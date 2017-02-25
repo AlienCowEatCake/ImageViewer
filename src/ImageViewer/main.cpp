@@ -49,7 +49,6 @@ int main(int argc, char *argv[])
 #else
     app.setAttribute(Qt::AA_DontShowIconsInMenus);
 #endif
-    app.setStyle(QStyleFactory::create(QString::fromLatin1("Fusion")));
     MainWindow * window = new MainWindow;
     if(argc > 1)
     {

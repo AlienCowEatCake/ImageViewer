@@ -31,6 +31,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QActionGroup>
+#include <QStyleFactory>
 
 #include "Themes/ThemeUtils.h"
 #include "ImageViewerWidget.h"
@@ -112,6 +113,12 @@ struct MainWindow::UI
         , actionEnglish(new QAction(menuLanguage))
         , actionRussian(new QAction(menuLanguage))
     {
+        QStyle *fusionStyle = QStyleFactory::create(QString::fromLatin1("Fusion"));
+        toolbar->setStyle(fusionStyle);
+        const QList<QWidget*> toolbarChildren = toolbar->findChildren<QWidget*>();
+        for(QList<QWidget*>::ConstIterator it = toolbarChildren.constBegin(); it != toolbarChildren.constEnd(); ++it)
+            (*it)->setStyle(fusionStyle);
+
         imageViewerWidget->setAcceptDrops(false);
 
         zoomFitToWindow->setCheckable(true);
@@ -205,6 +212,7 @@ struct MainWindow::UI
         menubar->addMenu(menuHelp);
 
         mainWindow->setCentralWidget(centralWidget);
+        mainWindow->setMenuBar(menubar);
         mainWindow->resize(WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT);
     }
 
@@ -244,7 +252,7 @@ struct MainWindow::UI
 
 private:
 
-    QToolButton *createToolbarButton(QWidget *parent)
+    QToolButton *createToolbarButton(QWidget *parent) const
     {
         QToolButton *button = new QToolButton(parent);
         button->setMinimumSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE));
@@ -252,7 +260,7 @@ private:
         return button;
     }
 
-    QWidget *createVerticalSeparator(QWidget *parent)
+    QWidget *createVerticalSeparator(QWidget *parent) const
     {
         QFrame *separator = new QFrame(parent);
         separator->setFrameShape(QFrame::VLine);
