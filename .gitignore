@@ -1,0 +1,78 @@
+# https://github.com/github/gitignore/blob/master/Qt.gitignore
+# https://github.com/github/gitignore/blob/master/C%2B%2B.gitignore
+# https://github.com/github/gitignore/blob/master/C.gitignore
+
+# ================ Common universal .gitignore file for C/C++/Qt ===============
+
+# Object files
+*.slo
+*.lo
+*.o
+*.obj
+*.ko
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Qt-es
+/.qmake.cache
+/.qmake.stash
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+Makefile*
+*-build-*
+
+# QtCreator
+*.autosave
+
+# QtCtreator Qml
+*.qmlproject.user
+*.qmlproject.user.*
+
+# Temp files
+*~
+
+# ====================== ImageViewer-specific .gitignore file =====================
+
+# Build directories
+/build
+/build_*
+
+# Binaries
+/ImageViewer
+/ImageViewer_*.dmg
+
+# OS X garbage
+.DS_Store
+
