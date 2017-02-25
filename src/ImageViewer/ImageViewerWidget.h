@@ -4,7 +4,7 @@
 #include <QGraphicsView>
 #include <QGraphicsItem>
 
-#include <QScopedPointer>
+#include "Utils/ScopedPointer.h"
 
 class ImageViewerWidget : public QGraphicsView
 {
@@ -13,13 +13,14 @@ class ImageViewerWidget : public QGraphicsView
 public:
     enum ZoomMode
     {
-        ZOOM_IDENTITY,
-        ZOOM_FIT_TO_WINDOW,
-        ZOOM_CUSTOM
+        ZOOM_IDENTITY       = 1,
+        ZOOM_FIT_TO_WINDOW  = 2,
+        ZOOM_CUSTOM         = 3
     };
 
 signals:
     void zoomModeChanged(ImageViewerWidget::ZoomMode mode);
+    void zoomLevelChanged(qreal zoomLevel);
 
 public:
 
@@ -35,6 +36,8 @@ public:
     qreal zoomLevel() const;
 
     void setSmoothEnabled(bool isEnabled);
+
+    QSize imageSize() const;
 
 public slots:
     void rotateClockwise();

@@ -11,7 +11,9 @@ struct ImageViewerWidget::Impl
         , scene(new QGraphicsScene(widget))
         , currentGraphicsItem(NULL)
         , currentZoomMode(ZOOM_IDENTITY)
+        , previousZoomMode(-1)
         , currentZoomLevel(1)
+        , previousZoomLevel(-1)
     {
         widget->setScene(scene);
     }
@@ -54,13 +56,26 @@ struct ImageViewerWidget::Impl
             break;
         }
         }
+
+        if(previousZoomLevel != currentZoomLevel)
+        {
+            emit imageViewerWidget->zoomLevelChanged(currentZoomLevel);
+            previousZoomLevel = currentZoomLevel;
+        }
+        if(previousZoomMode != currentZoomMode)
+        {
+            emit imageViewerWidget->zoomModeChanged(currentZoomMode);
+            previousZoomMode = currentZoomMode;
+        }
     }
 
     ImageViewerWidget *imageViewerWidget;
     QGraphicsScene *scene;
     QGraphicsItem *currentGraphicsItem;
     ZoomMode currentZoomMode;
+    int previousZoomMode;
     qreal currentZoomLevel;
+    qreal previousZoomLevel;
     qreal currentRotationAngle;
 };
 
@@ -78,13 +93,10 @@ ImageViewerWidget::~ImageViewerWidget()
 
 void ImageViewerWidget::setZoomMode(ImageViewerWidget::ZoomMode mode, qreal zoomLevel)
 {
-    const ZoomMode previousZoomMode = m_impl->currentZoomMode;
     m_impl->currentZoomMode = mode;
     if(zoomLevel > 0)
         m_impl->currentZoomLevel = zoomLevel;
     m_impl->updateTransformations();
-    if(previousZoomMode != mode)
-        emit zoomModeChanged(mode);
 }
 
 ImageViewerWidget::ZoomMode ImageViewerWidget::zoomMode() const
@@ -107,6 +119,13 @@ void ImageViewerWidget::setSmoothEnabled(bool isEnabled)
     setRenderHint(QPainter::Antialiasing, isEnabled);
     setRenderHint(QPainter::TextAntialiasing, isEnabled);
     setRenderHint(QPainter::SmoothPixmapTransform, isEnabled);
+}
+
+QSize ImageViewerWidget::imageSize() const
+{
+    if(!m_impl->currentGraphicsItem)
+        return QSize();
+    return m_impl->currentGraphicsItem->boundingRect().size().toSize();
 }
 
 void ImageViewerWidget::rotateClockwise()

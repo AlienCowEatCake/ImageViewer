@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/icons/modern">
+        <file>icon_close_black.png</file>
+        <file>icon_close_white.png</file>
+        <file>icon_copy_black.png</file>
+        <file>icon_copy_white.png</file>
+        <file>icon_cut_black.png</file>
+        <file>icon_cut_white.png</file>
+        <file>icon_exit_black.png</file>
+        <file>icon_exit_white.png</file>
+        <file>icon_help_black.png</file>
+        <file>icon_help_white.png</file>
+        <file>icon_info_black.png</file>
+        <file>icon_info_white.png</file>
+        <file>icon_new_black.png</file>
+        <file>icon_new_white.png</file>
+        <file>icon_new_window_black.png</file>
+        <file>icon_new_window_white.png</file>
+        <file>icon_open_black.png</file>
+        <file>icon_open_white.png</file>
+        <file>icon_paste_black.png</file>
+        <file>icon_paste_white.png</file>
+        <file>icon_people_black.png</file>
+        <file>icon_people_white.png</file>
+        <file>icon_qt_black.png</file>
+        <file>icon_qt_white.png</file>
+        <file>icon_save_as_black.png</file>
+        <file>icon_save_as_white.png</file>
+        <file>icon_save_black.png</file>
+        <file>icon_save_white.png</file>
+        <file>icon_text_black.png</file>
+        <file>icon_text_white.png</file>
+    </qresource>
+</RCC>

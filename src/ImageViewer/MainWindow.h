@@ -1,11 +1,30 @@
+/*
+   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+
+   This file is part of the `ImageViewer' program.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #ifndef MAINWINDOW_H_INCLUDED
 #define MAINWINDOW_H_INCLUDED
 
 #include <QMainWindow>
 #include <QString>
 
+#include "Utils/ScopedPointer.h"
 #include "ImageViewerWidget.h"
-#include <QScopedPointer>
 
 class MainWindow : public QMainWindow
 {
@@ -15,13 +34,27 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void setLanguage(const QString &newLanguage = QString());
+
 public slots:
+    void openNewWindow(const QString &filename = QString());
+    void updateWindowTitle();
+
     void onZoomModeChanged(ImageViewerWidget::ZoomMode mode);
     void onZoomFitToWindowRequested();
     void onZoomOriginalSizeRequested();
     void onOpenFileRequested(const QString &filename);
     void onOpenFileWithDialogRequested();
     void onExitRequested();
+
+    void onActionEnglishTriggered();
+    void onActionRussianTriggered();
+
+protected:
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+    void dropEvent(QDropEvent *event);
 
 private:
     struct UI;

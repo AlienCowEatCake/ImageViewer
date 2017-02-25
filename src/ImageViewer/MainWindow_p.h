@@ -1,3 +1,22 @@
+/*
+   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+
+   This file is part of the `ImageViewer' program.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #ifndef MAINWINDOW_P_H_INCLUDED
 #define MAINWINDOW_P_H_INCLUDED
 
@@ -8,11 +27,29 @@
 #include <QHBoxLayout>
 #include <QFrame>
 #include <QToolButton>
+#include <QMenuBar>
+#include <QAction>
+#include <QMenu>
+#include <QActionGroup>
 
+#include "Themes/ThemeUtils.h"
 #include "ImageViewerWidget.h"
+
+namespace {
+
+const int TOOLBAR_BUTTON_SIZE       = 28;
+const int TOOLBAR_LAYOUT_SPACING    = 3;
+const int TOOLBAR_HORIZONTAL_MARGIN = 4;
+const int TOOLBAR_VERTICAL_MARGIN   = 2;
+const int WINDOW_DEFAULT_WIDTH      = 640;
+const int WINDOW_DEFAULT_HEIGHT     = 480;
+
+} // namespace
 
 struct MainWindow::UI
 {
+    MainWindow *mainWindow;
+
     QFrame *centralWidget;
     ImageViewerWidget *imageViewerWidget;
     QFrame *toolbar;
@@ -28,47 +65,76 @@ struct MainWindow::UI
     QToolButton *saveFileAs;
     QToolButton *deleteFile;
     QToolButton *preferences;
-    QToolButton *quit;
+    QToolButton *exit;
 
+    QMenuBar *menubar;
+    QMenu *menuFile;
+    QMenu *menuLanguage;
+    QMenu *menuHelp;
+
+    QAction *actionOpen;
+    QAction *actionSaveAs;
+    QAction *actionPreferences;
+    QAction *actionExit;
+    QAction *actionAbout;
+    QAction *actionAboutQt;
+    QAction *actionEnglish;
+    QAction *actionRussian;
 
     UI(MainWindow *mainWindow)
-        : centralWidget(new QFrame(mainWindow))
+        : mainWindow(mainWindow)
+        , centralWidget(new QFrame(mainWindow))
         , imageViewerWidget(new ImageViewerWidget(centralWidget))
         , toolbar(new QFrame(centralWidget))
-        , navigatePrevious(new QToolButton(toolbar))
-        , navigateNext(new QToolButton(toolbar))
-        , zoomOut(new QToolButton(toolbar))
-        , zoomIn(new QToolButton(toolbar))
-        , zoomFitToWindow(new QToolButton(toolbar))
-        , zoomOriginalSize(new QToolButton(toolbar))
-        , rotateCounterclockwise(new QToolButton(toolbar))
-        , rotateClockwise(new QToolButton(toolbar))
-        , openFile(new QToolButton(toolbar))
-        , saveFileAs(new QToolButton(toolbar))
-        , deleteFile(new QToolButton(toolbar))
-        , preferences(new QToolButton(toolbar))
-        , quit(new QToolButton(toolbar))
+        , navigatePrevious(createToolbarButton(toolbar))
+        , navigateNext(createToolbarButton(toolbar))
+        , zoomOut(createToolbarButton(toolbar))
+        , zoomIn(createToolbarButton(toolbar))
+        , zoomFitToWindow(createToolbarButton(toolbar))
+        , zoomOriginalSize(createToolbarButton(toolbar))
+        , rotateCounterclockwise(createToolbarButton(toolbar))
+        , rotateClockwise(createToolbarButton(toolbar))
+        , openFile(createToolbarButton(toolbar))
+        , saveFileAs(createToolbarButton(toolbar))
+        , deleteFile(createToolbarButton(toolbar))
+        , preferences(createToolbarButton(toolbar))
+        , exit(createToolbarButton(toolbar))
+        , menubar(new QMenuBar(mainWindow))
+        , menuFile(new QMenu(menubar))
+        , menuLanguage(new QMenu(menubar))
+        , menuHelp(new QMenu(menubar))
+        , actionOpen(new QAction(menuFile))
+        , actionSaveAs(new QAction(menuFile))
+        , actionPreferences(new QAction(menuFile))
+        , actionExit(new QAction(menuFile))
+        , actionAbout(new QAction(menuHelp))
+        , actionAboutQt(new QAction(menuHelp))
+        , actionEnglish(new QAction(menuLanguage))
+        , actionRussian(new QAction(menuLanguage))
     {
+        imageViewerWidget->setAcceptDrops(false);
+
         zoomFitToWindow->setCheckable(true);
         zoomOriginalSize->setCheckable(true);
 
-        navigatePrevious->setText("<");
-        navigateNext->setText(">");
-        zoomOut->setText("-");
-        zoomIn->setText("+");
-        zoomFitToWindow->setText("[]");
-        zoomOriginalSize->setText("1");
-        rotateCounterclockwise->setText("\\");
-        rotateClockwise->setText("/");
-        openFile->setText("O");
-        saveFileAs->setText("S");
-        deleteFile->setText("D");
-        preferences->setText("P");
-        quit->setText("Q");
+        navigatePrevious->setText(QString::fromLatin1("<"));
+        navigateNext->setText(QString::fromLatin1(">"));
+        zoomOut->setText(QString::fromLatin1("-"));
+        zoomIn->setText(QString::fromLatin1("+"));
+        zoomFitToWindow->setText(QString::fromLatin1("[]"));
+        zoomOriginalSize->setText(QString::fromLatin1("1"));
+        rotateCounterclockwise->setText(QString::fromLatin1("\\"));
+        rotateClockwise->setText(QString::fromLatin1("/"));
+        deleteFile->setText(QString::fromLatin1("D"));
+        preferences->setText(QString::fromLatin1("P"));
+
+        openFile->setIcon   (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN      , ThemeUtils::WidgetHasDarkTheme(openFile)));
+        saveFileAs->setIcon (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS   , ThemeUtils::WidgetHasDarkTheme(saveFileAs)));
+        exit->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT      , ThemeUtils::WidgetHasDarkTheme(exit)));
 
         QHBoxLayout *toolbarLayout = new QHBoxLayout(toolbar);
-        toolbarLayout->setContentsMargins(0, 0, 0, 0);
-        toolbarLayout->setSpacing(0);
+        toolbarLayout->setContentsMargins(TOOLBAR_HORIZONTAL_MARGIN, TOOLBAR_VERTICAL_MARGIN, TOOLBAR_HORIZONTAL_MARGIN, TOOLBAR_VERTICAL_MARGIN);
+        toolbarLayout->setSpacing(TOOLBAR_LAYOUT_SPACING);
         toolbarLayout->addStretch();
         toolbarLayout->addWidget(navigatePrevious);
         toolbarLayout->addWidget(navigateNext);
@@ -86,7 +152,7 @@ struct MainWindow::UI
         toolbarLayout->addWidget(deleteFile);
         toolbarLayout->addWidget(createVerticalSeparator(toolbar));
         toolbarLayout->addWidget(preferences);
-        toolbarLayout->addWidget(quit);
+        toolbarLayout->addWidget(exit);
         toolbarLayout->addStretch();
 
         QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
@@ -95,8 +161,51 @@ struct MainWindow::UI
         mainLayout->addWidget(imageViewerWidget);
         mainLayout->addWidget(toolbar);
 
+        menuFile->addAction(actionOpen);
+        actionOpen->setShortcut(QKeySequence::Open);
+        actionOpen->setMenuRole(QAction::NoRole);
+        menuFile->addAction(actionSaveAs);
+        actionSaveAs->setShortcut(QKeySequence::Save);
+        actionSaveAs->setMenuRole(QAction::NoRole);
+        menuFile->addSeparator();
+        menuFile->addAction(actionPreferences);
+        actionPreferences->setShortcut(QKeySequence::Preferences);
+        actionPreferences->setMenuRole(QAction::PreferencesRole);
+        menuFile->addSeparator();
+        menuFile->addAction(actionExit);
+        actionExit->setShortcut(QKeySequence::Quit);
+        actionExit->setMenuRole(QAction::QuitRole);
+
+        menuLanguage->addAction(actionEnglish);
+        actionEnglish->setMenuRole(QAction::NoRole);
+        actionEnglish->setCheckable(true);
+        menuLanguage->addAction(actionRussian);
+        actionRussian->setMenuRole(QAction::NoRole);
+        actionRussian->setCheckable(true);
+
+        menuHelp->addAction(actionAbout);
+        actionAbout->setMenuRole(QAction::AboutRole);
+        menuHelp->addAction(actionAboutQt);
+        actionAboutQt->setMenuRole(QAction::AboutQtRole);
+
+        const bool menuHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(menuFile);
+        actionOpen->setIcon     (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN      , menuHasDarkTheme));
+        actionSaveAs->setIcon   (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS   , menuHasDarkTheme));
+        actionExit->setIcon     (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT      , menuHasDarkTheme));
+        actionAbout->setIcon    (ThemeUtils::GetIcon(ThemeUtils::ICON_ABOUT     , menuHasDarkTheme));
+        actionAboutQt->setIcon  (ThemeUtils::GetIcon(ThemeUtils::ICON_QT        , menuHasDarkTheme));
+
+        QActionGroup *langActions = new QActionGroup(menuLanguage);
+        langActions->addAction(actionEnglish);
+        langActions->addAction(actionRussian);
+        langActions->setExclusive(true);
+
+        menubar->addMenu(menuFile);
+        menubar->addMenu(menuLanguage);
+        menubar->addMenu(menuHelp);
+
         mainWindow->setCentralWidget(centralWidget);
-        retranslate();
+        mainWindow->resize(WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT);
     }
 
     ~UI()
@@ -116,16 +225,50 @@ struct MainWindow::UI
         saveFileAs->setToolTip(qApp->translate("MainWindow", "Save File As"));
         deleteFile->setToolTip(qApp->translate("MainWindow", "Delete File"));
         preferences->setToolTip(qApp->translate("MainWindow", "Preferences"));
-        quit->setToolTip(qApp->translate("MainWindow", "Quit"));
+        exit->setToolTip(qApp->translate("MainWindow", "Exit"));
+
+        menuFile->setTitle(QApplication::translate("MainWindow", "&File"));
+        menuHelp->setTitle(QApplication::translate("MainWindow", "&Help"));
+        menuLanguage->setTitle(QApplication::translate("MainWindow", "&Language"));
+
+        actionOpen->setText(QApplication::translate("MainWindow", "&Open"));
+        actionSaveAs->setText(QApplication::translate("MainWindow", "&Save As"));
+        actionExit->setText(QApplication::translate("MainWindow", "&Exit"));
+        actionAbout->setText(QApplication::translate("MainWindow", "&About"));
+        actionAboutQt->setText(QApplication::translate("MainWindow", "About &Qt"));
+        actionEnglish->setText(QApplication::translate("MainWindow", "&English"));
+        actionRussian->setText(QApplication::translate("MainWindow", "&Russian"));
+
+        updateDockMenu();
     }
 
 private:
+
+    QToolButton *createToolbarButton(QWidget *parent)
+    {
+        QToolButton *button = new QToolButton(parent);
+        button->setMinimumSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE));
+        button->setMaximumSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE));
+        return button;
+    }
 
     QWidget *createVerticalSeparator(QWidget *parent)
     {
         QFrame *separator = new QFrame(parent);
         separator->setFrameShape(QFrame::VLine);
+        separator->setFrameShadow(QFrame::Sunken);
         return separator;
+    }
+
+    void updateDockMenu()
+    {
+#if defined (Q_OS_MAC)
+        void qt_mac_set_dock_menu(QMenu *menu);
+        static QMenu dock_menu;
+        dock_menu.clear();
+        dock_menu.addAction(qApp->translate("Dock", "New Window"), mainWindow, SLOT(openNewWindow()));
+        qt_mac_set_dock_menu(&dock_menu);
+#endif
     }
 };
 
