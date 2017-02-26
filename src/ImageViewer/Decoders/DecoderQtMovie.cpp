@@ -42,11 +42,15 @@ QString DecoderQtMovie::name() const
 
 QList<DecoderFormatInfo> DecoderQtMovie::supportedFormats() const
 {
+    const QList<QByteArray> readerFormats = QList<QByteArray>() << QByteArray("gif");//QMovie::supportedFormats();
     QList<DecoderFormatInfo> result;
-    DecoderFormatInfo info;
-    info.decoderPriority = DECODER_QT_MOVIE_PRIORITY;
-    info.format = QString::fromLatin1("gif");
-    result.append(info);
+    for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
+    {
+        DecoderFormatInfo info;
+        info.decoderPriority = DECODER_QT_MOVIE_PRIORITY;
+        info.format = QString::fromLatin1(*it).toLower();
+        result.append(info);
+    }
     return result;
 }
 
@@ -62,6 +66,7 @@ QGraphicsItem *DecoderQtMovie::loadImage(const QString &filename)
         return NULL;
     }
     QLabel *movieLabel = new QLabel();
+    movieLabel->setAttribute(Qt::WA_TranslucentBackground, true);
     movieLabel->setMovie(movie);
     movie->start();
     QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();
