@@ -124,20 +124,19 @@ struct MainWindow::UI
         zoomFitToWindow->setCheckable(true);
         zoomOriginalSize->setCheckable(true);
 
-        navigatePrevious->setText(QString::fromLatin1("<"));
-        navigateNext->setText(QString::fromLatin1(">"));
-        zoomOut->setText(QString::fromLatin1("-"));
-        zoomIn->setText(QString::fromLatin1("+"));
-        zoomFitToWindow->setText(QString::fromLatin1("[]"));
-        zoomOriginalSize->setText(QString::fromLatin1("1"));
-        rotateCounterclockwise->setText(QString::fromLatin1("\\"));
-        rotateClockwise->setText(QString::fromLatin1("/"));
-        deleteFile->setText(QString::fromLatin1("D"));
-        preferences->setText(QString::fromLatin1("P"));
-
-        openFile->setIcon   (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN      , ThemeUtils::WidgetHasDarkTheme(openFile)));
-        saveFileAs->setIcon (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS   , ThemeUtils::WidgetHasDarkTheme(saveFileAs)));
-        exit->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT      , ThemeUtils::WidgetHasDarkTheme(exit)));
+        navigatePrevious->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_LEFT                      , ThemeUtils::WidgetHasDarkTheme(navigatePrevious)));
+        navigateNext->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_RIGHT                     , ThemeUtils::WidgetHasDarkTheme(navigateNext)));
+        zoomOut->setIcon                (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_OUT                  , ThemeUtils::WidgetHasDarkTheme(zoomOut)));
+        zoomIn->setIcon                 (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , ThemeUtils::WidgetHasDarkTheme(zoomIn)));
+        zoomFitToWindow->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , ThemeUtils::WidgetHasDarkTheme(zoomFitToWindow)));
+        zoomOriginalSize->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , ThemeUtils::WidgetHasDarkTheme(zoomOriginalSize)));
+        rotateCounterclockwise->setIcon (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , ThemeUtils::WidgetHasDarkTheme(rotateCounterclockwise)));
+        rotateClockwise->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , ThemeUtils::WidgetHasDarkTheme(rotateClockwise)));
+        openFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , ThemeUtils::WidgetHasDarkTheme(openFile)));
+        saveFileAs->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS                   , ThemeUtils::WidgetHasDarkTheme(saveFileAs)));
+        deleteFile->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_DELETE                    , ThemeUtils::WidgetHasDarkTheme(deleteFile)));
+        preferences->setIcon            (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS                  , ThemeUtils::WidgetHasDarkTheme(preferences)));
+        exit->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT                      , ThemeUtils::WidgetHasDarkTheme(exit)));
 
         QHBoxLayout *toolbarLayout = new QHBoxLayout(toolbar);
         toolbarLayout->setContentsMargins(TOOLBAR_HORIZONTAL_MARGIN, TOOLBAR_VERTICAL_MARGIN, TOOLBAR_HORIZONTAL_MARGIN, TOOLBAR_VERTICAL_MARGIN);
@@ -196,11 +195,12 @@ struct MainWindow::UI
         actionAboutQt->setMenuRole(QAction::AboutQtRole);
 
         const bool menuHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(menuFile);
-        actionOpen->setIcon     (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN      , menuHasDarkTheme));
-        actionSaveAs->setIcon   (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS   , menuHasDarkTheme));
-        actionExit->setIcon     (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT      , menuHasDarkTheme));
-        actionAbout->setIcon    (ThemeUtils::GetIcon(ThemeUtils::ICON_ABOUT     , menuHasDarkTheme));
-        actionAboutQt->setIcon  (ThemeUtils::GetIcon(ThemeUtils::ICON_QT        , menuHasDarkTheme));
+        actionOpen->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN      , menuHasDarkTheme));
+        actionSaveAs->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS   , menuHasDarkTheme));
+        actionPreferences->setIcon  (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS  , menuHasDarkTheme));
+        actionExit->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT      , menuHasDarkTheme));
+        actionAbout->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ABOUT     , menuHasDarkTheme));
+        actionAboutQt->setIcon      (ThemeUtils::GetIcon(ThemeUtils::ICON_QT        , menuHasDarkTheme));
 
         QActionGroup *langActions = new QActionGroup(menuLanguage);
         langActions->addAction(actionEnglish);
@@ -211,6 +211,7 @@ struct MainWindow::UI
         menubar->addMenu(menuLanguage);
         menubar->addMenu(menuHelp);
 
+        setImageControlsEnabled(false);
         mainWindow->setCentralWidget(centralWidget);
         mainWindow->setMenuBar(menubar);
         mainWindow->resize(WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT);
@@ -249,6 +250,21 @@ struct MainWindow::UI
         actionRussian->setText(QApplication::translate("MainWindow", "&Russian"));
 
         updateDockMenu();
+    }
+
+    void setImageControlsEnabled(bool isEnabled)
+    {
+        navigatePrevious->setEnabled(isEnabled);
+        navigateNext->setEnabled(isEnabled);
+        zoomOut->setEnabled(isEnabled);
+        zoomIn->setEnabled(isEnabled);
+        zoomFitToWindow->setEnabled(isEnabled);
+        zoomOriginalSize->setEnabled(isEnabled);
+        rotateCounterclockwise->setEnabled(isEnabled);
+        rotateClockwise->setEnabled(isEnabled);
+        saveFileAs->setEnabled(isEnabled);
+        deleteFile->setEnabled(isEnabled);
+        actionSaveAs->setEnabled(isEnabled);
     }
 
 private:

@@ -14,6 +14,7 @@ struct ImageViewerWidget::Impl
         , previousZoomMode(-1)
         , currentZoomLevel(1)
         , previousZoomLevel(-1)
+        , currentRotationAngle(0)
     {
         widget->setScene(scene);
     }

@@ -54,13 +54,24 @@ enum IconTypes
     ICON_OPEN,
     ICON_CUT,
     ICON_COPY,
-    ICON_PASTE
+    ICON_PASTE,
+    ICON_DELETE,
+    ICON_ZOOM_IN,
+    ICON_ZOOM_OUT,
+    ICON_ZOOM_IDENTITY,
+    ICON_ZOOM_EMPTY,
+    ICON_LEFT,
+    ICON_RIGHT,
+    ICON_ROTATE_CLOCKWISE,
+    ICON_ROTATE_COUNTERCLOCKWISE,
+    ICON_SETTINGS
 };
 
 /// @brief Функция для получения иконки
 /// @param[in] type - Тип иконки (см. enum IconTypes)
 /// @param[in] darkBackground - true, если иконка располагается на темном фоне
-QIcon GetIcon(IconTypes type, bool darkBackground = false);
+/// @param[in] withRasterPixmaps - использовать ли растровые изображения при создании иконки
+QIcon GetIcon(IconTypes type, bool darkBackground = false, bool withRasterPixmaps = false);
 
 } // namespace ThemeUtils
 

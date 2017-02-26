@@ -58,7 +58,8 @@ QIcon CreateScalableIcon(const QString &defaultImagePath, const QStringList &sca
 /// @brief Функция для получения иконки
 /// @param[in] type - Тип иконки (см. enum IconTypes)
 /// @param[in] darkBackground - true, если иконка располагается на темном фоне
-QIcon GetIcon(IconTypes type, bool darkBackground)
+/// @param[in] withRasterPixmaps - использовать ли растровые изображения при создании иконки
+QIcon GetIcon(IconTypes type, bool darkBackground, bool withRasterPixmaps)
 {
     const QString iconNameTemplate = QString::fromLatin1(":/icons/modern/%2_%1.%3")
             .arg(darkBackground ? QString::fromLatin1("white") : QString::fromLatin1("black"));
@@ -67,52 +68,41 @@ QIcon GetIcon(IconTypes type, bool darkBackground)
 
     switch(type)
     {
-    case ICON_QT:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_qt")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_qt")).arg(pixmapExt)));
-    case ICON_ABOUT:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_info")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_info")).arg(pixmapExt)));
-    case ICON_HELP:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_help")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_help")).arg(pixmapExt)));
-    case ICON_AUTHORS:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_people")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_people")).arg(pixmapExt)));
-    case ICON_TEXT:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_text")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_text")).arg(pixmapExt)));
-    case ICON_SAVE:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_save")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_save")).arg(pixmapExt)));
-    case ICON_SAVE_AS:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_save_as")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_save_as")).arg(pixmapExt)));
-    case ICON_CLOSE:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_close")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_close")).arg(pixmapExt)));
-    case ICON_EXIT:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_exit")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_exit")).arg(pixmapExt)));
-    case ICON_NEW:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_new")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_new")).arg(pixmapExt)));
-    case ICON_NEW_WINDOW:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_new_window")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_new_window")).arg(pixmapExt)));
-    case ICON_OPEN:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_open")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_open")).arg(pixmapExt)));
-    case ICON_CUT:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_cut")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_cut")).arg(pixmapExt)));
-    case ICON_COPY:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_copy")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_copy")).arg(pixmapExt)));
-    case ICON_PASTE:
-        return CreateScalableIcon(iconNameTemplate.arg(QString::fromLatin1("icon_paste")).arg(defaultExt),
-                QStringList(iconNameTemplate.arg(QString::fromLatin1("icon_paste")).arg(pixmapExt)));
-
+#define ADD_NAMED_ICON_CASE(ICON_TYPE, ICON_NAME) \
+    case ICON_TYPE: \
+    { \
+        const QString iconName = QString::fromLatin1(ICON_NAME).toLower(); \
+        const QStringList rasterPixmaps = (withRasterPixmaps ? QStringList(iconNameTemplate.arg(iconName).arg(pixmapExt)) : QStringList()); \
+        return CreateScalableIcon(iconNameTemplate.arg(iconName).arg(defaultExt), rasterPixmaps); \
+    }
+#define ADD_ICON_CASE(ICON_TYPE) ADD_NAMED_ICON_CASE(ICON_TYPE, #ICON_TYPE)
+    ADD_ICON_CASE(ICON_QT)
+    ADD_NAMED_ICON_CASE(ICON_ABOUT, "icon_info")
+    ADD_ICON_CASE(ICON_HELP)
+    ADD_NAMED_ICON_CASE(ICON_AUTHORS, "icon_people")
+    ADD_ICON_CASE(ICON_TEXT)
+    ADD_ICON_CASE(ICON_SAVE)
+    ADD_ICON_CASE(ICON_SAVE_AS)
+    ADD_ICON_CASE(ICON_CLOSE)
+    ADD_ICON_CASE(ICON_EXIT)
+    ADD_ICON_CASE(ICON_NEW)
+    ADD_ICON_CASE(ICON_NEW_WINDOW)
+    ADD_ICON_CASE(ICON_OPEN)
+    ADD_ICON_CASE(ICON_CUT)
+    ADD_ICON_CASE(ICON_COPY)
+    ADD_ICON_CASE(ICON_PASTE)
+    ADD_ICON_CASE(ICON_DELETE)
+    ADD_ICON_CASE(ICON_ZOOM_IN)
+    ADD_ICON_CASE(ICON_ZOOM_OUT)
+    ADD_ICON_CASE(ICON_ZOOM_IDENTITY)
+    ADD_ICON_CASE(ICON_ZOOM_EMPTY)
+    ADD_ICON_CASE(ICON_LEFT)
+    ADD_ICON_CASE(ICON_RIGHT)
+    ADD_ICON_CASE(ICON_ROTATE_CLOCKWISE)
+    ADD_ICON_CASE(ICON_ROTATE_COUNTERCLOCKWISE)
+    ADD_ICON_CASE(ICON_SETTINGS)
+#undef ADD_ICON_CASE
+#undef ADD_NAMED_ICON_CASE
     }
     return QIcon();
 }

@@ -30,5 +30,25 @@
         <file>icon_save_white.svg</file>
         <file>icon_text_black.svg</file>
         <file>icon_text_white.svg</file>
+        <file>icon_zoom_empty_black.svg</file>
+        <file>icon_zoom_empty_white.svg</file>
+        <file>icon_zoom_identity_black.svg</file>
+        <file>icon_zoom_identity_white.svg</file>
+        <file>icon_zoom_in_black.svg</file>
+        <file>icon_zoom_in_white.svg</file>
+        <file>icon_zoom_out_black.svg</file>
+        <file>icon_zoom_out_white.svg</file>
+        <file>icon_right_black.svg</file>
+        <file>icon_right_white.svg</file>
+        <file>icon_left_black.svg</file>
+        <file>icon_left_white.svg</file>
+        <file>icon_rotate_clockwise_black.svg</file>
+        <file>icon_rotate_clockwise_white.svg</file>
+        <file>icon_rotate_counterclockwise_black.svg</file>
+        <file>icon_rotate_counterclockwise_white.svg</file>
+        <file>icon_delete_black.svg</file>
+        <file>icon_delete_white.svg</file>
+        <file>icon_settings_black.svg</file>
+        <file>icon_settings_white.svg</file>
     </qresource>
 </RCC>

@@ -30,15 +30,15 @@
      id="layer1">
     <path
        id="path4161"
-       d="m 2.5,1050.8622 0,-13 11,0 0,10 -3,3 z"
+       d="m 2.5,1050.8622 v -13 h 11 v 10 l -3,3 z"
        style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        id="path4163"
-       d="m 10.5,1050.8622 0,-3 3,0 z"
+       d="m 10.5,1050.8622 v -3 h 3 z"
        style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:bevel;stroke-opacity:1" />
     <path
        id="path4165"
-       d="m 10.5,1048.3622 0,-0.5 0.5,0"
+       d="m 10.5,1048.3622 v -0.5 H 11"
        style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   </g>
 </svg>

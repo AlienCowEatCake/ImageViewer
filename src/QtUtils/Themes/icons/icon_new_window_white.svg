@@ -31,23 +31,23 @@
      id="layer1">
     <path
        id="path4143"
-       d="m 1.5,1049.8622 0,-11 13,0 0,11 z"
+       d="m 1.5,1049.8622 v -11 h 13 v 11 z"
        style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        id="path4147"
-       d="m 1.5,1039.8622 13,0"
+       d="m 1.5,1039.8622 h 13"
        style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        id="path4155"
-       d="m 13,1045.8622 -5,0"
+       d="M 13,1045.8622 H 8"
        style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        id="path4157"
-       d="m 10.5,1048.3622 0,-5"
+       d="m 10.5,1048.3622 v -5"
        style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        id="path4159"
-       d="m 1.5,1040.8622 13,0"
+       d="m 1.5,1040.8622 h 13"
        style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   </g>
 </svg>

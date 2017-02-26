@@ -31,7 +31,7 @@
      id="layer1">
     <path
        id="path4150"
-       d="m 1.5,1049.8622 0,-3 c 0,-1 1,-2 2,-2 l 4,0 c 1,0 2,1 2,2 l 0,3 z"
+       d="m 1.5,1049.8622 v -3 c 0,-1 1,-2 2,-2 h 4 c 1,0 2,1 2,2 v 3 z"
        style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        id="path4152"
@@ -39,7 +39,7 @@
        style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     <path
        id="path4154"
-       d="m 9.5,1043.8622 3,0 c 1,0 2,1 2,2 l 0,2 -3.5,0"
+       d="m 9.5,1043.8622 h 3 c 1,0 2,1 2,2 v 2 H 11"
        style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:1px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        id="path4156"

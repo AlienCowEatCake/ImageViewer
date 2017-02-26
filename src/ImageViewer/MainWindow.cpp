@@ -212,6 +212,7 @@ void MainWindow::onOpenFileRequested(const QString &filename)
 
     m_ui->imageViewerWidget->setGraphicsItem(new QGraphicsPixmapItem(QPixmap(filename)));
 
+    m_ui->setImageControlsEnabled(true);
     m_impl->lastOpenedFilename = filename;
     updateWindowTitle();
 }
