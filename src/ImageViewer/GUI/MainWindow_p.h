@@ -119,8 +119,11 @@ struct MainWindow::UI
         for(QList<QWidget*>::ConstIterator it = toolbarChildren.constBegin(); it != toolbarChildren.constEnd(); ++it)
             (*it)->setStyle(fusionStyle);
 
+        const QList<QWidget*> mainWindowChildren = mainWindow->findChildren<QWidget*>();
+        for(QList<QWidget*>::ConstIterator it = mainWindowChildren.constBegin(); it != mainWindowChildren.constEnd(); ++it)
+            (*it)->setFocusPolicy(Qt::NoFocus);
+
         imageViewerWidget->setAcceptDrops(false);
-        imageViewerWidget->setFocusPolicy(Qt::NoFocus);
 
         zoomFitToWindow->setCheckable(true);
         zoomOriginalSize->setCheckable(true);

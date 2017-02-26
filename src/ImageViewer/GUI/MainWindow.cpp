@@ -403,13 +403,22 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Up:
     case Qt::Key_Left:
     case Qt::Key_Backspace:
-        onOpenPreviousRequested();
+        m_ui->navigatePrevious->animateClick();
         break;
     case Qt::Key_Right:
     case Qt::Key_Down:
     case Qt::Key_Space:
     case Qt::Key_Return:
-        onOpenNextRequested();
+    case Qt::Key_Enter:
+        m_ui->navigateNext->animateClick();
+        break;
+    case Qt::Key_Minus:
+    case Qt::Key_Underscore:
+        m_ui->zoomOut->animateClick();
+        break;
+    case Qt::Key_Plus:
+    case Qt::Key_Equal:
+        m_ui->zoomIn->animateClick();
         break;
     default:
         break;
