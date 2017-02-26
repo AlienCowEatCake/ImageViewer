@@ -32,20 +32,20 @@ TRANSLATIONS += \
     src/ImageViewer/resources/translations/ru.ts
 
 win32 {
-##    RC_FILE += src/ImageViewer/resources/platform/windows/resources.rc
+    RC_FILE += src/ImageViewer/resources/platform/windows/resources.rc
     DEFINES += NOMINMAX
 }
 
 macx {
-##    QMAKE_INFO_PLIST = src/ImageViewer/resources/platform/macosx/Info.plist
-##    ICON = src/ImageViewer/resources/icon/ball.icns
-    TARGET = "ImageViewer"
+    QMAKE_INFO_PLIST = src/ImageViewer/resources/platform/macosx/Info.plist
+    ICON = src/ImageViewer/resources/icon/icon.icns
+    TARGET = "Image Viewer"
     QMAKE_CXXFLAGS += -Wno-invalid-constexpr
 }
 
 RESOURCES += \
-    src/ImageViewer/resources/translations/translations.qrc
-##    src/ImageViewer/resources/icon/icon.qrc
+    src/ImageViewer/resources/translations/translations.qrc \
+    src/ImageViewer/resources/icon/icon.qrc
 
 QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9
 

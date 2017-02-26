@@ -241,6 +241,7 @@ struct MainWindow::UI
 
         actionOpen->setText(QApplication::translate("MainWindow", "&Open"));
         actionSaveAs->setText(QApplication::translate("MainWindow", "&Save As"));
+        actionPreferences->setText(QApplication::translate("MainWindow", "&Preferences"));
         actionExit->setText(QApplication::translate("MainWindow", "&Exit"));
         actionAbout->setText(QApplication::translate("MainWindow", "&About"));
         actionAboutQt->setText(QApplication::translate("MainWindow", "About &Qt"));

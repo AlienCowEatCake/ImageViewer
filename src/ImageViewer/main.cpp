@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     app.setApplicationName(QString::fromLatin1("ImageViewer"));
     app.setApplicationVersion(QString::fromLatin1("1.0"));
 #if !defined (Q_OS_MAC)
-//    app.setWindowIcon(QIcon(QString::fromLatin1(":/icon/icon.ico")));
+    app.setWindowIcon(QIcon(QString::fromLatin1(":/icon/icon.ico")));
     app.setAttribute(Qt::AA_DontShowIconsInMenus, false);
 #else
     app.setAttribute(Qt::AA_DontShowIconsInMenus);
