@@ -255,8 +255,6 @@ struct MainWindow::UI
 
     void setImageControlsEnabled(bool isEnabled)
     {
-        navigatePrevious->setEnabled(isEnabled);
-        navigateNext->setEnabled(isEnabled);
         zoomOut->setEnabled(isEnabled);
         zoomIn->setEnabled(isEnabled);
         zoomFitToWindow->setEnabled(isEnabled);
@@ -264,7 +262,6 @@ struct MainWindow::UI
         rotateCounterclockwise->setEnabled(isEnabled);
         rotateClockwise->setEnabled(isEnabled);
         saveFileAs->setEnabled(isEnabled);
-        deleteFile->setEnabled(isEnabled);
         actionSaveAs->setEnabled(isEnabled);
     }
 

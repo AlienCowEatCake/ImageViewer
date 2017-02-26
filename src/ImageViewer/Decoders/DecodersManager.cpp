@@ -107,6 +107,14 @@ QStringList DecodersManager::supportedFormats() const
     return result;
 }
 
+QStringList DecodersManager::supportedFormatsWithWildcards() const
+{
+    QStringList result;
+    for(std::map<QString, std::set<DecoderWithPriority> >::const_iterator it = m_impl->formats.begin(); it != m_impl->formats.end(); ++it)
+        result.append(QString::fromLatin1("*.%1").arg(it->first));
+    return result;
+}
+
 QGraphicsItem *DecodersManager::loadImage(const QString &filename)
 {
     const QFileInfo fileInfo(filename);

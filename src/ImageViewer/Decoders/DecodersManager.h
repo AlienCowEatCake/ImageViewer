@@ -40,6 +40,7 @@ public:
     void registerDefaultDecoder(IDecoder *decoder);
     QStringList registeredDecoders() const;
     QStringList supportedFormats() const;
+    QStringList supportedFormatsWithWildcards() const;
 
     QGraphicsItem *loadImage(const QString &filename);
 

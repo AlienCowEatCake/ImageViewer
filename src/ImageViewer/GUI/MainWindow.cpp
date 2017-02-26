@@ -35,6 +35,8 @@
 #include <QGraphicsItem>
 #include <QMessageBox>
 #include <QLabel>
+#include <QDir>
+#include <QVector>
 
 #include "Utils/SettingsWrapper.h"
 #include "Utils/Workarounds.h"
@@ -45,12 +47,74 @@ struct MainWindow::Impl
 {
     Impl(MainWindow *mainWindow)
         : mainWindow(mainWindow)
-        , supportedFormats(DecodersManager::getInstance().supportedFormats())
-    {}
+        , supportedFormats(DecodersManager::getInstance().supportedFormatsWithWildcards())
+    {
+        onFileClosed();
+    }
 
-    QString lastOpenedFilename;
+    void onFileOpened(const QString &path)
+    {
+        const QFileInfo fileInfo = QFileInfo(path);
+        const QDir dir = fileInfo.dir();
+        const QString directoryPath = dir.absolutePath();
+        const QString fileName = fileInfo.fileName();
+        if(directoryPath != currentDirectory)
+        {
+            currentDirectory = directoryPath;
+            filesInCurrentDirectory.clear();
+            currentIndexInDirectory = -1;
+            const QStringList list = dir.entryList(supportedFormats, QDir::Files | QDir::Readable, QDir::Name | QDir::IgnoreCase);
+            for(QStringList::ConstIterator it = list.constBegin(); it != list.constEnd(); ++it)
+            {
+                const QString &name = *it;
+                filesInCurrentDirectory.append(name);
+                if(currentIndexInDirectory == -1 && name == fileName)
+                    currentIndexInDirectory = filesInCurrentDirectory.size() - 1;
+            }
+        }
+        else
+        {
+            if(currentIndexInDirectory > 0 && filesInCurrentDirectory[currentIndexInDirectory - 1] == fileName)
+                currentIndexInDirectory--;
+            else if(currentIndexInDirectory < filesInCurrentDirectory.size() - 1 && filesInCurrentDirectory[currentIndexInDirectory + 1] == fileName)
+                currentIndexInDirectory++;
+            else
+                currentIndexInDirectory = filesInCurrentDirectory.indexOf(fileName);
+        }
+
+        if(currentIndexInDirectory < 0)
+        {
+            filesInCurrentDirectory.clear();
+            currentDirectory.clear();
+            mainWindow->m_ui->navigateNext->setEnabled(false);
+            mainWindow->m_ui->navigatePrevious->setEnabled(false);
+        }
+        else
+        {
+            mainWindow->m_ui->navigateNext->setEnabled(currentIndexInDirectory < filesInCurrentDirectory.size() - 1);
+            mainWindow->m_ui->navigatePrevious->setEnabled(currentIndexInDirectory > 0);
+        }
+        mainWindow->m_ui->deleteFile->setEnabled(fileInfo.isWritable());
+    }
+
+    void onFileClosed()
+    {
+        filesInCurrentDirectory.clear();
+        currentDirectory.clear();
+        currentIndexInDirectory = -1;
+        mainWindow->m_ui->navigateNext->setEnabled(false);
+        mainWindow->m_ui->navigatePrevious->setEnabled(false);
+        mainWindow->m_ui->deleteFile->setEnabled(false);
+    }
+
     MainWindow *mainWindow;
     const QStringList supportedFormats;
+
+    QString lastOpenedFilename;
+
+    QString currentDirectory;
+    QVector<QString> filesInCurrentDirectory;
+    int currentIndexInDirectory;
 };
 
 MainWindow::MainWindow(QWidget *parent)
@@ -215,14 +279,14 @@ void MainWindow::showPreferences()
 
 void MainWindow::onOpenPreviousRequested()
 {
-    /// @todo
-    QMessageBox::critical(this, QString::fromLatin1("Error"), QString::fromLatin1("Not implemented yet =("));
+    if(m_impl->currentIndexInDirectory > 0)
+        onOpenFileRequested(QDir(m_impl->currentDirectory).absoluteFilePath(m_impl->filesInCurrentDirectory[m_impl->currentIndexInDirectory - 1]));
 }
 
 void MainWindow::onOpenNextRequested()
 {
-    /// @todo
-    QMessageBox::critical(this, QString::fromLatin1("Error"), QString::fromLatin1("Not implemented yet =("));
+    if(m_impl->currentIndexInDirectory >= 0 && m_impl->currentIndexInDirectory < m_impl->filesInCurrentDirectory.size() - 1)
+        onOpenFileRequested(QDir(m_impl->currentDirectory).absoluteFilePath(m_impl->filesInCurrentDirectory[m_impl->currentIndexInDirectory + 1]));
 }
 
 void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)
@@ -246,13 +310,14 @@ void MainWindow::onOpenFileRequested(const QString &filename)
         m_ui->setImageControlsEnabled(false);
         QMessageBox::critical(this, tr("Error"), tr("Failed to open file \"%1\"").arg(filename));
     }
+    m_impl->onFileOpened(filename);
     updateWindowTitle();
 }
 
 void MainWindow::onOpenFileWithDialogRequested()
 {
     const QString formatString = QString::fromLatin1("%2 (%1);;%3 (*.*)")
-            .arg(m_impl->supportedFormats.join(QString::fromLatin1(" *.")).prepend(QString::fromLatin1("*.")))
+            .arg(m_impl->supportedFormats.join(QString::fromLatin1(" ")))
             .arg(tr("All Supported Images")).arg(tr("All Files"));
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), m_impl->lastOpenedFilename, formatString);
     if(fileName.isEmpty())
