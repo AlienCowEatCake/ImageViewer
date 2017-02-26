@@ -20,12 +20,6 @@
 #include "MainWindow.h"
 #include "MainWindow_p.h"
 
-#include <QLabel>
-#include <QMovie>
-#include <QGraphicsProxyWidget>
-#include <QGraphicsSvgItem>
-
-
 #include <QApplication>
 #include <QFileDialog>
 #include <QDragEnterEvent>
@@ -38,9 +32,12 @@
 #include <QProcess>
 #include <QTranslator>
 #include <QLibraryInfo>
+#include <QGraphicsItem>
 
 #include "Utils/SettingsWrapper.h"
 #include "Utils/Workarounds.h"
+
+#include "Decoders/DecodersManager.h"
 
 struct MainWindow::Impl
 {
@@ -195,32 +192,29 @@ void MainWindow::onZoomOriginalSizeRequested()
 
 void MainWindow::onOpenFileRequested(const QString &filename)
 {
-    // Pixmap example
-//    m_ui->imageViewerWidget->setGraphicsItem(new QGraphicsPixmapItem(QPixmap("/home/peter/Projects/build-ImageViewer-Desktop_Qt_5_7_1_qt5-Debug/800px-RCA_Indian_Head_test_pattern.jpg")));
-
-    // SVG example
-//    m_ui->imageViewerWidget->setGraphicsItem(new QGraphicsSvgItem("/home/peter/Projects/build-ImageViewer-Desktop_Qt_5_7_1_qt5-Debug/splash_en.svg"));
-
-    // GIF example
-//    QLabel *gif_anim = new QLabel();
-//    QMovie *movie = new QMovie("/home/peter/Projects/build-ImageViewer-Desktop_Qt_5_7_1_qt5-Debug/file.gif");
-//    gif_anim->setMovie(movie);
-//    movie->start();
-//    QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();
-//    proxy->setWidget(gif_anim);
-//    m_ui->imageViewerWidget->setGraphicsItem(proxy);
-
-    m_ui->imageViewerWidget->setGraphicsItem(new QGraphicsPixmapItem(QPixmap(filename)));
-
-    m_ui->setImageControlsEnabled(true);
-    m_impl->lastOpenedFilename = filename;
+    QGraphicsItem *item = DecodersManager::getInstance().loadImage(filename);
+    if(item)
+    {
+        m_ui->imageViewerWidget->setGraphicsItem(item);
+        m_ui->setImageControlsEnabled(true);
+        m_impl->lastOpenedFilename = filename;
+    }
+    else
+    {
+        m_ui->imageViewerWidget->clear();
+        m_ui->setImageControlsEnabled(false);
+        /// @todo MessageBox with error
+    }
     updateWindowTitle();
 }
 
 void MainWindow::onOpenFileWithDialogRequested()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), m_impl->lastOpenedFilename,
-            QString::fromLatin1("%1 (*.png *.jpg);;%2 (*.*)").arg(tr("All Supported Images")).arg(tr("All Files")));
+    const QStringList supportedFormats = DecodersManager::getInstance().supportedFormats();
+    const QString formatString = QString::fromLatin1("%2 (%1);;%3 (*.*)")
+            .arg(supportedFormats.join(QString::fromLatin1(" *.")).prepend(QString::fromLatin1("*.")))
+            .arg(tr("All Supported Images")).arg(tr("All Files"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), m_impl->lastOpenedFilename, formatString);
     if(fileName.isEmpty())
         return;
     onOpenFileRequested(fileName);

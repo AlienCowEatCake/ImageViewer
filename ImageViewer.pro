@@ -18,36 +18,52 @@ DEFINES += QT_NO_CAST_FROM_ASCII
 include(src/QtUtils/QtUtils.pri)
 
 SOURCES += \
-    src/ImageViewer/MainWindow.cpp \
-    src/ImageViewer/main.cpp \
-    src/ImageViewer/ImageViewerWidget.cpp
+    src/ImageViewer/GUI/MainWindow.cpp \
+    src/ImageViewer/GUI/ImageViewerWidget.cpp \
+    src/ImageViewer/Decoders/DecodersManager.cpp \
+    src/ImageViewer/Decoders/DecoderQtPixmap.cpp \
+    src/ImageViewer/Decoders/DecoderQtSVG.cpp \
+    src/ImageViewer/Decoders/DecoderQtMovie.cpp \
+    src/ImageViewer/main.cpp
 
 HEADERS += \
-    src/ImageViewer/MainWindow.h \
-    src/ImageViewer/MainWindow_p.h \
-    src/ImageViewer/ImageViewerWidget.h
+    src/ImageViewer/GUI/MainWindow.h \
+    src/ImageViewer/GUI/MainWindow_p.h \
+    src/ImageViewer/GUI/ImageViewerWidget.h \
+    src/ImageViewer/Decoders/DecodersManager.h \
+    src/ImageViewer/Decoders/IDecoder.h \
+    src/ImageViewer/Decoders/DecoderAutoRegistrator.h \
+    src/ImageViewer/Decoders/DecoderQtPixmap.h \
+    src/ImageViewer/Decoders/DecoderQtSVG.h \
+    src/ImageViewer/Decoders/DecoderQtMovie.h
 
 TRANSLATIONS += \
-    src/ImageViewer/resources/translations/en.ts \
-    src/ImageViewer/resources/translations/ru.ts
+    src/ImageViewer/Resources/translations/en.ts \
+    src/ImageViewer/Resources/translations/ru.ts
 
 win32 {
-    RC_FILE += src/ImageViewer/resources/platform/windows/resources.rc
+    RC_FILE += src/ImageViewer/Resources/platform/windows/Resources.rc
     DEFINES += NOMINMAX
 }
 
 macx {
-    QMAKE_INFO_PLIST = src/ImageViewer/resources/platform/macosx/Info.plist
-    ICON = src/ImageViewer/resources/icon/icon.icns
+    QMAKE_INFO_PLIST = src/ImageViewer/Resources/platform/macosx/Info.plist
+    ICON = src/ImageViewer/Resources/icon/icon.icns
     TARGET = "Image Viewer"
     QMAKE_CXXFLAGS += -Wno-invalid-constexpr
 }
 
 RESOURCES += \
-    src/ImageViewer/resources/translations/translations.qrc \
-    src/ImageViewer/resources/icon/icon.qrc
+    src/ImageViewer/Resources/translations/translations.qrc \
+    src/ImageViewer/Resources/icon/icon.qrc
 
 QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9
+
+DESTDIR = .
+OBJECTS_DIR = build/objects
+MOC_DIR = build/moc
+RCC_DIR = build/rcc
+UI_DIR = build/ui
 
 # qmake CONFIG+=use_static_qjpeg
 use_static_qjpeg {

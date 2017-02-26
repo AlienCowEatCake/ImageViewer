@@ -23,6 +23,8 @@ CONFIG += object_with_source object_parallel_to_source no_batch warn_on
 
 QT += core gui svg
 
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
 *g++*|*clang* {
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CXXFLAGS_RELEASE *= -O3

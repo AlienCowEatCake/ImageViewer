@@ -20,7 +20,7 @@
 #include <QtPlugin>
 #include <QIcon>
 #include <QStyleFactory>
-#include "MainWindow.h"
+#include "GUI/MainWindow.h"
 #include "Utils/Application.h"
 #include "Utils/Workarounds.h"
 

@@ -17,7 +17,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MAINWINDOW_P_H_INCLUDED
+#if !defined(MAINWINDOW_P_H_INCLUDED)
 #define MAINWINDOW_P_H_INCLUDED
 
 #include "MainWindow.h"
