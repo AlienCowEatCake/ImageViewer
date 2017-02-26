@@ -39,13 +39,20 @@ public:
 public slots:
     void openNewWindow(const QString &filename = QString());
     void updateWindowTitle();
+    void showAbout();
+    void showPreferences();
 
+    void onOpenPreviousRequested();
+    void onOpenNextRequested();
     void onZoomModeChanged(ImageViewerWidget::ZoomMode mode);
-    void onZoomFitToWindowRequested();
-    void onZoomOriginalSizeRequested();
     void onOpenFileRequested(const QString &filename);
     void onOpenFileWithDialogRequested();
+    void onSaveAsRequested();
+    void onDeleteFileRequested();
     void onExitRequested();
+
+    void onZoomFitToWindowClicked();
+    void onZoomOriginalSizeClicked();
 
     void onActionEnglishTriggered();
     void onActionRussianTriggered();
@@ -55,6 +62,7 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 
 private:
     struct UI;

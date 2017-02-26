@@ -33,6 +33,8 @@
 #include <QTranslator>
 #include <QLibraryInfo>
 #include <QGraphicsItem>
+#include <QMessageBox>
+#include <QLabel>
 
 #include "Utils/SettingsWrapper.h"
 #include "Utils/Workarounds.h"
@@ -43,12 +45,13 @@ struct MainWindow::Impl
 {
     Impl(MainWindow *mainWindow)
         : mainWindow(mainWindow)
+        , supportedFormats(DecodersManager::getInstance().supportedFormats())
     {}
 
     QString lastOpenedFilename;
     MainWindow *mainWindow;
+    const QStringList supportedFormats;
 };
-
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -58,20 +61,30 @@ MainWindow::MainWindow(QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
     setAcceptDrops(true);
 
-    connect(m_ui->zoomIn, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(zoomIn()));
-    connect(m_ui->zoomOut, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(zoomOut()));
-    connect(m_ui->zoomFitToWindow, SIGNAL(clicked()), this, SLOT(onZoomFitToWindowRequested()));
-    connect(m_ui->zoomOriginalSize, SIGNAL(clicked()), this, SLOT(onZoomOriginalSizeRequested()));
     connect(m_ui->imageViewerWidget, SIGNAL(zoomModeChanged(ImageViewerWidget::ZoomMode)), this, SLOT(onZoomModeChanged(ImageViewerWidget::ZoomMode)));
     connect(m_ui->imageViewerWidget, SIGNAL(zoomLevelChanged(qreal)), this, SLOT(updateWindowTitle()));
+
+    connect(m_ui->navigatePrevious, SIGNAL(clicked()), this, SLOT(onOpenPreviousRequested()));
+    connect(m_ui->navigateNext, SIGNAL(clicked()), this, SLOT(onOpenNextRequested()));
+    connect(m_ui->zoomIn, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(zoomIn()));
+    connect(m_ui->zoomOut, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(zoomOut()));
+    connect(m_ui->zoomFitToWindow, SIGNAL(clicked()), this, SLOT(onZoomFitToWindowClicked()));
+    connect(m_ui->zoomOriginalSize, SIGNAL(clicked()), this, SLOT(onZoomOriginalSizeClicked()));
     connect(m_ui->rotateCounterclockwise, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(rotateCounterclockwise()));
     connect(m_ui->rotateClockwise, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(rotateClockwise()));
     connect(m_ui->openFile, SIGNAL(clicked()), this, SLOT(onOpenFileWithDialogRequested()));
+    connect(m_ui->saveFileAs, SIGNAL(clicked()), this, SLOT(onSaveAsRequested()));
+    connect(m_ui->deleteFile, SIGNAL(clicked()), this, SLOT(onDeleteFileRequested()));
+    connect(m_ui->preferences, SIGNAL(clicked()), this, SLOT(showPreferences()));
     connect(m_ui->exit, SIGNAL(clicked()), this, SLOT(onExitRequested()));
+
     connect(m_ui->actionOpen, SIGNAL(triggered()), this, SLOT(onOpenFileWithDialogRequested()));
+    connect(m_ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(onSaveAsRequested()));
+    connect(m_ui->actionPreferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
     connect(m_ui->actionExit, SIGNAL(triggered()), this, SLOT(onExitRequested()));
     connect(m_ui->actionEnglish, SIGNAL(triggered()), this, SLOT(onActionEnglishTriggered()));
     connect(m_ui->actionRussian, SIGNAL(triggered()), this, SLOT(onActionRussianTriggered()));
+    connect(m_ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
     connect(m_ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
     m_ui->imageViewerWidget->setZoomMode(ImageViewerWidget::ZOOM_FIT_TO_WINDOW);
@@ -174,20 +187,48 @@ void MainWindow::updateWindowTitle()
     setWindowTitle(label);
 }
 
+void MainWindow::showAbout()
+{
+    QMessageBox msgBox(this);
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    msgBox.setWindowTitle(tr("About"));
+    msgBox.setText(tr("<b>Image Viewer v%1</b>").arg(QString::fromLatin1("1.0")));
+    msgBox.setInformativeText(QString::fromLatin1(
+                      "<a href=\"https://fami.codefreak.ru/gitlab/peter/ImageViewer\">https://fami.codefreak.ru/gitlab/peter/ImageViewer</a><br>"
+                      "%1: <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU GPL v3</a><br><br>"
+                      "Copyright &copy; 2017<br>"
+                      "%2 &lt;<a href=\"mailto:peter.zhigalov@gmail.com\">peter.zhigalov@gmail.com</a>&gt;"
+                      ).arg(tr("License")).arg(tr("Peter S. Zhigalov")));
+    const QList<QLabel*> labels = msgBox.findChildren<QLabel*>();
+    for(QList<QLabel*>::ConstIterator it = labels.begin(); it != labels.end(); ++it)
+        (*it)->setWordWrap(false);
+    msgBox.setIconPixmap(QString::fromLatin1(":/icon/icon_64.png"));
+    msgBox.exec();
+}
+
+void MainWindow::showPreferences()
+{
+    /// @todo
+    QMessageBox::critical(this, QString::fromLatin1("Error"), QString::fromLatin1("Not implemented yet =("));
+}
+
+void MainWindow::onOpenPreviousRequested()
+{
+    /// @todo
+    QMessageBox::critical(this, QString::fromLatin1("Error"), QString::fromLatin1("Not implemented yet =("));
+}
+
+void MainWindow::onOpenNextRequested()
+{
+    /// @todo
+    QMessageBox::critical(this, QString::fromLatin1("Error"), QString::fromLatin1("Not implemented yet =("));
+}
+
 void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)
 {
     m_ui->zoomFitToWindow->setChecked(mode == ImageViewerWidget::ZOOM_FIT_TO_WINDOW);
     m_ui->zoomOriginalSize->setChecked(mode == ImageViewerWidget::ZOOM_IDENTITY);
-}
-
-void MainWindow::onZoomFitToWindowRequested()
-{
-    m_ui->imageViewerWidget->setZoomMode(ImageViewerWidget::ZOOM_FIT_TO_WINDOW);
-}
-
-void MainWindow::onZoomOriginalSizeRequested()
-{
-    m_ui->imageViewerWidget->setZoomMode(ImageViewerWidget::ZOOM_IDENTITY);
 }
 
 void MainWindow::onOpenFileRequested(const QString &filename)
@@ -203,16 +244,15 @@ void MainWindow::onOpenFileRequested(const QString &filename)
     {
         m_ui->imageViewerWidget->clear();
         m_ui->setImageControlsEnabled(false);
-        /// @todo MessageBox with error
+        QMessageBox::critical(this, tr("Error"), tr("Failed to open file \"%1\"").arg(filename));
     }
     updateWindowTitle();
 }
 
 void MainWindow::onOpenFileWithDialogRequested()
 {
-    const QStringList supportedFormats = DecodersManager::getInstance().supportedFormats();
     const QString formatString = QString::fromLatin1("%2 (%1);;%3 (*.*)")
-            .arg(supportedFormats.join(QString::fromLatin1(" *.")).prepend(QString::fromLatin1("*.")))
+            .arg(m_impl->supportedFormats.join(QString::fromLatin1(" *.")).prepend(QString::fromLatin1("*.")))
             .arg(tr("All Supported Images")).arg(tr("All Files"));
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), m_impl->lastOpenedFilename, formatString);
     if(fileName.isEmpty())
@@ -220,9 +260,37 @@ void MainWindow::onOpenFileWithDialogRequested()
     onOpenFileRequested(fileName);
 }
 
+void MainWindow::onSaveAsRequested()
+{
+    /// @todo
+    QMessageBox::critical(this, QString::fromLatin1("Error"), QString::fromLatin1("Not implemented yet =("));
+}
+
+void MainWindow::onDeleteFileRequested()
+{
+    /// @todo
+    QMessageBox::critical(this, QString::fromLatin1("Error"), QString::fromLatin1("Not implemented yet =("));
+}
+
 void MainWindow::onExitRequested()
 {
     close();
+}
+
+void MainWindow::onZoomFitToWindowClicked()
+{
+    if(m_ui->zoomFitToWindow->isChecked())
+        m_ui->imageViewerWidget->setZoomMode(ImageViewerWidget::ZOOM_FIT_TO_WINDOW);
+    else
+        m_ui->imageViewerWidget->setZoomMode(ImageViewerWidget::ZOOM_CUSTOM);
+}
+
+void MainWindow::onZoomOriginalSizeClicked()
+{
+    if(m_ui->zoomOriginalSize->isChecked())
+        m_ui->imageViewerWidget->setZoomMode(ImageViewerWidget::ZOOM_IDENTITY);
+    else
+        m_ui->imageViewerWidget->setZoomMode(ImageViewerWidget::ZOOM_CUSTOM);
 }
 
 void MainWindow::onActionEnglishTriggered()
@@ -261,4 +329,25 @@ void MainWindow::dropEvent(QDropEvent *event)
         for(; it != urlList.end(); ++it)
             openNewWindow(it->toLocalFile());
     }
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    switch(event->key())
+    {
+    case Qt::Key_Up:
+    case Qt::Key_Left:
+    case Qt::Key_Backspace:
+        onOpenPreviousRequested();
+        break;
+    case Qt::Key_Right:
+    case Qt::Key_Down:
+    case Qt::Key_Space:
+    case Qt::Key_Return:
+        onOpenNextRequested();
+        break;
+    default:
+        break;
+    }
+    QMainWindow::keyPressEvent(event);
 }

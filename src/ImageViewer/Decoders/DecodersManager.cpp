@@ -60,12 +60,12 @@ struct DecodersManager::Impl
 DecodersManager::DecodersManager()
     : m_impl(new Impl())
 {
-    qDebug() << __FUNCTION__ << "DecodersManager created!";
+    qDebug() << "DecodersManager created!";
 }
 
 DecodersManager::~DecodersManager()
 {
-    qDebug() << __FUNCTION__ << "DecodersManager destroyed!";
+    qDebug() << "DecodersManager destroyed!";
 }
 
 DecodersManager &DecodersManager::getInstance()
@@ -80,7 +80,7 @@ void DecodersManager::registerDecoder(IDecoder *decoder)
     const QList<DecoderFormatInfo> info = decoder->supportedFormats();
     for(QList<DecoderFormatInfo>::ConstIterator it = info.constBegin(); it != info.constEnd(); ++it)
         m_impl->formats[it->format].insert(DecoderWithPriority(decoder, it->decoderPriority));
-    qDebug() << __FUNCTION__ << "Decoder" << decoder->name() << "registered!";
+    qDebug() << "Decoder" << decoder->name() << "registered!";
 }
 
 void DecodersManager::registerDefaultDecoder(IDecoder *decoder)
@@ -88,7 +88,7 @@ void DecodersManager::registerDefaultDecoder(IDecoder *decoder)
     assert(!m_impl->defaultDecoder);
     registerDecoder(decoder);
     m_impl->defaultDecoder = decoder;
-    qDebug() << __FUNCTION__ << "Decoder" << decoder->name() << "registered as DEFAULT!";
+    qDebug() << "Decoder" << decoder->name() << "registered as DEFAULT!";
 }
 
 QStringList DecodersManager::registeredDecoders() const
@@ -112,7 +112,7 @@ QGraphicsItem *DecodersManager::loadImage(const QString &filename)
     const QFileInfo fileInfo(filename);
     if(!fileInfo.exists() || !fileInfo.isReadable())
     {
-        qDebug() << __FUNCTION__ << "File" << filename << "is not exist or unreadable!";
+        qDebug() << "File" << filename << "is not exist or unreadable!";
         return NULL;
     }
 

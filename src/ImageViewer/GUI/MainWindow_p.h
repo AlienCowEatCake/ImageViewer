@@ -120,6 +120,7 @@ struct MainWindow::UI
             (*it)->setStyle(fusionStyle);
 
         imageViewerWidget->setAcceptDrops(false);
+        imageViewerWidget->setFocusPolicy(Qt::NoFocus);
 
         zoomFitToWindow->setCheckable(true);
         zoomOriginalSize->setCheckable(true);
