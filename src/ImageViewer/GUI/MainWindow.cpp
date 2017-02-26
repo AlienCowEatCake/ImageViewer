@@ -52,6 +52,11 @@ struct MainWindow::Impl
         onFileClosed();
     }
 
+    QStringList supportedFilesInDirectory(const QDir &dir) const
+    {
+        return dir.entryList(supportedFormats, QDir::Files | QDir::Readable, QDir::Name | QDir::IgnoreCase);
+    }
+
     void onFileOpened(const QString &path)
     {
         const QFileInfo fileInfo = QFileInfo(path);
@@ -63,7 +68,7 @@ struct MainWindow::Impl
             currentDirectory = directoryPath;
             filesInCurrentDirectory.clear();
             currentIndexInDirectory = -1;
-            const QStringList list = dir.entryList(supportedFormats, QDir::Files | QDir::Readable, QDir::Name | QDir::IgnoreCase);
+            const QStringList list = supportedFilesInDirectory(dir);
             for(QStringList::ConstIterator it = list.constBegin(); it != list.constEnd(); ++it)
             {
                 const QString &name = *it;
@@ -390,9 +395,31 @@ void MainWindow::dropEvent(QDropEvent *event)
     {
         QList<QUrl> urlList = mimeData->urls();
         QList<QUrl>::ConstIterator it = urlList.begin();
-        onOpenFileRequested((it++)->toLocalFile());
+        QFileInfo info((it++)->toLocalFile());
+        if(info.isDir())
+        {
+            const QStringList files = m_impl->supportedFilesInDirectory(info.dir());
+            if(!files.empty())
+                onOpenFileRequested(info.dir().absoluteFilePath(files.first()));
+        }
+        else
+        {
+            onOpenFileRequested(info.absoluteFilePath());
+        }
         for(; it != urlList.end(); ++it)
-            openNewWindow(it->toLocalFile());
+        {
+            QFileInfo info(it->toLocalFile());
+            if(info.isDir())
+            {
+                const QStringList files = m_impl->supportedFilesInDirectory(info.dir());
+                if(!files.empty())
+                    openNewWindow(info.dir().absoluteFilePath(files.first()));
+            }
+            else
+            {
+                openNewWindow(info.absoluteFilePath());
+            }
+        }
     }
 }
 
