@@ -20,6 +20,8 @@
 #include "MainWindow.h"
 #include "MainWindow_p.h"
 
+#include <cassert>
+
 #include <QApplication>
 #include <QFileDialog>
 #include <QDragEnterEvent>
@@ -38,11 +40,64 @@
 #include <QLabel>
 #include <QDir>
 #include <QVector>
+#include <QtAlgorithms>
 
 #include "Utils/SettingsWrapper.h"
 #include "Utils/Workarounds.h"
 
 #include "Decoders/DecodersManager.h"
+
+namespace {
+
+bool numericLessThan(const QString &s1, const QString &s2)
+{
+    const QString sl1 = s1.toLower(), sl2 = s2.toLower();
+    QString::ConstIterator it1 = sl1.constBegin(), it2 = sl2.constBegin();
+    for(; it1 != sl1.constEnd() && it2 != sl2.constEnd(); ++it1, ++it2)
+    {
+        QChar c1 = *it1, c2 = *it2;
+        if(c1.isNumber() && c2.isNumber())
+        {
+            QString num1, num2;
+            while(c1.isNumber())
+            {
+                num1.append(c1);
+                if((++it1) == sl1.constEnd())
+                    break;
+                c1 = *it1;
+            }
+            while(c2.isNumber())
+            {
+                num2.append(c2);
+                if((++it2) == sl2.constEnd())
+                    break;
+                c2 = *it2;
+            }
+            if(num1 != num2)
+            {
+                return num1.toLongLong() < num2.toLongLong();
+            }
+            else
+            {
+                if(it1 == sl1.constEnd() || it2 == sl2.constEnd())
+                    break;
+                --it1;
+                --it2;
+            }
+        }
+        else if(c1 != c2)
+        {
+            return c1 < c2;
+        }
+    }
+    if(it1 == sl1.constEnd() && it2 != sl2.constEnd())
+        return true;
+    if(it1 != sl1.constEnd() && it2 == sl2.constEnd())
+        return false;
+    return s1 < s2;
+}
+
+} // namespace
 
 struct MainWindow::Impl
 {
@@ -55,7 +110,9 @@ struct MainWindow::Impl
 
     QStringList supportedFilesInDirectory(const QDir &dir) const
     {
-        return dir.entryList(supportedFormats, QDir::Files | QDir::Readable, QDir::Name | QDir::IgnoreCase);
+        QStringList list = dir.entryList(supportedFormats, QDir::Files | QDir::Readable, QDir::NoSort);
+        qSort(list.begin(), list.end(), &numericLessThan);
+        return list;
     }
 
     void onFileOpened(const QString &path)
