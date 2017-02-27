@@ -23,6 +23,7 @@
 #include <QGraphicsProxyWidget>
 #include <QLabel>
 #include <QFileInfo>
+#include <QStringList>
 #include "Utils/ScopedPointer.h"
 
 #include "DecoderAutoRegistrator.h"
@@ -42,13 +43,17 @@ QString DecoderQtMovie::name() const
 
 QList<DecoderFormatInfo> DecoderQtMovie::supportedFormats() const
 {
-    const QList<QByteArray> readerFormats = QList<QByteArray>() << QByteArray("gif");//QMovie::supportedFormats();
+    const QStringList whitelistFormats = QStringList() << QString::fromLatin1("gif").toLower();
+    const QList<QByteArray> readerFormats = QMovie::supportedFormats();
     QList<DecoderFormatInfo> result;
     for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
     {
+        const QString format = QString::fromLatin1(*it).toLower();
+        if(!whitelistFormats.contains(format))
+            continue;
         DecoderFormatInfo info;
         info.decoderPriority = DECODER_QT_MOVIE_PRIORITY;
-        info.format = QString::fromLatin1(*it).toLower();
+        info.format = format;
         result.append(info);
     }
     return result;
@@ -66,7 +71,7 @@ QGraphicsItem *DecoderQtMovie::loadImage(const QString &filename)
         return NULL;
     }
     QLabel *movieLabel = new QLabel();
-    movieLabel->setAttribute(Qt::WA_TranslucentBackground, true);
+    movieLabel->setAttribute(Qt::WA_NoSystemBackground, true);
     movieLabel->setMovie(movie);
     movie->start();
     QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();

@@ -30,6 +30,7 @@
 #include <QUrl>
 #include <QStringList>
 #include <QProcess>
+#include <QLocale>
 #include <QTranslator>
 #include <QLibraryInfo>
 #include <QGraphicsItem>

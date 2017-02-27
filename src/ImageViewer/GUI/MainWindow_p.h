@@ -113,11 +113,25 @@ struct MainWindow::UI
         , actionEnglish(new QAction(menuLanguage))
         , actionRussian(new QAction(menuLanguage))
     {
-        QStyle *fusionStyle = QStyleFactory::create(QString::fromLatin1("Fusion"));
-        toolbar->setStyle(fusionStyle);
-        const QList<QWidget*> toolbarChildren = toolbar->findChildren<QWidget*>();
-        for(QList<QWidget*>::ConstIterator it = toolbarChildren.constBegin(); it != toolbarChildren.constEnd(); ++it)
-            (*it)->setStyle(fusionStyle);
+        QStyle *style = NULL;
+#if defined (Q_OS_MAC)
+        if(QStyleFactory::keys().contains(QString::fromLatin1("Fusion"), Qt::CaseInsensitive))
+             style = QStyleFactory::create(QString::fromLatin1("Fusion"));
+        else if(QStyleFactory::keys().contains(QString::fromLatin1("Windows"), Qt::CaseInsensitive))
+            style = QStyleFactory::create(QString::fromLatin1("Windows"));
+#elif !defined (Q_OS_WIN)
+        if(QStyleFactory::keys().contains(QString::fromLatin1("Cleanlooks"), Qt::CaseInsensitive))
+            style = QStyleFactory::create(QString::fromLatin1("Cleanlooks"));
+        else if(QStyleFactory::keys().contains(QString::fromLatin1("Fusion"), Qt::CaseInsensitive))
+            style = QStyleFactory::create(QString::fromLatin1("Fusion"));
+#endif
+        if(style)
+        {
+            toolbar->setStyle(style);
+            const QList<QWidget*> toolbarChildren = toolbar->findChildren<QWidget*>();
+            for(QList<QWidget*>::ConstIterator it = toolbarChildren.constBegin(); it != toolbarChildren.constEnd(); ++it)
+                (*it)->setStyle(style);
+        }
 
         const QList<QWidget*> mainWindowChildren = mainWindow->findChildren<QWidget*>();
         for(QList<QWidget*>::ConstIterator it = mainWindowChildren.constBegin(); it != mainWindowChildren.constEnd(); ++it)
@@ -179,11 +193,17 @@ struct MainWindow::UI
         actionSaveAs->setMenuRole(QAction::NoRole);
         menuFile->addSeparator();
         menuFile->addAction(actionPreferences);
-        actionPreferences->setShortcut(QKeySequence::Preferences);
+#if defined(Q_OS_MAC)
+        actionPreferences->setShortcut(Qt::CTRL + Qt::Key_Comma);
+#endif
         actionPreferences->setMenuRole(QAction::PreferencesRole);
         menuFile->addSeparator();
         menuFile->addAction(actionExit);
-        actionExit->setShortcut(QKeySequence::Quit);
+#if defined(Q_OS_WIN)
+        actionExit->setShortcut(Qt::ALT + Qt::Key_F4);
+#else
+        actionExit->setShortcut(Qt::CTRL + Qt::Key_Q);
+#endif
         actionExit->setMenuRole(QAction::QuitRole);
 
         menuLanguage->addAction(actionEnglish);

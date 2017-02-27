@@ -101,7 +101,11 @@ void HighDPIFix()
 #endif
     }
 
+    // Qt::AA_UseHighDpiPixmaps доступен и в более ранних версиях,
+    // однако без поддержки HighDPI его применение нецелесообразно
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
 }
 
 /// @brief Определить, запущено ли приложение удаленно

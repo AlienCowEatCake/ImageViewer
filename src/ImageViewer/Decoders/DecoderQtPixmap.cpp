@@ -19,6 +19,8 @@
 
 #include "DecoderQtPixmap.h"
 
+#include <set>
+
 #include <QImageReader>
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
@@ -42,13 +44,31 @@ QString DecoderQtPixmap::name() const
 
 QList<DecoderFormatInfo> DecoderQtPixmap::supportedFormats() const
 {
+    // https://doc.qt.io/archives/qtextended4.4/qimagereader.html#supportedImageFormats
+    const QStringList defaultReaderFormats = QStringList()
+            << QString::fromLatin1("bmp")
+            << QString::fromLatin1("jpg")
+            << QString::fromLatin1("jpeg")
+            << QString::fromLatin1("mng")
+            << QString::fromLatin1("png")
+            << QString::fromLatin1("pbm")
+            << QString::fromLatin1("pgm")
+            << QString::fromLatin1("ppm")
+            << QString::fromLatin1("tiff")
+            << QString::fromLatin1("xbm")
+            << QString::fromLatin1("xpm");
     const QList<QByteArray> readerFormats = QImageReader::supportedImageFormats();
-    QList<DecoderFormatInfo> result;
+    std::set<QString> allReaderFormats;
     for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
+        allReaderFormats.insert(QString::fromLatin1(*it).toLower());
+    for(QStringList::ConstIterator it = defaultReaderFormats.constBegin(); it != defaultReaderFormats.constEnd(); ++it)
+        allReaderFormats.insert(it->toLower());
+    QList<DecoderFormatInfo> result;
+    for(std::set<QString>::const_iterator it = allReaderFormats.begin(); it != allReaderFormats.end(); ++it)
     {
         DecoderFormatInfo info;
         info.decoderPriority = DECODER_QT_PIXMAP_PRIORITY;
-        info.format = QString::fromLatin1(*it).toLower();
+        info.format = *it;
         result.append(info);
     }
     return result;

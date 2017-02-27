@@ -78,9 +78,13 @@ void DecodersManager::registerDecoder(IDecoder *decoder)
 {
     m_impl->decoders.insert(decoder);
     const QList<DecoderFormatInfo> info = decoder->supportedFormats();
+    QStringList debugFormatList;
     for(QList<DecoderFormatInfo>::ConstIterator it = info.constBegin(); it != info.constEnd(); ++it)
+    {
         m_impl->formats[it->format].insert(DecoderWithPriority(decoder, it->decoderPriority));
-    qDebug() << "Decoder" << decoder->name() << "registered!";
+        debugFormatList.append(it->format);
+    }
+    qDebug() << "Decoder" << decoder->name() << "registered for" << debugFormatList;
 }
 
 void DecodersManager::registerDefaultDecoder(IDecoder *decoder)

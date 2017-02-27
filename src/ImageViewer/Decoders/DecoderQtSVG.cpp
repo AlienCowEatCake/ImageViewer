@@ -19,7 +19,10 @@
 
 #include "DecoderQtSVG.h"
 
+#include <QtGlobal>
+#if defined (QT_SVG_LIB)
 #include <QGraphicsSvgItem>
+#endif
 #include <QFileInfo>
 #include "Utils/ScopedPointer.h"
 
@@ -40,6 +43,7 @@ QString DecoderQtSVG::name() const
 
 QList<DecoderFormatInfo> DecoderQtSVG::supportedFormats() const
 {
+#if defined (QT_SVG_LIB)
     const QList<QByteArray> svgFormats = QList<QByteArray>()
             << "svg"
             << "svgz";
@@ -52,6 +56,9 @@ QList<DecoderFormatInfo> DecoderQtSVG::supportedFormats() const
         result.append(info);
     }
     return result;
+#else
+    return QList<DecoderFormatInfo>();
+#endif
 }
 
 QGraphicsItem *DecoderQtSVG::loadImage(const QString &filename)
@@ -59,5 +66,9 @@ QGraphicsItem *DecoderQtSVG::loadImage(const QString &filename)
     const QFileInfo fileInfo(filename);
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
+#if defined (QT_SVG_LIB)
     return new QGraphicsSvgItem(filename);
+#else
+    return NULL;
+#endif
 }

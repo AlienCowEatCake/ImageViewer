@@ -70,8 +70,7 @@ enum IconTypes
 /// @brief Функция для получения иконки
 /// @param[in] type - Тип иконки (см. enum IconTypes)
 /// @param[in] darkBackground - true, если иконка располагается на темном фоне
-/// @param[in] withRasterPixmaps - использовать ли растровые изображения при создании иконки
-QIcon GetIcon(IconTypes type, bool darkBackground = false, bool withRasterPixmaps = false);
+QIcon GetIcon(IconTypes type, bool darkBackground = false);
 
 } // namespace ThemeUtils
 
