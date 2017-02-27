@@ -33,7 +33,7 @@
 		<string>x86_64</string>
 	</array>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.7.0</string>
+	<string>10.7</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>(c) Peter S. Zhigalov, 2017</string>
 	<key>CFBundleDocumentTypes</key>
@@ -43,11 +43,102 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>png</string>
-				<string>jpg</string>
+				<string>bmp</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Images</string>
+			<string>BMP Image (Windows Bitmap)</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>gif</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>GIF Image (Graphic Interchange Format)</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>jpg</string>
+				<string>jpeg</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>JPEG Image (Joint Photographic Experts Group)</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>png</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>PNG Image (Portable Network Graphics)</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>pbm</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>PBM Image (Portable Bitmap)</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>pgm</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>PGM Image (Portable Graymap)</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>ppm</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>PPM Image (Portable Pixmap)</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>xbm</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>XBM Image (X11 Bitmap)</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>xpm</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>XPM Image (X11 Pixmap)</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>svg</string>
+				<string>svgz</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>SVG Image (Scalable Vector Graphics)</string>
 		</dict>
 	</array>
 </dict>

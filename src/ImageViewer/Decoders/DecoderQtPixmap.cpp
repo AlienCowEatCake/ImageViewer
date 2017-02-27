@@ -49,12 +49,12 @@ QList<DecoderFormatInfo> DecoderQtPixmap::supportedFormats() const
             << QString::fromLatin1("bmp")
             << QString::fromLatin1("jpg")
             << QString::fromLatin1("jpeg")
-            << QString::fromLatin1("mng")
+//            << QString::fromLatin1("mng")
             << QString::fromLatin1("png")
             << QString::fromLatin1("pbm")
             << QString::fromLatin1("pgm")
             << QString::fromLatin1("ppm")
-            << QString::fromLatin1("tiff")
+//            << QString::fromLatin1("tiff")
             << QString::fromLatin1("xbm")
             << QString::fromLatin1("xpm");
     const QList<QByteArray> readerFormats = QImageReader::supportedImageFormats();

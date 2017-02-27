@@ -14,7 +14,7 @@ mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 ${CMD_QMAKE} CONFIG+="release" "../${PROJECT}.pro"
 make -j3
-sed -e 's/10.7.0/10.6.0/' -i "" "${APPNAME}.app/Contents/Info.plist"
+sed -e 's/10.7/10.6/' -i "" "${APPNAME}.app/Contents/Info.plist"
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -f "${RES_PATH}/empty.lproj"
 mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"

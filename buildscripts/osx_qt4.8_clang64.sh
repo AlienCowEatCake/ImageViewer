@@ -16,7 +16,7 @@ cd "${BUILDDIR}"
 ${CMD_QMAKE} CONFIG+="release" CONFIG+="x86_64" -r -spec unsupported/macx-clang QMAKE_MACOSX_DEPLOYMENT_TARGET=10.5 "../${PROJECT}.pro"
 make
 cp -a "../${INFO_PLIST}" "${APPNAME}.app/Contents/Info.plist"
-sed -e 's/10.7.0/10.5.0/' -i "" "${APPNAME}.app/Contents/Info.plist"
+sed -e 's/10.7/10.5/' -i "" "${APPNAME}.app/Contents/Info.plist"
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -f "${RES_PATH}/empty.lproj"
 mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"
