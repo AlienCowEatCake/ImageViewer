@@ -39,6 +39,7 @@
 namespace {
 
 const int TOOLBAR_BUTTON_SIZE       = 28;
+const int TOOLBAR_BUTTON_ICON_SIZE  = 16;
 const int TOOLBAR_LAYOUT_SPACING    = 3;
 const int TOOLBAR_HORIZONTAL_MARGIN = 4;
 const int TOOLBAR_VERTICAL_MARGIN   = 2;
@@ -113,18 +114,12 @@ struct MainWindow::UI
         , actionEnglish(new QAction(menuLanguage))
         , actionRussian(new QAction(menuLanguage))
     {
-        QStyle *style = NULL;
 #if defined (Q_OS_MAC)
+        QStyle *style = NULL;
         if(QStyleFactory::keys().contains(QString::fromLatin1("Fusion"), Qt::CaseInsensitive))
              style = QStyleFactory::create(QString::fromLatin1("Fusion"));
         else if(QStyleFactory::keys().contains(QString::fromLatin1("Windows"), Qt::CaseInsensitive))
             style = QStyleFactory::create(QString::fromLatin1("Windows"));
-#elif !defined (Q_OS_WIN)
-        if(QStyleFactory::keys().contains(QString::fromLatin1("Cleanlooks"), Qt::CaseInsensitive))
-            style = QStyleFactory::create(QString::fromLatin1("Cleanlooks"));
-        else if(QStyleFactory::keys().contains(QString::fromLatin1("Fusion"), Qt::CaseInsensitive))
-            style = QStyleFactory::create(QString::fromLatin1("Fusion"));
-#endif
         if(style)
         {
             toolbar->setStyle(style);
@@ -132,6 +127,7 @@ struct MainWindow::UI
             for(QList<QWidget*>::ConstIterator it = toolbarChildren.constBegin(); it != toolbarChildren.constEnd(); ++it)
                 (*it)->setStyle(style);
         }
+#endif
 
         const QList<QWidget*> mainWindowChildren = mainWindow->findChildren<QWidget*>();
         for(QList<QWidget*>::ConstIterator it = mainWindowChildren.constBegin(); it != mainWindowChildren.constEnd(); ++it)
@@ -295,6 +291,7 @@ private:
         QToolButton *button = new QToolButton(parent);
         button->setMinimumSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE));
         button->setMaximumSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE));
+        button->setIconSize(QSize(TOOLBAR_BUTTON_ICON_SIZE, TOOLBAR_BUTTON_ICON_SIZE));
         return button;
     }
 
