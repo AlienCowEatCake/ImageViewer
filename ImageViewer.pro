@@ -47,6 +47,13 @@ win32 {
 }
 
 macx {
+    greaterThan(QT_MAJOR_VERSION, 4): QT += macextras
+    OBJECTIVE_SOURCES += \
+        src/ImageViewer/Decoders/DecoderNSImage.mm
+    HEADERS += \
+        src/ImageViewer/Decoders/DecoderNSImage.h
+    LIBS += -framework AppKit
+
     QMAKE_INFO_PLIST = src/ImageViewer/Resources/platform/macosx/Info.plist
     ICON = src/ImageViewer/Resources/icon/icon.icns
     TARGET = "Image Viewer"

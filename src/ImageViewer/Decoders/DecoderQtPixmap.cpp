@@ -25,7 +25,6 @@
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 #include <QFileInfo>
-#include "Utils/ScopedPointer.h"
 
 #include "DecoderAutoRegistrator.h"
 

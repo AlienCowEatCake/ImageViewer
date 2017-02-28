@@ -24,7 +24,6 @@
 #include <QLabel>
 #include <QFileInfo>
 #include <QStringList>
-#include "Utils/ScopedPointer.h"
 
 #include "DecoderAutoRegistrator.h"
 
