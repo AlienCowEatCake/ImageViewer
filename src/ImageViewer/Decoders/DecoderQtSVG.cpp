@@ -22,6 +22,8 @@
 #include <QtGlobal>
 #if defined (QT_SVG_LIB)
 #include <QGraphicsSvgItem>
+#else
+#include <QGraphicsItem>
 #endif
 #include <QFileInfo>
 #include "Utils/ScopedPointer.h"

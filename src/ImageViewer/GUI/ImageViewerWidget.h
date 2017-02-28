@@ -21,9 +21,9 @@
 #define IMAGEVIEWERWIDGET_H_INCLUDED
 
 #include <QGraphicsView>
-#include <QGraphicsItem>
-
 #include "Utils/ScopedPointer.h"
+
+class QGraphicsItem;
 
 class ImageViewerWidget : public QGraphicsView
 {

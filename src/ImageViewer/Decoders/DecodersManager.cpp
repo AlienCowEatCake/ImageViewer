@@ -23,6 +23,7 @@
 #include <set>
 #include <cassert>
 
+#include <QGraphicsItem>
 #include <QFileInfo>
 #include <QDebug>
 

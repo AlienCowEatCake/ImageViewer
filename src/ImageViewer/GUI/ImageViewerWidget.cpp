@@ -20,8 +20,7 @@
 #include "ImageViewerWidget.h"
 
 #include <QGraphicsScene>
-
-#include <QDebug>
+#include <QGraphicsItem>
 
 struct ImageViewerWidget::Impl
 {

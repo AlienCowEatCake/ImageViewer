@@ -20,9 +20,10 @@
 #if !defined(IDECODER_H_INCLUDED)
 #define IDECODER_H_INCLUDED
 
-#include <QGraphicsItem>
 #include <QString>
 #include <QList>
+
+class QGraphicsItem;
 
 struct DecoderFormatInfo
 {
