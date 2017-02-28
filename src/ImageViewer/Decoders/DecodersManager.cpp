@@ -52,9 +52,31 @@ struct DecodersManager::Impl
         : defaultDecoder(NULL)
     {}
 
+    void checkPendingDecoderRegistration()
+    {
+        if(!pendingDecoders.isEmpty())
+        {
+            for(QList<IDecoder*>::ConstIterator it = pendingDecoders.constBegin(); it != pendingDecoders.constEnd(); ++it)
+            {
+                IDecoder *decoder = *it;
+                decoders.insert(decoder);
+                const QList<DecoderFormatInfo> info = decoder->supportedFormats();
+                QStringList debugFormatList;
+                for(QList<DecoderFormatInfo>::ConstIterator it = info.constBegin(); it != info.constEnd(); ++it)
+                {
+                    formats[it->format].insert(DecoderWithPriority(decoder, it->decoderPriority));
+                    debugFormatList.append(it->format);
+                }
+                qDebug() << "Decoder" << decoder->name() << "registered for" << debugFormatList;
+            }
+            pendingDecoders.clear();
+        }
+    }
+
     IDecoder *defaultDecoder;
     std::set<IDecoder*> decoders;
     std::map<QString, std::set<DecoderWithPriority> > formats;
+    QList<IDecoder*> pendingDecoders;
 };
 
 DecodersManager::DecodersManager()
@@ -76,15 +98,8 @@ DecodersManager &DecodersManager::getInstance()
 
 void DecodersManager::registerDecoder(IDecoder *decoder)
 {
-    m_impl->decoders.insert(decoder);
-    const QList<DecoderFormatInfo> info = decoder->supportedFormats();
-    QStringList debugFormatList;
-    for(QList<DecoderFormatInfo>::ConstIterator it = info.constBegin(); it != info.constEnd(); ++it)
-    {
-        m_impl->formats[it->format].insert(DecoderWithPriority(decoder, it->decoderPriority));
-        debugFormatList.append(it->format);
-    }
-    qDebug() << "Decoder" << decoder->name() << "registered for" << debugFormatList;
+    m_impl->pendingDecoders.append(decoder);
+    qDebug() << "Decoder" << decoder->name() << "was planned for delayed registration";
 }
 
 void DecodersManager::registerDefaultDecoder(IDecoder *decoder)
@@ -97,6 +112,7 @@ void DecodersManager::registerDefaultDecoder(IDecoder *decoder)
 
 QStringList DecodersManager::registeredDecoders() const
 {
+    m_impl->checkPendingDecoderRegistration();
     QStringList result;
     for(std::set<IDecoder*>::const_iterator it = m_impl->decoders.begin(); it != m_impl->decoders.end(); ++it)
         result.append((*it)->name());
@@ -105,6 +121,7 @@ QStringList DecodersManager::registeredDecoders() const
 
 QStringList DecodersManager::supportedFormats() const
 {
+    m_impl->checkPendingDecoderRegistration();
     QStringList result;
     for(std::map<QString, std::set<DecoderWithPriority> >::const_iterator it = m_impl->formats.begin(); it != m_impl->formats.end(); ++it)
         result.append(it->first);
@@ -113,6 +130,7 @@ QStringList DecodersManager::supportedFormats() const
 
 QStringList DecodersManager::supportedFormatsWithWildcards() const
 {
+    m_impl->checkPendingDecoderRegistration();
     QStringList result;
     for(std::map<QString, std::set<DecoderWithPriority> >::const_iterator it = m_impl->formats.begin(); it != m_impl->formats.end(); ++it)
         result.append(QString::fromLatin1("*.%1").arg(it->first));
@@ -121,6 +139,7 @@ QStringList DecodersManager::supportedFormatsWithWildcards() const
 
 QGraphicsItem *DecodersManager::loadImage(const QString &filename)
 {
+    m_impl->checkPendingDecoderRegistration();
     const QFileInfo fileInfo(filename);
     if(!fileInfo.exists() || !fileInfo.isReadable())
     {
