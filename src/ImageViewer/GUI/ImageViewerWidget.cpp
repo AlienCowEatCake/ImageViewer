@@ -176,10 +176,8 @@ void ImageViewerWidget::zoomOut()
 
 void ImageViewerWidget::setGraphicsItem(QGraphicsItem *graphicsItem)
 {
+    clear();
     m_impl->currentGraphicsItem = graphicsItem;
-    scene()->clear();
-    resetTransform();
-    resetMatrix();
     if(!graphicsItem)
         return;
     graphicsItem->setFlags(QGraphicsItem::ItemClipsToShape);
@@ -194,6 +192,8 @@ void ImageViewerWidget::clear()
     m_impl->currentGraphicsItem = NULL;
     scene()->clear();
     resetTransform();
+    resetMatrix();
+    setSceneRect(0, 0, 1, 1);
 }
 
 void ImageViewerWidget::showEvent(QShowEvent *event)

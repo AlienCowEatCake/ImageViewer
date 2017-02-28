@@ -44,6 +44,7 @@
 
 #include "Utils/SettingsWrapper.h"
 #include "Utils/Workarounds.h"
+#include "Utils/FileUtils.h"
 
 #include "Decoders/DecodersManager.h"
 
@@ -115,6 +116,11 @@ struct MainWindow::Impl
         return list;
     }
 
+    bool isFileOpened() const
+    {
+        return mainWindow->m_ui->imageViewerWidget->imageSize().isValid();
+    }
+
     void onFileOpened(const QString &path)
     {
         const QFileInfo fileInfo = QFileInfo(path);
@@ -154,10 +160,10 @@ struct MainWindow::Impl
         }
         else
         {
-            mainWindow->m_ui->navigateNext->setEnabled(currentIndexInDirectory < filesInCurrentDirectory.size() - 1);
-            mainWindow->m_ui->navigatePrevious->setEnabled(currentIndexInDirectory > 0);
+            mainWindow->m_ui->navigateNext->setEnabled(true);
+            mainWindow->m_ui->navigatePrevious->setEnabled(true);
         }
-        mainWindow->m_ui->deleteFile->setEnabled(fileInfo.isWritable());
+        mainWindow->m_ui->deleteFile->setEnabled(QFileInfo(fileInfo.absolutePath()).isWritable() && isFileOpened());
     }
 
     void onFileClosed()
@@ -176,7 +182,7 @@ struct MainWindow::Impl
     QString lastOpenedFilename;
 
     QString currentDirectory;
-    QVector<QString> filesInCurrentDirectory;
+    QVector<QString> filesInCurrentDirectory; /// @todo std::vector?
     int currentIndexInDirectory;
 };
 
@@ -296,12 +302,12 @@ void MainWindow::openNewWindow(const QString &filename)
 
 void MainWindow::updateWindowTitle()
 {
-    const QSize imageSize = m_ui->imageViewerWidget->imageSize();
-    if(!imageSize.isValid())
+    if(!m_impl->isFileOpened())
     {
         setWindowTitle(tr("Image Viewer"));
         return;
     }
+    const QSize imageSize = m_ui->imageViewerWidget->imageSize();
     QString label = m_impl->lastOpenedFilename.split(QChar::fromLatin1('/')).last();
 #if defined (Q_OS_WIN32)
     label = label.split(QChar::fromLatin1('\\')).last();
@@ -311,6 +317,9 @@ void MainWindow::updateWindowTitle()
                  .arg(imageSize.height())
                  .arg(static_cast<quint64>(m_ui->imageViewerWidget->zoomLevel() * 100))
                  .arg(tr("Image Viewer")));
+    label.prepend(QString::fromLatin1("[%1/%2] ")
+                  .arg(m_impl->currentIndexInDirectory + 1)
+                  .arg(m_impl->filesInCurrentDirectory.size()));
     setWindowTitle(label);
 }
 
@@ -337,19 +346,31 @@ void MainWindow::showAbout()
 void MainWindow::showPreferences()
 {
     /// @todo
-    QMessageBox::critical(this, QString::fromLatin1("Error"), QString::fromLatin1("Not implemented yet =("));
+    QMessageBox::critical(this, tr("Error"), tr("Not implemented yet =("));
 }
 
 void MainWindow::onOpenPreviousRequested()
 {
+    int bestMatchedIndex;
     if(m_impl->currentIndexInDirectory > 0)
-        onOpenFileRequested(QDir(m_impl->currentDirectory).absoluteFilePath(m_impl->filesInCurrentDirectory[m_impl->currentIndexInDirectory - 1]));
+        bestMatchedIndex = m_impl->currentIndexInDirectory - 1;
+    else if(m_impl->filesInCurrentDirectory.size() > 0)
+        bestMatchedIndex = m_impl->filesInCurrentDirectory.size() - 1;
+    else
+        return;
+    onOpenFileRequested(QDir(m_impl->currentDirectory).absoluteFilePath(m_impl->filesInCurrentDirectory[bestMatchedIndex]));
 }
 
 void MainWindow::onOpenNextRequested()
 {
+    int bestMatchedIndex;
     if(m_impl->currentIndexInDirectory >= 0 && m_impl->currentIndexInDirectory < m_impl->filesInCurrentDirectory.size() - 1)
-        onOpenFileRequested(QDir(m_impl->currentDirectory).absoluteFilePath(m_impl->filesInCurrentDirectory[m_impl->currentIndexInDirectory + 1]));
+        bestMatchedIndex = m_impl->currentIndexInDirectory + 1;
+    else if(m_impl->filesInCurrentDirectory.size() > 0)
+        bestMatchedIndex = 0;
+    else
+        return;
+    onOpenFileRequested(QDir(m_impl->currentDirectory).absoluteFilePath(m_impl->filesInCurrentDirectory[bestMatchedIndex]));
 }
 
 void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)
@@ -391,13 +412,41 @@ void MainWindow::onOpenFileWithDialogRequested()
 void MainWindow::onSaveAsRequested()
 {
     /// @todo
-    QMessageBox::critical(this, QString::fromLatin1("Error"), QString::fromLatin1("Not implemented yet =("));
+    QMessageBox::critical(this, tr("Error"), tr("Not implemented yet =("));
 }
 
 void MainWindow::onDeleteFileRequested()
 {
-    /// @todo
-    QMessageBox::critical(this, QString::fromLatin1("Error"), QString::fromLatin1("Not implemented yet =("));
+    if(!m_impl->isFileOpened())
+        return;
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::warning(this, tr("Delete File"), tr("Are you sure you want to delete \"%1\"?")
+            .arg(m_impl->lastOpenedFilename), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+    if(reply == QMessageBox::No)
+        return;
+
+    QString errorDescription;
+    bool status = FileUtils::MoveToTrash(m_impl->lastOpenedFilename, &errorDescription);
+    if(!status)
+    {
+        QMessageBox::critical(this, tr("Error"), errorDescription);
+        return;
+    }
+
+    m_ui->imageViewerWidget->clear();
+    m_ui->setImageControlsEnabled(false);
+    if(m_impl->currentIndexInDirectory >= 0)
+        m_impl->filesInCurrentDirectory.erase(m_impl->filesInCurrentDirectory.begin() + m_impl->currentIndexInDirectory);
+    if(m_impl->filesInCurrentDirectory.size() > 0)
+    {
+        m_impl->currentIndexInDirectory--;
+        onOpenNextRequested();
+    }
+    else
+    {
+        m_impl->onFileClosed();
+        updateWindowTitle();
+    }
 }
 
 void MainWindow::onExitRequested()
@@ -487,7 +536,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
     case Qt::Key_Up:
     case Qt::Key_Left:
-    case Qt::Key_Backspace:
         m_ui->navigatePrevious->animateClick();
         break;
     case Qt::Key_Right:
@@ -505,6 +553,9 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Equal:
         m_ui->zoomIn->animateClick();
         break;
+    case Qt::Key_Delete:
+    case Qt::Key_Backspace:
+        m_ui->deleteFile->animateClick();
     default:
         break;
     }

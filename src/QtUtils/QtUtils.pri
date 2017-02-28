@@ -62,4 +62,13 @@ macx {
     OBJECTIVE_SOURCES += \
         $$files($$PWD/Utils/*.mm)
     LIBS += -framework Foundation
+    LIBS += -framework CoreServices
+}
+
+win32 {
+    *g++*|*clang* {
+        QMAKE_LIBS += -lshell32
+    } else {
+        QMAKE_LIBS += shell32.lib
+    }
 }
