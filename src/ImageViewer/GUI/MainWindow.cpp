@@ -47,6 +47,8 @@
 #include "Utils/FileUtils.h"
 
 #include "Decoders/DecodersManager.h"
+#include "GUISettings.h"
+#include "SettingsDialog.h"
 
 namespace {
 
@@ -104,6 +106,7 @@ struct MainWindow::Impl
 {
     Impl(MainWindow *mainWindow)
         : mainWindow(mainWindow)
+        , settings(new GUISettings(mainWindow))
         , supportedFormats(DecodersManager::getInstance().supportedFormatsWithWildcards())
     {
         onFileClosed();
@@ -177,6 +180,7 @@ struct MainWindow::Impl
     }
 
     MainWindow *mainWindow;
+    GUISettings *settings;
     const QStringList supportedFormats;
 
     QString lastOpenedFilename;
@@ -345,8 +349,15 @@ void MainWindow::showAbout()
 
 void MainWindow::showPreferences()
 {
-    /// @todo
-    QMessageBox::critical(this, tr("Error"), tr("Not implemented yet =("));
+    SettingsDialog dialog(m_impl->settings, this);
+    dialog.exec();
+}
+
+void MainWindow::onOpenFirstRequested()
+{
+    if(m_impl->filesInCurrentDirectory.size() == 0)
+        return;
+    onOpenFileRequested(QDir(m_impl->currentDirectory).absoluteFilePath(m_impl->filesInCurrentDirectory[0]));
 }
 
 void MainWindow::onOpenPreviousRequested()
@@ -371,6 +382,13 @@ void MainWindow::onOpenNextRequested()
     else
         return;
     onOpenFileRequested(QDir(m_impl->currentDirectory).absoluteFilePath(m_impl->filesInCurrentDirectory[bestMatchedIndex]));
+}
+
+void MainWindow::onOpenLastRequested()
+{
+    if(m_impl->filesInCurrentDirectory.size() == 0)
+        return;
+    onOpenFileRequested(QDir(m_impl->currentDirectory).absoluteFilePath(m_impl->filesInCurrentDirectory[m_impl->filesInCurrentDirectory.size() - 1]));
 }
 
 void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)
@@ -419,18 +437,35 @@ void MainWindow::onDeleteFileRequested()
 {
     if(!m_impl->isFileOpened())
         return;
-    QMessageBox::StandardButton reply;
-    reply = QMessageBox::warning(this, tr("Delete File"), tr("Are you sure you want to delete \"%1\"?")
-            .arg(m_impl->lastOpenedFilename), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-    if(reply == QMessageBox::No)
-        return;
 
-    QString errorDescription;
-    bool status = FileUtils::MoveToTrash(m_impl->lastOpenedFilename, &errorDescription);
-    if(!status)
+    if(m_impl->settings->askBeforeDelete())
     {
-        QMessageBox::critical(this, tr("Error"), errorDescription);
-        return;
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::warning(this, tr("Delete File"), tr("Are you sure you want to delete \"%1\"?")
+                .arg(m_impl->lastOpenedFilename), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if(reply == QMessageBox::No)
+            return;
+    }
+
+    if(m_impl->settings->moveToTrash())
+    {
+        QString errorDescription;
+        bool status = FileUtils::MoveToTrash(m_impl->lastOpenedFilename, &errorDescription);
+        if(!status)
+        {
+            QMessageBox::critical(this, tr("Error"), errorDescription);
+            return;
+        }
+    }
+    else
+    {
+        QFile file(m_impl->lastOpenedFilename);
+        bool status = file.remove();
+        if(!status)
+        {
+            QMessageBox::critical(this, tr("Error"), tr("Unable to delete \"%1\"!").arg(m_impl->lastOpenedFilename));
+            return;
+        }
     }
 
     m_ui->imageViewerWidget->clear();
@@ -556,6 +591,13 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Delete:
     case Qt::Key_Backspace:
         m_ui->deleteFile->animateClick();
+        break;
+    case Qt::Key_Home:
+        onOpenFirstRequested();
+        break;
+    case Qt::Key_End:
+        onOpenLastRequested();
+        break;
     default:
         break;
     }

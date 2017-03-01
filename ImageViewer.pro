@@ -18,8 +18,10 @@ DEFINES += QT_NO_CAST_FROM_ASCII
 include(src/QtUtils/QtUtils.pri)
 
 SOURCES += \
+    src/ImageViewer/GUI/GUISettings.cpp \
     src/ImageViewer/GUI/MainWindow.cpp \
     src/ImageViewer/GUI/ImageViewerWidget.cpp \
+    src/ImageViewer/GUI/SettingsDialog.cpp \
     src/ImageViewer/Decoders/DecodersManager.cpp \
     src/ImageViewer/Decoders/DecoderQtPixmap.cpp \
     src/ImageViewer/Decoders/DecoderQtSVG.cpp \
@@ -27,9 +29,11 @@ SOURCES += \
     src/ImageViewer/main.cpp
 
 HEADERS += \
+    src/ImageViewer/GUI/GUISettings.h \
     src/ImageViewer/GUI/MainWindow.h \
     src/ImageViewer/GUI/MainWindow_p.h \
     src/ImageViewer/GUI/ImageViewerWidget.h \
+    src/ImageViewer/GUI/SettingsDialog.h \
     src/ImageViewer/Decoders/DecodersManager.h \
     src/ImageViewer/Decoders/IDecoder.h \
     src/ImageViewer/Decoders/DecoderAutoRegistrator.h \
@@ -53,6 +57,7 @@ macx {
     HEADERS += \
         src/ImageViewer/Decoders/DecoderNSImage.h
     LIBS += -framework AppKit
+    LIBS += -framework Foundation
 
     QMAKE_INFO_PLIST = src/ImageViewer/Resources/platform/macosx/Info.plist
     ICON = src/ImageViewer/Resources/icon/icon.icns
