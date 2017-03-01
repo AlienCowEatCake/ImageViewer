@@ -18,7 +18,37 @@
 */
 
 #include "GUISettings.h"
+#include <limits>
 #include "Utils/SettingsWrapper.h"
+
+namespace {
+
+ImageViewerWidget::ZoomMode zoomModeFromVariant(const QVariant &variant, ImageViewerWidget::ZoomMode defaultValue)
+{
+    bool ok;
+    int value = variant.toInt(&ok);
+    if(!ok)
+        return defaultValue;
+    switch(value)
+    {
+    case ImageViewerWidget::ZOOM_IDENTITY:
+        return ImageViewerWidget::ZOOM_IDENTITY;
+    case ImageViewerWidget::ZOOM_FIT_TO_WINDOW:
+        return ImageViewerWidget::ZOOM_FIT_TO_WINDOW;
+    case ImageViewerWidget::ZOOM_CUSTOM:
+        return ImageViewerWidget::ZOOM_CUSTOM;
+    default:
+        break;
+    }
+    return defaultValue;
+}
+
+QVariant zoomModeToVariant(ImageViewerWidget::ZoomMode mode)
+{
+    return mode;
+}
+
+} // namespace
 
 struct GUISettings::Impl
 {
@@ -40,7 +70,7 @@ bool GUISettings::askBeforeDelete() const
 {
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(QString::fromLatin1("AskBeforeDelete"), defaultValue);
-    return value.isValid() ? value.toBool() : defaultValue;
+    return value.isValid() && value.canConvert(QMetaType::Bool) ? value.toBool() : defaultValue;
 }
 
 void GUISettings::setAskBeforeDelete(bool enabled)
@@ -55,7 +85,7 @@ bool GUISettings::moveToTrash() const
 {
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(QString::fromLatin1("MoveToTrash"), defaultValue);
-    return value.isValid() ? value.toBool() : defaultValue;
+    return value.isValid() && value.canConvert(QMetaType::Bool) ? value.toBool() : defaultValue;
 }
 
 void GUISettings::setMoveToTrash(bool enabled)
@@ -64,4 +94,38 @@ void GUISettings::setMoveToTrash(bool enabled)
     if(enabled != oldValue)
         emit moveToTrashChanged(enabled);
     m_impl->settings.setValue(QString::fromLatin1("MoveToTrash"), enabled);
+}
+
+ImageViewerWidget::ZoomMode GUISettings::zoomMode() const
+{
+    const ImageViewerWidget::ZoomMode defaultMode = ImageViewerWidget::ZOOM_FIT_TO_WINDOW;
+    const QVariant defaultValue = zoomModeToVariant(defaultMode);
+    QVariant value = m_impl->settings.value(QString::fromLatin1("ZoomMode"), defaultValue);
+    return zoomModeFromVariant((value.isValid() ? value : defaultValue), defaultMode);
+}
+
+void GUISettings::setZoomMode(ImageViewerWidget::ZoomMode mode)
+{
+    const ImageViewerWidget::ZoomMode oldValue = zoomMode();
+    if(mode != oldValue)
+        emit zoomModeChanged(mode);
+    m_impl->settings.setValue(QString::fromLatin1("ZoomMode"), zoomModeToVariant(mode));
+}
+
+qreal GUISettings::zoomLevel() const
+{
+    const qreal defaultValue = 1;
+    QVariant value = m_impl->settings.value(QString::fromLatin1("ZoomLevel"), defaultValue);
+    double newValue = (value.isValid() && value.canConvert(QMetaType::Double) ? value.toDouble() : defaultValue);
+    if(newValue > 0 && newValue < std::numeric_limits<qreal>::max())
+        return static_cast<qreal>(newValue);
+    return defaultValue;
+}
+
+void GUISettings::setZoomLevel(qreal level)
+{
+    const qreal oldValue = zoomLevel();
+    if(level != oldValue)
+        emit zoomLevelChanged(level);
+    m_impl->settings.setValue(QString::fromLatin1("ZoomLevel"), level);
 }

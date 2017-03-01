@@ -224,13 +224,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
     connect(m_ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    m_ui->imageViewerWidget->setZoomMode(ImageViewerWidget::ZOOM_FIT_TO_WINDOW);
+    m_ui->imageViewerWidget->setZoomMode(m_impl->settings->zoomMode(), m_impl->settings->zoomLevel());
 
     setLanguage();
 }
 
 MainWindow::~MainWindow()
 {
+    m_impl->settings->setZoomMode(m_ui->imageViewerWidget->zoomMode());
+    m_impl->settings->setZoomLevel(m_ui->imageViewerWidget->zoomLevel());
     qApp->quit();
 }
 

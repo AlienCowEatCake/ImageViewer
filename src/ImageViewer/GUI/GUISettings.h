@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include "Utils/ScopedPointer.h"
+#include "ImageViewerWidget.h"
 
 class GUISettings : public QObject
 {
@@ -30,6 +31,8 @@ class GUISettings : public QObject
 signals:
     void askBeforeDeleteChanged(bool enabled);
     void moveToTrashChanged(bool enabled);
+    void zoomModeChanged(ImageViewerWidget::ZoomMode mode);
+    void zoomLevelChanged(qreal level);
 
 public:
     GUISettings(QObject *parent = NULL);
@@ -40,6 +43,12 @@ public:
 
     bool moveToTrash() const;
     void setMoveToTrash(bool enabled);
+
+    ImageViewerWidget::ZoomMode zoomMode() const;
+    void setZoomMode(ImageViewerWidget::ZoomMode mode);
+
+    qreal zoomLevel() const;
+    void setZoomLevel(qreal level);
 
 private:
     struct Impl;
