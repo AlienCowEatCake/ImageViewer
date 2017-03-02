@@ -268,7 +268,7 @@ QExifValue::QExifValue( const QString &value, TextEncoding encoding )
     switch( encoding )
     {
     case AsciiEncoding:
-        d = new QExifUndefinedValuePrivate( QByteArray::fromRawData( "ASCII\0\0\0", 8 ) + value.toAscii() );
+        d = new QExifUndefinedValuePrivate( QByteArray::fromRawData( "ASCII\0\0\0", 8 ) + value.toLatin1() );
         break;
     case JisEncoding:
         {
@@ -505,7 +505,7 @@ QString QExifValue::toString() const
             switch( encoding() )
             {
             case AsciiEncoding:
-                return QString::fromAscii( string.constData(), string.length() );
+                return QString::fromLatin1( string.constData(), string.length() );
             case JisEncoding:
                 {
                     QTextCodec *codec = QTextCodec::codecForName( "JIS X 0208" );
@@ -618,7 +618,7 @@ QByteArray QExifValue::toByteArray() const
     switch( d->type )
     {
     case Ascii:
-        return static_cast< const QExifAsciiValuePrivate * >( d.constData() )->value.toAscii();
+        return static_cast< const QExifAsciiValuePrivate * >( d.constData() )->value.toLatin1();
     case Undefined:
         return static_cast< const QExifUndefinedValuePrivate * >( d.constData() )->value;
     default:
@@ -1452,9 +1452,9 @@ QExifValue QExifImageHeader::readIfdValue(QDataStream &stream, int startPos, con
 
             QByteArray ascii = stream.device()->read(header.count);
 
-            return QExifValue(QString::fromAscii(ascii.constData(), ascii.size() - 1));
+            return QExifValue(QString::fromLatin1(ascii.constData(), ascii.size() - 1));
         } else {
-            return QExifValue(QString::fromAscii(header.offsetAscii, header.count - 1));
+            return QExifValue(QString::fromLatin1(header.offsetAscii, header.count - 1));
         }
     case QExifValue::Short:
         {

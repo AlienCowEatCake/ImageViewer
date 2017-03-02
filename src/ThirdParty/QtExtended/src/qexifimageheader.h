@@ -24,6 +24,7 @@
 #include <QSharedData>
 #include <QVariant>
 #include <QSysInfo>
+#include <QIODevice>
 #include <qtopiaglobal.h>
 
 typedef QPair< quint32, quint32 > QExifURational;
