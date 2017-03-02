@@ -70,7 +70,7 @@ bool GUISettings::askBeforeDelete() const
 {
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(QString::fromLatin1("AskBeforeDelete"), defaultValue);
-    return value.isValid() && value.canConvert(QMetaType::Bool) ? value.toBool() : defaultValue;
+    return value.isValid() && value.canConvert(QVariant::Bool) ? value.toBool() : defaultValue;
 }
 
 void GUISettings::setAskBeforeDelete(bool enabled)
@@ -85,7 +85,7 @@ bool GUISettings::moveToTrash() const
 {
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(QString::fromLatin1("MoveToTrash"), defaultValue);
-    return value.isValid() && value.canConvert(QMetaType::Bool) ? value.toBool() : defaultValue;
+    return value.isValid() && value.canConvert(QVariant::Bool) ? value.toBool() : defaultValue;
 }
 
 void GUISettings::setMoveToTrash(bool enabled)
@@ -116,7 +116,7 @@ qreal GUISettings::zoomLevel() const
 {
     const qreal defaultValue = 1;
     QVariant value = m_impl->settings.value(QString::fromLatin1("ZoomLevel"), defaultValue);
-    double newValue = (value.isValid() && value.canConvert(QMetaType::Double) ? value.toDouble() : defaultValue);
+    double newValue = (value.isValid() && value.canConvert(QVariant::Double) ? value.toDouble() : defaultValue);
     if(newValue > 0 && newValue < std::numeric_limits<qreal>::max())
         return static_cast<qreal>(newValue);
     return defaultValue;

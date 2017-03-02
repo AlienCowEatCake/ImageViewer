@@ -55,7 +55,10 @@ struct SettingsDialog::Impl
         settingsDialog->adjustSize();
         settingsDialog->resize(widget->minimumSize());
         settingsDialog->setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint |
-                               Qt::WindowCloseButtonHint | Qt::MSWindowsFixedSizeDialogHint);
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
+                               Qt::WindowCloseButtonHint |
+#endif
+                               Qt::MSWindowsFixedSizeDialogHint);
         settingsDialog->setWindowModality(Qt::ApplicationModal);
     }
 
