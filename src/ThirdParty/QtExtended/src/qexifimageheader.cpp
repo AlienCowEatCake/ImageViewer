@@ -1819,6 +1819,9 @@ qint64 QExifImageHeader::write(QIODevice *device) const
 {
 #ifndef QT_NO_DEBUG
     qint64 startPos = device->pos();
+#else
+    qint64 startPos;
+    Q_UNUSED(startPos);
 #endif
 
     QDataStream stream( device );

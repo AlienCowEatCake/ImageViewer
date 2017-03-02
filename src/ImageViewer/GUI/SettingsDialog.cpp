@@ -58,7 +58,7 @@ struct SettingsDialog::Impl
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
                                Qt::WindowCloseButtonHint |
 #endif
-                               Qt::MSWindowsFixedSizeDialogHint);
+                               Qt::WindowSystemMenuHint | Qt::MSWindowsFixedSizeDialogHint);
         settingsDialog->setWindowModality(Qt::ApplicationModal);
     }
 
