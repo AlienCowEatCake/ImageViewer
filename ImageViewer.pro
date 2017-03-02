@@ -16,6 +16,7 @@ INCLUDEPATH += src/ImageViewer
 DEFINES += QT_NO_CAST_FROM_ASCII
 
 include(src/QtUtils/QtUtils.pri)
+include(src/ThirdParty/QtExtended/QtExtended.pri)
 
 SOURCES += \
     src/ImageViewer/GUI/GUISettings.cpp \
