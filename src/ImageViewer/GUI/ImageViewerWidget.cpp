@@ -103,7 +103,9 @@ ImageViewerWidget::ImageViewerWidget(QWidget *parent)
     , m_impl(new Impl(this))
 {
     setViewportMargins(0, 0, 0, 0);
-    setSmoothEnabled(true);
+    setRenderHint(QPainter::Antialiasing, true);
+    setRenderHint(QPainter::TextAntialiasing, true);
+    setRenderHint(QPainter::SmoothPixmapTransform, true);
     setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 }
 
@@ -131,13 +133,6 @@ void ImageViewerWidget::setZoomLevel(qreal zoomLevel)
 qreal ImageViewerWidget::zoomLevel() const
 {
     return m_impl->currentZoomLevel;
-}
-
-void ImageViewerWidget::setSmoothEnabled(bool isEnabled)
-{
-    setRenderHint(QPainter::Antialiasing, isEnabled);
-    setRenderHint(QPainter::TextAntialiasing, isEnabled);
-    setRenderHint(QPainter::SmoothPixmapTransform, isEnabled);
 }
 
 QSize ImageViewerWidget::imageSize() const

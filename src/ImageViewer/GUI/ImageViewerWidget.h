@@ -54,8 +54,6 @@ public:
     void setZoomLevel(qreal zoomLevel);
     qreal zoomLevel() const;
 
-    void setSmoothEnabled(bool isEnabled);
-
     QSize imageSize() const;
 
 public slots:
