@@ -144,6 +144,8 @@ QGraphicsItem *DecoderQImage::loadImage(const QString &filename)
     if(status)
     {
         quint16 orientation = exifHeader.value(QExifImageHeader::Orientation).toShort();
+        qDebug() << "EXIF header detected";
+        qDebug() << "EXIF orientation =" << orientation;
         if((status = (orientation >= 2 && orientation <= 8)))
         {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))

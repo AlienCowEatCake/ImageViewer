@@ -356,13 +356,6 @@ void MainWindow::showPreferences()
     dialog.exec();
 }
 
-void MainWindow::onOpenFirstRequested()
-{
-    if(m_impl->filesInCurrentDirectory.size() == 0)
-        return;
-    onOpenFileRequested(QDir(m_impl->currentDirectory).absoluteFilePath(m_impl->filesInCurrentDirectory[0]));
-}
-
 void MainWindow::onOpenPreviousRequested()
 {
     int bestMatchedIndex;
@@ -385,6 +378,13 @@ void MainWindow::onOpenNextRequested()
     else
         return;
     onOpenFileRequested(QDir(m_impl->currentDirectory).absoluteFilePath(m_impl->filesInCurrentDirectory[bestMatchedIndex]));
+}
+
+void MainWindow::onOpenFirstRequested()
+{
+    if(m_impl->filesInCurrentDirectory.size() == 0)
+        return;
+    onOpenFileRequested(QDir(m_impl->currentDirectory).absoluteFilePath(m_impl->filesInCurrentDirectory[0]));
 }
 
 void MainWindow::onOpenLastRequested()
@@ -574,26 +574,41 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     {
     case Qt::Key_Up:
     case Qt::Key_Left:
-        m_ui->navigatePrevious->animateClick();
+        if(!event->isAutoRepeat())
+            m_ui->navigatePrevious->animateClick();
+        else
+            onOpenPreviousRequested();
         break;
     case Qt::Key_Right:
     case Qt::Key_Down:
     case Qt::Key_Space:
     case Qt::Key_Return:
     case Qt::Key_Enter:
-        m_ui->navigateNext->animateClick();
+        if(!event->isAutoRepeat())
+            m_ui->navigateNext->animateClick();
+        else
+            onOpenNextRequested();
         break;
     case Qt::Key_Minus:
     case Qt::Key_Underscore:
-        m_ui->zoomOut->animateClick();
+        if(!event->isAutoRepeat())
+            m_ui->zoomOut->animateClick();
+        else
+            m_ui->imageViewerWidget->zoomOut();
         break;
     case Qt::Key_Plus:
     case Qt::Key_Equal:
-        m_ui->zoomIn->animateClick();
+        if(!event->isAutoRepeat())
+            m_ui->zoomIn->animateClick();
+        else
+            m_ui->imageViewerWidget->zoomIn();
         break;
     case Qt::Key_Delete:
     case Qt::Key_Backspace:
-        m_ui->deleteFile->animateClick();
+        if(!event->isAutoRepeat())
+            m_ui->deleteFile->animateClick();
+        else
+            onDeleteFileRequested();
         break;
     case Qt::Key_Home:
         onOpenFirstRequested();

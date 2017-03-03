@@ -18,110 +18,47 @@
 */
 
 #include "SettingsDialog.h"
+#include "SettingsDialog_p.h"
 
-#include <QApplication>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QCheckBox>
-#include <QLabel>
-#include <QToolButton>
-#include <QPixmap>
 #include <QColorDialog>
-#include <QDialogButtonBox>
-
-#include "GUISettings.h"
-
-namespace {
-
-const QSize COLOR_BUTTON_SIZE   (40, 24);
-const QSize COLOR_ICON_SIZE     (30, 14);
-
-} // namespace
 
 struct SettingsDialog::Impl
 {
     Impl(SettingsDialog *widget, GUISettings *settings)
-        : settingsDialog(widget)
+        : dialog(widget)
+        , ui(dialog->m_ui.data())
         , settings(settings)
-        , askBeforeDeleteCheckbox(new QCheckBox(settingsDialog))
-        , moveToTrashCheckbox(new QCheckBox(settingsDialog))
-        , backgroundColorFrame(new QFrame(settingsDialog))
-        , backgroundColorLabel(new QLabel(backgroundColorFrame))
-        , backgroundColorButton(new QToolButton(backgroundColorFrame))
-        , buttonBox(new QDialogButtonBox(settingsDialog))
     {
-        askBeforeDeleteCheckbox->setText(qApp->translate("SettingsDialog", "Ask before deleting images"));
-        askBeforeDeleteCheckbox->setChecked(settings->askBeforeDelete());
-
-        moveToTrashCheckbox->setText(qApp->translate("SettingsDialog", "Move deleted images to trash"));
-        moveToTrashCheckbox->setChecked(settings->moveToTrash());
-
-        backgroundColorLabel->setText(qApp->translate("SettingsDialog", "Background color"));
-
-        backgroundColorButton->resize(COLOR_BUTTON_SIZE);
-        backgroundColorButton->setIconSize(COLOR_ICON_SIZE);
         onBackgroundColorChanged(settings->backgroundColor());
-        QObject::connect(backgroundColorButton, SIGNAL(clicked()), settingsDialog, SLOT(onColorDialogRequested()));
-        QObject::connect(settings, SIGNAL(backgroundColorChanged(const QColor&)), settingsDialog, SLOT(onBackgroundColorChanged(const QColor&)));
-
-        buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
-        QObject::connect(buttonBox, SIGNAL(rejected()), settingsDialog, SLOT(close()));
-        QObject::connect(buttonBox, SIGNAL(accepted()), settingsDialog, SLOT(onSettingsAccepted()));
-
-        QHBoxLayout *backgroundColorLayout = new QHBoxLayout(backgroundColorFrame);
-        backgroundColorLayout->setContentsMargins(0, 0, 0, 0);
-        backgroundColorLayout->addWidget(backgroundColorLabel);
-        backgroundColorLayout->addWidget(backgroundColorButton);
-        backgroundColorLayout->addStretch();
-
-        QVBoxLayout *mainLayout = new QVBoxLayout(settingsDialog);
-        mainLayout->addWidget(askBeforeDeleteCheckbox);
-        mainLayout->addWidget(moveToTrashCheckbox);
-        mainLayout->addWidget(backgroundColorFrame);
-        mainLayout->addWidget(buttonBox);
-
-        settingsDialog->setWindowTitle(qApp->translate("SettingsDialog", "Preferences"));
-        settingsDialog->ensurePolished();
-        settingsDialog->adjustSize();
-        settingsDialog->resize(widget->minimumSize());
-        settingsDialog->setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint |
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
-                               Qt::WindowCloseButtonHint |
-#endif
-                               Qt::WindowSystemMenuHint | Qt::MSWindowsFixedSizeDialogHint);
-        settingsDialog->setWindowModality(Qt::ApplicationModal);
+        QObject::connect(ui->backgroundColorButton, SIGNAL(clicked()), dialog, SLOT(onColorDialogRequested()));
+        QObject::connect(ui->buttonBox, SIGNAL(rejected()), dialog, SLOT(close()));
+        QObject::connect(ui->buttonBox, SIGNAL(accepted()), dialog, SLOT(onSettingsAccepted()));
+        QObject::connect(settings, SIGNAL(backgroundColorChanged(const QColor&)), dialog, SLOT(onBackgroundColorChanged(const QColor&)));
     }
 
     void onSettingsAccepted()
     {
-        settings->setAskBeforeDelete(askBeforeDeleteCheckbox->isChecked());
-        settings->setMoveToTrash(moveToTrashCheckbox->isChecked());
-        settings->setBackgroundColor(backgroundColor);
-        settingsDialog->close();
+        settings->setAskBeforeDelete(ui->askBeforeDeleteCheckbox->isChecked());
+        settings->setMoveToTrash(ui->moveToTrashCheckbox->isChecked());
+        settings->setBackgroundColor(background);
+        dialog->close();
     }
 
     void onBackgroundColorChanged(const QColor &color)
     {
-        backgroundColor = color;
-        QPixmap pixmap(COLOR_ICON_SIZE);
-        pixmap.fill(color);
-        backgroundColorButton->setIcon(QIcon(pixmap));
+        background = color;
+        ui->updateBackgroundColorButton(color);
     }
 
-    SettingsDialog *settingsDialog;
+    SettingsDialog *dialog;
+    SettingsDialog::UI *ui;
     GUISettings *settings;
-    QColor backgroundColor;
-
-    QCheckBox *askBeforeDeleteCheckbox;
-    QCheckBox *moveToTrashCheckbox;
-    QFrame *backgroundColorFrame;
-    QLabel *backgroundColorLabel;
-    QToolButton *backgroundColorButton;
-    QDialogButtonBox *buttonBox;
+    QColor background;
 };
 
 SettingsDialog::SettingsDialog(GUISettings *settings, QWidget *parent)
     : QDialog(parent)
+    , m_ui(new UI(this, settings))
     , m_impl(new Impl(this, settings))
 {}
 

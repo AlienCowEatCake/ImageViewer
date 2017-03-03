@@ -42,9 +42,9 @@ public slots:
     void showAbout();
     void showPreferences();
 
-    void onOpenFirstRequested();
     void onOpenPreviousRequested();
     void onOpenNextRequested();
+    void onOpenFirstRequested();
     void onOpenLastRequested();
     void onZoomModeChanged(ImageViewerWidget::ZoomMode mode);
     void onOpenFileRequested(const QString &filename);

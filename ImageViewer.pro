@@ -35,6 +35,7 @@ HEADERS += \
     src/ImageViewer/GUI/MainWindow_p.h \
     src/ImageViewer/GUI/ImageViewerWidget.h \
     src/ImageViewer/GUI/SettingsDialog.h \
+    src/ImageViewer/GUI/SettingsDialog_p.h \
     src/ImageViewer/Decoders/DecodersManager.h \
     src/ImageViewer/Decoders/IDecoder.h \
     src/ImageViewer/Decoders/DecoderAutoRegistrator.h \
