@@ -17,7 +17,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "DecoderQtPixmap.h"
+#include "DecoderQImage.h"
 
 #include <set>
 
@@ -37,10 +37,13 @@ namespace {
 
 const int DECODER_QT_PIXMAP_PRIORITY = 100;
 
-DecoderAutoRegistrator registrator(new DecoderQtPixmap, true);
+DecoderAutoRegistrator registrator(new DecoderQImage, true);
 
 #if defined (HAS_THIRDPARTY_QTEXTENDED)
 
+// https://bugreports.qt.io/browse/QTBUG-37946
+// https://codereview.qt-project.org/#/c/110668/2
+// https://github.com/qt/qtbase/blob/v5.4.0/src/gui/image/qjpeghandler.cpp
 void applyExifOrientation(QImage *image, quint16 exifOrientation)
 {
     // This is not an optimized implementation, but easiest to maintain
@@ -87,12 +90,12 @@ void applyExifOrientation(QImage *image, quint16 exifOrientation)
 
 } // namespace
 
-QString DecoderQtPixmap::name() const
+QString DecoderQImage::name() const
 {
-    return QString::fromLatin1("DecoderQtPixmap");
+    return QString::fromLatin1("DecoderQImage");
 }
 
-QList<DecoderFormatInfo> DecoderQtPixmap::supportedFormats() const
+QList<DecoderFormatInfo> DecoderQImage::supportedFormats() const
 {
     // https://doc.qt.io/archives/qtextended4.4/qimagereader.html#supportedImageFormats
     const QStringList defaultReaderFormats = QStringList()
@@ -124,12 +127,15 @@ QList<DecoderFormatInfo> DecoderQtPixmap::supportedFormats() const
     return result;
 }
 
-QGraphicsItem *DecoderQtPixmap::loadImage(const QString &filename)
+QGraphicsItem *DecoderQImage::loadImage(const QString &filename)
 {
     const QFileInfo fileInfo(filename);
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
-    QPixmap pixmap;
+    QImageReader imageReader(filename);
+    imageReader.setBackgroundColor(Qt::transparent);
+    imageReader.setQuality(100);
+    QImage image;
     bool status = false;
 
 #if defined (HAS_THIRDPARTY_QTEXTENDED)
@@ -140,19 +146,27 @@ QGraphicsItem *DecoderQtPixmap::loadImage(const QString &filename)
         quint16 orientation = exifHeader.value(QExifImageHeader::Orientation).toShort();
         if((status = (orientation >= 2 && orientation <= 8)))
         {
-            QImage image(filename);
-            if((status = !image.isNull()))
-            {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+            imageReader.setAutoTransform(false);
+#endif
+            image = imageReader.read();
+            if(!image.isNull())
                 applyExifOrientation(&image, exifHeader.value(QExifImageHeader::Orientation).toShort());
-                pixmap = QPixmap::fromImage(image);
-            }
+            else
+                return NULL;
         }
     }
 #endif
 
     if(!status)
-        pixmap.load(filename);
-    if(pixmap.isNull())
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+        imageReader.setAutoTransform(true);
+#endif
+        image = imageReader.read();
+    }
+    if(image.isNull())
         return NULL;
-    return new QGraphicsPixmapItem(pixmap);
+
+    return new QGraphicsPixmapItem(QPixmap::fromImage(image));
 }

@@ -24,9 +24,9 @@ SOURCES += \
     src/ImageViewer/GUI/ImageViewerWidget.cpp \
     src/ImageViewer/GUI/SettingsDialog.cpp \
     src/ImageViewer/Decoders/DecodersManager.cpp \
-    src/ImageViewer/Decoders/DecoderQtPixmap.cpp \
+    src/ImageViewer/Decoders/DecoderQImage.cpp \
+    src/ImageViewer/Decoders/DecoderQMovie.cpp \
     src/ImageViewer/Decoders/DecoderQtSVG.cpp \
-    src/ImageViewer/Decoders/DecoderQtMovie.cpp \
     src/ImageViewer/main.cpp
 
 HEADERS += \
@@ -38,9 +38,9 @@ HEADERS += \
     src/ImageViewer/Decoders/DecodersManager.h \
     src/ImageViewer/Decoders/IDecoder.h \
     src/ImageViewer/Decoders/DecoderAutoRegistrator.h \
-    src/ImageViewer/Decoders/DecoderQtPixmap.h \
-    src/ImageViewer/Decoders/DecoderQtSVG.h \
-    src/ImageViewer/Decoders/DecoderQtMovie.h
+    src/ImageViewer/Decoders/DecoderQImage.h \
+    src/ImageViewer/Decoders/DecoderQMovie.h \
+    src/ImageViewer/Decoders/DecoderQtSVG.h
 
 TRANSLATIONS += \
     src/ImageViewer/Resources/translations/en.ts \

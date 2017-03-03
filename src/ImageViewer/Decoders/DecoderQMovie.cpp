@@ -17,7 +17,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "DecoderQtMovie.h"
+#include "DecoderQMovie.h"
 
 #include <QMovie>
 #include <QGraphicsProxyWidget>
@@ -31,16 +31,16 @@ namespace {
 
 const int DECODER_QT_MOVIE_PRIORITY = 160;
 
-DecoderAutoRegistrator registrator(new DecoderQtMovie);
+DecoderAutoRegistrator registrator(new DecoderQMovie);
 
 } // namespace
 
-QString DecoderQtMovie::name() const
+QString DecoderQMovie::name() const
 {
-    return QString::fromLatin1("DecoderQtMovie");
+    return QString::fromLatin1("DecoderQMovie");
 }
 
-QList<DecoderFormatInfo> DecoderQtMovie::supportedFormats() const
+QList<DecoderFormatInfo> DecoderQMovie::supportedFormats() const
 {
     const QStringList whitelistFormats = QStringList() << QString::fromLatin1("gif").toLower();
     const QList<QByteArray> readerFormats = QMovie::supportedFormats();
@@ -58,7 +58,7 @@ QList<DecoderFormatInfo> DecoderQtMovie::supportedFormats() const
     return result;
 }
 
-QGraphicsItem *DecoderQtMovie::loadImage(const QString &filename)
+QGraphicsItem *DecoderQMovie::loadImage(const QString &filename)
 {
     const QFileInfo fileInfo(filename);
     if(!fileInfo.exists() || !fileInfo.isReadable())

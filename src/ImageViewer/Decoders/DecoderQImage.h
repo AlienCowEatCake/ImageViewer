@@ -17,12 +17,12 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined(DECODER_QT_PIXMAP_H_INCLUDED)
-#define DECODER_QT_PIXMAP_H_INCLUDED
+#if !defined(DECODER_QIMAGE_H_INCLUDED)
+#define DECODER_QIMAGE_H_INCLUDED
 
 #include "IDecoder.h"
 
-class DecoderQtPixmap : public IDecoder
+class DecoderQImage : public IDecoder
 {
 public:
     QString name() const;
