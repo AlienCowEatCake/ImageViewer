@@ -21,6 +21,7 @@
 #define GUISETTINGS_H_INCLUDED
 
 #include <QObject>
+#include <QString>
 #include "Utils/ScopedPointer.h"
 #include "ImageViewerWidget.h"
 
@@ -33,6 +34,7 @@ signals:
     void moveToTrashChanged(bool enabled);
     void zoomModeChanged(ImageViewerWidget::ZoomMode mode);
     void zoomLevelChanged(qreal level);
+    void lastOpenedPathChanged(const QString &path);
 
 public:
     GUISettings(QObject *parent = NULL);
@@ -49,6 +51,9 @@ public:
 
     qreal zoomLevel() const;
     void setZoomLevel(qreal level);
+
+    QString lastOpenedPath() const;
+    void setLastOpenedPath(const QString &path);
 
 private:
     struct Impl;

@@ -129,3 +129,18 @@ void GUISettings::setZoomLevel(qreal level)
         emit zoomLevelChanged(level);
     m_impl->settings.setValue(QString::fromLatin1("ZoomLevel"), level);
 }
+
+QString GUISettings::lastOpenedPath() const
+{
+    const QString defaultValue;
+    QVariant value = m_impl->settings.value(QString::fromLatin1("LastOpenedPath"), defaultValue);
+    return (value.isValid() && value.canConvert(QVariant::String) ? value.toString() : defaultValue);
+}
+
+void GUISettings::setLastOpenedPath(const QString &path)
+{
+    const QString oldValue = lastOpenedPath();
+    if(path != oldValue)
+        emit lastOpenedPathChanged(path);
+    m_impl->settings.setValue(QString::fromLatin1("LastOpenedPath"), path);
+}

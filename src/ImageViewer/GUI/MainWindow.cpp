@@ -183,8 +183,6 @@ struct MainWindow::Impl
     GUISettings *settings;
     const QStringList supportedFormats;
 
-    QString lastOpenedFilename;
-
     QString currentDirectory;
     QVector<QString> filesInCurrentDirectory; /// @todo std::vector?
     int currentIndexInDirectory;
@@ -314,7 +312,7 @@ void MainWindow::updateWindowTitle()
         return;
     }
     const QSize imageSize = m_ui->imageViewerWidget->imageSize();
-    QString label = m_impl->lastOpenedFilename.split(QChar::fromLatin1('/')).last();
+    QString label = m_impl->settings->lastOpenedPath().split(QChar::fromLatin1('/')).last();
 #if defined (Q_OS_WIN32)
     label = label.split(QChar::fromLatin1('\\')).last();
 #endif
@@ -406,7 +404,7 @@ void MainWindow::onOpenFileRequested(const QString &filename)
     {
         m_ui->imageViewerWidget->setGraphicsItem(item);
         m_ui->setImageControlsEnabled(true);
-        m_impl->lastOpenedFilename = filename;
+        m_impl->settings->setLastOpenedPath(filename);
     }
     else
     {
@@ -423,7 +421,7 @@ void MainWindow::onOpenFileWithDialogRequested()
     const QString formatString = QString::fromLatin1("%2 (%1);;%3 (*.*)")
             .arg(m_impl->supportedFormats.join(QString::fromLatin1(" ")))
             .arg(tr("All Supported Images")).arg(tr("All Files"));
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), m_impl->lastOpenedFilename, formatString);
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), m_impl->settings->lastOpenedPath(), formatString);
     if(fileName.isEmpty())
         return;
     onOpenFileRequested(fileName);
@@ -444,7 +442,7 @@ void MainWindow::onDeleteFileRequested()
     {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::warning(this, tr("Delete File"), tr("Are you sure you want to delete \"%1\"?")
-                .arg(m_impl->lastOpenedFilename), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+                .arg(m_impl->settings->lastOpenedPath()), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
         if(reply == QMessageBox::No)
             return;
     }
@@ -452,7 +450,7 @@ void MainWindow::onDeleteFileRequested()
     if(m_impl->settings->moveToTrash())
     {
         QString errorDescription;
-        bool status = FileUtils::MoveToTrash(m_impl->lastOpenedFilename, &errorDescription);
+        bool status = FileUtils::MoveToTrash(m_impl->settings->lastOpenedPath(), &errorDescription);
         if(!status)
         {
             QMessageBox::critical(this, tr("Error"), errorDescription);
@@ -461,11 +459,11 @@ void MainWindow::onDeleteFileRequested()
     }
     else
     {
-        QFile file(m_impl->lastOpenedFilename);
+        QFile file(m_impl->settings->lastOpenedPath());
         bool status = file.remove();
         if(!status)
         {
-            QMessageBox::critical(this, tr("Error"), tr("Unable to delete \"%1\"!").arg(m_impl->lastOpenedFilename));
+            QMessageBox::critical(this, tr("Error"), tr("Unable to delete \"%1\"!").arg(m_impl->settings->lastOpenedPath()));
             return;
         }
     }
