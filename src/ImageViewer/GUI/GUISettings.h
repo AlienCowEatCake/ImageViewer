@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QColor>
 #include "Utils/ScopedPointer.h"
 #include "ImageViewerWidget.h"
 
@@ -34,6 +35,7 @@ signals:
     void moveToTrashChanged(bool enabled);
     void zoomModeChanged(ImageViewerWidget::ZoomMode mode);
     void zoomLevelChanged(qreal level);
+    void backgroundColorChanged(const QColor &color);
     void lastOpenedPathChanged(const QString &path);
 
 public:
@@ -51,6 +53,9 @@ public:
 
     qreal zoomLevel() const;
     void setZoomLevel(qreal level);
+
+    QColor backgroundColor() const;
+    void setBackgroundColor(const QColor &color);
 
     QString lastOpenedPath() const;
     void setLastOpenedPath(const QString &path);

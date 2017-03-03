@@ -130,6 +130,21 @@ void GUISettings::setZoomLevel(qreal level)
     m_impl->settings.setValue(QString::fromLatin1("ZoomLevel"), level);
 }
 
+QColor GUISettings::backgroundColor() const
+{
+    const QColor defaultValue = Qt::white;
+    QVariant value = m_impl->settings.value(QString::fromLatin1("BackgroundColor"), defaultValue);
+    return (value.isValid() && value.canConvert(QVariant::Color) ? value.value<QColor>() : defaultValue);
+}
+
+void GUISettings::setBackgroundColor(const QColor &color)
+{
+    const QColor oldValue = backgroundColor();
+    if(color != oldValue)
+        emit backgroundColorChanged(color);
+    m_impl->settings.setValue(QString::fromLatin1("BackgroundColor"), color);
+}
+
 QString GUISettings::lastOpenedPath() const
 {
     const QString defaultValue;

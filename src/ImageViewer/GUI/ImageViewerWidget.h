@@ -63,6 +63,8 @@ public slots:
     void zoomIn();
     void zoomOut();
 
+    void setBackgroundColor(const QColor &color);
+
 protected:
     void showEvent(QShowEvent *event);
     void resizeEvent(QResizeEvent *event);

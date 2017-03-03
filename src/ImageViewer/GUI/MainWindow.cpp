@@ -222,7 +222,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
     connect(m_ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
+    connect(m_impl->settings, SIGNAL(backgroundColorChanged(const QColor&)), m_ui->imageViewerWidget, SLOT(setBackgroundColor(const QColor&)));
+
     m_ui->imageViewerWidget->setZoomMode(m_impl->settings->zoomMode(), m_impl->settings->zoomLevel());
+    m_ui->imageViewerWidget->setBackgroundColor(m_impl->settings->backgroundColor());
 
     setLanguage();
 }

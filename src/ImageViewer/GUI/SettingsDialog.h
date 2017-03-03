@@ -38,6 +38,8 @@ protected:
 
 protected slots:
     void onSettingsAccepted();
+    void onBackgroundColorChanged(const QColor &color);
+    void onColorDialogRequested();
 
 private:
     struct Impl;

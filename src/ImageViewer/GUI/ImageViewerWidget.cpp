@@ -168,6 +168,11 @@ void ImageViewerWidget::zoomOut()
     setZoomLevel(m_impl->currentZoomLevel / 1.1);
 }
 
+void ImageViewerWidget::setBackgroundColor(const QColor &color)
+{
+    setBackgroundBrush(QBrush(color));
+}
+
 void ImageViewerWidget::setGraphicsItem(QGraphicsItem *graphicsItem)
 {
     clear();
