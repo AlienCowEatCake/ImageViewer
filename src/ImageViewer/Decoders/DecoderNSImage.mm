@@ -65,7 +65,7 @@ QList<DecoderFormatInfo> DecoderNSImage::supportedFormats() const
         std::set<QString> fileTypes;
         for(NSString *fileType in [NSImage imageFileTypes])
         {
-            QString simplifiedFileType = QString::fromNSString(fileType).toLower();
+            QString simplifiedFileType = QString::fromUtf8([fileType UTF8String]).toLower();
             simplifiedFileType.replace(QRegExp(QString::fromLatin1("[^\\w]")), QString::fromLatin1(""));
             fileTypes.insert(simplifiedFileType.simplified());
         }
@@ -91,13 +91,14 @@ QGraphicsItem *DecoderNSImage::loadImage(const QString &filename)
 
     @autoreleasepool
     {
-        NSString *pathNSString = filename.toNSString();
+        NSString *pathNSString = [NSString stringWithUTF8String: filename.toUtf8().data()];
         NSImage *picture = [[NSImage alloc] initWithContentsOfFile: pathNSString];
         if(picture == nil)
             return NULL;
 
         QPixmap pixmap;
 
+#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
         if(QSysInfo::MacintoshVersion >= QSysInfo::MV_SNOWLEOPARD)
         {
             // https://stackoverflow.com/questions/2548059/turning-an-nsimage-into-a-cgimageref
@@ -106,6 +107,7 @@ QGraphicsItem *DecoderNSImage::loadImage(const QString &filename)
             pixmap = fromCGImageRef(cgImage);
         }
         else
+#endif
         {
             // https://stackoverflow.com/questions/2468811/load-nsimage-into-qpixmap-or-qimage
             NSInteger width = static_cast<NSInteger>(picture.size.width);

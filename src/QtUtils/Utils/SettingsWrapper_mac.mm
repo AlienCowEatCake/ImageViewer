@@ -73,7 +73,7 @@ QVariant value(const QString &group, const QString &key, const QVariant &default
 {
     NSString *nativeKey = [NSString stringWithUTF8String: getNativeKeyString(group, key).toUtf8().data()];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    const QString value = QString::fromNSString([defaults stringForKey: nativeKey]);
+    const QString value = QString::fromUtf8([[defaults stringForKey: nativeKey] UTF8String]);
     if(value.isEmpty())
         return defaultValue;
     const QVariant variantValue = SettingsEncoder::Decode(value);
