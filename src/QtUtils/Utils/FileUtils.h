@@ -21,6 +21,7 @@
 #define QTUTILS_FILEUTILS_H_INCLUDED
 
 #include <cstddef>
+
 class QString;
 
 namespace FileUtils {

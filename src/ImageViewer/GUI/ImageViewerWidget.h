@@ -21,6 +21,7 @@
 #define IMAGEVIEWERWIDGET_H_INCLUDED
 
 #include <QGraphicsView>
+#include <QImage>
 #include "Utils/ScopedPointer.h"
 
 class QGraphicsItem;
@@ -48,12 +49,13 @@ public:
     void setGraphicsItem(QGraphicsItem *graphicsItem);
     void clear();
 
-    void setZoomMode(ZoomMode mode, qreal zoomLevel = -1);
+    void setZoomMode(ZoomMode mode);
     ZoomMode zoomMode() const;
     void setZoomLevel(qreal zoomLevel);
     qreal zoomLevel() const;
 
     QSize imageSize() const;
+    QImage grabImage() const;
 
 public slots:
     void rotateClockwise();

@@ -21,6 +21,7 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <QStyleOptionGraphicsItem>
 
 #if (QT_VERSION < QT_VERSION_CHECK(4, 6, 0))
 #define IMAGEVIEWERWIDGET_NO_GESTURES
@@ -115,7 +116,7 @@ struct ImageViewerWidget::Impl
         if(changeFlags.testFlag(QPinchGesture::ScaleFactorChanged))
         {
             const qreal newZoomLevel = currentZoomLevel * gesture->scaleFactor();
-            imageViewerWidget->setZoomMode(ZOOM_CUSTOM, newZoomLevel);
+            imageViewerWidget->setZoomLevel(newZoomLevel);
             updateTransformations();
         }
         if(changeFlags.testFlag(QPinchGesture::RotationAngleChanged))
@@ -165,11 +166,32 @@ ImageViewerWidget::ImageViewerWidget(QWidget *parent)
 ImageViewerWidget::~ImageViewerWidget()
 {}
 
-void ImageViewerWidget::setZoomMode(ImageViewerWidget::ZoomMode mode, qreal zoomLevel)
+void ImageViewerWidget::setGraphicsItem(QGraphicsItem *graphicsItem)
+{
+    clear();
+    m_impl->currentGraphicsItem = graphicsItem;
+    if(!graphicsItem)
+        return;
+    graphicsItem->setFlags(QGraphicsItem::ItemClipsToShape);
+    graphicsItem->setCacheMode(QGraphicsItem::NoCache);
+    scene()->addItem(graphicsItem);
+    setSceneRect(graphicsItem->boundingRect());
+    m_impl->updateTransformations();
+}
+
+void ImageViewerWidget::clear()
+{
+    m_impl->currentGraphicsItem = NULL;
+    scene()->clear();
+    resetTransform();
+    resetMatrix();
+    setSceneRect(0, 0, 1, 1);
+    m_impl->currentRotationAngle = 0;
+}
+
+void ImageViewerWidget::setZoomMode(ImageViewerWidget::ZoomMode mode)
 {
     m_impl->currentZoomMode = mode;
-    if(zoomLevel > 0)
-        m_impl->currentZoomLevel = zoomLevel;
     m_impl->updateTransformations();
 }
 
@@ -180,7 +202,9 @@ ImageViewerWidget::ZoomMode ImageViewerWidget::zoomMode() const
 
 void ImageViewerWidget::setZoomLevel(qreal zoomLevel)
 {
-    setZoomMode(ZOOM_CUSTOM, zoomLevel);
+    m_impl->currentZoomMode = ZOOM_CUSTOM;
+    m_impl->currentZoomLevel = zoomLevel;
+    m_impl->updateTransformations();
 }
 
 qreal ImageViewerWidget::zoomLevel() const
@@ -193,6 +217,30 @@ QSize ImageViewerWidget::imageSize() const
     if(!m_impl->currentGraphicsItem)
         return QSize();
     return m_impl->currentGraphicsItem->boundingRect().size().toSize();
+}
+
+QImage ImageViewerWidget::grabImage() const
+{
+    if(!m_impl->currentGraphicsItem)
+        return QImage();
+    QImage image(imageSize(), QImage::Format_ARGB32_Premultiplied);
+    image.fill(Qt::transparent);
+    QPainter painter;
+    painter.begin(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::TextAntialiasing);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    QStyleOptionGraphicsItem options;
+    m_impl->currentGraphicsItem->paint(&painter, &options);
+    painter.end();
+    int rotationAngle = static_cast<int>(m_impl->currentRotationAngle);
+    if(rotationAngle)
+    {
+        QTransform transform;
+        transform.rotate(rotationAngle);
+        image = image.transformed(transform);
+    }
+    return image;
 }
 
 void ImageViewerWidget::rotateClockwise()
@@ -233,28 +281,6 @@ bool ImageViewerWidget::event(QEvent *event)
         return m_impl->gestureEvent(static_cast<QGestureEvent*>(event));
 #endif
     return QGraphicsView::event(event);
-}
-
-void ImageViewerWidget::setGraphicsItem(QGraphicsItem *graphicsItem)
-{
-    clear();
-    m_impl->currentGraphicsItem = graphicsItem;
-    if(!graphicsItem)
-        return;
-    graphicsItem->setFlags(QGraphicsItem::ItemClipsToShape);
-    graphicsItem->setCacheMode(QGraphicsItem::NoCache);
-    scene()->addItem(graphicsItem);
-    setSceneRect(graphicsItem->boundingRect());
-    m_impl->updateTransformations();
-}
-
-void ImageViewerWidget::clear()
-{
-    m_impl->currentGraphicsItem = NULL;
-    scene()->clear();
-    resetTransform();
-    resetMatrix();
-    setSceneRect(0, 0, 1, 1);
 }
 
 void ImageViewerWidget::showEvent(QShowEvent *event)

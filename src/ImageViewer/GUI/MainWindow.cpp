@@ -45,6 +45,7 @@
 #include "Utils/SettingsWrapper.h"
 #include "Utils/Workarounds.h"
 #include "Utils/FileUtils.h"
+#include "Utils/ImageSaver.h"
 
 #include "Decoders/DecodersManager.h"
 #include "GUISettings.h"
@@ -435,8 +436,9 @@ void MainWindow::onOpenFileWithDialogRequested()
 
 void MainWindow::onSaveAsRequested()
 {
-    /// @todo
-    QMessageBox::critical(this, tr("Error"), tr("Not implemented yet =("));
+    ImageSaver imageSaver(this);
+    imageSaver.setDefaultName(m_impl->settings->lastOpenedPath());
+    imageSaver.save(m_ui->imageViewerWidget->grabImage());
 }
 
 void MainWindow::onDeleteFileRequested()
