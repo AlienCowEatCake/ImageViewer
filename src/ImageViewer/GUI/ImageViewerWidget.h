@@ -66,6 +66,7 @@ public slots:
     void setBackgroundColor(const QColor &color);
 
 protected:
+    bool event(QEvent* event);
     void showEvent(QShowEvent *event);
     void resizeEvent(QResizeEvent *event);
 

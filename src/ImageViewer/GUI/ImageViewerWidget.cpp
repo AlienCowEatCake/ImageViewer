@@ -22,6 +22,18 @@
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 
+#if (QT_VERSION < QT_VERSION_CHECK(4, 6, 0))
+#define IMAGEVIEWERWIDGET_NO_GESTURES
+#endif
+#if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
+#include <QGesture>
+#include <QGestureEvent>
+#include <QPinchGesture>
+#else
+class QGestureEvent {};
+class QPinchGesture {};
+#endif
+
 struct ImageViewerWidget::Impl
 {
     Impl(ImageViewerWidget *widget)
@@ -88,6 +100,49 @@ struct ImageViewerWidget::Impl
         }
     }
 
+    bool gestureEvent(QGestureEvent* event)
+    {
+#if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
+        if(QGesture* pinch = event->gesture(Qt::PinchGesture))
+            pinchTriggered(static_cast<QPinchGesture*>(pinch));
+        return true;
+#else
+        Q_UNUSED(event);
+        return true;
+#endif
+    }
+
+    void pinchTriggered(QPinchGesture* gesture)
+    {
+#if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
+        const QPinchGesture::ChangeFlags changeFlags = gesture->changeFlags();
+        if(changeFlags.testFlag(QPinchGesture::ScaleFactorChanged))
+        {
+            const qreal newZoomLevel = currentZoomLevel * gesture->scaleFactor();
+            imageViewerWidget->setZoomMode(ZOOM_CUSTOM, newZoomLevel);
+            updateTransformations();
+        }
+        if(changeFlags.testFlag(QPinchGesture::RotationAngleChanged))
+        {
+            const qreal rotationAngle = gesture->rotationAngle();
+            const qreal rotationTreshhold = 30;
+            if(rotationAngle > rotationTreshhold)
+            {
+                imageViewerWidget->rotateClockwise();
+                gesture->setRotationAngle(0);
+            }
+            if(rotationAngle < -rotationTreshhold)
+            {
+                imageViewerWidget->rotateCounterclockwise();
+                gesture->setRotationAngle(0);
+            }
+        }
+        /// @todo QPinchGesture::CenterPointChanged
+#else
+        Q_UNUSED(gesture);
+#endif
+    }
+
     ImageViewerWidget *imageViewerWidget;
     QGraphicsScene *scene;
     QGraphicsItem *currentGraphicsItem;
@@ -107,6 +162,9 @@ ImageViewerWidget::ImageViewerWidget(QWidget *parent)
     setRenderHint(QPainter::TextAntialiasing, true);
     setRenderHint(QPainter::SmoothPixmapTransform, true);
     setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+#if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
+    grabGesture(Qt::PinchGesture);
+#endif
 }
 
 ImageViewerWidget::~ImageViewerWidget()
@@ -171,6 +229,15 @@ void ImageViewerWidget::zoomOut()
 void ImageViewerWidget::setBackgroundColor(const QColor &color)
 {
     setBackgroundBrush(QBrush(color));
+}
+
+bool ImageViewerWidget::event(QEvent *event)
+{
+#if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
+    if(event->type() == QEvent::Gesture)
+        return m_impl->gestureEvent(static_cast<QGestureEvent*>(event));
+#endif
+    return QGraphicsView::event(event);
 }
 
 void ImageViewerWidget::setGraphicsItem(QGraphicsItem *graphicsItem)
