@@ -38,7 +38,6 @@ public:
     };
 
 signals:
-    void zoomModeChanged(ImageViewerWidget::ZoomMode mode);
     void zoomLevelChanged(qreal zoomLevel);
 
 public:

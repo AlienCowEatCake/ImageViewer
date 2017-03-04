@@ -41,7 +41,6 @@ struct ImageViewerWidget::Impl
         , scene(new QGraphicsScene(widget))
         , currentGraphicsItem(NULL)
         , currentZoomMode(ZOOM_IDENTITY)
-        , previousZoomMode(-1)
         , currentZoomLevel(1)
         , previousZoomLevel(-1)
         , currentRotationAngle(0)
@@ -95,11 +94,6 @@ struct ImageViewerWidget::Impl
             emit imageViewerWidget->zoomLevelChanged(currentZoomLevel);
             previousZoomLevel = currentZoomLevel;
         }
-        if(previousZoomMode != currentZoomMode)
-        {
-            emit imageViewerWidget->zoomModeChanged(currentZoomMode);
-            previousZoomMode = currentZoomMode;
-        }
     }
 
     bool gestureEvent(QGestureEvent* event)
@@ -149,7 +143,6 @@ struct ImageViewerWidget::Impl
     QGraphicsScene *scene;
     QGraphicsItem *currentGraphicsItem;
     ZoomMode currentZoomMode;
-    int previousZoomMode;
     qreal currentZoomLevel;
     qreal previousZoomLevel;
     qreal currentRotationAngle;

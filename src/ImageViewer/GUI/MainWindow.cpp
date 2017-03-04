@@ -196,7 +196,6 @@ MainWindow::MainWindow(QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
     setAcceptDrops(true);
 
-    connect(m_ui->imageViewerWidget, SIGNAL(zoomModeChanged(ImageViewerWidget::ZoomMode)), this, SLOT(onZoomModeChanged(ImageViewerWidget::ZoomMode)));
     connect(m_ui->imageViewerWidget, SIGNAL(zoomLevelChanged(qreal)), this, SLOT(updateWindowTitle()));
 
     connect(m_ui->navigatePrevious, SIGNAL(clicked()), this, SLOT(onOpenPreviousRequested()));
@@ -224,15 +223,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_impl->settings, SIGNAL(backgroundColorChanged(const QColor&)), m_ui->imageViewerWidget, SLOT(setBackgroundColor(const QColor&)));
 
-    m_ui->imageViewerWidget->setZoomMode(m_impl->settings->zoomMode(), m_impl->settings->zoomLevel());
+    m_ui->imageViewerWidget->setZoomLevel(m_impl->settings->zoomLevel());
     m_ui->imageViewerWidget->setBackgroundColor(m_impl->settings->backgroundColor());
+    onZoomModeChanged(m_impl->settings->zoomMode());
 
     setLanguage();
 }
 
 MainWindow::~MainWindow()
 {
-    m_impl->settings->setZoomMode(m_ui->imageViewerWidget->zoomMode());
     m_impl->settings->setZoomLevel(m_ui->imageViewerWidget->zoomLevel());
     qApp->quit();
 }
@@ -396,8 +395,11 @@ void MainWindow::onOpenLastRequested()
 
 void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)
 {
+    m_ui->imageViewerWidget->setZoomMode(mode);
     m_ui->zoomFitToWindow->setChecked(mode == ImageViewerWidget::ZOOM_FIT_TO_WINDOW);
     m_ui->zoomOriginalSize->setChecked(mode == ImageViewerWidget::ZOOM_IDENTITY);
+    m_impl->settings->setZoomMode(mode);
+    updateWindowTitle();
 }
 
 void MainWindow::onOpenFileRequested(const QString &filename)
@@ -405,6 +407,7 @@ void MainWindow::onOpenFileRequested(const QString &filename)
     QGraphicsItem *item = DecodersManager::getInstance().loadImage(filename);
     if(item)
     {
+        m_ui->imageViewerWidget->setZoomMode(m_impl->settings->zoomMode());
         m_ui->imageViewerWidget->setGraphicsItem(item);
         m_ui->setImageControlsEnabled(true);
         m_impl->settings->setLastOpenedPath(filename);
@@ -494,18 +497,22 @@ void MainWindow::onExitRequested()
 
 void MainWindow::onZoomFitToWindowClicked()
 {
+    ImageViewerWidget::ZoomMode mode;
     if(m_ui->zoomFitToWindow->isChecked())
-        m_ui->imageViewerWidget->setZoomMode(ImageViewerWidget::ZOOM_FIT_TO_WINDOW);
+        mode = ImageViewerWidget::ZOOM_FIT_TO_WINDOW;
     else
-        m_ui->imageViewerWidget->setZoomMode(ImageViewerWidget::ZOOM_CUSTOM);
+        mode = ImageViewerWidget::ZOOM_CUSTOM;
+    onZoomModeChanged(mode);
 }
 
 void MainWindow::onZoomOriginalSizeClicked()
 {
+    ImageViewerWidget::ZoomMode mode;
     if(m_ui->zoomOriginalSize->isChecked())
-        m_ui->imageViewerWidget->setZoomMode(ImageViewerWidget::ZOOM_IDENTITY);
+        mode = ImageViewerWidget::ZOOM_IDENTITY;
     else
-        m_ui->imageViewerWidget->setZoomMode(ImageViewerWidget::ZOOM_CUSTOM);
+        mode = ImageViewerWidget::ZOOM_CUSTOM;
+    onZoomModeChanged(mode);
 }
 
 void MainWindow::onActionEnglishTriggered()
