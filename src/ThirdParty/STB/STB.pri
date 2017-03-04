@@ -21,7 +21,7 @@ THIRDPARTY_STB_SOURCES += \
     thirdparty_stb_compiler.output = ${QMAKE_VAR_OBJECTS_DIR}${QMAKE_FILE_BASE}$${first(QMAKE_EXT_OBJ)}
     thirdparty_stb_compiler.commands = $${QMAKE_CXX} $(CXXFLAGS)
     *g++*|*clang* {
-        thirdparty_stb_compiler.commands += -Wno-unused-parameter
+        thirdparty_stb_compiler.commands += -Wno-unused-parameter -Wno-shift-negative-value
         thirdparty_stb_compiler.commands += $(INCPATH) -c ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}
     }
     *msvc* {

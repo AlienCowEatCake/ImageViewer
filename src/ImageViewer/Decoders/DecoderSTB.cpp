@@ -51,20 +51,20 @@ QList<DecoderFormatInfo> DecoderSTB::supportedFormats() const
     const QStringList stbImageFormats = QStringList()
             << QString::fromLatin1("jpg")
             << QString::fromLatin1("jpeg")
-            << QString::fromLatin1("jpe") /// @todo Check this!
+            << QString::fromLatin1("jpe")   /// @todo Check this!
             << QString::fromLatin1("png")
             << QString::fromLatin1("bmp")
-            << QString::fromLatin1("dib") /// @todo Check this!
+            << QString::fromLatin1("dib")   /// @todo Check this!
             << QString::fromLatin1("psd")
             << QString::fromLatin1("tga")
             << QString::fromLatin1("targa") /// @todo Check this!
             << QString::fromLatin1("gif")
             << QString::fromLatin1("hdr")
             << QString::fromLatin1("pic")
-            << QString::fromLatin1("pbm") /// @todo Check this!
+            << QString::fromLatin1("pbm")   /// @todo Check this!
             << QString::fromLatin1("ppm")
             << QString::fromLatin1("pgm")
-            << QString::fromLatin1("pnm"); /// @todo Check this!
+            << QString::fromLatin1("pnm");  /// @todo Check this!
     QList<DecoderFormatInfo> result;
     for(QStringList::ConstIterator it = stbImageFormats.constBegin(); it != stbImageFormats.constEnd(); ++it)
     {
