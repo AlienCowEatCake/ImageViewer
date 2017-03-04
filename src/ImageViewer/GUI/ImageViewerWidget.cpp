@@ -231,6 +231,7 @@ QImage ImageViewerWidget::grabImage() const
     painter.setRenderHint(QPainter::TextAntialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
     QStyleOptionGraphicsItem options;
+    options.exposedRect = m_impl->currentGraphicsItem->boundingRect();
     m_impl->currentGraphicsItem->paint(&painter, &options);
     painter.end();
     int rotationAngle = static_cast<int>(m_impl->currentRotationAngle);
