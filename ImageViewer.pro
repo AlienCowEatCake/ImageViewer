@@ -17,6 +17,7 @@ DEFINES += QT_NO_CAST_FROM_ASCII
 
 include(src/QtUtils/QtUtils.pri)
 include(src/ThirdParty/QtExtended/QtExtended.pri)
+include(src/ThirdParty/STB/STB.pri)
 
 SOURCES += \
     src/ImageViewer/GUI/GUISettings.cpp \
@@ -27,6 +28,8 @@ SOURCES += \
     src/ImageViewer/Decoders/DecoderQImage.cpp \
     src/ImageViewer/Decoders/DecoderQMovie.cpp \
     src/ImageViewer/Decoders/DecoderQtSVG.cpp \
+    src/ImageViewer/Decoders/DecoderSTB.cpp \
+    src/ImageViewer/Decoders/ExifUtils.cpp \
     src/ImageViewer/main.cpp
 
 HEADERS += \
@@ -41,7 +44,9 @@ HEADERS += \
     src/ImageViewer/Decoders/DecoderAutoRegistrator.h \
     src/ImageViewer/Decoders/DecoderQImage.h \
     src/ImageViewer/Decoders/DecoderQMovie.h \
-    src/ImageViewer/Decoders/DecoderQtSVG.h
+    src/ImageViewer/Decoders/DecoderQtSVG.h \
+    src/ImageViewer/Decoders/DecoderSTB.h \
+    src/ImageViewer/Decoders/ExifUtils.h
 
 TRANSLATIONS += \
     src/ImageViewer/Resources/translations/en.ts \

@@ -68,13 +68,13 @@ struct ImageViewerWidget::Impl
             rotationMatrix.rotate(currentRotationAngle);
             const QRectF boundingRect = rotationMatrix.mapRect(currentGraphicsItem->boundingRect());
             const QSize imageSize = boundingRect.size().toSize();
-            const QSize windowSize = imageViewerWidget->size();
+            const QSize windowSize = imageViewerWidget->viewport()->size();
             if(imageSize.width() > windowSize.width() || imageSize.height() > windowSize.height())
             {
-                imageViewerWidget->fitInView(currentGraphicsItem, Qt::KeepAspectRatio);
                 const qreal deltaWidth = qreal(windowSize.width()) / qreal(imageSize.width());
                 const qreal deltaHeight = qreal(windowSize.height()) / qreal(imageSize.height());
                 currentZoomLevel = qMin(deltaWidth, deltaHeight);
+                imageViewerWidget->scale(currentZoomLevel, currentZoomLevel);
             }
             else
             {

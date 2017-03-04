@@ -29,7 +29,7 @@
 
 namespace {
 
-const int DECODER_QT_MOVIE_PRIORITY = 160;
+const int DECODER_QMOVIE_PRIORITY = 160;
 
 DecoderAutoRegistrator registrator(new DecoderQMovie);
 
@@ -51,7 +51,7 @@ QList<DecoderFormatInfo> DecoderQMovie::supportedFormats() const
         if(!whitelistFormats.contains(format))
             continue;
         DecoderFormatInfo info;
-        info.decoderPriority = DECODER_QT_MOVIE_PRIORITY;
+        info.decoderPriority = DECODER_QMOVIE_PRIORITY;
         info.format = format;
         result.append(info);
     }
