@@ -26,6 +26,7 @@
 #include <QGraphicsItem>
 #include <QFileInfo>
 #include <QDebug>
+#include <QTime>
 
 namespace {
 
@@ -153,15 +154,20 @@ QGraphicsItem *DecodersManager::loadImage(const QString &filename)
         for(std::set<DecoderWithPriority>::const_iterator decoderData = formatData->second.begin(); decoderData != formatData->second.end(); ++decoderData)
         {
             IDecoder *decoder = decoderData->decoder;
+            QTime time;
+            time.start();
             QGraphicsItem *item = decoder->loadImage(filename);
+            const int elapsed = time.elapsed();
             if(item)
             {
                 qDebug() << "Successfully opened" << filename << "with decoder" << decoder->name();
+                qDebug() << "Elapsed time =" << elapsed << "ms";
                 return item;
             }
             else
             {
                 qDebug() << "Failed to open" << filename << "with decoder" << decoder->name();
+                qDebug() << "Elapsed time =" << elapsed << "ms";
             }
         }
     }
