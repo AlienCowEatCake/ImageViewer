@@ -26,21 +26,7 @@
 #include <QDebug>
 
 #if defined (HAS_THIRDPARTY_STB)
-
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wunused-function"
-#endif
-
-#define STB_IMAGE_STATIC
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-
 #endif
 
 #include "DecoderAutoRegistrator.h"
@@ -48,7 +34,7 @@
 
 namespace {
 
-const int DECODER_STB_PRIORITY = 1000;
+const int DECODER_STB_PRIORITY = 80;
 
 DecoderAutoRegistrator registrator(new DecoderSTB);
 
