@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     Application app(argc, argv);
     app.setOrganizationDomain(QString::fromLatin1("fami.codefreak.ru"));
     app.setOrganizationName(QString::fromLatin1("FAMI Net Team"));
-    app.setApplicationName(QString::fromLatin1("ImageViewer"));
+    app.setApplicationName(QString::fromLatin1("Image Viewer"));
     app.setApplicationVersion(QString::fromLatin1("1.0"));
 #if !defined (Q_OS_MAC)
     app.setWindowIcon(QIcon(QString::fromLatin1(":/icon/icon.ico")));

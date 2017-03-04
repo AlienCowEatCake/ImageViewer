@@ -311,7 +311,7 @@ void MainWindow::updateWindowTitle()
 {
     if(!m_impl->isFileOpened())
     {
-        setWindowTitle(tr("Image Viewer"));
+        setWindowTitle(qApp->applicationName());
         return;
     }
     const QSize imageSize = m_ui->imageViewerWidget->imageSize();
@@ -323,7 +323,7 @@ void MainWindow::updateWindowTitle()
                  .arg(imageSize.width())
                  .arg(imageSize.height())
                  .arg(static_cast<quint64>(m_ui->imageViewerWidget->zoomLevel() * 100))
-                 .arg(tr("Image Viewer")));
+                 .arg(qApp->applicationName()));
     label.prepend(QString::fromLatin1("[%1/%2] ")
                   .arg(m_impl->currentIndexInDirectory + 1)
                   .arg(m_impl->filesInCurrentDirectory.size()));
@@ -336,13 +336,16 @@ void MainWindow::showAbout()
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
     msgBox.setWindowTitle(tr("About"));
-    msgBox.setText(tr("<b>Image Viewer v%1</b>").arg(QString::fromLatin1("1.0")));
+    msgBox.setText(tr("<b>%1 v%2</b>").arg(qApp->applicationName()).arg(qApp->applicationVersion()));
     msgBox.setInformativeText(QString::fromLatin1(
-                      "<a href=\"https://fami.codefreak.ru/gitlab/peter/ImageViewer\">https://fami.codefreak.ru/gitlab/peter/ImageViewer</a><br>"
+                      "<a href=\"%4\">%4</a><br>"
                       "%1: <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU GPL v3</a><br><br>"
                       "Copyright &copy; 2017<br>"
-                      "%2 &lt;<a href=\"mailto:peter.zhigalov@gmail.com\">peter.zhigalov@gmail.com</a>&gt;"
-                      ).arg(tr("License")).arg(tr("Peter S. Zhigalov")));
+                      "%2 &lt;<a href=\"mailto:%3\">%3</a>&gt;"
+                      ).arg(tr("License"))
+                       .arg(tr("Peter S. Zhigalov"))
+                       .arg(QString::fromLatin1("peter.zhigalov@gmail.com"))
+                       .arg(QString::fromLatin1("https://fami.codefreak.ru/gitlab/peter/ImageViewer")));
     const QList<QLabel*> labels = msgBox.findChildren<QLabel*>();
     for(QList<QLabel*>::ConstIterator it = labels.begin(); it != labels.end(); ++it)
         (*it)->setWordWrap(false);
@@ -436,6 +439,9 @@ void MainWindow::onOpenFileWithDialogRequested()
 
 void MainWindow::onSaveAsRequested()
 {
+    if(!m_impl->isFileOpened())
+        return;
+
     ImageSaver imageSaver(this);
     imageSaver.setDefaultName(m_impl->settings->lastOpenedPath());
     imageSaver.save(m_ui->imageViewerWidget->grabImage());

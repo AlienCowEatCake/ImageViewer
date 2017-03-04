@@ -112,7 +112,7 @@ QGraphicsItem *DecoderSTB::loadImage(const QString &filename)
         inBits += 4;
     }
 #endif
-    stbi_image_free(data);
+    ::stbi_image_free(data);
 
     if(image.isNull())
         return NULL;
