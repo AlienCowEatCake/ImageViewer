@@ -29,11 +29,11 @@
 #include "DecoderAutoRegistrator.h"
 #include "ExifUtils.h"
 
+#define DECODER_QIMAGE_PRIORITY 100
+
 namespace {
 
-const int DECODER_QIMAGE_PRIORITY = 100;
-
-DecoderAutoRegistrator registrator(new DecoderQImage, true);
+DecoderAutoRegistrator registrator(new DecoderQImage, 100);
 
 } // namespace
 

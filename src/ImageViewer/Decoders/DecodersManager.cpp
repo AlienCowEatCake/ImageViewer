@@ -50,7 +50,6 @@ struct DecoderWithPriority
 struct DecodersManager::Impl
 {
     Impl()
-        : defaultDecoder(NULL)
     {}
 
     void checkPendingDecoderRegistration()
@@ -74,8 +73,8 @@ struct DecodersManager::Impl
         }
     }
 
-    IDecoder *defaultDecoder;
     std::set<IDecoder*> decoders;
+    std::set<DecoderWithPriority> defaultDecoders;
     std::map<QString, std::set<DecoderWithPriority> > formats;
     QList<IDecoder*> pendingDecoders;
 };
@@ -103,12 +102,11 @@ void DecodersManager::registerDecoder(IDecoder *decoder)
     qDebug() << "Decoder" << decoder->name() << "was planned for delayed registration";
 }
 
-void DecodersManager::registerDefaultDecoder(IDecoder *decoder)
+void DecodersManager::registerDefaultDecoder(IDecoder *decoder, int priority)
 {
-    assert(!m_impl->defaultDecoder);
     registerDecoder(decoder);
-    m_impl->defaultDecoder = decoder;
-    qDebug() << "Decoder" << decoder->name() << "registered as DEFAULT!";
+    m_impl->defaultDecoders.insert(DecoderWithPriority(decoder, priority));
+    qDebug() << "Decoder" << decoder->name() << "registered as DEFAULT with priority =" << priority;
 }
 
 QStringList DecodersManager::registeredDecoders() const
@@ -169,12 +167,13 @@ QGraphicsItem *DecodersManager::loadImage(const QString &filename)
     }
 
     qDebug() << "Unknown format for file" << filename << "with extension" << extension;
-    if(m_impl->defaultDecoder)
+    for(std::set<DecoderWithPriority>::const_iterator decoderData = m_impl->defaultDecoders.begin(); decoderData != m_impl->defaultDecoders.end(); ++decoderData)
     {
-        QGraphicsItem *item = m_impl->defaultDecoder->loadImage(filename);
+        IDecoder *decoder = decoderData->decoder;
+        QGraphicsItem *item = decoder->loadImage(filename);
         if(item)
         {
-            qDebug() << "Successfully opened" << filename << "with decoder" << m_impl->defaultDecoder->name() << "(DEFAULT)";
+            qDebug() << "Successfully opened" << filename << "with decoder" << decoder->name() << "(DEFAULT)";
             return item;
         }
     }

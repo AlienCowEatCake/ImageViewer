@@ -27,9 +27,9 @@
 
 #include "DecoderAutoRegistrator.h"
 
-namespace {
+#define DECODER_QMOVIE_PRIORITY 160
 
-const int DECODER_QMOVIE_PRIORITY = 160;
+namespace {
 
 DecoderAutoRegistrator registrator(new DecoderQMovie);
 

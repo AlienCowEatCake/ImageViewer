@@ -27,11 +27,11 @@
 class DecoderAutoRegistrator
 {
 public:
-    DecoderAutoRegistrator(IDecoder *decoder, bool asDefault = false)
+    DecoderAutoRegistrator(IDecoder *decoder, int defaultPriority = -1)
         : m_decoder(decoder)
     {
-        if(asDefault)
-            DecodersManager::getInstance().registerDefaultDecoder(decoder);
+        if(defaultPriority > 0)
+            DecodersManager::getInstance().registerDefaultDecoder(decoder, defaultPriority);
         else
             DecodersManager::getInstance().registerDecoder(decoder);
     }

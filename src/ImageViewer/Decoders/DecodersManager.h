@@ -37,7 +37,7 @@ public:
     static DecodersManager &getInstance();
 
     void registerDecoder(IDecoder *decoder);
-    void registerDefaultDecoder(IDecoder *decoder);
+    void registerDefaultDecoder(IDecoder *decoder, int priority);
     QStringList registeredDecoders() const;
     QStringList supportedFormats() const;
     QStringList supportedFormatsWithWildcards() const;

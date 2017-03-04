@@ -29,9 +29,9 @@
 
 #include "DecoderAutoRegistrator.h"
 
-namespace {
+#define DECODER_QT_SVG_PRIORITY 150
 
-const int DECODER_QT_SVG_PRIORITY = 150;
+namespace {
 
 DecoderAutoRegistrator registrator(new DecoderQtSVG);
 

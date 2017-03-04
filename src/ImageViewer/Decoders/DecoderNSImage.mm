@@ -36,11 +36,11 @@
 
 #include "DecoderAutoRegistrator.h"
 
+#define DECODER_NSIMAGE_PRIORITY 120
+
 namespace {
 
-const int DECODER_NSIMAGE_PRIORITY = 70;
-
-DecoderAutoRegistrator registrator(new DecoderNSImage);
+DecoderAutoRegistrator registrator(new DecoderNSImage, DECODER_NSIMAGE_PRIORITY);
 
 QPixmap fromCGImageRef(CGImageRef image)
 {
