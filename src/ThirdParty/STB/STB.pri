@@ -2,7 +2,7 @@
 
 THIRDPARTY_STB_PATH = $${PWD}/stb
 
-CONFIG += has_thirdparty_qtextended
+CONFIG += has_thirdparty_stb
 INCLUDEPATH += $${THIRDPARTY_STB_PATH}
 DEPENDPATH += $${THIRDPARTY_STB_PATH}
 DEFINES += HAS_THIRDPARTY_STB
@@ -11,7 +11,7 @@ HEADERS += \
     $$files($${THIRDPARTY_STB_PATH}/*.h)
 
 THIRDPARTY_STB_SOURCES += \
-    $$files($${THIRDPARTY_STB_PATH}/*.c)
+    $$files($${THIRDPARTY_STB_PATH}/*.cpp)
 
 *g++*|*clang*|*msvc* {
     thirdparty_stb_compiler.name = thirdparty_stb_compiler
@@ -19,7 +19,7 @@ THIRDPARTY_STB_SOURCES += \
     thirdparty_stb_compiler.dependency_type = TYPE_C
     thirdparty_stb_compiler.variable_out = OBJECTS
     thirdparty_stb_compiler.output = ${QMAKE_VAR_OBJECTS_DIR}${QMAKE_FILE_BASE}$${first(QMAKE_EXT_OBJ)}
-    thirdparty_stb_compiler.commands = $${QMAKE_CC} $(CFLAGS)
+    thirdparty_stb_compiler.commands = $${QMAKE_CXX} $(CXXFLAGS)
     *g++*|*clang* {
         thirdparty_stb_compiler.commands += -Wno-unused-parameter
         thirdparty_stb_compiler.commands += $(INCPATH) -c ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}

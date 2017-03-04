@@ -37,7 +37,7 @@
 namespace {
 
 const QSize COLOR_BUTTON_SIZE   (40, 24);
-const QSize COLOR_ICON_SIZE     (30, 14);
+const QSize COLOR_ICON_SIZE     (32, 16);
 
 } // namespace
 
@@ -60,7 +60,8 @@ struct SettingsDialog::UI
 
         backgroundColorLabel->setText(qApp->translate("SettingsDialog", "Background color"));
 
-        backgroundColorButton->resize(COLOR_BUTTON_SIZE);
+        backgroundColorButton->setFixedSize(COLOR_BUTTON_SIZE);
+        backgroundColorButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
         backgroundColorButton->setIconSize(COLOR_ICON_SIZE);
 
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);

@@ -289,9 +289,9 @@ private:
     QToolButton *createToolbarButton(QWidget *parent) const
     {
         QToolButton *button = new QToolButton(parent);
-        button->setMinimumSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE));
-        button->setMaximumSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE));
+        button->setFixedSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE));
         button->setIconSize(QSize(TOOLBAR_BUTTON_ICON_SIZE, TOOLBAR_BUTTON_ICON_SIZE));
+        button->setToolButtonStyle(Qt::ToolButtonIconOnly);
         return button;
     }
 
