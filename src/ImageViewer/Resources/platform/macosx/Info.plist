@@ -49,6 +49,7 @@
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>bmp</string>
+				<string>dib</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Windows Bitmap Image</string>
@@ -90,6 +91,7 @@
 			<array>
 				<string>jpg</string>
 				<string>jpeg</string>
+				<string>jpe</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Joint Photographic Experts Group Image</string>
@@ -139,6 +141,16 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>psd</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Adobe Photoshop Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>svg</string>
 				<string>svgz</string>
 			</array>
@@ -150,6 +162,18 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>tga</string>
+				<string>targa</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Truevision TGA Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>tif</string>
 				<string>tiff</string>
 			</array>
 			<key>CFBundleTypeName</key>

@@ -57,6 +57,7 @@ QList<DecoderFormatInfo> DecoderSTB::supportedFormats() const
             << QString::fromLatin1("dib") /// @todo Check this!
             << QString::fromLatin1("psd")
             << QString::fromLatin1("tga")
+            << QString::fromLatin1("targa") /// @todo Check this!
             << QString::fromLatin1("gif")
             << QString::fromLatin1("hdr")
             << QString::fromLatin1("pic")
