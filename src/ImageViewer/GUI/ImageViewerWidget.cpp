@@ -65,12 +65,14 @@ struct ImageViewerWidget::Impl
         }
         case ZOOM_FIT_TO_WINDOW:
         {
-            const QRectF boundingRect = currentGraphicsItem->boundingRect();
+            QMatrix rotationMatrix;
+            rotationMatrix.rotate(currentRotationAngle);
+            const QRectF boundingRect = rotationMatrix.mapRect(currentGraphicsItem->boundingRect());
             const QSize imageSize = boundingRect.size().toSize();
             const QSize windowSize = imageViewerWidget->size();
             if(imageSize.width() > windowSize.width() || imageSize.height() > windowSize.height())
             {
-                imageViewerWidget->fitInView(boundingRect, Qt::KeepAspectRatio);
+                imageViewerWidget->fitInView(currentGraphicsItem, Qt::KeepAspectRatio);
                 const qreal deltaWidth = qreal(windowSize.width()) / qreal(imageSize.width());
                 const qreal deltaHeight = qreal(windowSize.height()) / qreal(imageSize.height());
                 currentZoomLevel = qMin(deltaWidth, deltaHeight);
