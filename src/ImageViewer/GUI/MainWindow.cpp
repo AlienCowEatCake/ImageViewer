@@ -429,6 +429,22 @@ void MainWindow::onOpenFileRequested(const QString &filename)
     updateWindowTitle();
 }
 
+void MainWindow::onOpenPathRequested(const QString &path)
+{
+    const QFileInfo info(path);
+    if(info.isFile())
+    {
+        onOpenFileRequested(path);
+    }
+    else
+    {
+        const QDir dir(info.absoluteFilePath());
+        const QStringList files = m_impl->supportedFilesInDirectory(dir);
+        if(!files.empty())
+            onOpenFileRequested(dir.absoluteFilePath(files.first()));
+    }
+}
+
 void MainWindow::onOpenFileWithDialogRequested()
 {
     const QString formatString = QString::fromLatin1("%2 (%1);;%3 (*.*)")
@@ -444,8 +460,9 @@ void MainWindow::onSaveAsRequested()
 {
     if(!m_impl->isFileOpened())
         return;
-    m_impl->imageSaver.setDefaultName(m_impl->settings->lastOpenedPath());
-    m_impl->imageSaver.save(m_ui->imageViewerWidget->grabImage());
+    const QString openedPath = m_impl->settings->lastOpenedPath();
+    m_impl->imageSaver.setDefaultName(openedPath);
+    m_impl->imageSaver.save(m_ui->imageViewerWidget->grabImage(), openedPath);
 }
 
 void MainWindow::onDeleteFileRequested()
@@ -557,16 +574,7 @@ void MainWindow::dropEvent(QDropEvent *event)
         QList<QUrl> urlList = mimeData->urls();
         QList<QUrl>::ConstIterator it = urlList.begin();
         QFileInfo info((it++)->toLocalFile());
-        if(info.isDir())
-        {
-            const QStringList files = m_impl->supportedFilesInDirectory(info.dir());
-            if(!files.empty())
-                onOpenFileRequested(info.dir().absoluteFilePath(files.first()));
-        }
-        else
-        {
-            onOpenFileRequested(info.absoluteFilePath());
-        }
+        onOpenPathRequested(info.absoluteFilePath());
         for(; it != urlList.end(); ++it)
         {
             QFileInfo info(it->toLocalFile());

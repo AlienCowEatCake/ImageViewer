@@ -27,6 +27,8 @@
 #include <QImageWriter>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QFileInfo>
+#include <QDir>
 
 ImageSaver::ImageSaver(QWidget *parent)
     : QObject(parent)
@@ -47,7 +49,7 @@ void ImageSaver::setDefaultName(const QString &defaultName)
     m_defaultName = defaultName;
 }
 
-bool ImageSaver::save(const QImage &image)
+bool ImageSaver::save(const QImage &image, const QString &preferredName)
 {
     // Белый список форматов, чтобы в предлагаемых форматах не было всяких ico, webp и прочих
     static const QStringList whiteList = QStringList()
@@ -75,9 +77,10 @@ bool ImageSaver::save(const QImage &image)
     formatsAll.prepend(tr("All Images").append(QString::fromLatin1(" ("))).append(QString::fromLatin1(");;"));
     formats.prepend(formatsAll);
 
-    const QByteArray defaultExtension("png");
     if(m_lastSavedName.isEmpty())
         m_lastSavedName = m_defaultName;
+    if(!m_lastSavedName.isEmpty() && !preferredName.isEmpty())
+        m_lastSavedName = QFileInfo(m_lastSavedName).absoluteDir().absoluteFilePath(QFileInfo(preferredName).fileName());
     QString filename = QFileDialog::getSaveFileName(m_parent, tr("Save Image File"), m_lastSavedName, formats);
     if(filename.length() == 0)
     {
@@ -86,22 +89,10 @@ bool ImageSaver::save(const QImage &image)
         return false;
     }
 
-    QByteArray extension;
-    int found = filename.lastIndexOf(QChar::fromLatin1('.'));
-    if(found == -1)
-    {
+    const QByteArray defaultExtension("png");
+    const QByteArray extension = QFileInfo(filename).suffix().toLower().toLatin1();
+    if(!supported.contains(extension))
         filename.append(QString::fromLatin1(".")).append(QString::fromLatin1(defaultExtension));
-        extension = defaultExtension;
-    }
-    else
-    {
-        extension = filename.right(filename.length() - found - 1).toLower().toLatin1();
-        if(std::find(supported.begin(), supported.end(), extension) == supported.end())
-        {
-            filename.append(QString::fromLatin1(".")).append(QString::fromLatin1(defaultExtension));
-            extension = defaultExtension;
-        }
-    }
     m_lastSavedName = filename;
 
     bool saved = image.save(filename);

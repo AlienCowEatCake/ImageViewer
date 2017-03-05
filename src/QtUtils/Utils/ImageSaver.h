@@ -38,7 +38,7 @@ public:
     QString defaultName() const;
     void setDefaultName(const QString &defaultName);
 
-    bool save(const QImage &image);
+    bool save(const QImage &image, const QString &preferredName);
 
 private:
     QWidget *m_parent;

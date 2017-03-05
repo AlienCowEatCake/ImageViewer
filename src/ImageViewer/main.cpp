@@ -59,13 +59,13 @@ int main(int argc, char *argv[])
             if(i + 1 < argc)
                 filename.append(" ");
         }
-        window->onOpenFileRequested(QString::fromLocal8Bit(filename.c_str()));
+        window->onOpenPathRequested(QString::fromLocal8Bit(filename.c_str()));
     }
     else if(app.hasLastOpenFilename())
     {
-        window->onOpenFileRequested(app.getLastOpenFilename());
+        window->onOpenPathRequested(app.getLastOpenFilename());
     }
-    QObject::connect(&app, SIGNAL(openFileEvent(const QString &)), window, SLOT(onOpenFileRequested(const QString &)));
+    QObject::connect(&app, SIGNAL(openFileEvent(const QString &)), window, SLOT(onOpenPathRequested(const QString &)));
     window->show();
     return app.exec();
 }
