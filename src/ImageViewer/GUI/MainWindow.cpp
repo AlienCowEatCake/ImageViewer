@@ -109,6 +109,7 @@ struct MainWindow::Impl
         : mainWindow(mainWindow)
         , settings(new GUISettings(mainWindow))
         , supportedFormats(DecodersManager::getInstance().supportedFormatsWithWildcards())
+        , imageSaver(mainWindow)
     {
         onFileClosed();
     }
@@ -187,6 +188,8 @@ struct MainWindow::Impl
     QString currentDirectory;
     QVector<QString> filesInCurrentDirectory; /// @todo std::vector?
     int currentIndexInDirectory;
+
+    ImageSaver imageSaver;
 };
 
 MainWindow::MainWindow(QWidget *parent)
@@ -441,10 +444,8 @@ void MainWindow::onSaveAsRequested()
 {
     if(!m_impl->isFileOpened())
         return;
-
-    ImageSaver imageSaver(this);
-    imageSaver.setDefaultName(m_impl->settings->lastOpenedPath());
-    imageSaver.save(m_ui->imageViewerWidget->grabImage());
+    m_impl->imageSaver.setDefaultName(m_impl->settings->lastOpenedPath());
+    m_impl->imageSaver.save(m_ui->imageViewerWidget->grabImage());
 }
 
 void MainWindow::onDeleteFileRequested()
