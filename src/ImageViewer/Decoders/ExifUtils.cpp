@@ -32,8 +32,7 @@ quint16 GetExifOrientation(const QString &filePath)
 {
 #if defined (HAS_THIRDPARTY_QTEXTENDED)
     QExifImageHeader exifHeader;
-    bool status = exifHeader.loadFromJpeg(filePath) && exifHeader.contains(QExifImageHeader::Orientation);
-    if(status)
+    if(exifHeader.loadFromJpeg(filePath) && exifHeader.contains(QExifImageHeader::Orientation))
     {
         quint16 orientation = exifHeader.value(QExifImageHeader::Orientation).toShort();
         qDebug() << "EXIF header detected";

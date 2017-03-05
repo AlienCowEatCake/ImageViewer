@@ -117,9 +117,7 @@ QGraphicsItem *DecoderSTB::loadImage(const QString &filename)
     if(image.isNull())
         return NULL;
 
-    quint16 orientation = ExifUtils::GetExifOrientation(filename);
-    if(orientation != 1)
-        ExifUtils::ApplyExifOrientation(&image, orientation);
+    ExifUtils::ApplyExifOrientation(&image, ExifUtils::GetExifOrientation(filename));
 
     return new QGraphicsPixmapItem(QPixmap::fromImage(image));
 #else

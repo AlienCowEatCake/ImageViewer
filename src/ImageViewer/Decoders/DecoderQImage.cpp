@@ -33,7 +33,7 @@
 
 namespace {
 
-DecoderAutoRegistrator registrator(new DecoderQImage, 100);
+DecoderAutoRegistrator registrator(new DecoderQImage, DECODER_QIMAGE_PRIORITY);
 
 } // namespace
 
@@ -85,7 +85,7 @@ QGraphicsItem *DecoderQImage::loadImage(const QString &filename)
     QImage image;
 
     quint16 orientation = ExifUtils::GetExifOrientation(filename);
-    if(orientation != 1)
+    if(orientation > 1 && orientation <= 8)
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
         imageReader.setAutoTransform(false);
