@@ -1,101 +1,253 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="en_US">
 <context>
     <name>Dock</name>
     <message>
-        <location filename="../../MainWindow_p.h" line="192"/>
+        <location filename="../../GUI/MainWindow_p.h" line="312"/>
         <source>New Window</source>
+        <translation>New Window</translation>
+    </message>
+</context>
+<context>
+    <name>FileUtils</name>
+    <message>
+        <location filename="../../../QtUtils/Utils/FileUtils.cpp" line="54"/>
+        <source>The specified path does not exist</source>
+        <translation>The specified path does not exist</translation>
+    </message>
+    <message>
+        <location filename="../../../QtUtils/Utils/FileUtils.cpp" line="176"/>
+        <source>Move to Trash is not implemented yet for your system</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ImageSaver</name>
+    <message>
+        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="72"/>
+        <source>Images</source>
+        <translation>Images</translation>
+    </message>
+    <message>
+        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="75"/>
+        <source>All Images</source>
+        <translation>All Images</translation>
+    </message>
+    <message>
+        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="81"/>
+        <source>Save Image File</source>
+        <translation>Save Image File</translation>
+    </message>
+    <message>
+        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="109"/>
+        <source>Error</source>
+        <translation>Error</translation>
+    </message>
+    <message>
+        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="109"/>
+        <source>Error: Can&apos;t save file</source>
+        <translation>Error: Can&apos;t save file</translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../MainWindow.cpp" line="89"/>
-        <location filename="../../MainWindow.cpp" line="100"/>
-        <source>Image Viewer</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../GUI/MainWindow.cpp" line="341"/>
+        <source>About</source>
+        <translation>About</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="145"/>
-        <source>Open Image</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../GUI/MainWindow.cpp" line="348"/>
+        <source>License</source>
+        <translation>License</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="146"/>
+        <location filename="../../GUI/MainWindow.cpp" line="349"/>
+        <source>Peter S. Zhigalov</source>
+        <translation>Peter S. Zhigalov</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow.cpp" line="426"/>
+        <location filename="../../GUI/MainWindow.cpp" line="471"/>
+        <location filename="../../GUI/MainWindow.cpp" line="481"/>
+        <source>Error</source>
+        <translation>Error</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow.cpp" line="426"/>
+        <source>Failed to open file &quot;%1&quot;</source>
+        <translation>Failed to open file &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow.cpp" line="459"/>
+        <source>Are you sure you want to delete current file?</source>
+        <translation>Are you sure you want to delete current file?</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow.cpp" line="481"/>
+        <source>Failed to delete file &quot;%1&quot;</source>
+        <translation>Failed to delete file &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow.cpp" line="436"/>
         <source>All Supported Images</source>
-        <translation type="unfinished"></translation>
+        <translation>All Supported Images</translation>
     </message>
     <message>
-        <location filename="../../MainWindow.cpp" line="146"/>
+        <location filename="../../GUI/MainWindow.cpp" line="436"/>
         <source>All Files</source>
-        <translation type="unfinished"></translation>
+        <translation>All Files</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="151"/>
+        <location filename="../../GUI/MainWindow_p.h" line="245"/>
         <source>Previous</source>
-        <translation type="unfinished"></translation>
+        <translation>Previous</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="152"/>
+        <location filename="../../GUI/MainWindow_p.h" line="246"/>
         <source>Next</source>
-        <translation type="unfinished"></translation>
+        <translation>Next</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="153"/>
+        <location filename="../../GUI/MainWindow_p.h" line="247"/>
         <source>Zoom Out</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoom Out</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="154"/>
+        <location filename="../../GUI/MainWindow_p.h" line="248"/>
         <source>Zoom In</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoom In</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="155"/>
+        <location filename="../../GUI/MainWindow_p.h" line="249"/>
         <source>Fit Image To Window Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Fit Image To Window Size</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="156"/>
+        <location filename="../../GUI/MainWindow_p.h" line="250"/>
         <source>Original Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Original Size</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="157"/>
+        <location filename="../../GUI/MainWindow_p.h" line="251"/>
         <source>Rotate Counterclockwise</source>
-        <translation type="unfinished"></translation>
+        <translation>Rotate Counterclockwise</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="158"/>
+        <location filename="../../GUI/MainWindow_p.h" line="252"/>
         <source>Rotate Clockwise</source>
-        <translation type="unfinished"></translation>
+        <translation>Rotate Clockwise</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="159"/>
+        <location filename="../../GUI/MainWindow.cpp" line="437"/>
+        <location filename="../../GUI/MainWindow_p.h" line="253"/>
         <source>Open File</source>
-        <translation type="unfinished"></translation>
+        <translation>Open File</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="160"/>
+        <location filename="../../GUI/MainWindow_p.h" line="254"/>
         <source>Save File As</source>
-        <translation type="unfinished"></translation>
+        <translation>Save File As</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="161"/>
+        <location filename="../../GUI/MainWindow_p.h" line="257"/>
+        <source>Exit</source>
+        <translation>Quit</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow_p.h" line="259"/>
+        <source>&amp;File</source>
+        <translation>&amp;File</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow_p.h" line="260"/>
+        <source>&amp;Help</source>
+        <translation>&amp;Help</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow_p.h" line="261"/>
+        <source>&amp;Language</source>
+        <translation>&amp;Language</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow_p.h" line="263"/>
+        <source>&amp;Open</source>
+        <translation>&amp;Open</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow_p.h" line="264"/>
+        <source>&amp;Save As</source>
+        <translation>&amp;Save As</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow_p.h" line="265"/>
+        <source>&amp;Preferences</source>
+        <translation>&amp;Preferences</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow_p.h" line="266"/>
+        <source>&amp;Exit</source>
+        <translation>&amp;Quit</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow_p.h" line="267"/>
+        <source>&amp;About</source>
+        <translation>&amp;About</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow_p.h" line="268"/>
+        <source>About &amp;Qt</source>
+        <translation>About &amp;Qt</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow_p.h" line="269"/>
+        <source>&amp;English</source>
+        <translation>&amp;English</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow_p.h" line="270"/>
+        <source>&amp;Russian</source>
+        <translation>&amp;Russian</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/MainWindow.cpp" line="459"/>
+        <location filename="../../GUI/MainWindow_p.h" line="255"/>
         <source>Delete File</source>
-        <translation type="unfinished"></translation>
+        <translation>Delete File</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="162"/>
+        <location filename="../../GUI/MainWindow_p.h" line="256"/>
         <source>Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Preferences</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsDialog</name>
+    <message>
+        <location filename="../../GUI/SettingsDialog.cpp" line="90"/>
+        <source>Select Background Color</source>
+        <translation>Select Background Color</translation>
     </message>
     <message>
-        <location filename="../../MainWindow_p.h" line="163"/>
-        <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../GUI/SettingsDialog_p.h" line="55"/>
+        <source>Ask before deleting images</source>
+        <translation>Ask before deleting images</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/SettingsDialog_p.h" line="58"/>
+        <source>Move deleted images to trash</source>
+        <translation>Move deleted images to trash</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/SettingsDialog_p.h" line="61"/>
+        <source>Background color</source>
+        <translation>Background color</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/SettingsDialog_p.h" line="81"/>
+        <source>Preferences</source>
+        <translation>Preferences</translation>
     </message>
 </context>
 </TS>

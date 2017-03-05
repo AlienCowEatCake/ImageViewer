@@ -173,7 +173,7 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
 
     /// @todo
     if(errorDescription)
-        *errorDescription = qApp->translate("FileUtils", "Not implemented yet");
+        *errorDescription = qApp->translate("FileUtils", "Move to Trash is not implemented yet for your system");
     return false;
 
 #endif

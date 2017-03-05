@@ -339,7 +339,7 @@ void MainWindow::showAbout()
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
     msgBox.setWindowTitle(tr("About"));
-    msgBox.setText(tr("<b>%1 v%2</b>").arg(qApp->applicationName()).arg(qApp->applicationVersion()));
+    msgBox.setText(QString::fromLatin1("<b>%1 v%2</b>").arg(qApp->applicationName()).arg(qApp->applicationVersion()));
     msgBox.setInformativeText(QString::fromLatin1(
                       "<a href=\"%4\">%4</a><br>"
                       "%1: <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU GPL v3</a><br><br>"
@@ -434,7 +434,7 @@ void MainWindow::onOpenFileWithDialogRequested()
     const QString formatString = QString::fromLatin1("%2 (%1);;%3 (*.*)")
             .arg(m_impl->supportedFormats.join(QString::fromLatin1(" ")))
             .arg(tr("All Supported Images")).arg(tr("All Files"));
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), m_impl->settings->lastOpenedPath(), formatString);
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), m_impl->settings->lastOpenedPath(), formatString);
     if(fileName.isEmpty())
         return;
     onOpenFileRequested(fileName);
@@ -456,8 +456,8 @@ void MainWindow::onDeleteFileRequested()
     if(m_impl->settings->askBeforeDelete())
     {
         QMessageBox::StandardButton reply;
-        reply = QMessageBox::warning(this, tr("Delete File"), tr("Are you sure you want to delete \"%1\"?")
-                .arg(m_impl->settings->lastOpenedPath()), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        reply = QMessageBox::warning(this, tr("Delete File"), tr("Are you sure you want to delete current file?"),
+                                     QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
         if(reply == QMessageBox::No)
             return;
     }
@@ -478,7 +478,7 @@ void MainWindow::onDeleteFileRequested()
         bool status = file.remove();
         if(!status)
         {
-            QMessageBox::critical(this, tr("Error"), tr("Unable to delete \"%1\"!").arg(m_impl->settings->lastOpenedPath()));
+            QMessageBox::critical(this, tr("Error"), tr("Failed to delete file \"%1\"").arg(m_impl->settings->lastOpenedPath()));
             return;
         }
     }
