@@ -81,9 +81,9 @@ QList<DecoderFormatInfo> DecoderNSImage::supportedFormats() const
     }
 }
 
-QGraphicsItem *DecoderNSImage::loadImage(const QString &filename)
+QGraphicsItem *DecoderNSImage::loadImage(const QString &filePath)
 {
-    const QFileInfo fileInfo(filename);
+    const QFileInfo fileInfo(filePath);
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
 
@@ -91,7 +91,7 @@ QGraphicsItem *DecoderNSImage::loadImage(const QString &filename)
 
     @autoreleasepool
     {
-        NSString *pathNSString = [NSString stringWithUTF8String: filename.toUtf8().data()];
+        NSString *pathNSString = [NSString stringWithUTF8String: filePath.toUtf8().data()];
         NSImage *picture = [[NSImage alloc] initWithContentsOfFile: pathNSString];
         if(picture == nil)
             return NULL;

@@ -409,23 +409,23 @@ void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)
     updateWindowTitle();
 }
 
-void MainWindow::onOpenFileRequested(const QString &filename)
+void MainWindow::onOpenFileRequested(const QString &filePath)
 {
-    QGraphicsItem *item = DecodersManager::getInstance().loadImage(filename);
+    QGraphicsItem *item = DecodersManager::getInstance().loadImage(filePath);
     if(item)
     {
         m_ui->imageViewerWidget->setZoomMode(m_impl->settings->zoomMode());
         m_ui->imageViewerWidget->setGraphicsItem(item);
         m_ui->setImageControlsEnabled(true);
-        m_impl->settings->setLastOpenedPath(filename);
+        m_impl->settings->setLastOpenedPath(filePath);
     }
     else
     {
         m_ui->imageViewerWidget->clear();
         m_ui->setImageControlsEnabled(false);
-        QMessageBox::critical(this, tr("Error"), tr("Failed to open file \"%1\"").arg(filename));
+        QMessageBox::critical(this, tr("Error"), tr("Failed to open file \"%1\"").arg(filePath));
     }
-    m_impl->onFileOpened(filename);
+    m_impl->onFileOpened(filePath);
     updateWindowTitle();
 }
 
@@ -461,7 +461,7 @@ void MainWindow::onSaveAsRequested()
     if(!m_impl->isFileOpened())
         return;
     const QString openedPath = m_impl->settings->lastOpenedPath();
-    m_impl->imageSaver.setDefaultName(openedPath);
+    m_impl->imageSaver.setDefaultFilePath(openedPath);
     m_impl->imageSaver.save(m_ui->imageViewerWidget->grabImage(), openedPath);
 }
 

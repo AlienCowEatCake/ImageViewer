@@ -27,7 +27,7 @@ class DecoderQMovie : public IDecoder
 public:
     QString name() const;
     QList<DecoderFormatInfo> supportedFormats() const;
-    QGraphicsItem *loadImage(const QString &filename);
+    QGraphicsItem *loadImage(const QString &filePath);
 };
 
 #endif

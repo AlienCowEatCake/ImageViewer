@@ -79,15 +79,15 @@ QList<DecoderFormatInfo> DecoderSTB::supportedFormats() const
 #endif
 }
 
-QGraphicsItem *DecoderSTB::loadImage(const QString &filename)
+QGraphicsItem *DecoderSTB::loadImage(const QString &filePath)
 {
-    const QFileInfo fileInfo(filename);
+    const QFileInfo fileInfo(filePath);
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
 
 #if defined (HAS_THIRDPARTY_STB)
     int x, y, n;
-    unsigned char *data = ::stbi_load(filename.toLocal8Bit().data(), &x, &y, &n, 4);
+    unsigned char *data = ::stbi_load(filePath.toLocal8Bit().data(), &x, &y, &n, 4);
     if(!data)
     {
         qDebug() << ::stbi_failure_reason();
@@ -117,7 +117,7 @@ QGraphicsItem *DecoderSTB::loadImage(const QString &filename)
     if(image.isNull())
         return NULL;
 
-    ExifUtils::ApplyExifOrientation(&image, ExifUtils::GetExifOrientation(filename));
+    ExifUtils::ApplyExifOrientation(&image, ExifUtils::GetExifOrientation(filePath));
 
     return new QGraphicsPixmapItem(QPixmap::fromImage(image));
 #else

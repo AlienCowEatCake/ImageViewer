@@ -42,7 +42,7 @@ public:
     QStringList supportedFormats() const;
     QStringList supportedFormatsWithWildcards() const;
 
-    QGraphicsItem *loadImage(const QString &filename);
+    QGraphicsItem *loadImage(const QString &filePath);
 
 private:
     struct Impl;

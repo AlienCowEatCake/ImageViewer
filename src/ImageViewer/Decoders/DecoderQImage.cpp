@@ -74,17 +74,17 @@ QList<DecoderFormatInfo> DecoderQImage::supportedFormats() const
     return result;
 }
 
-QGraphicsItem *DecoderQImage::loadImage(const QString &filename)
+QGraphicsItem *DecoderQImage::loadImage(const QString &filePath)
 {
-    const QFileInfo fileInfo(filename);
+    const QFileInfo fileInfo(filePath);
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
-    QImageReader imageReader(filename);
+    QImageReader imageReader(filePath);
     imageReader.setBackgroundColor(Qt::transparent);
     imageReader.setQuality(100);
     QImage image;
 
-    quint16 orientation = ExifUtils::GetExifOrientation(filename);
+    quint16 orientation = ExifUtils::GetExifOrientation(filePath);
     if(orientation > 1 && orientation <= 8)
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))

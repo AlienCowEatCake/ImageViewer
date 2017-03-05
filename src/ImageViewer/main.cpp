@@ -61,9 +61,9 @@ int main(int argc, char *argv[])
         }
         window->onOpenPathRequested(QString::fromLocal8Bit(filename.c_str()));
     }
-    else if(app.hasLastOpenFilename())
+    else if(app.hasLastOpenFilePath())
     {
-        window->onOpenPathRequested(app.getLastOpenFilename());
+        window->onOpenPathRequested(app.getLastOpenFilePath());
     }
     QObject::connect(&app, SIGNAL(openFileEvent(const QString &)), window, SLOT(onOpenPathRequested(const QString &)));
     window->show();

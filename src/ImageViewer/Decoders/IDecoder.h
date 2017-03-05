@@ -37,7 +37,7 @@ public:
     virtual ~IDecoder() {}
     virtual QString name() const = 0;
     virtual QList<DecoderFormatInfo> supportedFormats() const = 0;
-    virtual QGraphicsItem *loadImage(const QString &filename) = 0;
+    virtual QGraphicsItem *loadImage(const QString &filePath) = 0;
 };
 
 #endif

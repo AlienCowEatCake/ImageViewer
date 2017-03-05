@@ -23,8 +23,8 @@
 #define QTUTILS_IMAGESAVER_H_INCLUDED
 
 #include <QWidget>
+#include <QString>
 
-class QString;
 class QImage;
 
 class ImageSaver: public QObject
@@ -35,15 +35,15 @@ public:
     ImageSaver(QWidget *parent = NULL);
     ~ImageSaver();
 
-    QString defaultName() const;
-    void setDefaultName(const QString &defaultName);
+    QString defaultFilePath() const;
+    void setDefaultFilePath(const QString &defaultFilePath);
 
-    bool save(const QImage &image, const QString &preferredName);
+    bool save(const QImage &image, const QString &preferredName = QString());
 
 private:
     QWidget *m_parent;
-    QString m_defaultName;
-    QString m_lastSavedName;
+    QString m_defaultFilePath;
+    QString m_lastSavedFilePath;
 };
 
 #endif // QTUTILS_IMAGESAVER_H_INCLUDED

@@ -47,7 +47,7 @@ public slots:
     void onOpenFirstRequested();
     void onOpenLastRequested();
     void onZoomModeChanged(ImageViewerWidget::ZoomMode mode);
-    void onOpenFileRequested(const QString &filename);
+    void onOpenFileRequested(const QString &filePath);
     void onOpenPathRequested(const QString &path);
     void onOpenFileWithDialogRequested();
     void onSaveAsRequested();

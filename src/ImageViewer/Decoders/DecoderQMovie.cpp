@@ -58,12 +58,12 @@ QList<DecoderFormatInfo> DecoderQMovie::supportedFormats() const
     return result;
 }
 
-QGraphicsItem *DecoderQMovie::loadImage(const QString &filename)
+QGraphicsItem *DecoderQMovie::loadImage(const QString &filePath)
 {
-    const QFileInfo fileInfo(filename);
+    const QFileInfo fileInfo(filePath);
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
-    QMovie *movie = new QMovie(filename);
+    QMovie *movie = new QMovie(filePath);
     if(!movie->isValid())
     {
         movie->deleteLater();

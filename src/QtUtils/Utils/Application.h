@@ -42,13 +42,13 @@ public:
      * @brief Получить имя последнего файла, который пришел в QFileOpenEvent
      * @return Имя последнего файла, который пришел в QFileOpenEvent
      */
-    const QString &getLastOpenFilename() const;
+    const QString &getLastOpenFilePath() const;
 
     /**
      * @brief Узнать, сохранено ли имя последнего файла, который пришел в QFileOpenEvent
      * @return true - имя сохранено, false - имя не сохранено
      */
-    bool hasLastOpenFilename() const;
+    bool hasLastOpenFilePath() const;
 
 protected:
     /**
@@ -61,15 +61,15 @@ protected:
 signals:
     /**
      * @brief Сигнал о том, что пришло событие QFileOpenEvent
-     * @param filename Имя файла
+     * @param filePath Имя файла
      */
-    void openFileEvent(const QString &filename);
+    void openFileEvent(const QString &filePath);
 
 private:
     /**
      * @brief Имя последнего файла, который пришел в QFileOpenEvent
      */
-    QString m_lastOpenFilename;
+    QString m_lastOpenFilePath;
 };
 
 #endif // QTUTILS_APPLICATION_H_INCLUDED

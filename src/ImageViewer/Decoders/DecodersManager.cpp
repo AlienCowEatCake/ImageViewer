@@ -137,13 +137,13 @@ QStringList DecodersManager::supportedFormatsWithWildcards() const
     return result;
 }
 
-QGraphicsItem *DecodersManager::loadImage(const QString &filename)
+QGraphicsItem *DecodersManager::loadImage(const QString &filePath)
 {
     m_impl->checkPendingDecoderRegistration();
-    const QFileInfo fileInfo(filename);
+    const QFileInfo fileInfo(filePath);
     if(!fileInfo.exists() || !fileInfo.isReadable())
     {
-        qDebug() << "File" << filename << "is not exist or unreadable!";
+        qDebug() << "File" << filePath << "is not exist or unreadable!";
         return NULL;
     }
 
@@ -156,30 +156,30 @@ QGraphicsItem *DecodersManager::loadImage(const QString &filename)
             IDecoder *decoder = decoderData->decoder;
             QTime time;
             time.start();
-            QGraphicsItem *item = decoder->loadImage(filename);
+            QGraphicsItem *item = decoder->loadImage(filePath);
             const int elapsed = time.elapsed();
             if(item)
             {
-                qDebug() << "Successfully opened" << filename << "with decoder" << decoder->name();
+                qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name();
                 qDebug() << "Elapsed time =" << elapsed << "ms";
                 return item;
             }
             else
             {
-                qDebug() << "Failed to open" << filename << "with decoder" << decoder->name();
+                qDebug() << "Failed to open" << filePath << "with decoder" << decoder->name();
                 qDebug() << "Elapsed time =" << elapsed << "ms";
             }
         }
     }
 
-    qDebug() << "Unknown format for file" << filename << "with extension" << extension;
+    qDebug() << "Unknown format for file" << filePath << "with extension" << extension;
     for(std::set<DecoderWithPriority>::const_iterator decoderData = m_impl->defaultDecoders.begin(); decoderData != m_impl->defaultDecoders.end(); ++decoderData)
     {
         IDecoder *decoder = decoderData->decoder;
-        QGraphicsItem *item = decoder->loadImage(filename);
+        QGraphicsItem *item = decoder->loadImage(filePath);
         if(item)
         {
-            qDebug() << "Successfully opened" << filename << "with decoder" << decoder->name() << "(DEFAULT)";
+            qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name() << "(DEFAULT)";
             return item;
         }
     }

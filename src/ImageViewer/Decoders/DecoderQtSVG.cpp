@@ -62,13 +62,13 @@ QList<DecoderFormatInfo> DecoderQtSVG::supportedFormats() const
 #endif
 }
 
-QGraphicsItem *DecoderQtSVG::loadImage(const QString &filename)
+QGraphicsItem *DecoderQtSVG::loadImage(const QString &filePath)
 {
-    const QFileInfo fileInfo(filename);
+    const QFileInfo fileInfo(filePath);
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
 #if defined (QT_SVG_LIB)
-    return new QGraphicsSvgItem(filename);
+    return new QGraphicsSvgItem(filePath);
 #else
     return NULL;
 #endif

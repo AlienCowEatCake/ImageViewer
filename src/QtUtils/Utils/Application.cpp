@@ -34,18 +34,18 @@ Application::Application(int &argc, char **argv)
  * @brief Получить имя последнего файла, который пришел в QFileOpenEvent
  * @return Имя последнего файла, который пришел в QFileOpenEvent
  */
-const QString &Application::getLastOpenFilename() const
+const QString &Application::getLastOpenFilePath() const
 {
-    return m_lastOpenFilename;
+    return m_lastOpenFilePath;
 }
 
 /**
  * @brief Узнать, сохранено ли имя последнего файла, который пришел в QFileOpenEvent
  * @return true - имя сохранено, false - имя не сохранено
  */
-bool Application::hasLastOpenFilename() const
+bool Application::hasLastOpenFilePath() const
 {
-    return !m_lastOpenFilename.isEmpty();
+    return !m_lastOpenFilePath.isEmpty();
 }
 
 /**
@@ -60,10 +60,10 @@ bool Application::event(QEvent *event)
         QFileOpenEvent *fileOpenEvent = static_cast<QFileOpenEvent*>(event);
         if(fileOpenEvent)
         {
-            m_lastOpenFilename = fileOpenEvent->file();
-            if(hasLastOpenFilename())
+            m_lastOpenFilePath = fileOpenEvent->file();
+            if(hasLastOpenFilePath())
             {
-                emit openFileEvent(m_lastOpenFilename);
+                emit openFileEvent(m_lastOpenFilePath);
                 return true;
             }
         }

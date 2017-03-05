@@ -20,7 +20,6 @@
 */
 
 #include "ImageSaver.h"
-#include <QString>
 #include <QImage>
 #include <QStringList>
 #include <QByteArray>
@@ -30,27 +29,57 @@
 #include <QFileInfo>
 #include <QDir>
 
+namespace {
+
+QStringList getSupportedImageWriterFormats()
+{
+    static QStringList result;
+    static bool initialized = false;
+    if(!initialized)
+    {
+        const QList<QByteArray> formats = QImageWriter::supportedImageFormats();
+        for(QList<QByteArray>::ConstIterator it = formats.constBegin(); it != formats.constEnd(); ++it)
+            result.append(QString::fromLatin1(*it).toLower());
+        initialized = true;
+    }
+    return result;
+}
+
+} // namespace
+
 ImageSaver::ImageSaver(QWidget *parent)
     : QObject(parent)
     , m_parent(parent)
-    , m_defaultName(QString::fromLatin1("Image"))
+    , m_defaultFilePath(QString::fromLatin1("Image"))
 {}
 
 ImageSaver::~ImageSaver()
 {}
 
-QString ImageSaver::defaultName() const
+QString ImageSaver::defaultFilePath() const
 {
-    return m_defaultName;
+    return m_defaultFilePath;
 }
 
-void ImageSaver::setDefaultName(const QString &defaultName)
+void ImageSaver::setDefaultFilePath(const QString &defaultFilePath)
 {
-    m_defaultName = defaultName;
+    m_defaultFilePath = defaultFilePath;
 }
 
 bool ImageSaver::save(const QImage &image, const QString &preferredName)
 {
+    const QFileInfo preferredInfo(preferredName);
+    const QString defaultExtension = QString::fromLatin1("png");
+    QString preferredExtension;
+    if(!preferredName.isEmpty())
+        preferredExtension = preferredInfo.suffix();
+    else if(!m_lastSavedFilePath.isEmpty())
+        preferredExtension = QFileInfo(m_lastSavedFilePath).suffix();
+    else if(!m_defaultFilePath.isEmpty())
+        preferredExtension = QFileInfo(m_defaultFilePath).suffix();
+    else
+        preferredExtension = defaultExtension;
+
     // Белый список форматов, чтобы в предлагаемых форматах не было всяких ico, webp и прочих
     static const QStringList whiteList = QStringList()
             << QString::fromLatin1("bmp")
@@ -60,40 +89,45 @@ bool ImageSaver::save(const QImage &image, const QString &preferredName)
             << QString::fromLatin1("tif")
             << QString::fromLatin1("tiff");
 
-    QList<QByteArray> supported = QImageWriter::supportedImageFormats();
-    QString formats, formatsAll;
-    for(QList<QByteArray>::iterator it = supported.begin(); it != supported.end(); ++it)
+    const QStringList supportedFormats = getSupportedImageWriterFormats();
+    QString formatString, preferredFormatString, defaultFormatString;
+    for(QStringList::ConstIterator it = supportedFormats.constBegin(); it != supportedFormats.constEnd(); ++it)
     {
-        *it = (*it).toLower();
-        const QString format = QString::fromLatin1(*it);
+        const QString &format = *it;
         if(!whiteList.contains(format, Qt::CaseInsensitive))
             continue;
-        formatsAll.append(formatsAll.length() > 0 ? QString::fromLatin1(" *.") : QString::fromLatin1("*.")).append(format);
-        if(formats.length() > 0)
-            formats.append(QString::fromLatin1(";;"));
-        formats.append(format.toUpper()).append(QString::fromLatin1(" ")).append(tr("Images"))
-               .append(QString::fromLatin1(" (*.")).append(format).append(QString::fromLatin1(")"));
+        const QString currentFormatString = QString::fromLatin1("%1 %2 (*.%3)").arg(format.toUpper()).arg(tr("Images")).arg(format);
+        formatString.append(QString::fromLatin1(";;%1").arg(currentFormatString));
+        if(format == preferredExtension)
+            preferredFormatString = currentFormatString;
+        if(format == defaultExtension)
+            defaultFormatString = currentFormatString;
     }
-    formatsAll.prepend(tr("All Images").append(QString::fromLatin1(" ("))).append(QString::fromLatin1(");;"));
-    formats.prepend(formatsAll);
+    const QString formatsAll = QString::fromLatin1("%1 (*.%2)").arg(tr("All Images")).arg(supportedFormats.join(QString::fromLatin1(" *.")));
+    formatString.prepend(formatsAll);
+    if(preferredFormatString.isEmpty())
+        preferredFormatString = (defaultFormatString.isEmpty() ? formatsAll : defaultFormatString);
 
-    if(m_lastSavedName.isEmpty())
-        m_lastSavedName = m_defaultName;
-    if(!m_lastSavedName.isEmpty() && !preferredName.isEmpty())
-        m_lastSavedName = QFileInfo(m_lastSavedName).absoluteDir().absoluteFilePath(QFileInfo(preferredName).fileName());
-    QString filename = QFileDialog::getSaveFileName(m_parent, tr("Save Image File"), m_lastSavedName, formats);
+    QString supportedPreferredName = (preferredName.isEmpty() ? preferredName : preferredInfo.fileName());
+    if(!supportedPreferredName.isEmpty() && !supportedFormats.contains(preferredExtension))
+        supportedPreferredName = supportedPreferredName.left(supportedPreferredName.length() - preferredExtension.length()).append(defaultExtension);
+
+    if(m_lastSavedFilePath.isEmpty())
+        m_lastSavedFilePath = m_defaultFilePath;
+    if(!m_lastSavedFilePath.isEmpty() && !supportedPreferredName.isEmpty())
+        m_lastSavedFilePath = QFileInfo(m_lastSavedFilePath).absoluteDir().absoluteFilePath(supportedPreferredName);
+    QString filename = QFileDialog::getSaveFileName(m_parent, tr("Save Image File"), m_lastSavedFilePath, formatString, &preferredFormatString);
     if(filename.length() == 0)
     {
-        if(m_lastSavedName == m_defaultName)
-            m_lastSavedName.clear();
+        if(m_lastSavedFilePath == m_defaultFilePath)
+            m_lastSavedFilePath.clear();
         return false;
     }
 
-    const QByteArray defaultExtension("png");
-    const QByteArray extension = QFileInfo(filename).suffix().toLower().toLatin1();
-    if(!supported.contains(extension))
-        filename.append(QString::fromLatin1(".")).append(QString::fromLatin1(defaultExtension));
-    m_lastSavedName = filename;
+    const QString extension = QFileInfo(filename).suffix().toLower();
+    if(!supportedFormats.contains(extension))
+        filename.append(QString::fromLatin1(".")).append(defaultExtension);
+    m_lastSavedFilePath = filename;
 
     bool saved = image.save(filename);
     if(!saved)
