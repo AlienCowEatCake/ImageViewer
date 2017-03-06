@@ -234,6 +234,9 @@ MainWindow::MainWindow(QWidget *parent)
     onZoomModeChanged(m_impl->settings->zoomMode());
 
     setLanguage();
+
+    restoreState(m_impl->settings->mainWindowState());
+    restoreGeometry(m_impl->settings->mainWindowGeometry());
 }
 
 MainWindow::~MainWindow()
@@ -551,6 +554,13 @@ void MainWindow::onActionEnglishTriggered()
 void MainWindow::onActionRussianTriggered()
 {
     setLanguage(QString::fromLatin1("ru"));
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    m_impl->settings->setMainWindowGeometry(saveGeometry());
+    m_impl->settings->setMainWindowState(saveState());
+    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)

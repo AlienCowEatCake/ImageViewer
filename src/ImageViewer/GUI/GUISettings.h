@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QString>
 #include <QColor>
+#include <QByteArray>
 #include "Utils/ScopedPointer.h"
 #include "ImageViewerWidget.h"
 
@@ -38,6 +39,8 @@ signals:
     void backgroundColorChanged(const QColor &color);
     void lastOpenedPathChanged(const QString &path);
     void smoothTransformationChanged(bool enabled);
+    void mainWindowStateChanged(const QByteArray &geometry);
+    void mainWindowGeometryChanged(const QByteArray &state);
 
 public:
     GUISettings(QObject *parent = NULL);
@@ -63,6 +66,12 @@ public:
 
     bool smoothTransformation() const;
     void setSmoothTransformation(bool enabled);
+
+    QByteArray mainWindowGeometry() const;
+    void setMainWindowGeometry(const QByteArray &geometry);
+
+    QByteArray mainWindowState() const;
+    void setMainWindowState(const QByteArray &state);
 
 private:
     struct Impl;

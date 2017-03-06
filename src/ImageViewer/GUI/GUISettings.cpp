@@ -174,3 +174,31 @@ void GUISettings::setSmoothTransformation(bool enabled)
         emit smoothTransformationChanged(enabled);
     m_impl->settings.setValue(QString::fromLatin1("SmoothTransformation"), enabled);
 }
+
+QByteArray GUISettings::mainWindowGeometry() const
+{
+    QVariant value = m_impl->settings.value(QString::fromLatin1("MainWindowGeometry"));
+    return value.isValid() && value.canConvert(QVariant::ByteArray) ? value.toByteArray() : QByteArray();
+}
+
+void GUISettings::setMainWindowGeometry(const QByteArray &geometry)
+{
+    const QByteArray oldValue = mainWindowGeometry();
+    if(geometry != oldValue)
+        emit mainWindowGeometryChanged(geometry);
+    m_impl->settings.setValue(QString::fromLatin1("MainWindowGeometry"), geometry);
+}
+
+QByteArray GUISettings::mainWindowState() const
+{
+    QVariant value = m_impl->settings.value(QString::fromLatin1("MainWindowState"));
+    return value.isValid() && value.canConvert(QVariant::ByteArray) ? value.toByteArray() : QByteArray();
+}
+
+void GUISettings::setMainWindowState(const QByteArray &state)
+{
+    const QByteArray oldValue = mainWindowState();
+    if(state != oldValue)
+        emit mainWindowStateChanged(state);
+    m_impl->settings.setValue(QString::fromLatin1("MainWindowState"), state);
+}
