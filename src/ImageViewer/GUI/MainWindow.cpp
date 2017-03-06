@@ -226,9 +226,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
     connect(m_impl->settings, SIGNAL(backgroundColorChanged(const QColor&)), m_ui->imageViewerWidget, SLOT(setBackgroundColor(const QColor&)));
+    connect(m_impl->settings, SIGNAL(smoothTransformationChanged(bool)), m_ui->imageViewerWidget, SLOT(setSmoothTransformation(bool)));
 
     m_ui->imageViewerWidget->setZoomLevel(m_impl->settings->zoomLevel());
     m_ui->imageViewerWidget->setBackgroundColor(m_impl->settings->backgroundColor());
+    m_ui->imageViewerWidget->setSmoothTransformation(m_impl->settings->smoothTransformation());
     onZoomModeChanged(m_impl->settings->zoomMode());
 
     setLanguage();

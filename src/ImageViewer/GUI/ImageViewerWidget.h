@@ -66,6 +66,8 @@ public slots:
 
     void setBackgroundColor(const QColor &color);
 
+    void setSmoothTransformation(bool enabled);
+
 protected:
     bool event(QEvent* event);
     void showEvent(QShowEvent *event);

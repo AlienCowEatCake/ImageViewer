@@ -25,27 +25,27 @@
 <context>
     <name>ImageSaver</name>
     <message>
-        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="72"/>
+        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="99"/>
         <source>Images</source>
         <translation>Изображения</translation>
     </message>
     <message>
-        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="75"/>
+        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="106"/>
         <source>All Images</source>
         <translation>Все изображения</translation>
     </message>
     <message>
-        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="81"/>
+        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="119"/>
         <source>Save Image File</source>
         <translation>Сохранить изображение</translation>
     </message>
     <message>
-        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="109"/>
+        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="134"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="109"/>
+        <location filename="../../../QtUtils/Utils/ImageSaver.cpp" line="134"/>
         <source>Error: Can&apos;t save file</source>
         <translation>Ошибка: Не удалось сохранить файл</translation>
     </message>
@@ -53,49 +53,49 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../GUI/MainWindow.cpp" line="341"/>
+        <location filename="../../GUI/MainWindow.cpp" line="343"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../../GUI/MainWindow.cpp" line="348"/>
+        <location filename="../../GUI/MainWindow.cpp" line="350"/>
         <source>License</source>
         <translation>Лицензия</translation>
     </message>
     <message>
-        <location filename="../../GUI/MainWindow.cpp" line="349"/>
+        <location filename="../../GUI/MainWindow.cpp" line="351"/>
         <source>Peter S. Zhigalov</source>
         <translation>Жигалов Петр</translation>
     </message>
     <message>
-        <location filename="../../GUI/MainWindow.cpp" line="426"/>
-        <location filename="../../GUI/MainWindow.cpp" line="471"/>
-        <location filename="../../GUI/MainWindow.cpp" line="481"/>
+        <location filename="../../GUI/MainWindow.cpp" line="428"/>
+        <location filename="../../GUI/MainWindow.cpp" line="490"/>
+        <location filename="../../GUI/MainWindow.cpp" line="500"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../GUI/MainWindow.cpp" line="426"/>
+        <location filename="../../GUI/MainWindow.cpp" line="428"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>Не удалось открыть файл &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../GUI/MainWindow.cpp" line="459"/>
+        <location filename="../../GUI/MainWindow.cpp" line="478"/>
         <source>Are you sure you want to delete current file?</source>
         <translation>Вы уверены что хотите удалить этот файл?</translation>
     </message>
     <message>
-        <location filename="../../GUI/MainWindow.cpp" line="481"/>
+        <location filename="../../GUI/MainWindow.cpp" line="500"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation>Не удалось удалить файл &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../GUI/MainWindow.cpp" line="436"/>
+        <location filename="../../GUI/MainWindow.cpp" line="454"/>
         <source>All Supported Images</source>
         <translation>Все поддерживаемые изображения</translation>
     </message>
     <message>
-        <location filename="../../GUI/MainWindow.cpp" line="436"/>
+        <location filename="../../GUI/MainWindow.cpp" line="454"/>
         <source>All Files</source>
         <translation>Все файлы</translation>
     </message>
@@ -140,7 +140,7 @@
         <translation>Повернуть по часовой стрелке</translation>
     </message>
     <message>
-        <location filename="../../GUI/MainWindow.cpp" line="437"/>
+        <location filename="../../GUI/MainWindow.cpp" line="455"/>
         <location filename="../../GUI/MainWindow_p.h" line="253"/>
         <source>Open File</source>
         <translation>Открыть файл</translation>
@@ -211,7 +211,7 @@
         <translation>&amp;Русский</translation>
     </message>
     <message>
-        <location filename="../../GUI/MainWindow.cpp" line="459"/>
+        <location filename="../../GUI/MainWindow.cpp" line="478"/>
         <location filename="../../GUI/MainWindow_p.h" line="255"/>
         <source>Delete File</source>
         <translation>Удалить файл</translation>
@@ -225,27 +225,32 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="../../GUI/SettingsDialog.cpp" line="90"/>
+        <location filename="../../GUI/SettingsDialog.cpp" line="91"/>
         <source>Select Background Color</source>
         <translation>Выберите цвет фона</translation>
     </message>
     <message>
-        <location filename="../../GUI/SettingsDialog_p.h" line="55"/>
+        <location filename="../../GUI/SettingsDialog_p.h" line="56"/>
         <source>Ask before deleting images</source>
         <translation>Спросить перед удалением изображений</translation>
     </message>
     <message>
-        <location filename="../../GUI/SettingsDialog_p.h" line="58"/>
+        <location filename="../../GUI/SettingsDialog_p.h" line="59"/>
         <source>Move deleted images to trash</source>
         <translation>Удалять изображения в корзину</translation>
     </message>
     <message>
-        <location filename="../../GUI/SettingsDialog_p.h" line="61"/>
+        <location filename="../../GUI/SettingsDialog_p.h" line="62"/>
+        <source>Use smooth image rendering</source>
+        <translation>Использовать сглаженный режим отрисовки</translation>
+    </message>
+    <message>
+        <location filename="../../GUI/SettingsDialog_p.h" line="65"/>
         <source>Background color</source>
         <translation>Цвет фона</translation>
     </message>
     <message>
-        <location filename="../../GUI/SettingsDialog_p.h" line="81"/>
+        <location filename="../../GUI/SettingsDialog_p.h" line="86"/>
         <source>Preferences</source>
         <translation>Настройки</translation>
     </message>

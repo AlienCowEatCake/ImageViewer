@@ -159,3 +159,18 @@ void GUISettings::setLastOpenedPath(const QString &path)
         emit lastOpenedPathChanged(path);
     m_impl->settings.setValue(QString::fromLatin1("LastOpenedPath"), path);
 }
+
+bool GUISettings::smoothTransformation() const
+{
+    const bool defaultValue = true;
+    QVariant value = m_impl->settings.value(QString::fromLatin1("SmoothTransformation"), defaultValue);
+    return value.isValid() && value.canConvert(QVariant::Bool) ? value.toBool() : defaultValue;
+}
+
+void GUISettings::setSmoothTransformation(bool enabled)
+{
+    const bool oldValue = smoothTransformation();
+    if(enabled != oldValue)
+        emit smoothTransformationChanged(enabled);
+    m_impl->settings.setValue(QString::fromLatin1("SmoothTransformation"), enabled);
+}

@@ -47,6 +47,7 @@ struct SettingsDialog::UI
         : settingsDialog(widget)
         , askBeforeDeleteCheckbox(new QCheckBox(settingsDialog))
         , moveToTrashCheckbox(new QCheckBox(settingsDialog))
+        , smoothTransformationCheckbox(new QCheckBox(settingsDialog))
         , backgroundColorFrame(new QFrame(settingsDialog))
         , backgroundColorLabel(new QLabel(backgroundColorFrame))
         , backgroundColorButton(new QToolButton(backgroundColorFrame))
@@ -57,6 +58,9 @@ struct SettingsDialog::UI
 
         moveToTrashCheckbox->setText(qApp->translate("SettingsDialog", "Move deleted images to trash"));
         moveToTrashCheckbox->setChecked(settings->moveToTrash());
+
+        smoothTransformationCheckbox->setText(qApp->translate("SettingsDialog", "Use smooth image rendering"));
+        smoothTransformationCheckbox->setChecked(settings->smoothTransformation());
 
         backgroundColorLabel->setText(qApp->translate("SettingsDialog", "Background color"));
 
@@ -75,6 +79,7 @@ struct SettingsDialog::UI
         QVBoxLayout *mainLayout = new QVBoxLayout(settingsDialog);
         mainLayout->addWidget(askBeforeDeleteCheckbox);
         mainLayout->addWidget(moveToTrashCheckbox);
+        mainLayout->addWidget(smoothTransformationCheckbox);
         mainLayout->addWidget(backgroundColorFrame);
         mainLayout->addWidget(buttonBox);
 
@@ -100,6 +105,7 @@ struct SettingsDialog::UI
     SettingsDialog *settingsDialog;
     QCheckBox *askBeforeDeleteCheckbox;
     QCheckBox *moveToTrashCheckbox;
+    QCheckBox *smoothTransformationCheckbox;
     QFrame *backgroundColorFrame;
     QLabel *backgroundColorLabel;
     QToolButton *backgroundColorButton;

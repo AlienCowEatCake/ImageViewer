@@ -37,6 +37,7 @@ signals:
     void zoomLevelChanged(qreal level);
     void backgroundColorChanged(const QColor &color);
     void lastOpenedPathChanged(const QString &path);
+    void smoothTransformationChanged(bool enabled);
 
 public:
     GUISettings(QObject *parent = NULL);
@@ -59,6 +60,9 @@ public:
 
     QString lastOpenedPath() const;
     void setLastOpenedPath(const QString &path);
+
+    bool smoothTransformation() const;
+    void setSmoothTransformation(bool enabled);
 
 private:
     struct Impl;

@@ -21,6 +21,7 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <QGraphicsPixmapItem>
 #include <QStyleOptionGraphicsItem>
 
 #if (QT_VERSION < QT_VERSION_CHECK(4, 6, 0))
@@ -45,6 +46,7 @@ struct ImageViewerWidget::Impl
         , currentZoomLevel(1)
         , previousZoomLevel(-1)
         , currentRotationAngle(0)
+        , transformationMode(Qt::SmoothTransformation)
     {
         widget->setScene(scene);
     }
@@ -97,6 +99,15 @@ struct ImageViewerWidget::Impl
         }
     }
 
+    void applyTransformationMode()
+    {
+        if(!currentGraphicsItem)
+            return;
+        QGraphicsPixmapItem *pixItem = dynamic_cast<QGraphicsPixmapItem*>(currentGraphicsItem);
+        if(pixItem)
+            pixItem->setTransformationMode(transformationMode);
+    }
+
     bool gestureEvent(QGestureEvent* event)
     {
 #if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
@@ -147,6 +158,7 @@ struct ImageViewerWidget::Impl
     qreal currentZoomLevel;
     qreal previousZoomLevel;
     qreal currentRotationAngle;
+    Qt::TransformationMode transformationMode;
 };
 
 ImageViewerWidget::ImageViewerWidget(QWidget *parent)
@@ -176,6 +188,7 @@ void ImageViewerWidget::setGraphicsItem(QGraphicsItem *graphicsItem)
     graphicsItem->setCacheMode(QGraphicsItem::NoCache);
     scene()->addItem(graphicsItem);
     setSceneRect(graphicsItem->boundingRect());
+    m_impl->applyTransformationMode();
     m_impl->updateTransformations();
 }
 
@@ -273,6 +286,12 @@ void ImageViewerWidget::zoomOut()
 void ImageViewerWidget::setBackgroundColor(const QColor &color)
 {
     setBackgroundBrush(QBrush(color));
+}
+
+void ImageViewerWidget::setSmoothTransformation(bool enabled)
+{
+    m_impl->transformationMode = (enabled ? Qt::SmoothTransformation : Qt::FastTransformation);
+    m_impl->applyTransformationMode();
 }
 
 bool ImageViewerWidget::event(QEvent *event)

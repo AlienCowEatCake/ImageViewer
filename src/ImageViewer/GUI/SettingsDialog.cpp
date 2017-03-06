@@ -40,6 +40,7 @@ struct SettingsDialog::Impl
     {
         settings->setAskBeforeDelete(ui->askBeforeDeleteCheckbox->isChecked());
         settings->setMoveToTrash(ui->moveToTrashCheckbox->isChecked());
+        settings->setSmoothTransformation(ui->smoothTransformationCheckbox->isChecked());
         settings->setBackgroundColor(background);
         dialog->close();
     }
