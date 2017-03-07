@@ -7,9 +7,12 @@ INCLUDEPATH += $${THIRDPARTY_QTEXTENDED_PATH}
 DEPENDPATH += $${THIRDPARTY_QTEXTENDED_PATH}
 DEFINES += HAS_THIRDPARTY_QTEXTENDED
 
-HEADERS += \
-    $$files($${THIRDPARTY_QTEXTENDED_PATH}/*.h)
+QT += core
 
-SOURCES += \
-    $$files($${THIRDPARTY_QTEXTENDED_PATH}/*.cpp)
+LIBS += -L$${OUT_PWD}/../ThirdParty/QtExtended
+*g++*|*clang* {
+    LIBS += -lQtExtended
+} else {
+    LIBS += QtExtended.lib
+}
 

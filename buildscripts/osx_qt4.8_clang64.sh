@@ -3,8 +3,8 @@ PROJECT=ImageViewer
 BUILDDIR=build_osx_qt4.8_clang64
 APPNAME="Image Viewer"
 DMGNAME="${PROJECT}_qt4.8_clang64"
-INFO_PLIST="src/ImageViewer/Resources/platform/macosx/Info.plist"
-ICON="src/ImageViewer/Resources/icon/icon.icns"
+INFO_PLIST="src/ImageViewer/resources/platform/macosx/Info.plist"
+ICON="src/ImageViewer/resources/icon/icon.icns"
 
 CMD_QMAKE="qmake"
 CMD_DEPLOY="macdeployqt"
