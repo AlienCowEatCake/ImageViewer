@@ -86,8 +86,8 @@ HEADERS += \
     src/Decoders/ExifUtils.h
 
 TRANSLATIONS += \
-    resources/translations/en.ts \
-    resources/translations/ru.ts
+    resources/translations/imageviewer_en.ts \
+    resources/translations/imageviewer_ru.ts
 
 win32 {
     RC_FILE += resources/platform/windows/Resources.rc
@@ -110,7 +110,7 @@ macx {
 }
 
 RESOURCES += \
-    resources/translations/translations.qrc \
+    resources/translations/imageviewer_translations.qrc \
     resources/icon/icon.qrc
 
 QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9

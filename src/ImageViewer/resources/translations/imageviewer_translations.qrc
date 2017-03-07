@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/translations">
+        <file>imageviewer_en.qm</file>
+        <file>imageviewer_ru.qm</file>
+    </qresource>
+</RCC>
+

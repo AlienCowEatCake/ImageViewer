@@ -24,17 +24,6 @@
 #include <QPixmap>
 #include <QDebug>
 
-void initThemeResources()
-{
-    static bool isInitialized = false;
-    if(!isInitialized)
-    {
-        Q_INIT_RESOURCE(icons_png);
-        Q_INIT_RESOURCE(icons_svg);
-        isInitialized = true;
-    }
-}
-
 namespace ThemeUtils {
 
 /// @brief Функция для определения темная используемая тема виджета или нет
@@ -78,7 +67,6 @@ QIcon CreateScalableIcon(const QString &defaultImagePath, const QStringList &sca
 /// @param[in] darkBackground - true, если иконка располагается на темном фоне
 QIcon GetIcon(IconTypes type, bool darkBackground)
 {
-    initThemeResources();
     const QString iconNameTemplate = QString::fromLatin1(":/icons/modern/%2_%1.%3")
             .arg(darkBackground ? QString::fromLatin1("white") : QString::fromLatin1("black"));
 #if defined (QT_SVG_LIB) && (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))

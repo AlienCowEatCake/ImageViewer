@@ -61,13 +61,19 @@ SOURCES += \
     $$files(src/Themes/*.cpp) \
     $$files(src/Utils/*.cpp)
 
-RESOURCES += \
-    $$files(src/Themes/icons/*.qrc)
+TRANSLATIONS += \
+    resources/translations/qtutils_en.ts \
+    resources/translations/qtutils_ru.ts
 
 macx {
     OBJECTIVE_SOURCES += \
         $$files(src/Utils/*.mm)
 }
+
+RESOURCES += \
+    resources/icons/qtutils_icons_png.qrc \
+    resources/icons/qtutils_icons_svg.qrc \
+    resources/translations/qtutils_translations.qrc
 
 QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9
 
