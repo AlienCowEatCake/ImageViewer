@@ -17,58 +17,38 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-INCLUDEPATH += $$PWD
-DEPENDPATH += $$PWD
-CONFIG += object_with_source object_parallel_to_source no_batch warn_on
+INCLUDEPATH += $${PWD}/src
+DEPENDPATH += $${PWD}/src
 
-QT += core gui
+QT += core gui svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-*g++*|*clang* {
-    QMAKE_CXXFLAGS_RELEASE -= -O2
-    QMAKE_CXXFLAGS_RELEASE *= -O3
-    QMAKE_CXXFLAGS_RELEASE *= -DNDEBUG
-    QMAKE_CXXFLAGS_RELEASE *= -DQT_NO_DEBUG_OUTPUT
-}
-
-*msvc* {
-    QMAKE_CXXFLAGS_RELEASE -= -O2
-    QMAKE_CXXFLAGS_RELEASE *= -Ox
-    QMAKE_CXXFLAGS_RELEASE -= -GS
-    QMAKE_CXXFLAGS_RELEASE *= -GS-
-    QMAKE_CXXFLAGS_RELEASE *= -DQT_NO_DEBUG_OUTPUT
-    DEFINES += _CRT_SECURE_NO_WARNINGS
-    DEFINES += _CRT_SECURE_NO_DEPRECATE
-    DEFINES += _USE_MATH_DEFINES
-}
-
-win32 {
-    DEFINES += NOMINMAX
-}
-
-HEADERS += \
-    $$files($$PWD/Themes/*.h) \
-    $$files($$PWD/Utils/*.h)
-
-SOURCES += \
-    $$files($$PWD/Themes/*.cpp) \
-    $$files($$PWD/Utils/*.cpp)
-
-RESOURCES += \
-    $$files($$PWD/Themes/icons/*.qrc)
-
 macx {
-    OBJECTIVE_SOURCES += \
-        $$files($$PWD/Utils/*.mm)
     LIBS += -framework Foundation
     LIBS += -framework CoreServices
 }
 
 win32 {
     *g++*|*clang* {
-        QMAKE_LIBS += -lshell32
+        LIBS += -lshell32
     } else {
-        QMAKE_LIBS += shell32.lib
+        LIBS += shell32.lib
     }
 }
+
+win32 {
+    CONFIG(release, debug|release) {
+        LIBS += -L$${OUT_PWD}/../QtUtils/release
+    } else:CONFIG(debug, debug|release) {
+        LIBS += -L$${OUT_PWD}/../QtUtils/debug
+    }
+    *g++*|*clang* {
+        LIBS += -lQtUtils
+    } else {
+        LIBS += QtUtils.lib
+    }
+} else {
+    LIBS += -L$${OUT_PWD}/../QtUtils -lQtUtils
+}
+

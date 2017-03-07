@@ -289,14 +289,19 @@ void MainWindow::setLanguage(const QString &newLanguage)
     // Удалим старый перевод, установим новый
     static QTranslator qtTranslator;
     static QTranslator appTranslator;
+    static QTranslator utilsTranslator;
     if(!qtTranslator.isEmpty())
         qApp->removeTranslator(&qtTranslator);
     if(!appTranslator.isEmpty())
         qApp->removeTranslator(&appTranslator);
+    if(!utilsTranslator.isEmpty())
+        qApp->removeTranslator(&utilsTranslator);
     qtTranslator.load(QString::fromLatin1("qt_%1").arg(language), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    appTranslator.load(QString::fromLatin1(":/translations/%1").arg(language));
+    appTranslator.load(QString::fromLatin1(":/translations/imageviewer_%1").arg(language));
+    utilsTranslator.load(QString::fromLatin1(":/translations/qtutils_%1").arg(language));
     qApp->installTranslator(&qtTranslator);
     qApp->installTranslator(&appTranslator);
+    qApp->installTranslator(&utilsTranslator);
 
     // Пофиксим шрифты
     Workarounds::FontsFix(language);

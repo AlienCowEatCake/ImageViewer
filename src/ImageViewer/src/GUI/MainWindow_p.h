@@ -33,7 +33,7 @@
 #include <QActionGroup>
 #include <QStyleFactory>
 
-#include "Themes/ThemeUtils.h"
+#include "Utils/ThemeUtils.h"
 #include "ImageViewerWidget.h"
 
 namespace {

@@ -28,7 +28,22 @@
 #include <QFontDatabase>
 #include <QStringList>
 
+/// @brief Инициализация ресурсов статической библиотеки QtUtils
+/// @attention Функция должна быть в глобальном namespace
+static void InitQtUtilsResources_internal()
+{
+    Q_INIT_RESOURCE(qtutils_icons_png);
+    Q_INIT_RESOURCE(qtutils_icons_svg);
+    Q_INIT_RESOURCE(qtutils_translations);
+}
+
 namespace Workarounds {
+
+/// @brief Инициализация ресурсов статической библиотеки QtUtils
+void InitQtUtilsResources()
+{
+    InitQtUtilsResources_internal();
+}
 
 /// @brief Исправить отображение локализованных шрифтов под Windows
 /// @param[in] language - язык, для которого будет проводиться исправление

@@ -4,6 +4,7 @@ set QTDIR=C:\Qt\4.4.3\mingw342_32_static
 set MINGWDIR=C:\Qt\Tools\mingw342_32
 set BUILDDIR=build_win_qt4.4_mingw342
 set SUFFIX=_qt4.4_mingw32
+set APP_PATH=src\%PROJECT%
 
 set PATH=%QTDIR%\bin;%MINGWDIR%\bin;%MINGWDIR%\libexec\gcc\mingw32\3.4.2;%WINDIR%;%WINDIR%\System32
 set CPLUS_INCLUDE_PATH=%MINGWDIR%\include\c++
@@ -21,7 +22,7 @@ mkdir %BUILDDIR%
 cd %BUILDDIR%
 qmake CONFIG+="release" CONFIG+="use_static_qjpeg use_static_qtiff" ..\%PROJECT%.pro
 mingw32-make
-strip --strip-all release\%PROJECT%.exe
-copy release\%PROJECT%.exe ..\%PROJECT%%SUFFIX%.exe
+strip --strip-all %APP_PATH%\release\%PROJECT%.exe
+copy %APP_PATH%\release\%PROJECT%.exe ..\%PROJECT%%SUFFIX%.exe
 
 pause

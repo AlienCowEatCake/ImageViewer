@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
 #else
     app.setAttribute(Qt::AA_DontShowIconsInMenus);
 #endif
+    Workarounds::InitQtUtilsResources();
     MainWindow * window = new MainWindow;
     if(argc > 1)
     {
