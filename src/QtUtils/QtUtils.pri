@@ -37,10 +37,18 @@ win32 {
     }
 }
 
-LIBS += -L$${OUT_PWD}/../QtUtils
-*g++*|*clang* {
-    LIBS += -lQtUtils
+win32 {
+    CONFIG(release, debug|release) {
+        LIBS += -L$${OUT_PWD}/../QtUtils/release
+    } else:CONFIG(debug, debug|release) {
+        LIBS += -L$${OUT_PWD}/../QtUtils/debug
+    }
+    *g++*|*clang* {
+        LIBS += -lQtUtils
+    } else {
+        LIBS += QtUtils.lib
+    }
 } else {
-    LIBS += QtUtils.lib
+    LIBS += -L$${OUT_PWD}/../QtUtils -lQtUtils
 }
 

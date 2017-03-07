@@ -9,10 +9,18 @@ DEFINES += HAS_THIRDPARTY_QTEXTENDED
 
 QT += core
 
-LIBS += -L$${OUT_PWD}/../ThirdParty/QtExtended
-*g++*|*clang* {
-    LIBS += -lQtExtended
+win32 {
+    CONFIG(release, debug|release) {
+        LIBS += -L$${OUT_PWD}/../ThirdParty/QtExtended/release
+    } else:CONFIG(debug, debug|release) {
+        LIBS += -L$${OUT_PWD}/../ThirdParty/QtExtended/debug
+    }
+    *g++*|*clang* {
+        LIBS += -lQtExtended
+    } else {
+        LIBS += QtExtended.lib
+    }
 } else {
-    LIBS += QtExtended.lib
+    LIBS += -L$${OUT_PWD}/../ThirdParty/QtExtended -lQtExtended
 }
 
