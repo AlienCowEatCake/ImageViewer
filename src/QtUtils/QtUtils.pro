@@ -54,11 +54,9 @@ win32 {
 }
 
 HEADERS += \
-    $$files(src/Themes/*.h) \
     $$files(src/Utils/*.h)
 
 SOURCES += \
-    $$files(src/Themes/*.cpp) \
     $$files(src/Utils/*.cpp)
 
 TRANSLATIONS += \
