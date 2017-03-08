@@ -32,6 +32,7 @@ DEFINES += QT_NO_CAST_FROM_ASCII
 
 include(../QtUtils/QtUtils.pri)
 include(../ThirdParty/QtExtended/QtExtended.pri)
+include(../ThirdParty/QtImageFormats/QtImageFormats.pri)
 include(../ThirdParty/STB/STB.pri)
 
 *g++*|*clang* {
