@@ -1478,8 +1478,10 @@ QVariant QDDSHandler::option(QImageIOHandler::ImageOption option) const
         return QSize(m_header.width, m_header.height);
     case QImageIOHandler::SubType:
         return formatName(m_format);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
     case QImageIOHandler::SupportedSubTypes:
         return QVariant::fromValue(QList<QByteArray>() << formatName(FormatA8R8G8B8));
+#endif
     default:
         break;
     }
@@ -1501,7 +1503,10 @@ bool QDDSHandler::supportsOption(QImageIOHandler::ImageOption option) const
 {
     return (option == QImageIOHandler::Size)
             || (option == QImageIOHandler::SubType)
-            || (option == QImageIOHandler::SupportedSubTypes);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
+            || (option == QImageIOHandler::SupportedSubTypes)
+#endif
+            ;
 }
 
 int QDDSHandler::imageCount() const

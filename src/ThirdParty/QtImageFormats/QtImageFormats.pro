@@ -1,10 +1,13 @@
 # https://github.com/qt/qtimageformats
 
+lessThan(QT_MAJOR_VERSION, 5): error(This project requires Qt 5 or later)
+
 TEMPLATE = lib
 CONFIG += staticlib
 TARGET = QtImageFormats
 
 THIRDPARTY_QTIMAGEFORMATS_PATH = $${PWD}/qtimageformats
+THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH = $${PWD}/qtimageformats_legacy
 THIRDPARTY_QTIMAGEFORMATS_QTBASE_PATH = $${PWD}/qtbase
 THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
 
@@ -78,20 +81,29 @@ DEFINES += WRAPPER_USE_TGA_HANDLER
 
 # --------------------------------------------------------------------------------
 
-SOURCES += \
-    $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/tiff/qtiffhandler.cpp
+greaterThan(QT_MAJOR_VERSION, 5) | greaterThan(QT_MINOR_VERSION_VERSION, 4) {
 
-HEADERS += \
-    $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/tiff/qtiffhandler_p.h
+    SOURCES += \
+        $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/tiff/qtiffhandler.cpp
 
-config_libtiff {
-    unix|mingw: LIBS += -ltiff
-    else:win32: LIBS += libtiff.lib
+    HEADERS += \
+        $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/tiff/qtiffhandler_p.h
+
+    DEFINES += WRAPPER_USE_TIFF_HANDLER
+
 } else {
-    include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/3rdparty/libtiff.pri)
+
+    SOURCES += \
+        $${THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH}/src/plugins/imageformats/tiff/qtiffhandler.cpp
+
+    HEADERS += \
+        $${THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH}/src/plugins/imageformats/tiff/qtiffhandler_p.h
+
+    DEFINES += WRAPPER_USE_LEGACY_TIFF_HANDLER
+
 }
 
-DEFINES += WRAPPER_USE_TIFF_HANDLER
+include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/3rdparty/libtiff.pri)
 
 # --------------------------------------------------------------------------------
 
@@ -111,12 +123,7 @@ SOURCES += \
 HEADERS += \
     $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/webp/qwebphandler_p.h
 
-config_libwebp {
-    unix|win32-g++*: LIBS += -lwebp -lwebpdemux
-    else:win32: LIBS += libwebp.lib libwebpdemux.lib
-} else {
-    include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/3rdparty/libwebp.pri)
-}
+include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/3rdparty/libwebp.pri)
 
 DEFINES += WRAPPER_USE_WEBP_HANDLER
 

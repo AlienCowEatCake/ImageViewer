@@ -32,8 +32,10 @@ DEFINES += QT_NO_CAST_FROM_ASCII
 
 include(../QtUtils/QtUtils.pri)
 include(../ThirdParty/QtExtended/QtExtended.pri)
-include(../ThirdParty/QtImageFormats/QtImageFormats.pri)
 include(../ThirdParty/STB/STB.pri)
+greaterThan(QT_MAJOR_VERSION, 4) {
+    include(../ThirdParty/QtImageFormats/QtImageFormats.pri)
+}
 
 *g++*|*clang* {
     QMAKE_CXXFLAGS_RELEASE -= -O2

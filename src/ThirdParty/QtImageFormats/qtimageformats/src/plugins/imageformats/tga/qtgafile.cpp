@@ -52,7 +52,7 @@ struct TgaReader
 struct Tga16Reader : public TgaReader
 {
     ~Tga16Reader() {}
-    QRgb operator()(QIODevice *s) const override
+    QRgb operator()(QIODevice *s) const Q_DECL_OVERRIDE
     {
         char ch1, ch2;
         if (s->getChar(&ch1) && s->getChar(&ch2)) {
@@ -68,7 +68,7 @@ struct Tga16Reader : public TgaReader
 
 struct Tga24Reader : public TgaReader
 {
-    QRgb operator()(QIODevice *s) const override
+    QRgb operator()(QIODevice *s) const Q_DECL_OVERRIDE
     {
         char r, g, b;
         if (s->getChar(&b) && s->getChar(&g) && s->getChar(&r))
@@ -80,7 +80,7 @@ struct Tga24Reader : public TgaReader
 
 struct Tga32Reader : public TgaReader
 {
-    QRgb operator()(QIODevice *s) const override
+    QRgb operator()(QIODevice *s) const Q_DECL_OVERRIDE
     {
         char r, g, b, a;
         if (s->getChar(&b) && s->getChar(&g) && s->getChar(&r) && s->getChar(&a))

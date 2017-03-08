@@ -63,12 +63,12 @@ public:
     QWbmpHandler(QIODevice *device);
     ~QWbmpHandler();
 
-    bool canRead() const override;
-    bool read(QImage *image) override;
-    bool write(const QImage &image) override;
+    bool canRead() const Q_DECL_OVERRIDE;
+    bool read(QImage *image) Q_DECL_OVERRIDE;
+    bool write(const QImage &image) Q_DECL_OVERRIDE;
 
-    QVariant option(ImageOption option) const override;
-    bool supportsOption(ImageOption option) const override;
+    QVariant option(ImageOption option) const Q_DECL_OVERRIDE;
+    bool supportsOption(ImageOption option) const Q_DECL_OVERRIDE;
 
     static bool canRead(QIODevice *device);
 
