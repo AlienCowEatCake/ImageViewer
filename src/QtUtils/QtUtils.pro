@@ -27,7 +27,7 @@ QT += core gui svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += object_with_source object_parallel_to_source no_batch warn_on
+CONFIG += warn_on
 
 DEFINES += QT_NO_CAST_FROM_ASCII
 
@@ -75,7 +75,6 @@ RESOURCES += \
 
 QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9
 
-DESTDIR = .
 OBJECTS_DIR = build/objects
 MOC_DIR = build/moc
 RCC_DIR = build/rcc

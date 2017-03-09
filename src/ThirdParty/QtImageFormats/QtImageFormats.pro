@@ -10,9 +10,9 @@ THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
 
 INCLUDEPATH += $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins
 
-QT += core
+QT += core gui
 
-CONFIG += object_with_source object_parallel_to_source no_batch
+CONFIG -= warn_on
 
 *g++*|*clang* {
     QMAKE_CXXFLAGS_RELEASE -= -O2
