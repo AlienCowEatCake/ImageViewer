@@ -25,6 +25,7 @@
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 #include <QFileInfo>
+#include <QDebug>
 
 #include "DecoderAutoRegistrator.h"
 #include "ExifUtils.h"
@@ -103,7 +104,10 @@ QGraphicsItem *DecoderQImage::loadImage(const QString &filePath)
     }
 
     if(image.isNull())
+    {
+        qDebug() << imageReader.errorString();
         return NULL;
+    }
 
     return new QGraphicsPixmapItem(QPixmap::fromImage(image));
 }

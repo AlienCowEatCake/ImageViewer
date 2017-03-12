@@ -11,8 +11,6 @@ THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH = $${PWD}/qtimageformats_legacy
 THIRDPARTY_QTIMAGEFORMATS_QTBASE_PATH = $${PWD}/qtbase
 THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
 
-INCLUDEPATH += $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins
-
 QT += core gui
 
 CONFIG -= warn_on
@@ -134,10 +132,10 @@ include($${THIRDPARTY_QTIMAGEFORMATS_QTBASE_PATH}/src/3rdparty/zlib.pri)
 # --------------------------------------------------------------------------------
 
 SOURCES += \
-    $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}/QtImageFormatsReaderWrapper.cpp
+    $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}/QtImageFormatsImageReader.cpp
 
 HEADERS += \
-    $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}/QtImageFormatsReaderWrapper.h
+    $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}/QtImageFormatsImageReader.h
 
 # --------------------------------------------------------------------------------
 
