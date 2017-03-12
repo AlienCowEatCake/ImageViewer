@@ -81,6 +81,7 @@ QGraphicsItem *DecoderQImage::loadImage(const QString &filePath)
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
     QImageReader imageReader(filePath);
+    imageReader.setDecideFormatFromContent(true);
     imageReader.setBackgroundColor(Qt::transparent);
     imageReader.setQuality(100);
     QImage image;

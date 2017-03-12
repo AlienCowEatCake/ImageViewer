@@ -4,8 +4,9 @@
 
 #include "QtImageFormatsImageReader.h"
 
-#define QTIMAGEFORMATS_IMAGEREADER_DEBUG
+//#define QTIMAGEFORMATS_IMAGEREADER_DEBUG
 
+#include <QCoreApplication>
 #include <QByteArray>
 #include <QDebug>
 #include <QFile>
@@ -334,28 +335,21 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
 static QMap<QString, QString> getImageTextFromDescription(const QString &description)
 {
     QMap<QString, QString> text;
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
-    QVector<QStringRef> pairs = description.splitRef(QLatin1String("\n\n"));
-    for(QVector<QStringRef>::ConstIterator it = pairs.constBegin(); it != pairs.constEnd(); ++it)
-    {
-        const QStringRef &pair = *it;
-#else
     QStringList pairs = description.split(QLatin1String("\n\n"));
     for(QStringList::ConstIterator it = pairs.constBegin(); it != pairs.constEnd(); ++it)
     {
-        const QStringRef pair(&(*it));
-#endif
+        const QString &pair = *it;
         int index = pair.indexOf(QLatin1Char(':'));
         if(index >= 0 && pair.indexOf(QLatin1Char(' ')) < index)
         {
             if(!pair.trimmed().isEmpty())
-                text.insert(QLatin1String("Description"), pair.toString().simplified());
+                text.insert(QLatin1String("Description"), pair.simplified());
         }
         else
         {
-            const QStringRef key = pair.left(index);
+            const QString key = pair.left(index);
             if(!key.trimmed().isEmpty())
-                text.insert(key.toString(), pair.mid(index + 2).toString().simplified());
+                text.insert(key, pair.mid(index + 2).simplified());
         }
     }
     return text;
@@ -420,7 +414,7 @@ bool QtImageFormatsImageReader::Impl::initHandler()
     if(!device || (!deleteDevice && !device->isOpen() && !device->open(QIODevice::ReadOnly)))
     {
         imageReaderError = QImageReader::DeviceError;
-        errorString = QImageReader::tr("Invalid device");
+        errorString = qApp->translate("QImageReader", "Invalid device");
         return false;
     }
 
@@ -450,7 +444,7 @@ bool QtImageFormatsImageReader::Impl::initHandler()
         if(!device->isOpen())
         {
             imageReaderError = QImageReader::FileNotFoundError;
-            errorString = QImageReader::tr("File not found");
+            errorString = qApp->translate("QImageReader", "File not found");
             file->setFileName(fileName); // restore the old file name
             return false;
         }
@@ -460,7 +454,7 @@ bool QtImageFormatsImageReader::Impl::initHandler()
     if(!handler && (handler = createReadHandlerHelper(device, format, autoDetectImageFormat, ignoresFormatAndExtension)) == 0)
     {
         imageReaderError = QImageReader::UnsupportedFormatError;
-        errorString = QImageReader::tr("Unsupported image format");
+        errorString = qApp->translate("QImageReader", "Unsupported image format");
         return false;
     }
     return true;
@@ -771,7 +765,7 @@ bool QtImageFormatsImageReader::read(QImage *image)
     if(!m_impl->handler->read(image))
     {
         m_impl->imageReaderError = QImageReader::InvalidDataError;
-        m_impl->errorString = QImageReader::tr("Unable to read image data");
+        m_impl->errorString = qApp->translate("QImageReader", "Unable to read image data");
         return false;
     }
 
@@ -914,7 +908,7 @@ QImageReader::ImageReaderError QtImageFormatsImageReader::error() const
 QString QtImageFormatsImageReader::errorString() const
 {
     if(m_impl->errorString.isEmpty())
-        return QImageReader::tr("Unknown error");
+        return qApp->translate("QImageReader", "Unknown error");
     return m_impl->errorString;
 }
 
