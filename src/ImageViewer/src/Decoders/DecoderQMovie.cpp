@@ -72,6 +72,7 @@ QGraphicsItem *DecoderQMovie::loadImage(const QString &filePath)
     QLabel *movieLabel = new QLabel();
     movieLabel->setAttribute(Qt::WA_NoSystemBackground, true);
     movieLabel->setMovie(movie);
+    movie->setParent(movieLabel);
     movie->start();
     QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();
     proxy->setWidget(movieLabel);
