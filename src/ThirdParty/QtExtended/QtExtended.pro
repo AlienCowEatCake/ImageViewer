@@ -8,9 +8,9 @@ THIRDPARTY_QTEXTENDED_PATH = $${PWD}/src
 
 INCLUDEPATH += $${THIRDPARTY_QTEXTENDED_PATH}
 
-QT += core
+QT += core gui
 
-CONFIG += object_with_source object_parallel_to_source no_batch
+CONFIG -= warn_on
 
 *g++*|*clang* {
     QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -32,10 +32,4 @@ HEADERS += \
 
 SOURCES += \
     $$files($${THIRDPARTY_QTEXTENDED_PATH}/*.cpp)
-
-DESTDIR = .
-OBJECTS_DIR = build/objects
-MOC_DIR = build/moc
-RCC_DIR = build/rcc
-UI_DIR = build/ui
 

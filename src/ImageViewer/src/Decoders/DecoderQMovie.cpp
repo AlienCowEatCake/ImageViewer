@@ -23,7 +23,6 @@
 #include <QGraphicsProxyWidget>
 #include <QLabel>
 #include <QFileInfo>
-#include <QStringList>
 
 #include "DecoderAutoRegistrator.h"
 
@@ -42,14 +41,11 @@ QString DecoderQMovie::name() const
 
 QList<DecoderFormatInfo> DecoderQMovie::supportedFormats() const
 {
-    const QStringList whitelistFormats = QStringList() << QString::fromLatin1("gif").toLower();
     const QList<QByteArray> readerFormats = QMovie::supportedFormats();
     QList<DecoderFormatInfo> result;
     for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
     {
         const QString format = QString::fromLatin1(*it).toLower();
-        if(!whitelistFormats.contains(format))
-            continue;
         DecoderFormatInfo info;
         info.decoderPriority = DECODER_QMOVIE_PRIORITY;
         info.format = format;
@@ -72,6 +68,7 @@ QGraphicsItem *DecoderQMovie::loadImage(const QString &filePath)
     QLabel *movieLabel = new QLabel();
     movieLabel->setAttribute(Qt::WA_NoSystemBackground, true);
     movieLabel->setMovie(movie);
+    movie->setParent(movieLabel);
     movie->start();
     QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();
     proxy->setWidget(movieLabel);

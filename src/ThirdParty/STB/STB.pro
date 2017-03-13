@@ -6,7 +6,9 @@ TARGET = STB
 
 THIRDPARTY_STB_PATH = $${PWD}/stb
 
-CONFIG += object_with_source object_parallel_to_source no_batch
+QT -= core gui
+
+CONFIG -= warn_on
 
 *g++*|*clang* {
     QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -34,10 +36,4 @@ SOURCES += \
     $$files($${THIRDPARTY_STB_PATH}/*.cpp)
 
 TR_EXCLUDE += $${THIRDPARTY_STB_PATH}/*
-
-DESTDIR = .
-OBJECTS_DIR = build/objects
-MOC_DIR = build/moc
-RCC_DIR = build/rcc
-UI_DIR = build/ui
 

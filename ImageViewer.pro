@@ -11,6 +11,13 @@ CONFIG += ordered
 SUBDIRS = \
     src/QtUtils/QtUtils.pro \
     src/ThirdParty/QtExtended/QtExtended.pro \
-    src/ThirdParty/STB/STB.pro \
+    src/ThirdParty/STB/STB.pro
+
+greaterThan(QT_MAJOR_VERSION, 4) {
+    SUBDIRS += \
+        src/ThirdParty/QtImageFormats/QtImageFormats.pro
+}
+
+SUBDIRS += \
     src/ImageViewer/ImageViewer.pro
 

@@ -19,6 +19,8 @@
 
 #include "DecoderSTB.h"
 
+#include <cassert>
+
 #include <QGraphicsPixmapItem>
 #include <QImage>
 #include <QPixmap>
@@ -87,31 +89,41 @@ QGraphicsItem *DecoderSTB::loadImage(const QString &filePath)
 
 #if defined (HAS_THIRDPARTY_STB)
     int x, y, n;
-    unsigned char *data = ::stbi_load(filePath.toLocal8Bit().data(), &x, &y, &n, 4);
+    unsigned char *data = ::stbi_load(filePath.toLocal8Bit().data(), &x, &y, &n, 0);
     if(!data)
     {
         qDebug() << ::stbi_failure_reason();
         return NULL;
     }
 
-    std::size_t imageBytesSize = static_cast<std::size_t>(x) * static_cast<std::size_t>(y) * 4;
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-    QImage image(x, y, QImage::Format_RGBA8888);
-    memcpy(image.bits(), data, imageBytesSize);
-#else
     QImage image(x, y, QImage::Format_ARGB32);
-    uchar *outBits = image.bits();
-    uchar *inBits = reinterpret_cast<uchar*>(data);
-    for(std::size_t i = 0; i < imageBytesSize; i += 4)
+    for(int i = 0; i < y; i++)
     {
-        outBits[0] = inBits[2]; // B
-        outBits[1] = inBits[1]; // G
-        outBits[2] = inBits[0]; // R
-        outBits[3] = inBits[3]; // A
-        outBits += 4;
-        inBits += 4;
+        QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(i));
+        for(int j = 0; j < x; j++)
+        {
+            unsigned char *source = data + (i * x + j) * n;
+            switch(n)
+            {
+            case 1: // grey
+                line[j] = qRgb(source[0], source[0], source[0]);
+                break;
+            case 2: // grey, alpha
+                line[j] = qRgba(source[0], source[0], source[0], source[1]);
+                break;
+            case 3: // red, green, blue
+                line[j] = qRgb(source[0], source[1], source[2]);
+                break;
+            case 4: // red, green, blue, alpha
+                line[j] = qRgba(source[0], source[1], source[2], source[3]);
+                break;
+            default:
+                assert(false);
+                image = QImage();
+                break;
+            }
+        }
     }
-#endif
     ::stbi_image_free(data);
 
     if(image.isNull())

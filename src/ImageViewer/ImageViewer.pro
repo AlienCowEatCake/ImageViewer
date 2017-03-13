@@ -26,13 +26,16 @@ QT += core gui svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += object_with_source object_parallel_to_source no_batch warn_on
+CONFIG += warn_on
 
 DEFINES += QT_NO_CAST_FROM_ASCII
 
 include(../QtUtils/QtUtils.pri)
 include(../ThirdParty/QtExtended/QtExtended.pri)
 include(../ThirdParty/STB/STB.pri)
+greaterThan(QT_MAJOR_VERSION, 4) {
+    include(../ThirdParty/QtImageFormats/QtImageFormats.pri)
+}
 
 *g++*|*clang* {
     QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -64,6 +67,8 @@ SOURCES += \
     src/Decoders/DecodersManager.cpp \
     src/Decoders/DecoderQImage.cpp \
     src/Decoders/DecoderQMovie.cpp \
+    src/Decoders/DecoderQtImageFormatsImage.cpp \
+    src/Decoders/DecoderQtImageFormatsMovie.cpp \
     src/Decoders/DecoderQtSVG.cpp \
     src/Decoders/DecoderSTB.cpp \
     src/Decoders/ExifUtils.cpp \
@@ -81,6 +86,8 @@ HEADERS += \
     src/Decoders/DecoderAutoRegistrator.h \
     src/Decoders/DecoderQImage.h \
     src/Decoders/DecoderQMovie.h \
+    src/Decoders/DecoderQtImageFormatsImage.h \
+    src/Decoders/DecoderQtImageFormatsMovie.h \
     src/Decoders/DecoderQtSVG.h \
     src/Decoders/DecoderSTB.h \
     src/Decoders/ExifUtils.h
@@ -114,12 +121,6 @@ RESOURCES += \
     resources/icon/icon.qrc
 
 QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9
-
-DESTDIR = .
-OBJECTS_DIR = build/objects
-MOC_DIR = build/moc
-RCC_DIR = build/rcc
-UI_DIR = build/ui
 
 # qmake CONFIG+=use_static_qjpeg
 use_static_qjpeg {
