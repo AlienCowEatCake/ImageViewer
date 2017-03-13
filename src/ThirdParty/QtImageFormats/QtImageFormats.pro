@@ -115,15 +115,17 @@ DEFINES += WRAPPER_USE_WBMP_HANDLER
 
 # --------------------------------------------------------------------------------
 
-SOURCES += \
-    $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/webp/qwebphandler.cpp
-
-HEADERS += \
-    $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/webp/qwebphandler_p.h
-
-include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/3rdparty/libwebp.pri)
-
-DEFINES += WRAPPER_USE_WEBP_HANDLER
+##FIXME: Crash with Qt 5.6.2 MSVC 2015 (static build)
+#
+#SOURCES += \
+#    $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/webp/qwebphandler.cpp
+#
+#HEADERS += \
+#    $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/webp/qwebphandler_p.h
+#
+#include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/3rdparty/libwebp.pri)
+#
+#DEFINES += WRAPPER_USE_WEBP_HANDLER
 
 # --------------------------------------------------------------------------------
 
