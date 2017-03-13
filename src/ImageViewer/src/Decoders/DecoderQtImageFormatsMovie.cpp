@@ -19,9 +19,10 @@
 
 #include "DecoderQtImageFormatsMovie.h"
 
-#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
 #include <QGraphicsProxyWidget>
 #include <QFileInfo>
+
+#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
 #include "QtImageFormatsMovie.h"
 #include "QtImageFormatsMovieLabel.h"
 #endif
@@ -56,7 +57,7 @@ QList<DecoderFormatInfo> DecoderQtImageFormatsMovie::supportedFormats() const
     }
     return result;
 #else
-    return QList<QByteArray>();
+    return QList<DecoderFormatInfo>();
 #endif
 }
 

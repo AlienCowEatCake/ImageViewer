@@ -75,8 +75,3 @@ RESOURCES += \
 
 QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9
 
-OBJECTS_DIR = build/objects
-MOC_DIR = build/moc
-RCC_DIR = build/rcc
-UI_DIR = build/ui
-

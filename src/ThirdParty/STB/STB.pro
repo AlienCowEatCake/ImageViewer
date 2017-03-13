@@ -37,8 +37,3 @@ SOURCES += \
 
 TR_EXCLUDE += $${THIRDPARTY_STB_PATH}/*
 
-OBJECTS_DIR = build/objects
-MOC_DIR = build/moc
-RCC_DIR = build/rcc
-UI_DIR = build/ui
-

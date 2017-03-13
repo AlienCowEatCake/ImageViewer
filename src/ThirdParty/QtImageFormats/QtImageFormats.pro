@@ -143,9 +143,3 @@ HEADERS += \
 
 # --------------------------------------------------------------------------------
 
-DESTDIR = .
-OBJECTS_DIR = build/objects
-MOC_DIR = build/moc
-RCC_DIR = build/rcc
-UI_DIR = build/ui
-

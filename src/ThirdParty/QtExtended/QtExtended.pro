@@ -33,8 +33,3 @@ HEADERS += \
 SOURCES += \
     $$files($${THIRDPARTY_QTEXTENDED_PATH}/*.cpp)
 
-OBJECTS_DIR = build/objects
-MOC_DIR = build/moc
-RCC_DIR = build/rcc
-UI_DIR = build/ui
-
