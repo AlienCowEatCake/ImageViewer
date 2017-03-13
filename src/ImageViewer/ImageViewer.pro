@@ -68,6 +68,7 @@ SOURCES += \
     src/Decoders/DecoderQImage.cpp \
     src/Decoders/DecoderQMovie.cpp \
     src/Decoders/DecoderQtImageFormatsImage.cpp \
+    src/Decoders/DecoderQtImageFormatsMovie.cpp \
     src/Decoders/DecoderQtSVG.cpp \
     src/Decoders/DecoderSTB.cpp \
     src/Decoders/ExifUtils.cpp \
@@ -86,6 +87,7 @@ HEADERS += \
     src/Decoders/DecoderQImage.h \
     src/Decoders/DecoderQMovie.h \
     src/Decoders/DecoderQtImageFormatsImage.h \
+    src/Decoders/DecoderQtImageFormatsMovie.h \
     src/Decoders/DecoderQtSVG.h \
     src/Decoders/DecoderSTB.h \
     src/Decoders/ExifUtils.h

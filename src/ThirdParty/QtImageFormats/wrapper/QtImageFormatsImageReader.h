@@ -1,6 +1,4 @@
-/***************************************
- * This is modified QImageReader code. *
- ***************************************/
+/// @note This is modified QImageReader code.
 
 #if !defined(QTIMAGEFORMATS_IMAGEREADER_H_INCLUDED)
 #define QTIMAGEFORMATS_IMAGEREADER_H_INCLUDED

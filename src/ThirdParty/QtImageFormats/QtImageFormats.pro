@@ -11,7 +11,7 @@ THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH = $${PWD}/qtimageformats_legacy
 THIRDPARTY_QTIMAGEFORMATS_QTBASE_PATH = $${PWD}/qtbase
 THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
 
-QT += core gui
+QT += core gui widgets
 
 CONFIG -= warn_on
 
@@ -132,10 +132,14 @@ include($${THIRDPARTY_QTIMAGEFORMATS_QTBASE_PATH}/src/3rdparty/zlib.pri)
 # --------------------------------------------------------------------------------
 
 SOURCES += \
-    $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}/QtImageFormatsImageReader.cpp
+    $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}/QtImageFormatsImageReader.cpp \
+    $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}/QtImageFormatsMovie.cpp \
+    $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}/QtImageFormatsMovieLabel.cpp
 
 HEADERS += \
-    $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}/QtImageFormatsImageReader.h
+    $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}/QtImageFormatsImageReader.h \
+    $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}/QtImageFormatsMovie.h \
+    $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}/QtImageFormatsMovieLabel.h
 
 # --------------------------------------------------------------------------------
 

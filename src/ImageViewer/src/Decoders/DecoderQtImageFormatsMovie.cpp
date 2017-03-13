@@ -17,55 +17,62 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "DecoderQMovie.h"
+#include "DecoderQtImageFormatsMovie.h"
 
-#include <QMovie>
+#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
 #include <QGraphicsProxyWidget>
-#include <QLabel>
 #include <QFileInfo>
+#include "QtImageFormatsMovie.h"
+#include "QtImageFormatsMovieLabel.h"
+#endif
 
 #include "DecoderAutoRegistrator.h"
 
-#define DECODER_QMOVIE_PRIORITY 160
+#define DECODER_QTIMAREFORMATS_MOVIE_PRIORITY 170
 
 namespace {
 
-DecoderAutoRegistrator registrator(new DecoderQMovie);
+DecoderAutoRegistrator registrator(new DecoderQtImageFormatsMovie);
 
 } // namespace
 
-QString DecoderQMovie::name() const
+QString DecoderQtImageFormatsMovie::name() const
 {
-    return QString::fromLatin1("DecoderQMovie");
+    return QString::fromLatin1("DecoderQtImageFormatsMovie");
 }
 
-QList<DecoderFormatInfo> DecoderQMovie::supportedFormats() const
+QList<DecoderFormatInfo> DecoderQtImageFormatsMovie::supportedFormats() const
 {
-    const QList<QByteArray> readerFormats = QMovie::supportedFormats();
+#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
+    const QList<QByteArray> readerFormats = QtImageFormatsMovie::supportedFormats();
     QList<DecoderFormatInfo> result;
     for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
     {
         const QString format = QString::fromLatin1(*it).toLower();
         DecoderFormatInfo info;
-        info.decoderPriority = DECODER_QMOVIE_PRIORITY;
+        info.decoderPriority = DECODER_QTIMAREFORMATS_MOVIE_PRIORITY;
         info.format = format;
         result.append(info);
     }
     return result;
+#else
+    return QList<QByteArray>();
+#endif
 }
 
-QGraphicsItem *DecoderQMovie::loadImage(const QString &filePath)
+QGraphicsItem *DecoderQtImageFormatsMovie::loadImage(const QString &filePath)
 {
     const QFileInfo fileInfo(filePath);
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
-    QMovie *movie = new QMovie(filePath);
+#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
+    QtImageFormatsMovie *movie = new QtImageFormatsMovie(filePath);
     if(!movie->isValid())
     {
         movie->deleteLater();
         return NULL;
     }
-    QLabel *movieLabel = new QLabel();
+    QtImageFormatsMovieLabel *movieLabel = new QtImageFormatsMovieLabel();
     movieLabel->setAttribute(Qt::WA_NoSystemBackground, true);
     movieLabel->setMovie(movie);
     movie->setParent(movieLabel);
@@ -73,4 +80,7 @@ QGraphicsItem *DecoderQMovie::loadImage(const QString &filePath)
     QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();
     proxy->setWidget(movieLabel);
     return proxy;
+#else
+    return NULL;
+#endif
 }

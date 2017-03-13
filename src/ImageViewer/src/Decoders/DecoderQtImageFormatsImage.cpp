@@ -59,10 +59,10 @@ QList<DecoderFormatInfo> DecoderQtImageFormatsImage::supportedFormats() const
 
 QGraphicsItem *DecoderQtImageFormatsImage::loadImage(const QString &filePath)
 {
-#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
     const QFileInfo fileInfo(filePath);
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
+#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
     QtImageFormatsImageReader imageReader(filePath);
     imageReader.setDecideFormatFromContent(true);
     imageReader.setBackgroundColor(Qt::transparent);

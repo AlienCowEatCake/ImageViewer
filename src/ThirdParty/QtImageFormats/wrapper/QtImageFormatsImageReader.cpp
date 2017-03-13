@@ -1,6 +1,4 @@
-/***************************************
- * This is modified QImageReader code. *
- ***************************************/
+/// @note This is modified QImageReader code.
 
 #include "QtImageFormatsImageReader.h"
 
@@ -138,7 +136,7 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
         // this allows plugins to override our built-in handlers.
         if(QFile *file = qobject_cast<QFile *>(device))
         {
-#ifdef QTIMAGEFORMATS_IMAGEREADER_DEBUG
+#if defined (QTIMAGEFORMATS_IMAGEREADER_DEBUG)
             qDebug() << "QImageReader::createReadHandler: device is a file:" << file->fileName();
 #endif
             suffix = QFileInfo(file->fileName()).suffix().toLower().toLatin1();
@@ -213,7 +211,7 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
         default:
             break;
         }
-#ifdef QTIMAGEFORMATS_IMAGEREADER_DEBUG
+#if defined (QTIMAGEFORMATS_IMAGEREADER_DEBUG)
         if(handler)
             qDebug() << "QImageReader::createReadHandler: using the built-in handler for" << testFormat;
 #endif
@@ -305,7 +303,7 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
 
             if(handler)
             {
-#ifdef QTIMAGEFORMATS_IMAGEREADER_DEBUG
+#if defined (QTIMAGEFORMATS_IMAGEREADER_DEBUG)
                 qDebug("QImageReader::createReadHandler: the %s built-in handler can read this data", handler->name().constData());
 #endif
                 break;
@@ -319,7 +317,7 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
 
     if(!handler)
     {
-#ifdef QTIMAGEFORMATS_IMAGEREADER_DEBUG
+#if defined (QTIMAGEFORMATS_IMAGEREADER_DEBUG)
         qDebug("QImageReader::createReadHandler: no handlers found. giving up.");
 #endif
         // no handler: give up.
@@ -392,9 +390,9 @@ struct QtImageFormatsImageReader::Impl
 QtImageFormatsImageReader::Impl::Impl(QtImageFormatsImageReader *reader)
     : autoDetectImageFormat(true)
     , ignoresFormatAndExtension(false)
-    , device(NULL)
+    , device(Q_NULLPTR)
     , deleteDevice(false)
-    , handler(NULL)
+    , handler(Q_NULLPTR)
     , quality(-1)
     , autoTransform(UsePluginDefault)
     , imageReaderError(QImageReader::UnknownError)
@@ -531,7 +529,7 @@ void QtImageFormatsImageReader::setDevice(QIODevice *device)
     m_impl->device = device;
     m_impl->deleteDevice = false;
     delete m_impl->handler;
-    m_impl->handler = NULL;
+    m_impl->handler = Q_NULLPTR;
     m_impl->text.clear();
 }
 
