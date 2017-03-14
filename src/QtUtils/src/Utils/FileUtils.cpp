@@ -400,17 +400,11 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
         return false;
     }
 
-//    if(!pathInfo.isWritable()) /// @todo FIXME!
-//    {
-//        if(errorDescription)
-//            *errorDescription = QString::fromLatin1("Permission denied: %1").arg(path);
-//        return false;
-//    }
     struct stat pathStat;
     memset(&pathStat, 0, sizeof(pathStat));
     if(!(lstat(pathInfo.absoluteFilePath().toLocal8Bit().data(), &pathStat) == 0 &&
          pathInfo.isReadable() && QFileInfo(pathInfo.absolutePath()).isWritable() &&
-         !((pathStat.st_mode & S_ISVTX) && (pathStat.st_uid != getuid()))))
+         !((pathStat.st_mode & S_ISVTX) && (pathStat.st_uid != geteuid()))))
     {
         if(errorDescription)
             *errorDescription = QString::fromLatin1("Permission denied: %1").arg(path);
