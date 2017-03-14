@@ -396,7 +396,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
     if(!pathInfo.exists())
     {
         if(errorDescription)
-            *errorDescription = QString::fromLatin1("File not found: %1").arg(path);
+            *errorDescription = qApp->translate("FileUtils", "File not found: %1").arg(path);
         return false;
     }
 
@@ -407,7 +407,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
          !((pathStat.st_mode & S_ISVTX) && (pathStat.st_uid != geteuid()))))
     {
         if(errorDescription)
-            *errorDescription = QString::fromLatin1("Permission denied: %1").arg(path);
+            *errorDescription = qApp->translate("FileUtils", "Permission denied: %1").arg(path);
         return false;
     }
 
@@ -426,7 +426,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
         if(trashDev != pathDev)
         {
             if(errorDescription)
-                *errorDescription = QString::fromLatin1("Couldn't find mount point for %1").arg(path);
+                *errorDescription = qApp->translate("FileUtils", "Couldn't find mount point for %1").arg(path);
             return false;
         }
         destTrash = findExtVolumeTrash(topDir);
@@ -434,7 +434,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
     if(!trashMove(path, destTrash, topDir))
     {
         if(errorDescription)
-            *errorDescription = QString::fromLatin1("Couldn't move to trash for %1").arg(path);
+            *errorDescription = qApp->translate("FileUtils", "Couldn't move to trash: %1").arg(path);
         return false;
     }
     return true;
@@ -448,7 +448,9 @@ namespace FileUtils {
 /// @brief Удаление указанного файла или директории в корзину
 /// @attention Используется удаление без запроса. В случае отсутствия на целевой системе
 ///         корзины, либо если корзина программно отключена поведение этой функции строго
-///         не специфицируется. Предполагаемое поведение - удаление файла мимо корзины.
+///         не специфицируется. Предполагаемое поведение - либо будет произведен выход с
+///         false, либо произойдет удаление файла мимо корзины (может зависеть от текущей
+///         платформы). Текстовое описание ошибки при этом устанавливаться не обязано.
 /// @param[in] path - путь к файлу или директории
 /// @param[out] errorDescription - текстовое описание ошибки в случае ее возникновения
 /// @return - true в случае успешного удаления, false в случае ошибки
