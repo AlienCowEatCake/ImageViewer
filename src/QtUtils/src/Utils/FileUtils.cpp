@@ -68,21 +68,21 @@ namespace MoveToTrashInternal {
 //# find or create the user's trash directory.
 
 //FILES_DIR = 'files'
-static QString getFilesDir()
+static const QString &getFilesDir()
 {
     static const QString FILES_DIR = QString::fromLatin1("files");
     return FILES_DIR;
 }
 
 //INFO_DIR = 'info'
-static QString getInfoDir()
+static const QString &getInfoDir()
 {
     static const QString INFO_DIR = QString::fromLatin1("info");
     return INFO_DIR;
 }
 
 //INFO_SUFFIX = '.trashinfo'
-static QString getInfoSuffix()
+static const QString &getInfoSuffix()
 {
     static const QString INFO_SUFFIX = QString::fromLatin1(".trashinfo");
     return INFO_SUFFIX;
@@ -90,45 +90,45 @@ static QString getInfoSuffix()
 
 //# Default of ~/.local/share [3]
 //XDG_DATA_HOME = op.expanduser(os.environ.get('XDG_DATA_HOME', '~/.local/share'))
-static QString getXdgDataHome()
+static const QString &getXdgDataHome()
 {
     static const QString XDG_DATA_HOME = QFileInfo(QProcessEnvironment().value(QString::fromLatin1("XDG_DATA_HOME"), QString::fromLatin1("%1/.local/share").arg(QDir::homePath()))).absoluteFilePath();
     return XDG_DATA_HOME;
 }
 
 //HOMETRASH = op.join(XDG_DATA_HOME, 'Trash')
-static QString getHomeTrash()
+static const QString &getHomeTrash()
 {
     static const QString HOMETRASH = QDir(getXdgDataHome()).absoluteFilePath(QString::fromLatin1("Trash"));
     return HOMETRASH;
 }
 
 //uid = os.getuid()
-static QString getUid()
+static const QString &getUid()
 {
     static const QString uid = QString::number(getuid());
     return uid;
 }
 
 //TOPDIR_TRASH = '.Trash'
-static QString getTopdirTrash()
+static const QString &getTopDirTrash()
 {
     static const QString TOPDIR_TRASH = QString::fromLatin1(".Trash");
     return TOPDIR_TRASH;
 }
 
 //TOPDIR_FALLBACK = '.Trash-' + str(uid)
-static QString getTopdirFallback()
+static const QString &getTopDirFallback()
 {
-    static const QString TOPDIR_TRASH = QString::fromLatin1(".Trash-") + getUid();
-    return TOPDIR_TRASH;
+    static const QString TOPDIR_FALLBACK = QString::fromLatin1(".Trash-") + getUid();
+    return TOPDIR_FALLBACK;
 }
 
 //def is_parent(parent, path):
 //    path = op.realpath(path) # In case it's a symlink
 //    parent = op.realpath(parent)
 //    return path.startswith(parent)
-static bool is_parent(const QString &parent, const QString &path)
+static bool isParent(const QString &parent, const QString &path)
 {
     const QString canonicalPath = QFileInfo(path).canonicalFilePath();
     const QString canonicalParent = QFileInfo(parent).canonicalFilePath();
@@ -137,7 +137,7 @@ static bool is_parent(const QString &parent, const QString &path)
 
 //def format_date(date):
 //    return date.strftime("%Y-%m-%dT%H:%M:%S")
-static QString format_date(const QDateTime &date)
+static QString formatDate(const QDateTime &date)
 {
     return date.toString(QString::fromLatin1("yyyy-MM-ddTHH:mm:ss"));
 }
@@ -154,17 +154,17 @@ static QString format_date(const QDateTime &date)
 //    info += "Path=" + quote(src) + "\n"
 //    info += "DeletionDate=" + format_date(datetime.now()) + "\n"
 //    return info
-static QString info_for(const QString &src, const QString &topdir)
+static QString infoFor(const QString &src, const QString &topDir)
 {
     QString path;
-    if(topdir.isEmpty() || !is_parent(topdir, src))
+    if(topDir.isEmpty() || !isParent(topDir, src))
         path = QFileInfo(src).absoluteFilePath();
     else
-        path = QDir(topdir).relativeFilePath(src);
+        path = QDir(topDir).relativeFilePath(src);
     QString info;
     info.append(QString::fromLatin1("[Trash Info]\n"));
     info.append(QString::fromLatin1("Path=%1\n").arg(QString::fromLatin1(QUrl::toPercentEncoding(path))));
-    info.append(QString::fromLatin1("DeletionDate=%1\n").arg(format_date(QDateTime::currentDateTime())));
+    info.append(QString::fromLatin1("DeletionDate=%1\n").arg(formatDate(QDateTime::currentDateTime())));
     return info;
 }
 
@@ -172,9 +172,9 @@ static QString info_for(const QString &src, const QString &topdir)
 //    # use 0700 for paths [3]
 //    if not op.exists(dir):
 //        os.makedirs(dir, 0o700)
-static bool check_create(const QString &dir)
+static bool checkCreate(const QString &dir)
 {
-    QByteArray name = QFileInfo(dir).absoluteFilePath().toLocal8Bit();
+    const QByteArray name = QFileInfo(dir).absoluteFilePath().toLocal8Bit();
     struct stat st;
     memset(&st, 0, sizeof(st));
     if(stat(name.data(), &st) != 0)
@@ -188,14 +188,14 @@ static bool check_create(const QString &dir)
 //   ignored; splitext('.cshrc') returns ('.cshrc', '').
 static void pathSplit(const QString& path, QString &root, QString &ext)
 {
-    QString filename = QFileInfo(path).fileName();
-    const int dotLastIndex = filename.lastIndexOf(QChar::fromLatin1('.'));
-    ext = filename.right(filename.length() - dotLastIndex);
+    const QString fileName = QFileInfo(path).fileName();
+    const int dotLastIndex = fileName.lastIndexOf(QChar::fromLatin1('.'));
+    ext = fileName.right(fileName.length() - dotLastIndex);
     root = path;
-    if(ext == filename)
+    if(ext == fileName)
         ext.clear();
     else
-        root.remove(path.length() - filename.length() + dotLastIndex, filename.length());
+        root.remove(path.length() - fileName.length() + dotLastIndex, fileName.length());
 }
 
 //def trash_move(src, dst, topdir=None):
@@ -217,31 +217,39 @@ static void pathSplit(const QString& path, QString &root, QString &ext)
 //    f = open(op.join(infopath, destname + INFO_SUFFIX), 'w')
 //    f.write(info_for(src, topdir))
 //    f.close()
-static void trash_move(const QString &src, const QString &dst, const QString &topdir = QString())
+static bool trashMove(const QString &src, const QString &dst, const QString &topDir = QString())
 {
-    const QString filename = QFileInfo(src).fileName();
-    const QString filespath = QDir(dst).absoluteFilePath(getFilesDir());
-    const QString infopath = QDir(dst).absoluteFilePath(getInfoDir());
-    QString base_name, ext;
-    pathSplit(filename, base_name, ext);
+    const QString fileName = QFileInfo(src).fileName();
+    const QString filesPath = QDir(dst).absoluteFilePath(getFilesDir());
+    const QString infoPath = QDir(dst).absoluteFilePath(getInfoDir());
+    QString baseName, ext;
+    pathSplit(fileName, baseName, ext);
 
     int counter = 0;
-    QString destname = filename;
-    while(QFileInfo(QDir(filespath).absoluteFilePath(destname)).exists() || QFileInfo(QDir(filespath).absoluteFilePath(destname + getInfoSuffix())).exists())
+    QString destName = fileName;
+    while(QFileInfo(QDir(filesPath).absoluteFilePath(destName)).exists() || QFileInfo(QDir(filesPath).absoluteFilePath(destName + getInfoSuffix())).exists())
     {
         counter++;
-        destname = QString::fromLatin1("%1 %2%3").arg(base_name).arg(counter).arg(ext);
+        destName = QString::fromLatin1("%1 %2%3").arg(baseName).arg(counter).arg(ext);
     }
 
-    check_create(filespath);
-    check_create(infopath);
+    if(!checkCreate(filesPath))
+        return false;
+    if(!checkCreate(infoPath))
+        return false;
 
-    QDir().rename(QFileInfo(src).absoluteFilePath(), QDir(filespath).absoluteFilePath(destname));
-    QFile file(QDir(infopath).absoluteFilePath(destname + getInfoSuffix()));
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    if(!QDir().rename(QFileInfo(src).absoluteFilePath(), QDir(filesPath).absoluteFilePath(destName)))
+        return false;
+    QFile file(QDir(infoPath).absoluteFilePath(destName + getInfoSuffix()));
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QDir().rename(QDir(filesPath).absoluteFilePath(destName), QFileInfo(src).absoluteFilePath());
+        return false;
+    }
     QTextStream out(&file);
-    out << info_for(src, topdir);
+    out << infoFor(src, topDir);
     file.close();
+    return true;
 }
 
 //def find_mount_point(path):
@@ -251,7 +259,7 @@ static void trash_move(const QString &src, const QString &dst, const QString &to
 //    while not op.ismount(path):
 //        path = op.split(path)[0]
 //    return path
-static QString find_mount_point(const QString &path)
+static QString findMountPoint(const QString &path)
 {
     const QFileInfo info = path;
     QDir currentDir = info.isDir() ? info.canonicalFilePath() : info.canonicalPath();
@@ -271,7 +279,7 @@ static QString find_mount_point(const QString &path)
         if(stat(currentDir.canonicalPath().toLocal8Bit().data(), &parentStat) != 0)
             return currentPath;
 
-        if(dirStat.st_dev != parentStat.st_dev || (dirStat.st_dev == parentStat.st_dev && dirStat.st_ino == parentStat.st_ino))
+        if(dirStat.st_dev != parentStat.st_dev || dirStat.st_ino == parentStat.st_ino)
             return currentPath;
 
         currentPath = currentDir.canonicalPath();
@@ -298,22 +306,22 @@ static QString find_mount_point(const QString &path)
 //    except OSError:
 //        return None
 //    return trash_dir
-static QString find_ext_volume_global_trash(const QString &volume_root)
+static QString findExtVolumeGlobalTrash(const QString &volumeRoot)
 {
-    QString trash_dir = QDir(volume_root).absoluteFilePath(getTopdirTrash());
-    const QFileInfo trashInfo(trash_dir);
+    QString trashDir = QDir(volumeRoot).absoluteFilePath(getTopDirTrash());
+    const QFileInfo trashInfo(trashDir);
     if(!trashInfo.exists() || !trashInfo.isDir() || trashInfo.isSymLink())
         return QString();
 
     struct stat trashStat;
     memset(&trashStat, 0, sizeof(trashStat));
-    if(lstat(trash_dir.toLocal8Bit().data(), &trashStat) != 0 || !(trashStat.st_mode & S_ISVTX))
+    if(lstat(trashDir.toLocal8Bit().data(), &trashStat) != 0 || !(trashStat.st_mode & S_ISVTX))
         return QString();
 
-    trash_dir = QDir(trash_dir).absoluteFilePath(getUid());
-    if(!check_create(trash_dir))
+    trashDir = QDir(trashDir).absoluteFilePath(getUid());
+    if(!checkCreate(trashDir))
         return QString();
-    return trash_dir;
+    return trashDir;
 }
 
 //def find_ext_volume_fallback_trash(volume_root):
@@ -323,11 +331,11 @@ static QString find_ext_volume_global_trash(const QString &volume_root)
 //    # be thrown out of send2trash.
 //    check_create(trash_dir)
 //    return trash_dir
-static QString find_ext_volume_fallback_trash(const QString &volume_root)
+static QString findExtVolumeFallbackTrash(const QString &volumeRoot)
 {
-    QString trash_dir = QDir(volume_root).absoluteFilePath(getTopdirFallback());
-    check_create(trash_dir);
-    return trash_dir;
+    const QString trashDir = QDir(volumeRoot).absoluteFilePath(getTopDirFallback());
+    checkCreate(trashDir);
+    return trashDir;
 }
 
 //def find_ext_volume_trash(volume_root):
@@ -335,18 +343,18 @@ static QString find_ext_volume_fallback_trash(const QString &volume_root)
 //    if trash_dir is None:
 //        trash_dir = find_ext_volume_fallback_trash(volume_root)
 //    return trash_dir
-static QString find_ext_volume_trash(const QString &volume_root)
+static QString findExtVolumeTrash(const QString &volumeRoot)
 {
-    QString trash_dir = find_ext_volume_global_trash(volume_root);
-    if(trash_dir.isEmpty())
-        trash_dir = find_ext_volume_fallback_trash(volume_root);
-    return trash_dir;
+    QString trashDir = findExtVolumeGlobalTrash(volumeRoot);
+    if(trashDir.isEmpty())
+        trashDir = findExtVolumeFallbackTrash(volumeRoot);
+    return trashDir;
 }
 
 //# Pull this out so it's easy to stub (to avoid stubbing lstat itself)
 //def get_dev(path):
 //    return os.lstat(path).st_dev
-static dev_t get_dev(const QString &path)
+static dev_t getDev(const QString &path)
 {
     struct stat pathStat;
     memset(&pathStat, 0, sizeof(pathStat));
@@ -382,9 +390,9 @@ static dev_t get_dev(const QString &path)
 //            raise OSError("Couldn't find mount point for %s" % path)
 //        dest_trash = find_ext_volume_trash(topdir)
 //    trash_move(path, dest_trash, topdir)
-static bool send2trash(const QString &path, QString *errorDescription)
+static bool sendToTrash(const QString &path, QString *errorDescription)
 {
-    QFileInfo pathInfo(path);
+    const QFileInfo pathInfo(path);
     if(!pathInfo.exists())
     {
         if(errorDescription)
@@ -392,34 +400,49 @@ static bool send2trash(const QString &path, QString *errorDescription)
         return false;
     }
 
-    if(!pathInfo.isWritable()) /// @todo FIXME!
+//    if(!pathInfo.isWritable()) /// @todo FIXME!
+//    {
+//        if(errorDescription)
+//            *errorDescription = QString::fromLatin1("Permission denied: %1").arg(path);
+//        return false;
+//    }
+    struct stat pathStat;
+    memset(&pathStat, 0, sizeof(pathStat));
+    if(!(lstat(pathInfo.absoluteFilePath().toLocal8Bit().data(), &pathStat) == 0 &&
+         pathInfo.isReadable() && QFileInfo(pathInfo.absolutePath()).isWritable() &&
+         !((pathStat.st_mode & S_ISVTX) && (pathStat.st_uid != getuid()))))
     {
         if(errorDescription)
             *errorDescription = QString::fromLatin1("Permission denied: %1").arg(path);
         return false;
     }
 
-    dev_t path_dev = get_dev(path);
-    dev_t trash_dev = get_dev(QDir::homePath());
-    QString topdir, dest_trash;
-    if(path_dev == trash_dev)
+    dev_t pathDev = getDev(path);
+    dev_t trashDev = getDev(QDir::homePath());
+    QString topDir, destTrash;
+    if(pathDev == trashDev)
     {
-        topdir = getXdgDataHome();
-        dest_trash = getHomeTrash();
+        topDir = getXdgDataHome();
+        destTrash = getHomeTrash();
     }
     else
     {
-        topdir = find_mount_point(path);
-        trash_dev = get_dev(topdir);
-        if(trash_dev != path_dev)
+        topDir = findMountPoint(path);
+        trashDev = getDev(topDir);
+        if(trashDev != pathDev)
         {
             if(errorDescription)
                 *errorDescription = QString::fromLatin1("Couldn't find mount point for %1").arg(path);
             return false;
         }
-        dest_trash = find_ext_volume_trash(topdir);
+        destTrash = findExtVolumeTrash(topDir);
     }
-    trash_move(path, dest_trash, topdir);
+    if(!trashMove(path, destTrash, topDir))
+    {
+        if(errorDescription)
+            *errorDescription = QString::fromLatin1("Couldn't move to trash for %1").arg(path);
+        return false;
+    }
     return true;
 }
 
@@ -561,7 +584,7 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
 
     // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_other.py
 
-    return MoveToTrashInternal::send2trash(absolutePath, errorDescription);
+    return MoveToTrashInternal::sendToTrash(absolutePath, errorDescription);
 
 #endif
 
