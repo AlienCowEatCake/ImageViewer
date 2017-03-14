@@ -59,6 +59,16 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>dds</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>DirectDraw Surface Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>gif</string>
 			</array>
 			<key>CFBundleTypeName</key>
@@ -95,6 +105,29 @@
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Joint Photographic Experts Group Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>jp2</string>
+				<string>j2k</string>
+				<string>jpc</string>
+				<string>j2c</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>JPEG 2000 Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>mng</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Multiple-image Network Graphics Image</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
@@ -178,6 +211,26 @@
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Tagged Image File Format Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>wbmp</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Wireless Application Protocol Bitmap Format Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>webp</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>WebP Image</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>

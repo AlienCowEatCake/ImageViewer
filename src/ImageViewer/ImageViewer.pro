@@ -67,10 +67,7 @@ SOURCES += \
     src/Decoders/DecodersManager.cpp \
     src/Decoders/DecoderQImage.cpp \
     src/Decoders/DecoderQMovie.cpp \
-    src/Decoders/DecoderQtImageFormatsImage.cpp \
-    src/Decoders/DecoderQtImageFormatsMovie.cpp \
     src/Decoders/DecoderQtSVG.cpp \
-    src/Decoders/DecoderSTB.cpp \
     src/Decoders/ExifUtils.cpp \
     src/main.cpp
 
@@ -86,11 +83,24 @@ HEADERS += \
     src/Decoders/DecoderAutoRegistrator.h \
     src/Decoders/DecoderQImage.h \
     src/Decoders/DecoderQMovie.h \
-    src/Decoders/DecoderQtImageFormatsImage.h \
-    src/Decoders/DecoderQtImageFormatsMovie.h \
     src/Decoders/DecoderQtSVG.h \
-    src/Decoders/DecoderSTB.h \
     src/Decoders/ExifUtils.h
+
+has_thirdparty_stb {
+    SOURCES += \
+        src/Decoders/DecoderSTB.cpp
+    HEADERS += \
+        src/Decoders/DecoderSTB.h
+}
+
+has_thirdparty_qtimageformats {
+    SOURCES += \
+        src/Decoders/DecoderQtImageFormatsImage.cpp \
+        src/Decoders/DecoderQtImageFormatsMovie.cpp
+    HEADERS += \
+        src/Decoders/DecoderQtImageFormatsImage.h \
+        src/Decoders/DecoderQtImageFormatsMovie.h
+}
 
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
