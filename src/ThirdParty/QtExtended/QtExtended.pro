@@ -27,6 +27,10 @@ CONFIG -= warn_on
     QMAKE_CXXFLAGS_RELEASE *= -DQT_NO_DEBUG_OUTPUT
 }
 
+macx {
+    QMAKE_CXXFLAGS += -Wno-invalid-constexpr
+}
+
 HEADERS += \
     $$files($${THIRDPARTY_QTEXTENDED_PATH}/*.h)
 

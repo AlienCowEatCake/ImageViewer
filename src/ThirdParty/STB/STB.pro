@@ -29,6 +29,10 @@ CONFIG -= warn_on
     QMAKE_CXXFLAGS += -w44100
 }
 
+macx {
+    QMAKE_CXXFLAGS += -Wno-invalid-constexpr
+}
+
 HEADERS += \
     $$files($${THIRDPARTY_STB_PATH}/*.h)
 

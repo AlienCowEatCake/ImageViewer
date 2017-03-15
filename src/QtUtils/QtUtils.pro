@@ -53,6 +53,10 @@ win32 {
     DEFINES += NOMINMAX
 }
 
+macx {
+    QMAKE_CXXFLAGS += -Wno-invalid-constexpr
+}
+
 HEADERS += \
     $$files(src/Utils/*.h)
 

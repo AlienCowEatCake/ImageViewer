@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 PROJECT=ImageViewer
 BUILDDIR=build_osx_qt4.8_clang64
 APPNAME="Image Viewer"
@@ -15,7 +15,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-${CMD_QMAKE} CONFIG+="release" CONFIG+="x86_64" -r -spec unsupported/macx-clang QMAKE_MACOSX_DEPLOYMENT_TARGET=10.5 "../${PROJECT}.pro"
+${CMD_QMAKE} CONFIG+="release" LIBS+=-dead_strip CONFIG+="x86_64" -r -spec unsupported/macx-clang QMAKE_MACOSX_DEPLOYMENT_TARGET=10.5 "../${PROJECT}.pro"
 make
 cd "${OUT_PATH}"
 cp -a "${BUILD_PATH}/../${INFO_PLIST}" "${APPNAME}.app/Contents/Info.plist"
@@ -24,16 +24,15 @@ RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -f "${RES_PATH}/empty.lproj"
 mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"
 cp -a "${BUILD_PATH}/../${ICON}" "${RES_PATH}/"
-${CMD_DEPLOY} "${APPNAME}.app" -dmg -verbose=2
+${CMD_DEPLOY} "${APPNAME}.app" -verbose=2
 cd "${BUILD_PATH}"
 
-hdiutil convert -format UDRW -o "${APPNAME}_rw.dmg" "${OUT_PATH}/${APPNAME}.dmg"
-mkdir "${APPNAME}_rw_mount"
-hdiutil attach -mountpoint "${APPNAME}_rw_mount" -noautoopen "${APPNAME}_rw.dmg"
-cd "${APPNAME}_rw_mount"
+INSTALL_PATH="${PWD}/install"
+ARTIFACTS_PATH="${PWD}/artifacts"
+mkdir -p "${INSTALL_PATH}" "${ARTIFACTS_PATH}"
+mv "${OUT_PATH}/${APPNAME}.app" "${INSTALL_PATH}/"
+cd "${INSTALL_PATH}"
 ln -s /Applications ./Applications
-cd ..
-hdiutil detach "${APPNAME}_rw_mount"
-hdiutil convert -format UDRO -o "${APPNAME}_ro.dmg" "${APPNAME}_rw.dmg"
-cp "${APPNAME}_ro.dmg" ../"${DMGNAME}.dmg"
+cd "${BUILD_PATH}"
+hdiutil create -format UDBZ -srcfolder "${INSTALL_PATH}" -volname "${APPNAME}" "${ARTIFACTS_PATH}/${DMGNAME}.dmg"
 
