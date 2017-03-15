@@ -168,7 +168,7 @@ struct MainWindow::Impl
             mainWindow->m_ui->navigateNext->setEnabled(true);
             mainWindow->m_ui->navigatePrevious->setEnabled(true);
         }
-        mainWindow->m_ui->deleteFile->setEnabled(QFileInfo(fileInfo.absolutePath()).isWritable() && isFileOpened());
+        mainWindow->m_ui->deleteFile->setEnabled(fileInfo.exists() && fileInfo.isWritable() && isFileOpened());
     }
 
     void onFileClosed()
@@ -328,18 +328,18 @@ void MainWindow::updateWindowTitle()
         return;
     }
     const QSize imageSize = m_ui->imageViewerWidget->imageSize();
-    QString label = m_impl->settings->lastOpenedPath().split(QChar::fromLatin1('/')).last();
-#if defined (Q_OS_WIN32)
-    label = label.split(QChar::fromLatin1('\\')).last();
-#endif
+    QString label = QFileInfo(m_impl->settings->lastOpenedPath()).fileName();
     label.append(QString::fromLatin1(" (%1x%2) %3% - %4")
                  .arg(imageSize.width())
                  .arg(imageSize.height())
                  .arg(static_cast<quint64>(m_ui->imageViewerWidget->zoomLevel() * 100))
                  .arg(qApp->applicationName()));
-    label.prepend(QString::fromLatin1("[%1/%2] ")
-                  .arg(m_impl->currentIndexInDirectory + 1)
-                  .arg(m_impl->filesInCurrentDirectory.size()));
+    if(m_impl->currentIndexInDirectory >= 0)
+    {
+        label.prepend(QString::fromLatin1("[%1/%2] ")
+                      .arg(m_impl->currentIndexInDirectory + 1)
+                      .arg(m_impl->filesInCurrentDirectory.size()));
+    }
     setWindowTitle(label);
 }
 
