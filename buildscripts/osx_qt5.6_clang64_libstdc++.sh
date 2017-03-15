@@ -1,36 +1,42 @@
-#!/bin/bash
+#!/bin/bash -e
 PROJECT=ImageViewer
 BUILDDIR=build_osx_qt5.6_clang64_libstdc++
 APPNAME="Image Viewer"
 DMGNAME="${PROJECT}_qt5.6_clang64_libstdc++"
 OUT_PATH="src/${PROJECT}"
 
-QTDIR="/opt/Qt/5.6.2/clang_64_libstdc++_sdk10.11"
-CMD_QMAKE="${QTDIR}/bin/qmake"
-CMD_DEPLOY="${QTDIR}/bin/macdeployqt"
+QT_PATH="/opt/Qt/5.6.2/clang_64_libstdc++_sdk10.11"
+QTPLUGINS_PATH="${QT_PATH}/plugins"
+CMD_QMAKE="${QT_PATH}/bin/qmake"
+CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
 
 cd "$(dirname $0)"/..
 rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-${CMD_QMAKE} CONFIG+="release" "../${PROJECT}.pro"
+${CMD_QMAKE} CONFIG+="release" LIBS+=-dead_strip "../${PROJECT}.pro"
 make -j3
 cd "${OUT_PATH}"
 sed -e 's/10.7/10.6/' -i "" "${APPNAME}.app/Contents/Info.plist"
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -f "${RES_PATH}/empty.lproj"
 mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"
-${CMD_DEPLOY} "${APPNAME}.app" -dmg -verbose=2
+PLUGINS_PATH="${APPNAME}.app/Contents/PlugIns"
+mkdir -p "${PLUGINS_PATH}/iconengines"
+for iconengines_plugin in libqsvgicon.dylib ; do
+	cp -a "${QTPLUGINS_PATH}/iconengines/${iconengines_plugin}" "${PLUGINS_PATH}/iconengines/"
+done
+${CMD_DEPLOY} "${APPNAME}.app" -verbose=2
 cd "${BUILD_PATH}"
 
-hdiutil convert -format UDRW -o "${APPNAME}_rw.dmg" "${OUT_PATH}/${APPNAME}.dmg"
-mkdir "${APPNAME}_rw_mount"
-hdiutil attach -mountpoint "${APPNAME}_rw_mount" -noautoopen "${APPNAME}_rw.dmg"
-cd "${APPNAME}_rw_mount"
+INSTALL_PATH="${PWD}/install"
+ARTIFACTS_PATH="${PWD}/artifacts"
+mkdir -p "${INSTALL_PATH}" "${ARTIFACTS_PATH}"
+mv "${OUT_PATH}/${APPNAME}.app" "${INSTALL_PATH}/"
+cd "${INSTALL_PATH}"
 ln -s /Applications ./Applications
-cd ..
-hdiutil detach "${APPNAME}_rw_mount"
-hdiutil convert -format UDRO -o "${APPNAME}_ro.dmg" "${APPNAME}_rw.dmg"
-cp "${APPNAME}_ro.dmg" ../"${DMGNAME}.dmg"
+find "${APPNAME}.app/Contents/PlugIns" -name "*_debug.dylib" -delete
+cd "${BUILD_PATH}"
+hdiutil create -fs UDF -format UDBZ -srcfolder "${INSTALL_PATH}" -volname "${APPNAME}" "${ARTIFACTS_PATH}/${DMGNAME}.dmg"
 

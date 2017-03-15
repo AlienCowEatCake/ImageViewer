@@ -35,7 +35,7 @@ bool WidgetHasDarkTheme(const QWidget *widget);
 /// @param[in] defaultImagePath - Путь к иконке по умолчанию (может быть SVG)
 /// @param[in] scaledImagePaths - Список путей иконкам разного размера (растр)
 /// @return Масштабируемая иконка
-QIcon CreateScalableIcon(const QString &defaultImagePath, const QStringList &scaledImagePaths);
+QIcon CreateScalableIcon(const QString &defaultImagePath, const QStringList &scaledImagePaths = QStringList());
 
 /// @brief Типы иконок
 enum IconTypes
