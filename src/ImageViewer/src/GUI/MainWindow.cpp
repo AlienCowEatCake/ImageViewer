@@ -549,11 +549,8 @@ void MainWindow::onExitRequested()
 
 void MainWindow::onDirectoryChanged()
 {
-    if(m_impl->isFileOpened())
-    {
-        m_impl->updateDirectoryInfo(m_impl->settings->lastOpenedPath(), true);
-        updateWindowTitle();
-    }
+    m_impl->updateDirectoryInfo(m_impl->settings->lastOpenedPath(), true);
+    updateWindowTitle();
 }
 
 void MainWindow::onZoomFitToWindowClicked()
