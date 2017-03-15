@@ -36,6 +36,13 @@ class QGestureEvent {};
 class QPinchGesture {};
 #endif
 
+namespace {
+
+const qreal ZOOM_CHANGE_EPSILON = 1e-5;
+const qreal ZOOM_FIT_CORRECTION = 0.999;
+
+} // namespace
+
 struct ImageViewerWidget::Impl
 {
     Impl(ImageViewerWidget *widget)
@@ -76,7 +83,7 @@ struct ImageViewerWidget::Impl
             {
                 const qreal deltaWidth = qreal(windowSize.width()) / qreal(imageSize.width());
                 const qreal deltaHeight = qreal(windowSize.height()) / qreal(imageSize.height());
-                currentZoomLevel = qMin(deltaWidth, deltaHeight);
+                currentZoomLevel = qMin(deltaWidth, deltaHeight) * ZOOM_FIT_CORRECTION;
                 imageViewerWidget->scale(currentZoomLevel, currentZoomLevel);
             }
             else
@@ -92,7 +99,7 @@ struct ImageViewerWidget::Impl
         }
         }
 
-        if(previousZoomLevel != currentZoomLevel)
+        if(qAbs(previousZoomLevel - currentZoomLevel) / qMax(previousZoomLevel, currentZoomLevel) > ZOOM_CHANGE_EPSILON)
         {
             emit imageViewerWidget->zoomLevelChanged(currentZoomLevel);
             previousZoomLevel = currentZoomLevel;
