@@ -54,13 +54,14 @@ public slots:
     void onDeleteFileRequested();
     void onExitRequested();
 
-    void onDirectoryChanged();
-
     void onZoomFitToWindowClicked();
     void onZoomOriginalSizeClicked();
 
     void onActionEnglishTriggered();
     void onActionRussianTriggered();
+
+private slots:
+    void onDirectoryChanged();
 
 protected:
     void closeEvent(QCloseEvent *event);

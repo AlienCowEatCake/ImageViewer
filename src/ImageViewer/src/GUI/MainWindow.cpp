@@ -547,12 +547,6 @@ void MainWindow::onExitRequested()
     close();
 }
 
-void MainWindow::onDirectoryChanged()
-{
-    m_impl->updateDirectoryInfo(m_impl->settings->lastOpenedPath(), true);
-    updateWindowTitle();
-}
-
 void MainWindow::onZoomFitToWindowClicked()
 {
     ImageViewerWidget::ZoomMode mode;
@@ -581,6 +575,12 @@ void MainWindow::onActionEnglishTriggered()
 void MainWindow::onActionRussianTriggered()
 {
     setLanguage(QString::fromLatin1("ru"));
+}
+
+void MainWindow::onDirectoryChanged()
+{
+    m_impl->updateDirectoryInfo(m_impl->settings->lastOpenedPath(), true);
+    updateWindowTitle();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
