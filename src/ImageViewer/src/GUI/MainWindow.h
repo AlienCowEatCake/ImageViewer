@@ -54,6 +54,8 @@ public slots:
     void onDeleteFileRequested();
     void onExitRequested();
 
+    void onDirectoryChanged();
+
     void onZoomFitToWindowClicked();
     void onZoomOriginalSizeClicked();
 

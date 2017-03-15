@@ -41,6 +41,7 @@
 #include <QDir>
 #include <QVector>
 #include <QtAlgorithms>
+#include <QFileSystemWatcher>
 
 #include "Utils/SettingsWrapper.h"
 #include "Utils/Workarounds.h"
@@ -110,6 +111,7 @@ struct MainWindow::Impl
         , settings(new GUISettings(mainWindow))
         , supportedFormats(DecodersManager::getInstance().supportedFormatsWithWildcards())
         , imageSaver(mainWindow)
+        , watcher(mainWindow)
     {
         onFileClosed();
     }
@@ -126,13 +128,13 @@ struct MainWindow::Impl
         return mainWindow->m_ui->imageViewerWidget->imageSize().isValid();
     }
 
-    void onFileOpened(const QString &path)
+    void updateDirectoryInfo(const QString &path, bool force = false)
     {
         const QFileInfo fileInfo = QFileInfo(path);
         const QDir dir = fileInfo.dir();
         const QString directoryPath = dir.absolutePath();
         const QString fileName = fileInfo.fileName();
-        if(directoryPath != currentDirectory)
+        if(directoryPath != currentDirectory || force)
         {
             currentDirectory = directoryPath;
             filesInCurrentDirectory.clear();
@@ -144,6 +146,14 @@ struct MainWindow::Impl
                 filesInCurrentDirectory.append(name);
                 if(currentIndexInDirectory == -1 && name == fileName)
                     currentIndexInDirectory = filesInCurrentDirectory.size() - 1;
+            }
+            const QStringList currentDirectories = watcher.directories();
+            if(currentDirectories.isEmpty() || currentDirectories.first() != directoryPath)
+            {
+                if(!currentDirectories.isEmpty())
+                    watcher.removePaths(currentDirectories);
+                if(currentIndexInDirectory >= 0)
+                    watcher.addPath(directoryPath);
             }
         }
         else
@@ -173,6 +183,9 @@ struct MainWindow::Impl
 
     void onFileClosed()
     {
+        const QStringList currentDirectories = watcher.directories();
+        if(!currentDirectories.isEmpty())
+            watcher.removePaths(currentDirectories);
         filesInCurrentDirectory.clear();
         currentDirectory.clear();
         currentIndexInDirectory = -1;
@@ -190,6 +203,7 @@ struct MainWindow::Impl
     int currentIndexInDirectory;
 
     ImageSaver imageSaver;
+    QFileSystemWatcher watcher;
 };
 
 MainWindow::MainWindow(QWidget *parent)
@@ -227,6 +241,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_impl->settings, SIGNAL(backgroundColorChanged(const QColor&)), m_ui->imageViewerWidget, SLOT(setBackgroundColor(const QColor&)));
     connect(m_impl->settings, SIGNAL(smoothTransformationChanged(bool)), m_ui->imageViewerWidget, SLOT(setSmoothTransformation(bool)));
+
+    connect(&m_impl->watcher, SIGNAL(directoryChanged(const QString&)), this, SLOT(onDirectoryChanged()));
 
     m_ui->imageViewerWidget->setZoomLevel(m_impl->settings->zoomLevel());
     m_ui->imageViewerWidget->setBackgroundColor(m_impl->settings->backgroundColor());
@@ -435,7 +451,7 @@ void MainWindow::onOpenFileRequested(const QString &filePath)
         m_ui->setImageControlsEnabled(false);
         QMessageBox::critical(this, tr("Error"), tr("Failed to open file \"%1\"").arg(filePath));
     }
-    m_impl->onFileOpened(filePath);
+    m_impl->updateDirectoryInfo(filePath);
     updateWindowTitle();
 }
 
@@ -529,6 +545,15 @@ void MainWindow::onDeleteFileRequested()
 void MainWindow::onExitRequested()
 {
     close();
+}
+
+void MainWindow::onDirectoryChanged()
+{
+    if(m_impl->isFileOpened())
+    {
+        m_impl->updateDirectoryInfo(m_impl->settings->lastOpenedPath(), true);
+        updateWindowTitle();
+    }
 }
 
 void MainWindow::onZoomFitToWindowClicked()
