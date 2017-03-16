@@ -150,7 +150,6 @@ struct ImageViewerWidget::Impl
                 gesture->setRotationAngle(0);
             }
         }
-        /// @todo QPinchGesture::CenterPointChanged
 #else
         Q_UNUSED(gesture);
 #endif
@@ -162,7 +161,7 @@ struct ImageViewerWidget::Impl
     ZoomMode currentZoomMode;
     qreal currentZoomLevel;
     qreal previousZoomLevel;
-    qreal currentRotationAngle;
+    int currentRotationAngle;
     Qt::TransformationMode transformationMode;
 };
 
@@ -252,11 +251,10 @@ QImage ImageViewerWidget::grabImage() const
     options.exposedRect = m_impl->currentGraphicsItem->boundingRect();
     m_impl->currentGraphicsItem->paint(&painter, &options);
     painter.end();
-    int rotationAngle = static_cast<int>(m_impl->currentRotationAngle);
-    if(rotationAngle)
+    if(m_impl->currentRotationAngle)
     {
         QTransform transform;
-        transform.rotate(rotationAngle);
+        transform.rotate(m_impl->currentRotationAngle);
         image = image.transformed(transform);
     }
     return image;
