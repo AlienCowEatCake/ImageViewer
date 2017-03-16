@@ -23,6 +23,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
 #include <QStyleOptionGraphicsItem>
+#include <QMatrix>
 
 #if (QT_VERSION < QT_VERSION_CHECK(4, 6, 0))
 #define IMAGEVIEWERWIDGET_NO_GESTURES
@@ -58,46 +59,43 @@ struct ImageViewerWidget::Impl
         widget->setScene(scene);
     }
 
+    qreal getFitToWindowZoomLevel() const
+    {
+        QMatrix rotationMatrix;
+        rotationMatrix.rotate(currentRotationAngle);
+        const QRectF boundingRect = rotationMatrix.mapRect(currentGraphicsItem->boundingRect());
+        const QSize imageSize = boundingRect.size().toSize();
+        const QSize windowSize = imageViewerWidget->viewport()->size();
+        if(imageSize.width() > windowSize.width() || imageSize.height() > windowSize.height())
+        {
+            const qreal deltaWidth = qreal(windowSize.width()) / qreal(imageSize.width());
+            const qreal deltaHeight = qreal(windowSize.height()) / qreal(imageSize.height());
+            return qMin(deltaWidth, deltaHeight) * ZOOM_FIT_CORRECTION;
+        }
+        return 1;
+    }
+
     void updateTransformations()
     {
         if(!currentGraphicsItem)
             return;
 
-        imageViewerWidget->resetTransform();
-        imageViewerWidget->rotate(currentRotationAngle);
         switch(currentZoomMode)
         {
         case ZOOM_IDENTITY:
-        {
             currentZoomLevel = 1;
             break;
-        }
         case ZOOM_FIT_TO_WINDOW:
-        {
-            QMatrix rotationMatrix;
-            rotationMatrix.rotate(currentRotationAngle);
-            const QRectF boundingRect = rotationMatrix.mapRect(currentGraphicsItem->boundingRect());
-            const QSize imageSize = boundingRect.size().toSize();
-            const QSize windowSize = imageViewerWidget->viewport()->size();
-            if(imageSize.width() > windowSize.width() || imageSize.height() > windowSize.height())
-            {
-                const qreal deltaWidth = qreal(windowSize.width()) / qreal(imageSize.width());
-                const qreal deltaHeight = qreal(windowSize.height()) / qreal(imageSize.height());
-                currentZoomLevel = qMin(deltaWidth, deltaHeight) * ZOOM_FIT_CORRECTION;
-                imageViewerWidget->scale(currentZoomLevel, currentZoomLevel);
-            }
-            else
-            {
-                currentZoomLevel = 1;
-            }
+            currentZoomLevel = getFitToWindowZoomLevel();
             break;
-        }
         case ZOOM_CUSTOM:
-        {
-            imageViewerWidget->scale(currentZoomLevel, currentZoomLevel);
             break;
         }
-        }
+
+        QMatrix matrix;
+        matrix.scale(currentZoomLevel, currentZoomLevel);
+        matrix.rotate(currentRotationAngle);
+        imageViewerWidget->setMatrix(matrix);
 
         if(qAbs(previousZoomLevel - currentZoomLevel) / qMax(previousZoomLevel, currentZoomLevel) > ZOOM_CHANGE_EPSILON)
         {
@@ -172,11 +170,12 @@ ImageViewerWidget::ImageViewerWidget(QWidget *parent)
     : QGraphicsView(parent)
     , m_impl(new Impl(this))
 {
-    setViewportMargins(0, 0, 0, 0);
     setRenderHint(QPainter::Antialiasing, true);
     setRenderHint(QPainter::TextAntialiasing, true);
     setRenderHint(QPainter::SmoothPixmapTransform, true);
-    setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+    setDragMode(QGraphicsView::ScrollHandDrag);
+    setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 #if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
     grabGesture(Qt::PinchGesture);
 #endif
@@ -203,9 +202,8 @@ void ImageViewerWidget::clear()
 {
     m_impl->currentGraphicsItem = NULL;
     scene()->clear();
-    resetTransform();
     resetMatrix();
-    setSceneRect(0, 0, 1, 1);
+    ensureVisible(QRectF(0, 0, 0, 0));
     m_impl->currentRotationAngle = 0;
 }
 
