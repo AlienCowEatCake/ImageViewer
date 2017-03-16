@@ -40,7 +40,7 @@ class QPinchGesture {};
 namespace {
 
 const qreal ZOOM_CHANGE_EPSILON = 1e-5;
-const qreal ZOOM_FIT_CORRECTION = 0.999;
+const int ZOOM_FIT_SIZE_CORRECTION = 1;
 
 } // namespace
 
@@ -68,9 +68,9 @@ struct ImageViewerWidget::Impl
         const QSize windowSize = imageViewerWidget->viewport()->size();
         if(imageSize.width() > windowSize.width() || imageSize.height() > windowSize.height())
         {
-            const qreal deltaWidth = qreal(windowSize.width()) / qreal(imageSize.width());
-            const qreal deltaHeight = qreal(windowSize.height()) / qreal(imageSize.height());
-            return qMin(deltaWidth, deltaHeight) * ZOOM_FIT_CORRECTION;
+            const qreal deltaWidth = qreal(windowSize.width() - ZOOM_FIT_SIZE_CORRECTION) / qreal(imageSize.width());
+            const qreal deltaHeight = qreal(windowSize.height() - ZOOM_FIT_SIZE_CORRECTION) / qreal(imageSize.height());
+            return qMin(deltaWidth, deltaHeight);
         }
         return 1;
     }
