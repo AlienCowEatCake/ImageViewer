@@ -22,6 +22,7 @@
 #include <cstring>
 #include <string>
 #include <algorithm>
+#include <cstdlib>
 
 #include <QtGlobal>
 #if defined (Q_OS_MAC)
@@ -43,13 +44,20 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDateTime>
-#include <QProcessEnvironment>
 #include <QUrl>
 #include <QDebug>
 
 #if !defined (Q_OS_MAC) && !defined (Q_OS_WIN)
 // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_other.py
 namespace MoveToTrashInternal {
+
+QString getEnvironment(const QString &name, const QString &defaultValue = QString())
+{
+    const char *value = getenv(name.toLocal8Bit().data());
+    if(value)
+        return QString::fromLocal8Bit(value);
+    return defaultValue;
+}
 
 // freedesktop.org trash specification:
 //   [1] http://www.freedesktop.org/wiki/Specifications/trash-spec
@@ -78,7 +86,7 @@ static const QString &getInfoSuffix()
 // Default of ~/.local/share [3]
 static const QString &getXdgDataHome()
 {
-    static const QString XDG_DATA_HOME = QFileInfo(QProcessEnvironment().value(QString::fromLatin1("XDG_DATA_HOME"), QString::fromLatin1("%1/.local/share").arg(QDir::homePath()))).absoluteFilePath();
+    static const QString XDG_DATA_HOME = QFileInfo(getEnvironment(QString::fromLatin1("XDG_DATA_HOME"), QString::fromLatin1("%1/.local/share").arg(QDir::homePath()))).absoluteFilePath();
     return XDG_DATA_HOME;
 }
 
