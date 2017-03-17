@@ -36,7 +36,11 @@
 
 #include "DecoderAutoRegistrator.h"
 
+#if defined (QT_DEBUG)
+#define DECODER_NSIMAGE_PRIORITY -1
+#else
 #define DECODER_NSIMAGE_PRIORITY 120
+#endif
 
 namespace {
 
@@ -103,7 +107,7 @@ QGraphicsItem *DecoderNSImage::loadImage(const QString &filePath)
         {
             // https://stackoverflow.com/questions/2548059/turning-an-nsimage-into-a-cgimageref
             NSRect imageRect = NSMakeRect(0, 0, picture.size.width, picture.size.height);
-            CGImageRef cgImage = [picture CGImageForProposedRect:&imageRect context:NULL hints:nil];
+            CGImageRef cgImage = [picture CGImageForProposedRect: &imageRect context: NULL hints: nil];
             pixmap = fromCGImageRef(cgImage);
         }
         else

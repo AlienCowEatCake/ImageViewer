@@ -63,10 +63,14 @@ struct DecodersManager::Impl
                 decoders.insert(decoder);
                 const QList<DecoderFormatInfo> info = decoder->supportedFormats();
                 QStringList debugFormatList;
-                for(QList<DecoderFormatInfo>::ConstIterator it = info.constBegin(); it != info.constEnd(); ++it)
+                for(QList<DecoderFormatInfo>::ConstIterator jt = info.constBegin(); jt != info.constEnd(); ++jt)
                 {
-                    formats[it->format].insert(DecoderWithPriority(decoder, it->decoderPriority));
-                    debugFormatList.append(it->format);
+                    const int priority = jt->decoderPriority;
+                    if(priority >= 0)
+                    {
+                        formats[jt->format].insert(DecoderWithPriority(decoder, priority));
+                        debugFormatList.append(jt->format);
+                    }
                 }
                 qDebug() << "Decoder" << decoder->name() << "registered for" << debugFormatList;
             }
