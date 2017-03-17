@@ -1,0 +1,7 @@
+ImageViewerWidget
+{
+    background-image: url(:/style/background_pattern_light.png);
+    background-position: top left;
+    background-repeat: repeat-xy;
+}
+

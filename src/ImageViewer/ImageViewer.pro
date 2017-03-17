@@ -128,7 +128,8 @@ macx {
 
 RESOURCES += \
     resources/translations/imageviewer_translations.qrc \
-    resources/icon/icon.qrc
+    resources/icon/icon.qrc \
+    resources/style/style.qrc
 
 QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9
 

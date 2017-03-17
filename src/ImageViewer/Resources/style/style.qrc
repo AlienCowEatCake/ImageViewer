@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/style">
+        <file>background_pattern_light.png</file>
+        <file>background_pattern_dark.png</file>
+        <file>style.qss</file>
+    </qresource>
+</RCC>

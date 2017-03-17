@@ -22,6 +22,7 @@
 #include <QStyleFactory>
 #include "GUI/MainWindow.h"
 #include "Utils/Application.h"
+#include "Utils/ThemeUtils.h"
 #include "Utils/Workarounds.h"
 
 #if defined (USE_STATIC_QJPEG)
@@ -50,6 +51,7 @@ int main(int argc, char *argv[])
     app.setAttribute(Qt::AA_DontShowIconsInMenus);
 #endif
     Workarounds::InitQtUtilsResources();
+    ThemeUtils::LoadStyleSheet(QString::fromLatin1(":/style/style.qss"));
     MainWindow * window = new MainWindow;
     if(argc > 1)
     {

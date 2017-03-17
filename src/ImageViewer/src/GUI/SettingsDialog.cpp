@@ -85,18 +85,18 @@ void SettingsDialog::onBackgroundColorChanged(const QColor &color)
 void SettingsDialog::onColorDialogRequested()
 {
     const QColor oldColor = m_impl->settings->backgroundColor();
+    QColorDialog dialog(this);
+    dialog.setOption(QColorDialog::ShowAlphaChannel, true);
+    dialog.setCurrentColor(oldColor);
 #if !defined (Q_OS_MAC)
-    const QColor newColor = QColorDialog::getColor(oldColor, this
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
-        , tr("Select Background Color")
-#endif
-        );
+    setWindowTitle(tr("Select Background Color"));
+    dialog.exec();
+    const QColor newColor = dialog.currentColor();
     if(newColor.isValid() && newColor != oldColor)
         onBackgroundColorChanged(newColor);
 #else
-   QColorDialog dialog(oldColor, this);
-   dialog.setOption(QColorDialog::NoButtons);
-   connect(&dialog, SIGNAL(colorSelected(const QColor&)), this, SLOT(onBackgroundColorChanged(const QColor&)));
-   dialog.exec();
+    dialog.setOption(QColorDialog::NoButtons);
+    connect(&dialog, SIGNAL(colorSelected(const QColor&)), this, SLOT(onBackgroundColorChanged(const QColor&)));
+    dialog.exec();
 #endif
 }

@@ -22,9 +22,38 @@
 #include <QStyle>
 #include <QStyleOption>
 #include <QPixmap>
+#include <QTextStream>
+#include <QFile>
 #include <QDebug>
 
 namespace ThemeUtils {
+
+/// @brief Считать стилизацию из файла и применить ее к QApplication
+/// @param[in] filePath - Путь до QSS файла со стилями
+/// @return true если стилизация успешно применена, false - иначе
+bool LoadStyleSheet(const QString &filePath)
+{
+    return LoadStyleSheet(QStringList() << filePath);
+}
+
+/// @brief Считать стилизацию из файлов и применить ее к QApplication
+/// @param[in] filePaths - Список путей до QSS файлов со стилями
+/// @return true если стилизация успешно применена, false - иначе
+bool LoadStyleSheet(const QStringList &filePaths)
+{
+    bool status = true;
+    QString allStyles;
+    for(QStringList::ConstIterator it = filePaths.constBegin(); it != filePaths.constEnd(); ++it)
+    {
+        QFile styleFile(*it);
+        if(styleFile.open(QIODevice::ReadOnly))
+            allStyles.append(QTextStream(&styleFile).readAll());
+        else
+            status = false;
+    }
+    qApp->setStyleSheet(allStyles);
+    return status;
+}
 
 /// @brief Функция для определения темная используемая тема виджета или нет
 /// @param[in] widget - Виджет, для которого выполняется эта проверка
