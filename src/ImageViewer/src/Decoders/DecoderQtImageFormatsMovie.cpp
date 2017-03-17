@@ -68,7 +68,7 @@ QGraphicsItem *DecoderQtImageFormatsMovie::loadImage(const QString &filePath)
         return NULL;
 #if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
     QtImageFormatsMovie *movie = new QtImageFormatsMovie(filePath);
-    if(!movie->isValid())
+    if(!movie->isValid() || movie->frameCount() == 1)
     {
         movie->deleteLater();
         return NULL;

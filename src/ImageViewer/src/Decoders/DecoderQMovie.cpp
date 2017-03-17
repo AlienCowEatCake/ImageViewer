@@ -60,7 +60,7 @@ QGraphicsItem *DecoderQMovie::loadImage(const QString &filePath)
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
     QMovie *movie = new QMovie(filePath);
-    if(!movie->isValid())
+    if(!movie->isValid() || movie->frameCount() == 1)
     {
         movie->deleteLater();
         return NULL;
