@@ -45,6 +45,8 @@
 #include <QTextStream>
 #include <QDateTime>
 #include <QUrl>
+#include <QProcess>
+#include <QStringList>
 #include <QDebug>
 
 #if !defined (Q_OS_MAC) && !defined (Q_OS_WIN)
@@ -290,6 +292,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
     {
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "The specified path was not found");
+        qWarning() << "[FileUtils::MoveToTrash]: The specified path was not found:" << pathInfo.absoluteFilePath();
         return false;
     }
 
@@ -303,6 +306,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
     {
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "Permission denied");
+        qWarning() << "[FileUtils::MoveToTrash]: Permission denied:" << pathInfo.absoluteFilePath();
         return false;
     }
 
@@ -328,6 +332,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
         {
             if(errorDescription)
                 *errorDescription = qApp->translate("FileUtils", "Could not find mount point for specified path");
+            qWarning() << "[FileUtils::MoveToTrash]: Could not find mount point for specified path:" << pathInfo.absoluteFilePath();
             return false;
         }
         destTrash = findExtVolumeTrash(topDir);
@@ -336,6 +341,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
     {
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash");
+        qWarning() << "[FileUtils::MoveToTrash]: The specified path could not be moved to Trash:" << pathInfo.absoluteFilePath();
         return false;
     }
     return true;
@@ -357,7 +363,7 @@ namespace FileUtils {
 /// @return - true в случае успешного удаления, false в случае ошибки
 bool MoveToTrash(const QString &path, QString *errorDescription)
 {
-    QFileInfo info(path);
+    const QFileInfo info(path);
     if(!info.exists())
     {
         if(errorDescription)
@@ -478,6 +484,24 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
     }
 
 #else
+
+    int status = QProcess::execute(QString::fromLatin1("gvfs-trash"), QStringList() << absolutePath);
+    switch(status)
+    {
+    case -2:
+        qDebug() << "[FileUtils::MoveToTrash]: gvfs-trash process cannot be started";
+        break;
+    case -1:
+        qDebug() << "[FileUtils::MoveToTrash]: gvfs-trash process crashed";
+        break;
+    case 0:
+        return true;
+    default:
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash");
+        qWarning() << "[FileUtils::MoveToTrash]: The specified path could not be moved to Trash" << absolutePath;
+        return false;
+    }
 
     // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_other.py
 

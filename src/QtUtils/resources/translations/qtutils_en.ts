@@ -4,27 +4,28 @@
 <context>
     <name>FileUtils</name>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="292"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="294"/>
         <source>The specified path was not found</source>
         <translation>The specified path was not found</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="305"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="308"/>
         <source>Permission denied</source>
         <translation>Permission denied</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="330"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="334"/>
         <source>Could not find mount point for specified path</source>
         <translation>Could not find mount point for specified path</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="338"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="343"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="501"/>
         <source>The specified path could not be moved to Trash</source>
         <translation>The specified path could not be moved to Trash</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="364"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="370"/>
         <source>The specified path does not exist</source>
         <translation>The specified path does not exist</translation>
     </message>
