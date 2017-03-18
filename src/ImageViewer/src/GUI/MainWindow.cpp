@@ -338,18 +338,28 @@ void MainWindow::openNewWindow(const QString &filename)
 
 void MainWindow::updateWindowTitle()
 {
-    if(!m_impl->isFileOpened())
+    QString label;
+    if(m_impl->isFileOpened())
     {
-        setWindowTitle(qApp->applicationName());
-        return;
+        const QSize imageSize = m_ui->imageViewerWidget->imageSize();
+        label = QFileInfo(m_impl->settings->lastOpenedPath()).fileName();
+        label.append(QString::fromLatin1(" (%1x%2) %3% - %4")
+                     .arg(imageSize.width())
+                     .arg(imageSize.height())
+                     .arg(static_cast<quint64>(m_ui->imageViewerWidget->zoomLevel() * 100))
+                     .arg(qApp->applicationName()));
     }
-    const QSize imageSize = m_ui->imageViewerWidget->imageSize();
-    QString label = QFileInfo(m_impl->settings->lastOpenedPath()).fileName();
-    label.append(QString::fromLatin1(" (%1x%2) %3% - %4")
-                 .arg(imageSize.width())
-                 .arg(imageSize.height())
-                 .arg(static_cast<quint64>(m_ui->imageViewerWidget->zoomLevel() * 100))
-                 .arg(qApp->applicationName()));
+    else if(m_impl->currentIndexInDirectory >= 0)
+    {
+        label = QFileInfo(m_impl->filesInCurrentDirectory[m_impl->currentIndexInDirectory]).fileName();
+        label.append(QString::fromLatin1(" (%1) - %2")
+                     .arg(tr("Error"))
+                     .arg(qApp->applicationName()));
+    }
+    else
+    {
+        label = qApp->applicationName();
+    }
     if(m_impl->currentIndexInDirectory >= 0)
     {
         label.prepend(QString::fromLatin1("[%1/%2] ")
