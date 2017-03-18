@@ -12,49 +12,50 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="367"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="377"/>
         <source>About</source>
         <translation>About</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="374"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="384"/>
         <source>License</source>
         <translation>License</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="375"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="385"/>
         <source>Peter S. Zhigalov</source>
         <translation>Peter S. Zhigalov</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="452"/>
-        <location filename="../../src/GUI/MainWindow.cpp" line="514"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="356"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="462"/>
         <location filename="../../src/GUI/MainWindow.cpp" line="524"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="534"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="452"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="462"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>Failed to open file &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="502"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="512"/>
         <source>Are you sure you want to delete current file?</source>
         <translation>Are you sure you want to delete current file?</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="524"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="534"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation>Failed to delete file &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="478"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="488"/>
         <source>All Supported Images</source>
         <translation>All Supported Images</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="478"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="488"/>
         <source>All Files</source>
         <translation>All Files</translation>
     </message>
@@ -99,7 +100,7 @@
         <translation>Rotate Clockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="479"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="489"/>
         <location filename="../../src/GUI/MainWindow_p.h" line="253"/>
         <source>Open File</source>
         <translation>Open File</translation>
@@ -170,7 +171,7 @@
         <translation>&amp;Russian</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="502"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="512"/>
         <location filename="../../src/GUI/MainWindow_p.h" line="255"/>
         <source>Delete File</source>
         <translation>Delete File</translation>
