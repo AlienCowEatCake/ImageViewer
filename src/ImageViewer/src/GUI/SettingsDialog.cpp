@@ -95,9 +95,10 @@ void SettingsDialog::onColorDialogRequested()
     const QColor newColor = dialog.currentColor();
 #else
     bool ok = true;
-    const QColor newColor = QColorDialog::getRgba(oldColor.rgba(), &ok, this);
+    const QRgb newRgba = QColorDialog::getRgba(oldColor.rgba(), &ok, this);
     if(!ok)
         return;
+    const QColor newColor(qRed(newRgba), qGreen(newRgba), qBlue(newRgba), qAlpha(newRgba));
 #endif
     if(newColor.isValid() && newColor != oldColor)
         onBackgroundColorChanged(newColor);
