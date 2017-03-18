@@ -4,14 +4,29 @@
 <context>
     <name>FileUtils</name>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="54"/>
-        <source>The specified path does not exist</source>
-        <translation>The specified path does not exist</translation>
+        <location filename="../../src/Utils/FileUtils.cpp" line="292"/>
+        <source>The specified path was not found</source>
+        <translation>The specified path was not found</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="176"/>
-        <source>Move to Trash is not implemented yet for your system</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../src/Utils/FileUtils.cpp" line="305"/>
+        <source>Permission denied</source>
+        <translation>Permission denied</translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/FileUtils.cpp" line="330"/>
+        <source>Could not find mount point for specified path</source>
+        <translation>Could not find mount point for specified path</translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/FileUtils.cpp" line="338"/>
+        <source>The specified path could not be moved to Trash</source>
+        <translation>The specified path could not be moved to Trash</translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/FileUtils.cpp" line="364"/>
+        <source>The specified path does not exist</source>
+        <translation>The specified path does not exist</translation>
     </message>
 </context>
 <context>

@@ -289,7 +289,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
     if(!pathInfo.exists())
     {
         if(errorDescription)
-            *errorDescription = qApp->translate("FileUtils", "File not found: %1").arg(path);
+            *errorDescription = qApp->translate("FileUtils", "The specified path was not found");
         return false;
     }
 
@@ -302,7 +302,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
          !((pathStat.st_mode & S_ISVTX) && (pathStat.st_uid != geteuid()))))
     {
         if(errorDescription)
-            *errorDescription = qApp->translate("FileUtils", "Permission denied: %1").arg(path);
+            *errorDescription = qApp->translate("FileUtils", "Permission denied");
         return false;
     }
 
@@ -327,7 +327,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
         if(trashDev != pathDev)
         {
             if(errorDescription)
-                *errorDescription = qApp->translate("FileUtils", "Couldn't find mount point for %1").arg(path);
+                *errorDescription = qApp->translate("FileUtils", "Could not find mount point for specified path");
             return false;
         }
         destTrash = findExtVolumeTrash(topDir);
@@ -335,7 +335,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
     if(!trashMove(path, destTrash, topDir))
     {
         if(errorDescription)
-            *errorDescription = qApp->translate("FileUtils", "Couldn't move to trash: %1").arg(path);
+            *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash");
         return false;
     }
     return true;
