@@ -72,6 +72,8 @@ protected:
     bool event(QEvent* event);
     void showEvent(QShowEvent *event);
     void resizeEvent(QResizeEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
 private:
     struct Impl;

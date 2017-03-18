@@ -172,7 +172,7 @@ ImageViewerWidget::ImageViewerWidget(QWidget *parent)
     setRenderHint(QPainter::Antialiasing, true);
     setRenderHint(QPainter::TextAntialiasing, true);
     setRenderHint(QPainter::SmoothPixmapTransform, true);
-    setDragMode(QGraphicsView::ScrollHandDrag);
+    setDragMode(QGraphicsView::NoDrag);
     setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     setInteractive(false);
@@ -317,4 +317,16 @@ void ImageViewerWidget::resizeEvent(QResizeEvent *event)
 {
     m_impl->updateTransformations();
     QGraphicsView::resizeEvent(event);
+}
+
+void ImageViewerWidget::mousePressEvent(QMouseEvent *event)
+{
+    setDragMode(QGraphicsView::ScrollHandDrag);
+    QGraphicsView::mousePressEvent(event);
+}
+
+void ImageViewerWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    QGraphicsView::mouseReleaseEvent(event);
+    setDragMode(QGraphicsView::NoDrag);
 }
