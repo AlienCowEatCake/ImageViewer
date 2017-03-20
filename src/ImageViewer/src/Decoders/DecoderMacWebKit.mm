@@ -31,6 +31,8 @@
 #include <QUrl>
 #include <QPixmap>
 #include <QPainter>
+#include <QStringList>
+#include <QRegExp>
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
 #include <QMacCocoaViewContainer>
 #endif
@@ -82,11 +84,15 @@ public:
 
     QPixmap grapPixmap();
 
+    void initGeometry(const QSize &size, const QRect &viewBox);
+
 private:
     WebView *m_view;
     QMacCocoaViewContainer *m_container;
     MacWebKitRasterizerViewDelegate *m_delegate;
     State m_state;
+    QSize m_size;
+    QRect m_viewBox;
 };
 
 MacWebKitRasterizerGraphicsItem::MacWebKitRasterizerGraphicsItem(const QString &fileName, QGraphicsItem *parentItem)
@@ -122,9 +128,10 @@ MacWebKitRasterizerGraphicsItem::~MacWebKitRasterizerGraphicsItem()
 
 QRectF MacWebKitRasterizerGraphicsItem::boundingRect() const
 {
-    NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
-    NSRect cacheRect = [webFrameViewDocView bounds];
-    return QRectF(cacheRect.origin.x, cacheRect.origin.y, cacheRect.size.width, cacheRect.size.height);
+//    NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
+//    NSRect cacheRect = [webFrameViewDocView bounds];
+//    return QRectF(cacheRect.origin.x, cacheRect.origin.y, cacheRect.size.width, cacheRect.size.height);
+    return QRectF(m_viewBox);
 }
 
 void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -173,6 +180,14 @@ QPixmap MacWebKitRasterizerGraphicsItem::grapPixmap()
     return pixmap;
 }
 
+void MacWebKitRasterizerGraphicsItem::initGeometry(const QSize &size, const QRect &viewBox)
+{
+    qDebug() << "size:" << size;
+    qDebug() << "viewBox:" << viewBox;
+    m_size = size;
+    m_viewBox = viewBox;
+}
+
 } // namespace
 
 @implementation MacWebKitRasterizerViewDelegate
@@ -196,6 +211,12 @@ QPixmap MacWebKitRasterizerGraphicsItem::grapPixmap()
     if(frame != [sender mainFrame])
         qDebug() << "@@@ ACHTUNG!!! @@@";
     qDebug() << __PRETTY_FUNCTION__;
+    NSString *viewBox = [sender stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('viewBox');"];
+    NSString *height  = [sender stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('height');"];
+    NSString *width   = [sender stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('width');"];
+    const QStringList vb = QString::fromNSString(viewBox).split(QRegExp(QString::fromLatin1("\\s")));
+    const QRect viewBoxRect = (vb.size() == 4 ? QRect(vb.at(0).toInt(), vb.at(1).toInt(), vb.at(2).toInt(), vb.at(3).toInt()) : QRect());
+    m_graphicsItem->initGeometry(QSize(static_cast<int>([width integerValue]), static_cast<int>([height integerValue])), viewBoxRect);
     m_graphicsItem->setState(MacWebKitRasterizerGraphicsItem::STATE_SUCCEED);
 }
 
