@@ -184,10 +184,29 @@ QPixmap MacWebKitRasterizerGraphicsItem::grapPixmap()
 
 void MacWebKitRasterizerGraphicsItem::initGeometry(const QSizeF &size, const QRectF &viewBox)
 {
-    qDebug() << "size:" << size;
-    qDebug() << "viewBox:" << viewBox;
-    m_size = size;
-    m_viewBox = viewBox.isValid() ? viewBox : QRectF(QPointF(0, 0), size);
+    if(!size.isEmpty() && viewBox.isValid())
+    {
+        m_size = size;
+        m_viewBox = viewBox;
+    }
+    else if(!size.isEmpty() && !viewBox.isValid())
+    {
+        m_size = size;
+        m_viewBox = QRectF(QPointF(0, 0), size);
+    }
+    else if(size.isEmpty() && viewBox.isValid())
+    {
+        m_size = viewBox.size();
+        m_viewBox = viewBox;
+    }
+    else
+    {
+        NSRect rect = [[[[m_view mainFrame] frameView] documentView] bounds];
+        m_viewBox = QRectF(rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+        m_size = m_viewBox.size();
+    }
+    qDebug() << "size:" << size << " => " << m_size;
+    qDebug() << "viewBox:" << viewBox << " => " << m_viewBox;
 }
 
 } // namespace
