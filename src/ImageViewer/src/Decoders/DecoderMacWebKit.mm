@@ -21,18 +21,19 @@
 
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+#import <CoreGraphics/CoreGraphics.h>
+#import <AppKit/AppKit.h>
 #import <WebKit/WebKit.h>
 
 #include <QtGlobal>
-#include <QGraphicsProxyWidget>
+#include <QGraphicsObject>
 #include <QFileInfo>
 #include <QUrl>
+#include <QPixmap>
+#include <QPainter>
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
 #include <QMacCocoaViewContainer>
 #endif
-#include <QPixmap>
-#include <QLabel>
-
 #include <QDebug>
 
 #include "Internal/DecoderAutoRegistrator.h"
@@ -48,158 +49,165 @@ namespace {
 
 DecoderAutoRegistrator registrator(new DecoderMacWebKit);
 
-class MacWebKitWidget;
+class MacWebKitRasterizerGraphicsItem;
 
 } // namespace
 
-@interface MacWebKitWidgetViewDelegate : NSObject
--(id) initWithWidget: (MacWebKitWidget*) widget;
+@interface MacWebKitRasterizerViewDelegate : NSObject
+-(id) initWithGraphicsItem: (MacWebKitRasterizerGraphicsItem*) graphicsItem;
 @end
 
 namespace {
 
-class MacWebKitWidget : public QLabel
+class MacWebKitRasterizerGraphicsItem : public QGraphicsObject
 {
+    Q_INTERFACES(QGraphicsItem)
+
 public:
-    MacWebKitWidget(const QString &filePath, QWidget *parent = NULL)
-        : QLabel(parent)
-        , m_view([[WebView alloc] initWithFrame: NSMakeRect(0, 0, 0, 0)])
-        , m_delegate([[MacWebKitWidgetViewDelegate alloc] initWithWidget: this])
-        , m_loading(true)
+    enum State
     {
-        setDelegate(m_delegate);
-        [m_view setDrawsBackground:NO];
-        NSURLRequest *request = [NSURLRequest requestWithURL: QUrl::fromLocalFile(QFileInfo(filePath).absoluteFilePath()).toNSURL()];
-        [[m_view mainFrame] loadRequest: request];
+        STATE_LOADING,
+        STATE_FAILED,
+        STATE_SUCCEED
+    };
 
-        QMacCocoaViewContainer *container = new QMacCocoaViewContainer(m_view);
-//        container->setWindowFlags(Qt::Window);
-//        container->show();
+    MacWebKitRasterizerGraphicsItem(const QString &fileName, QGraphicsItem *parentItem = NULL);
+    ~MacWebKitRasterizerGraphicsItem();
 
-        while(m_loading)
-            [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
-    }
+    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = NULL);
 
-    ~MacWebKitWidget()
-    {
-        setDelegate(nil);
-        [m_delegate release];
-        [m_view release];
-    }
+    State state() const;
+    void setState(State state);
 
-    void setLoading(bool loading)
-    {
-        m_loading = loading;
-    }
+    QPixmap grapPixmap();
 
 private:
-    void setDelegate(MacWebKitWidgetViewDelegate *delegate)
-    {
-        [m_view setFrameLoadDelegate:(id <WebFrameLoadDelegate>)delegate];
-        [m_view setPolicyDelegate:(id <WebPolicyDelegate>)delegate];
-        [m_view setUIDelegate:(id <WebUIDelegate>)delegate];
-        [m_view setEditingDelegate:(id <WebEditingDelegate>)delegate];
-    }
-
     WebView *m_view;
-    MacWebKitWidgetViewDelegate *m_delegate;
-    bool m_loading;
+    QMacCocoaViewContainer *m_container;
+    MacWebKitRasterizerViewDelegate *m_delegate;
+    State m_state;
 };
+
+MacWebKitRasterizerGraphicsItem::MacWebKitRasterizerGraphicsItem(const QString &fileName, QGraphicsItem *parentItem)
+    : QGraphicsObject(parentItem)
+    , m_view([[WebView alloc] initWithFrame: NSMakeRect(0, 0, 0, 0)])
+    , m_container(new QMacCocoaViewContainer(m_view))
+    , m_delegate([[MacWebKitRasterizerViewDelegate alloc] initWithGraphicsItem: this])
+    , m_state(STATE_LOADING)
+{
+    [m_view setFrameLoadDelegate    : (id <WebFrameLoadDelegate>)   m_delegate];
+    [m_view setPolicyDelegate       : (id <WebPolicyDelegate>)      m_delegate];
+    [m_view setUIDelegate           : (id <WebUIDelegate>)          m_delegate];
+    [m_view setEditingDelegate      : (id <WebEditingDelegate>)     m_delegate];
+
+    [m_view setDrawsBackground: NO];
+    NSURLRequest *request = [NSURLRequest requestWithURL: QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()).toNSURL()];
+    [[m_view mainFrame] loadRequest: request];
+    while(m_state == STATE_LOADING)
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+}
+
+MacWebKitRasterizerGraphicsItem::~MacWebKitRasterizerGraphicsItem()
+{
+    m_container->setCocoaView(nil);
+    [m_view setFrameLoadDelegate    : (id <WebFrameLoadDelegate>)   nil];
+    [m_view setPolicyDelegate       : (id <WebPolicyDelegate>)      nil];
+    [m_view setUIDelegate           : (id <WebUIDelegate>)          nil];
+    [m_view setEditingDelegate      : (id <WebEditingDelegate>)     nil];
+    [m_delegate release];
+    [m_view release];
+    m_container->deleteLater();
+}
+
+QRectF MacWebKitRasterizerGraphicsItem::boundingRect() const
+{
+    NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
+    NSRect cacheRect = [webFrameViewDocView bounds];
+    return QRectF(cacheRect.origin.x, cacheRect.origin.y, cacheRect.size.width, cacheRect.size.height);
+}
+
+void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    painter->drawPixmap(boundingRect(), grapPixmap(), boundingRect());
+}
+
+MacWebKitRasterizerGraphicsItem::State MacWebKitRasterizerGraphicsItem::state() const
+{
+    return m_state;
+}
+
+void MacWebKitRasterizerGraphicsItem::setState(State state)
+{
+    m_state = state;
+}
+
+QPixmap MacWebKitRasterizerGraphicsItem::grapPixmap()
+{
+    NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
+    NSRect cacheRect = [webFrameViewDocView bounds];
+    NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc]
+            initWithBitmapDataPlanes: nil
+                          pixelsWide: static_cast<NSInteger>(cacheRect.size.width)
+                          pixelsHigh: static_cast<NSInteger>(cacheRect.size.height)
+                       bitsPerSample: 8
+                     samplesPerPixel: 4
+                            hasAlpha: YES
+                            isPlanar: NO
+                      colorSpaceName: NSCalibratedRGBColorSpace
+                        bitmapFormat: 0
+                         bytesPerRow: static_cast<NSInteger>(4 * cacheRect.size.width)
+                        bitsPerPixel: 32];
+
+    [NSGraphicsContext saveGraphicsState];
+    NSGraphicsContext *graphicsContext = [NSGraphicsContext graphicsContextWithBitmapImageRep: bitmapRep];
+    [NSGraphicsContext setCurrentContext: graphicsContext];
+//    CGContextScaleCTM(graphicsContext.graphicsPort, scale, scale);
+    [webFrameViewDocView displayRectIgnoringOpacity: cacheRect inContext: graphicsContext];
+    [NSGraphicsContext restoreGraphicsState];
+
+    NSImage *webImage = [[NSImage alloc] initWithSize: bitmapRep.size];
+    [webImage addRepresentation: bitmapRep];
+    QPixmap pixmap = MacImageUtils::QPixmapFromNSImage(webImage);
+    [webImage release];
+    return pixmap;
+}
 
 } // namespace
 
-@implementation MacWebKitWidgetViewDelegate
+@implementation MacWebKitRasterizerViewDelegate
 {
-    MacWebKitWidget *m_widget;
+    MacWebKitRasterizerGraphicsItem *m_graphicsItem;
 }
 
--(id) initWithWidget: (MacWebKitWidget*) widget
+-(id)         initWithGraphicsItem: (MacWebKitRasterizerGraphicsItem*) graphicsItem
 {
     self = [super init];
     if(self)
-        m_widget = widget;
+        m_graphicsItem = graphicsItem;
     return self;
 }
 
--(void)                    webView: (WebView *)sender
-             didFinishLoadForFrame: (WebFrame *)frame
+-(void)                    webView: (WebView*)  sender
+             didFinishLoadForFrame: (WebFrame*) frame
 {
-    qDebug() << __PRETTY_FUNCTION__;
-
+    Q_UNUSED(sender);
+    Q_UNUSED(frame);
     if(frame != [sender mainFrame])
-        return;
-
-    NSView *webFrameViewDocView = [[[sender mainFrame] frameView] documentView];
-    NSRect cacheRect = [webFrameViewDocView bounds];
-
-//    NSBitmapImageRep *bitmapRep = [webFrameViewDocView bitmapImageRepForCachingDisplayInRect:cacheRect];
-//    [webFrameViewDocView cacheDisplayInRect:cacheRect toBitmapImageRep:bitmapRep];
-
-//    NSSize imgSize = cacheRect.size;
-//    if (imgSize.height > imgSize.width)
-//    {
-//        imgSize.height = imgSize.width;
-//    }
-
-//    NSRect srcRect = NSZeroRect;
-//    srcRect.size = imgSize;
-//    srcRect.origin.y = cacheRect.size.height - imgSize.height;
-
-//    NSRect destRect = NSZeroRect;
-//    destRect.size = imgSize;
-
-//    NSImage *webImage = [[[NSImage alloc] initWithSize:imgSize] autorelease];
-//    [webImage lockFocus];
-//    [bitmapRep drawInRect:destRect
-//                          fromRect:srcRect
-//                          operation:NSCompositeCopy
-//                          fraction:1.0
-//                          respectFlipped:YES
-//                          hints:nil];
-//    [webImage unlockFocus];
-
-//    NSSize defaultDisplaySize;
-//    defaultDisplaySize.height = 64.0 * (imgSize.height / imgSize.width);
-//    defaultDisplaySize.width = 64.0;
-//    [webImage setSize:defaultDisplaySize];
-
-    NSBitmapImageRep *bitmapRep;
-
-    bitmapRep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:nil
-                                                        pixelsWide:cacheRect.size.width
-                                                        pixelsHigh:cacheRect.size.height
-                                                     bitsPerSample:8
-                                                   samplesPerPixel:4
-                                                          hasAlpha:YES
-                                                          isPlanar:NO
-                                                    colorSpaceName:NSCalibratedRGBColorSpace
-                                                      bitmapFormat:0
-                                                       bytesPerRow:(4 * cacheRect.size.width)
-                                                      bitsPerPixel:32];
-
-    [NSGraphicsContext saveGraphicsState];
-
-    NSGraphicsContext *graphicsContext = [NSGraphicsContext graphicsContextWithBitmapImageRep:bitmapRep];
-    [NSGraphicsContext setCurrentContext:graphicsContext];
-//    CGContextScaleCTM(graphicsContext.graphicsPort, scale, scale);
-
-    [webFrameViewDocView displayRectIgnoringOpacity: cacheRect inContext:graphicsContext];
-
-    [NSGraphicsContext restoreGraphicsState];
-
-    NSImage *webImage = [[NSImage alloc] initWithSize:bitmapRep.size];
-    [webImage addRepresentation:bitmapRep];
-
-    m_widget->setPixmap(MacImageUtils::QPixmapFromNSImage(webImage));
-    m_widget->setLoading(false);
+        qDebug() << "@@@ ACHTUNG!!! @@@";
+    qDebug() << __PRETTY_FUNCTION__;
+    m_graphicsItem->setState(MacWebKitRasterizerGraphicsItem::STATE_SUCCEED);
 }
 
-- (void)                   webView: (WebView *)sender
-   didFailProvisionalLoadWithError: (NSError *)error
-                          forFrame: (WebFrame *)frame
+- (void)                   webView: (WebView*)  sender
+   didFailProvisionalLoadWithError: (NSError*)  error
+                          forFrame: (WebFrame*) frame
 {
-    m_widget->setLoading(false);
+    Q_UNUSED(sender);
+    Q_UNUSED(frame);
+    Q_UNUSED(error);
     qDebug() << __PRETTY_FUNCTION__;
+    m_graphicsItem->setState(MacWebKitRasterizerGraphicsItem::STATE_FAILED);
 }
 
 @end
@@ -235,18 +243,16 @@ QGraphicsItem *DecoderMacWebKit::loadImage(const QString &filePath)
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
 
-    QGraphicsProxyWidget *result = NULL;
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
-//    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    MacWebKitRasterizerGraphicsItem *result = new MacWebKitRasterizerGraphicsItem(filePath);
+    if(result->state() != MacWebKitRasterizerGraphicsItem::STATE_SUCCEED)
+    {
+        result->deleteLater();
+        result = NULL;
+    }
 
-    MacWebKitWidget *container = new MacWebKitWidget(filePath);
-    container->resize(1000, 1000);
-    container->setAttribute(Qt::WA_NoSystemBackground, true);
-
-    result = new QGraphicsProxyWidget();
-    result->setWidget(container);
-
-//    [pool release];
+    [pool release];
 
     return result;
 }
