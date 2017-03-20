@@ -27,7 +27,7 @@
 #endif
 #include <QFileInfo>
 
-#include "DecoderAutoRegistrator.h"
+#include "Internal/DecoderAutoRegistrator.h"
 
 #define DECODER_QT_SVG_PRIORITY 150
 

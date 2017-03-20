@@ -68,7 +68,7 @@ SOURCES += \
     src/Decoders/DecoderQImage.cpp \
     src/Decoders/DecoderQMovie.cpp \
     src/Decoders/DecoderQtSVG.cpp \
-    src/Decoders/ExifUtils.cpp \
+    src/Decoders/Internal/ExifUtils.cpp \
     src/main.cpp
 
 HEADERS += \
@@ -80,11 +80,11 @@ HEADERS += \
     src/GUI/SettingsDialog_p.h \
     src/Decoders/DecodersManager.h \
     src/Decoders/IDecoder.h \
-    src/Decoders/DecoderAutoRegistrator.h \
     src/Decoders/DecoderQImage.h \
     src/Decoders/DecoderQMovie.h \
     src/Decoders/DecoderQtSVG.h \
-    src/Decoders/ExifUtils.h
+    src/Decoders/Internal/DecoderAutoRegistrator.h \
+    src/Decoders/Internal/ExifUtils.h
 
 has_thirdparty_stb {
     SOURCES += \
@@ -114,9 +114,11 @@ win32 {
 macx {
     greaterThan(QT_MAJOR_VERSION, 4): QT += macextras
     OBJECTIVE_SOURCES += \
+        src/Decoders/Internal/MacImageUtils.mm \
         src/Decoders/DecoderNSImage.mm \
         src/Decoders/DecoderMacWebKit.mm
     HEADERS += \
+        src/Decoders/Internal/MacImageUtils.h \
         src/Decoders/DecoderNSImage.h \
         src/Decoders/DecoderMacWebKit.h
     LIBS += -framework AppKit

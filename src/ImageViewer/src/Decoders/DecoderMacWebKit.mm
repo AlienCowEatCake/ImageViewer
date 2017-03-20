@@ -31,15 +31,12 @@
 #include <QMacCocoaViewContainer>
 #endif
 #include <QPixmap>
-#include <QSysInfo>
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#include <QtMac>
-#endif
 #include <QLabel>
 
 #include <QDebug>
 
-#include "DecoderAutoRegistrator.h"
+#include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/MacImageUtils.h"
 
 //#if defined (QT_DEBUG)
 //#define DECODER_MAC_WEBKIT_PRIORITY -1
@@ -60,15 +57,6 @@ class MacWebKitWidget;
 @end
 
 namespace {
-
-QPixmap fromCGImageRef(CGImageRef image)
-{
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    return QtMac::fromCGImageRef(image);
-#else
-    return QPixmap::fromMacCGImageRef(image);
-#endif
-}
 
 class MacWebKitWidget : public QLabel
 {
@@ -192,45 +180,7 @@ private:
     NSImage *webImage = [[NSImage alloc] initWithSize:bitmapRep.size];
     [webImage addRepresentation:bitmapRep];
 
-
-    QPixmap pixmap;
-
-#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
-    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_SNOWLEOPARD)
-    {
-        // https://stackoverflow.com/questions/2548059/turning-an-nsimage-into-a-cgimageref
-        NSRect imageRect = NSMakeRect(0, 0, webImage.size.width, webImage.size.height);
-        CGImageRef cgImage = [webImage CGImageForProposedRect: &imageRect context: NULL hints: nil];
-        pixmap = fromCGImageRef(cgImage);
-    }
-    else
-#endif
-    {
-        // https://stackoverflow.com/questions/2468811/load-nsimage-into-qpixmap-or-qimage
-        NSInteger width = static_cast<NSInteger>(webImage.size.width);
-        NSInteger height = static_cast<NSInteger>(webImage.size.height);
-        NSBitmapImageRep *bmp = [[NSBitmapImageRep alloc]
-                initWithBitmapDataPlanes: NULL
-                              pixelsWide: width
-                              pixelsHigh: height
-                           bitsPerSample: 8
-                         samplesPerPixel: 4
-                                hasAlpha: YES
-                                isPlanar: NO
-                          colorSpaceName: NSDeviceRGBColorSpace
-                            bitmapFormat: NSAlphaFirstBitmapFormat
-                             bytesPerRow: 0
-                            bitsPerPixel: 0
-        ];
-        [NSGraphicsContext saveGraphicsState];
-        [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep: bmp]];
-        [webImage drawInRect:NSMakeRect(0, 0, width, height) fromRect: NSZeroRect operation: NSCompositeSourceOver fraction: 1];
-        [NSGraphicsContext restoreGraphicsState];
-        pixmap = fromCGImageRef([bmp CGImage]);
-        [bmp release];
-    }
-
-    m_widget->setPixmap(pixmap);
+    m_widget->setPixmap(MacImageUtils::QPixmapFromNSImage(webImage));
 }
 
 - (void)                   webView: (WebView *)sender

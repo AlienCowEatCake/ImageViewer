@@ -107,7 +107,7 @@ void SettingsDialog::onColorDialogRequested()
     dialog.setOption(QColorDialog::NoButtons);
     dialog.setOption(QColorDialog::ShowAlphaChannel, true);
     dialog.setCurrentColor(oldColor);
-    connect(&dialog, SIGNAL(colorSelected(const QColor&)), this, SLOT(onBackgroundColorChanged(const QColor&)));
+    connect(&dialog, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(onBackgroundColorChanged(const QColor&)));
     dialog.exec();
 #endif
 }

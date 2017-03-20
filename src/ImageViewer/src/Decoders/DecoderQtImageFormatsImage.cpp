@@ -28,7 +28,7 @@
 #include "QtImageFormatsImageReader.h"
 #endif
 
-#include "DecoderAutoRegistrator.h"
+#include "Internal/DecoderAutoRegistrator.h"
 
 #define DECODER_QTIMAREFORMATS_IMAGE_PRIORITY 110
 

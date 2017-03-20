@@ -9,13 +9,13 @@ THIRDPARTY_STB_PATH = $${PWD}/stb
 QT -= core gui
 
 CONFIG -= warn_on
+CONFIG += exceptions_off warn_off
 
 *g++*|*clang* {
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CXXFLAGS_RELEASE *= -O3
     QMAKE_CXXFLAGS_RELEASE *= -DNDEBUG
     QMAKE_CXXFLAGS_RELEASE *= -DQT_NO_DEBUG_OUTPUT
-    QMAKE_CXXFLAGS += -Wno-unused-parameter -w
 }
 
 *msvc* {
@@ -26,7 +26,6 @@ CONFIG -= warn_on
     QMAKE_CXXFLAGS_RELEASE *= -DQT_NO_DEBUG_OUTPUT
     DEFINES += _CRT_SECURE_NO_WARNINGS
     DEFINES += _CRT_SECURE_NO_DEPRECATE
-    QMAKE_CXXFLAGS += -w44100
 }
 
 macx {

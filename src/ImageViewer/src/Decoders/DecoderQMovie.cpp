@@ -24,7 +24,7 @@
 #include <QLabel>
 #include <QFileInfo>
 
-#include "DecoderAutoRegistrator.h"
+#include "Internal/DecoderAutoRegistrator.h"
 
 #define DECODER_QMOVIE_PRIORITY 160
 

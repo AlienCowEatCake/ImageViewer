@@ -27,8 +27,8 @@
 #include <QFileInfo>
 #include <QDebug>
 
-#include "DecoderAutoRegistrator.h"
-#include "ExifUtils.h"
+#include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/ExifUtils.h"
 
 #define DECODER_QIMAGE_PRIORITY 100
 

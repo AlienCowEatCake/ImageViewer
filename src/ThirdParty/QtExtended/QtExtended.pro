@@ -11,6 +11,7 @@ INCLUDEPATH += $${THIRDPARTY_QTEXTENDED_PATH}
 QT += core gui
 
 CONFIG -= warn_on
+CONFIG += exceptions_off warn_off
 
 *g++*|*clang* {
     QMAKE_CXXFLAGS_RELEASE -= -O2

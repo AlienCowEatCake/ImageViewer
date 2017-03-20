@@ -14,13 +14,13 @@ THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
 QT += core gui widgets
 
 CONFIG -= warn_on
+CONFIG += exceptions_off warn_off
 
 *g++*|*clang* {
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CXXFLAGS_RELEASE *= -O3
     QMAKE_CXXFLAGS_RELEASE *= -DNDEBUG
     QMAKE_CXXFLAGS_RELEASE *= -DQT_NO_DEBUG_OUTPUT
-    QMAKE_CFLAGS += -w
 }
 
 *msvc* {
