@@ -84,15 +84,15 @@ public:
 
     QPixmap grapPixmap();
 
-    void initGeometry(const QSize &size, const QRect &viewBox);
+    void initGeometry(const QSizeF &size, const QRectF &viewBox);
 
 private:
     WebView *m_view;
     QMacCocoaViewContainer *m_container;
     MacWebKitRasterizerViewDelegate *m_delegate;
     State m_state;
-    QSize m_size;
-    QRect m_viewBox;
+    QSizeF m_size;
+    QRectF m_viewBox;
 };
 
 MacWebKitRasterizerGraphicsItem::MacWebKitRasterizerGraphicsItem(const QString &fileName, QGraphicsItem *parentItem)
@@ -131,7 +131,7 @@ QRectF MacWebKitRasterizerGraphicsItem::boundingRect() const
 //    NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
 //    NSRect cacheRect = [webFrameViewDocView bounds];
 //    return QRectF(cacheRect.origin.x, cacheRect.origin.y, cacheRect.size.width, cacheRect.size.height);
-    return QRectF(m_viewBox);
+    return m_viewBox;
 }
 
 void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -151,6 +151,7 @@ void MacWebKitRasterizerGraphicsItem::setState(State state)
 
 QPixmap MacWebKitRasterizerGraphicsItem::grapPixmap()
 {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
     NSRect cacheRect = [webFrameViewDocView bounds];
     NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc]
@@ -177,15 +178,16 @@ QPixmap MacWebKitRasterizerGraphicsItem::grapPixmap()
     [webImage addRepresentation: bitmapRep];
     QPixmap pixmap = MacImageUtils::QPixmapFromNSImage(webImage);
     [webImage release];
+    [pool release];
     return pixmap;
 }
 
-void MacWebKitRasterizerGraphicsItem::initGeometry(const QSize &size, const QRect &viewBox)
+void MacWebKitRasterizerGraphicsItem::initGeometry(const QSizeF &size, const QRectF &viewBox)
 {
     qDebug() << "size:" << size;
     qDebug() << "viewBox:" << viewBox;
     m_size = size;
-    m_viewBox = viewBox;
+    m_viewBox = viewBox.isValid() ? viewBox : QRectF(QPointF(0, 0), size);
 }
 
 } // namespace
@@ -206,29 +208,33 @@ void MacWebKitRasterizerGraphicsItem::initGeometry(const QSize &size, const QRec
 -(void)                    webView: (WebView*)  sender
              didFinishLoadForFrame: (WebFrame*) frame
 {
-    Q_UNUSED(sender);
-    Q_UNUSED(frame);
-    if(frame != [sender mainFrame])
-        qDebug() << "@@@ ACHTUNG!!! @@@";
     qDebug() << __PRETTY_FUNCTION__;
-    NSString *viewBox = [sender stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('viewBox');"];
-    NSString *height  = [sender stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('height');"];
-    NSString *width   = [sender stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('width');"];
-    const QStringList vb = QString::fromNSString(viewBox).split(QRegExp(QString::fromLatin1("\\s")));
-    const QRect viewBoxRect = (vb.size() == 4 ? QRect(vb.at(0).toInt(), vb.at(1).toInt(), vb.at(2).toInt(), vb.at(3).toInt()) : QRect());
-    m_graphicsItem->initGeometry(QSize(static_cast<int>([width integerValue]), static_cast<int>([height integerValue])), viewBoxRect);
-    m_graphicsItem->setState(MacWebKitRasterizerGraphicsItem::STATE_SUCCEED);
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    if(frame == [sender mainFrame])
+    {
+        NSString *viewBox = [sender stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('viewBox');"];
+        NSString *height  = [sender stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('height');"];
+        NSString *width   = [sender stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('width');"];
+        const QStringList vb = QString::fromNSString(viewBox).split(QRegExp(QString::fromLatin1("\\s")));
+        const QRectF viewBoxRect = (vb.size() == 4 ? QRectF(vb.at(0).toDouble(), vb.at(1).toDouble(), vb.at(2).toDouble(), vb.at(3).toDouble()) : QRectF());
+        m_graphicsItem->initGeometry(QSizeF(static_cast<qreal>([width doubleValue]), static_cast<qreal>([height doubleValue])), viewBoxRect);
+        m_graphicsItem->setState(MacWebKitRasterizerGraphicsItem::STATE_SUCCEED);
+    }
+    [pool release];
 }
 
 - (void)                   webView: (WebView*)  sender
    didFailProvisionalLoadWithError: (NSError*)  error
                           forFrame: (WebFrame*) frame
 {
-    Q_UNUSED(sender);
-    Q_UNUSED(frame);
-    Q_UNUSED(error);
     qDebug() << __PRETTY_FUNCTION__;
-    m_graphicsItem->setState(MacWebKitRasterizerGraphicsItem::STATE_FAILED);
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    if(frame == [sender mainFrame])
+    {
+        qWarning() << QString::fromNSString([error description]);
+        m_graphicsItem->setState(MacWebKitRasterizerGraphicsItem::STATE_FAILED);
+    }
+    [pool release];
 }
 
 @end
