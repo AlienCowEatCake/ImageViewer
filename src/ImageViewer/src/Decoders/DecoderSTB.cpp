@@ -31,8 +31,8 @@
 #include "stb_image.h"
 #endif
 
-#include "DecoderAutoRegistrator.h"
-#include "ExifUtils.h"
+#include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/ExifUtils.h"
 
 #define DECODER_STB_PRIORITY 80
 
