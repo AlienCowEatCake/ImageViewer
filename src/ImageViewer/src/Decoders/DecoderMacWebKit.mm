@@ -65,6 +65,7 @@ public:
         : QLabel(parent)
         , m_view([[WebView alloc] initWithFrame: NSMakeRect(0, 0, 0, 0)])
         , m_delegate([[MacWebKitWidgetViewDelegate alloc] initWithWidget: this])
+        , m_loading(true)
     {
         setDelegate(m_delegate);
         [m_view setDrawsBackground:NO];
@@ -74,6 +75,9 @@ public:
         QMacCocoaViewContainer *container = new QMacCocoaViewContainer(m_view);
 //        container->setWindowFlags(Qt::Window);
 //        container->show();
+
+        while(m_loading)
+            [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
     }
 
     ~MacWebKitWidget()
@@ -81,6 +85,11 @@ public:
         setDelegate(nil);
         [m_delegate release];
         [m_view release];
+    }
+
+    void setLoading(bool loading)
+    {
+        m_loading = loading;
     }
 
 private:
@@ -94,6 +103,7 @@ private:
 
     WebView *m_view;
     MacWebKitWidgetViewDelegate *m_delegate;
+    bool m_loading;
 };
 
 } // namespace
@@ -181,12 +191,14 @@ private:
     [webImage addRepresentation:bitmapRep];
 
     m_widget->setPixmap(MacImageUtils::QPixmapFromNSImage(webImage));
+    m_widget->setLoading(false);
 }
 
 - (void)                   webView: (WebView *)sender
    didFailProvisionalLoadWithError: (NSError *)error
                           forFrame: (WebFrame *)frame
 {
+    m_widget->setLoading(false);
     qDebug() << __PRETTY_FUNCTION__;
 }
 
