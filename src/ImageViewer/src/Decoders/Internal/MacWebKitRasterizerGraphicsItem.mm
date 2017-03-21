@@ -35,7 +35,7 @@
 #include <QRegExp>
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsScene>
-#include <QMacCocoaViewContainer> /// @todo Заменить на нативный контейнер
+#include <QWidget>
 #include <QDebug>
 
 #include "MacImageUtils.h"
@@ -60,13 +60,13 @@ QRectF getDomActualBoundingRect(DOMNode *node)
         if(!childRect.isValid())
             childRect = QRectFromNSRect([childNode boundingBox]);
 
-        qDebug() << __FUNCTION__
-                 << "nodeName:" << QString::fromNSString([childNode nodeName])
-                 << "localName:" << QString::fromNSString([childNode localName])
-                 << "id:" << ([childNode hasAttributes] ? QString::fromNSString([childNode getAttribute: @"id"]) : QString())
-                 << "nodeValue:" << QString::fromNSString([childNode nodeValue])
-                 << "textContent:" << QString::fromNSString([childNode textContent])
-                 << childRect;
+//        qDebug() << __FUNCTION__
+//                 << "nodeName:" << QString::fromNSString([childNode nodeName])
+//                 << "localName:" << QString::fromNSString([childNode localName])
+//                 << "id:" << ([childNode hasAttributes] ? QString::fromNSString([childNode getAttribute: @"id"]) : QString())
+//                 << "nodeValue:" << QString::fromNSString([childNode nodeValue])
+//                 << "textContent:" << QString::fromNSString([childNode textContent])
+//                 << childRect;
 
         if(!childRect.isValid())
             continue;
@@ -91,6 +91,12 @@ QRectF getDomActualBoundingRect(DOMNode *node)
 class MacWebKitRasterizerGraphicsItem::Impl
 {
 public:
+    struct RasterizerCache
+    {
+        QPixmap pixmap;
+        qreal scaleFactor;
+    };
+
     Impl(const QUrl &url);
     Impl(const QString &htmlString);
     ~Impl();
@@ -104,14 +110,18 @@ public:
     QRectF rect() const;
     void setRect(const QRectF &rect);
 
+    RasterizerCache &rasterizerCache();
+    const RasterizerCache &rasterizerCache() const;
+
 private:
     void init();
 
     WebView *m_view;
-    QMacCocoaViewContainer *m_container;
+    QWidget *m_container;
     MacWebKitRasterizerViewDelegate *m_delegate;
     MacWebKitRasterizerGraphicsItem::State m_state;
     QRectF m_rect;
+    RasterizerCache m_rasterizerCache;
 };
 
 // ====================================================================================================
@@ -151,12 +161,12 @@ MacWebKitRasterizerGraphicsItem::Impl::Impl(const QString &htmlString)
 
 MacWebKitRasterizerGraphicsItem::Impl::~Impl()
 {
-    m_container->setCocoaView(nil);
     [m_view setFrameLoadDelegate    : (id <WebFrameLoadDelegate>)   nil];
     [m_view setPolicyDelegate       : (id <WebPolicyDelegate>)      nil];
     [m_view setUIDelegate           : (id <WebUIDelegate>)          nil];
     [m_view setEditingDelegate      : (id <WebEditingDelegate>)     nil];
     [m_delegate release];
+    [m_view removeFromSuperview];
     [m_view release];
     m_container->deleteLater();
 }
@@ -180,10 +190,10 @@ void MacWebKitRasterizerGraphicsItem::Impl::waitForLoad() const
 QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    const QSizeF scaledSize = m_rect.size() * scaleFactor;
-    [m_view setFrameSize: NSMakeSize(scaledSize.width(), scaledSize.height())];
     const QString zoomScript = QString::fromLatin1("document.documentElement.style.zoom = \"%1\"");
     [m_view stringByEvaluatingJavaScriptFromString: zoomScript.arg(scaleFactor).toNSString()];
+    const QSizeF scaledSize = m_rect.size() * scaleFactor;
+    [m_view setFrameSize: NSMakeSize(scaledSize.width(), scaledSize.height())];
 
     NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
     NSRect cacheRect = [webFrameViewDocView bounds];
@@ -203,7 +213,6 @@ QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
     [NSGraphicsContext saveGraphicsState];
     NSGraphicsContext *graphicsContext = [NSGraphicsContext graphicsContextWithBitmapImageRep: bitmapRep];
     [NSGraphicsContext setCurrentContext: graphicsContext];
-//    CGContextScaleCTM(graphicsContext.graphicsPort, scale, scale);
     [webFrameViewDocView displayRectIgnoringOpacity: cacheRect inContext: graphicsContext];
     [NSGraphicsContext restoreGraphicsState];
 
@@ -222,22 +231,34 @@ QRectF MacWebKitRasterizerGraphicsItem::Impl::rect() const
 
 void MacWebKitRasterizerGraphicsItem::Impl::setRect(const QRectF &rect)
 {
-    qDebug() << "rect:" << rect;
+    qDebug() << __FUNCTION__ << "rect:" << rect;
     m_rect = rect;
+}
+
+MacWebKitRasterizerGraphicsItem::Impl::RasterizerCache &MacWebKitRasterizerGraphicsItem::Impl::rasterizerCache()
+{
+    return m_rasterizerCache;
+}
+
+const MacWebKitRasterizerGraphicsItem::Impl::RasterizerCache &MacWebKitRasterizerGraphicsItem::Impl::rasterizerCache() const
+{
+    return m_rasterizerCache;
 }
 
 void MacWebKitRasterizerGraphicsItem::Impl::init()
 {
     m_view = [[WebView alloc] initWithFrame: NSMakeRect(0, 0, 0, 0)];
-    m_container = new QMacCocoaViewContainer(m_view);
+    m_container = new QWidget;
     m_delegate = [[MacWebKitRasterizerViewDelegate alloc] initWithImpl: this];
     m_state = MacWebKitRasterizerGraphicsItem::STATE_LOADING;
+    m_rasterizerCache.scaleFactor = 0;
 
     [m_view setFrameLoadDelegate    : (id <WebFrameLoadDelegate>)   m_delegate];
     [m_view setPolicyDelegate       : (id <WebPolicyDelegate>)      m_delegate];
     [m_view setUIDelegate           : (id <WebUIDelegate>)          m_delegate];
     [m_view setEditingDelegate      : (id <WebEditingDelegate>)     m_delegate];
 
+    [reinterpret_cast<NSView*>(m_container->winId()) addSubview: m_view];
     [m_view setDrawsBackground: NO];
 }
 
@@ -270,8 +291,10 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
         const QRectF viewBox = (vb.size() == 4 ? QRectF(vb.at(0).toDouble(), vb.at(1).toDouble(), vb.at(2).toDouble(), vb.at(3).toDouble()) : QRectF());
         const QSizeF size = QSizeF(static_cast<qreal>([widthStr doubleValue]), static_cast<qreal>([heightStr doubleValue]));
 
-        qDebug() << __FUNCTION__ << "viewBox:" << viewBox;
-        qDebug() << __FUNCTION__ << "size:" << size;
+//        qDebug() << "***** viewBox:" << viewBox;
+//        qDebug() << "***** size:" << size;
+//        qDebug() << "***** DOM boundingBox:" << getDomActualBoundingRect([view mainFrameDocument]);
+//        qDebug() << "***** documentView bounds:" << QRectFromNSRect([[[frame frameView] documentView] bounds]);
 
         QRectF actualRect;
         if(!size.isEmpty())
@@ -329,15 +352,21 @@ void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptio
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    const QTransform deviceTransform = painter->deviceTransform();
-    const qreal scaleFactor = qMax(deviceTransform.m11(), deviceTransform.m22());
-    QPixmap pixmap = m_impl->grapPixmap(scaleFactor);
-    painter->drawPixmap(m_impl->rect(), pixmap, QRectF(pixmap.rect()));
 #if defined (QT_DEBUG)
     painter->setBrush(Qt::transparent);
     painter->setPen(Qt::red);
-    painter->drawRect(m_impl->rect());
+    painter->drawRect(boundingRect());
 #endif
+    QPixmap &pixmap = m_impl->rasterizerCache().pixmap;
+    const QTransform deviceTransform = painter->deviceTransform();
+    const qreal newScaleFactor = qMax(deviceTransform.m11(), deviceTransform.m22()) * scale();
+    qreal &scaleFactor = m_impl->rasterizerCache().scaleFactor;
+    if(qAbs(newScaleFactor - scaleFactor) / qMax(newScaleFactor, scaleFactor) > 1e-2)
+    {
+        scaleFactor = newScaleFactor;
+        pixmap = m_impl->grapPixmap(newScaleFactor);
+    }
+    painter->drawPixmap(boundingRect(), pixmap, QRectF(pixmap.rect()));
 }
 
 MacWebKitRasterizerGraphicsItem::State MacWebKitRasterizerGraphicsItem::state() const
