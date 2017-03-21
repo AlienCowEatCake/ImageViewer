@@ -98,18 +98,38 @@ private:
 MacWebKitRasterizerGraphicsItem::MacWebKitRasterizerGraphicsItem(const QString &fileName, QGraphicsItem *parentItem)
     : QGraphicsObject(parentItem)
     , m_view([[WebView alloc] initWithFrame: NSMakeRect(0, 0, 0, 0)])
-    , m_container(new QMacCocoaViewContainer(m_view))
+//    , m_container(new QMacCocoaViewContainer(m_view))
+    , m_container(new QMacCocoaViewContainer(nil))
     , m_delegate([[MacWebKitRasterizerViewDelegate alloc] initWithGraphicsItem: this])
     , m_state(STATE_LOADING)
 {
+//    [m_view setFrameSize: NSMakeSize(1, 1)];
+//    m_container->resize(QSize(1, 1));
+    m_container->setCocoaView(m_view);
+
     [m_view setFrameLoadDelegate    : (id <WebFrameLoadDelegate>)   m_delegate];
     [m_view setPolicyDelegate       : (id <WebPolicyDelegate>)      m_delegate];
     [m_view setUIDelegate           : (id <WebUIDelegate>)          m_delegate];
     [m_view setEditingDelegate      : (id <WebEditingDelegate>)     m_delegate];
 
     [m_view setDrawsBackground: NO];
-    NSURLRequest *request = [NSURLRequest requestWithURL: QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()).toNSURL()];
-    [[m_view mainFrame] loadRequest: request];
+//    NSURLRequest *request = [NSURLRequest requestWithURL: QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()).toNSURL()];
+//    [[m_view mainFrame] loadRequest: request];
+
+    const QString webWrapper = QString::fromLatin1(
+                "<html>"
+                    "<head>"
+                    "</head>"
+                    "<body>"
+                        "<div id=\"content\">"
+                            "<img src=\"%1\"/>"
+                        "</div>"
+                    "</body>"
+                "</html>"
+                );
+
+    [[m_view mainFrame] loadHTMLString: webWrapper.arg(QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()).toString()).toNSString() baseURL: nil];
+
     while(m_state == STATE_LOADING)
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
 }
@@ -131,7 +151,7 @@ QRectF MacWebKitRasterizerGraphicsItem::boundingRect() const
 //    NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
 //    NSRect cacheRect = [webFrameViewDocView bounds];
 //    return QRectF(cacheRect.origin.x, cacheRect.origin.y, cacheRect.size.width, cacheRect.size.height);
-    return m_viewBox;
+    return QRectF(QPoint(0, 0), m_size);
 }
 
 void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -231,6 +251,13 @@ void MacWebKitRasterizerGraphicsItem::initGeometry(const QSizeF &size, const QRe
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     if(frame == [sender mainFrame])
     {
+        qDebug() << QString::fromNSString([sender stringByEvaluatingJavaScriptFromString: @"document.height"]);
+        qDebug() << QString::fromNSString([sender stringByEvaluatingJavaScriptFromString: @"document.body.scrollHeight"]);
+        qDebug() << QString::fromNSString([sender stringByEvaluatingJavaScriptFromString: @"document.body.offsetHeight"]);
+        qDebug() << QString::fromNSString([sender stringByEvaluatingJavaScriptFromString: @"document.documentElement.clientHeight"]);
+        qDebug() << QString::fromNSString([sender stringByEvaluatingJavaScriptFromString: @"document.documentElement.scrollHeight"]);
+        qDebug() << QString::fromNSString([sender stringByEvaluatingJavaScriptFromString: @"document.documentElement.offsetHeight"]);
+
         NSString *viewBox = [sender stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('viewBox');"];
         NSString *height  = [sender stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('height');"];
         NSString *width   = [sender stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('width');"];
