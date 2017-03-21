@@ -33,7 +33,8 @@
 #include <QString>
 #include <QStringList>
 #include <QRegExp>
-#include <QIODevice>
+#include <QStyleOptionGraphicsItem>
+#include <QGraphicsScene>
 #include <QMacCocoaViewContainer> /// @todo Заменить на нативный контейнер
 #include <QDebug>
 
@@ -59,7 +60,13 @@ QRectF getDomActualBoundingRect(DOMNode *node)
         if(!childRect.isValid())
             childRect = QRectFromNSRect([childNode boundingBox]);
 
-        qDebug() << __FUNCTION__ << QString::fromNSString([childNode localName]) << childRect;
+        qDebug() << __FUNCTION__
+                 << "nodeName:" << QString::fromNSString([childNode nodeName])
+                 << "localName:" << QString::fromNSString([childNode localName])
+                 << "id:" << ([childNode hasAttributes] ? QString::fromNSString([childNode getAttribute: @"id"]) : QString())
+                 << "nodeValue:" << QString::fromNSString([childNode nodeValue])
+                 << "textContent:" << QString::fromNSString([childNode textContent])
+                 << childRect;
 
         if(!childRect.isValid())
             continue;
@@ -92,7 +99,7 @@ public:
     void setState(MacWebKitRasterizerGraphicsItem::State state);
 
     void waitForLoad() const;
-    QPixmap grapPixmap();
+    QPixmap grapPixmap(qreal scaleFactor = 1);
 
     QRectF rect() const;
     void setRect(const QRectF &rect);
@@ -170,9 +177,14 @@ void MacWebKitRasterizerGraphicsItem::Impl::waitForLoad() const
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
 }
 
-QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap()
+QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    const QSizeF scaledSize = m_rect.size() * scaleFactor;
+    [m_view setFrameSize: NSMakeSize(scaledSize.width(), scaledSize.height())];
+    const QString zoomScript = QString::fromLatin1("document.documentElement.style.zoom = \"%1\"");
+    [m_view stringByEvaluatingJavaScriptFromString: zoomScript.arg(scaleFactor).toNSString()];
+
     NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
     NSRect cacheRect = [webFrameViewDocView bounds];
     NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc]
@@ -258,11 +270,14 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
         const QRectF viewBox = (vb.size() == 4 ? QRectF(vb.at(0).toDouble(), vb.at(1).toDouble(), vb.at(2).toDouble(), vb.at(3).toDouble()) : QRectF());
         const QSizeF size = QSizeF(static_cast<qreal>([widthStr doubleValue]), static_cast<qreal>([heightStr doubleValue]));
 
+        qDebug() << __FUNCTION__ << "viewBox:" << viewBox;
+        qDebug() << __FUNCTION__ << "size:" << size;
+
         QRectF actualRect;
-        if(viewBox.isValid())
-            actualRect = QRectF(0, 0, viewBox.width(), viewBox.height()); /// @note WebKit рендерит с учетом смещения, нужен только размер
-        else if(!size.isEmpty())
+        if(!size.isEmpty())
             actualRect = QRectF(0, 0, size.width(), size.height());
+        else if(viewBox.isValid())
+            actualRect = QRectF(0, 0, viewBox.width(), viewBox.height()); /// @note WebKit рендерит с учетом смещения, нужен только размер
         else
             actualRect = getDomActualBoundingRect([view mainFrameDocument]);
         if(!actualRect.isValid())
@@ -312,7 +327,17 @@ QRectF MacWebKitRasterizerGraphicsItem::boundingRect() const
 
 void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    painter->drawPixmap(boundingRect(), m_impl->grapPixmap(), boundingRect());
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+    const QTransform deviceTransform = painter->deviceTransform();
+    const qreal scaleFactor = qMax(deviceTransform.m11(), deviceTransform.m22());
+    QPixmap pixmap = m_impl->grapPixmap(scaleFactor);
+    painter->drawPixmap(m_impl->rect(), pixmap, QRectF(pixmap.rect()));
+#if defined (QT_DEBUG)
+    painter->setBrush(Qt::transparent);
+    painter->setPen(Qt::red);
+    painter->drawRect(m_impl->rect());
+#endif
 }
 
 MacWebKitRasterizerGraphicsItem::State MacWebKitRasterizerGraphicsItem::state() const
