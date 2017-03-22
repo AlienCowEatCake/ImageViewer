@@ -49,6 +49,11 @@ QRectF QRectFromNSRect(const NSRect &rect)
     return QRectF(rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
 }
 
+NSRect QRectToNSRect(const QRectF &rect)
+{
+    return NSMakeRect(rect.x(), rect.y(), rect.width(), rect.height());
+}
+
 QRectF getDomActualBoundingRect(DOMNode *node)
 {
     QRectF result;
@@ -66,7 +71,7 @@ QRectF getDomActualBoundingRect(DOMNode *node)
 //                 << "id:" << ([childNode hasAttributes] ? QString::fromNSString([childNode getAttribute: @"id"]) : QString())
 //                 << "nodeValue:" << QString::fromNSString([childNode nodeValue])
 //                 << "textContent:" << QString::fromNSString([childNode textContent])
-//                 << childRect;
+//                 << childRect << QRectFromNSRect([childNode boundingBox]);
 
         if(!childRect.isValid())
             continue;
@@ -190,24 +195,29 @@ void MacWebKitRasterizerGraphicsItem::Impl::waitForLoad() const
 QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    const QString zoomScript = QString::fromLatin1("document.documentElement.style.zoom = \"%1\"");
+    const QString zoomScript = QString::fromLatin1("document.documentElement.style.zoom = '%1'");
+    const QRectF scaledRect = QRectF(m_rect.topLeft() * scaleFactor, m_rect.size() * scaleFactor);
+    const QSizeF scaledPageSize = scaledRect.united(QRectF(0, 0, 1, 1)).size();
+
+//    qDebug() << QString::fromNSString([m_view stringByEvaluatingJavaScriptFromString: @"document.documentElement.style.zoom;"]);
+
     [m_view stringByEvaluatingJavaScriptFromString: zoomScript.arg(scaleFactor).toNSString()];
-    const QSizeF scaledSize = m_rect.size() * scaleFactor;
-    [m_view setFrameSize: NSMakeSize(scaledSize.width(), scaledSize.height())];
+    [m_view setFrameSize: NSMakeSize(scaledPageSize.width(), scaledPageSize.height())];
 
     NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
-    NSRect cacheRect = [webFrameViewDocView bounds];
+    const NSRect cacheRect = QRectToNSRect(scaledRect);
+    const NSInteger one = static_cast<NSInteger>(1);
     NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc]
             initWithBitmapDataPlanes: nil
-                          pixelsWide: static_cast<NSInteger>(cacheRect.size.width)
-                          pixelsHigh: static_cast<NSInteger>(cacheRect.size.height)
+                          pixelsWide: qMax(static_cast<NSInteger>(cacheRect.size.width), one)
+                          pixelsHigh: qMax(static_cast<NSInteger>(cacheRect.size.height), one)
                        bitsPerSample: 8
                      samplesPerPixel: 4
                             hasAlpha: YES
                             isPlanar: NO
                       colorSpaceName: NSCalibratedRGBColorSpace
                         bitmapFormat: 0
-                         bytesPerRow: static_cast<NSInteger>(4 * cacheRect.size.width)
+                         bytesPerRow: 4 * qMax(static_cast<NSInteger>(cacheRect.size.width), one)
                         bitsPerPixel: 32];
 
     [NSGraphicsContext saveGraphicsState];
@@ -300,7 +310,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
         if(!size.isEmpty())
             actualRect = QRectF(0, 0, size.width(), size.height());
         else if(viewBox.isValid())
-            actualRect = QRectF(0, 0, viewBox.width(), viewBox.height()); /// @note WebKit рендерит с учетом смещения, нужен только размер
+            actualRect = QRectF(0, 0, viewBox.width(), viewBox.height()); /// @note WebKit рендерит с viewBox с учетом смещения, нужен только размер
         else
             actualRect = getDomActualBoundingRect([view mainFrameDocument]);
         if(!actualRect.isValid())
