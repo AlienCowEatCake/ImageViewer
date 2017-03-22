@@ -40,6 +40,8 @@
 
 #include "MacImageUtils.h"
 
+//#define MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG
+
 // ====================================================================================================
 
 namespace {
@@ -54,25 +56,16 @@ NSRect QRectToNSRect(const QRectF &rect)
     return NSMakeRect(rect.x(), rect.y(), rect.width(), rect.height());
 }
 
-QRectF getDomActualBoundingRect(DOMNode *node)
+QRectF DOMNodeActualBoundingBox(DOMNode *node)
 {
     QRectF result;
     DOMNodeList *childNodes = [node childNodes];
     for(unsigned int i = 0; i < [childNodes length]; i++)
     {
         DOMNode *childNode = [childNodes item: i];
-        QRectF childRect = getDomActualBoundingRect(childNode);
+        QRectF childRect = QRectFromNSRect([childNode boundingBox]);
         if(!childRect.isValid())
-            childRect = QRectFromNSRect([childNode boundingBox]);
-
-//        qDebug() << __FUNCTION__
-//                 << "nodeName:" << QString::fromNSString([childNode nodeName])
-//                 << "localName:" << QString::fromNSString([childNode localName])
-//                 << "id:" << ([childNode hasAttributes] ? QString::fromNSString([childNode getAttribute: @"id"]) : QString())
-//                 << "nodeValue:" << QString::fromNSString([childNode nodeValue])
-//                 << "textContent:" << QString::fromNSString([childNode textContent])
-//                 << childRect << QRectFromNSRect([childNode boundingBox]);
-
+            childRect = DOMNodeActualBoundingBox(childNode);
         if(!childRect.isValid())
             continue;
         if(!result.isValid())
@@ -198,11 +191,17 @@ QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
     const QString zoomScript = QString::fromLatin1("document.documentElement.style.zoom = '%1'");
     const QRectF scaledRect = QRectF(m_rect.topLeft() * scaleFactor, m_rect.size() * scaleFactor);
     const QSizeF scaledPageSize = scaledRect.united(QRectF(0, 0, 1, 1)).size();
-
-//    qDebug() << QString::fromNSString([m_view stringByEvaluatingJavaScriptFromString: @"document.documentElement.style.zoom;"]);
-
-    [m_view stringByEvaluatingJavaScriptFromString: zoomScript.arg(scaleFactor).toNSString()];
-    [m_view setFrameSize: NSMakeSize(scaledPageSize.width(), scaledPageSize.height())];
+    const double oldScaleFactor = QString::fromNSString([m_view stringByEvaluatingJavaScriptFromString: @"document.documentElement.style.zoom;"]).toDouble();
+    if(oldScaleFactor > scaleFactor)
+    {
+        [m_view stringByEvaluatingJavaScriptFromString: zoomScript.arg(scaleFactor).toNSString()];
+        [m_view setFrameSize: NSMakeSize(scaledPageSize.width(), scaledPageSize.height())];
+    }
+    else
+    {
+        [m_view setFrameSize: NSMakeSize(scaledPageSize.width(), scaledPageSize.height())];
+        [m_view stringByEvaluatingJavaScriptFromString: zoomScript.arg(scaleFactor).toNSString()];
+    }
 
     NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
     const NSRect cacheRect = QRectToNSRect(scaledRect);
@@ -241,7 +240,9 @@ QRectF MacWebKitRasterizerGraphicsItem::Impl::rect() const
 
 void MacWebKitRasterizerGraphicsItem::Impl::setRect(const QRectF &rect)
 {
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
     qDebug() << __FUNCTION__ << "rect:" << rect;
+#endif
     m_rect = rect;
 }
 
@@ -290,7 +291,9 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
 -(void)                    webView: (WebView*)  view
              didFinishLoadForFrame: (WebFrame*) frame
 {
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
     qDebug() << __FUNCTION__;
+#endif
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     if(frame == [view mainFrame])
     {
@@ -301,10 +304,12 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
         const QRectF viewBox = (vb.size() == 4 ? QRectF(vb.at(0).toDouble(), vb.at(1).toDouble(), vb.at(2).toDouble(), vb.at(3).toDouble()) : QRectF());
         const QSizeF size = QSizeF(static_cast<qreal>([widthStr doubleValue]), static_cast<qreal>([heightStr doubleValue]));
 
-//        qDebug() << "***** viewBox:" << viewBox;
-//        qDebug() << "***** size:" << size;
-//        qDebug() << "***** DOM boundingBox:" << getDomActualBoundingRect([view mainFrameDocument]);
-//        qDebug() << "***** documentView bounds:" << QRectFromNSRect([[[frame frameView] documentView] bounds]);
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+        qDebug() << "***** viewBox:" << viewBox;
+        qDebug() << "***** size:" << size;
+        qDebug() << "***** DOM boundingBox:" << DOMNodeActualBoundingBox([view mainFrameDocument]);
+        qDebug() << "***** documentView bounds:" << QRectFromNSRect([[[frame frameView] documentView] bounds]);
+#endif
 
         QRectF actualRect;
         if(!size.isEmpty())
@@ -312,7 +317,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
         else if(viewBox.isValid())
             actualRect = QRectF(0, 0, viewBox.width(), viewBox.height()); /// @note WebKit рендерит с viewBox с учетом смещения, нужен только размер
         else
-            actualRect = getDomActualBoundingRect([view mainFrameDocument]);
+            actualRect = DOMNodeActualBoundingBox([view mainFrameDocument]);
         if(!actualRect.isValid())
             actualRect = QRectFromNSRect([[[frame frameView] documentView] bounds]);
         m_impl->setRect(actualRect);
@@ -326,7 +331,9 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
    didFailProvisionalLoadWithError: (NSError*)  error
                           forFrame: (WebFrame*) frame
 {
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
     qDebug() << __FUNCTION__;
+#endif
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     if(frame == [view mainFrame])
     {
@@ -362,7 +369,7 @@ void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptio
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
-#if defined (QT_DEBUG)
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
     painter->setBrush(Qt::transparent);
     painter->setPen(Qt::red);
     painter->drawRect(boundingRect());
