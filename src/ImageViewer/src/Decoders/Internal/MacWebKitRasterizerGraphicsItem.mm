@@ -26,6 +26,7 @@
 #import <WebKit/WebKit.h>
 
 #include <cmath>
+#include <algorithm>
 
 #include <QtGlobal>
 #include <QFileInfo>
@@ -38,6 +39,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsScene>
 #include <QWidget>
+#include <QPolygonF>
 #include <QDebug>
 
 #include "MacImageUtils.h"
@@ -52,8 +54,8 @@ QRectF QRectFIntegerized(const QRectF rect)
 {
     const qreal left = std::floor(rect.left());
     const qreal top = std::floor(rect.top());
-    const qreal width = std::ceil(rect.width() + qAbs(rect.left() - left));
-    const qreal height = std::ceil(rect.height() + qAbs(rect.top() - top));
+    const qreal width = std::ceil(rect.width() + std::abs(rect.left() - left));
+    const qreal height = std::ceil(rect.height() + std::abs(rect.top() - top));
     return QRectF(left, top, width, height);
 }
 
@@ -219,15 +221,15 @@ QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
     const NSInteger one = static_cast<NSInteger>(1);
     NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc]
             initWithBitmapDataPlanes: nil
-                          pixelsWide: qMax(static_cast<NSInteger>(cacheRect.size.width), one)
-                          pixelsHigh: qMax(static_cast<NSInteger>(cacheRect.size.height), one)
+                          pixelsWide: std::max(static_cast<NSInteger>(cacheRect.size.width), one)
+                          pixelsHigh: std::max(static_cast<NSInteger>(cacheRect.size.height), one)
                        bitsPerSample: 8
                      samplesPerPixel: 4
                             hasAlpha: YES
                             isPlanar: NO
                       colorSpaceName: NSCalibratedRGBColorSpace
                         bitmapFormat: 0
-                         bytesPerRow: 4 * qMax(static_cast<NSInteger>(cacheRect.size.width), one)
+                         bytesPerRow: 4 * std::max(static_cast<NSInteger>(cacheRect.size.width), one)
                         bitsPerPixel: 32];
 
     [NSGraphicsContext saveGraphicsState];
@@ -409,10 +411,14 @@ void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptio
     painter->drawRect(boundingRect());
 #endif
     QPixmap &pixmap = m_impl->rasterizerCache().pixmap;
-    const QTransform deviceTransform = painter->deviceTransform();
-    const qreal newScaleFactor = qMax(deviceTransform.m11(), deviceTransform.m22()) * scale();
+    const QRectF identityRect = QRectF(0, 0, 1, 1);
+    const QRectF worldTransformedRect = painter->worldTransform().mapRect(identityRect);
+    const QRectF deviceTransformedRect = painter->deviceTransform().mapRect(identityRect);
+    const qreal worldScaleFactor = std::max(worldTransformedRect.width(), worldTransformedRect.height());
+    const qreal deviceScaleFactor = std::max(deviceTransformedRect.width(), deviceTransformedRect.height());
+    const qreal newScaleFactor = std::max(worldScaleFactor, deviceScaleFactor) * std::abs(scale());
     qreal &scaleFactor = m_impl->rasterizerCache().scaleFactor;
-    if(qAbs(newScaleFactor - scaleFactor) / qMax(newScaleFactor, scaleFactor) > 1e-2)
+    if(std::abs(newScaleFactor - scaleFactor) / std::max(newScaleFactor, scaleFactor) > 1e-2)
     {
         scaleFactor = newScaleFactor;
         pixmap = m_impl->grapPixmap(newScaleFactor);
