@@ -25,6 +25,8 @@
 #import <AppKit/AppKit.h>
 #import <WebKit/WebKit.h>
 
+#include <cmath>
+
 #include <QtGlobal>
 #include <QFileInfo>
 #include <QUrl>
@@ -46,12 +48,21 @@
 
 namespace {
 
-QRectF QRectFromNSRect(const NSRect &rect)
+QRectF QRectFIntegerized(const QRectF rect)
+{
+    const qreal left = std::floor(rect.left());
+    const qreal top = std::floor(rect.top());
+    const qreal width = std::ceil(rect.width() + qAbs(rect.left() - left));
+    const qreal height = std::ceil(rect.height() + qAbs(rect.top() - top));
+    return QRectF(left, top, width, height);
+}
+
+QRectF QRectFFromNSRect(const NSRect &rect)
 {
     return QRectF(rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
 }
 
-NSRect QRectToNSRect(const QRectF &rect)
+NSRect QRectFToNSRect(const QRectF &rect)
 {
     return NSMakeRect(rect.x(), rect.y(), rect.width(), rect.height());
 }
@@ -63,7 +74,7 @@ QRectF DOMNodeActualBoundingBox(DOMNode *node)
     for(unsigned int i = 0; i < [childNodes length]; i++)
     {
         DOMNode *childNode = [childNodes item: i];
-        QRectF childRect = QRectFromNSRect([childNode boundingBox]);
+        QRectF childRect = QRectFFromNSRect([childNode boundingBox]);
         if(!childRect.isValid())
             childRect = DOMNodeActualBoundingBox(childNode);
         if(!childRect.isValid())
@@ -204,7 +215,7 @@ QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
     }
 
     NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
-    const NSRect cacheRect = QRectToNSRect(scaledRect);
+    const NSRect cacheRect = QRectFToNSRect(QRectFIntegerized(scaledRect));
     const NSInteger one = static_cast<NSInteger>(1);
     NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc]
             initWithBitmapDataPlanes: nil
@@ -297,31 +308,54 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     if(frame == [view mainFrame])
     {
-        NSString *viewBoxStr = [view stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('viewBox');"];
-        NSString *heightStr  = [view stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('height');"];
-        NSString *widthStr   = [view stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('width');"];
-        const QStringList vb = QString::fromNSString(viewBoxStr).split(QRegExp(QString::fromLatin1("\\s")));
-        const QRectF viewBox = (vb.size() == 4 ? QRectF(vb.at(0).toDouble(), vb.at(1).toDouble(), vb.at(2).toDouble(), vb.at(3).toDouble()) : QRectF());
-        const QSizeF size = QSizeF(static_cast<qreal>([widthStr doubleValue]), static_cast<qreal>([heightStr doubleValue]));
+        QRectF actualRect;
+        if(QString::fromNSString([view stringByEvaluatingJavaScriptFromString: @"document.documentElement instanceof SVGElement;"]) == QString::fromLatin1("true"))
+        {
+            const NSString *viewBoxStr = [view stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('viewBox');"];
+            const QStringList vb = QString::fromNSString(viewBoxStr).split(QRegExp(QString::fromLatin1("\\s")));
+            const QRectF viewBox = (vb.size() == 4 ? QRectF(vb.at(0).toDouble(), vb.at(1).toDouble(), vb.at(2).toDouble(), vb.at(3).toDouble()) : QRectF());
+
+            const NSString *heightStr  = [view stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('height');"];
+            const NSString *widthStr   = [view stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('width');"];
+            const QSizeF size = QSizeF(static_cast<qreal>([widthStr doubleValue]), static_cast<qreal>([heightStr doubleValue]));
+
+            if(!size.isEmpty())
+                actualRect = QRectF(0, 0, size.width(), size.height());
+            else if(viewBox.isValid())
+                /// @note WebKit рендерит с viewBox с учетом смещения, нужен только размер
+                actualRect = QRectF(0, 0, viewBox.width(), viewBox.height());
+            else
+                actualRect = DOMNodeActualBoundingBox([view mainFrameDocument]);
+            if(!actualRect.isValid())
+                actualRect = QRectFFromNSRect([[[frame frameView] documentView] bounds]);
 
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-        qDebug() << "***** viewBox:" << viewBox;
-        qDebug() << "***** size:" << size;
-        qDebug() << "***** DOM boundingBox:" << DOMNodeActualBoundingBox([view mainFrameDocument]);
-        qDebug() << "***** documentView bounds:" << QRectFromNSRect([[[frame frameView] documentView] bounds]);
+            qDebug() << "***** ----------------------------------------";
+            qDebug() << "***** Detected SVG document";
+            qDebug() << "***** ----------------------------------------";
+            qDebug() << "***** viewBox:" << viewBox;
+            qDebug() << "***** size:" << size;
+            qDebug() << "***** DOM boundingBox:" << DOMNodeActualBoundingBox([view mainFrameDocument]);
+            qDebug() << "***** documentView bounds:" << QRectFFromNSRect([[[frame frameView] documentView] bounds]);
+            qDebug() << "***** ----------------------------------------";
 #endif
-
-        QRectF actualRect;
-        if(!size.isEmpty())
-            actualRect = QRectF(0, 0, size.width(), size.height());
-        else if(viewBox.isValid())
-            actualRect = QRectF(0, 0, viewBox.width(), viewBox.height()); /// @note WebKit рендерит с viewBox с учетом смещения, нужен только размер
+        }
         else
-            actualRect = DOMNodeActualBoundingBox([view mainFrameDocument]);
-        if(!actualRect.isValid())
-            actualRect = QRectFromNSRect([[[frame frameView] documentView] bounds]);
-        m_impl->setRect(actualRect);
+        {
+            /// @todo Тут, возможно, следует сделать более гибкий алгоритм
+            actualRect = QRectFFromNSRect([[[frame frameView] documentView] bounds]);
+            actualRect = actualRect.united(QRectF(0, 0, 640, 1));
 
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+            qDebug() << "***** ----------------------------------------";
+            qDebug() << "***** Detected HTML document";
+            qDebug() << "***** ----------------------------------------";
+            qDebug() << "***** DOM boundingBox:" << DOMNodeActualBoundingBox([view mainFrameDocument]);
+            qDebug() << "***** documentView bounds:" << QRectFFromNSRect([[[frame frameView] documentView] bounds]);
+            qDebug() << "***** ----------------------------------------";
+#endif
+        }
+        m_impl->setRect(actualRect);
         m_impl->setState(MacWebKitRasterizerGraphicsItem::STATE_SUCCEED);
     }
     [pool release];
