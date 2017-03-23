@@ -17,19 +17,17 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined(DECODER_MAC_IMAGEUTILS_H_INCLUDED)
-#define DECODER_MAC_IMAGEUTILS_H_INCLUDED
+#if !defined(DECODER_MAC_WEBKIT_H_INCLUDED)
+#define DECODER_MAC_WEBKIT_H_INCLUDED
 
-#import <AppKit/AppKit.h>
+#include "IDecoder.h"
 
-#include <QPixmap>
-
-namespace MacImageUtils {
-
-QPixmap QPixmapFromCGImageRef(CGImageRef image);
-
-QPixmap QPixmapFromNSImage(NSImage *image);
-
-} // namespace MacImageUtils
+class DecoderMacWebKit : public IDecoder
+{
+public:
+    QString name() const;
+    QList<DecoderFormatInfo> supportedFormats() const;
+    QGraphicsItem *loadImage(const QString &filePath);
+};
 
 #endif

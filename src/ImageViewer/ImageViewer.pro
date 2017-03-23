@@ -115,12 +115,17 @@ macx {
     greaterThan(QT_MAJOR_VERSION, 4): QT += macextras
     OBJECTIVE_SOURCES += \
         src/Decoders/Internal/MacImageUtils.mm \
-        src/Decoders/DecoderNSImage.mm
+        src/Decoders/Internal/MacWebKitRasterizerGraphicsItem.mm \
+        src/Decoders/DecoderNSImage.mm \
+        src/Decoders/DecoderMacWebKit.mm
     HEADERS += \
         src/Decoders/Internal/MacImageUtils.h \
-        src/Decoders/DecoderNSImage.h
+        src/Decoders/Internal/MacWebKitRasterizerGraphicsItem.h \
+        src/Decoders/DecoderNSImage.h \
+        src/Decoders/DecoderMacWebKit.h
     LIBS += -framework AppKit
     LIBS += -framework Foundation
+    LIBS += -framework WebKit
 
     QMAKE_INFO_PLIST = resources/platform/macosx/Info.plist
     ICON = resources/icon/icon.icns

@@ -17,34 +17,34 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "DecoderQtSVG.h"
+#include "DecoderMacWebKit.h"
 
-#include <QtGlobal>
-#if defined (QT_SVG_LIB)
-#include <QGraphicsSvgItem>
-#else
-#include <QGraphicsItem>
-#endif
 #include <QFileInfo>
+#include <QUrl>
 
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/MacWebKitRasterizerGraphicsItem.h"
 
-#define DECODER_QT_SVG_PRIORITY 180
+//#if defined (QT_DEBUG)
+//#define DECODER_MAC_WEBKIT_PRIORITY -1
+//#else
+#define DECODER_MAC_WEBKIT_PRIORITY 200
+//#endif
 
 namespace {
 
-DecoderAutoRegistrator registrator(new DecoderQtSVG);
+DecoderAutoRegistrator registrator(new DecoderMacWebKit);
 
 } // namespace
 
-QString DecoderQtSVG::name() const
+
+QString DecoderMacWebKit::name() const
 {
-    return QString::fromLatin1("DecoderQtSVG");
+    return QString::fromLatin1("DecoderMacWebKit");
 }
 
-QList<DecoderFormatInfo> DecoderQtSVG::supportedFormats() const
+QList<DecoderFormatInfo> DecoderMacWebKit::supportedFormats() const
 {
-#if defined (QT_SVG_LIB)
     const QList<QByteArray> svgFormats = QList<QByteArray>()
             << "svg"
             << "svgz";
@@ -52,24 +52,25 @@ QList<DecoderFormatInfo> DecoderQtSVG::supportedFormats() const
     for(QList<QByteArray>::ConstIterator it = svgFormats.constBegin(); it != svgFormats.constEnd(); ++it)
     {
         DecoderFormatInfo info;
-        info.decoderPriority = DECODER_QT_SVG_PRIORITY;
+        info.decoderPriority = DECODER_MAC_WEBKIT_PRIORITY;
         info.format = QString::fromLatin1(*it).toLower();
         result.append(info);
     }
     return result;
-#else
-    return QList<DecoderFormatInfo>();
-#endif
 }
 
-QGraphicsItem *DecoderQtSVG::loadImage(const QString &filePath)
+QGraphicsItem *DecoderMacWebKit::loadImage(const QString &filePath)
 {
     const QFileInfo fileInfo(filePath);
     if(!fileInfo.exists() || !fileInfo.isReadable())
         return NULL;
-#if defined (QT_SVG_LIB)
-    return new QGraphicsSvgItem(filePath);
-#else
-    return NULL;
-#endif
+
+    MacWebKitRasterizerGraphicsItem *result = new MacWebKitRasterizerGraphicsItem(QUrl(fileInfo.absoluteFilePath()));
+    if(result->state() != MacWebKitRasterizerGraphicsItem::STATE_SUCCEED)
+    {
+        result->deleteLater();
+        result = NULL;
+    }
+
+    return result;
 }
