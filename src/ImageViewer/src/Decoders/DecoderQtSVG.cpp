@@ -29,7 +29,7 @@
 
 #include "Internal/DecoderAutoRegistrator.h"
 
-#define DECODER_QT_SVG_PRIORITY 150
+#define DECODER_QT_SVG_PRIORITY 180
 
 namespace {
 
