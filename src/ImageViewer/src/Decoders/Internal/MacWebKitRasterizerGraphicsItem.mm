@@ -50,6 +50,8 @@
 
 namespace {
 
+const qreal MAX_PIXMAP_DIMENSION = 16384;
+
 QRectF QRectFIntegerized(const QRectF rect)
 {
     const qreal left = std::floor(rect.left());
@@ -121,6 +123,9 @@ public:
     QRectF rect() const;
     void setRect(const QRectF &rect);
 
+    qreal maxScaleFactor() const;
+    void setMaxScaleFactor(qreal maxScaleFactor);
+
     RasterizerCache &rasterizerCache();
     const RasterizerCache &rasterizerCache() const;
 
@@ -132,6 +137,7 @@ private:
     MacWebKitRasterizerViewDelegate *m_delegate;
     MacWebKitRasterizerGraphicsItem::State m_state;
     QRectF m_rect;
+    qreal m_maxScaleFactor;
     RasterizerCache m_rasterizerCache;
 };
 
@@ -259,6 +265,16 @@ void MacWebKitRasterizerGraphicsItem::Impl::setRect(const QRectF &rect)
     m_rect = rect;
 }
 
+qreal MacWebKitRasterizerGraphicsItem::Impl::maxScaleFactor() const
+{
+    return m_maxScaleFactor;
+}
+
+void MacWebKitRasterizerGraphicsItem::Impl::setMaxScaleFactor(qreal maxScaleFactor)
+{
+    m_maxScaleFactor = maxScaleFactor;
+}
+
 MacWebKitRasterizerGraphicsItem::Impl::RasterizerCache &MacWebKitRasterizerGraphicsItem::Impl::rasterizerCache()
 {
     return m_rasterizerCache;
@@ -276,6 +292,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
     m_delegate = [[MacWebKitRasterizerViewDelegate alloc] initWithImpl: this];
     m_state = MacWebKitRasterizerGraphicsItem::STATE_LOADING;
     m_rasterizerCache.scaleFactor = 0;
+    m_maxScaleFactor = 1;
 
     [m_view setFrameLoadDelegate    : (id <WebFrameLoadDelegate>)   m_delegate];
     [m_view setPolicyDelegate       : (id <WebPolicyDelegate>)      m_delegate];
@@ -358,6 +375,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
 #endif
         }
         m_impl->setRect(actualRect);
+        m_impl->setMaxScaleFactor(std::min(MAX_PIXMAP_DIMENSION / actualRect.width(), MAX_PIXMAP_DIMENSION / actualRect.height()));
         m_impl->setState(MacWebKitRasterizerGraphicsItem::STATE_SUCCEED);
     }
     [pool release];
@@ -412,11 +430,8 @@ void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptio
 #endif
     QPixmap &pixmap = m_impl->rasterizerCache().pixmap;
     const QRectF identityRect = QRectF(0, 0, 1, 1);
-    const QRectF worldTransformedRect = painter->worldTransform().mapRect(identityRect);
     const QRectF deviceTransformedRect = painter->deviceTransform().mapRect(identityRect);
-    const qreal worldScaleFactor = std::max(worldTransformedRect.width(), worldTransformedRect.height());
-    const qreal deviceScaleFactor = std::max(deviceTransformedRect.width(), deviceTransformedRect.height());
-    const qreal newScaleFactor = std::max(worldScaleFactor, deviceScaleFactor) * std::abs(scale());
+    const qreal newScaleFactor = std::min(std::max(deviceTransformedRect.width(), deviceTransformedRect.height()), m_impl->maxScaleFactor());
     qreal &scaleFactor = m_impl->rasterizerCache().scaleFactor;
     if(std::abs(newScaleFactor - scaleFactor) / std::max(newScaleFactor, scaleFactor) > 1e-2)
     {
