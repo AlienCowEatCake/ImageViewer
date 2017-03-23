@@ -178,10 +178,7 @@ MacWebKitRasterizerGraphicsItem::Impl::Impl(const QString &htmlString)
 
 MacWebKitRasterizerGraphicsItem::Impl::~Impl()
 {
-    [m_view setFrameLoadDelegate    : (id <WebFrameLoadDelegate>)   nil];
-    [m_view setPolicyDelegate       : (id <WebPolicyDelegate>)      nil];
-    [m_view setUIDelegate           : (id <WebUIDelegate>)          nil];
-    [m_view setEditingDelegate      : (id <WebEditingDelegate>)     nil];
+    [m_view setFrameLoadDelegate: (id <WebFrameLoadDelegate>)nil];
     [m_delegate release];
     [m_view removeFromSuperview];
     [m_view release];
@@ -201,7 +198,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::setState(MacWebKitRasterizerGraphics
 void MacWebKitRasterizerGraphicsItem::Impl::waitForLoad() const
 {
     while(m_state == MacWebKitRasterizerGraphicsItem::STATE_LOADING)
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+        [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate: [NSDate distantFuture]];
 }
 
 QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
@@ -293,12 +290,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
     m_state = MacWebKitRasterizerGraphicsItem::STATE_LOADING;
     m_rasterizerCache.scaleFactor = 0;
     m_maxScaleFactor = 1;
-
-    [m_view setFrameLoadDelegate    : (id <WebFrameLoadDelegate>)   m_delegate];
-    [m_view setPolicyDelegate       : (id <WebPolicyDelegate>)      m_delegate];
-    [m_view setUIDelegate           : (id <WebUIDelegate>)          m_delegate];
-    [m_view setEditingDelegate      : (id <WebEditingDelegate>)     m_delegate];
-
+    [m_view setFrameLoadDelegate: (id <WebFrameLoadDelegate>)m_delegate];
     [reinterpret_cast<NSView*>(m_container->winId()) addSubview: m_view];
     [m_view setDrawsBackground: NO];
 }
@@ -357,6 +349,8 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
             qDebug() << "***** DOM boundingBox:" << DOMNodeActualBoundingBox([view mainFrameDocument]);
             qDebug() << "***** documentView bounds:" << QRectFFromNSRect([[[frame frameView] documentView] bounds]);
             qDebug() << "***** ----------------------------------------";
+            qDebug() << "***** actual rect:" << actualRect;
+            qDebug() << "***** ----------------------------------------";
 #endif
         }
         else
@@ -371,6 +365,8 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
             qDebug() << "***** ----------------------------------------";
             qDebug() << "***** DOM boundingBox:" << DOMNodeActualBoundingBox([view mainFrameDocument]);
             qDebug() << "***** documentView bounds:" << QRectFFromNSRect([[[frame frameView] documentView] bounds]);
+            qDebug() << "***** ----------------------------------------";
+            qDebug() << "***** actual rect:" << actualRect;
             qDebug() << "***** ----------------------------------------";
 #endif
         }
