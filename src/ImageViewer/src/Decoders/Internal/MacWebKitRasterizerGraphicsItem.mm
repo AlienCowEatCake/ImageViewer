@@ -17,13 +17,12 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "MacWebKitRasterizerGraphicsItem.h"
-
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
-#import <CoreGraphics/CoreGraphics.h>
 #import <AppKit/AppKit.h>
 #import <WebKit/WebKit.h>
+
+#include "MacWebKitRasterizerGraphicsItem.h"
 
 #include <cmath>
 #include <algorithm>
@@ -153,7 +152,7 @@ MacWebKitRasterizerGraphicsItem::Impl::Impl(const QUrl &url)
     }
     else
     {
-        NSURLRequest *request = [NSURLRequest requestWithURL: url.toNSURL()];
+        NSURLRequest *request = [NSURLRequest requestWithURL: [NSURL URLWithString: [NSString stringWithUTF8String: url.toString().toUtf8().data()]]];
         [[m_view mainFrame] loadRequest: request];
         waitForLoad();
     }
@@ -170,7 +169,7 @@ MacWebKitRasterizerGraphicsItem::Impl::Impl(const QString &htmlString)
     }
     else
     {
-        [[m_view mainFrame] loadHTMLString: htmlString.toNSString() baseURL: nil];
+        [[m_view mainFrame] loadHTMLString: [NSString stringWithUTF8String: htmlString.toUtf8().data()] baseURL: nil];
         waitForLoad();
     }
     [pool release];
@@ -178,7 +177,7 @@ MacWebKitRasterizerGraphicsItem::Impl::Impl(const QString &htmlString)
 
 MacWebKitRasterizerGraphicsItem::Impl::~Impl()
 {
-    [m_view setFrameLoadDelegate: (id <WebFrameLoadDelegate>)nil];
+    [m_view setFrameLoadDelegate: nil];
     [m_delegate release];
     [m_view removeFromSuperview];
     [m_view release];
@@ -207,16 +206,16 @@ QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
     const QString zoomScript = QString::fromLatin1("document.documentElement.style.zoom = '%1'");
     const QRectF scaledRect = QRectF(m_rect.topLeft() * scaleFactor, m_rect.size() * scaleFactor);
     const QSizeF scaledPageSize = scaledRect.united(QRectF(0, 0, 1, 1)).size();
-    const double oldScaleFactor = QString::fromNSString([m_view stringByEvaluatingJavaScriptFromString: @"document.documentElement.style.zoom;"]).toDouble();
+    const double oldScaleFactor = QString::fromUtf8([[m_view stringByEvaluatingJavaScriptFromString: @"document.documentElement.style.zoom;"] UTF8String]).toDouble();
     if(oldScaleFactor > scaleFactor)
     {
-        [m_view stringByEvaluatingJavaScriptFromString: zoomScript.arg(scaleFactor).toNSString()];
+        [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(scaleFactor).toUtf8().data()]];
         [m_view setFrameSize: NSMakeSize(scaledPageSize.width(), scaledPageSize.height())];
     }
     else
     {
         [m_view setFrameSize: NSMakeSize(scaledPageSize.width(), scaledPageSize.height())];
-        [m_view stringByEvaluatingJavaScriptFromString: zoomScript.arg(scaleFactor).toNSString()];
+        [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(scaleFactor).toUtf8().data()]];
     }
 
     NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
@@ -290,7 +289,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
     m_state = MacWebKitRasterizerGraphicsItem::STATE_LOADING;
     m_rasterizerCache.scaleFactor = 0;
     m_maxScaleFactor = 1;
-    [m_view setFrameLoadDelegate: (id <WebFrameLoadDelegate>)m_delegate];
+    [m_view setFrameLoadDelegate: m_delegate];
     [reinterpret_cast<NSView*>(m_container->winId()) addSubview: m_view];
     [m_view setDrawsBackground: NO];
 }
@@ -320,10 +319,10 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
     if(frame == [view mainFrame])
     {
         QRectF actualRect;
-        if(QString::fromNSString([view stringByEvaluatingJavaScriptFromString: @"document.documentElement instanceof SVGElement;"]) == QString::fromLatin1("true"))
+        if(QString::fromUtf8([[view stringByEvaluatingJavaScriptFromString: @"document.documentElement instanceof SVGElement;"] UTF8String]) == QString::fromLatin1("true"))
         {
             const NSString *viewBoxStr = [view stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('viewBox');"];
-            const QStringList vb = QString::fromNSString(viewBoxStr).split(QRegExp(QString::fromLatin1("\\s")));
+            const QStringList vb = QString::fromUtf8([viewBoxStr UTF8String]).split(QRegExp(QString::fromLatin1("\\s")));
             const QRectF viewBox = (vb.size() == 4 ? QRectF(vb.at(0).toDouble(), vb.at(1).toDouble(), vb.at(2).toDouble(), vb.at(3).toDouble()) : QRectF());
 
             const NSString *heightStr  = [view stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('height');"];
@@ -387,7 +386,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     if(frame == [view mainFrame])
     {
-        qWarning() << QString::fromNSString([error description]);
+        qWarning() << QString::fromUtf8([[error description] UTF8String]);
         m_impl->setState(MacWebKitRasterizerGraphicsItem::STATE_FAILED);
     }
     [pool release];

@@ -20,7 +20,6 @@
 #if !defined(DECODER_MAC_IMAGEUTILS_H_INCLUDED)
 #define DECODER_MAC_IMAGEUTILS_H_INCLUDED
 
-#import <CoreGraphics/CoreGraphics.h>
 #import <AppKit/AppKit.h>
 
 #include <QPixmap>
