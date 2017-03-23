@@ -50,6 +50,8 @@
 namespace {
 
 const qreal MAX_PIXMAP_DIMENSION = 16384;
+const qreal DEFAULT_WIDTH = 640;
+const qreal DEFAULT_HEIGHT = 480;
 
 QRectF QRectFIntegerized(const QRectF rect)
 {
@@ -289,7 +291,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
     m_state = MacWebKitRasterizerGraphicsItem::STATE_LOADING;
     m_rasterizerCache.scaleFactor = 0;
     m_maxScaleFactor = 1;
-    [m_view setFrameLoadDelegate: m_delegate];
+    [m_view setFrameLoadDelegate: reinterpret_cast<id>(m_delegate)];
     [reinterpret_cast<NSView*>(m_container->winId()) addSubview: m_view];
     [m_view setDrawsBackground: NO];
 }
@@ -356,7 +358,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
         {
             /// @todo Тут, возможно, следует сделать более гибкий алгоритм
             actualRect = QRectFFromNSRect([[[frame frameView] documentView] bounds]);
-            actualRect = actualRect.united(QRectF(0, 0, 640, 1));
+            actualRect = actualRect.united(QRectF(0, 0, DEFAULT_WIDTH, 1));
 
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
             qDebug() << "***** ----------------------------------------";
@@ -369,6 +371,16 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
             qDebug() << "***** ----------------------------------------";
 #endif
         }
+
+        if(!actualRect.isValid())
+        {
+            const qreal width = std::max(actualRect.width(), DEFAULT_WIDTH);
+            const qreal height = std::max(actualRect.height(), DEFAULT_HEIGHT);
+            const qreal top = (actualRect.top() + actualRect.height() > height ? actualRect.top() : 0);
+            const qreal left = (actualRect.left() + actualRect.width() > width ? actualRect.left() : 0);
+            actualRect = QRectF(left, top, width, height);
+        }
+
         m_impl->setRect(actualRect);
         m_impl->setMaxScaleFactor(std::min(MAX_PIXMAP_DIMENSION / actualRect.width(), MAX_PIXMAP_DIMENSION / actualRect.height()));
         m_impl->setState(MacWebKitRasterizerGraphicsItem::STATE_SUCCEED);
