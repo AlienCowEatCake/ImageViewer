@@ -1,4 +1,4 @@
-# https://github.com/qt/qtimageformats
+# URL: https://github.com/qt/qtimageformats
 
 lessThan(QT_MAJOR_VERSION, 5): error(This project requires Qt 5 or later)
 
@@ -18,11 +18,11 @@ win32 {
         LIBS += -L$${OUT_PWD}/../ThirdParty/QtImageFormats/debug
     }
     *g++*|*clang* {
-        LIBS += -lQtImageFormats
+        LIBS += -ltp_QtImageFormats
     } else {
-        LIBS += QtImageFormats.lib
+        LIBS += tp_QtImageFormats.lib
     }
 } else {
-    LIBS += -L$${OUT_PWD}/../ThirdParty/QtImageFormats -lQtImageFormats
+    LIBS += -L$${OUT_PWD}/../ThirdParty/QtImageFormats -ltp_QtImageFormats
 }
 

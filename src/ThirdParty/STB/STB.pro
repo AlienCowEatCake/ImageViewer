@@ -1,8 +1,9 @@
-# https://github.com/nothings/stb
+# URL: https://github.com/nothings/stb
+# License: public domain or MIT
 
 TEMPLATE = lib
 CONFIG += staticlib
-TARGET = STB
+TARGET = tp_STB
 
 THIRDPARTY_STB_PATH = $${PWD}/stb
 

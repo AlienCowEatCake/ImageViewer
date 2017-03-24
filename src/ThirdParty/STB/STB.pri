@@ -1,4 +1,5 @@
-# https://github.com/nothings/stb
+# URL: https://github.com/nothings/stb
+# License: public domain or MIT
 
 THIRDPARTY_STB_PATH = $${PWD}/stb
 
@@ -14,11 +15,11 @@ win32 {
         LIBS += -L$${OUT_PWD}/../ThirdParty/STB/debug
     }
     *g++*|*clang* {
-        LIBS += -lSTB
+        LIBS += -ltp_STB
     } else {
-        LIBS += STB.lib
+        LIBS += tp_STB.lib
     }
 } else {
-    LIBS += -L$${OUT_PWD}/../ThirdParty/STB -lSTB
+    LIBS += -L$${OUT_PWD}/../ThirdParty/STB -ltp_STB
 }
 

@@ -4,4 +4,4 @@
 #} else {
 #    QT_PRIVATE += zlib-private
 #}
-INCLUDEPATH += $$PWD/../../../qtbase/src/3rdparty/zlib
+include($${PWD}/../../../../zlib/zlib.pri)

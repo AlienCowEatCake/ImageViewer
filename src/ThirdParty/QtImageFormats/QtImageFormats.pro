@@ -1,10 +1,10 @@
-# https://github.com/qt/qtimageformats
+# URL: https://github.com/qt/qtimageformats
 
 lessThan(QT_MAJOR_VERSION, 5): error(This project requires Qt 5 or later)
 
 TEMPLATE = lib
 CONFIG += staticlib
-TARGET = QtImageFormats
+TARGET = tp_QtImageFormats
 
 THIRDPARTY_QTIMAGEFORMATS_PATH = $${PWD}/qtimageformats
 THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH = $${PWD}/qtimageformats_legacy
@@ -130,10 +130,6 @@ DEFINES += WRAPPER_USE_WBMP_HANDLER
 #include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/3rdparty/libwebp.pri)
 #
 #DEFINES += WRAPPER_USE_WEBP_HANDLER
-
-# --------------------------------------------------------------------------------
-
-include($${THIRDPARTY_QTIMAGEFORMATS_QTBASE_PATH}/src/3rdparty/zlib.pri)
 
 # --------------------------------------------------------------------------------
 

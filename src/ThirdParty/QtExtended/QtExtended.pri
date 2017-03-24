@@ -1,4 +1,5 @@
-# https://sourceforge.net/projects/qpe/files/QPE/qtopia/qt-extended-opensource-src-4.4.3.tar.gz/download
+# URL: https://sourceforge.net/projects/qpe/files/QPE/qtopia/qt-extended-opensource-src-4.4.3.tar.gz/download
+# License: GNU General Public License version 2
 
 THIRDPARTY_QTEXTENDED_PATH = $${PWD}/src
 
@@ -16,11 +17,11 @@ win32 {
         LIBS += -L$${OUT_PWD}/../ThirdParty/QtExtended/debug
     }
     *g++*|*clang* {
-        LIBS += -lQtExtended
+        LIBS += -ltp_QtExtended
     } else {
-        LIBS += QtExtended.lib
+        LIBS += tp_QtExtended.lib
     }
 } else {
-    LIBS += -L$${OUT_PWD}/../ThirdParty/QtExtended -lQtExtended
+    LIBS += -L$${OUT_PWD}/../ThirdParty/QtExtended -ltp_QtExtended
 }
 

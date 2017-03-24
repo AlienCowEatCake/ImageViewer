@@ -10,11 +10,14 @@ CONFIG += ordered
 
 SUBDIRS = \
     src/QtUtils/QtUtils.pro \
+    src/ThirdParty/zlib/zlib.pro \
     src/ThirdParty/QtExtended/QtExtended.pro \
     src/ThirdParty/STB/STB.pro
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     SUBDIRS += \
+        src/ThirdParty/libjpeg/libjpeg.pro \
+        src/ThirdParty/JasPer/JasPer.pro \
         src/ThirdParty/QtImageFormats/QtImageFormats.pro
 }
 

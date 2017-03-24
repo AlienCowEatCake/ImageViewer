@@ -9,4 +9,4 @@
 #    else: \
 #        INCLUDEPATH += $$[QT_INSTALL_HEADERS/src]/QtZlib
 #}
-INCLUDEPATH += $$PWD/../../../qtbase/src/3rdparty/zlib
+include($${PWD}/../../../../zlib/zlib.pri)
