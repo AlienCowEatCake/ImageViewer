@@ -26,6 +26,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include <limits>
 
 #include <QtGlobal>
 #include <QFileInfo>
@@ -36,9 +37,8 @@
 #include <QStringList>
 #include <QRegExp>
 #include <QStyleOptionGraphicsItem>
-#include <QGraphicsScene>
 #include <QWidget>
-#include <QPolygonF>
+#include <QSysInfo>
 #include <QDebug>
 
 #include "MacImageUtils.h"
@@ -92,6 +92,11 @@ QRectF DOMNodeActualBoundingBox(DOMNode *node)
     return result;
 }
 
+QRectF WebFrameDocumentBounds(WebFrame *frame)
+{
+    return QRectFFromNSRect([[[frame frameView] documentView] bounds]);
+}
+
 QRectF SVGViewBoxAttribute(WebView *webView)
 {
     const NSString *str = [webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('viewBox');"];
@@ -119,12 +124,31 @@ QRectF SVGBBox(WebView *webView)
 
 QRectF SVGBoundingClientRect(WebView *webView)
 {
-    return QRectF(
-        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().x;"] doubleValue]),
-        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().y;"] doubleValue]),
-        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().width;"] doubleValue]),
-        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().height;"] doubleValue])
-    );
+    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_10_9) /// @todo Работает в 10.8.5, нужно проверить ранние версии 10.8
+    {
+        return QRectF(
+            static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().x;"] doubleValue]),
+            static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().y;"] doubleValue]),
+            static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().width;"] doubleValue]),
+            static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().height;"] doubleValue])
+        );
+    }
+    else
+    {
+        return WebFrameDocumentBounds([webView mainFrame]);
+    }
+}
+
+QRectF SVGActualBoundingBox(WebView *webView)
+{
+    QRectF rect;
+    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_10_8) /// @todo Работает в 10.8.5, нужно проверить ранние версии 10.8
+        rect = DOMNodeActualBoundingBox([webView mainFrameDocument]);
+    else
+        rect = QRectFIntegerized(SVGBBox(webView));
+    if(rect.isValid())
+        rect = rect.intersected(QRectF(0, 0, std::numeric_limits<qreal>::max(), std::numeric_limits<qreal>::max()));
+    return rect;
 }
 
 } // namespace
@@ -378,17 +402,17 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
         if(QString::fromUtf8([[view stringByEvaluatingJavaScriptFromString: @"document.documentElement instanceof SVGElement;"] UTF8String]) == QString::fromLatin1("true"))
         {
             const QRectF viewBox = SVGViewBoxAttribute(view);
-            const QSizeF size = SVGBoundingClientRect(view).size();
+            const QRectF boundClientRect = SVGBoundingClientRect(view);
 
-            if(!size.isEmpty())
-                actualRect = QRectF(0, 0, size.width(), size.height());
+            /// @note WebKit рендерит с учетом смещения, нужен только размер
+            if(boundClientRect.isValid())
+                actualRect = QRectF(0, 0, boundClientRect.width(), boundClientRect.height());
             else if(viewBox.isValid())
-                /// @note WebKit рендерит с viewBox с учетом смещения, нужен только размер
                 actualRect = QRectF(0, 0, viewBox.width(), viewBox.height());
             else
-                actualRect = DOMNodeActualBoundingBox([view mainFrameDocument]);
+                actualRect = SVGActualBoundingBox(view);
             if(!actualRect.isValid())
-                actualRect = QRectFFromNSRect([[[frame frameView] documentView] bounds]);
+                actualRect = WebFrameDocumentBounds(frame);
 
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
             qDebug() << "***** ----------------------------------------";
@@ -399,7 +423,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
             qDebug() << "***** getBBox() value:" << SVGBBox(view);
             qDebug() << "***** getBoundingClientRect() value:" << SVGBoundingClientRect(view);
             qDebug() << "***** DOM boundingBox:" << DOMNodeActualBoundingBox([view mainFrameDocument]);
-            qDebug() << "***** documentView bounds:" << QRectFFromNSRect([[[frame frameView] documentView] bounds]);
+            qDebug() << "***** documentView bounds:" << WebFrameDocumentBounds(frame);
             qDebug() << "***** ----------------------------------------";
             qDebug() << "***** actual rect:" << actualRect;
             qDebug() << "***** ----------------------------------------";
@@ -408,7 +432,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
         else
         {
             /// @todo Тут, возможно, следует сделать более гибкий алгоритм
-            actualRect = QRectFFromNSRect([[[frame frameView] documentView] bounds]);
+            actualRect = WebFrameDocumentBounds(frame);
             actualRect = actualRect.united(QRectF(0, 0, DEFAULT_WIDTH, 1));
 
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
@@ -416,7 +440,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
             qDebug() << "***** Detected HTML document";
             qDebug() << "***** ----------------------------------------";
             qDebug() << "***** DOM boundingBox:" << DOMNodeActualBoundingBox([view mainFrameDocument]);
-            qDebug() << "***** documentView bounds:" << QRectFFromNSRect([[[frame frameView] documentView] bounds]);
+            qDebug() << "***** documentView bounds:" << WebFrameDocumentBounds(frame);
             qDebug() << "***** ----------------------------------------";
             qDebug() << "***** actual rect:" << actualRect;
             qDebug() << "***** ----------------------------------------";
