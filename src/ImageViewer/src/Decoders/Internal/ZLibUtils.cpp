@@ -31,28 +31,28 @@
 
 namespace {
 
-void zerr(int ret)
+QByteArray zerr(int ret)
 {
-    QString description = QString::fromLatin1("[ZLibUtils::InflateFile]: zpipe: ");
+    QByteArray description = "zpipe: ";
     switch(ret)
     {
     case Z_ERRNO:
-        description.append(QString::fromLatin1("error reading/writing stream"));
+        description.append("error reading stream");
         break;
     case Z_STREAM_ERROR:
-        description.append(QString::fromLatin1("invalid compression level"));
+        description.append("invalid compression level");
         break;
     case Z_DATA_ERROR:
-        description.append(QString::fromLatin1("invalid or incomplete deflate data"));
+        description.append("invalid or incomplete deflate data");
         break;
     case Z_MEM_ERROR:
-        description.append(QString::fromLatin1("out of memory"));
+        description.append("out of memory");
         break;
     case Z_VERSION_ERROR:
-        description.append(QString::fromLatin1("zlib version mismatch!"));
+        description.append("zlib version mismatch!");
         break;
     }
-    qWarning() << description;
+    return description;
 }
 
 } // namespace
@@ -83,7 +83,7 @@ QByteArray InflateFile(const QString &filePath)
     ret = inflateInit2(&strm, 16 + MAX_WBITS);
     if(ret != Z_OK)
     {
-        zerr(ret);
+        qWarning() << "[ZLibUtils::InflateFile]:" << zerr(ret);
         return QByteArray();
     }
 
@@ -96,7 +96,7 @@ QByteArray InflateFile(const QString &filePath)
         if(count < 0)
         {
             inflateEnd(&strm);
-            zerr(Z_ERRNO);
+            qWarning() << "[ZLibUtils::InflateFile]:" << zerr(Z_ERRNO);
             return QByteArray();
         }
         if(count == 0)
@@ -115,12 +115,12 @@ QByteArray InflateFile(const QString &filePath)
             {
             case Z_NEED_DICT:
                 inflateEnd(&strm);
-                zerr(Z_DATA_ERROR);
+                qWarning() << "[ZLibUtils::InflateFile]:" << zerr(Z_DATA_ERROR);
                 return QByteArray();
             case Z_DATA_ERROR:
             case Z_MEM_ERROR:
                 inflateEnd(&strm);
-                zerr(ret);
+                qWarning() << "[ZLibUtils::InflateFile]:" << zerr(ret);
                 return QByteArray();
             }
             int have = static_cast<int>(CHUNK - strm.avail_out);
@@ -136,7 +136,7 @@ QByteArray InflateFile(const QString &filePath)
     inflateEnd(&strm);
     if(ret != Z_STREAM_END)
     {
-        zerr(Z_DATA_ERROR);
+        qWarning() << "[ZLibUtils::InflateFile]:" << zerr(Z_DATA_ERROR);
         return QByteArray();
     }
     return dest;
