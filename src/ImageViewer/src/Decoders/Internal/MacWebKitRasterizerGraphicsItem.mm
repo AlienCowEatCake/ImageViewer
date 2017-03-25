@@ -170,6 +170,12 @@ public:
         qreal scaleFactor;
     };
 
+    enum ScaleMethod
+    {
+        SCALE_BY_RESIZE_FRAME,
+        SCALE_BY_RESIZE_FRAME_AND_SCALE_CONTENT
+    };
+
     Impl(const QUrl &url);
     Impl(const QByteArray &htmlData, MacWebKitRasterizerGraphicsItem::DataType dataType);
     ~Impl();
@@ -186,6 +192,9 @@ public:
     qreal maxScaleFactor() const;
     void setMaxScaleFactor(qreal maxScaleFactor);
 
+    ScaleMethod scaleMethod() const;
+    void setScaleMethod(ScaleMethod scaleMethod);
+
     RasterizerCache &rasterizerCache();
     const RasterizerCache &rasterizerCache() const;
 
@@ -198,6 +207,7 @@ private:
     MacWebKitRasterizerGraphicsItem::State m_state;
     QRectF m_rect;
     qreal m_maxScaleFactor;
+    ScaleMethod m_scaleMethod;
     RasterizerCache m_rasterizerCache;
 };
 
@@ -283,19 +293,32 @@ void MacWebKitRasterizerGraphicsItem::Impl::waitForLoad() const
 QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    const QString zoomScript = QString::fromLatin1("document.documentElement.style.zoom = '%1'");
     const QRectF scaledRect = QRectFIntegerized(QRectF(m_rect.topLeft() * scaleFactor, m_rect.size() * scaleFactor));
     const QRectF scaledPage = QRectFIntegerized(scaledRect.united(QRectF(0, 0, 1, 1)));
-    const double oldScaleFactor = QString::fromUtf8([[m_view stringByEvaluatingJavaScriptFromString: @"document.documentElement.style.zoom;"] UTF8String]).toDouble();
-    if(oldScaleFactor > scaleFactor)
+
+    switch(scaleMethod())
     {
-        [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(scaleFactor).toUtf8().data()]];
-        [m_view setFrameSize: NSMakeSize(scaledPage.width(), scaledPage.height())];
+    case SCALE_BY_RESIZE_FRAME_AND_SCALE_CONTENT:
+    {
+        const QString zoomScript = QString::fromLatin1("document.documentElement.style.zoom = '%1'");
+        const double oldScaleFactor = QString::fromUtf8([[m_view stringByEvaluatingJavaScriptFromString: @"document.documentElement.style.zoom;"] UTF8String]).toDouble();
+        if(oldScaleFactor > scaleFactor)
+        {
+            [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(scaleFactor).toUtf8().data()]];
+            [m_view setFrameSize: NSMakeSize(scaledPage.width(), scaledPage.height())];
+        }
+        else
+        {
+            [m_view setFrameSize: NSMakeSize(scaledPage.width(), scaledPage.height())];
+            [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(scaleFactor).toUtf8().data()]];
+        }
+        break;
     }
-    else
+    case SCALE_BY_RESIZE_FRAME:
     {
         [m_view setFrameSize: NSMakeSize(scaledPage.width(), scaledPage.height())];
-        [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(scaleFactor).toUtf8().data()]];
+        break;
+    }
     }
 
     NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
@@ -351,6 +374,30 @@ void MacWebKitRasterizerGraphicsItem::Impl::setMaxScaleFactor(qreal maxScaleFact
     m_maxScaleFactor = maxScaleFactor;
 }
 
+MacWebKitRasterizerGraphicsItem::Impl::ScaleMethod MacWebKitRasterizerGraphicsItem::Impl::scaleMethod() const
+{
+    return m_scaleMethod;
+}
+
+void MacWebKitRasterizerGraphicsItem::Impl::setScaleMethod(MacWebKitRasterizerGraphicsItem::Impl::ScaleMethod scaleMethod)
+{
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+    QString methodStr;
+    switch(scaleMethod)
+    {
+#define METHOD_CASE(METHOD) \
+    case METHOD: \
+        methodStr = QString::fromLatin1(#METHOD); \
+        break;
+    METHOD_CASE(SCALE_BY_RESIZE_FRAME)
+    METHOD_CASE(SCALE_BY_RESIZE_FRAME_AND_SCALE_CONTENT)
+#undef METHOD_CASE
+    }
+    qDebug() << __FUNCTION__ << "scaleMethod:" << methodStr;
+#endif
+    m_scaleMethod = scaleMethod;
+}
+
 MacWebKitRasterizerGraphicsItem::Impl::RasterizerCache &MacWebKitRasterizerGraphicsItem::Impl::rasterizerCache()
 {
     return m_rasterizerCache;
@@ -369,6 +416,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
     m_state = MacWebKitRasterizerGraphicsItem::STATE_LOADING;
     m_rasterizerCache.scaleFactor = 0;
     m_maxScaleFactor = 1;
+    m_scaleMethod = SCALE_BY_RESIZE_FRAME;
     [m_view setFrameLoadDelegate: reinterpret_cast<id>(m_delegate)];
     [reinterpret_cast<NSView*>(m_container->winId()) addSubview: m_view];
     [m_view setDrawsBackground: NO];
@@ -428,6 +476,12 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
             qDebug() << "***** actual rect:" << actualRect;
             qDebug() << "***** ----------------------------------------";
 #endif
+            MacWebKitRasterizerGraphicsItem::Impl::ScaleMethod scaleMethod;
+            if(SVGSizeAttribute(view).isEmpty() && viewBox.isValid())
+                scaleMethod = MacWebKitRasterizerGraphicsItem::Impl::SCALE_BY_RESIZE_FRAME;
+            else
+                scaleMethod = MacWebKitRasterizerGraphicsItem::Impl::SCALE_BY_RESIZE_FRAME_AND_SCALE_CONTENT;
+            m_impl->setScaleMethod(scaleMethod);
         }
         else
         {
@@ -445,6 +499,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
             qDebug() << "***** actual rect:" << actualRect;
             qDebug() << "***** ----------------------------------------";
 #endif
+            m_impl->setScaleMethod(MacWebKitRasterizerGraphicsItem::Impl::SCALE_BY_RESIZE_FRAME_AND_SCALE_CONTENT);
         }
 
         if(!actualRect.isValid())
