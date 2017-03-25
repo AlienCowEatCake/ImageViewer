@@ -204,6 +204,7 @@ void ImageViewerWidget::clear()
     scene()->clear();
     resetMatrix();
     ensureVisible(QRectF(0, 0, 0, 0));
+    setSceneRect(0, 0, 1, 1);
     m_impl->currentRotationAngle = 0;
 }
 
