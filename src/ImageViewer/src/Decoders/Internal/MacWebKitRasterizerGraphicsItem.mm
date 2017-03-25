@@ -268,11 +268,13 @@ MacWebKitRasterizerGraphicsItem::Impl::Impl(const QByteArray &htmlData, MacWebKi
 
 MacWebKitRasterizerGraphicsItem::Impl::~Impl()
 {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     [m_view setFrameLoadDelegate: nil];
     [m_delegate release];
     [m_view removeFromSuperview];
     [m_view release];
     m_container->deleteLater();
+    [pool release];
 }
 
 MacWebKitRasterizerGraphicsItem::State MacWebKitRasterizerGraphicsItem::Impl::state() const
