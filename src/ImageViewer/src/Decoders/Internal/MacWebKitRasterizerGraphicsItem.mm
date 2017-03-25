@@ -284,22 +284,22 @@ QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     const QString zoomScript = QString::fromLatin1("document.documentElement.style.zoom = '%1'");
-    const QRectF scaledRect = QRectF(m_rect.topLeft() * scaleFactor, m_rect.size() * scaleFactor);
-    const QSizeF scaledPageSize = scaledRect.united(QRectF(0, 0, 1, 1)).size();
+    const QRectF scaledRect = QRectFIntegerized(QRectF(m_rect.topLeft() * scaleFactor, m_rect.size() * scaleFactor));
+    const QRectF scaledPage = QRectFIntegerized(scaledRect.united(QRectF(0, 0, 1, 1)));
     const double oldScaleFactor = QString::fromUtf8([[m_view stringByEvaluatingJavaScriptFromString: @"document.documentElement.style.zoom;"] UTF8String]).toDouble();
     if(oldScaleFactor > scaleFactor)
     {
         [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(scaleFactor).toUtf8().data()]];
-        [m_view setFrameSize: NSMakeSize(scaledPageSize.width(), scaledPageSize.height())];
+        [m_view setFrameSize: NSMakeSize(scaledPage.width(), scaledPage.height())];
     }
     else
     {
-        [m_view setFrameSize: NSMakeSize(scaledPageSize.width(), scaledPageSize.height())];
+        [m_view setFrameSize: NSMakeSize(scaledPage.width(), scaledPage.height())];
         [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(scaleFactor).toUtf8().data()]];
     }
 
     NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
-    const NSRect cacheRect = QRectFToNSRect(QRectFIntegerized(scaledRect));
+    const NSRect cacheRect = QRectFToNSRect(scaledPage);
     const NSInteger one = static_cast<NSInteger>(1);
     NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc]
             initWithBitmapDataPlanes: nil
@@ -325,7 +325,7 @@ QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
     QPixmap pixmap = MacImageUtils::QPixmapFromNSImage(webImage);
     [webImage release];
     [pool release];
-    return pixmap;
+    return pixmap.copy(scaledRect.toRect());
 }
 
 QRectF MacWebKitRasterizerGraphicsItem::Impl::rect() const
