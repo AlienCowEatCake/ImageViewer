@@ -112,7 +112,7 @@ public:
     };
 
     Impl(const QUrl &url);
-    Impl(const QString &htmlString);
+    Impl(const QByteArray &htmlData, MacWebKitRasterizerGraphicsItem::DataType dataType);
     ~Impl();
 
     MacWebKitRasterizerGraphicsItem::State state() const;
@@ -161,17 +161,36 @@ MacWebKitRasterizerGraphicsItem::Impl::Impl(const QUrl &url)
     [pool release];
 }
 
-MacWebKitRasterizerGraphicsItem::Impl::Impl(const QString &htmlString)
+MacWebKitRasterizerGraphicsItem::Impl::Impl(const QByteArray &htmlData, MacWebKitRasterizerGraphicsItem::DataType dataType)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     init();
-    if(htmlString.isEmpty())
+    if(htmlData.isEmpty())
     {
         m_state = MacWebKitRasterizerGraphicsItem::STATE_FAILED;
     }
     else
     {
-        [[m_view mainFrame] loadHTMLString: [NSString stringWithUTF8String: htmlString.toUtf8().data()] baseURL: nil];
+        NSString *mimeType = nil;
+        switch(dataType)
+        {
+        case DATA_TYPE_HTML:
+            mimeType = @"text/html";
+            break;
+        case DATA_TYPE_XHTML:
+            mimeType = @"application/xhtml+xml";
+            break;
+        case DATA_TYPE_XML:
+            mimeType = @"application/xml";
+            break;
+        case DATA_TYPE_SVG:
+            mimeType = @"image/svg+xml";
+            break;
+        default:
+            break;
+        }
+        NSData *data = [NSData dataWithBytes: const_cast<void*>(static_cast<const void*>(htmlData.constData())) length: static_cast<NSUInteger>(htmlData.size())];
+        [[m_view mainFrame] loadData: data MIMEType: mimeType textEncodingName: nil baseURL: nil];
         waitForLoad();
     }
     [pool release];
@@ -413,9 +432,9 @@ MacWebKitRasterizerGraphicsItem::MacWebKitRasterizerGraphicsItem(const QUrl &url
     , m_impl(new Impl(url))
 {}
 
-MacWebKitRasterizerGraphicsItem::MacWebKitRasterizerGraphicsItem(const QString &htmlString, QGraphicsItem *parentItem)
+MacWebKitRasterizerGraphicsItem::MacWebKitRasterizerGraphicsItem(const QByteArray &htmlData, DataType dataType, QGraphicsItem *parentItem)
     : QGraphicsObject(parentItem)
-    , m_impl(new Impl(htmlString))
+    , m_impl(new Impl(htmlData, dataType))
 {}
 
 MacWebKitRasterizerGraphicsItem::~MacWebKitRasterizerGraphicsItem()

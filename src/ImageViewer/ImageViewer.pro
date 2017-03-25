@@ -72,6 +72,7 @@ SOURCES += \
     src/Decoders/DecoderQMovie.cpp \
     src/Decoders/DecoderQtSVG.cpp \
     src/Decoders/Internal/ExifUtils.cpp \
+    src/Decoders/Internal/ZLibUtils.cpp \
     src/main.cpp
 
 HEADERS += \
@@ -87,7 +88,8 @@ HEADERS += \
     src/Decoders/DecoderQMovie.h \
     src/Decoders/DecoderQtSVG.h \
     src/Decoders/Internal/DecoderAutoRegistrator.h \
-    src/Decoders/Internal/ExifUtils.h
+    src/Decoders/Internal/ExifUtils.h \
+    src/Decoders/Internal/ZLibUtils.h
 
 has_thirdparty_stb {
     SOURCES += \

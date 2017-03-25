@@ -35,10 +35,20 @@ public:
         STATE_FAILED,
         STATE_SUCCEED
     };
+
+    enum DataType
+    {
+        DATA_TYPE_UNKNOWN,
+        DATA_TYPE_HTML,
+        DATA_TYPE_XHTML,
+        DATA_TYPE_XML,
+        DATA_TYPE_SVG
+    };
+
     class Impl;
 
     MacWebKitRasterizerGraphicsItem(const QUrl &url, QGraphicsItem *parentItem = NULL);
-    MacWebKitRasterizerGraphicsItem(const QString &htmlString, QGraphicsItem *parentItem = NULL);
+    MacWebKitRasterizerGraphicsItem(const QByteArray &htmlData, DataType dataType = DATA_TYPE_UNKNOWN, QGraphicsItem *parentItem = NULL);
 
     ~MacWebKitRasterizerGraphicsItem();
 
