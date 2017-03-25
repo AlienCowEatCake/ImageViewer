@@ -92,6 +92,41 @@ QRectF DOMNodeActualBoundingBox(DOMNode *node)
     return result;
 }
 
+QRectF SVGViewBoxAttribute(WebView *webView)
+{
+    const NSString *str = [webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('viewBox');"];
+    const QStringList vb = QString::fromUtf8([str UTF8String]).split(QRegExp(QString::fromLatin1("\\s")));
+    return (vb.size() == 4 ? QRectF(vb.at(0).toDouble(), vb.at(1).toDouble(), vb.at(2).toDouble(), vb.at(3).toDouble()) : QRectF());
+}
+
+QSizeF SVGSizeAttribute(WebView *webView)
+{
+    return QSizeF(
+        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('width');"] doubleValue]),
+        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('height');"] doubleValue])
+    );
+}
+
+QRectF SVGBBox(WebView *webView)
+{
+    return QRectF(
+        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBBox().x;"] doubleValue]),
+        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBBox().y;"] doubleValue]),
+        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBBox().width;"] doubleValue]),
+        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBBox().height;"] doubleValue])
+    );
+}
+
+QRectF SVGBoundingClientRect(WebView *webView)
+{
+    return QRectF(
+        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().x;"] doubleValue]),
+        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().y;"] doubleValue]),
+        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().width;"] doubleValue]),
+        static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().height;"] doubleValue])
+    );
+}
+
 } // namespace
 
 // ====================================================================================================
@@ -342,13 +377,8 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
         QRectF actualRect;
         if(QString::fromUtf8([[view stringByEvaluatingJavaScriptFromString: @"document.documentElement instanceof SVGElement;"] UTF8String]) == QString::fromLatin1("true"))
         {
-            const NSString *viewBoxStr = [view stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('viewBox');"];
-            const QStringList vb = QString::fromUtf8([viewBoxStr UTF8String]).split(QRegExp(QString::fromLatin1("\\s")));
-            const QRectF viewBox = (vb.size() == 4 ? QRectF(vb.at(0).toDouble(), vb.at(1).toDouble(), vb.at(2).toDouble(), vb.at(3).toDouble()) : QRectF());
-
-            const NSString *heightStr  = [view stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('height');"];
-            const NSString *widthStr   = [view stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('width');"];
-            const QSizeF size = QSizeF(static_cast<qreal>([widthStr doubleValue]), static_cast<qreal>([heightStr doubleValue]));
+            const QRectF viewBox = SVGViewBoxAttribute(view);
+            const QSizeF size = SVGBoundingClientRect(view).size();
 
             if(!size.isEmpty())
                 actualRect = QRectF(0, 0, size.width(), size.height());
@@ -364,8 +394,10 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
             qDebug() << "***** ----------------------------------------";
             qDebug() << "***** Detected SVG document";
             qDebug() << "***** ----------------------------------------";
-            qDebug() << "***** viewBox:" << viewBox;
-            qDebug() << "***** size:" << size;
+            qDebug() << "***** viewBox attribute:" << SVGViewBoxAttribute(view);
+            qDebug() << "***** size attribute:" << SVGSizeAttribute(view);
+            qDebug() << "***** getBBox() value:" << SVGBBox(view);
+            qDebug() << "***** getBoundingClientRect() value:" << SVGBoundingClientRect(view);
             qDebug() << "***** DOM boundingBox:" << DOMNodeActualBoundingBox([view mainFrameDocument]);
             qDebug() << "***** documentView bounds:" << QRectFFromNSRect([[[frame frameView] documentView] bounds]);
             qDebug() << "***** ----------------------------------------";
