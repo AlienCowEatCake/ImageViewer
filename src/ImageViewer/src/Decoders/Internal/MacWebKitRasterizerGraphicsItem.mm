@@ -52,6 +52,7 @@ namespace {
 const qreal MAX_PIXMAP_DIMENSION = 16384;
 const qreal DEFAULT_WIDTH = 640;
 const qreal DEFAULT_HEIGHT = 480;
+const qreal DIMENSION_DELTA = 0.5;
 
 QRectF QRectFIntegerized(const QRectF rect)
 {
@@ -142,7 +143,7 @@ QRectF SVGBoundingClientRect(WebView *webView)
 QRectF SVGActualBoundingBox(WebView *webView)
 {
     QRectF rect;
-    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_10_8) /// @todo Работает в 10.8.5, нужно проверить ранние версии 10.8
+    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_10_9) /// @todo Работает в 10.8.5, нужно проверить ранние версии 10.8
         rect = DOMNodeActualBoundingBox([webView mainFrameDocument]);
     else
         rect = QRectFIntegerized(SVGBBox(webView));
@@ -447,7 +448,9 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
     if(frame == [view mainFrame])
     {
         QRectF actualRect;
-        if(QString::fromUtf8([[view stringByEvaluatingJavaScriptFromString: @"document.documentElement instanceof SVGElement;"] UTF8String]) == QString::fromLatin1("true"))
+        const bool isSvg = QString::fromUtf8([[view stringByEvaluatingJavaScriptFromString: @"document.documentElement instanceof SVGElement;"] UTF8String]) == QString::fromLatin1("true");
+        const bool emptySVGViewBoxSupported = QSysInfo::MacintoshVersion >= QSysInfo::MV_10_9; /// @todo Работает в 10.8.5, нужно проверить ранние версии 10.8
+        if(isSvg)
         {
             const QRectF viewBox = SVGViewBoxAttribute(view);
             const QRectF boundClientRect = SVGBoundingClientRect(view);
@@ -476,8 +479,9 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
             qDebug() << "***** actual rect:" << actualRect;
             qDebug() << "***** ----------------------------------------";
 #endif
+
             MacWebKitRasterizerGraphicsItem::Impl::ScaleMethod scaleMethod;
-            if(SVGSizeAttribute(view).isEmpty() && viewBox.isValid())
+            if(SVGSizeAttribute(view).isEmpty() && (viewBox.isValid() || !emptySVGViewBoxSupported))
                 scaleMethod = MacWebKitRasterizerGraphicsItem::Impl::SCALE_BY_RESIZE_FRAME;
             else
                 scaleMethod = MacWebKitRasterizerGraphicsItem::Impl::SCALE_BY_RESIZE_FRAME_AND_SCALE_CONTENT;
@@ -509,6 +513,16 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
             const qreal top = (actualRect.top() + actualRect.height() > height ? actualRect.top() : 0);
             const qreal left = (actualRect.left() + actualRect.width() > width ? actualRect.left() : 0);
             actualRect = QRectF(left, top, width, height);
+        }
+
+        if(isSvg && !emptySVGViewBoxSupported && !SVGViewBoxAttribute(view).isValid())
+        {
+            const QRectF fakeViewBoxRect = QRectFIntegerized(QRectF(0, 0, actualRect.width(), actualRect.height()));
+            const qreal x = -DIMENSION_DELTA;
+            const qreal y = -DIMENSION_DELTA;
+            const qreal w = fakeViewBoxRect.width() + 2 * DIMENSION_DELTA;
+            const qreal h = fakeViewBoxRect.height() + 2 * DIMENSION_DELTA;
+            [view stringByEvaluatingJavaScriptFromString: [NSString stringWithFormat: @"document.querySelector('svg').setAttribute('viewBox', '%f %f %f %f');", x, y, w, h]];
         }
 
         m_impl->setRect(actualRect);
