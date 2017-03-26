@@ -29,7 +29,6 @@
 #include <limits>
 
 #include <QtGlobal>
-#include <QFileInfo>
 #include <QUrl>
 #include <QImage>
 #include <QPainter>
@@ -41,8 +40,6 @@
 #include <QSysInfo>
 #include <QTime>
 #include <QDebug>
-
-#include "MacImageUtils.h"
 
 //#define MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG
 
