@@ -189,7 +189,7 @@ void ImageViewerWidget::setGraphicsItem(QGraphicsItem *graphicsItem)
     m_impl->currentGraphicsItem = graphicsItem;
     if(!graphicsItem)
         return;
-    graphicsItem->setFlags(QGraphicsItem::ItemClipsToShape);
+    graphicsItem->setFlag(QGraphicsItem::ItemClipsToShape, true);
     graphicsItem->setCacheMode(QGraphicsItem::NoCache);
     scene()->addItem(graphicsItem);
     setSceneRect(graphicsItem->boundingRect());

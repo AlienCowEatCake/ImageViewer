@@ -31,7 +31,7 @@
 #include <QtGlobal>
 #include <QFileInfo>
 #include <QUrl>
-#include <QPixmap>
+#include <QImage>
 #include <QPainter>
 #include <QString>
 #include <QStringList>
@@ -39,6 +39,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
 #include <QSysInfo>
+#include <QTime>
 #include <QDebug>
 
 #include "MacImageUtils.h"
@@ -167,7 +168,8 @@ class MacWebKitRasterizerGraphicsItem::Impl
 public:
     struct RasterizerCache
     {
-        QPixmap pixmap;
+        QImage image;
+        QRectF exposedRect;
         qreal scaleFactor;
     };
 
@@ -185,7 +187,7 @@ public:
     void setState(MacWebKitRasterizerGraphicsItem::State state);
 
     void waitForLoad() const;
-    QPixmap grapPixmap(qreal scaleFactor = 1);
+    QImage grabImage(qreal scaleFactor = 1, const QRectF &targetArea = QRectF());
 
     QRectF rect() const;
     void setRect(const QRectF &rect);
@@ -293,7 +295,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::waitForLoad() const
         [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate: [NSDate distantFuture]];
 }
 
-QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
+QImage MacWebKitRasterizerGraphicsItem::Impl::grabImage(qreal scaleFactor, const QRectF &targetArea)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     const QRectF scaledRect = QRectFIntegerized(QRectF(m_rect.topLeft() * scaleFactor, m_rect.size() * scaleFactor));
@@ -324,6 +326,11 @@ QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
     }
     }
 
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+    QTime time;
+    time.start();
+#endif
+
     NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
     const NSRect cacheRect = QRectFToNSRect(scaledPage);
     const NSInteger one = static_cast<NSInteger>(1);
@@ -346,12 +353,31 @@ QPixmap MacWebKitRasterizerGraphicsItem::Impl::grapPixmap(qreal scaleFactor)
     [webFrameViewDocView displayRectIgnoringOpacity: cacheRect inContext: graphicsContext];
     [NSGraphicsContext restoreGraphicsState];
 
-    NSImage *webImage = [[NSImage alloc] initWithSize: bitmapRep.size];
-    [webImage addRepresentation: bitmapRep];
-    QPixmap pixmap = MacImageUtils::QPixmapFromNSImage(webImage);
-    [webImage release];
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+    qDebug() << "Offscreen rendering time =" << time.elapsed() << "ms";
+    time.restart();
+#endif
+
+    QRect outputRect = (targetArea.isValid() ? QRectF(targetArea.topLeft() * scaleFactor, targetArea.size() * scaleFactor) : scaledRect).toRect();
+    QImage image(outputRect.size(), QImage::Format_ARGB32);
+    for(int i = 0; i < outputRect.height(); i++)
+    {
+        QRgb *dstLine = reinterpret_cast<QRgb*>(image.scanLine(i));
+        unsigned char *srcLine = [bitmapRep bitmapData] + (i + outputRect.y()) * [bitmapRep bytesPerRow] + outputRect.x() * [bitmapRep samplesPerPixel];
+        for(int j = 0; j < outputRect.width(); j++)
+        {
+            unsigned char *source = srcLine + j * [bitmapRep samplesPerPixel];
+            dstLine[j] = qRgba(source[0], source[1], source[2], source[3]);
+        }
+    }
+
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+    qDebug() << "Image converting time =" << time.elapsed() << "ms";
+#endif
+
+    [bitmapRep release];
     [pool release];
-    return pixmap.copy(scaledRect.toRect());
+    return image;
 }
 
 QRectF MacWebKitRasterizerGraphicsItem::Impl::rect() const
@@ -557,12 +583,16 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
 MacWebKitRasterizerGraphicsItem::MacWebKitRasterizerGraphicsItem(const QUrl &url, QGraphicsItem *parentItem)
     : QGraphicsObject(parentItem)
     , m_impl(new Impl(url))
-{}
+{
+    setFlag(QGraphicsItem::ItemUsesExtendedStyleOption, true);
+}
 
 MacWebKitRasterizerGraphicsItem::MacWebKitRasterizerGraphicsItem(const QByteArray &htmlData, DataType dataType, QGraphicsItem *parentItem)
     : QGraphicsObject(parentItem)
     , m_impl(new Impl(htmlData, dataType))
-{}
+{
+    setFlag(QGraphicsItem::ItemUsesExtendedStyleOption, true);
+}
 
 MacWebKitRasterizerGraphicsItem::~MacWebKitRasterizerGraphicsItem()
 {}
@@ -581,17 +611,20 @@ void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptio
     painter->setPen(Qt::red);
     painter->drawRect(boundingRect());
 #endif
-    QPixmap &pixmap = m_impl->rasterizerCache().pixmap;
     const QRectF identityRect = QRectF(0, 0, 1, 1);
     const QRectF deviceTransformedRect = painter->deviceTransform().mapRect(identityRect);
     const qreal newScaleFactor = std::min(std::max(deviceTransformedRect.width(), deviceTransformedRect.height()), m_impl->maxScaleFactor());
+    const QRectF newExposedRect = boundingRect().intersected(option->exposedRect);
+    QImage &image = m_impl->rasterizerCache().image;
+    QRectF &exposedRect = m_impl->rasterizerCache().exposedRect;
     qreal &scaleFactor = m_impl->rasterizerCache().scaleFactor;
-    if(std::abs(newScaleFactor - scaleFactor) / std::max(newScaleFactor, scaleFactor) > 1e-2)
+    if(std::abs(newScaleFactor - scaleFactor) / std::max(newScaleFactor, scaleFactor) > 1e-2 || !exposedRect.contains(newExposedRect))
     {
+        image = m_impl->grabImage(newScaleFactor, newExposedRect);
         scaleFactor = newScaleFactor;
-        pixmap = m_impl->grapPixmap(newScaleFactor);
+        exposedRect = newExposedRect;
     }
-    painter->drawPixmap(boundingRect(), pixmap, QRectF(pixmap.rect()));
+    painter->drawImage(newExposedRect, image, QRectF(image.rect()));
 }
 
 MacWebKitRasterizerGraphicsItem::State MacWebKitRasterizerGraphicsItem::state() const
