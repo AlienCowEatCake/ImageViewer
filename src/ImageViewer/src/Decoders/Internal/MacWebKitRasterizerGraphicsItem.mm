@@ -312,6 +312,15 @@ QImage MacWebKitRasterizerGraphicsItem::Impl::grabImage(qreal scaleFactor, const
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
     DLOG << "actualScaleFactor:" << actualScaleFactor;
 #endif
+    if(actualScaleFactor < scaleFactor)
+    {
+        qWarning() << QString::fromLatin1("%1 Extremely large scale factor requested! Requested: %2; Max: %3; Will be used: %4.")
+                      .arg(QString::fromLatin1("[MacWebKitRasterizerGraphicsItem]"))
+                      .arg(scaleFactor)
+                      .arg(maxScaleFactor())
+                      .arg(actualScaleFactor)
+                      .toLatin1().data();
+    }
     const QRectF scaledRect = QRectFIntegerized(QRectF(m_rect.topLeft() * actualScaleFactor, m_rect.size() * actualScaleFactor));
     const QRectF scaledPage = QRectFIntegerized(scaledRect.united(QRectF(0, 0, 1, 1)));
 
