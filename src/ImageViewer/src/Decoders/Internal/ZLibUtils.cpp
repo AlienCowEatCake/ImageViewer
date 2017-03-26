@@ -124,7 +124,11 @@ QByteArray InflateFile(const QString &filePath)
                 return QByteArray();
             }
             int have = static_cast<int>(CHUNK - strm.avail_out);
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
             dest.append(reinterpret_cast<const char*>(out), have);
+#else
+            dest.append(QByteArray(reinterpret_cast<const char*>(out), have));
+#endif
         }
         while(strm.avail_out == 0);
 
