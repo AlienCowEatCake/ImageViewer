@@ -667,8 +667,14 @@ void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptio
         image = m_impl->grabImage(newScaleFactor, newExposedRect);
         scaleFactor = newScaleFactor;
         exposedRect = newExposedRect;
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+        DLOG << "Rasterizer cache updated";
+#endif
     }
-    painter->drawImage(newExposedRect, image, QRectF(image.rect()));
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+    DLOG << "Paint with exposedRect:" << exposedRect << "requestedRect:" << option->exposedRect;
+#endif
+    painter->drawImage(exposedRect, image, QRectF(image.rect()));
 }
 
 MacWebKitRasterizerGraphicsItem::State MacWebKitRasterizerGraphicsItem::state() const
