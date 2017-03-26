@@ -35,8 +35,8 @@ include(../ThirdParty/QtExtended/QtExtended.pri)
 include(../ThirdParty/STB/STB.pri)
 greaterThan(QT_MAJOR_VERSION, 4) {
     include(../ThirdParty/QtImageFormats/QtImageFormats.pri)
-    include(../ThirdParty/JasPer/JasPer.pri)
-    include(../ThirdParty/libjpeg/libjpeg.pri)
+#    include(../ThirdParty/JasPer/JasPer.pri) # FIXME: C99
+#    include(../ThirdParty/libjpeg/libjpeg.pri)
 }
 include(../ThirdParty/zlib/zlib.pri)
 

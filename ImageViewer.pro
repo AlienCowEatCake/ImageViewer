@@ -16,8 +16,8 @@ SUBDIRS = \
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     SUBDIRS += \
-        src/ThirdParty/libjpeg/libjpeg.pro \
-        src/ThirdParty/JasPer/JasPer.pro \
+\#        src/ThirdParty/libjpeg/libjpeg.pro \
+\#        src/ThirdParty/JasPer/JasPer.pro \ # FIXME: C99
         src/ThirdParty/QtImageFormats/QtImageFormats.pro
 }
 
