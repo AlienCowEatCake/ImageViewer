@@ -46,11 +46,17 @@
 
 //#define MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG
 
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+#define DLOG qDebug() << QString::fromLatin1("[%1]").arg(QString::fromLatin1(__FUNCTION__)).toLatin1().data()
+#define WHEREAMI qDebug() << QString::fromLatin1("[%1]").arg(QString::fromLatin1(__PRETTY_FUNCTION__)).toLatin1().data()
+#endif
+
 // ====================================================================================================
 
 namespace {
 
-const qreal MAX_PIXMAP_DIMENSION = 16384;
+const qreal MAX_IMAGE_DIMENSION = 16384;
+const qreal MIN_IMAGE_DIMENSION = 1;
 const qreal DEFAULT_WIDTH = 640;
 const qreal DEFAULT_HEIGHT = 480;
 const qreal DIMENSION_DELTA = 0.5;
@@ -192,6 +198,9 @@ public:
     QRectF rect() const;
     void setRect(const QRectF &rect);
 
+    qreal minScaleFactor() const;
+    void setMinScaleFactor(qreal minScaleFactor);
+
     qreal maxScaleFactor() const;
     void setMaxScaleFactor(qreal maxScaleFactor);
 
@@ -209,6 +218,7 @@ private:
     MacWebKitRasterizerViewDelegate *m_delegate;
     MacWebKitRasterizerGraphicsItem::State m_state;
     QRectF m_rect;
+    qreal m_minScaleFactor;
     qreal m_maxScaleFactor;
     ScaleMethod m_scaleMethod;
     RasterizerCache m_rasterizerCache;
@@ -298,7 +308,11 @@ void MacWebKitRasterizerGraphicsItem::Impl::waitForLoad() const
 QImage MacWebKitRasterizerGraphicsItem::Impl::grabImage(qreal scaleFactor, const QRectF &targetArea)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    const QRectF scaledRect = QRectFIntegerized(QRectF(m_rect.topLeft() * scaleFactor, m_rect.size() * scaleFactor));
+    const qreal actualScaleFactor = std::max(std::min(scaleFactor, maxScaleFactor()), minScaleFactor());
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+    DLOG << "actualScaleFactor:" << actualScaleFactor;
+#endif
+    const QRectF scaledRect = QRectFIntegerized(QRectF(m_rect.topLeft() * actualScaleFactor, m_rect.size() * actualScaleFactor));
     const QRectF scaledPage = QRectFIntegerized(scaledRect.united(QRectF(0, 0, 1, 1)));
 
     switch(scaleMethod())
@@ -307,15 +321,15 @@ QImage MacWebKitRasterizerGraphicsItem::Impl::grabImage(qreal scaleFactor, const
     {
         const QString zoomScript = QString::fromLatin1("document.documentElement.style.zoom = '%1'");
         const double oldScaleFactor = QString::fromUtf8([[m_view stringByEvaluatingJavaScriptFromString: @"document.documentElement.style.zoom;"] UTF8String]).toDouble();
-        if(oldScaleFactor > scaleFactor)
+        if(oldScaleFactor > actualScaleFactor)
         {
-            [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(scaleFactor).toUtf8().data()]];
+            [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(actualScaleFactor).toUtf8().data()]];
             [m_view setFrameSize: NSMakeSize(scaledPage.width(), scaledPage.height())];
         }
         else
         {
             [m_view setFrameSize: NSMakeSize(scaledPage.width(), scaledPage.height())];
-            [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(scaleFactor).toUtf8().data()]];
+            [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(actualScaleFactor).toUtf8().data()]];
         }
         break;
     }
@@ -354,11 +368,11 @@ QImage MacWebKitRasterizerGraphicsItem::Impl::grabImage(qreal scaleFactor, const
     [NSGraphicsContext restoreGraphicsState];
 
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-    qDebug() << "Offscreen rendering time =" << time.elapsed() << "ms";
+    DLOG << "Offscreen rendering time =" << time.elapsed() << "ms";
     time.restart();
 #endif
 
-    QRect outputRect = (targetArea.isValid() ? QRectF(targetArea.topLeft() * scaleFactor, targetArea.size() * scaleFactor) : scaledRect).toRect();
+    QRect outputRect = (targetArea.isValid() ? QRectF(targetArea.topLeft() * actualScaleFactor, targetArea.size() * actualScaleFactor) : scaledRect).toRect();
     QImage image(outputRect.size(), QImage::Format_ARGB32);
     for(int i = 0; i < outputRect.height(); i++)
     {
@@ -372,7 +386,7 @@ QImage MacWebKitRasterizerGraphicsItem::Impl::grabImage(qreal scaleFactor, const
     }
 
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-    qDebug() << "Image converting time =" << time.elapsed() << "ms";
+    DLOG << "Image converting time =" << time.elapsed() << "ms";
 #endif
 
     [bitmapRep release];
@@ -388,9 +402,22 @@ QRectF MacWebKitRasterizerGraphicsItem::Impl::rect() const
 void MacWebKitRasterizerGraphicsItem::Impl::setRect(const QRectF &rect)
 {
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-    qDebug() << __FUNCTION__ << "rect:" << rect;
+    DLOG << "rect:" << rect;
 #endif
     m_rect = rect;
+}
+
+qreal MacWebKitRasterizerGraphicsItem::Impl::minScaleFactor() const
+{
+    return m_minScaleFactor;
+}
+
+void MacWebKitRasterizerGraphicsItem::Impl::setMinScaleFactor(qreal minScaleFactor)
+{
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+    DLOG << "minScaleFactor:" << minScaleFactor;
+#endif
+    m_minScaleFactor = minScaleFactor;
 }
 
 qreal MacWebKitRasterizerGraphicsItem::Impl::maxScaleFactor() const
@@ -400,6 +427,9 @@ qreal MacWebKitRasterizerGraphicsItem::Impl::maxScaleFactor() const
 
 void MacWebKitRasterizerGraphicsItem::Impl::setMaxScaleFactor(qreal maxScaleFactor)
 {
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+    DLOG << "maxScaleFactor:" << maxScaleFactor;
+#endif
     m_maxScaleFactor = maxScaleFactor;
 }
 
@@ -422,7 +452,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::setScaleMethod(MacWebKitRasterizerGr
     METHOD_CASE(SCALE_BY_RESIZE_FRAME_AND_SCALE_CONTENT)
 #undef METHOD_CASE
     }
-    qDebug() << __FUNCTION__ << "scaleMethod:" << methodStr;
+    DLOG << "scaleMethod:" << methodStr;
 #endif
     m_scaleMethod = scaleMethod;
 }
@@ -444,6 +474,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
     m_delegate = [[MacWebKitRasterizerViewDelegate alloc] initWithImpl: this];
     m_state = MacWebKitRasterizerGraphicsItem::STATE_LOADING;
     m_rasterizerCache.scaleFactor = 0;
+    m_minScaleFactor = 1;
     m_maxScaleFactor = 1;
     m_scaleMethod = SCALE_BY_RESIZE_FRAME;
     [m_view setFrameLoadDelegate: reinterpret_cast<id>(m_delegate)];
@@ -470,7 +501,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
              didFinishLoadForFrame: (WebFrame*) frame
 {
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-    qDebug() << __FUNCTION__;
+    WHEREAMI;
 #endif
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     if(frame == [view mainFrame])
@@ -551,10 +582,14 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
             const qreal w = fakeViewBoxRect.width() + 2 * DIMENSION_DELTA;
             const qreal h = fakeViewBoxRect.height() + 2 * DIMENSION_DELTA;
             [view stringByEvaluatingJavaScriptFromString: [NSString stringWithFormat: @"document.querySelector('svg').setAttribute('viewBox', '%f %f %f %f');", x, y, w, h]];
+#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+            DLOG << "Set fake ViewBox:" << x << y << w << h;
+#endif
         }
 
         m_impl->setRect(actualRect);
-        m_impl->setMaxScaleFactor(std::min(MAX_PIXMAP_DIMENSION / actualRect.width(), MAX_PIXMAP_DIMENSION / actualRect.height()));
+        m_impl->setMinScaleFactor(std::max(MIN_IMAGE_DIMENSION / actualRect.width(), MIN_IMAGE_DIMENSION / actualRect.height()));
+        m_impl->setMaxScaleFactor(std::min(MAX_IMAGE_DIMENSION / actualRect.width(), MAX_IMAGE_DIMENSION / actualRect.height()));
         m_impl->setState(MacWebKitRasterizerGraphicsItem::STATE_SUCCEED);
     }
     [pool release];
@@ -565,7 +600,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
                           forFrame: (WebFrame*) frame
 {
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-    qDebug() << __FUNCTION__;
+    WHEREAMI;
 #endif
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     if(frame == [view mainFrame])
@@ -613,7 +648,7 @@ void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptio
 #endif
     const QRectF identityRect = QRectF(0, 0, 1, 1);
     const QRectF deviceTransformedRect = painter->deviceTransform().mapRect(identityRect);
-    const qreal newScaleFactor = std::min(std::max(deviceTransformedRect.width(), deviceTransformedRect.height()), m_impl->maxScaleFactor());
+    const qreal newScaleFactor = std::max(deviceTransformedRect.width(), deviceTransformedRect.height());
     const QRectF newExposedRect = boundingRect().intersected(option->exposedRect);
     QImage &image = m_impl->rasterizerCache().image;
     QRectF &exposedRect = m_impl->rasterizerCache().exposedRect;
