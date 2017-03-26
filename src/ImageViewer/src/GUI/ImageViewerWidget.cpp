@@ -175,7 +175,6 @@ ImageViewerWidget::ImageViewerWidget(QWidget *parent)
     setDragMode(QGraphicsView::NoDrag);
     setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    setInteractive(false);
 #if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
     grabGesture(Qt::PinchGesture);
 #endif
