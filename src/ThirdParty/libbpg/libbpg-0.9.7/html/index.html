@@ -1,0 +1,38 @@
+<html>
+<head>
+<meta charset="UTF-8"> 
+<!-- The following scripts are available (sorted by increasing size):
+     bpgdec8.js  : 8 bit only, no animation
+     bpgdec.js   : up to 14 bits, no animation
+     bpgdec8a.js : 8 bit only, animations
+-->
+<script type="text/javascript" src="bpgdec8a.js"></script>
+</head>
+<body>
+<h1>BPG Decoding Demo</h1>
+IMG tag:<br>
+<img src="lena512color.bpg">
+<p>
+IMG tag with animated image:<br>
+<img src="clock.bpg">
+<p>
+Dynamic loading in a canvas:<br>
+<canvas id="mycanvas" width="512" height="512"></canvas>
+<script>
+(function ()
+{
+    var img, canvas, ctx;
+
+    canvas = document.getElementById("mycanvas");
+    ctx = canvas.getContext("2d");
+
+    img = new BPGDecoder(ctx);
+    img.onload = function() {
+        /* draw the image to the canvas */
+        ctx.putImageData(this.imageData, 0, 0);
+    };
+    img.load("lena512color.bpg");
+})();
+</script>
+</body>
+</html>

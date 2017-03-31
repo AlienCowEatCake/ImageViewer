@@ -48,6 +48,10 @@ SUBDIRS =
     SUBDIRS += LibWebP/LibWebP.pro
 }
 
+!disable_libbpg : !system_libbpg {
+    SUBDIRS += libbpg/libbpg.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }

@@ -84,6 +84,11 @@ disable_zlib {
 #    system_libwebp
 
 
+# libbpg options:
+#    disable_libbpg
+#    system_libbpg
+
+
 # ::::: Optional Third Party Components Configuration :::::
 
 # QtExtended options:
