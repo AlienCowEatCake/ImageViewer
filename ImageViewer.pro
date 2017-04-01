@@ -24,6 +24,10 @@ SUBDIRS =
     SUBDIRS += src/ThirdParty/JasPer/JasPer.pro
 }
 
+!disable_liblcms2 : !system_liblcms2 {
+    SUBDIRS += src/ThirdParty/LittleCMS2/LittleCMS2.pro
+}
+
 !disable_qtextended {
     SUBDIRS += src/ThirdParty/QtExtended/QtExtended.pro
 }
