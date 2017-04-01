@@ -100,6 +100,11 @@ HEADERS += \
         src/Decoders/DecoderQtImageFormatsMovie.cpp
 }
 
+!disable_libjpeg {
+    SOURCES += \
+        src/Decoders/DecoderLibJpeg.cpp
+}
+
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
     resources/translations/imageviewer_ru.ts
