@@ -17,8 +17,6 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "DecoderQtImageFormatsImage.h"
-
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 #include <QFileInfo>
@@ -28,63 +26,68 @@
 #include "QtImageFormatsImageReader.h"
 #endif
 
+#include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 
 #define DECODER_QTIMAREFORMATS_IMAGE_PRIORITY 110
 
 namespace {
 
+class DecoderQtImageFormatsImage : public IDecoder
+{
+public:
+    QString name() const
+    {
+        return QString::fromLatin1("DecoderQtImageFormatsImage");
+    }
+
+    QList<DecoderFormatInfo> supportedFormats() const
+    {
+#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
+        const QList<QByteArray> readerFormats = QtImageFormatsImageReader::supportedImageFormats();
+        QList<DecoderFormatInfo> result;
+        for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
+        {
+            DecoderFormatInfo info;
+            info.decoderPriority = DECODER_QTIMAREFORMATS_IMAGE_PRIORITY;
+            info.format = QString::fromLatin1(*it).toLower();
+            result.append(info);
+        }
+        return result;
+#else
+        return QList<DecoderFormatInfo>();
+#endif
+    }
+
+    QGraphicsItem *loadImage(const QString &filePath)
+    {
+        const QFileInfo fileInfo(filePath);
+        if(!fileInfo.exists() || !fileInfo.isReadable())
+            return NULL;
+#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
+        QtImageFormatsImageReader imageReader(filePath);
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
+        imageReader.setDecideFormatFromContent(true);
+#endif
+        imageReader.setBackgroundColor(Qt::transparent);
+        imageReader.setQuality(100);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+        imageReader.setAutoTransform(true);
+#endif
+        QImage image;
+        image = imageReader.read();
+        if(image.isNull())
+        {
+            qDebug() << imageReader.errorString();
+            return NULL;
+        }
+        return new QGraphicsPixmapItem(QPixmap::fromImage(image));
+#else
+        return NULL;
+#endif
+    }
+};
+
 DecoderAutoRegistrator registrator(new DecoderQtImageFormatsImage, DECODER_QTIMAREFORMATS_IMAGE_PRIORITY);
 
 } // namespace
-
-QString DecoderQtImageFormatsImage::name() const
-{
-    return QString::fromLatin1("DecoderQtImageFormatsImage");
-}
-
-QList<DecoderFormatInfo> DecoderQtImageFormatsImage::supportedFormats() const
-{
-#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
-    const QList<QByteArray> readerFormats = QtImageFormatsImageReader::supportedImageFormats();
-    QList<DecoderFormatInfo> result;
-    for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
-    {
-        DecoderFormatInfo info;
-        info.decoderPriority = DECODER_QTIMAREFORMATS_IMAGE_PRIORITY;
-        info.format = QString::fromLatin1(*it).toLower();
-        result.append(info);
-    }
-    return result;
-#else
-    return QList<DecoderFormatInfo>();
-#endif
-}
-
-QGraphicsItem *DecoderQtImageFormatsImage::loadImage(const QString &filePath)
-{
-    const QFileInfo fileInfo(filePath);
-    if(!fileInfo.exists() || !fileInfo.isReadable())
-        return NULL;
-#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
-    QtImageFormatsImageReader imageReader(filePath);
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
-    imageReader.setDecideFormatFromContent(true);
-#endif
-    imageReader.setBackgroundColor(Qt::transparent);
-    imageReader.setQuality(100);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
-    imageReader.setAutoTransform(true);
-#endif
-    QImage image;
-    image = imageReader.read();
-    if(image.isNull())
-    {
-        qDebug() << imageReader.errorString();
-        return NULL;
-    }
-    return new QGraphicsPixmapItem(QPixmap::fromImage(image));
-#else
-    return NULL;
-#endif
-}

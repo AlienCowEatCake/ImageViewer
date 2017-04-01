@@ -20,8 +20,6 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
-#include "DecoderNSImage.h"
-
 #include <set>
 
 #include <QtGlobal>
@@ -30,6 +28,7 @@
 #include <QPixmap>
 #include <QFileInfo>
 
+#include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/MacImageUtils.h"
 
@@ -41,56 +40,60 @@
 
 namespace {
 
+class DecoderNSImage : public IDecoder
+{
+public:
+    QString name() const
+    {
+        return QString::fromLatin1("DecoderNSImage");
+    }
+
+    QList<DecoderFormatInfo> supportedFormats() const
+    {
+        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+        std::set<QString> fileTypes;
+        for(NSString *fileType in [NSImage imageFileTypes])
+        {
+            QString simplifiedFileType = QString::fromUtf8([fileType UTF8String]).toLower();
+            simplifiedFileType.replace(QRegExp(QString::fromLatin1("[^\\w]")), QString::fromLatin1(""));
+            fileTypes.insert(simplifiedFileType.simplified());
+        }
+        QList<DecoderFormatInfo> result;
+        for(std::set<QString>::const_iterator it = fileTypes.begin(); it != fileTypes.end(); ++it)
+        {
+            DecoderFormatInfo info;
+            info.decoderPriority = DECODER_NSIMAGE_PRIORITY;
+            info.format = *it;
+            result.append(info);
+        }
+        [pool release];
+        return result;
+    }
+
+    QGraphicsItem *loadImage(const QString &filePath)
+    {
+        const QFileInfo fileInfo(filePath);
+        if(!fileInfo.exists() || !fileInfo.isReadable())
+            return NULL;
+
+        QGraphicsPixmapItem *result = NULL;
+        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
+        NSString *pathNSString = [NSString stringWithUTF8String: filePath.toUtf8().data()];
+        NSImage *picture = [[NSImage alloc] initWithContentsOfFile: pathNSString];
+        if(picture == nil)
+            return NULL;
+
+        QPixmap pixmap = MacImageUtils::QPixmapFromNSImage(picture);
+        if(!pixmap.isNull())
+            result = new QGraphicsPixmapItem(pixmap);
+
+        [picture release];
+        [pool release];
+        return result;
+    }
+};
+
 DecoderAutoRegistrator registrator(new DecoderNSImage, DECODER_NSIMAGE_PRIORITY);
 
 } // namespace
-
-QString DecoderNSImage::name() const
-{
-    return QString::fromLatin1("DecoderNSImage");
-}
-
-QList<DecoderFormatInfo> DecoderNSImage::supportedFormats() const
-{
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    std::set<QString> fileTypes;
-    for(NSString *fileType in [NSImage imageFileTypes])
-    {
-        QString simplifiedFileType = QString::fromUtf8([fileType UTF8String]).toLower();
-        simplifiedFileType.replace(QRegExp(QString::fromLatin1("[^\\w]")), QString::fromLatin1(""));
-        fileTypes.insert(simplifiedFileType.simplified());
-    }
-    QList<DecoderFormatInfo> result;
-    for(std::set<QString>::const_iterator it = fileTypes.begin(); it != fileTypes.end(); ++it)
-    {
-        DecoderFormatInfo info;
-        info.decoderPriority = DECODER_NSIMAGE_PRIORITY;
-        info.format = *it;
-        result.append(info);
-    }
-    [pool release];
-    return result;
-}
-
-QGraphicsItem *DecoderNSImage::loadImage(const QString &filePath)
-{
-    const QFileInfo fileInfo(filePath);
-    if(!fileInfo.exists() || !fileInfo.isReadable())
-        return NULL;
-
-    QGraphicsPixmapItem *result = NULL;
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
-    NSString *pathNSString = [NSString stringWithUTF8String: filePath.toUtf8().data()];
-    NSImage *picture = [[NSImage alloc] initWithContentsOfFile: pathNSString];
-    if(picture == nil)
-        return NULL;
-
-    QPixmap pixmap = MacImageUtils::QPixmapFromNSImage(picture);
-    if(!pixmap.isNull())
-        result = new QGraphicsPixmapItem(pixmap);
-
-    [picture release];
-    [pool release];
-    return result;
-}

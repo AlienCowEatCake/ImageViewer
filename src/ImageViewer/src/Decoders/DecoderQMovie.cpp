@@ -17,60 +17,63 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "DecoderQMovie.h"
-
 #include <QMovie>
 #include <QGraphicsProxyWidget>
 #include <QLabel>
 #include <QFileInfo>
 
+#include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 
 #define DECODER_QMOVIE_PRIORITY 160
 
 namespace {
 
+class DecoderQMovie : public IDecoder
+{
+public:
+    QString name() const
+    {
+        return QString::fromLatin1("DecoderQMovie");
+    }
+
+    QList<DecoderFormatInfo> supportedFormats() const
+    {
+        const QList<QByteArray> readerFormats = QMovie::supportedFormats();
+        QList<DecoderFormatInfo> result;
+        for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
+        {
+            const QString format = QString::fromLatin1(*it).toLower();
+            DecoderFormatInfo info;
+            info.decoderPriority = DECODER_QMOVIE_PRIORITY;
+            info.format = format;
+            result.append(info);
+        }
+        return result;
+    }
+
+    QGraphicsItem *loadImage(const QString &filePath)
+    {
+        const QFileInfo fileInfo(filePath);
+        if(!fileInfo.exists() || !fileInfo.isReadable())
+            return NULL;
+        QMovie *movie = new QMovie(filePath);
+        if(!movie->isValid() || movie->frameCount() == 1)
+        {
+            movie->deleteLater();
+            return NULL;
+        }
+        QLabel *movieLabel = new QLabel();
+        movieLabel->setAttribute(Qt::WA_NoSystemBackground, true);
+        movieLabel->setMovie(movie);
+        movie->setParent(movieLabel);
+        movie->start();
+        QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();
+        proxy->setWidget(movieLabel);
+        return proxy;
+    }
+};
+
 DecoderAutoRegistrator registrator(new DecoderQMovie);
 
 } // namespace
-
-QString DecoderQMovie::name() const
-{
-    return QString::fromLatin1("DecoderQMovie");
-}
-
-QList<DecoderFormatInfo> DecoderQMovie::supportedFormats() const
-{
-    const QList<QByteArray> readerFormats = QMovie::supportedFormats();
-    QList<DecoderFormatInfo> result;
-    for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
-    {
-        const QString format = QString::fromLatin1(*it).toLower();
-        DecoderFormatInfo info;
-        info.decoderPriority = DECODER_QMOVIE_PRIORITY;
-        info.format = format;
-        result.append(info);
-    }
-    return result;
-}
-
-QGraphicsItem *DecoderQMovie::loadImage(const QString &filePath)
-{
-    const QFileInfo fileInfo(filePath);
-    if(!fileInfo.exists() || !fileInfo.isReadable())
-        return NULL;
-    QMovie *movie = new QMovie(filePath);
-    if(!movie->isValid() || movie->frameCount() == 1)
-    {
-        movie->deleteLater();
-        return NULL;
-    }
-    QLabel *movieLabel = new QLabel();
-    movieLabel->setAttribute(Qt::WA_NoSystemBackground, true);
-    movieLabel->setMovie(movie);
-    movie->setParent(movieLabel);
-    movie->start();
-    QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();
-    proxy->setWidget(movieLabel);
-    return proxy;
-}

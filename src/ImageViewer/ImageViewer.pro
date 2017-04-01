@@ -84,9 +84,6 @@ HEADERS += \
     src/GUI/SettingsDialog_p.h \
     src/Decoders/DecodersManager.h \
     src/Decoders/IDecoder.h \
-    src/Decoders/DecoderQImage.h \
-    src/Decoders/DecoderQMovie.h \
-    src/Decoders/DecoderQtSVG.h \
     src/Decoders/Internal/DecoderAutoRegistrator.h \
     src/Decoders/Internal/ExifUtils.h \
     src/Decoders/Internal/ZLibUtils.h
@@ -94,17 +91,12 @@ HEADERS += \
 has_thirdparty_stb {
     SOURCES += \
         src/Decoders/DecoderSTB.cpp
-    HEADERS += \
-        src/Decoders/DecoderSTB.h
 }
 
 has_thirdparty_qtimageformats {
     SOURCES += \
         src/Decoders/DecoderQtImageFormatsImage.cpp \
         src/Decoders/DecoderQtImageFormatsMovie.cpp
-    HEADERS += \
-        src/Decoders/DecoderQtImageFormatsImage.h \
-        src/Decoders/DecoderQtImageFormatsMovie.h
 }
 
 TRANSLATIONS += \
@@ -125,9 +117,7 @@ macx {
         src/Decoders/DecoderMacWebKit.mm
     HEADERS += \
         src/Decoders/Internal/MacImageUtils.h \
-        src/Decoders/Internal/MacWebKitRasterizerGraphicsItem.h \
-        src/Decoders/DecoderNSImage.h \
-        src/Decoders/DecoderMacWebKit.h
+        src/Decoders/Internal/MacWebKitRasterizerGraphicsItem.h
     LIBS += -framework AppKit
     LIBS += -framework Foundation
     LIBS += -framework WebKit

@@ -17,8 +17,6 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "DecoderSTB.h"
-
 #include <cassert>
 
 #include <QGraphicsPixmapItem>
@@ -31,6 +29,7 @@
 #include "stb_image.h"
 #endif
 
+#include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/ExifUtils.h"
 
@@ -38,101 +37,105 @@
 
 namespace {
 
+class DecoderSTB : public IDecoder
+{
+public:
+    QString name() const
+    {
+        return QString::fromLatin1("DecoderSTB");
+    }
+
+    QList<DecoderFormatInfo> supportedFormats() const
+    {
+#if defined (HAS_THIRDPARTY_STB)
+        const QStringList stbImageFormats = QStringList()
+                << QString::fromLatin1("jpg")
+                << QString::fromLatin1("jpeg")
+                << QString::fromLatin1("jpe")   /// @todo Check this!
+                << QString::fromLatin1("png")
+                << QString::fromLatin1("bmp")
+                << QString::fromLatin1("dib")   /// @todo Check this!
+                << QString::fromLatin1("psd")
+                << QString::fromLatin1("tga")
+                << QString::fromLatin1("targa") /// @todo Check this!
+                << QString::fromLatin1("gif")
+                << QString::fromLatin1("hdr")
+                << QString::fromLatin1("pic")
+                << QString::fromLatin1("pbm")   /// @todo Check this!
+                << QString::fromLatin1("ppm")
+                << QString::fromLatin1("pgm")
+                << QString::fromLatin1("pnm");  /// @todo Check this!
+        QList<DecoderFormatInfo> result;
+        for(QStringList::ConstIterator it = stbImageFormats.constBegin(); it != stbImageFormats.constEnd(); ++it)
+        {
+            DecoderFormatInfo info;
+            info.decoderPriority = DECODER_STB_PRIORITY;
+            info.format = *it;
+            result.append(info);
+        }
+        return result;
+#else
+        return QList<DecoderFormatInfo>();
+#endif
+    }
+
+    QGraphicsItem *loadImage(const QString &filePath)
+    {
+        const QFileInfo fileInfo(filePath);
+        if(!fileInfo.exists() || !fileInfo.isReadable())
+            return NULL;
+
+#if defined (HAS_THIRDPARTY_STB)
+        int x, y, n;
+        unsigned char *data = ::stbi_load(filePath.toLocal8Bit().data(), &x, &y, &n, 0);
+        if(!data)
+        {
+            qDebug() << ::stbi_failure_reason();
+            return NULL;
+        }
+
+        QImage image(x, y, QImage::Format_ARGB32);
+        for(int i = 0; i < y; i++)
+        {
+            QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(i));
+            for(int j = 0; j < x; j++)
+            {
+                unsigned char *source = data + (i * x + j) * n;
+                switch(n)
+                {
+                case 1: // grey
+                    line[j] = qRgb(source[0], source[0], source[0]);
+                    break;
+                case 2: // grey, alpha
+                    line[j] = qRgba(source[0], source[0], source[0], source[1]);
+                    break;
+                case 3: // red, green, blue
+                    line[j] = qRgb(source[0], source[1], source[2]);
+                    break;
+                case 4: // red, green, blue, alpha
+                    line[j] = qRgba(source[0], source[1], source[2], source[3]);
+                    break;
+                default:
+                    assert(false);
+                    image = QImage();
+                    break;
+                }
+            }
+        }
+        ::stbi_image_free(data);
+
+        if(image.isNull())
+            return NULL;
+
+        ExifUtils::ApplyExifOrientation(&image, ExifUtils::GetExifOrientation(filePath));
+
+        return new QGraphicsPixmapItem(QPixmap::fromImage(image));
+#else
+        return NULL;
+#endif
+    }
+};
+
 DecoderAutoRegistrator registrator(new DecoderSTB, DECODER_STB_PRIORITY);
 
 } // namespace
-
-QString DecoderSTB::name() const
-{
-    return QString::fromLatin1("DecoderSTB");
-}
-
-QList<DecoderFormatInfo> DecoderSTB::supportedFormats() const
-{
-#if defined (HAS_THIRDPARTY_STB)
-    const QStringList stbImageFormats = QStringList()
-            << QString::fromLatin1("jpg")
-            << QString::fromLatin1("jpeg")
-            << QString::fromLatin1("jpe")   /// @todo Check this!
-            << QString::fromLatin1("png")
-            << QString::fromLatin1("bmp")
-            << QString::fromLatin1("dib")   /// @todo Check this!
-            << QString::fromLatin1("psd")
-            << QString::fromLatin1("tga")
-            << QString::fromLatin1("targa") /// @todo Check this!
-            << QString::fromLatin1("gif")
-            << QString::fromLatin1("hdr")
-            << QString::fromLatin1("pic")
-            << QString::fromLatin1("pbm")   /// @todo Check this!
-            << QString::fromLatin1("ppm")
-            << QString::fromLatin1("pgm")
-            << QString::fromLatin1("pnm");  /// @todo Check this!
-    QList<DecoderFormatInfo> result;
-    for(QStringList::ConstIterator it = stbImageFormats.constBegin(); it != stbImageFormats.constEnd(); ++it)
-    {
-        DecoderFormatInfo info;
-        info.decoderPriority = DECODER_STB_PRIORITY;
-        info.format = *it;
-        result.append(info);
-    }
-    return result;
-#else
-    return QList<DecoderFormatInfo>();
-#endif
-}
-
-QGraphicsItem *DecoderSTB::loadImage(const QString &filePath)
-{
-    const QFileInfo fileInfo(filePath);
-    if(!fileInfo.exists() || !fileInfo.isReadable())
-        return NULL;
-
-#if defined (HAS_THIRDPARTY_STB)
-    int x, y, n;
-    unsigned char *data = ::stbi_load(filePath.toLocal8Bit().data(), &x, &y, &n, 0);
-    if(!data)
-    {
-        qDebug() << ::stbi_failure_reason();
-        return NULL;
-    }
-
-    QImage image(x, y, QImage::Format_ARGB32);
-    for(int i = 0; i < y; i++)
-    {
-        QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(i));
-        for(int j = 0; j < x; j++)
-        {
-            unsigned char *source = data + (i * x + j) * n;
-            switch(n)
-            {
-            case 1: // grey
-                line[j] = qRgb(source[0], source[0], source[0]);
-                break;
-            case 2: // grey, alpha
-                line[j] = qRgba(source[0], source[0], source[0], source[1]);
-                break;
-            case 3: // red, green, blue
-                line[j] = qRgb(source[0], source[1], source[2]);
-                break;
-            case 4: // red, green, blue, alpha
-                line[j] = qRgba(source[0], source[1], source[2], source[3]);
-                break;
-            default:
-                assert(false);
-                image = QImage();
-                break;
-            }
-        }
-    }
-    ::stbi_image_free(data);
-
-    if(image.isNull())
-        return NULL;
-
-    ExifUtils::ApplyExifOrientation(&image, ExifUtils::GetExifOrientation(filePath));
-
-    return new QGraphicsPixmapItem(QPixmap::fromImage(image));
-#else
-    return NULL;
-#endif
-}
