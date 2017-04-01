@@ -22,7 +22,9 @@
 # ZLib options:
 #    disable_zlib
 #    system_zlib
-
+macx {
+    CONFIG += system_zlib
+}
 
 # LibJPEG options:
 #    disable_libjpeg
