@@ -73,6 +73,7 @@ SOURCES += \
     src/Decoders/DecoderQMovie.cpp \
     src/Decoders/DecoderQtSVG.cpp \
     src/Decoders/Internal/ExifUtils.cpp \
+    src/Decoders/Internal/CmsUtils.cpp \
     src/Decoders/Internal/ZLibUtils.cpp \
     src/main.cpp
 
@@ -87,6 +88,7 @@ HEADERS += \
     src/Decoders/IDecoder.h \
     src/Decoders/Internal/DecoderAutoRegistrator.h \
     src/Decoders/Internal/ExifUtils.h \
+    src/Decoders/Internal/CmsUtils.h \
     src/Decoders/Internal/ZLibUtils.h
 
 !disable_stb {

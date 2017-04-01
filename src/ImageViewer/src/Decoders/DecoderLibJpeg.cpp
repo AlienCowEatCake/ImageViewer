@@ -32,11 +32,127 @@
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/ExifUtils.h"
+#include "Internal/CmsUtils.h"
 
 #define DECODER_LIBJPEG_PRIORITY 1000
 
 namespace
 {
+
+// Since an ICC profile can be larger than the maximum size of a JPEG marker
+// (64K), we need provisions to split it into multiple markers.  The format
+// defined by the ICC specifies one or more APP2 markers containing the
+// following data:
+//      Identifying string      ASCII "ICC_PROFILE\0"  (12 bytes)
+//      Marker sequence number  1 for first APP2, 2 for next, etc (1 byte)
+//      Number of markers       Total number of APP2's used (1 byte)
+//      Profile data            (remainder of APP2 data)
+// Decoders should use the marker sequence numbers to reassemble the profile,
+// rather than assuming that the APP2 markers appear in the correct sequence.
+
+#define EXIF_MARKER  (JPEG_APP0 + 1)    // JPEG marker code for EXIF
+#define ICCP_MARKER  (JPEG_APP0 + 2)    // JPEG marker code for ICC
+#define ICCP_OVERHEAD_LEN  14           // size of non-profile data in APP2
+#define MAX_BYTES_IN_MARKER  65533      // maximum data len of a JPEG marker
+#define MAX_DATA_BYTES_IN_MARKER  (MAX_BYTES_IN_MARKER - ICCP_OVERHEAD_LEN)
+
+// Handy subroutine to test whether a saved marker is an ICC profile marker.
+bool markerIsICCP(jpeg_saved_marker_ptr marker)
+{
+    return
+            marker->marker == ICCP_MARKER &&
+            marker->data_length >= ICCP_OVERHEAD_LEN &&
+            // verify the identifying string
+            GETJOCTET(marker->data[0]) == 0x49 &&
+            GETJOCTET(marker->data[1]) == 0x43 &&
+            GETJOCTET(marker->data[2]) == 0x43 &&
+            GETJOCTET(marker->data[3]) == 0x5F &&
+            GETJOCTET(marker->data[4]) == 0x50 &&
+            GETJOCTET(marker->data[5]) == 0x52 &&
+            GETJOCTET(marker->data[6]) == 0x4F &&
+            GETJOCTET(marker->data[7]) == 0x46 &&
+            GETJOCTET(marker->data[8]) == 0x49 &&
+            GETJOCTET(marker->data[9]) == 0x4C &&
+            GETJOCTET(marker->data[10]) == 0x45 &&
+            GETJOCTET(marker->data[11]) == 0x0;
+}
+
+// See if there was an ICC profile in the JPEG file being read;
+// if so, reassemble and return the profile data.
+QByteArray readICCProfile(j_decompress_ptr cinfo)
+{
+    int num_markers = 0;
+    int seq_no;
+    const int MAX_SEQ_NO = 255;             // sufficient since marker numbers are bytes
+    char marker_present[MAX_SEQ_NO+1];      // 1 if marker found
+    unsigned int data_length[MAX_SEQ_NO+1]; // size of profile data in marker
+    unsigned int data_offset[MAX_SEQ_NO+1]; // offset for data in marker
+
+    // This first pass over the saved markers discovers whether there are
+    // any ICC markers and verifies the consistency of the marker numbering.
+
+    for(seq_no = 1; seq_no <= MAX_SEQ_NO; seq_no++)
+        marker_present[seq_no] = 0;
+
+    for(jpeg_saved_marker_ptr marker = cinfo->marker_list; marker != NULL; marker = marker->next)
+    {
+        if(markerIsICCP(marker))
+        {
+            if(num_markers == 0)
+                num_markers = GETJOCTET(marker->data[13]);
+            else if(num_markers != GETJOCTET(marker->data[13]))
+                return QByteArray();    // inconsistent num_markers fields
+            seq_no = GETJOCTET(marker->data[12]);
+            if(seq_no <= 0 || seq_no > num_markers)
+                return QByteArray();    // bogus sequence number
+            if(marker_present[seq_no])
+                return QByteArray();    // duplicate sequence numbers
+            marker_present[seq_no] = 1;
+            data_length[seq_no] = marker->data_length - ICCP_OVERHEAD_LEN;
+        }
+    }
+
+    if(num_markers == 0)
+        return QByteArray();
+
+    // Check for missing markers, count total space needed,
+    // compute offset of each marker's part of the data.
+
+    unsigned int total_length = 0;
+    for(seq_no = 1; seq_no <= num_markers; seq_no++)
+    {
+        if(marker_present[seq_no] == 0)
+            return QByteArray();        // missing sequence number
+        data_offset[seq_no] = total_length;
+        total_length += data_length[seq_no];
+    }
+
+    if(total_length == 0)
+        return QByteArray();    // found only empty markers?
+
+    // Allocate space for assembled data
+    QByteArray result(static_cast<int>(total_length * sizeof(JOCTET)), 0);
+    JOCTET *icc_data = reinterpret_cast<JOCTET*>(result.data());
+
+    // and fill it in
+    for(jpeg_saved_marker_ptr marker = cinfo->marker_list; marker != NULL; marker = marker->next)
+    {
+        if(markerIsICCP(marker))
+        {
+            JOCTET *src_ptr;
+            JOCTET *dst_ptr;
+            unsigned int length;
+            seq_no = GETJOCTET(marker->data[12]);
+            dst_ptr = icc_data + data_offset[seq_no];
+            src_ptr = marker->data + ICCP_OVERHEAD_LEN;
+            length = data_length[seq_no];
+            while(length--)
+                *dst_ptr++ = *src_ptr++;
+        }
+    }
+
+    return result;
+}
 
 // Here's the extended error handler struct:
 struct JpegError
@@ -103,8 +219,8 @@ QImage readJpegFile(const QString &filename)
 
     // Step 3: read file parameters with jpeg_read_header()
 
-    jpeg_save_markers(&cinfo, JPEG_APP0 + 1, 0xFFFF);   // EXIF metadata
-    jpeg_save_markers(&cinfo, JPEG_APP0 + 2, 0xFFFF);   // ICCP metadata
+    jpeg_save_markers(&cinfo, EXIF_MARKER, 0xFFFF); // EXIF metadata
+    jpeg_save_markers(&cinfo, ICCP_MARKER, 0xFFFF); // ICCP metadata
 
     (void)jpeg_read_header(&cinfo, TRUE);
     // We can ignore the return value from jpeg_read_header since
@@ -112,16 +228,17 @@ QImage readJpegFile(const QString &filename)
     //   (b) we passed TRUE to reject a tables-only JPEG file as an error.
     // See libjpeg.txt for more info.
 
-//    quint16 orientation = 1;
+    quint16 orientation = 1;
+    QByteArray iccProfile = readICCProfile(&cinfo);
     for(jpeg_saved_marker_ptr marker = cinfo.marker_list; marker != NULL; marker = marker->next)
     {
         switch(marker->marker)
         {
-        case JPEG_APP0 + 1:
+        case EXIF_MARKER:
             qDebug() << "Found EXIF metadata";
-//            orientation = ExifUtils::GetExifOrientation()
+            orientation = 0;//ExifUtils::GetExifOrientation()
             break;
-        case JPEG_APP0 + 2:
+        case ICCP_MARKER:
             qDebug() << "Found ICCP metadata";
             break;
         default:
@@ -172,6 +289,14 @@ QImage readJpegFile(const QString &filename)
             outLine[j] = qRgb(inPixel[0], inPixel[1], inPixel[2]);
         }
     }
+
+    if(!iccProfile.isEmpty())
+        CmsUtils::ApplyICCProfile(&outImage, iccProfile);
+
+    if(orientation == 0)
+        orientation = ExifUtils::GetExifOrientation(filename);
+    if(orientation > 1 && orientation <= 8)
+        ExifUtils::ApplyExifOrientation(&outImage, orientation);
 
     // Step 7: Finish decompression
 
