@@ -25,9 +25,7 @@
 #include <QFileInfo>
 #include <QDebug>
 
-#if defined (HAS_THIRDPARTY_STB)
 #include "stb_image.h"
-#endif
 
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -47,7 +45,6 @@ public:
 
     QList<DecoderFormatInfo> supportedFormats() const
     {
-#if defined (HAS_THIRDPARTY_STB)
         const QStringList stbImageFormats = QStringList()
                 << QString::fromLatin1("jpg")
                 << QString::fromLatin1("jpeg")
@@ -74,9 +71,6 @@ public:
             result.append(info);
         }
         return result;
-#else
-        return QList<DecoderFormatInfo>();
-#endif
     }
 
     QGraphicsItem *loadImage(const QString &filePath)
@@ -85,7 +79,6 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
 
-#if defined (HAS_THIRDPARTY_STB)
         int x, y, n;
         unsigned char *data = ::stbi_load(filePath.toLocal8Bit().data(), &x, &y, &n, 0);
         if(!data)
@@ -130,9 +123,6 @@ public:
         ExifUtils::ApplyExifOrientation(&image, ExifUtils::GetExifOrientation(filePath));
 
         return new QGraphicsPixmapItem(QPixmap::fromImage(image));
-#else
-        return NULL;
-#endif
     }
 };
 

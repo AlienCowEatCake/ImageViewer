@@ -8,19 +8,35 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
-SUBDIRS = \
-    src/QtUtils/QtUtils.pro \
-    src/ThirdParty/zlib/zlib.pro \
-    src/ThirdParty/QtExtended/QtExtended.pro \
-    src/ThirdParty/STB/STB.pro
+include(Features.pri)
 
-greaterThan(QT_MAJOR_VERSION, 4) {
-    SUBDIRS += \
-\#        src/ThirdParty/libjpeg/libjpeg.pro \
-\#        src/ThirdParty/JasPer/JasPer.pro \ # FIXME: C99
-        src/ThirdParty/QtImageFormats/QtImageFormats.pro
+SUBDIRS =
+
+!disable_zlib : !system_zlib {
+    SUBDIRS += src/ThirdParty/zlib/zlib.pro
+}
+
+!disable_libjpeg : !system_libjpeg {
+    SUBDIRS += src/ThirdParty/libjpeg/libjpeg.pro
+}
+
+!disable_libjasper : !system_libjasper {
+    SUBDIRS += src/ThirdParty/JasPer/JasPer.pro
+}
+
+!disable_qtextended {
+    SUBDIRS += src/ThirdParty/QtExtended/QtExtended.pro
+}
+
+!disable_stb {
+    SUBDIRS += src/ThirdParty/STB/STB.pro
+}
+
+!disable_qtimageformats {
+    SUBDIRS += src/ThirdParty/QtImageFormats/QtImageFormats.pro
 }
 
 SUBDIRS += \
+    src/QtUtils/QtUtils.pro \
     src/ImageViewer/ImageViewer.pro
 

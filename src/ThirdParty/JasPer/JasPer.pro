@@ -8,7 +8,6 @@ TARGET = tp_jasper
 QT -= core gui
 
 CONFIG -= warn_on
-#CONFIG += hide_symbols
 CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_JASPER_PATH = $${PWD}/jasper-2.0.12
@@ -70,9 +69,16 @@ SOURCES += \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/pnm/pnm_enc.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/ras/ras_cod.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/ras/ras_dec.c \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/ras/ras_enc.c \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpg/jpg_dec.c \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpg/jpg_enc.c
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/ras/ras_enc.c
+
+!disable_libjpeg {
+    SOURCES += \
+        $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpg/jpg_dec.c \
+        $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpg/jpg_enc.c
+} else {
+    SOURCES += \
+        $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpg/jpg_dummy.c
+}
 
 TR_EXCLUDE += $${THIRDPARTY_JASPER_PATH}/*
 

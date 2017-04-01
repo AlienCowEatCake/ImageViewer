@@ -1,25 +1,40 @@
 # URL: https://github.com/nothings/stb
 # License: public domain or MIT
 
-THIRDPARTY_STB_PATH = $${PWD}/stb
+include($${PWD}/../../../Features.pri)
 
-CONFIG += has_thirdparty_stb
-INCLUDEPATH += $${THIRDPARTY_STB_PATH}
-DEPENDPATH += $${THIRDPARTY_STB_PATH}
-DEFINES += HAS_THIRDPARTY_STB
+!disable_stb {
 
-win32 {
-    CONFIG(release, debug|release) {
-        LIBS += -L$${OUT_PWD}/../ThirdParty/STB/release
-    } else:CONFIG(debug, debug|release) {
-        LIBS += -L$${OUT_PWD}/../ThirdParty/STB/debug
-    }
-    *g++*|*clang* {
-        LIBS += -ltp_STB
+    THIRDPARTY_STB_PATH = $${PWD}/stb
+
+    INCLUDEPATH += $${THIRDPARTY_STB_PATH}
+    DEPENDPATH += $${THIRDPARTY_STB_PATH}
+    DEFINES += HAS_STB
+
+    OUT_LIB_TARGET = tp_STB
+    OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/STB
+    OUT_LIB_NAME =
+    OUT_LIB_LINK =
+    win32 {
+        CONFIG(release, debug|release) {
+            OUT_LIB_DIR = $${OUT_LIB_DIR}/release
+        } else:CONFIG(debug, debug|release) {
+            OUT_LIB_DIR = $${OUT_LIB_DIR}/debug
+        }
+        *g++*|*clang* {
+            OUT_LIB_NAME = lib$${OUT_LIB_TARGET}.a
+            OUT_LIB_LINK = -l$${OUT_LIB_TARGET}
+        } else {
+            OUT_LIB_NAME = $${OUT_LIB_TARGET}.lib
+            OUT_LIB_LINK = $${OUT_LIB_NAME}
+        }
     } else {
-        LIBS += tp_STB.lib
+        OUT_LIB_DIR = $${OUT_LIB_DIR}
+        OUT_LIB_NAME = lib$${OUT_LIB_TARGET}.a
+        OUT_LIB_LINK = -l$${OUT_LIB_TARGET}
     }
-} else {
-    LIBS += -L$${OUT_PWD}/../ThirdParty/STB -ltp_STB
+    LIBS += -L$${OUT_LIB_DIR} $${OUT_LIB_LINK}
+    PRE_TARGETDEPS += $${OUT_LIB_DIR}/$${OUT_LIB_NAME}
+
 }
 

@@ -8,7 +8,6 @@ TARGET = tp_zlib
 QT -= core gui
 
 CONFIG -= warn_on
-#CONFIG += hide_symbols
 CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_ZLIB_PATH = $${PWD}/zlib-1.2.11
