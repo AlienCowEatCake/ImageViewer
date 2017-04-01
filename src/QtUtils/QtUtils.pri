@@ -37,18 +37,28 @@ win32 {
     }
 }
 
+OUT_LIB_TARGET = QtUtils
+OUT_LIB_DIR = $${OUT_PWD}/../QtUtils
+OUT_LIB_NAME =
+OUT_LIB_LINK =
 win32 {
     CONFIG(release, debug|release) {
-        LIBS += -L$${OUT_PWD}/../QtUtils/release
+        OUT_LIB_DIR = $${OUT_LIB_DIR}/release
     } else:CONFIG(debug, debug|release) {
-        LIBS += -L$${OUT_PWD}/../QtUtils/debug
+        OUT_LIB_DIR = $${OUT_LIB_DIR}/debug
     }
     *g++*|*clang* {
-        LIBS += -lQtUtils
+        OUT_LIB_NAME = lib$${OUT_LIB_TARGET}.a
+        OUT_LIB_LINK = -l$${OUT_LIB_TARGET}
     } else {
-        LIBS += QtUtils.lib
+        OUT_LIB_NAME = $${OUT_LIB_TARGET}.lib
+        OUT_LIB_LINK = $${OUT_LIB_NAME}
     }
 } else {
-    LIBS += -L$${OUT_PWD}/../QtUtils -lQtUtils
+    OUT_LIB_DIR = $${OUT_LIB_DIR}
+    OUT_LIB_NAME = lib$${OUT_LIB_TARGET}.a
+    OUT_LIB_LINK = -l$${OUT_LIB_TARGET}
 }
+LIBS += -L$${OUT_LIB_DIR} $${OUT_LIB_LINK}
+PRE_TARGETDEPS += $${OUT_LIB_DIR}/$${OUT_LIB_NAME}
 

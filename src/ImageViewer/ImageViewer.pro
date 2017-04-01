@@ -30,14 +30,13 @@ CONFIG += warn_on
 
 DEFINES += QT_NO_CAST_FROM_ASCII
 
+include(../../Features.pri)
 include(../QtUtils/QtUtils.pri)
 include(../ThirdParty/QtExtended/QtExtended.pri)
 include(../ThirdParty/STB/STB.pri)
-greaterThan(QT_MAJOR_VERSION, 4) {
-    include(../ThirdParty/QtImageFormats/QtImageFormats.pri)
-#    include(../ThirdParty/JasPer/JasPer.pri) # FIXME: C99
-#    include(../ThirdParty/libjpeg/libjpeg.pri)
-}
+include(../ThirdParty/QtImageFormats/QtImageFormats.pri)
+include(../ThirdParty/JasPer/JasPer.pri)
+include(../ThirdParty/libjpeg/libjpeg.pri)
 include(../ThirdParty/zlib/zlib.pri)
 
 *g++*|*clang* {
@@ -88,12 +87,12 @@ HEADERS += \
     src/Decoders/Internal/ExifUtils.h \
     src/Decoders/Internal/ZLibUtils.h
 
-has_thirdparty_stb {
+!disable_stb {
     SOURCES += \
         src/Decoders/DecoderSTB.cpp
 }
 
-has_thirdparty_qtimageformats {
+!disable_qtimageformats {
     SOURCES += \
         src/Decoders/DecoderQtImageFormatsImage.cpp \
         src/Decoders/DecoderQtImageFormatsMovie.cpp

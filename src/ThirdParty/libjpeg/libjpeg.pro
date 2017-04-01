@@ -8,7 +8,6 @@ TARGET = tp_libjpeg
 QT -= core gui
 
 CONFIG -= warn_on
-#CONFIG += hide_symbols
 CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_LIBJPEG_PATH = $${PWD}/jpeg-9b

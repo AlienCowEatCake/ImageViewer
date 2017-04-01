@@ -1,24 +1,52 @@
 # URL: https://www.ece.uvic.ca/~frodo/jasper/
 # License: https://www.ece.uvic.ca/~frodo/jasper/LICENSE
 
-THIRDPARTY_JASPER_PATH = $${PWD}/jasper-2.0.12
-THIRDPARTY_JASPER_CONFIG_PATH = $${PWD}/config
+include($${PWD}/../../../Features.pri)
 
-INCLUDEPATH += $${THIRDPARTY_JASPER_PATH}/src/libjasper/include $${THIRDPARTY_JASPER_PATH}/include $${THIRDPARTY_JASPER_CONFIG_PATH}
-DEPENDPATH += $${THIRDPARTY_JASPER_PATH}/src/libjasper/include $${THIRDPARTY_JASPER_PATH}/include $${THIRDPARTY_JASPER_CONFIG_PATH}
+!disable_libjasper {
 
-win32 {
-    CONFIG(release, debug|release) {
-        LIBS += -L$${OUT_PWD}/../ThirdParty/JasPer/release
-    } else:CONFIG(debug, debug|release) {
-        LIBS += -L$${OUT_PWD}/../ThirdParty/JasPer/debug
-    }
-    *g++*|*clang* {
-        LIBS += -ltp_jasper
+    DEFINES += HAS_LIBJASPER
+
+    !system_libjasper {
+
+        THIRDPARTY_JASPER_PATH = $${PWD}/jasper-2.0.12
+        THIRDPARTY_JASPER_CONFIG_PATH = $${PWD}/config
+
+        INCLUDEPATH += $${THIRDPARTY_JASPER_PATH}/src/libjasper/include $${THIRDPARTY_JASPER_PATH}/include $${THIRDPARTY_JASPER_CONFIG_PATH}
+        DEPENDPATH += $${THIRDPARTY_JASPER_PATH}/src/libjasper/include $${THIRDPARTY_JASPER_PATH}/include $${THIRDPARTY_JASPER_CONFIG_PATH}
+        DEFINES += __STDC_CONSTANT_MACROS __STDC_LIMIT_MACROS
+
+        OUT_LIB_TARGET = tp_jasper
+        OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/JasPer
+        OUT_LIB_NAME =
+        OUT_LIB_LINK =
+        win32 {
+            CONFIG(release, debug|release) {
+                OUT_LIB_DIR = $${OUT_LIB_DIR}/release
+            } else:CONFIG(debug, debug|release) {
+                OUT_LIB_DIR = $${OUT_LIB_DIR}/debug
+            }
+            *g++*|*clang* {
+                OUT_LIB_NAME = lib$${OUT_LIB_TARGET}.a
+                OUT_LIB_LINK = -l$${OUT_LIB_TARGET}
+            } else {
+                OUT_LIB_NAME = $${OUT_LIB_TARGET}.lib
+                OUT_LIB_LINK = $${OUT_LIB_NAME}
+            }
+        } else {
+            OUT_LIB_DIR = $${OUT_LIB_DIR}
+            OUT_LIB_NAME = lib$${OUT_LIB_TARGET}.a
+            OUT_LIB_LINK = -l$${OUT_LIB_TARGET}
+        }
+        LIBS += -L$${OUT_LIB_DIR} $${OUT_LIB_LINK}
+#        PRE_TARGETDEPS += $${OUT_LIB_DIR}/$${OUT_LIB_NAME}
+
     } else {
-        LIBS += tp_jasper.lib
+
+        msvc: LIBS += libjasper.lib
+        else: LIBS += -ljasper
+
     }
-} else {
-    LIBS += -L$${OUT_PWD}/../ThirdParty/JasPer -ltp_jasper
+
 }
 

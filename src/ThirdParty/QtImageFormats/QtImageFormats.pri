@@ -1,28 +1,43 @@
 # URL: https://github.com/qt/qtimageformats
 
-lessThan(QT_MAJOR_VERSION, 5): error(This project requires Qt 5 or later)
+include($${PWD}/../../../Features.pri)
 
-THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
+!disable_qtimageformats {
 
-CONFIG += has_thirdparty_qtimageformats
-INCLUDEPATH += $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}
-DEPENDPATH += $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}
-DEFINES += HAS_THIRDPARTY_QTIMAGEFORMATS
+    lessThan(QT_MAJOR_VERSION, 5): error(This project requires Qt 5 or later)
 
-QT += core gui widgets
+    THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
 
-win32 {
-    CONFIG(release, debug|release) {
-        LIBS += -L$${OUT_PWD}/../ThirdParty/QtImageFormats/release
-    } else:CONFIG(debug, debug|release) {
-        LIBS += -L$${OUT_PWD}/../ThirdParty/QtImageFormats/debug
-    }
-    *g++*|*clang* {
-        LIBS += -ltp_QtImageFormats
+    INCLUDEPATH += $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}
+    DEPENDPATH += $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}
+    DEFINES += HAS_QTIMAGEFORMATS
+
+    QT += core gui widgets
+
+    OUT_LIB_TARGET = tp_QtImageFormats
+    OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/QtImageFormats
+    OUT_LIB_NAME =
+    OUT_LIB_LINK =
+    win32 {
+        CONFIG(release, debug|release) {
+            OUT_LIB_DIR = $${OUT_LIB_DIR}/release
+        } else:CONFIG(debug, debug|release) {
+            OUT_LIB_DIR = $${OUT_LIB_DIR}/debug
+        }
+        *g++*|*clang* {
+            OUT_LIB_NAME = lib$${OUT_LIB_TARGET}.a
+            OUT_LIB_LINK = -l$${OUT_LIB_TARGET}
+        } else {
+            OUT_LIB_NAME = $${OUT_LIB_TARGET}.lib
+            OUT_LIB_LINK = $${OUT_LIB_NAME}
+        }
     } else {
-        LIBS += tp_QtImageFormats.lib
+        OUT_LIB_DIR = $${OUT_LIB_DIR}
+        OUT_LIB_NAME = lib$${OUT_LIB_TARGET}.a
+        OUT_LIB_LINK = -l$${OUT_LIB_TARGET}
     }
-} else {
-    LIBS += -L$${OUT_PWD}/../ThirdParty/QtImageFormats -ltp_QtImageFormats
+    LIBS += -L$${OUT_LIB_DIR} $${OUT_LIB_LINK}
+    PRE_TARGETDEPS += $${OUT_LIB_DIR}/$${OUT_LIB_NAME}
+
 }
 

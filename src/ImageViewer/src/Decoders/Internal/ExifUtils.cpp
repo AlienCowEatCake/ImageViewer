@@ -22,7 +22,7 @@
 #include <QTransform>
 #include <QDebug>
 
-#if defined (HAS_THIRDPARTY_QTEXTENDED)
+#if defined (HAS_QTEXTENDED)
 #include "qexifimageheader.h"
 #endif
 
@@ -30,7 +30,7 @@ namespace ExifUtils {
 
 quint16 GetExifOrientation(const QString &filePath)
 {
-#if defined (HAS_THIRDPARTY_QTEXTENDED)
+#if defined (HAS_QTEXTENDED)
     QExifImageHeader exifHeader;
     if(exifHeader.loadFromJpeg(filePath) && exifHeader.contains(QExifImageHeader::Orientation))
     {

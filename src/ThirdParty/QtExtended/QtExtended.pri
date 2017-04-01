@@ -1,27 +1,42 @@
 # URL: https://sourceforge.net/projects/qpe/files/QPE/qtopia/qt-extended-opensource-src-4.4.3.tar.gz/download
 # License: GNU General Public License version 2
 
-THIRDPARTY_QTEXTENDED_PATH = $${PWD}/src
+include($${PWD}/../../../Features.pri)
 
-CONFIG += has_thirdparty_qtextended
-INCLUDEPATH += $${THIRDPARTY_QTEXTENDED_PATH}
-DEPENDPATH += $${THIRDPARTY_QTEXTENDED_PATH}
-DEFINES += HAS_THIRDPARTY_QTEXTENDED
+!disable_qtextended {
 
-QT += core gui
+    THIRDPARTY_QTEXTENDED_PATH = $${PWD}/src
 
-win32 {
-    CONFIG(release, debug|release) {
-        LIBS += -L$${OUT_PWD}/../ThirdParty/QtExtended/release
-    } else:CONFIG(debug, debug|release) {
-        LIBS += -L$${OUT_PWD}/../ThirdParty/QtExtended/debug
-    }
-    *g++*|*clang* {
-        LIBS += -ltp_QtExtended
+    INCLUDEPATH += $${THIRDPARTY_QTEXTENDED_PATH}
+    DEPENDPATH += $${THIRDPARTY_QTEXTENDED_PATH}
+    DEFINES += HAS_QTEXTENDED
+
+    QT += core gui
+
+    OUT_LIB_TARGET = tp_QtExtended
+    OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/QtExtended
+    OUT_LIB_NAME =
+    OUT_LIB_LINK =
+    win32 {
+        CONFIG(release, debug|release) {
+            OUT_LIB_DIR = $${OUT_LIB_DIR}/release
+        } else:CONFIG(debug, debug|release) {
+            OUT_LIB_DIR = $${OUT_LIB_DIR}/debug
+        }
+        *g++*|*clang* {
+            OUT_LIB_NAME = lib$${OUT_LIB_TARGET}.a
+            OUT_LIB_LINK = -l$${OUT_LIB_TARGET}
+        } else {
+            OUT_LIB_NAME = $${OUT_LIB_TARGET}.lib
+            OUT_LIB_LINK = $${OUT_LIB_NAME}
+        }
     } else {
-        LIBS += tp_QtExtended.lib
+        OUT_LIB_DIR = $${OUT_LIB_DIR}
+        OUT_LIB_NAME = lib$${OUT_LIB_TARGET}.a
+        OUT_LIB_LINK = -l$${OUT_LIB_TARGET}
     }
-} else {
-    LIBS += -L$${OUT_PWD}/../ThirdParty/QtExtended -ltp_QtExtended
+    LIBS += -L$${OUT_LIB_DIR} $${OUT_LIB_LINK}
+    PRE_TARGETDEPS += $${OUT_LIB_DIR}/$${OUT_LIB_NAME}
+
 }
 

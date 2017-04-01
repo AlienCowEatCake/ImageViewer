@@ -22,9 +22,7 @@
 #include <QFileInfo>
 #include <QDebug>
 
-#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
 #include "QtImageFormatsImageReader.h"
-#endif
 
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -43,7 +41,6 @@ public:
 
     QList<DecoderFormatInfo> supportedFormats() const
     {
-#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
         const QList<QByteArray> readerFormats = QtImageFormatsImageReader::supportedImageFormats();
         QList<DecoderFormatInfo> result;
         for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
@@ -54,9 +51,6 @@ public:
             result.append(info);
         }
         return result;
-#else
-        return QList<DecoderFormatInfo>();
-#endif
     }
 
     QGraphicsItem *loadImage(const QString &filePath)
@@ -64,7 +58,6 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
-#if defined (HAS_THIRDPARTY_QTIMAGEFORMATS)
         QtImageFormatsImageReader imageReader(filePath);
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
         imageReader.setDecideFormatFromContent(true);
@@ -82,9 +75,6 @@ public:
             return NULL;
         }
         return new QGraphicsPixmapItem(QPixmap::fromImage(image));
-#else
-        return NULL;
-#endif
     }
 };
 
