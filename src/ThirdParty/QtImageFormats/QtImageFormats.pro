@@ -2,6 +2,8 @@
 
 lessThan(QT_MAJOR_VERSION, 5): error(This project requires Qt 5 or later)
 
+include(../../../Features.pri)
+
 TEMPLATE = lib
 CONFIG += staticlib
 TARGET = tp_QtImageFormats
@@ -59,15 +61,23 @@ DEFINES += WRAPPER_USE_ICNS_HANDLER
 
 # --------------------------------------------------------------------------------
 
-include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/jp2/qjp2handler.pri)
+!disable_libjasper {
 
-DEFINES += WRAPPER_USE_JP2_HANDLER
+    include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/jp2/qjp2handler.pri)
+
+    DEFINES += WRAPPER_USE_JP2_HANDLER
+
+}
 
 # --------------------------------------------------------------------------------
 
-include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/mng/qmnghandler.pri)
+!disable_zlib {
 
-DEFINES += WRAPPER_USE_MNG_HANDLER
+    include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/mng/qmnghandler.pri)
+
+    DEFINES += WRAPPER_USE_MNG_HANDLER
+
+}
 
 # --------------------------------------------------------------------------------
 
@@ -83,29 +93,33 @@ DEFINES += WRAPPER_USE_TGA_HANDLER
 
 # --------------------------------------------------------------------------------
 
-greaterThan(QT_MAJOR_VERSION, 5) | greaterThan(QT_MINOR_VERSION_VERSION, 4) {
+!disable_zlib {
 
-    SOURCES += \
-        $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/tiff/qtiffhandler.cpp
+    greaterThan(QT_MAJOR_VERSION, 5) | greaterThan(QT_MINOR_VERSION_VERSION, 4) {
 
-    HEADERS += \
-        $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/tiff/qtiffhandler_p.h
+        SOURCES += \
+            $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/tiff/qtiffhandler.cpp
 
-    DEFINES += WRAPPER_USE_TIFF_HANDLER
+        HEADERS += \
+            $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/tiff/qtiffhandler_p.h
 
-} else {
+        DEFINES += WRAPPER_USE_TIFF_HANDLER
 
-    SOURCES += \
-        $${THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH}/src/plugins/imageformats/tiff/qtiffhandler.cpp
+    } else {
 
-    HEADERS += \
-        $${THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH}/src/plugins/imageformats/tiff/qtiffhandler_p.h
+        SOURCES += \
+            $${THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH}/src/plugins/imageformats/tiff/qtiffhandler.cpp
 
-    DEFINES += WRAPPER_USE_LEGACY_TIFF_HANDLER
+        HEADERS += \
+            $${THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH}/src/plugins/imageformats/tiff/qtiffhandler_p.h
+
+        DEFINES += WRAPPER_USE_LEGACY_TIFF_HANDLER
+
+    }
+
+    include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/3rdparty/libtiff.pri)
 
 }
-
-include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/3rdparty/libtiff.pri)
 
 # --------------------------------------------------------------------------------
 
