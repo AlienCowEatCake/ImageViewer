@@ -43,7 +43,7 @@ include($${PWD}/../../../Features.pri)
 
     } else {
 
-        msvc: LIBS += zdll.lib
+        *msvc*: LIBS += zdll.lib
         else: LIBS += -lz
 
     }

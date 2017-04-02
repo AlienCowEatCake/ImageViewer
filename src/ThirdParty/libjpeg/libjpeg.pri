@@ -42,7 +42,7 @@ include($${PWD}/../../../Features.pri)
 
     } else {
 
-        msvc: LIBS += libjpeg.lib
+        *msvc*: LIBS += libjpeg.lib
         else: LIBS += -ljpeg
 
     }

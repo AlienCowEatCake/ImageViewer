@@ -43,7 +43,7 @@ include($${PWD}/../../../Features.pri)
 
     } else {
 
-        msvc: LIBS += libjasper.lib
+        *msvc*: LIBS += libjasper.lib
         else: LIBS += -ljasper
 
     }

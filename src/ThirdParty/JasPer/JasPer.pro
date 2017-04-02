@@ -17,7 +17,7 @@ include(../libjpeg/libjpeg.pri)
 
 INCLUDEPATH = $${THIRDPARTY_JASPER_PATH}/src/libjasper/include $${THIRDPARTY_JASPER_PATH}/include $${THIRDPARTY_JASPER_CONFIG_PATH} $${INCLUDEPATH}
 
-msvc: DEFINES += JAS_WIN_MSVC_BUILD
+*msvc*: DEFINES += JAS_WIN_MSVC_BUILD
 
 SOURCES += \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/base/jas_cm.c \

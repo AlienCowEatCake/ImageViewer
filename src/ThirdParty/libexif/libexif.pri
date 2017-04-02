@@ -41,7 +41,7 @@ include($${PWD}/../../../Features.pri)
 
     } else {
 
-        msvc: LIBS += libexif.lib
+        *msvc*: LIBS += libexif.lib
         else: LIBS += -lexif
 
     }

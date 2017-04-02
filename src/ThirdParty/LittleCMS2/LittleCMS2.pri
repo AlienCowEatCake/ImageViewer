@@ -41,7 +41,7 @@ include($${PWD}/../../../Features.pri)
 
     } else {
 
-        msvc: LIBS += liblcms2.lib
+        *msvc*: LIBS += liblcms2.lib
         else: LIBS += -llcms2
 
     }

@@ -20,6 +20,7 @@
 #if !defined(DECODER_CMSUTILS_H_INCLUDED)
 #define DECODER_CMSUTILS_H_INCLUDED
 
+#include <cstddef>
 #include <QtGlobal>
 
 class QImage;

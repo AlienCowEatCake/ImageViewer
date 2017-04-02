@@ -15,6 +15,18 @@ THIRDPARTY_LIBJPEG_CONFIG_PATH = $${PWD}/config
 
 INCLUDEPATH = $${THIRDPARTY_LIBJPEG_PATH} $${THIRDPARTY_LIBJPEG_CONFIG_PATH} $${INCLUDEPATH}
 
+DEFINES += jdiv_round_up=tp_jdiv_round_up
+DEFINES += jround_up=tp_jround_up
+DEFINES += jcopy_sample_rows=tp_jcopy_sample_rows
+DEFINES += jcopy_block_row=tp_jcopy_block_row
+DEFINES += jpeg_natural_order=tp_jpeg_natural_order
+DEFINES += jpeg_natural_order2=tp_jpeg_natural_order2
+DEFINES += jpeg_natural_order3=tp_jpeg_natural_order3
+DEFINES += jpeg_natural_order4=tp_jpeg_natural_order4
+DEFINES += jpeg_natural_order5=tp_jpeg_natural_order5
+DEFINES += jpeg_natural_order6=tp_jpeg_natural_order6
+DEFINES += jpeg_natural_order7=tp_jpeg_natural_order7
+
 SOURCES += \
     $${THIRDPARTY_LIBJPEG_PATH}/jaricom.c \
     $${THIRDPARTY_LIBJPEG_PATH}/jcapimin.c \
