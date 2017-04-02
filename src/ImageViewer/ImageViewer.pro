@@ -38,6 +38,7 @@ include(../ThirdParty/QtImageFormats/QtImageFormats.pri)
 include(../ThirdParty/JasPer/JasPer.pri)
 include(../ThirdParty/libjpeg/libjpeg.pri)
 include(../ThirdParty/LittleCMS2/LittleCMS2.pri)
+include(../ThirdParty/libexif/libexif.pri)
 include(../ThirdParty/zlib/zlib.pri)
 
 *g++*|*clang* {

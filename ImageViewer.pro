@@ -28,6 +28,10 @@ SUBDIRS =
     SUBDIRS += src/ThirdParty/LittleCMS2/LittleCMS2.pro
 }
 
+!disable_libexif : !system_libexif {
+    SUBDIRS += src/ThirdParty/libexif/libexif.pro
+}
+
 !disable_qtextended {
     SUBDIRS += src/ThirdParty/QtExtended/QtExtended.pro
 }

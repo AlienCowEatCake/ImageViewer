@@ -43,6 +43,11 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
 #    system_liblcms2
 
 
+# libexif options:
+#    disable_libexif
+#    system_libexif
+
+
 
 # ::::: Optional Third Party Components Configuration :::::
 
