@@ -29,7 +29,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/ExifUtils.h"
 
-#define DECODER_QIMAGE_PRIORITY 100
+#define DECODER_QIMAGE_PRIORITY 1000
 
 namespace {
 

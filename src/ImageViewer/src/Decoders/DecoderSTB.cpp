@@ -31,7 +31,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/ExifUtils.h"
 
-#define DECODER_STB_PRIORITY 80
+#define DECODER_STB_PRIORITY 800
 
 namespace {
 

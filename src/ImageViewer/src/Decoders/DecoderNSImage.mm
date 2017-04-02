@@ -35,7 +35,7 @@
 #if defined (QT_DEBUG)
 #define DECODER_NSIMAGE_PRIORITY -1
 #else
-#define DECODER_NSIMAGE_PRIORITY 120
+#define DECODER_NSIMAGE_PRIORITY 1200
 #endif
 
 namespace {

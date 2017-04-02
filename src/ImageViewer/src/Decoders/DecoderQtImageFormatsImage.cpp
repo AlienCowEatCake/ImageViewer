@@ -27,7 +27,7 @@
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 
-#define DECODER_QTIMAREFORMATS_IMAGE_PRIORITY 110
+#define DECODER_QTIMAREFORMATS_IMAGE_PRIORITY 1100
 
 namespace {
 

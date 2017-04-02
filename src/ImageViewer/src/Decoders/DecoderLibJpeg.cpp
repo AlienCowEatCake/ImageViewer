@@ -34,7 +34,7 @@
 #include "Internal/ExifUtils.h"
 #include "Internal/CmsUtils.h"
 
-#define DECODER_LIBJPEG_PRIORITY 1000
+#define DECODER_LIBJPEG_PRIORITY 1110
 
 namespace
 {
