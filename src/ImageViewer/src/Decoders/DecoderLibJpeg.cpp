@@ -282,7 +282,7 @@ QImage readJpegFile(const QString &filename)
         // more than one scanline at a time if that's more convenient.
         (void)jpeg_read_scanlines(&cinfo, buffer, 1);
         // Assume put_scanline_someplace wants a pointer and sample count.
-        QRgb *outLine = reinterpret_cast<QRgb*>(outImage.scanLine(static_cast<int>(cinfo.output_scanline)));
+        QRgb *outLine = reinterpret_cast<QRgb*>(outImage.scanLine(static_cast<int>(cinfo.output_scanline) - 1));
         iccProfile.applyToRGBData(buffer[0], cinfo.output_width);
         for(JDIMENSION j = 0; j < cinfo.output_width; j++)
         {
