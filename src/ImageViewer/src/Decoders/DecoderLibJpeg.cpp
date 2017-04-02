@@ -29,6 +29,8 @@
 #include <QGraphicsPixmapItem>
 #include <QDebug>
 
+#include "Utils/ScopedPointer.h"
+
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/ExifUtils.h"
@@ -191,10 +193,14 @@ QImage readJpegFile(const QString &filename)
     // requires it in order to read binary files.
     if(!inFile.open(QIODevice::ReadOnly))
     {
-        qWarning() << "can't open" << filename;
+        qWarning() << "Can't open" << filename;
         return QImage();
     }
     const QByteArray inBuffer = inFile.readAll();
+
+    // Construct any C++ objects before setjmp!
+    QScopedPointer<ICCProfile> iccProfile;
+    QImage outImage;
 
     // Step 1: allocate and initialize JPEG decompression object
 
@@ -204,6 +210,7 @@ QImage readJpegFile(const QString &filename)
     // Establish the setjmp return context for my_error_exit to use.
     if(setjmp(jerr.setjmpBuffer))
     {
+        qDebug() << "Error lonjgmp completed";
         // If we get here, the JPEG code has signaled an error.
         // We need to clean up the JPEG object, close the input file, and return.
         jpeg_destroy_decompress(&cinfo);
@@ -222,13 +229,17 @@ QImage readJpegFile(const QString &filename)
     jpeg_save_markers(&cinfo, EXIF_MARKER, 0xFFFF); // EXIF metadata
     jpeg_save_markers(&cinfo, ICCP_MARKER, 0xFFFF); // ICCP metadata
 
-    (void)jpeg_read_header(&cinfo, TRUE);
+    if(!jpeg_read_header(&cinfo, TRUE))
+    {
+        qWarning() << "Can't read JPEG header";
+        longjmp(jerr.setjmpBuffer, 1);
+    }
     // We can ignore the return value from jpeg_read_header since
     //   (a) suspension is not possible with the stdio data source, and
     //   (b) we passed TRUE to reject a tables-only JPEG file as an error.
     // See libjpeg.txt for more info.
 
-    ICCProfile iccProfile(readICCProfile(&cinfo));
+    iccProfile.reset(new ICCProfile(readICCProfile(&cinfo)));
 #if defined (QT_DEBUG)
     for(jpeg_saved_marker_ptr marker = cinfo.marker_list; marker != NULL; marker = marker->next)
     {
@@ -254,7 +265,11 @@ QImage readJpegFile(const QString &filename)
 
     // Step 5: Start decompressor
 
-    (void)jpeg_start_decompress(&cinfo);
+    if(!jpeg_start_decompress(&cinfo))
+    {
+        qWarning() << "Can't start JPEG decompress";
+        longjmp(jerr.setjmpBuffer, 1);
+    }
     // We can ignore the return value since suspension is not possible
     // with the stdio data source.
 
@@ -263,7 +278,12 @@ QImage readJpegFile(const QString &filename)
     // output image dimensions available, as well as the output colormap
     // if we asked for color quantization.
     // In this example, we need to make an output work buffer of the right size.
-    QImage outImage = QImage(static_cast<int>(cinfo.output_width), static_cast<int>(cinfo.output_height), QImage::Format_RGB32);
+    outImage = QImage(static_cast<int>(cinfo.output_width), static_cast<int>(cinfo.output_height), QImage::Format_RGB32);
+    if(outImage.size().isEmpty())
+    {
+        qWarning() << "Invalid image size";
+        longjmp(jerr.setjmpBuffer, 1);
+    }
 
     // JSAMPLEs per row in output buffer
     rowStride = cinfo.output_width * static_cast<JDIMENSION>(cinfo.output_components);
@@ -280,10 +300,14 @@ QImage readJpegFile(const QString &filename)
         // jpeg_read_scanlines expects an array of pointers to scanlines.
         // Here the array is only one element long, but you could ask for
         // more than one scanline at a time if that's more convenient.
-        (void)jpeg_read_scanlines(&cinfo, buffer, 1);
+        if(!jpeg_read_scanlines(&cinfo, buffer, 1))
+        {
+            qWarning() << "Can't read JPEG scanlines";
+            longjmp(jerr.setjmpBuffer, 1);
+        }
         // Assume put_scanline_someplace wants a pointer and sample count.
         QRgb *outLine = reinterpret_cast<QRgb*>(outImage.scanLine(static_cast<int>(cinfo.output_scanline) - 1));
-        iccProfile.applyToRGBData(buffer[0], cinfo.output_width);
+        iccProfile->applyToRGBData(buffer[0], cinfo.output_width);
         for(JDIMENSION j = 0; j < cinfo.output_width; j++)
         {
             unsigned char *inPixel = reinterpret_cast<unsigned char*>(buffer[0]) + j * static_cast<JDIMENSION>(cinfo.output_components);
@@ -293,7 +317,11 @@ QImage readJpegFile(const QString &filename)
 
     // Step 7: Finish decompression
 
-    (void)jpeg_finish_decompress(&cinfo);
+    if(!jpeg_finish_decompress(&cinfo))
+    {
+        qWarning() << "Can't finish JPEG decompress";
+        longjmp(jerr.setjmpBuffer, 1);
+    }
     // We can ignore the return value since suspension is not possible
     // with the stdio data source.
 
@@ -359,6 +387,6 @@ public:
     }
 };
 
-DecoderAutoRegistrator registrator(new DecoderLibJpeg, DECODER_LIBJPEG_PRIORITY);
+DecoderAutoRegistrator registrator(new DecoderLibJpeg);
 
 } // namespace

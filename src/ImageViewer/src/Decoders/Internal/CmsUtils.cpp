@@ -70,10 +70,6 @@ struct ICCProfile::Impl
 #endif
 };
 
-ICCProfile::ICCProfile()
-    : m_impl(new Impl())
-{}
-
 ICCProfile::ICCProfile(const QByteArray &profileData)
     : m_impl(new Impl())
 {

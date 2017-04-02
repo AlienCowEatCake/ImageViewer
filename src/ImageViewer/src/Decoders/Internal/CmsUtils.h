@@ -29,7 +29,6 @@ class QByteArray;
 class ICCProfile
 {
 public:
-    ICCProfile();
     ICCProfile(const QByteArray &profileData);
     ~ICCProfile();
 
@@ -38,6 +37,9 @@ public:
     void applyToRGBAData(void *rgbaData, std::size_t pixelsNum);
 
 private:
+    ICCProfile(const ICCProfile &);
+    ICCProfile &operator = (const ICCProfile &);
+
     struct Impl;
     Impl *m_impl;
 };
