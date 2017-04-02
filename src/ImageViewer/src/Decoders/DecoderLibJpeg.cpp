@@ -228,15 +228,14 @@ QImage readJpegFile(const QString &filename)
     //   (b) we passed TRUE to reject a tables-only JPEG file as an error.
     // See libjpeg.txt for more info.
 
-    quint16 orientation = 1;
     ICCProfile iccProfile(readICCProfile(&cinfo));
+#if defined (QT_DEBUG)
     for(jpeg_saved_marker_ptr marker = cinfo.marker_list; marker != NULL; marker = marker->next)
     {
         switch(marker->marker)
         {
         case EXIF_MARKER:
             qDebug() << "Found EXIF metadata";
-            orientation = 0;//ExifUtils::GetExifOrientation()
             break;
         case ICCP_MARKER:
             qDebug() << "Found ICCP metadata";
@@ -245,6 +244,7 @@ QImage readJpegFile(const QString &filename)
             break;
         }
     }
+#endif
 
     // Step 4: set parameters for decompression
 
@@ -313,8 +313,7 @@ QImage readJpegFile(const QString &filename)
 
     // And we're done!
 
-    if(orientation == 0)
-        orientation = ExifUtils::GetExifOrientation(filename);
+    quint16 orientation = ExifUtils::GetExifOrientation(filename);
     if(orientation > 1 && orientation <= 8)
         ExifUtils::ApplyExifOrientation(&outImage, orientation);
 
