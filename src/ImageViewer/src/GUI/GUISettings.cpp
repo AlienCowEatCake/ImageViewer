@@ -132,7 +132,7 @@ void GUISettings::setZoomLevel(qreal level)
 
 QColor GUISettings::backgroundColor() const
 {
-    const QColor defaultValue = Qt::white;
+    const QColor defaultValue(255, 255, 255, 128);
     QVariant value = m_impl->settings.value(QString::fromLatin1("BackgroundColor"), defaultValue);
     return (value.isValid() && value.canConvert(QVariant::Color) ? value.value<QColor>() : defaultValue);
 }
