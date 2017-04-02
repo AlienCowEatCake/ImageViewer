@@ -25,7 +25,7 @@
 #include <QFile>
 #include <QDebug>
 
-#include "zlib.h"
+#include <zlib.h>
 
 #define CHUNK 16384
 
