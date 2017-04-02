@@ -36,6 +36,7 @@ public:
             DecodersManager::getInstance().registerDecoder(decoder);
     }
 private:
+    Q_DISABLE_COPY(DecoderAutoRegistrator)
     QScopedPointer<IDecoder> m_decoder;
 };
 

@@ -27,11 +27,6 @@
 
 class DecodersManager
 {
-private:
-    DecodersManager();
-    DecodersManager(const DecodersManager&);
-    bool operator = (const DecodersManager&);
-
 public:
     ~DecodersManager();
     static DecodersManager &getInstance();
@@ -45,6 +40,9 @@ public:
     QGraphicsItem *loadImage(const QString &filePath);
 
 private:
+    DecodersManager();
+    Q_DISABLE_COPY(DecodersManager)
+
     struct Impl;
     QScopedPointer<Impl> m_impl;
 };

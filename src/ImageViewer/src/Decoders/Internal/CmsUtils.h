@@ -37,9 +37,7 @@ public:
     void applyToRGBAData(void *rgbaData, std::size_t pixelsNum);
 
 private:
-    ICCProfile(const ICCProfile &);
-    ICCProfile &operator = (const ICCProfile &);
-
+    Q_DISABLE_COPY(ICCProfile)
     struct Impl;
     Impl *m_impl;
 };

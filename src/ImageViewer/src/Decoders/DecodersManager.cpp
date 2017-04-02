@@ -84,12 +84,6 @@ struct DecodersManager::Impl
     QList<IDecoder*> pendingDecoders;
 };
 
-DecodersManager::DecodersManager()
-    : m_impl(new Impl())
-{
-    qDebug() << "DecodersManager created!";
-}
-
 DecodersManager::~DecodersManager()
 {
     qDebug() << "DecodersManager destroyed!";
@@ -188,4 +182,10 @@ QGraphicsItem *DecodersManager::loadImage(const QString &filePath)
         }
     }
     return NULL;
+}
+
+DecodersManager::DecodersManager()
+    : m_impl(new Impl())
+{
+    qDebug() << "DecodersManager created!";
 }
