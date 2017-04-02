@@ -28,7 +28,7 @@
 //#if defined (QT_DEBUG)
 //#define DECODER_MAC_WEBKIT_PRIORITY -1
 //#else
-#define DECODER_MAC_WEBKIT_PRIORITY 200
+#define DECODER_MAC_WEBKIT_PRIORITY 2000
 //#endif
 
 namespace {

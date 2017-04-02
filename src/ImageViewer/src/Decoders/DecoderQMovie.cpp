@@ -25,7 +25,7 @@
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 
-#define DECODER_QMOVIE_PRIORITY 160
+#define DECODER_QMOVIE_PRIORITY 1600
 
 namespace {
 

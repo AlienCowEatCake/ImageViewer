@@ -28,7 +28,7 @@
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 
-#define DECODER_QT_SVG_PRIORITY 180
+#define DECODER_QT_SVG_PRIORITY 1800
 
 namespace {
 

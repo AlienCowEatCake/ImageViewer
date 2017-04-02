@@ -18,11 +18,16 @@
 */
 
 #include "ExifUtils.h"
+
+#include <cstdio>
+
 #include <QImage>
 #include <QTransform>
 #include <QDebug>
 
-#if defined (HAS_QTEXTENDED)
+#if defined (HAS_LIBEXIF)
+#include <libexif/exif-data.h>
+#elif defined (HAS_QTEXTENDED)
 #include "qexifimageheader.h"
 #endif
 
@@ -30,7 +35,28 @@ namespace ExifUtils {
 
 quint16 GetExifOrientation(const QString &filePath)
 {
-#if defined (HAS_QTEXTENDED)
+#if defined (HAS_LIBEXIF)
+    quint16 orientation = 1;
+    ExifData *exifData = exif_data_new_from_file(filePath.toLocal8Bit());
+    if(!exifData)
+        return orientation;
+#if defined (QT_DEBUG)
+    fflush(stdout);
+    fflush(stderr);
+    exif_data_dump(exifData);
+    fflush(stdout);
+    fflush(stderr);
+#endif
+    ExifEntry *entry = exif_content_get_entry(exifData->ifd[EXIF_IFD_0], EXIF_TAG_ORIENTATION);
+    if(entry && entry->parent && entry->parent->parent && entry->format == EXIF_FORMAT_SHORT && entry->components == 1)
+    {
+        orientation = exif_get_short(entry->data, exif_data_get_byte_order(entry->parent->parent));
+        qDebug() << "EXIF header detected";
+        qDebug() << "EXIF orientation =" << orientation;
+    }
+    exif_data_unref(exifData);
+    return orientation;
+#elif defined (HAS_QTEXTENDED)
     QExifImageHeader exifHeader;
     if(exifHeader.loadFromJpeg(filePath) && exifHeader.contains(QExifImageHeader::Orientation))
     {
