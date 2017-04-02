@@ -23,11 +23,22 @@
 #include <QtGlobal>
 
 class QImage;
+class QByteArray;
 
-namespace CmsUtils {
+class ICCProfile
+{
+public:
+    ICCProfile();
+    ICCProfile(const QByteArray &profileData);
+    ~ICCProfile();
 
-void ApplyICCProfile(QImage *image, const QByteArray &profileData);
+    void applyToImage(QImage *image);
+    void applyToRGBData(void *rgbData, std::size_t pixelsNum);
+    void applyToRGBAData(void *rgbaData, std::size_t pixelsNum);
 
-} // namespace CmsUtils
+private:
+    struct Impl;
+    Impl *m_impl;
+};
 
 #endif

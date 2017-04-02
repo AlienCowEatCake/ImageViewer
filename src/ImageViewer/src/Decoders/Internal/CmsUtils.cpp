@@ -20,25 +20,85 @@
 #include "CmsUtils.h"
 
 #include <cassert>
+#include <map>
 
 #include <QImage>
-#include <QTransform>
-#include <QDebug>
+#include <QByteArray>
 
 #if defined (HAS_LCMS2)
 #include <lcms2.h>
 #endif
 
-namespace CmsUtils {
-
-void ApplyICCProfile(QImage *image, const QByteArray &profileData)
+struct ICCProfile::Impl
 {
 #if defined (HAS_LCMS2)
-    cmsHPROFILE outProfile = cmsCreate_sRGBProfile();
-    cmsHPROFILE inProfile = cmsOpenProfileFromMem(profileData.constData(), static_cast<cmsUInt32Number>(profileData.size()));
-    cmsHTRANSFORM transform = cmsCreateTransform(inProfile, TYPE_RGBA_8, outProfile, TYPE_RGBA_8, INTENT_PERCEPTUAL, 0);
-    cmsCloseProfile(inProfile);
-    cmsCloseProfile(outProfile);
+    Impl()
+        : inProfile(NULL)
+        , outProfile(NULL)
+    {}
+
+    ~Impl()
+    {
+        if(inProfile)
+            cmsCloseProfile(inProfile);
+        if(outProfile)
+            cmsCloseProfile(outProfile);
+        for(std::map<cmsUInt32Number, cmsHTRANSFORM>::iterator it = transforms.begin(); it != transforms.end(); ++it)
+            cmsDeleteTransform(it->second);
+    }
+
+    cmsHTRANSFORM getOrCreateTransform(cmsUInt32Number format)
+    {
+        std::map<cmsUInt32Number, cmsHTRANSFORM>::iterator it = transforms.find(format);
+        if(it != transforms.end())
+            return it->second;
+        cmsHTRANSFORM transform = cmsCreateTransform(inProfile, format, outProfile, format, INTENT_PERCEPTUAL, 0);
+        transforms[format] = transform;
+        return transform;
+    }
+
+    void applyTransform(void *data, cmsUInt32Number pixelsNum, cmsUInt32Number format)
+    {
+        if(!inProfile || !outProfile)
+            return;
+        cmsDoTransform(getOrCreateTransform(format), data, data, pixelsNum);
+    }
+
+    cmsHPROFILE inProfile;
+    cmsHPROFILE outProfile;
+    std::map<cmsUInt32Number, cmsHTRANSFORM> transforms;
+#endif
+};
+
+ICCProfile::ICCProfile()
+    : m_impl(new Impl())
+{}
+
+ICCProfile::ICCProfile(const QByteArray &profileData)
+    : m_impl(new Impl())
+{
+#if defined (HAS_LCMS2)
+    if(profileData.isEmpty())
+        return;
+    m_impl->outProfile = cmsCreate_sRGBProfile();
+    m_impl->inProfile = cmsOpenProfileFromMem(profileData.constData(), static_cast<cmsUInt32Number>(profileData.size()));
+#else
+    Q_UNUSED(profileData);
+#endif
+}
+
+ICCProfile::~ICCProfile()
+{
+    delete m_impl;
+}
+
+void ICCProfile::applyToImage(QImage *image)
+{
+#if defined (HAS_LCMS2)
+    if(!m_impl->inProfile || !m_impl->outProfile)
+        return;
+
+    cmsHTRANSFORM transform = m_impl->getOrCreateTransform(TYPE_RGBA_8);
     for(int i = 0; i < image->height(); i++)
     {
         QRgb *line = reinterpret_cast<QRgb*>(image->scanLine(i));
@@ -56,12 +116,28 @@ void ApplyICCProfile(QImage *image, const QByteArray &profileData)
             pixel = qRgba(rgba[0], rgba[1], rgba[2], rgba[3]);
         }
     }
-    cmsDeleteTransform(transform);
 #else
     Q_UNUSED(image);
-    Q_UNUSED(iccProfileData);
-    Q_UNUSED(iccProfileSize);
 #endif
 }
 
-} // namespace CmsUtils
+void ICCProfile::applyToRGBData(void *rgbData, std::size_t pixelsNum)
+{
+#if defined (HAS_LCMS2)
+    m_impl->applyTransform(rgbData, static_cast<cmsUInt32Number>(pixelsNum), TYPE_RGB_8);
+#else
+    Q_UNUSED(rgbData);
+    Q_UNUSED(pixelsNum);
+#endif
+}
+
+void ICCProfile::applyToRGBAData(void *rgbaData, std::size_t pixelsNum)
+{
+#if defined (HAS_LCMS2)
+    m_impl->applyTransform(rgbaData, static_cast<cmsUInt32Number>(pixelsNum), TYPE_RGBA_8);
+#else
+    Q_UNUSED(rgbaData);
+    Q_UNUSED(pixelsNum);
+#endif
+}
+

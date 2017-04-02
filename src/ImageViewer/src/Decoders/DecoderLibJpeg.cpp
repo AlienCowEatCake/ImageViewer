@@ -229,7 +229,7 @@ QImage readJpegFile(const QString &filename)
     // See libjpeg.txt for more info.
 
     quint16 orientation = 1;
-    QByteArray iccProfile = readICCProfile(&cinfo);
+    ICCProfile iccProfile(readICCProfile(&cinfo));
     for(jpeg_saved_marker_ptr marker = cinfo.marker_list; marker != NULL; marker = marker->next)
     {
         switch(marker->marker)
@@ -283,20 +283,13 @@ QImage readJpegFile(const QString &filename)
         (void)jpeg_read_scanlines(&cinfo, buffer, 1);
         // Assume put_scanline_someplace wants a pointer and sample count.
         QRgb *outLine = reinterpret_cast<QRgb*>(outImage.scanLine(static_cast<int>(cinfo.output_scanline)));
+        iccProfile.applyToRGBData(buffer[0], cinfo.output_width);
         for(JDIMENSION j = 0; j < cinfo.output_width; j++)
         {
             unsigned char *inPixel = reinterpret_cast<unsigned char*>(buffer[0]) + j * static_cast<JDIMENSION>(cinfo.output_components);
             outLine[j] = qRgb(inPixel[0], inPixel[1], inPixel[2]);
         }
     }
-
-    if(!iccProfile.isEmpty())
-        CmsUtils::ApplyICCProfile(&outImage, iccProfile);
-
-    if(orientation == 0)
-        orientation = ExifUtils::GetExifOrientation(filename);
-    if(orientation > 1 && orientation <= 8)
-        ExifUtils::ApplyExifOrientation(&outImage, orientation);
 
     // Step 7: Finish decompression
 
@@ -319,6 +312,12 @@ QImage readJpegFile(const QString &filename)
     // warnings occurred (test whether jerr.pub.num_warnings is nonzero).
 
     // And we're done!
+
+    if(orientation == 0)
+        orientation = ExifUtils::GetExifOrientation(filename);
+    if(orientation > 1 && orientation <= 8)
+        ExifUtils::ApplyExifOrientation(&outImage, orientation);
+
     return outImage;
 }
 
