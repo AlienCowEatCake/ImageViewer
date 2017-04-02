@@ -16,6 +16,7 @@ THIRDPARTY_LIBEXIF_CONFIG_PATH = $${PWD}/config
 INCLUDEPATH = $${THIRDPARTY_LIBEXIF_PATH} $${THIRDPARTY_LIBEXIF_CONFIG_PATH} $${INCLUDEPATH}
 
 DEFINES += GETTEXT_PACKAGE=\\\"libexif-12\\\"
+msvc: DEFINES += ssize_t=__int64 inline=__inline
 
 SOURCES += \
     $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-byte-order.c \
