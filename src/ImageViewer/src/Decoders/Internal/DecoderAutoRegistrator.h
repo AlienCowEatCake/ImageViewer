@@ -27,13 +27,12 @@
 class DecoderAutoRegistrator
 {
 public:
-    DecoderAutoRegistrator(IDecoder *decoder, int defaultPriority = -1)
+    DecoderAutoRegistrator(IDecoder *decoder, int fallbackPriority = -1)
         : m_decoder(decoder)
     {
-        if(defaultPriority > 0)
-            DecodersManager::getInstance().registerDefaultDecoder(decoder, defaultPriority);
-        else
-            DecodersManager::getInstance().registerDecoder(decoder);
+        DecodersManager::getInstance().registerDecoder(decoder);
+        if(fallbackPriority > 0)
+            DecodersManager::getInstance().registerFallbackDecoder(decoder, fallbackPriority);
     }
 private:
     Q_DISABLE_COPY(DecoderAutoRegistrator)

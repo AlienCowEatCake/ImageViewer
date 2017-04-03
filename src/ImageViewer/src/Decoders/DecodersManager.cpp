@@ -79,7 +79,7 @@ struct DecodersManager::Impl
     }
 
     std::set<IDecoder*> decoders;
-    std::set<DecoderWithPriority> defaultDecoders;
+    std::set<DecoderWithPriority> fallbackDecoders;
     std::map<QString, std::set<DecoderWithPriority> > formats;
     QList<IDecoder*> pendingDecoders;
 };
@@ -101,11 +101,10 @@ void DecodersManager::registerDecoder(IDecoder *decoder)
     qDebug() << "Decoder" << decoder->name() << "was planned for delayed registration";
 }
 
-void DecodersManager::registerDefaultDecoder(IDecoder *decoder, int priority)
+void DecodersManager::registerFallbackDecoder(IDecoder *decoder, int fallbackPriority)
 {
-    registerDecoder(decoder);
-    m_impl->defaultDecoders.insert(DecoderWithPriority(decoder, priority));
-    qDebug() << "Decoder" << decoder->name() << "registered as DEFAULT with priority =" << priority;
+    m_impl->fallbackDecoders.insert(DecoderWithPriority(decoder, fallbackPriority));
+    qDebug() << "Decoder" << decoder->name() << "registered as FALLBACK with priority =" << fallbackPriority;
 }
 
 QStringList DecodersManager::registeredDecoders() const
@@ -145,6 +144,8 @@ QGraphicsItem *DecodersManager::loadImage(const QString &filePath)
         return NULL;
     }
 
+    std::set<IDecoder*> failedDecodres;
+
     const QString extension = fileInfo.suffix().toLower();
     std::map<QString, std::set<DecoderWithPriority> >::const_iterator formatData = m_impl->formats.find(extension);
     if(formatData != m_impl->formats.end())
@@ -162,24 +163,31 @@ QGraphicsItem *DecodersManager::loadImage(const QString &filePath)
                 qDebug() << "Elapsed time =" << elapsed << "ms";
                 return item;
             }
-            else
-            {
-                qDebug() << "Failed to open" << filePath << "with decoder" << decoder->name();
-                qDebug() << "Elapsed time =" << elapsed << "ms";
-            }
+            qDebug() << "Failed to open" << filePath << "with decoder" << decoder->name();
+            qDebug() << "Elapsed time =" << elapsed << "ms";
+            failedDecodres.insert(decoder);
         }
     }
 
     qDebug() << "Unknown format for file" << filePath << "with extension" << extension;
-    for(std::set<DecoderWithPriority>::const_iterator decoderData = m_impl->defaultDecoders.begin(); decoderData != m_impl->defaultDecoders.end(); ++decoderData)
+    for(std::set<DecoderWithPriority>::const_iterator decoderData = m_impl->fallbackDecoders.begin(); decoderData != m_impl->fallbackDecoders.end(); ++decoderData)
     {
         IDecoder *decoder = decoderData->decoder;
+        if(failedDecodres.find(decoder) != failedDecodres.end())
+            continue;
+        QTime time;
+        time.start();
         QGraphicsItem *item = decoder->loadImage(filePath);
+        const int elapsed = time.elapsed();
         if(item)
         {
-            qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name() << "(DEFAULT)";
+            qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name() << "(FALLBACK)";
+            qDebug() << "Elapsed time =" << elapsed << "ms";
             return item;
         }
+        qDebug() << "Failed to open" << filePath << "with decoder" << decoder->name() << "(FALLBACK)";
+        qDebug() << "Elapsed time =" << elapsed << "ms";
+        failedDecodres.insert(decoder);
     }
     return NULL;
 }
