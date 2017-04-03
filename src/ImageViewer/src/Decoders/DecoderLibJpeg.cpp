@@ -29,8 +29,6 @@
 #include <QGraphicsPixmapItem>
 #include <QDebug>
 
-#include "Utils/ScopedPointer.h"
-
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/ExifUtils.h"
@@ -199,7 +197,7 @@ QImage readJpegFile(const QString &filename)
     const QByteArray inBuffer = inFile.readAll();
 
     // Construct any C++ objects before setjmp!
-    QScopedPointer<ICCProfile> iccProfile;
+    ICCProfile *iccProfile = NULL;
     QImage outImage;
 
     // Step 1: allocate and initialize JPEG decompression object
@@ -215,6 +213,8 @@ QImage readJpegFile(const QString &filename)
         // We need to clean up the JPEG object, close the input file, and return.
         jpeg_destroy_decompress(&cinfo);
         inFile.close();
+        if(iccProfile)
+            delete iccProfile;
         return QImage();
     }
     // Now we can initialize the JPEG decompression object.
@@ -239,7 +239,7 @@ QImage readJpegFile(const QString &filename)
     //   (b) we passed TRUE to reject a tables-only JPEG file as an error.
     // See libjpeg.txt for more info.
 
-    iccProfile.reset(new ICCProfile(readICCProfile(&cinfo)));
+    iccProfile = new ICCProfile(readICCProfile(&cinfo));
 #if defined (QT_DEBUG)
     for(jpeg_saved_marker_ptr marker = cinfo.marker_list; marker != NULL; marker = marker->next)
     {
@@ -340,6 +340,8 @@ QImage readJpegFile(const QString &filename)
     // warnings occurred (test whether jerr.pub.num_warnings is nonzero).
 
     // And we're done!
+
+    delete iccProfile;
 
     quint16 orientation = ExifUtils::GetExifOrientation(filename);
     if(orientation > 1 && orientation <= 8)
