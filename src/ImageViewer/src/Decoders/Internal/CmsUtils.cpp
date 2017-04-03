@@ -44,7 +44,11 @@ struct ICCProfile::Impl
         if(outProfile)
             cmsCloseProfile(outProfile);
         for(std::map<cmsUInt32Number, cmsHTRANSFORM>::iterator it = transforms.begin(); it != transforms.end(); ++it)
-            cmsDeleteTransform(it->second);
+        {
+            cmsHTRANSFORM transform = it->second;
+            if(transform)
+                cmsDeleteTransform(transform);
+        }
     }
 
     cmsHTRANSFORM getOrCreateTransform(cmsUInt32Number format)
@@ -60,6 +64,9 @@ struct ICCProfile::Impl
     void applyTransform(void *data, cmsUInt32Number pixelsNum, cmsUInt32Number format)
     {
         if(!inProfile || !outProfile)
+            return;
+        cmsHTRANSFORM transform = getOrCreateTransform(format);
+        if(!transform)
             return;
         cmsDoTransform(getOrCreateTransform(format), data, data, pixelsNum);
     }
@@ -95,6 +102,8 @@ void ICCProfile::applyToImage(QImage *image)
         return;
 
     cmsHTRANSFORM transform = m_impl->getOrCreateTransform(TYPE_RGBA_8);
+    if(!transform)
+        return;
     for(int i = 0; i < image->height(); i++)
     {
         QRgb *line = reinterpret_cast<QRgb*>(image->scanLine(i));
