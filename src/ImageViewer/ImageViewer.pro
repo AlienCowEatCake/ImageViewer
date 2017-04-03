@@ -32,14 +32,7 @@ DEFINES += QT_NO_CAST_FROM_ASCII
 
 include(../../Features.pri)
 include(../QtUtils/QtUtils.pri)
-include(../ThirdParty/QtExtended/QtExtended.pri)
-include(../ThirdParty/STB/STB.pri)
-include(../ThirdParty/QtImageFormats/QtImageFormats.pri)
-include(../ThirdParty/JasPer/JasPer.pri)
-include(../ThirdParty/libjpeg/libjpeg.pri)
-include(../ThirdParty/LittleCMS2/LittleCMS2.pri)
-include(../ThirdParty/libexif/libexif.pri)
-include(../ThirdParty/zlib/zlib.pri)
+include(../ThirdParty/ThirdParty.pri)
 
 *g++*|*clang* {
     QMAKE_CXXFLAGS_RELEASE -= -O2

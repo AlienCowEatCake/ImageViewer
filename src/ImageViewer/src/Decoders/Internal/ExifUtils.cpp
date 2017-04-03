@@ -40,13 +40,13 @@ quint16 GetExifOrientation(const QString &filePath)
     ExifData *exifData = exif_data_new_from_file(filePath.toLocal8Bit());
     if(!exifData)
         return orientation;
-#if defined (QT_DEBUG)
-    fflush(stdout);
-    fflush(stderr);
-    exif_data_dump(exifData);
-    fflush(stdout);
-    fflush(stderr);
-#endif
+//#if defined (QT_DEBUG)
+//    fflush(stdout);
+//    fflush(stderr);
+//    exif_data_dump(exifData);
+//    fflush(stdout);
+//    fflush(stderr);
+//#endif
     ExifEntry *entry = exif_content_get_entry(exifData->ifd[EXIF_IFD_0], EXIF_TAG_ORIENTATION);
     if(entry && entry->parent && entry->parent->parent && entry->format == EXIF_FORMAT_SHORT && entry->components == 1)
     {

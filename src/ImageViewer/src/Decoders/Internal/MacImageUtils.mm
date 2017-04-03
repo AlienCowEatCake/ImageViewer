@@ -62,7 +62,7 @@ QPixmap QPixmapFromNSImage(NSImage *image)
                          samplesPerPixel: 4
                                 hasAlpha: YES
                                 isPlanar: NO
-                          colorSpaceName: NSDeviceRGBColorSpace
+                          colorSpaceName: NSCalibratedRGBColorSpace
                             bitmapFormat: NSAlphaFirstBitmapFormat
                              bytesPerRow: 0
                             bitsPerPixel: 0

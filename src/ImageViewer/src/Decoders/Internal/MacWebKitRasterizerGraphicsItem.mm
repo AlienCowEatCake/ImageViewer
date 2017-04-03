@@ -365,8 +365,8 @@ QImage MacWebKitRasterizerGraphicsItem::Impl::grabImage(qreal scaleFactor, const
                       colorSpaceName: NSCalibratedRGBColorSpace
                         bitmapFormat: 0
                          bytesPerRow: 4 * std::max(static_cast<NSInteger>(cacheRect.size.width), one)
-                        bitsPerPixel: 32];
-
+                        bitsPerPixel: 32
+    ];
     [NSGraphicsContext saveGraphicsState];
     NSGraphicsContext *graphicsContext = [NSGraphicsContext graphicsContextWithBitmapImageRep: bitmapRep];
     [NSGraphicsContext setCurrentContext: graphicsContext];

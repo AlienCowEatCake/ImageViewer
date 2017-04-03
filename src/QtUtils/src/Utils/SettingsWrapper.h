@@ -47,8 +47,6 @@ public:
     QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
 
 private:
-    Q_DISABLE_COPY(SettingsWrapper)
-
     /// @brief Группа (секция) настроек
     const QString m_settingsGroup;
 
