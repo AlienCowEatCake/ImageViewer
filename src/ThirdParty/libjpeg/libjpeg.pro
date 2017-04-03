@@ -13,6 +13,8 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_LIBJPEG_PATH = $${PWD}/jpeg-9b
 THIRDPARTY_LIBJPEG_CONFIG_PATH = $${PWD}/config
 
+include(../CommonSettings.pri)
+
 INCLUDEPATH = $${THIRDPARTY_LIBJPEG_PATH} $${THIRDPARTY_LIBJPEG_CONFIG_PATH} $${INCLUDEPATH}
 
 DEFINES += jdiv_round_up=tp_jdiv_round_up

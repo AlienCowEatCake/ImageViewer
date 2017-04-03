@@ -2,40 +2,22 @@
 
 lessThan(QT_MAJOR_VERSION, 5): error(This project requires Qt 5 or later)
 
-include(../../../Features.pri)
-
 TEMPLATE = lib
 CONFIG += staticlib
 TARGET = tp_QtImageFormats
-
-THIRDPARTY_QTIMAGEFORMATS_PATH = $${PWD}/qtimageformats
-THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH = $${PWD}/qtimageformats_legacy
-THIRDPARTY_QTIMAGEFORMATS_QTBASE_PATH = $${PWD}/qtbase
-THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
 
 QT += core gui widgets
 
 CONFIG -= warn_on
 CONFIG += exceptions_off warn_off
 
-*g++*|*clang* {
-    QMAKE_CXXFLAGS_RELEASE -= -O2
-    QMAKE_CXXFLAGS_RELEASE *= -O3
-    QMAKE_CXXFLAGS_RELEASE *= -DNDEBUG
-    QMAKE_CXXFLAGS_RELEASE *= -DQT_NO_DEBUG_OUTPUT
-}
+THIRDPARTY_QTIMAGEFORMATS_PATH = $${PWD}/qtimageformats
+THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH = $${PWD}/qtimageformats_legacy
+THIRDPARTY_QTIMAGEFORMATS_QTBASE_PATH = $${PWD}/qtbase
+THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
 
-*msvc* {
-    QMAKE_CXXFLAGS_RELEASE -= -O2
-    QMAKE_CXXFLAGS_RELEASE *= -Ox
-    QMAKE_CXXFLAGS_RELEASE -= -GS
-    QMAKE_CXXFLAGS_RELEASE *= -GS-
-    QMAKE_CXXFLAGS_RELEASE *= -DQT_NO_DEBUG_OUTPUT
-}
-
-macx {
-    QMAKE_CXXFLAGS += -Wno-invalid-constexpr
-}
+include(../../../Features.pri)
+include(../CommonSettings.pri)
 
 # --------------------------------------------------------------------------------
 

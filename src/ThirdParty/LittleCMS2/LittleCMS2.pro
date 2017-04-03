@@ -12,6 +12,8 @@ CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_LIBLCMS2_PATH = $${PWD}/lcms2-2.8
 
+include(../CommonSettings.pri)
+
 INCLUDEPATH = $${THIRDPARTY_LIBLCMS2_PATH}/include $${THIRDPARTY_LIBLCMS2_PATH}/src $${INCLUDEPATH}
 
 SOURCES += \

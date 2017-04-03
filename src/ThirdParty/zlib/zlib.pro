@@ -12,6 +12,8 @@ CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_ZLIB_PATH = $${PWD}/zlib-1.2.11
 
+include(../CommonSettings.pri)
+
 INCLUDEPATH = $${THIRDPARTY_ZLIB_PATH} $${INCLUDEPATH}
 
 DEFINES += Z_PREFIX

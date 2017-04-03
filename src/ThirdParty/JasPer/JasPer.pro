@@ -13,6 +13,7 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_JASPER_PATH = $${PWD}/jasper-2.0.12
 THIRDPARTY_JASPER_CONFIG_PATH = $${PWD}/config
 
+include(../CommonSettings.pri)
 include(../libjpeg/libjpeg.pri)
 
 INCLUDEPATH = $${THIRDPARTY_JASPER_PATH}/src/libjasper/include $${THIRDPARTY_JASPER_PATH}/include $${THIRDPARTY_JASPER_CONFIG_PATH} $${INCLUDEPATH}
