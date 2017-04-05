@@ -8,4 +8,3 @@ SOURCES += $$PWD/qjp2handler.cpp
 #} else {
 #    include($$PWD/../../../3rdparty/jasper.pri)
 #}
-include($${PWD}/../../../../../../JasPer/JasPer.pri)

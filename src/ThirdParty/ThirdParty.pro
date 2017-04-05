@@ -24,6 +24,10 @@ SUBDIRS =
     SUBDIRS += libexif/libexif.pro
 }
 
+!disable_libmng : !system_libmng {
+    SUBDIRS += libmng/libmng.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }

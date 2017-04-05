@@ -16,7 +16,7 @@ THIRDPARTY_JASPER_CONFIG_PATH = $${PWD}/config
 include(../CommonSettings.pri)
 include(../libjpeg/libjpeg.pri)
 
-INCLUDEPATH = $${THIRDPARTY_JASPER_PATH}/src/libjasper/include $${THIRDPARTY_JASPER_PATH}/include $${THIRDPARTY_JASPER_CONFIG_PATH} $${INCLUDEPATH}
+INCLUDEPATH = $${THIRDPARTY_JASPER_CONFIG_PATH} $${THIRDPARTY_JASPER_PATH}/src/libjasper/include $${THIRDPARTY_JASPER_PATH}/include $${INCLUDEPATH}
 
 *msvc*: DEFINES += JAS_WIN_MSVC_BUILD
 

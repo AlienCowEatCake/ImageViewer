@@ -1,0 +1,24 @@
+Description: Patch to support GNU/kFreeBSD
+ This patch provides fix and support for building libmng for support
+ GNU/kFreeBSD.
+Author: Aurelien Jarno <aurel32@debian.org>
+Bug-Debian: http://bugs.debian.org/314696
+Forwarded: https://sourceforge.net/tracker/?func=detail&aid=3015142&group_id=5635&atid=105635
+Origin: vendor
+Last-Update: 2010-06-12
+
+--- libmng-1.0.10.orig/libmng_types.h	2007-04-20 14:11:59.000000000 +0530
++++ libmng-1.0.10/libmng_types.h	2010-06-12 14:44:21.000000000 +0530
+@@ -178,7 +178,11 @@
+ #ifndef ZLIB_DLL
+ #undef FAR
+ #endif
+-#include <lcms.h>
++#if defined(WIN32) || defined(linux) || defined(__GNU__) || defined(__FreeBSD_kernel__)   /* different header locations */
++#include "lcms.h"
++#else
++#include "lcms/lcms.h"
++#endif
+ #endif /* MNG_INCLUDE_LCMS */
+ 
+ #ifdef MNG_INCLUDE_IJG6B               /* IJG's jpgsrc6b */

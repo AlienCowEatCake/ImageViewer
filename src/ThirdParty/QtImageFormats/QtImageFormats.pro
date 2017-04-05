@@ -18,6 +18,12 @@ THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
 
 include(../../../Features.pri)
 include(../CommonSettings.pri)
+include(../libmng/libmng.pri)
+include(../JasPer/JasPer.pri)
+include(../libjpeg/libjpeg.pri)
+include(../LittleCMS2/LittleCMS2.pri)
+include(../libexif/libexif.pri)
+include(../zlib/zlib.pri)
 
 # --------------------------------------------------------------------------------
 
