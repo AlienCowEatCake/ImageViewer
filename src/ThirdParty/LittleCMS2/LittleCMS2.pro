@@ -44,5 +44,10 @@ SOURCES += \
     $${THIRDPARTY_LIBLCMS2_PATH}/src/cmswtpnt.c \
     $${THIRDPARTY_LIBLCMS2_PATH}/src/cmsxform.c
 
+HEADERS += \
+    $${THIRDPARTY_LIBLCMS2_PATH}/include/lcms2.h \
+    $${THIRDPARTY_LIBLCMS2_PATH}/include/lcms2_plugin.h \
+    $${THIRDPARTY_LIBLCMS2_PATH}/src/lcms2_internal.h
+
 TR_EXCLUDE += $${THIRDPARTY_LIBLCMS2_PATH}/*
 

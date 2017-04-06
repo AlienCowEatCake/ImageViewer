@@ -36,5 +36,18 @@ SOURCES += \
     $${THIRDPARTY_ZLIB_PATH}/uncompr.c \
     $${THIRDPARTY_ZLIB_PATH}/zutil.c
 
+HEADERS += \
+    $${THIRDPARTY_ZLIB_PATH}/crc32.h \
+    $${THIRDPARTY_ZLIB_PATH}/deflate.h \
+    $${THIRDPARTY_ZLIB_PATH}/gzguts.h \
+    $${THIRDPARTY_ZLIB_PATH}/inffast.h \
+    $${THIRDPARTY_ZLIB_PATH}/inffixed.h \
+    $${THIRDPARTY_ZLIB_PATH}/inflate.h \
+    $${THIRDPARTY_ZLIB_PATH}/inftrees.h \
+    $${THIRDPARTY_ZLIB_PATH}/trees.h \
+    $${THIRDPARTY_ZLIB_PATH}/zconf.h \
+    $${THIRDPARTY_ZLIB_PATH}/zlib.h \
+    $${THIRDPARTY_ZLIB_PATH}/zutil.h
+
 TR_EXCLUDE += $${THIRDPARTY_ZLIB_PATH}/*
 

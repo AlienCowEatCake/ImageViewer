@@ -46,5 +46,38 @@ SOURCES += \
     $${THIRDPARTY_LIBEXIF_PATH}/libexif/pentax/mnote-pentax-entry.c \
     $${THIRDPARTY_LIBEXIF_PATH}/libexif/pentax/mnote-pentax-tag.c
 
+HEADERS += \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-byte-order.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-content.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-data.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-data-type.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-entry.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-format.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-ifd.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-loader.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-log.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-mem.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-mnote-data.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-mnote-data-priv.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-system.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-tag.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-utils.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/i18n.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/_stdint.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/canon/exif-mnote-data-canon.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/canon/mnote-canon-entry.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/canon/mnote-canon-tag.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/fuji/exif-mnote-data-fuji.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/fuji/mnote-fuji-entry.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/fuji/mnote-fuji-tag.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/olympus/exif-mnote-data-olympus.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/olympus/mnote-olympus-entry.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/olympus/mnote-olympus-tag.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/pentax/exif-mnote-data-pentax.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/pentax/mnote-pentax-entry.h \
+    $${THIRDPARTY_LIBEXIF_PATH}/libexif/pentax/mnote-pentax-tag.h \
+    $${THIRDPARTY_LIBEXIF_CONFIG_PATH}/config.h
+
 TR_EXCLUDE += $${THIRDPARTY_LIBEXIF_PATH}/*
 
