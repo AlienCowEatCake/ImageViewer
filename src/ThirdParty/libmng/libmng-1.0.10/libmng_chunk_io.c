@@ -4,8 +4,8 @@
 /* ************************************************************************** */
 /* *                                                                        * */
 /* * project   : libmng                                                     * */
-/* * file      : libmng_chunk_io.c         copyright (c) 2000-2007 G.Juyn   * */
-/* * version   : 1.0.10                                                     * */
+/* * file      : libmng_chunk_io.c         copyright (c) 2000-2008 G.Juyn   * */
+/* * version   : 1.0.11                                                     * */
 /* *                                                                        * */
 /* * purpose   : Chunk I/O routines (implementation)                        * */
 /* *                                                                        * */
@@ -236,7 +236,9 @@
 /* *             1.0.10 - 04/12/2007 - G.Juyn                               * */
 /* *             - added support for ANG proposal                           * */
 /* *             1.0.10 - 05/02/2007 - G.Juyn                               * */
-/* *             - fixed inflate_buffer for extreme compression ratios      * */
+/* *                                                                        * */
+/* *             1.0.11 - 03/29/2008 - G.R-P.                               * */
+/* *             - fixed some possibles use of uninitialized variables      * */
 /* *                                                                        * */
 /* ************************************************************************** */
 
@@ -2639,7 +2641,8 @@ READ_CHUNK (mng_read_text)
 READ_CHUNK (mng_read_ztxt)
 {
   mng_retcode iRetcode;
-  mng_uint32  iKeywordlen, iTextlen;
+  mng_uint32  iKeywordlen;
+  mng_uint32  iTextlen=0;
   mng_pchar   zKeyword;
   mng_uint8p  pTemp;
   mng_uint32  iCompressedsize;
@@ -2715,7 +2718,8 @@ READ_CHUNK (mng_read_ztxt)
 
     if (iRetcode)                      /* on error bail out */
     {                                  /* don't forget to drop the temp buffers */
-      MNG_FREEX (pData, pBuf, iBufsize);
+      if (pData->fProcesstext)
+        MNG_FREEX (pData, pBuf, iBufsize);
       MNG_FREEX (pData, zKeyword, iKeywordlen+1);
       return iRetcode;
     }
@@ -2899,7 +2903,8 @@ READ_CHUNK (mng_read_itxt)
       MNG_FREEX (pData, zTranslation, iTranslationlen + 1);
       MNG_FREEX (pData, zLanguage,    iLanguagelen    + 1);
       MNG_FREEX (pData, zKeyword,     iKeywordlen     + 1);
-      MNG_FREEX (pData, pBuf,         iBufsize);
+      if (iCompressionflag)
+        MNG_FREEX (pData, pBuf,         iBufsize);
       return iRetcode;
     }
                                        /* store the fields */
@@ -8500,7 +8505,8 @@ WRITE_CHUNK (mng_write_itxt)
 
   }
 
-  MNG_FREEX (pData, pBuf, iBuflen);    /* always drop the compression buffer */
+  if (pITXT->iCompressionflag)
+     MNG_FREEX (pData, pBuf, iBuflen); /* always drop the compression buffer */
 
   if (iRetcode)                        /* on error bail out */
     return iRetcode;

@@ -15,8 +15,6 @@ include($${PWD}/../../../Features.pri)
         DEPENDPATH += $${THIRDPARTY_LIBMNG_PATH}
 
         DEFINES += MNG_BUILD_SO
-#        DEFINES += MNG_INCLUDE_MPNG_PROPOSAL
-        DEFINES += MNG_INCLUDE_ANG_PROPOSAL
 
         disable_libjpeg {
             DEFINES += MNG_NO_INCLUDE_JNG

@@ -1,0 +1,519 @@
+From 33a479526c11988091e380291aa48aeb6f4d7653 Mon Sep 17 00:00:00 2001
+From: John Doe <johndoe@example.com>
+Date: Thu, 6 Apr 2017 23:45:16 +0700
+Subject: [PATCH] All CVS changes after 1.0.10 release
+
+  * handover to glennrp
+  * fix handling of all-zero-delay MNG files.
+  * Fixed an incorrect #ifndef (bug report by Lucas Quintana)
+  * Update version number to 1.0.10
+  * Attempting to fix bugs reported on the bug tracker, bug #1896227
+  * Fixed typo (old_ should just be old)
+  * Check return from GlobalAlloc()
+  * Fix typo (.0 should be .o)
+  * Fixed typo in makefile.vcwin32 ("(0)" should be "(O)")
+  * Fixed misplaced bracked introduced in 1.0.11
+---
+ CHANGES                                            | 26 ++++++++++
+ README                                             |  3 ++
+ contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c    | 22 +++++---
+ libmng_chunk_io.c                                  | 20 +++++---
+ libmng_chunk_xs.c                                  |  7 ++-
+ libmng_data.h                                      |  7 ++-
+ libmng_display.c                                   | 60 ++++++++++++++--------
+ libmng_hlapi.c                                     | 10 +++-
+ makefiles/configure.in                             |  2 +-
+ makefiles/makefile.dj                              |  2 +-
+ makefiles/makefile.linux                           |  2 +-
+ makefiles/makefile.vcwin32                         |  2 +-
+ 12 files changed, 119 insertions(+), 44 deletions(-)
+
+diff --git a/CHANGES b/CHANGES
+index eeacf33..bb877e8 100644
+--- a/CHANGES
++++ b/CHANGES
+@@ -1,5 +1,31 @@
+ -----------------------------------------------------------
+ 
++1.0.11 (xxx xxth 2007)
++----------------------
++
++in short:
++
++intermediate CVS
++
++-------------------
++
++bugfixes:
++
++core:
++- handle MNG datastreams with all-zero delays
++
++samples:
++
++contrib:
++
++doc:
++
++makefiles:
++
++autoconf:
++
++-----------------------------------------------------------
++
+ 1.0.10 (Jul 13th 2007)
+ ----------------------
+ 
+diff --git a/README b/README
+index a8e67ca..fb2a31e 100644
+--- a/README
++++ b/README
+@@ -3,6 +3,9 @@ libmng 1.0.10
+ 
+ Added provisional ANG and anIM support, and made some minor bugfixes.
+ 
++Gerard has handed libmng maintenance over to Glenn Randers-Pehrson
++(glennrp at users.sourceforge.net)
++
+ libmng 1.0.9
+ ------------
+ 
+diff --git a/contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c b/contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c
+index 91719bd..a3959c1 100644
+--- a/contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c
++++ b/contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c
+@@ -1008,6 +1008,7 @@ static int32 NPP_Write(NPP instance, NPStream *stream, int32 offset, int32 len,
+ 	if(len<1) return len;
+ 
+ 	if(offset+len > (int)This->bytesalloc) {  // oops, overflowed our memory buffer
++	        unsigned char *oldmngdata=This->mngdata;
+ 		This->bytesalloc += ALLOC_CHUNK_SIZE;
+ 		if(This->mngdata) {
+ 			This->mngdata=realloc(This->mngdata, This->bytesalloc);
+@@ -1017,6 +1018,7 @@ static int32 NPP_Write(NPP instance, NPStream *stream, int32 offset, int32 len,
+ 		}
+ 		if(!This->mngdata) {
+ 			warn(This,"Cannot allocate memory for image (%d,%d,%p",offset,len,buffer);
++                        if(oldmngdata) free(oldmngdata);
+ 			return -1;
+ 		}
+ 	}
+@@ -1139,9 +1141,9 @@ static void NPP_Print(NPP instance, NPPrint* printInfo)
+ 		 * sub-structure).
+ 		 */
+ 
+-		if(sizeof(NPWindow)>28 &&     /* i.e. is plugin API >= 0.11? */
+-			     HIBYTE(g_pNavigatorFuncs->version)==0 &&
+-		         LOBYTE(g_pNavigatorFuncs->version)<=9) {
++		if((sizeof(NPWindow)>28) &&  /* i.e. is plugin API >= 0.11? */
++		         (HIBYTE(g_pNavigatorFuncs->version)==0) &&
++		         (LOBYTE(g_pNavigatorFuncs->version)<=9)) {
+ 			char *tmpc;
+ 			HDC  *tmph;
+ 
+@@ -1323,16 +1325,20 @@ static void CopyToClipboard(PluginInstance *This,unsigned char *mem,int size,UIN
+ 
+ 	if(EmptyClipboard()) {
+ 		hClip=GlobalAlloc(GMEM_ZEROINIT|GMEM_MOVEABLE|GMEM_DDESHARE,size);
+-		lpClip=GlobalLock(hClip);
+-		if(lpClip) {
++                if(hClip) {
++		  lpClip=GlobalLock(hClip);
++		  if(lpClip) {
+ 			CopyMemory(lpClip,mem,size);
+ 			GlobalUnlock(hClip);
+ 			if(!SetClipboardData(format,hClip)) {
+ 				warn(This,"Can't set clipboard data");
+ 			}
+-		}
+-		else {
+-			warn(This,"Can't allocate memory for clipboard");
++		  }
++		  else {
++			warn(This,"Can't lock clipboard");
++	        }
++	        else {
++	  	  warn(This,"Can't allocate memory for clipboard");
+ 		}
+ 	}
+ 	else {
+diff --git a/libmng_chunk_io.c b/libmng_chunk_io.c
+index eb18099..a975aa6 100644
+--- a/libmng_chunk_io.c
++++ b/libmng_chunk_io.c
+@@ -4,8 +4,8 @@
+ /* ************************************************************************** */
+ /* *                                                                        * */
+ /* * project   : libmng                                                     * */
+-/* * file      : libmng_chunk_io.c         copyright (c) 2000-2007 G.Juyn   * */
+-/* * version   : 1.0.10                                                     * */
++/* * file      : libmng_chunk_io.c         copyright (c) 2000-2008 G.Juyn   * */
++/* * version   : 1.0.11                                                     * */
+ /* *                                                                        * */
+ /* * purpose   : Chunk I/O routines (implementation)                        * */
+ /* *                                                                        * */
+@@ -236,7 +236,9 @@
+ /* *             1.0.10 - 04/12/2007 - G.Juyn                               * */
+ /* *             - added support for ANG proposal                           * */
+ /* *             1.0.10 - 05/02/2007 - G.Juyn                               * */
+-/* *             - fixed inflate_buffer for extreme compression ratios      * */
++/* *                                                                        * */
++/* *             1.0.11 - 03/29/2008 - G.R-P.                               * */
++/* *             - fixed some possibles use of uninitialized variables      * */
+ /* *                                                                        * */
+ /* ************************************************************************** */
+ 
+@@ -2639,7 +2641,8 @@ READ_CHUNK (mng_read_text)
+ READ_CHUNK (mng_read_ztxt)
+ {
+   mng_retcode iRetcode;
+-  mng_uint32  iKeywordlen, iTextlen;
++  mng_uint32  iKeywordlen;
++  mng_uint32  iTextlen=0;
+   mng_pchar   zKeyword;
+   mng_uint8p  pTemp;
+   mng_uint32  iCompressedsize;
+@@ -2715,7 +2718,8 @@ READ_CHUNK (mng_read_ztxt)
+ 
+     if (iRetcode)                      /* on error bail out */
+     {                                  /* don't forget to drop the temp buffers */
+-      MNG_FREEX (pData, pBuf, iBufsize);
++      if (pData->fProcesstext)
++        MNG_FREEX (pData, pBuf, iBufsize);
+       MNG_FREEX (pData, zKeyword, iKeywordlen+1);
+       return iRetcode;
+     }
+@@ -2899,7 +2903,8 @@ READ_CHUNK (mng_read_itxt)
+       MNG_FREEX (pData, zTranslation, iTranslationlen + 1);
+       MNG_FREEX (pData, zLanguage,    iLanguagelen    + 1);
+       MNG_FREEX (pData, zKeyword,     iKeywordlen     + 1);
+-      MNG_FREEX (pData, pBuf,         iBufsize);
++      if (iCompressionflag)
++        MNG_FREEX (pData, pBuf,         iBufsize);
+       return iRetcode;
+     }
+                                        /* store the fields */
+@@ -8500,7 +8505,8 @@ WRITE_CHUNK (mng_write_itxt)
+ 
+   }
+ 
+-  MNG_FREEX (pData, pBuf, iBuflen);    /* always drop the compression buffer */
++  if (pITXT->iCompressionflag)
++     MNG_FREEX (pData, pBuf, iBuflen); /* always drop the compression buffer */
+ 
+   if (iRetcode)                        /* on error bail out */
+     return iRetcode;
+diff --git a/libmng_chunk_xs.c b/libmng_chunk_xs.c
+index 1311409..319921f 100644
+--- a/libmng_chunk_xs.c
++++ b/libmng_chunk_xs.c
+@@ -5,7 +5,7 @@
+ /* *                                                                        * */
+ /* * project   : libmng                                                     * */
+ /* * file      : libmng_chunk_xs.c         copyright (c) 2000-2007 G.Juyn   * */
+-/* * version   : 1.0.10                                                     * */
++/* * version   : 1.0.11                                                     * */
+ /* *                                                                        * */
+ /* * purpose   : chunk access functions (implementation)                    * */
+ /* *                                                                        * */
+@@ -91,6 +91,9 @@
+ /* *             1.0.10 - 04/08/2007 - G.Juyn                               * */
+ /* *             - added support for mPNG proposal                          * */
+ /* *                                                                        * */
++/* *             1.0.11 - 08/03/2007 - G.R-P                                * */
++/* *             - fixed incorrect #ifndef                                  * */
++/* *                                                                        * */
+ /* ************************************************************************** */
+ 
+ #include "libmng.h"
+@@ -2363,7 +2366,7 @@ MNG_EXT mng_retcode MNG_DECL mng_getchunk_mpng_frame (mng_handle hHandle,
+ 
+ /* ************************************************************************** */
+ 
+-#ifndef MNG_SKIPCHUNK_evNT
++#ifdef MNG_SKIPCHUNK_evNT
+ mng_retcode MNG_DECL mng_getchunk_evnt (mng_handle hHandle,
+                                         mng_handle hChunk,
+                                         mng_uint32 *iCount)
+diff --git a/libmng_data.h b/libmng_data.h
+index 430dca9..f2b52d5 100644
+--- a/libmng_data.h
++++ b/libmng_data.h
+@@ -5,7 +5,7 @@
+ /* *                                                                        * */
+ /* * project   : libmng                                                     * */
+ /* * file      : libmng_data.h             copyright (c) 2000-2007 G.Juyn   * */
+-/* * version   : 1.0.10                                                     * */
++/* * version   : 1.0.11                                                     * */
+ /* *                                                                        * */
+ /* * purpose   : main data structure definition                             * */
+ /* *                                                                        * */
+@@ -153,6 +153,8 @@
+ /* *             1.0.10 - 04/12/2007 - G.Juyn                               * */
+ /* *             - added support for ANG proposal                           * */
+ /* *                                                                        * */
++/* *             1.0.11 - 07/24/2007 - G.R-P bugfix for all-zero delays     * */
++/* *                                                                        * */
+ /* ************************************************************************** */
+ 
+ #if defined(__BORLANDC__) && defined(MNG_STRICT_ANSI)
+@@ -658,6 +660,9 @@ typedef struct mng_data_struct {
+            mng_int32         iFrameclipb;
+ 
+            mng_uint32        iNextdelay;         /* delay *after* next image */
++
++           mng_bool bForcedelay;
++           mng_uint32 iAccumdelay;
+ #endif
+ 
+ #ifndef MNG_SKIPCHUNK_SHOW
+diff --git a/libmng_display.c b/libmng_display.c
+index adfb91d..75063c4 100644
+--- a/libmng_display.c
++++ b/libmng_display.c
+@@ -4,8 +4,8 @@
+ /* ************************************************************************** */
+ /* *                                                                        * */
+ /* * project   : libmng                                                     * */
+-/* * file      : libmng_display.c          copyright (c) 2000-2007 G.Juyn   * */
+-/* * version   : 1.0.10                                                     * */
++/* * file      : libmng_display.c          copyright (c) 2000-2008 G.Juyn   * */
++/* * version   : 1.0.11                                                     * */
+ /* *                                                                        * */
+ /* * purpose   : Display management (implementation)                        * */
+ /* *                                                                        * */
+@@ -235,6 +235,10 @@
+ /* *             1.0.10 - 04/12/2007 - G.Juyn                               * */
+ /* *             - added support for ANG proposal                           * */
+ /* *                                                                        * */
++/* *             1.0.11 - 07/24/2007 - G.R-P bugfix for all-zero delays     * */
++/* *             1.0.11 - 03/29/2008 - G.R-P.                               * */
++/* *             - fixed some possible use of uninitialized variables       * */
++/* *                                                                        * */
+ /* ************************************************************************** */
+ 
+ #include "libmng.h"
+@@ -382,26 +386,27 @@ MNG_LOCAL mng_retcode interframe_delay (mng_datap pData)
+   MNG_TRACE (pData, MNG_FN_INTERFRAME_DELAY, MNG_LC_START);
+ #endif
+ 
+-  {
+ #ifndef MNG_SKIPCHUNK_FRAM
+-    if (pData->iFramedelay > 0)        /* real delay ? */
+-    {                                  /* let the app refresh first ? */
+-      if ((pData->bRunning) && (!pData->bSkipping) &&
+-          (pData->iUpdatetop < pData->iUpdatebottom) && (pData->iUpdateleft < pData->iUpdateright))
+-        if (!pData->fRefresh (((mng_handle)pData),
++  if (pData->iFramedelay > 0 || pData->bForcedelay) /* real delay ? */
++  { /* let the app refresh first ? */
++     pData->bForcedelay = MNG_FALSE;
++     if ((pData->bRunning) && (!pData->bSkipping) &&
++         (pData->iUpdatetop < pData->iUpdatebottom) &&
++         (pData->iUpdateleft < pData->iUpdateright))
++       if (!pData->fRefresh (((mng_handle)pData),
+                               pData->iUpdateleft,  pData->iUpdatetop,
+                               pData->iUpdateright - pData->iUpdateleft,
+                               pData->iUpdatebottom - pData->iUpdatetop))
+           MNG_ERROR (pData, MNG_APPMISCERROR);
+ 
+-      pData->iUpdateleft   = 0;        /* reset update-region */
+-      pData->iUpdateright  = 0;
+-      pData->iUpdatetop    = 0;
+-      pData->iUpdatebottom = 0;        /* reset refreshneeded indicator */
+-      pData->bNeedrefresh  = MNG_FALSE;
++     pData->iUpdateleft   = 0;        /* reset update-region */
++     pData->iUpdateright  = 0;
++     pData->iUpdatetop    = 0;
++     pData->iUpdatebottom = 0;        /* reset refreshneeded indicator */
++     pData->bNeedrefresh  = MNG_FALSE;
+ 
+ #ifndef MNG_SKIPCHUNK_TERM
+-      if (pData->bOnlyfirstframe)      /* only processing first frame after TERM ? */
++     if (pData->bOnlyfirstframe) /* only processing first frame after TERM ? */
+       {
+         pData->iFramesafterTERM++;
+                                        /* did we do a frame yet ? */
+@@ -415,7 +420,7 @@ MNG_LOCAL mng_retcode interframe_delay (mng_datap pData)
+       }
+ #endif
+ 
+-      if (pData->fGettickcount)
++     if (pData->fGettickcount)
+       {                                /* get current tickcount */
+         pData->iRuntime = pData->fGettickcount ((mng_handle)pData);
+                                        /* calculate interval since last sync-point */
+@@ -449,14 +454,14 @@ MNG_LOCAL mng_retcode interframe_delay (mng_datap pData)
+         if (iRetcode)                  /* on error bail out */
+           return iRetcode;
+       }
+-    }
++  }
+ 
+-    if (!pData->bSkipping)             /* increase frametime in advance */
+-      pData->iFrametime = pData->iFrametime + iWaitfor;
+-                                       /* setup for next delay */
+-    pData->iFramedelay = pData->iNextdelay;
++  if (!pData->bSkipping)             /* increase frametime in advance */
++    pData->iFrametime = pData->iFrametime + iWaitfor;
++                                     /* setup for next delay */
++  pData->iFramedelay = pData->iNextdelay;
++  pData->iAccumdelay += pData->iFramedelay;
+ #endif
+-  }
+ 
+ #ifdef MNG_SUPPORT_TRACE
+   MNG_TRACE (pData, MNG_FN_INTERFRAME_DELAY, MNG_LC_END);
+@@ -3340,6 +3345,9 @@ mng_retcode mng_process_display_mend (mng_datap pData)
+   MNG_TRACE (pData, MNG_FN_PROCESS_DISPLAY_MEND, MNG_LC_START);
+ #endif
+ 
++  pData->bForcedelay = pData->iAccumdelay ? MNG_FALSE : MNG_TRUE;
++  pData->iAccumdelay = 0;
++
+ #ifdef MNG_SUPPORT_DYNAMICMNG
+   if (pData->bStopafterseek)           /* need to stop after this ? */
+   {
+@@ -6606,11 +6614,15 @@ mng_retcode mng_process_display_past (mng_datap  pData)
+     mng_int32      iSourceYinc;
+     mng_int32      iSourcerowsize;
+     mng_int32      iSourcesamples;
++#ifndef MNG_NO_16BIT_SUPPORT
+     mng_bool       bSourceRGBA16;
++#endif
+     mng_int32      iTargetY;
+     mng_int32      iTargetrowsize;
+     mng_int32      iTargetsamples;
++#ifndef MNG_NO_16BIT_SUPPORT
+     mng_bool       bTargetRGBA16 = MNG_FALSE;
++#endif
+     mng_int32      iTemprowsize;
+     mng_imagedatap pBuf;
+ #ifndef MNG_SKIPCHUNK_MAGN
+@@ -6621,7 +6633,9 @@ mng_retcode mng_process_display_past (mng_datap  pData)
+ 
+     if (!iRetcode)                     /* still ok ? */
+     {
++#ifndef MNG_NO_16BIT_SUPPORT
+       bTargetRGBA16 = (mng_bool)(pTargetimg->pImgbuf->iBitdepth > 8);
++#endif
+ 
+ #ifndef MNG_OPTIMIZE_DISPLAYCALLS
+       switch (iTargettype)             /* determine target x/y */
+@@ -6697,8 +6711,10 @@ mng_retcode mng_process_display_past (mng_datap  pData)
+           pData->iPixelofs    = 0;
+           iSourcesamples      = (mng_int32)pBuf->iWidth;
+           iSourcerowsize      = pBuf->iRowsize;
++#ifndef MNG_NO_16BIT_SUPPORT
+           bSourceRGBA16       = (mng_bool)(pBuf->iBitdepth > 8);
+                                        /* make sure the delta-routines do the right thing */
++#endif
+           pData->iDeltatype   = MNG_DELTATYPE_BLOCKPIXELREPLACE;
+ 
+           switch (pBuf->iColortype)
+@@ -7000,7 +7016,9 @@ mng_retcode mng_process_display_past (mng_datap  pData)
+               pData->iRow          = iSourceY;
+               pData->iRowsamples   = iSourcesamples;
+               pData->iRowsize      = iSourcerowsize;
++#ifndef MNG_NO_16BIT_SUPPORT
+               pData->bIsRGBA16     = bSourceRGBA16;
++#endif
+               iRetcode             = ((mng_retrieverow)pData->fRetrieverow) (pData);
+                                        /* scale it (if necessary) */
+               if ((!iRetcode) && (pData->fScalerow))
+diff --git a/libmng_hlapi.c b/libmng_hlapi.c
+index 6199d59..9267116 100644
+--- a/libmng_hlapi.c
++++ b/libmng_hlapi.c
+@@ -5,7 +5,7 @@
+ /* *                                                                        * */
+ /* * project   : libmng                                                     * */
+ /* * file      : libmng_hlapi.c            copyright (c) 2000-2007 G.Juyn   * */
+-/* * version   : 1.0.10                                                     * */
++/* * version   : 1.0.11                                                     * */
+ /* *                                                                        * */
+ /* * purpose   : high-level application API (implementation)                * */
+ /* *                                                                        * */
+@@ -196,6 +196,8 @@
+ /* *             - added support for ANG proposal                           * */
+ /* *             1.0.10 - 07/06/2007 - G.R-P bugfix by Lucas Quintana       * */
+ /* *                                                                        * */
++/* *             1.0.11 - 07/24/2007 - G.R-P bugfix for all-zero delays     * */
++/* *                                                                        * */
+ /* ************************************************************************** */
+ 
+ #include "libmng.h"
+@@ -446,6 +448,9 @@ MNG_LOCAL mng_retcode mng_reset_rundata (mng_datap pData)
+   pData->iFrameclipb           = 0;
+ 
+   pData->iNextdelay            = 1;
++
++  pData->bForcedelay = MNG_FALSE;
++  pData->iAccumdelay = 0;
+ #endif
+ 
+ #ifndef MNG_SKIPCHUNK_SHOW
+@@ -1737,6 +1742,9 @@ mng_retcode MNG_DECL mng_reset (mng_handle hHandle)
+   pData->iFrameclipb           = 0;
+ 
+   pData->iNextdelay            = 1;
++
++  pData->bForcedelay = MNG_FALSE;
++  pData->iAccumdelay = 0;
+ #endif
+ 
+ #ifndef MNG_SKIPCHUNK_SHOW
+diff --git a/makefiles/configure.in b/makefiles/configure.in
+index e7cb75c..d9e9535 100644
+--- a/makefiles/configure.in
++++ b/makefiles/configure.in
+@@ -6,7 +6,7 @@ AC_PREREQ(2.52)
+ 
+ dnl this call will define PACKAGE and VERSION
+ dnl please use this as the primary reference for the version number
+-AM_INIT_AUTOMAKE(libmng, 1.0.9)
++AM_INIT_AUTOMAKE(libmng, 1.0.10)
+ 
+ dnl pass the version string on the the makefiles
+ AC_SUBST(PACKAGE)
+diff --git a/makefiles/makefile.dj b/makefiles/makefile.dj
+index 2cef088..7b227d4 100644
+--- a/makefiles/makefile.dj
++++ b/makefiles/makefile.dj
+@@ -74,7 +74,7 @@ OBJS = \
+ 	libmng_write.o \
+ 	libmng_zlib.o
+ 
+-OBJSDLL = $(OBJS:.0=.pic.o)
++OBJSDLL = $(OBJS:.o=.pic.o)
+ 
+ .SUFFIXES:      .c .o .pic.o
+ 
+diff --git a/makefiles/makefile.linux b/makefiles/makefile.linux
+index e06a829..f72feb9 100644
+--- a/makefiles/makefile.linux
++++ b/makefiles/makefile.linux
+@@ -84,7 +84,7 @@ OBJS = \
+ 	libmng_write.o \
+ 	libmng_zlib.o
+ 
+-OBJSDLL = $(OBJS:.0=.pic.o)
++OBJSDLL = $(OBJS:.o=.pic.o)
+ 
+ .SUFFIXES:      .c .o .pic.o
+ 
+diff --git a/makefiles/makefile.vcwin32 b/makefiles/makefile.vcwin32
+index 6f9c2c0..50ec073 100644
+--- a/makefiles/makefile.vcwin32
++++ b/makefiles/makefile.vcwin32
+@@ -19,7 +19,7 @@ O=.obj
+ #ERRFILE= >> mngerrs
+ 
+ # variables
+-OBJS1 = libmng_callback_xs$(O) libmng_chunk_io$(O) libmng_chunk_prc$(O) libmng_chunk_descr$(0)
++OBJS1 = libmng_callback_xs$(O) libmng_chunk_io$(O) libmng_chunk_prc$(O) libmng_chunk_descr$(O)
+ OBJS2 = libmng_chunk_xs$(O) libmng_cms$(O) libmng_display$(O) libmng_dither$(O)
+ OBJS3 = libmng_error$(O) libmng_filter$(O) libmng_hlapi$(O) libmng_jpeg$(O)
+ OBJS4 = libmng_object_prc$(O) libmng_pixels$(O) libmng_prop_xs$(O)
+-- 
+2.11.0
+

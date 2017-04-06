@@ -5,7 +5,7 @@
 /* *                                                                        * */
 /* * project   : libmng                                                     * */
 /* * file      : libmng_hlapi.c            copyright (c) 2000-2007 G.Juyn   * */
-/* * version   : 1.0.10                                                     * */
+/* * version   : 1.0.11                                                     * */
 /* *                                                                        * */
 /* * purpose   : high-level application API (implementation)                * */
 /* *                                                                        * */
@@ -195,6 +195,8 @@
 /* *             1.0.10 - 04/12/2007 - G.Juyn                               * */
 /* *             - added support for ANG proposal                           * */
 /* *             1.0.10 - 07/06/2007 - G.R-P bugfix by Lucas Quintana       * */
+/* *                                                                        * */
+/* *             1.0.11 - 07/24/2007 - G.R-P bugfix for all-zero delays     * */
 /* *                                                                        * */
 /* ************************************************************************** */
 
@@ -447,8 +449,8 @@ MNG_LOCAL mng_retcode mng_reset_rundata (mng_datap pData)
 
   pData->iNextdelay            = 1;
 
-  pData->bForcedelay           = MNG_FALSE;
-  pData->iAccumdelay           = 0;
+  pData->bForcedelay = MNG_FALSE;
+  pData->iAccumdelay = 0;
 #endif
 
 #ifndef MNG_SKIPCHUNK_SHOW
@@ -1741,8 +1743,8 @@ mng_retcode MNG_DECL mng_reset (mng_handle hHandle)
 
   pData->iNextdelay            = 1;
 
-  pData->bForcedelay           = MNG_FALSE;
-  pData->iAccumdelay           = 0;
+  pData->bForcedelay = MNG_FALSE;
+  pData->iAccumdelay = 0;
 #endif
 
 #ifndef MNG_SKIPCHUNK_SHOW

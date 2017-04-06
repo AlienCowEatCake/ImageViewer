@@ -1008,6 +1008,7 @@ static int32 NPP_Write(NPP instance, NPStream *stream, int32 offset, int32 len, 
 	if(len<1) return len;
 
 	if(offset+len > (int)This->bytesalloc) {  // oops, overflowed our memory buffer
+	        unsigned char *oldmngdata=This->mngdata;
 		This->bytesalloc += ALLOC_CHUNK_SIZE;
 		if(This->mngdata) {
 			This->mngdata=realloc(This->mngdata, This->bytesalloc);
@@ -1017,6 +1018,7 @@ static int32 NPP_Write(NPP instance, NPStream *stream, int32 offset, int32 len, 
 		}
 		if(!This->mngdata) {
 			warn(This,"Cannot allocate memory for image (%d,%d,%p",offset,len,buffer);
+                        if(oldmngdata) free(oldmngdata);
 			return -1;
 		}
 	}
@@ -1139,9 +1141,9 @@ static void NPP_Print(NPP instance, NPPrint* printInfo)
 		 * sub-structure).
 		 */
 
-		if(sizeof(NPWindow)>28 &&     /* i.e. is plugin API >= 0.11? */
-			     HIBYTE(g_pNavigatorFuncs->version)==0 &&
-		         LOBYTE(g_pNavigatorFuncs->version)<=9) {
+		if((sizeof(NPWindow)>28) &&  /* i.e. is plugin API >= 0.11? */
+		         (HIBYTE(g_pNavigatorFuncs->version)==0) &&
+		         (LOBYTE(g_pNavigatorFuncs->version)<=9)) {
 			char *tmpc;
 			HDC  *tmph;
 
@@ -1323,16 +1325,20 @@ static void CopyToClipboard(PluginInstance *This,unsigned char *mem,int size,UIN
 
 	if(EmptyClipboard()) {
 		hClip=GlobalAlloc(GMEM_ZEROINIT|GMEM_MOVEABLE|GMEM_DDESHARE,size);
-		lpClip=GlobalLock(hClip);
-		if(lpClip) {
+                if(hClip) {
+		  lpClip=GlobalLock(hClip);
+		  if(lpClip) {
 			CopyMemory(lpClip,mem,size);
 			GlobalUnlock(hClip);
 			if(!SetClipboardData(format,hClip)) {
 				warn(This,"Can't set clipboard data");
 			}
-		}
-		else {
-			warn(This,"Can't allocate memory for clipboard");
+		  }
+		  else {
+			warn(This,"Can't lock clipboard");
+	        }
+	        else {
+	  	  warn(This,"Can't allocate memory for clipboard");
 		}
 	}
 	else {

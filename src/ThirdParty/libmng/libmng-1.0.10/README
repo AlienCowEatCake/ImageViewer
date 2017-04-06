@@ -3,6 +3,9 @@ libmng 1.0.10
 
 Added provisional ANG and anIM support, and made some minor bugfixes.
 
+Gerard has handed libmng maintenance over to Glenn Randers-Pehrson
+(glennrp at users.sourceforge.net)
+
 libmng 1.0.9
 ------------
 

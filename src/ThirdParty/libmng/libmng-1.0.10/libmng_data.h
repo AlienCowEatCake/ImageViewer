@@ -5,7 +5,7 @@
 /* *                                                                        * */
 /* * project   : libmng                                                     * */
 /* * file      : libmng_data.h             copyright (c) 2000-2007 G.Juyn   * */
-/* * version   : 1.0.10                                                     * */
+/* * version   : 1.0.11                                                     * */
 /* *                                                                        * */
 /* * purpose   : main data structure definition                             * */
 /* *                                                                        * */
@@ -152,6 +152,8 @@
 /* *             - added support for mPNG proposal                          * */
 /* *             1.0.10 - 04/12/2007 - G.Juyn                               * */
 /* *             - added support for ANG proposal                           * */
+/* *                                                                        * */
+/* *             1.0.11 - 07/24/2007 - G.R-P bugfix for all-zero delays     * */
 /* *                                                                        * */
 /* ************************************************************************** */
 
@@ -659,8 +661,8 @@ typedef struct mng_data_struct {
 
            mng_uint32        iNextdelay;         /* delay *after* next image */
 
-           mng_bool          bForcedelay;
-           mng_uint32        iAccumdelay;
+           mng_bool bForcedelay;
+           mng_uint32 iAccumdelay;
 #endif
 
 #ifndef MNG_SKIPCHUNK_SHOW

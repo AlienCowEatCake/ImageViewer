@@ -5,7 +5,7 @@
 /* *                                                                        * */
 /* * project   : libmng                                                     * */
 /* * file      : libmng_chunk_xs.c         copyright (c) 2000-2007 G.Juyn   * */
-/* * version   : 1.0.10                                                     * */
+/* * version   : 1.0.11                                                     * */
 /* *                                                                        * */
 /* * purpose   : chunk access functions (implementation)                    * */
 /* *                                                                        * */
@@ -90,6 +90,9 @@
 /* *                                                                        * */
 /* *             1.0.10 - 04/08/2007 - G.Juyn                               * */
 /* *             - added support for mPNG proposal                          * */
+/* *                                                                        * */
+/* *             1.0.11 - 08/03/2007 - G.R-P                                * */
+/* *             - fixed incorrect #ifndef                                  * */
 /* *                                                                        * */
 /* ************************************************************************** */
 
@@ -2363,7 +2366,7 @@ MNG_EXT mng_retcode MNG_DECL mng_getchunk_mpng_frame (mng_handle hHandle,
 
 /* ************************************************************************** */
 
-#ifndef MNG_SKIPCHUNK_evNT
+#ifdef MNG_SKIPCHUNK_evNT
 mng_retcode MNG_DECL mng_getchunk_evnt (mng_handle hHandle,
                                         mng_handle hChunk,
                                         mng_uint32 *iCount)

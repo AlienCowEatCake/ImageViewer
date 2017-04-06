@@ -84,7 +84,7 @@ OBJS = \
 	libmng_write.o \
 	libmng_zlib.o
 
-OBJSDLL = $(OBJS:.0=.pic.o)
+OBJSDLL = $(OBJS:.o=.pic.o)
 
 .SUFFIXES:      .c .o .pic.o
 

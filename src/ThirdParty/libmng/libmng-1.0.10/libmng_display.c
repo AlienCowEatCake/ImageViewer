@@ -4,8 +4,8 @@
 /* ************************************************************************** */
 /* *                                                                        * */
 /* * project   : libmng                                                     * */
-/* * file      : libmng_display.c          copyright (c) 2000-2007 G.Juyn   * */
-/* * version   : 1.0.10                                                     * */
+/* * file      : libmng_display.c          copyright (c) 2000-2008 G.Juyn   * */
+/* * version   : 1.0.11                                                     * */
 /* *                                                                        * */
 /* * purpose   : Display management (implementation)                        * */
 /* *                                                                        * */
@@ -235,6 +235,10 @@
 /* *             1.0.10 - 04/12/2007 - G.Juyn                               * */
 /* *             - added support for ANG proposal                           * */
 /* *                                                                        * */
+/* *             1.0.11 - 07/24/2007 - G.R-P bugfix for all-zero delays     * */
+/* *             1.0.11 - 03/29/2008 - G.R-P.                               * */
+/* *             - fixed some possible use of uninitialized variables       * */
+/* *                                                                        * */
 /* ************************************************************************** */
 
 #include "libmng.h"
@@ -382,27 +386,27 @@ MNG_LOCAL mng_retcode interframe_delay (mng_datap pData)
   MNG_TRACE (pData, MNG_FN_INTERFRAME_DELAY, MNG_LC_START);
 #endif
 
-  {
 #ifndef MNG_SKIPCHUNK_FRAM
-    if (pData->iFramedelay > 0 || pData->bForcedelay) /* real delay ? */
-    {                                  /* let the app refresh first ? */
-      pData->bForcedelay = MNG_FALSE;
-      if ((pData->bRunning) && (!pData->bSkipping) &&
-          (pData->iUpdatetop < pData->iUpdatebottom) && (pData->iUpdateleft < pData->iUpdateright))
-        if (!pData->fRefresh (((mng_handle)pData),
+  if (pData->iFramedelay > 0 || pData->bForcedelay) /* real delay ? */
+  { /* let the app refresh first ? */
+     pData->bForcedelay = MNG_FALSE;
+     if ((pData->bRunning) && (!pData->bSkipping) &&
+         (pData->iUpdatetop < pData->iUpdatebottom) &&
+         (pData->iUpdateleft < pData->iUpdateright))
+       if (!pData->fRefresh (((mng_handle)pData),
                               pData->iUpdateleft,  pData->iUpdatetop,
                               pData->iUpdateright - pData->iUpdateleft,
                               pData->iUpdatebottom - pData->iUpdatetop))
           MNG_ERROR (pData, MNG_APPMISCERROR);
 
-      pData->iUpdateleft   = 0;        /* reset update-region */
-      pData->iUpdateright  = 0;
-      pData->iUpdatetop    = 0;
-      pData->iUpdatebottom = 0;        /* reset refreshneeded indicator */
-      pData->bNeedrefresh  = MNG_FALSE;
+     pData->iUpdateleft   = 0;        /* reset update-region */
+     pData->iUpdateright  = 0;
+     pData->iUpdatetop    = 0;
+     pData->iUpdatebottom = 0;        /* reset refreshneeded indicator */
+     pData->bNeedrefresh  = MNG_FALSE;
 
 #ifndef MNG_SKIPCHUNK_TERM
-      if (pData->bOnlyfirstframe)      /* only processing first frame after TERM ? */
+     if (pData->bOnlyfirstframe) /* only processing first frame after TERM ? */
       {
         pData->iFramesafterTERM++;
                                        /* did we do a frame yet ? */
@@ -416,7 +420,7 @@ MNG_LOCAL mng_retcode interframe_delay (mng_datap pData)
       }
 #endif
 
-      if (pData->fGettickcount)
+     if (pData->fGettickcount)
       {                                /* get current tickcount */
         pData->iRuntime = pData->fGettickcount ((mng_handle)pData);
                                        /* calculate interval since last sync-point */
@@ -450,15 +454,14 @@ MNG_LOCAL mng_retcode interframe_delay (mng_datap pData)
         if (iRetcode)                  /* on error bail out */
           return iRetcode;
       }
-    }
-
-    if (!pData->bSkipping)             /* increase frametime in advance */
-      pData->iFrametime = pData->iFrametime + iWaitfor;
-                                       /* setup for next delay */
-    pData->iFramedelay = pData->iNextdelay;
-    pData->iAccumdelay += pData->iFramedelay;
-#endif
   }
+
+  if (!pData->bSkipping)             /* increase frametime in advance */
+    pData->iFrametime = pData->iFrametime + iWaitfor;
+                                     /* setup for next delay */
+  pData->iFramedelay = pData->iNextdelay;
+  pData->iAccumdelay += pData->iFramedelay;
+#endif
 
 #ifdef MNG_SUPPORT_TRACE
   MNG_TRACE (pData, MNG_FN_INTERFRAME_DELAY, MNG_LC_END);
@@ -6611,11 +6614,15 @@ mng_retcode mng_process_display_past (mng_datap  pData)
     mng_int32      iSourceYinc;
     mng_int32      iSourcerowsize;
     mng_int32      iSourcesamples;
+#ifndef MNG_NO_16BIT_SUPPORT
     mng_bool       bSourceRGBA16;
+#endif
     mng_int32      iTargetY;
     mng_int32      iTargetrowsize;
     mng_int32      iTargetsamples;
+#ifndef MNG_NO_16BIT_SUPPORT
     mng_bool       bTargetRGBA16 = MNG_FALSE;
+#endif
     mng_int32      iTemprowsize;
     mng_imagedatap pBuf;
 #ifndef MNG_SKIPCHUNK_MAGN
@@ -6626,7 +6633,9 @@ mng_retcode mng_process_display_past (mng_datap  pData)
 
     if (!iRetcode)                     /* still ok ? */
     {
+#ifndef MNG_NO_16BIT_SUPPORT
       bTargetRGBA16 = (mng_bool)(pTargetimg->pImgbuf->iBitdepth > 8);
+#endif
 
 #ifndef MNG_OPTIMIZE_DISPLAYCALLS
       switch (iTargettype)             /* determine target x/y */
@@ -6702,8 +6711,10 @@ mng_retcode mng_process_display_past (mng_datap  pData)
           pData->iPixelofs    = 0;
           iSourcesamples      = (mng_int32)pBuf->iWidth;
           iSourcerowsize      = pBuf->iRowsize;
+#ifndef MNG_NO_16BIT_SUPPORT
           bSourceRGBA16       = (mng_bool)(pBuf->iBitdepth > 8);
                                        /* make sure the delta-routines do the right thing */
+#endif
           pData->iDeltatype   = MNG_DELTATYPE_BLOCKPIXELREPLACE;
 
           switch (pBuf->iColortype)
@@ -7005,7 +7016,9 @@ mng_retcode mng_process_display_past (mng_datap  pData)
               pData->iRow          = iSourceY;
               pData->iRowsamples   = iSourcesamples;
               pData->iRowsize      = iSourcerowsize;
+#ifndef MNG_NO_16BIT_SUPPORT
               pData->bIsRGBA16     = bSourceRGBA16;
+#endif
               iRetcode             = ((mng_retrieverow)pData->fRetrieverow) (pData);
                                        /* scale it (if necessary) */
               if ((!iRetcode) && (pData->fScalerow))

@@ -19,7 +19,7 @@ O=.obj
 #ERRFILE= >> mngerrs
 
 # variables
-OBJS1 = libmng_callback_xs$(O) libmng_chunk_io$(O) libmng_chunk_prc$(O) libmng_chunk_descr$(0)
+OBJS1 = libmng_callback_xs$(O) libmng_chunk_io$(O) libmng_chunk_prc$(O) libmng_chunk_descr$(O)
 OBJS2 = libmng_chunk_xs$(O) libmng_cms$(O) libmng_display$(O) libmng_dither$(O)
 OBJS3 = libmng_error$(O) libmng_filter$(O) libmng_hlapi$(O) libmng_jpeg$(O)
 OBJS4 = libmng_object_prc$(O) libmng_pixels$(O) libmng_prop_xs$(O)

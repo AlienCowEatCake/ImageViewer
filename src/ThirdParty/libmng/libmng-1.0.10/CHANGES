@@ -1,5 +1,31 @@
 -----------------------------------------------------------
 
+1.0.11 (xxx xxth 2007)
+----------------------
+
+in short:
+
+intermediate CVS
+
+-------------------
+
+bugfixes:
+
+core:
+- handle MNG datastreams with all-zero delays
+
+samples:
+
+contrib:
+
+doc:
+
+makefiles:
+
+autoconf:
+
+-----------------------------------------------------------
+
 1.0.10 (Jul 13th 2007)
 ----------------------
 

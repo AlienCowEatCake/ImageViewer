@@ -20,8 +20,6 @@ include(../zlib/zlib.pri)
 INCLUDEPATH = $${THIRDPARTY_LIBMNG_PATH} $${INCLUDEPATH}
 
 DEFINES += MNG_BUILD_SO
-#DEFINES += MNG_INCLUDE_MPNG_PROPOSAL
-DEFINES += MNG_INCLUDE_ANG_PROPOSAL
 
 disable_libjpeg {
     DEFINES += MNG_NO_INCLUDE_JNG
@@ -51,6 +49,30 @@ SOURCES += \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_trace.c \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_write.c \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_zlib.c
+
+HEADERS += \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_chunk_descr.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_chunk_io.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_chunk_prc.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_chunks.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_cms.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_conf.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_data.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_display.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_dither.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_error.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_filter.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_jpeg.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_memory.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_object_prc.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_objects.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_pixels.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_read.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_trace.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_types.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_write.h \
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_zlib.h
 
 TR_EXCLUDE += $${THIRDPARTY_LIBMNG_PATH}/*
 
