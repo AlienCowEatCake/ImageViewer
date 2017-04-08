@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
-include(../../Features.pri)
+include(../Features.pri)
 
 SUBDIRS =
 

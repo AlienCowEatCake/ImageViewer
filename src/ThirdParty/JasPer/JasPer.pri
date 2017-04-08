@@ -1,7 +1,7 @@
 # URL: https://www.ece.uvic.ca/~frodo/jasper/
 # License: https://www.ece.uvic.ca/~frodo/jasper/LICENSE
 
-include($${PWD}/../../../Features.pri)
+include($${PWD}/../../Features.pri)
 
 !disable_libjasper {
 

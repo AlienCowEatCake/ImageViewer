@@ -1,7 +1,7 @@
 # URL: http://ijg.org/
 # License: ???
 
-include($${PWD}/../../../Features.pri)
+include($${PWD}/../../Features.pri)
 
 !disable_libjpeg {
 

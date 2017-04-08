@@ -1,7 +1,7 @@
 # URL: https://sourceforge.net/projects/libmng/
 # License: zlib/libpng License
 
-include($${PWD}/../../../Features.pri)
+include($${PWD}/../../Features.pri)
 
 !disable_libmng {
 

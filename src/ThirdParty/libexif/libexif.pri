@@ -1,7 +1,7 @@
 # URL: http://libexif.sourceforge.net/
 # License: GNU LGPL v2.1
 
-include($${PWD}/../../../Features.pri)
+include($${PWD}/../../Features.pri)
 
 !disable_libexif {
 

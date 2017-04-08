@@ -1,6 +1,6 @@
 # URL: https://github.com/qt/qtimageformats
 
-include($${PWD}/../../../Features.pri)
+include($${PWD}/../../Features.pri)
 
 !disable_qtimageformats {
 

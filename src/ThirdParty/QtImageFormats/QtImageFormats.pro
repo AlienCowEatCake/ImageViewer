@@ -16,7 +16,7 @@ THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH = $${PWD}/qtimageformats_legacy
 THIRDPARTY_QTIMAGEFORMATS_QTBASE_PATH = $${PWD}/qtbase
 THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
 
-include(../../../Features.pri)
+include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../libmng/libmng.pri)
 include(../JasPer/JasPer.pri)

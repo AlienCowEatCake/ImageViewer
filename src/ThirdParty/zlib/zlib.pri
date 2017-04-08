@@ -1,7 +1,7 @@
 # URL: http://www.zlib.net/
 # License: http://www.zlib.net/zlib_license.html
 
-include($${PWD}/../../../Features.pri)
+include($${PWD}/../../Features.pri)
 
 !disable_zlib {
 

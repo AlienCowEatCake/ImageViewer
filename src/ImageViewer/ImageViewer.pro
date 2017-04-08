@@ -30,7 +30,7 @@ CONFIG += warn_on
 
 DEFINES += QT_NO_CAST_FROM_ASCII
 
-include(../../Features.pri)
+include(../Features.pri)
 include(../QtUtils/QtUtils.pri)
 include(../ThirdParty/ThirdParty.pri)
 

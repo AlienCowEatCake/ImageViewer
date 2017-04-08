@@ -1,7 +1,7 @@
 # URL: http://www.littlecms.com/
 # License:  MIT License
 
-include($${PWD}/../../../Features.pri)
+include($${PWD}/../../Features.pri)
 
 !disable_liblcms2 {
 

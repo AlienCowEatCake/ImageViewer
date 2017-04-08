@@ -1,7 +1,7 @@
 # URL: https://github.com/nothings/stb
 # License: public domain or MIT
 
-include($${PWD}/../../../Features.pri)
+include($${PWD}/../../Features.pri)
 
 !disable_stb {
 
