@@ -39,6 +39,8 @@
 namespace
 {
 
+// ====================================================================================================
+
 // Since an ICC profile can be larger than the maximum size of a JPEG marker
 // (64K), we need provisions to split it into multiple markers.  The format
 // defined by the ICC specifies one or more APP2 markers containing the
@@ -350,6 +352,8 @@ QImage readJpegFile(const QString &filename)
     return outImage;
 }
 
+// ====================================================================================================
+
 class DecoderLibJpeg : public IDecoder
 {
 public:
@@ -390,5 +394,7 @@ public:
 };
 
 DecoderAutoRegistrator registrator(new DecoderLibJpeg);
+
+// ====================================================================================================
 
 } // namespace
