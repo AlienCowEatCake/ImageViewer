@@ -65,6 +65,9 @@ SOURCES += \
     src/Decoders/DecoderQImage.cpp \
     src/Decoders/DecoderQMovie.cpp \
     src/Decoders/DecoderQtSVG.cpp \
+    src/Decoders/Internal/Animation/AnimationObject.cpp \
+    src/Decoders/Internal/Animation/AnimationUtils.cpp \
+    src/Decoders/Internal/Animation/AnimationWidget.cpp \
     src/Decoders/Internal/ExifUtils.cpp \
     src/Decoders/Internal/CmsUtils.cpp \
     src/Decoders/Internal/ZLibUtils.cpp \
@@ -79,6 +82,10 @@ HEADERS += \
     src/GUI/SettingsDialog_p.h \
     src/Decoders/DecodersManager.h \
     src/Decoders/IDecoder.h \
+    src/Decoders/Internal/Animation/AnimationObject.h \
+    src/Decoders/Internal/Animation/AnimationUtils.h \
+    src/Decoders/Internal/Animation/AnimationWidget.h \
+    src/Decoders/Internal/Animation/IAnimationProvider.h \
     src/Decoders/Internal/DecoderAutoRegistrator.h \
     src/Decoders/Internal/ExifUtils.h \
     src/Decoders/Internal/CmsUtils.h \
@@ -98,6 +105,11 @@ HEADERS += \
 !disable_libjpeg {
     SOURCES += \
         src/Decoders/DecoderLibJpeg.cpp
+}
+
+!disable_libmng {
+    SOURCES += \
+        src/Decoders/DecoderLibMng.cpp
 }
 
 TRANSLATIONS += \
