@@ -29,6 +29,11 @@
 
 namespace AnimationUtils {
 
+void SetTransparentBackground(QWidget *widget)
+{
+    widget->setStyleSheet(QString::fromLatin1("background: transparent; border: none;"));
+}
+
 QGraphicsItem *CreateGraphicsItem(IAnimationProvider *provider)
 {
     if(!provider || !provider->isValid())
@@ -48,7 +53,7 @@ QGraphicsItem *CreateGraphicsItem(IAnimationProvider *provider)
     }
 
     AnimationWidget *widget = new AnimationWidget();
-    widget->setAttribute(Qt::WA_NoSystemBackground, true);
+    SetTransparentBackground(widget);
     widget->setAnimationProvider(provider);
     QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();
     proxy->setWidget(widget);

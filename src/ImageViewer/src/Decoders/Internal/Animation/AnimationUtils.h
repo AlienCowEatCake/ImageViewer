@@ -20,10 +20,13 @@
 #if !defined(ANIMATIONUTILS_H_INCLUDED)
 #define ANIMATIONUTILS_H_INCLUDED
 
+class QWidget;
 class QGraphicsItem;
 class IAnimationProvider;
 
 namespace AnimationUtils {
+
+void SetTransparentBackground(QWidget *widget);
 
 QGraphicsItem *CreateGraphicsItem(IAnimationProvider *provider);
 

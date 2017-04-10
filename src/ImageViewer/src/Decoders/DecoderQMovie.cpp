@@ -24,6 +24,7 @@
 
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/Animation/AnimationUtils.h"
 
 namespace {
 
@@ -56,7 +57,7 @@ public:
             return NULL;
         }
         QLabel *movieLabel = new QLabel();
-        movieLabel->setAttribute(Qt::WA_NoSystemBackground, true);
+        AnimationUtils::SetTransparentBackground(movieLabel);
         movieLabel->setMovie(movie);
         movie->setParent(movieLabel);
         movie->start();
