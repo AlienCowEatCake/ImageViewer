@@ -58,6 +58,12 @@ struct MngAnimationProvider : public IAnimationProvider
     bool error;
     int elapsed;
     int nextDelay;
+
+    enum {
+        TYPE_UNKNOWN         = 0,
+        TYPE_SINGLE_FRAME    = 1,
+        TYPE_MULTIPLE_FRAMES = 2
+    } imageType;
 };
 
 // ====================================================================================================
@@ -178,6 +184,7 @@ MngAnimationProvider::MngAnimationProvider(const QString &filePath)
     , error(false)
     , elapsed(0)
     , nextDelay(0)
+    , imageType(TYPE_UNKNOWN)
 {
     if(hMNG)
     {
@@ -208,7 +215,7 @@ bool MngAnimationProvider::isValid() const
 
 bool MngAnimationProvider::isSingleFrame() const
 {
-    return false; /// @todo
+    return imageType == TYPE_SINGLE_FRAME || (imageType == TYPE_UNKNOWN && !file.isOpen() && isValid());
 }
 
 int MngAnimationProvider::nextImageDelay() const
@@ -218,6 +225,8 @@ int MngAnimationProvider::nextImageDelay() const
 
 bool MngAnimationProvider::jumpToNextImage()
 {
+    if(imageType == TYPE_UNKNOWN && isValid())
+        imageType = (file.isOpen() ? TYPE_MULTIPLE_FRAMES : TYPE_SINGLE_FRAME);
     mng_display_resume(hMNG);
     return true;
 }
