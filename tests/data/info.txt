@@ -1,0 +1,182 @@
+--------------------------------------------------------------------------------
+
+::: APNG test images :::
+
+Images from https://en.wikipedia.org/wiki/APNG
+ * Animated_PNG_example_bouncing_beach_ball.png
+ * Brain_MRI_apng_105px_100ms.png
+
+Images from https://people-mozilla.org/~dolske/apng/demo.html
+ * chompy2.png
+ * chompy.png
+ * demo-2-over+background.png
+ * demo-2-over+none.png
+ * demo-2-over+previous.png
+ * spinfox.png
+
+--------------------------------------------------------------------------------
+
+::: GIF test images :::
+
+Images from https://people-mozilla.org/~dolske/apng/demo.html
+ * chompy.gif
+ * spinfox.gif
+
+--------------------------------------------------------------------------------
+
+::: JNG test images :::
+
+Images from http://libmng.com/JNGsuite/
+ * C1CBN0.jng
+ * C2CBN0.jng
+ * C3CBN0.jng
+ * C4CBN0.jng
+ * C6CBN0.jng
+ * G1CBN0.jng
+ * G2CBN0.jng
+ * G3CBN0.jng
+ * G4CBN0.jng
+ * G6CBN0.jng
+ * I1CBN0.jng
+ * I2CBN0.jng
+ * I3CBN0.jng
+ * I4CBN0.jng
+ * TCBA8S.jng
+ * TCBN0S.jng
+ * TCOA8S.jng
+ * TCON0S.jng
+ * TCPA8L.jng
+ * TCPA8S.jng
+ * TCPN0L.jng
+ * TCPN0S.jng
+ * TGBA1S.jng
+ * TGBN0S.jng
+ * TGOA1S.jng
+ * TGON0S.jng
+ * TGPA1L.jng
+ * TGPA1S.jng
+ * TGPN0L.jng
+ * TGPN0S.jng
+
+--------------------------------------------------------------------------------
+
+::: JPG test images :::
+
+Test image which was created during the development of this project
+ * exif_rotate90.jpg
+
+Image from http://regex.info/blog/photo-tech/color-spaces-page1
+ * sample-wonky.profile.jpg
+
+--------------------------------------------------------------------------------
+
+::: MNG test images :::
+
+Images from https://code.qt.io/cgit/qt/qtimageformats.git/tree/tests/shared/images/mng
+ * animation.mng
+ * ball.mng
+ * corrupt.mng
+ * dutch.mng
+ * fire.mng
+
+Images from http://libmng.com/MNGsuite/
+ * australia1.mng
+ * button1.mng
+ * button2.mng
+ * Delta-gray1.mng
+ * Delta-gray2.mng
+ * Delta-gray4.mng
+ * Delta-gray8.mng
+ * Delta-gray16.mn
+ * Delta-gray-a8b.mng
+ * Delta-gray-a8w.mng
+ * Delta-gray-a16b.mng
+ * Delta-gray-a16w.mng
+ * Delta-rgb8.mng
+ * Delta-rgb16.mng
+ * Delta-rgb-a8b.mng
+ * Delta-rgb-a8w.mng
+ * Delta-rgb-a16b.mng
+ * Delta-rgb-a16w.mng
+ * DUTCH1.mng
+ * DUTCH2.mng
+ * DUTCH3.mng
+ * home.mng
+ * I01SCRL.mng
+ * MNGCOL1.mng
+ * MNGCOL2.mng
+ * MNGGAMA1.mng
+ * MNGGAMA2.mng
+ * MNGPAST8a.mng
+ * MNGPAST8b.mng
+ * MNGPAST16a.mng
+ * MNGPAST16b.mng
+ * MNGTERM0.mng
+ * MNGTERM1.mng
+ * MNGTERM2.mng
+ * MNGTERM3-0-0-1.mng
+ * MNGTERM3-0-0-3.mng
+ * MNGTERM3-0-3-3.mng
+ * MNGTERM3-1-0-1.mng
+ * MNGTERM3-1-0-3.mng
+ * MNGTERM3-1-3-3.mng
+ * MNGTERM3-2-0-1.mng
+ * MNGTERM3-2-0-3.mng
+ * MNGTERM3-2-3-3.mng
+ * PNGBASxx.mng
+ * PNGBGxxx.mng
+ * PNGCH-CC.mng
+ * PNGCMSPx.mng
+ * PNGFxxxx.mng
+ * PNGGxxxx.mng
+ * PNGSxxxx.mng
+ * PNGTBxxx.mng
+ * PROM-BASI-repl.mng
+ * PROM-BASI-zfil.mng
+ * PROM-BASN-repl.mng
+ * PROM-BASN-zfil.mng
+ * T01SCRL.mng
+ * T02SCRL.mng
+ * T03SCRL.mng
+ * Waves1.mng
+ * Waves2.mng
+ * Waves3.mng
+
+--------------------------------------------------------------------------------
+
+::: PNG test images :::
+
+Image from http://regex.info/blog/photo-tech/color-spaces-page1 (converted to png)
+ * sample-wonky.profile.png
+
+--------------------------------------------------------------------------------
+
+::: SVG test images :::
+
+Test images which was created during the development of this project
+ * bounding_test_1.svg
+ * damaged.svg
+ * geometry_full.svg
+ * geometry_nothing.svg
+ * geometry_viewbox.svg
+ * geometry_width_height.svg
+ * koi8-r.svg
+ * koi8-r.svgz
+ * size_detection_full.svg
+ * size_detection_nothing.svg
+ * size_detection_viewbox.svg
+ * size_detection_width_height.svg
+ * utf-8.svg
+ * utf-8.svgz
+ * utf-16.svg
+ * utf-16.svgz
+ * windows-1251.svg
+ * windows-1251.svgz
+
+Images from https://bugs.launchpad.net/libsvg-android/+bug/632464
+ * gesamt_ii.svg
+ * gesamt_iii.svg
+ * gesamt_iii_sized.svg (modified gesamt_iii.svg)
+
+--------------------------------------------------------------------------------
+
