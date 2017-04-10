@@ -34,6 +34,15 @@ Q_IMPORT_PLUGIN(qtiff)
 #if defined (USE_STATIC_QICO)
 Q_IMPORT_PLUGIN(qico)
 #endif
+#if defined (USE_STATIC_QGIF)
+Q_IMPORT_PLUGIN(qgif)
+#endif
+#if defined (USE_STATIC_QMNG)
+Q_IMPORT_PLUGIN(qmng)
+#endif
+#if defined (USE_STATIC_QSVG)
+Q_IMPORT_PLUGIN(qsvg)
+#endif
 
 int main(int argc, char *argv[])
 {

@@ -165,3 +165,21 @@ use_static_qico {
     QTPLUGIN += qico
     DEFINES += USE_STATIC_QICO
 }
+
+# qmake CONFIG+=use_static_qgif
+use_static_qgif {
+    QTPLUGIN += qgif
+    DEFINES += USE_STATIC_QGIF
+}
+
+# qmake CONFIG+=use_static_qmng
+use_static_qmng {
+    QTPLUGIN += qmng
+    DEFINES += USE_STATIC_QMNG
+}
+
+# qmake CONFIG+=use_static_qsvg
+use_static_qsvg {
+    QTPLUGIN += qsvg
+    DEFINES += USE_STATIC_QSVG
+}
