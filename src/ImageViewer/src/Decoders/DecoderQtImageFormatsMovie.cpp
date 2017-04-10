@@ -26,8 +26,6 @@
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 
-#define DECODER_QTIMAREFORMATS_MOVIE_PRIORITY 1700
-
 namespace {
 
 class DecoderQtImageFormatsMovie : public IDecoder
@@ -38,18 +36,12 @@ public:
         return QString::fromLatin1("DecoderQtImageFormatsMovie");
     }
 
-    QList<DecoderFormatInfo> supportedFormats() const
+    QStringList supportedFormats() const
     {
         const QList<QByteArray> readerFormats = QtImageFormatsMovie::supportedFormats();
-        QList<DecoderFormatInfo> result;
+        QStringList result;
         for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
-        {
-            const QString format = QString::fromLatin1(*it).toLower();
-            DecoderFormatInfo info;
-            info.decoderPriority = DECODER_QTIMAREFORMATS_MOVIE_PRIORITY;
-            info.format = format;
-            result.append(info);
-        }
+            result.append(QString::fromLatin1(*it).toLower());
         return result;
     }
 

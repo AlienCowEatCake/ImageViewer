@@ -32,12 +32,6 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/MacImageUtils.h"
 
-#if defined (QT_DEBUG)
-#define DECODER_NSIMAGE_PRIORITY -1
-#else
-#define DECODER_NSIMAGE_PRIORITY 1200
-#endif
-
 namespace {
 
 class DecoderNSImage : public IDecoder
@@ -48,7 +42,7 @@ public:
         return QString::fromLatin1("DecoderNSImage");
     }
 
-    QList<DecoderFormatInfo> supportedFormats() const
+    QStringList supportedFormats() const
     {
         NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
         std::set<QString> fileTypes;
@@ -58,14 +52,9 @@ public:
             simplifiedFileType.replace(QRegExp(QString::fromLatin1("[^\\w]")), QString::fromLatin1(""));
             fileTypes.insert(simplifiedFileType.simplified());
         }
-        QList<DecoderFormatInfo> result;
+        QStringList result;
         for(std::set<QString>::const_iterator it = fileTypes.begin(); it != fileTypes.end(); ++it)
-        {
-            DecoderFormatInfo info;
-            info.decoderPriority = DECODER_NSIMAGE_PRIORITY;
-            info.format = *it;
-            result.append(info);
-        }
+            result.append(*it);
         [pool release];
         return result;
     }
@@ -94,6 +83,6 @@ public:
     }
 };
 
-DecoderAutoRegistrator registrator(new DecoderNSImage, DECODER_NSIMAGE_PRIORITY);
+DecoderAutoRegistrator registrator(new DecoderNSImage, true);
 
 } // namespace

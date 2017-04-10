@@ -31,8 +31,6 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/ExifUtils.h"
 
-#define DECODER_STB_PRIORITY 800
-
 namespace {
 
 class DecoderSTB : public IDecoder
@@ -43,9 +41,9 @@ public:
         return QString::fromLatin1("DecoderSTB");
     }
 
-    QList<DecoderFormatInfo> supportedFormats() const
+    QStringList supportedFormats() const
     {
-        const QStringList stbImageFormats = QStringList()
+        return QStringList()
                 << QString::fromLatin1("jpg")
                 << QString::fromLatin1("jpeg")
                 << QString::fromLatin1("jpe")   /// @todo Check this!
@@ -62,15 +60,6 @@ public:
                 << QString::fromLatin1("ppm")
                 << QString::fromLatin1("pgm")
                 << QString::fromLatin1("pnm");  /// @todo Check this!
-        QList<DecoderFormatInfo> result;
-        for(QStringList::ConstIterator it = stbImageFormats.constBegin(); it != stbImageFormats.constEnd(); ++it)
-        {
-            DecoderFormatInfo info;
-            info.decoderPriority = DECODER_STB_PRIORITY;
-            info.format = *it;
-            result.append(info);
-        }
-        return result;
     }
 
     QGraphicsItem *loadImage(const QString &filePath)
@@ -126,6 +115,6 @@ public:
     }
 };
 
-DecoderAutoRegistrator registrator(new DecoderSTB, DECODER_STB_PRIORITY);
+DecoderAutoRegistrator registrator(new DecoderSTB, true);
 
 } // namespace

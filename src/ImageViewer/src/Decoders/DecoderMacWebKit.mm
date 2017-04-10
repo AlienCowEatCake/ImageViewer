@@ -25,12 +25,6 @@
 #include "Internal/MacWebKitRasterizerGraphicsItem.h"
 #include "Internal/ZLibUtils.h"
 
-//#if defined (QT_DEBUG)
-//#define DECODER_MAC_WEBKIT_PRIORITY -1
-//#else
-#define DECODER_MAC_WEBKIT_PRIORITY 2000
-//#endif
-
 namespace {
 
 class DecoderMacWebKit : public IDecoder
@@ -41,20 +35,11 @@ public:
         return QString::fromLatin1("DecoderMacWebKit");
     }
 
-    QList<DecoderFormatInfo> supportedFormats() const
+    QStringList supportedFormats() const
     {
-        const QList<QByteArray> svgFormats = QList<QByteArray>()
-                << "svg"
-                << "svgz";
-        QList<DecoderFormatInfo> result;
-        for(QList<QByteArray>::ConstIterator it = svgFormats.constBegin(); it != svgFormats.constEnd(); ++it)
-        {
-            DecoderFormatInfo info;
-            info.decoderPriority = DECODER_MAC_WEBKIT_PRIORITY;
-            info.format = QString::fromLatin1(*it).toLower();
-            result.append(info);
-        }
-        return result;
+        return QStringList()
+                << QString::fromLatin1("svg")
+                << QString::fromLatin1("svgz");
     }
 
     QGraphicsItem *loadImage(const QString &filePath)

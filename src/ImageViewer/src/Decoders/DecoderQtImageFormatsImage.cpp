@@ -27,8 +27,6 @@
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 
-#define DECODER_QTIMAREFORMATS_IMAGE_PRIORITY 1100
-
 namespace {
 
 class DecoderQtImageFormatsImage : public IDecoder
@@ -39,17 +37,12 @@ public:
         return QString::fromLatin1("DecoderQtImageFormatsImage");
     }
 
-    QList<DecoderFormatInfo> supportedFormats() const
+    QStringList supportedFormats() const
     {
         const QList<QByteArray> readerFormats = QtImageFormatsImageReader::supportedImageFormats();
-        QList<DecoderFormatInfo> result;
+        QStringList result;
         for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
-        {
-            DecoderFormatInfo info;
-            info.decoderPriority = DECODER_QTIMAREFORMATS_IMAGE_PRIORITY;
-            info.format = QString::fromLatin1(*it).toLower();
-            result.append(info);
-        }
+            result.append(QString::fromLatin1(*it).toLower());
         return result;
     }
 
@@ -78,6 +71,6 @@ public:
     }
 };
 
-DecoderAutoRegistrator registrator(new DecoderQtImageFormatsImage, DECODER_QTIMAREFORMATS_IMAGE_PRIORITY);
+DecoderAutoRegistrator registrator(new DecoderQtImageFormatsImage, true);
 
 } // namespace

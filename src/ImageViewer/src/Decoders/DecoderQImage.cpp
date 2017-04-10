@@ -29,8 +29,6 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/ExifUtils.h"
 
-#define DECODER_QIMAGE_PRIORITY 1000
-
 namespace {
 
 class DecoderQImage : public IDecoder
@@ -41,7 +39,7 @@ public:
         return QString::fromLatin1("DecoderQImage");
     }
 
-    QList<DecoderFormatInfo> supportedFormats() const
+    QStringList supportedFormats() const
     {
         // https://doc.qt.io/archives/qtextended4.4/qimagereader.html#supportedImageFormats
         const QStringList defaultReaderFormats = QStringList()
@@ -62,14 +60,9 @@ public:
             allReaderFormats.insert(QString::fromLatin1(*it).toLower());
         for(QStringList::ConstIterator it = defaultReaderFormats.constBegin(); it != defaultReaderFormats.constEnd(); ++it)
             allReaderFormats.insert(it->toLower());
-        QList<DecoderFormatInfo> result;
+        QStringList result;
         for(std::set<QString>::const_iterator it = allReaderFormats.begin(); it != allReaderFormats.end(); ++it)
-        {
-            DecoderFormatInfo info;
-            info.decoderPriority = DECODER_QIMAGE_PRIORITY;
-            info.format = *it;
-            result.append(info);
-        }
+            result.append(*it);
         return result;
     }
 
@@ -114,6 +107,6 @@ public:
     }
 };
 
-DecoderAutoRegistrator registrator(new DecoderQImage, DECODER_QIMAGE_PRIORITY);
+DecoderAutoRegistrator registrator(new DecoderQImage, true);
 
 } // namespace

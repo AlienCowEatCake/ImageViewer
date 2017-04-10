@@ -28,8 +28,6 @@
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 
-#define DECODER_QT_SVG_PRIORITY 1800
-
 namespace {
 
 class DecoderQtSVG : public IDecoder
@@ -40,24 +38,14 @@ public:
         return QString::fromLatin1("DecoderQtSVG");
     }
 
-    QList<DecoderFormatInfo> supportedFormats() const
+    QStringList supportedFormats() const
     {
+        return QStringList()
 #if defined (QT_SVG_LIB)
-        const QList<QByteArray> svgFormats = QList<QByteArray>()
-                << "svg"
-                << "svgz";
-        QList<DecoderFormatInfo> result;
-        for(QList<QByteArray>::ConstIterator it = svgFormats.constBegin(); it != svgFormats.constEnd(); ++it)
-        {
-            DecoderFormatInfo info;
-            info.decoderPriority = DECODER_QT_SVG_PRIORITY;
-            info.format = QString::fromLatin1(*it).toLower();
-            result.append(info);
-        }
-        return result;
-#else
-        return QList<DecoderFormatInfo>();
+                << QString::fromLatin1("svg")
+                << QString::fromLatin1("svgz")
 #endif
+                ;
     }
 
     QGraphicsItem *loadImage(const QString &filePath)

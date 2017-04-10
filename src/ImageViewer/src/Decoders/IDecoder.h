@@ -20,23 +20,16 @@
 #if !defined(IDECODER_H_INCLUDED)
 #define IDECODER_H_INCLUDED
 
-#include <QString>
-#include <QList>
+#include <QStringList>
 
 class QGraphicsItem;
-
-struct DecoderFormatInfo
-{
-    QString format;
-    int decoderPriority;
-};
 
 class IDecoder
 {
 public:
     virtual ~IDecoder() {}
     virtual QString name() const = 0;
-    virtual QList<DecoderFormatInfo> supportedFormats() const = 0;
+    virtual QStringList supportedFormats() const = 0;
     virtual QGraphicsItem *loadImage(const QString &filePath) = 0;
 };
 

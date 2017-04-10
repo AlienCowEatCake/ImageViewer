@@ -36,8 +36,6 @@
 #include "Internal/Animation/IAnimationProvider.h"
 #include "Internal/Animation/AnimationUtils.h"
 
-#define DECODER_LIBMNG_PRIORITY 1720
-
 namespace
 {
 
@@ -239,23 +237,14 @@ public:
         return QString::fromLatin1("DecoderLibMng");
     }
 
-    QList<DecoderFormatInfo> supportedFormats() const
+    QStringList supportedFormats() const
     {
-        const QStringList jpegImageFormats = QStringList()
+        return QStringList()
                 << QString::fromLatin1("mng")
 #if !defined (MNG_NO_INCLUDE_JNG)
                 << QString::fromLatin1("jng")
 #endif
                 ;
-        QList<DecoderFormatInfo> result;
-        for(QStringList::ConstIterator it = jpegImageFormats.constBegin(); it != jpegImageFormats.constEnd(); ++it)
-        {
-            DecoderFormatInfo info;
-            info.decoderPriority = DECODER_LIBMNG_PRIORITY;
-            info.format = *it;
-            result.append(info);
-        }
-        return result;
     }
 
     QGraphicsItem *loadImage(const QString &filePath)

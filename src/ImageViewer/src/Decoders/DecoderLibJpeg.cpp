@@ -34,8 +34,6 @@
 #include "Internal/ExifUtils.h"
 #include "Internal/CmsUtils.h"
 
-#define DECODER_LIBJPEG_PRIORITY 1110
-
 namespace
 {
 
@@ -362,21 +360,12 @@ public:
         return QString::fromLatin1("DecoderLibJpeg");
     }
 
-    QList<DecoderFormatInfo> supportedFormats() const
+    QStringList supportedFormats() const
     {
-        const QStringList jpegImageFormats = QStringList()
+        return QStringList()
                 << QString::fromLatin1("jpg")
                 << QString::fromLatin1("jpeg")
                 << QString::fromLatin1("jpe");
-        QList<DecoderFormatInfo> result;
-        for(QStringList::ConstIterator it = jpegImageFormats.constBegin(); it != jpegImageFormats.constEnd(); ++it)
-        {
-            DecoderFormatInfo info;
-            info.decoderPriority = DECODER_LIBJPEG_PRIORITY;
-            info.format = *it;
-            result.append(info);
-        }
-        return result;
     }
 
     QGraphicsItem *loadImage(const QString &filePath)

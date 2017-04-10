@@ -27,6 +27,7 @@
 #include <QFileInfo>
 #include <QDebug>
 #include <QTime>
+#include <QMap>
 
 namespace {
 
@@ -46,6 +47,44 @@ struct DecoderWithPriority
     int priority;
 };
 
+int GetDecoderPriority(const IDecoder *decoder)
+{
+    static QMap<QString, int> decoderPriotities;
+    if(decoderPriotities.isEmpty())
+    {
+#define PD(NAME, PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = PRIORITY
+#if defined (QT_DEBUG)
+#define PR(NAME, PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = -1
+#else
+#define PR(NAME, PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = PRIORITY
+#endif
+        /// @note Декодеры статических изображений
+        PD("DecoderSTB"                 ,  100);    ///< Резервный декодер, так как мало что умеет.
+        PD("DecoderQImage"              ,  200);    ///< Умеет все, что умеет Qt. Не поддерживает EXIF и ICCP.
+        PD("DecoderQtImageFormatsImage" ,  300);    ///< Экзотические и deprecated декодеры Qt. Должен быть выше QImage.
+        PD("DecoderLibJpeg"             ,  400);    ///< Умеет jpeg форматы. Поддерживает EXIF и ICCP. Должен быть выше QImage.
+        PR("DecoderNSImage"             ,  900);    ///< Умеет очень много разных форматов.
+        /// @note Декодеры анимированных изображений
+        PD("DecoderQMovie"              , 1100);    ///< Умеет анимированные gif.
+        PD("DecoderLibMng"              , 1110);    ///< Умеет анимированные mng и jng. Поддержка mng хуже, чем в QtImageFormatsMovie.
+        PD("DecoderQtImageFormatsMovie" , 1200);    ///< Умеет анимированные mng.
+        /// @note Декодеры векторных изображений
+        PD("DecoderQtSVG"               , 2100);    ///< Умеет svg, но очень плохо.
+        PD("DecoderMacWebKit"           , 2200);    ///< Умеет неинтерактивные svg.
+#undef PD
+#undef PR
+    }
+
+    QMap<QString, int>::ConstIterator it = decoderPriotities.find(decoder->name());
+    if(it != decoderPriotities.end())
+        return it.value();
+
+    static int unknownDecoderPriority = 10000;
+    decoderPriotities[decoder->name()] = unknownDecoderPriority;
+    qWarning() << "Unknown priority for decoder" << decoder->name();
+    return unknownDecoderPriority++;
+}
+
 } // namespace
 
 struct DecodersManager::Impl
@@ -60,19 +99,19 @@ struct DecodersManager::Impl
             for(QList<IDecoder*>::ConstIterator it = pendingDecoders.constBegin(); it != pendingDecoders.constEnd(); ++it)
             {
                 IDecoder *decoder = *it;
-                decoders.insert(decoder);
-                const QList<DecoderFormatInfo> info = decoder->supportedFormats();
-                QStringList debugFormatList;
-                for(QList<DecoderFormatInfo>::ConstIterator jt = info.constBegin(); jt != info.constEnd(); ++jt)
+                const int priority = GetDecoderPriority(decoder);
+                if(priority >= 0)
                 {
-                    const int priority = jt->decoderPriority;
-                    if(priority >= 0)
-                    {
-                        formats[jt->format].insert(DecoderWithPriority(decoder, priority));
-                        debugFormatList.append(jt->format);
-                    }
+                    decoders.insert(decoder);
+                    const QStringList supportedFormats = decoder->supportedFormats();
+                    for(QStringList::ConstIterator jt = supportedFormats.constBegin(); jt != supportedFormats.constEnd(); ++jt)
+                        formats[*jt].insert(DecoderWithPriority(decoder, priority));
+                    qDebug() << "Decoder" << decoder->name() << "was registered for" << supportedFormats << " with priority =" << priority;
                 }
-                qDebug() << "Decoder" << decoder->name() << "registered for" << debugFormatList;
+                else
+                {
+                    qDebug() << "Decoder" << decoder->name() << "was NOT registered with priority =" << priority;
+                }
             }
             pendingDecoders.clear();
         }
@@ -101,10 +140,11 @@ void DecodersManager::registerDecoder(IDecoder *decoder)
     qDebug() << "Decoder" << decoder->name() << "was planned for delayed registration";
 }
 
-void DecodersManager::registerFallbackDecoder(IDecoder *decoder, int fallbackPriority)
+void DecodersManager::registerFallbackDecoder(IDecoder *decoder)
 {
+    const int fallbackPriority = GetDecoderPriority(decoder);
     m_impl->fallbackDecoders.insert(DecoderWithPriority(decoder, fallbackPriority));
-    qDebug() << "Decoder" << decoder->name() << "registered as FALLBACK with priority =" << fallbackPriority;
+    qDebug() << "Decoder" << decoder->name() << "was registered as FALLBACK with priority =" << fallbackPriority;
 }
 
 QStringList DecodersManager::registeredDecoders() const
