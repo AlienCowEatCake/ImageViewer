@@ -46,7 +46,7 @@ struct AnimationObject::Impl
 
     bool jumpToNextImage()
     {
-        if(provider->jumpToNextImage())
+        if(provider && provider->jumpToNextImage())
         {
             nextImageDelay = provider->nextImageDelay();
             currentPixmap = provider->currentPixmap();
@@ -62,6 +62,7 @@ struct AnimationObject::Impl
         nextImageTimer.stop();
         if(provider)
             delete provider;
+        provider = NULL;
         currentPixmap = QPixmap();
         nextImageDelay = -1;
     }
@@ -92,7 +93,11 @@ void AnimationObject::setProvider(IAnimationProvider *provider)
 {
     m_impl->cleanup();
     if(!provider || !provider->isValid())
+    {
+        if(provider)
+            delete provider;
         return;
+    }
     m_impl->provider = provider;
     m_impl->currentPixmap = provider->currentPixmap();
     m_impl->nextImageDelay = provider->nextImageDelay();
