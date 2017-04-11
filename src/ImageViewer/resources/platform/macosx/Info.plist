@@ -99,6 +99,16 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>jng</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>JPEG Network Graphics Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>jpg</string>
 				<string>jpeg</string>
 				<string>jpe</string>
