@@ -20,7 +20,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake CONFIG+="release" CONFIG+="use_static_qgif use_static_qtiff" ..\%PROJECT%.pro
+qmake CONFIG+="release" CONFIG+="use_static_qgif use_static_qtiff use_static_qjpeg" ..\%PROJECT%.pro
 mingw32-make
 strip --strip-all %APP_PATH%\release\%PROJECT%.exe
 copy %APP_PATH%\release\%PROJECT%.exe ..\%PROJECT%%SUFFIX%.exe
