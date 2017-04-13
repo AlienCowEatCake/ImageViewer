@@ -29,6 +29,7 @@
 #include <QPixmap>
 #include <QFile>
 #include <QByteArray>
+#include <QSysInfo>
 #include <QDebug>
 
 #include "IDecoder.h"

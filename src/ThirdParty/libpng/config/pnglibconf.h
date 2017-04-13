@@ -1,8 +1,8 @@
 /* pnglibconf.h - library build configuration */
 
-/* libpng version 1.6.20 - December 3, 2015 */
+/* libpng version 1.6.29, March 16, 2017 */
 
-/* Copyright (c) 1998-2014 Glenn Randers-Pehrson */
+/* Copyright (c) 1998-2016 Glenn Randers-Pehrson */
 
 /* This code is released under the libpng license. */
 /* For conditions of distribution and use, see the disclaimer */
@@ -25,9 +25,7 @@
 #define PNG_CHECK_FOR_INVALID_INDEX_SUPPORTED
 #define PNG_COLORSPACE_SUPPORTED
 #define PNG_CONSOLE_IO_SUPPORTED
-#ifndef _WIN32_WCE
 #define PNG_CONVERT_tIME_SUPPORTED
-#endif
 #define PNG_EASY_ACCESS_SUPPORTED
 /*#undef PNG_ERROR_NUMBERS_SUPPORTED*/
 #define PNG_ERROR_TEXT_SUPPORTED
@@ -44,6 +42,8 @@
 #define PNG_IO_STATE_SUPPORTED
 #define PNG_MNG_FEATURES_SUPPORTED
 #define PNG_POINTER_INDEXING_SUPPORTED
+/*#undef PNG_POWERPC_VSX_API_SUPPORTED*/
+/*#undef PNG_POWERPC_VSX_CHECK_SUPPORTED*/
 #define PNG_PROGRESSIVE_READ_SUPPORTED
 #define PNG_READ_16BIT_SUPPORTED
 #define PNG_READ_ALPHA_MODE_SUPPORTED
@@ -101,19 +101,16 @@
 #define PNG_SAVE_UNKNOWN_CHUNKS_SUPPORTED
 #define PNG_SEQUENTIAL_READ_SUPPORTED
 #define PNG_SETJMP_SUPPORTED
-#define PNG_SET_CHUNK_CACHE_LIMIT_SUPPORTED
-#define PNG_SET_CHUNK_MALLOC_LIMIT_SUPPORTED
 #define PNG_SET_OPTION_SUPPORTED
 #define PNG_SET_UNKNOWN_CHUNKS_SUPPORTED
 #define PNG_SET_USER_LIMITS_SUPPORTED
-#ifndef _WIN32_WCE
 #define PNG_SIMPLIFIED_READ_AFIRST_SUPPORTED
 #define PNG_SIMPLIFIED_READ_BGR_SUPPORTED
 #define PNG_SIMPLIFIED_READ_SUPPORTED
 #define PNG_SIMPLIFIED_WRITE_AFIRST_SUPPORTED
 #define PNG_SIMPLIFIED_WRITE_BGR_SUPPORTED
+#define PNG_SIMPLIFIED_WRITE_STDIO_SUPPORTED
 #define PNG_SIMPLIFIED_WRITE_SUPPORTED
-#endif
 #define PNG_STDIO_SUPPORTED
 #define PNG_STORE_UNKNOWN_CHUNKS_SUPPORTED
 #define PNG_TEXT_SUPPORTED
@@ -189,7 +186,6 @@
 /* end of options */
 /* settings */
 #define PNG_API_RULE 0
-#define PNG_COST_SHIFT 3
 #define PNG_DEFAULT_READ_MACROS 1
 #define PNG_GAMMA_THRESHOLD_FIXED 5000
 #define PNG_IDAT_READ_SIZE PNG_ZBUF_SIZE
@@ -199,6 +195,7 @@
 #define PNG_LINKAGE_DATA extern
 #define PNG_LINKAGE_FUNCTION extern
 #define PNG_MAX_GAMMA_8 11
+#define PNG_PREFIX tp_
 #define PNG_QUANTIZE_BLUE_BITS 5
 #define PNG_QUANTIZE_GREEN_BITS 5
 #define PNG_QUANTIZE_RED_BITS 5
@@ -208,7 +205,6 @@
 #define PNG_USER_CHUNK_MALLOC_MAX 8000000
 #define PNG_USER_HEIGHT_MAX 1000000
 #define PNG_USER_WIDTH_MAX 1000000
-#define PNG_WEIGHT_SHIFT 8
 #define PNG_ZBUF_SIZE 8192
 #define PNG_ZLIB_VERNUM 0 /* unknown */
 #define PNG_Z_DEFAULT_COMPRESSION (-1)
@@ -217,4 +213,270 @@
 #define PNG_sCAL_PRECISION 5
 #define PNG_sRGB_PROFILE_CHECKS 2
 /* end of settings */
+#define png_access_version_number tp_png_access_version_number
+#define png_benign_error tp_png_benign_error
+#define png_build_grayscale_palette tp_png_build_grayscale_palette
+#define png_calloc tp_png_calloc
+#define png_chunk_benign_error tp_png_chunk_benign_error
+#define png_chunk_error tp_png_chunk_error
+#define png_chunk_warning tp_png_chunk_warning
+#define png_convert_from_struct_tm tp_png_convert_from_struct_tm
+#define png_convert_from_time_t tp_png_convert_from_time_t
+#define png_convert_to_rfc1123 tp_png_convert_to_rfc1123
+#define png_convert_to_rfc1123_buffer tp_png_convert_to_rfc1123_buffer
+#define png_create_info_struct tp_png_create_info_struct
+#define png_create_read_struct tp_png_create_read_struct
+#define png_create_read_struct_2 tp_png_create_read_struct_2
+#define png_create_write_struct tp_png_create_write_struct
+#define png_create_write_struct_2 tp_png_create_write_struct_2
+#define png_data_freer tp_png_data_freer
+#define png_destroy_info_struct tp_png_destroy_info_struct
+#define png_destroy_read_struct tp_png_destroy_read_struct
+#define png_destroy_write_struct tp_png_destroy_write_struct
+#define png_error tp_png_error
+#define png_free tp_png_free
+#define png_free_data tp_png_free_data
+#define png_free_default tp_png_free_default
+#define png_get_IHDR tp_png_get_IHDR
+#define png_get_PLTE tp_png_get_PLTE
+#define png_get_bKGD tp_png_get_bKGD
+#define png_get_bit_depth tp_png_get_bit_depth
+#define png_get_cHRM tp_png_get_cHRM
+#define png_get_cHRM_XYZ tp_png_get_cHRM_XYZ
+#define png_get_cHRM_XYZ_fixed tp_png_get_cHRM_XYZ_fixed
+#define png_get_cHRM_fixed tp_png_get_cHRM_fixed
+#define png_get_channels tp_png_get_channels
+#define png_get_chunk_cache_max tp_png_get_chunk_cache_max
+#define png_get_chunk_malloc_max tp_png_get_chunk_malloc_max
+#define png_get_color_type tp_png_get_color_type
+#define png_get_compression_buffer_size tp_png_get_compression_buffer_size
+#define png_get_compression_type tp_png_get_compression_type
+#define png_get_copyright tp_png_get_copyright
+#define png_get_current_pass_number tp_png_get_current_pass_number
+#define png_get_current_row_number tp_png_get_current_row_number
+#define png_get_error_ptr tp_png_get_error_ptr
+#define png_get_filter_type tp_png_get_filter_type
+#define png_get_gAMA tp_png_get_gAMA
+#define png_get_gAMA_fixed tp_png_get_gAMA_fixed
+#define png_get_hIST tp_png_get_hIST
+#define png_get_header_ver tp_png_get_header_ver
+#define png_get_header_version tp_png_get_header_version
+#define png_get_iCCP tp_png_get_iCCP
+#define png_get_image_height tp_png_get_image_height
+#define png_get_image_width tp_png_get_image_width
+#define png_get_int_32 tp_png_get_int_32
+#define png_get_interlace_type tp_png_get_interlace_type
+#define png_get_io_chunk_type tp_png_get_io_chunk_type
+#define png_get_io_ptr tp_png_get_io_ptr
+#define png_get_io_state tp_png_get_io_state
+#define png_get_libpng_ver tp_png_get_libpng_ver
+#define png_get_mem_ptr tp_png_get_mem_ptr
+#define png_get_oFFs tp_png_get_oFFs
+#define png_get_pCAL tp_png_get_pCAL
+#define png_get_pHYs tp_png_get_pHYs
+#define png_get_pHYs_dpi tp_png_get_pHYs_dpi
+#define png_get_palette_max tp_png_get_palette_max
+#define png_get_pixel_aspect_ratio tp_png_get_pixel_aspect_ratio
+#define png_get_pixel_aspect_ratio_fixed tp_png_get_pixel_aspect_ratio_fixed
+#define png_get_pixels_per_inch tp_png_get_pixels_per_inch
+#define png_get_pixels_per_meter tp_png_get_pixels_per_meter
+#define png_get_progressive_ptr tp_png_get_progressive_ptr
+#define png_get_rgb_to_gray_status tp_png_get_rgb_to_gray_status
+#define png_get_rowbytes tp_png_get_rowbytes
+#define png_get_rows tp_png_get_rows
+#define png_get_sBIT tp_png_get_sBIT
+#define png_get_sCAL tp_png_get_sCAL
+#define png_get_sCAL_fixed tp_png_get_sCAL_fixed
+#define png_get_sCAL_s tp_png_get_sCAL_s
+#define png_get_sPLT tp_png_get_sPLT
+#define png_get_sRGB tp_png_get_sRGB
+#define png_get_signature tp_png_get_signature
+#define png_get_tIME tp_png_get_tIME
+#define png_get_tRNS tp_png_get_tRNS
+#define png_get_text tp_png_get_text
+#define png_get_uint_16 tp_png_get_uint_16
+#define png_get_uint_31 tp_png_get_uint_31
+#define png_get_uint_32 tp_png_get_uint_32
+#define png_get_unknown_chunks tp_png_get_unknown_chunks
+#define png_get_user_chunk_ptr tp_png_get_user_chunk_ptr
+#define png_get_user_height_max tp_png_get_user_height_max
+#define png_get_user_transform_ptr tp_png_get_user_transform_ptr
+#define png_get_user_width_max tp_png_get_user_width_max
+#define png_get_valid tp_png_get_valid
+#define png_get_x_offset_inches tp_png_get_x_offset_inches
+#define png_get_x_offset_inches_fixed tp_png_get_x_offset_inches_fixed
+#define png_get_x_offset_microns tp_png_get_x_offset_microns
+#define png_get_x_offset_pixels tp_png_get_x_offset_pixels
+#define png_get_x_pixels_per_inch tp_png_get_x_pixels_per_inch
+#define png_get_x_pixels_per_meter tp_png_get_x_pixels_per_meter
+#define png_get_y_offset_inches tp_png_get_y_offset_inches
+#define png_get_y_offset_inches_fixed tp_png_get_y_offset_inches_fixed
+#define png_get_y_offset_microns tp_png_get_y_offset_microns
+#define png_get_y_offset_pixels tp_png_get_y_offset_pixels
+#define png_get_y_pixels_per_inch tp_png_get_y_pixels_per_inch
+#define png_get_y_pixels_per_meter tp_png_get_y_pixels_per_meter
+#define png_handle_as_unknown tp_png_handle_as_unknown
+#define png_image_begin_read_from_file tp_png_image_begin_read_from_file
+#define png_image_begin_read_from_memory tp_png_image_begin_read_from_memory
+#define png_image_begin_read_from_stdio tp_png_image_begin_read_from_stdio
+#define png_image_finish_read tp_png_image_finish_read
+#define png_image_free tp_png_image_free
+#define png_image_write_to_file tp_png_image_write_to_file
+#define png_image_write_to_memory tp_png_image_write_to_memory
+#define png_image_write_to_stdio tp_png_image_write_to_stdio
+#define png_info_init_3 tp_png_info_init_3
+#define png_init_io tp_png_init_io
+#define png_longjmp tp_png_longjmp
+#define png_malloc tp_png_malloc
+#define png_malloc_default tp_png_malloc_default
+#define png_malloc_warn tp_png_malloc_warn
+#define png_permit_mng_features tp_png_permit_mng_features
+#define png_process_data tp_png_process_data
+#define png_process_data_pause tp_png_process_data_pause
+#define png_process_data_skip tp_png_process_data_skip
+#define png_progressive_combine_row tp_png_progressive_combine_row
+#define png_read_end tp_png_read_end
+#define png_read_image tp_png_read_image
+#define png_read_info tp_png_read_info
+#define png_read_png tp_png_read_png
+#define png_read_row tp_png_read_row
+#define png_read_rows tp_png_read_rows
+#define png_read_update_info tp_png_read_update_info
+#define png_reset_zstream tp_png_reset_zstream
+#define png_save_int_32 tp_png_save_int_32
+#define png_save_uint_16 tp_png_save_uint_16
+#define png_save_uint_32 tp_png_save_uint_32
+#define png_set_IHDR tp_png_set_IHDR
+#define png_set_PLTE tp_png_set_PLTE
+#define png_set_add_alpha tp_png_set_add_alpha
+#define png_set_alpha_mode tp_png_set_alpha_mode
+#define png_set_alpha_mode_fixed tp_png_set_alpha_mode_fixed
+#define png_set_bKGD tp_png_set_bKGD
+#define png_set_background tp_png_set_background
+#define png_set_background_fixed tp_png_set_background_fixed
+#define png_set_benign_errors tp_png_set_benign_errors
+#define png_set_bgr tp_png_set_bgr
+#define png_set_cHRM tp_png_set_cHRM
+#define png_set_cHRM_XYZ tp_png_set_cHRM_XYZ
+#define png_set_cHRM_XYZ_fixed tp_png_set_cHRM_XYZ_fixed
+#define png_set_cHRM_fixed tp_png_set_cHRM_fixed
+#define png_set_check_for_invalid_index tp_png_set_check_for_invalid_index
+#define png_set_chunk_cache_max tp_png_set_chunk_cache_max
+#define png_set_chunk_malloc_max tp_png_set_chunk_malloc_max
+#define png_set_compression_buffer_size tp_png_set_compression_buffer_size
+#define png_set_compression_level tp_png_set_compression_level
+#define png_set_compression_mem_level tp_png_set_compression_mem_level
+#define png_set_compression_method tp_png_set_compression_method
+#define png_set_compression_strategy tp_png_set_compression_strategy
+#define png_set_compression_window_bits tp_png_set_compression_window_bits
+#define png_set_crc_action tp_png_set_crc_action
+#define png_set_error_fn tp_png_set_error_fn
+#define png_set_expand tp_png_set_expand
+#define png_set_expand_16 tp_png_set_expand_16
+#define png_set_expand_gray_1_2_4_to_8 tp_png_set_expand_gray_1_2_4_to_8
+#define png_set_filler tp_png_set_filler
+#define png_set_filter tp_png_set_filter
+#define png_set_filter_heuristics tp_png_set_filter_heuristics
+#define png_set_filter_heuristics_fixed tp_png_set_filter_heuristics_fixed
+#define png_set_flush tp_png_set_flush
+#define png_set_gAMA tp_png_set_gAMA
+#define png_set_gAMA_fixed tp_png_set_gAMA_fixed
+#define png_set_gamma tp_png_set_gamma
+#define png_set_gamma_fixed tp_png_set_gamma_fixed
+#define png_set_gray_to_rgb tp_png_set_gray_to_rgb
+#define png_set_hIST tp_png_set_hIST
+#define png_set_iCCP tp_png_set_iCCP
+#define png_set_interlace_handling tp_png_set_interlace_handling
+#define png_set_invalid tp_png_set_invalid
+#define png_set_invert_alpha tp_png_set_invert_alpha
+#define png_set_invert_mono tp_png_set_invert_mono
+#define png_set_keep_unknown_chunks tp_png_set_keep_unknown_chunks
+#define png_set_longjmp_fn tp_png_set_longjmp_fn
+#define png_set_mem_fn tp_png_set_mem_fn
+#define png_set_oFFs tp_png_set_oFFs
+#define png_set_option tp_png_set_option
+#define png_set_pCAL tp_png_set_pCAL
+#define png_set_pHYs tp_png_set_pHYs
+#define png_set_packing tp_png_set_packing
+#define png_set_packswap tp_png_set_packswap
+#define png_set_palette_to_rgb tp_png_set_palette_to_rgb
+#define png_set_progressive_read_fn tp_png_set_progressive_read_fn
+#define png_set_quantize tp_png_set_quantize
+#define png_set_read_fn tp_png_set_read_fn
+#define png_set_read_status_fn tp_png_set_read_status_fn
+#define png_set_read_user_chunk_fn tp_png_set_read_user_chunk_fn
+#define png_set_read_user_transform_fn tp_png_set_read_user_transform_fn
+#define png_set_rgb_to_gray tp_png_set_rgb_to_gray
+#define png_set_rgb_to_gray_fixed tp_png_set_rgb_to_gray_fixed
+#define png_set_rows tp_png_set_rows
+#define png_set_sBIT tp_png_set_sBIT
+#define png_set_sCAL tp_png_set_sCAL
+#define png_set_sCAL_fixed tp_png_set_sCAL_fixed
+#define png_set_sCAL_s tp_png_set_sCAL_s
+#define png_set_sPLT tp_png_set_sPLT
+#define png_set_sRGB tp_png_set_sRGB
+#define png_set_sRGB_gAMA_and_cHRM tp_png_set_sRGB_gAMA_and_cHRM
+#define png_set_scale_16 tp_png_set_scale_16
+#define png_set_shift tp_png_set_shift
+#define png_set_sig_bytes tp_png_set_sig_bytes
+#define png_set_strip_16 tp_png_set_strip_16
+#define png_set_strip_alpha tp_png_set_strip_alpha
+#define png_set_swap tp_png_set_swap
+#define png_set_swap_alpha tp_png_set_swap_alpha
+#define png_set_tIME tp_png_set_tIME
+#define png_set_tRNS tp_png_set_tRNS
+#define png_set_tRNS_to_alpha tp_png_set_tRNS_to_alpha
+#define png_set_text tp_png_set_text
+#define png_set_text_compression_level tp_png_set_text_compression_level
+#define png_set_text_compression_mem_level tp_png_set_text_compression_mem_level
+#define png_set_text_compression_method tp_png_set_text_compression_method
+#define png_set_text_compression_strategy tp_png_set_text_compression_strategy
+#define png_set_text_compression_window_bits tp_png_set_text_compression_window_bits
+#define png_set_unknown_chunk_location tp_png_set_unknown_chunk_location
+#define png_set_unknown_chunks tp_png_set_unknown_chunks
+#define png_set_user_limits tp_png_set_user_limits
+#define png_set_user_transform_info tp_png_set_user_transform_info
+#define png_set_write_fn tp_png_set_write_fn
+#define png_set_write_status_fn tp_png_set_write_status_fn
+#define png_set_write_user_transform_fn tp_png_set_write_user_transform_fn
+#define png_sig_cmp tp_png_sig_cmp
+#define png_start_read_image tp_png_start_read_image
+#define png_warning tp_png_warning
+#define png_write_chunk tp_png_write_chunk
+#define png_write_chunk_data tp_png_write_chunk_data
+#define png_write_chunk_end tp_png_write_chunk_end
+#define png_write_chunk_start tp_png_write_chunk_start
+#define png_write_end tp_png_write_end
+#define png_write_flush tp_png_write_flush
+#define png_write_image tp_png_write_image
+#define png_write_info tp_png_write_info
+#define png_write_info_before_PLTE tp_png_write_info_before_PLTE
+#define png_write_png tp_png_write_png
+#define png_write_row tp_png_write_row
+#define png_write_rows tp_png_write_rows
+#define png_write_sig tp_png_write_sig
+#define tp_png_get_uint_32(buf) PNG_get_uint_32(buf)
+#define tp_png_get_uint_16(buf) PNG_get_uint_16(buf)
+#define tp_png_get_int_32(buf) PNG_get_int_32(buf)
+/* apng for libpng 1.6.29 */
+#define png_get_acTL tp_png_get_acTL
+#define png_set_acTL tp_png_set_acTL
+#define png_get_num_frames tp_png_get_num_frames
+#define png_get_num_plays tp_png_get_num_plays
+#define png_get_next_frame_fcTL tp_png_get_next_frame_fcTL
+#define png_set_next_frame_fcTL tp_png_set_next_frame_fcTL
+#define png_get_next_frame_width tp_png_get_next_frame_width
+#define png_get_next_frame_height tp_png_get_next_frame_height
+#define png_get_next_frame_x_offset tp_png_get_next_frame_x_offset
+#define png_get_next_frame_y_offset tp_png_get_next_frame_y_offset
+#define png_get_next_frame_delay_num tp_png_get_next_frame_delay_num
+#define png_get_next_frame_delay_den tp_png_get_next_frame_delay_den
+#define png_get_next_frame_dispose_op tp_png_get_next_frame_dispose_op
+#define png_get_next_frame_blend_op tp_png_get_next_frame_blend_op
+#define png_get_first_frame_is_hidden tp_png_get_first_frame_is_hidden
+#define png_set_first_frame_is_hidden tp_png_set_first_frame_is_hidden
+#define png_read_frame_head tp_png_read_frame_head
+#define png_set_progressive_frame_fn tp_png_set_progressive_frame_fn
+#define png_write_frame_head tp_png_write_frame_head
+#define png_write_frame_tail tp_png_write_frame_tail
 #endif /* PNGLCONF_H */

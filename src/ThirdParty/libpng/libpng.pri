@@ -10,9 +10,10 @@ include($${PWD}/../../Features.pri)
     !system_libpng {
 
         THIRDPARTY_LIBPNG_PATH = $${PWD}/libpng-1.6.29
+        THIRDPARTY_LIBPNG_CONFIG_PATH = $${PWD}/config
 
-        INCLUDEPATH += $${THIRDPARTY_LIBPNG_PATH}
-        DEPENDPATH += $${THIRDPARTY_LIBPNG_PATH}
+        INCLUDEPATH += $${THIRDPARTY_LIBPNG_CONFIG_PATH} $${THIRDPARTY_LIBPNG_PATH}
+        DEPENDPATH += $${THIRDPARTY_LIBPNG_CONFIG_PATH} $${THIRDPARTY_LIBPNG_PATH}
 
         OUT_LIB_TARGET = tp_libpng
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/libpng
