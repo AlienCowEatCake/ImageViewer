@@ -39,6 +39,11 @@
 #include "Internal/Animation/AnimationUtils.h"
 #include "Internal/CmsUtils.h"
 
+#ifndef png_jmpbuf
+#define png_jmpbuf(png_ptr) ((png_ptr)->png_jmpbuf)
+#endif
+#define PNG_BYTES_TO_CHECK 4
+
 namespace
 {
 
@@ -55,16 +60,13 @@ struct PngAnimationProvider : public IAnimationProvider
     bool jumpToNextImage();
     QPixmap currentPixmap() const;
 
-    void read_png();
-    void clean_png();
-    void apply_icc_profile();
+    bool check_if_png();
+    void apply_icc_profile(png_const_structrp png_ptr, png_inforp info_ptr, QImage *image);
+    bool read_png();
 
     QImage image;
     QFile file;
     bool error;
-    png_structp png_ptr;
-    png_infop info_ptr;
-    ICCProfile *icc;
 };
 
 // ====================================================================================================
@@ -80,19 +82,12 @@ void readPngFile(png_structp png_ptr, png_bytep data, png_size_t length)
 PngAnimationProvider::PngAnimationProvider(const QString &filePath)
     : file(filePath)
     , error(true)
-    , png_ptr(NULL)
-    , info_ptr(NULL)
-    , icc(NULL)
 {
-    if(!file.open(QIODevice::ReadOnly))
-        return;
-    read_png();
+    error = !read_png();
 }
 
 PngAnimationProvider::~PngAnimationProvider()
-{
-    clean_png();
-}
+{}
 
 bool PngAnimationProvider::isValid() const
 {
@@ -119,12 +114,48 @@ QPixmap PngAnimationProvider::currentPixmap() const
     return QPixmap::fromImage(image);
 }
 
-#ifndef png_jmpbuf
-#define png_jmpbuf(png_ptr) ((png_ptr)->png_jmpbuf)
-#endif
-
-void PngAnimationProvider::read_png()
+bool PngAnimationProvider::check_if_png()
 {
+    char buf[PNG_BYTES_TO_CHECK];
+
+    // Open the prospective PNG file.
+    if(!file.open(QIODevice::ReadOnly))
+        return false;
+
+    // Read in some of the signature bytes
+    if(file.read(buf, PNG_BYTES_TO_CHECK) != PNG_BYTES_TO_CHECK)
+    {
+        file.close();
+        return false;
+    }
+
+    // Compare the first PNG_BYTES_TO_CHECK bytes of the signature.
+    // Return nonzero (true) if they match
+    return(!png_sig_cmp(reinterpret_cast<png_const_bytep>(buf), static_cast<png_size_t>(0), PNG_BYTES_TO_CHECK));
+}
+
+void PngAnimationProvider::apply_icc_profile(png_const_structrp png_ptr, png_inforp info_ptr, QImage *image)
+{
+    png_charp name;
+    int compression_type;
+    png_bytep profile;
+    png_uint_32 proflen;
+    if(png_get_iCCP(png_ptr, info_ptr, &name, &compression_type, &profile, &proflen) == PNG_INFO_iCCP)
+    {
+        qDebug() << "Found ICCP metadata";
+        ICCProfile icc(QByteArray::fromRawData(reinterpret_cast<char*>(profile), static_cast<int>(proflen)));
+        icc.applyToImage(image);
+    }
+}
+
+bool PngAnimationProvider::read_png()
+{
+    if(!check_if_png())
+        return false;
+
+    png_structp png_ptr = NULL;
+    png_infop info_ptr = NULL;
+
     // Create and initialize the png_struct with the desired error handler
     // functions.  If you want to use the default stderr and longjump method,
     // you can supply NULL for the last three parameters.  We also supply the
@@ -134,7 +165,8 @@ void PngAnimationProvider::read_png()
     if(!png_ptr)
     {
         qWarning() << "Can't initialize png_struct";
-        return;
+        file.close();
+        return false;
     }
 
     // Allocate/initialize the memory for image information.  REQUIRED.
@@ -143,7 +175,8 @@ void PngAnimationProvider::read_png()
     {
         qWarning() << "Can't initialize png_info";
         png_destroy_read_struct(&png_ptr, NULL, NULL);
-        return;
+        file.close();
+        return false;
     }
 
     // Set error handling if you are using the setjmp/longjmp method (this is
@@ -153,14 +186,18 @@ void PngAnimationProvider::read_png()
     {
        // Free all of the memory associated with the png_ptr and info_ptr
        png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+       file.close();
        // If we get here, we had a problem reading the file
        qWarning() << "Can't read PNG file";
-       return;
+       return false;
     }
 
     // If you are using replacement read functions, instead of calling
     // png_init_io() here you would call:
     png_set_read_fn(png_ptr, reinterpret_cast<void*>(this), &readPngFile);
+
+    // If we have already read some of the signature
+    png_set_sig_bytes(png_ptr, PNG_BYTES_TO_CHECK);
 
     // The call to png_read_info() gives us all of the information from the
     // PNG file before the first IDAT (image data chunk).  REQUIRED
@@ -265,39 +302,15 @@ void PngAnimationProvider::read_png()
 
     // At this point you have read the entire image
 
-    error = false;
-    apply_icc_profile();
-}
+    apply_icc_profile(png_ptr, info_ptr, &image);
 
-void PngAnimationProvider::clean_png()
-{
     // Clean up after the read, and free any memory allocated - REQUIRED
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
     // Close the file
     file.close();
 
-    if(icc)
-        delete icc;
-}
-
-void PngAnimationProvider::apply_icc_profile()
-{
-    png_charp name;
-    int compression_type;
-#if ((PNG_LIBPNG_VER_MAJOR << 8) | PNG_LIBPNG_VER_MINOR << 0) < ((1 << 8) | (5 << 0))
-    png_charp profile;
-#else
-    png_bytep profile;
-#endif
-    png_uint_32 proflen;
-
-    if(png_get_iCCP(png_ptr, info_ptr, &name, &compression_type, &profile, &proflen) == PNG_INFO_iCCP)
-    {
-        qDebug() << "Found ICCP metadata";
-        icc = new ICCProfile(QByteArray::fromRawData(reinterpret_cast<char*>(profile), static_cast<int>(proflen)));
-        icc->applyToImage(&image);
-    }
+    return true;
 }
 
 // ====================================================================================================
