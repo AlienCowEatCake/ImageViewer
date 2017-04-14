@@ -31,6 +31,7 @@
 #include <QFile>
 #include <QByteArray>
 #include <QSysInfo>
+#include <QVector>
 #include <QDebug>
 
 #include "IDecoder.h"
@@ -43,6 +44,8 @@
 #define png_jmpbuf(png_ptr) ((png_ptr)->png_jmpbuf)
 #endif
 #define PNG_BYTES_TO_CHECK 4
+
+/// @todo https://sourceforge.net/projects/apng/files/libpng/examples/code_examples.zip/download
 
 namespace
 {
@@ -64,7 +67,17 @@ struct PngAnimationProvider : public IAnimationProvider
     void apply_icc_profile(png_const_structrp png_ptr, png_inforp info_ptr, QImage *image);
     bool read_png();
 
-    QImage image;
+    struct PngFrame
+    {
+        QImage image;
+        int delay;
+    };
+
+    QVector<PngFrame> frames;
+    int numFrames;
+    int numLoops;
+    int currentFrame;
+    int currentLoop;
     QFile file;
     bool error;
 };
@@ -80,7 +93,11 @@ void readPngFile(png_structp png_ptr, png_bytep data, png_size_t length)
 // ====================================================================================================
 
 PngAnimationProvider::PngAnimationProvider(const QString &filePath)
-    : file(filePath)
+    : numFrames(1)
+    , numLoops(0)
+    , currentFrame(0)
+    , currentLoop(0)
+    , file(filePath)
     , error(true)
 {
     error = !read_png();
@@ -96,22 +113,28 @@ bool PngAnimationProvider::isValid() const
 
 bool PngAnimationProvider::isSingleFrame() const
 {
-    return true;
+    return numFrames == 1;
 }
 
 int PngAnimationProvider::nextImageDelay() const
 {
-    return 0;
+    return frames[currentFrame].delay;
 }
 
 bool PngAnimationProvider::jumpToNextImage()
 {
-    return true;
+    currentFrame++;
+    if(currentFrame == numFrames)
+    {
+        currentFrame = 0;
+        currentLoop++;
+    }
+    return numLoops <= 0 || currentLoop <= numLoops;
 }
 
 QPixmap PngAnimationProvider::currentPixmap() const
 {
-    return QPixmap::fromImage(image);
+    return QPixmap::fromImage(frames[currentFrame].image);
 }
 
 bool PngAnimationProvider::check_if_png()
@@ -203,106 +226,140 @@ bool PngAnimationProvider::read_png()
     // PNG file before the first IDAT (image data chunk).  REQUIRED
     png_read_info(png_ptr, info_ptr);
 
-    png_uint_32 width, height;
-    int bit_depth, color_type, interlace_type;
-    png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, &interlace_type, NULL, NULL);
+#if defined (PNG_APNG_SUPPORTED)
+    if(png_get_valid(png_ptr, info_ptr, PNG_INFO_acTL))
+    {
+        numFrames = static_cast<int>(png_get_num_frames(png_ptr, info_ptr));
+        numLoops = static_cast<int>(png_get_num_plays(png_ptr, info_ptr));
+    }
+#endif
+    frames.resize(numFrames);
 
-    // Set up the data transformations you want.  Note that these are all
-    // optional.  Only call them if you want/need them.  Many of the
-    // transformations only work on specific types of images, and many
-    // are mutually exclusive.
-
-    // Tell libpng to strip 16 bits/color files down to 8 bits/color.
-    // Use accurate scaling if it's available, otherwise just chop off the
-    // low byte.
-#ifdef PNG_READ_SCALE_16_TO_8_SUPPORTED
-    png_set_scale_16(png_ptr);
-#else
-    png_set_strip_16(png_ptr);
+    png_uint_32 width = png_get_image_width(png_ptr, info_ptr);
+    png_uint_32 height = png_get_image_height(png_ptr, info_ptr);
+    for(int count = 0; count < numFrames; count++)
+    {
+//        int bit_depth = png_get_bit_depth(png_ptr, info_ptr);
+//        int color_type = png_get_color_type(png_ptr, info_ptr);
+//        int interlace_type = png_get_color_type(png_ptr, info_ptr);
+        png_uint_32 next_frame_width = width, next_frame_height = height;
+        png_uint_32 next_frame_x_offset = 0, next_frame_y_offset = 0;
+#ifdef PNG_APNG_SUPPORTED
+        png_uint_16 next_frame_delay_num = 0, next_frame_delay_den = 1;
+        png_byte next_frame_dispose_op, next_frame_blend_op;
+        if(png_get_valid(png_ptr, info_ptr, PNG_INFO_acTL))
+        {
+            png_read_frame_head(png_ptr, info_ptr);
+            if(png_get_valid(png_ptr, info_ptr, PNG_INFO_fcTL))
+            {
+                png_get_next_frame_fcTL(png_ptr, info_ptr,
+                                        &next_frame_width, &next_frame_height,
+                                        &next_frame_x_offset, &next_frame_y_offset,
+                                        &next_frame_delay_num, &next_frame_delay_den,
+                                        &next_frame_dispose_op, &next_frame_blend_op);
+            }
+        }
 #endif
 
-    // Extract multiple pixels with bit depths of 1, 2, and 4 from a single
-    // byte into separate bytes (useful for paletted and grayscale images).
-//    png_set_packing(png_ptr); /// @todo Нужно ли это?
+        // Set up the data transformations you want.  Note that these are all
+        // optional.  Only call them if you want/need them.  Many of the
+        // transformations only work on specific types of images, and many
+        // are mutually exclusive.
 
-    // Expand paletted colors into true RGB triplets
-//    if(color_type == PNG_COLOR_TYPE_PALETTE)
+        // Tell libpng to strip 16 bits/color files down to 8 bits/color.
+        // Use accurate scaling if it's available, otherwise just chop off the
+        // low byte.
+#ifdef PNG_READ_SCALE_16_TO_8_SUPPORTED
+        png_set_scale_16(png_ptr);
+#else
+        png_set_strip_16(png_ptr);
+#endif
+
+        // Extract multiple pixels with bit depths of 1, 2, and 4 from a single
+        // byte into separate bytes (useful for paletted and grayscale images).
+//        png_set_packing(png_ptr); /// @todo Нужно ли это?
+
+        // Expand paletted colors into true RGB triplets
+//        if(color_type == PNG_COLOR_TYPE_PALETTE)
         png_set_palette_to_rgb(png_ptr);
 
-    // Expand grayscale images to the full 8 bits from 1, 2, or 4 bits/pixel
-//    if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
+        // Expand grayscale images to the full 8 bits from 1, 2, or 4 bits/pixel
+//        if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
         png_set_expand_gray_1_2_4_to_8(png_ptr);
 
-    // Конвертим черно-белое в RGB
-//    if(color_type == PNG_COLOR_TYPE_GRAY)
+        // Конвертим черно-белое в RGB
+//        if(color_type == PNG_COLOR_TYPE_GRAY)
         png_set_gray_to_rgb(png_ptr);
 
-    // Expand paletted or RGB images with transparency to full alpha channels
-    // so the data will be available as RGBA quartets.
-//    if(png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS) != 0)
+        // Expand paletted or RGB images with transparency to full alpha channels
+        // so the data will be available as RGBA quartets.
+//        if(png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS) != 0)
         png_set_tRNS_to_alpha(png_ptr);
 
-    if(QSysInfo::ByteOrder == QSysInfo::LittleEndian) // BGRA
-    {
-        // Flip the RGB pixels to BGR (or RGBA to BGRA)
-//        if((color_type & PNG_COLOR_MASK_COLOR) != 0)
+        if(QSysInfo::ByteOrder == QSysInfo::LittleEndian) // BGRA
+        {
+            // Flip the RGB pixels to BGR (or RGBA to BGRA)
+//            if((color_type & PNG_COLOR_MASK_COLOR) != 0)
             png_set_bgr(png_ptr);
 
-        // Add filler (or alpha) byte (before/after each RGB triplet)
-        png_set_filler(png_ptr, 0xffff, PNG_FILLER_AFTER);
-    }
-    else // ARGB
-    {
-        /// @todo Check Me !!!
+            // Add filler (or alpha) byte (before/after each RGB triplet)
+            png_set_filler(png_ptr, 0xffff, PNG_FILLER_AFTER);
+        }
+        else // ARGB
+        {
+            /// @todo Check Me !!!
 
-        // Swap the RGBA or GA data to ARGB or AG (or BGRA to ABGR)
-        png_set_swap_alpha(png_ptr);
+            // Swap the RGBA or GA data to ARGB or AG (or BGRA to ABGR)
+            png_set_swap_alpha(png_ptr);
 
-        // Add filler (or alpha) byte (before/after each RGB triplet)
-        png_set_filler(png_ptr, 0xffff, PNG_FILLER_BEFORE);
-    }
+            // Add filler (or alpha) byte (before/after each RGB triplet)
+            png_set_filler(png_ptr, 0xffff, PNG_FILLER_BEFORE);
+        }
 
 #ifdef PNG_READ_INTERLACING_SUPPORTED
-    // Turn on interlace handling.  REQUIRED if you are not using
-    // png_read_image().  To see how to handle interlacing passes,
-    // see the png_read_row() method below:
-    int number_passes = png_set_interlace_handling(png_ptr);
+        // Turn on interlace handling.  REQUIRED if you are not using
+        // png_read_image().  To see how to handle interlacing passes,
+        // see the png_read_row() method below:
+        int number_passes = png_set_interlace_handling(png_ptr);
 #else
-    int number_passes = 1;
+        int number_passes = 1;
 #endif
 
-    // Optional call to gamma correct and add the background to the palette
-    // and update info structure.  REQUIRED if you are expecting libpng to
-    // update the palette for you (ie you selected such a transform above).
-    png_read_update_info(png_ptr, info_ptr);
+        // Optional call to gamma correct and add the background to the palette
+        // and update info structure.  REQUIRED if you are expecting libpng to
+        // update the palette for you (ie you selected such a transform above).
+        png_read_update_info(png_ptr, info_ptr);
 
-    // Allocate the memory to hold the image using the fields of info_ptr.
-    image = QImage(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32);
-    if(image.size().isEmpty())
-    {
-        qWarning() << "Invalid image size";
-        longjmp(png_jmpbuf(png_ptr), 1);
-    }
-#if defined (QT_DEBUG)
-    image.fill(Qt::red);
-#endif
-
-    // Now it's time to read the image.
-    for(int pass = 0; pass < number_passes; pass++)
-    {
-        for(int y = 0; y < static_cast<int>(height); y++)
+        // Allocate the memory to hold the image using the fields of info_ptr.
+        frames[count].image = QImage(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32);
+        QImage &image = frames[count].image;
+        if(image.size().isEmpty())
         {
-            uchar *row_pointer = image.scanLine(y);
-            png_read_rows(png_ptr, &row_pointer, NULL, 1);
+            qWarning() << "Invalid image size";
+            longjmp(png_jmpbuf(png_ptr), 1);
         }
+        image.fill(Qt::transparent);
+
+        // Now it's time to read the image.
+        for(int pass = 0; pass < number_passes; pass++)
+        {
+            for(png_uint_32 y = 0; y < next_frame_height; y++)
+                png_read_row(png_ptr, image.scanLine(static_cast<int>(y + next_frame_y_offset)) + next_frame_x_offset * 4, NULL);
+        }
+
+        apply_icc_profile(png_ptr, info_ptr, &image);
+
+#ifdef PNG_APNG_SUPPORTED
+        frames[count].delay = next_frame_delay_num * 1000 / next_frame_delay_den;
+#else
+        frames[count].delay = 0;
+#endif
     }
 
     // Read rest of file, and get additional chunks in info_ptr - REQUIRED
     png_read_end(png_ptr, info_ptr);
 
     // At this point you have read the entire image
-
-    apply_icc_profile(png_ptr, info_ptr, &image);
 
     // Clean up after the read, and free any memory allocated - REQUIRED
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);

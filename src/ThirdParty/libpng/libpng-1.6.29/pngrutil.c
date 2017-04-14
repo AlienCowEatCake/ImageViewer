@@ -3260,9 +3260,14 @@ png_combine_row(png_const_structrp png_ptr, png_bytep dp, int display)
     * any call to png_read_update_info at this point.  Do not continue if we got
     * this wrong.
     */
+   /* TODO: PNG_ROWBYTES returns wrong values for some animated images with
+    * first frame width != next frame width.
+    */
+#ifndef PNG_READ_APNG_SUPPORTED
    if (png_ptr->info_rowbytes != 0 && png_ptr->info_rowbytes !=
           PNG_ROWBYTES(pixel_depth, row_width))
       png_error(png_ptr, "internal row size calculation error");
+#endif
 
    /* Don't expect this to ever happen: */
    if (row_width == 0)
