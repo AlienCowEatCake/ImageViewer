@@ -7,7 +7,7 @@ include($${PWD}/../../Features.pri)
 
     DEFINES += HAS_LIBMNG
 
-    !system_libjpeg {
+    !system_libmng {
 
         THIRDPARTY_LIBMNG_PATH = $${PWD}/libmng-1.0.10
 

@@ -57,6 +57,13 @@ disable_zlib {
     CONFIG += disable_libmng
 }
 
+# libpng options:
+#    disable_libpng
+#    system_libpng
+disable_zlib {
+    CONFIG += disable_libpng
+}
+
 
 # ::::: Optional Third Party Components Configuration :::::
 

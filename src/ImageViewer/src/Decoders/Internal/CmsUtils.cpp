@@ -24,6 +24,7 @@
 
 #include <QImage>
 #include <QByteArray>
+#include <QSysInfo>
 
 #if defined (HAS_LCMS2)
 #include <lcms2.h>
@@ -101,26 +102,30 @@ void ICCProfile::applyToImage(QImage *image)
     if(!m_impl->inProfile || !m_impl->outProfile)
         return;
 
-    cmsHTRANSFORM transform = m_impl->getOrCreateTransform(TYPE_RGBA_8);
+    cmsHTRANSFORM transform = NULL;
+    switch(image->format())
+    {
+    case QImage::Format_ARGB32:
+    case QImage::Format_RGB32:
+        transform = m_impl->getOrCreateTransform((QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8);
+        break;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+    case QImage::Format_RGBA8888:
+    case QImage::Format_RGBX8888:
+        transform = m_impl->getOrCreateTransform(TYPE_RGBA_8);
+        break;
+#endif
+    default:
+        *image = image->convertToFormat(QImage::Format_ARGB32);
+        transform = m_impl->getOrCreateTransform((QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8);
+        break;
+    }
     if(!transform)
         return;
-    for(int i = 0; i < image->height(); i++)
-    {
-        QRgb *line = reinterpret_cast<QRgb*>(image->scanLine(i));
-        for(int j = 0; j < image->width(); j++)
-        {
-            QRgb &pixel = line[j];
-            unsigned char rgba[4] =
-            {
-                static_cast<unsigned char>(qRed(pixel)),
-                static_cast<unsigned char>(qGreen(pixel)),
-                static_cast<unsigned char>(qBlue(pixel)),
-                static_cast<unsigned char>(qAlpha(pixel))
-            };
-            cmsDoTransform(transform, rgba, rgba, 1);
-            pixel = qRgba(rgba[0], rgba[1], rgba[2], rgba[3]);
-        }
-    }
+
+    unsigned char *rgba = reinterpret_cast<unsigned char*>(image->bits());
+    cmsDoTransform(transform, rgba, rgba, static_cast<cmsUInt32Number>(image->width() * image->height()));
+
 #else
     Q_UNUSED(image);
 #endif

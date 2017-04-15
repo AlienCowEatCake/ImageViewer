@@ -28,6 +28,10 @@ SUBDIRS =
     SUBDIRS += libmng/libmng.pro
 }
 
+!disable_libpng : !system_libpng {
+    SUBDIRS += libpng/libpng.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }

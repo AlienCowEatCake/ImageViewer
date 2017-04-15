@@ -112,6 +112,11 @@ HEADERS += \
         src/Decoders/DecoderLibMng.cpp
 }
 
+!disable_libpng {
+    SOURCES += \
+        src/Decoders/DecoderLibPng.cpp
+}
+
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
     resources/translations/imageviewer_ru.ts
