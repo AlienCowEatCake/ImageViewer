@@ -21,6 +21,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
+#include <cassert>
 
 #include <png.h>
 #include <zlib.h>
@@ -65,7 +66,7 @@ struct PngAnimationProvider : public IAnimationProvider
 
     bool check_if_png();
     void apply_icc_profile(png_const_structrp png_ptr, png_inforp info_ptr, QImage *image);
-    void blend_over(QImage &current, const QImage &previous);
+    void blend_over(uchar *rows_dst, const uchar *rows_src, png_uint_32 x, png_uint_32 y, png_uint_32 w, png_uint_32 h, png_uint_32 l);
     bool read_png();
 
     struct PngFrame
@@ -172,13 +173,14 @@ void PngAnimationProvider::apply_icc_profile(png_const_structrp png_ptr, png_inf
     }
 }
 
-void PngAnimationProvider::blend_over(QImage &current, const QImage &previous)
+void PngAnimationProvider::blend_over(uchar *rows_dst, const uchar *rows_src, png_uint_32 x, png_uint_32 y, png_uint_32 w, png_uint_32 h, png_uint_32 l)
 {
-    for(int j = 0; j < current.height(); j++)
+    for(png_uint_32 j = 0; j < h; j++)
     {
-        const QRgb *sp = reinterpret_cast<const QRgb*>(previous.constScanLine(j));
-        QRgb *dp = reinterpret_cast<QRgb*>(current.scanLine(j));
-        for(int i = 0; i < current.width(); i++, sp++, dp++)
+        const std::size_t offset = ((j + y) * l + x) * 4;
+        const QRgb *sp = reinterpret_cast<const QRgb*>(rows_src + offset);
+        QRgb *dp = reinterpret_cast<QRgb*>(rows_dst + offset);
+        for(png_uint_32 i = 0; i < w; i++, sp++, dp++)
         {
             if(qAlpha(*sp) == 255)
             {
@@ -213,7 +215,8 @@ bool PngAnimationProvider::read_png()
 
     png_structp png_ptr = NULL;
     png_infop info_ptr = NULL;
-
+    uchar *tmpBuffer1 = NULL;
+    uchar *tmpBuffer2 = NULL;
 
     // Create and initialize the png_struct with the desired error handler
     // functions.  If you want to use the default stderr and longjump method,
@@ -246,6 +249,10 @@ bool PngAnimationProvider::read_png()
        // Free all of the memory associated with the png_ptr and info_ptr
        png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
        file.close();
+       if(tmpBuffer1)
+           delete [] tmpBuffer1;
+       if(tmpBuffer2)
+           delete [] tmpBuffer2;
        // If we get here, we had a problem reading the file
        qWarning() << "Can't read PNG file";
        return false;
@@ -272,8 +279,9 @@ bool PngAnimationProvider::read_png()
 #endif
     frames.resize(numFrames);
 
-    png_uint_32 width = png_get_image_width(png_ptr, info_ptr);
-    png_uint_32 height = png_get_image_height(png_ptr, info_ptr);
+    const png_uint_32 width = png_get_image_width(png_ptr, info_ptr);
+    const png_uint_32 height = png_get_image_height(png_ptr, info_ptr);
+    const png_uint_32 size = width * height * 4;
     for(int count = 0; count < numFrames; count++)
     {
 //        int bit_depth = png_get_bit_depth(png_ptr, info_ptr);
@@ -295,13 +303,22 @@ bool PngAnimationProvider::read_png()
                                         &next_frame_x_offset, &next_frame_y_offset,
                                         &next_frame_delay_num, &next_frame_delay_den,
                                         &next_frame_dispose_op, &next_frame_blend_op);
-
             }
             if(count == first)
             {
                 next_frame_blend_op = PNG_BLEND_OP_SOURCE;
                 if(next_frame_dispose_op == PNG_DISPOSE_OP_PREVIOUS)
                     next_frame_dispose_op = PNG_DISPOSE_OP_BACKGROUND;
+            }
+            if(!tmpBuffer1)
+            {
+                tmpBuffer1 = new uchar [size];
+                memset(tmpBuffer1, 0, size);
+            }
+            if(!tmpBuffer2)
+            {
+                tmpBuffer2 = new uchar [size];
+                memset(tmpBuffer2, 0, size);
             }
         }
 #endif
@@ -395,8 +412,39 @@ bool PngAnimationProvider::read_png()
         apply_icc_profile(png_ptr, info_ptr, &image);
 
 #if defined (PNG_APNG_SUPPORTED)
-        if(next_frame_blend_op == PNG_BLEND_OP_OVER)
-            blend_over(image, frames[count - 1].image);
+        if(tmpBuffer1 && tmpBuffer2)
+        {
+            if(next_frame_blend_op == PNG_DISPOSE_OP_PREVIOUS)
+                memcpy(tmpBuffer2, tmpBuffer1, size);
+
+            if(next_frame_blend_op == PNG_BLEND_OP_OVER)
+            {
+                blend_over(tmpBuffer1, image.constBits(), next_frame_x_offset, next_frame_y_offset, next_frame_width, next_frame_height, width);
+            }
+            else
+            {
+                for(png_uint_32 j = 0; j < next_frame_height; j++)
+                {
+                    const std::size_t offset = ((j + next_frame_y_offset) * width + next_frame_x_offset) * 4;
+                    memcpy(tmpBuffer1 + offset, image.constBits() + offset, next_frame_width * 4);
+                }
+            }
+
+            memcpy(image.bits(), tmpBuffer1, size);
+
+            if(next_frame_dispose_op == PNG_DISPOSE_OP_PREVIOUS)
+            {
+                memcpy(tmpBuffer1, tmpBuffer2, size);
+            }
+            else if(next_frame_dispose_op == PNG_DISPOSE_OP_BACKGROUND)
+            {
+                for(png_uint_32 j = 0; j < next_frame_height; j++)
+                {
+                    const std::size_t offset = ((j + next_frame_y_offset) * width + next_frame_x_offset) * 4;
+                    memset(tmpBuffer1 + offset, 0, next_frame_width * 4);
+                }
+            }
+        }
 #endif
 
 #if defined (PNG_APNG_SUPPORTED)
@@ -416,6 +464,11 @@ bool PngAnimationProvider::read_png()
 
     // Close the file
     file.close();
+
+    if(tmpBuffer1)
+        delete [] tmpBuffer1;
+    if(tmpBuffer2)
+        delete [] tmpBuffer2;
 
     return true;
 }
