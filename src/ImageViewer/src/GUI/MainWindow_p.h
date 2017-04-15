@@ -61,6 +61,7 @@ struct MainWindow::UI
     QToolButton *zoomIn;
     QToolButton *zoomFitToWindow;
     QToolButton *zoomOriginalSize;
+    QToolButton *zoomFullScreen;
     QToolButton *rotateCounterclockwise;
     QToolButton *rotateClockwise;
     QToolButton *openFile;
@@ -94,6 +95,7 @@ struct MainWindow::UI
         , zoomIn(createToolbarButton(toolbar))
         , zoomFitToWindow(createToolbarButton(toolbar))
         , zoomOriginalSize(createToolbarButton(toolbar))
+        , zoomFullScreen(createToolbarButton(toolbar))
         , rotateCounterclockwise(createToolbarButton(toolbar))
         , rotateClockwise(createToolbarButton(toolbar))
         , openFile(createToolbarButton(toolbar))
@@ -144,6 +146,7 @@ struct MainWindow::UI
         zoomIn->setIcon                 (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , ThemeUtils::WidgetHasDarkTheme(zoomIn)));
         zoomFitToWindow->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , ThemeUtils::WidgetHasDarkTheme(zoomFitToWindow)));
         zoomOriginalSize->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , ThemeUtils::WidgetHasDarkTheme(zoomOriginalSize)));
+//        zoomFullScreen->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , ThemeUtils::WidgetHasDarkTheme(zoomFullScreen)));
         rotateCounterclockwise->setIcon (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , ThemeUtils::WidgetHasDarkTheme(rotateCounterclockwise)));
         rotateClockwise->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , ThemeUtils::WidgetHasDarkTheme(rotateClockwise)));
         openFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , ThemeUtils::WidgetHasDarkTheme(openFile)));
@@ -163,6 +166,7 @@ struct MainWindow::UI
         toolbarLayout->addWidget(zoomIn);
         toolbarLayout->addWidget(zoomFitToWindow);
         toolbarLayout->addWidget(zoomOriginalSize);
+        toolbarLayout->addWidget(zoomFullScreen);
         toolbarLayout->addWidget(createVerticalSeparator(toolbar));
         toolbarLayout->addWidget(rotateCounterclockwise);
         toolbarLayout->addWidget(rotateClockwise);
@@ -248,6 +252,7 @@ struct MainWindow::UI
         zoomIn->setToolTip(qApp->translate("MainWindow", "Zoom In"));
         zoomFitToWindow->setToolTip(qApp->translate("MainWindow", "Fit Image To Window Size"));
         zoomOriginalSize->setToolTip(qApp->translate("MainWindow", "Original Size"));
+        zoomFullScreen->setToolTip(qApp->translate("MainWindow", "Full Screen"));
         rotateCounterclockwise->setToolTip(qApp->translate("MainWindow", "Rotate Counterclockwise"));
         rotateClockwise->setToolTip(qApp->translate("MainWindow", "Rotate Clockwise"));
         openFile->setToolTip(qApp->translate("MainWindow", "Open File"));
@@ -278,6 +283,7 @@ struct MainWindow::UI
         zoomIn->setEnabled(isEnabled);
         zoomFitToWindow->setEnabled(isEnabled);
         zoomOriginalSize->setEnabled(isEnabled);
+        zoomFullScreen->setEnabled(isEnabled);
         rotateCounterclockwise->setEnabled(isEnabled);
         rotateClockwise->setEnabled(isEnabled);
         saveFileAs->setEnabled(isEnabled);

@@ -41,6 +41,7 @@ public slots:
     void updateWindowTitle();
     void showAbout();
     void showPreferences();
+    void switchFullScreenMode();
 
     void onOpenPreviousRequested();
     void onOpenNextRequested();

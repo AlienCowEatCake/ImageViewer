@@ -110,6 +110,7 @@ struct MainWindow::Impl
         : mainWindow(mainWindow)
         , settings(new GUISettings(mainWindow))
         , supportedFormats(DecodersManager::getInstance().supportedFormatsWithWildcards())
+        , isFullScreenMode(false)
         , imageSaver(mainWindow)
         , watcher(mainWindow)
     {
@@ -197,6 +198,7 @@ struct MainWindow::Impl
     MainWindow *mainWindow;
     GUISettings *settings;
     const QStringList supportedFormats;
+    bool isFullScreenMode;
 
     QString currentDirectory;
     QVector<QString> filesInCurrentDirectory; /// @todo std::vector?
@@ -222,6 +224,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->zoomOut, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(zoomOut()));
     connect(m_ui->zoomFitToWindow, SIGNAL(clicked()), this, SLOT(onZoomFitToWindowClicked()));
     connect(m_ui->zoomOriginalSize, SIGNAL(clicked()), this, SLOT(onZoomOriginalSizeClicked()));
+    connect(m_ui->zoomFullScreen, SIGNAL(clicked()), this, SLOT(switchFullScreenMode()));
     connect(m_ui->rotateCounterclockwise, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(rotateCounterclockwise()));
     connect(m_ui->rotateClockwise, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(rotateClockwise()));
     connect(m_ui->openFile, SIGNAL(clicked()), this, SLOT(onOpenFileWithDialogRequested()));
@@ -396,6 +399,30 @@ void MainWindow::showPreferences()
 {
     SettingsDialog dialog(m_impl->settings, this);
     dialog.exec();
+}
+
+void MainWindow::switchFullScreenMode()
+{
+    if(m_impl->isFullScreenMode)
+    {
+        m_impl->isFullScreenMode = false;
+        setWindowFlags(Qt::Window);
+        showNormal();
+        m_ui->menubar->setVisible(true);
+        m_ui->toolbar->setVisible(true);
+        restoreState(m_impl->settings->mainWindowState());
+        restoreGeometry(m_impl->settings->mainWindowGeometry());
+    }
+    else
+    {
+        m_impl->settings->setMainWindowGeometry(saveGeometry());
+        m_impl->settings->setMainWindowState(saveState());
+        m_impl->isFullScreenMode = true;
+        setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+        showFullScreen();
+        m_ui->menubar->setVisible(false);
+        m_ui->toolbar->setVisible(false);
+    }
 }
 
 void MainWindow::onOpenPreviousRequested()
@@ -595,8 +622,11 @@ void MainWindow::onDirectoryChanged()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    m_impl->settings->setMainWindowGeometry(saveGeometry());
-    m_impl->settings->setMainWindowState(saveState());
+    if(!m_impl->isFullScreenMode)
+    {
+        m_impl->settings->setMainWindowGeometry(saveGeometry());
+        m_impl->settings->setMainWindowState(saveState());
+    }
     QMainWindow::closeEvent(event);
 }
 
@@ -688,6 +718,10 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_End:
         onOpenLastRequested();
+        break;
+    case Qt::Key_Escape:
+        if(m_impl->isFullScreenMode)
+            switchFullScreenMode();
         break;
     default:
         break;
