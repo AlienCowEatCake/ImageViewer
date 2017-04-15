@@ -2,6 +2,16 @@
 
 ::: APNG test images :::
 
+Images from http://littlesvr.ca/apng/history.html
+ * 012-dispose-background.png
+ * 012-dispose-none.png
+ * 012-dispose-previous.png
+ * keepandblend.png
+ * keepandnoblend.png
+ * lion-greyscale-3frame.png
+ * lion-rgb-3frame.png
+ * toucan-pallete-2frame.png
+
 Images from https://en.wikipedia.org/wiki/APNG
  * Animated_PNG_example_bouncing_beach_ball.png
  * Brain_MRI_apng_105px_100ms.png
