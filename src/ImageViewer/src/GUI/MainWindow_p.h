@@ -34,6 +34,7 @@
 #include <QStyleFactory>
 
 #include "Utils/ThemeUtils.h"
+#include "Utils/MenuUtils.h"
 #include "ImageViewerWidget.h"
 
 namespace {
@@ -212,7 +213,6 @@ struct MainWindow::UI
         mainLayout->addWidget(imageViewerWidget);
         mainLayout->addWidget(toolbar);
 
-        menuFile->menuAction()->setMenuRole(QAction::NoRole);
         menuFile->addAction(actionOpen);
         actionOpen->setShortcuts(QList<QKeySequence>() << QKeySequence::Open << Qt::Key_O);
         actionOpen->setMenuRole(QAction::NoRole);
@@ -243,7 +243,6 @@ struct MainWindow::UI
 #endif
         actionExit->setMenuRole(QAction::QuitRole);
 
-        menuEdit->menuAction()->setMenuRole(QAction::NoRole);
         menuEdit->addAction(actionRotateCounterclockwise);
         actionRotateCounterclockwise->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_L << Qt::Key_L);
         actionRotateCounterclockwise->setMenuRole(QAction::NoRole);
@@ -255,7 +254,6 @@ struct MainWindow::UI
         actionDeleteFile->setShortcuts(QKeySequence::Delete);
         actionDeleteFile->setMenuRole(QAction::NoRole);
 
-        menuView->menuAction()->setMenuRole(QAction::NoRole);
         menuView->addAction(actionZoomOut);
         actionZoomOut->setShortcuts(QList<QKeySequence>() << Qt::Key_Minus << Qt::Key_Underscore);
         actionZoomOut->setMenuRole(QAction::NoRole);
@@ -270,10 +268,13 @@ struct MainWindow::UI
         actionZoomOriginalSize->setMenuRole(QAction::NoRole);
         menuView->addSeparator();
         menuView->addAction(actionZoomFullScreen);
-        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::Key_F11);
+#if defined(Q_OS_MAC)
+        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::META + Qt::Key_F << Qt::Key_F11);
+#else
+        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::Key_F11 << Qt::CTRL + Qt::META + Qt::Key_F);
+#endif
         actionZoomFullScreen->setMenuRole(QAction::NoRole);
 
-        menuLanguage->menuAction()->setMenuRole(QAction::NoRole);
         menuLanguage->addAction(actionEnglish);
         actionEnglish->setMenuRole(QAction::NoRole);
         actionEnglish->setCheckable(true);
@@ -281,7 +282,6 @@ struct MainWindow::UI
         actionRussian->setMenuRole(QAction::NoRole);
         actionRussian->setCheckable(true);
 
-        menuHelp->menuAction()->setMenuRole(QAction::NoRole);
         menuHelp->addAction(actionAbout);
         actionAbout->setMenuRole(QAction::AboutRole);
         menuHelp->addAction(actionAboutQt);
@@ -326,6 +326,13 @@ struct MainWindow::UI
         mainWindow->setCentralWidget(centralWidget);
         mainWindow->setMenuBar(menubar);
         mainWindow->resize(WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT);
+
+#if defined (Q_OS_MAC)
+        MenuUtils::DisableDictationMenuItem();
+        MenuUtils::DisableCharacterPaletteMenuItem();
+        MenuUtils::DisableShowTabBarMenuItem();
+        MenuUtils::DisableEnterFullScreenMenuItem();
+#endif
     }
 
     ~UI()
@@ -356,12 +363,12 @@ struct MainWindow::UI
 
         actionOpen->setText(QApplication::translate("MainWindow", "&Open"));
         actionSaveAs->setText(QApplication::translate("MainWindow", "&Save As"));
-        actionNavigatePrevious->setText(qApp->translate("MainWindow", "Previous")); /// @todo &
-        actionNavigateNext->setText(qApp->translate("MainWindow", "Next")); /// @todo &
+        actionNavigatePrevious->setText(qApp->translate("MainWindow", "P&revious"));
+        actionNavigateNext->setText(qApp->translate("MainWindow", "&Next"));
         actionPreferences->setText(QApplication::translate("MainWindow", "&Preferences"));
         actionExit->setText(QApplication::translate("MainWindow", "&Exit"));
-        actionRotateCounterclockwise->setText(QApplication::translate("MainWindow", "Rotate Counterclockwise")); /// @todo &
-        actionRotateClockwise->setText(QApplication::translate("MainWindow", "Rotate Clockwise")); /// @todo &
+        actionRotateCounterclockwise->setText(QApplication::translate("MainWindow", "Rotate &Counterclockwise"));
+        actionRotateClockwise->setText(QApplication::translate("MainWindow", "&Rotate Clockwise"));
         actionDeleteFile->setText(QApplication::translate("MainWindow", "&Delete File"));
         actionZoomOut->setText(QApplication::translate("MainWindow", "Zoom &Out"));
         actionZoomIn->setText(QApplication::translate("MainWindow", "Zoom &In"));
@@ -386,8 +393,6 @@ struct MainWindow::UI
         actionZoomFitToWindow->setEnabled(isEnabled);
         zoomOriginalSize->setEnabled(isEnabled);
         actionZoomOriginalSize->setEnabled(isEnabled);
-        zoomFullScreen->setEnabled(isEnabled);
-        actionZoomFullScreen->setEnabled(isEnabled);
         rotateCounterclockwise->setEnabled(isEnabled);
         actionRotateCounterclockwise->setEnabled(isEnabled);
         rotateClockwise->setEnabled(isEnabled);
