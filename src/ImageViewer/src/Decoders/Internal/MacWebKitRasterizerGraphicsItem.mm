@@ -129,7 +129,7 @@ QRectF SVGBBox(WebView *webView)
 
 QRectF SVGBoundingClientRect(WebView *webView)
 {
-    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_10_9) /// @todo Работает в 10.8.5, нужно проверить ранние версии 10.8
+    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_10_8)
     {
         return QRectF(
             static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().x;"] doubleValue]),
@@ -147,7 +147,7 @@ QRectF SVGBoundingClientRect(WebView *webView)
 QRectF SVGActualBoundingBox(WebView *webView)
 {
     QRectF rect;
-    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_10_9) /// @todo Работает в 10.8.5, нужно проверить ранние версии 10.8
+    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_10_8)
         rect = DOMNodeActualBoundingBox([webView mainFrameDocument]);
     else
         rect = QRectFIntegerized(SVGBBox(webView));
@@ -514,7 +514,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
     {
         QRectF actualRect;
         const bool isSvg = QString::fromUtf8([[view stringByEvaluatingJavaScriptFromString: @"document.documentElement instanceof SVGElement;"] UTF8String]) == QString::fromLatin1("true");
-        const bool emptySVGViewBoxSupported = QSysInfo::MacintoshVersion >= QSysInfo::MV_10_9; /// @todo Работает в 10.8.5, нужно проверить ранние версии 10.8
+        const bool emptySVGViewBoxSupported = QSysInfo::MacintoshVersion >= QSysInfo::MV_10_8;
         if(isSvg)
         {
             const QRectF viewBox = SVGViewBoxAttribute(view);
