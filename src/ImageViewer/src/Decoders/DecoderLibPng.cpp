@@ -46,7 +46,8 @@
 #endif
 #define PNG_BYTES_TO_CHECK 4
 
-/// @todo https://sourceforge.net/projects/apng/files/libpng/examples/code_examples.zip/download
+/// @todo Посмотреть на реализацию APNG на чистом libpng, без патчей:
+/// https://sourceforge.net/projects/apng/files/libpng/examples/code_examples.zip/download
 
 namespace
 {
@@ -371,7 +372,7 @@ bool PngAnimationProvider::readPng()
         }
         else // ARGB
         {
-            /// @todo Check Me !!!
+            /// @todo Проверить работоспособность на Big Endian системах
 
             // Swap the RGBA or GA data to ARGB or AG (or BGRA to ABGR)
             png_set_swap_alpha(pngPtr);
