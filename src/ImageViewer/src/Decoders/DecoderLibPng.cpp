@@ -65,6 +65,7 @@ struct PngAnimationProvider : public IAnimationProvider
 
     bool check_if_png();
     void apply_icc_profile(png_const_structrp png_ptr, png_inforp info_ptr, QImage *image);
+    void blend_over(QImage &current, const QImage &previous);
     bool read_png();
 
     struct PngFrame
@@ -171,6 +172,40 @@ void PngAnimationProvider::apply_icc_profile(png_const_structrp png_ptr, png_inf
     }
 }
 
+void PngAnimationProvider::blend_over(QImage &current, const QImage &previous)
+{
+    for(int j = 0; j < current.height(); j++)
+    {
+        const QRgb *sp = reinterpret_cast<const QRgb*>(previous.constScanLine(j));
+        QRgb *dp = reinterpret_cast<QRgb*>(current.scanLine(j));
+        for(int i = 0; i < current.width(); i++, sp++, dp++)
+        {
+            if(qAlpha(*sp) == 255)
+            {
+                *dp = *sp;
+            }
+            else if(qAlpha(*sp) != 0)
+            {
+                if(qAlpha(*dp) != 0)
+                {
+                    int u = qAlpha(*sp) * 255;
+                    int v = (255 - qAlpha(*sp)) * qAlpha(*dp);
+                    int al = u + v;
+                    int r = (qRed(*sp) * u + qRed(*dp) * v) / al;
+                    int g = (qGreen(*sp) * u + qGreen(*dp) * v) / al;
+                    int b = (qBlue(*sp) * u + qBlue(*dp) * v) / al;
+                    int a = al / 255;
+                    *dp = qRgba(r, g, b, a);
+                }
+                else
+                {
+                    *dp = *sp;
+                }
+            }
+        }
+    }
+}
+
 bool PngAnimationProvider::read_png()
 {
     if(!check_if_png())
@@ -178,6 +213,7 @@ bool PngAnimationProvider::read_png()
 
     png_structp png_ptr = NULL;
     png_infop info_ptr = NULL;
+
 
     // Create and initialize the png_struct with the desired error handler
     // functions.  If you want to use the default stderr and longjump method,
@@ -227,6 +263,7 @@ bool PngAnimationProvider::read_png()
     png_read_info(png_ptr, info_ptr);
 
 #if defined (PNG_APNG_SUPPORTED)
+    int first = png_get_first_frame_is_hidden(png_ptr, info_ptr) ? 1 : 0;
     if(png_get_valid(png_ptr, info_ptr, PNG_INFO_acTL))
     {
         numFrames = static_cast<int>(png_get_num_frames(png_ptr, info_ptr));
@@ -244,9 +281,10 @@ bool PngAnimationProvider::read_png()
 //        int interlace_type = png_get_color_type(png_ptr, info_ptr);
         png_uint_32 next_frame_width = width, next_frame_height = height;
         png_uint_32 next_frame_x_offset = 0, next_frame_y_offset = 0;
-#ifdef PNG_APNG_SUPPORTED
+#if defined (PNG_APNG_SUPPORTED)
         png_uint_16 next_frame_delay_num = 0, next_frame_delay_den = 1;
-        png_byte next_frame_dispose_op, next_frame_blend_op;
+        png_byte next_frame_dispose_op = PNG_DISPOSE_OP_NONE;
+        png_byte next_frame_blend_op = PNG_BLEND_OP_SOURCE;
         if(png_get_valid(png_ptr, info_ptr, PNG_INFO_acTL))
         {
             png_read_frame_head(png_ptr, info_ptr);
@@ -257,6 +295,13 @@ bool PngAnimationProvider::read_png()
                                         &next_frame_x_offset, &next_frame_y_offset,
                                         &next_frame_delay_num, &next_frame_delay_den,
                                         &next_frame_dispose_op, &next_frame_blend_op);
+
+            }
+            if(count == first)
+            {
+                next_frame_blend_op = PNG_BLEND_OP_SOURCE;
+                if(next_frame_dispose_op == PNG_DISPOSE_OP_PREVIOUS)
+                    next_frame_dispose_op = PNG_DISPOSE_OP_BACKGROUND;
             }
         }
 #endif
@@ -269,7 +314,7 @@ bool PngAnimationProvider::read_png()
         // Tell libpng to strip 16 bits/color files down to 8 bits/color.
         // Use accurate scaling if it's available, otherwise just chop off the
         // low byte.
-#ifdef PNG_READ_SCALE_16_TO_8_SUPPORTED
+#if defined (PNG_READ_SCALE_16_TO_8_SUPPORTED)
         png_set_scale_16(png_ptr);
 #else
         png_set_strip_16(png_ptr);
@@ -316,7 +361,7 @@ bool PngAnimationProvider::read_png()
             png_set_filler(png_ptr, 0xffff, PNG_FILLER_BEFORE);
         }
 
-#ifdef PNG_READ_INTERLACING_SUPPORTED
+#if defined (PNG_READ_INTERLACING_SUPPORTED)
         // Turn on interlace handling.  REQUIRED if you are not using
         // png_read_image().  To see how to handle interlacing passes,
         // see the png_read_row() method below:
@@ -349,10 +394,15 @@ bool PngAnimationProvider::read_png()
 
         apply_icc_profile(png_ptr, info_ptr, &image);
 
-#ifdef PNG_APNG_SUPPORTED
+#if defined (PNG_APNG_SUPPORTED)
+        if(next_frame_blend_op == PNG_BLEND_OP_OVER)
+            blend_over(image, frames[count - 1].image);
+#endif
+
+#if defined (PNG_APNG_SUPPORTED)
         frames[count].delay = next_frame_delay_num * 1000 / next_frame_delay_den;
 #else
-        frames[count].delay = 0;
+        frames[count].delay = -1;
 #endif
     }
 
