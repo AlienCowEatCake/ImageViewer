@@ -218,8 +218,7 @@ bool PngAnimationProvider::readPng()
 
     png_structp pngPtr = NULL;
     png_infop infoPtr = NULL;
-    uchar *prevBuffer = NULL;
-    uchar *tempBuffer = NULL;
+    QByteArray prevBuffer, tempBuffer;
 
     // Create and initialize the png_struct with the desired error handler
     // functions.  If you want to use the default stderr and longjump method,
@@ -252,10 +251,6 @@ bool PngAnimationProvider::readPng()
        // Free all of the memory associated with the png_ptr and info_ptr
        png_destroy_read_struct(&pngPtr, &infoPtr, NULL);
        file.close();
-       if(prevBuffer)
-           delete [] prevBuffer;
-       if(tempBuffer)
-           delete [] tempBuffer;
        // If we get here, we had a problem reading the file
        qWarning() << "Can't read PNG file";
        return false;
@@ -313,15 +308,15 @@ bool PngAnimationProvider::readPng()
                 if(nextFrameDisposeOp == PNG_DISPOSE_OP_PREVIOUS)
                     nextFrameDisposeOp = PNG_DISPOSE_OP_BACKGROUND;
             }
-            if(!prevBuffer)
+            if(prevBuffer.isEmpty())
             {
-                prevBuffer = new uchar [dataSze];
-                memset(prevBuffer, 0, dataSze);
+                prevBuffer.resize(static_cast<int>(dataSze));
+                memset(prevBuffer.data(), 0, dataSze);
             }
-            if(!tempBuffer)
+            if(tempBuffer.isEmpty())
             {
-                tempBuffer = new uchar [dataSze];
-                memset(tempBuffer, 0, dataSze);
+                tempBuffer.resize(static_cast<int>(dataSze));
+                memset(tempBuffer.data(), 0, dataSze);
             }
         }
 #endif
@@ -415,38 +410,40 @@ bool PngAnimationProvider::readPng()
         applyICCProfile(pngPtr, infoPtr, &image);
 
 #if defined (PNG_APNG_SUPPORTED)
-        if(prevBuffer && tempBuffer)
+        if(!prevBuffer.isEmpty() && !tempBuffer.isEmpty())
         {
             uchar *imageBits = image.bits();
+            uchar *tempBits = reinterpret_cast<uchar*>(tempBuffer.data());
+            uchar *prevBits = reinterpret_cast<uchar*>(prevBuffer.data());
 
             if(nextFrameBlendOp == PNG_DISPOSE_OP_PREVIOUS)
-                memcpy(tempBuffer, prevBuffer, dataSze);
+                memcpy(tempBits, prevBits, dataSze);
 
             if(nextFrameBlendOp == PNG_BLEND_OP_OVER)
             {
-                blendOver(prevBuffer, imageBits, nextFrameOffsetX, nextFrameOffsetY, nextFrameWidth, nextFrameHeight, width);
+                blendOver(prevBits, imageBits, nextFrameOffsetX, nextFrameOffsetY, nextFrameWidth, nextFrameHeight, width);
             }
             else
             {
                 for(png_uint_32 j = 0; j < nextFrameHeight; j++)
                 {
                     const std::size_t offset = ((j + nextFrameOffsetY) * width + nextFrameOffsetX) * 4;
-                    memcpy(prevBuffer + offset, imageBits + offset, nextFrameWidth * 4);
+                    memcpy(prevBits + offset, imageBits + offset, nextFrameWidth * 4);
                 }
             }
 
-            memcpy(imageBits, prevBuffer, dataSze);
+            memcpy(imageBits, prevBits, dataSze);
 
             if(nextFrameDisposeOp == PNG_DISPOSE_OP_PREVIOUS)
             {
-                memcpy(prevBuffer, tempBuffer, dataSze);
+                memcpy(prevBits, tempBits, dataSze);
             }
             else if(nextFrameDisposeOp == PNG_DISPOSE_OP_BACKGROUND)
             {
                 for(png_uint_32 j = 0; j < nextFrameHeight; j++)
                 {
                     const std::size_t offset = ((j + nextFrameOffsetY) * width + nextFrameOffsetX) * 4;
-                    memset(prevBuffer + offset, 0, nextFrameWidth * 4);
+                    memset(prevBits + offset, 0, nextFrameWidth * 4);
                 }
             }
         }
@@ -469,11 +466,6 @@ bool PngAnimationProvider::readPng()
 
     // Close the file
     file.close();
-
-    if(prevBuffer)
-        delete [] prevBuffer;
-    if(tempBuffer)
-        delete [] tempBuffer;
 
     return true;
 }
