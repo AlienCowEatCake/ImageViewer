@@ -163,6 +163,7 @@ struct MainWindow::UI
             (*it)->setFocusPolicy(Qt::NoFocus);
 
         imageViewerWidget->setAcceptDrops(false);
+        imageViewerWidget->setContextMenuPolicy(Qt::NoContextMenu);
 
         zoomFitToWindow->setCheckable(true);
         zoomOriginalSize->setCheckable(true);
