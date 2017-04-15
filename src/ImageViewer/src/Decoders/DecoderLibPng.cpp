@@ -417,23 +417,25 @@ bool PngAnimationProvider::readPng()
 #if defined (PNG_APNG_SUPPORTED)
         if(prevBuffer && tempBuffer)
         {
+            uchar *imageBits = image.bits();
+
             if(nextFrameBlendOp == PNG_DISPOSE_OP_PREVIOUS)
                 memcpy(tempBuffer, prevBuffer, dataSze);
 
             if(nextFrameBlendOp == PNG_BLEND_OP_OVER)
             {
-                blendOver(prevBuffer, image.constBits(), nextFrameOffsetX, nextFrameOffsetY, nextFrameWidth, nextFrameHeight, width);
+                blendOver(prevBuffer, imageBits, nextFrameOffsetX, nextFrameOffsetY, nextFrameWidth, nextFrameHeight, width);
             }
             else
             {
                 for(png_uint_32 j = 0; j < nextFrameHeight; j++)
                 {
                     const std::size_t offset = ((j + nextFrameOffsetY) * width + nextFrameOffsetX) * 4;
-                    memcpy(prevBuffer + offset, image.constBits() + offset, nextFrameWidth * 4);
+                    memcpy(prevBuffer + offset, imageBits + offset, nextFrameWidth * 4);
                 }
             }
 
-            memcpy(image.bits(), prevBuffer, dataSze);
+            memcpy(imageBits, prevBuffer, dataSze);
 
             if(nextFrameDisposeOp == PNG_DISPOSE_OP_PREVIOUS)
             {
