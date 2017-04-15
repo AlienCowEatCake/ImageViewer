@@ -173,13 +173,19 @@ struct MainWindow::Impl
             currentDirectory.clear();
             mainWindow->m_ui->navigateNext->setEnabled(false);
             mainWindow->m_ui->navigatePrevious->setEnabled(false);
+            mainWindow->m_ui->actionNavigateNext->setEnabled(false);
+            mainWindow->m_ui->actionNavigatePrevious->setEnabled(false);
         }
         else
         {
             mainWindow->m_ui->navigateNext->setEnabled(true);
             mainWindow->m_ui->navigatePrevious->setEnabled(true);
+            mainWindow->m_ui->actionNavigateNext->setEnabled(true);
+            mainWindow->m_ui->actionNavigatePrevious->setEnabled(true);
         }
-        mainWindow->m_ui->deleteFile->setEnabled(fileInfo.exists() && fileInfo.isWritable() && isFileOpened());
+        const bool deletionEnabled = fileInfo.exists() && fileInfo.isWritable() && isFileOpened();
+        mainWindow->m_ui->deleteFile->setEnabled(deletionEnabled);
+        mainWindow->m_ui->actionDeleteFile->setEnabled(deletionEnabled);
     }
 
     void onFileClosed()
@@ -193,6 +199,9 @@ struct MainWindow::Impl
         mainWindow->m_ui->navigateNext->setEnabled(false);
         mainWindow->m_ui->navigatePrevious->setEnabled(false);
         mainWindow->m_ui->deleteFile->setEnabled(false);
+        mainWindow->m_ui->actionNavigateNext->setEnabled(false);
+        mainWindow->m_ui->actionNavigatePrevious->setEnabled(false);
+        mainWindow->m_ui->actionDeleteFile->setEnabled(false);
     }
 
     MainWindow *mainWindow;
@@ -201,7 +210,7 @@ struct MainWindow::Impl
     bool isFullScreenMode;
 
     QString currentDirectory;
-    QVector<QString> filesInCurrentDirectory; /// @todo std::vector?
+    QVector<QString> filesInCurrentDirectory;
     int currentIndexInDirectory;
 
     ImageSaver imageSaver;
@@ -232,11 +241,20 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->deleteFile, SIGNAL(clicked()), this, SLOT(onDeleteFileRequested()));
     connect(m_ui->preferences, SIGNAL(clicked()), this, SLOT(showPreferences()));
     connect(m_ui->exit, SIGNAL(clicked()), this, SLOT(onExitRequested()));
-
     connect(m_ui->actionOpen, SIGNAL(triggered()), this, SLOT(onOpenFileWithDialogRequested()));
     connect(m_ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(onSaveAsRequested()));
+    connect(m_ui->actionNavigatePrevious, SIGNAL(triggered()), this, SLOT(onOpenPreviousRequested()));
+    connect(m_ui->actionNavigateNext, SIGNAL(triggered()), this, SLOT(onOpenNextRequested()));
     connect(m_ui->actionPreferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
     connect(m_ui->actionExit, SIGNAL(triggered()), this, SLOT(onExitRequested()));
+    connect(m_ui->actionRotateCounterclockwise, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(rotateCounterclockwise()));
+    connect(m_ui->actionRotateClockwise, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(rotateClockwise()));
+    connect(m_ui->actionDeleteFile, SIGNAL(triggered()), this, SLOT(onDeleteFileRequested()));
+    connect(m_ui->actionZoomIn, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(zoomIn()));
+    connect(m_ui->actionZoomOut, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(zoomOut()));
+    connect(m_ui->actionZoomFitToWindow, SIGNAL(triggered()), this, SLOT(onZoomFitToWindowClicked()));
+    connect(m_ui->actionZoomOriginalSize, SIGNAL(triggered()), this, SLOT(onZoomOriginalSizeClicked()));
+    connect(m_ui->actionZoomFullScreen, SIGNAL(triggered()), this, SLOT(switchFullScreenMode()));
     connect(m_ui->actionEnglish, SIGNAL(triggered()), this, SLOT(onActionEnglishTriggered()));
     connect(m_ui->actionRussian, SIGNAL(triggered()), this, SLOT(onActionRussianTriggered()));
     connect(m_ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -256,6 +274,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     restoreState(m_impl->settings->mainWindowState());
     restoreGeometry(m_impl->settings->mainWindowGeometry());
+
+    addAction(m_ui->actionOpen);
 }
 
 MainWindow::~MainWindow()
@@ -406,10 +426,11 @@ void MainWindow::switchFullScreenMode()
     if(m_impl->isFullScreenMode)
     {
         m_impl->isFullScreenMode = false;
-        setWindowFlags(Qt::Window);
         showNormal();
         m_ui->menubar->setVisible(true);
         m_ui->toolbar->setVisible(true);
+        m_ui->zoomFullScreen->setChecked(false);
+
         restoreState(m_impl->settings->mainWindowState());
         restoreGeometry(m_impl->settings->mainWindowGeometry());
     }
@@ -417,11 +438,12 @@ void MainWindow::switchFullScreenMode()
     {
         m_impl->settings->setMainWindowGeometry(saveGeometry());
         m_impl->settings->setMainWindowState(saveState());
+
         m_impl->isFullScreenMode = true;
-        setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
         showFullScreen();
         m_ui->menubar->setVisible(false);
         m_ui->toolbar->setVisible(false);
+        m_ui->zoomFullScreen->setChecked(true);
     }
 }
 
@@ -727,4 +749,10 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         break;
     }
     QMainWindow::keyPressEvent(event);
+}
+
+void MainWindow::contextMenuEvent(QContextMenuEvent *event)
+{
+    m_ui->contextMenu->exec(event->globalPos());
+    QMainWindow::contextMenuEvent(event);
 }
