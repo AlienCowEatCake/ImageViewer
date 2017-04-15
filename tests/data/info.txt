@@ -366,3 +366,9 @@ Images from https://bugs.launchpad.net/libsvg-android/+bug/632464
 
 --------------------------------------------------------------------------------
 
+::: External test images :::
+
+HDR: http://www.hdrlabs.com/sibl/archive.html
+
+--------------------------------------------------------------------------------
+
