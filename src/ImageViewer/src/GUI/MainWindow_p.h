@@ -229,7 +229,7 @@ struct MainWindow::UI
         actionNavigateNext->setMenuRole(QAction::NoRole);
         menuFile->addSeparator();
         menuFile->addAction(actionPreferences);
-#if defined(Q_OS_MAC)
+#if defined (Q_OS_MAC)
         actionPreferences->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_Comma << Qt::CTRL + Qt::Key_P << Qt::Key_P);
 #else
         actionPreferences->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_P << Qt::Key_P << Qt::CTRL + Qt::Key_Comma);
@@ -237,7 +237,7 @@ struct MainWindow::UI
         actionPreferences->setMenuRole(QAction::PreferencesRole);
         menuFile->addSeparator();
         menuFile->addAction(actionExit);
-#if defined(Q_OS_WIN)
+#if defined (Q_OS_WIN)
         actionExit->setShortcuts(QList<QKeySequence>() << Qt::ALT + Qt::Key_F4 << Qt::CTRL + Qt::Key_Q);
 #else
         actionExit->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_Q << Qt::ALT + Qt::Key_F4);
@@ -252,7 +252,11 @@ struct MainWindow::UI
         actionRotateClockwise->setMenuRole(QAction::NoRole);
         menuEdit->addSeparator();
         menuEdit->addAction(actionDeleteFile);
-        actionDeleteFile->setShortcuts(QKeySequence::Delete);
+#if defined (Q_OS_MAC)
+        actionDeleteFile->setShortcuts(QList<QKeySequence>() << Qt::Key_Backspace << Qt::Key_Delete);
+#else
+        actionDeleteFile->setShortcuts(QList<QKeySequence>() << Qt::Key_Delete << Qt::Key_Backspace);
+#endif
         actionDeleteFile->setMenuRole(QAction::NoRole);
 
         menuView->addAction(actionZoomOut);
@@ -269,7 +273,7 @@ struct MainWindow::UI
         actionZoomOriginalSize->setMenuRole(QAction::NoRole);
         menuView->addSeparator();
         menuView->addAction(actionZoomFullScreen);
-#if defined(Q_OS_MAC)
+#if defined (Q_OS_MAC)
         actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::META + Qt::Key_F << Qt::Key_F11);
 #else
         actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::Key_F11 << Qt::CTRL + Qt::META + Qt::Key_F);

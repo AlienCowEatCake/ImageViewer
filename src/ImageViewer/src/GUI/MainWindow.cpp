@@ -697,44 +697,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key())
     {
-    case Qt::Key_Up:
-    case Qt::Key_Left:
-        if(!event->isAutoRepeat())
-            m_ui->navigatePrevious->animateClick();
-        else
-            onOpenPreviousRequested();
-        break;
-    case Qt::Key_Right:
-    case Qt::Key_Down:
-    case Qt::Key_Space:
-    case Qt::Key_Return:
-    case Qt::Key_Enter:
-        if(!event->isAutoRepeat())
-            m_ui->navigateNext->animateClick();
-        else
-            onOpenNextRequested();
-        break;
-    case Qt::Key_Minus:
-    case Qt::Key_Underscore:
-        if(!event->isAutoRepeat())
-            m_ui->zoomOut->animateClick();
-        else
-            m_ui->imageViewerWidget->zoomOut();
-        break;
-    case Qt::Key_Plus:
-    case Qt::Key_Equal:
-        if(!event->isAutoRepeat())
-            m_ui->zoomIn->animateClick();
-        else
-            m_ui->imageViewerWidget->zoomIn();
-        break;
-    case Qt::Key_Delete:
-    case Qt::Key_Backspace:
-        if(!event->isAutoRepeat())
-            m_ui->deleteFile->animateClick();
-        else
-            onDeleteFileRequested();
-        break;
     case Qt::Key_Home:
         onOpenFirstRequested();
         break;
