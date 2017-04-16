@@ -61,7 +61,7 @@ struct SettingsDialog::Impl
         ui->updateFullScreenBackgroundColorButton(color);
     }
 
-    void onColorDialogRequested(const QColor &oldColor, const char *method, const char *slot)
+    void onColorDialogRequested(const QColor &oldColor, void (SettingsDialog::*callback)(const QColor&), const char *slot)
     {
         /// @todo Нужен нормальный кроссплатформенный ColorDialog!
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
@@ -74,9 +74,9 @@ struct SettingsDialog::Impl
         dialog.exec();
         const QColor newColor = dialog.currentColor();
         if(newColor.isValid() && newColor != oldColor)
-            settingsDialog->metaObject()->invokeMethod(settingsDialog, method, Q_ARG(const QColor&, newColor));
+            (settingsDialog->*callback)(newColor);
     #else
-        Q_UNUSED(method);
+        Q_UNUSED(callback);
         QColorDialog dialog(settingsDialog);
         dialog.setOption(QColorDialog::NoButtons);
         dialog.setOption(QColorDialog::ShowAlphaChannel, true);
@@ -92,7 +92,7 @@ struct SettingsDialog::Impl
             return;
         const QColor newColor(qRed(newRgba), qGreen(newRgba), qBlue(newRgba), qAlpha(newRgba));
         if(newColor.isValid() && newColor != oldColor)
-            settingsDialog->metaObject()->invokeMethod(settingsDialog, method, Q_ARG(const QColor&, newColor));
+            (settingsDialog->*callback)(newColor);
 #endif
     }
 
@@ -136,13 +136,13 @@ void SettingsDialog::onFullScreenBackgroundColorChanged(const QColor &color)
 void SettingsDialog::onNormalColorDialogRequested()
 {
     m_impl->onColorDialogRequested(m_impl->settings->normalBackgroundColor(),
-                                   "onNormalBackgroundColorChanged",
+                                   &SettingsDialog::onNormalBackgroundColorChanged,
                                    SLOT(onNormalBackgroundColorChanged(const QColor&)));
 }
 
 void SettingsDialog::onFullScreenColorDialogRequested()
 {
     m_impl->onColorDialogRequested(m_impl->settings->fullScreenBackgroundColor(),
-                                   "onFullScreenBackgroundColorChanged",
+                                   &SettingsDialog::onFullScreenBackgroundColorChanged,
                                    SLOT(onFullScreenBackgroundColorChanged(const QColor&)));
 }

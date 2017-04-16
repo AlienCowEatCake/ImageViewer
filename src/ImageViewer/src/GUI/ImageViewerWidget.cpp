@@ -24,6 +24,7 @@
 #include <QGraphicsPixmapItem>
 #include <QStyleOptionGraphicsItem>
 #include <QMatrix>
+#include <QMouseEvent>
 
 #if (QT_VERSION < QT_VERSION_CHECK(4, 6, 0))
 #define IMAGEVIEWERWIDGET_NO_GESTURES
