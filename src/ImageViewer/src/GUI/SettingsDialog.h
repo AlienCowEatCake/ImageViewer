@@ -38,8 +38,10 @@ protected:
 
 protected slots:
     void onSettingsAccepted();
-    void onBackgroundColorChanged(const QColor &color);
-    void onColorDialogRequested();
+    void onNormalBackgroundColorChanged(const QColor &color);
+    void onFullScreenBackgroundColorChanged(const QColor &color);
+    void onNormalColorDialogRequested();
+    void onFullScreenColorDialogRequested();
 
 private:
     struct UI;

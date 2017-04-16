@@ -34,6 +34,7 @@
 #include <QStyleFactory>
 
 #include "Utils/ThemeUtils.h"
+#include "Utils/MenuUtils.h"
 #include "ImageViewerWidget.h"
 
 namespace {
@@ -61,6 +62,7 @@ struct MainWindow::UI
     QToolButton *zoomIn;
     QToolButton *zoomFitToWindow;
     QToolButton *zoomOriginalSize;
+    QToolButton *zoomFullScreen;
     QToolButton *rotateCounterclockwise;
     QToolButton *rotateClockwise;
     QToolButton *openFile;
@@ -70,18 +72,31 @@ struct MainWindow::UI
     QToolButton *exit;
 
     QMenuBar *menubar;
+    QMenu *contextMenu;
     QMenu *menuFile;
+    QMenu *menuEdit;
+    QMenu *menuView;
     QMenu *menuLanguage;
     QMenu *menuHelp;
 
     QAction *actionOpen;
     QAction *actionSaveAs;
+    QAction *actionNavigatePrevious;
+    QAction *actionNavigateNext;
     QAction *actionPreferences;
     QAction *actionExit;
-    QAction *actionAbout;
-    QAction *actionAboutQt;
+    QAction *actionRotateCounterclockwise;
+    QAction *actionRotateClockwise;
+    QAction *actionDeleteFile;
+    QAction *actionZoomOut;
+    QAction *actionZoomIn;
+    QAction *actionZoomFitToWindow;
+    QAction *actionZoomOriginalSize;
+    QAction *actionZoomFullScreen;
     QAction *actionEnglish;
     QAction *actionRussian;
+    QAction *actionAbout;
+    QAction *actionAboutQt;
 
     UI(MainWindow *mainWindow)
         : mainWindow(mainWindow)
@@ -94,6 +109,7 @@ struct MainWindow::UI
         , zoomIn(createToolbarButton(toolbar))
         , zoomFitToWindow(createToolbarButton(toolbar))
         , zoomOriginalSize(createToolbarButton(toolbar))
+        , zoomFullScreen(createToolbarButton(toolbar))
         , rotateCounterclockwise(createToolbarButton(toolbar))
         , rotateClockwise(createToolbarButton(toolbar))
         , openFile(createToolbarButton(toolbar))
@@ -102,17 +118,30 @@ struct MainWindow::UI
         , preferences(createToolbarButton(toolbar))
         , exit(createToolbarButton(toolbar))
         , menubar(new QMenuBar(mainWindow))
+        , contextMenu(new QMenu(mainWindow))
         , menuFile(new QMenu(menubar))
+        , menuEdit(new QMenu(menubar))
+        , menuView(new QMenu(menubar))
         , menuLanguage(new QMenu(menubar))
         , menuHelp(new QMenu(menubar))
-        , actionOpen(new QAction(menuFile))
-        , actionSaveAs(new QAction(menuFile))
-        , actionPreferences(new QAction(menuFile))
-        , actionExit(new QAction(menuFile))
-        , actionAbout(new QAction(menuHelp))
-        , actionAboutQt(new QAction(menuHelp))
-        , actionEnglish(new QAction(menuLanguage))
-        , actionRussian(new QAction(menuLanguage))
+        , actionOpen(createWidgetAction(mainWindow))
+        , actionSaveAs(createWidgetAction(mainWindow))
+        , actionNavigatePrevious(createWidgetAction(mainWindow))
+        , actionNavigateNext(createWidgetAction(mainWindow))
+        , actionPreferences(createWidgetAction(mainWindow))
+        , actionExit(createWidgetAction(mainWindow))
+        , actionRotateCounterclockwise(createWidgetAction(mainWindow))
+        , actionRotateClockwise(createWidgetAction(mainWindow))
+        , actionDeleteFile(createWidgetAction(mainWindow))
+        , actionZoomOut(createWidgetAction(mainWindow))
+        , actionZoomIn(createWidgetAction(mainWindow))
+        , actionZoomFitToWindow(createWidgetAction(mainWindow))
+        , actionZoomOriginalSize(createWidgetAction(mainWindow))
+        , actionZoomFullScreen(createWidgetAction(mainWindow))
+        , actionEnglish(createWidgetAction(mainWindow))
+        , actionRussian(createWidgetAction(mainWindow))
+        , actionAbout(createWidgetAction(mainWindow))
+        , actionAboutQt(createWidgetAction(mainWindow))
     {
 #if defined (Q_OS_MAC)
         QStyle *style = NULL;
@@ -132,11 +161,14 @@ struct MainWindow::UI
         const QList<QWidget*> mainWindowChildren = mainWindow->findChildren<QWidget*>();
         for(QList<QWidget*>::ConstIterator it = mainWindowChildren.constBegin(); it != mainWindowChildren.constEnd(); ++it)
             (*it)->setFocusPolicy(Qt::NoFocus);
+        menubar->setFocusProxy(mainWindow);
 
         imageViewerWidget->setAcceptDrops(false);
+        imageViewerWidget->setContextMenuPolicy(Qt::NoContextMenu);
 
         zoomFitToWindow->setCheckable(true);
         zoomOriginalSize->setCheckable(true);
+        zoomFullScreen->setCheckable(true);
 
         navigatePrevious->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_LEFT                      , ThemeUtils::WidgetHasDarkTheme(navigatePrevious)));
         navigateNext->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_RIGHT                     , ThemeUtils::WidgetHasDarkTheme(navigateNext)));
@@ -144,6 +176,7 @@ struct MainWindow::UI
         zoomIn->setIcon                 (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , ThemeUtils::WidgetHasDarkTheme(zoomIn)));
         zoomFitToWindow->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , ThemeUtils::WidgetHasDarkTheme(zoomFitToWindow)));
         zoomOriginalSize->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , ThemeUtils::WidgetHasDarkTheme(zoomOriginalSize)));
+        zoomFullScreen->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , ThemeUtils::WidgetHasDarkTheme(zoomFullScreen)));
         rotateCounterclockwise->setIcon (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , ThemeUtils::WidgetHasDarkTheme(rotateCounterclockwise)));
         rotateClockwise->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , ThemeUtils::WidgetHasDarkTheme(rotateClockwise)));
         openFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , ThemeUtils::WidgetHasDarkTheme(openFile)));
@@ -163,6 +196,7 @@ struct MainWindow::UI
         toolbarLayout->addWidget(zoomIn);
         toolbarLayout->addWidget(zoomFitToWindow);
         toolbarLayout->addWidget(zoomOriginalSize);
+        toolbarLayout->addWidget(zoomFullScreen);
         toolbarLayout->addWidget(createVerticalSeparator(toolbar));
         toolbarLayout->addWidget(rotateCounterclockwise);
         toolbarLayout->addWidget(rotateClockwise);
@@ -182,25 +216,73 @@ struct MainWindow::UI
         mainLayout->addWidget(toolbar);
 
         menuFile->addAction(actionOpen);
-        actionOpen->setShortcut(QKeySequence::Open);
+        actionOpen->setShortcuts(QList<QKeySequence>() << QKeySequence::Open << Qt::Key_O);
         actionOpen->setMenuRole(QAction::NoRole);
         menuFile->addAction(actionSaveAs);
-        actionSaveAs->setShortcut(QKeySequence::Save);
+        actionSaveAs->setShortcuts(QList<QKeySequence>() << QKeySequence::Save << Qt::Key_S);
         actionSaveAs->setMenuRole(QAction::NoRole);
         menuFile->addSeparator();
+        menuFile->addAction(actionNavigatePrevious);
+        actionNavigatePrevious->setShortcuts(QList<QKeySequence>() << Qt::Key_Left << Qt::Key_Up);
+        actionNavigatePrevious->setMenuRole(QAction::NoRole);
+        menuFile->addAction(actionNavigateNext);
+        actionNavigateNext->setShortcuts(QList<QKeySequence>() << Qt::Key_Right << Qt::Key_Down << Qt::Key_Space << Qt::Key_Return << Qt::Key_Enter);
+        actionNavigateNext->setMenuRole(QAction::NoRole);
+        menuFile->addSeparator();
         menuFile->addAction(actionPreferences);
-#if defined(Q_OS_MAC)
-        actionPreferences->setShortcut(Qt::CTRL + Qt::Key_Comma);
+#if defined (Q_OS_MAC)
+        actionPreferences->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_Comma << Qt::CTRL + Qt::Key_P << Qt::Key_P);
+#else
+        actionPreferences->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_P << Qt::Key_P << Qt::CTRL + Qt::Key_Comma);
 #endif
         actionPreferences->setMenuRole(QAction::PreferencesRole);
         menuFile->addSeparator();
         menuFile->addAction(actionExit);
-#if defined(Q_OS_WIN)
-        actionExit->setShortcut(Qt::ALT + Qt::Key_F4);
+#if defined (Q_OS_WIN)
+        actionExit->setShortcuts(QList<QKeySequence>() << Qt::ALT + Qt::Key_F4 << Qt::CTRL + Qt::Key_Q);
 #else
-        actionExit->setShortcut(Qt::CTRL + Qt::Key_Q);
+        actionExit->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_Q << Qt::ALT + Qt::Key_F4);
 #endif
         actionExit->setMenuRole(QAction::QuitRole);
+
+        menuEdit->addAction(actionRotateCounterclockwise);
+        actionRotateCounterclockwise->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_L << Qt::Key_L);
+        actionRotateCounterclockwise->setMenuRole(QAction::NoRole);
+        menuEdit->addAction(actionRotateClockwise);
+        actionRotateClockwise->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_R << Qt::Key_R);
+        actionRotateClockwise->setMenuRole(QAction::NoRole);
+        menuEdit->addSeparator();
+        menuEdit->addAction(actionDeleteFile);
+#if defined (Q_OS_MAC)
+        actionDeleteFile->setShortcuts(QList<QKeySequence>() << Qt::Key_Backspace << Qt::Key_Delete);
+#else
+        actionDeleteFile->setShortcuts(QList<QKeySequence>() << Qt::Key_Delete << Qt::Key_Backspace);
+#endif
+        actionDeleteFile->setMenuRole(QAction::NoRole);
+
+        menuView->addAction(actionZoomOut);
+        actionZoomOut->setShortcuts(QList<QKeySequence>() << Qt::Key_Minus << Qt::Key_Underscore);
+        actionZoomOut->setMenuRole(QAction::NoRole);
+        menuView->addAction(actionZoomIn);
+        actionZoomIn->setShortcuts(QList<QKeySequence>() << Qt::Key_Plus << Qt::Key_Equal);
+        actionZoomIn->setMenuRole(QAction::NoRole);
+        menuView->addAction(actionZoomFitToWindow);
+        actionZoomFitToWindow->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_F << Qt::Key_F);
+        actionZoomFitToWindow->setMenuRole(QAction::NoRole);
+        actionZoomFitToWindow->setCheckable(true);
+        menuView->addAction(actionZoomOriginalSize);
+        actionZoomOriginalSize->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_G << Qt::Key_G);
+        actionZoomOriginalSize->setMenuRole(QAction::NoRole);
+        actionZoomOriginalSize->setCheckable(true);
+        menuView->addSeparator();
+        menuView->addAction(actionZoomFullScreen);
+#if defined (Q_OS_MAC)
+        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::META + Qt::Key_F << Qt::Key_F11);
+#else
+        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::Key_F11 << Qt::CTRL + Qt::META + Qt::Key_F);
+#endif
+        actionZoomFullScreen->setMenuRole(QAction::NoRole);
+        actionZoomFullScreen->setCheckable(true);
 
         menuLanguage->addAction(actionEnglish);
         actionEnglish->setMenuRole(QAction::NoRole);
@@ -215,12 +297,22 @@ struct MainWindow::UI
         actionAboutQt->setMenuRole(QAction::AboutQtRole);
 
         const bool menuHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(menuFile);
-        actionOpen->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN      , menuHasDarkTheme));
-        actionSaveAs->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS   , menuHasDarkTheme));
-        actionPreferences->setIcon  (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS  , menuHasDarkTheme));
-        actionExit->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT      , menuHasDarkTheme));
-        actionAbout->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ABOUT     , menuHasDarkTheme));
-        actionAboutQt->setIcon      (ThemeUtils::GetIcon(ThemeUtils::ICON_QT        , menuHasDarkTheme));
+        actionOpen->setIcon                     (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , menuHasDarkTheme));
+        actionSaveAs->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS                   , menuHasDarkTheme));
+        actionNavigatePrevious->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_LEFT                      , menuHasDarkTheme));
+        actionNavigateNext->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_RIGHT                     , menuHasDarkTheme));
+        actionPreferences->setIcon              (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS                  , menuHasDarkTheme));
+        actionExit->setIcon                     (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT                      , menuHasDarkTheme));
+        actionRotateCounterclockwise->setIcon   (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , menuHasDarkTheme));
+        actionRotateClockwise->setIcon          (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , menuHasDarkTheme));
+        actionDeleteFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_DELETE                    , menuHasDarkTheme));
+        actionZoomOut->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_OUT                  , menuHasDarkTheme));
+        actionZoomIn->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , menuHasDarkTheme));
+        actionZoomFitToWindow->setIcon          (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , menuHasDarkTheme));
+        actionZoomOriginalSize->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , menuHasDarkTheme));
+        actionZoomFullScreen->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , menuHasDarkTheme));
+        actionAbout->setIcon                    (ThemeUtils::GetIcon(ThemeUtils::ICON_ABOUT                     , menuHasDarkTheme));
+        actionAboutQt->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_QT                        , menuHasDarkTheme));
 
         QActionGroup *langActions = new QActionGroup(menuLanguage);
         langActions->addAction(actionEnglish);
@@ -228,13 +320,28 @@ struct MainWindow::UI
         langActions->setExclusive(true);
 
         menubar->addMenu(menuFile);
+        menubar->addMenu(menuEdit);
+        menubar->addMenu(menuView);
         menubar->addMenu(menuLanguage);
         menubar->addMenu(menuHelp);
+
+        contextMenu->addMenu(menuFile);
+        contextMenu->addMenu(menuEdit);
+        contextMenu->addMenu(menuView);
+        contextMenu->addMenu(menuLanguage);
+        contextMenu->addMenu(menuHelp);
 
         setImageControlsEnabled(false);
         mainWindow->setCentralWidget(centralWidget);
         mainWindow->setMenuBar(menubar);
         mainWindow->resize(WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT);
+
+#if defined (Q_OS_MAC)
+        MenuUtils::DisableDictationMenuItem();
+        MenuUtils::DisableCharacterPaletteMenuItem();
+        MenuUtils::DisableShowTabBarMenuItem();
+        MenuUtils::DisableEnterFullScreenMenuItem();
+#endif
     }
 
     ~UI()
@@ -248,6 +355,7 @@ struct MainWindow::UI
         zoomIn->setToolTip(qApp->translate("MainWindow", "Zoom In"));
         zoomFitToWindow->setToolTip(qApp->translate("MainWindow", "Fit Image To Window Size"));
         zoomOriginalSize->setToolTip(qApp->translate("MainWindow", "Original Size"));
+        zoomFullScreen->setToolTip(qApp->translate("MainWindow", "Full Screen"));
         rotateCounterclockwise->setToolTip(qApp->translate("MainWindow", "Rotate Counterclockwise"));
         rotateClockwise->setToolTip(qApp->translate("MainWindow", "Rotate Clockwise"));
         openFile->setToolTip(qApp->translate("MainWindow", "Open File"));
@@ -257,17 +365,29 @@ struct MainWindow::UI
         exit->setToolTip(qApp->translate("MainWindow", "Exit"));
 
         menuFile->setTitle(QApplication::translate("MainWindow", "&File"));
-        menuHelp->setTitle(QApplication::translate("MainWindow", "&Help"));
+        menuEdit->setTitle(QApplication::translate("MainWindow", "&Edit"));
+        menuView->setTitle(QApplication::translate("MainWindow", "&View"));
         menuLanguage->setTitle(QApplication::translate("MainWindow", "&Language"));
+        menuHelp->setTitle(QApplication::translate("MainWindow", "&Help"));
 
         actionOpen->setText(QApplication::translate("MainWindow", "&Open"));
         actionSaveAs->setText(QApplication::translate("MainWindow", "&Save As"));
+        actionNavigatePrevious->setText(qApp->translate("MainWindow", "P&revious"));
+        actionNavigateNext->setText(qApp->translate("MainWindow", "&Next"));
         actionPreferences->setText(QApplication::translate("MainWindow", "&Preferences"));
         actionExit->setText(QApplication::translate("MainWindow", "&Exit"));
-        actionAbout->setText(QApplication::translate("MainWindow", "&About"));
-        actionAboutQt->setText(QApplication::translate("MainWindow", "About &Qt"));
+        actionRotateCounterclockwise->setText(QApplication::translate("MainWindow", "Rotate &Counterclockwise"));
+        actionRotateClockwise->setText(QApplication::translate("MainWindow", "&Rotate Clockwise"));
+        actionDeleteFile->setText(QApplication::translate("MainWindow", "&Delete File"));
+        actionZoomOut->setText(QApplication::translate("MainWindow", "Zoom &Out"));
+        actionZoomIn->setText(QApplication::translate("MainWindow", "Zoom &In"));
+        actionZoomFitToWindow->setText(QApplication::translate("MainWindow", "&Fit Image To Window Size"));
+        actionZoomOriginalSize->setText(QApplication::translate("MainWindow", "Ori&ginal Size"));
+        actionZoomFullScreen->setText(QApplication::translate("MainWindow", "Full &Screen"));
         actionEnglish->setText(QApplication::translate("MainWindow", "&English"));
         actionRussian->setText(QApplication::translate("MainWindow", "&Russian"));
+        actionAbout->setText(QApplication::translate("MainWindow", "&About"));
+        actionAboutQt->setText(QApplication::translate("MainWindow", "About &Qt"));
 
         updateDockMenu();
     }
@@ -275,11 +395,17 @@ struct MainWindow::UI
     void setImageControlsEnabled(bool isEnabled)
     {
         zoomOut->setEnabled(isEnabled);
+        actionZoomOut->setEnabled(isEnabled);
         zoomIn->setEnabled(isEnabled);
+        actionZoomIn->setEnabled(isEnabled);
         zoomFitToWindow->setEnabled(isEnabled);
+        actionZoomFitToWindow->setEnabled(isEnabled);
         zoomOriginalSize->setEnabled(isEnabled);
+        actionZoomOriginalSize->setEnabled(isEnabled);
         rotateCounterclockwise->setEnabled(isEnabled);
+        actionRotateCounterclockwise->setEnabled(isEnabled);
         rotateClockwise->setEnabled(isEnabled);
+        actionRotateClockwise->setEnabled(isEnabled);
         saveFileAs->setEnabled(isEnabled);
         actionSaveAs->setEnabled(isEnabled);
     }
@@ -301,6 +427,13 @@ private:
         separator->setFrameShape(QFrame::VLine);
         separator->setFrameShadow(QFrame::Sunken);
         return separator;
+    }
+
+    QAction *createWidgetAction(QWidget *widget)
+    {
+        QAction *action = new QAction(widget);
+        widget->addAction(action);
+        return action;
     }
 
     void updateDockMenu()

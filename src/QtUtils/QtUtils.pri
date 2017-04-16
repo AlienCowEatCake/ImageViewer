@@ -27,6 +27,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 macx {
     LIBS += -framework Foundation
     LIBS += -framework CoreServices
+    LIBS += -framework AppKit
 }
 
 win32 {

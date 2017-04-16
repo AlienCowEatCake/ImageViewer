@@ -36,7 +36,8 @@ signals:
     void moveToTrashChanged(bool enabled);
     void zoomModeChanged(ImageViewerWidget::ZoomMode mode);
     void zoomLevelChanged(qreal level);
-    void backgroundColorChanged(const QColor &color);
+    void normalBackgroundColorChanged(const QColor &color);
+    void fullScreenBackgroundColorChanged(const QColor &color);
     void lastOpenedPathChanged(const QString &path);
     void smoothTransformationChanged(bool enabled);
     void mainWindowStateChanged(const QByteArray &geometry);
@@ -58,8 +59,11 @@ public:
     qreal zoomLevel() const;
     void setZoomLevel(qreal level);
 
-    QColor backgroundColor() const;
-    void setBackgroundColor(const QColor &color);
+    QColor normalBackgroundColor() const;
+    void setNormalBackgroundColor(const QColor &color);
+
+    QColor fullScreenBackgroundColor() const;
+    void setFullScreenBackgroundColor(const QColor &color);
 
     QString lastOpenedPath() const;
     void setLastOpenedPath(const QString &path);
