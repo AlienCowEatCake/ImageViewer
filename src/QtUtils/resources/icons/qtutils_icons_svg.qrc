@@ -50,5 +50,7 @@
         <file>icon_delete_white.svg</file>
         <file>icon_settings_black.svg</file>
         <file>icon_settings_white.svg</file>
+        <file>icon_fullscreen_black.svg</file>
+        <file>icon_fullscreen_white.svg</file>
     </qresource>
 </RCC>

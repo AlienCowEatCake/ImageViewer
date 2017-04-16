@@ -330,3 +330,10 @@ void ImageViewerWidget::mouseReleaseEvent(QMouseEvent *event)
     QGraphicsView::mouseReleaseEvent(event);
     setDragMode(QGraphicsView::NoDrag);
 }
+
+void ImageViewerWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    QGraphicsView::mouseMoveEvent(event);
+    if(dragMode() == QGraphicsView::ScrollHandDrag && event->buttons() == Qt::MouseButtons())
+        setDragMode(QGraphicsView::NoDrag);
+}

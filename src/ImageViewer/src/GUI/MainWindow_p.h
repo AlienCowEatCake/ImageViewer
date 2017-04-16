@@ -161,6 +161,7 @@ struct MainWindow::UI
         const QList<QWidget*> mainWindowChildren = mainWindow->findChildren<QWidget*>();
         for(QList<QWidget*>::ConstIterator it = mainWindowChildren.constBegin(); it != mainWindowChildren.constEnd(); ++it)
             (*it)->setFocusPolicy(Qt::NoFocus);
+        menubar->setFocusProxy(mainWindow);
 
         imageViewerWidget->setAcceptDrops(false);
         imageViewerWidget->setContextMenuPolicy(Qt::NoContextMenu);
@@ -175,7 +176,7 @@ struct MainWindow::UI
         zoomIn->setIcon                 (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , ThemeUtils::WidgetHasDarkTheme(zoomIn)));
         zoomFitToWindow->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , ThemeUtils::WidgetHasDarkTheme(zoomFitToWindow)));
         zoomOriginalSize->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , ThemeUtils::WidgetHasDarkTheme(zoomOriginalSize)));
-//        zoomFullScreen->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , ThemeUtils::WidgetHasDarkTheme(zoomFullScreen)));
+        zoomFullScreen->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , ThemeUtils::WidgetHasDarkTheme(zoomFullScreen)));
         rotateCounterclockwise->setIcon (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , ThemeUtils::WidgetHasDarkTheme(rotateCounterclockwise)));
         rotateClockwise->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , ThemeUtils::WidgetHasDarkTheme(rotateClockwise)));
         openFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , ThemeUtils::WidgetHasDarkTheme(openFile)));
@@ -268,9 +269,11 @@ struct MainWindow::UI
         menuView->addAction(actionZoomFitToWindow);
         actionZoomFitToWindow->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_F << Qt::Key_F);
         actionZoomFitToWindow->setMenuRole(QAction::NoRole);
+        actionZoomFitToWindow->setCheckable(true);
         menuView->addAction(actionZoomOriginalSize);
         actionZoomOriginalSize->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_G << Qt::Key_G);
         actionZoomOriginalSize->setMenuRole(QAction::NoRole);
+        actionZoomOriginalSize->setCheckable(true);
         menuView->addSeparator();
         menuView->addAction(actionZoomFullScreen);
 #if defined (Q_OS_MAC)
@@ -279,6 +282,7 @@ struct MainWindow::UI
         actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::Key_F11 << Qt::CTRL + Qt::META + Qt::Key_F);
 #endif
         actionZoomFullScreen->setMenuRole(QAction::NoRole);
+        actionZoomFullScreen->setCheckable(true);
 
         menuLanguage->addAction(actionEnglish);
         actionEnglish->setMenuRole(QAction::NoRole);
@@ -306,7 +310,7 @@ struct MainWindow::UI
         actionZoomIn->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , menuHasDarkTheme));
         actionZoomFitToWindow->setIcon          (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , menuHasDarkTheme));
         actionZoomOriginalSize->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , menuHasDarkTheme));
-//        actionZoomFullScreen->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , menuHasDarkTheme));
+        actionZoomFullScreen->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , menuHasDarkTheme));
         actionAbout->setIcon                    (ThemeUtils::GetIcon(ThemeUtils::ICON_ABOUT                     , menuHasDarkTheme));
         actionAboutQt->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_QT                        , menuHasDarkTheme));
 

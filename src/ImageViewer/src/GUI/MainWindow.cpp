@@ -430,6 +430,7 @@ void MainWindow::switchFullScreenMode()
         m_ui->menubar->setVisible(true);
         m_ui->toolbar->setVisible(true);
         m_ui->zoomFullScreen->setChecked(false);
+        m_ui->actionZoomFullScreen->setChecked(false);
 
         restoreState(m_impl->settings->mainWindowState());
         restoreGeometry(m_impl->settings->mainWindowGeometry());
@@ -444,6 +445,7 @@ void MainWindow::switchFullScreenMode()
         m_ui->menubar->setVisible(false);
         m_ui->toolbar->setVisible(false);
         m_ui->zoomFullScreen->setChecked(true);
+        m_ui->actionZoomFullScreen->setChecked(true);
     }
 }
 
@@ -487,9 +489,13 @@ void MainWindow::onOpenLastRequested()
 
 void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)
 {
+    const bool modeIsFitToWindow = mode == ImageViewerWidget::ZOOM_FIT_TO_WINDOW;
+    const bool modeIsOriginalSize = mode == ImageViewerWidget::ZOOM_IDENTITY;
     m_ui->imageViewerWidget->setZoomMode(mode);
-    m_ui->zoomFitToWindow->setChecked(mode == ImageViewerWidget::ZOOM_FIT_TO_WINDOW);
-    m_ui->zoomOriginalSize->setChecked(mode == ImageViewerWidget::ZOOM_IDENTITY);
+    m_ui->zoomFitToWindow->setChecked(modeIsFitToWindow);
+    m_ui->zoomOriginalSize->setChecked(modeIsOriginalSize);
+    m_ui->actionZoomFitToWindow->setChecked(modeIsFitToWindow);
+    m_ui->actionZoomOriginalSize->setChecked(modeIsOriginalSize);
     m_impl->settings->setZoomMode(mode);
     updateWindowTitle();
 }
