@@ -76,9 +76,9 @@ bool GUISettings::askBeforeDelete() const
 void GUISettings::setAskBeforeDelete(bool enabled)
 {
     const bool oldValue = askBeforeDelete();
+    m_impl->settings.setValue(QString::fromLatin1("AskBeforeDelete"), enabled);
     if(enabled != oldValue)
         emit askBeforeDeleteChanged(enabled);
-    m_impl->settings.setValue(QString::fromLatin1("AskBeforeDelete"), enabled);
 }
 
 bool GUISettings::moveToTrash() const
@@ -91,9 +91,9 @@ bool GUISettings::moveToTrash() const
 void GUISettings::setMoveToTrash(bool enabled)
 {
     const bool oldValue = moveToTrash();
+    m_impl->settings.setValue(QString::fromLatin1("MoveToTrash"), enabled);
     if(enabled != oldValue)
         emit moveToTrashChanged(enabled);
-    m_impl->settings.setValue(QString::fromLatin1("MoveToTrash"), enabled);
 }
 
 ImageViewerWidget::ZoomMode GUISettings::zoomMode() const
@@ -107,9 +107,9 @@ ImageViewerWidget::ZoomMode GUISettings::zoomMode() const
 void GUISettings::setZoomMode(ImageViewerWidget::ZoomMode mode)
 {
     const ImageViewerWidget::ZoomMode oldValue = zoomMode();
+    m_impl->settings.setValue(QString::fromLatin1("ZoomMode"), zoomModeToVariant(mode));
     if(mode != oldValue)
         emit zoomModeChanged(mode);
-    m_impl->settings.setValue(QString::fromLatin1("ZoomMode"), zoomModeToVariant(mode));
 }
 
 qreal GUISettings::zoomLevel() const
@@ -125,24 +125,39 @@ qreal GUISettings::zoomLevel() const
 void GUISettings::setZoomLevel(qreal level)
 {
     const qreal oldValue = zoomLevel();
+    m_impl->settings.setValue(QString::fromLatin1("ZoomLevel"), level);
     if(level != oldValue)
         emit zoomLevelChanged(level);
-    m_impl->settings.setValue(QString::fromLatin1("ZoomLevel"), level);
 }
 
-QColor GUISettings::backgroundColor() const
+QColor GUISettings::normalBackgroundColor() const
 {
     const QColor defaultValue(255, 255, 255, 128);
-    QVariant value = m_impl->settings.value(QString::fromLatin1("BackgroundColor"), defaultValue);
+    QVariant value = m_impl->settings.value(QString::fromLatin1("NormalBackgroundColor"), defaultValue);
     return (value.isValid() && value.canConvert(QVariant::Color) ? value.value<QColor>() : defaultValue);
 }
 
-void GUISettings::setBackgroundColor(const QColor &color)
+void GUISettings::setNormalBackgroundColor(const QColor &color)
 {
-    const QColor oldValue = backgroundColor();
+    const QColor oldValue = normalBackgroundColor();
+    m_impl->settings.setValue(QString::fromLatin1("NormalBackgroundColor"), color);
     if(color != oldValue)
-        emit backgroundColorChanged(color);
-    m_impl->settings.setValue(QString::fromLatin1("BackgroundColor"), color);
+        emit normalBackgroundColorChanged(color);
+}
+
+QColor GUISettings::fullScreenBackgroundColor() const
+{
+    const QColor defaultValue(0, 0, 0, 128);
+    QVariant value = m_impl->settings.value(QString::fromLatin1("FullScreenBackgroundColor"), defaultValue);
+    return (value.isValid() && value.canConvert(QVariant::Color) ? value.value<QColor>() : defaultValue);
+}
+
+void GUISettings::setFullScreenBackgroundColor(const QColor &color)
+{
+    const QColor oldValue = fullScreenBackgroundColor();
+    m_impl->settings.setValue(QString::fromLatin1("FullScreenBackgroundColor"), color);
+    if(color != oldValue)
+        emit fullScreenBackgroundColorChanged(color);
 }
 
 QString GUISettings::lastOpenedPath() const
@@ -155,9 +170,9 @@ QString GUISettings::lastOpenedPath() const
 void GUISettings::setLastOpenedPath(const QString &path)
 {
     const QString oldValue = lastOpenedPath();
+    m_impl->settings.setValue(QString::fromLatin1("LastOpenedPath"), path);
     if(path != oldValue)
         emit lastOpenedPathChanged(path);
-    m_impl->settings.setValue(QString::fromLatin1("LastOpenedPath"), path);
 }
 
 bool GUISettings::smoothTransformation() const
@@ -170,9 +185,9 @@ bool GUISettings::smoothTransformation() const
 void GUISettings::setSmoothTransformation(bool enabled)
 {
     const bool oldValue = smoothTransformation();
+    m_impl->settings.setValue(QString::fromLatin1("SmoothTransformation"), enabled);
     if(enabled != oldValue)
         emit smoothTransformationChanged(enabled);
-    m_impl->settings.setValue(QString::fromLatin1("SmoothTransformation"), enabled);
 }
 
 QByteArray GUISettings::mainWindowGeometry() const
@@ -184,9 +199,9 @@ QByteArray GUISettings::mainWindowGeometry() const
 void GUISettings::setMainWindowGeometry(const QByteArray &geometry)
 {
     const QByteArray oldValue = mainWindowGeometry();
+    m_impl->settings.setValue(QString::fromLatin1("MainWindowGeometry"), geometry);
     if(geometry != oldValue)
         emit mainWindowGeometryChanged(geometry);
-    m_impl->settings.setValue(QString::fromLatin1("MainWindowGeometry"), geometry);
 }
 
 QByteArray GUISettings::mainWindowState() const
@@ -198,7 +213,7 @@ QByteArray GUISettings::mainWindowState() const
 void GUISettings::setMainWindowState(const QByteArray &state)
 {
     const QByteArray oldValue = mainWindowState();
+    m_impl->settings.setValue(QString::fromLatin1("MainWindowState"), state);
     if(state != oldValue)
         emit mainWindowStateChanged(state);
-    m_impl->settings.setValue(QString::fromLatin1("MainWindowState"), state);
 }

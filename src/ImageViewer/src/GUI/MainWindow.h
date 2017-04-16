@@ -42,6 +42,7 @@ public slots:
     void showAbout();
     void showPreferences();
     void switchFullScreenMode();
+    void updateBackgroundColor();
 
     void onOpenPreviousRequested();
     void onOpenNextRequested();

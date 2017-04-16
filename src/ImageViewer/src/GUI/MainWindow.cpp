@@ -260,13 +260,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
     connect(m_ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    connect(m_impl->settings, SIGNAL(backgroundColorChanged(const QColor&)), m_ui->imageViewerWidget, SLOT(setBackgroundColor(const QColor&)));
+    connect(m_impl->settings, SIGNAL(normalBackgroundColorChanged(const QColor&)), this, SLOT(updateBackgroundColor()));
+    connect(m_impl->settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&)), this, SLOT(updateBackgroundColor()));
     connect(m_impl->settings, SIGNAL(smoothTransformationChanged(bool)), m_ui->imageViewerWidget, SLOT(setSmoothTransformation(bool)));
 
     connect(&m_impl->watcher, SIGNAL(directoryChanged(const QString&)), this, SLOT(onDirectoryChanged()));
 
     m_ui->imageViewerWidget->setZoomLevel(m_impl->settings->zoomLevel());
-    m_ui->imageViewerWidget->setBackgroundColor(m_impl->settings->backgroundColor());
+    m_ui->imageViewerWidget->setBackgroundColor(m_impl->settings->normalBackgroundColor());
     m_ui->imageViewerWidget->setSmoothTransformation(m_impl->settings->smoothTransformation());
     onZoomModeChanged(m_impl->settings->zoomMode());
 
@@ -423,30 +424,34 @@ void MainWindow::showPreferences()
 
 void MainWindow::switchFullScreenMode()
 {
-    if(m_impl->isFullScreenMode)
-    {
-        m_impl->isFullScreenMode = false;
-        showNormal();
-        m_ui->menubar->setVisible(true);
-        m_ui->toolbar->setVisible(true);
-        m_ui->zoomFullScreen->setChecked(false);
-        m_ui->actionZoomFullScreen->setChecked(false);
-
-        restoreState(m_impl->settings->mainWindowState());
-        restoreGeometry(m_impl->settings->mainWindowGeometry());
-    }
-    else
+    const bool toFullScreenMode = !m_impl->isFullScreenMode;
+    const bool toNormalMode = !toFullScreenMode;
+    m_impl->isFullScreenMode = toFullScreenMode;
+    if(toFullScreenMode)
     {
         m_impl->settings->setMainWindowGeometry(saveGeometry());
         m_impl->settings->setMainWindowState(saveState());
-
-        m_impl->isFullScreenMode = true;
         showFullScreen();
-        m_ui->menubar->setVisible(false);
-        m_ui->toolbar->setVisible(false);
-        m_ui->zoomFullScreen->setChecked(true);
-        m_ui->actionZoomFullScreen->setChecked(true);
     }
+    m_ui->menubar->setVisible(toNormalMode);
+    m_ui->toolbar->setVisible(toNormalMode);
+    m_ui->zoomFullScreen->setChecked(toFullScreenMode);
+    m_ui->actionZoomFullScreen->setChecked(toFullScreenMode);
+    updateBackgroundColor();
+    if(toNormalMode)
+    {
+        showNormal();
+        restoreState(m_impl->settings->mainWindowState());
+        restoreGeometry(m_impl->settings->mainWindowGeometry());
+    }
+}
+
+void MainWindow::updateBackgroundColor()
+{
+    const QColor color = m_impl->isFullScreenMode
+            ? m_impl->settings->fullScreenBackgroundColor()
+            : m_impl->settings->normalBackgroundColor();
+    m_ui->imageViewerWidget->setBackgroundColor(color);
 }
 
 void MainWindow::onOpenPreviousRequested()
