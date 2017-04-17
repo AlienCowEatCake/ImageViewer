@@ -67,6 +67,8 @@ struct MainWindow::UI
     QToolButton *zoomFullScreen;
     QToolButton *rotateCounterclockwise;
     QToolButton *rotateClockwise;
+    QToolButton *flipHorizontal;
+    QToolButton *flipVertical;
     QToolButton *openFile;
     QToolButton *saveFileAs;
     QToolButton *deleteFile;
@@ -90,6 +92,8 @@ struct MainWindow::UI
     QAction *actionExit;
     QAction *actionRotateCounterclockwise;
     QAction *actionRotateClockwise;
+    QAction *actionFlipHorizontal;
+    QAction *actionFlipVertical;
     QAction *actionDeleteFile;
     QAction *actionZoomOut;
     QAction *actionZoomIn;
@@ -117,6 +121,8 @@ struct MainWindow::UI
         , zoomFullScreen(createToolbarButton(toolbar))
         , rotateCounterclockwise(createToolbarButton(toolbar))
         , rotateClockwise(createToolbarButton(toolbar))
+        , flipHorizontal(createToolbarButton(toolbar))
+        , flipVertical(createToolbarButton(toolbar))
         , openFile(createToolbarButton(toolbar))
         , saveFileAs(createToolbarButton(toolbar))
         , deleteFile(createToolbarButton(toolbar))
@@ -138,6 +144,8 @@ struct MainWindow::UI
         , actionExit(createWidgetAction(mainWindow))
         , actionRotateCounterclockwise(createWidgetAction(mainWindow))
         , actionRotateClockwise(createWidgetAction(mainWindow))
+        , actionFlipHorizontal(createWidgetAction(mainWindow))
+        , actionFlipVertical(createWidgetAction(mainWindow))
         , actionDeleteFile(createWidgetAction(mainWindow))
         , actionZoomOut(createWidgetAction(mainWindow))
         , actionZoomIn(createWidgetAction(mainWindow))
@@ -185,6 +193,8 @@ struct MainWindow::UI
         zoomFullScreen->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , ThemeUtils::WidgetHasDarkTheme(zoomFullScreen)));
         rotateCounterclockwise->setIcon (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , ThemeUtils::WidgetHasDarkTheme(rotateCounterclockwise)));
         rotateClockwise->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , ThemeUtils::WidgetHasDarkTheme(rotateClockwise)));
+        flipHorizontal->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_HORIZONTAL           , ThemeUtils::WidgetHasDarkTheme(flipHorizontal)));
+        flipVertical->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_VERTICAL             , ThemeUtils::WidgetHasDarkTheme(flipVertical)));
         openFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , ThemeUtils::WidgetHasDarkTheme(openFile)));
         saveFileAs->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS                   , ThemeUtils::WidgetHasDarkTheme(saveFileAs)));
         deleteFile->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_DELETE                    , ThemeUtils::WidgetHasDarkTheme(deleteFile)));
@@ -207,6 +217,8 @@ struct MainWindow::UI
         toolbarLayout->addWidget(createVerticalSeparator(toolbar));
         toolbarLayout->addWidget(rotateCounterclockwise);
         toolbarLayout->addWidget(rotateClockwise);
+        toolbarLayout->addWidget(flipHorizontal);
+        toolbarLayout->addWidget(flipVertical);
         toolbarLayout->addWidget(createVerticalSeparator(toolbar));
         toolbarLayout->addWidget(openFile);
         toolbarLayout->addWidget(saveFileAs);
@@ -261,6 +273,12 @@ struct MainWindow::UI
         menuEdit->addAction(actionRotateClockwise);
         actionRotateClockwise->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_R << Qt::Key_R);
         actionRotateClockwise->setMenuRole(QAction::NoRole);
+        menuEdit->addAction(actionFlipHorizontal);
+        actionFlipHorizontal->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_H << Qt::Key_H);
+        actionFlipHorizontal->setMenuRole(QAction::NoRole);
+        menuEdit->addAction(actionFlipVertical);
+        actionFlipVertical->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_V << Qt::Key_V);
+        actionFlipVertical->setMenuRole(QAction::NoRole);
         menuEdit->addSeparator();
         menuEdit->addAction(actionDeleteFile);
 #if defined (Q_OS_MAC)
@@ -315,6 +333,8 @@ struct MainWindow::UI
         actionExit->setIcon                     (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT                      , menuHasDarkTheme));
         actionRotateCounterclockwise->setIcon   (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , menuHasDarkTheme));
         actionRotateClockwise->setIcon          (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , menuHasDarkTheme));
+        actionFlipHorizontal->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_HORIZONTAL           , menuHasDarkTheme));
+        actionFlipVertical->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_VERTICAL             , menuHasDarkTheme));
         actionDeleteFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_DELETE                    , menuHasDarkTheme));
         actionZoomOut->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_OUT                  , menuHasDarkTheme));
         actionZoomIn->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , menuHasDarkTheme));
@@ -368,6 +388,8 @@ struct MainWindow::UI
         zoomFullScreen->setToolTip(qApp->translate("MainWindow", "Full Screen"));
         rotateCounterclockwise->setToolTip(qApp->translate("MainWindow", "Rotate Counterclockwise"));
         rotateClockwise->setToolTip(qApp->translate("MainWindow", "Rotate Clockwise"));
+        flipHorizontal->setToolTip(qApp->translate("MainWindow", "Flip Horizontal"));
+        flipVertical->setToolTip(qApp->translate("MainWindow", "Flip Vertical"));
         openFile->setToolTip(qApp->translate("MainWindow", "Open File"));
         saveFileAs->setToolTip(qApp->translate("MainWindow", "Save File As"));
         deleteFile->setToolTip(qApp->translate("MainWindow", "Delete File"));
@@ -388,6 +410,8 @@ struct MainWindow::UI
         actionExit->setText(QApplication::translate("MainWindow", "&Exit"));
         actionRotateCounterclockwise->setText(QApplication::translate("MainWindow", "Rotate &Counterclockwise"));
         actionRotateClockwise->setText(QApplication::translate("MainWindow", "&Rotate Clockwise"));
+        actionFlipHorizontal->setText(qApp->translate("MainWindow", "Flip &Horizontal"));
+        actionFlipVertical->setText(qApp->translate("MainWindow", "Flip &Vertical"));
         actionDeleteFile->setText(QApplication::translate("MainWindow", "&Delete File"));
         actionZoomOut->setText(QApplication::translate("MainWindow", "Zoom &Out"));
         actionZoomIn->setText(QApplication::translate("MainWindow", "Zoom &In"));
@@ -415,6 +439,10 @@ struct MainWindow::UI
         actionZoomOriginalSize->setEnabled(isEnabled);
         rotateCounterclockwise->setEnabled(isEnabled);
         actionRotateCounterclockwise->setEnabled(isEnabled);
+        flipHorizontal->setEnabled(isEnabled);
+        actionFlipHorizontal->setEnabled(isEnabled);
+        flipVertical->setEnabled(isEnabled);
+        actionFlipVertical->setEnabled(isEnabled);
         rotateClockwise->setEnabled(isEnabled);
         actionRotateClockwise->setEnabled(isEnabled);
         saveFileAs->setEnabled(isEnabled);

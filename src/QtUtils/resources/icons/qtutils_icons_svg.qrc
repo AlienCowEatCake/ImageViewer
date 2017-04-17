@@ -46,6 +46,10 @@
         <file>icon_rotate_clockwise_white.svg</file>
         <file>icon_rotate_counterclockwise_black.svg</file>
         <file>icon_rotate_counterclockwise_white.svg</file>
+        <file>icon_flip_horizontal_black.svg</file>
+        <file>icon_flip_horizontal_white.svg</file>
+        <file>icon_flip_vertical_black.svg</file>
+        <file>icon_flip_vertical_white.svg</file>
         <file>icon_delete_black.svg</file>
         <file>icon_delete_white.svg</file>
         <file>icon_settings_black.svg</file>

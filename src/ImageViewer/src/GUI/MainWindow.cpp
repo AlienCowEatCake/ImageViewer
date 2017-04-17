@@ -249,6 +249,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->zoomFullScreen, SIGNAL(clicked()), this, SLOT(switchFullScreenMode()));
     connect(m_ui->rotateCounterclockwise, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(rotateCounterclockwise()));
     connect(m_ui->rotateClockwise, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(rotateClockwise()));
+    connect(m_ui->flipHorizontal, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(flipHorizontal()));
+    connect(m_ui->flipVertical, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(flipVertical()));
     connect(m_ui->openFile, SIGNAL(clicked()), this, SLOT(onOpenFileWithDialogRequested()));
     connect(m_ui->saveFileAs, SIGNAL(clicked()), this, SLOT(onSaveAsRequested()));
     connect(m_ui->deleteFile, SIGNAL(clicked()), this, SLOT(onDeleteFileRequested()));
@@ -263,6 +265,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->actionExit, SIGNAL(triggered()), this, SLOT(onExitRequested()));
     connect(m_ui->actionRotateCounterclockwise, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(rotateCounterclockwise()));
     connect(m_ui->actionRotateClockwise, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(rotateClockwise()));
+    connect(m_ui->actionFlipHorizontal, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(flipHorizontal()));
+    connect(m_ui->actionFlipVertical, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(flipVertical()));
     connect(m_ui->actionDeleteFile, SIGNAL(triggered()), this, SLOT(onDeleteFileRequested()));
     connect(m_ui->actionZoomIn, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(zoomIn()));
     connect(m_ui->actionZoomOut, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(zoomOut()));

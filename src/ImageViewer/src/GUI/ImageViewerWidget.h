@@ -61,6 +61,9 @@ public slots:
     void rotateClockwise();
     void rotateCounterclockwise();
 
+    void flipHorizontal();
+    void flipVertical();
+
     void zoomIn();
     void zoomOut();
 

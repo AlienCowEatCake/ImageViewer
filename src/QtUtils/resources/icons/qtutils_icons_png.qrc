@@ -46,6 +46,10 @@
         <file>icon_rotate_clockwise_white.png</file>
         <file>icon_rotate_counterclockwise_black.png</file>
         <file>icon_rotate_counterclockwise_white.png</file>
+        <file>icon_flip_horizontal_black.png</file>
+        <file>icon_flip_horizontal_white.png</file>
+        <file>icon_flip_vertical_black.png</file>
+        <file>icon_flip_vertical_white.png</file>
         <file>icon_delete_black.png</file>
         <file>icon_delete_white.png</file>
         <file>icon_settings_black.png</file>

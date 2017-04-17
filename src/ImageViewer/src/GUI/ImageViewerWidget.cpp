@@ -55,6 +55,8 @@ struct ImageViewerWidget::Impl
         , currentZoomLevel(1)
         , previousZoomLevel(-1)
         , currentRotationAngle(0)
+        , flipHorizontal(false)
+        , flipVertical(false)
         , transformationMode(Qt::SmoothTransformation)
     {
         widget->setScene(scene);
@@ -96,6 +98,7 @@ struct ImageViewerWidget::Impl
         QMatrix matrix;
         matrix.scale(currentZoomLevel, currentZoomLevel);
         matrix.rotate(currentRotationAngle);
+        matrix.scale(flipHorizontal ? -1 : 1, flipVertical ? -1 : 1);
         imageViewerWidget->setMatrix(matrix);
 
         if(qAbs(previousZoomLevel - currentZoomLevel) / qMax(previousZoomLevel, currentZoomLevel) > ZOOM_CHANGE_EPSILON)
@@ -163,6 +166,8 @@ struct ImageViewerWidget::Impl
     qreal currentZoomLevel;
     qreal previousZoomLevel;
     int currentRotationAngle;
+    bool flipHorizontal;
+    bool flipVertical;
     Qt::TransformationMode transformationMode;
 };
 
@@ -206,6 +211,8 @@ void ImageViewerWidget::clear()
     ensureVisible(QRectF(0, 0, 0, 0));
     setSceneRect(0, 0, 1, 1);
     m_impl->currentRotationAngle = 0;
+    m_impl->flipHorizontal = false;
+    m_impl->flipVertical = false;
 }
 
 void ImageViewerWidget::setZoomMode(ImageViewerWidget::ZoomMode mode)
@@ -259,6 +266,8 @@ QImage ImageViewerWidget::grabImage() const
         transform.rotate(m_impl->currentRotationAngle);
         image = image.transformed(transform);
     }
+    if(m_impl->flipHorizontal || m_impl->flipVertical)
+        image = image.mirrored(m_impl->flipHorizontal, m_impl->flipVertical);
     return image;
 }
 
@@ -275,6 +284,18 @@ void ImageViewerWidget::rotateCounterclockwise()
     m_impl->currentRotationAngle -= 90;
     if(m_impl->currentRotationAngle <= -360)
         m_impl->currentRotationAngle += 360;
+    m_impl->updateTransformations();
+}
+
+void ImageViewerWidget::flipHorizontal()
+{
+    m_impl->flipHorizontal = !m_impl->flipHorizontal;
+    m_impl->updateTransformations();
+}
+
+void ImageViewerWidget::flipVertical()
+{
+    m_impl->flipVertical = !m_impl->flipVertical;
     m_impl->updateTransformations();
 }
 
