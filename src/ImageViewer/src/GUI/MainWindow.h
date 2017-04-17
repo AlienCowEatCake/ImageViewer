@@ -42,7 +42,7 @@ public slots:
     void showAbout();
     void showPreferences();
     void switchFullScreenMode();
-    void updateBackgroundColor();
+    void switchSlideShowMode();
 
     void onOpenPreviousRequested();
     void onOpenNextRequested();
@@ -64,6 +64,8 @@ public slots:
 
 private slots:
     void onDirectoryChanged();
+    void updateSlideShowInterval();
+    void updateBackgroundColor();
 
 protected:
     void closeEvent(QCloseEvent *event);

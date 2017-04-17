@@ -75,7 +75,9 @@ enum IconTypes
     ICON_ROTATE_CLOCKWISE,
     ICON_ROTATE_COUNTERCLOCKWISE,
     ICON_SETTINGS,
-    ICON_FULLSCREEN
+    ICON_FULLSCREEN,
+    ICON_PLAY,
+    ICON_STOP
 };
 
 /// @brief Функция для получения иконки

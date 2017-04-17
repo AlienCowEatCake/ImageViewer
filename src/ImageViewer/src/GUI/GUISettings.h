@@ -42,6 +42,7 @@ signals:
     void smoothTransformationChanged(bool enabled);
     void mainWindowStateChanged(const QByteArray &geometry);
     void mainWindowGeometryChanged(const QByteArray &state);
+    void slideShowIntervalChanged(int seconds);
 
 public:
     GUISettings(QObject *parent = NULL);
@@ -76,6 +77,9 @@ public:
 
     QByteArray mainWindowState() const;
     void setMainWindowState(const QByteArray &state);
+
+    int slideShowInterval() const;
+    void setSlideShowInterval(int seconds);
 
 private:
     struct Impl;

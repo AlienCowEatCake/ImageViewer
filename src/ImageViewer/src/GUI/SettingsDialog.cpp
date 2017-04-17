@@ -46,6 +46,7 @@ struct SettingsDialog::Impl
         settings->setSmoothTransformation(ui->smoothTransformationCheckbox->isChecked());
         settings->setNormalBackgroundColor(normalBackground);
         settings->setFullScreenBackgroundColor(fullScreenBackground);
+        settings->setSlideShowInterval(ui->slideShowSpinBox->value());
         settingsDialog->close();
     }
 

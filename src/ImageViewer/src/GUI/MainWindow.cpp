@@ -42,6 +42,7 @@
 #include <QVector>
 #include <QtAlgorithms>
 #include <QFileSystemWatcher>
+#include <QTimer>
 
 #include "Utils/SettingsWrapper.h"
 #include "Utils/Workarounds.h"
@@ -113,6 +114,8 @@ struct MainWindow::Impl
         , isFullScreenMode(false)
         , imageSaver(mainWindow)
         , watcher(mainWindow)
+        , slideShowTimer(mainWindow)
+        , isSlideShowMode(false)
     {
         onFileClosed();
     }
@@ -173,15 +176,19 @@ struct MainWindow::Impl
             currentDirectory.clear();
             mainWindow->m_ui->navigateNext->setEnabled(false);
             mainWindow->m_ui->navigatePrevious->setEnabled(false);
+            mainWindow->m_ui->startSlideShow->setEnabled(false);
             mainWindow->m_ui->actionNavigateNext->setEnabled(false);
             mainWindow->m_ui->actionNavigatePrevious->setEnabled(false);
+            mainWindow->m_ui->actionStartSlideShow->setEnabled(false);
         }
         else
         {
             mainWindow->m_ui->navigateNext->setEnabled(true);
             mainWindow->m_ui->navigatePrevious->setEnabled(true);
+            mainWindow->m_ui->startSlideShow->setEnabled(true);
             mainWindow->m_ui->actionNavigateNext->setEnabled(true);
             mainWindow->m_ui->actionNavigatePrevious->setEnabled(true);
+            mainWindow->m_ui->actionStartSlideShow->setEnabled(true);
         }
         const bool deletionEnabled = fileInfo.exists() && fileInfo.isWritable() && isFileOpened();
         mainWindow->m_ui->deleteFile->setEnabled(deletionEnabled);
@@ -198,9 +205,11 @@ struct MainWindow::Impl
         currentIndexInDirectory = -1;
         mainWindow->m_ui->navigateNext->setEnabled(false);
         mainWindow->m_ui->navigatePrevious->setEnabled(false);
+        mainWindow->m_ui->startSlideShow->setEnabled(false);
         mainWindow->m_ui->deleteFile->setEnabled(false);
         mainWindow->m_ui->actionNavigateNext->setEnabled(false);
         mainWindow->m_ui->actionNavigatePrevious->setEnabled(false);
+        mainWindow->m_ui->actionStartSlideShow->setEnabled(false);
         mainWindow->m_ui->actionDeleteFile->setEnabled(false);
     }
 
@@ -215,6 +224,9 @@ struct MainWindow::Impl
 
     ImageSaver imageSaver;
     QFileSystemWatcher watcher;
+
+    QTimer slideShowTimer;
+    bool isSlideShowMode;
 };
 
 MainWindow::MainWindow(QWidget *parent)
@@ -229,6 +241,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_ui->navigatePrevious, SIGNAL(clicked()), this, SLOT(onOpenPreviousRequested()));
     connect(m_ui->navigateNext, SIGNAL(clicked()), this, SLOT(onOpenNextRequested()));
+    connect(m_ui->startSlideShow, SIGNAL(clicked()), this, SLOT(switchSlideShowMode()));
     connect(m_ui->zoomIn, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(zoomIn()));
     connect(m_ui->zoomOut, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(zoomOut()));
     connect(m_ui->zoomFitToWindow, SIGNAL(clicked()), this, SLOT(onZoomFitToWindowClicked()));
@@ -245,6 +258,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(onSaveAsRequested()));
     connect(m_ui->actionNavigatePrevious, SIGNAL(triggered()), this, SLOT(onOpenPreviousRequested()));
     connect(m_ui->actionNavigateNext, SIGNAL(triggered()), this, SLOT(onOpenNextRequested()));
+    connect(m_ui->actionStartSlideShow, SIGNAL(triggered()), this, SLOT(switchSlideShowMode()));
     connect(m_ui->actionPreferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
     connect(m_ui->actionExit, SIGNAL(triggered()), this, SLOT(onExitRequested()));
     connect(m_ui->actionRotateCounterclockwise, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(rotateCounterclockwise()));
@@ -263,20 +277,21 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_impl->settings, SIGNAL(normalBackgroundColorChanged(const QColor&)), this, SLOT(updateBackgroundColor()));
     connect(m_impl->settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&)), this, SLOT(updateBackgroundColor()));
     connect(m_impl->settings, SIGNAL(smoothTransformationChanged(bool)), m_ui->imageViewerWidget, SLOT(setSmoothTransformation(bool)));
+    connect(m_impl->settings, SIGNAL(slideShowIntervalChanged(int)), this, SLOT(updateSlideShowInterval()));
 
     connect(&m_impl->watcher, SIGNAL(directoryChanged(const QString&)), this, SLOT(onDirectoryChanged()));
+
+    connect(&m_impl->slideShowTimer, SIGNAL(timeout()), this, SLOT(onOpenNextRequested()));
 
     m_ui->imageViewerWidget->setZoomLevel(m_impl->settings->zoomLevel());
     m_ui->imageViewerWidget->setBackgroundColor(m_impl->settings->normalBackgroundColor());
     m_ui->imageViewerWidget->setSmoothTransformation(m_impl->settings->smoothTransformation());
     onZoomModeChanged(m_impl->settings->zoomMode());
-
+    updateSlideShowInterval();
     setLanguage();
 
     restoreState(m_impl->settings->mainWindowState());
     restoreGeometry(m_impl->settings->mainWindowGeometry());
-
-    addAction(m_ui->actionOpen);
 }
 
 MainWindow::~MainWindow()
@@ -446,12 +461,14 @@ void MainWindow::switchFullScreenMode()
     }
 }
 
-void MainWindow::updateBackgroundColor()
+void MainWindow::switchSlideShowMode()
 {
-    const QColor color = m_impl->isFullScreenMode
-            ? m_impl->settings->fullScreenBackgroundColor()
-            : m_impl->settings->normalBackgroundColor();
-    m_ui->imageViewerWidget->setBackgroundColor(color);
+    m_impl->isSlideShowMode = !m_impl->isSlideShowMode;
+    m_ui->setSlideShowMode(m_impl->isSlideShowMode);
+    if(m_impl->isSlideShowMode)
+        m_impl->slideShowTimer.start();
+    else
+        m_impl->slideShowTimer.stop();
 }
 
 void MainWindow::onOpenPreviousRequested()
@@ -651,6 +668,19 @@ void MainWindow::onDirectoryChanged()
 {
     m_impl->updateDirectoryInfo(m_impl->settings->lastOpenedPath(), true);
     updateWindowTitle();
+}
+
+void MainWindow::updateSlideShowInterval()
+{
+    m_impl->slideShowTimer.setInterval(m_impl->settings->slideShowInterval() * 1000);
+}
+
+void MainWindow::updateBackgroundColor()
+{
+    const QColor color = m_impl->isFullScreenMode
+            ? m_impl->settings->fullScreenBackgroundColor()
+            : m_impl->settings->normalBackgroundColor();
+    m_ui->imageViewerWidget->setBackgroundColor(color);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

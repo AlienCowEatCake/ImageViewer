@@ -52,5 +52,9 @@
         <file>icon_settings_white.png</file>
         <file>icon_fullscreen_black.png</file>
         <file>icon_fullscreen_white.png</file>
+        <file>icon_play_black.png</file>
+        <file>icon_play_white.png</file>
+        <file>icon_stop_black.png</file>
+        <file>icon_stop_white.png</file>
     </qresource>
 </RCC>

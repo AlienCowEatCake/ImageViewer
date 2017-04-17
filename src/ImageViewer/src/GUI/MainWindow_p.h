@@ -52,12 +52,14 @@ const int WINDOW_DEFAULT_HEIGHT     = 480;
 struct MainWindow::UI
 {
     MainWindow *mainWindow;
+    bool isSlideShowMode;
 
     QFrame *centralWidget;
     ImageViewerWidget *imageViewerWidget;
     QFrame *toolbar;
     QToolButton *navigatePrevious;
     QToolButton *navigateNext;
+    QToolButton *startSlideShow;
     QToolButton *zoomOut;
     QToolButton *zoomIn;
     QToolButton *zoomFitToWindow;
@@ -83,6 +85,7 @@ struct MainWindow::UI
     QAction *actionSaveAs;
     QAction *actionNavigatePrevious;
     QAction *actionNavigateNext;
+    QAction *actionStartSlideShow;
     QAction *actionPreferences;
     QAction *actionExit;
     QAction *actionRotateCounterclockwise;
@@ -100,11 +103,13 @@ struct MainWindow::UI
 
     UI(MainWindow *mainWindow)
         : mainWindow(mainWindow)
+        , isSlideShowMode(false)
         , centralWidget(new QFrame(mainWindow))
         , imageViewerWidget(new ImageViewerWidget(centralWidget))
         , toolbar(new QFrame(centralWidget))
         , navigatePrevious(createToolbarButton(toolbar))
         , navigateNext(createToolbarButton(toolbar))
+        , startSlideShow(createToolbarButton(toolbar))
         , zoomOut(createToolbarButton(toolbar))
         , zoomIn(createToolbarButton(toolbar))
         , zoomFitToWindow(createToolbarButton(toolbar))
@@ -128,6 +133,7 @@ struct MainWindow::UI
         , actionSaveAs(createWidgetAction(mainWindow))
         , actionNavigatePrevious(createWidgetAction(mainWindow))
         , actionNavigateNext(createWidgetAction(mainWindow))
+        , actionStartSlideShow(createWidgetAction(mainWindow))
         , actionPreferences(createWidgetAction(mainWindow))
         , actionExit(createWidgetAction(mainWindow))
         , actionRotateCounterclockwise(createWidgetAction(mainWindow))
@@ -191,6 +197,7 @@ struct MainWindow::UI
         toolbarLayout->addStretch();
         toolbarLayout->addWidget(navigatePrevious);
         toolbarLayout->addWidget(navigateNext);
+        toolbarLayout->addWidget(startSlideShow);
         toolbarLayout->addWidget(createVerticalSeparator(toolbar));
         toolbarLayout->addWidget(zoomOut);
         toolbarLayout->addWidget(zoomIn);
@@ -228,6 +235,9 @@ struct MainWindow::UI
         menuFile->addAction(actionNavigateNext);
         actionNavigateNext->setShortcuts(QList<QKeySequence>() << Qt::Key_Right << Qt::Key_Down << Qt::Key_Space << Qt::Key_Return << Qt::Key_Enter);
         actionNavigateNext->setMenuRole(QAction::NoRole);
+        menuFile->addAction(actionStartSlideShow);
+        actionStartSlideShow->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_W << Qt::Key_W);
+        actionStartSlideShow->setMenuRole(QAction::NoRole);
         menuFile->addSeparator();
         menuFile->addAction(actionPreferences);
 #if defined (Q_OS_MAC)
@@ -381,14 +391,15 @@ struct MainWindow::UI
         actionDeleteFile->setText(QApplication::translate("MainWindow", "&Delete File"));
         actionZoomOut->setText(QApplication::translate("MainWindow", "Zoom &Out"));
         actionZoomIn->setText(QApplication::translate("MainWindow", "Zoom &In"));
-        actionZoomFitToWindow->setText(QApplication::translate("MainWindow", "&Fit Image To Window Size"));
-        actionZoomOriginalSize->setText(QApplication::translate("MainWindow", "Ori&ginal Size"));
-        actionZoomFullScreen->setText(QApplication::translate("MainWindow", "Full &Screen"));
+        actionZoomFitToWindow->setText(QApplication::translate("MainWindow", "Fit Image To &Window Size"));
+        actionZoomOriginalSize->setText(QApplication::translate("MainWindow", "Original &Size"));
+        actionZoomFullScreen->setText(QApplication::translate("MainWindow", "&Full Screen"));
         actionEnglish->setText(QApplication::translate("MainWindow", "&English"));
         actionRussian->setText(QApplication::translate("MainWindow", "&Russian"));
         actionAbout->setText(QApplication::translate("MainWindow", "&About"));
         actionAboutQt->setText(QApplication::translate("MainWindow", "About &Qt"));
 
+        setSlideShowMode(isSlideShowMode);
         updateDockMenu();
     }
 
@@ -408,6 +419,25 @@ struct MainWindow::UI
         actionRotateClockwise->setEnabled(isEnabled);
         saveFileAs->setEnabled(isEnabled);
         actionSaveAs->setEnabled(isEnabled);
+    }
+
+    void setSlideShowMode(bool isSlideShow)
+    {
+        isSlideShowMode = isSlideShow;
+        if(!isSlideShowMode)
+        {
+            startSlideShow->setToolTip(qApp->translate("MainWindow", "Start Slideshow"));
+            startSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_PLAY, ThemeUtils::WidgetHasDarkTheme(startSlideShow)));
+            actionStartSlideShow->setText(qApp->translate("MainWindow", "Start S&lideshow"));
+            actionStartSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_PLAY, ThemeUtils::WidgetHasDarkTheme(menuFile)));
+        }
+        else
+        {
+            startSlideShow->setToolTip(qApp->translate("MainWindow", "Stop Slideshow"));
+            startSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_STOP, ThemeUtils::WidgetHasDarkTheme(startSlideShow)));
+            actionStartSlideShow->setText(qApp->translate("MainWindow", "Stop S&lideshow"));
+            actionStartSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_STOP, ThemeUtils::WidgetHasDarkTheme(menuFile)));
+        }
     }
 
 private:

@@ -74,6 +74,7 @@ struct SettingsDialog::UI
 
         slideShowIntervalLabel->setText(qApp->translate("SettingsDialog", "Slideshow interval"));
         slideShowSecLabel->setText(qApp->translate("SettingsDialog", "sec"));
+        slideShowSpinBox->setValue(settings->slideShowInterval());
         slideShowSpinBox->setRange(1, 1000);
 
         backgroundColorsLabel->setText(qApp->translate("SettingsDialog", "<b>Background colors</b>"));
