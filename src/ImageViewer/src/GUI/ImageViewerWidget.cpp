@@ -343,7 +343,8 @@ void ImageViewerWidget::resizeEvent(QResizeEvent *event)
 
 void ImageViewerWidget::mousePressEvent(QMouseEvent *event)
 {
-    setDragMode(QGraphicsView::ScrollHandDrag);
+    if(event->button() == Qt::LeftButton)
+        setDragMode(QGraphicsView::ScrollHandDrag);
     QGraphicsView::mousePressEvent(event);
 }
 
