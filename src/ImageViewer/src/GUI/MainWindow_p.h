@@ -235,10 +235,10 @@ struct MainWindow::UI
         mainLayout->addWidget(toolbar);
 
         menuFile->addAction(actionOpen);
-        actionOpen->setShortcuts(QList<QKeySequence>() << QKeySequence::Open << Qt::Key_O);
+        actionOpen->setShortcut(QKeySequence::Open);
         actionOpen->setMenuRole(QAction::NoRole);
         menuFile->addAction(actionSaveAs);
-        actionSaveAs->setShortcuts(QList<QKeySequence>() << QKeySequence::Save << Qt::Key_S);
+        actionSaveAs->setShortcut(QKeySequence::Save);
         actionSaveAs->setMenuRole(QAction::NoRole);
         menuFile->addSeparator();
         menuFile->addAction(actionNavigatePrevious);
@@ -248,14 +248,14 @@ struct MainWindow::UI
         actionNavigateNext->setShortcuts(QList<QKeySequence>() << Qt::Key_Right << Qt::Key_Down << Qt::Key_Space << Qt::Key_Return << Qt::Key_Enter);
         actionNavigateNext->setMenuRole(QAction::NoRole);
         menuFile->addAction(actionStartSlideShow);
-        actionStartSlideShow->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_W << Qt::Key_W);
+        actionStartSlideShow->setShortcuts(createAnyModifierShortcuts(Qt::Key_W));
         actionStartSlideShow->setMenuRole(QAction::NoRole);
         menuFile->addSeparator();
         menuFile->addAction(actionPreferences);
 #if defined (Q_OS_MAC)
-        actionPreferences->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_Comma << Qt::CTRL + Qt::Key_P << Qt::Key_P);
+        actionPreferences->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_Comma << createAnyModifierShortcuts(Qt::Key_P));
 #else
-        actionPreferences->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_P << Qt::Key_P << Qt::CTRL + Qt::Key_Comma);
+        actionPreferences->setShortcuts(QList<QKeySequence>() << createAnyModifierShortcuts(Qt::Key_P) << Qt::CTRL + Qt::Key_Comma);
 #endif
         actionPreferences->setMenuRole(QAction::PreferencesRole);
         menuFile->addSeparator();
@@ -268,23 +268,23 @@ struct MainWindow::UI
         actionExit->setMenuRole(QAction::QuitRole);
 
         menuEdit->addAction(actionRotateCounterclockwise);
-        actionRotateCounterclockwise->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_L << Qt::Key_L);
+        actionRotateCounterclockwise->setShortcuts(createAnyModifierShortcuts(Qt::Key_L));
         actionRotateCounterclockwise->setMenuRole(QAction::NoRole);
         menuEdit->addAction(actionRotateClockwise);
-        actionRotateClockwise->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_R << Qt::Key_R);
+        actionRotateClockwise->setShortcuts(createAnyModifierShortcuts(Qt::Key_R));
         actionRotateClockwise->setMenuRole(QAction::NoRole);
         menuEdit->addAction(actionFlipHorizontal);
-        actionFlipHorizontal->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_H << Qt::Key_H);
+        actionFlipHorizontal->setShortcuts(createAnyModifierShortcuts(Qt::Key_H));
         actionFlipHorizontal->setMenuRole(QAction::NoRole);
         menuEdit->addAction(actionFlipVertical);
-        actionFlipVertical->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_V << Qt::Key_V);
+        actionFlipVertical->setShortcuts(createAnyModifierShortcuts(Qt::Key_V));
         actionFlipVertical->setMenuRole(QAction::NoRole);
         menuEdit->addSeparator();
         menuEdit->addAction(actionDeleteFile);
 #if defined (Q_OS_MAC)
         actionDeleteFile->setShortcuts(QList<QKeySequence>() << Qt::Key_Backspace << Qt::Key_Delete);
 #else
-        actionDeleteFile->setShortcuts(QList<QKeySequence>() << Qt::Key_Delete << Qt::Key_Backspace);
+        actionDeleteFile->setShortcuts(QList<QKeySequence>() << Qt::Key_Delete/* << Qt::Key_Backspace*/);
 #endif
         actionDeleteFile->setMenuRole(QAction::NoRole);
 
@@ -295,11 +295,11 @@ struct MainWindow::UI
         actionZoomIn->setShortcuts(QList<QKeySequence>() << Qt::Key_Plus << Qt::Key_Equal);
         actionZoomIn->setMenuRole(QAction::NoRole);
         menuView->addAction(actionZoomFitToWindow);
-        actionZoomFitToWindow->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_F << Qt::Key_F);
+        actionZoomFitToWindow->setShortcuts(createAnyModifierShortcuts(Qt::Key_F));
         actionZoomFitToWindow->setMenuRole(QAction::NoRole);
         actionZoomFitToWindow->setCheckable(true);
         menuView->addAction(actionZoomOriginalSize);
-        actionZoomOriginalSize->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_G << Qt::Key_G);
+        actionZoomOriginalSize->setShortcuts(createAnyModifierShortcuts(Qt::Key_G));
         actionZoomOriginalSize->setMenuRole(QAction::NoRole);
         actionZoomOriginalSize->setCheckable(true);
         menuView->addSeparator();
@@ -492,6 +492,34 @@ private:
         QAction *action = new QAction(widget);
         widget->addAction(action);
         return action;
+    }
+
+    QList<QKeySequence> createAnyModifierShortcuts(Qt::Key key, int defaultModifier = 0)
+    {
+        static const QList<int> modifiers = QList<int>()
+                << 0
+                << Qt::SHIFT
+                << Qt::META
+                << Qt::CTRL
+                << Qt::ALT
+                << Qt::SHIFT + Qt::META
+                << Qt::SHIFT + Qt::CTRL
+                << Qt::SHIFT + Qt::ALT
+                << Qt::META + Qt::CTRL
+                << Qt::META + Qt::ALT
+                << Qt::SHIFT + Qt::META + Qt::CTRL
+                << Qt::SHIFT + Qt::META + Qt::ALT
+                << Qt::SHIFT + Qt::CTRL + Qt::ALT
+                << Qt::SHIFT + Qt::META + Qt::CTRL + Qt::ALT;
+        QList<QKeySequence> result;
+        result.append(key + defaultModifier);
+        for(QList<int>::ConstIterator it = modifiers.constBegin(); it != modifiers.constEnd(); ++it)
+        {
+            const int modifier = *it;
+            if(modifier != defaultModifier)
+                result.append(key + modifier);
+        }
+        return result;
     }
 
     void updateDockMenu()
