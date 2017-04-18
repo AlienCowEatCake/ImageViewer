@@ -43,6 +43,8 @@ public slots:
     void showPreferences();
     void switchFullScreenMode();
     void switchSlideShowMode();
+    void switchShowMenuBar();
+    void switchShowToolBar();
 
     void onOpenPreviousRequested();
     void onOpenNextRequested();

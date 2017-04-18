@@ -100,6 +100,8 @@ struct MainWindow::UI
     QAction *actionZoomFitToWindow;
     QAction *actionZoomOriginalSize;
     QAction *actionZoomFullScreen;
+    QAction *actionShowMenuBar;
+    QAction *actionShowToolBar;
     QAction *actionEnglish;
     QAction *actionRussian;
     QAction *actionAbout;
@@ -152,6 +154,8 @@ struct MainWindow::UI
         , actionZoomFitToWindow(createWidgetAction(mainWindow))
         , actionZoomOriginalSize(createWidgetAction(mainWindow))
         , actionZoomFullScreen(createWidgetAction(mainWindow))
+        , actionShowMenuBar(createWidgetAction(mainWindow))
+        , actionShowToolBar(createWidgetAction(mainWindow))
         , actionEnglish(createWidgetAction(mainWindow))
         , actionRussian(createWidgetAction(mainWindow))
         , actionAbout(createWidgetAction(mainWindow))
@@ -311,6 +315,17 @@ struct MainWindow::UI
 #endif
         actionZoomFullScreen->setMenuRole(QAction::NoRole);
         actionZoomFullScreen->setCheckable(true);
+        menuView->addSeparator();
+#if !defined (Q_OS_MAC)
+        menuView->addAction(actionShowMenuBar);
+        actionShowMenuBar->setShortcuts(createAnyModifierShortcuts(Qt::Key_M));
+#endif
+        actionShowMenuBar->setMenuRole(QAction::NoRole);
+        actionShowMenuBar->setCheckable(true);
+        menuView->addAction(actionShowToolBar);
+        actionShowToolBar->setShortcuts(createAnyModifierShortcuts(Qt::Key_T));
+        actionShowToolBar->setMenuRole(QAction::NoRole);
+        actionShowToolBar->setCheckable(true);
 
         menuLanguage->addAction(actionEnglish);
         actionEnglish->setMenuRole(QAction::NoRole);
@@ -418,6 +433,8 @@ struct MainWindow::UI
         actionZoomFitToWindow->setText(QApplication::translate("MainWindow", "Fit Image To &Window Size"));
         actionZoomOriginalSize->setText(QApplication::translate("MainWindow", "Original &Size"));
         actionZoomFullScreen->setText(QApplication::translate("MainWindow", "&Full Screen"));
+        actionShowMenuBar->setText(QApplication::translate("MainWindow", "Show &Menu Bar"));
+        actionShowToolBar->setText(QApplication::translate("MainWindow", "Show &Tool Bar"));
         actionEnglish->setText(QApplication::translate("MainWindow", "&English"));
         actionRussian->setText(QApplication::translate("MainWindow", "&Russian"));
         actionAbout->setText(QApplication::translate("MainWindow", "&About"));

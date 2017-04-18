@@ -59,6 +59,8 @@ const QString SMOOTH_TRANSFORMATION_KEY         = QString::fromLatin1("SmoothTra
 const QString MAIN_WINDOW_GEOMETRY_KEY          = QString::fromLatin1("MainWindowGeometry");
 const QString MAIN_WINDOW_STATE_KEY             = QString::fromLatin1("MainWindowState");
 const QString SLIDESHOW_INTERVAL_KEY            = QString::fromLatin1("SlideShowInterval");
+const QString MENUBAR_VISIBLE_KEY               = QString::fromLatin1("MenuBarVisible");
+const QString TOOLBAR_VISIBLE_KEY               = QString::fromLatin1("ToolBarVisible");
 
 } // namespace
 
@@ -248,4 +250,34 @@ void GUISettings::setSlideShowInterval(int seconds)
     m_impl->settings.setValue(SLIDESHOW_INTERVAL_KEY, seconds);
     if(seconds != oldValue)
         emit slideShowIntervalChanged(seconds);
+}
+
+bool GUISettings::menuBarVisible() const
+{
+    const bool defaultValue = true;
+    QVariant value = m_impl->settings.value(MENUBAR_VISIBLE_KEY, defaultValue);
+    return value.isValid() && value.canConvert(QVariant::Bool) ? value.toBool() : defaultValue;
+}
+
+void GUISettings::setMenuBarVisible(bool visible)
+{
+    const bool oldValue = menuBarVisible();
+    m_impl->settings.setValue(MENUBAR_VISIBLE_KEY, visible);
+    if(visible != oldValue)
+        emit menuBarVisibleChanged(visible);
+}
+
+bool GUISettings::toolBarVisible() const
+{
+    const bool defaultValue = true;
+    QVariant value = m_impl->settings.value(TOOLBAR_VISIBLE_KEY, defaultValue);
+    return value.isValid() && value.canConvert(QVariant::Bool) ? value.toBool() : defaultValue;
+}
+
+void GUISettings::setToolBarVisible(bool visible)
+{
+    const bool oldValue = toolBarVisible();
+    m_impl->settings.setValue(TOOLBAR_VISIBLE_KEY, visible);
+    if(visible != oldValue)
+        emit toolBarVisibleChanged(visible);
 }

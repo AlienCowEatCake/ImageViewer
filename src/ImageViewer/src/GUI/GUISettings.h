@@ -43,6 +43,8 @@ signals:
     void mainWindowStateChanged(const QByteArray &geometry);
     void mainWindowGeometryChanged(const QByteArray &state);
     void slideShowIntervalChanged(int seconds);
+    void menuBarVisibleChanged(bool visible);
+    void toolBarVisibleChanged(bool visible);
 
 public:
     GUISettings(QObject *parent = NULL);
@@ -80,6 +82,12 @@ public:
 
     int slideShowInterval() const;
     void setSlideShowInterval(int seconds);
+
+    bool menuBarVisible() const;
+    void setMenuBarVisible(bool visible);
+
+    bool toolBarVisible() const;
+    void setToolBarVisible(bool visible);
 
 private:
     struct Impl;

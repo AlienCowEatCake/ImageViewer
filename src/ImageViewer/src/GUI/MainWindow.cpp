@@ -273,6 +273,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->actionZoomFitToWindow, SIGNAL(triggered()), this, SLOT(onZoomFitToWindowClicked()));
     connect(m_ui->actionZoomOriginalSize, SIGNAL(triggered()), this, SLOT(onZoomOriginalSizeClicked()));
     connect(m_ui->actionZoomFullScreen, SIGNAL(triggered()), this, SLOT(switchFullScreenMode()));
+    connect(m_ui->actionShowMenuBar, SIGNAL(triggered()), this, SLOT(switchShowMenuBar()));
+    connect(m_ui->actionShowToolBar, SIGNAL(triggered()), this, SLOT(switchShowToolBar()));
     connect(m_ui->actionEnglish, SIGNAL(triggered()), this, SLOT(onActionEnglishTriggered()));
     connect(m_ui->actionRussian, SIGNAL(triggered()), this, SLOT(onActionRussianTriggered()));
     connect(m_ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -293,6 +295,11 @@ MainWindow::MainWindow(QWidget *parent)
     onZoomModeChanged(m_impl->settings->zoomMode());
     updateSlideShowInterval();
     setLanguage();
+
+    m_ui->menubar->setVisible(m_impl->settings->menuBarVisible());
+    m_ui->actionShowMenuBar->setChecked(m_impl->settings->menuBarVisible());
+    m_ui->toolbar->setVisible(m_impl->settings->toolBarVisible());
+    m_ui->actionShowToolBar->setChecked(m_impl->settings->toolBarVisible());
 
     restoreState(m_impl->settings->mainWindowState());
     restoreGeometry(m_impl->settings->mainWindowGeometry());
@@ -451,9 +458,14 @@ void MainWindow::switchFullScreenMode()
         m_impl->settings->setMainWindowGeometry(saveGeometry());
         m_impl->settings->setMainWindowState(saveState());
         showFullScreen();
+        m_ui->menubar->setVisible(false);
+        m_ui->toolbar->setVisible(false);
     }
-    m_ui->menubar->setVisible(toNormalMode);
-    m_ui->toolbar->setVisible(toNormalMode);
+    else
+    {
+        m_ui->menubar->setVisible(m_impl->settings->menuBarVisible());
+        m_ui->toolbar->setVisible(m_impl->settings->toolBarVisible());
+    }
     m_ui->zoomFullScreen->setChecked(toFullScreenMode);
     m_ui->actionZoomFullScreen->setChecked(toFullScreenMode);
     updateBackgroundColor();
@@ -473,6 +485,24 @@ void MainWindow::switchSlideShowMode()
         m_impl->slideShowTimer.start();
     else
         m_impl->slideShowTimer.stop();
+}
+
+void MainWindow::switchShowMenuBar()
+{
+    const bool newValue = !m_impl->settings->menuBarVisible();
+    m_impl->settings->setMenuBarVisible(newValue);
+    m_ui->actionShowMenuBar->setChecked(newValue);
+    if(!m_impl->isFullScreenMode)
+        m_ui->menubar->setVisible(newValue);
+}
+
+void MainWindow::switchShowToolBar()
+{
+    const bool newValue = !m_impl->settings->toolBarVisible();
+    m_impl->settings->setToolBarVisible(newValue);
+    m_ui->actionShowToolBar->setChecked(newValue);
+    if(!m_impl->isFullScreenMode)
+        m_ui->toolbar->setVisible(newValue);
 }
 
 void MainWindow::onOpenPreviousRequested()
