@@ -35,6 +35,8 @@
 #include <QSpacerItem>
 #include <QPixmap>
 
+#include "Utils/ObjectsUtils.h"
+
 #include "GUISettings.h"
 
 namespace {
@@ -48,20 +50,20 @@ struct SettingsDialog::UI
 {
     UI(SettingsDialog *widget, GUISettings *settings)
         : settingsDialog(widget)
-        , askBeforeDeleteCheckbox(new QCheckBox(settingsDialog))
-        , moveToTrashCheckbox(new QCheckBox(settingsDialog))
-        , smoothTransformationCheckbox(new QCheckBox(settingsDialog))
-        , slideShowIntervalFrame(new QFrame(settingsDialog))
-        , slideShowIntervalLabel(new QLabel(slideShowIntervalFrame))
-        , slideShowSpinBox(new QSpinBox(slideShowIntervalFrame))
-        , slideShowSecLabel(new QLabel(slideShowIntervalFrame))
-        , backgroundColorsFrame(new QFrame(settingsDialog))
-        , backgroundColorsLabel(new QLabel(backgroundColorsFrame))
-        , normalBackgroundColorLabel(new QLabel(backgroundColorsFrame))
-        , normalBackgroundColorButton(new QToolButton(backgroundColorsFrame))
-        , fullScreenBackgroundColorLabel(new QLabel(backgroundColorsFrame))
-        , fullScreenBackgroundColorButton(new QToolButton(backgroundColorsFrame))
-        , buttonBox(new QDialogButtonBox(settingsDialog))
+        , CONSTRUCT_OBJECT(askBeforeDeleteCheckbox, QCheckBox, (settingsDialog))
+        , CONSTRUCT_OBJECT(moveToTrashCheckbox, QCheckBox, (settingsDialog))
+        , CONSTRUCT_OBJECT(smoothTransformationCheckbox, QCheckBox, (settingsDialog))
+        , CONSTRUCT_OBJECT(slideShowIntervalFrame, QFrame, (settingsDialog))
+        , CONSTRUCT_OBJECT(slideShowIntervalLabel, QLabel, (slideShowIntervalFrame))
+        , CONSTRUCT_OBJECT(slideShowSpinBox, QSpinBox, (slideShowIntervalFrame))
+        , CONSTRUCT_OBJECT(slideShowSecLabel, QLabel, (slideShowIntervalFrame))
+        , CONSTRUCT_OBJECT(backgroundColorsFrame, QFrame, (settingsDialog))
+        , CONSTRUCT_OBJECT(backgroundColorsLabel, QLabel, (backgroundColorsFrame))
+        , CONSTRUCT_OBJECT(normalBackgroundColorLabel, QLabel, (backgroundColorsFrame))
+        , CONSTRUCT_OBJECT(normalBackgroundColorButton, QToolButton, (backgroundColorsFrame))
+        , CONSTRUCT_OBJECT(fullScreenBackgroundColorLabel, QLabel, (backgroundColorsFrame))
+        , CONSTRUCT_OBJECT(fullScreenBackgroundColorButton, QToolButton, (backgroundColorsFrame))
+        , CONSTRUCT_OBJECT(buttonBox, QDialogButtonBox, (settingsDialog))
     {
         askBeforeDeleteCheckbox->setText(qApp->translate("SettingsDialog", "Ask before deleting images"));
         askBeforeDeleteCheckbox->setChecked(settings->askBeforeDelete());
