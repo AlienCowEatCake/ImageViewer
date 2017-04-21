@@ -79,6 +79,9 @@ AboutDialog::AboutDialog(QWidget *parent)
                              .arg(qApp->translate("MainWindow", ABOUT_EMAIL_STRING))
                              );
     m_ui->textBrowser->setHtml(getTextBrowserContent());
+
+    adjustSize();
+    setFixedSize(minimumSize());
 }
 
 AboutDialog::~AboutDialog()

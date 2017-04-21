@@ -48,11 +48,13 @@ struct AboutDialog::UI
         , CONSTRUCT_OBJECT(titleLabel, QLabel, (centralWidget))
         , CONSTRUCT_OBJECT(textLabel, QLabel, (centralWidget))
         , CONSTRUCT_OBJECT(textBrowser, QTextBrowser, (centralWidget))
-        , CONSTRUCT_OBJECT(buttonBox, QDialogButtonBox, (QDialogButtonBox::Ok, centralWidget))
+        , CONSTRUCT_OBJECT(buttonBox, QDialogButtonBox, (centralWidget))
     {
         QPalette palette = textBrowser->palette();
         palette.setColor(QPalette::Base, palette.color(QPalette::Window));
         textBrowser->setPalette(palette);
+
+        buttonBox->setStandardButtons(QDialogButtonBox::Ok);
 
         QGridLayout *centralLayout = new QGridLayout(centralWidget);
         centralLayout->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop | Qt::AlignCenter);
@@ -66,10 +68,7 @@ struct AboutDialog::UI
         dialogLayout->addWidget(centralWidget);
 
         parent->ensurePolished();
-        parent->adjustSize();
-        parent->setFixedSize(parent->minimumSize());
     }
 };
-
 
 #endif // ABOUTDIALOG_P_H_INCLUDED

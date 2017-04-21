@@ -36,9 +36,10 @@ int AdjustableFrame::layoutMargin() const
 {
     if(!layout())
         return INVALID_INT_VALUE;
-    const QMargins margins = layout()->contentsMargins();
-    if(margins.left() == margins.right() && margins.top() == margins.bottom() && margins.left() == margins.top())
-        return margins.left();
+    int left = INVALID_INT_VALUE, top = INVALID_INT_VALUE, right = INVALID_INT_VALUE, bottom = INVALID_INT_VALUE;
+    layout()->getContentsMargins(&left, &top, &right, &bottom);
+    if(left == right && top == bottom && left == top)
+        return left;
     return INVALID_INT_VALUE;
 }
 
@@ -53,64 +54,72 @@ int AdjustableFrame::layoutMarginLeft() const
 {
     if(!layout())
         return INVALID_INT_VALUE;
-    return layout()->contentsMargins().left();
+    int left = INVALID_INT_VALUE, top = INVALID_INT_VALUE, right = INVALID_INT_VALUE, bottom = INVALID_INT_VALUE;
+    layout()->getContentsMargins(&left, &top, &right, &bottom);
+    return left;
 }
 
 void AdjustableFrame::setLayoutMarginLeft(int marginLeft)
 {
     if(!layout())
         return;
-    QMargins margins = layout()->contentsMargins();
-    margins.setLeft(marginLeft);
-    layout()->setContentsMargins(margins);
+    int left = INVALID_INT_VALUE, top = INVALID_INT_VALUE, right = INVALID_INT_VALUE, bottom = INVALID_INT_VALUE;
+    layout()->getContentsMargins(&left, &top, &right, &bottom);
+    layout()->setContentsMargins(marginLeft, top, right, bottom);
 }
 
 int AdjustableFrame::layoutMarginRight() const
 {
     if(!layout())
         return INVALID_INT_VALUE;
-    return layout()->contentsMargins().right();
+    int left = INVALID_INT_VALUE, top = INVALID_INT_VALUE, right = INVALID_INT_VALUE, bottom = INVALID_INT_VALUE;
+    layout()->getContentsMargins(&left, &top, &right, &bottom);
+    return right;
 }
 
 void AdjustableFrame::setLayoutMarginRight(int marginRight)
 {
     if(!layout())
         return;
-    QMargins margins = layout()->contentsMargins();
-    margins.setRight(marginRight);
-    layout()->setContentsMargins(margins);
+    int left = INVALID_INT_VALUE, top = INVALID_INT_VALUE, right = INVALID_INT_VALUE, bottom = INVALID_INT_VALUE;
+    layout()->getContentsMargins(&left, &top, &right, &bottom);
+    layout()->setContentsMargins(left, top, marginRight, bottom);
 }
 
 int AdjustableFrame::layoutMarginTop() const
 {
     if(!layout())
         return INVALID_INT_VALUE;
-    return layout()->contentsMargins().top();
+    int left = INVALID_INT_VALUE, top = INVALID_INT_VALUE, right = INVALID_INT_VALUE, bottom = INVALID_INT_VALUE;
+    layout()->getContentsMargins(&left, &top, &right, &bottom);
+    return top;
 }
 
 void AdjustableFrame::setLayoutMarginTop(int marginTop)
 {
     if(!layout())
         return;
-    QMargins margins = layout()->contentsMargins();
-    margins.setTop(marginTop);
-    layout()->setContentsMargins(margins);
+    int left = INVALID_INT_VALUE, top = INVALID_INT_VALUE, right = INVALID_INT_VALUE, bottom = INVALID_INT_VALUE;
+    layout()->getContentsMargins(&left, &top, &right, &bottom);
+    layout()->setContentsMargins(left, marginTop, right, bottom);
 }
 
 int AdjustableFrame::layoutMarginBottom() const
 {
     if(!layout())
         return INVALID_INT_VALUE;
-    return layout()->contentsMargins().bottom();
+    int left = INVALID_INT_VALUE, top = INVALID_INT_VALUE, right = INVALID_INT_VALUE, bottom = INVALID_INT_VALUE;
+    layout()->getContentsMargins(&left, &top, &right, &bottom);
+    return bottom;
 }
 
 void AdjustableFrame::setLayoutMarginBottom(int marginBottom)
 {
     if(!layout())
         return;
-    QMargins margins = layout()->contentsMargins();
-    margins.setBottom(marginBottom);
-    layout()->setContentsMargins(margins);
+    int left = INVALID_INT_VALUE, top = INVALID_INT_VALUE, right = INVALID_INT_VALUE, bottom = INVALID_INT_VALUE;
+    layout()->getContentsMargins(&left, &top, &right, &bottom);
+    layout()->setContentsMargins(left, top, right, marginBottom);
 }
 
 int AdjustableFrame::layoutSpacing() const
