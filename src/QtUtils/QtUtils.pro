@@ -58,10 +58,12 @@ macx {
 }
 
 HEADERS += \
-    $$files(src/Utils/*.h)
+    $$files(src/Utils/*.h) \
+    $$files(src/Widgets/*.h)
 
 SOURCES += \
-    $$files(src/Utils/*.cpp)
+    $$files(src/Utils/*.cpp) \
+    $$files(src/Widgets/*.cpp)
 
 TRANSLATIONS += \
     resources/translations/qtutils_en.ts \

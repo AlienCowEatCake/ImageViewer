@@ -26,21 +26,16 @@
 #include <QDialogButtonBox>
 #include <QTextBrowser>
 #include <QGridLayout>
+#include <QVBoxLayout>
 #include <QApplication>
 #include <QPixmap>
 
 #include "Utils/ObjectsUtils.h"
-
-namespace {
-
-const int LAYOUT_SPACING = 14;
-const int LAYOUT_MARGINS = 14;
-const int TEXTBROWSER_HEIGHT = 80;
-
-} // namespace
+#include "Widgets/AdjustableFrame.h"
 
 struct AboutDialog::UI
 {
+    AdjustableFrame *centralWidget;
     QLabel *iconLabel;
     QLabel *titleLabel;
     QLabel *textLabel;
@@ -48,34 +43,27 @@ struct AboutDialog::UI
     QDialogButtonBox *buttonBox;
 
     UI(QWidget *parent)
-        : CONSTRUCT_OBJECT(iconLabel, QLabel, (parent))
-        , CONSTRUCT_OBJECT(titleLabel, QLabel, (parent))
-        , CONSTRUCT_OBJECT(textLabel, QLabel, (parent))
-        , CONSTRUCT_OBJECT(textBrowser, QTextBrowser, (parent))
-        , CONSTRUCT_OBJECT(buttonBox, QDialogButtonBox, (QDialogButtonBox::Ok, parent))
+        : CONSTRUCT_OBJECT(centralWidget, AdjustableFrame, (parent))
+        , CONSTRUCT_OBJECT(iconLabel, QLabel, (centralWidget))
+        , CONSTRUCT_OBJECT(titleLabel, QLabel, (centralWidget))
+        , CONSTRUCT_OBJECT(textLabel, QLabel, (centralWidget))
+        , CONSTRUCT_OBJECT(textBrowser, QTextBrowser, (centralWidget))
+        , CONSTRUCT_OBJECT(buttonBox, QDialogButtonBox, (QDialogButtonBox::Ok, centralWidget))
     {
-        QGridLayout *grid = new QGridLayout(parent);
-        grid->setContentsMargins(LAYOUT_MARGINS, LAYOUT_MARGINS, LAYOUT_MARGINS, LAYOUT_MARGINS);
-        grid->setSpacing(LAYOUT_SPACING);
-        grid->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop | Qt::AlignCenter);
-        grid->addWidget(titleLabel, 0, 1, 1, 1, Qt::AlignTop | Qt::AlignLeft);
-        grid->addWidget(textLabel, 1, 1, 1, 1, Qt::AlignTop | Qt::AlignLeft);
-        grid->addWidget(textBrowser, 2, 0, 1, 2, Qt::AlignCenter);
-        grid->addWidget(buttonBox, 3, 0, 1, 2, Qt::AlignVCenter | Qt::AlignRight);
-
-        textBrowser->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-        textBrowser->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        textBrowser->setOpenExternalLinks(true);
-        textBrowser->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-        textBrowser->setFixedHeight(TEXTBROWSER_HEIGHT);
-
         QPalette palette = textBrowser->palette();
         palette.setColor(QPalette::Base, palette.color(QPalette::Window));
         textBrowser->setPalette(palette);
 
-        titleLabel->setWordWrap(false);
-        textLabel->setWordWrap(false);
-        textLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+        QGridLayout *centralLayout = new QGridLayout(centralWidget);
+        centralLayout->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop | Qt::AlignCenter);
+        centralLayout->addWidget(titleLabel, 0, 1, 1, 1, Qt::AlignTop | Qt::AlignLeft);
+        centralLayout->addWidget(textLabel, 1, 1, 1, 1, Qt::AlignTop | Qt::AlignLeft);
+        centralLayout->addWidget(textBrowser, 2, 0, 1, 2, Qt::AlignCenter);
+        centralLayout->addWidget(buttonBox, 3, 0, 1, 2, Qt::AlignVCenter | Qt::AlignRight);
+
+        QVBoxLayout *dialogLayout = new QVBoxLayout(parent);
+        dialogLayout->setContentsMargins(0, 0, 0, 0);
+        dialogLayout->addWidget(centralWidget);
 
         parent->ensurePolished();
         parent->adjustSize();

@@ -87,5 +87,5 @@ AboutDialog::~AboutDialog()
 void AboutDialog::resizeEvent(QResizeEvent *event)
 {
     QDialog::resizeEvent(event);
-    m_ui->textBrowser->setFixedWidth(width() - 2 * LAYOUT_MARGINS);
+    m_ui->textBrowser->setFixedWidth(width() - m_ui->centralWidget->layoutMarginLeft() - m_ui->centralWidget->layoutMarginRight());
 }

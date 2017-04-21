@@ -11,3 +11,53 @@ AboutDialog #textLabel
     padding-bottom: 1px;
 }
 
+MainWindow #toolbar
+{
+    qproperty-layoutSpacing: 3;
+    qproperty-layoutMarginLeft: 4;
+    qproperty-layoutMarginRight: 4;
+    qproperty-layoutMarginTop: 2;
+    qproperty-layoutMarginBottom: 2;
+}
+
+MainWindow #toolbar QToolButton
+{
+	qproperty-iconSize: 16px 16px;
+    qproperty-toolButtonStyle: ToolButtonIconOnly;
+    qproperty-minimumSize: 28px 28px;
+    qproperty-maximumSize: 28px 28px;
+}
+
+MainWindow #toolbar #separator
+{
+    qproperty-frameShape: VLine;
+    qproperty-frameShadow: Sunken;
+}
+
+AboutDialog #centralWidget
+{
+    qproperty-layoutSpacing: 14;
+    qproperty-layoutMargin: 14;
+}
+
+AboutDialog #textBrowser
+{
+    min-height: 80px;
+    max-height: 80px;
+    qproperty-openExternalLinks: true;
+    qproperty-verticalScrollBarPolicy: ScrollBarAlwaysOn;
+    qproperty-horizontalScrollBarPolicy: ScrollBarAlwaysOff;
+}
+
+AboutDialog #titleLabel
+{
+    qproperty-wordWrap: false;
+}
+
+AboutDialog #textLabel
+{
+    qproperty-wordWrap: false;
+    qproperty-alignment: 'AlignLeft | AlignTop';
+}
+
+

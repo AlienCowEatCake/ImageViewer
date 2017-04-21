@@ -39,10 +39,10 @@
 
 // CREATE_OBJECT(someLabel, QLabel, (parent));
 #define CREATE_OBJECT(VAR, TYPE, ARGS) \
-    VAR = (ObjectsUtils::setObjectName((new TYPE ARGS), QString::fromLatin1(#VAR)))
+    TYPE * VAR = (ObjectsUtils::setObjectName((new TYPE ARGS), QString::fromLatin1(#VAR)))
 // CREATE_NAMED_OBJECT(someLabel, QLabel, "someNamedLabel", (parent));
 #define CREATE_NAMED_OBJECT(VAR, TYPE, NAME, ARGS) \
-    VAR = (ObjectsUtils::setObjectName((new TYPE ARGS), QString::fromLatin1(NAME)))
+    TYPE * VAR = (ObjectsUtils::setObjectName((new TYPE ARGS), QString::fromLatin1(NAME)))
 
 
 namespace ObjectsUtils {
