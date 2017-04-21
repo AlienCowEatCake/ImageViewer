@@ -45,7 +45,6 @@ struct AboutDialog::UI
     UI(QWidget *parent)
         : CONSTRUCT_OBJECT(centralWidget, AdjustableFrame, (parent))
         , CONSTRUCT_OBJECT(iconLabel, QLabel, (centralWidget))
-        , CONSTRUCT_OBJECT(titleLabel, QLabel, (centralWidget))
         , CONSTRUCT_OBJECT(textLabel, QLabel, (centralWidget))
         , CONSTRUCT_OBJECT(textBrowser, QTextBrowser, (centralWidget))
         , CONSTRUCT_OBJECT(buttonBox, QDialogButtonBox, (centralWidget))
@@ -55,13 +54,13 @@ struct AboutDialog::UI
         textBrowser->setPalette(palette);
 
         buttonBox->setStandardButtons(QDialogButtonBox::Ok);
+        textLabel->setOpenExternalLinks(true);
 
         QGridLayout *centralLayout = new QGridLayout(centralWidget);
         centralLayout->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop | Qt::AlignCenter);
-        centralLayout->addWidget(titleLabel, 0, 1, 1, 1, Qt::AlignTop | Qt::AlignLeft);
-        centralLayout->addWidget(textLabel, 1, 1, 1, 1, Qt::AlignTop | Qt::AlignLeft);
-        centralLayout->addWidget(textBrowser, 2, 0, 1, 2, Qt::AlignCenter);
-        centralLayout->addWidget(buttonBox, 3, 0, 1, 2, Qt::AlignVCenter | Qt::AlignRight);
+        centralLayout->addWidget(textLabel, 0, 1, 1, 1, Qt::AlignTop | Qt::AlignLeft);
+        centralLayout->addWidget(textBrowser, 1, 0, 1, 2, Qt::AlignCenter);
+        centralLayout->addWidget(buttonBox, 2, 0, 1, 2, Qt::AlignVCenter | Qt::AlignRight);
 
         QVBoxLayout *dialogLayout = new QVBoxLayout(parent);
         dialogLayout->setContentsMargins(0, 0, 0, 0);

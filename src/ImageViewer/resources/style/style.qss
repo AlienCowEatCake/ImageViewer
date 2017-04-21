@@ -44,14 +44,8 @@ AboutDialog #textBrowser
 {
     min-height: 80px;
     max-height: 80px;
-    qproperty-openExternalLinks: true;
     qproperty-verticalScrollBarPolicy: ScrollBarAlwaysOn;
     qproperty-horizontalScrollBarPolicy: ScrollBarAlwaysOff;
-}
-
-AboutDialog #titleLabel
-{
-    qproperty-wordWrap: false;
 }
 
 AboutDialog #textLabel

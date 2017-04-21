@@ -64,13 +64,15 @@ AboutDialog::AboutDialog(QWidget *parent)
 
     m_ui->iconLabel->setPixmap(qApp->translate("MainWindow", ABOUT_PIXMAP_PATH));
     setWindowTitle(qApp->translate("MainWindow", "About"));
-    m_ui->titleLabel->setText(QString::fromLatin1("<h3>%1 v%2</h3>").arg(qApp->applicationName()).arg(qApp->applicationVersion()));
     m_ui->textLabel->setText(QString::fromLatin1(
-                                 "<a href=\"%1\">%1</a><br>"
-                                 "%2: %3<br><br>"
-                                 "Copyright &copy; %4<br>"
-                                 "%5 &lt;<a href=\"mailto:%6\">%6</a>&gt;"
+                                 "<h3>%1 v%2</h3>"
+                                 "<a href=\"%3\">%3</a><br>"
+                                 "%4: %5<br><br>"
+                                 "Copyright &copy; %6<br>"
+                                 "%7 &lt;<a href=\"mailto:%8\">%8</a>&gt;"
                                  )
+                             .arg(qApp->applicationName())
+                             .arg(qApp->applicationVersion())
                              .arg(qApp->translate("MainWindow", ABOUT_URL_STRING))
                              .arg(qApp->translate("MainWindow", "License"))
                              .arg(qApp->translate("MainWindow", ABOUT_LICENSE_STRIG))
