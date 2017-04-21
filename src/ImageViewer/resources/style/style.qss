@@ -5,7 +5,8 @@ ImageViewerWidget
     background-repeat: repeat-xy;
 }
 
-QMessageBox #qt_msgbox_informativelabel
+QMessageBox #qt_msgbox_informativelabel,
+AboutDialog #textLabel
 {
     padding-bottom: 1px;
 }
