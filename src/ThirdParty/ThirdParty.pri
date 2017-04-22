@@ -1,6 +1,7 @@
 include(QtExtended/QtExtended.pri)
 include(STB/STB.pri)
 include(QtImageFormats/QtImageFormats.pri)
+include(POSH/POSH.pri)
 include(libmng/libmng.pri)
 include(libpng/libpng.pri)
 include(JasPer/JasPer.pri)

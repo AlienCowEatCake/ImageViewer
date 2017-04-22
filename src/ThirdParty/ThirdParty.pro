@@ -44,3 +44,7 @@ SUBDIRS =
     SUBDIRS += QtImageFormats/QtImageFormats.pro
 }
 
+!disable_poshlib {
+    SUBDIRS += POSH/POSH.pro
+}
+
