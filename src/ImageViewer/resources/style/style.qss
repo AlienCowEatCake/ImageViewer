@@ -42,8 +42,8 @@ AboutDialog #centralWidget
 
 AboutDialog #textBrowser
 {
-    min-height: 80px;
-    max-height: 80px;
+    min-height: 100px;
+    max-height: 100px;
     qproperty-verticalScrollBarPolicy: ScrollBarAlwaysOn;
     qproperty-horizontalScrollBarPolicy: ScrollBarAlwaysOff;
 }

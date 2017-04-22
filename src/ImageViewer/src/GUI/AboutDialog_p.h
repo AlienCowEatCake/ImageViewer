@@ -53,8 +53,9 @@ struct AboutDialog::UI
         palette.setColor(QPalette::Base, palette.color(QPalette::Window));
         textBrowser->setPalette(palette);
 
-        buttonBox->setStandardButtons(QDialogButtonBox::Ok);
+        textBrowser->setOpenExternalLinks(true);
         textLabel->setOpenExternalLinks(true);
+        buttonBox->setStandardButtons(QDialogButtonBox::Ok);
 
         QGridLayout *centralLayout = new QGridLayout(centralWidget);
         centralLayout->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop | Qt::AlignCenter);
