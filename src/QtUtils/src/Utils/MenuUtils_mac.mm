@@ -29,28 +29,36 @@ namespace MenuUtils {
 /// @brief Remove (disable) the "Start Dictation..." menu item from the "Edit" menu
 void DisableDictationMenuItem()
 {
-    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"NSDisabledDictationMenuItem"];
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    [[NSUserDefaults standardUserDefaults] setBool: YES forKey: @"NSDisabledDictationMenuItem"];
+    [pool release];
 }
 
 /// @brief Remove (disable) the "Emoji & Symbols" menu item from the "Edit" menu
 void DisableCharacterPaletteMenuItem()
 {
-    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"NSDisabledCharacterPaletteMenuItem"];
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    [[NSUserDefaults standardUserDefaults] setBool: YES forKey: @"NSDisabledCharacterPaletteMenuItem"];
+    [pool release];
 }
 
 /// @brief Remove (don't allow) the "Show Tab Bar" menu item from the "View" menu, if supported
 void DisableShowTabBarMenuItem()
 {
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_AND_LATER)
-    if([NSWindow respondsToSelector:@selector(allowsAutomaticWindowTabbing)])
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    if([NSWindow respondsToSelector: @selector(allowsAutomaticWindowTabbing)])
         NSWindow.allowsAutomaticWindowTabbing = NO;
+    [pool release];
 #endif
 }
 
 /// @brief Remove (don't have) the "Enter Full Screen" menu item from the "View" menu
 void DisableEnterFullScreenMenuItem()
 {
-    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"NSFullScreenMenuItemEverywhere"];
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    [[NSUserDefaults standardUserDefaults] setBool: NO forKey: @"NSFullScreenMenuItemEverywhere"];
+    [pool release];
 }
 
 } // namespace MenuUtils
