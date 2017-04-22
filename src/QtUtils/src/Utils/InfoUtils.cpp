@@ -310,7 +310,7 @@ QString GetSystemDescription()
 /// @brief Получить человеко-читаемую информацию о компиляторе
 QString GetCompilerDescription()
 {
-    static QString description = compilerDescriptionInt();
+    QString description = compilerDescriptionInt();
     const QString target = targetDescriptionInt();
     if(!target.isEmpty())
         description.append(QString::fromLatin1(", %1").arg(target));
