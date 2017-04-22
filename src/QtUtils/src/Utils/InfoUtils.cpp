@@ -21,6 +21,9 @@
 
 #include <cstring>
 
+#include <QtGlobal>
+#include <QString>
+
 #if defined (Q_OS_WIN)
 #include <windows.h>
 #include <lm.h>
@@ -49,9 +52,6 @@
 #include <sys/utsname.h>
 #endif
 
-#include <QString>
-#include <QtGlobal>
-
 namespace {
 
 QString compilerDescriptionInt()
@@ -61,11 +61,11 @@ QString compilerDescriptionInt()
 #elif defined (__GNUC__)
     QString prefix;
 #if defined (__MINGW32__)
-    prefix = QString::fromLatin1("MinGW");
+    prefix = QString::fromLatin1("MinGW ");
 #elif defined (__CYGWIN__)
-    prefix = QString::fromLatin1("Cygwin");
+    prefix = QString::fromLatin1("Cygwin ");
 #endif
-    return QString::fromLatin1("%1 GCC %2.%3.%4").arg(prefix).arg(__GNUC__).arg(__GNUC_MINOR__).arg(__GNUC_PATCHLEVEL__);
+    return QString::fromLatin1("%1GCC %2.%3.%4").arg(prefix).arg(__GNUC__).arg(__GNUC_MINOR__).arg(__GNUC_PATCHLEVEL__);
 #elif defined(_MSC_VER)
     switch (_MSC_VER)
     {
