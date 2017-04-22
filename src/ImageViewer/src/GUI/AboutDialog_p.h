@@ -29,6 +29,7 @@
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QPixmap>
+#include <QStyle>
 
 #include "Utils/ObjectsUtils.h"
 #include "Widgets/AdjustableFrame.h"
@@ -56,6 +57,7 @@ struct AboutDialog::UI
         textBrowser->setOpenExternalLinks(true);
         textLabel->setOpenExternalLinks(true);
         buttonBox->setStandardButtons(QDialogButtonBox::Ok);
+        textLabel->setTextInteractionFlags(Qt::TextInteractionFlags(textLabel->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, NULL, textLabel)));
 
         QGridLayout *centralLayout = new QGridLayout(centralWidget);
         centralLayout->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop | Qt::AlignCenter);
