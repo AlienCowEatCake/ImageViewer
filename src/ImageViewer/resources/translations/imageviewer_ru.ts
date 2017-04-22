@@ -4,17 +4,17 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../src/GUI/AboutDialog.cpp" line="64"/>
+        <location filename="../../src/GUI/AboutDialog.cpp" line="56"/>
         <source>Peter S. Zhigalov</source>
         <translation>Жигалов Петр</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/AboutDialog.cpp" line="309"/>
+        <location filename="../../src/GUI/AboutDialog.cpp" line="234"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/AboutDialog.cpp" line="320"/>
+        <location filename="../../src/GUI/AboutDialog.cpp" line="245"/>
         <source>License</source>
         <translation>Лицензия</translation>
     </message>
@@ -22,7 +22,7 @@
 <context>
     <name>Dock</name>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="535"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="540"/>
         <source>New Window</source>
         <translation>Новое окно</translation>
     </message>
@@ -63,239 +63,239 @@
         <translation>Все файлы</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="395"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="400"/>
         <source>Previous</source>
         <translation>Предыдущий</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="396"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="401"/>
         <source>Next</source>
         <translation>Следующий</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="397"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="402"/>
         <source>Zoom Out</source>
         <translation>Уменьшить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="398"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="403"/>
         <source>Zoom In</source>
         <translation>Увеличить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="399"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="404"/>
         <source>Fit Image To Window Size</source>
         <translation>Масштабировать к размеру окна</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="400"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="405"/>
         <source>Original Size</source>
         <translation>Масштаб 1:1</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="401"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="406"/>
         <source>Full Screen</source>
         <translation>На полный экран</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="402"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="407"/>
         <source>Rotate Counterclockwise</source>
         <translation>Повернуть против часовой стрелки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="403"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="408"/>
         <source>Rotate Clockwise</source>
         <translation>Повернуть по часовой стрелке</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow.cpp" line="584"/>
-        <location filename="../../src/GUI/MainWindow_p.h" line="406"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="411"/>
         <source>Open File</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="407"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="412"/>
         <source>Save File As</source>
         <translation>Сохранить файл как</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="410"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="415"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="412"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="417"/>
         <source>&amp;File</source>
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="416"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="421"/>
         <source>&amp;Help</source>
         <translation>&amp;Справка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="415"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="420"/>
         <source>&amp;Language</source>
         <translation>&amp;Язык</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="404"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="409"/>
         <source>Flip Horizontal</source>
         <translation>Перевернуть по горизонтали</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="405"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="410"/>
         <source>Flip Vertical</source>
         <translation>Перевернуть по вертикали</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="413"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="418"/>
         <source>&amp;Edit</source>
         <translation>&amp;Правка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="414"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="419"/>
         <source>&amp;View</source>
         <translation>&amp;Вид</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="418"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="423"/>
         <source>&amp;Open</source>
         <translation>&amp;Открыть</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="419"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="424"/>
         <source>&amp;Save As</source>
         <translation>&amp;Сохранить как</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="420"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="425"/>
         <source>P&amp;revious</source>
         <translation>&amp;Предыдущий</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="421"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="426"/>
         <source>&amp;Next</source>
         <translation>С&amp;ледующий</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="422"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="427"/>
         <source>&amp;Preferences</source>
         <translation>&amp;Настройки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="423"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="428"/>
         <source>&amp;Exit</source>
         <translation>&amp;Выход</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="424"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="429"/>
         <source>Rotate &amp;Counterclockwise</source>
         <translation>&amp;Повернуть против часовой стрелки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="425"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="430"/>
         <source>&amp;Rotate Clockwise</source>
         <translation>Повернуть по &amp;часовой стрелке</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="426"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="431"/>
         <source>Flip &amp;Horizontal</source>
         <translation>Перевернуть по &amp;горизонтали</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="427"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="432"/>
         <source>Flip &amp;Vertical</source>
         <translation>Перевернуть по &amp;вертикали</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="428"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="433"/>
         <source>&amp;Delete File</source>
         <translation>&amp;Удалить файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="429"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="434"/>
         <source>Zoom &amp;Out</source>
         <translation>&amp;Уменьшить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="430"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="435"/>
         <source>Zoom &amp;In</source>
         <translation>У&amp;величить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="434"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="439"/>
         <source>Show &amp;Menu Bar</source>
         <translation>Показать &amp;строку меню</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="435"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="440"/>
         <source>Show &amp;Tool Bar</source>
         <translation>Показать &amp;панель инструментов</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="438"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="443"/>
         <source>&amp;About</source>
         <translation>&amp;О программе</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="439"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="444"/>
         <source>About &amp;Qt</source>
         <translation>О &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="472"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="477"/>
         <source>Start Slideshow</source>
         <translation>Запуск слайдшоу</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="474"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="479"/>
         <source>Start S&amp;lideshow</source>
         <translation>Запуск слайд&amp;шоу</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="479"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="484"/>
         <source>Stop Slideshow</source>
         <translation>Останов слайдшоу</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="481"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="486"/>
         <source>Stop S&amp;lideshow</source>
         <translation>Останов слайд&amp;шоу</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="436"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="441"/>
         <source>&amp;English</source>
         <translation>&amp;English</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="431"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="436"/>
         <source>Fit Image To &amp;Window Size</source>
         <translation>Масштабировать к размеру &amp;окна</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="432"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="437"/>
         <source>Original &amp;Size</source>
         <translation>&amp;Масштаб 1:1</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="433"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="438"/>
         <source>&amp;Full Screen</source>
         <translation>На полный &amp;экран</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="437"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="442"/>
         <source>&amp;Russian</source>
         <translation>&amp;Русский</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow.cpp" line="607"/>
-        <location filename="../../src/GUI/MainWindow_p.h" line="408"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="413"/>
         <source>Delete File</source>
         <translation>Удалить файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow_p.h" line="409"/>
+        <location filename="../../src/GUI/MainWindow_p.h" line="414"/>
         <source>Preferences</source>
         <translation>Настройки</translation>
     </message>
