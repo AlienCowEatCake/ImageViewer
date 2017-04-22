@@ -46,9 +46,6 @@
 #if defined (HAS_ZLIB)
 #include <zlib.h>
 #endif
-#if defined (HAS_POSHLIB)
-#include "posh.h"
-#endif
 
 namespace {
 
@@ -219,15 +216,6 @@ QString getTextBrowserContent()
                       QString::fromLatin1("stb"),
                       QString(),
                       QString::fromLatin1("https://github.com/nothings/stb")
-                      ));
-#endif
-
-#if defined (HAS_POSHLIB)
-    result.append(formatItem(
-                      QString::fromLatin1("This software uses the Portable Open Source Harness library"),
-                      QString::fromLatin1("poshlib"),
-                      QString(),
-                      QString::fromLatin1("http://hookatooka.com/poshlib/")
                       ));
 #endif
 
