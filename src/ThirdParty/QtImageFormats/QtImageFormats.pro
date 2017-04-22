@@ -83,7 +83,7 @@ DEFINES += WRAPPER_USE_TGA_HANDLER
 
 !disable_zlib {
 
-    greaterThan(QT_MAJOR_VERSION, 5) | greaterThan(QT_MINOR_VERSION_VERSION, 4) {
+    greaterThan(QT_MAJOR_VERSION, 5) | greaterThan(QT_MINOR_VERSION, 4) {
 
         SOURCES += \
             $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/tiff/qtiffhandler.cpp
