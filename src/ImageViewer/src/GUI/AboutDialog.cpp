@@ -181,7 +181,7 @@ QString getTextBrowserContent()
     result.append(formatItem(
                       QString::fromLatin1("This software uses the Qt framework"),
                       QString::fromLatin1("qt"),
-                      QString::fromLatin1("%1.%2.%3").arg(QT_VERSION_MAJOR).arg(QT_VERSION_MINOR).arg(QT_VERSION_PATCH),
+                      QString::fromLatin1(QT_VERSION_STR),
                       QString::fromLatin1("https://www.qt.io/")
                       ));
 
