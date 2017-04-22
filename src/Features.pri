@@ -81,8 +81,3 @@ disable_zlib {
     CONFIG += disable_qtimageformats
 }
 
-# poshlib options:
-#    disable_poshlib
-#    system_poshlib
-
-
