@@ -52,6 +52,7 @@
 #include "Decoders/DecodersManager.h"
 #include "GUISettings.h"
 #include "SettingsDialog.h"
+#include "AboutDialog.h"
 
 namespace {
 
@@ -421,25 +422,8 @@ void MainWindow::updateWindowTitle()
 
 void MainWindow::showAbout()
 {
-    QMessageBox msgBox(this);
-    msgBox.setStandardButtons(QMessageBox::Ok);
-    msgBox.setDefaultButton(QMessageBox::Ok);
-    msgBox.setWindowTitle(tr("About"));
-    msgBox.setText(QString::fromLatin1("<b>%1 v%2</b>").arg(qApp->applicationName()).arg(qApp->applicationVersion()));
-    msgBox.setInformativeText(QString::fromLatin1(
-                      "<a href=\"%4\">%4</a><br>"
-                      "%1: <a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU GPL v3</a><br><br>"
-                      "Copyright &copy; 2017<br>"
-                      "%2 &lt;<a href=\"mailto:%3\">%3</a>&gt;"
-                      ).arg(tr("License"))
-                       .arg(tr("Peter S. Zhigalov"))
-                       .arg(QString::fromLatin1("peter.zhigalov@gmail.com"))
-                       .arg(QString::fromLatin1("https://fami.codefreak.ru/gitlab/peter/ImageViewer")));
-    const QList<QLabel*> labels = msgBox.findChildren<QLabel*>();
-    for(QList<QLabel*>::ConstIterator it = labels.begin(); it != labels.end(); ++it)
-        (*it)->setWordWrap(false);
-    msgBox.setIconPixmap(QString::fromLatin1(":/icon/icon_64.png"));
-    msgBox.exec();
+    AboutDialog dialog(this);
+    dialog.exec();
 }
 
 void MainWindow::showPreferences()

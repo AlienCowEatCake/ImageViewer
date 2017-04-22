@@ -36,18 +36,14 @@
 #include "Utils/MenuUtils.h"
 #include "Utils/ObjectsUtils.h"
 #include "Utils/ThemeUtils.h"
+#include "Widgets/AdjustableFrame.h"
 
 #include "ImageViewerWidget.h"
 
 namespace {
 
-const int TOOLBAR_BUTTON_SIZE       = 28;
-const int TOOLBAR_BUTTON_ICON_SIZE  = 16;
-const int TOOLBAR_LAYOUT_SPACING    = 3;
-const int TOOLBAR_HORIZONTAL_MARGIN = 4;
-const int TOOLBAR_VERTICAL_MARGIN   = 2;
-const int WINDOW_DEFAULT_WIDTH      = 640;
-const int WINDOW_DEFAULT_HEIGHT     = 480;
+const int WINDOW_DEFAULT_WIDTH  = 640;
+const int WINDOW_DEFAULT_HEIGHT = 480;
 
 } // namespace
 
@@ -58,7 +54,7 @@ struct MainWindow::UI
 
     QFrame *centralWidget;
     ImageViewerWidget *imageViewerWidget;
-    QFrame *toolbar;
+    AdjustableFrame *toolbar;
     QToolButton *navigatePrevious;
     QToolButton *navigateNext;
     QToolButton *startSlideShow;
@@ -114,24 +110,24 @@ struct MainWindow::UI
         , isSlideShowMode(false)
         , CONSTRUCT_OBJECT(centralWidget, QFrame, (mainWindow))
         , CONSTRUCT_OBJECT(imageViewerWidget, ImageViewerWidget, (centralWidget))
-        , CONSTRUCT_OBJECT(toolbar, QFrame, (centralWidget))
-        , CONSTRUCT_OBJECT_FROM_POINTER(navigatePrevious, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(navigateNext, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(startSlideShow, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(zoomOut, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(zoomIn, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(zoomFitToWindow, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(zoomOriginalSize, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(zoomFullScreen, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(rotateCounterclockwise, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(rotateClockwise, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(flipHorizontal, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(flipVertical, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(openFile, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(saveFileAs, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(deleteFile, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(preferences, createToolbarButton(toolbar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(exit, createToolbarButton(toolbar))
+        , CONSTRUCT_OBJECT(toolbar, AdjustableFrame, (centralWidget))
+        , CONSTRUCT_OBJECT(navigatePrevious, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(navigateNext, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(startSlideShow, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(zoomOut, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(zoomIn, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(zoomFitToWindow, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(zoomOriginalSize, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(zoomFullScreen, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(rotateCounterclockwise, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(rotateClockwise, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(flipHorizontal, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(flipVertical, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(openFile, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(saveFileAs, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(deleteFile, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(preferences, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(exit, QToolButton, (toolbar))
         , CONSTRUCT_OBJECT(menubar, QMenuBar, (mainWindow))
         , CONSTRUCT_OBJECT(contextMenu, QMenu, (mainWindow))
         , CONSTRUCT_OBJECT(menuFile, QMenu, (menubar))
@@ -208,8 +204,6 @@ struct MainWindow::UI
         exit->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT                      , ThemeUtils::WidgetHasDarkTheme(exit)));
 
         QHBoxLayout *toolbarLayout = new QHBoxLayout(toolbar);
-        toolbarLayout->setContentsMargins(TOOLBAR_HORIZONTAL_MARGIN, TOOLBAR_VERTICAL_MARGIN, TOOLBAR_HORIZONTAL_MARGIN, TOOLBAR_VERTICAL_MARGIN);
-        toolbarLayout->setSpacing(TOOLBAR_LAYOUT_SPACING);
         toolbarLayout->addStretch();
         toolbarLayout->addWidget(navigatePrevious);
         toolbarLayout->addWidget(navigateNext);
@@ -389,6 +383,8 @@ struct MainWindow::UI
         MenuUtils::DisableShowTabBarMenuItem();
         MenuUtils::DisableEnterFullScreenMenuItem();
 #endif
+
+        mainWindow->ensurePolished();
     }
 
     ~UI()
@@ -489,20 +485,9 @@ struct MainWindow::UI
 
 private:
 
-    QToolButton *createToolbarButton(QWidget *parent) const
-    {
-        QToolButton *button = new QToolButton(parent);
-        button->setFixedSize(QSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE));
-        button->setIconSize(QSize(TOOLBAR_BUTTON_ICON_SIZE, TOOLBAR_BUTTON_ICON_SIZE));
-        button->setToolButtonStyle(Qt::ToolButtonIconOnly);
-        return button;
-    }
-
     QWidget *createVerticalSeparator(QWidget *parent) const
     {
-        QFrame *separator = new QFrame(parent);
-        separator->setFrameShape(QFrame::VLine);
-        separator->setFrameShadow(QFrame::Sunken);
+        CREATE_OBJECT(separator, QFrame, (parent));
         return separator;
     }
 

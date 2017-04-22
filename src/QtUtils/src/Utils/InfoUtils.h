@@ -17,30 +17,20 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined (QTUTILS_MENUUTILS_H_INCLUDED)
-#define QTUTILS_MENUUTILS_H_INCLUDED
+#if !defined (QTUTILS_INFOUTILS_H_INCLUDED)
+#define QTUTILS_INFOUTILS_H_INCLUDED
 
-#include <QtGlobal>
+class QString;
 
-namespace MenuUtils {
+namespace InfoUtils {
 
-#if defined (Q_OS_MAC)
+/// @brief Получить человеко-читаемую информацию о системе
+QString GetSystemDescription();
 
-/// @brief Remove (disable) the "Start Dictation..." menu item from the "Edit" menu
-void DisableDictationMenuItem();
+/// @brief Получить человеко-читаемую информацию о компиляторе
+QString GetCompilerDescription();
 
-/// @brief Remove (disable) the "Emoji & Symbols" menu item from the "Edit" menu
-void DisableCharacterPaletteMenuItem();
+} // namespace InfoUtils
 
-/// @brief Remove (don't allow) the "Show Tab Bar" menu item from the "View" menu, if supported
-void DisableShowTabBarMenuItem();
-
-/// @brief Remove (don't have) the "Enter Full Screen" menu item from the "View" menu
-void DisableEnterFullScreenMenuItem();
-
-#endif
-
-} // namespace MenuUtils
-
-#endif // QTUTILS_MENUUTILS_H_INCLUDED
+#endif // QTUTILS_INFOUTILS_H_INCLUDED
 

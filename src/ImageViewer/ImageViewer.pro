@@ -61,6 +61,7 @@ SOURCES += \
     src/GUI/MainWindow.cpp \
     src/GUI/ImageViewerWidget.cpp \
     src/GUI/SettingsDialog.cpp \
+    src/GUI/AboutDialog.cpp \
     src/Decoders/DecodersManager.cpp \
     src/Decoders/DecoderQImage.cpp \
     src/Decoders/DecoderQMovie.cpp \
@@ -80,6 +81,8 @@ HEADERS += \
     src/GUI/ImageViewerWidget.h \
     src/GUI/SettingsDialog.h \
     src/GUI/SettingsDialog_p.h \
+    src/GUI/AboutDialog.h \
+    src/GUI/AboutDialog_p.h \
     src/Decoders/DecodersManager.h \
     src/Decoders/IDecoder.h \
     src/Decoders/Internal/Animation/AnimationObject.h \
