@@ -297,11 +297,9 @@ QString GetSystemDescription()
     memset(&buf, 0, sizeof(buf));
     if(uname(&buf))
         return QString();
-    return QString::fromLatin1("%1 %2 %3 %4 %5")
+    return QString::fromLatin1("%1 %2, %3")
             .arg(QString::fromLocal8Bit(buf.sysname))
-            .arg(QString::fromLocal8Bit(buf.nodename))
             .arg(QString::fromLocal8Bit(buf.release))
-            .arg(QString::fromLocal8Bit(buf.version))
             .arg(QString::fromLocal8Bit(buf.machine));
 }
 
