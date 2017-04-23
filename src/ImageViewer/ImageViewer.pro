@@ -120,6 +120,11 @@ HEADERS += \
         src/Decoders/DecoderLibPng.cpp
 }
 
+!disable_libjasper {
+    SOURCES += \
+        src/Decoders/DecoderLibJasPer.cpp
+}
+
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
     resources/translations/imageviewer_ru.ts
