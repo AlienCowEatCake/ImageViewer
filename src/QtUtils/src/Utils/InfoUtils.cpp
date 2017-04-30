@@ -121,7 +121,7 @@ QString GetSystemDescription()
     if(hKernel32)
     {
         typedef void(WINAPI *GetNativeSystemInfo_t)(LPSYSTEM_INFO);
-        GetNativeSystemInfo_t GetNativeSystemInfo_f = (GetNativeSystemInfo_t)GetProcAddress(hKernel32, "GetNativeSystemInfo");
+        GetNativeSystemInfo_t GetNativeSystemInfo_f = reinterpret_cast<GetNativeSystemInfo_t>(GetProcAddress(hKernel32, "GetNativeSystemInfo"));
         if(!GetNativeSystemInfo_f)
             GetNativeSystemInfo_f = &GetSystemInfo;
         GetNativeSystemInfo_f(&sysInfo);
@@ -137,9 +137,9 @@ QString GetSystemDescription()
     if(hKernel32)
     {
         typedef BOOL(WINAPI *GetVersionExA_t)(LPOSVERSIONINFOEXA);
-        GetVersionExA_t GetVersionExA_f = (GetVersionExA_t)GetProcAddress(hKernel32, "GetVersionExA");
+        GetVersionExA_t GetVersionExA_f = reinterpret_cast<GetVersionExA_t>(GetProcAddress(hKernel32, "GetVersionExA"));
         typedef BOOL(WINAPI *GetVersionA_t)(LPOSVERSIONINFOA);
-        GetVersionA_t GetVersionA_f = (GetVersionA_t)GetProcAddress(hKernel32, "GetVersionA");
+        GetVersionA_t GetVersionA_f = reinterpret_cast<GetVersionA_t>(GetProcAddress(hKernel32, "GetVersionA"));
         bool exStatus = false;
         if(GetVersionExA_f)
         {
@@ -174,9 +174,9 @@ QString GetSystemDescription()
         if(osMajorVersion == 6 && osMinorVersion == 2)
         {
             typedef ULONGLONG(WINAPI *VerSetConditionMask_t)(ULONGLONG, DWORD, BYTE);
-            VerSetConditionMask_t VerSetConditionMask_f = (VerSetConditionMask_t)GetProcAddress(hKernel32, "VerSetConditionMask");
+            VerSetConditionMask_t VerSetConditionMask_f = reinterpret_cast<VerSetConditionMask_t>(GetProcAddress(hKernel32, "VerSetConditionMask"));
             typedef BOOL(WINAPI *VerifyVersionInfoA_t)(LPOSVERSIONINFOEXA, DWORD, DWORDLONG);
-            VerifyVersionInfoA_t VerifyVersionInfoA_f = (VerifyVersionInfoA_t)GetProcAddress(hKernel32, "VerifyVersionInfoA");
+            VerifyVersionInfoA_t VerifyVersionInfoA_f = reinterpret_cast<VerifyVersionInfoA_t>(GetProcAddress(hKernel32, "VerifyVersionInfoA"));
             if(VerSetConditionMask_f && VerifyVersionInfoA_f)
             {
                 OSVERSIONINFOEXA osvi;
@@ -194,15 +194,15 @@ QString GetSystemDescription()
     if(hNetapi32)
     {
         typedef NET_API_STATUS(NET_API_FUNCTION *NetWkstaGetInfo_t)(LPWSTR, DWORD, LPBYTE*);
-        NetWkstaGetInfo_t NetWkstaGetInfo_f = (NetWkstaGetInfo_t)GetProcAddress(hNetapi32, "NetWkstaGetInfo");
+        NetWkstaGetInfo_t NetWkstaGetInfo_f = reinterpret_cast<NetWkstaGetInfo_t>(GetProcAddress(hNetapi32, "NetWkstaGetInfo"));
         typedef NET_API_STATUS(NET_API_FUNCTION *NetApiBufferFree_t)(LPVOID);
-        NetApiBufferFree_t NetApiBufferFree_f = (NetApiBufferFree_t)GetProcAddress(hNetapi32, "NetApiBufferFree");
+        NetApiBufferFree_t NetApiBufferFree_f = reinterpret_cast<NetApiBufferFree_t>(GetProcAddress(hNetapi32, "NetApiBufferFree"));
         if(NetWkstaGetInfo_f && NetApiBufferFree_f)
         {
             LPBYTE pinfoRawData = NULL;
             if(NERR_Success == NetWkstaGetInfo_f(NULL, 100, &pinfoRawData) && pinfoRawData)
             {
-                WKSTA_INFO_100* pworkstationInfo = (WKSTA_INFO_100*)pinfoRawData;
+                WKSTA_INFO_100* pworkstationInfo = reinterpret_cast<WKSTA_INFO_100*>(pinfoRawData);
                 osMajorVersion = pworkstationInfo->wki100_ver_major;
                 osMinorVersion = pworkstationInfo->wki100_ver_minor;
                 NetApiBufferFree_f(pinfoRawData);
@@ -214,9 +214,9 @@ QString GetSystemDescription()
     FreeLibrary(hKernel32);
 
     QString winVersion;
-    if     (osMajorVersion == 10 && osMinorVersion >= 0 && osProductType != VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows 10 Server");
-    else if(osMajorVersion == 10 && osMinorVersion >= 0 && osProductType == VER_NT_WORKSTATION)
+    if     (osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osProductType != VER_NT_WORKSTATION)
+        winVersion = QString::fromLatin1("Windows Server 2016");
+    else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osProductType == VER_NT_WORKSTATION)
         winVersion = QString::fromLatin1("Windows 10");
     else if(osMajorVersion == 6 && osMinorVersion == 3 && osProductType != VER_NT_WORKSTATION)
         winVersion = QString::fromLatin1("Windows Server 2012 R2");

@@ -408,11 +408,11 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
 
     HMODULE hShell32 = LoadLibraryA("shell32.dll");
     typedef int(*SHFileOperationW_t)(LPSHFILEOPSTRUCTW);
-    SHFileOperationW_t SHFileOperationW_f = (SHFileOperationW_t)GetProcAddress(hShell32, "SHFileOperationW");
+    SHFileOperationW_t SHFileOperationW_f = reinterpret_cast<SHFileOperationW_t>(GetProcAddress(hShell32, "SHFileOperationW"));
 
     HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
     typedef DWORD(WINAPI *FormatMessageW_t)(DWORD, LPCVOID, DWORD, DWORD, LPWSTR, DWORD, va_list);
-    FormatMessageW_t FormatMessageW_f = (FormatMessageW_t)GetProcAddress(hKernel32, "FormatMessageW");
+    FormatMessageW_t FormatMessageW_f = reinterpret_cast<FormatMessageW_t>(GetProcAddress(hKernel32, "FormatMessageW"));
 
     if(SHFileOperationW_f && FormatMessageW_f)
     {
@@ -429,12 +429,12 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
         fileop.fAnyOperationsAborted = 0;
         fileop.hNameMappings = 0;
         fileop.lpszProgressTitle = NULL;
-        int status = SHFileOperationW_f(&fileop);
+        DWORD status = static_cast<DWORD>(SHFileOperationW_f(&fileop));
         if(status)
         {
             WCHAR * errorRawStr = NULL;
             FormatMessageW_f(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                           NULL, status, 0, (LPWSTR)(&errorRawStr), 0, NULL);
+                           NULL, status, 0, reinterpret_cast<LPWSTR>(&errorRawStr), 0, NULL);
             const QString description = QString::fromStdWString(std::wstring(errorRawStr));
             LocalFree(errorRawStr);
             if(errorDescription)
@@ -466,12 +466,12 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
         fileop.fAnyOperationsAborted = 0;
         fileop.hNameMappings = 0;
         fileop.lpszProgressTitle = NULL;
-        int status = SHFileOperationA(&fileop);
+        DWORD status = static_cast<DWORD>(SHFileOperationA(&fileop));
         if(status)
         {
             char * errorRawStr = NULL;
             FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                           NULL, status, 0, (LPSTR)(&errorRawStr), 0, NULL);
+                           NULL, status, 0, reinterpret_cast<LPSTR>(&errorRawStr), 0, NULL);
             const QString description = QString::fromLocal8Bit(errorRawStr);
             LocalFree(errorRawStr);
             if(errorDescription)
