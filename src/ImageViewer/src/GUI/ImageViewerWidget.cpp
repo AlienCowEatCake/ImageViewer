@@ -387,8 +387,12 @@ void ImageViewerWidget::wheelEvent(QWheelEvent *event)
 {
     if(wheelMode() == WHEEL_ZOOM)
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
         const QPointF numDegrees = QPointF(event->angleDelta()) / 8.0;
         const qreal stepsDistance = (numDegrees.x() + numDegrees.y()) / 15.0;
+#else
+        const qreal stepsDistance = event->delta() / 8.0 / 15.0;
+#endif
         const qreal scaleFactor = (stepsDistance > 0 ? (1.0 + stepsDistance / 10.0) : 1.0 / (1.0 - stepsDistance / 10.0));
         setZoomLevel(m_impl->currentZoomLevel * scaleFactor);
         event->accept();

@@ -32,9 +32,9 @@ macx {
 
 win32 {
     *g++*|*clang* {
-        LIBS += -lshell32
+        LIBS += -lshell32 -luser32
     } else {
-        LIBS += shell32.lib
+        LIBS += shell32.lib user32.lib
     }
 }
 
