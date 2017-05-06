@@ -286,6 +286,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_impl->settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&)), this, SLOT(updateBackgroundColor()));
     connect(m_impl->settings, SIGNAL(smoothTransformationChanged(bool)), m_ui->imageViewerWidget, SLOT(setSmoothTransformation(bool)));
     connect(m_impl->settings, SIGNAL(slideShowIntervalChanged(int)), this, SLOT(updateSlideShowInterval()));
+    connect(m_impl->settings, SIGNAL(wheelModeChanged(ImageViewerWidget::WheelMode)), m_ui->imageViewerWidget, SLOT(setWheelMode(ImageViewerWidget::WheelMode)));
 
     connect(&m_impl->watcher, SIGNAL(directoryChanged(const QString&)), this, SLOT(onDirectoryChanged()));
 
@@ -294,6 +295,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_ui->imageViewerWidget->setZoomLevel(m_impl->settings->zoomLevel());
     m_ui->imageViewerWidget->setBackgroundColor(m_impl->settings->normalBackgroundColor());
     m_ui->imageViewerWidget->setSmoothTransformation(m_impl->settings->smoothTransformation());
+    m_ui->imageViewerWidget->setWheelMode(m_impl->settings->wheelMode());
     onZoomModeChanged(m_impl->settings->zoomMode());
     updateSlideShowInterval();
     setLanguage();

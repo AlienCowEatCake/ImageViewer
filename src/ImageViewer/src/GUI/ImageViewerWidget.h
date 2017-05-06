@@ -38,6 +38,12 @@ public:
         ZOOM_CUSTOM         = 3
     };
 
+    enum WheelMode
+    {
+        WHEEL_SCROLL        = 1,
+        WHEEL_ZOOM          = 2
+    };
+
 signals:
     void zoomLevelChanged(qreal zoomLevel);
 
@@ -46,18 +52,24 @@ public:
     ImageViewerWidget(QWidget *parent = NULL);
     ~ImageViewerWidget();
 
-    void setGraphicsItem(QGraphicsItem *graphicsItem);
-    void clear();
-
-    void setZoomMode(ZoomMode mode);
     ZoomMode zoomMode() const;
-    void setZoomLevel(qreal zoomLevel);
     qreal zoomLevel() const;
+
+    WheelMode wheelMode() const;
 
     QSize imageSize() const;
     QImage grabImage() const;
 
 public slots:
+
+    void setGraphicsItem(QGraphicsItem *graphicsItem);
+    void clear();
+
+    void setZoomMode(ImageViewerWidget::ZoomMode mode);
+    void setZoomLevel(qreal zoomLevel);
+
+    void setWheelMode(ImageViewerWidget::WheelMode mode);
+
     void rotateClockwise();
     void rotateCounterclockwise();
 
@@ -79,6 +91,7 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
 
 private:
     struct Impl;

@@ -47,6 +47,7 @@ struct SettingsDialog::Impl
         settings->setNormalBackgroundColor(normalBackground);
         settings->setFullScreenBackgroundColor(fullScreenBackground);
         settings->setSlideShowInterval(ui->slideShowSpinBox->value());
+        settings->setWheelMode(ui->wheelZoomRadioButton->isChecked() ? ImageViewerWidget::WHEEL_ZOOM : ImageViewerWidget::WHEEL_SCROLL);
         settingsDialog->close();
     }
 

@@ -28,6 +28,8 @@
 #include <QLabel>
 #include <QToolButton>
 #include <QSpinBox>
+#include <QRadioButton>
+#include <QButtonGroup>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -63,6 +65,10 @@ struct SettingsDialog::UI
         , CONSTRUCT_OBJECT(normalBackgroundColorButton, QToolButton, (backgroundColorsFrame))
         , CONSTRUCT_OBJECT(fullScreenBackgroundColorLabel, QLabel, (backgroundColorsFrame))
         , CONSTRUCT_OBJECT(fullScreenBackgroundColorButton, QToolButton, (backgroundColorsFrame))
+        , CONSTRUCT_OBJECT(wheelModeFrame, QFrame, (settingsDialog))
+        , CONSTRUCT_OBJECT(wheelModeLabel, QLabel, (wheelModeFrame))
+        , CONSTRUCT_OBJECT(wheelScrollRadioButton, QRadioButton, (wheelModeFrame))
+        , CONSTRUCT_OBJECT(wheelZoomRadioButton, QRadioButton, (wheelModeFrame))
         , CONSTRUCT_OBJECT(buttonBox, QDialogButtonBox, (settingsDialog))
     {
         askBeforeDeleteCheckbox->setText(qApp->translate("SettingsDialog", "Ask before deleting images"));
@@ -91,6 +97,19 @@ struct SettingsDialog::UI
         fullScreenBackgroundColorButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
         fullScreenBackgroundColorButton->setIconSize(COLOR_ICON_SIZE);
 
+        wheelModeLabel->setText(qApp->translate("SettingsDialog", "<b>Mouse wheel action</b>"));
+        wheelScrollRadioButton->setText(qApp->translate("SettingsDialog", "Scroll", "WheelMode"));
+        wheelZoomRadioButton->setText(qApp->translate("SettingsDialog", "Zoom", "WheelMode"));
+
+        const ImageViewerWidget::WheelMode wheelMode = settings->wheelMode();
+        wheelScrollRadioButton->setChecked(wheelMode == ImageViewerWidget::WHEEL_SCROLL);
+        wheelZoomRadioButton->setChecked(wheelMode == ImageViewerWidget::WHEEL_ZOOM);
+
+        CREATE_OBJECT(wheelModeGroup, QButtonGroup, (wheelModeFrame));
+        wheelModeGroup->addButton(wheelScrollRadioButton);
+        wheelModeGroup->addButton(wheelZoomRadioButton);
+        wheelModeGroup->setExclusive(true);
+
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
 
         QHBoxLayout *slideShowIntervalLayout = new QHBoxLayout(slideShowIntervalFrame);
@@ -109,12 +128,20 @@ struct SettingsDialog::UI
         backgroundColorsLayout->addWidget(fullScreenBackgroundColorButton, 1, 3, Qt::AlignLeft | Qt::AlignVCenter);
         backgroundColorsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 4);
 
+        QGridLayout *wheelModeLayout = new QGridLayout(wheelModeFrame);
+        wheelModeLayout->setContentsMargins(0, 0, 0, 0);
+        wheelModeLayout->addWidget(wheelModeLabel, 0, 0, 1, 3, Qt::AlignLeft | Qt::AlignBottom);
+        wheelModeLayout->addWidget(wheelScrollRadioButton, 1, 0, Qt::AlignLeft | Qt::AlignVCenter);
+        wheelModeLayout->addWidget(wheelZoomRadioButton, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
+        wheelModeLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 2);
+
         QVBoxLayout *mainLayout = new QVBoxLayout(settingsDialog);
         mainLayout->addWidget(askBeforeDeleteCheckbox);
         mainLayout->addWidget(moveToTrashCheckbox);
         mainLayout->addWidget(smoothTransformationCheckbox);
         mainLayout->addWidget(slideShowIntervalFrame);
         mainLayout->addWidget(backgroundColorsFrame);
+        mainLayout->addWidget(wheelModeFrame);
         mainLayout->addWidget(buttonBox);
 
         settingsDialog->setWindowTitle(qApp->translate("SettingsDialog", "Preferences"));
@@ -157,6 +184,10 @@ struct SettingsDialog::UI
     QToolButton *normalBackgroundColorButton;
     QLabel *fullScreenBackgroundColorLabel;
     QToolButton *fullScreenBackgroundColorButton;
+    QFrame *wheelModeFrame;
+    QLabel *wheelModeLabel;
+    QRadioButton *wheelScrollRadioButton;
+    QRadioButton *wheelZoomRadioButton;
     QDialogButtonBox *buttonBox;
 };
 

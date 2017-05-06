@@ -22,7 +22,7 @@ MainWindow #toolbar
 
 MainWindow #toolbar QToolButton
 {
-	qproperty-iconSize: 16px 16px;
+    qproperty-iconSize: 16px 16px;
     qproperty-toolButtonStyle: ToolButtonIconOnly;
     qproperty-minimumSize: 28px 28px;
     qproperty-maximumSize: 28px 28px;

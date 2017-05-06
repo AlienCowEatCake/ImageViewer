@@ -30,35 +30,35 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="408"/>
-        <location filename="../../src/GUI/MainWindow.cpp" line="558"/>
-        <location filename="../../src/GUI/MainWindow.cpp" line="620"/>
-        <location filename="../../src/GUI/MainWindow.cpp" line="630"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="410"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="560"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="622"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="632"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="558"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="560"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>Failed to open file &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="608"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="610"/>
         <source>Are you sure you want to delete current file?</source>
         <translation>Are you sure you want to delete current file?</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="630"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="632"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation>Failed to delete file &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="584"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="586"/>
         <source>All Supported Images</source>
         <translation>All Supported Images</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="584"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="586"/>
         <source>All Files</source>
         <translation>All Files</translation>
     </message>
@@ -108,7 +108,7 @@
         <translation>Rotate Clockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="585"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="587"/>
         <location filename="../../src/GUI/MainWindow_p.h" line="417"/>
         <source>Open File</source>
         <translation>Open File</translation>
@@ -294,7 +294,7 @@
         <translation>&amp;Russian</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="608"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="610"/>
         <location filename="../../src/GUI/MainWindow_p.h" line="419"/>
         <source>Delete File</source>
         <translation>Delete File</translation>
@@ -308,52 +308,69 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="../../src/GUI/SettingsDialog.cpp" line="74"/>
+        <location filename="../../src/GUI/SettingsDialog.cpp" line="75"/>
         <source>Select Background Color</source>
         <translation>Select Background Color</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/SettingsDialog_p.h" line="68"/>
+        <location filename="../../src/GUI/SettingsDialog_p.h" line="74"/>
         <source>Ask before deleting images</source>
         <translation>Ask before deleting images</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/SettingsDialog_p.h" line="71"/>
+        <location filename="../../src/GUI/SettingsDialog_p.h" line="77"/>
         <source>Move deleted images to trash</source>
         <translation>Move deleted images to trash</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/SettingsDialog_p.h" line="74"/>
+        <location filename="../../src/GUI/SettingsDialog_p.h" line="80"/>
         <source>Use smooth image rendering</source>
         <translation>Use smooth image rendering</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/SettingsDialog_p.h" line="77"/>
+        <location filename="../../src/GUI/SettingsDialog_p.h" line="83"/>
         <source>Slideshow interval</source>
         <translation>Slideshow interval</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/SettingsDialog_p.h" line="78"/>
+        <location filename="../../src/GUI/SettingsDialog_p.h" line="84"/>
         <source>sec</source>
         <translation>sec</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/SettingsDialog_p.h" line="82"/>
+        <location filename="../../src/GUI/SettingsDialog_p.h" line="88"/>
         <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
         <translation>&lt;b&gt;Background colors&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/SettingsDialog_p.h" line="83"/>
+        <location filename="../../src/GUI/SettingsDialog_p.h" line="89"/>
         <source>Normal:</source>
         <translation>Normal:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/SettingsDialog_p.h" line="84"/>
+        <location filename="../../src/GUI/SettingsDialog_p.h" line="90"/>
         <source>Fullscreen:</source>
         <translation>Fullscreen:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/SettingsDialog_p.h" line="120"/>
+        <location filename="../../src/GUI/SettingsDialog_p.h" line="100"/>
+        <source>&lt;b&gt;Mouse wheel action&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Mouse wheel action&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/SettingsDialog_p.h" line="101"/>
+        <source>Scroll</source>
+        <comment>WheelMode</comment>
+        <translation>Scroll</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/SettingsDialog_p.h" line="102"/>
+        <source>Zoom</source>
+        <comment>WheelMode</comment>
+        <translation>Zoom</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/SettingsDialog_p.h" line="147"/>
         <source>Preferences</source>
         <translation>Preferences</translation>
     </message>

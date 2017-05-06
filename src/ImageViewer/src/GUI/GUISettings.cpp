@@ -48,10 +48,34 @@ QVariant zoomModeToVariant(ImageViewerWidget::ZoomMode mode)
     return mode;
 }
 
+ImageViewerWidget::WheelMode wheelModeFromVariant(const QVariant &variant, ImageViewerWidget::WheelMode defaultValue)
+{
+    bool ok;
+    int value = variant.toInt(&ok);
+    if(!ok)
+        return defaultValue;
+    switch(value)
+    {
+    case ImageViewerWidget::WHEEL_SCROLL:
+        return ImageViewerWidget::WHEEL_SCROLL;
+    case ImageViewerWidget::WHEEL_ZOOM:
+        return ImageViewerWidget::WHEEL_ZOOM;
+    default:
+        break;
+    }
+    return defaultValue;
+}
+
+QVariant wheelModeToVariant(ImageViewerWidget::WheelMode mode)
+{
+    return mode;
+}
+
 const QString ASK_BEFORE_DELETE_KEY             = QString::fromLatin1("AskBeforeDelete");
 const QString MOVE_TO_TRASH_KEY                 = QString::fromLatin1("MoveToTrash");
 const QString ZOOM_MODE_KEY                     = QString::fromLatin1("ZoomMode");
 const QString ZOOM_LEVEL_KEY                    = QString::fromLatin1("ZoomLevel");
+const QString WHEEL_MODE_KEY                    = QString::fromLatin1("WheelMode");
 const QString NORMAL_BACKGROUND_COLOR_KEY       = QString::fromLatin1("NormalBackgroundColor");
 const QString FULLSCREEN_BACKGROUND_COLOR_KEY   = QString::fromLatin1("FullScreenBackgroundColor");
 const QString LAST_OPENED_PATH_KEY              = QString::fromLatin1("LastOpenedPath");
@@ -143,6 +167,22 @@ void GUISettings::setZoomLevel(qreal level)
     m_impl->settings.setValue(ZOOM_LEVEL_KEY, level);
     if(level != oldValue)
         emit zoomLevelChanged(level);
+}
+
+ImageViewerWidget::WheelMode GUISettings::wheelMode() const
+{
+    const ImageViewerWidget::WheelMode defaultMode = ImageViewerWidget::WHEEL_SCROLL;
+    const QVariant defaultValue = wheelModeToVariant(defaultMode);
+    QVariant value = m_impl->settings.value(WHEEL_MODE_KEY, defaultValue);
+    return wheelModeFromVariant((value.isValid() ? value : defaultValue), defaultMode);
+}
+
+void GUISettings::setWheelMode(ImageViewerWidget::WheelMode mode)
+{
+    const ImageViewerWidget::WheelMode oldValue = wheelMode();
+    m_impl->settings.setValue(WHEEL_MODE_KEY, wheelModeToVariant(mode));
+    if(mode != oldValue)
+        emit wheelModeChanged(mode);
 }
 
 QColor GUISettings::normalBackgroundColor() const

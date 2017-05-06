@@ -25,6 +25,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <QMatrix>
 #include <QMouseEvent>
+#include <QWheelEvent>
 
 #if (QT_VERSION < QT_VERSION_CHECK(4, 6, 0))
 #define IMAGEVIEWERWIDGET_NO_GESTURES
@@ -59,6 +60,7 @@ struct ImageViewerWidget::Impl
         , flipHorizontal(false)
         , flipVertical(false)
         , transformationMode(Qt::SmoothTransformation)
+        , wheelMode(WHEEL_SCROLL)
     {
         widget->setScene(scene);
     }
@@ -171,6 +173,7 @@ struct ImageViewerWidget::Impl
     bool flipHorizontal;
     bool flipVertical;
     Qt::TransformationMode transformationMode;
+    WheelMode wheelMode;
 };
 
 ImageViewerWidget::ImageViewerWidget(QWidget *parent)
@@ -190,6 +193,54 @@ ImageViewerWidget::ImageViewerWidget(QWidget *parent)
 
 ImageViewerWidget::~ImageViewerWidget()
 {}
+
+ImageViewerWidget::ZoomMode ImageViewerWidget::zoomMode() const
+{
+    return m_impl->currentZoomMode;
+}
+
+qreal ImageViewerWidget::zoomLevel() const
+{
+    return m_impl->currentZoomLevel;
+}
+
+ImageViewerWidget::WheelMode ImageViewerWidget::wheelMode() const
+{
+    return m_impl->wheelMode;
+}
+
+QSize ImageViewerWidget::imageSize() const
+{
+    if(!m_impl->currentGraphicsItem)
+        return QSize();
+    return m_impl->currentGraphicsItem->boundingRect().size().toSize();
+}
+
+QImage ImageViewerWidget::grabImage() const
+{
+    if(!m_impl->currentGraphicsItem)
+        return QImage();
+    QImage image(imageSize(), QImage::Format_ARGB32_Premultiplied);
+    image.fill(Qt::transparent);
+    QPainter painter;
+    painter.begin(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::TextAntialiasing);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    QStyleOptionGraphicsItem options;
+    options.exposedRect = m_impl->currentGraphicsItem->boundingRect();
+    m_impl->currentGraphicsItem->paint(&painter, &options);
+    painter.end();
+    if(m_impl->currentRotationAngle)
+    {
+        QTransform transform;
+        transform.rotate(m_impl->currentRotationAngle);
+        image = image.transformed(transform);
+    }
+    if(m_impl->flipHorizontal || m_impl->flipVertical)
+        image = image.mirrored(m_impl->flipHorizontal, m_impl->flipVertical);
+    return image;
+}
 
 void ImageViewerWidget::setGraphicsItem(QGraphicsItem *graphicsItem)
 {
@@ -224,11 +275,6 @@ void ImageViewerWidget::setZoomMode(ImageViewerWidget::ZoomMode mode)
     m_impl->updateTransformations();
 }
 
-ImageViewerWidget::ZoomMode ImageViewerWidget::zoomMode() const
-{
-    return m_impl->currentZoomMode;
-}
-
 void ImageViewerWidget::setZoomLevel(qreal zoomLevel)
 {
     m_impl->currentZoomMode = ZOOM_CUSTOM;
@@ -236,42 +282,9 @@ void ImageViewerWidget::setZoomLevel(qreal zoomLevel)
     m_impl->updateTransformations();
 }
 
-qreal ImageViewerWidget::zoomLevel() const
+void ImageViewerWidget::setWheelMode(ImageViewerWidget::WheelMode mode)
 {
-    return m_impl->currentZoomLevel;
-}
-
-QSize ImageViewerWidget::imageSize() const
-{
-    if(!m_impl->currentGraphicsItem)
-        return QSize();
-    return m_impl->currentGraphicsItem->boundingRect().size().toSize();
-}
-
-QImage ImageViewerWidget::grabImage() const
-{
-    if(!m_impl->currentGraphicsItem)
-        return QImage();
-    QImage image(imageSize(), QImage::Format_ARGB32_Premultiplied);
-    image.fill(Qt::transparent);
-    QPainter painter;
-    painter.begin(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setRenderHint(QPainter::TextAntialiasing);
-    painter.setRenderHint(QPainter::SmoothPixmapTransform);
-    QStyleOptionGraphicsItem options;
-    options.exposedRect = m_impl->currentGraphicsItem->boundingRect();
-    m_impl->currentGraphicsItem->paint(&painter, &options);
-    painter.end();
-    if(m_impl->currentRotationAngle)
-    {
-        QTransform transform;
-        transform.rotate(m_impl->currentRotationAngle);
-        image = image.transformed(transform);
-    }
-    if(m_impl->flipHorizontal || m_impl->flipVertical)
-        image = image.mirrored(m_impl->flipHorizontal, m_impl->flipVertical);
-    return image;
+    m_impl->wheelMode = mode;
 }
 
 void ImageViewerWidget::rotateClockwise()
@@ -368,4 +381,18 @@ void ImageViewerWidget::mouseMoveEvent(QMouseEvent *event)
     QGraphicsView::mouseMoveEvent(event);
     if(dragMode() == QGraphicsView::ScrollHandDrag && event->buttons() == Qt::MouseButtons())
         setDragMode(QGraphicsView::NoDrag);
+}
+
+void ImageViewerWidget::wheelEvent(QWheelEvent *event)
+{
+    if(wheelMode() == WHEEL_ZOOM)
+    {
+        const QPointF numDegrees = QPointF(event->angleDelta()) / 8.0;
+        const qreal stepsDistance = (numDegrees.x() + numDegrees.y()) / 15.0;
+        const qreal scaleFactor = (stepsDistance > 0 ? (1.0 + stepsDistance / 10.0) : 1.0 / (1.0 - stepsDistance / 10.0));
+        setZoomLevel(m_impl->currentZoomLevel * scaleFactor);
+        event->accept();
+        return;
+    }
+    QGraphicsView::wheelEvent(event);
 }
