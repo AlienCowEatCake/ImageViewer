@@ -63,7 +63,7 @@ struct AboutDialog::UI
         centralLayout->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop | Qt::AlignCenter);
         centralLayout->addWidget(textLabel, 0, 1, 1, 1, Qt::AlignTop | Qt::AlignLeft);
         centralLayout->addWidget(textBrowser, 1, 0, 1, 2, Qt::AlignCenter);
-        centralLayout->addWidget(buttonBox, 2, 0, 1, 2, Qt::AlignVCenter | Qt::AlignRight);
+        centralLayout->addWidget(buttonBox, 2, 0, 1, 2, Qt::AlignCenter);
 
         QVBoxLayout *dialogLayout = new QVBoxLayout(parent);
         dialogLayout->setContentsMargins(0, 0, 0, 0);
