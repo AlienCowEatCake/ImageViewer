@@ -60,5 +60,7 @@
         <file>icon_play_white.svg</file>
         <file>icon_stop_black.svg</file>
         <file>icon_stop_white.svg</file>
+        <file>icon_reset_black.svg</file>
+        <file>icon_reset_white.svg</file>
     </qresource>
 </RCC>

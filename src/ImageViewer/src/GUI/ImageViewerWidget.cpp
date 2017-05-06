@@ -52,6 +52,7 @@ struct ImageViewerWidget::Impl
         , scene(new QGraphicsScene(widget))
         , currentGraphicsItem(NULL)
         , currentZoomMode(ZOOM_IDENTITY)
+        , lastZoomMode(currentZoomMode)
         , currentZoomLevel(1)
         , previousZoomLevel(-1)
         , currentRotationAngle(0)
@@ -163,6 +164,7 @@ struct ImageViewerWidget::Impl
     QGraphicsScene *scene;
     QGraphicsItem *currentGraphicsItem;
     ZoomMode currentZoomMode;
+    ZoomMode lastZoomMode;
     qreal currentZoomLevel;
     qreal previousZoomLevel;
     int currentRotationAngle;
@@ -218,6 +220,7 @@ void ImageViewerWidget::clear()
 void ImageViewerWidget::setZoomMode(ImageViewerWidget::ZoomMode mode)
 {
     m_impl->currentZoomMode = mode;
+    m_impl->lastZoomMode = mode;
     m_impl->updateTransformations();
 }
 
@@ -307,6 +310,12 @@ void ImageViewerWidget::zoomIn()
 void ImageViewerWidget::zoomOut()
 {
     setZoomLevel(m_impl->currentZoomLevel / 1.1);
+}
+
+void ImageViewerWidget::resetZoom()
+{
+    m_impl->currentZoomMode = m_impl->lastZoomMode;
+    m_impl->updateTransformations();
 }
 
 void ImageViewerWidget::setBackgroundColor(const QColor &color)

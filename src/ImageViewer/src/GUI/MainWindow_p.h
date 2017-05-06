@@ -97,6 +97,7 @@ struct MainWindow::UI
     QAction *actionDeleteFile;
     QAction *actionZoomOut;
     QAction *actionZoomIn;
+    QAction *actionZoomReset;
     QAction *actionZoomFitToWindow;
     QAction *actionZoomOriginalSize;
     QAction *actionZoomFullScreen;
@@ -153,6 +154,7 @@ struct MainWindow::UI
         , CONSTRUCT_OBJECT_FROM_POINTER(actionDeleteFile, createWidgetAction(mainWindow))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomOut, createWidgetAction(mainWindow))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomIn, createWidgetAction(mainWindow))
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomReset, createWidgetAction(mainWindow))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomFitToWindow, createWidgetAction(mainWindow))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomOriginalSize, createWidgetAction(mainWindow))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomFullScreen, createWidgetAction(mainWindow))
@@ -276,11 +278,14 @@ struct MainWindow::UI
         actionDeleteFile->setMenuRole(QAction::NoRole);
 
         menuView->addAction(actionZoomOut);
-        actionZoomOut->setShortcuts(QList<QKeySequence>() << Qt::Key_Minus << Qt::Key_Underscore);
+        actionZoomOut->setShortcuts(QList<QKeySequence>() << createAnyModifierShortcuts(Qt::Key_Minus) << createAnyModifierShortcuts(Qt::Key_Underscore));
         actionZoomOut->setMenuRole(QAction::NoRole);
         menuView->addAction(actionZoomIn);
-        actionZoomIn->setShortcuts(QList<QKeySequence>() << Qt::Key_Plus << Qt::Key_Equal);
+        actionZoomIn->setShortcuts(QList<QKeySequence>() << createAnyModifierShortcuts(Qt::Key_Plus) << createAnyModifierShortcuts(Qt::Key_Equal));
         actionZoomIn->setMenuRole(QAction::NoRole);
+        menuView->addAction(actionZoomReset);
+        actionZoomReset->setShortcuts(QList<QKeySequence>() << createAnyModifierShortcuts(Qt::Key_0) << createAnyModifierShortcuts(Qt::Key_BracketLeft));
+        actionZoomReset->setMenuRole(QAction::NoRole);
         menuView->addAction(actionZoomFitToWindow);
         actionZoomFitToWindow->setShortcuts(createAnyModifierShortcuts(Qt::Key_F));
         actionZoomFitToWindow->setMenuRole(QAction::NoRole);
@@ -385,6 +390,7 @@ struct MainWindow::UI
         actionDeleteFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_DELETE                    , menuActionsHasDarkTheme));
         actionZoomOut->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_OUT                  , menuActionsHasDarkTheme));
         actionZoomIn->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , menuActionsHasDarkTheme));
+        actionZoomReset->setIcon                (ThemeUtils::GetIcon(ThemeUtils::ICON_RESET                     , menuActionsHasDarkTheme));
         actionZoomFitToWindow->setIcon          (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , menuActionsHasDarkTheme));
         actionZoomOriginalSize->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , menuActionsHasDarkTheme));
         actionZoomFullScreen->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , menuActionsHasDarkTheme));
@@ -433,6 +439,7 @@ struct MainWindow::UI
         actionDeleteFile->setText(QApplication::translate("MainWindow", "&Delete File"));
         actionZoomOut->setText(QApplication::translate("MainWindow", "Zoom &Out"));
         actionZoomIn->setText(QApplication::translate("MainWindow", "Zoom &In"));
+        actionZoomReset->setText(QApplication::translate("MainWindow", "&Reset Zoom"));
         actionZoomFitToWindow->setText(QApplication::translate("MainWindow", "Fit Image To &Window Size"));
         actionZoomOriginalSize->setText(QApplication::translate("MainWindow", "Original &Size"));
         actionZoomFullScreen->setText(QApplication::translate("MainWindow", "&Full Screen"));
@@ -453,6 +460,7 @@ struct MainWindow::UI
         actionZoomOut->setEnabled(isEnabled);
         zoomIn->setEnabled(isEnabled);
         actionZoomIn->setEnabled(isEnabled);
+        actionZoomReset->setEnabled(isEnabled);
         zoomFitToWindow->setEnabled(isEnabled);
         actionZoomFitToWindow->setEnabled(isEnabled);
         zoomOriginalSize->setEnabled(isEnabled);

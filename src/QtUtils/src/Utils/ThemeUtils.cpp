@@ -145,6 +145,7 @@ QIcon GetIcon(IconTypes type, bool darkBackground)
     ADD_ICON_CASE(ICON_FULLSCREEN)
     ADD_ICON_CASE(ICON_PLAY)
     ADD_ICON_CASE(ICON_STOP)
+    ADD_ICON_CASE(ICON_RESET)
 #undef ADD_ICON_CASE
 #undef ADD_NAMED_ICON_CASE
     }

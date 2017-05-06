@@ -271,6 +271,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->actionDeleteFile, SIGNAL(triggered()), this, SLOT(onDeleteFileRequested()));
     connect(m_ui->actionZoomIn, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(zoomIn()));
     connect(m_ui->actionZoomOut, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(zoomOut()));
+    connect(m_ui->actionZoomReset, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(resetZoom()));
     connect(m_ui->actionZoomFitToWindow, SIGNAL(triggered()), this, SLOT(onZoomFitToWindowClicked()));
     connect(m_ui->actionZoomOriginalSize, SIGNAL(triggered()), this, SLOT(onZoomOriginalSizeClicked()));
     connect(m_ui->actionZoomFullScreen, SIGNAL(triggered()), this, SLOT(switchFullScreenMode()));

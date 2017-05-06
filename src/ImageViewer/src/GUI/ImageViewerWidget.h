@@ -66,6 +66,7 @@ public slots:
 
     void zoomIn();
     void zoomOut();
+    void resetZoom();
 
     void setBackgroundColor(const QColor &color);
 

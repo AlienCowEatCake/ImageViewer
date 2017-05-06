@@ -79,7 +79,8 @@ enum IconTypes
     ICON_SETTINGS,
     ICON_FULLSCREEN,
     ICON_PLAY,
-    ICON_STOP
+    ICON_STOP,
+    ICON_RESET
 };
 
 /// @brief Функция для получения иконки
