@@ -82,6 +82,48 @@ QString compilerDescriptionInt()
     case 1910: return QString::fromLatin1("MSVC++ 14.1 (Visual Studio 2017)");
     default:   return QString::fromLatin1("MSVC++");
     }
+#elif defined (Q_CC_SYM)
+    return QString::fromLatin1("Digital Mars C/C++ (used to be Symantec C++)");
+#elif defined (Q_CC_MSVC)
+    return QString::fromLatin1("Microsoft Visual C/C++, Intel C++ for Windows");
+#elif defined (Q_CC_BOR)
+    return QString::fromLatin1("Borland/Turbo C++");
+#elif defined (Q_CC_WAT)
+    return QString::fromLatin1("Watcom C++");
+#elif defined (Q_CC_GNU)
+    return QString::fromLatin1("GNU C++");
+#elif defined (Q_CC_COMEAU)
+    return QString::fromLatin1("Comeau C++");
+#elif defined (Q_CC_EDG)
+    return QString::fromLatin1("Edison Design Group C++");
+#elif defined (Q_CC_OC)
+    return QString::fromLatin1("CenterLine C++");
+#elif defined (Q_CC_SUN)
+    return QString::fromLatin1("Forte Developer, or Sun Studio C++");
+#elif defined (Q_CC_MIPS)
+    return QString::fromLatin1("MIPSpro C++");
+#elif defined (Q_CC_DEC)
+    return QString::fromLatin1("DEC C++");
+#elif defined (Q_CC_HPACC)
+    return QString::fromLatin1("HP aC++");
+#elif defined (Q_CC_USLC)
+    return QString::fromLatin1("SCO OUDK and UDK");
+#elif defined (Q_CC_CDS)
+    return QString::fromLatin1("Reliant C++");
+#elif defined (Q_CC_KAI)
+    return QString::fromLatin1("KAI C++");
+#elif defined (Q_CC_INTEL)
+    return QString::fromLatin1("Intel C++ for Linux, Intel C++ for Windows");
+#elif defined (Q_CC_HIGHC)
+    return QString::fromLatin1("MetaWare High C/C++");
+#elif defined (Q_CC_PGI)
+    return QString::fromLatin1("Portland Group C++");
+#elif defined (Q_CC_GHS)
+    return QString::fromLatin1("Green Hills Optimizing C++ Compilers");
+#elif defined (Q_CC_RVCT)
+    return QString::fromLatin1("ARM Realview Compiler Suite");
+#elif defined (Q_CC_CLANG)
+    return QString::fromLatin1("C++ front-end for the LLVM compiler");
 #else
     return QString::fromLatin1("Unknown");
 #endif
@@ -98,6 +140,62 @@ QString targetDescriptionInt()
 #elif (defined(_M_X64  ) || defined(__x86_64) || defined(__x86_64__) || \
     defined(_M_AMD64) || defined(__amd64 ) || defined(__amd64__ ))
     return QString::fromLatin1("x86-64");
+#elif defined (Q_PROCESSOR_ALPHA)
+    return QString::fromLatin1("Alpha");
+#elif defined (Q_PROCESSOR_ARM_V5)
+    return QString::fromLatin1("ARM V5");
+#elif defined (Q_PROCESSOR_ARM_V6)
+    return QString::fromLatin1("ARM V6");
+#elif defined (Q_PROCESSOR_ARM_V7)
+    return QString::fromLatin1("ARM V7");
+#elif defined (Q_PROCESSOR_ARM_V8)
+    return QString::fromLatin1("ARM V8");
+#elif defined (Q_PROCESSOR_ARM_64)
+    return QString::fromLatin1("ARM64");
+#elif defined (Q_PROCESSOR_ARM)
+    return QString::fromLatin1("ARM");
+#elif defined (Q_PROCESSOR_AVR32)
+    return QString::fromLatin1("AVR32");
+#elif defined (Q_PROCESSOR_BLACKFIN)
+    return QString::fromLatin1("Blackfin");
+#elif defined (Q_PROCESSOR_IA64)
+    return QString::fromLatin1("IA-64");
+#elif defined (Q_PROCESSOR_MIPS_I)
+    return QString::fromLatin1("MIPS I");
+#elif defined (Q_PROCESSOR_MIPS_II)
+    return QString::fromLatin1("MIPS II");
+#elif defined (Q_PROCESSOR_MIPS_III)
+    return QString::fromLatin1("MIPS III");
+#elif defined (Q_PROCESSOR_MIPS_IV)
+    return QString::fromLatin1("MIPS IV");
+#elif defined (Q_PROCESSOR_MIPS_V)
+    return QString::fromLatin1("MIPS V");
+#elif defined (Q_PROCESSOR_MIPS_64)
+    return QString::fromLatin1("MIPS64");
+#elif defined (Q_PROCESSOR_MIPS)
+    return QString::fromLatin1("MIPS");
+#elif defined (Q_PROCESSOR_POWER_64)
+    return QString::fromLatin1("Power 64");
+#elif defined (Q_PROCESSOR_POWER)
+    return QString::fromLatin1("Power");
+#elif defined (Q_PROCESSOR_S390_X)
+    return QString::fromLatin1("S390X (64-bit)");
+#elif defined (Q_PROCESSOR_S390)
+    return QString::fromLatin1("S390");
+#elif defined (Q_PROCESSOR_SH_4A)
+    return QString::fromLatin1("SuperH SH-4A");
+#elif defined (Q_PROCESSOR_SH)
+    return QString::fromLatin1("SuperH");
+#elif defined (Q_PROCESSOR_SPARC_V9)
+    return QString::fromLatin1("SPARCv9");
+#elif defined (Q_PROCESSOR_SPARC_64)
+    return QString::fromLatin1("SPARC64");
+#elif defined (Q_PROCESSOR_SPARC)
+    return QString::fromLatin1("SPARC");
+#elif defined (Q_PROCESSOR_X86_64)
+    return QString::fromLatin1("x86-64");
+#elif defined (Q_PROCESSOR_X86)
+    return QString::fromLatin1("x86");
 #else
     return QString();
 #endif
@@ -310,8 +408,9 @@ QString GetCompilerDescription()
 {
     QString description = compilerDescriptionInt();
     const QString target = targetDescriptionInt();
+    const QString byteOrder = QString::fromLatin1(QSysInfo::ByteOrder == QSysInfo::BigEndian ? "BE" : "LE");
     if(!target.isEmpty())
-        description.append(QString::fromLatin1(", %1").arg(target));
+        description.append(QString::fromLatin1(", %1 (%2)").arg(target).arg(byteOrder));
     return description;
 }
 
