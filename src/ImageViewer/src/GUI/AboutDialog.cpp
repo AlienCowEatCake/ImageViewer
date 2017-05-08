@@ -176,7 +176,7 @@ QString getTextBrowserContent()
 #endif
 
 #if defined (HAS_LIBTIFF)
-    const QRegExp tiffVersionRegExp(QString::fromLatin1("(\\d*\\.\\d*)(\\.\\d*)?"));
+    QRegExp tiffVersionRegExp(QString::fromLatin1("(\\d*\\.\\d*)(\\.\\d*)?"));
     result.append(formatItem(
                       QString::fromLatin1("This software uses the LibTIFF library"),
                       QString::fromLatin1("libtiff"),
