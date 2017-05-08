@@ -125,6 +125,7 @@
 				<string>j2k</string>
 				<string>jpc</string>
 				<string>j2c</string>
+				<string>pgx</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>JPEG 2000 Image</string>
