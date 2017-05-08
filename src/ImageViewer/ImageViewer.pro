@@ -125,6 +125,11 @@ HEADERS += \
         src/Decoders/DecoderLibJasPer.cpp
 }
 
+!disable_libtiff {
+    SOURCES += \
+        src/Decoders/DecoderLibTiff.cpp
+}
+
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
     resources/translations/imageviewer_ru.ts

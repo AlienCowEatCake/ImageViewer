@@ -30,6 +30,11 @@ class ICCProfile
 {
 public:
     ICCProfile(const QByteArray &profileData);
+    ICCProfile(float *whitePoint,
+               float *primaryChromaticities,
+               unsigned short *transferFunctionRed,
+               unsigned short *transferFunctionGreen,
+               unsigned short *transferFunctionBlue);
     ~ICCProfile();
 
     void applyToImage(QImage *image);
