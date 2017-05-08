@@ -63,6 +63,8 @@ int GetDecoderPriority(const IDecoder *decoder)
         PD("DecoderQImage"              ,  200);    ///< Умеет все, что умеет Qt. Не поддерживает EXIF и ICCP.
         PD("DecoderQtImageFormatsImage" ,  300);    ///< Экзотические и deprecated декодеры Qt. Должен быть выше QImage.
         PD("DecoderLibJpeg"             ,  400);    ///< Умеет jpeg форматы. Поддерживает EXIF и ICCP. Должен быть выше QImage.
+        PD("DecoderLibJasPer"           ,  410);    ///< Умеет формат JPEG 2000 и несколько побочных. Поддержка хуже, чем в QtImageFormatsImage, но имеет ряд дополнительных проверок от крашей.
+        PD("DecoderLibTiff"             ,  420);    ///< Умеет формат tiff. Поддерживает EXIF(?) и ICCP. Должен быть выше QImage и QtImageFormatsImage.
         PR("DecoderNSImage"             ,  900);    ///< Умеет очень много разных форматов.
         /// @note Декодеры анимированных изображений
         PD("DecoderQMovie"              , 1100);    ///< Умеет анимированные gif.
