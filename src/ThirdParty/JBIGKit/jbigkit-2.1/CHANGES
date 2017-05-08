@@ -1,0 +1,237 @@
+
+JBIG-KIT revision history
+-------------------------
+
+Changes in version 2.1 (2014-04-08)
+
+This is a security-critical bug-fix release that remains API and ABI
+backwards compatible to version 2.0. Users who process BIE data from
+untrusted sources should upgrade.
+
+  - fixed a buffer-overflow vulnerability in the jbig.c decoder,
+    reported by Florian Weimer (Red Hat): CVE-2013-6369
+    
+  - fixed ability of corrupted input data to force jbig85.c decoder
+    into an end-less loop
+
+  - fixed a bug in the processing of private deterministic-prediction
+    tables (DPPRIV=1) in jbig.c decoder
+
+  - fixed integer-type mismatches in printf arguments on 64-bit systems
+
+  - fuzz-testing script added
+
+Changes in version 2.0 (2008-08-30)
+
+Main new features of release 2.0:
+
+  - This release adds a separate lightweight "T.85" version of the
+    encoder and decoder library (jbig85.c, jbig85.h). This new T.85
+    library is optimized for embedded low-memory applications, such as
+    printers and fax machines. It implements only the subset of the
+    JBIG standard that is required by the ITU-T T.85 fax profile,
+    namely only a single bit plane (P = 1) and no differential layers
+    (DL = D = HITOLO = SEQ = ILEAVE = SMID = TPDON = DPON = DPON =
+    DPLAST = 0) and some other restrictions (MY = 0, MX < 128).
+
+    The T.85 library requires only three pixel rows of the
+    uncompressed image to reside in memory at any time. This 3-line
+    buffer has to be allocated by the calling application, therefore
+    the T.85 library will not call any heap management functions such
+    as malloc() or free() itself.
+
+  - There are also two new example applications pbmtojbg85 and
+    jbgtopbm85 included that provide command-line access to the new
+    T.85 library. (Note to distribution maintainers: there is probably
+    little point in adding pbmtojbg85 and jbgtopbm85 to precompiled
+    JBIG-KIT packages for workstation operating systems, as these two
+    programs do not really provide the end user much additional
+    functionality beyond what pbmtojbg and jbgtopbm already do, which
+    use the full library instead.)
+
+Changes to the original full jbig.c library from version 1.6:
+
+  - the arithmetic codec routines are now located in a separate source
+    file (they are now used by both the full library jbig.c and the new
+    T.85 library jbig85.c, and might also be of use to other applications)
+
+  - arithmetic decoder behaviour slightly changed to enable the
+    lookahead needed to handle T.85-style NEWLEN after the final
+    stripe
+
+  - added encoder support for adding comment marker segment
+
+  - added encoder option for using SDRST marker instead of SDNORM
+    (only useful to make encoder able to generate a wider range
+    of test data)
+
+  - added pbmtojbg options -C and -r, which provide command-line
+    access to the previous two extensions
+
+  - slightly improved diagnostic output of jbgtopbm option -d
+
+  - non-English translations of error messages are now provided
+    in a separate PO file (e.g., for use with GNU gettext),
+    jbg_strerror() no longer has a language attribute and the
+    JBG_EN, JBG_DE_8859_1, JBG_DE_UTF_8 constants no longer exist
+
+  - jbg_dec_in() return values changed; the least significant bits of
+    the error codes now provide more information about what caused the
+    error, beyond what the more general error text messages returned by
+    jbg_strerror() reveal
+
+  - pbmtojbg has a new option -f as a shortcut for all the options
+    needed to make the output comply to the basic ITU-T T.85 fax
+    profile
+
+  - jbg_dec_getwidth(), jbg_dec_getheight(), jbg_dec_getsize(), and
+    jbg_dec_getsize_merged() return now an unsigned long value
+    (was: long), and return 0 (was: -1) if no image is available yet
+
+  - jbgtopbm now outputs image dimensions in header padded to 10
+    digits fixed width, for consistency with jbgtopbm85
+    to allow for later in-place update of height due to NEWLEN
+
+  - macro JBG_LICENCE can be changed from the default value "GPL" to a
+    licence agreement reference code to if the library is used under a
+    commercial licence, to clarify under which exact licence the
+    library is used in a particular application
+
+Changes in version 1.6 (2004-06-11)
+
+  - various small changes to reduce the risk of 32-bit unsigned
+    integer overflows when dealing with extremely large images
+
+  - robuster treatment of L0 = 0xffffffff
+
+  - minor API modification in jbg_enc_options(): parameter l0 changed
+    from type long to unsigned long; previous value now remains
+    unchanged when l0 == 0 (was: l0 < 0)
+
+  - lots of type casts added such that the C source code is now
+    also compilable as C++
+
+Changes in version 1.5 (2003-06-11)
+
+  - fixed two minor memory leaks (special thanks to Davide Pizzolato
+    <ing.davide.pizzolato@libero.it> for locating one of these)
+
+  - jbgtopbm does not attempt any more to parse multiple concatenated
+    BIEs (options -m must be used now to enable this feature explicitly),
+    in order to handle BIEs with data after the last expected SDE gracefully
+
+  - various extensions to improve support of JBIG fax applications
+    (ITU-T T.85 profile):
+
+      o support for maximum adaptive template pixel offset increased
+        to MX=127 in both encoder and decoder
+
+      o encoder now has a hook for producing BIEs with a NEWLEN marker
+        segment and VLENGTH=1, in order to assist in testing decoders
+        for T.85 conformance (see also new pbmtojbg option -Y)
+
+      o a new function jbg_newlen() can be used to scan an
+        entire in-memory BIE for NEWLEN marker segments and update the
+        YD value in the BIE header, which can be applied to BIE data
+        before passing it to the decoder for T.85 compliance
+        (Background: the incremental design of the JBIG-KIT decoder
+        makes it infeasible to look ahead for NEWLEN marker segments
+        that occur after the SDE with the last image line, therefore
+        this second pass is necessary to handle the old-style fax
+        applications permitted by T.85 in which the low-RAM encoder
+        doesn't know the height of the image at the start of
+        transmission)
+
+Changes in version 1.4 (2002-04-09)
+
+  - typo fixed in stripe number calculation, which caused encoder and
+    decoder to fail on certain image sizes (special thanks to Koen Denecker
+    <denecker@elis.rug.ac.be> for locating this one)
+
+Changes in version 1.3 (2002-03-23):
+
+  - bugs fixed in jbg_split_planes(), jbg_dec_merge_planes() that
+    caused a failure for more than eight planes per pixel
+
+  - example converters now can handle PGM files with up to 32 bits
+    per pixel
+
+Changes in version 1.2 (2000-04-08):
+
+  - bug in the decoder fixed, which caused the rest of the input file
+    to be skipped whenever a comment marker was encountered (special
+    thanks to Ben Rudiak-Gould <benrg@math.berkeley.edu> for
+    reporting this one)
+
+Changes in version 1.1 (1999-11-16):
+
+  - serious bug in the encoder fixed, which for a very small
+    percentage of images has caused an unterminated linked list to be
+    created internally that could have been responsible for
+    segmentation violations or non-terminating encoders
+    (special thanks to Hisashi Saiga <saiga@itl.tnr.sharp.co.jp> for
+    tracking that one down)
+
+  - minor bug in the "jbgtopbm -d" diagnostic output fixed
+
+Changes in version 1.0 (1998-04-11):
+
+  - two bugs fixed that caused the encoder and decoder to fail
+    under certain modes of operation with several bit planes
+
+  - added new functions jbg_split_planes(), jbg_dec_merge_planes(),
+    and jbg_dec_getsize_merged() for easy handling of grayscale
+    images
+
+  - added support for compressing grayscale PGM files to pbmtojbg
+    and jbgtopbm
+
+  - more changes to avoid paranoid compiler warnings
+
+Changes in version 0.9 (1996-01-09):
+
+  - encoder won't break any more on input bitmap data with incorrect
+    zero padding
+
+  - pbmtojbg displays a warning if input file has incorrect zero
+    padding
+
+  - various minor improvements suggested by Stefan Willer
+    <Stefan.Willer@unnet.wupper.DE>
+
+  - many minor changes in order to avoid warnings from paranoid
+    compilers
+
+Changes in version 0.8 (1995-09-20):
+
+  - namespace cleared up, all names externally visible from the library
+    start now with jbg_ or JBG_
+
+  - minor non-critical bug fixed which caused library to fail compatibility
+    test and showed up especially on DEC Alpha systems
+
+  - jbg_dec_gethight() is now called jbg_dec_getheight()
+
+  - filenames conform now to MS-DOS limits
+
+  - Bug in pbmtojbg fixed (handling of ASCII PBM files)
+
+Changes in version 0.7 (1995-06-10):
+
+  - more problems on 16-bit int systems and on Macintosh systems fixed
+    (special thanks to Jean-Pierre Gachen <jpg11@calvanet.calvacom.fr>)
+
+  - global Makefile
+
+Changes in version 0.6 (1995-06-08):
+
+  - memory leak fixed
+
+  - should now also work on systems where int is only 16-bit large
+
+  - changes of the JBIG "Technical Corrigendum 1" included (special
+    thanks to Dr. Sebestyen from Siemens AG for sending me a copy
+    of the draft)
+
+First release: version 0.5 (1995-05-28)
+

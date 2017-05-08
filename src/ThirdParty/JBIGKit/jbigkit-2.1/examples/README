@@ -1,0 +1,8 @@
+The files in this directory are a few sample images and documents
+stored as raw bi-level image entities (BIE) (the data stream specified
+by the JBIG standard).
+
+The source data for the test examples ccitt* and lena.bie is available from
+
+  ftp://ftp.funet.fi/pub/graphics/misc/test-images/
+

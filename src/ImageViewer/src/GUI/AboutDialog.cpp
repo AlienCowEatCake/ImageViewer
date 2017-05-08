@@ -24,6 +24,7 @@
 
 #include <QApplication>
 #include <QSysInfo>
+#include <QRegExp>
 
 #include "Utils/InfoUtils.h"
 #include "Decoders/DecodersManager.h"
@@ -40,11 +41,20 @@
 #if defined (HAS_LIBMNG)
 #include <libmng.h>
 #endif
+#if defined (HAS_LIBTIFF)
+#include <tiffio.h>
+#endif
+#if defined (HAS_JBIGKIT)
+#include <jbig.h>
+#endif
 #if defined (HAS_LCMS2)
 #include <lcms2.h>
 #endif
 #if defined (HAS_ZLIB)
 #include <zlib.h>
+#endif
+#if defined (HAS_XZUTILS)
+#include <lzma.h>
 #endif
 
 namespace {
@@ -165,6 +175,25 @@ QString getTextBrowserContent()
                       ));
 #endif
 
+#if defined (HAS_LIBTIFF)
+    QRegExp tiffVersionRegExp(QString::fromLatin1("(\\d*\\.\\d*)(\\.\\d*)?"));
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the LibTIFF library"),
+                      QString::fromLatin1("libtiff"),
+                      (tiffVersionRegExp.indexIn(QString::fromLatin1(TIFFGetVersion())) >= 0) ? tiffVersionRegExp.cap(0) : QString(),
+                      QString::fromLatin1("http://www.simplesystems.org/libtiff/")
+                      ));
+#endif
+
+#if defined (HAS_JBIGKIT)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the JBIG-KIT library"),
+                      QString::fromLatin1("jbigkit"),
+                      QString::fromLatin1(JBG_VERSION),
+                      QString::fromLatin1("https://www.cl.cam.ac.uk/~mgk25/jbigkit/")
+                      ));
+#endif
+
 #if defined (HAS_LIBEXIF)
     result.append(formatItem(
                       QString::fromLatin1("This software uses the libexif C EXIF library"),
@@ -189,6 +218,15 @@ QString getTextBrowserContent()
                       QString::fromLatin1("zlib"),
                       QString::fromLatin1(ZLIB_VERSION),
                       QString::fromLatin1("http://www.zlib.net/")
+                      ));
+#endif
+
+#if defined (HAS_XZUTILS)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses part of the XZ Utils"),
+                      QString::fromLatin1("xz"),
+                      QString::fromLatin1(lzma_version_string()),
+                      QString::fromLatin1("https://tukaani.org/xz/")
                       ));
 #endif
 

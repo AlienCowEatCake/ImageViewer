@@ -1,0 +1,93 @@
+JBGTOPBM(1)                                                        JBGTOPBM(1)
+
+
+
+NAME
+       jbgtopbm - JBIG1 to portable bitmap file converter
+
+SYNOPSIS
+       jbgtopbm [ options ] [ input-file | -  [ output-file ]]
+
+DESCRIPTION
+       Reads  in  a  JBIG1 bi-level image entity (BIE) from a file or standard
+       input, decompresses it, and outputs a portable bitmap (PBM) file.
+
+       JBIG1 is a highly effective lossless compression algorithm for bi-level
+       images  (one bit per pixel), which is particularly suitable for scanned
+       document pages.
+
+       A JBIG1 encoded image can be stored in several resolutions  in  one  or
+       several  BIEs.  All  resolution layers except the lowest one are stored
+       efficiently as differences to the next lower resolution layer.  Options
+       -x  and -y can be used to stop the decompression at a specified maximal
+       output image size. With option -m the input file can consist of  multi-
+       ple  concatenated  BIEs  which  contain different increasing resolution
+       layers of the same image.
+
+       If more than one bit per pixel is stored in the JBIG1 file, then a  PGM
+       file will be produced.
+
+OPTIONS
+       -             A  single hyphen instead of an input file name will cause
+                     jbgtopbm to read the data  from  standard  input  instead
+                     from a file.
+
+       -x number     Decode  only  up to the largest resolution layer which is
+                     still not more than number pixels wide. If no such  reso-
+                     lution layer exists, then use the smallest one available.
+
+       -y number     Decode  only  up to the largest resolution layer which is
+                     still not more than number pixels high. If no such  reso-
+                     lution layer exists, then use the smallest one available.
+                     Options -x and -y can also be used together in which case
+                     the  largest  layer  that  satisfies  both limits will be
+                     selected.
+
+       -m            Process multiple concatenated BIEs. If  there  are  bytes
+                     left after the final SDE in the first BIE, then with this
+                     option jbgtopbm will attempt to decode these as the start
+                     of  another  BIE that may contain higher resolution data.
+                     Normally, any remaining bytes  will  generate  a  warning
+                     message.
+
+       -b            Use  binary values instead of Gray code words in order to
+                     decode pixel values from multiple bitplanes. This  option
+                     has  only  an  effect if the input has more than one bit-
+                     plane and a PGM output file is produced.  Note  that  the
+                     decoder  has  to  be used in the same mode as the encoder
+                     and cannot determine from the BIE, whether Gray or binary
+                     code words were used by the encoder.
+
+       -d            Diagnose  a  single  BIE. With this option, jbgtopbm will
+                     print a summary of the header information  found  in  the
+                     input file, followed by a list of all PSCD and ESC marker
+                     sequences encountered  until  the  end  of  the  file  is
+                     reached.
+
+       -p number     If  the  input  contains multiple bitplanes, then extract
+                     only the specified single plane as a PBM file. The  first
+                     plane has number 0.
+
+BUGS
+       Using  standard input and standard output for binary data works only on
+       systems where there is no difference between binary  and  text  streams
+       (e.g.,  Unix). On other systems (e.g., MS-DOS), using standard input or
+       standard output may cause control  characters  like  CR  or  LF  to  be
+       inserted or deleted and this will damage the binary data.
+
+STANDARDS
+       This  program  implements the JBIG1 image coding algorithm as specified
+       in ISO/IEC 11544:1993 and ITU-T T.82(1993).
+
+AUTHOR
+       The jbgtopbm program is part of the JBIG-KIT package,  which  has  been
+       developed  by  Markus  Kuhn.   The most recent version of this portable
+       JBIG1    library    and     tools     set     is     available     from
+       <http://www.cl.cam.ac.uk/~mgk25/jbigkit/>.
+
+SEE ALSO
+       pbm(5), pgm(5), pbmtojbg(1)
+
+
+
+                                  2003-06-04                       JBGTOPBM(1)
