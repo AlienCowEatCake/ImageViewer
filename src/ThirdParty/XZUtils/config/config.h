@@ -3,6 +3,13 @@
 
 #include <qglobal.h>
 
+/* TODO: BEGIN WORKAROUND */
+#if defined(_MSC_VER)
+#include <windows.h>
+#include <intrin.h>
+#endif
+/* TODO: END WORKAROUND */
+
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 

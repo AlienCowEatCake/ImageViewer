@@ -72,6 +72,11 @@ win32 {
         $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_unix.c
 }
 
+*msvc* {
+    SOURCES += \
+        $${THIRDPARTY_LIBTIFF_PATH}/port/snprintf.c
+}
+
 HEADERS += \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/t4.h \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_dir.h \

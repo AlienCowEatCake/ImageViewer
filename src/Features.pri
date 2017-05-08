@@ -31,6 +31,18 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
     CONFIG += disable_xzutils # FIXME: C99
 }
 
+# LCMS options:
+#    disable_liblcms2
+#    system_liblcms2
+
+
+# libexif options:
+#    disable_libexif
+#    system_libexif
+win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
+    CONFIG += disable_libexif # FIXME: C99
+}
+
 # LibJPEG options:
 #    disable_libjpeg
 #    system_libjpeg
@@ -41,18 +53,6 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
 #    system_libjasper
 win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
     CONFIG += disable_libjasper # FIXME: C99
-}
-
-# LCMS options:
-#    disable_liblcms2
-#    system_liblcms2
-
-
-# libexif options:
-#    disable_libexif
-#    system_libexif
-win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-    CONFIG += disable_libexif # FIXME: C99
 }
 
 # libmng options:
