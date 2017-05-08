@@ -1,0 +1,53 @@
+# Russian translations for jbigkit package.
+# This file is distributed under the same license as the jbigkit package.
+# Russian translation by ghostmansd@gmil.com,
+# with some changes by Sergei Skorobogatov.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: jbigkit 2.1\n"
+"Report-Msgid-Bugs-To: http://www.cl.cam.ac.uk/~mgk25/jbigkit/\n"
+"POT-Creation-Date: 2014-03-24 15:35+0000\n"
+"PO-Revision-Date: 2014-03-21 18:06+0000\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: jbig.c:98 jbig85.c:69
+msgid "All OK"
+msgstr "Успешное завершение"
+
+#: jbig.c:99 jbig85.c:70
+msgid "Reached specified image size"
+msgstr "Указанный размер достигнут"
+
+#: jbig.c:100 jbig85.c:71
+msgid "Unexpected end of input data stream"
+msgstr "Неожиданный конец входного потока"
+
+#: jbig.c:101 jbig85.c:72
+msgid "Not enough memory available"
+msgstr "Недостаточно памяти"
+
+#: jbig.c:102 jbig85.c:73
+msgid "ABORT marker segment encountered"
+msgstr "Обнаружен сегмент прерывания"
+
+#: jbig.c:103 jbig85.c:74
+msgid "Unknown marker segment encountered"
+msgstr "Обнаружен неизвестный сегмент"
+
+#: jbig.c:104 jbig85.c:75
+msgid "Input data stream contains invalid data"
+msgstr "Входной поток содержит неверные данные"
+
+#: jbig.c:105 jbig85.c:76
+msgid "Input data stream uses unimplemented JBIG features"
+msgstr "Входной поток использует нереализованные функции"
+
+#: jbig.c:106
+msgid "Incremental BIE does not continue previous one"
+msgstr "Следующий тип данных BIE не продолжает предыдущий"

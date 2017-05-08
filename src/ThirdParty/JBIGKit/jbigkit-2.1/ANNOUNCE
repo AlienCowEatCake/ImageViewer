@@ -1,0 +1,172 @@
+
+JBIG-KIT lossless image compression library
+-------------------------------------------
+
+by Markus Kuhn
+
+
+The latest release of JBIG-KIT can be downloaded from
+
+  http://www.cl.cam.ac.uk/~mgk25/jbigkit/
+
+JBIG-KIT implements a highly effective data compression algorithm for
+bi-level high-resolution images such as fax pages or scanned
+documents.
+
+JBIG-KIT provides two variants of a portable library of compression
+and decompression functions with a documented interface. You can very
+easily include into your image or document processing software. In
+addition, JBIG-KIT provides ready-to-use compression and decompression
+programs with a simple command line interface (similar to the
+converters found in Jef Poskanzer's PBM graphics file conversion
+package).
+
+JBIG-KIT implements the specification
+
+  International Standard ISO/IEC 11544:1993 and ITU-T Recommendation
+  T.82(1993), "Information technology - Coded representation of picture
+  and audio information - progressive bi-level image compression",
+  <http://www.itu.int/rec/T-REC-T.82>,
+
+which is commonly referred to as the "JBIG1 standard". JBIG (Joint
+Bi-level Image experts Group) is the committee which developed this
+international standard for the lossless compression of images using
+arithmetic coding. Like the well-known compression algorithms JPEG and
+MPEG, JBIG has also been developed and published by the International
+Organization for Standardization (ISO) and the International
+Telecommunication Union (ITU). See also
+
+  http://www.jpeg.org/jbig/
+  http://www.iso.ch/
+  http://www.itu.int/
+
+The JBIG compression algorithm offers the following features:
+
+  - Close to state-of-the-art lossless compression ratio for high
+    resolution bi-level images.
+
+  - About 1.1 to 1.5 times better compression ratio on typical
+    scanned documents compared to G4 fax compression (ITU-T T.6),
+    which has been the best compression algorithm for scanned
+    documents available prior to JBIG.
+
+  - Up to 30 times better compression of scanned images with dithered
+    images compared to G4 fax compression.
+
+  - About 2 times better compression on typical 300 dpi documents
+    compared to 'gzip -9' on raw bitmaps.
+    
+  - About 3-4 times better compression than GIF on typical 300 dpi
+    documents.
+
+  - Even much better competitive compression results on computer
+    generated images which are free of scanning distortions.
+
+  - JBIG supports hierarchical "progressive" encoding, that means it is
+    possible to encode a low resolution image first, followed by
+    resolution enhancement data. This allows, for instance, a document
+    browser to display already a good 75 dpi low resolution version of
+    an image, while the data necessary to reconstruct the full 300 dpi
+    version for laser printer reproduction is still arriving (say
+    over a slow network link or mass storage medium).
+
+  - The various resolution layers of a JBIG image in progressive
+    encoding mode together require not much more space than a
+    normal non-progressive mode encoded image (which JBIG also
+    supports).
+
+  - The progressive encoding mode utilizes a quite sophisticated
+    resolution reduction algorithm which offers high quality low
+    resolution versions that preserve the shape of characters as well
+    as the integrity of thin lines and dithered images.
+
+  - JBIG supports multiple bit planes and can this way also be used
+    for grayscale and color images, although the main field of
+    application is compression of bi-level images, i.e. images with
+    only two different pixel values. For grayscale images with up to
+    6 bit per pixel, JBIG performs superior to JPEG's lossless
+    mode.
+
+JBIG-KIT can be used as free software under the GNU General Public
+License. Other license arrangements more suitable for commercial
+applications are available as well, please contact the author for
+details. JBIG-KIT provides two portable libraries implemented in
+ANSI/ISO C for encoding and decoding JBIG data streams, along with
+documentation. The first library, jbig.c, implements nearly all of the
+options that the JBIG standard provides, but keeps the entire
+uncompressed image in memory. The second library, jbig85.c, implements
+only the ITU-R T.85 subset of the standard that black/white fax
+machines use (single bit per pixel, no "progressive" encoding), and
+keeps only three lines of the uncompressed image in memory, making it
+particularly attractive for low-memory embedded applications.
+
+The libraries are not intended for 8-bit or 16-bit machine
+architectures (e.g., old MS-DOS C compilers). For maximum performance,
+a 32-bit processor is required (64-bit systems work too, of course).
+On architectures with 16-bit pointer arithmetic, the full-featured
+jbig.c library can process only very small images.
+
+Special features of the full-featured jbig.c variant:
+
+  - Fully reentrant multithread-capable design (no global or static
+    variables, isolated malloc()/free() calls, etc.)
+
+  - Capable of handling incomplete and growing JBIG data streams in
+    order to allow earliest display of low resolution versions
+
+  - Capable of handling several incoming data streams simultaneously
+    in one single process and thread
+
+  - Especially designed with applications in mind that want to display
+    incoming data as early as possible (e.g., similar to the way in
+    which Netscape Navigator handles incoming GIF images)
+
+  - Implements all JBIG features and options including progressive and
+    sequential encoding, multiple bit planes, user specified
+    resolution reduction and deterministic prediction tables, adaptive
+    template changes for optimal performance on half-tone images,
+    deterministic prediction, typical prediction in lowest and
+    differential layers, various stripe orderings, etc; only the SEQ
+    and HITOLO options are currently not supported by the decoder
+    (they are normally never required, but could be added later in
+    case of user requirements)
+
+  - Suitable for fax applications, satisfies ITU-T T.85 profile
+
+  - Efficient code, optimized utilization of 32-bit processor
+    registers
+
+  - Very easy to use documented C library interface
+
+  - Included Gray code conversion routines for efficient encoding
+    of grayscale images
+
+  - Ready-to-use pbmtojbg and jbgtopbm converters.
+
+Special features of the light-weight jbig85.c variant:
+
+  - Suitable for low-memory embedded applications
+
+  - Implements only the JBIG1 subset defined in the ITU-T T.85
+    profile (single bit plane, no differential layers)
+
+  - Requires only three pixel rows of the uncompressed image to be
+    kept in memory
+
+  - Handles all NEWLEN modes of operation required by ITU-T T.85 with
+    just a single pass over the data, automatically performing the
+    necessary lookahead after the last stripe
+
+  - Codec buffers only a few bytes of arithmetic-codec data and outputs
+    resulting bytes or lines as soon as they are available.
+
+I will try to provide free support and maintenance for this software
+for the foreseeable future, depending on my available time.
+
+Happy compressing ...
+
+Markus Kuhn
+
+--
+Markus Kuhn, Computer Laboratory, University of Cambridge
+http://www.cl.cam.ac.uk/~mgk25/ || CB3 0FD, Great Britain

@@ -1,0 +1,51 @@
+Features that may appear in some future release regarding jbig.c:
+
+  - function to prepare incompletely decoded images for display by Xlib
+
+  - use a more efficient resolution-reduction method suggested by
+    Dr. Klaus Bartz <bartzkau@kou3.ina.de>
+
+  - investigate whether there is a standard way of embedding JBIG
+    into TIFF and implement it (see also RFC 2301)
+
+  - test for and eliminate warning messages from compilers
+    other than GCC
+
+  - multichannel (e.g., RGB) support, PPM support
+
+  - add dynamic library target to Makefile (patch by David Woodhouse),
+    for the benefit of Linux packagers
+
+The NEWLEN handling in jbig.c remains less than ideal. There is no
+easy fix as NEWLEN is inherently incompatible with many of the other
+options that jbig.c supports. The whole point of the VLENGTH bit may
+have been to allow recipients to choose between a jbig.c (VLENGTH=0)
+and jbig85.c (VLENGTH=1) style of decoder implementation. The cleanest
+option would really be to remove NEWLEN support entirely from jbig.c
+and to urge users who need it to use jbig85.c instead. Short of that,
+the new NEWLEN look-ahead architecture from jbig85.c could be
+backported to jbig.c, but this would only only slightly increase the
+number of cases where the jbig.c decoder could deal with a NEWLEN
+marker without a prior invocation of the jbg_newlen() pre-processing
+pass.
+
+The following past feature requests for jbig.c probably have become
+less important since the release of jbig85.c:
+
+  - compile-time option to remove progressive encoding and
+    resolution-reduction support (in the interest of reducing code size)
+
+  - investigate how to best deal with broken BIEs that contain
+    multiple NEWLEN marker segments, which are not permitted by ITU-T
+    T.85, but which have been observed coming from some fax machines;
+    possible options for jbg_newlen(): use first, last, or minimum
+    value
+
+  - version of jbg_newlen() for dealing with BIEs that are split
+    into several blocks
+
+  - call-back function for progress meter
+
+Features that may appear in some future release regarding jbig85.c:
+
+  - man pages for pbmtojbg85 and jbgtopbm85

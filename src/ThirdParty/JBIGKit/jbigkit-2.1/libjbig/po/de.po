@@ -1,0 +1,52 @@
+# German translations for jbigkit package
+# Copyright (C) 2008 Markus Kuhn <http://www.cl.cam.ac.uk/~mgk25/>
+# This file is distributed under the same license as the jbigkit package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: jbigkit 2.0\n"
+"Report-Msgid-Bugs-To: http://www.cl.cam.ac.uk/~mgk25/jbigkit/\n"
+"POT-Creation-Date: 2014-03-24 15:35+0000\n"
+"PO-Revision-Date: 2008-08-27 20:16+0100\n"
+"Last-Translator: Markus Kuhn <http://www.cl.cam.ac.uk/~mgk25/>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: jbig.c:98 jbig85.c:69
+msgid "All OK"
+msgstr "Kein Problem"
+
+#: jbig.c:99 jbig85.c:70
+msgid "Reached specified image size"
+msgstr "Angeforderte Bildgröße erreicht"
+
+#: jbig.c:100 jbig85.c:71
+msgid "Unexpected end of input data stream"
+msgstr "Unerwartetes Ende des Eingabedatenstroms"
+
+#: jbig.c:101 jbig85.c:72
+msgid "Not enough memory available"
+msgstr "Nicht genügend Speicher vorhanden"
+
+#: jbig.c:102 jbig85.c:73
+msgid "ABORT marker segment encountered"
+msgstr "Es wurde eine Abbruch-Sequenz gefunden"
+
+#: jbig.c:103 jbig85.c:74
+msgid "Unknown marker segment encountered"
+msgstr "Es wurde eine unbekannte Marker-Sequenz gefunden"
+
+#: jbig.c:104 jbig85.c:75
+msgid "Input data stream contains invalid data"
+msgstr "Es wurden ungültige Daten gefunden"
+
+#: jbig.c:105 jbig85.c:76
+msgid "Input data stream uses unimplemented JBIG features"
+msgstr "Eingabedatenstrom benutzt nicht implementierte JBIG Optionen"
+
+#: jbig.c:106
+msgid "Incremental BIE does not continue previous one"
+msgstr "Neue Bilddaten passen nicht zu vorangegangenen"

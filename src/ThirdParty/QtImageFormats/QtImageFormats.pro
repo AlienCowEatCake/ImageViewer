@@ -20,6 +20,7 @@ include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../libmng/libmng.pri)
 include(../JasPer/JasPer.pri)
+include(../libtiff/libtiff.pri)
 include(../libjpeg/libjpeg.pri)
 include(../LittleCMS2/LittleCMS2.pri)
 include(../libexif/libexif.pri)
@@ -81,7 +82,7 @@ DEFINES += WRAPPER_USE_TGA_HANDLER
 
 # --------------------------------------------------------------------------------
 
-!disable_zlib {
+!disable_libtiff {
 
     greaterThan(QT_MAJOR_VERSION, 5) | greaterThan(QT_MINOR_VERSION, 4) {
 
@@ -104,8 +105,6 @@ DEFINES += WRAPPER_USE_TGA_HANDLER
         DEFINES += WRAPPER_USE_LEGACY_TIFF_HANDLER
 
     }
-
-    include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/3rdparty/libtiff.pri)
 
 }
 

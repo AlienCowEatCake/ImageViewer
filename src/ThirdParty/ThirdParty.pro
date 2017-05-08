@@ -8,6 +8,10 @@ SUBDIRS =
     SUBDIRS += zlib/zlib.pro
 }
 
+!disable_xzutils : !system_xzutils {
+    SUBDIRS += XZUtils/XZUtils.pro
+}
+
 !disable_libjpeg : !system_libjpeg {
     SUBDIRS += libjpeg/libjpeg.pro
 }
@@ -30,6 +34,14 @@ SUBDIRS =
 
 !disable_libpng : !system_libpng {
     SUBDIRS += libpng/libpng.pro
+}
+
+!disable_jbigkit : !system_jbigkit {
+    SUBDIRS += JBIGKit/JBIGKit.pro
+}
+
+!disable_libtiff : !system_libtiff {
+    SUBDIRS += libtiff/libtiff.pro
 }
 
 !disable_qtextended {

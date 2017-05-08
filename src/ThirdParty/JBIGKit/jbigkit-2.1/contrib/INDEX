@@ -1,0 +1,16 @@
+Here are some files which users of JBIG-KIT have contributed and which
+I have included into the package in the hope that you might find them
+useful. If you have questions with regard to these files, better
+contact the respective contributors directly.
+
+---------------------------------------------------------------------------
+
+atariprj.tar
+
+  From: Stefan Willer <Stefan.Willer@unnet.wupper.DE>
+
+  These are four hierarchical project files for use with the Atari ST
+  Pure-C development environment. With these files, installing
+  JBIG-KIT should be child's play for Atari ST users (except the
+  necessary line end changes in all text files).
+

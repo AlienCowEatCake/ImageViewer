@@ -24,6 +24,13 @@
 #    system_zlib
 
 
+# XZUtils options:
+#    disable_xzutils
+#    system_xzutils
+win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+    CONFIG += disable_xzutils # FIXME: C99
+}
+
 # LibJPEG options:
 #    disable_libjpeg
 #    system_libjpeg
@@ -61,6 +68,15 @@ disable_zlib {
 disable_zlib {
     CONFIG += disable_libpng
 }
+
+# jbigkit options:
+#    disable_jbigkit
+#    system_jbigkit
+
+
+# libtiff options:
+#    disable_libtiff
+#    system_libtiff
 
 
 # ::::: Optional Third Party Components Configuration :::::
