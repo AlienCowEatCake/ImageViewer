@@ -366,6 +366,79 @@ Images from https://bugs.launchpad.net/libsvg-android/+bug/632464
 
 --------------------------------------------------------------------------------
 
+::: TIFF test images :::
+
+Test Lena images with various compression types
+ * lena_jpeg.tif
+ * lena_lzw.tif
+ * lena_zip.tif
+
+Images from ftp://download.osgeo.org/libtiff/pics-3.8.0.tar.gz
+ * libtiffpic/caspian.tif
+ * libtiffpic/cramps.tif
+ * libtiffpic/cramps-tile.tif
+ * libtiffpic/dscf0013.tif
+ * libtiffpic/fax2d.tif
+ * libtiffpic/g3test.g3
+ * libtiffpic/g3test.tif
+ * libtiffpic/jello.tif
+ * libtiffpic/jim___ah.tif
+ * libtiffpic/jim___cg.tif
+ * libtiffpic/jim___dg.tif
+ * libtiffpic/jim___gg.tif
+ * libtiffpic/ladoga.tif
+ * libtiffpic/off_l16.tif
+ * libtiffpic/off_luv24.tif
+ * libtiffpic/off_luv32.tif
+ * libtiffpic/oxford.tif
+ * libtiffpic/pc260001.tif
+ * libtiffpic/quad-jpeg.tif
+ * libtiffpic/quad-lzw.tif
+ * libtiffpic/quad-tile.tif
+ * libtiffpic/smallliz.tif
+ * libtiffpic/strike.tif
+ * libtiffpic/text.tif
+ * libtiffpic/ycbcr-cat.tif
+ * libtiffpic/zackthecat.tif
+ * libtiffpic/depth/flower-minisblack-02.tif
+ * libtiffpic/depth/flower-minisblack-04.tif
+ * libtiffpic/depth/flower-minisblack-06.tif
+ * libtiffpic/depth/flower-minisblack-08.tif
+ * libtiffpic/depth/flower-minisblack-10.tif
+ * libtiffpic/depth/flower-minisblack-12.tif
+ * libtiffpic/depth/flower-minisblack-14.tif
+ * libtiffpic/depth/flower-minisblack-16.tif
+ * libtiffpic/depth/flower-minisblack-24.tif
+ * libtiffpic/depth/flower-minisblack-32.tif
+ * libtiffpic/depth/flower-palette-02.tif
+ * libtiffpic/depth/flower-palette-04.tif
+ * libtiffpic/depth/flower-palette-08.tif
+ * libtiffpic/depth/flower-palette-16.tif
+ * libtiffpic/depth/flower-rgb-contig-02.tif
+ * libtiffpic/depth/flower-rgb-contig-04.tif
+ * libtiffpic/depth/flower-rgb-contig-08.tif
+ * libtiffpic/depth/flower-rgb-contig-10.tif
+ * libtiffpic/depth/flower-rgb-contig-12.tif
+ * libtiffpic/depth/flower-rgb-contig-14.tif
+ * libtiffpic/depth/flower-rgb-contig-16.tif
+ * libtiffpic/depth/flower-rgb-contig-24.tif
+ * libtiffpic/depth/flower-rgb-contig-32.tif
+ * libtiffpic/depth/flower-rgb-planar-02.tif
+ * libtiffpic/depth/flower-rgb-planar-04.tif
+ * libtiffpic/depth/flower-rgb-planar-08.tif
+ * libtiffpic/depth/flower-rgb-planar-10.tif
+ * libtiffpic/depth/flower-rgb-planar-12.tif
+ * libtiffpic/depth/flower-rgb-planar-14.tif
+ * libtiffpic/depth/flower-rgb-planar-16.tif
+ * libtiffpic/depth/flower-rgb-planar-24.tif
+ * libtiffpic/depth/flower-rgb-planar-32.tif
+ * libtiffpic/depth/flower-separated-contig-08.tif
+ * libtiffpic/depth/flower-separated-contig-16.tif
+ * libtiffpic/depth/flower-separated-planar-08.tif
+ * libtiffpic/depth/flower-separated-planar-16.tif
+
+--------------------------------------------------------------------------------
+
 ::: External test images :::
 
 HDR: http://www.hdrlabs.com/sibl/archive.html
