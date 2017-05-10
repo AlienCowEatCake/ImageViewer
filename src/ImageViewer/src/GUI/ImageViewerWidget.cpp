@@ -385,7 +385,7 @@ void ImageViewerWidget::mouseMoveEvent(QMouseEvent *event)
 
 void ImageViewerWidget::wheelEvent(QWheelEvent *event)
 {
-    if(wheelMode() == WHEEL_ZOOM)
+    if(wheelMode() == WHEEL_ZOOM || event->modifiers() & Qt::ControlModifier)
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
         const QPointF numDegrees = QPointF(event->angleDelta()) / 8.0;
