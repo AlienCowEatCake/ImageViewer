@@ -147,9 +147,9 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
     {
         frames.push_back(WebPFrame(features.width, features.height));
         QImage &frame = frames[0].image;
-        const std::uint8_t *data = reinterpret_cast<const uint8_t*>(inBuffer.constData());
+        const uint8_t *data = reinterpret_cast<const uint8_t*>(inBuffer.constData());
         const std::size_t dataSize = static_cast<std::size_t>(inBuffer.size());
-        std::uint8_t *output = reinterpret_cast<uint8_t*>(frame.bits());
+        uint8_t *output = reinterpret_cast<uint8_t*>(frame.bits());
         const std::size_t size = static_cast<std::size_t>(frame.bytesPerLine() * frame.height());
         const int stride = frame.bytesPerLine();
 #if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
@@ -205,9 +205,9 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
             }
 
             QImage frame(iter.width, iter.height, QImage::Format_ARGB32);
-            const std::uint8_t *data = iter.fragment.bytes;
+            const uint8_t *data = iter.fragment.bytes;
             const std::size_t dataSize = iter.fragment.size;
-            std::uint8_t *output = reinterpret_cast<uint8_t*>(frame.bits());
+            uint8_t *output = reinterpret_cast<uint8_t*>(frame.bits());
             const std::size_t size = static_cast<std::size_t>(frame.bytesPerLine() * frame.height());
             const int stride = frame.bytesPerLine();
 #if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
