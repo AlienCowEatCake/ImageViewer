@@ -39,6 +39,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Animation/IAnimationProvider.h"
 #include "Internal/Animation/AnimationUtils.h"
+#include "Internal/Animation/FrameCompositor.h"
 #include "Internal/CmsUtils.h"
 
 #ifndef png_jmpbuf
@@ -67,8 +68,6 @@ struct PngAnimationProvider : public IAnimationProvider
 
     bool checkIfPng();
     void applyICCProfile(png_const_structrp pngPtr, png_inforp infoPtr, QImage *image);
-    void blendOver(uchar *dst, const uchar *src, png_uint_32 blendOffsetX, png_uint_32 blendOffsetY,
-                   png_uint_32 blendWidth, png_uint_32 blendHeight, png_uint_32 dataWidth);
     bool readPng();
 
     struct PngFrame
@@ -175,42 +174,6 @@ void PngAnimationProvider::applyICCProfile(png_const_structrp pngPtr, png_inforp
     }
 }
 
-void PngAnimationProvider::blendOver(uchar *dst, const uchar *src, png_uint_32 blendOffsetX, png_uint_32 blendOffsetY,
-                                     png_uint_32 blendWidth, png_uint_32 blendHeight, png_uint_32 dataWidth)
-{
-    for(png_uint_32 j = 0; j < blendHeight; j++)
-    {
-        const std::size_t offset = ((j + blendOffsetY) * dataWidth + blendOffsetX) * 4;
-        const QRgb *sp = reinterpret_cast<const QRgb*>(src + offset);
-        QRgb *dp = reinterpret_cast<QRgb*>(dst + offset);
-        for(png_uint_32 i = 0; i < blendWidth; i++, sp++, dp++)
-        {
-            if(qAlpha(*sp) == 255)
-            {
-                *dp = *sp;
-            }
-            else if(qAlpha(*sp) != 0)
-            {
-                if(qAlpha(*dp) != 0)
-                {
-                    int u = qAlpha(*sp) * 255;
-                    int v = (255 - qAlpha(*sp)) * qAlpha(*dp);
-                    int al = u + v;
-                    int r = (qRed(*sp)   * u + qRed(*dp)   * v) / al;
-                    int g = (qGreen(*sp) * u + qGreen(*dp) * v) / al;
-                    int b = (qBlue(*sp)  * u + qBlue(*dp)  * v) / al;
-                    int a = al / 255;
-                    *dp = qRgba(r, g, b, a);
-                }
-                else
-                {
-                    *dp = *sp;
-                }
-            }
-        }
-    }
-}
-
 bool PngAnimationProvider::readPng()
 {
     if(!checkIfPng())
@@ -218,7 +181,7 @@ bool PngAnimationProvider::readPng()
 
     png_structp pngPtr = NULL;
     png_infop infoPtr = NULL;
-    QByteArray prevBuffer, tempBuffer;
+    FrameCompositor compositor;
 
     // Create and initialize the png_struct with the desired error handler
     // functions.  If you want to use the default stderr and longjump method,
@@ -280,7 +243,6 @@ bool PngAnimationProvider::readPng()
 
     const png_uint_32 width = png_get_image_width(pngPtr, infoPtr);
     const png_uint_32 height = png_get_image_height(pngPtr, infoPtr);
-    const png_uint_32 dataSze = width * height * 4;
     for(int count = 0; count < numFrames; count++)
     {
 //        int bitDepth = png_get_bit_depth(pngPtr, infoPtr);
@@ -307,16 +269,7 @@ bool PngAnimationProvider::readPng()
                 nextFrameBlendOp = PNG_BLEND_OP_SOURCE;
                 if(nextFrameDisposeOp == PNG_DISPOSE_OP_PREVIOUS)
                     nextFrameDisposeOp = PNG_DISPOSE_OP_BACKGROUND;
-            }
-            if(prevBuffer.isEmpty())
-            {
-                prevBuffer.resize(static_cast<int>(dataSze));
-                memset(prevBuffer.data(), 0, dataSze);
-            }
-            if(tempBuffer.isEmpty())
-            {
-                tempBuffer.resize(static_cast<int>(dataSze));
-                memset(tempBuffer.data(), 0, dataSze);
+                compositor.startComposition(width, height);
             }
         }
 #endif
@@ -410,42 +363,24 @@ bool PngAnimationProvider::readPng()
         applyICCProfile(pngPtr, infoPtr, &image);
 
 #if defined (PNG_APNG_SUPPORTED)
-        if(!prevBuffer.isEmpty() && !tempBuffer.isEmpty())
+        if(compositor.isStarted())
         {
-            uchar *imageBits = image.bits();
-            uchar *tempBits = reinterpret_cast<uchar*>(tempBuffer.data());
-            uchar *prevBits = reinterpret_cast<uchar*>(prevBuffer.data());
-
-            if(nextFrameDisposeOp == PNG_DISPOSE_OP_PREVIOUS)
-                memcpy(tempBits, prevBits, dataSze);
-
-            if(nextFrameBlendOp == PNG_BLEND_OP_OVER)
+            const QRect frameRect = QRect(static_cast<int>(nextFrameOffsetX), static_cast<int>(nextFrameOffsetY),
+                                          static_cast<int>(nextFrameWidth), static_cast<int>(nextFrameHeight));
+            FrameCompositor::DisposeType compositorDisposeType = FrameCompositor::DISPOSE_NONE;
+            switch(nextFrameDisposeOp)
             {
-                blendOver(prevBits, imageBits, nextFrameOffsetX, nextFrameOffsetY, nextFrameWidth, nextFrameHeight, width);
+            case PNG_DISPOSE_OP_NONE:       compositorDisposeType = FrameCompositor::DISPOSE_NONE;          break;
+            case PNG_DISPOSE_OP_BACKGROUND: compositorDisposeType = FrameCompositor::DISPOSE_BACKGROUND;    break;
+            case PNG_DISPOSE_OP_PREVIOUS:   compositorDisposeType = FrameCompositor::DISPOSE_PREVIOUS;      break;
             }
-            else
+            FrameCompositor::BlendType compositorBlendType = FrameCompositor::BLEND_NONE;
+            switch(nextFrameBlendOp)
             {
-                for(png_uint_32 j = 0; j < nextFrameHeight; j++)
-                {
-                    const std::size_t offset = ((j + nextFrameOffsetY) * width + nextFrameOffsetX) * 4;
-                    memcpy(prevBits + offset, imageBits + offset, nextFrameWidth * 4);
-                }
+            case PNG_BLEND_OP_SOURCE:   compositorBlendType = FrameCompositor::BLEND_NONE; break;
+            case PNG_BLEND_OP_OVER:     compositorBlendType = FrameCompositor::BLEND_OVER; break;
             }
-
-            memcpy(imageBits, prevBits, dataSze);
-
-            if(nextFrameDisposeOp == PNG_DISPOSE_OP_PREVIOUS)
-            {
-                memcpy(prevBits, tempBits, dataSze);
-            }
-            else if(nextFrameDisposeOp == PNG_DISPOSE_OP_BACKGROUND)
-            {
-                for(png_uint_32 j = 0; j < nextFrameHeight; j++)
-                {
-                    const std::size_t offset = ((j + nextFrameOffsetY) * width + nextFrameOffsetX) * 4;
-                    memset(prevBits + offset, 0, nextFrameWidth * 4);
-                }
-            }
+            image = compositor.compositeFrame(image, frameRect, compositorDisposeType, compositorBlendType);
         }
 #endif
 
