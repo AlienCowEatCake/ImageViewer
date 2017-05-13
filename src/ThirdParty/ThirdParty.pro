@@ -44,6 +44,10 @@ SUBDIRS =
     SUBDIRS += libtiff/libtiff.pro
 }
 
+!disable_libwebp : !system_libwebp {
+    SUBDIRS += LibWebP/LibWebP.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }

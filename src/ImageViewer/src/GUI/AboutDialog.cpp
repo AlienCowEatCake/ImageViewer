@@ -44,6 +44,9 @@
 #if defined (HAS_LIBTIFF)
 #include <tiffio.h>
 #endif
+#if defined (HAS_LIBWEBP)
+#include <webp/decode.h>
+#endif
 #if defined (HAS_JBIGKIT)
 #include <jbig.h>
 #endif
@@ -182,6 +185,16 @@ QString getTextBrowserContent()
                       QString::fromLatin1("libtiff"),
                       (tiffVersionRegExp.indexIn(QString::fromLatin1(TIFFGetVersion())) >= 0) ? tiffVersionRegExp.cap(0) : QString(),
                       QString::fromLatin1("http://www.simplesystems.org/libtiff/")
+                      ));
+#endif
+
+#if defined (HAS_LIBWEBP)
+    const QString webpVersion = QString::fromLatin1("%1").arg(QString::number(WebPGetDecoderVersion(), 16), 6, QChar::fromLatin1('0'));
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the WebP image library"),
+                      QString::fromLatin1("libwebp"),
+                      QString::fromLatin1("%1.%2.%3").arg(webpVersion.mid(0, 2).toInt()).arg(webpVersion.mid(2, 2).toInt()).arg(webpVersion.mid(4, 2).toInt()),
+                      QString::fromLatin1("https://www.webmproject.org/")
                       ));
 #endif
 

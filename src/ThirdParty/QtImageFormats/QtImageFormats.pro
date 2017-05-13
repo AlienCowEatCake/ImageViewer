@@ -22,6 +22,7 @@ include(../libmng/libmng.pri)
 include(../JasPer/JasPer.pri)
 include(../libtiff/libtiff.pri)
 include(../libjpeg/libjpeg.pri)
+include(../LibWebP/LibWebP.pri)
 include(../LittleCMS2/LittleCMS2.pri)
 include(../libexif/libexif.pri)
 include(../zlib/zlib.pri)
@@ -120,17 +121,17 @@ DEFINES += WRAPPER_USE_WBMP_HANDLER
 
 # --------------------------------------------------------------------------------
 
-##FIXME: Crash with Qt 5.6.2 MSVC 2015 (static build)
-#
-#SOURCES += \
-#    $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/webp/qwebphandler.cpp
-#
-#HEADERS += \
-#    $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/webp/qwebphandler_p.h
-#
-#include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/3rdparty/libwebp.pri)
-#
-#DEFINES += WRAPPER_USE_WEBP_HANDLER
+!disable_libwebp {
+
+    SOURCES += \
+        $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/webp/qwebphandler.cpp
+
+    HEADERS += \
+        $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/webp/qwebphandler_p.h
+
+    DEFINES += WRAPPER_USE_WEBP_HANDLER
+
+}
 
 # --------------------------------------------------------------------------------
 
