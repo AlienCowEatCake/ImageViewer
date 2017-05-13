@@ -416,7 +416,7 @@ bool PngAnimationProvider::readPng()
             uchar *tempBits = reinterpret_cast<uchar*>(tempBuffer.data());
             uchar *prevBits = reinterpret_cast<uchar*>(prevBuffer.data());
 
-            if(nextFrameBlendOp == PNG_DISPOSE_OP_PREVIOUS)
+            if(nextFrameDisposeOp == PNG_DISPOSE_OP_PREVIOUS)
                 memcpy(tempBits, prevBits, dataSze);
 
             if(nextFrameBlendOp == PNG_BLEND_OP_OVER)
