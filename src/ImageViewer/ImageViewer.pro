@@ -132,6 +132,11 @@ HEADERS += \
         src/Decoders/DecoderLibTiff.cpp
 }
 
+!disable_libwebp {
+    SOURCES += \
+        src/Decoders/DecoderLibWebP.cpp
+}
+
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
     resources/translations/imageviewer_ru.ts

@@ -79,6 +79,11 @@ disable_zlib {
 #    system_libtiff
 
 
+# LibWebP options:
+#    disable_libwebp
+#    system_libwebp
+
+
 # ::::: Optional Third Party Components Configuration :::::
 
 # QtExtended options:
