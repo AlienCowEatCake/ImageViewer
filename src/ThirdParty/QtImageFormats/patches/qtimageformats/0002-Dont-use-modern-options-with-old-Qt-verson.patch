@@ -1,0 +1,59 @@
+From 057b0ab61ffcd3e73f7b709eb26bdfb67c4c047f Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 14 May 2017 23:12:38 +0700
+Subject: [PATCH 2/3] Dont use modern options with old Qt verson
+
+---
+ src/plugins/imageformats/dds/qddshandler.cpp | 7 ++++++-
+ src/plugins/imageformats/jp2/qjp2handler.cpp | 7 +++++++
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/src/plugins/imageformats/dds/qddshandler.cpp b/src/plugins/imageformats/dds/qddshandler.cpp
+index 3a44b51..dab69d5 100644
+--- a/src/plugins/imageformats/dds/qddshandler.cpp
++++ b/src/plugins/imageformats/dds/qddshandler.cpp
+@@ -1489,8 +1489,10 @@ QVariant QDDSHandler::option(QImageIOHandler::ImageOption option) const
+         return QSize(m_header.width, m_header.height);
+     case QImageIOHandler::SubType:
+         return formatName(m_format);
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
+     case QImageIOHandler::SupportedSubTypes:
+         return QVariant::fromValue(QList<QByteArray>() << formatName(FormatA8R8G8B8));
++#endif
+     default:
+         break;
+     }
+@@ -1512,7 +1514,10 @@ bool QDDSHandler::supportsOption(QImageIOHandler::ImageOption option) const
+ {
+     return (option == QImageIOHandler::Size)
+             || (option == QImageIOHandler::SubType)
+-            || (option == QImageIOHandler::SupportedSubTypes);
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
++            || (option == QImageIOHandler::SupportedSubTypes)
++#endif
++            ;
+ }
+ 
+ int QDDSHandler::imageCount() const
+diff --git a/src/plugins/imageformats/jp2/qjp2handler.cpp b/src/plugins/imageformats/jp2/qjp2handler.cpp
+index 17373fd..da74fb2 100644
+--- a/src/plugins/imageformats/jp2/qjp2handler.cpp
++++ b/src/plugins/imageformats/jp2/qjp2handler.cpp
+@@ -589,7 +589,14 @@ bool Jpeg2000JasperReader::read(QImage *pImage)
+         if (hasAlpha) {
+             qtImage = QImage(qtWidth, qtHeight, QImage::Format_ARGB32);
+         } else {
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+             qtImage = QImage(qtWidth, qtHeight, QImage::Format_Grayscale8);
++#else
++            qtImage = QImage(qtWidth, qtHeight, QImage::Format_Indexed8);
++            qtImage.setColorCount(256);
++            for (int c = 0; c < 256; ++c)
++                qtImage.setColor(c, qRgb(c,c,c));
++#endif
+         }
+     }
+ 
+-- 
+2.13.0
+

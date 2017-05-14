@@ -1,0 +1,79 @@
+From 23e8c1d5784948e80138e51f15f7035968364f7b Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 14 May 2017 23:22:10 +0700
+Subject: [PATCH] Dont use modern options with old Qt verson
+
+---
+ src/plugins/imageformats/tiff/qtiffhandler.cpp | 27 ++++++++++++++++++++++++++
+ src/plugins/imageformats/tiff/qtiffhandler_p.h |  1 +
+ 2 files changed, 28 insertions(+)
+
+diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+index 9697f45..d1f464f 100644
+--- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
++++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+@@ -572,17 +572,31 @@ bool QTiffHandler::write(const QImage &image)
+             TIFFClose(tiff);
+             return false;
+         }
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+         // try to do the RGBA8888 conversion in chunks no greater than 16 MB
++#else
++        // try to do the ARGB32 conversion in chunks no greater than 16 MB
++#endif
+         const int chunks = (width * height * 4 / (1024 * 1024 * 16)) + 1;
+         const int chunkHeight = qMax(height / chunks, 1);
+ 
+         int y = 0;
+         while (y < height) {
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+             const QImage chunk = image.copy(0, y, width, qMin(chunkHeight, height - y)).convertToFormat(QImage::Format_RGBA8888);
++#else
++            QImage chunk = image.copy(0, y, width, qMin(chunkHeight, height - y)).convertToFormat(QImage::Format_ARGB32);
++#endif
+ 
+             int chunkStart = y;
+             int chunkEnd = y + chunk.height();
+             while (y < chunkEnd) {
++#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
++                if (QSysInfo::ByteOrder == QSysInfo::LittleEndian)
++                    convert32BitOrder(chunk.scanLine(y - chunkStart), width);
++                else
++                    convert32BitOrderBigEndian(chunk.scanLine(y - chunkStart), width);
++#endif
+                 if (TIFFWriteScanline(tiff, (void*)chunk.scanLine(y - chunkStart), y) != 1) {
+                     TIFFClose(tiff);
+                     return false;
+@@ -661,4 +675,17 @@ void QTiffHandler::convert32BitOrder(void *buffer, int width)
+                     | ((p & 0x000000ff) << 16);
+     }
+ }
++
++void QTiffHandler::convert32BitOrderBigEndian(void *buffer, int width)
++{
++    uint32 *target = reinterpret_cast<uint32 *>(buffer);
++    for (int32 x=0; x<width; ++x) {
++        uint32 p = target[x];
++        target[x] = (p & 0xff000000) >> 24
++                    | (p & 0x00ff0000) << 8
++                    | (p & 0x0000ff00) << 8
++                    | (p & 0x000000ff) << 8;
++    }
++}
++
+ QT_END_NAMESPACE
+diff --git a/src/plugins/imageformats/tiff/qtiffhandler_p.h b/src/plugins/imageformats/tiff/qtiffhandler_p.h
+index 37e69cd..0d39cbd 100644
+--- a/src/plugins/imageformats/tiff/qtiffhandler_p.h
++++ b/src/plugins/imageformats/tiff/qtiffhandler_p.h
+@@ -61,6 +61,7 @@ public:
+     };
+ private:
+     void convert32BitOrder(void *buffer, int width);
++    void convert32BitOrderBigEndian(void *buffer, int width);
+     int compression;
+ };
+ 
+-- 
+2.13.0
+

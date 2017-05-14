@@ -41,5 +41,14 @@
         <file>tiff/rgb_orientation_8.tiff</file>
         <file>tiff/teapot.tiff</file>
         <file>tiff/colorful.bmp</file>
+        <file>tiff/tiled_grayscale.tiff</file>
+        <file>tiff/tiled_oddsize_grayscale.tiff</file>
+        <file>tiff/oddsize_grayscale.tiff</file>
+        <file>tiff/original_grayscale.tiff</file>
+        <file>tiff/tiled_indexed.tiff</file>
+        <file>tiff/tiled_mono.tiff</file>
+        <file>tiff/tiled_oddsize_mono.tiff</file>
+        <file>tiff/oddsize_mono.tiff</file>
+        <file>tiff/tiled_rgb.tiff</file>
     </qresource>
 </RCC>

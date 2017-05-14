@@ -8,5 +8,3 @@ config_jasper {
 } else {
     include($$PWD/../../../3rdparty/jasper.pri)
 }
-## FIXME: C99
-#include($${PWD}/../../../../../../JasPer/JasPer.pri)

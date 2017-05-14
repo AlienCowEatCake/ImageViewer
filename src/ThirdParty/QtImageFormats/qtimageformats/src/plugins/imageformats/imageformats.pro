@@ -1,11 +1,13 @@
 TEMPLATE = subdirs
 SUBDIRS = \
 #    dds \
-    icns \
     tga \
     tiff \
     wbmp \
     webp
+
+qtConfig(regularexpression): \
+    SUBDIRS += icns
 
 config_libmng: SUBDIRS += mng
 config_jasper {

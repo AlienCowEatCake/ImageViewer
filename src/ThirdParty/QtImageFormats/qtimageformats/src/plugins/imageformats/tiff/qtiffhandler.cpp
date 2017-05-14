@@ -329,22 +329,88 @@ bool QTiffHandler::read(QImage *image)
     if (image->size() != d->size || image->format() != format)
         *image = QImage(d->size, format);
 
+    if (image->isNull()) {
+        d->close();
+        return false;
+    }
+
     TIFF *const tiff = d->tiff;
     const uint32 width = d->size.width();
     const uint32 height = d->size.height();
 
-    if (format == QImage::Format_Mono) {
-        QVector<QRgb> colortable(2);
-        if (d->photometric == PHOTOMETRIC_MINISBLACK) {
-            colortable[0] = 0xff000000;
-            colortable[1] = 0xffffffff;
-        } else {
-            colortable[0] = 0xffffffff;
-            colortable[1] = 0xff000000;
-        }
-        image->setColorTable(colortable);
+    if (format == QImage::Format_Mono || format == QImage::Format_Indexed8 || format == QImage::Format_Grayscale8) {
+        if (format == QImage::Format_Mono) {
+            QVector<QRgb> colortable(2);
+            if (d->photometric == PHOTOMETRIC_MINISBLACK) {
+                colortable[0] = 0xff000000;
+                colortable[1] = 0xffffffff;
+            } else {
+                colortable[0] = 0xffffffff;
+                colortable[1] = 0xff000000;
+            }
+            image->setColorTable(colortable);
+        } else if (format == QImage::Format_Indexed8) {
+            const uint16 tableSize = 256;
+            QVector<QRgb> qtColorTable(tableSize);
+            if (d->grayscale) {
+                for (int i = 0; i<tableSize; ++i) {
+                    const int c = (d->photometric == PHOTOMETRIC_MINISBLACK) ? i : (255 - i);
+                    qtColorTable[i] = qRgb(c, c, c);
+                }
+            } else {
+                // create the color table
+                uint16 *redTable = 0;
+                uint16 *greenTable = 0;
+                uint16 *blueTable = 0;
+                if (!TIFFGetField(tiff, TIFFTAG_COLORMAP, &redTable, &greenTable, &blueTable)) {
+                    d->close();
+                    return false;
+                }
+                if (!redTable || !greenTable || !blueTable) {
+                    d->close();
+                    return false;
+                }
 
-        if (!image->isNull()) {
+                for (int i = 0; i<tableSize ;++i) {
+                    const int red = redTable[i] / 257;
+                    const int green = greenTable[i] / 257;
+                    const int blue = blueTable[i] / 257;
+                    qtColorTable[i] = qRgb(red, green, blue);
+                }
+            }
+            image->setColorTable(qtColorTable);
+            // free redTable, greenTable and greenTable done by libtiff
+        }
+
+        if (TIFFIsTiled(tiff)) {
+            quint32 tileWidth, tileLength;
+            TIFFGetField(tiff, TIFFTAG_TILEWIDTH, &tileWidth);
+            TIFFGetField(tiff, TIFFTAG_TILELENGTH, &tileLength);
+            uchar *buf = (uchar *)_TIFFmalloc(TIFFTileSize(tiff));
+            if (!tileWidth || !tileLength || !buf) {
+                _TIFFfree(buf);
+                d->close();
+                return false;
+            }
+            quint32 byteWidth = (format == QImage::Format_Mono) ? (width + 7)/8 : width;
+            quint32 byteTileWidth = (format == QImage::Format_Mono) ? tileWidth/8 : tileWidth;
+            for (quint32 y = 0; y < height; y += tileLength) {
+                for (quint32 x = 0; x < width; x += tileWidth) {
+                    if (TIFFReadTile(tiff, buf, x, y, 0, 0) < 0) {
+                        _TIFFfree(buf);
+                        d->close();
+                        return false;
+                    }
+                    quint32 linesToCopy = qMin(tileLength, height - y);
+                    quint32 byteOffset = (format == QImage::Format_Mono) ? x/8 : x;
+                    quint32 widthToCopy = qMin(byteTileWidth, byteWidth - byteOffset);
+                    for (quint32 i = 0; i < linesToCopy; i++) {
+                        ::memcpy(image->scanLine(y + i) + byteOffset, buf + (i * byteTileWidth), widthToCopy);
+                    }
+                }
+            }
+            _TIFFfree(buf);
+        } else {
             for (uint32 y=0; y<height; ++y) {
                 if (TIFFReadScanline(tiff, image->scanLine(y), y, 0) < 0) {
                     d->close();
@@ -353,74 +419,16 @@ bool QTiffHandler::read(QImage *image)
             }
         }
     } else {
-        if (format == QImage::Format_Indexed8) {
-            if (!image->isNull()) {
-                const uint16 tableSize = 256;
-                QVector<QRgb> qtColorTable(tableSize);
-                if (d->grayscale) {
-                    for (int i = 0; i<tableSize; ++i) {
-                        const int c = (d->photometric == PHOTOMETRIC_MINISBLACK) ? i : (255 - i);
-                        qtColorTable[i] = qRgb(c, c, c);
-                    }
-                } else {
-                    // create the color table
-                    uint16 *redTable = 0;
-                    uint16 *greenTable = 0;
-                    uint16 *blueTable = 0;
-                    if (!TIFFGetField(tiff, TIFFTAG_COLORMAP, &redTable, &greenTable, &blueTable)) {
-                        d->close();
-                        return false;
-                    }
-                    if (!redTable || !greenTable || !blueTable) {
-                        d->close();
-                        return false;
-                    }
-
-                    for (int i = 0; i<tableSize ;++i) {
-                        const int red = redTable[i] / 257;
-                        const int green = greenTable[i] / 257;
-                        const int blue = blueTable[i] / 257;
-                        qtColorTable[i] = qRgb(red, green, blue);
-                    }
-                }
-
-                image->setColorTable(qtColorTable);
-                for (uint32 y=0; y<height; ++y) {
-                    if (TIFFReadScanline(tiff, image->scanLine(y), y, 0) < 0) {
-                        d->close();
-                        return false;
-                    }
-                }
-
-                // free redTable, greenTable and greenTable done by libtiff
-            }
-        } else if (format == QImage::Format_Grayscale8) {
-            if (!image->isNull()) {
-                for (uint32 y = 0; y < height; ++y) {
-                    if (TIFFReadScanline(tiff, image->scanLine(y), y, 0) < 0) {
-                        d->close();
-                        return false;
-                    }
-                }
-            }
+        const int stopOnError = 1;
+        if (TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(image->bits()), qt2Exif(d->transformation), stopOnError)) {
+            for (uint32 y=0; y<height; ++y)
+                convert32BitOrder(image->scanLine(y), width);
         } else {
-            if (!image->isNull()) {
-                const int stopOnError = 1;
-                if (TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(image->bits()), qt2Exif(d->transformation), stopOnError)) {
-                    for (uint32 y=0; y<height; ++y)
-                        convert32BitOrder(image->scanLine(y), width);
-                } else {
-                    d->close();
-                    return false;
-                }
-            }
+            d->close();
+            return false;
         }
     }
 
-    if (image->isNull()) {
-        d->close();
-        return false;
-    }
 
     float resX = 0;
     float resY = 0;

@@ -52,7 +52,6 @@ libraries. If not found, it may fall back on using a bundled copy (in
 
 \table
 \header \li Format \li Description                      \li Support      \li 3rd Party Codec
-\row    \li DDS    \li Direct Draw Surface              \li Read/write   \li No
 \row    \li ICNS   \li Apple Icon Image                 \li Read/write   \li No
 \row    \li JP2    \li Joint Photographic Experts Group 2000 \li Read/write   \li Yes (bundled, unmaintained)
 \row    \li MNG    \li Multiple-image Network Graphics  \li Read         \li Yes (bundled, unmaintained)
