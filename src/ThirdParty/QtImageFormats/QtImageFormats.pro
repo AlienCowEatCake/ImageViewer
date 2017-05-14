@@ -27,6 +27,8 @@ include(../LittleCMS2/LittleCMS2.pri)
 include(../libexif/libexif.pri)
 include(../zlib/zlib.pri)
 
+INCLUDEPATH += $${THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH}
+
 # --------------------------------------------------------------------------------
 
 SOURCES += \

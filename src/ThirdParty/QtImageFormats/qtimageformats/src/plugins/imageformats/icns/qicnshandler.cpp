@@ -46,6 +46,10 @@
 #include <QtCore/qbuffer.h>
 #include <QtGui/qimage.h>
 
+#if defined (WRAPPER_USE_JP2_HANDLER)
+#include "QtImageFormatsImageReader.h"
+#endif
+
 #ifndef QT_NO_DATASTREAM
 
 QT_BEGIN_NAMESPACE
@@ -736,7 +740,16 @@ bool QICNSHandler::read(QImage *outImage)
         else if (icon.dataFormat == ICNSEntry::JP2)
             format = "jp2";
         // Even if JP2 or PNG magic is not detected, try anyway for unknown formats
-        img = QImage::fromData(device()->read(icon.dataLength), format);
+        QByteArray data = device()->read(icon.dataLength);
+        img = QImage::fromData(data, format);
+#if defined (WRAPPER_USE_JP2_HANDLER)
+        if (img.isNull()) {
+            QBuffer b;
+            b.setData(data);
+            b.open(QIODevice::ReadOnly);
+            img = QtImageFormatsImageReader(&b, format).read();
+        }
+#endif
         if (img.isNull()) {
             if (format == 0)
                 format = "unknown";
