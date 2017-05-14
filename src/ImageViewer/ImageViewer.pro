@@ -139,6 +139,11 @@ HEADERS += \
         src/Decoders/DecoderLibWebP.cpp
 }
 
+!disable_libbpg {
+    SOURCES += \
+        src/Decoders/DecoderLibBpg.cpp
+}
+
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
     resources/translations/imageviewer_ru.ts

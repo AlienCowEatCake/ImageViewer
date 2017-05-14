@@ -198,6 +198,15 @@ QString getTextBrowserContent()
                       ));
 #endif
 
+#if defined (HAS_LIBBPG)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the libbpg library"),
+                      QString::fromLatin1("libbpg"),
+                      QString(),
+                      QString::fromLatin1("https://bellard.org/bpg/")
+                      ));
+#endif
+
 #if defined (HAS_JBIGKIT)
     result.append(formatItem(
                       QString::fromLatin1("This software uses the JBIG-KIT library"),

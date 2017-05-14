@@ -65,10 +65,40 @@ quint16 GetExifOrientation(const QString &filePath)
         qDebug() << "EXIF orientation =" << orientation;
         return orientation;
     }
+    return 1;
 #else
     Q_UNUSED(filePath);
-#endif
     return 1;
+#endif
+}
+
+quint16 GetExifOrientation(const QByteArray &rawExifData)
+{
+#if defined (HAS_LIBEXIF)
+    quint16 orientation = 1;
+    ExifData *exifData = exif_data_new_from_data(reinterpret_cast<const unsigned char*>(rawExifData.data()), static_cast<unsigned int>(rawExifData.size()));
+    if(!exifData)
+        return orientation;
+//#if defined (QT_DEBUG)
+//    fflush(stdout);
+//    fflush(stderr);
+//    exif_data_dump(exifData);
+//    fflush(stdout);
+//    fflush(stderr);
+//#endif
+    ExifEntry *entry = exif_content_get_entry(exifData->ifd[EXIF_IFD_0], EXIF_TAG_ORIENTATION);
+    if(entry && entry->parent && entry->parent->parent && entry->format == EXIF_FORMAT_SHORT && entry->components == 1)
+    {
+        orientation = exif_get_short(entry->data, exif_data_get_byte_order(entry->parent->parent));
+        qDebug() << "EXIF header detected";
+        qDebug() << "EXIF orientation =" << orientation;
+    }
+    exif_data_unref(exifData);
+    return orientation;
+#else
+    Q_UNUSED(rawExifData);
+    return 1;
+#endif
 }
 
 // https://bugreports.qt.io/browse/QTBUG-37946

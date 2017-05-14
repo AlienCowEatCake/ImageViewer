@@ -28,6 +28,8 @@ namespace ExifUtils {
 
 quint16 GetExifOrientation(const QString &filePath);
 
+quint16 GetExifOrientation(const QByteArray &rawExifData);
+
 void ApplyExifOrientation(QImage *image, quint16 exifOrientation);
 
 } // namespace ExifUtils

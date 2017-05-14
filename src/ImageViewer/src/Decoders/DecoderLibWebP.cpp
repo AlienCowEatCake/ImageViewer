@@ -24,8 +24,6 @@
 
 #include <QFileInfo>
 #include <QImage>
-#include <QPixmap>
-#include <QGraphicsPixmapItem>
 #include <QFile>
 #include <QByteArray>
 #include <QDebug>

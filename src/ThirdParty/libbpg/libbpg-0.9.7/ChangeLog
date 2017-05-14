@@ -1,0 +1,60 @@
+version 0.9.7:
+
+- Increased the memory size of the JS decoder to 32 MiB and avoid
+  polluting the global namespace.
+- Published the Emscripten patches which reduce the size of the
+  generated JS code.
+
+version 0.9.6:
+
+- Faster encoding (x265 is the default encoder and is built in bpgenc).
+- Added monochrome support to x265.
+- Fixed metadata handling.
+
+version 0.9.5:
+
+- Added animation support.
+- added bpgview utility.
+- bpgenc: fixed support of some JPEG parameter combinations
+- fixed JS 8 bit only decoder and renamed it to bpgdec8.js
+- libbpg: added CMYK output format
+
+version 0.9.4:
+
+- Modified alpha plane encoding to allow progressive display and
+  streaming encoding. This change is incompatible, so images
+  containing alpha from the previous versions of the format cannot be
+  decoded.
+
+- Added 4:2:2 and 4:2:0 chroma formats with MPEG2 chroma sample position.
+
+version 0.9.3:
+
+- Fixed small palette PNG.
+- Added support for BT 709 and BT 2020 YCbCr.
+- Added limited range color support.
+- Changed CMYK signalling.
+- Added premultiplied alpha support.
+- Specified the output RGB color space if no color profile is present.
+- Reduced the size of the js decoder.
+- Removed buffer overflows.
+
+version 0.9.2:
+
+- Fixed encoding of paletted PNG.
+- Reduced memory usage in the decoder.
+- Added faster 8 bit only Javascript decoder.
+- bpgenc: added '-e' option to explicitely select the encoder.
+- bpgenc: set default bit depth to 8.
+- bpgenc: added lossless support with x265.
+- js decoder: handle width and height attributes.
+
+version 0.9.1:
+
+- Added new meta data tags: ICC profile, XMP and thumbnail.
+- Disabled metadata copying by default.
+- Use same chroma pixel position as JPEG for 4:2:2 and 4:2:0.
+
+version 0.9:
+
+- Initial release.

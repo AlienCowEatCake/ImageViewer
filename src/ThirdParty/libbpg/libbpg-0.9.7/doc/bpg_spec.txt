@@ -1,0 +1,517 @@
+BPG Specification
+
+version 0.9.5
+
+Copyright (c) 2014-2015 Fabrice Bellard
+
+1) Introduction
+---------------
+
+BPG is a lossy and lossless picture compression format based on HEVC
+[1]. It supports grayscale, YCbCr, RGB, YCgCo color spaces with an
+optional alpha channel. CMYK is supported by reusing the alpha channel
+to encode an additional white component. The bit depth of each
+component is from 8 to 14 bits. The color values are stored either in
+full range (JPEG case) or limited range (video case). The YCbCr color
+space is either BT 601 (JPEG case), BT 709 or BT 2020.
+
+The chroma can be subsampled by a factor of two in horizontal or both
+in horizontal and vertical directions (4:4:4, 4:2:2 or 4:2:0 chroma
+formats are supported). In order to be able to transcode JPEG images
+or video frames without modification to the chroma, both JPEG and
+MPEG2 chroma sample positions are supported.
+
+Progressive decoding and display is supported by interleaving the
+alpha and color data.
+
+Arbitrary metadata (such as EXIF, ICC profile, XMP) are supported.
+
+Animations are supported as an optional feature. Decoders not
+supporting animation display the first frame of the animation.
+
+2) Bitstream conventions
+------------------------
+
+The bit stream is byte aligned and bit fields are read from most
+significant to least signficant bit in each byte.
+
+- u(n) is an unsigned integer stored on n bits.
+
+- ue7(n) is an unsigned integer of at most n bits stored on a variable
+  number of bytes. All the bytes except the last one have a '1' as
+  their first bit. The unsigned integer is represented as the
+  concatenation of the remaining 7 bit codewords. Only the shortest
+  encoding for a given unsigned integer shall be accepted by the
+  decoder (i.e. the first byte is never 0x80). Example:
+
+  Encoded bytes       Unsigned integer value
+  0x08                8
+  0x84 0x1e           542
+  0xac 0xbe 0x17      728855
+
+- ue(v) : unsigned integer 0-th order Exp-Golomb-coded (see HEVC
+  specification).
+
+- b(8) is an arbitrary byte.
+
+3) File format
+--------------
+
+3.1) Syntax
+-----------
+
+heic_file() {
+
+     file_magic                                                  u(32)
+
+     pixel_format                                                u(3)
+     alpha1_flag                                                 u(1)
+     bit_depth_minus_8                                           u(4)
+
+     color_space                                                 u(4)
+     extension_present_flag                                      u(1)
+     alpha2_flag                                                 u(1)
+     limited_range_flag                                          u(1)
+     animation_flag                                              u(1)
+     
+     picture_width                                               ue7(32)
+     picture_height                                              ue7(32)
+     
+     picture_data_length                                         ue7(32)
+     if (extension_present_flag)  
+         extension_data_length                                   ue7(32)
+         extension_data()
+     }
+
+     hevc_header_and_data()
+}
+
+extension_data() 
+{
+     while (more_bytes()) {
+         extension_tag                                           ue7(32)
+         extension_tag_length                                    ue7(32)
+         if (extension_tag == 5) {
+             animation_control_extension(extension_tag_length)
+         } else {
+             for(j = 0; j < extension_tag_length; j++) {
+                 extension_tag_data_byte                         b(8)
+             }
+         }
+     }
+}
+
+animation_control_extension(payload_length)
+{
+    loop_count                                                   ue7(16)
+    frame_period_num                                             ue7(16)
+    frame_period_den                                             ue7(16)
+    while (more_bytes()) {
+        dummy_byte                                               b(8)
+    }
+}
+
+hevc_header_and_data()
+{
+     if (alpha1_flag || alpha2_flag) {
+         hevc_header()
+     }
+     hevc_header()
+     hevc_data()
+}
+
+hevc_header()
+{
+     hevc_header_length                                          ue7(32)
+     log2_min_luma_coding_block_size_minus3                      ue(v)
+     log2_diff_max_min_luma_coding_block_size                    ue(v)
+     log2_min_transform_block_size_minus2                        ue(v)
+     log2_diff_max_min_transform_block_size                      ue(v)
+     max_transform_hierarchy_depth_intra                         ue(v)
+     sample_adaptive_offset_enabled_flag                         u(1)
+     pcm_enabled_flag                                            u(1)
+     if (pcm_enabled_flag) {
+         pcm_sample_bit_depth_luma_minus1                        u(4)
+         pcm_sample_bit_depth_chroma_minus1                      u(4)
+         log2_min_pcm_luma_coding_block_size_minus3              ue(v)
+         log2_diff_max_min_pcm_luma_coding_block_size            ue(v)
+         pcm_loop_filter_disabled_flag                           u(1)
+     }
+     strong_intra_smoothing_enabled_flag                         u(1)
+     sps_extension_present_flag                                  u(1)
+     if (sps_extension_present_flag) {
+         sps_range_extension_flag                                u(1)
+         sps_extension_7bits                                     u(7)     
+     }
+     if (sps_range_extension_flag) {
+         transform_skip_rotation_enabled_flag                    u(1)
+         transform_skip_context_enabled_flag                     u(1)
+         implicit_rdpcm_enabled_flag                             u(1)
+         explicit_rdpcm_enabled_flag                             u(1)
+         extended_precision_processing_flag                      u(1)
+         intra_smoothing_disabled_flag                           u(1)
+         high_precision_offsets_enabled_flag                     u(1)
+         persistent_rice_adaptation_enabled_flag                 u(1)
+         cabac_bypass_alignment_enabled_flag                     u(1)
+     }
+     trailing_bits                                               u(v)
+}
+
+hevc_data() 
+{
+     for(i = 0; i < v; i++) {
+         hevc_data_byte                                          b(8)
+     }
+}
+
+frame_duration_sei(payloadSize)
+{
+     frame_duration                                              u(16)
+}
+
+3.2) Semantics
+--------------
+
+     'file_magic' is defined as 0x425047fb.
+
+     'pixel_format' indicates the chroma subsampling:
+
+       0 : Grayscale
+       1 : 4:2:0. Chroma at position (0.5, 0.5) (JPEG chroma position)
+       2 : 4:2:2. Chroma at position (0.5, 0) (JPEG chroma position)
+       3 : 4:4:4
+       4 : 4:2:0. Chroma at position (0, 0.5) (MPEG2 chroma position)
+       5 : 4:2:2. Chroma at position (0, 0) (MPEG2 chroma position)
+
+       The other values are reserved.
+       
+     'alpha1_flag' and 'alpha2_flag' give information about the alpha plane:
+
+       alpha1_flag=0 alpha2_flag=0: no alpha plane.
+
+       alpha1_flag=1 alpha2_flag=0: alpha present. The color is not
+       premultiplied.
+        
+       alpha1_flag=1 alpha2_flag=1: alpha present. The color is
+       premultiplied. The resulting non-premultiplied R', G', B' shall
+       be recovered as:
+          
+         if A != 0 
+           R' = min(R / A, 1), G' = min(G / A, 1), B' = min(B / A, 1)
+         else
+           R' = G' = B' = 1 .
+         
+       alpha1_flag=0 alpha2_flag=1: the alpha plane is present and
+       contains the W color component (CMYK color). The resulting CMYK
+       data can be recovered as follows:
+
+         C = (1 - R), M = (1 - G), Y = (1 - B), K = (1 - W) .
+     
+       In case no color profile is specified, the sRGB color R'G'B'
+       shall be computed as: 
+
+         R' = R * W, G' = G * W, B' = B * W .
+
+     'bit_depth_minus_8' is the number of bits used for each component
+     minus 8. In this version of the specification, bit_depth_minus_8
+     <= 6.
+
+     'extension_present_flag' indicates that extension data are
+     present.
+
+     'color_space' specifies how to convert the color planes to
+     RGB. It must be 0 when pixel_format = 0 (grayscale):
+
+       0 : YCbCr (BT 601, same as JPEG and HEVC matrix_coeffs = 5)
+       1 : RGB (component order: G B R)
+       2 : YCgCo (same as HEVC matrix_coeffs = 8)
+       3 : YCbCr (BT 709, same as HEVC matrix_coeffs = 1)
+       4 : YCbCr (BT 2020 non constant luminance system, same as HEVC
+       matrix_coeffs = 9)
+       5 : reserved for BT 2020 constant luminance system, not
+       supported in this version of the specification.
+
+       The other values are reserved.
+
+       YCbCr is defined using the BT 601, BT 709 or BT 2020 conversion
+       matrices.
+
+       For RGB, G is stored as the Y plane. B in the Cb plane and R in
+       the Cr plane.
+
+       YCgCo is defined as HEVC matrix_coeffs = 8. Y is stored in the
+       Y plane. Cg in the Cb plane and Co in the Cr plane.
+       
+       If no color profile is present, the RGB output data are assumed
+       to be in the sRGB color space [6].
+
+     'limited_range_flag': opposite of the HEVC video_full_range_flag.
+     The value zero indicates that the full range of each color
+     component is used. The value one indicates that a limited range
+     is used:
+
+          - (16 << (bit_depth - 8) to (235 << (bit_depth - 8)) for Y
+     and G, B, R,
+          - (16 << (bit_depth - 8) to (240 << (bit_depth - 8)) for Cb and Cr.
+
+     For the YCgCo color space, the range limitation shall be done on
+     the RGB data.
+
+     The alpha (or W) plane always uses the full range.
+
+     'animation_flag'. The value '1' indicates that more than one
+     frame are encoded in the hevc data. The animation control
+     extension must be present. If the decoder does not support
+     animations, it shall decode the first frame only and ignore the
+     animation information.
+
+     'picture_width' is the picture width in pixels. The value 0 is
+     not allowed.
+
+     'picture_height' is the picture height in pixels. The value 0 is
+     not allowed.
+
+     'picture_data_length' is the picture data length in bytes. The
+     special value of zero indicates that the picture data goes up to
+     the end of the file.
+
+     'extension_data_length' is the extension data length in bytes.
+
+     'extension_data()' is the extension data.
+
+     'extension_tag' is the extension tag. The following values are defined:
+
+       1: EXIF data.
+
+       2: ICC profile (see [4])
+
+       3: XMP (see [5])
+
+       4: Thumbnail (the thumbnail shall be a lower resolution version
+       of the image and stored in BPG format).
+
+       5: Animation control data.
+
+     The decoder shall ignore the tags it does not support.
+
+     'extension_tag_length' is the length in bytes of the extension tag.
+
+     'loop_count' gives the number of times the animation shall be
+     played. The value of 0 means infinite.
+     
+     'frame_period_num' and 'frame_period_den' encode the default
+     delay between each frame as frame_period_num/frame_period_den
+     seconds. The value of 0 for 'frame_period_num' or
+     'frame_period_den' is forbidden.
+     
+     'hevc_header_length' is the length in bytes of the following data
+     up to and including 'trailing_bits'.
+     
+     'log2_min_luma_coding_block_size_minus3',
+     'log2_diff_max_min_luma_coding_block_size',
+     'log2_min_transform_block_size_minus2',
+     'log2_diff_max_min_transform_block_size',
+     'max_transform_hierarchy_depth_intra',
+     'sample_adaptive_offset_enabled_flag', 'pcm_enabled_flag',
+     'pcm_sample_bit_depth_luma_minus1',
+     'pcm_sample_bit_depth_chroma_minus1',
+     'log2_min_pcm_luma_coding_block_size_minus3',
+     'log2_diff_max_min_pcm_luma_coding_block_size',
+     'pcm_loop_filter_disabled_flag',
+     'strong_intra_smoothing_enabled_flag', 'sps_extension_flag'
+     'sps_extension_present_flag', 'sps_range_extension_flag'
+     'transform_skip_rotation_enabled_flag',
+     'transform_skip_context_enabled_flag',
+     'implicit_rdpcm_enabled_flag', 'explicit_rdpcm_enabled_flag',
+     'extended_precision_processing_flag',
+     'intra_smoothing_disabled_flag',
+     'high_precision_offsets_enabled_flag',
+     'persistent_rice_adaptation_enabled_flag',
+     'cabac_bypass_alignment_enabled_flag' are
+     the corresponding fields of the HEVC SPS syntax element.
+         
+     'trailing_bits' has a value of 0 and has a length from 0 to 7
+     bits so that the next data is byte aligned.
+
+     'hevc_data()' contains the corresponding HEVC picture data,
+     excluding the first NAL start code (i.e. the first 0x00 0x00 0x01
+     or 0x00 0x00 0x00 0x01 bytes). The VPS and SPS NALs shall not be
+     included in the HEVC picture data. The decoder can recover the
+     necessary fields from the header by doing the following
+     assumptions:
+
+     - vps_video_parameter_set_id = 0
+     - sps_video_parameter_set_id = 0
+     - sps_max_sub_layers = 1
+     - sps_seq_parameter_set_id = 0
+     - chroma_format_idc: for picture data: 
+         chroma_format_idc = pixel_format
+       for alpha data: 
+         chroma_format_idc = 0.
+     - separate_colour_plane_flag = 0
+     - pic_width_in_luma_samples = ceil(picture_width/cb_size) * cb_size
+     - pic_height_in_luma_samples = ceil(picture_height/cb_size) * cb_size
+       with cb_size = 1 << log2_min_luma_coding_block_size
+     - bit_depth_luma_minus8 = bit_depth_minus_8
+     - bit_depth_chroma_minus8 = bit_depth_minus_8
+     - max_transform_hierarchy_depth_inter = max_transform_hierarchy_depth_intra
+     - scaling_list_enabled_flag = 0
+     - log2_max_pic_order_cnt_lsb_minus4 = 4
+     - amp_enabled_flag = 1
+     - sps_temporal_mvp_enabled_flag = 1
+     
+
+     Alpha data encoding:
+
+     - If alpha data is present, all the corresponding NALs have
+       nuh_layer_id = 1. NALs for color data shall have nuh_layer_id =
+       0.
+     - Alpha data shall use the same tile sizes as color data and
+       shall have the same entropy_coding_sync_enabled_flag value as
+       color data.
+     - Alpha slices shall use the same number of coding units as color
+       slices and should be interleaved with color slices. alpha NALs
+       shall come before the corresponding color NALs.
+
+     Animation encoding:
+
+     - The optional prefix SEI with payloadType = 257 (defined in
+       frame_duration_sei()) specifies that the image must be repeated
+       'frame_duration' times. 'frame_duration' shall not be zero. If
+       the frame duration SEI is not present for a given frame,
+       frame_duration = 1 shall be assumed by the decoder. If alpha
+       data is present, the frame duration SEI shall be present only
+       for the color data.
+     
+3.3) HEVC Profile
+-----------------
+
+Conforming HEVC bit streams shall conform to the Main 4:4:4 16 Still
+Picture, Level 8.5 of the HEVC specification with the following
+modifications.
+
+- separate_colour_plane_flag shall be 0 when present.
+
+- bit_depth_luma_minus8 <= 6
+
+- bit_depth_chroma_minus8 = bit_depth_luma_minus8
+
+- explicit_rdpcm_enabled_flag = 0 (does not matter for intra frames)
+
+- extended_precision_processing_flag = 0
+
+- cabac_bypass_alignment_enabled_flag = 0
+
+- high_precision_offsets_enabled_flag = 0 (does not matter for intra frames)
+
+- If the encoded image is larger than the size indicated by
+picture_width and picture_height, the lower right part of the decoded
+image shall be cropped. If a horizontal (resp. vertical) decimation by
+two is done for the chroma and that the width (resp. height) is n
+pixels, ceil(n/2) pixels must be kept as the resulting chroma
+information.
+
+When animations are present, the next frames shall be encoded with the
+following changes:
+
+- P slices are allowed (but B slices are not allowed).
+
+- Only the previous picture can be used as reference (hence a DPB size
+  of 2 pictures).
+
+4) Design choices
+-----------------
+
+(This section is informative)
+
+- Our design principle was to keep the format as simple as possible
+  while taking the HEVC codec as basis. Our main metric to evaluate
+  the simplicity was the size of a software decoder which outputs 32
+  bit RGBA pixel data.
+
+- Pixel formats: we wanted to be able to convert JPEG images to BPG
+  with as little loss as possible. So supporting the same color space
+  (BT 601 YCbCr) with the same range (full range) and most of the
+  allowed JPEG chroma formats (4:4:4, 4:2:2, 4:2:0 or grayscale) was
+  mandatory to avoid going back to RGB or doing a subsampling or
+  interpolation.
+
+- Alpha support: alpha support is mandatory. We chose to use a
+  separate HEVC monochrome plane to handle it instead of another
+  format to simplify the decoder. The color is either
+  non-premultiplied or premultiplied. Premultiplied alpha usually
+  gives a better compression. Non-premultiplied alpha is supported in
+  case no loss is needed on the color components. In order to allow
+  progressive display, the alpha and color data are interleaved (the
+  nuh_layed_id NAL field is 0 for color data and 1 for alpha
+  data). The alpha and color slices should contain the same number of
+  coding units and each alpha slice should come before the
+  corresponding color slice. Since alpha slices are usually smaller
+  than color slices, it allows a progressive display even if there is
+  a single slice.
+
+- Color spaces: In addition to YCbCr, RGB is supported for the high
+  quality or lossless cases. YCgCo is supported because it may give
+  slightly better results than YCbCr for high quality images. CMYK is
+  supported so that JPEGs containing this color space can be
+  converted. The alpha plane is used to store the W (1-K) plane. The
+  data is stored with inverted components (1-X) so that the conversion
+  to RGB is simplified. The support of the BT 709 and BT 2020 (non
+  constant luminance) YCbCr encodings and of the limited range color
+  values were added to reduce the losses when converting video frames.
+
+- Bit depth: we decided to support the HEVC bit depths 8 to 14. The
+  added complexity is small and it allows to support high quality
+  pictures from cameras.
+
+- Picture file format: keeping a completely standard HEVC stream would
+  have meant a more difficult parsing for the picture header which is
+  a problem for the various image utilities to get the basic picture
+  information (pixel format, width, height). So we added a small
+  header before the HEVC bit stream. The picture header is byte
+  oriended so it is easy to parse.
+
+- HEVC bit stream: the standard HEVC headers (the VPS and SPS NALs)
+  give an overhead of about 60 bytes for no added value in the case of
+  picture compression. Since the alpha plane uses a different HEVC bit
+  stream, it also adds the same overhead again. So we removed the VPS
+  and SPS NALs and added a very small header with the equivalent
+  information (typically 4 bytes). We also removed the first NAL start
+  code which is not useful. It is still possible to reconstruct a
+  standard HEVC stream to feed an unmodified hardware decoder if needed.
+
+- Extensions: the metadata are stored at the beginning of the file so
+  that they can be read at the same time as the header. Since metadata
+  tend to evolve faster than the image formats, we left room for
+  extension by using a (tag, lengh) representation. The decoder can
+  easily skip all the metadata because their length is explicitly
+  stored in the image header.
+
+- Animations: they are interesting compared to WebM or MP4 short
+  videos for the following reasons:
+    * transparency is supported
+    * lossless encoding is supported
+    * the decoding resources are smaller than with a generic video
+      player because only two frames need to be stored (DPB size = 2).
+    * the animations are expected to be small so the decoder can cache
+      all the decoded frames in memory.
+    * the animation can be decoded as a still image if the decoder
+      does not support animations.
+  Compared to the other animated image formats (GIF, APNG, WebP), the
+  compression ratio is usually much higher because of the HEVC inter
+  frame prediction.
+
+5) References
+-------------
+
+[1] High efficiency video coding (HEVC) version 2 (ITU-T Recommendation H.265)
+
+[2] JPEG File Interchange Format version 1.02 ( http://www.w3.org/Graphics/JPEG/jfif3.pdf )
+
+[3] EXIF version 2.2 (JEITA CP-3451)
+
+[4] The International Color Consortium ( http://www.color.org/ )
+
+[5] Extensible Metadata Platform (XMP) http://www.adobe.com/devnet/xmp.html
+
+[6] sRGB color space, IEC 61966-2-1

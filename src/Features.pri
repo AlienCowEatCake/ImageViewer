@@ -84,6 +84,13 @@ disable_zlib {
 #    system_libwebp
 
 
+# libbpg options:
+#    disable_libbpg
+#    system_libbpg
+win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+    CONFIG += disable_libbpg # FIXME: C99
+}
+
 # ::::: Optional Third Party Components Configuration :::::
 
 # QtExtended options:

@@ -72,6 +72,7 @@ int GetDecoderPriority(const IDecoder *decoder)
         PD("DecoderQtImageFormatsMovie" , 1200);    ///< Умеет анимированные mng.
         PD("DecoderLibPng"              , 1300);    ///< Умеет анимированные png. Поддерживает EXIF и ICCP.
         PD("DecoderLibWebP"             , 1310);    ///< Умеет анимированные webp. Поддержка лучше, чем в QtImageFormatsMovie.
+        PD("DecoderLibBpg"              , 1320);    ///< Умеет анимированные bpg. Поддерживает EXIF и ICCP.
         /// @note Декодеры векторных изображений
         PD("DecoderQtSVG"               , 2100);    ///< Умеет svg, но очень плохо.
         PD("DecoderMacWebKit"           , 2200);    ///< Умеет неинтерактивные svg.
