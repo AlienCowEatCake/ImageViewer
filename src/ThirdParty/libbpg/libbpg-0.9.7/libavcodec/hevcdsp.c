@@ -319,7 +319,4 @@ int i = 0;
         break;
     }
 #endif /* USE_VAR_BIT_DEPTH */
-
-    if (ARCH_X86)
-        ff_hevc_dsp_init_x86(hevcdsp, bit_depth);
 }

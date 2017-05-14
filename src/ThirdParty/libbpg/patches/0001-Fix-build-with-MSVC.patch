@@ -1,0 +1,170 @@
+From d1397559550c3751fb45f72d3d76b43adf993487 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 14 May 2017 22:37:31 +0700
+Subject: [PATCH] Fix build with MSVC
+
+---
+ libavcodec/hevcdsp.c  |    3 ---
+ libavcodec/hevcdsp.h  |    2 --
+ libavcodec/videodsp.c |    9 ---------
+ libavcodec/videodsp.h |    6 ------
+ libavutil/atomic.h    |   39 +++++++++++++++++++++------------------
+ libavutil/internal.h  |    5 -----
+ 6 files changed, 21 insertions(+), 43 deletions(-)
+
+diff --git a/libavcodec/hevcdsp.c b/libavcodec/hevcdsp.c
+index 4dda2e8..b503b8e 100644
+--- a/libavcodec/hevcdsp.c
++++ b/libavcodec/hevcdsp.c
+@@ -319,7 +319,4 @@ int i = 0;
+         break;
+     }
+ #endif /* USE_VAR_BIT_DEPTH */
+-
+-    if (ARCH_X86)
+-        ff_hevc_dsp_init_x86(hevcdsp, bit_depth);
+ }
+diff --git a/libavcodec/hevcdsp.h b/libavcodec/hevcdsp.h
+index 7b5dd00..d36c684 100644
+--- a/libavcodec/hevcdsp.h
++++ b/libavcodec/hevcdsp.h
+@@ -135,8 +135,6 @@ void ff_hevc_dsp_init(HEVCDSPContext *hpc, int bit_depth);
+ extern const int8_t ff_hevc_epel_filters[7][4];
+ extern const int8_t ff_hevc_qpel_filters[3][16];
+ 
+-void ff_hevc_dsp_init_x86(HEVCDSPContext *c, const int bit_depth);
+-
+ #ifdef CONFIG_SMALL
+ void hevc_transform_init(void);
+ #endif
+diff --git a/libavcodec/videodsp.c b/libavcodec/videodsp.c
+index 46a35e1..6228b7a 100644
+--- a/libavcodec/videodsp.c
++++ b/libavcodec/videodsp.c
+@@ -62,15 +62,6 @@ av_cold void ff_videodsp_init(VideoDSPContext *ctx, int bpc)
+     ctx->emulated_edge_mc = ff_emulated_edge_mc_8;
+ #endif
+ #endif /* !USE_FULL */
+-
+-    if (ARCH_AARCH64)
+-        ff_videodsp_init_aarch64(ctx, bpc);
+-    if (ARCH_ARM)
+-        ff_videodsp_init_arm(ctx, bpc);
+-    if (ARCH_PPC)
+-        ff_videodsp_init_ppc(ctx, bpc);
+-    if (ARCH_X86)
+-        ff_videodsp_init_x86(ctx, bpc);
+ }
+ 
+ #endif
+diff --git a/libavcodec/videodsp.h b/libavcodec/videodsp.h
+index fc01a31..9c161e3 100644
+--- a/libavcodec/videodsp.h
++++ b/libavcodec/videodsp.h
+@@ -78,10 +78,4 @@ typedef struct VideoDSPContext {
+ 
+ void ff_videodsp_init(VideoDSPContext *ctx, int bpc);
+ 
+-/* for internal use only (i.e. called by ff_videodsp_init() */
+-void ff_videodsp_init_aarch64(VideoDSPContext *ctx, int bpc);
+-void ff_videodsp_init_arm(VideoDSPContext *ctx, int bpc);
+-void ff_videodsp_init_ppc(VideoDSPContext *ctx, int bpc);
+-void ff_videodsp_init_x86(VideoDSPContext *ctx, int bpc);
+-
+ #endif /* AVCODEC_VIDEODSP_H */
+diff --git a/libavutil/atomic.h b/libavutil/atomic.h
+index 15906d2..f0fe06c 100644
+--- a/libavutil/atomic.h
++++ b/libavutil/atomic.h
+@@ -23,18 +23,6 @@
+ 
+ #include "config.h"
+ 
+-#if HAVE_ATOMICS_NATIVE
+-
+-#if HAVE_ATOMICS_GCC
+-#include "atomic_gcc.h"
+-#elif HAVE_ATOMICS_WIN32
+-#include "atomic_win32.h"
+-#elif HAVE_ATOMICS_SUNCC
+-#include "atomic_suncc.h"
+-#endif
+-
+-#else
+-
+ /**
+  * Load the current value stored in an atomic integer.
+  *
+@@ -42,7 +30,10 @@
+  * @return the current value of the atomic integer
+  * @note This acts as a memory barrier.
+  */
+-int avpriv_atomic_int_get(volatile int *ptr);
++static inline int avpriv_atomic_int_get(volatile int *ptr)
++{
++    return *ptr;
++}
+ 
+ /**
+  * Store a new value in an atomic integer.
+@@ -51,7 +42,10 @@ int avpriv_atomic_int_get(volatile int *ptr);
+  * @param val the value to store in the atomic integer
+  * @note This acts as a memory barrier.
+  */
+-void avpriv_atomic_int_set(volatile int *ptr, int val);
++static inline void avpriv_atomic_int_set(volatile int *ptr, int val)
++{
++    *ptr = val;
++}
+ 
+ /**
+  * Add a value to an atomic integer.
+@@ -62,7 +56,11 @@ void avpriv_atomic_int_set(volatile int *ptr, int val);
+  * @note This does NOT act as a memory barrier. This is primarily
+  *       intended for reference counting.
+  */
+-int avpriv_atomic_int_add_and_fetch(volatile int *ptr, int inc);
++static inline int avpriv_atomic_int_add_and_fetch(volatile int *ptr, int inc)
++{
++    *ptr += inc;
++    return *ptr;
++}
+ 
+ /**
+  * Atomic pointer compare and swap.
+@@ -72,8 +70,13 @@ int avpriv_atomic_int_add_and_fetch(volatile int *ptr, int inc);
+  * @param newval value to replace *ptr with
+  * @return the value of *ptr before comparison
+  */
+-void *avpriv_atomic_ptr_cas(void * volatile *ptr, void *oldval, void *newval);
+-
+-#endif /* HAVE_ATOMICS_NATIVE */
++static inline void *avpriv_atomic_ptr_cas(void * volatile *ptr, void *oldval, void *newval)
++{
++    if (*ptr == oldval) {
++        *ptr = newval;
++        return oldval;
++    }
++    return *ptr;
++}
+ 
+ #endif /* AVUTIL_ATOMIC_H */
+diff --git a/libavutil/internal.h b/libavutil/internal.h
+index 4565276..5629419 100644
+--- a/libavutil/internal.h
++++ b/libavutil/internal.h
+@@ -167,11 +167,6 @@
+ 
+ #include "libm.h"
+ 
+-#if defined(_MSC_VER)
+-#pragma comment(linker, "/include:"EXTERN_PREFIX"avpriv_strtod")
+-#pragma comment(linker, "/include:"EXTERN_PREFIX"avpriv_snprintf")
+-#endif
+-
+ /**
+  * Return NULL if CONFIG_SMALL is true, otherwise the argument
+  * without modification. Used to disable the definition of strings
+-- 
+1.7.9
+

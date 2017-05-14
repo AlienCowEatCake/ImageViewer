@@ -65,6 +65,7 @@ quint16 GetExifOrientation(const QString &filePath)
         qDebug() << "EXIF orientation =" << orientation;
         return orientation;
     }
+    return 1;
 #else
     Q_UNUSED(filePath);
     return 1;

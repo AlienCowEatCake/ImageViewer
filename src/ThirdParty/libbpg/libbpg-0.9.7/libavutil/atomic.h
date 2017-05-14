@@ -23,18 +23,6 @@
 
 #include "config.h"
 
-#if HAVE_ATOMICS_NATIVE
-
-#if HAVE_ATOMICS_GCC
-#include "atomic_gcc.h"
-#elif HAVE_ATOMICS_WIN32
-#include "atomic_win32.h"
-#elif HAVE_ATOMICS_SUNCC
-#include "atomic_suncc.h"
-#endif
-
-#else
-
 /**
  * Load the current value stored in an atomic integer.
  *
@@ -42,7 +30,10 @@
  * @return the current value of the atomic integer
  * @note This acts as a memory barrier.
  */
-int avpriv_atomic_int_get(volatile int *ptr);
+static inline int avpriv_atomic_int_get(volatile int *ptr)
+{
+    return *ptr;
+}
 
 /**
  * Store a new value in an atomic integer.
@@ -51,7 +42,10 @@ int avpriv_atomic_int_get(volatile int *ptr);
  * @param val the value to store in the atomic integer
  * @note This acts as a memory barrier.
  */
-void avpriv_atomic_int_set(volatile int *ptr, int val);
+static inline void avpriv_atomic_int_set(volatile int *ptr, int val)
+{
+    *ptr = val;
+}
 
 /**
  * Add a value to an atomic integer.
@@ -62,7 +56,11 @@ void avpriv_atomic_int_set(volatile int *ptr, int val);
  * @note This does NOT act as a memory barrier. This is primarily
  *       intended for reference counting.
  */
-int avpriv_atomic_int_add_and_fetch(volatile int *ptr, int inc);
+static inline int avpriv_atomic_int_add_and_fetch(volatile int *ptr, int inc)
+{
+    *ptr += inc;
+    return *ptr;
+}
 
 /**
  * Atomic pointer compare and swap.
@@ -72,8 +70,13 @@ int avpriv_atomic_int_add_and_fetch(volatile int *ptr, int inc);
  * @param newval value to replace *ptr with
  * @return the value of *ptr before comparison
  */
-void *avpriv_atomic_ptr_cas(void * volatile *ptr, void *oldval, void *newval);
-
-#endif /* HAVE_ATOMICS_NATIVE */
+static inline void *avpriv_atomic_ptr_cas(void * volatile *ptr, void *oldval, void *newval)
+{
+    if (*ptr == oldval) {
+        *ptr = newval;
+        return oldval;
+    }
+    return *ptr;
+}
 
 #endif /* AVUTIL_ATOMIC_H */
