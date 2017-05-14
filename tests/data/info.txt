@@ -33,6 +33,37 @@ Images from https://en.wikipedia.org/wiki/APNG
 
 --------------------------------------------------------------------------------
 
+::: BPG test images :::
+
+Images from https://bellard.org/bpg/gallery3.html
+ * bpg_decoding_tests/042-10b.bpg
+ * bpg_decoding_tests/042-12b.bpg
+ * bpg_decoding_tests/042-14b.bpg
+ * bpg_decoding_tests/042-420v.bpg
+ * bpg_decoding_tests/042-422.bpg
+ * bpg_decoding_tests/042-422v.bpg
+ * bpg_decoding_tests/042-444.bpg
+ * bpg_decoding_tests/042-bt2020.bpg
+ * bpg_decoding_tests/042-bt601-l.bpg
+ * bpg_decoding_tests/042-bt601.bpg
+ * bpg_decoding_tests/042-bt709.bpg
+ * bpg_decoding_tests/042-gray-l.bpg
+ * bpg_decoding_tests/042-gray.bpg
+ * bpg_decoding_tests/042-rgb-l.bpg
+ * bpg_decoding_tests/042-rgb.bpg
+ * bpg_decoding_tests/042-ycgco-l.bpg
+ * bpg_decoding_tests/042-ycgco.bpg
+ * bpg_decoding_tests/3-320.bpg
+ * bpg_decoding_tests/3-320p.bpg
+ * bpg_decoding_tests/CMYK.bpg
+
+Images from https://bellard.org/bpg/animation.html
+ * bpg_animation_tests/cinemagraph-6.bpg
+ * bpg_animation_tests/clock.bpg
+ * bpg_animation_tests/pyani.bpg
+
+--------------------------------------------------------------------------------
+
 ::: GIF test images :::
 
 Images from http://littlesvr.ca/apng/gif_apng_webp.html
