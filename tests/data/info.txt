@@ -73,6 +73,12 @@ Images from https://issues.apache.org/jira/browse/TIKA-1491
  * TIKA-1491/testJPEG_commented_xnviewmp026.bpg
  * TIKA-1491/testJPEG_oddTagComponent.bpg
 
+Test image which was created during the development of this project
+ * exif_rotate90.bpg
+
+Image from http://regex.info/blog/photo-tech/color-spaces-page1 (converted to bpg)
+ * sample-wonky.profile.bpg
+
 --------------------------------------------------------------------------------
 
 ::: GIF test images :::
