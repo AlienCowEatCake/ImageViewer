@@ -70,6 +70,7 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
     BPGImageInfo imageInfo;
 
     decoderContext = bpg_decoder_open();
+    bpg_decoder_keep_extension_data(decoderContext, 1);
     if(bpg_decoder_decode(decoderContext, reinterpret_cast<const uint8_t*>(inBuffer.constData()), inBuffer.size()) < 0)
     {
         qWarning() << "Can't bpg_decoder_decode for" << filePath;
@@ -77,6 +78,76 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
         return false;
     }
     bpg_decoder_get_info(decoderContext, &imageInfo);
+
+    /// @attention BEGIN DEBUG ROUTINES
+
+    static const char *format_str[6] = {
+        "Gray",
+        "4:2:0",
+        "4:2:2",
+        "4:4:4",
+        "4:2:0_video",
+        "4:2:2_video",
+    };
+    static const char *color_space_str[BPG_CS_COUNT] = {
+        "YCbCr",
+        "RGB",
+        "YCgCo",
+        "YCbCr_BT709",
+        "YCbCr_BT2020",
+    };
+    static const char *extension_tag_str[] = {
+        "Unknown",
+        "EXIF",
+        "ICC profile",
+        "XMP",
+        "Thumbnail",
+        "Animation control",
+    };
+
+    BPGExtensionData *first_md = bpg_decoder_get_extension_data(decoderContext);
+
+    qDebug() << QString::fromLatin1("size=%1x%2 color_space=%3")
+                .arg(imageInfo.width)
+                .arg(imageInfo.height)
+                .arg(QString::fromLatin1(imageInfo.format == BPG_FORMAT_GRAY ? "Gray" : color_space_str[imageInfo.color_space]))
+                .toLatin1().data();
+    if(imageInfo.has_w_plane)
+        qDebug() << QString::fromLatin1("w_plane=%1")
+                    .arg(imageInfo.has_w_plane)
+                    .toLatin1().data();
+    if(imageInfo.has_alpha)
+        qDebug() << QString::fromLatin1("alpha=%1 premul=%2")
+                    .arg(imageInfo.has_alpha)
+                    .arg(imageInfo.premultiplied_alpha)
+                    .toLatin1().data();
+    qDebug() << QString::fromLatin1("format=%1 limited_range=%2 bit_depth=%3 animation=%4")
+                .arg(QString::fromLatin1(format_str[imageInfo.format]))
+                .arg(imageInfo.limited_range)
+                .arg(imageInfo.bit_depth)
+                .arg(imageInfo.has_animation)
+                .toLatin1().data();
+
+    if(first_md)
+    {
+        const char *tag_name;
+        qDebug() << "Extension data:";
+        for(BPGExtensionData *md = first_md; md != NULL; md = md->next)
+        {
+            if(md->tag <= 5)
+                tag_name = extension_tag_str[md->tag];
+            else
+                tag_name = extension_tag_str[0];
+            qDebug() << QString::fromLatin1("tag=%1 (%2) length=%3")
+                        .arg(md->tag)
+                        .arg(QString::fromLatin1(tag_name))
+                        .arg(md->buf_len)
+                        .toLatin1().data();
+        }
+    }
+
+    /// @attention END DEBUG ROUTINES
+
     for(m_numFrames = 0; ; m_numFrames++)
     {
         if(bpg_decoder_start(decoderContext, BPG_OUTPUT_FORMAT_RGBA32) < 0)
@@ -104,95 +175,6 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
     bpg_decoder_close(decoderContext);
     return true;
 }
-
-
-//void bpgShowInfo(const char *filename, int show_extensions)
-//{
-//    uint8_t *buf;
-//    int buf_len, ret, buf_len_max;
-//    FILE *f;
-//    BPGImageInfo p_s, *p = &p_s;
-//    BPGExtensionData *first_md, *md;
-//    static const char *format_str[6] = {
-//        "Gray",
-//        "4:2:0",
-//        "4:2:2",
-//        "4:4:4",
-//        "4:2:0_video",
-//        "4:2:2_video",
-//    };
-//    static const char *color_space_str[BPG_CS_COUNT] = {
-//        "YCbCr",
-//        "RGB",
-//        "YCgCo",
-//        "YCbCr_BT709",
-//        "YCbCr_BT2020",
-//    };
-//    static const char *extension_tag_str[] = {
-//        "Unknown",
-//        "EXIF",
-//        "ICC profile",
-//        "XMP",
-//        "Thumbnail",
-//        "Animation control",
-//    };
-
-//    f = fopen(filename, "rb");
-//    if (!f) {
-//        fprintf(stderr, "Could not open %s\n", filename);
-//        exit(1);
-//    }
-
-//    if (show_extensions) {
-//        fseek(f, 0, SEEK_END);
-//        buf_len_max = ftell(f);
-//        fseek(f, 0, SEEK_SET);
-//    } else {
-//        /* if no extension are shown, just need the header */
-//        buf_len_max = BPG_DECODER_INFO_BUF_SIZE;
-//    }
-//    buf = malloc(buf_len_max);
-//    buf_len = fread(buf, 1, buf_len_max, f);
-
-//    ret = bpg_decoder_get_info_from_buf(p, show_extensions ? &first_md : NULL,
-//                                        buf, buf_len);
-//    free(buf);
-//    fclose(f);
-//    if (ret < 0) {
-//        fprintf(stderr, "Not a BPG image\n");
-//        exit(1);
-//    }
-//    printf("size=%dx%d color_space=%s",
-//           p->width, p->height,
-//           p->format == BPG_FORMAT_GRAY ? "Gray" : color_space_str[p->color_space]);
-//    if (p->has_w_plane) {
-//        printf(" w_plane=%d", p->has_w_plane);
-//    }
-//    if (p->has_alpha) {
-//        printf(" alpha=%d premul=%d",
-//               p->has_alpha, p->premultiplied_alpha);
-//    }
-//    printf(" format=%s limited_range=%d bit_depth=%d animation=%d\n",
-//           format_str[p->format],
-//           p->limited_range,
-//           p->bit_depth,
-//           p->has_animation);
-
-//    if (first_md) {
-//        const char *tag_name;
-//        printf("Extension data:\n");
-//        for(md = first_md; md != NULL; md = md->next) {
-//            if (md->tag <= 5)
-//                tag_name = extension_tag_str[md->tag];
-//            else
-//                tag_name = extension_tag_str[0];
-//            printf("  tag=%d (%s) length=%d\n",
-//                   md->tag, tag_name, md->buf_len);
-//        }
-//        bpg_decoder_free_extension_data(first_md);
-//    }
-//}
-
 
 // ====================================================================================================
 
