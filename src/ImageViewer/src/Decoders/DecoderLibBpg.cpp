@@ -29,11 +29,14 @@ extern "C" {
 #include <QByteArray>
 #include <QDebug>
 
+#include "Utils/ScopedPointer.h"
+
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/AnimationUtils.h"
 #include "Internal/Animation/FrameCompositor.h"
+#include "Internal/CmsUtils.h"
 
 namespace {
 
@@ -148,6 +151,20 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
 
     /// @attention END DEBUG ROUTINES
 
+    QScopedPointer<ICCProfile> profile;
+    for(BPGExtensionData *extension = bpg_decoder_get_extension_data(decoderContext); extension != NULL; extension = extension->next)
+    {
+        switch(extension->tag)
+        {
+        case BPG_EXTENSION_TAG_ICCP:
+            qDebug() << "Found ICCP metadata";
+            profile.reset(new ICCProfile(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf), static_cast<int>(extension->buf_len))));
+            break;
+        default:
+            break;
+        }
+    }
+
     for(m_numFrames = 0; ; m_numFrames++)
     {
         if(bpg_decoder_start(decoderContext, BPG_OUTPUT_FORMAT_RGBA32) < 0)
@@ -170,6 +187,8 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
             *(imageData++) = qRgba(rawPixelData[0], rawPixelData[1], rawPixelData[2], rawPixelData[3]);
         }
 #endif
+        if(profile)
+            profile->applyToImage(&frame);
         m_frames.push_back(Frame(frame, delayNum * 1000 / delayDen));
     }
     bpg_decoder_close(decoderContext);
