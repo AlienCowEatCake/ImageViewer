@@ -204,6 +204,8 @@ bool PngAnimationProvider::readPng()
                                         &nextFrameOffsetX, &nextFrameOffsetY,
                                         &nextFrameDelayNum, &nextFrameDelayDen,
                                         &nextFrameDisposeOp, &nextFrameBlendOp);
+                if(nextFrameDelayDen == 0)
+                    nextFrameDelayDen = 1;
             }
             if(count == firstFrameNumber)
             {

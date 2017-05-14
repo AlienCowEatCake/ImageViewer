@@ -105,8 +105,16 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
     {
         if(bpg_decoder_start(decoderContext, BPG_OUTPUT_FORMAT_RGBA32) < 0)
             break;
-        int delayNum, delayDen;
+
+        int delayNum = 0, delayDen = 0;
         bpg_decoder_get_frame_duration(decoderContext, &delayNum, &delayDen);
+        if(delayNum < 0)
+            delayNum = -delayNum;
+        if(delayDen < 0)
+            delayDen = -delayDen;
+        else if(delayDen == 0)
+            delayDen = 1;
+
         QImage frame(static_cast<int>(imageInfo.width), static_cast<int>(imageInfo.height),
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
                      QImage::Format_RGBA8888);
@@ -123,9 +131,11 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
             *(imageData++) = qRgba(rawPixelData[0], rawPixelData[1], rawPixelData[2], rawPixelData[3]);
         }
 #endif
+
         if(profile)
             profile->applyToImage(&frame);
         ExifUtils::ApplyExifOrientation(&frame, orientation);
+
         m_frames.push_back(Frame(frame, delayNum * 1000 / delayDen));
     }
     bpg_decoder_close(decoderContext);
