@@ -37,6 +37,7 @@ extern "C" {
 #include "Internal/Animation/AnimationUtils.h"
 #include "Internal/Animation/FrameCompositor.h"
 #include "Internal/CmsUtils.h"
+#include "Internal/ExifUtils.h"
 
 namespace {
 
@@ -82,76 +83,8 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
     }
     bpg_decoder_get_info(decoderContext, &imageInfo);
 
-    /// @attention BEGIN DEBUG ROUTINES
-
-    static const char *format_str[6] = {
-        "Gray",
-        "4:2:0",
-        "4:2:2",
-        "4:4:4",
-        "4:2:0_video",
-        "4:2:2_video",
-    };
-    static const char *color_space_str[BPG_CS_COUNT] = {
-        "YCbCr",
-        "RGB",
-        "YCgCo",
-        "YCbCr_BT709",
-        "YCbCr_BT2020",
-    };
-    static const char *extension_tag_str[] = {
-        "Unknown",
-        "EXIF",
-        "ICC profile",
-        "XMP",
-        "Thumbnail",
-        "Animation control",
-    };
-
-    BPGExtensionData *first_md = bpg_decoder_get_extension_data(decoderContext);
-
-    qDebug() << QString::fromLatin1("size=%1x%2 color_space=%3")
-                .arg(imageInfo.width)
-                .arg(imageInfo.height)
-                .arg(QString::fromLatin1(imageInfo.format == BPG_FORMAT_GRAY ? "Gray" : color_space_str[imageInfo.color_space]))
-                .toLatin1().data();
-    if(imageInfo.has_w_plane)
-        qDebug() << QString::fromLatin1("w_plane=%1")
-                    .arg(imageInfo.has_w_plane)
-                    .toLatin1().data();
-    if(imageInfo.has_alpha)
-        qDebug() << QString::fromLatin1("alpha=%1 premul=%2")
-                    .arg(imageInfo.has_alpha)
-                    .arg(imageInfo.premultiplied_alpha)
-                    .toLatin1().data();
-    qDebug() << QString::fromLatin1("format=%1 limited_range=%2 bit_depth=%3 animation=%4")
-                .arg(QString::fromLatin1(format_str[imageInfo.format]))
-                .arg(imageInfo.limited_range)
-                .arg(imageInfo.bit_depth)
-                .arg(imageInfo.has_animation)
-                .toLatin1().data();
-
-    if(first_md)
-    {
-        const char *tag_name;
-        qDebug() << "Extension data:";
-        for(BPGExtensionData *md = first_md; md != NULL; md = md->next)
-        {
-            if(md->tag <= 5)
-                tag_name = extension_tag_str[md->tag];
-            else
-                tag_name = extension_tag_str[0];
-            qDebug() << QString::fromLatin1("tag=%1 (%2) length=%3")
-                        .arg(md->tag)
-                        .arg(QString::fromLatin1(tag_name))
-                        .arg(md->buf_len)
-                        .toLatin1().data();
-        }
-    }
-
-    /// @attention END DEBUG ROUTINES
-
     QScopedPointer<ICCProfile> profile;
+    quint16 orientation = 1;
     for(BPGExtensionData *extension = bpg_decoder_get_extension_data(decoderContext); extension != NULL; extension = extension->next)
     {
         switch(extension->tag)
@@ -159,6 +92,10 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
         case BPG_EXTENSION_TAG_ICCP:
             qDebug() << "Found ICCP metadata";
             profile.reset(new ICCProfile(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf), static_cast<int>(extension->buf_len))));
+            break;
+        case BPG_EXTENSION_TAG_EXIF:
+            qDebug() << "Found EXIF metadata";
+            orientation = ExifUtils::GetExifOrientation(QByteArray("Exif\0", 5) + QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf), static_cast<int>(extension->buf_len)));
             break;
         default:
             break;
@@ -189,6 +126,7 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
 #endif
         if(profile)
             profile->applyToImage(&frame);
+        ExifUtils::ApplyExifOrientation(&frame, orientation);
         m_frames.push_back(Frame(frame, delayNum * 1000 / delayDen));
     }
     bpg_decoder_close(decoderContext);
