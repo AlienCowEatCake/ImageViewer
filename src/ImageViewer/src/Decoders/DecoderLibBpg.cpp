@@ -31,13 +31,80 @@ extern "C" {
 
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
-#include "Internal/Animation/IAnimationProvider.h"
+#include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/AnimationUtils.h"
 #include "Internal/Animation/FrameCompositor.h"
 
 namespace {
 
 // ====================================================================================================
+
+class BpgAnimationProvider : public AbstractAnimationProvider
+{
+public:
+    BpgAnimationProvider(const QString &filePath);
+
+private:
+    bool readBpg(const QString &filePath);
+};
+
+// ====================================================================================================
+
+BpgAnimationProvider::BpgAnimationProvider(const QString &filePath)
+{
+    m_error = !readBpg(filePath);
+}
+
+bool BpgAnimationProvider::readBpg(const QString &filePath)
+{
+    QFile inFile(filePath);
+    if(!inFile.open(QIODevice::ReadOnly))
+    {
+        qWarning() << "Can't open" << filePath;
+        return false;
+    }
+    QByteArray inBuffer = inFile.readAll();
+    inFile.close();
+
+    BPGDecoderContext *decoderContext;
+    BPGImageInfo imageInfo;
+
+    decoderContext = bpg_decoder_open();
+    if(bpg_decoder_decode(decoderContext, reinterpret_cast<const uint8_t*>(inBuffer.constData()), inBuffer.size()) < 0)
+    {
+        qWarning() << "Can't bpg_decoder_decode for" << filePath;
+        bpg_decoder_close(decoderContext);
+        return false;
+    }
+    bpg_decoder_get_info(decoderContext, &imageInfo);
+    for(m_numFrames = 0; ; m_numFrames++)
+    {
+        if(bpg_decoder_start(decoderContext, BPG_OUTPUT_FORMAT_RGBA32) < 0)
+            break;
+        int delayNum, delayDen;
+        bpg_decoder_get_frame_duration(decoderContext, &delayNum, &delayDen);
+        QImage frame(static_cast<int>(imageInfo.width), static_cast<int>(imageInfo.height),
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+                     QImage::Format_RGBA8888);
+#else
+                     QImage::Format_ARGB32);
+#endif
+        for(int y = 0; y < frame.height(); y++)
+            bpg_decoder_get_line(decoderContext, reinterpret_cast<uint8_t*>(frame.bits()) + y * frame.bytesPerLine());
+#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
+        QRgb *imageData = reinterpret_cast<QRgb*>(frame.bits());
+        for(int i = 0; i < frame.width() * frame.height(); i++)
+        {
+            uchar *rawPixelData = reinterpret_cast<uchar*>(imageData);
+            *(imageData++) = qRgba(rawPixelData[0], rawPixelData[1], rawPixelData[2], rawPixelData[3]);
+        }
+#endif
+        m_frames.push_back(Frame(frame, delayNum * 1000 / delayDen));
+    }
+    bpg_decoder_close(decoderContext);
+    return true;
+}
+
 
 //void bpgShowInfo(const char *filename, int show_extensions)
 //{
@@ -148,8 +215,7 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
-//        return AnimationUtils::CreateGraphicsItem(new WebPAnimationProvider(filePath));
-        return NULL;
+        return AnimationUtils::CreateGraphicsItem(new BpgAnimationProvider(filePath));
     }
 };
 

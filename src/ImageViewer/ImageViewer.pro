@@ -141,7 +141,7 @@ HEADERS += \
 
 !disable_libbpg {
     SOURCES += \
-        src/Decoders/DecoderLibBPG.cpp
+        src/Decoders/DecoderLibBpg.cpp
 }
 
 TRANSLATIONS += \
