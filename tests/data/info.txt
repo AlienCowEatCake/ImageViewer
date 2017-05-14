@@ -62,6 +62,17 @@ Images from https://bellard.org/bpg/animation.html
  * bpg_animation_tests/clock.bpg
  * bpg_animation_tests/pyani.bpg
 
+Images from https://issues.apache.org/jira/browse/TIKA-1491
+ * TIKA-1491/testJPEG.bpg
+ * TIKA-1491/testJPEG_EXIF.bpg
+ * TIKA-1491/testJPEG_EXIF_emptyDateTime.bpg
+ * TIKA-1491/testJPEG_GEO.bpg
+ * TIKA-1491/testJPEG_GEO_2.bpg
+ * TIKA-1491/testJPEG_commented.bpg
+ * TIKA-1491/testJPEG_commented_pspcs2mac.bpg
+ * TIKA-1491/testJPEG_commented_xnviewmp026.bpg
+ * TIKA-1491/testJPEG_oddTagComponent.bpg
+
 --------------------------------------------------------------------------------
 
 ::: GIF test images :::
