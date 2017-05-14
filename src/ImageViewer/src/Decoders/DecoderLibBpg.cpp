@@ -35,7 +35,6 @@ extern "C" {
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/AnimationUtils.h"
-#include "Internal/Animation/FrameCompositor.h"
 #include "Internal/CmsUtils.h"
 #include "Internal/ExifUtils.h"
 

@@ -37,7 +37,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/AnimationUtils.h"
-#include "Internal/Animation/FrameCompositor.h"
+#include "Internal/Animation/FramesCompositor.h"
 #include "Internal/CmsUtils.h"
 
 #ifndef png_jmpbuf
@@ -122,7 +122,7 @@ bool PngAnimationProvider::readPng()
 
     png_structp pngPtr = NULL;
     png_infop infoPtr = NULL;
-    FrameCompositor compositor;
+    FramesCompositor compositor;
 
     // Create and initialize the png_struct with the desired error handler
     // functions.  If you want to use the default stderr and longjump method,
@@ -308,18 +308,18 @@ bool PngAnimationProvider::readPng()
         {
             const QRect frameRect = QRect(static_cast<int>(nextFrameOffsetX), static_cast<int>(nextFrameOffsetY),
                                           static_cast<int>(nextFrameWidth), static_cast<int>(nextFrameHeight));
-            FrameCompositor::DisposeType compositorDisposeType = FrameCompositor::DISPOSE_NONE;
+            FramesCompositor::DisposeType compositorDisposeType = FramesCompositor::DISPOSE_NONE;
             switch(nextFrameDisposeOp)
             {
-            case PNG_DISPOSE_OP_NONE:       compositorDisposeType = FrameCompositor::DISPOSE_NONE;          break;
-            case PNG_DISPOSE_OP_BACKGROUND: compositorDisposeType = FrameCompositor::DISPOSE_BACKGROUND;    break;
-            case PNG_DISPOSE_OP_PREVIOUS:   compositorDisposeType = FrameCompositor::DISPOSE_PREVIOUS;      break;
+            case PNG_DISPOSE_OP_NONE:       compositorDisposeType = FramesCompositor::DISPOSE_NONE;         break;
+            case PNG_DISPOSE_OP_BACKGROUND: compositorDisposeType = FramesCompositor::DISPOSE_BACKGROUND;   break;
+            case PNG_DISPOSE_OP_PREVIOUS:   compositorDisposeType = FramesCompositor::DISPOSE_PREVIOUS;     break;
             }
-            FrameCompositor::BlendType compositorBlendType = FrameCompositor::BLEND_NONE;
+            FramesCompositor::BlendType compositorBlendType = FramesCompositor::BLEND_NONE;
             switch(nextFrameBlendOp)
             {
-            case PNG_BLEND_OP_SOURCE:   compositorBlendType = FrameCompositor::BLEND_NONE; break;
-            case PNG_BLEND_OP_OVER:     compositorBlendType = FrameCompositor::BLEND_OVER; break;
+            case PNG_BLEND_OP_SOURCE:   compositorBlendType = FramesCompositor::BLEND_NONE; break;
+            case PNG_BLEND_OP_OVER:     compositorBlendType = FramesCompositor::BLEND_OVER; break;
             }
             image = compositor.compositeFrame(image, frameRect, compositorDisposeType, compositorBlendType);
         }

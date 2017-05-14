@@ -69,7 +69,7 @@ SOURCES += \
     src/Decoders/Internal/Animation/AnimationObject.cpp \
     src/Decoders/Internal/Animation/AnimationUtils.cpp \
     src/Decoders/Internal/Animation/AnimationWidget.cpp \
-    src/Decoders/Internal/Animation/FrameCompositor.cpp \
+    src/Decoders/Internal/Animation/FramesCompositor.cpp \
     src/Decoders/Internal/Animation/AbstractAnimationProvider.cpp \
     src/Decoders/Internal/ExifUtils.cpp \
     src/Decoders/Internal/CmsUtils.cpp \
@@ -90,7 +90,7 @@ HEADERS += \
     src/Decoders/Internal/Animation/AnimationObject.h \
     src/Decoders/Internal/Animation/AnimationUtils.h \
     src/Decoders/Internal/Animation/AnimationWidget.h \
-    src/Decoders/Internal/Animation/FrameCompositor.h \
+    src/Decoders/Internal/Animation/FramesCompositor.h \
     src/Decoders/Internal/Animation/IAnimationProvider.h \
     src/Decoders/Internal/Animation/AbstractAnimationProvider.h \
     src/Decoders/Internal/DecoderAutoRegistrator.h \

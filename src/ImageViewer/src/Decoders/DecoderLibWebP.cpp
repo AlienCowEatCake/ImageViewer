@@ -32,7 +32,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/AnimationUtils.h"
-#include "Internal/Animation/FrameCompositor.h"
+#include "Internal/Animation/FramesCompositor.h"
 
 namespace
 {
@@ -126,7 +126,7 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
             return false;
         }
 
-        FrameCompositor compositor;
+        FramesCompositor compositor;
         compositor.startComposition(QSize(features.width, features.height));
 
         for(int i = 0; i < m_numFrames; i++)
@@ -164,17 +164,17 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
             }
 
             const QRect frameRect(iter.x_offset, iter.y_offset, iter.width, iter.height);
-            FrameCompositor::DisposeType compositorDisposeType = FrameCompositor::DISPOSE_NONE;
+            FramesCompositor::DisposeType compositorDisposeType = FramesCompositor::DISPOSE_NONE;
             switch(iter.dispose_method)
             {
-            case WEBP_MUX_DISPOSE_NONE:         compositorDisposeType = FrameCompositor::DISPOSE_NONE;          break;
-            case WEBP_MUX_DISPOSE_BACKGROUND:   compositorDisposeType = FrameCompositor::DISPOSE_BACKGROUND;    break;
+            case WEBP_MUX_DISPOSE_NONE:         compositorDisposeType = FramesCompositor::DISPOSE_NONE;         break;
+            case WEBP_MUX_DISPOSE_BACKGROUND:   compositorDisposeType = FramesCompositor::DISPOSE_BACKGROUND;   break;
             }
-            FrameCompositor::BlendType compositorBlendType = FrameCompositor::BLEND_NONE;
+            FramesCompositor::BlendType compositorBlendType = FramesCompositor::BLEND_NONE;
             switch(iter.blend_method)
             {
-            case WEBP_MUX_NO_BLEND: compositorBlendType = FrameCompositor::BLEND_NONE; break;
-            case WEBP_MUX_BLEND:    compositorBlendType = FrameCompositor::BLEND_OVER; break;
+            case WEBP_MUX_NO_BLEND: compositorBlendType = FramesCompositor::BLEND_NONE; break;
+            case WEBP_MUX_BLEND:    compositorBlendType = FramesCompositor::BLEND_OVER; break;
             }
             m_frames.push_back(Frame(compositor.compositeFrame(frame, frameRect, compositorDisposeType, compositorBlendType), iter.duration));
 

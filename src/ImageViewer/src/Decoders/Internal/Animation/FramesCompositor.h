@@ -26,7 +26,7 @@
 
 #include "Utils/ScopedPointer.h"
 
-class FrameCompositor
+class FramesCompositor
 {
 public:
     enum DisposeType
@@ -42,8 +42,8 @@ public:
         BLEND_OVER
     };
 
-    FrameCompositor();
-    ~FrameCompositor();
+    FramesCompositor();
+    ~FramesCompositor();
 
     void startComposition(const QSize& size);
     void startComposition(std::size_t width, std::size_t height);
@@ -52,7 +52,7 @@ public:
     QImage compositeFrame(const QImage &frame, const QRect &rect, DisposeType dispose = DISPOSE_NONE, BlendType blend = BLEND_NONE);
 
 private:
-    Q_DISABLE_COPY(FrameCompositor)
+    Q_DISABLE_COPY(FramesCompositor)
     struct Impl;
     QScopedPointer<Impl> m_impl;
 };

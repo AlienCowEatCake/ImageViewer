@@ -17,12 +17,12 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "FrameCompositor.h"
+#include "FramesCompositor.h"
 
 #include <cassert>
 #include <vector>
 
-struct FrameCompositor::Impl
+struct FramesCompositor::Impl
 {
     Impl()
         : isFirstFrame(true)
@@ -69,14 +69,14 @@ struct FrameCompositor::Impl
     bool isFirstFrame;
 };
 
-FrameCompositor::FrameCompositor()
+FramesCompositor::FramesCompositor()
     : m_impl(new Impl)
 {}
 
-FrameCompositor::~FrameCompositor()
+FramesCompositor::~FramesCompositor()
 {}
 
-void FrameCompositor::startComposition(const QSize &size)
+void FramesCompositor::startComposition(const QSize &size)
 {
     m_impl->previousFrame = QImage(size, QImage::Format_ARGB32);
     m_impl->previousFrame.fill(Qt::transparent);
@@ -84,17 +84,17 @@ void FrameCompositor::startComposition(const QSize &size)
     m_impl->size = m_impl->previousFrame.size();
 }
 
-void FrameCompositor::startComposition(std::size_t width, std::size_t height)
+void FramesCompositor::startComposition(std::size_t width, std::size_t height)
 {
     startComposition(QSize(static_cast<int>(width), static_cast<int>(height)));
 }
 
-bool FrameCompositor::isStarted() const
+bool FramesCompositor::isStarted() const
 {
     return !m_impl->size.isEmpty();
 }
 
-QImage FrameCompositor::compositeFrame(const QImage &frame, const QRect &rect, FrameCompositor::DisposeType dispose, FrameCompositor::BlendType blend)
+QImage FramesCompositor::compositeFrame(const QImage &frame, const QRect &rect, FramesCompositor::DisposeType dispose, FramesCompositor::BlendType blend)
 {
     assert(frame.format() == QImage::Format_ARGB32 || frame.format() == QImage::Format_RGB32);
     if(!isStarted())
