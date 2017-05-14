@@ -32,7 +32,7 @@
 
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
-#include "Internal/Animation/IAnimationProvider.h"
+#include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/AnimationUtils.h"
 #include "Internal/Animation/FrameCompositor.h"
 
@@ -41,80 +41,20 @@ namespace
 
 // ====================================================================================================
 
-class WebPAnimationProvider : public IAnimationProvider
+class WebPAnimationProvider : public AbstractAnimationProvider
 {
 public:
     WebPAnimationProvider(const QString &filePath);
-    ~WebPAnimationProvider();
-
-    bool isValid() const;
-    bool isSingleFrame() const;
-    int nextImageDelay() const;
-    bool jumpToNextImage();
-    QPixmap currentPixmap() const;
 
 private:
     bool readWebP(const QString &filePath);
-
-    struct WebPFrame
-    {
-        WebPFrame() : delay(-1) {}
-        WebPFrame(int width, int height, int delay = -1) : image(width, height, QImage::Format_ARGB32), delay(delay) {}
-        WebPFrame(const QImage &image, int delay = -1) : image(image), delay(delay) {}
-        QImage image;
-        int delay;
-    };
-
-    QVector<WebPFrame> frames;
-    int numFrames;
-    int numLoops;
-    int currentFrame;
-    int currentLoop;
-    bool error;
 };
 
 // ====================================================================================================
 
 WebPAnimationProvider::WebPAnimationProvider(const QString &filePath)
-    : numFrames(1)
-    , numLoops(0)
-    , currentFrame(0)
-    , currentLoop(0)
-    , error(!readWebP(filePath))
-{}
-
-WebPAnimationProvider::~WebPAnimationProvider()
-{}
-
-bool WebPAnimationProvider::isValid() const
 {
-    return !error;
-}
-
-bool WebPAnimationProvider::isSingleFrame() const
-{
-    return numFrames == 1;
-}
-
-int WebPAnimationProvider::nextImageDelay() const
-{
-    return frames[currentFrame].delay;
-}
-
-bool WebPAnimationProvider::jumpToNextImage()
-{
-    currentFrame++;
-    if(currentFrame == numFrames)
-    {
-        currentFrame = 0;
-        currentLoop++;
-    }
-    return numLoops <= 0 || currentLoop <= numLoops;
-}
-
-QPixmap WebPAnimationProvider::currentPixmap() const
-{
-    return QPixmap::fromImage(frames[currentFrame].image);
+    m_error = !readWebP(filePath);
 }
 
 bool WebPAnimationProvider::readWebP(const QString &filePath)
@@ -145,8 +85,8 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
 
     if(!features.has_animation)
     {
-        frames.push_back(WebPFrame(features.width, features.height));
-        QImage &frame = frames[0].image;
+        m_frames.push_back(Frame(features.width, features.height));
+        QImage &frame = m_frames[0].image;
         const uint8_t *data = reinterpret_cast<const uint8_t*>(inBuffer.constData());
         const std::size_t dataSize = static_cast<std::size_t>(inBuffer.size());
         uint8_t *output = reinterpret_cast<uint8_t*>(frame.bits());
@@ -176,8 +116,8 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
             return false;
         }
 
-        numLoops = static_cast<int>(WebPDemuxGetI(demuxer, WEBP_FF_LOOP_COUNT));
-        numFrames = static_cast<int>(WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT));
+        m_numLoops = static_cast<int>(WebPDemuxGetI(demuxer, WEBP_FF_LOOP_COUNT));
+        m_numFrames = static_cast<int>(WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT));
 
         WebPIterator iter;
         iter.duration = 100;
@@ -191,7 +131,7 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
         FrameCompositor compositor;
         compositor.startComposition(QSize(features.width, features.height));
 
-        for(int i = 0; i < numFrames; i++)
+        for(int i = 0; i < m_numFrames; i++)
         {
             status = WebPGetFeatures(iter.fragment.bytes, iter.fragment.size, &features);
             if(status != VP8_STATUS_OK)
@@ -238,9 +178,9 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
             case WEBP_MUX_NO_BLEND: compositorBlendType = FrameCompositor::BLEND_NONE; break;
             case WEBP_MUX_BLEND:    compositorBlendType = FrameCompositor::BLEND_OVER; break;
             }
-            frames.push_back(WebPFrame(compositor.compositeFrame(frame, frameRect, compositorDisposeType, compositorBlendType), iter.duration));
+            m_frames.push_back(Frame(compositor.compositeFrame(frame, frameRect, compositorDisposeType, compositorBlendType), iter.duration));
 
-            if(i != numFrames - 1 && !WebPDemuxNextFrame(&iter))
+            if(i != m_numFrames - 1 && !WebPDemuxNextFrame(&iter))
             {
                 qWarning() << "Can't WebPDemuxNextFrame for" << filePath;
                 qWarning() << "Error fragment:" << i;

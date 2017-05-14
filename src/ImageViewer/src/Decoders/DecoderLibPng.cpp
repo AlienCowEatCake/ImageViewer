@@ -37,7 +37,7 @@
 
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
-#include "Internal/Animation/IAnimationProvider.h"
+#include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/AnimationUtils.h"
 #include "Internal/Animation/FrameCompositor.h"
 #include "Internal/CmsUtils.h"
@@ -55,34 +55,16 @@ namespace
 
 // ====================================================================================================
 
-struct PngAnimationProvider : public IAnimationProvider
+class PngAnimationProvider : public AbstractAnimationProvider
 {
+public:
     PngAnimationProvider(const QString &filePath);
-    ~PngAnimationProvider();
-
-    bool isValid() const;
-    bool isSingleFrame() const;
-    int nextImageDelay() const;
-    bool jumpToNextImage();
-    QPixmap currentPixmap() const;
 
     bool checkIfPng();
     void applyICCProfile(png_const_structrp pngPtr, png_inforp infoPtr, QImage *image);
     bool readPng();
 
-    struct PngFrame
-    {
-        QImage image;
-        int delay;
-    };
-
-    QVector<PngFrame> frames;
-    int numFrames;
-    int numLoops;
-    int currentFrame;
-    int currentLoop;
     QFile file;
-    bool error;
 };
 
 // ====================================================================================================
@@ -96,48 +78,9 @@ void readPngData(png_structp pngPtr, png_bytep data, png_size_t length)
 // ====================================================================================================
 
 PngAnimationProvider::PngAnimationProvider(const QString &filePath)
-    : numFrames(1)
-    , numLoops(0)
-    , currentFrame(0)
-    , currentLoop(0)
-    , file(filePath)
-    , error(true)
+    : file(filePath)
 {
-    error = !readPng();
-}
-
-PngAnimationProvider::~PngAnimationProvider()
-{}
-
-bool PngAnimationProvider::isValid() const
-{
-    return !error;
-}
-
-bool PngAnimationProvider::isSingleFrame() const
-{
-    return numFrames == 1;
-}
-
-int PngAnimationProvider::nextImageDelay() const
-{
-    return frames[currentFrame].delay;
-}
-
-bool PngAnimationProvider::jumpToNextImage()
-{
-    currentFrame++;
-    if(currentFrame == numFrames)
-    {
-        currentFrame = 0;
-        currentLoop++;
-    }
-    return numLoops <= 0 || currentLoop <= numLoops;
-}
-
-QPixmap PngAnimationProvider::currentPixmap() const
-{
-    return QPixmap::fromImage(frames[currentFrame].image);
+    m_error = !readPng();
 }
 
 bool PngAnimationProvider::checkIfPng()
@@ -235,15 +178,15 @@ bool PngAnimationProvider::readPng()
     int firstFrameNumber = png_get_first_frame_is_hidden(pngPtr, infoPtr) ? 1 : 0;
     if(png_get_valid(pngPtr, infoPtr, PNG_INFO_acTL))
     {
-        numFrames = static_cast<int>(png_get_num_frames(pngPtr, infoPtr));
-        numLoops = static_cast<int>(png_get_num_plays(pngPtr, infoPtr));
+        m_numFrames = static_cast<int>(png_get_num_frames(pngPtr, infoPtr));
+        m_numLoops = static_cast<int>(png_get_num_plays(pngPtr, infoPtr));
     }
 #endif
-    frames.resize(numFrames);
+    m_frames.resize(m_numFrames);
 
     const png_uint_32 width = png_get_image_width(pngPtr, infoPtr);
     const png_uint_32 height = png_get_image_height(pngPtr, infoPtr);
-    for(int count = 0; count < numFrames; count++)
+    for(int count = 0; count < m_numFrames; count++)
     {
 //        int bitDepth = png_get_bit_depth(pngPtr, infoPtr);
 //        int colorType = png_get_color_type(pngPtr, infoPtr);
@@ -344,8 +287,8 @@ bool PngAnimationProvider::readPng()
         png_read_update_info(pngPtr, infoPtr);
 
         // Allocate the memory to hold the image using the fields of info_ptr.
-        frames[count].image = QImage(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32);
-        QImage &image = frames[count].image;
+        m_frames[count].image = QImage(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32);
+        QImage &image = m_frames[count].image;
         if(image.size().isEmpty())
         {
             qWarning() << "Invalid image size";
@@ -385,9 +328,9 @@ bool PngAnimationProvider::readPng()
 #endif
 
 #if defined (PNG_APNG_SUPPORTED)
-        frames[count].delay = nextFrameDelayNum * 1000 / nextFrameDelayDen;
+        m_frames[count].delay = nextFrameDelayNum * 1000 / nextFrameDelayDen;
 #else
-        frames[count].delay = -1;
+        m_frames[count].delay = -1;
 #endif
     }
 
