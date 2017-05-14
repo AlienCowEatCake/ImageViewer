@@ -23,10 +23,10 @@ extern "C" {
 #include <libbpg.h>
 }
 
-#include <QGraphicsPixmapItem>
-#include <QImage>
-#include <QPixmap>
 #include <QFileInfo>
+#include <QImage>
+#include <QFile>
+#include <QByteArray>
 #include <QDebug>
 
 #include "IDecoder.h"
