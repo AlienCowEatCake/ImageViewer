@@ -59,6 +59,16 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>bpg</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Better Portable Graphics Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>dds</string>
 			</array>
 			<key>CFBundleTypeName</key>
