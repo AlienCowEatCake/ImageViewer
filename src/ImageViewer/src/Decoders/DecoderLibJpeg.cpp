@@ -59,7 +59,7 @@ namespace
 #define MAX_DATA_BYTES_IN_MARKER  (MAX_BYTES_IN_MARKER - ICCP_OVERHEAD_LEN)
 
 // Handy subroutine to test whether a saved marker is an ICC profile marker.
-bool markerIsICCP(jpeg_saved_marker_ptr marker)
+bool markerIsICCP(const jpeg_saved_marker_ptr marker)
 {
     return
             marker->marker == ICCP_MARKER &&

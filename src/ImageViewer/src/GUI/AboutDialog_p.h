@@ -38,7 +38,6 @@ struct AboutDialog::UI
 {
     AdjustableFrame *centralWidget;
     QLabel *iconLabel;
-    QLabel *titleLabel;
     QLabel *textLabel;
     QTextBrowser *textBrowser;
     QDialogButtonBox *buttonBox;

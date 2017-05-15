@@ -238,20 +238,22 @@ MainWindow::MainWindow(QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
     setAcceptDrops(true);
 
-    connect(m_ui->imageViewerWidget, SIGNAL(zoomLevelChanged(qreal)), this, SLOT(updateWindowTitle()));
+    ImageViewerWidget *imageViewerWidget = m_ui->imageViewerWidget;
+
+    connect(imageViewerWidget, SIGNAL(zoomLevelChanged(qreal)), this, SLOT(updateWindowTitle()));
 
     connect(m_ui->navigatePrevious, SIGNAL(clicked()), this, SLOT(onOpenPreviousRequested()));
     connect(m_ui->navigateNext, SIGNAL(clicked()), this, SLOT(onOpenNextRequested()));
     connect(m_ui->startSlideShow, SIGNAL(clicked()), this, SLOT(switchSlideShowMode()));
-    connect(m_ui->zoomIn, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(zoomIn()));
-    connect(m_ui->zoomOut, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(zoomOut()));
+    connect(m_ui->zoomIn, SIGNAL(clicked()), imageViewerWidget, SLOT(zoomIn()));
+    connect(m_ui->zoomOut, SIGNAL(clicked()), imageViewerWidget, SLOT(zoomOut()));
     connect(m_ui->zoomFitToWindow, SIGNAL(clicked()), this, SLOT(onZoomFitToWindowClicked()));
     connect(m_ui->zoomOriginalSize, SIGNAL(clicked()), this, SLOT(onZoomOriginalSizeClicked()));
     connect(m_ui->zoomFullScreen, SIGNAL(clicked()), this, SLOT(switchFullScreenMode()));
-    connect(m_ui->rotateCounterclockwise, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(rotateCounterclockwise()));
-    connect(m_ui->rotateClockwise, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(rotateClockwise()));
-    connect(m_ui->flipHorizontal, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(flipHorizontal()));
-    connect(m_ui->flipVertical, SIGNAL(clicked()), m_ui->imageViewerWidget, SLOT(flipVertical()));
+    connect(m_ui->rotateCounterclockwise, SIGNAL(clicked()), imageViewerWidget, SLOT(rotateCounterclockwise()));
+    connect(m_ui->rotateClockwise, SIGNAL(clicked()), imageViewerWidget, SLOT(rotateClockwise()));
+    connect(m_ui->flipHorizontal, SIGNAL(clicked()), imageViewerWidget, SLOT(flipHorizontal()));
+    connect(m_ui->flipVertical, SIGNAL(clicked()), imageViewerWidget, SLOT(flipVertical()));
     connect(m_ui->openFile, SIGNAL(clicked()), this, SLOT(onOpenFileWithDialogRequested()));
     connect(m_ui->saveFileAs, SIGNAL(clicked()), this, SLOT(onSaveAsRequested()));
     connect(m_ui->deleteFile, SIGNAL(clicked()), this, SLOT(onDeleteFileRequested()));
@@ -264,14 +266,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->actionStartSlideShow, SIGNAL(triggered()), this, SLOT(switchSlideShowMode()));
     connect(m_ui->actionPreferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
     connect(m_ui->actionExit, SIGNAL(triggered()), this, SLOT(onExitRequested()));
-    connect(m_ui->actionRotateCounterclockwise, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(rotateCounterclockwise()));
-    connect(m_ui->actionRotateClockwise, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(rotateClockwise()));
-    connect(m_ui->actionFlipHorizontal, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(flipHorizontal()));
-    connect(m_ui->actionFlipVertical, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(flipVertical()));
+    connect(m_ui->actionRotateCounterclockwise, SIGNAL(triggered()), imageViewerWidget, SLOT(rotateCounterclockwise()));
+    connect(m_ui->actionRotateClockwise, SIGNAL(triggered()), imageViewerWidget, SLOT(rotateClockwise()));
+    connect(m_ui->actionFlipHorizontal, SIGNAL(triggered()), imageViewerWidget, SLOT(flipHorizontal()));
+    connect(m_ui->actionFlipVertical, SIGNAL(triggered()), imageViewerWidget, SLOT(flipVertical()));
     connect(m_ui->actionDeleteFile, SIGNAL(triggered()), this, SLOT(onDeleteFileRequested()));
-    connect(m_ui->actionZoomIn, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(zoomIn()));
-    connect(m_ui->actionZoomOut, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(zoomOut()));
-    connect(m_ui->actionZoomReset, SIGNAL(triggered()), m_ui->imageViewerWidget, SLOT(resetZoom()));
+    connect(m_ui->actionZoomIn, SIGNAL(triggered()), imageViewerWidget, SLOT(zoomIn()));
+    connect(m_ui->actionZoomOut, SIGNAL(triggered()), imageViewerWidget, SLOT(zoomOut()));
+    connect(m_ui->actionZoomReset, SIGNAL(triggered()), imageViewerWidget, SLOT(resetZoom()));
     connect(m_ui->actionZoomFitToWindow, SIGNAL(triggered()), this, SLOT(onZoomFitToWindowClicked()));
     connect(m_ui->actionZoomOriginalSize, SIGNAL(triggered()), this, SLOT(onZoomOriginalSizeClicked()));
     connect(m_ui->actionZoomFullScreen, SIGNAL(triggered()), this, SLOT(switchFullScreenMode()));
@@ -282,31 +284,33 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
     connect(m_ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    connect(m_impl->settings, SIGNAL(normalBackgroundColorChanged(const QColor&)), this, SLOT(updateBackgroundColor()));
-    connect(m_impl->settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&)), this, SLOT(updateBackgroundColor()));
-    connect(m_impl->settings, SIGNAL(smoothTransformationChanged(bool)), m_ui->imageViewerWidget, SLOT(setSmoothTransformation(bool)));
-    connect(m_impl->settings, SIGNAL(slideShowIntervalChanged(int)), this, SLOT(updateSlideShowInterval()));
-    connect(m_impl->settings, SIGNAL(wheelModeChanged(ImageViewerWidget::WheelMode)), m_ui->imageViewerWidget, SLOT(setWheelMode(ImageViewerWidget::WheelMode)));
+    GUISettings *settings = m_impl->settings;
+
+    connect(settings, SIGNAL(normalBackgroundColorChanged(const QColor&)), this, SLOT(updateBackgroundColor()));
+    connect(settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&)), this, SLOT(updateBackgroundColor()));
+    connect(settings, SIGNAL(smoothTransformationChanged(bool)), imageViewerWidget, SLOT(setSmoothTransformation(bool)));
+    connect(settings, SIGNAL(slideShowIntervalChanged(int)), this, SLOT(updateSlideShowInterval()));
+    connect(settings, SIGNAL(wheelModeChanged(ImageViewerWidget::WheelMode)), imageViewerWidget, SLOT(setWheelMode(ImageViewerWidget::WheelMode)));
 
     connect(&m_impl->watcher, SIGNAL(directoryChanged(const QString&)), this, SLOT(onDirectoryChanged()));
 
     connect(&m_impl->slideShowTimer, SIGNAL(timeout()), this, SLOT(onOpenNextRequested()));
 
-    m_ui->imageViewerWidget->setZoomLevel(m_impl->settings->zoomLevel());
-    m_ui->imageViewerWidget->setBackgroundColor(m_impl->settings->normalBackgroundColor());
-    m_ui->imageViewerWidget->setSmoothTransformation(m_impl->settings->smoothTransformation());
-    m_ui->imageViewerWidget->setWheelMode(m_impl->settings->wheelMode());
-    onZoomModeChanged(m_impl->settings->zoomMode());
+    imageViewerWidget->setZoomLevel(settings->zoomLevel());
+    imageViewerWidget->setBackgroundColor(settings->normalBackgroundColor());
+    imageViewerWidget->setSmoothTransformation(settings->smoothTransformation());
+    imageViewerWidget->setWheelMode(settings->wheelMode());
+    onZoomModeChanged(settings->zoomMode());
     updateSlideShowInterval();
     setLanguage();
 
-    m_ui->menubar->setVisible(m_impl->settings->menuBarVisible());
-    m_ui->actionShowMenuBar->setChecked(m_impl->settings->menuBarVisible());
-    m_ui->toolbar->setVisible(m_impl->settings->toolBarVisible());
-    m_ui->actionShowToolBar->setChecked(m_impl->settings->toolBarVisible());
+    m_ui->menubar->setVisible(settings->menuBarVisible());
+    m_ui->actionShowMenuBar->setChecked(settings->menuBarVisible());
+    m_ui->toolbar->setVisible(settings->toolBarVisible());
+    m_ui->actionShowToolBar->setChecked(settings->toolBarVisible());
 
-    restoreState(m_impl->settings->mainWindowState());
-    restoreGeometry(m_impl->settings->mainWindowGeometry());
+    restoreState(settings->mainWindowState());
+    restoreGeometry(settings->mainWindowGeometry());
 }
 
 MainWindow::~MainWindow()
@@ -440,18 +444,19 @@ void MainWindow::switchFullScreenMode()
     const bool toFullScreenMode = !m_impl->isFullScreenMode;
     const bool toNormalMode = !toFullScreenMode;
     m_impl->isFullScreenMode = toFullScreenMode;
+    GUISettings *settings = m_impl->settings;
     if(toFullScreenMode)
     {
-        m_impl->settings->setMainWindowGeometry(saveGeometry());
-        m_impl->settings->setMainWindowState(saveState());
+        settings->setMainWindowGeometry(saveGeometry());
+        settings->setMainWindowState(saveState());
         showFullScreen();
         m_ui->menubar->setVisible(false);
         m_ui->toolbar->setVisible(false);
     }
     else
     {
-        m_ui->menubar->setVisible(m_impl->settings->menuBarVisible());
-        m_ui->toolbar->setVisible(m_impl->settings->toolBarVisible());
+        m_ui->menubar->setVisible(settings->menuBarVisible());
+        m_ui->toolbar->setVisible(settings->toolBarVisible());
     }
     m_ui->zoomFullScreen->setChecked(toFullScreenMode);
     m_ui->actionZoomFullScreen->setChecked(toFullScreenMode);
@@ -459,8 +464,8 @@ void MainWindow::switchFullScreenMode()
     if(toNormalMode)
     {
         showNormal();
-        restoreState(m_impl->settings->mainWindowState());
-        restoreGeometry(m_impl->settings->mainWindowGeometry());
+        restoreState(settings->mainWindowState());
+        restoreGeometry(settings->mainWindowGeometry());
     }
 }
 
@@ -604,7 +609,9 @@ void MainWindow::onDeleteFileRequested()
     if(!m_impl->isFileOpened())
         return;
 
-    if(m_impl->settings->askBeforeDelete())
+    GUISettings *settings = m_impl->settings;
+
+    if(settings->askBeforeDelete())
     {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::warning(this, tr("Delete File"), tr("Are you sure you want to delete current file?"),
@@ -613,10 +620,10 @@ void MainWindow::onDeleteFileRequested()
             return;
     }
 
-    if(m_impl->settings->moveToTrash())
+    if(settings->moveToTrash())
     {
         QString errorDescription;
-        bool status = FileUtils::MoveToTrash(m_impl->settings->lastOpenedPath(), &errorDescription);
+        bool status = FileUtils::MoveToTrash(settings->lastOpenedPath(), &errorDescription);
         if(!status)
         {
             QMessageBox::critical(this, tr("Error"), errorDescription);
@@ -625,11 +632,11 @@ void MainWindow::onDeleteFileRequested()
     }
     else
     {
-        QFile file(m_impl->settings->lastOpenedPath());
+        QFile file(settings->lastOpenedPath());
         bool status = file.remove();
         if(!status)
         {
-            QMessageBox::critical(this, tr("Error"), tr("Failed to delete file \"%1\"").arg(m_impl->settings->lastOpenedPath()));
+            QMessageBox::critical(this, tr("Error"), tr("Failed to delete file \"%1\"").arg(settings->lastOpenedPath()));
             return;
         }
     }

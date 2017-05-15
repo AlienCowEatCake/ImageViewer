@@ -143,7 +143,6 @@ void ApplyExifOrientation(QImage *image, quint16 exifOrientation)
         default:
             qWarning("This should never happen");
     }
-    exifOrientation = 1;
 }
 
 } // namespace ExifUtils

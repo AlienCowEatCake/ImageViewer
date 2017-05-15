@@ -129,7 +129,7 @@ QImage renderRgbImage(jas_image_t *jasImage)
 QImage renderGrayImage(jas_image_t *jasImage)
 {
     const int cmptno = 0;
-    if(cmptno < 0 || cmptno >= jasImage->numcmpts_)
+    if(cmptno >= jasImage->numcmpts_)
     {
         qWarning() << "Incorrect component number";
         return QImage();
