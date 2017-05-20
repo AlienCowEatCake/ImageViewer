@@ -27,7 +27,7 @@
 
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
-#include "Internal/ExifUtils.h"
+#include "Internal/Utils/ExifUtils.h"
 
 namespace {
 

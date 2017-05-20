@@ -31,7 +31,7 @@
 
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
-#include "Internal/CmsUtils.h"
+#include "Internal/Utils/CmsUtils.h"
 
 namespace
 {

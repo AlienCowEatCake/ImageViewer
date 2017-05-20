@@ -30,7 +30,7 @@
 
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
-#include "Internal/MacImageUtils.h"
+#include "Internal/Utils/MacImageUtils.h"
 
 namespace {
 

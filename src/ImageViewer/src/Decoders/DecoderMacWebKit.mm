@@ -23,7 +23,7 @@
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/MacWebKitRasterizerGraphicsItem.h"
-#include "Internal/ZLibUtils.h"
+#include "Internal/Utils/ZLibUtils.h"
 
 namespace {
 

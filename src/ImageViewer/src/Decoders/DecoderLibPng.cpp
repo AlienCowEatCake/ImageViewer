@@ -38,7 +38,7 @@
 #include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/AnimationUtils.h"
 #include "Internal/Animation/FramesCompositor.h"
-#include "Internal/CmsUtils.h"
+#include "Internal/Utils/CmsUtils.h"
 
 #ifndef png_jmpbuf
 #define png_jmpbuf(png_ptr) ((png_ptr)->png_jmpbuf)

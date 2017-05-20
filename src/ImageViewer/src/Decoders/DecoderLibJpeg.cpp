@@ -33,8 +33,8 @@
 
 #include "IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
-#include "Internal/ExifUtils.h"
-#include "Internal/CmsUtils.h"
+#include "Internal/Utils/ExifUtils.h"
+#include "Internal/Utils/CmsUtils.h"
 
 namespace
 {

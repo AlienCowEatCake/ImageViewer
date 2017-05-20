@@ -71,9 +71,9 @@ SOURCES += \
     src/Decoders/Internal/Animation/AnimationWidget.cpp \
     src/Decoders/Internal/Animation/FramesCompositor.cpp \
     src/Decoders/Internal/Animation/AbstractAnimationProvider.cpp \
-    src/Decoders/Internal/ExifUtils.cpp \
-    src/Decoders/Internal/CmsUtils.cpp \
-    src/Decoders/Internal/ZLibUtils.cpp \
+    src/Decoders/Internal/Utils/ExifUtils.cpp \
+    src/Decoders/Internal/Utils/CmsUtils.cpp \
+    src/Decoders/Internal/Utils/ZLibUtils.cpp \
     src/main.cpp
 
 HEADERS += \
@@ -94,9 +94,9 @@ HEADERS += \
     src/Decoders/Internal/Animation/IAnimationProvider.h \
     src/Decoders/Internal/Animation/AbstractAnimationProvider.h \
     src/Decoders/Internal/DecoderAutoRegistrator.h \
-    src/Decoders/Internal/ExifUtils.h \
-    src/Decoders/Internal/CmsUtils.h \
-    src/Decoders/Internal/ZLibUtils.h
+    src/Decoders/Internal/Utils/ExifUtils.h \
+    src/Decoders/Internal/Utils/CmsUtils.h \
+    src/Decoders/Internal/Utils/ZLibUtils.h
 
 !disable_stb {
     SOURCES += \
@@ -156,12 +156,12 @@ win32 {
 macx {
     greaterThan(QT_MAJOR_VERSION, 4): QT += macextras
     OBJECTIVE_SOURCES += \
-        src/Decoders/Internal/MacImageUtils.mm \
+        src/Decoders/Internal/Utils/MacImageUtils.mm \
         src/Decoders/Internal/MacWebKitRasterizerGraphicsItem.mm \
         src/Decoders/DecoderNSImage.mm \
         src/Decoders/DecoderMacWebKit.mm
     HEADERS += \
-        src/Decoders/Internal/MacImageUtils.h \
+        src/Decoders/Internal/Utils/MacImageUtils.h \
         src/Decoders/Internal/MacWebKitRasterizerGraphicsItem.h
     LIBS += -framework AppKit
     LIBS += -framework Foundation
