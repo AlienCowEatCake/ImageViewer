@@ -39,6 +39,7 @@ include(../ThirdParty/ThirdParty.pri)
     QMAKE_CXXFLAGS_RELEASE *= -O3
     QMAKE_CXXFLAGS_RELEASE *= -DNDEBUG
     QMAKE_CXXFLAGS_RELEASE *= -DQT_NO_DEBUG_OUTPUT
+#    QMAKE_LFLAGS += -Wl,--whole-archive
 }
 
 *msvc* {

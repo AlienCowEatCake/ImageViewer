@@ -18,6 +18,9 @@
  * EDIT A COPY NAMED JCONFIG.H.
  */
 
+#if defined (JPEG_PREFIX)
+#include "jpegprefix.h"
+#endif
 
 /*
  * These symbols indicate the properties of your machine or compiler.

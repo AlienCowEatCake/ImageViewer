@@ -1,6 +1,10 @@
 /* libtiff/tif_config.h.  Generated from tif_config.h.in by configure.  */
 /* libtiff/tif_config.h.in.  Generated from configure.ac by autoheader.  */
 
+#if defined (TIFF_PREFIX)
+#include "tiffprefix.h"
+#endif
+
 #include <qglobal.h>
 
 /* Define if building universal (internal helper macro) */

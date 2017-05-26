@@ -13,7 +13,6 @@ CONFIG += exceptions_off warn_off
 
 THIRDPARTY_QTIMAGEFORMATS_PATH = $${PWD}/qtimageformats
 THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH = $${PWD}/qtimageformats_legacy
-THIRDPARTY_QTIMAGEFORMATS_QTBASE_PATH = $${PWD}/qtbase
 THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
 
 include(../../Features.pri)
@@ -41,6 +40,11 @@ HEADERS += \
 
 DEFINES += WRAPPER_USE_DDS_HANDLER
 
+DEFINES += DDSPixelFormat=tp_DDSPixelFormat
+DEFINES += DDSHeader=tp_DDSHeader
+DEFINES += DDSHeaderDX10=tp_DDSHeaderDX10
+DEFINES += QDDSHandler=tp_QDDSHandler
+
 # --------------------------------------------------------------------------------
 
 SOURCES += \
@@ -51,6 +55,10 @@ HEADERS += \
 
 DEFINES += WRAPPER_USE_ICNS_HANDLER
 
+DEFINES += ICNSBlockHeader=tp_ICNSBlockHeader
+DEFINES += ICNSEntry=tp_ICNSEntry
+DEFINES += QICNSHandler=tp_QICNSHandler
+
 # --------------------------------------------------------------------------------
 
 !disable_libjasper {
@@ -59,15 +67,21 @@ DEFINES += WRAPPER_USE_ICNS_HANDLER
 
     DEFINES += WRAPPER_USE_JP2_HANDLER
 
+    DEFINES += QJp2HandlerPrivate=tp_QJp2HandlerPrivate
+    DEFINES += QJp2Handler=tp_QJp2Handler
+
 }
 
 # --------------------------------------------------------------------------------
 
-!disable_zlib {
+!disable_libmng {
 
     include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/mng/qmnghandler.pri)
 
     DEFINES += WRAPPER_USE_MNG_HANDLER
+
+    DEFINES += QMngHandlerPrivate=tp_QMngHandlerPrivate
+    DEFINES += QMngHandler=tp_QMngHandler
 
 }
 
@@ -82,6 +96,9 @@ HEADERS += \
     $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/tga/qtgahandler.h
 
 DEFINES += WRAPPER_USE_TGA_HANDLER
+
+DEFINES += QTgaFile=tp_QTgaFile
+DEFINES += QTgaHandler=tp_QTgaHandler
 
 # --------------------------------------------------------------------------------
 
@@ -109,6 +126,16 @@ DEFINES += WRAPPER_USE_TGA_HANDLER
 
     }
 
+    DEFINES += QTiffHandlerPrivate=tp_QTiffHandlerPrivate
+    DEFINES += QTiffHandler=tp_QTiffHandler
+    DEFINES += qtiffReadProc=tp_qtiffReadProc
+    DEFINES += qtiffWriteProc=tp_qtiffWriteProc
+    DEFINES += qtiffSeekProc=tp_qtiffSeekProc
+    DEFINES += qtiffCloseProc=tp_qtiffCloseProc
+    DEFINES += qtiffSizeProc=tp_qtiffSizeProc
+    DEFINES += qtiffMapProc=tp_qtiffMapProc
+    DEFINES += qtiffUnmapProc=tp_qtiffUnmapProc
+
 }
 
 # --------------------------------------------------------------------------------
@@ -121,6 +148,9 @@ HEADERS += \
 
 DEFINES += WRAPPER_USE_WBMP_HANDLER
 
+DEFINES += WBMPReader=tp_WBMPReader
+DEFINES += QWbmpHandler=tp_QWbmpHandler
+
 # --------------------------------------------------------------------------------
 
 !disable_libwebp {
@@ -132,6 +162,8 @@ DEFINES += WRAPPER_USE_WBMP_HANDLER
         $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/webp/qwebphandler_p.h
 
     DEFINES += WRAPPER_USE_WEBP_HANDLER
+
+    DEFINES += QWebpHandler=tp_QWebpHandler
 
 }
 

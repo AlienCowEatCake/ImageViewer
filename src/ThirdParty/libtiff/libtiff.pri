@@ -15,6 +15,8 @@ include($${PWD}/../../Features.pri)
         INCLUDEPATH += $${THIRDPARTY_LIBTIFF_CONFIG_PATH} $${THIRDPARTY_LIBTIFF_PATH}/libtiff
         DEPENDPATH += $${THIRDPARTY_LIBTIFF_CONFIG_PATH} $${THIRDPARTY_LIBTIFF_PATH}/libtiff
 
+        DEFINES += TIFF_PREFIX
+
         OUT_LIB_TARGET = tp_libtiff
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/libtiff
         OUT_LIB_NAME =

@@ -15,6 +15,8 @@ include($${PWD}/../../Features.pri)
         INCLUDEPATH += $${THIRDPARTY_LIBJPEG_CONFIG_PATH} $${THIRDPARTY_LIBJPEG_PATH}
         DEPENDPATH += $${THIRDPARTY_LIBJPEG_CONFIG_PATH} $${THIRDPARTY_LIBJPEG_PATH}
 
+        DEFINES += JPEG_PREFIX
+
         OUT_LIB_TARGET = tp_libjpeg
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/libjpeg
         OUT_LIB_NAME =

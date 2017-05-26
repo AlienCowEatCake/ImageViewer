@@ -60,6 +60,10 @@
 #ifndef _libmng_conf_h_
 #define _libmng_conf_h_
 
+#if defined (MNG_PREFIX)
+#include "mngprefix.h"
+#endif
+
 #ifdef MNG_MOZILLA_CFG
 #include "special\mozcfg\mozlibmngconf.h"
 #endif

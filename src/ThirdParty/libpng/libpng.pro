@@ -31,7 +31,6 @@ SOURCES += \
     $${THIRDPARTY_LIBPNG_PATH}/pngrtran.c \
     $${THIRDPARTY_LIBPNG_PATH}/pngrutil.c \
     $${THIRDPARTY_LIBPNG_PATH}/pngset.c \
-    $${THIRDPARTY_LIBPNG_PATH}/pngtest.c \
     $${THIRDPARTY_LIBPNG_PATH}/pngtrans.c \
     $${THIRDPARTY_LIBPNG_PATH}/pngwio.c \
     $${THIRDPARTY_LIBPNG_PATH}/pngwrite.c \

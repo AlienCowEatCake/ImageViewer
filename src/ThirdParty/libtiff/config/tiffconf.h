@@ -8,6 +8,10 @@
 #ifndef _TIFFCONF_
 #define _TIFFCONF_
 
+#if defined (TIFF_PREFIX)
+#include "tiffprefix.h"
+#endif
+
 #include <qglobal.h>
 
 /* Signed 16-bit type */

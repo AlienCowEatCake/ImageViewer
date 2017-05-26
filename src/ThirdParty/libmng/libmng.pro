@@ -11,13 +11,16 @@ CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_LIBMNG_PATH = $${PWD}/libmng-1.0.10
+THIRDPARTY_LIBMNG_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
 include(../libjpeg/libjpeg.pri)
 include(../LittleCMS2/LittleCMS2.pri)
 include(../zlib/zlib.pri)
 
-INCLUDEPATH = $${THIRDPARTY_LIBMNG_PATH} $${INCLUDEPATH}
+INCLUDEPATH = $${THIRDPARTY_LIBMNG_CONFIG_PATH} $${THIRDPARTY_LIBMNG_PATH} $${INCLUDEPATH}
+
+DEFINES += MNG_PREFIX
 
 DEFINES += MNG_BUILD_SO
 
@@ -72,7 +75,8 @@ HEADERS += \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_trace.h \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_types.h \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_write.h \
-    $${THIRDPARTY_LIBMNG_PATH}/libmng_zlib.h
+    $${THIRDPARTY_LIBMNG_PATH}/libmng_zlib.h \
+    $${THIRDPARTY_LIBMNG_CONFIG_PATH}/mngprefix.h
 
 TR_EXCLUDE += $${THIRDPARTY_LIBMNG_PATH}/*
 
