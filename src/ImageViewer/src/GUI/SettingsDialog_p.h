@@ -143,17 +143,6 @@ struct SettingsDialog::UI
         mainLayout->addWidget(backgroundColorsFrame);
         mainLayout->addWidget(wheelModeFrame);
         mainLayout->addWidget(buttonBox);
-
-        settingsDialog->setWindowTitle(qApp->translate("SettingsDialog", "Preferences"));
-        settingsDialog->ensurePolished();
-        settingsDialog->adjustSize();
-        settingsDialog->setFixedSize(widget->minimumSize());
-        settingsDialog->setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint |
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
-                               Qt::WindowCloseButtonHint |
-#endif
-                               Qt::WindowSystemMenuHint | Qt::MSWindowsFixedSizeDialogHint);
-        settingsDialog->setWindowModality(Qt::ApplicationModal);
     }
 
     void updateNormalBackgroundColorButton(const QColor &color)

@@ -310,8 +310,16 @@ AboutDialog::AboutDialog(QWidget *parent)
                              );
     m_ui->textBrowser->setHtml(getTextBrowserContent());
 
+    ensurePolished();
     adjustSize();
     setFixedSize(minimumSize());
+
+    setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint |
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
+                   Qt::WindowCloseButtonHint |
+#endif
+                   Qt::WindowSystemMenuHint | Qt::MSWindowsFixedSizeDialogHint);
+    setWindowModality(Qt::ApplicationModal);
 }
 
 AboutDialog::~AboutDialog()

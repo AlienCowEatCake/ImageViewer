@@ -67,8 +67,6 @@ struct AboutDialog::UI
         QVBoxLayout *dialogLayout = new QVBoxLayout(parent);
         dialogLayout->setContentsMargins(0, 0, 0, 0);
         dialogLayout->addWidget(centralWidget);
-
-        parent->ensurePolished();
     }
 };
 

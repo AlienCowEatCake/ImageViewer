@@ -109,7 +109,20 @@ SettingsDialog::SettingsDialog(GUISettings *settings, QWidget *parent)
     : QDialog(parent)
     , m_ui(new UI(this, settings))
     , m_impl(new Impl(this, settings))
-{}
+{
+    setWindowTitle(qApp->translate("SettingsDialog", "Preferences"));
+
+    ensurePolished();
+    adjustSize();
+    setFixedSize(minimumSize());
+
+    setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint |
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
+                   Qt::WindowCloseButtonHint |
+#endif
+                   Qt::WindowSystemMenuHint | Qt::MSWindowsFixedSizeDialogHint);
+    setWindowModality(Qt::ApplicationModal);
+}
 
 SettingsDialog::~SettingsDialog()
 {}
