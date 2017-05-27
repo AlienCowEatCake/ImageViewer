@@ -52,32 +52,26 @@ int GetDecoderPriority(const IDecoder *decoder)
     static QMap<QString, int> decoderPriotities;
     if(decoderPriotities.isEmpty())
     {
-#define PD(NAME, PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = PRIORITY
-#if defined (QT_DEBUG)
-#define PR(NAME, PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = -1
-#else
-#define PR(NAME, PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = PRIORITY
-#endif
+#define P(NAME, PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = PRIORITY
         /// @note Декодеры статических изображений
-        PD("DecoderSTB"                 ,  100);    ///< Резервный декодер, так как мало что умеет.
-        PD("DecoderQImage"              ,  200);    ///< Умеет все, что умеет Qt. Не поддерживает EXIF и ICCP.
-        PD("DecoderQtImageFormatsImage" ,  300);    ///< Экзотические и deprecated декодеры Qt. Должен быть выше QImage.
-        PD("DecoderLibJpeg"             ,  400);    ///< Умеет jpeg форматы. Поддерживает EXIF и ICCP. Должен быть выше QImage.
-        PD("DecoderLibJasPer"           ,  410);    ///< Умеет формат JPEG 2000 и несколько побочных. Поддержка хуже, чем в QtImageFormatsImage, но имеет ряд дополнительных проверок от крашей.
-        PD("DecoderLibTiff"             ,  420);    ///< Умеет формат tiff. Поддерживает EXIF(?) и ICCP. Должен быть выше QImage и QtImageFormatsImage.
-        PR("DecoderNSImage"             ,  900);    ///< Умеет очень много разных форматов.
+        P("DecoderSTB"                  ,  100);    ///< Резервный декодер, так как мало что умеет.
+        P("DecoderQImage"               ,  200);    ///< Умеет все, что умеет Qt. Не поддерживает EXIF и ICCP.
+        P("DecoderQtImageFormatsImage"  ,  300);    ///< Экзотические и deprecated декодеры Qt. Должен быть выше QImage.
+        P("DecoderLibJpeg"              ,  400);    ///< Умеет jpeg форматы. Поддерживает EXIF и ICCP. Должен быть выше QImage.
+        P("DecoderLibJasPer"            ,  410);    ///< Умеет формат JPEG 2000 и несколько побочных. Поддержка хуже, чем в QtImageFormatsImage, но имеет ряд дополнительных проверок от крашей.
+        P("DecoderLibTiff"              ,  420);    ///< Умеет формат tiff. Поддерживает EXIF(?) и ICCP. Должен быть выше QImage и QtImageFormatsImage.
+        P("DecoderNSImage"              ,  900);    ///< Умеет очень много разных форматов.
         /// @note Декодеры анимированных изображений
-        PD("DecoderQMovie"              , 1100);    ///< Умеет анимированные gif.
-        PD("DecoderLibMng"              , 1110);    ///< Умеет анимированные mng и jng. Поддержка mng хуже, чем в QtImageFormatsMovie.
-        PD("DecoderQtImageFormatsMovie" , 1200);    ///< Умеет анимированные mng.
-        PD("DecoderLibPng"              , 1300);    ///< Умеет анимированные png. Поддерживает EXIF и ICCP.
-        PD("DecoderLibWebP"             , 1310);    ///< Умеет анимированные webp. Поддержка лучше, чем в QtImageFormatsMovie.
-        PD("DecoderLibBpg"              , 1320);    ///< Умеет анимированные bpg. Поддерживает EXIF и ICCP.
+        P("DecoderQMovie"               , 1100);    ///< Умеет анимированные gif.
+        P("DecoderLibMng"               , 1110);    ///< Умеет анимированные mng и jng. Поддержка mng хуже, чем в QtImageFormatsMovie.
+        P("DecoderQtImageFormatsMovie"  , 1200);    ///< Умеет анимированные mng.
+        P("DecoderLibPng"               , 1300);    ///< Умеет анимированные png. Поддерживает EXIF и ICCP.
+        P("DecoderLibWebP"              , 1310);    ///< Умеет анимированные webp. Поддержка лучше, чем в QtImageFormatsMovie.
+        P("DecoderLibBpg"               , 1320);    ///< Умеет анимированные bpg. Поддерживает EXIF и ICCP.
         /// @note Декодеры векторных изображений
-        PD("DecoderQtSVG"               , 2100);    ///< Умеет svg, но очень плохо.
-        PD("DecoderMacWebKit"           , 2200);    ///< Умеет неинтерактивные svg.
-#undef PD
-#undef PR
+        P("DecoderQtSVG"                , 2100);    ///< Умеет svg, но очень плохо.
+        P("DecoderMacWebKit"            , 2200);    ///< Умеет неинтерактивные svg.
+#undef P
     }
 
     QMap<QString, int>::ConstIterator it = decoderPriotities.find(decoder->name());

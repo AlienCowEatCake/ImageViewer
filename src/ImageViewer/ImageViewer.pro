@@ -22,7 +22,7 @@ TARGET = ImageViewer
 
 INCLUDEPATH += src
 
-QT += core gui svg
+QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -66,7 +66,6 @@ SOURCES += \
     src/Decoders/DecodersManager.cpp \
     src/Decoders/DecoderQImage.cpp \
     src/Decoders/DecoderQMovie.cpp \
-    src/Decoders/DecoderQtSVG.cpp \
     src/Decoders/Internal/Animation/AnimationObject.cpp \
     src/Decoders/Internal/Animation/AnimationUtils.cpp \
     src/Decoders/Internal/Animation/AnimationWidget.cpp \
@@ -145,6 +144,26 @@ HEADERS += \
         src/Decoders/DecoderLibBpg.cpp
 }
 
+!disable_qtsvg {
+    QT += svg
+    SOURCES += \
+        src/Decoders/DecoderQtSVG.cpp
+}
+
+!disable_nsimage {
+    OBJECTIVE_SOURCES += \
+        src/Decoders/DecoderNSImage.mm
+}
+
+!disable_macwebkit {
+    OBJECTIVE_SOURCES += \
+        src/Decoders/Internal/MacWebKitRasterizerGraphicsItem.mm \
+        src/Decoders/DecoderMacWebKit.mm
+    HEADERS += \
+        src/Decoders/Internal/MacWebKitRasterizerGraphicsItem.h
+    LIBS += -framework WebKit
+}
+
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
     resources/translations/imageviewer_ru.ts
@@ -157,16 +176,11 @@ win32 {
 macx {
     greaterThan(QT_MAJOR_VERSION, 4): QT += macextras
     OBJECTIVE_SOURCES += \
-        src/Decoders/Internal/Utils/MacImageUtils.mm \
-        src/Decoders/Internal/MacWebKitRasterizerGraphicsItem.mm \
-        src/Decoders/DecoderNSImage.mm \
-        src/Decoders/DecoderMacWebKit.mm
+        src/Decoders/Internal/Utils/MacImageUtils.mm
     HEADERS += \
-        src/Decoders/Internal/Utils/MacImageUtils.h \
-        src/Decoders/Internal/MacWebKitRasterizerGraphicsItem.h
+        src/Decoders/Internal/Utils/MacImageUtils.h
     LIBS += -framework AppKit
     LIBS += -framework Foundation
-    LIBS += -framework WebKit
 
     QMAKE_INFO_PLIST = resources/platform/macosx/Info.plist
     ICON = resources/icon/icon.icns

@@ -107,3 +107,21 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
     CONFIG += disable_qtimageformats
 }
 
+# ::::: Optional Built-in Components Configuration :::::
+
+# DecoderQtSVG options:
+#    disable_qtsvg
+
+
+# DecoderNSImage options:
+#    disable_nsimage
+!macx | CONFIG(debug, debug|release) {
+    CONFIG += disable_nsimage
+}
+
+# DecoderMacWebKit options:
+#    disable_macwebkit
+!macx {
+    CONFIG += disable_macwebkit
+}
+
