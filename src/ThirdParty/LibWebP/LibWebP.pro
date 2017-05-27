@@ -125,6 +125,51 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/thread_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/utils.c
 
+HEADERS += \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dec/alphai_dec.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dec/common_dec.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dec/vp8_dec.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dec/vp8i_dec.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dec/vp8li_dec.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dec/webpi_dec.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/common_sse2.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dsp.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_common.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/mips_macro.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/msa_macro.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/neon.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/backward_references_enc.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/cost_enc.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/delta_palettization_enc.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/histogram_enc.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/vp8i_enc.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/vp8li_enc.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/mux/animi.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/mux/muxi.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/bit_reader_inl_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/bit_reader_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/bit_writer_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/color_cache_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/endian_inl_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/filters_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/huffman_encode_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/huffman_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/quant_levels_dec_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/quant_levels_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/random_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/rescaler_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/thread_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/webp/decode.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/webp/demux.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/webp/encode.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/webp/format_constants.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/webp/mux.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/webp/mux_types.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/webp/types.h
+
 android {
     SOURCES += $${NDK_ROOT}/sources/android/cpufeatures/cpu-features.c
     INCLUDEPATH += $${NDK_ROOT}/sources/android/cpufeatures

@@ -17,13 +17,11 @@ include(../CommonSettings.pri)
 INCLUDEPATH = $${THIRDPARTY_JBIGKIT_PATH}/libjbig $${INCLUDEPATH}
 
 SOURCES += \
-    $${THIRDPARTY_JBIGKIT_PATH}/libjbig/jbig85.c \
     $${THIRDPARTY_JBIGKIT_PATH}/libjbig/jbig_ar.c \
     $${THIRDPARTY_JBIGKIT_PATH}/libjbig/jbig.c
 
 HEADERS += \
     $${THIRDPARTY_JBIGKIT_PATH}/libjbig/jbig_ar.h \
-    $${THIRDPARTY_JBIGKIT_PATH}/libjbig/jbig85.h \
     $${THIRDPARTY_JBIGKIT_PATH}/libjbig/jbig.h
 
 TR_EXCLUDE += $${THIRDPARTY_JBIGKIT_PATH}/*

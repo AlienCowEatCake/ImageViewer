@@ -68,8 +68,6 @@ SOURCES += \
     $${THIRDPARTY_LIBJPEG_PATH}/jmemnobs.c
 
 HEADERS += \
-    $${THIRDPARTY_LIBJPEG_PATH}/cderror.h \
-    $${THIRDPARTY_LIBJPEG_PATH}/cdjpeg.h \
     $${THIRDPARTY_LIBJPEG_PATH}/jdct.h \
     $${THIRDPARTY_LIBJPEG_PATH}/jerror.h \
     $${THIRDPARTY_LIBJPEG_PATH}/jinclude.h \
@@ -78,7 +76,6 @@ HEADERS += \
     $${THIRDPARTY_LIBJPEG_PATH}/jpegint.h \
     $${THIRDPARTY_LIBJPEG_PATH}/jpeglib.h \
     $${THIRDPARTY_LIBJPEG_PATH}/jversion.h \
-    $${THIRDPARTY_LIBJPEG_PATH}/transupp.h \
     $${THIRDPARTY_LIBJPEG_CONFIG_PATH}/jconfig.h \
     $${THIRDPARTY_LIBJPEG_CONFIG_PATH}/jpegprefix.h
 

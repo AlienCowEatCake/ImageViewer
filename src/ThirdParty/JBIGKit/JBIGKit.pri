@@ -41,8 +41,8 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += libjbig.lib libjbig85.lib
-        else: LIBS += -ljbig -ljbig85
+        *msvc*: LIBS += libjbig.lib
+        else: LIBS += -ljbig
 
     }
 
