@@ -711,6 +711,23 @@ void MainWindow::updateBackgroundColor()
     m_ui->imageViewerWidget->setBackgroundColor(color);
 }
 
+void MainWindow::changeEvent(QEvent *event)
+{
+    switch(event->type())
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    case QEvent::ThemeChange:
+#endif
+    case QEvent::StyleChange:
+    case QEvent::PaletteChange:
+        m_ui->updateIcons();
+        break;
+    default:
+        break;
+    }
+    QMainWindow::changeEvent(event);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(!m_impl->isFullScreenMode)

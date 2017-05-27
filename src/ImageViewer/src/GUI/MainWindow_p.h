@@ -357,45 +357,7 @@ struct MainWindow::UI
 #endif
 
         mainWindow->ensurePolished();
-
-        toolBarButtonsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(openFile);
-        navigatePrevious->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_LEFT                      , toolBarButtonsHasDarkTheme));
-        navigateNext->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_RIGHT                     , toolBarButtonsHasDarkTheme));
-        zoomOut->setIcon                (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_OUT                  , toolBarButtonsHasDarkTheme));
-        zoomIn->setIcon                 (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , toolBarButtonsHasDarkTheme));
-        zoomFitToWindow->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , toolBarButtonsHasDarkTheme));
-        zoomOriginalSize->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , toolBarButtonsHasDarkTheme));
-        zoomFullScreen->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , toolBarButtonsHasDarkTheme));
-        rotateCounterclockwise->setIcon (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , toolBarButtonsHasDarkTheme));
-        rotateClockwise->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , toolBarButtonsHasDarkTheme));
-        flipHorizontal->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_HORIZONTAL           , toolBarButtonsHasDarkTheme));
-        flipVertical->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_VERTICAL             , toolBarButtonsHasDarkTheme));
-        openFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , toolBarButtonsHasDarkTheme));
-        saveFileAs->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS                   , toolBarButtonsHasDarkTheme));
-        deleteFile->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_DELETE                    , toolBarButtonsHasDarkTheme));
-        preferences->setIcon            (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS                  , toolBarButtonsHasDarkTheme));
-        exit->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT                      , toolBarButtonsHasDarkTheme));
-
-        menuActionsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(menuFile);
-        actionOpen->setIcon                     (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , menuActionsHasDarkTheme));
-        actionSaveAs->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS                   , menuActionsHasDarkTheme));
-        actionNavigatePrevious->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_LEFT                      , menuActionsHasDarkTheme));
-        actionNavigateNext->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_RIGHT                     , menuActionsHasDarkTheme));
-        actionPreferences->setIcon              (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS                  , menuActionsHasDarkTheme));
-        actionExit->setIcon                     (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT                      , menuActionsHasDarkTheme));
-        actionRotateCounterclockwise->setIcon   (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , menuActionsHasDarkTheme));
-        actionRotateClockwise->setIcon          (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , menuActionsHasDarkTheme));
-        actionFlipHorizontal->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_HORIZONTAL           , menuActionsHasDarkTheme));
-        actionFlipVertical->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_VERTICAL             , menuActionsHasDarkTheme));
-        actionDeleteFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_DELETE                    , menuActionsHasDarkTheme));
-        actionZoomOut->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_OUT                  , menuActionsHasDarkTheme));
-        actionZoomIn->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , menuActionsHasDarkTheme));
-        actionZoomReset->setIcon                (ThemeUtils::GetIcon(ThemeUtils::ICON_RESET                     , menuActionsHasDarkTheme));
-        actionZoomFitToWindow->setIcon          (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , menuActionsHasDarkTheme));
-        actionZoomOriginalSize->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , menuActionsHasDarkTheme));
-        actionZoomFullScreen->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , menuActionsHasDarkTheme));
-        actionAbout->setIcon                    (ThemeUtils::GetIcon(ThemeUtils::ICON_ABOUT                     , menuActionsHasDarkTheme));
-        actionAboutQt->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_QT                        , menuActionsHasDarkTheme));
+        updateIcons();
     }
 
     ~UI()
@@ -452,6 +414,59 @@ struct MainWindow::UI
 
         setSlideShowMode(isSlideShowMode);
         updateDockMenu();
+    }
+
+    void updateIcons()
+    {
+        toolBarButtonsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(openFile);
+        navigatePrevious->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_LEFT                      , toolBarButtonsHasDarkTheme));
+        navigateNext->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_RIGHT                     , toolBarButtonsHasDarkTheme));
+        zoomOut->setIcon                (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_OUT                  , toolBarButtonsHasDarkTheme));
+        zoomIn->setIcon                 (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , toolBarButtonsHasDarkTheme));
+        zoomFitToWindow->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , toolBarButtonsHasDarkTheme));
+        zoomOriginalSize->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , toolBarButtonsHasDarkTheme));
+        zoomFullScreen->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , toolBarButtonsHasDarkTheme));
+        rotateCounterclockwise->setIcon (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , toolBarButtonsHasDarkTheme));
+        rotateClockwise->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , toolBarButtonsHasDarkTheme));
+        flipHorizontal->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_HORIZONTAL           , toolBarButtonsHasDarkTheme));
+        flipVertical->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_VERTICAL             , toolBarButtonsHasDarkTheme));
+        openFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , toolBarButtonsHasDarkTheme));
+        saveFileAs->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS                   , toolBarButtonsHasDarkTheme));
+        deleteFile->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_DELETE                    , toolBarButtonsHasDarkTheme));
+        preferences->setIcon            (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS                  , toolBarButtonsHasDarkTheme));
+        exit->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT                      , toolBarButtonsHasDarkTheme));
+
+        menuActionsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(menuFile);
+        actionOpen->setIcon                     (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , menuActionsHasDarkTheme));
+        actionSaveAs->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS                   , menuActionsHasDarkTheme));
+        actionNavigatePrevious->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_LEFT                      , menuActionsHasDarkTheme));
+        actionNavigateNext->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_RIGHT                     , menuActionsHasDarkTheme));
+        actionPreferences->setIcon              (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS                  , menuActionsHasDarkTheme));
+        actionExit->setIcon                     (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT                      , menuActionsHasDarkTheme));
+        actionRotateCounterclockwise->setIcon   (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , menuActionsHasDarkTheme));
+        actionRotateClockwise->setIcon          (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , menuActionsHasDarkTheme));
+        actionFlipHorizontal->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_HORIZONTAL           , menuActionsHasDarkTheme));
+        actionFlipVertical->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_VERTICAL             , menuActionsHasDarkTheme));
+        actionDeleteFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_DELETE                    , menuActionsHasDarkTheme));
+        actionZoomOut->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_OUT                  , menuActionsHasDarkTheme));
+        actionZoomIn->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , menuActionsHasDarkTheme));
+        actionZoomReset->setIcon                (ThemeUtils::GetIcon(ThemeUtils::ICON_RESET                     , menuActionsHasDarkTheme));
+        actionZoomFitToWindow->setIcon          (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , menuActionsHasDarkTheme));
+        actionZoomOriginalSize->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , menuActionsHasDarkTheme));
+        actionZoomFullScreen->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , menuActionsHasDarkTheme));
+        actionAbout->setIcon                    (ThemeUtils::GetIcon(ThemeUtils::ICON_ABOUT                     , menuActionsHasDarkTheme));
+        actionAboutQt->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_QT                        , menuActionsHasDarkTheme));
+
+        if(!isSlideShowMode)
+        {
+            startSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_PLAY, toolBarButtonsHasDarkTheme));
+            actionStartSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_PLAY, menuActionsHasDarkTheme));
+        }
+        else
+        {
+            startSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_STOP, toolBarButtonsHasDarkTheme));
+            actionStartSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_STOP, menuActionsHasDarkTheme));
+        }
     }
 
     void setImageControlsEnabled(bool isEnabled)

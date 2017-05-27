@@ -59,7 +59,7 @@ bool LoadStyleSheet(const QStringList &filePaths)
 /// @param[in] widget - Виджет, для которого выполняется эта проверка
 bool WidgetHasDarkTheme(const QWidget *widget)
 {
-    return widget->palette().color(widget->foregroundRole()).toHsv().value() > 128;
+    return widget->palette().color(widget->backgroundRole()).toHsv().value() < 128;
 }
 
 /// @brief Создать масштабируемую иконку из нескольких разного размера

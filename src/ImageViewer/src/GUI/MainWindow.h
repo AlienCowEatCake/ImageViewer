@@ -70,6 +70,7 @@ private slots:
     void updateBackgroundColor();
 
 protected:
+    void changeEvent(QEvent *event);
     void closeEvent(QCloseEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
