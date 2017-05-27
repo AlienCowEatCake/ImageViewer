@@ -364,6 +364,11 @@ public:
                 << QString::fromLatin1("png");
     }
 
+    QStringList advancedFormats() const
+    {
+        return QStringList();
+    }
+
     QGraphicsItem *loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);

@@ -210,6 +210,11 @@ public:
                 << QString::fromLatin1("webp");
     }
 
+    QStringList advancedFormats() const
+    {
+        return QStringList();
+    }
+
     QGraphicsItem *loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);

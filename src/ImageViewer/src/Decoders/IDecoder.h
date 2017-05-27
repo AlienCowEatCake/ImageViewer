@@ -28,8 +28,13 @@ class IDecoder
 {
 public:
     virtual ~IDecoder() {}
+    /// @brief Название декодера, должно быть уникальным
     virtual QString name() const = 0;
+    /// @brief Основные (приоритетные) форматы, поддерживаемые декодером
     virtual QStringList supportedFormats() const = 0;
+    /// @brief Дополнительные (не приоритетные) форматы, которые можно попытаться открыть
+    virtual QStringList advancedFormats() const = 0;
+    /// @brief Загрузка изображения по заданному пути в элемент сцены
     virtual QGraphicsItem *loadImage(const QString &filePath) = 0;
 };
 

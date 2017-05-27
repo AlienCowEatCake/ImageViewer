@@ -62,6 +62,11 @@ public:
                 << QString::fromLatin1("pnm");  /// @todo Check this!
     }
 
+    QStringList advancedFormats() const
+    {
+        return QStringList();
+    }
+
     QGraphicsItem *loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);

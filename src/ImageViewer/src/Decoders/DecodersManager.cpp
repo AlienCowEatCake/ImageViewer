@@ -47,42 +47,55 @@ struct DecoderWithPriority
     int priority;
 };
 
-int GetDecoderPriority(const IDecoder *decoder)
+struct ComplexPriotiry
 {
-    static QMap<QString, int> decoderPriotities;
+    ComplexPriotiry(int mainPriority = -1, int advancedPriority = -1)
+        : mainPriority(mainPriority)
+        , advancedPriority(advancedPriority)
+    {}
+
+    int mainPriority;
+    int advancedPriority;
+};
+
+ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
+{
+    static QMap<QString, ComplexPriotiry> decoderPriotities;
     if(decoderPriotities.isEmpty())
     {
-#define P(NAME, PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = PRIORITY
+#define P(NAME, MAIN_PRIORITY, ADVANCED_PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = ComplexPriotiry(MAIN_PRIORITY, ADVANCED_PRIORITY)
         /// @note Декодеры статических изображений
-        P("DecoderSTB"                  ,  100);    ///< Резервный декодер, так как мало что умеет.
-        P("DecoderQImage"               ,  200);    ///< Умеет все, что умеет Qt. Не поддерживает EXIF и ICCP.
-        P("DecoderQtImageFormatsImage"  ,  300);    ///< Экзотические и deprecated декодеры Qt. Должен быть выше QImage.
-        P("DecoderLibJpeg"              ,  400);    ///< Умеет jpeg форматы. Поддерживает EXIF и ICCP. Должен быть выше QImage.
-        P("DecoderLibJasPer"            ,  410);    ///< Умеет формат JPEG 2000 и несколько побочных. Поддержка хуже, чем в QtImageFormatsImage, но имеет ряд дополнительных проверок от крашей.
-        P("DecoderLibTiff"              ,  420);    ///< Умеет формат tiff. Поддерживает EXIF(?) и ICCP. Должен быть выше QImage и QtImageFormatsImage.
-        P("DecoderJbigKit"              ,  430);    ///< Умеет формат JBIG1.
-        P("DecoderNSImage"              ,  900);    ///< Умеет очень много разных форматов.
+        P("DecoderSTB"                  ,  100, -1); ///< Резервный декодер, так как мало что умеет.
+        P("DecoderQImage"               ,  200, -1); ///< Умеет все, что умеет Qt. Не поддерживает EXIF и ICCP.
+        P("DecoderQtImageFormatsImage"  ,  300, -1); ///< Экзотические и deprecated декодеры Qt. Должен быть выше QImage.
+        P("DecoderLibJpeg"              ,  400, -1); ///< Умеет jpeg форматы. Поддерживает EXIF и ICCP. Должен быть выше QImage.
+        P("DecoderLibJasPer"            ,  410, 90); ///< Умеет формат JPEG 2000 и несколько побочных. Поддержка хуже, чем в QtImageFormatsImage, но имеет ряд дополнительных проверок от крашей.
+        P("DecoderLibTiff"              ,  420, -1); ///< Умеет формат tiff. Поддерживает EXIF(?) и ICCP. Должен быть выше QImage и QtImageFormatsImage.
+        P("DecoderJbigKit"              ,  430, -1); ///< Умеет формат JBIG1.
+        P("DecoderNSImage"              ,  900, -1); ///< Умеет очень много разных форматов.
         /// @note Декодеры анимированных изображений
-        P("DecoderQMovie"               , 1100);    ///< Умеет анимированные gif.
-        P("DecoderLibMng"               , 1110);    ///< Умеет анимированные mng и jng. Поддержка mng хуже, чем в QtImageFormatsMovie.
-        P("DecoderQtImageFormatsMovie"  , 1200);    ///< Умеет анимированные mng.
-        P("DecoderLibPng"               , 1300);    ///< Умеет анимированные png. Поддерживает EXIF и ICCP.
-        P("DecoderLibWebP"              , 1310);    ///< Умеет анимированные webp. Поддержка лучше, чем в QtImageFormatsMovie.
-        P("DecoderLibBpg"               , 1320);    ///< Умеет анимированные bpg. Поддерживает EXIF и ICCP.
+        P("DecoderQMovie"               , 1100, -1); ///< Умеет анимированные gif.
+        P("DecoderLibMng"               , 1110, -1); ///< Умеет анимированные mng и jng. Поддержка mng хуже, чем в QtImageFormatsMovie.
+        P("DecoderQtImageFormatsMovie"  , 1200, -1); ///< Умеет анимированные mng.
+        P("DecoderLibPng"               , 1300, -1); ///< Умеет анимированные png. Поддерживает EXIF и ICCP.
+        P("DecoderLibWebP"              , 1310, -1); ///< Умеет анимированные webp. Поддержка лучше, чем в QtImageFormatsMovie.
+        P("DecoderLibBpg"               , 1320, -1); ///< Умеет анимированные bpg. Поддерживает EXIF и ICCP.
         /// @note Декодеры векторных изображений
-        P("DecoderQtSVG"                , 2100);    ///< Умеет svg, но очень плохо.
-        P("DecoderMacWebKit"            , 2200);    ///< Умеет неинтерактивные svg.
+        P("DecoderQtSVG"                , 2100, -1); ///< Умеет svg, но очень плохо.
+        P("DecoderMacWebKit"            , 2200, -1); ///< Умеет неинтерактивные svg.
 #undef P
     }
 
-    QMap<QString, int>::ConstIterator it = decoderPriotities.find(decoder->name());
+    QMap<QString, ComplexPriotiry>::ConstIterator it = decoderPriotities.find(decoder->name());
     if(it != decoderPriotities.end())
         return it.value();
 
-    static int unknownDecoderPriority = 10000;
+    static ComplexPriotiry unknownDecoderPriority(20000, 10000);
     decoderPriotities[decoder->name()] = unknownDecoderPriority;
     qWarning() << "Unknown priority for decoder" << decoder->name();
-    return unknownDecoderPriority++;
+    unknownDecoderPriority.mainPriority++;
+    unknownDecoderPriority.advancedPriority++;
+    return unknownDecoderPriority;
 }
 
 } // namespace
@@ -99,18 +112,26 @@ struct DecodersManager::Impl
             for(QList<IDecoder*>::ConstIterator it = pendingDecoders.constBegin(); it != pendingDecoders.constEnd(); ++it)
             {
                 IDecoder *decoder = *it;
-                const int priority = GetDecoderPriority(decoder);
-                if(priority >= 0)
+                const ComplexPriotiry priority = GetDecoderPriority(decoder);
+                if(priority.mainPriority >= 0)
                 {
                     decoders.insert(decoder);
                     const QStringList supportedFormats = decoder->supportedFormats();
                     for(QStringList::ConstIterator jt = supportedFormats.constBegin(); jt != supportedFormats.constEnd(); ++jt)
-                        formats[*jt].insert(DecoderWithPriority(decoder, priority));
-                    qDebug() << "Decoder" << decoder->name() << "was registered for" << supportedFormats << " with priority =" << priority;
+                        formats[*jt].insert(DecoderWithPriority(decoder, priority.mainPriority));
+                    qDebug() << "Decoder" << decoder->name() << "was registered for" << supportedFormats << " with priority =" << priority.mainPriority;
+
+                    if(priority.advancedPriority >= 0)
+                    {
+                        const QStringList advancedFormats = decoder->advancedFormats();
+                        for(QStringList::ConstIterator jt = advancedFormats.constBegin(); jt != advancedFormats.constEnd(); ++jt)
+                            formats[*jt].insert(DecoderWithPriority(decoder, priority.advancedPriority));
+                        qDebug() << "Decoder" << decoder->name() << "was registered for" << advancedFormats << " with priority =" << priority.advancedPriority;
+                    }
                 }
                 else
                 {
-                    qDebug() << "Decoder" << decoder->name() << "was NOT registered with priority =" << priority;
+                    qDebug() << "Decoder" << decoder->name() << "was NOT registered with priority =" << priority.mainPriority;
                 }
             }
             pendingDecoders.clear();
@@ -142,7 +163,7 @@ void DecodersManager::registerDecoder(IDecoder *decoder)
 
 void DecodersManager::registerFallbackDecoder(IDecoder *decoder)
 {
-    const int fallbackPriority = GetDecoderPriority(decoder);
+    const int fallbackPriority = GetDecoderPriority(decoder).mainPriority;
     m_impl->fallbackDecoders.insert(DecoderWithPriority(decoder, fallbackPriority));
     qDebug() << "Decoder" << decoder->name() << "was registered as FALLBACK with priority =" << fallbackPriority;
 }

@@ -158,6 +158,11 @@ public:
                 << QString::fromLatin1("bpg");
     }
 
+    QStringList advancedFormats() const
+    {
+        return QStringList();
+    }
+
     QGraphicsItem *loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);

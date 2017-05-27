@@ -242,28 +242,34 @@ public:
 #if !defined(EXCLUDE_PGX_SUPPORT)
                 << QString::fromLatin1("pgx") // PGX (JPEG 2000)
 #endif
-                /// @note Дополнительные форматы, открываемые libjasper
-//#if !defined(EXCLUDE_JPG_SUPPORT)
-//                << QString::fromLatin1("jpg")
-//#endif
+                   ;
+    }
+
+    QStringList advancedFormats() const
+    {
+        return QStringList()
+                   /// @note Дополнительные форматы, открываемые libjasper
+#if !defined(EXCLUDE_JPG_SUPPORT)
+                << QString::fromLatin1("jpg")
+#endif
 #if !defined(EXCLUDE_MIF_SUPPORT)
                 << QString::fromLatin1("mif") // Magick Image File Format
 #endif
-//#if !defined(EXCLUDE_PNM_SUPPORT)
-//                << QString::fromLatin1("pnm") // Portable anymap format
-//                << QString::fromLatin1("ppm") // Portable pixmap format
-//                << QString::fromLatin1("pgm") // Portable graymap format
-//                << QString::fromLatin1("pbm") // Portable bitmap format
-//#endif
+#if !defined(EXCLUDE_PNM_SUPPORT)
+                << QString::fromLatin1("pnm") // Portable anymap format
+                << QString::fromLatin1("ppm") // Portable pixmap format
+                << QString::fromLatin1("pgm") // Portable graymap format
+                << QString::fromLatin1("pbm") // Portable bitmap format
+#endif
 #if !defined(EXCLUDE_RAS_SUPPORT)
                 << QString::fromLatin1("ras") // Sun Raster
                 << QString::fromLatin1("sun")
 #endif
-//#if !defined(EXCLUDE_BMP_SUPPORT)
-//                << QString::fromLatin1("bmp")
-//                << QString::fromLatin1("dib")
-//                << QString::fromLatin1("rle")
-//#endif
+#if !defined(EXCLUDE_BMP_SUPPORT)
+                << QString::fromLatin1("bmp")
+                << QString::fromLatin1("dib")
+                << QString::fromLatin1("rle")
+#endif
                    ;
     }
 

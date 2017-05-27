@@ -46,6 +46,11 @@ public:
         return result;
     }
 
+    QStringList advancedFormats() const
+    {
+        return QStringList();
+    }
+
     QGraphicsItem *loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);
