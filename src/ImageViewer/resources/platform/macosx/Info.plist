@@ -92,7 +92,7 @@
 				<string>icns</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Apple icon image</string>
+			<string>Apple Icon Image</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
@@ -102,7 +102,7 @@
 				<string>ico</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Windows icon image</string>
+			<string>Windows Icon Image</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
@@ -113,7 +113,7 @@
 				<string>jbig</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>JBIG1 image</string>
+			<string>JBIG1 Image</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
