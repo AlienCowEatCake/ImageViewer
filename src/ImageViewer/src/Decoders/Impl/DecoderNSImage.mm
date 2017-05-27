@@ -28,7 +28,7 @@
 #include <QPixmap>
 #include <QFileInfo>
 
-#include "IDecoder.h"
+#include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Utils/MacImageUtils.h"
 

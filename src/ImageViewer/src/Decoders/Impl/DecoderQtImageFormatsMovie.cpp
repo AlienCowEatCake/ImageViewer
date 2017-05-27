@@ -17,28 +17,29 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QMovie>
 #include <QGraphicsProxyWidget>
-#include <QLabel>
 #include <QFileInfo>
 
-#include "IDecoder.h"
+#include "QtImageFormatsMovie.h"
+#include "QtImageFormatsMovieLabel.h"
+
+#include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Animation/AnimationUtils.h"
 
 namespace {
 
-class DecoderQMovie : public IDecoder
+class DecoderQtImageFormatsMovie : public IDecoder
 {
 public:
     QString name() const
     {
-        return QString::fromLatin1("DecoderQMovie");
+        return QString::fromLatin1("DecoderQtImageFormatsMovie");
     }
 
     QStringList supportedFormats() const
     {
-        const QList<QByteArray> readerFormats = QMovie::supportedFormats();
+        const QList<QByteArray> readerFormats = QtImageFormatsMovie::supportedFormats();
         QStringList result;
         for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
             result.append(QString::fromLatin1(*it).toLower());
@@ -50,13 +51,13 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
-        QMovie *movie = new QMovie(filePath);
+        QtImageFormatsMovie *movie = new QtImageFormatsMovie(filePath);
         if(!movie->isValid() || movie->frameCount() == 1)
         {
             movie->deleteLater();
             return NULL;
         }
-        QLabel *movieLabel = new QLabel();
+        QtImageFormatsMovieLabel *movieLabel = new QtImageFormatsMovieLabel();
         AnimationUtils::SetTransparentBackground(movieLabel);
         movieLabel->setMovie(movie);
         movie->setParent(movieLabel);
@@ -67,6 +68,6 @@ public:
     }
 };
 
-DecoderAutoRegistrator registrator(new DecoderQMovie);
+DecoderAutoRegistrator registrator(new DecoderQtImageFormatsMovie);
 
 } // namespace

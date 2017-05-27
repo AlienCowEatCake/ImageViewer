@@ -28,7 +28,7 @@
 #include <QByteArray>
 #include <QDebug>
 
-#include "IDecoder.h"
+#include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/AnimationUtils.h"

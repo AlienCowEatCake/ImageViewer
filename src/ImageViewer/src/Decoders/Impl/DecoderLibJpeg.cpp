@@ -31,7 +31,7 @@
 #include <QGraphicsPixmapItem>
 #include <QDebug>
 
-#include "IDecoder.h"
+#include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Utils/ExifUtils.h"
 #include "Internal/Utils/CmsUtils.h"

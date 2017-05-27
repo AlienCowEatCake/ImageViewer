@@ -21,8 +21,8 @@
 #define DECODER_AUTOREGISTRATOR_H_INCLUDED
 
 #include "Utils/ScopedPointer.h"
-#include "../IDecoder.h"
-#include "../DecodersManager.h"
+#include "../../IDecoder.h"
+#include "../../DecodersManager.h"
 
 class DecoderAutoRegistrator
 {

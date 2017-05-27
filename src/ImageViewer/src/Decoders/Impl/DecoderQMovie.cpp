@@ -17,29 +17,28 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QGraphicsPixmapItem>
-#include <QPixmap>
+#include <QMovie>
+#include <QGraphicsProxyWidget>
+#include <QLabel>
 #include <QFileInfo>
-#include <QDebug>
 
-#include "QtImageFormatsImageReader.h"
-
-#include "IDecoder.h"
+#include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/Animation/AnimationUtils.h"
 
 namespace {
 
-class DecoderQtImageFormatsImage : public IDecoder
+class DecoderQMovie : public IDecoder
 {
 public:
     QString name() const
     {
-        return QString::fromLatin1("DecoderQtImageFormatsImage");
+        return QString::fromLatin1("DecoderQMovie");
     }
 
     QStringList supportedFormats() const
     {
-        const QList<QByteArray> readerFormats = QtImageFormatsImageReader::supportedImageFormats();
+        const QList<QByteArray> readerFormats = QMovie::supportedFormats();
         QStringList result;
         for(QList<QByteArray>::ConstIterator it = readerFormats.constBegin(); it != readerFormats.constEnd(); ++it)
             result.append(QString::fromLatin1(*it).toLower());
@@ -51,26 +50,23 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
-        QtImageFormatsImageReader imageReader(filePath);
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
-        imageReader.setDecideFormatFromContent(true);
-#endif
-        imageReader.setBackgroundColor(Qt::transparent);
-        imageReader.setQuality(100);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
-        imageReader.setAutoTransform(true);
-#endif
-        QImage image;
-        image = imageReader.read();
-        if(image.isNull())
+        QMovie *movie = new QMovie(filePath);
+        if(!movie->isValid() || movie->frameCount() == 1)
         {
-            qDebug() << imageReader.errorString();
+            movie->deleteLater();
             return NULL;
         }
-        return new QGraphicsPixmapItem(QPixmap::fromImage(image));
+        QLabel *movieLabel = new QLabel();
+        AnimationUtils::SetTransparentBackground(movieLabel);
+        movieLabel->setMovie(movie);
+        movie->setParent(movieLabel);
+        movie->start();
+        QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();
+        proxy->setWidget(movieLabel);
+        return proxy;
     }
 };
 
-DecoderAutoRegistrator registrator(new DecoderQtImageFormatsImage, true);
+DecoderAutoRegistrator registrator(new DecoderQMovie);
 
 } // namespace
