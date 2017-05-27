@@ -129,6 +129,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderLibJasPer.cpp
 }
 
+!disable_jbigkit {
+    SOURCES += \
+        src/Decoders/Impl/DecoderJbigKit.cpp
+}
+
 !disable_libtiff {
     SOURCES += \
         src/Decoders/Impl/DecoderLibTiff.cpp

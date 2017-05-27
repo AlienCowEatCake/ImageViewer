@@ -109,6 +109,17 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>jbg</string>
+				<string>jbig</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>JBIG1 image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>jng</string>
 			</array>
 			<key>CFBundleTypeName</key>
