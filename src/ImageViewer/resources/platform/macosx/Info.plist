@@ -69,6 +69,16 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>cur</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Windows Cursor Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>dds</string>
 			</array>
 			<key>CFBundleTypeName</key>
@@ -156,6 +166,26 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>hdr</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>High Dynamic Range Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>mif</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Magick Image File Format Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>mng</string>
 			</array>
 			<key>CFBundleTypeName</key>
@@ -196,6 +226,26 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>pic</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Softimage PIC Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>pnm</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Portable Anymap Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>ppm</string>
 			</array>
 			<key>CFBundleTypeName</key>
@@ -210,6 +260,17 @@
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Adobe Photoshop Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>sun</string>
+				<string>ras</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Sun Raster Image</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>

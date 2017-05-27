@@ -268,7 +268,6 @@ public:
 #if !defined(EXCLUDE_BMP_SUPPORT)
                 << QString::fromLatin1("bmp")
                 << QString::fromLatin1("dib")
-                << QString::fromLatin1("rle")
 #endif
                    ;
     }
