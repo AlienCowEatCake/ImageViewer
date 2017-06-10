@@ -83,9 +83,11 @@ QString compilerDescriptionInt()
     default:   return QString::fromLatin1("MSVC++");
     }
 #elif defined (Q_CC_SYM)
-    return QString::fromLatin1("Digital Mars C/C++ (used to be Symantec C++)");
+    return QString::fromLatin1("Digital Mars C/C++");
+#elif defined (Q_CC_INTEL)
+    return QString::fromLatin1("Intel C++");
 #elif defined (Q_CC_MSVC)
-    return QString::fromLatin1("Microsoft Visual C/C++, Intel C++ for Windows");
+    return QString::fromLatin1("Microsoft Visual C/C++");
 #elif defined (Q_CC_BOR)
     return QString::fromLatin1("Borland/Turbo C++");
 #elif defined (Q_CC_WAT)
@@ -112,8 +114,6 @@ QString compilerDescriptionInt()
     return QString::fromLatin1("Reliant C++");
 #elif defined (Q_CC_KAI)
     return QString::fromLatin1("KAI C++");
-#elif defined (Q_CC_INTEL)
-    return QString::fromLatin1("Intel C++ for Linux, Intel C++ for Windows");
 #elif defined (Q_CC_HIGHC)
     return QString::fromLatin1("MetaWare High C/C++");
 #elif defined (Q_CC_PGI)

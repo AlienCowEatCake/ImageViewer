@@ -91,6 +91,9 @@ QString GetSystemDescription()
     case 112:
         result.append(QString::fromLatin1(" \"Sierra\""));
         break;
+    case 113:
+        result.append(QString::fromLatin1(" \"High Sierra\""));
+        break;
     default:
         break;
     }
