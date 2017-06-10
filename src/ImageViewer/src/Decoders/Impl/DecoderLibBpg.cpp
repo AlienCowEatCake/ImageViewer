@@ -94,7 +94,7 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
             break;
         case BPG_EXTENSION_TAG_EXIF:
             qDebug() << "Found EXIF metadata";
-            orientation = ExifUtils::GetExifOrientation(QByteArray("Exif\0", 5) + QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf), static_cast<int>(extension->buf_len)));
+            orientation = ExifUtils::GetExifOrientation(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf + 1), static_cast<int>(extension->buf_len - 1)));
             break;
         default:
             break;

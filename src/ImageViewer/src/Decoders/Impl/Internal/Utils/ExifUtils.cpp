@@ -23,6 +23,7 @@
 
 #include <QImage>
 #include <QTransform>
+#include <QBuffer>
 #include <QDebug>
 
 #if defined (HAS_LIBEXIF)
@@ -75,8 +76,11 @@ quint16 GetExifOrientation(const QString &filePath)
 quint16 GetExifOrientation(const QByteArray &rawExifData)
 {
 #if defined (HAS_LIBEXIF)
+    const QByteArray rawExifDataWithHeader = QByteArray("Exif\0\0", 6) + rawExifData;
+    const unsigned char* data = reinterpret_cast<const unsigned char*>(rawExifDataWithHeader.data());
+    const unsigned int dataSize = static_cast<unsigned int>(rawExifDataWithHeader.size());
     quint16 orientation = 1;
-    ExifData *exifData = exif_data_new_from_data(reinterpret_cast<const unsigned char*>(rawExifData.data()), static_cast<unsigned int>(rawExifData.size()));
+    ExifData *exifData = exif_data_new_from_data(data, dataSize);
     if(!exifData)
         return orientation;
 //#if defined (QT_DEBUG)
@@ -95,6 +99,20 @@ quint16 GetExifOrientation(const QByteArray &rawExifData)
     }
     exif_data_unref(exifData);
     return orientation;
+#elif defined (HAS_QTEXTENDED)
+    quint16 orientation = 1;
+    QBuffer buffer(const_cast<QByteArray*>(&rawExifData));
+    if(!buffer.open(QIODevice::ReadOnly))
+        return orientation;
+    QExifImageHeader exifHeader;
+    if(exifHeader.read(&buffer) && exifHeader.contains(QExifImageHeader::Orientation))
+    {
+        orientation = exifHeader.value(QExifImageHeader::Orientation).toShort();
+        qDebug() << "EXIF header detected";
+        qDebug() << "EXIF orientation =" << orientation;
+    }
+    buffer.close();
+    return  orientation;
 #else
     Q_UNUSED(rawExifData);
     return 1;
