@@ -2,6 +2,7 @@
 #define TP_TIFF_PREFIX_H_INCLUDED
 
 #define _TIFFBuiltinCODECS                      _tp_TIFFBuiltinCODECS
+#define _TIFFcalloc                             _tp_TIFFcalloc
 #define _TIFFCheckMalloc                        _tp_TIFFCheckMalloc
 #define _TIFFCheckRealloc                       _tp_TIFFCheckRealloc
 #define _TIFFCreateAnonField                    _tp_TIFFCreateAnonField
@@ -163,7 +164,9 @@
 #define TIFFReadRGBAImage                       tp_TIFFReadRGBAImage
 #define TIFFReadRGBAImageOriented               tp_TIFFReadRGBAImageOriented
 #define TIFFReadRGBAStrip                       tp_TIFFReadRGBAStrip
+#define TIFFReadRGBAStripExt                    tp_TIFFReadRGBAStripExt
 #define TIFFReadRGBATile                        tp_TIFFReadRGBATile
+#define TIFFReadRGBATileExt                     tp_TIFFReadRGBATileExt
 #define TIFFReadScanline                        tp_TIFFReadScanline
 #define TIFFReadTile                            tp_TIFFReadTile
 #define TIFFRegisterCODEC                       tp_TIFFRegisterCODEC
