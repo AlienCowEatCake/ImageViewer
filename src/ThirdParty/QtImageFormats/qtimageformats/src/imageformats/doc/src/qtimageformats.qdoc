@@ -65,6 +65,10 @@ libraries. If not found, it may fall back on using a bundled copy (in
 provided for manual builds only, and not used as a fallback in case system
 libraries are unavailable.
 
+\note For security reasons, the Direct Draw Surface (DDS) handler is not built
+by default since Qt 5.8. Users who still want this handler can build it from the
+source project.
+
 \section2 Deployment
 
 When built, the Qt Image Formats plugins are located as dynamic

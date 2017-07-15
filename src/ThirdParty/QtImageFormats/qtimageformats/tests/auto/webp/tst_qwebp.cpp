@@ -127,6 +127,7 @@ void tst_qwebp::readAnimation()
     }
 
     QVERIFY(reader.read().isNull());
+    QCOMPARE(reader.canRead(), !reader.supportsAnimation());
 }
 
 void tst_qwebp::writeImage_data()

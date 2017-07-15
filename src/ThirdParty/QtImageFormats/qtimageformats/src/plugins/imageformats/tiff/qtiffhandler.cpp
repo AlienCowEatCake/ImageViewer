@@ -335,8 +335,8 @@ bool QTiffHandler::read(QImage *image)
     }
 
     TIFF *const tiff = d->tiff;
-    const uint32 width = d->size.width();
-    const uint32 height = d->size.height();
+    const quint32 width = d->size.width();
+    const quint32 height = d->size.height();
 
     if (format == QImage::Format_Mono || format == QImage::Format_Indexed8 || format == QImage::Format_Grayscale8) {
         if (format == QImage::Format_Mono) {

@@ -74,6 +74,10 @@ bool QWebpHandler::canRead() const
 
     if (m_scanState != ScanError) {
         setFormat(QByteArrayLiteral("webp"));
+
+        if (m_features.has_animation && m_iter.frame_num >= m_frameCount)
+            return false;
+
         return true;
     }
     return false;
@@ -118,6 +122,8 @@ bool QWebpHandler::ensureScanned() const
                 that->m_bgColor = QColor::fromRgba(QRgb(WebPDemuxGetI(m_demuxer, WEBP_FF_BACKGROUND_COLOR)));
 
                 that->m_composited = new QImage(that->m_features.width, that->m_features.height, QImage::Format_ARGB32);
+                if (that->m_features.has_alpha)
+                    that->m_composited->fill(Qt::transparent);
 
                 // We do not reset device position since we have read in all data
                 m_scanState = ScanSuccess;
@@ -189,6 +195,8 @@ bool QWebpHandler::read(QImage *image)
     } else {
         // Animation
         QPainter painter(m_composited);
+        if (m_features.has_alpha && m_iter.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND)
+            m_composited->fill(Qt::transparent);
         painter.drawImage(currentImageRect(), frame);
 
         *image = *m_composited;
