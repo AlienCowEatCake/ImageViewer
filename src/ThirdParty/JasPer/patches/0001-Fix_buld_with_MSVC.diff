@@ -1,0 +1,16 @@
+diff --git a/src/libjasper/include/jasper/jas_types.h b/src/libjasper/include/jasper/jas_types.h
+index 3e15573..ccd72ac 100644
+--- a/src/libjasper/include/jasper/jas_types.h
++++ b/src/libjasper/include/jasper/jas_types.h
+@@ -110,9 +110,11 @@
+ #define jas_ulonglong unsigned long long
+ 
+ #if defined(_MSC_VER) && (_MSC_VER < 1800)
++#ifndef __cplusplus
+ #define bool  int
+ #define false 0
+ #define true  1
++#endif
+ 
+ #define PRIxFAST32 "x"
+ #define PRIxFAST16 PRIxFAST32

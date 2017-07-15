@@ -110,9 +110,11 @@
 #define jas_ulonglong unsigned long long
 
 #if defined(_MSC_VER) && (_MSC_VER < 1800)
+#ifndef __cplusplus
 #define bool  int
 #define false 0
 #define true  1
+#endif
 
 #define PRIxFAST32 "x"
 #define PRIxFAST16 PRIxFAST32
