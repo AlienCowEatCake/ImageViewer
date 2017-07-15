@@ -107,35 +107,35 @@ struct DecodersManager::Impl
 
     void checkPendingDecoderRegistration()
     {
-        if(!pendingDecoders.isEmpty())
-        {
-            for(QList<IDecoder*>::ConstIterator it = pendingDecoders.constBegin(); it != pendingDecoders.constEnd(); ++it)
-            {
-                IDecoder *decoder = *it;
-                const ComplexPriotiry priority = GetDecoderPriority(decoder);
-                if(priority.mainPriority >= 0)
-                {
-                    decoders.insert(decoder);
-                    const QStringList supportedFormats = decoder->supportedFormats();
-                    for(QStringList::ConstIterator jt = supportedFormats.constBegin(); jt != supportedFormats.constEnd(); ++jt)
-                        formats[*jt].insert(DecoderWithPriority(decoder, priority.mainPriority));
-                    qDebug() << "Decoder" << decoder->name() << "was registered for" << supportedFormats << " with priority =" << priority.mainPriority;
+        if(pendingDecoders.isEmpty())
+            return;
 
-                    if(priority.advancedPriority >= 0)
-                    {
-                        const QStringList advancedFormats = decoder->advancedFormats();
-                        for(QStringList::ConstIterator jt = advancedFormats.constBegin(); jt != advancedFormats.constEnd(); ++jt)
-                            formats[*jt].insert(DecoderWithPriority(decoder, priority.advancedPriority));
-                        qDebug() << "Decoder" << decoder->name() << "was registered for" << advancedFormats << " with priority =" << priority.advancedPriority;
-                    }
-                }
-                else
+        for(QList<IDecoder*>::ConstIterator it = pendingDecoders.constBegin(); it != pendingDecoders.constEnd(); ++it)
+        {
+            IDecoder *decoder = *it;
+            const ComplexPriotiry priority = GetDecoderPriority(decoder);
+            if(priority.mainPriority >= 0)
+            {
+                decoders.insert(decoder);
+                const QStringList supportedFormats = decoder->supportedFormats();
+                for(QStringList::ConstIterator jt = supportedFormats.constBegin(); jt != supportedFormats.constEnd(); ++jt)
+                    formats[*jt].insert(DecoderWithPriority(decoder, priority.mainPriority));
+                qDebug() << "Decoder" << decoder->name() << "was registered for" << supportedFormats << " with priority =" << priority.mainPriority;
+
+                if(priority.advancedPriority >= 0)
                 {
-                    qDebug() << "Decoder" << decoder->name() << "was NOT registered with priority =" << priority.mainPriority;
+                    const QStringList advancedFormats = decoder->advancedFormats();
+                    for(QStringList::ConstIterator jt = advancedFormats.constBegin(); jt != advancedFormats.constEnd(); ++jt)
+                        formats[*jt].insert(DecoderWithPriority(decoder, priority.advancedPriority));
+                    qDebug() << "Decoder" << decoder->name() << "was registered for" << advancedFormats << " with priority =" << priority.advancedPriority;
                 }
             }
-            pendingDecoders.clear();
+            else
+            {
+                qDebug() << "Decoder" << decoder->name() << "was NOT registered with priority =" << priority.mainPriority;
+            }
         }
+        pendingDecoders.clear();
     }
 
     std::set<IDecoder*> decoders;
