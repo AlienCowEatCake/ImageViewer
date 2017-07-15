@@ -71,6 +71,8 @@ SOURCES += \
     src/Decoders/Impl/Internal/Animation/AnimationWidget.cpp \
     src/Decoders/Impl/Internal/Animation/FramesCompositor.cpp \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.cpp \
+    src/Decoders/Impl/Internal/GraphicsItems/ImageResamplerWorker.cpp \
+    src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/Utils/ExifUtils.cpp \
     src/Decoders/Impl/Internal/Utils/CmsUtils.cpp \
     src/Decoders/Impl/Internal/Utils/ZLibUtils.cpp \
@@ -93,10 +95,12 @@ HEADERS += \
     src/Decoders/Impl/Internal/Animation/FramesCompositor.h \
     src/Decoders/Impl/Internal/Animation/IAnimationProvider.h \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.h \
-    src/Decoders/Impl/Internal/DecoderAutoRegistrator.h \
+    src/Decoders/Impl/Internal/GraphicsItems/ImageResamplerWorker.h \
+    src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.h \
     src/Decoders/Impl/Internal/Utils/ExifUtils.h \
     src/Decoders/Impl/Internal/Utils/CmsUtils.h \
-    src/Decoders/Impl/Internal/Utils/ZLibUtils.h
+    src/Decoders/Impl/Internal/Utils/ZLibUtils.h \
+    src/Decoders/Impl/Internal/DecoderAutoRegistrator.h
 
 !disable_stb {
     SOURCES += \
@@ -167,10 +171,10 @@ HEADERS += \
 
 !disable_macwebkit {
     OBJECTIVE_SOURCES += \
-        src/Decoders/Impl/Internal/MacWebKitRasterizerGraphicsItem.mm \
+        src/Decoders/Impl/Internal/GraphicsItems/MacWebKitRasterizerGraphicsItem.mm \
         src/Decoders/Impl/DecoderMacWebKit.mm
     HEADERS += \
-        src/Decoders/Impl/Internal/MacWebKitRasterizerGraphicsItem.h
+        src/Decoders/Impl/Internal/GraphicsItems/MacWebKitRasterizerGraphicsItem.h
     LIBS += -framework WebKit
 }
 

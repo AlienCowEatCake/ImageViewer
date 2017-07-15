@@ -20,14 +20,13 @@
 #include <set>
 
 #include <QImageReader>
-#include <QGraphicsPixmapItem>
-#include <QPixmap>
 #include <QFileInfo>
 #include <QDebug>
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Utils/ExifUtils.h"
+#include "Internal/GraphicsItems/ResampledImageGraphicsItem.h"
 
 namespace {
 
@@ -108,7 +107,7 @@ public:
             return NULL;
         }
 
-        return new QGraphicsPixmapItem(QPixmap::fromImage(image));
+        return new ResampledImageGraphicsItem(image);
     }
 };
 

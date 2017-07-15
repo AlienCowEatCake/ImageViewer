@@ -52,6 +52,7 @@ struct MngAnimationProvider : public IAnimationProvider
     int nextImageDelay() const;
     bool jumpToNextImage();
     QPixmap currentPixmap() const;
+    QImage currentImage() const;
 
     mng_handle hMNG;
     QImage image;
@@ -234,7 +235,12 @@ bool MngAnimationProvider::jumpToNextImage()
 
 QPixmap MngAnimationProvider::currentPixmap() const
 {
-    return QPixmap::fromImage(image);
+    return QPixmap::fromImage(currentImage());
+}
+
+QImage MngAnimationProvider::currentImage() const
+{
+    return image;
 }
 
 // ====================================================================================================

@@ -66,7 +66,12 @@ bool AbstractAnimationProvider::jumpToNextImage()
 
 QPixmap AbstractAnimationProvider::currentPixmap() const
 {
-    return QPixmap::fromImage(m_frames[m_currentFrame].image);
+    return QPixmap::fromImage(currentImage());
+}
+
+QImage AbstractAnimationProvider::currentImage() const
+{
+    return m_frames[m_currentFrame].image;
 }
 
 AbstractAnimationProvider::AbstractAnimationProvider()

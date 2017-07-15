@@ -21,6 +21,7 @@
 #define IANIMATIONPROVIDER_H_INCLUDED
 
 class QPixmap;
+class QImage;
 
 class IAnimationProvider
 {
@@ -34,6 +35,7 @@ public:
     virtual bool jumpToNextImage() = 0;
 
     virtual QPixmap currentPixmap() const = 0;
+    virtual QImage currentImage() const = 0;
 };
 
 #endif // IANIMATIONPROVIDER_H_INCLUDED

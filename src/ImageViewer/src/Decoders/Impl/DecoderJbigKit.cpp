@@ -27,14 +27,13 @@ extern "C" {
 
 #include <QFileInfo>
 #include <QImage>
-#include <QPixmap>
 #include <QFile>
 #include <QByteArray>
-#include <QGraphicsPixmapItem>
 #include <QDebug>
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/GraphicsItems/ResampledImageGraphicsItem.h"
 
 namespace
 {
@@ -113,7 +112,7 @@ public:
         if(image.isNull())
             return NULL;
 
-        return new QGraphicsPixmapItem(QPixmap::fromImage(image));
+        return new ResampledImageGraphicsItem(image);
     }
 };
 
