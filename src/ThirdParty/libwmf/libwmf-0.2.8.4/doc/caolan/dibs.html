@@ -1,0 +1,591 @@
+<BASE HREF="http://www.geocities.com/SiliconValley/2151/">
+
+<!-- <SERVICE NAME="watermark"> -->
+<SCRIPT LANGUAGE="javascript1.2" SRC="http://www.geocities.com/include/watermark/v2/lib.js"></SCRIPT>
+<SCRIPT LANGUAGE="javascript1.2">
+<!--
+var args= new Array;
+
+assignArrays("Computers & Technology", "Computers_and_Technology");
+
+//-->
+</SCRIPT>
+<SCRIPT LANGUAGE="javascript1.2" SRC="http://www.geocities.com/include/watermark/v2/ns.js">
+</SCRIPT>
+<!-- </SERVICE> -->
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<title>Device-Independent Bitmaps and Palettes</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+<div align="center"><center>
+
+<table border="0" width="100%" bgcolor="#00FFFF">
+    <tr>
+        <td><font color="#0000FF" size="4" face="Arial"><strong>Device-Independent
+        Bitmaps and Palettes</strong></font></td>
+    </tr>
+</table>
+</center></div>
+
+<p><font size="2" face="Arial"><b>Introduction</b></font></p>
+
+<p><font size="2" face="Arial">The purpose of this article is to
+show how to create a Device-Independent Bitmap of a given format,
+how to get a pointer to the memory bits that make up the image
+and how to display it on screen regardless of the current display
+mode.</font></p>
+
+<p><font size="2" face="Arial"><strong>Pick a Flavor</strong></font></p>
+
+<p><font size="2" face="Arial">When you create a DIB, you have to
+specify the pixel format you want it in. In general there are two
+&quot;flavors&quot;:</font></p>
+
+<ul>
+    <li><font size="2" face="Arial">Palette images</font></li>
+    <li><font size="2" face="Arial">RGB images</font></li>
+</ul>
+
+<p><font size="2" face="Arial">Palette images usually contain 256
+colors. You supply a palette of 256 colors, and each pixel in the
+image takes up one byte which is an index into the palette table.</font></p>
+
+<p><font size="2" face="Arial">With RGB images you specify each
+of the 3 RGB components for each pixel. RGB images are usually
+16-bits or 24-bits per pixel.</font></p>
+
+<p><font size="2" face="Arial"><strong>Setting up the Palette</strong></font></p>
+
+<p><font size="2" face="Arial">If you want to display a 256 color
+image then you'll need to set up a palette for it. We need this
+palette information twice: once to create the bitmap, and again
+to create a palette object we'll use when rendering to the
+window. To keep things simple, I'm going to start out by
+declaring a 256x3 array of bytes which we'll use later on. The
+following code also initializes the entire palette to a smooth
+gradiant from black to bright red:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>// Set up a palette
+BYTE palette[256][3];
+for (i=0; i&lt;255; i++)
+{
+ palette[i][0] = i; // red
+ palette[i][1] = 0; // green
+ palette[i][2] = 0; // blue
+}</strong></font></pre>
+
+<p><font size="2" face="Arial"><strong>Creating the Bitmap</strong></font></p>
+
+<p><font size="2" face="Arial">There are several ways to create a
+bitmap under Windows95, the most useful is probably with the <em>CreateDIBSection()</em>
+function. <em>CreateDIBSection()</em> allows you to specify the
+desired pixel format, and it returns both a handle to the bitmap
+object and a pointer to the image memory.</font></p>
+
+<p><font size="2" face="Arial">Before calling <em>CreateDIBSection()</em>
+we must set up a BITMAPINFO structure for the desired pixel
+format. The BITMAPINFO structure contains two fields: <em>bmiHeader</em>
+(of type BITMAPINFOHEADER) and <em>bmiColors</em> (a one element
+array of type RGBQUAD). The pixel format itself is stored in the
+bmiHeader header field, while the bmiColors field is used to
+store the first palette entry. Since this first example is for a
+256-color bitmap, we need to allocate a structure containing
+enough memory for the BITMAPINFO structure itself as well as an
+extra 255 palette entries immediately after it (which we can then
+access by indexing off the bmiColors field). The following code
+will allocate the amount of memory we need:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>// Allocate enough memory for the BITMAPINFOHEADER and 256 RGBQUAD palette entries
+LPBITMAPINFO lpbi;
+lpbi = (LPBITMAPINFO) new BYTE[sizeof(BITMAPINFOHEADER) + (256 * sizeof(RGBQUAD))];</strong></font></pre>
+
+<p><font size="2" face="Arial">Our next step is to initialize the
+fields in the BITMAPINFOHEADER member <em>bmiHeader</em>.
+BITMAPINFOHEADER contains the following fields:</font></p>
+
+<ul>
+    <li><font size="2" face="Arial">biSize: the size of this
+        structure, set it to sizeof(BITMAPINFOHEADER).</font></li>
+    <li><font size="2" face="Arial">biWidth: the bitmap's width
+        in pixels.</font></li>
+    <li><font size="2" face="Arial">biHeight: the bitmap's height
+        in pixels.</font></li>
+    <li><font size="2" face="Arial">biPlanes: the number of
+        planes in the image. This should be set to 1 for both
+        palette and RGB bitmaps.</font></li>
+    <li><font size="2" face="Arial">biBitCount: the number of
+        bits per pixel. Set it to 8 for 256 color bitmaps, and 24
+        for 24-bit RGB bitmaps.</font></li>
+    <li><font size="2" face="Arial">biCompression: the type of
+        compression used. We don't want any compression, so set
+        it to BI_RGB for both bitmap flavors.</font></li>
+    <li><font size="2" face="Arial">biSizeImage: the size of the
+        image, in bytes. This is used for compressed bitmaps
+        where the image size is not a direct function of the
+        width and height of the image itself. Our bitmaps aren't
+        compressed, so we can set it to 0.</font></li>
+    <li><font size="2" face="Arial">biXPelsPerMeter and
+        biYPelsPerMeter: specifies the resolution of the bitmap.
+        We'll be displaying these on the screen, so set both
+        fields to 0.</font></li>
+    <li><font size="2" face="Arial">biClrUsed and biClrImportant:
+        these values are used to notify Windows of which colors
+        in the image are most important. I won't be covering this
+        topic in this article, so for now just set both to 0.</font></li>
+</ul>
+
+<p><font size="2" face="Arial">So the code to initialize the lpbi
+structure should look something like this:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>lpbi-&gt;bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+lpbi-&gt;bmiHeader.biWidth = width;
+lpbi-&gt;bmiHeader.biHeight = height;
+lpbi-&gt;bmiHeader.biPlanes = 1;
+lpbi-&gt;bmiHeader.biBitCount = 8;
+lpbi-&gt;bmiHeader.biCompression = BI_RGB;
+lpbi-&gt;bmiHeader.biSizeImage = 0;
+lpbi-&gt;bmiHeader.biXPelsPerMeter = 0;
+lpbi-&gt;bmiHeader.biYPelsPerMeter = 0;
+lpbi-&gt;bmiHeader.biClrUsed = 0;
+lpbi-&gt;bmiHeader.biClrImportant = 0;</strong></font></pre>
+
+<p><font size="2" face="Arial">The next step is to fill in the <em>bmiColors</em>
+array. We do this by simply copying the values out of the palette
+array we set up in the first step:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>// Set the bitmap palette
+for (i=0; i&lt;255; i++)
+{
+ lpbi-&gt;bmiColors[i].rgbRed      = palette[i][0];
+ lpbi-&gt;bmiColors[i].rgbGreen    = palette[i][1];
+ lpbi-&gt;bmiColors[i].rgbBlue     = palette[i][2];
+ lpbi-&gt;bmiColors[i].rgbReserved = 0;
+}</strong></font></pre>
+
+<p><font size="2" face="Arial">We are now ready to create the
+bitmap. The <em>CreateDIBSection(</em>) function is declared as
+follows:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>HBITMAP CreateDIBSection(HDC hdc,CONST BITMAPINFO *pbmi,UINT iUsage,VOID *ppvBits,HANDLE hSection,DWORD dwOffset)</strong></font></pre>
+
+<p><font size="2" face="Arial">As you can see, the first
+parameter is a device context. What we need here is the device
+context for the screen, we can get it by calling <em>GetWindowDC(</em>)
+and passing in NULL as the window handle. pbmi is a pointer to a
+BITMAPINFO structure (ie our <em>lpbi</em> variable). iUsage is
+an identifier that specifies the type of information we've filled
+the palette with, so set it to RGB (do so for 24-bit images as
+well). ppvBits should point to a variable of type LPBYTE, it will
+be filled with a pointer to the bitmap's pixel memory. hSection
+and dwOffset are used with file mapping objects, set them both to
+0. The following code gets the screen dc, calls <em>CreateDIBSection()</em>
+to create the bitmap then frees both the dc and the lpbi
+structure we allocated:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>HDC hScreenDC = GetWindowDC(NULL);
+hBitmap = CreateDIBSection(hScreenDC, lpbi, DIB_RGB_COLORS, (LPVOID *)&amp;m_pBits, NULL, 0 );
+ReleaseDC(NULL,hScreenDC);
+delete [](BYTE *)lpbi;</strong></font></pre>
+
+<p><font size="2" face="Arial">BTW, if you're using MFC then
+you'll probably want to declare a variable of type CBitmap and
+attach the bitmap handle to it with a call to the <em>Attach()</em>
+member function.</font></p>
+
+<p><font size="2" face="Arial"><strong>Creating a Palette Object</strong></font></p>
+
+<p><font size="2" face="Arial">In order to display the bitmap on
+screen we also need a palette object. The palette object is
+created with a call to <em>CreatePalette()</em>, and we pass in a
+pointer to a LOGPALETTE structure. LOGPALETTE contains the
+following fields:</font></p>
+
+<ul>
+    <li><font size="2" face="Arial">palVersion: indicates the
+        Windows version number. You should set this to 0x300.</font></li>
+    <li><font size="2" face="Arial">palNumEntries: the number of
+        indices in the palette. This should be set to 256.</font></li>
+    <li><font size="2" face="Arial">palPalEntry: an array of
+        PALETTEENTRY structures containing the palette
+        information.</font></li>
+</ul>
+
+<p><font size="2" face="Arial">The palPalEntry field contains a
+single element of type PALETTEENTRY, so we need to do the same
+trick we used when creating the bitmap to tack an extra 255
+entries to the end of the LOGPALETTE structure. The following
+code allocates the memory, fills it with the information from our
+palette array and creates the palette object itself:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>// Create the palette object
+LPLOGPALETTE lpLogPal;
+lpLogPal = (LPLOGPALETTE)new BYTE[sizeof(LOGPALETTE) + 255*sizeof(PALETTEENTRY)];
+lpLogPal-&gt;palVersion = 0x0300;
+lpLogPal-&gt;palNumEntries = 256;
+for (i=0; i&lt;255; i++)
+{
+ lpLogPal-&gt;palPalEntry[i].peRed   = palette[i][0];
+ lpLogPal-&gt;palPalEntry[i].peGreen = palette[i][1];
+ lpLogPal-&gt;palPalEntry[i].peBlue  = palette[i][2];
+ lpLogPal-&gt;palPalEntry[i].peFlags = 0;
+}
+hPalette = ::CreatePalette(lpLogPal);
+delete [](BYTE *)lpLogPal;
+</strong></font></pre>
+
+<p><font size="2" face="Arial">If you're using MFC then you'll
+probably want to attach the palette handle to a CPalette
+variable. Or better yet, call the CPalette's CreatePalette()
+member function and pass the <em>lpLogPal</em> variable into it.</font></p>
+
+<p><font size="2" face="Arial"><strong>Displaying the Bitmap</strong></font></p>
+
+<p><font size="2" face="Arial">The information presented in this
+section is enough to display the bitmap if the user's display is
+set to an RGB mode (eg 16 or 24 bits per pixel). However, it's <em>not</em>
+enough for displaying in 256-color modes. To do that you need the
+code in this section, plus handlers for an extra 2 windows
+messages (which I'll show in the next section).</font></p>
+
+<p><font size="2" face="Arial">To display the bitmap you
+obviously need a device context for the window you're rendering
+to. This is usually obtained by calling BeginPaint() in response
+to a WM_PAINT message. The first task is to create a compatible
+device context for the bitmap. This is done by calling <em>CreateCompatibleDC()</em>
+and passing in the destination dc. Next, we need to select the
+bitmap into it by calling <em>SelectObject()</em>. Don't forget
+to save a copy of the bitmap handle it returns, you'll need to
+select it back into the dc when you're done. Finally, we need to
+select the palette into the destination dc, this is done with a
+call to the <em>SelectPalette()</em> function.</font></p>
+
+<p><font size="2" face="Arial">Before going any further, let me
+explain a bit about the <em>SelectPalette()</em> function and how
+it works. This function accepts a device context (the destination
+dc in our case), a handle to the palette object itself and a
+BOOLEAN variable called <em>bForceBackground</em>. <em>bForceBackground</em>
+indicates to Windows what it should do with the palette object
+we've just given it. If it's set to FALSE, then that means we
+want windows to try and perfectly match as many of the palette
+indices as possible. Windows normally reserves 20 palette entries
+for itself and other applications may add their own entries to
+the palette. If your application currently has the input focus
+then you get palette priority over other programs, but Windows
+still has priority over you to set the 20 reserved entries. When
+you set a palette, Windows searches for any matches between your
+palette entries and the entries in the current physical palette
+(i.e. the actual palette that the screen is set to). If no match
+is found, then what Windows does depends on the <em>bForceBackground
+</em>parameter. If <em>bForceBackground</em> is set to FALSE,
+then Windows will go ahead and pick the closest matching index
+from the current physical palette. If it's set to TRUE then
+Windows will find an empty entry in the physical palette and add
+the new index to it. None of this really matters in 16 or 24 bit
+modes, since Windows doesn't use a physical palette in those
+modes. It makes a big difference though in 256-color modes, since
+you want Windows to display as many of your palette colors as
+possible. Note that if your window does not have the focus and
+another window has set the palette, then Windows will map your
+palette indices to that application's palette regardless of what <em>bForceBackground</em>
+value you passed in.</font></p>
+
+<p><font size="2" face="Arial">So obviously we want to always
+pass in TRUE when we first call <em>SelectPalette()</em>, if our
+window doesn't have the focus then it'll just be ignored anyway.
+The function returns the handle to the previous palette, and when
+we're done rendering we need to set that palette back into the
+device context. In this second case though, we <em>don't</em>
+want windows to go and change all the palette entries back to the
+old palette, we want it to simply remap them to the palette we've
+just set. So when we call <em>SelectPalette()</em> the second
+time to restore the old palette, we want to pass in FALSE.</font></p>
+
+<p><font size="2" face="Arial">With the palette set we can now
+blt the bitmap to the destination dc. Here's some code that uses
+BitBlt to display the bitmap:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>// Assume hPaintDC is a variable of type HDC, and the dc we're rendering to
+HDC hBitmapDC = CreateCompatibleDC(hPaintDC);
+HBITMAP hOldBitmap = (HBITMAP)SelectObject(hBitmapDC, hBitmap);
+HPALETTE hOldPalette = SelectPalette(hPaintDC, hPalette, FALSE);
+BitBlt(hPaintDC, 0, 0, BITMAP_WIDTH, BITMAP_HEIGHT, hBitmapDC, 0, 0, SRCCOPY);
+SelectPalette(hPaintDC, hOldPalette, TRUE);
+SelectObject(hBitmapDC, hOldBitmap);
+DeleteDC(hBitmapDC);</strong></font></pre>
+
+<p><font size="2" face="Arial"><strong>Dueling Palettes</strong></font></p>
+
+<p><font size="2" face="Arial">Windows is a multi-tasking
+environment, and that means that at any given moment there are
+typically numerous applications all fighting for control of the
+palette. Windows has a very simple method of determining who gets
+what: if your window has the input focus, then you get palette
+priority, and all other windows have their palettes remapped to
+yours. Windows loops through each index of all the other
+palettes, finds the entry in your palette that's closest and
+makes a note of it. Whenever one of those applications renders
+something to the screen Windows looks up each pixel's value in an
+internal table and draws the remapped color instead. Since the
+other application is using your palette, it's not going to look
+anywhere near as good as if it were using it's own, but at least
+it's better than the alternative (i.e. a jumbled mess of pixels).</font></p>
+
+<p><font size="2" face="Arial">Unfortunately it works both ways,
+since you too are subject to having another application rip the
+palette out from under your feet. In order to help you deal with
+this in an effective manner, Windows provides two messages to
+notify you of palette changes: WM_PALETTECHANGED and
+WM_QUERYNEWPALETTE.</font></p>
+
+<p><font size="2" face="Arial">WM_QUERYNEWPALETTE is sent
+whenever your application gets the input focus, thus giving you a
+chance to prepare the palette for rendering. When you select a
+palette into a device context, Windows assigns each palette index
+a space in the physical palette, but it does not actually go
+ahead and make changes to the physical palette itself. To do that
+you need to call the <em>RealizePalette()</em> function. The
+correct way to handle the WM_QUERYNEWPALETTE message is to get
+the device context for the window, select the palette into it
+with <em>bForceBackground</em> set to FALSE (remember to save the
+old palette handle), realize the palette, select the old palette
+back in with <em>bForceBackground</em> set to TRUE and release
+the device context. Here's the WM_QUERYNEWPALETTE handler code to
+do all this:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>HDC hDC = GetWindowDC(hWnd);
+HPALETTE hOldPalette = SelectPalette(hDC, hPalette, FALSE);
+UINT nChanged = RealizePalette(hDC);
+SelectPalette(hDC, hOldPalette, TRUE);
+ReleaseDC(hWnd, hDC);</strong></font></pre>
+
+<p><font size="2" face="Arial">(Note that we could avoid handling
+this message by simply realizing the palette immediately after
+the SelectPalette() call in the WM_PAINT handler. Realizing a
+palette however is slow, so we may as well only do it when we
+need to).</font></p>
+
+<p><font size="2" face="Arial">WM_PALETTECHANGED is sent whenever
+any application, including yours, causes changes to the physical
+palette. If it's your own application doing the changing then you
+should ignore this message, but if it's another application then
+you need to realize your palette. Realizing the palette can be
+done with the same code as used for the WM_QUERYNEWPALETTE
+handler. Since this message is only handled when another window
+has received the input focus, we should be able to to still pass
+in a <em>bForceBackground </em>parameter of FALSE, since it'll be
+ignored anyway. However, one document I read stated that it's
+possible for the WM_PALETTECHANGED message to be sent to your
+window <em>before</em> the other window has actually received the
+input focus. If this happens and you're passing in FALSE, then
+the other windows' palette will be messed up, so it's best to
+stay on the safe side and pass in the correct value. When this
+message is received, check the wParam value to see if it matches
+your windows' HWND. If it's different, then realize the palette:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>HDC hDC = GetWindowDC(hWnd);
+HPALETTE hOldPalette = SelectPalette(hDC, hPalette, TRUE);
+UINT nChanged = RealizePalette(hDC);
+SelectPalette(hDC, hOldPalette, TRUE);
+ReleaseDC(hWnd, hDC);</strong></font></pre>
+
+<p><font size="2" face="Arial">To avoid code duplication, you
+should probably have each message call a function which accepts
+the appropriate <em>bForceBackground</em> value and passes it
+into the first <em>SelectPalette()</em> call.</font></p>
+
+<p><font size="2" face="Arial">One last thing to keep in mind: if
+the <em>RealizePalette()</em> function in either handler returns
+non-zero, then you should invalidate and repaint your entire
+client area. This is needed to fix any image degradation caused
+when by another window changing the palette.</font></p>
+
+<p><font size="2" face="Arial"><strong>True-Color Tyranny</strong></font></p>
+
+<p><font size="2" face="Arial">24-bit DIBs are somewhat easier to
+create than their 8-bit counterparts, since you no longer have to
+worry about a palette. Displaying them is a bit different though
+(that is, if want them to look semi-decent on a 256-color
+display).</font></p>
+
+<p><font size="2" face="Arial">To create a 24-bit bitmap you
+simply set the <em>biBitCount</em> field of the BITMAPINFOHEADER
+structure to 24. Since this bitmap doesn't require a palette, we
+can use an actual BITMAPINFOHEADER structure instead of a
+BITMAPINFO structure. The important thing to remember here is to <em>save
+a copy of the BITMAPINFOHEADER variable</em>. You need it to
+display the bitmap, for reasons which will become apparent in a
+minute. Here's the code to create a 24-bit DIB:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>BITMAPINFOHEADER m_BitmapInfo; // &lt;- this should be saved, eg make it a member variable
+
+m_BitmapInfo.biSize = sizeof(BITMAPINFOHEADER);
+m_BitmapInfo.biWidth = BITMAP_WIDTH;
+m_BitmapInfo.biHeight = BITMAP_HEIGHT;
+m_BitmapInfo.biPlanes = 1;
+m_BitmapInfo.biBitCount = 24;
+m_BitmapInfo.biCompression = BI_RGB;
+m_BitmapInfo.biSizeImage = 0;
+m_BitmapInfo.biXPelsPerMeter = 0;
+m_BitmapInfo.biYPelsPerMeter = 0;
+m_BitmapInfo.biClrUsed = 0;
+m_BitmapInfo.biClrImportant = 0;
+HDC hScreenDC = GetWindowDC(NULL);
+hBitmap = CreateDIBSection(hScreenDC, (LPBITMAPINFO)&amp;m_BitmapInfo, DIB_RGB_COLORS, (LPVOID *)&amp;m_pBits, NULL, 0);
+ReleaseDC(NULL,hScreenDC);</strong></font></pre>
+
+<p><font size="2" face="Arial">We no longer have to worry about
+selecting and realizing palettes, so we can just go ahead and
+select the bitmap into a device context and blt it to the
+destination device<br>
+in our WM_PAINT handler:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>HDC hBitmapDC = CreateCompatibleDC(hPaintDC);
+HBITMAP hOldBitmap = (HBITMAP)SelectObject(hBitmapDC, hBitmap);
+BitBlt(hPaintDC, 0, 0, BITMAP_WIDTH, BITMAP_HEIGHT, hBitmapDC, 0, 0, SRCCOPY);
+SelectObject(hBitmapDC, hOldBitmap);
+DeleteDC(hBitmapDC);</strong></font></pre>
+
+<p><font size="2" face="Arial">This works fine if the display is
+in a true color mode, but if it's in a 256-color mode then
+Windows maps each pixel to the closest entry in the physical
+palette, i.e. usually one of it's 20 reserved entries. Needless
+to say, it looks like crap! In theory, we should should be able
+to call <em>SetStretchBltMode()</em>, <em>SetBrushOrgEx()</em>
+and <em>StretchBlt()</em> to render with dithering. I have tried
+and tried to get this to work, but to no avail. It may be a
+feature that only certain drivers support. If so, I have yet to
+find one that does!</font></p>
+
+<p><font size="2" face="Arial">Fortunately, Video for Windows
+provides a function for dithering DIBs. Instead of accepting the
+bitmap's device context, it requires a pointer to the memory bits
+and, lo-and-behold, it's BITMAPINFOHEADER structure (good thing
+you saved it, huh?). To use video for windows you need to add the
+following declarations to the top of your source. The first line
+includes it's header file while the second links in the
+appropriate lib file:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>// Include video for windows
+#include 
+#pragma comment(lib, &quot;vfw32.lib&quot;)</strong></font></pre>
+
+<p><font size="2" face="Arial">We no longer need a device
+context, so our display code is reduced to just 3 measly lines:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>HDRAWDIB hdd = DrawDibOpen(); 
+DrawDibDraw(hdd, hPaintDC,0,0,BITMAP_WIDTH,BITMAP_HEIGHT,&amp;m_BitmapInfo,m_pBits,0,0,BITMAP_WIDTH,BITMAP_HEIGHT,DDF_HALFTONE);
+DrawDibClose(hdd);</strong></font></pre>
+
+<p><font size="2" face="Arial">DrawDib apparently uses some kind
+of pattern dither (Bayer?) to display images, but it does a
+surprisingly good job of it. On my machine it's reasonably fast
+too! In the past I've used it to emulate the primary surface in
+debug builds of my DirectDraw code, since it allows me to display
+16-bit images in a window even when I'm running in a 256-color
+mode.</font></p>
+
+<p><font size="2" face="Arial"><strong>Full-Screen Without
+DirectX</strong></font></p>
+
+<p><font size="2" face="Arial">If you want to develop high-speed
+full-screen applications then you'll almost certainly want to use
+DirectX. However, the techniques discussed in this file can be
+used to develop full-screen apps, provided you don't try and
+update too much of the screen each frame (otherwise it'll bog
+down, particularly at higher resolutions).</font></p>
+
+<p><font size="2" face="Arial">The first thing you'll probably
+want to do is change the screen resolution. Win32 allows you to
+do this on the fly <em>provided</em> that you don't try and
+change the number of bits-per-pixel. I've already shown how to
+handle different pixel depths, so only changing the resolution
+will be adequate for our needs. Of course, if the user is running
+in a 16 or 24-bit mode and you're rendering an 8-bit bitmap then
+there'll be some slowdown since Windows has to convert it. The
+code to change the display mode is as follows:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>SIZE m_sOldRes; // &lt;-- save this somewhere</strong></font></pre>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>// Get current display mode
+sOldRes.cx = GetSystemMetrics(SM_CXSCREEN);
+sOldRes.cy = GetSystemMetrics(SM_CYSCREEN);
+
+// Switch to our desired display mode
+DEVMODE mode;
+ZeroMemory(&amp;mode, sizeof(mode));
+mode.dmSize = sizeof(mode);
+mode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
+mode.dmPelsWidth = SCREEN_WIDTH; // eg 640
+mode.dmPelsHeight = SCREEN_HEIGHT; // eg 480
+ChangeDisplaySettings(&amp;mode, 0); &lt;- don't forget to check the error returned here</strong></font></pre>
+
+<p><font size="2" face="Arial">To change it back again once the
+program has finished you simply plug in the old resolution
+values:</font></p>
+
+<pre><font color="#008080" size="2" face="Arial"><strong>// Restore old display mode
+DEVMODE mode;
+ZeroMemory(&amp;mode, sizeof(mode));
+mode.dmSize = sizeof(mode);
+mode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
+mode.dmPelsWidth = sOldRes.cx;
+mode.dmPelsHeight = sOldRes.cy;
+ChangeDisplaySettings(&amp;mode, 0);</strong></font></pre>
+
+<p><font size="2" face="Arial">Finally, we need to create a
+window that covers the entire screen, including the task bar.
+This is easily done by creating a window with the WS_POPUP style
+and maximizing it with a call to ShowWindow(hWnd,
+SW_SHOWMAXIMISED).</font></p>
+<div align="center"><center>
+
+<table border="0" width="100%" bgcolor="#00FFFF">
+    <tr>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+</center></div>
+
+<pre><font size="2" face="Arial"><em>Copyright (c) 1997 </em></font><a
+href="http://www.geocities.com/SiliconValley/2151"><font size="2"
+face="Arial"><em>Mark Feldman</em></font></a><font size="2"
+face="Arial"><em> (</em></font><a
+href="mailto:pcgpe@geocities.com"><font size="2" face="Arial"><em>pcgpe@geocities.com</em></font></a><font
+size="2" face="Arial"><em>) - All Rights Reserved</em></font></pre>
+
+<pre><font size="2" face="Arial"><em>This article is part of </em></font><a
+href="http://www.geocities.com/SiliconValley/2151/win95gpe.html"><font
+size="2" face="Arial"><em>The Win95 Game Programmer's Encyclopedia</em></font></a></pre>
+
+<pre><font size="2" face="Arial"><em>Please retain this footer if you distribute this file.</em></font></pre>
+<div align="left">
+
+<table border="0">
+    <tr>
+        <td><a href="graphics.html"><font size="2" face="Arial"><em><img
+        src="back.jpg" align="baseline" border="0" width="32"
+        height="32"></em></font></a></td>
+        <td><a href="graphics.html"><font size="2" face="Arial"><em>Back
+        to Graphics</em></font></a></td>
+    </tr>
+</table>
+</div>
+</body>
+</html>
+
+<!-- <SERVICE NAME="pop"> -->
+<SCRIPT LANGUAGE="javascript">
+<!-- 
+var cuid= "10197"; var keywords= "none"; 
+// -->
+</SCRIPT>
+
+
+<DIV CLASS="GeoBrandingV2" ID="GeoBrandingV2" STYLE="position:absolute;top:1;visibility:hide;" ALIGN="right"><DIV CLASS="GeoBrandingV2" ID="GeoBrandingV2" TTYLE="position:absolute;top:1;visibility:hide;" ALIGN="right"><A HREF="http://www.geocities.com/?source=watermark&browser=NS" TARGET="_top"><IMG SRC="http://pic.geocities.com/images/watermark/v1/geocities.gif" ALT="Click Here!" WIDTH="107" HEIGHT="41" BORDER="0"></A></DIV>

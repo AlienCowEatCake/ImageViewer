@@ -1,0 +1,58 @@
+<head>
+<title>META_SETDIBTODEV</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_SETDIBTODEV
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+INT32 SetDIBitsToDevice
+(
+	HDC32 hdc,
+	INT32 xDest,
+	INT32 yDest,
+	DWORD cx,
+	DWORD cy,
+	INT32 xSrc,
+	INT32 ySrc,
+	UINT32 startscan,
+	UINT32 lines,
+	LPCVOID bits,
+	const BITMAPINFO *info,
+	UINT32 coloruse
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<table border=1>
+<tr><td>U16</td><td>Value</td></tr>
+<tr><td>0</td><td>coloruse</td></tr>
+<tr><td>1</td><td>lines</td></tr>
+<tr><td>2</td><td>starting line</td></tr>
+<tr><td>3</td><td>ySrc</td></tr>
+<tr><td>4</td><td>xSrc</td></tr>
+<tr><td>5</td><td>cy</td></tr>
+<tr><td>6</td><td>cx</td></tr>
+<tr><td>7</td><td>yDst</td></tr>
+<tr><td>8</td><td>xDst</td></tr>
+<tr><td>9 to end</td><td>the dib itself</td></tr>
+</table>
+coloruse is one of either DIB_RGB_COLORS or DIB_PAL_COLORS<br>
+lines is the number of lines in the dib to copy, in fact only
+this number of lines *exist* in the dib attached to the record, the
+header of the dib may tell you that there's more lines in
+the dib that there actually is, so you must use this value to determine
+the truth (nasty eh!)<br>
+starting line is the line of the original dib that was to be the starting
+line to copy from, in the metafile record you can ignore this, as the
+attached dib is cropped as far as this line, so this work is done for you<br>
+xSrc, and ySrc are the location in the dib to copy from, im uncertain of
+these for the moment, as all examples have them to set to 0<br>
+cy and cx are the size of the destination rectangle, with xDest and yDest
+being the coordinate of the topleft of the dest rect.<br>
+the rest of the bytes are the dib itself, but remember the height of the
+dib, as shown in its header may be wrong, use the lines parameter to
+determine the truth
+<br>
+<p>
+<p><a href="support.html">back</a><p>
+</body>

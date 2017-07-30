@@ -1,0 +1,63 @@
+<head>
+<title>META_PIE</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_PIE
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+
+BOOL32 Pie
+(
+    HDC32 hdc,
+    INT32 left,
+    INT32 top,
+    INT32 right,
+    INT32 bottom,
+    INT32 xstart,
+    INT32 ystart,
+    INT32 xend,
+    INT32 yend
+);
+
+</pre>
+<h1>DESCRIPTION</h1>
+<table border=1>
+<tr>
+<td>U16 array no</td><td>Value</td>
+</tr>
+<td>0</td> <td>yend, y of endpoint</td>
+</tr>
+<tr>
+ <td>1</td> <td>xend, x of endpoint</td>
+</tr>
+<tr>
+ <td>2</td> <td>ystart, y of endpoint</td>
+</tr>
+<tr>
+ <td>3</td><td>xstart, x of endpoint</td>
+</tr>
+<tr>
+ <td>4</td><td>bottom, bottom of bounding box</td>
+</tr>
+<tr>
+ <td>5</td><td>right, right of bounding box</td>
+</tr>
+<tr>
+ <td>6</td><td>top, top of bounding box</td>
+</tr>
+<tr>
+ <td>7</td><td>left, left of bounding box</td>
+</tr>
+</table>
+left, right, top and bottom are the extents of the ellipse of
+which the pie is a part<br>
+xstart,ystart define a point from which you draw an imaginary line
+between it and the center of the ellipse, where that line intersects the
+ellipse is the starting part of the arc<br>
+xend,yend similiarly define the end of the arc.<p>
+This is quite different from how X, and other drawing lib's define an Arc,
+and its somewhat awkward to convert from it to X's mechanism, see the
+X bindings for libwmf for into on that.
+<p><a href="support.html">back</a>
+</body>

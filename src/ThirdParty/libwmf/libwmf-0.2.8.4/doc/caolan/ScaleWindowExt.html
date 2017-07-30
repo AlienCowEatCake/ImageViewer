@@ -1,0 +1,56 @@
+<head>
+<title>META_SCALEWINDOWEXT</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_SCALEWINDOWEXT
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+BOOL32 ScaleWindowExtEx
+(
+	HDC32 hdc,
+	INT32 xNum,
+	INT32 xDenom,
+	INT32 yNum,
+	INT32 yDenom,
+	LPSIZE32 size
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+
+<TR>
+<TD>0</TD>
+
+<TD>yDenom</TD>
+</TR>
+
+<TR>
+<TD>1</TD>
+<TD>yNum</TD>
+</TR>
+
+<TR>
+<TD>2</TD>
+<TD>xDenom</TD>
+</TR>
+
+<TR>
+<TD>3</TD>
+<TD>xNum</TD>
+</TR>
+</TABLE>
+ScaleWindowExt resizes the width and height of the logical window by
+<pre>
+width = (width * xNum) / xDenom;
+height = (height * yNum) / yDenom;
+</pre>
+see <a href="mapmode.html">this file</a> for
+explanation.
+<p><a href="support.html">back</a>
+</body>

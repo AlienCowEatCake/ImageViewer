@@ -1,0 +1,38 @@
+<head>
+<title>META_MOVETO</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_MOVETO
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+BOOL32 MoveToEx
+(
+	HDC32 hdc,
+	INT32 x,
+	INT32 y,
+	LPPOINT32 pt
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+
+<TR>
+<TD>0</TD>
+
+<TD>y</TD>
+</TR>
+
+<TR>
+<TD>1</TD>
+<TD>x</TD>
+</TR>
+</TABLE>
+MoveTo moves the current position to the specified position (in logical units).<br>
+<p><a href="support.html">back</a>
+</body>

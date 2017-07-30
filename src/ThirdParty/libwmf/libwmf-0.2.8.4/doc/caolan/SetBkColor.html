@@ -1,0 +1,58 @@
+<HTML>
+<title>
+META_SETBKCOLOR
+</title>
+<BODY  link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+
+<H1>
+NAME</H1>
+META_SETBKCOLOR
+<H1>
+NEAREST API CALL</H1>
+
+<PRE>#include &lt;windows.h>
+
+COLORREF SetBkColor
+(
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HDC32 hdc,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; COLORREF color
+);</PRE>
+
+<H1>
+DESCRIPTION</H1>
+
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+
+<TR>
+<TD>0</TD>
+
+<TD ROWSPAN="2">COLORREF</TD>
+</TR>
+
+<TR>
+<TD>1</TD>
+</TR>
+</TABLE>
+When the <a href="SetBkMode.html">BkMode</a> is set to OPAQUE, the color that SETBKCOLOR sets is the
+color that will be used as the background color for
+<UL>
+<LI>
+the box that is the background to text.</LI>
+
+<LI>
+the color that shows through the transparent areas of hatched brushes and
+styled (dashed) lines.</LI>
+
+<LI>
+and for the background color when converting bitmaps to monochrome and
+vice versa, though i havent figured out if this last point has any revelence
+to a metafile converter.</LI>
+</UL>
+<p><a href="support.html">back</a>
+</BODY>
+</HTML>

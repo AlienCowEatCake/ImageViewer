@@ -1,0 +1,27 @@
+<head>
+<title>META_DELETEOBJECT</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_DELETEOBJECT
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+BOOL32 DeleteObject(HGDIOBJ32 obj)
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+<TR>
+<TD>0</TD>
+<TD>object no</TD>
+</TR>
+</TABLE>
+object no is the number of the object to delete, this frees up the number of the object
+to be reused by any of the Create operands, e.g <a href="CreatePenIndirect.html">CreatePenIndirect</a>,  <a href="SelectObject.html">SelectObject</a> has more details
+on objects.
+<p><a href="support.html">back</a><p>
+</body>

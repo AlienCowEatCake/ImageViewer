@@ -96,6 +96,13 @@ disable_zlib | disable_libpng {
     CONFIG += disable_freetype
 }
 
+# libwmf options:
+#    disable_libwmf
+#    system_libwmf
+disable_zlib | disable_libpng | disable_freetype | disable_libjpeg {
+    CONFIG += disable_libwmf
+}
+
 # ::::: Optional Third Party Components Configuration :::::
 
 # QtExtended options:

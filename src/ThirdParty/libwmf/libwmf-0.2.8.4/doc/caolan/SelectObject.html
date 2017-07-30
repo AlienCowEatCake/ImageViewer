@@ -1,0 +1,35 @@
+<head>
+<title>META_SELECTOBJECT</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_SELECTOBJECT
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+HGDIOBJ32 SelectObject
+(
+	HDC32 hdc,
+	HGDIOBJ32 handle
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+<TR>
+<TD>0</TD>
+<TD>Object No</TD>
+</TR>
+</TABLE>
+
+SelectObject asks for an given object no to be selected, an internal list of objects is kept by libwmf.<br>
+The object no is an index into this list.<br>
+Object's include OBJ_PEN,OBJ_BRUSH,OBJ_PAL,OBJ_FONT & OBJ_REGION<br>
+SelectObject can select any of these to be the current object on their class, e.g. when you
+select a brush, it becomes the current brush, etc etc. libwmf handles all of this stuff for
+you (hopefully), see <a href="DeleteObject.html">DeleteObject</a>
+<p><a href="support.html">back</a>
+</body>

@@ -1,0 +1,78 @@
+<head>
+<title>Windows Metafiles, guide for non-windows programmers</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>Windows Metafiles</h1>
+<h2>a guide for non-windows programmers</h2>
+Windows Metafiles (wmf) files are common in the windows world. Basically they are a recording
+of the windows gdi (graphic) calls. They consist of a list of calls to such graphic 
+primitives as LineTo, Polygon, Rectangle, etc. And as such as inherently a vector based
+format.<p>
+There are three basic kinds, <br>
+<ul>
+<li>The original 16 bit format
+<li>Placeable 16 bit format
+<li>The new 32 bit (emf) format
+</ul>
+O'Reilly's File Format handbook <a href="ora-wmf.html">has a description</a> of the headers of these files, and
+some other info on them<p>
+While this information is very useful, it lacks an explanation of each of the records that
+can exist in a metafile, for the development of <a href="http://www.csn.ul.ie/~caolan/docs/libwmf.html">libwmf</a> it
+was required to understand each of the metafile records. To this end the <a href="http://www.winehq.com">wine</a> source
+was a great aid. As was the basic help files of MS's Visual C compiler. In most cases
+just looking at the definition of an equivalent windows api call allows you to know what
+the parameters of each metafile record mean. <p>
+First you must know that the arguments to each
+api call are stored in reverse order in the actual disk dump that is a metafile record.<br>
+So in the case of a Rectangle call which from wine has the api<br>
+<pre>
+BOOL32 Rectangle
+(
+	HDC32 hdc,
+	INT32 left,
+	INT32 top,
+	INT32 right,
+	INT32 bottom
+);
+</pre><p>
+Now wine uses the win32 api, so in 16 bit wmf files left,top,right and bottom are all 16 bit values,
+not 32, and also they are stored in reverse order in the parameter list of wmf record, so
+the layout on disk for a RECTANGLE entry is<br>
+<pre>
+|32bit size of total record|0x041B |bottom|right|top|left|
+</pre>
+Got that ?, so all the other records are the same.<p>
+There are complications when you start into the more complex operands such as BITBLT, and CREATEPATTERNBRUSH
+as they appear to get converted into DIBBITBLT and DIBCREATEPATTERNBRUSH when used in
+conjuntion with a metafile<p>
+There are other complications in many of the other operands, my particular 
+favorite is one i found in <a href="DibBitBlt.html">DIBBITBLT</a>. <p>
+
+I've created a list of all
+the known operands that can be used in 16 bit metafiles, as listed in wine's wingdi.h 
+(and windows of course).
+The list attempts to document all the calls in terms of the layout of the operands'
+parameters as dumped to file, some of them are definitely correct, and some have been
+pieced together by the wine developers, and one of two ive put together myself from
+mucking around with a hexeditor and wmf files that i've created under windows. So if
+you know them to be incorrect or have any information that you think would help, please
+do send that information to <a href="mailto:caolan.mcnamara@ul.ie">me</a>
+<p>
+This information is primarily intended for developers to create alternative bindings
+to the <a href="http://www.csn.ul.ie/~caolan/docs/libwmf.html">libwmf library</a> which
+is a wmf library for non-windows machines that ive written, it takes care of most
+of the housecleaning and handling of wmf files. All new bindings should have
+to implement is handlers for the calls as listed in the (as yes non-existant) libwmf developer's
+documentation.<br>
+For that reason this list also shows what operands are supported in the various existing
+bindings for libwmf, which currently are one for X, and one for gd which is a graphic
+library for creating gif files. So as it stands any X program can display wmf files using
+the included X binding to libwmf, and there exists a wmftogif program which can create
+gif's from wmf files without requiring windows. libwmf was developed to allow my other
+project <a href="http://www.csn.ul.ie/~caolan/docs/MSWordView.html">mswordview</a>, a msword converter
+to extract wmf files in a unix-friendly format. Bindings that are missing that would be useful are
+eps and fig, to name two.<p>
+Enough already, here is the the known world's most complete wmf documentation to data<p>
+<a href="support.html">The Windows Metafile (wmf) Operand Documentation</a> by <a href="http://www.csn.ul.ie/~caolan">Caol&aacute;n McNamara</a>
+
+</body>
