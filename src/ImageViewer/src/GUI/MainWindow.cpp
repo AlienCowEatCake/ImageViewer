@@ -322,7 +322,7 @@ MainWindow::~MainWindow()
 void MainWindow::setLanguage(const QString &newLanguage)
 {
     // Отображение название языка -> соответствующая ему менюшка
-    static QMap<QString, QAction *> languagesMap;
+    static QMap<QString, QAction*> languagesMap;
     if(languagesMap.isEmpty())
     {
         languagesMap[QString::fromLatin1("en")] = m_ui->actionEnglish;
@@ -334,7 +334,7 @@ void MainWindow::setLanguage(const QString &newLanguage)
     if(systemLang.isEmpty())
     {
         const QString systemLocale = QLocale::system().name().toLower();
-        for(QMap<QString, QAction *>::Iterator it = languagesMap.begin(); it != languagesMap.end(); ++it)
+        for(QMap<QString, QAction*>::Iterator it = languagesMap.begin(); it != languagesMap.end(); ++it)
         {
             if(systemLocale.startsWith(it.key()))
             {
@@ -589,7 +589,7 @@ void MainWindow::onOpenFileWithDialogRequested()
     const QString formatString = QString::fromLatin1("%2 (%1);;%3 (*.*)")
             .arg(m_impl->supportedFormats.join(QString::fromLatin1(" ")))
             .arg(tr("All Supported Images")).arg(tr("All Files"));
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), m_impl->settings->lastOpenedPath(), formatString);
+    const QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), m_impl->settings->lastOpenedPath(), formatString);
     if(fileName.isEmpty())
         return;
     onOpenFileRequested(fileName);
@@ -613,18 +613,15 @@ void MainWindow::onDeleteFileRequested()
 
     if(settings->askBeforeDelete())
     {
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::warning(this, tr("Delete File"), tr("Are you sure you want to delete current file?"),
-                                     QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-        if(reply == QMessageBox::No)
+        if(QMessageBox::warning(this, tr("Delete File"), tr("Are you sure you want to delete current file?"),
+                                QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
             return;
     }
 
     if(settings->moveToTrash())
     {
         QString errorDescription;
-        bool status = FileUtils::MoveToTrash(settings->lastOpenedPath(), &errorDescription);
-        if(!status)
+        if(!FileUtils::MoveToTrash(settings->lastOpenedPath(), &errorDescription))
         {
             QMessageBox::critical(this, tr("Error"), errorDescription);
             return;
@@ -633,8 +630,7 @@ void MainWindow::onDeleteFileRequested()
     else
     {
         QFile file(settings->lastOpenedPath());
-        bool status = file.remove();
-        if(!status)
+        if(!file.remove())
         {
             QMessageBox::critical(this, tr("Error"), tr("Failed to delete file \"%1\"").arg(settings->lastOpenedPath()));
             return;
@@ -758,13 +754,13 @@ void MainWindow::dropEvent(QDropEvent *event)
     const QMimeData* mimeData = event->mimeData();
     if(mimeData->hasUrls())
     {
-        QList<QUrl> urlList = mimeData->urls();
-        QList<QUrl>::ConstIterator it = urlList.begin();
-        QFileInfo info((it++)->toLocalFile());
+        const QList<QUrl> urlList = mimeData->urls();
+        QList<QUrl>::ConstIterator it = urlList.constBegin();
+        const QFileInfo info((it++)->toLocalFile());
         onOpenPathRequested(info.absoluteFilePath());
-        for(; it != urlList.end(); ++it)
+        for(; it != urlList.constEnd(); ++it)
         {
-            QFileInfo info(it->toLocalFile());
+            const QFileInfo info(it->toLocalFile());
             if(info.isDir())
             {
                 const QStringList files = m_impl->supportedFilesInDirectory(info.dir());

@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 #endif
     Workarounds::InitQtUtilsResources();
     ThemeUtils::LoadStyleSheet(QString::fromLatin1(":/style/style.qss"));
-    MainWindow * window = new MainWindow;
+    MainWindow *window = new MainWindow;
     if(argc > 1)
     {
         std::string filename;
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     {
         window->onOpenPathRequested(app.getLastOpenFilePath());
     }
-    QObject::connect(&app, SIGNAL(openFileEvent(const QString &)), window, SLOT(onOpenPathRequested(const QString &)));
+    QObject::connect(&app, SIGNAL(openFileEvent(const QString&)), window, SLOT(onOpenPathRequested(const QString&)));
     window->show();
     return app.exec();
 }
