@@ -23,6 +23,7 @@
 
 #include <QtGlobal>
 #include <QString>
+#include <QSysInfo>
 
 #if defined (Q_OS_WIN)
 #include <windows.h>
@@ -391,6 +392,9 @@ QString GetSystemDescription()
 /// @brief Получить человеко-читаемую информацию о системе
 QString GetSystemDescription()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
+    return QSysInfo::prettyProductName();
+#else
     utsname buf;
     memset(&buf, 0, sizeof(buf));
     if(uname(&buf))
@@ -399,6 +403,7 @@ QString GetSystemDescription()
             .arg(QString::fromLocal8Bit(buf.sysname))
             .arg(QString::fromLocal8Bit(buf.release))
             .arg(QString::fromLocal8Bit(buf.machine));
+#endif
 }
 
 #endif
