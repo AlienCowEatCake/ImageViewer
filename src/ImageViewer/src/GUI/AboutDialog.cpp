@@ -59,6 +59,10 @@
 #if defined (HAS_XZUTILS)
 #include <lzma.h>
 #endif
+#if defined (HAS_FREETYPE)
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#endif
 
 namespace {
 
@@ -207,6 +211,15 @@ QString getTextBrowserContent()
                       ));
 #endif
 
+#if defined (HAS_LIBWMF)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the libwmf library"),
+                      QString::fromLatin1("libwmf"),
+                      QString(),
+                      QString::fromLatin1("http://wvware.sourceforge.net/libwmf.html")
+                      ));
+#endif
+
 #if defined (HAS_JBIGKIT)
     result.append(formatItem(
                       QString::fromLatin1("This software uses the JBIG-KIT library"),
@@ -249,6 +262,15 @@ QString getTextBrowserContent()
                       QString::fromLatin1("xz"),
                       QString::fromLatin1(lzma_version_string()),
                       QString::fromLatin1("https://tukaani.org/xz/")
+                      ));
+#endif
+
+#if defined (HAS_FREETYPE)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the FreeType library"),
+                      QString::fromLatin1("freetype"),
+                      QString::fromLatin1("%1.%2.%3").arg(FREETYPE_MAJOR).arg(FREETYPE_MINOR).arg(FREETYPE_PATCH),
+                      QString::fromLatin1("https://freetype.org/")
                       ));
 #endif
 
