@@ -45,14 +45,7 @@ namespace
 const qreal MAX_IMAGE_DIMENSION = 16384;
 const qreal MIN_IMAGE_DIMENSION = 1;
 
-int sink(void *context, char *buffer, int length)
-{
-    QByteArray *imageData = reinterpret_cast<QByteArray*>(context);
-    imageData->append(buffer, length);
-    return imageData->size();
-}
-
-const char* wmfErrorToString(wmf_error_t error)
+const char *wmfErrorToString(wmf_error_t error)
 {
     switch(error)
     {
@@ -114,7 +107,7 @@ public:
         error = wmf_api_create(&m_API, flags, &m_options);
         if(error != wmf_E_None)
         {
-            qWarning() << "Can't create wmf API:" << wmfErrorToString(error);
+            qWarning() << "Couldn't create WMF reader:" << wmfErrorToString(error);
             if(m_API)
                 wmf_api_destroy(m_API);
             return;
@@ -122,17 +115,10 @@ public:
 
         m_ddata = WMF_GD_GetData(m_API);
 
-        if((m_ddata->flags & WMF_GD_SUPPORTS_PNG) == 0)
-        {
-            qWarning() << "libwmf should be built with GD + PNG support";
-            wmf_api_destroy(m_API);
-            return;
-        }
-
         error = wmf_mem_open(m_API, bufferData, bufferSize);
         if(error != wmf_E_None)
         {
-            qWarning() << "Can't open memory:" << wmfErrorToString(error);
+            qWarning() << "Couldn't create reader API:" << wmfErrorToString(error);
             wmf_api_destroy(m_API);
             return;
         }
@@ -140,7 +126,7 @@ public:
         error = wmf_scan(m_API, 0, &m_bbox);
         if(error != wmf_E_None)
         {
-            qWarning() << "Can't scan wmf:" << wmfErrorToString(error);
+            qWarning() << "Error scanning WMF file:" << wmfErrorToString(error);
             wmf_mem_close(m_API);
             wmf_api_destroy(m_API);
             return;
@@ -206,30 +192,47 @@ public:
 protected:
     QPixmap getPixmap(const float scaleFactor)
     {
-        QByteArray imageData;
-
-        m_ddata->type = wmf_gd_png;
-        m_ddata->flags |= WMF_GD_OUTPUT_MEMORY | WMF_GD_OWN_BUFFER;
-        m_ddata->sink.function = &sink;
-        m_ddata->sink.context = reinterpret_cast<void*>(&imageData);
-        m_ddata->file = NULL;
-
+        m_ddata->type = wmf_gd_image;
         m_ddata->bbox.TL.x = m_bbox.TL.x * scaleFactor;
         m_ddata->bbox.TL.y = m_bbox.TL.y * scaleFactor;
         m_ddata->bbox.BR.x = m_bbox.BR.x * scaleFactor;
         m_ddata->bbox.BR.y = m_bbox.BR.y * scaleFactor;
-
         m_ddata->width  = static_cast<unsigned int>(std::ceil(m_ddata->bbox.BR.x - m_ddata->bbox.TL.x));
         m_ddata->height = static_cast<unsigned int>(std::ceil(m_ddata->bbox.BR.y - m_ddata->bbox.TL.y));
 
         const wmf_error_t error = wmf_play(m_API, 0, &m_ddata->bbox);
         if(error != wmf_E_None)
         {
-            qWarning() << "Can't play wmf:" << wmfErrorToString(error);
+            qWarning() << "Couldn't decode WMF file into pixbuf:" << wmfErrorToString(error);
             return QPixmap();
         }
 
-        return QPixmap::fromImage(QImage::fromData(imageData));
+        int *gdPixels = NULL;
+        if(m_ddata->gd_image == NULL || (gdPixels = wmf_gd_image_pixels(m_ddata->gd_image)) == NULL)
+        {
+            qWarning() << "Couldn't decode WMF file - no output (huh?)" << wmfErrorToString(error);
+            return QPixmap();
+        }
+
+        QImage image(static_cast<int>(m_ddata->width), static_cast<int>(m_ddata->height), QImage::Format_ARGB32);
+        QRgb *imagePtr = reinterpret_cast<QRgb*>(image.bits());
+        for(int i = 0; i < image.height(); i++)
+        {
+            for(int j = 0; j < image.width(); j++)
+            {
+                unsigned int pixel = static_cast<unsigned int>(*gdPixels++);
+                unsigned char b = static_cast<unsigned char>(pixel & 0xff);
+                pixel >>= 8;
+                unsigned char g = static_cast<unsigned char>(pixel & 0xff);
+                pixel >>= 8;
+                unsigned char r = static_cast<unsigned char>(pixel & 0xff);
+                pixel >>= 7;
+                unsigned char a = static_cast<unsigned char>(pixel & 0xfe);
+                a ^= 0xff;
+                *(imagePtr++) = qRgba(r, g, b, a);
+            }
+        }
+        return QPixmap::fromImage(image);
     }
 
 private:
