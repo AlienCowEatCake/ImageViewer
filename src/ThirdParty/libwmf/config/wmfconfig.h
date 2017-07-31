@@ -79,7 +79,9 @@
 #define HAVE_TIME_H 1
 
 /* define if you have unistd.h */
+#if !defined (_WIN32)
 #define HAVE_UNISTD_H 1
+#endif
 
 /* Define to 1 if you have the `vfprintf' function. */
 #define HAVE_VFPRINTF 1
