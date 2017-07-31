@@ -48,7 +48,7 @@ static int            ReadBlobByte (BMPSource*);
 static unsigned short ReadBlobLSBShort (BMPSource*);
 static unsigned long  ReadBlobLSBLong (BMPSource*);
 static long           TellBlob (BMPSource*);
-static void           DecodeImage (wmfAPI*,wmfBMP*,BMPSource*,unsigned int,unsigned char*);
+static int            DecodeImage (wmfAPI*,wmfBMP*,BMPSource*,unsigned int,unsigned char*);
 static void           ReadBMPImage (wmfAPI*,wmfBMP*,BMPSource*);
 static int            ExtractColor (wmfAPI*,wmfBMP*,wmfRGB*,unsigned int,unsigned int);
 static void           SetColor (wmfAPI*,wmfBMP*,wmfRGB*,unsigned char,unsigned int,unsigned int);

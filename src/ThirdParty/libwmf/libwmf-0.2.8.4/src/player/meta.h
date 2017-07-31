@@ -1565,7 +1565,7 @@ static int meta_rgn_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 	objects = P->objects;
 
 	i = 0;
-	while (objects[i].type && (i < NUM_OBJECTS (API))) i++;
+	while ((i < NUM_OBJECTS (API)) && objects[i].type) i++;
 
 	if (i == NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
@@ -2142,7 +2142,7 @@ static int meta_dib_brush (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist
 	objects = P->objects;
 
 	i = 0;
-	while (objects[i].type && (i < NUM_OBJECTS (API))) i++;
+	while ((i < NUM_OBJECTS (API)) && objects[i].type) i++;
 
 	if (i == NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
@@ -2593,9 +2593,10 @@ static int meta_dc_restore (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 		polyrect.BR = 0;
 
 		polyrect.count = 0;
+	
+		if (FR->region_clip) FR->region_clip (API,&polyrect);
 	}
 
-	if (FR->region_clip) FR->region_clip (API,&polyrect);
 
 	return (changed);
 }
@@ -3067,7 +3068,7 @@ static int meta_pen_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 	objects = P->objects;
 
 	i = 0;
-	while (objects[i].type && (i < NUM_OBJECTS (API))) i++;
+	while ((i < NUM_OBJECTS (API)) && objects[i].type) i++;
 
 	if (i == NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
@@ -3181,7 +3182,7 @@ static int meta_brush_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrl
 	objects = P->objects;
 
 	i = 0;
-	while (objects[i].type && (i < NUM_OBJECTS (API))) i++;
+	while ((i < NUM_OBJECTS (API)) && objects[i].type) i++;
 
 	if (i == NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
@@ -3288,7 +3289,7 @@ static int meta_font_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrli
 	objects = P->objects;
 
 	i = 0;
-	while (objects[i].type && (i < NUM_OBJECTS (API))) i++;
+	while ((i < NUM_OBJECTS (API)) && objects[i].type) i++;
 
 	if (i == NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
@@ -3396,7 +3397,7 @@ static int meta_palette_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* att
 	objects = P->objects;
 
 	i = 0;
-	while (objects[i].type && (i < NUM_OBJECTS (API))) i++;
+	while ((i < NUM_OBJECTS (API)) && objects[i].type) i++;
 
 	if (i == NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");

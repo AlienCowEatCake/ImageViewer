@@ -70,6 +70,7 @@ void gdClipSetAdd(gdImagePtr im,gdClipRectanglePtr rect)
 	{	more = gdRealloc (im->clip->list,(im->clip->max + 8) * sizeof (gdClipRectangle));
 		if (more == 0) return;
 		im->clip->max += 8;
+		im->clip->list = more;
 	}
 	im->clip->list[im->clip->count] = (*rect);
 	im->clip->count++;
