@@ -81,6 +81,8 @@ public:
         : m_isValid(false)
         , m_API(NULL)
         , m_ddata(NULL)
+        , m_width(0)
+        , m_height(0)
         , m_minScaleFactor(1)
         , m_maxScaleFactor(1)
         , m_cachedScaleFactor(0)
@@ -132,10 +134,19 @@ public:
             return;
         }
 
+        const double resolution = 72.0;
+        error = wmf_display_size(m_API, &m_width, &m_height, resolution, resolution);
+        if(error != wmf_E_None || m_width == 0 || m_height == 0)
+        {
+            qWarning() << "Couldn't determine image size:" << wmfErrorToString(error);
+            wmf_mem_close(m_API);
+            wmf_api_destroy(m_API);
+            return;
+        }
+
         m_isValid = true;
-        const QRectF actualRect = boundingRect();
-        m_minScaleFactor = std::max(MIN_IMAGE_DIMENSION / actualRect.width(), MIN_IMAGE_DIMENSION / actualRect.height());
-        m_maxScaleFactor = std::min(MAX_IMAGE_DIMENSION / actualRect.width(), MAX_IMAGE_DIMENSION / actualRect.height());
+        m_minScaleFactor = std::max(MIN_IMAGE_DIMENSION / m_width, MIN_IMAGE_DIMENSION / m_height);
+        m_maxScaleFactor = std::min(MAX_IMAGE_DIMENSION / m_width, MAX_IMAGE_DIMENSION / m_height);
     }
 
     ~WmfGraphicsItem()
@@ -153,11 +164,7 @@ public:
 
     QRectF boundingRect() const
     {
-        const qreal left   = static_cast<qreal>(m_bbox.TL.x);
-        const qreal top    = static_cast<qreal>(m_bbox.TL.y);
-        const qreal width  = static_cast<qreal>(m_bbox.BR.x - m_bbox.TL.x);
-        const qreal height = static_cast<qreal>(m_bbox.BR.y - m_bbox.TL.y);
-        return QRectF(left, top, width, height);
+        return QRectF(0, 0, m_width, m_height);
     }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = NULL)
@@ -175,11 +182,11 @@ public:
         {
             const bool previousPixmapIsValid = !m_cachedPixmap.isNull();
             m_cachedPixmap = QPixmap();
-            m_cachedPixmap = getPixmap(static_cast<float>(actualScaleFactor));
+            m_cachedPixmap = getPixmap(actualScaleFactor);
             if(m_cachedPixmap.isNull() && previousPixmapIsValid)
             {
                 m_maxScaleFactor = m_cachedScaleFactor;
-                m_cachedPixmap = getPixmap(static_cast<float>(m_cachedScaleFactor));
+                m_cachedPixmap = getPixmap(m_cachedScaleFactor);
             }
             else
             {
@@ -190,15 +197,15 @@ public:
     }
 
 protected:
-    QPixmap getPixmap(const float scaleFactor)
+    QPixmap getPixmap(const qreal scaleFactor)
     {
         m_ddata->type = wmf_gd_image;
-        m_ddata->bbox.TL.x = m_bbox.TL.x * scaleFactor;
-        m_ddata->bbox.TL.y = m_bbox.TL.y * scaleFactor;
-        m_ddata->bbox.BR.x = m_bbox.BR.x * scaleFactor;
-        m_ddata->bbox.BR.y = m_bbox.BR.y * scaleFactor;
-        m_ddata->width  = static_cast<unsigned int>(std::ceil(m_ddata->bbox.BR.x - m_ddata->bbox.TL.x));
-        m_ddata->height = static_cast<unsigned int>(std::ceil(m_ddata->bbox.BR.y - m_ddata->bbox.TL.y));
+        m_ddata->bbox.TL.x = m_bbox.TL.x;
+        m_ddata->bbox.TL.y = m_bbox.TL.y;
+        m_ddata->bbox.BR.x = m_bbox.BR.x;
+        m_ddata->bbox.BR.y = m_bbox.BR.y;
+        m_ddata->width  = static_cast<unsigned int>(std::ceil(m_width * scaleFactor));
+        m_ddata->height = static_cast<unsigned int>(std::ceil(m_height * scaleFactor));
 
         const wmf_error_t error = wmf_play(m_API, 0, &m_ddata->bbox);
         if(error != wmf_E_None)
@@ -243,6 +250,8 @@ private:
     wmfAPI *m_API;
     wmf_gd_t *m_ddata;
     wmfD_Rect m_bbox;
+    unsigned int m_width;
+    unsigned int m_height;
     qreal m_minScaleFactor;
     qreal m_maxScaleFactor;
 
