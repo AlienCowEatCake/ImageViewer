@@ -35,45 +35,6 @@
 
 #include "font.h"
 
-#ifdef _WIN32
-
-extern char* _libwmf_get_fontdir();
-
-static char* _libwmf_get_xtra_fontmap (void)
-{
-	static char retval[1000] = "";
-
-	if (retval[0] == '\0')
-	{	strcpy (retval, _libwmf_get_fontdir ());
-		strcat (retval, "\\share\\libwmf\\fonts\\fontmap");
-	}
-
-	return retval;
-}
-
-#undef WMF_XTRA_FONTMAP
-#define WMF_XTRA_FONTMAP _libwmf_get_xtra_fontmap ()
-
-static char* remap_font_file_name(wmfAPI* API,char* filename)
-{
-	/* If filename is prefixed with the compile-time WMF_FONTDIR,
-	 * substitute the run-time font directory.
-	 */
-	char* retval;
-	if (strncmp (filename, WMF_FONTDIR "/", strlen (WMF_FONTDIR "/")) == 0)
-	{	retval = wmf_malloc (API,strlen (filename) - strlen (WMF_FONTDIR) + strlen (_libwmf_get_fontdir ()) + 1);
-		strcpy (retval,_libwmf_get_fontdir ());
-		strcat (retval,filename + strlen (WMF_FONTDIR));
-	}
-	else
-	{	retval = wmf_strdup (API,filename);
-	}
-
-	return retval;
-}
-
-#endif
-
 static void ipa_font_add_wmf (wmfAPI* API,wmfFontMap* mapping)
 {	wmfFontmapData* font_data = (wmfFontmapData*) ((wmfFontData*) API->font_data)->user_data;
 
@@ -1657,16 +1618,10 @@ static FT_Face ipa_font_face_open (wmfAPI* API,char* ps_name,char* glyphs,char* 
 
 	struct stat stat_buf;
 
-#ifdef _WIN32
-	glyphs = remap_font_file_name (API,glyphs);
-#endif
 	if (stat (glyphs,&stat_buf))
 	{	WMF_ERROR (API,"unable to stat font file:");
 		WMF_ERROR (API,glyphs);
 		API->err = wmf_E_BadFile;
-#ifdef _WIN32
-		wmf_free (API,glyphs);
-#endif
 		return (0);
 	}
 
@@ -1674,15 +1629,9 @@ static FT_Face ipa_font_face_open (wmfAPI* API,char* ps_name,char* glyphs,char* 
 	{	WMF_ERROR (API,"Failed to open font:");
 		WMF_ERROR (API,glyphs);
 		API->err = wmf_E_DeviceError;
-#ifdef _WIN32
-		wmf_free (API,glyphs);
-#endif
 		return (0);
 	}
 
-#ifdef _WIN32
-	metrics = remap_font_file_name (API,metrics);
-#endif
 	if (metrics)
 	{	if (stat (metrics,&stat_buf))
 		{	WMF_DEBUG (API,"unable to stat font metrics file:");

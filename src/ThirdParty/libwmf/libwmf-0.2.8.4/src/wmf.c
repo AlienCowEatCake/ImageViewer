@@ -25,59 +25,6 @@
 
 #include "wmfdefs.h"
 
-#ifdef _WIN32
-#include <windows.h>
-
-static char installation_prefix[1000] = "";
-
-BOOL WINAPI DllMain (HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpvReserved)
-{
-	char* p;
-
-	switch (fdwReason) {
-	case DLL_PROCESS_ATTACH:
-		if (!GetModuleFileName ((HMODULE) hinstDLL,
-					installation_prefix,
-					sizeof (installation_prefix)))
-			break;
-		
-		/* If the libwmf DLL is in a "bin" or "lib" subfolder, assume
-		 * it's a Unix-style installation tree.
-		 */
-		p = strrchr (installation_prefix, '\\');
-		if (p)
-		{	*p = '\0';
-			p = strrchr (installation_prefix, '\\');
-			if (p && (stricmp (p + 1, "bin") == 0 ||
-				  stricmp (p + 1, "lib") == 0))
-				*p = '\0';
-		}
-		else
-			installation_prefix[0] = '\0';
-      
-		break;
-	}
-
-  return TRUE;
-}
-
-char* _libwmf_get_fontdir (void)
-{
-	static char retval[1000] = "";
-
-	if (retval[0] == '\0')
-	{	strcpy (retval, installation_prefix);
-		strcat (retval, "\\share\\libwmf\\fonts");
-	}
-
-	return retval;
-}
-
-#undef WMF_FONTDIR
-#define WMF_FONTDIR _libwmf_get_fontdir ()
-
-#endif
-
 static void wmf_arg (unsigned long*,wmfAPI_Options*);
 static void wmf_arg_fontdirs (wmfAPI*,wmfAPI_Options*);
 
@@ -283,9 +230,7 @@ static void wmf_arg_fontdirs (wmfAPI* API,wmfAPI_Options* options)
 		}
 	}
 
-#ifndef _WIN32
  	wmf_ipa_font_dir (API,WMF_GS_FONTDIR);
-#endif
 	wmf_ipa_font_dir (API,WMF_FONTDIR);
 }
 
