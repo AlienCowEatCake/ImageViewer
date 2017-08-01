@@ -147,13 +147,14 @@
 /* define to your implementation of vsnprintf */
 /* #undef vsnprintf */
 
-/* BEGIN TODO */
-#define WMF_FONTDIR "/usr/local/share/libwmf/fonts"
-#define WMF_GS_FONTDIR "/usr/share/fonts/type1/gsfonts"
-#define WMF_SYS_FONTMAP "/usr/share/fonts/fontmap"
-#define WMF_XTRA_FONTMAP "/etc/libwmf.fontmap"
-#define WMF_GS_FONTMAP "/var/lib/ghostscript/fonts/Fontmap"
-/* END TODO */
+
+/* custom fonts provider */
+#include "fontsprovider/fontsprovider.h"
+#define WMF_FONTDIR         ProvideWmfFontdir()
+#define WMF_GS_FONTDIR      ProvideWmfGsFontdir()
+#define WMF_SYS_FONTMAP     ProvideWmfSysFontmap()
+#define WMF_XTRA_FONTMAP    ProvideWmfXtraFontmap()
+#define WMF_GS_FONTMAP      ProvideWmfGsFontmap()
 
 #endif /* ! LIBWMF_CONFIG_H */
 

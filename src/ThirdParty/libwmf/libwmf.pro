@@ -5,7 +5,7 @@ TEMPLATE = lib
 CONFIG += staticlib
 TARGET = tp_libwmf
 
-QT -= core gui
+QT += core gui
 
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
@@ -36,6 +36,39 @@ win32 {
 } else {
     DEFINES += HAVE_UNISTD_H
 }
+
+SOURCES += \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/fontsprovider.cpp
+
+HEADERS += \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/fontsprovider.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n019003l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n019003l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n019004l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n019004l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n019023l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n019023l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n019024l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n019024l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n021003l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n021003l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n021004l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n021004l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n021023l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n021023l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n021024l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n021024l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n022003l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n022003l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n022004l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n022004l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n022023l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n022023l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n022024l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/n022024l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/s050000l.afm.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/s050000l.pfb.h \
+    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/fontmap.in.h
 
 SOURCES += \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gd.c \
