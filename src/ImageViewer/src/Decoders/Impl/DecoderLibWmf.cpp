@@ -36,6 +36,7 @@
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/Utils/ZLibUtils.h"
 
 namespace
 {
@@ -89,13 +90,27 @@ public:
     {
         memset(&m_bbox, 0, sizeof(wmfD_Rect));
 
-        QFile inFile(filePath);
-        if(!inFile.open(QIODevice::ReadOnly))
+        if(QFileInfo(filePath).suffix().toLower() == QString::fromLatin1("wmz"))
         {
-            qWarning() << "Can't open" << filePath;
+            m_inBuffer = ZLibUtils::InflateFile(filePath);
+        }
+        else
+        {
+            QFile inFile(filePath);
+            if(!inFile.open(QIODevice::ReadOnly))
+            {
+                qWarning() << "Can't open" << filePath;
+                return;
+            }
+            m_inBuffer = inFile.readAll();
+        }
+
+        if(m_inBuffer.isEmpty())
+        {
+            qWarning() << "Can't read" << filePath;
             return;
         }
-        m_inBuffer = inFile.readAll();
+
         unsigned char *bufferData = reinterpret_cast<unsigned char*>(m_inBuffer.data());
         const long bufferSize = static_cast<long>(m_inBuffer.size());
 
@@ -272,7 +287,8 @@ public:
     QStringList supportedFormats() const
     {
         return QStringList()
-                << QString::fromLatin1("wmf");
+                << QString::fromLatin1("wmf")
+                << QString::fromLatin1("wmz");
     }
 
     QStringList advancedFormats() const

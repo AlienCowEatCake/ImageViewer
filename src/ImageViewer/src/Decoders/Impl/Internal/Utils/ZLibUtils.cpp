@@ -55,20 +55,8 @@ QByteArray zerr(int ret)
     return description;
 }
 
-} // namespace
-
-namespace ZLibUtils {
-
-QByteArray InflateFile(const QString &filePath)
+QByteArray InflateDataStream(QDataStream& source)
 {
-    QFile file(filePath);
-    if(!file.open(QIODevice::ReadOnly))
-    {
-        qWarning() << "[ZLibUtils::InflateFile]: Can't open" << filePath;
-        return QByteArray();
-    }
-    QDataStream source(&file);
-
     int ret;
     z_stream strm;
     unsigned char in[CHUNK];
@@ -144,6 +132,35 @@ QByteArray InflateFile(const QString &filePath)
         return QByteArray();
     }
     return dest;
+}
+
+} // namespace
+
+namespace ZLibUtils {
+
+QByteArray InflateDevice(QIODevice *device)
+{
+    if(!device)
+        return QByteArray();
+    QDataStream source(device);
+    return InflateDataStream(source);
+}
+
+QByteArray InflateFile(const QString &filePath)
+{
+    QFile file(filePath);
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        qWarning() << "[ZLibUtils::InflateFile]: Can't open" << filePath;
+        return QByteArray();
+    }
+    return InflateDevice(&file);
+}
+
+QByteArray InflateData(const QByteArray &byteArray)
+{
+    QDataStream source(byteArray);
+    return InflateDataStream(source);
 }
 
 } // namespace ZLibUtils

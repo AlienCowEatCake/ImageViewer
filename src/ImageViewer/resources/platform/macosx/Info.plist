@@ -331,6 +331,7 @@
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>wmf</string>
+				<string>wmz</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Windows Metafile Image</string>
