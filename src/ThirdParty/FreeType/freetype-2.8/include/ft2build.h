@@ -34,6 +34,10 @@
 #ifndef FT2BUILD_H_
 #define FT2BUILD_H_
 
+#if defined (FT_PREFIX)
+#include "ftprefix.h"
+#endif
+
 #include <freetype/config/ftheader.h>
 
 #endif /* FT2BUILD_H_ */

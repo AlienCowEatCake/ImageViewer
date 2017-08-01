@@ -10,9 +10,12 @@ include($${PWD}/../../Features.pri)
     !system_freetype {
 
         THIRDPARTY_FREETYPE_PATH = $${PWD}/freetype-2.8
+        THIRDPARTY_FREETYPE_CONFIG_PATH = $${PWD}/config
 
-        INCLUDEPATH = $${THIRDPARTY_FREETYPE_PATH}/include $${INCLUDEPATH}
-        DEPENDPATH += $${THIRDPARTY_FREETYPE_PATH}/include
+        INCLUDEPATH += $${THIRDPARTY_FREETYPE_PATH}/include $${THIRDPARTY_FREETYPE_CONFIG_PATH}
+        DEPENDPATH += $${THIRDPARTY_FREETYPE_PATH}/include $${THIRDPARTY_FREETYPE_CONFIG_PATH}
+
+        DEFINES += FT_PREFIX
 
         OUT_LIB_TARGET = tp_freetype
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/FreeType

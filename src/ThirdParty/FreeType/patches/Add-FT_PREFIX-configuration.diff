@@ -1,0 +1,15 @@
+diff --git a/include/ft2build.h b/include/ft2build.h
+index e7d808f..212642c 100644
+--- a/include/ft2build.h
++++ b/include/ft2build.h
+@@ -34,6 +34,10 @@
+ #ifndef FT2BUILD_H_
+ #define FT2BUILD_H_
+ 
++#if defined (FT_PREFIX)
++#include "ftprefix.h"
++#endif
++
+ #include <freetype/config/ftheader.h>
+ 
+ #endif /* FT2BUILD_H_ */
