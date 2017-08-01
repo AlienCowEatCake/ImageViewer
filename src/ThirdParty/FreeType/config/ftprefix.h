@@ -1,6 +1,8 @@
 #if !defined (FT_PREFIX_H_INCLUDED)
 #define FT_PREFIX_H_INCLUDED
 
+#define FT_MSB_USE_C_IMPL 1
+
 /*
 nm -g --demangle libtp_freetype.a | grep -v ' U ' | cut -c 20- | grep -v '^$' | LANG=C sort -u | sed 's|^\(.*\)$|#define \1 tp_\1|'
 */
@@ -120,6 +122,7 @@ nm -g --demangle libtp_freetype.a | grep -v ' U ' | cut -c 20- | grep -v '^$' | 
 #define FT_Load_Glyph tp_FT_Load_Glyph
 #define FT_Load_Sfnt_Table tp_FT_Load_Sfnt_Table
 #define FT_Lookup_Renderer tp_FT_Lookup_Renderer
+#define FT_MSB tp_FT_MSB
 #define FT_Match_Size tp_FT_Match_Size
 #define FT_Matrix_Invert tp_FT_Matrix_Invert
 #define FT_Matrix_Multiply tp_FT_Matrix_Multiply

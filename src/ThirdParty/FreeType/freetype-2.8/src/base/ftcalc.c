@@ -107,7 +107,7 @@
     return a & ~0xFFFFL;
   }
 
-#ifndef FT_MSB
+#if !defined (FT_MSB) || defined (FT_MSB_USE_C_IMPL)
 
   FT_BASE_DEF ( FT_Int )
   FT_MSB( FT_UInt32 z )

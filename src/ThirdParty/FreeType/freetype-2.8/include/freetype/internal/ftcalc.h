@@ -357,7 +357,7 @@ FT_BEGIN_HEADER
 #endif /* __GNUC__ */
 #endif /* !FT_CONFIG_OPTION_NO_ASSEMBLER */
 
-#ifndef FT_MSB
+#if !defined (FT_MSB) || defined (FT_MSB_USE_C_IMPL)
 
   FT_BASE( FT_Int )
   FT_MSB( FT_UInt32  z );
