@@ -89,6 +89,20 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
     CONFIG += disable_libbpg # FIXME: C99
 }
 
+# FreeType options:
+#    disable_freetype
+#    system_freetype
+disable_zlib | disable_libpng {
+    CONFIG += disable_freetype
+}
+
+# libwmf options:
+#    disable_libwmf
+#    system_libwmf
+disable_zlib | disable_libpng | disable_freetype | disable_libjpeg {
+    CONFIG += disable_libwmf
+}
+
 # ::::: Optional Third Party Components Configuration :::::
 
 # QtExtended options:

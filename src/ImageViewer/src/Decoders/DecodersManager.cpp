@@ -83,6 +83,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         /// @note Декодеры векторных изображений
         P("DecoderQtSVG"                , 2100, -1); ///< Умеет svg, но очень плохо.
         P("DecoderMacWebKit"            , 2200, -1); ///< Умеет неинтерактивные svg.
+        P("DecoderLibWmf"               , 2300, -1); ///< Умеет wmf.
 #undef P
     }
 

@@ -646,6 +646,16 @@ Images from http://littlesvr.ca/apng/gif_apng_webp.html
 
 --------------------------------------------------------------------------------
 
+::: WMF test images :::
+
+Image from https://university.prognoz.ru/biu/ru/Image:image114.wmz
+ * image114-29172303.wmz
+
+Image from http://comsquare.dynvpn.de/forums/viewtopic.php?f=54&t=35570
+ * Example Bike.wmf
+
+--------------------------------------------------------------------------------
+
 ::: External test images :::
 
 HDR: http://www.hdrlabs.com/sibl/archive.html

@@ -1,0 +1,11 @@
+RPMS
+
+If any files are added to the package, or if files-to-be-installed changes, then
+libwmf.spec needs to be updated. To create the RPMs, I use the sequence:
+
+# ./configure
+# make dist
+# cp libwmf.spec /usr/src/redhat/SPECS
+# cp libwmf-0.2.0.tar.gz /usr/src/redhat/SOURCES
+# cd /usr/src/redhat
+# rpm -ba SPECS/libwmf.spec

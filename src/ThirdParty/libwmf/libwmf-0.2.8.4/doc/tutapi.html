@@ -1,0 +1,856 @@
+<html>
+<head>
+<title>libwmf-0.2.0 Tutorial 1: The API</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff"
+      background="caolan/pics/weave.jpg">
+<h1>libwmf-0.2.0 Tutorial 1: The API</h1>
+
+<h2>Contents</h2>
+
+<ul>
+<li><a href="#intro">Introduction</a>
+<li><a href="#headers">Header Files</a>
+<li><a href="#api">Creating The <b>API</b></a>
+<li><a href="#devinit">Acknowledging The Device Layer</a>
+<li><a href="#scan">Scanning The Metafile</a>
+<li><a href="#devsetup">Setting Up The Device Layer</a>
+<li><a href="#play">Playing The Metafile</a>
+<li><a href="#font">Fonts &amp; libwmf</a>
+<li><a href="#fns">Other <b>API</b> Functions</a>
+</ul>
+
+<a name="intro"><h2>Introduction</h2></a>
+
+<p>
+The figure below illustrates the tripartite division of <b>application</b>,
+<b>interpreter</b>, and <b>device layer</b>. The internal workings of each
+of the three is irrelevant; all that matters is the three interfaces which
+are separate. The core of <tt>libwmf</tt> is the interpreter, and as such
+only the interfaces between (a) the interpreter and the application - the
+<b>API</b> - and (b) the interpreter and the device layer - the <b>IPA</b>
+- are defined. Applications that wish to implement their own new device
+layer are free therefore to define whatever interface is suitable.
+</p>
+
+<table align=center><tr><td><img src="wmfpic.png"></td></tr></table>
+
+<p>
+<tt>libwmf</tt> includes two device layers: <tt>eps</tt> for conversion to
+<tt>EPS</tt> (Encapsulated Postscript) or <tt>PS</tt> (Postscript); and
+<tt>gd</tt> for conversion to <tt>PNG</tt> or <tt>JPEG</tt> image formats.
+Included with <tt>libwmf</tt> are converters for these: <tt>wmf2eps</tt>
+and <tt>wmf2gd</tt> respectively. The source-code for these is an excellent
+place to see how to use the various features of the <b>API</b> and device-layer
+interfaces.
+</p>
+
+<a name="headers"><h2>Header Files</h2></a>
+
+<p>
+All libwmf header files are now in a <tt>libwmf</tt> subdirectory. In general
+you will need to include two. Unless you are writing a new device layer, which
+will be discussed later, you should include only <tt>libwmf/api.h</tt> and the
+header for whichever device layer you are interested in, for example:
+</p>
+<font color=blue>
+<pre>
+#include &#60;libwmf/api.h&#62;
+#include &#60;libwmf/gd.h&#62;
+</pre>
+</font>
+<p>
+The <tt>gd</tt> device layer uses the <tt>GD</tt> library, included with
+<tt>libwmf</tt>, to output images in <tt>PNG</tt> (or possibly in <tt>JPEG</tt>)
+format. Alternatively, if you wish the output to be in <tt>PS</tt> or
+<tt>EPS</tt> format, you would include:
+</p>
+<font color=blue>
+<pre>
+#include &#60;libwmf/api.h&#62;
+#include &#60;libwmf/eps.h&#62;
+</pre>
+</font>
+
+<a name="api"><h2>Creating The API</h2></a>
+
+<p>
+For each metafile you wish to process and convert to a given image type, you
+must create an instance of the <b>API</b>. This can be sophisticated or simple.
+In its simplest form, the only thing that needs to be specified is which
+device layer you wish to use. For example, to use <tt>GD</tt>:
+</p>
+<font color=blue>
+<pre>
+	wmfAPI_Options options;
+	wmfAPI* API;
+
+	wmf_error_t error;
+
+	unsigned long flags;
+
+	/* */
+
+	flags = WMF_OPT_FUNCTION;
+
+	options.function = wmf_gd_function;
+
+	/* Other Options */
+
+	error = wmf_api_create (&API,flags,&options);
+	if (error != wmf_E_None)
+	{	wmf_api_destroy (API);
+
+		/* */
+	}
+
+	/* */
+</pre>
+</font>
+<p>
+The library performs all memory allocation with respect to the <b>API</b>, and
+destroying the instance will free up all associated memory:
+</p>
+<font color=blue>
+<pre>
+	error = wmf_api_destroy (API);
+</pre>
+</font>
+<p>
+There are a number of different options which can be used when creating the
+<b>API</b>. The structure of <tt>wmfAPI_Options</tt> is:
+</p>
+<font color=blue>
+<pre>
+typedef struct _wmfAPI_Options wmfAPI_Options;
+
+struct _wmfAPI_Options
+{	void* context;
+
+	void* (*malloc)  (void* context,size_t size);
+	void* (*realloc) (void* context,void* mem,size_t size);
+	void  (*free)    (void* context,void* mem);
+
+	int    argc;
+	char** argv;
+
+	char** fontdirs; /* NULL-terminated list of directories to search for font files */
+
+	struct
+	{	wmfFontMap* wmf; /* {0,*}-terminated list: wmf-font-name -> ps-font-name */
+		wmfMapping* sub; /* {0,*}-terminated list: wmf-font-name substring equiv */
+		wmfMapping* ps;  /* {0,*}-terminated list: ps-font-name -> pfb-file-name */
+	} font;
+
+	char* sys_fontmap_file;
+	char* xtra_fontmap_file;
+
+	void (*function) (wmfAPI*);
+
+	char*  module;
+	char** dirs;
+
+	FILE* debug_out;
+	FILE* error_out;
+};
+</pre>
+</font>
+<ul>
+<li><b>WMF_OPT_ALLOC</b><br>
+If you wish to provide your own memory allocation routines for <tt>libwmf</tt>
+to use instead of <tt>malloc</tt>, <tt>realloc</tt> and <tt>free</tt>, these
+can be specified:
+<font color=blue>
+<pre>
+	flags |= WMF_OPT_ALLOC;
+
+	options.context = my_memory_manager_data;
+	options.malloc  = my_malloc;
+	options.realloc = my_realloc;
+	options.free    = my_free;
+</pre>
+</font>
+<li><b>WMF_OPT_ARGS</b><br>
+<tt>libwmf</tt> can be allowed to check for certain command line arguments:
+<pre>
+  --wmf-ignore-nonfatal     ignore any non-critical errors or unsupported features
+  --wmf-error=no            suppress error reports
+  --wmf-debug=no            suppress debug reports
+  --wmf-diagnostics         emit diagnostic information (for analysis of metafiles)
+  --wmf-fontdir=&#60;path&#62;      add &#60;path&#62; to list of directories searched for fonts
+  --wmf-sys-fonts           use system fonts, if any found
+  --wmf-sys-fontmap=&#60;file&#62;  use system xml-fontmap file &#60;file&#62; (implies --wmf-sys-fonts)
+  --wmf-xtra-fonts          use non-system fonts, if any found
+  --wmf-xtra-fontmap=&#60;file&#62; use non-system xml-fontmap file &#60;file&#62; (implies --wmf-xtra-fonts)
+</pre>
+where the command line is specified by:
+<font color=blue>
+<pre>
+int main (int argc,char** argv)
+{	/* */
+
+	flags |= WMF_OPT_ARGS;
+
+	options.argc = argc;
+	options.argv = argv;
+</pre>
+</font>
+<li><b>WMF_OPT_FONTDIRS</b><br>
+A <b>NULL</b>-terminated list of directories to be searched for fonts can be
+specified by:
+<font color=blue>
+<pre>
+	char* dirs[3] = { "/usr/share/fonts", "/usr/local/share/fonts", NULL };
+
+	/* */
+
+	flags |= WMF_OPT_FONTDIRS;
+
+	options.fontdirs = dirs;
+</pre>
+</font>
+<li><b>WMF_OPT_FONTMAP</b> [UNTESTED]<br>
+This is a system for specifying font mappings; see section on fonts.
+<li><b>WMF_OPT_SYS_FONTS</b><br>
+Use any system fonts found, not just standard 13.
+<li><b>WMF_OPT_SYS_FONTMAP</b> [UNTESTED]<br>
+Use specified system XML fontmap file:
+<font color=blue>
+<pre>
+	flags |= WMF_OPT_SYS_FONTS;
+	flags |= WMF_OPT_SYS_FONTMAP;
+
+	options.sys_fontmap_file = "/usr/local/share/fonts/fontmap";
+</pre>
+</font>
+<li><b>WMF_OPT_XTRA_FONTS</b><br>
+Use any system fonts found, not just standard 13.
+<li><b>WMF_OPT_XTRA_FONTMAP</b> [UNTESTED]<br>
+Use specified non-system XML fontmap file:
+<font color=blue>
+<pre>
+	flags |= WMF_OPT_XTRA_FONTS;
+	flags |= WMF_OPT_XTRA_FONTMAP;
+
+	options.xtra_fontmap_file = "/usr/local/share/libwmf/fonts/fontmap";
+</pre>
+</font>
+<li><b>WMF_OPT_FUNCTION</b><br>
+This is how to initialize a device-layer with a supplied function. (Currently
+this is the only way to initialize a device layer since modules are not yet
+implemented.) The function is device-specific. See above.
+<li><b>WMF_OPT_MODULE</b> [UNIMPLEMENTED]<br>
+initialize device-layer with specified module
+<li><b>WMF_OPT_MODULE_DIRS</b> [UNIMPLEMENTED]<br>
+check for module also in specified directories
+<li><b>WMF_OPT_IGNORE_NONFATAL</b> [HIGHLY RECOMMENDED]<br>
+Ignore (some) non-fatal errors, equivalent to --wmf-ignore-nonfatal
+<font color=blue>
+<pre>
+	flags |= WMF_OPT_IGNORE_NONFATAL;
+</pre>
+</font>
+<li><b>WMF_OPT_NO_ERROR</b><br>
+Suppress all error reports, equivalent to --wmf-error=no
+<font color=blue>
+<pre>
+	flags |= WMF_OPT_NO_ERROR;
+</pre>
+</font>
+<li><b>WMF_OPT_NO_DEBUG</b><br>
+Suppress all debug reports, equivalent to --wmf-debug=no
+<font color=blue>
+<pre>
+	flags |= WMF_OPT_NO_DEBUG;
+</pre>
+</font>
+<li><b>WMF_OPT_LOG_ERROR</b> [UNTESTED]<br>
+Divert error reports to specified stream:
+<font color=blue>
+<pre>
+	FILE* e_out;
+
+	/* */
+
+	e_out = fopen ("error.log","w");
+	if (e_out)
+	{	flags |= WMF_OPT_LOG_ERROR;
+
+		options.error_out = e_out;
+	}
+</pre>
+</font>
+<li><b>WMF_OPT_LOG_DEBUG</b> [UNTESTED]<br>
+Divert debug reports to specified stream:
+<font color=blue>
+<pre>
+	FILE* d_out;
+
+	/* */
+
+	d_out = fopen ("debug.log","w");
+	if (d_out)
+	{	flags |= WMF_OPT_LOG_DEBUG;
+
+		options.debug_out = d_out;
+	}
+</pre>
+</font>
+</ul>
+
+<a name="devinit"><h2>Acknowledging The Device Layer</h2></a>
+
+<p>
+In addition to creating the <b>API</b>, <tt>wmf_api_create</tt> sets up the
+link with the device layer. Device layer data can be accessed through
+<tt>API->device_data</tt>, but the implementation will probably provide a
+convenient interface. For example, with <tt>GD</tt>:
+</p>
+<font color=blue>
+<pre>
+	wmfAPI_Options options;
+	wmfAPI* API;
+
+	wmf_error_t error;
+
+	wmf_gd_t* ddata;
+
+	unsigned long flags;
+
+	/* */
+
+	flags = WMF_OPT_FUNCTION | WMF_OPT_IGNORE_NONFATAL;
+
+	options.function = wmf_gd_function;
+
+	/* Other Options */
+
+	error = wmf_api_create (&API,flags,&options);
+	if (error != wmf_E_None)
+	{	wmf_api_destroy (API);
+
+		/* */
+	}
+
+	ddata = WMF_GD_GetData (API);
+
+	if ((ddata->flags & WMF_GD_SUPPORTS_JPEG) == 0)
+	{	fprintf (stderr,"libwmf does not support JPEG conversion!\n");
+
+		wmf_api_destroy (API);
+
+		/* */
+	}
+
+	/* */
+</pre>
+</font>
+<p>
+At this point there is little need to acknowledge the device layer, except if
+(as in the above example) the device layer indicates possible restrictions.
+</p>
+
+<a name="scan"><h2>Scanning The Metafile</h2></a>
+
+<p>
+Before <i>playing</i> the metafile (i.e., rendering the image) it is necessary
+first to open the metafile and second to <i>scan</i> it. To open a metafile
+that is a file on disc is simple:
+</p>
+<font color=blue>
+<pre>
+	error = wmf_file_open (API,"file.wmf");
+	if (error != wmf_E_None)
+	{	wmf_api_destroy (API);
+
+		/* */
+	}
+</pre>
+</font>
+<p>
+The file needs to be closed later by calling:
+</p>
+<font color=blue>
+<pre>
+	error = wmf_file_close (API);
+</pre>
+</font>
+<p>
+Alternatively, if the metafile is preloaded in memory, it can be opened with:
+</p>
+<font color=blue>
+<pre>
+	error = wmf_mem_open (API,(unsigned char*) buffer,(long) buffer_length);
+	if (error != wmf_E_None)
+	{	wmf_api_destroy (API);
+
+		/* */
+	}
+</pre>
+</font>
+<p>
+and closed later by calling:
+</p>
+<font color=blue>
+<pre>
+	error = wmf_mem_close (API);
+</pre>
+</font>
+<p>
+A third, more generic method is available as well, but requires more work. For
+example, to `open' an already-open file stream:
+</p>
+<font color=blue>
+<pre>
+int  my_wmfRead (void*);
+int  my_wmfSeek (void*,long);
+long my_wmfTell (void*);
+
+/* User redefinable functions for input-stream access:
+ * wmfRead: returns unsigned char cast to int, or EOF
+ */
+int my_wmfRead (void* context)
+{	return (fgetc ((FILE*) context));
+}
+
+/* User redefinable functions for input-stream access:
+ * wmfSeek: returns (-1) on error, else 0
+ */
+int my_wmfSeek (void* context,long position)
+{	return (fseek ((FILE*) context,position,SEEK_SET));
+}
+
+/* User redefinable functions for input-stream access:
+ * wmfTell: returns (-1) on error, else pos
+ */
+long my_wmfTell (void* context)
+{	return (ftell ((FILE*) context));
+}
+
+	/* */
+
+	error = wmf_bbuf_input (API,my_wmfRead,my_wmfSeek,my_wmfTell,(void*) in);
+	if (error != wmf_E_None)
+	{	wmf_api_destroy (API);
+
+		/* */
+	}
+</pre>
+</font>
+<p>
+Once the metafile has been opened, it must be scanned. Scanning parses the
+metafile without any interaction with the device layer, and its purpose is
+(a) determine whether it is a valid metafile, and (b) estimate the dimensions
+of the metafile.
+</p>
+<font color=blue>
+<pre>
+	wmfD_Rect bbox;
+
+	/* */
+
+	error = wmf_scan (API,0,&bbox);
+	if (error != wmf_E_None)
+	{	wmf_api_destroy (API);
+
+		/* */
+	}
+</pre>
+</font>
+<p>
+A metafile needs to be scanned, but only once. <tt>wmf_scan</tt> will reject
+any further attempts to scan; <tt>wmf_play</tt> (see below) will fail unless
+the metafile has been scanned.
+</p>
+
+<a name="devsetup"><h2>Setting Up The Device Layer</h2></a>
+
+<p>
+Metafiles are basically a vector-graphic format and as such they can be scaled
+to any size and aspect ratio. The interpreter describes the metafile in a
+scaleable manner to the device layer, and the device layer is free to scale
+the metafile in any manner it chooses. As such, the device layer will almost
+certainly require (a) the dimensions of the metafile found by <tt>wmf_scan</tt>
+(see above), and (b) the image width and height desired by the application.
+</p>
+<p>
+<tt>wmfD_Rect</tt> describes a bounding box in the interpreter's device
+coordinates, and is defined as:
+</p>
+<font color=blue>
+<pre>
+typedef struct _wmfD_Coord wmfD_Coord;
+typedef struct _wmfD_Rect  wmfD_Rect;
+
+struct _wmfD_Coord
+{	float x;
+	float y;
+};
+
+struct _wmfD_Rect
+{	wmfD_Coord TL;
+	wmfD_Coord BR;
+};
+</pre>
+</font>
+<p>
+and so an application can determine the image's aspect ratio by:
+</p>
+<font color=blue>
+<pre>
+	float aspect_ratio;
+
+	/* */
+
+	aspect_ratio = (bbox.BR.y - bbox.TL.y) / (bbox.BR.x - bbox.TL.x);
+</pre>
+</font>
+<p>
+<b>Note: By definition bbox.BR.y &#62; bbox.TL.y and bbox.BR.x &#62; bbox.TL.x</b>
+</p>
+<p>
+Putting this all together, and again using <tt>GD</tt> as an example:
+</p>
+<font color=blue>
+<pre>
+	wmfAPI_Options options;
+	wmfAPI* API;
+
+	wmfD_Rect bbox;
+
+	wmf_error_t error;
+
+	wmf_gd_t* ddata;
+
+	unsigned long flags;
+
+	FILE* out;
+
+	/* */
+
+	flags = WMF_OPT_FUNCTION | WMF_OPT_IGNORE_NONFATAL;
+
+	options.function = wmf_gd_function;
+
+	/* Other Options */
+
+	error = wmf_api_create (&API,flags,&options);
+	if (error != wmf_E_None)
+	{	wmf_api_destroy (API);
+
+		/* */
+	}
+
+	ddata = WMF_GD_GetData (API);
+
+	if ((ddata->flags & WMF_GD_SUPPORTS_JPEG) == 0)
+	{	fprintf (stderr,"libwmf does not support JPEG conversion!\n");
+
+		wmf_api_destroy (API);
+
+		/* */
+	}
+
+	error = wmf_file_open (API,"file.wmf");
+	if (error != wmf_E_None)
+	{	wmf_api_destroy (API);
+
+		/* */
+	}
+
+	error = wmf_scan (API,0,&bbox);
+	if (error != wmf_E_None)
+	{	wmf_api_destroy (API);
+
+		/* */
+	}
+
+	out = fopen ("file.jpeg","w");
+	if (out == 0)
+	{	wmf_api_destroy (API);
+
+		/* */
+	}
+
+	ddata->type = wmf_gd_jpeg;
+
+	ddata->flags |= WMF_GD_OUTPUT_FILE;
+	ddata->file = out;
+
+	ddata->bbox = bbox;
+
+	ddata->width  = (unsigned int) ceil (ddata->bbox.BR.x - ddata->bbox.TL.x);
+	ddata->height = (unsigned int) ceil (ddata->bbox.BR.y - ddata->bbox.TL.y);
+</pre>
+</font>
+<p>
+The above example doesn't do anything intelligent with the size of the image.
+The converter <tt>wmf2gd</tt> sets a maximum size and scales the image
+accordingly.
+</p>
+
+<a name="play"><h2>Playing The Metafile</h2></a>
+
+<p>
+The final step is simply to play the metafile:
+</p>
+<font color=blue>
+<pre>
+	error = wmf_play (API,0,0);
+	if (error != wmf_E_None)
+	{	wmf_api_destroy (API);
+
+		/* */
+	}
+</pre>
+</font>
+<p>
+This can be done any number of times, with varying device layer settings if
+desired.
+</p>
+
+<a name="font"><h2>Fonts &amp; libwmf</h2></a>
+
+<p>
+There are a number of issues with fonts and <tt>libwmf</tt> to complicate
+matters: the first is the need to translate font names specified into font
+names recognized by <tt>libwmf</tt>; the second is to find the corresponding
+font files; a third is to work out what encoding (char. set) to use. Described
+below is <tt>libwmf</tt>'s native mechanism for dealing with these issues.
+While versatile, unfortunately it requires significant effort on the part of an
+application that seeks to extend the limited font mapping provided by default.
+A second (experimental and optional) mechanism is provided also, and this reads
+an XML file containing font information (file locations and font names); on
+RedHat Linux systems this file is <tt>/usr/share/fonts/fontmap</tt>. No doubt
+this is an area that will see considerable future development.
+</p>
+<p>
+Chances are, the metafile will require fonts that are not available to
+<tt>libwmf</tt>, and there must be a mechanism, therefore, for translating
+metafile fontnames into usable fonts. As noted above, the
+<tt>wmfAPI_Options</tt> structure passed to <tt>wmf_api_create</tt> has the
+following entries:
+</p>
+<font color=blue>
+<pre>
+typedef struct _wmfAPI_Options wmfAPI_Options;
+
+struct _wmfAPI_Options
+{	/* */
+
+	struct
+	{	wmfFontMap* wmf; /* {0,*}-terminated list: wmf-font-name -> ps-font-name */
+		wmfMapping* sub; /* {0,*}-terminated list: wmf-font-name substring equiv */
+		wmfMapping* ps;  /* {0,*}-terminated list: ps-font-name -> pfb-file-name */
+	} font;
+
+	/* */
+}
+</pre>
+</font>
+<p>
+The two mapping types are defined:
+</p>
+<font color=blue>
+<pre>
+typedef struct _wmfMapping             wmfMapping;
+typedef struct _wmfFontMap             wmfFontMap;
+
+struct _wmfMapping
+{	char* name;
+	char* mapping;
+
+	FT_Encoding encoding;
+};
+
+struct _wmfFontMap
+{	char* name;       /* wmf font name */
+
+	char* normal;     /* postscript font names */
+	char* italic;
+	char* bold;
+	char* bolditalic;
+};
+</pre>
+</font>
+<p>
+Internally <tt>libwmf</tt> has the following default definitions:
+</p>
+<font color=blue>
+<pre>
+/* postscript (standard 13) font name mapping to type 1 font file
+ */
+static wmfMapping PSFontMap[13] = {
+	{	"Courier",		"n022003l.pfb",	ft_encoding_adobe_standard	},
+	{	"Courier-Oblique",	"n022023l.pfb",	ft_encoding_adobe_standard	},
+	{	"Courier-Bold",		"n022004l.pfb",	ft_encoding_adobe_standard	},
+	{	"Courier-BoldOblique",	"n022024l.pfb",	ft_encoding_adobe_standard	},
+	{	"Helvetica",		"n019003l.pfb",	ft_encoding_adobe_standard	},
+	{	"Helvetica-Oblique",	"n019023l.pfb",	ft_encoding_adobe_standard	},
+	{	"Helvetica-Bold",	"n019004l.pfb",	ft_encoding_adobe_standard	},
+	{	"Helvetica-BoldOblique","n019024l.pfb",	ft_encoding_adobe_standard	},
+	{	"Times-Roman",		"n021003l.pfb",	ft_encoding_adobe_standard	},
+	{	"Times-Italic",		"n021023l.pfb",	ft_encoding_adobe_standard	},
+	{	"Times-Bold",		"n021004l.pfb",	ft_encoding_adobe_standard	},
+	{	"Times-BoldItalic",	"n021024l.pfb",	ft_encoding_adobe_standard	},
+	{	"Symbol",		"s050000l.pfb",	ft_encoding_adobe_custom	}};
+
+/* exact WMF font name to postscript (standard 13) equivalent...
+ * well, yeah, I know. :-(
+ */
+static wmfFontMap WMFFontMap[] = {
+{ "Courier",		"Courier",     "Courier-Oblique",   "Courier-Bold",   "Courier-BoldOblique"   },
+{ "Helvetica",		"Helvetica",   "Helvetica-Oblique", "Helvetica-Bold", "Helvetica-BoldOblique" },
+{ "Modern",		"Courier",     "Courier-Oblique",   "Courier-Bold",   "Courier-BoldOblique"   },
+{ "Monotype Corsiva",	"Courier",     "Courier-Oblique",   "Courier-Bold",   "Courier-BoldOblique"   },
+{ "News Gothic",	"Helvetica",   "Helvetica-Oblique", "Helvetica-Bold", "Helvetica-BoldOblique" },
+{ "Symbol",		"Symbol",      "Symbol",            "Symbol",         "Symbol"                },
+{ "System",		"Courier",     "Courier-Oblique",   "Courier-Bold",   "Courier-BoldOblique"   },
+{ "Times",		"Times-Roman", "Times-Italic",      "Times-Bold",     "Times-BoldItalic"      }};
+
+/* Sub-string match if not in the above list;
+ */
+static wmfMapping SubFontMap[] = {
+	{	"Arial",		"Helvetica"	},
+	{	"Courier",		"Courier"	},
+	{	"Fixed",		"Courier"	},
+	{	"Helvetica",		"Helvetica"	},
+	{	"Sans",			"Helvetica"	},
+	{	"Sym",			"Symbol"	},
+	{	"Terminal",		"Courier"	},
+	{	"Times",		"Times"		},
+	{	"Wingdings",		"Symbol"	}};
+
+/* If all else fails, assume Times
+ */
+static char* DefaultFontMapping = "Times";
+</pre>
+</font>
+<p>
+Bundled with <tt>libwmf</tt> are the thirteen standard <tt>ghostscript</tt>
+fonts. Unless the application specifies other fonts, <tt>libwmf</tt> will
+attempt to map the metafile's font name to one of these default fonts.
+</p>
+<p>
+First an exact match is sought with the first argument of each font in
+<tt>WMFFontMap</tt>. For example, "News Gothic" would be an exact match;
+"Arial" would not. If there is no exact match, then a substring search is
+performed against the first argument of each font in <tt>SubFontMap</tt>.
+For example, this time "Arial" would match; "Zapf Chancery" would not. If
+there is still no exact match then "Times" is assumed.
+</p>
+<p>
+Once a font name is found, this is converted to an equivalent name, assumed to
+be the postscript font name, using <tt>WMFFontMap</tt>. And finally the
+equivalent name is searched for in <tt>PSFontMap</tt>. For example,
+"Zapf Chancery" in italics would be mapped to "Times" in italics, then to
+"Times-Italic", and finally to "n021023l.pfb".
+</p>
+<p>
+<tt>libwmf</tt> searches through the list of font directories for this file
+and loads it using <tt>freetype (2)</tt> with the encoding specified by the
+third argument of the <tt>PSFontMap</tt> entry.
+</p>
+<p>
+These three lists can be prepended by using the <b>WMF_OPT_FONTMAP</b> option.
+The font files can be any format supported by <tt>freetype (2)</tt>.
+</p>
+<p>
+After the metafile has been scanned, <tt>API->fonts</tt> is a
+<tt>NULL</tt>-terminated list of (postscript) font names corresponding to the
+fonts selected by the interpreter.
+</p>
+
+<a name="fns"><h2>Other API Functions</h2></a>
+
+<p>
+<tt>libwmf</tt> performs all memory allocation with respect to the <b>API</b>.
+When the <b>API</b> is destroyed, all associated memory is freed. The routines
+for allocating and freeing such memory are:
+</p>
+<font color=blue>
+<pre>
+extern void* wmf_malloc (wmfAPI*,size_t);
+extern void* wmf_calloc (wmfAPI*,size_t,size_t);
+extern void* wmf_realloc (wmfAPI*,void*,size_t);
+extern void  wmf_free (wmfAPI*,void*);
+</pre>
+</font>
+<p>
+These behave similarly to the standard <tt>malloc</tt>, etc. Similarly:
+</p>
+<font color=blue>
+<pre>
+extern char* wmf_strdup (wmfAPI*,char*);
+</pre>
+</font>
+<p>
+is an internal implementation of <tt>strdup</tt> which allocates the copied
+string w.r.t. the <b>API</b>. On a related note,
+</p>
+<font color=blue>
+<pre>
+extern char* wmf_strstr (const char*,const char*);
+</pre>
+</font>
+<p>
+is an internal implementation of <tt>strstr</tt> and may be just a wrapper for
+it. This is a special case of a function which does not refer to the
+<b>API</b>.
+</p>
+<p>
+Messages can be added to the <i>error</i> and <i>debug</i> streams using:
+</p>
+<font color=blue>
+<pre>
+extern void wmf_error (wmfAPI* API,char* srcfilename,int linenumber,char* message);
+extern void wmf_debug (wmfAPI* API,char* srcfilename,int linenumber,char* message);
+extern void wmf_assert (wmfAPI* API,char* srcfilename,int linenumber);
+</pre>
+</font>
+<p>
+but these functions should be used via the macros <tt>WMF_ERROR(API,"mesg")</tt>,
+<tt>WMF_DEBUG(API,"mesg")</tt>, and <tt>WMF_ASSERT(API,&#60;expr&#62;)</tt>.
+</p>
+<p>
+Finally, a call-back function can be set. This is called after each metafile
+record with an estimate of the proportion of the metafile read; if the return
+value is non-zero then the player will exit prematurely.
+</p>
+<font color=blue>
+<pre>
+typedef int (*wmfStatus) (void* context,float proportion);
+
+extern void wmf_status_function (wmfAPI* API,void* context,wmfStatus function);
+</pre>
+</font>
+<p>
+For example, the following status function is used by <tt>wmf2gd</tt>:
+</p>
+<font color=blue>
+<pre>
+int wmf2gd_status (void* context,float p)
+{	int percent;
+
+	percent = (int) (p * 100);
+
+	if (percent <  0) percent =  0;
+	if (percent > 99) percent = 99;
+
+	fprintf (stderr,"%2d%%\b\b\b",percent);
+}
+</pre>
+</font>
+<p>
+Although there are other functions in the <b>API</b>, their use is <i>not</i>
+recommended.
+</p>
+
+<hr>
+
+<address>
+Copyright 2001 wvWare/libwmf <a href="http://www.wvware.com/">http://www.wvware.com/</a>
+</address>
+
+</body>
+</html>

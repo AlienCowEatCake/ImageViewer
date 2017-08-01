@@ -21,11 +21,14 @@
 #define DECODER_ZLIBUTILS_H_INCLUDED
 
 #include <QByteArray>
+#include <QIODevice>
 #include <QString>
 
 namespace ZLibUtils {
 
+QByteArray InflateDevice(QIODevice *device);
 QByteArray InflateFile(const QString &filePath);
+QByteArray InflateData(const QByteArray &byteArray);
 
 } // namespace ZLibUtils
 

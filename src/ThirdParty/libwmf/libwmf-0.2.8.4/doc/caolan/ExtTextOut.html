@@ -1,0 +1,113 @@
+<head>
+<title>META_EXTTEXTOUT</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_EXTTEXTOUT
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+BOOL32 ExtTextOutA
+(
+	HDC32 hdc,
+	INT32 x,
+	INT32 y,
+	UINT32 flags,
+	const RECT32 *lprect,
+	LPCSTR str,
+	UINT32 count,
+	const INT32 *lpDx
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER =1>
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+<TR>
+<TD>0</TD>
+<TD>y</TD>
+</TR>
+<TR>
+<TD>1</TD>
+<TD>x</TD>
+</TR>
+<TR>
+<TD>2</TD>
+<TD>count</TD>
+</TR>
+<TR>
+<TD>3</TD>
+<TD>flag</TD>
+</TR>
+</table>
+
+If flag & ETO_CLIPPED is true then the following parameters are...
+<table border=1>
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+<TR>
+<TD>4</TD>
+<TD>x1</TD>
+</TR>
+<TR>
+<TD>5</TD>
+<TD>y1</TD>
+</TR>
+<TR>
+<TD>6</TD>
+<TD>x2</TD>
+</TR>
+<TR>
+<TD>7</TD>
+<TD>y2</TD>
+</TR>
+</TABLE>
+
+In either case the next parameters are
+
+<table border=1>
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+<TR>
+<TD>next parameter, for a count of parameter[2]/2</TD>
+<TD>two chars of the string</TD>
+</TR>
+</TABLE>
+
+There may be extra parameters after the end of the string , this
+array is known as lpDx and each element is the extra distance
+from one character to the next.
+<table border=1>
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+<TR>
+<TD>each next parameter, until the end of the record</TD>
+<TD></TD>
+</TR>
+</TABLE>
+
+count is the number of characters in the string, as each char is only a 8bit
+number, two chars exist in each 16bit parameter entry.<br>
+flag is one or both of ETO_OPAQUE and ETO_CLIPPED, the first means that the
+background of the box that the text is typed in is OPAQUE, and the usual
+opaque rules apply, (<a href="SetBkMode.html">SetBkMode</a>. The second means
+that the text is clipped to the rectangle supplied.
+x1, y1, x2 and y2, are the points of the optional clipping rectangle, included if
+flags has ETO_CLIPPED set<br>
+Then the string follows, and then there is an optional array of widths, each
+16bit width is the distance from one character to the next.
+
+
+<p><a href="support.html">back</a><p>
+</body>

@@ -1,0 +1,599 @@
+#!/bin/sh
+
+font_map=@WMF_XTRA_FONTMAP@
+font_dir=
+
+echo_help=no
+
+while test $# -gt 0; do
+	case "$1" in
+	-*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+	*)    optarg= ;;
+	esac
+
+	case $1 in
+	--help)  echo_help=yes ;;
+	--map=*)
+		font_map=$optarg
+	;;
+	*)
+		if test "x$font_dir" = "x"; then
+			font_dir=$1
+		else
+			font_dir="$font_dir $1"
+		fi
+	;;
+	esac
+
+	shift
+done
+
+if test "x$font_map" = "x"; then
+	echo_help=yes
+fi
+
+if test "x$font_dir" = "x"; then
+	font_dir="@WMF_FONTDIR@"
+else
+	font_dir="$font_dir @WMF_FONTDIR@"
+fi
+
+if test $echo_help = yes; then
+	cat <<EOF
+Usage: libwmf-fontmap --map=<fontmap> dir1 [dir2 [dir3 ...]]
+EOF
+	exit $1
+fi
+
+echo font map = $font_map
+
+font_pwd=`pwd`
+
+if test -w $font_map; then
+	rm -f $font_map
+fi
+
+cat > $font_map <<EOF
+<?xml version="1.0"?>
+<fontmap>
+EOF
+
+for i in $font_dir; do
+	if test -d $i; then
+		cd $i;
+		font_cwd=`pwd`;
+		echo scanning $i;
+
+		for j in `ls *.afm 2> /dev/null`; do
+			font_root=`echo $j | sed s/.afm//`
+			font_metrics=$font_cwd/$font_root.afm
+			font_glyphs=
+			if test -r $font_cwd/$font_root.pfa; then
+				font_glyphs=$font_cwd/$font_root.pfa
+			elif test -r $font_cwd/$font_root.pfb; then
+				font_glyphs=$font_cwd/$font_root.pfb
+			fi
+			if test "x$font_glyphs" != "x"; then
+				echo font: $font_root
+				FontName=`grep "FontName " $font_metrics | sed "s/FontName //"`
+				FullName=`grep "FullName " $font_metrics | sed "s/FullName //"`
+				FamilyName=`grep "FamilyName " $font_metrics | sed "s/FamilyName //"`
+				Weight=`grep "Weight " $font_metrics | sed "s/Weight //"`
+				cd $font_pwd
+				echo '<font format="type1" metrics="'$font_metrics'" glyphs="'$font_glyphs'" name="'$FontName'" fullname="'$FullName'" familyname="'$FamilyName'" weight="'$Weight'" version="0.1" alias="'$FontName'"/>' >> $font_map
+				cd $font_cwd
+			fi
+		done
+
+		for j in `ls *.ttf 2> /dev/null`; do
+			font_root=`echo $j | sed s/.ttf//`
+			font_recognized=yes
+			font_glyphs=$font_cwd/$font_root.ttf
+			case "$font_root" in
+				antquab)
+				FontName="BookAntiqua-Bold"
+				FullName="Book Antiqua Bold"
+				FamilyName="Book Antiqua"
+				Weight="Bold"
+				;;
+				antquabi)
+				FontName="BookAntiqua-BoldItalic"
+				FullName="Book Antiqua Bold Italic"
+				FamilyName="Book Antiqua"
+				Weight="Bold Italic"
+				;;
+				antquai)
+				FontName="BookAntiqua-Italic"
+				FullName="Book Antiqua Italic"
+				FamilyName="Book Antiqua"
+				Weight="Italic"
+				;;
+				arbli___)
+				FontName="Arial-BlackItalic"
+				FullName="Arial Black Italic"
+				FamilyName="Arial Black"
+				Weight="Italic"
+				;;
+				arial)
+				FontName="ArialMT"
+				FullName="Arial"
+				FamilyName="Arial"
+				Weight="Regular"
+				;;
+				arialbd)
+				FontName="Arial-BoldMT"
+				FullName="Arial Bold"
+				FamilyName="Arial"
+				Weight="Bold"
+				;;
+				arialbi)
+				FontName="Arial-BoldItalicMT"
+				FullName="Arial Bold Italic"
+				FamilyName="Arial"
+				Weight="Bold Italic"
+				;;
+				ariali)
+				FontName="Arial-ItalicMT"
+				FullName="Arial Italic"
+				FamilyName="Arial"
+				Weight="Italic"
+				;;
+				arialn)
+				FontName="ArialNarrow"
+				FullName="Arial Narrow"
+				FamilyName="Arial Narrow"
+				Weight="Regular"
+				;;
+				arialnb)
+				FontName="ArialNarrow-Bold"
+				FullName="Arial Narrow Bold"
+				FamilyName="Arial Narrow"
+				Weight="Bold"
+				;;
+				arialnbi)
+				FontName="ArialNarrow-BoldItalic"
+				FullName="Arial Narrow Bold Italic"
+				FamilyName="Arial Narrow"
+				Weight="Bold Italic"
+				;;
+				arialni)
+				FontName="ArialNarrow-Italic"
+				FullName="Arial Narrow Italic"
+				FamilyName="Arial Narrow"
+				Weight="Italic"
+				;;
+				arialuni)
+				FontName="ArialUnicodeMS"
+				FullName="Arial Unicode MS"
+				FamilyName="Arial Unicode MS"
+				Weight="Regular"
+				;;
+				ariblk)
+				FontName="Arial-Black"
+				FullName="Arial Black"
+				FamilyName="Arial Black"
+				Weight="Regular"
+				;;
+				batang)
+				FontName="Batang"
+				FullName="Batang"
+				FamilyName="Batang"
+				Weight="Regular"
+				;;
+				bkant)
+				FontName="BookAntiqua"
+				FullName="Book Antiqua"
+				FamilyName="Book Antiqua"
+				Weight="Regular"
+				;;
+				bookos)
+				FontName="BookmanOldStyle"
+				FullName="Bookman Old Style"
+				FamilyName="Bookman Old Style"
+				Weight="Regular"
+				;;
+				bookosb)
+				FontName="BookmanOldStyle-Bold"
+				FullName="Bookman Old Style Bold"
+				FamilyName="Bookman Old Style"
+				Weight="Bold"
+				;;
+				bookosbi)
+				FontName="BookmanOldStyle-BoldItalic"
+				FullName="Bookman Old Style Bold Italic"
+				FamilyName="Bookman Old Style"
+				Weight="Bold Italic"
+				;;
+				bookosi)
+				FontName="BookmanOldStyle-Italic"
+				FullName="Bookman Old Style Italic"
+				FamilyName="Bookman Old Style"
+				Weight="Italic"
+				;;
+				century)
+				FontName="Century"
+				FullName="Century"
+				FamilyName="Century"
+				Weight="Regular"
+				;;
+				comic)
+				FontName="ComicSansMS"
+				FullName="Comic Sans MS"
+				FamilyName="Comic Sans MS"
+				Weight="Regular"
+				;;
+				comicbd)
+				FontName="ComicSansMS-Bold"
+				FullName="Comic Sans MS Bold"
+				FamilyName="Comic Sans MS"
+				Weight="Bold"
+				;;
+				cour)
+				FontName="CourierNewPSMT"
+				FullName="Courier New"
+				FamilyName="Courier New"
+				Weight="Regular"
+				;;
+				courbd)
+				FontName="CourierNewPS-BoldMT"
+				FullName="Courier New Bold"
+				FamilyName="Courier New"
+				Weight="Bold"
+				;;
+				courbi)
+				FontName="CourierNewPS-BoldItalicMT"
+				FullName="Courier New Bold Italic"
+				FamilyName="Courier New"
+				Weight="Bold Italic"
+				;;
+				couri)
+				FontName="CourierNewPS-ItalicMT"
+				FullName="Courier New Italic"
+				FamilyName="Courier New"
+				Weight="Italic"
+				;;
+				euclid)
+				FontName="Euclid"
+				FullName="Euclid"
+				FamilyName="Euclid"
+				Weight="Regular"
+				;;
+				euclidb)
+				FontName="Euclid-Bold"
+				FullName="Euclid Bold"
+				FamilyName="Euclid"
+				Weight="Bold"
+				;;
+				euclidbi)
+				FontName="Euclid-BoldItalic"
+				FullName="Euclid Bold Italic"
+				FamilyName="Euclid"
+				Weight="Bold Italic"
+				;;
+				euclidi)
+				FontName="Euclid-Italic"
+				FullName="Euclid Italic"
+				FamilyName="Euclid"
+				Weight="Italic"
+				;;
+				eucsym)
+				FontName="EuclidSymbol"
+				FullName="Euclid Symbol"
+				FamilyName="Euclid Symbol"
+				Weight="Regular"
+				;;
+				eucsymb)
+				FontName="EuclidSymbol-Bold"
+				FullName="Euclid Symbol Bold"
+				FamilyName="Euclid Symbol"
+				Weight="Bold"
+				;;
+				eucsymbi)
+				FontName="EuclidSymbol-BoldItalic"
+				FullName="Euclid Symbol Bold Italic"
+				FamilyName="Euclid Symbol"
+				Weight="Bold Italic"
+				;;
+				eucsymi)
+				FontName="EuclidSymbol-Italic"
+				FullName="Euclid Symbol Italic"
+				FamilyName="Euclid Symbol"
+				Weight="Italic"
+				;;
+				euextra)
+				FontName="EuclidExtra"
+				FullName="Euclid Extra"
+				FamilyName="Euclid Extra"
+				Weight="Regular"
+				;;
+				euextrab)
+				FontName="EuclidExtra-Bold"
+				FullName="Euclid Extra Bold"
+				FamilyName="Euclid Extra"
+				Weight="Bold"
+				;;
+				eufrak)
+				FontName="EuclidFraktur"
+				FullName="Euclid Fraktur"
+				FamilyName="Euclid Fraktur"
+				Weight="Regular"
+				;;
+				eufrakb)
+				FontName="EuclidFraktur-Bold"
+				FullName="Euclid Fraktur Bold"
+				FamilyName="Euclid Fraktur"
+				Weight="Bold"
+				;;
+				eumat1)
+				FontName="EuclidMathOne"
+				FullName="Euclid Math One"
+				FamilyName="Euclid Math One"
+				Weight="Regular"
+				;;
+				eumat1b)
+				FontName="EuclidMathOne-Bold"
+				FullName="Euclid Math One Bold"
+				FamilyName="Euclid Math One"
+				Weight="Bold"
+				;;
+				eumat2)
+				FontName="EuclidMathTwo"
+				FullName="Euclid Math Two"
+				FamilyName="Euclid Math Two"
+				Weight="Regular"
+				;;
+				eumat2b)
+				FontName="EuclidMathTwo-Bold"
+				FullName="Euclid Math Two Bold"
+				FamilyName="Euclid Math Two"
+				Weight="Bold"
+				;;
+				fences)
+				FontName="Fences-Plain"
+				FullName="Fences Plain"
+				FamilyName="Fences"
+				Weight="Plain"
+				;;
+				gara)
+				FontName="Garamond"
+				FullName="Garamond"
+				FamilyName="Garamond"
+				Weight="Regular"
+				;;
+				garabd)
+				FontName="Garamond-Bold"
+				FullName="Garamond Bold"
+				FamilyName="Garamond"
+				Weight="Bold"
+				;;
+				garait)
+				FontName="Garamond-Italic"
+				FullName="Garamond Italic"
+				FamilyName="Garamond"
+				Weight="Italic"
+				;;
+				gothic)
+				FontName="CenturyGothic"
+				FullName="Century Gothic"
+				FamilyName="Century Gothic"
+				Weight="Regular"
+				;;
+				gothicb)
+				FontName="CenturyGothic-Bold"
+				FullName="Century Gothic Bold"
+				FamilyName="Century Gothic"
+				Weight="Bold"
+				;;
+				gothicbi)
+				FontName="CenturyGothic-BoldItalic"
+				FullName="Century Gothic Bold Italic"
+				FamilyName="Century Gothic"
+				Weight="Bold Italic"
+				;;
+				gothici)
+				FontName="CenturyGothic-Italic"
+				FullName="Century Gothic Italic"
+				FamilyName="Century Gothic"
+				Weight="Italic"
+				;;
+				impact)
+				FontName="Impact"
+				FullName="Impact"
+				FamilyName="Impact"
+				Weight="Regular"
+				;;
+				l_10646)
+				FontName="LucidaSansUnicode"
+				FullName="Lucida Sans Unicode"
+				FamilyName="Lucida Sans Unicode"
+				Weight="Regular"
+				;;
+				lucon)
+				FontName="LucidaConsole"
+				FullName="Lucida Console"
+				FamilyName="Lucida Console"
+				Weight="Regular"
+				;;
+				marlett)
+				FontName="Marlett"
+				FullName="Marlett"
+				FamilyName="Marlett"
+				Weight="Regular"
+				;;
+				msmincho)
+				FontName="MS-Mincho"
+				FullName="MS Mincho"
+				FamilyName="MS Mincho"
+				Weight="Regular"
+				;;
+				mtcorsva)
+				FontName="MonotypeCorsiva"
+				FullName="Monotype Corsiva"
+				FamilyName="Monotype Corsiva"
+				Weight="Regular"
+				;;
+				mtextra)
+				FontName="MT-Extra"
+				FullName="MT Extra"
+				FamilyName="MT Extra"
+				Weight="Regular"
+				;;
+				mtsymbol)
+				FontName="MT-Symbol"
+				FullName="MT Symbol"
+				FamilyName="MT Symbol"
+				Weight="Regular"
+				;;
+				outlook)
+				FontName="MSOutlook"
+				FullName="MS Outlook"
+				FamilyName="MS Outlook"
+				Weight="Regular"
+				;;
+				pmingliu)
+				FontName="PMingLiU"
+				FullName="PMingLiU"
+				FamilyName="PMingLiU"
+				Weight="Regular"
+				;;
+				simsun)
+				FontName="SimSun"
+				FullName="SimSun"
+				FamilyName="SimSun"
+				Weight="Regular"
+				;;
+				symbol)
+				FontName="SymbolMT"
+				FullName="Symbol"
+				FamilyName="Symbol"
+				Weight="Regular"
+				;;
+				tahoma)
+				FontName="Tahoma"
+				FullName="Tahoma"
+				FamilyName="Tahoma"
+				Weight="Regular"
+				;;
+				tahomabd)
+				FontName="Tahoma-Bold"
+				FullName="Tahoma Bold"
+				FamilyName="Tahoma"
+				Weight="Bold"
+				;;
+				times)
+				FontName="TimesNewRomanPSMT"
+				FullName="Times New Roman"
+				FamilyName="Times New Roman"
+				Weight="Regular"
+				;;
+				timesbd)
+				FontName="TimesNewRomanPS-BoldMT"
+				FullName="Times New Roman Bold"
+				FamilyName="Times New Roman"
+				Weight="Bold"
+				;;
+				timesbi)
+				FontName="TimesNewRomanPS-BoldItalicMT"
+				FullName="Times New Roman Bold Italic"
+				FamilyName="Times New Roman"
+				Weight="Bold Italic"
+				;;
+				timesi)
+				FontName="TimesNewRomanPS-ItalicMT"
+				FullName="Times New Roman Italic"
+				FamilyName="Times New Roman"
+				Weight="Italic"
+				;;
+				trebuc)
+				FontName="TrebuchetMS"
+				FullName="Trebuchet MS"
+				FamilyName="Trebuchet MS"
+				Weight="Regular"
+				;;
+				trebucbd)
+				FontName="TrebuchetMS-Bold"
+				FullName="Trebuchet MS Bold"
+				FamilyName="Trebuchet MS"
+				Weight="Bold"
+				;;
+				trebucbi)
+				FontName="Trebuchet-BoldItalic"
+				FullName="Trebuchet MS Bold Italic"
+				FamilyName="Trebuchet MS"
+				Weight="Bold Italic"
+				;;
+				trebucit)
+				FontName="TrebuchetMS-Italic"
+				FullName="Trebuchet MS Italic"
+				FamilyName="Trebuchet MS"
+				Weight="Italic"
+				;;
+				verdana)
+				FontName="Verdana"
+				FullName="Verdana"
+				FamilyName="Verdana"
+				Weight="Regular"
+				;;
+				verdanab)
+				FontName="Verdana-Bold"
+				FullName="Verdana Bold"
+				FamilyName="Verdana"
+				Weight="Bold"
+				;;
+				verdanai)
+				FontName="Verdana-Italic"
+				FullName="Verdana Italic"
+				FamilyName="Verdana"
+				Weight="Italic"
+				;;
+				verdanaz)
+				FontName="Verdana-BoldItalic"
+				FullName="Verdana Bold Italic"
+				FamilyName="Verdana"
+				Weight="Bold Italic"
+				;;
+				webdings)
+				FontName="Webdings"
+				FullName="Webdings"
+				FamilyName="Webdings"
+				Weight="Regular"
+				;;
+				wingding)
+				FontName="Wingdings-Regular"
+				FullName="Wingdings"
+				FamilyName="Wingdings"
+				Weight="Regular"
+				;;
+				wingdng2)
+				FontName="Wingdings2"
+				FullName="Wingdings 2"
+				FamilyName="Wingdings 2"
+				Weight="Regular"
+				;;
+				wingdng3)
+				FontName="Wingdings3"
+				FullName="Wingdings 3"
+				FamilyName="Wingdings 3"
+				Weight="Regular"
+				;;
+				*)
+				font_recognized=no
+				;;
+			esac
+			if test $font_recognized = yes; then
+				echo font: $font_root
+				cd $font_pwd
+				echo '<font format="type1" metrics="'$font_metrics'" glyphs="'$font_glyphs'" name="'$FontName'" fullname="'$FullName'" familyname="'$FamilyName'" weight="'$Weight'" version="0.1" alias="'$FontName'"/>' >> $font_map
+				cd $font_cwd
+			else
+				echo "I don't know" $font_root
+			fi
+		done
+
+		cd $font_pwd;
+	fi
+done
+
+cat >> $font_map <<EOF
+</fontmap>
+EOF

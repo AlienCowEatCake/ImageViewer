@@ -1,0 +1,60 @@
+o Do we need to check for memcpy (), memset (), ... ??
+o Does Win* have unlink () ?? Better to remove() ??
+o Should I be opening files with "rb" & "wb" - check!
+
+o crop, width, height, etc. tests for bitmaps
+o further tests for division by zero
+
+o Add a dpi option in wmf_eps_t struct ??
+o eps,gd,x: bmp_draw ignores bitmap type
+
+o -geometry option to wmf2x doesn't work properly; ditch position ??
+
+o Does that (X) flood fill function really work?
+o What is the proper order of x & y coordinates in lists of points in *poly* ??
+o Check mismatch in DIBSTRETCHBLT/crop
+
+o Need to check use of font map options
+
+o in player/dc.h, pointers set up to default brush/pen/font; are these over-written ??
+
+o reset bounding box before play ?? (in which case, need to remove SCAN() qualifies around
+  registration...)
+
+o what is opacity for non-32bit bitmaps? assuming 0xff, but maybe 0x00 ??
+
+o xwmf in official libwmf tree: (a) renders test11.wmf incorrectly
+o                               (b) angles text the wrong way
+
+o scaling of pattern brush? - multiply imaging is possible but potentially expensive... PS forms ??
+
+o I'm uncertain about the eps arc-draw functions... Does anyone have an elliptic pie-chart ??
+
+o char width calcs using wmf_D_Coord_translate need to translate origin as well! - check
+- why not just multiply by pixel_width? or have official scale function...
+
+o finish eps,gd text: need underline (& strikethrough ?? (& ... ??))
+o eps,gd,x: ROP ??
+o eps fill transparency/color gets trashed on x86 - this seems to be a problem with ghostscript...
+  ... but what to do about it?
+
+o gd,eps,x: Has the rounded rectangle been implemented ??
+o gd,eps,x: PS_INSIDE_FRAME - How to implement this (see gdwmfapi.c...)
+o gd,eps,x: drawpixel implementations aren't scaling...
+
+o add wmf_attach () & wmf_detach () functions for inserting/removing memory from libwmf MM array ??
+
+o add WMF_SCAN_HEADER option ?? not sure this is a valid test. Why not do a full scan?
+
+o original libwmf: gd_draw_rectangle uses height instead of width?
+
+o with arcs, if start and end points the same then the player should request an ellipse, *not* an arc
+
+o x: use of unqualified arrays is perhaps dangerous ??
+o x: flood fill
+
+o x,gd: angled text: I'm not entirely convinced about this;
+- also, bounding box may be at wrong angle...
+- in fact, bad assumption here: what references WMF_TEXT_ANGLE that shouldn't ??
+
+o gd: background colour is black instead of white?

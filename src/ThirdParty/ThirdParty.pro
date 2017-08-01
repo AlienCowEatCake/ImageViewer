@@ -52,6 +52,14 @@ SUBDIRS =
     SUBDIRS += libbpg/libbpg.pro
 }
 
+!disable_freetype : !system_freetype {
+    SUBDIRS += FreeType/FreeType.pro
+}
+
+!disable_libwmf : !system_libwmf {
+    SUBDIRS += libwmf/libwmf.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }

@@ -1,0 +1,32 @@
+<head>
+<title>META_SETPOLYFILLMODE</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_SETPOLYFILLMODE
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+int SetPolyFillMode(
+	HDC hdc,
+	INT fillmode
+	);
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+<TR>
+<TD>0</TD>
+<TD>FillMode</TD>
+</TR>
+</TABLE>
+SetPolyFillMode sets polygon filling to either ALTERNATE or WINDING.<br>
+ALTERNATE is equivalent to X's EvenOddRule, and <br>
+WINDING is equivalent to WindingRule<br>
+The default is ALTERNATE, and fills the polygon in the
+intuitive manner, im not too sure what the hell WINDING means.<p>
+<p><a href="support.html">back</a>
+</body>

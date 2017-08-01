@@ -1,0 +1,84 @@
+<html>
+<head>
+<title>libwmf: Index to Documentation</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff"
+      background="caolan/pics/weave.jpg">
+<h1>libwmf</h1>
+
+<h2>Index to Documentation</h2>
+<ul>
+<li><a href="html/index.html">Doxygen documentation for libwmf-0.2.1 &amp; later</a>
+<li><a href="tutapi.html">libwmf-0.2.0 Tutorial 1: The API</a>
+<li><a href="tutipa.html">libwmf-0.2.0 Tutorial 2: The IPA</a>
+<li><a href="dlayer.html">libwmf-0.2.0 Device Layer Reference</a>
+<li><a href="caolan/index.html"><i>The Windows Metafile (wmf) Operand Documentation</i>, by Caolán McNamara</a>
+<li><a href="gd.html"><i>gd 2.0.1 Documentation</i>, from Boutell.Com</a>
+</ul>
+
+<h2>Frequently Asked Questions</h2>
+
+<ol>
+ <li><a href="#fonts">Fonts</a>
+ <ol>
+  <li><a href="#font13">How come there are only 13 fonts?</a>
+  <li><a href="#fontmore">So, how do I add more fonts?</a>
+  <li><a href="#fontmapper">I don't understand XML. Isn't there an easy way to do this?</a>
+  <li><a href="#fonttype">What types of font are supported?</a>
+ </ol>
+</ol>
+
+<ol>
+ <h3><li><a name="fonts">Fonts</a></h3>
+ <ol>
+  <li><b><a name="font13">How come there are only 13 fonts?</a></b><br>
+      <p>
+      Postscript has 13 standard fonts (or only four, depending on your perspective):
+      Helvetica (optionally bold and/or italic), Times (optionally bold and/or italic),
+      Courier (optionally bold and/or italic), and Symbol. The decision was taken to
+      support these 13 fonts for all outputs from libwmf2, but also to provide mechanisms
+      for adding other fonts.
+      </p>
+  <li><b><a name="fontmore">So, how do I add more fonts?</a></b><br>
+      <p>
+      RedHat Linux systems, and probably other RPM-based distributions as well, have a
+      `fontmap' file in /usr/share/fonts which lists a large number fonts. libwmf has a
+      mechanism for reading files that have this XML format. In fact, libwmf looks for
+      two such files, a <i>system</i> fontmap and a <i>non-</i>system (or `xtra') fontmap,
+      <i>but only if asked to!</i>
+      </p>
+      <p>
+      If you use wmf2x, for example, with the command line option --wmf-sys-fonts then
+      libwmf will search for fonts in the system fontmap file. Similarly, if you
+      specify the command line option --wmf-xtra-fonts then libwmf will search for fonts
+      in the non-system fontmap file. The default locations of these files is specified
+      at compilation time, but can also be specified at run time through the use of the
+      command line options --wmf-sys-fontmap=<i>fontmap</i> and
+      --wmf-xtra-fontmap=<i>fontmap</i>.
+      </p>
+      <p><b>Warning:</b>If you use non-system fonts with wmf2eps, ghostscript (or
+      whatever postscript interpreter you use) may not be able to find all the fonts;
+      the problem is even worse if you want other people to be able to view the image,
+      because only the 13 standard fonts are guaranteed to be supported.
+      </p>
+  <li><b><a name="fontmapper">I don't understand XML. Isn't there an easy way to do this?</a></b><br>
+      <p>
+      There is a utility called libwmf-fontmap that hunts through directories for fonts
+      and creates a custom fontmap file. Just type:
+      </p>
+      <p>
+      <font color=blue>
+      libwmf-fontmap --map=<i>fontmap</i> <i>directory1</i> <i>directory2</i> ...
+      </font>
+      </p>
+  <li><b><a name="fonttype">What types of font are supported?</a></b><br>
+      <p>
+      libwmf uses freetype (2) for loading fonts and therefore supports all fonts that
+      freetype knows, this includes postscript fonts (font.afm &amp; font.pfa pairs or
+      font.afm &amp; font.pfb pairs) and true-type fonts (font.ttf) and many others.
+      </p>
+ </ol>
+</ol>
+
+</body>
+</html>

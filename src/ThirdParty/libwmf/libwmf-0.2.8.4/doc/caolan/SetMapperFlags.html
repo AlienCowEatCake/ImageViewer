@@ -1,0 +1,42 @@
+<head>
+<title>META_SETMAPPERFLAGS</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_SETMAPPERFLAGS
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+DWORD SetMapperFlags
+(
+	HDC32 hDC,
+	DWORD dwFlag
+);
+
+</pre>
+<h1>DESCRIPTION</h1>
+extract from http://www.melander.dk/lib/windows/gdi/fontmap.htm<br>
+<pre>
+ Windows Font Mapping
+
+ Ron Gery
+
+ Microsoft Developer Network Technology Group
+
+ Created: June 8, 1992
+
+ Filters
+</pre>
+An application can, to some extent, filter which physical fonts are examined by the font mapper.
+Aspect-ratio filtering, which is available in both Windows versions 3.0 and 3.1, allows an
+application to specify that only fonts designed for the device's aspect ratio should be considered
+by the font mapper. An application enables and disables this filter by using the SetMapperFlags
+function. Because nonscaling raster fonts are designed with a certain aspect ratio in mind, it is
+sometimes desirable to ensure that only fonts actually designed for the device are used. When this
+filter is enabled, the font mapper does not consider any physical fonts whose design aspect ratio
+does not match that of the device. Aspect-ratio filtering does not affect TrueType fonts because
+they can scale to match any aspect ratio. This filter affects all font selections to the DC until
+the filter is turned off. Aspect-ratio filtering is a holdover from earlier times and is not a
+recommended approach in today's font world.
+
+<p><a href="support.html">back</a><p>
+</body>

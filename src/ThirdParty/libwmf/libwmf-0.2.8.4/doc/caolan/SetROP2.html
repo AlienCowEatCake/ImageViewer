@@ -1,0 +1,61 @@
+<head>
+<title>META_SETROP2</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_SETROP2
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+INT32 SetROP2
+(
+HDC32 hdc,
+INT32 ROP
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+
+<TR>
+<TD>0</TD>
+
+<TD ROWSPAN="2">ROP</TD>
+</TR>
+
+<TR>
+<TD>1</TD>
+</TR>
+</TABLE>
+
+SetROP2 sets the binary raster operation which affects how the current brush
+and pen combine with the existing window contents when they draw to it, this
+is equivalent to the GC functions in X, heres an equivalence table and info
+where src is the brush or pen, and dest is where the pen or brush is being
+applied, R2_COPYPEN is the intuitive default.
+
+<table>
+<tr><td>X Function Name</td><td>MS ROP2 Name</td><td>Operation</td></tr>
+<tr><td>GXclear</td><td>        R2_BLACK </td><td>		0</td></tr>
+ <tr><td>GXnor  </td><td>        R2_NOTMERGEPEN </td><td>	(NOT src) AND (NOT dst)</td></tr>
+ <tr><td>GXandInverted  </td><td>R2_MASKNOTPEN </td><td>	(NOT src) AND dst</td></tr>
+ <tr><td>GXcopyInverted </td><td>R2_NOTCOPYPEN </td><td>	NOT src</td></tr>
+ <tr><td>GXandReverse </td><td>  R2_MASKPENNOT </td><td>	src AND NOT dst</td></tr>
+ <tr><td>GXinvert   </td><td>    R2_NOT 	</td><td>		NOT dst</td></tr>
+ <tr><td>GXxor     </td><td>     R2_XORPEN 	</td><td>	src XOR dst</td></tr>
+ <tr><td>GXnand    </td><td>     R2_NOTMASKPEN </td><td>	(NOT src) OR (NOT dst)</td></tr>
+ <tr><td>GXand      </td><td>    R2_MASKPEN 	</td><td>	src AND dst</td></tr>
+ <tr><td>GXequiv     </td><td>   R2_NOTXORPEN </td><td>	(NOT src) XOR dst</td></tr>
+ <tr><td>GXnoop     </td><td>    R2_NOP 	</td><td>		dst</td></tr>
+ <tr><td>GXorInverted </td><td>  R2_MERGENOTPEN </td><td>	(NOT src) OR dst</td></tr>
+ <tr><td>GXcopy       </td><td>  R2_COPYPEN 	</td><td>	src</td></tr>
+ <tr><td>GXorReverse   </td><td> R2_MERGEPENNOT </td><td>	src OR (NOT dst)</td></tr>
+ <tr><td>GXor       </td><td>    R2_MERGEPEN </td><td>		src OR dst</td></tr>
+ <tr><td>GXset     </td><td>     R2_WHITE 		</td><td>1</td></tr>
+</table>
+
+<p><a href="support.html">back</a>
+</body>

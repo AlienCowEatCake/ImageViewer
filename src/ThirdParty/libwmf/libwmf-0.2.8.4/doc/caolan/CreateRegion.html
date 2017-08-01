@@ -1,0 +1,51 @@
+<head>
+<title>META_CREATEREGION</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_CREATEREGION
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+HRGN32 CreateRectRgn
+(
+	INT32 left,
+	INT32 top,
+	INT32 right,
+	INT32 bottom
+);
+</pre>
+<h1>DESCRIPTION</h1>
+Now on this one, i havent a clue, so heres what the wine source has to say on the 
+matter, i blithered for a while and gave up and just dumped the wine source into
+libwmf and waved a dead chicken over it, and it appears to work for rectangular
+regions so....
+<pre>
+/*
+ *  The layout of the record looks something like this:
+ *  
+ *   rdParam    meaning
+ *   0      Always 0?
+ *   1      Always 6?
+ *   2      Looks like a handle? - not constant
+ *   3      0 or 1 ??
+ *   4      Total number of bytes
+ *   5      No. of seperate bands = n [see below]
+ *   6      Largest number of x co-ords in a band
+ *   7-10       Bounding box x1 y1 x2 y2
+ *   11-...     n bands
+ *
+ *   Regions are divided into bands that are uniform in the
+ *   y-direction. Each band consists of pairs of on/off x-coords and is
+ *   written as
+ *      m y0 y1 x1 x2 x3 ... xm m
+ *   into successive rdParam[]s.
+ *
+ *   This is probably just a dump of the internal RGNOBJ?
+ *
+ *   HDMD - 18/12/97
+ *
+ */
+</pre><p>
+This operation adds an entry for itself in the object list.
+<p><a href="support.html">back</a><p>
+</body>

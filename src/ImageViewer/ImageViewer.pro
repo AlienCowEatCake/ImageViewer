@@ -149,6 +149,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderLibBpg.cpp
 }
 
+!disable_libwmf {
+    SOURCES += \
+        src/Decoders/Impl/DecoderLibWmf.cpp
+}
+
 !disable_qtsvg {
     QT += svg
     SOURCES += \
