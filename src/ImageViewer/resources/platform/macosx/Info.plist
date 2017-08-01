@@ -330,6 +330,16 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>wmf</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Windows Metafile Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>xbm</string>
 			</array>
 			<key>CFBundleTypeName</key>
