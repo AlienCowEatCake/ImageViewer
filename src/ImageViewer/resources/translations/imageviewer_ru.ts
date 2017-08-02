@@ -4,17 +4,17 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../src/GUI/AboutDialog.cpp" line="69"/>
+        <location filename="../../src/GUI/AboutDialog.cpp" line="73"/>
         <source>Peter S. Zhigalov</source>
         <translation>Жигалов Петр</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/AboutDialog.cpp" line="294"/>
+        <location filename="../../src/GUI/AboutDialog.cpp" line="316"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/AboutDialog.cpp" line="305"/>
+        <location filename="../../src/GUI/AboutDialog.cpp" line="327"/>
         <source>License</source>
         <translation>Лицензия</translation>
     </message>
@@ -32,8 +32,8 @@
     <message>
         <location filename="../../src/GUI/MainWindow.cpp" line="414"/>
         <location filename="../../src/GUI/MainWindow.cpp" line="565"/>
-        <location filename="../../src/GUI/MainWindow.cpp" line="629"/>
-        <location filename="../../src/GUI/MainWindow.cpp" line="639"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="626"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="635"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -43,12 +43,12 @@
         <translation>Не удалось открыть файл &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="617"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="616"/>
         <source>Are you sure you want to delete current file?</source>
         <translation>Вы уверены что хотите удалить этот файл?</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="639"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="635"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation>Не удалось удалить файл &quot;%1&quot;</translation>
     </message>
@@ -294,7 +294,7 @@
         <translation>&amp;Русский</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow.cpp" line="617"/>
+        <location filename="../../src/GUI/MainWindow.cpp" line="616"/>
         <location filename="../../src/GUI/MainWindow_p.h" line="381"/>
         <source>Delete File</source>
         <translation>Удалить файл</translation>
