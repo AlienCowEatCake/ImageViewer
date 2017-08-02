@@ -34,8 +34,9 @@ public:
     {
         if(!m_wmfFontdir.isNull())
             return m_wmfFontdir.constData();
-        if(!copyWmfFonts())
-            return (m_wmfFontdir = "").constData();
+//        if(!copyWmfFonts())
+//            return (m_wmfFontdir = "").constData();
+        copyWmfFonts(); ///< Try to load as is
         return (m_wmfFontdir = fontCacheDir().toLocal8Bit()).constData();
     }
 
@@ -172,33 +173,34 @@ private:
 
     bool copyWmfFonts()
     {
-        if(!copyResource(QString::fromLatin1("n019003l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("n019003l.pfb"))) return false;
-        if(!copyResource(QString::fromLatin1("n019004l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("n019004l.pfb"))) return false;
-        if(!copyResource(QString::fromLatin1("n019023l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("n019023l.pfb"))) return false;
-        if(!copyResource(QString::fromLatin1("n019024l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("n019024l.pfb"))) return false;
-        if(!copyResource(QString::fromLatin1("n021003l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("n021003l.pfb"))) return false;
-        if(!copyResource(QString::fromLatin1("n021004l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("n021004l.pfb"))) return false;
-        if(!copyResource(QString::fromLatin1("n021023l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("n021023l.pfb"))) return false;
-        if(!copyResource(QString::fromLatin1("n021024l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("n021024l.pfb"))) return false;
-        if(!copyResource(QString::fromLatin1("n022003l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("n022003l.pfb"))) return false;
-        if(!copyResource(QString::fromLatin1("n022004l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("n022004l.pfb"))) return false;
-        if(!copyResource(QString::fromLatin1("n022023l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("n022023l.pfb"))) return false;
-        if(!copyResource(QString::fromLatin1("n022024l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("n022024l.pfb"))) return false;
-        if(!copyResource(QString::fromLatin1("s050000l.afm"))) return false;
-        if(!copyResource(QString::fromLatin1("s050000l.pfb"))) return false;
-        return true;
+        bool status = true;
+        status &= copyResource(QString::fromLatin1("n019003l.afm"));
+        status &= copyResource(QString::fromLatin1("n019003l.pfb"));
+        status &= copyResource(QString::fromLatin1("n019004l.afm"));
+        status &= copyResource(QString::fromLatin1("n019004l.pfb"));
+        status &= copyResource(QString::fromLatin1("n019023l.afm"));
+        status &= copyResource(QString::fromLatin1("n019023l.pfb"));
+        status &= copyResource(QString::fromLatin1("n019024l.afm"));
+        status &= copyResource(QString::fromLatin1("n019024l.pfb"));
+        status &= copyResource(QString::fromLatin1("n021003l.afm"));
+        status &= copyResource(QString::fromLatin1("n021003l.pfb"));
+        status &= copyResource(QString::fromLatin1("n021004l.afm"));
+        status &= copyResource(QString::fromLatin1("n021004l.pfb"));
+        status &= copyResource(QString::fromLatin1("n021023l.afm"));
+        status &= copyResource(QString::fromLatin1("n021023l.pfb"));
+        status &= copyResource(QString::fromLatin1("n021024l.afm"));
+        status &= copyResource(QString::fromLatin1("n021024l.pfb"));
+        status &= copyResource(QString::fromLatin1("n022003l.afm"));
+        status &= copyResource(QString::fromLatin1("n022003l.pfb"));
+        status &= copyResource(QString::fromLatin1("n022004l.afm"));
+        status &= copyResource(QString::fromLatin1("n022004l.pfb"));
+        status &= copyResource(QString::fromLatin1("n022023l.afm"));
+        status &= copyResource(QString::fromLatin1("n022023l.pfb"));
+        status &= copyResource(QString::fromLatin1("n022024l.afm"));
+        status &= copyResource(QString::fromLatin1("n022024l.pfb"));
+        status &= copyResource(QString::fromLatin1("s050000l.afm"));
+        status &= copyResource(QString::fromLatin1("s050000l.pfb"));
+        return status;
     }
 
     Q_DISABLE_COPY(FontsProvider)
