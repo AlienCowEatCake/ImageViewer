@@ -193,7 +193,7 @@ public:
         const QRectF deviceTransformedRect = painter->deviceTransform().mapRect(identityRect);
         const qreal deviceScaleFactor = std::max(deviceTransformedRect.width(), deviceTransformedRect.height());
         const qreal actualScaleFactor = std::min(std::max(m_minScaleFactor, deviceScaleFactor), m_maxScaleFactor);
-        if(std::abs(actualScaleFactor - m_cachedScaleFactor) / actualScaleFactor > 1e-2)
+        if(std::abs(actualScaleFactor - m_cachedScaleFactor) / std::max(actualScaleFactor, m_cachedScaleFactor) > 1e-2)
         {
             const bool previousPixmapIsValid = !m_cachedPixmap.isNull();
             m_cachedPixmap = QPixmap();
@@ -208,7 +208,7 @@ public:
                 m_cachedScaleFactor = actualScaleFactor;
             }
         }
-        painter->drawPixmap(boundingRect(), m_cachedPixmap, m_cachedPixmap.rect());
+        painter->drawPixmap(boundingRect(), m_cachedPixmap, QRectF(0, 0, m_width * m_cachedScaleFactor, m_height * m_cachedScaleFactor));
     }
 
 protected:
