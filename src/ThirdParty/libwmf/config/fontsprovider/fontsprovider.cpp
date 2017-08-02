@@ -72,6 +72,9 @@ public:
         if(fontCacheDir().isEmpty())
             return (m_wmfSysFontmap = "").constData();
         const QString fontmapPath = QDir(fontCacheDir()).absoluteFilePath(QString::fromLatin1("fontmap"));
+        const QFileInfo currentFontmapInfo(fontmapPath);
+        if(currentFontmapInfo.exists() && currentFontmapInfo.isFile())
+            return (m_wmfSysFontmap = fontmapPath.toLocal8Bit()).constData();
         QFile inFile(QString::fromLatin1(":/libwmf/fontsprovider/fontmap.in"));
         if(!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
             return (m_wmfSysFontmap = "").constData();
@@ -154,10 +157,14 @@ private:
     {
         if(fontCacheDir().isEmpty())
             return false;
+        const QString filePath = QDir(fontCacheDir()).absoluteFilePath(fileName);
+        const QFileInfo currentFileInfo(filePath);
+        if(currentFileInfo.exists() && currentFileInfo.isFile())
+            return true;
         QFile inFile(QString::fromLatin1(":/libwmf/fontsprovider/") + fileName);
         if(!inFile.open(QIODevice::ReadOnly))
             return false;
-        QFile outFile(QDir(fontCacheDir()).absoluteFilePath(fileName));
+        QFile outFile(filePath);
         if(!outFile.open(QIODevice::WriteOnly))
             return false;
         return outFile.write(inFile.readAll()) >= 0;
