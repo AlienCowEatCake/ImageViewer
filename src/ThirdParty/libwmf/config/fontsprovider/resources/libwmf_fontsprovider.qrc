@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/libwmf/fontsprovider">
+        <file>fontmap.in</file>
+        <file>n019003l.afm</file>
+        <file>n019003l.pfb</file>
+        <file>n019004l.afm</file>
+        <file>n019004l.pfb</file>
+        <file>n019023l.afm</file>
+        <file>n019023l.pfb</file>
+        <file>n019024l.afm</file>
+        <file>n019024l.pfb</file>
+        <file>n021003l.afm</file>
+        <file>n021003l.pfb</file>
+        <file>n021004l.afm</file>
+        <file>n021004l.pfb</file>
+        <file>n021023l.afm</file>
+        <file>n021023l.pfb</file>
+        <file>n021024l.afm</file>
+        <file>n021024l.pfb</file>
+        <file>n022003l.afm</file>
+        <file>n022003l.pfb</file>
+        <file>n022004l.afm</file>
+        <file>n022004l.pfb</file>
+        <file>n022023l.afm</file>
+        <file>n022023l.pfb</file>
+        <file>n022024l.afm</file>
+        <file>n022024l.pfb</file>
+        <file>s050000l.afm</file>
+        <file>s050000l.pfb</file>
+    </qresource>
+</RCC>
