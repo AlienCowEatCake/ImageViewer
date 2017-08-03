@@ -5,7 +5,7 @@ APPNAME="Image Viewer"
 DMGNAME="${PROJECT}_qt5.6_clang64_libstdc++"
 OUT_PATH="src/${PROJECT}"
 
-QT_PATH="/opt/Qt/5.6.2/clang_64_libstdc++_sdk10.11"
+QT_PATH="/opt/Qt/5.6.2/clang_64_libstdc++_sdk10.12"
 QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
