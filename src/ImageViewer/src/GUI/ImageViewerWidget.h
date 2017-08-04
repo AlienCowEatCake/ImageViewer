@@ -80,6 +80,11 @@ public slots:
     void zoomOut();
     void resetZoom();
 
+    void scrollLeft();
+    void scrollRight();
+    void scrollUp();
+    void scrollDown();
+
     void setBackgroundColor(const QColor &color);
 
     void setSmoothTransformation(bool enabled);

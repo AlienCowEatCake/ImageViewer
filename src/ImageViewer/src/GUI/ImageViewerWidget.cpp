@@ -21,6 +21,7 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <QScrollBar>
 #include <QGraphicsPixmapItem>
 #include <QStyleOptionGraphicsItem>
 #include <QMatrix>
@@ -41,8 +42,11 @@ class QPinchGesture {};
 
 namespace {
 
+const int SCROLL_STEP = 10;
+const qreal ZOOM_STEP = 1.1;
 const qreal ZOOM_CHANGE_EPSILON = 1e-5;
 const int ZOOM_FIT_SIZE_CORRECTION = 1;
+const qreal ROTATION_TRESHOLD = 30;
 
 } // namespace
 
@@ -145,13 +149,12 @@ struct ImageViewerWidget::Impl
         if(changeFlags.testFlag(QPinchGesture::RotationAngleChanged))
         {
             const qreal rotationAngle = gesture->rotationAngle();
-            const qreal rotationTreshhold = 30;
-            if(rotationAngle > rotationTreshhold)
+            if(rotationAngle > ROTATION_TRESHOLD)
             {
                 imageViewerWidget->rotateClockwise();
                 gesture->setRotationAngle(0);
             }
-            if(rotationAngle < -rotationTreshhold)
+            if(rotationAngle < -ROTATION_TRESHOLD)
             {
                 imageViewerWidget->rotateCounterclockwise();
                 gesture->setRotationAngle(0);
@@ -159,6 +162,7 @@ struct ImageViewerWidget::Impl
         }
 #else
         Q_UNUSED(gesture);
+        Q_UNUSED(ROTATION_TRESHOLD);
 #endif
     }
 
@@ -317,18 +321,42 @@ void ImageViewerWidget::flipVertical()
 
 void ImageViewerWidget::zoomIn()
 {
-    setZoomLevel(m_impl->currentZoomLevel * 1.1);
+    setZoomLevel(m_impl->currentZoomLevel * ZOOM_STEP);
 }
 
 void ImageViewerWidget::zoomOut()
 {
-    setZoomLevel(m_impl->currentZoomLevel / 1.1);
+    setZoomLevel(m_impl->currentZoomLevel / ZOOM_STEP);
 }
 
 void ImageViewerWidget::resetZoom()
 {
     m_impl->currentZoomMode = m_impl->lastZoomMode;
     m_impl->updateTransformations();
+}
+
+void ImageViewerWidget::scrollLeft()
+{
+    QScrollBar* scrollBar = horizontalScrollBar();
+    scrollBar->setValue(scrollBar->value() - SCROLL_STEP);
+}
+
+void ImageViewerWidget::scrollRight()
+{
+    QScrollBar* scrollBar = horizontalScrollBar();
+    scrollBar->setValue(scrollBar->value() + SCROLL_STEP);
+}
+
+void ImageViewerWidget::scrollUp()
+{
+    QScrollBar* scrollBar = verticalScrollBar();
+    scrollBar->setValue(scrollBar->value() - SCROLL_STEP);
+}
+
+void ImageViewerWidget::scrollDown()
+{
+    QScrollBar* scrollBar = verticalScrollBar();
+    scrollBar->setValue(scrollBar->value() + SCROLL_STEP);
 }
 
 void ImageViewerWidget::setBackgroundColor(const QColor &color)

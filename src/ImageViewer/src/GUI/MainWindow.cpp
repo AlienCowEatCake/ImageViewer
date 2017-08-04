@@ -789,6 +789,18 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         if(m_impl->isFullScreenMode)
             switchFullScreenMode();
         break;
+    case Qt::Key_Up:
+        m_ui->imageViewerWidget->scrollUp();
+        break;
+    case Qt::Key_Down:
+        m_ui->imageViewerWidget->scrollDown();
+        break;
+    case Qt::Key_Left:
+        m_ui->imageViewerWidget->scrollLeft();
+        break;
+    case Qt::Key_Right:
+        m_ui->imageViewerWidget->scrollRight();
+        break;
     default:
         break;
     }
