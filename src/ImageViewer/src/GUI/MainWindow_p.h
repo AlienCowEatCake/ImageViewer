@@ -32,6 +32,7 @@
 #include <QMenu>
 #include <QActionGroup>
 #include <QStyleFactory>
+#include <QShortcutEvent>
 
 #include "Utils/MenuUtils.h"
 #include "Utils/ObjectsUtils.h"
@@ -53,6 +54,24 @@ struct MainWindow::UI
     bool isSlideShowMode;
     bool toolBarButtonsHasDarkTheme;
     bool menuActionsHasDarkTheme;
+
+    class ActionsEventFilter : public QObject
+    {
+    public:
+        ActionsEventFilter(QObject *parent = NULL)
+            : QObject(parent)
+        {}
+
+    protected:
+        bool eventFilter(QObject *o, QEvent *e)
+        {
+            if(e->type() != QEvent::Shortcut)
+                return QObject::eventFilter(o, e);
+            qobject_cast<QAction*>(o)->activate(QAction::Trigger);
+            return true;
+        }
+    };
+    ActionsEventFilter *actionsEventFilter;
 
     QFrame *centralWidget;
     ImageViewerWidget *imageViewerWidget;
@@ -113,6 +132,7 @@ struct MainWindow::UI
         , isSlideShowMode(false)
         , toolBarButtonsHasDarkTheme(false)
         , menuActionsHasDarkTheme(false)
+        , actionsEventFilter(new ActionsEventFilter(mainWindow))
         , CONSTRUCT_OBJECT(centralWidget, QFrame, (mainWindow))
         , CONSTRUCT_OBJECT(imageViewerWidget, ImageViewerWidget, (centralWidget))
         , CONSTRUCT_OBJECT(toolbar, AdjustableFrame, (centralWidget))
@@ -278,13 +298,13 @@ struct MainWindow::UI
         actionDeleteFile->setMenuRole(QAction::NoRole);
 
         menuView->addAction(actionZoomOut);
-        actionZoomOut->setShortcuts(QList<QKeySequence>() << createAnyModifierShortcuts(Qt::Key_Minus) << createAnyModifierShortcuts(Qt::Key_Underscore));
+        actionZoomOut->setShortcuts(createAnyModifierConjugatedShortcuts(Qt::Key_Minus, Qt::Key_Underscore));
         actionZoomOut->setMenuRole(QAction::NoRole);
         menuView->addAction(actionZoomIn);
-        actionZoomIn->setShortcuts(QList<QKeySequence>() << createAnyModifierShortcuts(Qt::Key_Plus) << createAnyModifierShortcuts(Qt::Key_Equal));
+        actionZoomIn->setShortcuts(createAnyModifierConjugatedShortcuts(Qt::Key_Plus, Qt::Key_Equal));
         actionZoomIn->setMenuRole(QAction::NoRole);
         menuView->addAction(actionZoomReset);
-        actionZoomReset->setShortcuts(QList<QKeySequence>() << createAnyModifierShortcuts(Qt::Key_0) << createAnyModifierShortcuts(Qt::Key_BracketLeft));
+        actionZoomReset->setShortcuts(createAnyModifierConjugatedShortcuts(Qt::Key_0, Qt::Key_BracketLeft));
         actionZoomReset->setMenuRole(QAction::NoRole);
         menuView->addAction(actionZoomFitToWindow);
         actionZoomFitToWindow->setShortcuts(createAnyModifierShortcuts(Qt::Key_F));
@@ -523,6 +543,7 @@ private:
     {
         QAction *action = new QAction(widget);
         widget->addAction(action);
+        action->installEventFilter(actionsEventFilter);
         return action;
     }
 
@@ -539,9 +560,11 @@ private:
                 << Qt::SHIFT + Qt::ALT
                 << Qt::META + Qt::CTRL
                 << Qt::META + Qt::ALT
+                << Qt::CTRL + Qt::ALT
                 << Qt::SHIFT + Qt::META + Qt::CTRL
                 << Qt::SHIFT + Qt::META + Qt::ALT
                 << Qt::SHIFT + Qt::CTRL + Qt::ALT
+                << Qt::META + Qt::CTRL + Qt::ALT
                 << Qt::SHIFT + Qt::META + Qt::CTRL + Qt::ALT;
         QList<QKeySequence> result;
         result.append(key + defaultModifier);
@@ -550,6 +573,29 @@ private:
             const int modifier = *it;
             if(modifier != defaultModifier)
                 result.append(key + modifier);
+        }
+        return result;
+    }
+
+    QList<QKeySequence> createAnyModifierConjugatedShortcuts(Qt::Key master, Qt::Key slave, int defaultModifier = 0)
+    {
+        static const QList<int> modifiers = QList<int>()
+                << 0
+                << Qt::META
+                << Qt::CTRL
+                << Qt::ALT
+                << Qt::META + Qt::CTRL
+                << Qt::META + Qt::ALT
+                << Qt::CTRL + Qt::ALT
+                << Qt::META + Qt::CTRL + Qt::ALT;
+        QList<QKeySequence> result;
+        result.append(master + defaultModifier);
+        for(QList<int>::ConstIterator it = modifiers.constBegin(); it != modifiers.constEnd(); ++it)
+        {
+            const int modifier = *it;
+            if(modifier != defaultModifier)
+                result.append(master + modifier);
+            result.append(slave + modifier);
         }
         return result;
     }
