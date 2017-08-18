@@ -661,7 +661,7 @@ void MainWindow::onExitRequested()
 void MainWindow::onZoomFitToWindowClicked()
 {
     ImageViewerWidget::ZoomMode mode;
-    if(!m_ui->zoomFitToWindow->isChecked())
+    if(m_impl->settings->zoomMode() != ImageViewerWidget::ZOOM_FIT_TO_WINDOW)
         mode = ImageViewerWidget::ZOOM_FIT_TO_WINDOW;
     else
         mode = ImageViewerWidget::ZOOM_CUSTOM;
@@ -671,7 +671,7 @@ void MainWindow::onZoomFitToWindowClicked()
 void MainWindow::onZoomOriginalSizeClicked()
 {
     ImageViewerWidget::ZoomMode mode;
-    if(!m_ui->zoomOriginalSize->isChecked())
+    if(m_impl->settings->zoomMode() != ImageViewerWidget::ZOOM_IDENTITY)
         mode = ImageViewerWidget::ZOOM_IDENTITY;
     else
         mode = ImageViewerWidget::ZOOM_CUSTOM;
