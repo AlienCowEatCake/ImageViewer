@@ -19,10 +19,13 @@
 
 #include "ImageResamplerWorker.h"
 
+#include <cassert>
+
 #include <QImage>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QList>
+#include <QDebug>
 
 #include <stb_image_resize.h>
 
@@ -69,10 +72,19 @@ ImageResamplerWorker::~ImageResamplerWorker()
 void ImageResamplerWorker::setImage(const QImage &newImage)
 {
     static const QList<QImage::Format> nativeImageFormats = QList<QImage::Format>()
+            /// @todo Не работает, если stride != 0. Разобраться почему.
+//#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+//            << QImage::Format_Grayscale8
+//            << QImage::Format_Alpha8
+//#endif
+//            << QImage::Format_RGB888
             << QImage::Format_RGB32
             << QImage::Format_ARGB32
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
             << QImage::Format_RGBX8888
-            << QImage::Format_RGBA8888; /// @todo
+            << QImage::Format_RGBA8888
+#endif
+               ;
     if(nativeImageFormats.contains(newImage.format()))
         m_impl->image = newImage;
     else
@@ -134,10 +146,47 @@ void ImageResamplerWorker::process()
     const qreal newScaleFactor = m_impl->scaleFactor;
     const QSize scaledImageSize = m_impl->image.size() * newScaleFactor;
     CHECK_ABORT_STATE;
-    QScopedPointer<Impl::ResampledImageData> data(new Impl::ResampledImageData(QImage(scaledImageSize, QImage::Format_ARGB32), newScaleFactor));
+    QScopedPointer<Impl::ResampledImageData> data(new Impl::ResampledImageData(QImage(scaledImageSize, m_impl->image.format()), newScaleFactor));
+
     CHECK_ABORT_STATE;
-    stbir_resize_uint8(m_impl->image.bits(), m_impl->image.width(), m_impl->image.height(), 0,
-                       data->image.bits(), scaledImageSize.width(), scaledImageSize.height(), 0, 4);
+    int numChannels = 0;
+    switch(m_impl->image.format())
+    {
+    /// @todo Не работает, если stride != 0. Разобраться почему.
+//#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+//    case QImage::Format_Grayscale8:
+//    case QImage::Format_Alpha8:
+//        numChannels = 1;
+//        break;
+//#endif
+//    case QImage::Format_RGB888:
+//        numChannels = 3;
+//        break;
+    case QImage::Format_RGB32:
+    case QImage::Format_ARGB32:
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+    case QImage::Format_RGBX8888:
+    case QImage::Format_RGBA8888:
+#endif
+        numChannels = 4;
+        break;
+    default:
+        qWarning() << "[ImageResamplerWorker::process()]: Unsupported image format";
+        emit aborted();
+        return;
+    }
+
+    CHECK_ABORT_STATE;
+    const int inputStride = m_impl->image.bytesPerLine() - m_impl->image.width() * numChannels;
+    const int outputStride = data->image.bytesPerLine() - scaledImageSize.width() * numChannels;
+
+    /// @todo Не работает, если stride != 0. Разобраться почему.
+    assert(inputStride == 0);
+    assert(outputStride == 0);
+
+    CHECK_ABORT_STATE;
+    stbir_resize_uint8(m_impl->image.bits(), m_impl->image.width(), m_impl->image.height(), inputStride,
+                       data->image.bits(), scaledImageSize.width(), scaledImageSize.height(), outputStride, numChannels);
 
     CHECK_ABORT_STATE;
     QMutexLocker guard(&m_impl->resampledDataLock);
@@ -145,8 +194,8 @@ void ImageResamplerWorker::process()
     m_impl->resampledData.swap(data);
     CHECK_ABORT_STATE;
     guard.unlock();
-    CHECK_ABORT_STATE;
 
+    CHECK_ABORT_STATE;
     emit finished();
 
 #undef CHECK_ABORT_STATE
