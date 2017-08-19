@@ -79,9 +79,9 @@ public:
         if(picture == nil)
             return NULL;
 
-        QImage image = MacImageUtils::QPixmapFromNSImage(picture).toImage();
-        if(!image.isNull())
-            result = new ResampledImageGraphicsItem(image);
+        QPixmap pixmap = MacImageUtils::QPixmapFromNSImage(picture);
+        if(!pixmap.isNull())
+            result = new ResampledImageGraphicsItem(pixmap);
 
         [picture release];
         [pool release];
