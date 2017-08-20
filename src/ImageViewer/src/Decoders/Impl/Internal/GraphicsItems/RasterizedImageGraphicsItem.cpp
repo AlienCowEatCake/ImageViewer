@@ -19,7 +19,6 @@
 
 #include "RasterizedImageGraphicsItem.h"
 
-#include <cmath>
 #include <algorithm>
 #include <cassert>
 
@@ -32,7 +31,8 @@
 
 #include "AbstractScalingManager.h"
 #include "AbstractScalingWorker.h"
-#include "AbstractScalingWorkerHandler.h"
+#include "AutoUpdatedScalingWorkerHandler.h"
+#include "GraphicsItemUtils.h"
 
 // ====================================================================================================
 
@@ -89,39 +89,10 @@ private:
 
 namespace {
 
-class RasterizerWorkerHandler : public AbstractScalingWorkerHandler
-{
-public:
-    RasterizerWorkerHandler(RasterizedImageGraphicsItem *item, RasterizerWorker *worker, QThread *thread)
-        : AbstractScalingWorkerHandler(worker, thread)
-        , m_item(item)
-    {}
-
-private:
-    void onFinished()
-    {
-        if(m_item)
-            m_item->update();
-    }
-
-    void prepareTermination()
-    {
-        m_item = NULL;
-    }
-
-    RasterizedImageGraphicsItem *m_item;
-};
-
-} // namespace
-
-// ====================================================================================================
-
-namespace {
-
 class RasterizerManager : public AbstractScalingManager
 {
 public:
-    RasterizerManager(RasterizerWorker *worker, RasterizerWorkerHandler* handler, QThread *thread)
+    RasterizerManager(RasterizerWorker *worker, AutoUpdatedScalingWorkerHandler* handler, QThread *thread)
         : AbstractScalingManager(worker, handler, thread)
     {}
 
@@ -142,7 +113,7 @@ RasterizerManager *createRasterizerManager(RasterizedImageGraphicsItem *item)
 {
     RasterizerWorker *worker = new RasterizerWorker();
     QThread *thread = new QThread();
-    RasterizerWorkerHandler *handler = new RasterizerWorkerHandler(item, worker, thread);
+    AutoUpdatedScalingWorkerHandler *handler = new AutoUpdatedScalingWorkerHandler(item, worker, thread);
     return new RasterizerManager(worker, handler, thread);
 }
 
@@ -217,9 +188,7 @@ void RasterizedImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGra
     if(!m_impl->provider || !m_impl->provider->isValid())
         return;
 
-    const QRectF identityRect = QRectF(0, 0, 1, 1);
-    const QRectF deviceTransformedRect = painter->deviceTransform().mapRect(identityRect);
-    const qreal deviceScaleFactor = std::max(deviceTransformedRect.width(), deviceTransformedRect.height());
+    const qreal deviceScaleFactor = GraphicsItemUtils::GetDeviceScaleFactor(painter);
     const qreal maxScaleFactor = m_impl->provider->maxScaleFactor();
     const qreal minScaleFactor = m_impl->provider->minScaleFactor();
     const qreal newScaleFactor = std::max(std::min(deviceScaleFactor, maxScaleFactor), minScaleFactor);
@@ -231,14 +200,12 @@ void RasterizedImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGra
         return;
 
     painter->setRenderHint(QPainter::SmoothPixmapTransform, m_impl->transformationMode == Qt::SmoothTransformation);
-    const QRectF originalRect = boundingRect();
     m_impl->rasterizerManager->beginScaledImageProcessing();
     const qreal actualScaleFactor = m_impl->rasterizerManager->getScaledScaleFactor();
-    const QRectF scaledRect = QRectF(originalRect.topLeft() * actualScaleFactor, originalRect.size() * actualScaleFactor);
-    painter->drawPixmap(originalRect, m_impl->rasterizerManager->getScaledPixmap(), scaledRect);
+    GraphicsItemUtils::DrawScaledPixmap(painter,m_impl->rasterizerManager->getScaledPixmap(), boundingRect(), actualScaleFactor);
     m_impl->rasterizerManager->endScaledImageProcessing();
 
-    if(std::abs(newScaleFactor - actualScaleFactor) / std::max(newScaleFactor, actualScaleFactor) > 1e-2)
+    if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, actualScaleFactor))
         m_impl->rasterizerManager->startTask(newScaleFactor);
 }
 

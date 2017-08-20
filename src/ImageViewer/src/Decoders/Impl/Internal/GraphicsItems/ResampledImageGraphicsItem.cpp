@@ -19,8 +19,6 @@
 
 #include "ResampledImageGraphicsItem.h"
 
-#include <cmath>
-#include <algorithm>
 #include <cassert>
 
 #include <QObject>
@@ -36,7 +34,8 @@
 
 #include "AbstractScalingManager.h"
 #include "AbstractScalingWorker.h"
-#include "AbstractScalingWorkerHandler.h"
+#include "AutoUpdatedScalingWorkerHandler.h"
+#include "GraphicsItemUtils.h"
 
 // ====================================================================================================
 
@@ -146,39 +145,10 @@ private:
 
 namespace {
 
-class ResamplerWorkerHandler : public AbstractScalingWorkerHandler
-{
-public:
-    ResamplerWorkerHandler(ResampledImageGraphicsItem *item, ResamplerWorker *worker, QThread *thread)
-        : AbstractScalingWorkerHandler(worker, thread)
-        , m_item(item)
-    {}
-
-private:
-    void onFinished()
-    {
-        if(m_item)
-            m_item->update();
-    }
-
-    void prepareTermination()
-    {
-        m_item = NULL;
-    }
-
-    ResampledImageGraphicsItem *m_item;
-};
-
-} // namespace
-
-// ====================================================================================================
-
-namespace {
-
 class ResamplerManager : public AbstractScalingManager
 {
 public:
-    ResamplerManager(ResamplerWorker *worker, ResamplerWorkerHandler* handler, QThread *thread)
+    ResamplerManager(ResamplerWorker *worker, AutoUpdatedScalingWorkerHandler* handler, QThread *thread)
         : AbstractScalingManager(worker, handler, thread)
     {}
 
@@ -197,7 +167,7 @@ ResamplerManager *createResamplerManager(ResampledImageGraphicsItem *item)
 {
     ResamplerWorker *worker = new ResamplerWorker();
     QThread *thread = new QThread();
-    ResamplerWorkerHandler *handler = new ResamplerWorkerHandler(item, worker, thread);
+    AutoUpdatedScalingWorkerHandler *handler = new AutoUpdatedScalingWorkerHandler(item, worker, thread);
     return new ResamplerManager(worker, handler, thread);
 }
 
@@ -225,11 +195,11 @@ struct ResampledImageGraphicsItem::Impl
 
     void paintResampled(QPainter *painter) const
     {
-        const QPixmap pixmap = resamplerManager->getScaledPixmap();
-        if(pixmap.isNull())
+        const QPixmap scaledPixmap = resamplerManager->getScaledPixmap();
+        if(scaledPixmap.isNull())
             return paintDefault(painter);
         painter->setRenderHint(QPainter::SmoothPixmapTransform, transformationMode == Qt::SmoothTransformation);
-        painter->drawPixmap(pixmap.rect(), pixmap, QRectF(QPointF(0, 0), QSizeF(pixmap.size()) * resamplerManager->getScaledScaleFactor()));
+        GraphicsItemUtils::DrawScaledPixmap(painter, scaledPixmap, pixmap.rect(), resamplerManager->getScaledScaleFactor());
     }
 };
 
@@ -308,16 +278,14 @@ void ResampledImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGrap
     if(m_impl->transformationMode != Qt::SmoothTransformation)
         return m_impl->paintDefault(painter);
 
-    const QRectF identityRect = QRectF(0, 0, 1, 1);
-    const QRectF deviceTransformedRect = painter->deviceTransform().mapRect(identityRect);
-    const qreal newScaleFactor = std::max(deviceTransformedRect.width(), deviceTransformedRect.height());
+    const qreal newScaleFactor = GraphicsItemUtils::GetDeviceScaleFactor(painter);
 
     if(newScaleFactor >= 1 || newScaleFactor <= 0)
         return m_impl->paintDefault(painter);
 
     m_impl->resamplerManager->beginScaledImageProcessing();
     const qreal scaleFactor = !m_impl->resamplerManager->hasScaledData() ? newScaleFactor : m_impl->resamplerManager->getScaledScaleFactor();
-    if(!(!m_impl->resamplerManager->hasScaledData() || std::abs(newScaleFactor - scaleFactor) / std::max(newScaleFactor, scaleFactor) > 1e-2))
+    if(m_impl->resamplerManager->hasScaledData() && GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, scaleFactor))
     {
         m_impl->paintResampled(painter);
         m_impl->resamplerManager->endScaledImageProcessing();
