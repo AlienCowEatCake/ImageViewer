@@ -17,8 +17,6 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QGraphicsPixmapItem>
-#include <QPixmap>
 #include <QFileInfo>
 #include <QDebug>
 
@@ -26,6 +24,7 @@
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/GraphicsItems/ResampledImageGraphicsItem.h"
 
 namespace {
 
@@ -72,7 +71,7 @@ public:
             qDebug() << imageReader.errorString();
             return NULL;
         }
-        return new QGraphicsPixmapItem(QPixmap::fromImage(image));
+        return new ResampledImageGraphicsItem(image);
     }
 };
 

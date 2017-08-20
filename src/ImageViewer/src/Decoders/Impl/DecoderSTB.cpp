@@ -19,17 +19,16 @@
 
 #include <cassert>
 
-#include <QGraphicsPixmapItem>
 #include <QImage>
-#include <QPixmap>
 #include <QFileInfo>
 #include <QDebug>
 
-#include "stb_image.h"
+#include <stb_image.h>
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Utils/ExifUtils.h"
+#include "Internal/GraphicsItems/ResampledImageGraphicsItem.h"
 
 namespace {
 
@@ -116,7 +115,7 @@ public:
 
         ExifUtils::ApplyExifOrientation(&image, ExifUtils::GetExifOrientation(filePath));
 
-        return new QGraphicsPixmapItem(QPixmap::fromImage(image));
+        return new ResampledImageGraphicsItem(image);
     }
 };
 

@@ -24,13 +24,14 @@
 
 #include <QtGlobal>
 #include <QRegExp>
-#include <QGraphicsPixmapItem>
 #include <QPixmap>
+#include <QImage>
 #include <QFileInfo>
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Utils/MacImageUtils.h"
+#include "Internal/GraphicsItems/ResampledImageGraphicsItem.h"
 
 namespace {
 
@@ -70,7 +71,7 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
 
-        QGraphicsPixmapItem *result = NULL;
+        ResampledImageGraphicsItem *result = NULL;
         NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
         NSString *pathNSString = [NSString stringWithUTF8String: filePath.toUtf8().data()];
@@ -80,7 +81,7 @@ public:
 
         QPixmap pixmap = MacImageUtils::QPixmapFromNSImage(picture);
         if(!pixmap.isNull())
-            result = new QGraphicsPixmapItem(pixmap);
+            result = new ResampledImageGraphicsItem(pixmap);
 
         [picture release];
         [pool release];

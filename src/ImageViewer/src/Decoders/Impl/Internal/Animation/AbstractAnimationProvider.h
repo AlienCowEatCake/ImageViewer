@@ -44,6 +44,7 @@ public:
     int nextImageDelay() const;
     bool jumpToNextImage();
     QPixmap currentPixmap() const;
+    QImage currentImage() const;
 
 protected:
     AbstractAnimationProvider();

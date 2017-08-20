@@ -19,9 +19,10 @@
 
 #include "AnimationUtils.h"
 
-#include <QGraphicsPixmapItem>
 #include <QGraphicsProxyWidget>
-#include <QPixmap>
+#include <QImage>
+
+#include "../GraphicsItems/ResampledImageGraphicsItem.h"
 
 #include "IAnimationProvider.h"
 #include "AnimationWidget.h"
@@ -45,10 +46,10 @@ QGraphicsItem *CreateGraphicsItem(IAnimationProvider *provider)
 
     if(provider->isSingleFrame())
     {
-        const QPixmap pixmap = provider->currentPixmap();
+        const QImage image = provider->currentImage();
         delete provider;
-        if(!pixmap.isNull())
-            return new QGraphicsPixmapItem(pixmap);
+        if(!image.isNull())
+            return new ResampledImageGraphicsItem(image);
         return NULL;
     }
 

@@ -40,6 +40,8 @@ class QGestureEvent {};
 class QPinchGesture {};
 #endif
 
+#include "Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.h"
+
 namespace {
 
 const int SCROLL_STEP = 10;
@@ -121,7 +123,16 @@ struct ImageViewerWidget::Impl
             return;
         QGraphicsPixmapItem *pixItem = dynamic_cast<QGraphicsPixmapItem*>(currentGraphicsItem);
         if(pixItem)
+        {
             pixItem->setTransformationMode(transformationMode);
+            return;
+        }
+        ResampledImageGraphicsItem* imgItem = dynamic_cast<ResampledImageGraphicsItem*>(currentGraphicsItem);
+        if(imgItem)
+        {
+            imgItem->setTransformationMode(transformationMode);
+            return;
+        }
     }
 
     bool gestureEvent(QGestureEvent* event)

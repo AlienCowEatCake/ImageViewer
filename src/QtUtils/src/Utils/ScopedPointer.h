@@ -70,8 +70,8 @@ public:
     void swap(QScopedPointer<T> & other)
     {
         T *tmp = m_data;
-        m_data = other.data;
-        other.data = tmp;
+        m_data = other.m_data;
+        other.m_data = tmp;
     }
 
     /// @brief Returns the value of the pointer referenced by this object. The pointer of this QScopedPointer object will be reset to null.
