@@ -45,10 +45,6 @@ namespace {
 class ResamplerWorker : public AbstractScalingWorker
 {
 public:
-    ResamplerWorker(QObject *parent = NULL)
-        : AbstractScalingWorker(parent)
-    {}
-
     void setImage(const QImage &newImage)
     {
         static const QList<QImage::Format> nativeImageFormats = QList<QImage::Format>()
@@ -153,8 +149,8 @@ namespace {
 class ResamplerWorkerHandler : public AbstractScalingWorkerHandler
 {
 public:
-    ResamplerWorkerHandler(ResampledImageGraphicsItem *item, ResamplerWorker *worker, QThread *thread, QObject *parent = NULL)
-        : AbstractScalingWorkerHandler(worker, thread, parent)
+    ResamplerWorkerHandler(ResampledImageGraphicsItem *item, ResamplerWorker *worker, QThread *thread)
+        : AbstractScalingWorkerHandler(worker, thread)
         , m_item(item)
     {}
 
@@ -182,7 +178,7 @@ namespace {
 class ResamplerManager : public AbstractScalingManager
 {
 public:
-    ResamplerManager(ResamplerWorker *worker, ResamplerWorkerHandler* handler, QThread *thread, QObject *parent = NULL)
+    ResamplerManager(ResamplerWorker *worker, ResamplerWorkerHandler* handler, QThread *thread)
         : AbstractScalingManager(worker, handler, thread)
     {}
 
@@ -229,8 +225,11 @@ struct ResampledImageGraphicsItem::Impl
 
     void paintResampled(QPainter *painter) const
     {
+        const QPixmap pixmap = resamplerManager->getScaledPixmap();
+        if(pixmap.isNull())
+            return paintDefault(painter);
         painter->setRenderHint(QPainter::SmoothPixmapTransform, transformationMode == Qt::SmoothTransformation);
-        painter->drawPixmap(pixmap.rect(), resamplerManager->getScaledPixmap(), QRectF(QPointF(0, 0), QSizeF(pixmap.size()) * resamplerManager->getScaledScaleFactor()));
+        painter->drawPixmap(pixmap.rect(), pixmap, QRectF(QPointF(0, 0), QSizeF(pixmap.size()) * resamplerManager->getScaledScaleFactor()));
     }
 };
 
@@ -302,6 +301,9 @@ void ResampledImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGrap
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
+
+    if(m_impl->pixmap.isNull())
+        return;
 
     if(m_impl->transformationMode != Qt::SmoothTransformation)
         return m_impl->paintDefault(painter);

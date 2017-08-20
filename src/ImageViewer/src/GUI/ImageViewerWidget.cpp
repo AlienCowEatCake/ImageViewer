@@ -41,6 +41,7 @@ class QPinchGesture {};
 #endif
 
 #include "Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.h"
+#include "Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.h"
 
 namespace {
 
@@ -127,10 +128,16 @@ struct ImageViewerWidget::Impl
             pixItem->setTransformationMode(transformationMode);
             return;
         }
-        ResampledImageGraphicsItem* imgItem = dynamic_cast<ResampledImageGraphicsItem*>(currentGraphicsItem);
-        if(imgItem)
+        ResampledImageGraphicsItem* resampledItem = dynamic_cast<ResampledImageGraphicsItem*>(currentGraphicsItem);
+        if(resampledItem)
         {
-            imgItem->setTransformationMode(transformationMode);
+            resampledItem->setTransformationMode(transformationMode);
+            return;
+        }
+        RasterizedImageGraphicsItem* rasterizedItem = dynamic_cast<RasterizedImageGraphicsItem*>(currentGraphicsItem);
+        if(rasterizedItem)
+        {
+            rasterizedItem->setTransformationMode(transformationMode);
             return;
         }
     }

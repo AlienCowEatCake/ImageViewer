@@ -31,7 +31,7 @@ class AbstractScalingWorker : public QObject
     Q_OBJECT
 
 public:
-    AbstractScalingWorker(QObject *parent = NULL);
+    AbstractScalingWorker();
     ~AbstractScalingWorker();
 
     void setScaleFactor(const qreal newScaleFactor);

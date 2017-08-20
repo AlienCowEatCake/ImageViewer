@@ -61,9 +61,8 @@ struct AbstractScalingWorkerHandler::Impl
     }
 };
 
-AbstractScalingWorkerHandler::AbstractScalingWorkerHandler(AbstractScalingWorker *worker, QThread *thread, QObject *parent)
-    : QObject(parent)
-    , m_impl(new Impl(this, worker, thread))
+AbstractScalingWorkerHandler::AbstractScalingWorkerHandler(AbstractScalingWorker *worker, QThread *thread)
+    : m_impl(new Impl(this, worker, thread))
 {
     connect(worker, SIGNAL(started()), this, SLOT(onStartedReceived()));
     connect(worker, SIGNAL(finished()), this, SLOT(onFinishedReceived()));

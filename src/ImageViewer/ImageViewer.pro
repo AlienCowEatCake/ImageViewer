@@ -74,6 +74,7 @@ SOURCES += \
     src/Decoders/Impl/Internal/GraphicsItems/AbstractScalingManager.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/AbstractScalingWorker.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/AbstractScalingWorkerHandler.cpp \
+    src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/Utils/ExifUtils.cpp \
     src/Decoders/Impl/Internal/Utils/CmsUtils.cpp \
@@ -100,6 +101,7 @@ HEADERS += \
     src/Decoders/Impl/Internal/GraphicsItems/AbstractScalingManager.h \
     src/Decoders/Impl/Internal/GraphicsItems/AbstractScalingWorker.h \
     src/Decoders/Impl/Internal/GraphicsItems/AbstractScalingWorkerHandler.h \
+    src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.h \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.h \
     src/Decoders/Impl/Internal/Utils/ExifUtils.h \
     src/Decoders/Impl/Internal/Utils/CmsUtils.h \

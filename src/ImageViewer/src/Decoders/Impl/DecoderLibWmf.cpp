@@ -30,11 +30,11 @@
 #include <QPixmap>
 #include <QFile>
 #include <QByteArray>
-#include <QGraphicsItem>
 #include <QPainter>
 #include <QDebug>
 
 #include "../IDecoder.h"
+#include "Internal/GraphicsItems/RasterizedImageGraphicsItem.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/Utils/ZLibUtils.h"
 
@@ -75,10 +75,10 @@ const char *wmfErrorToString(wmf_error_t error)
 
 // ====================================================================================================
 
-class WmfGraphicsItem : public QGraphicsItem
+class WmfPixmapProvider : public RasterizedImageGraphicsItem::IRasterizedPixmapProvider
 {
 public:
-    WmfGraphicsItem(const QString &filePath)
+    WmfPixmapProvider(const QString &filePath)
         : m_isValid(false)
         , m_API(NULL)
         , m_ddata(NULL)
@@ -86,7 +86,6 @@ public:
         , m_height(0)
         , m_minScaleFactor(1)
         , m_maxScaleFactor(1)
-        , m_cachedScaleFactor(0)
     {
         memset(&m_bbox, 0, sizeof(wmfD_Rect));
 
@@ -164,7 +163,7 @@ public:
         m_maxScaleFactor = std::min(MAX_IMAGE_DIMENSION / m_width, MAX_IMAGE_DIMENSION / m_height);
     }
 
-    ~WmfGraphicsItem()
+    ~WmfPixmapProvider()
     {
         if(!isValid())
             return;
@@ -182,37 +181,7 @@ public:
         return QRectF(0, 0, m_width, m_height);
     }
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = NULL)
-    {
-        Q_UNUSED(option);
-        Q_UNUSED(widget);
-        if(!isValid())
-            return;
-
-        const QRectF identityRect = QRectF(0, 0, 1, 1);
-        const QRectF deviceTransformedRect = painter->deviceTransform().mapRect(identityRect);
-        const qreal deviceScaleFactor = std::max(deviceTransformedRect.width(), deviceTransformedRect.height());
-        const qreal actualScaleFactor = std::min(std::max(m_minScaleFactor, deviceScaleFactor), m_maxScaleFactor);
-        if(std::abs(actualScaleFactor - m_cachedScaleFactor) / std::max(actualScaleFactor, m_cachedScaleFactor) > 1e-2)
-        {
-            const bool previousPixmapIsValid = !m_cachedPixmap.isNull();
-            m_cachedPixmap = QPixmap();
-            m_cachedPixmap = getPixmap(actualScaleFactor);
-            if(m_cachedPixmap.isNull() && previousPixmapIsValid)
-            {
-                m_maxScaleFactor = m_cachedScaleFactor;
-                m_cachedPixmap = getPixmap(m_cachedScaleFactor);
-            }
-            else
-            {
-                m_cachedScaleFactor = actualScaleFactor;
-            }
-        }
-        painter->drawPixmap(boundingRect(), m_cachedPixmap, QRectF(0, 0, m_width * m_cachedScaleFactor, m_height * m_cachedScaleFactor));
-    }
-
-protected:
-    QPixmap getPixmap(const qreal scaleFactor)
+    QPixmap pixmap(const qreal scaleFactor)
     {
         m_ddata->type = wmf_gd_image;
         m_ddata->bbox.TL.x = m_bbox.TL.x;
@@ -257,8 +226,18 @@ protected:
         return QPixmap::fromImage(image);
     }
 
+    qreal minScaleFactor() const
+    {
+        return m_minScaleFactor;
+    }
+
+    qreal maxScaleFactor() const
+    {
+        return m_maxScaleFactor;
+    }
+
 private:
-    Q_DISABLE_COPY(WmfGraphicsItem)
+    Q_DISABLE_COPY(WmfPixmapProvider)
 
     bool m_isValid;
     QByteArray m_inBuffer;
@@ -269,9 +248,6 @@ private:
     unsigned int m_height;
     qreal m_minScaleFactor;
     qreal m_maxScaleFactor;
-
-    QPixmap m_cachedPixmap;
-    qreal m_cachedScaleFactor;
 };
 
 // ====================================================================================================
@@ -302,13 +278,11 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
 
-        WmfGraphicsItem *item = new WmfGraphicsItem(filePath);
-        if(!item->isValid())
-        {
-            delete item;
+        QSharedPointer<WmfPixmapProvider> provider(new WmfPixmapProvider(filePath));
+        if(!provider->isValid())
             return NULL;
-        }
-        return item;
+
+        return new RasterizedImageGraphicsItem(provider);
     }
 };
 

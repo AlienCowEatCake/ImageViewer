@@ -32,7 +32,7 @@ class AbstractScalingWorkerHandler : public QObject
     Q_OBJECT
 
 public:
-    AbstractScalingWorkerHandler(AbstractScalingWorker *worker, QThread *thread, QObject *parent = NULL);
+    AbstractScalingWorkerHandler(AbstractScalingWorker *worker, QThread *thread);
     ~AbstractScalingWorkerHandler();
 
     bool isRunning() const;

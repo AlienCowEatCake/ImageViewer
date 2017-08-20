@@ -35,9 +35,8 @@ AbstractScalingWorker::ScaledImageData::ScaledImageData(const QPixmap &pixmap, c
     , scaleFactor(scaleFactor)
 {}
 
-AbstractScalingWorker::AbstractScalingWorker(QObject *parent)
-    : QObject(parent)
-    , m_scaleFactor(INVALID_SCALE_FACTOR)
+AbstractScalingWorker::AbstractScalingWorker()
+    : m_scaleFactor(INVALID_SCALE_FACTOR)
     , m_workerAborted(false)
 {}
 
