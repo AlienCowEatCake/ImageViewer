@@ -27,7 +27,9 @@
 #include <QList>
 #include <QDebug>
 
+#if defined (HAS_STB)
 #include <stb_image_resize.h>
+#endif
 
 // ====================================================================================================
 
@@ -133,6 +135,7 @@ qreal ImageResamplerWorker::getResampledScaleFactor() const
 
 void ImageResamplerWorker::process()
 {
+#if defined (HAS_STB)
 #define CHECK_ABORT_STATE \
     if(m_impl->workerAborted) \
     { \
@@ -199,6 +202,10 @@ void ImageResamplerWorker::process()
     emit finished();
 
 #undef CHECK_ABORT_STATE
+#else
+    emit started();
+    emit aborted();
+#endif
 }
 
 void ImageResamplerWorker::abort()
