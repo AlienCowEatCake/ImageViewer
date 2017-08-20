@@ -26,8 +26,6 @@
 #include <QObject>
 #include <QPainter>
 #include <QThread>
-#include <QMutex>
-#include <QMutexLocker>
 #include <QDebug>
 
 #if defined (HAS_STB)
@@ -88,7 +86,7 @@ private:
         const qreal newScaleFactor = m_scaleFactor;
         const QSize scaledImageSize = m_image.size() * newScaleFactor;
         CHECK_ABORT_STATE;
-        QScopedPointer<ScaledImageData> data(new ScaledImageData(QImage(scaledImageSize, m_image.format()), newScaleFactor));
+        QImage scaledImage(scaledImageSize, m_image.format());
 
         CHECK_ABORT_STATE;
         int numChannels = 0;
@@ -119,7 +117,7 @@ private:
 
         CHECK_ABORT_STATE;
         const int inputStride = m_image.bytesPerLine() - m_image.width() * numChannels;
-        const int outputStride = data->image.bytesPerLine() - scaledImageSize.width() * numChannels;
+        const int outputStride = scaledImage.bytesPerLine() - scaledImageSize.width() * numChannels;
 
         /// @todo Не работает, если stride != 0. Разобраться почему.
         assert(inputStride == 0);
@@ -127,11 +125,11 @@ private:
 
         CHECK_ABORT_STATE;
         stbir_resize_uint8(m_image.bits(), m_image.width(), m_image.height(), inputStride,
-                           data->image.bits(), scaledImageSize.width(), scaledImageSize.height(), outputStride, numChannels);
+                           scaledImage.bits(), scaledImageSize.width(), scaledImageSize.height(), outputStride, numChannels);
 
         CHECK_ABORT_STATE;
         lockScaledImage();
-        m_scaledData.swap(data);
+        m_scaledData.reset(new ScaledImageData(QPixmap::fromImage(scaledImage), newScaleFactor));
         unlockScaledImage();
         CHECK_ABORT_STATE;
 
@@ -232,7 +230,7 @@ struct ResampledImageGraphicsItem::Impl
     void paintResampled(QPainter *painter) const
     {
         painter->setRenderHint(QPainter::SmoothPixmapTransform, transformationMode == Qt::SmoothTransformation);
-        painter->drawImage(pixmap.rect(), resamplerManager->getScaledImage(), QRectF(QPointF(0, 0), QSizeF(pixmap.size()) * resamplerManager->getScaledScaleFactor()));
+        painter->drawPixmap(pixmap.rect(), resamplerManager->getScaledPixmap(), QRectF(QPointF(0, 0), QSizeF(pixmap.size()) * resamplerManager->getScaledScaleFactor()));
     }
 };
 

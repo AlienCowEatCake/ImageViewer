@@ -21,7 +21,7 @@
 #define ABSTRACT_SCALING_WORKER_H_INCLUDED
 
 #include <QObject>
-#include <QImage>
+#include <QPixmap>
 #include <QMutex>
 
 #include "Utils/ScopedPointer.h"
@@ -41,7 +41,7 @@ public:
     void unlockScaledImage();
 
     bool hasScaledData() const;
-    QImage getScaledImage() const;
+    QPixmap getScaledPixmap() const;
     qreal getScaledScaleFactor() const;
 
 public slots:
@@ -55,14 +55,14 @@ signals:
 
 protected:
     bool isAborted() const;
-    virtual bool scaleImpl();
+    virtual bool scaleImpl() = 0;
 
     qreal m_scaleFactor;
     struct ScaledImageData
     {
-        QImage image;
+        QPixmap pixmap;
         qreal scaleFactor;
-        ScaledImageData(const QImage& image, const qreal scaleFactor);
+        ScaledImageData(const QPixmap& pixmap, const qreal scaleFactor);
     };
     QScopedPointer<ScaledImageData> m_scaledData;
 

@@ -20,7 +20,7 @@
 #if !defined(ABSTRACT_SCALING_MANAGER_H_INCLUDED)
 #define ABSTRACT_SCALING_MANAGER_H_INCLUDED
 
-#include <QImage>
+#include <QPixmap>
 
 #include "Utils/ScopedPointer.h"
 
@@ -34,9 +34,6 @@ public:
     AbstractScalingManager(AbstractScalingWorker *worker, AbstractScalingWorkerHandler *handler, QThread *thread);
     ~AbstractScalingManager();
 
-    void setImage(const QImage &image);
-    QImage getImage() const;
-
     void startTask(const qreal scaleFactor);
     void abortTask();
 
@@ -44,7 +41,7 @@ public:
     void endScaledImageProcessing();
 
     bool hasScaledData() const;
-    QImage getScaledImage() const;
+    QPixmap getScaledPixmap() const;
     qreal getScaledScaleFactor() const;
 
 protected:
