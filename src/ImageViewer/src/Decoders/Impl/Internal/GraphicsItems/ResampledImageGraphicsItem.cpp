@@ -25,8 +25,6 @@
 #include <QObject>
 #include <QPainter>
 #include <QThread>
-#include <QList>
-#include <QPointer>
 #include <QMutex>
 #include <QMutexLocker>
 
