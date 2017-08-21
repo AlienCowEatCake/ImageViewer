@@ -23,6 +23,7 @@
 
 #include <QObject>
 #include <QPainter>
+#include <QPixmap>
 #include <QThread>
 #include <QDebug>
 
@@ -124,7 +125,7 @@ private:
 
         CHECK_ABORT_STATE;
         lockScaledImage();
-        m_scaledData.reset(new ScaledImageData(QPixmap::fromImage(scaledImage), newScaleFactor));
+        m_scaledData.reset(new ScaledImageData(scaledImage, newScaleFactor));
         unlockScaledImage();
         CHECK_ABORT_STATE;
 
@@ -195,11 +196,11 @@ struct ResampledImageGraphicsItem::Impl
 
     void paintResampled(QPainter *painter) const
     {
-        const QPixmap scaledPixmap = resamplerManager->getScaledPixmap();
-        if(scaledPixmap.isNull())
+        const QImage scaledImage = resamplerManager->getScaledImage();
+        if(scaledImage.isNull())
             return paintDefault(painter);
         painter->setRenderHint(QPainter::SmoothPixmapTransform, transformationMode == Qt::SmoothTransformation);
-        GraphicsItemUtils::DrawScaledPixmap(painter, scaledPixmap, pixmap.rect(), resamplerManager->getScaledScaleFactor());
+        GraphicsItemUtils::DrawScaledImage(painter, scaledImage, pixmap.rect(), resamplerManager->getScaledScaleFactor());
     }
 };
 

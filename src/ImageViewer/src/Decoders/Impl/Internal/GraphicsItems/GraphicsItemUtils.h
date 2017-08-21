@@ -23,7 +23,7 @@
 #include <QtGlobal>
 
 class QPainter;
-class QPixmap;
+class QImage;
 class QRectF;
 
 namespace GraphicsItemUtils {
@@ -32,7 +32,7 @@ qreal GetDeviceScaleFactor(const QPainter *painter);
 
 bool IsFuzzyEqualScaleFactors(const qreal scaleFactor1, const qreal scaleFactor2);
 
-void DrawScaledPixmap(QPainter *painter, const QPixmap &scaledPixmap, const QRectF &originalRect, const qreal scaleFactor);
+void DrawScaledImage(QPainter *painter, const QImage &scaledImage, const QRectF &originalRect, const qreal scaleFactor);
 
 } // GraphicsItemUtils
 

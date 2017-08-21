@@ -70,9 +70,9 @@ bool AbstractScalingManager::hasScaledData() const
     return m_scalingWorker->hasScaledData();
 }
 
-QPixmap AbstractScalingManager::getScaledPixmap() const
+QImage AbstractScalingManager::getScaledImage() const
 {
-    return m_scalingWorker->getScaledPixmap();
+    return m_scalingWorker->getScaledImage();
 }
 
 qreal AbstractScalingManager::getScaledScaleFactor() const

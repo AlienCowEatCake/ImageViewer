@@ -36,10 +36,10 @@
 
 // ====================================================================================================
 
-RasterizedImageGraphicsItem::IRasterizedPixmapProvider::~IRasterizedPixmapProvider()
+RasterizedImageGraphicsItem::IRasterizedImageProvider::~IRasterizedImageProvider()
 {}
 
-typedef RasterizedImageGraphicsItem::IRasterizedPixmapProvider IProvider;
+typedef RasterizedImageGraphicsItem::IRasterizedImageProvider IProvider;
 
 // ====================================================================================================
 
@@ -53,7 +53,7 @@ public:
         m_provider = provider;
     }
 
-    bool generateScaledPixmap(const bool checkAbortedState)
+    bool generateScaledImage(const bool checkAbortedState)
     {
 #define CHECK_ABORT_STATE if(checkAbortedState && isAborted()) return false
         CHECK_ABORT_STATE;
@@ -62,12 +62,12 @@ public:
         CHECK_ABORT_STATE;
         const qreal newScaleFactor = m_scaleFactor;
         CHECK_ABORT_STATE;
-        QPixmap pixmap = m_provider->pixmap(newScaleFactor);
-        if(pixmap.isNull())
+        QImage image = m_provider->image(newScaleFactor);
+        if(image.isNull())
             return false;
         CHECK_ABORT_STATE;
         lockScaledImage();
-        m_scaledData.reset(new ScaledImageData(pixmap, newScaleFactor));
+        m_scaledData.reset(new ScaledImageData(image, newScaleFactor));
         unlockScaledImage();
         CHECK_ABORT_STATE;
         return true;
@@ -77,7 +77,7 @@ public:
 private:
     bool scaleImpl()
     {
-        return generateScaledPixmap(true);
+        return generateScaledImage(true);
     }
 
     QSharedPointer<IProvider> m_provider;
@@ -105,7 +105,7 @@ public:
     {
         abortTask();
         m_scalingWorker->setScaleFactor(scaleFactor);
-        static_cast<RasterizerWorker*>(m_scalingWorker)->generateScaledPixmap(false);
+        static_cast<RasterizerWorker*>(m_scalingWorker)->generateScaledImage(false);
     }
 };
 
@@ -140,7 +140,7 @@ RasterizedImageGraphicsItem::RasterizedImageGraphicsItem(QGraphicsItem *parentIt
     , m_impl(new Impl(this))
 {}
 
-RasterizedImageGraphicsItem::RasterizedImageGraphicsItem(QSharedPointer<IRasterizedPixmapProvider> provider, QGraphicsItem *parentItem)
+RasterizedImageGraphicsItem::RasterizedImageGraphicsItem(QSharedPointer<IRasterizedImageProvider> provider, QGraphicsItem *parentItem)
     : QGraphicsItem(parentItem)
     , m_impl(new Impl(this))
 {
@@ -150,12 +150,12 @@ RasterizedImageGraphicsItem::RasterizedImageGraphicsItem(QSharedPointer<IRasteri
 RasterizedImageGraphicsItem::~RasterizedImageGraphicsItem()
 {}
 
-QSharedPointer<RasterizedImageGraphicsItem::IRasterizedPixmapProvider> RasterizedImageGraphicsItem::provider() const
+QSharedPointer<RasterizedImageGraphicsItem::IRasterizedImageProvider> RasterizedImageGraphicsItem::provider() const
 {
     return m_impl->provider;
 }
 
-void RasterizedImageGraphicsItem::setProvider(QSharedPointer<IRasterizedPixmapProvider> provider)
+void RasterizedImageGraphicsItem::setProvider(QSharedPointer<IRasterizedImageProvider> provider)
 {
     m_impl->provider = provider;
     m_impl->rasterizerManager->setProvider(provider);
@@ -202,7 +202,7 @@ void RasterizedImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGra
     painter->setRenderHint(QPainter::SmoothPixmapTransform, m_impl->transformationMode == Qt::SmoothTransformation);
     m_impl->rasterizerManager->beginScaledImageProcessing();
     const qreal actualScaleFactor = m_impl->rasterizerManager->getScaledScaleFactor();
-    GraphicsItemUtils::DrawScaledPixmap(painter,m_impl->rasterizerManager->getScaledPixmap(), boundingRect(), actualScaleFactor);
+    GraphicsItemUtils::DrawScaledImage(painter,m_impl->rasterizerManager->getScaledImage(), boundingRect(), actualScaleFactor);
     m_impl->rasterizerManager->endScaledImageProcessing();
 
     if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, actualScaleFactor))

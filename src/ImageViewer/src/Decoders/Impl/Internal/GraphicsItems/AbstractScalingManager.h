@@ -20,7 +20,7 @@
 #if !defined(ABSTRACT_SCALING_MANAGER_H_INCLUDED)
 #define ABSTRACT_SCALING_MANAGER_H_INCLUDED
 
-#include <QPixmap>
+#include <QImage>
 
 #include "Utils/ScopedPointer.h"
 
@@ -41,7 +41,7 @@ public:
     void endScaledImageProcessing();
 
     bool hasScaledData() const;
-    QPixmap getScaledPixmap() const;
+    QImage getScaledImage() const;
     qreal getScaledScaleFactor() const;
 
 protected:

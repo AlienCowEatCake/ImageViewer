@@ -30,8 +30,8 @@ const qreal INVALID_SCALE_FACTOR = -1;
 
 } // namespace
 
-AbstractScalingWorker::ScaledImageData::ScaledImageData(const QPixmap &pixmap, const qreal scaleFactor)
-    : pixmap(pixmap)
+AbstractScalingWorker::ScaledImageData::ScaledImageData(const QImage &image, const qreal scaleFactor)
+    : image(image)
     , scaleFactor(scaleFactor)
 {}
 
@@ -68,11 +68,11 @@ bool AbstractScalingWorker::hasScaledData() const
     return !m_scaledData.isNull();
 }
 
-QPixmap AbstractScalingWorker::getScaledPixmap() const
+QImage AbstractScalingWorker::getScaledImage() const
 {
     if(hasScaledData())
-        return m_scaledData->pixmap;
-    return QPixmap();
+        return m_scaledData->image;
+    return QImage();
 }
 
 qreal AbstractScalingWorker::getScaledScaleFactor() const

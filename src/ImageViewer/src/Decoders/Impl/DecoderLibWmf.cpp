@@ -27,7 +27,6 @@
 
 #include <QFileInfo>
 #include <QImage>
-#include <QPixmap>
 #include <QFile>
 #include <QByteArray>
 #include <QPainter>
@@ -75,7 +74,7 @@ const char *wmfErrorToString(wmf_error_t error)
 
 // ====================================================================================================
 
-class WmfPixmapProvider : public RasterizedImageGraphicsItem::IRasterizedPixmapProvider
+class WmfPixmapProvider : public RasterizedImageGraphicsItem::IRasterizedImageProvider
 {
 public:
     WmfPixmapProvider(const QString &filePath)
@@ -181,7 +180,7 @@ public:
         return QRectF(0, 0, m_width, m_height);
     }
 
-    QPixmap pixmap(const qreal scaleFactor)
+    QImage image(const qreal scaleFactor)
     {
         m_ddata->type = wmf_gd_image;
         m_ddata->bbox.TL.x = m_bbox.TL.x;
@@ -195,14 +194,14 @@ public:
         if(error != wmf_E_None)
         {
             qWarning() << "Couldn't decode WMF file into pixbuf:" << wmfErrorToString(error);
-            return QPixmap();
+            return QImage();
         }
 
         int *gdPixels = NULL;
         if(m_ddata->gd_image == NULL || (gdPixels = wmf_gd_image_pixels(m_ddata->gd_image)) == NULL)
         {
             qWarning() << "Couldn't decode WMF file - no output (huh?)" << wmfErrorToString(error);
-            return QPixmap();
+            return QImage();
         }
 
         QImage image(static_cast<int>(m_ddata->width), static_cast<int>(m_ddata->height), QImage::Format_ARGB32);
@@ -223,7 +222,7 @@ public:
                 *(imagePtr++) = qRgba(r, g, b, a);
             }
         }
-        return QPixmap::fromImage(image);
+        return image;
     }
 
     qreal minScaleFactor() const
