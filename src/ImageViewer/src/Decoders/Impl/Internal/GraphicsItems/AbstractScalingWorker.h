@@ -17,34 +17,32 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined(IMAGE_RESAMPLER_WORKER_H_INCLUDED)
-#define IMAGE_RESAMPLER_WORKER_H_INCLUDED
+#if !defined(ABSTRACT_SCALING_WORKER_H_INCLUDED)
+#define ABSTRACT_SCALING_WORKER_H_INCLUDED
 
 #include <QObject>
 #include <QImage>
+#include <QMutex>
 
 #include "Utils/ScopedPointer.h"
 
-class ImageResamplerWorker : public QObject
+class AbstractScalingWorker : public QObject
 {
     Q_OBJECT
 
 public:
-    ImageResamplerWorker(QObject *parent = NULL);
-    ~ImageResamplerWorker();
-
-    void setImage(const QImage &newImage);
-    QImage getImage() const;
+    AbstractScalingWorker();
+    ~AbstractScalingWorker();
 
     void setScaleFactor(const qreal newScaleFactor);
     qreal getScaleFactor() const;
 
-    void lockResampledImage();
-    void unlockResampledImage();
+    void lockScaledImage();
+    void unlockScaledImage();
 
-    bool hasResampledData() const;
-    QImage getResampledImage() const;
-    qreal getResampledScaleFactor() const;
+    bool hasScaledData() const;
+    QImage getScaledImage() const;
+    qreal getScaledScaleFactor() const;
 
 public slots:
     void process();
@@ -55,26 +53,22 @@ signals:
     void finished();
     void aborted();
 
+protected:
+    bool isAborted() const;
+    virtual bool scaleImpl() = 0;
+
+    qreal m_scaleFactor;
+    struct ScaledImageData
+    {
+        QImage image;
+        qreal scaleFactor;
+        ScaledImageData(const QImage& image, const qreal scaleFactor);
+    };
+    QScopedPointer<ScaledImageData> m_scaledData;
+
 private:
-    struct Impl;
-    QScopedPointer<Impl> m_impl;
+    bool m_workerAborted;
+    QMutex m_scaledDataLock;
 };
 
-class ImageResamplerWorkerHandler : public QObject
-{
-    Q_OBJECT
-
-public:
-    ImageResamplerWorkerHandler(ImageResamplerWorker *worker, QObject *parent = NULL);
-
-    virtual void onStarted() = 0;
-    virtual void onFinished() = 0;
-    virtual void onAborted() = 0;
-
-private slots:
-    void onStartedReceived();
-    void onFinishedReceived();
-    void onAbortedReceived();
-};
-
-#endif // IMAGE_RESAMPLER_WORKER_H_INCLUDED
+#endif // ABSTRACT_SCALING_WORKER_H_INCLUDED

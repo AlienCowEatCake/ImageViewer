@@ -1,7 +1,7 @@
 /*
-   Copyright (C) 2011-2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
-   This file is part of the `QtUtils' library.
+   This file is part of the `ImageViewer' program.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,20 +17,23 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined (QTUTILS_SCOPEDPOINTER_H_INCLUDED)
-#define QTUTILS_SCOPEDPOINTER_H_INCLUDED
+#if !defined(GRAPHICS_ITEM_UTILS_H_INCLUDED)
+#define GRAPHICS_ITEM_UTILS_H_INCLUDED
 
 #include <QtGlobal>
 
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
+class QPainter;
+class QImage;
+class QRectF;
 
-#include <QScopedPointer>
+namespace GraphicsItemUtils {
 
-#else
+qreal GetDeviceScaleFactor(const QPainter *painter);
 
-#include "_backport/Qt4.6/qscopedpointer.h"
+bool IsFuzzyEqualScaleFactors(const qreal scaleFactor1, const qreal scaleFactor2);
 
-#endif
+void DrawScaledImage(QPainter *painter, const QImage &scaledImage, const QRectF &originalRect, const qreal scaleFactor);
 
-#endif // QTUTILS_SCOPEDPOINTER_H_INCLUDED
+} // GraphicsItemUtils
 
+#endif // GRAPHICS_ITEM_UTILS_H_INCLUDED

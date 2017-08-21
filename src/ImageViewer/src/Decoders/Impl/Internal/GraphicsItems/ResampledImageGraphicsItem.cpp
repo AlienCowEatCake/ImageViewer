@@ -19,97 +19,125 @@
 
 #include "ResampledImageGraphicsItem.h"
 
-#include <cmath>
-#include <algorithm>
+#include <cassert>
 
 #include <QObject>
 #include <QPainter>
+#include <QPixmap>
 #include <QThread>
-#include <QMutex>
-#include <QMutexLocker>
+#include <QDebug>
 
+#if defined (HAS_STB)
 #include <stb_image_resize.h>
+#endif
 
 #include "Utils/ScopedPointer.h"
-#include "ImageResamplerWorker.h"
+
+#include "AbstractScalingManager.h"
+#include "AbstractScalingWorker.h"
+#include "AutoUpdatedScalingWorkerHandler.h"
+#include "GraphicsItemUtils.h"
 
 // ====================================================================================================
 
 namespace {
 
-class ResamplerWorkerHandler : public ImageResamplerWorkerHandler
+class ResamplerWorker : public AbstractScalingWorker
 {
 public:
-    ResamplerWorkerHandler(QGraphicsItem *item, ImageResamplerWorker *worker, QThread *thread, QObject *parent = NULL)
-        : ImageResamplerWorkerHandler(worker, parent)
-        , m_item(item)
-        , m_isRunning(false)
-        , m_destroyOnFinished(false)
-        , m_worker(worker)
-        , m_thread(thread)
-    {}
-
-    void onStarted()
+    void setImage(const QImage &newImage)
     {
-        QMutexLocker guard(&m_handlerMutex);
-        m_isRunning = true;
+        static const QList<QImage::Format> nativeImageFormats = QList<QImage::Format>()
+                /// @todo Не работает, если stride != 0. Разобраться почему.
+//#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+//                << QImage::Format_Grayscale8
+//                << QImage::Format_Alpha8
+//#endif
+//                << QImage::Format_RGB888
+                << QImage::Format_RGB32
+                << QImage::Format_ARGB32
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+                << QImage::Format_RGBX8888
+                << QImage::Format_RGBA8888
+#endif
+                   ;
+        if(nativeImageFormats.contains(newImage.format()))
+            m_image = newImage;
+        else
+            m_image = newImage.convertToFormat(QImage::Format_ARGB32);
     }
 
-    void onFinished()
+    QImage getImage() const
     {
-        QMutexLocker guard(&m_handlerMutex);
-        m_isRunning = false;
-        m_thread->quit();
-        if(m_item)
-            m_item->update();
-        checkAndDestroy();
-    }
-
-    void onAborted()
-    {
-        QMutexLocker guard(&m_handlerMutex);
-        m_isRunning = false;
-        m_thread->quit();
-        checkAndDestroy();
-    }
-
-    bool isRunning() const
-    {
-        return m_isRunning;
-    }
-
-    void setDestroyOnFinished()
-    {
-        QMutexLocker guard(&m_handlerMutex);
-        m_item = NULL;
-        m_destroyOnFinished = true;
-        if(!isRunning())
-            checkAndDestroy();
+        return m_image;
     }
 
 private:
-    void checkAndDestroy()
+    bool scaleImpl()
     {
-        if(!m_destroyOnFinished)
-            return;
+#if defined (HAS_STB)
 
-        m_worker->disconnect();
-        m_thread->disconnect();
-        disconnect();
+#define CHECK_ABORT_STATE if(isAborted()) return false
+        CHECK_ABORT_STATE;
+        const qreal newScaleFactor = m_scaleFactor;
+        const QSize scaledImageSize = m_image.size() * newScaleFactor;
+        CHECK_ABORT_STATE;
+        QImage scaledImage(scaledImageSize, m_image.format());
 
-        m_thread->quit();
-        m_thread->wait();
-        delete m_worker;
-        m_thread->deleteLater();
-        deleteLater();
+        CHECK_ABORT_STATE;
+        int numChannels = 0;
+        switch(m_image.format())
+        {
+        /// @todo Не работает, если stride != 0. Разобраться почему.
+//#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+//        case QImage::Format_Grayscale8:
+//        case QImage::Format_Alpha8:
+//            numChannels = 1;
+//            break;
+//#endif
+//        case QImage::Format_RGB888:
+//            numChannels = 3;
+//            break;
+        case QImage::Format_RGB32:
+        case QImage::Format_ARGB32:
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+        case QImage::Format_RGBX8888:
+        case QImage::Format_RGBA8888:
+#endif
+            numChannels = 4;
+            break;
+        default:
+            qWarning() << "[ImageResamplerWorker::scaleImpl()]: Unsupported image format";
+            return false;
+        }
+
+        CHECK_ABORT_STATE;
+        const int inputStride = m_image.bytesPerLine() - m_image.width() * numChannels;
+        const int outputStride = scaledImage.bytesPerLine() - scaledImageSize.width() * numChannels;
+
+        /// @todo Не работает, если stride != 0. Разобраться почему.
+        assert(inputStride == 0);
+        assert(outputStride == 0);
+
+        CHECK_ABORT_STATE;
+        stbir_resize_uint8(m_image.bits(), m_image.width(), m_image.height(), inputStride,
+                           scaledImage.bits(), scaledImageSize.width(), scaledImageSize.height(), outputStride, numChannels);
+
+        CHECK_ABORT_STATE;
+        lockScaledImage();
+        m_scaledData.reset(new ScaledImageData(scaledImage, newScaleFactor));
+        unlockScaledImage();
+        CHECK_ABORT_STATE;
+
+        return true;
+#undef CHECK_ABORT_STATE
+
+#else
+        return false;
+#endif
     }
 
-    QMutex m_handlerMutex;
-    QGraphicsItem *m_item;
-    bool m_isRunning;
-    bool m_destroyOnFinished;
-    ImageResamplerWorker *m_worker;
-    QThread *m_thread;
+    QImage m_image;
 };
 
 } // namespace
@@ -118,80 +146,31 @@ private:
 
 namespace {
 
-class ResamplerManager
+class ResamplerManager : public AbstractScalingManager
 {
 public:
-    ResamplerManager(QGraphicsItem *item)
-        : resamplerWorker(new ImageResamplerWorker)
-        , resamplerThread(new QThread)
-        , resamplerWorkerHandler(new ResamplerWorkerHandler(item, resamplerWorker, resamplerThread))
-    {
-        resamplerWorker->moveToThread(resamplerThread);
-        QObject::connect(resamplerThread, SIGNAL(started()), resamplerWorker, SLOT(process()));
-    }
-
-    ~ResamplerManager()
-    {
-        abortTask();
-        resamplerWorkerHandler->setDestroyOnFinished();
-    }
+    ResamplerManager(ResamplerWorker *worker, AutoUpdatedScalingWorkerHandler* handler, QThread *thread)
+        : AbstractScalingManager(worker, handler, thread)
+    {}
 
     void setImage(const QImage &image)
     {
-        resamplerWorker->setImage(image);
+        static_cast<ResamplerWorker*>(m_scalingWorker)->setImage(image);
     }
 
     QImage getImage() const
     {
-        return resamplerWorker->getImage();
+        return static_cast<ResamplerWorker*>(m_scalingWorker)->getImage();
     }
-
-    void startTask(qreal scaleFactor)
-    {
-        if(resamplerWorkerHandler->isRunning())
-            return;
-
-        abortTask();
-        resamplerWorker->setScaleFactor(scaleFactor);
-        resamplerThread->start();
-    }
-
-    void abortTask()
-    {
-        resamplerWorker->abort();
-    }
-
-    void beginResampledImageProcessing()
-    {
-        resamplerWorker->lockResampledImage();
-    }
-
-    void endResampledImageProcessing()
-    {
-        resamplerWorker->unlockResampledImage();
-    }
-
-    bool hasResampledData() const
-    {
-        return resamplerWorker->hasResampledData();
-    }
-
-    QImage getResampledImage() const
-    {
-        return resamplerWorker->getResampledImage();
-    }
-
-    qreal getResampledScaleFactor() const
-    {
-        return resamplerWorker->getResampledScaleFactor();
-    }
-
-private:
-
-    ImageResamplerWorker *resamplerWorker;
-    QThread *resamplerThread;
-    ResamplerWorkerHandler *resamplerWorkerHandler;
 };
+
+ResamplerManager *createResamplerManager(ResampledImageGraphicsItem *item)
+{
+    ResamplerWorker *worker = new ResamplerWorker();
+    QThread *thread = new QThread();
+    AutoUpdatedScalingWorkerHandler *handler = new AutoUpdatedScalingWorkerHandler(item, worker, thread);
+    return new ResamplerManager(worker, handler, thread);
+}
 
 } // namespace
 
@@ -202,11 +181,11 @@ struct ResampledImageGraphicsItem::Impl
     QPixmap pixmap;
     Qt::TransformationMode transformationMode;
 
-    ResamplerManager resamplerManager;
+    QScopedPointer<ResamplerManager> resamplerManager;
 
     Impl(ResampledImageGraphicsItem *resampledImageGraphicsItem)
         : transformationMode(Qt::FastTransformation)
-        , resamplerManager(resampledImageGraphicsItem)
+        , resamplerManager(createResamplerManager(resampledImageGraphicsItem))
     {}
 
     void paintDefault(QPainter *painter) const
@@ -217,8 +196,11 @@ struct ResampledImageGraphicsItem::Impl
 
     void paintResampled(QPainter *painter) const
     {
+        const QImage scaledImage = resamplerManager->getScaledImage();
+        if(scaledImage.isNull())
+            return paintDefault(painter);
         painter->setRenderHint(QPainter::SmoothPixmapTransform, transformationMode == Qt::SmoothTransformation);
-        painter->drawImage(pixmap.rect(), resamplerManager.getResampledImage(), QRectF(QPointF(0, 0), QSizeF(pixmap.size()) * resamplerManager.getResampledScaleFactor()));
+        GraphicsItemUtils::DrawScaledImage(painter, scaledImage, pixmap.rect(), resamplerManager->getScaledScaleFactor());
     }
 };
 
@@ -248,13 +230,13 @@ ResampledImageGraphicsItem::~ResampledImageGraphicsItem()
 
 QImage ResampledImageGraphicsItem::image() const
 {
-    return m_impl->resamplerManager.getImage();
+    return m_impl->resamplerManager->getImage();
 }
 
 void ResampledImageGraphicsItem::setImage(const QImage &image)
 {
     m_impl->pixmap = QPixmap::fromImage(image);
-    m_impl->resamplerManager.setImage(image);
+    m_impl->resamplerManager->setImage(image);
     update();
 }
 
@@ -266,7 +248,7 @@ QPixmap ResampledImageGraphicsItem::pixmap() const
 void ResampledImageGraphicsItem::setPixmap(const QPixmap &pixmap)
 {
     m_impl->pixmap = pixmap;
-    m_impl->resamplerManager.setImage(pixmap.toImage());
+    m_impl->resamplerManager->setImage(pixmap.toImage());
     update();
 }
 
@@ -291,28 +273,29 @@ void ResampledImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGrap
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
+    if(m_impl->pixmap.isNull())
+        return;
+
     if(m_impl->transformationMode != Qt::SmoothTransformation)
         return m_impl->paintDefault(painter);
 
-    const QRectF identityRect = QRectF(0, 0, 1, 1);
-    const QRectF deviceTransformedRect = painter->deviceTransform().mapRect(identityRect);
-    const qreal newScaleFactor = std::max(deviceTransformedRect.width(), deviceTransformedRect.height());
+    const qreal newScaleFactor = GraphicsItemUtils::GetDeviceScaleFactor(painter);
 
     if(newScaleFactor >= 1 || newScaleFactor <= 0)
         return m_impl->paintDefault(painter);
 
-    m_impl->resamplerManager.beginResampledImageProcessing();
-    const qreal scaleFactor = !m_impl->resamplerManager.hasResampledData() ? newScaleFactor : m_impl->resamplerManager.getResampledScaleFactor();
-    if(!(!m_impl->resamplerManager.hasResampledData() || std::abs(newScaleFactor - scaleFactor) / std::max(newScaleFactor, scaleFactor) > 1e-2))
+    m_impl->resamplerManager->beginScaledImageProcessing();
+    const qreal scaleFactor = !m_impl->resamplerManager->hasScaledData() ? newScaleFactor : m_impl->resamplerManager->getScaledScaleFactor();
+    if(m_impl->resamplerManager->hasScaledData() && GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, scaleFactor))
     {
         m_impl->paintResampled(painter);
-        m_impl->resamplerManager.endResampledImageProcessing();
+        m_impl->resamplerManager->endScaledImageProcessing();
         return;
     }
-    m_impl->resamplerManager.endResampledImageProcessing();
+    m_impl->resamplerManager->endScaledImageProcessing();
 
     m_impl->paintDefault(painter);
-    m_impl->resamplerManager.startTask(newScaleFactor);
+    m_impl->resamplerManager->startTask(newScaleFactor);
 }
 
 // ====================================================================================================

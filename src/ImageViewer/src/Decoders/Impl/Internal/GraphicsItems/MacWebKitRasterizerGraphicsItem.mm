@@ -41,6 +41,8 @@
 #include <QTime>
 #include <QDebug>
 
+#include "GraphicsItemUtils.h"
+
 //#define MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG
 
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
@@ -652,14 +654,12 @@ void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptio
     painter->setPen(Qt::red);
     painter->drawRect(boundingRect());
 #endif
-    const QRectF identityRect = QRectF(0, 0, 1, 1);
-    const QRectF deviceTransformedRect = painter->deviceTransform().mapRect(identityRect);
-    const qreal newScaleFactor = std::max(deviceTransformedRect.width(), deviceTransformedRect.height());
+    const qreal newScaleFactor = GraphicsItemUtils::GetDeviceScaleFactor(painter);
     const QRectF newExposedRect = boundingRect().intersected(option->exposedRect);
     QImage &image = m_impl->rasterizerCache().image;
     QRectF &exposedRect = m_impl->rasterizerCache().exposedRect;
     qreal &scaleFactor = m_impl->rasterizerCache().scaleFactor;
-    if(std::abs(newScaleFactor - scaleFactor) / std::max(newScaleFactor, scaleFactor) > 1e-2 || !exposedRect.contains(newExposedRect))
+    if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, scaleFactor) || !exposedRect.contains(newExposedRect))
     {
         image = m_impl->grabImage(newScaleFactor, newExposedRect);
         scaleFactor = newScaleFactor;

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -17,20 +17,22 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined (QTUTILS_SCOPEDPOINTER_H_INCLUDED)
-#define QTUTILS_SCOPEDPOINTER_H_INCLUDED
+#if !defined (QTUTILS_SHAREDPOINTER_H_INCLUDED)
+#define QTUTILS_SHAREDPOINTER_H_INCLUDED
 
 #include <QtGlobal>
 
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
 
-#include <QScopedPointer>
+#include <QSharedPointer>
 
 #else
 
-#include "_backport/Qt4.6/qscopedpointer.h"
+#define QSHAREDPOINTER_H
+#include "_backport/Qt4.5/qsharedpointer_impl.h"
+#undef QSHAREDPOINTER_H
 
 #endif
 
-#endif // QTUTILS_SCOPEDPOINTER_H_INCLUDED
+#endif // QTUTILS_SHAREDPOINTER_H_INCLUDED
 
