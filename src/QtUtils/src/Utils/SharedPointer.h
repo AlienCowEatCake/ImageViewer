@@ -28,7 +28,9 @@
 
 #else
 
-/// @todo
+#define QSHAREDPOINTER_H
+#include "_backport/Qt4.5/qsharedpointer_impl.h"
+#undef QSHAREDPOINTER_H
 
 #endif
 
