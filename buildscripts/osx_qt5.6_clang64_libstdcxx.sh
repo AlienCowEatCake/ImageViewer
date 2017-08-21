@@ -1,8 +1,8 @@
 #!/bin/bash -e
 PROJECT=ImageViewer
-BUILDDIR=build_osx_qt5.6_clang64_libstdc++
+BUILDDIR=build_osx_qt5.6_clang64_libstdcxx
 APPNAME="Image Viewer"
-DMGNAME="${PROJECT}_qt5.6_clang64_libstdc++"
+DMGNAME="${PROJECT}_qt5.6_clang64_libstdcxx"
 OUT_PATH="src/${PROJECT}"
 
 QT_PATH="/opt/Qt/5.6.2/clang_64_libstdc++_sdk10.12"
