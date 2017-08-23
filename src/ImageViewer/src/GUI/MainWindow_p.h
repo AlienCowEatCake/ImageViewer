@@ -603,11 +603,17 @@ private:
     void updateDockMenu()
     {
 #if defined (Q_OS_MAC)
+        static QMenu dockMenu;
+        dockMenu.clear();
+        dockMenu.addAction(qApp->translate("Dock", "New Window"), mainWindow, SLOT(openNewWindow()));
+    #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+        dockMenu.setAsDockMenu();
+    #elif (QT_VERSION < QT_VERSION_CHECK(5, 0, 0) || QT_VERSION >= QT_VERSION_CHECK(5, 0, 2)) // QTBUG-28167
         void qt_mac_set_dock_menu(QMenu *menu);
-        static QMenu dock_menu;
-        dock_menu.clear();
-        dock_menu.addAction(qApp->translate("Dock", "New Window"), mainWindow, SLOT(openNewWindow()));
-        qt_mac_set_dock_menu(&dock_menu);
+        qt_mac_set_dock_menu(&dockMenu);
+    #else
+        Q_UNUSED(dockMenu);
+    #endif
 #endif
     }
 };
