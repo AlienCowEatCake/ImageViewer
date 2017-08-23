@@ -280,8 +280,9 @@ void ResampledImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGrap
         return m_impl->paintDefault(painter);
 
     const qreal newScaleFactor = GraphicsItemUtils::GetDeviceScaleFactor(painter);
-
-    if(newScaleFactor >= 1 || newScaleFactor <= 0)
+    const QSize originalPixmapSize = m_impl->pixmap.size();
+    const QSize scaledPixmapSize = originalPixmapSize * newScaleFactor;
+    if(newScaleFactor >= 1 || newScaleFactor <= 0 || scaledPixmapSize == originalPixmapSize)
         return m_impl->paintDefault(painter);
 
     m_impl->resamplerManager->beginScaledImageProcessing();
