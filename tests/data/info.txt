@@ -426,6 +426,9 @@ Images from https://bugs.launchpad.net/libsvg-android/+bug/632464
  * gesamt_iii.svg
  * gesamt_iii_sized.svg (modified gesamt_iii.svg)
 
+Unknown source (TODO)
+ * bicycle.svg
+
 --------------------------------------------------------------------------------
 
 ::: TIFF test images :::
