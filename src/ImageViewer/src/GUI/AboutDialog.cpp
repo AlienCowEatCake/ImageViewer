@@ -64,6 +64,9 @@
 #include FT_FREETYPE_H
 #endif
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
 namespace {
 
 const char *ABOUT_PIXMAP_PATH     = ":/icon/icon_64.png";
@@ -154,15 +157,23 @@ QString getTextBrowserContent()
 #endif
 
 #if defined (HAS_LIBJPEG)
+#if defined (LIBJPEG_TURBO_VERSION)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the libjpeg-turbo library"),
+                      QString::fromLatin1("libjpeg-turbo"),
+                      QString::fromLatin1(TOSTRING(LIBJPEG_TURBO_VERSION)),
+                      QString::fromLatin1("https://www.libjpeg-turbo.org/")
+                      ));
+#else
     result.append(formatItem(
                       QString::fromLatin1("This software is based in part on the work of the Independent JPEG Group"),
                       QString::fromLatin1("libjpeg"),
                       QString::number(JPEG_LIB_VERSION_MAJOR) + letterByNumFrom1(JPEG_LIB_VERSION_MINOR),
                       QString::fromLatin1("http://www.ijg.org/")
                       ));
-#else
-    Q_UNUSED(letterByNumFrom1);
 #endif
+#endif
+    Q_UNUSED(letterByNumFrom1);
 
 #if defined (HAS_LIBJASPER)
     result.append(formatItem(

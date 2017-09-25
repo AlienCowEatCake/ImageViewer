@@ -41,8 +41,8 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += libwmf.lib
-        else: LIBS += -lwmf
+        *msvc*: LIBS += libwmf.lib libwmflite.lib
+        else: LIBS += -lwmf -lwmflite
 
     }
 

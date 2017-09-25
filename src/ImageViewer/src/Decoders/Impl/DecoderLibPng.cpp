@@ -188,9 +188,10 @@ bool PngAnimationProvider::readPng()
     {
 //        int bitDepth = png_get_bit_depth(pngPtr, infoPtr);
 //        int colorType = png_get_color_type(pngPtr, infoPtr);
-        png_uint_32 nextFrameWidth = width, nextFrameHeight = height;
+        png_uint_32 nextFrameHeight = height;
         png_uint_32 nextFrameOffsetX = 0, nextFrameOffsetY = 0;
 #if defined (PNG_APNG_SUPPORTED)
+        png_uint_32 nextFrameWidth = width;
         png_uint_16 nextFrameDelayNum = 0, nextFrameDelayDen = 1;
         png_byte nextFrameDisposeOp = PNG_DISPOSE_OP_NONE;
         png_byte nextFrameBlendOp = PNG_BLEND_OP_SOURCE;

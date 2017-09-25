@@ -17,6 +17,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <cstdio>
 #include <cstdlib>
 
 #if !defined (MNG_USE_SO)

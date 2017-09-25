@@ -41,8 +41,8 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += libwebp.lib
-        else: LIBS += -lwebp
+        *msvc*: LIBS += libwebp.lib libwebpdemux.lib libwebpmux.lib
+        else: LIBS += -lwebp -lwebpdemux -lwebpmux
 
     }
 
