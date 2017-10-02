@@ -43,8 +43,11 @@ namespace
 
 // ====================================================================================================
 
-struct MngAnimationProvider : public IAnimationProvider
+class MngAnimationProvider : public IAnimationProvider
 {
+    Q_DISABLE_COPY(MngAnimationProvider)
+
+public:
     MngAnimationProvider(const QString &filePath);
     ~MngAnimationProvider();
 

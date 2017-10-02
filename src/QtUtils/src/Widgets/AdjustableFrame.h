@@ -27,6 +27,7 @@
 class AdjustableFrame : public QFrame
 {
     Q_OBJECT
+    Q_DISABLE_COPY(AdjustableFrame)
 
     Q_PROPERTY(int layoutMargin         READ layoutMargin       WRITE setLayoutMargin       STORED false)
     Q_PROPERTY(int layoutMarginLeft     READ layoutMarginLeft   WRITE setLayoutMarginLeft   STORED false)

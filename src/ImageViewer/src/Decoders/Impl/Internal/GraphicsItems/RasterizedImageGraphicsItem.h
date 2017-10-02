@@ -28,6 +28,8 @@ class IScaledImageProvider;
 
 class RasterizedImageGraphicsItem : public QGraphicsItem
 {
+    Q_DISABLE_COPY(RasterizedImageGraphicsItem)
+
 public:
     RasterizedImageGraphicsItem(QGraphicsItem *parentItem = NULL);
     RasterizedImageGraphicsItem(IScaledImageProvider *provider, QGraphicsItem *parentItem = NULL);
@@ -43,7 +45,6 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = NULL);
 
 private:
-    Q_DISABLE_COPY(RasterizedImageGraphicsItem)
     struct Impl;
     QScopedPointer<Impl> m_impl;
 };

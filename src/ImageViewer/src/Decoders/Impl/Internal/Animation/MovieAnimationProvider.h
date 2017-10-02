@@ -27,6 +27,8 @@
 template<typename Movie>
 class MovieAnimationProvider : public IAnimationProvider
 {
+    Q_DISABLE_COPY(MovieAnimationProvider)
+
 public:
     MovieAnimationProvider(Movie *movie)
         : m_movie(movie)

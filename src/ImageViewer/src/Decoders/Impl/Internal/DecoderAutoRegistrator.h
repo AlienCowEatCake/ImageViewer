@@ -26,6 +26,8 @@
 
 class DecoderAutoRegistrator
 {
+    Q_DISABLE_COPY(DecoderAutoRegistrator)
+
 public:
     DecoderAutoRegistrator(IDecoder *decoder, bool isFallback = false)
         : m_decoder(decoder)
@@ -34,8 +36,8 @@ public:
         if(isFallback)
             DecodersManager::getInstance().registerFallbackDecoder(decoder);
     }
+
 private:
-    Q_DISABLE_COPY(DecoderAutoRegistrator)
     QScopedPointer<IDecoder> m_decoder;
 };
 

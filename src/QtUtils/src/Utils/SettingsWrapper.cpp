@@ -272,6 +272,8 @@ namespace {
 /// @brief Хранилище настроек для Mac, использует NSUserDefaults. Введен по причине глючности QSettings.
 class SettingsStorage
 {
+    Q_DISABLE_COPY(SettingsStorage)
+
 public:
     /// @brief Установить значение для заданного ключа в NSUserDefaults
     /// @param[in] group - группа (секция) настроек
@@ -298,6 +300,8 @@ public:
 /// @brief Универсальное хранилище настроек, использует QSettings.
 class SettingsStorage
 {
+    Q_DISABLE_COPY(SettingsStorage)
+
 public:
     SettingsStorage()
         : m_settings(NULL)
@@ -375,6 +379,8 @@ private:
 /// @brief Кэш настроек
 class SettingsWrapper::SettingsCache : public QObject
 {
+    Q_DISABLE_COPY(SettingsCache)
+
 public:
     SettingsCache()
         : m_isConnectedToQApp(false)

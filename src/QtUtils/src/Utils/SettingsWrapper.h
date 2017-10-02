@@ -28,6 +28,8 @@
 /// @note Thread-safe
 class SettingsWrapper
 {
+    Q_DISABLE_COPY(SettingsWrapper)
+
 public:
     /// @brief SettingsWrapper
     /// @param[in] settingsGroup - группа (секция) настроек

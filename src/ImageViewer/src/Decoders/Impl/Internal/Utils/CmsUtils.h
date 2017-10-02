@@ -28,6 +28,8 @@ class QByteArray;
 
 class ICCProfile
 {
+    Q_DISABLE_COPY(ICCProfile)
+
 public:
     ICCProfile(const QByteArray &profileData);
     ICCProfile(float *whitePoint,
@@ -42,7 +44,6 @@ public:
     void applyToRGBAData(void *rgbaData, std::size_t pixelsNum);
 
 private:
-    Q_DISABLE_COPY(ICCProfile)
     struct Impl;
     Impl *m_impl;
 };

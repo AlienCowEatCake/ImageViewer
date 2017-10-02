@@ -24,6 +24,8 @@
 
 class PixmapGraphicsItem : public QGraphicsPixmapItem
 {
+    Q_DISABLE_COPY(PixmapGraphicsItem)
+
 public:
     explicit PixmapGraphicsItem(QGraphicsItem *parent = NULL);
     explicit PixmapGraphicsItem(const QPixmap &pixmap, QGraphicsItem *parent = NULL);

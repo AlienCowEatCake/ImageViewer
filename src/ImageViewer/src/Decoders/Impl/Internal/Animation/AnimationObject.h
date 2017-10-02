@@ -29,6 +29,7 @@ class IAnimationProvider;
 class AnimationObject : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY(AnimationObject)
 
 public:
     explicit AnimationObject(QObject *parent = NULL);
@@ -49,7 +50,6 @@ private slots:
     void loadNextFrame();
 
 private:
-    Q_DISABLE_COPY(AnimationObject)
     struct Impl;
     QScopedPointer<Impl> m_impl;
 };

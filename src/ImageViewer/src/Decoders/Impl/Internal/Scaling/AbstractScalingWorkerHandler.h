@@ -30,6 +30,7 @@ class AbstractScalingWorker;
 class AbstractScalingWorkerHandler : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY(AbstractScalingWorkerHandler)
 
 public:
     AbstractScalingWorkerHandler(AbstractScalingWorker *worker, QThread *thread);

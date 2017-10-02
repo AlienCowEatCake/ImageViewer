@@ -26,6 +26,7 @@
 class AboutDialog : public QDialog
 {
     Q_OBJECT
+    Q_DISABLE_COPY(AboutDialog)
 
 public:
     AboutDialog(QWidget *parent = NULL);

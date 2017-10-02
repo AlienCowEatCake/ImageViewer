@@ -28,6 +28,8 @@
 
 class FramesCompositor
 {
+    Q_DISABLE_COPY(FramesCompositor)
+
 public:
     enum DisposeType
     {
@@ -52,7 +54,6 @@ public:
     QImage compositeFrame(const QImage &frame, const QRect &rect, DisposeType dispose = DISPOSE_NONE, BlendType blend = BLEND_NONE);
 
 private:
-    Q_DISABLE_COPY(FramesCompositor)
     struct Impl;
     QScopedPointer<Impl> m_impl;
 };

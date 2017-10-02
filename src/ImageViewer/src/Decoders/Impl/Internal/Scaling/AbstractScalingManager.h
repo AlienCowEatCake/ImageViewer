@@ -30,6 +30,8 @@ class AbstractScalingWorkerHandler;
 
 class AbstractScalingManager
 {
+    Q_DISABLE_COPY(AbstractScalingManager)
+
 public:
     AbstractScalingManager(AbstractScalingWorker *worker, AbstractScalingWorkerHandler *handler, QThread *thread);
     ~AbstractScalingManager();
@@ -48,9 +50,6 @@ protected:
     AbstractScalingWorker *m_scalingWorker;
     QThread *m_scalingThread;
     AbstractScalingWorkerHandler *m_scalingWorkerHandler;
-
-private:
-    Q_DISABLE_COPY(AbstractScalingManager)
 };
 
 #endif // ABSTRACT_SCALING_MANAGER_H_INCLUDED

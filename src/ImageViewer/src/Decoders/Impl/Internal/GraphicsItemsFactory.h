@@ -30,6 +30,8 @@ class IScaledImageProvider;
 
 class GraphicsItemsFactory
 {
+    Q_DISABLE_COPY(GraphicsItemsFactory)
+
 public:
     static GraphicsItemsFactory &instance();
 
@@ -39,7 +41,6 @@ public:
     QGraphicsItem *createScalableItem(IScaledImageProvider *scaledImageProvider);
 
 private:
-    Q_DISABLE_COPY(GraphicsItemsFactory)
     GraphicsItemsFactory();
     ~GraphicsItemsFactory();
 };

@@ -55,6 +55,8 @@ namespace
 
 class PngAnimationProvider : public AbstractAnimationProvider
 {
+    Q_DISABLE_COPY(PngAnimationProvider)
+
 public:
     PngAnimationProvider(const QString &filePath);
 

@@ -27,6 +27,8 @@
 
 class ResampledImageGraphicsItem : public QGraphicsItem
 {
+    Q_DISABLE_COPY(ResampledImageGraphicsItem)
+
 public:
     ResampledImageGraphicsItem(QGraphicsItem *parentItem = NULL);
     ResampledImageGraphicsItem(const QImage &image, QGraphicsItem *parentItem = NULL);
@@ -46,7 +48,6 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = NULL);
 
 private:
-    Q_DISABLE_COPY(ResampledImageGraphicsItem)
     struct Impl;
     QScopedPointer<Impl> m_impl;
 };

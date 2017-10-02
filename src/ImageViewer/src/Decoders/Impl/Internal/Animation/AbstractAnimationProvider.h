@@ -27,6 +27,8 @@
 
 class AbstractAnimationProvider : public IAnimationProvider
 {
+    Q_DISABLE_COPY(AbstractAnimationProvider)
+
 public:
     struct Frame
     {

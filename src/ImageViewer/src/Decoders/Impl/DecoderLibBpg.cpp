@@ -44,6 +44,8 @@ namespace {
 
 class BpgAnimationProvider : public AbstractAnimationProvider
 {
+    Q_DISABLE_COPY(BpgAnimationProvider)
+
 public:
     BpgAnimationProvider(const QString &filePath);
 

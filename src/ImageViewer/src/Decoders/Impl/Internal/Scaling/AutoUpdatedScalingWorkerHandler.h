@@ -27,6 +27,7 @@ class QGraphicsItem;
 class AutoUpdatedScalingWorkerHandler : public AbstractScalingWorkerHandler
 {
     Q_OBJECT
+    Q_DISABLE_COPY(AutoUpdatedScalingWorkerHandler)
 
 public:
     AutoUpdatedScalingWorkerHandler(QGraphicsItem *graphicsItem, AbstractScalingWorker *worker, QThread *thread);

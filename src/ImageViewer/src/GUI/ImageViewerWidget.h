@@ -29,6 +29,7 @@ class QGraphicsItem;
 class ImageViewerWidget : public QGraphicsView
 {
     Q_OBJECT
+    Q_DISABLE_COPY(ImageViewerWidget)
 
 public:
     enum ZoomMode

@@ -30,6 +30,7 @@
 class GUISettings : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY(GUISettings)
 
 signals:
     void askBeforeDeleteChanged(bool enabled);

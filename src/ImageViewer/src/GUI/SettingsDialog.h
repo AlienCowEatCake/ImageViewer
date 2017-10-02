@@ -28,6 +28,7 @@ class GUISettings;
 class SettingsDialog : public QDialog
 {
     Q_OBJECT
+    Q_DISABLE_COPY(SettingsDialog)
 
 public:
     SettingsDialog(GUISettings *settings, QWidget *parent = NULL);

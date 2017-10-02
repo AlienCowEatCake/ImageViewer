@@ -28,6 +28,7 @@ class IAnimationProvider;
 class AnimationWidget : public QLabel
 {
     Q_OBJECT
+    Q_DISABLE_COPY(AnimationWidget)
 
 public:
     explicit AnimationWidget(QWidget *parent = NULL, Qt::WindowFlags flags = Qt::WindowFlags());
@@ -41,7 +42,6 @@ private slots:
     void animationUpdated();
 
 private:
-    Q_DISABLE_COPY(AnimationWidget)
     struct Impl;
     QScopedPointer<Impl> m_impl;
 };

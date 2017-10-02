@@ -27,6 +27,8 @@
 
 class DecodersManager
 {
+    Q_DISABLE_COPY(DecodersManager)
+
 public:
     ~DecodersManager();
     static DecodersManager &getInstance();
@@ -41,7 +43,6 @@ public:
 
 private:
     DecodersManager();
-    Q_DISABLE_COPY(DecodersManager)
 
     struct Impl;
     QScopedPointer<Impl> m_impl;

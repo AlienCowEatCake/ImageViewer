@@ -30,6 +30,7 @@ class QImage;
 class ImageSaver: public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY(ImageSaver)
 
 public:
     ImageSaver(QWidget *parent = NULL);

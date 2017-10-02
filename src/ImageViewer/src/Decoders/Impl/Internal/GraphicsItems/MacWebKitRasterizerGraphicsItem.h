@@ -27,6 +27,7 @@ class MacWebKitRasterizerGraphicsItem : public QGraphicsObject
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
+    Q_DISABLE_COPY(MacWebKitRasterizerGraphicsItem)
 
 public:
     enum State

@@ -41,6 +41,8 @@ namespace
 
 class WebPAnimationProvider : public AbstractAnimationProvider
 {
+    Q_DISABLE_COPY(WebPAnimationProvider)
+
 public:
     WebPAnimationProvider(const QString &filePath);
 

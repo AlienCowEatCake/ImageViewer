@@ -77,6 +77,8 @@ const char *wmfErrorToString(wmf_error_t error)
 
 class WmfPixmapProvider : public IScaledImageProvider
 {
+    Q_DISABLE_COPY(WmfPixmapProvider)
+
 public:
     WmfPixmapProvider(const QString &filePath)
         : m_isValid(false)
@@ -237,8 +239,6 @@ public:
     }
 
 private:
-    Q_DISABLE_COPY(WmfPixmapProvider)
-
     bool m_isValid;
     QByteArray m_inBuffer;
     wmfAPI *m_API;

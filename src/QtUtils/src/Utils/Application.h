@@ -30,6 +30,8 @@
 class Application : public QApplication
 {
     Q_OBJECT
+    Q_DISABLE_COPY(Application)
+
 public:
     /**
      * @brief Конструктор
