@@ -67,20 +67,20 @@ SOURCES += \
     src/Decoders/Impl/DecoderQImage.cpp \
     src/Decoders/Impl/DecoderQMovie.cpp \
     src/Decoders/Impl/Internal/Animation/AnimationObject.cpp \
-    src/Decoders/Impl/Internal/Animation/AnimationUtils.cpp \
     src/Decoders/Impl/Internal/Animation/AnimationWidget.cpp \
     src/Decoders/Impl/Internal/Animation/FramesCompositor.cpp \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.cpp \
-    src/Decoders/Impl/Internal/GraphicsItems/AbstractScalingManager.cpp \
-    src/Decoders/Impl/Internal/GraphicsItems/AbstractScalingWorker.cpp \
-    src/Decoders/Impl/Internal/GraphicsItems/AbstractScalingWorkerHandler.cpp \
-    src/Decoders/Impl/Internal/GraphicsItems/AutoUpdatedScalingWorkerHandler.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.cpp \
+    src/Decoders/Impl/Internal/Scaling/AbstractScalingManager.cpp \
+    src/Decoders/Impl/Internal/Scaling/AbstractScalingWorker.cpp \
+    src/Decoders/Impl/Internal/Scaling/AbstractScalingWorkerHandler.cpp \
+    src/Decoders/Impl/Internal/Scaling/AutoUpdatedScalingWorkerHandler.cpp \
     src/Decoders/Impl/Internal/Utils/ExifUtils.cpp \
     src/Decoders/Impl/Internal/Utils/CmsUtils.cpp \
     src/Decoders/Impl/Internal/Utils/ZLibUtils.cpp \
+    src/Decoders/Impl/Internal/GraphicsItemsFactory.cpp \
     src/main.cpp
 
 HEADERS += \
@@ -95,22 +95,24 @@ HEADERS += \
     src/Decoders/DecodersManager.h \
     src/Decoders/IDecoder.h \
     src/Decoders/Impl/Internal/Animation/AnimationObject.h \
-    src/Decoders/Impl/Internal/Animation/AnimationUtils.h \
     src/Decoders/Impl/Internal/Animation/AnimationWidget.h \
     src/Decoders/Impl/Internal/Animation/FramesCompositor.h \
     src/Decoders/Impl/Internal/Animation/IAnimationProvider.h \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.h \
-    src/Decoders/Impl/Internal/GraphicsItems/AbstractScalingManager.h \
-    src/Decoders/Impl/Internal/GraphicsItems/AbstractScalingWorker.h \
-    src/Decoders/Impl/Internal/GraphicsItems/AbstractScalingWorkerHandler.h \
-    src/Decoders/Impl/Internal/GraphicsItems/AutoUpdatedScalingWorkerHandler.h \
+    src/Decoders/Impl/Internal/Animation/MovieAnimationProvider.h \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.h \
     src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.h \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.h \
+    src/Decoders/Impl/Internal/Scaling/AbstractScalingManager.h \
+    src/Decoders/Impl/Internal/Scaling/AbstractScalingWorker.h \
+    src/Decoders/Impl/Internal/Scaling/AbstractScalingWorkerHandler.h \
+    src/Decoders/Impl/Internal/Scaling/AutoUpdatedScalingWorkerHandler.h \
+    src/Decoders/Impl/Internal/Scaling/IScaledImageProvider.h \
     src/Decoders/Impl/Internal/Utils/ExifUtils.h \
     src/Decoders/Impl/Internal/Utils/CmsUtils.h \
     src/Decoders/Impl/Internal/Utils/ZLibUtils.h \
-    src/Decoders/Impl/Internal/DecoderAutoRegistrator.h
+    src/Decoders/Impl/Internal/DecoderAutoRegistrator.h \
+    src/Decoders/Impl/Internal/GraphicsItemsFactory.h
 
 !disable_stb {
     SOURCES += \

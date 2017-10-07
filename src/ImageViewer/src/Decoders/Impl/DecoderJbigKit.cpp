@@ -33,7 +33,7 @@ extern "C" {
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
-#include "Internal/GraphicsItems/ResampledImageGraphicsItem.h"
+#include "Internal/GraphicsItemsFactory.h"
 
 namespace
 {
@@ -107,12 +107,7 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
-
-        const QImage image = readJbigFile(filePath);
-        if(image.isNull())
-            return NULL;
-
-        return new ResampledImageGraphicsItem(image);
+        return GraphicsItemsFactory::instance().createImageItem(readJbigFile(filePath));
     }
 };
 

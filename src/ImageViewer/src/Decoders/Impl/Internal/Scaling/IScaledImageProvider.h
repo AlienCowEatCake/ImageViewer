@@ -17,19 +17,21 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined(ANIMATIONUTILS_H_INCLUDED)
-#define ANIMATIONUTILS_H_INCLUDED
+#if !defined(ISCALEDIMAGEPROVIDER_H_INCLUDED)
+#define ISCALEDIMAGEPROVIDER_H_INCLUDED
 
-class QWidget;
-class QGraphicsItem;
-class IAnimationProvider;
+#include <QRectF>
+#include <QImage>
 
-namespace AnimationUtils {
+class IScaledImageProvider
+{
+public:
+    virtual ~IScaledImageProvider() {}
+    virtual bool isValid() const = 0;
+    virtual QImage image(const qreal scaleFactor) = 0;
+    virtual QRectF boundingRect() const = 0;
+    virtual qreal minScaleFactor() const = 0;
+    virtual qreal maxScaleFactor() const = 0;
+};
 
-void SetTransparentBackground(QWidget *widget);
-
-QGraphicsItem *CreateGraphicsItem(IAnimationProvider *provider);
-
-} // namespace AnimationUtils
-
-#endif // ANIMATIONUTILS_H_INCLUDED
+#endif // ISCALEDIMAGEPROVIDER_H_INCLUDED

@@ -18,13 +18,12 @@
 */
 
 #include <QMovie>
-#include <QGraphicsProxyWidget>
-#include <QLabel>
 #include <QFileInfo>
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
-#include "Internal/Animation/AnimationUtils.h"
+#include "Internal/GraphicsItemsFactory.h"
+#include "Internal/Animation/MovieAnimationProvider.h"
 
 namespace {
 
@@ -61,14 +60,7 @@ public:
             movie->deleteLater();
             return NULL;
         }
-        QLabel *movieLabel = new QLabel();
-        AnimationUtils::SetTransparentBackground(movieLabel);
-        movieLabel->setMovie(movie);
-        movie->setParent(movieLabel);
-        movie->start();
-        QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();
-        proxy->setWidget(movieLabel);
-        return proxy;
+        return GraphicsItemsFactory::instance().createAnimatedItem(new MovieAnimationProvider<QMovie>(movie));
     }
 };
 

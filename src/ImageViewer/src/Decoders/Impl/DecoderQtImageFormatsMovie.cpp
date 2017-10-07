@@ -21,11 +21,11 @@
 #include <QFileInfo>
 
 #include "QtImageFormatsMovie.h"
-#include "QtImageFormatsMovieLabel.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
-#include "Internal/Animation/AnimationUtils.h"
+#include "Internal/GraphicsItemsFactory.h"
+#include "Internal/Animation/MovieAnimationProvider.h"
 
 namespace {
 
@@ -62,14 +62,7 @@ public:
             movie->deleteLater();
             return NULL;
         }
-        QtImageFormatsMovieLabel *movieLabel = new QtImageFormatsMovieLabel();
-        AnimationUtils::SetTransparentBackground(movieLabel);
-        movieLabel->setMovie(movie);
-        movie->setParent(movieLabel);
-        movie->start();
-        QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();
-        proxy->setWidget(movieLabel);
-        return proxy;
+        return GraphicsItemsFactory::instance().createAnimatedItem(new MovieAnimationProvider<QtImageFormatsMovie>(movie));
     }
 };
 

@@ -31,11 +31,9 @@
 #include <stb_image_resize.h>
 #endif
 
-#include "Utils/ScopedPointer.h"
-
-#include "AbstractScalingManager.h"
-#include "AbstractScalingWorker.h"
-#include "AutoUpdatedScalingWorkerHandler.h"
+#include "../Scaling/AbstractScalingManager.h"
+#include "../Scaling/AbstractScalingWorker.h"
+#include "../Scaling/AutoUpdatedScalingWorkerHandler.h"
 #include "GraphicsItemUtils.h"
 
 // ====================================================================================================

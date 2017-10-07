@@ -35,8 +35,8 @@
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Animation/IAnimationProvider.h"
-#include "Internal/Animation/AnimationUtils.h"
 
 namespace
 {
@@ -274,7 +274,7 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
-        return AnimationUtils::CreateGraphicsItem(new MngAnimationProvider(filePath));
+        return GraphicsItemsFactory::instance().createAnimatedItem(new MngAnimationProvider(filePath));
     }
 };
 

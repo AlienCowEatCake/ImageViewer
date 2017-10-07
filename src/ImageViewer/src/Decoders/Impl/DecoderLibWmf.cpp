@@ -33,8 +33,9 @@
 #include <QDebug>
 
 #include "../IDecoder.h"
-#include "Internal/GraphicsItems/RasterizedImageGraphicsItem.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/GraphicsItemsFactory.h"
+#include "Internal/Scaling/IScaledImageProvider.h"
 #include "Internal/Utils/ZLibUtils.h"
 
 namespace
@@ -74,7 +75,7 @@ const char *wmfErrorToString(wmf_error_t error)
 
 // ====================================================================================================
 
-class WmfPixmapProvider : public RasterizedImageGraphicsItem::IRasterizedImageProvider
+class WmfPixmapProvider : public IScaledImageProvider
 {
 public:
     WmfPixmapProvider(const QString &filePath)
@@ -276,12 +277,7 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
-
-        QSharedPointer<WmfPixmapProvider> provider(new WmfPixmapProvider(filePath));
-        if(!provider->isValid())
-            return NULL;
-
-        return new RasterizedImageGraphicsItem(provider);
+        return GraphicsItemsFactory::instance().createScalableItem(new WmfPixmapProvider(filePath));
     }
 };
 

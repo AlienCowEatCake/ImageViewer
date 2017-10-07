@@ -30,8 +30,8 @@
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Utils/MacImageUtils.h"
-#include "Internal/GraphicsItems/ResampledImageGraphicsItem.h"
 
 namespace {
 
@@ -71,17 +71,13 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
 
-        ResampledImageGraphicsItem *result = NULL;
         NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
         NSString *pathNSString = [NSString stringWithUTF8String: filePath.toUtf8().data()];
         NSImage *picture = [[NSImage alloc] initWithContentsOfFile: pathNSString];
         if(picture == nil)
             return NULL;
-
-        QPixmap pixmap = MacImageUtils::QPixmapFromNSImage(picture);
-        if(!pixmap.isNull())
-            result = new ResampledImageGraphicsItem(pixmap);
+        QGraphicsItem *result = GraphicsItemsFactory::instance().createPixmapItem(MacImageUtils::QPixmapFromNSImage(picture));
 
         [picture release];
         [pool release];

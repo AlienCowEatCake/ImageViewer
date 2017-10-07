@@ -23,28 +23,18 @@
 #include <QGraphicsItem>
 #include <QImage>
 #include "Utils/ScopedPointer.h"
-#include "Utils/SharedPointer.h"
+
+class IScaledImageProvider;
 
 class RasterizedImageGraphicsItem : public QGraphicsItem
 {
 public:
-    class IRasterizedImageProvider
-    {
-    public:
-        virtual ~IRasterizedImageProvider();
-        virtual bool isValid() const = 0;
-        virtual QImage image(const qreal scaleFactor) = 0;
-        virtual QRectF boundingRect() const = 0;
-        virtual qreal minScaleFactor() const = 0;
-        virtual qreal maxScaleFactor() const = 0;
-    };
-
     RasterizedImageGraphicsItem(QGraphicsItem *parentItem = NULL);
-    RasterizedImageGraphicsItem(QSharedPointer<IRasterizedImageProvider> provider, QGraphicsItem *parentItem = NULL);
+    RasterizedImageGraphicsItem(IScaledImageProvider *provider, QGraphicsItem *parentItem = NULL);
     ~RasterizedImageGraphicsItem();
 
-    QSharedPointer<IRasterizedImageProvider> provider() const;
-    void setProvider(QSharedPointer<IRasterizedImageProvider> provider);
+    IScaledImageProvider *provider() const;
+    void setProvider(IScaledImageProvider *provider);
 
     Qt::TransformationMode transformationMode() const;
     void setTransformationMode(Qt::TransformationMode mode);
