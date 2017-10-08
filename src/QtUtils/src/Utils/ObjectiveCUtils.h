@@ -1,7 +1,7 @@
 /*
    Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
-   This file is part of the `ImageViewer' program.
+   This file is part of the `QtUtils' library.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,19 +17,16 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined(DECODER_MAC_IMAGEUTILS_H_INCLUDED)
-#define DECODER_MAC_IMAGEUTILS_H_INCLUDED
+#if !defined (QTUTILS_OBJECTIVECUTILS_H_INCLUDED)
+#define QTUTILS_OBJECTIVECUTILS_H_INCLUDED
 
-#import <AppKit/AppKit.h>
+#include <QtGlobal>
 
-#include <QPixmap>
+#if defined (Q_OS_MAC)
 
-namespace MacImageUtils {
-
-QPixmap QPixmapFromCGImageRef(CGImageRef image);
-
-QPixmap QPixmapFromNSImage(NSImage *image);
-
-} // namespace MacImageUtils
+#include "ObjectiveCUtils_mac.h"
 
 #endif
+
+#endif // QTUTILS_OBJECTIVECUTILS_H_INCLUDED
+
