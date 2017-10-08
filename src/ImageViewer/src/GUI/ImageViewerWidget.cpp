@@ -128,13 +128,13 @@ struct ImageViewerWidget::Impl
             pixItem->setTransformationMode(transformationMode);
             return;
         }
-        ResampledImageGraphicsItem* resampledItem = dynamic_cast<ResampledImageGraphicsItem*>(currentGraphicsItem);
+        ResampledImageGraphicsItem *resampledItem = dynamic_cast<ResampledImageGraphicsItem*>(currentGraphicsItem);
         if(resampledItem)
         {
             resampledItem->setTransformationMode(transformationMode);
             return;
         }
-        RasterizedImageGraphicsItem* rasterizedItem = dynamic_cast<RasterizedImageGraphicsItem*>(currentGraphicsItem);
+        RasterizedImageGraphicsItem *rasterizedItem = dynamic_cast<RasterizedImageGraphicsItem*>(currentGraphicsItem);
         if(rasterizedItem)
         {
             rasterizedItem->setTransformationMode(transformationMode);
@@ -142,10 +142,10 @@ struct ImageViewerWidget::Impl
         }
     }
 
-    bool gestureEvent(QGestureEvent* event)
+    bool gestureEvent(QGestureEvent *event)
     {
 #if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
-        if(QGesture* pinch = event->gesture(Qt::PinchGesture))
+        if(QGesture *pinch = event->gesture(Qt::PinchGesture))
             pinchTriggered(static_cast<QPinchGesture*>(pinch));
         return true;
 #else
@@ -154,7 +154,7 @@ struct ImageViewerWidget::Impl
 #endif
     }
 
-    void pinchTriggered(QPinchGesture* gesture)
+    void pinchTriggered(QPinchGesture *gesture)
     {
 #if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
         const QPinchGesture::ChangeFlags changeFlags = gesture->changeFlags();
