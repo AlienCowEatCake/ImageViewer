@@ -275,6 +275,9 @@ class SettingsStorage
     Q_DISABLE_COPY(SettingsStorage)
 
 public:
+    SettingsStorage()
+    {}
+
     /// @brief Установить значение для заданного ключа в NSUserDefaults
     /// @param[in] group - группа (секция) настроек
     /// @param[in] key - ключ, для которого устанавливается значение
