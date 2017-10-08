@@ -28,6 +28,7 @@
 #include "Animation/AnimationWidget.h"
 #include "Animation/AnimationObject.h"
 #include "Scaling/IScaledImageProvider.h"
+#include "GraphicsItems/PixmapGraphicsItem.h"
 #include "GraphicsItems/RasterizedImageGraphicsItem.h"
 #include "GraphicsItems/ResampledImageGraphicsItem.h"
 
@@ -41,14 +42,14 @@ QGraphicsItem *GraphicsItemsFactory::createImageItem(const QImage &image)
 {
     if(image.isNull())
         return NULL;
-    return new ResampledImageGraphicsItem(image);
+    return new PixmapGraphicsItem(QPixmap::fromImage(image));
 }
 
 QGraphicsItem *GraphicsItemsFactory::createPixmapItem(const QPixmap &pixmap)
 {
     if(pixmap.isNull())
         return NULL;
-    return new ResampledImageGraphicsItem(pixmap);
+    return new PixmapGraphicsItem(pixmap);
 }
 
 QGraphicsItem *GraphicsItemsFactory::createAnimatedItem(IAnimationProvider *animationProvider)
