@@ -30,8 +30,8 @@
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
-#include "Internal/Animation/AnimationUtils.h"
 #include "Internal/Animation/FramesCompositor.h"
 
 namespace
@@ -220,7 +220,7 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
-        return AnimationUtils::CreateGraphicsItem(new WebPAnimationProvider(filePath));
+        return GraphicsItemsFactory::instance().createAnimatedItem(new WebPAnimationProvider(filePath));
     }
 };
 

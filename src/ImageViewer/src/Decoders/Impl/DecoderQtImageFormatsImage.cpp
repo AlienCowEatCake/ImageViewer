@@ -24,7 +24,7 @@
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
-#include "Internal/GraphicsItems/ResampledImageGraphicsItem.h"
+#include "Internal/GraphicsItemsFactory.h"
 
 namespace {
 
@@ -71,7 +71,7 @@ public:
             qDebug() << imageReader.errorString();
             return NULL;
         }
-        return new ResampledImageGraphicsItem(image);
+        return GraphicsItemsFactory::instance().createImageItem(image);
     }
 };
 

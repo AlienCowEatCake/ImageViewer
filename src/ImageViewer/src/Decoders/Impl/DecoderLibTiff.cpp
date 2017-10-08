@@ -29,8 +29,8 @@
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Utils/CmsUtils.h"
-#include "Internal/GraphicsItems/ResampledImageGraphicsItem.h"
 
 namespace
 {
@@ -213,12 +213,7 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
-
-        const QImage image = readTiffFile(filePath);
-        if(image.isNull())
-            return NULL;
-
-        return new ResampledImageGraphicsItem(image);
+        return GraphicsItemsFactory::instance().createImageItem(readTiffFile(filePath));
     }
 };
 

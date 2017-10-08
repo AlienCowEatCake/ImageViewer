@@ -26,20 +26,13 @@
 #include <QPainter>
 #include <QThread>
 
-#include "Utils/ScopedPointer.h"
 #include "Utils/SharedPointer.h"
 
-#include "AbstractScalingManager.h"
-#include "AbstractScalingWorker.h"
-#include "AutoUpdatedScalingWorkerHandler.h"
+#include "../Scaling/IScaledImageProvider.h"
+#include "../Scaling/AbstractScalingManager.h"
+#include "../Scaling/AbstractScalingWorker.h"
+#include "../Scaling/AutoUpdatedScalingWorkerHandler.h"
 #include "GraphicsItemUtils.h"
-
-// ====================================================================================================
-
-RasterizedImageGraphicsItem::IRasterizedImageProvider::~IRasterizedImageProvider()
-{}
-
-typedef RasterizedImageGraphicsItem::IRasterizedImageProvider IProvider;
 
 // ====================================================================================================
 
@@ -48,7 +41,7 @@ namespace {
 class RasterizerWorker : public AbstractScalingWorker
 {
 public:
-    void setProvider(const QSharedPointer<IProvider> &provider)
+    void setProvider(const QSharedPointer<IScaledImageProvider> &provider)
     {
         m_provider = provider;
     }
@@ -80,7 +73,7 @@ private:
         return generateScaledImage(true);
     }
 
-    QSharedPointer<IProvider> m_provider;
+    QSharedPointer<IScaledImageProvider> m_provider;
 };
 
 } // namespace
@@ -96,7 +89,7 @@ public:
         : AbstractScalingManager(worker, handler, thread)
     {}
 
-    void setProvider(const QSharedPointer<IProvider> &provider)
+    void setProvider(const QSharedPointer<IScaledImageProvider> &provider)
     {
         static_cast<RasterizerWorker*>(m_scalingWorker)->setProvider(provider);
     }
@@ -123,7 +116,7 @@ RasterizerManager *createRasterizerManager(RasterizedImageGraphicsItem *item)
 
 struct RasterizedImageGraphicsItem::Impl
 {
-    QSharedPointer<IProvider> provider;
+    QSharedPointer<IScaledImageProvider> provider;
     Qt::TransformationMode transformationMode;
     QScopedPointer<RasterizerManager> rasterizerManager;
 
@@ -140,7 +133,7 @@ RasterizedImageGraphicsItem::RasterizedImageGraphicsItem(QGraphicsItem *parentIt
     , m_impl(new Impl(this))
 {}
 
-RasterizedImageGraphicsItem::RasterizedImageGraphicsItem(QSharedPointer<IRasterizedImageProvider> provider, QGraphicsItem *parentItem)
+RasterizedImageGraphicsItem::RasterizedImageGraphicsItem(IScaledImageProvider *provider, QGraphicsItem *parentItem)
     : QGraphicsItem(parentItem)
     , m_impl(new Impl(this))
 {
@@ -150,15 +143,16 @@ RasterizedImageGraphicsItem::RasterizedImageGraphicsItem(QSharedPointer<IRasteri
 RasterizedImageGraphicsItem::~RasterizedImageGraphicsItem()
 {}
 
-QSharedPointer<RasterizedImageGraphicsItem::IRasterizedImageProvider> RasterizedImageGraphicsItem::provider() const
+IScaledImageProvider *RasterizedImageGraphicsItem::provider() const
 {
-    return m_impl->provider;
+    return m_impl->provider.data();
 }
 
-void RasterizedImageGraphicsItem::setProvider(QSharedPointer<IRasterizedImageProvider> provider)
+void RasterizedImageGraphicsItem::setProvider(IScaledImageProvider *provider)
 {
-    m_impl->provider = provider;
-    m_impl->rasterizerManager->setProvider(provider);
+    QSharedPointer<IScaledImageProvider> sharedProvider(provider);
+    m_impl->provider = sharedProvider;
+    m_impl->rasterizerManager->setProvider(sharedProvider);
     update();
 }
 
@@ -202,7 +196,7 @@ void RasterizedImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGra
     painter->setRenderHint(QPainter::SmoothPixmapTransform, m_impl->transformationMode == Qt::SmoothTransformation);
     m_impl->rasterizerManager->beginScaledImageProcessing();
     const qreal actualScaleFactor = m_impl->rasterizerManager->getScaledScaleFactor();
-    GraphicsItemUtils::DrawScaledImage(painter,m_impl->rasterizerManager->getScaledImage(), boundingRect(), actualScaleFactor);
+    GraphicsItemUtils::DrawScaledImage(painter, m_impl->rasterizerManager->getScaledImage(), boundingRect(), actualScaleFactor);
     m_impl->rasterizerManager->endScaledImageProcessing();
 
     if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, actualScaleFactor))

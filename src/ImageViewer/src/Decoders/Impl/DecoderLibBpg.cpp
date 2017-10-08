@@ -33,8 +33,8 @@ extern "C" {
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
-#include "Internal/Animation/AnimationUtils.h"
 #include "Internal/Utils/CmsUtils.h"
 #include "Internal/Utils/ExifUtils.h"
 
@@ -168,7 +168,7 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
-        return AnimationUtils::CreateGraphicsItem(new BpgAnimationProvider(filePath));
+        return GraphicsItemsFactory::instance().createAnimatedItem(new BpgAnimationProvider(filePath));
     }
 };
 

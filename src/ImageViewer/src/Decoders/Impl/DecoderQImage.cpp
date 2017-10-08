@@ -25,8 +25,8 @@
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Utils/ExifUtils.h"
-#include "Internal/GraphicsItems/ResampledImageGraphicsItem.h"
 
 namespace {
 
@@ -107,7 +107,7 @@ public:
             return NULL;
         }
 
-        return new ResampledImageGraphicsItem(image);
+        return GraphicsItemsFactory::instance().createImageItem(image);
     }
 };
 
