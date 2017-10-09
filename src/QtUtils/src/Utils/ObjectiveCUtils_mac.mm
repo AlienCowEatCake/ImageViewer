@@ -29,37 +29,95 @@
 #include <QDateTime>
 #include <QUrl>
 #include <QPixmap>
+#include <QImage>
 #include <QRectF>
 #include <QSizeF>
 #include <QPointF>
 #include <QSysInfo>
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
 #include <QtMac>
 #endif
 
+namespace ObjCUtils {
+
 namespace {
+
+#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0) && QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+void imageDeleter(void *image, const void *, std::size_t)
+{
+    delete static_cast<QImage*>(image);
+}
+#endif
 
 QPixmap QPixmapFromCGImageRef(const CGImageRef image)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    if(!image)
+        return QPixmap();
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     return QtMac::fromCGImageRef(image);
-#else
+#elif (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     return QPixmap::fromMacCGImageRef(image);
+#else
+    const std::size_t width = CGImageGetWidth(image);
+    const std::size_t height = CGImageGetHeight(image);
+    QImage result(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32);
+    result.fill(Qt::transparent);
+
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+    if(!colorSpace)
+        return QPixmap();
+
+    CGContextRef context = CGBitmapContextCreate(static_cast<void*>(result.bits()), width, height,
+            8, width * 4, colorSpace, kCGImageAlphaFirst | kCGBitmapByteOrder32Host);
+    CGColorSpaceRelease(colorSpace);
+    if(!context)
+        return QPixmap();
+
+    CGRect rect = CGRectMake(0, 0, width, height);
+    CGContextDrawImage(context, rect, image);
+    CGContextRelease(context);
+    return QPixmap::fromImage(result);
 #endif
 }
 
 CGImageRef QPixmapToCGImageRef(const QPixmap &pixmap)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    if(pixmap.isNull())
+        return nil;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     return QtMac::toCGImageRef(pixmap);
-#else
+#elif (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     return pixmap.toMacCGImageRef();
+#else
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+    if(!colorSpace)
+        return nil;
+
+    QImage *image = new QImage(pixmap.toImage().convertToFormat(QImage::Format_ARGB32));
+    const std::size_t width = static_cast<std::size_t>(image->width());
+    const std::size_t height = static_cast<std::size_t>(image->height());
+
+    CGDataProviderRef provider = CGDataProviderCreateWithData(static_cast<void*>(image),
+            static_cast<const void*>(image->bits()), 4 * width * height, imageDeleter);
+    if(!provider)
+    {
+        delete image;
+        CGColorSpaceRelease(colorSpace);
+        return nil;
+    }
+
+    CGImageRef result = CGImageCreate(width, height, 8, 32, 4 * width, colorSpace,
+            kCGImageAlphaFirst | kCGBitmapByteOrder32Host, provider, NULL, false,
+            kCGRenderingIntentDefault);
+    CGColorSpaceRelease(colorSpace);
+    CGDataProviderRelease(provider);
+    return result;
 #endif
 }
 
 } // namespace
-
-namespace ObjCUtils {
 
 AutoReleasePool::AutoReleasePool()
 {
