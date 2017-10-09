@@ -21,10 +21,13 @@
 #define QTUTILS_MENUUTILS_H_INCLUDED
 
 #include <QtGlobal>
+#include <QMenu>
 
 namespace MenuUtils {
 
 #if defined (Q_OS_MAC)
+
+void SetDockMenu(QMenu *menu);
 
 /// @brief Remove (disable) the "Start Dictation..." menu item from the "Edit" menu
 void DisableDictationMenuItem();

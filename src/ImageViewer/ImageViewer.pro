@@ -202,7 +202,6 @@ win32 {
 }
 
 macx {
-    greaterThan(QT_MAJOR_VERSION, 4): QT += macextras
     LIBS += -framework AppKit
     LIBS += -framework Foundation
 

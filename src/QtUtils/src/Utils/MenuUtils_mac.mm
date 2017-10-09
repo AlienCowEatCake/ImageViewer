@@ -24,7 +24,25 @@
 
 #include "ObjectiveCUtils.h"
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+void qt_mac_set_dock_menu(QMenu *menu);
+#endif
+
 namespace MenuUtils {
+
+void SetDockMenu(QMenu *menu)
+{
+    if(!menu)
+        return;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+    menu->setAsDockMenu();
+#elif (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    qt_mac_set_dock_menu(menu);
+#else
+    Q_UNUSED(menu);
+#endif
+}
 
 // https://forum.qt.io/topic/60623/qt-5-4-2-os-x-10-11-el-capitan-how-to-remove-the-enter-full-screen-menu-item
 
