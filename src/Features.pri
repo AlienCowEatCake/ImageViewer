@@ -127,9 +127,7 @@ disable_zlib | disable_libpng | disable_freetype | disable_libjpeg {
 
 # DecoderNSImage options:
 #    disable_nsimage
-!macx | CONFIG(debug, debug|release) {
-    CONFIG += disable_nsimage
-}
+
 
 # DecoderMacWebKit options:
 #    disable_macwebkit

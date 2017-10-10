@@ -18,6 +18,7 @@
 */
 
 #include <QFileInfo>
+#include <QColor>
 #include <QDebug>
 
 #include "QtImageFormatsImageReader.h"

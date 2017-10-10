@@ -17,10 +17,9 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#import <Foundation/Foundation.h>
-#import <CoreServices/CoreServices.h>
-
 #include "InfoUtils.h"
+
+#import <CoreServices/CoreServices.h>
 
 #include <QString>
 
@@ -30,7 +29,6 @@ namespace InfoUtils {
 QString GetSystemDescription()
 {
     QString result;
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
     SInt32 majorVersion, minorVersion, bugFixVersion;
     Gestalt(gestaltSystemVersionMajor, &majorVersion);
@@ -98,7 +96,6 @@ QString GetSystemDescription()
         break;
     }
 
-    [pool release];
     return result;
 }
 

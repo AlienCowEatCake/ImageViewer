@@ -606,14 +606,7 @@ private:
         static QMenu dockMenu;
         dockMenu.clear();
         dockMenu.addAction(qApp->translate("Dock", "New Window"), mainWindow, SLOT(openNewWindow()));
-    #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-        dockMenu.setAsDockMenu();
-    #elif (QT_VERSION < QT_VERSION_CHECK(5, 0, 0) || QT_VERSION >= QT_VERSION_CHECK(5, 0, 2)) // QTBUG-28167
-        void qt_mac_set_dock_menu(QMenu *menu);
-        qt_mac_set_dock_menu(&dockMenu);
-    #else
-        Q_UNUSED(dockMenu);
-    #endif
+        MenuUtils::SetDockMenu(&dockMenu);
 #endif
     }
 };

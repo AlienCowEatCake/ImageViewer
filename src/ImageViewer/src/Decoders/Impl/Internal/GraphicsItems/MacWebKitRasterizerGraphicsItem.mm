@@ -41,6 +41,8 @@
 #include <QTime>
 #include <QDebug>
 
+#include "Utils/ObjectiveCUtils.h"
+
 #include "GraphicsItemUtils.h"
 
 //#define MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG
@@ -69,16 +71,6 @@ QRectF QRectFIntegerized(const QRectF rect)
     return QRectF(left, top, width, height);
 }
 
-QRectF QRectFFromNSRect(const NSRect &rect)
-{
-    return QRectF(rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
-}
-
-NSRect QRectFToNSRect(const QRectF &rect)
-{
-    return NSMakeRect(rect.x(), rect.y(), rect.width(), rect.height());
-}
-
 QRectF DOMNodeActualBoundingBox(DOMNode *node)
 {
     QRectF result;
@@ -86,7 +78,7 @@ QRectF DOMNodeActualBoundingBox(DOMNode *node)
     for(unsigned int i = 0; i < [childNodes length]; i++)
     {
         DOMNode *childNode = [childNodes item: i];
-        QRectF childRect = QRectFFromNSRect([childNode boundingBox]);
+        QRectF childRect = ObjCUtils::QRectFFromNSRect([childNode boundingBox]);
         if(!childRect.isValid())
             childRect = DOMNodeActualBoundingBox(childNode);
         if(!childRect.isValid())
@@ -101,13 +93,13 @@ QRectF DOMNodeActualBoundingBox(DOMNode *node)
 
 QRectF WebFrameDocumentBounds(WebFrame *frame)
 {
-    return QRectFFromNSRect([[[frame frameView] documentView] bounds]);
+    return ObjCUtils::QRectFFromNSRect([[[frame frameView] documentView] bounds]);
 }
 
 QRectF SVGViewBoxAttribute(WebView *webView)
 {
     const NSString *str = [webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getAttribute('viewBox');"];
-    const QStringList vb = QString::fromUtf8([str UTF8String]).split(QRegExp(QString::fromLatin1("\\s")));
+    const QStringList vb = ObjCUtils::QStringFromNSString(str).split(QRegExp(QString::fromLatin1("\\s")));
     return (vb.size() == 4 ? QRectF(vb.at(0).toDouble(), vb.at(1).toDouble(), vb.at(2).toDouble(), vb.at(3).toDouble()) : QRectF());
 }
 
@@ -227,7 +219,7 @@ private:
 
 MacWebKitRasterizerGraphicsItem::Impl::Impl(const QUrl &url)
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    AUTORELEASE_POOL;
     init();
     if(!url.isValid())
     {
@@ -235,16 +227,15 @@ MacWebKitRasterizerGraphicsItem::Impl::Impl(const QUrl &url)
     }
     else
     {
-        NSURLRequest *request = [NSURLRequest requestWithURL: [NSURL URLWithString: [NSString stringWithUTF8String: url.toString().toUtf8().data()]]];
+        NSURLRequest *request = [NSURLRequest requestWithURL: ObjCUtils::QUrlToNSURL(url)];
         [[m_view mainFrame] loadRequest: request];
         waitForLoad();
     }
-    [pool release];
 }
 
 MacWebKitRasterizerGraphicsItem::Impl::Impl(const QByteArray &htmlData, MacWebKitRasterizerGraphicsItem::DataType dataType)
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    AUTORELEASE_POOL;
     init();
     if(htmlData.isEmpty())
     {
@@ -270,22 +261,20 @@ MacWebKitRasterizerGraphicsItem::Impl::Impl(const QByteArray &htmlData, MacWebKi
         default:
             break;
         }
-        NSData *data = [NSData dataWithBytes: const_cast<void*>(static_cast<const void*>(htmlData.constData())) length: static_cast<NSUInteger>(htmlData.size())];
+        NSData *data = ObjCUtils::QByteArrayToNSData(htmlData);
         [[m_view mainFrame] loadData: data MIMEType: mimeType textEncodingName: nil baseURL: nil];
         waitForLoad();
     }
-    [pool release];
 }
 
 MacWebKitRasterizerGraphicsItem::Impl::~Impl()
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    AUTORELEASE_POOL;
     [m_view setFrameLoadDelegate: nil];
     [m_delegate release];
     [m_view removeFromSuperview];
     [m_view release];
     m_container->deleteLater();
-    [pool release];
 }
 
 MacWebKitRasterizerGraphicsItem::State MacWebKitRasterizerGraphicsItem::Impl::state() const
@@ -306,7 +295,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::waitForLoad() const
 
 QImage MacWebKitRasterizerGraphicsItem::Impl::grabImage(qreal scaleFactor, const QRectF &targetArea)
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    AUTORELEASE_POOL;
     const qreal actualScaleFactor = std::max(std::min(scaleFactor, maxScaleFactor()), minScaleFactor());
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
     DLOG << "actualScaleFactor:" << actualScaleFactor;
@@ -328,22 +317,22 @@ QImage MacWebKitRasterizerGraphicsItem::Impl::grabImage(qreal scaleFactor, const
     case SCALE_BY_RESIZE_FRAME_AND_SCALE_CONTENT:
     {
         const QString zoomScript = QString::fromLatin1("document.documentElement.style.zoom = '%1'");
-        const double oldScaleFactor = QString::fromUtf8([[m_view stringByEvaluatingJavaScriptFromString: @"document.documentElement.style.zoom;"] UTF8String]).toDouble();
+        const double oldScaleFactor = ObjCUtils::QStringFromNSString([m_view stringByEvaluatingJavaScriptFromString: @"document.documentElement.style.zoom;"]).toDouble();
         if(oldScaleFactor > actualScaleFactor)
         {
-            [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(actualScaleFactor).toUtf8().data()]];
-            [m_view setFrameSize: NSMakeSize(scaledPage.width(), scaledPage.height())];
+            [m_view stringByEvaluatingJavaScriptFromString: ObjCUtils::QStringToNSString(zoomScript.arg(actualScaleFactor))];
+            [m_view setFrameSize: ObjCUtils::QSizeFToNSSize(scaledPage.size())];
         }
         else
         {
-            [m_view setFrameSize: NSMakeSize(scaledPage.width(), scaledPage.height())];
-            [m_view stringByEvaluatingJavaScriptFromString: [NSString stringWithUTF8String: zoomScript.arg(actualScaleFactor).toUtf8().data()]];
+            [m_view setFrameSize: ObjCUtils::QSizeFToNSSize(scaledPage.size())];
+            [m_view stringByEvaluatingJavaScriptFromString: ObjCUtils::QStringToNSString(zoomScript.arg(actualScaleFactor))];
         }
         break;
     }
     case SCALE_BY_RESIZE_FRAME:
     {
-        [m_view setFrameSize: NSMakeSize(scaledPage.width(), scaledPage.height())];
+        [m_view setFrameSize: ObjCUtils::QSizeFToNSSize(scaledPage.size())];
         break;
     }
     }
@@ -354,7 +343,7 @@ QImage MacWebKitRasterizerGraphicsItem::Impl::grabImage(qreal scaleFactor, const
 #endif
 
     NSView *webFrameViewDocView = [[[m_view mainFrame] frameView] documentView];
-    const NSRect cacheRect = QRectFToNSRect(scaledPage);
+    const NSRect cacheRect = ObjCUtils::QRectFToNSRect(scaledPage);
     const NSInteger one = static_cast<NSInteger>(1);
     NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc]
             initWithBitmapDataPlanes: nil
@@ -398,7 +387,6 @@ QImage MacWebKitRasterizerGraphicsItem::Impl::grabImage(qreal scaleFactor, const
 #endif
 
     [bitmapRep release];
-    [pool release];
     return image;
 }
 
@@ -511,11 +499,11 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
     WHEREAMI;
 #endif
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    AUTORELEASE_POOL;
     if(frame == [view mainFrame])
     {
         QRectF actualRect;
-        const bool isSvg = QString::fromUtf8([[view stringByEvaluatingJavaScriptFromString: @"document.documentElement instanceof SVGElement;"] UTF8String]) == QString::fromLatin1("true");
+        const bool isSvg = ObjCUtils::QStringFromNSString([view stringByEvaluatingJavaScriptFromString: @"document.documentElement instanceof SVGElement;"]) == QString::fromLatin1("true");
         const bool emptySVGViewBoxSupported = QSysInfo::MacintoshVersion >= QSysInfo::MV_10_8;
         if(isSvg)
         {
@@ -600,7 +588,6 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
         m_impl->setMaxScaleFactor(std::min(MAX_IMAGE_DIMENSION / actualRect.width(), MAX_IMAGE_DIMENSION / actualRect.height()));
         m_impl->setState(MacWebKitRasterizerGraphicsItem::STATE_SUCCEED);
     }
-    [pool release];
 }
 
 - (void)                   webView: (WebView*)  view
@@ -610,13 +597,12 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
 #if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
     WHEREAMI;
 #endif
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    AUTORELEASE_POOL;
     if(frame == [view mainFrame])
     {
-        qWarning() << QString::fromUtf8([[error description] UTF8String]);
+        qWarning() << ObjCUtils::QStringFromNSString([error description]);
         m_impl->setState(MacWebKitRasterizerGraphicsItem::STATE_FAILED);
     }
-    [pool release];
 }
 
 @end

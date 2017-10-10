@@ -202,11 +202,6 @@ win32 {
 }
 
 macx {
-    greaterThan(QT_MAJOR_VERSION, 4): QT += macextras
-    OBJECTIVE_SOURCES += \
-        src/Decoders/Impl/Internal/Utils/MacImageUtils.mm
-    HEADERS += \
-        src/Decoders/Impl/Internal/Utils/MacImageUtils.h
     LIBS += -framework AppKit
     LIBS += -framework Foundation
 

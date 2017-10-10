@@ -28,10 +28,11 @@
 #include <QImage>
 #include <QFileInfo>
 
+#include "Utils/ObjectiveCUtils.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
-#include "Internal/Utils/MacImageUtils.h"
 
 namespace {
 
@@ -45,18 +46,17 @@ public:
 
     QStringList supportedFormats() const
     {
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+        AUTORELEASE_POOL;
         std::set<QString> fileTypes;
         for(NSString *fileType in [NSImage imageFileTypes])
         {
-            QString simplifiedFileType = QString::fromUtf8([fileType UTF8String]).toLower();
+            QString simplifiedFileType = ObjCUtils::QStringFromNSString(fileType).toLower();
             simplifiedFileType.replace(QRegExp(QString::fromLatin1("[^\\w]")), QString::fromLatin1(""));
             fileTypes.insert(simplifiedFileType.simplified());
         }
         QStringList result;
         for(std::set<QString>::const_iterator it = fileTypes.begin(); it != fileTypes.end(); ++it)
             result.append(*it);
-        [pool release];
         return result;
     }
 
@@ -71,16 +71,11 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
 
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
-        NSString *pathNSString = [NSString stringWithUTF8String: filePath.toUtf8().data()];
-        NSImage *picture = [[NSImage alloc] initWithContentsOfFile: pathNSString];
+        AUTORELEASE_POOL;
+        NSImage *picture = [[[NSImage alloc] initWithContentsOfFile: ObjCUtils::QStringToNSString(filePath)] autorelease];
         if(picture == nil)
             return NULL;
-        QGraphicsItem *result = GraphicsItemsFactory::instance().createPixmapItem(MacImageUtils::QPixmapFromNSImage(picture));
-
-        [picture release];
-        [pool release];
+        QGraphicsItem *result = GraphicsItemsFactory::instance().createPixmapItem(ObjCUtils::QPixmapFromNSImage(picture));
         return result;
     }
 };

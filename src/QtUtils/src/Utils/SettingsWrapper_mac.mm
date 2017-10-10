@@ -18,8 +18,11 @@
 */
 
 #import <Foundation/Foundation.h>
+
 #include <QString>
 #include <QVariant>
+
+#include "ObjectiveCUtils.h"
 
 namespace SettingsEncoder {
 
@@ -57,13 +60,12 @@ QString getNativeKeyString(const QString &group, const QString &key)
 /// @param[in] value - значение, которое устанавливается для ключа
 void setValue(const QString &group, const QString &key, const QVariant &value)
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    NSString *nativeKey = [NSString stringWithUTF8String: getNativeKeyString(group, key).toUtf8().data()];
+    AUTORELEASE_POOL;
+    NSString *nativeKey = ObjCUtils::QStringToNSString(getNativeKeyString(group, key));
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *nativeValue = [NSString stringWithUTF8String: SettingsEncoder::Encode(value).toUtf8().data()];
+    NSString *nativeValue = ObjCUtils::QStringToNSString(SettingsEncoder::Encode(value));
     [defaults setObject: nativeValue forKey: nativeKey];
     [defaults synchronize];
-    [pool release];
 }
 
 /// @brief Получить значение для заданного ключа из NSUserDefaults
@@ -73,10 +75,10 @@ void setValue(const QString &group, const QString &key, const QVariant &value)
 /// @return - значение для ключа или defaultValue при отсутствии значения
 QVariant value(const QString &group, const QString &key, const QVariant &defaultValue)
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    NSString *nativeKey = [NSString stringWithUTF8String: getNativeKeyString(group, key).toUtf8().data()];
+    AUTORELEASE_POOL;
+    NSString *nativeKey = ObjCUtils::QStringToNSString(getNativeKeyString(group, key));
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    const QString value = QString::fromUtf8([[defaults stringForKey: nativeKey] UTF8String]);
+    const QString value = ObjCUtils::QStringFromNSString([defaults stringForKey: nativeKey]);
     QVariant result = defaultValue;
     if(!value.isEmpty())
     {
@@ -84,7 +86,6 @@ QVariant value(const QString &group, const QString &key, const QVariant &default
         if(variantValue.isValid())
             result = variantValue;
     }
-    [pool release];
     return result;
 }
 
