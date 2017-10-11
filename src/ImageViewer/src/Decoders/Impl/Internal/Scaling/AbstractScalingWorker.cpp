@@ -27,6 +27,7 @@
 namespace {
 
 const qreal INVALID_SCALE_FACTOR = -1;
+const qint64 INVALID_DATA_ID = 0;
 
 } // namespace
 
@@ -80,6 +81,13 @@ qreal AbstractScalingWorker::getScaledScaleFactor() const
     if(hasScaledData())
         return m_scaledData->scaleFactor;
     return INVALID_SCALE_FACTOR;
+}
+
+qint64 AbstractScalingWorker::getScaledDataId() const
+{
+    if(hasScaledData())
+        return m_scaledData->image.cacheKey();
+    return INVALID_DATA_ID;
 }
 
 void AbstractScalingWorker::process()

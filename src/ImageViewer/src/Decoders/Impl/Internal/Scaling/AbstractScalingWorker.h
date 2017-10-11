@@ -44,6 +44,7 @@ public:
     bool hasScaledData() const;
     QImage getScaledImage() const;
     qreal getScaledScaleFactor() const;
+    qint64 getScaledDataId() const;
 
 public slots:
     void process();

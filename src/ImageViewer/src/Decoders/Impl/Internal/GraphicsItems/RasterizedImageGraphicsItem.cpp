@@ -120,10 +120,33 @@ struct RasterizedImageGraphicsItem::Impl
     Qt::TransformationMode transformationMode;
     QScopedPointer<RasterizerManager> rasterizerManager;
 
+    QPixmap lastPaintedPixmap;
+    qint64 lastPaintedDataId;
+
     Impl(RasterizedImageGraphicsItem *rasterizedImageGraphicsItem)
         : transformationMode(Qt::FastTransformation)
         , rasterizerManager(createRasterizerManager(rasterizedImageGraphicsItem))
+        , lastPaintedDataId(0)
     {}
+
+    void drawScaledImage(QPainter *painter)
+    {
+        const qint64 currentDataId = rasterizerManager->getScaledDataId();
+        if(currentDataId != lastPaintedDataId || lastPaintedPixmap.isNull())
+        {
+            const QImage scaledImage = rasterizerManager->getScaledImage();
+            if(scaledImage.isNull())
+                return;
+
+            lastPaintedPixmap = QPixmap::fromImage(scaledImage);
+            lastPaintedDataId = currentDataId;
+        }
+
+        const QRectF originalRect = provider->boundingRect();
+        const qreal scaleFactor = rasterizerManager->getScaledScaleFactor();
+        const QRectF scaledRect = QRectF(originalRect.topLeft() * scaleFactor, originalRect.size() * scaleFactor);
+        painter->drawPixmap(originalRect, lastPaintedPixmap, scaledRect);
+    }
 };
 
 // ====================================================================================================
@@ -195,11 +218,10 @@ void RasterizedImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGra
 
     painter->setRenderHint(QPainter::SmoothPixmapTransform, m_impl->transformationMode == Qt::SmoothTransformation);
     m_impl->rasterizerManager->beginScaledImageProcessing();
-    const qreal actualScaleFactor = m_impl->rasterizerManager->getScaledScaleFactor();
-    GraphicsItemUtils::DrawScaledImage(painter, m_impl->rasterizerManager->getScaledImage(), boundingRect(), actualScaleFactor);
+    m_impl->drawScaledImage(painter);
     m_impl->rasterizerManager->endScaledImageProcessing();
 
-    if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, actualScaleFactor))
+    if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, m_impl->rasterizerManager->getScaledScaleFactor()))
         m_impl->rasterizerManager->startTask(newScaleFactor);
 }
 

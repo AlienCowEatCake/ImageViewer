@@ -79,3 +79,8 @@ qreal AbstractScalingManager::getScaledScaleFactor() const
 {
     return m_scalingWorker->getScaledScaleFactor();
 }
+
+qint64 AbstractScalingManager::getScaledDataId() const
+{
+    return m_scalingWorker->getScaledDataId();
+}

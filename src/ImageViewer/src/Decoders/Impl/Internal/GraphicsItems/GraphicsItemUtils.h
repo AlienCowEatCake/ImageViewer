@@ -32,8 +32,6 @@ qreal GetDeviceScaleFactor(const QPainter *painter);
 
 bool IsFuzzyEqualScaleFactors(const qreal scaleFactor1, const qreal scaleFactor2);
 
-void DrawScaledImage(QPainter *painter, const QImage &scaledImage, const QRectF &originalRect, const qreal scaleFactor);
-
 } // GraphicsItemUtils
 
 #endif // GRAPHICS_ITEM_UTILS_H_INCLUDED

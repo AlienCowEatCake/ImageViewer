@@ -40,10 +40,4 @@ bool IsFuzzyEqualScaleFactors(const qreal scaleFactor1, const qreal scaleFactor2
     return std::abs(scaleFactor1 - scaleFactor2) / std::max(scaleFactor1, scaleFactor2) <= 1e-2;
 }
 
-void DrawScaledImage(QPainter *painter, const QImage &scaledImage, const QRectF &originalRect, const qreal scaleFactor)
-{
-    const QRectF scaledRect = QRectF(originalRect.topLeft() * scaleFactor, originalRect.size() * scaleFactor);
-    painter->drawImage(originalRect, scaledImage, scaledRect);
-}
-
 } // GraphicsItemUtils
