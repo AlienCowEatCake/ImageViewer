@@ -24,13 +24,10 @@ QT += core gui svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-greaterThan(QT_MAJOR_VERSION, 5): CONFIG += has_qt52_or_later
-equals(QT_MAJOR_VERSION, 5):greaterThan(QT_MINOR_VERSION, 1): CONFIG += has_qt52_or_later
-
 macx {
-    has_qt52_or_later: QT += macextras
-    LIBS += -framework Foundation
+    LIBS += -framework CoreFoundation
     LIBS += -framework CoreServices
+    LIBS += -framework Foundation
     LIBS += -framework AppKit
 }
 

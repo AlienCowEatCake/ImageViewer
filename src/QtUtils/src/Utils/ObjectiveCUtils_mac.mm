@@ -34,51 +34,49 @@
 #include <QSizeF>
 #include <QPointF>
 #include <QSysInfo>
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-#include <QtMac>
-#endif
+//#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+//#include <QtMac>
+//#endif
 
 namespace ObjCUtils {
 
 namespace {
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0) && QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+//#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0) && QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 void imageDeleter(void *image, const void *, std::size_t)
 {
     delete static_cast<QImage*>(image);
 }
-#endif
+//#endif
 
 QPixmap QPixmapFromCGImageRef(const CGImageRef image)
 {
     if(!image)
         return QPixmap();
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-    return QtMac::fromCGImageRef(image);
-#elif (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    return QPixmap::fromMacCGImageRef(image);
-#else
+//#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+//    return QtMac::fromCGImageRef(image);
+//#elif (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+//    return QPixmap::fromMacCGImageRef(image);
+//#else
     const std::size_t width = CGImageGetWidth(image);
     const std::size_t height = CGImageGetHeight(image);
-    QImage result(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32);
+    QImage result(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32_Premultiplied);
     result.fill(Qt::transparent);
 
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+    CFRAII<CGColorSpaceRef> colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
     if(!colorSpace)
         return QPixmap();
 
-    CGContextRef context = CGBitmapContextCreate(static_cast<void*>(result.bits()), width, height,
-            8, width * 4, colorSpace, kCGImageAlphaFirst | kCGBitmapByteOrder32Host);
-    CGColorSpaceRelease(colorSpace);
+    CFRAII<CGContextRef> context = CGBitmapContextCreate(static_cast<void*>(result.bits()), width, height,
+            8, width * 4, colorSpace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host);
     if(!context)
         return QPixmap();
 
     CGRect rect = CGRectMake(0, 0, width, height);
     CGContextDrawImage(context, rect, image);
-    CGContextRelease(context);
     return QPixmap::fromImage(result);
-#endif
+//#endif
 }
 
 CGImageRef QPixmapToCGImageRef(const QPixmap &pixmap)
@@ -86,35 +84,32 @@ CGImageRef QPixmapToCGImageRef(const QPixmap &pixmap)
     if(pixmap.isNull())
         return nil;
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-    return QtMac::toCGImageRef(pixmap);
-#elif (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    return pixmap.toMacCGImageRef();
-#else
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+//#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+//    return QtMac::toCGImageRef(pixmap);
+//#elif (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+//    return pixmap.toMacCGImageRef();
+//#else
+    CFRAII<CGColorSpaceRef> colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
     if(!colorSpace)
         return nil;
 
-    QImage *image = new QImage(pixmap.toImage().convertToFormat(QImage::Format_ARGB32));
+    QImage *image = new QImage(pixmap.toImage().convertToFormat(QImage::Format_ARGB32_Premultiplied));
     const std::size_t width = static_cast<std::size_t>(image->width());
     const std::size_t height = static_cast<std::size_t>(image->height());
 
-    CGDataProviderRef provider = CGDataProviderCreateWithData(static_cast<void*>(image),
+    CFRAII<CGDataProviderRef> provider = CGDataProviderCreateWithData(static_cast<void*>(image),
             static_cast<const void*>(image->bits()), 4 * width * height, imageDeleter);
     if(!provider)
     {
         delete image;
-        CGColorSpaceRelease(colorSpace);
         return nil;
     }
 
     CGImageRef result = CGImageCreate(width, height, 8, 32, 4 * width, colorSpace,
-            kCGImageAlphaFirst | kCGBitmapByteOrder32Host, provider, NULL, false,
+            kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host, provider, NULL, false,
             kCGRenderingIntentDefault);
-    CGColorSpaceRelease(colorSpace);
-    CGDataProviderRelease(provider);
     return result;
-#endif
+//#endif
 }
 
 } // namespace
@@ -372,6 +367,8 @@ QPixmap QPixmapFromNSImage(const NSImage *image)
                              bytesPerRow: 0
                             bitsPerPixel: 0
         ];
+        if(!bmp)
+            return QPixmap();
         [NSGraphicsContext saveGraphicsState];
         [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep: bmp]];
         [image drawInRect: NSMakeRect(0, 0, width, height) fromRect: NSZeroRect operation: NSCompositeSourceOver fraction: 1];
@@ -388,13 +385,19 @@ NSImage *QPixmapToNSImage(const QPixmap &pixmap)
 #if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
     if(QSysInfo::MacintoshVersion >= QSysInfo::MV_SNOWLEOPARD)
     {
-        return [[[NSImage alloc] initWithCGImage:QPixmapToCGImageRef(pixmap) size:QSizeFToNSSize(pixmap.size())] autorelease];
+        CFRAII<CGImageRef> imageRef = QPixmapToCGImageRef(pixmap);
+        if(!imageRef)
+            return nil;
+        return [[[NSImage alloc] initWithCGImage:imageRef size:QSizeFToNSSize(pixmap.size())] autorelease];
     }
     else
 #endif
     {
         // https://stackoverflow.com/questions/10627557/mac-os-x-drawing-into-an-offscreen-nsgraphicscontext-using-cgcontextref-c-funct
         // http://www.cocoabuilder.com/archive/cocoa/133768-converting-cgimagerefs-to-nsimages-how.html
+        CFRAII<CGImageRef> imageRef = QPixmapToCGImageRef(pixmap);
+        if(!imageRef)
+            return nil;
         const NSRect rect = QRectFToNSRect(pixmap.rect());
         NSInteger width = static_cast<NSInteger>(rect.size.width);
         NSInteger height = static_cast<NSInteger>(rect.size.height);
@@ -411,10 +414,11 @@ NSImage *QPixmapToNSImage(const QPixmap &pixmap)
                              bytesPerRow: 0
                             bitsPerPixel: 0
         ];
+        if(!bmp)
+            return nil;
         [NSGraphicsContext saveGraphicsState];
         NSGraphicsContext *context = [NSGraphicsContext graphicsContextWithBitmapImageRep: bmp];
         [NSGraphicsContext setCurrentContext: context];
-        CGImageRef imageRef = QPixmapToCGImageRef(pixmap);
         CGContextDrawImage(reinterpret_cast<CGContextRef>([context graphicsPort]), *reinterpret_cast<const CGRect*>(&rect), imageRef);
         [NSGraphicsContext restoreGraphicsState];
         NSImage *image = [[NSImage alloc] initWithSize:rect.size];

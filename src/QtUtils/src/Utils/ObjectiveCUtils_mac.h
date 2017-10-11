@@ -20,6 +20,7 @@
 #if !defined (QTUTILS_OBJECTIVECUTILS_MAC_H_INCLUDED)
 #define QTUTILS_OBJECTIVECUTILS_MAC_H_INCLUDED
 
+#import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
@@ -41,6 +42,56 @@ public:
 private:
     NSAutoreleasePool *m_pool;
 };
+
+
+template <typename T>
+class CFRAII
+{
+public:
+    inline CFRAII(const T &dataRef = static_cast<T>(0))
+        : m_dataRef(dataRef)
+    {}
+
+    inline CFRAII(const CFRAII &other)
+        : m_dataRef(other.m_dataRef)
+    {
+        if(m_dataRef)
+            CFRetain(m_dataRef);
+    }
+
+    inline ~CFRAII()
+    {
+        if(m_dataRef)
+            CFRelease(m_dataRef);
+    }
+
+    inline CFRAII operator = (const CFRAII &other)
+    {
+        if(this == &other)
+            return;
+        if(other.m_dataRef)
+            CFRetain(other.m_dataRef);
+        CFTypeRef oldDataRef = m_dataRef;
+        m_dataRef = other.m_dataRef;
+        if(oldDataRef)
+            CFRelease(oldDataRef);
+        return *this;
+    }
+
+    inline operator T ()
+    {
+        return m_dataRef;
+    }
+
+    inline T *operator & ()
+    {
+        return &m_dataRef;
+    }
+
+private:
+    T m_dataRef;
+};
+
 
 QVariant QVariantFromObject(const id obj);
 id QVariantToObject(const QVariant &variant);
