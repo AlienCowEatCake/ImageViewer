@@ -23,7 +23,7 @@ CONFIG += staticlib
 
 INCLUDEPATH += src
 
-QT += core gui svg
+QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -75,8 +75,7 @@ macx {
 }
 
 RESOURCES += \
-    resources/icons/qtutils_icons_png.qrc \
-    resources/icons/qtutils_icons_svg.qrc \
+    resources/icons/qtutils_icons.qrc \
     resources/translations/qtutils_translations.qrc
 
 QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9
