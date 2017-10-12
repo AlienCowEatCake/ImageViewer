@@ -32,8 +32,7 @@
 /// @attention Функция должна быть в глобальном namespace
 static void InitQtUtilsResources_internal()
 {
-    Q_INIT_RESOURCE(qtutils_icons_png);
-    Q_INIT_RESOURCE(qtutils_icons_svg);
+    Q_INIT_RESOURCE(qtutils_icons);
     Q_INIT_RESOURCE(qtutils_translations);
 }
 

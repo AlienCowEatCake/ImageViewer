@@ -1,22 +1,23 @@
-#!/bin/bash
+#!/bin/bash -e
 
+sizes="16 32"
+source_path="${PWD}"
+destination_path=$(readlink -e "${source_path}/..")
+
+inkscape_cmd=inkscape
+gimp_cmd=gimp
+optipng_cmd=optipng
+
+cd "${source_path}"
 for input in `ls *.svg`
 do
-	output_black_svg=`echo "../${input}" | sed 's/\.svg$/_black.svg/'`
-	output_black_png=`echo ${output_black_svg} | sed 's/\.svg$/.png/'`
-	output_white_svg=`echo ${output_black_svg} | sed 's/_black\.svg$/_white.svg/'`
-	output_white_png=`echo ${output_white_svg} | sed 's/\.svg$/.png/'`
-	# Convert to Plain SVG
-	inkscape -z -T -C --vacuum-defs -l ${output_black_svg} ${input}
-	# Replace Black to White
-	cat ${output_black_svg} | sed 's/#000000/#ffffff/g' > ${output_white_svg}
-	# Convert SVG to PNG
-	inkscape -z -C -e ${output_black_png} ${output_black_svg}
-	inkscape -z -C -e ${output_white_png} ${output_white_svg}
-	# Compress PNG
-	optipng -o7 -strip all ${output_black_png}
-	optipng -o7 -strip all ${output_white_png}
-	# Fix rendering issues
-	sed -i 's/crispEdges/auto/' ${output_black_svg}
-	sed -i 's/crispEdges/auto/' ${output_white_svg}
+	input_name="${input%.*}"
+	input_path="${source_path}/${input}"
+	for size in ${sizes}
+	do
+		output_path="${destination_path}/${input_name}_${size}.png"
+		"${inkscape_cmd}" -z -C -e "${output_path}" -w ${size} -h ${size} "${input_path}"
+		"${gimp_cmd}" -c -d -i -b "(let* ((image (car (file-png-load 0 \"${output_path}\" \"${output_path}\"))) (drawable (car (gimp-image-get-active-layer image)))) (gimp-image-convert-grayscale image) (file-png-save 1 image drawable \"${output_path}\" \"${output_path}\" 0 9 0 0 0 0 0) )" -b "(gimp-quit 0)"
+		"${optipng_cmd}" -o7 -strip all "${output_path}"
+	done
 done

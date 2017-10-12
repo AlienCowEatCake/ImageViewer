@@ -47,6 +47,12 @@ bool WidgetHasDarkTheme(const QWidget *widget);
 /// @return Масштабируемая иконка
 QIcon CreateScalableIcon(const QString &defaultImagePath, const QStringList &scaledImagePaths = QStringList());
 
+/// @brief Создать масштабируемую иконку из нескольких растровых разного размера
+/// @param[in] scaledImagePaths - Список путей иконкам разного размера (только растр)
+/// @param[in] invertPixels - Требуется ли инвертированное изображение вместо обычного
+/// @return Масштабируемая иконка
+QIcon CreateScalableIcon(const QStringList &scaledImagePaths, bool invertPixels = false);
+
 /// @brief Типы иконок
 enum IconTypes
 {

@@ -22,11 +22,28 @@
 #include <QStyle>
 #include <QStyleOption>
 #include <QPixmap>
+#include <QImage>
 #include <QTextStream>
 #include <QFile>
 #include <QDebug>
 
 namespace ThemeUtils {
+
+namespace {
+
+void AddPixmapToIcon(QIcon &icon, const QPixmap &pixmap)
+{
+    QStyleOption opt(0);
+    opt.palette = QApplication::palette();
+#define ADD_PIXMAP(MODE) icon.addPixmap(QApplication::style()->generatedIconPixmap(MODE, pixmap, &opt), MODE)
+    ADD_PIXMAP(QIcon::Normal);
+    ADD_PIXMAP(QIcon::Disabled);
+    ADD_PIXMAP(QIcon::Active);
+    ADD_PIXMAP(QIcon::Selected);
+#undef ADD_PIXMAP
+}
+
+} // namespace
 
 /// @brief Считать стилизацию из файла и применить ее к QApplication
 /// @param[in] filePath - Путь до QSS файла со стилями
@@ -43,7 +60,7 @@ bool LoadStyleSheet(const QStringList &filePaths)
 {
     bool status = true;
     QString allStyles;
-    for(QStringList::ConstIterator it = filePaths.constBegin(); it != filePaths.constEnd(); ++it)
+    for(QStringList::ConstIterator it = filePaths.constBegin(), itEnd = filePaths.constEnd(); it != itEnd; ++it)
     {
         QFile styleFile(*it);
         if(styleFile.open(QIODevice::ReadOnly))
@@ -69,23 +86,36 @@ bool WidgetHasDarkTheme(const QWidget *widget)
 QIcon CreateScalableIcon(const QString &defaultImagePath, const QStringList &scaledImagePaths)
 {
     QIcon result(defaultImagePath);
-    for(QStringList::ConstIterator it = scaledImagePaths.begin(); it != scaledImagePaths.end(); ++it)
+    for(QStringList::ConstIterator it = scaledImagePaths.begin(), itEnd = scaledImagePaths.end(); it != itEnd; ++it)
     {
         const QPixmap pixmap(*it);
         if(!pixmap.isNull())
+            AddPixmapToIcon(result, pixmap);
+        else
+            qWarning() << "[ThemeUtils::CreateScalableIcon]: Unable to load pixmap" << *it;
+    }
+    return result;
+}
+
+/// @brief Создать масштабируемую иконку из нескольких растровых разного размера
+/// @param[in] scaledImagePaths - Список путей иконкам разного размера (только растр)
+/// @param[in] invertPixels - Требуется ли инвертированное изображение вместо обычного
+/// @return Масштабируемая иконка
+QIcon CreateScalableIcon(const QStringList &scaledImagePaths, bool invertPixels)
+{
+    QIcon result;
+    for(QStringList::ConstIterator it = scaledImagePaths.begin(), itEnd = scaledImagePaths.end(); it != itEnd; ++it)
+    {
+        QImage image(*it);
+        if(!image.isNull())
         {
-            QStyleOption opt(0);
-            opt.palette = QApplication::palette();
-#define ADD_PIXMAP(MODE) result.addPixmap(QApplication::style()->generatedIconPixmap(MODE, pixmap, &opt), MODE)
-            ADD_PIXMAP(QIcon::Normal);
-            ADD_PIXMAP(QIcon::Disabled);
-            ADD_PIXMAP(QIcon::Active);
-            ADD_PIXMAP(QIcon::Selected);
-#undef ADD_PIXMAP
+            if(invertPixels)
+                image.invertPixels(QImage::InvertRgb);
+            AddPixmapToIcon(result, QPixmap::fromImage(image));
         }
         else
         {
-            qWarning() << "[ThemeUtils::CreateScalableIcon]: Unable to load pixmap" << *it;
+            qWarning() << "[ThemeUtils::CreateScalableIcon]: Unable to load image" << *it;
         }
     }
     return result;
@@ -96,23 +126,16 @@ QIcon CreateScalableIcon(const QString &defaultImagePath, const QStringList &sca
 /// @param[in] darkBackground - true, если иконка располагается на темном фоне
 QIcon GetIcon(IconTypes type, bool darkBackground)
 {
-    const QString iconNameTemplate = QString::fromLatin1(":/icons/modern/%2_%1.%3")
-            .arg(darkBackground ? QString::fromLatin1("white") : QString::fromLatin1("black"));
-#if defined (QT_SVG_LIB) && (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
-    const QString defaultExt = QString::fromLatin1("svg");
-#else
-    const QString defaultExt = QString::fromLatin1("png");
-#endif
-    const QString pixmapExt = QString::fromLatin1("png");
-
+    const QString iconNameTemplate = QString::fromLatin1(":/icons/modern/%1_%2.png");
     switch(type)
     {
 #define ADD_NAMED_ICON_CASE(ICON_TYPE, ICON_NAME) \
     case ICON_TYPE: \
     { \
         const QString iconName = QString::fromLatin1(ICON_NAME).toLower(); \
-        const QStringList rasterPixmaps = QStringList(iconNameTemplate.arg(iconName).arg(pixmapExt)); \
-        return CreateScalableIcon(iconNameTemplate.arg(iconName).arg(defaultExt), rasterPixmaps); \
+        const QString iconTemplate = iconNameTemplate.arg(iconName); \
+        const QStringList rasterPixmaps = QStringList() << iconTemplate.arg(16) << iconTemplate.arg(32); \
+        return CreateScalableIcon(rasterPixmaps, darkBackground); \
     }
 #define ADD_ICON_CASE(ICON_TYPE) ADD_NAMED_ICON_CASE(ICON_TYPE, #ICON_TYPE)
     ADD_ICON_CASE(ICON_QT)

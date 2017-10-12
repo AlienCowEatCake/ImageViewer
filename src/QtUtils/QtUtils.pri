@@ -20,7 +20,7 @@
 INCLUDEPATH += $${PWD}/src
 DEPENDPATH += $${PWD}/src
 
-QT += core gui svg
+QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
