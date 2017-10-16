@@ -173,7 +173,7 @@ QString getTextBrowserContent()
                       ));
 #endif
 #endif
-    Q_UNUSED(letterByNumFrom1);
+    Q_UNUSED(letterByNumFrom1(0));
 
 #if defined (HAS_LIBJASPER)
     result.append(formatItem(

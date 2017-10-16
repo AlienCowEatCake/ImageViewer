@@ -80,8 +80,9 @@ QString compilerDescriptionInt()
     case 1700: return QString::fromLatin1("MSVC++ 11.0 (Visual Studio 2012)");
     case 1800: return QString::fromLatin1("MSVC++ 12.0 (Visual Studio 2013)");
     case 1900: return QString::fromLatin1("MSVC++ 14.0 (Visual Studio 2015)");
-    case 1910: return QString::fromLatin1("MSVC++ 14.1 (Visual Studio 2017)");
-    default:   return QString::fromLatin1("MSVC++");
+    case 1910:
+    case 1911: return QString::fromLatin1("MSVC++ 14.1 (Visual Studio 2017)");
+    default:   return QString::fromLatin1("MSVC++ (_MSC_VER=%1)").arg(_MSC_VER);
     }
 #elif defined (Q_CC_SYM)
     return QString::fromLatin1("Digital Mars C/C++");

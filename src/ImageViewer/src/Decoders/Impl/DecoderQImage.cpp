@@ -22,6 +22,7 @@
 #include <QImageReader>
 #include <QFileInfo>
 #include <QColor>
+#include <QImage>
 #include <QDebug>
 
 #include "../IDecoder.h"
