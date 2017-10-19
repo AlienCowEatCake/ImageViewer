@@ -1,8 +1,8 @@
 /* pnglibconf.h - library build configuration */
 
-/* libpng version 1.6.29, March 16, 2017 */
+/* libpng version 1.6.34, September 29, 2017 */
 
-/* Copyright (c) 1998-2016 Glenn Randers-Pehrson */
+/* Copyright (c) 1998-2017 Glenn Randers-Pehrson */
 
 /* This code is released under the libpng license. */
 /* For conditions of distribution and use, see the disclaimer */
@@ -82,6 +82,7 @@
 #define PNG_READ_USER_TRANSFORM_SUPPORTED
 #define PNG_READ_bKGD_SUPPORTED
 #define PNG_READ_cHRM_SUPPORTED
+#define PNG_READ_eXIf_SUPPORTED
 #define PNG_READ_gAMA_SUPPORTED
 #define PNG_READ_hIST_SUPPORTED
 #define PNG_READ_iCCP_SUPPORTED
@@ -151,6 +152,7 @@
 #define PNG_WRITE_WEIGHTED_FILTER_SUPPORTED
 #define PNG_WRITE_bKGD_SUPPORTED
 #define PNG_WRITE_cHRM_SUPPORTED
+#define PNG_WRITE_eXIf_SUPPORTED
 #define PNG_WRITE_gAMA_SUPPORTED
 #define PNG_WRITE_hIST_SUPPORTED
 #define PNG_WRITE_iCCP_SUPPORTED
@@ -168,6 +170,7 @@
 #define PNG_WRITE_zTXt_SUPPORTED
 #define PNG_bKGD_SUPPORTED
 #define PNG_cHRM_SUPPORTED
+#define PNG_eXIf_SUPPORTED
 #define PNG_gAMA_SUPPORTED
 #define PNG_hIST_SUPPORTED
 #define PNG_iCCP_SUPPORTED
@@ -239,6 +242,7 @@
 #define png_free_default tp_png_free_default
 #define png_get_IHDR tp_png_get_IHDR
 #define png_get_PLTE tp_png_get_PLTE
+#define png_get_acTL tp_png_get_acTL
 #define png_get_bKGD tp_png_get_bKGD
 #define png_get_bit_depth tp_png_get_bit_depth
 #define png_get_cHRM tp_png_get_cHRM
@@ -254,8 +258,11 @@
 #define png_get_copyright tp_png_get_copyright
 #define png_get_current_pass_number tp_png_get_current_pass_number
 #define png_get_current_row_number tp_png_get_current_row_number
+#define png_get_eXIf tp_png_get_eXIf
+#define png_get_eXIf_1 tp_png_get_eXIf_1
 #define png_get_error_ptr tp_png_get_error_ptr
 #define png_get_filter_type tp_png_get_filter_type
+#define png_get_first_frame_is_hidden tp_png_get_first_frame_is_hidden
 #define png_get_gAMA tp_png_get_gAMA
 #define png_get_gAMA_fixed tp_png_get_gAMA_fixed
 #define png_get_hIST tp_png_get_hIST
@@ -271,6 +278,17 @@
 #define png_get_io_state tp_png_get_io_state
 #define png_get_libpng_ver tp_png_get_libpng_ver
 #define png_get_mem_ptr tp_png_get_mem_ptr
+#define png_get_next_frame_blend_op tp_png_get_next_frame_blend_op
+#define png_get_next_frame_delay_den tp_png_get_next_frame_delay_den
+#define png_get_next_frame_delay_num tp_png_get_next_frame_delay_num
+#define png_get_next_frame_dispose_op tp_png_get_next_frame_dispose_op
+#define png_get_next_frame_fcTL tp_png_get_next_frame_fcTL
+#define png_get_next_frame_height tp_png_get_next_frame_height
+#define png_get_next_frame_width tp_png_get_next_frame_width
+#define png_get_next_frame_x_offset tp_png_get_next_frame_x_offset
+#define png_get_next_frame_y_offset tp_png_get_next_frame_y_offset
+#define png_get_num_frames tp_png_get_num_frames
+#define png_get_num_plays tp_png_get_num_plays
 #define png_get_oFFs tp_png_get_oFFs
 #define png_get_pCAL tp_png_get_pCAL
 #define png_get_pHYs tp_png_get_pHYs
@@ -336,6 +354,7 @@
 #define png_process_data_skip tp_png_process_data_skip
 #define png_progressive_combine_row tp_png_progressive_combine_row
 #define png_read_end tp_png_read_end
+#define png_read_frame_head tp_png_read_frame_head
 #define png_read_image tp_png_read_image
 #define png_read_info tp_png_read_info
 #define png_read_png tp_png_read_png
@@ -348,6 +367,7 @@
 #define png_save_uint_32 tp_png_save_uint_32
 #define png_set_IHDR tp_png_set_IHDR
 #define png_set_PLTE tp_png_set_PLTE
+#define png_set_acTL tp_png_set_acTL
 #define png_set_add_alpha tp_png_set_add_alpha
 #define png_set_alpha_mode tp_png_set_alpha_mode
 #define png_set_alpha_mode_fixed tp_png_set_alpha_mode_fixed
@@ -370,6 +390,8 @@
 #define png_set_compression_strategy tp_png_set_compression_strategy
 #define png_set_compression_window_bits tp_png_set_compression_window_bits
 #define png_set_crc_action tp_png_set_crc_action
+#define png_set_eXIf tp_png_set_eXIf
+#define png_set_eXIf_1 tp_png_set_eXIf_1
 #define png_set_error_fn tp_png_set_error_fn
 #define png_set_expand tp_png_set_expand
 #define png_set_expand_16 tp_png_set_expand_16
@@ -378,6 +400,7 @@
 #define png_set_filter tp_png_set_filter
 #define png_set_filter_heuristics tp_png_set_filter_heuristics
 #define png_set_filter_heuristics_fixed tp_png_set_filter_heuristics_fixed
+#define png_set_first_frame_is_hidden tp_png_set_first_frame_is_hidden
 #define png_set_flush tp_png_set_flush
 #define png_set_gAMA tp_png_set_gAMA
 #define png_set_gAMA_fixed tp_png_set_gAMA_fixed
@@ -393,6 +416,7 @@
 #define png_set_keep_unknown_chunks tp_png_set_keep_unknown_chunks
 #define png_set_longjmp_fn tp_png_set_longjmp_fn
 #define png_set_mem_fn tp_png_set_mem_fn
+#define png_set_next_frame_fcTL tp_png_set_next_frame_fcTL
 #define png_set_oFFs tp_png_set_oFFs
 #define png_set_option tp_png_set_option
 #define png_set_pCAL tp_png_set_pCAL
@@ -400,6 +424,7 @@
 #define png_set_packing tp_png_set_packing
 #define png_set_packswap tp_png_set_packswap
 #define png_set_palette_to_rgb tp_png_set_palette_to_rgb
+#define png_set_progressive_frame_fn tp_png_set_progressive_frame_fn
 #define png_set_progressive_read_fn tp_png_set_progressive_read_fn
 #define png_set_quantize tp_png_set_quantize
 #define png_set_read_fn tp_png_set_read_fn
@@ -448,6 +473,8 @@
 #define png_write_chunk_start tp_png_write_chunk_start
 #define png_write_end tp_png_write_end
 #define png_write_flush tp_png_write_flush
+#define png_write_frame_head tp_png_write_frame_head
+#define png_write_frame_tail tp_png_write_frame_tail
 #define png_write_image tp_png_write_image
 #define png_write_info tp_png_write_info
 #define png_write_info_before_PLTE tp_png_write_info_before_PLTE
@@ -458,25 +485,4 @@
 #define tp_png_get_uint_32(buf) PNG_get_uint_32(buf)
 #define tp_png_get_uint_16(buf) PNG_get_uint_16(buf)
 #define tp_png_get_int_32(buf) PNG_get_int_32(buf)
-/* apng for libpng 1.6.29 */
-#define png_get_acTL tp_png_get_acTL
-#define png_set_acTL tp_png_set_acTL
-#define png_get_num_frames tp_png_get_num_frames
-#define png_get_num_plays tp_png_get_num_plays
-#define png_get_next_frame_fcTL tp_png_get_next_frame_fcTL
-#define png_set_next_frame_fcTL tp_png_set_next_frame_fcTL
-#define png_get_next_frame_width tp_png_get_next_frame_width
-#define png_get_next_frame_height tp_png_get_next_frame_height
-#define png_get_next_frame_x_offset tp_png_get_next_frame_x_offset
-#define png_get_next_frame_y_offset tp_png_get_next_frame_y_offset
-#define png_get_next_frame_delay_num tp_png_get_next_frame_delay_num
-#define png_get_next_frame_delay_den tp_png_get_next_frame_delay_den
-#define png_get_next_frame_dispose_op tp_png_get_next_frame_dispose_op
-#define png_get_next_frame_blend_op tp_png_get_next_frame_blend_op
-#define png_get_first_frame_is_hidden tp_png_get_first_frame_is_hidden
-#define png_set_first_frame_is_hidden tp_png_set_first_frame_is_hidden
-#define png_read_frame_head tp_png_read_frame_head
-#define png_set_progressive_frame_fn tp_png_set_progressive_frame_fn
-#define png_write_frame_head tp_png_write_frame_head
-#define png_write_frame_tail tp_png_write_frame_tail
 #endif /* PNGLCONF_H */

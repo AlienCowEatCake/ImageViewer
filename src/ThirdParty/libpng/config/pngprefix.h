@@ -35,6 +35,7 @@
 #define png_write_sBIT tp_png_write_sBIT
 #define png_write_cHRM_fixed tp_png_write_cHRM_fixed
 #define png_write_sRGB tp_png_write_sRGB
+#define png_write_eXIf tp_png_write_eXIf
 #define png_write_iCCP tp_png_write_iCCP
 #define png_write_sPLT tp_png_write_sPLT
 #define png_write_tRNS tp_png_write_tRNS
@@ -72,6 +73,7 @@
 #define png_handle_IEND tp_png_handle_IEND
 #define png_handle_bKGD tp_png_handle_bKGD
 #define png_handle_cHRM tp_png_handle_cHRM
+#define png_handle_eXIf tp_png_handle_eXIf
 #define png_handle_gAMA tp_png_handle_gAMA
 #define png_handle_hIST tp_png_handle_hIST
 #define png_handle_iCCP tp_png_handle_iCCP
@@ -88,6 +90,7 @@
 #define png_handle_tRNS tp_png_handle_tRNS
 #define png_handle_zTXt tp_png_handle_zTXt
 #define png_check_chunk_name tp_png_check_chunk_name
+#define png_check_chunk_length tp_png_check_chunk_length
 #define png_handle_unknown tp_png_handle_unknown
 #define png_chunk_unknown_handling tp_png_chunk_unknown_handling
 #define png_do_read_transformations tp_png_do_read_transformations
@@ -117,6 +120,20 @@
 #define png_colorspace_set_gamma tp_png_colorspace_set_gamma
 #define png_colorspace_sync_info tp_png_colorspace_sync_info
 #define png_colorspace_sync tp_png_colorspace_sync
+#define png_ensure_fcTL_is_valid tp_png_ensure_fcTL_is_valid
+#define png_handle_acTL tp_png_handle_acTL
+#define png_handle_fcTL tp_png_handle_fcTL
+#define png_handle_fdAT tp_png_handle_fdAT
+#define png_have_info tp_png_have_info
+#define png_ensure_sequence_number tp_png_ensure_sequence_number
+#define png_read_reset tp_png_read_reset
+#define png_read_reinit tp_png_read_reinit
+#define png_progressive_read_reset tp_png_progressive_read_reset
+#define png_write_acTL tp_png_write_acTL
+#define png_write_fcTL tp_png_write_fcTL
+#define png_write_fdAT tp_png_write_fdAT
+#define png_write_reset tp_png_write_reset
+#define png_write_reinit tp_png_write_reinit
 #define png_colorspace_set_chromaticities tp_png_colorspace_set_chromaticities
 #define png_colorspace_set_endpoints tp_png_colorspace_set_endpoints
 #define png_colorspace_set_sRGB tp_png_colorspace_set_sRGB
