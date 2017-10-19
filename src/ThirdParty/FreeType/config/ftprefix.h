@@ -4,7 +4,7 @@
 #define FT_MSB_USE_C_IMPL 1
 
 /*
-nm -g --demangle libtp_freetype.a | grep -v ' U ' | cut -c 20- | grep -v '^$' | LANG=C sort -u | sed 's|^\(.*\)$|#define \1 tp_\1|'
+nm -C libtp_freetype.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#define \1 tp_\1|' | LANG=C sort -u
 */
 
 #define FTC_CMapCache_Lookup tp_FTC_CMapCache_Lookup
@@ -84,6 +84,7 @@ nm -g --demangle libtp_freetype.a | grep -v ' U ' | cut -c 20- | grep -v '^$' | 
 #define FT_Get_SubGlyph_Info tp_FT_Get_SubGlyph_Info
 #define FT_Get_Track_Kerning tp_FT_Get_Track_Kerning
 #define FT_Get_TrueType_Engine_Type tp_FT_Get_TrueType_Engine_Type
+#define FT_Get_Var_Axis_Flags tp_FT_Get_Var_Axis_Flags
 #define FT_Get_Var_Blend_Coordinates tp_FT_Get_Var_Blend_Coordinates
 #define FT_Get_Var_Design_Coordinates tp_FT_Get_Var_Design_Coordinates
 #define FT_Get_X11_Font_Format tp_FT_Get_X11_Font_Format
@@ -579,6 +580,7 @@ nm -g --demangle libtp_freetype.a | grep -v ' U ' | cut -c 20- | grep -v '^$' | 
 #define tt_cmap4_class_rec tp_tt_cmap4_class_rec
 #define tt_cmap6_class_rec tp_tt_cmap6_class_rec
 #define tt_cmap8_class_rec tp_tt_cmap8_class_rec
+#define tt_cmap_unicode_class_rec tp_tt_cmap_unicode_class_rec
 #define tt_default_graphics_state tp_tt_default_graphics_state
 #define tt_driver_class tp_tt_driver_class
 #define winfnt_driver_class tp_winfnt_driver_class

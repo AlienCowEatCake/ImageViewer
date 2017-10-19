@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_FREETYPE_PATH = $${PWD}/freetype-2.8
+THIRDPARTY_FREETYPE_PATH = $${PWD}/freetype-2.8.1
 THIRDPARTY_FREETYPE_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)

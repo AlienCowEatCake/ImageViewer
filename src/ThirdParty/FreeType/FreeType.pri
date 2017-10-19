@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_freetype {
 
-        THIRDPARTY_FREETYPE_PATH = $${PWD}/freetype-2.8
+        THIRDPARTY_FREETYPE_PATH = $${PWD}/freetype-2.8.1
         THIRDPARTY_FREETYPE_CONFIG_PATH = $${PWD}/config
 
         INCLUDEPATH += $${THIRDPARTY_FREETYPE_PATH}/include $${THIRDPARTY_FREETYPE_CONFIG_PATH}
