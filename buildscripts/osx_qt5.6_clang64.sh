@@ -4,6 +4,7 @@ BUILDDIR=build_osx_qt5.6_clang64
 APPNAME="Image Viewer"
 DMGNAME="${PROJECT}_qt5.6_clang64"
 OUT_PATH="src/${PROJECT}"
+MAC_SDK="$(xcodebuild -showsdks | grep '\-sdk macosx' | tail -1 | sed 's|.*-sdk ||')"
 
 QT_PATH="/opt/Qt/5.6/clang_64"
 QTPLUGINS_PATH="${QT_PATH}/plugins"
@@ -15,7 +16,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-${CMD_QMAKE} CONFIG+="release" LIBS+=-dead_strip QMAKE_MACOSX_DEPLOYMENT_TARGET=10.7 "../${PROJECT}.pro"
+${CMD_QMAKE} CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.7 "../${PROJECT}.pro"
 make -j3
 cd "${OUT_PATH}"
 RES_PATH="${APPNAME}.app/Contents/Resources"
