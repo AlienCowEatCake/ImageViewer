@@ -1,6 +1,8 @@
 #if !defined (TP_TIFF_PREFIX_H_INCLUDED)
 #define TP_TIFF_PREFIX_H_INCLUDED
 
+#define TIFFOpenW tp_TIFFOpenW
+
 /*
 nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#define \1 tp_\1|' | LANG=C sort -u
 */
@@ -257,17 +259,6 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#d
 #define _TIFFsetString tp__TIFFsetString
 #define _TIFFwarningHandler tp__TIFFwarningHandler
 #define _TIFFwarningHandlerExt tp__TIFFwarningHandlerExt
-#define tp_TIFFSwabArrayOfDouble tp_tp_TIFFSwabArrayOfDouble
-#define tp_TIFFSwabArrayOfFloat tp_tp_TIFFSwabArrayOfFloat
-#define tp_TIFFSwabArrayOfLong tp_tp_TIFFSwabArrayOfLong
-#define tp_TIFFSwabArrayOfLong8 tp_tp_TIFFSwabArrayOfLong8
-#define tp_TIFFSwabArrayOfShort tp_tp_TIFFSwabArrayOfShort
-#define tp_TIFFSwabArrayOfTriples tp_tp_TIFFSwabArrayOfTriples
-#define tp_TIFFSwabDouble tp_tp_TIFFSwabDouble
-#define tp_TIFFSwabFloat tp_tp_TIFFSwabFloat
-#define tp_TIFFSwabLong tp_tp_TIFFSwabLong
-#define tp_TIFFSwabLong8 tp_tp_TIFFSwabLong8
-#define tp_TIFFSwabShort tp_tp_TIFFSwabShort
 #define uv_decode tp_uv_decode
 #define uv_encode tp_uv_encode
 
