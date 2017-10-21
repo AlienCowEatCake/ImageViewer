@@ -202,7 +202,7 @@ void RasterizedImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGra
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-	const QSharedPointer<IScaledImageProvider> &provider = m_impl->provider;
+    const QSharedPointer<IScaledImageProvider> &provider = m_impl->provider;
     if(!provider || !provider->isValid())
         return;
 
@@ -211,7 +211,7 @@ void RasterizedImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGra
     const qreal minScaleFactor = provider->minScaleFactor();
     const qreal newScaleFactor = std::max(std::min(deviceScaleFactor, maxScaleFactor), minScaleFactor);
 
-	RasterizerManager *rasterizerManager = m_impl->rasterizerManager.data();
+    RasterizerManager *rasterizerManager = m_impl->rasterizerManager.data();
 
     if(!rasterizerManager->hasScaledData())
         rasterizerManager->execTaskSynchronously(newScaleFactor);

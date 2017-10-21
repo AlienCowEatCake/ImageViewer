@@ -226,7 +226,7 @@ void ResampledImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGrap
     if(newScaleFactor >= 1 || newScaleFactor <= 0 || scaledPixmapSize == originalPixmapSize)
         return m_impl->paintDefault(painter);
 
-	ResamplerManager *resamplerManager = m_impl->resamplerManager.data();
+    ResamplerManager *resamplerManager = m_impl->resamplerManager.data();
 
     resamplerManager->beginScaledImageProcessing();
     const qreal scaleFactor = !resamplerManager->hasScaledData() ? newScaleFactor : resamplerManager->getScaledScaleFactor();
