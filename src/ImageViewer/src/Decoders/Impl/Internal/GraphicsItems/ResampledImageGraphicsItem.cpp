@@ -226,18 +226,20 @@ void ResampledImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGrap
     if(newScaleFactor >= 1 || newScaleFactor <= 0 || scaledPixmapSize == originalPixmapSize)
         return m_impl->paintDefault(painter);
 
-    m_impl->resamplerManager->beginScaledImageProcessing();
-    const qreal scaleFactor = !m_impl->resamplerManager->hasScaledData() ? newScaleFactor : m_impl->resamplerManager->getScaledScaleFactor();
-    if(m_impl->resamplerManager->hasScaledData() && GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, scaleFactor))
+	ResamplerManager *resamplerManager = m_impl->resamplerManager.data();
+
+    resamplerManager->beginScaledImageProcessing();
+    const qreal scaleFactor = !resamplerManager->hasScaledData() ? newScaleFactor : resamplerManager->getScaledScaleFactor();
+    if(resamplerManager->hasScaledData() && GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, scaleFactor))
     {
         m_impl->paintResampled(painter);
-        m_impl->resamplerManager->endScaledImageProcessing();
+        resamplerManager->endScaledImageProcessing();
         return;
     }
-    m_impl->resamplerManager->endScaledImageProcessing();
+    resamplerManager->endScaledImageProcessing();
 
     m_impl->paintDefault(painter);
-    m_impl->resamplerManager->startTask(newScaleFactor);
+    resamplerManager->startTask(newScaleFactor);
 }
 
 // ====================================================================================================

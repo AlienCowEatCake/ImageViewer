@@ -202,27 +202,30 @@ void RasterizedImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGra
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    if(!m_impl->provider || !m_impl->provider->isValid())
+	const QSharedPointer<IScaledImageProvider> &provider = m_impl->provider;
+    if(!provider || !provider->isValid())
         return;
 
     const qreal deviceScaleFactor = GraphicsItemUtils::GetDeviceScaleFactor(painter);
-    const qreal maxScaleFactor = m_impl->provider->maxScaleFactor();
-    const qreal minScaleFactor = m_impl->provider->minScaleFactor();
+    const qreal maxScaleFactor = provider->maxScaleFactor();
+    const qreal minScaleFactor = provider->minScaleFactor();
     const qreal newScaleFactor = std::max(std::min(deviceScaleFactor, maxScaleFactor), minScaleFactor);
 
-    if(!m_impl->rasterizerManager->hasScaledData())
-        m_impl->rasterizerManager->execTaskSynchronously(newScaleFactor);
+	RasterizerManager *rasterizerManager = m_impl->rasterizerManager.data();
 
-    if(!m_impl->rasterizerManager->hasScaledData())
+    if(!rasterizerManager->hasScaledData())
+        rasterizerManager->execTaskSynchronously(newScaleFactor);
+
+    if(!rasterizerManager->hasScaledData())
         return;
 
     painter->setRenderHint(QPainter::SmoothPixmapTransform, m_impl->transformationMode == Qt::SmoothTransformation);
-    m_impl->rasterizerManager->beginScaledImageProcessing();
+    rasterizerManager->beginScaledImageProcessing();
     m_impl->drawScaledImage(painter);
-    m_impl->rasterizerManager->endScaledImageProcessing();
+    rasterizerManager->endScaledImageProcessing();
 
-    if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, m_impl->rasterizerManager->getScaledScaleFactor()))
-        m_impl->rasterizerManager->startTask(newScaleFactor);
+    if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, rasterizerManager->getScaledScaleFactor()))
+        rasterizerManager->startTask(newScaleFactor);
 }
 
 // ====================================================================================================

@@ -16,7 +16,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-${CMD_QMAKE} CONFIG+="release" LIBS+=-dead_strip CONFIG+="x86_64" -r -spec unsupported/macx-clang QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.5 "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip CONFIG+="x86_64" -r -spec unsupported/macx-clang QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.5 "../${PROJECT}.pro"
 make
 cd "${OUT_PATH}"
 cp -a "${BUILD_PATH}/../${INFO_PLIST}" "${APPNAME}.app/Contents/Info.plist"

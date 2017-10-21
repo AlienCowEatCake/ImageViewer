@@ -15,7 +15,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake CONFIG+="release" QTPLUGIN.imageformats="qico qsvg qtiff" ..\%PROJECT%.pro
+qmake -r CONFIG+="release" QTPLUGIN.imageformats="qico qsvg qtiff" ..\%PROJECT%.pro
 nmake
 copy %APP_PATH%\release\%PROJECT%.exe ..\%PROJECT%%SUFFIX%.exe
 cd ..

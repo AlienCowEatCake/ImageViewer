@@ -16,7 +16,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-${CMD_QMAKE} CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.7 "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.7 "../${PROJECT}.pro"
 make -j3
 cd "${OUT_PATH}"
 RES_PATH="${APPNAME}.app/Contents/Resources"
