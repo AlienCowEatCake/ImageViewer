@@ -54,38 +54,32 @@ Version GetCurrentMacVersionImpl()
     AUTORELEASE_POOL;
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_10
-
     NSProcessInfo *processInfo = [NSProcessInfo processInfo];
     if([processInfo respondsToSelector:@selector(operatingSystemVersion)])
     {
         NSOperatingSystemVersion version = [processInfo operatingSystemVersion];
         return CreateVersion(version.majorVersion, version.minorVersion, version.patchVersion);
     }
-
 #endif
 
     SInt32 majorVersion = 0, minorVersion = 0, bugFixVersion = 0;
-    /// @note Gestalt is deprecated!
-//    Gestalt(gestaltSystemVersionMajor, &majorVersion);
-//    Gestalt(gestaltSystemVersionMinor, &minorVersion);
-//    Gestalt(gestaltSystemVersionBugFix, &bugFixVersion);
-
+#if MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_8
+    Gestalt(gestaltSystemVersionMajor, &majorVersion);
+    Gestalt(gestaltSystemVersionMinor, &minorVersion);
+    Gestalt(gestaltSystemVersionBugFix, &bugFixVersion);
+#else
     typedef OSErr (*Gestalt_t)(OSType selector, SInt32 *response);
-    static Gestalt_t Gestalt_f = NULL;
-    static bool hasInitializedGestalt = false;
-    if(!hasInitializedGestalt)
-    {
-        CFBundleRef bundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.CoreServices"));
-        if(bundle)
-            Gestalt_f = reinterpret_cast<Gestalt_t>(CFBundleGetFunctionPointerForName(bundle, CFSTR("Gestalt")));
-        hasInitializedGestalt = true;
-    }
+    Gestalt_t Gestalt_f = NULL;
+    CFBundleRef coreServicesBundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.CoreServices"));
+    if(coreServicesBundle)
+        Gestalt_f = reinterpret_cast<Gestalt_t>(CFBundleGetFunctionPointerForName(coreServicesBundle, CFSTR("Gestalt")));
     if(Gestalt_f)
     {
         Gestalt_f('sys1', &majorVersion);
         Gestalt_f('sys2', &minorVersion);
         Gestalt_f('sys3', &bugFixVersion);
     }
+#endif
     return CreateVersion(majorVersion, minorVersion, bugFixVersion);
 }
 
