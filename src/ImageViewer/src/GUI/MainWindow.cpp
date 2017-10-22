@@ -110,6 +110,7 @@ struct MainWindow::Impl
 {
     Impl(MainWindow *mainWindow)
         : mainWindow(mainWindow)
+        , ui(new UI(mainWindow))
         , settings(new GUISettings(mainWindow))
         , supportedFormats(DecodersManager::getInstance().supportedFormatsWithWildcards())
         , isFullScreenMode(false)
@@ -130,7 +131,7 @@ struct MainWindow::Impl
 
     bool isFileOpened() const
     {
-        return mainWindow->m_ui->imageViewerWidget->imageSize().isValid();
+        return ui->imageViewerWidget->imageSize().isValid();
     }
 
     void updateDirectoryInfo(const QString &path, bool force = false)
@@ -175,25 +176,25 @@ struct MainWindow::Impl
         {
             filesInCurrentDirectory.clear();
             currentDirectory.clear();
-            mainWindow->m_ui->navigateNext->setEnabled(false);
-            mainWindow->m_ui->navigatePrevious->setEnabled(false);
-            mainWindow->m_ui->startSlideShow->setEnabled(false);
-            mainWindow->m_ui->actionNavigateNext->setEnabled(false);
-            mainWindow->m_ui->actionNavigatePrevious->setEnabled(false);
-            mainWindow->m_ui->actionStartSlideShow->setEnabled(false);
+            ui->navigateNext->setEnabled(false);
+            ui->navigatePrevious->setEnabled(false);
+            ui->startSlideShow->setEnabled(false);
+            ui->actionNavigateNext->setEnabled(false);
+            ui->actionNavigatePrevious->setEnabled(false);
+            ui->actionStartSlideShow->setEnabled(false);
         }
         else
         {
-            mainWindow->m_ui->navigateNext->setEnabled(true);
-            mainWindow->m_ui->navigatePrevious->setEnabled(true);
-            mainWindow->m_ui->startSlideShow->setEnabled(true);
-            mainWindow->m_ui->actionNavigateNext->setEnabled(true);
-            mainWindow->m_ui->actionNavigatePrevious->setEnabled(true);
-            mainWindow->m_ui->actionStartSlideShow->setEnabled(true);
+            ui->navigateNext->setEnabled(true);
+            ui->navigatePrevious->setEnabled(true);
+            ui->startSlideShow->setEnabled(true);
+            ui->actionNavigateNext->setEnabled(true);
+            ui->actionNavigatePrevious->setEnabled(true);
+            ui->actionStartSlideShow->setEnabled(true);
         }
         const bool deletionEnabled = fileInfo.exists() && fileInfo.isWritable() && isFileOpened();
-        mainWindow->m_ui->deleteFile->setEnabled(deletionEnabled);
-        mainWindow->m_ui->actionDeleteFile->setEnabled(deletionEnabled);
+        ui->deleteFile->setEnabled(deletionEnabled);
+        ui->actionDeleteFile->setEnabled(deletionEnabled);
     }
 
     void onFileClosed()
@@ -204,17 +205,40 @@ struct MainWindow::Impl
         filesInCurrentDirectory.clear();
         currentDirectory.clear();
         currentIndexInDirectory = -1;
-        mainWindow->m_ui->navigateNext->setEnabled(false);
-        mainWindow->m_ui->navigatePrevious->setEnabled(false);
-        mainWindow->m_ui->startSlideShow->setEnabled(false);
-        mainWindow->m_ui->deleteFile->setEnabled(false);
-        mainWindow->m_ui->actionNavigateNext->setEnabled(false);
-        mainWindow->m_ui->actionNavigatePrevious->setEnabled(false);
-        mainWindow->m_ui->actionStartSlideShow->setEnabled(false);
-        mainWindow->m_ui->actionDeleteFile->setEnabled(false);
+        ui->navigateNext->setEnabled(false);
+        ui->navigatePrevious->setEnabled(false);
+        ui->startSlideShow->setEnabled(false);
+        ui->deleteFile->setEnabled(false);
+        ui->actionNavigateNext->setEnabled(false);
+        ui->actionNavigatePrevious->setEnabled(false);
+        ui->actionStartSlideShow->setEnabled(false);
+        ui->actionDeleteFile->setEnabled(false);
+    }
+
+    void syncFullScreen()
+    {
+        if((isFullScreenMode && mainWindow->isFullScreen()) || (!isFullScreenMode && !mainWindow->isFullScreen()))
+            return;
+
+        const bool toFullScreenMode = mainWindow->isFullScreen();
+        isFullScreenMode = toFullScreenMode;
+        if(toFullScreenMode)
+        {
+            ui->menubar->setVisible(false);
+            ui->toolbar->setVisible(false);
+        }
+        else
+        {
+            ui->menubar->setVisible(settings->menuBarVisible());
+            ui->toolbar->setVisible(settings->toolBarVisible());
+        }
+        ui->zoomFullScreen->setChecked(toFullScreenMode);
+        ui->actionZoomFullScreen->setChecked(toFullScreenMode);
+        mainWindow->updateBackgroundColor();
     }
 
     MainWindow *mainWindow;
+    QScopedPointer<UI> ui;
     GUISettings *settings;
     const QStringList supportedFormats;
     bool isFullScreenMode;
@@ -232,57 +256,57 @@ struct MainWindow::Impl
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , m_ui(new UI(this))
     , m_impl(new Impl(this))
 {
     setAttribute(Qt::WA_DeleteOnClose);
     setAcceptDrops(true);
 
-    ImageViewerWidget *imageViewerWidget = m_ui->imageViewerWidget;
+    QScopedPointer<UI> &ui = m_impl->ui;
+    ImageViewerWidget *imageViewerWidget = ui->imageViewerWidget;
 
     connect(imageViewerWidget, SIGNAL(zoomLevelChanged(qreal)), this, SLOT(updateWindowTitle()));
 
-    connect(m_ui->navigatePrevious, SIGNAL(clicked()), this, SLOT(onOpenPreviousRequested()));
-    connect(m_ui->navigateNext, SIGNAL(clicked()), this, SLOT(onOpenNextRequested()));
-    connect(m_ui->startSlideShow, SIGNAL(clicked()), this, SLOT(switchSlideShowMode()));
-    connect(m_ui->zoomIn, SIGNAL(clicked()), imageViewerWidget, SLOT(zoomIn()));
-    connect(m_ui->zoomOut, SIGNAL(clicked()), imageViewerWidget, SLOT(zoomOut()));
-    connect(m_ui->zoomFitToWindow, SIGNAL(clicked()), this, SLOT(onZoomFitToWindowClicked()));
-    connect(m_ui->zoomOriginalSize, SIGNAL(clicked()), this, SLOT(onZoomOriginalSizeClicked()));
-    connect(m_ui->zoomFullScreen, SIGNAL(clicked()), this, SLOT(switchFullScreenMode()));
-    connect(m_ui->rotateCounterclockwise, SIGNAL(clicked()), imageViewerWidget, SLOT(rotateCounterclockwise()));
-    connect(m_ui->rotateClockwise, SIGNAL(clicked()), imageViewerWidget, SLOT(rotateClockwise()));
-    connect(m_ui->flipHorizontal, SIGNAL(clicked()), imageViewerWidget, SLOT(flipHorizontal()));
-    connect(m_ui->flipVertical, SIGNAL(clicked()), imageViewerWidget, SLOT(flipVertical()));
-    connect(m_ui->openFile, SIGNAL(clicked()), this, SLOT(onOpenFileWithDialogRequested()));
-    connect(m_ui->saveFileAs, SIGNAL(clicked()), this, SLOT(onSaveAsRequested()));
-    connect(m_ui->deleteFile, SIGNAL(clicked()), this, SLOT(onDeleteFileRequested()));
-    connect(m_ui->preferences, SIGNAL(clicked()), this, SLOT(showPreferences()));
-    connect(m_ui->exit, SIGNAL(clicked()), this, SLOT(onExitRequested()));
-    connect(m_ui->actionOpen, SIGNAL(triggered()), this, SLOT(onOpenFileWithDialogRequested()));
-    connect(m_ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(onSaveAsRequested()));
-    connect(m_ui->actionNavigatePrevious, SIGNAL(triggered()), this, SLOT(onOpenPreviousRequested()));
-    connect(m_ui->actionNavigateNext, SIGNAL(triggered()), this, SLOT(onOpenNextRequested()));
-    connect(m_ui->actionStartSlideShow, SIGNAL(triggered()), this, SLOT(switchSlideShowMode()));
-    connect(m_ui->actionPreferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
-    connect(m_ui->actionExit, SIGNAL(triggered()), this, SLOT(onExitRequested()));
-    connect(m_ui->actionRotateCounterclockwise, SIGNAL(triggered()), imageViewerWidget, SLOT(rotateCounterclockwise()));
-    connect(m_ui->actionRotateClockwise, SIGNAL(triggered()), imageViewerWidget, SLOT(rotateClockwise()));
-    connect(m_ui->actionFlipHorizontal, SIGNAL(triggered()), imageViewerWidget, SLOT(flipHorizontal()));
-    connect(m_ui->actionFlipVertical, SIGNAL(triggered()), imageViewerWidget, SLOT(flipVertical()));
-    connect(m_ui->actionDeleteFile, SIGNAL(triggered()), this, SLOT(onDeleteFileRequested()));
-    connect(m_ui->actionZoomIn, SIGNAL(triggered()), imageViewerWidget, SLOT(zoomIn()));
-    connect(m_ui->actionZoomOut, SIGNAL(triggered()), imageViewerWidget, SLOT(zoomOut()));
-    connect(m_ui->actionZoomReset, SIGNAL(triggered()), imageViewerWidget, SLOT(resetZoom()));
-    connect(m_ui->actionZoomFitToWindow, SIGNAL(triggered()), this, SLOT(onZoomFitToWindowClicked()));
-    connect(m_ui->actionZoomOriginalSize, SIGNAL(triggered()), this, SLOT(onZoomOriginalSizeClicked()));
-    connect(m_ui->actionZoomFullScreen, SIGNAL(triggered()), this, SLOT(switchFullScreenMode()));
-    connect(m_ui->actionShowMenuBar, SIGNAL(triggered()), this, SLOT(switchShowMenuBar()));
-    connect(m_ui->actionShowToolBar, SIGNAL(triggered()), this, SLOT(switchShowToolBar()));
-    connect(m_ui->actionEnglish, SIGNAL(triggered()), this, SLOT(onActionEnglishTriggered()));
-    connect(m_ui->actionRussian, SIGNAL(triggered()), this, SLOT(onActionRussianTriggered()));
-    connect(m_ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
-    connect(m_ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+    connect(ui->navigatePrevious, SIGNAL(clicked()), this, SLOT(onOpenPreviousRequested()));
+    connect(ui->navigateNext, SIGNAL(clicked()), this, SLOT(onOpenNextRequested()));
+    connect(ui->startSlideShow, SIGNAL(clicked()), this, SLOT(switchSlideShowMode()));
+    connect(ui->zoomIn, SIGNAL(clicked()), imageViewerWidget, SLOT(zoomIn()));
+    connect(ui->zoomOut, SIGNAL(clicked()), imageViewerWidget, SLOT(zoomOut()));
+    connect(ui->zoomFitToWindow, SIGNAL(clicked()), this, SLOT(onZoomFitToWindowClicked()));
+    connect(ui->zoomOriginalSize, SIGNAL(clicked()), this, SLOT(onZoomOriginalSizeClicked()));
+    connect(ui->zoomFullScreen, SIGNAL(clicked()), this, SLOT(switchFullScreenMode()));
+    connect(ui->rotateCounterclockwise, SIGNAL(clicked()), imageViewerWidget, SLOT(rotateCounterclockwise()));
+    connect(ui->rotateClockwise, SIGNAL(clicked()), imageViewerWidget, SLOT(rotateClockwise()));
+    connect(ui->flipHorizontal, SIGNAL(clicked()), imageViewerWidget, SLOT(flipHorizontal()));
+    connect(ui->flipVertical, SIGNAL(clicked()), imageViewerWidget, SLOT(flipVertical()));
+    connect(ui->openFile, SIGNAL(clicked()), this, SLOT(onOpenFileWithDialogRequested()));
+    connect(ui->saveFileAs, SIGNAL(clicked()), this, SLOT(onSaveAsRequested()));
+    connect(ui->deleteFile, SIGNAL(clicked()), this, SLOT(onDeleteFileRequested()));
+    connect(ui->preferences, SIGNAL(clicked()), this, SLOT(showPreferences()));
+    connect(ui->exit, SIGNAL(clicked()), this, SLOT(onExitRequested()));
+    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(onOpenFileWithDialogRequested()));
+    connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(onSaveAsRequested()));
+    connect(ui->actionNavigatePrevious, SIGNAL(triggered()), this, SLOT(onOpenPreviousRequested()));
+    connect(ui->actionNavigateNext, SIGNAL(triggered()), this, SLOT(onOpenNextRequested()));
+    connect(ui->actionStartSlideShow, SIGNAL(triggered()), this, SLOT(switchSlideShowMode()));
+    connect(ui->actionPreferences, SIGNAL(triggered()), this, SLOT(showPreferences()));
+    connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(onExitRequested()));
+    connect(ui->actionRotateCounterclockwise, SIGNAL(triggered()), imageViewerWidget, SLOT(rotateCounterclockwise()));
+    connect(ui->actionRotateClockwise, SIGNAL(triggered()), imageViewerWidget, SLOT(rotateClockwise()));
+    connect(ui->actionFlipHorizontal, SIGNAL(triggered()), imageViewerWidget, SLOT(flipHorizontal()));
+    connect(ui->actionFlipVertical, SIGNAL(triggered()), imageViewerWidget, SLOT(flipVertical()));
+    connect(ui->actionDeleteFile, SIGNAL(triggered()), this, SLOT(onDeleteFileRequested()));
+    connect(ui->actionZoomIn, SIGNAL(triggered()), imageViewerWidget, SLOT(zoomIn()));
+    connect(ui->actionZoomOut, SIGNAL(triggered()), imageViewerWidget, SLOT(zoomOut()));
+    connect(ui->actionZoomReset, SIGNAL(triggered()), imageViewerWidget, SLOT(resetZoom()));
+    connect(ui->actionZoomFitToWindow, SIGNAL(triggered()), this, SLOT(onZoomFitToWindowClicked()));
+    connect(ui->actionZoomOriginalSize, SIGNAL(triggered()), this, SLOT(onZoomOriginalSizeClicked()));
+    connect(ui->actionZoomFullScreen, SIGNAL(triggered()), this, SLOT(switchFullScreenMode()));
+    connect(ui->actionShowMenuBar, SIGNAL(triggered()), this, SLOT(switchShowMenuBar()));
+    connect(ui->actionShowToolBar, SIGNAL(triggered()), this, SLOT(switchShowToolBar()));
+    connect(ui->actionEnglish, SIGNAL(triggered()), this, SLOT(onActionEnglishTriggered()));
+    connect(ui->actionRussian, SIGNAL(triggered()), this, SLOT(onActionRussianTriggered()));
+    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
+    connect(ui->actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
     GUISettings *settings = m_impl->settings;
 
@@ -304,10 +328,10 @@ MainWindow::MainWindow(QWidget *parent)
     updateSlideShowInterval();
     setLanguage();
 
-    m_ui->menubar->setVisible(settings->menuBarVisible());
-    m_ui->actionShowMenuBar->setChecked(settings->menuBarVisible());
-    m_ui->toolbar->setVisible(settings->toolBarVisible());
-    m_ui->actionShowToolBar->setChecked(settings->toolBarVisible());
+    ui->menubar->setVisible(settings->menuBarVisible());
+    ui->actionShowMenuBar->setChecked(settings->menuBarVisible());
+    ui->toolbar->setVisible(settings->toolBarVisible());
+    ui->actionShowToolBar->setChecked(settings->toolBarVisible());
 
     restoreState(settings->mainWindowState());
     restoreGeometry(settings->mainWindowGeometry());
@@ -315,7 +339,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    m_impl->settings->setZoomLevel(m_ui->imageViewerWidget->zoomLevel());
+    m_impl->settings->setZoomLevel(m_impl->ui->imageViewerWidget->zoomLevel());
     qApp->quit();
 }
 
@@ -325,8 +349,8 @@ void MainWindow::setLanguage(const QString &newLanguage)
     static QMap<QString, QAction*> languagesMap;
     if(languagesMap.isEmpty())
     {
-        languagesMap[QString::fromLatin1("en")] = m_ui->actionEnglish;
-        languagesMap[QString::fromLatin1("ru")] = m_ui->actionRussian;
+        languagesMap[QString::fromLatin1("en")] = m_impl->ui->actionEnglish;
+        languagesMap[QString::fromLatin1("ru")] = m_impl->ui->actionRussian;
     }
 
     // Определим системную локаль
@@ -384,7 +408,7 @@ void MainWindow::setLanguage(const QString &newLanguage)
     languagesMap[language]->setChecked(true);
 
     // Перегрузим ресурсы в окнах
-    m_ui->retranslate();
+    m_impl->ui->retranslate();
     updateWindowTitle();
 }
 
@@ -399,12 +423,12 @@ void MainWindow::updateWindowTitle()
     QString label;
     if(m_impl->isFileOpened())
     {
-        const QSize imageSize = m_ui->imageViewerWidget->imageSize();
+        const QSize imageSize = m_impl->ui->imageViewerWidget->imageSize();
         label = QFileInfo(m_impl->settings->lastOpenedPath()).fileName();
         label.append(QString::fromLatin1(" (%1x%2) %3% - %4")
                      .arg(imageSize.width())
                      .arg(imageSize.height())
-                     .arg(static_cast<quint64>(m_ui->imageViewerWidget->zoomLevel() * 100))
+                     .arg(static_cast<quint64>(m_impl->ui->imageViewerWidget->zoomLevel() * 100))
                      .arg(qApp->applicationName()));
     }
     else if(m_impl->currentIndexInDirectory >= 0)
@@ -442,37 +466,26 @@ void MainWindow::showPreferences()
 void MainWindow::switchFullScreenMode()
 {
     const bool toFullScreenMode = !m_impl->isFullScreenMode;
-    const bool toNormalMode = !toFullScreenMode;
-    m_impl->isFullScreenMode = toFullScreenMode;
     GUISettings *settings = m_impl->settings;
     if(toFullScreenMode)
     {
         settings->setMainWindowGeometry(saveGeometry());
         settings->setMainWindowState(saveState());
         showFullScreen();
-        m_ui->menubar->setVisible(false);
-        m_ui->toolbar->setVisible(false);
     }
     else
-    {
-        m_ui->menubar->setVisible(settings->menuBarVisible());
-        m_ui->toolbar->setVisible(settings->toolBarVisible());
-    }
-    m_ui->zoomFullScreen->setChecked(toFullScreenMode);
-    m_ui->actionZoomFullScreen->setChecked(toFullScreenMode);
-    updateBackgroundColor();
-    if(toNormalMode)
     {
         showNormal();
         restoreState(settings->mainWindowState());
         restoreGeometry(settings->mainWindowGeometry());
     }
+    m_impl->syncFullScreen();
 }
 
 void MainWindow::switchSlideShowMode()
 {
     m_impl->isSlideShowMode = !m_impl->isSlideShowMode;
-    m_ui->setSlideShowMode(m_impl->isSlideShowMode);
+    m_impl->ui->setSlideShowMode(m_impl->isSlideShowMode);
     if(m_impl->isSlideShowMode)
         m_impl->slideShowTimer.start();
     else
@@ -483,18 +496,18 @@ void MainWindow::switchShowMenuBar()
 {
     const bool newValue = !m_impl->settings->menuBarVisible();
     m_impl->settings->setMenuBarVisible(newValue);
-    m_ui->actionShowMenuBar->setChecked(newValue);
+    m_impl->ui->actionShowMenuBar->setChecked(newValue);
     if(!m_impl->isFullScreenMode)
-        m_ui->menubar->setVisible(newValue);
+        m_impl->ui->menubar->setVisible(newValue);
 }
 
 void MainWindow::switchShowToolBar()
 {
     const bool newValue = !m_impl->settings->toolBarVisible();
     m_impl->settings->setToolBarVisible(newValue);
-    m_ui->actionShowToolBar->setChecked(newValue);
+    m_impl->ui->actionShowToolBar->setChecked(newValue);
     if(!m_impl->isFullScreenMode)
-        m_ui->toolbar->setVisible(newValue);
+        m_impl->ui->toolbar->setVisible(newValue);
 }
 
 void MainWindow::onOpenPreviousRequested()
@@ -539,11 +552,11 @@ void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)
 {
     const bool modeIsFitToWindow = mode == ImageViewerWidget::ZOOM_FIT_TO_WINDOW;
     const bool modeIsOriginalSize = mode == ImageViewerWidget::ZOOM_IDENTITY;
-    m_ui->imageViewerWidget->setZoomMode(mode);
-    m_ui->zoomFitToWindow->setChecked(modeIsFitToWindow);
-    m_ui->zoomOriginalSize->setChecked(modeIsOriginalSize);
-    m_ui->actionZoomFitToWindow->setChecked(modeIsFitToWindow);
-    m_ui->actionZoomOriginalSize->setChecked(modeIsOriginalSize);
+    m_impl->ui->imageViewerWidget->setZoomMode(mode);
+    m_impl->ui->zoomFitToWindow->setChecked(modeIsFitToWindow);
+    m_impl->ui->zoomOriginalSize->setChecked(modeIsOriginalSize);
+    m_impl->ui->actionZoomFitToWindow->setChecked(modeIsFitToWindow);
+    m_impl->ui->actionZoomOriginalSize->setChecked(modeIsOriginalSize);
     m_impl->settings->setZoomMode(mode);
     updateWindowTitle();
 }
@@ -553,15 +566,15 @@ void MainWindow::onOpenFileRequested(const QString &filePath)
     QGraphicsItem *item = DecodersManager::getInstance().loadImage(filePath);
     if(item)
     {
-        m_ui->imageViewerWidget->setZoomMode(m_impl->settings->zoomMode());
-        m_ui->imageViewerWidget->setGraphicsItem(item);
-        m_ui->setImageControlsEnabled(true);
+        m_impl->ui->imageViewerWidget->setZoomMode(m_impl->settings->zoomMode());
+        m_impl->ui->imageViewerWidget->setGraphicsItem(item);
+        m_impl->ui->setImageControlsEnabled(true);
         m_impl->settings->setLastOpenedPath(filePath);
     }
     else
     {
-        m_ui->imageViewerWidget->clear();
-        m_ui->setImageControlsEnabled(false);
+        m_impl->ui->imageViewerWidget->clear();
+        m_impl->ui->setImageControlsEnabled(false);
         QMessageBox::critical(this, tr("Error"), tr("Failed to open file \"%1\"").arg(filePath));
     }
     m_impl->updateDirectoryInfo(filePath);
@@ -601,7 +614,7 @@ void MainWindow::onSaveAsRequested()
         return;
     const QString openedPath = m_impl->settings->lastOpenedPath();
     m_impl->imageSaver.setDefaultFilePath(openedPath);
-    m_impl->imageSaver.save(m_ui->imageViewerWidget->grabImage(), openedPath);
+    m_impl->imageSaver.save(m_impl->ui->imageViewerWidget->grabImage(), openedPath);
 }
 
 void MainWindow::onDeleteFileRequested()
@@ -637,8 +650,8 @@ void MainWindow::onDeleteFileRequested()
         }
     }
 
-    m_ui->imageViewerWidget->clear();
-    m_ui->setImageControlsEnabled(false);
+    m_impl->ui->imageViewerWidget->clear();
+    m_impl->ui->setImageControlsEnabled(false);
     if(m_impl->currentIndexInDirectory >= 0)
         m_impl->filesInCurrentDirectory.erase(m_impl->filesInCurrentDirectory.begin() + m_impl->currentIndexInDirectory);
     if(m_impl->filesInCurrentDirectory.size() > 0)
@@ -704,7 +717,7 @@ void MainWindow::updateBackgroundColor()
     const QColor color = m_impl->isFullScreenMode
             ? m_impl->settings->fullScreenBackgroundColor()
             : m_impl->settings->normalBackgroundColor();
-    m_ui->imageViewerWidget->setBackgroundColor(color);
+    m_impl->ui->imageViewerWidget->setBackgroundColor(color);
 }
 
 void MainWindow::changeEvent(QEvent *event)
@@ -716,7 +729,10 @@ void MainWindow::changeEvent(QEvent *event)
 #endif
     case QEvent::StyleChange:
     case QEvent::PaletteChange:
-        m_ui->updateIcons();
+        m_impl->ui->updateIcons();
+        break;
+    case QEvent::WindowStateChange:
+        m_impl->syncFullScreen();
         break;
     default:
         break;
@@ -790,16 +806,16 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             switchFullScreenMode();
         break;
     case Qt::Key_Up:
-        m_ui->imageViewerWidget->scrollUp();
+        m_impl->ui->imageViewerWidget->scrollUp();
         break;
     case Qt::Key_Down:
-        m_ui->imageViewerWidget->scrollDown();
+        m_impl->ui->imageViewerWidget->scrollDown();
         break;
     case Qt::Key_Left:
-        m_ui->imageViewerWidget->scrollLeft();
+        m_impl->ui->imageViewerWidget->scrollLeft();
         break;
     case Qt::Key_Right:
-        m_ui->imageViewerWidget->scrollRight();
+        m_impl->ui->imageViewerWidget->scrollRight();
         break;
     default:
         break;
@@ -809,6 +825,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
-    m_ui->contextMenu->exec(event->globalPos());
+    m_impl->ui->contextMenu->exec(event->globalPos());
     QMainWindow::contextMenuEvent(event);
 }

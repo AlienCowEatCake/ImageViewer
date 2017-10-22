@@ -82,7 +82,6 @@ protected:
 
 private:
     struct UI;
-    QScopedPointer<UI> m_ui;
     struct Impl;
     QScopedPointer<Impl> m_impl;
 };
