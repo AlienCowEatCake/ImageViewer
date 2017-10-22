@@ -19,6 +19,8 @@
 
 #include "ObjectiveCUtils_mac.h"
 
+#include <AvailabilityMacros.h>
+
 #include <cstring>
 #include <algorithm>
 
@@ -335,7 +337,7 @@ QPixmap QPixmapFromNSImage(const NSImage *image)
     if(!image)
         return pixmap;
 
-#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER)
     if(InfoUtils::MacVersionGreatOrEqual(10, 6))
     {
         // https://stackoverflow.com/questions/2548059/turning-an-nsimage-into-a-cgimageref
@@ -384,7 +386,7 @@ QPixmap QPixmapFromNSImage(const NSImage *image)
 
 NSImage *QPixmapToNSImage(const QPixmap &pixmap)
 {
-#if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER)
     if(InfoUtils::MacVersionGreatOrEqual(10, 6))
     {
         CFRAII<CGImageRef> imageRef = QPixmapToCGImageRef(pixmap);

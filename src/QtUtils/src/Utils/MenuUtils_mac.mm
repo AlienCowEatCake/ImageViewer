@@ -21,6 +21,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
+#include <AvailabilityMacros.h>
 
 #include "ObjectiveCUtils.h"
 

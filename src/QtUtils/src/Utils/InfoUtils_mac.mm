@@ -21,6 +21,7 @@
 
 #import <CoreServices/CoreServices.h>
 #import <Foundation/Foundation.h>
+#include <AvailabilityMacros.h>
 
 #include <QString>
 
@@ -53,7 +54,7 @@ Version GetCurrentMacVersionImpl()
 {
     AUTORELEASE_POOL;
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_10
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_10_AND_LATER)
     NSProcessInfo *processInfo = [NSProcessInfo processInfo];
     if([processInfo respondsToSelector:@selector(operatingSystemVersion)])
     {
@@ -63,7 +64,7 @@ Version GetCurrentMacVersionImpl()
 #endif
 
     SInt32 majorVersion = 0, minorVersion = 0, bugFixVersion = 0;
-#if MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_8
+#if !defined (AVAILABLE_MAC_OS_X_VERSION_10_8_AND_LATER)
     Gestalt(gestaltSystemVersionMajor, &majorVersion);
     Gestalt(gestaltSystemVersionMinor, &minorVersion);
     Gestalt(gestaltSystemVersionBugFix, &bugFixVersion);
