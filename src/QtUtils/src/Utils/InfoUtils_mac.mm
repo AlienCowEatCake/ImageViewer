@@ -20,76 +20,164 @@
 #include "InfoUtils.h"
 
 #import <CoreServices/CoreServices.h>
+#import <Foundation/Foundation.h>
 
 #include <QString>
 
+#include "ObjectiveCUtils.h"
+
 namespace InfoUtils {
+
+namespace {
+
+struct Version
+{
+    int major;
+    int minor;
+    int patch;
+
+    Version(const int major = -1, const int minor = -1, const int patch = -1)
+        : major(major)
+        , minor(minor)
+        , patch(patch)
+    {}
+};
+
+template <typename T>
+Version CreateVersion(const T major = -1, const T minor = -1, const T patch = -1)
+{
+    return Version(static_cast<int>(major), static_cast<int>(minor), static_cast<int>(patch));
+}
+
+Version GetCurrentMacVersionImpl()
+{
+    AUTORELEASE_POOL;
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_10
+
+    NSProcessInfo *processInfo = [NSProcessInfo processInfo];
+    if([processInfo respondsToSelector:@selector(operatingSystemVersion)])
+    {
+        NSOperatingSystemVersion version = [processInfo operatingSystemVersion];
+        return CreateVersion(version.majorVersion, version.minorVersion, version.patchVersion);
+    }
+
+#endif
+
+    SInt32 majorVersion = 0, minorVersion = 0, bugFixVersion = 0;
+    /// @note Gestalt is deprecated!
+//    Gestalt(gestaltSystemVersionMajor, &majorVersion);
+//    Gestalt(gestaltSystemVersionMinor, &minorVersion);
+//    Gestalt(gestaltSystemVersionBugFix, &bugFixVersion);
+
+    typedef OSErr (*Gestalt_t)(OSType selector, SInt32 *response);
+    static Gestalt_t Gestalt_f = NULL;
+    static bool hasInitializedGestalt = false;
+    if(!hasInitializedGestalt)
+    {
+        CFBundleRef bundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.CoreServices"));
+        if(bundle)
+            Gestalt_f = reinterpret_cast<Gestalt_t>(CFBundleGetFunctionPointerForName(bundle, CFSTR("Gestalt")));
+        hasInitializedGestalt = true;
+    }
+    if(Gestalt_f)
+    {
+        Gestalt_f('sys1', &majorVersion);
+        Gestalt_f('sys2', &minorVersion);
+        Gestalt_f('sys3', &bugFixVersion);
+    }
+    return CreateVersion(majorVersion, minorVersion, bugFixVersion);
+}
+
+Version GetCurrentMacVersion()
+{
+    static const Version version = GetCurrentMacVersionImpl();
+    return version;
+}
+
+} // namespace
+
+/// @brief Проверить текущую версию macOS
+bool MacVersionGreatOrEqual(const int major, const int minor, const int patch)
+{
+    const Version version = GetCurrentMacVersion();
+    if(version.major > major)
+        return true;
+    if(version.major < major)
+        return false;
+    if(version.minor > minor)
+        return true;
+    if(version.minor < minor)
+        return false;
+    if(version.patch > patch)
+        return true;
+    if(version.patch < patch)
+        return false;
+    return true;
+}
 
 /// @brief Получить человеко-читаемую информацию о системе
 QString GetSystemDescription()
 {
     QString result;
 
-    SInt32 majorVersion, minorVersion, bugFixVersion;
-    Gestalt(gestaltSystemVersionMajor, &majorVersion);
-    Gestalt(gestaltSystemVersionMinor, &minorVersion);
-    Gestalt(gestaltSystemVersionBugFix, &bugFixVersion);
+    const Version version = GetCurrentMacVersion();
 
-    if(majorVersion < 10)
+    if(version.major < 10)
         result.append(QString::fromLatin1("Mac OS"));
-    else if(majorVersion == 10 && minorVersion < 8)
+    else if(version.major == 10 && version.minor < 8)
         result.append(QString::fromLatin1("Mac OS X"));
-    else if(majorVersion == 10 && minorVersion < 12)
+    else if(version.major == 10 && version.minor < 12)
         result.append(QString::fromLatin1("OS X"));
     else
         result.append(QString::fromLatin1("macOS"));
 
-    result.append(QString::fromLatin1(" %1.%2").arg(majorVersion).arg(minorVersion));
-    if(bugFixVersion > 0)
-        result.append(QString::fromLatin1(".%1").arg(bugFixVersion));
+    result.append(QString::fromLatin1(" %1.%2").arg(version.major).arg(version.minor));
+    if(version.patch > 0)
+        result.append(QString::fromLatin1(".%1").arg(version.patch));
 
-    switch (majorVersion * 10 + minorVersion)
+    switch(version.major * 100 + version.minor)
     {
-    case 100:
+    case 1000:
         result.append(QString::fromLatin1(" \"Cheetah\""));
         break;
-    case 101:
+    case 1001:
         result.append(QString::fromLatin1(" \"Puma\""));
         break;
-    case 102:
+    case 1002:
         result.append(QString::fromLatin1(" \"Jaguar\""));
         break;
-    case 103:
+    case 1003:
         result.append(QString::fromLatin1(" \"Panther\""));
         break;
-    case 104:
+    case 1004:
         result.append(QString::fromLatin1(" \"Tiger\""));
         break;
-    case 105:
+    case 1005:
         result.append(QString::fromLatin1(" \"Leopard\""));
         break;
-    case 106:
+    case 1006:
         result.append(QString::fromLatin1(" \"Snow Leopard\""));
         break;
-    case 107:
+    case 1007:
         result.append(QString::fromLatin1(" \"Lion\""));
         break;
-    case 108:
+    case 1008:
         result.append(QString::fromLatin1(" \"Mountain Lion\""));
         break;
-    case 109:
+    case 1009:
         result.append(QString::fromLatin1(" \"Mavericks\""));
         break;
-    case 110:
+    case 1010:
         result.append(QString::fromLatin1(" \"Yosemite\""));
         break;
-    case 111:
+    case 1011:
         result.append(QString::fromLatin1(" \"El Capitan\""));
         break;
-    case 112:
+    case 1012:
         result.append(QString::fromLatin1(" \"Sierra\""));
         break;
-    case 113:
+    case 1013:
         result.append(QString::fromLatin1(" \"High Sierra\""));
         break;
     default:

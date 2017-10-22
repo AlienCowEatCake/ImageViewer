@@ -390,6 +390,15 @@ QString GetSystemDescription()
 
 #elif !defined (Q_OS_MAC)
 
+/// @brief Проверить текущую версию macOS
+bool MacVersionGreatOrEqual(const int major, const int minor, const int patch)
+{
+    Q_UNUSED(major);
+    Q_UNUSED(minor);
+    Q_UNUSED(patch);
+    return false;
+}
+
 /// @brief Получить человеко-читаемую информацию о системе
 QString GetSystemDescription()
 {

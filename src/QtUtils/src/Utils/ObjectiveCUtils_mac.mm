@@ -38,6 +38,8 @@
 //#include <QtMac>
 //#endif
 
+#include "InfoUtils.h"
+
 namespace ObjCUtils {
 
 namespace {
@@ -334,7 +336,7 @@ QPixmap QPixmapFromNSImage(const NSImage *image)
         return pixmap;
 
 #if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
-    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_SNOWLEOPARD)
+    if(InfoUtils::MacVersionGreatOrEqual(10, 6))
     {
         // https://stackoverflow.com/questions/2548059/turning-an-nsimage-into-a-cgimageref
         NSRect imageRect = NSMakeRect(0, 0, image.size.width, image.size.height);
@@ -383,7 +385,7 @@ QPixmap QPixmapFromNSImage(const NSImage *image)
 NSImage *QPixmapToNSImage(const QPixmap &pixmap)
 {
 #if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
-    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_SNOWLEOPARD)
+    if(InfoUtils::MacVersionGreatOrEqual(10, 6))
     {
         CFRAII<CGImageRef> imageRef = QPixmapToCGImageRef(pixmap);
         if(!imageRef)

@@ -24,6 +24,9 @@ class QString;
 
 namespace InfoUtils {
 
+/// @brief Проверить текущую версию macOS
+bool MacVersionGreatOrEqual(const int major, const int minor, const int patch = -1);
+
 /// @brief Получить человеко-читаемую информацию о системе
 QString GetSystemDescription();
 

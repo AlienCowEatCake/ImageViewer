@@ -41,6 +41,7 @@
 #include <QTime>
 #include <QDebug>
 
+#include "Utils/InfoUtils.h"
 #include "Utils/ObjectiveCUtils.h"
 
 #include "GraphicsItemUtils.h"
@@ -123,7 +124,7 @@ QRectF SVGBBox(WebView *webView)
 
 QRectF SVGBoundingClientRect(WebView *webView)
 {
-    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_10_8)
+    if(InfoUtils::MacVersionGreatOrEqual(10, 8))
     {
         return QRectF(
             static_cast<qreal>([[webView stringByEvaluatingJavaScriptFromString: @"document.querySelector('svg').getBoundingClientRect().x;"] doubleValue]),
@@ -141,7 +142,7 @@ QRectF SVGBoundingClientRect(WebView *webView)
 QRectF SVGActualBoundingBox(WebView *webView)
 {
     QRectF rect;
-    if(QSysInfo::MacintoshVersion >= QSysInfo::MV_10_8)
+    if(InfoUtils::MacVersionGreatOrEqual(10, 8))
         rect = DOMNodeActualBoundingBox([webView mainFrameDocument]);
     else
         rect = QRectFIntegerized(SVGBBox(webView));
@@ -504,7 +505,7 @@ void MacWebKitRasterizerGraphicsItem::Impl::init()
     {
         QRectF actualRect;
         const bool isSvg = ObjCUtils::QStringFromNSString([view stringByEvaluatingJavaScriptFromString: @"document.documentElement instanceof SVGElement;"]) == QString::fromLatin1("true");
-        const bool emptySVGViewBoxSupported = QSysInfo::MacintoshVersion >= QSysInfo::MV_10_8;
+        const bool emptySVGViewBoxSupported = InfoUtils::MacVersionGreatOrEqual(10, 8);
         if(isSvg)
         {
             const QRectF viewBox = SVGViewBoxAttribute(view);
