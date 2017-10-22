@@ -2,10 +2,10 @@ IDI_ICON1 ICON DISCARDABLE "../../icon/icon.ico"
 
 #include <windows.h>
 
-#define VER_FILEVERSION             0,99,9,0
-#define VER_FILEVERSION_STR         "0.99.9.0\0"
-#define VER_PRODUCTVERSION          0,99,9,0
-#define VER_PRODUCTVERSION_STR      "0.99.9\0"
+#define VER_FILEVERSION             0,99,10,0
+#define VER_FILEVERSION_STR         "0.99.10.0\0"
+#define VER_PRODUCTVERSION          0,99,10,0
+#define VER_PRODUCTVERSION_STR      "0.99.10\0"
 #define VER_FILEDESCRIPTION_STR     "Image Viewer"
 #define VER_INTERNALNAME_STR        "ImageViewer"
 #define VER_LEGALCOPYRIGHT_STR      "(c) Peter S. Zhigalov, 2017"
