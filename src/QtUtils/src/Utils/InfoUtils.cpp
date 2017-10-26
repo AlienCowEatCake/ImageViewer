@@ -58,7 +58,11 @@ namespace {
 QString compilerDescriptionInt()
 {
 #if defined(__clang__)
-    return QString::fromLatin1("Clang %1.%2.%3").arg(__clang_major__).arg(__clang_minor__).arg(__clang_patchlevel__);
+    QString prefix;
+#if defined (__apple_build_version__)
+    prefix = QString::fromLatin1("Apple ");
+#endif
+    return QString::fromLatin1("%1Clang %2.%3.%4").arg(prefix).arg(__clang_major__).arg(__clang_minor__).arg(__clang_patchlevel__);
 #elif defined (__GNUC__)
     QString prefix;
 #if defined (__MINGW32__)
