@@ -29,6 +29,7 @@
 #include <QDropEvent>
 #include <QMimeData>
 #include <QUrl>
+#include <QString>
 #include <QStringList>
 #include <QLocale>
 #include <QTranslator>
@@ -105,47 +106,29 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
 
     connect(imageViewerWidget, SIGNAL(zoomLevelChanged(qreal)), this, SLOT(updateWindowTitle()));
 
-    connect(ui.navigatePrevious             , SIGNAL(clicked())     , this              , SIGNAL(selectPreviousRequested())     );
-    connect(ui.navigateNext                 , SIGNAL(clicked())     , this              , SIGNAL(selectNextRequested())         );
-    connect(ui.startSlideShow               , SIGNAL(clicked())     , this              , SLOT(switchSlideShowMode())           );
-    connect(ui.zoomIn                       , SIGNAL(clicked())     , imageViewerWidget , SLOT(zoomIn())                        );
-    connect(ui.zoomOut                      , SIGNAL(clicked())     , imageViewerWidget , SLOT(zoomOut())                       );
-    connect(ui.zoomFitToWindow              , SIGNAL(clicked())     , this              , SLOT(onZoomFitToWindowRequested())    );
-    connect(ui.zoomOriginalSize             , SIGNAL(clicked())     , this              , SLOT(onZoomOriginalSizeRequested())   );
-    connect(ui.zoomFullScreen               , SIGNAL(clicked())     , this              , SLOT(switchFullScreenMode())          );
-    connect(ui.rotateCounterclockwise       , SIGNAL(clicked())     , imageViewerWidget , SLOT(rotateCounterclockwise())        );
-    connect(ui.rotateClockwise              , SIGNAL(clicked())     , imageViewerWidget , SLOT(rotateClockwise())               );
-    connect(ui.flipHorizontal               , SIGNAL(clicked())     , imageViewerWidget , SLOT(flipHorizontal())                );
-    connect(ui.flipVertical                 , SIGNAL(clicked())     , imageViewerWidget , SLOT(flipVertical())                  );
-    connect(ui.openFile                     , SIGNAL(clicked())     , this              , SIGNAL(openFileWithDialogRequested()) );
-    connect(ui.saveFileAs                   , SIGNAL(clicked())     , this              , SLOT(onSaveAsRequested())             );
-    connect(ui.deleteFile                   , SIGNAL(clicked())     , this              , SIGNAL(deleteFileRequested())         );
-    connect(ui.preferences                  , SIGNAL(clicked())     , this              , SIGNAL(showPreferencesRequested())    );
-    connect(ui.exit                         , SIGNAL(clicked())     , this              , SLOT(close())                         );
-    connect(ui.actionOpen                   , SIGNAL(triggered())   , this              , SIGNAL(openFileWithDialogRequested()) );
-    connect(ui.actionSaveAs                 , SIGNAL(triggered())   , this              , SLOT(onSaveAsRequested())             );
-    connect(ui.actionNavigatePrevious       , SIGNAL(triggered())   , this              , SIGNAL(selectPreviousRequested())     );
-    connect(ui.actionNavigateNext           , SIGNAL(triggered())   , this              , SIGNAL(selectNextRequested())         );
-    connect(ui.actionStartSlideShow         , SIGNAL(triggered())   , this              , SLOT(switchSlideShowMode())           );
-    connect(ui.actionPreferences            , SIGNAL(triggered())   , this              , SIGNAL(showPreferencesRequested())    );
-    connect(ui.actionExit                   , SIGNAL(triggered())   , this              , SLOT(close())                         );
-    connect(ui.actionRotateCounterclockwise , SIGNAL(triggered())   , imageViewerWidget , SLOT(rotateCounterclockwise())        );
-    connect(ui.actionRotateClockwise        , SIGNAL(triggered())   , imageViewerWidget , SLOT(rotateClockwise())               );
-    connect(ui.actionFlipHorizontal         , SIGNAL(triggered())   , imageViewerWidget , SLOT(flipHorizontal())                );
-    connect(ui.actionFlipVertical           , SIGNAL(triggered())   , imageViewerWidget , SLOT(flipVertical())                  );
-    connect(ui.actionDeleteFile             , SIGNAL(triggered())   , this              , SIGNAL(deleteFileRequested())         );
-    connect(ui.actionZoomIn                 , SIGNAL(triggered())   , imageViewerWidget , SLOT(zoomIn())                        );
-    connect(ui.actionZoomOut                , SIGNAL(triggered())   , imageViewerWidget , SLOT(zoomOut())                       );
-    connect(ui.actionZoomReset              , SIGNAL(triggered())   , imageViewerWidget , SLOT(resetZoom())                     );
-    connect(ui.actionZoomFitToWindow        , SIGNAL(triggered())   , this              , SLOT(onZoomFitToWindowRequested())    );
-    connect(ui.actionZoomOriginalSize       , SIGNAL(triggered())   , this              , SLOT(onZoomOriginalSizeRequested())   );
-    connect(ui.actionZoomFullScreen         , SIGNAL(triggered())   , this              , SLOT(switchFullScreenMode())          );
-    connect(ui.actionShowMenuBar            , SIGNAL(triggered())   , this              , SLOT(switchShowMenuBar())             );
-    connect(ui.actionShowToolBar            , SIGNAL(triggered())   , this              , SLOT(switchShowToolBar())             );
-    connect(ui.actionEnglish                , SIGNAL(triggered())   , this              , SLOT(onActionEnglishTriggered())      );
-    connect(ui.actionRussian                , SIGNAL(triggered())   , this              , SLOT(onActionRussianTriggered())      );
-    connect(ui.actionAbout                  , SIGNAL(triggered())   , this              , SIGNAL(showAboutRequested())          );
-    connect(ui.actionAboutQt                , SIGNAL(triggered())   , this              , SIGNAL(showAboutQtRequested())        );
+    ObjectsConnector::RegisterReceiver(SWITCH_SLIDESHOW_MODE_ID , this              , SLOT(switchSlideShowMode())           );
+    ObjectsConnector::RegisterReceiver(ZOOM_IN_ID               , imageViewerWidget , SLOT(zoomIn())                        );
+    ObjectsConnector::RegisterReceiver(ZOOM_OUT_ID              , imageViewerWidget , SLOT(zoomOut())                       );
+    ObjectsConnector::RegisterReceiver(ZOOM_DEFAULT_ID          , imageViewerWidget , SLOT(resetZoom())                     );
+    ObjectsConnector::RegisterReceiver(ZOOM_FIT_TO_WINDOW_ID    , this              , SLOT(onZoomFitToWindowRequested())    );
+    ObjectsConnector::RegisterReceiver(ZOOM_ORIGINAL_SIZE_ID    , this              , SLOT(onZoomOriginalSizeRequested())   );
+    ObjectsConnector::RegisterReceiver(SWITCH_FULLSCREEN_ID     , this              , SLOT(switchFullScreenMode())          );
+    ObjectsConnector::RegisterReceiver(ROTATE_CCW_ID            , imageViewerWidget , SLOT(rotateCounterclockwise())        );
+    ObjectsConnector::RegisterReceiver(ROTATE_CW_ID             , imageViewerWidget , SLOT(rotateClockwise())               );
+    ObjectsConnector::RegisterReceiver(FLIP_HORIZONTAL_ID       , imageViewerWidget , SLOT(flipHorizontal())                );
+    ObjectsConnector::RegisterReceiver(FLIP_VERTICAL_ID         , imageViewerWidget , SLOT(flipVertical())                  );
+    ObjectsConnector::RegisterReceiver(SAVE_AS_ID               , this              , SLOT(onSaveAsRequested())             );
+    ObjectsConnector::RegisterReceiver(CLOSE_MAIN_WINDOW_ID     , this              , SLOT(close())                         );
+
+    ObjectsConnector::RegisterEmitter(SELECT_FIRST_ID       , this, SIGNAL(selectFirstRequested())                  );
+    ObjectsConnector::RegisterEmitter(SELECT_LAST_ID        , this, SIGNAL(selectLastRequested())                   );
+    ObjectsConnector::RegisterEmitter(OPEN_SINGLE_PATH_ID   , this, SIGNAL(openPathRequested(const QString&))       );
+    ObjectsConnector::RegisterEmitter(OPEN_MULTIPLE_PATHS_ID, this, SIGNAL(openPathsRequested(const QStringList&))  );
+
+    connect(ui.actionShowMenuBar, SIGNAL(triggered())   , this  , SLOT(switchShowMenuBar())         );
+    connect(ui.actionShowToolBar, SIGNAL(triggered())   , this  , SLOT(switchShowToolBar())         );
+    connect(ui.actionEnglish    , SIGNAL(triggered())   , this  , SLOT(onActionEnglishTriggered())  );
+    connect(ui.actionRussian    , SIGNAL(triggered())   , this  , SLOT(onActionRussianTriggered())  );
 
     connect(settings, SIGNAL(normalBackgroundColorChanged(const QColor&))       , this              , SLOT(updateBackgroundColor())                     );
     connect(settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&))   , this              , SLOT(updateBackgroundColor())                     );
@@ -153,7 +136,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     connect(settings, SIGNAL(slideShowIntervalChanged(int))                     , this              , SLOT(updateSlideShowInterval())                   );
     connect(settings, SIGNAL(wheelModeChanged(ImageViewerWidget::WheelMode))    , imageViewerWidget , SLOT(setWheelMode(ImageViewerWidget::WheelMode))  );
 
-    connect(&m_impl->slideShowTimer, SIGNAL(timeout()), this, SIGNAL(selectNextRequested()));
+    ObjectsConnector::RegisterEmitter(SELECT_NEXT_ID, &m_impl->slideShowTimer, SIGNAL(timeout()));
 
     imageViewerWidget->setZoomLevel(settings->zoomLevel());
     imageViewerWidget->setBackgroundColor(settings->normalBackgroundColor());
@@ -172,7 +155,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     restoreGeometry(settings->mainWindowGeometry());
 
     onUIStateChanged(m_impl->uiState, UICF_All);
-    RegisterUIStateChangedReceiver(this, SLOT(onUIStateChanged(const UIState&, const UIChangeFlags&)));
+    ObjectsConnector::RegisterReceiver(UI_STATE_CHANGED_ID, this, SLOT(onUIStateChanged(const UIState&, const UIChangeFlags&)));
 }
 
 MainWindow::~MainWindow()

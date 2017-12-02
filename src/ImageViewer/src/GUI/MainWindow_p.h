@@ -35,11 +35,13 @@
 #include <QShortcutEvent>
 
 #include "Utils/MenuUtils.h"
+#include "Utils/ObjectsConnector.h"
 #include "Utils/ObjectsUtils.h"
 #include "Utils/ThemeUtils.h"
 #include "Widgets/AdjustableFrame.h"
 
 #include "ImageViewerWidget.h"
+#include "ObjectsConnectorIDs.h"
 
 namespace {
 
@@ -160,31 +162,49 @@ struct MainWindow::UI
         , CONSTRUCT_OBJECT(menuView, QMenu, (menubar))
         , CONSTRUCT_OBJECT(menuLanguage, QMenu, (menubar))
         , CONSTRUCT_OBJECT(menuHelp, QMenu, (menubar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionOpen, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionSaveAs, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionNavigatePrevious, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionNavigateNext, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionStartSlideShow, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionPreferences, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionExit, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionRotateCounterclockwise, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionRotateClockwise, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionFlipHorizontal, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionFlipVertical, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionDeleteFile, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomOut, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomIn, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomReset, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomFitToWindow, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomOriginalSize, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomFullScreen, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionShowMenuBar, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionShowToolBar, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionEnglish, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionRussian, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionAbout, createWidgetAction(mainWindow))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionAboutQt, createWidgetAction(mainWindow))
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionOpen                  , createWidgetAction(mainWindow, OPEN_FILE_WITH_DIALOG_ID)  )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionSaveAs                , createWidgetAction(mainWindow, SAVE_AS_ID)                )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionNavigatePrevious      , createWidgetAction(mainWindow, SELECT_PREVIOUS_ID)        )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionNavigateNext          , createWidgetAction(mainWindow, SELECT_NEXT_ID)            )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionStartSlideShow        , createWidgetAction(mainWindow, SWITCH_SLIDESHOW_MODE_ID)  )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionPreferences           , createWidgetAction(mainWindow, SHOW_PREFERENCES_ID)       )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionExit                  , createWidgetAction(mainWindow, CLOSE_MAIN_WINDOW_ID)      )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionRotateCounterclockwise, createWidgetAction(mainWindow, ROTATE_CCW_ID)             )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionRotateClockwise       , createWidgetAction(mainWindow, ROTATE_CW_ID)              )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionFlipHorizontal        , createWidgetAction(mainWindow, FLIP_HORIZONTAL_ID)        )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionFlipVertical          , createWidgetAction(mainWindow, FLIP_VERTICAL_ID)          )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionDeleteFile            , createWidgetAction(mainWindow, DELETE_FILE_ID)            )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomOut               , createWidgetAction(mainWindow, ZOOM_OUT_ID)               )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomIn                , createWidgetAction(mainWindow, ZOOM_IN_ID)                )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomReset             , createWidgetAction(mainWindow, ZOOM_DEFAULT_ID)           )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomFitToWindow       , createWidgetAction(mainWindow, ZOOM_FIT_TO_WINDOW_ID)     )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomOriginalSize      , createWidgetAction(mainWindow, ZOOM_ORIGINAL_SIZE_ID)     )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomFullScreen        , createWidgetAction(mainWindow, SWITCH_FULLSCREEN_ID)      )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionShowMenuBar           , createWidgetAction(mainWindow)                            )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionShowToolBar           , createWidgetAction(mainWindow)                            )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionEnglish               , createWidgetAction(mainWindow)                            )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionRussian               , createWidgetAction(mainWindow)                            )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionAbout                 , createWidgetAction(mainWindow, SHOW_ABOUT_ID)             )
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionAboutQt               , createWidgetAction(mainWindow, SHOW_ABOUT_QT_ID)          )
     {
+        ObjectsConnector::RegisterEmitter(SELECT_PREVIOUS_ID        , navigatePrevious          , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(SELECT_NEXT_ID            , navigateNext              , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(SWITCH_SLIDESHOW_MODE_ID  , startSlideShow            , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(ZOOM_IN_ID                , zoomIn                    , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(ZOOM_OUT_ID               , zoomOut                   , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(ZOOM_FIT_TO_WINDOW_ID     , zoomFitToWindow           , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(ZOOM_ORIGINAL_SIZE_ID     , zoomOriginalSize          , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(SWITCH_FULLSCREEN_ID      , zoomFullScreen            , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(ROTATE_CCW_ID             , rotateCounterclockwise    , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(ROTATE_CW_ID              , rotateClockwise           , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(FLIP_HORIZONTAL_ID        , flipHorizontal            , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(FLIP_VERTICAL_ID          , flipVertical              , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(OPEN_FILE_WITH_DIALOG_ID  , openFile                  , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(SAVE_AS_ID                , saveFileAs                , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(DELETE_FILE_ID            , deleteFile                , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(SHOW_PREFERENCES_ID       , preferences               , SIGNAL(clicked()) );
+        ObjectsConnector::RegisterEmitter(CLOSE_MAIN_WINDOW_ID      , exit                      , SIGNAL(clicked()) );
+
 #if defined (Q_OS_MAC)
         QStyle *style = NULL;
         if(QStyleFactory::keys().contains(QString::fromLatin1("Fusion"), Qt::CaseInsensitive))
@@ -539,11 +559,13 @@ private:
         return separator;
     }
 
-    QAction *createWidgetAction(QWidget *widget)
+    QAction *createWidgetAction(QWidget *widget, const char * const id = NULL)
     {
         QAction *action = new QAction(widget);
         widget->addAction(action);
         action->installEventFilter(actionsEventFilter);
+        if(id)
+            ObjectsConnector::RegisterEmitter(id, action, SIGNAL(triggered()));
         return action;
     }
 
@@ -604,8 +626,10 @@ private:
     {
 #if defined (Q_OS_MAC)
         static QMenu dockMenu;
+        QAction *action = new QAction(qApp->translate("Dock", "New Window"), &dockMenu);
+        ObjectsConnector::RegisterEmitter(OPEN_NEW_WINDOW_ID, action, SIGNAL(triggered()));
         dockMenu.clear();
-        dockMenu.addAction(qApp->translate("Dock", "New Window"), mainWindow, SIGNAL(openNewWindowRequested()));
+        dockMenu.addAction(action);
         MenuUtils::SetDockMenu(&dockMenu);
 #endif
     }

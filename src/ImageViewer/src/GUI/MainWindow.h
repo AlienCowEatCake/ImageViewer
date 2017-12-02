@@ -21,12 +21,13 @@
 #define MAINWINDOW_H_INCLUDED
 
 #include <QMainWindow>
-#include <QString>
 
 #include "Utils/ScopedPointer.h"
 #include "ImageViewerWidget.h"
 #include "UIState.h"
 
+class QString;
+class QStringList;
 class GUISettings;
 
 class MainWindow : public QMainWindow
@@ -35,19 +36,10 @@ class MainWindow : public QMainWindow
     Q_DISABLE_COPY(MainWindow)
 
 signals:
-    void openNewWindowRequested();
-    void selectNextRequested();
-    void selectPreviousRequested();
     void selectFirstRequested();
     void selectLastRequested();
-    void deleteFileRequested();
     void openPathRequested(const QString &path);
     void openPathsRequested(const QStringList &paths);
-    void openFileWithDialogRequested();
-
-    void showAboutRequested();
-    void showPreferencesRequested();
-    void showAboutQtRequested();
 
     void closed();
 

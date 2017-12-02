@@ -26,6 +26,9 @@
 #include "FileManager.h"
 #include "UIState.h"
 
+class QString;
+class QStringList;
+
 class MainController : public QObject
 {
     Q_OBJECT

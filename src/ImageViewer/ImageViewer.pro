@@ -65,7 +65,7 @@ SOURCES += \
     src/GUI/ImageViewerWidget.cpp \
     src/GUI/SettingsDialog.cpp \
     src/GUI/AboutDialog.cpp \
-    src/GUI/UIState.cpp \
+    src/GUI/ObjectsConnectorIDs.cpp \
     src/Decoders/DecodersManager.cpp \
     src/Decoders/Impl/DecoderQImage.cpp \
     src/Decoders/Impl/DecoderQMovie.cpp \
@@ -97,6 +97,7 @@ HEADERS += \
     src/GUI/SettingsDialog_p.h \
     src/GUI/AboutDialog.h \
     src/GUI/AboutDialog_p.h \
+    src/GUI/ObjectsConnectorIDs.h \
     src/GUI/UIState.h \
     src/Decoders/DecodersManager.h \
     src/Decoders/IDecoder.h \

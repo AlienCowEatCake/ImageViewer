@@ -26,10 +26,13 @@
 #include <QMessageBox>
 #include <QStringList>
 
+#include "Utils/ObjectsConnector.h"
+
 #include "Decoders/DecodersManager.h"
 #include "AboutDialog.h"
 #include "GUISettings.h"
 #include "MainWindow.h"
+#include "ObjectsConnectorIDs.h"
 #include "SettingsDialog.h"
 
 struct MainController::Impl
@@ -79,23 +82,24 @@ MainController::MainController(QObject *parent)
     : QObject(parent)
     , m_impl(new Impl(this))
 {
-    RegisterUIStateChangedEmitter(this, SIGNAL(uiStateChanged(const UIState&, const UIChangeFlags&)));
+    ObjectsConnector::RegisterEmitter(UI_STATE_CHANGED_ID, this, SIGNAL(uiStateChanged(const UIState&, const UIChangeFlags&)));
     connect(&m_impl->fileManager, SIGNAL(stateChanged(const FileManager::ChangeFlags&)), this, SLOT(onFileManagerStateChanged(const FileManager::ChangeFlags&)));
 
     MainWindow * const mainWindow = &m_impl->mainWindow;
-    connect(mainWindow, SIGNAL(openNewWindowRequested())                , this, SLOT(openNewWindow())               );
-    connect(mainWindow, SIGNAL(selectNextRequested())                   , this, SLOT(selectNextFile())              );
-    connect(mainWindow, SIGNAL(selectPreviousRequested())               , this, SLOT(selectPreviousFile())          );
-    connect(mainWindow, SIGNAL(selectFirstRequested())                  , this, SLOT(selectFirstFile())             );
-    connect(mainWindow, SIGNAL(selectLastRequested())                   , this, SLOT(selectLastFile())              );
-    connect(mainWindow, SIGNAL(deleteFileRequested())                   , this, SLOT(deleteCurrentFile())           );
-    connect(mainWindow, SIGNAL(openPathRequested(const QString&))       , this, SLOT(openPath(const QString&))      );
-    connect(mainWindow, SIGNAL(openPathsRequested(const QStringList&))  , this, SLOT(openPaths(const QStringList&)) );
-    connect(mainWindow, SIGNAL(openFileWithDialogRequested())           , this, SLOT(openFileWithDialog())          );
-    connect(mainWindow, SIGNAL(showAboutRequested())                    , this, SLOT(showAbout())                   );
-    connect(mainWindow, SIGNAL(showPreferencesRequested())              , this, SLOT(showPreferences())             );
-    connect(mainWindow, SIGNAL(showAboutQtRequested())                  , qApp, SLOT(aboutQt())                     );
-    connect(mainWindow, SIGNAL(closed())                                , qApp, SLOT(quit())                        );
+    ObjectsConnector::RegisterReceiver(OPEN_NEW_WINDOW_ID       , this          , SLOT(openNewWindow())                 );
+    ObjectsConnector::RegisterReceiver(SELECT_NEXT_ID           , this          , SLOT(selectNextFile())                );
+    ObjectsConnector::RegisterReceiver(SELECT_PREVIOUS_ID       , this          , SLOT(selectPreviousFile())            );
+    ObjectsConnector::RegisterReceiver(SELECT_FIRST_ID          , this          , SLOT(selectFirstFile())               );
+    ObjectsConnector::RegisterReceiver(SELECT_LAST_ID           , this          , SLOT(selectLastFile())                );
+    ObjectsConnector::RegisterReceiver(DELETE_FILE_ID           , this          , SLOT(deleteCurrentFile())             );
+    ObjectsConnector::RegisterReceiver(OPEN_SINGLE_PATH_ID      , this          , SLOT(openPath(const QString&))        );
+    ObjectsConnector::RegisterReceiver(OPEN_MULTIPLE_PATHS_ID   , this          , SLOT(openPaths(const QStringList&))   );
+    ObjectsConnector::RegisterReceiver(OPEN_FILE_WITH_DIALOG_ID , this          , SLOT(openFileWithDialog())            );
+    ObjectsConnector::RegisterReceiver(SHOW_ABOUT_ID            , this          , SLOT(showAbout())                     );
+    ObjectsConnector::RegisterReceiver(SHOW_PREFERENCES_ID      , this          , SLOT(showPreferences())               );
+    ObjectsConnector::RegisterReceiver(SHOW_ABOUT_QT_ID         , qApp          , SLOT(aboutQt())                       );
+    ObjectsConnector::RegisterReceiver(QUIT_APPLICATION_ID      , qApp          , SLOT(quit())                          );
+    ObjectsConnector::RegisterEmitter (QUIT_APPLICATION_ID      , mainWindow    , SIGNAL(closed())                      );
 }
 
 MainController::~MainController()

@@ -62,10 +62,4 @@ struct UIState
     bool canDeleteCurrentFile;
 };
 
-// $NAME(const UIState &state, const UIChangeFlags &changeFlags)
-void RegisterUIStateChangedEmitter(QObject *object, const char *signal);
-void UnregisterUIStateChangedEmitter(QObject *object, const char *signal);
-void RegisterUIStateChangedReceiver(QObject *object, const char *slot);
-void UnregisterUIStateChangedReceiver(QObject *object, const char *slot);
-
 #endif // UI_STATE_H_INCLUDED
