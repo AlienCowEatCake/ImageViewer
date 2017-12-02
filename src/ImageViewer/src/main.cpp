@@ -20,7 +20,7 @@
 #include <QtPlugin>
 #include <QIcon>
 #include <QStyleFactory>
-#include "GUI/MainWindow.h"
+#include "GUI/MainController.h"
 #include "Utils/Application.h"
 #include "Utils/ThemeUtils.h"
 #include "Utils/Workarounds.h"
@@ -61,7 +61,8 @@ int main(int argc, char *argv[])
 #endif
     Workarounds::InitQtUtilsResources();
     ThemeUtils::LoadStyleSheet(QString::fromLatin1(":/style/style.qss"));
-    MainWindow *window = new MainWindow;
+
+    MainController controller;
     if(argc > 1)
     {
         std::string filename;
@@ -71,13 +72,13 @@ int main(int argc, char *argv[])
             if(i + 1 < argc)
                 filename.append(" ");
         }
-        window->onOpenPathRequested(QString::fromLocal8Bit(filename.c_str()));
+        controller.openPath(QString::fromLocal8Bit(filename.c_str()));
     }
     else if(app.hasLastOpenFilePath())
     {
-        window->onOpenPathRequested(app.getLastOpenFilePath());
+        controller.openPath(app.getLastOpenFilePath());
     }
-    QObject::connect(&app, SIGNAL(openFileEvent(const QString&)), window, SLOT(onOpenPathRequested(const QString&)));
-    window->show();
+    QObject::connect(&app, SIGNAL(openFileEvent(const QString&)), &controller, SLOT(openPath(const QString&)));
+    controller.showMainWindow();
     return app.exec();
 }

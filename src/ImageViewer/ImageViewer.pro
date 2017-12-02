@@ -58,11 +58,14 @@ win32 {
 }
 
 SOURCES += \
+    src/GUI/FileManager.cpp \
     src/GUI/GUISettings.cpp \
+    src/GUI/MainController.cpp \
     src/GUI/MainWindow.cpp \
     src/GUI/ImageViewerWidget.cpp \
     src/GUI/SettingsDialog.cpp \
     src/GUI/AboutDialog.cpp \
+    src/GUI/UIState.cpp \
     src/Decoders/DecodersManager.cpp \
     src/Decoders/Impl/DecoderQImage.cpp \
     src/Decoders/Impl/DecoderQMovie.cpp \
@@ -84,7 +87,9 @@ SOURCES += \
     src/main.cpp
 
 HEADERS += \
+    src/GUI/FileManager.h \
     src/GUI/GUISettings.h \
+    src/GUI/MainController.h \
     src/GUI/MainWindow.h \
     src/GUI/MainWindow_p.h \
     src/GUI/ImageViewerWidget.h \
@@ -92,6 +97,7 @@ HEADERS += \
     src/GUI/SettingsDialog_p.h \
     src/GUI/AboutDialog.h \
     src/GUI/AboutDialog_p.h \
+    src/GUI/UIState.h \
     src/Decoders/DecodersManager.h \
     src/Decoders/IDecoder.h \
     src/Decoders/Impl/Internal/Animation/AnimationObject.h \

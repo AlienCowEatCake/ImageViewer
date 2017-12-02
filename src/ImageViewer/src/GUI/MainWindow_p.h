@@ -605,7 +605,7 @@ private:
 #if defined (Q_OS_MAC)
         static QMenu dockMenu;
         dockMenu.clear();
-        dockMenu.addAction(qApp->translate("Dock", "New Window"), mainWindow, SLOT(openNewWindow()));
+        dockMenu.addAction(qApp->translate("Dock", "New Window"), mainWindow, SIGNAL(openNewWindowRequested()));
         MenuUtils::SetDockMenu(&dockMenu);
 #endif
     }

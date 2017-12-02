@@ -25,48 +25,57 @@
 
 #include "Utils/ScopedPointer.h"
 #include "ImageViewerWidget.h"
+#include "UIState.h"
+
+class GUISettings;
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
     Q_DISABLE_COPY(MainWindow)
 
+signals:
+    void openNewWindowRequested();
+    void selectNextRequested();
+    void selectPreviousRequested();
+    void selectFirstRequested();
+    void selectLastRequested();
+    void deleteFileRequested();
+    void openPathRequested(const QString &path);
+    void openPathsRequested(const QStringList &paths);
+    void openFileWithDialogRequested();
+
+    void showAboutRequested();
+    void showPreferencesRequested();
+    void showAboutQtRequested();
+
+    void closed();
+
 public:
-    MainWindow(QWidget *parent = 0);
+    MainWindow(GUISettings *settings, QWidget *parent = 0);
     ~MainWindow();
 
     void setLanguage(const QString &newLanguage = QString());
 
 public slots:
-    void openNewWindow(const QString &filename = QString());
     void updateWindowTitle();
-    void showAbout();
-    void showPreferences();
     void switchFullScreenMode();
     void switchSlideShowMode();
     void switchShowMenuBar();
     void switchShowToolBar();
 
-    void onOpenPreviousRequested();
-    void onOpenNextRequested();
-    void onOpenFirstRequested();
-    void onOpenLastRequested();
     void onZoomModeChanged(ImageViewerWidget::ZoomMode mode);
-    void onOpenFileRequested(const QString &filePath);
-    void onOpenPathRequested(const QString &path);
-    void onOpenFileWithDialogRequested();
     void onSaveAsRequested();
-    void onDeleteFileRequested();
-    void onExitRequested();
 
-    void onZoomFitToWindowClicked();
-    void onZoomOriginalSizeClicked();
+    void onZoomFitToWindowRequested();
+    void onZoomOriginalSizeRequested();
 
     void onActionEnglishTriggered();
     void onActionRussianTriggered();
 
 private slots:
-    void onDirectoryChanged();
+    void onUIStateChanged(const UIState &state, const UIChangeFlags &changeFlags);
+
     void updateSlideShowInterval();
     void updateBackgroundColor();
 
