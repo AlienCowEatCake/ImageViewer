@@ -33,6 +33,7 @@
 #include <QActionGroup>
 #include <QStyleFactory>
 #include <QShortcutEvent>
+#include <QList>
 
 #include "Utils/MenuUtils.h"
 #include "Utils/ObjectsConnector.h"
@@ -42,6 +43,7 @@
 
 #include "ImageViewerWidget.h"
 #include "ObjectsConnectorIDs.h"
+#include "ToolBar.h"
 
 namespace {
 
@@ -53,8 +55,8 @@ const int WINDOW_DEFAULT_HEIGHT = 480;
 struct MainWindow::UI
 {
     MainWindow *mainWindow;
+
     bool isSlideShowMode;
-    bool toolBarButtonsHasDarkTheme;
     bool menuActionsHasDarkTheme;
 
     class ActionsEventFilter : public QObject
@@ -77,25 +79,7 @@ struct MainWindow::UI
 
     QFrame *centralWidget;
     ImageViewerWidget *imageViewerWidget;
-    AdjustableFrame *toolbar;
-    QToolButton *navigatePrevious;
-    QToolButton *navigateNext;
-    QToolButton *startSlideShow;
-    QToolButton *zoomOut;
-    QToolButton *zoomIn;
-    QToolButton *zoomFitToWindow;
-    QToolButton *zoomOriginalSize;
-    QToolButton *zoomFullScreen;
-    QToolButton *rotateCounterclockwise;
-    QToolButton *rotateClockwise;
-    QToolButton *flipHorizontal;
-    QToolButton *flipVertical;
-    QToolButton *openFile;
-    QToolButton *saveFileAs;
-    QToolButton *deleteFile;
-    QToolButton *preferences;
-    QToolButton *exit;
-
+    ToolBar *toolbar;
     QMenuBar *menubar;
     QMenu *contextMenu;
     QMenu *menuFile;
@@ -129,32 +113,16 @@ struct MainWindow::UI
     QAction *actionAbout;
     QAction *actionAboutQt;
 
+    QList<IControlsContainer*> controlsContainers;
+
     UI(MainWindow *mainWindow)
         : mainWindow(mainWindow)
         , isSlideShowMode(false)
-        , toolBarButtonsHasDarkTheme(false)
         , menuActionsHasDarkTheme(false)
         , actionsEventFilter(new ActionsEventFilter(mainWindow))
         , CONSTRUCT_OBJECT(centralWidget, QFrame, (mainWindow))
         , CONSTRUCT_OBJECT(imageViewerWidget, ImageViewerWidget, (centralWidget))
-        , CONSTRUCT_OBJECT(toolbar, AdjustableFrame, (centralWidget))
-        , CONSTRUCT_OBJECT(navigatePrevious, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(navigateNext, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(startSlideShow, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(zoomOut, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(zoomIn, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(zoomFitToWindow, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(zoomOriginalSize, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(zoomFullScreen, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(rotateCounterclockwise, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(rotateClockwise, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(flipHorizontal, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(flipVertical, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(openFile, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(saveFileAs, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(deleteFile, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(preferences, QToolButton, (toolbar))
-        , CONSTRUCT_OBJECT(exit, QToolButton, (toolbar))
+        , CONSTRUCT_OBJECT(toolbar, ToolBar, (centralWidget))
         , CONSTRUCT_OBJECT(menubar, QMenuBar, (mainWindow))
         , CONSTRUCT_OBJECT(contextMenu, QMenu, (mainWindow))
         , CONSTRUCT_OBJECT(menuFile, QMenu, (menubar))
@@ -186,39 +154,33 @@ struct MainWindow::UI
         , CONSTRUCT_OBJECT_FROM_POINTER(actionRussian               , createWidgetAction(mainWindow)                            )
         , CONSTRUCT_OBJECT_FROM_POINTER(actionAbout                 , createWidgetAction(mainWindow, SHOW_ABOUT_ID)             )
         , CONSTRUCT_OBJECT_FROM_POINTER(actionAboutQt               , createWidgetAction(mainWindow, SHOW_ABOUT_QT_ID)          )
+        , controlsContainers(QList<IControlsContainer*>() << toolbar)
     {
-        ObjectsConnector::RegisterEmitter(SELECT_PREVIOUS_ID        , navigatePrevious          , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(SELECT_NEXT_ID            , navigateNext              , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(SWITCH_SLIDESHOW_MODE_ID  , startSlideShow            , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(ZOOM_IN_ID                , zoomIn                    , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(ZOOM_OUT_ID               , zoomOut                   , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(ZOOM_FIT_TO_WINDOW_ID     , zoomFitToWindow           , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(ZOOM_ORIGINAL_SIZE_ID     , zoomOriginalSize          , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(SWITCH_FULLSCREEN_ID      , zoomFullScreen            , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(ROTATE_CCW_ID             , rotateCounterclockwise    , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(ROTATE_CW_ID              , rotateClockwise           , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(FLIP_HORIZONTAL_ID        , flipHorizontal            , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(FLIP_VERTICAL_ID          , flipVertical              , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(OPEN_FILE_WITH_DIALOG_ID  , openFile                  , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(SAVE_AS_ID                , saveFileAs                , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(DELETE_FILE_ID            , deleteFile                , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(SHOW_PREFERENCES_ID       , preferences               , SIGNAL(clicked()) );
-        ObjectsConnector::RegisterEmitter(CLOSE_MAIN_WINDOW_ID      , exit                      , SIGNAL(clicked()) );
-
-#if defined (Q_OS_MAC)
-        QStyle *style = NULL;
-        if(QStyleFactory::keys().contains(QString::fromLatin1("Fusion"), Qt::CaseInsensitive))
-             style = QStyleFactory::create(QString::fromLatin1("Fusion"));
-        else if(QStyleFactory::keys().contains(QString::fromLatin1("Windows"), Qt::CaseInsensitive))
-            style = QStyleFactory::create(QString::fromLatin1("Windows"));
-        if(style)
+        /// @todo BEGIN TEMPORARY WORKAROUND
+        for(QList<IControlsContainer*>::Iterator it = controlsContainers.begin(), itEnd = controlsContainers.end(); it != itEnd; ++it)
         {
-            toolbar->setStyle(style);
-            const QList<QWidget*> toolbarChildren = toolbar->findChildren<QWidget*>();
-            for(QList<QWidget*>::ConstIterator it = toolbarChildren.constBegin(); it != toolbarChildren.constEnd(); ++it)
-                (*it)->setStyle(style);
+            QObject *object = dynamic_cast<QObject*>(*it);
+            if(!object)
+                continue;
+            ObjectsConnector::RegisterEmitter(SELECT_PREVIOUS_ID        , object, SIGNAL(navigatePreviousRequested())       );
+            ObjectsConnector::RegisterEmitter(SELECT_NEXT_ID            , object, SIGNAL(navigateNextRequested())           );
+            ObjectsConnector::RegisterEmitter(SWITCH_SLIDESHOW_MODE_ID  , object, SIGNAL(startSlideShowRequested())         );
+            ObjectsConnector::RegisterEmitter(ZOOM_IN_ID                , object, SIGNAL(zoomInRequested())                 );
+            ObjectsConnector::RegisterEmitter(ZOOM_OUT_ID               , object, SIGNAL(zoomOutRequested())                );
+            ObjectsConnector::RegisterEmitter(ZOOM_FIT_TO_WINDOW_ID     , object, SIGNAL(zoomFitToWindowRequested())        );
+            ObjectsConnector::RegisterEmitter(ZOOM_ORIGINAL_SIZE_ID     , object, SIGNAL(zoomOriginalSizeRequested())       );
+            ObjectsConnector::RegisterEmitter(SWITCH_FULLSCREEN_ID      , object, SIGNAL(zoomFullScreenRequested())         );
+            ObjectsConnector::RegisterEmitter(ROTATE_CCW_ID             , object, SIGNAL(rotateCounterclockwiseRequested()) );
+            ObjectsConnector::RegisterEmitter(ROTATE_CW_ID              , object, SIGNAL(rotateClockwiseRequested())        );
+            ObjectsConnector::RegisterEmitter(FLIP_HORIZONTAL_ID        , object, SIGNAL(flipHorizontalRequested())         );
+            ObjectsConnector::RegisterEmitter(FLIP_VERTICAL_ID          , object, SIGNAL(flipVerticalRequested())           );
+            ObjectsConnector::RegisterEmitter(OPEN_FILE_WITH_DIALOG_ID  , object, SIGNAL(openRequested())                   );
+            ObjectsConnector::RegisterEmitter(SAVE_AS_ID                , object, SIGNAL(saveAsRequested())                 );
+            ObjectsConnector::RegisterEmitter(DELETE_FILE_ID            , object, SIGNAL(deleteFileRequested())             );
+            ObjectsConnector::RegisterEmitter(SHOW_PREFERENCES_ID       , object, SIGNAL(preferencesRequested())            );
+            ObjectsConnector::RegisterEmitter(CLOSE_MAIN_WINDOW_ID      , object, SIGNAL(exitRequested())                   );
         }
-#endif
+        /// @todo END TEMPORARY WORKAROUND
 
         const QList<QWidget*> mainWindowChildren = mainWindow->findChildren<QWidget*>();
         for(QList<QWidget*>::ConstIterator it = mainWindowChildren.constBegin(); it != mainWindowChildren.constEnd(); ++it)
@@ -227,35 +189,6 @@ struct MainWindow::UI
 
         imageViewerWidget->setAcceptDrops(false);
         imageViewerWidget->setContextMenuPolicy(Qt::NoContextMenu);
-
-        zoomFitToWindow->setCheckable(true);
-        zoomOriginalSize->setCheckable(true);
-        zoomFullScreen->setCheckable(true);
-
-        QHBoxLayout *toolbarLayout = new QHBoxLayout(toolbar);
-        toolbarLayout->addStretch();
-        toolbarLayout->addWidget(navigatePrevious);
-        toolbarLayout->addWidget(navigateNext);
-        toolbarLayout->addWidget(startSlideShow);
-        toolbarLayout->addWidget(createVerticalSeparator(toolbar));
-        toolbarLayout->addWidget(zoomOut);
-        toolbarLayout->addWidget(zoomIn);
-        toolbarLayout->addWidget(zoomFitToWindow);
-        toolbarLayout->addWidget(zoomOriginalSize);
-        toolbarLayout->addWidget(zoomFullScreen);
-        toolbarLayout->addWidget(createVerticalSeparator(toolbar));
-        toolbarLayout->addWidget(rotateCounterclockwise);
-        toolbarLayout->addWidget(rotateClockwise);
-        toolbarLayout->addWidget(flipHorizontal);
-        toolbarLayout->addWidget(flipVertical);
-        toolbarLayout->addWidget(createVerticalSeparator(toolbar));
-        toolbarLayout->addWidget(openFile);
-        toolbarLayout->addWidget(saveFileAs);
-        toolbarLayout->addWidget(deleteFile);
-        toolbarLayout->addWidget(createVerticalSeparator(toolbar));
-        toolbarLayout->addWidget(preferences);
-        toolbarLayout->addWidget(exit);
-        toolbarLayout->addStretch();
 
         QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
         mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -405,23 +338,6 @@ struct MainWindow::UI
 
     void retranslate()
     {
-        navigatePrevious->setToolTip(qApp->translate("MainWindow", "Previous"));
-        navigateNext->setToolTip(qApp->translate("MainWindow", "Next"));
-        zoomOut->setToolTip(qApp->translate("MainWindow", "Zoom Out"));
-        zoomIn->setToolTip(qApp->translate("MainWindow", "Zoom In"));
-        zoomFitToWindow->setToolTip(qApp->translate("MainWindow", "Fit Image To Window Size"));
-        zoomOriginalSize->setToolTip(qApp->translate("MainWindow", "Original Size"));
-        zoomFullScreen->setToolTip(qApp->translate("MainWindow", "Full Screen"));
-        rotateCounterclockwise->setToolTip(qApp->translate("MainWindow", "Rotate Counterclockwise"));
-        rotateClockwise->setToolTip(qApp->translate("MainWindow", "Rotate Clockwise"));
-        flipHorizontal->setToolTip(qApp->translate("MainWindow", "Flip Horizontal"));
-        flipVertical->setToolTip(qApp->translate("MainWindow", "Flip Vertical"));
-        openFile->setToolTip(qApp->translate("MainWindow", "Open File"));
-        saveFileAs->setToolTip(qApp->translate("MainWindow", "Save File As"));
-        deleteFile->setToolTip(qApp->translate("MainWindow", "Delete File"));
-        preferences->setToolTip(qApp->translate("MainWindow", "Preferences"));
-        exit->setToolTip(qApp->translate("MainWindow", "Exit"));
-
         menuFile->setTitle(QApplication::translate("MainWindow", "&File"));
         menuEdit->setTitle(QApplication::translate("MainWindow", "&Edit"));
         menuView->setTitle(QApplication::translate("MainWindow", "&View"));
@@ -458,24 +374,6 @@ struct MainWindow::UI
 
     void updateIcons()
     {
-        toolBarButtonsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(openFile);
-        navigatePrevious->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_LEFT                      , toolBarButtonsHasDarkTheme));
-        navigateNext->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_RIGHT                     , toolBarButtonsHasDarkTheme));
-        zoomOut->setIcon                (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_OUT                  , toolBarButtonsHasDarkTheme));
-        zoomIn->setIcon                 (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , toolBarButtonsHasDarkTheme));
-        zoomFitToWindow->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , toolBarButtonsHasDarkTheme));
-        zoomOriginalSize->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , toolBarButtonsHasDarkTheme));
-        zoomFullScreen->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , toolBarButtonsHasDarkTheme));
-        rotateCounterclockwise->setIcon (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , toolBarButtonsHasDarkTheme));
-        rotateClockwise->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , toolBarButtonsHasDarkTheme));
-        flipHorizontal->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_HORIZONTAL           , toolBarButtonsHasDarkTheme));
-        flipVertical->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_VERTICAL             , toolBarButtonsHasDarkTheme));
-        openFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , toolBarButtonsHasDarkTheme));
-        saveFileAs->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS                   , toolBarButtonsHasDarkTheme));
-        deleteFile->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_DELETE                    , toolBarButtonsHasDarkTheme));
-        preferences->setIcon            (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS                  , toolBarButtonsHasDarkTheme));
-        exit->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT                      , toolBarButtonsHasDarkTheme));
-
         menuActionsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(menuFile);
         actionOpen->setIcon                     (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , menuActionsHasDarkTheme));
         actionSaveAs->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS                   , menuActionsHasDarkTheme));
@@ -496,68 +394,56 @@ struct MainWindow::UI
         actionZoomFullScreen->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , menuActionsHasDarkTheme));
         actionAbout->setIcon                    (ThemeUtils::GetIcon(ThemeUtils::ICON_ABOUT                     , menuActionsHasDarkTheme));
         actionAboutQt->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_QT                        , menuActionsHasDarkTheme));
-
-        if(!isSlideShowMode)
-        {
-            startSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_PLAY, toolBarButtonsHasDarkTheme));
-            actionStartSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_PLAY, menuActionsHasDarkTheme));
-        }
-        else
-        {
-            startSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_STOP, toolBarButtonsHasDarkTheme));
-            actionStartSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_STOP, menuActionsHasDarkTheme));
-        }
+        actionStartSlideShow->setIcon(ThemeUtils::GetIcon(isSlideShowMode ? ThemeUtils::ICON_STOP : ThemeUtils::ICON_PLAY, menuActionsHasDarkTheme));
     }
 
     void setImageControlsEnabled(bool isEnabled)
     {
-        zoomOut->setEnabled(isEnabled);
+        for(QList<IControlsContainer*>::Iterator it = controlsContainers.begin(), itEnd = controlsContainers.end(); it != itEnd; ++it)
+        {
+            IControlsContainer* container = *it;
+            container->setZoomOutEnabled(isEnabled);
+            container->setZoomInEnabled(isEnabled);
+            container->setZoomResetEnabled(isEnabled);
+            container->setZoomFitToWindowEnabled(isEnabled);
+            container->setZoomOriginalSizeEnabled(isEnabled);
+            container->setRotateCounterclockwiseEnabled(isEnabled);
+            container->setFlipHorizontalEnabled(isEnabled);
+            container->setFlipVerticalEnabled(isEnabled);
+            container->setRotateClockwiseEnabled(isEnabled);
+            container->setSaveAsEnabled(isEnabled);
+        }
         actionZoomOut->setEnabled(isEnabled);
-        zoomIn->setEnabled(isEnabled);
         actionZoomIn->setEnabled(isEnabled);
         actionZoomReset->setEnabled(isEnabled);
-        zoomFitToWindow->setEnabled(isEnabled);
         actionZoomFitToWindow->setEnabled(isEnabled);
-        zoomOriginalSize->setEnabled(isEnabled);
         actionZoomOriginalSize->setEnabled(isEnabled);
-        rotateCounterclockwise->setEnabled(isEnabled);
         actionRotateCounterclockwise->setEnabled(isEnabled);
-        flipHorizontal->setEnabled(isEnabled);
         actionFlipHorizontal->setEnabled(isEnabled);
-        flipVertical->setEnabled(isEnabled);
         actionFlipVertical->setEnabled(isEnabled);
-        rotateClockwise->setEnabled(isEnabled);
         actionRotateClockwise->setEnabled(isEnabled);
-        saveFileAs->setEnabled(isEnabled);
         actionSaveAs->setEnabled(isEnabled);
     }
 
     void setSlideShowMode(bool isSlideShow)
     {
+        for(QList<IControlsContainer*>::Iterator it = controlsContainers.begin(), itEnd = controlsContainers.end(); it != itEnd; ++it)
+            (*it)->setSlideShowMode(isSlideShow);
+
         isSlideShowMode = isSlideShow;
         if(!isSlideShowMode)
         {
-            startSlideShow->setToolTip(qApp->translate("MainWindow", "Start Slideshow"));
-            startSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_PLAY, toolBarButtonsHasDarkTheme));
             actionStartSlideShow->setText(qApp->translate("MainWindow", "Start S&lideshow"));
             actionStartSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_PLAY, menuActionsHasDarkTheme));
         }
         else
         {
-            startSlideShow->setToolTip(qApp->translate("MainWindow", "Stop Slideshow"));
-            startSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_STOP, toolBarButtonsHasDarkTheme));
             actionStartSlideShow->setText(qApp->translate("MainWindow", "Stop S&lideshow"));
             actionStartSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_STOP, menuActionsHasDarkTheme));
         }
     }
 
 private:
-
-    QWidget *createVerticalSeparator(QWidget *parent) const
-    {
-        CREATE_OBJECT(separator, QFrame, (parent));
-        return separator;
-    }
 
     QAction *createWidgetAction(QWidget *widget, const char * const id = NULL)
     {

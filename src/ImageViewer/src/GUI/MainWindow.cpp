@@ -89,7 +89,9 @@ struct MainWindow::Impl
             ui.menubar->setVisible(settings->menuBarVisible());
             ui.toolbar->setVisible(settings->toolBarVisible());
         }
-        ui.zoomFullScreen->setChecked(toFullScreenMode);
+
+        for(QList<IControlsContainer*>::Iterator it = ui.controlsContainers.begin(), itEnd = ui.controlsContainers.end(); it != itEnd; ++it)
+            (*it)->setZoomFullScreenChecked(toFullScreenMode);
         ui.actionZoomFullScreen->setChecked(toFullScreenMode);
         mainWindow->updateBackgroundColor();
     }
@@ -318,8 +320,12 @@ void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)
     const bool modeIsFitToWindow = mode == ImageViewerWidget::ZOOM_FIT_TO_WINDOW;
     const bool modeIsOriginalSize = mode == ImageViewerWidget::ZOOM_IDENTITY;
     m_impl->ui.imageViewerWidget->setZoomMode(mode);
-    m_impl->ui.zoomFitToWindow->setChecked(modeIsFitToWindow);
-    m_impl->ui.zoomOriginalSize->setChecked(modeIsOriginalSize);
+    for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
+    {
+        IControlsContainer* container = *it;
+        container->setZoomFitToWindowChecked(modeIsFitToWindow);
+        container->setZoomOriginalSizeChecked(modeIsOriginalSize);
+    }
     m_impl->ui.actionZoomFitToWindow->setChecked(modeIsFitToWindow);
     m_impl->ui.actionZoomOriginalSize->setChecked(modeIsOriginalSize);
     m_impl->settings->setZoomMode(mode);
@@ -396,21 +402,27 @@ void MainWindow::onUIStateChanged(const UIState &state, const UIChangeFlags &cha
 
     if(changeFlags.testFlag(UICF_CanDeleteCurrentFile))
     {
-        m_impl->ui.deleteFile->setEnabled(state.canDeleteCurrentFile);
+        for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
+            (*it)->setDeleteFileEnabled(state.canDeleteCurrentFile);
         m_impl->ui.actionDeleteFile->setEnabled(state.canDeleteCurrentFile);
     }
 
     if(changeFlags.testFlag(UICF_HasCurrentFileIndex))
     {
-        m_impl->ui.navigatePrevious->setEnabled(state.hasCurrentFileIndex);
+        for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
+        {
+            IControlsContainer* container = *it;
+            container->setNavigatePreviousEnabled(state.hasCurrentFileIndex);
+            container->setNavigateNextEnabled(state.hasCurrentFileIndex);
+        }
         m_impl->ui.actionNavigatePrevious->setEnabled(state.hasCurrentFileIndex);
-        m_impl->ui.navigateNext->setEnabled(state.hasCurrentFileIndex);
         m_impl->ui.actionNavigateNext->setEnabled(state.hasCurrentFileIndex);
     }
 
     if(changeFlags.testFlag(UICF_HasCurrentFile))
     {
-        m_impl->ui.startSlideShow->setEnabled(state.hasCurrentFile);
+        for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
+            (*it)->setStartSlideShowEnabled(state.hasCurrentFile);
         m_impl->ui.actionStartSlideShow->setEnabled(state.hasCurrentFile);
     }
 
