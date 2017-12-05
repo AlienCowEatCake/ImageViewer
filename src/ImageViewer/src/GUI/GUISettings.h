@@ -25,7 +25,7 @@
 #include <QColor>
 #include <QByteArray>
 #include "Utils/ScopedPointer.h"
-#include "ImageViewerWidget.h"
+#include "MainWindow/ImageViewerWidget.h"
 
 class GUISettings : public QObject
 {

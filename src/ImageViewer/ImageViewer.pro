@@ -58,15 +58,15 @@ win32 {
 }
 
 SOURCES += \
-    src/GUI/AboutDialog.cpp \
     src/GUI/FileManager.cpp \
     src/GUI/GUISettings.cpp \
-    src/GUI/ImageViewerWidget.cpp \
     src/GUI/MainController.cpp \
-    src/GUI/MainWindow.cpp \
-    src/GUI/MenuBar.cpp \
-    src/GUI/SettingsDialog.cpp \
-    src/GUI/ToolBar.cpp \
+    src/GUI/Dialogs/AboutDialog.cpp \
+    src/GUI/Dialogs/SettingsDialog.cpp \
+    src/GUI/MainWindow/ImageViewerWidget.cpp \
+    src/GUI/MainWindow/MainWindow.cpp \
+    src/GUI/MainWindow/MenuBar.cpp \
+    src/GUI/MainWindow/ToolBar.cpp \
     src/Decoders/DecodersManager.cpp \
     src/Decoders/Impl/DecoderQImage.cpp \
     src/Decoders/Impl/DecoderQMovie.cpp \
@@ -88,20 +88,20 @@ SOURCES += \
     src/main.cpp
 
 HEADERS += \
-    src/GUI/AboutDialog.h \
-    src/GUI/AboutDialog_p.h \
     src/GUI/FileManager.h \
     src/GUI/GUISettings.h \
-    src/GUI/IControlsContainer.h \
-    src/GUI/ImageViewerWidget.h \
     src/GUI/MainController.h \
-    src/GUI/MainWindow.h \
-    src/GUI/MainWindow_p.h \
-    src/GUI/MenuBar.h \
-    src/GUI/SettingsDialog.h \
-    src/GUI/SettingsDialog_p.h \
-    src/GUI/ToolBar.h \
     src/GUI/UIState.h \
+    src/GUI/Dialogs/AboutDialog.h \
+    src/GUI/Dialogs/AboutDialog_p.h \
+    src/GUI/Dialogs/SettingsDialog.h \
+    src/GUI/Dialogs/SettingsDialog_p.h \
+    src/GUI/MainWindow/IControlsContainer.h \
+    src/GUI/MainWindow/ImageViewerWidget.h \
+    src/GUI/MainWindow/MainWindow.h \
+    src/GUI/MainWindow/MainWindow_p.h \
+    src/GUI/MainWindow/MenuBar.h \
+    src/GUI/MainWindow/ToolBar.h \
     src/Decoders/DecodersManager.h \
     src/Decoders/IDecoder.h \
     src/Decoders/Impl/Internal/Animation/AnimationObject.h \

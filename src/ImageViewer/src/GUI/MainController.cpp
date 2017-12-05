@@ -27,10 +27,10 @@
 #include <QStringList>
 
 #include "Decoders/DecodersManager.h"
-#include "AboutDialog.h"
+#include "Dialogs/AboutDialog.h"
+#include "Dialogs/SettingsDialog.h"
+#include "MainWindow/MainWindow.h"
 #include "GUISettings.h"
-#include "MainWindow.h"
-#include "SettingsDialog.h"
 
 struct MainController::Impl
 {

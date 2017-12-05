@@ -44,7 +44,7 @@
 #include "Utils/ImageSaver.h"
 
 #include "Decoders/DecodersManager.h"
-#include "GUISettings.h"
+#include "../GUISettings.h"
 
 struct MainWindow::Impl
 {

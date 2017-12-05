@@ -24,7 +24,7 @@
 
 #include "Utils/ScopedPointer.h"
 #include "ImageViewerWidget.h"
-#include "UIState.h"
+#include "../UIState.h"
 
 class QString;
 class QStringList;
