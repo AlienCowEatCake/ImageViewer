@@ -64,7 +64,7 @@ SOURCES += \
     src/GUI/ImageViewerWidget.cpp \
     src/GUI/MainController.cpp \
     src/GUI/MainWindow.cpp \
-    src/GUI/ObjectsConnectorIDs.cpp \
+    src/GUI/MenuBar.cpp \
     src/GUI/SettingsDialog.cpp \
     src/GUI/ToolBar.cpp \
     src/Decoders/DecodersManager.cpp \
@@ -97,7 +97,7 @@ HEADERS += \
     src/GUI/MainController.h \
     src/GUI/MainWindow.h \
     src/GUI/MainWindow_p.h \
-    src/GUI/ObjectsConnectorIDs.h \
+    src/GUI/MenuBar.h \
     src/GUI/SettingsDialog.h \
     src/GUI/SettingsDialog_p.h \
     src/GUI/ToolBar.h \

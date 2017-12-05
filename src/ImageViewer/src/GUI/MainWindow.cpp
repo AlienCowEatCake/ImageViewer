@@ -31,9 +31,9 @@
 #include <QUrl>
 #include <QString>
 #include <QStringList>
-#include <QLocale>
-#include <QTranslator>
-#include <QLibraryInfo>
+//#include <QLocale>
+//#include <QTranslator>
+//#include <QLibraryInfo>
 #include <QGraphicsItem>
 #include <QMessageBox>
 #include <QFileInfo>
@@ -67,6 +67,24 @@ struct MainWindow::Impl
         , isFullScreenMode(false)
     {}
 
+    void setImageControlsEnabled(bool isEnabled)
+    {
+        for(QList<IControlsContainer*>::Iterator it = ui.controlsContainers.begin(), itEnd = ui.controlsContainers.end(); it != itEnd; ++it)
+        {
+            IControlsContainer* container = *it;
+            container->setZoomOutEnabled(isEnabled);
+            container->setZoomInEnabled(isEnabled);
+            container->setZoomResetEnabled(isEnabled);
+            container->setZoomFitToWindowEnabled(isEnabled);
+            container->setZoomOriginalSizeEnabled(isEnabled);
+            container->setRotateCounterclockwiseEnabled(isEnabled);
+            container->setFlipHorizontalEnabled(isEnabled);
+            container->setFlipVerticalEnabled(isEnabled);
+            container->setRotateClockwiseEnabled(isEnabled);
+            container->setSaveAsEnabled(isEnabled);
+        }
+    }
+
     bool isFileOpened() const
     {
         return ui.imageViewerWidget->imageSize().isValid();
@@ -92,7 +110,6 @@ struct MainWindow::Impl
 
         for(QList<IControlsContainer*>::Iterator it = ui.controlsContainers.begin(), itEnd = ui.controlsContainers.end(); it != itEnd; ++it)
             (*it)->setZoomFullScreenChecked(toFullScreenMode);
-        ui.actionZoomFullScreen->setChecked(toFullScreenMode);
         mainWindow->updateBackgroundColor();
     }
 };
@@ -108,37 +125,46 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
 
     connect(imageViewerWidget, SIGNAL(zoomLevelChanged(qreal)), this, SLOT(updateWindowTitle()));
 
-    ObjectsConnector::RegisterReceiver(SWITCH_SLIDESHOW_MODE_ID , this              , SLOT(switchSlideShowMode())           );
-    ObjectsConnector::RegisterReceiver(ZOOM_IN_ID               , imageViewerWidget , SLOT(zoomIn())                        );
-    ObjectsConnector::RegisterReceiver(ZOOM_OUT_ID              , imageViewerWidget , SLOT(zoomOut())                       );
-    ObjectsConnector::RegisterReceiver(ZOOM_DEFAULT_ID          , imageViewerWidget , SLOT(resetZoom())                     );
-    ObjectsConnector::RegisterReceiver(ZOOM_FIT_TO_WINDOW_ID    , this              , SLOT(onZoomFitToWindowRequested())    );
-    ObjectsConnector::RegisterReceiver(ZOOM_ORIGINAL_SIZE_ID    , this              , SLOT(onZoomOriginalSizeRequested())   );
-    ObjectsConnector::RegisterReceiver(SWITCH_FULLSCREEN_ID     , this              , SLOT(switchFullScreenMode())          );
-    ObjectsConnector::RegisterReceiver(ROTATE_CCW_ID            , imageViewerWidget , SLOT(rotateCounterclockwise())        );
-    ObjectsConnector::RegisterReceiver(ROTATE_CW_ID             , imageViewerWidget , SLOT(rotateClockwise())               );
-    ObjectsConnector::RegisterReceiver(FLIP_HORIZONTAL_ID       , imageViewerWidget , SLOT(flipHorizontal())                );
-    ObjectsConnector::RegisterReceiver(FLIP_VERTICAL_ID         , imageViewerWidget , SLOT(flipVertical())                  );
-    ObjectsConnector::RegisterReceiver(SAVE_AS_ID               , this              , SLOT(onSaveAsRequested())             );
-    ObjectsConnector::RegisterReceiver(CLOSE_MAIN_WINDOW_ID     , this              , SLOT(close())                         );
-
-    ObjectsConnector::RegisterEmitter(SELECT_FIRST_ID       , this, SIGNAL(selectFirstRequested())                  );
-    ObjectsConnector::RegisterEmitter(SELECT_LAST_ID        , this, SIGNAL(selectLastRequested())                   );
-    ObjectsConnector::RegisterEmitter(OPEN_SINGLE_PATH_ID   , this, SIGNAL(openPathRequested(const QString&))       );
-    ObjectsConnector::RegisterEmitter(OPEN_MULTIPLE_PATHS_ID, this, SIGNAL(openPathsRequested(const QStringList&))  );
-
-    connect(ui.actionShowMenuBar, SIGNAL(triggered())   , this  , SLOT(switchShowMenuBar())         );
-    connect(ui.actionShowToolBar, SIGNAL(triggered())   , this  , SLOT(switchShowToolBar())         );
+    for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
+    {
+        QObject *object = dynamic_cast<QObject*>(*it);
+        if(!object)
+            continue;
+        connect(object, SIGNAL(openRequested())                     , this              , SIGNAL(openFileWithDialogRequested()) );
+        connect(object, SIGNAL(saveAsRequested())                   , this              , SLOT(onSaveAsRequested())             );
+        connect(object, SIGNAL(newWindowRequested())                , this              , SIGNAL(newWindowRequested())          );
+        connect(object, SIGNAL(navigatePreviousRequested())         , this              , SIGNAL(selectPreviousRequested())     );
+        connect(object, SIGNAL(navigateNextRequested())             , this              , SIGNAL(selectNextRequested())         );
+        connect(object, SIGNAL(startSlideShowRequested())           , this              , SLOT(switchSlideShowMode())           );
+        connect(object, SIGNAL(preferencesRequested())              , this              , SIGNAL(preferencesRequested())        );
+        connect(object, SIGNAL(exitRequested())                     , this              , SLOT(close())                         );
+        connect(object, SIGNAL(rotateCounterclockwiseRequested())   , imageViewerWidget , SLOT(rotateCounterclockwise())        );
+        connect(object, SIGNAL(rotateClockwiseRequested())          , imageViewerWidget , SLOT(rotateClockwise())               );
+        connect(object, SIGNAL(flipHorizontalRequested())           , imageViewerWidget , SLOT(flipHorizontal())                );
+        connect(object, SIGNAL(flipVerticalRequested())             , imageViewerWidget , SLOT(flipVertical())                  );
+        connect(object, SIGNAL(deleteFileRequested())               , this              , SIGNAL(deleteFileRequested())         );
+        connect(object, SIGNAL(zoomOutRequested())                  , imageViewerWidget , SLOT(zoomOut())                       );
+        connect(object, SIGNAL(zoomInRequested())                   , imageViewerWidget , SLOT(zoomIn())                        );
+        connect(object, SIGNAL(zoomResetRequested())                , imageViewerWidget , SLOT(resetZoom())                     );
+        connect(object, SIGNAL(zoomFitToWindowRequested())          , this              , SLOT(onZoomFitToWindowRequested())    );
+        connect(object, SIGNAL(zoomOriginalSizeRequested())         , this              , SLOT(onZoomOriginalSizeRequested())   );
+        connect(object, SIGNAL(zoomFullScreenRequested())           , this              , SLOT(switchFullScreenMode())          );
+        connect(object, SIGNAL(showMenuBarRequested())              , this              , SLOT(switchShowMenuBar())             );
+        connect(object, SIGNAL(showToolBarRequested())              , this              , SLOT(switchShowToolBar())             );
+        connect(object, SIGNAL(aboutRequested())                    , this              , SIGNAL(aboutRequested())              );
+        connect(object, SIGNAL(aboutQtRequested())                  , this              , SIGNAL(aboutQtRequested())            );
+    }
+/*
     connect(ui.actionEnglish    , SIGNAL(triggered())   , this  , SLOT(onActionEnglishTriggered())  );
     connect(ui.actionRussian    , SIGNAL(triggered())   , this  , SLOT(onActionRussianTriggered())  );
-
+*/
     connect(settings, SIGNAL(normalBackgroundColorChanged(const QColor&))       , this              , SLOT(updateBackgroundColor())                     );
     connect(settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&))   , this              , SLOT(updateBackgroundColor())                     );
     connect(settings, SIGNAL(smoothTransformationChanged(bool))                 , imageViewerWidget , SLOT(setSmoothTransformation(bool))               );
     connect(settings, SIGNAL(slideShowIntervalChanged(int))                     , this              , SLOT(updateSlideShowInterval())                   );
     connect(settings, SIGNAL(wheelModeChanged(ImageViewerWidget::WheelMode))    , imageViewerWidget , SLOT(setWheelMode(ImageViewerWidget::WheelMode))  );
 
-    ObjectsConnector::RegisterEmitter(SELECT_NEXT_ID, &m_impl->slideShowTimer, SIGNAL(timeout()));
+    connect(&m_impl->slideShowTimer, SIGNAL(timeout()), this, SIGNAL(selectNextRequested()));
 
     imageViewerWidget->setZoomLevel(settings->zoomLevel());
     imageViewerWidget->setBackgroundColor(settings->normalBackgroundColor());
@@ -146,18 +172,22 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     imageViewerWidget->setWheelMode(settings->wheelMode());
     onZoomModeChanged(settings->zoomMode());
     updateSlideShowInterval();
-    setLanguage();
+//    setLanguage();
 
     ui.menubar->setVisible(settings->menuBarVisible());
-    ui.actionShowMenuBar->setChecked(settings->menuBarVisible());
     ui.toolbar->setVisible(settings->toolBarVisible());
-    ui.actionShowToolBar->setChecked(settings->toolBarVisible());
+
+    for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
+    {
+        IControlsContainer* container = *it;
+        container->setShowMenuBarChecked(settings->menuBarVisible());
+        container->setShowToolBarChecked(settings->toolBarVisible());
+    }
 
     restoreState(settings->mainWindowState());
     restoreGeometry(settings->mainWindowGeometry());
 
-    onUIStateChanged(m_impl->uiState, UICF_All);
-    ObjectsConnector::RegisterReceiver(UI_STATE_CHANGED_ID, this, SLOT(onUIStateChanged(const UIState&, const UIChangeFlags&)));
+    updateUIState(m_impl->uiState, UICF_All);
 }
 
 MainWindow::~MainWindow()
@@ -165,74 +195,73 @@ MainWindow::~MainWindow()
     m_impl->settings->setZoomLevel(m_impl->ui.imageViewerWidget->zoomLevel());
 }
 
-void MainWindow::setLanguage(const QString &newLanguage)
-{
-    // Отображение название языка -> соответствующая ему менюшка
-    static QMap<QString, QAction*> languagesMap;
-    if(languagesMap.isEmpty())
-    {
-        languagesMap[QString::fromLatin1("en")] = m_impl->ui.actionEnglish;
-        languagesMap[QString::fromLatin1("ru")] = m_impl->ui.actionRussian;
-    }
+//void MainWindow::setLanguage(const QString &newLanguage)
+//{
+//    // Отображение название языка -> соответствующая ему менюшка
+//    static QMap<QString, QAction*> languagesMap;
+//    if(languagesMap.isEmpty())
+//    {
+//        return;
+///*
+//        languagesMap[QString::fromLatin1("en")] = m_impl->ui.actionEnglish;
+//        languagesMap[QString::fromLatin1("ru")] = m_impl->ui.actionRussian;
+//*/
+//    }
 
-    // Определим системную локаль
-    static QString systemLang;
-    if(systemLang.isEmpty())
-    {
-        const QString systemLocale = QLocale::system().name().toLower();
-        for(QMap<QString, QAction*>::Iterator it = languagesMap.begin(); it != languagesMap.end(); ++it)
-        {
-            if(systemLocale.startsWith(it.key()))
-            {
-                systemLang = it.key();
-                break;
-            }
-        }
-        if(systemLang.isEmpty())
-            systemLang = QString::fromLatin1("en");
-    }
+//    // Определим системную локаль
+//    static QString systemLang;
+//    if(systemLang.isEmpty())
+//    {
+//        const QString systemLocale = QLocale::system().name().toLower();
+//        for(QMap<QString, QAction*>::Iterator it = languagesMap.begin(); it != languagesMap.end(); ++it)
+//        {
+//            if(systemLocale.startsWith(it.key()))
+//            {
+//                systemLang = it.key();
+//                break;
+//            }
+//        }
+//        if(systemLang.isEmpty())
+//            systemLang = QString::fromLatin1("en");
+//    }
 
-    // Посмотрим в настройки, не сохранен ли случайно в них язык
-    SettingsWrapper settings;
-    QString language = newLanguage;
-    if(language.isEmpty())
-    {
-        const QVariant rawValue = settings.value(QString::fromLatin1("Language"), systemLang);
-        const QString value = rawValue.isValid() ? rawValue.toString() : systemLang;
-        language = languagesMap.find(value) != languagesMap.end() ? value : systemLang;
-    }
-    else
-    {
-        settings.setValue(QString::fromLatin1("Language"), language);
-    }
+//    // Посмотрим в настройки, не сохранен ли случайно в них язык
+//    SettingsWrapper settings;
+//    QString language = newLanguage;
+//    if(language.isEmpty())
+//    {
+//        const QVariant rawValue = settings.value(QString::fromLatin1("Language"), systemLang);
+//        const QString value = rawValue.isValid() ? rawValue.toString() : systemLang;
+//        language = languagesMap.find(value) != languagesMap.end() ? value : systemLang;
+//    }
+//    else
+//    {
+//        settings.setValue(QString::fromLatin1("Language"), language);
+//    }
 
-    // Удалим старый перевод, установим новый
-    static QTranslator qtTranslator;
-    static QTranslator appTranslator;
-    static QTranslator utilsTranslator;
-    if(!qtTranslator.isEmpty())
-        qApp->removeTranslator(&qtTranslator);
-    if(!appTranslator.isEmpty())
-        qApp->removeTranslator(&appTranslator);
-    if(!utilsTranslator.isEmpty())
-        qApp->removeTranslator(&utilsTranslator);
-    qtTranslator.load(QString::fromLatin1("qt_%1").arg(language), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    appTranslator.load(QString::fromLatin1(":/translations/imageviewer_%1").arg(language));
-    utilsTranslator.load(QString::fromLatin1(":/translations/qtutils_%1").arg(language));
-    qApp->installTranslator(&qtTranslator);
-    qApp->installTranslator(&appTranslator);
-    qApp->installTranslator(&utilsTranslator);
+//    // Удалим старый перевод, установим новый
+//    static QTranslator qtTranslator;
+//    static QTranslator appTranslator;
+//    static QTranslator utilsTranslator;
+//    if(!qtTranslator.isEmpty())
+//        qApp->removeTranslator(&qtTranslator);
+//    if(!appTranslator.isEmpty())
+//        qApp->removeTranslator(&appTranslator);
+//    if(!utilsTranslator.isEmpty())
+//        qApp->removeTranslator(&utilsTranslator);
+//    qtTranslator.load(QString::fromLatin1("qt_%1").arg(language), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+//    appTranslator.load(QString::fromLatin1(":/translations/imageviewer_%1").arg(language));
+//    utilsTranslator.load(QString::fromLatin1(":/translations/qtutils_%1").arg(language));
+//    qApp->installTranslator(&qtTranslator);
+//    qApp->installTranslator(&appTranslator);
+//    qApp->installTranslator(&utilsTranslator);
 
-    // Пофиксим шрифты
-    Workarounds::FontsFix(language);
+//    // Пофиксим шрифты
+//    Workarounds::FontsFix(language);
 
-    // Проставим галочку на нужном нам языке и снимем с остальных
-    languagesMap[language]->setChecked(true);
-
-    // Перегрузим ресурсы в окнах
-    m_impl->ui.retranslate();
-    updateWindowTitle();
-}
+//    // Проставим галочку на нужном нам языке и снимем с остальных
+//    languagesMap[language]->setChecked(true);
+//}
 
 void MainWindow::updateWindowTitle()
 {
@@ -290,7 +319,8 @@ void MainWindow::switchFullScreenMode()
 void MainWindow::switchSlideShowMode()
 {
     m_impl->isSlideShowMode = !m_impl->isSlideShowMode;
-    m_impl->ui.setSlideShowMode(m_impl->isSlideShowMode);
+    for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
+        (*it)->setSlideShowMode(m_impl->isSlideShowMode);
     if(m_impl->isSlideShowMode)
         m_impl->slideShowTimer.start();
     else
@@ -301,7 +331,8 @@ void MainWindow::switchShowMenuBar()
 {
     const bool newValue = !m_impl->settings->menuBarVisible();
     m_impl->settings->setMenuBarVisible(newValue);
-    m_impl->ui.actionShowMenuBar->setChecked(newValue);
+    for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
+        (*it)->setShowMenuBarChecked(newValue);
     if(!m_impl->isFullScreenMode)
         m_impl->ui.menubar->setVisible(newValue);
 }
@@ -310,7 +341,8 @@ void MainWindow::switchShowToolBar()
 {
     const bool newValue = !m_impl->settings->toolBarVisible();
     m_impl->settings->setToolBarVisible(newValue);
-    m_impl->ui.actionShowToolBar->setChecked(newValue);
+    for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
+        (*it)->setShowToolBarChecked(newValue);
     if(!m_impl->isFullScreenMode)
         m_impl->ui.toolbar->setVisible(newValue);
 }
@@ -326,8 +358,6 @@ void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)
         container->setZoomFitToWindowChecked(modeIsFitToWindow);
         container->setZoomOriginalSizeChecked(modeIsOriginalSize);
     }
-    m_impl->ui.actionZoomFitToWindow->setChecked(modeIsFitToWindow);
-    m_impl->ui.actionZoomOriginalSize->setChecked(modeIsOriginalSize);
     m_impl->settings->setZoomMode(mode);
     updateWindowTitle();
 }
@@ -361,17 +391,17 @@ void MainWindow::onZoomOriginalSizeRequested()
     onZoomModeChanged(mode);
 }
 
-void MainWindow::onActionEnglishTriggered()
-{
-    setLanguage(QString::fromLatin1("en"));
-}
+//void MainWindow::onActionEnglishTriggered()
+//{
+//    setLanguage(QString::fromLatin1("en"));
+//}
 
-void MainWindow::onActionRussianTriggered()
-{
-    setLanguage(QString::fromLatin1("ru"));
-}
+//void MainWindow::onActionRussianTriggered()
+//{
+//    setLanguage(QString::fromLatin1("ru"));
+//}
 
-void MainWindow::onUIStateChanged(const UIState &state, const UIChangeFlags &changeFlags)
+void MainWindow::updateUIState(const UIState &state, const UIChangeFlags &changeFlags)
 {
     m_impl->uiState = state;
 
@@ -380,7 +410,7 @@ void MainWindow::onUIStateChanged(const UIState &state, const UIChangeFlags &cha
         if(state.currentFilePath.isEmpty())
         {
             m_impl->ui.imageViewerWidget->clear();
-            m_impl->ui.setImageControlsEnabled(false);
+            m_impl->setImageControlsEnabled(false);
         }
         else
         {
@@ -389,12 +419,12 @@ void MainWindow::onUIStateChanged(const UIState &state, const UIChangeFlags &cha
             {
                 m_impl->ui.imageViewerWidget->setZoomMode(m_impl->settings->zoomMode());
                 m_impl->ui.imageViewerWidget->setGraphicsItem(item);
-                m_impl->ui.setImageControlsEnabled(true);
+                m_impl->setImageControlsEnabled(true);
             }
             else
             {
                 m_impl->ui.imageViewerWidget->clear();
-                m_impl->ui.setImageControlsEnabled(false);
+                m_impl->setImageControlsEnabled(false);
                 QMessageBox::critical(this, tr("Error"), tr("Failed to open file \"%1\"").arg(state.currentFilePath));
             }
         }
@@ -404,7 +434,6 @@ void MainWindow::onUIStateChanged(const UIState &state, const UIChangeFlags &cha
     {
         for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
             (*it)->setDeleteFileEnabled(state.canDeleteCurrentFile);
-        m_impl->ui.actionDeleteFile->setEnabled(state.canDeleteCurrentFile);
     }
 
     if(changeFlags.testFlag(UICF_HasCurrentFileIndex))
@@ -415,15 +444,12 @@ void MainWindow::onUIStateChanged(const UIState &state, const UIChangeFlags &cha
             container->setNavigatePreviousEnabled(state.hasCurrentFileIndex);
             container->setNavigateNextEnabled(state.hasCurrentFileIndex);
         }
-        m_impl->ui.actionNavigatePrevious->setEnabled(state.hasCurrentFileIndex);
-        m_impl->ui.actionNavigateNext->setEnabled(state.hasCurrentFileIndex);
     }
 
     if(changeFlags.testFlag(UICF_HasCurrentFile))
     {
         for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
             (*it)->setStartSlideShowEnabled(state.hasCurrentFile);
-        m_impl->ui.actionStartSlideShow->setEnabled(state.hasCurrentFile);
     }
 
     if(changeFlags.testFlag(UICF_HasCurrentFile) ||
@@ -451,12 +477,8 @@ void MainWindow::changeEvent(QEvent *event)
 {
     switch(event->type())
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    case QEvent::ThemeChange:
-#endif
-    case QEvent::StyleChange:
-    case QEvent::PaletteChange:
-        m_impl->ui.updateIcons();
+    case QEvent::LanguageChange:
+        updateWindowTitle();
         break;
     case QEvent::WindowStateChange:
         m_impl->syncFullScreen();
@@ -543,6 +565,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
-    m_impl->ui.contextMenu->exec(event->globalPos());
+    m_impl->ui.menubar->contextMenu()->exec(event->globalPos());
     QMainWindow::contextMenuEvent(event);
 }

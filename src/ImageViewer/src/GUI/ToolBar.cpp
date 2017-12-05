@@ -25,6 +25,7 @@
 #include <QStyleFactory>
 #include <QToolButton>
 #include <QHBoxLayout>
+#include <QEvent>
 
 #include "Utils/ObjectsUtils.h"
 #include "Utils/ThemeUtils.h"
@@ -34,23 +35,23 @@ struct ToolBar::Impl
     bool isSlideShowMode;
     bool toolBarButtonsHasDarkTheme;
 
-    QToolButton *navigatePrevious;
-    QToolButton *navigateNext;
-    QToolButton *startSlideShow;
-    QToolButton *zoomOut;
-    QToolButton *zoomIn;
-    QToolButton *zoomFitToWindow;
-    QToolButton *zoomOriginalSize;
-    QToolButton *zoomFullScreen;
-    QToolButton *rotateCounterclockwise;
-    QToolButton *rotateClockwise;
-    QToolButton *flipHorizontal;
-    QToolButton *flipVertical;
-    QToolButton *openFile;
-    QToolButton *saveFileAs;
-    QToolButton *deleteFile;
-    QToolButton *preferences;
-    QToolButton *exit;
+    QToolButton * const navigatePrevious;
+    QToolButton * const navigateNext;
+    QToolButton * const startSlideShow;
+    QToolButton * const zoomOut;
+    QToolButton * const zoomIn;
+    QToolButton * const zoomFitToWindow;
+    QToolButton * const zoomOriginalSize;
+    QToolButton * const zoomFullScreen;
+    QToolButton * const rotateCounterclockwise;
+    QToolButton * const rotateClockwise;
+    QToolButton * const flipHorizontal;
+    QToolButton * const flipVertical;
+    QToolButton * const openFile;
+    QToolButton * const saveFileAs;
+    QToolButton * const deleteFile;
+    QToolButton * const preferences;
+    QToolButton * const exit;
 
     Impl(ToolBar *toolbar)
         : isSlideShowMode(false)
@@ -235,6 +236,7 @@ void ToolBar::changeEvent(QEvent *event)
 
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setOpenEnabled, m_impl->openFile)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setSaveAsEnabled, m_impl->saveFileAs)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(ToolBar, setNewWindowEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setNavigatePreviousEnabled, m_impl->navigatePrevious)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setNavigateNextEnabled, m_impl->navigateNext)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setStartSlideShowEnabled, m_impl->startSlideShow)

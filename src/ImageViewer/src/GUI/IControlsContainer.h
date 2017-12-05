@@ -22,7 +22,7 @@
 
 /*
 
-ALL_LIST="Open SaveAs NavigatePrevious NavigateNext StartSlideShow Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt"
+ALL_LIST="Open SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt"
 CHECKABLE_LIST="ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar"
 
 # signals
@@ -49,6 +49,7 @@ done
     Q_SIGNALS: \
         void openRequested(); \
         void saveAsRequested(); \
+        void newWindowRequested(); \
         void navigatePreviousRequested(); \
         void navigateNextRequested(); \
         void startSlideShowRequested(); \
@@ -75,6 +76,7 @@ done
     ACCESS_SPECIFIER : \
         virtual void setOpenEnabled(bool) FUNCTION_BODY \
         virtual void setSaveAsEnabled(bool) FUNCTION_BODY \
+        virtual void setNewWindowEnabled(bool) FUNCTION_BODY \
         virtual void setNavigatePreviousEnabled(bool) FUNCTION_BODY \
         virtual void setNavigateNextEnabled(bool) FUNCTION_BODY \
         virtual void setStartSlideShowEnabled(bool) FUNCTION_BODY \

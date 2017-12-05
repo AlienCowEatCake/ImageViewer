@@ -38,8 +38,17 @@ class MainWindow : public QMainWindow
 signals:
     void selectFirstRequested();
     void selectLastRequested();
+    void selectPreviousRequested();
+    void selectNextRequested();
     void openPathRequested(const QString &path);
     void openPathsRequested(const QStringList &paths);
+    void openFileWithDialogRequested();
+    void deleteFileRequested();
+
+    void newWindowRequested();
+    void preferencesRequested();
+    void aboutRequested();
+    void aboutQtRequested();
 
     void closed();
 
@@ -47,7 +56,7 @@ public:
     MainWindow(GUISettings *settings, QWidget *parent = 0);
     ~MainWindow();
 
-    void setLanguage(const QString &newLanguage = QString());
+//    void setLanguage(const QString &newLanguage = QString());
 
 public slots:
     void updateWindowTitle();
@@ -62,12 +71,12 @@ public slots:
     void onZoomFitToWindowRequested();
     void onZoomOriginalSizeRequested();
 
-    void onActionEnglishTriggered();
-    void onActionRussianTriggered();
+//    void onActionEnglishTriggered();
+//    void onActionRussianTriggered();
+
+    void updateUIState(const UIState &state, const UIChangeFlags &changeFlags);
 
 private slots:
-    void onUIStateChanged(const UIState &state, const UIChangeFlags &changeFlags);
-
     void updateSlideShowInterval();
     void updateBackgroundColor();
 
