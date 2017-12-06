@@ -260,48 +260,10 @@ private:
 
 // ====================================================================================================
 
-namespace {
-
-class ChangedGuard
-{
-public:
-    ChangedGuard(FileManager *manager)
-        : m_manager(manager)
-        , m_currentFilePath(manager->currentFilePath())
-        , m_currentFileIndex(manager->currentFileIndex())
-        , m_filesCount(manager->filesCount())
-        , m_canDeleteCurrentFile(manager->canDeleteCurrentFile())
-    {}
-
-    ~ChangedGuard()
-    {
-        FileManager::ChangeFlags flags;
-        if(m_currentFilePath != m_manager->currentFilePath())
-            flags.setFlag(FileManager::FlagCurrentFilePath);
-        if(m_currentFileIndex != m_manager->currentFileIndex())
-            flags.setFlag(FileManager::FlagCurrentFileIndex);
-        if(m_filesCount != m_manager->filesCount())
-            flags.setFlag(FileManager::FlagFilesCount);
-        if(m_canDeleteCurrentFile != m_manager->canDeleteCurrentFile())
-            flags.setFlag(FileManager::FlagCanDeleteCurrentFile);
-        if(flags != FileManager::ChangeFlags())
-            emit m_manager->stateChanged(flags);
-    }
-
-private:
-    FileManager * const m_manager;
-    QString m_currentFilePath;
-    int m_currentFileIndex;
-    int m_filesCount;
-    bool m_canDeleteCurrentFile;
-};
-
-} // namespace
-
-// ====================================================================================================
-
 struct FileManager::Impl
 {
+    class ChangedGuard;
+
     FileManager *fileManager;
     const QStringList supportedFormats;
     QScopedPointer<IFilesModel> filesModel;
@@ -331,6 +293,42 @@ struct FileManager::Impl
         resetFilesModel();
         return true;
     }
+};
+
+// ====================================================================================================
+
+class FileManager::Impl::ChangedGuard
+{
+public:
+    ChangedGuard(FileManager *manager)
+        : m_manager(manager)
+        , m_currentFilePath(manager->currentFilePath())
+        , m_currentFileIndex(manager->currentFileIndex())
+        , m_filesCount(manager->filesCount())
+        , m_canDeleteCurrentFile(manager->canDeleteCurrentFile())
+    {}
+
+    ~ChangedGuard()
+    {
+        FileManager::ChangeFlags flags;
+        if(m_currentFilePath != m_manager->currentFilePath())
+            flags |= FileManager::FlagCurrentFilePath;
+        if(m_currentFileIndex != m_manager->currentFileIndex())
+            flags |= FileManager::FlagCurrentFileIndex;
+        if(m_filesCount != m_manager->filesCount())
+            flags |= FileManager::FlagFilesCount;
+        if(m_canDeleteCurrentFile != m_manager->canDeleteCurrentFile())
+            flags |= FileManager::FlagCanDeleteCurrentFile;
+        if(flags != FileManager::ChangeFlags())
+            emit m_manager->stateChanged(flags);
+    }
+
+private:
+    FileManager * const m_manager;
+    QString m_currentFilePath;
+    int m_currentFileIndex;
+    int m_filesCount;
+    bool m_canDeleteCurrentFile;
 };
 
 // ====================================================================================================
@@ -365,13 +363,13 @@ bool FileManager::canDeleteCurrentFile() const
 
 void FileManager::reset()
 {
-    const ChangedGuard changedGuard(this);
+    const Impl::ChangedGuard changedGuard(this);
     m_impl->resetFilesModel();
 }
 
 void FileManager::update()
 {
-    const ChangedGuard changedGuard(this);
+    const Impl::ChangedGuard changedGuard(this);
     if(m_impl->filesModel)
         m_impl->filesModel->update();
 }
@@ -383,7 +381,7 @@ bool FileManager::openPath(const QString &filePath)
         return false;
 
     const bool pathIsDir = fileInfo.isDir();
-    const ChangedGuard changedGuard(this);
+    const Impl::ChangedGuard changedGuard(this);
     const QStringList files = supportedPathsInDirectory(m_impl->supportedFormats, pathIsDir ? QDir(fileInfo.absoluteFilePath()) : fileInfo.absoluteDir());
     if(files.isEmpty())
         m_impl->resetFilesModel(new FilxedListModel(QStringList() << fileInfo.absoluteFilePath()));
@@ -416,14 +414,14 @@ bool FileManager::openPaths(const QStringList &filePaths)
     if(pathsList.isEmpty())
         return false;
 
-    const ChangedGuard changedGuard(this);
+    const Impl::ChangedGuard changedGuard(this);
     m_impl->resetFilesModel(new FilxedListModel(pathsList));
     return true;
 }
 
 bool FileManager::selectByIndex(int index)
 {
-    const ChangedGuard changedGuard(this);
+    const Impl::ChangedGuard changedGuard(this);
     if(m_impl->filesModel)
         return m_impl->filesModel->selectByIndex(index);
     return false;
@@ -431,7 +429,7 @@ bool FileManager::selectByIndex(int index)
 
 bool FileManager::deleteCurrentFile()
 {
-    const ChangedGuard changedGuard(this);
+    const Impl::ChangedGuard changedGuard(this);
     if(!m_impl->filesModel || !m_impl->filesModel->canDeleteCurrentFile())
         return false;
     if(!QFile(currentFilePath()).remove())
@@ -441,7 +439,7 @@ bool FileManager::deleteCurrentFile()
 
 bool FileManager::moveToTrashCurrentFile(QString *errorDescription)
 {
-    const ChangedGuard changedGuard(this);
+    const Impl::ChangedGuard changedGuard(this);
     if(!m_impl->filesModel || !m_impl->filesModel->canDeleteCurrentFile())
         return false;
     if(!FileUtils::MoveToTrash(currentFilePath(), errorDescription))

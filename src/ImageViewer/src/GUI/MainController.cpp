@@ -229,12 +229,18 @@ void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &c
     uiState.canDeleteCurrentFile    = m_impl->fileManager.canDeleteCurrentFile();
 
     UIChangeFlags uiChangeFlags;
-    uiChangeFlags.setFlag(UICF_HasCurrentFile       , uiState.hasCurrentFile != m_impl->lastHasCurrentFile);
-    uiChangeFlags.setFlag(UICF_HasCurrentFileIndex  , uiState.hasCurrentFileIndex != m_impl->lastHasCurrentFileIndex);
-    uiChangeFlags.setFlag(UICF_CurrentFilePath      , changeFlags.testFlag(FileManager::FlagCurrentFilePath));
-    uiChangeFlags.setFlag(UICF_CurrentFileIndex     , changeFlags.testFlag(FileManager::FlagCurrentFileIndex));
-    uiChangeFlags.setFlag(UICF_FilesCount           , changeFlags.testFlag(FileManager::FlagFilesCount));
-    uiChangeFlags.setFlag(UICF_CanDeleteCurrentFile , changeFlags.testFlag(FileManager::FlagCanDeleteCurrentFile));
+    if(uiState.hasCurrentFile != m_impl->lastHasCurrentFile)
+        uiChangeFlags |= UICF_HasCurrentFile;
+    if(uiState.hasCurrentFileIndex != m_impl->lastHasCurrentFileIndex)
+        uiChangeFlags |= UICF_HasCurrentFileIndex;
+    if(changeFlags.testFlag(FileManager::FlagCurrentFilePath))
+        uiChangeFlags |= UICF_CurrentFilePath;
+    if(changeFlags.testFlag(FileManager::FlagCurrentFileIndex))
+        uiChangeFlags |= UICF_CurrentFileIndex;
+    if(changeFlags.testFlag(FileManager::FlagFilesCount))
+        uiChangeFlags |= UICF_FilesCount;
+    if(changeFlags.testFlag(FileManager::FlagCanDeleteCurrentFile))
+        uiChangeFlags |= UICF_CanDeleteCurrentFile;
 
     m_impl->lastHasCurrentFile = uiState.hasCurrentFile;
     m_impl->lastHasCurrentFileIndex = uiState.hasCurrentFileIndex;

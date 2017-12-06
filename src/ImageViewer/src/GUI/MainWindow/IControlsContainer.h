@@ -28,7 +28,7 @@ CHECKABLE_LIST="ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar Show
 # signals
 for i in ${ALL_LIST}
 do
-    echo ${i} | sed 's|^\(.\)|\L\1| ; s|^\(.*\)$|void \1Requested(); \\|'
+    echo ${i} | sed 's|^\(.\)|\L\1| ; s|^\(.*\)$|void \1Requested();|'
 done
 
 # setEnabled
@@ -44,33 +44,6 @@ do
 done
 
 */
-
-#define DECLARE_CONTROLS_CONTAINER_SIGNALS \
-    Q_SIGNALS: \
-        void openRequested(); \
-        void saveAsRequested(); \
-        void newWindowRequested(); \
-        void navigatePreviousRequested(); \
-        void navigateNextRequested(); \
-        void startSlideShowRequested(); \
-        void preferencesRequested(); \
-        void exitRequested(); \
-        void rotateCounterclockwiseRequested(); \
-        void rotateClockwiseRequested(); \
-        void flipHorizontalRequested(); \
-        void flipVerticalRequested(); \
-        void deleteFileRequested(); \
-        void zoomOutRequested(); \
-        void zoomInRequested(); \
-        void zoomResetRequested(); \
-        void zoomFitToWindowRequested(); \
-        void zoomOriginalSizeRequested(); \
-        void zoomFullScreenRequested(); \
-        void showMenuBarRequested(); \
-        void showToolBarRequested(); \
-        void aboutRequested(); \
-        void aboutQtRequested(); \
-
 
 #define DECLARE_CONTROLS_CONTAINER_FUNCTIONS_HELPER_SET_ENABLED(ACCESS_SPECIFIER, FUNCTION_BODY) \
     ACCESS_SPECIFIER : \
