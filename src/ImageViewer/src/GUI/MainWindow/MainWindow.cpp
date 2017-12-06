@@ -358,13 +358,8 @@ void MainWindow::updateUIState(const UIState &state, const UIChangeFlags &change
             IControlsContainer* container = *it;
             container->setNavigatePreviousEnabled(state.hasCurrentFileIndex);
             container->setNavigateNextEnabled(state.hasCurrentFileIndex);
+            container->setStartSlideShowEnabled(state.hasCurrentFileIndex);
         }
-    }
-
-    if(changeFlags.testFlag(UICF_HasCurrentFile))
-    {
-        for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
-            (*it)->setStartSlideShowEnabled(state.hasCurrentFile);
     }
 
     if(changeFlags.testFlag(UICF_HasCurrentFile) ||
