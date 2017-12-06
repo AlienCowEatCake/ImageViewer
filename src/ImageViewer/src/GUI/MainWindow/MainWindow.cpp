@@ -31,16 +31,13 @@
 #include <QUrl>
 #include <QString>
 #include <QStringList>
-//#include <QLocale>
-//#include <QTranslator>
-//#include <QLibraryInfo>
 #include <QGraphicsItem>
 #include <QMessageBox>
 #include <QFileInfo>
 #include <QTimer>
 
+#include "Utils/LocalizationManager.h"
 #include "Utils/SettingsWrapper.h"
-#include "Utils/Workarounds.h"
 #include "Utils/ImageSaver.h"
 
 #include "Decoders/DecodersManager.h"
@@ -123,6 +120,8 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     UI &ui = m_impl->ui;
     ImageViewerWidget *imageViewerWidget = ui.imageViewerWidget;
 
+    LocalizationManager::instance()->fillMenu(ui.menubar->menuLanguage());
+
     connect(imageViewerWidget, SIGNAL(zoomLevelChanged(qreal)), this, SLOT(updateWindowTitle()));
 
     for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
@@ -154,10 +153,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
         connect(object, SIGNAL(aboutRequested())                    , this              , SIGNAL(aboutRequested())              );
         connect(object, SIGNAL(aboutQtRequested())                  , this              , SIGNAL(aboutQtRequested())            );
     }
-/*
-    connect(ui.actionEnglish    , SIGNAL(triggered())   , this  , SLOT(onActionEnglishTriggered())  );
-    connect(ui.actionRussian    , SIGNAL(triggered())   , this  , SLOT(onActionRussianTriggered())  );
-*/
+
     connect(settings, SIGNAL(normalBackgroundColorChanged(const QColor&))       , this              , SLOT(updateBackgroundColor())                     );
     connect(settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&))   , this              , SLOT(updateBackgroundColor())                     );
     connect(settings, SIGNAL(smoothTransformationChanged(bool))                 , imageViewerWidget , SLOT(setSmoothTransformation(bool))               );
@@ -172,7 +168,6 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     imageViewerWidget->setWheelMode(settings->wheelMode());
     onZoomModeChanged(settings->zoomMode());
     updateSlideShowInterval();
-//    setLanguage();
 
     ui.menubar->setVisible(settings->menuBarVisible());
     ui.toolbar->setVisible(settings->toolBarVisible());
@@ -194,74 +189,6 @@ MainWindow::~MainWindow()
 {
     m_impl->settings->setZoomLevel(m_impl->ui.imageViewerWidget->zoomLevel());
 }
-
-//void MainWindow::setLanguage(const QString &newLanguage)
-//{
-//    // Отображение название языка -> соответствующая ему менюшка
-//    static QMap<QString, QAction*> languagesMap;
-//    if(languagesMap.isEmpty())
-//    {
-//        return;
-///*
-//        languagesMap[QString::fromLatin1("en")] = m_impl->ui.actionEnglish;
-//        languagesMap[QString::fromLatin1("ru")] = m_impl->ui.actionRussian;
-//*/
-//    }
-
-//    // Определим системную локаль
-//    static QString systemLang;
-//    if(systemLang.isEmpty())
-//    {
-//        const QString systemLocale = QLocale::system().name().toLower();
-//        for(QMap<QString, QAction*>::Iterator it = languagesMap.begin(); it != languagesMap.end(); ++it)
-//        {
-//            if(systemLocale.startsWith(it.key()))
-//            {
-//                systemLang = it.key();
-//                break;
-//            }
-//        }
-//        if(systemLang.isEmpty())
-//            systemLang = QString::fromLatin1("en");
-//    }
-
-//    // Посмотрим в настройки, не сохранен ли случайно в них язык
-//    SettingsWrapper settings;
-//    QString language = newLanguage;
-//    if(language.isEmpty())
-//    {
-//        const QVariant rawValue = settings.value(QString::fromLatin1("Language"), systemLang);
-//        const QString value = rawValue.isValid() ? rawValue.toString() : systemLang;
-//        language = languagesMap.find(value) != languagesMap.end() ? value : systemLang;
-//    }
-//    else
-//    {
-//        settings.setValue(QString::fromLatin1("Language"), language);
-//    }
-
-//    // Удалим старый перевод, установим новый
-//    static QTranslator qtTranslator;
-//    static QTranslator appTranslator;
-//    static QTranslator utilsTranslator;
-//    if(!qtTranslator.isEmpty())
-//        qApp->removeTranslator(&qtTranslator);
-//    if(!appTranslator.isEmpty())
-//        qApp->removeTranslator(&appTranslator);
-//    if(!utilsTranslator.isEmpty())
-//        qApp->removeTranslator(&utilsTranslator);
-//    qtTranslator.load(QString::fromLatin1("qt_%1").arg(language), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-//    appTranslator.load(QString::fromLatin1(":/translations/imageviewer_%1").arg(language));
-//    utilsTranslator.load(QString::fromLatin1(":/translations/qtutils_%1").arg(language));
-//    qApp->installTranslator(&qtTranslator);
-//    qApp->installTranslator(&appTranslator);
-//    qApp->installTranslator(&utilsTranslator);
-
-//    // Пофиксим шрифты
-//    Workarounds::FontsFix(language);
-
-//    // Проставим галочку на нужном нам языке и снимем с остальных
-//    languagesMap[language]->setChecked(true);
-//}
 
 void MainWindow::updateWindowTitle()
 {
@@ -390,16 +317,6 @@ void MainWindow::onZoomOriginalSizeRequested()
         mode = ImageViewerWidget::ZOOM_CUSTOM;
     onZoomModeChanged(mode);
 }
-
-//void MainWindow::onActionEnglishTriggered()
-//{
-//    setLanguage(QString::fromLatin1("en"));
-//}
-
-//void MainWindow::onActionRussianTriggered()
-//{
-//    setLanguage(QString::fromLatin1("ru"));
-//}
 
 void MainWindow::updateUIState(const UIState &state, const UIChangeFlags &changeFlags)
 {

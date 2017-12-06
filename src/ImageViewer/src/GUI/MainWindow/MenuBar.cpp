@@ -83,8 +83,6 @@ struct MenuBar::Impl
     QAction * const actionZoomFullScreen;
     QAction * const actionShowMenuBar;
     QAction * const actionShowToolBar;
-//    QAction * const actionEnglish;
-//    QAction * const actionRussian;
     QAction * const actionAbout;
     QAction * const actionAboutQt;
 
@@ -122,8 +120,6 @@ struct MenuBar::Impl
         , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomFullScreen        , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionShowMenuBar           , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionShowToolBar           , createWidgetAction(parent))
-//        , CONSTRUCT_OBJECT_FROM_POINTER(actionEnglish               , createWidgetAction(parent))
-//        , CONSTRUCT_OBJECT_FROM_POINTER(actionRussian               , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionAbout                 , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionAboutQt               , createWidgetAction(parent))
     {
@@ -222,22 +218,10 @@ struct MenuBar::Impl
         actionShowToolBar->setMenuRole(QAction::NoRole);
         actionShowToolBar->setCheckable(true);
 
-//        menuLanguage->addAction(actionEnglish);
-//        actionEnglish->setMenuRole(QAction::NoRole);
-//        actionEnglish->setCheckable(true);
-//        menuLanguage->addAction(actionRussian);
-//        actionRussian->setMenuRole(QAction::NoRole);
-//        actionRussian->setCheckable(true);
-
         menuHelp->addAction(actionAbout);
         actionAbout->setMenuRole(QAction::AboutRole);
         menuHelp->addAction(actionAboutQt);
         actionAboutQt->setMenuRole(QAction::AboutQtRole);
-
-//        QActionGroup *langActions = new QActionGroup(menuLanguage);
-//        langActions->addAction(actionEnglish);
-//        langActions->addAction(actionRussian);
-//        langActions->setExclusive(true);
 
         menubar->addMenu(menuFile);
         menubar->addMenu(menuEdit);
@@ -293,8 +277,6 @@ struct MenuBar::Impl
         actionZoomFullScreen->setText(QApplication::translate("MainWindow", "&Full Screen"));
         actionShowMenuBar->setText(QApplication::translate("MainWindow", "Show &Menu Bar"));
         actionShowToolBar->setText(QApplication::translate("MainWindow", "Show &Tool Bar"));
-//        actionEnglish->setText(QApplication::translate("MainWindow", "&English"));
-//        actionRussian->setText(QApplication::translate("MainWindow", "&Russian"));
         actionAbout->setText(QApplication::translate("MainWindow", "&About"));
         actionAboutQt->setText(QApplication::translate("MainWindow", "About &Qt"));
 

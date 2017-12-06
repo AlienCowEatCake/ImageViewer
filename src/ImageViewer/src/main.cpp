@@ -22,6 +22,7 @@
 #include <QStyleFactory>
 #include "GUI/MainController.h"
 #include "Utils/Application.h"
+#include "Utils/LocalizationManager.h"
 #include "Utils/ThemeUtils.h"
 #include "Utils/Workarounds.h"
 
@@ -61,6 +62,11 @@ int main(int argc, char *argv[])
 #endif
     Workarounds::InitQtUtilsResources();
     ThemeUtils::LoadStyleSheet(QString::fromLatin1(":/style/style.qss"));
+
+    LocalizationManager::instance()->initializeResources(QStringList()
+            << QString::fromLatin1(":/translations/imageviewer_%1")
+            << QString::fromLatin1(":/translations/qtutils_%1")
+    );
 
     MainController controller;
     if(argc > 1)

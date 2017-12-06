@@ -56,8 +56,6 @@ public:
     MainWindow(GUISettings *settings, QWidget *parent = 0);
     ~MainWindow();
 
-//    void setLanguage(const QString &newLanguage = QString());
-
 public slots:
     void updateWindowTitle();
     void switchFullScreenMode();
@@ -70,9 +68,6 @@ public slots:
 
     void onZoomFitToWindowRequested();
     void onZoomOriginalSizeRequested();
-
-//    void onActionEnglishTriggered();
-//    void onActionRussianTriggered();
 
     void updateUIState(const UIState &state, const UIChangeFlags &changeFlags);
 
