@@ -406,9 +406,15 @@ bool FileManager::openPaths(const QStringList &filePaths)
             continue;
 
         if(fileInfo.isDir())
-            pathsList.append(supportedPathsInDirectory(m_impl->supportedFormats, QDir(fileInfo.absoluteFilePath())));
+        {
+            const QStringList pathsInDir = supportedPathsInDirectory(m_impl->supportedFormats, QDir(fileInfo.absoluteFilePath()));
+            for(QStringList::ConstIterator jt = pathsInDir.constBegin(), jtEnd = pathsInDir.constEnd(); jt != jtEnd; ++jt)
+                pathsList.append(*jt);
+        }
         else
+        {
             pathsList.append(*it);
+        }
     }
 
     if(pathsList.isEmpty())
