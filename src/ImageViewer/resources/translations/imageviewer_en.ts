@@ -33,8 +33,8 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="120"/>
-        <source>Open File</source>
-        <translation>Open File</translation>
+        <source>Open Files</source>
+        <translation>Open Files</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="129"/>
@@ -66,13 +66,13 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="211"/>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="345"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="209"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="343"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="345"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="343"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>Failed to open file &quot;%1&quot;</translation>
     </message>
@@ -298,92 +298,92 @@
 <context>
     <name>ToolBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="133"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="118"/>
         <source>Previous</source>
         <translation>Previous</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="134"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="119"/>
         <source>Next</source>
         <translation>Next</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="135"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="120"/>
         <source>Zoom Out</source>
         <translation>Zoom Out</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="136"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="121"/>
         <source>Zoom In</source>
         <translation>Zoom In</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="137"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="122"/>
         <source>Fit Image To Window Size</source>
         <translation>Fit Image To Window Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="138"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="123"/>
         <source>Original Size</source>
         <translation>Original Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="139"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="124"/>
         <source>Full Screen</source>
         <translation>Full Screen</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="140"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="125"/>
         <source>Rotate Counterclockwise</source>
         <translation>Rotate Counterclockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="141"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="126"/>
         <source>Rotate Clockwise</source>
         <translation>Rotate Clockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="142"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="127"/>
         <source>Flip Horizontal</source>
         <translation>Flip Horizontal</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="143"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="128"/>
         <source>Flip Vertical</source>
         <translation>Flip Vertical</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="144"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="129"/>
         <source>Open File</source>
         <translation>Open File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="145"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="130"/>
         <source>Save File As</source>
         <translation>Save File As</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="146"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="131"/>
         <source>Delete File</source>
         <translation>Delete File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="147"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="132"/>
         <source>Preferences</source>
         <translation>Preferences</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="148"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="133"/>
         <source>Exit</source>
         <translation>Quit</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="179"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="164"/>
         <source>Start Slideshow</source>
         <translation>Start Slideshow</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="184"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="169"/>
         <source>Stop Slideshow</source>
         <translation>Stop Slideshow</translation>
     </message>

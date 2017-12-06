@@ -117,10 +117,10 @@ bool MainController::openFileWithDialog()
     const QString formatString = QString::fromLatin1("%2 (%1);;%3 (*.*)")
             .arg(m_impl->supportedFormats.join(QString::fromLatin1(" ")))
             .arg(tr("All Supported Images")).arg(tr("All Files"));
-    const QString filePath = QFileDialog::getOpenFileName(&m_impl->mainWindow, tr("Open File"), m_impl->settings.lastOpenedPath(), formatString);
-    if(filePath.isEmpty())
+    const QStringList filePaths = QFileDialog::getOpenFileNames(&m_impl->mainWindow, tr("Open Files"), m_impl->settings.lastOpenedPath(), formatString);
+    if(filePaths.isEmpty())
         return false;
-    return openPath(filePath);
+    return openPaths(filePaths);
 }
 
 bool MainController::openFolderWithDialog()
