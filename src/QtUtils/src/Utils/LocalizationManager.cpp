@@ -99,11 +99,11 @@ struct LocalizationManager::Impl
 
         ActionList &actionsEnglish = actionsMap[Locale::EN];
         for(ActionList::Iterator it = actionsEnglish.begin(), itEnd = actionsEnglish.end(); it != itEnd; ++it)
-            (*it)->setText(QApplication::translate("MainWindow", "&English"));
+            (*it)->setText(QApplication::translate("LocalizationManager", "&English"));
 
         ActionList &actionsRussian = actionsMap[Locale::RU];
         for(ActionList::Iterator it = actionsRussian.begin(), itEnd = actionsRussian.end(); it != itEnd; ++it)
-            (*it)->setText(QApplication::translate("MainWindow", "&Russian"));
+            (*it)->setText(QApplication::translate("LocalizationManager", "&Russian"));
     }
 };
 

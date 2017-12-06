@@ -58,4 +58,17 @@
         <translation>Error: Can&apos;t save file</translation>
     </message>
 </context>
+<context>
+    <name>LocalizationManager</name>
+    <message>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="102"/>
+        <source>&amp;English</source>
+        <translation>&amp;English</translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="106"/>
+        <source>&amp;Russian</source>
+        <translation>&amp;Russian</translation>
+    </message>
+</context>
 </TS>
