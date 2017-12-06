@@ -74,21 +74,6 @@ struct ToolBar::Impl
         , CONSTRUCT_OBJECT(preferences, QToolButton, (toolbar))
         , CONSTRUCT_OBJECT(exit, QToolButton, (toolbar))
     {
-#if defined (Q_OS_MAC)
-        QStyle *style = NULL;
-        if(QStyleFactory::keys().contains(QString::fromLatin1("Fusion"), Qt::CaseInsensitive))
-             style = QStyleFactory::create(QString::fromLatin1("Fusion"));
-        else if(QStyleFactory::keys().contains(QString::fromLatin1("Windows"), Qt::CaseInsensitive))
-            style = QStyleFactory::create(QString::fromLatin1("Windows"));
-        if(style)
-        {
-            toolbar->setStyle(style);
-            const QList<QWidget*> toolbarChildren = toolbar->findChildren<QWidget*>();
-            for(QList<QWidget*>::ConstIterator it = toolbarChildren.constBegin(); it != toolbarChildren.constEnd(); ++it)
-                (*it)->setStyle(style);
-        }
-#endif
-
         zoomFitToWindow->setCheckable(true);
         zoomOriginalSize->setCheckable(true);
         zoomFullScreen->setCheckable(true);
@@ -192,6 +177,21 @@ ToolBar::ToolBar(QWidget *parent)
     : AdjustableFrame(parent)
     , m_impl(new Impl(this))
 {
+#if defined (Q_OS_MAC)
+        QStyle *style = NULL;
+        if(QStyleFactory::keys().contains(QString::fromLatin1("Fusion"), Qt::CaseInsensitive))
+             style = QStyleFactory::create(QString::fromLatin1("Fusion"));
+        else if(QStyleFactory::keys().contains(QString::fromLatin1("Windows"), Qt::CaseInsensitive))
+            style = QStyleFactory::create(QString::fromLatin1("Windows"));
+        if(style)
+        {
+            setStyle(style);
+            const QList<QWidget*> toolbarChildren = findChildren<QWidget*>();
+            for(QList<QWidget*>::ConstIterator it = toolbarChildren.constBegin(); it != toolbarChildren.constEnd(); ++it)
+                (*it)->setStyle(style);
+        }
+#endif
+
     connect(m_impl->navigatePrevious        , SIGNAL(clicked()), emitter(), SIGNAL(navigatePreviousRequested())         );
     connect(m_impl->navigateNext            , SIGNAL(clicked()), emitter(), SIGNAL(navigateNextRequested())             );
     connect(m_impl->startSlideShow          , SIGNAL(clicked()), emitter(), SIGNAL(startSlideShowRequested())           );
