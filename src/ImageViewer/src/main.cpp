@@ -71,14 +71,13 @@ int main(int argc, char *argv[])
     MainController controller;
     if(argc > 1)
     {
-        std::string filename;
+        QStringList filePaths;
         for(int i = 1; i < argc; i++)
-        {
-            filename.append(argv[i]);
-            if(i + 1 < argc)
-                filename.append(" ");
-        }
-        controller.openPath(QString::fromLocal8Bit(filename.c_str()));
+            filePaths.append(QString::fromLocal8Bit(argv[i]));
+        if(filePaths.size() == 1)
+            controller.openPath(filePaths.first());
+        else
+            controller.openPaths(filePaths);
     }
     else if(app.hasLastOpenFilePath())
     {
