@@ -58,4 +58,17 @@
         <translation>Ошибка: Не удалось сохранить файл</translation>
     </message>
 </context>
+<context>
+    <name>LocalizationManager</name>
+    <message>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="102"/>
+        <source>&amp;English</source>
+        <translation>&amp;English</translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="106"/>
+        <source>&amp;Russian</source>
+        <translation>&amp;Русский</translation>
+    </message>
+</context>
 </TS>

@@ -20,8 +20,9 @@
 #include <QtPlugin>
 #include <QIcon>
 #include <QStyleFactory>
-#include "GUI/MainWindow.h"
+#include "GUI/MainController.h"
 #include "Utils/Application.h"
+#include "Utils/LocalizationManager.h"
 #include "Utils/ThemeUtils.h"
 #include "Utils/Workarounds.h"
 
@@ -61,23 +62,28 @@ int main(int argc, char *argv[])
 #endif
     Workarounds::InitQtUtilsResources();
     ThemeUtils::LoadStyleSheet(QString::fromLatin1(":/style/style.qss"));
-    MainWindow *window = new MainWindow;
+
+    LocalizationManager::instance()->initializeResources(QStringList()
+            << QString::fromLatin1(":/translations/imageviewer_%1")
+            << QString::fromLatin1(":/translations/qtutils_%1")
+    );
+
+    MainController controller;
     if(argc > 1)
     {
-        std::string filename;
+        QStringList filePaths;
         for(int i = 1; i < argc; i++)
-        {
-            filename.append(argv[i]);
-            if(i + 1 < argc)
-                filename.append(" ");
-        }
-        window->onOpenPathRequested(QString::fromLocal8Bit(filename.c_str()));
+            filePaths.append(QString::fromLocal8Bit(argv[i]));
+        if(filePaths.size() == 1)
+            controller.openPath(filePaths.first());
+        else
+            controller.openPaths(filePaths);
     }
     else if(app.hasLastOpenFilePath())
     {
-        window->onOpenPathRequested(app.getLastOpenFilePath());
+        controller.openPath(app.getLastOpenFilePath());
     }
-    QObject::connect(&app, SIGNAL(openFileEvent(const QString&)), window, SLOT(onOpenPathRequested(const QString&)));
-    window->show();
+    QObject::connect(&app, SIGNAL(openFileEvent(const QString&)), &controller, SLOT(openPath(const QString&)));
+    controller.showMainWindow();
     return app.exec();
 }

@@ -39,7 +39,7 @@
 
 #include "Utils/ObjectsUtils.h"
 
-#include "GUISettings.h"
+#include "../GUISettings.h"
 
 namespace {
 
