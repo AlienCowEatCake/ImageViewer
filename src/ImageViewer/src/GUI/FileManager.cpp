@@ -267,6 +267,7 @@ struct FileManager::Impl
     FileManager *fileManager;
     const QStringList supportedFormats;
     QScopedPointer<IFilesModel> filesModel;
+    QStringList currentOpenArguments;
 
     Impl(FileManager *fileManager, const QStringList &supportedFormatsWithWildcards)
         : fileManager(fileManager)
@@ -275,6 +276,7 @@ struct FileManager::Impl
 
     void resetFilesModel(IFilesModel *newFilesModel = NULL)
     {
+        currentOpenArguments.clear();
         filesModel.reset(newFilesModel);
         if(!newFilesModel)
             return;
@@ -361,6 +363,11 @@ bool FileManager::canDeleteCurrentFile() const
     return m_impl->filesModel ? m_impl->filesModel->canDeleteCurrentFile() : false;
 }
 
+QStringList FileManager::currentOpenArguments() const
+{
+    return m_impl->currentOpenArguments;
+}
+
 void FileManager::reset()
 {
     const Impl::ChangedGuard changedGuard(this);
@@ -387,6 +394,7 @@ bool FileManager::openPath(const QString &filePath)
         m_impl->resetFilesModel(new FilxedListModel(QStringList() << fileInfo.absoluteFilePath()));
     else
         m_impl->resetFilesModel(new DirContentModel(m_impl->supportedFormats, pathIsDir ? files.first() : fileInfo.absoluteFilePath()));
+    m_impl->currentOpenArguments = QStringList(filePath);
     return true;
 }
 
@@ -422,6 +430,7 @@ bool FileManager::openPaths(const QStringList &filePaths)
 
     const Impl::ChangedGuard changedGuard(this);
     m_impl->resetFilesModel(new FilxedListModel(pathsList));
+    m_impl->currentOpenArguments = filePaths;
     return true;
 }
 

@@ -53,6 +53,8 @@ public:
     int filesCount() const;
     bool canDeleteCurrentFile() const;
 
+    QStringList currentOpenArguments() const;
+
 public slots:
     void reset();
     void update();

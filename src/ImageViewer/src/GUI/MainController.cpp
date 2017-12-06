@@ -212,8 +212,7 @@ void MainController::showPreferences()
 
 void MainController::openNewWindow()
 {
-    const QStringList args = m_impl->hasCurrentFile() ? QStringList(m_impl->fileManager.currentFilePath()) : QStringList();
-    QProcess::startDetached(QApplication::applicationFilePath(), args, QDir::currentPath());
+    QProcess::startDetached(QApplication::applicationFilePath(), m_impl->fileManager.currentOpenArguments(), QDir::currentPath());
 }
 
 void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &changeFlags)
