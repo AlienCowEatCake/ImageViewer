@@ -130,22 +130,22 @@ struct ToolBar::Impl
 
     void retranslate()
     {
-        navigatePrevious->setToolTip(qApp->translate("MainWindow", "Previous"));
-        navigateNext->setToolTip(qApp->translate("MainWindow", "Next"));
-        zoomOut->setToolTip(qApp->translate("MainWindow", "Zoom Out"));
-        zoomIn->setToolTip(qApp->translate("MainWindow", "Zoom In"));
-        zoomFitToWindow->setToolTip(qApp->translate("MainWindow", "Fit Image To Window Size"));
-        zoomOriginalSize->setToolTip(qApp->translate("MainWindow", "Original Size"));
-        zoomFullScreen->setToolTip(qApp->translate("MainWindow", "Full Screen"));
-        rotateCounterclockwise->setToolTip(qApp->translate("MainWindow", "Rotate Counterclockwise"));
-        rotateClockwise->setToolTip(qApp->translate("MainWindow", "Rotate Clockwise"));
-        flipHorizontal->setToolTip(qApp->translate("MainWindow", "Flip Horizontal"));
-        flipVertical->setToolTip(qApp->translate("MainWindow", "Flip Vertical"));
-        openFile->setToolTip(qApp->translate("MainWindow", "Open File"));
-        saveFileAs->setToolTip(qApp->translate("MainWindow", "Save File As"));
-        deleteFile->setToolTip(qApp->translate("MainWindow", "Delete File"));
-        preferences->setToolTip(qApp->translate("MainWindow", "Preferences"));
-        exit->setToolTip(qApp->translate("MainWindow", "Exit"));
+        navigatePrevious->setToolTip(qApp->translate("ToolBar", "Previous"));
+        navigateNext->setToolTip(qApp->translate("ToolBar", "Next"));
+        zoomOut->setToolTip(qApp->translate("ToolBar", "Zoom Out"));
+        zoomIn->setToolTip(qApp->translate("ToolBar", "Zoom In"));
+        zoomFitToWindow->setToolTip(qApp->translate("ToolBar", "Fit Image To Window Size"));
+        zoomOriginalSize->setToolTip(qApp->translate("ToolBar", "Original Size"));
+        zoomFullScreen->setToolTip(qApp->translate("ToolBar", "Full Screen"));
+        rotateCounterclockwise->setToolTip(qApp->translate("ToolBar", "Rotate Counterclockwise"));
+        rotateClockwise->setToolTip(qApp->translate("ToolBar", "Rotate Clockwise"));
+        flipHorizontal->setToolTip(qApp->translate("ToolBar", "Flip Horizontal"));
+        flipVertical->setToolTip(qApp->translate("ToolBar", "Flip Vertical"));
+        openFile->setToolTip(qApp->translate("ToolBar", "Open File"));
+        saveFileAs->setToolTip(qApp->translate("ToolBar", "Save File As"));
+        deleteFile->setToolTip(qApp->translate("ToolBar", "Delete File"));
+        preferences->setToolTip(qApp->translate("ToolBar", "Preferences"));
+        exit->setToolTip(qApp->translate("ToolBar", "Exit"));
         setSlideShowMode(isSlideShowMode);
     }
 
@@ -176,12 +176,12 @@ struct ToolBar::Impl
         isSlideShowMode = isSlideShow;
         if(!isSlideShowMode)
         {
-            startSlideShow->setToolTip(qApp->translate("MainWindow", "Start Slideshow"));
+            startSlideShow->setToolTip(qApp->translate("ToolBar", "Start Slideshow"));
             startSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_PLAY, toolBarButtonsHasDarkTheme));
         }
         else
         {
-            startSlideShow->setToolTip(qApp->translate("MainWindow", "Stop Slideshow"));
+            startSlideShow->setToolTip(qApp->translate("ToolBar", "Stop Slideshow"));
             startSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_STOP, toolBarButtonsHasDarkTheme));
         }
     }

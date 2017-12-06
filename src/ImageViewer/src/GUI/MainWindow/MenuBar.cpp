@@ -251,34 +251,34 @@ struct MenuBar::Impl
 
     void retranslate()
     {
-        menuFile->setTitle(QApplication::translate("MainWindow", "&File"));
-        menuEdit->setTitle(QApplication::translate("MainWindow", "&Edit"));
-        menuView->setTitle(QApplication::translate("MainWindow", "&View"));
-        menuLanguage->setTitle(QApplication::translate("MainWindow", "&Language"));
-        menuHelp->setTitle(QApplication::translate("MainWindow", "&Help"));
+        menuFile->setTitle(qApp->translate("MenuBar", "&File"));
+        menuEdit->setTitle(qApp->translate("MenuBar", "&Edit"));
+        menuView->setTitle(qApp->translate("MenuBar", "&View"));
+        menuLanguage->setTitle(qApp->translate("MenuBar", "&Language"));
+        menuHelp->setTitle(qApp->translate("MenuBar", "&Help"));
 
-        actionOpen->setText(QApplication::translate("MainWindow", "&Open"));
-        actionSaveAs->setText(QApplication::translate("MainWindow", "&Save As"));
-        actionNewWindow->setText(qApp->translate("MainWindow", "New &Window"));
-        actionNavigatePrevious->setText(qApp->translate("MainWindow", "P&revious"));
-        actionNavigateNext->setText(qApp->translate("MainWindow", "&Next"));
-        actionPreferences->setText(QApplication::translate("MainWindow", "&Preferences"));
-        actionExit->setText(QApplication::translate("MainWindow", "&Exit"));
-        actionRotateCounterclockwise->setText(QApplication::translate("MainWindow", "Rotate &Counterclockwise"));
-        actionRotateClockwise->setText(QApplication::translate("MainWindow", "&Rotate Clockwise"));
-        actionFlipHorizontal->setText(qApp->translate("MainWindow", "Flip &Horizontal"));
-        actionFlipVertical->setText(qApp->translate("MainWindow", "Flip &Vertical"));
-        actionDeleteFile->setText(QApplication::translate("MainWindow", "&Delete File"));
-        actionZoomOut->setText(QApplication::translate("MainWindow", "Zoom &Out"));
-        actionZoomIn->setText(QApplication::translate("MainWindow", "Zoom &In"));
-        actionZoomReset->setText(QApplication::translate("MainWindow", "&Reset Zoom"));
-        actionZoomFitToWindow->setText(QApplication::translate("MainWindow", "Fit Image To &Window Size"));
-        actionZoomOriginalSize->setText(QApplication::translate("MainWindow", "Original &Size"));
-        actionZoomFullScreen->setText(QApplication::translate("MainWindow", "&Full Screen"));
-        actionShowMenuBar->setText(QApplication::translate("MainWindow", "Show &Menu Bar"));
-        actionShowToolBar->setText(QApplication::translate("MainWindow", "Show &Tool Bar"));
-        actionAbout->setText(QApplication::translate("MainWindow", "&About"));
-        actionAboutQt->setText(QApplication::translate("MainWindow", "About &Qt"));
+        actionOpen->setText(qApp->translate("MenuBar", "&Open"));
+        actionSaveAs->setText(qApp->translate("MenuBar", "&Save As"));
+        actionNewWindow->setText(qApp->translate("MenuBar", "New &Window"));
+        actionNavigatePrevious->setText(qApp->translate("MenuBar", "P&revious"));
+        actionNavigateNext->setText(qApp->translate("MenuBar", "&Next"));
+        actionPreferences->setText(qApp->translate("MenuBar", "&Preferences"));
+        actionExit->setText(qApp->translate("MenuBar", "&Exit"));
+        actionRotateCounterclockwise->setText(qApp->translate("MenuBar", "Rotate &Counterclockwise"));
+        actionRotateClockwise->setText(qApp->translate("MenuBar", "&Rotate Clockwise"));
+        actionFlipHorizontal->setText(qApp->translate("MenuBar", "Flip &Horizontal"));
+        actionFlipVertical->setText(qApp->translate("MenuBar", "Flip &Vertical"));
+        actionDeleteFile->setText(qApp->translate("MenuBar", "&Delete File"));
+        actionZoomOut->setText(qApp->translate("MenuBar", "Zoom &Out"));
+        actionZoomIn->setText(qApp->translate("MenuBar", "Zoom &In"));
+        actionZoomReset->setText(qApp->translate("MenuBar", "&Reset Zoom"));
+        actionZoomFitToWindow->setText(qApp->translate("MenuBar", "Fit Image To &Window Size"));
+        actionZoomOriginalSize->setText(qApp->translate("MenuBar", "Original &Size"));
+        actionZoomFullScreen->setText(qApp->translate("MenuBar", "&Full Screen"));
+        actionShowMenuBar->setText(qApp->translate("MenuBar", "Show &Menu Bar"));
+        actionShowToolBar->setText(qApp->translate("MenuBar", "Show &Tool Bar"));
+        actionAbout->setText(qApp->translate("MenuBar", "&About"));
+        actionAboutQt->setText(qApp->translate("MenuBar", "About &Qt"));
 
         setSlideShowMode(isSlideShowMode);
     }
@@ -314,12 +314,12 @@ struct MenuBar::Impl
         isSlideShowMode = isSlideShow;
         if(!isSlideShowMode)
         {
-            actionStartSlideShow->setText(qApp->translate("MainWindow", "Start S&lideshow"));
+            actionStartSlideShow->setText(qApp->translate("MenuBar", "Start S&lideshow"));
             actionStartSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_PLAY, menuActionsHasDarkTheme));
         }
         else
         {
-            actionStartSlideShow->setText(qApp->translate("MainWindow", "Stop S&lideshow"));
+            actionStartSlideShow->setText(qApp->translate("MenuBar", "Stop S&lideshow"));
             actionStartSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_STOP, menuActionsHasDarkTheme));
         }
     }
