@@ -390,29 +390,29 @@ MenuBar::MenuBar(QWidget *parent)
     : QMenuBar(parent)
     , m_impl(new Impl(parent, this))
 {
-    connect(m_impl->actionOpen                  , SIGNAL(triggered()), this, SIGNAL(openRequested())                    );
-    connect(m_impl->actionSaveAs                , SIGNAL(triggered()), this, SIGNAL(saveAsRequested())                  );
-    connect(m_impl->actionNewWindow             , SIGNAL(triggered()), this, SIGNAL(newWindowRequested())               );
-    connect(m_impl->actionNavigatePrevious      , SIGNAL(triggered()), this, SIGNAL(navigatePreviousRequested())        );
-    connect(m_impl->actionNavigateNext          , SIGNAL(triggered()), this, SIGNAL(navigateNextRequested())            );
-    connect(m_impl->actionStartSlideShow        , SIGNAL(triggered()), this, SIGNAL(startSlideShowRequested())          );
-    connect(m_impl->actionPreferences           , SIGNAL(triggered()), this, SIGNAL(preferencesRequested())             );
-    connect(m_impl->actionExit                  , SIGNAL(triggered()), this, SIGNAL(exitRequested())                    );
-    connect(m_impl->actionRotateCounterclockwise, SIGNAL(triggered()), this, SIGNAL(rotateCounterclockwiseRequested())  );
-    connect(m_impl->actionRotateClockwise       , SIGNAL(triggered()), this, SIGNAL(rotateClockwiseRequested())         );
-    connect(m_impl->actionFlipHorizontal        , SIGNAL(triggered()), this, SIGNAL(flipHorizontalRequested())          );
-    connect(m_impl->actionFlipVertical          , SIGNAL(triggered()), this, SIGNAL(flipVerticalRequested())            );
-    connect(m_impl->actionDeleteFile            , SIGNAL(triggered()), this, SIGNAL(deleteFileRequested())              );
-    connect(m_impl->actionZoomOut               , SIGNAL(triggered()), this, SIGNAL(zoomOutRequested())                 );
-    connect(m_impl->actionZoomIn                , SIGNAL(triggered()), this, SIGNAL(zoomInRequested())                  );
-    connect(m_impl->actionZoomReset             , SIGNAL(triggered()), this, SIGNAL(zoomResetRequested())               );
-    connect(m_impl->actionZoomFitToWindow       , SIGNAL(triggered()), this, SIGNAL(zoomFitToWindowRequested())         );
-    connect(m_impl->actionZoomOriginalSize      , SIGNAL(triggered()), this, SIGNAL(zoomOriginalSizeRequested())        );
-    connect(m_impl->actionZoomFullScreen        , SIGNAL(triggered()), this, SIGNAL(zoomFullScreenRequested())          );
-    connect(m_impl->actionShowMenuBar           , SIGNAL(triggered()), this, SIGNAL(showMenuBarRequested())             );
-    connect(m_impl->actionShowToolBar           , SIGNAL(triggered()), this, SIGNAL(showToolBarRequested())             );
-    connect(m_impl->actionAbout                 , SIGNAL(triggered()), this, SIGNAL(aboutRequested())                   );
-    connect(m_impl->actionAboutQt               , SIGNAL(triggered()), this, SIGNAL(aboutQtRequested())                 );
+    connect(m_impl->actionOpen                  , SIGNAL(triggered()), emitter(), SIGNAL(openRequested())                   );
+    connect(m_impl->actionSaveAs                , SIGNAL(triggered()), emitter(), SIGNAL(saveAsRequested())                 );
+    connect(m_impl->actionNewWindow             , SIGNAL(triggered()), emitter(), SIGNAL(newWindowRequested())              );
+    connect(m_impl->actionNavigatePrevious      , SIGNAL(triggered()), emitter(), SIGNAL(navigatePreviousRequested())       );
+    connect(m_impl->actionNavigateNext          , SIGNAL(triggered()), emitter(), SIGNAL(navigateNextRequested())           );
+    connect(m_impl->actionStartSlideShow        , SIGNAL(triggered()), emitter(), SIGNAL(startSlideShowRequested())         );
+    connect(m_impl->actionPreferences           , SIGNAL(triggered()), emitter(), SIGNAL(preferencesRequested())            );
+    connect(m_impl->actionExit                  , SIGNAL(triggered()), emitter(), SIGNAL(exitRequested())                   );
+    connect(m_impl->actionRotateCounterclockwise, SIGNAL(triggered()), emitter(), SIGNAL(rotateCounterclockwiseRequested()) );
+    connect(m_impl->actionRotateClockwise       , SIGNAL(triggered()), emitter(), SIGNAL(rotateClockwiseRequested())        );
+    connect(m_impl->actionFlipHorizontal        , SIGNAL(triggered()), emitter(), SIGNAL(flipHorizontalRequested())         );
+    connect(m_impl->actionFlipVertical          , SIGNAL(triggered()), emitter(), SIGNAL(flipVerticalRequested())           );
+    connect(m_impl->actionDeleteFile            , SIGNAL(triggered()), emitter(), SIGNAL(deleteFileRequested())             );
+    connect(m_impl->actionZoomOut               , SIGNAL(triggered()), emitter(), SIGNAL(zoomOutRequested())                );
+    connect(m_impl->actionZoomIn                , SIGNAL(triggered()), emitter(), SIGNAL(zoomInRequested())                 );
+    connect(m_impl->actionZoomReset             , SIGNAL(triggered()), emitter(), SIGNAL(zoomResetRequested())              );
+    connect(m_impl->actionZoomFitToWindow       , SIGNAL(triggered()), emitter(), SIGNAL(zoomFitToWindowRequested())        );
+    connect(m_impl->actionZoomOriginalSize      , SIGNAL(triggered()), emitter(), SIGNAL(zoomOriginalSizeRequested())       );
+    connect(m_impl->actionZoomFullScreen        , SIGNAL(triggered()), emitter(), SIGNAL(zoomFullScreenRequested())         );
+    connect(m_impl->actionShowMenuBar           , SIGNAL(triggered()), emitter(), SIGNAL(showMenuBarRequested())            );
+    connect(m_impl->actionShowToolBar           , SIGNAL(triggered()), emitter(), SIGNAL(showToolBarRequested())            );
+    connect(m_impl->actionAbout                 , SIGNAL(triggered()), emitter(), SIGNAL(aboutRequested())                  );
+    connect(m_impl->actionAboutQt               , SIGNAL(triggered()), emitter(), SIGNAL(aboutQtRequested())                );
 }
 
 MenuBar::~MenuBar()

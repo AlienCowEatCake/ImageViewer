@@ -31,31 +31,7 @@ class ToolBar : public AdjustableFrame, public IControlsContainer
     Q_DISABLE_COPY(ToolBar)
 
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS
-
-signals:
-    void openRequested();
-    void saveAsRequested();
-    void newWindowRequested();
-    void navigatePreviousRequested();
-    void navigateNextRequested();
-    void startSlideShowRequested();
-    void preferencesRequested();
-    void exitRequested();
-    void rotateCounterclockwiseRequested();
-    void rotateClockwiseRequested();
-    void flipHorizontalRequested();
-    void flipVerticalRequested();
-    void deleteFileRequested();
-    void zoomOutRequested();
-    void zoomInRequested();
-    void zoomResetRequested();
-    void zoomFitToWindowRequested();
-    void zoomOriginalSizeRequested();
-    void zoomFullScreenRequested();
-    void showMenuBarRequested();
-    void showToolBarRequested();
-    void aboutRequested();
-    void aboutQtRequested();
+    CONTROLS_CONTAINER_DEFAULT_EMITTER_IMPL
 
 public:
     ToolBar(QWidget *parent = NULL);

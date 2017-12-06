@@ -192,23 +192,23 @@ ToolBar::ToolBar(QWidget *parent)
     : AdjustableFrame(parent)
     , m_impl(new Impl(this))
 {
-    connect(m_impl->navigatePrevious        , SIGNAL(clicked()), this, SIGNAL(navigatePreviousRequested())          );
-    connect(m_impl->navigateNext            , SIGNAL(clicked()), this, SIGNAL(navigateNextRequested())              );
-    connect(m_impl->startSlideShow          , SIGNAL(clicked()), this, SIGNAL(startSlideShowRequested())            );
-    connect(m_impl->zoomOut                 , SIGNAL(clicked()), this, SIGNAL(zoomOutRequested())                   );
-    connect(m_impl->zoomIn                  , SIGNAL(clicked()), this, SIGNAL(zoomInRequested())                    );
-    connect(m_impl->zoomFitToWindow         , SIGNAL(clicked()), this, SIGNAL(zoomFitToWindowRequested())           );
-    connect(m_impl->zoomOriginalSize        , SIGNAL(clicked()), this, SIGNAL(zoomOriginalSizeRequested())          );
-    connect(m_impl->zoomFullScreen          , SIGNAL(clicked()), this, SIGNAL(zoomFullScreenRequested())            );
-    connect(m_impl->rotateCounterclockwise  , SIGNAL(clicked()), this, SIGNAL(rotateCounterclockwiseRequested())    );
-    connect(m_impl->rotateClockwise         , SIGNAL(clicked()), this, SIGNAL(rotateClockwiseRequested())           );
-    connect(m_impl->flipHorizontal          , SIGNAL(clicked()), this, SIGNAL(flipHorizontalRequested())            );
-    connect(m_impl->flipVertical            , SIGNAL(clicked()), this, SIGNAL(flipVerticalRequested())              );
-    connect(m_impl->openFile                , SIGNAL(clicked()), this, SIGNAL(openRequested())                      );
-    connect(m_impl->saveFileAs              , SIGNAL(clicked()), this, SIGNAL(saveAsRequested())                    );
-    connect(m_impl->deleteFile              , SIGNAL(clicked()), this, SIGNAL(deleteFileRequested())                );
-    connect(m_impl->preferences             , SIGNAL(clicked()), this, SIGNAL(preferencesRequested())               );
-    connect(m_impl->exit                    , SIGNAL(clicked()), this, SIGNAL(exitRequested())                      );
+    connect(m_impl->navigatePrevious        , SIGNAL(clicked()), emitter(), SIGNAL(navigatePreviousRequested())         );
+    connect(m_impl->navigateNext            , SIGNAL(clicked()), emitter(), SIGNAL(navigateNextRequested())             );
+    connect(m_impl->startSlideShow          , SIGNAL(clicked()), emitter(), SIGNAL(startSlideShowRequested())           );
+    connect(m_impl->zoomOut                 , SIGNAL(clicked()), emitter(), SIGNAL(zoomOutRequested())                  );
+    connect(m_impl->zoomIn                  , SIGNAL(clicked()), emitter(), SIGNAL(zoomInRequested())                   );
+    connect(m_impl->zoomFitToWindow         , SIGNAL(clicked()), emitter(), SIGNAL(zoomFitToWindowRequested())          );
+    connect(m_impl->zoomOriginalSize        , SIGNAL(clicked()), emitter(), SIGNAL(zoomOriginalSizeRequested())         );
+    connect(m_impl->zoomFullScreen          , SIGNAL(clicked()), emitter(), SIGNAL(zoomFullScreenRequested())           );
+    connect(m_impl->rotateCounterclockwise  , SIGNAL(clicked()), emitter(), SIGNAL(rotateCounterclockwiseRequested())   );
+    connect(m_impl->rotateClockwise         , SIGNAL(clicked()), emitter(), SIGNAL(rotateClockwiseRequested())          );
+    connect(m_impl->flipHorizontal          , SIGNAL(clicked()), emitter(), SIGNAL(flipHorizontalRequested())           );
+    connect(m_impl->flipVertical            , SIGNAL(clicked()), emitter(), SIGNAL(flipVerticalRequested())             );
+    connect(m_impl->openFile                , SIGNAL(clicked()), emitter(), SIGNAL(openRequested())                     );
+    connect(m_impl->saveFileAs              , SIGNAL(clicked()), emitter(), SIGNAL(saveAsRequested())                   );
+    connect(m_impl->deleteFile              , SIGNAL(clicked()), emitter(), SIGNAL(deleteFileRequested())               );
+    connect(m_impl->preferences             , SIGNAL(clicked()), emitter(), SIGNAL(preferencesRequested())              );
+    connect(m_impl->exit                    , SIGNAL(clicked()), emitter(), SIGNAL(exitRequested())                     );
 }
 
 ToolBar::~ToolBar()

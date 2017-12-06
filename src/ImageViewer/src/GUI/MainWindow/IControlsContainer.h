@@ -20,6 +20,8 @@
 #if !defined(I_CONTROLS_CONTAINER_H_INCLUDED)
 #define I_CONTROLS_CONTAINER_H_INCLUDED
 
+#include <QObject>
+
 /*
 
 ALL_LIST="Open SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt"
@@ -44,6 +46,37 @@ do
 done
 
 */
+
+class ControlsContainerEmitter : public QObject
+{
+    Q_OBJECT
+
+signals:
+    void openRequested();
+    void saveAsRequested();
+    void newWindowRequested();
+    void navigatePreviousRequested();
+    void navigateNextRequested();
+    void startSlideShowRequested();
+    void preferencesRequested();
+    void exitRequested();
+    void rotateCounterclockwiseRequested();
+    void rotateClockwiseRequested();
+    void flipHorizontalRequested();
+    void flipVerticalRequested();
+    void deleteFileRequested();
+    void zoomOutRequested();
+    void zoomInRequested();
+    void zoomResetRequested();
+    void zoomFitToWindowRequested();
+    void zoomOriginalSizeRequested();
+    void zoomFullScreenRequested();
+    void showMenuBarRequested();
+    void showToolBarRequested();
+    void aboutRequested();
+    void aboutQtRequested();
+};
+
 
 #define DECLARE_CONTROLS_CONTAINER_FUNCTIONS_HELPER_SET_ENABLED(ACCESS_SPECIFIER, FUNCTION_BODY) \
     ACCESS_SPECIFIER : \
@@ -92,7 +125,14 @@ done
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS_HELPER(public, = 0;)
 
 #define DECLARE_CONTROLS_CONTAINER_FUNCTIONS \
-    DECLARE_CONTROLS_CONTAINER_FUNCTIONS_HELPER(public /*Q_SLOTS*/, /*Q_DECL_OVERRIDE*/;)
+    DECLARE_CONTROLS_CONTAINER_FUNCTIONS_HELPER(public, /*Q_DECL_OVERRIDE*/;)
+
+
+#define CONTROLS_CONTAINER_DEFAULT_EMITTER_IMPL \
+    private: \
+        ControlsContainerEmitter m_emitter; \
+    public:\
+        ControlsContainerEmitter *emitter() { return &m_emitter; }
 
 
 #define CONTROLS_CONTAINER_BOOL_ARG_FUNCTION_IMPL(CLASS, CLASS_FUNCTION, OBJECT, OBJECT_FUNCTION) \
@@ -114,6 +154,7 @@ class IControlsContainer
 
 public:
     virtual ~IControlsContainer() {}
+    virtual ControlsContainerEmitter *emitter() = 0;
 };
 
 #endif // I_CONTROLS_CONTAINER_H_INCLUDED

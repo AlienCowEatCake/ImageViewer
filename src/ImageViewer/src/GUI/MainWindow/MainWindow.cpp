@@ -126,9 +126,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
 
     for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
     {
-        QObject *object = dynamic_cast<QObject*>(*it);
-        if(!object)
-            continue;
+        QObject *object = (*it)->emitter();
         connect(object, SIGNAL(openRequested())                     , this              , SIGNAL(openFileWithDialogRequested()) );
         connect(object, SIGNAL(saveAsRequested())                   , this              , SLOT(onSaveAsRequested())             );
         connect(object, SIGNAL(newWindowRequested())                , this              , SIGNAL(newWindowRequested())          );
