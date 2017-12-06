@@ -32,11 +32,12 @@ class MenuBar : public QMenuBar, public IControlsContainer
     Q_DISABLE_COPY(MenuBar)
 
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS
-    CONTROLS_CONTAINER_DEFAULT_EMITTER_IMPL
 
 public:
     MenuBar(QWidget *parent = NULL);
     ~MenuBar();
+
+    ControlsContainerEmitter *emitter();
 
     QMenu *contextMenu();
     QMenu *menuLanguage();

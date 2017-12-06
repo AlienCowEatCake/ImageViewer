@@ -30,7 +30,7 @@
 #include "Utils/ObjectsUtils.h"
 #include "Utils/ThemeUtils.h"
 
-struct ToolBar::Impl
+struct ToolBar::Impl : public ControlsContainerEmitter
 {
     bool isSlideShowMode;
     bool toolBarButtonsHasDarkTheme;
@@ -213,6 +213,11 @@ ToolBar::ToolBar(QWidget *parent)
 
 ToolBar::~ToolBar()
 {}
+
+ControlsContainerEmitter *ToolBar::emitter()
+{
+    return m_impl.data();
+}
 
 void ToolBar::changeEvent(QEvent *event)
 {

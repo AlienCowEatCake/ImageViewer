@@ -31,11 +31,12 @@ class ToolBar : public AdjustableFrame, public IControlsContainer
     Q_DISABLE_COPY(ToolBar)
 
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS
-    CONTROLS_CONTAINER_DEFAULT_EMITTER_IMPL
 
 public:
     ToolBar(QWidget *parent = NULL);
     ~ToolBar();
+
+    ControlsContainerEmitter *emitter();
 
 protected:
     void changeEvent(QEvent *event);

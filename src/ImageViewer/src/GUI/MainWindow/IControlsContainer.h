@@ -128,13 +128,6 @@ signals:
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS_HELPER(public, /*Q_DECL_OVERRIDE*/;)
 
 
-#define CONTROLS_CONTAINER_DEFAULT_EMITTER_IMPL \
-    private: \
-        ControlsContainerEmitter m_emitter; \
-    public:\
-        ControlsContainerEmitter *emitter() { return &m_emitter; }
-
-
 #define CONTROLS_CONTAINER_BOOL_ARG_FUNCTION_IMPL(CLASS, CLASS_FUNCTION, OBJECT, OBJECT_FUNCTION) \
     void CLASS::CLASS_FUNCTION(bool arg) { (OBJECT)->OBJECT_FUNCTION(arg); }
 

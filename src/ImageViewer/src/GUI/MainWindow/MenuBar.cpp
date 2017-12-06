@@ -29,7 +29,7 @@
 #include "Utils/ObjectsUtils.h"
 #include "Utils/ThemeUtils.h"
 
-struct MenuBar::Impl
+struct MenuBar::Impl : public ControlsContainerEmitter
 {
     bool isSlideShowMode;
     bool menuActionsHasDarkTheme;
@@ -417,6 +417,11 @@ MenuBar::MenuBar(QWidget *parent)
 
 MenuBar::~MenuBar()
 {}
+
+ControlsContainerEmitter *MenuBar::emitter()
+{
+    return m_impl.data();
+}
 
 QMenu *MenuBar::contextMenu()
 {
