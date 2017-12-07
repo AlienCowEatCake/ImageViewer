@@ -31,6 +31,9 @@
 #include "ImageViewerWidget.h"
 #include "ToolBar.h"
 #include "MenuBar.h"
+#if defined (USE_MAC_TOOLBAR)
+#include "MacToolBar.h"
+#endif
 
 namespace {
 
@@ -75,6 +78,12 @@ struct MainWindow::UI
         mainWindow->resize(WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT);
 
         mainWindow->ensurePolished();
+
+#if defined (USE_MAC_TOOLBAR)
+        MacToolBar *macToolbar = new MacToolBar(mainWindow);
+        controlsContainers.append(macToolbar);
+        macToolbar->attachToWindow(mainWindow->windowHandle());
+#endif
     }
 };
 
