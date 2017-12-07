@@ -121,7 +121,15 @@ bool MainController::openFileWithDialog()
     const QStringList filePaths = QFileDialog::getOpenFileNames(&m_impl->mainWindow, tr("Open File"), m_impl->settings.lastOpenedPath(), formatString);
     if(filePaths.isEmpty())
         return false;
-    return openPaths(filePaths);
+    const bool status = openPaths(filePaths);
+    if(!status)
+    {
+        const QString errorMessage = (filePaths.size() == 1)
+                ? (tr("Failed to open file \"%1\"").arg(filePaths.first()))
+                : (tr("Failed to open files \"%1\"").arg(filePaths.join(QString::fromLatin1("\", \""))));
+        QMessageBox::critical(&m_impl->mainWindow, tr("Error"), errorMessage);
+    }
+    return status;
 }
 
 bool MainController::openFolderWithDialog()
@@ -130,7 +138,10 @@ bool MainController::openFolderWithDialog()
     const QString dirPath = QFileDialog::getExistingDirectory(&m_impl->mainWindow, tr("Open Directory"), lastDirPath);
     if(dirPath.isEmpty())
         return false;
-    return openPath(dirPath);
+    const bool status = openPath(dirPath);
+    if(!status)
+        QMessageBox::critical(&m_impl->mainWindow, tr("Error"), tr("Failed to open folder \"%1\"").arg(dirPath));
+    return status;
 }
 
 bool MainController::deleteCurrentFile()

@@ -390,10 +390,12 @@ bool FileManager::openPath(const QString &filePath)
     const bool pathIsDir = fileInfo.isDir();
     const Impl::ChangedGuard changedGuard(this);
     const QStringList files = supportedPathsInDirectory(m_impl->supportedFormats, pathIsDir ? QDir(fileInfo.absoluteFilePath()) : fileInfo.absoluteDir());
-    if(files.isEmpty())
+    if(!files.isEmpty())
+        m_impl->resetFilesModel(new DirContentModel(m_impl->supportedFormats, pathIsDir ? files.first() : fileInfo.absoluteFilePath()));
+    else if(!pathIsDir)
         m_impl->resetFilesModel(new FilxedListModel(QStringList() << fileInfo.absoluteFilePath()));
     else
-        m_impl->resetFilesModel(new DirContentModel(m_impl->supportedFormats, pathIsDir ? files.first() : fileInfo.absoluteFilePath()));
+        return false;
     m_impl->currentOpenArguments = QStringList(filePath);
     return true;
 }

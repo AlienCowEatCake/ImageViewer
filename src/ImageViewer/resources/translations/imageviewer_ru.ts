@@ -37,28 +37,45 @@
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="130"/>
+        <location filename="../../src/GUI/MainController.cpp" line="128"/>
+        <source>Failed to open file &quot;%1&quot;</source>
+        <translation>Не удалось открыть файл &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainController.cpp" line="129"/>
+        <source>Failed to open files &quot;%1&quot;</source>
+        <translation>Не удалось открыть файлы &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainController.cpp" line="138"/>
         <source>Open Directory</source>
         <translation>Открыть папку</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="143"/>
+        <source>Failed to open folder &quot;%1&quot;</source>
+        <translation>Не удалось открыть папку &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainController.cpp" line="154"/>
         <source>Delete File</source>
         <translation>Удалить файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="143"/>
+        <location filename="../../src/GUI/MainController.cpp" line="154"/>
         <source>Are you sure you want to delete current file?</source>
         <translation>Вы уверены что хотите удалить этот файл?</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="153"/>
-        <location filename="../../src/GUI/MainController.cpp" line="161"/>
+        <location filename="../../src/GUI/MainController.cpp" line="130"/>
+        <location filename="../../src/GUI/MainController.cpp" line="143"/>
+        <location filename="../../src/GUI/MainController.cpp" line="164"/>
+        <location filename="../../src/GUI/MainController.cpp" line="172"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="161"/>
+        <location filename="../../src/GUI/MainController.cpp" line="172"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation>Не удалось удалить файл &quot;%1&quot;</translation>
     </message>
