@@ -24,7 +24,7 @@
 
 /*
 
-ALL_LIST="Open SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt"
+ALL_LIST="OpenFile OpenFolder SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt"
 CHECKABLE_LIST="ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar"
 
 # signals
@@ -52,7 +52,8 @@ class ControlsContainerEmitter : public QObject
     Q_OBJECT
 
 signals:
-    void openRequested();
+    void openFileRequested();
+    void openFolderRequested();
     void saveAsRequested();
     void newWindowRequested();
     void navigatePreviousRequested();
@@ -80,7 +81,8 @@ signals:
 
 #define DECLARE_CONTROLS_CONTAINER_FUNCTIONS_HELPER_SET_ENABLED(ACCESS_SPECIFIER, FUNCTION_BODY) \
     ACCESS_SPECIFIER : \
-        virtual void setOpenEnabled(bool) FUNCTION_BODY \
+        virtual void setOpenFileEnabled(bool) FUNCTION_BODY \
+        virtual void setOpenFolderEnabled(bool) FUNCTION_BODY \
         virtual void setSaveAsEnabled(bool) FUNCTION_BODY \
         virtual void setNewWindowEnabled(bool) FUNCTION_BODY \
         virtual void setNavigatePreviousEnabled(bool) FUNCTION_BODY \

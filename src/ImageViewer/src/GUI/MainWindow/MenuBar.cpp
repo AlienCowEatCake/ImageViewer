@@ -62,7 +62,8 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     QMenu * const menuLanguage;
     QMenu * const menuHelp;
 
-    QAction * const actionOpen;
+    QAction * const actionOpenFile;
+    QAction * const actionOpenFolder;
     QAction * const actionSaveAs;
     QAction * const actionNewWindow;
     QAction * const actionNavigatePrevious;
@@ -99,7 +100,8 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         , CONSTRUCT_OBJECT(menuView, QMenu, (menubar))
         , CONSTRUCT_OBJECT(menuLanguage, QMenu, (menubar))
         , CONSTRUCT_OBJECT(menuHelp, QMenu, (menubar))
-        , CONSTRUCT_OBJECT_FROM_POINTER(actionOpen                  , createWidgetAction(parent))
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionOpenFile              , createWidgetAction(parent))
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionOpenFolder            , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionSaveAs                , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionNewWindow             , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionNavigatePrevious      , createWidgetAction(parent))
@@ -123,9 +125,12 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         , CONSTRUCT_OBJECT_FROM_POINTER(actionAbout                 , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionAboutQt               , createWidgetAction(parent))
     {
-        menuFile->addAction(actionOpen);
-        actionOpen->setShortcut(QKeySequence::Open);
-        actionOpen->setMenuRole(QAction::NoRole);
+        menuFile->addAction(actionOpenFile);
+        actionOpenFile->setShortcut(QKeySequence::Open);
+        actionOpenFile->setMenuRole(QAction::NoRole);
+        menuFile->addAction(actionOpenFolder);
+        actionOpenFolder->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_O);
+        actionOpenFolder->setMenuRole(QAction::NoRole);
         menuFile->addAction(actionSaveAs);
         actionSaveAs->setShortcut(QKeySequence::Save);
         actionSaveAs->setMenuRole(QAction::NoRole);
@@ -257,7 +262,8 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menuLanguage->setTitle(qApp->translate("MenuBar", "&Language"));
         menuHelp->setTitle(qApp->translate("MenuBar", "&Help"));
 
-        actionOpen->setText(qApp->translate("MenuBar", "&Open"));
+        actionOpenFile->setText(qApp->translate("MenuBar", "&Open File"));
+        actionOpenFolder->setText(qApp->translate("MenuBar", "Open &Folder"));
         actionSaveAs->setText(qApp->translate("MenuBar", "&Save As"));
         actionNewWindow->setText(qApp->translate("MenuBar", "New &Window"));
         actionNavigatePrevious->setText(qApp->translate("MenuBar", "P&revious"));
@@ -286,7 +292,8 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     void updateIcons()
     {
         menuActionsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(menuFile);
-        actionOpen->setIcon                     (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , menuActionsHasDarkTheme));
+        actionOpenFile->setIcon                 (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , menuActionsHasDarkTheme));
+        actionOpenFolder->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , menuActionsHasDarkTheme));
         actionSaveAs->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS                   , menuActionsHasDarkTheme));
         actionNewWindow->setIcon                (ThemeUtils::GetIcon(ThemeUtils::ICON_NEW_WINDOW                , menuActionsHasDarkTheme));
         actionNavigatePrevious->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_LEFT                      , menuActionsHasDarkTheme));
@@ -390,7 +397,8 @@ MenuBar::MenuBar(QWidget *parent)
     : QMenuBar(parent)
     , m_impl(new Impl(parent, this))
 {
-    connect(m_impl->actionOpen                  , SIGNAL(triggered()), emitter(), SIGNAL(openRequested())                   );
+    connect(m_impl->actionOpenFile              , SIGNAL(triggered()), emitter(), SIGNAL(openFileRequested())               );
+    connect(m_impl->actionOpenFolder            , SIGNAL(triggered()), emitter(), SIGNAL(openFolderRequested())             );
     connect(m_impl->actionSaveAs                , SIGNAL(triggered()), emitter(), SIGNAL(saveAsRequested())                 );
     connect(m_impl->actionNewWindow             , SIGNAL(triggered()), emitter(), SIGNAL(newWindowRequested())              );
     connect(m_impl->actionNavigatePrevious      , SIGNAL(triggered()), emitter(), SIGNAL(navigatePreviousRequested())       );
@@ -453,7 +461,8 @@ void MenuBar::changeEvent(QEvent *event)
     QMenuBar::changeEvent(event);
 }
 
-CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setOpenEnabled, m_impl->actionOpen)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setOpenFileEnabled, m_impl->actionOpenFile)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setOpenFolderEnabled, m_impl->actionOpenFolder)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setSaveAsEnabled, m_impl->actionSaveAs)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setNewWindowEnabled, m_impl->actionNewWindow)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setNavigatePreviousEnabled, m_impl->actionNavigatePrevious)

@@ -204,7 +204,7 @@ ToolBar::ToolBar(QWidget *parent)
     connect(m_impl->rotateClockwise         , SIGNAL(clicked()), emitter(), SIGNAL(rotateClockwiseRequested())          );
     connect(m_impl->flipHorizontal          , SIGNAL(clicked()), emitter(), SIGNAL(flipHorizontalRequested())           );
     connect(m_impl->flipVertical            , SIGNAL(clicked()), emitter(), SIGNAL(flipVerticalRequested())             );
-    connect(m_impl->openFile                , SIGNAL(clicked()), emitter(), SIGNAL(openRequested())                     );
+    connect(m_impl->openFile                , SIGNAL(clicked()), emitter(), SIGNAL(openFileRequested())                 );
     connect(m_impl->saveFileAs              , SIGNAL(clicked()), emitter(), SIGNAL(saveAsRequested())                   );
     connect(m_impl->deleteFile              , SIGNAL(clicked()), emitter(), SIGNAL(deleteFileRequested())               );
     connect(m_impl->preferences             , SIGNAL(clicked()), emitter(), SIGNAL(preferencesRequested())              );
@@ -239,7 +239,8 @@ void ToolBar::changeEvent(QEvent *event)
     AdjustableFrame::changeEvent(event);
 }
 
-CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setOpenEnabled, m_impl->openFile)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setOpenFileEnabled, m_impl->openFile)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(ToolBar, setOpenFolderEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setSaveAsEnabled, m_impl->saveFileAs)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(ToolBar, setNewWindowEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setNavigatePreviousEnabled, m_impl->navigatePrevious)

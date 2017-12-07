@@ -91,6 +91,7 @@ MainController::MainController(QObject *parent)
     connect(mainWindow, SIGNAL(openPathRequested(const QString&))       , this, SLOT(openPath(const QString&))      );
     connect(mainWindow, SIGNAL(openPathsRequested(const QStringList&))  , this, SLOT(openPaths(const QStringList&)) );
     connect(mainWindow, SIGNAL(openFileWithDialogRequested())           , this, SLOT(openFileWithDialog())          );
+    connect(mainWindow, SIGNAL(openFolderWithDialogRequested())         , this, SLOT(openFolderWithDialog())        );
     connect(mainWindow, SIGNAL(deleteFileRequested())                   , this, SLOT(deleteCurrentFile())           );
     connect(mainWindow, SIGNAL(newWindowRequested())                    , this, SLOT(openNewWindow())               );
     connect(mainWindow, SIGNAL(preferencesRequested())                  , this, SLOT(showPreferences())             );
@@ -117,7 +118,7 @@ bool MainController::openFileWithDialog()
     const QString formatString = QString::fromLatin1("%2 (%1);;%3 (*.*)")
             .arg(m_impl->supportedFormats.join(QString::fromLatin1(" ")))
             .arg(tr("All Supported Images")).arg(tr("All Files"));
-    const QStringList filePaths = QFileDialog::getOpenFileNames(&m_impl->mainWindow, tr("Open Files"), m_impl->settings.lastOpenedPath(), formatString);
+    const QStringList filePaths = QFileDialog::getOpenFileNames(&m_impl->mainWindow, tr("Open File"), m_impl->settings.lastOpenedPath(), formatString);
     if(filePaths.isEmpty())
         return false;
     return openPaths(filePaths);

@@ -43,6 +43,7 @@ signals:
     void openPathRequested(const QString &path);
     void openPathsRequested(const QStringList &paths);
     void openFileWithDialogRequested();
+    void openFolderWithDialogRequested();
     void deleteFileRequested();
 
     void newWindowRequested();

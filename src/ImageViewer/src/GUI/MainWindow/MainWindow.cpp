@@ -127,29 +127,30 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
     {
         QObject *object = (*it)->emitter();
-        connect(object, SIGNAL(openRequested())                     , this              , SIGNAL(openFileWithDialogRequested()) );
-        connect(object, SIGNAL(saveAsRequested())                   , this              , SLOT(onSaveAsRequested())             );
-        connect(object, SIGNAL(newWindowRequested())                , this              , SIGNAL(newWindowRequested())          );
-        connect(object, SIGNAL(navigatePreviousRequested())         , this              , SIGNAL(selectPreviousRequested())     );
-        connect(object, SIGNAL(navigateNextRequested())             , this              , SIGNAL(selectNextRequested())         );
-        connect(object, SIGNAL(startSlideShowRequested())           , this              , SLOT(switchSlideShowMode())           );
-        connect(object, SIGNAL(preferencesRequested())              , this              , SIGNAL(preferencesRequested())        );
-        connect(object, SIGNAL(exitRequested())                     , this              , SLOT(close())                         );
-        connect(object, SIGNAL(rotateCounterclockwiseRequested())   , imageViewerWidget , SLOT(rotateCounterclockwise())        );
-        connect(object, SIGNAL(rotateClockwiseRequested())          , imageViewerWidget , SLOT(rotateClockwise())               );
-        connect(object, SIGNAL(flipHorizontalRequested())           , imageViewerWidget , SLOT(flipHorizontal())                );
-        connect(object, SIGNAL(flipVerticalRequested())             , imageViewerWidget , SLOT(flipVertical())                  );
-        connect(object, SIGNAL(deleteFileRequested())               , this              , SIGNAL(deleteFileRequested())         );
-        connect(object, SIGNAL(zoomOutRequested())                  , imageViewerWidget , SLOT(zoomOut())                       );
-        connect(object, SIGNAL(zoomInRequested())                   , imageViewerWidget , SLOT(zoomIn())                        );
-        connect(object, SIGNAL(zoomResetRequested())                , imageViewerWidget , SLOT(resetZoom())                     );
-        connect(object, SIGNAL(zoomFitToWindowRequested())          , this              , SLOT(onZoomFitToWindowRequested())    );
-        connect(object, SIGNAL(zoomOriginalSizeRequested())         , this              , SLOT(onZoomOriginalSizeRequested())   );
-        connect(object, SIGNAL(zoomFullScreenRequested())           , this              , SLOT(switchFullScreenMode())          );
-        connect(object, SIGNAL(showMenuBarRequested())              , this              , SLOT(switchShowMenuBar())             );
-        connect(object, SIGNAL(showToolBarRequested())              , this              , SLOT(switchShowToolBar())             );
-        connect(object, SIGNAL(aboutRequested())                    , this              , SIGNAL(aboutRequested())              );
-        connect(object, SIGNAL(aboutQtRequested())                  , this              , SIGNAL(aboutQtRequested())            );
+        connect(object, SIGNAL(openFileRequested())                 , this              , SIGNAL(openFileWithDialogRequested())     );
+        connect(object, SIGNAL(openFolderRequested())               , this              , SIGNAL(openFolderWithDialogRequested())   );
+        connect(object, SIGNAL(saveAsRequested())                   , this              , SLOT(onSaveAsRequested())                 );
+        connect(object, SIGNAL(newWindowRequested())                , this              , SIGNAL(newWindowRequested())              );
+        connect(object, SIGNAL(navigatePreviousRequested())         , this              , SIGNAL(selectPreviousRequested())         );
+        connect(object, SIGNAL(navigateNextRequested())             , this              , SIGNAL(selectNextRequested())             );
+        connect(object, SIGNAL(startSlideShowRequested())           , this              , SLOT(switchSlideShowMode())               );
+        connect(object, SIGNAL(preferencesRequested())              , this              , SIGNAL(preferencesRequested())            );
+        connect(object, SIGNAL(exitRequested())                     , this              , SLOT(close())                             );
+        connect(object, SIGNAL(rotateCounterclockwiseRequested())   , imageViewerWidget , SLOT(rotateCounterclockwise())            );
+        connect(object, SIGNAL(rotateClockwiseRequested())          , imageViewerWidget , SLOT(rotateClockwise())                   );
+        connect(object, SIGNAL(flipHorizontalRequested())           , imageViewerWidget , SLOT(flipHorizontal())                    );
+        connect(object, SIGNAL(flipVerticalRequested())             , imageViewerWidget , SLOT(flipVertical())                      );
+        connect(object, SIGNAL(deleteFileRequested())               , this              , SIGNAL(deleteFileRequested())             );
+        connect(object, SIGNAL(zoomOutRequested())                  , imageViewerWidget , SLOT(zoomOut())                           );
+        connect(object, SIGNAL(zoomInRequested())                   , imageViewerWidget , SLOT(zoomIn())                            );
+        connect(object, SIGNAL(zoomResetRequested())                , imageViewerWidget , SLOT(resetZoom())                         );
+        connect(object, SIGNAL(zoomFitToWindowRequested())          , this              , SLOT(onZoomFitToWindowRequested())        );
+        connect(object, SIGNAL(zoomOriginalSizeRequested())         , this              , SLOT(onZoomOriginalSizeRequested())       );
+        connect(object, SIGNAL(zoomFullScreenRequested())           , this              , SLOT(switchFullScreenMode())              );
+        connect(object, SIGNAL(showMenuBarRequested())              , this              , SLOT(switchShowMenuBar())                 );
+        connect(object, SIGNAL(showToolBarRequested())              , this              , SLOT(switchShowToolBar())                 );
+        connect(object, SIGNAL(aboutRequested())                    , this              , SIGNAL(aboutRequested())                  );
+        connect(object, SIGNAL(aboutQtRequested())                  , this              , SIGNAL(aboutQtRequested())                );
     }
 
     connect(settings, SIGNAL(normalBackgroundColorChanged(const QColor&))       , this              , SLOT(updateBackgroundColor())                     );
