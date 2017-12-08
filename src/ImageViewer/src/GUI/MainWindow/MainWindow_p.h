@@ -31,7 +31,7 @@
 #include "ImageViewerWidget.h"
 #include "ToolBar.h"
 #include "MenuBar.h"
-#if defined (USE_MAC_TOOLBAR)
+#if defined (HAS_MAC_TOOLBAR)
 #include "MacToolBar.h"
 #endif
 
@@ -79,7 +79,7 @@ struct MainWindow::UI
 
         mainWindow->ensurePolished();
 
-#if defined (USE_MAC_TOOLBAR)
+#if defined (HAS_MAC_TOOLBAR)
         MacToolBar *macToolbar = new MacToolBar(mainWindow);
         controlsContainers.append(macToolbar);
         macToolbar->attachToWindow(mainWindow->windowHandle());

@@ -200,15 +200,13 @@ HEADERS += \
     LIBS += -framework WebKit
 }
 
-macx : greaterThan(QT_MAJOR_VERSION, 4) {
-    greaterThan(QT_MAJOR_VERSION, 5) | greaterThan(QT_MINOR_VERSION, 3) {
-        QT += macextras
-        DEFINES += USE_MAC_TOOLBAR
-        OBJECTIVE_SOURCES += \
-            src/GUI/MainWindow/MacToolBar.mm
-        HEADERS += \
-            src/GUI/MainWindow/MacToolBar.h
-    }
+!disable_mactoolbar {
+    QT += macextras
+    DEFINES += HAS_MAC_TOOLBAR
+    OBJECTIVE_SOURCES += \
+        src/GUI/MainWindow/MacToolBar.mm
+    HEADERS += \
+        src/GUI/MainWindow/MacToolBar.h
 }
 
 TRANSLATIONS += \
