@@ -130,9 +130,9 @@ struct SimpleToolBarItem
         return [item itemIdentifier];
     }
 
-    id actionSender() const
+    bool actionSenderMatch(id sender) const
     {
-        return item;
+        return item && item == sender;
     }
 
     void setLabel(const QString &label)
@@ -207,6 +207,15 @@ struct GroupedToolBarItem : SimpleToolBarItem
         [segmentedControl setEnabled:value forSegment:segmentNum];
     }
 
+    bool actionSenderMatch(id sender) const
+    {
+        if(item && item == sender)
+            return true;
+        if(!sender || sender != segmentedControl)
+            return false;
+        return [segmentedControl selectedSegment] == segmentNumber();
+    }
+
     void setToolTip(const QString &toolTip)
     {
         if(!item || !segmentedControl)
@@ -268,9 +277,9 @@ struct ButtonedToolBarItem : SimpleToolBarItem
         [button setChecked:value];
     }
 
-    id actionSender() const
+    bool actionSenderMatch(id sender) const
     {
-        return button;
+        return button && button == sender;
     }
 
     void setToolTip(const QString &toolTip)
@@ -517,25 +526,28 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 - (IBAction)itemClicked:(id)sender
 {
 #define INVOKE_IF_MATCH(ITEM, METHOD) \
-    if(ITEM && sender == ITEM) \
-        QMetaObject::invokeMethod(m_emitterObject, METHOD)
-    INVOKE_IF_MATCH(m_toolBarData->navigatePrevious.actionSender()      , "navigatePreviousRequested"       );
-    INVOKE_IF_MATCH(m_toolBarData->navigateNext.actionSender()          , "navigateNextRequested"           );
-    INVOKE_IF_MATCH(m_toolBarData->startSlideShow.actionSender()        , "startSlideShowRequested"         );
-    INVOKE_IF_MATCH(m_toolBarData->zoomOut.actionSender()               , "zoomOutRequested"                );
-    INVOKE_IF_MATCH(m_toolBarData->zoomIn.actionSender()                , "zoomInRequested"                 );
-    INVOKE_IF_MATCH(m_toolBarData->zoomFitToWindow.actionSender()       , "zoomFitToWindowRequested"        );
-    INVOKE_IF_MATCH(m_toolBarData->zoomOriginalSize.actionSender()      , "zoomOriginalSizeRequested"       );
-    INVOKE_IF_MATCH(m_toolBarData->zoomFullScreen.actionSender()        , "zoomFullScreenRequested"         );
-    INVOKE_IF_MATCH(m_toolBarData->rotateCounterclockwise.actionSender(), "rotateCounterclockwiseRequested" );
-    INVOKE_IF_MATCH(m_toolBarData->rotateClockwise.actionSender()       , "rotateClockwiseRequested"        );
-    INVOKE_IF_MATCH(m_toolBarData->flipHorizontal.actionSender()        , "flipHorizontalRequested"         );
-    INVOKE_IF_MATCH(m_toolBarData->flipVertical.actionSender()          , "flipVerticalRequested"           );
-    INVOKE_IF_MATCH(m_toolBarData->openFile.actionSender()              , "openFileRequested"               );
-    INVOKE_IF_MATCH(m_toolBarData->saveFileAs.actionSender()            , "saveAsRequested"                 );
-    INVOKE_IF_MATCH(m_toolBarData->deleteFile.actionSender()            , "deleteFileRequested"             );
-    INVOKE_IF_MATCH(m_toolBarData->preferences.actionSender()           , "preferencesRequested"            );
-    INVOKE_IF_MATCH(m_toolBarData->exit.actionSender()                  , "exitRequested"                   );
+    if(ITEM.actionSenderMatch(sender)) \
+    { \
+        QMetaObject::invokeMethod(m_emitterObject, METHOD); \
+        return; \
+    }
+    INVOKE_IF_MATCH(m_toolBarData->navigatePrevious         , "navigatePreviousRequested"       )
+    INVOKE_IF_MATCH(m_toolBarData->navigateNext             , "navigateNextRequested"           )
+    INVOKE_IF_MATCH(m_toolBarData->startSlideShow           , "startSlideShowRequested"         )
+    INVOKE_IF_MATCH(m_toolBarData->zoomOut                  , "zoomOutRequested"                )
+    INVOKE_IF_MATCH(m_toolBarData->zoomIn                   , "zoomInRequested"                 )
+    INVOKE_IF_MATCH(m_toolBarData->zoomFitToWindow          , "zoomFitToWindowRequested"        )
+    INVOKE_IF_MATCH(m_toolBarData->zoomOriginalSize         , "zoomOriginalSizeRequested"       )
+    INVOKE_IF_MATCH(m_toolBarData->zoomFullScreen           , "zoomFullScreenRequested"         )
+    INVOKE_IF_MATCH(m_toolBarData->rotateCounterclockwise   , "rotateCounterclockwiseRequested" )
+    INVOKE_IF_MATCH(m_toolBarData->rotateClockwise          , "rotateClockwiseRequested"        )
+    INVOKE_IF_MATCH(m_toolBarData->flipHorizontal           , "flipHorizontalRequested"         )
+    INVOKE_IF_MATCH(m_toolBarData->flipVertical             , "flipVerticalRequested"           )
+    INVOKE_IF_MATCH(m_toolBarData->openFile                 , "openFileRequested"               )
+    INVOKE_IF_MATCH(m_toolBarData->saveFileAs               , "saveAsRequested"                 )
+    INVOKE_IF_MATCH(m_toolBarData->deleteFile               , "deleteFileRequested"             )
+    INVOKE_IF_MATCH(m_toolBarData->preferences              , "preferencesRequested"            )
+    INVOKE_IF_MATCH(m_toolBarData->exit                     , "exitRequested"                   )
 #undef INVOKE_IF_MATCH
 }
 
@@ -550,13 +562,13 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
               withSecondImage:(NSImage *)secondImage
 {
     NSToolbarItem *first = [[NSToolbarItem alloc] initWithItemIdentifier:firstIdentifier];
-    [first setTarget:self];
-    [first setAction:@selector(itemClicked:)];
+//    [first setTarget:self];
+//    [first setAction:@selector(itemClicked:)];
     firstItem.item = first;
 
     NSToolbarItem *second = [[NSToolbarItem alloc] initWithItemIdentifier:secondIdentifier];
-    [second setTarget:self];
-    [second setAction:@selector(itemClicked:)];
+//    [second setTarget:self];
+//    [second setAction:@selector(itemClicked:)];
     secondItem.item = second;
 
     NSSegmentedControl *segmentedControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, 2 * GROUPED_BUTTON_WIDTH, BUTTON_HEIGHT)];
@@ -570,6 +582,8 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     groupItem.segmentedControl = segmentedControl;
     firstItem.segmentedControl = segmentedControl;
     secondItem.segmentedControl = segmentedControl;
+    [segmentedControl setTarget:self];
+    [segmentedControl setAction:@selector(itemClicked:)];
 
     NSToolbarItemGroup *group = [[NSToolbarItemGroup alloc] initWithItemIdentifier:groupIdentifier];
     [group setSubitems:[NSArray arrayWithObjects:first, second, nil]];
