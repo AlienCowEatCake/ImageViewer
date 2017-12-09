@@ -36,8 +36,9 @@
 namespace {
 
 const NSInteger BUTTON_HEIGHT = 32;
-const NSInteger ALONE_BUTTON_WIDTH = 36;
-const NSInteger GROUPED_BUTTON_WIDTH = 32;
+const NSInteger ALONE_BUTTON_WIDTH = 40;
+const NSInteger GROUPED_BUTTON_WIDTH = 36;
+const NSInteger SEGMENTED_OFFSET = 0;
 const QColor BUTTON_BASE_COLOR = qRgb(85, 85, 85);
 const QColor BUTTON_ALTERNATE_COLOR = qRgb(255, 255, 255);
 
@@ -193,7 +194,7 @@ struct GroupedToolBarItem : SimpleToolBarItem
         BOOL value = isEnabled ? YES : NO;
         [item setEnabled: value];
         [group setEnabled:NO];
-        for(NSToolbarItem *subitem : [group subitems])
+        for(NSToolbarItem *subitem in [group subitems])
         {
             if([subitem isEnabled])
             {
@@ -450,21 +451,13 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
         return m_toolBarData->MEMBER.item
     CHECK(space);
     CHECK(flexibleSpace);
-    CHECK(navigatePrevious);
-    CHECK(navigateNext);
     CHECK(navigateGroup);
     CHECK(startSlideShow);
-    CHECK(zoomOut);
-    CHECK(zoomIn);
     CHECK(zoomGroup);
     CHECK(zoomFitToWindow);
     CHECK(zoomOriginalSize);
     CHECK(zoomFullScreen);
-    CHECK(rotateCounterclockwise);
-    CHECK(rotateClockwise);
     CHECK(rotateGroup);
-    CHECK(flipHorizontal);
-    CHECK(flipVertical);
     CHECK(flipGroup);
     CHECK(openFile);
     CHECK(saveFileAs);
@@ -507,6 +500,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
             m_toolBarData->zoomGroup.identifier(),
             m_toolBarData->zoomFitToWindow.identifier(),
             m_toolBarData->zoomOriginalSize.identifier(),
+            m_toolBarData->zoomFullScreen.identifier(),
             m_toolBarData->flexibleSpace.identifier(),
             m_toolBarData->rotateGroup.identifier(),
             m_toolBarData->flipGroup.identifier(),
@@ -514,6 +508,9 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
             m_toolBarData->openFile.identifier(),
             m_toolBarData->saveFileAs.identifier(),
             m_toolBarData->deleteFile.identifier(),
+            m_toolBarData->flexibleSpace.identifier(),
+            m_toolBarData->preferences.identifier(),
+            m_toolBarData->exit.identifier(),
             nil];
 }
 
@@ -571,7 +568,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 //    [second setAction:@selector(itemClicked:)];
     secondItem.item = second;
 
-    NSSegmentedControl *segmentedControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, 2 * GROUPED_BUTTON_WIDTH, BUTTON_HEIGHT)];
+    NSSegmentedControl *segmentedControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, 2 * GROUPED_BUTTON_WIDTH + SEGMENTED_OFFSET, BUTTON_HEIGHT)];
     [segmentedControl setSegmentStyle:NSSegmentStyleTexturedRounded];
     [segmentedControl setTrackingMode:NSSegmentSwitchTrackingMomentary];
     [segmentedControl setSegmentCount:2];
@@ -639,7 +636,7 @@ struct MacToolBar::Impl
         window = nil;
         [nativeToolbar setDelegate:delegate];
         [nativeToolbar setAllowsUserCustomization:YES];
-//        [nativeToolbar setAutosavesConfiguration:YES];
+        [nativeToolbar setAutosavesConfiguration:YES];
 
         retranslate();
     }
