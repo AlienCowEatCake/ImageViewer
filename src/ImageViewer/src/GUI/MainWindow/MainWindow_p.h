@@ -29,11 +29,12 @@
 #include "Utils/ObjectsUtils.h"
 
 #include "ImageViewerWidget.h"
-#include "ToolBar.h"
-#include "MenuBar.h"
 #if defined (HAS_MAC_TOOLBAR)
 #include "MacToolBar.h"
+#else
+#include "ToolBar.h"
 #endif
+#include "MenuBar.h"
 
 namespace {
 
@@ -47,7 +48,11 @@ struct MainWindow::UI
     MainWindow *mainWindow;
     QFrame *centralWidget;
     ImageViewerWidget *imageViewerWidget;
+#if defined (HAS_MAC_TOOLBAR)
+    MacToolBar *toolbar;
+#else
     ToolBar *toolbar;
+#endif
     MenuBar *menubar;
     QList<IControlsContainer*> controlsContainers;
 
@@ -55,7 +60,11 @@ struct MainWindow::UI
         : mainWindow(mainWindow)
         , CONSTRUCT_OBJECT(centralWidget, QFrame, (mainWindow))
         , CONSTRUCT_OBJECT(imageViewerWidget, ImageViewerWidget, (centralWidget))
+#if defined (HAS_MAC_TOOLBAR)
+        , toolbar(new MacToolBar(mainWindow))
+#else
         , CONSTRUCT_OBJECT(toolbar, ToolBar, (centralWidget))
+#endif
         , CONSTRUCT_OBJECT(menubar, MenuBar, (mainWindow))
         , controlsContainers(QList<IControlsContainer*>() << toolbar << menubar)
     {
@@ -71,7 +80,9 @@ struct MainWindow::UI
         mainLayout->setContentsMargins(0, 0, 0, 0);
         mainLayout->setSpacing(0);
         mainLayout->addWidget(imageViewerWidget);
+#if !defined (HAS_MAC_TOOLBAR)
         mainLayout->addWidget(toolbar);
+#endif
 
         mainWindow->setCentralWidget(centralWidget);
         mainWindow->setMenuBar(menubar);
@@ -80,9 +91,19 @@ struct MainWindow::UI
         mainWindow->ensurePolished();
 
 #if defined (HAS_MAC_TOOLBAR)
-        MacToolBar *macToolbar = new MacToolBar(mainWindow);
-        controlsContainers.append(macToolbar);
-        macToolbar->attachToWindow(mainWindow);
+        toolbar->attachToWindow(mainWindow);
+#endif
+    }
+
+    void setToolBarVisible(bool isVisible)
+    {
+#if defined (HAS_MAC_TOOLBAR)
+        if(isVisible)
+            toolbar->attachToWindow(mainWindow);
+        else
+            toolbar->detachFromWindow();
+#else
+        toolbar->setVisible(isVisible);
 #endif
     }
 };

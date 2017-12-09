@@ -93,21 +93,34 @@ struct MainWindow::Impl
             return;
 
         const bool toFullScreenMode = mainWindow->isFullScreen();
-        isFullScreenMode = toFullScreenMode;
         if(toFullScreenMode)
         {
             ui.menubar->setVisible(false);
-            ui.toolbar->setVisible(false);
+            ui.setToolBarVisible(false);
         }
         else
         {
             ui.menubar->setVisible(settings->menuBarVisible());
-            ui.toolbar->setVisible(settings->toolBarVisible());
+            ui.setToolBarVisible(settings->toolBarVisible());
+            restoreGeometry();
         }
+        isFullScreenMode = toFullScreenMode;
 
         for(QList<IControlsContainer*>::Iterator it = ui.controlsContainers.begin(), itEnd = ui.controlsContainers.end(); it != itEnd; ++it)
             (*it)->setZoomFullScreenChecked(toFullScreenMode);
         mainWindow->updateBackgroundColor();
+    }
+
+    void saveGeometry()
+    {
+        settings->setMainWindowGeometry(mainWindow->saveGeometry());
+        settings->setMainWindowState(mainWindow->saveState());
+    }
+
+    void restoreGeometry()
+    {
+        mainWindow->restoreState(settings->mainWindowState());
+        mainWindow->restoreGeometry(settings->mainWindowGeometry());
     }
 };
 
@@ -169,7 +182,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     updateSlideShowInterval();
 
     ui.menubar->setVisible(settings->menuBarVisible());
-    ui.toolbar->setVisible(settings->toolBarVisible());
+    ui.setToolBarVisible(settings->toolBarVisible());
 
     for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
     {
@@ -178,9 +191,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
         container->setShowToolBarChecked(settings->toolBarVisible());
     }
 
-    restoreState(settings->mainWindowState());
-    restoreGeometry(settings->mainWindowGeometry());
-
+    m_impl->restoreGeometry();
     updateUIState(m_impl->uiState, UICF_All);
 }
 
@@ -226,18 +237,15 @@ void MainWindow::updateWindowTitle()
 void MainWindow::switchFullScreenMode()
 {
     const bool toFullScreenMode = !m_impl->isFullScreenMode;
-    GUISettings * const settings = m_impl->settings;
     if(toFullScreenMode)
     {
-        settings->setMainWindowGeometry(saveGeometry());
-        settings->setMainWindowState(saveState());
+        m_impl->saveGeometry();
         showFullScreen();
     }
     else
     {
         showNormal();
-        restoreState(settings->mainWindowState());
-        restoreGeometry(settings->mainWindowGeometry());
+        m_impl->restoreGeometry();
     }
     m_impl->syncFullScreen();
 }
@@ -270,7 +278,7 @@ void MainWindow::switchShowToolBar()
     for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
         (*it)->setShowToolBarChecked(newValue);
     if(!m_impl->isFullScreenMode)
-        m_impl->ui.toolbar->setVisible(newValue);
+        m_impl->ui.setToolBarVisible(newValue);
 }
 
 void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)
@@ -400,13 +408,24 @@ void MainWindow::changeEvent(QEvent *event)
     QMainWindow::changeEvent(event);
 }
 
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    if(isVisible() && !m_impl->isFullScreenMode && !isFullScreen())
+        m_impl->saveGeometry();
+    QMainWindow::resizeEvent(event);
+}
+
+void MainWindow::moveEvent(QMoveEvent *event)
+{
+    if(isVisible() && !m_impl->isFullScreenMode && !isFullScreen())
+        m_impl->saveGeometry();
+    QMainWindow::moveEvent(event);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(!m_impl->isFullScreenMode)
-    {
-        m_impl->settings->setMainWindowGeometry(saveGeometry());
-        m_impl->settings->setMainWindowState(saveState());
-    }
+        m_impl->saveGeometry();
     QMainWindow::closeEvent(event);
     emit closed();
 }
