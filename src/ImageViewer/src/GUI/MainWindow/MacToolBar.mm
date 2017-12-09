@@ -24,7 +24,6 @@
 
 #include <QApplication>
 #include <QWidget>
-#include <QDebug>
 #include <QWindow>
 
 #include "Utils/InfoUtils.h"
@@ -39,8 +38,72 @@ namespace {
 const NSInteger BUTTON_HEIGHT = 32;
 const NSInteger ALONE_BUTTON_WIDTH = 36;
 const NSInteger GROUPED_BUTTON_WIDTH = 32;
+const QColor BUTTON_BASE_COLOR = qRgb(85, 85, 85);
+const QColor BUTTON_ALTERNATE_COLOR = qRgb(255, 255, 255);
 
 } // namespace
+
+// ====================================================================================================
+
+@interface CheckableNSButton : NSButton
+{
+    @private
+    BOOL m_isChecked;
+    BOOL m_isCheckable;
+}
+
+- (id)initWithFrame:(NSRect)frameRect;
+
+- (BOOL)isCheckable;
+- (void)setCheckable:(BOOL)isCheckable;
+
+- (BOOL)isChecked;
+- (void)setChecked:(BOOL)isChecked;
+
+@end
+
+
+@implementation CheckableNSButton
+
+- (id)initWithFrame:(NSRect)frameRect
+{
+    [super initWithFrame:frameRect];
+    m_isChecked = NO;
+    m_isCheckable = NO;
+    return self;
+}
+
+- (BOOL)isCheckable
+{
+    return m_isCheckable;
+}
+
+- (void)setCheckable:(BOOL)isCheckable
+{
+    NSButtonType newType = (isCheckable ? NSPushOnPushOffButton : NSMomentaryLightButton);
+    [self setButtonType:newType];
+    m_isCheckable = isCheckable;
+}
+
+- (BOOL)isChecked
+{
+    return m_isChecked;
+}
+
+- (void)setChecked:(BOOL)isChecked
+{
+    NSControlStateValue newState = isChecked ? NSOnState : NSOffState;
+    [self setState:newState];
+    if((![self isChecked] && isChecked) || ([self isChecked] && !isChecked))
+    {
+        NSImage *tempImage = [self image];
+        [self setImage:[self alternateImage]];
+        [self setAlternateImage:tempImage];
+    }
+    m_isChecked = isChecked;
+}
+
+@end
 
 // ====================================================================================================
 
@@ -67,7 +130,7 @@ struct SimpleToolBarItem
         return [item itemIdentifier];
     }
 
-    NSToolbarItem *actionSender() const
+    id actionSender() const
     {
         return item;
     }
@@ -175,7 +238,7 @@ struct GroupedToolBarItem : SimpleToolBarItem
 
 struct ButtonedToolBarItem : SimpleToolBarItem
 {
-    NSButton *button;
+    CheckableNSButton *button;
 
     ButtonedToolBarItem()
         : button(nil)
@@ -201,11 +264,11 @@ struct ButtonedToolBarItem : SimpleToolBarItem
         if(!item || !button)
             return;
         AUTORELEASE_POOL;
-        NSControlStateValue value = isChecked ? NSOnState : NSOffState;
-        [button setState:value];
+        BOOL value = isChecked ? YES : NO;
+        [button setChecked:value];
     }
 
-    NSButton *actionSender() const
+    id actionSender() const
     {
         return button;
     }
@@ -296,7 +359,12 @@ namespace {
 
 NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground = false)
 {
-    return ObjCUtils::QPixmapToNSImage(ThemeUtils::GetIcon(iconType, darkBackground).pixmap(16, 16));
+    const QIcon themeIcon = ThemeUtils::GetIcon(iconType);
+    const QSize iconSize(16, 16);
+    QImage iconImage(iconSize, QImage::Format_ARGB32_Premultiplied);
+    iconImage.fill(darkBackground ? BUTTON_ALTERNATE_COLOR : BUTTON_BASE_COLOR);
+    iconImage.setAlphaChannel(themeIcon.pixmap(iconSize).toImage().alphaChannel());
+    return ObjCUtils::QPixmapToNSImage(QPixmap::fromImage(iconImage));
 }
 
 } // namespace
@@ -334,7 +402,8 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     [self makeButtonedItem:m_toolBarData->ITEM \
             withIdentifier:@#ITEM \
     withVisibilityPriority:PRIORITY \
-                 withImage:NSImageForIconType(ThemeUtils::ICON) \
+                 withImage:NSImageForIconType(ThemeUtils::ICON, false) \
+        withAlternateImage:NSImageForIconType(ThemeUtils::ICON, true) \
     ]
 
     MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, high, navigatePrevious, ICON_LEFT, navigateNext, ICON_RIGHT);
@@ -354,9 +423,9 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 #undef MAKE_SEGMENTED_PAIR_ITEM
 #undef MAKE_BUTTONED_ITEM
 
-    [m_toolBarData->zoomFitToWindow.button setButtonType:NSPushOnPushOffButton];
-    [m_toolBarData->zoomOriginalSize.button setButtonType:NSPushOnPushOffButton];
-    [m_toolBarData->zoomFullScreen.button setButtonType:NSPushOnPushOffButton];
+    [m_toolBarData->zoomFitToWindow.button setCheckable:YES];
+    [m_toolBarData->zoomOriginalSize.button setCheckable:YES];
+    [m_toolBarData->zoomFullScreen.button setCheckable:YES];
 
     return self;
 }
@@ -470,15 +539,15 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 #undef INVOKE_IF_MATCH
 }
 
--(void)makeSegmentedPairItem:(SegmentedToolBarItem&)groupItem
-         withGroupIdentifier:(NSString*)groupIdentifier
-      withVisibilityPriority:(NSToolbarItemVisibilityPriority)visibilityPriority
-               withFirstItem:(GroupedToolBarItem&)firstItem
-         withFirstIdentifier:(NSString*)firstIdentifier
-              withFirstImage:(NSImage*)firstImage
-              withSecondItem:(GroupedToolBarItem&)secondItem
-        withSecondIdentifier:(NSString*)secondIdentifier
-             withSecondImage:(NSImage*)secondImage
+- (void)makeSegmentedPairItem:(SegmentedToolBarItem &)groupItem
+          withGroupIdentifier:(NSString *)groupIdentifier
+       withVisibilityPriority:(NSToolbarItemVisibilityPriority)visibilityPriority
+                withFirstItem:(GroupedToolBarItem &)firstItem
+          withFirstIdentifier:(NSString *)firstIdentifier
+               withFirstImage:(NSImage *)firstImage
+               withSecondItem:(GroupedToolBarItem &)secondItem
+         withSecondIdentifier:(NSString *)secondIdentifier
+              withSecondImage:(NSImage *)secondImage
 {
     NSToolbarItem *first = [[NSToolbarItem alloc] initWithItemIdentifier:firstIdentifier];
     [first setTarget:self];
@@ -511,14 +580,16 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     secondItem.group = group;
 }
 
--(void)makeButtonedItem:(ButtonedToolBarItem&)buttonedItem
-         withIdentifier:(NSString*)identifier
- withVisibilityPriority:(NSToolbarItemVisibilityPriority)visibilityPriority
-              withImage:(NSImage*)image
+- (void)makeButtonedItem:(ButtonedToolBarItem &)buttonedItem
+          withIdentifier:(NSString *)identifier
+  withVisibilityPriority:(NSToolbarItemVisibilityPriority)visibilityPriority
+               withImage:(NSImage *)image
+      withAlternateImage:(NSImage *)alternateImage
 {
-    NSButton *button = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, ALONE_BUTTON_WIDTH, BUTTON_HEIGHT)];
+    CheckableNSButton *button = [[CheckableNSButton alloc] initWithFrame:NSMakeRect(0, 0, ALONE_BUTTON_WIDTH, BUTTON_HEIGHT)];
     [button setBezelStyle:NSBezelStyleTexturedRounded];
     [button setImage:image];
+    [button setAlternateImage:alternateImage];
     [button setTitle:@""];
     [button setTarget:self];
     [button setAction:@selector(itemClicked:)];
