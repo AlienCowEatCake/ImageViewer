@@ -36,6 +36,16 @@
 
 namespace {
 
+const NSInteger BUTTON_HEIGHT = 32;
+const NSInteger ALONE_BUTTON_WIDTH = 36;
+const NSInteger GROUPED_BUTTON_WIDTH = 32;
+
+} // namespace
+
+// ====================================================================================================
+
+namespace {
+
 struct SimpleToolBarItem
 {
     NSToolbarItem *item;
@@ -114,13 +124,20 @@ struct GroupedToolBarItem : SimpleToolBarItem
 
     void setEnabled(bool isEnabled)
     {
-        if(!item)
+        if(!item || !segmentedControl || !group)
             return;
         AUTORELEASE_POOL;
         BOOL value = isEnabled ? YES : NO;
         [item setEnabled: value];
-        if(!segmentedControl)
-            return;
+        [group setEnabled:NO];
+        for(NSToolbarItem *subitem : [group subitems])
+        {
+            if([subitem isEnabled])
+            {
+                [group setEnabled:YES];
+                break;
+            }
+        }
         NSInteger segmentNum = segmentNumber();
         if(segmentNum < 0)
             return;
@@ -129,15 +146,13 @@ struct GroupedToolBarItem : SimpleToolBarItem
 
     void setToolTip(const QString &toolTip)
     {
-        if(!item)
+        if(!item || !segmentedControl)
             return;
         AUTORELEASE_POOL;
         [item setToolTip:ObjCUtils::QStringToNSString(toolTip)];
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_13_AND_LATER)
         if(@available(macOS 10.13, *))
         {
-            if(!segmentedControl)
-                return;
             NSInteger segmentNum = segmentNumber();
             if(segmentNum < 0)
                 return;
@@ -300,9 +315,14 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     m_toolBarData->space.item = [[NSToolbarItem alloc] initWithItemIdentifier:NSToolbarSpaceItemIdentifier];
     m_toolBarData->flexibleSpace.item = [[NSToolbarItem alloc] initWithItemIdentifier:NSToolbarFlexibleSpaceItemIdentifier];
 
-#define MAKE_SEGMENTED_PAIR_ITEM(GROUP, ITEM1, ICON1, ITEM2, ICON2) \
+    const NSToolbarItemVisibilityPriority low = NSToolbarItemVisibilityPriorityLow;
+    const NSToolbarItemVisibilityPriority std = NSToolbarItemVisibilityPriorityStandard;
+    const NSToolbarItemVisibilityPriority high = NSToolbarItemVisibilityPriorityHigh;
+
+#define MAKE_SEGMENTED_PAIR_ITEM(GROUP, PRIORITY, ITEM1, ICON1, ITEM2, ICON2) \
     [self makeSegmentedPairItem:m_toolBarData->GROUP \
             withGroupIdentifier:@#GROUP \
+         withVisibilityPriority:PRIORITY \
                   withFirstItem:m_toolBarData->ITEM1 \
             withFirstIdentifier:@#ITEM1 \
                  withFirstImage:NSImageForIconType(ThemeUtils::ICON1) \
@@ -310,25 +330,26 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
            withSecondIdentifier:@#ITEM2 \
                 withSecondImage:NSImageForIconType(ThemeUtils::ICON2) \
     ]
-#define MAKE_BUTTONED_ITEM(ITEM, ICON) \
+#define MAKE_BUTTONED_ITEM(ITEM, PRIORITY, ICON) \
     [self makeButtonedItem:m_toolBarData->ITEM \
             withIdentifier:@#ITEM \
+    withVisibilityPriority:PRIORITY \
                  withImage:NSImageForIconType(ThemeUtils::ICON) \
     ]
 
-    MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, navigatePrevious, ICON_LEFT, navigateNext, ICON_RIGHT);
-    MAKE_BUTTONED_ITEM(startSlideShow, ICON_PLAY);
-    MAKE_SEGMENTED_PAIR_ITEM(zoomGroup, zoomOut, ICON_ZOOM_OUT, zoomIn, ICON_ZOOM_IN);
-    MAKE_BUTTONED_ITEM(zoomFitToWindow, ICON_ZOOM_EMPTY);
-    MAKE_BUTTONED_ITEM(zoomOriginalSize, ICON_ZOOM_IDENTITY);
-    MAKE_BUTTONED_ITEM(zoomFullScreen, ICON_FULLSCREEN);
-    MAKE_SEGMENTED_PAIR_ITEM(rotateGroup, rotateCounterclockwise, ICON_ROTATE_COUNTERCLOCKWISE, rotateClockwise, ICON_ROTATE_CLOCKWISE);
-    MAKE_SEGMENTED_PAIR_ITEM(flipGroup, flipHorizontal, ICON_FLIP_HORIZONTAL, flipVertical, ICON_FLIP_VERTICAL);
-    MAKE_BUTTONED_ITEM(openFile, ICON_OPEN);
-    MAKE_BUTTONED_ITEM(saveFileAs, ICON_SAVE_AS);
-    MAKE_BUTTONED_ITEM(deleteFile, ICON_DELETE);
-    MAKE_BUTTONED_ITEM(preferences, ICON_SETTINGS);
-    MAKE_BUTTONED_ITEM(exit, ICON_EXIT);
+    MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, high, navigatePrevious, ICON_LEFT, navigateNext, ICON_RIGHT);
+    MAKE_BUTTONED_ITEM(startSlideShow, std, ICON_PLAY);
+    MAKE_SEGMENTED_PAIR_ITEM(zoomGroup, high, zoomOut, ICON_ZOOM_OUT, zoomIn, ICON_ZOOM_IN);
+    MAKE_BUTTONED_ITEM(zoomFitToWindow, high, ICON_ZOOM_EMPTY);
+    MAKE_BUTTONED_ITEM(zoomOriginalSize, high, ICON_ZOOM_IDENTITY);
+    MAKE_BUTTONED_ITEM(zoomFullScreen, low, ICON_FULLSCREEN);
+    MAKE_SEGMENTED_PAIR_ITEM(rotateGroup, high, rotateCounterclockwise, ICON_ROTATE_COUNTERCLOCKWISE, rotateClockwise, ICON_ROTATE_CLOCKWISE);
+    MAKE_SEGMENTED_PAIR_ITEM(flipGroup, std, flipHorizontal, ICON_FLIP_HORIZONTAL, flipVertical, ICON_FLIP_VERTICAL);
+    MAKE_BUTTONED_ITEM(openFile, high, ICON_OPEN);
+    MAKE_BUTTONED_ITEM(saveFileAs, std, ICON_SAVE_AS);
+    MAKE_BUTTONED_ITEM(deleteFile, std, ICON_DELETE);
+    MAKE_BUTTONED_ITEM(preferences, low, ICON_SETTINGS);
+    MAKE_BUTTONED_ITEM(exit, low, ICON_EXIT);
 
 #undef MAKE_SEGMENTED_PAIR_ITEM
 #undef MAKE_BUTTONED_ITEM
@@ -400,7 +421,22 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar *)toolbar
 {
-    return [self toolbarAllowedItemIdentifiers:toolbar];
+    (void)(toolbar);
+    return [NSArray arrayWithObjects:
+            m_toolBarData->navigateGroup.identifier(),
+            m_toolBarData->startSlideShow.identifier(),
+            m_toolBarData->flexibleSpace.identifier(),
+            m_toolBarData->zoomGroup.identifier(),
+            m_toolBarData->zoomFitToWindow.identifier(),
+            m_toolBarData->zoomOriginalSize.identifier(),
+            m_toolBarData->flexibleSpace.identifier(),
+            m_toolBarData->rotateGroup.identifier(),
+            m_toolBarData->flipGroup.identifier(),
+            m_toolBarData->flexibleSpace.identifier(),
+            m_toolBarData->openFile.identifier(),
+            m_toolBarData->saveFileAs.identifier(),
+            m_toolBarData->deleteFile.identifier(),
+            nil];
 }
 
 - (NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar
@@ -436,6 +472,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 
 -(void)makeSegmentedPairItem:(SegmentedToolBarItem&)groupItem
          withGroupIdentifier:(NSString*)groupIdentifier
+      withVisibilityPriority:(NSToolbarItemVisibilityPriority)visibilityPriority
                withFirstItem:(GroupedToolBarItem&)firstItem
          withFirstIdentifier:(NSString*)firstIdentifier
               withFirstImage:(NSImage*)firstImage
@@ -453,14 +490,14 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     [second setAction:@selector(itemClicked:)];
     secondItem.item = second;
 
-    NSSegmentedControl *segmentedControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, 85, 40)];
+    NSSegmentedControl *segmentedControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, 2 * GROUPED_BUTTON_WIDTH, BUTTON_HEIGHT)];
     [segmentedControl setSegmentStyle:NSSegmentStyleTexturedRounded];
     [segmentedControl setTrackingMode:NSSegmentSwitchTrackingMomentary];
     [segmentedControl setSegmentCount:2];
     [segmentedControl setImage:firstImage forSegment:0];
-    [segmentedControl setWidth:40 forSegment:0];
+    [segmentedControl setWidth:GROUPED_BUTTON_WIDTH forSegment:0];
     [segmentedControl setImage:secondImage forSegment:1];
-    [segmentedControl setWidth:40 forSegment:1];
+    [segmentedControl setWidth:GROUPED_BUTTON_WIDTH forSegment:1];
     groupItem.segmentedControl = segmentedControl;
     firstItem.segmentedControl = segmentedControl;
     secondItem.segmentedControl = segmentedControl;
@@ -468,6 +505,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     NSToolbarItemGroup *group = [[NSToolbarItemGroup alloc] initWithItemIdentifier:groupIdentifier];
     [group setSubitems:[NSArray arrayWithObjects:first, second, nil]];
     [group setView:segmentedControl];
+    [group setVisibilityPriority:visibilityPriority];
     groupItem.item = group;
     firstItem.group = group;
     secondItem.group = group;
@@ -475,9 +513,10 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 
 -(void)makeButtonedItem:(ButtonedToolBarItem&)buttonedItem
          withIdentifier:(NSString*)identifier
+ withVisibilityPriority:(NSToolbarItemVisibilityPriority)visibilityPriority
               withImage:(NSImage*)image
 {
-    NSButton *button = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 40, 40)];
+    NSButton *button = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, ALONE_BUTTON_WIDTH, BUTTON_HEIGHT)];
     [button setBezelStyle:NSBezelStyleTexturedRounded];
     [button setImage:image];
     [button setTitle:@""];
@@ -486,6 +525,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 
     NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:identifier];
     [item setView:button];
+    [item setVisibilityPriority:visibilityPriority];
     buttonedItem.item = item;
     buttonedItem.button = button;
 }
@@ -531,20 +571,20 @@ struct MacToolBar::Impl
     void retranslate()
     {
         toolBarData.navigatePrevious.setToolTip(qApp->translate("MacToolBar", "Previous", "Long"));
-        toolBarData.navigatePrevious.setLabel(qApp->translate("MacToolBar", "Previous", "Short"));
         toolBarData.navigateNext.setToolTip(qApp->translate("MacToolBar", "Next", "Long"));
-        toolBarData.navigateNext.setLabel(qApp->translate("MacToolBar", "Next", "Short"));
-        toolBarData.navigateGroup.setPaletteLabel(qApp->translate("MacToolBar", "Navigate", "Short"));
+        const QString navigateGroupText = qApp->translate("MacToolBar", "Navigate", "Short");
+        toolBarData.navigateGroup.setPaletteLabel(navigateGroupText);
+        toolBarData.navigateGroup.setLabel(navigateGroupText);
 
         const QString slideShowShortText = qApp->translate("MacToolBar", "Slideshow", "Short");
         toolBarData.startSlideShow.setPaletteLabel(slideShowShortText);
         toolBarData.startSlideShow.setLabel(slideShowShortText);
 
         toolBarData.zoomOut.setToolTip(qApp->translate("MacToolBar", "Zoom Out", "Long"));
-        toolBarData.zoomOut.setLabel(qApp->translate("MacToolBar", "Zoom Out", "Short"));
         toolBarData.zoomIn.setToolTip(qApp->translate("MacToolBar", "Zoom In", "Long"));
-        toolBarData.zoomIn.setLabel(qApp->translate("MacToolBar", "Zoom In", "Short"));
-        toolBarData.zoomGroup.setPaletteLabel(qApp->translate("MacToolBar", "Zoom", "Short"));
+        const QString zoomGroupText = qApp->translate("MacToolBar", "Zoom", "Short");
+        toolBarData.zoomGroup.setPaletteLabel(zoomGroupText);
+        toolBarData.zoomGroup.setLabel(zoomGroupText);
 
         const QString zoomFitToWindowFullText = qApp->translate("MacToolBar", "Fit Image To Window Size", "Long");
         const QString zoomFitToWindowShortText = qApp->translate("MacToolBar", "Fit Image To Window Size", "Short");
@@ -565,16 +605,16 @@ struct MacToolBar::Impl
         toolBarData.zoomFullScreen.setLabel(zoomFullScreenShortText);
 
         toolBarData.rotateCounterclockwise.setToolTip(qApp->translate("MacToolBar", "Rotate Counterclockwise", "Long"));
-        toolBarData.rotateCounterclockwise.setLabel(qApp->translate("MacToolBar", "Rotate Counterclockwise", "Short"));
         toolBarData.rotateClockwise.setToolTip(qApp->translate("MacToolBar", "Rotate Clockwise", "Long"));
-        toolBarData.rotateClockwise.setLabel(qApp->translate("MacToolBar", "Rotate Clockwise", "Short"));
-        toolBarData.rotateGroup.setPaletteLabel(qApp->translate("MacToolBar", "Rotate"));
+        const QString rotateGroupText = qApp->translate("MacToolBar", "Rotate", "Short");
+        toolBarData.rotateGroup.setPaletteLabel(rotateGroupText);
+        toolBarData.rotateGroup.setLabel(rotateGroupText);
 
         toolBarData.flipHorizontal.setToolTip(qApp->translate("MacToolBar", "Flip Horizontal", "Long"));
-        toolBarData.flipHorizontal.setLabel(qApp->translate("MacToolBar", "Flip Horizontal", "Short"));
         toolBarData.flipVertical.setToolTip(qApp->translate("MacToolBar", "Flip Vertical", "Long"));
-        toolBarData.flipVertical.setLabel(qApp->translate("MacToolBar", "Flip Vertical", "Short"));
-        toolBarData.flipGroup.setPaletteLabel(qApp->translate("MacToolBar", "Flip"));
+        const QString flipGroupText = qApp->translate("MacToolBar", "Flip", "Short");
+        toolBarData.flipGroup.setPaletteLabel(flipGroupText);
+        toolBarData.flipGroup.setLabel(flipGroupText);
 
         const QString openFileFullText = qApp->translate("MacToolBar", "Open File", "Long");
         const QString openFileShortText = qApp->translate("MacToolBar", "Open File", "Short");
