@@ -24,7 +24,6 @@
 
 #include <QApplication>
 #include <QWidget>
-#include <QWindow>
 
 #include "Utils/InfoUtils.h"
 #include "Utils/LocalizationManager.h"
@@ -37,10 +36,10 @@ namespace {
 
 const NSInteger BUTTON_HEIGHT = 32;
 const NSInteger ALONE_BUTTON_WIDTH = 40;
-const NSInteger GROUPED_BUTTON_WIDTH = 36;
-const NSInteger SEGMENTED_OFFSET = 0;
-const QColor BUTTON_BASE_COLOR = qRgb(85, 85, 85);
-const QColor BUTTON_ALTERNATE_COLOR = qRgb(255, 255, 255);
+const NSInteger GROUPED_BUTTON_WIDTH = InfoUtils::MacVersionGreatOrEqual(10, 13) ? 36 : 32;
+const NSInteger SEGMENTED_OFFSET = InfoUtils::MacVersionGreatOrEqual(10, 13) ? 0 : 8;
+const QColor BUTTON_BASE_COLOR = InfoUtils::MacVersionGreatOrEqual(10, 10) ? qRgb(85, 85, 85) : Qt::black;
+const QColor BUTTON_ALTERNATE_COLOR = Qt::white;
 
 } // namespace
 
@@ -93,7 +92,7 @@ const QColor BUTTON_ALTERNATE_COLOR = qRgb(255, 255, 255);
 
 - (void)setChecked:(BOOL)isChecked
 {
-    NSControlStateValue newState = isChecked ? NSOnState : NSOffState;
+    NSCellStateValue newState = isChecked ? NSOnState : NSOffState;
     [self setState:newState];
     if((![self isChecked] && isChecked) || ([self isChecked] && !isChecked))
     {
@@ -214,7 +213,16 @@ struct GroupedToolBarItem : SimpleToolBarItem
             return true;
         if(!sender || sender != segmentedControl)
             return false;
-        return [segmentedControl selectedSegment] == segmentNumber();
+        NSInteger segmentNum = segmentNumber();
+        if(segmentNum < 0 || [segmentedControl selectedSegment] != segmentNum)
+            return false;
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_10_3_AND_LATER)
+        if([segmentedControl respondsToSelector:@selector(trackingMode)])
+            if([segmentedControl trackingMode] == NSSegmentSwitchTrackingMomentary)
+                return true;
+#endif
+        [segmentedControl setSelected:NO forSegment:segmentNum];
+        return true;
     }
 
     void setToolTip(const QString &toolTip)
@@ -310,7 +318,7 @@ struct ToolBarData;
          andEmitterObject:(QObject*)emitterObject;
 
 - (NSToolbarItem *)toolbar:(NSToolbar *)toolbar
-     itemForItemIdentifier:(NSToolbarItemIdentifier)itemIdentifier
+     itemForItemIdentifier:(NSString *)itemIdentifier
  willBeInsertedIntoToolbar:(BOOL)flag;
 
 - (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar *)toolbar;
@@ -393,9 +401,9 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     m_toolBarData->space.item = [[NSToolbarItem alloc] initWithItemIdentifier:NSToolbarSpaceItemIdentifier];
     m_toolBarData->flexibleSpace.item = [[NSToolbarItem alloc] initWithItemIdentifier:NSToolbarFlexibleSpaceItemIdentifier];
 
-    const NSToolbarItemVisibilityPriority low = NSToolbarItemVisibilityPriorityLow;
-    const NSToolbarItemVisibilityPriority std = NSToolbarItemVisibilityPriorityStandard;
-    const NSToolbarItemVisibilityPriority high = NSToolbarItemVisibilityPriorityHigh;
+    const NSInteger low = NSToolbarItemVisibilityPriorityLow;
+    const NSInteger std = NSToolbarItemVisibilityPriorityStandard;
+    const NSInteger high = NSToolbarItemVisibilityPriorityHigh;
 
 #define MAKE_SEGMENTED_PAIR_ITEM(GROUP, PRIORITY, ITEM1, ICON1, ITEM2, ICON2) \
     [self makeSegmentedPairItem:m_toolBarData->GROUP \
@@ -441,7 +449,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 }
 
 - (NSToolbarItem *)toolbar:(NSToolbar *)toolbar
-     itemForItemIdentifier:(NSToolbarItemIdentifier)itemIdentifier
+     itemForItemIdentifier:(NSString *)itemIdentifier
  willBeInsertedIntoToolbar:(BOOL)flag
 {
     (void)(toolbar);
@@ -550,7 +558,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 
 - (void)makeSegmentedPairItem:(SegmentedToolBarItem &)groupItem
           withGroupIdentifier:(NSString *)groupIdentifier
-       withVisibilityPriority:(NSToolbarItemVisibilityPriority)visibilityPriority
+       withVisibilityPriority:(NSInteger)visibilityPriority
                 withFirstItem:(GroupedToolBarItem &)firstItem
           withFirstIdentifier:(NSString *)firstIdentifier
                withFirstImage:(NSImage *)firstImage
@@ -570,7 +578,10 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 
     NSSegmentedControl *segmentedControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, 2 * GROUPED_BUTTON_WIDTH + SEGMENTED_OFFSET, BUTTON_HEIGHT)];
     [segmentedControl setSegmentStyle:NSSegmentStyleTexturedRounded];
-    [segmentedControl setTrackingMode:NSSegmentSwitchTrackingMomentary];
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_10_3_AND_LATER)
+    if([segmentedControl respondsToSelector:@selector(setTrackingMode:)])
+        [segmentedControl setTrackingMode:NSSegmentSwitchTrackingMomentary];
+#endif
     [segmentedControl setSegmentCount:2];
     [segmentedControl setImage:firstImage forSegment:0];
     [segmentedControl setWidth:GROUPED_BUTTON_WIDTH forSegment:0];
@@ -593,12 +604,12 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 
 - (void)makeButtonedItem:(ButtonedToolBarItem &)buttonedItem
           withIdentifier:(NSString *)identifier
-  withVisibilityPriority:(NSToolbarItemVisibilityPriority)visibilityPriority
+  withVisibilityPriority:(NSInteger)visibilityPriority
                withImage:(NSImage *)image
       withAlternateImage:(NSImage *)alternateImage
 {
     CheckableNSButton *button = [[CheckableNSButton alloc] initWithFrame:NSMakeRect(0, 0, ALONE_BUTTON_WIDTH, BUTTON_HEIGHT)];
-    [button setBezelStyle:NSBezelStyleTexturedRounded];
+    [button setBezelStyle:NSTexturedRoundedBezelStyle];
     [button setImage:image];
     [button setAlternateImage:alternateImage];
     [button setTitle:@""];
@@ -645,9 +656,9 @@ struct MacToolBar::Impl
     {
         AUTORELEASE_POOL;
         macToolBar->detachFromWindow();
-        [nativeToolbar setDelegate:nil];
-        [nativeToolbar release];
-        [delegate release];
+//        [nativeToolbar setDelegate:nil];
+//        [nativeToolbar release];
+//        [delegate release];
     }
 
     void retranslate()
@@ -771,7 +782,7 @@ void MacToolBar::attachToWindow(QWidget *widget)
     NSView *windowView = reinterpret_cast<NSView*>(widget->window()->winId());
     NSWindow *window = reinterpret_cast<NSWindow*>([windowView window]);
     [window setToolbar:m_impl->nativeToolbar];
-//    [window setShowsToolbarButton:YES];
+    [window setShowsToolbarButton:NO];
     m_impl->window = window;
 }
 

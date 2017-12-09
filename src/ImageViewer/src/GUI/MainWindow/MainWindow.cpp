@@ -400,7 +400,8 @@ void MainWindow::changeEvent(QEvent *event)
         updateWindowTitle();
         break;
     case QEvent::WindowStateChange:
-        m_impl->syncFullScreen();
+        if(isVisible())
+            m_impl->syncFullScreen();
         break;
     default:
         break;
