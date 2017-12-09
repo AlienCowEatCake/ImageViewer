@@ -42,7 +42,7 @@ class LocalizationManager : public QObject
 signals:
     /// @brief Сигнал об изменении локализации.
     /// @param locale - Новая локаль.
-    void localeChanged(const QString& locale);
+    void localeChanged(const QString &locale);
 
 public:
     ~LocalizationManager();

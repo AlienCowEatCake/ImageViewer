@@ -20,14 +20,13 @@
 #if !defined(MAC_TOOLBAR_H_INCLUDED)
 #define MAC_TOOLBAR_H_INCLUDED
 
-#include <QMacToolBar>
-
 #include "Utils/ScopedPointer.h"
 
 #include "IControlsContainer.h"
 
-class MacToolBar : public QMacToolBar, public IControlsContainer
+class MacToolBar : public ControlsContainerEmitter, public IControlsContainer
 {
+    Q_OBJECT
     Q_DISABLE_COPY(MacToolBar)
 
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS
@@ -37,6 +36,12 @@ public:
     ~MacToolBar();
 
     ControlsContainerEmitter *emitter();
+
+    void attachToWindow(QWidget *widget);
+    void detachFromWindow();
+
+private slots:
+    void retranslate();
 
 private:
     struct Impl;

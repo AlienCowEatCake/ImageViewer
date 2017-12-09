@@ -136,10 +136,6 @@ disable_zlib | disable_libpng | disable_freetype | disable_libjpeg {
 }
 
 # MacToolBar options:
-!macx | lessThan(QT_MAJOR_VERSION, 5) {
-    CONFIG += disable_mactoolbar
-}
-equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 3) {
-    CONFIG += disable_mactoolbar
-}
+#    disable_mactoolbar
+
 

@@ -20,230 +20,684 @@
 #include "MacToolBar.h"
 
 #import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include <QApplication>
-#include <QMacToolBarItem>
+#include <QWidget>
+#include <QDebug>
+#include <QWindow>
 
-#include "Utils/ObjectsUtils.h"
+#include "Utils/InfoUtils.h"
+#include "Utils/LocalizationManager.h"
+#include "Utils/ObjectiveCUtils.h"
 #include "Utils/ThemeUtils.h"
 
-struct MacToolBar::Impl : public ControlsContainerEmitter
+// ====================================================================================================
+
+namespace {
+
+struct SimpleToolBarItem
 {
+    NSToolbarItem *item;
+
+    SimpleToolBarItem()
+        : item(nil)
+    {}
+
+    ~SimpleToolBarItem()
+    {
+        if(item)
+            [item release];
+    }
+
+    NSString *identifier() const
+    {
+        if(!item)
+            return nil;
+        return [item itemIdentifier];
+    }
+
+    NSToolbarItem *actionSender() const
+    {
+        return item;
+    }
+
+    void setLabel(const QString &label)
+    {
+        if(!item)
+            return;
+        AUTORELEASE_POOL;
+        [item setLabel:ObjCUtils::QStringToNSString(label)];
+    }
+
+    void setToolTip(const QString &toolTip)
+    {
+        if(!item)
+            return;
+        AUTORELEASE_POOL;
+        [item setToolTip:ObjCUtils::QStringToNSString(toolTip)];
+    }
+
+    void setPaletteLabel(const QString &paletteLabel)
+    {
+        if(!item)
+            return;
+        AUTORELEASE_POOL;
+        [item setPaletteLabel:ObjCUtils::QStringToNSString(paletteLabel)];
+    }
+};
+
+struct SegmentedToolBarItem : SimpleToolBarItem
+{
+    NSSegmentedControl *segmentedControl;
+
+    SegmentedToolBarItem()
+        : segmentedControl(nil)
+    {}
+
+    ~SegmentedToolBarItem()
+    {
+        if(segmentedControl)
+            [segmentedControl release];
+    }
+};
+
+struct GroupedToolBarItem : SimpleToolBarItem
+{
+    NSToolbarItemGroup *group;
+    NSSegmentedControl *segmentedControl;
+
+    GroupedToolBarItem()
+        : group(nil)
+        , segmentedControl(nil)
+    {}
+
+    void setEnabled(bool isEnabled)
+    {
+        if(!item)
+            return;
+        AUTORELEASE_POOL;
+        BOOL value = isEnabled ? YES : NO;
+        [item setEnabled: value];
+        if(!segmentedControl)
+            return;
+        NSInteger segmentNum = segmentNumber();
+        if(segmentNum < 0)
+            return;
+        [segmentedControl setEnabled:value forSegment:segmentNum];
+    }
+
+    void setToolTip(const QString &toolTip)
+    {
+        if(!item)
+            return;
+        AUTORELEASE_POOL;
+        [item setToolTip:ObjCUtils::QStringToNSString(toolTip)];
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_13_AND_LATER)
+        if(@available(macOS 10.13, *))
+        {
+            if(!segmentedControl)
+                return;
+            NSInteger segmentNum = segmentNumber();
+            if(segmentNum < 0)
+                return;
+            [segmentedControl setToolTip:ObjCUtils::QStringToNSString(toolTip) forSegment:segmentNum];
+        }
+#endif
+    }
+
+    NSInteger segmentNumber() const
+    {
+        if(!item || !group)
+            return -1;
+        AUTORELEASE_POOL;
+        NSArray *groupItems = [group subitems];
+        if(![groupItems containsObject:item])
+            return -1;
+        return static_cast<NSInteger>([[group subitems] indexOfObject:item]);
+    }
+};
+
+struct ButtonedToolBarItem : SimpleToolBarItem
+{
+    NSButton *button;
+
+    ButtonedToolBarItem()
+        : button(nil)
+    {}
+
+    ~ButtonedToolBarItem()
+    {
+        if(button)
+            [button release];
+    }
+
+    void setEnabled(bool isEnabled)
+    {
+        if(!item || !button)
+            return;
+        AUTORELEASE_POOL;
+        BOOL value = isEnabled ? YES : NO;
+        [button setEnabled:value];
+    }
+
+    void setChecked(bool isChecked)
+    {
+        if(!item || !button)
+            return;
+        AUTORELEASE_POOL;
+        NSControlStateValue value = isChecked ? NSOnState : NSOffState;
+        [button setState:value];
+    }
+
+    NSButton *actionSender() const
+    {
+        return button;
+    }
+
+    void setToolTip(const QString &toolTip)
+    {
+        if(!button)
+            return;
+        AUTORELEASE_POOL;
+        [button setToolTip:ObjCUtils::QStringToNSString(toolTip)];
+    }
+};
+
+} // namespace
+
+// ====================================================================================================
+
+namespace {
+struct ToolBarData;
+} // namespace
+
+@interface MacToolbarDelegate : NSObject <NSToolbarDelegate>
+{
+    ToolBarData *m_toolBarData;
+    QObject *m_emitterObject;
+}
+
+- (id)initWithToolBarData:(ToolBarData *)toolBarData
+         andEmitterObject:(QObject*)emitterObject;
+
+- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar
+     itemForItemIdentifier:(NSToolbarItemIdentifier)itemIdentifier
+ willBeInsertedIntoToolbar:(BOOL)flag;
+
+- (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar *)toolbar;
+
+- (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar *)toolbar;
+
+- (NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar;
+
+- (IBAction)itemClicked:(id)sender;
+
+@end
+
+// ====================================================================================================
+
+namespace {
+
+struct ToolBarData
+{
+    SimpleToolBarItem space;
+    SimpleToolBarItem flexibleSpace;
+
+    GroupedToolBarItem navigatePrevious;
+    GroupedToolBarItem navigateNext;
+    SegmentedToolBarItem navigateGroup;
+
+    ButtonedToolBarItem startSlideShow;
+
+    GroupedToolBarItem zoomOut;
+    GroupedToolBarItem zoomIn;
+    SegmentedToolBarItem zoomGroup;
+
+    ButtonedToolBarItem zoomFitToWindow;
+    ButtonedToolBarItem zoomOriginalSize;
+    ButtonedToolBarItem zoomFullScreen;
+
+    GroupedToolBarItem rotateCounterclockwise;
+    GroupedToolBarItem rotateClockwise;
+    SegmentedToolBarItem rotateGroup;
+
+    GroupedToolBarItem flipHorizontal;
+    GroupedToolBarItem flipVertical;
+    SegmentedToolBarItem flipGroup;
+
+    ButtonedToolBarItem openFile;
+    ButtonedToolBarItem saveFileAs;
+    ButtonedToolBarItem deleteFile;
+    ButtonedToolBarItem preferences;
+    ButtonedToolBarItem exit;
+};
+
+} // namespace
+
+// ====================================================================================================
+
+namespace {
+
+NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground = false)
+{
+    return ObjCUtils::QPixmapToNSImage(ThemeUtils::GetIcon(iconType, darkBackground).pixmap(16, 16));
+}
+
+} // namespace
+
+// ====================================================================================================
+
+@implementation MacToolbarDelegate
+
+- (id)initWithToolBarData:(ToolBarData *)toolBarData
+         andEmitterObject:(QObject*)emitterObject
+{
+    self = [super init];
+    m_toolBarData = toolBarData;
+    m_emitterObject = emitterObject;
+
+    m_toolBarData->space.item = [[NSToolbarItem alloc] initWithItemIdentifier:NSToolbarSpaceItemIdentifier];
+    m_toolBarData->flexibleSpace.item = [[NSToolbarItem alloc] initWithItemIdentifier:NSToolbarFlexibleSpaceItemIdentifier];
+
+#define MAKE_SEGMENTED_PAIR_ITEM(GROUP, ITEM1, ICON1, ITEM2, ICON2) \
+    [self makeSegmentedPairItem:m_toolBarData->GROUP \
+            withGroupIdentifier:@#GROUP \
+                  withFirstItem:m_toolBarData->ITEM1 \
+            withFirstIdentifier:@#ITEM1 \
+                 withFirstImage:NSImageForIconType(ThemeUtils::ICON1) \
+                 withSecondItem:m_toolBarData->ITEM2 \
+           withSecondIdentifier:@#ITEM2 \
+                withSecondImage:NSImageForIconType(ThemeUtils::ICON2) \
+    ]
+#define MAKE_BUTTONED_ITEM(ITEM, ICON) \
+    [self makeButtonedItem:m_toolBarData->ITEM \
+            withIdentifier:@#ITEM \
+                 withImage:NSImageForIconType(ThemeUtils::ICON) \
+    ]
+
+    MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, navigatePrevious, ICON_LEFT, navigateNext, ICON_RIGHT);
+    MAKE_BUTTONED_ITEM(startSlideShow, ICON_PLAY);
+    MAKE_SEGMENTED_PAIR_ITEM(zoomGroup, zoomOut, ICON_ZOOM_OUT, zoomIn, ICON_ZOOM_IN);
+    MAKE_BUTTONED_ITEM(zoomFitToWindow, ICON_ZOOM_EMPTY);
+    MAKE_BUTTONED_ITEM(zoomOriginalSize, ICON_ZOOM_IDENTITY);
+    MAKE_BUTTONED_ITEM(zoomFullScreen, ICON_FULLSCREEN);
+    MAKE_SEGMENTED_PAIR_ITEM(rotateGroup, rotateCounterclockwise, ICON_ROTATE_COUNTERCLOCKWISE, rotateClockwise, ICON_ROTATE_CLOCKWISE);
+    MAKE_SEGMENTED_PAIR_ITEM(flipGroup, flipHorizontal, ICON_FLIP_HORIZONTAL, flipVertical, ICON_FLIP_VERTICAL);
+    MAKE_BUTTONED_ITEM(openFile, ICON_OPEN);
+    MAKE_BUTTONED_ITEM(saveFileAs, ICON_SAVE_AS);
+    MAKE_BUTTONED_ITEM(deleteFile, ICON_DELETE);
+    MAKE_BUTTONED_ITEM(preferences, ICON_SETTINGS);
+    MAKE_BUTTONED_ITEM(exit, ICON_EXIT);
+
+#undef MAKE_SEGMENTED_PAIR_ITEM
+#undef MAKE_BUTTONED_ITEM
+
+    [m_toolBarData->zoomFitToWindow.button setButtonType:NSPushOnPushOffButton];
+    [m_toolBarData->zoomOriginalSize.button setButtonType:NSPushOnPushOffButton];
+    [m_toolBarData->zoomFullScreen.button setButtonType:NSPushOnPushOffButton];
+
+    return self;
+}
+
+- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar
+     itemForItemIdentifier:(NSToolbarItemIdentifier)itemIdentifier
+ willBeInsertedIntoToolbar:(BOOL)flag
+{
+    (void)(toolbar);
+    (void)(flag);
+#define CHECK(MEMBER) \
+    if(m_toolBarData->MEMBER.item && [itemIdentifier compare:[m_toolBarData->MEMBER.item itemIdentifier]] == NSOrderedSame) \
+        return m_toolBarData->MEMBER.item
+    CHECK(space);
+    CHECK(flexibleSpace);
+    CHECK(navigatePrevious);
+    CHECK(navigateNext);
+    CHECK(navigateGroup);
+    CHECK(startSlideShow);
+    CHECK(zoomOut);
+    CHECK(zoomIn);
+    CHECK(zoomGroup);
+    CHECK(zoomFitToWindow);
+    CHECK(zoomOriginalSize);
+    CHECK(zoomFullScreen);
+    CHECK(rotateCounterclockwise);
+    CHECK(rotateClockwise);
+    CHECK(rotateGroup);
+    CHECK(flipHorizontal);
+    CHECK(flipVertical);
+    CHECK(flipGroup);
+    CHECK(openFile);
+    CHECK(saveFileAs);
+    CHECK(deleteFile);
+    CHECK(preferences);
+    CHECK(exit);
+#undef CHECK
+    return nil;
+}
+
+- (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar *)toolbar
+{
+    (void)(toolbar);
+    return [NSArray arrayWithObjects:
+            m_toolBarData->navigateGroup.identifier(),
+            m_toolBarData->startSlideShow.identifier(),
+            m_toolBarData->zoomGroup.identifier(),
+            m_toolBarData->zoomFitToWindow.identifier(),
+            m_toolBarData->zoomOriginalSize.identifier(),
+            m_toolBarData->zoomFullScreen.identifier(),
+            m_toolBarData->rotateGroup.identifier(),
+            m_toolBarData->flipGroup.identifier(),
+            m_toolBarData->openFile.identifier(),
+            m_toolBarData->saveFileAs.identifier(),
+            m_toolBarData->deleteFile.identifier(),
+            m_toolBarData->preferences.identifier(),
+            m_toolBarData->exit.identifier(),
+            m_toolBarData->space.identifier(),
+            m_toolBarData->flexibleSpace.identifier(),
+            nil];
+}
+
+- (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar *)toolbar
+{
+    return [self toolbarAllowedItemIdentifiers:toolbar];
+}
+
+- (NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar
+{
+    (void)(toolbar);
+    return nil;
+}
+
+- (IBAction)itemClicked:(id)sender
+{
+#define INVOKE_IF_MATCH(ITEM, METHOD) \
+    if(ITEM && sender == ITEM) \
+        QMetaObject::invokeMethod(m_emitterObject, METHOD)
+    INVOKE_IF_MATCH(m_toolBarData->navigatePrevious.actionSender()      , "navigatePreviousRequested"       );
+    INVOKE_IF_MATCH(m_toolBarData->navigateNext.actionSender()          , "navigateNextRequested"           );
+    INVOKE_IF_MATCH(m_toolBarData->startSlideShow.actionSender()        , "startSlideShowRequested"         );
+    INVOKE_IF_MATCH(m_toolBarData->zoomOut.actionSender()               , "zoomOutRequested"                );
+    INVOKE_IF_MATCH(m_toolBarData->zoomIn.actionSender()                , "zoomInRequested"                 );
+    INVOKE_IF_MATCH(m_toolBarData->zoomFitToWindow.actionSender()       , "zoomFitToWindowRequested"        );
+    INVOKE_IF_MATCH(m_toolBarData->zoomOriginalSize.actionSender()      , "zoomOriginalSizeRequested"       );
+    INVOKE_IF_MATCH(m_toolBarData->zoomFullScreen.actionSender()        , "zoomFullScreenRequested"         );
+    INVOKE_IF_MATCH(m_toolBarData->rotateCounterclockwise.actionSender(), "rotateCounterclockwiseRequested" );
+    INVOKE_IF_MATCH(m_toolBarData->rotateClockwise.actionSender()       , "rotateClockwiseRequested"        );
+    INVOKE_IF_MATCH(m_toolBarData->flipHorizontal.actionSender()        , "flipHorizontalRequested"         );
+    INVOKE_IF_MATCH(m_toolBarData->flipVertical.actionSender()          , "flipVerticalRequested"           );
+    INVOKE_IF_MATCH(m_toolBarData->openFile.actionSender()              , "openFileRequested"               );
+    INVOKE_IF_MATCH(m_toolBarData->saveFileAs.actionSender()            , "saveAsRequested"                 );
+    INVOKE_IF_MATCH(m_toolBarData->deleteFile.actionSender()            , "deleteFileRequested"             );
+    INVOKE_IF_MATCH(m_toolBarData->preferences.actionSender()           , "preferencesRequested"            );
+    INVOKE_IF_MATCH(m_toolBarData->exit.actionSender()                  , "exitRequested"                   );
+#undef INVOKE_IF_MATCH
+}
+
+-(void)makeSegmentedPairItem:(SegmentedToolBarItem&)groupItem
+         withGroupIdentifier:(NSString*)groupIdentifier
+               withFirstItem:(GroupedToolBarItem&)firstItem
+         withFirstIdentifier:(NSString*)firstIdentifier
+              withFirstImage:(NSImage*)firstImage
+              withSecondItem:(GroupedToolBarItem&)secondItem
+        withSecondIdentifier:(NSString*)secondIdentifier
+             withSecondImage:(NSImage*)secondImage
+{
+    NSToolbarItem *first = [[NSToolbarItem alloc] initWithItemIdentifier:firstIdentifier];
+    [first setTarget:self];
+    [first setAction:@selector(itemClicked:)];
+    firstItem.item = first;
+
+    NSToolbarItem *second = [[NSToolbarItem alloc] initWithItemIdentifier:secondIdentifier];
+    [second setTarget:self];
+    [second setAction:@selector(itemClicked:)];
+    secondItem.item = second;
+
+    NSSegmentedControl *segmentedControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, 85, 40)];
+    [segmentedControl setSegmentStyle:NSSegmentStyleTexturedRounded];
+    [segmentedControl setTrackingMode:NSSegmentSwitchTrackingMomentary];
+    [segmentedControl setSegmentCount:2];
+    [segmentedControl setImage:firstImage forSegment:0];
+    [segmentedControl setWidth:40 forSegment:0];
+    [segmentedControl setImage:secondImage forSegment:1];
+    [segmentedControl setWidth:40 forSegment:1];
+    groupItem.segmentedControl = segmentedControl;
+    firstItem.segmentedControl = segmentedControl;
+    secondItem.segmentedControl = segmentedControl;
+
+    NSToolbarItemGroup *group = [[NSToolbarItemGroup alloc] initWithItemIdentifier:groupIdentifier];
+    [group setSubitems:[NSArray arrayWithObjects:first, second, nil]];
+    [group setView:segmentedControl];
+    groupItem.item = group;
+    firstItem.group = group;
+    secondItem.group = group;
+}
+
+-(void)makeButtonedItem:(ButtonedToolBarItem&)buttonedItem
+         withIdentifier:(NSString*)identifier
+              withImage:(NSImage*)image
+{
+    NSButton *button = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 40, 40)];
+    [button setBezelStyle:NSBezelStyleTexturedRounded];
+    [button setImage:image];
+    [button setTitle:@""];
+    [button setTarget:self];
+    [button setAction:@selector(itemClicked:)];
+
+    NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:identifier];
+    [item setView:button];
+    buttonedItem.item = item;
+    buttonedItem.button = button;
+}
+
+@end
+
+// ====================================================================================================
+
+struct MacToolBar::Impl
+{
+    MacToolBar *macToolBar;
+    ToolBarData toolBarData;
+    NSToolbar *nativeToolbar;
+    MacToolbarDelegate *delegate;
+    NSWindow *window;
+
     bool isSlideShowMode;
 
-    QMacToolBarItem * const navigatePrevious;
-    QMacToolBarItem * const navigateNext;
-    QMacToolBarItem * const startSlideShow;
-    QMacToolBarItem * const zoomOut;
-    QMacToolBarItem * const zoomIn;
-    QMacToolBarItem * const zoomFitToWindow;
-    QMacToolBarItem * const zoomOriginalSize;
-    QMacToolBarItem * const zoomFullScreen;
-    QMacToolBarItem * const rotateCounterclockwise;
-    QMacToolBarItem * const rotateClockwise;
-    QMacToolBarItem * const flipHorizontal;
-    QMacToolBarItem * const flipVertical;
-    QMacToolBarItem * const openFile;
-    QMacToolBarItem * const saveFileAs;
-    QMacToolBarItem * const deleteFile;
-    QMacToolBarItem * const preferences;
-    QMacToolBarItem * const exit;
-
-    QMacToolBarItem * const space;
-    QMacToolBarItem * const flexibleSpace;
-
     Impl(MacToolBar *macToolBar)
-        : isSlideShowMode(false)
-        , CONSTRUCT_OBJECT(navigatePrevious, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(navigateNext, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(startSlideShow, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(zoomOut, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(zoomIn, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(zoomFitToWindow, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(zoomOriginalSize, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(zoomFullScreen, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(rotateCounterclockwise, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(rotateClockwise, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(flipHorizontal, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(flipVertical, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(openFile, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(saveFileAs, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(deleteFile, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(preferences, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(exit, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(space, QMacToolBarItem, (macToolBar))
-        , CONSTRUCT_OBJECT(flexibleSpace, QMacToolBarItem, (macToolBar))
+        : macToolBar(macToolBar)
+        , isSlideShowMode(false)
     {
-        space->setStandardItem(QMacToolBarItem::Space);
-        flexibleSpace->setStandardItem(QMacToolBarItem::FlexibleSpace);
-
-        macToolBar->setAllowedItems(QList<QMacToolBarItem*>()
-                << navigatePrevious
-                << navigateNext
-                << startSlideShow
-                << zoomOut
-                << zoomIn
-                << zoomFitToWindow
-                << zoomOriginalSize
-                << zoomFullScreen
-                << rotateCounterclockwise
-                << rotateClockwise
-                << flipHorizontal
-                << flipVertical
-                << openFile
-                << saveFileAs
-                << deleteFile
-                << preferences
-                << exit
-                << space
-                << flexibleSpace);
-
-        macToolBar->setItems(QList<QMacToolBarItem*>()
-                << openFile
-                << saveFileAs
-                << deleteFile
-                << flexibleSpace
-                << navigatePrevious
-                << navigateNext
-                << flexibleSpace
-                << rotateCounterclockwise
-                << rotateClockwise
-                << flexibleSpace
-                << zoomOut
-                << zoomIn
-                << zoomFitToWindow
-                << zoomOriginalSize);
-
-        NSToolbar *nativeToolbar = macToolBar->nativeToolbar();
-//        [nativeToolbar setAllowsUserCustomization:NO];
-        [nativeToolbar setDisplayMode:NSToolbarDisplayModeIconAndLabel];
-        [nativeToolbar setSizeMode:NSToolbarSizeModeSmall];
+        AUTORELEASE_POOL;
+        nativeToolbar = [[NSToolbar alloc] initWithIdentifier:@"MacToolBar"];
+        delegate = [[MacToolbarDelegate alloc] initWithToolBarData:&toolBarData andEmitterObject:macToolBar];
+        window = nil;
+        [nativeToolbar setDelegate:delegate];
+        [nativeToolbar setAllowsUserCustomization:YES];
+//        [nativeToolbar setAutosavesConfiguration:YES];
 
         retranslate();
-        updateIcons();
+    }
+
+    ~Impl()
+    {
+        AUTORELEASE_POOL;
+        macToolBar->detachFromWindow();
+        [nativeToolbar setDelegate:nil];
+        [nativeToolbar release];
+        [delegate release];
     }
 
     void retranslate()
     {
-        navigatePrevious->setText(qApp->translate("MacToolBar", "Previous"));
-        navigateNext->setText(qApp->translate("MacToolBar", "Next"));
-        zoomOut->setText(qApp->translate("MacToolBar", "Zoom Out"));
-        zoomIn->setText(qApp->translate("MacToolBar", "Zoom In"));
-        zoomFitToWindow->setText(qApp->translate("MacToolBar", "Fit To Window"));
-        zoomOriginalSize->setText(qApp->translate("MacToolBar", "Original"));
-        zoomFullScreen->setText(qApp->translate("MacToolBar", "Full Screen"));
-        rotateCounterclockwise->setText(qApp->translate("MacToolBar", "Rotate CCW"));
-        rotateClockwise->setText(qApp->translate("MacToolBar", "Rotate CW"));
-        flipHorizontal->setText(qApp->translate("MacToolBar", "Flip Horizontal"));
-        flipVertical->setText(qApp->translate("MacToolBar", "Flip Vertical"));
-        openFile->setText(qApp->translate("MacToolBar", "Open"));
-        saveFileAs->setText(qApp->translate("MacToolBar", "Save As"));
-        deleteFile->setText(qApp->translate("MacToolBar", "Delete"));
-        preferences->setText(qApp->translate("MacToolBar", "Preferences"));
-        exit->setText(qApp->translate("MacToolBar", "Exit"));
-        setSlideShowMode(isSlideShowMode);
-    }
+        toolBarData.navigatePrevious.setToolTip(qApp->translate("MacToolBar", "Previous", "Long"));
+        toolBarData.navigatePrevious.setLabel(qApp->translate("MacToolBar", "Previous", "Short"));
+        toolBarData.navigateNext.setToolTip(qApp->translate("MacToolBar", "Next", "Long"));
+        toolBarData.navigateNext.setLabel(qApp->translate("MacToolBar", "Next", "Short"));
+        toolBarData.navigateGroup.setPaletteLabel(qApp->translate("MacToolBar", "Navigate", "Short"));
 
-    void updateIcons()
-    {
-        navigatePrevious->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_LEFT                      , true));
-        navigateNext->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_RIGHT                     , true));
-        zoomOut->setIcon                (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_OUT                  , false));
-        zoomIn->setIcon                 (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , false));
-        zoomFitToWindow->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , false));
-        zoomOriginalSize->setIcon       (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , false));
-        zoomFullScreen->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , false));
-        rotateCounterclockwise->setIcon (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , false));
-        rotateClockwise->setIcon        (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE          , false));
-        flipHorizontal->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_HORIZONTAL           , false));
-        flipVertical->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FLIP_VERTICAL             , false));
-        openFile->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , false));
-        saveFileAs->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS                   , false));
-        deleteFile->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_DELETE                    , false));
-        preferences->setIcon            (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS                  , false));
-        exit->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT                      , false));
-        startSlideShow->setIcon         (ThemeUtils::GetIcon(isSlideShowMode ? ThemeUtils::ICON_STOP : ThemeUtils::ICON_PLAY, false));
+        const QString slideShowShortText = qApp->translate("MacToolBar", "Slideshow", "Short");
+        toolBarData.startSlideShow.setPaletteLabel(slideShowShortText);
+        toolBarData.startSlideShow.setLabel(slideShowShortText);
+
+        toolBarData.zoomOut.setToolTip(qApp->translate("MacToolBar", "Zoom Out", "Long"));
+        toolBarData.zoomOut.setLabel(qApp->translate("MacToolBar", "Zoom Out", "Short"));
+        toolBarData.zoomIn.setToolTip(qApp->translate("MacToolBar", "Zoom In", "Long"));
+        toolBarData.zoomIn.setLabel(qApp->translate("MacToolBar", "Zoom In", "Short"));
+        toolBarData.zoomGroup.setPaletteLabel(qApp->translate("MacToolBar", "Zoom", "Short"));
+
+        const QString zoomFitToWindowFullText = qApp->translate("MacToolBar", "Fit Image To Window Size", "Long");
+        const QString zoomFitToWindowShortText = qApp->translate("MacToolBar", "Fit Image To Window Size", "Short");
+        toolBarData.zoomFitToWindow.setPaletteLabel(zoomFitToWindowShortText);
+        toolBarData.zoomFitToWindow.setToolTip(zoomFitToWindowFullText);
+        toolBarData.zoomFitToWindow.setLabel(zoomFitToWindowShortText);
+
+        const QString zoomOriginalSizeFullText = qApp->translate("MacToolBar", "Original Size", "Long");
+        const QString zoomOriginalSizeShortText = qApp->translate("MacToolBar", "Original Size", "Short");
+        toolBarData.zoomOriginalSize.setPaletteLabel(zoomOriginalSizeShortText);
+        toolBarData.zoomOriginalSize.setToolTip(zoomOriginalSizeFullText);
+        toolBarData.zoomOriginalSize.setLabel(zoomOriginalSizeShortText);
+
+        const QString zoomFullScreenFullText = qApp->translate("MacToolBar", "Full Screen", "Long");
+        const QString zoomFullScreenShortText = qApp->translate("MacToolBar", "Full Screen", "Short");
+        toolBarData.zoomFullScreen.setPaletteLabel(zoomFullScreenShortText);
+        toolBarData.zoomFullScreen.setToolTip(zoomFullScreenFullText);
+        toolBarData.zoomFullScreen.setLabel(zoomFullScreenShortText);
+
+        toolBarData.rotateCounterclockwise.setToolTip(qApp->translate("MacToolBar", "Rotate Counterclockwise", "Long"));
+        toolBarData.rotateCounterclockwise.setLabel(qApp->translate("MacToolBar", "Rotate Counterclockwise", "Short"));
+        toolBarData.rotateClockwise.setToolTip(qApp->translate("MacToolBar", "Rotate Clockwise", "Long"));
+        toolBarData.rotateClockwise.setLabel(qApp->translate("MacToolBar", "Rotate Clockwise", "Short"));
+        toolBarData.rotateGroup.setPaletteLabel(qApp->translate("MacToolBar", "Rotate"));
+
+        toolBarData.flipHorizontal.setToolTip(qApp->translate("MacToolBar", "Flip Horizontal", "Long"));
+        toolBarData.flipHorizontal.setLabel(qApp->translate("MacToolBar", "Flip Horizontal", "Short"));
+        toolBarData.flipVertical.setToolTip(qApp->translate("MacToolBar", "Flip Vertical", "Long"));
+        toolBarData.flipVertical.setLabel(qApp->translate("MacToolBar", "Flip Vertical", "Short"));
+        toolBarData.flipGroup.setPaletteLabel(qApp->translate("MacToolBar", "Flip"));
+
+        const QString openFileFullText = qApp->translate("MacToolBar", "Open File", "Long");
+        const QString openFileShortText = qApp->translate("MacToolBar", "Open File", "Short");
+        toolBarData.openFile.setPaletteLabel(openFileShortText);
+        toolBarData.openFile.setToolTip(openFileFullText);
+        toolBarData.openFile.setLabel(openFileShortText);
+        const QString saveFileAsFullText = qApp->translate("MacToolBar", "Save File As", "Long");
+        const QString saveFileAsShortText = qApp->translate("MacToolBar", "Save File As", "Short");
+        toolBarData.saveFileAs.setPaletteLabel(saveFileAsShortText);
+        toolBarData.saveFileAs.setToolTip(saveFileAsFullText);
+        toolBarData.saveFileAs.setLabel(saveFileAsShortText);
+        const QString deleteFileFullText = qApp->translate("MacToolBar", "Delete File", "Long");
+        const QString deleteFileShortText = qApp->translate("MacToolBar", "Delete File", "Short");
+        toolBarData.deleteFile.setPaletteLabel(deleteFileShortText);
+        toolBarData.deleteFile.setToolTip(deleteFileFullText);
+        toolBarData.deleteFile.setLabel(deleteFileShortText);
+        const QString preferencesFullText = qApp->translate("MacToolBar", "Preferences", "Long");
+        const QString preferencesShortText = qApp->translate("MacToolBar", "Preferences", "Short");
+        toolBarData.preferences.setPaletteLabel(preferencesShortText);
+        toolBarData.preferences.setToolTip(preferencesFullText);
+        toolBarData.preferences.setLabel(preferencesShortText);
+        const QString exitFullText = qApp->translate("MacToolBar", "Exit", "Long");
+        const QString exitShortText = qApp->translate("MacToolBar", "Exit", "Short");
+        toolBarData.exit.setPaletteLabel(exitShortText);
+        toolBarData.exit.setToolTip(exitFullText);
+        toolBarData.exit.setLabel(exitShortText);
+
+        setSlideShowMode(isSlideShowMode);
     }
 
     void setSlideShowMode(bool isSlideShow)
     {
+        AUTORELEASE_POOL;
         isSlideShowMode = isSlideShow;
+        NSButton *button = toolBarData.startSlideShow.button;
+        if(!button)
+            return;
         if(!isSlideShowMode)
         {
-            startSlideShow->setText(qApp->translate("MacToolBar", "Start Slideshow"));
-            startSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_PLAY, false));
+            [button setImage:NSImageForIconType(ThemeUtils::ICON_PLAY)];
+            toolBarData.startSlideShow.setToolTip(qApp->translate("MacToolBar", "Start Slideshow", "Long"));
         }
         else
         {
-            startSlideShow->setText(qApp->translate("MacToolBar", "Stop Slideshow"));
-            startSlideShow->setIcon(ThemeUtils::GetIcon(ThemeUtils::ICON_STOP, false));
+            [button setImage:NSImageForIconType(ThemeUtils::ICON_STOP)];
+            toolBarData.startSlideShow.setToolTip(qApp->translate("MacToolBar", "Stop Slideshow", "Long"));
         }
     }
-
 };
 
+// ====================================================================================================
+
 MacToolBar::MacToolBar(QObject *parent)
-    : QMacToolBar(parent)
+    : ControlsContainerEmitter(parent)
     , m_impl(new Impl(this))
 {
-    connect(m_impl->navigatePrevious        , SIGNAL(activated()), emitter(), SIGNAL(navigatePreviousRequested())         );
-    connect(m_impl->navigateNext            , SIGNAL(activated()), emitter(), SIGNAL(navigateNextRequested())             );
-    connect(m_impl->startSlideShow          , SIGNAL(activated()), emitter(), SIGNAL(startSlideShowRequested())           );
-    connect(m_impl->zoomOut                 , SIGNAL(activated()), emitter(), SIGNAL(zoomOutRequested())                  );
-    connect(m_impl->zoomIn                  , SIGNAL(activated()), emitter(), SIGNAL(zoomInRequested())                   );
-    connect(m_impl->zoomFitToWindow         , SIGNAL(activated()), emitter(), SIGNAL(zoomFitToWindowRequested())          );
-    connect(m_impl->zoomOriginalSize        , SIGNAL(activated()), emitter(), SIGNAL(zoomOriginalSizeRequested())         );
-    connect(m_impl->zoomFullScreen          , SIGNAL(activated()), emitter(), SIGNAL(zoomFullScreenRequested())           );
-    connect(m_impl->rotateCounterclockwise  , SIGNAL(activated()), emitter(), SIGNAL(rotateCounterclockwiseRequested())   );
-    connect(m_impl->rotateClockwise         , SIGNAL(activated()), emitter(), SIGNAL(rotateClockwiseRequested())          );
-    connect(m_impl->flipHorizontal          , SIGNAL(activated()), emitter(), SIGNAL(flipHorizontalRequested())           );
-    connect(m_impl->flipVertical            , SIGNAL(activated()), emitter(), SIGNAL(flipVerticalRequested())             );
-    connect(m_impl->openFile                , SIGNAL(activated()), emitter(), SIGNAL(openFileRequested())                 );
-    connect(m_impl->saveFileAs              , SIGNAL(activated()), emitter(), SIGNAL(saveAsRequested())                   );
-    connect(m_impl->deleteFile              , SIGNAL(activated()), emitter(), SIGNAL(deleteFileRequested())               );
-    connect(m_impl->preferences             , SIGNAL(activated()), emitter(), SIGNAL(preferencesRequested())              );
-    connect(m_impl->exit                    , SIGNAL(activated()), emitter(), SIGNAL(exitRequested())                     );
+    connect(LocalizationManager::instance(), SIGNAL(localeChanged(const QString&)), this, SLOT(retranslate()));
 }
 
 MacToolBar::~MacToolBar()
-{
-
-}
+{}
 
 ControlsContainerEmitter *MacToolBar::emitter()
 {
-    return m_impl.data();
+    return this;
 }
 
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setOpenFileEnabled)
+void MacToolBar::attachToWindow(QWidget *widget)
+{
+    AUTORELEASE_POOL;
+    detachFromWindow();
+    NSView *windowView = reinterpret_cast<NSView*>(widget->window()->winId());
+    NSWindow *window = reinterpret_cast<NSWindow*>([windowView window]);
+    [window setToolbar:m_impl->nativeToolbar];
+//    [window setShowsToolbarButton:YES];
+    m_impl->window = window;
+}
+
+void MacToolBar::detachFromWindow()
+{
+    if(!m_impl->window)
+        return;
+    AUTORELEASE_POOL;
+    [m_impl->window setToolbar:nil];
+    m_impl->window = nil;
+}
+
+void MacToolBar::retranslate()
+{
+    m_impl->retranslate();
+}
+
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setOpenFileEnabled, &m_impl->toolBarData.openFile)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setOpenFolderEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setSaveAsEnabled)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setSaveAsEnabled, &m_impl->toolBarData.saveFileAs)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setNewWindowEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setNavigatePreviousEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setNavigateNextEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setStartSlideShowEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setPreferencesEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setExitEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setRotateCounterclockwiseEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setRotateClockwiseEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setFlipHorizontalEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setFlipVerticalEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setDeleteFileEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setZoomOutEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setZoomInEnabled)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setNavigatePreviousEnabled, &m_impl->toolBarData.navigatePrevious)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setNavigateNextEnabled, &m_impl->toolBarData.navigateNext)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setStartSlideShowEnabled, &m_impl->toolBarData.startSlideShow)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setPreferencesEnabled, &m_impl->toolBarData.preferences)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setExitEnabled, &m_impl->toolBarData.exit)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setRotateCounterclockwiseEnabled, &m_impl->toolBarData.rotateCounterclockwise)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setRotateClockwiseEnabled, &m_impl->toolBarData.rotateClockwise)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setFlipHorizontalEnabled, &m_impl->toolBarData.flipHorizontal)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setFlipVerticalEnabled, &m_impl->toolBarData.flipVertical)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setDeleteFileEnabled, &m_impl->toolBarData.deleteFile)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setZoomOutEnabled, &m_impl->toolBarData.zoomOut)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setZoomInEnabled, &m_impl->toolBarData.zoomIn)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setZoomResetEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setZoomFitToWindowEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setZoomOriginalSizeEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setZoomFullScreenEnabled)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setZoomFitToWindowEnabled, &m_impl->toolBarData.zoomFitToWindow)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setZoomOriginalSizeEnabled, &m_impl->toolBarData.zoomOriginalSize)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setZoomFullScreenEnabled, &m_impl->toolBarData.zoomFullScreen)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setShowMenuBarEnabled)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setShowToolBarEnabled)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setAboutEnabled)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setAboutQtEnabled)
 
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setZoomFitToWindowChecked)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setZoomOriginalSizeChecked)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setZoomFullScreenChecked)
+CONTROLS_CONTAINER_SET_CHECKED_IMPL(MacToolBar, setZoomFitToWindowChecked, &m_impl->toolBarData.zoomFitToWindow)
+CONTROLS_CONTAINER_SET_CHECKED_IMPL(MacToolBar, setZoomOriginalSizeChecked, &m_impl->toolBarData.zoomOriginalSize)
+CONTROLS_CONTAINER_SET_CHECKED_IMPL(MacToolBar, setZoomFullScreenChecked, &m_impl->toolBarData.zoomFullScreen)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setShowMenuBarChecked)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setShowToolBarChecked)
 
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setSlideShowMode)
+CONTROLS_CONTAINER_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setSlideShowMode, m_impl, setSlideShowMode)
+
+// ====================================================================================================

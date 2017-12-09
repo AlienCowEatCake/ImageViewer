@@ -82,7 +82,7 @@ struct MainWindow::UI
 #if defined (HAS_MAC_TOOLBAR)
         MacToolBar *macToolbar = new MacToolBar(mainWindow);
         controlsContainers.append(macToolbar);
-        macToolbar->attachToWindow(mainWindow->windowHandle());
+        macToolbar->attachToWindow(mainWindow);
 #endif
     }
 };

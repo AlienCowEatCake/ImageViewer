@@ -201,7 +201,6 @@ HEADERS += \
 }
 
 !disable_mactoolbar {
-    QT += macextras
     DEFINES += HAS_MAC_TOOLBAR
     OBJECTIVE_SOURCES += \
         src/GUI/MainWindow/MacToolBar.mm
