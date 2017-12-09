@@ -66,7 +66,6 @@ SOURCES += \
     src/GUI/MainWindow/ImageViewerWidget.cpp \
     src/GUI/MainWindow/MainWindow.cpp \
     src/GUI/MainWindow/MenuBar.cpp \
-    src/GUI/MainWindow/ToolBar.cpp \
     src/Decoders/DecodersManager.cpp \
     src/Decoders/Impl/DecoderQImage.cpp \
     src/Decoders/Impl/DecoderQMovie.cpp \
@@ -101,7 +100,6 @@ HEADERS += \
     src/GUI/MainWindow/MainWindow.h \
     src/GUI/MainWindow/MainWindow_p.h \
     src/GUI/MainWindow/MenuBar.h \
-    src/GUI/MainWindow/ToolBar.h \
     src/Decoders/DecodersManager.h \
     src/Decoders/IDecoder.h \
     src/Decoders/Impl/Internal/Animation/AnimationObject.h \
@@ -206,6 +204,11 @@ HEADERS += \
         src/GUI/MainWindow/MacToolBar.mm
     HEADERS += \
         src/GUI/MainWindow/MacToolBar.h
+} else {
+    SOURCES += \
+        src/GUI/MainWindow/ToolBar.cpp
+    HEADERS += \
+        src/GUI/MainWindow/ToolBar.h
 }
 
 TRANSLATIONS += \
