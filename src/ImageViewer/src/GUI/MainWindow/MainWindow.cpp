@@ -96,12 +96,12 @@ struct MainWindow::Impl
         if(toFullScreenMode)
         {
             ui.menubar->setVisible(false);
-            ui.setToolBarVisible(false);
+            ui.toolbar->setVisible(false);
         }
         else
         {
             ui.menubar->setVisible(settings->menuBarVisible());
-            ui.setToolBarVisible(settings->toolBarVisible());
+            ui.toolbar->setVisible(settings->toolBarVisible());
             restoreGeometry();
         }
         isFullScreenMode = toFullScreenMode;
@@ -182,7 +182,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     updateSlideShowInterval();
 
     ui.menubar->setVisible(settings->menuBarVisible());
-    ui.setToolBarVisible(settings->toolBarVisible());
+    ui.toolbar->setVisible(settings->toolBarVisible());
 
     for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
     {
@@ -278,7 +278,7 @@ void MainWindow::switchShowToolBar()
     for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
         (*it)->setShowToolBarChecked(newValue);
     if(!m_impl->isFullScreenMode)
-        m_impl->ui.setToolBarVisible(newValue);
+        m_impl->ui.toolbar->setVisible(newValue);
 }
 
 void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)

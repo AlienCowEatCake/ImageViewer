@@ -40,6 +40,8 @@ public:
     void attachToWindow(QWidget *widget);
     void detachFromWindow();
 
+    void setVisible(bool isVisible);
+
 private slots:
     void retranslate();
 

@@ -107,6 +107,51 @@ const QColor BUTTON_ALTERNATE_COLOR = Qt::white;
 
 // ====================================================================================================
 
+@interface CustomNSToolbar : NSToolbar
+{
+    @private
+    BOOL m_manualVisibleState;
+    QObject *m_emitterObject;
+}
+
+- (id)initWithIdentifier:(NSString *)identifier
+        andEmitterObject:(QObject *)emitterObject;
+
+- (void)setVisible:(BOOL)isVisible;
+
+- (void)setManualVisible:(BOOL)isVisible;
+
+@end
+
+
+@implementation CustomNSToolbar
+
+- (id)initWithIdentifier:(NSString *)identifier
+        andEmitterObject:(QObject *)emitterObject
+{
+    [super initWithIdentifier:identifier];
+    m_manualVisibleState = [super isVisible];
+    m_emitterObject = emitterObject;
+    return self;
+}
+
+- (void)setVisible:(BOOL)isVisible
+{
+    if((!m_manualVisibleState && !isVisible) || (m_manualVisibleState && isVisible))
+        return [super setVisible:isVisible];
+    QMetaObject::invokeMethod(m_emitterObject, "showToolBarRequested");
+}
+
+- (void)setManualVisible:(BOOL)isVisible
+{
+    m_manualVisibleState = isVisible;
+    [super setVisible:isVisible];
+}
+
+@end
+
+// ====================================================================================================
+
 namespace {
 
 struct SimpleToolBarItem
@@ -631,7 +676,7 @@ struct MacToolBar::Impl
 {
     MacToolBar *macToolBar;
     ToolBarData toolBarData;
-    NSToolbar *nativeToolbar;
+    CustomNSToolbar *nativeToolbar;
     MacToolbarDelegate *delegate;
     NSWindow *window;
 
@@ -642,7 +687,7 @@ struct MacToolBar::Impl
         , isSlideShowMode(false)
     {
         AUTORELEASE_POOL;
-        nativeToolbar = [[NSToolbar alloc] initWithIdentifier:@"MacToolBar"];
+        nativeToolbar = [[CustomNSToolbar alloc] initWithIdentifier:@"MacToolBar" andEmitterObject:macToolBar];
         delegate = [[MacToolbarDelegate alloc] initWithToolBarData:&toolBarData andEmitterObject:macToolBar];
         window = nil;
         [nativeToolbar setDelegate:delegate];
@@ -782,7 +827,7 @@ void MacToolBar::attachToWindow(QWidget *widget)
     NSView *windowView = reinterpret_cast<NSView*>(widget->window()->winId());
     NSWindow *window = reinterpret_cast<NSWindow*>([windowView window]);
     [window setToolbar:m_impl->nativeToolbar];
-    [window setShowsToolbarButton:NO];
+    [window setShowsToolbarButton:YES];
     m_impl->window = window;
 }
 
@@ -793,6 +838,17 @@ void MacToolBar::detachFromWindow()
     AUTORELEASE_POOL;
     [m_impl->window setToolbar:nil];
     m_impl->window = nil;
+}
+
+void MacToolBar::setVisible(bool isVisible)
+{
+    AUTORELEASE_POOL;
+    if(m_impl->window)
+    {
+        [m_impl->window setToolbar:m_impl->nativeToolbar];
+        [m_impl->window setShowsToolbarButton:YES];
+    }
+    [m_impl->nativeToolbar setManualVisible:(isVisible ? YES : NO)];
 }
 
 void MacToolBar::retranslate()

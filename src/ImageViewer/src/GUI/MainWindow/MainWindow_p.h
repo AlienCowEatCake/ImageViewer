@@ -94,18 +94,6 @@ struct MainWindow::UI
         toolbar->attachToWindow(mainWindow);
 #endif
     }
-
-    void setToolBarVisible(bool isVisible)
-    {
-#if defined (HAS_MAC_TOOLBAR)
-        if(isVisible)
-            toolbar->attachToWindow(mainWindow);
-        else
-            toolbar->detachFromWindow();
-#else
-        toolbar->setVisible(isVisible);
-#endif
-    }
 };
 
 #endif // MAINWINDOW_P_H_INCLUDED
