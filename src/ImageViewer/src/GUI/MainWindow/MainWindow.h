@@ -78,8 +78,6 @@ private slots:
 
 protected:
     void changeEvent(QEvent *event);
-    void resizeEvent(QResizeEvent *event);
-    void moveEvent(QMoveEvent *event);
     void closeEvent(QCloseEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
