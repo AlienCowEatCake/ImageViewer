@@ -164,6 +164,7 @@ struct SimpleToolBarItem
 
     ~SimpleToolBarItem()
     {
+        AUTORELEASE_POOL;
         if(item)
             [item release];
     }
@@ -215,6 +216,7 @@ struct SegmentedToolBarItem : SimpleToolBarItem
 
     ~SegmentedToolBarItem()
     {
+        AUTORELEASE_POOL;
         if(segmentedControl)
             [segmentedControl release];
     }
@@ -309,6 +311,7 @@ struct ButtonedToolBarItem : SimpleToolBarItem
 
     ~ButtonedToolBarItem()
     {
+        AUTORELEASE_POOL;
         if(button)
             [button release];
     }
@@ -701,9 +704,9 @@ struct MacToolBar::Impl
     {
         AUTORELEASE_POOL;
         macToolBar->detachFromWindow();
-//        [nativeToolbar setDelegate:nil];
-//        [nativeToolbar release];
+        [nativeToolbar setDelegate:nil];
 //        [delegate release];
+        [nativeToolbar release];
     }
 
     NSWindow *nativeWindow()
