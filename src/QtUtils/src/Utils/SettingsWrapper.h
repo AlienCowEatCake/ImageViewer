@@ -24,7 +24,7 @@
 #include <QVariant>
 #include <QPointer>
 
-/// @brief Класс-обертка над настройками, содержит в себе кэш, сбрасываемый при выходе из программы
+/// @brief Класс-обертка над настройками, содержит в себе кэш, сохраняемый при выходе из программы
 /// @note Thread-safe
 class SettingsWrapper
 {
@@ -47,6 +47,9 @@ public:
     /// @param[in] defaultValue - умолчательное значение, возвращается при отсутствии значения
     /// @return - значение для ключа или defaultValue при отсутствии значения
     QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
+
+    /// @brief Принудительно сохранить все настройки, не дожидаясь выхода из программы
+    void flush();
 
 private:
     /// @brief Группа (секция) настроек

@@ -104,6 +104,11 @@ GUISettings::GUISettings(QObject *parent)
 GUISettings::~GUISettings()
 {}
 
+void GUISettings::flush()
+{
+    m_impl->settings.flush();
+}
+
 bool GUISettings::askBeforeDelete() const
 {
     const bool defaultValue = true;

@@ -441,7 +441,6 @@ public:
         return retValue;
     }
 
-private:
     /// @brief Сброс настроек в SettingsStorage
     void saveSettings()
     {
@@ -454,6 +453,7 @@ private:
         m_settingsMutex.unlock();
     }
 
+private:
     /// @brief Проверяет, соединен ли кэш настроек с QApplication, если нет - выполняет соединение
     void CheckOrConnectToQApp()
     {
@@ -503,5 +503,12 @@ void SettingsWrapper::setValue(const QString &key, const QVariant &value)
 QVariant SettingsWrapper::value(const QString &key, const QVariant &defaultValue) const
 {
     return g_settingsCache.isNull() ? defaultValue : g_settingsCache->value(m_settingsGroup, key, defaultValue);
+}
+
+/// @brief Принудительно сохранить все настройки, не дожидаясь выхода из программы
+void SettingsWrapper::flush()
+{
+    if(!g_settingsCache.isNull())
+        g_settingsCache->saveSettings();
 }
 

@@ -224,6 +224,12 @@ void MainController::showPreferences()
 
 void MainController::openNewWindow()
 {
+    if(!m_impl->mainWindow.isFullScreen())
+    {
+        m_impl->settings.setMainWindowGeometry(m_impl->mainWindow.saveGeometry());
+        m_impl->settings.setMainWindowState(m_impl->mainWindow.saveState());
+    }
+    m_impl->settings.flush();
     QProcess::startDetached(QApplication::applicationFilePath(), m_impl->fileManager.currentOpenArguments(), QDir::currentPath());
 }
 

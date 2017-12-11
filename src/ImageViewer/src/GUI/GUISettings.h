@@ -52,6 +52,8 @@ public:
     GUISettings(QObject *parent = NULL);
     ~GUISettings();
 
+    void flush();
+
     bool askBeforeDelete() const;
     void setAskBeforeDelete(bool enabled);
 
