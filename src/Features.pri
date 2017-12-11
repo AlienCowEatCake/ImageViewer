@@ -135,3 +135,9 @@ disable_zlib | disable_libpng | disable_freetype | disable_libjpeg {
     CONFIG += disable_macwebkit
 }
 
+# MacToolBar options:
+#    disable_mactoolbar
+!macx {
+    CONFIG += disable_mactoolbar
+}
+

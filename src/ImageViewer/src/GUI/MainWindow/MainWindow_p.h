@@ -29,7 +29,11 @@
 #include "Utils/ObjectsUtils.h"
 
 #include "ImageViewerWidget.h"
+#if defined (HAS_MAC_TOOLBAR)
+#include "MacToolBar.h"
+#else
 #include "ToolBar.h"
+#endif
 #include "MenuBar.h"
 
 namespace {
@@ -44,7 +48,11 @@ struct MainWindow::UI
     MainWindow *mainWindow;
     QFrame *centralWidget;
     ImageViewerWidget *imageViewerWidget;
+#if defined (HAS_MAC_TOOLBAR)
+    MacToolBar *toolbar;
+#else
     ToolBar *toolbar;
+#endif
     MenuBar *menubar;
     QList<IControlsContainer*> controlsContainers;
 
@@ -52,7 +60,11 @@ struct MainWindow::UI
         : mainWindow(mainWindow)
         , CONSTRUCT_OBJECT(centralWidget, QFrame, (mainWindow))
         , CONSTRUCT_OBJECT(imageViewerWidget, ImageViewerWidget, (centralWidget))
+#if defined (HAS_MAC_TOOLBAR)
+        , toolbar(new MacToolBar(mainWindow))
+#else
         , CONSTRUCT_OBJECT(toolbar, ToolBar, (centralWidget))
+#endif
         , CONSTRUCT_OBJECT(menubar, MenuBar, (mainWindow))
         , controlsContainers(QList<IControlsContainer*>() << toolbar << menubar)
     {
@@ -68,13 +80,19 @@ struct MainWindow::UI
         mainLayout->setContentsMargins(0, 0, 0, 0);
         mainLayout->setSpacing(0);
         mainLayout->addWidget(imageViewerWidget);
+#if !defined (HAS_MAC_TOOLBAR)
         mainLayout->addWidget(toolbar);
+#endif
 
         mainWindow->setCentralWidget(centralWidget);
         mainWindow->setMenuBar(menubar);
         mainWindow->resize(WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT);
 
         mainWindow->ensurePolished();
+
+#if defined (HAS_MAC_TOOLBAR)
+        toolbar->attachToWindow(mainWindow);
+#endif
     }
 };
 
