@@ -176,9 +176,6 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     onZoomModeChanged(settings->zoomMode());
     updateSlideShowInterval();
 
-    ui.menubar->setVisible(settings->menuBarVisible());
-    ui.toolbar->setVisible(settings->toolBarVisible());
-
     for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
     {
         IControlsContainer* container = *it;
@@ -186,8 +183,16 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
         container->setShowToolBarChecked(settings->toolBarVisible());
     }
 
+    ui.menubar->setVisible(false);
+    ui.toolbar->setVisible(false);
     restoreState(settings->mainWindowState());
     restoreGeometry(settings->mainWindowGeometry());
+    m_impl->geometryHelper.saveGeometry();
+    m_impl->geometryHelper.block();
+    ui.menubar->setVisible(settings->menuBarVisible());
+    ui.toolbar->setVisible(settings->toolBarVisible());
+    m_impl->geometryHelper.unblock();
+    m_impl->geometryHelper.restoreGeometry();
     updateUIState(m_impl->uiState, UICF_All);
 }
 

@@ -678,18 +678,18 @@ struct MacToolBar::Impl
     ToolBarData toolBarData;
     CustomNSToolbar *nativeToolbar;
     MacToolbarDelegate *delegate;
-    NSWindow *window;
+    QWidget *widget;
 
     bool isSlideShowMode;
 
     Impl(MacToolBar *macToolBar)
         : macToolBar(macToolBar)
+        , widget(NULL)
         , isSlideShowMode(false)
     {
         AUTORELEASE_POOL;
         nativeToolbar = [[CustomNSToolbar alloc] initWithIdentifier:@"MacToolBar" andEmitterObject:macToolBar];
         delegate = [[MacToolbarDelegate alloc] initWithToolBarData:&toolBarData andEmitterObject:macToolBar];
-        window = nil;
         [nativeToolbar setDelegate:delegate];
         [nativeToolbar setAllowsUserCustomization:YES];
         [nativeToolbar setAutosavesConfiguration:YES];
@@ -704,6 +704,19 @@ struct MacToolBar::Impl
 //        [nativeToolbar setDelegate:nil];
 //        [nativeToolbar release];
 //        [delegate release];
+    }
+
+    NSWindow *nativeWindow()
+    {
+        if(!widget)
+            return nil;
+        QWidget *qtWindow = widget->window();
+        if(!qtWindow)
+            return nil;
+        NSView *windowView = reinterpret_cast<NSView*>(qtWindow->winId());
+        if(!windowView)
+            return nil;
+        return reinterpret_cast<NSWindow*>([windowView window]);
     }
 
     void retranslate()
@@ -824,29 +837,29 @@ void MacToolBar::attachToWindow(QWidget *widget)
 {
     AUTORELEASE_POOL;
     detachFromWindow();
-    NSView *windowView = reinterpret_cast<NSView*>(widget->window()->winId());
-    NSWindow *window = reinterpret_cast<NSWindow*>([windowView window]);
-    [window setToolbar:m_impl->nativeToolbar];
-    [window setShowsToolbarButton:YES];
-    m_impl->window = window;
+    m_impl->widget = widget;
+    if(NSWindow *window = m_impl->nativeWindow())
+    {
+        [window setToolbar:m_impl->nativeToolbar];
+        [window setShowsToolbarButton:YES];
+    }
 }
 
 void MacToolBar::detachFromWindow()
 {
-    if(!m_impl->window)
-        return;
     AUTORELEASE_POOL;
-    [m_impl->window setToolbar:nil];
-    m_impl->window = nil;
+    if(NSWindow *window = m_impl->nativeWindow())
+        [window setToolbar:nil];
+    m_impl->widget = NULL;
 }
 
 void MacToolBar::setVisible(bool isVisible)
 {
     AUTORELEASE_POOL;
-    if(m_impl->window)
+    if(NSWindow *window = m_impl->nativeWindow())
     {
-        [m_impl->window setToolbar:m_impl->nativeToolbar];
-        [m_impl->window setShowsToolbarButton:YES];
+        [window setToolbar:m_impl->nativeToolbar];
+        [window setShowsToolbarButton:YES];
     }
     [m_impl->nativeToolbar setManualVisible:(isVisible ? YES : NO)];
 }

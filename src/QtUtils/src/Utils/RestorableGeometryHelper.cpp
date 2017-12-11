@@ -19,6 +19,8 @@
 
 #include "RestorableGeometryHelper.h"
 
+//#define RESTORABLE_GEOMETRY_HELPER_DEBUG
+
 #include <utility>
 
 #include <QWidget>
@@ -26,11 +28,15 @@
 #include <QEvent>
 #include <QList>
 #include <QDateTime>
+#if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
+#include <QDebug>
+#endif
 
 namespace {
 
 const int MILLISECONDS_NUMBER_FOR_DROP_AFTER_WINDOW_STATE_CHANGE = 1500;
 const int MAX_RECORDS_NUMBER_FOR_AUTO_SAVING_GEOMETRY = 100;
+const int MAX_TRY_TO_CORRECTING_INVALID_GEOMETRY = 5;
 
 } // namespace
 
@@ -42,6 +48,7 @@ struct RestorableGeometryHelper::Impl : public QObject
     bool isLastFullScreen;
 
     bool blocked;
+    bool temporaryBlockedBySetGeometry;
 
     QRect normalGeometry;
     QList<std::pair<QDateTime, QRect> > autoSavedGeometry;
@@ -52,6 +59,7 @@ struct RestorableGeometryHelper::Impl : public QObject
         , isLastMinimized(window->isMinimized())
         , isLastFullScreen(window->isFullScreen())
         , blocked(false)
+        , temporaryBlockedBySetGeometry(false)
         , normalGeometry(window->normalGeometry())
     {
         window->installEventFilter(this);
@@ -78,6 +86,9 @@ struct RestorableGeometryHelper::Impl : public QObject
         {
             autoSavedGeometry.clear();
             normalGeometry = window->normalGeometry();
+#if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
+            qDebug() << "[RGH] normalGeometry = " << normalGeometry;
+#endif
         }
     }
 
@@ -86,19 +97,54 @@ struct RestorableGeometryHelper::Impl : public QObject
         if(!blocked && !isRealMaximized() && !isRealMinimized() && !isRealFullScreen())
         {
             if(!autoSavedGeometry.isEmpty())
-                window->setGeometry(autoSavedGeometry.last().second);
+            {
+                forceSetGeometry(autoSavedGeometry.last().second);
+#if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
+                qDebug() << "[RGH] window->setGeometry (auto)" << autoSavedGeometry.last().second;
+#endif
+            }
             else
-                window->setGeometry(normalGeometry);
+            {
+                forceSetGeometry(normalGeometry);
+#if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
+                qDebug() << "[RGH] window->setGeometry (normal)" << normalGeometry;
+#endif
+            }
         }
     }
 
     void autoSaveGeometry()
     {
-        if(!blocked && !isRealMaximized() && !isRealMinimized() && !isRealFullScreen())
+        if(!blocked && !temporaryBlockedBySetGeometry && !isRealMaximized() && !isRealMinimized() && !isRealFullScreen())
+        {
             autoSavedGeometry.append(std::make_pair(QDateTime::currentDateTime(), window->normalGeometry()));
+#if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
+            qDebug() << "[RGH] autoSavedGeometry.append" << autoSavedGeometry.last().second;
+#endif
+        }
 
         while(autoSavedGeometry.size() > MAX_RECORDS_NUMBER_FOR_AUTO_SAVING_GEOMETRY)
             autoSavedGeometry.removeFirst();
+    }
+
+    void forceSetGeometry(const QRect& geometry)
+    {
+        temporaryBlockedBySetGeometry = true;
+        window->setGeometry(geometry);
+        for(int i = 0; i < MAX_TRY_TO_CORRECTING_INVALID_GEOMETRY && window->normalGeometry() != geometry; i++)
+        {
+            // Qt 4.8.7 + OS X 10.9.5
+#if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
+            qWarning() << "[RGH] Failed to set geometry! Trying to correct, attempt =" << i + 1;
+#endif
+            const QRect actualGeometry = window->normalGeometry();
+            const QRect correctedGeometry(
+                        geometry.topLeft() + (geometry.topLeft() - actualGeometry.topLeft()),
+                        geometry.bottomRight() + (geometry.bottomRight() - actualGeometry.bottomRight())
+                        );
+            window->setGeometry(correctedGeometry);
+        }
+        temporaryBlockedBySetGeometry = false;
     }
 
     bool eventFilter(QObject *object, QEvent *event)
