@@ -1,4 +1,4 @@
-# URL: http://www.simplesystems.org/libtiff/ + https://github.com/vadz/libtiff.git
+# URL: http://www.simplesystems.org/libtiff/
 # License: ???
 
 include($${PWD}/../../Features.pri)
@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libtiff {
 
-        THIRDPARTY_LIBTIFF_PATH = $${PWD}/libtiff-e568614
+        THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.0.9
         THIRDPARTY_LIBTIFF_CONFIG_PATH = $${PWD}/config
 
         INCLUDEPATH += $${THIRDPARTY_LIBTIFF_CONFIG_PATH} $${THIRDPARTY_LIBTIFF_PATH}/libtiff

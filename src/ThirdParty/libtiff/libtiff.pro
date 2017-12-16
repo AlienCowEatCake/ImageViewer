@@ -1,4 +1,4 @@
-# URL: http://www.simplesystems.org/libtiff/ + https://github.com/vadz/libtiff.git
+# URL: http://www.simplesystems.org/libtiff/
 # License: ???
 
 TEMPLATE = lib
@@ -10,7 +10,7 @@ TARGET = tp_libtiff
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBTIFF_PATH = $${PWD}/libtiff-e568614
+THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.0.9
 THIRDPARTY_LIBTIFF_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
