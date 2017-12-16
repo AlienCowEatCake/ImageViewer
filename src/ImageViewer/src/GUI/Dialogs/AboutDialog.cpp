@@ -245,7 +245,7 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the libexif C EXIF library"),
                       QString::fromLatin1("libexif"),
                       QString(),
-                      QString::fromLatin1("http://libexif.sourceforge.net/")
+                      QString::fromLatin1("https://libexif.github.io/")
                       ));
 #endif
 

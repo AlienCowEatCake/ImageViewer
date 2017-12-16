@@ -1,4 +1,4 @@
-# URL: http://libexif.sourceforge.net/
+# URL: https://libexif.github.io/
 # License: GNU LGPL v2.1
 
 TEMPLATE = lib
@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBEXIF_PATH = $${PWD}/libexif-0.6.21.1
+THIRDPARTY_LIBEXIF_PATH = $${PWD}/libexif-a881aa6
 THIRDPARTY_LIBEXIF_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
