@@ -44,16 +44,26 @@
 
 namespace ObjCUtils {
 
-namespace {
+AutoReleasePool::AutoReleasePool()
+{
+    m_pool = [[NSAutoreleasePool alloc] init];
+}
+
+AutoReleasePool::~AutoReleasePool()
+{
+    [m_pool release];
+}
 
 //#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0) && QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+namespace {
 void imageDeleter(void *image, const void *, std::size_t)
 {
     delete static_cast<QImage*>(image);
 }
+} // namespace
 //#endif
 
-QPixmap QPixmapFromCGImageRef(const CGImageRef image)
+QPixmap QPixmapFromCGImageRef(const CFTypePtr<CGImageRef> &image)
 {
     if(!image)
         return QPixmap();
@@ -68,12 +78,12 @@ QPixmap QPixmapFromCGImageRef(const CGImageRef image)
     QImage result(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32_Premultiplied);
     result.fill(Qt::transparent);
 
-    CFRAII<CGColorSpaceRef> colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+    const CFTypePtr<CGColorSpaceRef> colorSpace = CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
     if(!colorSpace)
         return QPixmap();
 
-    CFRAII<CGContextRef> context = CGBitmapContextCreate(static_cast<void*>(result.bits()), width, height,
-            8, width * 4, colorSpace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host);
+    const CFTypePtr<CGContextRef> context = CFTypePtrFromCreate(CGBitmapContextCreate(static_cast<void*>(result.bits()),
+            width, height, 8, width * 4, colorSpace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host));
     if(!context)
         return QPixmap();
 
@@ -83,49 +93,36 @@ QPixmap QPixmapFromCGImageRef(const CGImageRef image)
 //#endif
 }
 
-CGImageRef QPixmapToCGImageRef(const QPixmap &pixmap)
+CFTypePtr<CGImageRef> QPixmapToCGImageRef(const QPixmap &pixmap)
 {
     if(pixmap.isNull())
-        return nil;
+        return NULL;
 
 //#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-//    return QtMac::toCGImageRef(pixmap);
+//    return CFTypePtrFromCreate(QtMac::toCGImageRef(pixmap));
 //#elif (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-//    return pixmap.toMacCGImageRef();
+//    return CFTypePtrFromCreate(pixmap.toMacCGImageRef());
 //#else
-    CFRAII<CGColorSpaceRef> colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+    const CFTypePtr<CGColorSpaceRef> colorSpace = CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
     if(!colorSpace)
-        return nil;
+        return NULL;
 
     QImage *image = new QImage(pixmap.toImage().convertToFormat(QImage::Format_ARGB32_Premultiplied));
     const std::size_t width = static_cast<std::size_t>(image->width());
     const std::size_t height = static_cast<std::size_t>(image->height());
 
-    CFRAII<CGDataProviderRef> provider = CGDataProviderCreateWithData(static_cast<void*>(image),
-            static_cast<const void*>(image->bits()), 4 * width * height, imageDeleter);
+    const CFTypePtr<CGDataProviderRef> provider = CFTypePtrFromCreate(CGDataProviderCreateWithData(
+            static_cast<void*>(image), static_cast<const void*>(image->bits()), 4 * width * height, imageDeleter));
     if(!provider)
     {
         delete image;
-        return nil;
+        return NULL;
     }
 
-    CGImageRef result = CGImageCreate(width, height, 8, 32, 4 * width, colorSpace,
+    return CFTypePtrFromCreate(CGImageCreate(width, height, 8, 32, 4 * width, colorSpace,
             kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host, provider, NULL, false,
-            kCGRenderingIntentDefault);
-    return result;
+            kCGRenderingIntentDefault));
 //#endif
-}
-
-} // namespace
-
-AutoReleasePool::AutoReleasePool()
-{
-    m_pool = [[NSAutoreleasePool alloc] init];
-}
-
-AutoReleasePool::~AutoReleasePool()
-{
-    [m_pool release];
 }
 
 QVariant QVariantFromObject(const id obj)
@@ -342,8 +339,7 @@ QPixmap QPixmapFromNSImage(const NSImage *image)
     {
         // https://stackoverflow.com/questions/2548059/turning-an-nsimage-into-a-cgimageref
         NSRect imageRect = NSMakeRect(0, 0, image.size.width, image.size.height);
-        CGImageRef cgImage = [image CGImageForProposedRect: &imageRect context: NULL hints: nil];
-        pixmap = QPixmapFromCGImageRef(cgImage);
+        pixmap = QPixmapFromCGImageRef(CFTypePtrFromGet([image CGImageForProposedRect: &imageRect context: NULL hints: nil]));
     }
     else
 #endif
@@ -377,7 +373,7 @@ QPixmap QPixmapFromNSImage(const NSImage *image)
         [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep: bmp]];
         [image drawInRect: NSMakeRect(0, 0, width, height) fromRect: NSZeroRect operation: NSCompositeSourceOver fraction: 1];
         [NSGraphicsContext restoreGraphicsState];
-        pixmap = QPixmapFromCGImageRef([bmp CGImage]);
+        pixmap = QPixmapFromCGImageRef(CFTypePtrFromGet([bmp CGImage]));
         [bmp release];
     }
 
@@ -389,7 +385,7 @@ NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize &sizeInPoints)
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER)
     if(InfoUtils::MacVersionGreatOrEqual(10, 6))
     {
-        CFRAII<CGImageRef> imageRef = QPixmapToCGImageRef(pixmap);
+        const CFTypePtr<CGImageRef> imageRef = QPixmapToCGImageRef(pixmap);
         if(!imageRef)
             return nil;
         return [[[NSImage alloc] initWithCGImage:imageRef size:QSizeFToNSSize(sizeInPoints.isValid() ? sizeInPoints : pixmap.size())] autorelease];
@@ -399,7 +395,7 @@ NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize &sizeInPoints)
     {
         // https://stackoverflow.com/questions/10627557/mac-os-x-drawing-into-an-offscreen-nsgraphicscontext-using-cgcontextref-c-funct
         // http://www.cocoabuilder.com/archive/cocoa/133768-converting-cgimagerefs-to-nsimages-how.html
-        CFRAII<CGImageRef> imageRef = QPixmapToCGImageRef(pixmap);
+        const CFTypePtr<CGImageRef> imageRef = QPixmapToCGImageRef(pixmap);
         if(!imageRef)
             return nil;
         const NSRect rect = QRectFToNSRect(pixmap.rect());
