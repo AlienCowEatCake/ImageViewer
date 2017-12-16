@@ -103,6 +103,11 @@ disable_zlib | disable_libpng | disable_freetype | disable_libjpeg {
     CONFIG += disable_libwmf
 }
 
+# OpenJPEG options:
+#    disable_openjpeg
+#    system_openjpeg
+
+
 # ::::: Optional Third Party Components Configuration :::::
 
 # QtExtended options:
