@@ -10,20 +10,11 @@ TARGET = tp_LibWebP
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-0.6.0
+THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-0.6.1
 
 include(../CommonSettings.pri)
 
-INCLUDEPATH = \
-    $${THIRDPARTY_LIBWEBP_PATH}/src \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dec \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/enc \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/extra \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/mux \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/utils \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/webp \
-    $${INCLUDEPATH}
+INCLUDEPATH = $${THIRDPARTY_LIBWEBP_PATH} $${INCLUDEPATH}
 
 SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/alpha_dec.c \
@@ -40,9 +31,6 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/demux/anim_decode.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_mips_dsp_r2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_sse41.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/argb.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/argb_mips_dsp_r2.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/argb_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_mips_dsp_r2.c \
@@ -71,6 +59,8 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_mips_dsp_r2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_sse2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/ssim.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/ssim_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_mips_dsp_r2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_sse2.c \
@@ -87,6 +77,7 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/alpha_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/analysis_enc.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/backward_references_cost_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/backward_references_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/config_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/cost_enc.c \
@@ -186,7 +177,8 @@ equals(QT_ARCH, arm)|equals(QT_ARCH, arm64) {
         $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_neon.c \
         $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_neon.c \
         $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_neon.c \
-        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_neon.c
+        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_neon.c \
+        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_neon.c
 
     contains(QT_CPU_FEATURES.$$QT_ARCH, neon) {
         # Default compiler settings include this feature, so just add to SOURCES
