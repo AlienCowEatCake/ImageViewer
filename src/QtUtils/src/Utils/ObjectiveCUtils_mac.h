@@ -26,6 +26,7 @@
 
 #include <QtGlobal>
 #include <QVariant>
+#include <QSize>
 
 #define AUTORELEASE_POOL ::ObjCUtils::AutoReleasePool pool; (void)(pool)
 
@@ -115,7 +116,7 @@ QUrl QUrlFromNSURL(const NSURL *url);
 NSURL *QUrlToNSURL(const QUrl &url);
 
 QPixmap QPixmapFromNSImage(const NSImage *image);
-NSImage *QPixmapToNSImage(const QPixmap &pixmap);
+NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize& sizeInPoints = QSize());
 
 QRectF QRectFFromNSRect(const NSRect &rect);
 NSRect QRectFToNSRect(const QRectF &rect);

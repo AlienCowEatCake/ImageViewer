@@ -384,7 +384,7 @@ QPixmap QPixmapFromNSImage(const NSImage *image)
     return pixmap;
 }
 
-NSImage *QPixmapToNSImage(const QPixmap &pixmap)
+NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize &sizeInPoints)
 {
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER)
     if(InfoUtils::MacVersionGreatOrEqual(10, 6))
@@ -392,7 +392,7 @@ NSImage *QPixmapToNSImage(const QPixmap &pixmap)
         CFRAII<CGImageRef> imageRef = QPixmapToCGImageRef(pixmap);
         if(!imageRef)
             return nil;
-        return [[[NSImage alloc] initWithCGImage:imageRef size:QSizeFToNSSize(pixmap.size())] autorelease];
+        return [[[NSImage alloc] initWithCGImage:imageRef size:QSizeFToNSSize(sizeInPoints.isValid() ? sizeInPoints : pixmap.size())] autorelease];
     }
     else
 #endif

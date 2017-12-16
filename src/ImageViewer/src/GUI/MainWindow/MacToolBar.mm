@@ -427,10 +427,11 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 {
     const QIcon themeIcon = ThemeUtils::GetIcon(iconType);
     const QSize iconSize(16, 16);
-    QImage iconImage(iconSize, QImage::Format_ARGB32_Premultiplied);
+    const QPixmap iconPixmap = themeIcon.pixmap(iconSize);
+    QImage iconImage(iconPixmap.size(), QImage::Format_ARGB32_Premultiplied);
     iconImage.fill(darkBackground ? BUTTON_ALTERNATE_COLOR : BUTTON_BASE_COLOR);
-    iconImage.setAlphaChannel(themeIcon.pixmap(iconSize).toImage().alphaChannel());
-    return ObjCUtils::QPixmapToNSImage(QPixmap::fromImage(iconImage));
+    iconImage.setAlphaChannel(iconPixmap.toImage().alphaChannel());
+    return ObjCUtils::QPixmapToNSImage(QPixmap::fromImage(iconImage), iconSize);
 }
 
 } // namespace
