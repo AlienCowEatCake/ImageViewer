@@ -390,6 +390,50 @@ QImage rgbToQImage(opj_image_t *img)
     return result;
 }
 
+QImage rgbaToQImage(opj_image_t *img)
+{
+    if((img->numcomps != 4) ||
+            (img->comps[0].dx != img->comps[1].dx) ||
+            (img->comps[0].dx != img->comps[2].dx) ||
+            (img->comps[0].dx != img->comps[3].dx) ||
+            (img->comps[0].dy != img->comps[1].dy) ||
+            (img->comps[0].dy != img->comps[2].dy) ||
+            (img->comps[0].dy != img->comps[3].dy))
+    {
+        qDebug() << "Failed" << __FUNCTION__;
+        return QImage();
+    }
+
+    const int upb = (1 << static_cast<int>(img->comps[0].prec)) - 1;
+    const float correction = 255.0f / upb;
+
+    const bool isARGB = img->comps[0].alpha;
+    const int *r = img->comps[isARGB ? 1 : 0].data;
+    const int *g = img->comps[isARGB ? 2 : 1].data;
+    const int *b = img->comps[isARGB ? 3 : 2].data;
+    const int *a = img->comps[isARGB ? 0 : 3].data;
+
+    QImage result(static_cast<int>(img->comps[0].w), static_cast<int>(img->comps[0].h), QImage::Format_ARGB32);
+    if(result.isNull())
+    {
+        qWarning() << "Image is too large";
+        return QImage();
+    }
+
+    for(int i = 0; i < result.height(); i++)
+    {
+        QRgb *p = reinterpret_cast<QRgb*>(result.scanLine(i));
+        for(int j = 0; j < result.width(); j++)
+        {
+            *(p++) = qRgba(qBound(0, static_cast<int>(static_cast<float>(*(r++)) * correction), 255),
+                           qBound(0, static_cast<int>(static_cast<float>(*(g++)) * correction), 255),
+                           qBound(0, static_cast<int>(static_cast<float>(*(b++)) * correction), 255),
+                           qBound(0, static_cast<int>(static_cast<float>(*(a++)) * correction), 255));
+        }
+    }
+    return result;
+}
+
 QImage grayToQImage(opj_image *img)
 {
     const int upb = (1 << static_cast<int>(img->comps[0].prec)) - 1;
@@ -591,7 +635,7 @@ QImage readFile(const QString &filePath)
         break;
     case OPJ_CLRSPC_SRGB:           // sRGB
         qDebug() << "color_space = OPJ_CLRSPC_SRGB";
-        result = rgbToQImage(image);
+        result = (image->numcomps == 4 ? rgbaToQImage(image) : rgbToQImage(image));
         break;
     case OPJ_CLRSPC_GRAY:           // grayscale
         qDebug() << "color_space = OPJ_CLRSPC_GRAY";
@@ -619,6 +663,9 @@ QImage readFile(const QString &filePath)
 
     if(result.isNull())
         result = cmykToQImage(image);
+
+    if(result.isNull())
+        result = rgbaToQImage(image);
 
     if(result.isNull())
         result = syccToQImage(image);
