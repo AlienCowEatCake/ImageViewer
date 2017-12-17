@@ -60,6 +60,10 @@ SUBDIRS =
     SUBDIRS += libwmf/libwmf.pro
 }
 
+!disable_openjpeg : !system_openjpeg {
+    SUBDIRS += OpenJPEG/OpenJPEG.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }

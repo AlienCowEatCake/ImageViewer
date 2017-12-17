@@ -27,7 +27,7 @@
 # XZUtils options:
 #    disable_xzutils
 #    system_xzutils
-win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
     CONFIG += disable_xzutils # FIXME: C99
 }
 
@@ -39,7 +39,7 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
 # libexif options:
 #    disable_libexif
 #    system_libexif
-win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
+win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
     CONFIG += disable_libexif # FIXME: C99
 }
 
@@ -85,7 +85,7 @@ disable_zlib {
 # libbpg options:
 #    disable_libbpg
 #    system_libbpg
-win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
     CONFIG += disable_libbpg # FIXME: C99
 }
 
@@ -102,6 +102,11 @@ disable_zlib | disable_libpng {
 disable_zlib | disable_libpng | disable_freetype | disable_libjpeg {
     CONFIG += disable_libwmf
 }
+
+# OpenJPEG options:
+#    disable_openjpeg
+#    system_openjpeg
+
 
 # ::::: Optional Third Party Components Configuration :::::
 
