@@ -35,6 +35,9 @@
 #if defined (HAS_LIBJPEG)
 #include <jpeglib.h>
 #endif
+#if defined (HAS_OPENJPEG)
+#include <openjpeg.h>
+#endif
 #if defined (HAS_LIBJASPER)
 #include <jasper/jasper.h>
 #endif
@@ -174,6 +177,15 @@ QString getTextBrowserContent()
 #endif
 #endif
     Q_UNUSED(letterByNumFrom1(0));
+
+#if defined (HAS_OPENJPEG)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the OpenJPEG library"),
+                      QString::fromLatin1("libopenjp2"),
+                      QString::fromLatin1("%1.%2.%3").arg(OPJ_VERSION_MAJOR).arg(OPJ_VERSION_MINOR).arg(OPJ_VERSION_BUILD),
+                      QString::fromLatin1("http://www.openjpeg.org/")
+                      ));
+#endif
 
 #if defined (HAS_LIBJASPER)
     result.append(formatItem(

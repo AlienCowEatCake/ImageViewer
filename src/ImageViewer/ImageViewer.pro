@@ -178,6 +178,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderLibWmf.cpp
 }
 
+!disable_openjpeg {
+    SOURCES += \
+        src/Decoders/Impl/DecoderOpenJPEG.cpp
+}
+
 !disable_qtsvg {
     QT += svg
     SOURCES += \
