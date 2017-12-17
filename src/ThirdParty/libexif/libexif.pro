@@ -12,10 +12,11 @@ CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_LIBEXIF_PATH = $${PWD}/libexif-a881aa6
 THIRDPARTY_LIBEXIF_CONFIG_PATH = $${PWD}/config
+THIRDPARTY_LIBEXIF_INCLUDE_PATH = $${PWD}/include
 
 include(../CommonSettings.pri)
 
-INCLUDEPATH = $${THIRDPARTY_LIBEXIF_CONFIG_PATH} $${THIRDPARTY_LIBEXIF_PATH} $${INCLUDEPATH}
+INCLUDEPATH = $${THIRDPARTY_LIBEXIF_CONFIG_PATH} $${THIRDPARTY_LIBEXIF_INCLUDE_PATH} $${THIRDPARTY_LIBEXIF_PATH} $${INCLUDEPATH}
 
 DEFINES += GETTEXT_PACKAGE=\\\"libexif-12\\\"
 *msvc*: DEFINES += ssize_t=__int64 inline=__inline
@@ -64,7 +65,6 @@ HEADERS += \
     $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-tag.h \
     $${THIRDPARTY_LIBEXIF_PATH}/libexif/exif-utils.h \
     $${THIRDPARTY_LIBEXIF_PATH}/libexif/i18n.h \
-    $${THIRDPARTY_LIBEXIF_PATH}/libexif/_stdint.h \
     $${THIRDPARTY_LIBEXIF_PATH}/libexif/canon/exif-mnote-data-canon.h \
     $${THIRDPARTY_LIBEXIF_PATH}/libexif/canon/mnote-canon-entry.h \
     $${THIRDPARTY_LIBEXIF_PATH}/libexif/canon/mnote-canon-tag.h \
@@ -77,6 +77,7 @@ HEADERS += \
     $${THIRDPARTY_LIBEXIF_PATH}/libexif/pentax/exif-mnote-data-pentax.h \
     $${THIRDPARTY_LIBEXIF_PATH}/libexif/pentax/mnote-pentax-entry.h \
     $${THIRDPARTY_LIBEXIF_PATH}/libexif/pentax/mnote-pentax-tag.h \
+    $${THIRDPARTY_LIBEXIF_INCLUDE_PATH}/libexif/_stdint.h \
     $${THIRDPARTY_LIBEXIF_CONFIG_PATH}/config.h
 
 TR_EXCLUDE += $${THIRDPARTY_LIBEXIF_PATH}/*

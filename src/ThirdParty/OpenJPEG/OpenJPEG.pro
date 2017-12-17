@@ -17,6 +17,8 @@ include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_OPENJPEG_CONFIG_PATH} $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2 $${INCLUDEPATH}
 
+DEFINES += OPJ_STATIC
+
 *msvc* {
     DEFINES += _CRT_FAR_MAPPINGS_NO_DEPRECATE
     DEFINES += _CRT_IS_WCTYPE_NO_DEPRECATE
@@ -31,7 +33,7 @@ INCLUDEPATH = $${THIRDPARTY_OPENJPEG_CONFIG_PATH} $${THIRDPARTY_OPENJPEG_PATH}/s
 }
 
 SOURCES += \
-    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/bench_dwt.c \
+\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/bench_dwt.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/bio.c \
 \#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/cidx_manager.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/cio.c \
@@ -52,10 +54,10 @@ SOURCES += \
 \#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/ppix_manager.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/sparse_array.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1.c \
-    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1_generate_luts.c \
+\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1_generate_luts.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t2.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/tcd.c \
-    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/test_sparse_array.c \
+\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/test_sparse_array.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/tgt.c \
 \#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/thix_manager.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/thread.c \

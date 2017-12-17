@@ -15,6 +15,8 @@ include($${PWD}/../../Features.pri)
         INCLUDEPATH += $${THIRDPARTY_OPENJPEG_CONFIG_PATH} $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2
         DEPENDPATH += $${THIRDPARTY_OPENJPEG_CONFIG_PATH} $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2
 
+        DEFINES += OPJ_STATIC
+
         OUT_LIB_TARGET = tp_openjp2
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/OpenJPEG
         OUT_LIB_NAME =

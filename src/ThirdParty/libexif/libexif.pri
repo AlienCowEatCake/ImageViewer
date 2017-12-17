@@ -10,9 +10,10 @@ include($${PWD}/../../Features.pri)
     !system_libexif {
 
         THIRDPARTY_LIBEXIF_PATH = $${PWD}/libexif-a881aa6
+        THIRDPARTY_LIBEXIF_INCLUDE_PATH = $${PWD}/include
 
-        INCLUDEPATH += $${THIRDPARTY_LIBEXIF_PATH}
-        DEPENDPATH += $${THIRDPARTY_LIBEXIF_PATH}
+        INCLUDEPATH += $${THIRDPARTY_LIBEXIF_INCLUDE_PATH} $${THIRDPARTY_LIBEXIF_PATH}
+        DEPENDPATH += $${THIRDPARTY_LIBEXIF_INCLUDE_PATH} $${THIRDPARTY_LIBEXIF_PATH}
 
         OUT_LIB_TARGET = tp_libexif
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/libexif
