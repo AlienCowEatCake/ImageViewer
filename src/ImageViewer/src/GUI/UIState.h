@@ -48,7 +48,6 @@ struct UIState
     UIState()
         : hasCurrentFile(false)
         , hasCurrentFileIndex(false)
-        , currentFilePath(QString())
         , currentFileIndex(-1)
         , filesCount(0)
         , canDeleteCurrentFile(false)

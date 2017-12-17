@@ -2,5 +2,4 @@ Release 1.0:
  * Good decoder for SVG (based on librsg?)
  * Display image meta-information (EXIF tags, etc)
  * Add README.txt
- * Native toolbar for macOS
 

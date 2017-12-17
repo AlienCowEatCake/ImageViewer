@@ -132,7 +132,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
 
     connect(imageViewerWidget, SIGNAL(zoomLevelChanged(qreal)), this, SLOT(updateWindowTitle()));
 
-    for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
+    for(QList<IControlsContainer*>::Iterator it = ui.controlsContainers.begin(), itEnd = ui.controlsContainers.end(); it != itEnd; ++it)
     {
         QObject *object = (*it)->emitter();
         connect(object, SIGNAL(openFileRequested())                 , this              , SIGNAL(openFileWithDialogRequested())     );
@@ -176,7 +176,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     onZoomModeChanged(settings->zoomMode());
     updateSlideShowInterval();
 
-    for(QList<IControlsContainer*>::Iterator it = m_impl->ui.controlsContainers.begin(), itEnd = m_impl->ui.controlsContainers.end(); it != itEnd; ++it)
+    for(QList<IControlsContainer*>::Iterator it = ui.controlsContainers.begin(), itEnd = ui.controlsContainers.end(); it != itEnd; ++it)
     {
         IControlsContainer* container = *it;
         container->setShowMenuBarChecked(settings->menuBarVisible());

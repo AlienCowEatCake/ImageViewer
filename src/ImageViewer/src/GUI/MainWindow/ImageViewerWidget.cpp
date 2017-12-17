@@ -81,8 +81,8 @@ struct ImageViewerWidget::Impl
         const QSize windowSize = imageViewerWidget->viewport()->size();
         if(imageSize.width() > windowSize.width() || imageSize.height() > windowSize.height())
         {
-            const qreal deltaWidth = qreal(windowSize.width() - ZOOM_FIT_SIZE_CORRECTION) / qreal(imageSize.width());
-            const qreal deltaHeight = qreal(windowSize.height() - ZOOM_FIT_SIZE_CORRECTION) / qreal(imageSize.height());
+            const qreal deltaWidth = static_cast<qreal>(windowSize.width() - ZOOM_FIT_SIZE_CORRECTION) / static_cast<qreal>(imageSize.width());
+            const qreal deltaHeight = static_cast<qreal>(windowSize.height() - ZOOM_FIT_SIZE_CORRECTION) / static_cast<qreal>(imageSize.height());
             return qMin(deltaWidth, deltaHeight);
         }
         return 1;
