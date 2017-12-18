@@ -38,426 +38,357 @@ namespace
 
 // ====================================================================================================
 
-/// @note Based on openjpeg-2.3.0/src/bin/common/color.c
-
-// Matrix for sYCC, Amendment 1 to IEC 61966-2-1
-//
-// Y :   0.299   0.587    0.114   :R
-// Cb:  -0.1687 -0.3312   0.5     :G
-// Cr:   0.5    -0.4187  -0.0812  :B
-//
-// Inverse:
-//
-// R: 1        -3.68213e-05    1.40199      :Y
-// G: 1.00003  -0.344125      -0.714128     :Cb - 2^(prec - 1)
-// B: 0.999823  1.77204       -8.04142e-06  :Cr - 2^(prec - 1)
-
-QRgb syccToQRgb(int offset, int upb, int y, int cb, int cr)
+bool hasAlphaChannel(opj_image_t *img)
 {
-    cb -= offset;
-    cr -= offset;
-    const float correction = 255.0f / upb;
-    const float yf = static_cast<float>(y);
-    const float cbf = static_cast<float>(cb);
-    const float crf = static_cast<float>(cr);
-    return qRgb(qBound(0, static_cast<int>((yf + 1.402f * crf) * correction), 255),
-                qBound(0, static_cast<int>((yf - (0.344f * cbf + 0.714f * crf)) * correction), 255),
-                qBound(0, static_cast<int>((yf + 1.772f * cbf) * correction), 255));
+    for(OPJ_UINT32 i = 0; i < img->numcomps; i++)
+        if(img->comps[i].alpha)
+            return true;
+    return false;
 }
 
-QImage sycc444ToQImage(opj_image_t *img)
+bool is420(opj_image_t *img)
 {
-    int upb = static_cast<int>(img->comps[0].prec);
-    int offset = 1 << (upb - 1);
-    upb = (1 << upb) - 1;
-
-    const size_t maxw = static_cast<size_t>(img->comps[0].w);
-    const size_t maxh = static_cast<size_t>(img->comps[0].h);
-
-    const int *y = img->comps[0].data;
-    const int *cb = img->comps[1].data;
-    const int *cr = img->comps[2].data;
-
-    QImage result(static_cast<int>(maxw), static_cast<int>(maxh), QImage::Format_RGB32);
-    for(int i = 0; i < result.height(); i++)
-    {
-        QRgb *p = reinterpret_cast<QRgb*>(result.scanLine(i));
-        for(int j = 0; j < result.width(); j++)
-            *(p++) = syccToQRgb(offset, upb, *(y++), *(cb++), *(cr++));
-    }
-    return result;
-}
-
-QImage sycc422ToQImage(opj_image_t *img)
-{
-    int upb = static_cast<int>(img->comps[0].prec);
-    int offset = 1 << (upb - 1);
-    upb = (1 << upb) - 1;
-
-    const size_t maxw = static_cast<size_t>(img->comps[0].w);
-    const size_t maxh = static_cast<size_t>(img->comps[0].h);
-
-    const int *y = img->comps[0].data;
-    const int *cb = img->comps[1].data;
-    const int *cr = img->comps[2].data;
-
-    // if img->x0 is odd, then first column shall use Cb/Cr = 0
-    const size_t offx = img->x0 & 1U;
-    const size_t loopmaxw = maxw - offx;
-
-    QImage result(static_cast<int>(maxw), static_cast<int>(maxh), QImage::Format_RGB32);
-    if(result.isNull())
-    {
-        qWarning() << "Image is too large";
-        return QImage();
-    }
-
-    for(int i = 0; i < result.height(); i++)
-    {
-        QRgb *p = reinterpret_cast<QRgb*>(result.scanLine(i));
-
-        if(offx > 0)
-            *(p++) = syccToQRgb(offset, upb, *(y++), 0, 0);
-
-        size_t j;
-        for(j = 0; j < (loopmaxw & ~static_cast<size_t>(1)); j += 2)
-        {
-            *(p++) = syccToQRgb(offset, upb, *(y++), *cb, *cr);
-            *(p++) = syccToQRgb(offset, upb, *(y++), *(cb++), *(cr++));
-        }
-        if(j < loopmaxw)
-            *(p++) = syccToQRgb(offset, upb, *(y++), *(cb++), *(cr++));
-    }
-    return result;
-}
-
-QImage sycc420ToQImage(opj_image_t *img)
-{
-    int upb = static_cast<int>(img->comps[0].prec);
-    int offset = 1 << (upb - 1);
-    upb = (1 << upb) - 1;
-
-    const size_t maxw = static_cast<size_t>(img->comps[0].w);
-    const size_t maxh = static_cast<size_t>(img->comps[0].h);
-
-    const int *y = img->comps[0].data;
-    const int *cb = img->comps[1].data;
-    const int *cr = img->comps[2].data;
-
-    // if img->x0 is odd, then first column shall use Cb/Cr = 0
-    const size_t offx = img->x0 & 1U;
-    const size_t loopmaxw = maxw - offx;
-    // if img->y0 is odd, then first line shall use Cb/Cr = 0
-    const size_t offy = img->y0 & 1U;
-    const size_t loopmaxh = maxh - offy;
-
-    QImage result(static_cast<int>(maxw), static_cast<int>(maxh), QImage::Format_RGB32);
-    if(result.isNull())
-    {
-        qWarning() << "Image is too large";
-        return QImage();
-    }
-
-    QRgb *p = reinterpret_cast<QRgb*>(result.scanLine(0));
-
-    if(offy > 0)
-        for(size_t j = 0; j < maxw; ++j)
-            *(p++) = syccToQRgb(offset, upb, *(y++), 0, 0);
-
-    size_t i;
-    for(i = 0; i < (loopmaxh & ~static_cast<size_t>(1)); i += 2)
-    {
-        size_t j;
-
-        const int *ny = y + maxw;
-        QRgb *np = p + maxw;
-
-        if(offx > 0)
-        {
-            *(p++) = syccToQRgb(offset, upb, *(y++), 0, 0);
-            *(np++) = syccToQRgb(offset, upb, *(ny++), *cb, *cr);
-        }
-
-        for(j = 0; j < (loopmaxw & ~static_cast<size_t>(1)); j += 2)
-        {
-            *(p++) = syccToQRgb(offset, upb, *(y++), *cb, *cr);
-            *(p++) = syccToQRgb(offset, upb, *(y++), *cb, *cr);
-            *(np++) = syccToQRgb(offset, upb, *(ny++), *cb, *cr);
-            *(np++) = syccToQRgb(offset, upb, *(ny++), *(cb++), *(cr++));
-        }
-        if(j < loopmaxw)
-        {
-            *(p++) = syccToQRgb(offset, upb, *(y++), *cb, *cr);
-            *(np++) = syccToQRgb(offset, upb, *(ny++), *(cb++), *(cr++));
-        }
-        y += maxw;
-        p += maxw;
-    }
-    if(i < loopmaxh)
-    {
-        size_t j;
-        for(j = 0; j < (maxw & ~static_cast<size_t>(1)); j += 2)
-        {
-            *(p++) = syccToQRgb(offset, upb, *(y++), *cb, *cr);
-            *(p++) = syccToQRgb(offset, upb, *(y++), *(cb++), *(cr++));
-        }
-        if(j < maxw)
-            *p = syccToQRgb(offset, upb, *y, *cb, *cr);
-    }
-    return result;
-}
-
-QImage syccToQImage(opj_image_t *img)
-{
-    if((img->comps[0].dx == 1)
+    return((img->numcomps == 3)
+            && (img->comps[0].dx == 1)
             && (img->comps[1].dx == 2)
             && (img->comps[2].dx == 2)
             && (img->comps[0].dy == 1)
             && (img->comps[1].dy == 2)
-            && (img->comps[2].dy == 2)) // horizontal and vertical sub-sample
-        return sycc420ToQImage(img);
-    if((img->comps[0].dx == 1)
+            && (img->comps[2].dy == 2)); // horizontal and vertical sub-sample
+}
+
+bool is422(opj_image_t *img)
+{
+    return((img->numcomps == 3)
+            && (img->comps[0].dx == 1)
             && (img->comps[1].dx == 2)
             && (img->comps[2].dx == 2)
             && (img->comps[0].dy == 1)
             && (img->comps[1].dy == 1)
-            && (img->comps[2].dy == 1)) // horizontal sub-sample only
-        return sycc422ToQImage(img);
-    if((img->comps[0].dx == 1)
+            && (img->comps[2].dy == 1)); // horizontal and vertical sub-sample
+}
+
+bool is444(opj_image_t *img)
+{
+    return((img->numcomps == 3)
+            && (img->comps[0].dx == 1)
             && (img->comps[1].dx == 1)
             && (img->comps[2].dx == 1)
             && (img->comps[0].dy == 1)
             && (img->comps[1].dy == 1)
-            && (img->comps[2].dy == 1)) // no sub-sample
-        return sycc444ToQImage(img);
-
-    qDebug() << "Failed" << __FUNCTION__;
-    return QImage();
+            && (img->comps[2].dy == 1)); // no sub-sample
 }
 
-QImage cmykToQImage(opj_image_t *img)
-{
-    if((img->numcomps < 4) ||
-            (img->comps[0].dx != img->comps[1].dx) ||
-            (img->comps[0].dx != img->comps[2].dx) ||
-            (img->comps[0].dx != img->comps[3].dx) ||
-            (img->comps[0].dy != img->comps[1].dy) ||
-            (img->comps[0].dy != img->comps[2].dy) ||
-            (img->comps[0].dy != img->comps[3].dy))
-    {
-        qDebug() << "Failed" << __FUNCTION__;
-        return QImage();
+// ====================================================================================================
+
+#define CONSTRAINT_COMPONENTS_NUMBER_EQUAL(IMG, NUM) \
+    if((IMG)->numcomps != NUM) \
+    { \
+        qDebug() << "Failed" << __FUNCTION__; \
+        qDebug() << " > Reason: numcomps" << (IMG)->numcomps << "!=" << NUM; \
+        return QImage(); \
     }
 
+#define CONSTRAINT_COMPONENTS_NUMBER_GREAT_OR_EQUAL(IMG, NUM) \
+    if((IMG)->numcomps < NUM) \
+    { \
+        qDebug() << "Failed" << __FUNCTION__; \
+        qDebug() << " > Reason: numcomps" << (IMG)->numcomps << "<" << NUM; \
+        return QImage(); \
+    }
+
+#define CONSTRAINT_WITHOUT_ALPHA_CHANNEL(IMG) \
+    for(OPJ_UINT32 i = 0; i < (IMG)->numcomps; i++) \
+    { \
+        if((IMG)->comps[i].alpha) \
+        { \
+            qDebug() << "Failed" << __FUNCTION__; \
+            qDebug() << " > Reason: image contains alpha component" << i; \
+            return QImage(); \
+        } \
+    }
+
+#define CONSTRAINT_WITH_ALPHA_CHANNEL(IMG) \
+    if(!hasAlphaChannel(IMG)) \
+    { \
+        qDebug() << "Failed" << __FUNCTION__; \
+        qDebug() << " > Reason: image not contains alpha component"; \
+        return QImage(); \
+    }
+
+#define CONSTRAINT_HAS_USUAL_YCC_COMPONENTS(IMG) \
+    if(!(is420(IMG) || is422(IMG) || is444(IMG))) \
+    { \
+        qDebug() << "Failed" << __FUNCTION__; \
+        qDebug() << " > Reason: image is not match usual YCC component configuration (444, 422 or 420)"; \
+        return QImage(); \
+    }
+
+#define RETURN_CONVERTATION_RESULT(QIMG) \
+    { \
+        QImage result = (QIMG); \
+        if(!result.isNull()) \
+            qDebug() << "Completed" << __FUNCTION__; \
+        return result; \
+    }
+
+// ====================================================================================================
+
+QRgb syccToQRgb(opj_image_t *img, int componentsData[])
+{
+    // Matrix for sYCC, Amendment 1 to IEC 61966-2-1
+    //
+    // Y :   0.299   0.587    0.114   :R
+    // Cb:  -0.1687 -0.3312   0.5     :G
+    // Cr:   0.5    -0.4187  -0.0812  :B
+    //
+    // Inverse:
+    //
+    // R: 1        -3.68213e-05    1.40199      :Y
+    // G: 1.00003  -0.344125      -0.714128     :Cb - 2^(prec - 1)
+    // B: 0.999823  1.77204       -8.04142e-06  :Cr - 2^(prec - 1)
+
+    const int y = componentsData[0];
+    const int cb = componentsData[1] - (1 << (static_cast<int>(img->comps[1].prec) - 1));
+    const int cr = componentsData[2] - (1 << (static_cast<int>(img->comps[2].prec) - 1));
+
+    const float sy = 255.0f / ((1 << static_cast<int>(img->comps[0].prec)) - 1);
+    const float scb = 255.0f / ((1 << static_cast<int>(img->comps[1].prec)) - 1);
+    const float scr = 255.0f / ((1 << static_cast<int>(img->comps[2].prec)) - 1);
+
+    const float yf = static_cast<float>(y) * sy;
+    const float cbf = static_cast<float>(cb) * scb;
+    const float crf = static_cast<float>(cr) * scr;
+
+    return qRgb(qBound(0, static_cast<int>(yf + 1.402f * crf), 255),
+                qBound(0, static_cast<int>(yf - (0.344f * cbf + 0.714f * crf)), 255),
+                qBound(0, static_cast<int>(yf + 1.772f * cbf), 255));
+}
+
+QRgb cmykToQRgb(opj_image_t *img, int componentsData[])
+{
     const float sC = 1.0f / static_cast<float>((1 << img->comps[0].prec) - 1);
     const float sM = 1.0f / static_cast<float>((1 << img->comps[1].prec) - 1);
     const float sY = 1.0f / static_cast<float>((1 << img->comps[2].prec) - 1);
     const float sK = 1.0f / static_cast<float>((1 << img->comps[3].prec) - 1);
 
-    size_t index = 0;
+    // CMYK values from 0 to 1
+    float C = static_cast<float>(componentsData[0]) * sC;
+    float M = static_cast<float>(componentsData[1]) * sM;
+    float Y = static_cast<float>(componentsData[2]) * sY;
+    float K = static_cast<float>(componentsData[3]) * sK;
 
-    QImage result(static_cast<int>(img->comps[0].w), static_cast<int>(img->comps[0].h), QImage::Format_RGB32);
-    if(result.isNull())
-    {
-        qWarning() << "Image is too large";
-        return QImage();
-    }
+    // Invert all CMYK values
+    C = 1.0f - C;
+    M = 1.0f - M;
+    Y = 1.0f - Y;
+    K = 1.0f - K;
 
-    for(int i = 0; i < result.height(); i++)
-    {
-        QRgb *p = reinterpret_cast<QRgb*>(result.scanLine(i));
-        for(int j = 0; j < result.width(); j++)
-        {
-            // CMYK values from 0 to 1
-            float C = static_cast<float>(img->comps[0].data[index]) * sC;
-            float M = static_cast<float>(img->comps[1].data[index]) * sM;
-            float Y = static_cast<float>(img->comps[2].data[index]) * sY;
-            float K = static_cast<float>(img->comps[3].data[index]) * sK;
-
-            // Invert all CMYK values
-            C = 1.0f - C;
-            M = 1.0f - M;
-            Y = 1.0f - Y;
-            K = 1.0f - K;
-
-            // CMYK -> RGB : RGB results from 0 to 255
-            *(p++) = qRgb(qBound(0, static_cast<int>(255.0f * C * K), 255),     // R
-                          qBound(0, static_cast<int>(255.0f * M * K), 255),     // G
-                          qBound(0, static_cast<int>(255.0f * Y * K), 255));    // B
-
-            index++;
-        }
-    }
-    return result;
+    // CMYK -> RGB : RGB results from 0 to 255
+    return qRgb(qBound(0, static_cast<int>(255.0f * C * K), 255),     // R
+                qBound(0, static_cast<int>(255.0f * M * K), 255),     // G
+                qBound(0, static_cast<int>(255.0f * Y * K), 255));    // B
 }
 
-// This code has been adopted from sjpx_openjpeg.c of ghostscript
-QImage esyccToQImage(opj_image_t *img)
+QRgb esyccToQRgb(opj_image_t *img, int componentsData[])
 {
-    if((img->numcomps < 3) ||
-            (img->comps[0].dx != img->comps[1].dx) ||
-            (img->comps[0].dx != img->comps[2].dx) ||
-            (img->comps[0].dy != img->comps[1].dy) ||
-            (img->comps[0].dy != img->comps[2].dy))
-    {
-        qDebug() << "Failed" << __FUNCTION__;
-        return QImage();
-    }
-
     const int flip_value = (1 << (img->comps[0].prec - 1));
     const int max_value = (1 << img->comps[0].prec) - 1;
     const int sign1 = static_cast<int>(img->comps[1].sgnd);
     const int sign2 = static_cast<int>(img->comps[2].sgnd);
 
     const float correction = 255.0f / max_value;
-    size_t index = 0;
 
-    QImage result(static_cast<int>(img->comps[0].w), static_cast<int>(img->comps[0].h), QImage::Format_RGB32);
+    int y = componentsData[0];
+    int cb = componentsData[1];
+    int cr = componentsData[2];
+
+    if(!sign1)
+        cb -= flip_value;
+    if(!sign2)
+        cr -= flip_value;
+
+    const float yf = static_cast<float>(y);
+    const float cbf = static_cast<float>(cb);
+    const float crf = static_cast<float>(cr);
+
+    const float r = (yf - 0.0000368f * cbf + 1.40199f * crf + 0.5f);
+    const float g = (1.0003f * yf - 0.344125f * cbf - 0.7141128f * crf + 0.5f);
+    const float b = (0.999823f * yf + 1.77204f * cbf - 0.000008f * crf + 0.5f);
+
+    return qRgb(qBound(0, static_cast<int>(r * correction), 255),
+                qBound(0, static_cast<int>(g * correction), 255),
+                qBound(0, static_cast<int>(b * correction), 255));
+}
+
+QRgb rgbToQRgb(opj_image_t *img, int componentsData[])
+{
+    const float corrections[3] = {
+        255.0f / ((1 << static_cast<int>(img->comps[0].prec)) - 1),
+        255.0f / ((1 << static_cast<int>(img->comps[1].prec)) - 1),
+        255.0f / ((1 << static_cast<int>(img->comps[2].prec)) - 1)
+    };
+    return qRgb(qBound(0, static_cast<int>(static_cast<float>(componentsData[0]) * corrections[0]), 255),
+                qBound(0, static_cast<int>(static_cast<float>(componentsData[1]) * corrections[1]), 255),
+                qBound(0, static_cast<int>(static_cast<float>(componentsData[2]) * corrections[2]), 255));
+}
+
+QRgb rgbaToQRgb(opj_image_t *img, int componentsData[])
+{
+    const float corrections[4] = {
+        255.0f / ((1 << static_cast<int>(img->comps[0].prec)) - 1),
+        255.0f / ((1 << static_cast<int>(img->comps[1].prec)) - 1),
+        255.0f / ((1 << static_cast<int>(img->comps[2].prec)) - 1),
+        255.0f / ((1 << static_cast<int>(img->comps[3].prec)) - 1)
+    };
+    const bool isARGB = img->comps[0].alpha;
+    const size_t indexesARGB[4] = {1, 2, 3, 0};
+    const size_t indexesRGBA[4] = {0, 1, 2, 3};
+    const size_t *indexes = isARGB ? indexesARGB : indexesRGBA;
+    return qRgba(qBound(0, static_cast<int>(static_cast<float>(componentsData[indexes[0]]) * corrections[indexes[0]]), 255),
+                 qBound(0, static_cast<int>(static_cast<float>(componentsData[indexes[1]]) * corrections[indexes[1]]), 255),
+                 qBound(0, static_cast<int>(static_cast<float>(componentsData[indexes[2]]) * corrections[indexes[2]]), 255),
+                 qBound(0, static_cast<int>(static_cast<float>(componentsData[indexes[3]]) * corrections[indexes[3]]), 255));
+}
+
+QRgb grayToQRgb(opj_image_t *img, int componentsData[])
+{
+    const float correction = 255.0f / ((1 << static_cast<int>(img->comps[0].prec)) - 1);
+    const int value = qBound(0, static_cast<int>(static_cast<float>(componentsData[0]) * correction), 255);
+    return qRgb(value, value, value);
+}
+
+QRgb grayAlphaToQRgb(opj_image_t *img, int componentsData[])
+{
+    const float corrections[2] = {
+        255.0f / ((1 << static_cast<int>(img->comps[0].prec)) - 1),
+        255.0f / ((1 << static_cast<int>(img->comps[1].prec)) - 1)
+    };
+    const bool isAlphaFirst = img->comps[0].alpha;
+    const size_t indexesAlphaFirst[4] = {1, 0};
+    const size_t indexesAlphaLast[4] = {0, 1};
+    const size_t *indexes = isAlphaFirst ? indexesAlphaFirst : indexesAlphaLast;
+    const int value = qBound(0, static_cast<int>(static_cast<float>(componentsData[indexes[0]]) * corrections[indexes[0]]), 255);
+    const int alphaValue = qBound(0, static_cast<int>(static_cast<float>(componentsData[indexes[1]]) * corrections[indexes[1]]), 255);
+    return qRgba(value, value, value, alphaValue);
+}
+
+// ====================================================================================================
+
+typedef QRgb(*componentsDataToQRgb)(opj_image_t *img, int componentsData[]);
+
+template <const size_t numComps>
+QImage convertToQImage(opj_image_t *img, componentsDataToQRgb func)
+{
+    CONSTRAINT_COMPONENTS_NUMBER_GREAT_OR_EQUAL(img, numComps);
+
+    const OPJ_UINT32 width = img->x1 - img->x0;
+    const OPJ_UINT32 height = img->y1 - img->y0;
+
+    int upperBounds[numComps];
+    int *componentsDataBounds[numComps];
+    for(size_t i = 0; i < numComps; i++)
+    {
+        upperBounds[i] = (1 << static_cast<int>(img->comps[0].prec)) - 1;
+        componentsDataBounds[i] = img->comps[i].data + img->comps[i].w * img->comps[i].h;
+    }
+
+    QImage result(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32);
     if(result.isNull())
     {
         qWarning() << "Image is too large";
         return QImage();
     }
 
-    for(int i = 0; i < result.height(); i++)
+    for(OPJ_UINT32 currentY = 0; currentY < height; currentY++)
     {
-        QRgb *p = reinterpret_cast<QRgb*>(result.scanLine(i));
-        for(int j = 0; j < result.width(); j++)
+        int *componentsData[numComps];
+        int *componentsDataLineBounds[numComps];
+        for(size_t i = 0; i < numComps; i++)
         {
-            const int y = img->comps[0].data[index];
-            int cb = img->comps[1].data[index];
-            int cr = img->comps[2].data[index];
+            componentsData[i] = img->comps[i].data + currentY / img->comps[i].dy * img->comps[i].w;
+            componentsDataLineBounds[i] = componentsData[i] + img->comps[i].w;
+        }
 
-            if(!sign1)
-                cb -= flip_value;
-            if(!sign2)
-                cr -= flip_value;
+        QRgb *p = reinterpret_cast<QRgb*>(result.scanLine(static_cast<int>(currentY)));
 
-            const float yf = static_cast<float>(y);
-            const float cbf = static_cast<float>(cb);
-            const float crf = static_cast<float>(cr);
-
-            const float r = (yf - 0.0000368f * cbf + 1.40199f * crf + 0.5f);
-            const float g = (1.0003f * yf - 0.344125f * cbf - 0.7141128f * crf + 0.5f);
-            const float b = (0.999823f * yf + 1.77204f * cbf - 0.000008f * crf + 0.5f);
-
-            *(p++) = qRgb(qBound(0, static_cast<int>(r * correction), 255),
-                          qBound(0, static_cast<int>(g * correction), 255),
-                          qBound(0, static_cast<int>(b * correction), 255));
-
-            index++;
+        for(OPJ_UINT32 currentX = 0; currentX < width; currentX++)
+        {
+            int currentComponentsData[numComps];
+            for(size_t i = 0; i < numComps; i++)
+            {
+                currentComponentsData[i] = img->comps[i].alpha ? upperBounds[i] : 0;
+                if(img->comps[i].x0 > currentX + img->x0 || img->comps[i].y0 > currentY + img->y0)
+                    continue;
+                if(componentsData[i] >= componentsDataBounds[i])
+                    continue;
+                if(componentsData[i] >= componentsDataLineBounds[i])
+                    continue;
+                currentComponentsData[i] = *(componentsData[i]);
+                if(!(currentX % img->comps[i].dx))
+                    componentsData[i]++;
+            }
+            *(p++) = func(img, currentComponentsData);
         }
     }
     return result;
+}
+
+QImage syccToQImage(opj_image_t *img)
+{
+    CONSTRAINT_COMPONENTS_NUMBER_EQUAL(img, 3)
+    CONSTRAINT_WITHOUT_ALPHA_CHANNEL(img)
+    CONSTRAINT_HAS_USUAL_YCC_COMPONENTS(img)
+    RETURN_CONVERTATION_RESULT(convertToQImage<3>(img, syccToQRgb));
+}
+
+QImage cmykToQImage(opj_image_t *img)
+{
+    CONSTRAINT_COMPONENTS_NUMBER_EQUAL(img, 4)
+    CONSTRAINT_WITHOUT_ALPHA_CHANNEL(img)
+    RETURN_CONVERTATION_RESULT(convertToQImage<4>(img, cmykToQRgb));
+}
+
+QImage esyccToQImage(opj_image_t *img)
+{
+    CONSTRAINT_COMPONENTS_NUMBER_EQUAL(img, 3)
+    CONSTRAINT_WITHOUT_ALPHA_CHANNEL(img)
+    CONSTRAINT_HAS_USUAL_YCC_COMPONENTS(img)
+    RETURN_CONVERTATION_RESULT(convertToQImage<3>(img, esyccToQRgb));
 }
 
 QImage rgbToQImage(opj_image_t *img)
 {
-    if((img->numcomps != 3) ||
-            (img->comps[0].dx != img->comps[1].dx) ||
-            (img->comps[0].dx != img->comps[2].dx) ||
-            (img->comps[0].dy != img->comps[1].dy) ||
-            (img->comps[0].dy != img->comps[2].dy))
-    {
-        qDebug() << "Failed" << __FUNCTION__;
-        return QImage();
-    }
-
-    const int upb = (1 << static_cast<int>(img->comps[0].prec)) - 1;
-    const float correction = 255.0f / upb;
-
-    const int *r = img->comps[0].data;
-    const int *g = img->comps[1].data;
-    const int *b = img->comps[2].data;
-
-    QImage result(static_cast<int>(img->comps[0].w), static_cast<int>(img->comps[0].h), QImage::Format_RGB32);
-    if(result.isNull())
-    {
-        qWarning() << "Image is too large";
-        return QImage();
-    }
-
-    for(int i = 0; i < result.height(); i++)
-    {
-        QRgb *p = reinterpret_cast<QRgb*>(result.scanLine(i));
-        for(int j = 0; j < result.width(); j++)
-        {
-            *(p++) = qRgb(qBound(0, static_cast<int>(static_cast<float>(*(r++)) * correction), 255),
-                          qBound(0, static_cast<int>(static_cast<float>(*(g++)) * correction), 255),
-                          qBound(0, static_cast<int>(static_cast<float>(*(b++)) * correction), 255));
-        }
-    }
-    return result;
+    CONSTRAINT_COMPONENTS_NUMBER_EQUAL(img, 3)
+    CONSTRAINT_WITHOUT_ALPHA_CHANNEL(img)
+    RETURN_CONVERTATION_RESULT(convertToQImage<3>(img, rgbToQRgb));
 }
 
 QImage rgbaToQImage(opj_image_t *img)
 {
-    if((img->numcomps != 4) ||
-            (img->comps[0].dx != img->comps[1].dx) ||
-            (img->comps[0].dx != img->comps[2].dx) ||
-            (img->comps[0].dx != img->comps[3].dx) ||
-            (img->comps[0].dy != img->comps[1].dy) ||
-            (img->comps[0].dy != img->comps[2].dy) ||
-            (img->comps[0].dy != img->comps[3].dy))
-    {
-        qDebug() << "Failed" << __FUNCTION__;
-        return QImage();
-    }
-
-    const int upb = (1 << static_cast<int>(img->comps[0].prec)) - 1;
-    const float correction = 255.0f / upb;
-
-    const bool isARGB = img->comps[0].alpha;
-    const int *r = img->comps[isARGB ? 1 : 0].data;
-    const int *g = img->comps[isARGB ? 2 : 1].data;
-    const int *b = img->comps[isARGB ? 3 : 2].data;
-    const int *a = img->comps[isARGB ? 0 : 3].data;
-
-    QImage result(static_cast<int>(img->comps[0].w), static_cast<int>(img->comps[0].h), QImage::Format_ARGB32);
-    if(result.isNull())
-    {
-        qWarning() << "Image is too large";
-        return QImage();
-    }
-
-    for(int i = 0; i < result.height(); i++)
-    {
-        QRgb *p = reinterpret_cast<QRgb*>(result.scanLine(i));
-        for(int j = 0; j < result.width(); j++)
-        {
-            *(p++) = qRgba(qBound(0, static_cast<int>(static_cast<float>(*(r++)) * correction), 255),
-                           qBound(0, static_cast<int>(static_cast<float>(*(g++)) * correction), 255),
-                           qBound(0, static_cast<int>(static_cast<float>(*(b++)) * correction), 255),
-                           qBound(0, static_cast<int>(static_cast<float>(*(a++)) * correction), 255));
-        }
-    }
-    return result;
+    CONSTRAINT_COMPONENTS_NUMBER_EQUAL(img, 4)
+    CONSTRAINT_WITH_ALPHA_CHANNEL(img)
+    RETURN_CONVERTATION_RESULT(convertToQImage<4>(img, rgbaToQRgb));
 }
 
 QImage grayToQImage(opj_image *img)
 {
-    const int upb = (1 << static_cast<int>(img->comps[0].prec)) - 1;
-    const float correction = 255.0f / upb;
+    CONSTRAINT_COMPONENTS_NUMBER_EQUAL(img, 1)
+    CONSTRAINT_WITHOUT_ALPHA_CHANNEL(img)
+    RETURN_CONVERTATION_RESULT(convertToQImage<1>(img, grayToQRgb));
+}
 
-    const int *v = img->comps[0].data;
+QImage grayAlphaToQImage(opj_image *img)
+{
+    CONSTRAINT_COMPONENTS_NUMBER_EQUAL(img, 2)
+    CONSTRAINT_WITH_ALPHA_CHANNEL(img)
+    RETURN_CONVERTATION_RESULT(convertToQImage<2>(img, grayAlphaToQRgb));
+}
 
-    QImage result(static_cast<int>(img->comps[0].w), static_cast<int>(img->comps[0].h), QImage::Format_RGB32);
-    if(result.isNull())
-    {
-        qWarning() << "Image is too large";
-        return QImage();
-    }
-
-    for(int i = 0; i < result.height(); i++)
-    {
-        QRgb *p = reinterpret_cast<QRgb*>(result.scanLine(i));
-        for(int j = 0; j < result.width(); j++)
-        {
-            int color = qBound(0, static_cast<int>(static_cast<float>(*(v++)) * correction), 255);
-            *(p++) = qRgb(color, color, color);
-        }
-    }
-    return result;
+QImage anyToQImage(opj_image *img)
+{
+    CONSTRAINT_COMPONENTS_NUMBER_GREAT_OR_EQUAL(img, 1)
+    RETURN_CONVERTATION_RESULT(convertToQImage<1>(img, grayToQRgb));
 }
 
 // ====================================================================================================
@@ -509,6 +440,20 @@ void streamFreeCallback(void *userData)
 
 OPJ_CODEC_FORMAT getCodecFormat(const QString &filePath)
 {
+    static const QByteArray j2kMarker("\xff\x4f\xff\x51", 4);
+    static const QByteArray jp2Marker1("\x0d\x0a\x87\x0a", 4);
+    static const QByteArray jp2Marker2("\x00\x00\x00\x0c\x6a\x50\x20\x20\x0d\x0a\x87\x0a", 12);
+    QFile file(filePath);
+    if(file.open(QIODevice::ReadOnly))
+    {
+        const QByteArray data = file.read(std::max(j2kMarker.size(), std::max(jp2Marker1.size(), jp2Marker2.size())));
+        if(data.size() >= j2kMarker.size() && data.startsWith(j2kMarker))
+            return OPJ_CODEC_J2K;
+        if((data.size() >= jp2Marker1.size() && data.startsWith(jp2Marker1)) ||
+           (data.size() >= jp2Marker2.size() && data.startsWith(jp2Marker2)))
+            return OPJ_CODEC_JP2;
+    }
+
     const QByteArray suffix = QFileInfo(filePath).suffix().toLower().toLatin1();
     if(suffix == "j2k" || suffix == "j2c" || suffix == "jpc")
         return OPJ_CODEC_J2K; // JPEG-2000 codestream
@@ -619,6 +564,8 @@ QImage readFile(const QString &filePath)
     // Convert image to Qt
     //
 
+    const bool hasAlpha = hasAlphaChannel(image);
+
     if(image->color_space != OPJ_CLRSPC_SYCC && image->numcomps == 3 && image->comps[0].dx == image->comps[0].dy && image->comps[1].dx != 1)
         image->color_space = OPJ_CLRSPC_SYCC;
     else if(image->numcomps <= 2)
@@ -635,11 +582,11 @@ QImage readFile(const QString &filePath)
         break;
     case OPJ_CLRSPC_SRGB:           // sRGB
         qDebug() << "color_space = OPJ_CLRSPC_SRGB";
-        result = (image->numcomps == 4 ? rgbaToQImage(image) : rgbToQImage(image));
+        result = (hasAlpha ? rgbaToQImage(image) : rgbToQImage(image));
         break;
     case OPJ_CLRSPC_GRAY:           // grayscale
         qDebug() << "color_space = OPJ_CLRSPC_GRAY";
-        result = grayToQImage(image);
+        result = (hasAlpha ? grayAlphaToQImage(image) : grayToQImage(image));
         break;
     case OPJ_CLRSPC_SYCC:           // YUV
         qDebug() << "color_space = OPJ_CLRSPC_SYCC";
@@ -662,19 +609,22 @@ QImage readFile(const QString &filePath)
         result = rgbToQImage(image);
 
     if(result.isNull())
-        result = cmykToQImage(image);
+        result = rgbaToQImage(image);
 
     if(result.isNull())
-        result = rgbaToQImage(image);
+        result = cmykToQImage(image);
 
     if(result.isNull())
         result = syccToQImage(image);
 
     if(result.isNull())
-        result = esyccToQImage(image);
+        result = grayToQImage(image);
 
     if(result.isNull())
-        result = grayToQImage(image);
+        result = grayAlphaToQImage(image);
+
+    if(result.isNull())
+        result = anyToQImage(image);
 
     if(result.isNull())
         return result;
