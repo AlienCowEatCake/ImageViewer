@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -106,6 +106,11 @@ disable_zlib | disable_libpng | disable_freetype | disable_libjpeg {
 # OpenJPEG options:
 #    disable_openjpeg
 #    system_openjpeg
+
+
+# GIFLIB options:
+#    disable_giflib
+#    system_giflib
 
 
 # ::::: Optional Third Party Components Configuration :::::

@@ -64,6 +64,10 @@ SUBDIRS =
     SUBDIRS += OpenJPEG/OpenJPEG.pro
 }
 
+!disable_giflib : !system_giflib {
+    SUBDIRS += giflib/giflib.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }
