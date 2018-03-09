@@ -6,5 +6,6 @@ SUBDIRS = \
     icns \
     jp2 \
     webp \
+    heif \
     mng \
     tiff

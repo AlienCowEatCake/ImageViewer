@@ -1,4 +1,4 @@
-/* $Id: tif_win32.c,v 1.41 2015-08-23 20:12:44 bfriesen Exp $ */
+/* $Id: tif_win32.c,v 1.42 2017-01-11 19:02:49 erouault Exp $ */
 
 /*
  * Copyright (c) 1988-1997 Sam Leffler
@@ -360,6 +360,14 @@ _TIFFmalloc(tmsize_t s)
 	return (malloc((size_t) s));
 }
 
+void* _TIFFcalloc(tmsize_t nmemb, tmsize_t siz)
+{
+    if( nmemb == 0 || siz == 0 )
+        return ((void *) NULL);
+
+    return calloc((size_t) nmemb, (size_t)siz);
+}
+
 void
 _TIFFfree(void* p)
 {
@@ -390,6 +398,7 @@ _TIFFmemcmp(const void* p1, const void* p2, tmsize_t c)
 	return (memcmp(p1, p2, (size_t) c));
 }
 
+#ifndef _WIN32_WCE
 
 #if (_MSC_VER < 1500)
 #  define vsnprintf _vsnprintf
@@ -455,6 +464,7 @@ Win32ErrorHandler(const char* module, const char* fmt, va_list ap)
 }
 TIFFErrorHandler _TIFFerrorHandler = Win32ErrorHandler;
 
+#endif /* ndef _WIN32_WCE */
 
 /* vim: set ts=8 sts=8 sw=8 noet: */
 /*

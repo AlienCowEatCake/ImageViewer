@@ -8,12 +8,12 @@ QT += core-private gui-private
 
 SOURCES += \
     qmacjp2handler.cpp \
-    main.cpp \
-    qiiofhelpers.cpp
+    main.cpp
 
 HEADERS += \
-    qmacjp2handler.h \
-    qiiofhelpers_p.h
+    qmacjp2handler.h
+
+include (../shared/qiiofhelpers.pri)
 
 OTHER_FILES += macjp2.json
 

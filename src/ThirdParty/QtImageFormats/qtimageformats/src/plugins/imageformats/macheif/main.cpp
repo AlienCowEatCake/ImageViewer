@@ -1,9 +1,9 @@
 /****************************************************************************
 **
-** Copyright (C) 2016 The Qt Company Ltd.
+** Copyright (C) 2017 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
-** This file is part of the MacJp2 plugin in the Qt ImageFormats module.
+** This file is part of the MacHeif plugin in the Qt ImageFormats module.
 **
 ** $QT_BEGIN_LICENSE:LGPL$
 ** Commercial License Usage
@@ -37,36 +37,54 @@
 **
 ****************************************************************************/
 
-#ifndef QIIOFHELPERS_P_H
-#define QIIOFHELPERS_P_H
+#ifndef QT_NO_IMAGEFORMATPLUGIN
 
-//
-//  W A R N I N G
-//  -------------
-//
-// This file is not part of the Qt API.  It exists for the convenience
-// of other Qt classes.  This header file may change from version to
-// version without notice, or even be removed.
-//
-// We mean it.
-//
+#include <qmacheifhandler.h>
+#include <qiiofhelpers_p.h>
 
 QT_BEGIN_NAMESPACE
 
-class QImageIOHandler;
-class QImage;
-
-/*
-Functions to utilize the native ImageIO Framework in OS X and iOS
-*/
-
-class QIIOFHelpers
+class QMacHeifPlugin : public QImageIOPlugin
 {
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "macheif.json")
+
 public:
-    static bool readImage(QImageIOHandler *q_ptr, QImage *out);
-    static bool writeImage(QImageIOHandler *q_ptr, const QImage &in, const QString &uti);
+    Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const override;
 };
+
+QImageIOPlugin::Capabilities QMacHeifPlugin::capabilities(QIODevice *device, const QByteArray &format) const
+{
+    static const Capabilities sysCaps = QIIOFHelpers::systemCapabilities(QStringLiteral("public.heic"));
+
+    if (!sysCaps)
+        return 0;
+    if (format == "heic" || format == "heif")
+        return sysCaps;
+    if (!format.isEmpty())
+        return 0;
+    if (!device->isOpen())
+        return 0;
+
+    Capabilities cap;
+    if (sysCaps.testFlag(CanRead) && device->isReadable() && QMacHeifHandler::canRead(device))
+        cap |= CanRead;
+    if (sysCaps.testFlag(CanWrite) && device->isWritable())
+        cap |= CanWrite;
+    return cap;
+}
+
+QImageIOHandler *QMacHeifPlugin::create(QIODevice *device, const QByteArray &format) const
+{
+    QMacHeifHandler *handler = new QMacHeifHandler();
+    handler->setDevice(device);
+    handler->setFormat(format);
+    return handler;
+}
 
 QT_END_NAMESPACE
 
-#endif
+#include "main.moc"
+
+#endif // !QT_NO_IMAGEFORMATPLUGIN

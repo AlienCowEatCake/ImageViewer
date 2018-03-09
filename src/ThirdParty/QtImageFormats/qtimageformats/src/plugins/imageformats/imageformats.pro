@@ -6,6 +6,8 @@ SUBDIRS = \
     wbmp \
     webp
 
+darwin: SUBDIRS += macheif
+
 qtConfig(regularexpression): \
     SUBDIRS += icns
 

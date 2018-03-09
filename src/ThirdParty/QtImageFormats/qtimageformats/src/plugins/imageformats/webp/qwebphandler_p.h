@@ -85,7 +85,6 @@ private:
         ScanSuccess = 1,
     };
 
-    bool m_lossless;
     int m_quality;
     mutable ScanState m_scanState;
     WebPBitstreamFeatures m_features;

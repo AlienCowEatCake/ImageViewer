@@ -48,7 +48,6 @@
 static const int riffHeaderSize = 12; // RIFF_HEADER_SIZE from webp/format_constants.h
 
 QWebpHandler::QWebpHandler() :
-    m_lossless(false),
     m_quality(75),
     m_scanState(ScanNotScanned),
     m_features(),
@@ -177,7 +176,11 @@ bool QWebpHandler::read(QImage *image)
 
     QImage frame(m_iter.width, m_iter.height, QImage::Format_ARGB32);
     uint8_t *output = frame.bits();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+    size_t output_size = frame.sizeInBytes();
+#else
     size_t output_size = frame.byteCount();
+#endif
 #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
     if (!WebPDecodeBGRAInto(
         reinterpret_cast<const uint8_t*>(m_iter.fragment.bytes), m_iter.fragment.size,
@@ -250,8 +253,8 @@ bool QWebpHandler::write(const QImage &image)
         return false;
     }
 
-    config.lossless = m_lossless;
-    config.quality = m_quality;
+    config.quality = m_quality < 0 ? 75 : qMin(m_quality, 100);
+    config.lossless = (config.quality >= 100);
     picture.writer = pictureWriter;
     picture.custom_ptr = device();
 
@@ -289,13 +292,12 @@ void QWebpHandler::setOption(ImageOption option, const QVariant &value)
 {
     switch (option) {
     case Quality:
-        m_quality = qBound(0, value.toInt(), 100);
-        m_lossless = (m_quality >= 100);
+        m_quality = value.toInt();
         return;
     default:
         break;
     }
-    return QImageIOHandler::setOption(option, value);
+    QImageIOHandler::setOption(option, value);
 }
 
 bool QWebpHandler::supportsOption(ImageOption option) const
