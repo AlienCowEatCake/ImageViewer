@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -48,7 +48,7 @@ struct AnimationObject::Impl
     {
         if(provider && provider->jumpToNextImage())
         {
-            nextImageDelay = provider->nextImageDelay();
+            nextImageDelay = calcNextImageDelay();
             currentPixmap = provider->currentPixmap();
             return true;
         }
@@ -65,6 +65,18 @@ struct AnimationObject::Impl
         provider = NULL;
         currentPixmap = QPixmap();
         nextImageDelay = -1;
+    }
+
+    int calcNextImageDelay() const
+    {
+        if(!provider)
+            return -1;
+
+        // https://bugs.chromium.org/p/chromium/issues/detail?id=454693
+        const int realNextImageDelay = provider->nextImageDelay();
+        if(realNextImageDelay < 11)
+            return 100;
+        return realNextImageDelay;
     }
 
     AnimationObject *animation;
@@ -100,7 +112,7 @@ void AnimationObject::setProvider(IAnimationProvider *provider)
     }
     m_impl->provider = provider;
     m_impl->currentPixmap = provider->currentPixmap();
-    m_impl->nextImageDelay = provider->nextImageDelay();
+    m_impl->nextImageDelay = m_impl->calcNextImageDelay();
     if(m_impl->nextImageDelay >= 0)
         m_impl->nextImageTimer.start(m_impl->nextImageDelay);
     emit updated();
