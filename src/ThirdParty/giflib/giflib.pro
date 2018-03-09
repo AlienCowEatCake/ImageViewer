@@ -12,10 +12,12 @@ CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_GIFLIB_PATH = $${PWD}/giflib-5.1.4
+THIRDPARTY_GIFLIB_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_GIFLIB_PATH}/lib $${INCLUDEPATH}
+win32: INCLUDEPATH += $${THIRDPARTY_GIFLIB_CONFIG_PATH}/win
 
 SOURCES += \
     $${THIRDPARTY_GIFLIB_PATH}/lib/dgif_lib.c \
