@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -49,6 +49,9 @@
 #endif
 #if defined (HAS_LIBWEBP)
 #include <webp/decode.h>
+#endif
+#if defined (HAS_GIFLIB)
+#include <gif_lib.h>
 #endif
 #if defined (HAS_JBIGKIT)
 #include <jbig.h>
@@ -240,6 +243,19 @@ QString getTextBrowserContent()
                       QString::fromLatin1("libwmf"),
                       QString(),
                       QString::fromLatin1("http://wvware.sourceforge.net/libwmf.html")
+                      ));
+#endif
+
+#if defined (HAS_GIFLIB)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the GIFLIB library"),
+                      QString::fromLatin1("giflib"),
+#if defined (GIFLIB_MAJOR) && defined (GIFLIB_MINOR) && defined (GIFLIB_RELEASE)
+                      QString::fromLatin1("%1.%2.%3").arg(GIFLIB_MAJOR).arg(GIFLIB_MINOR).arg(GIFLIB_RELEASE),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("http://giflib.sourceforge.net/")
                       ));
 #endif
 

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -75,6 +75,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderLibTiff"              ,  530, -1); ///< Умеет формат tiff. Поддерживает EXIF(?) и ICCP. Должен быть выше QImage и QtImageFormatsImage.
         P("DecoderJbigKit"              ,  540, -1); ///< Умеет формат JBIG1.
         /// @note Декодеры анимированных изображений
+        P("DecoderGifLib"               , 1090, -1); ///< Умеет анимированные gif, но хуже, чем QMovie - медленнее и не поддерживаются расширения.
         P("DecoderQMovie"               , 1100, -1); ///< Умеет анимированные gif.
         P("DecoderLibMng"               , 1110, -1); ///< Умеет анимированные mng и jng. Поддержка mng хуже, чем в QtImageFormatsMovie.
         P("DecoderQtImageFormatsMovie"  , 1200, -1); ///< Умеет анимированные mng.
