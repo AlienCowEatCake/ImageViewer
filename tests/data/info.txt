@@ -94,6 +94,15 @@ Images from https://people-mozilla.org/~dolske/apng/demo.html
  * mozilla/chompy.gif
  * mozilla/spinfox.gif
 
+Images from https://www.htmlgoodies.com/tutorials/web_graphics/article.php/3479931/Image-Formats.htm#gif
+ * www.htmlgoodies.com/87a_noninterlaced.gif
+ * www.htmlgoodies.com/89a_interlaced.gif
+ * www.htmlgoodies.com/89a_noninterlaced2.gif
+ * www.htmlgoodies.com/89a_noninterlaced.gif
+ * www.htmlgoodies.com/time_ani.gif
+ * www.htmlgoodies.com/transpar1.gif
+ * www.htmlgoodies.com/transpar2.gif
+
 --------------------------------------------------------------------------------
 
 ::: JNG test images :::
