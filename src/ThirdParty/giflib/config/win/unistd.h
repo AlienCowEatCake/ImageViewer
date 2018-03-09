@@ -1,0 +1,3 @@
+#if !defined (GIFLIB_WIN_UNISTD_H_INCLUDED)
+#define GIFLIB_WIN_UNISTD_H_INCLUDED
+#endif

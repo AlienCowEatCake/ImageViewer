@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -181,6 +181,11 @@ HEADERS += \
 !disable_openjpeg {
     SOURCES += \
         src/Decoders/Impl/DecoderOpenJPEG.cpp
+}
+
+!disable_giflib {
+    SOURCES += \
+        src/Decoders/Impl/DecoderGifLib.cpp
 }
 
 !disable_qtsvg {

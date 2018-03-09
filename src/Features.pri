@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -107,6 +107,13 @@ disable_zlib | disable_libpng | disable_freetype | disable_libjpeg {
 #    disable_openjpeg
 #    system_openjpeg
 
+
+# GIFLIB options:
+#    disable_giflib
+#    system_giflib
+win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+    CONFIG += disable_giflib # FIXME: C99
+}
 
 # ::::: Optional Third Party Components Configuration :::::
 
