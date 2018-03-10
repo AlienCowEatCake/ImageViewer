@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -36,8 +36,8 @@ namespace {
 
 const NSInteger BUTTON_HEIGHT = 32;
 const NSInteger ALONE_BUTTON_WIDTH = 40;
-const NSInteger GROUPED_BUTTON_WIDTH = InfoUtils::MacVersionGreatOrEqual(10, 13) ? 36 : 32;
-const NSInteger SEGMENTED_OFFSET = InfoUtils::MacVersionGreatOrEqual(10, 13) ? 0 : 8;
+const NSInteger GROUPED_BUTTON_WIDTH = 32; // InfoUtils::MacVersionGreatOrEqual(10, 13) ? 36 : 32;
+const NSInteger SEGMENTED_OFFSET = 8; // InfoUtils::MacVersionGreatOrEqual(10, 13) ? 0 : 8;
 const QColor BUTTON_BASE_COLOR = InfoUtils::MacVersionGreatOrEqual(10, 10) ? qRgb(85, 85, 85) : Qt::black;
 const QColor BUTTON_ALTERNATE_COLOR = Qt::white;
 
