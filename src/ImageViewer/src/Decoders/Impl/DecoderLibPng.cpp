@@ -37,6 +37,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
+#include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Animation/FramesCompositor.h"
 #include "Internal/Utils/CmsUtils.h"
 
@@ -331,7 +332,7 @@ bool PngAnimationProvider::readPng()
 #endif
 
 #if defined (PNG_APNG_SUPPORTED)
-        m_frames[count].delay = nextFrameDelayNum * 1000 / nextFrameDelayDen;
+        m_frames[count].delay = DelayCalculator::calculate(nextFrameDelayNum * 1000 / nextFrameDelayDen, DelayCalculator::MODE_NORMAL);
 #else
         m_frames[count].delay = -1;
 #endif

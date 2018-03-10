@@ -36,6 +36,7 @@
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
+#include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Animation/IAnimationProvider.h"
 
 namespace
@@ -175,7 +176,7 @@ mng_bool proc_mng_settimer(mng_handle hMNG,
 {
     MngAnimationProvider *provider = reinterpret_cast<MngAnimationProvider*>(mng_get_userdata(hMNG));
     provider->elapsed += iMsecs;
-    provider->nextDelay = static_cast<int>(iMsecs);
+    provider->nextDelay = DelayCalculator::calculate(static_cast<int>(iMsecs), DelayCalculator::MODE_NORMAL);
     return MNG_TRUE;
 }
 

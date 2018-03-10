@@ -35,6 +35,7 @@ extern "C" {
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
+#include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Utils/CmsUtils.h"
 #include "Internal/Utils/ExifUtils.h"
 
@@ -145,7 +146,7 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
             profile->applyToImage(&frame);
         ExifUtils::ApplyExifOrientation(&frame, orientation);
 
-        m_frames.push_back(Frame(frame, delayNum * 1000 / delayDen));
+        m_frames.push_back(Frame(frame, DelayCalculator::calculate(delayNum * 1000 / delayDen, DelayCalculator::MODE_NORMAL)));
     }
     bpg_decoder_close(decoderContext);
     return true;

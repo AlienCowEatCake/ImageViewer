@@ -71,6 +71,7 @@ SOURCES += \
     src/Decoders/Impl/DecoderQMovie.cpp \
     src/Decoders/Impl/Internal/Animation/AnimationObject.cpp \
     src/Decoders/Impl/Internal/Animation/AnimationWidget.cpp \
+    src/Decoders/Impl/Internal/Animation/DelayCalculator.cpp \
     src/Decoders/Impl/Internal/Animation/FramesCompositor.cpp \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.cpp \
@@ -104,6 +105,7 @@ HEADERS += \
     src/Decoders/IDecoder.h \
     src/Decoders/Impl/Internal/Animation/AnimationObject.h \
     src/Decoders/Impl/Internal/Animation/AnimationWidget.h \
+    src/Decoders/Impl/Internal/Animation/DelayCalculator.h \
     src/Decoders/Impl/Internal/Animation/FramesCompositor.h \
     src/Decoders/Impl/Internal/Animation/IAnimationProvider.h \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.h \

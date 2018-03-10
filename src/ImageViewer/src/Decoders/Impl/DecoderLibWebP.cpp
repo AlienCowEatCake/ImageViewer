@@ -32,6 +32,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
+#include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Animation/FramesCompositor.h"
 
 namespace
@@ -192,7 +193,8 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
             case WEBP_MUX_NO_BLEND: compositorBlendType = FramesCompositor::BLEND_NONE; break;
             case WEBP_MUX_BLEND:    compositorBlendType = FramesCompositor::BLEND_OVER; break;
             }
-            m_frames.push_back(Frame(compositor.compositeFrame(frame, frameRect, compositorDisposeType, compositorBlendType), iter.duration));
+            const int realDuration = DelayCalculator::calculate(iter.duration, DelayCalculator::MODE_CHROME);
+            m_frames.push_back(Frame(compositor.compositeFrame(frame, frameRect, compositorDisposeType, compositorBlendType), realDuration));
 
             if(i != m_numFrames - 1 && !WebPDemuxNextFrame(&iter))
             {

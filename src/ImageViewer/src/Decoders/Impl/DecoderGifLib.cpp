@@ -47,6 +47,7 @@ const int GIFLIB_DISPOSE_PREVIOUS   = 3;
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
+#include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Animation/FramesCompositor.h"
 
 namespace {
@@ -261,7 +262,7 @@ private:
             }
 
             frame = compositor.compositeFrame(frame.convertToFormat(QImage::Format_ARGB32), frameRect, frameControl.disposeType, FramesCompositor::BLEND_OVER);
-            m_frames.push_back(Frame(frame, frameControl.delayMs));
+            m_frames.push_back(Frame(frame, DelayCalculator::calculate(frameControl.delayMs, DelayCalculator::MODE_CHROME)));
         }
 
         dGifCloseFileWrapper(gifFile);
