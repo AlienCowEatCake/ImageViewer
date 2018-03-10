@@ -453,6 +453,13 @@ Images from https://bugs.launchpad.net/libsvg-android/+bug/632464
  * gesamt_iii.svg
  * gesamt_iii_sized.svg (modified gesamt_iii.svg)
 
+Image from https://en.wikipedia.org/wiki/List_of_Linux_distributions
+ * Linux_Distribution_Timeline.svg
+
+Images from https://habrahabr.ru/post/350596/
+ * 027ea235753062811f9697dbd7a968a7.svg
+ * calendar.svg
+
 Unknown source (TODO)
  * bicycle.svg
 
