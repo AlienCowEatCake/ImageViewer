@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -81,6 +81,13 @@ public:
         }
 
         QImage image(x, y, QImage::Format_ARGB32);
+        if(image.isNull())
+        {
+            qWarning() << "Invalid image size";
+            ::stbi_image_free(data);
+            return NULL;
+        }
+
         for(int i = 0; i < y; i++)
         {
             QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(i));

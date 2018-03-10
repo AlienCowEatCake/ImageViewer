@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -68,7 +68,7 @@ QImage readJbigFile(const QString &filePath)
     const int width = static_cast<int>(jbg_dec_getwidth(&decoder));
     const int height = static_cast<int>(jbg_dec_getheight(&decoder));
     QImage result(width, height, QImage::Format_Mono);
-    if(result.size().isEmpty())
+    if(result.isNull())
     {
         qWarning() << "Invalid image size";
         jbg_dec_free(&decoder);

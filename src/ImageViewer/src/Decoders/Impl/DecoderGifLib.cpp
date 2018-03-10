@@ -230,6 +230,13 @@ private:
                 colorTable = screenColorTable;
 
             QImage frame(frameRect.width(), frameRect.height(), QImage::Format_Indexed8);
+            if(frame.isNull())
+            {
+                qWarning() << "Invalid image size";
+                dGifCloseFileWrapper(gifFile);
+                return false;
+            }
+
             frame.setColorTable(colorTable);
             if(frameControl.transparentIndex >= 0 && frameControl.transparentIndex < colorTable.size())
                 frame.fill(static_cast<uint>(frameControl.transparentIndex));

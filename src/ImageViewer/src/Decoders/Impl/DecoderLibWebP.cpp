@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -87,6 +87,12 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
     {
         m_frames.push_back(Frame(features.width, features.height));
         QImage &frame = m_frames[0].image;
+        if(frame.isNull())
+        {
+            qWarning() << "Invalid image size";
+            return false;
+        }
+
         const uint8_t *data = reinterpret_cast<const uint8_t*>(inBuffer.constData());
         const std::size_t dataSize = static_cast<std::size_t>(inBuffer.size());
         uint8_t *output = reinterpret_cast<uint8_t*>(frame.bits());
@@ -145,6 +151,14 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
             }
 
             QImage frame(iter.width, iter.height, QImage::Format_ARGB32);
+            if(frame.isNull())
+            {
+                qWarning() << "Invalid image size";
+                WebPDemuxReleaseIterator(&iter);
+                WebPDemuxDelete(demuxer);
+                return false;
+            }
+
             const uint8_t *data = iter.fragment.bytes;
             const std::size_t dataSize = iter.fragment.size;
             uint8_t *output = reinterpret_cast<uint8_t*>(frame.bits());

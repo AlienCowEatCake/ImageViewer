@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -76,6 +76,9 @@ QPixmap QPixmapFromCGImageRef(const CFTypePtr<CGImageRef> &image)
     const std::size_t width = CGImageGetWidth(image);
     const std::size_t height = CGImageGetHeight(image);
     QImage result(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32_Premultiplied);
+    if(result.isNull())
+        return QPixmap();
+
     result.fill(Qt::transparent);
 
     const CFTypePtr<CGColorSpaceRef> colorSpace = CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));

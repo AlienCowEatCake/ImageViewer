@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -292,7 +292,7 @@ bool PngAnimationProvider::readPng()
         // Allocate the memory to hold the image using the fields of info_ptr.
         m_frames[count].image = QImage(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32);
         QImage &image = m_frames[count].image;
-        if(image.size().isEmpty())
+        if(image.isNull())
         {
             qWarning() << "Invalid image size";
             longjmp(png_jmpbuf(pngPtr), 1);

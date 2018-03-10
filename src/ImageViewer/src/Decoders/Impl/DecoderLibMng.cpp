@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -138,6 +138,12 @@ mng_bool proc_mng_processheader(mng_handle hMNG,
     if(mng_set_canvasstyle(hMNG, canvasStyle) != MNG_NOERROR)
         return MNG_FALSE;
     provider->image = QImage(static_cast<int>(iWidth), static_cast<int>(iHeight), QImage::Format_ARGB32);
+    if(provider->image.isNull())
+    {
+        qWarning() << "Invalid image size";
+        provider->error = true;
+        return MNG_FALSE;
+    }
     provider->image.fill(0);
     return MNG_TRUE;
 }

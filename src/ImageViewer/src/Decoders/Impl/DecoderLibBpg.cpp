@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -123,6 +123,13 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
 #else
                      QImage::Format_ARGB32);
 #endif
+        if(frame.isNull())
+        {
+            qWarning() << "Invalid image size";
+            bpg_decoder_close(decoderContext);
+            return false;
+        }
+
         for(int y = 0; y < frame.height(); y++)
             bpg_decoder_get_line(decoderContext, reinterpret_cast<uint8_t*>(frame.bits()) + y * frame.bytesPerLine());
 #if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -153,6 +153,15 @@ QImage readTiffFile(const QString &filename)
 #else
                   QImage::Format_ARGB32);
 #endif
+    if(result.isNull())
+    {
+        qWarning() << "Invalid image size";
+        TIFFClose(tiff);
+        if(iccProfile)
+            delete iccProfile;
+        return QImage();
+    }
+
     img.req_orientation = ORIENTATION_TOPLEFT;
 
     if(!TIFFRGBAImageGet(&img, reinterpret_cast<uint32*>(result.bits()), img.width, img.height))

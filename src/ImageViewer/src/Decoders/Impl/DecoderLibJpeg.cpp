@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -280,7 +280,7 @@ QImage readJpegFile(const QString &filename)
     // if we asked for color quantization.
     // In this example, we need to make an output work buffer of the right size.
     outImage = QImage(static_cast<int>(cinfo.output_width), static_cast<int>(cinfo.output_height), QImage::Format_RGB32);
-    if(outImage.size().isEmpty())
+    if(outImage.isNull())
     {
         qWarning() << "Invalid image size";
         longjmp(jerr.setjmpBuffer, 1);
