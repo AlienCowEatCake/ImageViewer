@@ -67,7 +67,7 @@ const QColor BUTTON_ALTERNATE_COLOR = Qt::white;
 
 - (id)initWithFrame:(NSRect)frameRect
 {
-    [super initWithFrame:frameRect];
+    self = [super initWithFrame:frameRect];
     m_isChecked = NO;
     m_isCheckable = NO;
     return self;
@@ -129,7 +129,7 @@ const QColor BUTTON_ALTERNATE_COLOR = Qt::white;
 - (id)initWithIdentifier:(NSString *)identifier
         andEmitterObject:(QObject *)emitterObject
 {
-    [super initWithIdentifier:identifier];
+    self = [super initWithIdentifier:identifier];
     m_manualVisibleState = [super isVisible];
     m_emitterObject = emitterObject;
     return self;
