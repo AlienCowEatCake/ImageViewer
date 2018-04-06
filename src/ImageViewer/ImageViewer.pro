@@ -196,6 +196,16 @@ HEADERS += \
         src/Decoders/Impl/DecoderQtSVG.cpp
 }
 
+!disable_qtwebkit {
+    QT +=  webkit network
+    greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
+    SOURCES += \
+        src/Decoders/Impl/Internal/GraphicsItems/QtWebKitSVGGraphicsItem.cpp \
+        src/Decoders/Impl/DecoderQtWebKit.cpp
+    HEADERS += \
+        src/Decoders/Impl/Internal/GraphicsItems/QtWebKitSVGGraphicsItem.h
+}
+
 !disable_nsimage {
     OBJECTIVE_SOURCES += \
         src/Decoders/Impl/DecoderNSImage.mm

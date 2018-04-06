@@ -137,6 +137,13 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
 #    disable_qtsvg
 
 
+# DecoderQtWebKit options:
+#    disable_qtwebkit
+#    enable_qtwebkit
+#!enable_qtwebkit {
+#    CONFIG += disable_qtwebkit
+#}
+
 # DecoderNSImage options:
 #    disable_nsimage
 
