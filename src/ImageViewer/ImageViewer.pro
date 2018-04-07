@@ -206,6 +206,15 @@ HEADERS += \
         src/Decoders/Impl/Internal/GraphicsItems/QtWebKitSVGGraphicsItem.h
 }
 
+!disable_qtwebengine {
+    QT +=  webenginewidgets
+    SOURCES += \
+        src/Decoders/Impl/Internal/GraphicsItems/QtWebEngineSVGGraphicsItem.cpp \
+        src/Decoders/Impl/DecoderQtWebEngine.cpp
+    HEADERS += \
+        src/Decoders/Impl/Internal/GraphicsItems/QtWebEngineSVGGraphicsItem.h
+}
+
 !disable_nsimage {
     OBJECTIVE_SOURCES += \
         src/Decoders/Impl/DecoderNSImage.mm
