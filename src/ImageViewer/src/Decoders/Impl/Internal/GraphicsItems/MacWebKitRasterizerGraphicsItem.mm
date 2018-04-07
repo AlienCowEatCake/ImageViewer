@@ -346,6 +346,8 @@ bool MacWebKitRasterizerGraphicsItem::load(const QByteArray &svgData, const QUrl
         return false;
     }
 
+    removeRootOverflowAttribute();
+
     const bool emptySVGViewBoxSupported = InfoUtils::MacVersionGreatOrEqual(10, 8);
     const QRectF viewBox = svgViewBoxAttribute();
     const QSizeF size = svgSizeAttribute();

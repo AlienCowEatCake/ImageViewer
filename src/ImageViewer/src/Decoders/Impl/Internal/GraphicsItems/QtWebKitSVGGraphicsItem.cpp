@@ -68,6 +68,8 @@ bool QtWebKitSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &baseUr
         return false;
     }
 
+    removeRootOverflowAttribute();
+
     m_impl->svgRect = detectSvgRect();
     m_impl->svgRect = QRectF(m_impl->svgRect.topLeft(), m_impl->svgRect.size().expandedTo(QSizeF(1, 1)));
     m_impl->page.setViewportSize(m_impl->svgRect.united(QRectF(0, 0, 1, 1)).size().toSize());

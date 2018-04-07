@@ -139,6 +139,15 @@ bool AbstractSVGWebBrowser::rootElementIsSvg()
     return !root.isEmpty() && root.compare(QString::fromLatin1("svg"), Qt::CaseInsensitive) == 0;
 }
 
+void AbstractSVGWebBrowser::removeRootOverflowAttribute()
+{
+    evalJS(
+        "if(document.rootElement.hasAttribute('overflow')) {"
+            "document.rootElement.removeAttribute('overflow');"
+        "}"
+        );
+}
+
 QRectF AbstractSVGWebBrowser::QRectFIntegerized(const QRectF &rect)
 {
     const qreal left = std::floor(rect.left());

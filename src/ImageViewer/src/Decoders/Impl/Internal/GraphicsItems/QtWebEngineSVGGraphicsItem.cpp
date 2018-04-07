@@ -162,6 +162,8 @@ bool QtWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &bas
         return false;
     }
 
+    removeRootOverflowAttribute();
+
     m_impl->svgRect = detectSvgRect();
     m_impl->svgRect = QRectF(m_impl->svgRect.topLeft(), m_impl->svgRect.size().expandedTo(QSizeF(1, 1)));
     m_impl->view.resize(m_impl->svgRect.united(QRectF(0, 0, 1, 1)).size().toSize());

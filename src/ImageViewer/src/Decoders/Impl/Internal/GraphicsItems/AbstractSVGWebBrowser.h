@@ -51,6 +51,8 @@ protected:
 
     virtual bool rootElementIsSvg();
 
+    virtual void removeRootOverflowAttribute();
+
     static QRectF QRectFIntegerized(const QRectF &rect);
     static qreal parseLength(const QString &str);
 };
