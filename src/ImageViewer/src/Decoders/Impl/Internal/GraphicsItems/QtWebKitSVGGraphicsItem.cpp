@@ -44,6 +44,8 @@ QtWebKitSVGGraphicsItem::QtWebKitSVGGraphicsItem(QGraphicsItem *parentItem)
     : QGraphicsItem(parentItem)
     , m_impl(new Impl)
 {
+    setFlag(QGraphicsItem::ItemUsesExtendedStyleOption, true);
+
     QPalette palette = m_impl->page.palette();
     palette.setColor(QPalette::Background, Qt::transparent);
     palette.setBrush(QPalette::Base, Qt::transparent);
