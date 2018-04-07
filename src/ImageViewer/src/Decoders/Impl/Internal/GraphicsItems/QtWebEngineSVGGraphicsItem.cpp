@@ -116,9 +116,11 @@ struct QtWebEngineSVGGraphicsItem::Impl
     QRectF svgRect;
     SyncExecutor syncExecutor;
     QTimer timer;
+    bool renderProcessTerminated;
 
     Impl()
         : syncExecutor(&view)
+        , renderProcessTerminated(false)
     {}
 
     void setScaleFactor(qreal scaleFactor)
@@ -151,7 +153,9 @@ QtWebEngineSVGGraphicsItem::QtWebEngineSVGGraphicsItem(QGraphicsItem *parentItem
         openGLWidget->setAttribute(Qt::WA_AlwaysStackOnTop, false);
 #endif
 
-    connect(&m_impl->timer, SIGNAL(timeout()), this, SLOT(onUpdateRequested()));
+    connect(&m_impl->view, &QWebEngineView::renderProcessTerminated, this, &QtWebEngineSVGGraphicsItem::onRenderProcessTerminated);
+
+    connect(&m_impl->timer, &QTimer::timeout, this, &QtWebEngineSVGGraphicsItem::onUpdateRequested);
     m_impl->timer.setSingleShot(false);
     m_impl->timer.setInterval(1000 / SVG_RENDERING_FPS);
 }
@@ -207,19 +211,41 @@ QRectF QtWebEngineSVGGraphicsItem::boundingRect() const
 
 void QtWebEngineSVGGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    Q_UNUSED(widget);
-    const qreal scaleFactor = GraphicsItemUtils::GetDeviceScaleFactor(painter);
-    const QRectF exposedRect = boundingRect().intersected(QRectFIntegerized(option->exposedRect));
-    const qreal actualScaleFactor = std::max(std::min(scaleFactor, 5.0), 1.0);
-    m_impl->setScaleFactor(actualScaleFactor);
-    const QRect scaledRect = QRectFIntegerized(QRectF(exposedRect.topLeft() * actualScaleFactor, exposedRect.size() * actualScaleFactor)).toRect();
-    const QPixmap pixmap = m_impl->view.grab(scaledRect);
-    painter->drawPixmap(exposedRect, pixmap, pixmap.rect());
+    if(!m_impl->renderProcessTerminated)
+    {
+        Q_UNUSED(widget);
+        const qreal scaleFactor = GraphicsItemUtils::GetDeviceScaleFactor(painter);
+        const QRectF exposedRect = boundingRect().intersected(QRectFIntegerized(option->exposedRect));
+        const qreal actualScaleFactor = std::max(std::min(scaleFactor, 5.0), 1.0);
+        m_impl->setScaleFactor(actualScaleFactor);
+        const QRect scaledRect = QRectFIntegerized(QRectF(exposedRect.topLeft() * actualScaleFactor, exposedRect.size() * actualScaleFactor)).toRect();
+        const QPixmap pixmap = m_impl->view.grab(scaledRect);
+        if(!pixmap.isNull())
+        {
+            painter->drawPixmap(exposedRect, pixmap, pixmap.rect());
+        }
+        else
+        {
+            painter->fillRect(boundingRect(), QBrush(Qt::black, Qt::SolidPattern));
+            painter->fillRect(boundingRect(), QBrush(Qt::red, Qt::CrossPattern));
+        }
+    }
+    else
+    {
+        painter->fillRect(boundingRect(), QBrush(Qt::black, Qt::SolidPattern));
+        painter->fillRect(boundingRect(), QBrush(Qt::red, Qt::DiagCrossPattern));
+    }
 }
 
 void QtWebEngineSVGGraphicsItem::onUpdateRequested()
 {
     update();
+}
+
+void QtWebEngineSVGGraphicsItem::onRenderProcessTerminated(int terminationStatus)
+{
+    m_impl->renderProcessTerminated = true;
+    qWarning() << "[QtWebEngineSVGGraphicsItem] Error: render process is terminated, status =" << terminationStatus;
 }
 
 QVariant QtWebEngineSVGGraphicsItem::evalJSImpl(const QString &scriptSource)

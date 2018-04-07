@@ -44,6 +44,7 @@ public:
 
 private slots:
     void onUpdateRequested();
+    void onRenderProcessTerminated(int terminationStatus);
 
 private:
     QVariant evalJSImpl(const QString &scriptSource);
