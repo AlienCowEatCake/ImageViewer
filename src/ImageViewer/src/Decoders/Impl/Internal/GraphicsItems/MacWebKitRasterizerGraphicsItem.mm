@@ -314,7 +314,9 @@ MacWebKitRasterizerGraphicsItem::MacWebKitRasterizerGraphicsItem(QGraphicsItem *
     : QGraphicsItem(parentItem)
     , m_impl(new Impl(this))
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
     setFlag(QGraphicsItem::ItemUsesExtendedStyleOption, true);
+#endif
 }
 
 MacWebKitRasterizerGraphicsItem::~MacWebKitRasterizerGraphicsItem()
