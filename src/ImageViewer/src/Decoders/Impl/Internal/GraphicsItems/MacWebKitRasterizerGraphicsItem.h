@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -20,45 +20,36 @@
 #if !defined(MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_H_INCLUDED)
 #define MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_H_INCLUDED
 
-#include <QGraphicsObject>
+#include <QObject>
+#include <QGraphicsItem>
 #include "Utils/ScopedPointer.h"
+#include "AbstractSVGWebBrowser.h"
 
-class MacWebKitRasterizerGraphicsItem : public QGraphicsObject
+class QByteArray;
+class QUrl;
+
+class MacWebKitRasterizerGraphicsItem : public QObject, public QGraphicsItem, public AbstractSVGWebBrowser
 {
     Q_OBJECT
-    Q_INTERFACES(QGraphicsItem)
+//    Q_INTERFACES(QGraphicsItem)
     Q_DISABLE_COPY(MacWebKitRasterizerGraphicsItem)
 
 public:
-    enum State
-    {
-        STATE_LOADING,
-        STATE_FAILED,
-        STATE_SUCCEED
-    };
-
-    enum DataType
-    {
-        DATA_TYPE_UNKNOWN,
-        DATA_TYPE_HTML,
-        DATA_TYPE_XHTML,
-        DATA_TYPE_XML,
-        DATA_TYPE_SVG
-    };
-
-    class Impl;
-
-    MacWebKitRasterizerGraphicsItem(const QUrl &url, QGraphicsItem *parentItem = NULL);
-    MacWebKitRasterizerGraphicsItem(const QByteArray &htmlData, DataType dataType = DATA_TYPE_UNKNOWN, QGraphicsItem *parentItem = NULL);
-
+    MacWebKitRasterizerGraphicsItem(QGraphicsItem *parentItem = NULL);
     ~MacWebKitRasterizerGraphicsItem();
+
+    bool load(const QByteArray &svgData, const QUrl &baseUrl);
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = NULL);
 
-    State state() const;
+private:
+    QVariant evalJSImpl(const QString &scriptSource);
+    QRectF detectFallbackSvgRect();
+    QRectF svgBoundingClientRect();
 
 private:
+    struct Impl;
     QScopedPointer<Impl> m_impl;
 };
 

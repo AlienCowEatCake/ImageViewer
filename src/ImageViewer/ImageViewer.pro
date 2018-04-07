@@ -124,7 +124,8 @@ HEADERS += \
     src/Decoders/Impl/Internal/Utils/CmsUtils.h \
     src/Decoders/Impl/Internal/Utils/ZLibUtils.h \
     src/Decoders/Impl/Internal/DecoderAutoRegistrator.h \
-    src/Decoders/Impl/Internal/GraphicsItemsFactory.h
+    src/Decoders/Impl/Internal/GraphicsItemsFactory.h \
+    src/Decoders/Impl/Internal/SVGWebBrowserDecoderTemplate.h
 
 !disable_stb {
     SOURCES += \

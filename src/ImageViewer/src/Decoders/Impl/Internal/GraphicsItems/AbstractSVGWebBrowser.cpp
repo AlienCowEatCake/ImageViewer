@@ -62,6 +62,11 @@ QSizeF AbstractSVGWebBrowser::defaultSvgSize() const
     return QSizeF(DEFAULT_SVG_SIZE, DEFAULT_SVG_SIZE);
 }
 
+QRectF AbstractSVGWebBrowser::detectFallbackSvgRect()
+{
+    return svgBoundingBoxRect();
+}
+
 QRectF AbstractSVGWebBrowser::detectSvgRect()
 {
     const QSizeF size = svgSizeAttribute();
@@ -84,9 +89,9 @@ QRectF AbstractSVGWebBrowser::detectSvgRect()
         return QRectF(QPointF(), viewBox.size());
     }
 
-    const QRectF bBox = svgBoundingBoxRect();
-    if(!bBox.isEmpty())
-        return QRectFIntegerized(bBox);
+    const QRectF fallbackRect = detectFallbackSvgRect();
+    if(!fallbackRect.isEmpty())
+        return QRectFIntegerized(fallbackRect);
 
     return QRectF(QPointF(), defaultSvgSize());
 }
@@ -117,6 +122,15 @@ QRectF AbstractSVGWebBrowser::svgBoundingBoxRect()
                       static_cast<qreal>(evalJS("document.rootElement.getBBox().width;").toDouble()),
                       static_cast<qreal>(evalJS("document.rootElement.getBBox().height;").toDouble()));
     return bBox.isEmpty() ? QRectF() : QRectFIntegerized(bBox);
+}
+
+QRectF AbstractSVGWebBrowser::svgBoundingClientRect()
+{
+    const QRectF boundingClientRect(static_cast<qreal>(evalJS("document.rootElement.getBoundingClientRect().x;").toDouble()),
+                                    static_cast<qreal>(evalJS("document.rootElement.getBoundingClientRect().y;").toDouble()),
+                                    static_cast<qreal>(evalJS("document.rootElement.getBoundingClientRect().width;").toDouble()),
+                                    static_cast<qreal>(evalJS("document.rootElement.getBoundingClientRect().height;").toDouble()));
+    return boundingClientRect.isEmpty() ? QRectF() : boundingClientRect;
 }
 
 bool AbstractSVGWebBrowser::rootElementIsSvg()

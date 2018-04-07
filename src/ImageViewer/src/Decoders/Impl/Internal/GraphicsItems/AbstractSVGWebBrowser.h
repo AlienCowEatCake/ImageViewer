@@ -41,11 +41,13 @@ protected:
     virtual QVariant evalJSImpl(const QString &scriptSource) = 0;
 
     virtual QSizeF defaultSvgSize() const;
+    virtual QRectF detectFallbackSvgRect();
     virtual QRectF detectSvgRect();
 
     virtual QSizeF svgSizeAttribute();
     virtual QRectF svgViewBoxAttribute();
     virtual QRectF svgBoundingBoxRect();
+    virtual QRectF svgBoundingClientRect();
 
     virtual bool rootElementIsSvg();
 
