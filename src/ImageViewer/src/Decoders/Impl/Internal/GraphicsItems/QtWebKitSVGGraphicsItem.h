@@ -23,11 +23,12 @@
 #include <QGraphicsItem>
 #include <QObject>
 #include "Utils/ScopedPointer.h"
+#include "AbstractSVGWebBrowser.h"
 
 class QByteArray;
 class QUrl;
 
-class QtWebKitSVGGraphicsItem : public QObject, public QGraphicsItem
+class QtWebKitSVGGraphicsItem : public QObject, public QGraphicsItem, public AbstractSVGWebBrowser
 {
     Q_OBJECT
 //    Q_INTERFACES(QGraphicsItem)
@@ -44,6 +45,9 @@ public:
 
 private slots:
     void onUpdateRequested(const QRect& rect);
+
+private:
+    QVariant evalJSImpl(const QString &scriptSource);
 
 private:
     struct Impl;

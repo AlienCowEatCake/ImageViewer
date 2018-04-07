@@ -75,6 +75,7 @@ SOURCES += \
     src/Decoders/Impl/Internal/Animation/FramesCompositor.cpp \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.cpp \
+    src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowser.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/Scaling/AbstractScalingManager.cpp \
@@ -111,6 +112,7 @@ HEADERS += \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.h \
     src/Decoders/Impl/Internal/Animation/MovieAnimationProvider.h \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.h \
+    src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowser.h \
     src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.h \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.h \
     src/Decoders/Impl/Internal/Scaling/AbstractScalingManager.h \
