@@ -38,9 +38,11 @@
 
 #include <QDebug>
 
+#include "GraphicsItemUtils.h"
+
 namespace {
 
-const int SVG_RENDERING_FPS = 30;
+const int SVG_RENDERING_FPS = 25;
 
 class SyncExecutor : public QObject
 {
@@ -116,12 +118,20 @@ struct QtWebEngineSVGGraphicsItem::Impl
     Impl()
         : syncExecutor(&view)
     {}
+
+    void setScaleFactor(qreal scaleFactor)
+    {
+        view.resize((svgRect.united(QRectF(0, 0, 1, 1)).size() * scaleFactor).toSize());
+        view.setZoomFactor(scaleFactor);
+    }
 };
 
 QtWebEngineSVGGraphicsItem::QtWebEngineSVGGraphicsItem(QGraphicsItem *parentItem)
     : QGraphicsObject(parentItem)
     , m_impl(new Impl)
 {
+    setFlag(QGraphicsItem::ItemUsesExtendedStyleOption, true);
+
     m_impl->view.winId();
     m_impl->view.setContextMenuPolicy(Qt::PreventContextMenu);
     m_impl->view.setAcceptDrops(false);
@@ -166,7 +176,7 @@ bool QtWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &bas
 
     m_impl->svgRect = detectSvgRect();
     m_impl->svgRect = QRectF(m_impl->svgRect.topLeft(), m_impl->svgRect.size().expandedTo(QSizeF(1, 1)));
-    m_impl->view.resize(m_impl->svgRect.united(QRectF(0, 0, 1, 1)).size().toSize());
+    m_impl->setScaleFactor(1);
 
 //    m_impl->page.mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
 //    m_impl->page.mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
@@ -184,8 +194,12 @@ QRectF QtWebEngineSVGGraphicsItem::boundingRect() const
 void QtWebEngineSVGGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
-    const QRect exposedRect = QRectFIntegerized(option->exposedRect).toRect();
-    const QPixmap pixmap = m_impl->view.grab(exposedRect);
+    const qreal scaleFactor = GraphicsItemUtils::GetDeviceScaleFactor(painter);
+    const QRectF exposedRect = boundingRect().intersected(QRectFIntegerized(option->exposedRect));
+    const qreal actualScaleFactor = std::max(std::min(scaleFactor, 5.0), 1.0);
+    m_impl->setScaleFactor(actualScaleFactor);
+    const QRect scaledRect = QRectFIntegerized(QRectF(exposedRect.topLeft() * actualScaleFactor, exposedRect.size() * actualScaleFactor)).toRect();
+    const QPixmap pixmap = m_impl->view.grab(scaledRect);
     painter->drawPixmap(exposedRect, pixmap, pixmap.rect());
 }
 
