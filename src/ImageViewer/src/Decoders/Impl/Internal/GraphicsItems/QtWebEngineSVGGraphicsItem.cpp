@@ -36,6 +36,8 @@
 #include <QWebEngineView>
 #include <QOpenGLWidget>
 
+#include <QXmlStreamReader>
+
 #include <QDebug>
 
 #include "GraphicsItemUtils.h"
@@ -124,6 +126,13 @@ struct QtWebEngineSVGGraphicsItem::Impl
         view.resize((svgRect.united(QRectF(0, 0, 1, 1)).size() * scaleFactor).toSize());
         view.setZoomFactor(scaleFactor);
     }
+
+    QString detectEncoding(const QByteArray &svgData)
+    {
+        QXmlStreamReader reader(svgData);
+        while(reader.readNext() != QXmlStreamReader::StartDocument && !reader.atEnd());
+        return reader.documentEncoding().toString().simplified().toLower();
+    }
 };
 
 QtWebEngineSVGGraphicsItem::QtWebEngineSVGGraphicsItem(QGraphicsItem *parentItem)
@@ -158,9 +167,14 @@ bool QtWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &bas
     m_impl->timer.stop();
 
     m_impl->svgRect = QRectF(QPointF(), defaultSvgSize());
-    m_impl->view.resize(m_impl->svgRect.size().toSize());
+    m_impl->setScaleFactor(1);
 
-    if(!m_impl->syncExecutor.setContent(svgData, QString::fromLatin1("image/svg+xml"), baseUrl))
+    QString mimeType = QString::fromLatin1("image/svg+xml");
+    const QString encoding = m_impl->detectEncoding(svgData);
+    if(!encoding.isEmpty())
+        mimeType.append(QString::fromLatin1(";charset=") + encoding);
+
+    if(!m_impl->syncExecutor.setContent(svgData, mimeType, baseUrl))
     {
         qWarning() << "[QtWebEngineSVGGraphicsItem] Error: can't load content";
         return false;
