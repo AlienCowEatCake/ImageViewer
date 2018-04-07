@@ -140,16 +140,16 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
 # DecoderQtWebKit options:
 #    disable_qtwebkit
 #    enable_qtwebkit
-#!enable_qtwebkit {
-#    CONFIG += disable_qtwebkit
-#}
+!enable_qtwebkit {
+    CONFIG += disable_qtwebkit
+}
 
 # DecoderQtWebEngine options:
 #    disable_qtwebengine
 #    enable_qtwebengine
-#!enable_qtwebengine {
-#    CONFIG += disable_qtwebengine
-#}
+!enable_qtwebengine {
+    CONFIG += disable_qtwebengine
+}
 !greaterThan(QT_MAJOR_VERSION, 4) {
     CONFIG += disable_qtwebengine
 }
