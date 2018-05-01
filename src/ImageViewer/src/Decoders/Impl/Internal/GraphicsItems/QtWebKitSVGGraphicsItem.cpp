@@ -95,7 +95,7 @@ void QtWebKitSVGGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphic
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setRenderHint(QPainter::TextAntialiasing);
     painter->setRenderHint(QPainter::SmoothPixmapTransform);
-    m_impl->page.mainFrame()->render(painter, option->exposedRect.toRect());
+    m_impl->page.mainFrame()->render(painter, QRectFIntegerized(option->exposedRect).toRect());
 }
 
 void QtWebKitSVGGraphicsItem::onUpdateRequested(const QRect& rect)
