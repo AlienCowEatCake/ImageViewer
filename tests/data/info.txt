@@ -448,6 +448,9 @@ Test images which was created during the development of this project
  * windows-1251.svg
  * windows-1251.svgz
 
+Image from https://webkit.org/blog-files/animation-demo.svg
+ * animation-demo.svg
+
 Images from https://bugs.launchpad.net/libsvg-android/+bug/632464
  * gesamt_ii.svg
  * gesamt_iii.svg
