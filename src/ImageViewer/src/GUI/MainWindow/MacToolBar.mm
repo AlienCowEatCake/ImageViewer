@@ -428,6 +428,14 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     const QIcon themeIcon = ThemeUtils::GetIcon(iconType);
     const QSize iconSize(16, 16);
     const QPixmap iconPixmap = themeIcon.pixmap(iconSize);
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_5_AND_LATER)
+    NSImage *image = ObjCUtils::QPixmapToNSImage(iconPixmap, iconSize);
+    if([image respondsToSelector:@selector(setTemplate:)])
+    {
+        [image setTemplate:YES];
+        return image;
+    }
+#endif
     QImage iconImage(iconPixmap.size(), QImage::Format_ARGB32_Premultiplied);
     iconImage.fill(darkBackground ? BUTTON_ALTERNATE_COLOR : BUTTON_BASE_COLOR);
     iconImage.setAlphaChannel(iconPixmap.toImage().alphaChannel());

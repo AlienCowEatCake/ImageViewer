@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -174,6 +174,9 @@ QString GetSystemDescription()
         break;
     case 1013:
         result.append(QString::fromLatin1(" \"High Sierra\""));
+        break;
+    case 1014:
+        result.append(QString::fromLatin1(" \"Mojave\""));
         break;
     default:
         break;
