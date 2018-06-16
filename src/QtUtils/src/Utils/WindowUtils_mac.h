@@ -17,33 +17,24 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined (QTUTILS_MENUUTILS_H_INCLUDED)
-#define QTUTILS_MENUUTILS_H_INCLUDED
+#if !defined (QTUTILS_WINDOWUTILS_MAC_H_INCLUDED)
+#define QTUTILS_WINDOWUTILS_MAC_H_INCLUDED
 
-#include <QtGlobal>
-class QMenu;
+#include "ObjectiveCFwd.h"
 
-namespace MenuUtils {
+class QWidget;
 
-#if defined (Q_OS_MAC)
+OBJC_CLASS(NSWindow);
 
-void SetDockMenu(QMenu *menu);
+namespace WindowUtils {
 
-/// @brief Remove (disable) the "Start Dictation..." menu item from the "Edit" menu
-void DisableDictationMenuItem();
+/// @brief Получить NSWindow для виджета
+NSWindow *GetNativeWindow(QWidget* widget);
 
-/// @brief Remove (disable) the "Emoji & Symbols" menu item from the "Edit" menu
-void DisableCharacterPaletteMenuItem();
+/// @brief По возможности нативно переключить режим FullScreen
+void ToggleFullScreenMode(QWidget* window);
 
-/// @brief Remove (don't allow) the "Show Tab Bar" menu item from the "View" menu, if supported
-void DisableShowTabBarMenuItem();
+} // namespace WindowUtils
 
-/// @brief Remove (don't have) the "Enter Full Screen" menu item from the "View" menu
-void DisableEnterFullScreenMenuItem();
-
-#endif
-
-} // namespace MenuUtils
-
-#endif // QTUTILS_MENUUTILS_H_INCLUDED
+#endif // QTUTILS_WINDOWUTILS_MAC_H_INCLUDED
 

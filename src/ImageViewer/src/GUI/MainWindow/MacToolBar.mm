@@ -29,6 +29,7 @@
 #include "Utils/LocalizationManager.h"
 #include "Utils/ObjectiveCUtils.h"
 #include "Utils/ThemeUtils.h"
+#include "Utils/WindowUtils.h"
 
 // ====================================================================================================
 
@@ -718,19 +719,6 @@ struct MacToolBar::Impl
         [nativeToolbar release];
     }
 
-    NSWindow *nativeWindow()
-    {
-        if(!widget)
-            return nil;
-        QWidget *qtWindow = widget->window();
-        if(!qtWindow)
-            return nil;
-        NSView *windowView = reinterpret_cast<NSView*>(qtWindow->winId());
-        if(!windowView)
-            return nil;
-        return reinterpret_cast<NSWindow*>([windowView window]);
-    }
-
     void retranslate()
     {
         toolBarData.navigatePrevious.setToolTip(qApp->translate("MacToolBar", "Previous", "Long"));
@@ -850,7 +838,7 @@ void MacToolBar::attachToWindow(QWidget *widget)
     AUTORELEASE_POOL;
     detachFromWindow();
     m_impl->widget = widget;
-    if(NSWindow *window = m_impl->nativeWindow())
+    if(NSWindow *window = WindowUtils::GetNativeWindow(m_impl->widget))
     {
         [window setToolbar:m_impl->nativeToolbar];
         [window setShowsToolbarButton:YES];
@@ -860,7 +848,7 @@ void MacToolBar::attachToWindow(QWidget *widget)
 void MacToolBar::detachFromWindow()
 {
     AUTORELEASE_POOL;
-    if(NSWindow *window = m_impl->nativeWindow())
+    if(NSWindow *window = WindowUtils::GetNativeWindow(m_impl->widget))
         [window setToolbar:nil];
     m_impl->widget = NULL;
 }
@@ -868,7 +856,7 @@ void MacToolBar::detachFromWindow()
 void MacToolBar::setVisible(bool isVisible)
 {
     AUTORELEASE_POOL;
-    if(NSWindow *window = m_impl->nativeWindow())
+    if(NSWindow *window = WindowUtils::GetNativeWindow(m_impl->widget))
     {
         [window setToolbar:m_impl->nativeToolbar];
         [window setShowsToolbarButton:YES];

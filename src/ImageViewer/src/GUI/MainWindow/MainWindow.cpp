@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -40,6 +40,7 @@
 #include "Utils/SettingsWrapper.h"
 #include "Utils/ImageSaver.h"
 #include "Utils/RestorableGeometryHelper.h"
+#include "Utils/WindowUtils.h"
 
 #include "Decoders/DecodersManager.h"
 #include "../GUISettings.h"
@@ -239,20 +240,16 @@ void MainWindow::switchFullScreenMode()
 {
     const bool toFullScreenMode = !m_impl->isFullScreenMode;
     if(toFullScreenMode)
-    {
         m_impl->geometryHelper.saveGeometry();
+
 #if defined (Q_OS_MAC)
-        showFullScreen();
-#endif
+    WindowUtils::ToggleFullScreenMode(this);
+#else
+    if(toFullScreenMode)
         setWindowState(windowState() | Qt::WindowFullScreen);
-    }
     else
-    {
         setWindowState(windowState() & ~Qt::WindowFullScreen);
-#if defined (Q_OS_MAC)
-        showNormal();
 #endif
-    }
 }
 
 void MainWindow::switchSlideShowMode()

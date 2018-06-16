@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -22,6 +22,8 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 #include <AvailabilityMacros.h>
+
+#include <QMenu>
 
 #include "ObjectiveCUtils.h"
 
