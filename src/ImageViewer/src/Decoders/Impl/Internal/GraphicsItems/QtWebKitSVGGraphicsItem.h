@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,31 +17,34 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined(MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_H_INCLUDED)
-#define MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_H_INCLUDED
+#if !defined(QT_WEBKIT_SVG_GRAPHICS_ITEM_H_INCLUDED)
+#define QT_WEBKIT_SVG_GRAPHICS_ITEM_H_INCLUDED
 
-#include <QObject>
 #include <QGraphicsItem>
+#include <QObject>
 #include "Utils/ScopedPointer.h"
 #include "AbstractSVGWebBrowser.h"
 
 class QByteArray;
 class QUrl;
 
-class MacWebKitRasterizerGraphicsItem : public QObject, public QGraphicsItem, public AbstractSVGWebBrowser
+class QtWebKitSVGGraphicsItem : public QObject, public QGraphicsItem, public AbstractSVGWebBrowser
 {
     Q_OBJECT
 //    Q_INTERFACES(QGraphicsItem)
-    Q_DISABLE_COPY(MacWebKitRasterizerGraphicsItem)
+    Q_DISABLE_COPY(QtWebKitSVGGraphicsItem)
 
 public:
-    MacWebKitRasterizerGraphicsItem(QGraphicsItem *parentItem = NULL);
-    ~MacWebKitRasterizerGraphicsItem();
+    QtWebKitSVGGraphicsItem(QGraphicsItem *parentItem = NULL);
+    ~QtWebKitSVGGraphicsItem();
 
     bool load(const QByteArray &svgData, const QUrl &baseUrl);
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = NULL);
+
+private slots:
+    void onUpdateRequested(const QRect& rect);
 
 private:
     QVariant evalJSImpl(const QString &scriptSource);
@@ -51,4 +54,4 @@ private:
     QScopedPointer<Impl> m_impl;
 };
 
-#endif // MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_H_INCLUDED
+#endif // QT_WEBKIT_SVG_GRAPHICS_ITEM_H_INCLUDED

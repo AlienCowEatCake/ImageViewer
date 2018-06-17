@@ -75,6 +75,7 @@ SOURCES += \
     src/Decoders/Impl/Internal/Animation/FramesCompositor.cpp \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.cpp \
+    src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowser.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/Scaling/AbstractScalingManager.cpp \
@@ -111,6 +112,7 @@ HEADERS += \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.h \
     src/Decoders/Impl/Internal/Animation/MovieAnimationProvider.h \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.h \
+    src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowser.h \
     src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.h \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.h \
     src/Decoders/Impl/Internal/Scaling/AbstractScalingManager.h \
@@ -122,7 +124,8 @@ HEADERS += \
     src/Decoders/Impl/Internal/Utils/CmsUtils.h \
     src/Decoders/Impl/Internal/Utils/ZLibUtils.h \
     src/Decoders/Impl/Internal/DecoderAutoRegistrator.h \
-    src/Decoders/Impl/Internal/GraphicsItemsFactory.h
+    src/Decoders/Impl/Internal/GraphicsItemsFactory.h \
+    src/Decoders/Impl/Internal/SVGWebBrowserDecoderTemplate.h
 
 !disable_stb {
     SOURCES += \
@@ -194,6 +197,25 @@ HEADERS += \
     QT += svg
     SOURCES += \
         src/Decoders/Impl/DecoderQtSVG.cpp
+}
+
+!disable_qtwebkit {
+    QT +=  webkit network
+    greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
+    SOURCES += \
+        src/Decoders/Impl/Internal/GraphicsItems/QtWebKitSVGGraphicsItem.cpp \
+        src/Decoders/Impl/DecoderQtWebKit.cpp
+    HEADERS += \
+        src/Decoders/Impl/Internal/GraphicsItems/QtWebKitSVGGraphicsItem.h
+}
+
+!disable_qtwebengine {
+    QT +=  webenginewidgets
+    SOURCES += \
+        src/Decoders/Impl/Internal/GraphicsItems/QtWebEngineSVGGraphicsItem.cpp \
+        src/Decoders/Impl/DecoderQtWebEngine.cpp
+    HEADERS += \
+        src/Decoders/Impl/Internal/GraphicsItems/QtWebEngineSVGGraphicsItem.h
 }
 
 !disable_nsimage {

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,64 +17,12 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QFileInfo>
-#include <QUrl>
-
-#include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/SVGWebBrowserDecoderTemplate.h"
 #include "Internal/GraphicsItems/MacWebKitRasterizerGraphicsItem.h"
-#include "Internal/Utils/ZLibUtils.h"
 
 namespace {
 
-class DecoderMacWebKit : public IDecoder
-{
-public:
-    QString name() const
-    {
-        return QString::fromLatin1("DecoderMacWebKit");
-    }
-
-    QStringList supportedFormats() const
-    {
-        return QStringList()
-                << QString::fromLatin1("svg")
-                << QString::fromLatin1("svgz");
-    }
-
-    QStringList advancedFormats() const
-    {
-        return QStringList();
-    }
-
-    QGraphicsItem *loadImage(const QString &filePath)
-    {
-        const QFileInfo fileInfo(filePath);
-        if(!fileInfo.exists() || !fileInfo.isReadable())
-            return NULL;
-
-        MacWebKitRasterizerGraphicsItem *result = NULL;
-        if(fileInfo.suffix().toLower() == QString::fromLatin1("svgz"))
-        {
-            const QByteArray svgData = ZLibUtils::InflateFile(fileInfo.absoluteFilePath());
-            if(!svgData.isEmpty())
-                result = new MacWebKitRasterizerGraphicsItem(svgData, MacWebKitRasterizerGraphicsItem::DATA_TYPE_SVG);
-        }
-        else
-        {
-            result = new MacWebKitRasterizerGraphicsItem(QUrl(fileInfo.absoluteFilePath()));
-        }
-
-        if(result && result->state() != MacWebKitRasterizerGraphicsItem::STATE_SUCCEED)
-        {
-            result->deleteLater();
-            result = NULL;
-        }
-
-        return result;
-    }
-};
-
-DecoderAutoRegistrator registrator(new DecoderMacWebKit);
+DecoderAutoRegistrator registrator(new SVGWebBrowserDecoderTemplate<MacWebKitRasterizerGraphicsItem>("DecoderMacWebKit"));
 
 } // namespace

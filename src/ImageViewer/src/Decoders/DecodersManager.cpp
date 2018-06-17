@@ -84,8 +84,10 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderLibBpg"               , 1320, -1); ///< Умеет анимированные bpg. Поддерживает EXIF и ICCP.
         /// @note Декодеры векторных изображений
         P("DecoderQtSVG"                , 2100, -1); ///< Умеет svg, но очень плохо.
-        P("DecoderMacWebKit"            , 2200, -1); ///< Умеет неинтерактивные svg.
-        P("DecoderLibWmf"               , 2300, -1); ///< Умеет wmf.
+        P("DecoderMacWebKit"            , 2200, -1); ///< Умеет неинтерактивные svg, только под macOS. Весьма медленная отрисовка.
+        P("DecoderQtWebEngine"          , 2300, -1); ///< Умеет анимированные svg, в том числе и с JavaScript. Весьма медленная отрисовка.
+        P("DecoderQtWebKit"             , 2400, -1); ///< Умеет анимированные svg, в том числе и с JavaScript. Очень быстр, но deprecated.
+        P("DecoderLibWmf"               , 2500, -1); ///< Умеет wmf.
 #undef P
     }
 
