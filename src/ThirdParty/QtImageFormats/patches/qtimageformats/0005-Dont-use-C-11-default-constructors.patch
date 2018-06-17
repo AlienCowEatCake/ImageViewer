@@ -1,0 +1,25 @@
+From 5a2cf5748c68a6447f7b58c04c62a346583d32ef Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 17 Jun 2018 21:58:03 +0700
+Subject: [PATCH 5/5] Dont use C++11 'default' constructors
+
+---
+ src/plugins/imageformats/tga/qtgafile.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/plugins/imageformats/tga/qtgafile.cpp b/src/plugins/imageformats/tga/qtgafile.cpp
+index ea48f99..089f105 100644
+--- a/src/plugins/imageformats/tga/qtgafile.cpp
++++ b/src/plugins/imageformats/tga/qtgafile.cpp
+@@ -47,7 +47,7 @@ struct TgaReader
+ {
+     Q_DISABLE_COPY(TgaReader)
+ 
+-    TgaReader() = default;
++    TgaReader() {}
+ 
+     virtual ~TgaReader() {}
+     virtual QRgb operator()(QIODevice *s) const = 0;
+-- 
+2.17.1
+

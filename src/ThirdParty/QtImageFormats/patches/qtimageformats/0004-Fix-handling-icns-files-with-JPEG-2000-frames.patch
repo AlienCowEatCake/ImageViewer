@@ -1,7 +1,7 @@
-From ddc936f884b8f1dc5e4daa67f0020d0d9e1f2ca2 Mon Sep 17 00:00:00 2001
+From 06bd6b66bf88eb6bbcc8233f2f8bbaf19b2f380e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 15 May 2017 00:06:30 +0700
-Subject: [PATCH 4/4] Fix handling icns files with JPEG 2000 frames
+Subject: [PATCH 4/5] Fix handling icns files with JPEG 2000 frames
 
 ---
  src/plugins/imageformats/icns/qicnshandler.cpp | 15 ++++++++++++++-

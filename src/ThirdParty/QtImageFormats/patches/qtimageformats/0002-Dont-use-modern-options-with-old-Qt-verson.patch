@@ -1,7 +1,7 @@
-From 6e51e3bab1ef2a140fc17d97bfc94a29e7340034 Mon Sep 17 00:00:00 2001
+From 4baaa99203a27d4d97e621c290ff1261214bff61 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 17 Jun 2018 19:52:22 +0700
-Subject: [PATCH 2/4] Dont use modern options with old Qt verson
+Subject: [PATCH 2/5] Dont use modern options with old Qt verson
 
 ---
  src/plugins/imageformats/dds/qddshandler.cpp  |  7 ++++++-

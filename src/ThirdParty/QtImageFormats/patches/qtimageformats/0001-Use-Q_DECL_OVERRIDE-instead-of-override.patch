@@ -1,7 +1,7 @@
-From 08f1e18405e2c432f4252705bd3b98a563d761a3 Mon Sep 17 00:00:00 2001
+From 10aaada16c8e19b64c3ef3526dc135aefe9313d5 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 10 Mar 2018 15:40:08 +0700
-Subject: [PATCH 1/4] Use "Q_DECL_OVERRIDE" instead of "override"
+Subject: [PATCH 1/5] Use "Q_DECL_OVERRIDE" instead of "override"
 
 ---
  src/plugins/imageformats/dds/qddshandler.h    | 18 ++++++-------

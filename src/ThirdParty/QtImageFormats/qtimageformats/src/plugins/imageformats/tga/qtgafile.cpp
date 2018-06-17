@@ -47,7 +47,7 @@ struct TgaReader
 {
     Q_DISABLE_COPY(TgaReader)
 
-    TgaReader() = default;
+    TgaReader() {}
 
     virtual ~TgaReader() {}
     virtual QRgb operator()(QIODevice *s) const = 0;
