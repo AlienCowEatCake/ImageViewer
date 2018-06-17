@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libbpg {
 
-        THIRDPARTY_LIBBPG_PATH = $${PWD}/libbpg-0.9.7
+        THIRDPARTY_LIBBPG_PATH = $${PWD}/libbpg-0.9.8
 
         INCLUDEPATH += $${THIRDPARTY_LIBBPG_PATH}
         DEPENDPATH += $${THIRDPARTY_LIBBPG_PATH}

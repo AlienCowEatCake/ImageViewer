@@ -11,7 +11,7 @@ CONFIG -= warn_on
 #CONFIG += hide_symbols
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBBPG_PATH = $${PWD}/libbpg-0.9.7
+THIRDPARTY_LIBBPG_PATH = $${PWD}/libbpg-0.9.8
 
 include(../CommonSettings.pri)
 
