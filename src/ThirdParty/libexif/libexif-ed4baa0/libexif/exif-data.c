@@ -378,7 +378,7 @@ exif_data_load_data_content (ExifData *data, ExifIfd ifd,
 	if ((((int)ifd) < 0) || ( ((int)ifd) >= EXIF_IFD_COUNT))
 	  return;
 
-	if (recursion_depth > 30) {
+	if (recursion_depth > 12) {
 		exif_log (data->priv->log, EXIF_LOG_CODE_CORRUPT_DATA, "ExifData",
 			  "Deep recursion detected!");
 		return;
@@ -811,7 +811,7 @@ exif_data_load_data (ExifData *data, const unsigned char *d_orig,
 	}
 	if (!memcmp (d, ExifHeader, 6)) {
 		exif_log (data->priv->log, EXIF_LOG_CODE_DEBUG, "ExifData",
-			  "Found EXIF header.");
+			  "Found EXIF header at start.");
 	} else {
 		while (ds >= 3) {
 			while (ds && (d[0] == 0xff)) {
@@ -826,8 +826,16 @@ exif_data_load_data (ExifData *data, const unsigned char *d_orig,
 				continue;
 			}
 
-			/* JPEG_MARKER_APP0 */
-			if (ds >= 3 && d[0] == JPEG_MARKER_APP0) {
+			/* JPEG_MARKER_APP1 */
+			if (ds && d[0] == JPEG_MARKER_APP1)
+				break;
+
+			/* Skip irrelevant APP markers. The branch for APP1 must come before this,
+			   otherwise this code block will cause APP1 to be skipped. This code path
+			   is only relevant for files that are nonconformant to the EXIF
+			   specification. For conformant files, the APP1 code path above will be
+			   taken. */
+			if (ds >= 3 && d[0] >= 0xe0 && d[0] <= 0xef) {  /* JPEG_MARKER_APPn */
 				d++;
 				ds--;
 				l = (d[0] << 8) | d[1];
@@ -837,10 +845,6 @@ exif_data_load_data (ExifData *data, const unsigned char *d_orig,
 				ds -= l;
 				continue;
 			}
-
-			/* JPEG_MARKER_APP1 */
-			if (ds && d[0] == JPEG_MARKER_APP1)
-				break;
 
 			/* Unknown marker or data. Give up. */
 			exif_log (data->priv->log, EXIF_LOG_CODE_CORRUPT_DATA,
