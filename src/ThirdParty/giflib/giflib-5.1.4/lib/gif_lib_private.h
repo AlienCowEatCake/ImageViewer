@@ -54,6 +54,9 @@ typedef struct GifFilePrivateType {
     bool gif89;
 } GifFilePrivateType;
 
+extern void *openbsd_reallocarray(void *optr, size_t nmemb, size_t size);
+#define reallocarray openbsd_reallocarray
+
 #endif /* _GIF_LIB_PRIVATE_H */
 
 /* end */

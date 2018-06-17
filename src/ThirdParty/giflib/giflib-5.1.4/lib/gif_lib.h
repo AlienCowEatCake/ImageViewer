@@ -244,9 +244,6 @@ extern ColorMapObject *GifUnionColorMap(const ColorMapObject *ColorIn1,
                                      GifPixelType ColorTransIn2[]);
 extern int GifBitSize(int n);
 
-extern void *
-reallocarray(void *optr, size_t nmemb, size_t size);
-
 /******************************************************************************
  Support for the in-core structures allocation (slurp mode).              
 ******************************************************************************/

@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "gif_lib.h"
+#include "gif_lib_private.h"
 
 #define MAX(x, y)    (((x) > (y)) ? (x) : (y))
 
