@@ -1,13 +1,13 @@
-From d02eaf5fc9e0b7a64f812f6f5cbb2dabeba1e7eb Mon Sep 17 00:00:00 2001
+From 6e51e3bab1ef2a140fc17d97bfc94a29e7340034 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
-Date: Sun, 14 May 2017 23:12:38 +0700
+Date: Sun, 17 Jun 2018 19:52:22 +0700
 Subject: [PATCH 2/4] Dont use modern options with old Qt verson
 
 ---
- src/plugins/imageformats/dds/qddshandler.cpp   | 7 ++++++-
- src/plugins/imageformats/jp2/qjp2handler.cpp   | 7 +++++++
- src/plugins/imageformats/webp/qwebphandler.cpp | 4 ++++
- 3 files changed, 17 insertions(+), 1 deletion(-)
+ src/plugins/imageformats/dds/qddshandler.cpp  |  7 ++++++-
+ src/plugins/imageformats/jp2/qjp2handler.cpp  |  7 +++++++
+ .../imageformats/webp/qwebphandler.cpp        | 20 +++++++++++++++++++
+ 3 files changed, 33 insertions(+), 1 deletion(-)
 
 diff --git a/src/plugins/imageformats/dds/qddshandler.cpp b/src/plugins/imageformats/dds/qddshandler.cpp
 index 3a44b51..dab69d5 100644
@@ -56,12 +56,12 @@ index 17373fd..da74fb2 100644
      }
  
 diff --git a/src/plugins/imageformats/webp/qwebphandler.cpp b/src/plugins/imageformats/webp/qwebphandler.cpp
-index 3a7bf43..13ea7fa 100644
+index 578a701..d861db4 100644
 --- a/src/plugins/imageformats/webp/qwebphandler.cpp
 +++ b/src/plugins/imageformats/webp/qwebphandler.cpp
-@@ -176,7 +176,11 @@ bool QWebpHandler::read(QImage *image)
- 
-     QImage frame(m_iter.width, m_iter.height, QImage::Format_ARGB32);
+@@ -177,7 +177,11 @@ bool QWebpHandler::read(QImage *image)
+     QImage::Format format = m_features.has_alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
+     QImage frame(m_iter.width, m_iter.height, format);
      uint8_t *output = frame.bits();
 +#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
      size_t output_size = frame.sizeInBytes();
@@ -71,6 +71,41 @@ index 3a7bf43..13ea7fa 100644
  #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
      if (!WebPDecodeBGRAInto(
          reinterpret_cast<const uint8_t*>(m_iter.fragment.bytes), m_iter.fragment.size,
+@@ -221,7 +225,11 @@ bool QWebpHandler::write(const QImage &image)
+ 
+     QImage srcImage = image;
+     bool alpha = srcImage.hasAlphaChannel();
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+     QImage::Format newFormat = alpha ? QImage::Format_RGBA8888 : QImage::Format_RGB888;
++#else
++    QImage::Format newFormat = alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
++#endif
+     if (srcImage.format() != newFormat)
+         srcImage = srcImage.convertToFormat(newFormat);
+ 
+@@ -237,10 +245,22 @@ bool QWebpHandler::write(const QImage &image)
+     picture.height = srcImage.height();
+     picture.use_argb = 1;
+     bool failed = false;
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+     if (alpha)
+         failed = !WebPPictureImportRGBA(&picture, srcImage.bits(), srcImage.bytesPerLine());
+     else
+         failed = !WebPPictureImportRGB(&picture, srcImage.bits(), srcImage.bytesPerLine());
++#else
++# if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
++    if (alpha)
++        failed = !WebPPictureImportBGRA(&picture, srcImage.bits(), srcImage.bytesPerLine());
++    else
++        failed = !WebPPictureImportBGRX(&picture, srcImage.bits(), srcImage.bytesPerLine());
++# else /* Q_BIG_ENDIAN */
++    qWarning() << "QWebpHandler::write is not implemented for big endian systems with Qt < 5.2";
++    failed = true;
++# endif
++#endif
+ 
+     if (failed) {
+         qWarning() << "failed to import image data to webp picture.";
 -- 
-2.14.2
+2.17.1
 

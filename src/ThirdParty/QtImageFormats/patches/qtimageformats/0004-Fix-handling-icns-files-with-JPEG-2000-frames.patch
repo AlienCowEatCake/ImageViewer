@@ -1,4 +1,4 @@
-From 88843aa58e17bf2d92196e7e0e848cdb4396c4d9 Mon Sep 17 00:00:00 2001
+From ddc936f884b8f1dc5e4daa67f0020d0d9e1f2ca2 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 15 May 2017 00:06:30 +0700
 Subject: [PATCH 4/4] Fix handling icns files with JPEG 2000 frames
@@ -41,5 +41,5 @@ index a854506..981f367 100644
              if (format == 0)
                  format = "unknown";
 -- 
-2.13.0
+2.17.1
 

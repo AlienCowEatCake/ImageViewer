@@ -53,15 +53,18 @@ void tst_qwebp::readImage_data()
 {
     QTest::addColumn<QString>("fileName");
     QTest::addColumn<QSize>("size");
+    QTest::addColumn<bool>("alpha");
 
-    QTest::newRow("kollada") << QString("kollada") << QSize(436, 160);
-    QTest::newRow("kollada_lossless") << QString("kollada_lossless") << QSize(436, 160);
+    QTest::newRow("kollada") << QString("kollada") << QSize(436, 160) << true;
+    QTest::newRow("kollada_lossless") << QString("kollada_lossless") << QSize(436, 160) << true;
+    QTest::newRow("kollada_noalpha") << QString("kollada_noalpha") << QSize(436, 160) << false;
 }
 
 void tst_qwebp::readImage()
 {
     QFETCH(QString, fileName);
     QFETCH(QSize, size);
+    QFETCH(bool, alpha);
 
     const QString path = QStringLiteral(":/images/") + fileName + QStringLiteral(".webp");
     QImageReader reader(path);
@@ -69,6 +72,7 @@ void tst_qwebp::readImage()
     QImage image = reader.read();
     QVERIFY2(!image.isNull(), qPrintable(reader.errorString()));
     QCOMPARE(image.size(), size);
+    QCOMPARE(image.hasAlphaChannel(), alpha);
 }
 
 void tst_qwebp::readAnimation_data()
@@ -136,10 +140,13 @@ void tst_qwebp::writeImage_data()
     QTest::addColumn<QString>("postfix");
     QTest::addColumn<int>("quality");
     QTest::addColumn<QSize>("size");
+    QTest::addColumn<bool>("alpha");
     QTest::addColumn<bool>("needcheck");
 
-    QTest::newRow("kollada-75") << QString("kollada") << QString(".png") << 75 << QSize(436, 160) << false;
-    QTest::newRow("kollada-100") << QString("kollada") << QString(".png") << 100 << QSize(436, 160) << true;
+    QTest::newRow("kollada-75") << QString("kollada") << QString(".png") << 75 << QSize(436, 160) << true << false;
+    QTest::newRow("kollada-100") << QString("kollada") << QString(".png") << 100 << QSize(436, 160) << true << true;
+    QTest::newRow("kollada_noalpha-75") << QString("kollada_noalpha") << QString(".webp") << 75 << QSize(436, 160) << false << false;
+    QTest::newRow("kollada_noalpha-100") << QString("kollada_noalpha") << QString(".webp") << 100 << QSize(436, 160) << false << true;
 }
 
 void tst_qwebp::writeImage()
@@ -148,6 +155,7 @@ void tst_qwebp::writeImage()
     QFETCH(QString, postfix);
     QFETCH(int, quality);
     QFETCH(QSize, size);
+    QFETCH(bool, alpha);
     QFETCH(bool, needcheck);
 
     const QString path = QString("%1-%2.webp").arg(fileName).arg(quality);
@@ -162,8 +170,13 @@ void tst_qwebp::writeImage()
     writer.setQuality(quality);
     QVERIFY2(writer.write(image), qPrintable(writer.errorString()));
 
+    QImage reread(path);
+    QVERIFY(!reread.isNull());
+    QVERIFY(reread.size() == size);
+    QVERIFY(reread.hasAlphaChannel() == alpha);
+
     if (needcheck)
-        QVERIFY(image == QImage(path));
+        QVERIFY(image == reread);
 }
 
 QTEST_MAIN(tst_qwebp)

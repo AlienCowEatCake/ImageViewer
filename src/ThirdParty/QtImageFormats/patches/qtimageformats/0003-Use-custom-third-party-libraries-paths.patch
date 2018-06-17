@@ -1,7 +1,7 @@
-From 626bbd164d711a699685e1f95ead1e4ff3d29e6f Mon Sep 17 00:00:00 2001
+From 6ae19c4845835e81a08ce7920d483a444111083b Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 May 2017 23:13:29 +0700
-Subject: [PATCH 3/3] Use custom third-party libraries paths
+Subject: [PATCH 3/4] Use custom third-party libraries paths
 
 ---
  src/3rdparty/zlib_dependency.pri             | 11 ++++++-----
@@ -69,5 +69,5 @@ index 5c0fff1..25a2939 100644
 +#    *-g++*: QMAKE_CFLAGS_WARN_ON += -Wno-unused-parameter
 +#}
 -- 
-2.13.0
+2.17.1
 

@@ -25,9 +25,6 @@ SOURCES += \
     $$PWD/libwebp/src/dsp/alpha_processing_mips_dsp_r2.c \
     $$PWD/libwebp/src/dsp/alpha_processing_sse2.c \
     $$PWD/libwebp/src/dsp/alpha_processing_sse41.c \
-    $$PWD/libwebp/src/dsp/argb.c \
-    $$PWD/libwebp/src/dsp/argb_mips_dsp_r2.c \
-    $$PWD/libwebp/src/dsp/argb_sse2.c \
     $$PWD/libwebp/src/dsp/cost.c \
     $$PWD/libwebp/src/dsp/cost_mips32.c \
     $$PWD/libwebp/src/dsp/cost_mips_dsp_r2.c \
@@ -64,21 +61,25 @@ SOURCES += \
     $$PWD/libwebp/src/dsp/rescaler_mips_dsp_r2.c \
     $$PWD/libwebp/src/dsp/rescaler_msa.c \
     $$PWD/libwebp/src/dsp/rescaler_sse2.c \
+    $$PWD/libwebp/src/dsp/ssim.c \
+    $$PWD/libwebp/src/dsp/ssim_sse2.c \
     $$PWD/libwebp/src/dsp/upsampling.c \
     $$PWD/libwebp/src/dsp/upsampling_mips_dsp_r2.c \
     $$PWD/libwebp/src/dsp/upsampling_msa.c \
     $$PWD/libwebp/src/dsp/upsampling_sse2.c \
+    $$PWD/libwebp/src/dsp/upsampling_sse41.c \
     $$PWD/libwebp/src/dsp/yuv.c \
     $$PWD/libwebp/src/dsp/yuv_mips_dsp_r2.c \
     $$PWD/libwebp/src/dsp/lossless_sse2.c \
     $$PWD/libwebp/src/dsp/yuv_mips32.c \
     $$PWD/libwebp/src/dsp/yuv_sse2.c \
+    $$PWD/libwebp/src/dsp/yuv_sse41.c \
     $$PWD/libwebp/src/enc/alpha_enc.c \
     $$PWD/libwebp/src/enc/analysis_enc.c \
+    $$PWD/libwebp/src/enc/backward_references_cost_enc.c \
     $$PWD/libwebp/src/enc/backward_references_enc.c \
     $$PWD/libwebp/src/enc/config_enc.c \
     $$PWD/libwebp/src/enc/cost_enc.c \
-    $$PWD/libwebp/src/enc/delta_palettization_enc.c \
     $$PWD/libwebp/src/enc/filter_enc.c \
     $$PWD/libwebp/src/enc/frame_enc.c \
     $$PWD/libwebp/src/enc/histogram_enc.c \
@@ -131,7 +132,8 @@ equals(QT_ARCH, arm)|equals(QT_ARCH, arm64) {
         $$PWD/libwebp/src/dsp/lossless_enc_neon.c \
         $$PWD/libwebp/src/dsp/lossless_neon.c \
         $$PWD/libwebp/src/dsp/rescaler_neon.c \
-        $$PWD/libwebp/src/dsp/upsampling_neon.c
+        $$PWD/libwebp/src/dsp/upsampling_neon.c \
+        $$PWD/libwebp/src/dsp/yuv_neon.c
 
     contains(QT_CPU_FEATURES.$$QT_ARCH, neon) {
         # Default compiler settings include this feature, so just add to SOURCES

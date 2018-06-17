@@ -5,6 +5,9 @@ project     = QtImageFormats
 description = Qt Image Formats Documentation
 version     = $QT_VERSION
 
+# Instruct Clang to not look for a module header
+moduleheader =
+
 # Directories in which to search for files to document.
 # Paths are relative to the location of this file.
 # exampledirs += ../examples

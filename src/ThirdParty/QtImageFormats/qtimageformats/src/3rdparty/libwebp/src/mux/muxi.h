@@ -15,9 +15,9 @@
 #define WEBP_MUX_MUXI_H_
 
 #include <stdlib.h>
-#include "../dec/vp8i_dec.h"
-#include "../dec/vp8li_dec.h"
-#include "../webp/mux.h"
+#include "src/dec/vp8i_dec.h"
+#include "src/dec/vp8li_dec.h"
+#include "src/webp/mux.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,8 +26,8 @@ extern "C" {
 //------------------------------------------------------------------------------
 // Defines and constants.
 
-#define MUX_MAJ_VERSION 0
-#define MUX_MIN_VERSION 4
+#define MUX_MAJ_VERSION 1
+#define MUX_MIN_VERSION 0
 #define MUX_REV_VERSION 0
 
 // Chunk object.

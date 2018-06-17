@@ -1,18 +1,18 @@
-From ef1b4549d244a391335621473792857e57fd460e Mon Sep 17 00:00:00 2001
+From 08f1e18405e2c432f4252705bd3b98a563d761a3 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 10 Mar 2018 15:40:08 +0700
 Subject: [PATCH 1/4] Use "Q_DECL_OVERRIDE" instead of "override"
 
 ---
- src/plugins/imageformats/dds/qddshandler.h     | 18 +++++++++---------
- src/plugins/imageformats/icns/qicnshandler_p.h | 18 +++++++++---------
- src/plugins/imageformats/jp2/qjp2handler_p.h   | 14 +++++++-------
- src/plugins/imageformats/mng/qmnghandler_p.h   | 26 +++++++++++++-------------
- src/plugins/imageformats/tga/qtgafile.cpp      |  6 +++---
- src/plugins/imageformats/tga/qtgahandler.h     | 12 ++++++------
- src/plugins/imageformats/tiff/qtiffhandler_p.h | 22 +++++++++++-----------
- src/plugins/imageformats/wbmp/qwbmphandler_p.h | 10 +++++-----
- src/plugins/imageformats/webp/qwebphandler_p.h | 24 ++++++++++++------------
+ src/plugins/imageformats/dds/qddshandler.h    | 18 ++++++-------
+ .../imageformats/icns/qicnshandler_p.h        | 18 ++++++-------
+ src/plugins/imageformats/jp2/qjp2handler_p.h  | 14 +++++-----
+ src/plugins/imageformats/mng/qmnghandler_p.h  | 26 +++++++++----------
+ src/plugins/imageformats/tga/qtgafile.cpp     |  6 ++---
+ src/plugins/imageformats/tga/qtgahandler.h    | 12 ++++-----
+ .../imageformats/tiff/qtiffhandler_p.h        | 22 ++++++++--------
+ .../imageformats/wbmp/qwbmphandler_p.h        | 10 +++----
+ .../imageformats/webp/qwebphandler_p.h        | 24 ++++++++---------
  9 files changed, 75 insertions(+), 75 deletions(-)
 
 diff --git a/src/plugins/imageformats/dds/qddshandler.h b/src/plugins/imageformats/dds/qddshandler.h
@@ -301,5 +301,5 @@ index 950b501..5126692 100644
  private:
      bool ensureScanned() const;
 -- 
-2.14.2
+2.17.1
 

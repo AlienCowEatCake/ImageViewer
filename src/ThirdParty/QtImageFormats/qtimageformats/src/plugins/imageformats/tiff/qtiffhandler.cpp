@@ -558,7 +558,8 @@ bool QTiffHandler::write(const QImage &image)
             photometric = PHOTOMETRIC_MINISWHITE;
         if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, photometric)
             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
-            || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 1)) {
+            || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 1)
+            || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tiff, 0))) {
             TIFFClose(tiff);
             return false;
         }
@@ -593,14 +594,16 @@ bool QTiffHandler::write(const QImage &image)
                 photometric = PHOTOMETRIC_MINISWHITE;
             if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, photometric)
                     || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
-                    || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)) {
+                    || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)
+                    || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tiff, 0))) {
                 TIFFClose(tiff);
                 return false;
             }
         } else {
             if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_PALETTE)
                     || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
-                    || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)) {
+                    || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)
+                    || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tiff, 0))) {
                 TIFFClose(tiff);
                 return false;
             }
@@ -652,7 +655,8 @@ bool QTiffHandler::write(const QImage &image)
         if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB)
             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 3)
-            || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)) {
+            || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)
+            || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tiff, 0))) {
             TIFFClose(tiff);
             return false;
         }
@@ -683,7 +687,8 @@ bool QTiffHandler::write(const QImage &image)
             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 4)
             || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)
-            || !TIFFSetField(tiff, TIFFTAG_EXTRASAMPLES, 1, &extrasamples)) {
+            || !TIFFSetField(tiff, TIFFTAG_EXTRASAMPLES, 1, &extrasamples)
+            || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tiff, 0))) {
             TIFFClose(tiff);
             return false;
         }
