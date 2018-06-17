@@ -10,7 +10,7 @@ TARGET = tp_LibWebP
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-0.6.1
+THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.0.0
 
 include(../CommonSettings.pri)
 
@@ -64,6 +64,7 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_mips_dsp_r2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_sse2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_mips_dsp_r2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing.c \
@@ -75,13 +76,13 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_sse2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/alpha_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/analysis_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/backward_references_cost_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/backward_references_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/config_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/cost_enc.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/delta_palettization_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/filter_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/frame_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/histogram_enc.c \
@@ -124,16 +125,16 @@ HEADERS += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/vp8li_dec.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/webpi_dec.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/common_sse2.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/common_sse41.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dsp.h \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_common.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/mips_macro.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/msa_macro.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/neon.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/backward_references_enc.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/cost_enc.h \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/delta_palettization_enc.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/histogram_enc.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/vp8i_enc.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/vp8li_enc.h \
