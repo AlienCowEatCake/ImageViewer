@@ -1067,6 +1067,9 @@ _TIFFVGetField(TIFF* tif, uint32 tag, va_list ap)
 			if (td->td_samplesperpixel - td->td_extrasamples > 1) {
 				*va_arg(ap, uint16**) = td->td_transferfunction[1];
 				*va_arg(ap, uint16**) = td->td_transferfunction[2];
+			} else {
+				*va_arg(ap, uint16**) = NULL;
+				*va_arg(ap, uint16**) = NULL;
 			}
 			break;
 		case TIFFTAG_REFERENCEBLACKWHITE:
