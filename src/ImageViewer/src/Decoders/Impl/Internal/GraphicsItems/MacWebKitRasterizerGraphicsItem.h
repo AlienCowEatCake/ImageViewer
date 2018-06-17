@@ -45,8 +45,6 @@ public:
 
 private:
     QVariant evalJSImpl(const QString &scriptSource);
-    QRectF detectFallbackSvgRect();
-    QRectF svgBoundingClientRect();
 
 private:
     struct Impl;

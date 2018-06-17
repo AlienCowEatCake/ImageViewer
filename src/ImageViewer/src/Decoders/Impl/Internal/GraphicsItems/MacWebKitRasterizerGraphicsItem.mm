@@ -56,37 +56,6 @@ const qreal MAX_IMAGE_DIMENSION = 16384;
 const qreal MIN_IMAGE_DIMENSION = 1;
 const qreal DIMENSION_DELTA = 0.5;
 
-QRectF DOMNodeActualBoundingBox(DOMNode *node)
-{
-    QRectF result;
-    DOMNodeList *childNodes = [node childNodes];
-    for(unsigned int i = 0; i < [childNodes length]; i++)
-    {
-        DOMNode *childNode = [childNodes item: i];
-        QRectF childRect = ObjCUtils::QRectFFromNSRect([childNode boundingBox]);
-        if(!childRect.isValid())
-            childRect = DOMNodeActualBoundingBox(childNode);
-        if(!childRect.isValid())
-            continue;
-        if(!result.isValid())
-            result = childRect;
-        else
-            result = result.united(childRect);
-    }
-    return result;
-}
-
-QRectF WebFrameDocumentBounds(WebFrame *frame)
-{
-    return ObjCUtils::QRectFFromNSRect([[[frame frameView] documentView] bounds]);
-}
-
-} // namespace
-
-// ====================================================================================================
-
-namespace {
-
 enum State
 {
     STATE_LOADING,
@@ -363,8 +332,6 @@ bool MacWebKitRasterizerGraphicsItem::load(const QByteArray &svgData, const QUrl
     qDebug() << "***** size attribute:" << svgSizeAttribute();
     qDebug() << "***** getBBox() value:" << svgBoundingBoxRect();
     qDebug() << "***** getBoundingClientRect() value:" << svgBoundingClientRect();
-    qDebug() << "***** DOM boundingBox:" << DOMNodeActualBoundingBox([m_impl->view mainFrameDocument]);
-    qDebug() << "***** documentView bounds:" << WebFrameDocumentBounds([m_impl->view mainFrame]);
     qDebug() << "***** ----------------------------------------";
     qDebug() << "***** actual rect:" << m_impl->rect;
     qDebug() << "***** ----------------------------------------";
@@ -420,28 +387,6 @@ QVariant MacWebKitRasterizerGraphicsItem::evalJSImpl(const QString &scriptSource
 {
     AUTORELEASE_POOL;
     return ObjCUtils::QStringFromNSString([m_impl->view stringByEvaluatingJavaScriptFromString: ObjCUtils::QStringToNSString(scriptSource)]);
-}
-
-QRectF MacWebKitRasterizerGraphicsItem::detectFallbackSvgRect()
-{
-    QRectF rect;
-    if(InfoUtils::MacVersionGreatOrEqual(10, 8))
-        rect = DOMNodeActualBoundingBox([m_impl->view mainFrameDocument]);
-    else
-        rect = svgBoundingBoxRect();
-    if(rect.isValid())
-        rect = rect.intersected(QRectF(0, 0, std::numeric_limits<qreal>::max(), std::numeric_limits<qreal>::max()));
-    else
-        rect = svgBoundingClientRect();
-    return rect;
-}
-
-QRectF MacWebKitRasterizerGraphicsItem::svgBoundingClientRect()
-{
-    if(InfoUtils::MacVersionGreatOrEqual(10, 8))
-        return AbstractSVGWebBrowser::svgBoundingClientRect();
-    else
-        return WebFrameDocumentBounds([m_impl->view mainFrame]);
 }
 
 // ====================================================================================================
