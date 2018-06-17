@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libjasper {
 
-        THIRDPARTY_JASPER_PATH = $${PWD}/jasper-771c6c0
+        THIRDPARTY_JASPER_PATH = $${PWD}/jasper-573a6e4
         THIRDPARTY_JASPER_CONFIG_PATH = $${PWD}/config
 
         INCLUDEPATH += $${THIRDPARTY_JASPER_CONFIG_PATH} $${THIRDPARTY_JASPER_PATH}/src/libjasper/include
