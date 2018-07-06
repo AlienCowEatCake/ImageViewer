@@ -29,16 +29,15 @@
 #include <QFileInfo>
 #include <QImage>
 #include <QFile>
-#include <QDir>
 #include <QByteArray>
 #include <QDebug>
 #include <QLibrary>
-#include <QApplication>
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
+#include "Internal/Utils/LibraryUtils.h"
 #if defined (HAS_ZLIB)
 #include "Internal/Utils/ZLibUtils.h"
 #endif
@@ -50,10 +49,34 @@ namespace
 
 #if !defined (LINKED_LIBRSVG)
 
-const QString GLIB_LIBRARY_NAME = QString::fromLatin1("glib-2.0");
-const QString GOBJECT_LIBRARY_NAME = QString::fromLatin1("gobject-2.0");
-const QString CAIRO_LIBRARY_NAME = QString::fromLatin1("cairo");
-const QString RSVG_LIBRARY_NAME = QString::fromLatin1("rsvg-2");
+const QStringList GLIB_LIBRARY_NAMES = QStringList()
+        << QString::fromLatin1("glib-2.0")
+        << QString::fromLatin1("glib-2.0.0")
+        << QString::fromLatin1("libglib-2.0")
+        << QString::fromLatin1("libglib-2.0.0")
+        << QString::fromLatin1("libglib-2.0-0")
+           ;
+const QStringList GOBJECT_LIBRARY_NAMES = QStringList()
+        << QString::fromLatin1("gobject-2.0")
+        << QString::fromLatin1("gobject-2.0.0")
+        << QString::fromLatin1("libgobject-2.0")
+        << QString::fromLatin1("libgobject-2.0.0")
+        << QString::fromLatin1("libgobject-2.0-0")
+           ;
+const QStringList CAIRO_LIBRARY_NAMES = QStringList()
+        << QString::fromLatin1("cairo")
+        << QString::fromLatin1("cairo.2")
+        << QString::fromLatin1("libcairo")
+        << QString::fromLatin1("libcairo.2")
+        << QString::fromLatin1("libcairo-2")
+           ;
+const QStringList RSVG_LIBRARY_NAMES = QStringList()
+        << QString::fromLatin1("rsvg-2")
+        << QString::fromLatin1("rsvg-2.2")
+        << QString::fromLatin1("librsvg-2")
+        << QString::fromLatin1("librsvg-2.2")
+        << QString::fromLatin1("librsvg-2-2")
+           ;
 
 struct GError
 {
@@ -89,7 +112,7 @@ public:
         static GLib _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load" << GLIB_LIBRARY_NAME;
+            qWarning() << "Failed to load libglib";
             return NULL;
         }
         return &_;
@@ -106,10 +129,7 @@ private:
     GLib()
         : m_g_error_free(NULL)
     {
-        m_library.setFileName(QDir(qApp->applicationDirPath()).filePath(GLIB_LIBRARY_NAME));
-        if(!m_library.load())
-            m_library.setFileName(GLIB_LIBRARY_NAME);
-        if(!m_library.load())
+        if(!LibraryUtils::LoadLibrary(m_library, GLIB_LIBRARY_NAMES))
             return;
 
         m_g_error_free = m_library.resolve("g_error_free");
@@ -131,7 +151,7 @@ void g_error_free(GError *error)
 {
     if(GLib *glib = GLib::instance())
         return glib->g_error_free(error);
-    qWarning() << "Failed to load" << GLIB_LIBRARY_NAME;
+    qWarning() << "Failed to load libglib";
 }
 
 class GObject
@@ -142,7 +162,7 @@ public:
         static GObject _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load" << GOBJECT_LIBRARY_NAME;
+            qWarning() << "Failed to load libgobject";
             return NULL;
         }
         return &_;
@@ -159,10 +179,7 @@ private:
     GObject()
         : m_g_object_unref(NULL)
     {
-        m_library.setFileName(QDir(qApp->applicationDirPath()).filePath(GOBJECT_LIBRARY_NAME));
-        if(!m_library.load())
-            m_library.setFileName(GOBJECT_LIBRARY_NAME);
-        if(!m_library.load())
+        if(!LibraryUtils::LoadLibrary(m_library, GOBJECT_LIBRARY_NAMES))
             return;
 
         m_g_object_unref = m_library.resolve("g_object_unref");
@@ -184,7 +201,7 @@ void g_object_unref(gpointer object)
 {
     if(GObject *gobject = GObject::instance())
         return gobject->g_object_unref(object);
-    qWarning() << "Failed to load" << GOBJECT_LIBRARY_NAME;
+    qWarning() << "Failed to load libgobject";
 }
 
 class Cairo
@@ -195,7 +212,7 @@ public:
         static Cairo _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load" << CAIRO_LIBRARY_NAME;
+            qWarning() << "Failed to load libcairo";
             return NULL;
         }
         return &_;
@@ -244,10 +261,7 @@ private:
         , m_cairo_destroy(NULL)
         , m_cairo_surface_destroy(NULL)
     {
-        m_library.setFileName(QDir(qApp->applicationDirPath()).filePath(CAIRO_LIBRARY_NAME));
-        if(!m_library.load())
-            m_library.setFileName(CAIRO_LIBRARY_NAME);
-        if(!m_library.load())
+        if(!LibraryUtils::LoadLibrary(m_library, CAIRO_LIBRARY_NAMES))
             return;
 
         m_cairo_image_surface_create_for_data = m_library.resolve("cairo_image_surface_create_for_data");
@@ -278,7 +292,7 @@ cairo_surface_t *cairo_image_surface_create_for_data(unsigned char *data, cairo_
 {
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_image_surface_create_for_data(data, format, width, height, stride);
-    qWarning() << "Failed to load" << CAIRO_LIBRARY_NAME;
+    qWarning() << "Failed to load libcairo";
     return NULL;
 }
 
@@ -286,7 +300,7 @@ cairo_t *cairo_create(cairo_surface_t *target)
 {
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_create(target);
-    qWarning() << "Failed to load" << CAIRO_LIBRARY_NAME;
+    qWarning() << "Failed to load libcairo";
     return NULL;
 }
 
@@ -294,21 +308,21 @@ void cairo_scale(cairo_t *cr, double sx, double sy)
 {
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_scale(cr, sx, sy);
-    qWarning() << "Failed to load" << CAIRO_LIBRARY_NAME;
+    qWarning() << "Failed to load libcairo";
 }
 
 void cairo_destroy(cairo_t *cr)
 {
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_destroy(cr);
-    qWarning() << "Failed to load" << CAIRO_LIBRARY_NAME;
+    qWarning() << "Failed to load libcairo";
 }
 
 void cairo_surface_destroy(cairo_surface_t *surface)
 {
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_surface_destroy(surface);
-    qWarning() << "Failed to load" << CAIRO_LIBRARY_NAME;
+    qWarning() << "Failed to load libcairo";
 }
 
 class RSVG
@@ -319,7 +333,7 @@ public:
         static RSVG _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load" << RSVG_LIBRARY_NAME;
+            qWarning() << "Failed to load librsvg";
             return NULL;
         }
         return &_;
@@ -360,10 +374,7 @@ private:
         , m_rsvg_handle_get_dimensions(NULL)
         , m_rsvg_handle_render_cairo(NULL)
     {
-        m_library.setFileName(QDir(qApp->applicationDirPath()).filePath(RSVG_LIBRARY_NAME));
-        if(!m_library.load())
-            m_library.setFileName(RSVG_LIBRARY_NAME);
-        if(!m_library.load())
+        if(!LibraryUtils::LoadLibrary(m_library, RSVG_LIBRARY_NAMES))
             return;
 
         m_rsvg_handle_new_from_data = m_library.resolve("rsvg_handle_new_from_data");
@@ -392,7 +403,7 @@ RsvgHandle *rsvg_handle_new_from_data(const quint8 *data, size_t data_len, GErro
 {
     if(RSVG *rsvg = RSVG::instance())
         return rsvg->rsvg_handle_new_from_data(data, data_len, error);
-    qWarning() << "Failed to load" << RSVG_LIBRARY_NAME;
+    qWarning() << "Failed to load librsvg";
     return NULL;
 }
 
@@ -400,21 +411,21 @@ void rsvg_handle_set_base_uri(RsvgHandle *handle, const char *base_uri)
 {
     if(RSVG *rsvg = RSVG::instance())
         return rsvg->rsvg_handle_set_base_uri(handle, base_uri);
-    qWarning() << "Failed to load" << RSVG_LIBRARY_NAME;
+    qWarning() << "Failed to load librsvg";
 }
 
 void rsvg_handle_get_dimensions(RsvgHandle *handle, RsvgDimensionData *dimension_data)
 {
     if(RSVG *rsvg = RSVG::instance())
         return rsvg->rsvg_handle_get_dimensions(handle, dimension_data);
-    qWarning() << "Failed to load" << RSVG_LIBRARY_NAME;
+    qWarning() << "Failed to load librsvg";
 }
 
 gboolean rsvg_handle_render_cairo(RsvgHandle *handle, cairo_t *cr)
 {
     if(RSVG *rsvg = RSVG::instance())
         return rsvg->rsvg_handle_render_cairo(handle, cr);
-    qWarning() << "Failed to load" << RSVG_LIBRARY_NAME;
+    qWarning() << "Failed to load librsvg";
     return 0;
 }
 

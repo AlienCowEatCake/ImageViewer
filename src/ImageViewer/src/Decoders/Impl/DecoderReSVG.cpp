@@ -23,24 +23,26 @@
 #include <QFileInfo>
 #include <QImage>
 #include <QFile>
-#include <QDir>
 #include <QByteArray>
 #include <QDebug>
 #include <QLibrary>
-#include <QApplication>
 #include <QPainter>
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
+#include "Internal/Utils/LibraryUtils.h"
 
 namespace
 {
 
 // ====================================================================================================
 
-const QString RESVG_LIBRARY_NAME = QString::fromLatin1("resvg");
+const QStringList RESVG_LIBRARY_NAMES = QStringList()
+        << QString::fromLatin1("resvg")
+        << QString::fromLatin1("libresvg")
+           ;
 
 typedef struct resvg_handle resvg_handle;
 typedef struct resvg_render_tree resvg_render_tree;
@@ -92,7 +94,7 @@ public:
         static ReSVG _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load" << RESVG_LIBRARY_NAME;
+            qWarning() << "Failed to load resvg";
             return NULL;
         }
         return &_;
@@ -161,16 +163,13 @@ private:
         , m_resvg_tree_destroy(NULL)
         , m_resvg_qt_render_to_canvas(NULL)
         {
-            m_library.setFileName(QDir(qApp->applicationDirPath()).filePath(RESVG_LIBRARY_NAME));
-            if(!m_library.load())
-                m_library.setFileName(RESVG_LIBRARY_NAME);
-            if(!m_library.load())
+            if(!LibraryUtils::LoadLibrary(m_library, RESVG_LIBRARY_NAMES))
                 return;
 
             m_resvg_init_log = m_library.resolve("resvg_init_log");
             m_resvg_init_options = m_library.resolve("resvg_init_options");
             m_resvg_parse_tree_from_data = m_library.resolve("resvg_parse_tree_from_data");
-    //        m_resvg_is_image_empty = m_library.resolve("resvg_is_image_empty");
+//            m_resvg_is_image_empty = m_library.resolve("resvg_is_image_empty");
             m_resvg_get_image_size = m_library.resolve("resvg_get_image_size");
             m_resvg_get_image_viewbox = m_library.resolve("resvg_get_image_viewbox");
             m_resvg_tree_destroy = m_library.resolve("resvg_tree_destroy");
@@ -205,14 +204,14 @@ void resvg_init_options(resvg_options *opt)
 {
     if(ReSVG *resvg = ReSVG::instance())
         return resvg->resvg_init_options(opt);
-    qWarning() << "Failed to load" << RESVG_LIBRARY_NAME;
+    qWarning() << "Failed to load resvg";
 }
 
 int resvg_parse_tree_from_data(const char *data, const size_t len, const resvg_options *opt, resvg_render_tree **tree)
 {
     if(ReSVG *resvg = ReSVG::instance())
         return resvg->resvg_parse_tree_from_data(data, len, opt, tree);
-    qWarning() << "Failed to load" << RESVG_LIBRARY_NAME;
+    qWarning() << "Failed to load resvg";
     return -1;
 }
 
@@ -220,7 +219,7 @@ int resvg_parse_tree_from_data(const char *data, const size_t len, const resvg_o
 //{
 //    if(ReSVG *resvg = ReSVG::instance())
 //        return resvg->resvg_is_image_empty(tree);
-//    qWarning() << "Failed to load" << RESVG_LIBRARY_NAME;
+//    qWarning() << "Failed to load resvg";
 //    return true;
 //}
 
@@ -228,7 +227,7 @@ resvg_size resvg_get_image_size(const resvg_render_tree *tree)
 {
     if(ReSVG *resvg = ReSVG::instance())
         return resvg->resvg_get_image_size(tree);
-    qWarning() << "Failed to load" << RESVG_LIBRARY_NAME;
+    qWarning() << "Failed to load resvg";
     resvg_size result;
     memset(&result, 0, sizeof(resvg_size));
     return result;
@@ -238,7 +237,7 @@ resvg_rect resvg_get_image_viewbox(const resvg_render_tree *tree)
 {
     if(ReSVG *resvg = ReSVG::instance())
         return resvg->resvg_get_image_viewbox(tree);
-    qWarning() << "Failed to load" << RESVG_LIBRARY_NAME;
+    qWarning() << "Failed to load resvg";
     resvg_rect result;
     memset(&result, 0, sizeof(resvg_rect));
     return result;
@@ -248,14 +247,14 @@ void resvg_tree_destroy(resvg_render_tree *tree)
 {
     if(ReSVG *resvg = ReSVG::instance())
         return resvg->resvg_tree_destroy(tree);
-    qWarning() << "Failed to load" << RESVG_LIBRARY_NAME;
+    qWarning() << "Failed to load resvg";
 }
 
 void resvg_qt_render_to_canvas(const resvg_render_tree *tree, const resvg_options *opt, resvg_size size, void *painter)
 {
     if(ReSVG *resvg = ReSVG::instance())
         return resvg->resvg_qt_render_to_canvas(tree, opt, size, painter);
-    qWarning() << "Failed to load" << RESVG_LIBRARY_NAME;
+    qWarning() << "Failed to load resvg";
 }
 
 bool isReady()

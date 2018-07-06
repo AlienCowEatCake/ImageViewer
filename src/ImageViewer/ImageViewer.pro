@@ -84,6 +84,7 @@ SOURCES += \
     src/Decoders/Impl/Internal/Scaling/AutoUpdatedScalingWorkerHandler.cpp \
     src/Decoders/Impl/Internal/Utils/ExifUtils.cpp \
     src/Decoders/Impl/Internal/Utils/CmsUtils.cpp \
+    src/Decoders/Impl/Internal/Utils/LibraryUtils.cpp \
     src/Decoders/Impl/Internal/Utils/ZLibUtils.cpp \
     src/Decoders/Impl/Internal/GraphicsItemsFactory.cpp \
     src/main.cpp
@@ -122,6 +123,7 @@ HEADERS += \
     src/Decoders/Impl/Internal/Scaling/IScaledImageProvider.h \
     src/Decoders/Impl/Internal/Utils/ExifUtils.h \
     src/Decoders/Impl/Internal/Utils/CmsUtils.h \
+    src/Decoders/Impl/Internal/Utils/LibraryUtils.h \
     src/Decoders/Impl/Internal/Utils/ZLibUtils.h \
     src/Decoders/Impl/Internal/DecoderAutoRegistrator.h \
     src/Decoders/Impl/Internal/GraphicsItemsFactory.h \
