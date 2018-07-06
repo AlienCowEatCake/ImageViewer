@@ -33,6 +33,12 @@
 #include <QDebug>
 #include <QLibrary>
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QFunctionPointer>
+#else
+typedef void* QFunctionPointer;
+#endif
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"

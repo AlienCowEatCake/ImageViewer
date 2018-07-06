@@ -28,6 +28,12 @@
 #include <QLibrary>
 #include <QPainter>
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QFunctionPointer>
+#else
+typedef void* QFunctionPointer;
+#endif
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
@@ -176,7 +182,11 @@ private:
             m_resvg_qt_render_to_canvas = m_library.resolve("resvg_qt_render_to_canvas");
 
             if(m_resvg_init_log)
-                m_resvg_init_log();
+            {
+                typedef void (*func_t)();
+                func_t func = (func_t)m_resvg_init_log;
+                func();
+            }
     }
 
     ~ReSVG()
