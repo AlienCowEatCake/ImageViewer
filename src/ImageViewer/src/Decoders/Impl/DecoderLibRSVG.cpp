@@ -38,7 +38,9 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
+#if defined (HAS_ZLIB)
 #include "Internal/Utils/ZLibUtils.h"
+#endif
 
 namespace
 {
@@ -420,11 +422,13 @@ public:
         , m_maxScaleFactor(1)
     {
         QByteArray inBuffer;
+#if defined (HAS_ZLIB)
         if(QFileInfo(filePath).suffix().toLower() == QString::fromLatin1("svgz"))
         {
             inBuffer = ZLibUtils::InflateFile(filePath);
         }
         else
+#endif
         {
             QFile inFile(filePath);
             if(!inFile.open(QIODevice::ReadOnly))
@@ -547,7 +551,9 @@ public:
     {
         return QStringList()
                 << QString::fromLatin1("svg")
+#if defined (HAS_ZLIB)
                 << QString::fromLatin1("svgz")
+#endif
                    ;
     }
 
