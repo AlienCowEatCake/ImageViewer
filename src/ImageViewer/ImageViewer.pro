@@ -198,6 +198,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderLibRSVG.cpp
 }
 
+!disable_resvg {
+    SOURCES += \
+        src/Decoders/Impl/DecoderReSVG.cpp
+}
+
 !disable_qtsvg {
     QT += svg
     SOURCES += \
