@@ -29,6 +29,7 @@
 #include <QFileInfo>
 #include <QImage>
 #include <QFile>
+#include <QDir>
 #include <QByteArray>
 #include <QDebug>
 #include <QLibrary>
@@ -103,9 +104,16 @@ public:
 
 private:
     GLib()
-        : m_library(GLIB_LIBRARY_NAME)
-        , m_g_error_free(m_library.resolve("g_error_free"))
-    {}
+        : m_g_error_free(NULL)
+    {
+        m_library.setFileName(QDir(qApp->applicationDirPath()).filePath(GLIB_LIBRARY_NAME));
+        if(!m_library.load())
+            m_library.setFileName(GLIB_LIBRARY_NAME);
+        if(!m_library.load())
+            return;
+
+        m_g_error_free = m_library.resolve("g_error_free");
+    }
 
     ~GLib()
     {}
@@ -149,9 +157,16 @@ public:
 
 private:
     GObject()
-        : m_library(GOBJECT_LIBRARY_NAME)
-        , m_g_object_unref(m_library.resolve("g_object_unref"))
-    {}
+        : m_g_object_unref(NULL)
+    {
+        m_library.setFileName(QDir(qApp->applicationDirPath()).filePath(GOBJECT_LIBRARY_NAME));
+        if(!m_library.load())
+            m_library.setFileName(GOBJECT_LIBRARY_NAME);
+        if(!m_library.load())
+            return;
+
+        m_g_object_unref = m_library.resolve("g_object_unref");
+    }
 
     ~GObject()
     {}
@@ -223,13 +238,24 @@ public:
 
 private:
     Cairo()
-        : m_library(CAIRO_LIBRARY_NAME)
-        , m_cairo_image_surface_create_for_data(m_library.resolve("cairo_image_surface_create_for_data"))
-        , m_cairo_create(m_library.resolve("cairo_create"))
-        , m_cairo_scale(m_library.resolve("cairo_scale"))
-        , m_cairo_destroy(m_library.resolve("cairo_destroy"))
-        , m_cairo_surface_destroy(m_library.resolve("cairo_surface_destroy"))
-    {}
+        : m_cairo_image_surface_create_for_data(NULL)
+        , m_cairo_create(NULL)
+        , m_cairo_scale(NULL)
+        , m_cairo_destroy(NULL)
+        , m_cairo_surface_destroy(NULL)
+    {
+        m_library.setFileName(QDir(qApp->applicationDirPath()).filePath(CAIRO_LIBRARY_NAME));
+        if(!m_library.load())
+            m_library.setFileName(CAIRO_LIBRARY_NAME);
+        if(!m_library.load())
+            return;
+
+        m_cairo_image_surface_create_for_data = m_library.resolve("cairo_image_surface_create_for_data");
+        m_cairo_create = m_library.resolve("cairo_create");
+        m_cairo_scale = m_library.resolve("cairo_scale");
+        m_cairo_destroy = m_library.resolve("cairo_destroy");
+        m_cairo_surface_destroy = m_library.resolve("cairo_surface_destroy");
+    }
 
     ~Cairo()
     {}
@@ -329,12 +355,22 @@ public:
 
 private:
     RSVG()
-        : m_library(RSVG_LIBRARY_NAME)
-        , m_rsvg_handle_new_from_data(m_library.resolve("rsvg_handle_new_from_data"))
-        , m_rsvg_handle_set_base_uri(m_library.resolve("rsvg_handle_set_base_uri"))
-        , m_rsvg_handle_get_dimensions(m_library.resolve("rsvg_handle_get_dimensions"))
-        , m_rsvg_handle_render_cairo(m_library.resolve("rsvg_handle_render_cairo"))
-    {}
+        : m_rsvg_handle_new_from_data(NULL)
+        , m_rsvg_handle_set_base_uri(NULL)
+        , m_rsvg_handle_get_dimensions(NULL)
+        , m_rsvg_handle_render_cairo(NULL)
+    {
+        m_library.setFileName(QDir(qApp->applicationDirPath()).filePath(RSVG_LIBRARY_NAME));
+        if(!m_library.load())
+            m_library.setFileName(RSVG_LIBRARY_NAME);
+        if(!m_library.load())
+            return;
+
+        m_rsvg_handle_new_from_data = m_library.resolve("rsvg_handle_new_from_data");
+        m_rsvg_handle_set_base_uri = m_library.resolve("rsvg_handle_set_base_uri");
+        m_rsvg_handle_get_dimensions = m_library.resolve("rsvg_handle_get_dimensions");
+        m_rsvg_handle_render_cairo = m_library.resolve("rsvg_handle_render_cairo");
+    }
 
     ~RSVG()
     {}

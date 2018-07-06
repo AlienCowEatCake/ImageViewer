@@ -23,6 +23,7 @@
 #include <QFileInfo>
 #include <QImage>
 #include <QFile>
+#include <QDir>
 #include <QByteArray>
 #include <QDebug>
 #include <QLibrary>
@@ -151,18 +152,32 @@ public:
 
 private:
     ReSVG()
-        : m_library(RESVG_LIBRARY_NAME)
-        , m_resvg_init_log(m_library.resolve("resvg_init_log"))
-        , m_resvg_init_options(m_library.resolve("resvg_init_options"))
-        , m_resvg_parse_tree_from_data(m_library.resolve("resvg_parse_tree_from_data"))
-//        , m_resvg_is_image_empty(m_library.resolve("resvg_is_image_empty"))
-        , m_resvg_get_image_size(m_library.resolve("resvg_get_image_size"))
-        , m_resvg_get_image_viewbox(m_library.resolve("resvg_get_image_viewbox"))
-        , m_resvg_tree_destroy(m_library.resolve("resvg_tree_destroy"))
-        , m_resvg_qt_render_to_canvas(m_library.resolve("resvg_qt_render_to_canvas"))
-    {
-        if(m_resvg_init_log)
-            m_resvg_init_log();
+        : m_resvg_init_log(NULL)
+        , m_resvg_init_options(NULL)
+        , m_resvg_parse_tree_from_data(NULL)
+//        , m_resvg_is_image_empty(NULL)
+        , m_resvg_get_image_size(NULL)
+        , m_resvg_get_image_viewbox(NULL)
+        , m_resvg_tree_destroy(NULL)
+        , m_resvg_qt_render_to_canvas(NULL)
+        {
+            m_library.setFileName(QDir(qApp->applicationDirPath()).filePath(RESVG_LIBRARY_NAME));
+            if(!m_library.load())
+                m_library.setFileName(RESVG_LIBRARY_NAME);
+            if(!m_library.load())
+                return;
+
+            m_resvg_init_log = m_library.resolve("resvg_init_log");
+            m_resvg_init_options = m_library.resolve("resvg_init_options");
+            m_resvg_parse_tree_from_data = m_library.resolve("resvg_parse_tree_from_data");
+    //        m_resvg_is_image_empty = m_library.resolve("resvg_is_image_empty");
+            m_resvg_get_image_size = m_library.resolve("resvg_get_image_size");
+            m_resvg_get_image_viewbox = m_library.resolve("resvg_get_image_viewbox");
+            m_resvg_tree_destroy = m_library.resolve("resvg_tree_destroy");
+            m_resvg_qt_render_to_canvas = m_library.resolve("resvg_qt_render_to_canvas");
+
+            if(m_resvg_init_log)
+                m_resvg_init_log();
     }
 
     ~ReSVG()
