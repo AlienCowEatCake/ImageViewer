@@ -121,7 +121,7 @@ struct DecodersManager::Impl
         {
             IDecoder *decoder = *it;
             const ComplexPriotiry priority = GetDecoderPriority(decoder);
-            if(priority.mainPriority >= 0)
+            if(priority.mainPriority >= 0 && decoder->isAvailable())
             {
                 decoders.insert(decoder);
                 const QStringList supportedFormats = decoder->supportedFormats();

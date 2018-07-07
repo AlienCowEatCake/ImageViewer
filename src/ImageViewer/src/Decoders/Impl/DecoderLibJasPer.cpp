@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -269,6 +269,11 @@ public:
                 << QString::fromLatin1("dib")
 #endif
                    ;
+    }
+
+    bool isAvailable() const
+    {
+        return true;
     }
 
     QGraphicsItem *loadImage(const QString &filePath)

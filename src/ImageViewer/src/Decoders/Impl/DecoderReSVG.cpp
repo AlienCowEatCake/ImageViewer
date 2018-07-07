@@ -428,10 +428,15 @@ public:
         return QStringList();
     }
 
+    bool isAvailable() const
+    {
+        return isReady();
+    }
+
     QGraphicsItem *loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);
-        if(!fileInfo.exists() || !fileInfo.isReadable() || !isReady())
+        if(!fileInfo.exists() || !fileInfo.isReadable() || !isAvailable())
             return NULL;
         return GraphicsItemsFactory::instance().createScalableItem(new ReSVGPixmapProvider(filePath));
     }

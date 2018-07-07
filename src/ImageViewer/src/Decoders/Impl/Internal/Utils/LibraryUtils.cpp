@@ -32,19 +32,19 @@ bool LoadLibrary(QLibrary &library, const QStringList &names)
 {
     for(QStringList::ConstIterator it = names.constBegin(), itEnd = names.constEnd(); it != itEnd; ++it)
     {
-        qDebug() << "Loading" << *it << "from application directory ...";
+        qDebug() << "[LoadLibrary]" << "Loading" << *it << "from application directory ...";
         library.setFileName(QDir(qApp->applicationDirPath()).filePath(*it));
         if(library.load())
             break;
-        qDebug() << library.errorString();
-        qDebug() << "Loading" << *it << "from default directories ...";
+        qDebug() << "[LoadLibrary]" << "Error:" << library.errorString();
+        qDebug() << "[LoadLibrary]" << "Loading" << *it << "from default directories ...";
         library.setFileName(*it);
         if(library.load())
             break;
-        qDebug() << library.errorString();
+        qDebug() << "[LoadLibrary]" << "Error:" << library.errorString();
     }
     const bool status = library.isLoaded();
-    qDebug() << (status ? "Loading success!" : "Loading failed!");
+    qDebug() << "[LoadLibrary]" << (status ? "Loading success!" : "Loading failed!");
     return library.isLoaded();
 }
 

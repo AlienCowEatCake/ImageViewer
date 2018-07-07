@@ -292,6 +292,11 @@ public:
         return QStringList();
     }
 
+    bool isAvailable() const
+    {
+        return true;
+    }
+
     QGraphicsItem *loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);

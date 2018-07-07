@@ -34,6 +34,8 @@ public:
     virtual QStringList supportedFormats() const = 0;
     /// @brief Дополнительные (не приоритетные) форматы, которые можно попытаться открыть
     virtual QStringList advancedFormats() const = 0;
+    /// @brief Доступен ли декодер на текущий момент (актуально для декодеров, подгружаемых из runtime)
+    virtual bool isAvailable() const = 0;
     /// @brief Загрузка изображения по заданному пути в элемент сцены
     virtual QGraphicsItem *loadImage(const QString &filePath) = 0;
 };

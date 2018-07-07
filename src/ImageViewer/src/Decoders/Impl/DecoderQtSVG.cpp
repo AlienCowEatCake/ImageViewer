@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -51,6 +51,15 @@ public:
     QStringList advancedFormats() const
     {
         return QStringList();
+    }
+
+    bool isAvailable() const
+    {
+#if defined (QT_SVG_LIB)
+        return true;
+#else
+        return false;
+#endif
     }
 
     QGraphicsItem *loadImage(const QString &filePath)
