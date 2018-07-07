@@ -27,6 +27,7 @@
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
+#include "Internal/ImageData.h"
 
 namespace {
 
@@ -57,7 +58,7 @@ public:
         return true;
     }
 
-    QGraphicsItem *loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
@@ -78,7 +79,7 @@ public:
             qDebug() << imageReader.errorString();
             return NULL;
         }
-        return GraphicsItemsFactory::instance().createImageItem(image);
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(image), name()));
     }
 };
 

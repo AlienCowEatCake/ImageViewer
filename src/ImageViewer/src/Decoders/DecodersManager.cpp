@@ -29,6 +29,8 @@
 #include <QTime>
 #include <QMap>
 
+#include "IImageData.h"
+
 namespace {
 
 struct DecoderWithPriority
@@ -202,7 +204,7 @@ QStringList DecodersManager::supportedFormatsWithWildcards() const
     return result;
 }
 
-QGraphicsItem *DecodersManager::loadImage(const QString &filePath)
+QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
 {
     m_impl->checkPendingDecoderRegistration();
     const QFileInfo fileInfo(filePath);
@@ -223,13 +225,13 @@ QGraphicsItem *DecodersManager::loadImage(const QString &filePath)
             IDecoder *decoder = decoderData->decoder;
             QTime time;
             time.start();
-            QGraphicsItem *item = decoder->loadImage(filePath);
+            QSharedPointer<IImageData> data = decoder->loadImage(filePath);
             const int elapsed = time.elapsed();
-            if(item)
+            if(data && !data->isEmpty())
             {
                 qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name();
                 qDebug() << "Elapsed time =" << elapsed << "ms";
-                return item;
+                return data;
             }
             qDebug() << "Failed to open" << filePath << "with decoder" << decoder->name();
             qDebug() << "Elapsed time =" << elapsed << "ms";
@@ -245,18 +247,56 @@ QGraphicsItem *DecodersManager::loadImage(const QString &filePath)
             continue;
         QTime time;
         time.start();
-        QGraphicsItem *item = decoder->loadImage(filePath);
+        QSharedPointer<IImageData> data = decoder->loadImage(filePath);
         const int elapsed = time.elapsed();
-        if(item)
+        if(data && !data->isEmpty())
         {
             qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name() << "(FALLBACK)";
             qDebug() << "Elapsed time =" << elapsed << "ms";
-            return item;
+            return data;
         }
         qDebug() << "Failed to open" << filePath << "with decoder" << decoder->name() << "(FALLBACK)";
         qDebug() << "Elapsed time =" << elapsed << "ms";
         failedDecodres.insert(decoder);
     }
+    return NULL;
+}
+
+QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath, const QString &decoderName)
+{
+    m_impl->checkPendingDecoderRegistration();
+    const QFileInfo fileInfo(filePath);
+    if(!fileInfo.exists() || !fileInfo.isReadable())
+    {
+        qDebug() << "File" << filePath << "is not exist or unreadable!";
+        return NULL;
+    }
+
+    for(std::set<IDecoder*>::const_iterator it = m_impl->decoders.cbegin(), itEnd = m_impl->decoders.cend(); it != itEnd; ++it)
+    {
+        IDecoder *decoder = *it;
+        if(decoder->name() != decoderName)
+            continue;
+
+        QTime time;
+        time.start();
+        QSharedPointer<IImageData> data = decoder->loadImage(filePath);
+        const int elapsed = time.elapsed();
+        if(data && !data->isEmpty())
+        {
+            qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name();
+            qDebug() << "Elapsed time =" << elapsed << "ms";
+        }
+        else
+        {
+            data.reset();
+            qDebug() << "Failed to open" << filePath << "with decoder" << decoder->name();
+            qDebug() << "Elapsed time =" << elapsed << "ms";
+        }
+        return data;
+    }
+
+    qDebug() << "Decoder with name" << decoderName << "was not found";
     return NULL;
 }
 

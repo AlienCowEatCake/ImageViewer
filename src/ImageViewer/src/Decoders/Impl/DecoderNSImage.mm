@@ -33,6 +33,7 @@
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
+#include "Internal/ImageData.h"
 
 namespace {
 
@@ -70,7 +71,7 @@ public:
         return true;
     }
 
-    QGraphicsItem *loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
@@ -81,7 +82,7 @@ public:
         if(picture == nil)
             return NULL;
         QGraphicsItem *result = GraphicsItemsFactory::instance().createPixmapItem(ObjCUtils::QPixmapFromNSImage(picture));
-        return result;
+        return QSharedPointer<IImageData>(new ImageData(result, name()));
     }
 };
 

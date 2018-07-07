@@ -43,6 +43,7 @@
 #include "Utils/WindowUtils.h"
 
 #include "Decoders/DecodersManager.h"
+#include "Decoders/IImageData.h"
 #include "../GUISettings.h"
 
 struct MainWindow::Impl
@@ -51,6 +52,7 @@ struct MainWindow::Impl
     GUISettings * const settings;
     UI ui;
     UIState uiState;
+    QSharedPointer<IImageData> imageData;
     ImageSaver imageSaver;
     RestorableGeometryHelper geometryHelper;
     QTimer slideShowTimer;
@@ -88,7 +90,7 @@ struct MainWindow::Impl
 
     bool isFileOpened() const
     {
-        return ui.imageViewerWidget->imageSize().isValid();
+        return imageData && !imageData->isEmpty() && imageData->size().isValid();
     }
 
     void syncFullScreen()
@@ -208,7 +210,7 @@ void MainWindow::updateWindowTitle()
     const int currentFileIndex = m_impl->uiState.currentFileIndex;
     if(m_impl->isFileOpened())
     {
-        const QSize imageSize = m_impl->ui.imageViewerWidget->imageSize();
+        const QSize imageSize = m_impl->imageData->size();
         label = QFileInfo(m_impl->uiState.currentFilePath).fileName();
         label.append(QString::fromLatin1(" (%1x%2) %3% - %4")
                      .arg(imageSize.width())
@@ -345,20 +347,22 @@ void MainWindow::updateUIState(const UIState &state, const UIChangeFlags &change
     {
         if(state.currentFilePath.isEmpty())
         {
+            m_impl->imageData.reset();
             m_impl->ui.imageViewerWidget->clear();
             m_impl->setImageControlsEnabled(false);
         }
         else
         {
-            QGraphicsItem *item = DecodersManager::getInstance().loadImage(state.currentFilePath);
-            if(item)
+            m_impl->imageData = DecodersManager::getInstance().loadImage(state.currentFilePath);
+            if(m_impl->imageData && !m_impl->imageData->isEmpty())
             {
                 m_impl->ui.imageViewerWidget->setZoomMode(m_impl->settings->zoomMode());
-                m_impl->ui.imageViewerWidget->setGraphicsItem(item);
+                m_impl->ui.imageViewerWidget->setGraphicsItem(m_impl->imageData->graphicsItem());
                 m_impl->setImageControlsEnabled(true);
             }
             else
             {
+                m_impl->imageData.reset();
                 m_impl->ui.imageViewerWidget->clear();
                 m_impl->setImageControlsEnabled(false);
                 QMessageBox::critical(this, tr("Error"), tr("Failed to open file \"%1\"").arg(state.currentFilePath));

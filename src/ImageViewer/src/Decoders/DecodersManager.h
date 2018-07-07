@@ -39,7 +39,8 @@ public:
     QStringList supportedFormats() const;
     QStringList supportedFormatsWithWildcards() const;
 
-    QGraphicsItem *loadImage(const QString &filePath);
+    QSharedPointer<IImageData> loadImage(const QString &filePath);
+    QSharedPointer<IImageData> loadImage(const QString &filePath, const QString &decoderName);
 
 private:
     DecodersManager();

@@ -87,6 +87,7 @@ SOURCES += \
     src/Decoders/Impl/Internal/Utils/LibraryUtils.cpp \
     src/Decoders/Impl/Internal/Utils/ZLibUtils.cpp \
     src/Decoders/Impl/Internal/GraphicsItemsFactory.cpp \
+    src/Decoders/Impl/Internal/ImageData.cpp \
     src/main.cpp
 
 HEADERS += \
@@ -105,6 +106,7 @@ HEADERS += \
     src/GUI/MainWindow/MenuBar.h \
     src/Decoders/DecodersManager.h \
     src/Decoders/IDecoder.h \
+    src/Decoders/IImageData.h \
     src/Decoders/Impl/Internal/Animation/AnimationObject.h \
     src/Decoders/Impl/Internal/Animation/AnimationWidget.h \
     src/Decoders/Impl/Internal/Animation/DelayCalculator.h \
@@ -127,6 +129,7 @@ HEADERS += \
     src/Decoders/Impl/Internal/Utils/ZLibUtils.h \
     src/Decoders/Impl/Internal/DecoderAutoRegistrator.h \
     src/Decoders/Impl/Internal/GraphicsItemsFactory.h \
+    src/Decoders/Impl/Internal/ImageData.h \
     src/Decoders/Impl/Internal/SVGWebBrowserDecoderTemplate.h
 
 !disable_stb {

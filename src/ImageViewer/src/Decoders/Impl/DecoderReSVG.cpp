@@ -37,6 +37,7 @@ typedef void* QFunctionPointer;
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
+#include "Internal/ImageData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
 #include "Internal/Utils/LibraryUtils.h"
 
@@ -433,12 +434,12 @@ public:
         return isReady();
     }
 
-    QGraphicsItem *loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable() || !isAvailable())
             return NULL;
-        return GraphicsItemsFactory::instance().createScalableItem(new ReSVGPixmapProvider(filePath));
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createScalableItem(new ReSVGPixmapProvider(filePath)), name()));
     }
 };
 
