@@ -19,6 +19,7 @@
 
 #include <QtPlugin>
 #include <QIcon>
+#include <QFileInfo>
 #include <QStyleFactory>
 #include "GUI/MainController.h"
 #include "Utils/Application.h"
@@ -69,20 +70,19 @@ int main(int argc, char *argv[])
     );
 
     MainController controller;
-    if(argc > 1)
+    QStringList filePaths;
+    for(int i = 1; i < argc; i++)
     {
-        QStringList filePaths;
-        for(int i = 1; i < argc; i++)
-            filePaths.append(QString::fromLocal8Bit(argv[i]));
-        if(filePaths.size() == 1)
-            controller.openPath(filePaths.first());
-        else
-            controller.openPaths(filePaths);
+        const QString filePath = QString::fromLocal8Bit(argv[i]);
+        if(QFileInfo(filePath).exists())
+            filePaths.append(filePath);
     }
-    else if(app.hasLastOpenFilePath())
-    {
-        controller.openPath(app.getLastOpenFilePath());
-    }
+    if(filePaths.empty() && app.hasLastOpenFilePath())
+        filePaths.append(app.getLastOpenFilePath());
+    if(filePaths.size() == 1)
+        controller.openPath(filePaths.first());
+    else if(!filePaths.empty())
+        controller.openPaths(filePaths);
     QObject::connect(&app, SIGNAL(openFileEvent(const QString&)), &controller, SLOT(openPath(const QString&)));
     controller.showMainWindow();
     return app.exec();
