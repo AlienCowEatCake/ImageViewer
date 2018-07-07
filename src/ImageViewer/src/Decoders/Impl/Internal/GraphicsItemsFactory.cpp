@@ -78,7 +78,11 @@ QGraphicsItem *GraphicsItemsFactory::createAnimatedItem(IAnimationProvider *anim
 QGraphicsItem *GraphicsItemsFactory::createScalableItem(IScaledImageProvider *scaledImageProvider)
 {
     if(!scaledImageProvider || !scaledImageProvider->isValid())
+    {
+        if(scaledImageProvider)
+            delete scaledImageProvider;
         return NULL;
+    }
     return new RasterizedImageGraphicsItem(scaledImageProvider);
 }
 
