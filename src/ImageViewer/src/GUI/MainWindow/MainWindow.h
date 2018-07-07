@@ -75,6 +75,7 @@ public slots:
 private slots:
     void updateSlideShowInterval();
     void updateBackgroundColor();
+    void onActionReopenWithTriggered(QAction *action);
 
 protected:
     void changeEvent(QEvent *event);

@@ -41,6 +41,7 @@ public:
 
     QMenu *contextMenu();
     QMenu *menuLanguage();
+    QMenu *menuReopenWith();
 
 protected:
     void changeEvent(QEvent *event);
