@@ -34,7 +34,6 @@
 
 #include <QWebEnginePage>
 #include <QWebEngineView>
-#include <QOpenGLWidget>
 
 #include <QXmlStreamReader>
 
@@ -149,8 +148,9 @@ QtWebEngineSVGGraphicsItem::QtWebEngineSVGGraphicsItem(QGraphicsItem *parentItem
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
     m_impl->view.setStyleSheet(QString::fromLatin1("background: transparent; border: none;"));
     m_impl->view.page()->setBackgroundColor(Qt::transparent);
-    if(QOpenGLWidget *openGLWidget = m_impl->view.findChild<QOpenGLWidget*>())
-        openGLWidget->setAttribute(Qt::WA_AlwaysStackOnTop, false);
+    const QList<QWidget*> childWidgets = m_impl->view.findChildren<QWidget*>();
+    for(QList<QWidget*>::ConstIterator it = childWidgets.constBegin(), itEnd = childWidgets.constEnd(); it != itEnd; ++it)
+        (*it)->setAttribute(Qt::WA_AlwaysStackOnTop, false);
 #endif
 
     connect(&m_impl->view, &QWebEngineView::renderProcessTerminated, this, &QtWebEngineSVGGraphicsItem::onRenderProcessTerminated);
