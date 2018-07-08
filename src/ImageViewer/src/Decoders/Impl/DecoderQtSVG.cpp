@@ -67,11 +67,11 @@ public:
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
-            return NULL;
+            return QSharedPointer<IImageData>();
 #if defined (QT_SVG_LIB)
         return QSharedPointer<IImageData>(new ImageData(new QGraphicsSvgItem(filePath), name()));
 #else
-        return NULL;
+        return QSharedPointer<IImageData>();
 #endif
     }
 };

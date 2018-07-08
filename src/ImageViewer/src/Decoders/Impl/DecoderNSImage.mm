@@ -75,12 +75,12 @@ public:
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
-            return NULL;
+            return QSharedPointer<IImageData>();
 
         AUTORELEASE_POOL;
         NSImage *picture = [[[NSImage alloc] initWithContentsOfFile: ObjCUtils::QStringToNSString(filePath)] autorelease];
         if(picture == nil)
-            return NULL;
+            return QSharedPointer<IImageData>();
         QGraphicsItem *result = GraphicsItemsFactory::instance().createPixmapItem(ObjCUtils::QPixmapFromNSImage(picture));
         return QSharedPointer<IImageData>(new ImageData(result, name()));
     }

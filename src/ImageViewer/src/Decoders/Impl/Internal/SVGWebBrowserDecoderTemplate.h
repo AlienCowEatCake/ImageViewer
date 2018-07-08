@@ -70,7 +70,7 @@ public:
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
-            return NULL;
+            return QSharedPointer<IImageData>();
 
         QByteArray svgData;
 #if defined (HAS_ZLIB)
@@ -85,7 +85,7 @@ public:
             if(!inFile.open(QIODevice::ReadOnly))
             {
                 qWarning() << "Can't open" << filePath;
-                return NULL;
+                return QSharedPointer<IImageData>();
             }
             svgData = inFile.readAll();
             inFile.close();
@@ -94,7 +94,7 @@ public:
         if(svgData.isEmpty())
         {
             qWarning() << "Can't read content of" << filePath;
-            return NULL;
+            return QSharedPointer<IImageData>();
         }
 
         T *result = new T();
@@ -103,7 +103,7 @@ public:
 
         qWarning() << "Can't load content of" << filePath;
         delete result;
-        return NULL;
+        return QSharedPointer<IImageData>();
     }
 
 private:

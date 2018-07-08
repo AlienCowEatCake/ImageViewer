@@ -183,7 +183,7 @@ public:
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
-            return NULL;
+            return QSharedPointer<IImageData>();
         return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(new BpgAnimationProvider(filePath)), name()));
     }
 };

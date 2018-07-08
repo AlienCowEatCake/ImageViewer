@@ -76,14 +76,14 @@ public:
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
-            return NULL;
+            return QSharedPointer<IImageData>();
 
         int x, y, n;
         unsigned char *data = ::stbi_load(filePath.toLocal8Bit().data(), &x, &y, &n, 0);
         if(!data)
         {
             qDebug() << ::stbi_failure_reason();
-            return NULL;
+            return QSharedPointer<IImageData>();
         }
 
         QImage image(x, y, QImage::Format_ARGB32);
@@ -91,7 +91,7 @@ public:
         {
             qWarning() << "Invalid image size";
             ::stbi_image_free(data);
-            return NULL;
+            return QSharedPointer<IImageData>();
         }
 
         for(int i = 0; i < y; i++)
@@ -124,7 +124,7 @@ public:
         ::stbi_image_free(data);
 
         if(image.isNull())
-            return NULL;
+            return QSharedPointer<IImageData>();
 
         ExifUtils::ApplyExifOrientation(&image, ExifUtils::GetExifOrientation(filePath));
 

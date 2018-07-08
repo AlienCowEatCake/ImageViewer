@@ -35,7 +35,6 @@
 
 namespace {
 
-const QString DECODERS_SETTINGS_GROUP           = QString::fromLatin1("Decoders");
 const QString DECODERS_SETTINGS_BLACKLIST_KEY   = QString::fromLatin1("Blacklist");
 
 struct DecoderWithPriority
@@ -117,7 +116,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
 struct DecodersManager::Impl
 {
     Impl()
-        : decodersSettins(DECODERS_SETTINGS_GROUP)
+        : decodersSettins(QString::fromLatin1("Decoders"))
     {}
 
     void checkPendingDecoderRegistration()
@@ -273,7 +272,7 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
     if(!fileInfo.exists() || !fileInfo.isReadable())
     {
         qDebug() << "File" << filePath << "is not exist or unreadable!";
-        return NULL;
+        return QSharedPointer<IImageData>();
     }
 
     std::set<IDecoder*> failedDecodres;
@@ -325,7 +324,7 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
         qDebug() << "Elapsed time =" << elapsed << "ms";
         failedDecodres.insert(decoder);
     }
-    return NULL;
+    return QSharedPointer<IImageData>();
 }
 
 QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath, const QString &decoderName)
@@ -335,7 +334,7 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath, c
     if(!fileInfo.exists() || !fileInfo.isReadable())
     {
         qDebug() << "File" << filePath << "is not exist or unreadable!";
-        return NULL;
+        return QSharedPointer<IImageData>();
     }
 
     for(std::set<IDecoder*>::const_iterator it = m_impl->decoders.begin(), itEnd = m_impl->decoders.end(); it != itEnd; ++it)
@@ -355,7 +354,7 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath, c
         }
         else
         {
-            data.reset();
+            data = QSharedPointer<IImageData>();
             qDebug() << "Failed to open" << filePath << "with decoder" << decoder->name();
             qDebug() << "Elapsed time =" << elapsed << "ms";
         }
@@ -363,7 +362,7 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath, c
     }
 
     qDebug() << "Decoder with name" << decoderName << "was not found";
-    return NULL;
+    return QSharedPointer<IImageData>();
 }
 
 DecodersManager::DecodersManager()

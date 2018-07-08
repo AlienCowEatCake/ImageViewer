@@ -438,7 +438,7 @@ public:
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable() || !isAvailable())
-            return NULL;
+            return QSharedPointer<IImageData>();
         return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createScalableItem(new ReSVGPixmapProvider(filePath)), name()));
     }
 };

@@ -82,7 +82,7 @@ public:
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
-            return NULL;
+            return QSharedPointer<IImageData>();
         QImageReader imageReader(filePath);
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
         imageReader.setDecideFormatFromContent(true);
@@ -112,7 +112,7 @@ public:
         if(image.isNull())
         {
             qDebug() << imageReader.errorString();
-            return NULL;
+            return QSharedPointer<IImageData>();
         }
 
         return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(image), name()));

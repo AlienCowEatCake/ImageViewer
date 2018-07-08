@@ -189,7 +189,7 @@ struct MainWindow::Impl
         }
         else
         {
-            imageData.reset();
+            imageData = QSharedPointer<IImageData>();
             ui.imageViewerWidget->clear();
             setImageControlsEnabled(false);
             QMessageBox::critical(mainWindow, qApp->translate("MainWindow", "Error"), qApp->translate("MainWindow", "Failed to open file \"%1\"").arg(uiState.currentFilePath));
@@ -423,7 +423,7 @@ void MainWindow::updateUIState(const UIState &state, const UIChangeFlags &change
     {
         if(state.currentFilePath.isEmpty())
         {
-            m_impl->imageData.reset();
+            m_impl->imageData = QSharedPointer<IImageData>();
             m_impl->ui.imageViewerWidget->clear();
             m_impl->setImageControlsEnabled(false);
         }

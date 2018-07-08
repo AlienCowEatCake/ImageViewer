@@ -61,12 +61,12 @@ public:
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
-            return NULL;
+            return QSharedPointer<IImageData>();
         QtImageFormatsMovie *movie = new QtImageFormatsMovie(filePath);
         if(!movie->isValid() || movie->frameCount() == 1)
         {
             movie->deleteLater();
-            return NULL;
+            return QSharedPointer<IImageData>();
         }
         return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(new MovieAnimationProvider<QtImageFormatsMovie>(movie)), name()));
     }

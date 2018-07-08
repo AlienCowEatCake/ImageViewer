@@ -21,6 +21,7 @@
 #include "SettingsDialog_p.h"
 
 #include <QColorDialog>
+#include <QVariant>
 
 #include "Decoders/DecodersManager.h"
 
@@ -66,6 +67,7 @@ struct SettingsDialog::Impl
             checkBox->setChecked(!blacklistedDecoders.contains(*it));
         }
         ui->enabledDecodersScrollArea->setWidget(ui->enabledDecodersFrame);
+        ui->enabledDecodersScrollArea->setWidgetResizable(true);
     }
 
     void onSettingsAccepted()
