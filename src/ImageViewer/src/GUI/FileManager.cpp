@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -88,6 +88,8 @@ const int INVALID_INDEX = -1;
 
 QStringList supportedFilesInDirectory(const QStringList &supportedFormatsWithWildcards, const QDir &dir)
 {
+    if(supportedFormatsWithWildcards.empty())
+        return QStringList();
     QStringList list = dir.entryList(supportedFormatsWithWildcards, QDir::Files | QDir::Readable, QDir::NoSort);
     std::sort(list.begin(), list.end(), &numericLessThan);
     return list;
@@ -265,13 +267,13 @@ struct FileManager::Impl
     class ChangedGuard;
 
     FileManager *fileManager;
-    const QStringList supportedFormats;
+    QStringList supportedFormats;
     QScopedPointer<IFilesModel> filesModel;
     QStringList currentOpenArguments;
 
-    Impl(FileManager *fileManager, const QStringList &supportedFormatsWithWildcards)
+    Impl(FileManager *fileManager)
         : fileManager(fileManager)
-        , supportedFormats(supportedFormatsWithWildcards)
+        , supportedFormats(QString::fromLatin1("*.*"))
     {}
 
     void resetFilesModel(IFilesModel *newFilesModel = NULL)
@@ -335,13 +337,23 @@ private:
 
 // ====================================================================================================
 
-FileManager::FileManager(const QStringList &supportedFormatsWithWildcards, QObject *parent)
+FileManager::FileManager(QObject *parent)
     : QObject(parent)
-    , m_impl(new Impl(this, supportedFormatsWithWildcards))
+    , m_impl(new Impl(this))
 {}
 
 FileManager::~FileManager()
 {}
+
+QStringList FileManager::supportedFormatsWithWildcards() const
+{
+    return m_impl->supportedFormats;
+}
+
+void FileManager::setSupportedFormatsWithWildcards(const QStringList &supportedFormatsWithWildcards)
+{
+    m_impl->supportedFormats = supportedFormatsWithWildcards;
+}
 
 QString FileManager::currentFilePath() const
 {

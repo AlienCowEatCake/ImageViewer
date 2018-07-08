@@ -29,9 +29,14 @@
 #include <QTime>
 #include <QMap>
 
+#include "Utils/SettingsWrapper.h"
+
 #include "IImageData.h"
 
 namespace {
+
+const QString DECODERS_SETTINGS_GROUP           = QString::fromLatin1("Decoders");
+const QString DECODERS_SETTINGS_BLACKLIST_KEY   = QString::fromLatin1("Blacklist");
 
 struct DecoderWithPriority
 {
@@ -112,6 +117,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
 struct DecodersManager::Impl
 {
     Impl()
+        : decodersSettins(DECODERS_SETTINGS_GROUP)
     {}
 
     void checkPendingDecoderRegistration()
@@ -145,12 +151,45 @@ struct DecodersManager::Impl
             }
         }
         pendingDecoders.clear();
+        updateBlacklistedDecoders();
+    }
+
+    QStringList getBlacklistFromSettings() const
+    {
+        return decodersSettins.value(DECODERS_SETTINGS_BLACKLIST_KEY, QString()).toString().split(QChar::fromLatin1(','), QString::SkipEmptyParts);
+    }
+
+    QStringList getUnregisteredFromBlacklist() const
+    {
+        QStringList result;
+        const QStringList blacklist = getBlacklistFromSettings();
+        for(QStringList::ConstIterator it = blacklist.constBegin(), itEnd = blacklist.constEnd(); it != itEnd; ++it)
+        {
+            bool found = false;
+            for(std::set<IDecoder*>::const_iterator jt = decoders.begin(), jtEnd = decoders.end(); jt != jtEnd && !found; ++jt)
+                if((*jt)->name().compare(*it, Qt::CaseInsensitive) == 0)
+                    found = true;
+            if(!found)
+                result.append(*it);
+        }
+        return result;
+    }
+
+    void updateBlacklistedDecoders()
+    {
+        blacklistedDecoders.clear();
+        const QStringList blacklist = getBlacklistFromSettings();
+        for(std::set<IDecoder*>::const_iterator it = decoders.begin(), itEnd = decoders.end(); it != itEnd; ++it)
+            if(blacklist.contains((*it)->name(), Qt::CaseInsensitive))
+                blacklistedDecoders.insert(*it);
     }
 
     std::set<IDecoder*> decoders;
     std::set<DecoderWithPriority> fallbackDecoders;
     std::map<QString, std::set<DecoderWithPriority> > formats;
     QList<IDecoder*> pendingDecoders;
+    SettingsWrapper decodersSettins;
+    std::set<IDecoder*> blacklistedDecoders;
 };
 
 DecodersManager::~DecodersManager()
@@ -191,17 +230,40 @@ QStringList DecodersManager::supportedFormats() const
     m_impl->checkPendingDecoderRegistration();
     QStringList result;
     for(std::map<QString, std::set<DecoderWithPriority> >::const_iterator it = m_impl->formats.begin(); it != m_impl->formats.end(); ++it)
-        result.append(it->first);
+    {
+        const std::set<DecoderWithPriority>& decodersWithPriority = it->second;
+        bool inBlacklist = true;
+        for(std::set<DecoderWithPriority>::const_iterator jt = decodersWithPriority.begin(), jtEnd = decodersWithPriority.end(); jt != jtEnd && inBlacklist; ++jt)
+            if(m_impl->blacklistedDecoders.find(jt->decoder) == m_impl->blacklistedDecoders.end())
+                inBlacklist = false;
+        if(!inBlacklist)
+            result.append(it->first);
+    }
     return result;
 }
 
 QStringList DecodersManager::supportedFormatsWithWildcards() const
 {
+    QStringList result = supportedFormats();
+    for(QStringList::iterator it = result.begin(), itEnd = result.end(); it != itEnd; ++it)
+        *it = QString::fromLatin1("*.%1").arg(*it);
+    return result;
+}
+
+QStringList DecodersManager::blackListedDecoders() const
+{
     m_impl->checkPendingDecoderRegistration();
     QStringList result;
-    for(std::map<QString, std::set<DecoderWithPriority> >::const_iterator it = m_impl->formats.begin(); it != m_impl->formats.end(); ++it)
-        result.append(QString::fromLatin1("*.%1").arg(it->first));
+    for(std::set<IDecoder*>::const_iterator it = m_impl->blacklistedDecoders.begin(), itEnd = m_impl->blacklistedDecoders.end(); it != itEnd; ++it)
+        result.append((*it)->name());
     return result;
+}
+
+void DecodersManager::setBlackListedDecoders(const QStringList &blackListedDecoders) const
+{
+    m_impl->checkPendingDecoderRegistration();
+    m_impl->decodersSettins.setValue(DECODERS_SETTINGS_BLACKLIST_KEY, (blackListedDecoders + m_impl->getUnregisteredFromBlacklist()).join(QChar::fromLatin1(',')));
+    m_impl->updateBlacklistedDecoders();
 }
 
 QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
@@ -223,6 +285,8 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
         for(std::set<DecoderWithPriority>::const_iterator decoderData = formatData->second.begin(); decoderData != formatData->second.end(); ++decoderData)
         {
             IDecoder *decoder = decoderData->decoder;
+            if(m_impl->blacklistedDecoders.find(decoder) != m_impl->blacklistedDecoders.end())
+                continue;
             QTime time;
             time.start();
             QSharedPointer<IImageData> data = decoder->loadImage(filePath);
@@ -243,6 +307,8 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
     for(std::set<DecoderWithPriority>::const_iterator decoderData = m_impl->fallbackDecoders.begin(); decoderData != m_impl->fallbackDecoders.end(); ++decoderData)
     {
         IDecoder *decoder = decoderData->decoder;
+        if(m_impl->blacklistedDecoders.find(decoder) != m_impl->blacklistedDecoders.end())
+            continue;
         if(failedDecodres.find(decoder) != failedDecodres.end())
             continue;
         QTime time;
@@ -272,7 +338,7 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath, c
         return NULL;
     }
 
-    for(std::set<IDecoder*>::const_iterator it = m_impl->decoders.cbegin(), itEnd = m_impl->decoders.cend(); it != itEnd; ++it)
+    for(std::set<IDecoder*>::const_iterator it = m_impl->decoders.begin(), itEnd = m_impl->decoders.end(); it != itEnd; ++it)
     {
         IDecoder *decoder = *it;
         if(decoder->name() != decoderName)

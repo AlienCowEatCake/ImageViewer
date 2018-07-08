@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -37,7 +37,11 @@ public:
         FlagCurrentFilePath         = 1 << 0,
         FlagCurrentFileIndex        = 1 << 1,
         FlagFilesCount              = 1 << 2,
-        FlagCanDeleteCurrentFile    = 1 << 3
+        FlagCanDeleteCurrentFile    = 1 << 3,
+        FlagChangeAll               = FlagCurrentFilePath
+                                    | FlagCurrentFileIndex
+                                    | FlagFilesCount
+                                    | FlagCanDeleteCurrentFile
     };
     Q_DECLARE_FLAGS(ChangeFlags, ChangeFlag)
 
@@ -45,8 +49,11 @@ signals:
     void stateChanged(const FileManager::ChangeFlags& changedFlags);
 
 public:
-    FileManager(const QStringList &supportedFormatsWithWildcards, QObject *parent = NULL);
+    FileManager(QObject *parent = NULL);
     ~FileManager();
+
+    QStringList supportedFormatsWithWildcards() const;
+    void setSupportedFormatsWithWildcards(const QStringList& supportedFormatsWithWildcards);
 
     QString currentFilePath() const;
     int currentFileIndex() const;

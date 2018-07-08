@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -38,6 +38,9 @@ public:
     QStringList registeredDecoders() const;
     QStringList supportedFormats() const;
     QStringList supportedFormatsWithWildcards() const;
+
+    QStringList blackListedDecoders() const;
+    void setBlackListedDecoders(const QStringList& blackListedDecoders) const;
 
     QSharedPointer<IImageData> loadImage(const QString &filePath);
     QSharedPointer<IImageData> loadImage(const QString &filePath, const QString &decoderName);

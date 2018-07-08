@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,6 +22,14 @@
 
 #include <QColorDialog>
 
+#include "Decoders/DecodersManager.h"
+
+namespace {
+
+const char CHECKBOX_PROPERTY_DECODER_NAME[] = "Decoder";
+
+} // namespace
+
 struct SettingsDialog::Impl
 {
     Impl(SettingsDialog *widget, GUISettings *settings)
@@ -39,6 +47,27 @@ struct SettingsDialog::Impl
         QObject::connect(settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&)), settingsDialog, SLOT(onFullScreenBackgroundColorChanged(const QColor&)));
     }
 
+    void fillDecoders()
+    {
+        QVBoxLayout *enabledDecodersLayout = new QVBoxLayout(ui->enabledDecodersFrame);
+        DecodersManager &decodersManager = DecodersManager::getInstance();
+        const QStringList blacklistedDecoders = decodersManager.blackListedDecoders();
+        QStringList registeredDecoders = decodersManager.registeredDecoders();
+        registeredDecoders.sort();
+        for(QStringList::ConstIterator it = registeredDecoders.constBegin(), itEnd = registeredDecoders.constEnd(); it != itEnd; ++it)
+        {
+            QString humanReadableName = *it;
+            const QString decoderPrefix = QString::fromLatin1("Decoder");
+            if(humanReadableName.startsWith(decoderPrefix))
+                humanReadableName = humanReadableName.mid(decoderPrefix.length());
+            QCheckBox *checkBox = new QCheckBox(humanReadableName, ui->enabledDecodersFrame);
+            enabledDecodersLayout->addWidget(checkBox);
+            checkBox->setProperty(CHECKBOX_PROPERTY_DECODER_NAME, *it);
+            checkBox->setChecked(!blacklistedDecoders.contains(*it));
+        }
+        ui->enabledDecodersScrollArea->setWidget(ui->enabledDecodersFrame);
+    }
+
     void onSettingsAccepted()
     {
         settings->setAskBeforeDelete(ui->askBeforeDeleteCheckbox->isChecked());
@@ -48,7 +77,21 @@ struct SettingsDialog::Impl
         settings->setFullScreenBackgroundColor(fullScreenBackground);
         settings->setSlideShowInterval(ui->slideShowSpinBox->value());
         settings->setWheelMode(ui->wheelZoomRadioButton->isChecked() ? ImageViewerWidget::WHEEL_ZOOM : ImageViewerWidget::WHEEL_SCROLL);
-        settingsDialog->close();
+
+        const QList<QCheckBox*> enabledDecodersCheckboxes = ui->enabledDecodersFrame->findChildren<QCheckBox*>();
+        QStringList blacklistedDecoders;
+        for(QList<QCheckBox*>::ConstIterator it = enabledDecodersCheckboxes.constBegin(), itEnd = enabledDecodersCheckboxes.constEnd(); it != itEnd; ++it)
+        {
+            const QCheckBox *checkBox = *it;
+            if(checkBox->checkState() != Qt::Unchecked)
+                continue;
+            const QString decoderName = checkBox->property(CHECKBOX_PROPERTY_DECODER_NAME).toString();
+            if(!decoderName.isEmpty())
+                blacklistedDecoders.append(decoderName);
+        }
+        DecodersManager::getInstance().setBlackListedDecoders(blacklistedDecoders);
+
+        settingsDialog->accept();
     }
 
     void onNormalBackgroundColorChanged(const QColor &color)
@@ -122,6 +165,8 @@ SettingsDialog::SettingsDialog(GUISettings *settings, QWidget *parent)
 #endif
                    Qt::WindowSystemMenuHint | Qt::MSWindowsFixedSizeDialogHint);
     setWindowModality(Qt::ApplicationModal);
+
+    m_impl->fillDecoders();
 }
 
 SettingsDialog::~SettingsDialog()
