@@ -27,6 +27,7 @@
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
+#include "Internal/ImageData.h"
 
 namespace {
 
@@ -62,13 +63,13 @@ public:
 #endif
     }
 
-    QGraphicsItem *loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
 #if defined (QT_SVG_LIB)
-        return new QGraphicsSvgItem(filePath);
+        return QSharedPointer<IImageData>(new ImageData(new QGraphicsSvgItem(filePath), name()));
 #else
         return NULL;
 #endif

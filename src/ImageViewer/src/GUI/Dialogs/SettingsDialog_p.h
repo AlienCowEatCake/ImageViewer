@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -23,6 +23,7 @@
 #include "SettingsDialog.h"
 
 #include <QApplication>
+#include <QTabWidget>
 #include <QCheckBox>
 #include <QFrame>
 #include <QLabel>
@@ -30,6 +31,7 @@
 #include <QSpinBox>
 #include <QRadioButton>
 #include <QButtonGroup>
+#include <QScrollArea>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -52,25 +54,34 @@ struct SettingsDialog::UI
 {
     UI(SettingsDialog *widget, GUISettings *settings)
         : settingsDialog(widget)
-        , CONSTRUCT_OBJECT(askBeforeDeleteCheckbox, QCheckBox, (settingsDialog))
-        , CONSTRUCT_OBJECT(moveToTrashCheckbox, QCheckBox, (settingsDialog))
-        , CONSTRUCT_OBJECT(smoothTransformationCheckbox, QCheckBox, (settingsDialog))
-        , CONSTRUCT_OBJECT(slideShowIntervalFrame, QFrame, (settingsDialog))
+        , CONSTRUCT_OBJECT(tabWidget, QTabWidget, (settingsDialog))
+        , CONSTRUCT_OBJECT(generalTabFrame, QFrame, (tabWidget))
+        , CONSTRUCT_OBJECT(askBeforeDeleteCheckbox, QCheckBox, (generalTabFrame))
+        , CONSTRUCT_OBJECT(moveToTrashCheckbox, QCheckBox, (generalTabFrame))
+        , CONSTRUCT_OBJECT(smoothTransformationCheckbox, QCheckBox, (generalTabFrame))
+        , CONSTRUCT_OBJECT(slideShowIntervalFrame, QFrame, (generalTabFrame))
         , CONSTRUCT_OBJECT(slideShowIntervalLabel, QLabel, (slideShowIntervalFrame))
         , CONSTRUCT_OBJECT(slideShowSpinBox, QSpinBox, (slideShowIntervalFrame))
         , CONSTRUCT_OBJECT(slideShowSecLabel, QLabel, (slideShowIntervalFrame))
-        , CONSTRUCT_OBJECT(backgroundColorsFrame, QFrame, (settingsDialog))
+        , CONSTRUCT_OBJECT(backgroundColorsFrame, QFrame, (generalTabFrame))
         , CONSTRUCT_OBJECT(backgroundColorsLabel, QLabel, (backgroundColorsFrame))
         , CONSTRUCT_OBJECT(normalBackgroundColorLabel, QLabel, (backgroundColorsFrame))
         , CONSTRUCT_OBJECT(normalBackgroundColorButton, QToolButton, (backgroundColorsFrame))
         , CONSTRUCT_OBJECT(fullScreenBackgroundColorLabel, QLabel, (backgroundColorsFrame))
         , CONSTRUCT_OBJECT(fullScreenBackgroundColorButton, QToolButton, (backgroundColorsFrame))
-        , CONSTRUCT_OBJECT(wheelModeFrame, QFrame, (settingsDialog))
+        , CONSTRUCT_OBJECT(wheelModeFrame, QFrame, (generalTabFrame))
         , CONSTRUCT_OBJECT(wheelModeLabel, QLabel, (wheelModeFrame))
         , CONSTRUCT_OBJECT(wheelScrollRadioButton, QRadioButton, (wheelModeFrame))
         , CONSTRUCT_OBJECT(wheelZoomRadioButton, QRadioButton, (wheelModeFrame))
+        , CONSTRUCT_OBJECT(decodersTabFrame, QFrame, (tabWidget))
+        , CONSTRUCT_OBJECT(enabledDecodersLabel, QLabel, (decodersTabFrame))
+        , CONSTRUCT_OBJECT(enabledDecodersScrollArea, QScrollArea, (decodersTabFrame))
+        , CONSTRUCT_OBJECT(enabledDecodersFrame, QFrame, (enabledDecodersScrollArea))
         , CONSTRUCT_OBJECT(buttonBox, QDialogButtonBox, (settingsDialog))
     {
+        tabWidget->addTab(generalTabFrame, qApp->translate("SettingsDialog", "General"));
+        tabWidget->addTab(decodersTabFrame, qApp->translate("SettingsDialog", "Decoders"));
+
         askBeforeDeleteCheckbox->setText(qApp->translate("SettingsDialog", "Ask before deleting images"));
         askBeforeDeleteCheckbox->setChecked(settings->askBeforeDelete());
 
@@ -135,13 +146,23 @@ struct SettingsDialog::UI
         wheelModeLayout->addWidget(wheelZoomRadioButton, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
         wheelModeLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 2);
 
+        QVBoxLayout *generalTabLayout = new QVBoxLayout(generalTabFrame);
+        generalTabLayout->addWidget(askBeforeDeleteCheckbox);
+        generalTabLayout->addWidget(moveToTrashCheckbox);
+        generalTabLayout->addWidget(smoothTransformationCheckbox);
+        generalTabLayout->addWidget(slideShowIntervalFrame);
+        generalTabLayout->addWidget(backgroundColorsFrame);
+        generalTabLayout->addWidget(wheelModeFrame);
+
+        enabledDecodersLabel->setText(qApp->translate("SettingsDialog", "<b>Enabled decoders:</b>"));
+
+        QVBoxLayout *decodersTabLayout = new QVBoxLayout(decodersTabFrame);
+        decodersTabLayout->addWidget(enabledDecodersLabel);
+        decodersTabLayout->addWidget(enabledDecodersScrollArea);
+        decodersTabLayout->addStretch();
+
         QVBoxLayout *mainLayout = new QVBoxLayout(settingsDialog);
-        mainLayout->addWidget(askBeforeDeleteCheckbox);
-        mainLayout->addWidget(moveToTrashCheckbox);
-        mainLayout->addWidget(smoothTransformationCheckbox);
-        mainLayout->addWidget(slideShowIntervalFrame);
-        mainLayout->addWidget(backgroundColorsFrame);
-        mainLayout->addWidget(wheelModeFrame);
+        mainLayout->addWidget(tabWidget);
         mainLayout->addWidget(buttonBox);
     }
 
@@ -160,6 +181,8 @@ struct SettingsDialog::UI
     }
 
     SettingsDialog *settingsDialog;
+    QTabWidget *tabWidget;
+    QFrame *generalTabFrame;
     QCheckBox *askBeforeDeleteCheckbox;
     QCheckBox *moveToTrashCheckbox;
     QCheckBox *smoothTransformationCheckbox;
@@ -177,6 +200,10 @@ struct SettingsDialog::UI
     QLabel *wheelModeLabel;
     QRadioButton *wheelScrollRadioButton;
     QRadioButton *wheelZoomRadioButton;
+    QFrame *decodersTabFrame;
+    QLabel *enabledDecodersLabel;
+    QScrollArea *enabledDecodersScrollArea;
+    QFrame *enabledDecodersFrame;
     QDialogButtonBox *buttonBox;
 };
 

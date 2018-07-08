@@ -25,6 +25,7 @@
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
+#include "Internal/ImageData.h"
 #include "Internal/Animation/MovieAnimationProvider.h"
 
 namespace {
@@ -56,7 +57,7 @@ public:
         return true;
     }
 
-    QGraphicsItem *loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
@@ -67,7 +68,7 @@ public:
             movie->deleteLater();
             return NULL;
         }
-        return GraphicsItemsFactory::instance().createAnimatedItem(new MovieAnimationProvider<QtImageFormatsMovie>(movie));
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(new MovieAnimationProvider<QtImageFormatsMovie>(movie)), name()));
     }
 };
 

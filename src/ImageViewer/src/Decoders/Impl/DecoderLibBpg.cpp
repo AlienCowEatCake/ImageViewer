@@ -34,6 +34,7 @@ extern "C" {
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
+#include "Internal/ImageData.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Utils/CmsUtils.h"
@@ -178,12 +179,12 @@ public:
         return true;
     }
 
-    QGraphicsItem *loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return NULL;
-        return GraphicsItemsFactory::instance().createAnimatedItem(new BpgAnimationProvider(filePath));
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(new BpgAnimationProvider(filePath)), name()));
     }
 };
 

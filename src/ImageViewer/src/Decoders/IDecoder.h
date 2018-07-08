@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,7 +22,9 @@
 
 #include <QStringList>
 
-class QGraphicsItem;
+#include "Utils/SharedPointer.h"
+
+class IImageData;
 
 class IDecoder
 {
@@ -36,8 +38,8 @@ public:
     virtual QStringList advancedFormats() const = 0;
     /// @brief Доступен ли декодер на текущий момент (актуально для декодеров, подгружаемых из runtime)
     virtual bool isAvailable() const = 0;
-    /// @brief Загрузка изображения по заданному пути в элемент сцены
-    virtual QGraphicsItem *loadImage(const QString &filePath) = 0;
+    /// @brief Загрузка изображения по заданному пути в IImageData
+    virtual QSharedPointer<IImageData> loadImage(const QString &filePath) = 0;
 };
 
-#endif
+#endif // IDECODER_H_INCLUDED

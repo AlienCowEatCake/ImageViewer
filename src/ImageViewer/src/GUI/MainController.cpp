@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -26,6 +26,8 @@
 #include <QMessageBox>
 #include <QStringList>
 
+#include "Utils/SignalBlocker.h"
+
 #include "Decoders/DecodersManager.h"
 #include "Dialogs/AboutDialog.h"
 #include "Dialogs/SettingsDialog.h"
@@ -35,7 +37,6 @@
 struct MainController::Impl
 {
     MainController * const mainController;
-    const QStringList supportedFormats;
     FileManager fileManager;
     GUISettings settings;
     MainWindow mainWindow;
@@ -45,8 +46,7 @@ struct MainController::Impl
 
     Impl(MainController *mainController)
         : mainController(mainController)
-        , supportedFormats(DecodersManager::getInstance().supportedFormatsWithWildcards())
-        , fileManager(supportedFormats)
+        , fileManager()
         , mainWindow(&settings)
         , lastHasCurrentFile(false)
         , lastHasCurrentFileIndex(false)
@@ -97,7 +97,7 @@ MainController::MainController(QObject *parent)
     connect(mainWindow, SIGNAL(preferencesRequested())                  , this, SLOT(showPreferences())             );
     connect(mainWindow, SIGNAL(aboutRequested())                        , this, SLOT(showAbout())                   );
     connect(mainWindow, SIGNAL(aboutQtRequested())                      , qApp, SLOT(aboutQt())                     );
-    connect(mainWindow, SIGNAL(closed())                                , qApp, SLOT(quit()));
+    connect(mainWindow, SIGNAL(closed())                                , qApp, SLOT(quit())                        );
 }
 
 MainController::~MainController()
@@ -105,18 +105,20 @@ MainController::~MainController()
 
 bool MainController::openPath(const QString &path)
 {
+    m_impl->fileManager.setSupportedFormatsWithWildcards(DecodersManager::getInstance().supportedFormatsWithWildcards());
     return m_impl->fileManager.openPath(path);
 }
 
 bool MainController::openPaths(const QStringList &paths)
 {
+    m_impl->fileManager.setSupportedFormatsWithWildcards(DecodersManager::getInstance().supportedFormatsWithWildcards());
     return m_impl->fileManager.openPaths(paths);
 }
 
 bool MainController::openFileWithDialog()
 {
     const QString formatString = QString::fromLatin1("%2 (%1);;%3 (*.*)")
-            .arg(m_impl->supportedFormats.join(QString::fromLatin1(" ")))
+            .arg(DecodersManager::getInstance().supportedFormatsWithWildcards().join(QString::fromLatin1(" ")))
             .arg(tr("All Supported Images")).arg(tr("All Files"));
     const QStringList filePaths = QFileDialog::getOpenFileNames(&m_impl->mainWindow, tr("Open File"), m_impl->settings.lastOpenedPath(), formatString);
     if(filePaths.isEmpty())
@@ -219,7 +221,15 @@ void MainController::showAbout()
 void MainController::showPreferences()
 {
     SettingsDialog dialog(&m_impl->settings, &m_impl->mainWindow);
-    dialog.exec();
+    if(dialog.exec() != QDialog::Accepted)
+        return;
+
+    /// @note Перезагружаем все, чтобы применились настройки декодеров
+    {
+        QSignalBlocker blocker(m_impl->fileManager);
+        openPaths(m_impl->fileManager.currentOpenArguments());
+    }
+    onFileManagerStateChanged(FileManager::FlagChangeAll);
 }
 
 void MainController::openNewWindow()

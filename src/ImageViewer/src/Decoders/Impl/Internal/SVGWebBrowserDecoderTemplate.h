@@ -28,6 +28,7 @@
 #include <QDebug>
 
 #include "../../IDecoder.h"
+#include "ImageData.h"
 #if defined (HAS_ZLIB)
 #include "Utils/ZLibUtils.h"
 #endif
@@ -65,7 +66,7 @@ public:
         return true;
     }
 
-    QGraphicsItem *loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath)
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
@@ -98,7 +99,7 @@ public:
 
         T *result = new T();
         if(result->load(svgData, QUrl::fromLocalFile(fileInfo.absolutePath())))
-            return result;
+            return QSharedPointer<IImageData>(new ImageData(result, name()));
 
         qWarning() << "Can't load content of" << filePath;
         delete result;

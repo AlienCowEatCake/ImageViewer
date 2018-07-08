@@ -38,11 +38,13 @@
 
 #include "Utils/LocalizationManager.h"
 #include "Utils/SettingsWrapper.h"
+#include "Utils/SignalBlocker.h"
 #include "Utils/ImageSaver.h"
 #include "Utils/RestorableGeometryHelper.h"
 #include "Utils/WindowUtils.h"
 
 #include "Decoders/DecodersManager.h"
+#include "Decoders/IImageData.h"
 #include "../GUISettings.h"
 
 struct MainWindow::Impl
@@ -51,6 +53,7 @@ struct MainWindow::Impl
     GUISettings * const settings;
     UI ui;
     UIState uiState;
+    QSharedPointer<IImageData> imageData;
     ImageSaver imageSaver;
     RestorableGeometryHelper geometryHelper;
     QTimer slideShowTimer;
@@ -84,11 +87,12 @@ struct MainWindow::Impl
             container->setRotateClockwiseEnabled(isEnabled);
             container->setSaveAsEnabled(isEnabled);
         }
+        updateMenuReopenWith();
     }
 
     bool isFileOpened() const
     {
-        return ui.imageViewerWidget->imageSize().isValid();
+        return imageData && !imageData->isEmpty() && imageData->size().isValid();
     }
 
     void syncFullScreen()
@@ -118,6 +122,79 @@ struct MainWindow::Impl
             (*it)->setZoomFullScreenChecked(toFullScreenMode);
         mainWindow->updateBackgroundColor();
     }
+
+    void updateMenuReopenWith()
+    {
+        QMenu *menuReopenWith = ui.menubar->menuReopenWith();
+        const bool enabled = uiState.hasCurrentFile;
+        menuReopenWith->setEnabled(enabled);
+        QActionGroup *actionGroup = menuReopenWith->findChild<QActionGroup*>();
+        if(!actionGroup)
+            return;
+        QSignalBlocker blocker(actionGroup);
+        actionGroup->setEnabled(enabled);
+        if(imageData || !enabled)
+            if(QAction *checkedAction = actionGroup->checkedAction())
+                checkedAction->setChecked(false);
+        if(!imageData)
+            return;
+        QList<QAction*> childActions = actionGroup->actions();
+        for(QList<QAction*>::Iterator it = childActions.begin(), itEnd = childActions.end(); it != itEnd; ++it)
+            if((*it)->data().toString() == imageData->decoderName())
+                (*it)->setChecked(true);
+    }
+
+    void fillMenuReopenWith()
+    {
+        QMenu *menuReopenWith = ui.menubar->menuReopenWith();
+        QActionGroup *actionGroup = menuReopenWith->findChild<QActionGroup*>();
+        if(!actionGroup)
+        {
+            actionGroup = new QActionGroup(menuReopenWith);
+            actionGroup->setExclusive(true);
+            connect(actionGroup, SIGNAL(triggered(QAction*)), mainWindow, SLOT(onActionReopenWithTriggered(QAction*)));
+        }
+        QList<QAction*> childActions = actionGroup->actions();
+        for(QList<QAction*>::Iterator it = childActions.begin(), itEnd = childActions.end(); it != itEnd; ++it)
+        {
+            menuReopenWith->removeAction(*it);
+            (*it)->deleteLater();
+        }
+        DecodersManager &decodersManager = DecodersManager::getInstance();
+        QStringList registeredDecoders = decodersManager.registeredDecoders();
+        registeredDecoders.sort();
+        for(QStringList::ConstIterator it = registeredDecoders.constBegin(), itEnd = registeredDecoders.constEnd(); it != itEnd; ++it)
+        {
+            QString humanReadableName = *it;
+            const QString decoderPrefix = QString::fromLatin1("Decoder");
+            if(humanReadableName.startsWith(decoderPrefix))
+                humanReadableName = humanReadableName.mid(decoderPrefix.length());
+            QAction *action = new QAction(humanReadableName, actionGroup);
+            menuReopenWith->addAction(action);
+            actionGroup->addAction(action);
+            action->setCheckable(true);
+            action->setData(*it);
+        }
+        updateMenuReopenWith();
+    }
+
+    void loadImageData(const QSharedPointer<IImageData> &data)
+    {
+        imageData = data;
+        if(imageData && !imageData->isEmpty())
+        {
+            ui.imageViewerWidget->setZoomMode(settings->zoomMode());
+            ui.imageViewerWidget->setGraphicsItem(imageData->graphicsItem());
+            setImageControlsEnabled(true);
+        }
+        else
+        {
+            imageData.reset();
+            ui.imageViewerWidget->clear();
+            setImageControlsEnabled(false);
+            QMessageBox::critical(mainWindow, qApp->translate("MainWindow", "Error"), qApp->translate("MainWindow", "Failed to open file \"%1\"").arg(uiState.currentFilePath));
+        }
+    }
 };
 
 MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
@@ -130,6 +207,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     ImageViewerWidget *imageViewerWidget = ui.imageViewerWidget;
 
     LocalizationManager::instance()->fillMenu(ui.menubar->menuLanguage());
+    m_impl->fillMenuReopenWith();
 
     connect(imageViewerWidget, SIGNAL(zoomLevelChanged(qreal)), this, SLOT(updateWindowTitle()));
 
@@ -208,7 +286,7 @@ void MainWindow::updateWindowTitle()
     const int currentFileIndex = m_impl->uiState.currentFileIndex;
     if(m_impl->isFileOpened())
     {
-        const QSize imageSize = m_impl->ui.imageViewerWidget->imageSize();
+        const QSize imageSize = m_impl->imageData->size();
         label = QFileInfo(m_impl->uiState.currentFilePath).fileName();
         label.append(QString::fromLatin1(" (%1x%2) %3% - %4")
                      .arg(imageSize.width())
@@ -345,24 +423,13 @@ void MainWindow::updateUIState(const UIState &state, const UIChangeFlags &change
     {
         if(state.currentFilePath.isEmpty())
         {
+            m_impl->imageData.reset();
             m_impl->ui.imageViewerWidget->clear();
             m_impl->setImageControlsEnabled(false);
         }
         else
         {
-            QGraphicsItem *item = DecodersManager::getInstance().loadImage(state.currentFilePath);
-            if(item)
-            {
-                m_impl->ui.imageViewerWidget->setZoomMode(m_impl->settings->zoomMode());
-                m_impl->ui.imageViewerWidget->setGraphicsItem(item);
-                m_impl->setImageControlsEnabled(true);
-            }
-            else
-            {
-                m_impl->ui.imageViewerWidget->clear();
-                m_impl->setImageControlsEnabled(false);
-                QMessageBox::critical(this, tr("Error"), tr("Failed to open file \"%1\"").arg(state.currentFilePath));
-            }
+            m_impl->loadImageData(DecodersManager::getInstance().loadImage(state.currentFilePath));
         }
     }
 
@@ -402,6 +469,15 @@ void MainWindow::updateBackgroundColor()
             ? m_impl->settings->fullScreenBackgroundColor()
             : m_impl->settings->normalBackgroundColor();
     m_impl->ui.imageViewerWidget->setBackgroundColor(color);
+}
+
+void MainWindow::onActionReopenWithTriggered(QAction *action)
+{
+    assert(m_impl->uiState.hasCurrentFile);
+    if(!m_impl->uiState.hasCurrentFile)
+        return;
+    m_impl->loadImageData(DecodersManager::getInstance().loadImage(m_impl->uiState.currentFilePath, action->data().toString()));
+    updateWindowTitle();
 }
 
 void MainWindow::changeEvent(QEvent *event)

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,38 +17,28 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined(MENUBAR_H_INCLUDED)
-#define MENUBAR_H_INCLUDED
+#if !defined(IIMAGEDATA_H_INCLUDED)
+#define IIMAGEDATA_H_INCLUDED
 
-#include <QMenuBar>
+#include <QMap>
 
-#include "Utils/ScopedPointer.h"
+class QGraphicsItem;
+class QString;
+class QSize;
 
-#include "IControlsContainer.h"
-
-class MenuBar : public QMenuBar, public IControlsContainer
+class IImageData
 {
-    Q_OBJECT
-    Q_DISABLE_COPY(MenuBar)
-
-    DECLARE_CONTROLS_CONTAINER_FUNCTIONS
-
 public:
-    MenuBar(QWidget *parent = NULL);
-    ~MenuBar();
+    typedef QMap<QString, QString> Metadata;
 
-    ControlsContainerEmitter *emitter();
+    virtual ~IImageData() {}
 
-    QMenu *contextMenu();
-    QMenu *menuLanguage();
-    QMenu *menuReopenWith();
+    virtual bool isEmpty() const = 0;
 
-protected:
-    void changeEvent(QEvent *event);
-
-private:
-    struct Impl;
-    QScopedPointer<Impl> m_impl;
+    virtual QGraphicsItem *graphicsItem() const = 0;
+    virtual QString decoderName() const = 0;
+    virtual QSize size() const = 0;
+    virtual Metadata metadata() const = 0;
 };
 
-#endif // MENUBAR_H_INCLUDED
+#endif // IIMAGEDATA_H_INCLUDED

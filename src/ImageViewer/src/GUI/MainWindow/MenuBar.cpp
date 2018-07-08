@@ -61,6 +61,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     QMenu * const menuView;
     QMenu * const menuLanguage;
     QMenu * const menuHelp;
+    QMenu * const menuReopenWith;
 
     QAction * const actionOpenFile;
     QAction * const actionOpenFolder;
@@ -100,6 +101,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         , CONSTRUCT_OBJECT(menuView, QMenu, (menubar))
         , CONSTRUCT_OBJECT(menuLanguage, QMenu, (menubar))
         , CONSTRUCT_OBJECT(menuHelp, QMenu, (menubar))
+        , CONSTRUCT_OBJECT(menuReopenWith, QMenu, (menuFile))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionOpenFile              , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionOpenFolder            , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionSaveAs                , createWidgetAction(parent))
@@ -137,6 +139,8 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menuFile->addAction(actionNewWindow);
         actionNewWindow->setShortcut(Qt::CTRL + Qt::Key_N);
         actionNewWindow->setMenuRole(QAction::NoRole);
+        menuFile->addSeparator();
+        menuFile->addMenu(menuReopenWith);
         menuFile->addSeparator();
         menuFile->addAction(actionNavigatePrevious);
         actionNavigatePrevious->setShortcuts(QList<QKeySequence>() << Qt::Key_Left << Qt::Key_Up);
@@ -261,12 +265,13 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menuView->setTitle(qApp->translate("MenuBar", "&View"));
         menuLanguage->setTitle(qApp->translate("MenuBar", "&Language"));
         menuHelp->setTitle(qApp->translate("MenuBar", "&Help"));
+        menuReopenWith->setTitle(qApp->translate("MenuBar", "&Reopen With"));
 
         actionOpenFile->setText(qApp->translate("MenuBar", "&Open File"));
         actionOpenFolder->setText(qApp->translate("MenuBar", "Open &Folder"));
         actionSaveAs->setText(qApp->translate("MenuBar", "&Save As"));
         actionNewWindow->setText(qApp->translate("MenuBar", "New &Window"));
-        actionNavigatePrevious->setText(qApp->translate("MenuBar", "P&revious"));
+        actionNavigatePrevious->setText(qApp->translate("MenuBar", "Pre&vious"));
         actionNavigateNext->setText(qApp->translate("MenuBar", "&Next"));
         actionPreferences->setText(qApp->translate("MenuBar", "&Preferences"));
         actionExit->setText(qApp->translate("MenuBar", "&Exit"));
@@ -292,6 +297,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     void updateIcons()
     {
         menuActionsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(menuFile);
+        menuReopenWith->setIcon                 (ThemeUtils::GetIcon(ThemeUtils::ICON_RESET                     , menuActionsHasDarkTheme));
         actionOpenFile->setIcon                 (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , menuActionsHasDarkTheme));
         actionOpenFolder->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_OPEN                      , menuActionsHasDarkTheme));
         actionSaveAs->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_SAVE_AS                   , menuActionsHasDarkTheme));
@@ -439,6 +445,11 @@ QMenu *MenuBar::contextMenu()
 QMenu *MenuBar::menuLanguage()
 {
     return m_impl->menuLanguage;
+}
+
+QMenu *MenuBar::menuReopenWith()
+{
+    return m_impl->menuReopenWith;
 }
 
 void MenuBar::changeEvent(QEvent *event)
