@@ -211,60 +211,60 @@
 <context>
     <name>MainController</name>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="120"/>
+        <location filename="../../src/GUI/MainController.cpp" line="122"/>
         <source>All Supported Images</source>
         <translation>All Supported Images</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="120"/>
+        <location filename="../../src/GUI/MainController.cpp" line="122"/>
         <source>All Files</source>
         <translation>All Files</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="121"/>
+        <location filename="../../src/GUI/MainController.cpp" line="123"/>
         <source>Open File</source>
         <translation>Open File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="128"/>
+        <location filename="../../src/GUI/MainController.cpp" line="130"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>Failed to open file &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="129"/>
+        <location filename="../../src/GUI/MainController.cpp" line="131"/>
         <source>Failed to open files &quot;%1&quot;</source>
         <translation>Failed to open files &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="138"/>
+        <location filename="../../src/GUI/MainController.cpp" line="140"/>
         <source>Open Directory</source>
         <translation>Open Folder</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="143"/>
+        <location filename="../../src/GUI/MainController.cpp" line="145"/>
         <source>Failed to open folder &quot;%1&quot;</source>
         <translation>Failed to open folder &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="154"/>
+        <location filename="../../src/GUI/MainController.cpp" line="156"/>
         <source>Delete File</source>
         <translation>Delete File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="154"/>
+        <location filename="../../src/GUI/MainController.cpp" line="156"/>
         <source>Are you sure you want to delete current file?</source>
         <translation>Are you sure you want to delete current file?</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="130"/>
-        <location filename="../../src/GUI/MainController.cpp" line="143"/>
-        <location filename="../../src/GUI/MainController.cpp" line="164"/>
-        <location filename="../../src/GUI/MainController.cpp" line="172"/>
+        <location filename="../../src/GUI/MainController.cpp" line="132"/>
+        <location filename="../../src/GUI/MainController.cpp" line="145"/>
+        <location filename="../../src/GUI/MainController.cpp" line="166"/>
+        <location filename="../../src/GUI/MainController.cpp" line="174"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="172"/>
+        <location filename="../../src/GUI/MainController.cpp" line="174"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation>Failed to delete file &quot;%1&quot;</translation>
     </message>
@@ -444,69 +444,84 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="75"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="118"/>
         <source>Select Background Color</source>
         <translation>Select Background Color</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="74"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="82"/>
+        <source>General</source>
+        <translation>General</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="83"/>
+        <source>Decoders</source>
+        <translation>Decoders</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="85"/>
         <source>Ask before deleting images</source>
         <translation>Ask before deleting images</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="77"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="88"/>
         <source>Move deleted images to trash</source>
         <translation>Move deleted images to trash</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="80"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="91"/>
         <source>Use smooth image rendering</source>
         <translation>Use smooth image rendering</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="83"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="94"/>
         <source>Slideshow interval</source>
         <translation>Slideshow interval</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="84"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="95"/>
         <source>sec</source>
         <translation>sec</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="88"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="99"/>
         <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
         <translation>&lt;b&gt;Background colors&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="89"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="100"/>
         <source>Normal:</source>
         <translation>Normal:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="90"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="101"/>
         <source>Fullscreen:</source>
         <translation>Fullscreen:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="100"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="111"/>
         <source>&lt;b&gt;Mouse wheel action&lt;/b&gt;</source>
         <translation>&lt;b&gt;Mouse wheel action&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="101"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="112"/>
         <source>Scroll</source>
         <comment>WheelMode</comment>
         <translation>Scroll</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="102"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="113"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
         <translation>Zoom</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="113"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="157"/>
+        <source>&lt;b&gt;Enabled decoders:&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Enabled decoders:&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="156"/>
         <source>Preferences</source>
         <translation>Preferences</translation>
     </message>

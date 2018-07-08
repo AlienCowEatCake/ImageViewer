@@ -211,60 +211,60 @@
 <context>
     <name>MainController</name>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="120"/>
+        <location filename="../../src/GUI/MainController.cpp" line="122"/>
         <source>All Supported Images</source>
         <translation>Все поддерживаемые изображения</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="120"/>
+        <location filename="../../src/GUI/MainController.cpp" line="122"/>
         <source>All Files</source>
         <translation>Все файлы</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="121"/>
+        <location filename="../../src/GUI/MainController.cpp" line="123"/>
         <source>Open File</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="128"/>
+        <location filename="../../src/GUI/MainController.cpp" line="130"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>Не удалось открыть файл &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="129"/>
+        <location filename="../../src/GUI/MainController.cpp" line="131"/>
         <source>Failed to open files &quot;%1&quot;</source>
         <translation>Не удалось открыть файлы &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="138"/>
+        <location filename="../../src/GUI/MainController.cpp" line="140"/>
         <source>Open Directory</source>
         <translation>Открыть папку</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="143"/>
+        <location filename="../../src/GUI/MainController.cpp" line="145"/>
         <source>Failed to open folder &quot;%1&quot;</source>
         <translation>Не удалось открыть папку &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="154"/>
+        <location filename="../../src/GUI/MainController.cpp" line="156"/>
         <source>Delete File</source>
         <translation>Удалить файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="154"/>
+        <location filename="../../src/GUI/MainController.cpp" line="156"/>
         <source>Are you sure you want to delete current file?</source>
         <translation>Вы уверены что хотите удалить этот файл?</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="130"/>
-        <location filename="../../src/GUI/MainController.cpp" line="143"/>
-        <location filename="../../src/GUI/MainController.cpp" line="164"/>
-        <location filename="../../src/GUI/MainController.cpp" line="172"/>
+        <location filename="../../src/GUI/MainController.cpp" line="132"/>
+        <location filename="../../src/GUI/MainController.cpp" line="145"/>
+        <location filename="../../src/GUI/MainController.cpp" line="166"/>
+        <location filename="../../src/GUI/MainController.cpp" line="174"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="172"/>
+        <location filename="../../src/GUI/MainController.cpp" line="174"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation>Не удалось удалить файл &quot;%1&quot;</translation>
     </message>
@@ -444,69 +444,84 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="75"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="118"/>
         <source>Select Background Color</source>
         <translation>Выберите цвет фона</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="74"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="82"/>
+        <source>General</source>
+        <translation>Основные</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="83"/>
+        <source>Decoders</source>
+        <translation>Декодеры</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="85"/>
         <source>Ask before deleting images</source>
         <translation>Спросить перед удалением изображений</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="77"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="88"/>
         <source>Move deleted images to trash</source>
         <translation>Удалять изображения в корзину</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="80"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="91"/>
         <source>Use smooth image rendering</source>
         <translation>Использовать сглаженный режим отрисовки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="83"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="94"/>
         <source>Slideshow interval</source>
         <translation>Интервал слайдшоу</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="84"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="95"/>
         <source>sec</source>
         <translation>сек</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="88"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="99"/>
         <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
         <translation>&lt;b&gt;Цвета фона&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="89"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="100"/>
         <source>Normal:</source>
         <translation>Обычный:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="90"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="101"/>
         <source>Fullscreen:</source>
         <translation>На полный экран:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="100"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="111"/>
         <source>&lt;b&gt;Mouse wheel action&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Действие при вращении колесика мыши&lt;/b&gt;</translation>
+        <translation>&lt;b&gt;Действие при вращении колёсика мыши&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="101"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="112"/>
         <source>Scroll</source>
         <comment>WheelMode</comment>
         <translation>Прокрутка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="102"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="113"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
         <translation>Масштабирование</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="113"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="157"/>
+        <source>&lt;b&gt;Enabled decoders:&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Разрешённые декодеры:&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="156"/>
         <source>Preferences</source>
         <translation>Настройки</translation>
     </message>
