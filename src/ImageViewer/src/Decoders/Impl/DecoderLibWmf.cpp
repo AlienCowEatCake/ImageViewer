@@ -179,6 +179,11 @@ public:
         return m_isValid;
     }
 
+    bool requiresMainThread() const
+    {
+        return false;
+    }
+
     QRectF boundingRect() const
     {
         return QRectF(0, 0, m_width, m_height);

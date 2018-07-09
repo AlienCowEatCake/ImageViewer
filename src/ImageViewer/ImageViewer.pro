@@ -238,6 +238,16 @@ HEADERS += \
         src/Decoders/Impl/Internal/GraphicsItems/QtWebEngineSVGGraphicsItem.h
 }
 
+!disable_mshtml {
+    SOURCES += \
+        src/Decoders/Impl/DecoderMSHTML.cpp
+    *g++*|*clang* {
+        LIBS += -lgdi32 -lole32 -loleaut32 -luuid
+    } else {
+        LIBS += gdi32.lib ole32.lib oleaut32.lib uuid.lib
+    }
+}
+
 !disable_nsimage {
     OBJECTIVE_SOURCES += \
         src/Decoders/Impl/DecoderNSImage.mm

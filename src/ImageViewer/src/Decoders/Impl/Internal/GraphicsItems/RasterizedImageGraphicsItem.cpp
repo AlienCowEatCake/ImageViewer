@@ -213,19 +213,28 @@ void RasterizedImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGra
 
     RasterizerManager *rasterizerManager = m_impl->rasterizerManager.data();
 
-    if(!rasterizerManager->hasScaledData())
-        rasterizerManager->execTaskSynchronously(newScaleFactor);
+    if(provider->requiresMainThread())
+    {
+        if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, rasterizerManager->getScaledScaleFactor()))
+            rasterizerManager->execTaskSynchronously(newScaleFactor);
+        m_impl->drawScaledImage(painter);
+    }
+    else
+    {
+        if(!rasterizerManager->hasScaledData())
+            rasterizerManager->execTaskSynchronously(newScaleFactor);
 
-    if(!rasterizerManager->hasScaledData())
-        return;
+        if(!rasterizerManager->hasScaledData())
+            return;
 
-    painter->setRenderHint(QPainter::SmoothPixmapTransform, m_impl->transformationMode == Qt::SmoothTransformation);
-    rasterizerManager->beginScaledImageProcessing();
-    m_impl->drawScaledImage(painter);
-    rasterizerManager->endScaledImageProcessing();
+        painter->setRenderHint(QPainter::SmoothPixmapTransform, m_impl->transformationMode == Qt::SmoothTransformation);
+        rasterizerManager->beginScaledImageProcessing();
+        m_impl->drawScaledImage(painter);
+        rasterizerManager->endScaledImageProcessing();
 
-    if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, rasterizerManager->getScaledScaleFactor()))
-        rasterizerManager->startTask(newScaleFactor);
+        if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, rasterizerManager->getScaledScaleFactor()))
+            rasterizerManager->startTask(newScaleFactor);
+    }
 }
 
 // ====================================================================================================
