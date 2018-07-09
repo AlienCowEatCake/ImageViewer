@@ -20,6 +20,7 @@
 #include "MainController.h"
 
 #include <QApplication>
+#include <QDesktopWidget>
 #include <QProcess>
 #include <QFileInfo>
 #include <QFileDialog>
@@ -209,7 +210,18 @@ bool MainController::selectLastFile()
 
 void MainController::showMainWindow()
 {
+    const QPoint oldPos = m_impl->mainWindow.pos();
     m_impl->mainWindow.showNormal();
+    m_impl->mainWindow.move(oldPos);
+
+    const QRect frameGeometry = m_impl->mainWindow.frameGeometry();
+    QDesktopWidget desktopWidget;
+    if(desktopWidget.availableGeometry().contains(frameGeometry) && !oldPos.isNull())
+        return;
+
+    const QRect primaryScreenGeometry = desktopWidget.availableGeometry(desktopWidget.primaryScreen());
+    const QPoint newPos = primaryScreenGeometry.center() - QPoint(frameGeometry.width() / 2, frameGeometry.height() / 2);
+    m_impl->mainWindow.move(newPos);
 }
 
 void MainController::showAbout()
