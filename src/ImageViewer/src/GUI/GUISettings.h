@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -42,7 +42,6 @@ signals:
     void fullScreenBackgroundColorChanged(const QColor &color);
     void lastOpenedPathChanged(const QString &path);
     void smoothTransformationChanged(bool enabled);
-    void mainWindowStateChanged(const QByteArray &geometry);
     void mainWindowGeometryChanged(const QByteArray &state);
     void slideShowIntervalChanged(int seconds);
     void menuBarVisibleChanged(bool visible);
@@ -83,9 +82,6 @@ public:
 
     QByteArray mainWindowGeometry() const;
     void setMainWindowGeometry(const QByteArray &geometry);
-
-    QByteArray mainWindowState() const;
-    void setMainWindowState(const QByteArray &state);
 
     int slideShowInterval() const;
     void setSlideShowInterval(int seconds);

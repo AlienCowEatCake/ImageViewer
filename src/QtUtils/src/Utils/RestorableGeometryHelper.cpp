@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -24,6 +24,11 @@
 #include <utility>
 
 #include <QWidget>
+#include <QDesktopWidget>
+#include <QByteArray>
+#include <QString>
+#include <QStringList>
+#include <QRegExp>
 #include <QRect>
 #include <QEvent>
 #include <QList>
@@ -37,6 +42,7 @@ namespace {
 const int MILLISECONDS_NUMBER_FOR_DROP_AFTER_WINDOW_STATE_CHANGE = 1500;
 const int MAX_RECORDS_NUMBER_FOR_AUTO_SAVING_GEOMETRY = 100;
 const int MAX_TRY_TO_CORRECTING_INVALID_GEOMETRY = 5;
+const int SERIALIZER_FORMAT_VERSION = 1;
 
 } // namespace
 
@@ -147,6 +153,26 @@ struct RestorableGeometryHelper::Impl : public QObject
         temporaryBlockedBySetGeometry = false;
     }
 
+    void overrideSavedGeometry(const QRect &newGeometry)
+    {
+        if(newGeometry.isEmpty())
+            return;
+        normalGeometry = newGeometry;
+        autoSavedGeometry.clear();
+#if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
+        qDebug() << "[RGH] overrideSavedGeometry" << newGeometry;
+#endif
+        restoreGeometry();
+    }
+
+    QRect getFallbackGeometry() const
+    {
+        QDesktopWidget desktopWidget;
+        const QRect primaryScreenGeometry = desktopWidget.availableGeometry(desktopWidget.primaryScreen());
+        const QPoint newPos = primaryScreenGeometry.center() - QPoint(normalGeometry.width() / 2, normalGeometry.height() / 2);
+        return QRect(newPos, normalGeometry.size());
+    }
+
     bool eventFilter(QObject *object, QEvent *event)
     {
         switch(event->type())
@@ -185,6 +211,37 @@ RestorableGeometryHelper::RestorableGeometryHelper(QWidget *window)
 
 RestorableGeometryHelper::~RestorableGeometryHelper()
 {}
+
+QByteArray RestorableGeometryHelper::serialize() const
+{
+    if(m_impl->normalGeometry.isEmpty())
+        return QByteArray();
+#if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
+    qDebug() << "[RGH] serialize" << m_impl->normalGeometry;
+#endif
+    return QString::fromLatin1("FormatVersion:%1;NormalGeometry:(%2,%3 %4x%5)")
+            .arg(SERIALIZER_FORMAT_VERSION)
+            .arg(m_impl->normalGeometry.x())
+            .arg(m_impl->normalGeometry.y())
+            .arg(m_impl->normalGeometry.width())
+            .arg(m_impl->normalGeometry.height())
+            .toLatin1();
+}
+
+void RestorableGeometryHelper::deserialize(const QByteArray &data)
+{
+    QRegExp regExp(QString::fromLatin1("FormatVersion:%1;NormalGeometry:\\((\\d+),(\\d+) (\\d+)x(\\d+)\\)").arg(SERIALIZER_FORMAT_VERSION));
+    QRect newGeometry;
+    if(regExp.indexIn(QString::fromLatin1(data)) != -1)
+        newGeometry = QRect(regExp.cap(1).toInt(), regExp.cap(2).toInt(), regExp.cap(3).toInt(), regExp.cap(4).toInt());
+    QDesktopWidget desktopWidget;
+    if(newGeometry.isEmpty() || !desktopWidget.availableGeometry().contains(newGeometry) || newGeometry.topLeft().isNull())
+        newGeometry = m_impl->getFallbackGeometry();
+#if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
+    qDebug() << "[RGH] deserialize" << newGeometry;
+#endif
+    m_impl->overrideSavedGeometry(newGeometry);
+}
 
 void RestorableGeometryHelper::saveGeometry()
 {

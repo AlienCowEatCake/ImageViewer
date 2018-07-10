@@ -264,9 +264,8 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
 
     ui.menubar->setVisible(false);
     ui.toolbar->setVisible(false);
-    restoreState(settings->mainWindowState());
-    restoreGeometry(settings->mainWindowGeometry());
     m_impl->geometryHelper.saveGeometry();
+    m_impl->geometryHelper.deserialize(settings->mainWindowGeometry());
     m_impl->geometryHelper.block();
     ui.menubar->setVisible(settings->menuBarVisible());
     ui.toolbar->setVisible(settings->toolBarVisible());
@@ -458,6 +457,13 @@ void MainWindow::updateUIState(const UIState &state, const UIChangeFlags &change
         updateWindowTitle();
 }
 
+void MainWindow::saveGeometrySettings()
+{
+    if(!m_impl->isFullScreenMode)
+        m_impl->geometryHelper.saveGeometry();
+    m_impl->settings->setMainWindowGeometry(m_impl->geometryHelper.serialize());
+}
+
 void MainWindow::updateSlideShowInterval()
 {
     m_impl->slideShowTimer.setInterval(m_impl->settings->slideShowInterval() * 1000);
@@ -499,11 +505,7 @@ void MainWindow::changeEvent(QEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if(!m_impl->isFullScreenMode)
-    {
-        m_impl->settings->setMainWindowGeometry(saveGeometry());
-        m_impl->settings->setMainWindowState(saveState());
-    }
+    saveGeometrySettings();
     QMainWindow::closeEvent(event);
     emit closed();
 }

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -81,7 +81,6 @@ const QString FULLSCREEN_BACKGROUND_COLOR_KEY   = QString::fromLatin1("FullScree
 const QString LAST_OPENED_PATH_KEY              = QString::fromLatin1("LastOpenedPath");
 const QString SMOOTH_TRANSFORMATION_KEY         = QString::fromLatin1("SmoothTransformation");
 const QString MAIN_WINDOW_GEOMETRY_KEY          = QString::fromLatin1("MainWindowGeometry");
-const QString MAIN_WINDOW_STATE_KEY             = QString::fromLatin1("MainWindowState");
 const QString SLIDESHOW_INTERVAL_KEY            = QString::fromLatin1("SlideShowInterval");
 const QString MENUBAR_VISIBLE_KEY               = QString::fromLatin1("MenuBarVisible");
 const QString TOOLBAR_VISIBLE_KEY               = QString::fromLatin1("ToolBarVisible");
@@ -262,20 +261,6 @@ void GUISettings::setMainWindowGeometry(const QByteArray &geometry)
     m_impl->settings.setValue(MAIN_WINDOW_GEOMETRY_KEY, geometry);
     if(geometry != oldValue)
         emit mainWindowGeometryChanged(geometry);
-}
-
-QByteArray GUISettings::mainWindowState() const
-{
-    QVariant value = m_impl->settings.value(MAIN_WINDOW_STATE_KEY);
-    return value.isValid() && value.canConvert(QVariant::ByteArray) ? value.toByteArray() : QByteArray();
-}
-
-void GUISettings::setMainWindowState(const QByteArray &state)
-{
-    const QByteArray oldValue = mainWindowState();
-    m_impl->settings.setValue(MAIN_WINDOW_STATE_KEY, state);
-    if(state != oldValue)
-        emit mainWindowStateChanged(state);
 }
 
 int GUISettings::slideShowInterval() const

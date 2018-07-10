@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -23,6 +23,7 @@
 #include "ScopedPointer.h"
 
 class QWidget;
+class QByteArray;
 
 class RestorableGeometryHelper
 {
@@ -31,6 +32,9 @@ class RestorableGeometryHelper
 public:
     RestorableGeometryHelper(QWidget *window);
     ~RestorableGeometryHelper();
+
+    QByteArray serialize() const;
+    void deserialize(const QByteArray &data);
 
     void saveGeometry();
     void restoreGeometry();
