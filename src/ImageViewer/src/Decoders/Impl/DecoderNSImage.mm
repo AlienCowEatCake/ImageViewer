@@ -27,6 +27,7 @@
 #include <QPixmap>
 #include <QImage>
 #include <QFileInfo>
+#include <QDebug>
 
 #include "Utils/ObjectiveCUtils.h"
 
@@ -49,6 +50,11 @@ public:
     {
         AUTORELEASE_POOL;
         std::set<QString> fileTypes;
+        if(![NSImage respondsToSelector:@selector(imageFileTypes)])
+        {
+            qWarning() << "NSImage does not responds to imageFileTypes selector";
+            return QStringList();
+        }
         for(NSString *fileType in [NSImage imageFileTypes])
         {
             QString simplifiedFileType = ObjCUtils::QStringFromNSString(fileType).toLower();

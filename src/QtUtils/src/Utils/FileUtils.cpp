@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -374,6 +374,8 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
 
 #if defined (Q_OS_MAC)
 
+#if 0
+
     // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_osx.py
 
     FSRef ref;
@@ -401,6 +403,33 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
         return false;
     }
     return true;
+
+#else
+
+    int status = QProcess::execute(QString::fromLatin1("osascript"), QStringList()
+            << QString::fromLatin1("-e")
+            << QString::fromLatin1("tell application \"Finder\"\n"
+                                   "move POSIX file \"%1\" to trash\n"
+                                   "end tell").arg(absolutePath));
+    switch(status)
+    {
+    case -2:
+        qWarning() << "[FileUtils::MoveToTrash]: osascript process cannot be started";
+        break;
+    case -1:
+        qWarning() << "[FileUtils::MoveToTrash]: osascript process crashed";
+        break;
+    case 0:
+        return true;
+    default:
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash");
+        qWarning() << "[FileUtils::MoveToTrash]: The specified path could not be moved to Trash" << absolutePath;
+        break;
+    }
+    return false;
+
+#endif
 
 #elif defined (Q_OS_WIN)
 
