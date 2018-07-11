@@ -65,7 +65,7 @@ void Lab2ITU(LPcmsCIELab Lab, WORD Out[3])
 #define GRID_POINTS 33
 
 static
-int InputDirection(register WORD In[], register WORD Out[], register LPVOID Cargo)
+int InputDirection(WORD In[], WORD Out[], LPVOID Cargo)
 {	   
     cmsCIELab Lab;
 
@@ -78,7 +78,7 @@ int InputDirection(register WORD In[], register WORD Out[], register LPVOID Carg
 
 
 static
-int OutputDirection(register WORD In[], register WORD Out[], register LPVOID Cargo)
+int OutputDirection(WORD In[], WORD Out[], LPVOID Cargo)
 {	
 
 	cmsCIELab Lab;

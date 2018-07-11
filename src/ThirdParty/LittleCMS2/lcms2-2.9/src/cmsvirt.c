@@ -361,7 +361,7 @@ cmsHPROFILE CMSEXPORT cmsCreateLinearizationDeviceLink(cmsColorSpaceSignature Co
 //     K: Does not change
 
 static
-int InkLimitingSampler(register const cmsUInt16Number In[], register cmsUInt16Number Out[], register void* Cargo)
+int InkLimitingSampler(const cmsUInt16Number In[], cmsUInt16Number Out[], void* Cargo)
 {
     cmsFloat64Number InkLimit = *(cmsFloat64Number *) Cargo;
     cmsFloat64Number SumCMY, SumCMYK, Ratio;
@@ -686,7 +686,7 @@ typedef struct {
 
 
 static
-int bchswSampler(register const cmsUInt16Number In[], register cmsUInt16Number Out[], register void* Cargo)
+int bchswSampler(const cmsUInt16Number In[], cmsUInt16Number Out[], void* Cargo)
 {
     cmsCIELab LabIn, LabOut;
     cmsCIELCh LChIn, LChOut;

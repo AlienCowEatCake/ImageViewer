@@ -467,7 +467,7 @@ cmsFloat64Number Clip(cmsFloat64Number v)
 }
 
 static
-cmsInt32Number ForwardSampler(register const cmsUInt16Number In[], cmsUInt16Number Out[], void* Cargo)
+cmsInt32Number ForwardSampler(const cmsUInt16Number In[], cmsUInt16Number Out[], void* Cargo)
 {
     FakeCMYKParams* p = (FakeCMYKParams*) Cargo;
     cmsFloat64Number rgb[3], cmyk[4];
@@ -497,7 +497,7 @@ cmsInt32Number ForwardSampler(register const cmsUInt16Number In[], cmsUInt16Numb
 
 
 static
-cmsInt32Number ReverseSampler(register const cmsUInt16Number In[], register cmsUInt16Number Out[], register void* Cargo)
+cmsInt32Number ReverseSampler(const cmsUInt16Number In[], cmsUInt16Number Out[], void* Cargo)
 {
     FakeCMYKParams* p = (FakeCMYKParams*) Cargo;
     cmsFloat64Number c, m, y, k, rgb[3];
@@ -1733,9 +1733,9 @@ cmsUInt16Number Fn8D3(cmsUInt16Number a1, cmsUInt16Number a2, cmsUInt16Number a3
 
 
 static
-cmsInt32Number Sampler3D(register const cmsUInt16Number In[],
-               register cmsUInt16Number Out[],
-               register void * Cargo)
+cmsInt32Number Sampler3D(const cmsUInt16Number In[],
+               cmsUInt16Number Out[],
+               void * Cargo)
 {
 
     Out[0] = Fn8D1(In[0], In[1], In[2], 0, 0, 0, 0, 0, 3);
@@ -1749,9 +1749,9 @@ cmsInt32Number Sampler3D(register const cmsUInt16Number In[],
 }
 
 static
-cmsInt32Number Sampler4D(register const cmsUInt16Number In[],
-               register cmsUInt16Number Out[],
-               register void * Cargo)
+cmsInt32Number Sampler4D(const cmsUInt16Number In[],
+               cmsUInt16Number Out[],
+               void * Cargo)
 {
 
     Out[0] = Fn8D1(In[0], In[1], In[2], In[3], 0, 0, 0, 0, 4);
@@ -1764,9 +1764,9 @@ cmsInt32Number Sampler4D(register const cmsUInt16Number In[],
 }
 
 static
-cmsInt32Number Sampler5D(register const cmsUInt16Number In[],
-               register cmsUInt16Number Out[],
-               register void * Cargo)
+cmsInt32Number Sampler5D(const cmsUInt16Number In[],
+               cmsUInt16Number Out[],
+               void * Cargo)
 {
 
     Out[0] = Fn8D1(In[0], In[1], In[2], In[3], In[4], 0, 0, 0, 5);
@@ -1779,9 +1779,9 @@ cmsInt32Number Sampler5D(register const cmsUInt16Number In[],
 }
 
 static
-cmsInt32Number Sampler6D(register const cmsUInt16Number In[],
-               register cmsUInt16Number Out[],
-               register void * Cargo)
+cmsInt32Number Sampler6D(const cmsUInt16Number In[],
+               cmsUInt16Number Out[],
+               void * Cargo)
 {
 
     Out[0] = Fn8D1(In[0], In[1], In[2], In[3], In[4], In[5], 0, 0, 6);
@@ -1794,9 +1794,9 @@ cmsInt32Number Sampler6D(register const cmsUInt16Number In[],
 }
 
 static
-cmsInt32Number Sampler7D(register const cmsUInt16Number In[],
-               register cmsUInt16Number Out[],
-               register void * Cargo)
+cmsInt32Number Sampler7D(const cmsUInt16Number In[],
+               cmsUInt16Number Out[],
+               void * Cargo)
 {
 
     Out[0] = Fn8D1(In[0], In[1], In[2], In[3], In[4], In[5], In[6], 0, 7);
@@ -1809,9 +1809,9 @@ cmsInt32Number Sampler7D(register const cmsUInt16Number In[],
 }
 
 static
-cmsInt32Number Sampler8D(register const cmsUInt16Number In[],
-               register cmsUInt16Number Out[],
-               register void * Cargo)
+cmsInt32Number Sampler8D(const cmsUInt16Number In[],
+               cmsUInt16Number Out[],
+               void * Cargo)
 {
 
     Out[0] = Fn8D1(In[0], In[1], In[2], In[3], In[4], In[5], In[6], In[7], 8);

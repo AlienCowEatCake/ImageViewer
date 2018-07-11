@@ -44,7 +44,7 @@ typedef struct {
 // Our space will be CIE primaries plus a gamma of 4.5
 
 static
-int Forward(register WORD In[], register WORD Out[], register LPVOID Cargo)
+int Forward(WORD In[], WORD Out[], LPVOID Cargo)
 {	
 	LPCARGO C = (LPCARGO) Cargo;	
 	WORD RGB[3];
@@ -68,7 +68,7 @@ int Forward(register WORD In[], register WORD Out[], register LPVOID Cargo)
 
 
 static
-int Reverse(register WORD In[], register WORD Out[], register LPVOID Cargo)
+int Reverse(WORD In[], WORD Out[], LPVOID Cargo)
 {	
 
 	LPCARGO C = (LPCARGO) Cargo;	

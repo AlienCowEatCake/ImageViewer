@@ -26,7 +26,7 @@
 
 
 static
-int Forward(register WORD In[], register WORD Out[], register LPVOID Cargo)
+int Forward(WORD In[], WORD Out[], LPVOID Cargo)
 {	
     cmsCIELab Lab;
 

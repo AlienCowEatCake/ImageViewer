@@ -710,7 +710,7 @@ typedef struct {
 
 // Preserve black only if that is the only ink used
 static
-int BlackPreservingGrayOnlySampler(register const cmsUInt16Number In[], register cmsUInt16Number Out[], register void* Cargo)
+int BlackPreservingGrayOnlySampler(const cmsUInt16Number In[], cmsUInt16Number Out[], void* Cargo)
 {
     GrayOnlyParams* bp = (GrayOnlyParams*) Cargo;
 
@@ -837,7 +837,7 @@ typedef struct {
 
 // The CLUT will be stored at 16 bits, but calculations are performed at cmsFloat32Number precision
 static
-int BlackPreservingSampler(register const cmsUInt16Number In[], register cmsUInt16Number Out[], register void* Cargo)
+int BlackPreservingSampler(const cmsUInt16Number In[], cmsUInt16Number Out[], void* Cargo)
 {
     int i;
     cmsFloat32Number Inf[4], Outf[4];

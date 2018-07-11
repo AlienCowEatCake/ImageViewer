@@ -239,9 +239,9 @@ void Fake1Dfloat(const cmsFloat32Number Value[],
 
 // This fake interpolation just uses scrambled negated indexes for output
 static
-void Fake3D16(register const cmsUInt16Number Input[],
-              register cmsUInt16Number Output[],
-              register const struct _cms_interp_struc* p)
+void Fake3D16(const cmsUInt16Number Input[],
+              cmsUInt16Number Output[],
+              const struct _cms_interp_struc* p)
 {
        Output[0] =  0xFFFF - Input[2];
        Output[1] =  0xFFFF - Input[1];
@@ -635,10 +635,10 @@ Error:
 
 #define TYPE_RGB_565  (COLORSPACE_SH(PT_RGB)|CHANNELS_SH(3)|BYTES_SH(0) | (1 << 23))
 
-cmsUInt8Number* my_Unroll565(register struct _cmstransform_struct* nfo, 
-                            register cmsUInt16Number wIn[], 
-                            register cmsUInt8Number* accum,
-                            register cmsUInt32Number Stride)
+cmsUInt8Number* my_Unroll565(struct _cmstransform_struct* nfo, 
+                            cmsUInt16Number wIn[], 
+                            cmsUInt8Number* accum,
+                            cmsUInt32Number Stride)
 {
     cmsUInt16Number pixel = *(cmsUInt16Number*) accum;  // Take whole pixel
 
@@ -653,13 +653,13 @@ cmsUInt8Number* my_Unroll565(register struct _cmstransform_struct* nfo,
     return accum + 2;
 }
 
-cmsUInt8Number* my_Pack565(register _cmsTRANSFORM* info, 
-                           register cmsUInt16Number wOut[],
-                           register cmsUInt8Number* output,
-                           register cmsUInt32Number Stride)
+cmsUInt8Number* my_Pack565(_cmsTRANSFORM* info, 
+                           cmsUInt16Number wOut[],
+                           cmsUInt8Number* output,
+                           cmsUInt32Number Stride)
 {
 
-    register cmsUInt16Number pixel;
+    cmsUInt16Number pixel;
     int r, g, b;
 
     r = (int) floor(( wOut[2] * 31) / 65535.0 + 0.5);
@@ -1113,9 +1113,9 @@ Error:
 // --------------------------------------------------------------------------------------------------
 
 static
-void FastEvaluateCurves(register const cmsUInt16Number In[],
-                                     register cmsUInt16Number Out[],
-                                     register const void* Data)
+void FastEvaluateCurves(const cmsUInt16Number In[],
+                                     cmsUInt16Number Out[],
+                                     const void* Data)
 {
     Out[0] = In[0];
 }

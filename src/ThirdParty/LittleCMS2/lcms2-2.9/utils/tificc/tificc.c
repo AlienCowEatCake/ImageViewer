@@ -135,9 +135,9 @@ static int FromLabV4ToLabV2(int x)
 // Formatter for 8bit Lab TIFF (photometric 8)
 static
 unsigned char* UnrollTIFFLab8(struct _cmstransform_struct* CMMcargo,
-                              register cmsUInt16Number wIn[], 
-                              register cmsUInt8Number* accum, 
-                              register cmsUInt32Number Stride)
+                              cmsUInt16Number wIn[], 
+                              cmsUInt8Number* accum, 
+                              cmsUInt32Number Stride)
 {
     wIn[0] = (cmsUInt16Number) FromLabV2ToLabV4((accum[0]) << 8);
     wIn[1] = (cmsUInt16Number) FromLabV2ToLabV4(((accum[1] > 127) ? (accum[1] - 128) : (accum[1] + 128)) << 8);
@@ -152,9 +152,9 @@ unsigned char* UnrollTIFFLab8(struct _cmstransform_struct* CMMcargo,
 // Formatter for 16bit Lab TIFF (photometric 8)
 static
 unsigned char* UnrollTIFFLab16(struct _cmstransform_struct* CMMcargo,
-                              register cmsUInt16Number wIn[],
-                              register cmsUInt8Number* accum,
-                              register cmsUInt32Number Stride )
+                              cmsUInt16Number wIn[],
+                              cmsUInt8Number* accum,
+                              cmsUInt32Number Stride )
 {
     cmsUInt16Number* accum16 = (cmsUInt16Number*) accum;
 
@@ -171,9 +171,9 @@ unsigned char* UnrollTIFFLab16(struct _cmstransform_struct* CMMcargo,
 
 static
 unsigned char* PackTIFFLab8(struct _cmstransform_struct* CMMcargo, 
-                            register cmsUInt16Number wOut[], 
-                            register cmsUInt8Number* output, 
-                            register cmsUInt32Number Stride)
+                            cmsUInt16Number wOut[], 
+                            cmsUInt8Number* output, 
+                            cmsUInt32Number Stride)
 {
     int a, b;
 
@@ -193,9 +193,9 @@ unsigned char* PackTIFFLab8(struct _cmstransform_struct* CMMcargo,
 
 static
 unsigned char* PackTIFFLab16(struct _cmstransform_struct* CMMcargo, 
-                            register cmsUInt16Number wOut[], 
-                            register cmsUInt8Number* output, 
-                            register cmsUInt32Number Stride)
+                            cmsUInt16Number wOut[], 
+                            cmsUInt8Number* output, 
+                            cmsUInt32Number Stride)
 {
     int a, b;
     cmsUInt16Number* output16 = (cmsUInt16Number*) output;

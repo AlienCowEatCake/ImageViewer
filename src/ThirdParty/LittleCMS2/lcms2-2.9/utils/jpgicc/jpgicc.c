@@ -176,7 +176,7 @@ void Lab2ITU(const cmsCIELab* Lab, cmsUInt16Number Out[3])
 #define GRID_POINTS 33
 
 static
-int PCS2ITU(register const cmsUInt16Number In[], register cmsUInt16Number Out[], register void*  Cargo)
+int PCS2ITU(const cmsUInt16Number In[], cmsUInt16Number Out[], void*  Cargo)
 {
     cmsCIELab Lab;
 
@@ -190,7 +190,7 @@ int PCS2ITU(register const cmsUInt16Number In[], register cmsUInt16Number Out[],
 
 
 static
-int ITU2PCS( register const cmsUInt16Number In[], register cmsUInt16Number Out[], register void*  Cargo)
+int ITU2PCS( const cmsUInt16Number In[], cmsUInt16Number Out[], void*  Cargo)
 {
     cmsCIELab Lab;
 
