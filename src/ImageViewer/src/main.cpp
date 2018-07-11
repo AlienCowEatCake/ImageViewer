@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     Workarounds::InitQtUtilsResources();
 
     ThemeManager *themeManager = ThemeManager::instance();
-    themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Default")),
+    themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "System")),
                                 QStringList() << QString::fromLatin1(":/style/style.qss"),
                                 QString::fromLatin1("Themes"), true);
     themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Light")),
