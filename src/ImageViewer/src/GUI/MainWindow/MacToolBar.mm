@@ -713,7 +713,7 @@ struct MacToolBar::Impl
     ~Impl()
     {
         AUTORELEASE_POOL;
-        macToolBar->detachFromWindow();
+//        macToolBar->detachFromWindow();
         [nativeToolbar setDelegate:nil];
 //        [delegate release];
         [nativeToolbar release];
