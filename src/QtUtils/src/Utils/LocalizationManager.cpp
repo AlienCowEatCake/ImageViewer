@@ -127,9 +127,6 @@ struct LocalizationManager::Impl
     }
 };
 
-LocalizationManager::~LocalizationManager()
-{}
-
 /// @brief Получить указатель на экземпляр текущего менеджера локализаций.
 /// @return Указатель на экземпляр текущего менеджера локализаций.
 LocalizationManager *LocalizationManager::instance()
@@ -222,13 +219,18 @@ void LocalizationManager::fillMenu(QMenu *menu)
     m_impl->updateActions(m_impl->currentLocale());
 }
 
-void LocalizationManager::fillComboBox(QComboBox *comboBox)
+/// @brief Заполнить комбобокс элементами для выбора локали. Все необходимые
+///  соединения будут установлены автоматически.
+/// @param comboBox - комбобокс, который должен быть заполнен.
+/// @param autoApply - автоматически применять изменения при выборе локали
+void LocalizationManager::fillComboBox(QComboBox *comboBox, const bool autoApply)
 {
     if(!comboBox)
         return;
 
     m_impl->comboBoxList.append(comboBox);
-    connect(comboBox, SIGNAL(activated(int)), this, SLOT(onComboBoxActivated(int)));
+    if(autoApply)
+        connect(comboBox, SIGNAL(activated(int)), this, SLOT(onComboBoxActivated(int)));
     connect(comboBox, SIGNAL(destroyed(QObject*)), this, SLOT(onComboBoxDestroyed(QObject*)));
     m_impl->updateComboBoxes(m_impl->currentLocale());
 }
@@ -239,6 +241,9 @@ LocalizationManager::LocalizationManager()
     assert(qApp);
     setLocale();
 }
+
+LocalizationManager::~LocalizationManager()
+{}
 
 void LocalizationManager::onActionEnglishTriggered()
 {

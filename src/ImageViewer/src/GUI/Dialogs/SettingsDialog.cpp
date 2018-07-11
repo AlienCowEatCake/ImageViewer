@@ -95,6 +95,10 @@ struct SettingsDialog::Impl
         }
         DecodersManager::getInstance().setBlackListedDecoders(blacklistedDecoders);
 
+        const QString locale = ui->languageComboBox->currentData().toString();
+        if(!locale.isEmpty() && locale != LocalizationManager::instance()->locale())
+            LocalizationManager::instance()->setLocale(locale);
+
         settingsDialog->accept();
     }
 
@@ -119,7 +123,7 @@ struct SettingsDialog::Impl
         QColorDialog dialog(settingsDialog);
         dialog.setOption(QColorDialog::ShowAlphaChannel, true);
         dialog.setCurrentColor(oldColor);
-        dialog.setWindowTitle(tr("Select Background Color"));
+        dialog.setWindowTitle(qApp->translate("SettingsDialog", "Select Background Color"));
         dialog.exec();
         const QColor newColor = dialog.currentColor();
         if(newColor.isValid() && newColor != oldColor)
@@ -170,7 +174,7 @@ SettingsDialog::SettingsDialog(GUISettings *settings, QWidget *parent)
                    Qt::WindowSystemMenuHint | Qt::MSWindowsFixedSizeDialogHint);
     setWindowModality(Qt::ApplicationModal);
 
-    LocalizationManager::instance()->fillComboBox(m_ui->languageComboBox);
+    LocalizationManager::instance()->fillComboBox(m_ui->languageComboBox, false);
     m_impl->fillDecoders();
 }
 

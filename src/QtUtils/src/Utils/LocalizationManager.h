@@ -46,8 +46,6 @@ signals:
     void localeChanged(const QString &locale);
 
 public:
-    ~LocalizationManager();
-
     /// @brief Получить указатель на экземпляр текущего менеджера локализаций.
     /// @return Указатель на экземпляр текущего менеджера локализаций.
     static LocalizationManager *instance();
@@ -73,10 +71,12 @@ public:
     /// @brief Заполнить комбобокс элементами для выбора локали. Все необходимые
     ///  соединения будут установлены автоматически.
     /// @param comboBox - комбобокс, который должен быть заполнен.
-    void fillComboBox(QComboBox *comboBox);
+    /// @param autoApply - автоматически применять изменения при выборе локали
+    void fillComboBox(QComboBox *comboBox, const bool autoApply = true);
 
 private:
     LocalizationManager();
+    ~LocalizationManager();
 
 private slots:
     void onActionEnglishTriggered();
