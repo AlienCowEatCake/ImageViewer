@@ -11,7 +11,7 @@ ImageViewerWidget
 MainWindow #toolbar #separator
 {
     qproperty-frameShadow: Plain;
-    background-color: #22000000;
+    background-color: /*#22000000*/ #000000 13%;
     border: none;
     max-width: 1px;
     margin-left: 1px;

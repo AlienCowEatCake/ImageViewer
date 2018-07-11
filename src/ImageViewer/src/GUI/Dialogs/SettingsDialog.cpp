@@ -96,11 +96,11 @@ struct SettingsDialog::Impl
         }
         DecodersManager::getInstance().setBlackListedDecoders(blacklistedDecoders);
 
-        const QString locale = ui->languageComboBox->currentData().toString();
+        const QString locale = ui->languageComboBox->itemData(ui->languageComboBox->currentIndex()).toString();
         if(!locale.isEmpty() && locale != LocalizationManager::instance()->locale())
             LocalizationManager::instance()->setLocale(locale);
 
-        const QString theme = ui->themeComboBox->currentData().toString();
+        const QString theme = ui->themeComboBox->itemData(ui->themeComboBox->currentIndex()).toString();
         if(!theme.isEmpty() && theme != ThemeManager::instance()->currentTheme())
             ThemeManager::instance()->setTheme(theme, true, settingsDialog);
 

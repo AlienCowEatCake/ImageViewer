@@ -122,7 +122,7 @@ struct LocalizationManager::Impl
             comboBox->setEditable(false);
             for(QMap<QString, QString>::ConstIterator jt = itemTexts.constBegin(), jtEnd = itemTexts.constEnd(); jt != jtEnd; ++jt)
                 comboBox->addItem(jt.value(), jt.key());
-            comboBox->setCurrentText(itemTexts[locale]);
+            comboBox->setCurrentIndex(comboBox->findData(locale));
         }
     }
 };
@@ -260,7 +260,7 @@ void LocalizationManager::onComboBoxActivated(int index)
     Q_UNUSED(index);
     QComboBox *comboBox = static_cast<QComboBox*>(sender());
     assert(comboBox);
-    setLocale(comboBox->currentData().toString());
+    setLocale(comboBox->itemData(comboBox->currentIndex()).toString());
 }
 
 void LocalizationManager::onActionDestroyed(QObject *object)

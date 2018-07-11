@@ -118,7 +118,7 @@ struct ThemeManager::Impl
     {
         StylableTheme theme;
         const QStringList availableStyles = QStyleFactory::keys();
-        const QStringList preferredStyles = theme.preferredStyles.split(QChar::fromLatin1(','), QString::SkipEmptyParts);
+        const QStringList preferredStyles = theme.preferredStyles().split(QChar::fromLatin1(','), QString::SkipEmptyParts);
         QString matchedStyle;
         for(QStringList::ConstIterator it = preferredStyles.constBegin(), itEnd = preferredStyles.constEnd(); it != itEnd; ++it)
         {
@@ -131,44 +131,44 @@ struct ThemeManager::Impl
         QStyle *style = QStyleFactory::create(matchedStyle);
 
         const QList<PaletteMappingData> mapping = QList<PaletteMappingData>()
-                << PaletteMappingData(theme.paletteWindow,                    QPalette::Window,           QPalette::All,      false)
-                << PaletteMappingData(theme.paletteWindowDisabled,            QPalette::Window,           QPalette::Disabled, false)
-                << PaletteMappingData(theme.paletteWindowText,                QPalette::WindowText,       QPalette::All,      true)
-                << PaletteMappingData(theme.paletteWindowTextDisabled,        QPalette::WindowText,       QPalette::Disabled, true)
-                << PaletteMappingData(theme.paletteBase,                      QPalette::Base,             QPalette::All,      false)
-                << PaletteMappingData(theme.paletteBaseDisabled,              QPalette::Base,             QPalette::Disabled, false)
-                << PaletteMappingData(theme.paletteAlternateBase,             QPalette::AlternateBase,    QPalette::All,      false)
-                << PaletteMappingData(theme.paletteAlternateBaseDisabled,     QPalette::AlternateBase,    QPalette::Disabled, false)
-                << PaletteMappingData(theme.paletteToolTipBase,               QPalette::ToolTipBase,      QPalette::All,      true)
-                << PaletteMappingData(theme.paletteToolTipBaseDisabled,       QPalette::ToolTipBase,      QPalette::Disabled, true)
-                << PaletteMappingData(theme.paletteToolTipText,               QPalette::ToolTipText,      QPalette::All,      false)
-                << PaletteMappingData(theme.paletteToolTipTextDisabled,       QPalette::ToolTipText,      QPalette::Disabled, false)
-                << PaletteMappingData(theme.paletteText,                      QPalette::Text,             QPalette::All,      true)
-                << PaletteMappingData(theme.paletteTextDisabled,              QPalette::Text,             QPalette::Disabled, true)
-                << PaletteMappingData(theme.paletteButton,                    QPalette::Button,           QPalette::All,      false)
-                << PaletteMappingData(theme.paletteButtonDisabled,            QPalette::Button,           QPalette::Disabled, false)
-                << PaletteMappingData(theme.paletteButtonText,                QPalette::ButtonText,       QPalette::All,      true)
-                << PaletteMappingData(theme.paletteButtonTextDisabled,        QPalette::ButtonText,       QPalette::Disabled, true)
-                << PaletteMappingData(theme.paletteBrightText,                QPalette::BrightText,       QPalette::All,      false)
-                << PaletteMappingData(theme.paletteBrightTextDisabled,        QPalette::BrightText,       QPalette::Disabled, false)
-                << PaletteMappingData(theme.paletteHighlight,                 QPalette::Highlight,        QPalette::All,      true)
-                << PaletteMappingData(theme.paletteHighlightDisabled,         QPalette::Highlight,        QPalette::Disabled, true)
-                << PaletteMappingData(theme.paletteHighlightedText,           QPalette::HighlightedText,  QPalette::All,      true)
-                << PaletteMappingData(theme.paletteHighlightedTextDisabled,   QPalette::HighlightedText,  QPalette::Disabled, true)
-                << PaletteMappingData(theme.paletteLink,                      QPalette::Link,             QPalette::All,      false)
-                << PaletteMappingData(theme.paletteLinkDisabled,              QPalette::Link,             QPalette::Disabled, false)
-                << PaletteMappingData(theme.paletteLinkVisited,               QPalette::LinkVisited,      QPalette::All,      false)
-                << PaletteMappingData(theme.paletteLinkVisitedDisabled,       QPalette::LinkVisited,      QPalette::Disabled, false)
-                << PaletteMappingData(theme.paletteLight,                     QPalette::Light,            QPalette::All,      false)
-                << PaletteMappingData(theme.paletteLightDisabled,             QPalette::Light,            QPalette::Disabled, false)
-                << PaletteMappingData(theme.paletteMidlight,                  QPalette::Midlight,         QPalette::All,      false)
-                << PaletteMappingData(theme.paletteMidlightDisabled,          QPalette::Midlight,         QPalette::Disabled, false)
-                << PaletteMappingData(theme.paletteDark,                      QPalette::Dark,             QPalette::All,      false)
-                << PaletteMappingData(theme.paletteDarkDisabled,              QPalette::Dark,             QPalette::Disabled, false)
-                << PaletteMappingData(theme.paletteMid,                       QPalette::Mid,              QPalette::All,      false)
-                << PaletteMappingData(theme.paletteMidDisabled,               QPalette::Mid,              QPalette::Disabled, false)
-                << PaletteMappingData(theme.paletteShadow,                    QPalette::Shadow,           QPalette::All,      false)
-                << PaletteMappingData(theme.paletteShadowDisabled,            QPalette::Shadow,           QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteWindow(),                    QPalette::Window,           QPalette::All,      false)
+                << PaletteMappingData(theme.paletteWindowDisabled(),            QPalette::Window,           QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteWindowText(),                QPalette::WindowText,       QPalette::All,      true)
+                << PaletteMappingData(theme.paletteWindowTextDisabled(),        QPalette::WindowText,       QPalette::Disabled, true)
+                << PaletteMappingData(theme.paletteBase(),                      QPalette::Base,             QPalette::All,      false)
+                << PaletteMappingData(theme.paletteBaseDisabled(),              QPalette::Base,             QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteAlternateBase(),             QPalette::AlternateBase,    QPalette::All,      false)
+                << PaletteMappingData(theme.paletteAlternateBaseDisabled(),     QPalette::AlternateBase,    QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteToolTipBase(),               QPalette::ToolTipBase,      QPalette::All,      true)
+                << PaletteMappingData(theme.paletteToolTipBaseDisabled(),       QPalette::ToolTipBase,      QPalette::Disabled, true)
+                << PaletteMappingData(theme.paletteToolTipText(),               QPalette::ToolTipText,      QPalette::All,      false)
+                << PaletteMappingData(theme.paletteToolTipTextDisabled(),       QPalette::ToolTipText,      QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteText(),                      QPalette::Text,             QPalette::All,      true)
+                << PaletteMappingData(theme.paletteTextDisabled(),              QPalette::Text,             QPalette::Disabled, true)
+                << PaletteMappingData(theme.paletteButton(),                    QPalette::Button,           QPalette::All,      false)
+                << PaletteMappingData(theme.paletteButtonDisabled(),            QPalette::Button,           QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteButtonText(),                QPalette::ButtonText,       QPalette::All,      true)
+                << PaletteMappingData(theme.paletteButtonTextDisabled(),        QPalette::ButtonText,       QPalette::Disabled, true)
+                << PaletteMappingData(theme.paletteBrightText(),                QPalette::BrightText,       QPalette::All,      false)
+                << PaletteMappingData(theme.paletteBrightTextDisabled(),        QPalette::BrightText,       QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteHighlight(),                 QPalette::Highlight,        QPalette::All,      true)
+                << PaletteMappingData(theme.paletteHighlightDisabled(),         QPalette::Highlight,        QPalette::Disabled, true)
+                << PaletteMappingData(theme.paletteHighlightedText(),           QPalette::HighlightedText,  QPalette::All,      true)
+                << PaletteMappingData(theme.paletteHighlightedTextDisabled(),   QPalette::HighlightedText,  QPalette::Disabled, true)
+                << PaletteMappingData(theme.paletteLink(),                      QPalette::Link,             QPalette::All,      false)
+                << PaletteMappingData(theme.paletteLinkDisabled(),              QPalette::Link,             QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteLinkVisited(),               QPalette::LinkVisited,      QPalette::All,      false)
+                << PaletteMappingData(theme.paletteLinkVisitedDisabled(),       QPalette::LinkVisited,      QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteLight(),                     QPalette::Light,            QPalette::All,      false)
+                << PaletteMappingData(theme.paletteLightDisabled(),             QPalette::Light,            QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteMidlight(),                  QPalette::Midlight,         QPalette::All,      false)
+                << PaletteMappingData(theme.paletteMidlightDisabled(),          QPalette::Midlight,         QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteDark(),                      QPalette::Dark,             QPalette::All,      false)
+                << PaletteMappingData(theme.paletteDarkDisabled(),              QPalette::Dark,             QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteMid(),                       QPalette::Mid,              QPalette::All,      false)
+                << PaletteMappingData(theme.paletteMidDisabled(),               QPalette::Mid,              QPalette::Disabled, false)
+                << PaletteMappingData(theme.paletteShadow(),                    QPalette::Shadow,           QPalette::All,      false)
+                << PaletteMappingData(theme.paletteShadowDisabled(),            QPalette::Shadow,           QPalette::Disabled, false)
                    ;
         QPalette palette = style ? style->standardPalette() : defaultPalette;
         for(QList<PaletteMappingData>::ConstIterator it = mapping.constBegin(), itEnd = mapping.constEnd(); it != itEnd; ++it)
@@ -228,7 +228,7 @@ struct ThemeManager::Impl
             for(QList<ThemeData>::ConstIterator jt = themes.constBegin(), jtEnd = themes.constEnd(); jt != jtEnd; ++jt)
                 comboBox->addItem(itemTexts[jt->themeId], jt->themeId);
             if(currentTheme())
-                comboBox->setCurrentText(itemTexts[currentTheme()->themeId]);
+                comboBox->setCurrentIndex(comboBox->findData(currentTheme()->themeId));
         }
     }
 };
@@ -363,7 +363,7 @@ void ThemeManager::onComboBoxActivated(int index)
     Q_UNUSED(index);
     QComboBox *comboBox = static_cast<QComboBox*>(sender());
     assert(comboBox);
-    setTheme(comboBox->currentData().toString());
+    setTheme(comboBox->itemData(comboBox->currentIndex()).toString());
 }
 
 void ThemeManager::onActionDestroyed(QObject *object)

@@ -1,33 +1,33 @@
 StylableTheme
 {
     qproperty-preferredStyles: "fusion,windows";
-    qproperty-paletteWindow: #ff2E2F30;
-    qproperty-paletteWindowText: #ffd0d0d0;
-    qproperty-paletteBase: #ff2E2F30;
-    qproperty-paletteAlternateBase: #ff353637;
-    qproperty-paletteButton: #ff404244;
-    qproperty-paletteBrightText: #ffff3333;
-    qproperty-paletteText: #ffd0d0d0;
-    qproperty-paletteButtonText: #ffd0d0d0;
-    qproperty-paletteButtonTextDisabled: #60a4a6a8;
-    qproperty-paletteToolTipBase: #66000000;
-    qproperty-paletteHighlight: #66000000;
-    qproperty-paletteDark: #ff404244;
-    qproperty-paletteHighlightedText: #ffffffff;
-    qproperty-paletteToolTipText: #ffd0d0d0;
-    qproperty-paletteLink: #ff007af4;
-    qproperty-paletteLinkVisited: #ffa57aff;
-    qproperty-paletteWindowDisabled: #ff444444;
-    qproperty-paletteWindowTextDisabled: #60a4a6a8;
-    qproperty-paletteBaseDisabled: #ff444444;
-    qproperty-paletteTextDisabled: #60a4a6a8;
-    qproperty-paletteButtonDisabled: #ff292929;
+    qproperty-paletteWindow: #2E2F30;
+    qproperty-paletteWindowText: #d0d0d0;
+    qproperty-paletteBase: #2E2F30;
+    qproperty-paletteAlternateBase: #353637;
+    qproperty-paletteButton: #404244;
+    qproperty-paletteBrightText: #ff3333;
+    qproperty-paletteText: #d0d0d0;
+    qproperty-paletteButtonText: #d0d0d0;
+    qproperty-paletteButtonTextDisabled: /*#60a4a6a8*/ #a4a6a8 38%;
+    qproperty-paletteToolTipBase: /*#66000000*/ #000000 40%;
+    qproperty-paletteHighlight: /*#66000000*/ #000000 40%;
+    qproperty-paletteDark: #404244;
+    qproperty-paletteHighlightedText: #ffffff;
+    qproperty-paletteToolTipText: #d0d0d0;
+    qproperty-paletteLink: #007af4;
+    qproperty-paletteLinkVisited: #a57aff;
+    qproperty-paletteWindowDisabled: #444444;
+    qproperty-paletteWindowTextDisabled: /*#60a4a6a8*/ #a4a6a8 38%;
+    qproperty-paletteBaseDisabled: #444444;
+    qproperty-paletteTextDisabled: /*#60a4a6a8*/ #a4a6a8 38%;
+    qproperty-paletteButtonDisabled: #292929;
 }
 
 QMenu::item:disabled
 {
     background-color: transparent;
-    color: #ff757575;
+    color: #757575;
 }
 
 ImageViewerWidget
@@ -38,7 +38,7 @@ ImageViewerWidget
 MainWindow #toolbar #separator
 {
     qproperty-frameShadow: Plain;
-    background-color: #22ffffff;
+    background-color: /*#22ffffff*/ #ffffff 13%;
     border: none;
     max-width: 1px;
     margin-left: 1px;
