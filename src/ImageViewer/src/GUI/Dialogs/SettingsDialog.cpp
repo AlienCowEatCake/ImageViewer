@@ -24,6 +24,7 @@
 #include <QVariant>
 
 #include "Utils/LocalizationManager.h"
+#include "Utils/ThemeManager.h"
 
 #include "Decoders/DecodersManager.h"
 
@@ -98,6 +99,10 @@ struct SettingsDialog::Impl
         const QString locale = ui->languageComboBox->currentData().toString();
         if(!locale.isEmpty() && locale != LocalizationManager::instance()->locale())
             LocalizationManager::instance()->setLocale(locale);
+
+        const QString theme = ui->themeComboBox->currentData().toString();
+        if(!theme.isEmpty() && theme != ThemeManager::instance()->currentTheme())
+            ThemeManager::instance()->setTheme(theme, true, settingsDialog);
 
         settingsDialog->accept();
     }
@@ -175,6 +180,7 @@ SettingsDialog::SettingsDialog(GUISettings *settings, QWidget *parent)
     setWindowModality(Qt::ApplicationModal);
 
     LocalizationManager::instance()->fillComboBox(m_ui->languageComboBox, false);
+    ThemeManager::instance()->fillComboBox(m_ui->themeComboBox, false);
     m_impl->fillDecoders();
 }
 

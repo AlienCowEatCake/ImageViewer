@@ -1,0 +1,46 @@
+StylableTheme
+{
+    qproperty-preferredStyles: "fusion,windows";
+    qproperty-paletteWindow: #ff2E2F30;
+    qproperty-paletteWindowText: #ffd0d0d0;
+    qproperty-paletteBase: #ff2E2F30;
+    qproperty-paletteAlternateBase: #ff353637;
+    qproperty-paletteButton: #ff404244;
+    qproperty-paletteBrightText: #ffff3333;
+    qproperty-paletteText: #ffd0d0d0;
+    qproperty-paletteButtonText: #ffd0d0d0;
+    qproperty-paletteButtonTextDisabled: #60a4a6a8;
+    qproperty-paletteToolTipBase: #66000000;
+    qproperty-paletteHighlight: #66000000;
+    qproperty-paletteDark: #ff404244;
+    qproperty-paletteHighlightedText: #ffffffff;
+    qproperty-paletteToolTipText: #ffd0d0d0;
+    qproperty-paletteLink: #ff007af4;
+    qproperty-paletteLinkVisited: #ffa57aff;
+    qproperty-paletteWindowDisabled: #ff444444;
+    qproperty-paletteWindowTextDisabled: #60a4a6a8;
+    qproperty-paletteBaseDisabled: #ff444444;
+    qproperty-paletteTextDisabled: #60a4a6a8;
+    qproperty-paletteButtonDisabled: #ff292929;
+}
+
+QMenu::item:disabled
+{
+    background-color: transparent;
+    color: #ff757575;
+}
+
+ImageViewerWidget
+{
+    background-image: url(:/style/background_pattern_dark.png);
+}
+
+MainWindow #toolbar #separator
+{
+    qproperty-frameShadow: Plain;
+    background-color: #22ffffff;
+    border: none;
+    max-width: 1px;
+    margin-left: 1px;
+    margin-right: 1px;
+}

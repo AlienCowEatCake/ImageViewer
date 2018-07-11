@@ -71,6 +71,8 @@ struct SettingsDialog::UI
         , CONSTRUCT_OBJECT(interfaceTabFrame, QFrame, (tabWidget))
         , CONSTRUCT_OBJECT(languageLabel, QLabel, (interfaceTabFrame))
         , CONSTRUCT_OBJECT(languageComboBox, QComboBox, (interfaceTabFrame))
+        , CONSTRUCT_OBJECT(themeLabel, QLabel, (interfaceTabFrame))
+        , CONSTRUCT_OBJECT(themeComboBox, QComboBox, (interfaceTabFrame))
         , CONSTRUCT_OBJECT(backgroundColorsFrame, QFrame, (interfaceTabFrame))
         , CONSTRUCT_OBJECT(backgroundColorsLabel, QLabel, (backgroundColorsFrame))
         , CONSTRUCT_OBJECT(normalBackgroundColorLabel, QLabel, (backgroundColorsFrame))
@@ -137,6 +139,7 @@ struct SettingsDialog::UI
         generalTabLayout->addStretch();
 
         languageLabel->setText(qApp->translate("SettingsDialog", "<b>Language</b>"));
+        themeLabel->setText(qApp->translate("SettingsDialog", "<b>Theme</b>"));
 
         backgroundColorsLabel->setText(qApp->translate("SettingsDialog", "<b>Background colors</b>"));
         normalBackgroundColorLabel->setText(qApp->translate("SettingsDialog", "Normal:"));
@@ -162,6 +165,8 @@ struct SettingsDialog::UI
         QVBoxLayout *interfaceTabLayout = new QVBoxLayout(interfaceTabFrame);
         interfaceTabLayout->addWidget(languageLabel);
         interfaceTabLayout->addWidget(languageComboBox);
+        interfaceTabLayout->addWidget(themeLabel);
+        interfaceTabLayout->addWidget(themeComboBox);
         interfaceTabLayout->addWidget(backgroundColorsFrame);
         interfaceTabLayout->addStretch();
 
@@ -210,6 +215,8 @@ struct SettingsDialog::UI
     QFrame *interfaceTabFrame;
     QLabel *languageLabel;
     QComboBox *languageComboBox;
+    QLabel *themeLabel;
+    QComboBox *themeComboBox;
     QFrame *backgroundColorsFrame;
     QLabel *backgroundColorsLabel;
     QLabel *normalBackgroundColorLabel;

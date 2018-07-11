@@ -1,0 +1,19 @@
+StylableTheme
+{
+    qproperty-preferredStyles: "fusion,windows";
+}
+
+ImageViewerWidget
+{
+    background-image: url(:/style/background_pattern_light.png);
+}
+
+MainWindow #toolbar #separator
+{
+    qproperty-frameShadow: Plain;
+    background-color: #22000000;
+    border: none;
+    max-width: 1px;
+    margin-left: 1px;
+    margin-right: 1px;
+}

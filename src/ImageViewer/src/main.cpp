@@ -24,7 +24,7 @@
 #include "GUI/MainController.h"
 #include "Utils/Application.h"
 #include "Utils/LocalizationManager.h"
-#include "Utils/ThemeUtils.h"
+#include "Utils/ThemeManager.h"
 #include "Utils/Workarounds.h"
 
 #if defined (USE_STATIC_QJPEG)
@@ -62,7 +62,20 @@ int main(int argc, char *argv[])
     app.setAttribute(Qt::AA_DontShowIconsInMenus);
 #endif
     Workarounds::InitQtUtilsResources();
-    ThemeUtils::LoadStyleSheet(QString::fromLatin1(":/style/style.qss"));
+
+    ThemeManager *themeManager = ThemeManager::instance();
+    themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Default")),
+                                QStringList() << QString::fromLatin1(":/style/style.qss"),
+                                QString::fromLatin1("Themes"), true);
+    themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Light")),
+                                QStringList() << QString::fromLatin1(":/style/style.qss")
+                                    << QString::fromLatin1(":/style/theme-light.qss"),
+                                QString::fromLatin1("Themes"));
+    themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Dark")),
+                                QStringList() << QString::fromLatin1(":/style/style.qss")
+                                    << QString::fromLatin1(":/style/theme-dark.qss"),
+                                QString::fromLatin1("Themes"));
+    themeManager->applyCurrentTheme();
 
     LocalizationManager::instance()->initializeResources(QStringList()
             << QString::fromLatin1(":/translations/imageviewer_%1")
