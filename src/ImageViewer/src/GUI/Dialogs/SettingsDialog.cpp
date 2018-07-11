@@ -23,6 +23,8 @@
 #include <QColorDialog>
 #include <QVariant>
 
+#include "Utils/LocalizationManager.h"
+
 #include "Decoders/DecodersManager.h"
 
 namespace {
@@ -168,6 +170,7 @@ SettingsDialog::SettingsDialog(GUISettings *settings, QWidget *parent)
                    Qt::WindowSystemMenuHint | Qt::MSWindowsFixedSizeDialogHint);
     setWindowModality(Qt::ApplicationModal);
 
+    LocalizationManager::instance()->fillComboBox(m_ui->languageComboBox);
     m_impl->fillDecoders();
 }
 

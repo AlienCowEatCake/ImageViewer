@@ -30,6 +30,7 @@
 #include <QToolButton>
 #include <QSpinBox>
 #include <QRadioButton>
+#include <QComboBox>
 #include <QButtonGroup>
 #include <QScrollArea>
 #include <QDialogButtonBox>
@@ -63,16 +64,19 @@ struct SettingsDialog::UI
         , CONSTRUCT_OBJECT(slideShowIntervalLabel, QLabel, (slideShowIntervalFrame))
         , CONSTRUCT_OBJECT(slideShowSpinBox, QSpinBox, (slideShowIntervalFrame))
         , CONSTRUCT_OBJECT(slideShowSecLabel, QLabel, (slideShowIntervalFrame))
-        , CONSTRUCT_OBJECT(backgroundColorsFrame, QFrame, (generalTabFrame))
+        , CONSTRUCT_OBJECT(wheelModeFrame, QFrame, (generalTabFrame))
+        , CONSTRUCT_OBJECT(wheelModeLabel, QLabel, (wheelModeFrame))
+        , CONSTRUCT_OBJECT(wheelScrollRadioButton, QRadioButton, (wheelModeFrame))
+        , CONSTRUCT_OBJECT(wheelZoomRadioButton, QRadioButton, (wheelModeFrame))
+        , CONSTRUCT_OBJECT(interfaceTabFrame, QFrame, (tabWidget))
+        , CONSTRUCT_OBJECT(languageLabel, QLabel, (interfaceTabFrame))
+        , CONSTRUCT_OBJECT(languageComboBox, QComboBox, (interfaceTabFrame))
+        , CONSTRUCT_OBJECT(backgroundColorsFrame, QFrame, (interfaceTabFrame))
         , CONSTRUCT_OBJECT(backgroundColorsLabel, QLabel, (backgroundColorsFrame))
         , CONSTRUCT_OBJECT(normalBackgroundColorLabel, QLabel, (backgroundColorsFrame))
         , CONSTRUCT_OBJECT(normalBackgroundColorButton, QToolButton, (backgroundColorsFrame))
         , CONSTRUCT_OBJECT(fullScreenBackgroundColorLabel, QLabel, (backgroundColorsFrame))
         , CONSTRUCT_OBJECT(fullScreenBackgroundColorButton, QToolButton, (backgroundColorsFrame))
-        , CONSTRUCT_OBJECT(wheelModeFrame, QFrame, (generalTabFrame))
-        , CONSTRUCT_OBJECT(wheelModeLabel, QLabel, (wheelModeFrame))
-        , CONSTRUCT_OBJECT(wheelScrollRadioButton, QRadioButton, (wheelModeFrame))
-        , CONSTRUCT_OBJECT(wheelZoomRadioButton, QRadioButton, (wheelModeFrame))
         , CONSTRUCT_OBJECT(decodersTabFrame, QFrame, (tabWidget))
         , CONSTRUCT_OBJECT(enabledDecodersLabel, QLabel, (decodersTabFrame))
         , CONSTRUCT_OBJECT(enabledDecodersScrollArea, QScrollArea, (decodersTabFrame))
@@ -80,6 +84,7 @@ struct SettingsDialog::UI
         , CONSTRUCT_OBJECT(buttonBox, QDialogButtonBox, (settingsDialog))
     {
         tabWidget->addTab(generalTabFrame, qApp->translate("SettingsDialog", "General"));
+        tabWidget->addTab(interfaceTabFrame, qApp->translate("SettingsDialog", "Interface"));
         tabWidget->addTab(decodersTabFrame, qApp->translate("SettingsDialog", "Decoders"));
 
         askBeforeDeleteCheckbox->setText(qApp->translate("SettingsDialog", "Ask before deleting images"));
@@ -96,18 +101,6 @@ struct SettingsDialog::UI
         slideShowSpinBox->setValue(settings->slideShowInterval());
         slideShowSpinBox->setRange(1, 1000);
 
-        backgroundColorsLabel->setText(qApp->translate("SettingsDialog", "<b>Background colors</b>"));
-        normalBackgroundColorLabel->setText(qApp->translate("SettingsDialog", "Normal:"));
-        fullScreenBackgroundColorLabel->setText(qApp->translate("SettingsDialog", "Fullscreen:"));
-
-        normalBackgroundColorButton->setFixedSize(COLOR_BUTTON_SIZE);
-        normalBackgroundColorButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-        normalBackgroundColorButton->setIconSize(COLOR_ICON_SIZE);
-
-        fullScreenBackgroundColorButton->setFixedSize(COLOR_BUTTON_SIZE);
-        fullScreenBackgroundColorButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-        fullScreenBackgroundColorButton->setIconSize(COLOR_ICON_SIZE);
-
         wheelModeLabel->setText(qApp->translate("SettingsDialog", "<b>Mouse wheel action</b>"));
         wheelScrollRadioButton->setText(qApp->translate("SettingsDialog", "Scroll", "WheelMode"));
         wheelZoomRadioButton->setText(qApp->translate("SettingsDialog", "Zoom", "WheelMode"));
@@ -121,23 +114,12 @@ struct SettingsDialog::UI
         wheelModeGroup->addButton(wheelZoomRadioButton);
         wheelModeGroup->setExclusive(true);
 
-        buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
-
         QHBoxLayout *slideShowIntervalLayout = new QHBoxLayout(slideShowIntervalFrame);
         slideShowIntervalLayout->setContentsMargins(0, 0, 0, 0);
         slideShowIntervalLayout->addWidget(slideShowIntervalLabel);
         slideShowIntervalLayout->addWidget(slideShowSpinBox);
         slideShowIntervalLayout->addWidget(slideShowSecLabel);
         slideShowIntervalLayout->addStretch();
-
-        QGridLayout *backgroundColorsLayout = new QGridLayout(backgroundColorsFrame);
-        backgroundColorsLayout->setContentsMargins(0, 0, 0, 0);
-        backgroundColorsLayout->addWidget(backgroundColorsLabel, 0, 0, 1, 5, Qt::AlignLeft | Qt::AlignBottom);
-        backgroundColorsLayout->addWidget(normalBackgroundColorLabel, 1, 0, Qt::AlignLeft | Qt::AlignVCenter);
-        backgroundColorsLayout->addWidget(normalBackgroundColorButton, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
-        backgroundColorsLayout->addWidget(fullScreenBackgroundColorLabel, 1, 2, Qt::AlignLeft | Qt::AlignVCenter);
-        backgroundColorsLayout->addWidget(fullScreenBackgroundColorButton, 1, 3, Qt::AlignLeft | Qt::AlignVCenter);
-        backgroundColorsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 4);
 
         QGridLayout *wheelModeLayout = new QGridLayout(wheelModeFrame);
         wheelModeLayout->setContentsMargins(0, 0, 0, 0);
@@ -151,8 +133,37 @@ struct SettingsDialog::UI
         generalTabLayout->addWidget(moveToTrashCheckbox);
         generalTabLayout->addWidget(smoothTransformationCheckbox);
         generalTabLayout->addWidget(slideShowIntervalFrame);
-        generalTabLayout->addWidget(backgroundColorsFrame);
         generalTabLayout->addWidget(wheelModeFrame);
+        generalTabLayout->addStretch();
+
+        languageLabel->setText(qApp->translate("SettingsDialog", "<b>Language</b>"));
+
+        backgroundColorsLabel->setText(qApp->translate("SettingsDialog", "<b>Background colors</b>"));
+        normalBackgroundColorLabel->setText(qApp->translate("SettingsDialog", "Normal:"));
+        fullScreenBackgroundColorLabel->setText(qApp->translate("SettingsDialog", "Fullscreen:"));
+
+        normalBackgroundColorButton->setFixedSize(COLOR_BUTTON_SIZE);
+        normalBackgroundColorButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+        normalBackgroundColorButton->setIconSize(COLOR_ICON_SIZE);
+
+        fullScreenBackgroundColorButton->setFixedSize(COLOR_BUTTON_SIZE);
+        fullScreenBackgroundColorButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+        fullScreenBackgroundColorButton->setIconSize(COLOR_ICON_SIZE);
+
+        QGridLayout *backgroundColorsLayout = new QGridLayout(backgroundColorsFrame);
+        backgroundColorsLayout->setContentsMargins(0, 0, 0, 0);
+        backgroundColorsLayout->addWidget(backgroundColorsLabel, 0, 0, 1, 5, Qt::AlignLeft | Qt::AlignBottom);
+        backgroundColorsLayout->addWidget(normalBackgroundColorLabel, 1, 0, Qt::AlignLeft | Qt::AlignVCenter);
+        backgroundColorsLayout->addWidget(normalBackgroundColorButton, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
+        backgroundColorsLayout->addWidget(fullScreenBackgroundColorLabel, 1, 2, Qt::AlignLeft | Qt::AlignVCenter);
+        backgroundColorsLayout->addWidget(fullScreenBackgroundColorButton, 1, 3, Qt::AlignLeft | Qt::AlignVCenter);
+        backgroundColorsLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 4);
+
+        QVBoxLayout *interfaceTabLayout = new QVBoxLayout(interfaceTabFrame);
+        interfaceTabLayout->addWidget(languageLabel);
+        interfaceTabLayout->addWidget(languageComboBox);
+        interfaceTabLayout->addWidget(backgroundColorsFrame);
+        interfaceTabLayout->addStretch();
 
         enabledDecodersLabel->setText(qApp->translate("SettingsDialog", "<b>Enabled decoders:</b>"));
 
@@ -160,6 +171,8 @@ struct SettingsDialog::UI
         decodersTabLayout->addWidget(enabledDecodersLabel);
         decodersTabLayout->addWidget(enabledDecodersScrollArea);
         decodersTabLayout->addStretch();
+
+        buttonBox->setStandardButtons(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
 
         QVBoxLayout *mainLayout = new QVBoxLayout(settingsDialog);
         mainLayout->addWidget(tabWidget);
@@ -190,16 +203,19 @@ struct SettingsDialog::UI
     QLabel *slideShowIntervalLabel;
     QSpinBox *slideShowSpinBox;
     QLabel *slideShowSecLabel;
+    QFrame *wheelModeFrame;
+    QLabel *wheelModeLabel;
+    QRadioButton *wheelScrollRadioButton;
+    QRadioButton *wheelZoomRadioButton;
+    QFrame *interfaceTabFrame;
+    QLabel *languageLabel;
+    QComboBox *languageComboBox;
     QFrame *backgroundColorsFrame;
     QLabel *backgroundColorsLabel;
     QLabel *normalBackgroundColorLabel;
     QToolButton *normalBackgroundColorButton;
     QLabel *fullScreenBackgroundColorLabel;
     QToolButton *fullScreenBackgroundColorButton;
-    QFrame *wheelModeFrame;
-    QLabel *wheelModeLabel;
-    QRadioButton *wheelScrollRadioButton;
-    QRadioButton *wheelZoomRadioButton;
     QFrame *decodersTabFrame;
     QLabel *enabledDecodersLabel;
     QScrollArea *enabledDecodersScrollArea;

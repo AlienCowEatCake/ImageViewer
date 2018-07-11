@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -28,10 +28,12 @@
 #include <QMenu>
 #include <QAction>
 #include <QActionGroup>
+#include <QComboBox>
 #include <QList>
 #include <QStringList>
 
 #include "SettingsWrapper.h"
+#include "SignalBlocker.h"
 #include "Workarounds.h"
 
 namespace Locale {
@@ -67,6 +69,7 @@ struct LocalizationManager::Impl
     SettingsWrapper settings;
 
     ActionListMap actionsMap;
+    QList<QComboBox*> comboBoxList;
 
     QTranslator qtTranslator;
     TranslatorList customTranslators;
@@ -104,6 +107,23 @@ struct LocalizationManager::Impl
         ActionList &actionsRussian = actionsMap[Locale::RU];
         for(ActionList::Iterator it = actionsRussian.begin(), itEnd = actionsRussian.end(); it != itEnd; ++it)
             (*it)->setText(QApplication::translate("LocalizationManager", "&Russian"));
+    }
+
+    void updateComboBoxes(const QString &locale)
+    {
+        QMap<QString, QString> itemTexts;
+        itemTexts[Locale::EN] = QApplication::translate("LocalizationManager", "English");
+        itemTexts[Locale::RU] = QApplication::translate("LocalizationManager", "Russian");
+        for(QList<QComboBox*>::Iterator it = comboBoxList.begin(), itEnd = comboBoxList.end(); it != itEnd; ++it)
+        {
+            QComboBox *comboBox = *it;
+            QSignalBlocker blocker(comboBox);
+            comboBox->clear();
+            comboBox->setEditable(false);
+            for(QMap<QString, QString>::ConstIterator jt = itemTexts.constBegin(), jtEnd = itemTexts.constEnd(); jt != jtEnd; ++jt)
+                comboBox->addItem(jt.value(), jt.key());
+            comboBox->setCurrentText(itemTexts[locale]);
+        }
     }
 };
 
@@ -164,6 +184,7 @@ void LocalizationManager::setLocale(const QString &locale)
 
     Workarounds::FontsFix(newLocale);
     m_impl->updateActions(newLocale);
+    m_impl->updateComboBoxes(newLocale);
     emit localeChanged(newLocale);
 }
 
@@ -201,6 +222,17 @@ void LocalizationManager::fillMenu(QMenu *menu)
     m_impl->updateActions(m_impl->currentLocale());
 }
 
+void LocalizationManager::fillComboBox(QComboBox *comboBox)
+{
+    if(!comboBox)
+        return;
+
+    m_impl->comboBoxList.append(comboBox);
+    connect(comboBox, SIGNAL(activated(int)), this, SLOT(onComboBoxActivated(int)));
+    connect(comboBox, SIGNAL(destroyed(QObject*)), this, SLOT(onComboBoxDestroyed(QObject*)));
+    m_impl->updateComboBoxes(m_impl->currentLocale());
+}
+
 LocalizationManager::LocalizationManager()
     : m_impl(new Impl)
 {
@@ -218,11 +250,26 @@ void LocalizationManager::onActionRussianTriggered()
     setLocale(Locale::RU);
 }
 
+void LocalizationManager::onComboBoxActivated(int index)
+{
+    Q_UNUSED(index);
+    QComboBox *comboBox = static_cast<QComboBox*>(sender());
+    assert(comboBox);
+    setLocale(comboBox->currentData().toString());
+}
+
 void LocalizationManager::onActionDestroyed(QObject *object)
 {
     QAction *action = static_cast<QAction*>(object);
     assert(action);
     for(ActionListMap::Iterator it = m_impl->actionsMap.begin(), itEnd = m_impl->actionsMap.end(); it != itEnd; ++it)
         it.value().removeAll(action);
+}
+
+void LocalizationManager::onComboBoxDestroyed(QObject *object)
+{
+    QComboBox *comboBox = static_cast<QComboBox*>(object);
+    assert(comboBox);
+    m_impl->comboBoxList.removeAll(comboBox);
 }
 

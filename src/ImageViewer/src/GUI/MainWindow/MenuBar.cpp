@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -59,7 +59,6 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     QMenu * const menuFile;
     QMenu * const menuEdit;
     QMenu * const menuView;
-    QMenu * const menuLanguage;
     QMenu * const menuHelp;
     QMenu * const menuReopenWith;
 
@@ -99,7 +98,6 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         , CONSTRUCT_OBJECT(menuFile, QMenu, (menubar))
         , CONSTRUCT_OBJECT(menuEdit, QMenu, (menubar))
         , CONSTRUCT_OBJECT(menuView, QMenu, (menubar))
-        , CONSTRUCT_OBJECT(menuLanguage, QMenu, (menubar))
         , CONSTRUCT_OBJECT(menuHelp, QMenu, (menubar))
         , CONSTRUCT_OBJECT(menuReopenWith, QMenu, (menuFile))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionOpenFile              , createWidgetAction(parent))
@@ -235,13 +233,11 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menubar->addMenu(menuFile);
         menubar->addMenu(menuEdit);
         menubar->addMenu(menuView);
-        menubar->addMenu(menuLanguage);
         menubar->addMenu(menuHelp);
 
         contextMenu->addMenu(menuFile);
         contextMenu->addMenu(menuEdit);
         contextMenu->addMenu(menuView);
-        contextMenu->addMenu(menuLanguage);
         contextMenu->addMenu(menuHelp);
 
 #if defined (Q_OS_MAC)
@@ -263,7 +259,6 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menuFile->setTitle(qApp->translate("MenuBar", "&File"));
         menuEdit->setTitle(qApp->translate("MenuBar", "&Edit"));
         menuView->setTitle(qApp->translate("MenuBar", "&View"));
-        menuLanguage->setTitle(qApp->translate("MenuBar", "&Language"));
         menuHelp->setTitle(qApp->translate("MenuBar", "&Help"));
         menuReopenWith->setTitle(qApp->translate("MenuBar", "&Reopen With"));
 
@@ -440,11 +435,6 @@ ControlsContainerEmitter *MenuBar::emitter()
 QMenu *MenuBar::contextMenu()
 {
     return m_impl->contextMenu;
-}
-
-QMenu *MenuBar::menuLanguage()
-{
-    return m_impl->menuLanguage;
 }
 
 QMenu *MenuBar::menuReopenWith()

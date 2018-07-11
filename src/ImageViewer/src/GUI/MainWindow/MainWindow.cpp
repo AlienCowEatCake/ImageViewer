@@ -36,7 +36,6 @@
 #include <QFileInfo>
 #include <QTimer>
 
-#include "Utils/LocalizationManager.h"
 #include "Utils/SettingsWrapper.h"
 #include "Utils/SignalBlocker.h"
 #include "Utils/ImageSaver.h"
@@ -206,7 +205,6 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     UI &ui = m_impl->ui;
     ImageViewerWidget *imageViewerWidget = ui.imageViewerWidget;
 
-    LocalizationManager::instance()->fillMenu(ui.menubar->menuLanguage());
     m_impl->fillMenuReopenWith();
 
     connect(imageViewerWidget, SIGNAL(zoomLevelChanged(qreal)), this, SLOT(updateWindowTitle()));

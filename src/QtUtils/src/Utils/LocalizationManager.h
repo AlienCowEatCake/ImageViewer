@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -24,6 +24,7 @@
 #include "ScopedPointer.h"
 
 class QMenu;
+class QComboBox;
 class QStringList;
 
 namespace Locale {
@@ -69,13 +70,20 @@ public:
     /// @param menu - меню, которое должно быть заполнено.
     void fillMenu(QMenu *menu);
 
+    /// @brief Заполнить комбобокс элементами для выбора локали. Все необходимые
+    ///  соединения будут установлены автоматически.
+    /// @param comboBox - комбобокс, который должен быть заполнен.
+    void fillComboBox(QComboBox *comboBox);
+
 private:
     LocalizationManager();
 
 private slots:
     void onActionEnglishTriggered();
     void onActionRussianTriggered();
+    void onComboBoxActivated(int index);
     void onActionDestroyed(QObject *object);
+    void onComboBoxDestroyed(QObject *object);
 
 private:
     struct Impl;
