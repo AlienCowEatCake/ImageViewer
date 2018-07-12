@@ -4,6 +4,7 @@
         <file>background_pattern_dark.png</file>
         <file>style.qss</file>
         <file>theme-dark.qss</file>
-        <file>theme-light.qss</file>
+        <file>theme-fusion-dark.qss</file>
+        <file>theme-fusion-light.qss</file>
     </qresource>
 </RCC>

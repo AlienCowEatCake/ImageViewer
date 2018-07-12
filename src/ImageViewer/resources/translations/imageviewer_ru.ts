@@ -544,12 +544,17 @@
         <translation>Системная</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="70"/>
-        <source>Light</source>
-        <translation>Светлая</translation>
+        <location filename="../../src/main.cpp" line="75"/>
+        <source>Fusion_Light</source>
+        <translation>Fusion светлая</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="74"/>
+        <location filename="../../src/main.cpp" line="79"/>
+        <source>Fusion_Dark</source>
+        <translation>Fusion тёмная</translation>
+    </message>
+    <message>
+        <location filename="../../src/main.cpp" line="70"/>
         <source>Dark</source>
         <translation>Тёмная</translation>
     </message>
