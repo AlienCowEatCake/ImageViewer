@@ -813,9 +813,7 @@ QHeaderView::down-arrow
 ImageViewerWidget
 {
     background-image: url(:/style/background_pattern_dark.png);
-    border: none;
-    border-left: 1px solid #454545;
-    border-right: 1px solid #454545;
+    border: 1px solid #454545;
 }
 
 MainWindow #toolbar #separator
