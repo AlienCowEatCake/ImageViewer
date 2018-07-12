@@ -106,6 +106,7 @@ QMenu::icon
 {
     background: transparent;
     border: 1px solid transparent;
+    border-radius: 1px;
     position: absolute;
     top: 1px;
     right: 1px;
@@ -115,10 +116,12 @@ QMenu::icon
 QMenu::icon:checked:enabled
 {
     border: 1px solid #1d82cc;
+    background: #676767;
 }
 QMenu::icon:checked:disabled
 {
     border: 1px solid #858585;
+    background: #505050;
 }
 QMenu::icon:disabled
 {
