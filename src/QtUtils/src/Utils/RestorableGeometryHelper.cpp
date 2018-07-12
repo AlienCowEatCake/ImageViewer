@@ -214,17 +214,18 @@ RestorableGeometryHelper::~RestorableGeometryHelper()
 
 QByteArray RestorableGeometryHelper::serialize() const
 {
-    if(m_impl->normalGeometry.isEmpty())
+    const QRect &normalGeometry = m_impl->normalGeometry;
+    if(normalGeometry.isEmpty())
         return QByteArray();
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
     qDebug() << "[RGH] serialize" << m_impl->normalGeometry;
 #endif
     return QString::fromLatin1("FormatVersion:%1;NormalGeometry:(%2,%3 %4x%5)")
             .arg(SERIALIZER_FORMAT_VERSION)
-            .arg(m_impl->normalGeometry.x())
-            .arg(m_impl->normalGeometry.y())
-            .arg(m_impl->normalGeometry.width())
-            .arg(m_impl->normalGeometry.height())
+            .arg(normalGeometry.x())
+            .arg(normalGeometry.y())
+            .arg(normalGeometry.width())
+            .arg(normalGeometry.height())
             .toLatin1();
 }
 

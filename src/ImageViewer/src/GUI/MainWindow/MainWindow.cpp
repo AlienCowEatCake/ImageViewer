@@ -262,13 +262,14 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
 
     ui.menubar->setVisible(false);
     ui.toolbar->setVisible(false);
-    m_impl->geometryHelper.saveGeometry();
-    m_impl->geometryHelper.deserialize(settings->mainWindowGeometry());
-    m_impl->geometryHelper.block();
+    RestorableGeometryHelper &geometryHelper = m_impl->geometryHelper;
+    geometryHelper.saveGeometry();
+    geometryHelper.deserialize(settings->mainWindowGeometry());
+    geometryHelper.block();
     ui.menubar->setVisible(settings->menuBarVisible());
     ui.toolbar->setVisible(settings->toolBarVisible());
-    m_impl->geometryHelper.unblock();
-    m_impl->geometryHelper.restoreGeometry();
+    geometryHelper.unblock();
+    geometryHelper.restoreGeometry();
     updateUIState(m_impl->uiState, UICF_All);
 }
 
@@ -346,11 +347,12 @@ void MainWindow::switchShowMenuBar()
         (*it)->setShowMenuBarChecked(newValue);
     if(m_impl->isFullScreenMode)
         return;
-    m_impl->geometryHelper.saveGeometry();
-    m_impl->geometryHelper.block();
+    RestorableGeometryHelper &geometryHelper = m_impl->geometryHelper;
+    geometryHelper.saveGeometry();
+    geometryHelper.block();
     m_impl->ui.menubar->setVisible(newValue);
-    m_impl->geometryHelper.unblock();
-    m_impl->geometryHelper.restoreGeometry();
+    geometryHelper.unblock();
+    geometryHelper.restoreGeometry();
 }
 
 void MainWindow::switchShowToolBar()
@@ -361,11 +363,12 @@ void MainWindow::switchShowToolBar()
         (*it)->setShowToolBarChecked(newValue);
     if(m_impl->isFullScreenMode)
         return;
-    m_impl->geometryHelper.saveGeometry();
-    m_impl->geometryHelper.block();
+    RestorableGeometryHelper &geometryHelper = m_impl->geometryHelper;
+    geometryHelper.saveGeometry();
+    geometryHelper.block();
     m_impl->ui.toolbar->setVisible(newValue);
-    m_impl->geometryHelper.unblock();
-    m_impl->geometryHelper.restoreGeometry();
+    geometryHelper.unblock();
+    geometryHelper.restoreGeometry();
 }
 
 void MainWindow::onZoomModeChanged(ImageViewerWidget::ZoomMode mode)

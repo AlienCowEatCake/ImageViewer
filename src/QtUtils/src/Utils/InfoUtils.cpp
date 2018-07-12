@@ -429,9 +429,11 @@ QString GetCompilerDescription()
 {
     QString description = compilerDescriptionInt();
     const QString target = targetDescriptionInt();
-    const QString byteOrder = QString::fromLatin1(QSysInfo::ByteOrder == QSysInfo::BigEndian ? "BE" : "LE");
     if(!target.isEmpty())
+    {
+        const QString byteOrder = QString::fromLatin1(QSysInfo::ByteOrder == QSysInfo::BigEndian ? "BE" : "LE");
         description.append(QString::fromLatin1(", %1 (%2)").arg(target).arg(byteOrder));
+    }
     return description;
 }
 

@@ -241,15 +241,16 @@ void MainController::openNewWindow()
 
 void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &changeFlags)
 {
-    m_impl->settings.setLastOpenedPath(m_impl->fileManager.currentFilePath());
+    FileManager &fileManager = m_impl->fileManager;
+    m_impl->settings.setLastOpenedPath(fileManager.currentFilePath());
 
     UIState uiState;
     uiState.hasCurrentFile          = m_impl->hasCurrentFile();
     uiState.hasCurrentFileIndex     = m_impl->hasCurrentFileIndex();
-    uiState.currentFilePath         = m_impl->fileManager.currentFilePath();
-    uiState.currentFileIndex        = m_impl->fileManager.currentFileIndex();
-    uiState.filesCount              = m_impl->fileManager.filesCount();
-    uiState.canDeleteCurrentFile    = m_impl->fileManager.canDeleteCurrentFile();
+    uiState.currentFilePath         = fileManager.currentFilePath();
+    uiState.currentFileIndex        = fileManager.currentFileIndex();
+    uiState.filesCount              = fileManager.filesCount();
+    uiState.canDeleteCurrentFile    = fileManager.canDeleteCurrentFile();
 
     UIChangeFlags uiChangeFlags;
     if(uiState.hasCurrentFile != m_impl->lastHasCurrentFile)
