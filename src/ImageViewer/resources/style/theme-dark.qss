@@ -10,8 +10,8 @@ StylableTheme
     qproperty-paletteText: #d2d2d2;
     qproperty-paletteButtonText: #d2d2d2;
     qproperty-paletteButtonTextDisabled: #858585;
-    qproperty-paletteToolTipBase: /*#66000000*/ #000000 40%;
-    qproperty-paletteHighlight: /*#66000000*/ #000000 40%;
+    qproperty-paletteToolTipBase: #454545;
+    qproperty-paletteHighlight: #1d82cc;
     qproperty-paletteDark: #353535;
     qproperty-paletteHighlightedText: #f2f2f2;
     qproperty-paletteToolTipText: #d2d2d2;
@@ -51,6 +51,8 @@ QMenuBar
 {
     min-height: 16px;
     padding-left: 8px;
+    padding-top: 1px;
+    padding-bottom: 1px;
 }
 
 QMenuBar::item
@@ -811,6 +813,9 @@ QHeaderView::down-arrow
 ImageViewerWidget
 {
     background-image: url(:/style/background_pattern_dark.png);
+    border: none;
+    border-left: 1px solid #454545;
+    border-right: 1px solid #454545;
 }
 
 MainWindow #toolbar #separator
