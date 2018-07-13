@@ -81,8 +81,8 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderLibTiff"              ,  530, -1); ///< Умеет формат tiff. Поддерживает EXIF(?) и ICCP. Должен быть выше QImage и QtImageFormatsImage.
         P("DecoderJbigKit"              ,  540, -1); ///< Умеет формат JBIG1.
         /// @note Декодеры анимированных изображений
-        P("DecoderGifLib"               , 1090, -1); ///< Умеет анимированные gif, но хуже, чем QMovie - медленнее и не поддерживаются расширения.
-        P("DecoderQMovie"               , 1100, -1); ///< Умеет анимированные gif.
+        P("DecoderQMovie"               , 1090, -1); ///< Умеет анимированные gif.
+        P("DecoderGifLib"               , 1100, -1); ///< Умеет анимированные gif, но медленнее, чем QMovie, зато поддерживает ICCP и более всеяден.
         P("DecoderLibMng"               , 1110, -1); ///< Умеет анимированные mng и jng. Поддержка mng хуже, чем в QtImageFormatsMovie.
         P("DecoderQtImageFormatsMovie"  , 1200, -1); ///< Умеет анимированные mng.
         P("DecoderLibPng"               , 1300, -1); ///< Умеет анимированные png. Поддерживает EXIF и ICCP.

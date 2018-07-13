@@ -50,6 +50,7 @@ const int GIFLIB_DISPOSE_PREVIOUS   = 3;
 #include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Animation/FramesCompositor.h"
+#include "Internal/Utils/CmsUtils.h"
 
 namespace {
 
@@ -177,6 +178,7 @@ class GifAnimationProvider : public AbstractAnimationProvider
 public:
     GifAnimationProvider(const QString &filePath)
     {
+        m_numLoops = 1;
         m_error = !readGif(filePath);
     }
 
@@ -213,6 +215,7 @@ private:
         }
 
         const QVector<QRgb> screenColorTable = colorTableFromColorMapObject(gifFile->SColorMap);
+        QScopedPointer<ICCProfile> iccProfile;
 
         FramesCompositor compositor;
         compositor.startComposition(screenSize);
@@ -220,6 +223,51 @@ private:
         for(int frameIndex = 0; frameIndex < gifFile->ImageCount; frameIndex++)
         {
             const SavedImage *gifFrame = gifFile->SavedImages + frameIndex;
+
+            for(int i = 0; i < gifFrame->ExtensionBlockCount; i++)
+            {
+                ExtensionBlock *extensionHeader = gifFrame->ExtensionBlocks + i;
+                if(extensionHeader->Function != APPLICATION_EXT_FUNC_CODE)
+                    continue;
+                if(!extensionHeader->Bytes || extensionHeader->ByteCount != 11)
+                    continue;
+                if(i + 1 == gifFrame->ExtensionBlockCount) // Нужно для CONTINUE_EXT_FUNC_CODE
+                    continue;
+                if(!memcmp(extensionHeader->Bytes, "NETSCAPE2.0", 11) || !memcmp(extensionHeader->Bytes, "ANIMEXTS1.0", 11))
+                {
+                    ExtensionBlock *extensionData = extensionHeader + 1;
+                    if(extensionData->Function != CONTINUE_EXT_FUNC_CODE)
+                        continue;
+                    if(!extensionData->Bytes || extensionData->ByteCount != 3)
+                        continue;
+                    if(extensionData->Bytes[0] != 1) // wrong marker
+                        continue;
+                    m_numLoops = extensionData->Bytes[1] | (extensionData->Bytes[2] << 8);
+                    i++;
+                    continue;
+                }
+                if(!memcmp(extensionHeader->Bytes, "XMP dataXMP", 11))
+                {
+                    /// @todo
+                    qDebug() << "Found XMP metadata";
+                    continue;
+                }
+                if(!memcmp(extensionHeader->Bytes, "ICCRGBG1012", 11))
+                {
+                    QByteArray iccData;
+                    ExtensionBlock *extensionData = extensionHeader + 1;
+                    while(extensionData->Function == CONTINUE_EXT_FUNC_CODE)
+                    {
+                        iccData.append(reinterpret_cast<const char*>(extensionData->Bytes), extensionData->ByteCount);
+                        extensionData++;
+                        i++;
+                    }
+                    iccProfile.reset(new ICCProfile(iccData));
+                    qDebug() << "Found ICCP metadata";
+                    continue;
+                }
+            }
+
             const QRect frameRect = QRect(gifFrame->ImageDesc.Left, gifFrame->ImageDesc.Top, gifFrame->ImageDesc.Width, gifFrame->ImageDesc.Height);
             const FrameControlData frameControl = getFrameControlData(gifFile, frameIndex);
 
@@ -262,7 +310,10 @@ private:
                     memcpy(frame.scanLine(row), gifFrame->RasterBits + row * frameRect.width(), static_cast<size_t>(frameRect.width()));
             }
 
-            frame = compositor.compositeFrame(frame.convertToFormat(QImage::Format_ARGB32), frameRect, frameControl.disposeType, FramesCompositor::BLEND_OVER);
+            frame = frame.convertToFormat(QImage::Format_ARGB32);
+            if(iccProfile)
+                iccProfile->applyToImage(&frame);
+            frame = compositor.compositeFrame(frame, frameRect, frameControl.disposeType, FramesCompositor::BLEND_OVER);
             m_frames.push_back(Frame(frame, DelayCalculator::calculate(frameControl.delayMs, DelayCalculator::MODE_CHROME)));
         }
 

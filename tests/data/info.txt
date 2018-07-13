@@ -684,6 +684,12 @@ Images from http://littlesvr.ca/apng/gif_apng_webp.html
  * littlesvr.ca-apng-gif_apng_webp/world-cup-2014-42_lossy.webp
  * littlesvr.ca-apng-gif_apng_webp/world-cup-2014-42.webp
 
+Image from https://habr.com/post/274917/
+ * 6b56819bc0cd362bcaa0a8e83fd2a6d2.gif
+
+Image from https://bolknote.ru/all/3728/
+ * gif-icc.gif
+
 --------------------------------------------------------------------------------
 
 ::: WMF test images :::
