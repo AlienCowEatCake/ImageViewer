@@ -25,11 +25,10 @@ ImageData::ImageData()
     : m_graphicsItem(NULL)
 {}
 
-ImageData::ImageData(QGraphicsItem *graphicsItem, const QString &decoderName, const IImageData::Metadata &metadata)
+ImageData::ImageData(QGraphicsItem *graphicsItem, const QString &decoderName)
     : m_graphicsItem(graphicsItem)
     , m_decoderName(decoderName)
     , m_size(graphicsItem ? graphicsItem->boundingRect().toAlignedRect().size() : QSize())
-    , m_metadata(metadata)
 {}
 
 ImageData::~ImageData()
@@ -56,9 +55,4 @@ QString ImageData::decoderName() const
 QSize ImageData::size() const
 {
     return m_size;
-}
-
-IImageData::Metadata ImageData::metadata() const
-{
-    return m_metadata;
 }

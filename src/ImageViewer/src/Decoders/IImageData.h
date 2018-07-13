@@ -20,8 +20,6 @@
 #if !defined(IIMAGEDATA_H_INCLUDED)
 #define IIMAGEDATA_H_INCLUDED
 
-#include <QMap>
-
 class QGraphicsItem;
 class QString;
 class QSize;
@@ -29,8 +27,6 @@ class QSize;
 class IImageData
 {
 public:
-    typedef QMap<QString, QString> Metadata;
-
     virtual ~IImageData() {}
 
     virtual bool isEmpty() const = 0;
@@ -38,7 +34,6 @@ public:
     virtual QGraphicsItem *graphicsItem() const = 0;
     virtual QString decoderName() const = 0;
     virtual QSize size() const = 0;
-    virtual Metadata metadata() const = 0;
 };
 
 #endif // IIMAGEDATA_H_INCLUDED

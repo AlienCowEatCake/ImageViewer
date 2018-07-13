@@ -32,7 +32,7 @@ class ImageData : public IImageData
 
 public:
     ImageData();
-    ImageData(QGraphicsItem *graphicsItem, const QString &decoderName, const Metadata &metadata = Metadata());
+    ImageData(QGraphicsItem *graphicsItem, const QString &decoderName);
     ~ImageData();
 
     bool isEmpty() const;
@@ -40,13 +40,11 @@ public:
     QGraphicsItem *graphicsItem() const;
     QString decoderName() const;
     QSize size() const;
-    Metadata metadata() const;
 
 private:
     QGraphicsItem * const m_graphicsItem;
     const QString m_decoderName;
     const QSize m_size;
-    const Metadata m_metadata;
 };
 
 #endif // IMAGEDATA_H_INCLUDED
