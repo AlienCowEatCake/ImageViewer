@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -55,13 +55,16 @@ int AbstractAnimationProvider::nextImageDelay() const
 
 bool AbstractAnimationProvider::jumpToNextImage()
 {
+    if(m_numLoops > 0 && m_currentLoop == m_numLoops && m_currentFrame + 1 == m_numFrames)
+        return false;
+
     m_currentFrame++;
     if(m_currentFrame == m_numFrames)
     {
         m_currentFrame = 0;
         m_currentLoop++;
     }
-    return m_numLoops <= 0 || m_currentLoop <= m_numLoops;
+    return m_numLoops <= 0 || m_currentLoop < m_numLoops;
 }
 
 QPixmap AbstractAnimationProvider::currentPixmap() const
