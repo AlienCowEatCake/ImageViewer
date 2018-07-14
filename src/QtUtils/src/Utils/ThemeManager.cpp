@@ -33,6 +33,7 @@
 #include <QComboBox>
 #include <QMap>
 #include <QColor>
+#include <QTextDocument>
 
 #include "SettingsWrapper.h"
 #include "SignalBlocker.h"
@@ -80,6 +81,35 @@ struct ThemeData
     {}
 };
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
+
+/// @note https://bugreports.qt.io/browse/QTBUG-34114
+class TextDocumentStyler : public QObject
+{
+    Q_DISABLE_COPY(TextDocumentStyler)
+
+public:
+    TextDocumentStyler(QObject *parent = NULL)
+        : QObject(parent)
+    {}
+
+protected:
+    bool eventFilter(QObject *object, QEvent *event)
+    {
+        if(event->type() == QEvent::ChildAdded)
+        {
+            if(QTextDocument *document = qobject_cast<QTextDocument*>(object))
+            {
+                const QString styleSheetTemplate = QString::fromLatin1("a { color: %1; }");
+                document->setDefaultStyleSheet(styleSheetTemplate.arg(qApp->palette().color(QPalette::Link).name()));
+            }
+        }
+        return QObject::eventFilter(object, event);
+    }
+};
+
+#endif
+
 typedef QList<QAction*> ActionList;
 typedef QMap<QString, ActionList> ActionListMap;
 
@@ -96,7 +126,11 @@ struct ThemeManager::Impl
 
     Impl()
         : defaultPalette(qApp->palette())
-    {}
+    {
+#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
+        qApp->installEventFilter(new TextDocumentStyler(qApp));
+#endif
+    }
 
     ThemeData *currentTheme()
     {
