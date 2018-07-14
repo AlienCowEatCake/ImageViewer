@@ -115,6 +115,11 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
     CONFIG += disable_giflib # FIXME: C99
 }
 
+# LibRaw options:
+#    disable_libraw
+#    system_libraw
+
+
 # librsvg options:
 #    disable_librsvg
 
