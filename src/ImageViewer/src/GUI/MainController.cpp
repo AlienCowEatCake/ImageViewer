@@ -19,6 +19,8 @@
 
 #include "MainController.h"
 
+#include <algorithm>
+
 #include <QApplication>
 #include <QProcess>
 #include <QFileInfo>
@@ -220,9 +222,24 @@ void MainController::showAbout()
 
 void MainController::showPreferences()
 {
+    const QStringList oldBlackList = DecodersManager::getInstance().blackListedDecoders();
     SettingsDialog dialog(&m_impl->settings, &m_impl->mainWindow);
     if(dialog.exec() != QDialog::Accepted)
         return;
+
+    QStringList newBlackList = DecodersManager::getInstance().blackListedDecoders();
+    if(oldBlackList.size() == newBlackList.size())
+    {
+        for(QStringList::ConstIterator it = oldBlackList.constBegin(), itEnd = oldBlackList.constEnd(); it != itEnd; ++it)
+        {
+            QStringList::iterator found = std::find(newBlackList.begin(), newBlackList.end(), *it);
+            if(found == newBlackList.end())
+                break;
+            newBlackList.erase(found);
+        }
+        if(newBlackList.empty())
+            return;
+    }
 
     /// @note Перезагружаем все, чтобы применились настройки декодеров
     {
