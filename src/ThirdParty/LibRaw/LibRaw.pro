@@ -44,6 +44,10 @@ win32 {
     DEFINES += LIBRAW_NODLL
 }
 
+*clang* {
+    DEFINES *= _LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR
+}
+
 SOURCES += \
 \#    $${THIRDPARTY_LIBRAW_PATH}/dcraw/dcraw.c \
 \#    $${THIRDPARTY_LIBRAW_PATH}/internal/aahd_demosaic.cpp \

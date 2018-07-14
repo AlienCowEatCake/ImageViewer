@@ -18,6 +18,10 @@ include($${PWD}/../../Features.pri)
             DEFINES += LIBRAW_NODLL
         }
 
+        *clang* {
+            DEFINES *= _LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR
+        }
+
         OUT_LIB_TARGET = tp_LibRaw
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/LibRaw
         OUT_LIB_NAME =
