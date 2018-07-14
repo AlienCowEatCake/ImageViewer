@@ -726,6 +726,35 @@ LibRaw_windows_datastream::~LibRaw_windows_datastream()
     ::CloseHandle(hMap_);
 }
 
+static BOOL GetFileSizeEx_Legacy(HANDLE hFile, PLARGE_INTEGER lpFileSize)
+{
+  if (lpFileSize == NULL)
+    return FALSE;
+
+  HMODULE hKernel32 = ::LoadLibraryA("kernel32.dll");
+  typedef BOOL(WINAPI *GetFileSizeEx_t)(HANDLE, PLARGE_INTEGER);
+  GetFileSizeEx_t GetFileSizeEx_f = reinterpret_cast<GetFileSizeEx_t>(::GetProcAddress(hKernel32, "GetFileSizeEx"));
+
+  BOOL fileSizeStatus = FALSE;
+  if (GetFileSizeEx_f)
+  {
+    fileSizeStatus = GetFileSizeEx_f(hFile, lpFileSize);
+  }
+  else
+  {
+    DWORD dwSizeHigh = 0, dwSizeLow = 0;
+    dwSizeLow = ::GetFileSize(hFile, &dwSizeHigh);
+    if((dwSizeLow != INVALID_FILE_SIZE) || (dwSizeLow == INVALID_FILE_SIZE && ::GetLastError() != NO_ERROR))
+    {
+      lpFileSize->HighPart = dwSizeHigh;
+      lpFileSize->LowPart = dwSizeLow;
+    }
+  }
+
+  ::FreeLibrary(hKernel32);
+  return fileSizeStatus;
+}
+
 void LibRaw_windows_datastream::Open(HANDLE hFile)
 {
   // create a file mapping handle on the file handle
@@ -734,7 +763,7 @@ void LibRaw_windows_datastream::Open(HANDLE hFile)
     throw std::runtime_error("failed to create file mapping");
 
   // now map the whole file base view
-  if (!::GetFileSizeEx(hFile, (PLARGE_INTEGER)&cbView_))
+  if (!GetFileSizeEx_Legacy(hFile, (PLARGE_INTEGER)&cbView_))
     throw std::runtime_error("failed to get the file size");
 
   pView_ = ::MapViewOfFile(hMap_, FILE_MAP_READ, 0, 0, (size_t)cbView_);
