@@ -14,6 +14,10 @@ include($${PWD}/../../Features.pri)
         INCLUDEPATH += $${THIRDPARTY_LIBRAW_PATH}
         DEPENDPATH += $${THIRDPARTY_LIBRAW_PATH}
 
+        win32 {
+            DEFINES += LIBRAW_NODLL
+        }
+
         OUT_LIB_TARGET = tp_LibRaw
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/LibRaw
         OUT_LIB_NAME =

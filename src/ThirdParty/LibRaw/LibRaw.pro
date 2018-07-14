@@ -40,6 +40,10 @@ DEFINES += LIBRAW_NOTHREADS
     DEFINES += NO_JASPER
 }
 
+win32 {
+    DEFINES += LIBRAW_NODLL
+}
+
 SOURCES += \
 \#    $${THIRDPARTY_LIBRAW_PATH}/dcraw/dcraw.c \
 \#    $${THIRDPARTY_LIBRAW_PATH}/internal/aahd_demosaic.cpp \

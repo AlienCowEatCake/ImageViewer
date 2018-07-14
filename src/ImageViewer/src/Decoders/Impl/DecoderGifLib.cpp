@@ -258,7 +258,7 @@ private:
                     ExtensionBlock *extensionData = extensionHeader + 1;
                     while(extensionData->Function == CONTINUE_EXT_FUNC_CODE)
                     {
-                        iccData.append(reinterpret_cast<const char*>(extensionData->Bytes), extensionData->ByteCount);
+                        iccData += QByteArray(reinterpret_cast<const char*>(extensionData->Bytes), extensionData->ByteCount);
                         extensionData++;
                         i++;
                     }
