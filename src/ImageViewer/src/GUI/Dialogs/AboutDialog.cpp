@@ -53,6 +53,9 @@
 #if defined (HAS_GIFLIB)
 #include <gif_lib.h>
 #endif
+#if defined (HAS_LIBRAW)
+#include <libraw/libraw_version.h>
+#endif
 #if defined (HAS_JBIGKIT)
 #include <jbig.h>
 #endif
@@ -256,6 +259,15 @@ QString getTextBrowserContent()
                       QString(),
 #endif
                       QString::fromLatin1("http://giflib.sourceforge.net/")
+                      ));
+#endif
+
+#if defined (HAS_LIBRAW)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the LibRaw library"),
+                      QString::fromLatin1("libraw"),
+                      QString::fromLatin1(LIBRAW_VERSION_STR),
+                      QString::fromLatin1("https://www.libraw.org/")
                       ));
 #endif
 

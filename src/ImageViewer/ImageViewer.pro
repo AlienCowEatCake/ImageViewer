@@ -198,6 +198,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderGifLib.cpp
 }
 
+!disable_libraw {
+    SOURCES += \
+        src/Decoders/Impl/DecoderLibRaw.cpp
+}
+
 !disable_librsvg {
     SOURCES += \
         src/Decoders/Impl/DecoderLibRSVG.cpp

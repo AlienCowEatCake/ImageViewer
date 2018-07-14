@@ -100,6 +100,10 @@
 #ifdef _WIN32
 #ifndef __RPCNDR_H__		/* don't conflict if rpcndr.h already read */
 typedef unsigned char boolean;
+#elif defined(__MINGW32__) && \
+    defined(__RPCNDR_H_VERSION__) && (__RPCNDR_H_VERSION__ <= 450) && \
+    !defined(_RPCNDR_H) /* https://sourceforge.net/p/mingw/bugs/384/ */
+typedef unsigned char boolean;
 #endif
 #ifndef FALSE			/* in case these macros already exist */
 #define FALSE	0		/* values of boolean */

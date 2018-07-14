@@ -706,6 +706,9 @@ Image from http://comsquare.dynvpn.de/forums/viewtopic.php?f=54&t=35570
 
 HDR: http://www.hdrlabs.com/sibl/archive.html
 JP2: https://github.com/uclouvain/openjpeg-data/
+RAW: https://commonsarchive.wmflabs.org/wiki/Category:Camera_raw_files
+     https://raw.pixls.us/?noncc0#repo
+     https://drive.google.com/drive/folders/19zeKUfiB7aFIxC4AKk_broTm1hP01cP7
 
 --------------------------------------------------------------------------------
 

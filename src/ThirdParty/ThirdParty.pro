@@ -68,6 +68,10 @@ SUBDIRS =
     SUBDIRS += giflib/giflib.pro
 }
 
+!disable_libraw : !system_libraw {
+    SUBDIRS += LibRaw/LibRaw.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }
