@@ -267,6 +267,22 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>raw</string>
+				<string>crw</string>
+				<string>cr2</string>
+				<string>arw</string>
+				<string>nef</string>
+				<string>raf</string>
+				<string>dng</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Camera Raw Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>sun</string>
 				<string>ras</string>
 			</array>
