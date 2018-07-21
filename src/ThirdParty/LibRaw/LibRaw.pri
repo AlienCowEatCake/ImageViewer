@@ -47,6 +47,11 @@ include($${PWD}/../../Features.pri)
         LIBS += -L$${OUT_LIB_DIR} $${OUT_LIB_LINK}
 #        PRE_TARGETDEPS += $${OUT_LIB_DIR}/$${OUT_LIB_NAME}
 
+        win32 {
+            *msvc*: LIBS += ws2_32.lib
+            else: LIBS += -lws2_32
+        }
+
     } else {
 
         *msvc*: LIBS += libraw.lib
