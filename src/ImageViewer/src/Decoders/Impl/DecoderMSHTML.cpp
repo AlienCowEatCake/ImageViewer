@@ -353,74 +353,17 @@ private:
                 return false;
             }
 
-            switch(reader.tokenType())
+            writer.writeCurrentToken(reader);
+            if(reader.tokenType() == QXmlStreamReader::StartElement)
             {
-            case QXmlStreamReader::StartDocument:
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
-                if(reader.documentVersion().isEmpty())
-                    writer.writeStartDocument();
-                else
-                    writer.writeStartDocument(reader.documentVersion().toString(), reader.isStandaloneDocument());
-#else
-                if(reader.documentVersion().isEmpty())
-                    writer.writeStartDocument(QString::fromLatin1("1.0"));
-                else
-                    writer.writeStartDocument(reader.documentVersion().toString());
-#endif
-                break;
-            case QXmlStreamReader::EndDocument:
-                writer.writeEndDocument();
-                break;
-            case QXmlStreamReader::StartElement:
-            {
-                writer.writeStartElement(reader.qualifiedName().toString());
-
-                const QXmlStreamNamespaceDeclarations namespaceDeclarations = reader.namespaceDeclarations();
-                for(QXmlStreamNamespaceDeclarations::ConstIterator it = namespaceDeclarations.constBegin(), itEnd = namespaceDeclarations.constEnd(); it != itEnd; ++it)
-                {
-                    if(it->prefix().isEmpty())
-                        writer.writeDefaultNamespace(it->namespaceUri().toString());
-                    else
-                        writer.writeNamespace(it->namespaceUri().toString(), it->prefix().toString());
-                }
-
-                const QXmlStreamAttributes attributes = reader.attributes();
-                for(QXmlStreamAttributes::ConstIterator it = attributes.constBegin(), itEnd = attributes.constEnd(); it != itEnd; ++it)
-                {
-                    writer.writeAttribute(it->qualifiedName().toString(), it->value().toString());
-                }
-
                 if(fakeViewBoxRequired && !compare(reader.name(), QString::fromLatin1("svg"), Qt::CaseInsensitive))
                 {
                     writer.writeAttribute(QString::fromLatin1("viewBox"), QString::fromLatin1("%1 %2 %3 %4").arg(0).arg(0).arg(size.width()).arg(size.height()));
                     qDebug() << __FUNCTION__ << "Fake viewBox injected";
                 }
-                break;
-            }
-            case QXmlStreamReader::EndElement:
-                writer.writeEndElement();
-                break;
-            case QXmlStreamReader::Characters:
-                if(reader.isCDATA())
-                    writer.writeCDATA(reader.text().toString());
-                else
-                    writer.writeCharacters(reader.text().toString());
-                break;
-            case QXmlStreamReader::DTD:
-                writer.writeDTD(reader.text().toString());
-                break;
-            case QXmlStreamReader::EntityReference:
-                qWarning() << __FUNCTION__ << "Prepare EntityReference is not implemented!";
-                break;
-            case QXmlStreamReader::ProcessingInstruction:
-                qWarning() << __FUNCTION__ << "Prepare ProcessingInstruction is not implemented!";
-                break;
-            default:
-                break;
             }
         }
 
-//        qDebug() << preparedData;
         m_svgData = preparedData;
         return true;
     }
