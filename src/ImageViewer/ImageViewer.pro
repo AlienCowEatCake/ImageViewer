@@ -242,9 +242,9 @@ HEADERS += \
     SOURCES += \
         src/Decoders/Impl/DecoderMSHTML.cpp
     *g++*|*clang* {
-        LIBS += -lgdi32 -lole32 -loleaut32 -luuid
+        LIBS += -lgdi32
     } else {
-        LIBS += gdi32.lib ole32.lib oleaut32.lib uuid.lib
+        LIBS += gdi32.lib
     }
 }
 

@@ -32,10 +32,17 @@
 #include <QByteArray>
 #include <QVariant>
 #include <QDebug>
+#include <QLibrary>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QXmlStreamAttributes>
 #include <QXmlStreamNamespaceDeclarations>
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QFunctionPointer>
+#else
+typedef void* QFunctionPointer;
+#endif
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -43,13 +50,14 @@
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
+#include "Internal/Utils/LibraryUtils.h"
 #if defined (HAS_ZLIB)
 #include "Internal/Utils/ZLibUtils.h"
 #endif
 
-//#pragma comment(lib, "gdi32.lib")
 //#pragma comment(lib, "ole32.lib") // CoInitializeEx, CoUninitialize, CoCreateInstance
 //#pragma comment(lib, "oleaut32.lib") // SysAllocString, SysFreeString, SafeArrayDestroy, SafeArrayAccessData, SafeArrayCreateVector
+//#pragma comment(lib, "uuid.lib")
 
 namespace
 {
@@ -58,6 +66,316 @@ namespace
 
 const qreal MAX_IMAGE_DIMENSION = 16384;
 const qreal MIN_IMAGE_DIMENSION = 1;
+
+// ====================================================================================================
+
+class OLE32
+{
+public:
+    static OLE32 *instance()
+    {
+        static OLE32 _;
+        if(!_.isValid())
+        {
+            qWarning() << "Failed to load ole32.dll";
+            return NULL;
+        }
+        return &_;
+    }
+
+    HRESULT CoInitializeEx(LPVOID pvReserved, DWORD dwCoInit)
+    {
+        typedef HRESULT(*CoInitializeEx_t)(LPVOID, DWORD);
+        CoInitializeEx_t CoInitializeEx_f = (CoInitializeEx_t)m_CoInitializeEx;
+        return CoInitializeEx_f(pvReserved, dwCoInit);
+    }
+
+    HRESULT CoUninitialize()
+    {
+        typedef HRESULT(*CoUninitialize_t)();
+        CoUninitialize_t CoUninitialize_f = (CoUninitialize_t)m_CoUninitialize;
+        return CoUninitialize_f();
+    }
+
+    HRESULT CoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID *ppv)
+    {
+        typedef HRESULT(*CoCreateInstance_t)(REFCLSID, LPUNKNOWN, DWORD, REFIID, LPVOID*);
+        CoCreateInstance_t CoCreateInstance_f = (CoCreateInstance_t)m_CoCreateInstance;
+        return CoCreateInstance_f(rclsid, pUnkOuter, dwClsContext, riid, ppv);
+    }
+
+    HRESULT CLSIDFromProgID(LPCOLESTR lpszProgID, LPCLSID lpclsid)
+    {
+        typedef HRESULT(*CLSIDFromProgID_t)(LPCOLESTR, LPCLSID);
+        CLSIDFromProgID_t CLSIDFromProgID_f = (CLSIDFromProgID_t)m_CLSIDFromProgID;
+        return CLSIDFromProgID_f(lpszProgID, lpclsid);
+    }
+
+    HRESULT IIDFromString(LPCOLESTR lpsz, LPIID lpiid)
+    {
+        typedef HRESULT(*IIDFromString_t)(LPCOLESTR, LPIID);
+        IIDFromString_t IIDFromString_f = (IIDFromString_t)m_IIDFromString;
+        return IIDFromString_f(lpsz, lpiid);
+    }
+
+    HRESULT CLSIDFromString(LPCOLESTR lpsz, LPCLSID pclsid)
+    {
+        typedef HRESULT(*CLSIDFromString_t)(LPCOLESTR, LPCLSID);
+        CLSIDFromString_t CLSIDFromString_f = (CLSIDFromString_t)m_CLSIDFromString;
+        return CLSIDFromString_f(lpsz, pclsid);
+    }
+
+private:
+    OLE32()
+        : m_CoInitializeEx(NULL)
+        , m_CoUninitialize(NULL)
+        , m_CoCreateInstance(NULL)
+        , m_CLSIDFromProgID(NULL)
+        , m_IIDFromString(NULL)
+        , m_CLSIDFromString(NULL)
+    {
+        if(!LibraryUtils::LoadQLibrary(m_library, "ole32"))
+            return;
+
+        m_CoInitializeEx = m_library.resolve("CoInitializeEx");
+        m_CoUninitialize = m_library.resolve("CoUninitialize");
+        m_CoCreateInstance = m_library.resolve("CoCreateInstance");
+        m_CLSIDFromProgID = m_library.resolve("CLSIDFromProgID");
+        m_IIDFromString = m_library.resolve("IIDFromString");
+        m_CLSIDFromString = m_library.resolve("CLSIDFromString");
+    }
+
+    ~OLE32()
+    {}
+
+    bool isValid() const
+    {
+        return m_library.isLoaded() && m_CoInitializeEx && m_CoUninitialize
+                && m_CoCreateInstance && m_CLSIDFromProgID && m_IIDFromString
+                && m_CLSIDFromString;
+    }
+
+    QLibrary m_library;
+    QFunctionPointer m_CoInitializeEx;
+    QFunctionPointer m_CoUninitialize;
+    QFunctionPointer m_CoCreateInstance;
+    QFunctionPointer m_CLSIDFromProgID;
+    QFunctionPointer m_IIDFromString;
+    QFunctionPointer m_CLSIDFromString;
+};
+
+HRESULT CoInitializeEx_WRAP(LPVOID pvReserved, DWORD dwCoInit)
+{
+    if(OLE32 *ole32 = OLE32::instance())
+        return ole32->CoInitializeEx(pvReserved, dwCoInit);
+    qWarning() << "Failed to load ole32.dll";
+    return E_FAIL;
+}
+#define CoInitializeEx CoInitializeEx_WRAP
+
+HRESULT CoUninitialize_WRAP()
+{
+    if(OLE32 *ole32 = OLE32::instance())
+        return ole32->CoUninitialize();
+    qWarning() << "Failed to load ole32.dll";
+    return E_FAIL;
+}
+#define CoUninitialize CoUninitialize_WRAP
+
+HRESULT CoCreateInstance_WRAP(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID *ppv)
+{
+    if(OLE32 *ole32 = OLE32::instance())
+        return ole32->CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
+    qWarning() << "Failed to load ole32.dll";
+    return E_FAIL;
+}
+#define CoCreateInstance CoCreateInstance_WRAP
+
+HRESULT CLSIDFromProgID_WRAP(LPCOLESTR lpszProgID, LPCLSID lpclsid)
+{
+    if(OLE32 *ole32 = OLE32::instance())
+        return ole32->CLSIDFromProgID(lpszProgID, lpclsid);
+    qWarning() << "Failed to load ole32.dll";
+    return E_FAIL;
+}
+#define CLSIDFromProgID CLSIDFromProgID_WRAP
+
+HRESULT IIDFromString_WRAP(LPCOLESTR lpsz, LPIID lpiid)
+{
+    if(OLE32 *ole32 = OLE32::instance())
+        return ole32->IIDFromString(lpsz, lpiid);
+    qWarning() << "Failed to load ole32.dll";
+    return E_FAIL;
+}
+#define IIDFromString IIDFromString_WRAP
+
+HRESULT CLSIDFromString_WRAP(LPCOLESTR lpsz, LPCLSID pclsid)
+{
+    if(OLE32 *ole32 = OLE32::instance())
+        return ole32->CLSIDFromString(lpsz, pclsid);
+    qWarning() << "Failed to load ole32.dll";
+    return E_FAIL;
+}
+#define CLSIDFromString CLSIDFromString_WRAP
+
+// ====================================================================================================
+
+class OLEAut32
+{
+public:
+    static OLEAut32 *instance()
+    {
+        static OLEAut32 _;
+        if(!_.isValid())
+        {
+            qWarning() << "Failed to load oleaut32.dll";
+            return NULL;
+        }
+        return &_;
+    }
+
+    BSTR SysAllocString(const OLECHAR *psz)
+    {
+        typedef BSTR(*ft)(const OLECHAR*);
+        ft fp = (ft)m_SysAllocString;
+        return fp(psz);
+    }
+
+    void SysFreeString(BSTR bstrString)
+    {
+        typedef void(*ft)(const BSTR);
+        ft fp = (ft)m_SysFreeString;
+        return fp(bstrString);
+    }
+
+    SAFEARRAY *SafeArrayCreateVector(VARTYPE vt, LONG lLbound, ULONG cElements)
+    {
+        typedef SAFEARRAY*(*ft)(VARTYPE, LONG, ULONG);
+        ft fp = (ft)m_SafeArrayCreateVector;
+        return fp(vt, lLbound, cElements);
+    }
+
+    HRESULT SafeArrayAccessData(SAFEARRAY *psa, void **ppvData)
+    {
+        typedef HRESULT(*ft)(SAFEARRAY*, void**);
+        ft fp = (ft)m_SafeArrayAccessData;
+        return fp(psa, ppvData);
+    }
+
+    HRESULT SafeArrayDestroy(SAFEARRAY *psa)
+    {
+        typedef HRESULT(*ft)(SAFEARRAY*);
+        ft fp = (ft)m_SafeArrayDestroy;
+        return fp(psa);
+    }
+
+private:
+    OLEAut32()
+        : m_SysAllocString(NULL)
+        , m_SysFreeString(NULL)
+        , m_SafeArrayCreateVector(NULL)
+        , m_SafeArrayAccessData(NULL)
+        , m_SafeArrayDestroy(NULL)
+    {
+        if(!LibraryUtils::LoadQLibrary(m_library, "oleaut32"))
+            return;
+
+        m_SysAllocString = m_library.resolve("SysAllocString");
+        m_SysFreeString = m_library.resolve("SysFreeString");
+        m_SafeArrayCreateVector = m_library.resolve("SafeArrayCreateVector");
+        m_SafeArrayAccessData = m_library.resolve("SafeArrayAccessData");
+        m_SafeArrayDestroy = m_library.resolve("SafeArrayDestroy");
+    }
+
+    ~OLEAut32()
+    {}
+
+    bool isValid() const
+    {
+        return m_library.isLoaded() && m_SysAllocString && m_SysFreeString
+                && m_SafeArrayCreateVector && m_SafeArrayAccessData && m_SafeArrayDestroy;
+    }
+
+    QLibrary m_library;
+    QFunctionPointer m_SysAllocString;
+    QFunctionPointer m_SysFreeString;
+    QFunctionPointer m_SafeArrayCreateVector;
+    QFunctionPointer m_SafeArrayAccessData;
+    QFunctionPointer m_SafeArrayDestroy;
+};
+
+BSTR SysAllocString_WRAP(const OLECHAR *psz)
+{
+    if(OLEAut32 *oleaut32 = OLEAut32::instance())
+        return oleaut32->SysAllocString(psz);
+    qWarning() << "Failed to load oleaut32.dll";
+    return NULL;
+}
+#define SysAllocString SysAllocString_WRAP
+
+void SysFreeString_WRAP(BSTR bstrString)
+{
+    if(OLEAut32 *oleaut32 = OLEAut32::instance())
+        return oleaut32->SysFreeString(bstrString);
+    qWarning() << "Failed to load oleaut32.dll";
+}
+#define SysFreeString SysFreeString_WRAP
+
+SAFEARRAY *SafeArrayCreateVector_WRAP(VARTYPE vt, LONG lLbound, ULONG cElements)
+{
+    if(OLEAut32 *oleaut32 = OLEAut32::instance())
+        return oleaut32->SafeArrayCreateVector(vt, lLbound, cElements);
+    qWarning() << "Failed to load oleaut32.dll";
+    return NULL;
+}
+#define SafeArrayCreateVector SafeArrayCreateVector_WRAP
+
+HRESULT SafeArrayAccessData_WRAP(SAFEARRAY *psa, void **ppvData)
+{
+    if(OLEAut32 *oleaut32 = OLEAut32::instance())
+        return oleaut32->SafeArrayAccessData(psa, ppvData);
+    qWarning() << "Failed to load oleaut32.dll";
+    return E_FAIL;
+}
+#define SafeArrayAccessData SafeArrayAccessData_WRAP
+
+HRESULT SafeArrayDestroy_WRAP(SAFEARRAY *psa)
+{
+    if(OLEAut32 *oleaut32 = OLEAut32::instance())
+        return oleaut32->SafeArrayDestroy(psa);
+    qWarning() << "Failed to load oleaut32.dll";
+    return E_FAIL;
+}
+#define SafeArrayDestroy SafeArrayDestroy_WRAP
+
+// ====================================================================================================
+
+IID GetIID(LPCOLESTR lpsz)
+{
+    IID result;
+    memset(&result, 0, sizeof(IID));
+    HRESULT hr = IIDFromString(lpsz, &result);
+    if(!SUCCEEDED(hr))
+        qWarning() << "Can't get IID for" << QString::fromStdWString(lpsz);
+    return result;
+}
+
+#define IID_IHTMLDocument2  GetIID(L"{332c4425-26cb-11d0-b483-00c04fd90119}")
+#define IID_IHTMLDocument3  GetIID(L"{3050f485-98b5-11cf-bb82-00aa00bdce0b}")
+#define IID_IOleObject      GetIID(L"{00000112-0000-0000-C000-000000000046}")
+#define IID_IViewObject     GetIID(L"{0000010D-0000-0000-C000-000000000046}")
+
+CLSID GetCLSID(LPCOLESTR lpsz)
+{
+    CLSID result;
+    memset(&result, 0, sizeof(CLSID));
+    HRESULT hr = CLSIDFromString(lpsz, &result);
+    if(!SUCCEEDED(hr))
+        qWarning() << "Can't get CLSID for" << QString::fromStdWString(lpsz);
+    return result;
+}
+
+#define CLSID_HTMLDocument  GetCLSID(L"{25336920-03F9-11cf-8FD0-00AA00686F13}")
 
 // ====================================================================================================
 
@@ -155,13 +473,15 @@ public:
             return;
         }
 
-        GUID CLSID_HTMLDocument;
-        HRESULT hr = CLSIDFromProgID(L"htmlfile", &CLSID_HTMLDocument);
-        if(!SUCCEEDED(hr))
-        {
-            qWarning() << "Can't get CLSID for mshtml" << QString::number(hr, 16);
-            return;
-        }
+        HRESULT hr = E_FAIL;
+
+//        GUID CLSID_HTMLDocument;
+//        hr = CLSIDFromProgID(L"htmlfile", &CLSID_HTMLDocument);
+//        if(!SUCCEEDED(hr))
+//        {
+//            qWarning() << "Can't get CLSID for mshtml" << QString::number(hr, 16);
+//            return;
+//        }
 
         hr = CoCreateInstance(CLSID_HTMLDocument, NULL, CLSCTX_INPROC_SERVER, IID_IHTMLDocument2, (void**)&m_htmlDocument2);
         if(!SUCCEEDED(hr))
@@ -507,7 +827,7 @@ public:
 
     bool isAvailable() const
     {
-        return true;
+        return OLE32::instance() && OLEAut32::instance();
     }
 
     QSharedPointer<IImageData> loadImage(const QString &filePath)

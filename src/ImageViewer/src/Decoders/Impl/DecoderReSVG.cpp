@@ -170,7 +170,7 @@ private:
         , m_resvg_tree_destroy(NULL)
         , m_resvg_qt_render_to_canvas(NULL)
         {
-            if(!LibraryUtils::LoadLibrary(m_library, RESVG_LIBRARY_NAMES))
+            if(!LibraryUtils::LoadQLibrary(m_library, RESVG_LIBRARY_NAMES))
                 return;
 
             m_resvg_init_log = m_library.resolve("resvg_init_log");

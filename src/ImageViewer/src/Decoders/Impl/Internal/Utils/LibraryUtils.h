@@ -21,11 +21,14 @@
 #define DECODER_LIBRARY_UTILS_H_INCLUDED
 
 class QLibrary;
+class QString;
 class QStringList;
 
 namespace LibraryUtils {
 
-bool LoadLibrary(QLibrary &library, const QStringList &names);
+bool LoadQLibrary(QLibrary &library, const char *name);
+bool LoadQLibrary(QLibrary &library, const QString &name);
+bool LoadQLibrary(QLibrary &library, const QStringList &names);
 
 } // namespace LibraryUtils
 

@@ -28,7 +28,17 @@
 
 namespace LibraryUtils {
 
-bool LoadLibrary(QLibrary &library, const QStringList &names)
+bool LoadQLibrary(QLibrary &library, const char *name)
+{
+    return LoadQLibrary(library, QString::fromLatin1(name));
+}
+
+bool LoadQLibrary(QLibrary &library, const QString &name)
+{
+    return LoadQLibrary(library, QStringList(name));
+}
+
+bool LoadQLibrary(QLibrary &library, const QStringList &names)
 {
     for(QStringList::ConstIterator it = names.constBegin(), itEnd = names.constEnd(); it != itEnd; ++it)
     {
