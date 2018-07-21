@@ -173,6 +173,12 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
     CONFIG += disable_qtwebengine
 }
 
+# DecoderMSHTML options:
+#    disable_mshtml
+!win32 {
+    CONFIG += disable_mshtml
+}
+
 # DecoderNSImage options:
 #    disable_nsimage
 !macx {

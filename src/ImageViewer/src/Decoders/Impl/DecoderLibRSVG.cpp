@@ -136,7 +136,7 @@ private:
     GLib()
         : m_g_error_free(NULL)
     {
-        if(!LibraryUtils::LoadLibrary(m_library, GLIB_LIBRARY_NAMES))
+        if(!LibraryUtils::LoadQLibrary(m_library, GLIB_LIBRARY_NAMES))
             return;
 
         m_g_error_free = m_library.resolve("g_error_free");
@@ -186,7 +186,7 @@ private:
     GObject()
         : m_g_object_unref(NULL)
     {
-        if(!LibraryUtils::LoadLibrary(m_library, GOBJECT_LIBRARY_NAMES))
+        if(!LibraryUtils::LoadQLibrary(m_library, GOBJECT_LIBRARY_NAMES))
             return;
 
         m_g_object_unref = m_library.resolve("g_object_unref");
@@ -268,7 +268,7 @@ private:
         , m_cairo_destroy(NULL)
         , m_cairo_surface_destroy(NULL)
     {
-        if(!LibraryUtils::LoadLibrary(m_library, CAIRO_LIBRARY_NAMES))
+        if(!LibraryUtils::LoadQLibrary(m_library, CAIRO_LIBRARY_NAMES))
             return;
 
         m_cairo_image_surface_create_for_data = m_library.resolve("cairo_image_surface_create_for_data");
@@ -381,7 +381,7 @@ private:
         , m_rsvg_handle_get_dimensions(NULL)
         , m_rsvg_handle_render_cairo(NULL)
     {
-        if(!LibraryUtils::LoadLibrary(m_library, RSVG_LIBRARY_NAMES))
+        if(!LibraryUtils::LoadQLibrary(m_library, RSVG_LIBRARY_NAMES))
             return;
 
         m_rsvg_handle_new_from_data = m_library.resolve("rsvg_handle_new_from_data");
@@ -541,6 +541,11 @@ public:
     bool isValid() const
     {
         return m_isValid;
+    }
+
+    bool requiresMainThread() const
+    {
+        return false;
     }
 
     QRectF boundingRect() const

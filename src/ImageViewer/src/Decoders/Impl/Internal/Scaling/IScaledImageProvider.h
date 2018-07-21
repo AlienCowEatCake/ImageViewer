@@ -28,6 +28,7 @@ class IScaledImageProvider
 public:
     virtual ~IScaledImageProvider() {}
     virtual bool isValid() const = 0;
+    virtual bool requiresMainThread() const = 0;
     virtual QImage image(const qreal scaleFactor) = 0;
     virtual QRectF boundingRect() const = 0;
     virtual qreal minScaleFactor() const = 0;
