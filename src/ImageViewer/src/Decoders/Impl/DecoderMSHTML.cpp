@@ -33,6 +33,8 @@
 #include <QVariant>
 #include <QDebug>
 #include <QLibrary>
+#include <QSysInfo>
+#include <QSettings>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QXmlStreamAttributes>
@@ -827,7 +829,37 @@ public:
 
     bool isAvailable() const
     {
-        return OLE32::instance() && OLEAut32::instance();
+        static Qt::CheckState state = Qt::Unchecked;
+        if(state != Qt::Unchecked)
+            return state == Qt::Checked;
+
+        if(QSysInfo::windowsVersion() < QSysInfo::WV_VISTA)
+        {
+            qDebug() << "DecoderMSHTML unavailable, reason: windowsVersion() < QSysInfo::WV_VISTA";
+            state = Qt::PartiallyChecked;
+            return false;
+        }
+
+        QSettings settings(QString::fromLatin1("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Internet Explorer"), QSettings::NativeFormat);
+        const QString ieVersion = settings.value(QString::fromLatin1("Version")).toString();
+        if(ieVersion.isEmpty())
+        {
+            qDebug() << "DecoderMSHTML unavailable, reason: Can't detect IE version";
+            state = Qt::PartiallyChecked;
+            return false;
+        }
+
+        qDebug() << "IE version:" << ieVersion;
+        if(ieVersion.split(QChar::fromLatin1('.'), QString::SkipEmptyParts).first().toInt() < 9)
+        {
+            qDebug() << "DecoderMSHTML unavailable, reason: Required IE >= 9";
+            state = Qt::PartiallyChecked;
+            return false;
+        }
+
+        const bool result = OLE32::instance() && OLEAut32::instance();
+        state = result ? Qt::Checked : Qt::PartiallyChecked;
+        return result;
     }
 
     QSharedPointer<IImageData> loadImage(const QString &filePath)
