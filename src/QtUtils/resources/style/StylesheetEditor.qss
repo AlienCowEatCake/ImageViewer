@@ -1,0 +1,32 @@
+*
+{
+    background: lightgray;
+    color: black;
+    border: 1px solid gray;
+}
+
+QAbstractButton
+{
+    padding: 2px 10px;
+}
+
+QAbstractButton:hover
+{
+    background: gray;
+}
+
+QAbstractButton:pressed
+{
+    background: darkgray;
+}
+
+QPlainTextEdit,
+QLineEdit
+{
+    background: white;
+}
+
+QCheckBox
+{
+    border: none;
+}

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -32,8 +32,14 @@
 /// @attention Функция должна быть в глобальном namespace
 static void InitQtUtilsResources_internal()
 {
+    static bool isInitialized = false;
+    if(isInitialized)
+        return;
+
+    isInitialized = true;
     Q_INIT_RESOURCE(qtutils_icons);
     Q_INIT_RESOURCE(qtutils_translations);
+    Q_INIT_RESOURCE(qtutils_style);
 }
 
 namespace Workarounds {

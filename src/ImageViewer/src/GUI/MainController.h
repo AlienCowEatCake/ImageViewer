@@ -55,6 +55,7 @@ public slots:
     void showMainWindow();
     void showAbout();
     void showPreferences();
+    void showStylesheetEditor();
     void openNewWindow();
 
 private slots:

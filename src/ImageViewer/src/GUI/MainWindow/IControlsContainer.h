@@ -76,6 +76,7 @@ signals:
     void showToolBarRequested();
     void aboutRequested();
     void aboutQtRequested();
+    void editStylesheetRequested();
 
 public:
     explicit ControlsContainerEmitter(QObject *parent = NULL)
