@@ -737,6 +737,68 @@ QAbstractItemView
     selection-color: #f2f2f2;
 }
 
+QScrollArea QScrollBar:vertical,
+QTextBrowser QScrollBar:vertical,
+QAbstractItemView QScrollBar:vertical
+{
+    border-right: none;
+    margin: 14px 0px;
+}
+
+QScrollArea QScrollBar::add-line:vertical,
+QTextBrowser QScrollBar::add-line:vertical,
+QAbstractItemView QScrollBar::add-line:vertical
+{
+    border-right: none;
+    border-bottom: none;
+}
+
+QScrollArea QScrollBar::sub-line:vertical,
+QTextBrowser QScrollBar::sub-line:vertical,
+QAbstractItemView QScrollBar::sub-line:vertical
+{
+    border-right: none;
+    border-top: none;
+}
+
+QScrollArea QScrollBar:horizontal,
+QTextBrowser QScrollBar:horizontal,
+QAbstractItemView QScrollBar:horizontal
+{
+    border-bottom: none;
+    margin: 0px 14px;
+}
+
+QScrollArea QScrollBar::add-line:horizontal,
+QTextBrowser QScrollBar::add-line:horizontal,
+QAbstractItemView QScrollBar::add-line:horizontal
+{
+    border-bottom: none;
+    border-right: none;
+}
+
+QScrollArea QScrollBar::sub-line:horizontal,
+QTextBrowser QScrollBar::sub-line:horizontal,
+QAbstractItemView QScrollBar::sub-line:horizontal
+{
+    border-bottom: none;
+    border-left: none;
+}
+
+QScrollArea[ScrollBorderRequired=true] QScrollBar::add-line:vertical,
+QTextBrowser[ScrollBorderRequired=true] QScrollBar::add-line:vertical,
+QAbstractItemView[ScrollBorderRequired=true] QScrollBar::add-line:vertical
+{
+    border-bottom: 1px solid #1a1c1f;
+}
+
+QScrollArea[ScrollBorderRequired=true] QScrollBar::add-line:horizontal,
+QTextBrowser[ScrollBorderRequired=true] QScrollBar::add-line:horizontal,
+QAbstractItemView[ScrollBorderRequired=true] QScrollBar::add-line:horizontal
+{
+    border-right: 1px solid #1a1c1f;
+}
+
 /***************
  * QHeaderView *
  ***************/

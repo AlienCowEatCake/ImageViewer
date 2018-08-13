@@ -31,6 +31,7 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QComboBox>
+#include <QAbstractScrollArea>
 #include <QMap>
 #include <QColor>
 #include <QTextDocument>
@@ -83,6 +84,8 @@ struct ThemeData
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
 
+#define USE_TEXTDOCUMENT_STYLER
+
 /// @note https://bugreports.qt.io/browse/QTBUG-34114
 class TextDocumentStyler : public QObject
 {
@@ -110,6 +113,33 @@ protected:
 
 #endif
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
+
+#define USE_SCROLLBAR_STYLER
+
+class ScrollBarStyler : public QObject
+{
+    Q_DISABLE_COPY(ScrollBarStyler)
+
+public:
+    ScrollBarStyler(QObject *parent = NULL)
+        : QObject(parent)
+    {}
+
+protected:
+    bool eventFilter(QObject *object, QEvent *event)
+    {
+        if(event->type() == QEvent::ChildAdded)
+        {
+            if(QAbstractScrollArea *scrollArea = qobject_cast<QAbstractScrollArea*>(object))
+                scrollArea->setProperty("ScrollBorderRequired", true);
+        }
+        return QObject::eventFilter(object, event);
+    }
+};
+
+#endif
+
 typedef QList<QAction*> ActionList;
 typedef QMap<QString, ActionList> ActionListMap;
 
@@ -127,8 +157,11 @@ struct ThemeManager::Impl
     Impl()
         : defaultPalette(qApp->palette())
     {
-#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
+#if defined (USE_TEXTDOCUMENT_STYLER)
         qApp->installEventFilter(new TextDocumentStyler(qApp));
+#endif
+#if defined (USE_SCROLLBAR_STYLER)
+        qApp->installEventFilter(new ScrollBarStyler(qApp));
 #endif
     }
 
