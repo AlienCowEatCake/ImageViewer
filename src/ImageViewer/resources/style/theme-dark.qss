@@ -376,79 +376,87 @@ QRadioButton::indicator
     width: 14px;
     height: 14px;
 }
-QCheckbox::indicator
+
+QCheckBox::indicator:unchecked
 {
-    border-radius: 2px;
+    border-image:url(":/style/dark/checkbox_unchecked_normal@2x.png");
 }
-QRadioButton::indicator
+QCheckBox::indicator:unchecked:hover
 {
-    border-radius: 8px;
+    border-image:url(":/style/dark/checkbox_unchecked_hover@2x.png");
 }
-QCheckBox::indicator:unchecked,
-QRadioButton::indicator:unchecked
+QCheckBox::indicator:unchecked:pressed
 {
-    background: #353535;
-    border: 1px solid #181a1b;
+    border-image:url(":/style/dark/checkbox_unchecked_pressed@2x.png");
 }
-QCheckBox::indicator:unchecked:hover,
-QRadioButton::indicator:unchecked:hover
+QCheckBox::indicator:unchecked:disabled
 {
-    border: 1px solid #1973b1;
+    border-image:url(":/style/dark/checkbox_unchecked_disabled@2x.png");
 }
-QCheckBox::indicator:unchecked:pressed,
-QRadioButton::indicator:unchecked:pressed
+QCheckBox::indicator:checked
 {
-    border: 1px solid #1d81cb;
+    border-image:url(":/style/dark/checkbox_checked_normal@2x.png");
 }
-QCheckBox::indicator:unchecked:disabled,
-QRadioButton::indicator:unchecked:disabled
+QCheckBox::indicator:checked:hover
 {
-    background: #505050;
-    border: 1px solid #353535;
+    border-image:url(":/style/dark/checkbox_checked_hover@2x.png");
 }
-QCheckBox::indicator:checked,
-QRadioButton::indicator:checked
+QCheckBox::indicator:checked:pressed
 {
-    border: 1px solid #181a1b;
-    background: qradialgradient(cx:0.5, cy:0.5, radius: 0.2, fx:0.5, fy:0.5, stop:0 #cacaca, stop:0.7 #cacaca, stop:1 #353535);
+    border-image:url(":/style/dark/checkbox_checked_pressed@2x.png");
 }
-QCheckBox::indicator:checked:hover,
-QRadioButton::indicator:checked:hover
+QCheckBox::indicator:checked:disabled
 {
-    border: 1px solid #181a1b;
-    background: qradialgradient(cx:0.5, cy:0.5, radius: 0.2, fx:0.5, fy:0.5, stop:0 #2094e8, stop:0.7 #2094e8, stop:1 #353535);
-}
-QCheckBox::indicator:checked:pressed,
-QRadioButton::indicator:checked:pressed
-{
-    border: 1px solid #17191a;
-    background: qradialgradient(cx:0.5, cy:0.5, radius: 0.2, fx:0.5, fy:0.5, stop:0 #1971b0, stop:0.7 #1971b0, stop:1 #353535);
-}
-QCheckBox::indicator:checked:disabled,
-QRadioButton::indicator:checked:disabled
-{
-    background: qradialgradient(cx:0.5, cy:0.5, radius: 0.2, fx:0.5, fy:0.5, stop:0 #858585, stop:0.7 #858585, stop:1 #505050);
-    border: 1px solid #353535;
+    border-image:url(":/style/dark/checkbox_checked_disabled@2x.png");
 }
 QCheckBox::indicator:indeterminate
 {
-    border: 1px solid #181a1b;
-    background: qradialgradient(cx:0.5, cy:0.5, radius: 0.2, fx:0.5, fy:0.5, stop:0.5 #353535, stop:0.6 #cacaca, stop:0.9 #cacaca, stop:1 #353535);
+    border-image:url(":/style/dark/checkbox_indeterminate_normal@2x.png");
 }
 QCheckBox::indicator:indeterminate:hover
 {
-    border: 1px solid #181a1b;
-    background: qradialgradient(cx:0.5, cy:0.5, radius: 0.2, fx:0.5, fy:0.5, stop:0.5 #353535, stop:0.6 #2094e8, stop:0.9 #2094e8, stop:1 #353535);
+    border-image:url(":/style/dark/checkbox_indeterminate_hover@2x.png");
 }
 QCheckBox::indicator:indeterminate:pressed
 {
-    border: 1px solid #17191a;
-    background: qradialgradient(cx:0.5, cy:0.5, radius: 0.2, fx:0.5, fy:0.5, stop:0.5 #353535, stop:0.6 #1971b0, stop:0.9 #1971b0, stop:1 #353535);
+    border-image:url(":/style/dark/checkbox_indeterminate_pressed@2x.png");
 }
 QCheckBox::indicator:indeterminate:disabled
 {
-    background: qradialgradient(cx:0.5, cy:0.5, radius: 0.2, fx:0.5, fy:0.5, stop:0.5 #505050, stop:0.6 #858585, stop:0.9 #858585, stop:1 #505050);
-    border: 1px solid #353535;
+    border-image:url(":/style/dark/checkbox_indeterminate_disabled@2x.png");
+}
+
+QRadioButton::indicator:unchecked
+{
+    border-image:url(":/style/dark/radiobutton_unchecked_normal@2x.png");
+}
+QRadioButton::indicator:unchecked:hover
+{
+    border-image:url(":/style/dark/radiobutton_unchecked_hover@2x.png");
+}
+QRadioButton::indicator:unchecked:pressed
+{
+    border-image:url(":/style/dark/radiobutton_unchecked_pressed@2x.png");
+}
+QRadioButton::indicator:unchecked:disabled
+{
+    border-image:url(":/style/dark/radiobutton_unchecked_disabled@2x.png");
+}
+QRadioButton::indicator:checked
+{
+    border-image:url(":/style/dark/radiobutton_checked_normal@2x.png");
+}
+QRadioButton::indicator:checked:hover
+{
+    border-image:url(":/style/dark/radiobutton_checked_hover@2x.png");
+}
+QRadioButton::indicator:checked:pressed
+{
+    border-image:url(":/style/dark/radiobutton_checked_pressed@2x.png");
+}
+QRadioButton::indicator:checked:disabled
+{
+    border-image:url(":/style/dark/radiobutton_checked_disabled@2x.png");
 }
 
 /**************
