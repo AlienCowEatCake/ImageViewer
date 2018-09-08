@@ -5,6 +5,11 @@ ImageViewerWidget
     background-repeat: repeat-xy;
 }
 
+ImageViewerWidget[DarkMode=true]
+{
+    background-image: url(:/style/background_pattern_dark.png);
+}
+
 QMessageBox #qt_msgbox_informativelabel,
 AboutDialog #textLabel
 {

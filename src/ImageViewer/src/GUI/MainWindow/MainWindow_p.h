@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -25,8 +25,10 @@
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QList>
+#include <QStyle>
 
 #include "Utils/ObjectsUtils.h"
+#include "Utils/ThemeUtils.h"
 
 #include "ImageViewerWidget.h"
 #if defined (HAS_MAC_TOOLBAR)
@@ -93,6 +95,15 @@ struct MainWindow::UI
 #if defined (HAS_MAC_TOOLBAR)
         toolbar->attachToWindow(mainWindow);
 #endif
+
+        OnThemeChanged();
+    }
+
+    void OnThemeChanged()
+    {
+        imageViewerWidget->setProperty("DarkMode", ThemeUtils::SystemHasDarkTheme());
+        imageViewerWidget->style()->unpolish(imageViewerWidget);
+        imageViewerWidget->style()->polish(imageViewerWidget);
     }
 };
 

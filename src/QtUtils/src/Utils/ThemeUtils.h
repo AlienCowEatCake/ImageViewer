@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -40,6 +40,9 @@ bool LoadStyleSheet(const QStringList &filePaths);
 /// @brief Функция для определения темная используемая тема виджета или нет
 /// @param[in] widget - Виджет, для которого выполняется эта проверка
 bool WidgetHasDarkTheme(const QWidget *widget);
+
+/// @brief Функция для определения темная используемая тема системы или нет
+bool SystemHasDarkTheme();
 
 /// @brief Создать масштабируемую иконку из нескольких разного размера
 /// @param[in] defaultImagePath - Путь к иконке по умолчанию (может быть SVG)

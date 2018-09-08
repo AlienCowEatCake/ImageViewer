@@ -492,6 +492,14 @@ void MainWindow::changeEvent(QEvent *event)
     QMainWindow::changeEvent(event);
     switch(event->type())
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    case QEvent::ThemeChange:
+#endif
+    case QEvent::StyleChange:
+    case QEvent::PaletteChange:
+        if(isVisible())
+            m_impl->ui.OnThemeChanged();
+        break;
     case QEvent::LanguageChange:
         updateWindowTitle();
         break;
