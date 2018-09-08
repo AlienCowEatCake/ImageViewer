@@ -813,6 +813,8 @@ QHeaderView::section
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #404040, stop:1 #303030);
     color: #d2d2d2;
     border: 1px solid #1a1c1f;
+    border-top: none;
+    border-left: none;
     padding: 2px 4px;
 }
 QHeaderView::section:checked
