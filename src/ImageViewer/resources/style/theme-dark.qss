@@ -257,44 +257,57 @@ QScrollBar::down-arrow,
 QScrollBar::left-arrow,
 QScrollBar::right-arrow
 {
-    border: none;
-    width: 4px;
-    height: 4px;
-    background: #d2d2d2;
-}
-QScrollBar::up-arrow:hover,
-QScrollBar::down-arrow:hover,
-QScrollBar::left-arrow:hover,
-QScrollBar::right-arrow:hover
-{
-    background: #f2f2f2;
-}
-QScrollBar::up-arrow:disabled,
-QScrollBar::down-arrow:disabled,
-QScrollBar::left-arrow:disabled,
-QScrollBar::right-arrow:disabled
-{
-    background: #858585;
+    width: 6px;
+    height: 6px;
+    background: none;
 }
 QScrollBar::up-arrow
 {
-    border-top-left-radius: 2px;
-    border-top-right-radius: 2px;
+    border-image:url(":/style/dark/arrow_up_6_normal@2x.png");
 }
 QScrollBar::down-arrow
 {
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
+    border-image:url(":/style/dark/arrow_down_6_normal@2x.png");
 }
 QScrollBar::left-arrow
 {
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
+    border-image:url(":/style/dark/arrow_left_6_normal@2x.png");
 }
 QScrollBar::right-arrow
 {
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
+    border-image:url(":/style/dark/arrow_right_6_normal@2x.png");
+}
+QScrollBar::up-arrow:hover
+{
+    border-image:url(":/style/dark/arrow_up_6_hover@2x.png");
+}
+QScrollBar::down-arrow:hover
+{
+    border-image:url(":/style/dark/arrow_down_6_hover@2x.png");
+}
+QScrollBar::left-arrow:hover
+{
+    border-image:url(":/style/dark/arrow_left_6_hover@2x.png");
+}
+QScrollBar::right-arrow:hover
+{
+    border-image:url(":/style/dark/arrow_right_6_hover@2x.png");
+}
+QScrollBar::up-arrow:disabled
+{
+    border-image:url(":/style/dark/arrow_up_6_disabled@2x.png");
+}
+QScrollBar::down-arrow:disabled
+{
+    border-image:url(":/style/dark/arrow_down_6_disabled@2x.png");
+}
+QScrollBar::left-arrow:disabled
+{
+    border-image:url(":/style/dark/arrow_left_6_disabled@2x.png");
+}
+QScrollBar::right-arrow:disabled
+{
+    border-image:url(":/style/dark/arrow_right_6_disabled@2x.png");
 }
 
 QScrollBar::add-page:horizontal,
@@ -616,32 +629,35 @@ QSpinBox::down-button:off
 QSpinBox::up-arrow,
 QSpinBox::down-arrow
 {
-    border: none;
-    width: 4px;
-    height: 4px;
-    background: #d2d2d2;
-}
-QSpinBox::up-arrow:hover,
-QSpinBox::down-arrow:hover
-{
-    background: #f2f2f2;
-}
-QSpinBox::up-arrow:disabled,
-QSpinBox::down-arrow:disabled,
-QSpinBox::up-arrow:off,
-QSpinBox::down-arrow:off
-{
-    background: #858585;
+    width: 5px;
+    height: 5px;
+    background: none;
 }
 QSpinBox::up-arrow
 {
-    border-top-left-radius: 2px;
-    border-top-right-radius: 2px;
+    border-image:url(":/style/dark/arrow_up_5_normal@2x.png");
 }
 QSpinBox::down-arrow
 {
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
+    border-image:url(":/style/dark/arrow_down_5_normal@2x.png");
+}
+QSpinBox::up-arrow:hover
+{
+    border-image:url(":/style/dark/arrow_up_5_hover@2x.png");
+}
+QSpinBox::down-arrow:hover
+{
+    border-image:url(":/style/dark/arrow_down_5_hover@2x.png");
+}
+QSpinBox::up-arrow:disabled,
+QSpinBox::up-arrow:off
+{
+    border-image:url(":/style/dark/arrow_up_5_disabled@2x.png");
+}
+QSpinBox::down-arrow:disabled,
+QSpinBox::down-arrow:off
+{
+    border-image:url(":/style/dark/arrow_down_5_disabled@2x.png");
 }
 
 /*************
@@ -689,29 +705,33 @@ QComboBox::drop-down:disabled
 
 QComboBox::down-arrow
 {
-    border: none;
-    width: 4px;
-    height: 4px;
-    background: #d2d2d2;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-}
-QComboBox::down-arrow:hover
-{
-    background: #f2f2f2;
-}
-QComboBox::down-arrow:disabled
-{
-    background: #858585;
+    width: 6px;
+    height: 6px;
+    background: none;
 }
 QComboBox::down-arrow:open
 {
-    border-top-left-radius: 2px;
-    border-top-right-radius: 2px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
+    border-image:url(":/style/dark/arrow_up_6_normal@2x.png");
+}
+QComboBox::down-arrow
+{
+    border-image:url(":/style/dark/arrow_down_6_normal@2x.png");
+}
+QComboBox::down-arrow:open:hover
+{
+    border-image:url(":/style/dark/arrow_up_6_hover@2x.png");
+}
+QComboBox::down-arrow:hover
+{
+    border-image:url(":/style/dark/arrow_down_6_hover@2x.png");
+}
+QComboBox::down-arrow:open:disabled
+{
+    border-image:url(":/style/dark/arrow_up_6_disabled@2x.png");
+}
+QComboBox::down-arrow:disabled
+{
+    border-image:url(":/style/dark/arrow_down_6_disabled@2x.png");
 }
 
 QComboBox QAbstractItemView
@@ -854,31 +874,34 @@ QHeaderView::section:checked:disabled
 QHeaderView::down-arrow,
 QHeaderView::up-arrow
 {
-    border: none;
     width: 6px;
     height: 6px;
-    background: #d2d2d2;
+    background: none;
     margin-right: 5px;
-}
-QHeaderView::down-arrow:hover,
-QHeaderView::up-arrow:hover
-{
-    background: #f2f2f2;
-}
-QHeaderView::down-arrow:disabled,
-QHeaderView::up-arrow:disabled
-{
-    background: #858585;
 }
 QHeaderView::up-arrow
 {
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
+    border-image:url(":/style/dark/arrow_up_5_normal@2x.png");
 }
 QHeaderView::down-arrow
 {
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
+    border-image:url(":/style/dark/arrow_down_5_normal@2x.png");
+}
+QHeaderView::up-arrow:hover
+{
+    border-image:url(":/style/dark/arrow_up_5_hover@2x.png");
+}
+QHeaderView::down-arrow:hover
+{
+    border-image:url(":/style/dark/arrow_down_5_hover@2x.png");
+}
+QHeaderView::up-arrow:disabled
+{
+    border-image:url(":/style/dark/arrow_up_5_disabled@2x.png");
+}
+QHeaderView::down-arrow:disabled
+{
+    border-image:url(":/style/dark/arrow_down_5_disabled@2x.png");
 }
 
 /**********
