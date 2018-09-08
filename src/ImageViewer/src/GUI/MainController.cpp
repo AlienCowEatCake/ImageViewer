@@ -28,7 +28,9 @@
 #include <QMessageBox>
 #include <QStringList>
 
+#include "Utils/ScopedPointer.h"
 #include "Utils/SignalBlocker.h"
+#include "Widgets/StylesheetEditor.h"
 
 #include "Decoders/DecodersManager.h"
 #include "Dialogs/AboutDialog.h"
@@ -42,6 +44,7 @@ struct MainController::Impl
     FileManager fileManager;
     GUISettings settings;
     MainWindow mainWindow;
+    QScopedPointer<StylesheetEditor> stylesheetEditor;
 
     bool lastHasCurrentFile;
     bool lastHasCurrentFileIndex;
@@ -99,6 +102,7 @@ MainController::MainController(QObject *parent)
     connect(mainWindow, SIGNAL(preferencesRequested())                  , this, SLOT(showPreferences())             );
     connect(mainWindow, SIGNAL(aboutRequested())                        , this, SLOT(showAbout())                   );
     connect(mainWindow, SIGNAL(aboutQtRequested())                      , qApp, SLOT(aboutQt())                     );
+    connect(mainWindow, SIGNAL(editStylesheetRequested())               , this, SLOT(showStylesheetEditor())        );
     connect(mainWindow, SIGNAL(closed())                                , qApp, SLOT(quit())                        );
 }
 
@@ -247,6 +251,16 @@ void MainController::showPreferences()
         openPaths(m_impl->fileManager.currentOpenArguments());
     }
     onFileManagerStateChanged(FileManager::FlagChangeAll);
+}
+
+void MainController::showStylesheetEditor()
+{
+    if(!m_impl->stylesheetEditor)
+    {
+        m_impl->stylesheetEditor.reset(new StylesheetEditor());
+        m_impl->stylesheetEditor->setProtected(false);
+    }
+    m_impl->stylesheetEditor->show();
 }
 
 void MainController::openNewWindow()

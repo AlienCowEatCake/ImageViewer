@@ -1,3 +1,7 @@
+/******************************
+ * *** Fusion Light Theme *** *
+ ******************************/
+
 StylableTheme
 {
     qproperty-preferredStyles: "fusion";

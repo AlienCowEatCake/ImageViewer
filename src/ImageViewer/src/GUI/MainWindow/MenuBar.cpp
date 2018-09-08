@@ -86,6 +86,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     QAction * const actionShowToolBar;
     QAction * const actionAbout;
     QAction * const actionAboutQt;
+    QAction * const actionEditStylesheet;
 
     Impl(QWidget *parent, MenuBar *menubar)
         : isSlideShowMode(false)
@@ -124,6 +125,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         , CONSTRUCT_OBJECT_FROM_POINTER(actionShowToolBar           , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionAbout                 , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionAboutQt               , createWidgetAction(parent))
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionEditStylesheet        , createWidgetAction(parent))
     {
         menuFile->addAction(actionOpenFile);
         actionOpenFile->setShortcut(QKeySequence::Open);
@@ -229,6 +231,12 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionAbout->setMenuRole(QAction::AboutRole);
         menuHelp->addAction(actionAboutQt);
         actionAboutQt->setMenuRole(QAction::AboutQtRole);
+#if !defined NDEBUG
+        menuHelp->addSeparator();
+        menuHelp->addAction(actionEditStylesheet);
+        actionEditStylesheet->setMenuRole(QAction::NoRole);
+        actionEditStylesheet->setText(QString::fromLatin1("Edit Stylesheet"));
+#endif
 
         menubar->addMenu(menuFile);
         menubar->addMenu(menuEdit);
@@ -314,6 +322,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionZoomFullScreen->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , menuActionsHasDarkTheme));
         actionAbout->setIcon                    (ThemeUtils::GetIcon(ThemeUtils::ICON_ABOUT                     , menuActionsHasDarkTheme));
         actionAboutQt->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_QT                        , menuActionsHasDarkTheme));
+        actionEditStylesheet->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS                  , menuActionsHasDarkTheme));
         actionStartSlideShow->setIcon(ThemeUtils::GetIcon(isSlideShowMode ? ThemeUtils::ICON_STOP : ThemeUtils::ICON_PLAY, menuActionsHasDarkTheme));
     }
 
@@ -422,6 +431,7 @@ MenuBar::MenuBar(QWidget *parent)
     connect(m_impl->actionShowToolBar           , SIGNAL(triggered()), emitter(), SIGNAL(showToolBarRequested())            );
     connect(m_impl->actionAbout                 , SIGNAL(triggered()), emitter(), SIGNAL(aboutRequested())                  );
     connect(m_impl->actionAboutQt               , SIGNAL(triggered()), emitter(), SIGNAL(aboutQtRequested())                );
+    connect(m_impl->actionEditStylesheet        , SIGNAL(triggered()), emitter(), SIGNAL(editStylesheetRequested())         );
 }
 
 MenuBar::~MenuBar()

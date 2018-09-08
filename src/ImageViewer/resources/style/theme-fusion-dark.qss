@@ -1,3 +1,7 @@
+/*****************************
+ * *** Fusion Dark Theme *** *
+ *****************************/
+
 StylableTheme
 {
     qproperty-preferredStyles: "fusion";
@@ -9,18 +13,18 @@ StylableTheme
     qproperty-paletteBrightText: #ff3333;
     qproperty-paletteText: #d0d0d0;
     qproperty-paletteButtonText: #d0d0d0;
-    qproperty-paletteButtonTextDisabled: /*#60a4a6a8*/ #a4a6a8 38%;
-    qproperty-paletteToolTipBase: /*#66000000*/ #000000 40%;
-    qproperty-paletteHighlight: /*#66000000*/ #000000 40%;
+    qproperty-paletteButtonTextDisabled: /*#60a4a6a8*/ rgba(164, 166, 168, 38%);
+    qproperty-paletteToolTipBase: /*#66000000*/ rgba(0, 0, 0, 40%);
+    qproperty-paletteHighlight: /*#66000000*/ rgba(0, 0, 0, 40%);
     qproperty-paletteDark: #404244;
     qproperty-paletteHighlightedText: #ffffff;
     qproperty-paletteToolTipText: #d0d0d0;
     qproperty-paletteLink: #007af4;
     qproperty-paletteLinkVisited: #a57aff;
     qproperty-paletteWindowDisabled: #444444;
-    qproperty-paletteWindowTextDisabled: /*#60a4a6a8*/ #a4a6a8 38%;
+    qproperty-paletteWindowTextDisabled: /*#60a4a6a8*/ rgba(164, 166, 168, 38%);
     qproperty-paletteBaseDisabled: #444444;
-    qproperty-paletteTextDisabled: /*#60a4a6a8*/ #a4a6a8 38%;
+    qproperty-paletteTextDisabled: /*#60a4a6a8*/ rgba(164, 166, 168, 38%);
     qproperty-paletteButtonDisabled: #292929;
 }
 
@@ -38,7 +42,7 @@ ImageViewerWidget
 MainWindow #toolbar #separator
 {
     qproperty-frameShadow: Plain;
-    background-color: /*#22ffffff*/ #ffffff 13%;
+    background-color: /*#22ffffff*/ rgba(255, 255, 255, 13%);
     border: none;
     max-width: 1px;
     margin-left: 1px;

@@ -76,6 +76,7 @@ macx {
 
 RESOURCES += \
     resources/icons/qtutils_icons.qrc \
+    resources/style/qtutils_style.qrc \
     resources/translations/qtutils_translations.qrc
 
 QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9

@@ -50,6 +50,7 @@ signals:
     void preferencesRequested();
     void aboutRequested();
     void aboutQtRequested();
+    void editStylesheetRequested();
 
     void closed();
 

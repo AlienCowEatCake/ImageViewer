@@ -6,5 +6,43 @@
         <file>theme-dark.qss</file>
         <file>theme-fusion-dark.qss</file>
         <file>theme-fusion-light.qss</file>
+        <file>dark/arrow_up_5_disabled@2x.png</file>
+        <file>dark/arrow_up_5_hover@2x.png</file>
+        <file>dark/arrow_up_5_normal@2x.png</file>
+        <file>dark/arrow_down_5_disabled@2x.png</file>
+        <file>dark/arrow_down_5_hover@2x.png</file>
+        <file>dark/arrow_down_5_normal@2x.png</file>
+        <file>dark/arrow_up_6_disabled@2x.png</file>
+        <file>dark/arrow_up_6_hover@2x.png</file>
+        <file>dark/arrow_up_6_normal@2x.png</file>
+        <file>dark/arrow_down_6_disabled@2x.png</file>
+        <file>dark/arrow_down_6_hover@2x.png</file>
+        <file>dark/arrow_down_6_normal@2x.png</file>
+        <file>dark/arrow_left_6_disabled@2x.png</file>
+        <file>dark/arrow_left_6_hover@2x.png</file>
+        <file>dark/arrow_left_6_normal@2x.png</file>
+        <file>dark/arrow_right_6_disabled@2x.png</file>
+        <file>dark/arrow_right_6_hover@2x.png</file>
+        <file>dark/arrow_right_6_normal@2x.png</file>
+        <file>dark/checkbox_checked_disabled@2x.png</file>
+        <file>dark/checkbox_checked_hover@2x.png</file>
+        <file>dark/checkbox_checked_normal@2x.png</file>
+        <file>dark/checkbox_checked_pressed@2x.png</file>
+        <file>dark/checkbox_indeterminate_disabled@2x.png</file>
+        <file>dark/checkbox_indeterminate_hover@2x.png</file>
+        <file>dark/checkbox_indeterminate_normal@2x.png</file>
+        <file>dark/checkbox_indeterminate_pressed@2x.png</file>
+        <file>dark/checkbox_unchecked_disabled@2x.png</file>
+        <file>dark/checkbox_unchecked_hover@2x.png</file>
+        <file>dark/checkbox_unchecked_normal@2x.png</file>
+        <file>dark/checkbox_unchecked_pressed@2x.png</file>
+        <file>dark/radiobutton_checked_disabled@2x.png</file>
+        <file>dark/radiobutton_checked_hover@2x.png</file>
+        <file>dark/radiobutton_checked_normal@2x.png</file>
+        <file>dark/radiobutton_checked_pressed@2x.png</file>
+        <file>dark/radiobutton_unchecked_disabled@2x.png</file>
+        <file>dark/radiobutton_unchecked_hover@2x.png</file>
+        <file>dark/radiobutton_unchecked_normal@2x.png</file>
+        <file>dark/radiobutton_unchecked_pressed@2x.png</file>
     </qresource>
 </RCC>
