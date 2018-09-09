@@ -1,4 +1,4 @@
-From 10aaada16c8e19b64c3ef3526dc135aefe9313d5 Mon Sep 17 00:00:00 2001
+From 63e0c4ade158c1336b4dad069db39c43f7c3b467 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 10 Mar 2018 15:40:08 +0700
 Subject: [PATCH 1/5] Use "Q_DECL_OVERRIDE" instead of "override"
@@ -143,7 +143,7 @@ index 0f9a207..41bde34 100644
      private:
      Q_DECLARE_PRIVATE(QMngHandler)
 diff --git a/src/plugins/imageformats/tga/qtgafile.cpp b/src/plugins/imageformats/tga/qtgafile.cpp
-index 97510df..ea48f99 100644
+index 5d086c6..12866fd 100644
 --- a/src/plugins/imageformats/tga/qtgafile.cpp
 +++ b/src/plugins/imageformats/tga/qtgafile.cpp
 @@ -56,7 +56,7 @@ struct TgaReader
@@ -201,7 +201,7 @@ index 5ef7e02..1960681 100644
  private:
      mutable QTgaFile *tga;
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler_p.h b/src/plugins/imageformats/tiff/qtiffhandler_p.h
-index c7b074d..b1b371e 100644
+index 2090e38..7608d26 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler_p.h
 +++ b/src/plugins/imageformats/tiff/qtiffhandler_p.h
 @@ -51,22 +51,22 @@ class QTiffHandler : public QImageIOHandler
@@ -301,5 +301,5 @@ index 950b501..5126692 100644
  private:
      bool ensureScanned() const;
 -- 
-2.17.1
+2.18.0
 

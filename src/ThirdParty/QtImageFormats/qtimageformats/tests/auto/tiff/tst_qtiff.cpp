@@ -84,6 +84,8 @@ private slots:
     void tiled_data();
     void tiled();
 
+    void readRgba64();
+
 private:
     QString prefix;
 };
@@ -165,6 +167,7 @@ void tst_qtiff::readImage_data()
     QTest::newRow("tiled_mono") << QString("tiled_mono.tiff") << QSize(64, 64);
     QTest::newRow("tiled_oddsize_grayscale") << QString("tiled_oddsize_grayscale.tiff") << QSize(59, 71);
     QTest::newRow("tiled_oddsize_mono") << QString("tiled_oddsize_mono.tiff") << QSize(59, 71);
+    QTest::newRow("16bpc") << QString("16bpc.tiff") << QSize(64, 46);
 }
 
 void tst_qtiff::readImage()
@@ -384,6 +387,9 @@ void tst_qtiff::readWriteNonDestructive_data()
     QTest::newRow("tiff argb32pm") << QImage::Format_ARGB32_Premultiplied << QImage::Format_ARGB32_Premultiplied << QImageIOHandler::TransformationRotate90;
     QTest::newRow("tiff rgb32") << QImage::Format_RGB32 << QImage::Format_RGB32 << QImageIOHandler::TransformationRotate270;
     QTest::newRow("tiff grayscale") << QImage::Format_Grayscale8 << QImage::Format_Grayscale8 << QImageIOHandler::TransformationFlip;
+    QTest::newRow("tiff rgb64") << QImage::Format_RGBX64 << QImage::Format_RGBX64 << QImageIOHandler::TransformationNone;
+    QTest::newRow("tiff rgba64") << QImage::Format_RGBA64 << QImage::Format_RGBA64 << QImageIOHandler::TransformationRotate90;
+    QTest::newRow("tiff rgba64pm") << QImage::Format_RGBA64_Premultiplied << QImage::Format_RGBA64_Premultiplied << QImageIOHandler::TransformationNone;
 }
 
 void tst_qtiff::readWriteNonDestructive()
@@ -590,6 +596,17 @@ void tst_qtiff::tiled()
     QImage tiledImage(prefix + tiledFile);
     QVERIFY(!tiledImage.isNull());
     QCOMPARE(expectedImage, tiledImage);
+}
+
+void tst_qtiff::readRgba64()
+{
+    QString path = prefix + QString("16bpc.tiff");
+    QImageReader reader(path);
+    QVERIFY(reader.canRead());
+    QCOMPARE(reader.imageFormat(), QImage::Format_RGBX64);
+    QImage image = reader.read();
+    QVERIFY(!image.isNull());
+    QCOMPARE(image.format(), QImage::Format_RGBX64);
 }
 
 QTEST_MAIN(tst_qtiff)

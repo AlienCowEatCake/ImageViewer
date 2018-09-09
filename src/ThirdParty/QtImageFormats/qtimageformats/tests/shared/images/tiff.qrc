@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>tiff/16bpc.tiff</file>
         <file>tiff/corrupt-data.tif</file>
         <file>tiff/grayscale-ref.tif</file>
         <file>tiff/grayscale.tif</file>

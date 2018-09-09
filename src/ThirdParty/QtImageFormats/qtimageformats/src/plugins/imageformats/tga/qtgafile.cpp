@@ -163,6 +163,12 @@ QTgaFile::QTgaFile(QIODevice *device)
     if (!validDepth)
     {
         mErrorMessage = tr("Image depth not valid");
+        return;
+    }
+    if (quint64(width()) * quint64(height()) > (8192 * 8192))
+    {
+        mErrorMessage = tr("Image size exceeds limit");
+        return;
     }
     int curPos = mDevice->pos();
     int fileBytes = mDevice->size();
@@ -233,6 +239,8 @@ QImage QTgaFile::readImage()
     unsigned char yCorner = desc & 0x20; // 0 = lower, 1 = upper
 
     QImage im(imageWidth, imageHeight, QImage::Format_ARGB32);
+    if (im.isNull())
+        return QImage();
     TgaReader *reader = 0;
     if (bitsPerPixel == 16)
         reader = new Tga16Reader();
