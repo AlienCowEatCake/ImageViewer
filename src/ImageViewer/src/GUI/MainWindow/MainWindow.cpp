@@ -499,7 +499,7 @@ void MainWindow::changeEvent(QEvent *event)
     case QEvent::StyleChange:
     case QEvent::PaletteChange:
         if(isVisible())
-            m_impl->ui.OnThemeChanged();
+            m_impl->ui.onThemeChanged();
         break;
     case QEvent::LanguageChange:
         updateWindowTitle();

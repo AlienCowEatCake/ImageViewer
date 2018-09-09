@@ -96,10 +96,10 @@ struct MainWindow::UI
         toolbar->attachToWindow(mainWindow);
 #endif
 
-        OnThemeChanged();
+        onThemeChanged();
     }
 
-    void OnThemeChanged()
+    void onThemeChanged()
     {
         imageViewerWidget->setProperty("DarkMode", ThemeUtils::SystemHasDarkTheme());
         imageViewerWidget->style()->unpolish(imageViewerWidget);
