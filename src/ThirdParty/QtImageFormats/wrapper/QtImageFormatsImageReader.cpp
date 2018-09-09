@@ -312,6 +312,8 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
             --numFormats;
             ++currentFormat;
             currentFormat %= NumFormats;
+            if(currentFormat >= NumFormats)
+                currentFormat = 0;
         }
     }
 
@@ -419,6 +421,16 @@ bool QtImageFormatsImageReader::Impl::initHandler()
     // probe the file extension
     if(deleteDevice && !device->isOpen() && !device->open(QIODevice::ReadOnly) && autoDetectImageFormat)
     {
+        Q_ASSERT(qobject_cast<QFile*>(device) != 0); // future-proofing; for now this should always be the case, so...
+        QFile *file = static_cast<QFile *>(device);
+        if(file->error() == QFileDevice::ResourceError)
+        {
+            // this is bad. we should abort the open attempt and note the failure.
+            imageReaderError = QImageReader::DeviceError;
+            errorString = file->errorString();
+            return false;
+        }
+
         QList<QByteArray> extensions = QtImageFormatsImageReader::supportedImageFormats();
         if(!format.isEmpty())
         {
@@ -430,7 +442,6 @@ bool QtImageFormatsImageReader::Impl::initHandler()
 
         int currentExtension = 0;
 
-        QFile *file = static_cast<QFile*>(device);
         QString fileName = file->fileName();
 
         do
@@ -706,7 +717,7 @@ QList<QByteArray> QtImageFormatsImageReader::supportedSubTypes() const
 {
     if(!m_impl->initHandler())
         return QList<QByteArray>();
-    if(!m_impl->handler->supportsOption(QImageIOHandler::SupportedSubTypes))
+    if(m_impl->handler->supportsOption(QImageIOHandler::SupportedSubTypes))
         return m_impl->handler->option(QImageIOHandler::SupportedSubTypes).value< QList<QByteArray> >();
     return QList<QByteArray>();
 }

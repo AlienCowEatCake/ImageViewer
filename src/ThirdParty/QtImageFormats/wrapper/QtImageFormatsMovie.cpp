@@ -181,7 +181,8 @@ QtImageFormatsFrameInfo QtImageFormatsMovie::Impl::infoForFrame(int frameNumber)
                         reader = new QtImageFormatsImageReader(device, format);
                     else
                         reader = new QtImageFormatsImageReader(absoluteFilePath, format);
-                    (void)reader->canRead(); // Provoke a device->open() call
+                    if(!reader->canRead()) // Provoke a device->open() call
+                        emit movie->error(reader->error());
                     reader->device()->seek(initialDevicePos);
                     reader->setBackgroundColor(bgColor);
                     reader->setScaledSize(scaledSize);
@@ -296,6 +297,10 @@ bool QtImageFormatsMovie::Impl::next()
         currentPixmap = QPixmap::fromImage(info.pixmap.toImage().scaled(scaledSize));
     else
         currentPixmap = info.pixmap;
+
+    if(!speed)
+        return true;
+
     nextDelay = speedAdjustedDelay(info.delay);
     // Adjust delay according to the time it took to read the frame
     int processingTime = time.elapsed();
@@ -330,7 +335,7 @@ void QtImageFormatsMovie::Impl::loadNextFrame(bool starting)
         emit movie->updated(frameRect);
         emit movie->frameChanged(currentFrameNumber);
 
-        if(movieState == QMovie::Running)
+        if(speed && movieState == QMovie::Running)
             nextImageTimer.start(nextDelay);
     }
     else
@@ -353,8 +358,19 @@ void QtImageFormatsMovie::Impl::loadNextFrame(bool starting)
 
 bool QtImageFormatsMovie::Impl::isValid() const
 {
-    return (greatestFrameNumber >= 0) // have we seen valid data
-        || reader->canRead(); // or does the reader see valid data
+    if(greatestFrameNumber >= 0)
+        return true; // have we seen valid data
+    bool canRead = reader->canRead();
+    if(!canRead)
+    {
+        // let the consumer know it's broken
+        //
+        // ### the const_cast here is ugly, but 'const' of this method is
+        // technically wrong right now, since it may cause the underlying device
+        // to open.
+        emit const_cast<QtImageFormatsMovie*>(movie)->error(reader->error());
+    }
+    return canRead;
 }
 
 bool QtImageFormatsMovie::Impl::jumpToFrame(int frameNumber)
@@ -425,7 +441,7 @@ QList<QByteArray> QtImageFormatsMovie::supportedFormats()
     buffer.open(QIODevice::ReadOnly);
     for(QList<QByteArray>::Iterator it = list.begin(); it != list.end();)
     {
-        if(QtImageFormatsImageReader(&buffer, *it).supportsAnimation())
+        if(QtImageFormatsImageReader(&buffer, *it).supportsOption(QImageIOHandler::Animation))
             ++it;
         else
             it = list.erase(it);
@@ -499,6 +515,16 @@ QPixmap QtImageFormatsMovie::currentPixmap() const
 bool QtImageFormatsMovie::isValid() const
 {
     return m_impl->isValid();
+}
+
+QImageReader::ImageReaderError QtImageFormatsMovie::lastError() const
+{
+    return m_impl->reader->error();
+}
+
+QString QtImageFormatsMovie::lastErrorString() const
+{
+    return m_impl->reader->errorString();
 }
 
 bool QtImageFormatsMovie::jumpToFrame(int frameNumber)
@@ -593,6 +619,8 @@ void QtImageFormatsMovie::stop()
 
 void QtImageFormatsMovie::setSpeed(int percentSpeed)
 {
+    if(!m_impl->speed && m_impl->movieState == QMovie::Running)
+        m_impl->nextImageTimer.start(nextFrameDelay());
     m_impl->speed = percentSpeed;
 }
 
