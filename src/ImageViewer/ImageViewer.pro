@@ -63,6 +63,7 @@ SOURCES += \
     src/GUI/MainController.cpp \
     src/GUI/Dialogs/AboutDialog.cpp \
     src/GUI/Dialogs/SettingsDialog.cpp \
+    src/GUI/MainWindow/EffectsStorage.cpp \
     src/GUI/MainWindow/ImageViewerWidget.cpp \
     src/GUI/MainWindow/MainWindow.cpp \
     src/GUI/MainWindow/MenuBar.cpp \
@@ -99,6 +100,7 @@ HEADERS += \
     src/GUI/Dialogs/AboutDialog_p.h \
     src/GUI/Dialogs/SettingsDialog.h \
     src/GUI/Dialogs/SettingsDialog_p.h \
+    src/GUI/MainWindow/EffectsStorage.h \
     src/GUI/MainWindow/IControlsContainer.h \
     src/GUI/MainWindow/ImageViewerWidget.h \
     src/GUI/MainWindow/MainWindow.h \
