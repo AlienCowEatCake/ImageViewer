@@ -79,6 +79,8 @@ private slots:
     void updateSlideShowInterval();
     void updateBackgroundColor();
     void onActionReopenWithTriggered(QAction *action);
+    void rotateClockwise();
+    void rotateCounterclockwise();
 
 protected:
     void changeEvent(QEvent *event);

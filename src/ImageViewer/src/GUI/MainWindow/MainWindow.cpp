@@ -35,6 +35,7 @@
 #include <QMessageBox>
 #include <QFileInfo>
 #include <QTimer>
+#include <QHash>
 
 #include "Utils/SettingsWrapper.h"
 #include "Utils/SignalBlocker.h"
@@ -55,6 +56,7 @@ struct MainWindow::Impl
     QSharedPointer<IImageData> imageData;
     ImageSaver imageSaver;
     RestorableGeometryHelper geometryHelper;
+    QHash<QString, int> rotationStorage;
     QTimer slideShowTimer;
     bool isSlideShowMode;
     bool isFullScreenMode;
@@ -184,6 +186,22 @@ struct MainWindow::Impl
         {
             ui.imageViewerWidget->setZoomMode(settings->zoomMode());
             ui.imageViewerWidget->setGraphicsItem(imageData->graphicsItem());
+            const QString &openedPath = uiState.currentFilePath;
+            QHash<QString, int>::ConstIterator rotationData = rotationStorage.find(openedPath);
+            if(rotationData != rotationStorage.constEnd())
+            {
+                int angle = rotationData.value();
+                while(angle > 0)
+                {
+                    ui.imageViewerWidget->rotateClockwise();
+                    angle -= 90;
+                }
+                while(angle < 0)
+                {
+                    ui.imageViewerWidget->rotateCounterclockwise();
+                    angle += 90;
+                }
+            }
             setImageControlsEnabled(true);
         }
         else
@@ -193,6 +211,28 @@ struct MainWindow::Impl
             setImageControlsEnabled(false);
             QMessageBox::critical(mainWindow, qApp->translate("MainWindow", "Error"), qApp->translate("MainWindow", "Failed to open file \"%1\"").arg(uiState.currentFilePath));
         }
+    }
+
+    void saveRotationData(int angleDelta)
+    {
+        const QString &openedPath = uiState.currentFilePath;
+        if(openedPath.isEmpty())
+            return;
+        QHash<QString, int>::Iterator rotationData = rotationStorage.find(openedPath);
+        if(rotationData != rotationStorage.end())
+        {
+            int actualAngle = rotationData.value() + angleDelta;
+            if(actualAngle >= 360)
+                actualAngle -= 360;
+            if(actualAngle <= -360)
+                actualAngle += 360;
+            if(actualAngle != 0)
+                rotationData.value() = actualAngle;
+            else
+                rotationStorage.remove(rotationData.key());
+            return;
+        }
+        rotationStorage.insert(openedPath, angleDelta);
     }
 };
 
@@ -221,8 +261,8 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
         connect(object, SIGNAL(startSlideShowRequested())           , this              , SLOT(switchSlideShowMode())               );
         connect(object, SIGNAL(preferencesRequested())              , this              , SIGNAL(preferencesRequested())            );
         connect(object, SIGNAL(exitRequested())                     , this              , SLOT(close())                             );
-        connect(object, SIGNAL(rotateCounterclockwiseRequested())   , imageViewerWidget , SLOT(rotateCounterclockwise())            );
-        connect(object, SIGNAL(rotateClockwiseRequested())          , imageViewerWidget , SLOT(rotateClockwise())                   );
+        connect(object, SIGNAL(rotateCounterclockwiseRequested())   , this              , SLOT(rotateCounterclockwise())            );
+        connect(object, SIGNAL(rotateClockwiseRequested())          , this              , SLOT(rotateClockwise())                   );
         connect(object, SIGNAL(flipHorizontalRequested())           , imageViewerWidget , SLOT(flipHorizontal())                    );
         connect(object, SIGNAL(flipVerticalRequested())             , imageViewerWidget , SLOT(flipVertical())                      );
         connect(object, SIGNAL(deleteFileRequested())               , this              , SIGNAL(deleteFileRequested())             );
@@ -486,6 +526,18 @@ void MainWindow::onActionReopenWithTriggered(QAction *action)
         return;
     m_impl->loadImageData(DecodersManager::getInstance().loadImage(m_impl->uiState.currentFilePath, action->data().toString()));
     updateWindowTitle();
+}
+
+void MainWindow::rotateClockwise()
+{
+    m_impl->saveRotationData(+90);
+    m_impl->ui.imageViewerWidget->rotateClockwise();
+}
+
+void MainWindow::rotateCounterclockwise()
+{
+    m_impl->saveRotationData(-90);
+    m_impl->ui.imageViewerWidget->rotateCounterclockwise();
 }
 
 void MainWindow::changeEvent(QEvent *event)
