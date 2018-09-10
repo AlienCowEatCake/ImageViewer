@@ -301,7 +301,7 @@ void MainWindow::updateWindowTitle()
         label.append(QString::fromLatin1(" (%1x%2) %3% - %4")
                      .arg(imageSize.width())
                      .arg(imageSize.height())
-                     .arg(static_cast<quint64>(m_impl->ui.imageViewerWidget->zoomLevel() * 100))
+                     .arg(qRound(m_impl->ui.imageViewerWidget->zoomLevel() * 100))
                      .arg(qApp->applicationName()));
     }
     else if(m_impl->uiState.hasCurrentFile)
