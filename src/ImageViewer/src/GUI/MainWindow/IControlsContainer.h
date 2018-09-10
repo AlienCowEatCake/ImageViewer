@@ -24,7 +24,7 @@
 
 /*
 
-ALL_LIST="OpenFile OpenFolder SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt"
+ALL_LIST="OpenFile OpenFolder SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomCustom ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt EditStylesheet"
 CHECKABLE_LIST="ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar"
 
 # signals
@@ -69,6 +69,7 @@ signals:
     void zoomOutRequested();
     void zoomInRequested();
     void zoomResetRequested();
+    void zoomCustomRequested();
     void zoomFitToWindowRequested();
     void zoomOriginalSizeRequested();
     void zoomFullScreenRequested();
@@ -104,6 +105,7 @@ public:
         virtual void setZoomOutEnabled(bool) FUNCTION_BODY \
         virtual void setZoomInEnabled(bool) FUNCTION_BODY \
         virtual void setZoomResetEnabled(bool) FUNCTION_BODY \
+        virtual void setZoomCustomEnabled(bool) FUNCTION_BODY \
         virtual void setZoomFitToWindowEnabled(bool) FUNCTION_BODY \
         virtual void setZoomOriginalSizeEnabled(bool) FUNCTION_BODY \
         virtual void setZoomFullScreenEnabled(bool) FUNCTION_BODY \
@@ -111,6 +113,7 @@ public:
         virtual void setShowToolBarEnabled(bool) FUNCTION_BODY \
         virtual void setAboutEnabled(bool) FUNCTION_BODY \
         virtual void setAboutQtEnabled(bool) FUNCTION_BODY \
+        virtual void setEditStylesheetEnabled(bool) FUNCTION_BODY \
 
 #define DECLARE_CONTROLS_CONTAINER_FUNCTIONS_HELPER_SET_CHECKED(ACCESS_SPECIFIER, FUNCTION_BODY) \
     ACCESS_SPECIFIER : \

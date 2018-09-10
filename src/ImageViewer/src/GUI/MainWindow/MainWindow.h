@@ -68,6 +68,7 @@ public slots:
     void onZoomModeChanged(ImageViewerWidget::ZoomMode mode);
     void onSaveAsRequested();
 
+    void onZoomCustomRequested();
     void onZoomFitToWindowRequested();
     void onZoomOriginalSizeRequested();
 

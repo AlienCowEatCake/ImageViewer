@@ -886,6 +886,7 @@ CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setDeleteFileEnabled, &m_impl->t
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setZoomOutEnabled, &m_impl->toolBarData.zoomOut)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setZoomInEnabled, &m_impl->toolBarData.zoomIn)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setZoomResetEnabled)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setZoomCustomEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setZoomFitToWindowEnabled, &m_impl->toolBarData.zoomFitToWindow)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setZoomOriginalSizeEnabled, &m_impl->toolBarData.zoomOriginalSize)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setZoomFullScreenEnabled, &m_impl->toolBarData.zoomFullScreen)
@@ -893,6 +894,7 @@ CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setShowMenuBarEnable
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setShowToolBarEnabled)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setAboutEnabled)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setAboutQtEnabled)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setEditStylesheetEnabled)
 
 CONTROLS_CONTAINER_SET_CHECKED_IMPL(MacToolBar, setZoomFitToWindowChecked, &m_impl->toolBarData.zoomFitToWindow)
 CONTROLS_CONTAINER_SET_CHECKED_IMPL(MacToolBar, setZoomOriginalSizeChecked, &m_impl->toolBarData.zoomOriginalSize)

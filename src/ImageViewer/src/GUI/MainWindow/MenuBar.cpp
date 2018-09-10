@@ -79,6 +79,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     QAction * const actionZoomOut;
     QAction * const actionZoomIn;
     QAction * const actionZoomReset;
+    QAction * const actionZoomCustom;
     QAction * const actionZoomFitToWindow;
     QAction * const actionZoomOriginalSize;
     QAction * const actionZoomFullScreen;
@@ -118,6 +119,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomOut               , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomIn                , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomReset             , createWidgetAction(parent))
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomCustom            , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomFitToWindow       , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomOriginalSize      , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionZoomFullScreen        , createWidgetAction(parent))
@@ -198,6 +200,9 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menuView->addAction(actionZoomReset);
         actionZoomReset->setShortcuts(createAnyModifierConjugatedShortcuts(Qt::Key_0, Qt::Key_BracketLeft));
         actionZoomReset->setMenuRole(QAction::NoRole);
+        menuView->addAction(actionZoomCustom);
+        actionZoomCustom->setShortcuts(createAnyModifierShortcuts(Qt::Key_Z));
+        actionZoomCustom->setMenuRole(QAction::NoRole);
         menuView->addAction(actionZoomFitToWindow);
         actionZoomFitToWindow->setShortcuts(createAnyModifierShortcuts(Qt::Key_F));
         actionZoomFitToWindow->setMenuRole(QAction::NoRole);
@@ -286,6 +291,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionZoomOut->setText(qApp->translate("MenuBar", "Zoom &Out"));
         actionZoomIn->setText(qApp->translate("MenuBar", "Zoom &In"));
         actionZoomReset->setText(qApp->translate("MenuBar", "&Reset Zoom"));
+        actionZoomCustom->setText(qApp->translate("MenuBar", "&Zoom..."));
         actionZoomFitToWindow->setText(qApp->translate("MenuBar", "Fit Image To &Window Size"));
         actionZoomOriginalSize->setText(qApp->translate("MenuBar", "Original &Size"));
         actionZoomFullScreen->setText(qApp->translate("MenuBar", "&Full Screen"));
@@ -317,6 +323,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionZoomOut->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_OUT                  , menuActionsHasDarkTheme));
         actionZoomIn->setIcon                   (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IN                   , menuActionsHasDarkTheme));
         actionZoomReset->setIcon                (ThemeUtils::GetIcon(ThemeUtils::ICON_RESET                     , menuActionsHasDarkTheme));
+        actionZoomCustom->setIcon               (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_CUSTOM               , menuActionsHasDarkTheme));
         actionZoomFitToWindow->setIcon          (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_EMPTY                , menuActionsHasDarkTheme));
         actionZoomOriginalSize->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY             , menuActionsHasDarkTheme));
         actionZoomFullScreen->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , menuActionsHasDarkTheme));
@@ -424,6 +431,7 @@ MenuBar::MenuBar(QWidget *parent)
     connect(m_impl->actionZoomOut               , SIGNAL(triggered()), emitter(), SIGNAL(zoomOutRequested())                );
     connect(m_impl->actionZoomIn                , SIGNAL(triggered()), emitter(), SIGNAL(zoomInRequested())                 );
     connect(m_impl->actionZoomReset             , SIGNAL(triggered()), emitter(), SIGNAL(zoomResetRequested())              );
+    connect(m_impl->actionZoomCustom            , SIGNAL(triggered()), emitter(), SIGNAL(zoomCustomRequested())             );
     connect(m_impl->actionZoomFitToWindow       , SIGNAL(triggered()), emitter(), SIGNAL(zoomFitToWindowRequested())        );
     connect(m_impl->actionZoomOriginalSize      , SIGNAL(triggered()), emitter(), SIGNAL(zoomOriginalSizeRequested())       );
     connect(m_impl->actionZoomFullScreen        , SIGNAL(triggered()), emitter(), SIGNAL(zoomFullScreenRequested())         );
@@ -489,6 +497,7 @@ CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setDeleteFileEnabled, m_impl->actio
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setZoomOutEnabled, m_impl->actionZoomOut)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setZoomInEnabled, m_impl->actionZoomIn)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setZoomResetEnabled, m_impl->actionZoomReset)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setZoomCustomEnabled, m_impl->actionZoomCustom)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setZoomFitToWindowEnabled, m_impl->actionZoomFitToWindow)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setZoomOriginalSizeEnabled, m_impl->actionZoomOriginalSize)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setZoomFullScreenEnabled, m_impl->actionZoomFullScreen)
@@ -496,6 +505,7 @@ CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setShowMenuBarEnabled, m_impl->acti
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setShowToolBarEnabled, m_impl->actionShowToolBar)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setAboutEnabled, m_impl->actionAbout)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setAboutQtEnabled, m_impl->actionAboutQt)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setEditStylesheetEnabled, m_impl->actionEditStylesheet)
 
 CONTROLS_CONTAINER_SET_CHECKED_IMPL(MenuBar, setZoomFitToWindowChecked, m_impl->actionZoomFitToWindow)
 CONTROLS_CONTAINER_SET_CHECKED_IMPL(MenuBar, setZoomOriginalSizeChecked, m_impl->actionZoomOriginalSize)

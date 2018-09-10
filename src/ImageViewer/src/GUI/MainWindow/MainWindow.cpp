@@ -33,6 +33,7 @@
 #include <QStringList>
 #include <QGraphicsItem>
 #include <QMessageBox>
+#include <QInputDialog>
 #include <QFileInfo>
 #include <QTimer>
 
@@ -81,6 +82,7 @@ struct MainWindow::Impl
             container->setZoomOutEnabled(isEnabled);
             container->setZoomInEnabled(isEnabled);
             container->setZoomResetEnabled(isEnabled);
+            container->setZoomCustomEnabled(isEnabled);
             container->setZoomFitToWindowEnabled(isEnabled);
             container->setZoomOriginalSizeEnabled(isEnabled);
             container->setRotateCounterclockwiseEnabled(isEnabled);
@@ -237,6 +239,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
         connect(object, SIGNAL(zoomOutRequested())                  , imageViewerWidget         , SLOT(zoomOut())                           );
         connect(object, SIGNAL(zoomInRequested())                   , imageViewerWidget         , SLOT(zoomIn())                            );
         connect(object, SIGNAL(zoomResetRequested())                , imageViewerWidget         , SLOT(resetZoom())                         );
+        connect(object, SIGNAL(zoomCustomRequested())               , this                      , SLOT(onZoomCustomRequested())             );
         connect(object, SIGNAL(zoomFitToWindowRequested())          , this                      , SLOT(onZoomFitToWindowRequested())        );
         connect(object, SIGNAL(zoomOriginalSizeRequested())         , this                      , SLOT(onZoomOriginalSizeRequested())       );
         connect(object, SIGNAL(zoomFullScreenRequested())           , this                      , SLOT(switchFullScreenMode())              );
@@ -402,6 +405,20 @@ void MainWindow::onSaveAsRequested()
     const QString openedPath = m_impl->uiState.currentFilePath;
     m_impl->imageSaver.setDefaultFilePath(openedPath);
     m_impl->imageSaver.save(m_impl->ui.imageViewerWidget->grabImage(), openedPath);
+}
+
+void MainWindow::onZoomCustomRequested()
+{
+    const double minValue = 1e-7;
+    const double maxValue = 1e+12;
+    const double defValue = qBound(minValue, static_cast<double>(m_impl->ui.imageViewerWidget->zoomLevel()) * 100., maxValue);
+    const int decimals = 7;
+    const QString titleText = qApp->translate("MainWindow", "Zoom");
+    const QString labelText = qApp->translate("MainWindow", "Zoom Factor (%):");
+    bool ok = false;
+    const double zoomLevel = QInputDialog::getDouble(this, titleText, labelText, defValue, minValue, maxValue, decimals, &ok);
+    if(ok)
+        m_impl->ui.imageViewerWidget->setZoomLevel(static_cast<qreal>(qBound(minValue, zoomLevel, maxValue) / 100.));
 }
 
 void MainWindow::onZoomFitToWindowRequested()

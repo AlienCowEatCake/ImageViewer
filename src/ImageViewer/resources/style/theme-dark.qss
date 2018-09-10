@@ -567,11 +567,11 @@ QLineEdit:disabled
     border: 1px solid #353535;
 }
 
-/************
- * QSpinBox *
- ************/
+/********************
+ * QAbstractSpinBox *
+ ********************/
 
-QSpinBox
+QAbstractSpinBox
 {
     padding-left: 1px;
     padding-bottom: 1px;
@@ -582,84 +582,84 @@ QSpinBox
     selection-background-color: #1d82cc;
     selection-color: #f2f2f2;
 }
-QSpinBox:disabled
+QAbstractSpinBox:disabled
 {
     background: #4d4d4d;
     border: 1px solid #353535;
 }
 
-QSpinBox::up-button,
-QSpinBox::down-button
+QAbstractSpinBox::up-button,
+QAbstractSpinBox::down-button
 {
     subcontrol-origin: border;
     width: 16px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #404040, stop:1 #303030);
     border: 1px solid #1a1c1f;
 }
-QSpinBox::up-button
+QAbstractSpinBox::up-button
 {
     subcontrol-position: top right;
     border-top-right-radius: 3px;
     margin-bottom: -1px;
 }
-QSpinBox::down-button
+QAbstractSpinBox::down-button
 {
     subcontrol-position: bottom right;
     border-bottom-right-radius: 3px;
     margin-top: -1px;
 }
-QSpinBox::up-button:hover,
-QSpinBox::down-button:hover
+QAbstractSpinBox::up-button:hover,
+QAbstractSpinBox::down-button:hover
 {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2194d3, stop:1 #1971c8);
 }
-QSpinBox::up-button:pressed,
-QSpinBox::down-button:pressed
+QAbstractSpinBox::up-button:pressed,
+QAbstractSpinBox::down-button:pressed
 {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1d83bd, stop:1 #1564ab);
 }
-QSpinBox::up-button:disabled,
-QSpinBox::down-button:disabled
+QAbstractSpinBox::up-button:disabled,
+QAbstractSpinBox::down-button:disabled
 {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #424242);
     border: 1px solid #353535;
 }
-QSpinBox::up-button:off,
-QSpinBox::down-button:off
+QAbstractSpinBox::up-button:off,
+QAbstractSpinBox::down-button:off
 {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #424242);
 }
 
-QSpinBox::up-arrow,
-QSpinBox::down-arrow
+QAbstractSpinBox::up-arrow,
+QAbstractSpinBox::down-arrow
 {
     width: 5px;
     height: 5px;
     background: none;
 }
-QSpinBox::up-arrow
+QAbstractSpinBox::up-arrow
 {
     border-image:url(":/style/dark/arrow_up_5_normal@2x.png");
 }
-QSpinBox::down-arrow
+QAbstractSpinBox::down-arrow
 {
     border-image:url(":/style/dark/arrow_down_5_normal@2x.png");
 }
-QSpinBox::up-arrow:hover
+QAbstractSpinBox::up-arrow:hover
 {
     border-image:url(":/style/dark/arrow_up_5_hover@2x.png");
 }
-QSpinBox::down-arrow:hover
+QAbstractSpinBox::down-arrow:hover
 {
     border-image:url(":/style/dark/arrow_down_5_hover@2x.png");
 }
-QSpinBox::up-arrow:disabled,
-QSpinBox::up-arrow:off
+QAbstractSpinBox::up-arrow:disabled,
+QAbstractSpinBox::up-arrow:off
 {
     border-image:url(":/style/dark/arrow_up_5_disabled@2x.png");
 }
-QSpinBox::down-arrow:disabled,
-QSpinBox::down-arrow:off
+QAbstractSpinBox::down-arrow:disabled,
+QAbstractSpinBox::down-arrow:off
 {
     border-image:url(":/style/dark/arrow_down_5_disabled@2x.png");
 }
