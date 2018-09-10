@@ -322,6 +322,16 @@ QScrollBar::sub-page:vertical
     background: none;
 }
 
+/***********************
+ * QAbstractScrollArea *
+ ***********************/
+
+QAbstractScrollArea::corner
+{
+    background: #454545;
+    border: none;
+}
+
 /****************************
  * QToolButton, QPushButton *
  ****************************/
@@ -822,6 +832,15 @@ QPlainTextEdit QScrollBar::sub-line:horizontal
 {
     border-bottom: none;
     border-left: none;
+}
+
+QScrollArea::corner,
+QTextBrowser::corner,
+QAbstractItemView::corner,
+QPlainTextEdit::corner
+{
+    border-top: 1px solid #1a1c1f;
+    border-left: 1px solid #1a1c1f;
 }
 
 QScrollArea[ScrollBorderRequired=true] QScrollBar::add-line:vertical,
