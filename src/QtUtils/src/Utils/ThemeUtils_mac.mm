@@ -28,11 +28,7 @@ bool SystemHasDarkTheme()
 {
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER)
     if(@available(*, macOS 10.14))
-    {
-        NSAppearanceName name = [[NSAppearance currentAppearance] name];
-        if(name == NSAppearanceNameDarkAqua || name == NSAppearanceNameAccessibilityHighContrastDarkAqua)
-            return true;
-    }
+        return [NSApp.effectiveAppearance.name hasSuffix:@"DarkAqua"];
 #endif
     return false;
 }
