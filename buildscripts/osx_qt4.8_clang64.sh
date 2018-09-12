@@ -6,10 +6,18 @@ DMGNAME="${PROJECT}_qt4.8_clang64"
 INFO_PLIST="src/ImageViewer/resources/platform/macosx/Info.plist"
 ICON="src/ImageViewer/resources/icon/icon.icns"
 OUT_PATH="src/${PROJECT}"
-MAC_SDK="$(xcodebuild -showsdks | grep '\-sdk macosx' | tail -1 | sed 's|.*-sdk ||')"
+ALL_SDK_VERSIONS="$(xcodebuild -showsdks | grep '\-sdk macosx' | sed 's|.*-sdk macosx||')"
+for SDK_VERSION in ${ALL_SDK_VERSIONS} ; do
+	SDK_PATH="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SDK_VERSION}.sdk"
+	if [[ $(find "${SDK_PATH}/usr/lib" -name 'libstdc++*' -maxdepth 1 | wc -l | xargs) > 0 ]] ; then
+		MAC_SDK="macosx${SDK_VERSION}"
+	fi
+done
 
 CMD_QMAKE="qmake"
 CMD_DEPLOY="macdeployqt"
+
+echo "Using MAC_SDK=${MAC_SDK}"
 
 cd "$(dirname $0)"/..
 rm -rf "${BUILDDIR}"
@@ -20,7 +28,7 @@ ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip CONFIG+="x86_64" -r -spec un
 make
 cd "${OUT_PATH}"
 cp -a "${BUILD_PATH}/../${INFO_PLIST}" "${APPNAME}.app/Contents/Info.plist"
-sed -e 's/10.7/10.5/' -i "" "${APPNAME}.app/Contents/Info.plist"
+plutil -replace LSMinimumSystemVersion -string "10.5" "${APPNAME}.app/Contents/Info.plist"
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -f "${RES_PATH}/empty.lproj"
 mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"

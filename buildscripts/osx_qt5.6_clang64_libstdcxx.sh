@@ -4,12 +4,20 @@ BUILDDIR=build_osx_qt5.6_clang64_libstdcxx
 APPNAME="Image Viewer"
 DMGNAME="${PROJECT}_qt5.6_clang64_libstdcxx"
 OUT_PATH="src/${PROJECT}"
-MAC_SDK="$(xcodebuild -showsdks | grep '\-sdk macosx' | tail -1 | sed 's|.*-sdk ||')"
+ALL_SDK_VERSIONS="$(xcodebuild -showsdks | grep '\-sdk macosx' | sed 's|.*-sdk macosx||')"
+for SDK_VERSION in ${ALL_SDK_VERSIONS} ; do
+	SDK_PATH="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SDK_VERSION}.sdk"
+	if [[ $(find "${SDK_PATH}/usr/lib" -name 'libstdc++*' -maxdepth 1 | wc -l | xargs) > 0 ]] ; then
+		MAC_SDK="macosx${SDK_VERSION}"
+	fi
+done
 
 QT_PATH="/opt/Qt/5.6.3/clang_64_libstdc++_sdk10.10"
 QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
+
+echo "Using MAC_SDK=${MAC_SDK}"
 
 cd "$(dirname $0)"/..
 rm -rf "${BUILDDIR}"
@@ -19,7 +27,7 @@ BUILD_PATH="${PWD}"
 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} "../${PROJECT}.pro"
 make -j3
 cd "${OUT_PATH}"
-sed -e 's/10.7/10.6/' -i "" "${APPNAME}.app/Contents/Info.plist"
+plutil -replace LSMinimumSystemVersion -string "10.6" "${APPNAME}.app/Contents/Info.plist"
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -f "${RES_PATH}/empty.lproj"
 mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"
