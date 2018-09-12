@@ -63,6 +63,22 @@ Version GetCurrentMacVersionImpl()
     }
 #endif
 
+    if(NSDictionary *systemVersion = [NSDictionary dictionaryWithContentsOfFile:@"/System/Library/CoreServices/SystemVersion.plist"])
+    {
+        NSString *productVersion = [systemVersion objectForKey:@"ProductVersion"];
+        if(productVersion && [productVersion isKindOfClass:[NSString class]])
+        {
+            NSArray *components = [productVersion componentsSeparatedByString:@"."];
+            if(components && [components count] >= 2)
+            {
+                const NSInteger major = [(NSString*)[components objectAtIndex:0] integerValue];
+                const NSInteger minor = [(NSString*)[components objectAtIndex:1] integerValue];
+                const NSInteger patch = ([components count] >= 3 ? [(NSString*)[components objectAtIndex:2] integerValue] : -1);
+                return CreateVersion(major, minor, patch);
+            }
+        }
+    }
+
     SInt32 majorVersion = 0, minorVersion = 0, bugFixVersion = 0;
 #if !defined (AVAILABLE_MAC_OS_X_VERSION_10_8_AND_LATER)
     Gestalt(gestaltSystemVersionMajor, &majorVersion);
