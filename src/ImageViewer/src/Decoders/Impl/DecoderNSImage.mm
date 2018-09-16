@@ -17,6 +17,8 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <CoreFoundation/CoreFoundation.h>
+#include <CoreServices/CoreServices.h>
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
@@ -29,6 +31,7 @@
 #include <QFileInfo>
 #include <QDebug>
 
+#include "Utils/InfoUtils.h"
 #include "Utils/ObjectiveCUtils.h"
 
 #include "../IDecoder.h"
@@ -50,17 +53,30 @@ public:
     {
         AUTORELEASE_POOL;
         std::set<QString> fileTypes;
-        if(![NSImage respondsToSelector:@selector(imageFileTypes)])
+        if([NSImage respondsToSelector:@selector(imageFileTypes)])
         {
-            qWarning() << "NSImage does not responds to imageFileTypes selector";
-            return QStringList();
+            for(NSString *fileType in [NSImage performSelector:@selector(imageFileTypes)])
+            {
+                QString simplifiedFileType = ObjCUtils::QStringFromNSString(fileType).toLower();
+                simplifiedFileType.replace(QRegExp(QString::fromLatin1("[^\\w]")), QString::fromLatin1(""));
+                fileTypes.insert(simplifiedFileType.simplified());
+            }
         }
-        for(NSString *fileType in [NSImage imageFileTypes])
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_10_AND_LATER)
+        if(InfoUtils::MacVersionGreatOrEqual(10, 10))
         {
-            QString simplifiedFileType = ObjCUtils::QStringFromNSString(fileType).toLower();
-            simplifiedFileType.replace(QRegExp(QString::fromLatin1("[^\\w]")), QString::fromLatin1(""));
-            fileTypes.insert(simplifiedFileType.simplified());
+            for(NSString *uti in [NSImage imageTypes])
+            {
+                CFArrayRef tags = UTTypeCopyAllTagsWithClass((__bridge CFStringRef)uti, kUTTagClassFilenameExtension);
+                for(CFIndex i = 0, count = CFArrayGetCount(tags); i < count; ++i)
+                {
+                    CFStringRef tag = (CFStringRef)CFArrayGetValueAtIndex(tags, i);
+                    fileTypes.insert(ObjCUtils::QStringFromNSString((__bridge NSString*)tag).toLower());
+                }
+                CFRelease(tags);
+            }
         }
+#endif
         QStringList result;
         for(std::set<QString>::const_iterator it = fileTypes.begin(); it != fileTypes.end(); ++it)
             result.append(*it);
