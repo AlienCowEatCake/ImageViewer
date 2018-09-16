@@ -256,7 +256,7 @@ private:
                 {
                     QByteArray iccData;
                     ExtensionBlock *extensionData = extensionHeader + 1;
-                    while(extensionData->Function == CONTINUE_EXT_FUNC_CODE)
+                    while(i + 1 != gifFrame->ExtensionBlockCount && extensionData->Function == CONTINUE_EXT_FUNC_CODE)
                     {
                         iccData += QByteArray(reinterpret_cast<const char*>(extensionData->Bytes), extensionData->ByteCount);
                         extensionData++;
