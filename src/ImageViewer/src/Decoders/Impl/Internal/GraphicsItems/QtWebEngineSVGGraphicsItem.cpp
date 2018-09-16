@@ -37,6 +37,10 @@
 
 #include <QXmlStreamReader>
 
+#include <QOpenGLContext>
+#include <QOffscreenSurface>
+#include <QOpenGLFunctions>
+
 #include <QDebug>
 
 #include "GraphicsItemUtils.h"
@@ -44,6 +48,40 @@
 namespace {
 
 const int SVG_RENDERING_FPS = 25;
+const qreal MAX_IMAGE_DIMENSION = 16384;
+const qreal MIN_IMAGE_DIMENSION = 1;
+
+int getMaxTextureSize()
+{
+    static int maxTextureSize = 0;
+    static bool isInitialized = false;
+    if(!isInitialized)
+    {
+        isInitialized = true;
+
+        QOpenGLContext context;
+        if(!context.create())
+            return maxTextureSize;
+
+        QOffscreenSurface surface;
+        surface.setFormat(context.format());
+        surface.create();
+        if(!surface.isValid())
+            return maxTextureSize;
+
+        context.makeCurrent(&surface);
+
+        QOpenGLFunctions *functions = context.functions();
+        if(!functions)
+            return maxTextureSize;
+
+        functions->glEnable(GL_TEXTURE_2D);
+        functions->glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+
+        qDebug() << "GL_MAX_TEXTURE_SIZE =" << maxTextureSize;
+    }
+    return maxTextureSize;
+}
 
 class SyncExecutor : public QObject
 {
@@ -113,12 +151,16 @@ struct QtWebEngineSVGGraphicsItem::Impl
 {
     QWebEngineView view;
     QRectF svgRect;
+    qreal minScaleFactor;
+    qreal maxScaleFactor;
     SyncExecutor syncExecutor;
     QTimer timer;
     bool renderProcessTerminated;
 
     Impl()
-        : syncExecutor(&view)
+        : minScaleFactor(1)
+        , maxScaleFactor(1)
+        , syncExecutor(&view)
         , renderProcessTerminated(false)
     {}
 
@@ -196,6 +238,15 @@ bool QtWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &bas
     m_impl->svgRect = QRectF(m_impl->svgRect.topLeft(), m_impl->svgRect.size().expandedTo(QSizeF(1, 1)));
     m_impl->setScaleFactor(1);
 
+    const qreal maxImageDimension = std::min(MAX_IMAGE_DIMENSION, static_cast<qreal>(getMaxTextureSize()));
+    m_impl->minScaleFactor = std::max(std::max(MIN_IMAGE_DIMENSION / m_impl->svgRect.width(), MIN_IMAGE_DIMENSION / m_impl->svgRect.height()), static_cast<qreal>(1));
+    m_impl->maxScaleFactor = std::min(maxImageDimension / m_impl->svgRect.width(), maxImageDimension / m_impl->svgRect.height());
+    if(m_impl->maxScaleFactor < m_impl->minScaleFactor)
+    {
+        qWarning() << "[QtWebEngineSVGGraphicsItem] Error: too large SVG size, max =" << maxImageDimension << "x" << maxImageDimension;
+        return false;
+    }
+
 //    m_impl->page.mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
 //    m_impl->page.mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
 
@@ -216,7 +267,7 @@ void QtWebEngineSVGGraphicsItem::paint(QPainter *painter, const QStyleOptionGrap
         Q_UNUSED(widget);
         const qreal scaleFactor = GraphicsItemUtils::GetDeviceScaleFactor(painter);
         const QRectF exposedRect = boundingRect().intersected(QRectFIntegerized(option->exposedRect));
-        const qreal actualScaleFactor = std::max(std::min(scaleFactor, 5.0), 1.0);
+        const qreal actualScaleFactor = std::max(std::min(scaleFactor, m_impl->maxScaleFactor), m_impl->minScaleFactor);
         m_impl->setScaleFactor(actualScaleFactor);
         const QRect scaledRect = QRectFIntegerized(QRectF(exposedRect.topLeft() * actualScaleFactor, exposedRect.size() * actualScaleFactor)).toRect();
         const QPixmap pixmap = m_impl->view.grab(scaledRect);
