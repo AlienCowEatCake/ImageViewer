@@ -20,6 +20,7 @@
 #include <QtGlobal>
 #if defined (QT_SVG_LIB)
 #include <QGraphicsSvgItem>
+#include <QSvgRenderer>
 #else
 #include <QGraphicsItem>
 #endif
@@ -69,10 +70,12 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
 #if defined (QT_SVG_LIB)
-        return QSharedPointer<IImageData>(new ImageData(new QGraphicsSvgItem(filePath), name()));
-#else
-        return QSharedPointer<IImageData>();
+        QGraphicsSvgItem *graphicsSvgItem = new QGraphicsSvgItem(filePath);
+        if(graphicsSvgItem->renderer()->isValid())
+            return QSharedPointer<IImageData>(new ImageData(graphicsSvgItem, name()));
+        delete graphicsSvgItem;
 #endif
+        return QSharedPointer<IImageData>();
     }
 };
 
