@@ -40,6 +40,8 @@ class QGestureEvent {};
 class QPinchGesture {};
 #endif
 
+#include "Utils/Global.h"
+
 #include "Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.h"
 #include "Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.h"
 
