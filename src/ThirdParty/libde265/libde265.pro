@@ -19,6 +19,10 @@ INCLUDEPATH = $${THIRDPARTY_LIBDE265_CONFIG_PATH} $${THIRDPARTY_LIBDE265_PATH} $
 
 DEFINES += HAVE_CONFIG_H LIBDE265_STATIC_BUILD
 
+win32 {
+    DEFINES += NOMINMAX
+}
+
 SOURCES += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/alloc_pool.cc \
 \ #    $${THIRDPARTY_LIBDE265_PATH}/libde265/arm/arm.cc \
@@ -31,7 +35,7 @@ SOURCES += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/decctx.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/dpb.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/en265.cc \
-    $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/algo/algo.cc \
+\ #    $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/algo/algo.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/algo/cb-interpartmode.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/algo/cb-intra-inter.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/algo/cb-intrapartmode.cc \
@@ -143,6 +147,13 @@ HEADERS += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse-motion.h \
     $${THIRDPARTY_LIBDE265_CONFIG_PATH}/config.h
+
+win32 {
+    SOURCES += \
+        $${THIRDPARTY_LIBDE265_PATH}/extra/win32cond.c
+    HEADERS += \
+        $${THIRDPARTY_LIBDE265_PATH}/extra/win32cond.h
+}
 
 TR_EXCLUDE += $${THIRDPARTY_LIBDE265_PATH}/*
 

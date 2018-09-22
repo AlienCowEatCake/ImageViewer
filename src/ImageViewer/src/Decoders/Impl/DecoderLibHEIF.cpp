@@ -113,7 +113,7 @@ QImage readHeifFile(const QString &filePath)
 
     const int width = static_cast<int>(heif_image_get_width(img, heif_channel_interleaved));
     const int height = static_cast<int>(heif_image_get_height(img, heif_channel_interleaved));
-    QImage result(width, height, QImage::Format_ARGB32_Premultiplied);
+    QImage result(width, height, QImage::Format_ARGB32);
     if(result.isNull())
     {
         qWarning() << "Invalid image size:" << width << "x" << height;
@@ -135,7 +135,7 @@ QImage readHeifFile(const QString &filePath)
             const int g = *(currentPlaneByte++);
             const int b = *(currentPlaneByte++);
             const int a = *(currentPlaneByte++);
-            *(imageData++) = qPremultiply(qRgba(r, g, b, a));
+            *(imageData++) = qRgba(r, g, b, a);
         }
     }
 
