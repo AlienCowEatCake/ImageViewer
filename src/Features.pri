@@ -136,6 +136,13 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
 #    system_libde265
 
 
+# libheif options:
+#    disable_libheif
+#    system_libheif
+disable_libde265 {
+    CONFIG += disable_libheif
+}
+
 # ::::: Optional Third Party Components Configuration :::::
 
 # QtExtended options:
