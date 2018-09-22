@@ -131,6 +131,11 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
     CONFIG += disable_resvg
 }
 
+# libde265 options:
+#    disable_libde265
+#    system_libde265
+
+
 # ::::: Optional Third Party Components Configuration :::::
 
 # QtExtended options:
