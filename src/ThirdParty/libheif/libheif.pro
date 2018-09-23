@@ -23,10 +23,10 @@ DEFINES += HAVE_CONFIG_H LIBHEIF_STATIC_BUILD
 SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/bitstream.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/box.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/box_fuzzer.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/encoder_fuzzer.cc \
+\ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/box_fuzzer.cc \
+\ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/encoder_fuzzer.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/error.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/file_fuzzer.cc \
+\ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/file_fuzzer.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_context.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_decoder_libde265.cc \
