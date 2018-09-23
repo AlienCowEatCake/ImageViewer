@@ -840,7 +840,7 @@ QVariant QTiffHandler::option(ImageOption option) const
 void QTiffHandler::setOption(ImageOption option, const QVariant &value)
 {
     if (option == CompressionRatio && value.type() == QVariant::Int)
-        d->compression = value.toInt();
+        d->compression = qBound(0, value.toInt(), 1);
     if (option == ImageTransformation) {
         int transformation = value.toInt();
         if (transformation > 0 && transformation < 8)
