@@ -15,4 +15,6 @@ ${CMD_QMAKE} -r CONFIG+="release" CONFIG+="use_static_qico" "../${PROJECT}.pro"
 make
 strip --strip-all "${APP_PATH}/${PROJECT}"
 cp -a "${APP_PATH}/${PROJECT}" ../"${PROJECT}${SUFFIX}.elf"
+cd ..
+gzip -9v "${PROJECT}${SUFFIX}.elf"
 
