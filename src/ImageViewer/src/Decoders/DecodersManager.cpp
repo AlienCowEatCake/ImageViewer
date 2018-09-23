@@ -80,6 +80,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderOpenJPEG"             ,  520, -1); ///< Умеет формат JPEG 2000. Поддерживает ICCP. Поддержка в чем-то лучше LibJasPer, в чем-то хуже.
         P("DecoderLibTiff"              ,  530, -1); ///< Умеет формат tiff. Поддерживает EXIF(?) и ICCP. Должен быть выше QImage и QtImageFormatsImage.
         P("DecoderJbigKit"              ,  540, -1); ///< Умеет формат JBIG1.
+        P("DecoderLibHEIF"              ,  550, -1); ///< Умеет HEIF с кодеком HEVC.
         /// @note Декодеры анимированных изображений
         P("DecoderQMovie"               , 1090, -1); ///< Умеет анимированные gif.
         P("DecoderGifLib"               , 1100, -1); ///< Умеет анимированные gif, но медленнее, чем QMovie, зато поддерживает ICCP и более всеяден.

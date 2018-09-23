@@ -72,6 +72,14 @@ SUBDIRS =
     SUBDIRS += LibRaw/LibRaw.pro
 }
 
+!disable_libde265 : !system_libde265 {
+    SUBDIRS += libde265/libde265.pro
+}
+
+!disable_libheif : !system_libheif {
+    SUBDIRS += libheif/libheif.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }

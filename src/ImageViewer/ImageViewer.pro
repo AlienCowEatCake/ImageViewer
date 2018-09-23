@@ -215,6 +215,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderReSVG.cpp
 }
 
+!disable_libheif {
+    SOURCES += \
+        src/Decoders/Impl/DecoderLibHEIF.cpp
+}
+
 !disable_qtsvg {
     QT += svg
     SOURCES += \

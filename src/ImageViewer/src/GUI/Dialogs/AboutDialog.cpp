@@ -56,6 +56,9 @@
 #if defined (HAS_LIBRAW)
 #include <libraw/libraw_version.h>
 #endif
+#if defined (HAS_LIBHEIF)
+#include <libheif/heif.h>
+#endif
 #if defined (HAS_JBIGKIT)
 #include <jbig.h>
 #endif
@@ -71,6 +74,9 @@
 #if defined (HAS_FREETYPE)
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#endif
+#if defined (HAS_LIBDE256)
+#include <libde265/de265.h>
 #endif
 
 #define STRINGIFY(x) #x
@@ -271,6 +277,15 @@ QString getTextBrowserContent()
                       ));
 #endif
 
+#if defined (HAS_LIBHEIF)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the libheif library"),
+                      QString::fromLatin1("libheif"),
+                      QString::fromLatin1(LIBHEIF_VERSION),
+                      QString::fromLatin1("https://github.com/strukturag/libheif")
+                      ));
+#endif
+
 #if defined (HAS_JBIGKIT)
     result.append(formatItem(
                       QString::fromLatin1("This software uses the JBIG-KIT library"),
@@ -322,6 +337,15 @@ QString getTextBrowserContent()
                       QString::fromLatin1("freetype"),
                       QString::fromLatin1("%1.%2.%3").arg(FREETYPE_MAJOR).arg(FREETYPE_MINOR).arg(FREETYPE_PATCH),
                       QString::fromLatin1("https://freetype.org/")
+                      ));
+#endif
+
+#if defined (HAS_LIBDE256)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the libde265 library"),
+                      QString::fromLatin1("libde265"),
+                      QString::fromLatin1(LIBDE265_VERSION),
+                      QString::fromLatin1("https://www.libde265.org/")
                       ));
 #endif
 
