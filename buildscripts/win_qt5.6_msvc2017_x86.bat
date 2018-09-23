@@ -6,6 +6,7 @@ set QTDIR=C:\Qt\5.6.3\msvc2017_static
 set BUILDDIR=build_win_qt5.6_msvc2017_%ARCH%
 set SUFFIX=_qt5.6_msvc2017_%ARCH%
 set APP_PATH=src\%PROJECT%
+set ZIP_CMD=C:\MinGW\msys\1.0\bin\zip.exe
 
 call %VCVARS% %ARCH%
 set PATH=%QTDIR%\bin;%PATH%
@@ -19,5 +20,6 @@ qmake -r CONFIG+="release" QTPLUGIN.imageformats="qico qsvg qtiff" ..\%PROJECT%.
 nmake
 copy %APP_PATH%\release\%PROJECT%.exe ..\%PROJECT%%SUFFIX%.exe
 cd ..
+%ZIP_CMD% -9r %PROJECT%%SUFFIX%.zip %PROJECT%%SUFFIX%.exe
 
 pause
