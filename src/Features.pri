@@ -17,6 +17,39 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# ::::: Languages Configuration :::::
+
+# C++11 options:
+#    disable_cxx11
+#    enable_cxx11
+!disable_cxx11 {
+    win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
+        CONFIG += test_cxx11_incompatible_msvc
+    }
+    *msvc* : !test_cxx11_incompatible_msvc {
+        CONFIG += test_cxx11_compatible_msvc
+    }
+    equals(QT_MAJOR_VERSION, 5) : greaterThan(QT_MINOR_VERSION, 6) {
+        CONFIG += test_cxx11_compatible_qt
+    }
+    greaterThan(QT_MAJOR_VERSION, 5) {
+        CONFIG += test_cxx11_compatible_qt
+    }
+    c++11 | c++14 | c++1z {
+        CONFIG += test_cxx11_compatible_config
+    }
+    test_cxx11_compatible_qt | test_cxx11_compatible_config | test_cxx11_compatible_msvc | enable_cxx11 {
+        CONFIG -= disable_cxx11
+        CONFIG += enable_cxx11
+    } else {
+        CONFIG += disable_cxx11
+        CONFIG -= enable_cxx11
+    }
+} else {
+    CONFIG += disable_cxx11
+    CONFIG -= enable_cxx11
+}
+
 # ::::: System Libraries Configuration :::::
 
 # ZLib options:
@@ -134,12 +167,17 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
 # libde265 options:
 #    disable_libde265
 #    system_libde265
-
+disable_cxx11 : !system_libde265 {
+    CONFIG += disable_libde265
+}
 
 # libheif options:
 #    disable_libheif
 #    system_libheif
 disable_libde265 {
+    CONFIG += disable_libheif
+}
+disable_cxx11 : !system_libheif {
     CONFIG += disable_libheif
 }
 
