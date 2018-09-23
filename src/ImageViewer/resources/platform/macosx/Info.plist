@@ -177,6 +177,17 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>heif</string>
+				<string>heic</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>High Efficiency Image File Format Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>mif</string>
 			</array>
 			<key>CFBundleTypeName</key>
