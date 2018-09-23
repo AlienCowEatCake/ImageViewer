@@ -22,7 +22,6 @@
 #include <cstring>
 
 #include <libheif/heif.h>
-#include <libheif/heif_decoder_libde265.h>
 
 #include <QFileInfo>
 #include <QImage>
@@ -73,8 +72,6 @@ QImage readHeifFile(const QString &filePath)
         qWarning() << "Can't open" << filePath;
         return QImage();
     }
-
-    heif_register_decoder_plugin(get_decoder_plugin_libde265());
 
     heif_context *ctx = heif_context_alloc();
     heif_reader reader;

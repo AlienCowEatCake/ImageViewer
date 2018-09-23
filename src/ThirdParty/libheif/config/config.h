@@ -2,6 +2,7 @@
 #define THIRDPARTY_LIBHEIF_CONFIG_H_INCLUDED
 
 #define HAVE_INTTYPES_H
+#define HAVE_LIBDE265 1
 #define HAVE_STDDEF_H
 #if !defined(_MSC_VER)
 #define HAVE_UNISTD_H
