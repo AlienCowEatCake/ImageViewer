@@ -89,14 +89,14 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
 # libmng options:
 #    disable_libmng
 #    system_libmng
-disable_zlib {
+disable_zlib : !system_libmng {
     CONFIG += disable_libmng
 }
 
 # libpng options:
 #    disable_libpng
 #    system_libpng
-disable_zlib {
+disable_zlib : !system_libpng {
     CONFIG += disable_libpng
 }
 
@@ -125,14 +125,26 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
 # FreeType options:
 #    disable_freetype
 #    system_freetype
-disable_zlib | disable_libpng {
+disable_zlib : !system_freetype {
+    CONFIG += disable_freetype
+}
+disable_zlib : !system_freetype {
     CONFIG += disable_freetype
 }
 
 # libwmf options:
 #    disable_libwmf
 #    system_libwmf
-disable_zlib | disable_libpng | disable_freetype | disable_libjpeg {
+disable_zlib : !system_libwmf {
+    CONFIG += disable_libwmf
+}
+disable_libpng : !system_libwmf {
+    CONFIG += disable_libwmf
+}
+disable_freetype : !system_libwmf {
+    CONFIG += disable_libwmf
+}
+disable_libjpeg : !system_libwmf {
     CONFIG += disable_libwmf
 }
 
@@ -174,7 +186,7 @@ disable_cxx11 : !system_libde265 {
 # libheif options:
 #    disable_libheif
 #    system_libheif
-disable_libde265 {
+disable_libde265 : !system_libheif {
     CONFIG += disable_libheif
 }
 disable_cxx11 : !system_libheif {
@@ -247,3 +259,16 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
     CONFIG += disable_mactoolbar
 }
 
+# ::::: Cleanup Unised :::::
+
+disable_libtiff | system_libtiff {
+    CONFIG += disable_xzutils
+}
+
+disable_libwmf | system_libwmf {
+    CONFIG += disable_freetype
+}
+
+system_libheif | disable_libheif {
+    CONFIG += disable_libde265
+}
