@@ -71,7 +71,7 @@ public:
 
 // ====================================================================================================
 
-void readPngData(png_structp pngPtr, png_bytep data, png_size_t length)
+void readPngData(png_structp pngPtr, png_bytep data, size_t length)
 {
     PngAnimationProvider *provider = reinterpret_cast<PngAnimationProvider*>(png_get_io_ptr(pngPtr));
     provider->file.read(reinterpret_cast<char*>(data), static_cast<int>(length));
@@ -102,7 +102,7 @@ bool PngAnimationProvider::checkIfPng()
 
     // Compare the first PNG_BYTES_TO_CHECK bytes of the signature.
     // Return nonzero (true) if they match
-    return(!png_sig_cmp(reinterpret_cast<png_const_bytep>(buf), static_cast<png_size_t>(0), PNG_BYTES_TO_CHECK));
+    return(!png_sig_cmp(reinterpret_cast<png_const_bytep>(buf), static_cast<size_t>(0), PNG_BYTES_TO_CHECK));
 }
 
 void PngAnimationProvider::applyICCProfile(png_const_structrp pngPtr, png_inforp infoPtr, QImage *image)
