@@ -67,7 +67,11 @@ public:
         {
             for(NSString *uti in [NSImage imageTypes])
             {
+                if(!uti)
+                    continue;
                 CFArrayRef tags = UTTypeCopyAllTagsWithClass((__bridge CFStringRef)uti, kUTTagClassFilenameExtension);
+                if(!tags)
+                    continue;
                 for(CFIndex i = 0, count = CFArrayGetCount(tags); i < count; ++i)
                 {
                     CFStringRef tag = (CFStringRef)CFArrayGetValueAtIndex(tags, i);
