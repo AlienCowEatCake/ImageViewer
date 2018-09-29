@@ -30,6 +30,7 @@ class ImageViewerWidget : public QGraphicsView
 {
     Q_OBJECT
     Q_DISABLE_COPY(ImageViewerWidget)
+    Q_PROPERTY(QImage backgroundTexture READ backgroundTexture WRITE setBackgroundTexture)
 
 public:
     enum ZoomMode
@@ -88,9 +89,14 @@ public slots:
 
     void setBackgroundColor(const QColor &color);
 
+    QImage backgroundTexture() const;
+    void setBackgroundTexture(const QImage &image);
+
     void setSmoothTransformation(bool enabled);
 
 protected:
+    void drawBackground(QPainter *painter, const QRectF &rect);
+
     bool event(QEvent* event);
     void showEvent(QShowEvent *event);
     void resizeEvent(QResizeEvent *event);

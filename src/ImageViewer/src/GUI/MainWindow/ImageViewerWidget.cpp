@@ -189,6 +189,7 @@ struct ImageViewerWidget::Impl
     ImageViewerWidget *imageViewerWidget;
     QGraphicsScene *scene;
     QGraphicsItem *currentGraphicsItem;
+    QImage backgroundTexture;
     ZoomMode currentZoomMode;
     ZoomMode lastZoomMode;
     qreal currentZoomLevel;
@@ -386,10 +387,38 @@ void ImageViewerWidget::setBackgroundColor(const QColor &color)
     setBackgroundBrush(QBrush(color));
 }
 
+QImage ImageViewerWidget::backgroundTexture() const
+{
+    return m_impl->backgroundTexture;
+}
+
+void ImageViewerWidget::setBackgroundTexture(const QImage &image)
+{
+    m_impl->backgroundTexture = image;
+}
+
 void ImageViewerWidget::setSmoothTransformation(bool enabled)
 {
     m_impl->transformationMode = (enabled ? Qt::SmoothTransformation : Qt::FastTransformation);
     m_impl->applyTransformationMode();
+}
+
+void ImageViewerWidget::drawBackground(QPainter *painter, const QRectF &rect)
+{
+    if(!m_impl->backgroundTexture.isNull())
+    {
+        const int xOffset = horizontalScrollBar()->value() % m_impl->backgroundTexture.width();
+        const int yOffset = verticalScrollBar()->value() % m_impl->backgroundTexture.height();
+        const QRect targetRect = mapFromScene(rect).boundingRect().adjusted(-xOffset, -yOffset, xOffset, yOffset);
+        painter->save();
+        painter->resetTransform();
+        painter->translate(-xOffset, -yOffset);
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(m_impl->backgroundTexture);
+        painter->drawRect(targetRect);
+        painter->restore();
+    }
+    return QGraphicsView::drawBackground(painter, rect);
 }
 
 bool ImageViewerWidget::event(QEvent *event)

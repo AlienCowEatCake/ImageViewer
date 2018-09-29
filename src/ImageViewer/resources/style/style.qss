@@ -1,13 +1,13 @@
 ImageViewerWidget
 {
-    background-image: url(:/style/background_pattern_light.png);
+    qproperty-backgroundTexture: url(:/style/background_pattern_light.png);
     background-position: top left;
     background-repeat: repeat-xy;
 }
 
 ImageViewerWidget[DarkMode=true]
 {
-    background-image: url(:/style/background_pattern_dark.png);
+    qproperty-backgroundTexture: url(:/style/background_pattern_dark.png);
 }
 
 QMessageBox #qt_msgbox_informativelabel,

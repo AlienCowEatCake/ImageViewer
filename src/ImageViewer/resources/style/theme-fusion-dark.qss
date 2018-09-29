@@ -36,7 +36,7 @@ QMenu::item:disabled
 
 ImageViewerWidget
 {
-    background-image: url(:/style/background_pattern_dark.png);
+    qproperty-backgroundTexture: url(:/style/background_pattern_dark.png);
 }
 
 MainWindow #toolbar #separator
