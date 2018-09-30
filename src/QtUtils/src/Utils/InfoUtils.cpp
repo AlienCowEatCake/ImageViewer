@@ -49,6 +49,10 @@
 #if !defined (VER_EQUAL)
 #define VER_EQUAL 1
 #endif
+#elif defined (Q_OS_HAIKU)
+#include <AppFileInfo.h>
+#include <FindDirectory.h>
+#include <Path.h>
 #elif !defined (Q_OS_MAC)
 #include <sys/utsname.h>
 #endif
@@ -214,6 +218,19 @@ QString targetDescriptionInt()
 } // namespace
 
 namespace InfoUtils {
+
+#if !defined (Q_OS_MAC)
+
+/// @brief Проверить текущую версию macOS
+bool MacVersionGreatOrEqual(const int major, const int minor, const int patch)
+{
+    Q_UNUSED(major);
+    Q_UNUSED(minor);
+    Q_UNUSED(patch);
+    return false;
+}
+
+#endif
 
 #if defined (Q_OS_WIN)
 
@@ -396,16 +413,33 @@ QString GetSystemDescription()
     return winVersion;
 }
 
-#elif !defined (Q_OS_MAC)
+#elif defined (Q_OS_HAIKU)
 
-/// @brief Проверить текущую версию macOS
-bool MacVersionGreatOrEqual(const int major, const int minor, const int patch)
+/// @brief Получить человеко-читаемую информацию о системе
+QString GetSystemDescription()
 {
-    Q_UNUSED(major);
-    Q_UNUSED(minor);
-    Q_UNUSED(patch);
-    return false;
+    QString result = QString::fromLatin1("Haiku");
+
+    // https://github.com/haiku/haiku/blob/r1beta1/src/apps/aboutsystem/AboutSystem.cpp#L437
+    // the version is stored in the BEOS:APP_VERSION attribute of libbe.so
+    BPath path;
+    if(find_directory(B_BEOS_LIB_DIRECTORY, &path) == B_OK)
+    {
+        path.Append("libbe.so");
+        BAppFileInfo appFileInfo;
+        version_info versionInfo;
+        BFile file;
+        if(file.SetTo(path.Path(), B_READ_ONLY) == B_OK
+                && appFileInfo.SetTo(&file) == B_OK
+                && appFileInfo.GetVersionInfo(&versionInfo, B_APP_VERSION_KIND) == B_OK
+                && versionInfo.short_info[0] != '\0')
+            result += QString::fromLatin1(" ") + QString::fromLocal8Bit(versionInfo.short_info);
+    }
+
+    return result;
 }
+
+#elif !defined (Q_OS_MAC)
 
 /// @brief Получить человеко-читаемую информацию о системе
 QString GetSystemDescription()

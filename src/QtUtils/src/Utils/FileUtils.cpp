@@ -30,6 +30,13 @@
 #elif defined (Q_OS_WIN)
 #include <windows.h>
 #include <shellapi.h>
+#elif defined (Q_OS_HAIKU)
+#include <Directory.h>
+#include <Entry.h>
+#include <File.h>
+#include <FindDirectory.h>
+#include <Path.h>
+#include <String.h>
 #else
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -49,7 +56,7 @@
 #include <QStringList>
 #include <QDebug>
 
-#if !defined (Q_OS_MAC) && !defined (Q_OS_WIN)
+#if !defined (Q_OS_MAC) && !defined (Q_OS_WIN) && !defined (Q_OS_HAIKU)
 // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_other.py
 namespace MoveToTrashInternal {
 
@@ -511,6 +518,84 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
         }
         return true;
     }
+
+#elif defined (Q_OS_HAIKU)
+
+    // https://github.com/haiku/haiku/blob/r1beta1/src/apps/mediaplayer/playlist/FilePlaylistItem.cpp#L485
+
+    const QByteArray absolutePathData = absolutePath.toLocal8Bit();
+
+    BEntry entry(absolutePathData.data(), false);
+    status_t err = entry.InitCheck();
+    if(err != B_OK)
+    {
+        qWarning() << "[FileUtils::MoveToTrash]: Failed to init BEntry for specified path:" << strerror(err);
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "Failed to init BEntry for specified path: %1").arg(QString::fromLocal8Bit(strerror(err)));
+        return false;
+    }
+
+    entry_ref entryRef;
+    err = entry.GetRef(&entryRef);
+    if(err != B_OK)
+    {
+        qWarning() << "[FileUtils::MoveToTrash]: Failed to get entry_ref for specified path:" << strerror(err);
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "Failed to get entry_ref for specified path: %1").arg(QString::fromLocal8Bit(strerror(err)));
+        return false;
+    }
+
+    char trashPath[B_PATH_NAME_LENGTH];
+    err = find_directory(B_TRASH_DIRECTORY, entryRef.device, true, trashPath, B_PATH_NAME_LENGTH);
+    if(err != B_OK)
+    {
+        qWarning() << "[FileUtils::MoveToTrash]: Failed to find Trash" << strerror(err);
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "Failed to find Trash: %1").arg(QString::fromLocal8Bit(strerror(err)));
+        return false;
+    }
+
+    BDirectory trashDir(trashPath);
+    err = trashDir.InitCheck();
+    if(err != B_OK)
+    {
+        qWarning() << "[FileUtils::MoveToTrash]: Failed to init BDirectory for" << trashPath << ":" << strerror(err);
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "Failed to init BDirectory for %1: %2").arg(QString::fromLocal8Bit(trashPath), QString::fromLocal8Bit(strerror(err)));
+        return false;
+    }
+
+    // Find a unique name for the entry in the trash
+    BString nameInTrash = entryRef.name;
+    for(int32 uniqueNameIndex = 1; true; uniqueNameIndex++)
+    {
+        BEntry test(&trashDir, nameInTrash.String());
+        if(!test.Exists())
+            break;
+        nameInTrash = entryRef.name;
+        nameInTrash << ' ' << uniqueNameIndex;
+    }
+
+    // Remember the original path
+    BPath originalPath;
+    entry.GetPath(&originalPath);
+
+    // Finally, move the entry into the trash
+    err = entry.MoveTo(&trashDir, nameInTrash.String());
+    if(err != B_OK)
+    {
+        qWarning() << "[FileUtils::MoveToTrash]: Failed to move entry into trash" << trashPath << ":" << strerror(err);
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "Failed to move entry into trash %1: %2").arg(QString::fromLocal8Bit(trashPath), QString::fromLocal8Bit(strerror(err)));
+        return false;
+    }
+
+    // Allow Tracker to restore this entry
+    BNode node(&entry);
+    BString originalPathString(originalPath.Path());
+    node.WriteAttrString("_trk/original_path", &originalPathString);
+
+    return true;
 
 #else
 

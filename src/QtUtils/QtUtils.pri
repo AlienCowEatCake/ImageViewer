@@ -39,6 +39,10 @@ win32 {
     }
 }
 
+haiku {
+    LIBS += -lbe
+}
+
 OUT_LIB_TARGET = QtUtils
 OUT_LIB_DIR = $${OUT_PWD}/../QtUtils
 OUT_LIB_NAME =

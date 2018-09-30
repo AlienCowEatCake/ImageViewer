@@ -306,7 +306,7 @@ void CodeEditor::keyPressEvent(QKeyEvent *event)
         showSearchDialog();
     else if(event->matches(QKeySequence::Save))
         emit applyRequested();
-    else if(event->key() == Qt::Key_Slash && event->modifiers().testFlag(Qt::ControlModifier) && toggleCommentSelection())
+    else if((event->key() == Qt::Key_Slash || event->key() == Qt::Key_Question) && event->modifiers().testFlag(Qt::ControlModifier) && toggleCommentSelection())
         return;
     else if(((event->key() == Qt::Key_Tab && event->modifiers().testFlag(Qt::ShiftModifier)) || (event->key() == Qt::Key_Backtab)) && indentSelectedLines(INDENT_DECREASE_LEVEL))
         return;
