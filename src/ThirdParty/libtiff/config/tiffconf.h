@@ -14,6 +14,8 @@
 
 #include <qglobal.h>
 
+#if !defined (Q_OS_HAIKU)
+
 /* Signed 16-bit type */
 #define TIFF_INT16_T qint16
 
@@ -37,6 +39,21 @@
 
 /* Unsigned 8-bit type */
 #define TIFF_UINT8_T quint8
+
+#else
+
+#include <SupportDefs.h>
+
+#define TIFF_INT8_T     __haiku_int8
+#define TIFF_UINT8_T    __haiku_uint8
+#define TIFF_INT16_T    __haiku_int16
+#define TIFF_UINT16_T   __haiku_uint16
+#define TIFF_INT32_T    __haiku_int32
+#define TIFF_UINT32_T   __haiku_uint32
+#define TIFF_INT64_T    __haiku_int64
+#define TIFF_UINT64_T   __haiku_uint64
+
+#endif
 
 /* Signed size type */
 #if defined(QT_POINTER_SIZE) && (QT_POINTER_SIZE == 4)
