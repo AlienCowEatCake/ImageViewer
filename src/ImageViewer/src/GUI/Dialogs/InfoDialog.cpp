@@ -148,7 +148,7 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
         {
             m_ui->tableWidget->insertRow(currentRow);
             m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(*it));
-            m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(jt->tagTitle));
+            m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(jt->tagTitle.isEmpty() ? jt->tagName : jt->tagTitle));
             m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(jt->value));
 
             QString toolTip;
@@ -156,7 +156,7 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
                 toolTip = QString::fromLatin1("<b>%1:</b> %2").arg(jt->tagName).arg(jt->tagDescription);
             else if(!jt->tagDescription.isEmpty())
                 toolTip = FORCE_RICH_TEXT_TEMPLATE.arg(jt->tagDescription);
-            else if(!jt->tagName.isEmpty())
+            else if(!jt->tagName.isEmpty() && !jt->tagTitle.isEmpty())
                 toolTip = FORCE_RICH_TEXT_TEMPLATE.arg(jt->tagName);
             if(!toolTip.isEmpty())
                 for(int i = 0; i < 3; i++)

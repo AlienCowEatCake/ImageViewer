@@ -39,6 +39,11 @@ public:
         MetaDataEntry()
         {}
 
+        MetaDataEntry(const QString &tagName, const QString &value)
+            : tagName(tagName)
+            , value(value)
+        {}
+
         MetaDataEntry(const QString &tagName, const QString &tagTitle, const QString &tagDescription, const QString &value)
             : tagName(tagName)
             , tagTitle(tagTitle)
