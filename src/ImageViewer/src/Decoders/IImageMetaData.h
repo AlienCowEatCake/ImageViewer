@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,21 +17,28 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined(DECODER_EXIFUTILS_H_INCLUDED)
-#define DECODER_EXIFUTILS_H_INCLUDED
+#if !defined(IIMAGEMETADATA_H_INCLUDED)
+#define IIMAGEMETADATA_H_INCLUDED
 
-#include <QtGlobal>
+#include <QMap>
+#include <QList>
+#include <QPair>
 
-class QImage;
+class QString;
 
-namespace ExifUtils {
+class IImageMetaData
+{
+public:
+    typedef QString MetaDataType;
+    typedef QPair<QString, QString> MetaDataEntry;
+    typedef QList<MetaDataEntry> MetaDataEntryList;
+    typedef QMap<MetaDataType, MetaDataEntryList> MetaDataEntryListMap;
 
-quint16 GetExifOrientation(const QString &filePath);
+public:
+    virtual ~IImageMetaData() {}
 
-quint16 GetExifOrientation(const QByteArray &rawExifData);
+    virtual QList<MetaDataType> types() const = 0;
+    virtual MetaDataEntryList metaData(MetaDataType type) const = 0;
+};
 
-void ApplyExifOrientation(QImage *image, quint16 exifOrientation);
-
-} // namespace ExifUtils
-
-#endif
+#endif // IIMAGEMETADATA_H_INCLUDED

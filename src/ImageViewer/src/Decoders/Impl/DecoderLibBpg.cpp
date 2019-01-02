@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -35,10 +35,11 @@ extern "C" {
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
+#include "Internal/ImageMetaData.h"
+#include "Internal/PayloadWithMetaData.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Utils/CmsUtils.h"
-#include "Internal/Utils/ExifUtils.h"
 
 namespace {
 
@@ -49,20 +50,16 @@ class BpgAnimationProvider : public AbstractAnimationProvider
     Q_DISABLE_COPY(BpgAnimationProvider)
 
 public:
-    BpgAnimationProvider(const QString &filePath);
-
-private:
-    bool readBpg(const QString &filePath);
+    BpgAnimationProvider();
+    PayloadWithMetaData<bool> readBpgFile(const QString &filePath);
 };
 
 // ====================================================================================================
 
-BpgAnimationProvider::BpgAnimationProvider(const QString &filePath)
-{
-    m_error = !readBpg(filePath);
-}
+BpgAnimationProvider::BpgAnimationProvider()
+{}
 
-bool BpgAnimationProvider::readBpg(const QString &filePath)
+PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &filePath)
 {
     QFile inFile(filePath);
     if(!inFile.open(QIODevice::ReadOnly))
@@ -87,7 +84,8 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
     bpg_decoder_get_info(decoderContext, &imageInfo);
 
     QScopedPointer<ICCProfile> profile;
-    quint16 orientation = 1;
+    ImageMetaData *metaData = NULL;
+
     for(BPGExtensionData *extension = bpg_decoder_get_extension_data(decoderContext); extension != NULL; extension = extension->next)
     {
         switch(extension->tag)
@@ -98,7 +96,7 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
             break;
         case BPG_EXTENSION_TAG_EXIF:
             qDebug() << "Found EXIF metadata";
-            orientation = ExifUtils::GetExifOrientation(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf + 1), static_cast<int>(extension->buf_len - 1)));
+            metaData = ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf + 1), static_cast<int>(extension->buf_len - 1)));
             break;
         default:
             break;
@@ -129,7 +127,7 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
         {
             qWarning() << "Invalid image size";
             bpg_decoder_close(decoderContext);
-            return false;
+            return PayloadWithMetaData<bool>(false, metaData);
         }
 
         for(int y = 0; y < frame.height(); y++)
@@ -145,12 +143,15 @@ bool BpgAnimationProvider::readBpg(const QString &filePath)
 
         if(profile)
             profile->applyToImage(&frame);
-        ExifUtils::ApplyExifOrientation(&frame, orientation);
+        if(metaData)
+            metaData->applyExifOrientation(&frame);
 
         m_frames.push_back(Frame(frame, DelayCalculator::calculate(delayNum * 1000 / delayDen, DelayCalculator::MODE_NORMAL)));
     }
     bpg_decoder_close(decoderContext);
-    return true;
+
+    m_error = false;
+    return PayloadWithMetaData<bool>(true, metaData);
 }
 
 // ====================================================================================================
@@ -184,7 +185,9 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(new BpgAnimationProvider(filePath)), name()));
+        BpgAnimationProvider* provider = new BpgAnimationProvider();
+        const PayloadWithMetaData<bool> readResult = provider->readBpgFile(filePath);
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(provider), name(), readResult.metaData()));
     }
 };
 

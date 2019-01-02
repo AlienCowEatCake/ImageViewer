@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -83,11 +83,11 @@ SOURCES += \
     src/Decoders/Impl/Internal/Scaling/AbstractScalingWorker.cpp \
     src/Decoders/Impl/Internal/Scaling/AbstractScalingWorkerHandler.cpp \
     src/Decoders/Impl/Internal/Scaling/AutoUpdatedScalingWorkerHandler.cpp \
-    src/Decoders/Impl/Internal/Utils/ExifUtils.cpp \
     src/Decoders/Impl/Internal/Utils/CmsUtils.cpp \
     src/Decoders/Impl/Internal/Utils/LibraryUtils.cpp \
     src/Decoders/Impl/Internal/GraphicsItemsFactory.cpp \
     src/Decoders/Impl/Internal/ImageData.cpp \
+    src/Decoders/Impl/Internal/ImageMetaData.cpp \
     src/main.cpp
 
 HEADERS += \
@@ -108,6 +108,7 @@ HEADERS += \
     src/Decoders/DecodersManager.h \
     src/Decoders/IDecoder.h \
     src/Decoders/IImageData.h \
+    src/Decoders/IImageMetaData.h \
     src/Decoders/Impl/Internal/Animation/AnimationObject.h \
     src/Decoders/Impl/Internal/Animation/AnimationWidget.h \
     src/Decoders/Impl/Internal/Animation/DelayCalculator.h \
@@ -124,12 +125,13 @@ HEADERS += \
     src/Decoders/Impl/Internal/Scaling/AbstractScalingWorkerHandler.h \
     src/Decoders/Impl/Internal/Scaling/AutoUpdatedScalingWorkerHandler.h \
     src/Decoders/Impl/Internal/Scaling/IScaledImageProvider.h \
-    src/Decoders/Impl/Internal/Utils/ExifUtils.h \
     src/Decoders/Impl/Internal/Utils/CmsUtils.h \
     src/Decoders/Impl/Internal/Utils/LibraryUtils.h \
     src/Decoders/Impl/Internal/DecoderAutoRegistrator.h \
     src/Decoders/Impl/Internal/GraphicsItemsFactory.h \
     src/Decoders/Impl/Internal/ImageData.h \
+    src/Decoders/Impl/Internal/ImageMetaData.h \
+    src/Decoders/Impl/Internal/PayloadWithMetaData.h \
     src/Decoders/Impl/Internal/SVGWebBrowserDecoderTemplate.h
 
 !disable_zlib {

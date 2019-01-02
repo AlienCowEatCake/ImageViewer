@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -24,6 +24,8 @@ class QGraphicsItem;
 class QString;
 class QSize;
 
+class IImageMetaData;
+
 class IImageData
 {
 public:
@@ -34,6 +36,7 @@ public:
     virtual QGraphicsItem *graphicsItem() const = 0;
     virtual QString decoderName() const = 0;
     virtual QSize size() const = 0;
+    virtual const IImageMetaData *metaData() const = 0;
 };
 
 #endif // IIMAGEDATA_H_INCLUDED

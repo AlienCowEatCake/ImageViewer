@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -29,7 +29,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
-#include "Internal/Utils/ExifUtils.h"
+#include "Internal/ImageMetaData.h"
 
 namespace {
 
@@ -126,9 +126,10 @@ public:
         if(image.isNull())
             return QSharedPointer<IImageData>();
 
-        ExifUtils::ApplyExifOrientation(&image, ExifUtils::GetExifOrientation(filePath));
+        ImageMetaData *metaData = ImageMetaData::createExifMetaData(filePath);
+        metaData->applyExifOrientation(&image);
 
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(image), name()));
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(image), name(), metaData));
     }
 };
 

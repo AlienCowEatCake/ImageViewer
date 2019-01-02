@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -25,11 +25,13 @@
 #include <QImage>
 #include <QDebug>
 
+#include "Utils/ScopedPointer.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
-#include "Internal/Utils/ExifUtils.h"
+#include "Internal/ImageMetaData.h"
 
 namespace {
 
@@ -89,33 +91,23 @@ public:
 #endif
         imageReader.setBackgroundColor(Qt::transparent);
         imageReader.setQuality(100);
-        QImage image;
-
-        quint16 orientation = ExifUtils::GetExifOrientation(filePath);
-        if(orientation > 1 && orientation <= 8)
-        {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
-            imageReader.setAutoTransform(false);
+        imageReader.setAutoTransform(true);
 #endif
-            image = imageReader.read();
-            if(!image.isNull())
-                ExifUtils::ApplyExifOrientation(&image, orientation);
-        }
-        else
-        {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
-            imageReader.setAutoTransform(true);
-#endif
-            image = imageReader.read();
-        }
+        QImage image = imageReader.read();
 
+        QScopedPointer<ImageMetaData> metaData(ImageMetaData::createExifMetaData(filePath));
+#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
+        if(metaData)
+            metaData->applyExifOrientation(&image);
+#endif
         if(image.isNull())
         {
             qDebug() << imageReader.errorString();
             return QSharedPointer<IImageData>();
         }
 
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(image), name()));
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(image), name(), metaData.take()));
     }
 };
 

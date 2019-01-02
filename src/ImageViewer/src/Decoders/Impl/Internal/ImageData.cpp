@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -21,20 +21,33 @@
 
 #include <QGraphicsItem>
 
+#include "../../IImageMetaData.h"
+
 ImageData::ImageData()
     : m_graphicsItem(NULL)
+    , m_metaData(NULL)
 {}
 
 ImageData::ImageData(QGraphicsItem *graphicsItem, const QString &decoderName)
     : m_graphicsItem(graphicsItem)
     , m_decoderName(decoderName)
     , m_size(graphicsItem ? graphicsItem->boundingRect().toAlignedRect().size() : QSize())
+    , m_metaData(NULL)
+{}
+
+ImageData::ImageData(QGraphicsItem *graphicsItem, const QString &decoderName, const IImageMetaData *metaData)
+    : m_graphicsItem(graphicsItem)
+    , m_decoderName(decoderName)
+    , m_size(graphicsItem ? graphicsItem->boundingRect().toAlignedRect().size() : QSize())
+    , m_metaData(metaData)
 {}
 
 ImageData::~ImageData()
 {
     if(m_graphicsItem && !m_graphicsItem->scene())
         delete m_graphicsItem;
+    if(m_metaData)
+        delete m_metaData;
 }
 
 bool ImageData::isEmpty() const
@@ -55,4 +68,9 @@ QString ImageData::decoderName() const
 QSize ImageData::size() const
 {
     return m_size;
+}
+
+const IImageMetaData *ImageData::metaData() const
+{
+    return m_metaData;
 }
