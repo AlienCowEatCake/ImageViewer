@@ -88,6 +88,12 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
 
     m_ui->tableWidget->insertRow(currentRow);
     m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
+    m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Decoder")));
+    m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(imageData->decoderName()));
+    currentRow++;
+
+    m_ui->tableWidget->insertRow(currentRow);
+    m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
     m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "File Size")));
     m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(formatFileSize(fileInfo.size())));
     currentRow++;
