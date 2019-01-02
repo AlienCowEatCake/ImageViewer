@@ -110,12 +110,6 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
     m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.lastModified().toString()));
     currentRow++;
 
-    m_ui->tableWidget->insertRow(currentRow);
-    m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
-    m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Last Read")));
-    m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.lastRead().toString()));
-    currentRow++;
-
 #if !defined (Q_OS_WIN)
     m_ui->tableWidget->insertRow(currentRow);
     m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
