@@ -37,7 +37,7 @@ public:
     virtual QString decoderName() const = 0;
     virtual QString filePath() const = 0;
     virtual QSize size() const = 0;
-    virtual const IImageMetaData *metaData() const = 0;
+    virtual IImageMetaData *metaData() const = 0;
 };
 
 #endif // IIMAGEDATA_H_INCLUDED

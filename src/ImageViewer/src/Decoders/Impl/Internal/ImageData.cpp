@@ -28,7 +28,7 @@ ImageData::ImageData()
     , m_metaData(NULL)
 {}
 
-ImageData::ImageData(QGraphicsItem *graphicsItem, const QString &filePath, const QString &decoderName, const IImageMetaData *metaData)
+ImageData::ImageData(QGraphicsItem *graphicsItem, const QString &filePath, const QString &decoderName, IImageMetaData *metaData)
     : m_graphicsItem(graphicsItem)
     , m_decoderName(decoderName)
     , m_filePath(filePath)
@@ -69,7 +69,7 @@ QSize ImageData::size() const
     return m_size;
 }
 
-const IImageMetaData *ImageData::metaData() const
+IImageMetaData *ImageData::metaData() const
 {
     return m_metaData;
 }

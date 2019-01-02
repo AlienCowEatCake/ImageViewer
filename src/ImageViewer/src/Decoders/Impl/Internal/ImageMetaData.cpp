@@ -362,6 +362,7 @@ IImageMetaData::MetaDataEntry makeEntry(int tagID, const QExifValue &value)
 struct ImageMetaData::Impl
 {
     IImageMetaData::MetaDataEntryListMap entryListMap;
+    bool isEntryListLoaded;
 #if defined (HAS_LIBEXIF)
     ExifData *exifData;
 #elif defined (HAS_QTEXTENDED)
@@ -369,6 +370,7 @@ struct ImageMetaData::Impl
 #endif
 
     Impl()
+        : isEntryListLoaded(false)
     {
 #if defined (HAS_LIBEXIF)
         exifData = NULL;
@@ -407,7 +409,7 @@ struct ImageMetaData::Impl
 
 #if defined (HAS_LIBEXIF)
 
-    void FillMetadata()
+    void fillMetaData()
     {
         if(!exifData)
             return;
@@ -434,7 +436,7 @@ struct ImageMetaData::Impl
 
 #elif defined (HAS_QTEXTENDED)
 
-    void FillMetadata()
+    void fillMetaData()
     {
         const QList<QExifImageHeader::ImageTag> imageTags = exifHeader.imageTags();
         if(!imageTags.empty())
@@ -467,7 +469,20 @@ struct ImageMetaData::Impl
         }
     }
 
+#else
+
+    void fillMetaData()
+    {}
+
 #endif
+
+    void ensureMetaDataFilled()
+    {
+        if(isEntryListLoaded)
+            return;
+        fillMetaData();
+        isEntryListLoaded = true;
+    }
 };
 
 ImageMetaData *ImageMetaData::createExifMetaData(const QString &filePath)
@@ -512,14 +527,12 @@ bool ImageMetaData::readExifData(const QString &filePath)
 //    fflush(stderr);
 //#endif
     qDebug() << "EXIF header detected";
-    m_impl->FillMetadata();
     return true;
 #elif defined (HAS_QTEXTENDED)
     m_impl->exifHeader.clear();
     if(!m_impl->exifHeader.loadFromJpeg(filePath))
         return false;
     qDebug() << "EXIF header detected";
-    m_impl->FillMetadata();
     return true;
 #else
     Q_UNUSED(filePath);
@@ -547,7 +560,6 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
 //    fflush(stderr);
 //#endif
     qDebug() << "EXIF header detected";
-    m_impl->FillMetadata();
     return true;
 #elif defined (HAS_QTEXTENDED)
     m_impl->exifHeader.clear();
@@ -557,7 +569,6 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
     if(!m_impl->exifHeader.read(&buffer))
         return false;
     qDebug() << "EXIF header detected";
-    m_impl->FillMetadata();
     return true;
 #else
     Q_UNUSED(rawExifData);
@@ -613,12 +624,14 @@ void ImageMetaData::applyExifOrientation(QImage *image) const
     }
 }
 
-QList<IImageMetaData::MetaDataType> ImageMetaData::types() const
+QList<IImageMetaData::MetaDataType> ImageMetaData::types()
 {
+    m_impl->ensureMetaDataFilled();
     return m_impl->entryListMap.keys();
 }
 
-IImageMetaData::MetaDataEntryList ImageMetaData::metaData(IImageMetaData::MetaDataType type) const
+IImageMetaData::MetaDataEntryList ImageMetaData::metaData(IImageMetaData::MetaDataType type)
 {
+    m_impl->ensureMetaDataFilled();
     return m_impl->entryListMap.value(type);
 }

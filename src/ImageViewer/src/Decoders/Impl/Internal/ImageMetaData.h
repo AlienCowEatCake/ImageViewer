@@ -45,8 +45,8 @@ public:
     void applyExifOrientation(QImage *image) const;
 
 public: // IImageMetaData
-    QList<MetaDataType> types() const;
-    MetaDataEntryList metaData(MetaDataType type) const;
+    QList<MetaDataType> types();
+    MetaDataEntryList metaData(MetaDataType type);
 
 private:
     struct Impl;

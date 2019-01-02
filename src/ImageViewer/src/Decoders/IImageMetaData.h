@@ -58,8 +58,8 @@ public:
 public:
     virtual ~IImageMetaData() {}
 
-    virtual QList<MetaDataType> types() const = 0;
-    virtual MetaDataEntryList metaData(MetaDataType type) const = 0;
+    virtual QList<MetaDataType> types() = 0;
+    virtual MetaDataEntryList metaData(MetaDataType type) = 0;
 };
 
 #endif // IIMAGEMETADATA_H_INCLUDED

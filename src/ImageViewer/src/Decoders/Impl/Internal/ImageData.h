@@ -32,7 +32,7 @@ class ImageData : public IImageData
 
 public:
     ImageData();
-    ImageData(QGraphicsItem *graphicsItem, const QString &filePath, const QString &decoderName, const IImageMetaData *metaData = NULL);
+    ImageData(QGraphicsItem *graphicsItem, const QString &filePath, const QString &decoderName, IImageMetaData *metaData = NULL);
     ~ImageData();
 
     bool isEmpty() const;
@@ -41,14 +41,14 @@ public:
     QString decoderName() const;
     QString filePath() const;
     QSize size() const;
-    const IImageMetaData *metaData() const;
+    IImageMetaData *metaData() const;
 
 private:
     QGraphicsItem * const m_graphicsItem;
     const QString m_decoderName;
     const QString m_filePath;
     const QSize m_size;
-    const IImageMetaData * const m_metaData;
+    IImageMetaData * const m_metaData;
 };
 
 #endif // IMAGEDATA_H_INCLUDED

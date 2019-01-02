@@ -130,7 +130,7 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
     currentRow++;
 #endif
 
-    const IImageMetaData *metaData = imageData->metaData();
+    IImageMetaData *metaData = imageData->metaData();
     if(!metaData)
         return;
 
