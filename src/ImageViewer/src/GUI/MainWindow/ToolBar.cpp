@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -246,6 +246,7 @@ CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(ToolBar, setNewWindowEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setNavigatePreviousEnabled, m_impl->navigatePrevious)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setNavigateNextEnabled, m_impl->navigateNext)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setStartSlideShowEnabled, m_impl->startSlideShow)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(ToolBar, setImageInformationEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setPreferencesEnabled, m_impl->preferences)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setExitEnabled, m_impl->exit)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setRotateCounterclockwiseEnabled, m_impl->rotateCounterclockwise)

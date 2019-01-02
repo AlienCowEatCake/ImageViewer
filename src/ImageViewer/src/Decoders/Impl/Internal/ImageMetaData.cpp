@@ -41,7 +41,7 @@ namespace {
 
 IImageMetaData::MetaDataType getMetaDataType(ExifIfd ifd)
 {
-    return QString::fromLatin1("EXIF IFD %1").arg(QString::fromLatin1(exif_ifd_get_name(ifd)));
+    return QString::fromLatin1("EXIF IFD %1").arg(QString::fromUtf8(exif_ifd_get_name(ifd)));
 }
 
 #endif
@@ -109,9 +109,13 @@ struct ImageMetaData::Impl
             for(unsigned int j = 0, count = exifData->ifd[i]->count; j < count; j++)
             {
                 ExifEntry *e = exifData->ifd[i]->entries[j];
-                char value[1024];
-                list.append(qMakePair(QString::fromLatin1(exif_tag_get_name_in_ifd(e->tag, static_cast<ExifIfd>(i))),
-                                      QString::fromLatin1(exif_entry_get_value(e, value, sizeof(value)))));
+                char value[8192];
+                list.append(IImageMetaData::MetaDataEntry(
+                                QString::fromUtf8(exif_tag_get_name_in_ifd(e->tag, static_cast<ExifIfd>(i))),
+                                QString::fromUtf8(exif_tag_get_title_in_ifd(e->tag, static_cast<ExifIfd>(i))),
+                                QString::fromUtf8(exif_tag_get_description_in_ifd(e->tag, static_cast<ExifIfd>(i))),
+                                QString::fromUtf8(exif_entry_get_value(e, value, sizeof(value)))
+                                ));
             }
             entryListMap[type] = list;
         }

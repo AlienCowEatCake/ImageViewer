@@ -62,6 +62,7 @@ SOURCES += \
     src/GUI/GUISettings.cpp \
     src/GUI/MainController.cpp \
     src/GUI/Dialogs/AboutDialog.cpp \
+    src/GUI/Dialogs/InfoDialog.cpp \
     src/GUI/Dialogs/SettingsDialog.cpp \
     src/GUI/MainWindow/EffectsStorage.cpp \
     src/GUI/MainWindow/ImageViewerWidget.cpp \
@@ -97,6 +98,8 @@ HEADERS += \
     src/GUI/UIState.h \
     src/GUI/Dialogs/AboutDialog.h \
     src/GUI/Dialogs/AboutDialog_p.h \
+    src/GUI/Dialogs/InfoDialog.h \
+    src/GUI/Dialogs/InfoDialog_p.h \
     src/GUI/Dialogs/SettingsDialog.h \
     src/GUI/Dialogs/SettingsDialog_p.h \
     src/GUI/MainWindow/EffectsStorage.h \

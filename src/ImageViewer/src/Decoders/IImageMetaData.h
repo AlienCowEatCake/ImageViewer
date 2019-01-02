@@ -29,9 +29,25 @@ class QString;
 class IImageMetaData
 {
 public:
-    typedef QString MetaDataType;
-    typedef QPair<QString, QString> MetaDataEntry;
+    struct MetaDataEntry
+    {
+        QString tagName;
+        QString tagTitle;
+        QString tagDescription;
+        QString value;
+
+        MetaDataEntry()
+        {}
+
+        MetaDataEntry(const QString &tagName, const QString &tagTitle, const QString &tagDescription, const QString &value)
+            : tagName(tagName)
+            , tagTitle(tagTitle)
+            , tagDescription(tagDescription)
+            , value(value)
+        {}
+    };
     typedef QList<MetaDataEntry> MetaDataEntryList;
+    typedef QString MetaDataType;
     typedef QMap<MetaDataType, MetaDataEntryList> MetaDataEntryListMap;
 
 public:

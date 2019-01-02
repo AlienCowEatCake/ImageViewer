@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -24,7 +24,7 @@
 
 /*
 
-ALL_LIST="OpenFile OpenFolder SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomCustom ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt EditStylesheet"
+ALL_LIST="OpenFile OpenFolder SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow ImageInformation Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomCustom ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt EditStylesheet"
 CHECKABLE_LIST="ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar"
 
 # signals
@@ -59,6 +59,7 @@ signals:
     void navigatePreviousRequested();
     void navigateNextRequested();
     void startSlideShowRequested();
+    void imageInformationRequested();
     void preferencesRequested();
     void exitRequested();
     void rotateCounterclockwiseRequested();
@@ -95,6 +96,7 @@ public:
         virtual void setNavigatePreviousEnabled(bool) FUNCTION_BODY \
         virtual void setNavigateNextEnabled(bool) FUNCTION_BODY \
         virtual void setStartSlideShowEnabled(bool) FUNCTION_BODY \
+        virtual void setImageInformationEnabled(bool) FUNCTION_BODY \
         virtual void setPreferencesEnabled(bool) FUNCTION_BODY \
         virtual void setExitEnabled(bool) FUNCTION_BODY \
         virtual void setRotateCounterclockwiseEnabled(bool) FUNCTION_BODY \
