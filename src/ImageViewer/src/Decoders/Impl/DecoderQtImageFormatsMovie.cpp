@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -68,7 +68,7 @@ public:
             movie->deleteLater();
             return QSharedPointer<IImageData>();
         }
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(new MovieAnimationProvider<QtImageFormatsMovie>(movie)), name()));
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(new MovieAnimationProvider<QtImageFormatsMovie>(movie)), filePath, name()));
     }
 };
 

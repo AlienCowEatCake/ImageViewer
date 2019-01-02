@@ -187,7 +187,7 @@ public:
             return QSharedPointer<IImageData>();
         BpgAnimationProvider* provider = new BpgAnimationProvider();
         const PayloadWithMetaData<bool> readResult = provider->readBpgFile(filePath);
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(provider), name(), readResult.metaData()));
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(provider), filePath, name(), readResult.metaData()));
     }
 };
 

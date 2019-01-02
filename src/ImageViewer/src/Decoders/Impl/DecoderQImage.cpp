@@ -107,7 +107,7 @@ public:
             return QSharedPointer<IImageData>();
         }
 
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(image), name(), metaData.take()));
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(image), filePath, name(), metaData.take()));
     }
 };
 

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -867,7 +867,7 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable() || !isAvailable())
             return QSharedPointer<IImageData>();
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createScalableItem(new MSHTMLPixmapProvider(filePath)), name()));
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createScalableItem(new MSHTMLPixmapProvider(filePath)), filePath, name()));
     }
 };
 

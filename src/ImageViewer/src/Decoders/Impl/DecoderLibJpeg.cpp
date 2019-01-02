@@ -387,7 +387,7 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
         const PayloadWithMetaData<QImage> readData = readJpegFile(filePath);
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(readData), name(), readData.metaData()));
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(readData), filePath, name(), readData.metaData()));
     }
 };
 

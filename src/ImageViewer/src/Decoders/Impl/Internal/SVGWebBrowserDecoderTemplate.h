@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -99,7 +99,7 @@ public:
 
         T *result = new T();
         if(result->load(svgData, QUrl::fromLocalFile(fileInfo.absolutePath())))
-            return QSharedPointer<IImageData>(new ImageData(result, name()));
+            return QSharedPointer<IImageData>(new ImageData(result, filePath, name()));
 
         qWarning() << "Can't load content of" << filePath;
         delete result;

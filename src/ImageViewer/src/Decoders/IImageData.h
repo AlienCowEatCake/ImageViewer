@@ -35,6 +35,7 @@ public:
 
     virtual QGraphicsItem *graphicsItem() const = 0;
     virtual QString decoderName() const = 0;
+    virtual QString filePath() const = 0;
     virtual QSize size() const = 0;
     virtual const IImageMetaData *metaData() const = 0;
 };

@@ -28,16 +28,10 @@ ImageData::ImageData()
     , m_metaData(NULL)
 {}
 
-ImageData::ImageData(QGraphicsItem *graphicsItem, const QString &decoderName)
+ImageData::ImageData(QGraphicsItem *graphicsItem, const QString &filePath, const QString &decoderName, const IImageMetaData *metaData)
     : m_graphicsItem(graphicsItem)
     , m_decoderName(decoderName)
-    , m_size(graphicsItem ? graphicsItem->boundingRect().toAlignedRect().size() : QSize())
-    , m_metaData(NULL)
-{}
-
-ImageData::ImageData(QGraphicsItem *graphicsItem, const QString &decoderName, const IImageMetaData *metaData)
-    : m_graphicsItem(graphicsItem)
-    , m_decoderName(decoderName)
+    , m_filePath(filePath)
     , m_size(graphicsItem ? graphicsItem->boundingRect().toAlignedRect().size() : QSize())
     , m_metaData(metaData)
 {}
@@ -63,6 +57,11 @@ QGraphicsItem *ImageData::graphicsItem() const
 QString ImageData::decoderName() const
 {
     return m_decoderName;
+}
+
+QString ImageData::filePath() const
+{
+    return m_filePath;
 }
 
 QSize ImageData::size() const
