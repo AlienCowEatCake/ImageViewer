@@ -249,9 +249,9 @@ public:
     {
         return QStringList()
                    /// @note Дополнительные форматы, открываемые libjasper
-#if !defined(EXCLUDE_JPG_SUPPORT)
-                << QString::fromLatin1("jpg")
-#endif
+//#if !defined(EXCLUDE_JPG_SUPPORT)
+//                << QString::fromLatin1("jpg")
+//#endif
 #if !defined(EXCLUDE_MIF_SUPPORT)
                 << QString::fromLatin1("mif") // Magick Image File Format
 #endif

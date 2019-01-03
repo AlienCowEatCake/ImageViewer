@@ -127,7 +127,8 @@ public:
             return QSharedPointer<IImageData>();
 
         ImageMetaData *metaData = ImageMetaData::createExifMetaData(filePath);
-        metaData->applyExifOrientation(&image);
+        if(metaData)
+            metaData->applyExifOrientation(&image);
 
         return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(image), filePath, name(), metaData));
     }

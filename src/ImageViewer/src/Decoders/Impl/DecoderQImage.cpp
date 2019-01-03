@@ -95,19 +95,19 @@ public:
         imageReader.setAutoTransform(true);
 #endif
         QImage image = imageReader.read();
-
-        QScopedPointer<ImageMetaData> metaData(ImageMetaData::createExifMetaData(filePath));
-#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
-        if(metaData)
-            metaData->applyExifOrientation(&image);
-#endif
         if(image.isNull())
         {
             qDebug() << imageReader.errorString();
             return QSharedPointer<IImageData>();
         }
 
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(image), filePath, name(), metaData.take()));
+        ImageMetaData *metaData = ImageMetaData::createExifMetaData(filePath);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
+        if(metaData)
+            metaData->applyExifOrientation(&image);
+#endif
+
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(image), filePath, name(), metaData));
     }
 };
 
