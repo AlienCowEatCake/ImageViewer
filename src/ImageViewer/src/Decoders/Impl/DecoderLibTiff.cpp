@@ -31,6 +31,8 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
+#include "Internal/ImageMetaData.h"
+#include "Internal/PayloadWithMetaData.h"
 #include "Internal/Utils/CmsUtils.h"
 
 namespace
@@ -111,7 +113,137 @@ ICCProfile *readICCProfile(TIFF *tiff)
     return NULL;
 }
 
-QImage readTiffFile(const QString &filename)
+/// @note See https://learn.foundry.com/nuke/developers/63/ndkreference/examples/tiffReader.cpp
+template<class T>
+void addMetaData(TIFF *tiff, const TIFFField *field, ImageMetaData *metaData, const QString &group, const QString &tag)
+{
+    const int readCount = TIFFFieldReadCount(field);
+    if(readCount == TIFF_VARIABLE2 || readCount == TIFF_VARIABLE || readCount > 1)
+    {
+        quint32 actualCount = 0;
+        T *data;
+        if(readCount == TIFF_VARIABLE)
+        {
+            quint16 gotCount = 0;
+            if(!TIFFGetField(tiff, TIFFFieldTag(field), &gotCount, &data))
+                return;
+            actualCount = gotCount;
+        }
+        else if(readCount == TIFF_VARIABLE2)
+        {
+            quint32 gotCount = 0;
+            if(!TIFFGetField(tiff, TIFFFieldTag(field), &gotCount, &data))
+                return;
+            actualCount = gotCount;
+        }
+        else
+        {
+            if(!TIFFGetField(tiff, TIFFFieldTag(field), &data))
+                return;
+            actualCount = readCount;
+        }
+        if(TIFFFieldDataType(field) == TIFF_UNDEFINED)
+        {
+            const char *charData = reinterpret_cast<const char*>(data);
+            const int charSize = static_cast<int>(actualCount * sizeof(T) / sizeof(char));
+            metaData->addExifEntry(group, TIFFFieldTag(field), tag, QString::fromLatin1(QByteArray(charData, charSize).toHex().prepend("0x")));
+        }
+        else
+        {
+            QStringList values;
+            for(quint32 i = 0; i < actualCount; i++)
+                values.append(QString::fromLatin1("%1").arg(data[i]));
+            metaData->addExifEntry(group, TIFFFieldTag(field), tag, QString::fromLatin1("{ %1 }").arg(values.join(QString::fromLatin1(", "))));
+        }
+    }
+    else if(readCount == 1)
+    {
+        T data;
+        TIFFGetField(tiff, TIFFFieldTag(field), &data);
+        metaData->addExifEntry(group, TIFFFieldTag(field), tag, QString::fromLatin1("%1").arg(data));
+    }
+}
+
+template<>
+void addMetaData<QString>(TIFF *tiff, const TIFFField *field, ImageMetaData *metaData, const QString &group, const QString &tag)
+{
+    if(TIFFFieldReadCount(field) <= 1)
+        return;
+    char *data = NULL;
+    if(!TIFFGetField(tiff, TIFFFieldTag(field), &data) || !data)
+        return;
+    metaData->addExifEntry(group, TIFFFieldTag(field), tag, QString::fromUtf8(data));
+}
+
+void readTiffTagToMetaData(TIFF *tiff, ImageMetaData *&metaData, quint32 tag, const QString &tagDescription)
+{
+    quint32 exif_offset;
+    if(!TIFFGetField(tiff, tag, &exif_offset))
+        return;
+    if(!TIFFReadEXIFDirectory(tiff, exif_offset))
+        return;
+    qDebug() << "Found EXIF metadata (" << tagDescription << ")";
+    metaData = new ImageMetaData;
+    for(int i = 0, tagListCount = TIFFGetTagListCount(tiff); i < tagListCount; i++)
+    {
+        ttag_t tag = TIFFGetTagListEntry(tiff, i);
+        const TIFFField *field = TIFFFieldWithTag(tiff, tag);
+        const QString exifName = QString::fromUtf8(TIFFFieldName(field));
+        /// @note See _TIFFVGetField in tif_dir.c
+        switch(TIFFFieldDataType(field))
+        {
+        case TIFF_BYTE:
+        case TIFF_UNDEFINED:
+            addMetaData<quint8>(tiff, field, metaData, tagDescription, exifName);
+            break;
+        case TIFF_ASCII:
+            addMetaData<QString>(tiff, field, metaData, tagDescription, exifName);
+            break;
+        case TIFF_SHORT:
+            addMetaData<quint16>(tiff, field, metaData, tagDescription, exifName);
+            break;
+        case TIFF_LONG:
+            addMetaData<quint32>(tiff, field, metaData, tagDescription, exifName);
+            break;
+        case TIFF_SBYTE:
+            addMetaData<qint8>(tiff, field, metaData, tagDescription, exifName);
+            break;
+        case TIFF_SSHORT:
+            addMetaData<qint16>(tiff, field, metaData, tagDescription, exifName);
+            break;
+        case TIFF_SLONG:
+            addMetaData<qint32>(tiff, field, metaData, tagDescription, exifName);
+            break;
+        case TIFF_SRATIONAL:
+        case TIFF_RATIONAL:
+        case TIFF_FLOAT:
+            addMetaData<float>(tiff, field, metaData, tagDescription, exifName);
+            break;
+        case TIFF_DOUBLE:
+            addMetaData<double>(tiff, field, metaData, tagDescription, exifName);
+            break;
+        case TIFF_LONG8:
+            addMetaData<quint64>(tiff, field, metaData, tagDescription, exifName);
+            break;
+        case TIFF_SLONG8:
+            addMetaData<qint64>(tiff, field, metaData, tagDescription, exifName);
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+IImageMetaData *readExifMetaData(TIFF *tiff)
+{
+    ImageMetaData *metaData = NULL;
+    readTiffTagToMetaData(tiff, metaData, TIFFTAG_EXIFIFD, QString::fromLatin1("TIFFTAG_EXIFIFD"));
+    readTiffTagToMetaData(tiff, metaData, TIFFTAG_GPSIFD, QString::fromLatin1("TIFFTAG_GPSIFD"));
+    readTiffTagToMetaData(tiff, metaData, TIFFTAG_INTEROPERABILITYIFD, QString::fromLatin1("TIFFTAG_INTEROPERABILITYIFD"));
+    return metaData;
+}
+
+PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
 {
     QFile inFile(filename);
     if(!inFile.open(QIODevice::ReadOnly))
@@ -190,10 +322,12 @@ QImage readTiffFile(const QString &filename)
         iccProfile = NULL;
     }
 
+    IImageMetaData *metaData = readExifMetaData(tiff);
+
     TIFFRGBAImageEnd(&img);
     TIFFClose(tiff);
 
-    return result;
+    return PayloadWithMetaData<QImage>(result, metaData);
 }
 
 // ====================================================================================================
@@ -228,7 +362,8 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(readTiffFile(filePath)), filePath, name()));
+        const PayloadWithMetaData<QImage> readData = readTiffFile(filePath);
+        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(readData), filePath, name(), readData.metaData()));
     }
 };
 

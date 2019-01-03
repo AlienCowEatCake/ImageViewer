@@ -40,13 +40,18 @@ public:
     ImageMetaData();
     ~ImageMetaData();
 
-    bool readExifData(const QString &filePath);
-    bool readExifData(const QByteArray &rawExifData);
     void applyExifOrientation(QImage *image) const;
+
+    void addExifEntry(const QString &type, int tag, const QString &tagString, const QString &value);
+    void addCustomEntry(const QString &type, const QString &tag, const QString &value);
 
 public: // IImageMetaData
     QList<MetaDataType> types();
     MetaDataEntryList metaData(MetaDataType type);
+
+protected:
+    bool readExifData(const QString &filePath);
+    bool readExifData(const QByteArray &rawExifData);
 
 private:
     struct Impl;
