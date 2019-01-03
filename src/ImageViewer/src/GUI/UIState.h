@@ -25,8 +25,9 @@
 
 #include "Utils/SharedPointer.h"
 
+#include "Decoders/IImageData.h"
+
 class QObject;
-class IImageData;
 
 enum UIChangeFlag
 {

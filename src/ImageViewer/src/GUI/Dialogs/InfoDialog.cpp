@@ -55,16 +55,11 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
     : QDialog(parent)
     , m_ui(new UI(this))
 {
-    setWindowFlags(Qt::Window |
-                   Qt::CustomizeWindowHint |
-                   Qt::WindowTitleHint |
-                   Qt::WindowSystemMenuHint |
-                   Qt::WindowMinimizeButtonHint |
-                   Qt::WindowMaximizeButtonHint |
+    setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint |
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
-                   Qt::WindowCloseButtonHint
+                   Qt::WindowCloseButtonHint |
 #endif
-                   );
+                   Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
     setWindowTitle(qApp->translate("InfoDialog", "Image Information"));
     setWindowModality(Qt::ApplicationModal);
 
