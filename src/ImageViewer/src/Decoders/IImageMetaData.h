@@ -23,8 +23,7 @@
 #include <QMap>
 #include <QList>
 #include <QPair>
-
-class QString;
+#include <QString>
 
 class IImageMetaData
 {

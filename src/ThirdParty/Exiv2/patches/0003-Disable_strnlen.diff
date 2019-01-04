@@ -1,0 +1,13 @@
+diff -Nur exiv2-0.27.0-Source.orig/src/helper_functions.cpp exiv2-0.27.0-Source/src/helper_functions.cpp
+--- exiv2-0.27.0-Source.orig/src/helper_functions.cpp	2019-01-05 02:45:47.712346000 +0700
++++ exiv2-0.27.0-Source/src/helper_functions.cpp	2019-01-05 02:48:50.962601300 +0700
+@@ -32,7 +32,8 @@
+ 
+ std::string string_from_unterminated(const char* data, size_t data_length)
+ {
+-    const size_t StringLength = strnlen(data, data_length);
++    size_t StringLength = 0;
++    for (const char* str = data; StringLength < data_length && *str; StringLength++, str++);
+ 
+     return std::string(data, StringLength);
+ }

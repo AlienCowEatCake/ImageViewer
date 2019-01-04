@@ -346,7 +346,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 
     delete iccProfile;
 
-    ImageMetaData *metaData = ImageMetaData::createExifMetaData(filename);
+    ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer);
     if(metaData)
         metaData->applyExifOrientation(&outImage);
 

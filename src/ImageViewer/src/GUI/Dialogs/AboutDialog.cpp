@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -62,6 +62,9 @@
 #if defined (HAS_JBIGKIT)
 #include <jbig.h>
 #endif
+#if defined (HAS_EXIV2)
+#include <exiv2/exiv2.hpp>
+#endif
 #if defined (HAS_LCMS2)
 #include <lcms2.h>
 #endif
@@ -70,6 +73,9 @@
 #endif
 #if defined (HAS_XZUTILS)
 #include <lzma.h>
+#endif
+#if defined (HAS_LIBEXPAT)
+#include <expat.h>
 #endif
 #if defined (HAS_FREETYPE)
 #include <ft2build.h>
@@ -304,6 +310,15 @@ QString getTextBrowserContent()
                       ));
 #endif
 
+#if defined (HAS_EXIV2)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the Exiv2 C++ metadata library"),
+                      QString::fromLatin1("exiv2"),
+                      QString::fromLatin1(Exiv2::versionString().c_str()),
+                      QString::fromLatin1("http://www.exiv2.org/")
+                      ));
+#endif
+
 #if defined (HAS_LCMS2)
     result.append(formatItem(
                       QString::fromLatin1("This software uses the Little CMS 2 library"),
@@ -328,6 +343,15 @@ QString getTextBrowserContent()
                       QString::fromLatin1("xz"),
                       QString::fromLatin1(lzma_version_string()),
                       QString::fromLatin1("https://tukaani.org/xz/")
+                      ));
+#endif
+
+#if defined (HAS_LIBEXPAT)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the Expat, a C library for parsing XML"),
+                      QString::fromLatin1("libexpat"),
+                      QString::fromLatin1("%1.%2.%3").arg(XML_MAJOR_VERSION).arg(XML_MINOR_VERSION).arg(XML_MICRO_VERSION),
+                      QString::fromLatin1("https://libexpat.github.io/")
                       ));
 #endif
 

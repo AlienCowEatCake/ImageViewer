@@ -33,7 +33,8 @@ class ImageMetaData : public IImageMetaData
     Q_DISABLE_COPY(ImageMetaData)
 
 public:
-    static ImageMetaData *createExifMetaData(const QString &filePath);
+    static ImageMetaData *createMetaData(const QString &filePath);
+    static ImageMetaData *createMetaData(const QByteArray &fileData);
     static ImageMetaData *createExifMetaData(const QByteArray &rawExifData);
 
 public:
@@ -50,7 +51,8 @@ public: // IImageMetaData
     MetaDataEntryList metaData(MetaDataType type);
 
 protected:
-    bool readExifData(const QString &filePath);
+    bool readFile(const QString &filePath);
+    bool readFile(const QByteArray &fileData);
     bool readExifData(const QByteArray &rawExifData);
 
 private:
