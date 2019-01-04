@@ -155,11 +155,13 @@ namespace Exiv2 {
       The fourth version number is designated a "tweak" an used by Release Candidates
     */
     EXIV2API bool testVersion(int major, int minor, int patch);
+#if 0
     /*!
       @brief dumpLibraryInfo implements the exiv2 option --version --verbose
              used by exiv2 test suite to inspect libraries loaded at run-time
      */
     EXIV2API void dumpLibraryInfo(std::ostream& os,const exv_grep_keys_t& keys);
+#endif
 }                                       // namespace Exiv2
 
 

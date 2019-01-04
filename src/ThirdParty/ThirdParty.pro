@@ -28,6 +28,10 @@ SUBDIRS =
     SUBDIRS += libexif/libexif.pro
 }
 
+!disable_exiv2 : !system_exiv2 {
+    SUBDIRS += Exiv2/Exiv2.pro
+}
+
 !disable_libmng : !system_libmng {
     SUBDIRS += libmng/libmng.pro
 }

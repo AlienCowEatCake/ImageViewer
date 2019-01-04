@@ -76,6 +76,11 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
     CONFIG += disable_libexif # FIXME: C99
 }
 
+# exiv2 options:
+#    disable_exiv2
+#    system_exiv2
+
+
 # LibJPEG options:
 #    disable_libjpeg
 #    system_libjpeg

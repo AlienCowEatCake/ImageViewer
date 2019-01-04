@@ -20,31 +20,131 @@
 #include "ImageMetaData.h"
 
 #include <cstdio>
+#include <string>
+#include <sstream>
 
 #include <QImage>
 #include <QTransform>
 #include <QBuffer>
 #include <QDebug>
 
+//#undef HAS_EXIV2
 //#undef HAS_LIBEXIF
 //#undef HAS_QTEXTENDED
 
+#if defined (HAS_EXIV2)
+#define USE_EXIV2
+#elif defined (HAS_LIBEXIF)
+#define USE_LIBEXIF
+#elif defined (HAS_QTEXTENDED)
+#define USE_QTEXTENDED
+#endif
+
+#if defined (HAS_EXIV2)
+#include <exiv2/exiv2.hpp>
+#endif
 #if defined (HAS_LIBEXIF)
 #include <libexif/exif-data.h>
-#elif defined (HAS_QTEXTENDED)
+#include <libexif/exif-loader.h>
+#endif
+#if defined (HAS_QTEXTENDED)
 #include "qexifimageheader.h"
 #endif
 
 namespace {
 
-#if defined (HAS_LIBEXIF)
+#if defined (USE_EXIV2)
+
+void fillExifMetaData(const Exiv2::ExifData &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
+{
+    try
+    {
+        for(Exiv2::ExifData::const_iterator it = data.begin(), end = data.end(); it != end; ++it)
+        {
+            const IImageMetaData::MetaDataType type = QString::fromUtf8(it->familyName()) + QString::fromLatin1(" ") + QString::fromUtf8(it->ifdName());
+            std::stringstream sst;
+            sst << it->value();
+            IImageMetaData::MetaDataEntryList list = entryListMap[type];
+            list.append(IImageMetaData::MetaDataEntry(
+                            QString::fromUtf8(it->tagName().c_str()),
+                            QString::fromUtf8(it->tagLabel().c_str()),
+                            QString(),
+                            QString::fromUtf8(sst.str().c_str())
+                            ));
+            entryListMap[type] = list;
+        }
+    }
+    catch(...)
+    {}
+}
+
+void fillIptcMetaData(const Exiv2::IptcData &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
+{
+    try
+    {
+        for(Exiv2::IptcData::const_iterator it = data.begin(), end = data.end(); it != end; ++it)
+        {
+            const IImageMetaData::MetaDataType type = QString::fromUtf8(it->familyName());
+            std::stringstream sst;
+            sst << it->value();
+            IImageMetaData::MetaDataEntryList list = entryListMap[type];
+            list.append(IImageMetaData::MetaDataEntry(
+                            QString::fromUtf8(it->tagName().c_str()),
+                            QString::fromUtf8(it->tagLabel().c_str()),
+                            QString(),
+                            QString::fromUtf8(sst.str().c_str())
+                            ));
+            entryListMap[type] = list;
+        }
+    }
+    catch(...)
+    {}
+}
+
+void fillXmpMetaData(const Exiv2::XmpData &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
+{
+    try
+    {
+        for(Exiv2::XmpData::const_iterator it = data.begin(), end = data.end(); it != end; ++it)
+        {
+            const IImageMetaData::MetaDataType type = QString::fromUtf8(it->familyName());
+            std::stringstream sst;
+            sst << it->value();
+            IImageMetaData::MetaDataEntryList list = entryListMap[type];
+            list.append(IImageMetaData::MetaDataEntry(
+                            QString::fromUtf8(it->tagName().c_str()),
+                            QString::fromUtf8(it->tagLabel().c_str()),
+                            QString(),
+                            QString::fromUtf8(sst.str().c_str())
+                            ));
+            entryListMap[type] = list;
+        }
+    }
+    catch(...)
+    {}
+}
+
+quint16 getOrientation(const Exiv2::ExifData &data)
+{
+    try
+    {
+        Exiv2::ExifData::const_iterator it = Exiv2::orientation(data);
+        if(it != data.end())
+            return static_cast<quint16>(it->toLong());
+    }
+    catch(...)
+    {}
+    return 1;
+}
+
+#elif defined (USE_LIBEXIF)
 
 IImageMetaData::MetaDataType getMetaDataType(ExifIfd ifd)
 {
     return QString::fromLatin1("EXIF IFD %1").arg(QString::fromUtf8(exif_ifd_get_name(ifd)));
 }
 
-#elif defined (HAS_QTEXTENDED)
+#elif defined (USE_QTEXTENDED)
 
 template<typename T>
 QString toStringValue(const T &value)
@@ -363,23 +463,26 @@ struct ImageMetaData::Impl
 {
     IImageMetaData::MetaDataEntryListMap entryListMap;
     bool isEntryListLoaded;
-#if defined (HAS_LIBEXIF)
+#if defined (USE_EXIV2)
+    Exiv2::Image::AutoPtr image;
+    Exiv2::ExifData exifData;
+#elif defined (USE_LIBEXIF)
     ExifData *exifData;
-#elif defined (HAS_QTEXTENDED)
+#elif defined (USE_QTEXTENDED)
     QExifImageHeader exifHeader;
 #endif
 
     Impl()
         : isEntryListLoaded(false)
     {
-#if defined (HAS_LIBEXIF)
+#if defined (USE_LIBEXIF)
         exifData = NULL;
 #endif
     }
 
     ~Impl()
     {
-#if defined (HAS_LIBEXIF)
+#if defined (USE_LIBEXIF)
         if(exifData)
             exif_data_unref(exifData);
 #endif
@@ -388,7 +491,18 @@ struct ImageMetaData::Impl
     quint16 getExifOrientation() const
     {
         quint16 orientation = 1;
-#if defined (HAS_LIBEXIF)
+#if defined (USE_EXIV2)
+        if(image.get())
+        {
+            orientation = getOrientation(image->exifData());
+            qDebug() << "EXIF orientation =" << orientation;
+        }
+        else if(!exifData.empty())
+        {
+            orientation = getOrientation(exifData);
+            qDebug() << "EXIF orientation =" << orientation;
+        }
+#elif defined (USE_LIBEXIF)
         if(!exifData)
             return orientation;
         ExifEntry *entry = exif_content_get_entry(exifData->ifd[EXIF_IFD_0], EXIF_TAG_ORIENTATION);
@@ -397,7 +511,7 @@ struct ImageMetaData::Impl
             orientation = exif_get_short(entry->data, exif_data_get_byte_order(entry->parent->parent));
             qDebug() << "EXIF orientation =" << orientation;
         }
-#elif defined (HAS_QTEXTENDED)
+#elif defined (USE_QTEXTENDED)
         if(exifHeader.contains(QExifImageHeader::Orientation))
         {
             orientation = exifHeader.value(QExifImageHeader::Orientation).toShort();
@@ -407,7 +521,23 @@ struct ImageMetaData::Impl
         return orientation;
     }
 
-#if defined (HAS_LIBEXIF)
+#if defined (USE_EXIV2)
+
+    void fillMetaData()
+    {
+        if(image.get())
+        {
+            fillExifMetaData(image->exifData(), entryListMap);
+            fillIptcMetaData(image->iptcData(), entryListMap);
+            fillXmpMetaData(image->xmpData(), entryListMap);
+        }
+        else if(!exifData.empty())
+        {
+            fillExifMetaData(exifData, entryListMap);
+        }
+    }
+
+#elif defined (USE_LIBEXIF)
 
     void fillMetaData()
     {
@@ -434,7 +564,7 @@ struct ImageMetaData::Impl
         }
     }
 
-#elif defined (HAS_QTEXTENDED)
+#elif defined (USE_QTEXTENDED)
 
     void fillMetaData()
     {
@@ -485,10 +615,19 @@ struct ImageMetaData::Impl
     }
 };
 
-ImageMetaData *ImageMetaData::createExifMetaData(const QString &filePath)
+ImageMetaData *ImageMetaData::createMetaData(const QString &filePath)
 {
     ImageMetaData *metaData = new ImageMetaData();
-    if(metaData->readExifData(filePath))
+    if(metaData->readFile(filePath))
+        return metaData;
+    delete metaData;
+    return NULL;
+}
+
+ImageMetaData *ImageMetaData::createMetaData(const QByteArray &fileData)
+{
+    ImageMetaData *metaData = new ImageMetaData();
+    if(metaData->readFile(fileData))
         return metaData;
     delete metaData;
     return NULL;
@@ -592,10 +731,34 @@ IImageMetaData::MetaDataEntryList ImageMetaData::metaData(IImageMetaData::MetaDa
     return m_impl->entryListMap.value(type);
 }
 
-bool ImageMetaData::readExifData(const QString &filePath)
+bool ImageMetaData::readFile(const QString &filePath)
 {
     m_impl->entryListMap.clear();
-#if defined (HAS_LIBEXIF)
+#if defined (USE_EXIV2)
+    try
+    {
+        m_impl->image.reset();
+        m_impl->exifData.clear();
+        const std::string file = filePath.toLocal8Bit().data();
+        m_impl->image = Exiv2::ImageFactory::open(file);
+        if(!m_impl->image.get())
+            return false;
+        m_impl->image->readMetadata();
+        if(m_impl->image->exifData().empty() && m_impl->image->iptcData().empty() && m_impl->image->xmpData().empty())
+            return false;
+        if(!m_impl->image->exifData().empty())
+            qDebug() << "EXIF data detected";
+        if(!m_impl->image->iptcData().empty())
+            qDebug() << "IPTC data detected";
+        if(!m_impl->image->xmpData().empty())
+            qDebug() << "XMP data detected";
+        return true;
+    }
+    catch(...)
+    {
+        return false;
+    }
+#elif defined (USE_LIBEXIF)
     if(m_impl->exifData)
         exif_data_unref(m_impl->exifData);
     m_impl->exifData = exif_data_new_from_file(filePath.toLocal8Bit());
@@ -610,9 +773,72 @@ bool ImageMetaData::readExifData(const QString &filePath)
 //#endif
     qDebug() << "EXIF header detected";
     return true;
-#elif defined (HAS_QTEXTENDED)
+#elif defined (USE_QTEXTENDED)
     m_impl->exifHeader.clear();
     if(!m_impl->exifHeader.loadFromJpeg(filePath))
+        return false;
+    qDebug() << "EXIF header detected";
+    return true;
+#else
+    Q_UNUSED(filePath);
+    return false;
+#endif
+}
+
+bool ImageMetaData::readFile(const QByteArray &fileData)
+{
+    m_impl->entryListMap.clear();
+#if defined (USE_EXIV2)
+    try
+    {
+        m_impl->image.reset();
+        m_impl->exifData.clear();
+        const Exiv2::byte *data = reinterpret_cast<const Exiv2::byte*>(fileData.constData());
+        const long dataSize = static_cast<long>(fileData.size());
+        m_impl->image = Exiv2::ImageFactory::open(data, dataSize);
+        if(!m_impl->image.get())
+            return false;
+        m_impl->image->readMetadata();
+        if(m_impl->image->exifData().empty() && m_impl->image->iptcData().empty() && m_impl->image->xmpData().empty())
+            return false;
+        if(!m_impl->image->exifData().empty())
+            qDebug() << "EXIF data detected";
+        if(!m_impl->image->iptcData().empty())
+            qDebug() << "IPTC data detected";
+        if(!m_impl->image->xmpData().empty())
+            qDebug() << "XMP data detected";
+        return true;
+    }
+    catch(...)
+    {
+        return false;
+    }
+#elif defined (USE_LIBEXIF)
+    if(m_impl->exifData)
+        exif_data_unref(m_impl->exifData);
+    ExifLoader *loader = exif_loader_new();
+    unsigned char *buf = const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(fileData.constData()));
+    unsigned int len = static_cast<unsigned int>(fileData.size());
+    exif_loader_write(loader, buf, len);
+    m_impl->exifData = exif_loader_get_data(loader);
+    exif_loader_unref(loader);
+    if(!m_impl->exifData)
+        return false;
+//#if defined (QT_DEBUG)
+//    fflush(stdout);
+//    fflush(stderr);
+//    exif_data_dump(m_impl->exifData);
+//    fflush(stdout);
+//    fflush(stderr);
+//#endif
+    qDebug() << "EXIF header detected";
+    return true;
+#elif defined (USE_QTEXTENDED)
+    m_impl->exifHeader.clear();
+    QBuffer buffer(const_cast<QByteArray*>(&fileData));
+    if(!buffer.open(QIODevice::ReadOnly))
+        return false;
+    if(!m_impl->exifHeader.loadFromJpeg(&buffer))
         return false;
     qDebug() << "EXIF header detected";
     return true;
@@ -625,25 +851,42 @@ bool ImageMetaData::readExifData(const QString &filePath)
 bool ImageMetaData::readExifData(const QByteArray &rawExifData)
 {
     m_impl->entryListMap.clear();
-#if defined (HAS_LIBEXIF)
+#if defined (USE_EXIV2)
+    try
+    {
+        m_impl->image.reset();
+        m_impl->exifData.clear();
+        const Exiv2::byte *data = reinterpret_cast<const Exiv2::byte*>(rawExifData.constData());
+        const uint32_t dataSize = static_cast<uint32_t>(rawExifData.size());
+        Exiv2::ExifParser::decode(m_impl->exifData, data, dataSize);
+        if(m_impl->exifData.empty())
+            return false;
+        qDebug() << "EXIF data detected";
+        return true;
+    }
+    catch(...)
+    {
+        return false;
+    }
+#elif defined (USE_LIBEXIF)
     if(m_impl->exifData)
         exif_data_unref(m_impl->exifData);
     const QByteArray rawExifDataWithHeader = QByteArray("Exif\0\0", 6) + rawExifData;
-    const unsigned char* data = reinterpret_cast<const unsigned char*>(rawExifDataWithHeader.data());
+    const unsigned char *data = reinterpret_cast<const unsigned char*>(rawExifDataWithHeader.data());
     const unsigned int dataSize = static_cast<unsigned int>(rawExifDataWithHeader.size());
     m_impl->exifData = exif_data_new_from_data(data, dataSize);
     if(!m_impl->exifData)
         return false;
-#if defined (QT_DEBUG)
-    fflush(stdout);
-    fflush(stderr);
-    exif_data_dump(m_impl->exifData);
-    fflush(stdout);
-    fflush(stderr);
-#endif
+//#if defined (QT_DEBUG)
+//    fflush(stdout);
+//    fflush(stderr);
+//    exif_data_dump(m_impl->exifData);
+//    fflush(stdout);
+//    fflush(stderr);
+//#endif
     qDebug() << "EXIF header detected";
     return true;
-#elif defined (HAS_QTEXTENDED)
+#elif defined (USE_QTEXTENDED)
     m_impl->exifHeader.clear();
     QBuffer buffer(const_cast<QByteArray*>(&rawExifData));
     if(!buffer.open(QIODevice::ReadOnly))

@@ -126,7 +126,7 @@ public:
         if(image.isNull())
             return QSharedPointer<IImageData>();
 
-        ImageMetaData *metaData = ImageMetaData::createExifMetaData(filePath);
+        ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
         if(metaData)
             metaData->applyExifOrientation(&image);
 

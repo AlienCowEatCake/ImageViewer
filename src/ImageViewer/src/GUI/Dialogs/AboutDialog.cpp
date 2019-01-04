@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -61,6 +61,9 @@
 #endif
 #if defined (HAS_JBIGKIT)
 #include <jbig.h>
+#endif
+#if defined (HAS_EXIV2)
+#include <exiv2/exiv2.hpp>
 #endif
 #if defined (HAS_LCMS2)
 #include <lcms2.h>
@@ -301,6 +304,15 @@ QString getTextBrowserContent()
                       QString::fromLatin1("libexif"),
                       QString(),
                       QString::fromLatin1("https://libexif.github.io/")
+                      ));
+#endif
+
+#if defined (HAS_EXIV2)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the Exiv2 C++ metadata library"),
+                      QString::fromLatin1("exiv2"),
+                      QString::fromLatin1(Exiv2::versionString().c_str()),
+                      QString::fromLatin1("http://www.exiv2.org/")
                       ));
 #endif
 

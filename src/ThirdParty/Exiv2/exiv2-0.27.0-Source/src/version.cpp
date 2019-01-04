@@ -95,6 +95,7 @@ namespace Exiv2 {
 
 }                                       // namespace Exiv2
 
+#if 0
 #ifndef lengthof
 #define lengthof(x) sizeof(x)/sizeof(x[0])
 #endif
@@ -557,3 +558,4 @@ void Exiv2::dumpLibraryInfo(std::ostream& os,const exv_grep_keys_t& keys)
 #endif
 
 }
+#endif
