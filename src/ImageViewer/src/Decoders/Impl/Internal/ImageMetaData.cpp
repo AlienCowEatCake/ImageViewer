@@ -126,6 +126,16 @@ void fillXmpMetaData(const Exiv2::XmpData &data, IImageMetaData::MetaDataEntryLi
     {}
 }
 
+void fillCommentMetaData(const std::string &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
+{
+    if(data.empty())
+        return;
+    const IImageMetaData::MetaDataType type = QString::fromLatin1("Comment");
+    IImageMetaData::MetaDataEntryList list = entryListMap[type];
+    list.append(IImageMetaData::MetaDataEntry(type, QString::fromUtf8(data.c_str())));
+    entryListMap[type] = list;
+}
+
 quint16 getOrientation(const Exiv2::ExifData &data)
 {
     try
@@ -532,6 +542,7 @@ struct ImageMetaData::Impl
             fillExifMetaData(image->exifData(), entryListMap);
             fillIptcMetaData(image->iptcData(), entryListMap);
             fillXmpMetaData(image->xmpData(), entryListMap);
+            fillCommentMetaData(image->comment(), entryListMap);
         }
         else if(!exifData.empty())
         {
