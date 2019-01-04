@@ -59,7 +59,9 @@
 #endif
 
 /* Define if you have (Exiv2/xmpsdk) Adobe XMP Toolkit. */
+#if defined (HAS_LIBEXPAT)
 #define EXV_HAVE_XMP_TOOLKIT
+#endif
 
 /* Define to the full name of this package. */
 #define EXV_PACKAGE_NAME "exiv2"

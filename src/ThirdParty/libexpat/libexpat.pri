@@ -1,22 +1,21 @@
-# URL: http://www.exiv2.org/
-# License: GNU GPL
+# URL: https://github.com/libexpat/libexpat
+# License: https://github.com/libexpat/libexpat/blob/master/expat/COPYING
 
 include($${PWD}/../../Features.pri)
 
-!disable_exiv2 {
+!disable_libexpat {
 
-    DEFINES += HAS_EXIV2
+    DEFINES += HAS_LIBEXPAT
 
-    !system_exiv2 {
+    !system_libexpat {
 
-        THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.27.0-Source
-        THIRDPARTY_EXIV2_CONFIG_PATH = $${PWD}/config
+        THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.2.6
 
-        INCLUDEPATH += $${THIRDPARTY_EXIV2_PATH}/include $${THIRDPARTY_EXIV2_CONFIG_PATH}
-        DEPENDPATH += $${THIRDPARTY_EXIV2_PATH}/include $${THIRDPARTY_EXIV2_CONFIG_PATH}
+        INCLUDEPATH += $${THIRDPARTY_LIBEXPAT_PATH}/lib
+        DEPENDPATH += $${THIRDPARTY_LIBEXPAT_PATH}/lib
 
-        OUT_LIB_TARGET = tp_exiv2
-        OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/Exiv2
+        OUT_LIB_TARGET = tp_libexpat
+        OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/libexpat
         OUT_LIB_NAME =
         OUT_LIB_LINK =
         win32 {
@@ -42,8 +41,8 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += exiv2.lib
-        else: LIBS += -lexiv2
+        *msvc*: LIBS += libexpat.lib
+        else: LIBS += -lexpat
 
     }
 

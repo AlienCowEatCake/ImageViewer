@@ -64,6 +64,11 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
     CONFIG += disable_xzutils # FIXME: C99
 }
 
+# libexpat options:
+#    disable_libexpat
+#    system_libexpat
+
+
 # LCMS options:
 #    disable_liblcms2
 #    system_liblcms2
@@ -276,4 +281,8 @@ disable_libwmf | system_libwmf {
 
 system_libheif | disable_libheif {
     CONFIG += disable_libde265
+}
+
+disable_exiv2 | system_exiv2 {
+    CONFIG += disable_libexpat
 }

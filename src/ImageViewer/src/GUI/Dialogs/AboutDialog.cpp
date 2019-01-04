@@ -74,6 +74,9 @@
 #if defined (HAS_XZUTILS)
 #include <lzma.h>
 #endif
+#if defined (HAS_LIBEXPAT)
+#include <expat.h>
+#endif
 #if defined (HAS_FREETYPE)
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -340,6 +343,15 @@ QString getTextBrowserContent()
                       QString::fromLatin1("xz"),
                       QString::fromLatin1(lzma_version_string()),
                       QString::fromLatin1("https://tukaani.org/xz/")
+                      ));
+#endif
+
+#if defined (HAS_LIBEXPAT)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the Expat, a C library for parsing XML"),
+                      QString::fromLatin1("libexpat"),
+                      QString::fromLatin1("%1.%2.%3").arg(XML_MAJOR_VERSION).arg(XML_MINOR_VERSION).arg(XML_MICRO_VERSION),
+                      QString::fromLatin1("https://libexpat.github.io/")
                       ));
 #endif
 

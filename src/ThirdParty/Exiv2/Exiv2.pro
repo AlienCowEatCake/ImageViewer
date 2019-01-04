@@ -15,28 +15,13 @@ THIRDPARTY_EXIV2_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
 include(../zlib/zlib.pri)
+include(../libexpat/libexpat.pri)
 
 INCLUDEPATH = $${THIRDPARTY_EXIV2_CONFIG_PATH} $${THIRDPARTY_EXIV2_PATH}/include $${THIRDPARTY_EXIV2_PATH}/include/exiv2 $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include $${INCLUDEPATH}
 
 DEFINES += EXV_HAVE_STDINT_H exiv2lib_STATIC
 
 SOURCES += \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/ExpatAdapter.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/MD5.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/ParseRDF.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/UnicodeConversions.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/WXMPIterator.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/WXMPMeta.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/WXMPUtils.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XML_Node.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPCore_Impl.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPIterator.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPMeta-GetSet.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPMeta-Parse.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPMeta-Serialize.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPMeta.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPUtils-FileInfo.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPUtils.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/canonmn_int.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/casiomn_int.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/cr2header_int.cpp \
@@ -103,15 +88,6 @@ SOURCES += \
     $${THIRDPARTY_EXIV2_PATH}/src/xmpsidecar.cpp \
 
 HEADERS += \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/MD5.h \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/TXMPIterator.hpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/TXMPMeta.hpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/TXMPUtils.hpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/XMP_Const.h \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/XMP_Environment.h \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/XMP.incl_cpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/XMPSDK.hpp \
-    $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/XMP_Version.h \
     $${THIRDPARTY_EXIV2_PATH}/src/canonmn_int.hpp \
     $${THIRDPARTY_EXIV2_PATH}/src/casiomn_int.hpp \
     $${THIRDPARTY_EXIV2_PATH}/src/cr2header_int.hpp \
@@ -179,6 +155,36 @@ HEADERS += \
     $${THIRDPARTY_EXIV2_PATH}/include/exiv2/webpimage.hpp \
     $${THIRDPARTY_EXIV2_PATH}/include/exiv2/xmp_exiv2.hpp \
     $${THIRDPARTY_EXIV2_PATH}/include/exiv2/xmpsidecar.hpp \
+
+!disable_libexpat {
+    SOURCES += \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/ExpatAdapter.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/MD5.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/ParseRDF.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/UnicodeConversions.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/WXMPIterator.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/WXMPMeta.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/WXMPUtils.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XML_Node.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPCore_Impl.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPIterator.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPMeta-GetSet.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPMeta-Parse.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPMeta-Serialize.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPMeta.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPUtils-FileInfo.cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/src/XMPUtils.cpp
+    HEADERS += \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/MD5.h \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/TXMPIterator.hpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/TXMPMeta.hpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/TXMPUtils.hpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/XMP_Const.h \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/XMP_Environment.h \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/XMP.incl_cpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/XMPSDK.hpp \
+        $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include/XMP_Version.h
+}
 
 !disable_zlib {
     SOURCES += \
