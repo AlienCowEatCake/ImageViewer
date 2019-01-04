@@ -89,9 +89,7 @@
 #define EXV_HAVE_LENSDATA
 
 // Define if you have the iconv function.
-#if !defined (_WIN32) || defined (__CYGWIN__)
-#define EXV_HAVE_ICONV
-#endif
+/* #undef EXV_HAVE_ICONV */
 
 // Definition to enable conversion of UCS2 encoded Windows tags to UTF-8.
 #define EXV_HAVE_PRINTUCS2
