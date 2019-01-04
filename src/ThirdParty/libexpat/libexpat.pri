@@ -14,6 +14,8 @@ include($${PWD}/../../Features.pri)
         INCLUDEPATH += $${THIRDPARTY_LIBEXPAT_PATH}/lib
         DEPENDPATH += $${THIRDPARTY_LIBEXPAT_PATH}/lib
 
+        DEFINES += XML_STATIC
+
         OUT_LIB_TARGET = tp_libexpat
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/libexpat
         OUT_LIB_NAME =

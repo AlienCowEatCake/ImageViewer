@@ -5,7 +5,7 @@ TEMPLATE = lib
 CONFIG += staticlib
 TARGET = tp_exiv2
 
-QT -= core gui
+QT -= gui
 
 CONFIG -= warn_on
 CONFIG += warn_off
@@ -20,6 +20,10 @@ include(../libexpat/libexpat.pri)
 INCLUDEPATH = $${THIRDPARTY_EXIV2_CONFIG_PATH} $${THIRDPARTY_EXIV2_PATH}/include $${THIRDPARTY_EXIV2_PATH}/include/exiv2 $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include $${INCLUDEPATH}
 
 DEFINES += EXV_HAVE_STDINT_H exiv2lib_STATIC
+
+win32 {
+    DEFINES += NOMINMAX
+}
 
 SOURCES += \
     $${THIRDPARTY_EXIV2_PATH}/src/canonmn_int.cpp \
@@ -192,6 +196,13 @@ HEADERS += \
         $${THIRDPARTY_EXIV2_PATH}/src/pngimage.cpp
     HEADERS += \
         $${THIRDPARTY_EXIV2_PATH}/include/exiv2/pngimage.hpp
+}
+
+win32 {
+    *g++*|*clang* {
+        SOURCES += \
+            $${THIRDPARTY_EXIV2_PATH}/src/localtime.c
+    }
 }
 
 TR_EXCLUDE += $${THIRDPARTY_EXIV2_PATH}/*

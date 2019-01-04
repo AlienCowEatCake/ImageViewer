@@ -26,6 +26,8 @@
 #include <QImage>
 #include <QTransform>
 #include <QBuffer>
+#include <QString>
+#include <QStringList>
 #include <QDebug>
 
 //#undef HAS_EXIV2

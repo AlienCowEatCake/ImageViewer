@@ -32,7 +32,8 @@
 
 std::string string_from_unterminated(const char* data, size_t data_length)
 {
-    const size_t StringLength = strnlen(data, data_length);
+    size_t StringLength = 0;
+    for (const char* str = data; StringLength < data_length && *str; StringLength++, str++);
 
     return std::string(data, StringLength);
 }

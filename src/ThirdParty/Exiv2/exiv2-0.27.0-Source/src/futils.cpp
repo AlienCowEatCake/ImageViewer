@@ -460,6 +460,7 @@ namespace Exiv2 {
         return result;
     }
 
+#if 0
     std::string getProcessPath()
     {
         std::string ret("unknown");
@@ -497,4 +498,5 @@ namespace Exiv2 {
     #endif
         return ret.substr(0, idxLastSeparator);
     }
+#endif
 }                                       // namespace Exiv2

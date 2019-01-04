@@ -15,6 +15,8 @@ include($${PWD}/../../Features.pri)
         INCLUDEPATH += $${THIRDPARTY_EXIV2_PATH}/include $${THIRDPARTY_EXIV2_CONFIG_PATH}
         DEPENDPATH += $${THIRDPARTY_EXIV2_PATH}/include $${THIRDPARTY_EXIV2_CONFIG_PATH}
 
+        DEFINES += EXV_HAVE_STDINT_H
+
         OUT_LIB_TARGET = tp_exiv2
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/Exiv2
         OUT_LIB_NAME =
@@ -39,6 +41,11 @@ include($${PWD}/../../Features.pri)
         }
         LIBS += -L$${OUT_LIB_DIR} $${OUT_LIB_LINK}
 #        PRE_TARGETDEPS += $${OUT_LIB_DIR}/$${OUT_LIB_NAME}
+
+        win32 {
+            *msvc*: LIBS += ws2_32.lib
+            else: LIBS += -lws2_32
+        }
 
     } else {
 

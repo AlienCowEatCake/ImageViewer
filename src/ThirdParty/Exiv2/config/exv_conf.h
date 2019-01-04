@@ -42,16 +42,24 @@
 /* #undef EXV_HAVE_REGEX_H */
 
 // Define if you have the mmap function.
+#if !defined (_WIN32) || defined (__CYGWIN__)
 #define EXV_HAVE_MMAP
+#endif
 
 // Define if you have the munmap function.
+#if !defined (_WIN32) || defined (__CYGWIN__)
 #define EXV_HAVE_MUNMAP
+#endif
 
 /* Define if you have the <unistd.h> header file. */
+#if !defined (_WIN32) || defined (__CYGWIN__)
 #define EXV_HAVE_UNISTD_H
+#endif
 
 // Define if you have the <sys/mman.h> header file.
+#if !defined (_WIN32) || defined (__CYGWIN__)
 #define EXV_HAVE_SYS_MMAN_H
+#endif
 
 // Define if you have are using the zlib library.
 #if defined (HAS_ZLIB)
@@ -81,7 +89,9 @@
 #define EXV_HAVE_LENSDATA
 
 // Define if you have the iconv function.
+#if !defined (_WIN32) || defined (__CYGWIN__)
 #define EXV_HAVE_ICONV
+#endif
 
 // Definition to enable conversion of UCS2 encoded Windows tags to UTF-8.
 #define EXV_HAVE_PRINTUCS2

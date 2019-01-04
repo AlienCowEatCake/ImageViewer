@@ -97,10 +97,14 @@ namespace Exiv2 {
             std::string inifile;
 #if defined(_MSC_VER) || defined(__MINGW__)
             char path[MAX_PATH];
-            if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, path))) {
+            HMODULE hShell32 = ::LoadLibraryA("shell32.dll");
+            typedef HRESULT(WINAPI *SHGetFolderPathA_t)(HWND, int, HANDLE, DWORD, LPSTR);
+            SHGetFolderPathA_t SHGetFolderPathA_f = reinterpret_cast<SHGetFolderPathA_t>(::GetProcAddress(hShell32, "SHGetFolderPathA"));
+            if (SHGetFolderPathA_f && SUCCEEDED(SHGetFolderPathA_f(NULL, CSIDL_PROFILE, NULL, 0, path))) {
                 homedir = std::string(path);
                 inifile = "exiv2.ini"      ;
             }
+            ::FreeLibrary(hShell32);
 #else
             struct passwd* pw = getpwuid(getuid());
             homedir = std::string(pw?pw->pw_dir:"");
