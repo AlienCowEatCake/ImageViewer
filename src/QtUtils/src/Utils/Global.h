@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -34,6 +34,10 @@ static inline bool qFuzzyIsNull(float f)
     return qAbs(f) <= 0.00001f;
 }
 
+#endif
+
+#if !defined (Q_DECL_OVERRIDE)
+#define Q_DECL_OVERRIDE
 #endif
 
 #endif // QTUTILS_GLOBAL_H_INCLUDED

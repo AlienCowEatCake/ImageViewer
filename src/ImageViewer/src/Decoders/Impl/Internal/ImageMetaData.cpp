@@ -54,9 +54,19 @@
 #include "qexifimageheader.h"
 #endif
 
+#include "Utils/Global.h"
+
 namespace {
 
 #if defined (USE_EXIV2)
+
+#if (EXIV2_MAJOR_VERSION == 0 && EXIV2_MINOR_VERSION < 27) || (EXIV2_MAJOR_VERSION == 0 && EXIV2_MINOR_VERSION == 27 && EXIV2_PATCH_VERSION < 99)
+typedef Exiv2::BasicIo::AutoPtr Exiv2BasicIoPtr;
+typedef Exiv2::Image::AutoPtr Exiv2ImagePtr;
+#else
+typedef Exiv2::BasicIo::UniquePtr Exiv2BasicIoPtr;
+typedef Exiv2::Image::UniquePtr Exiv2ImagePtr;
+#endif
 
 class QFileIo : public Exiv2::BasicIo
 {
@@ -65,6 +75,7 @@ class QFileIo : public Exiv2::BasicIo
 public:
     explicit QFileIo(const QString &path)
         : m_file(path)
+        , m_mapped(NULL)
     {}
 
     //! @name Manipulators
@@ -81,7 +92,7 @@ public:
       @return 0 if successful;<BR>
           Nonzero if failure.
      */
-    int open()
+    int open() Q_DECL_OVERRIDE
     {
         if(m_file.isOpen())
             m_file.close();
@@ -98,7 +109,7 @@ public:
       @return 0 if successful;<BR>
           Nonzero if failure.
      */
-    int close()
+    int close() Q_DECL_OVERRIDE
     {
         m_file.close();
         return 0;
@@ -113,7 +124,7 @@ public:
       @return Number of bytes written to IO source successfully;<BR>
           0 if failure;
      */
-    long write(const Exiv2::byte */*data*/, long /*wcount*/)
+    long write(const Exiv2::byte */*data*/, long /*wcount*/) Q_DECL_OVERRIDE
     {
         qWarning() << "[Exiv2::QFileIo]" << "Error in write(): Not allowed (RO only)";
         return 0;
@@ -128,7 +139,7 @@ public:
       @return Number of bytes written to IO source successfully;<BR>
           0 if failure;
      */
-    long write(Exiv2::BasicIo &/*src*/)
+    long write(Exiv2::BasicIo &/*src*/) Q_DECL_OVERRIDE
     {
         qWarning() << "[Exiv2::QFileIo]" << "Error in write(): Not allowed (RO only)";
         return 0;
@@ -141,7 +152,7 @@ public:
       @return The value of the byte written if successful;<BR>
           EOF if failure;
      */
-    virtual int putb(Exiv2::byte /*data*/)
+    virtual int putb(Exiv2::byte /*data*/) Q_DECL_OVERRIDE
     {
         qWarning() << "[Exiv2::QFileIo]" << "Error in putb(): Not allowed (RO only)";
         return EOF;
@@ -157,7 +168,7 @@ public:
           DataBuf::size_ member to find the number of bytes read.
           DataBuf::size_ will be 0 on failure.
      */
-    Exiv2::DataBuf read(long rcount)
+    Exiv2::DataBuf read(long rcount) Q_DECL_OVERRIDE
     {
         const QByteArray ba = m_file.read(static_cast<qint64>(rcount));
         Exiv2::DataBuf buf(reinterpret_cast<const Exiv2::byte*>(ba.constData()), static_cast<long>(ba.size()));
@@ -176,7 +187,7 @@ public:
       @return Number of bytes read from IO source successfully;<BR>
           0 if failure;
      */
-    long read(Exiv2::byte *buf, long rcount)
+    long read(Exiv2::byte *buf, long rcount) Q_DECL_OVERRIDE
     {
         return static_cast<long>(m_file.read(reinterpret_cast<char*>(buf), static_cast<qint64>(rcount)));
     }
@@ -187,7 +198,7 @@ public:
       @return The byte read from the IO source if successful;<BR>
           EOF if failure;
      */
-    int getb()
+    int getb() Q_DECL_OVERRIDE
     {
         Exiv2::byte byte = 0;
         if(m_file.read(reinterpret_cast<char*>(&byte), 1) == 1)
@@ -209,10 +220,15 @@ public:
           invalidated by the method.
       @throw Error In case of failure
      */
-    void transfer(BasicIo &/*src*/)
+    void transfer(BasicIo &/*src*/) Q_DECL_OVERRIDE
     {
         qWarning() << "[Exiv2::QFileIo]" << "Error in transfer(): Not allowed (RO only)";
-        throw Exiv2::Error(Exiv2::kerErrorMessage, "Not allowed (RO only)");
+#if (EXIV2_MAJOR_VERSION == 0 && EXIV2_MINOR_VERSION < 26)
+        const int errorCode = 1;
+#else
+        const Exiv2::ErrorCode errorCode = Exiv2::kerErrorMessage;
+#endif
+        throw Exiv2::Error(errorCode, "Not allowed (RO only)");
     }
 
     /*!
@@ -224,9 +240,9 @@ public:
           Nonzero if failure;
      */
 #if defined (_MSC_VER)
-    int seek(int64_t offset, BasicIo::Position pos)
+    int seek(int64_t offset, BasicIo::Position pos) Q_DECL_OVERRIDE
 #else
-    int seek(long offset, BasicIo::Position pos)
+    int seek(long offset, BasicIo::Position pos) Q_DECL_OVERRIDE
 #endif
     {
         qint64 newIdx = 0;
@@ -262,16 +278,21 @@ public:
       @return A pointer to the mapped area.
       @throw Error In case of failure.
      */
-    Exiv2::byte *mmap(bool /*isWriteable*/ = false)
+    Exiv2::byte *mmap(bool /*isWriteable*/ = false) Q_DECL_OVERRIDE
     {
         uchar *memory = m_file.map(0, m_file.size());
         if(!memory)
         {
             qWarning() << "[Exiv2::QFileIo]" << "Error in mmap():" << m_file.errorString();
-            throw Exiv2::Error(Exiv2::kerErrorMessage, m_file.errorString().toLocal8Bit().data());
+#if (EXIV2_MAJOR_VERSION == 0 && EXIV2_MINOR_VERSION < 26)
+            const int errorCode = 1;
+#else
+            const Exiv2::ErrorCode errorCode = Exiv2::kerErrorMessage;
+#endif
+            throw Exiv2::Error(errorCode, m_file.errorString().toLocal8Bit().data());
         }
-        bigBlock_ = reinterpret_cast<Exiv2::byte*>(memory);
-        return bigBlock_;
+        m_mapped = reinterpret_cast<Exiv2::byte*>(memory);
+        return m_mapped;
     }
 
     /*!
@@ -280,14 +301,14 @@ public:
       @return 0 if successful;<BR>
               Nonzero if failure;
      */
-    int munmap()
+    int munmap() Q_DECL_OVERRIDE
     {
-        if(!m_file.unmap(reinterpret_cast<uchar*>(bigBlock_)))
+        if(!m_file.unmap(reinterpret_cast<uchar*>(m_mapped)))
         {
             qWarning() << "[Exiv2::QFileIo]" << "Error in mmap():" << m_file.errorString();
             return 1;
         }
-        bigBlock_ = NULL;
+        m_mapped = NULL;
         return 0;
     }
 
@@ -300,7 +321,7 @@ public:
       @return Offset from the start of IO if successful;<BR>
              -1 if failure;
      */
-    long tell() const
+    long tell() const Q_DECL_OVERRIDE
     {
         if(m_file.isOpen())
             return static_cast<long>(m_file.pos());
@@ -313,25 +334,32 @@ public:
       @return Size of the IO source in bytes;<BR>
              -1 if failure;
      */
-    size_t size() const
+#if (EXIV2_MAJOR_VERSION == 0 && EXIV2_MINOR_VERSION < 26)
+    long size() const Q_DECL_OVERRIDE
+    {
+        return static_cast<long>(m_file.size());
+    }
+#else
+    size_t size() const Q_DECL_OVERRIDE
     {
         return static_cast<size_t>(m_file.size());
     }
+#endif
 
     //!Returns true if the IO source is open, otherwise false.
-    bool isopen() const
+    bool isopen() const Q_DECL_OVERRIDE
     {
         return m_file.isOpen();
     }
 
     //!Returns 0 if the IO source is in a valid state, otherwise nonzero.
-    int error() const
+    int error() const Q_DECL_OVERRIDE
     {
         return m_file.error();
     }
 
     //!Returns true if the IO position has reached the end, otherwise false.
-    bool eof() const
+    bool eof() const Q_DECL_OVERRIDE
     {
         return m_file.atEnd();
     }
@@ -341,7 +369,7 @@ public:
           comprehensive error messages where only a BasicIo instance is
           available.
      */
-    std::string path() const
+    std::string path() const Q_DECL_OVERRIDE
     {
         return m_file.fileName().toLocal8Bit().data();
     }
@@ -351,9 +379,27 @@ public:
       @brief Like path() but returns a unicode path in an std::wstring.
       @note This function is only available on Windows.
      */
-    std::wstring wpath() const
+    std::wstring wpath() const Q_DECL_OVERRIDE
     {
         return m_file.fileName().toStdWString();
+    }
+#endif
+
+#if (EXIV2_MAJOR_VERSION == 0 && EXIV2_MINOR_VERSION < 26)
+    /*!
+      @brief Returns a temporary data storage location. This is often
+          needed to rewrite an IO source.
+      For example, data may be read from the original IO source, modified
+      in some way, and then saved to the temporary instance. After the
+      operation is complete, the BasicIo::transfer method can be used to
+      replace the original IO source with the modified version. Subclasses
+      are free to return any class that derives from BasicIo.
+      @return An instance of BasicIo on success
+      @throw Error In case of failure
+     */
+    Exiv2::BasicIo::AutoPtr temporary() const Q_DECL_OVERRIDE
+    {
+        return Exiv2::BasicIo::AutoPtr(new Exiv2::MemIo);
     }
 #endif
 
@@ -361,6 +407,7 @@ public:
 
 private:
     QFile m_file;
+    Exiv2::byte *m_mapped;
 };
 
 void fillExifMetaData(const Exiv2::ExifData &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
@@ -782,7 +829,7 @@ struct ImageMetaData::Impl
     IImageMetaData::MetaDataEntryListMap entryListMap;
     bool isEntryListLoaded;
 #if defined (USE_EXIV2)
-    Exiv2::Image::AutoPtr image;
+    Exiv2ImagePtr image;
     Exiv2::ExifData exifData;
 #elif defined (USE_LIBEXIF)
     ExifData *exifData;
@@ -1058,7 +1105,7 @@ bool ImageMetaData::readFile(const QString &filePath)
     {
         m_impl->image.reset();
         m_impl->exifData.clear();
-        m_impl->image = Exiv2::ImageFactory::open(Exiv2::BasicIo::AutoPtr(new QFileIo(filePath)));
+        m_impl->image = Exiv2::ImageFactory::open(Exiv2BasicIoPtr(new QFileIo(filePath)));
         if(!m_impl->image.get())
             return false;
         m_impl->image->readMetadata();
