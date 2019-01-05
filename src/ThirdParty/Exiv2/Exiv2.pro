@@ -25,6 +25,10 @@ win32 {
     DEFINES += NOMINMAX
 }
 
+*clang* {
+    DEFINES *= _LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR
+}
+
 SOURCES += \
     $${THIRDPARTY_EXIV2_PATH}/src/canonmn_int.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/casiomn_int.cpp \

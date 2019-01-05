@@ -7,6 +7,10 @@ include($${PWD}/../../Features.pri)
 
     DEFINES += HAS_EXIV2
 
+    *clang* {
+        DEFINES *= _LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR
+    }
+
     !system_exiv2 {
 
         THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.27.0-Source
