@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -24,6 +24,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
+#include "Internal/ImageMetaData.h"
 #include "Internal/Animation/MovieAnimationProvider.h"
 
 namespace {
@@ -66,7 +67,10 @@ public:
             movie->deleteLater();
             return QSharedPointer<IImageData>();
         }
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(new MovieAnimationProvider<QMovie>(movie)), name()));
+        IAnimationProvider *provider = new MovieAnimationProvider<QMovie>(movie);
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createAnimatedItem(provider);
+        IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
 };
 

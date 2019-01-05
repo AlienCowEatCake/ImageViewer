@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -32,19 +32,23 @@ class ImageData : public IImageData
 
 public:
     ImageData();
-    ImageData(QGraphicsItem *graphicsItem, const QString &decoderName);
+    ImageData(QGraphicsItem *graphicsItem, const QString &filePath, const QString &decoderName, IImageMetaData *metaData = NULL);
     ~ImageData();
 
     bool isEmpty() const;
 
     QGraphicsItem *graphicsItem() const;
     QString decoderName() const;
+    QString filePath() const;
     QSize size() const;
+    IImageMetaData *metaData() const;
 
 private:
     QGraphicsItem * const m_graphicsItem;
     const QString m_decoderName;
+    const QString m_filePath;
     const QSize m_size;
+    IImageMetaData * const m_metaData;
 };
 
 #endif // IMAGEDATA_H_INCLUDED

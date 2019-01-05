@@ -12,6 +12,10 @@ SUBDIRS =
     SUBDIRS += XZUtils/XZUtils.pro
 }
 
+!disable_libexpat : !system_libexpat {
+    SUBDIRS += libexpat/libexpat.pro
+}
+
 !disable_libjpeg : !system_libjpeg {
     SUBDIRS += libjpeg/libjpeg.pro
 }
@@ -26,6 +30,10 @@ SUBDIRS =
 
 !disable_libexif : !system_libexif {
     SUBDIRS += libexif/libexif.pro
+}
+
+!disable_exiv2 : !system_exiv2 {
+    SUBDIRS += Exiv2/Exiv2.pro
 }
 
 !disable_libmng : !system_libmng {

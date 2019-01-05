@@ -64,6 +64,11 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
     CONFIG += disable_xzutils # FIXME: C99
 }
 
+# libexpat options:
+#    disable_libexpat
+#    system_libexpat
+
+
 # LCMS options:
 #    disable_liblcms2
 #    system_liblcms2
@@ -76,6 +81,13 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
     CONFIG += disable_libexif # FIXME: C99
 }
 
+# exiv2 options:
+#    disable_exiv2
+#    system_exiv2
+win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 {
+    CONFIG += disable_exiv2 # FIXME: C99
+}
+
 # LibJPEG options:
 #    disable_libjpeg
 #    system_libjpeg
@@ -84,7 +96,9 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
 # LibJasPer options:
 #    disable_libjasper
 #    system_libjasper
-
+win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 {
+    CONFIG += disable_libjasper # FIXME: C99
+}
 
 # libmng options:
 #    disable_libmng
@@ -135,6 +149,9 @@ disable_zlib : !system_freetype {
 # libwmf options:
 #    disable_libwmf
 #    system_libwmf
+win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 {
+    CONFIG += disable_libwmf # FIXME: C99
+}
 disable_zlib : !system_libwmf {
     CONFIG += disable_libwmf
 }
@@ -271,4 +288,8 @@ disable_libwmf | system_libwmf {
 
 system_libheif | disable_libheif {
     CONFIG += disable_libde265
+}
+
+disable_exiv2 | system_exiv2 {
+    CONFIG += disable_libexpat
 }

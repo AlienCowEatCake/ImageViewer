@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -55,10 +55,12 @@ public slots:
     void showMainWindow();
     void showAbout();
     void showPreferences();
+    void showImageInformation();
     void showStylesheetEditor();
     void openNewWindow();
 
 private slots:
+    void onReopenWithRequested(const QString &decoderName);
     void onFileManagerStateChanged(const FileManager::ChangeFlags &changedFlags);
 
 private:

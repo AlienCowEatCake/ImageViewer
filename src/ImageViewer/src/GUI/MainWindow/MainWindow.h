@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -45,8 +45,10 @@ signals:
     void openFileWithDialogRequested();
     void openFolderWithDialogRequested();
     void deleteFileRequested();
+    void reopenWithRequested(const QString &decoderName);
 
     void newWindowRequested();
+    void imageInformationRequested();
     void preferencesRequested();
     void aboutRequested();
     void aboutQtRequested();

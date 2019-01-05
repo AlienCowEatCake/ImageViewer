@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -54,7 +54,6 @@ struct MainWindow::Impl
     GUISettings * const settings;
     UI ui;
     UIState uiState;
-    QSharedPointer<IImageData> imageData;
     ImageSaver imageSaver;
     RestorableGeometryHelper geometryHelper;
     EffectsStorage effectsStorage;
@@ -90,13 +89,14 @@ struct MainWindow::Impl
             container->setFlipVerticalEnabled(isEnabled);
             container->setRotateClockwiseEnabled(isEnabled);
             container->setSaveAsEnabled(isEnabled);
+            container->setImageInformationEnabled(isEnabled);
         }
         updateMenuReopenWith();
     }
 
     bool isFileOpened() const
     {
-        return imageData && !imageData->isEmpty() && imageData->size().isValid();
+        return uiState.imageData && !uiState.imageData->isEmpty() && uiState.imageData->size().isValid();
     }
 
     void syncFullScreen()
@@ -137,14 +137,14 @@ struct MainWindow::Impl
             return;
         QSignalBlocker blocker(actionGroup);
         actionGroup->setEnabled(enabled);
-        if(imageData || !enabled)
+        if(uiState.imageData || !enabled)
             if(QAction *checkedAction = actionGroup->checkedAction())
                 checkedAction->setChecked(false);
-        if(!imageData)
+        if(!uiState.imageData)
             return;
         QList<QAction*> childActions = actionGroup->actions();
         for(QList<QAction*>::Iterator it = childActions.begin(), itEnd = childActions.end(); it != itEnd; ++it)
-            if((*it)->data().toString() == imageData->decoderName())
+            if((*it)->data().toString() == uiState.imageData->decoderName())
                 (*it)->setChecked(true);
     }
 
@@ -182,19 +182,17 @@ struct MainWindow::Impl
         updateMenuReopenWith();
     }
 
-    void loadImageData(const QSharedPointer<IImageData> &data)
+    void loadImageData()
     {
-        imageData = data;
-        if(imageData && !imageData->isEmpty())
+        if(uiState.imageData && !uiState.imageData->isEmpty())
         {
             ui.imageViewerWidget->setZoomMode(settings->zoomMode());
-            ui.imageViewerWidget->setGraphicsItem(imageData->graphicsItem());
+            ui.imageViewerWidget->setGraphicsItem(uiState.imageData->graphicsItem());
             effectsStorage.applySavedEffects(ui.imageViewerWidget);
             setImageControlsEnabled(true);
         }
         else
         {
-            imageData = QSharedPointer<IImageData>();
             ui.imageViewerWidget->clear();
             setImageControlsEnabled(false);
             QMessageBox::critical(mainWindow, qApp->translate("MainWindow", "Error"), qApp->translate("MainWindow", "Failed to open file \"%1\"").arg(uiState.currentFilePath));
@@ -225,6 +223,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
         connect(object, SIGNAL(navigatePreviousRequested())         , this                      , SIGNAL(selectPreviousRequested())         );
         connect(object, SIGNAL(navigateNextRequested())             , this                      , SIGNAL(selectNextRequested())             );
         connect(object, SIGNAL(startSlideShowRequested())           , this                      , SLOT(switchSlideShowMode())               );
+        connect(object, SIGNAL(imageInformationRequested())         , this                      , SIGNAL(imageInformationRequested())       );
         connect(object, SIGNAL(preferencesRequested())              , this                      , SIGNAL(preferencesRequested())            );
         connect(object, SIGNAL(exitRequested())                     , this                      , SLOT(close())                             );
         connect(object, SIGNAL(rotateCounterclockwiseRequested())   , imageViewerWidget         , SLOT(rotateCounterclockwise())            );
@@ -296,7 +295,7 @@ void MainWindow::updateWindowTitle()
     const int currentFileIndex = m_impl->uiState.currentFileIndex;
     if(m_impl->isFileOpened())
     {
-        const QSize imageSize = m_impl->imageData->size();
+        const QSize imageSize = m_impl->uiState.imageData->size();
         label = QFileInfo(m_impl->uiState.currentFilePath).fileName();
         label.append(QString::fromLatin1(" (%1x%2) %3% - %4")
                      .arg(imageSize.width())
@@ -446,17 +445,16 @@ void MainWindow::updateUIState(const UIState &state, const UIChangeFlags &change
     m_impl->uiState = state;
     m_impl->effectsStorage.updateUIState(state, changeFlags);
 
-    if(changeFlags.testFlag(UICF_CurrentFilePath))
+    if(changeFlags.testFlag(UICF_CurrentFilePath) || changeFlags.testFlag(UICF_ImageData))
     {
         if(state.currentFilePath.isEmpty())
         {
-            m_impl->imageData = QSharedPointer<IImageData>();
             m_impl->ui.imageViewerWidget->clear();
             m_impl->setImageControlsEnabled(false);
         }
         else
         {
-            m_impl->loadImageData(DecodersManager::getInstance().loadImage(state.currentFilePath));
+            m_impl->loadImageData();
         }
     }
 
@@ -481,7 +479,8 @@ void MainWindow::updateUIState(const UIState &state, const UIChangeFlags &change
        changeFlags.testFlag(UICF_HasCurrentFileIndex) ||
        changeFlags.testFlag(UICF_CurrentFilePath) ||
        changeFlags.testFlag(UICF_CurrentFileIndex) ||
-       changeFlags.testFlag(UICF_FilesCount))
+       changeFlags.testFlag(UICF_FilesCount) ||
+       changeFlags.testFlag(UICF_ImageData))
         updateWindowTitle();
 }
 
@@ -510,7 +509,7 @@ void MainWindow::onActionReopenWithTriggered(QAction *action)
     assert(m_impl->uiState.hasCurrentFile);
     if(!m_impl->uiState.hasCurrentFile)
         return;
-    m_impl->loadImageData(DecodersManager::getInstance().loadImage(m_impl->uiState.currentFilePath, action->data().toString()));
+    emit reopenWithRequested(action->data().toString());
     updateWindowTitle();
 }
 

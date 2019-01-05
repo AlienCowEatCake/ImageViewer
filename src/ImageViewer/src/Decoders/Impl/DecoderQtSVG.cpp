@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -72,7 +72,7 @@ public:
 #if defined (QT_SVG_LIB)
         QGraphicsSvgItem *graphicsSvgItem = new QGraphicsSvgItem(filePath);
         if(graphicsSvgItem->renderer()->isValid())
-            return QSharedPointer<IImageData>(new ImageData(graphicsSvgItem, name()));
+            return QSharedPointer<IImageData>(new ImageData(graphicsSvgItem, filePath, name()));
         delete graphicsSvgItem;
 #endif
         return QSharedPointer<IImageData>();

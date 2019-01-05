@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -38,6 +38,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
+#include "Internal/ImageMetaData.h"
 
 namespace {
 
@@ -108,7 +109,8 @@ public:
         if(picture == nil)
             return QSharedPointer<IImageData>();
         QGraphicsItem *result = GraphicsItemsFactory::instance().createPixmapItem(ObjCUtils::QPixmapFromNSImage(picture));
-        return QSharedPointer<IImageData>(new ImageData(result, name()));
+        IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+        return QSharedPointer<IImageData>(new ImageData(result, filePath, name(), metaData));
     }
 };
 

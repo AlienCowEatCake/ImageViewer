@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -33,7 +33,8 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
-#include "Internal/Utils/ExifUtils.h"
+#include "Internal/ImageMetaData.h"
+#include "Internal/PayloadWithMetaData.h"
 #include "Internal/Utils/CmsUtils.h"
 
 namespace
@@ -172,7 +173,7 @@ void jpegErrorExit(j_common_ptr cinfo)
 }
 
 // Sample routine for JPEG decompression.
-QImage readJpegFile(const QString &filename)
+PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 {
     // This struct contains the JPEG decompression parameters and pointers to
     // working space (which is allocated as needed by the JPEG library).
@@ -345,11 +346,11 @@ QImage readJpegFile(const QString &filename)
 
     delete iccProfile;
 
-    quint16 orientation = ExifUtils::GetExifOrientation(filename);
-    if(orientation > 1 && orientation <= 8)
-        ExifUtils::ApplyExifOrientation(&outImage, orientation);
+    ImageMetaData *metaData = ImageMetaData::createMetaData(filename);
+    if(metaData)
+        metaData->applyExifOrientation(&outImage);
 
-    return outImage;
+    return PayloadWithMetaData<QImage>(outImage, metaData);
 }
 
 // ====================================================================================================
@@ -385,7 +386,9 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(readJpegFile(filePath)), name()));
+        const PayloadWithMetaData<QImage> readData = readJpegFile(filePath);
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createImageItem(readData);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), readData.metaData()));
     }
 };
 

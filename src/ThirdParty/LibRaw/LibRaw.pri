@@ -7,6 +7,10 @@ include($${PWD}/../../Features.pri)
 
     DEFINES += HAS_LIBRAW
 
+    *clang* {
+        DEFINES *= _LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR
+    }
+
     !system_libraw {
 
         THIRDPARTY_LIBRAW_PATH = $${PWD}/LibRaw-0.19.0
@@ -16,10 +20,6 @@ include($${PWD}/../../Features.pri)
 
         win32 {
             DEFINES += LIBRAW_NODLL
-        }
-
-        *clang* {
-            DEFINES *= _LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR
         }
 
         OUT_LIB_TARGET = tp_LibRaw

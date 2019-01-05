@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -34,6 +34,7 @@
 
 #include "Decoders/DecodersManager.h"
 #include "Dialogs/AboutDialog.h"
+#include "Dialogs/InfoDialog.h"
 #include "Dialogs/SettingsDialog.h"
 #include "MainWindow/MainWindow.h"
 #include "GUISettings.h"
@@ -45,6 +46,8 @@ struct MainController::Impl
     GUISettings settings;
     MainWindow mainWindow;
     QScopedPointer<StylesheetEditor> stylesheetEditor;
+
+    QSharedPointer<IImageData> imageData;
 
     bool lastHasCurrentFile;
     bool lastHasCurrentFileIndex;
@@ -78,6 +81,19 @@ struct MainController::Impl
     {
         return hasCurrentFileIndex() && fileManager.currentFileIndex() > 0;
     }
+
+    UIState createUIState() const
+    {
+        UIState uiState;
+        uiState.hasCurrentFile          = hasCurrentFile();
+        uiState.hasCurrentFileIndex     = hasCurrentFileIndex();
+        uiState.currentFilePath         = fileManager.currentFilePath();
+        uiState.currentFileIndex        = fileManager.currentFileIndex();
+        uiState.filesCount              = fileManager.filesCount();
+        uiState.canDeleteCurrentFile    = fileManager.canDeleteCurrentFile();
+        uiState.imageData               = imageData;
+        return uiState;
+    }
 };
 
 MainController::MainController(QObject *parent)
@@ -89,21 +105,23 @@ MainController::MainController(QObject *parent)
     connect(&m_impl->fileManager, SIGNAL(stateChanged(const FileManager::ChangeFlags&)), this, SLOT(onFileManagerStateChanged(const FileManager::ChangeFlags&)));
     connect(this, SIGNAL(uiStateChanged(const UIState&, const UIChangeFlags&)), mainWindow, SLOT(updateUIState(const UIState&, const UIChangeFlags&)));
 
-    connect(mainWindow, SIGNAL(selectFirstRequested())                  , this, SLOT(selectFirstFile())             );
-    connect(mainWindow, SIGNAL(selectLastRequested())                   , this, SLOT(selectLastFile())              );
-    connect(mainWindow, SIGNAL(selectPreviousRequested())               , this, SLOT(selectPreviousFile())          );
-    connect(mainWindow, SIGNAL(selectNextRequested())                   , this, SLOT(selectNextFile())              );
-    connect(mainWindow, SIGNAL(openPathRequested(const QString&))       , this, SLOT(openPath(const QString&))      );
-    connect(mainWindow, SIGNAL(openPathsRequested(const QStringList&))  , this, SLOT(openPaths(const QStringList&)) );
-    connect(mainWindow, SIGNAL(openFileWithDialogRequested())           , this, SLOT(openFileWithDialog())          );
-    connect(mainWindow, SIGNAL(openFolderWithDialogRequested())         , this, SLOT(openFolderWithDialog())        );
-    connect(mainWindow, SIGNAL(deleteFileRequested())                   , this, SLOT(deleteCurrentFile())           );
-    connect(mainWindow, SIGNAL(newWindowRequested())                    , this, SLOT(openNewWindow())               );
-    connect(mainWindow, SIGNAL(preferencesRequested())                  , this, SLOT(showPreferences())             );
-    connect(mainWindow, SIGNAL(aboutRequested())                        , this, SLOT(showAbout())                   );
-    connect(mainWindow, SIGNAL(aboutQtRequested())                      , qApp, SLOT(aboutQt())                     );
-    connect(mainWindow, SIGNAL(editStylesheetRequested())               , this, SLOT(showStylesheetEditor())        );
-    connect(mainWindow, SIGNAL(closed())                                , qApp, SLOT(quit())                        );
+    connect(mainWindow, SIGNAL(selectFirstRequested())                  , this, SLOT(selectFirstFile())                     );
+    connect(mainWindow, SIGNAL(selectLastRequested())                   , this, SLOT(selectLastFile())                      );
+    connect(mainWindow, SIGNAL(selectPreviousRequested())               , this, SLOT(selectPreviousFile())                  );
+    connect(mainWindow, SIGNAL(selectNextRequested())                   , this, SLOT(selectNextFile())                      );
+    connect(mainWindow, SIGNAL(openPathRequested(const QString&))       , this, SLOT(openPath(const QString&))              );
+    connect(mainWindow, SIGNAL(openPathsRequested(const QStringList&))  , this, SLOT(openPaths(const QStringList&))         );
+    connect(mainWindow, SIGNAL(openFileWithDialogRequested())           , this, SLOT(openFileWithDialog())                  );
+    connect(mainWindow, SIGNAL(openFolderWithDialogRequested())         , this, SLOT(openFolderWithDialog())                );
+    connect(mainWindow, SIGNAL(deleteFileRequested())                   , this, SLOT(deleteCurrentFile())                   );
+    connect(mainWindow, SIGNAL(reopenWithRequested(const QString&))     , this, SLOT(onReopenWithRequested(const QString&)) );
+    connect(mainWindow, SIGNAL(newWindowRequested())                    , this, SLOT(openNewWindow())                       );
+    connect(mainWindow, SIGNAL(imageInformationRequested())             , this, SLOT(showImageInformation())                );
+    connect(mainWindow, SIGNAL(preferencesRequested())                  , this, SLOT(showPreferences())                     );
+    connect(mainWindow, SIGNAL(aboutRequested())                        , this, SLOT(showAbout())                           );
+    connect(mainWindow, SIGNAL(aboutQtRequested())                      , qApp, SLOT(aboutQt())                             );
+    connect(mainWindow, SIGNAL(editStylesheetRequested())               , this, SLOT(showStylesheetEditor())                );
+    connect(mainWindow, SIGNAL(closed())                                , qApp, SLOT(quit())                                );
 }
 
 MainController::~MainController()
@@ -253,6 +271,12 @@ void MainController::showPreferences()
     onFileManagerStateChanged(FileManager::FlagChangeAll);
 }
 
+void MainController::showImageInformation()
+{
+    InfoDialog dialog(m_impl->imageData, &m_impl->mainWindow);
+    dialog.exec();
+}
+
 void MainController::showStylesheetEditor()
 {
     if(!m_impl->stylesheetEditor)
@@ -270,26 +294,35 @@ void MainController::openNewWindow()
     QProcess::startDetached(QApplication::applicationFilePath(), m_impl->fileManager.currentOpenArguments(), QDir::currentPath());
 }
 
+void MainController::onReopenWithRequested(const QString &decoderName)
+{
+    const QString currentFilePath = m_impl->fileManager.currentFilePath();
+    m_impl->imageData = currentFilePath.isEmpty()
+            ? QSharedPointer<IImageData>()
+            : DecodersManager::getInstance().loadImage(currentFilePath, decoderName);
+    UIState uiState = m_impl->createUIState();
+    UIChangeFlags uiChangeFlags = UICF_ImageData;
+    emit uiStateChanged(uiState, uiChangeFlags);
+}
+
 void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &changeFlags)
 {
-    FileManager &fileManager = m_impl->fileManager;
-    m_impl->settings.setLastOpenedPath(fileManager.currentFilePath());
+    const QString currentFilePath = m_impl->fileManager.currentFilePath();
+    if(!currentFilePath.isEmpty())
+        m_impl->settings.setLastOpenedPath(currentFilePath);
+    if(changeFlags.testFlag(FileManager::FlagCurrentFilePath))
+        m_impl->imageData = currentFilePath.isEmpty()
+                ? QSharedPointer<IImageData>()
+                : DecodersManager::getInstance().loadImage(currentFilePath);
 
-    UIState uiState;
-    uiState.hasCurrentFile          = m_impl->hasCurrentFile();
-    uiState.hasCurrentFileIndex     = m_impl->hasCurrentFileIndex();
-    uiState.currentFilePath         = fileManager.currentFilePath();
-    uiState.currentFileIndex        = fileManager.currentFileIndex();
-    uiState.filesCount              = fileManager.filesCount();
-    uiState.canDeleteCurrentFile    = fileManager.canDeleteCurrentFile();
-
+    UIState uiState = m_impl->createUIState();
     UIChangeFlags uiChangeFlags;
     if(uiState.hasCurrentFile != m_impl->lastHasCurrentFile)
         uiChangeFlags |= UICF_HasCurrentFile;
     if(uiState.hasCurrentFileIndex != m_impl->lastHasCurrentFileIndex)
         uiChangeFlags |= UICF_HasCurrentFileIndex;
     if(changeFlags.testFlag(FileManager::FlagCurrentFilePath))
-        uiChangeFlags |= UICF_CurrentFilePath;
+        uiChangeFlags = uiChangeFlags | UICF_CurrentFilePath | UICF_ImageData;
     if(changeFlags.testFlag(FileManager::FlagCurrentFileIndex))
         uiChangeFlags |= UICF_CurrentFileIndex;
     if(changeFlags.testFlag(FileManager::FlagFilesCount))
