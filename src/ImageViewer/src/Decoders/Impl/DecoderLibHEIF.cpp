@@ -137,32 +137,35 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
         }
     }
 
-    ImageMetaData *metaData = NULL;
-    const int numberOfMetadataBlocks = heif_image_handle_get_number_of_metadata_blocks(handle, NULL);
-    if(numberOfMetadataBlocks > 0)
+    ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+    if(!metaData)
     {
-        heif_item_id *ids = new heif_item_id[numberOfMetadataBlocks];
-        heif_image_handle_get_list_of_metadata_block_IDs(handle, NULL, ids, numberOfMetadataBlocks);
-        for(int i = 0; i < numberOfMetadataBlocks; ++i)
+        const int numberOfMetadataBlocks = heif_image_handle_get_number_of_metadata_blocks(handle, NULL);
+        if(numberOfMetadataBlocks > 0)
         {
-            if(strcmp(heif_image_handle_get_metadata_type(handle, ids[i]), "Exif") == 0)
+            heif_item_id *ids = new heif_item_id[numberOfMetadataBlocks];
+            heif_image_handle_get_list_of_metadata_block_IDs(handle, NULL, ids, numberOfMetadataBlocks);
+            for(int i = 0; i < numberOfMetadataBlocks; ++i)
             {
-                qDebug() << "Found EXIF metadata";
-                const size_t metadataSize = heif_image_handle_get_metadata_size(handle, ids[i]);
-                QByteArray metadata(static_cast<int>(metadataSize), 0);
-                error = heif_image_handle_get_metadata(handle, ids[i], metadata.data());
-                if(error.code != heif_error_Ok)
+                if(strcmp(heif_image_handle_get_metadata_type(handle, ids[i]), "Exif") == 0)
                 {
-                    qWarning() << "Can't get EXIF metadata:" << error.message;
-                }
-                else
-                {
-                    const int offset = 10;
-                    metaData = ImageMetaData::createExifMetaData(QByteArray::fromRawData(metadata.constData() + offset, metadata.size() - offset));
+                    qDebug() << "Found EXIF metadata";
+                    const size_t metadataSize = heif_image_handle_get_metadata_size(handle, ids[i]);
+                    QByteArray rawMetadata(static_cast<int>(metadataSize), 0);
+                    error = heif_image_handle_get_metadata(handle, ids[i], rawMetadata.data());
+                    if(error.code != heif_error_Ok)
+                    {
+                        qWarning() << "Can't get EXIF metadata:" << error.message;
+                    }
+                    else
+                    {
+                        const int offset = 10;
+                        metaData = ImageMetaData::createExifMetaData(QByteArray::fromRawData(rawMetadata.constData() + offset, rawMetadata.size() - offset));
+                    }
                 }
             }
+            delete [] ids;
         }
-        delete [] ids;
     }
 
     heif_image_release(img);
@@ -202,7 +205,8 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
         const PayloadWithMetaData<QImage> readData = readHeifFile(filePath);
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(readData), filePath, name(), readData.metaData()));
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createImageItem(readData);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), readData.metaData()));
     }
 };
 

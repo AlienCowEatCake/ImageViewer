@@ -84,7 +84,7 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
     bpg_decoder_get_info(decoderContext, &imageInfo);
 
     QScopedPointer<ICCProfile> profile;
-    ImageMetaData *metaData = NULL;
+    ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
 
     for(BPGExtensionData *extension = bpg_decoder_get_extension_data(decoderContext); extension != NULL; extension = extension->next)
     {
@@ -96,7 +96,12 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
             break;
         case BPG_EXTENSION_TAG_EXIF:
             qDebug() << "Found EXIF metadata";
-            metaData = ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf + 1), static_cast<int>(extension->buf_len - 1)));
+            if(!metaData)
+                metaData = ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf + 1), static_cast<int>(extension->buf_len - 1)));
+            break;
+        case BPG_EXTENSION_TAG_XMP:
+            /// @todo
+            qDebug() << "Found XMP metadata";
             break;
         default:
             break;
@@ -185,9 +190,10 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
-        BpgAnimationProvider* provider = new BpgAnimationProvider();
+        BpgAnimationProvider *provider = new BpgAnimationProvider();
         const PayloadWithMetaData<bool> readResult = provider->readBpgFile(filePath);
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(provider), filePath, name(), readResult.metaData()));
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createAnimatedItem(provider);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), readResult.metaData()));
     }
 };
 

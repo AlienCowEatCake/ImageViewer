@@ -32,6 +32,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
+#include "Internal/ImageMetaData.h"
 #include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Animation/FramesCompositor.h"
@@ -244,7 +245,10 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(new WebPAnimationProvider(filePath)), filePath, name()));
+        IAnimationProvider *provider = new WebPAnimationProvider(filePath);
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createAnimatedItem(provider);
+        IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
 };
 

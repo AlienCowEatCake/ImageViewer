@@ -24,6 +24,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
+#include "Internal/ImageMetaData.h"
 #include "Internal/Animation/MovieAnimationProvider.h"
 
 namespace {
@@ -66,7 +67,10 @@ public:
             movie->deleteLater();
             return QSharedPointer<IImageData>();
         }
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createAnimatedItem(new MovieAnimationProvider<QMovie>(movie)), filePath, name()));
+        IAnimationProvider *provider = new MovieAnimationProvider<QMovie>(movie);
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createAnimatedItem(provider);
+        IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
 };
 

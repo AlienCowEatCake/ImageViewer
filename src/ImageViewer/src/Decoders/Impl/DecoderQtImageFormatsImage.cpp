@@ -28,6 +28,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
+#include "Internal/ImageMetaData.h"
 
 namespace {
 
@@ -72,14 +73,21 @@ public:
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
         imageReader.setAutoTransform(true);
 #endif
-        QImage image;
-        image = imageReader.read();
+        QImage image = imageReader.read();
         if(image.isNull())
         {
             qDebug() << imageReader.errorString();
             return QSharedPointer<IImageData>();
         }
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(image), filePath, name()));
+
+        ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
+        if(metaData)
+            metaData->applyExifOrientation(&image);
+#endif
+
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createImageItem(image);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
 };
 

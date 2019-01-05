@@ -867,7 +867,9 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable() || !isAvailable())
             return QSharedPointer<IImageData>();
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createScalableItem(new MSHTMLPixmapProvider(filePath)), filePath, name()));
+        IScaledImageProvider *provider = new MSHTMLPixmapProvider(filePath);
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createScalableItem(provider);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name()));
     }
 };
 

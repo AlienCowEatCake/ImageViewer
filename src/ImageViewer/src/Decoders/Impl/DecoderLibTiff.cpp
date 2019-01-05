@@ -330,7 +330,9 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
         iccProfile = NULL;
     }
 
-    IImageMetaData *metaData = readExifMetaData(tiff);
+    IImageMetaData *metaData = ImageMetaData::createMetaData(filename);
+    if(!metaData)
+        metaData = readExifMetaData(tiff);
 
     TIFFRGBAImageEnd(&img);
     TIFFClose(tiff);
@@ -371,7 +373,8 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
         const PayloadWithMetaData<QImage> readData = readTiffFile(filePath);
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(readData), filePath, name(), readData.metaData()));
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createImageItem(readData);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), readData.metaData()));
     }
 };
 

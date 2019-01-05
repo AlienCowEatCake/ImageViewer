@@ -346,7 +346,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 
     delete iccProfile;
 
-    ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer);
+    ImageMetaData *metaData = ImageMetaData::createMetaData(filename);
     if(metaData)
         metaData->applyExifOrientation(&outImage);
 
@@ -387,7 +387,8 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
         const PayloadWithMetaData<QImage> readData = readJpegFile(filePath);
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createImageItem(readData), filePath, name(), readData.metaData()));
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createImageItem(readData);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), readData.metaData()));
     }
 };
 

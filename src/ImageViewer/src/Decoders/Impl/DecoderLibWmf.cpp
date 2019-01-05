@@ -36,6 +36,7 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
+#include "Internal/ImageMetaData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
 #include "Internal/Utils/ZLibUtils.h"
 
@@ -288,7 +289,10 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
-        return QSharedPointer<IImageData>(new ImageData(GraphicsItemsFactory::instance().createScalableItem(new WmfPixmapProvider(filePath)), filePath, name()));
+        IScaledImageProvider *provider = new WmfPixmapProvider(filePath);
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createScalableItem(provider);
+        IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
 };
 
