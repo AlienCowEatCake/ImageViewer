@@ -26,6 +26,7 @@
 #include <QImage>
 #include <QTransform>
 #include <QBuffer>
+#include <QFile>
 #include <QString>
 #include <QStringList>
 #include <QDebug>
@@ -56,6 +57,311 @@
 namespace {
 
 #if defined (USE_EXIV2)
+
+class QFileIo : public Exiv2::BasicIo
+{
+    Q_DISABLE_COPY(QFileIo)
+
+public:
+    explicit QFileIo(const QString &path)
+        : m_file(path)
+    {}
+
+    //! @name Manipulators
+    //@{
+    /*!
+      @brief Open the IO source using the default access mode. The
+          default mode should allow for reading and writing.
+
+      This method can also be used to "reopen" an IO source which will
+      flush any unwritten data and reset the IO position to the start.
+      Subclasses may provide custom methods to allow for
+      opening IO sources differently.
+
+      @return 0 if successful;<BR>
+          Nonzero if failure.
+     */
+    int open()
+    {
+        if(m_file.isOpen())
+            m_file.close();
+        if(m_file.open(QIODevice::ReadOnly))
+            return 0;
+        qWarning() << "[Exiv2::QFileIo]" << "Error in open():" << m_file.errorString();
+        return 1;
+    }
+
+    /*!
+      @brief Close the IO source. After closing a BasicIo instance can not
+          be read or written. Closing flushes any unwritten data. It is
+          safe to call close on a closed instance.
+      @return 0 if successful;<BR>
+          Nonzero if failure.
+     */
+    int close()
+    {
+        m_file.close();
+        return 0;
+    }
+
+    /*!
+      @brief Write data to the IO source. Current IO position is advanced
+          by the number of bytes written.
+      @param data Pointer to data. Data must be at least \em wcount
+          bytes long
+      @param wcount Number of bytes to be written.
+      @return Number of bytes written to IO source successfully;<BR>
+          0 if failure;
+     */
+    long write(const Exiv2::byte */*data*/, long /*wcount*/)
+    {
+        qWarning() << "[Exiv2::QFileIo]" << "Error in write(): Not allowed (RO only)";
+        return 0;
+    }
+
+    /*!
+      @brief Write data that is read from another BasicIo instance to
+          the IO source. Current IO position is advanced by the number
+          of bytes written.
+      @param src Reference to another BasicIo instance. Reading start
+          at the source's current IO position
+      @return Number of bytes written to IO source successfully;<BR>
+          0 if failure;
+     */
+    long write(Exiv2::BasicIo &/*src*/)
+    {
+        qWarning() << "[Exiv2::QFileIo]" << "Error in write(): Not allowed (RO only)";
+        return 0;
+    }
+
+    /*!
+      @brief Write one byte to the IO source. Current IO position is
+          advanced by one byte.
+      @param data The single byte to be written.
+      @return The value of the byte written if successful;<BR>
+          EOF if failure;
+     */
+    virtual int putb(Exiv2::byte /*data*/)
+    {
+        qWarning() << "[Exiv2::QFileIo]" << "Error in putb(): Not allowed (RO only)";
+        return EOF;
+    }
+
+    /*!
+      @brief Read data from the IO source. Reading starts at the current
+          IO position and the position is advanced by the number of bytes
+          read.
+      @param rcount Maximum number of bytes to read. Fewer bytes may be
+          read if \em rcount bytes are not available.
+      @return DataBuf instance containing the bytes read. Use the
+          DataBuf::size_ member to find the number of bytes read.
+          DataBuf::size_ will be 0 on failure.
+     */
+    Exiv2::DataBuf read(long rcount)
+    {
+        const QByteArray ba = m_file.read(static_cast<qint64>(rcount));
+        Exiv2::DataBuf buf(reinterpret_cast<const Exiv2::byte*>(ba.constData()), static_cast<long>(ba.size()));
+        return buf;
+    }
+
+    /*!
+      @brief Read data from the IO source. Reading starts at the current
+          IO position and the position is advanced by the number of bytes
+          read.
+      @param buf Pointer to a block of memory into which the read data
+          is stored. The memory block must be at least \em rcount bytes
+          long.
+      @param rcount Maximum number of bytes to read. Fewer bytes may be
+          read if \em rcount bytes are not available.
+      @return Number of bytes read from IO source successfully;<BR>
+          0 if failure;
+     */
+    long read(Exiv2::byte *buf, long rcount)
+    {
+        return static_cast<long>(m_file.read(reinterpret_cast<char*>(buf), static_cast<qint64>(rcount)));
+    }
+
+    /*!
+      @brief Read one byte from the IO source. Current IO position is
+          advanced by one byte.
+      @return The byte read from the IO source if successful;<BR>
+          EOF if failure;
+     */
+    int getb()
+    {
+        Exiv2::byte byte = 0;
+        if(m_file.read(reinterpret_cast<char*>(&byte), 1) == 1)
+            return byte;
+        qWarning() << "[Exiv2::QFileIo]" << "Error in getb():" << m_file.errorString();
+        return EOF;
+    }
+
+    /*!
+      @brief Remove all data from this object's IO source and then transfer
+          data from the \em src BasicIo object into this object.
+
+      The source object is invalidated by this operation and should not be
+      used after this method returns. This method exists primarily to
+      be used with the BasicIo::temporary() method.
+
+      @param src Reference to another BasicIo instance. The entire contents
+          of src are transferred to this object. The \em src object is
+          invalidated by the method.
+      @throw Error In case of failure
+     */
+    void transfer(BasicIo &/*src*/)
+    {
+        qWarning() << "[Exiv2::QFileIo]" << "Error in transfer(): Not allowed (RO only)";
+        throw Exiv2::Error(Exiv2::kerErrorMessage, "Not allowed (RO only)");
+    }
+
+    /*!
+      @brief Move the current IO position.
+      @param offset Number of bytes to move the position relative
+          to the starting position specified by \em pos
+      @param pos Position from which the seek should start
+      @return 0 if successful;<BR>
+          Nonzero if failure;
+     */
+#if defined (_MSC_VER)
+    int seek(int64_t offset, BasicIo::Position pos)
+#else
+    int seek(long offset, BasicIo::Position pos)
+#endif
+    {
+        qint64 newIdx = 0;
+        switch(pos)
+        {
+        case BasicIo::cur:
+            newIdx = m_file.pos() + static_cast<qint64>(offset);
+            break;
+        case BasicIo::beg:
+            newIdx = static_cast<qint64>(offset);
+            break;
+        case BasicIo::end:
+            newIdx = m_file.size() + static_cast<qint64>(offset);
+            break;
+        }
+        if(newIdx < 0)
+        {
+            qWarning() << "[Exiv2::QFileIo]" << "Error in seek(): position is negative";
+            return 1;
+        }
+        if(m_file.seek(newIdx))
+            return 0;
+        qWarning() << "[Exiv2::QFileIo]" << "Error in seek():" << m_file.errorString();
+        return 1;
+    }
+
+    /*!
+      @brief Direct access to the IO data. For files, this is done by
+             mapping the file into the process's address space; for memory
+             blocks, this allows direct access to the memory block.
+      @param isWriteable Set to true if the mapped area should be writeable
+             (default is false).
+      @return A pointer to the mapped area.
+      @throw Error In case of failure.
+     */
+    Exiv2::byte *mmap(bool /*isWriteable*/ = false)
+    {
+        uchar *memory = m_file.map(0, m_file.size());
+        if(!memory)
+        {
+            qWarning() << "[Exiv2::QFileIo]" << "Error in mmap():" << m_file.errorString();
+            throw Exiv2::Error(Exiv2::kerErrorMessage, m_file.errorString().toLocal8Bit().data());
+        }
+        bigBlock_ = reinterpret_cast<Exiv2::byte*>(memory);
+        return bigBlock_;
+    }
+
+    /*!
+      @brief Remove a mapping established with mmap(). If the mapped area
+             is writeable, this ensures that changes are written back.
+      @return 0 if successful;<BR>
+              Nonzero if failure;
+     */
+    int munmap()
+    {
+        if(!m_file.unmap(reinterpret_cast<uchar*>(bigBlock_)))
+        {
+            qWarning() << "[Exiv2::QFileIo]" << "Error in mmap():" << m_file.errorString();
+            return 1;
+        }
+        bigBlock_ = NULL;
+        return 0;
+    }
+
+    //@}
+
+    //! @name Accessors
+    //@{
+    /*!
+      @brief Get the current IO position.
+      @return Offset from the start of IO if successful;<BR>
+             -1 if failure;
+     */
+    long tell() const
+    {
+        if(m_file.isOpen())
+            return static_cast<long>(m_file.pos());
+        qWarning() << "[Exiv2::QFileIo]" << "Error in tell(): File is not open!";
+        return -1;
+    }
+
+    /*!
+      @brief Get the current size of the IO source in bytes.
+      @return Size of the IO source in bytes;<BR>
+             -1 if failure;
+     */
+    size_t size() const
+    {
+        return static_cast<size_t>(m_file.size());
+    }
+
+    //!Returns true if the IO source is open, otherwise false.
+    bool isopen() const
+    {
+        return m_file.isOpen();
+    }
+
+    //!Returns 0 if the IO source is in a valid state, otherwise nonzero.
+    int error() const
+    {
+        return m_file.error();
+    }
+
+    //!Returns true if the IO position has reached the end, otherwise false.
+    bool eof() const
+    {
+        return m_file.atEnd();
+    }
+
+    /*!
+      @brief Return the path to the IO resource. Often used to form
+          comprehensive error messages where only a BasicIo instance is
+          available.
+     */
+    std::string path() const
+    {
+        return m_file.fileName().toLocal8Bit().data();
+    }
+
+#if defined (EXV_UNICODE_PATH)
+    /*!
+      @brief Like path() but returns a unicode path in an std::wstring.
+      @note This function is only available on Windows.
+     */
+    std::wstring wpath() const
+    {
+        return m_file.fileName().toStdWString();
+    }
+#endif
+
+    //@}
+
+private:
+    QFile m_file;
+};
 
 void fillExifMetaData(const Exiv2::ExifData &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
 {
@@ -752,8 +1058,7 @@ bool ImageMetaData::readFile(const QString &filePath)
     {
         m_impl->image.reset();
         m_impl->exifData.clear();
-        const std::string file = filePath.toLocal8Bit().data();
-        m_impl->image = Exiv2::ImageFactory::open(file);
+        m_impl->image = Exiv2::ImageFactory::open(Exiv2::BasicIo::AutoPtr(new QFileIo(filePath)));
         if(!m_impl->image.get())
             return false;
         m_impl->image->readMetadata();
