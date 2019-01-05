@@ -262,9 +262,16 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 
     // Step 4: set parameters for decompression
 
-    // In this example, we don't need to change any of the defaults set by
-    // jpeg_read_header(), so we do nothing here.
-    cinfo.out_color_space = JCS_RGB;
+    bool isCMYK = cinfo.jpeg_color_space == JCS_CMYK;
+    if(cinfo.jpeg_color_space == JCS_YCCK)
+    {
+        isCMYK = true;
+        cinfo.out_color_space = JCS_CMYK;
+    }
+    if(!isCMYK)
+    {
+        cinfo.out_color_space = JCS_RGB;
+    }
 
     // Step 5: Start decompressor
 
@@ -310,13 +317,25 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
         }
         // Assume put_scanline_someplace wants a pointer and sample count.
         QRgb *outLine = reinterpret_cast<QRgb*>(outImage.scanLine(static_cast<int>(cinfo.output_scanline) - 1));
-        iccProfile->applyToRGBData(buffer[0], cinfo.output_width);
-        for(JDIMENSION j = 0; j < cinfo.output_width; j++)
+        if(isCMYK)
         {
-            unsigned char *inPixel = reinterpret_cast<unsigned char*>(buffer[0]) + j * static_cast<JDIMENSION>(cinfo.output_components);
-            outLine[j] = qRgb(inPixel[0], inPixel[1], inPixel[2]);
+            for(JDIMENSION j = 0; j < cinfo.output_width; j++)
+            {
+                unsigned char *inPixel = reinterpret_cast<unsigned char*>(buffer[0]) + j * static_cast<JDIMENSION>(cinfo.output_components);
+                const int k = inPixel[3];
+                outLine[j] = qRgb(k * inPixel[0] / 255, k * inPixel[1] / 255, k * inPixel[2] / 255);
+            }
+        }
+        else
+        {
+            for(JDIMENSION j = 0; j < cinfo.output_width; j++)
+            {
+                unsigned char *inPixel = reinterpret_cast<unsigned char*>(buffer[0]) + j * static_cast<JDIMENSION>(cinfo.output_components);
+                outLine[j] = qRgb(inPixel[0], inPixel[1], inPixel[2]);
+            }
         }
     }
+    iccProfile->applyToImage(&outImage);
 
     // Step 7: Finish decompression
 
