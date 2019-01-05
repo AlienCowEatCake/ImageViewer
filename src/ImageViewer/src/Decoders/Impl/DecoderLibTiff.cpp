@@ -177,10 +177,18 @@ void addMetaData<QString>(TIFF *tiff, const TIFFField *field, ImageMetaData *met
 
 void readTiffTagToMetaData(TIFF *tiff, ImageMetaData *&metaData, quint32 tag, const QString &tagDescription)
 {
-    quint32 exif_offset;
-    if(!TIFFGetField(tiff, tag, &exif_offset))
+    const TIFFField *tagField = TIFFFindField(tiff, tag, TIFF_ANY);
+    if(!tagField)
         return;
-    if(!TIFFReadEXIFDirectory(tiff, exif_offset))
+    if(TIFFFieldDataType(tagField) != TIFF_IFD8)
+    {
+        qWarning() << "TIFFFieldDataType for tag (" << tagDescription << ") is not TIFF_IFD8!";
+        return;
+    }
+    quint64 exifOffset = 0;
+    if(!TIFFGetField(tiff, tag, &exifOffset))
+        return;
+    if(!TIFFReadEXIFDirectory(tiff, exifOffset))
         return;
     qDebug() << "Found EXIF metadata (" << tagDescription << ")";
     metaData = new ImageMetaData;
