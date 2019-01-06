@@ -78,6 +78,7 @@ SOURCES += \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowser.cpp \
+    src/Decoders/Impl/Internal/GraphicsItems/ProgressiveResampledImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/Scaling/AbstractScalingManager.cpp \
@@ -121,8 +122,10 @@ HEADERS += \
     src/Decoders/Impl/Internal/Animation/MovieAnimationProvider.h \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.h \
     src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowser.h \
+    src/Decoders/Impl/Internal/GraphicsItems/ProgressiveResampledImageGraphicsItem.h \
     src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.h \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.h \
+    src/Decoders/Impl/Internal/Scaling/AbstractProgressiveImageProvider.h \
     src/Decoders/Impl/Internal/Scaling/AbstractScalingManager.h \
     src/Decoders/Impl/Internal/Scaling/AbstractScalingWorker.h \
     src/Decoders/Impl/Internal/Scaling/AbstractScalingWorkerHandler.h \

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -27,6 +27,7 @@ class QImage;
 class QPixmap;
 class IAnimationProvider;
 class IScaledImageProvider;
+class AbstractProgressiveImageProvider;
 
 class GraphicsItemsFactory
 {
@@ -37,6 +38,7 @@ public:
 
     QGraphicsItem *createImageItem(const QImage &image);
     QGraphicsItem *createPixmapItem(const QPixmap &pixmap);
+    QGraphicsItem *createProgressiveImageItem(AbstractProgressiveImageProvider* progressiveImageProvider);
     QGraphicsItem *createAnimatedItem(IAnimationProvider *animationProvider);
     QGraphicsItem *createScalableItem(IScaledImageProvider *scaledImageProvider);
 

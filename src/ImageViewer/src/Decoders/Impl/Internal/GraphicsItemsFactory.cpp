@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -27,7 +27,9 @@
 #include "Animation/IAnimationProvider.h"
 #include "Animation/AnimationWidget.h"
 #include "Animation/AnimationObject.h"
+#include "Scaling/AbstractProgressiveImageProvider.h"
 #include "Scaling/IScaledImageProvider.h"
+#include "GraphicsItems/ProgressiveResampledImageGraphicsItem.h"
 #include "GraphicsItems/RasterizedImageGraphicsItem.h"
 #include "GraphicsItems/ResampledImageGraphicsItem.h"
 
@@ -49,6 +51,17 @@ QGraphicsItem *GraphicsItemsFactory::createPixmapItem(const QPixmap &pixmap)
     if(pixmap.isNull())
         return NULL;
     return new ResampledImageGraphicsItem(pixmap);
+}
+
+QGraphicsItem *GraphicsItemsFactory::createProgressiveImageItem(AbstractProgressiveImageProvider *progressiveImageProvider)
+{
+    if(!progressiveImageProvider || !progressiveImageProvider->isValid())
+    {
+        if(progressiveImageProvider)
+            delete progressiveImageProvider;
+        return NULL;
+    }
+    return new ProgressiveResampledImageGraphicsItem(progressiveImageProvider);
 }
 
 QGraphicsItem *GraphicsItemsFactory::createAnimatedItem(IAnimationProvider *animationProvider)
