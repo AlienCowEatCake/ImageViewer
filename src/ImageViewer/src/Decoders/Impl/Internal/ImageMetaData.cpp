@@ -124,7 +124,7 @@ public:
       @return Number of bytes written to IO source successfully;<BR>
           0 if failure;
      */
-    long write(const Exiv2::byte */*data*/, long /*wcount*/) Q_DECL_OVERRIDE
+    long write(const Exiv2::byte * /*data*/, long /*wcount*/) Q_DECL_OVERRIDE
     {
         qWarning() << "[Exiv2::QFileIo]" << "Error in write(): Not allowed (RO only)";
         return 0;
