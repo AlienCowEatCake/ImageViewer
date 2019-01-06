@@ -40,7 +40,10 @@ ProgressiveResampledImageGraphicsItem::ProgressiveResampledImageGraphicsItem(Abs
 }
 
 ProgressiveResampledImageGraphicsItem::~ProgressiveResampledImageGraphicsItem()
-{}
+{
+    if(m_provider)
+        m_provider->disconnect();
+}
 
 AbstractProgressiveImageProvider *ProgressiveResampledImageGraphicsItem::provider() const
 {

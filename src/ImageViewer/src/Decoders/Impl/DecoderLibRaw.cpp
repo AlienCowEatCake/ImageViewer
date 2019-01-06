@@ -370,7 +370,9 @@ private:
 
         void run() Q_DECL_OVERRIDE
         {
-            QImage image = m_provider->m_rawImageProcessor->getImage();
+            const QImage image = m_provider->m_rawImageProcessor->getImage();
+            if(m_provider->m_rawImageProcessor->isCancelled())
+                return;
             m_provider->m_mutex.lock();
             if(!image.isNull())
                 m_provider->m_image = image;
