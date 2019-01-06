@@ -4,17 +4,17 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="91"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="97"/>
         <source>Peter S. Zhigalov</source>
         <translation>Жигалов Петр</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="391"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="415"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="402"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="426"/>
         <source>License</source>
         <translation>Лицензия</translation>
     </message>
@@ -47,65 +47,65 @@
         <translation>%1 ТиБ</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="68"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="63"/>
         <source>Image Information</source>
         <translation>Информация об изображении</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="78"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="84"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="90"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="96"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="102"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="108"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="115"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="121"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="127"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="73"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="79"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="85"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="91"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="97"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="103"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="110"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="116"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="122"/>
         <source>General Info</source>
         <translation>Общая информация</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="79"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="74"/>
         <source>File Name</source>
         <translation>Имя файла</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="85"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="80"/>
         <source>Resolution</source>
         <translation>Разрешение</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="91"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="86"/>
         <source>Decoder</source>
         <translation>Декодер</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="97"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="92"/>
         <source>File Size</source>
         <translation>Размер файла</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="103"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="98"/>
         <source>Created</source>
         <translation>Дата создания</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="109"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="104"/>
         <source>Last Modified</source>
         <translation>Дата изменения</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="116"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="111"/>
         <source>Owner</source>
         <translation>Владелец</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="122"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="117"/>
         <source>Group</source>
         <translation>Группа</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="128"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="123"/>
         <source>Permissions</source>
         <translation>Права доступа</translation>
     </message>
@@ -333,6 +333,8 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="154"/>
+        <location filename="../../src/GUI/MainController.cpp" line="318"/>
+        <location filename="../../src/GUI/MainController.cpp" line="365"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>Не удалось открыть файл &quot;%1&quot;</translation>
     </message>
@@ -366,6 +368,8 @@
         <location filename="../../src/GUI/MainController.cpp" line="169"/>
         <location filename="../../src/GUI/MainController.cpp" line="190"/>
         <location filename="../../src/GUI/MainController.cpp" line="198"/>
+        <location filename="../../src/GUI/MainController.cpp" line="318"/>
+        <location filename="../../src/GUI/MainController.cpp" line="365"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -378,23 +382,17 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="198"/>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="310"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="308"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="198"/>
-        <source>Failed to open file &quot;%1&quot;</source>
-        <translation>Не удалось открыть файл &quot;%1&quot;</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="415"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="413"/>
         <source>Zoom</source>
         <translation>Масштабирование</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="416"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="414"/>
         <source>Zoom Factor (%):</source>
         <translation>Масштаб (%):</translation>
     </message>

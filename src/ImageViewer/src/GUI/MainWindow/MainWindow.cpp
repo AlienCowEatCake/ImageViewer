@@ -32,7 +32,6 @@
 #include <QString>
 #include <QStringList>
 #include <QGraphicsItem>
-#include <QMessageBox>
 #include <QInputDialog>
 #include <QFileInfo>
 #include <QTimer>
@@ -195,7 +194,6 @@ struct MainWindow::Impl
         {
             ui.imageViewerWidget->clear();
             setImageControlsEnabled(false);
-            QMessageBox::critical(mainWindow, qApp->translate("MainWindow", "Error"), qApp->translate("MainWindow", "Failed to open file \"%1\"").arg(uiState.currentFilePath));
         }
     }
 };

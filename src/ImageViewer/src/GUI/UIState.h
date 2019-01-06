@@ -48,6 +48,7 @@ enum UIChangeFlag
                                 | UICF_ImageData
 };
 Q_DECLARE_FLAGS(UIChangeFlags, UIChangeFlag)
+Q_DECLARE_OPERATORS_FOR_FLAGS(UIChangeFlags)
 
 struct UIState
 {

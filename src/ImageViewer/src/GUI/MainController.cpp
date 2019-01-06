@@ -297,12 +297,25 @@ void MainController::openNewWindow()
 void MainController::onReopenWithRequested(const QString &decoderName)
 {
     const QString currentFilePath = m_impl->fileManager.currentFilePath();
-    m_impl->imageData = currentFilePath.isEmpty()
-            ? QSharedPointer<IImageData>()
-            : DecodersManager::getInstance().loadImage(currentFilePath, decoderName);
+    if(currentFilePath.isEmpty())
+    {
+        m_impl->imageData = QSharedPointer<IImageData>();
+    }
+    else
+    {
+        /// @note Не все декодеры поддерживают одновременное открытие нескольких файлов
+        if(m_impl->imageData)
+        {
+            m_impl->imageData = QSharedPointer<IImageData>();
+            emit uiStateChanged(m_impl->createUIState(), UICF_ImageData);
+        }
+        m_impl->imageData = DecodersManager::getInstance().loadImage(currentFilePath, decoderName);
+    }
     UIState uiState = m_impl->createUIState();
     UIChangeFlags uiChangeFlags = UICF_ImageData;
     emit uiStateChanged(uiState, uiChangeFlags);
+    if(!currentFilePath.isEmpty() && !m_impl->imageData)
+        QMessageBox::critical(&m_impl->mainWindow, tr("Error"), tr("Failed to open file \"%1\"").arg(uiState.currentFilePath));
 }
 
 void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &changeFlags)
@@ -311,9 +324,22 @@ void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &c
     if(!currentFilePath.isEmpty())
         m_impl->settings.setLastOpenedPath(currentFilePath);
     if(changeFlags.testFlag(FileManager::FlagCurrentFilePath))
-        m_impl->imageData = currentFilePath.isEmpty()
-                ? QSharedPointer<IImageData>()
-                : DecodersManager::getInstance().loadImage(currentFilePath);
+    {
+        if(currentFilePath.isEmpty())
+        {
+            m_impl->imageData = QSharedPointer<IImageData>();
+        }
+        else
+        {
+            /// @note Не все декодеры поддерживают одновременное открытие нескольких файлов
+            if(m_impl->imageData)
+            {
+                m_impl->imageData = QSharedPointer<IImageData>();
+                emit uiStateChanged(m_impl->createUIState(), UICF_ImageData);
+            }
+            m_impl->imageData = DecodersManager::getInstance().loadImage(currentFilePath);
+        }
+    }
 
     UIState uiState = m_impl->createUIState();
     UIChangeFlags uiChangeFlags;
@@ -322,7 +348,7 @@ void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &c
     if(uiState.hasCurrentFileIndex != m_impl->lastHasCurrentFileIndex)
         uiChangeFlags |= UICF_HasCurrentFileIndex;
     if(changeFlags.testFlag(FileManager::FlagCurrentFilePath))
-        uiChangeFlags = uiChangeFlags | UICF_CurrentFilePath | UICF_ImageData;
+        uiChangeFlags |= UICF_CurrentFilePath | UICF_ImageData;
     if(changeFlags.testFlag(FileManager::FlagCurrentFileIndex))
         uiChangeFlags |= UICF_CurrentFileIndex;
     if(changeFlags.testFlag(FileManager::FlagFilesCount))
@@ -334,4 +360,7 @@ void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &c
     m_impl->lastHasCurrentFileIndex = uiState.hasCurrentFileIndex;
 
     emit uiStateChanged(uiState, uiChangeFlags);
+
+    if(!currentFilePath.isEmpty() && !m_impl->imageData)
+        QMessageBox::critical(&m_impl->mainWindow, tr("Error"), tr("Failed to open file \"%1\"").arg(uiState.currentFilePath));
 }
