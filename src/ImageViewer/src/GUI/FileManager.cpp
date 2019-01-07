@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -146,7 +146,7 @@ public:
     {
         assert(!filePath.isEmpty());
         assert(QFileInfo(filePath).isFile());
-        update();
+        DirContentModel::update();
         m_watcher.addPath(m_directoryPath);
     }
 
