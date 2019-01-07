@@ -57,6 +57,11 @@
 #    system_zlib
 
 
+# Zstandard options:
+#    disable_zstd
+#    system_zstd
+
+
 # XZUtils options:
 #    disable_xzutils
 #    system_xzutils
@@ -279,6 +284,7 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
 # ::::: Cleanup Unised :::::
 
 disable_libtiff | system_libtiff {
+    CONFIG += disable_zstd
     CONFIG += disable_xzutils
 }
 

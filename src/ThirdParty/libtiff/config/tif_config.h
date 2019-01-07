@@ -377,7 +377,9 @@
 #endif
 
 /* Support zstd compression */
-/* #undef ZSTD_SUPPORT */
+#if defined(HAS_ZSTD)
+#define ZSTD_SUPPORT 1
+#endif
 
 /* Enable large inode numbers on Mac OS X 10.5.  */
 #ifndef _DARWIN_USE_64_BIT_INODE

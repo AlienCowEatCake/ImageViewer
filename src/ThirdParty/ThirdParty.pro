@@ -8,6 +8,10 @@ SUBDIRS =
     SUBDIRS += zlib/zlib.pro
 }
 
+!disable_zstd : !system_zstd {
+    SUBDIRS += Zstandard/Zstandard.pro
+}
+
 !disable_xzutils : !system_xzutils {
     SUBDIRS += XZUtils/XZUtils.pro
 }
