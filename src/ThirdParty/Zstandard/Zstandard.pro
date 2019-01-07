@@ -11,13 +11,13 @@ CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_ZSTD_PATH = $${PWD}/zstd-1.3.8
+THIRDPARTY_ZSTD_WORKAROUND_PATH = $${PWD}/workaround
 
 include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_ZSTD_PATH}/lib $${THIRDPARTY_ZSTD_PATH}/lib/common $${THIRDPARTY_ZSTD_PATH}/lib/legacy $${INCLUDEPATH}
 
 DEFINES += XXH_NAMESPACE=tp_ZSTD_ ZSTD_LEGACY_SUPPORT=1
-DEFINES += XXH_PRIVATE_API # Workaround: qmake + #include "xxhash.c" = :(
 
 *msvc* {
     DEFINES += ZSTD_HEAPMODE=0
@@ -60,6 +60,7 @@ SOURCES += \
     $${THIRDPARTY_ZSTD_PATH}/lib/legacy/zstd_v05.c \
     $${THIRDPARTY_ZSTD_PATH}/lib/legacy/zstd_v06.c \
     $${THIRDPARTY_ZSTD_PATH}/lib/legacy/zstd_v07.c \
+    $${THIRDPARTY_ZSTD_WORKAROUND_PATH}/wa_xxhash.c
 
 HEADERS += \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/bitstream.h \
