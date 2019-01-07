@@ -1,4 +1,4 @@
-# URL: https://www.webmproject.org/code/#webp-repositories
+# URL: https://www.webmproject.org/code/#webp-repositories + https://github.com/webmproject/libwebp/
 # License: ???
 
 TEMPLATE = lib
@@ -10,7 +10,7 @@ TARGET = tp_LibWebP
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.0.0
+THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.0.1
 
 include(../CommonSettings.pri)
 
@@ -29,7 +29,9 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/webp_dec.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/demux/demux.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/demux/anim_decode.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_mips_dsp_r2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_mips32.c \
@@ -37,42 +39,44 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cpu.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_clip_tables.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_mips_dsp_r2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_msa.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_mips_dsp_r2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_msa.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/filters.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/filters_mips_dsp_r2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/filters_msa.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/filters_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_mips_dsp_r2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_msa.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_mips_dsp_r2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_mips_dsp_r2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_msa.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/ssim.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/ssim_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_mips_dsp_r2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_msa.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_mips_dsp_r2.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_sse2.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_clip_tables.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_mips32.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_avx2.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_sse2.c \
@@ -88,18 +92,18 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/histogram_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/iterator_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/near_lossless_enc.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/predictor_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_enc.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_csp_enc.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_psnr_enc.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_rescale_enc.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_tools_enc.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/predictor_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/quant_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/syntax_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/token_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/tree_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/vp8l_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/webp_enc.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_csp_enc.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_psnr_enc.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_rescale_enc.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_tools_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/mux/anim_encode.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/mux/muxedit.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/mux/muxinternal.c \
@@ -162,7 +166,7 @@ HEADERS += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/webp/mux_types.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/webp/types.h
 
-android {
+android:!android-embedded {
     SOURCES += $${NDK_ROOT}/sources/android/cpufeatures/cpu-features.c
     INCLUDEPATH += $${NDK_ROOT}/sources/android/cpufeatures
 }
@@ -173,8 +177,10 @@ integrity {
 
 equals(QT_ARCH, arm)|equals(QT_ARCH, arm64) {
     SOURCES_FOR_NEON += \
+        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_neon.c \
         $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_neon.c \
         $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_neon.c \
+        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/filters_neon.c \
         $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_neon.c \
         $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_neon.c \
         $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_neon.c \
