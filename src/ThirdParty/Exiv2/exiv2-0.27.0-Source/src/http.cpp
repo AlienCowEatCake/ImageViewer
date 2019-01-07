@@ -71,7 +71,11 @@
 
 #include <unistd.h>
 #include <strings.h>
+#if defined(__HAIKU__)
+#include <errno.h>
+#else
 #include <sys/errno.h>
+#endif
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/uio.h>

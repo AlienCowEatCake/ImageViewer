@@ -1,0 +1,27 @@
+diff -Nur exiv2-0.27.0-Source.orig/src/http.cpp exiv2-0.27.0-Source/src/http.cpp
+--- exiv2-0.27.0-Source.orig/src/http.cpp	2019-01-07 16:47:19.869269504 +0000
++++ exiv2-0.27.0-Source/src/http.cpp	2019-01-07 16:48:00.798490624 +0000
+@@ -71,7 +71,11 @@
+ 
+ #include <unistd.h>
+ #include <strings.h>
++#if defined(__HAIKU__)
++#include <errno.h>
++#else
+ #include <sys/errno.h>
++#endif
+ #include <sys/socket.h>
+ #include <sys/un.h>
+ #include <sys/uio.h>
+diff -Nur exiv2-0.27.0-Source.orig/src/timegm.h exiv2-0.27.0-Source/src/timegm.h
+--- exiv2-0.27.0-Source.orig/src/timegm.h	2019-01-07 16:47:19.869793792 +0000
++++ exiv2-0.27.0-Source/src/timegm.h	2019-01-07 16:48:00.798490624 +0000
+@@ -15,7 +15,7 @@
+ #define timegm _mkgmtime
+ #endif
+ 
+-#if defined(__MINGW__)
++#if defined(__MINGW__) || defined(__HAIKU__)
+ time_t timegm(struct tm * const tmp);
+ #endif
+ 

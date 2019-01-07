@@ -50,6 +50,9 @@ include($${PWD}/../../Features.pri)
             *msvc*: LIBS += ws2_32.lib
             else: LIBS += -lws2_32
         }
+        haiku {
+            LIBS += -lnetwork
+        }
 
     } else {
 

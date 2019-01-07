@@ -15,7 +15,7 @@ extern "C" {
 #define timegm _mkgmtime
 #endif
 
-#if defined(__MINGW__)
+#if defined(__MINGW__) || defined(__HAIKU__)
 time_t timegm(struct tm * const tmp);
 #endif
 
