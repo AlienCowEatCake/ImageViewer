@@ -1,4 +1,4 @@
-# URL: https://libexif.github.io/
+# URL: https://libexif.github.io/ + https://github.com/libexif/libexif
 # License: GNU LGPL v2.1
 
 include($${PWD}/../../Features.pri)
@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libexif {
 
-        THIRDPARTY_LIBEXIF_PATH = $${PWD}/libexif-44089eb
+        THIRDPARTY_LIBEXIF_PATH = $${PWD}/libexif-f2bfe3f
         THIRDPARTY_LIBEXIF_INCLUDE_PATH = $${PWD}/include
 
         INCLUDEPATH += $${THIRDPARTY_LIBEXIF_INCLUDE_PATH} $${THIRDPARTY_LIBEXIF_PATH}

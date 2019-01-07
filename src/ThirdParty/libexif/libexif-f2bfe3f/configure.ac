@@ -8,7 +8,7 @@ AM_MAINTAINER_MODE
 
 # Use the silent-rules feature when possible.
 m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
-AM_SILENT_RULES([no])
+AM_SILENT_RULES([yes])
 
 GP_CHECK_SHELL_ENVIRONMENT
 GP_CONFIG_MSG([Build])
@@ -129,6 +129,9 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([
 	])
 ])
 
+# Check whether libfailmalloc is available for tests
+CHECK_FAILMALLOC
+
 # doc support
 GP_CHECK_DOC_DIR
 GP_CHECK_DOXYGEN
@@ -204,6 +207,7 @@ AC_CONFIG_FILES([  po/Makefile.in
   libexif.spec
   libexif/Makefile
   test/Makefile
+  test/check-vars.sh
   test/nls/Makefile
   m4m/Makefile
   doc/Makefile

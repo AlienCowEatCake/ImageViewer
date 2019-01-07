@@ -477,6 +477,11 @@ exif_data_load_data_content (ExifData *data, ExifIfd ifd,
 					break;
 			}
 			entry = exif_entry_new_mem (data->priv->mem);
+			if (!entry) {
+				  exif_log (data->priv->log, EXIF_LOG_CODE_NO_MEMORY, "ExifData",
+                                          "Could not allocate memory");
+				  return;
+			}
 			if (exif_data_load_data_entry (data, entry, d, ds,
 						   offset + 12 * i))
 				exif_content_add_entry (data->ifd[ifd], entry);
@@ -1085,7 +1090,7 @@ exif_data_dump (ExifData *data)
 	}
 
 	if (data->data) {
-		printf ("%i byte(s) thumbnail data available.", data->size);
+		printf ("%i byte(s) thumbnail data available: ", data->size);
 		if (data->size >= 4) {
 			printf ("0x%02x 0x%02x ... 0x%02x 0x%02x\n",
 				data->data[0], data->data[1],
