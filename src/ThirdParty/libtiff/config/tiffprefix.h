@@ -95,6 +95,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#d
 #define TIFFInitPixarLog tp_TIFFInitPixarLog
 #define TIFFInitSGILog tp_TIFFInitSGILog
 #define TIFFInitThunderScan tp_TIFFInitThunderScan
+#define TIFFInitWebP tp_TIFFInitWebP
 #define TIFFInitZIP tp_TIFFInitZIP
 #define TIFFIsBigEndian tp_TIFFIsBigEndian
 #define TIFFIsByteSwapped tp_TIFFIsByteSwapped

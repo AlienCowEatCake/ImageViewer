@@ -1,0 +1,69 @@
+From c7774df9a7fe9c2f8d1268e48a34a5a2d5869387 Mon Sep 17 00:00:00 2001
+From: Norman Barker <norman.barker@mapbox.com>
+Date: Tue, 20 Nov 2018 11:54:01 -0600
+Subject: [PATCH] fixed lossless webp compression config
+
+---
+ libtiff/tif_webp.c | 25 ++++++++++++++++---------
+ 1 file changed, 16 insertions(+), 9 deletions(-)
+
+diff --git a/libtiff/tif_webp.c b/libtiff/tif_webp.c
+index a002f481..ee0a0649 100644
+--- a/libtiff/tif_webp.c
++++ b/libtiff/tif_webp.c
+@@ -349,6 +349,12 @@ TWebPSetupEncode(TIFF* tif)
+ 
+   sp->state |= LSTATE_INIT_ENCODE;
+ 
++  if (!WebPPictureInit(&sp->sPicture)) {
++    TIFFErrorExt(tif->tif_clientdata, module,
++        "Error initializing WebP picture.");
++    return 0;
++  }
++
+   if (!WebPConfigInitInternal(&sp->sEncoderConfig, WEBP_PRESET_DEFAULT,
+                               sp->quality_level,
+                               WEBP_ENCODER_ABI_VERSION)) {
+@@ -357,9 +363,13 @@ TWebPSetupEncode(TIFF* tif)
+     return 0;
+   }
+ 
+-#if WEBP_ENCODER_ABI_VERSION >= 0x0100
+-  sp->sEncoderConfig.lossless = sp->lossless;
+-#endif
++  // WebPConfigInitInternal above sets lossless to false
++  #if WEBP_ENCODER_ABI_VERSION >= 0x0100
++    sp->sEncoderConfig.lossless = sp->lossless;
++    if (sp->lossless) {
++      sp->sPicture.use_argb = 1;
++    }
++  #endif
+ 
+   if (!WebPValidateConfig(&sp->sEncoderConfig)) {
+     TIFFErrorExt(tif->tif_clientdata, module,
+@@ -367,12 +377,6 @@ TWebPSetupEncode(TIFF* tif)
+     return 0;
+   }
+ 
+-  if (!WebPPictureInit(&sp->sPicture)) {
+-    TIFFErrorExt(tif->tif_clientdata, module,
+-        "Error initializing WebP picture.");
+-    return 0;
+-  }
+-
+   return 1;
+ }
+ 
+@@ -570,6 +574,9 @@ TWebPVSetField(TIFF* tif, uint32 tag, va_list ap)
+   case TIFFTAG_WEBP_LOSSLESS:
+     #if WEBP_ENCODER_ABI_VERSION >= 0x0100
+     sp->lossless = va_arg(ap, int);
++    if (sp->lossless){
++      sp->quality_level = 100.0f;      
++    }
+     return 1;
+     #else
+       TIFFErrorExt(tif->tif_clientdata, module,
+-- 
+2.18.1
+

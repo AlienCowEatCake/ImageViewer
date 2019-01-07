@@ -44,9 +44,6 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
 
-/* Define to 1 if you have the `floor' function. */
-/* #undef HAVE_FLOOR */
-
 /* Define to 1 if fseeko (and presumably ftello) exists and is declared. */
 /* #undef HAVE_FSEEKO */
 
@@ -69,23 +66,11 @@
    machine */
 #define HAVE_IEEEFP 1
 
-/* Define to 1 if the system has the type `int16'. */
-/* #undef HAVE_INT16 */
-
-/* Define to 1 if the system has the type `int32'. */
-/* #undef HAVE_INT32 */
-
-/* Define to 1 if the system has the type `int8'. */
-/* #undef HAVE_INT8 */
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 /* #undef HAVE_INTTYPES_H */
 
 /* Define to 1 if you have the <io.h> header file. */
 /* #undef HAVE_IO_H */
-
-/* Define to 1 if you have the `isascii' function. */
-/* #undef HAVE_ISASCII */
 
 /* Define to 1 if you have the `jbg_newlen' function. */
 #define HAVE_JBG_NEWLEN 1
@@ -93,20 +78,8 @@
 /* Define to 1 if you have the `lfind' function. */
 /* #undef HAVE_LFIND */
 
-/* Define to 1 if you have the <limits.h> header file. */
-#define HAVE_LIMITS_H 1
-
-/* Define to 1 if you have the <malloc.h> header file. */
-/* #undef HAVE_MALLOC_H */
-
-/* Define to 1 if you have the `memmove' function. */
-#define HAVE_MEMMOVE 1
-
 /* Define to 1 if you have the <memory.h> header file. */
 /* #undef HAVE_MEMORY_H */
-
-/* Define to 1 if you have the `memset' function. */
-#define HAVE_MEMSET 1
 
 /* Define to 1 if you have the `mmap' function. */
 /* #undef HAVE_MMAP */
@@ -116,9 +89,6 @@
 
 /* Define to 1 if you have the <OpenGL/gl.h> header file. */
 /* #undef HAVE_OPENGL_GL_H */
-
-/* Define to 1 if you have the `pow' function. */
-#define HAVE_POW 1
 
 /* Define if you have POSIX threads libraries and header files. */
 /* #undef HAVE_PTHREAD */
@@ -134,9 +104,6 @@
 #define HAVE_SNPRINTF 1
 #endif
 
-/* Define to 1 if you have the `sqrt' function. */
-#define HAVE_SQRT 1
-
 /* Define to 1 if you have the <stdint.h> header file. */
 /* #undef HAVE_STDINT_H */
 
@@ -146,23 +113,17 @@
 /* Define to 1 if you have the `strcasecmp' function. */
 /* #undef HAVE_STRCASECMP */
 
-/* Define to 1 if you have the `strchr' function. */
-#define HAVE_STRCHR 1
-
 /* Define to 1 if you have the <strings.h> header file. */
 /* #undef HAVE_STRINGS_H */
 
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
 
-/* Define to 1 if you have the `strrchr' function. */
-#define HAVE_STRRCHR 1
-
-/* Define to 1 if you have the `strstr' function. */
-#define HAVE_STRSTR 1
-
 /* Define to 1 if you have the `strtol' function. */
 #define HAVE_STRTOL 1
+
+/* Define to 1 if you have the `strtoll' function. */
+/* #undef HAVE_STRTOLL */
 
 /* Define to 1 if you have the `strtoul' function. */
 #define HAVE_STRTOUL 1
@@ -172,9 +133,6 @@
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 /* #undef HAVE_SYS_STAT_H */
-
-/* Define to 1 if you have the <sys/time.h> header file. */
-/* #undef HAVE_SYS_TIME_H */
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #define HAVE_SYS_TYPES_H 1
@@ -254,7 +212,7 @@
 #define PACKAGE_NAME "LibTIFF Software"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "LibTIFF Software 4.0.9"
+#define PACKAGE_STRING "LibTIFF Software 4.0.10"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "tiff"
@@ -263,7 +221,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.0.9"
+#define PACKAGE_VERSION "4.0.10"
 
 /* Support Macintosh PackBits algorithm */
 #define PACKBITS_SUPPORT 1
@@ -286,9 +244,6 @@
 /* The size of `signed long long', as computed by sizeof. */
 /* #undef SIZEOF_SIGNED_LONG_LONG */
 
-/* The size of `signed short', as computed by sizeof. */
-/* #undef SIZEOF_SIGNED_SHORT */
-
 /* The size of `size_t', as computed by sizeof. */
 /* #undef SIZEOF_SIZE_T */
 
@@ -303,9 +258,6 @@
 
 /* The size of `unsigned long long', as computed by sizeof. */
 /* #undef SIZEOF_UNSIGNED_LONG_LONG */
-
-/* The size of `unsigned short', as computed by sizeof. */
-/* #undef SIZEOF_UNSIGNED_SHORT */
 
 /* Define to 1 if you have the ANSI C header files. */
 /* #undef STDC_HEADERS */
@@ -397,7 +349,12 @@
 #endif
 
 /* Version number of package */
-#define VERSION "4.0.9"
+#define VERSION "4.0.10"
+
+/* Support webp compression */
+#if defined(HAS_LIBWEBP)
+#define WEBP_SUPPORT 1
+#endif
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
@@ -411,10 +368,6 @@
 # endif
 #endif
 
-#if !defined (WORDS_BIGENDIAN) && defined(Q_BYTE_ORDER) && (Q_BYTE_ORDER == Q_BIG_ENDIAN)
-#define WORDS_BIGENDIAN 1
-#endif
-
 /* Define to 1 if the X Window System is missing or not being used. */
 #define X_DISPLAY_MISSING 1
 
@@ -422,6 +375,9 @@
 #if defined(HAS_ZLIB)
 #define ZIP_SUPPORT 1
 #endif
+
+/* Support zstd compression */
+/* #undef ZSTD_SUPPORT */
 
 /* Enable large inode numbers on Mac OS X 10.5.  */
 #ifndef _DARWIN_USE_64_BIT_INODE

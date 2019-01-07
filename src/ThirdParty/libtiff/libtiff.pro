@@ -10,7 +10,7 @@ TARGET = tp_libtiff
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.0.9
+THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.0.10
 THIRDPARTY_LIBTIFF_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -18,6 +18,7 @@ include(../zlib/zlib.pri)
 include(../JBIGKit/JBIGKit.pri)
 include(../libjpeg/libjpeg.pri)
 include(../XZUtils/XZUtils.pri)
+include(../LibWebP/LibWebP.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LIBTIFF_CONFIG_PATH} $${THIRDPARTY_LIBTIFF_PATH}/libtiff $${INCLUDEPATH}
 
@@ -63,8 +64,10 @@ SOURCES += \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_tile.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_version.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_warning.c \
+    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_webp.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_write.c \
-    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_zip.c
+    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_zip.c \
+    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_zstd.c
 
 win32 {
     SOURCES += \
