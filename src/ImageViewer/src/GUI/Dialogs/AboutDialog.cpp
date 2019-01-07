@@ -71,6 +71,9 @@
 #if defined (HAS_ZLIB)
 #include <zlib.h>
 #endif
+#if defined (HAS_ZSTD)
+#include <zstd.h>
+#endif
 #if defined (HAS_XZUTILS)
 #include <lzma.h>
 #endif
@@ -334,6 +337,15 @@ QString getTextBrowserContent()
                       QString::fromLatin1("zlib"),
                       QString::fromLatin1(ZLIB_VERSION),
                       QString::fromLatin1("http://www.zlib.net/")
+                      ));
+#endif
+
+#if defined (HAS_ZSTD)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the Zstandard library"),
+                      QString::fromLatin1("zstd"),
+                      QString::fromLatin1("%1.%2.%3").arg(ZSTD_VERSION_MAJOR).arg(ZSTD_VERSION_MINOR).arg(ZSTD_VERSION_RELEASE),
+                      QString::fromLatin1("https://facebook.github.io/zstd/")
                       ));
 #endif
 

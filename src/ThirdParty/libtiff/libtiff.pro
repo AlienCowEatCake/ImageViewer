@@ -15,6 +15,7 @@ THIRDPARTY_LIBTIFF_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
 include(../zlib/zlib.pri)
+include(../Zstandard/Zstandard.pri)
 include(../JBIGKit/JBIGKit.pri)
 include(../libjpeg/libjpeg.pri)
 include(../XZUtils/XZUtils.pri)
