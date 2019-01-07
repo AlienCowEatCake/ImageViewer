@@ -38,7 +38,6 @@ SOURCES += \
     $$PWD/libwebp/src/dsp/dec_sse2.c \
     $$PWD/libwebp/src/dsp/dec_sse41.c \
     $$PWD/libwebp/src/dsp/enc.c \
-    $$PWD/libwebp/src/dsp/enc_avx2.c \
     $$PWD/libwebp/src/dsp/enc_mips32.c \
     $$PWD/libwebp/src/dsp/enc_mips_dsp_r2.c \
     $$PWD/libwebp/src/dsp/enc_msa.c \

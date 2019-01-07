@@ -1,0 +1,285 @@
+From 1e7b9a3b2d2b7461abb6c76de0cf66dab4d467b0 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Mon, 7 Jan 2019 21:11:00 +0700
+Subject: [PATCH 5/5] Dont use modern options with old Qt verson
+
+---
+ src/plugins/imageformats/dds/qddshandler.cpp  |  7 +++-
+ src/plugins/imageformats/jp2/qjp2handler.cpp  |  7 ++++
+ .../imageformats/tiff/qtiffhandler.cpp        | 37 +++++++++++++++++++
+ .../imageformats/tiff/qtiffhandler_p.h        |  2 +
+ .../imageformats/webp/qwebphandler.cpp        | 20 ++++++++++
+ 5 files changed, 72 insertions(+), 1 deletion(-)
+
+diff --git a/src/plugins/imageformats/dds/qddshandler.cpp b/src/plugins/imageformats/dds/qddshandler.cpp
+index 3a44b51..dab69d5 100644
+--- a/src/plugins/imageformats/dds/qddshandler.cpp
++++ b/src/plugins/imageformats/dds/qddshandler.cpp
+@@ -1489,8 +1489,10 @@ QVariant QDDSHandler::option(QImageIOHandler::ImageOption option) const
+         return QSize(m_header.width, m_header.height);
+     case QImageIOHandler::SubType:
+         return formatName(m_format);
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
+     case QImageIOHandler::SupportedSubTypes:
+         return QVariant::fromValue(QList<QByteArray>() << formatName(FormatA8R8G8B8));
++#endif
+     default:
+         break;
+     }
+@@ -1512,7 +1514,10 @@ bool QDDSHandler::supportsOption(QImageIOHandler::ImageOption option) const
+ {
+     return (option == QImageIOHandler::Size)
+             || (option == QImageIOHandler::SubType)
+-            || (option == QImageIOHandler::SupportedSubTypes);
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
++            || (option == QImageIOHandler::SupportedSubTypes)
++#endif
++            ;
+ }
+ 
+ int QDDSHandler::imageCount() const
+diff --git a/src/plugins/imageformats/jp2/qjp2handler.cpp b/src/plugins/imageformats/jp2/qjp2handler.cpp
+index 17373fd..da74fb2 100644
+--- a/src/plugins/imageformats/jp2/qjp2handler.cpp
++++ b/src/plugins/imageformats/jp2/qjp2handler.cpp
+@@ -589,7 +589,14 @@ bool Jpeg2000JasperReader::read(QImage *pImage)
+         if (hasAlpha) {
+             qtImage = QImage(qtWidth, qtHeight, QImage::Format_ARGB32);
+         } else {
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+             qtImage = QImage(qtWidth, qtHeight, QImage::Format_Grayscale8);
++#else
++            qtImage = QImage(qtWidth, qtHeight, QImage::Format_Indexed8);
++            qtImage.setColorCount(256);
++            for (int c = 0; c < 256; ++c)
++                qtImage.setColor(c, qRgb(c,c,c));
++#endif
+         }
+     }
+ 
+diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+index 837f9ff..63b236d 100644
+--- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
++++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+@@ -272,14 +272,18 @@ bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
+         format = QImage::Format_Mono;
+     else if (photometric == PHOTOMETRIC_MINISBLACK && bitPerSample == 8 && samplesPerPixel == 1)
+         format = QImage::Format_Grayscale8;
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+     else if (photometric == PHOTOMETRIC_MINISBLACK && bitPerSample == 16 && samplesPerPixel == 1)
+         format = QImage::Format_Grayscale16;
++#endif
+     else if ((grayscale || photometric == PHOTOMETRIC_PALETTE) && bitPerSample == 8 && samplesPerPixel == 1)
+         format = QImage::Format_Indexed8;
+     else if (samplesPerPixel < 4)
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+         if (bitPerSample > 8 && photometric == PHOTOMETRIC_RGB)
+             format = QImage::Format_RGBX64;
+         else
++#endif
+             format = QImage::Format_RGB32;
+     else {
+         uint16 count;
+@@ -293,6 +297,7 @@ bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
+         if (!gotField || !count || extrasamples[0] == EXTRASAMPLE_UNSPECIFIED)
+             premultiplied = false;
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+         if (bitPerSample > 8 && photometric == PHOTOMETRIC_RGB) {
+             // We read 64-bit raw, so unassoc remains unpremultiplied.
+             if (gotField && count && extrasamples[0] == EXTRASAMPLE_UNASSALPHA)
+@@ -302,6 +307,9 @@ bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
+             else
+                 format = QImage::Format_RGBA64;
+         } else {
++#else
++        if (true) {
++#endif
+             if (premultiplied)
+                 format = QImage::Format_ARGB32_Premultiplied;
+             else
+@@ -343,8 +351,15 @@ bool QTiffHandler::read(QImage *image)
+ 
+     QImage::Format format = d->format;
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+     if (image->size() == d->size && image->format() != format)
+         image->reinterpretAsFormat(format);
++#else
++    if (format == QImage::Format_RGB32 &&
++            (image->format() == QImage::Format_ARGB32 ||
++             image->format() == QImage::Format_ARGB32_Premultiplied))
++        format = image->format();
++#endif
+ 
+     if (image->size() != d->size || image->format() != format)
+         *image = QImage(d->size, format);
+@@ -358,8 +373,12 @@ bool QTiffHandler::read(QImage *image)
+     const quint32 width = d->size.width();
+     const quint32 height = d->size.height();
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+     // Setup color tables
+     if (format == QImage::Format_Mono || format == QImage::Format_Indexed8) {
++#else
++   if (format == QImage::Format_Mono || format == QImage::Format_Indexed8 || format == QImage::Format_Grayscale8) {
++#endif
+         if (format == QImage::Format_Mono) {
+             QVector<QRgb> colortable(2);
+             if (d->photometric == PHOTOMETRIC_MINISBLACK) {
+@@ -402,9 +421,14 @@ bool QTiffHandler::read(QImage *image)
+             image->setColorTable(qtColorTable);
+             // free redTable, greenTable and greenTable done by libtiff
+         }
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+     }
+     bool format8bit = (format == QImage::Format_Mono || format == QImage::Format_Indexed8 || format == QImage::Format_Grayscale8);
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+     bool format16bit = (format == QImage::Format_Grayscale16);
++#else
++    bool format16bit = false;
++#endif
+     bool format64bit = (format == QImage::Format_RGBX64 || format == QImage::Format_RGBA64 || format == QImage::Format_RGBA64_Premultiplied);
+ 
+     // Formats we read directly, instead of over RGBA32:
+@@ -412,6 +436,9 @@ bool QTiffHandler::read(QImage *image)
+         int bytesPerPixel = image->depth() / 8;
+         if (format == QImage::Format_RGBX64)
+             bytesPerPixel = 6;
++#else
++        int bytesPerPixel = 1; // 8bit
++#endif
+         if (TIFFIsTiled(tiff)) {
+             quint32 tileWidth, tileLength;
+             TIFFGetField(tiff, TIFFTAG_TILEWIDTH, &tileWidth);
+@@ -448,8 +475,10 @@ bool QTiffHandler::read(QImage *image)
+                 }
+             }
+         }
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+         if (format == QImage::Format_RGBX64)
+             rgb48fixup(image);
++#endif
+     } else {
+         const int stopOnError = 1;
+         if (TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(image->bits()), qt2Exif(d->transformation), stopOnError)) {
+@@ -517,7 +546,9 @@ static QVector<QRgb> effectiveColorTable(const QImage &image)
+             colors[i] = qRgba(0, 0, 0, i);
+         break;
+     case QImage::Format_Grayscale8:
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+     case QImage::Format_Grayscale16:
++#endif
+         colors.resize(256);
+         for (int i = 0; i < 256; ++i)
+             colors[i] = qRgb(i, i, i);
+@@ -627,7 +658,9 @@ bool QTiffHandler::write(const QImage &image)
+         TIFFClose(tiff);
+     } else if (format == QImage::Format_Indexed8
+                || format == QImage::Format_Grayscale8
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+                || format == QImage::Format_Grayscale16
++#endif
+                || format == QImage::Format_Alpha8) {
+         QVector<QRgb> colorTable = effectiveColorTable(image);
+         bool isGrayscale = checkGrayscale(colorTable);
+@@ -694,6 +727,7 @@ bool QTiffHandler::write(const QImage &image)
+             }
+         }
+         TIFFClose(tiff);
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+     } else if (format == QImage::Format_RGBX64) {
+         if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB)
+             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+@@ -766,6 +800,7 @@ bool QTiffHandler::write(const QImage &image)
+             }
+         }
+         TIFFClose(tiff);
++#endif
+     } else {
+         const bool premultiplied = image.format() != QImage::Format_ARGB32
+                                 && image.format() != QImage::Format_RGBA8888;
+@@ -899,6 +934,7 @@ void QTiffHandler::convert32BitOrder(void *buffer, int width)
+     }
+ }
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+ void QTiffHandler::rgb48fixup(QImage *image)
+ {
+     Q_ASSERT(image->depth() == 64);
+@@ -917,6 +953,7 @@ void QTiffHandler::rgb48fixup(QImage *image)
+         scanline += bpl;
+     }
+ }
++#endif
+ 
+ bool QTiffHandler::ensureHaveDirectoryCount() const
+ {
+diff --git a/src/plugins/imageformats/tiff/qtiffhandler_p.h b/src/plugins/imageformats/tiff/qtiffhandler_p.h
+index 7608d26..140a435 100644
+--- a/src/plugins/imageformats/tiff/qtiffhandler_p.h
++++ b/src/plugins/imageformats/tiff/qtiffhandler_p.h
+@@ -74,7 +74,9 @@ public:
+     };
+ private:
+     void convert32BitOrder(void *buffer, int width);
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+     void rgb48fixup(QImage *image);
++#endif
+     const QScopedPointer<QTiffHandlerPrivate> d;
+     bool ensureHaveDirectoryCount() const;
+ };
+diff --git a/src/plugins/imageformats/webp/qwebphandler.cpp b/src/plugins/imageformats/webp/qwebphandler.cpp
+index 578a701..d861db4 100644
+--- a/src/plugins/imageformats/webp/qwebphandler.cpp
++++ b/src/plugins/imageformats/webp/qwebphandler.cpp
+@@ -177,7 +177,11 @@ bool QWebpHandler::read(QImage *image)
+     QImage::Format format = m_features.has_alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
+     QImage frame(m_iter.width, m_iter.height, format);
+     uint8_t *output = frame.bits();
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+     size_t output_size = frame.sizeInBytes();
++#else
++    size_t output_size = frame.byteCount();
++#endif
+ #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+     if (!WebPDecodeBGRAInto(
+         reinterpret_cast<const uint8_t*>(m_iter.fragment.bytes), m_iter.fragment.size,
+@@ -221,7 +225,11 @@ bool QWebpHandler::write(const QImage &image)
+ 
+     QImage srcImage = image;
+     bool alpha = srcImage.hasAlphaChannel();
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+     QImage::Format newFormat = alpha ? QImage::Format_RGBA8888 : QImage::Format_RGB888;
++#else
++    QImage::Format newFormat = alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
++#endif
+     if (srcImage.format() != newFormat)
+         srcImage = srcImage.convertToFormat(newFormat);
+ 
+@@ -237,10 +245,22 @@ bool QWebpHandler::write(const QImage &image)
+     picture.height = srcImage.height();
+     picture.use_argb = 1;
+     bool failed = false;
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+     if (alpha)
+         failed = !WebPPictureImportRGBA(&picture, srcImage.bits(), srcImage.bytesPerLine());
+     else
+         failed = !WebPPictureImportRGB(&picture, srcImage.bits(), srcImage.bytesPerLine());
++#else
++# if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
++    if (alpha)
++        failed = !WebPPictureImportBGRA(&picture, srcImage.bits(), srcImage.bytesPerLine());
++    else
++        failed = !WebPPictureImportBGRX(&picture, srcImage.bits(), srcImage.bytesPerLine());
++# else /* Q_BIG_ENDIAN */
++    qWarning() << "QWebpHandler::write is not implemented for big endian systems with Qt < 5.2";
++    failed = true;
++# endif
++#endif
+ 
+     if (failed) {
+         qWarning() << "failed to import image data to webp picture.";
+-- 
+2.19.2
+

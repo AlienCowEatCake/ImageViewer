@@ -1,4 +1,4 @@
-From 63e0c4ade158c1336b4dad069db39c43f7c3b467 Mon Sep 17 00:00:00 2001
+From 65c9247641dd268c02e4560bcc8a830e0305f2ac Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 10 Mar 2018 15:40:08 +0700
 Subject: [PATCH 1/5] Use "Q_DECL_OVERRIDE" instead of "override"
@@ -301,5 +301,5 @@ index 950b501..5126692 100644
  private:
      bool ensureScanned() const;
 -- 
-2.18.0
+2.19.2
 

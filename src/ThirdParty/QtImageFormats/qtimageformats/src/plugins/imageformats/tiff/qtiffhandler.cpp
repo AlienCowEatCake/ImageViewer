@@ -272,6 +272,10 @@ bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
         format = QImage::Format_Mono;
     else if (photometric == PHOTOMETRIC_MINISBLACK && bitPerSample == 8 && samplesPerPixel == 1)
         format = QImage::Format_Grayscale8;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+    else if (photometric == PHOTOMETRIC_MINISBLACK && bitPerSample == 16 && samplesPerPixel == 1)
+        format = QImage::Format_Grayscale16;
+#endif
     else if ((grayscale || photometric == PHOTOMETRIC_PALETTE) && bitPerSample == 8 && samplesPerPixel == 1)
         format = QImage::Format_Indexed8;
     else if (samplesPerPixel < 4)
@@ -420,9 +424,15 @@ bool QTiffHandler::read(QImage *image)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
     }
     bool format8bit = (format == QImage::Format_Mono || format == QImage::Format_Indexed8 || format == QImage::Format_Grayscale8);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+    bool format16bit = (format == QImage::Format_Grayscale16);
+#else
+    bool format16bit = false;
+#endif
     bool format64bit = (format == QImage::Format_RGBX64 || format == QImage::Format_RGBA64 || format == QImage::Format_RGBA64_Premultiplied);
 
-    if (format8bit || format64bit) {
+    // Formats we read directly, instead of over RGBA32:
+    if (format8bit || format16bit || format64bit) {
         int bytesPerPixel = image->depth() / 8;
         if (format == QImage::Format_RGBX64)
             bytesPerPixel = 6;
@@ -536,6 +546,9 @@ static QVector<QRgb> effectiveColorTable(const QImage &image)
             colors[i] = qRgba(0, 0, 0, i);
         break;
     case QImage::Format_Grayscale8:
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+    case QImage::Format_Grayscale16:
+#endif
         colors.resize(256);
         for (int i = 0; i < 256; ++i)
             colors[i] = qRgb(i, i, i);
@@ -544,6 +557,15 @@ static QVector<QRgb> effectiveColorTable(const QImage &image)
         Q_UNREACHABLE();
     }
     return colors;
+}
+
+static quint32 defaultStripSize(TIFF *tiff)
+{
+    // Aim for 4MB strips
+    qint64 scanSize = qMax(tmsize_t(1), TIFFScanlineSize(tiff));
+    qint64 numRows = (4 * 1024 * 1024) / scanSize;
+    quint32 reqSize = static_cast<quint32>(qBound(qint64(1), numRows, qint64(UINT_MAX)));
+    return TIFFDefaultStripSize(tiff, reqSize);
 }
 
 bool QTiffHandler::write(const QImage &image)
@@ -610,7 +632,7 @@ bool QTiffHandler::write(const QImage &image)
         if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, photometric)
             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
             || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 1)
-            || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tiff, 0))) {
+            || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, defaultStripSize(tiff))) {
             TIFFClose(tiff);
             return false;
         }
@@ -636,6 +658,9 @@ bool QTiffHandler::write(const QImage &image)
         TIFFClose(tiff);
     } else if (format == QImage::Format_Indexed8
                || format == QImage::Format_Grayscale8
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+               || format == QImage::Format_Grayscale16
+#endif
                || format == QImage::Format_Alpha8) {
         QVector<QRgb> colorTable = effectiveColorTable(image);
         bool isGrayscale = checkGrayscale(colorTable);
@@ -645,8 +670,8 @@ bool QTiffHandler::write(const QImage &image)
                 photometric = PHOTOMETRIC_MINISWHITE;
             if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, photometric)
                     || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
-                    || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)
-                    || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tiff, 0))) {
+                    || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, image.depth())
+                    || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, defaultStripSize(tiff))) {
                 TIFFClose(tiff);
                 return false;
             }
@@ -654,7 +679,7 @@ bool QTiffHandler::write(const QImage &image)
             if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_PALETTE)
                     || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
                     || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)
-                    || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tiff, 0))) {
+                    || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, defaultStripSize(tiff))) {
                 TIFFClose(tiff);
                 return false;
             }
@@ -752,7 +777,7 @@ bool QTiffHandler::write(const QImage &image)
             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 3)
             || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)
-            || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tiff, 0))) {
+            || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, defaultStripSize(tiff))) {
             TIFFClose(tiff);
             return false;
         }
@@ -785,7 +810,7 @@ bool QTiffHandler::write(const QImage &image)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 4)
             || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)
             || !TIFFSetField(tiff, TIFFTAG_EXTRASAMPLES, 1, &extrasamples)
-            || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tiff, 0))) {
+            || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, defaultStripSize(tiff))) {
             TIFFClose(tiff);
             return false;
         }

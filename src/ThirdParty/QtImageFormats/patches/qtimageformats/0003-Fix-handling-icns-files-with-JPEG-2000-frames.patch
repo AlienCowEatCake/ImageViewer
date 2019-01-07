@@ -1,0 +1,45 @@
+From d4510bf3586b6abda645fefb92933e2227729ebb Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Mon, 15 May 2017 00:06:30 +0700
+Subject: [PATCH 3/5] Fix handling icns files with JPEG 2000 frames
+
+---
+ src/plugins/imageformats/icns/qicnshandler.cpp | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/src/plugins/imageformats/icns/qicnshandler.cpp b/src/plugins/imageformats/icns/qicnshandler.cpp
+index a854506..981f367 100644
+--- a/src/plugins/imageformats/icns/qicnshandler.cpp
++++ b/src/plugins/imageformats/icns/qicnshandler.cpp
+@@ -46,6 +46,10 @@
+ #include <QtCore/qbuffer.h>
+ #include <QtGui/qimage.h>
+ 
++#if defined (WRAPPER_USE_JP2_HANDLER)
++#include "QtImageFormatsImageReader.h"
++#endif
++
+ #ifndef QT_NO_DATASTREAM
+ 
+ QT_BEGIN_NAMESPACE
+@@ -736,7 +740,16 @@ bool QICNSHandler::read(QImage *outImage)
+         else if (icon.dataFormat == ICNSEntry::JP2)
+             format = "jp2";
+         // Even if JP2 or PNG magic is not detected, try anyway for unknown formats
+-        img = QImage::fromData(device()->read(icon.dataLength), format);
++        QByteArray data = device()->read(icon.dataLength);
++        img = QImage::fromData(data, format);
++#if defined (WRAPPER_USE_JP2_HANDLER)
++        if (img.isNull()) {
++            QBuffer b;
++            b.setData(data);
++            b.open(QIODevice::ReadOnly);
++            img = QtImageFormatsImageReader(&b, format).read();
++        }
++#endif
+         if (img.isNull()) {
+             if (format == 0)
+                 format = "unknown";
+-- 
+2.19.2
+

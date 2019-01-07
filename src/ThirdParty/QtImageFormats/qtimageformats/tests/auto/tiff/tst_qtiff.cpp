@@ -85,6 +85,7 @@ private slots:
     void tiled();
 
     void readRgba64();
+    void readGray16();
 
 private:
     QString prefix;
@@ -168,6 +169,7 @@ void tst_qtiff::readImage_data()
     QTest::newRow("tiled_oddsize_grayscale") << QString("tiled_oddsize_grayscale.tiff") << QSize(59, 71);
     QTest::newRow("tiled_oddsize_mono") << QString("tiled_oddsize_mono.tiff") << QSize(59, 71);
     QTest::newRow("16bpc") << QString("16bpc.tiff") << QSize(64, 46);
+    QTest::newRow("gray16") << QString("gray16.tiff") << QSize(64, 46);
 }
 
 void tst_qtiff::readImage()
@@ -178,9 +180,13 @@ void tst_qtiff::readImage()
     QString path = prefix + fileName;
     QImageReader reader(path);
     QVERIFY(reader.canRead());
+    QImage::Format headerFormat = reader.imageFormat();
+    QSize headerSize = reader.size();
     QImage image = reader.read();
     QVERIFY(!image.isNull());
     QCOMPARE(image.size(), size);
+    QCOMPARE(image.size(), headerSize);
+    QCOMPARE(image.format(), headerFormat);
 }
 
 void tst_qtiff::readCorruptImage_data()
@@ -386,7 +392,8 @@ void tst_qtiff::readWriteNonDestructive_data()
     QTest::newRow("tiff indexed") << QImage::Format_Indexed8 << QImage::Format_Indexed8 << QImageIOHandler::TransformationMirror;
     QTest::newRow("tiff argb32pm") << QImage::Format_ARGB32_Premultiplied << QImage::Format_ARGB32_Premultiplied << QImageIOHandler::TransformationRotate90;
     QTest::newRow("tiff rgb32") << QImage::Format_RGB32 << QImage::Format_RGB32 << QImageIOHandler::TransformationRotate270;
-    QTest::newRow("tiff grayscale") << QImage::Format_Grayscale8 << QImage::Format_Grayscale8 << QImageIOHandler::TransformationFlip;
+    QTest::newRow("tiff grayscale8") << QImage::Format_Grayscale8 << QImage::Format_Grayscale8 << QImageIOHandler::TransformationFlip;
+    QTest::newRow("tiff grayscale16") << QImage::Format_Grayscale16 << QImage::Format_Grayscale16 << QImageIOHandler::TransformationMirror;
     QTest::newRow("tiff rgb64") << QImage::Format_RGBX64 << QImage::Format_RGBX64 << QImageIOHandler::TransformationNone;
     QTest::newRow("tiff rgba64") << QImage::Format_RGBA64 << QImage::Format_RGBA64 << QImageIOHandler::TransformationRotate90;
     QTest::newRow("tiff rgba64pm") << QImage::Format_RGBA64_Premultiplied << QImage::Format_RGBA64_Premultiplied << QImageIOHandler::TransformationNone;
@@ -607,6 +614,17 @@ void tst_qtiff::readRgba64()
     QImage image = reader.read();
     QVERIFY(!image.isNull());
     QCOMPARE(image.format(), QImage::Format_RGBX64);
+}
+
+void tst_qtiff::readGray16()
+{
+    QString path = prefix + QString("gray16.tiff");
+    QImageReader reader(path);
+    QVERIFY(reader.canRead());
+    QCOMPARE(reader.imageFormat(), QImage::Format_Grayscale16);
+    QImage image = reader.read();
+    QVERIFY(!image.isNull());
+    QCOMPARE(image.format(), QImage::Format_Grayscale16);
 }
 
 QTEST_MAIN(tst_qtiff)

@@ -51,5 +51,6 @@
         <file>tiff/tiled_oddsize_mono.tiff</file>
         <file>tiff/oddsize_mono.tiff</file>
         <file>tiff/tiled_rgb.tiff</file>
+        <file>tiff/gray16.tiff</file>
     </qresource>
 </RCC>

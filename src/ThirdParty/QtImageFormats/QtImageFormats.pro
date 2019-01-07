@@ -63,7 +63,11 @@ DEFINES += QICNSHandler=tp_QICNSHandler
 
 !disable_libjasper {
 
-    include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/jp2/qjp2handler.pri)
+    SOURCES += \
+        $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/jp2/qjp2handler.cpp
+
+    HEADERS += \
+        $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/jp2/qjp2handler_p.h
 
     DEFINES += WRAPPER_USE_JP2_HANDLER
 
@@ -76,7 +80,11 @@ DEFINES += QICNSHandler=tp_QICNSHandler
 
 !disable_libmng {
 
-    include($${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/mng/qmnghandler.pri)
+    SOURCES += \
+        $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/mng/qmnghandler.cpp
+
+    HEADERS += \
+        $${THIRDPARTY_QTIMAGEFORMATS_PATH}/src/plugins/imageformats/mng/qmnghandler_p.h
 
     DEFINES += WRAPPER_USE_MNG_HANDLER
 
