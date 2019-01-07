@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2011-2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2011-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `QtUtils' library.
 #
@@ -59,7 +59,8 @@ macx {
 
 HEADERS += \
     $$files(src/Utils/*.h) \
-    $$files(src/Widgets/*.h)
+    $$files(src/Widgets/*.h) \
+    $$files(src/Workarounds/*.h)
 
 SOURCES += \
     $$files(src/Utils/*.cpp) \

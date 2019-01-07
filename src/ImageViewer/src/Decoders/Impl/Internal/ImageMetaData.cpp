@@ -44,7 +44,9 @@
 #endif
 
 #if defined (HAS_EXIV2)
+#include "Workarounds/BeginIgnoreDeprecated.h"
 #include <exiv2/exiv2.hpp>
+#include "Workarounds/EndIgnoreDeprecated.h"
 #endif
 #if defined (HAS_LIBEXIF)
 #include <libexif/exif-data.h>

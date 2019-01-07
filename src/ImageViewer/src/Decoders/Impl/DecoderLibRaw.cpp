@@ -19,8 +19,10 @@
 
 #include <cassert>
 
+#include "Workarounds/BeginIgnoreDeprecated.h"
 #include <libraw/libraw_datastream.h>
 #include <libraw/libraw.h>
+#include "Workarounds/EndIgnoreDeprecated.h"
 
 #include <QtGlobal>
 #include <QFileInfo>

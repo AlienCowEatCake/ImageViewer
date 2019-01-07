@@ -39,7 +39,9 @@
 #include <openjpeg.h>
 #endif
 #if defined (HAS_LIBJASPER)
+#include "Workarounds/BeginIgnoreShiftNegative.h"
 #include <jasper/jasper.h>
+#include "Workarounds/EndIgnoreShiftNegative.h"
 #endif
 #if defined (HAS_LIBMNG)
 #include <libmng.h>
@@ -54,7 +56,9 @@
 #include <gif_lib.h>
 #endif
 #if defined (HAS_LIBRAW)
+#include "Workarounds/BeginIgnoreDeprecated.h"
 #include <libraw/libraw_version.h>
+#include "Workarounds/EndIgnoreDeprecated.h"
 #endif
 #if defined (HAS_LIBHEIF)
 #include <libheif/heif.h>
@@ -63,7 +67,9 @@
 #include <jbig.h>
 #endif
 #if defined (HAS_EXIV2)
+#include "Workarounds/BeginIgnoreDeprecated.h"
 #include <exiv2/exiv2.hpp>
+#include "Workarounds/EndIgnoreDeprecated.h"
 #endif
 #if defined (HAS_LCMS2)
 #include <lcms2.h>

@@ -19,7 +19,9 @@
 
 #include <algorithm>
 
+#include "Workarounds/BeginIgnoreShiftNegative.h"
 #include <jasper/jasper.h>
+#include "Workarounds/EndIgnoreShiftNegative.h"
 
 #include <QFileInfo>
 #include <QImage>
