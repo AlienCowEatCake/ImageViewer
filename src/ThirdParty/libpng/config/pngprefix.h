@@ -174,3 +174,6 @@
 #define png_safe_execute tp_png_safe_execute
 #define png_image_error tp_png_image_error
 #define png_check_keyword tp_png_check_keyword
+#define png_riffle_palette_rgba tp_png_riffle_palette_rgba
+#define png_do_expand_palette_neon_rgba tp_png_do_expand_palette_neon_rgba
+#define png_do_expand_palette_neon_rgb tp_png_do_expand_palette_neon_rgb
