@@ -101,7 +101,7 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
         const uint8_t *data = reinterpret_cast<const uint8_t*>(inBuffer.constData());
         const std::size_t dataSize = static_cast<std::size_t>(inBuffer.size());
         uint8_t *output = reinterpret_cast<uint8_t*>(frame.bits());
-        const std::size_t size = static_cast<std::size_t>(frame.bytesPerLine() * frame.height());
+        const std::size_t size = static_cast<std::size_t>(frame.bytesPerLine()) * static_cast<std::size_t>(frame.height());
         const int stride = frame.bytesPerLine();
 #if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
         if(!WebPDecodeBGRAInto(data, dataSize, output, size, stride))
@@ -167,7 +167,7 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
             const uint8_t *data = iter.fragment.bytes;
             const std::size_t dataSize = iter.fragment.size;
             uint8_t *output = reinterpret_cast<uint8_t*>(frame.bits());
-            const std::size_t size = static_cast<std::size_t>(frame.bytesPerLine() * frame.height());
+            const std::size_t size = static_cast<std::size_t>(frame.bytesPerLine()) * static_cast<std::size_t>(frame.height());
             const int stride = frame.bytesPerLine();
 #if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
             if(!WebPDecodeBGRAInto(data, dataSize, output, size, stride))

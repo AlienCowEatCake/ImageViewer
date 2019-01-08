@@ -68,60 +68,61 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
 
     int currentRow = 0;
     QFileInfo fileInfo = QFileInfo(imageData->filePath());
+    QTableWidget * const tableWidget = m_ui->tableWidget;
 
-    m_ui->tableWidget->insertRow(currentRow);
-    m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
-    m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "File Name")));
-    m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.fileName()));
+    tableWidget->insertRow(currentRow);
+    tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
+    tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "File Name")));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.fileName()));
     currentRow++;
 
-    m_ui->tableWidget->insertRow(currentRow);
-    m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
-    m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Resolution")));
-    m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(QString::fromLatin1("%1 x %2").arg(imageData->size().width()).arg(imageData->size().height())));
+    tableWidget->insertRow(currentRow);
+    tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
+    tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Resolution")));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(QString::fromLatin1("%1 x %2").arg(imageData->size().width()).arg(imageData->size().height())));
     currentRow++;
 
-    m_ui->tableWidget->insertRow(currentRow);
-    m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
-    m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Decoder")));
-    m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(imageData->decoderName()));
+    tableWidget->insertRow(currentRow);
+    tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
+    tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Decoder")));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(imageData->decoderName()));
     currentRow++;
 
-    m_ui->tableWidget->insertRow(currentRow);
-    m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
-    m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "File Size")));
-    m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(formatFileSize(fileInfo.size())));
+    tableWidget->insertRow(currentRow);
+    tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
+    tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "File Size")));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(formatFileSize(fileInfo.size())));
     currentRow++;
 
-    m_ui->tableWidget->insertRow(currentRow);
-    m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
-    m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Created")));
-    m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.created().toString()));
+    tableWidget->insertRow(currentRow);
+    tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
+    tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Created")));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.created().toString()));
     currentRow++;
 
-    m_ui->tableWidget->insertRow(currentRow);
-    m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
-    m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Last Modified")));
-    m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.lastModified().toString()));
+    tableWidget->insertRow(currentRow);
+    tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
+    tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Last Modified")));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.lastModified().toString()));
     currentRow++;
 
 #if !defined (Q_OS_WIN)
-    m_ui->tableWidget->insertRow(currentRow);
-    m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
-    m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Owner")));
-    m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.owner()));
+    tableWidget->insertRow(currentRow);
+    tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
+    tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Owner")));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.owner()));
     currentRow++;
 
-    m_ui->tableWidget->insertRow(currentRow);
-    m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
-    m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Group")));
-    m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.group()));
+    tableWidget->insertRow(currentRow);
+    tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
+    tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Group")));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.group()));
     currentRow++;
 
-    m_ui->tableWidget->insertRow(currentRow);
-    m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
-    m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Permissions")));
-    m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(QString::number(fileInfo.permissions() & ~0xf000, 16)));
+    tableWidget->insertRow(currentRow);
+    tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
+    tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Permissions")));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(QString::number(fileInfo.permissions() & ~0xf000, 16)));
     currentRow++;
 #endif
 
@@ -136,15 +137,15 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
         if(entryList.empty())
             continue;
 
-        m_ui->tableWidget->insertRow(currentRow);
+        tableWidget->insertRow(currentRow);
         currentRow++;
 
         for(IImageMetaData::MetaDataEntryList::ConstIterator jt = entryList.constBegin(), jtEnd = entryList.constEnd(); jt != jtEnd; ++jt)
         {
-            m_ui->tableWidget->insertRow(currentRow);
-            m_ui->tableWidget->setItem(currentRow, 0, new QTableWidgetItem(*it));
-            m_ui->tableWidget->setItem(currentRow, 1, new QTableWidgetItem(jt->tagTitle.isEmpty() ? jt->tagName : jt->tagTitle));
-            m_ui->tableWidget->setItem(currentRow, 2, new QTableWidgetItem(jt->value));
+            tableWidget->insertRow(currentRow);
+            tableWidget->setItem(currentRow, 0, new QTableWidgetItem(*it));
+            tableWidget->setItem(currentRow, 1, new QTableWidgetItem(jt->tagTitle.isEmpty() ? jt->tagName : jt->tagTitle));
+            tableWidget->setItem(currentRow, 2, new QTableWidgetItem(jt->value));
 
             QString toolTip;
             if(!jt->tagName.isEmpty() && !jt->tagDescription.isEmpty())
@@ -155,7 +156,7 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
                 toolTip = FORCE_RICH_TEXT_TEMPLATE.arg(jt->tagName);
             if(!toolTip.isEmpty())
                 for(int i = 0; i < 3; i++)
-                    m_ui->tableWidget->item(currentRow, i)->setToolTip(toolTip);
+                    tableWidget->item(currentRow, i)->setToolTip(toolTip);
             currentRow++;
         }
     }
