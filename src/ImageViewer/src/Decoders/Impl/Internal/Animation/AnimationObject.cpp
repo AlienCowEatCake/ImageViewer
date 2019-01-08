@@ -30,7 +30,7 @@
 
 struct AnimationObject::Impl
 {
-    Impl(AnimationObject *animation)
+    explicit Impl(AnimationObject *animation)
         : animation(animation)
         , provider(Q_NULLPTR)
         , nextImageDelay(-1)

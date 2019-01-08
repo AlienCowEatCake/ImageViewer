@@ -37,7 +37,7 @@ class QtWebEngineSVGGraphicsItem : public QGraphicsObject, public AbstractSVGWeb
     Q_DISABLE_COPY(QtWebEngineSVGGraphicsItem)
 
 public:
-    QtWebEngineSVGGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
+    explicit QtWebEngineSVGGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
     ~QtWebEngineSVGGraphicsItem();
 
     bool load(const QByteArray &svgData, const QUrl &baseUrl);

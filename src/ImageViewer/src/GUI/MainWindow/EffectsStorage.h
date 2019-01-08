@@ -35,7 +35,7 @@ class EffectsStorage : public QObject
     Q_DISABLE_COPY(EffectsStorage)
 
 public:
-    EffectsStorage(QObject *parent = Q_NULLPTR);
+    explicit EffectsStorage(QObject *parent = Q_NULLPTR);
     ~EffectsStorage();
 
 public slots:

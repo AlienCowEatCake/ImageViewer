@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -30,7 +30,7 @@ class RestorableGeometryHelper
     Q_DISABLE_COPY(RestorableGeometryHelper)
 
 public:
-    RestorableGeometryHelper(QWidget *window);
+    explicit RestorableGeometryHelper(QWidget *window);
     ~RestorableGeometryHelper();
 
     QByteArray serialize() const;

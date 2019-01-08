@@ -38,7 +38,7 @@ class QtWebKitSVGGraphicsItem : public QObject, public QGraphicsItem, public Abs
     Q_DISABLE_COPY(QtWebKitSVGGraphicsItem)
 
 public:
-    QtWebKitSVGGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
+    explicit QtWebKitSVGGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
     ~QtWebKitSVGGraphicsItem();
 
     bool load(const QByteArray &svgData, const QUrl &baseUrl);

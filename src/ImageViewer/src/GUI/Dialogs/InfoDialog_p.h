@@ -40,7 +40,7 @@ struct InfoDialog::UI
 {
     QTableWidget * const tableWidget;
 
-    UI(InfoDialog *infoDialog)
+    explicit UI(InfoDialog *infoDialog)
         : CONSTRUCT_OBJECT(tableWidget, QTableWidget, (infoDialog))
     {
         infoDialog->resize(WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT);

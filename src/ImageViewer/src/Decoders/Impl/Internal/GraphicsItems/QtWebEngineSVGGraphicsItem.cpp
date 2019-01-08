@@ -86,8 +86,9 @@ int getMaxTextureSize()
 class SyncExecutor : public QObject
 {
 public:
-    SyncExecutor(QWebEngineView *view)
+    explicit SyncExecutor(QWebEngineView *view)
         : m_view(view)
+        , m_setContentResult(false)
     {}
 
     bool setContent(const QByteArray &data, const QString &mimeType = QString(), const QUrl& baseUrl = QUrl())
@@ -96,7 +97,7 @@ public:
         QMetaObject::Connection connection = connect(m_view, &QWebEngineView::loadFinished, this, &SyncExecutor::onSetContentResult);
         m_view->setContent(data, mimeType, baseUrl);
         execLoop();
-        QObject::disconnect(connection);
+        disconnect(connection);
         return m_setContentResult;
     }
 
@@ -113,7 +114,7 @@ private:
     class RunJavaScriptResultFunctor
     {
     public:
-        RunJavaScriptResultFunctor(SyncExecutor &executor)
+        explicit RunJavaScriptResultFunctor(SyncExecutor &executor)
             : m_executor(executor)
         {}
 

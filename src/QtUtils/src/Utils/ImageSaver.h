@@ -34,7 +34,7 @@ class ImageSaver: public QObject
     Q_DISABLE_COPY(ImageSaver)
 
 public:
-    ImageSaver(QWidget *parent = Q_NULLPTR);
+    explicit ImageSaver(QWidget *parent = Q_NULLPTR);
     ~ImageSaver();
 
     QString defaultFilePath() const;

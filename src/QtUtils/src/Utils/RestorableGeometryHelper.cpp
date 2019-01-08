@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -59,7 +59,7 @@ struct RestorableGeometryHelper::Impl : public QObject
     QRect normalGeometry;
     QList<std::pair<QDateTime, QRect> > autoSavedGeometry;
 
-    Impl(QWidget *window)
+    explicit Impl(QWidget *window)
         : window(window)
         , isLastMaximized(window->isMaximized())
         , isLastMinimized(window->isMinimized())

@@ -32,7 +32,7 @@ class MacToolBar : public ControlsContainerEmitter, public IControlsContainer
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS
 
 public:
-    MacToolBar(QObject *parent = Q_NULLPTR);
+    explicit MacToolBar(QObject *parent = Q_NULLPTR);
     ~MacToolBar();
 
     ControlsContainerEmitter *emitter() Q_DECL_OVERRIDE;

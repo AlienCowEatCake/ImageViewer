@@ -53,7 +53,7 @@ signals:
 
 public:
 
-    ImageViewerWidget(QWidget *parent = Q_NULLPTR);
+    explicit ImageViewerWidget(QWidget *parent = Q_NULLPTR);
     ~ImageViewerWidget();
 
     ZoomMode zoomMode() const;

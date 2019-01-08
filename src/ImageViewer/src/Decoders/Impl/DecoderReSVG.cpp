@@ -287,7 +287,7 @@ class ReSVGPixmapProvider : public IScaledImageProvider
     Q_DISABLE_COPY(ReSVGPixmapProvider)
 
 public:
-    ReSVGPixmapProvider(const QString &filePath)
+    explicit ReSVGPixmapProvider(const QString &filePath)
         : m_isValid(false)
         , m_filePath8bit(filePath.toLocal8Bit())
         , m_tree(Q_NULLPTR)

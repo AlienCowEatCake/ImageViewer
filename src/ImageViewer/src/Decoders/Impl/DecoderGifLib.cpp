@@ -178,7 +178,7 @@ class GifAnimationProvider : public AbstractAnimationProvider
     Q_DISABLE_COPY(GifAnimationProvider)
 
 public:
-    GifAnimationProvider(const QString &filePath)
+    explicit GifAnimationProvider(const QString &filePath)
     {
         m_numLoops = 1;
         m_error = !readGif(filePath);

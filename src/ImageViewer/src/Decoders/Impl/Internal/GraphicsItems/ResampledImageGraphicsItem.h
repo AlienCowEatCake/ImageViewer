@@ -32,7 +32,7 @@ class ResampledImageGraphicsItem : public QGraphicsItem
     Q_DISABLE_COPY(ResampledImageGraphicsItem)
 
 public:
-    ResampledImageGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
+    explicit ResampledImageGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
     ResampledImageGraphicsItem(const QImage &image, QGraphicsItem *parentItem = Q_NULLPTR);
     ResampledImageGraphicsItem(const QPixmap &pixmap, QGraphicsItem *parentItem = Q_NULLPTR);
     ~ResampledImageGraphicsItem();

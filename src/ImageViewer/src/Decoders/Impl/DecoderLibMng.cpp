@@ -53,7 +53,7 @@ class MngAnimationProvider : public IAnimationProvider
     Q_DISABLE_COPY(MngAnimationProvider)
 
 public:
-    MngAnimationProvider(const QString &filePath);
+    explicit MngAnimationProvider(const QString &filePath);
     ~MngAnimationProvider();
 
     bool isValid() const Q_DECL_OVERRIDE;

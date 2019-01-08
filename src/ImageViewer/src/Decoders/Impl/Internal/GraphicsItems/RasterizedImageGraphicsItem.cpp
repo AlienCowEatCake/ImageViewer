@@ -123,7 +123,7 @@ struct RasterizedImageGraphicsItem::Impl
     QPixmap lastPaintedPixmap;
     qint64 lastPaintedDataId;
 
-    Impl(RasterizedImageGraphicsItem *rasterizedImageGraphicsItem)
+    explicit Impl(RasterizedImageGraphicsItem *rasterizedImageGraphicsItem)
         : transformationMode(Qt::FastTransformation)
         , rasterizerManager(createRasterizerManager(rasterizedImageGraphicsItem))
         , lastPaintedDataId(0)

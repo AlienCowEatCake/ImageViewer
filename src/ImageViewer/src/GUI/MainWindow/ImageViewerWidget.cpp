@@ -57,7 +57,7 @@ const qreal ROTATION_TRESHOLD = 30;
 
 struct ImageViewerWidget::Impl
 {
-    Impl(ImageViewerWidget *widget)
+    explicit Impl(ImageViewerWidget *widget)
         : imageViewerWidget(widget)
         , scene(new QGraphicsScene(widget))
         , currentGraphicsItem(Q_NULLPTR)

@@ -52,7 +52,7 @@ namespace
 class RawImageProcessor
 {
 public:
-    RawImageProcessor(const QString &filePath)
+    explicit RawImageProcessor(const QString &filePath)
         : m_isValid(false)
         , m_isCancelled(false)
     {
@@ -301,7 +301,7 @@ class RawImageProvider : public AbstractProgressiveImageProvider
     Q_DISABLE_COPY(RawImageProvider)
 
 public:
-    RawImageProvider(const QString &filePath)
+    explicit RawImageProvider(const QString &filePath)
         : m_rawImageProcessor(new RawImageProcessor(filePath))
         , m_processingThread(Q_NULLPTR)
         , m_isFinal(true)
@@ -365,19 +365,19 @@ private:
     class ProcessingThread : public QThread
     {
     public:
-        ProcessingThread(RawImageProvider *provider)
+        explicit ProcessingThread(RawImageProvider *provider)
             : QThread(provider)
             , m_provider(provider)
         {}
 
         void run() Q_DECL_OVERRIDE
         {
-            const QImage image = m_provider->m_rawImageProcessor->getImage();
+            const QImage img = m_provider->m_rawImageProcessor->getImage();
             if(m_provider->m_rawImageProcessor->isCancelled())
                 return;
             m_provider->m_mutex.lock();
-            if(!image.isNull())
-                m_provider->m_image = image;
+            if(!img.isNull())
+                m_provider->m_image = img;
             m_provider->m_isFinal = true;
             m_provider->m_rawImageProcessor.reset();
             m_provider->m_mutex.unlock();

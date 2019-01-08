@@ -30,7 +30,7 @@ class ProgressiveResampledImageGraphicsItem : public QObject, public ResampledIm
     Q_DISABLE_COPY(ProgressiveResampledImageGraphicsItem)
 
 public:
-    ProgressiveResampledImageGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
+    explicit ProgressiveResampledImageGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
     ProgressiveResampledImageGraphicsItem(AbstractProgressiveImageProvider *provider, QGraphicsItem *parentItem = Q_NULLPTR);
     ~ProgressiveResampledImageGraphicsItem();
 

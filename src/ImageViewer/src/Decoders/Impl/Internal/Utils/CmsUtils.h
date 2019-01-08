@@ -33,7 +33,7 @@ class ICCProfile
     Q_DISABLE_COPY(ICCProfile)
 
 public:
-    ICCProfile(const QByteArray &profileData);
+    explicit ICCProfile(const QByteArray &profileData);
     ICCProfile(float *whitePoint,
                float *primaryChromaticities,
                unsigned short *transferFunctionRed,

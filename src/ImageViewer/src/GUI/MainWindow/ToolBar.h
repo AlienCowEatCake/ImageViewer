@@ -33,7 +33,7 @@ class ToolBar : public AdjustableFrame, public IControlsContainer
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS
 
 public:
-    ToolBar(QWidget *parent = Q_NULLPTR);
+    explicit ToolBar(QWidget *parent = Q_NULLPTR);
     ~ToolBar();
 
     ControlsContainerEmitter *emitter() Q_DECL_OVERRIDE;

@@ -41,7 +41,7 @@ signals:
     void applyRequested();
 
 public:
-    CodeEditor(QWidget *parent = Q_NULLPTR);
+    explicit CodeEditor(QWidget *parent = Q_NULLPTR);
 
     void repaintLineNumbersArea(const QRect &rect);
     int lineNumbersAreaWidth();
@@ -87,7 +87,7 @@ class LineNumberArea : public QWidget
     Q_DISABLE_COPY(LineNumberArea)
 
 public:
-    LineNumberArea(CodeEditor *editor);
+    explicit LineNumberArea(CodeEditor *editor);
 
     QSize sizeHint() const Q_DECL_OVERRIDE;
 
@@ -106,7 +106,7 @@ class SearchDialog : public QDialog
     Q_DISABLE_COPY(SearchDialog)
 
 public:
-    SearchDialog(CodeEditor *editor);
+    explicit SearchDialog(CodeEditor *editor);
 
 public slots:
     void onSearchClicked();

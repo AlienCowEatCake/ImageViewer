@@ -31,7 +31,7 @@ class AboutDialog : public QDialog
     Q_DISABLE_COPY(AboutDialog)
 
 public:
-    AboutDialog(QWidget *parent = Q_NULLPTR);
+    explicit AboutDialog(QWidget *parent = Q_NULLPTR);
     ~AboutDialog();
 
 protected:

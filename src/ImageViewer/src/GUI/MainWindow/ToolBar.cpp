@@ -53,7 +53,7 @@ struct ToolBar::Impl : public ControlsContainerEmitter
     QToolButton * const preferences;
     QToolButton * const exit;
 
-    Impl(ToolBar *toolbar)
+    explicit Impl(ToolBar *toolbar)
         : isSlideShowMode(false)
         , toolBarButtonsHasDarkTheme(false)
         , CONSTRUCT_OBJECT(navigatePrevious, QToolButton, (toolbar))

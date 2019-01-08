@@ -51,7 +51,7 @@ signals:
     void stateChanged(const FileManager::ChangeFlags& changedFlags);
 
 public:
-    FileManager(QObject *parent = Q_NULLPTR);
+    explicit FileManager(QObject *parent = Q_NULLPTR);
     ~FileManager();
 
     QStringList supportedFormatsWithWildcards() const;

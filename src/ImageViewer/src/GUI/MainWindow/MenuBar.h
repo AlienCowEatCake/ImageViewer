@@ -34,7 +34,7 @@ class MenuBar : public QMenuBar, public IControlsContainer
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS
 
 public:
-    MenuBar(QWidget *parent = Q_NULLPTR);
+    explicit MenuBar(QWidget *parent = Q_NULLPTR);
     ~MenuBar();
 
     ControlsContainerEmitter *emitter() Q_DECL_OVERRIDE;

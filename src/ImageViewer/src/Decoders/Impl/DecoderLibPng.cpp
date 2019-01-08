@@ -63,7 +63,7 @@ class PngAnimationProvider : public AbstractAnimationProvider
     Q_DISABLE_COPY(PngAnimationProvider)
 
 public:
-    PngAnimationProvider(const QString &filePath);
+    explicit PngAnimationProvider(const QString &filePath);
 
     bool checkIfPng();
     void applyICCProfile(png_const_structrp pngPtr, png_inforp infoPtr, QImage *image);

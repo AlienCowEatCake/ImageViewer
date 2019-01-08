@@ -33,7 +33,7 @@ class MovieAnimationProvider : public IAnimationProvider
     Q_DISABLE_COPY(MovieAnimationProvider)
 
 public:
-    MovieAnimationProvider(Movie *movie)
+    explicit MovieAnimationProvider(Movie *movie)
         : m_movie(movie)
     {
         m_movie->setParent(Q_NULLPTR);

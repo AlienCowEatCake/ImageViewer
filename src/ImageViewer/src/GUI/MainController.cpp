@@ -52,7 +52,7 @@ struct MainController::Impl
     bool lastHasCurrentFile;
     bool lastHasCurrentFileIndex;
 
-    Impl(MainController *mainController)
+    explicit Impl(MainController *mainController)
         : mainController(mainController)
         , fileManager()
         , mainWindow(&settings)

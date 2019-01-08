@@ -111,7 +111,7 @@ struct ResampledImageGraphicsItem::Impl
     QPixmap lastPaintedResampledPixmap;
     qint64 lastPaintedResampledDataId;
 
-    Impl(ResampledImageGraphicsItem *resampledImageGraphicsItem)
+    explicit Impl(ResampledImageGraphicsItem *resampledImageGraphicsItem)
         : transformationMode(Qt::FastTransformation)
         , resamplerManager(createResamplerManager(resampledImageGraphicsItem))
         , lastPaintedResampledDataId(0)

@@ -39,7 +39,7 @@ template<typename T>
 class SVGWebBrowserDecoderTemplate : public IDecoder
 {
 public:
-    SVGWebBrowserDecoderTemplate(const char * const name)
+    explicit SVGWebBrowserDecoderTemplate(const char * const name)
         : m_name(name)
     {}
 

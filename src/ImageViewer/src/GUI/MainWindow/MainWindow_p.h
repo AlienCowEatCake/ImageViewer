@@ -58,7 +58,7 @@ struct MainWindow::UI
     MenuBar *menubar;
     QList<IControlsContainer*> controlsContainers;
 
-    UI(MainWindow *mainWindow)
+    explicit UI(MainWindow *mainWindow)
         : mainWindow(mainWindow)
         , CONSTRUCT_OBJECT(centralWidget, QFrame, (mainWindow))
         , CONSTRUCT_OBJECT(imageViewerWidget, ImageViewerWidget, (centralWidget))

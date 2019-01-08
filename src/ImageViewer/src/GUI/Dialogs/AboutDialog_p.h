@@ -42,7 +42,7 @@ struct AboutDialog::UI
     QTextBrowser *textBrowser;
     QDialogButtonBox *buttonBox;
 
-    UI(QWidget *parent)
+    explicit UI(QWidget *parent)
         : CONSTRUCT_OBJECT(centralWidget, AdjustableFrame, (parent))
         , CONSTRUCT_OBJECT(iconLabel, QLabel, (centralWidget))
         , CONSTRUCT_OBJECT(textLabel, QLabel, (centralWidget))

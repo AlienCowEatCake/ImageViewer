@@ -695,7 +695,7 @@ struct MacToolBar::Impl
 
     bool isSlideShowMode;
 
-    Impl(MacToolBar *macToolBar)
+    explicit Impl(MacToolBar *macToolBar)
         : macToolBar(macToolBar)
         , widget(Q_NULLPTR)
         , isSlideShowMode(false)

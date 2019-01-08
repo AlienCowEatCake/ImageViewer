@@ -23,7 +23,7 @@
 
 struct AnimationWidget::Impl
 {
-    Impl(AnimationWidget *widget)
+    explicit Impl(AnimationWidget *widget)
         : widget(widget)
         , animation(Q_NULLPTR)
     {}

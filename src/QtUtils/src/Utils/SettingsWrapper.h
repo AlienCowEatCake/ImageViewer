@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -33,7 +33,7 @@ class SettingsWrapper
 public:
     /// @brief SettingsWrapper
     /// @param[in] settingsGroup - группа (секция) настроек
-    SettingsWrapper(const QString &settingsGroup = QString());
+    explicit SettingsWrapper(const QString &settingsGroup = QString());
 
     ~SettingsWrapper();
 

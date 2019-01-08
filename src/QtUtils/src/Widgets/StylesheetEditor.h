@@ -31,7 +31,7 @@ class StylesheetEditor : public QDialog
     Q_DISABLE_COPY(StylesheetEditor)
 
 public:
-    StylesheetEditor(QWidget *parent = Q_NULLPTR);
+    explicit StylesheetEditor(QWidget *parent = Q_NULLPTR);
     ~StylesheetEditor();
 
     bool isProtected() const;

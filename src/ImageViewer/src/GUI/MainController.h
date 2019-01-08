@@ -40,7 +40,7 @@ signals:
     void uiStateChanged(const UIState &state, const UIChangeFlags &changeFlags);
 
 public:
-    MainController(QObject *parent = Q_NULLPTR);
+    explicit MainController(QObject *parent = Q_NULLPTR);
     ~MainController();
 
 public slots:

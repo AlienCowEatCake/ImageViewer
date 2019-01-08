@@ -469,7 +469,7 @@ class RSVGPixmapProvider : public IScaledImageProvider
     Q_DISABLE_COPY(RSVGPixmapProvider)
 
 public:
-    RSVGPixmapProvider(const QString &filePath)
+    explicit RSVGPixmapProvider(const QString &filePath)
         : m_isValid(false)
         , m_rsvg(Q_NULLPTR)
         , m_width(0)

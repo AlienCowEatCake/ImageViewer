@@ -51,7 +51,7 @@ signals:
     void toolBarVisibleChanged(bool visible);
 
 public:
-    GUISettings(QObject *parent = Q_NULLPTR);
+    explicit GUISettings(QObject *parent = Q_NULLPTR);
     ~GUISettings();
 
     void flush();

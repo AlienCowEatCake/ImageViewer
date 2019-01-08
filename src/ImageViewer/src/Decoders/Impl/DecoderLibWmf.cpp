@@ -84,7 +84,7 @@ class WmfPixmapProvider : public IScaledImageProvider
     Q_DISABLE_COPY(WmfPixmapProvider)
 
 public:
-    WmfPixmapProvider(const QString &filePath)
+    explicit WmfPixmapProvider(const QString &filePath)
         : m_isValid(false)
         , m_API(Q_NULLPTR)
         , m_ddata(Q_NULLPTR)

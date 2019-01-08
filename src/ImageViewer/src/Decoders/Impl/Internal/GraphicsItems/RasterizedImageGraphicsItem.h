@@ -33,7 +33,7 @@ class RasterizedImageGraphicsItem : public QGraphicsItem
     Q_DISABLE_COPY(RasterizedImageGraphicsItem)
 
 public:
-    RasterizedImageGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
+    explicit RasterizedImageGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
     RasterizedImageGraphicsItem(IScaledImageProvider *provider, QGraphicsItem *parentItem = Q_NULLPTR);
     ~RasterizedImageGraphicsItem();
 

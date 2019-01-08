@@ -201,7 +201,7 @@ private:
 class FilxedListModel : public IFilesModel
 {
 public:
-    FilxedListModel(const QStringList &filePaths)
+    explicit FilxedListModel(const QStringList &filePaths)
         : m_pathsList(filePaths.toVector())
         , m_currentIndex(0)
         , m_canDeleteCurrentFile(false)
@@ -271,7 +271,7 @@ struct FileManager::Impl
     QScopedPointer<IFilesModel> filesModel;
     QStringList currentOpenArguments;
 
-    Impl(FileManager *fileManager)
+    explicit Impl(FileManager *fileManager)
         : fileManager(fileManager)
         , supportedFormats(QString::fromLatin1("*.*"))
     {}
@@ -304,7 +304,7 @@ struct FileManager::Impl
 class FileManager::Impl::ChangedGuard
 {
 public:
-    ChangedGuard(FileManager *manager)
+    explicit ChangedGuard(FileManager *manager)
         : m_manager(manager)
         , m_currentFilePath(manager->currentFilePath())
         , m_currentFileIndex(manager->currentFileIndex())

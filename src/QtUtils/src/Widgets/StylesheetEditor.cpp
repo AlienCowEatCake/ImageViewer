@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -436,15 +436,15 @@ struct StylesheetEditor::Impl
 {
     const QString originalStyleSheet;
 
-    QCheckBox *autoApplyCheckBox;
-    QCheckBox *protectCheckBox;
-    QPushButton *searchButton;
-    CodeEditor *codeEditor;
-    QPushButton *resetButton;
-    QPushButton *applyButton;
-    QPushButton *readButton;
+    QCheckBox * const autoApplyCheckBox;
+    QCheckBox * const protectCheckBox;
+    QPushButton * const searchButton;
+    CodeEditor * const codeEditor;
+    QPushButton * const resetButton;
+    QPushButton * const applyButton;
+    QPushButton * const readButton;
 
-    Impl(StylesheetEditor *stylesheetEditor)
+    explicit Impl(StylesheetEditor *stylesheetEditor)
         : originalStyleSheet(qApp->styleSheet())
         , autoApplyCheckBox(new QCheckBox(QString::fromLatin1("Auto apply style")))
         , protectCheckBox(new QCheckBox(QString::fromLatin1("Protect stylesheet editor")))

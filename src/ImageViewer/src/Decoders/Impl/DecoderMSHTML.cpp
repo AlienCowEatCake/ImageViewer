@@ -432,7 +432,7 @@ class MSHTMLPixmapProvider : public IScaledImageProvider, public AbstractSVGWebB
     Q_DISABLE_COPY(MSHTMLPixmapProvider)
 
 public:
-    MSHTMLPixmapProvider(const QString &filePath)
+    explicit MSHTMLPixmapProvider(const QString &filePath)
         : m_isValid(false)
         , m_htmlDocument2(Q_NULLPTR)
         , m_minScaleFactor(1)
@@ -778,7 +778,7 @@ private:
         clientRect.right = width;
         clientRect.bottom = height;
 
-        QImage image;
+        QImage result;
         HWND hwnd = 0;
         HDC hdc = GetDC(hwnd);
         HDC hdcMem = CreateCompatibleDC(hdc);
@@ -786,13 +786,13 @@ private:
         SelectObject(hdcMem, hbmp);
         HRESULT hr = viewObject->Draw(DVASPECT_CONTENT, -1, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR, hdcMem, &clientRect, Q_NULLPTR, Q_NULLPTR, 0);
         if(SUCCEEDED(hr))
-            image = QImageFromHBITMAP(hbmp);
+            result = QImageFromHBITMAP(hbmp);
         DeleteObject(hbmp);
         DeleteDC(hdcMem);
         ReleaseDC(hwnd, hdc);
         viewObject->Release();
 
-        return image;
+        return result;
     }
 
 private:

@@ -48,7 +48,7 @@ public:
         , m_metaData(other.m_metaData)
     {}
 
-    T &operator=(const PayloadWithMetaData &other)
+    PayloadWithMetaData &operator=(const PayloadWithMetaData &other)
     {
         if(this != &other)
         {
