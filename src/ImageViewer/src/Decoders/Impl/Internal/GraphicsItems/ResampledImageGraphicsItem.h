@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -23,6 +23,8 @@
 #include <QGraphicsItem>
 #include <QImage>
 #include <QPixmap>
+
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 class ResampledImageGraphicsItem : public QGraphicsItem
@@ -30,9 +32,9 @@ class ResampledImageGraphicsItem : public QGraphicsItem
     Q_DISABLE_COPY(ResampledImageGraphicsItem)
 
 public:
-    ResampledImageGraphicsItem(QGraphicsItem *parentItem = NULL);
-    ResampledImageGraphicsItem(const QImage &image, QGraphicsItem *parentItem = NULL);
-    ResampledImageGraphicsItem(const QPixmap &pixmap, QGraphicsItem *parentItem = NULL);
+    ResampledImageGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
+    ResampledImageGraphicsItem(const QImage &image, QGraphicsItem *parentItem = Q_NULLPTR);
+    ResampledImageGraphicsItem(const QPixmap &pixmap, QGraphicsItem *parentItem = Q_NULLPTR);
     ~ResampledImageGraphicsItem();
 
     QImage image() const;
@@ -44,8 +46,8 @@ public:
     Qt::TransformationMode transformationMode() const;
     void setTransformationMode(Qt::TransformationMode mode);
 
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = NULL);
+    QRectF boundingRect() const Q_DECL_OVERRIDE;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE;
 
 private:
     struct Impl;

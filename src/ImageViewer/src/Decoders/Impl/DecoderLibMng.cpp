@@ -33,6 +33,8 @@
 #include <QSysInfo>
 #include <QDebug>
 
+#include "Utils/Global.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
@@ -54,12 +56,12 @@ public:
     MngAnimationProvider(const QString &filePath);
     ~MngAnimationProvider();
 
-    bool isValid() const;
-    bool isSingleFrame() const;
-    int nextImageDelay() const;
-    bool jumpToNextImage();
-    QPixmap currentPixmap() const;
-    QImage currentImage() const;
+    bool isValid() const Q_DECL_OVERRIDE;
+    bool isSingleFrame() const Q_DECL_OVERRIDE;
+    int nextImageDelay() const Q_DECL_OVERRIDE;
+    bool jumpToNextImage() Q_DECL_OVERRIDE;
+    QPixmap currentPixmap() const Q_DECL_OVERRIDE;
+    QImage currentImage() const Q_DECL_OVERRIDE;
 
     mng_handle hMNG;
     QImage image;
@@ -261,12 +263,12 @@ QImage MngAnimationProvider::currentImage() const
 class DecoderLibMng : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderLibMng");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("mng")
@@ -276,17 +278,17 @@ public:
                 ;
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

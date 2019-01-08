@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -45,7 +45,7 @@ public:
     }
 
 private:
-    bool scaleImpl()
+    bool scaleImpl() Q_DECL_OVERRIDE
     {
 #define CHECK_ABORT_STATE if(isAborted()) return false
         CHECK_ABORT_STATE;

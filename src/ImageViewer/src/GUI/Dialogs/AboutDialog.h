@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -21,6 +21,8 @@
 #define ABOUTDIALOG_H_INCLUDED
 
 #include <QDialog>
+
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 class AboutDialog : public QDialog
@@ -29,11 +31,11 @@ class AboutDialog : public QDialog
     Q_DISABLE_COPY(AboutDialog)
 
 public:
-    AboutDialog(QWidget *parent = NULL);
+    AboutDialog(QWidget *parent = Q_NULLPTR);
     ~AboutDialog();
 
 protected:
-    void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 
 private:
     struct UI;

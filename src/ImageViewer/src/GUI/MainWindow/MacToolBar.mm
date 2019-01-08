@@ -697,7 +697,7 @@ struct MacToolBar::Impl
 
     Impl(MacToolBar *macToolBar)
         : macToolBar(macToolBar)
-        , widget(NULL)
+        , widget(Q_NULLPTR)
         , isSlideShowMode(false)
     {
         AUTORELEASE_POOL;
@@ -850,7 +850,7 @@ void MacToolBar::detachFromWindow()
     AUTORELEASE_POOL;
     if(NSWindow *window = WindowUtils::GetNativeWindow(m_impl->widget))
         [window setToolbar:nil];
-    m_impl->widget = NULL;
+    m_impl->widget = Q_NULLPTR;
 }
 
 void MacToolBar::setVisible(bool isVisible)

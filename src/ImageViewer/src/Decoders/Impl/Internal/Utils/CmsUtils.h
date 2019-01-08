@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -23,6 +23,8 @@
 #include <cstddef>
 #include <QtGlobal>
 
+#include "Utils/ScopedPointer.h"
+
 class QImage;
 class QByteArray;
 
@@ -45,7 +47,7 @@ public:
 
 private:
     struct Impl;
-    Impl *m_impl;
+    QScopedPointer<Impl> m_impl;
 };
 
 #endif

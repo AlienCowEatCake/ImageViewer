@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -28,7 +28,13 @@ bool SystemHasDarkTheme()
 {
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER)
     if(@available(*, macOS 10.14))
-        return [NSApp.effectiveAppearance.name hasSuffix:@"DarkAqua"];
+    {
+        NSAppearance *appearance = [NSApp effectiveAppearance];
+        NSAppearanceName bestMatchedName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+        if(bestMatchedName)
+            return [bestMatchedName isEqualToString:NSAppearanceNameDarkAqua];
+        return [[appearance name] hasSuffix:@"DarkAqua"];
+    }
 #endif
     return false;
 }

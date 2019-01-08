@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -21,6 +21,8 @@
 #define SETTINGSDIALOG_H_INCLUDED
 
 #include <QDialog>
+
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 class GUISettings;
@@ -31,11 +33,11 @@ class SettingsDialog : public QDialog
     Q_DISABLE_COPY(SettingsDialog)
 
 public:
-    SettingsDialog(GUISettings *settings, QWidget *parent = NULL);
+    SettingsDialog(GUISettings *settings, QWidget *parent = Q_NULLPTR);
     ~SettingsDialog();
 
 protected:
-    void showEvent(QShowEvent *event);
+    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
 
 protected slots:
     void onSettingsAccepted();

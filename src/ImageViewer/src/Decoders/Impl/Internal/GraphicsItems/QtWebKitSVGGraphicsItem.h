@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,7 +22,10 @@
 
 #include <QGraphicsItem>
 #include <QObject>
+
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
+
 #include "AbstractSVGWebBrowser.h"
 
 class QByteArray;
@@ -35,19 +38,19 @@ class QtWebKitSVGGraphicsItem : public QObject, public QGraphicsItem, public Abs
     Q_DISABLE_COPY(QtWebKitSVGGraphicsItem)
 
 public:
-    QtWebKitSVGGraphicsItem(QGraphicsItem *parentItem = NULL);
+    QtWebKitSVGGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
     ~QtWebKitSVGGraphicsItem();
 
     bool load(const QByteArray &svgData, const QUrl &baseUrl);
 
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = NULL);
+    QRectF boundingRect() const Q_DECL_OVERRIDE;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE;
 
 private slots:
     void onUpdateRequested(const QRect& rect);
 
 private:
-    QVariant evalJSImpl(const QString &scriptSource);
+    QVariant evalJSImpl(const QString &scriptSource) Q_DECL_OVERRIDE;
 
 private:
     struct Impl;

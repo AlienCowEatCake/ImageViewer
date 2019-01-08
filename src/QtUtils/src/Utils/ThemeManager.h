@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QString>
 
+#include "Global.h"
 #include "ScopedPointer.h"
 
 class QStringList;
@@ -69,7 +70,7 @@ public:
     /// @param showMessage - Показать ли сообщение что тема будет применена после
     ///  перезапуска программы.
     /// @param parent - Родитель для сообщения, показываемого при showMessage=true.
-    void setTheme(const QString &themeId, const bool showMessage = false, QWidget *parent = NULL);
+    void setTheme(const QString &themeId, const bool showMessage = false, QWidget *parent = Q_NULLPTR);
 
     /// @brief Заполнить меню элементами для выбора темы. Все необходимые
     ///  соединения будут установлены автоматически.

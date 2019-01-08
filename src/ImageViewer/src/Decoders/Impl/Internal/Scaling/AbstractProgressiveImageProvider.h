@@ -22,6 +22,8 @@
 
 #include <QObject>
 
+#include "Utils/Global.h"
+
 class QImage;
 class QSize;
 
@@ -34,7 +36,7 @@ signals:
     void updated();
 
 public:
-    AbstractProgressiveImageProvider(QObject *parent = NULL)
+    AbstractProgressiveImageProvider(QObject *parent = Q_NULLPTR)
         : QObject(parent)
     {}
 

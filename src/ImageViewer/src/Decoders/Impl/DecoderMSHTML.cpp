@@ -46,6 +46,8 @@
 typedef void* QFunctionPointer;
 #endif
 
+#include "Utils/Global.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItems/AbstractSVGWebBrowser.h"
@@ -80,7 +82,7 @@ public:
         if(!_.isValid())
         {
             qWarning() << "Failed to load ole32.dll";
-            return NULL;
+            return Q_NULLPTR;
         }
         return &_;
     }
@@ -129,12 +131,12 @@ public:
 
 private:
     OLE32()
-        : m_CoInitializeEx(NULL)
-        , m_CoUninitialize(NULL)
-        , m_CoCreateInstance(NULL)
-        , m_CLSIDFromProgID(NULL)
-        , m_IIDFromString(NULL)
-        , m_CLSIDFromString(NULL)
+        : m_CoInitializeEx(Q_NULLPTR)
+        , m_CoUninitialize(Q_NULLPTR)
+        , m_CoCreateInstance(Q_NULLPTR)
+        , m_CLSIDFromProgID(Q_NULLPTR)
+        , m_IIDFromString(Q_NULLPTR)
+        , m_CLSIDFromString(Q_NULLPTR)
     {
         if(!LibraryUtils::LoadQLibrary(m_library, "ole32"))
             return;
@@ -231,7 +233,7 @@ public:
         if(!_.isValid())
         {
             qWarning() << "Failed to load oleaut32.dll";
-            return NULL;
+            return Q_NULLPTR;
         }
         return &_;
     }
@@ -273,11 +275,11 @@ public:
 
 private:
     OLEAut32()
-        : m_SysAllocString(NULL)
-        , m_SysFreeString(NULL)
-        , m_SafeArrayCreateVector(NULL)
-        , m_SafeArrayAccessData(NULL)
-        , m_SafeArrayDestroy(NULL)
+        : m_SysAllocString(Q_NULLPTR)
+        , m_SysFreeString(Q_NULLPTR)
+        , m_SafeArrayCreateVector(Q_NULLPTR)
+        , m_SafeArrayAccessData(Q_NULLPTR)
+        , m_SafeArrayDestroy(Q_NULLPTR)
     {
         if(!LibraryUtils::LoadQLibrary(m_library, "oleaut32"))
             return;
@@ -311,7 +313,7 @@ BSTR SysAllocString_WRAP(const OLECHAR *psz)
     if(OLEAut32 *oleaut32 = OLEAut32::instance())
         return oleaut32->SysAllocString(psz);
     qWarning() << "Failed to load oleaut32.dll";
-    return NULL;
+    return Q_NULLPTR;
 }
 #define SysAllocString SysAllocString_WRAP
 
@@ -328,7 +330,7 @@ SAFEARRAY *SafeArrayCreateVector_WRAP(VARTYPE vt, LONG lLbound, ULONG cElements)
     if(OLEAut32 *oleaut32 = OLEAut32::instance())
         return oleaut32->SafeArrayCreateVector(vt, lLbound, cElements);
     qWarning() << "Failed to load oleaut32.dll";
-    return NULL;
+    return Q_NULLPTR;
 }
 #define SafeArrayCreateVector SafeArrayCreateVector_WRAP
 
@@ -432,11 +434,11 @@ class MSHTMLPixmapProvider : public IScaledImageProvider, public AbstractSVGWebB
 public:
     MSHTMLPixmapProvider(const QString &filePath)
         : m_isValid(false)
-        , m_htmlDocument2(NULL)
+        , m_htmlDocument2(Q_NULLPTR)
         , m_minScaleFactor(1)
         , m_maxScaleFactor(1)
     {
-        CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+        CoInitializeEx(Q_NULLPTR, COINIT_APARTMENTTHREADED);
 
         QByteArray inBuffer;
 #if defined (HAS_ZLIB)
@@ -485,7 +487,7 @@ public:
 //            return;
 //        }
 
-        hr = CoCreateInstance(CLSID_HTMLDocument, NULL, CLSCTX_INPROC_SERVER, IID_IHTMLDocument2, (void**)&m_htmlDocument2);
+        hr = CoCreateInstance(CLSID_HTMLDocument, Q_NULLPTR, CLSCTX_INPROC_SERVER, IID_IHTMLDocument2, (void**)&m_htmlDocument2);
         if(!SUCCEEDED(hr))
         {
             qWarning() << "CoCreateInstance(CLSID_HTMLDocument) failed" << QString::number(hr, 16);
@@ -493,7 +495,7 @@ public:
         }
 
 #if defined (__IHTMLDocument3_INTERFACE_DEFINED__) /// @todo
-        IHTMLDocument3 *htmlDocument3 = NULL;
+        IHTMLDocument3 *htmlDocument3 = Q_NULLPTR;
         hr = m_htmlDocument2->QueryInterface(IID_IHTMLDocument3, (void**)&htmlDocument3);
         if(SUCCEEDED(hr))
         {
@@ -527,22 +529,22 @@ public:
         CoUninitialize();
     }
 
-    bool isValid() const
+    bool isValid() const Q_DECL_OVERRIDE
     {
         return m_isValid;
     }
 
-    bool requiresMainThread() const
+    bool requiresMainThread() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QRectF boundingRect() const
+    QRectF boundingRect() const Q_DECL_OVERRIDE
     {
         return QRectF(0, 0, m_svgRect.width(), m_svgRect.height());
     }
 
-    QImage image(const qreal scaleFactor)
+    QImage image(const qreal scaleFactor) Q_DECL_OVERRIDE
     {
         if(!isValid())
             return QImage();
@@ -560,18 +562,18 @@ public:
         return renderImage(width, height);
     }
 
-    qreal minScaleFactor() const
+    qreal minScaleFactor() const Q_DECL_OVERRIDE
     {
         return m_minScaleFactor;
     }
 
-    qreal maxScaleFactor() const
+    qreal maxScaleFactor() const Q_DECL_OVERRIDE
     {
         return m_maxScaleFactor;
     }
 
 protected:
-    QSizeF svgSizeAttribute()
+    QSizeF svgSizeAttribute() Q_DECL_OVERRIDE
     {
         QXmlStreamReader reader(m_svgData);
         while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
@@ -583,7 +585,7 @@ protected:
         return size;
     }
 
-    QRectF svgViewBoxAttribute()
+    QRectF svgViewBoxAttribute() Q_DECL_OVERRIDE
     {
         QXmlStreamReader reader(m_svgData);
         while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
@@ -599,24 +601,24 @@ protected:
                 : QRectF();
     }
 
-    QRectF svgBoundingBoxRect()
+    QRectF svgBoundingBoxRect() Q_DECL_OVERRIDE
     {
         return QRectF(); /// @todo
     }
 
-    QRectF svgBoundingClientRect()
+    QRectF svgBoundingClientRect() Q_DECL_OVERRIDE
     {
         return QRectF(); /// @todo
     }
 
-    bool rootElementIsSvg()
+    bool rootElementIsSvg() Q_DECL_OVERRIDE
     {
         QXmlStreamReader reader(m_svgData);
         while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
         return !compare(reader.name(), QString::fromLatin1("svg"), Qt::CaseInsensitive);
     }
 
-    QVariant evalJSImpl(const QString &scriptSource)
+    QVariant evalJSImpl(const QString &scriptSource) Q_DECL_OVERRIDE
     {
         Q_UNUSED(scriptSource);
         qWarning() << __FUNCTION__ << "JavaScript is not available for MSHTML implementation";
@@ -624,7 +626,7 @@ protected:
 
 //        HRESULT hr = E_FAIL;
 
-//        IHTMLWindow2 *htmlWindow2 = NULL;
+//        IHTMLWindow2 *htmlWindow2 = Q_NULLPTR;
 //        hr = m_htmlDocument2->get_parentWindow(&htmlWindow2);
 //        if(!SUCCEEDED(hr))
 //        {
@@ -709,7 +711,7 @@ private:
             ).arg(QString::fromLatin1(m_svgData.toBase64())).toStdWString();
 
         SAFEARRAY *safeArray = SafeArrayCreateVector(VT_VARIANT, 0, 1);
-        VARIANT *param = NULL;
+        VARIANT *param = Q_NULLPTR;
         HRESULT hr = SafeArrayAccessData(safeArray, (LPVOID*)&param);
         if(!SUCCEEDED(hr))
         {
@@ -751,7 +753,7 @@ private:
         const int y = MulDiv(height, HIMETRIC_INCH, GetDeviceCaps(hdc, LOGPIXELSY));
         ReleaseDC(0, hdc);
 
-        IOleObject *oleObject = NULL;
+        IOleObject *oleObject = Q_NULLPTR;
         HRESULT hr = m_htmlDocument2->QueryInterface(IID_IOleObject, (void**)&oleObject);
         if(!SUCCEEDED(hr))
             return false;
@@ -767,7 +769,7 @@ private:
 
     QImage renderImage(int width, int height)
     {
-        IViewObject *viewObject = NULL;
+        IViewObject *viewObject = Q_NULLPTR;
         if(!SUCCEEDED(m_htmlDocument2->QueryInterface(IID_IViewObject, (void**)&viewObject)))
             return QImage();
 
@@ -782,7 +784,7 @@ private:
         HDC hdcMem = CreateCompatibleDC(hdc);
         HBITMAP hbmp = CreateCompatibleBitmap(hdc, width, height);
         SelectObject(hdcMem, hbmp);
-        HRESULT hr = viewObject->Draw(DVASPECT_CONTENT, -1, NULL, NULL, NULL, hdcMem, &clientRect, NULL, NULL, 0);
+        HRESULT hr = viewObject->Draw(DVASPECT_CONTENT, -1, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR, hdcMem, &clientRect, Q_NULLPTR, Q_NULLPTR, 0);
         if(SUCCEEDED(hr))
             image = QImageFromHBITMAP(hbmp);
         DeleteObject(hbmp);
@@ -807,12 +809,12 @@ private:
 class DecoderMSHTML : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderMSHTML");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("svg")
@@ -822,12 +824,12 @@ public:
                    ;
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         static Qt::CheckState state = Qt::Unchecked;
         if(state != Qt::Unchecked)
@@ -862,7 +864,7 @@ public:
         return result;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable() || !isAvailable())

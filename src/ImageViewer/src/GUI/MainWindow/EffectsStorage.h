@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -23,6 +23,8 @@
 #include <QObject>
 #include <QHash>
 
+#include "Utils/Global.h"
+
 #include "../UIState.h"
 
 class ImageViewerWidget;
@@ -33,7 +35,7 @@ class EffectsStorage : public QObject
     Q_DISABLE_COPY(EffectsStorage)
 
 public:
-    EffectsStorage(QObject *parent = NULL);
+    EffectsStorage(QObject *parent = Q_NULLPTR);
     ~EffectsStorage();
 
 public slots:

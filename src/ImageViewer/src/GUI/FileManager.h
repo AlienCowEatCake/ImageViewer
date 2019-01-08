@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -21,6 +21,8 @@
 #define FILEMANAGER_H_INCLUDED
 
 #include <QObject>
+
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 class QString;
@@ -49,7 +51,7 @@ signals:
     void stateChanged(const FileManager::ChangeFlags& changedFlags);
 
 public:
-    FileManager(QObject *parent = NULL);
+    FileManager(QObject *parent = Q_NULLPTR);
     ~FileManager();
 
     QStringList supportedFormatsWithWildcards() const;
@@ -69,7 +71,7 @@ public slots:
     bool openPaths(const QStringList &filePaths);
     bool selectByIndex(int index);
     bool deleteCurrentFile();
-    bool moveToTrashCurrentFile(QString *errorDescription = NULL);
+    bool moveToTrashCurrentFile(QString *errorDescription = Q_NULLPTR);
 
 private:
     struct Impl;

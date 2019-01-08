@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -389,7 +389,7 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
     memset(&ref, 0, sizeof(ref));
     const QByteArray utf8Path = absolutePath.toUtf8();
     const UInt8 *utf8PathData = reinterpret_cast<const UInt8*>(utf8Path.data());
-    OSStatus status = FSPathMakeRefWithOptions(utf8PathData, kFSPathMakeRefDoNotFollowLeafSymlink, &ref, NULL);
+    OSStatus status = FSPathMakeRefWithOptions(utf8PathData, kFSPathMakeRefDoNotFollowLeafSymlink, &ref, Q_NULLPTR);
     if(status)
     {
         const QString description = QString::fromUtf8(GetMacOSStatusCommentString(status));
@@ -399,7 +399,7 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
         qWarning() << "[FileUtils::MoveToTrash]: Status Comment:" << description;
         return false;
     }
-    status = FSMoveObjectToTrashSync(&ref, NULL, kFSFileOperationDefaultOptions);
+    status = FSMoveObjectToTrashSync(&ref, Q_NULLPTR, kFSFileOperationDefaultOptions);
     if(status)
     {
         const QString description = QString::fromUtf8(GetMacOSStatusCommentString(status));
@@ -460,17 +460,17 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
         fileop.hwnd = 0;
         fileop.wFunc = FO_DELETE;
         fileop.pFrom = wstringPath.c_str();
-        fileop.pTo = NULL;
+        fileop.pTo = Q_NULLPTR;
         fileop.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
         fileop.fAnyOperationsAborted = 0;
         fileop.hNameMappings = 0;
-        fileop.lpszProgressTitle = NULL;
+        fileop.lpszProgressTitle = Q_NULLPTR;
         DWORD status = static_cast<DWORD>(SHFileOperationW_f(&fileop));
         if(status)
         {
-            WCHAR * errorRawStr = NULL;
+            WCHAR * errorRawStr = Q_NULLPTR;
             FormatMessageW_f(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                           NULL, status, 0, reinterpret_cast<LPWSTR>(&errorRawStr), 0, NULL);
+                           Q_NULLPTR, status, 0, reinterpret_cast<LPWSTR>(&errorRawStr), 0, Q_NULLPTR);
             const QString description = QString::fromStdWString(std::wstring(errorRawStr));
             LocalFree(errorRawStr);
             if(errorDescription)
@@ -497,17 +497,17 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
         fileop.hwnd = 0;
         fileop.wFunc = FO_DELETE;
         fileop.pFrom = stringPath.c_str();
-        fileop.pTo = NULL;
+        fileop.pTo = Q_NULLPTR;
         fileop.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
         fileop.fAnyOperationsAborted = 0;
         fileop.hNameMappings = 0;
-        fileop.lpszProgressTitle = NULL;
+        fileop.lpszProgressTitle = Q_NULLPTR;
         DWORD status = static_cast<DWORD>(SHFileOperationA(&fileop));
         if(status)
         {
-            char * errorRawStr = NULL;
+            char * errorRawStr = Q_NULLPTR;
             FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                           NULL, status, 0, reinterpret_cast<LPSTR>(&errorRawStr), 0, NULL);
+                           Q_NULLPTR, status, 0, reinterpret_cast<LPSTR>(&errorRawStr), 0, Q_NULLPTR);
             const QString description = QString::fromLocal8Bit(errorRawStr);
             LocalFree(errorRawStr);
             if(errorDescription)

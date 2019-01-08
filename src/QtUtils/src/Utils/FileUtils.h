@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -20,7 +20,7 @@
 #if !defined (QTUTILS_FILEUTILS_H_INCLUDED)
 #define QTUTILS_FILEUTILS_H_INCLUDED
 
-#include <cstddef>
+#include "Global.h"
 
 class QString;
 
@@ -35,7 +35,7 @@ namespace FileUtils {
 /// @param[in] path - путь к файлу или директории
 /// @param[out] errorDescription - текстовое описание ошибки в случае ее возникновения
 /// @return - true в случае успешного удаления, false в случае ошибки
-bool MoveToTrash(const QString &path, QString* errorDescription = NULL);
+bool MoveToTrash(const QString &path, QString* errorDescription = Q_NULLPTR);
 
 } // namespace FileUtils
 

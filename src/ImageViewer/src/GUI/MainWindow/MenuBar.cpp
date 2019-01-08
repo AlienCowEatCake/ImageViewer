@@ -37,7 +37,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     class ActionsEventFilter : public QObject
     {
     public:
-        ActionsEventFilter(QObject *parent = NULL)
+        ActionsEventFilter(QObject *parent = Q_NULLPTR)
             : QObject(parent)
         {}
 

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -25,6 +25,7 @@
 
 #include <QString>
 
+#include "Global.h"
 #include "ObjectiveCUtils.h"
 
 namespace InfoUtils {
@@ -86,7 +87,7 @@ Version GetCurrentMacVersionImpl()
     Gestalt(gestaltSystemVersionBugFix, &bugFixVersion);
 #else
     typedef OSErr (*Gestalt_t)(OSType selector, SInt32 *response);
-    Gestalt_t Gestalt_f = NULL;
+    Gestalt_t Gestalt_f = Q_NULLPTR;
     CFBundleRef coreServicesBundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.CoreServices"));
     if(coreServicesBundle)
         Gestalt_f = reinterpret_cast<Gestalt_t>(CFBundleGetFunctionPointerForName(coreServicesBundle, CFSTR("Gestalt")));

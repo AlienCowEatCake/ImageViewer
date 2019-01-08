@@ -27,6 +27,8 @@
 #include <QByteArray>
 #include <QDebug>
 
+#include "Utils/Global.h"
+
 #include "../../IDecoder.h"
 #include "ImageData.h"
 #if defined (HAS_ZLIB)
@@ -41,12 +43,12 @@ public:
         : m_name(name)
     {}
 
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1(m_name);
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("svg")
@@ -56,17 +58,17 @@ public:
                    ;
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

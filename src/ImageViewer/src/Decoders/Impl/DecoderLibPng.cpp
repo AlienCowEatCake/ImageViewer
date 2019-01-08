@@ -33,6 +33,8 @@
 #include <QSysInfo>
 #include <QDebug>
 
+#include "Utils/Global.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
@@ -125,8 +127,8 @@ bool PngAnimationProvider::readPng()
     if(!checkIfPng())
         return false;
 
-    png_structp pngPtr = NULL;
-    png_infop infoPtr = NULL;
+    png_structp pngPtr = Q_NULLPTR;
+    png_infop infoPtr = Q_NULLPTR;
     FramesCompositor compositor;
 
     // Create and initialize the png_struct with the desired error handler
@@ -134,7 +136,7 @@ bool PngAnimationProvider::readPng()
     // you can supply NULL for the last three parameters.  We also supply the
     // the compiler header file version, so that we know if the application
     // was compiled with a compatible version of the library.  REQUIRED
-    pngPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    pngPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
     if(!pngPtr)
     {
         qWarning() << "Can't initialize png_struct";
@@ -147,7 +149,7 @@ bool PngAnimationProvider::readPng()
     if(!infoPtr)
     {
         qWarning() << "Can't initialize png_info";
-        png_destroy_read_struct(&pngPtr, NULL, NULL);
+        png_destroy_read_struct(&pngPtr, Q_NULLPTR, Q_NULLPTR);
         file.close();
         return false;
     }
@@ -158,7 +160,7 @@ bool PngAnimationProvider::readPng()
     if(setjmp(png_jmpbuf(pngPtr)))
     {
        // Free all of the memory associated with the png_ptr and info_ptr
-       png_destroy_read_struct(&pngPtr, &infoPtr, NULL);
+       png_destroy_read_struct(&pngPtr, &infoPtr, Q_NULLPTR);
        file.close();
        // If we get here, we had a problem reading the file
        qWarning() << "Can't read PNG file";
@@ -306,7 +308,7 @@ bool PngAnimationProvider::readPng()
         for(int pass = 0; pass < number_passes; pass++)
         {
             for(png_uint_32 y = 0; y < nextFrameHeight; y++)
-                png_read_row(pngPtr, image.scanLine(static_cast<int>(y + nextFrameOffsetY)) + nextFrameOffsetX * 4, NULL);
+                png_read_row(pngPtr, image.scanLine(static_cast<int>(y + nextFrameOffsetY)) + nextFrameOffsetX * 4, Q_NULLPTR);
         }
 
         applyICCProfile(pngPtr, infoPtr, &image);
@@ -346,7 +348,7 @@ bool PngAnimationProvider::readPng()
     // At this point you have read the entire image
 
     // Clean up after the read, and free any memory allocated - REQUIRED
-    png_destroy_read_struct(&pngPtr, &infoPtr, NULL);
+    png_destroy_read_struct(&pngPtr, &infoPtr, Q_NULLPTR);
 
     // Close the file
     file.close();
@@ -359,28 +361,28 @@ bool PngAnimationProvider::readPng()
 class DecoderLibPng : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderLibPng");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("png");
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

@@ -20,6 +20,7 @@
 #if !defined(IMAGE_METADATA_H_INCLUDED)
 #define IMAGE_METADATA_H_INCLUDED
 
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 #include "../../IImageMetaData.h"
@@ -47,8 +48,8 @@ public:
     void addCustomEntry(const QString &type, const QString &tag, const QString &value);
 
 public: // IImageMetaData
-    QList<MetaDataType> types();
-    MetaDataEntryList metaData(MetaDataType type);
+    QList<MetaDataType> types() Q_DECL_OVERRIDE;
+    MetaDataEntryList metaData(MetaDataType type) Q_DECL_OVERRIDE;
 
 protected:
     bool readFile(const QString &filePath);

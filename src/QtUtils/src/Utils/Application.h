@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -22,6 +22,8 @@
 
 #include <QApplication>
 #include <QString>
+
+#include "Global.h"
 
 /**
  * @brief Класс-обертка над QApplication, выполняющий обработку событий типа QFileOpenEvent
@@ -58,7 +60,7 @@ protected:
      * @param[in] event Событие
      * @return true - событие распознано и обработано, false - иначе
      */
-    bool event(QEvent *event);
+    bool event(QEvent *event) Q_DECL_OVERRIDE;
 
 signals:
     /**

@@ -28,6 +28,8 @@
 
 #include <openjpeg.h>
 
+#include "Utils/Global.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
@@ -528,7 +530,7 @@ QImage readFile(const QString &filePath)
         return QImage();
     }
 
-    opj_image_t* image = NULL;
+    opj_image_t* image = Q_NULLPTR;
     // Read the main header of the codestream and if necessary the JP2 boxes
     if(!opj_read_header(stream, codec, &image))
     {
@@ -550,7 +552,7 @@ QImage readFile(const QString &filePath)
     }
 
     // FIXME? Shouldn't that situation be considered as an error of opj_decode() / opj_get_decoded_tile() ?
-    if(image->comps[0].data == NULL)
+    if(image->comps[0].data == Q_NULLPTR)
     {
         qWarning() << "ERROR -> opj_decompress: no image data!";
         opj_destroy_codec(codec);
@@ -646,12 +648,12 @@ QImage readFile(const QString &filePath)
 class DecoderOpenJPEG : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderOpenJPEG");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("jp2")
@@ -662,17 +664,17 @@ public:
                    ;
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

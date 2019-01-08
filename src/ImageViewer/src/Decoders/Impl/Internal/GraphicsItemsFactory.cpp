@@ -24,6 +24,8 @@
 #include <QImage>
 #include <QPixmap>
 
+#include "Utils/Global.h"
+
 #include "Animation/IAnimationProvider.h"
 #include "Animation/AnimationWidget.h"
 #include "Animation/AnimationObject.h"
@@ -42,14 +44,14 @@ GraphicsItemsFactory &GraphicsItemsFactory::instance()
 QGraphicsItem *GraphicsItemsFactory::createImageItem(const QImage &image)
 {
     if(image.isNull())
-        return NULL;
+        return Q_NULLPTR;
     return new ResampledImageGraphicsItem(image);
 }
 
 QGraphicsItem *GraphicsItemsFactory::createPixmapItem(const QPixmap &pixmap)
 {
     if(pixmap.isNull())
-        return NULL;
+        return Q_NULLPTR;
     return new ResampledImageGraphicsItem(pixmap);
 }
 
@@ -59,7 +61,7 @@ QGraphicsItem *GraphicsItemsFactory::createProgressiveImageItem(AbstractProgress
     {
         if(progressiveImageProvider)
             delete progressiveImageProvider;
-        return NULL;
+        return Q_NULLPTR;
     }
     return new ProgressiveResampledImageGraphicsItem(progressiveImageProvider);
 }
@@ -70,7 +72,7 @@ QGraphicsItem *GraphicsItemsFactory::createAnimatedItem(IAnimationProvider *anim
     {
         if(animationProvider)
             delete animationProvider;
-        return NULL;
+        return Q_NULLPTR;
     }
 
     if(animationProvider->isSingleFrame())
@@ -94,7 +96,7 @@ QGraphicsItem *GraphicsItemsFactory::createScalableItem(IScaledImageProvider *sc
     {
         if(scaledImageProvider)
             delete scaledImageProvider;
-        return NULL;
+        return Q_NULLPTR;
     }
     return new RasterizedImageGraphicsItem(scaledImageProvider);
 }

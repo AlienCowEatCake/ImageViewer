@@ -178,7 +178,7 @@ ToolBar::ToolBar(QWidget *parent)
     , m_impl(new Impl(this))
 {
 #if defined (Q_OS_MAC)
-        QStyle *style = NULL;
+        QStyle *style = Q_NULLPTR;
         if(QStyleFactory::keys().contains(QString::fromLatin1("Fusion"), Qt::CaseInsensitive))
              style = QStyleFactory::create(QString::fromLatin1("Fusion"));
         else if(QStyleFactory::keys().contains(QString::fromLatin1("Windows"), Qt::CaseInsensitive))

@@ -29,6 +29,8 @@
 #include <QByteArray>
 #include <QDebug>
 
+#include "Utils/Global.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
@@ -82,7 +84,7 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     reader.read = &readCallback;
     reader.seek = &seekCallback;
     reader.wait_for_file_size = &waitForFileSizeCallback;
-    heif_error error = heif_context_read_from_reader(ctx, &reader, &inFile, NULL);
+    heif_error error = heif_context_read_from_reader(ctx, &reader, &inFile, Q_NULLPTR);
     if(error.code != heif_error_Ok)
     {
         qWarning() << "Can't read:" << error.message;
@@ -90,7 +92,7 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
         return QImage();
     }
 
-    heif_image_handle *handle = NULL;
+    heif_image_handle *handle = Q_NULLPTR;
     error = heif_context_get_primary_image_handle(ctx, &handle);
     if(error.code != heif_error_Ok)
     {
@@ -99,8 +101,8 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
         return QImage();
     }
 
-    heif_image *img = NULL;
-    error = heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, NULL);
+    heif_image *img = Q_NULLPTR;
+    error = heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, Q_NULLPTR);
     if(error.code != heif_error_Ok)
     {
         qWarning() << "Can't decode image:" << error.message;
@@ -140,11 +142,11 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
     if(!metaData)
     {
-        const int numberOfMetadataBlocks = heif_image_handle_get_number_of_metadata_blocks(handle, NULL);
+        const int numberOfMetadataBlocks = heif_image_handle_get_number_of_metadata_blocks(handle, Q_NULLPTR);
         if(numberOfMetadataBlocks > 0)
         {
             heif_item_id *ids = new heif_item_id[numberOfMetadataBlocks];
-            heif_image_handle_get_list_of_metadata_block_IDs(handle, NULL, ids, numberOfMetadataBlocks);
+            heif_image_handle_get_list_of_metadata_block_IDs(handle, Q_NULLPTR, ids, numberOfMetadataBlocks);
             for(int i = 0; i < numberOfMetadataBlocks; ++i)
             {
                 if(strcmp(heif_image_handle_get_metadata_type(handle, ids[i]), "Exif") == 0)
@@ -177,29 +179,29 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
 class DecoderLibHEIF : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderLibHEIF");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("heif")
                 << QString::fromLatin1("heic");
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

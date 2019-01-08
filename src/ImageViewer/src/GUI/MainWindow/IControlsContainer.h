@@ -22,6 +22,8 @@
 
 #include <QObject>
 
+#include "Utils/Global.h"
+
 /*
 
 ALL_LIST="OpenFile OpenFolder SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow ImageInformation Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomCustom ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt EditStylesheet"
@@ -81,7 +83,7 @@ signals:
     void editStylesheetRequested();
 
 public:
-    explicit ControlsContainerEmitter(QObject *parent = NULL)
+    explicit ControlsContainerEmitter(QObject *parent = Q_NULLPTR)
         : QObject(parent)
     {}
 };
@@ -138,7 +140,7 @@ public:
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS_HELPER(public, = 0;)
 
 #define DECLARE_CONTROLS_CONTAINER_FUNCTIONS \
-    DECLARE_CONTROLS_CONTAINER_FUNCTIONS_HELPER(public, /*Q_DECL_OVERRIDE*/;)
+    DECLARE_CONTROLS_CONTAINER_FUNCTIONS_HELPER(public, Q_DECL_OVERRIDE;)
 
 
 #define CONTROLS_CONTAINER_BOOL_ARG_FUNCTION_IMPL(CLASS, CLASS_FUNCTION, OBJECT, OBJECT_FUNCTION) \

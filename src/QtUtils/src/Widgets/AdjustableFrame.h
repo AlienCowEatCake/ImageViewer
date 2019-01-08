@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -22,6 +22,8 @@
 
 #include <QFrame>
 
+#include "Utils/Global.h"
+
 /// @brief Небольшая надстройка над QFrame, которая позволяет получить доступ из
 /// стилей к параметрам Layout'а, ассоциированного с этим фреймом.
 class AdjustableFrame : public QFrame
@@ -39,7 +41,7 @@ class AdjustableFrame : public QFrame
     Q_PROPERTY(int layoutVSpacing       READ layoutVSpacing     WRITE setLayoutVSpacing     STORED false)
 
 public:
-    AdjustableFrame(QWidget *parent = NULL, Qt::WindowFlags flags = Qt::WindowFlags());
+    AdjustableFrame(QWidget *parent = Q_NULLPTR, Qt::WindowFlags flags = Qt::WindowFlags());
 
     int layoutMargin() const;
     void setLayoutMargin(int margin);

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -21,6 +21,8 @@
 #define ANIMATIONWIDGET_H_INCLUDED
 
 #include <QLabel>
+
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 class IAnimationProvider;
@@ -31,7 +33,7 @@ class AnimationWidget : public QLabel
     Q_DISABLE_COPY(AnimationWidget)
 
 public:
-    explicit AnimationWidget(QWidget *parent = NULL, Qt::WindowFlags flags = Qt::WindowFlags());
+    explicit AnimationWidget(QWidget *parent = Q_NULLPTR, Qt::WindowFlags flags = Qt::WindowFlags());
     ~AnimationWidget();
 
 public slots:

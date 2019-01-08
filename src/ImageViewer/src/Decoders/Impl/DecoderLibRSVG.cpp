@@ -39,6 +39,8 @@
 typedef void* QFunctionPointer;
 #endif
 
+#include "Utils/Global.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
@@ -120,7 +122,7 @@ public:
         if(!_.isValid())
         {
             qWarning() << "Failed to load libglib";
-            return NULL;
+            return Q_NULLPTR;
         }
         return &_;
     }
@@ -134,7 +136,7 @@ public:
 
 private:
     GLib()
-        : m_g_error_free(NULL)
+        : m_g_error_free(Q_NULLPTR)
     {
         if(!LibraryUtils::LoadQLibrary(m_library, GLIB_LIBRARY_NAMES))
             return;
@@ -170,7 +172,7 @@ public:
         if(!_.isValid())
         {
             qWarning() << "Failed to load libgobject";
-            return NULL;
+            return Q_NULLPTR;
         }
         return &_;
     }
@@ -184,7 +186,7 @@ public:
 
 private:
     GObject()
-        : m_g_object_unref(NULL)
+        : m_g_object_unref(Q_NULLPTR)
     {
         if(!LibraryUtils::LoadQLibrary(m_library, GOBJECT_LIBRARY_NAMES))
             return;
@@ -220,7 +222,7 @@ public:
         if(!_.isValid())
         {
             qWarning() << "Failed to load libcairo";
-            return NULL;
+            return Q_NULLPTR;
         }
         return &_;
     }
@@ -262,11 +264,11 @@ public:
 
 private:
     Cairo()
-        : m_cairo_image_surface_create_for_data(NULL)
-        , m_cairo_create(NULL)
-        , m_cairo_scale(NULL)
-        , m_cairo_destroy(NULL)
-        , m_cairo_surface_destroy(NULL)
+        : m_cairo_image_surface_create_for_data(Q_NULLPTR)
+        , m_cairo_create(Q_NULLPTR)
+        , m_cairo_scale(Q_NULLPTR)
+        , m_cairo_destroy(Q_NULLPTR)
+        , m_cairo_surface_destroy(Q_NULLPTR)
     {
         if(!LibraryUtils::LoadQLibrary(m_library, CAIRO_LIBRARY_NAMES))
             return;
@@ -300,7 +302,7 @@ cairo_surface_t *cairo_image_surface_create_for_data(unsigned char *data, cairo_
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_image_surface_create_for_data(data, format, width, height, stride);
     qWarning() << "Failed to load libcairo";
-    return NULL;
+    return Q_NULLPTR;
 }
 
 cairo_t *cairo_create(cairo_surface_t *target)
@@ -308,7 +310,7 @@ cairo_t *cairo_create(cairo_surface_t *target)
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_create(target);
     qWarning() << "Failed to load libcairo";
-    return NULL;
+    return Q_NULLPTR;
 }
 
 void cairo_scale(cairo_t *cr, double sx, double sy)
@@ -341,7 +343,7 @@ public:
         if(!_.isValid())
         {
             qWarning() << "Failed to load librsvg";
-            return NULL;
+            return Q_NULLPTR;
         }
         return &_;
     }
@@ -376,10 +378,10 @@ public:
 
 private:
     RSVG()
-        : m_rsvg_handle_new_from_data(NULL)
-        , m_rsvg_handle_set_base_uri(NULL)
-        , m_rsvg_handle_get_dimensions(NULL)
-        , m_rsvg_handle_render_cairo(NULL)
+        : m_rsvg_handle_new_from_data(Q_NULLPTR)
+        , m_rsvg_handle_set_base_uri(Q_NULLPTR)
+        , m_rsvg_handle_get_dimensions(Q_NULLPTR)
+        , m_rsvg_handle_render_cairo(Q_NULLPTR)
     {
         if(!LibraryUtils::LoadQLibrary(m_library, RSVG_LIBRARY_NAMES))
             return;
@@ -411,7 +413,7 @@ RsvgHandle *rsvg_handle_new_from_data(const quint8 *data, size_t data_len, GErro
     if(RSVG *rsvg = RSVG::instance())
         return rsvg->rsvg_handle_new_from_data(data, data_len, error);
     qWarning() << "Failed to load librsvg";
-    return NULL;
+    return Q_NULLPTR;
 }
 
 void rsvg_handle_set_base_uri(RsvgHandle *handle, const char *base_uri)
@@ -469,7 +471,7 @@ class RSVGPixmapProvider : public IScaledImageProvider
 public:
     RSVGPixmapProvider(const QString &filePath)
         : m_isValid(false)
-        , m_rsvg(NULL)
+        , m_rsvg(Q_NULLPTR)
         , m_width(0)
         , m_height(0)
         , m_minScaleFactor(1)
@@ -502,7 +504,7 @@ public:
         unsigned char *bufferData = reinterpret_cast<unsigned char*>(inBuffer.data());
         const size_t bufferSize = static_cast<size_t>(inBuffer.size());
 
-        GError *error = NULL;
+        GError *error = Q_NULLPTR;
         m_rsvg = rsvg_handle_new_from_data(bufferData, bufferSize, &error);
         if(!m_rsvg)
         {
@@ -538,22 +540,22 @@ public:
             g_object_unref(m_rsvg);
     }
 
-    bool isValid() const
+    bool isValid() const Q_DECL_OVERRIDE
     {
         return m_isValid;
     }
 
-    bool requiresMainThread() const
+    bool requiresMainThread() const Q_DECL_OVERRIDE
     {
         return false;
     }
 
-    QRectF boundingRect() const
+    QRectF boundingRect() const Q_DECL_OVERRIDE
     {
         return QRectF(0, 0, m_width, m_height);
     }
 
-    QImage image(const qreal scaleFactor)
+    QImage image(const qreal scaleFactor) Q_DECL_OVERRIDE
     {
         if(!isValid())
             return QImage();
@@ -577,12 +579,12 @@ public:
         return image;
     }
 
-    qreal minScaleFactor() const
+    qreal minScaleFactor() const Q_DECL_OVERRIDE
     {
         return m_minScaleFactor;
     }
 
-    qreal maxScaleFactor() const
+    qreal maxScaleFactor() const Q_DECL_OVERRIDE
     {
         return m_maxScaleFactor;
     }
@@ -601,12 +603,12 @@ private:
 class DecoderLibRSVG : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderLibRSVG");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("svg")
@@ -616,17 +618,17 @@ public:
                    ;
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return isReady();
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable() || !isAvailable())

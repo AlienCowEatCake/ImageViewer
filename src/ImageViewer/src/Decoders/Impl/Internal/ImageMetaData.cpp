@@ -77,7 +77,7 @@ class QFileIo : public Exiv2::BasicIo
 public:
     explicit QFileIo(const QString &path)
         : m_file(path)
-        , m_mapped(NULL)
+        , m_mapped(Q_NULLPTR)
     {}
 
     //! @name Manipulators
@@ -310,7 +310,7 @@ public:
             qWarning() << "[Exiv2::QFileIo]" << "Error in mmap():" << m_file.errorString();
             return 1;
         }
-        m_mapped = NULL;
+        m_mapped = Q_NULLPTR;
         return 0;
     }
 
@@ -843,7 +843,7 @@ struct ImageMetaData::Impl
         : isEntryListLoaded(false)
     {
 #if defined (USE_LIBEXIF)
-        exifData = NULL;
+        exifData = Q_NULLPTR;
 #endif
     }
 
@@ -989,7 +989,7 @@ ImageMetaData *ImageMetaData::createMetaData(const QString &filePath)
     if(metaData->readFile(filePath))
         return metaData;
     delete metaData;
-    return NULL;
+    return Q_NULLPTR;
 }
 
 ImageMetaData *ImageMetaData::createMetaData(const QByteArray &fileData)
@@ -998,7 +998,7 @@ ImageMetaData *ImageMetaData::createMetaData(const QByteArray &fileData)
     if(metaData->readFile(fileData))
         return metaData;
     delete metaData;
-    return NULL;
+    return Q_NULLPTR;
 }
 
 ImageMetaData *ImageMetaData::createExifMetaData(const QByteArray &rawExifData)
@@ -1007,7 +1007,7 @@ ImageMetaData *ImageMetaData::createExifMetaData(const QByteArray &rawExifData)
     if(metaData->readExifData(rawExifData))
         return metaData;
     delete metaData;
-    return NULL;
+    return Q_NULLPTR;
 }
 
 ImageMetaData::ImageMetaData()

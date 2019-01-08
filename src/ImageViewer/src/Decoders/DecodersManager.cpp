@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -29,6 +29,7 @@
 #include <QTime>
 #include <QMap>
 
+#include "Utils/Global.h"
 #include "Utils/SettingsWrapper.h"
 
 #include "IImageData.h"
@@ -39,7 +40,7 @@ const QString DECODERS_SETTINGS_BLACKLIST_KEY   = QString::fromLatin1("Blacklist
 
 struct DecoderWithPriority
 {
-    DecoderWithPriority(IDecoder *decoder = NULL, int priority = 0)
+    DecoderWithPriority(IDecoder *decoder = Q_NULLPTR, int priority = 0)
         : decoder(decoder)
         , priority(priority)
     {}

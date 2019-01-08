@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -21,9 +21,10 @@
 
 #include <cstring>
 
-#include <QtGlobal>
 #include <QString>
 #include <QSysInfo>
+
+#include "Global.h"
 
 #if defined (Q_OS_WIN)
 #include <windows.h>
@@ -324,8 +325,8 @@ QString GetSystemDescription()
         NetApiBufferFree_t NetApiBufferFree_f = reinterpret_cast<NetApiBufferFree_t>(GetProcAddress(hNetapi32, "NetApiBufferFree"));
         if(NetWkstaGetInfo_f && NetApiBufferFree_f)
         {
-            LPBYTE pinfoRawData = NULL;
-            if(NERR_Success == NetWkstaGetInfo_f(NULL, 100, &pinfoRawData) && pinfoRawData)
+            LPBYTE pinfoRawData = Q_NULLPTR;
+            if(NERR_Success == NetWkstaGetInfo_f(Q_NULLPTR, 100, &pinfoRawData) && pinfoRawData)
             {
                 WKSTA_INFO_100* pworkstationInfo = reinterpret_cast<WKSTA_INFO_100*>(pinfoRawData);
                 osMajorVersion = pworkstationInfo->wki100_ver_major;

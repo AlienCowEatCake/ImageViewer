@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,6 +22,9 @@
 
 #include <QImage>
 #include <QPixmap>
+
+#include "Utils/Global.h"
+
 #include "IAnimationProvider.h"
 
 template<typename Movie>
@@ -33,7 +36,7 @@ public:
     MovieAnimationProvider(Movie *movie)
         : m_movie(movie)
     {
-        m_movie->setParent(NULL);
+        m_movie->setParent(Q_NULLPTR);
         m_movie->start();
         m_movie->stop();
     }
@@ -43,32 +46,32 @@ public:
         m_movie->deleteLater();
     }
 
-    bool isValid() const
+    bool isValid() const Q_DECL_OVERRIDE
     {
         return m_movie->isValid();
     }
 
-    bool isSingleFrame() const
+    bool isSingleFrame() const Q_DECL_OVERRIDE
     {
         return m_movie->frameCount() == 1;
     }
 
-    int nextImageDelay() const
+    int nextImageDelay() const Q_DECL_OVERRIDE
     {
         return m_movie->nextFrameDelay();
     }
 
-    bool jumpToNextImage()
+    bool jumpToNextImage() Q_DECL_OVERRIDE
     {
         return m_movie->jumpToNextFrame();
     }
 
-    QPixmap currentPixmap() const
+    QPixmap currentPixmap() const Q_DECL_OVERRIDE
     {
         return m_movie->currentPixmap();
     }
 
-    QImage currentImage() const
+    QImage currentImage() const Q_DECL_OVERRIDE
     {
         return m_movie->currentImage();
     }

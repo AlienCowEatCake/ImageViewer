@@ -1,7 +1,6 @@
 /*
-   Copyright (C) 2011-2017,
-        Andrei V. Kurochkin     <kurochkin.andrei.v@yandex.ru>
-        Peter S. Zhigalov       <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2017, Andrei V. Kurochkin <kurochkin.andrei.v@yandex.ru>
+                 2011-2019, Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -25,6 +24,8 @@
 #include <QWidget>
 #include <QString>
 
+#include "Global.h"
+
 class QImage;
 
 class ImageSaver: public QObject
@@ -33,7 +34,7 @@ class ImageSaver: public QObject
     Q_DISABLE_COPY(ImageSaver)
 
 public:
-    ImageSaver(QWidget *parent = NULL);
+    ImageSaver(QWidget *parent = Q_NULLPTR);
     ~ImageSaver();
 
     QString defaultFilePath() const;

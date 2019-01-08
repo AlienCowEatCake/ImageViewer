@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,20 +22,22 @@
 #include <cassert>
 #include <map>
 
+#if defined (HAS_LCMS2)
+#include <lcms2.h>
+#endif
+
 #include <QImage>
 #include <QByteArray>
 #include <QSysInfo>
 
-#if defined (HAS_LCMS2)
-#include <lcms2.h>
-#endif
+#include "Utils/Global.h"
 
 struct ICCProfile::Impl
 {
 #if defined (HAS_LCMS2)
     Impl()
-        : inProfile(NULL)
-        , outProfile(NULL)
+        : inProfile(Q_NULLPTR)
+        , outProfile(Q_NULLPTR)
     {}
 
     ~Impl()
@@ -128,13 +130,13 @@ ICCProfile::ICCProfile(float *whitePoint,
 
     cmsToneCurve* cmsTransferFunction[3] =
     {
-        cmsBuildTabulatedToneCurve16(NULL, 256, transferFunctionRed),
-        cmsBuildTabulatedToneCurve16(NULL, 256, transferFunctionGreen),
-        cmsBuildTabulatedToneCurve16(NULL, 256, transferFunctionBlue)
+        cmsBuildTabulatedToneCurve16(Q_NULLPTR, 256, transferFunctionRed),
+        cmsBuildTabulatedToneCurve16(Q_NULLPTR, 256, transferFunctionGreen),
+        cmsBuildTabulatedToneCurve16(Q_NULLPTR, 256, transferFunctionBlue)
     };
 
     m_impl->outProfile = cmsCreate_sRGBProfile();
-    m_impl->inProfile = cmsCreateRGBProfileTHR(NULL, &cmsWhitePoint, &cmsPrimaries, cmsTransferFunction);
+    m_impl->inProfile = cmsCreateRGBProfileTHR(Q_NULLPTR, &cmsWhitePoint, &cmsPrimaries, cmsTransferFunction);
 
     for(std::size_t i = 0; i < 3; i++)
         cmsFreeToneCurve(cmsTransferFunction[i]);
@@ -149,9 +151,7 @@ ICCProfile::ICCProfile(float *whitePoint,
 }
 
 ICCProfile::~ICCProfile()
-{
-    delete m_impl;
-}
+{}
 
 void ICCProfile::applyToImage(QImage *image)
 {
@@ -159,7 +159,7 @@ void ICCProfile::applyToImage(QImage *image)
     if(!m_impl->inProfile || !m_impl->outProfile)
         return;
 
-    cmsHTRANSFORM transform = NULL;
+    cmsHTRANSFORM transform = Q_NULLPTR;
     switch(image->format())
     {
     case QImage::Format_ARGB32:

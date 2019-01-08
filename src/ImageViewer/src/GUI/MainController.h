@@ -21,6 +21,8 @@
 #define MAIN_CONTROLLER_H_INCLUDED
 
 #include <QObject>
+
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 #include "FileManager.h"
@@ -38,7 +40,7 @@ signals:
     void uiStateChanged(const UIState &state, const UIChangeFlags &changeFlags);
 
 public:
-    MainController(QObject *parent = NULL);
+    MainController(QObject *parent = Q_NULLPTR);
     ~MainController();
 
 public slots:

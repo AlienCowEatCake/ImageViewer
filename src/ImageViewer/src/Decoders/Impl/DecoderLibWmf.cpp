@@ -32,6 +32,8 @@
 #include <QPainter>
 #include <QDebug>
 
+#include "Utils/Global.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
@@ -84,8 +86,8 @@ class WmfPixmapProvider : public IScaledImageProvider
 public:
     WmfPixmapProvider(const QString &filePath)
         : m_isValid(false)
-        , m_API(NULL)
-        , m_ddata(NULL)
+        , m_API(Q_NULLPTR)
+        , m_ddata(Q_NULLPTR)
         , m_width(0)
         , m_height(0)
         , m_minScaleFactor(1)
@@ -175,22 +177,22 @@ public:
         wmf_api_destroy(m_API);
     }
 
-    bool isValid() const
+    bool isValid() const Q_DECL_OVERRIDE
     {
         return m_isValid;
     }
 
-    bool requiresMainThread() const
+    bool requiresMainThread() const Q_DECL_OVERRIDE
     {
         return false;
     }
 
-    QRectF boundingRect() const
+    QRectF boundingRect() const Q_DECL_OVERRIDE
     {
         return QRectF(0, 0, m_width, m_height);
     }
 
-    QImage image(const qreal scaleFactor)
+    QImage image(const qreal scaleFactor) Q_DECL_OVERRIDE
     {
         m_ddata->type = wmf_gd_image;
         m_ddata->bbox.TL.x = m_bbox.TL.x;
@@ -207,8 +209,8 @@ public:
             return QImage();
         }
 
-        int *gdPixels = NULL;
-        if(m_ddata->gd_image == NULL || (gdPixels = wmf_gd_image_pixels(m_ddata->gd_image)) == NULL)
+        int *gdPixels = Q_NULLPTR;
+        if(m_ddata->gd_image == Q_NULLPTR || (gdPixels = wmf_gd_image_pixels(m_ddata->gd_image)) == Q_NULLPTR)
         {
             qWarning() << "Couldn't decode WMF file - no output (huh?)" << wmfErrorToString(error);
             return QImage();
@@ -235,12 +237,12 @@ public:
         return image;
     }
 
-    qreal minScaleFactor() const
+    qreal minScaleFactor() const Q_DECL_OVERRIDE
     {
         return m_minScaleFactor;
     }
 
-    qreal maxScaleFactor() const
+    qreal maxScaleFactor() const Q_DECL_OVERRIDE
     {
         return m_maxScaleFactor;
     }
@@ -262,29 +264,29 @@ private:
 class DecoderLibWmf : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderLibWmf");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("wmf")
                 << QString::fromLatin1("wmz");
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

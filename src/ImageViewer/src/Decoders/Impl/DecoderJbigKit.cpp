@@ -31,6 +31,8 @@ extern "C" {
 #include <QByteArray>
 #include <QDebug>
 
+#include "Utils/Global.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
@@ -56,7 +58,7 @@ QImage readJbigFile(const QString &filePath)
     jbg_dec_init(&decoder);
     jbg_newlen(bufferData, bufferSize);
 
-    int decodeStatus = jbg_dec_in(&decoder, bufferData, bufferSize, NULL);
+    int decodeStatus = jbg_dec_in(&decoder, bufferData, bufferSize, Q_NULLPTR);
     if(decodeStatus != JBG_EOK)
     {
         qWarning() << QString::fromLatin1("Error (%1) decoding: %2")
@@ -87,29 +89,29 @@ QImage readJbigFile(const QString &filePath)
 class DecoderJbigKit : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderJbigKit");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("jbg")
                 << QString::fromLatin1("jbig");
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

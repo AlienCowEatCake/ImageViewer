@@ -150,12 +150,12 @@ public:
         m_watcher.addPath(m_directoryPath);
     }
 
-    QString currentFilePath() const     { return m_currentFilePath; }
-    int currentFileIndex() const        { return m_currentIndex; }
-    int filesCount() const              { return m_filesList.size(); }
-    bool canDeleteCurrentFile() const   { return m_canDeleteCurrentFile; }
+    QString currentFilePath() const Q_DECL_OVERRIDE     { return m_currentFilePath; }
+    int currentFileIndex() const Q_DECL_OVERRIDE        { return m_currentIndex; }
+    int filesCount() const Q_DECL_OVERRIDE              { return m_filesList.size(); }
+    bool canDeleteCurrentFile() const Q_DECL_OVERRIDE   { return m_canDeleteCurrentFile; }
 
-    bool selectByIndex(int index)
+    bool selectByIndex(int index) Q_DECL_OVERRIDE
     {
         if(index < 0 || index >= m_filesList.size())
             return false;
@@ -165,7 +165,7 @@ public:
         return true;
     }
 
-    void update()
+    void update() Q_DECL_OVERRIDE
     {
         const QSignalBlocker watcherBlocker(m_watcher);
         const QFileInfo fileInfo = QFileInfo(m_currentFilePath);
@@ -185,7 +185,7 @@ public:
         m_canDeleteCurrentFile = canDeleteFile(m_currentFilePath);
     }
 
-    QFileSystemWatcher * watcher() { return &m_watcher; }
+    QFileSystemWatcher * watcher() Q_DECL_OVERRIDE { return &m_watcher; }
 
 private:
     const QStringList m_supportedFormats;
@@ -212,12 +212,12 @@ public:
         m_canDeleteCurrentFile = canDeleteFile(m_currentFilePath);
     }
 
-    QString currentFilePath() const     { return m_currentFilePath; }
-    int currentFileIndex() const        { return m_currentIndex; }
-    int filesCount() const              { return m_pathsList.size(); }
-    bool canDeleteCurrentFile() const   { return m_canDeleteCurrentFile; }
+    QString currentFilePath() const Q_DECL_OVERRIDE     { return m_currentFilePath; }
+    int currentFileIndex() const Q_DECL_OVERRIDE        { return m_currentIndex; }
+    int filesCount() const Q_DECL_OVERRIDE              { return m_pathsList.size(); }
+    bool canDeleteCurrentFile() const Q_DECL_OVERRIDE   { return m_canDeleteCurrentFile; }
 
-    bool selectByIndex(int index)
+    bool selectByIndex(int index) Q_DECL_OVERRIDE
     {
         if(index < 0 || index >= m_pathsList.size())
             return false;
@@ -227,7 +227,7 @@ public:
         return true;
     }
 
-    void update()
+    void update() Q_DECL_OVERRIDE
     {
         const QSignalBlocker watcherBlocker(m_watcher);
         bool wasChanged = false;
@@ -248,7 +248,7 @@ public:
         m_canDeleteCurrentFile = canDeleteFile(m_currentFilePath);
     }
 
-    QFileSystemWatcher * watcher() { return &m_watcher; }
+    QFileSystemWatcher * watcher() Q_DECL_OVERRIDE { return &m_watcher; }
 
 private:
     QFileSystemWatcher m_watcher;
@@ -276,7 +276,7 @@ struct FileManager::Impl
         , supportedFormats(QString::fromLatin1("*.*"))
     {}
 
-    void resetFilesModel(IFilesModel *newFilesModel = NULL)
+    void resetFilesModel(IFilesModel *newFilesModel = Q_NULLPTR)
     {
         currentOpenArguments.clear();
         filesModel.reset(newFilesModel);

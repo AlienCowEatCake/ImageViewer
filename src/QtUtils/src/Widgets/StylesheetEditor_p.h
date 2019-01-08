@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -41,16 +41,16 @@ signals:
     void applyRequested();
 
 public:
-    CodeEditor(QWidget *parent = NULL);
+    CodeEditor(QWidget *parent = Q_NULLPTR);
 
     void repaintLineNumbersArea(const QRect &rect);
     int lineNumbersAreaWidth();
 
 protected:
-    void resizeEvent(QResizeEvent *event);
-    void changeEvent(QEvent *event);
-    void keyPressEvent(QKeyEvent *event);
-    void hideEvent(QHideEvent *event);
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    void changeEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
+    void hideEvent(QHideEvent *event) Q_DECL_OVERRIDE;
 
 private:
     enum IndentOperation
@@ -89,10 +89,10 @@ class LineNumberArea : public QWidget
 public:
     LineNumberArea(CodeEditor *editor);
 
-    QSize sizeHint() const;
+    QSize sizeHint() const Q_DECL_OVERRIDE;
 
 protected:
-    void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
 
 private:
     CodeEditor *m_codeEditor;
@@ -112,7 +112,7 @@ public slots:
     void onSearchClicked();
 
 protected:
-    void showEvent(QShowEvent *event);
+    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
 
 private:
     CodeEditor *m_codeEditor;

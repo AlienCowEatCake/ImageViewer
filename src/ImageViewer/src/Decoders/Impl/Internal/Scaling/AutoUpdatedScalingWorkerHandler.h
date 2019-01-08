@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,6 +22,8 @@
 
 #include "AbstractScalingWorkerHandler.h"
 
+#include "Utils/Global.h"
+
 class QGraphicsItem;
 
 class AutoUpdatedScalingWorkerHandler : public AbstractScalingWorkerHandler
@@ -34,8 +36,8 @@ public:
     ~AutoUpdatedScalingWorkerHandler();
 
 protected:
-    void onFinished();
-    void prepareTermination();
+    void onFinished() Q_DECL_OVERRIDE;
+    void prepareTermination() Q_DECL_OVERRIDE;
 
 private:
     QGraphicsItem *m_graphicsItem;

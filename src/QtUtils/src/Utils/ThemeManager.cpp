@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -92,12 +92,12 @@ class TextDocumentStyler : public QObject
     Q_DISABLE_COPY(TextDocumentStyler)
 
 public:
-    TextDocumentStyler(QObject *parent = NULL)
+    TextDocumentStyler(QObject *parent = Q_NULLPTR)
         : QObject(parent)
     {}
 
 protected:
-    bool eventFilter(QObject *object, QEvent *event)
+    bool eventFilter(QObject *object, QEvent *event) Q_DECL_OVERRIDE
     {
         if(event->type() == QEvent::ChildAdded)
         {
@@ -122,12 +122,12 @@ class ScrollBarStyler : public QObject
     Q_DISABLE_COPY(ScrollBarStyler)
 
 public:
-    ScrollBarStyler(QObject *parent = NULL)
+    ScrollBarStyler(QObject *parent = Q_NULLPTR)
         : QObject(parent)
     {}
 
 protected:
-    bool eventFilter(QObject *object, QEvent *event)
+    bool eventFilter(QObject *object, QEvent *event) Q_DECL_OVERRIDE
     {
         if(event->type() == QEvent::ChildAdded)
         {
@@ -178,7 +178,7 @@ struct ThemeManager::Impl
         for(QList<ThemeData>::Iterator it = themes.begin(), itEnd = themes.end(); it != itEnd; ++it)
             if(it->isDefault)
                 return &(*it);
-        return NULL;
+        return Q_NULLPTR;
     }
 
     void applyThemeStyle()

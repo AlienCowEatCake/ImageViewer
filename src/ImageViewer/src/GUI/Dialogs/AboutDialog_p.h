@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -56,7 +56,7 @@ struct AboutDialog::UI
         textBrowser->setOpenExternalLinks(true);
         textLabel->setOpenExternalLinks(true);
         buttonBox->setStandardButtons(QDialogButtonBox::Ok);
-        textLabel->setTextInteractionFlags(Qt::TextInteractionFlags(textLabel->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, NULL, textLabel)));
+        textLabel->setTextInteractionFlags(Qt::TextInteractionFlags(textLabel->style()->styleHint(QStyle::SH_MessageBox_TextInteractionFlags, Q_NULLPTR, textLabel)));
 
         QGridLayout *centralLayout = new QGridLayout(centralWidget);
         centralLayout->addWidget(iconLabel, 0, 0, 2, 1, Qt::AlignTop | Qt::AlignCenter);

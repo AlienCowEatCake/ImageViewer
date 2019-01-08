@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -34,16 +34,16 @@ class MenuBar : public QMenuBar, public IControlsContainer
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS
 
 public:
-    MenuBar(QWidget *parent = NULL);
+    MenuBar(QWidget *parent = Q_NULLPTR);
     ~MenuBar();
 
-    ControlsContainerEmitter *emitter();
+    ControlsContainerEmitter *emitter() Q_DECL_OVERRIDE;
 
     QMenu *contextMenu();
     QMenu *menuReopenWith();
 
 protected:
-    void changeEvent(QEvent *event);
+    void changeEvent(QEvent *event) Q_DECL_OVERRIDE;
 
 private:
     struct Impl;

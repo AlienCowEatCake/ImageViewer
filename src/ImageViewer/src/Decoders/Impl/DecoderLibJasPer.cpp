@@ -29,6 +29,8 @@
 #include <QByteArray>
 #include <QDebug>
 
+#include "Utils/Global.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
@@ -197,7 +199,7 @@ QImage readJp2File(const QString &filename)
 //        jas_image_clearfmts();
 //        return QImage();
     }
-    jas_image_t *jasImage = jas_image_decode(stream, format, NULL);
+    jas_image_t *jasImage = jas_image_decode(stream, format, Q_NULLPTR);
     if(!jasImage)
     {
         qWarning() << "Can't load image data";
@@ -225,12 +227,12 @@ QImage readJp2File(const QString &filename)
 class DecoderLibJasPer : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderLibJasPer");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 /// @note Нативные форматы JPEG 2000
@@ -248,7 +250,7 @@ public:
                    ;
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                    /// @note Дополнительные форматы, открываемые libjasper
@@ -275,12 +277,12 @@ public:
                    ;
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

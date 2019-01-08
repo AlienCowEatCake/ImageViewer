@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -25,7 +25,7 @@ struct AnimationWidget::Impl
 {
     Impl(AnimationWidget *widget)
         : widget(widget)
-        , animation(NULL)
+        , animation(Q_NULLPTR)
     {}
 
     AnimationWidget *widget;
@@ -58,7 +58,7 @@ void AnimationWidget::clear()
         disconnect(m_impl->animation, SIGNAL(updated()), this, SLOT(animationUpdated()));
         m_impl->animation->deleteLater();
     }
-    m_impl->animation = NULL;
+    m_impl->animation = Q_NULLPTR;
     QLabel::clear();
 }
 

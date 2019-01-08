@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -24,7 +24,10 @@
 #include <QString>
 #include <QColor>
 #include <QByteArray>
+
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
+
 #include "MainWindow/ImageViewerWidget.h"
 
 class GUISettings : public QObject
@@ -48,7 +51,7 @@ signals:
     void toolBarVisibleChanged(bool visible);
 
 public:
-    GUISettings(QObject *parent = NULL);
+    GUISettings(QObject *parent = Q_NULLPTR);
     ~GUISettings();
 
     void flush();

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,6 +22,8 @@
 
 #include <QGraphicsView>
 #include <QImage>
+
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 class QGraphicsItem;
@@ -51,7 +53,7 @@ signals:
 
 public:
 
-    ImageViewerWidget(QWidget *parent = NULL);
+    ImageViewerWidget(QWidget *parent = Q_NULLPTR);
     ~ImageViewerWidget();
 
     ZoomMode zoomMode() const;
@@ -95,15 +97,15 @@ public slots:
     void setSmoothTransformation(bool enabled);
 
 protected:
-    void drawBackground(QPainter *painter, const QRectF &rect);
+    void drawBackground(QPainter *painter, const QRectF &rect) Q_DECL_OVERRIDE;
 
-    bool event(QEvent* event);
-    void showEvent(QShowEvent *event);
-    void resizeEvent(QResizeEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void wheelEvent(QWheelEvent *event);
+    bool event(QEvent* event) Q_DECL_OVERRIDE;
+    void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
 
 private:
     struct Impl;

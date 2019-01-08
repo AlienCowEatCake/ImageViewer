@@ -22,7 +22,9 @@
 
 #include <QMainWindow>
 
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
+
 #include "ImageViewerWidget.h"
 #include "../UIState.h"
 
@@ -57,7 +59,7 @@ signals:
     void closed();
 
 public:
-    MainWindow(GUISettings *settings, QWidget *parent = 0);
+    MainWindow(GUISettings *settings, QWidget *parent = Q_NULLPTR);
     ~MainWindow();
 
 public slots:
@@ -84,14 +86,14 @@ private slots:
     void onActionReopenWithTriggered(QAction *action);
 
 protected:
-    void changeEvent(QEvent *event);
-    void closeEvent(QCloseEvent *event);
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dragMoveEvent(QDragMoveEvent *event);
-    void dragLeaveEvent(QDragLeaveEvent *event);
-    void dropEvent(QDropEvent *event);
-    void keyPressEvent(QKeyEvent *event);
-    void contextMenuEvent(QContextMenuEvent *event);
+    void changeEvent(QEvent *event) Q_DECL_OVERRIDE;
+    void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
+    void dragEnterEvent(QDragEnterEvent *event) Q_DECL_OVERRIDE;
+    void dragMoveEvent(QDragMoveEvent *event) Q_DECL_OVERRIDE;
+    void dragLeaveEvent(QDragLeaveEvent *event) Q_DECL_OVERRIDE;
+    void dropEvent(QDropEvent *event) Q_DECL_OVERRIDE;
+    void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
+    void contextMenuEvent(QContextMenuEvent *event) Q_DECL_OVERRIDE;
 
 private:
     struct UI;

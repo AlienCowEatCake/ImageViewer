@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -22,6 +22,7 @@
 
 #include <QDialog>
 
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 class StylesheetEditor : public QDialog
@@ -30,7 +31,7 @@ class StylesheetEditor : public QDialog
     Q_DISABLE_COPY(StylesheetEditor)
 
 public:
-    StylesheetEditor(QWidget *parent = NULL);
+    StylesheetEditor(QWidget *parent = Q_NULLPTR);
     ~StylesheetEditor();
 
     bool isProtected() const;

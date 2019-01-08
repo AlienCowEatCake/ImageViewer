@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -25,6 +25,8 @@
 #include <QImage>
 #include <QVector>
 
+#include "Utils/Global.h"
+
 class AbstractAnimationProvider : public IAnimationProvider
 {
     Q_DISABLE_COPY(AbstractAnimationProvider)
@@ -41,12 +43,12 @@ public:
 
     ~AbstractAnimationProvider();
 
-    bool isValid() const;
-    bool isSingleFrame() const;
-    int nextImageDelay() const;
-    bool jumpToNextImage();
-    QPixmap currentPixmap() const;
-    QImage currentImage() const;
+    bool isValid() const Q_DECL_OVERRIDE;
+    bool isSingleFrame() const Q_DECL_OVERRIDE;
+    int nextImageDelay() const Q_DECL_OVERRIDE;
+    bool jumpToNextImage() Q_DECL_OVERRIDE;
+    QPixmap currentPixmap() const Q_DECL_OVERRIDE;
+    QImage currentImage() const Q_DECL_OVERRIDE;
 
 protected:
     AbstractAnimationProvider();

@@ -21,6 +21,8 @@
 #define INFO_DIALOG_H_INCLUDED
 
 #include <QDialog>
+
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 #include "Utils/SharedPointer.h"
 
@@ -32,7 +34,7 @@ class InfoDialog : public QDialog
     Q_DISABLE_COPY(InfoDialog)
 
 public:
-    InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *parent = NULL);
+    InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *parent = Q_NULLPTR);
     ~InfoDialog();
 
 private:

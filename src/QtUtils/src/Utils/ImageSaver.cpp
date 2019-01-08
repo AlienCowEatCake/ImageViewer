@@ -1,7 +1,6 @@
 /*
-   Copyright (C) 2011-2017,
-        Andrei V. Kurochkin     <kurochkin.andrei.v@yandex.ru>
-        Peter S. Zhigalov       <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2017, Andrei V. Kurochkin <kurochkin.andrei.v@yandex.ru>
+                 2011-2017, Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 

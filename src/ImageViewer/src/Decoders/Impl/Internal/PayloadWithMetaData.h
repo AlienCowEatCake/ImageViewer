@@ -20,7 +20,7 @@
 #if !defined(PAYLOAD_WITH_METADATA_H_INCLUDED)
 #define PAYLOAD_WITH_METADATA_H_INCLUDED
 
-#include <cstddef>
+#include "Utils/Global.h"
 
 class IImageMetaData;
 
@@ -30,12 +30,12 @@ class PayloadWithMetaData
 public:
     PayloadWithMetaData()
         : m_payload(T())
-        , m_metaData(NULL)
+        , m_metaData(Q_NULLPTR)
     {}
 
     PayloadWithMetaData(const T &payload)
         : m_payload(payload)
-        , m_metaData(NULL)
+        , m_metaData(Q_NULLPTR)
     {}
 
     PayloadWithMetaData(const T &payload, IImageMetaData *metaData)

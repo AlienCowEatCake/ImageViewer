@@ -29,6 +29,8 @@
 #include <QByteArray>
 #include <QDebug>
 
+#include "Utils/Global.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
@@ -97,7 +99,7 @@ QByteArray readICCProfile(j_decompress_ptr cinfo)
     for(seq_no = 1; seq_no <= MAX_SEQ_NO; seq_no++)
         marker_present[seq_no] = 0;
 
-    for(jpeg_saved_marker_ptr marker = cinfo->marker_list; marker != NULL; marker = marker->next)
+    for(jpeg_saved_marker_ptr marker = cinfo->marker_list; marker != Q_NULLPTR; marker = marker->next)
     {
         if(markerIsICCP(marker))
         {
@@ -138,7 +140,7 @@ QByteArray readICCProfile(j_decompress_ptr cinfo)
     JOCTET *icc_data = reinterpret_cast<JOCTET*>(result.data());
 
     // and fill it in
-    for(jpeg_saved_marker_ptr marker = cinfo->marker_list; marker != NULL; marker = marker->next)
+    for(jpeg_saved_marker_ptr marker = cinfo->marker_list; marker != Q_NULLPTR; marker = marker->next)
     {
         if(markerIsICCP(marker))
         {
@@ -200,7 +202,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
     const QByteArray inBuffer = inFile.readAll();
 
     // Construct any C++ objects before setjmp!
-    ICCProfile *iccProfile = NULL;
+    ICCProfile *iccProfile = Q_NULLPTR;
     QImage outImage;
 
     // Step 1: allocate and initialize JPEG decompression object
@@ -244,7 +246,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 
     iccProfile = new ICCProfile(readICCProfile(&cinfo));
 #if defined (QT_DEBUG)
-    for(jpeg_saved_marker_ptr marker = cinfo.marker_list; marker != NULL; marker = marker->next)
+    for(jpeg_saved_marker_ptr marker = cinfo.marker_list; marker != Q_NULLPTR; marker = marker->next)
     {
         switch(marker->marker)
         {
@@ -377,12 +379,12 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 class DecoderLibJpeg : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderLibJpeg");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("jpg")
@@ -390,17 +392,17 @@ public:
                 << QString::fromLatin1("jpe");
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

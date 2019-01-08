@@ -27,6 +27,8 @@
 #include <QByteArray>
 #include <QDebug>
 
+#include "Utils/Global.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
@@ -94,15 +96,15 @@ void unmapProc(thandle_t /*fd*/, tdata_t /*base*/, toff_t /*size*/)
 ICCProfile *readICCProfile(TIFF *tiff)
 {
     unsigned iccProfileSize = 0;
-    void *iccProfileData = NULL;
+    void *iccProfileData = Q_NULLPTR;
     if(TIFFGetField(tiff, TIFFTAG_ICCPROFILE, &iccProfileSize, &iccProfileData))
     {
         qDebug() << "Found ICCP metadata (TIFFTAG_ICCPROFILE)";
         return new ICCProfile(QByteArray(reinterpret_cast<const char*>(iccProfileData), static_cast<int>(iccProfileSize)));
     }
 
-    float *whitePoint = NULL, *primaryChromaticities = NULL;
-    unsigned short *transferFunctionRed = NULL, *transferFunctionGreen = NULL, *transferFunctionBlue = NULL;
+    float *whitePoint = Q_NULLPTR, *primaryChromaticities = Q_NULLPTR;
+    unsigned short *transferFunctionRed = Q_NULLPTR, *transferFunctionGreen = Q_NULLPTR, *transferFunctionBlue = Q_NULLPTR;
     if(TIFFGetField(tiff, TIFFTAG_WHITEPOINT, &whitePoint) && TIFFGetField(tiff, TIFFTAG_PRIMARYCHROMATICITIES, &primaryChromaticities) &&
        TIFFGetFieldDefaulted(tiff, TIFFTAG_TRANSFERFUNCTION, &transferFunctionRed, &transferFunctionGreen, &transferFunctionBlue))
     {
@@ -110,7 +112,7 @@ ICCProfile *readICCProfile(TIFF *tiff)
         return new ICCProfile(whitePoint, primaryChromaticities, transferFunctionRed, transferFunctionGreen, transferFunctionBlue);
     }
 
-    return NULL;
+    return Q_NULLPTR;
 }
 
 /// @note See https://learn.foundry.com/nuke/developers/63/ndkreference/examples/tiffReader.cpp
@@ -169,7 +171,7 @@ void addMetaData<QString>(TIFF *tiff, const TIFFField *field, ImageMetaData *met
 {
     if(TIFFFieldReadCount(field) <= 1)
         return;
-    char *data = NULL;
+    char *data = Q_NULLPTR;
     if(!TIFFGetField(tiff, TIFFFieldTag(field), &data) || !data)
         return;
     metaData->addExifEntry(group, TIFFFieldTag(field), tag, QString::fromUtf8(data));
@@ -244,7 +246,7 @@ void readTiffTagToMetaData(TIFF *tiff, ImageMetaData *&metaData, quint32 tag, co
 
 IImageMetaData *readExifMetaData(TIFF *tiff)
 {
-    ImageMetaData *metaData = NULL;
+    ImageMetaData *metaData = Q_NULLPTR;
     readTiffTagToMetaData(tiff, metaData, TIFFTAG_EXIFIFD, QString::fromLatin1("TIFFTAG_EXIFIFD"));
     readTiffTagToMetaData(tiff, metaData, TIFFTAG_GPSIFD, QString::fromLatin1("TIFFTAG_GPSIFD"));
     readTiffTagToMetaData(tiff, metaData, TIFFTAG_INTEROPERABILITYIFD, QString::fromLatin1("TIFFTAG_INTEROPERABILITYIFD"));
@@ -327,7 +329,7 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
     {
         iccProfile->applyToImage(&result);
         delete iccProfile;
-        iccProfile = NULL;
+        iccProfile = Q_NULLPTR;
     }
 
     IImageMetaData *metaData = ImageMetaData::createMetaData(filename);
@@ -345,29 +347,29 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
 class DecoderLibTiff : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderLibTiff");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("tif")
                 << QString::fromLatin1("tiff");
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

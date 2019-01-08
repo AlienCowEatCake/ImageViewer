@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -40,6 +40,7 @@
 //#include <QtMac>
 //#endif
 
+#include "Global.h"
 #include "InfoUtils.h"
 
 namespace ObjCUtils {
@@ -99,7 +100,7 @@ QPixmap QPixmapFromCGImageRef(const CFTypePtr<CGImageRef> &image)
 CFTypePtr<CGImageRef> QPixmapToCGImageRef(const QPixmap &pixmap)
 {
     if(pixmap.isNull())
-        return NULL;
+        return Q_NULLPTR;
 
 //#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
 //    return CFTypePtrFromCreate(QtMac::toCGImageRef(pixmap));
@@ -108,7 +109,7 @@ CFTypePtr<CGImageRef> QPixmapToCGImageRef(const QPixmap &pixmap)
 //#else
     const CFTypePtr<CGColorSpaceRef> colorSpace = CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
     if(!colorSpace)
-        return NULL;
+        return Q_NULLPTR;
 
     QImage *image = new QImage(pixmap.toImage().convertToFormat(QImage::Format_ARGB32_Premultiplied));
     const std::size_t width = static_cast<std::size_t>(image->width());
@@ -119,11 +120,11 @@ CFTypePtr<CGImageRef> QPixmapToCGImageRef(const QPixmap &pixmap)
     if(!provider)
     {
         delete image;
-        return NULL;
+        return Q_NULLPTR;
     }
 
     return CFTypePtrFromCreate(CGImageCreate(width, height, 8, 32, 4 * width, colorSpace,
-            kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host, provider, NULL, false,
+            kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host, provider, Q_NULLPTR, false,
             kCGRenderingIntentDefault));
 //#endif
 }
@@ -261,7 +262,7 @@ NSString *QStringToNSString(const QString &string)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     return string.toNSString();
 #else
-    return [NSString stringWithUTF8String: string.toUtf8().data()];
+    return [NSString stringWithUTF8String:string.toUtf8().data()];
 #endif
 }
 
@@ -342,7 +343,7 @@ QPixmap QPixmapFromNSImage(const NSImage *image)
     {
         // https://stackoverflow.com/questions/2548059/turning-an-nsimage-into-a-cgimageref
         NSRect imageRect = NSMakeRect(0, 0, image.size.width, image.size.height);
-        pixmap = QPixmapFromCGImageRef(CFTypePtrFromGet([image CGImageForProposedRect: &imageRect context: NULL hints: nil]));
+        pixmap = QPixmapFromCGImageRef(CFTypePtrFromGet([image CGImageForProposedRect:&imageRect context:nil hints:nil]));
     }
     else
 #endif
@@ -358,23 +359,23 @@ QPixmap QPixmapFromNSImage(const NSImage *image)
         }
         // https://stackoverflow.com/questions/2468811/load-nsimage-into-qpixmap-or-qimage
         NSBitmapImageRep *bmp = [[NSBitmapImageRep alloc]
-                initWithBitmapDataPlanes: NULL
-                              pixelsWide: width
-                              pixelsHigh: height
-                           bitsPerSample: 8
-                         samplesPerPixel: 4
-                                hasAlpha: YES
-                                isPlanar: NO
-                          colorSpaceName: NSCalibratedRGBColorSpace
-                            bitmapFormat: NSAlphaFirstBitmapFormat
-                             bytesPerRow: 0
-                            bitsPerPixel: 0
+                initWithBitmapDataPlanes:nil
+                              pixelsWide:width
+                              pixelsHigh:height
+                           bitsPerSample:8
+                         samplesPerPixel:4
+                                hasAlpha:YES
+                                isPlanar:NO
+                          colorSpaceName:NSCalibratedRGBColorSpace
+                            bitmapFormat:NSAlphaFirstBitmapFormat
+                             bytesPerRow:0
+                            bitsPerPixel:0
         ];
         if(!bmp)
             return QPixmap();
         [NSGraphicsContext saveGraphicsState];
-        [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep: bmp]];
-        [image drawInRect: NSMakeRect(0, 0, width, height) fromRect: NSZeroRect operation: NSCompositeSourceOver fraction: 1];
+        [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:bmp]];
+        [image drawInRect:NSMakeRect(0, 0, width, height) fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1];
         [NSGraphicsContext restoreGraphicsState];
         pixmap = QPixmapFromCGImageRef(CFTypePtrFromGet([bmp CGImage]));
         [bmp release];
@@ -405,27 +406,27 @@ NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize &sizeInPoints)
         NSInteger width = static_cast<NSInteger>(rect.size.width);
         NSInteger height = static_cast<NSInteger>(rect.size.height);
         NSBitmapImageRep *bmp = [[NSBitmapImageRep alloc]
-                initWithBitmapDataPlanes: NULL
-                              pixelsWide: width
-                              pixelsHigh: height
-                           bitsPerSample: 8
-                         samplesPerPixel: 4
-                                hasAlpha: YES
-                                isPlanar: NO
-                          colorSpaceName: NSCalibratedRGBColorSpace
-                            bitmapFormat: NSAlphaFirstBitmapFormat
-                             bytesPerRow: 0
-                            bitsPerPixel: 0
+                initWithBitmapDataPlanes:nil
+                              pixelsWide:width
+                              pixelsHigh:height
+                           bitsPerSample:8
+                         samplesPerPixel:4
+                                hasAlpha:YES
+                                isPlanar:NO
+                          colorSpaceName:NSCalibratedRGBColorSpace
+                            bitmapFormat:NSAlphaFirstBitmapFormat
+                             bytesPerRow:0
+                            bitsPerPixel:0
         ];
         if(!bmp)
             return nil;
         [NSGraphicsContext saveGraphicsState];
-        NSGraphicsContext *context = [NSGraphicsContext graphicsContextWithBitmapImageRep: bmp];
-        [NSGraphicsContext setCurrentContext: context];
+        NSGraphicsContext *context = [NSGraphicsContext graphicsContextWithBitmapImageRep:bmp];
+        [NSGraphicsContext setCurrentContext:context];
         CGContextDrawImage(reinterpret_cast<CGContextRef>([context graphicsPort]), *reinterpret_cast<const CGRect*>(&rect), imageRef);
         [NSGraphicsContext restoreGraphicsState];
         NSImage *image = [[NSImage alloc] initWithSize:rect.size];
-        [image addRepresentation: bmp];
+        [image addRepresentation:bmp];
         [bmp release];
         return [image autorelease];
     }

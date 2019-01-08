@@ -20,6 +20,8 @@
 #if !defined (QTUTILS_GLOBAL_H_INCLUDED)
 #define QTUTILS_GLOBAL_H_INCLUDED
 
+#include <cstddef>
+
 #include <QtGlobal>
 
 #if (QT_VERSION < QT_VERSION_CHECK(4, 6, 0))
@@ -38,6 +40,12 @@ static inline bool qFuzzyIsNull(float f)
 
 #if !defined (Q_DECL_OVERRIDE)
 #define Q_DECL_OVERRIDE
+#endif
+#if !defined (Q_DECL_FINAL)
+#define Q_DECL_FINAL
+#endif
+#if !defined (Q_NULLPTR)
+#define Q_NULLPTR NULL
 #endif
 
 #endif // QTUTILS_GLOBAL_H_INCLUDED

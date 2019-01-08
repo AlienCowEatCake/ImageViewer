@@ -24,6 +24,8 @@
 #include <QString>
 #include <QSize>
 
+#include "Utils/Global.h"
+
 #include "../../IImageData.h"
 
 class ImageData : public IImageData
@@ -32,16 +34,16 @@ class ImageData : public IImageData
 
 public:
     ImageData();
-    ImageData(QGraphicsItem *graphicsItem, const QString &filePath, const QString &decoderName, IImageMetaData *metaData = NULL);
+    ImageData(QGraphicsItem *graphicsItem, const QString &filePath, const QString &decoderName, IImageMetaData *metaData = Q_NULLPTR);
     ~ImageData();
 
-    bool isEmpty() const;
+    bool isEmpty() const Q_DECL_OVERRIDE;
 
-    QGraphicsItem *graphicsItem() const;
-    QString decoderName() const;
-    QString filePath() const;
-    QSize size() const;
-    IImageMetaData *metaData() const;
+    QGraphicsItem *graphicsItem() const Q_DECL_OVERRIDE;
+    QString decoderName() const Q_DECL_OVERRIDE;
+    QString filePath() const Q_DECL_OVERRIDE;
+    QSize size() const Q_DECL_OVERRIDE;
+    IImageMetaData *metaData() const Q_DECL_OVERRIDE;
 
 private:
     QGraphicsItem * const m_graphicsItem;

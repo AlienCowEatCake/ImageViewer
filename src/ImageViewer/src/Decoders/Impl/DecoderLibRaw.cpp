@@ -303,7 +303,7 @@ class RawImageProvider : public AbstractProgressiveImageProvider
 public:
     RawImageProvider(const QString &filePath)
         : m_rawImageProcessor(new RawImageProcessor(filePath))
-        , m_processingThread(NULL)
+        , m_processingThread(Q_NULLPTR)
         , m_isFinal(true)
     {
         if(!m_rawImageProcessor->isValid())
@@ -400,12 +400,12 @@ private:
 class DecoderLibRaw : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderLibRaw");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("raw")
@@ -417,17 +417,17 @@ public:
                 << QString::fromLatin1("dng");
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

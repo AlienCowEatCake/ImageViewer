@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -32,7 +32,7 @@ struct AnimationObject::Impl
 {
     Impl(AnimationObject *animation)
         : animation(animation)
-        , provider(NULL)
+        , provider(Q_NULLPTR)
         , nextImageDelay(-1)
     {
         nextImageTimer.setSingleShot(true);
@@ -62,7 +62,7 @@ struct AnimationObject::Impl
         nextImageTimer.stop();
         if(provider)
             delete provider;
-        provider = NULL;
+        provider = Q_NULLPTR;
         currentPixmap = QPixmap();
         nextImageDelay = -1;
     }

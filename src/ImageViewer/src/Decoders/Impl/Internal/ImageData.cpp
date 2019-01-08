@@ -24,8 +24,8 @@
 #include "../../IImageMetaData.h"
 
 ImageData::ImageData()
-    : m_graphicsItem(NULL)
-    , m_metaData(NULL)
+    : m_graphicsItem(Q_NULLPTR)
+    , m_metaData(Q_NULLPTR)
 {}
 
 ImageData::ImageData(QGraphicsItem *graphicsItem, const QString &filePath, const QString &decoderName, IImageMetaData *metaData)

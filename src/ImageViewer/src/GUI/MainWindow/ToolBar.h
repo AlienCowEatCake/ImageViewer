@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -33,13 +33,13 @@ class ToolBar : public AdjustableFrame, public IControlsContainer
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS
 
 public:
-    ToolBar(QWidget *parent = NULL);
+    ToolBar(QWidget *parent = Q_NULLPTR);
     ~ToolBar();
 
-    ControlsContainerEmitter *emitter();
+    ControlsContainerEmitter *emitter() Q_DECL_OVERRIDE;
 
 protected:
-    void changeEvent(QEvent *event);
+    void changeEvent(QEvent *event) Q_DECL_OVERRIDE;
 
 private:
     struct Impl;

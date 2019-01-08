@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -60,7 +60,7 @@ struct ImageViewerWidget::Impl
     Impl(ImageViewerWidget *widget)
         : imageViewerWidget(widget)
         , scene(new QGraphicsScene(widget))
-        , currentGraphicsItem(NULL)
+        , currentGraphicsItem(Q_NULLPTR)
         , currentZoomMode(ZOOM_IDENTITY)
         , lastZoomMode(currentZoomMode)
         , currentZoomLevel(1)
@@ -283,7 +283,7 @@ void ImageViewerWidget::setGraphicsItem(QGraphicsItem *graphicsItem)
 
 void ImageViewerWidget::clear()
 {
-    m_impl->currentGraphicsItem = NULL;
+    m_impl->currentGraphicsItem = Q_NULLPTR;
     scene()->clear();
     resetMatrix();
     ensureVisible(QRectF(0, 0, 0, 0));

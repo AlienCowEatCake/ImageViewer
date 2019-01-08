@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -32,10 +32,10 @@ class MacToolBar : public ControlsContainerEmitter, public IControlsContainer
     DECLARE_CONTROLS_CONTAINER_FUNCTIONS
 
 public:
-    MacToolBar(QObject *parent = NULL);
+    MacToolBar(QObject *parent = Q_NULLPTR);
     ~MacToolBar();
 
-    ControlsContainerEmitter *emitter();
+    ControlsContainerEmitter *emitter() Q_DECL_OVERRIDE;
 
     void attachToWindow(QWidget *widget);
     void detachFromWindow();

@@ -34,6 +34,8 @@
 typedef void* QFunctionPointer;
 #endif
 
+#include "Utils/Global.h"
+
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
@@ -102,7 +104,7 @@ public:
         if(!_.isValid())
         {
             qWarning() << "Failed to load resvg";
-            return NULL;
+            return Q_NULLPTR;
         }
         return &_;
     }
@@ -161,14 +163,14 @@ public:
 
 private:
     ReSVG()
-        : m_resvg_init_log(NULL)
-        , m_resvg_init_options(NULL)
-        , m_resvg_parse_tree_from_data(NULL)
-//        , m_resvg_is_image_empty(NULL)
-        , m_resvg_get_image_size(NULL)
-        , m_resvg_get_image_viewbox(NULL)
-        , m_resvg_tree_destroy(NULL)
-        , m_resvg_qt_render_to_canvas(NULL)
+        : m_resvg_init_log(Q_NULLPTR)
+        , m_resvg_init_options(Q_NULLPTR)
+        , m_resvg_parse_tree_from_data(Q_NULLPTR)
+//        , m_resvg_is_image_empty(Q_NULLPTR)
+        , m_resvg_get_image_size(Q_NULLPTR)
+        , m_resvg_get_image_viewbox(Q_NULLPTR)
+        , m_resvg_tree_destroy(Q_NULLPTR)
+        , m_resvg_qt_render_to_canvas(Q_NULLPTR)
         {
             if(!LibraryUtils::LoadQLibrary(m_library, RESVG_LIBRARY_NAMES))
                 return;
@@ -288,7 +290,7 @@ public:
     ReSVGPixmapProvider(const QString &filePath)
         : m_isValid(false)
         , m_filePath8bit(filePath.toLocal8Bit())
-        , m_tree(NULL)
+        , m_tree(Q_NULLPTR)
         , m_width(0)
         , m_height(0)
         , m_minScaleFactor(1)
@@ -350,22 +352,22 @@ public:
             resvg_tree_destroy(m_tree);
     }
 
-    bool isValid() const
+    bool isValid() const Q_DECL_OVERRIDE
     {
         return m_isValid;
     }
 
-    bool requiresMainThread() const
+    bool requiresMainThread() const Q_DECL_OVERRIDE
     {
         return false;
     }
 
-    QRectF boundingRect() const
+    QRectF boundingRect() const Q_DECL_OVERRIDE
     {
         return QRectF(0, 0, m_width, m_height);
     }
 
-    QImage image(const qreal scaleFactor)
+    QImage image(const qreal scaleFactor) Q_DECL_OVERRIDE
     {
         if(!isValid())
             return QImage();
@@ -389,12 +391,12 @@ public:
         return image;
     }
 
-    qreal minScaleFactor() const
+    qreal minScaleFactor() const Q_DECL_OVERRIDE
     {
         return m_minScaleFactor;
     }
 
-    qreal maxScaleFactor() const
+    qreal maxScaleFactor() const Q_DECL_OVERRIDE
     {
         return m_maxScaleFactor;
     }
@@ -416,12 +418,12 @@ private:
 class DecoderReSVG : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderReSVG");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("svg")
@@ -429,17 +431,17 @@ public:
                    ;
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return isReady();
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable() || !isAvailable())

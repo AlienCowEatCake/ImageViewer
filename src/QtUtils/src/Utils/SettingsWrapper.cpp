@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -24,6 +24,8 @@
 #include <QApplication>
 #include <QDir>
 #include <QColor>
+
+#include "Global.h"
 
 namespace SettingsEncoder {
 
@@ -307,7 +309,7 @@ class SettingsStorage
 
 public:
     SettingsStorage()
-        : m_settings(NULL)
+        : m_settings(Q_NULLPTR)
     {}
 
     ~SettingsStorage()

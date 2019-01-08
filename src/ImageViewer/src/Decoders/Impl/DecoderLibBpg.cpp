@@ -29,6 +29,7 @@ extern "C" {
 #include <QByteArray>
 #include <QDebug>
 
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 #include "../IDecoder.h"
@@ -86,7 +87,7 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
     QScopedPointer<ICCProfile> profile;
     ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
 
-    for(BPGExtensionData *extension = bpg_decoder_get_extension_data(decoderContext); extension != NULL; extension = extension->next)
+    for(BPGExtensionData *extension = bpg_decoder_get_extension_data(decoderContext); extension != Q_NULLPTR; extension = extension->next)
     {
         switch(extension->tag)
         {
@@ -164,28 +165,28 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
 class DecoderLibBpg : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderLibBpg");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 << QString::fromLatin1("bpg");
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

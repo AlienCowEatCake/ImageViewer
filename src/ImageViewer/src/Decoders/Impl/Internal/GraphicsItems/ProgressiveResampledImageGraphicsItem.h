@@ -30,15 +30,15 @@ class ProgressiveResampledImageGraphicsItem : public QObject, public ResampledIm
     Q_DISABLE_COPY(ProgressiveResampledImageGraphicsItem)
 
 public:
-    ProgressiveResampledImageGraphicsItem(QGraphicsItem *parentItem = NULL);
-    ProgressiveResampledImageGraphicsItem(AbstractProgressiveImageProvider *provider, QGraphicsItem *parentItem = NULL);
+    ProgressiveResampledImageGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
+    ProgressiveResampledImageGraphicsItem(AbstractProgressiveImageProvider *provider, QGraphicsItem *parentItem = Q_NULLPTR);
     ~ProgressiveResampledImageGraphicsItem();
 
     AbstractProgressiveImageProvider *provider() const;
     void setProvider(AbstractProgressiveImageProvider *provider);
 
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = NULL);
+    QRectF boundingRect() const Q_DECL_OVERRIDE;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE;
 
 private slots:
     void onUpdateRequested();

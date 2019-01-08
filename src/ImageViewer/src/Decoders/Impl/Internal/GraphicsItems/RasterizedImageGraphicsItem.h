@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,6 +22,8 @@
 
 #include <QGraphicsItem>
 #include <QImage>
+
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 class IScaledImageProvider;
@@ -31,8 +33,8 @@ class RasterizedImageGraphicsItem : public QGraphicsItem
     Q_DISABLE_COPY(RasterizedImageGraphicsItem)
 
 public:
-    RasterizedImageGraphicsItem(QGraphicsItem *parentItem = NULL);
-    RasterizedImageGraphicsItem(IScaledImageProvider *provider, QGraphicsItem *parentItem = NULL);
+    RasterizedImageGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
+    RasterizedImageGraphicsItem(IScaledImageProvider *provider, QGraphicsItem *parentItem = Q_NULLPTR);
     ~RasterizedImageGraphicsItem();
 
     IScaledImageProvider *provider() const;
@@ -41,8 +43,8 @@ public:
     Qt::TransformationMode transformationMode() const;
     void setTransformationMode(Qt::TransformationMode mode);
 
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = NULL);
+    QRectF boundingRect() const Q_DECL_OVERRIDE;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE;
 
 private:
     struct Impl;

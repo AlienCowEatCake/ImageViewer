@@ -31,6 +31,7 @@
 #include <QFileInfo>
 #include <QDebug>
 
+#include "Utils/Global.h"
 #include "Utils/InfoUtils.h"
 #include "Utils/ObjectiveCUtils.h"
 
@@ -45,12 +46,12 @@ namespace {
 class DecoderNSImage : public IDecoder
 {
 public:
-    QString name() const
+    QString name() const Q_DECL_OVERRIDE
     {
         return QString::fromLatin1("DecoderNSImage");
     }
 
-    QStringList supportedFormats() const
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         AUTORELEASE_POOL;
         std::set<QString> fileTypes;
@@ -88,17 +89,17 @@ public:
         return result;
     }
 
-    QStringList advancedFormats() const
+    QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList();
     }
 
-    bool isAvailable() const
+    bool isAvailable() const Q_DECL_OVERRIDE
     {
         return true;
     }
 
-    QSharedPointer<IImageData> loadImage(const QString &filePath)
+    QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
     {
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())

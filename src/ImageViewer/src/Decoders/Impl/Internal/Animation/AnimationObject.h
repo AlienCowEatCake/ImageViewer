@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -21,6 +21,8 @@
 #define ANIMATIONOBJECT_H_INCLUDED
 
 #include <QObject>
+
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 class QPixmap;
@@ -32,8 +34,8 @@ class AnimationObject : public QObject
     Q_DISABLE_COPY(AnimationObject)
 
 public:
-    explicit AnimationObject(QObject *parent = NULL);
-    explicit AnimationObject(IAnimationProvider *provider, QObject *parent = NULL);
+    explicit AnimationObject(QObject *parent = Q_NULLPTR);
+    explicit AnimationObject(IAnimationProvider *provider, QObject *parent = Q_NULLPTR);
     ~AnimationObject();
 
     void setProvider(IAnimationProvider *provider);
