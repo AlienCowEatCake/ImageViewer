@@ -412,6 +412,18 @@ private:
     Exiv2::byte *m_mapped;
 };
 
+QString formatValue(const std::string &value)
+{
+    return QString::fromUtf8(value.c_str());
+}
+
+QString formatValue(const Exiv2::Value &value)
+{
+    std::ostringstream sst;
+    sst << value;
+    return formatValue(sst.str());
+}
+
 void fillExifMetaData(const Exiv2::ExifData &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
 {
     try
@@ -419,14 +431,12 @@ void fillExifMetaData(const Exiv2::ExifData &data, IImageMetaData::MetaDataEntry
         for(Exiv2::ExifData::const_iterator it = data.begin(), end = data.end(); it != end; ++it)
         {
             const IImageMetaData::MetaDataType type = QString::fromUtf8(it->familyName()) + QString::fromLatin1(" ") + QString::fromUtf8(it->ifdName());
-            std::stringstream sst;
-            sst << it->value();
             IImageMetaData::MetaDataEntryList list = entryListMap[type];
             list.append(IImageMetaData::MetaDataEntry(
                             QString::fromUtf8(it->tagName().c_str()),
                             QString::fromUtf8(it->tagLabel().c_str()),
                             QString(),
-                            QString::fromUtf8(sst.str().c_str())
+                            formatValue(it->value())
                             ));
             entryListMap[type] = list;
         }
@@ -442,14 +452,12 @@ void fillIptcMetaData(const Exiv2::IptcData &data, IImageMetaData::MetaDataEntry
         for(Exiv2::IptcData::const_iterator it = data.begin(), end = data.end(); it != end; ++it)
         {
             const IImageMetaData::MetaDataType type = QString::fromUtf8(it->familyName());
-            std::stringstream sst;
-            sst << it->value();
             IImageMetaData::MetaDataEntryList list = entryListMap[type];
             list.append(IImageMetaData::MetaDataEntry(
                             QString::fromUtf8(it->tagName().c_str()),
                             QString::fromUtf8(it->tagLabel().c_str()),
                             QString(),
-                            QString::fromUtf8(sst.str().c_str())
+                            formatValue(it->value())
                             ));
             entryListMap[type] = list;
         }
@@ -465,14 +473,12 @@ void fillXmpMetaData(const Exiv2::XmpData &data, IImageMetaData::MetaDataEntryLi
         for(Exiv2::XmpData::const_iterator it = data.begin(), end = data.end(); it != end; ++it)
         {
             const IImageMetaData::MetaDataType type = QString::fromUtf8(it->familyName());
-            std::stringstream sst;
-            sst << it->value();
             IImageMetaData::MetaDataEntryList list = entryListMap[type];
             list.append(IImageMetaData::MetaDataEntry(
                             QString::fromUtf8(it->tagName().c_str()),
                             QString::fromUtf8(it->tagLabel().c_str()),
                             QString(),
-                            QString::fromUtf8(sst.str().c_str())
+                            formatValue(it->value())
                             ));
             entryListMap[type] = list;
         }
@@ -487,7 +493,7 @@ void fillCommentMetaData(const std::string &data, IImageMetaData::MetaDataEntryL
         return;
     const IImageMetaData::MetaDataType type = QString::fromLatin1("Comment");
     IImageMetaData::MetaDataEntryList list = entryListMap[type];
-    list.append(IImageMetaData::MetaDataEntry(type, QString::fromUtf8(data.c_str())));
+    list.append(IImageMetaData::MetaDataEntry(type, formatValue(data)));
     entryListMap[type] = list;
 }
 

@@ -29,6 +29,7 @@
 namespace {
 
 const QString FORCE_RICH_TEXT_TEMPLATE = QString::fromLatin1("<i></i>%1");
+const int MAX_METADATA_ENTRY_VALUE_LENGTH = 10000;
 
 QString formatFileSize(qint64 fileSize)
 {
@@ -47,6 +48,13 @@ QString formatFileSize(qint64 fileSize)
         unitSize = multiplied;
     }
     return labels.first().arg(fileSize);
+}
+
+QString formatMetaDataEntryValue(const QString &value)
+{
+    if(value.length() <= MAX_METADATA_ENTRY_VALUE_LENGTH)
+        return value;
+    return value.left(MAX_METADATA_ENTRY_VALUE_LENGTH).append(QString::fromUtf8("…"));
 }
 
 } // namespace
@@ -145,7 +153,7 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
             tableWidget->insertRow(currentRow);
             tableWidget->setItem(currentRow, 0, new QTableWidgetItem(*it));
             tableWidget->setItem(currentRow, 1, new QTableWidgetItem(jt->tagTitle.isEmpty() ? jt->tagName : jt->tagTitle));
-            tableWidget->setItem(currentRow, 2, new QTableWidgetItem(jt->value));
+            tableWidget->setItem(currentRow, 2, new QTableWidgetItem(formatMetaDataEntryValue(jt->value)));
 
             QString toolTip;
             if(!jt->tagName.isEmpty() && !jt->tagDescription.isEmpty())
