@@ -1,0 +1,14 @@
+diff -Nur exiv2-0.27.0-Source.orig/src/safe_op.hpp exiv2-0.27.0-Source/src/safe_op.hpp
+--- exiv2-0.27.0-Source.orig/src/safe_op.hpp	2019-01-10 02:16:29.000000000 +0700
++++ exiv2-0.27.0-Source/src/safe_op.hpp	2019-01-10 02:26:35.000000000 +0700
+@@ -205,7 +205,9 @@
+         }
+ 
+ #if defined(__GNUC__) || defined(__clang__)
+-#if __GNUC__ >= 5 || __clang_major__ >= 3
++#if (defined(__GNUC__) && (__GNUC__ >= 5)) || \
++    (defined(__clang__) && !defined(__apple_build_version__) && ((__clang_major__ > 3) || (__clang_major__ == 3 && __clang_minor__ >= 4))) || \
++    (defined(__clang__) && defined(__apple_build_version__) && (__clang_major__ >= 7))
+ 
+ /*!
+  * This macro pastes a specialization of builtin_add_overflow using gcc's &

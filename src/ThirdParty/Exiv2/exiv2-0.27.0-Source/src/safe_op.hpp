@@ -205,7 +205,9 @@ namespace Safe
         }
 
 #if defined(__GNUC__) || defined(__clang__)
-#if __GNUC__ >= 5 || __clang_major__ >= 3
+#if (defined(__GNUC__) && (__GNUC__ >= 5)) || \
+    (defined(__clang__) && !defined(__apple_build_version__) && ((__clang_major__ > 3) || (__clang_major__ == 3 && __clang_minor__ >= 4))) || \
+    (defined(__clang__) && defined(__apple_build_version__) && (__clang_major__ >= 7))
 
 /*!
  * This macro pastes a specialization of builtin_add_overflow using gcc's &
