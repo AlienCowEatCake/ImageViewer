@@ -14,6 +14,10 @@ THIRDPARTY_LIBLCMS2_PATH = $${PWD}/lcms2-2.9
 
 include(../CommonSettings.pri)
 
+*g++*|*clang* {
+    QMAKE_CFLAGS += -std=c99
+}
+
 INCLUDEPATH = $${THIRDPARTY_LIBLCMS2_PATH}/include $${THIRDPARTY_LIBLCMS2_PATH}/src $${INCLUDEPATH}
 
 SOURCES += \
