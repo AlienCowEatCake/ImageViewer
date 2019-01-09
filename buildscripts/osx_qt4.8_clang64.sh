@@ -10,7 +10,7 @@ ALL_SDK_VERSIONS="$(xcodebuild -showsdks | grep '\-sdk macosx' | sed 's|.*-sdk m
 for SDK_VERSION in ${ALL_SDK_VERSIONS} ; do
 	SDK_PATH="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SDK_VERSION}.sdk"
 	if [[ $(find "${SDK_PATH}/usr/lib" -name 'libstdc++*' -maxdepth 1 | wc -l | xargs) > 0 ]] ; then
-		MAC_SDK="macosx${SDK_VERSION}"
+		MAC_SDK="${SDK_PATH}"
 	fi
 done
 
