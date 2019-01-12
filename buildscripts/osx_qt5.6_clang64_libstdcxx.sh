@@ -47,5 +47,5 @@ cd "${INSTALL_PATH}"
 ln -s /Applications ./Applications
 find "${APPNAME}.app/Contents/PlugIns" -name "*_debug.dylib" -delete
 cd "${BUILD_PATH}"
-hdiutil create -format UDBZ -srcfolder "${INSTALL_PATH}" -volname "${APPNAME}" "${ARTIFACTS_PATH}/${DMGNAME}.dmg"
+hdiutil create -format UDBZ -fs HFS+ -srcfolder "${INSTALL_PATH}" -volname "${APPNAME}" "${ARTIFACTS_PATH}/${DMGNAME}.dmg"
 

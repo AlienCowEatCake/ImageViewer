@@ -43,5 +43,5 @@ mv "${OUT_PATH}/${APPNAME}.app" "${INSTALL_PATH}/"
 cd "${INSTALL_PATH}"
 ln -s /Applications ./Applications
 cd "${BUILD_PATH}"
-hdiutil create -format UDBZ -srcfolder "${INSTALL_PATH}" -volname "${APPNAME}" "${ARTIFACTS_PATH}/${DMGNAME}.dmg"
+hdiutil create -format UDBZ -fs HFS+ -srcfolder "${INSTALL_PATH}" -volname "${APPNAME}" "${ARTIFACTS_PATH}/${DMGNAME}.dmg"
 
