@@ -19,9 +19,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleVersion</key>
-	<string>0.99.15</string>
+	<string>0.99.16</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.99.15</string>
+	<string>0.99.16</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>NSPrincipalClass</key>
