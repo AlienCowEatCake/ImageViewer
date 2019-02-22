@@ -32,7 +32,7 @@
 #include "Utils/Global.h"
 #include "Utils/SettingsWrapper.h"
 
-#include "IImageData.h"
+#include "Impl/Internal/ImageData.h"
 
 namespace {
 
@@ -114,6 +114,29 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
     unknownDecoderPriority.advancedPriority++;
     return unknownDecoderPriority;
 }
+
+class StubGraphicsItem : public QGraphicsItem
+{
+public:
+    explicit StubGraphicsItem(const QSize &size)
+        : m_size(size)
+    {}
+
+    QRectF boundingRect() const Q_DECL_OVERRIDE
+    {
+        return QRect(QPoint(0, 0), m_size);
+    }
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE
+    {
+        Q_UNUSED(painter);
+        Q_UNUSED(option);
+        Q_UNUSED(widget);
+    }
+
+private:
+    const QSize m_size;
+};
 
 } // namespace
 
@@ -367,6 +390,16 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath, c
 
     qDebug() << "Decoder with name" << decoderName << "was not found";
     return QSharedPointer<IImageData>();
+}
+
+QSharedPointer<IImageData> DecodersManager::generateStub(const QSize &size, const QString &filePath)
+{
+    return QSharedPointer<IImageData>(new ImageData(new StubGraphicsItem(size), filePath, QString::fromLatin1("DecoderStub")));
+}
+
+QSharedPointer<IImageData> DecodersManager::generateStub(const QSharedPointer<IImageData> &base)
+{
+    return base ? generateStub(base->size(), base->filePath()) : QSharedPointer<IImageData>();
 }
 
 DecodersManager::DecodersManager()

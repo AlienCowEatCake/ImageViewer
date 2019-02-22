@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -44,6 +44,9 @@ public:
 
     QSharedPointer<IImageData> loadImage(const QString &filePath);
     QSharedPointer<IImageData> loadImage(const QString &filePath, const QString &decoderName);
+
+    QSharedPointer<IImageData> generateStub(const QSize &size, const QString &filePath);
+    QSharedPointer<IImageData> generateStub(const QSharedPointer<IImageData> &base);
 
 private:
     DecodersManager();

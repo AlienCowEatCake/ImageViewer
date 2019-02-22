@@ -306,7 +306,7 @@ void MainController::onReopenWithRequested(const QString &decoderName)
         /// @note Не все декодеры поддерживают одновременное открытие нескольких файлов
         if(m_impl->imageData)
         {
-            m_impl->imageData = QSharedPointer<IImageData>();
+            m_impl->imageData = DecodersManager::getInstance().generateStub(m_impl->imageData);
             emit uiStateChanged(m_impl->createUIState(), UICF_ImageData);
         }
         m_impl->imageData = DecodersManager::getInstance().loadImage(currentFilePath, decoderName);
@@ -334,7 +334,7 @@ void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &c
             /// @note Не все декодеры поддерживают одновременное открытие нескольких файлов
             if(m_impl->imageData)
             {
-                m_impl->imageData = QSharedPointer<IImageData>();
+                m_impl->imageData = DecodersManager::getInstance().generateStub(m_impl->imageData);
                 emit uiStateChanged(m_impl->createUIState(), UICF_ImageData);
             }
             m_impl->imageData = DecodersManager::getInstance().loadImage(currentFilePath);
