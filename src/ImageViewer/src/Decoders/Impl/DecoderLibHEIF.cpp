@@ -113,7 +113,9 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
 
     const int width = static_cast<int>(heif_image_get_width(img, heif_channel_interleaved));
     const int height = static_cast<int>(heif_image_get_height(img, heif_channel_interleaved));
-    QImage result(width, height, QImage::Format_ARGB32);
+    int stride = 0;
+    const uint8_t *planeData = heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride);
+    QImage result = QImage(reinterpret_cast<const uchar*>(planeData), width, height, stride, QImage::Format_ARGB32).rgbSwapped();
     if(result.isNull())
     {
         qWarning() << "Invalid image size:" << width << "x" << height;
@@ -121,22 +123,6 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
         heif_image_handle_release(handle);
         heif_context_free(ctx);
         return QImage();
-    }
-
-    int stride = 0;
-    const uint8_t *planeData = heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride);
-    QRgb *imageData = reinterpret_cast<QRgb*>(result.bits());
-    for(int j = 0; j < result.height(); j++)
-    {
-        const uint8_t *currentPlaneByte = planeData + j * stride;
-        for(int i = 0; i < result.width(); i++)
-        {
-            const int r = *(currentPlaneByte++);
-            const int g = *(currentPlaneByte++);
-            const int b = *(currentPlaneByte++);
-            const int a = *(currentPlaneByte++);
-            *(imageData++) = qRgba(r, g, b, a);
-        }
     }
 
     ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);

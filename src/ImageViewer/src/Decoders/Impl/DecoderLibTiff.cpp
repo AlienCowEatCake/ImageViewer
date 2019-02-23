@@ -290,8 +290,10 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
         return QImage();
     }
 
+#define USE_RGBA_8888 (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0) && Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
+
     QImage result(static_cast<int>(img.width), static_cast<int>(img.height),
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+#if (USE_RGBA_8888)
                   QImage::Format_RGBA8888);
 #else
                   QImage::Format_ARGB32);
@@ -316,14 +318,11 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
         return QImage();
     }
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
-    QRgb *imageData = reinterpret_cast<QRgb*>(result.bits());
-    for(int i = 0; i < result.width() * result.height(); i++)
-    {
-        uchar *rawPixelData = reinterpret_cast<uchar*>(imageData);
-        *(imageData++) = qRgba(rawPixelData[0], rawPixelData[1], rawPixelData[2], rawPixelData[3]);
-    }
+#if (!USE_RGBA_8888)
+    result = result.rgbSwapped();
 #endif
+
+#undef USE_RGBA_8888
 
     if(iccProfile)
     {

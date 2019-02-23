@@ -123,8 +123,10 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
         else if(delayDen == 0)
             delayDen = 1;
 
+#define USE_RGBA_8888 (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0) && Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
+
         QImage frame(static_cast<int>(imageInfo.width), static_cast<int>(imageInfo.height),
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+#if (USE_RGBA_8888)
                      QImage::Format_RGBA8888);
 #else
                      QImage::Format_ARGB32);
@@ -138,14 +140,11 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
 
         for(int y = 0; y < frame.height(); y++)
             bpg_decoder_get_line(decoderContext, reinterpret_cast<uint8_t*>(frame.bits()) + y * frame.bytesPerLine());
-#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
-        QRgb *imageData = reinterpret_cast<QRgb*>(frame.bits());
-        for(int i = 0; i < frame.width() * frame.height(); i++)
-        {
-            uchar *rawPixelData = reinterpret_cast<uchar*>(imageData);
-            *(imageData++) = qRgba(rawPixelData[0], rawPixelData[1], rawPixelData[2], rawPixelData[3]);
-        }
+#if (!USE_RGBA_8888)
+        frame = frame.rgbSwapped();
 #endif
+
+#undef USE_RGBA_8888
 
         if(profile)
             profile->applyToImage(&frame);
