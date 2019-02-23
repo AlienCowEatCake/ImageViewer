@@ -278,13 +278,44 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>raw</string>
-				<string>crw</string>
+				<string>bay</string>
+				<string>bmq</string>
 				<string>cr2</string>
-				<string>arw</string>
-				<string>nef</string>
-				<string>raf</string>
+				<string>crw</string>
+				<string>cs1</string>
+				<string>dc2</string>
+				<string>dcr</string>
 				<string>dng</string>
+				<string>erf</string>
+				<string>fff</string>
+				<string>hdr</string>
+				<string>k25</string>
+				<string>kdc</string>
+				<string>mdc</string>
+				<string>mos</string>
+				<string>mrw</string>
+				<string>nef</string>
+				<string>orf</string>
+				<string>pef</string>
+				<string>pxn</string>
+				<string>raf</string>
+				<string>raw</string>
+				<string>rdc</string>
+				<string>sr2</string>
+				<string>srf</string>
+				<string>x3f</string>
+				<string>arw</string>
+				<string>3fr</string>
+				<string>cine</string>
+				<string>ia</string>
+				<string>kc2</string>
+				<string>mef</string>
+				<string>nrw</string>
+				<string>qtk</string>
+				<string>rw2</string>
+				<string>sti</string>
+				<string>rwl</string>
+				<string>srw</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Camera Raw Image</string>
