@@ -116,6 +116,9 @@ void CodeEditor::showSearchDialog()
 {
     if(m_searchDialog.isNull())
         m_searchDialog = new SearchDialog(this);
+    const QString selectedText = textCursor().selectedText();
+    if(!selectedText.isEmpty())
+        m_searchDialog->setText(selectedText);
     const bool dialogIsHidden = m_searchDialog->isHidden();
     m_searchDialog->show();
     m_searchDialog->raise();
@@ -399,6 +402,11 @@ SearchDialog::SearchDialog(CodeEditor *editor)
     layout->addWidget(m_findWholeWordsCheckBox);
     layout->addWidget(m_searchPushButton);
     connect(m_searchPushButton, SIGNAL(clicked(bool)), this, SLOT(onSearchClicked()));
+}
+
+void SearchDialog::setText(const QString &text)
+{
+    m_searchLineEdit->setText(text);
 }
 
 void SearchDialog::onSearchClicked()

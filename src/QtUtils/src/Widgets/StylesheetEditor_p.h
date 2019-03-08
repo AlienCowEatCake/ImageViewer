@@ -32,6 +32,10 @@ namespace StylesheetEditorImpl {
 
 // ====================================================================================================
 
+class SearchDialog;
+
+// ====================================================================================================
+
 class CodeEditor : public QPlainTextEdit
 {
     Q_OBJECT
@@ -76,7 +80,7 @@ private slots:
 
 private:
     QWidget *m_lineNumberArea;
-    QPointer<QDialog> m_searchDialog;
+    QPointer<SearchDialog> m_searchDialog;
 };
 
 // ====================================================================================================
@@ -107,6 +111,7 @@ class SearchDialog : public QDialog
 
 public:
     explicit SearchDialog(CodeEditor *editor);
+    void setText(const QString &text);
 
 public slots:
     void onSearchClicked();
