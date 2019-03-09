@@ -199,6 +199,11 @@ void ResampledImageGraphicsItem::setTransformationMode(Qt::TransformationMode mo
     update();
 }
 
+QImage ResampledImageGraphicsItem::grabImage()
+{
+    return image();
+}
+
 QRectF ResampledImageGraphicsItem::boundingRect() const
 {
     return QRectF(m_impl->pixmap.rect());

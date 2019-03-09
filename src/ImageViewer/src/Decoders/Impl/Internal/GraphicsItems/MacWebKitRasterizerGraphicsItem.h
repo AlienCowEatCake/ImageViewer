@@ -26,12 +26,18 @@
 #include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
+#include "../../../GraphicsItemFeatures/IGrabImage.h"
+
 #include "AbstractSVGWebBrowser.h"
 
 class QByteArray;
 class QUrl;
 
-class MacWebKitRasterizerGraphicsItem : public QObject, public QGraphicsItem, public AbstractSVGWebBrowser
+class MacWebKitRasterizerGraphicsItem :
+        public QObject,
+        public QGraphicsItem,
+        public AbstractSVGWebBrowser,
+        public IGrabImage
 {
     Q_OBJECT
 //    Q_INTERFACES(QGraphicsItem)
@@ -42,6 +48,8 @@ public:
     ~MacWebKitRasterizerGraphicsItem();
 
     bool load(const QByteArray &svgData, const QUrl &baseUrl);
+
+    QImage grabImage() Q_DECL_OVERRIDE;
 
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE;

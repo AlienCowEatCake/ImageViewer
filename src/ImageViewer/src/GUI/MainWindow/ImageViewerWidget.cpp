@@ -42,8 +42,8 @@ class QPinchGesture {};
 
 #include "Utils/Global.h"
 
-#include "Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.h"
-#include "Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.h"
+#include "Decoders/GraphicsItemFeatures/IGrabImage.h"
+#include "Decoders/GraphicsItemFeatures/ITransformationMode.h"
 
 namespace {
 
@@ -124,22 +124,16 @@ struct ImageViewerWidget::Impl
     {
         if(!currentGraphicsItem)
             return;
-        QGraphicsPixmapItem *pixItem = dynamic_cast<QGraphicsPixmapItem*>(currentGraphicsItem);
-        if(pixItem)
+        QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(currentGraphicsItem);
+        if(pixmapItem)
         {
-            pixItem->setTransformationMode(transformationMode);
+            pixmapItem->setTransformationMode(transformationMode);
             return;
         }
-        ResampledImageGraphicsItem *resampledItem = dynamic_cast<ResampledImageGraphicsItem*>(currentGraphicsItem);
-        if(resampledItem)
+        ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(currentGraphicsItem);
+        if(itemWithTransformationMode)
         {
-            resampledItem->setTransformationMode(transformationMode);
-            return;
-        }
-        RasterizedImageGraphicsItem *rasterizedItem = dynamic_cast<RasterizedImageGraphicsItem*>(currentGraphicsItem);
-        if(rasterizedItem)
-        {
-            rasterizedItem->setTransformationMode(transformationMode);
+            itemWithTransformationMode->setTransformationMode(transformationMode);
             return;
         }
     }
@@ -245,17 +239,25 @@ QImage ImageViewerWidget::grabImage() const
 {
     if(!m_impl->currentGraphicsItem)
         return QImage();
-    QImage image(imageSize(), QImage::Format_ARGB32_Premultiplied);
-    image.fill(Qt::transparent);
-    QPainter painter;
-    painter.begin(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setRenderHint(QPainter::TextAntialiasing);
-    painter.setRenderHint(QPainter::SmoothPixmapTransform);
-    QStyleOptionGraphicsItem options;
-    options.exposedRect = m_impl->currentGraphicsItem->boundingRect();
-    m_impl->currentGraphicsItem->paint(&painter, &options);
-    painter.end();
+    QImage image;
+    if(IGrabImage *itemWithGrabImage = dynamic_cast<IGrabImage*>(m_impl->currentGraphicsItem))
+    {
+        image = itemWithGrabImage->grabImage();
+    }
+    else
+    {
+        image = QImage(imageSize(), QImage::Format_ARGB32_Premultiplied);
+        image.fill(Qt::transparent);
+        QPainter painter;
+        painter.begin(&image);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setRenderHint(QPainter::TextAntialiasing);
+        painter.setRenderHint(QPainter::SmoothPixmapTransform);
+        QStyleOptionGraphicsItem options;
+        options.exposedRect = m_impl->currentGraphicsItem->boundingRect();
+        m_impl->currentGraphicsItem->paint(&painter, &options);
+        painter.end();
+    }
     if(m_impl->currentRotationAngle)
     {
         QTransform transform;

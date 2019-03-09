@@ -27,7 +27,13 @@
 #include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
-class ResampledImageGraphicsItem : public QGraphicsItem
+#include "../../../GraphicsItemFeatures/IGrabImage.h"
+#include "../../../GraphicsItemFeatures/ITransformationMode.h"
+
+class ResampledImageGraphicsItem :
+        public QGraphicsItem,
+        public ITransformationMode,
+        public IGrabImage
 {
     Q_DISABLE_COPY(ResampledImageGraphicsItem)
 
@@ -43,8 +49,10 @@ public:
     QPixmap pixmap() const;
     void setPixmap(const QPixmap &pixmap);
 
-    Qt::TransformationMode transformationMode() const;
-    void setTransformationMode(Qt::TransformationMode mode);
+    Qt::TransformationMode transformationMode() const Q_DECL_OVERRIDE;
+    void setTransformationMode(Qt::TransformationMode mode) Q_DECL_OVERRIDE;
+
+    QImage grabImage() Q_DECL_OVERRIDE;
 
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE;

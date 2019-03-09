@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,22 +17,18 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined(GRAPHICS_ITEM_UTILS_H_INCLUDED)
-#define GRAPHICS_ITEM_UTILS_H_INCLUDED
+#if !defined(ISETTRANSFORMATIONMODE_H_INCLUDED)
+#define ISETTRANSFORMATIONMODE_H_INCLUDED
 
-#include <QtGlobal>
+#include <Qt>
 
-class QPainter;
-class QImage;
-class QRectF;
+class ITransformationMode
+{
+public:
+    virtual ~ITransformationMode() {}
 
-namespace GraphicsItemUtils {
+    virtual Qt::TransformationMode transformationMode() const = 0;
+    virtual void setTransformationMode(Qt::TransformationMode mode) = 0;
+};
 
-qreal GetDeviceScaleFactor(const QPainter *painter);
-
-bool IsFuzzyEqualScaleFactors(const qreal scaleFactor1, const qreal scaleFactor2);
-bool IsFuzzyEqualScaleFactors(const qreal scaleFactor1, const qreal scaleFactor2, const qreal epsilon);
-
-} // GraphicsItemUtils
-
-#endif // GRAPHICS_ITEM_UTILS_H_INCLUDED
+#endif // ISETTRANSFORMATIONMODE_H_INCLUDED

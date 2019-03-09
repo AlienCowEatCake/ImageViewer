@@ -190,6 +190,23 @@ void RasterizedImageGraphicsItem::setTransformationMode(Qt::TransformationMode m
     update();
 }
 
+QImage RasterizedImageGraphicsItem::grabImage()
+{
+    const QSharedPointer<IScaledImageProvider> &provider = m_impl->provider;
+    if(!provider || !provider->isValid())
+        return QImage();
+
+    const qreal deviceScaleFactor = 1.0;
+    const qreal maxScaleFactor = provider->maxScaleFactor();
+    const qreal minScaleFactor = provider->minScaleFactor();
+    const qreal newScaleFactor = std::max(std::min(deviceScaleFactor, maxScaleFactor), minScaleFactor);
+
+    RasterizerManager *rasterizerManager = m_impl->rasterizerManager.data();
+    if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, rasterizerManager->getScaledScaleFactor(), 1e-7))
+        rasterizerManager->execTaskSynchronously(newScaleFactor);
+    return rasterizerManager->getScaledImage();
+}
+
 QRectF RasterizedImageGraphicsItem::boundingRect() const
 {
     if(!m_impl->provider)

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -37,7 +37,12 @@ qreal GetDeviceScaleFactor(const QPainter *painter)
 
 bool IsFuzzyEqualScaleFactors(const qreal scaleFactor1, const qreal scaleFactor2)
 {
-    return std::abs(scaleFactor1 - scaleFactor2) / std::max(scaleFactor1, scaleFactor2) <= 1e-2;
+    return IsFuzzyEqualScaleFactors(scaleFactor1, scaleFactor2, 1e-2);
+}
+
+bool IsFuzzyEqualScaleFactors(const qreal scaleFactor1, const qreal scaleFactor2, const qreal epsilon)
+{
+    return std::abs(scaleFactor1 - scaleFactor2) / std::max(scaleFactor1, scaleFactor2) <= epsilon;
 }
 
 } // GraphicsItemUtils

@@ -361,6 +361,11 @@ bool MacWebKitRasterizerGraphicsItem::load(const QByteArray &svgData, const QUrl
     return true;
 }
 
+QImage MacWebKitRasterizerGraphicsItem::grabImage()
+{
+    return m_impl->grabImage(1.0, boundingRect());
+}
+
 QRectF MacWebKitRasterizerGraphicsItem::boundingRect() const
 {
     return m_impl->rect;
