@@ -357,32 +357,39 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
 } // namespace MoveToTrashInternal
 #endif
 
-namespace FileUtils {
-
-/// @brief Удаление указанного файла или директории в корзину
-/// @attention Используется удаление без запроса. В случае отсутствия на целевой системе
-///         корзины, либо если корзина программно отключена поведение этой функции строго
-///         не специфицируется. Предполагаемое поведение - либо будет произведен выход с
-///         false, либо произойдет удаление файла мимо корзины (может зависеть от текущей
-///         платформы). Текстовое описание ошибки при этом устанавливаться не обязано.
-/// @param[in] path - путь к файлу или директории
-/// @param[out] errorDescription - текстовое описание ошибки в случае ее возникновения
-/// @return - true в случае успешного удаления, false в случае ошибки
-bool MoveToTrash(const QString &path, QString *errorDescription)
-{
-    const QFileInfo info(path);
-    if(!info.exists())
-    {
-        if(errorDescription)
-            *errorDescription = qApp->translate("FileUtils", "The specified path does not exist");
-        return false;
-    }
-    const QString absolutePath = info.absoluteFilePath();
-
 #if defined (Q_OS_MAC)
+namespace MoveToTrashInternal {
 
-#if 0
+bool MoveToTrashViaFinderScript(const QString &absolutePath, QString *errorDescription)
+{
+    int status = QProcess::execute(QString::fromLatin1("osascript"), QStringList()
+            << QString::fromLatin1("-e")
+            << QString::fromLatin1("tell application \"Finder\"\n"
+                                   "move POSIX file \"%1\" to trash\n"
+                                   "end tell").arg(absolutePath));
+    switch(status)
+    {
+    case -2:
+        qWarning() << "[FileUtils::MoveToTrash]: osascript process cannot be started";
+        break;
+    case -1:
+        qWarning() << "[FileUtils::MoveToTrash]: osascript process crashed";
+        break;
+    case 0:
+        return true;
+    default:
+        qWarning() << "[FileUtils::MoveToTrash]: The specified path could not be moved to Trash" << absolutePath << QString::fromLatin1(" (%1)").arg(status);
+        break;
+    }
 
+    if(errorDescription)
+        *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash").append(QString::fromLatin1(" (%1)").arg(status));
+
+    return false;
+}
+
+bool MoveToTrashViaFSMoveObject(const QString &absolutePath, QString *errorDescription)
+{
     // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_osx.py
 
     FSRef ref;
@@ -410,33 +417,40 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
         return false;
     }
     return true;
+}
 
-#else
-
-    int status = QProcess::execute(QString::fromLatin1("osascript"), QStringList()
-            << QString::fromLatin1("-e")
-            << QString::fromLatin1("tell application \"Finder\"\n"
-                                   "move POSIX file \"%1\" to trash\n"
-                                   "end tell").arg(absolutePath));
-    switch(status)
-    {
-    case -2:
-        qWarning() << "[FileUtils::MoveToTrash]: osascript process cannot be started";
-        break;
-    case -1:
-        qWarning() << "[FileUtils::MoveToTrash]: osascript process crashed";
-        break;
-    case 0:
-        return true;
-    default:
-        if(errorDescription)
-            *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash");
-        qWarning() << "[FileUtils::MoveToTrash]: The specified path could not be moved to Trash" << absolutePath;
-        break;
-    }
-    return false;
-
+} // namespace MoveToTrashInternal
 #endif
+
+namespace FileUtils {
+
+/// @brief Удаление указанного файла или директории в корзину
+/// @attention Используется удаление без запроса. В случае отсутствия на целевой системе
+///         корзины, либо если корзина программно отключена поведение этой функции строго
+///         не специфицируется. Предполагаемое поведение - либо будет произведен выход с
+///         false, либо произойдет удаление файла мимо корзины (может зависеть от текущей
+///         платформы). Текстовое описание ошибки при этом устанавливаться не обязано.
+/// @param[in] path - путь к файлу или директории
+/// @param[out] errorDescription - текстовое описание ошибки в случае ее возникновения
+/// @return - true в случае успешного удаления, false в случае ошибки
+bool MoveToTrash(const QString &path, QString *errorDescription)
+{
+    const QFileInfo info(path);
+    if(!info.exists())
+    {
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "The specified path does not exist");
+        return false;
+    }
+    const QString absolutePath = info.absoluteFilePath();
+
+#if defined (Q_OS_MAC)
+
+    if(MoveToTrashInternal::MoveToTrashViaFinderScript(absolutePath, errorDescription))
+        return true;
+    if(MoveToTrashInternal::MoveToTrashViaFSMoveObject(absolutePath, errorDescription))
+        return true;
+    return false;
 
 #elif defined (Q_OS_WIN)
 
