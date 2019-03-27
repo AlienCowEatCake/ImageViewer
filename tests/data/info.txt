@@ -428,6 +428,15 @@ Image from https://en.wikipedia.org/wiki/Portable_Network_Graphics
 
 ::: SVG test images :::
 
+Images from https://en.wikipedia.org/wiki/SVG_animation
+ * svg/SVG_animation/SVG animation using SMIL.svg
+ * svg/SVG_animation/SVG animation using CSS.svg
+ * svg/SVG_animation/SVG animation using ECMAScript.svg
+ * svg/SVG_animation/Circulatory system SMIL.svg
+ * svg/SVG_animation/Toy train SMIL.svg
+ * svg/SVG_animation/Morphing SMIL.svg
+ * svg/SVG_animation/Penang Island textured model CSS3 animation.svg
+
 Test images which was created during the development of this project
  * bounding_test_1.svg
  * damaged.svg

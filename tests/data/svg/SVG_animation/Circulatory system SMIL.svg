@@ -1,0 +1,142 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="-135 -90 270 180"><script xmlns=""/>
+ <title>Circulatory system SMIL</title>
+ <desc>An animated schematic of the heart and circulatory system by CMG Lee. Red and blue represent oxygenated and deoxygenated blood, respectively.</desc>
+ <style type="text/css">
+  #chamber            { stroke:#000000; stroke-width:1; }
+  #vessels,#connector { stroke-width:1; stroke-dasharray:5,1; fill:none; }
+  .fill_d   { fill:url(#grad_d); }
+  .fill_o   { fill:url(#grad_o); }
+  .stroke_d { stroke:#0066ff; }
+  .stroke_o { stroke:#ff0000; }
+  .bg       { stroke:#ffffff; stroke-width:4; stroke-opacity:0.75; }
+  .fg       { stroke:#000000; stroke-width:2; }
+  .fade     { stroke:none; fill:url(#grad_fade); }
+ </style>
+ <defs>
+  <radialGradient id="grad_fade" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+   <stop offset="50%" stop-color="#ffffff" stop-opacity="0.75"/>
+   <stop offset="90%" stop-color="#ffffff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="grad_d" cx="50%" cy="50%" r="50%" fx="50%" fy="60%">
+   <stop offset="10%" stop-color="#0066ff"/>
+   <stop offset="90%" stop-color="#0033ff"/>
+  </radialGradient>
+  <radialGradient id="grad_o" cx="50%" cy="50%" r="50%" fx="50%" fy="60%">
+   <stop offset="10%" stop-color="#ff0000"/>
+   <stop offset="90%" stop-color="#cc0000"/>
+  </radialGradient>
+  <linearGradient id="grad_mask" x1="0%" x2="0%" y1="0%" y2="100%">
+   <stop offset="40%" stop-color="#000000"/>
+   <stop offset="50%" stop-color="#ffffff"/>
+  </linearGradient>
+
+  <mask id="mask"><rect x="-499" y="-499" width="999" height="999" fill="url(#grad_mask)"/></mask>
+
+  <path id="chamber" d="M 0,0 C 40,0 10,-30 0,-30 C -10,-30 -10,0 0,0"/>
+  <path id="vessels" transform="translate(60,0)" d="M -42,45 V 50 C -42,72 52,72 52,50 C 52,40 44,40 44,30 C 44,20 40,20 40,0 C 40,-20 44,-20 44,-30 C 44,-40 52,-40 52,-50 C 52,-72 -72,-72 -72,-50            M -44,45 V 50 C -44,74 54,74 54,50 C 54,40 46,40 46,30 C 46,20 50,20 50,0 C 50,-20 46,-20 46,-30 C 46,-40 54,-40 54,-50 C 54,-74 -74,-74 -74,-50            M -46,45 V 50 C -46,76 56,76 56,50 C 56,40 64,40 64,30 C 64,20 60,20 60,0 C 60,-20 64,-20 64,-30 C 64,-40 56,-40 56,-50 C 56,-76 -76,-76 -76,-50            M -48,45 V 50 C -48,78 58,78 58,50 C 58,40 66,40 66,30 C 66,20 70,20 70,0 C 70,-20 66,-20 66,-30 C 66,-40 58,-40 58,-50 C 58,-78 -78,-78 -78,-50"/>
+  <path id="connector" d="M 18,-20 V 0            M 16,-24 V 0            M 14,-20 V 0            M 20,-24 V 0"/>
+  <path id="valve_base" d="M 0,0 Q 5,0 7,7"/>
+  <g id="valve" stroke-linecap="round" fill="none">
+   <use xlink:href="#valve_base" class="bg"/>
+   <use xlink:href="#valve_base" class="fg"/>
+  </g>
+  <g id="valve_closed">
+   <use xlink:href="#valve" transform="translate(-8,0)"/>
+   <use xlink:href="#valve" transform="translate( 8,0) scale(-1,1)"/>
+  </g>
+  <g id="valve_open">
+   <use xlink:href="#valve" transform="translate(-8,0) rotate(30)"/>
+   <use xlink:href="#valve" transform="translate( 8,0) rotate(-30) scale(-1,1)"/>
+  </g>
+
+  <path id="arrow_base" d="M 0,5 V -5 M -2,2 L 0,5 L 2,2"/>
+  <g id="arrow" fill="none">
+   <use xlink:href="#arrow_base" class="bg"/>
+   <use xlink:href="#arrow_base" class="fg"/>
+  </g>
+  <g id="labels" font-family="Helvetica,Arial,sans-serif" font-size="14" letter-spacing="0" text-anchor="middle">
+   <text transform="translate( -67,-48)" x="0" y="0.6ex" font-weight="bold"><tspan>Right</tspan><tspan x="0" dy="12">atrium</tspan></text>
+   <text transform="translate(  67,-48)" x="0" y="0.6ex" font-weight="bold"><tspan>Left</tspan><tspan x="0" dy="12">atrium</tspan></text>
+   <text transform="translate( -67,-18)" x="0" y="0.6ex"><tspan>Tricuspid</tspan><tspan x="0" dy="12">valve</tspan></text>
+   <text transform="translate(  67,-18)" x="0" y="0.6ex"><tspan>Mitral</tspan><tspan x="0" dy="12">valve</tspan></text>
+   <text transform="translate( -67, 12)" x="0" y="0.6ex" font-weight="bold"><tspan>Right</tspan><tspan x="0" dy="12">ventricle</tspan></text>
+   <text transform="translate(  67, 12)" x="0" y="0.6ex" font-weight="bold"><tspan>Left</tspan><tspan x="0" dy="12">ventricle</tspan></text>
+   <text transform="translate( -67, 42)" x="0" y="0.6ex"><tspan>Pulmonary</tspan><tspan x="0" dy="12">valve</tspan></text>
+   <text transform="translate(  67, 42)" x="0" y="0.6ex"><tspan>Aortic</tspan><tspan x="0" dy="12">valve</tspan></text>
+   <text transform="translate( -67,-80)" x="0" y="0.6ex"><tspan>Pulmonary veins</tspan></text>
+   <text transform="translate(  67,-80)" x="0" y="0.6ex"><tspan>Venae cavae</tspan></text>
+   <text transform="translate( -67, 80)" x="0" y="0.6ex"><tspan>Pulmonary artery</tspan></text>
+   <text transform="translate(  67, 80)" x="0" y="0.6ex"><tspan>Aorta</tspan></text>
+   <text transform="translate(-115,  0)" x="0" y="0.6ex" font-weight="bold"><tspan>Lungs</tspan></text>
+   <text transform="translate( 115,-14)" x="0" y="0.6ex" font-weight="bold"><tspan>Rest</tspan><tspan x="0" dy="12">of the</tspan><tspan x="0" dy="12">body</tspan></text>
+  </g>
+ </defs>
+
+ <g stroke-linejoin="round" stroke="none" fill="none">
+  <g>
+   <use xlink:href="#vessels" class="stroke_d"/>
+   <use xlink:href="#vessels" class="stroke_o" mask="url(#mask)"/>
+   <use xlink:href="#vessels" class="stroke_o" transform="scale(-1,1)"/>
+   <use xlink:href="#vessels" class="stroke_d" mask="url(#mask)" transform="scale(-1,1)"/>
+   <animate attributeType="css" attributeName="stroke-dashoffset" values="25;25;0" keyTimes="0;0.4;1" dur="4s" repeatCount="indefinite"/>
+  </g>
+  <g>
+   <use xlink:href="#connector" class="stroke_o"/>
+   <use xlink:href="#connector" class="stroke_d" transform="scale(-1,1)"/>
+   <animate attributeType="css" attributeName="stroke-dashoffset" values="10;0;0" keyTimes="0;0.4;1" dur="4s" repeatCount="indefinite"/>
+  </g>
+
+  <g>
+   <use xlink:href="#valve_open" transform="translate( 17,-15)"/>
+   <use xlink:href="#valve_open" transform="translate(-17,-15)"/>
+   <use xlink:href="#valve_closed" transform="translate( 16,48)"/>
+   <use xlink:href="#valve_closed" transform="translate(-16,48)"/>
+   <use xlink:href="#arrow" transform="translate(-17,-10)"/>
+   <use xlink:href="#arrow" transform="translate( 17,-10)"/>
+   <animate attributeType="css" attributeName="opacity" values="1;1;0;0" keyTimes="0;0.4;0.4;1" dur="4s" repeatCount="indefinite"/>
+  </g>
+  <g>
+   <use xlink:href="#valve_closed" transform="translate( 17,-15)"/>
+   <use xlink:href="#valve_closed" transform="translate(-17,-15)"/>
+   <use xlink:href="#valve_open" transform="translate( 16, 48)"/>
+   <use xlink:href="#valve_open" transform="translate(-16, 48)"/>
+   <use xlink:href="#arrow" transform="translate(65, -68.5) rotate(90)"/>
+   <use xlink:href="#arrow" transform="translate(-65,-68.5) rotate(-90)"/>
+   <use xlink:href="#arrow" transform="translate(65,  68.5) rotate(-90)"/>
+   <use xlink:href="#arrow" transform="translate(-65, 68.5) rotate(90)"/>
+   <animate attributeType="css" attributeName="opacity" values="0;0;1;1" keyTimes="0;0.4;0.4;1" dur="4s" repeatCount="indefinite"/>
+  </g>
+
+  <g class="fill_d" transform="translate(-15,-20) scale(-1,1)">
+   <use xlink:href="#chamber">
+    <animateTransform attributeType="xml" attributeName="transform" type="scale" values="1,1;0.7,1;1,1" keyTimes="0;0.4;1" dur="4s" repeatCount="indefinite"/>
+   </use>
+  </g>
+  <g class="fill_o" transform="translate(15,-20)">
+   <use xlink:href="#chamber">
+    <animateTransform attributeType="xml" attributeName="transform" type="scale" values="1,1;0.7,1;1,1" keyTimes="0;0.4;1" dur="4s" repeatCount="indefinite"/>
+   </use>
+  </g>
+  <g class="fill_d" transform="translate(-15,0) scale(-1.1,-1.5)">
+   <use xlink:href="#chamber">
+    <animateTransform attributeType="xml" attributeName="transform" type="scale" values="0.7,1;1,1;0.7,1" keyTimes="0;0.4;1" dur="4s" repeatCount="indefinite"/>
+   </use>
+  </g>
+  <g class="fill_o" transform="translate(15,0) scale(1,-1.5)">
+   <use xlink:href="#chamber">
+    <animateTransform attributeType="xml" attributeName="transform" type="scale" values="0.7,1;1,1;0.7,1" keyTimes="0;0.4;1" dur="4s" repeatCount="indefinite"/>
+   </use>
+  </g>
+
+  <g>
+  <!--
+   <use xlink:href="#labels" stroke="#ffffff" stroke-width="8" stroke-opacity="0.75"/>
+  -->
+   <ellipse class="fade" cx="-115" cy="0" rx="30" ry="20"/>
+   <ellipse class="fade" cx="115" cy="0" rx="30" ry="40"/>
+   <path d="M 25,-10 H 45 M 25,52 H 45 M -25,-10 H -45 M -25,52 H -45" stroke="#999999"/>
+   <use xlink:href="#labels" stroke="none" fill="#000000"/>
+  </g>
+ </g>
+</svg>
