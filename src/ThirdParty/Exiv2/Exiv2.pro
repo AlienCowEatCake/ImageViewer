@@ -52,7 +52,7 @@ SOURCES += \
     $${THIRDPARTY_EXIV2_PATH}/src/tiffcomposite_int.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/tiffimage_int.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/tiffvisitor_int.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/src/asfvideo.cpp \
+\ #    $${THIRDPARTY_EXIV2_PATH}/src/asfvideo.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/basicio.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/bigtiffimage.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/bmpimage.cpp \
@@ -72,7 +72,7 @@ SOURCES += \
     $${THIRDPARTY_EXIV2_PATH}/src/iptc.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/jp2image.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/jpgimage.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/src/matroskavideo.cpp \
+\ #    $${THIRDPARTY_EXIV2_PATH}/src/matroskavideo.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/metadatum.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/mrwimage.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/orfimage.cpp \
@@ -80,15 +80,15 @@ SOURCES += \
     $${THIRDPARTY_EXIV2_PATH}/src/preview.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/properties.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/psdimage.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/src/quicktimevideo.cpp \
+\ #    $${THIRDPARTY_EXIV2_PATH}/src/quicktimevideo.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/rafimage.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/src/riffvideo.cpp \
+\ #    $${THIRDPARTY_EXIV2_PATH}/src/riffvideo.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/rw2image.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/tags.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/tgaimage.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/tiffimage.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/types.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/src/utilsvideo.cpp \
+\ #    $${THIRDPARTY_EXIV2_PATH}/src/utilsvideo.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/value.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/version.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/webpimage.cpp \

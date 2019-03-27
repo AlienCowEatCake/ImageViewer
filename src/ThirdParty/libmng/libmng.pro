@@ -34,7 +34,7 @@ disable_libjpeg {
 
 SOURCES += \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_callback_xs.c \
-    $${THIRDPARTY_LIBMNG_PATH}/libmng_chunk_descr.c \
+\ #    $${THIRDPARTY_LIBMNG_PATH}/libmng_chunk_descr.c \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_chunk_io.c \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_chunk_prc.c \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_chunk_xs.c \
@@ -49,7 +49,7 @@ SOURCES += \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_pixels.c \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_prop_xs.c \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_read.c \
-    $${THIRDPARTY_LIBMNG_PATH}/libmng_trace.c \
+\ #    $${THIRDPARTY_LIBMNG_PATH}/libmng_trace.c \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_write.c \
     $${THIRDPARTY_LIBMNG_PATH}/libmng_zlib.c
 

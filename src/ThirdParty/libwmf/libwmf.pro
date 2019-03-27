@@ -90,7 +90,7 @@ SOURCES += \
     $${THIRDPARTY_LIBWMF_PATH}/src/font.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/stream.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/wmf.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/xml.c
+\ #    $${THIRDPARTY_LIBWMF_PATH}/src/xml.c
 
 HEADERS += \
     $${THIRDPARTY_LIBWMF_PATH}/include/libwmf/api.h \
