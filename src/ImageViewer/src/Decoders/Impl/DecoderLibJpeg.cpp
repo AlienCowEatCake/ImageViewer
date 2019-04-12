@@ -394,7 +394,8 @@ public:
 
     QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
-        return QStringList();
+        return QStringList()
+                << QString::fromLatin1("heic"); // iPhone 7 Plus, iPhone 8 Plus, iPhone XS Max, etc.
     }
 
     bool isAvailable() const Q_DECL_OVERRIDE
