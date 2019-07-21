@@ -39,4 +39,4 @@
 #  endif
 #endif
 
-#endif
+#endif /* EXIV2API_H */

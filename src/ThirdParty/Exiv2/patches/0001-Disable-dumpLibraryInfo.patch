@@ -1,0 +1,48 @@
+From db5fe6deabb4c9acc07492124141244d1bc71826 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Mon, 22 Jul 2019 04:32:20 +0700
+Subject: [PATCH 1/9] Disable dumpLibraryInfo
+
+---
+ include/exiv2/version.hpp | 2 ++
+ src/version.cpp           | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/include/exiv2/version.hpp b/include/exiv2/version.hpp
+index f5df8150..7e47154f 100644
+--- a/include/exiv2/version.hpp
++++ b/include/exiv2/version.hpp
+@@ -155,11 +155,13 @@ namespace Exiv2 {
+       The fourth version number is designated a "tweak" an used by Release Candidates
+     */
+     EXIV2API bool testVersion(int major, int minor, int patch);
++#if 0
+     /*!
+       @brief dumpLibraryInfo implements the exiv2 option --version --verbose
+              used by exiv2 test suite to inspect libraries loaded at run-time
+      */
+     EXIV2API void dumpLibraryInfo(std::ostream& os,const exv_grep_keys_t& keys);
++#endif
+ }                                       // namespace Exiv2
+ 
+ 
+diff --git a/src/version.cpp b/src/version.cpp
+index 80525b11..1098bd20 100644
+--- a/src/version.cpp
++++ b/src/version.cpp
+@@ -95,6 +95,7 @@ namespace Exiv2 {
+ 
+ }                                       // namespace Exiv2
+ 
++#if 0
+ #ifndef lengthof
+ #define lengthof(x) sizeof(x)/sizeof(x[0])
+ #endif
+@@ -558,3 +559,4 @@ void Exiv2::dumpLibraryInfo(std::ostream& os,const exv_grep_keys_t& keys)
+ #endif
+ 
+ }
++#endif
+-- 
+2.20.1
+
