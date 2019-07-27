@@ -26,6 +26,7 @@
 #include <lcms2.h>
 #endif
 
+#include <QDebug>
 #include <QImage>
 #include <QByteArray>
 #include <QSysInfo>
@@ -38,7 +39,9 @@ struct ICCProfile::Impl
     Impl()
         : inProfile(Q_NULLPTR)
         , outProfile(Q_NULLPTR)
-    {}
+    {
+        cmsSetLogErrorHandler(&Impl::logErrorHandler);
+    }
 
     ~Impl()
     {
@@ -72,6 +75,31 @@ struct ICCProfile::Impl
         if(!transform)
             return;
         cmsDoTransform(getOrCreateTransform(format), data, data, pixelsNum);
+    }
+
+    static void logErrorHandler(cmsContext /*contextID*/, cmsUInt32Number errorCode, const char *text)
+    {
+        QString errorCodeString;
+        switch(errorCode)
+        {
+#define ADD_CASE(VALUE) case (VALUE): errorCodeString = QString::fromLatin1(#VALUE); break
+        ADD_CASE(cmsERROR_UNDEFINED);
+        ADD_CASE(cmsERROR_FILE);
+        ADD_CASE(cmsERROR_RANGE);
+        ADD_CASE(cmsERROR_INTERNAL);
+        ADD_CASE(cmsERROR_NULL);
+        ADD_CASE(cmsERROR_READ);
+        ADD_CASE(cmsERROR_SEEK);
+        ADD_CASE(cmsERROR_WRITE);
+        ADD_CASE(cmsERROR_UNKNOWN_EXTENSION);
+        ADD_CASE(cmsERROR_COLORSPACE_CHECK);
+        ADD_CASE(cmsERROR_ALREADY_DEFINED);
+        ADD_CASE(cmsERROR_BAD_SIGNATURE);
+        ADD_CASE(cmsERROR_CORRUPTION_DETECTED);
+        ADD_CASE(cmsERROR_NOT_SUITABLE);
+#undef ADD_CASE
+        }
+        qWarning() << "[CmsUtils] Error" << errorCodeString << ":" << text;
     }
 
     cmsHPROFILE inProfile;
