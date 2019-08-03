@@ -407,17 +407,16 @@ void ImageViewerWidget::setSmoothTransformation(bool enabled)
 
 void ImageViewerWidget::drawBackground(QPainter *painter, const QRectF &rect)
 {
-    if(!m_impl->backgroundTexture.isNull())
+    if(!m_impl->backgroundTexture.isNull() && m_impl->currentGraphicsItem)
     {
-        const int xOffset = horizontalScrollBar()->value() % m_impl->backgroundTexture.width();
-        const int yOffset = verticalScrollBar()->value() % m_impl->backgroundTexture.height();
-        const QRect targetRect = mapFromScene(rect).boundingRect().adjusted(-xOffset, -yOffset, xOffset, yOffset);
+        const QRect itemBounds = mapFromScene(m_impl->currentGraphicsItem->boundingRect()).boundingRect();
+        const QRect targetArea = itemBounds.intersected(mapFromScene(rect).boundingRect());
         painter->save();
         painter->resetTransform();
-        painter->translate(-xOffset, -yOffset);
+        painter->translate(itemBounds.topLeft());
         painter->setPen(Qt::NoPen);
         painter->setBrush(m_impl->backgroundTexture);
-        painter->drawRect(targetRect);
+        painter->drawRect(targetArea.x() - itemBounds.x(), targetArea.y() - itemBounds.y(), targetArea.width(), targetArea.height());
         painter->restore();
     }
     return QGraphicsView::drawBackground(painter, rect);
