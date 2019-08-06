@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libpng {
 
-        THIRDPARTY_LIBPNG_PATH = $${PWD}/libpng-1.6.36
+        THIRDPARTY_LIBPNG_PATH = $${PWD}/libpng-1.6.37
         THIRDPARTY_LIBPNG_CONFIG_PATH = $${PWD}/config
 
         INCLUDEPATH += $${THIRDPARTY_LIBPNG_CONFIG_PATH} $${THIRDPARTY_LIBPNG_PATH}
