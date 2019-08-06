@@ -409,7 +409,7 @@ void ImageViewerWidget::drawBackground(QPainter *painter, const QRectF &rect)
 {
     if(!m_impl->backgroundTexture.isNull() && m_impl->currentGraphicsItem)
     {
-        const QRect itemBounds = mapFromScene(m_impl->currentGraphicsItem->boundingRect()).boundingRect();
+        const QRect itemBounds = mapFromScene(m_impl->currentGraphicsItem->boundingRect()).boundingRect().adjusted(0, 0, -1, -1);
         const QRect targetArea = itemBounds.intersected(mapFromScene(rect).boundingRect());
         painter->save();
         painter->resetTransform();
