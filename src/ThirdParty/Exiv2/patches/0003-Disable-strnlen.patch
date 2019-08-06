@@ -1,4 +1,4 @@
-From 20b85f21d19d5cfd10e6e26f787b8786893dd3e2 Mon Sep 17 00:00:00 2001
+From 0ee742916fcbcbdd429f3a4cb9d1f249d6e85fc8 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:35:21 +0700
 Subject: [PATCH 3/9] Disable strnlen

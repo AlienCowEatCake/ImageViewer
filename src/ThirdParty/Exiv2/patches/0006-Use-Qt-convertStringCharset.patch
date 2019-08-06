@@ -1,4 +1,4 @@
-From be6267d4910ec284b284dae8a677c27b5e8f5d9a Mon Sep 17 00:00:00 2001
+From ddf0d540cb57b2f5b2dc27af5b042f3ba4f18125 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:37:35 +0700
 Subject: [PATCH 6/9] Use Qt convertStringCharset
@@ -8,7 +8,7 @@ Subject: [PATCH 6/9] Use Qt convertStringCharset
  1 file changed, 51 insertions(+)
 
 diff --git a/src/convert.cpp b/src/convert.cpp
-index be8bdbc7..084ce2f9 100644
+index ef83a23f..1d13f42d 100644
 --- a/src/convert.cpp
 +++ b/src/convert.cpp
 @@ -57,6 +57,14 @@

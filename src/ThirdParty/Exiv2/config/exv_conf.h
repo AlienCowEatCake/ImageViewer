@@ -35,7 +35,7 @@
 
 /* Define to `const' or to empty, depending on the second argument of `iconv'. */
 /* #undef ICONV_ACCEPTS_CONST_INPUT */
-#if defined ICONV_ACCEPTS_CONST_INPUT
+#if defined(ICONV_ACCEPTS_CONST_INPUT) || defined(__NetBSD__)
 #define EXV_ICONV_CONST const
 #else
 #define EXV_ICONV_CONST
@@ -101,14 +101,14 @@
 #define EXV_PACKAGE_NAME "exiv2"
 
 /* Define to the full name and version of this package. */
-#define EXV_PACKAGE_STRING "exiv2 0.27.1"
+#define EXV_PACKAGE_STRING "exiv2 0.27.2"
 
 /* Define to the version of this package. */
-#define EXV_PACKAGE_VERSION "0.27.1"
+#define EXV_PACKAGE_VERSION "0.27.2"
 
 #define EXIV2_MAJOR_VERSION (0)
 #define EXIV2_MINOR_VERSION (27)
-#define EXIV2_PATCH_VERSION (1)
+#define EXIV2_PATCH_VERSION (2)
 #define EXIV2_TWEAK_VERSION ()
 
 // Definition to enable translation of Nikon lens names.

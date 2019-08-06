@@ -1,4 +1,4 @@
-From 12a3e609b78c14aa3446e1a3541ac3a6f97b257d Mon Sep 17 00:00:00 2001
+From 5fc16c559d1bea3486e6c05331e9fd49d536fe13 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:34:14 +0700
 Subject: [PATCH 2/9] Disable getProcessPath
@@ -24,10 +24,10 @@ index 9e450282..6cd15156 100644
      /*!
        @brief A container for URL components. It also provides the method to parse a
 diff --git a/src/futils.cpp b/src/futils.cpp
-index 2de5dc00..9811ca02 100644
+index e07fa2d3..7fdffb59 100644
 --- a/src/futils.cpp
 +++ b/src/futils.cpp
-@@ -447,6 +447,7 @@ namespace Exiv2 {
+@@ -467,6 +467,7 @@ namespace Exiv2 {
          return result;
      }
  
@@ -35,7 +35,7 @@ index 2de5dc00..9811ca02 100644
      std::string getProcessPath()
      {
          std::string ret("unknown");
-@@ -481,4 +482,5 @@ namespace Exiv2 {
+@@ -511,4 +512,5 @@ namespace Exiv2 {
          const size_t idxLastSeparator = ret.find_last_of(EXV_SEPARATOR_STR);
          return ret.substr(0, idxLastSeparator);
      }

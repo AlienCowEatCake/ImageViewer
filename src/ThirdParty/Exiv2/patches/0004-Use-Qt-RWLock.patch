@@ -1,4 +1,4 @@
-From 5fdc828b0e6939fd615a30631cee0bab47c16b4b Mon Sep 17 00:00:00 2001
+From 51e76b879eb4ecb6cbcdb27b1f63a68d61f9c697 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:35:53 +0700
 Subject: [PATCH 4/9] Use Qt RWLock

@@ -1,4 +1,4 @@
-From 75ce4891d04e1bd3458fcbabb6e3ed8707ae3850 Mon Sep 17 00:00:00 2001
+From ae6e64e394b307553cd4396e07b8da8079014e13 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:41:51 +0700
 Subject: [PATCH 9/9] Fix build with Clang 3.3

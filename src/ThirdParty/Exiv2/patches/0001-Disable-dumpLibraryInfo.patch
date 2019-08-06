@@ -1,12 +1,12 @@
-From db5fe6deabb4c9acc07492124141244d1bc71826 Mon Sep 17 00:00:00 2001
+From deb3fd5ab07b1b89495003cbcf49fcbc54bbfeb8 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:32:20 +0700
 Subject: [PATCH 1/9] Disable dumpLibraryInfo
 
 ---
  include/exiv2/version.hpp | 2 ++
- src/version.cpp           | 2 ++
- 2 files changed, 4 insertions(+)
+ src/version.cpp           | 4 ++++
+ 2 files changed, 6 insertions(+)
 
 diff --git a/include/exiv2/version.hpp b/include/exiv2/version.hpp
 index f5df8150..7e47154f 100644
@@ -27,20 +27,36 @@ index f5df8150..7e47154f 100644
  
  
 diff --git a/src/version.cpp b/src/version.cpp
-index 80525b11..1098bd20 100644
+index bbcb1ea1..a21c34e0 100644
 --- a/src/version.cpp
 +++ b/src/version.cpp
-@@ -95,6 +95,7 @@ namespace Exiv2 {
- 
- }                                       // namespace Exiv2
+@@ -56,6 +56,7 @@
+ #define _MAX_PATH 512
+ #endif
  
 +#if 0
- #ifndef lengthof
- #define lengthof(x) sizeof(x)/sizeof(x[0])
+ // platform specific support for getLoadedLibraries
+ #if defined(__CYGWIN__) || defined(__MINGW__) || defined(WIN32)
+ # include <windows.h>
+@@ -75,6 +76,7 @@
+ # include <sys/sysctl.h>
+ # include <libprocstat.h>
  #endif
-@@ -558,3 +559,4 @@ void Exiv2::dumpLibraryInfo(std::ostream& os,const exv_grep_keys_t& keys)
- #endif
++#endif
  
+ 
+ 
+@@ -110,6 +112,7 @@ namespace Exiv2 {
+     }
+ }   // namespace Exiv2
+ 
++#if 0
+ static bool shouldOutput(const exv_grep_keys_t& greps,const char* key,const std::string& value)
+ {
+     bool bPrint = greps.empty();
+@@ -561,3 +564,4 @@ void Exiv2::dumpLibraryInfo(std::ostream& os,const exv_grep_keys_t& keys)
+     }
+ #endif
  }
 +#endif
 -- 
