@@ -25,6 +25,8 @@
 #include "Utils/ScopedPointer.h"
 #include "IDecoder.h"
 
+class QSize;
+
 class DecodersManager
 {
     Q_DISABLE_COPY(DecodersManager)

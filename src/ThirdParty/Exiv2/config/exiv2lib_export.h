@@ -22,7 +22,7 @@
 #endif
 
 #ifndef EXIV2LIB_DEPRECATED
-#  define EXIV2LIB_DEPRECATED __attribute__ ((__deprecated__))
+#  define EXIV2LIB_DEPRECATED /*__attribute__ ((__deprecated__))*/
 #endif
 
 #ifndef EXIV2LIB_DEPRECATED_EXPORT
