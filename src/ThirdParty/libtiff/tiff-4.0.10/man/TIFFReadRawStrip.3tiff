@@ -46,7 +46,7 @@ large as the number returned by
 The actual number of bytes of data that were placed in
 .I buf
 is returned;
-.IR TIFFReadEncodedStrip
+.IR TIFFReadRawStrip
 returns \-1 if an error was encountered.
 .SH DIAGNOSTICS
 All error messages are directed to the

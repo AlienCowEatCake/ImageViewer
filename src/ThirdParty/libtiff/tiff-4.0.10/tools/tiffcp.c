@@ -1435,6 +1435,12 @@ DECLAREreadFunc(readSeparateTilesIntoBuffer)
             status = 0;
             goto done;
         }
+        if (0xFFFFFFFF / tilew < spp)
+        {
+            TIFFError(TIFFFileName(in), "Error, either TileWidth (%u) or SamplePerPixel (%u) is too large", tilew, spp);
+            status = 0;
+            goto done;
+        }
 	bytes_per_sample = bps/8;
 
 	for (row = 0; row < imagelength; row += tl) {

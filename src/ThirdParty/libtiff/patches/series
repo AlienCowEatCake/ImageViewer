@@ -1,0 +1,8 @@
+fix_TIFFReadRawStrip_man_page_typo.patch
+fixed_lossless_webp_compression_config.patch
+CVE-2018-12900_part1.patch
+CVE-2018-12900_part2.patch
+CVE-2018-17000.patch
+CVE-2018-19210_part1.patch
+CVE-2018-19210_part2.patch
+CVE-2019-6128.patch
