@@ -1,5 +1,5 @@
 # URL: https://libexif.github.io/ + https://github.com/libexif/libexif
-# License: GNU LGPL v2.1
+# License: GNU LGPL v2.1 - https://github.com/libexif/libexif/blob/master/COPYING
 
 TEMPLATE = lib
 CONFIG += staticlib

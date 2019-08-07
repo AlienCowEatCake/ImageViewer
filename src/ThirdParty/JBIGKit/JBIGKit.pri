@@ -1,5 +1,5 @@
 # URL: https://www.cl.cam.ac.uk/~mgk25/jbigkit/
-# License: GNU GPL v2
+# License: GNU GPL v2 or Commercial - https://www.cl.cam.ac.uk/~mgk25/jbigkit/#licensing
 
 include($${PWD}/../../Features.pri)
 

@@ -1,5 +1,5 @@
 # URL: https://sourceforge.net/projects/libmng/
-# License: zlib/libpng License
+# License: Zlib License - https://opensource.org/licenses/Zlib
 
 include($${PWD}/../../Features.pri)
 

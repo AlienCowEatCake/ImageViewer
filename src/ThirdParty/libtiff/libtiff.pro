@@ -1,5 +1,5 @@
 # URL: http://www.simplesystems.org/libtiff/
-# License: ???
+# License: LibTiff License - https://gitlab.com/libtiff/libtiff/blob/master/COPYRIGHT
 
 TEMPLATE = lib
 CONFIG += staticlib

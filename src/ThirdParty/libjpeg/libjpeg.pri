@@ -1,5 +1,5 @@
 # URL: http://ijg.org/
-# License: ???
+# License: Libjpeg License - https://jpegclub.org/reference/libjpeg-license/
 
 include($${PWD}/../../Features.pri)
 

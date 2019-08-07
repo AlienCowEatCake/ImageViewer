@@ -1,4 +1,5 @@
 # URL: https://github.com/qt/qtimageformats
+# License: GNU GPL v2 or GNU LGPL v3 or Commercial - https://www.qt.io/licensing/
 
 lessThan(QT_MAJOR_VERSION, 5): error(This project requires Qt 5 or later)
 

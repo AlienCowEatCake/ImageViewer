@@ -1,5 +1,5 @@
 # URL: http://www.exiv2.org/
-# License: GNU GPL
+# License: GNU GPL v2 or later - https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 TEMPLATE = lib
 CONFIG += staticlib

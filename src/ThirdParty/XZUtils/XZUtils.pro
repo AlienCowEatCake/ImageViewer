@@ -1,5 +1,5 @@
 # URL: https://tukaani.org/xz/
-# License: ???
+# License: Public Domain - https://git.tukaani.org/?p=xz.git;a=blob;f=COPYING
 
 TEMPLATE = lib
 CONFIG += staticlib

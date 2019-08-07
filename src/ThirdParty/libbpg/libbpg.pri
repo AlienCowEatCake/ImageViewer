@@ -1,5 +1,5 @@
 # URL: http://bellard.org/bpg/
-# License: ???
+# License: MIT License + GNU LGPL v2.1
 
 include($${PWD}/../../Features.pri)
 

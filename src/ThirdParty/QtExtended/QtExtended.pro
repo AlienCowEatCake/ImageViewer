@@ -1,5 +1,5 @@
 # URL: https://sourceforge.net/projects/qpe/files/QPE/qtopia/qt-extended-opensource-src-4.4.3.tar.gz/download
-# License: GNU General Public License version 2
+# License: GNU GPL v2 - https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 TEMPLATE = lib
 CONFIG += staticlib

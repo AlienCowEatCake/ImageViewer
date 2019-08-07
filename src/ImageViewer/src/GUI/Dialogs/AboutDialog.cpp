@@ -119,7 +119,7 @@ QString letterByNumFrom1(int num)
     return letterByNumFrom0(num - 1);
 }
 
-QString formatItem(const QString &title, const QString &name, const QString &version, const QString &url)
+QString formatItem(const QString &title, const QString &name, const QString &version, const QString &url, const QString& license, const QString& licenseUrl)
 {
     QString result;
     if(!title.isEmpty())
@@ -129,6 +129,12 @@ QString formatItem(const QString &title, const QString &name, const QString &ver
         result.append(QString::fromLatin1(", version %1").arg(version));
     if(!url.isEmpty())
         result.append(QString::fromLatin1("<br><a href=\"%1\">%1</a>").arg(url));
+    if(!license.isEmpty() && !licenseUrl.isEmpty())
+        result.append(QString::fromLatin1("<br>License: <a href=\"%2\" title=\"%2\">%1</a>").arg(license).arg(licenseUrl));
+    else if(!license.isEmpty())
+        result.append(QString::fromLatin1("<br>License: %1").arg(license));
+    else if(!licenseUrl.isEmpty())
+        result.append(QString::fromLatin1("<br>License: <a href=\"%1\">%1</a>").arg(licenseUrl));
     result.append(QString::fromLatin1("<br><br>"));
     return result;
 }
@@ -166,7 +172,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the Qt framework"),
                       QString::fromLatin1("qt"),
                       QString::fromLatin1(QT_VERSION_STR),
-                      QString::fromLatin1("https://www.qt.io/")
+                      QString::fromLatin1("https://www.qt.io/"),
+                      QString::fromLatin1("GNU LGPL v3 or Commercial"),
+                      QString::fromLatin1("https://www.qt.io/licensing/")
                       ));
 
 #if defined (HAS_LIBPNG)
@@ -174,14 +182,18 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the PNG reference library"),
                       QString::fromLatin1("libpng"),
                       QString::fromLatin1("%1.%2.%3").arg(PNG_LIBPNG_VER_MAJOR).arg(PNG_LIBPNG_VER_MINOR).arg(PNG_LIBPNG_VER_RELEASE),
-                      QString::fromLatin1("http://www.libpng.org/pub/png/libpng.html")
+                      QString::fromLatin1("http://www.libpng.org/pub/png/libpng.html"),
+                      QString::fromLatin1("Zlib License"),
+                      QString::fromLatin1("http://www.libpng.org/pub/png/src/libpng-LICENSE.txt")
                       ));
 #if defined (PNG_APNG_SUPPORTED)
     result.append(formatItem(
                       QString::fromLatin1("This software uses the APNG patch for libpng"),
                       QString::fromLatin1("libpng-apng"),
                       QString::fromLatin1("%1.%2.%3").arg(PNG_LIBPNG_VER_MAJOR).arg(PNG_LIBPNG_VER_MINOR).arg(PNG_LIBPNG_VER_RELEASE),
-                      QString::fromLatin1("https://sourceforge.net/projects/libpng-apng/")
+                      QString::fromLatin1("https://sourceforge.net/projects/libpng-apng/"),
+                      QString::fromLatin1("Zlib License"),
+                      QString::fromLatin1("https://opensource.org/licenses/Zlib")
                       ));
 #endif
 #endif
@@ -192,14 +204,18 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the libjpeg-turbo library"),
                       QString::fromLatin1("libjpeg-turbo"),
                       QString::fromLatin1(TOSTRING(LIBJPEG_TURBO_VERSION)),
-                      QString::fromLatin1("https://www.libjpeg-turbo.org/")
+                      QString::fromLatin1("https://www.libjpeg-turbo.org/"),
+                      QString::fromLatin1("IJG License + Modified 3-clause BSD License + Zlib License"),
+                      QString::fromLatin1("https://github.com/libjpeg-turbo/libjpeg-turbo/blob/master/LICENSE.md")
                       ));
 #else
     result.append(formatItem(
                       QString::fromLatin1("This software is based in part on the work of the Independent JPEG Group"),
                       QString::fromLatin1("libjpeg"),
                       QString::number(JPEG_LIB_VERSION_MAJOR) + letterByNumFrom1(JPEG_LIB_VERSION_MINOR),
-                      QString::fromLatin1("http://www.ijg.org/")
+                      QString::fromLatin1("http://www.ijg.org/"),
+                      QString::fromLatin1("Libjpeg License"),
+                      QString::fromLatin1("https://jpegclub.org/reference/libjpeg-license/")
                       ));
 #endif
 #endif
@@ -210,7 +226,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the OpenJPEG library"),
                       QString::fromLatin1("libopenjp2"),
                       QString::fromLatin1("%1.%2.%3").arg(OPJ_VERSION_MAJOR).arg(OPJ_VERSION_MINOR).arg(OPJ_VERSION_BUILD),
-                      QString::fromLatin1("http://www.openjpeg.org/")
+                      QString::fromLatin1("http://www.openjpeg.org/"),
+                      QString::fromLatin1("2-clause BSD License"),
+                      QString::fromLatin1("https://github.com/uclouvain/openjpeg/blob/master/LICENSE")
                       ));
 #endif
 
@@ -219,7 +237,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the JasPer image processing/coding tool kit"),
                       QString::fromLatin1("libjasper"),
                       strcmp(JAS_VERSION, "unknown") ? QString::fromLatin1(JAS_VERSION) : QString(),
-                      QString::fromLatin1("https://www.ece.uvic.ca/~frodo/jasper/")
+                      QString::fromLatin1("https://www.ece.uvic.ca/~frodo/jasper/"),
+                      QString::fromLatin1("JasPer License v2.0"),
+                      QString::fromLatin1("https://www.ece.uvic.ca/~frodo/jasper/LICENSE")
                       ));
 #endif
 
@@ -228,7 +248,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the Multiple-image Network Graphics (MNG) reference library"),
                       QString::fromLatin1("libmng"),
                       QString::fromLatin1("%1.%2.%3").arg(MNG_VERSION_MAJOR).arg(MNG_VERSION_MINOR).arg(MNG_VERSION_RELEASE),
-                      QString::fromLatin1("https://sourceforge.net/projects/libmng/")
+                      QString::fromLatin1("https://sourceforge.net/projects/libmng/"),
+                      QString::fromLatin1("Zlib License"),
+                      QString::fromLatin1("https://opensource.org/licenses/Zlib")
                       ));
 #endif
 
@@ -238,7 +260,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the LibTIFF library"),
                       QString::fromLatin1("libtiff"),
                       (tiffVersionRegExp.indexIn(QString::fromLatin1(TIFFGetVersion())) >= 0) ? tiffVersionRegExp.cap(0) : QString(),
-                      QString::fromLatin1("http://www.simplesystems.org/libtiff/")
+                      QString::fromLatin1("http://www.simplesystems.org/libtiff/"),
+                      QString::fromLatin1("LibTiff License"),
+                      QString::fromLatin1("https://gitlab.com/libtiff/libtiff/blob/master/COPYRIGHT")
                       ));
 #endif
 
@@ -248,7 +272,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the WebP image library"),
                       QString::fromLatin1("libwebp"),
                       QString::fromLatin1("%1.%2.%3").arg(webpVersion.mid(0, 2).toInt()).arg(webpVersion.mid(2, 2).toInt()).arg(webpVersion.mid(4, 2).toInt()),
-                      QString::fromLatin1("https://www.webmproject.org/")
+                      QString::fromLatin1("https://www.webmproject.org/"),
+                      QString::fromLatin1("3-clause BSD License"),
+                      QString::fromLatin1("https://chromium.googlesource.com/webm/libwebp/+/refs/heads/master/COPYING")
                       ));
 #endif
 
@@ -257,7 +283,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the libbpg library"),
                       QString::fromLatin1("libbpg"),
                       QString(),
-                      QString::fromLatin1("https://bellard.org/bpg/")
+                      QString::fromLatin1("https://bellard.org/bpg/"),
+                      QString::fromLatin1("MIT License + GNU LGPL v2.1"),
+                      QString()
                       ));
 #endif
 
@@ -266,7 +294,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the libwmf library"),
                       QString::fromLatin1("libwmf"),
                       QString(),
-                      QString::fromLatin1("http://wvware.sourceforge.net/libwmf.html")
+                      QString::fromLatin1("http://wvware.sourceforge.net/libwmf.html"),
+                      QString::fromLatin1("GNU GPL v2"),
+                      QString::fromLatin1("https://www.gnu.org/licenses/old-licenses/gpl-2.0.html")
                       ));
 #endif
 
@@ -279,7 +309,9 @@ QString getTextBrowserContent()
 #else
                       QString(),
 #endif
-                      QString::fromLatin1("http://giflib.sourceforge.net/")
+                      QString::fromLatin1("http://giflib.sourceforge.net/"),
+                      QString::fromLatin1("MIT License"),
+                      QString::fromLatin1("https://sourceforge.net/p/giflib/code/ci/master/tree/COPYING")
                       ));
 #endif
 
@@ -288,7 +320,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the LibRaw library"),
                       QString::fromLatin1("libraw"),
                       QString::fromLatin1(LIBRAW_VERSION_STR),
-                      QString::fromLatin1("https://www.libraw.org/")
+                      QString::fromLatin1("https://www.libraw.org/"),
+                      QString::fromLatin1("GNU LGPL v2.1 or CDDL v1.0"),
+                      QString::fromLatin1("https://github.com/LibRaw/LibRaw/blob/master/COPYRIGHT")
                       ));
 #endif
 
@@ -297,7 +331,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the libheif library"),
                       QString::fromLatin1("libheif"),
                       QString::fromLatin1(LIBHEIF_VERSION),
-                      QString::fromLatin1("https://github.com/strukturag/libheif")
+                      QString::fromLatin1("https://github.com/strukturag/libheif"),
+                      QString::fromLatin1("GNU LGPL v3"),
+                      QString::fromLatin1("https://github.com/strukturag/libheif/blob/master/COPYING")
                       ));
 #endif
 
@@ -306,7 +342,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the JBIG-KIT library"),
                       QString::fromLatin1("jbigkit"),
                       QString::fromLatin1(JBG_VERSION),
-                      QString::fromLatin1("https://www.cl.cam.ac.uk/~mgk25/jbigkit/")
+                      QString::fromLatin1("https://www.cl.cam.ac.uk/~mgk25/jbigkit/"),
+                      QString::fromLatin1("GNU GPL v2 or Commercial"),
+                      QString::fromLatin1("https://www.cl.cam.ac.uk/~mgk25/jbigkit/#licensing")
                       ));
 #endif
 
@@ -315,7 +353,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the libexif C EXIF library"),
                       QString::fromLatin1("libexif"),
                       QString(),
-                      QString::fromLatin1("https://libexif.github.io/")
+                      QString::fromLatin1("https://libexif.github.io/"),
+                      QString::fromLatin1("GNU LGPL v2.1"),
+                      QString::fromLatin1("https://github.com/libexif/libexif/blob/master/COPYING")
                       ));
 #endif
 
@@ -324,7 +364,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the Exiv2 C++ metadata library"),
                       QString::fromLatin1("exiv2"),
                       QString::fromLatin1(Exiv2::versionString().c_str()),
-                      QString::fromLatin1("http://www.exiv2.org/")
+                      QString::fromLatin1("http://www.exiv2.org/"),
+                      QString::fromLatin1("GNU GPL v2 or later"),
+                      QString::fromLatin1("https://www.gnu.org/licenses/old-licenses/gpl-2.0.html")
                       ));
 #endif
 
@@ -333,7 +375,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the Little CMS 2 library"),
                       QString::fromLatin1("lcms2"),
                       QString::fromLatin1("%1.%2").arg(LCMS_VERSION / 1000).arg(LCMS_VERSION % 100 / 10),
-                      QString::fromLatin1("http://www.littlecms.com/")
+                      QString::fromLatin1("http://www.littlecms.com/"),
+                      QString::fromLatin1("MIT License"),
+                      QString::fromLatin1("https://opensource.org/licenses/mit-license")
                       ));
 #endif
 
@@ -342,7 +386,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the zlib library"),
                       QString::fromLatin1("zlib"),
                       QString::fromLatin1(ZLIB_VERSION),
-                      QString::fromLatin1("http://www.zlib.net/")
+                      QString::fromLatin1("http://www.zlib.net/"),
+                      QString::fromLatin1("Zlib License"),
+                      QString::fromLatin1("http://www.zlib.net/zlib_license.html")
                       ));
 #endif
 
@@ -351,7 +397,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the Zstandard library"),
                       QString::fromLatin1("zstd"),
                       QString::fromLatin1("%1.%2.%3").arg(ZSTD_VERSION_MAJOR).arg(ZSTD_VERSION_MINOR).arg(ZSTD_VERSION_RELEASE),
-                      QString::fromLatin1("https://facebook.github.io/zstd/")
+                      QString::fromLatin1("https://facebook.github.io/zstd/"),
+                      QString::fromLatin1("3-clause BSD License"),
+                      QString::fromLatin1("https://github.com/facebook/zstd/blob/dev/LICENSE")
                       ));
 #endif
 
@@ -360,7 +408,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses part of the XZ Utils"),
                       QString::fromLatin1("xz"),
                       QString::fromLatin1(lzma_version_string()),
-                      QString::fromLatin1("https://tukaani.org/xz/")
+                      QString::fromLatin1("https://tukaani.org/xz/"),
+                      QString::fromLatin1("Public Domain"),
+                      QString::fromLatin1("https://git.tukaani.org/?p=xz.git;a=blob;f=COPYING")
                       ));
 #endif
 
@@ -369,7 +419,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the Expat, a C library for parsing XML"),
                       QString::fromLatin1("libexpat"),
                       QString::fromLatin1("%1.%2.%3").arg(XML_MAJOR_VERSION).arg(XML_MINOR_VERSION).arg(XML_MICRO_VERSION),
-                      QString::fromLatin1("https://libexpat.github.io/")
+                      QString::fromLatin1("https://libexpat.github.io/"),
+                      QString::fromLatin1("MIT License"),
+                      QString::fromLatin1("https://github.com/libexpat/libexpat/blob/master/expat/COPYING")
                       ));
 #endif
 
@@ -378,7 +430,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the FreeType library"),
                       QString::fromLatin1("freetype"),
                       QString::fromLatin1("%1.%2.%3").arg(FREETYPE_MAJOR).arg(FREETYPE_MINOR).arg(FREETYPE_PATCH),
-                      QString::fromLatin1("https://freetype.org/")
+                      QString::fromLatin1("https://freetype.org/"),
+                      QString::fromLatin1("FreeType License or GNU GPL v2"),
+                      QString::fromLatin1("https://www.freetype.org/license.html")
                       ));
 #endif
 
@@ -387,7 +441,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the libde265 library"),
                       QString::fromLatin1("libde265"),
                       QString::fromLatin1(LIBDE265_VERSION),
-                      QString::fromLatin1("https://www.libde265.org/")
+                      QString::fromLatin1("https://www.libde265.org/"),
+                      QString::fromLatin1("GNU LGPL v3"),
+                      QString::fromLatin1("https://github.com/strukturag/libde265/blob/master/COPYING")
                       ));
 #endif
 
@@ -396,7 +452,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses part of the Qt Extended library"),
                       QString::fromLatin1("qt-extended"),
                       QString::fromLatin1("4.4.3"),
-                      QString::fromLatin1("https://sourceforge.net/projects/qpe/files/QPE/qtopia/")
+                      QString::fromLatin1("https://sourceforge.net/projects/qpe/files/QPE/qtopia/"),
+                      QString::fromLatin1("GNU GPL v2"),
+                      QString::fromLatin1("https://www.gnu.org/licenses/old-licenses/gpl-2.0.html")
                       ));
 #endif
 
@@ -405,7 +463,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the additional Image Format plugins for Qt"),
                       QString::fromLatin1("qtimageformats"),
                       QString(),
-                      QString::fromLatin1("https://github.com/qt/qtimageformats")
+                      QString::fromLatin1("https://github.com/qt/qtimageformats"),
+                      QString::fromLatin1("GNU GPL v2 or GNU LGPL v3 or Commercial"),
+                      QString::fromLatin1("https://www.qt.io/licensing/")
                       ));
 #endif
 
@@ -414,7 +474,9 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses part of the STB library"),
                       QString::fromLatin1("stb"),
                       QString(),
-                      QString::fromLatin1("https://github.com/nothings/stb")
+                      QString::fromLatin1("https://github.com/nothings/stb"),
+                      QString::fromLatin1("Public Domain or MIT License"),
+                      QString::fromLatin1("https://github.com/nothings/stb/blob/master/README.md")
                       ));
 #endif
 

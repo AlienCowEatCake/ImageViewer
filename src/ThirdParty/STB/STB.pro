@@ -1,5 +1,5 @@
 # URL: https://github.com/nothings/stb
-# License: public domain or MIT
+# License: Public Domain or MIT License - https://github.com/nothings/stb/blob/master/README.md
 
 TEMPLATE = lib
 CONFIG += staticlib

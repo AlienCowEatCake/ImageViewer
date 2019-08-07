@@ -1,5 +1,5 @@
 # URL: http://www.littlecms.com/
-# License:  MIT License
+# License: MIT License - https://opensource.org/licenses/mit-license
 
 TEMPLATE = lib
 CONFIG += staticlib

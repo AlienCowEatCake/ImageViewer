@@ -1,5 +1,5 @@
 # URL: https://www.ece.uvic.ca/~frodo/jasper/ + https://github.com/mdadams/jasper
-# License: https://www.ece.uvic.ca/~frodo/jasper/LICENSE
+# License: JasPer License v2.0 - https://www.ece.uvic.ca/~frodo/jasper/LICENSE
 
 TEMPLATE = lib
 CONFIG += staticlib

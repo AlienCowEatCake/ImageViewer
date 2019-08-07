@@ -1,5 +1,5 @@
 # URL: https://github.com/strukturag/libheif
-# License: GNU LGPL v3
+# License: GNU LGPL v3 - https://github.com/strukturag/libheif/blob/master/COPYING
 
 include($${PWD}/../../Features.pri)
 

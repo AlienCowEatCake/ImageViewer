@@ -1,5 +1,5 @@
 # URL: https://github.com/libexpat/libexpat
-# License: https://github.com/libexpat/libexpat/blob/master/expat/COPYING
+# License: MIT License - https://github.com/libexpat/libexpat/blob/master/expat/COPYING
 
 TEMPLATE = lib
 CONFIG += staticlib

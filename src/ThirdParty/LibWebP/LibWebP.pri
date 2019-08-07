@@ -1,5 +1,5 @@
 # URL: https://www.webmproject.org/code/#webp-repositories + https://github.com/webmproject/libwebp/
-# License: ???
+# License: 3-clause BSD License - https://chromium.googlesource.com/webm/libwebp/+/refs/heads/master/COPYING
 
 include($${PWD}/../../Features.pri)
 

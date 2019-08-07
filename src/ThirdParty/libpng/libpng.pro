@@ -1,5 +1,5 @@
 # URL: http://www.libpng.org/pub/png/libpng.html + https://sourceforge.net/projects/libpng-apng/
-# License: http://www.libpng.org/pub/png/src/libpng-LICENSE.txt
+# License: Zlib License - http://www.libpng.org/pub/png/src/libpng-LICENSE.txt
 
 TEMPLATE = lib
 CONFIG += staticlib

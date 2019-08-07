@@ -1,5 +1,5 @@
 # URL: http://www.zlib.net/
-# License: http://www.zlib.net/zlib_license.html
+# License: Zlib License - http://www.zlib.net/zlib_license.html
 
 TEMPLATE = lib
 CONFIG += staticlib

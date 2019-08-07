@@ -1,5 +1,5 @@
 # URL: https://github.com/strukturag/libde265
-# License: GNU LGPL v3
+# License: GNU LGPL v3 - https://github.com/strukturag/libde265/blob/master/COPYING
 
 TEMPLATE = lib
 CONFIG += staticlib

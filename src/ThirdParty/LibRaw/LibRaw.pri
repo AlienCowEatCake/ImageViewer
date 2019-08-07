@@ -1,5 +1,5 @@
 # URL: https://www.libraw.org/download
-# License: LGPL 2.1
+# License: GNU LGPL v2.1 or CDDL v1.0 - https://github.com/LibRaw/LibRaw/blob/master/COPYRIGHT
 
 include($${PWD}/../../Features.pri)
 

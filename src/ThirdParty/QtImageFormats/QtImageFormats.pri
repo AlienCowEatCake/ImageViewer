@@ -1,4 +1,5 @@
 # URL: https://github.com/qt/qtimageformats
+# License: GNU GPL v2 or GNU LGPL v3 or Commercial - https://www.qt.io/licensing/
 
 include($${PWD}/../../Features.pri)
 

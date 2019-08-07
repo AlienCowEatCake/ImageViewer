@@ -1,5 +1,5 @@
 # URL: https://sourceforge.net/projects/giflib/files/
-# License: ???
+# License: MIT License - https://sourceforge.net/p/giflib/code/ci/master/tree/COPYING
 
 include($${PWD}/../../Features.pri)
 

@@ -1,5 +1,5 @@
 # URL: http://wvware.sourceforge.net/libwmf.html
-# License: ???
+# License: GNU GPL v2 - https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 TEMPLATE = lib
 CONFIG += staticlib

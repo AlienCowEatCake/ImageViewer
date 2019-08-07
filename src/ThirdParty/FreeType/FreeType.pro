@@ -1,5 +1,5 @@
 # URL: https://www.freetype.org/
-# License: FreeType License / GNU GPL v2
+# License: FreeType License or GNU GPL v2 - https://www.freetype.org/license.html
 
 TEMPLATE = lib
 CONFIG += staticlib
