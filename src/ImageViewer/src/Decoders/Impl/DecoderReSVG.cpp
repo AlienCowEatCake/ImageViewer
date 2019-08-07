@@ -57,6 +57,9 @@ typedef struct resvg_handle resvg_handle;
 typedef struct resvg_render_tree resvg_render_tree;
 typedef int resvg_error;
 typedef int resvg_fit_to_type;
+typedef int resvg_shape_rendering;
+typedef int resvg_text_rendering;
+typedef int resvg_image_rendering;
 
 struct resvg_color
 {
@@ -71,7 +74,7 @@ struct resvg_fit_to
     float value;
 };
 
-struct resvg_options
+struct resvg_options_v020
 {
     const char *path;
     double dpi;
@@ -79,6 +82,45 @@ struct resvg_options
     bool draw_background;
     resvg_color background;
     bool keep_named_groups;
+};
+const size_t RESVG_OPTIONS_SIZE_V020 = offsetof(resvg_options_v020, keep_named_groups) + sizeof(resvg_options_v020::keep_named_groups);
+
+struct resvg_options_v040
+{
+    const char *path;
+    double dpi;
+    const char *font_family;
+    double font_size;
+    const char *languages;
+    resvg_fit_to fit_to;
+    bool draw_background;
+    resvg_color background;
+    bool keep_named_groups;
+};
+const size_t RESVG_OPTIONS_SIZE_V040 = offsetof(resvg_options_v040, keep_named_groups) + sizeof(resvg_options_v040::keep_named_groups);
+
+struct resvg_options_v070
+{
+    const char *path;
+    double dpi;
+    const char *font_family;
+    double font_size;
+    const char *languages;
+    resvg_shape_rendering shape_rendering;
+    resvg_text_rendering text_rendering;
+    resvg_image_rendering image_rendering;
+    resvg_fit_to fit_to;
+    bool draw_background;
+    resvg_color background;
+    bool keep_named_groups;
+};
+const size_t RESVG_OPTIONS_SIZE_V070 = offsetof(resvg_options_v070, keep_named_groups) + sizeof(resvg_options_v070::keep_named_groups);
+
+union resvg_options
+{
+    resvg_options_v020 opt_v020;
+    resvg_options_v040 opt_v040;
+    resvg_options_v070 opt_v070;
 };
 
 struct resvg_rect
@@ -115,8 +157,8 @@ public:
         func_t func = (func_t)m_resvg_init_options;
         if(func)
             return func(opt);
-        memset(opt, 0, sizeof(resvg_options));
-        opt->dpi = 96;
+        memset(opt, 0, RESVG_OPTIONS_SIZE_V020);
+        opt->opt_v020.dpi = 96;
     }
 
     int resvg_parse_tree_from_data(const char *data, const size_t len, const resvg_options *opt, resvg_render_tree **tree)
@@ -296,8 +338,44 @@ public:
         , m_minScaleFactor(1)
         , m_maxScaleFactor(1)
     {
-        resvg_init_options(&m_opt);
-        m_opt.path = m_filePath8bit.constData();
+        const quint8 flagBit = 0xff;
+        m_optData.resize(sizeof(resvg_options) * 3);
+        m_optData.fill(*reinterpret_cast<const char*>(&flagBit), m_optData.size());
+        m_opt = reinterpret_cast<resvg_options*>(m_optData.data());
+        resvg_init_options(m_opt);
+        int effectiveOptSize = m_optData.size();
+        while(effectiveOptSize > 0)
+        {
+            if(m_optData[effectiveOptSize - 1] != *reinterpret_cast<const char*>(&flagBit))
+                break;
+            else
+                effectiveOptSize--;
+        }
+
+        switch(effectiveOptSize)
+        {
+        case RESVG_OPTIONS_SIZE_V020:
+            m_opt->opt_v020.path = m_filePath8bit.constData();
+            qDebug() << "Detected v0.2.0 ABI for resvg_options";
+            break;
+        case RESVG_OPTIONS_SIZE_V040:
+            m_opt->opt_v040.path = m_filePath8bit.constData();
+            m_opt->opt_v040.font_family = "Times New Roman";
+            m_opt->opt_v040.languages = "";
+            qDebug() << "Detected v0.4.0 ABI for resvg_options";
+            break;
+        case RESVG_OPTIONS_SIZE_V070:
+            m_opt->opt_v070.path = m_filePath8bit.constData();
+            m_opt->opt_v070.font_family = "Times New Roman";
+            m_opt->opt_v070.languages = "";
+            qDebug() << "Detected v0.7.0 ABI for resvg_options";
+            break;
+        default:
+            qWarning() << "Can't detect ABI for resvg_options";
+            qWarning() << "Got:" << effectiveOptSize;
+            qWarning() << "Expected:" << RESVG_OPTIONS_SIZE_V020 << RESVG_OPTIONS_SIZE_V040 << RESVG_OPTIONS_SIZE_V070;
+            return;
+        }
 
         QByteArray inBuffer;
         QFile inFile(filePath);
@@ -317,7 +395,7 @@ public:
         const char *bufferData = reinterpret_cast<const char*>(inBuffer.constData());
         const size_t bufferSize = static_cast<size_t>(inBuffer.size());
 
-        const int err = resvg_parse_tree_from_data(bufferData, bufferSize, &m_opt, &m_tree);
+        const int err = resvg_parse_tree_from_data(bufferData, bufferSize, m_opt, &m_tree);
         if(err)
         {
             qWarning() << "Can't parse file, error =" << err;
@@ -386,7 +464,7 @@ public:
         resvg_size imgSize;
         imgSize.width = static_cast<quint32>(m_viewBox.width);
         imgSize.height = static_cast<quint32>(m_viewBox.height);
-        resvg_qt_render_to_canvas(m_tree, &m_opt, imgSize, &painter);
+        resvg_qt_render_to_canvas(m_tree, m_opt, imgSize, &painter);
         painter.end();
         return image;
     }
@@ -405,7 +483,8 @@ private:
     bool m_isValid;
     QByteArray m_filePath8bit;
     resvg_render_tree *m_tree;
-    resvg_options m_opt;
+    QByteArray m_optData;
+    resvg_options *m_opt;
     resvg_rect m_viewBox;
     int m_width;
     int m_height;
