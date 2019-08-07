@@ -79,6 +79,7 @@ QString compilerDescriptionInt()
 #elif defined(_MSC_VER)
     switch (_MSC_VER)
     {
+    // https://dev.to/yumetodo/list-of-mscver-and-mscfullver-8nd
     case 1100: return QString::fromLatin1("MSVC++ 5.0 (Visual Studio 97 version 5.0)");
     case 1200: return QString::fromLatin1("MSVC++ 6.0 (Visual Studio 6.0)");
     case 1300: return QString::fromLatin1("MSVC++ 7.0 (Visual Studio .NET 2002 version 7.0)");
@@ -95,6 +96,9 @@ QString compilerDescriptionInt()
     case 1913: return QString::fromLatin1("MSVC++ 14.13 (Visual Studio 2017 version 15.6)");
     case 1914: return QString::fromLatin1("MSVC++ 14.14 (Visual Studio 2017 version 15.7)");
     case 1915: return QString::fromLatin1("MSVC++ 14.15 (Visual Studio 2017 version 15.8)");
+    case 1916: return QString::fromLatin1("MSVC++ 14.16 (Visual Studio 2017 version 15.9)");
+    case 1920: return QString::fromLatin1("MSVC++ 14.20 (Visual Studio 2019 version 16.0)");
+    case 1921: return QString::fromLatin1("MSVC++ 14.21 (Visual Studio 2019 version 16.1)");
     default:   return QString::fromLatin1("MSVC++ (_MSC_VER=%1)").arg(_MSC_VER);
     }
 #elif defined (Q_CC_SYM)
