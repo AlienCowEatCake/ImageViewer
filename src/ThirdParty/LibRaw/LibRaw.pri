@@ -13,7 +13,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libraw {
 
-        THIRDPARTY_LIBRAW_PATH = $${PWD}/LibRaw-0.19.2
+        THIRDPARTY_LIBRAW_PATH = $${PWD}/LibRaw-0.19.4
 
         INCLUDEPATH += $${THIRDPARTY_LIBRAW_PATH}
         DEPENDPATH += $${THIRDPARTY_LIBRAW_PATH}
