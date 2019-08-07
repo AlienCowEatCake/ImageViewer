@@ -10,7 +10,7 @@ TARGET = tp_LibWebP
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.0.1
+THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.0.3
 
 include(../CommonSettings.pri)
 
@@ -136,6 +136,7 @@ HEADERS += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/mips_macro.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/msa_macro.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/neon.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/quant.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/backward_references_enc.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/cost_enc.h \
@@ -178,6 +179,7 @@ integrity {
 equals(QT_ARCH, arm)|equals(QT_ARCH, arm64) {
     SOURCES_FOR_NEON += \
         $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_neon.c \
+        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_neon.c \
         $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_neon.c \
         $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_neon.c \
         $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/filters_neon.c \
