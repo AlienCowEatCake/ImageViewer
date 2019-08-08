@@ -23,11 +23,19 @@
 #    disable_cxx11
 #    enable_cxx11
 !disable_cxx11 {
-    win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
-        CONFIG += test_cxx11_incompatible_msvc
-    }
-    *msvc* : !test_cxx11_incompatible_msvc {
-        CONFIG += test_cxx11_compatible_msvc
+    *msvc* {
+        isEmpty(QMAKE_MSC_VER) {
+            win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
+                CONFIG += test_cxx11_incompatible_msvc
+            }
+        } else {
+            !greaterThan(QMAKE_MSC_VER, 1900) { # MSVC2015
+                CONFIG += test_cxx11_incompatible_msvc
+            }
+        }
+        !test_cxx11_incompatible_msvc {
+            CONFIG += test_cxx11_compatible_msvc
+        }
     }
     equals(QT_MAJOR_VERSION, 5) : greaterThan(QT_MINOR_VERSION, 6) {
         CONFIG += test_cxx11_compatible_qt
@@ -65,8 +73,16 @@
 # XZUtils options:
 #    disable_xzutils
 #    system_xzutils
-win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-    CONFIG += disable_xzutils # FIXME: C99
+*msvc* {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+            CONFIG += disable_xzutils # FIXME: C99
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+            CONFIG += disable_xzutils # FIXME: C99
+        }
+    }
 }
 
 # libexpat options:
@@ -82,15 +98,31 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
 # libexif options:
 #    disable_libexif
 #    system_libexif
-win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
-    CONFIG += disable_libexif # FIXME: C99
+*msvc* {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
+            CONFIG += disable_libexif # FIXME: C99
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1900) { # MSVC2015
+            CONFIG += disable_libexif # FIXME: C99
+        }
+    }
 }
 
 # exiv2 options:
 #    disable_exiv2
 #    system_exiv2
-win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 {
-    CONFIG += disable_exiv2 # FIXME: C99
+*msvc* {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 {
+            CONFIG += disable_exiv2 # FIXME: C99
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1600) { # MSVC2010
+            CONFIG += disable_exiv2 # FIXME: C99
+        }
+    }
 }
 
 # LibJPEG options:
@@ -101,8 +133,16 @@ win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 |
 # LibJasPer options:
 #    disable_libjasper
 #    system_libjasper
-win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 {
-    CONFIG += disable_libjasper # FIXME: C99
+*msvc* {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 {
+            CONFIG += disable_libjasper # FIXME: C99
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1600) { # MSVC2010
+            CONFIG += disable_libjasper # FIXME: C99
+        }
+    }
 }
 
 # libmng options:
@@ -137,8 +177,16 @@ disable_zlib : !system_libpng {
 # libbpg options:
 #    disable_libbpg
 #    system_libbpg
-win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-    CONFIG += disable_libbpg # FIXME: C99
+*msvc* {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+            CONFIG += disable_libbpg # FIXME: C99
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+            CONFIG += disable_libbpg # FIXME: C99
+        }
+    }
 }
 
 # FreeType options:
@@ -154,8 +202,16 @@ disable_zlib : !system_freetype {
 # libwmf options:
 #    disable_libwmf
 #    system_libwmf
-win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 {
-    CONFIG += disable_libwmf # FIXME: C99
+*msvc* {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 {
+            CONFIG += disable_libwmf # FIXME: C99
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1600) { # MSVC2010
+            CONFIG += disable_libwmf # FIXME: C99
+        }
+    }
 }
 disable_zlib : !system_libwmf {
     CONFIG += disable_libwmf
@@ -178,8 +234,16 @@ disable_libjpeg : !system_libwmf {
 # GIFLIB options:
 #    disable_giflib
 #    system_giflib
-win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-    CONFIG += disable_giflib # FIXME: C99
+*msvc* {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+            CONFIG += disable_giflib # FIXME: C99
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+            CONFIG += disable_giflib # FIXME: C99
+        }
+    }
 }
 
 # LibRaw options:
