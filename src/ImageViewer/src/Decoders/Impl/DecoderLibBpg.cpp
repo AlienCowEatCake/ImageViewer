@@ -41,6 +41,7 @@ extern "C" {
 #include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Utils/CmsUtils.h"
+#include "Internal/Utils/MappedBuffer.h"
 
 namespace {
 
@@ -62,21 +63,16 @@ BpgAnimationProvider::BpgAnimationProvider()
 
 PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &filePath)
 {
-    QFile inFile(filePath);
-    if(!inFile.open(QIODevice::ReadOnly))
-    {
-        qWarning() << "Can't open" << filePath;
+    const MappedBuffer inBuffer(filePath);
+    if(!inBuffer.isValid())
         return false;
-    }
-    QByteArray inBuffer = inFile.readAll();
-    inFile.close();
 
     BPGDecoderContext *decoderContext;
     BPGImageInfo imageInfo;
 
     decoderContext = bpg_decoder_open();
     bpg_decoder_keep_extension_data(decoderContext, 1);
-    if(bpg_decoder_decode(decoderContext, reinterpret_cast<const uint8_t*>(inBuffer.constData()), inBuffer.size()) < 0)
+    if(bpg_decoder_decode(decoderContext, inBuffer.dataAs<const uint8_t*>(), inBuffer.sizeAs<int>()) < 0)
     {
         qWarning() << "Can't bpg_decoder_decode for" << filePath;
         bpg_decoder_close(decoderContext);

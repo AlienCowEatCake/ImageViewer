@@ -38,6 +38,7 @@
 #include "Internal/ImageMetaData.h"
 #include "Internal/PayloadWithMetaData.h"
 #include "Internal/Utils/CmsUtils.h"
+#include "Internal/Utils/MappedBuffer.h"
 
 namespace
 {
@@ -188,18 +189,13 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
     JSAMPARRAY buffer;    // Output row buffer
     JDIMENSION rowStride; // physical row width in output buffer
 
-    QFile inFile(filename);
-
     // In this example we want to open the input file before doing anything else,
     // so that the setjmp() error recovery below can assume the file is open.
     // VERY IMPORTANT: use "b" option to fopen() if you are on a machine that
     // requires it in order to read binary files.
-    if(!inFile.open(QIODevice::ReadOnly))
-    {
-        qWarning() << "Can't open" << filename;
+    const MappedBuffer inBuffer(filename);
+    if(!inBuffer.isValid())
         return QImage();
-    }
-    const QByteArray inBuffer = inFile.readAll();
 
     // Construct any C++ objects before setjmp!
     ICCProfile *iccProfile = Q_NULLPTR;
@@ -217,7 +213,6 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
         // If we get here, the JPEG code has signaled an error.
         // We need to clean up the JPEG object, close the input file, and return.
         jpeg_destroy_decompress(&cinfo);
-        inFile.close();
         if(iccProfile)
             delete iccProfile;
         return QImage();
@@ -227,7 +222,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 
     // Step 2: specify data source (eg, a file)
 
-    jpeg_mem_src(&cinfo, reinterpret_cast<const unsigned char*>(inBuffer.data()), static_cast<unsigned long>(inBuffer.size()));
+    jpeg_mem_src(&cinfo, inBuffer.dataAs<const unsigned char*>(), inBuffer.sizeAs<unsigned long>());
 
     // Step 3: read file parameters with jpeg_read_header()
 
@@ -358,7 +353,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
     // Here we postpone it until after no more JPEG errors are possible,
     // so as to simplify the setjmp error logic above.  (Actually, I don't
     // think that jpeg_destroy can do an error exit, but why assume anything...)
-    inFile.close();
+
 
     // At this point you may want to check to see whether any corrupt-data
     // warnings occurred (test whether jerr.pub.num_warnings is nonzero).

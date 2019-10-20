@@ -42,6 +42,7 @@ typedef void* QFunctionPointer;
 #include "Internal/ImageData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
 #include "Internal/Utils/LibraryUtils.h"
+#include "Internal/Utils/MappedBuffer.h"
 
 namespace
 {
@@ -377,25 +378,11 @@ public:
             return;
         }
 
-        QByteArray inBuffer;
-        QFile inFile(filePath);
-        if(!inFile.open(QIODevice::ReadOnly))
-        {
-            qWarning() << "Can't open" << filePath;
+        MappedBuffer inBuffer(filePath);
+        if(!inBuffer.isValid())
             return;
-        }
-        inBuffer = inFile.readAll();
 
-        if(inBuffer.isEmpty())
-        {
-            qWarning() << "Can't read" << filePath;
-            return;
-        }
-
-        const char *bufferData = reinterpret_cast<const char*>(inBuffer.constData());
-        const size_t bufferSize = static_cast<size_t>(inBuffer.size());
-
-        const int err = resvg_parse_tree_from_data(bufferData, bufferSize, m_opt, &m_tree);
+        const int err = resvg_parse_tree_from_data(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<size_t>(), m_opt, &m_tree);
         if(err)
         {
             qWarning() << "Can't parse file, error =" << err;

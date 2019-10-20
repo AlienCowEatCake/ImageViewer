@@ -38,6 +38,7 @@
 #include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Animation/FramesCompositor.h"
+#include "Internal/Utils/MappedBuffer.h"
 
 namespace
 {
@@ -64,17 +65,12 @@ WebPAnimationProvider::WebPAnimationProvider(const QString &filePath)
 
 bool WebPAnimationProvider::readWebP(const QString &filePath)
 {
-    QFile inFile(filePath);
-    if(!inFile.open(QIODevice::ReadOnly))
-    {
-        qWarning() << "Can't open" << filePath;
+    const MappedBuffer inBuffer(filePath);
+    if(!inBuffer.isValid())
         return false;
-    }
-    QByteArray inBuffer = inFile.readAll();
-    inFile.close();
 
     WebPBitstreamFeatures features;
-    VP8StatusCode status = WebPGetFeatures(reinterpret_cast<const uint8_t*>(inBuffer.constData()), static_cast<std::size_t>(inBuffer.size()), &features);
+    VP8StatusCode status = WebPGetFeatures(inBuffer.dataAs<const uint8_t*>(), inBuffer.sizeAs<std::size_t>(), &features);
     if(status != VP8_STATUS_OK)
     {
         qWarning() << "Can't WebPGetFeatures for" << filePath;
@@ -98,8 +94,8 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
             return false;
         }
 
-        const uint8_t *data = reinterpret_cast<const uint8_t*>(inBuffer.constData());
-        const std::size_t dataSize = static_cast<std::size_t>(inBuffer.size());
+        const uint8_t *data = inBuffer.dataAs<const uint8_t*>();
+        const std::size_t dataSize = inBuffer.sizeAs<std::size_t>();
         uint8_t *output = reinterpret_cast<uint8_t*>(frame.bits());
         const std::size_t size = static_cast<std::size_t>(frame.bytesPerLine()) * static_cast<std::size_t>(frame.height());
         const int stride = frame.bytesPerLine();
@@ -118,8 +114,8 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
     else
     {
         WebPData webpData;
-        webpData.bytes = reinterpret_cast<const uint8_t*>(inBuffer.constData());
-        webpData.size = static_cast<std::size_t>(inBuffer.size());
+        webpData.bytes = inBuffer.dataAs<const uint8_t*>();
+        webpData.size = inBuffer.sizeAs<std::size_t>();
         WebPDemuxer *demuxer = WebPDemux(&webpData);
         if(!demuxer)
         {

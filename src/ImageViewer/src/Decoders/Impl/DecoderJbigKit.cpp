@@ -38,27 +38,22 @@ extern "C" {
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
+#include "Internal/Utils/MappedBuffer.h"
 
 namespace
 {
 
 QImage readJbigFile(const QString &filePath)
 {
-    QFile inFile(filePath);
-    if(!inFile.open(QIODevice::ReadOnly))
-    {
-        qWarning() << "Can't open" << filePath;
+    const MappedBuffer inBuffer(filePath);
+    if(!inBuffer.isValid())
         return QImage();
-    }
-    QByteArray inBuffer = inFile.readAll();
-    unsigned char *bufferData = reinterpret_cast<unsigned char*>(inBuffer.data());
-    const std::size_t bufferSize = static_cast<std::size_t>(inBuffer.size());
 
     jbg_dec_state decoder;
     jbg_dec_init(&decoder);
-    jbg_newlen(bufferData, bufferSize);
+    jbg_newlen(inBuffer.dataAs<unsigned char*>(), inBuffer.sizeAs<std::size_t>());
 
-    int decodeStatus = jbg_dec_in(&decoder, bufferData, bufferSize, Q_NULLPTR);
+    int decodeStatus = jbg_dec_in(&decoder, inBuffer.dataAs<unsigned char*>(), inBuffer.sizeAs<std::size_t>(), Q_NULLPTR);
     if(decodeStatus != JBG_EOK)
     {
         qWarning() << QString::fromLatin1("Error (%1) decoding: %2")

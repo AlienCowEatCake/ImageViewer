@@ -43,6 +43,7 @@
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
 #include "Internal/Scaling/AbstractProgressiveImageProvider.h"
+#include "Internal/Utils/MappedBuffer.h"
 
 namespace
 {
@@ -164,17 +165,12 @@ private:
         try
         {
             const QByteArray filePathLocal8Bit = filePath.toLocal8Bit();
-            QByteArray inBuffer;
             if(QString::fromLocal8Bit(filePathLocal8Bit) != filePath || filePath.startsWith(QChar::fromLatin1(':')))
             {
-                QFile inFile(filePath);
-                if(!inFile.open(QIODevice::ReadOnly))
-                {
-                    qWarning() << "Can't open" << filePath;
+                m_mappedBuffer.reset(new MappedBuffer(filePath));
+                if(!m_mappedBuffer->isValid())
                     return false;
-                }
-                inBuffer = inFile.readAll();
-                m_dataStream.reset(new LibRaw_buffer_datastream(inBuffer.data(), static_cast<size_t>(inBuffer.size())));
+                m_dataStream.reset(new LibRaw_buffer_datastream(m_mappedBuffer->dataAs<void*>(), m_mappedBuffer->sizeAs<size_t>()));
             }
             else
             {
@@ -288,6 +284,7 @@ private:
     }
 
 private:
+    QScopedPointer<MappedBuffer> m_mappedBuffer;
     QScopedPointer<LibRaw_abstract_datastream> m_dataStream;
     LibRaw m_rawProcessor;
     bool m_isValid;

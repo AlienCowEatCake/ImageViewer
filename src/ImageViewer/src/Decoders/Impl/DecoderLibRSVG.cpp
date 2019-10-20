@@ -47,9 +47,7 @@ typedef void* QFunctionPointer;
 #include "Internal/ImageData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
 #include "Internal/Utils/LibraryUtils.h"
-#if defined (HAS_ZLIB)
-#include "Internal/Utils/ZLibUtils.h"
-#endif
+#include "Internal/Utils/MappedBuffer.h"
 
 namespace
 {
@@ -477,35 +475,16 @@ public:
         , m_minScaleFactor(1)
         , m_maxScaleFactor(1)
     {
-        QByteArray inBuffer;
+        MappedBuffer inBuffer(filePath);
+        if(!inBuffer.isValid())
+            return;
 #if defined (HAS_ZLIB)
         if(QFileInfo(filePath).suffix().toLower() == QString::fromLatin1("svgz"))
-        {
-            inBuffer = ZLibUtils::InflateFile(filePath);
-        }
-        else
+            inBuffer.doInflate();
 #endif
-        {
-            QFile inFile(filePath);
-            if(!inFile.open(QIODevice::ReadOnly))
-            {
-                qWarning() << "Can't open" << filePath;
-                return;
-            }
-            inBuffer = inFile.readAll();
-        }
-
-        if(inBuffer.isEmpty())
-        {
-            qWarning() << "Can't read" << filePath;
-            return;
-        }
-
-        unsigned char *bufferData = reinterpret_cast<unsigned char*>(inBuffer.data());
-        const size_t bufferSize = static_cast<size_t>(inBuffer.size());
 
         GError *error = Q_NULLPTR;
-        m_rsvg = rsvg_handle_new_from_data(bufferData, bufferSize, &error);
+        m_rsvg = rsvg_handle_new_from_data(inBuffer.dataAs<unsigned char*>(), inBuffer.sizeAs<size_t>(), &error);
         if(!m_rsvg)
         {
             qWarning() << "Error reading SVG:" << ((error && error->message) ? error->message : "Unknown error.");

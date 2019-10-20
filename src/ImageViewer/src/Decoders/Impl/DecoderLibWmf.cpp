@@ -40,7 +40,7 @@
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
-#include "Internal/Utils/ZLibUtils.h"
+#include "Internal/Utils/MappedBuffer.h"
 
 namespace
 {
@@ -86,6 +86,7 @@ class WmfPixmapProvider : public IScaledImageProvider
 public:
     explicit WmfPixmapProvider(const QString &filePath)
         : m_isValid(false)
+        , m_inBuffer(filePath)
         , m_API(Q_NULLPTR)
         , m_ddata(Q_NULLPTR)
         , m_width(0)
@@ -95,29 +96,10 @@ public:
     {
         memset(&m_bbox, 0, sizeof(wmfD_Rect));
 
-        if(QFileInfo(filePath).suffix().toLower() == QString::fromLatin1("wmz"))
-        {
-            m_inBuffer = ZLibUtils::InflateFile(filePath);
-        }
-        else
-        {
-            QFile inFile(filePath);
-            if(!inFile.open(QIODevice::ReadOnly))
-            {
-                qWarning() << "Can't open" << filePath;
-                return;
-            }
-            m_inBuffer = inFile.readAll();
-        }
-
-        if(m_inBuffer.isEmpty())
-        {
-            qWarning() << "Can't read" << filePath;
+        if(!m_inBuffer.isValid())
             return;
-        }
-
-        unsigned char *bufferData = reinterpret_cast<unsigned char*>(m_inBuffer.data());
-        const long bufferSize = static_cast<long>(m_inBuffer.size());
+        if(QFileInfo(filePath).suffix().toLower() == QString::fromLatin1("wmz"))
+            m_inBuffer.doInflate();
 
         wmfAPI_Options m_options;
         memset(&m_options, 0, sizeof(wmfAPI_Options));
@@ -137,7 +119,7 @@ public:
 
         m_ddata = WMF_GD_GetData(m_API);
 
-        error = wmf_mem_open(m_API, bufferData, bufferSize);
+        error = wmf_mem_open(m_API, m_inBuffer.dataAs<unsigned char*>(), m_inBuffer.sizeAs<long>());
         if(error != wmf_E_None)
         {
             qWarning() << "Couldn't create reader API:" << wmfErrorToString(error);
@@ -249,7 +231,7 @@ public:
 
 private:
     bool m_isValid;
-    QByteArray m_inBuffer;
+    MappedBuffer m_inBuffer;
     wmfAPI *m_API;
     wmf_gd_t *m_ddata;
     wmfD_Rect m_bbox;

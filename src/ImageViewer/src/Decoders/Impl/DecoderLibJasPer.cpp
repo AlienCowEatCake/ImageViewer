@@ -36,6 +36,7 @@
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
+#include "Internal/Utils/MappedBuffer.h"
 
 namespace
 {
@@ -176,13 +177,9 @@ QImage renderGrayImage(jas_image_t *jasImage)
 
 QImage readJp2File(const QString &filename)
 {
-    QFile inFile(filename);
-    if(!inFile.open(QIODevice::ReadOnly))
-    {
-        qWarning() << "Can't open" << filename;
+    const MappedBuffer inBuffer(filename);
+    if(!inBuffer.isValid())
         return QImage();
-    }
-    QByteArray inBuffer = inFile.readAll();
 
     if(jas_init())
     {
@@ -190,7 +187,7 @@ QImage readJp2File(const QString &filename)
         return QImage();
     }
 
-    jas_stream_t *stream = jas_stream_memopen(inBuffer.data(), inBuffer.size());
+    jas_stream_t *stream = jas_stream_memopen(inBuffer.dataAs<char*>(), inBuffer.sizeAs<int>());
     int format = jas_image_getfmt(stream);
     if(format < 0)
     {
