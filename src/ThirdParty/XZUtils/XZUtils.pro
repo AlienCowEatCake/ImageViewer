@@ -16,7 +16,7 @@ THIRDPARTY_XZUTILS_CONFIG_PATH = $${PWD}/config
 include(../CommonSettings.pri)
 
 *g++*|*clang* {
-    QMAKE_CFLAGS += -std=c99
+    QMAKE_CFLAGS += -std=gnu99
 }
 
 INCLUDEPATH = \
