@@ -2,11 +2,11 @@
 PROJECT=ImageViewer
 BUILDDIR=build_osx_qt5.12_clang64_target10.10
 APPNAME="Image Viewer"
-DMGNAME="${PROJECT}_qt5.6_clang64_target10.10"
+DMGNAME="${PROJECT}_qt5.12_clang64_target10.10"
 OUT_PATH="src/${PROJECT}"
 MAC_SDK="$(xcodebuild -showsdks | grep '\-sdk macosx' | tail -1 | sed 's|.*-sdk ||')"
 
-QT_PATH="/opt/Qt/5.12.4/clang_64_target10.10"
+QT_PATH="/opt/Qt/5.12.5/clang_64_target10.10"
 QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
