@@ -195,6 +195,9 @@ QString GetSystemDescription()
     case 1014:
         result.append(QString::fromLatin1(" \"Mojave\""));
         break;
+    case 1015:
+        result.append(QString::fromLatin1(" \"Catalina\""));
+        break;
     default:
         break;
     }
