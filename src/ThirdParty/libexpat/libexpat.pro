@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.2.7
+THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.2.9
 
 include(../CommonSettings.pri)
 include(../libpng/libpng.pri)
@@ -21,7 +21,6 @@ INCLUDEPATH = $${THIRDPARTY_LIBEXPAT_PATH}/lib $${INCLUDEPATH}
 DEFINES += HAVE_MEMMOVE XML_POOR_ENTROPY XML_STATIC
 
 SOURCES += \
-    $${THIRDPARTY_LIBEXPAT_PATH}/lib/loadlibrary.c \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/xmlparse.c \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/xmlrole.c \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/xmltok.c \
