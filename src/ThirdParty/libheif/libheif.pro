@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.4.0
+THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.5.1
 THIRDPARTY_LIBHEIF_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -28,6 +28,7 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/error.cc \
 \ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/file_fuzzer.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_colorconversion.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_context.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_decoder_libde265.cc \
 \ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_encoder_x265.cc \
@@ -42,6 +43,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/box.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/error.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_api_structs.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_colorconversion.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_context.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_cxx.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_decoder_libde265.h \
