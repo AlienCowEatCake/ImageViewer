@@ -9,10 +9,10 @@ include($${PWD}/../../Features.pri)
 
     !system_giflib {
 
-        THIRDPARTY_GIFLIB_PATH = $${PWD}/giflib-5.1.4
+        THIRDPARTY_GIFLIB_PATH = $${PWD}/giflib-5.2.1
 
-        INCLUDEPATH += $${THIRDPARTY_GIFLIB_PATH}/lib
-        DEPENDPATH += $${THIRDPARTY_GIFLIB_PATH}/lib
+        INCLUDEPATH += $${THIRDPARTY_GIFLIB_PATH}
+        DEPENDPATH += $${THIRDPARTY_GIFLIB_PATH}
 
         OUT_LIB_TARGET = tp_giflib
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/giflib
