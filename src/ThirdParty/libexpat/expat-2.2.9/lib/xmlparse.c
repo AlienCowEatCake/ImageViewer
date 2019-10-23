@@ -734,7 +734,7 @@ writeRandomBytes_arc4random(void *target, size_t count) {
 
 #endif /* defined(HAVE_ARC4RANDOM) && ! defined(HAVE_ARC4RANDOM_BUF) */
 
-#ifdef _WIN32
+#if defined(_WIN32) && ! defined(XML_POOR_ENTROPY)
 
 /* Obtain entropy on Windows using the rand_s() function which
  * generates cryptographically secure random numbers.  Internally it
@@ -813,7 +813,7 @@ generate_hash_secret_salt(XML_Parser parser) {
   return ENTROPY_DEBUG("arc4random", entropy);
 #else
   /* Try high quality providers first .. */
-#  ifdef _WIN32
+#  if defined(_WIN32) && ! defined(XML_POOR_ENTROPY)
   if (writeRandomBytes_rand_s((void *)&entropy, sizeof(entropy))) {
     return ENTROPY_DEBUG("rand_s", entropy);
   }
