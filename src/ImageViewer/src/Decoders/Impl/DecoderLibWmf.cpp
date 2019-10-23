@@ -25,6 +25,14 @@
 #include <libwmf/api.h>
 #include <libwmf/gd.h>
 
+/// @note U8/U16 conflicts with qstring.h from Qt 5.14.0-beta1
+#if defined (U8)
+#undef U8
+#endif
+#if defined (U16)
+#undef U16
+#endif
+
 #include <QFileInfo>
 #include <QImage>
 #include <QFile>
