@@ -19,11 +19,12 @@ make
 strip --strip-all "${APP_PATH}/${PROJECT}"
 
 rm -rf "AppDir"
-mkdir -p "AppDir/usr/bin" "AppDir/usr/share/applications" "AppDir/usr/share/icons/hicolor/scalable/apps"
+mkdir -p "AppDir/usr/bin" "AppDir/usr/lib" "AppDir/usr/share/applications" "AppDir/usr/share/icons/hicolor/scalable/apps"
 cp -a "${APP_PATH}/${PROJECT}" "AppDir/usr/bin/"
 cp -a "../${DESKTOP_PATH}" "AppDir/usr/share/applications/${PROJECT}.desktop"
 cp -a "../${ICON_PATH}" "AppDir/usr/share/icons/hicolor/scalable/apps/${PROJECT}.svg"
-"${CMD_DEPLOY}" "AppDir/usr/share/applications/${PROJECT}.desktop" -appimage -qmake="${CMD_QMAKE}"
+find /usr/local/lib -name 'libfreetype.so*' -exec cp -a \{\} "AppDir/usr/lib/" \;
+"${CMD_DEPLOY}" "AppDir/usr/share/applications/${PROJECT}.desktop" -appimage -always-overwrite -qmake="${CMD_QMAKE}"
 
-cp -a *.AppImage ../"${PROJECT}${SUFFIX}.AppImage"
+mv *.AppImage ../"${PROJECT}${SUFFIX}.AppImage"
 cd ..
