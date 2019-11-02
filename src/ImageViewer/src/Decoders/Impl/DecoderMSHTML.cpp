@@ -50,7 +50,7 @@ typedef void* QFunctionPointer;
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
-#include "Internal/GraphicsItems/AbstractSVGWebBrowser.h"
+#include "Internal/GraphicsItems/AbstractSVGWebBrowserNoJS.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
@@ -427,7 +427,7 @@ int compare(const QStringRef &s1, const QString &s2, Qt::CaseSensitivity cs)
 
 // ====================================================================================================
 
-class MSHTMLPixmapProvider : public IScaledImageProvider, public AbstractSVGWebBrowser
+class MSHTMLPixmapProvider : public IScaledImageProvider, public AbstractSVGWebBrowserNoJS
 {
     Q_DISABLE_COPY(MSHTMLPixmapProvider)
 
@@ -573,57 +573,13 @@ public:
     }
 
 protected:
-    QSizeF svgSizeAttribute() Q_DECL_OVERRIDE
+    QByteArray getSvgData() Q_DECL_OVERRIDE
     {
-        QXmlStreamReader reader(m_svgData);
-        while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
-        if(reader.atEnd())
-            return QSizeF();
-        const QXmlStreamAttributes attributes = reader.attributes();
-        const QSizeF size = QSizeF(parseLength(attributes.value(QString::fromLatin1("width")).toString()),
-                                   parseLength(attributes.value(QString::fromLatin1("height")).toString()));
-        return size;
+        return m_svgData;
     }
 
-    QRectF svgViewBoxAttribute() Q_DECL_OVERRIDE
-    {
-        QXmlStreamReader reader(m_svgData);
-        while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
-        if(reader.atEnd())
-            return QRectF();
-        const QStringList viewBoxData = reader.attributes().value(QString::fromLatin1("viewBox")).toString()
-                .split(QRegExp(QString::fromLatin1("\\s")), QString::SkipEmptyParts);
-        return (viewBoxData.size() == 4)
-                ? QRectF(parseLength(viewBoxData.at(0)),
-                         parseLength(viewBoxData.at(1)),
-                         parseLength(viewBoxData.at(2)),
-                         parseLength(viewBoxData.at(3)))
-                : QRectF();
-    }
-
-    QRectF svgBoundingBoxRect() Q_DECL_OVERRIDE
-    {
-        return QRectF(); /// @todo
-    }
-
-    QRectF svgBoundingClientRect() Q_DECL_OVERRIDE
-    {
-        return QRectF(); /// @todo
-    }
-
-    bool rootElementIsSvg() Q_DECL_OVERRIDE
-    {
-        QXmlStreamReader reader(m_svgData);
-        while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
-        return !compare(reader.name(), QString::fromLatin1("svg"), Qt::CaseInsensitive);
-    }
-
-    QVariant evalJSImpl(const QString &scriptSource) Q_DECL_OVERRIDE
-    {
-        Q_UNUSED(scriptSource);
-        qWarning() << __FUNCTION__ << "JavaScript is not available for MSHTML implementation";
-        return QVariant();
-
+//    QVariant evalJSImpl(const QString &scriptSource) Q_DECL_OVERRIDE
+//    {
 //        HRESULT hr = E_FAIL;
 
 //        IHTMLWindow2 *htmlWindow2 = Q_NULLPTR;
@@ -651,7 +607,7 @@ protected:
 
 //        qDebug() << result.vt;
 //        return QVariant();
-    }
+//    }
 
 private:
     bool prepareSVGData()
