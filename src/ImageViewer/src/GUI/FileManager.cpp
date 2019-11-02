@@ -127,6 +127,7 @@ public:
     virtual int filesCount() const = 0;
     virtual bool canDeleteCurrentFile() const = 0;
 
+    virtual bool selectByPath(const QString &path) = 0;
     virtual bool selectByIndex(int index) = 0;
     virtual void update() = 0;
 
@@ -154,6 +155,15 @@ public:
     int currentFileIndex() const Q_DECL_OVERRIDE        { return m_currentIndex; }
     int filesCount() const Q_DECL_OVERRIDE              { return m_filesList.size(); }
     bool canDeleteCurrentFile() const Q_DECL_OVERRIDE   { return m_canDeleteCurrentFile; }
+
+    bool selectByPath(const QString &path) Q_DECL_OVERRIDE
+    {
+        const QString absolutePath = QFileInfo(path).absoluteFilePath();
+        for(int i = 0; i < m_filesList.size(); ++i)
+            if(QDir(m_directoryPath).absoluteFilePath(m_filesList[i]) == absolutePath)
+                return selectByIndex(i);
+        return false;
+    }
 
     bool selectByIndex(int index) Q_DECL_OVERRIDE
     {
@@ -216,6 +226,15 @@ public:
     int currentFileIndex() const Q_DECL_OVERRIDE        { return m_currentIndex; }
     int filesCount() const Q_DECL_OVERRIDE              { return m_pathsList.size(); }
     bool canDeleteCurrentFile() const Q_DECL_OVERRIDE   { return m_canDeleteCurrentFile; }
+
+    bool selectByPath(const QString &path) Q_DECL_OVERRIDE
+    {
+        const QString absolutePath = QFileInfo(path).absoluteFilePath();
+        for(int i = 0; i < m_pathsList.size(); ++i)
+            if(QFileInfo(m_pathsList[i]).absoluteFilePath() == absolutePath)
+                return selectByIndex(i);
+        return false;
+    }
 
     bool selectByIndex(int index) Q_DECL_OVERRIDE
     {
@@ -446,6 +465,14 @@ bool FileManager::openPaths(const QStringList &filePaths)
     m_impl->resetFilesModel(new FilxedListModel(pathsList));
     m_impl->currentOpenArguments = filePaths;
     return true;
+}
+
+bool FileManager::selectByPath(const QString &filePath)
+{
+    const Impl::ChangedGuard changedGuard(this);
+    if(m_impl->filesModel)
+        return m_impl->filesModel->selectByPath(filePath);
+    return false;
 }
 
 bool FileManager::selectByIndex(int index)

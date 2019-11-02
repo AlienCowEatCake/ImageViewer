@@ -266,7 +266,9 @@ void MainController::showPreferences()
     /// @note Перезагружаем все, чтобы применились настройки декодеров
     {
         QSignalBlocker blocker(m_impl->fileManager);
+        const QString oldPath = m_impl->fileManager.currentFilePath();
         openPaths(m_impl->fileManager.currentOpenArguments());
+        m_impl->fileManager.selectByPath(oldPath);
     }
     onFileManagerStateChanged(FileManager::FlagChangeAll);
 }

@@ -69,6 +69,7 @@ public slots:
     void update();
     bool openPath(const QString &filePath);
     bool openPaths(const QStringList &filePaths);
+    bool selectByPath(const QString &filePath);
     bool selectByIndex(int index);
     bool deleteCurrentFile();
     bool moveToTrashCurrentFile(QString *errorDescription = Q_NULLPTR);
