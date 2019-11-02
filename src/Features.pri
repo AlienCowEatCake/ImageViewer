@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -319,6 +319,19 @@ disable_cxx11 : !system_libheif {
 }
 equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
     CONFIG += disable_qtwebengine
+}
+
+# DecoderQMLWebEngine options:
+#    disable_qmlwebengine
+#    enable_qmlwebengine
+!enable_qmlwebengine {
+    CONFIG += disable_qmlwebengine
+}
+!greaterThan(QT_MAJOR_VERSION, 4) {
+    CONFIG += disable_qmlwebengine
+}
+equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 10) {
+    CONFIG += disable_qmlwebengine
 }
 
 # DecoderMSHTML options:

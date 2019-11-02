@@ -78,6 +78,7 @@ SOURCES += \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowser.cpp \
+    src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowserNoJS.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/ProgressiveResampledImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.cpp \
@@ -125,6 +126,7 @@ HEADERS += \
     src/Decoders/Impl/Internal/Animation/MovieAnimationProvider.h \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.h \
     src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowser.h \
+    src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowserNoJS.h \
     src/Decoders/Impl/Internal/GraphicsItems/ProgressiveResampledImageGraphicsItem.h \
     src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.h \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.h \
@@ -260,6 +262,15 @@ HEADERS += \
         src/Decoders/Impl/DecoderQtWebEngine.cpp
     HEADERS += \
         src/Decoders/Impl/Internal/GraphicsItems/QtWebEngineSVGGraphicsItem.h
+}
+
+!disable_qmlwebengine {
+    QT += webengine quick
+    SOURCES += \
+        src/Decoders/Impl/Internal/GraphicsItems/QMLWebEngineSVGGraphicsItem.cpp \
+        src/Decoders/Impl/DecoderQMLWebEngine.cpp
+    HEADERS += \
+        src/Decoders/Impl/Internal/GraphicsItems/QMLWebEngineSVGGraphicsItem.h
 }
 
 !disable_mshtml {
