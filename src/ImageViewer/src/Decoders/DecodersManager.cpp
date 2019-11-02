@@ -98,6 +98,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderLibRSVG"              , 2300, -1); ///< Умеет неинтерактивные svg, подгружает внешние библиотеки. Весьма медленная отрисовка.
         P("DecoderMacWebKit"            , 2400, -1); ///< Умеет неинтерактивные svg, только под macOS. Весьма медленная отрисовка.
         P("DecoderQtWebEngine"          , 2500, -1); ///< Умеет анимированные svg, в том числе и с JavaScript. Весьма медленная отрисовка.
+        P("DecoderQMLWebEngine"         , 2510, -1); ///< Умеет чуть меньше, чем QtWebEngine, к тому же еще медленнее. Зато чуть лучше работает offscreen рендеринг.
         P("DecoderQtWebKit"             , 2600, -1); ///< Умеет анимированные svg, в том числе и с JavaScript. Очень быстр, но deprecated.
         P("DecoderLibWmf"               , 2700, -1); ///< Умеет wmf.
 #undef P

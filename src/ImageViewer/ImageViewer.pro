@@ -264,6 +264,15 @@ HEADERS += \
         src/Decoders/Impl/Internal/GraphicsItems/QtWebEngineSVGGraphicsItem.h
 }
 
+!disable_qmlwebengine {
+    QT += webengine quick
+    SOURCES += \
+        src/Decoders/Impl/Internal/GraphicsItems/QMLWebEngineSVGGraphicsItem.cpp \
+        src/Decoders/Impl/DecoderQMLWebEngine.cpp
+    HEADERS += \
+        src/Decoders/Impl/Internal/GraphicsItems/QMLWebEngineSVGGraphicsItem.h
+}
+
 !disable_mshtml {
     SOURCES += \
         src/Decoders/Impl/DecoderMSHTML.cpp
