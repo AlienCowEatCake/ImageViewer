@@ -9,6 +9,7 @@ ICON_PATH="src/${PROJECT}/resources/icon/icon.svg"
 QTDIR="/opt/Qt5.12.5/5.12.5/gcc_64"
 CMD_QMAKE="${QTDIR}/bin/qmake"
 CMD_DEPLOY="/opt/linuxdeployqt-6-x86_64.AppImage"
+CMD_APPIMAGETOOL="/opt/appimagetool-x86_64.AppImage"
 
 cd "$(dirname $0)"/..
 rm -rf "${BUILDDIR}"
@@ -23,8 +24,6 @@ mkdir -p "AppDir/usr/bin" "AppDir/usr/lib" "AppDir/usr/share/applications" "AppD
 cp -a "${APP_PATH}/${PROJECT}" "AppDir/usr/bin/"
 cp -a "../${DESKTOP_PATH}" "AppDir/usr/share/applications/${PROJECT}.desktop"
 cp -a "../${ICON_PATH}" "AppDir/usr/share/icons/hicolor/scalable/apps/${PROJECT}.svg"
-find /usr/local/lib -name 'libfreetype.so*' -exec cp -a \{\} "AppDir/usr/lib/" \;
-"${CMD_DEPLOY}" "AppDir/usr/share/applications/${PROJECT}.desktop" -appimage -always-overwrite -qmake="${CMD_QMAKE}"
-
-mv *.AppImage ../"${PROJECT}${SUFFIX}.AppImage"
+"${CMD_DEPLOY}" "AppDir/usr/share/applications/${PROJECT}.desktop" -always-overwrite -qmake="${CMD_QMAKE}"
+"${CMD_APPIMAGETOOL}" --no-appstream "AppDir" ../"${PROJECT}${SUFFIX}.AppImage"
 cd ..
