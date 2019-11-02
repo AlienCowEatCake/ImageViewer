@@ -32,6 +32,7 @@
 #include <QEventLoop>
 #include <QTimer>
 
+#include <QtWebEngine>
 #include <QQuickView>
 #include <QQmlEngine>
 #include <QQmlComponent>
@@ -93,6 +94,14 @@ int getMaxTextureSize()
 
 struct QMLWebEngineSVGGraphicsItem::Impl
 {
+    struct WebEngineInitializer
+    {
+        WebEngineInitializer()
+        {
+            QtWebEngine::initialize();
+        }
+    };
+    WebEngineInitializer webEngineInitializer;
     QQuickView quickView;
     QQuickItem *webEngineView;
     QByteArray svgData;
@@ -140,6 +149,12 @@ struct QMLWebEngineSVGGraphicsItem::Impl
                     "    settings.showScrollBars: false\n"
                     "}\n"
                     , QUrl());
+        if(component->status() != QQmlComponent::Ready)
+        {
+            qDebug() << "[QMLWebEngineSVGGraphicsItem] Error: " << component->errorString();
+            return Q_NULLPTR;
+        }
+
         QQuickItem *webEngineView = qobject_cast<QQuickItem*>(component->create(engine->rootContext()));
         if(!webEngineView)
         {
