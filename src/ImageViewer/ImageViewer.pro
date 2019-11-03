@@ -158,6 +158,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderSTB.cpp
 }
 
+!disable_nanosvg {
+    SOURCES += \
+        src/Decoders/Impl/DecoderNanoSVG.cpp
+}
+
 !disable_qtimageformats {
     SOURCES += \
         src/Decoders/Impl/DecoderQtImageFormatsImage.cpp \

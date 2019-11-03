@@ -480,6 +480,17 @@ QString getTextBrowserContent()
                       ));
 #endif
 
+#if defined (HAS_NANOSVG)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses Nano SVG parser and rasterizer"),
+                      QString::fromLatin1("nanosvg"),
+                      QString(),
+                      QString::fromLatin1("https://github.com/memononen/nanosvg"),
+                      QString::fromLatin1("Zlib License"),
+                      QString::fromLatin1("https://github.com/memononen/nanosvg/blob/master/LICENSE.txt")
+                      ));
+#endif
+
     return result;
 }
 

@@ -289,6 +289,10 @@ disable_cxx11 : !system_libheif {
 #    disable_stb
 
 
+# NanoSVG options:
+#    disable_nanosvg
+
+
 # QtImageFormats options:
 #    disable_qtimageformats
 !greaterThan(QT_MAJOR_VERSION, 4) {
