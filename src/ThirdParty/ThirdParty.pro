@@ -100,6 +100,10 @@ SUBDIRS =
     SUBDIRS += STB/STB.pro
 }
 
+!disable_nanosvg {
+    SUBDIRS += NanoSVG/NanoSVG.pro
+}
+
 !disable_qtimageformats {
     SUBDIRS += QtImageFormats/QtImageFormats.pro
 }

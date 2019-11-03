@@ -1,5 +1,6 @@
 include(QtExtended/QtExtended.pri)
 include(STB/STB.pri)
+include(NanoSVG/NanoSVG.pri)
 include(QtImageFormats/QtImageFormats.pri)
 include(LibRaw/LibRaw.pri)
 include(libwmf/libwmf.pri)
