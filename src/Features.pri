@@ -330,7 +330,7 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
 !greaterThan(QT_MAJOR_VERSION, 4) {
     CONFIG += disable_qmlwebengine
 }
-equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 10) {
+equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
     CONFIG += disable_qmlwebengine
 }
 

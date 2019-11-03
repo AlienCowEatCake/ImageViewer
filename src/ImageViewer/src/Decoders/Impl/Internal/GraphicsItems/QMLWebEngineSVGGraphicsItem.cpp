@@ -25,6 +25,8 @@
 #include <QUrl>
 #include <QString>
 #include <QByteArray>
+#include <QVector>
+#include <QPair>
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
@@ -90,6 +92,70 @@ int getMaxTextureSize()
     return maxTextureSize;
 }
 
+QByteArray getWebEngineComponentQml()
+{
+    static QByteArray qml;
+    static bool isInitialized = false;
+    if(isInitialized)
+        return qml;
+
+    isInitialized = true;
+    QVector<QPair<QByteArray, QByteArray>> qmls;
+    qmls.push_back(qMakePair<QByteArray, QByteArray>(
+                       "import QtQuick 2.0\n"
+                       "import QtWebEngine 1.6\n"
+                       "\n"
+                       "WebEngineView {\n"
+                       "    anchors.fill: parent\n"
+                       "    backgroundColor: \"transparent\"\n"
+                       "    settings.showScrollBars: false\n"
+                       "}\n"
+                       , "QtWebEngine 1.6+"));
+    qmls.push_back(qMakePair<QByteArray, QByteArray>(
+                       "import QtQuick 2.0\n"
+                       "import QtWebEngine 1.2\n"
+                       "\n"
+                       "WebEngineView {\n"
+                       "    anchors.fill: parent\n"
+                       "    backgroundColor: \"transparent\"\n"
+                       "}\n"
+                       , "QtWebEngine 1.2+"));
+    qmls.push_back(qMakePair<QByteArray, QByteArray>(
+                       "import QtQuick 2.0\n"
+                       "import QtWebEngine 1.1\n"
+                       "\n"
+                       "WebEngineView {\n"
+                       "    anchors.fill: parent\n"
+                       "}\n"
+                       , "QtWebEngine 1.1"));
+    qmls.push_back(qMakePair<QByteArray, QByteArray>(
+                       "import QtQuick 2.0\n"
+                       "import QtWebEngine 1.0\n"
+                       "\n"
+                       "WebEngineView {\n"
+                       "    anchors.fill: parent\n"
+                       "}\n"
+                       , "QtWebEngine 1.0"));
+
+    QQmlEngine engine;
+    for(typename QVector<QPair<QByteArray, QByteArray>>::ConstIterator it = qmls.constBegin(), itEnd = qmls.constEnd(); it != itEnd; ++it)
+    {
+        QQmlComponent component(&engine);
+        qml = it->first;
+        component.setData(qml, QUrl());
+        if(component.status() == QQmlComponent::Ready)
+        {
+            qDebug() << "[QMLWebEngineSVGGraphicsItem]" << it->second.data() << "detected";
+            return qml;
+        }
+        else
+        {
+            qDebug() << "[QMLWebEngineSVGGraphicsItem]" << it->second.data() << "not detected:" << component.errorString();
+        }
+    }
+    return qml;
+}
+
 } // namespace
 
 struct QMLWebEngineSVGGraphicsItem::Impl
@@ -139,19 +205,10 @@ struct QMLWebEngineSVGGraphicsItem::Impl
         }
 
         QQmlComponent *component = new QQmlComponent(engine);
-        component->setData(
-                    "import QtQuick 2.0\n"
-                    "import QtWebEngine 1.6\n"
-                    "\n"
-                    "WebEngineView {\n"
-                    "    anchors.fill: parent\n"
-                    "    backgroundColor: \"transparent\"\n"
-                    "    settings.showScrollBars: false\n"
-                    "}\n"
-                    , QUrl());
+        component->setData(getWebEngineComponentQml(), QUrl());
         if(component->status() != QQmlComponent::Ready)
         {
-            qDebug() << "[QMLWebEngineSVGGraphicsItem] Error: " << component->errorString();
+            qDebug() << "[QMLWebEngineSVGGraphicsItem] Error:" << component->errorString();
             return Q_NULLPTR;
         }
 
