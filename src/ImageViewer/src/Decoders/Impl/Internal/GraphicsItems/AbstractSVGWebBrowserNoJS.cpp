@@ -25,6 +25,8 @@
 #include <QRegExp>
 #include <QSize>
 #include <QString>
+#include <QStringList>
+#include <QVariant>
 #include <QXmlStreamAttributes>
 #include <QXmlStreamReader>
 
