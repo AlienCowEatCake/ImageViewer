@@ -150,7 +150,7 @@ private:
 
 struct QtWebEngineSVGGraphicsItem::Impl
 {
-    QWebEngineView view;
+    QWebEngineView *view;
     QRectF svgRect;
     qreal minScaleFactor;
     qreal maxScaleFactor;
@@ -159,16 +159,24 @@ struct QtWebEngineSVGGraphicsItem::Impl
     bool renderProcessTerminated;
 
     Impl()
-        : minScaleFactor(1)
+        : view(createWebEngineView())
+        , minScaleFactor(1)
         , maxScaleFactor(1)
-        , syncExecutor(&view)
+        , syncExecutor(view)
         , renderProcessTerminated(false)
     {}
 
+    ~Impl()
+    {
+        QWidget *window = view->window();
+        window->hide();
+        window->deleteLater();
+    }
+
     void setScaleFactor(qreal scaleFactor)
     {
-        view.resize((svgRect.united(QRectF(0, 0, 1, 1)).size() * scaleFactor).toSize());
-        view.setZoomFactor(scaleFactor);
+        view->resize((svgRect.united(QRectF(0, 0, 1, 1)).size() * scaleFactor).toSize());
+        view->setZoomFactor(scaleFactor);
     }
 
     QString detectEncoding(const QByteArray &svgData)
@@ -176,6 +184,31 @@ struct QtWebEngineSVGGraphicsItem::Impl
         QXmlStreamReader reader(svgData);
         while(reader.readNext() != QXmlStreamReader::StartDocument && !reader.atEnd());
         return reader.documentEncoding().toString().simplified().toLower();
+    }
+
+    QWebEngineView *createWebEngineView() const
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+        QWidget *window = new QWidget(Q_NULLPTR);
+        window->setWindowFlags(Qt::Window
+                               | Qt::FramelessWindowHint
+                               | Qt::NoDropShadowWindowHint
+                               | Qt::X11BypassWindowManagerHint
+#if !defined (Q_OS_MAC)
+                               | Qt::Tool
+#endif
+                               );
+        window->setFixedSize(0, 0);
+        window->setEnabled(false);
+        window->setWindowOpacity(0.0);
+        window->show();
+
+        QWebEngineView *view = new QWebEngineView(window);
+        view->show();
+        return view;
+#else
+        return new QWebEngineView(Q_NULLPTR);
+#endif
     }
 };
 
@@ -185,18 +218,18 @@ QtWebEngineSVGGraphicsItem::QtWebEngineSVGGraphicsItem(QGraphicsItem *parentItem
 {
     setFlag(QGraphicsItem::ItemUsesExtendedStyleOption, true);
 
-    m_impl->view.winId();
-    m_impl->view.setContextMenuPolicy(Qt::PreventContextMenu);
-    m_impl->view.setAcceptDrops(false);
+    m_impl->view->winId();
+    m_impl->view->setContextMenuPolicy(Qt::PreventContextMenu);
+    m_impl->view->setAcceptDrops(false);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
-    m_impl->view.setStyleSheet(QString::fromLatin1("background: transparent; border: none;"));
-    m_impl->view.page()->setBackgroundColor(Qt::transparent);
-    const QList<QWidget*> childWidgets = m_impl->view.findChildren<QWidget*>();
+    m_impl->view->setStyleSheet(QString::fromLatin1("background: transparent; border: none;"));
+    m_impl->view->page()->setBackgroundColor(Qt::transparent);
+    const QList<QWidget*> childWidgets = m_impl->view->findChildren<QWidget*>();
     for(QList<QWidget*>::ConstIterator it = childWidgets.constBegin(), itEnd = childWidgets.constEnd(); it != itEnd; ++it)
         (*it)->setAttribute(Qt::WA_AlwaysStackOnTop, false);
 #endif
 
-    connect(&m_impl->view, &QWebEngineView::renderProcessTerminated, this, &QtWebEngineSVGGraphicsItem::onRenderProcessTerminated);
+    connect(m_impl->view, &QWebEngineView::renderProcessTerminated, this, &QtWebEngineSVGGraphicsItem::onRenderProcessTerminated);
 
     connect(&m_impl->timer, &QTimer::timeout, this, &QtWebEngineSVGGraphicsItem::onUpdateRequested);
     m_impl->timer.setSingleShot(false);
@@ -271,7 +304,7 @@ void QtWebEngineSVGGraphicsItem::paint(QPainter *painter, const QStyleOptionGrap
         const qreal actualScaleFactor = std::max(std::min(scaleFactor, m_impl->maxScaleFactor), m_impl->minScaleFactor);
         m_impl->setScaleFactor(actualScaleFactor);
         const QRect scaledRect = QRectFIntegerized(QRectF(exposedRect.topLeft() * actualScaleFactor, exposedRect.size() * actualScaleFactor)).toRect();
-        const QPixmap pixmap = m_impl->view.grab(scaledRect);
+        const QPixmap pixmap = m_impl->view->grab(scaledRect);
         if(!pixmap.isNull())
         {
             painter->drawPixmap(exposedRect, pixmap, pixmap.rect());
