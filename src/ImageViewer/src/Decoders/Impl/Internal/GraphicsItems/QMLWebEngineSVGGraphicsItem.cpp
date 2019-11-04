@@ -185,7 +185,7 @@ struct QMLWebEngineSVGGraphicsItem::Impl
     void setScaleFactor(qreal scaleFactor)
     {
         quickView.resize((svgRect.united(QRectF(0, 0, 1, 1)).size() * scaleFactor).toSize());
-        QQmlProperty(webEngineView, QString::fromLatin1("zoomFactor")).write(scaleFactor);
+        QQmlProperty(webEngineView, QString::fromLatin1("zoomFactor")).write(scaleFactor / quickView.devicePixelRatio());
     }
 
     QString detectEncoding(const QByteArray &svgData)

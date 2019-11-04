@@ -29,6 +29,9 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 
+#include <QApplication>
+#include <QScreen>
+
 #include <QEventLoop>
 #include <QTimer>
 
@@ -198,6 +201,7 @@ struct QtWebEngineSVGGraphicsItem::Impl
                                | Qt::Tool
 #endif
                                );
+        window->move(qApp->primaryScreen()->availableGeometry().center());
         window->setFixedSize(0, 0);
         window->setEnabled(false);
         window->setWindowOpacity(0.0);
