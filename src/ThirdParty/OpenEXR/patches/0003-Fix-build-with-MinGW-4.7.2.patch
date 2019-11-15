@@ -1,0 +1,38 @@
+From e2607a81df7b164c620f6900cbb7f0dd09e3f110 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sat, 16 Nov 2019 19:25:07 +0700
+Subject: [PATCH 3/3] Fix build with MinGW 4.7.2
+
+---
+ OpenEXR/IlmImf/ImfMisc.cpp      | 2 +-
+ OpenEXR/IlmImf/ImfTiledMisc.cpp | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/OpenEXR/IlmImf/ImfMisc.cpp b/OpenEXR/IlmImf/ImfMisc.cpp
+index 2775543..e6a5bf8 100644
+--- a/OpenEXR/IlmImf/ImfMisc.cpp
++++ b/OpenEXR/IlmImf/ImfMisc.cpp
+@@ -1388,7 +1388,7 @@ namespace
+ // for architectures that require 32-bit alignment for float reading
+ //
+ 
+-struct FBytes { uint8_t b[4]; };
++struct FBytes { unsigned char b[4]; };
+ union bytesOrFloat {
+   FBytes b;
+   float f;
+diff --git a/OpenEXR/IlmImf/ImfTiledMisc.cpp b/OpenEXR/IlmImf/ImfTiledMisc.cpp
+index d262f73..e101957 100644
+--- a/OpenEXR/IlmImf/ImfTiledMisc.cpp
++++ b/OpenEXR/IlmImf/ImfTiledMisc.cpp
+@@ -45,6 +45,7 @@
+ #include <ImfChannelList.h>
+ #include <ImfTileDescription.h>
+ #include <algorithm>
++#include <limits>
+ 
+ #include "ImfNamespace.h"
+ 
+-- 
+2.20.1
+

@@ -279,6 +279,24 @@ disable_cxx11 : !system_libheif {
     CONFIG += disable_libheif
 }
 
+# OpenEXR options:
+#    disable_openexr
+#    system_openexr
+disable_zlib : !system_openexr {
+    CONFIG += disable_openexr
+}
+*msvc* : !system_openexr {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+            CONFIG += disable_openexr # FIXME: C99/C++11
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+            CONFIG += disable_openexr # FIXME: C99/C++11
+        }
+    }
+}
+
 # ::::: Optional Third Party Components Configuration :::::
 
 # QtExtended options:

@@ -247,7 +247,6 @@ HEADERS += \
 !disable_openexr {
     SOURCES += \
         src/Decoders/Impl/DecoderOpenEXR.cpp
-    LIBS += -lIlmImf -lIlmImfUtil -lIex -lHalf
 }
 
 !disable_qtsvg {
