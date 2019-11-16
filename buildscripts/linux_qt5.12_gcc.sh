@@ -6,7 +6,7 @@ APP_PATH="src/${PROJECT}"
 DESKTOP_PATH="src/${PROJECT}/resources/platform/linux/${PROJECT}.desktop"
 ICON_PATH="src/${PROJECT}/resources/icon/icon.svg"
 
-QTDIR="/opt/Qt5.12.5/5.12.5/gcc_64"
+QTDIR="/opt/Qt5.12.6/5.12.6/gcc_64"
 CMD_QMAKE="${QTDIR}/bin/qmake"
 CMD_DEPLOY="/opt/linuxdeployqt-6-x86_64.AppImage"
 CMD_APPIMAGETOOL="/opt/appimagetool-x86_64.AppImage"
