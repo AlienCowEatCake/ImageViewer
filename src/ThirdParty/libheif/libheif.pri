@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libheif {
 
-        THIRDPARTY_LIBDE265_PATH = $${PWD}/libheif-1.5.1
+        THIRDPARTY_LIBDE265_PATH = $${PWD}/libheif-1.6.0
 
         INCLUDEPATH += $${THIRDPARTY_LIBDE265_PATH}
         DEPENDPATH += $${THIRDPARTY_LIBDE265_PATH}

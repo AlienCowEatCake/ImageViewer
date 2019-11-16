@@ -436,6 +436,10 @@ LIBHEIF_API
 void heif_context_debug_dump_boxes_to_file(struct heif_context* ctx, int fd);
 
 
+LIBHEIF_API
+void heif_context_set_maximum_image_size_limit(struct heif_context* ctx, int maximum_width);
+
+
 // ========================= heif_image_handle =========================
 
 // An heif_image_handle is a handle to a logical image in the HEIF file.
@@ -1170,6 +1174,16 @@ LIBHEIF_API
 struct heif_error heif_context_add_XMP_metadata(struct heif_context*,
                                                 const struct heif_image_handle* image_handle,
                                                 const void* data, int size);
+
+// Add generic, proprietary metadata to an image. You have to specify an 'item_type' that will
+// identify your metadata. 'content_type' can be an additional type, or it can be NULL.
+// For example, this function can be used to add IPTC metadata (IIM stream, not XMP) to an image.
+// Even not standard, we propose to store IPTC data with item type="iptc", content_type=NULL.
+LIBHEIF_API
+struct heif_error heif_context_add_generic_metadata(struct heif_context* ctx,
+                                                    const struct heif_image_handle* image_handle,
+                                                    const void* data, int size,
+                                                    const char* item_type, const char* content_type);
 
 // --- heif_image allocation
 

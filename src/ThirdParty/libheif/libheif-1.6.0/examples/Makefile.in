@@ -90,17 +90,18 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 @HAVE_LIBPNG_TRUE@am__append_1 = heif-thumbnailer
-@HAVE_LIBJPEG_TRUE@am__append_2 = $(libjpeg_CFLAGS)
-@HAVE_LIBJPEG_TRUE@am__append_3 = $(libjpeg_LIBS)
-@HAVE_LIBJPEG_TRUE@am__append_4 = encoder_jpeg.cc encoder_jpeg.h
-@HAVE_LIBPNG_TRUE@am__append_5 = $(libpng_CFLAGS)
-@HAVE_LIBPNG_TRUE@am__append_6 = $(libpng_LIBS)
-@HAVE_LIBPNG_TRUE@am__append_7 = encoder_png.cc encoder_png.h
-@HAVE_LIBJPEG_TRUE@am__append_8 = $(libjpeg_CFLAGS)
-@HAVE_LIBJPEG_TRUE@am__append_9 = $(libjpeg_LIBS)
-@HAVE_LIBPNG_TRUE@am__append_10 = $(libpng_CFLAGS)
-@HAVE_LIBPNG_TRUE@am__append_11 = $(libpng_LIBS)
-@HAVE_GO_TRUE@am__append_12 = \
+@HAVE_LIBPNG_TRUE@am__append_2 = heif-thumbnailer.1
+@HAVE_LIBJPEG_TRUE@am__append_3 = $(libjpeg_CFLAGS)
+@HAVE_LIBJPEG_TRUE@am__append_4 = $(libjpeg_LIBS)
+@HAVE_LIBJPEG_TRUE@am__append_5 = encoder_jpeg.cc encoder_jpeg.h
+@HAVE_LIBPNG_TRUE@am__append_6 = $(libpng_CFLAGS)
+@HAVE_LIBPNG_TRUE@am__append_7 = $(libpng_LIBS)
+@HAVE_LIBPNG_TRUE@am__append_8 = encoder_png.cc encoder_png.h
+@HAVE_LIBJPEG_TRUE@am__append_9 = $(libjpeg_CFLAGS)
+@HAVE_LIBJPEG_TRUE@am__append_10 = $(libjpeg_LIBS)
+@HAVE_LIBPNG_TRUE@am__append_11 = $(libpng_CFLAGS)
+@HAVE_LIBPNG_TRUE@am__append_12 = $(libpng_LIBS)
+@HAVE_GO_TRUE@am__append_13 = \
 @HAVE_GO_TRUE@	heif-test-go
 
 @WITH_EXAMPLES_TRUE@bin_PROGRAMS = $(am__EXEEXT_2)
@@ -123,7 +124,7 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_LIBPNG_TRUE@am__EXEEXT_1 = heif-thumbnailer$(EXEEXT)
 am__EXEEXT_2 = heif-convert$(EXEEXT) heif-enc$(EXEEXT) \
 	heif-info$(EXEEXT) $(am__EXEEXT_1)
-am__installdirs = "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 @HAVE_GO_TRUE@am__EXEEXT_3 = heif-test-go$(EXEEXT)
 am__EXEEXT_4 = heif-test$(EXEEXT) test-c-api$(EXEEXT) $(am__EXEEXT_3)
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
@@ -248,6 +249,36 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+man1dir = $(mandir)/man1
+NROFF = nroff
+MANS = $(dist_man_MANS)
 am__extra_recursive_targets = format-recursive test-recursive
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
@@ -268,7 +299,8 @@ am__define_uniq_tagged_files = \
   done | $(am__uniquify_input)`
 ETAGS = etags
 CTAGS = ctags
-am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp COPYING
+am__DIST_COMMON = $(dist_man_MANS) $(srcdir)/Makefile.in \
+	$(top_srcdir)/depcomp COPYING
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -432,15 +464,16 @@ x265_CFLAGS = @x265_CFLAGS@
 x265_LIBS = @x265_LIBS@
 AUTOMAKE_OPTIONS = subdir-objects
 examples = heif-convert heif-enc heif-info $(am__append_1)
-examples_noinst = heif-test test-c-api $(am__append_12)
+examples_noinst = heif-test test-c-api $(am__append_13)
+dist_man_MANS = heif-convert.1 $(am__append_2) heif-info.1 heif-enc.1
 heif_convert_DEPENDENCIES = ../libheif/libheif.la
 heif_convert_CXXFLAGS = -I$(top_srcdir) -I$(top_builddir)/. \
-	$(am__append_2) $(am__append_5)
+	$(am__append_3) $(am__append_6)
 heif_convert_LDFLAGS = 
-heif_convert_LDADD = ../libheif/libheif.la $(am__append_3) \
-	$(am__append_6)
+heif_convert_LDADD = ../libheif/libheif.la $(am__append_4) \
+	$(am__append_7)
 heif_convert_SOURCES = encoder.cc encoder.h heif_convert.cc \
-	encoder_y4m.cc encoder_y4m.h $(am__append_4) $(am__append_7)
+	encoder_y4m.cc encoder_y4m.h $(am__append_5) $(am__append_8)
 @HAVE_LIBPNG_TRUE@heif_thumbnailer_DEPENDENCIES = ../libheif/libheif.la
 @HAVE_LIBPNG_TRUE@heif_thumbnailer_CXXFLAGS = -I$(top_srcdir) -I$(top_builddir) $(libpng_CFLAGS)
 @HAVE_LIBPNG_TRUE@heif_thumbnailer_LDFLAGS = $(libpng_LIBS)
@@ -452,11 +485,11 @@ heif_info_LDFLAGS =
 heif_info_LDADD = ../libheif/libheif.la
 heif_info_SOURCES = heif_info.cc
 heif_enc_DEPENDENCIES = ../libheif/libheif.la
-heif_enc_CXXFLAGS = -I$(top_srcdir) -I$(top_builddir) $(am__append_8) \
-	$(am__append_10)
-heif_enc_LDFLAGS = 
-heif_enc_LDADD = ../libheif/libheif.la $(am__append_9) \
+heif_enc_CXXFLAGS = -I$(top_srcdir) -I$(top_builddir) $(am__append_9) \
 	$(am__append_11)
+heif_enc_LDFLAGS = 
+heif_enc_LDADD = ../libheif/libheif.la $(am__append_10) \
+	$(am__append_12)
 heif_enc_SOURCES = heif_enc.cc
 heif_test_DEPENDENCIES = ../libheif/libheif.la
 heif_test_CXXFLAGS = -I$(top_srcdir) -I$(top_builddir)
@@ -835,6 +868,49 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+install-man1: $(dist_man_MANS)
+	@$(NORMAL_INSTALL)
+	@list1=''; \
+	list2='$(dist_man_MANS)'; \
+	test -n "$(man1dir)" \
+	  && test -n "`echo $$list1$$list2`" \
+	  || exit 0; \
+	echo " $(MKDIR_P) '$(DESTDIR)$(man1dir)'"; \
+	$(MKDIR_P) "$(DESTDIR)$(man1dir)" || exit 1; \
+	{ for i in $$list1; do echo "$$i"; done;  \
+	if test -n "$$list2"; then \
+	  for i in $$list2; do echo "$$i"; done \
+	    | sed -n '/\.1[a-z]*$$/p'; \
+	fi; \
+	} | while read p; do \
+	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; echo "$$p"; \
+	done | \
+	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
+	sed 'N;N;s,\n, ,g' | { \
+	list=; while read file base inst; do \
+	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
+	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst" || exit $$?; \
+	  fi; \
+	done; \
+	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
+	while read files; do \
+	  test -z "$$files" || { \
+	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man1dir)'"; \
+	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man1dir)" || exit $$?; }; \
+	done; }
+
+uninstall-man1:
+	@$(NORMAL_UNINSTALL)
+	@list=''; test -n "$(man1dir)" || exit 0; \
+	files=`{ for i in $$list; do echo "$$i"; done; \
+	l2='$(dist_man_MANS)'; for i in $$l2; do echo "$$i"; done | \
+	  sed -n '/\.1[a-z]*$$/p'; \
+	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
+	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
 format-local: 
 test-local: 
 
@@ -922,9 +998,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(PROGRAMS) $(MANS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -984,7 +1060,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-man
 
 install-dvi: install-dvi-am
 
@@ -1000,7 +1076,7 @@ install-info: install-info-am
 
 install-info-am:
 
-install-man:
+install-man: install-man1
 
 install-pdf: install-pdf-am
 
@@ -1034,7 +1110,9 @@ test: test-am
 
 test-am: test-local
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-man
+
+uninstall-man: uninstall-man1
 
 .MAKE: install-am install-strip
 
@@ -1046,13 +1124,14 @@ uninstall-am: uninstall-binPROGRAMS
 	html-am info info-am install install-am install-binPROGRAMS \
 	install-data install-data-am install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am test-am test-local uninstall uninstall-am \
-	uninstall-binPROGRAMS
+	install-info install-info-am install-man install-man1 \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags tags-am test-am test-local uninstall \
+	uninstall-am uninstall-binPROGRAMS uninstall-man \
+	uninstall-man1
 
 .PRECIOUS: Makefile
 

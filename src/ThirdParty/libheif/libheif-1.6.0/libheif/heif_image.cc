@@ -302,7 +302,7 @@ void HeifPixelImage::copy_new_plane_from(const std::shared_ptr<const HeifPixelIm
   src = src_image->get_plane(src_channel, &src_stride);
   dst = get_plane(dst_channel, &dst_stride);
 
-  int bpl = width * src_image->get_storage_bits_per_pixel(src_channel);
+  int bpl = width * (src_image->get_storage_bits_per_pixel(src_channel) / 8);
 
   for (int y=0;y<height;y++) {
     memcpy(dst+y*dst_stride, src+y*src_stride, bpl);
@@ -376,6 +376,16 @@ std::shared_ptr<HeifPixelImage> heif::convert_colorspace(const std::shared_ptr<H
   output_state.colorspace = target_colorspace;
   output_state.chroma = target_chroma;
 
+  // If we convert to an interleaved format, we want alpha only if present in the
+  // interleaved output format.
+  // For planar formats, we include an alpha plane when included in the input.
+
+  if (num_interleaved_pixels_per_plane(target_chroma)>1) {
+    output_state.has_alpha = is_chroma_with_alpha(target_chroma);
+  }
+  else {
+    output_state.has_alpha = input_state.has_alpha;
+  }
 
   ColorConversionPipeline pipeline;
   bool success = pipeline.construct_pipeline(input_state, output_state);
@@ -752,7 +762,7 @@ Error HeifPixelImage::scale_nearest_neighbor(std::shared_ptr<HeifPixelImage>& ou
     heif_channel channel = plane_pair.first;
     const ImagePlane& plane = plane_pair.second;
 
-    const int bpp = (plane.bit_depth + 7)/8;
+    const int bpp = get_storage_bits_per_pixel(channel)/8;
 
     int in_w = plane.width;
     int in_h = plane.height;
