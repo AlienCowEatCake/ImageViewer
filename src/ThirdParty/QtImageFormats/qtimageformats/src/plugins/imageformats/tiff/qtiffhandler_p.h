@@ -55,7 +55,9 @@ public:
     bool read(QImage *image) Q_DECL_OVERRIDE;
     bool write(const QImage &image) Q_DECL_OVERRIDE;
 
+#if QT_DEPRECATED_SINCE(5, 13)
     QByteArray name() const Q_DECL_OVERRIDE;
+#endif
 
     static bool canRead(QIODevice *device);
 

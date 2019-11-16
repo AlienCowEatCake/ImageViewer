@@ -87,6 +87,9 @@ private slots:
     void readRgba64();
     void readGray16();
 
+    void colorSpace_data();
+    void colorSpace();
+
 private:
     QString prefix;
 };
@@ -420,8 +423,7 @@ void tst_qtiff::readWriteNonDestructive()
     QImageReader reader(&buf);
     QCOMPARE(reader.imageFormat(), expectedFormat);
     QCOMPARE(reader.size(), image.size());
-    QCOMPARE(reader.autoTransform(), true);
-    reader.setAutoTransform(false);
+    QCOMPARE(reader.autoTransform(), false);
     QCOMPARE(reader.transformation(), transformation);
     QImage image2 = reader.read();
     QVERIFY2(!image.isNull(), qPrintable(reader.errorString()));
@@ -466,8 +468,7 @@ void tst_qtiff::supportsOption_data()
     QTest::newRow("tiff") << (QIntList()
                               << QImageIOHandler::Size
                               << QImageIOHandler::CompressionRatio
-                              << QImageIOHandler::ImageTransformation
-                              << QImageIOHandler::TransformedByDefault);
+                              << QImageIOHandler::ImageTransformation);
 }
 
 void tst_qtiff::supportsOption()
@@ -489,8 +490,7 @@ void tst_qtiff::supportsOption()
                << QImageIOHandler::Endianness
                << QImageIOHandler::Animation
                << QImageIOHandler::BackgroundColor
-               << QImageIOHandler::ImageTransformation
-               << QImageIOHandler::TransformedByDefault;
+               << QImageIOHandler::ImageTransformation;
 
     QImageWriter writer;
     writer.setFormat("tiff");
@@ -499,7 +499,7 @@ void tst_qtiff::supportsOption()
         allOptions.remove(QImageIOHandler::ImageOption(options.at(i)));
     }
 
-    foreach (QImageIOHandler::ImageOption option, allOptions)
+    for (QImageIOHandler::ImageOption option : qAsConst(allOptions))
         QVERIFY(!writer.supportsOption(option));
 }
 
@@ -625,6 +625,41 @@ void tst_qtiff::readGray16()
     QImage image = reader.read();
     QVERIFY(!image.isNull());
     QCOMPARE(image.format(), QImage::Format_Grayscale16);
+}
+
+void tst_qtiff::colorSpace_data()
+{
+    QTest::addColumn<decltype(QColorSpace::SRgb)>("namedColorSpace");
+
+    QTest::newRow("sRGB")         << QColorSpace::SRgb;
+    QTest::newRow("sRGB(linear)") << QColorSpace::SRgbLinear;
+    QTest::newRow("AdobeRGB")     << QColorSpace::AdobeRgb;
+    QTest::newRow("DisplayP3")    << QColorSpace::DisplayP3;
+    QTest::newRow("ProPhotoRgb")  << QColorSpace::ProPhotoRgb;
+}
+
+void tst_qtiff::colorSpace()
+{
+    QFETCH(decltype(QColorSpace::SRgb), namedColorSpace);
+
+    QImage image(prefix + "colorful.bmp");
+    QVERIFY(!image.isNull());
+
+    image.setColorSpace(namedColorSpace);
+
+    QByteArray output;
+    QBuffer buf(&output);
+    QVERIFY(buf.open(QIODevice::WriteOnly));
+    QImageWriter writer(&buf, "tiff");
+    writer.write(image);
+    buf.close();
+
+    QVERIFY(buf.open(QIODevice::ReadOnly));
+    QImageReader reader(&buf);
+    QImage image2 = reader.read();
+
+    QCOMPARE(image2.colorSpace(), namedColorSpace);
+    QCOMPARE(image2, image);
 }
 
 QTEST_MAIN(tst_qtiff)

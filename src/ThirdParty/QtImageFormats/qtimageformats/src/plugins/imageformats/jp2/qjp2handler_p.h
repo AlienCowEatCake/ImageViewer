@@ -64,7 +64,9 @@ public:
     QVariant option(ImageOption option) const Q_DECL_OVERRIDE;
     void setOption(ImageOption option, const QVariant &value) Q_DECL_OVERRIDE;
     bool supportsOption(ImageOption option) const Q_DECL_OVERRIDE;
+#if QT_DEPRECATED_SINCE(5, 13)
     QByteArray name() const Q_DECL_OVERRIDE;
+#endif
 
 private:
     Q_DECLARE_PRIVATE(QJp2Handler)

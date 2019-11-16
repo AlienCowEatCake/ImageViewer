@@ -42,9 +42,6 @@
 
 #ifndef QT_NO_IMAGEFORMATPLUGIN
 
-#ifdef QT_NO_IMAGEFORMAT_WEBP
-#undef QT_NO_IMAGEFORMAT_WEBP
-#endif
 #include "qwebphandler_p.h"
 
 #include <qiodevice.h>

@@ -1,2 +1,4 @@
 TEMPLATE = subdirs
-SUBDIRS = plugins imageformats
+SUBDIRS = imageformats plugins
+
+plugins.depends = imageformats

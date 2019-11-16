@@ -39,6 +39,9 @@
 
 #include "qtiffhandler_p.h"
 #include <qvariant.h>
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+#include <qcolorspace.h>
+#endif
 #include <qdebug.h>
 #include <qimage.h>
 #include <qglobal.h>
@@ -412,9 +415,10 @@ bool QTiffHandler::read(QImage *image)
                 }
 
                 for (int i = 0; i<tableSize ;++i) {
-                    const int red = redTable[i] / 257;
-                    const int green = greenTable[i] / 257;
-                    const int blue = blueTable[i] / 257;
+                    // emulate libtiff behavior for 16->8 bit color map conversion: just ignore the lower 8 bits
+                    const int red = redTable[i] >> 8;
+                    const int green = greenTable[i] >> 8;
+                    const int blue = blueTable[i] >> 8;
                     qtColorTable[i] = qRgb(red, green, blue);
                 }
             }
@@ -516,6 +520,17 @@ bool QTiffHandler::read(QImage *image)
         }
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    uint32 count;
+    void *profile;
+    if (TIFFGetField(tiff, TIFFTAG_ICCPROFILE, &count, &profile)) {
+        QByteArray iccProfile(reinterpret_cast<const char *>(profile), count);
+        image->setColorSpace(QColorSpace::fromIccProfile(iccProfile));
+    }
+    // We do not handle colorimetric metadat not on ICC profile form, it seems to be a lot
+    // less common, and would need additional API in QColorSpace.
+#endif
+
     return true;
 }
 
@@ -562,7 +577,7 @@ static QVector<QRgb> effectiveColorTable(const QImage &image)
 static quint32 defaultStripSize(TIFF *tiff)
 {
     // Aim for 4MB strips
-    qint64 scanSize = qMax(tmsize_t(1), TIFFScanlineSize(tiff));
+    qint64 scanSize = qMax(qint64(1), qint64(TIFFScanlineSize(tiff)));
     qint64 numRows = (4 * 1024 * 1024) / scanSize;
     quint32 reqSize = static_cast<quint32>(qBound(qint64(1), numRows, qint64(UINT_MAX)));
     return TIFFDefaultStripSize(tiff, reqSize);
@@ -622,7 +637,16 @@ bool QTiffHandler::write(const QImage &image)
         TIFFClose(tiff);
         return false;
     }
-
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    // set color space
+    if (image.colorSpace().isValid()) {
+        QByteArray iccProfile = image.colorSpace().iccProfile();
+        if (!TIFFSetField(tiff, TIFFTAG_ICCPROFILE, iccProfile.size(), reinterpret_cast<const void *>(iccProfile.constData()))) {
+            TIFFClose(tiff);
+            return false;
+        }
+    }
+#endif
     // configure image depth
     const QImage::Format format = image.format();
     if (format == QImage::Format_Mono || format == QImage::Format_MonoLSB) {
@@ -638,8 +662,12 @@ bool QTiffHandler::write(const QImage &image)
         }
 
         // try to do the conversion in chunks no greater than 16 MB
-        int chunks = (width * height / (1024 * 1024 * 16)) + 1;
-        int chunkHeight = qMax(height / chunks, 1);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+        const int chunks = int(image.sizeInBytes() / (1024 * 1024 * 16)) + 1;
+#else
+        const int chunks = int(image.byteCount() / (1024 * 1024 * 16)) + 1;
+#endif
+        const int chunkHeight = qMax(height / chunks, 1);
 
         int y = 0;
         while (y < height) {
@@ -708,22 +736,10 @@ bool QTiffHandler::write(const QImage &image)
         }
 
         //// write the data
-        // try to do the conversion in chunks no greater than 16 MB
-        int chunks = (width * height/ (1024 * 1024 * 16)) + 1;
-        int chunkHeight = qMax(height / chunks, 1);
-
-        int y = 0;
-        while (y < height) {
-            QImage chunk = image.copy(0, y, width, qMin(chunkHeight, height - y));
-
-            int chunkStart = y;
-            int chunkEnd = y + chunk.height();
-            while (y < chunkEnd) {
-                if (TIFFWriteScanline(tiff, reinterpret_cast<uint32 *>(chunk.scanLine(y - chunkStart)), y) != 1) {
-                    TIFFClose(tiff);
-                    return false;
-                }
-                ++y;
+        for (int y = 0; y < height; ++y) {
+            if (TIFFWriteScanline(tiff, const_cast<uchar *>(image.scanLine(y)), y) != 1) {
+                TIFFClose(tiff);
+                return false;
             }
         }
         TIFFClose(tiff);
@@ -782,7 +798,11 @@ bool QTiffHandler::write(const QImage &image)
             return false;
         }
         // try to do the RGB888 conversion in chunks no greater than 16 MB
-        const int chunks = (width * height * 3 / (1024 * 1024 * 16)) + 1;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+        const int chunks = int(image.sizeInBytes() / (1024 * 1024 * 16)) + 1;
+#else
+        const int chunks = int(image.byteCount() / (1024 * 1024 * 16)) + 1;
+#endif
         const int chunkHeight = qMax(height / chunks, 1);
 
         int y = 0;
@@ -815,7 +835,11 @@ bool QTiffHandler::write(const QImage &image)
             return false;
         }
         // try to do the RGBA8888 conversion in chunks no greater than 16 MB
-        const int chunks = (width * height * 4 / (1024 * 1024 * 16)) + 1;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+        const int chunks = int(image.sizeInBytes() / (1024 * 1024 * 16)) + 1;
+#else
+        const int chunks = int(image.byteCount() / (1024 * 1024 * 16)) + 1;
+#endif
         const int chunkHeight = qMax(height / chunks, 1);
 
         const QImage::Format format = premultiplied ? QImage::Format_RGBA8888_Premultiplied
@@ -840,10 +864,12 @@ bool QTiffHandler::write(const QImage &image)
     return true;
 }
 
+#if QT_DEPRECATED_SINCE(5, 13)
 QByteArray QTiffHandler::name() const
 {
     return "tiff";
 }
+#endif
 
 QVariant QTiffHandler::option(ImageOption option) const
 {
@@ -878,8 +904,7 @@ bool QTiffHandler::supportsOption(ImageOption option) const
     return option == CompressionRatio
             || option == Size
             || option == ImageFormat
-            || option == ImageTransformation
-            || option == TransformedByDefault;
+            || option == ImageTransformation;
 }
 
 bool QTiffHandler::jumpToNextImage()

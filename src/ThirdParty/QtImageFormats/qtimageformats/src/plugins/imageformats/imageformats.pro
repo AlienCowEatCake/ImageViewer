@@ -2,17 +2,21 @@ TEMPLATE = subdirs
 SUBDIRS = \
 #    dds \
     tga \
-    tiff \
-    wbmp \
-    webp
+    wbmp
+
+include($$OUT_PWD/../../imageformats/qtimageformats-config.pri)
+QT_FOR_CONFIG += imageformats-private
+
+qtConfig(tiff): SUBDIRS += tiff
+qtConfig(webp): SUBDIRS += webp
 
 darwin: SUBDIRS += macheif
 
 qtConfig(regularexpression): \
     SUBDIRS += icns
 
-config_libmng: SUBDIRS += mng
-config_jasper {
+qtConfig(mng): SUBDIRS += mng
+qtConfig(jasper) {
     SUBDIRS += jp2
 } else:darwin: {
     SUBDIRS += macjp2

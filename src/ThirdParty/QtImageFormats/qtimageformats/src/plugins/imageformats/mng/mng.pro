@@ -5,8 +5,10 @@ SOURCES += main.cpp \
            qmnghandler.cpp
 OTHER_FILES += mng.json
 
-msvc: LIBS += libmng.lib
-else: LIBS += -lmng
+include($$OUT_PWD/../../../imageformats/qtimageformats-config.pri)
+QT_FOR_CONFIG += imageformats-private
+
+QMAKE_USE_PRIVATE += mng
 
 PLUGIN_TYPE = imageformats
 PLUGIN_CLASS_NAME = QMngPlugin

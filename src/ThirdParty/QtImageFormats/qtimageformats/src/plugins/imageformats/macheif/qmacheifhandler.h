@@ -49,13 +49,13 @@ class QImage;
 class QByteArray;
 class QIODevice;
 class QVariant;
-class QMacHeifHandlerPrivate;
+class QIIOFHelper;
 
 class QMacHeifHandler : public QImageIOHandler
 {
 public:
     QMacHeifHandler();
-    ~QMacHeifHandler();
+    ~QMacHeifHandler() override;
 
     bool canRead() const override;
     bool read(QImage *image) override;
@@ -67,8 +67,7 @@ public:
     static bool canRead(QIODevice *iod);
 
 private:
-    Q_DECLARE_PRIVATE(QMacHeifHandler)
-    QScopedPointer<QMacHeifHandlerPrivate> d_ptr;
+    QScopedPointer<QIIOFHelper> d;
 };
 
 QT_END_NAMESPACE

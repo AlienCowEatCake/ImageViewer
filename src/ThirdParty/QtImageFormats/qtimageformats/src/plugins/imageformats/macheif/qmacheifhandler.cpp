@@ -43,22 +43,8 @@
 
 QT_BEGIN_NAMESPACE
 
-class QMacHeifHandlerPrivate
-{
-    Q_DECLARE_PUBLIC(QMacHeifHandler)
-    Q_DISABLE_COPY(QMacHeifHandlerPrivate)
-public:
-    QMacHeifHandlerPrivate(QMacHeifHandler *q_ptr)
-        : writeQuality(-1), q_ptr(q_ptr)
-    {}
-
-    int writeQuality;
-    QMacHeifHandler *q_ptr;
-};
-
-
 QMacHeifHandler::QMacHeifHandler()
-    : d_ptr(new QMacHeifHandlerPrivate(this))
+    : d(new QIIOFHelper(this))
 {
 }
 
@@ -90,28 +76,29 @@ bool QMacHeifHandler::canRead() const
 
 bool QMacHeifHandler::read(QImage *image)
 {
-    return QIIOFHelpers::readImage(this, image);
+    return d->readImage(image);
 }
 
 bool QMacHeifHandler::write(const QImage &image)
 {
-    return QIIOFHelpers::writeImage(this, image, QStringLiteral("public.heic"));
+    return d->writeImage(image, QStringLiteral("public.heic"));
 }
 
 QVariant QMacHeifHandler::option(ImageOption option) const
 {
-    return QVariant();
+    return d->imageProperty(option);
 }
 
 void QMacHeifHandler::setOption(ImageOption option, const QVariant &value)
 {
-    Q_UNUSED(option)
-    Q_UNUSED(value)
+    d->setOption(option, value);
 }
 
 bool QMacHeifHandler::supportsOption(ImageOption option) const
 {
-    return false;
+    return option == Quality
+        || option == Size
+        || option == ImageTransformation;
 }
 
 QT_END_NAMESPACE

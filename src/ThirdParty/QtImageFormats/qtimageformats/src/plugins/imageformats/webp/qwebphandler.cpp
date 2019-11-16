@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2016 The Qt Company Ltd.
+** Copyright (C) 2019 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the WebP plugins in the Qt ImageFormats module.
@@ -38,6 +38,7 @@
 ****************************************************************************/
 
 #include "qwebphandler_p.h"
+#include "webp/mux.h"
 #include "webp/encode.h"
 #include <qcolor.h>
 #include <qimage.h>
@@ -51,6 +52,7 @@ QWebpHandler::QWebpHandler() :
     m_quality(75),
     m_scanState(ScanNotScanned),
     m_features(),
+    m_formatFlags(0),
     m_loop(0),
     m_frameCount(0),
     m_demuxer(NULL),
@@ -151,6 +153,7 @@ bool QWebpHandler::ensureDemuxer()
     if (m_demuxer == NULL)
         return false;
 
+    m_formatFlags = WebPDemuxGetI(m_demuxer, WEBP_FF_FORMAT_FLAGS);
     return true;
 }
 
@@ -160,6 +163,18 @@ bool QWebpHandler::read(QImage *image)
         return false;
 
     if (m_iter.frame_num == 0) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        // Read global meta-data chunks first
+        WebPChunkIterator metaDataIter;
+        if ((m_formatFlags & ICCP_FLAG) && WebPDemuxGetChunk(m_demuxer, "ICCP", 1, &metaDataIter)) {
+            const QByteArray iccProfile = QByteArray::fromRawData(reinterpret_cast<const char *>(metaDataIter.chunk.bytes),
+                                                                  metaDataIter.chunk.size);
+            m_colorSpace = QColorSpace::fromIccProfile(iccProfile);
+            // ### consider parsing EXIF and/or XMP metadata too.
+            WebPDemuxReleaseChunkIterator(&metaDataIter);
+        }
+#endif
+
         // Go to first frame
         if (!WebPDemuxGetFrame(m_demuxer, 1, &m_iter))
             return false;
@@ -205,21 +220,21 @@ bool QWebpHandler::read(QImage *image)
 
         *image = *m_composited;
     }
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    image->setColorSpace(m_colorSpace);
+#endif
 
     return true;
-}
-
-static int pictureWriter(const quint8 *data, size_t data_size, const WebPPicture *const pic)
-{
-    QIODevice *io = reinterpret_cast<QIODevice*>(pic->custom_ptr);
-
-    return data_size ? ((quint64)(io->write((const char*)data, data_size)) == data_size) : 1;
 }
 
 bool QWebpHandler::write(const QImage &image)
 {
     if (image.isNull()) {
         qWarning() << "source image is null.";
+        return false;
+    }
+    if (std::max(image.width(), image.height()) > WEBP_MAX_DIMENSION) {
+        qWarning() << "QWebpHandler::write() source image too large for WebP: " << image.size();
         return false;
     }
 
@@ -277,8 +292,10 @@ bool QWebpHandler::write(const QImage &image)
         config.quality = 70;  // For lossless, specifies compression effort; 70 is libwebp default
     }
     config.alpha_quality = config.quality;
-    picture.writer = pictureWriter;
-    picture.custom_ptr = device();
+    WebPMemoryWriter writer;
+    WebPMemoryWriterInit(&writer);
+    picture.writer = WebPMemoryWrite;
+    picture.custom_ptr = &writer;
 
     if (!WebPEncode(&config, &picture)) {
         qWarning() << "failed to encode webp picture, error code: " << picture.error_code;
@@ -286,9 +303,55 @@ bool QWebpHandler::write(const QImage &image)
         return false;
     }
 
+    bool res = false;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    if (image.colorSpace().isValid()) {
+        int copy_data = 0;
+        WebPMux *mux = WebPMuxNew();
+        WebPData image_data = { writer.mem, writer.size };
+        WebPMuxSetImage(mux, &image_data, copy_data);
+        uint8_t vp8xChunk[10];
+        uint8_t flags = 0x20; // Has ICCP chunk, no XMP, EXIF or animation.
+        if (image.hasAlphaChannel())
+            flags |= 0x10;
+        vp8xChunk[0] = flags;
+        vp8xChunk[1] = 0;
+        vp8xChunk[2] = 0;
+        vp8xChunk[3] = 0;
+        const unsigned width = image.width() - 1;
+        const unsigned height = image.height() - 1;
+        vp8xChunk[4] = width & 0xff;
+        vp8xChunk[5] = (width >> 8) & 0xff;
+        vp8xChunk[6] = (width >> 16) & 0xff;
+        vp8xChunk[7] = height & 0xff;
+        vp8xChunk[8] = (height >> 8) & 0xff;
+        vp8xChunk[9] = (height >> 16) & 0xff;
+        WebPData vp8x_data = { vp8xChunk, 10 };
+        if (WebPMuxSetChunk(mux, "VP8X", &vp8x_data, copy_data) == WEBP_MUX_OK) {
+            QByteArray iccProfile = image.colorSpace().iccProfile();
+            WebPData iccp_data = {
+                    reinterpret_cast<const uint8_t *>(iccProfile.constData()),
+                    static_cast<size_t>(iccProfile.size())
+            };
+            if (WebPMuxSetChunk(mux, "ICCP", &iccp_data, copy_data) == WEBP_MUX_OK) {
+                WebPData output_data;
+                if (WebPMuxAssemble(mux, &output_data) == WEBP_MUX_OK) {
+                    res = (output_data.size ==
+                               static_cast<size_t>(device()->write(reinterpret_cast<const char *>(output_data.bytes), output_data.size)));
+                }
+                WebPDataClear(&output_data);
+            }
+        }
+        WebPMuxDelete(mux);
+    }
+#endif
+    if (!res) {
+        res = (writer.size ==
+                   static_cast<size_t>(device()->write(reinterpret_cast<const char *>(writer.mem), writer.size)));
+    }
     WebPPictureFree(&picture);
 
-    return true;
+    return res;
 }
 
 QVariant QWebpHandler::option(ImageOption option) const
@@ -330,10 +393,12 @@ bool QWebpHandler::supportsOption(ImageOption option) const
         || option == BackgroundColor;
 }
 
+#if QT_DEPRECATED_SINCE(5, 13)
 QByteArray QWebpHandler::name() const
 {
     return QByteArrayLiteral("webp");
 }
+#endif
 
 int QWebpHandler::imageCount() const
 {

@@ -5,8 +5,10 @@ SOURCES += main.cpp \
            qjp2handler.cpp
 OTHER_FILES += jp2.json
 
-msvc: LIBS += libjasper.lib
-else: LIBS += -ljasper
+include($$OUT_PWD/../../../imageformats/qtimageformats-config.pri)
+QT_FOR_CONFIG += imageformats-private
+
+QMAKE_USE_PRIVATE += jasper
 
 PLUGIN_TYPE = imageformats
 PLUGIN_CLASS_NAME = QJp2Plugin

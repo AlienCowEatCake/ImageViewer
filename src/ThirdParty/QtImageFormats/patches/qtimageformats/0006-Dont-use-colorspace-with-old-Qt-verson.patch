@@ -1,0 +1,130 @@
+From bcf755531bd8f6e35e1fb1d4567b3ebc6c763552 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 17 Nov 2019 01:42:45 +0700
+Subject: [PATCH 6/6] Dont use colorspace with old Qt verson
+
+---
+ src/plugins/imageformats/tiff/qtiffhandler.cpp | 6 ++++++
+ src/plugins/imageformats/webp/qwebphandler.cpp | 6 ++++++
+ src/plugins/imageformats/webp/qwebphandler_p.h | 4 ++++
+ 3 files changed, 16 insertions(+)
+
+diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+index 8cfe74f..9ceaa09 100644
+--- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
++++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+@@ -39,7 +39,9 @@
+ 
+ #include "qtiffhandler_p.h"
+ #include <qvariant.h>
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+ #include <qcolorspace.h>
++#endif
+ #include <qdebug.h>
+ #include <qimage.h>
+ #include <qglobal.h>
+@@ -518,6 +520,7 @@ bool QTiffHandler::read(QImage *image)
+         }
+     }
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+     uint32 count;
+     void *profile;
+     if (TIFFGetField(tiff, TIFFTAG_ICCPROFILE, &count, &profile)) {
+@@ -526,6 +529,7 @@ bool QTiffHandler::read(QImage *image)
+     }
+     // We do not handle colorimetric metadat not on ICC profile form, it seems to be a lot
+     // less common, and would need additional API in QColorSpace.
++#endif
+ 
+     return true;
+ }
+@@ -633,6 +637,7 @@ bool QTiffHandler::write(const QImage &image)
+         TIFFClose(tiff);
+         return false;
+     }
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+     // set color space
+     if (image.colorSpace().isValid()) {
+         QByteArray iccProfile = image.colorSpace().iccProfile();
+@@ -641,6 +646,7 @@ bool QTiffHandler::write(const QImage &image)
+             return false;
+         }
+     }
++#endif
+     // configure image depth
+     const QImage::Format format = image.format();
+     if (format == QImage::Format_Mono || format == QImage::Format_MonoLSB) {
+diff --git a/src/plugins/imageformats/webp/qwebphandler.cpp b/src/plugins/imageformats/webp/qwebphandler.cpp
+index 7200ea7..1ae5d5d 100644
+--- a/src/plugins/imageformats/webp/qwebphandler.cpp
++++ b/src/plugins/imageformats/webp/qwebphandler.cpp
+@@ -163,6 +163,7 @@ bool QWebpHandler::read(QImage *image)
+         return false;
+ 
+     if (m_iter.frame_num == 0) {
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+         // Read global meta-data chunks first
+         WebPChunkIterator metaDataIter;
+         if ((m_formatFlags & ICCP_FLAG) && WebPDemuxGetChunk(m_demuxer, "ICCP", 1, &metaDataIter)) {
+@@ -172,6 +173,7 @@ bool QWebpHandler::read(QImage *image)
+             // ### consider parsing EXIF and/or XMP metadata too.
+             WebPDemuxReleaseChunkIterator(&metaDataIter);
+         }
++#endif
+ 
+         // Go to first frame
+         if (!WebPDemuxGetFrame(m_demuxer, 1, &m_iter))
+@@ -218,7 +220,9 @@ bool QWebpHandler::read(QImage *image)
+ 
+         *image = *m_composited;
+     }
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+     image->setColorSpace(m_colorSpace);
++#endif
+ 
+     return true;
+ }
+@@ -300,6 +304,7 @@ bool QWebpHandler::write(const QImage &image)
+     }
+ 
+     bool res = false;
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+     if (image.colorSpace().isValid()) {
+         int copy_data = 0;
+         WebPMux *mux = WebPMuxNew();
+@@ -339,6 +344,7 @@ bool QWebpHandler::write(const QImage &image)
+         }
+         WebPMuxDelete(mux);
+     }
++#endif
+     if (!res) {
+         res = (writer.size ==
+                    static_cast<size_t>(device()->write(reinterpret_cast<const char *>(writer.mem), writer.size)));
+diff --git a/src/plugins/imageformats/webp/qwebphandler_p.h b/src/plugins/imageformats/webp/qwebphandler_p.h
+index a96437b..8342cd1 100644
+--- a/src/plugins/imageformats/webp/qwebphandler_p.h
++++ b/src/plugins/imageformats/webp/qwebphandler_p.h
+@@ -41,7 +41,9 @@
+ #define QWEBPHANDLER_P_H
+ 
+ #include <QtGui/qcolor.h>
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+ #include <QtGui/qcolorspace.h>
++#endif
+ #include <QtGui/qimage.h>
+ #include <QtGui/qimageiohandler.h>
+ #include <QtCore/qbytearray.h>
+@@ -99,7 +101,9 @@ private:
+     WebPData m_webpData;
+     WebPDemuxer *m_demuxer;
+     WebPIterator m_iter;
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+     QColorSpace m_colorSpace;
++#endif
+     QImage *m_composited;   // For animation frames composition
+ };
+ 
+-- 
+2.20.1
+

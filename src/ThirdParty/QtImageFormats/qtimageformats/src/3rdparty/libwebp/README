@@ -4,7 +4,7 @@
           \__\__/\____/\_____/__/ ____  ___
                 / _/ /    \    \ /  _ \/ _/
                /  \_/   / /   \ \   __/  \__
-               \____/____/\_____/_____/____/v1.0.1
+               \____/____/\_____/_____/____/v1.0.3
 
 Description:
 ============
@@ -135,6 +135,8 @@ CMake, e.g.:
 cmake -DWEBP_BUILD_CWEBP=ON -DWEBP_BUILD_DWEBP=ON ../
 
 or through your favorite interface (like ccmake or cmake-qt-gui).
+
+Use option -DWEBP_UNICODE=ON for Unicode support on Windows (with chcp 65001).
 
 Finally, once installed, you can also use WebP in your CMake project by doing:
 
@@ -595,7 +597,7 @@ The encoding flow looks like:
   // Setup a config, starting form a preset and tuning some additional
   // parameters
   WebPConfig config;
-  if (!WebPConfigPreset(&config, WEBP_PRESET_PHOTO, quality_factor))
+  if (!WebPConfigPreset(&config, WEBP_PRESET_PHOTO, quality_factor)) {
     return 0;   // version error
   }
   // ... additional tuning

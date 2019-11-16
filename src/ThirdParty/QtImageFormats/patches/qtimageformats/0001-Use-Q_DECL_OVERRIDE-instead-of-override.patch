@@ -1,7 +1,7 @@
-From 65c9247641dd268c02e4560bcc8a830e0305f2ac Mon Sep 17 00:00:00 2001
+From 48837617d95a21b991043590151483b834d8a5d6 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 10 Mar 2018 15:40:08 +0700
-Subject: [PATCH 1/5] Use "Q_DECL_OVERRIDE" instead of "override"
+Subject: [PATCH 1/6] Use "Q_DECL_OVERRIDE" instead of "override"
 
 ---
  src/plugins/imageformats/dds/qddshandler.h    | 18 ++++++-------
@@ -16,15 +16,16 @@ Subject: [PATCH 1/5] Use "Q_DECL_OVERRIDE" instead of "override"
  9 files changed, 75 insertions(+), 75 deletions(-)
 
 diff --git a/src/plugins/imageformats/dds/qddshandler.h b/src/plugins/imageformats/dds/qddshandler.h
-index 665bd16..cfaa38c 100644
+index f4bc888..a527657 100644
 --- a/src/plugins/imageformats/dds/qddshandler.h
 +++ b/src/plugins/imageformats/dds/qddshandler.h
-@@ -53,18 +53,18 @@ class QDDSHandler : public QImageIOHandler
- public:
+@@ -54,19 +54,19 @@ public:
      QDDSHandler();
  
+ #if QT_DEPRECATED_SINCE(5, 13)
 -    QByteArray name() const override;
 +    QByteArray name() const Q_DECL_OVERRIDE;
+ #endif
  
 -    bool canRead() const override;
 -    bool read(QImage *image) override;
@@ -48,10 +49,10 @@ index 665bd16..cfaa38c 100644
      static bool canRead(QIODevice *device);
  
 diff --git a/src/plugins/imageformats/icns/qicnshandler_p.h b/src/plugins/imageformats/icns/qicnshandler_p.h
-index 84c7bf1..778b73f 100644
+index b532045..fe072a6 100644
 --- a/src/plugins/imageformats/icns/qicnshandler_p.h
 +++ b/src/plugins/imageformats/icns/qicnshandler_p.h
-@@ -128,18 +128,18 @@ class QICNSHandler : public QImageIOHandler
+@@ -128,20 +128,20 @@ class QICNSHandler : public QImageIOHandler
  public:
      QICNSHandler();
  
@@ -62,8 +63,10 @@ index 84c7bf1..778b73f 100644
 +    bool read(QImage *image) Q_DECL_OVERRIDE;
 +    bool write(const QImage &image) Q_DECL_OVERRIDE;
  
+ #if QT_DEPRECATED_SINCE(5, 13)
 -    QByteArray name() const override;
 +    QByteArray name() const Q_DECL_OVERRIDE;
+ #endif
  
 -    bool supportsOption(ImageOption option) const override;
 -    QVariant option(ImageOption option) const override;
@@ -80,10 +83,10 @@ index 84c7bf1..778b73f 100644
      static bool canRead(QIODevice *device);
  
 diff --git a/src/plugins/imageformats/jp2/qjp2handler_p.h b/src/plugins/imageformats/jp2/qjp2handler_p.h
-index e81ec9e..d20eec5 100644
+index 16ddc8a..5424054 100644
 --- a/src/plugins/imageformats/jp2/qjp2handler_p.h
 +++ b/src/plugins/imageformats/jp2/qjp2handler_p.h
-@@ -58,13 +58,13 @@ public:
+@@ -58,14 +58,14 @@ public:
      QJp2Handler();
      ~QJp2Handler();
      static bool canRead(QIODevice *iod, QByteArray *subType);
@@ -93,17 +96,18 @@ index e81ec9e..d20eec5 100644
 -    QVariant option(ImageOption option) const override;
 -    void setOption(ImageOption option, const QVariant &value) override;
 -    bool supportsOption(ImageOption option) const override;
--    QByteArray name() const override;
 +    bool canRead() const Q_DECL_OVERRIDE;
 +    bool read(QImage *image) Q_DECL_OVERRIDE;
 +    bool write(const QImage &image) Q_DECL_OVERRIDE;
 +    QVariant option(ImageOption option) const Q_DECL_OVERRIDE;
 +    void setOption(ImageOption option, const QVariant &value) Q_DECL_OVERRIDE;
 +    bool supportsOption(ImageOption option) const Q_DECL_OVERRIDE;
+ #if QT_DEPRECATED_SINCE(5, 13)
+-    QByteArray name() const override;
 +    QByteArray name() const Q_DECL_OVERRIDE;
+ #endif
  
  private:
-     Q_DECLARE_PRIVATE(QJp2Handler)
 diff --git a/src/plugins/imageformats/mng/qmnghandler_p.h b/src/plugins/imageformats/mng/qmnghandler_p.h
 index 0f9a207..41bde34 100644
 --- a/src/plugins/imageformats/mng/qmnghandler_p.h
@@ -174,10 +178,10 @@ index 5d086c6..12866fd 100644
          char r, g, b, a;
          if (s->getChar(&b) && s->getChar(&g) && s->getChar(&r) && s->getChar(&a))
 diff --git a/src/plugins/imageformats/tga/qtgahandler.h b/src/plugins/imageformats/tga/qtgahandler.h
-index 5ef7e02..1960681 100644
+index 6550a11..6ad6855 100644
 --- a/src/plugins/imageformats/tga/qtgahandler.h
 +++ b/src/plugins/imageformats/tga/qtgahandler.h
-@@ -52,16 +52,16 @@ public:
+@@ -52,18 +52,18 @@ public:
      QTgaHandler();
      ~QTgaHandler();
  
@@ -186,8 +190,10 @@ index 5ef7e02..1960681 100644
 +    bool canRead() const Q_DECL_OVERRIDE;
 +    bool read(QImage *image) Q_DECL_OVERRIDE;
  
+ #if QT_DEPRECATED_SINCE(5, 13)
 -    QByteArray name() const override;
 +    QByteArray name() const Q_DECL_OVERRIDE;
+ #endif
  
      static bool canRead(QIODevice *device);
  
@@ -201,10 +207,10 @@ index 5ef7e02..1960681 100644
  private:
      mutable QTgaFile *tga;
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler_p.h b/src/plugins/imageformats/tiff/qtiffhandler_p.h
-index 2090e38..7608d26 100644
+index c2eb412..3131672 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler_p.h
 +++ b/src/plugins/imageformats/tiff/qtiffhandler_p.h
-@@ -51,22 +51,22 @@ class QTiffHandler : public QImageIOHandler
+@@ -51,24 +51,24 @@ class QTiffHandler : public QImageIOHandler
  public:
      QTiffHandler();
  
@@ -215,8 +221,10 @@ index 2090e38..7608d26 100644
 +    bool read(QImage *image) Q_DECL_OVERRIDE;
 +    bool write(const QImage &image) Q_DECL_OVERRIDE;
  
+ #if QT_DEPRECATED_SINCE(5, 13)
 -    QByteArray name() const override;
 +    QByteArray name() const Q_DECL_OVERRIDE;
+ #endif
  
      static bool canRead(QIODevice *device);
  
@@ -261,15 +269,16 @@ index 3856fc4..9cdaee8 100644
      static bool canRead(QIODevice *device);
  
 diff --git a/src/plugins/imageformats/webp/qwebphandler_p.h b/src/plugins/imageformats/webp/qwebphandler_p.h
-index 950b501..5126692 100644
+index 96a8811..a96437b 100644
 --- a/src/plugins/imageformats/webp/qwebphandler_p.h
 +++ b/src/plugins/imageformats/webp/qwebphandler_p.h
-@@ -56,23 +56,23 @@ public:
-     ~QWebpHandler();
+@@ -58,24 +58,24 @@ public:
  
  public:
+ #if QT_DEPRECATED_SINCE(5, 13)
 -    QByteArray name() const override;
 +    QByteArray name() const Q_DECL_OVERRIDE;
+ #endif
  
 -    bool canRead() const override;
 -    bool read(QImage *image) override;
@@ -301,5 +310,5 @@ index 950b501..5126692 100644
  private:
      bool ensureScanned() const;
 -- 
-2.19.2
+2.20.1
 

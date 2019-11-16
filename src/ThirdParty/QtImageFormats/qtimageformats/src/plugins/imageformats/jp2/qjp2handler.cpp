@@ -308,6 +308,7 @@ bool QJp2Handler::supportsOption(ImageOption option) const
     return (option == Quality || option == SubType);
 }
 
+#if QT_DEPRECATED_SINCE(5, 13)
 /*!
     Return the common identifier of the format.
     For JPEG 2000 this will return "jp2".
@@ -316,6 +317,7 @@ QByteArray QJp2Handler::name() const
 {
     return QByteArrayLiteral("jp2");
 }
+#endif
 
 /*!
     Automatic resource handling for a jas_image_t*.

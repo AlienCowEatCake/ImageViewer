@@ -52,6 +52,9 @@
 //
 
 #include <QImageIOPlugin>
+#include <private/qcore_mac_p.h>
+#include <ImageIO/ImageIO.h>
+#include <QVector>
 
 QT_BEGIN_NAMESPACE
 
@@ -65,6 +68,27 @@ public:
     static QImageIOPlugin::Capabilities systemCapabilities(const QString &uti);
     static bool readImage(QImageIOHandler *q_ptr, QImage *out);
     static bool writeImage(QImageIOHandler *q_ptr, const QImage &in, const QString &uti);
+};
+
+class QIIOFHelper
+{
+public:
+    QIIOFHelper(QImageIOHandler *q);
+
+    bool readImage(QImage *out);
+    bool writeImage(const QImage &in, const QString &uti);
+    QVariant imageProperty(QImageIOHandler::ImageOption option);
+    void setOption(QImageIOHandler::ImageOption option, const QVariant &value);
+
+protected:
+    bool initRead();
+    bool getIntProperty(CFStringRef property, int *value);
+
+    QImageIOHandler *q_ptr = nullptr;
+    QVector<QVariant> writeOptions;
+    QCFType<CGDataProviderRef> cgDataProvider = nullptr;
+    QCFType<CGImageSourceRef> cgImageSource = nullptr;
+    QCFType<CFDictionaryRef> cfImageDict = nullptr;
 };
 
 QT_END_NAMESPACE

@@ -38,15 +38,12 @@
 ****************************************************************************/
 
 #include <QGuiApplication>
-#include <qpa/qplatformnativeinterface.h>
 #include <QBuffer>
 #include <QImageIOHandler>
 #include <QImage>
-#include <private/qcore_mac_p.h>
 
 #include "qiiofhelpers_p.h"
 
-#include <ImageIO/ImageIO.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -57,14 +54,14 @@ static size_t cbGetBytes(void *info, void *buffer, size_t count)
     QIODevice *dev = static_cast<QIODevice *>(info);
     if (!dev || !buffer)
         return 0;
-    qint64 res = dev->read(static_cast<char *>(buffer), count);
-    return qMax(qint64(0), res);
+    qint64 res = dev->read(static_cast<char *>(buffer), qint64(count));
+    return size_t(qMax(qint64(0), res));
 }
 
 static off_t cbSkipForward(void *info, off_t count)
 {
     QIODevice *dev = static_cast<QIODevice *>(info);
-    if (!dev || !count)
+    if (!dev || count <= 0)
         return 0;
     qint64 res = 0;
     if (!dev->isSequential()) {
@@ -72,7 +69,7 @@ static off_t cbSkipForward(void *info, off_t count)
         dev->seek(prevPos + count);
         res = dev->pos() - prevPos;
     } else {
-        char *buf = new char[count];
+        char *buf = new char[quint64(count)];
         res = dev->read(buf, count);
         delete[] buf;
     }
@@ -89,8 +86,8 @@ static size_t cbPutBytes(void *info, const void *buffer, size_t count)
     QIODevice *dev = static_cast<QIODevice *>(info);
     if (!dev || !buffer)
         return 0;
-    qint64 res = dev->write(static_cast<const char *>(buffer), count);
-    return qMax(qint64(0), res);
+    qint64 res = dev->write(static_cast<const char *>(buffer), qint64(count));
+    return size_t(qMax(qint64(0), res));
 }
 
 
@@ -118,22 +115,49 @@ QImageIOPlugin::Capabilities QIIOFHelpers::systemCapabilities(const QString &uti
 
 bool QIIOFHelpers::readImage(QImageIOHandler *q_ptr, QImage *out)
 {
+    QIIOFHelper h(q_ptr);
+    return h.readImage(out);
+}
+
+bool QIIOFHelpers::writeImage(QImageIOHandler *q_ptr, const QImage &in, const QString &uti)
+{
+    QIIOFHelper h(q_ptr);
+    return h.writeImage(in, uti);
+}
+
+QIIOFHelper::QIIOFHelper(QImageIOHandler *q)
+    : q_ptr(q)
+{
+}
+
+bool QIIOFHelper::initRead()
+{
     static const CGDataProviderSequentialCallbacks cgCallbacks = { 0, &cbGetBytes, &cbSkipForward, &cbRewind, nullptr };
 
-    if (!q_ptr || !q_ptr->device() || !out)
+    if (cgImageSource)
+        return true;
+    if (!q_ptr || !q_ptr->device())
         return false;
 
-    QCFType<CGDataProviderRef> cgDataProvider;
     if (QBuffer *b = qobject_cast<QBuffer *>(q_ptr->device())) {
         // do direct access to avoid data copy
         const void *rawData = b->data().constData() + b->pos();
-        cgDataProvider = CGDataProviderCreateWithData(nullptr, rawData, b->data().size() - b->pos(), nullptr);
+        cgDataProvider = CGDataProviderCreateWithData(nullptr, rawData, size_t(b->data().size() - b->pos()), nullptr);
     } else {
         cgDataProvider = CGDataProviderCreateSequential(q_ptr->device(), &cgCallbacks);
     }
 
-    QCFType<CGImageSourceRef> cgImageSource = CGImageSourceCreateWithDataProvider(cgDataProvider, nullptr);
-    if (!cgImageSource)
+    cgImageSource = CGImageSourceCreateWithDataProvider(cgDataProvider, nullptr);
+
+    if (cgImageSource)
+        cfImageDict = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nullptr);
+
+    return (cgImageSource);
+}
+
+bool QIIOFHelper::readImage(QImage *out)
+{
+    if (!out || !initRead())
         return false;
 
     QCFType<CGImageRef> cgImage = CGImageSourceCreateImageAtIndex(cgImageSource, 0, nullptr);
@@ -141,11 +165,117 @@ bool QIIOFHelpers::readImage(QImageIOHandler *q_ptr, QImage *out)
         return false;
 
     *out = qt_mac_toQImage(cgImage);
-    return !out->isNull();
+    if (out->isNull())
+        return false;
+
+    int dpi = 0;
+    if (getIntProperty(kCGImagePropertyDPIWidth, &dpi))
+        out->setDotsPerMeterX(qRound(dpi / 0.0254f));
+    if (getIntProperty(kCGImagePropertyDPIHeight, &dpi))
+        out->setDotsPerMeterY(qRound(dpi / 0.0254f));
+
+    return true;
 }
 
+bool QIIOFHelper::getIntProperty(CFStringRef property, int *value)
+{
+    if (!cfImageDict)
+        return false;
 
-bool QIIOFHelpers::writeImage(QImageIOHandler *q_ptr, const QImage &in, const QString &uti)
+    CFNumberRef cfNumber = static_cast<CFNumberRef>(CFDictionaryGetValue(cfImageDict, property));
+    if (cfNumber) {
+        int intVal;
+        if (CFNumberGetValue(cfNumber, kCFNumberIntType, &intVal)) {
+            if (value)
+                *value = intVal;
+            return true;
+        }
+    }
+    return false;
+}
+
+static QImageIOHandler::Transformations exif2Qt(int exifOrientation)
+{
+    switch (exifOrientation) {
+    case 1: // normal
+        return QImageIOHandler::TransformationNone;
+    case 2: // mirror horizontal
+        return QImageIOHandler::TransformationMirror;
+    case 3: // rotate 180
+        return QImageIOHandler::TransformationRotate180;
+    case 4: // mirror vertical
+        return QImageIOHandler::TransformationFlip;
+    case 5: // mirror horizontal and rotate 270 CW
+        return QImageIOHandler::TransformationFlipAndRotate90;
+    case 6: // rotate 90 CW
+        return QImageIOHandler::TransformationRotate90;
+    case 7: // mirror horizontal and rotate 90 CW
+        return QImageIOHandler::TransformationMirrorAndRotate90;
+    case 8: // rotate 270 CW
+        return QImageIOHandler::TransformationRotate270;
+    }
+    return QImageIOHandler::TransformationNone;
+}
+
+static int qt2Exif(QImageIOHandler::Transformations transformation)
+{
+    switch (transformation) {
+    case QImageIOHandler::TransformationNone:
+        return 1;
+    case QImageIOHandler::TransformationMirror:
+        return 2;
+    case QImageIOHandler::TransformationRotate180:
+        return 3;
+    case QImageIOHandler::TransformationFlip:
+        return 4;
+    case QImageIOHandler::TransformationFlipAndRotate90:
+        return 5;
+    case QImageIOHandler::TransformationRotate90:
+        return 6;
+    case QImageIOHandler::TransformationMirrorAndRotate90:
+        return 7;
+    case QImageIOHandler::TransformationRotate270:
+        return 8;
+    }
+    qWarning("Invalid Qt image transformation");
+    return 1;
+}
+
+QVariant QIIOFHelper::imageProperty(QImageIOHandler::ImageOption option)
+{
+    if (!initRead())
+        return QVariant();
+
+    switch (option) {
+    case QImageIOHandler::Size: {
+        QSize sz;
+        if (getIntProperty(kCGImagePropertyPixelWidth, &sz.rwidth())
+                && getIntProperty(kCGImagePropertyPixelHeight, &sz.rheight())) {
+            return sz;
+        }
+        break;
+    }
+    case QImageIOHandler::ImageTransformation: {
+        int orient;
+        if (getIntProperty(kCGImagePropertyOrientation, &orient))
+            return int(exif2Qt(orient));
+        break;
+    }
+    default:
+        break;
+    }
+
+    return QVariant();
+}
+
+void QIIOFHelper::setOption(QImageIOHandler::ImageOption option, const QVariant &value)
+{
+    if (writeOptions.size() < option + 1)
+        writeOptions.resize(option + 1);
+    writeOptions[option] = value;
+}
+
+bool QIIOFHelper::writeImage(const QImage &in, const QString &uti)
 {
     static const CGDataConsumerCallbacks cgCallbacks = { &cbPutBytes, nullptr };
 
@@ -159,17 +289,35 @@ bool QIIOFHelpers::writeImage(QImageIOHandler *q_ptr, const QImage &in, const QS
     if (!cgImageDest || !cgImage)
         return false;
 
-    QCFType<CFNumberRef> cfVal;
-    QCFType<CFDictionaryRef> cfProps;
+    QCFType<CFNumberRef> cfQuality = nullptr;
+    QCFType<CFNumberRef> cfOrientation = nullptr;
+    const void *dictKeys[2];
+    const void *dictVals[2];
+    int dictSize = 0;
+
     if (q_ptr->supportsOption(QImageIOHandler::Quality)) {
         bool ok = false;
-        int writeQuality = q_ptr->option(QImageIOHandler::Quality).toInt(&ok);
+        int writeQuality = writeOptions.value(QImageIOHandler::Quality).toInt(&ok);
         // If quality is unset, default to 75%
-        float quality = (ok && writeQuality >= 0 ? (qMin(writeQuality, 100)) : 75) / 100.0;
-        cfVal = CFNumberCreate(nullptr, kCFNumberFloatType, &quality);
-        cfProps = CFDictionaryCreate(nullptr, (const void **)&kCGImageDestinationLossyCompressionQuality, (const void **)&cfVal, 1,
-                                     &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+        float quality = (ok && writeQuality >= 0 ? (qMin(writeQuality, 100)) : 75) / 100.0f;
+        cfQuality = CFNumberCreate(nullptr, kCFNumberFloatType, &quality);
+        dictKeys[dictSize] = static_cast<const void *>(kCGImageDestinationLossyCompressionQuality);
+        dictVals[dictSize] = static_cast<const void *>(cfQuality);
+        dictSize++;
     }
+    if (q_ptr->supportsOption(QImageIOHandler::ImageTransformation)) {
+        int orient = qt2Exif(static_cast<QImageIOHandler::Transformation>(writeOptions.value(QImageIOHandler::ImageTransformation).toInt()));
+        cfOrientation = CFNumberCreate(nullptr, kCFNumberIntType, &orient);
+        dictKeys[dictSize] = static_cast<const void *>(kCGImagePropertyOrientation);
+        dictVals[dictSize] = static_cast<const void *>(cfOrientation);
+        dictSize++;
+    }
+
+    QCFType<CFDictionaryRef> cfProps = nullptr;
+    if (dictSize)
+        cfProps = CFDictionaryCreate(nullptr, dictKeys, dictVals, dictSize,
+                                     &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+
     CGImageDestinationAddImage(cgImageDest, cgImage, cfProps);
     return CGImageDestinationFinalize(cgImageDest);
 }
