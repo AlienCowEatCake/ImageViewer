@@ -20,38 +20,38 @@
     </message>
     <message>
         <location filename="../../src/Utils/FileUtils.cpp" line="350"/>
-        <location filename="../../src/Utils/FileUtils.cpp" line="433"/>
-        <location filename="../../src/Utils/FileUtils.cpp" line="615"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="386"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="629"/>
         <source>The specified path could not be moved to Trash</source>
         <translation>The specified path could not be moved to Trash</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="377"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="442"/>
         <source>The specified path does not exist</source>
         <translation>The specified path does not exist</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="534"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="548"/>
         <source>Failed to init BEntry for specified path: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="544"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="558"/>
         <source>Failed to get entry_ref for specified path: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="554"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="568"/>
         <source>Failed to find Trash: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="564"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="578"/>
         <source>Failed to init BDirectory for %1: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="589"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="603"/>
         <source>Failed to move entry into trash %1: %2</source>
         <translation type="unfinished"></translation>
     </message>

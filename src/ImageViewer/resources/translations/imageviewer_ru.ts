@@ -4,17 +4,17 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="106"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="109"/>
         <source>Peter S. Zhigalov</source>
         <translation>Жигалов Петр</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="433"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="520"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="444"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="531"/>
         <source>License</source>
         <translation>Лицензия</translation>
     </message>
@@ -333,8 +333,8 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="154"/>
-        <location filename="../../src/GUI/MainController.cpp" line="318"/>
-        <location filename="../../src/GUI/MainController.cpp" line="365"/>
+        <location filename="../../src/GUI/MainController.cpp" line="320"/>
+        <location filename="../../src/GUI/MainController.cpp" line="367"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>Не удалось открыть файл &quot;%1&quot;</translation>
     </message>
@@ -368,8 +368,8 @@
         <location filename="../../src/GUI/MainController.cpp" line="169"/>
         <location filename="../../src/GUI/MainController.cpp" line="190"/>
         <location filename="../../src/GUI/MainController.cpp" line="198"/>
-        <location filename="../../src/GUI/MainController.cpp" line="318"/>
-        <location filename="../../src/GUI/MainController.cpp" line="365"/>
+        <location filename="../../src/GUI/MainController.cpp" line="320"/>
+        <location filename="../../src/GUI/MainController.cpp" line="367"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
