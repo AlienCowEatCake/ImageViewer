@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_ZSTD_PATH = $${PWD}/zstd-1.4.3
+THIRDPARTY_ZSTD_PATH = $${PWD}/zstd-1.4.4
 THIRDPARTY_ZSTD_WORKAROUND_PATH = $${PWD}/workaround
 
 include(../CommonSettings.pri)
@@ -82,6 +82,7 @@ HEADERS += \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_compress_internal.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_compress_literals.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_compress_sequences.h \
+    $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_cwksp.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_double_fast.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_fast.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_lazy.h \
