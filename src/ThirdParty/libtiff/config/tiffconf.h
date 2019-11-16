@@ -55,6 +55,13 @@
 
 #endif
 
+/* Unsigned size type */
+#if defined(QT_POINTER_SIZE) && (QT_POINTER_SIZE == 4)
+#define TIFF_SIZE_T quint32
+#else
+#define TIFF_SIZE_T quint64
+#endif
+
 /* Signed size type */
 #if defined(QT_POINTER_SIZE) && (QT_POINTER_SIZE == 4)
 #define TIFF_SSIZE_T qint32

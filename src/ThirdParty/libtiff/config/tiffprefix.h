@@ -38,6 +38,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#d
 #define TIFFDefaultDirectory tp_TIFFDefaultDirectory
 #define TIFFDefaultStripSize tp_TIFFDefaultStripSize
 #define TIFFDefaultTileSize tp_TIFFDefaultTileSize
+#define TIFFDeferStrileArrayWriting tp_TIFFDeferStrileArrayWriting
 #define TIFFError tp_TIFFError
 #define TIFFErrorExt tp_TIFFErrorExt
 #define TIFFFaxBlackCodes tp_TIFFFaxBlackCodes
@@ -63,6 +64,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#d
 #define TIFFFlush tp_TIFFFlush
 #define TIFFFlushData tp_TIFFFlushData
 #define TIFFFlushData1 tp_TIFFFlushData1
+#define TIFFForceStrileArrayWriting tp_TIFFForceStrileArrayWriting
 #define TIFFFreeDirectory tp_TIFFFreeDirectory
 #define TIFFGetBitRevTable tp_TIFFGetBitRevTable
 #define TIFFGetClientInfo tp_TIFFGetClientInfo
@@ -75,6 +77,10 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#d
 #define TIFFGetReadProc tp_TIFFGetReadProc
 #define TIFFGetSeekProc tp_TIFFGetSeekProc
 #define TIFFGetSizeProc tp_TIFFGetSizeProc
+#define TIFFGetStrileByteCount tp_TIFFGetStrileByteCount
+#define TIFFGetStrileByteCountWithErr tp_TIFFGetStrileByteCountWithErr
+#define TIFFGetStrileOffset tp_TIFFGetStrileOffset
+#define TIFFGetStrileOffsetWithErr tp_TIFFGetStrileOffsetWithErr
 #define TIFFGetTagListCount tp_TIFFGetTagListCount
 #define TIFFGetTagListEntry tp_TIFFGetTagListEntry
 #define TIFFGetUnmapFileProc tp_TIFFGetUnmapFileProc
@@ -128,6 +134,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#d
 #define TIFFReadEXIFDirectory tp_TIFFReadEXIFDirectory
 #define TIFFReadEncodedStrip tp_TIFFReadEncodedStrip
 #define TIFFReadEncodedTile tp_TIFFReadEncodedTile
+#define TIFFReadFromUserBuffer tp_TIFFReadFromUserBuffer
 #define TIFFReadRGBAImage tp_TIFFReadRGBAImage
 #define TIFFReadRGBAImageOriented tp_TIFFReadRGBAImageOriented
 #define TIFFReadRGBAStrip tp_TIFFReadRGBAStrip
@@ -203,9 +210,11 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#d
 #define TIFFYCbCrtoRGB tp_TIFFYCbCrtoRGB
 #define XYZtoRGB24 tp_XYZtoRGB24
 #define _TIFFBuiltinCODECS tp__TIFFBuiltinCODECS
+#define _TIFFCastUInt64ToSSize tp__TIFFCastUInt64ToSSize
 #define _TIFFCheckFieldIsValidForCodec tp__TIFFCheckFieldIsValidForCodec
 #define _TIFFCheckMalloc tp__TIFFCheckMalloc
 #define _TIFFCheckRealloc tp__TIFFCheckRealloc
+#define _TIFFClampDoubleToFloat tp__TIFFClampDoubleToFloat
 #define _TIFFCreateAnonField tp__TIFFCreateAnonField
 #define _TIFFDataSize tp__TIFFDataSize
 #define _TIFFDefaultStripSize tp__TIFFDefaultStripSize
@@ -218,6 +227,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#d
 #define _TIFFMergeFields tp__TIFFMergeFields
 #define _TIFFMultiply32 tp__TIFFMultiply32
 #define _TIFFMultiply64 tp__TIFFMultiply64
+#define _TIFFMultiplySSize tp__TIFFMultiplySSize
 #define _TIFFNoPostDecode tp__TIFFNoPostDecode
 #define _TIFFNoPreCode tp__TIFFNoPreCode
 #define _TIFFNoRowDecode tp__TIFFNoRowDecode
