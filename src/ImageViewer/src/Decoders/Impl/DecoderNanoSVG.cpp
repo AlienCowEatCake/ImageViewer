@@ -98,7 +98,7 @@ public:
         m_maxScaleFactor = std::min(MAX_IMAGE_DIMENSION / m_width, MAX_IMAGE_DIMENSION / m_height);
     }
 
-    ~NanoSVGPixmapProvider() Q_DECL_OVERRIDE
+    ~NanoSVGPixmapProvider()
     {
         if(m_rasterizer)
             nsvgDeleteRasterizer(m_rasterizer);

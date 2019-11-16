@@ -32,7 +32,7 @@ class AbstractSVGWebBrowserNoJS : public AbstractSVGWebBrowser
 
 public:
     AbstractSVGWebBrowserNoJS();
-    ~AbstractSVGWebBrowserNoJS()  Q_DECL_OVERRIDE;
+    ~AbstractSVGWebBrowserNoJS();
 
 protected:
     virtual QByteArray getSvgData() = 0;
