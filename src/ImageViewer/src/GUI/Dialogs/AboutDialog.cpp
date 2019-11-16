@@ -63,6 +63,9 @@
 #if defined (HAS_LIBHEIF)
 #include <libheif/heif.h>
 #endif
+#if defined (HAS_OPENEXR)
+#include <OpenEXR/OpenEXRConfig.h>
+#endif
 #if defined (HAS_JBIGKIT)
 #include <jbig.h>
 #endif
@@ -334,6 +337,17 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://github.com/strukturag/libheif"),
                       QString::fromLatin1("GNU LGPL v3"),
                       QString::fromLatin1("https://github.com/strukturag/libheif/blob/master/COPYING")
+                      ));
+#endif
+
+#if defined (HAS_OPENEXR)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the OpenEXR library"),
+                      QString::fromLatin1("openexr"),
+                      QString::fromLatin1(OPENEXR_VERSION_STRING),
+                      QString::fromLatin1("https://www.openexr.com/"),
+                      QString::fromLatin1("3-clause BSD License"),
+                      QString::fromLatin1("https://github.com/openexr/openexr/blob/master/LICENSE.md")
                       ));
 #endif
 

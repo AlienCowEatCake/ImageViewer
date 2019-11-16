@@ -244,6 +244,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderLibHEIF.cpp
 }
 
+!disable_openexr {
+    SOURCES += \
+        src/Decoders/Impl/DecoderOpenEXR.cpp
+}
+
 !disable_qtsvg {
     QT += svg
     SOURCES += \

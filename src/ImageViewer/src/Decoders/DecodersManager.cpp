@@ -83,6 +83,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderJbigKit"              ,  540, -1); ///< Умеет формат JBIG1.
         P("DecoderLibRaw"               ,  550, -1); ///< Умеет форматы RAW.
         P("DecoderLibHEIF"              ,  560, -1); ///< Умеет формат HEIF с кодеком HEVC.
+        P("DecoderOpenEXR"              ,  570, -1); ///< Умеет формат EXR.
         /// @note Декодеры анимированных изображений
         P("DecoderQMovie"               , 1090, -1); ///< Умеет анимированные gif.
         P("DecoderGifLib"               , 1100, -1); ///< Умеет анимированные gif, но медленнее, чем QMovie, зато поддерживает ICCP и более всеяден.

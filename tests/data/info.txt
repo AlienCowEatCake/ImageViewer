@@ -718,6 +718,7 @@ JP2: https://github.com/uclouvain/openjpeg-data/
 RAW: https://commonsarchive.wmflabs.org/wiki/Category:Camera_raw_files
      https://raw.pixls.us/?noncc0#repo
      https://drive.google.com/drive/folders/19zeKUfiB7aFIxC4AKk_broTm1hP01cP7
+EXR: https://github.com/openexr/openexr-images
 
 --------------------------------------------------------------------------------
 

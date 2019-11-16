@@ -92,6 +92,10 @@ SUBDIRS =
     SUBDIRS += libheif/libheif.pro
 }
 
+!disable_openexr : !system_openexr {
+    SUBDIRS += OpenEXR/OpenEXR.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }

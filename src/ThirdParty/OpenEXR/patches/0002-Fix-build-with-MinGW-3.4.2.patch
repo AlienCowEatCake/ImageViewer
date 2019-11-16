@@ -1,0 +1,305 @@
+From 256a6a28dbfb6ada1af690935a750884878be9ac Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sat, 16 Nov 2019 18:20:28 +0700
+Subject: [PATCH 2/3] Fix build with MinGW 3.4.2
+
+---
+ IlmBase/Half/half.h                | 13 +++++++++++
+ IlmBase/Half/halfFunction.h        |  7 ++++++
+ IlmBase/IexMath/IexMathFloatExc.h  |  7 ++++++
+ IlmBase/Imath/ImathColor.h         | 18 +++++++++++++--
+ OpenEXR/IlmImf/ImfFrameBuffer.h    |  2 +-
+ OpenEXR/IlmImf/ImfStdIO.cpp        | 34 +++++++++-------------------
+ OpenEXR/IlmImf/ImfSystemSpecific.h | 36 ++++++++++++++++++++++++++++--
+ 7 files changed, 89 insertions(+), 28 deletions(-)
+
+diff --git a/IlmBase/Half/half.h b/IlmBase/Half/half.h
+index 6a5ee23..415fcef 100644
+--- a/IlmBase/Half/half.h
++++ b/IlmBase/Half/half.h
+@@ -96,12 +96,21 @@ class half
+     // Constructors
+     //-------------
+ 
++#if __cplusplus >= 201103L
+     half () = default;			// no initialization
++#else
++    half () {}					// no initialization
++#endif
+     half (float f);
+     // rule of 5
++#if __cplusplus >= 201103L
+     ~half () = default;
+     half (const half &) = default;
+     half (half &&) noexcept = default;
++#else
++    ~half () {}
++    half (const half &h) { this->_h = h._h; }
++#endif
+ 
+     //--------------------
+     // Conversion to float
+@@ -121,8 +130,12 @@ class half
+     // Assignment
+     //-----------
+ 
++#if __cplusplus >= 201103L
+     half &		operator = (const half  &h) = default;
+     half &		operator = (half  &&h) noexcept = default;
++#else
++    half &		operator = (const half  &h) { this->_h = h._h; return *this; }
++#endif
+     half &		operator = (float f);
+ 
+     half &		operator += (half  h);
+diff --git a/IlmBase/Half/halfFunction.h b/IlmBase/Half/halfFunction.h
+index 16bae05..a45f37c 100644
+--- a/IlmBase/Half/halfFunction.h
++++ b/IlmBase/Half/halfFunction.h
+@@ -114,10 +114,17 @@ class halfFunction
+ 
+ #ifndef ILMBASE_HAVE_LARGE_STACK
+     ~halfFunction () { delete [] _lut; }
++#if __cplusplus >= 201103L
+     halfFunction (const halfFunction &) = delete;
+     halfFunction& operator= (const halfFunction &) = delete;
+     halfFunction (halfFunction &&) = delete;
+     halfFunction& operator= (halfFunction &&) = delete;
++#else
++  private:
++    halfFunction (const halfFunction &);
++    halfFunction& operator= (const halfFunction &);
++  public:
++#endif
+ #endif
+ 
+     //-----------
+diff --git a/IlmBase/IexMath/IexMathFloatExc.h b/IlmBase/IexMath/IexMathFloatExc.h
+index 5bf3d11..9befff6 100644
+--- a/IlmBase/IexMath/IexMathFloatExc.h
++++ b/IlmBase/IexMath/IexMathFloatExc.h
+@@ -106,10 +106,17 @@ class MathExcOn
+ 
+     IEXMATH_EXPORT MathExcOn (int when);
+     IEXMATH_EXPORT ~MathExcOn ();
++#if __cplusplus >= 201103L
+     MathExcOn (const MathExcOn&) = delete;
+     MathExcOn& operator= (const MathExcOn&) = delete;
+     MathExcOn (MathExcOn&&) = delete;
+     MathExcOn& operator= (MathExcOn&&) = delete;
++#else
++  private:
++    MathExcOn (const MathExcOn&);
++    MathExcOn& operator= (const MathExcOn&);
++  public:
++#endif
+ 
+     // It is possible for functions to set the exception registers
+     // yet not trigger a SIGFPE.  Specifically, the implementation
+diff --git a/IlmBase/Imath/ImathColor.h b/IlmBase/Imath/ImathColor.h
+index 79ef544..a6422b0 100644
+--- a/IlmBase/Imath/ImathColor.h
++++ b/IlmBase/Imath/ImathColor.h
+@@ -62,7 +62,7 @@ class Color3: public Vec3 <T>
+     Color3 ();			// no initialization
+     explicit Color3 (T a);	// (a a a)
+     Color3 (T a, T b, T c);	// (a b c)
+-    ~Color3 () = default;
++    ~Color3 ();
+ 
+     //---------------------------------
+     // Copy constructors and assignment
+@@ -139,7 +139,7 @@ template <class T> class Color4
+     Color4 ();			    	// no initialization
+     explicit Color4 (T a);		// (a a a a)
+     Color4 (T a, T b, T c, T d);	// (a b c d)
+-    ~Color4 () = default;
++    ~Color4 ();
+ 
+     //---------------------------------
+     // Copy constructors and assignment
+@@ -309,6 +309,13 @@ Color3<T>::Color3 (T a, T b, T c): Vec3 <T> (a, b, c)
+     // empty
+ }
+ 
++template <class T>
++inline
++Color3<T>::~Color3 ()
++{
++    // empty
++}
++
+ template <class T>
+ inline
+ Color3<T>::Color3 (const Color3 &c): Vec3 <T> (c)
+@@ -479,6 +486,13 @@ Color4<T>::Color4 (T x, T y, T z, T w)
+     a = w;
+ }
+ 
++template <class T>
++inline
++Color4<T>::~Color4 ()
++{
++    // empty
++}
++
+ template <class T>
+ inline
+ Color4<T>::Color4 (const Color4 &v)
+diff --git a/OpenEXR/IlmImf/ImfFrameBuffer.h b/OpenEXR/IlmImf/ImfFrameBuffer.h
+index dca74b0..02eaf55 100644
+--- a/OpenEXR/IlmImf/ImfFrameBuffer.h
++++ b/OpenEXR/IlmImf/ImfFrameBuffer.h
+@@ -52,7 +52,7 @@
+ 
+ #include <map>
+ #include <string>
+-#include <cstdint>
++#include <stdint.h>
+ 
+ 
+ OPENEXR_IMF_INTERNAL_NAMESPACE_HEADER_ENTER
+diff --git a/OpenEXR/IlmImf/ImfStdIO.cpp b/OpenEXR/IlmImf/ImfStdIO.cpp
+index c0c34e7..2a93c78 100644
+--- a/OpenEXR/IlmImf/ImfStdIO.cpp
++++ b/OpenEXR/IlmImf/ImfStdIO.cpp
+@@ -86,8 +86,7 @@ template <typename CharT, typename TraitsT>
+ class InjectFilebuf : public basic_filebuf<CharT, TraitsT>
+ {
+ public:
+-    using base_filebuf = basic_filebuf<CharT, TraitsT>;
+-    inline base_filebuf* wide_open (int fd, ios_base::openmode m)
++    inline basic_filebuf<CharT, TraitsT>* wide_open (int fd, ios_base::openmode m)
+     {
+         // sys_open will do an fdopen internally which will then clean up the fd upon close
+         this->_M_file.sys_open (fd, m);
+@@ -105,7 +104,7 @@ public:
+             // we don't ever seek to end or anything, so should be done at this point...
+             return this;
+         }
+-        return nullptr;
++        return NULL;
+     }
+ };
+ # endif // USE_CUSTOM_WIDE_OPEN
+@@ -115,21 +114,16 @@ make_ifstream (const char *filename)
+ {
+     wstring wfn = WidenFilename (filename);
+ # ifdef USE_CUSTOM_WIDE_OPEN
+-    int     fd;
+-    errno_t e = _wsopen_s (
+-        &fd, wfn.c_str (), _O_RDONLY|_O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+-    if (e != 0)
++    int fd = _wsopen (
++        wfn.c_str (), _O_RDONLY|_O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
++    if (fd == 0)
+     {
+-        char errbuf[4096];
+-        strerror_s (errbuf, 4096, e);
+-        errno = e;
++        char* errbuf = strerror (errno);
+         throw IEX_NAMESPACE::ErrnoExc (
+             "Unable to open input filestream: " + std::string (errbuf));
+     }
+     ifstream* ret = new ifstream;
+-    using CharT   = ifstream::char_type;
+-    using TraitsT = ifstream::traits_type;
+-    if (static_cast<InjectFilebuf<CharT, TraitsT>*> (ret->rdbuf ())
++    if (static_cast<InjectFilebuf<ifstream::char_type, ifstream::traits_type>*> (ret->rdbuf ())
+         ->wide_open (fd, ios_base::in | ios_base::binary))
+     {
+         ret->clear();
+@@ -146,25 +140,19 @@ make_ofstream (const char* filename)
+ {
+     wstring   wfn = WidenFilename (filename);
+ # ifdef USE_CUSTOM_WIDE_OPEN
+-    int     fd;
+-    errno_t e = _wsopen_s (
+-        &fd,
++    int fd = _wsopen (
+         wfn.c_str (),
+         _O_WRONLY | _O_CREAT | _O_BINARY,
+         _SH_DENYNO,
+         _S_IREAD | _S_IWRITE);
+-    if (e != 0)
++    if (fd == 0)
+     {
+-        char errbuf[4096];
+-        strerror_s (errbuf, 4096, e);
+-        errno = e;
++        char* errbuf = strerror (errno);
+         throw IEX_NAMESPACE::ErrnoExc (
+             "Unable to open output filestream: " + std::string(errbuf));
+     }
+     ofstream* ret = new ofstream;
+-    using CharT   = ifstream::char_type;
+-    using TraitsT = ifstream::traits_type;
+-    if (static_cast<InjectFilebuf<CharT, TraitsT>*> (ret->rdbuf ())
++    if (static_cast<InjectFilebuf<ifstream::char_type, ifstream::traits_type>*> (ret->rdbuf ())
+             ->wide_open (fd, ios_base::out | ios_base::binary))
+     {
+         ret->clear ();
+diff --git a/OpenEXR/IlmImf/ImfSystemSpecific.h b/OpenEXR/IlmImf/ImfSystemSpecific.h
+index fa801b2..b47cc91 100644
+--- a/OpenEXR/IlmImf/ImfSystemSpecific.h
++++ b/OpenEXR/IlmImf/ImfSystemSpecific.h
+@@ -37,6 +37,10 @@
+ 
+ #include "ImfNamespace.h"
+ #include "ImfSimd.h"
++#if defined(_WIN32) && defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)
++# include <errno.h>
++# include <stdint.h>
++#endif
+ #include <stdlib.h>
+ #include "ImfExport.h"
+ 
+@@ -55,7 +59,28 @@ inline void*
+ EXRAllocAligned (size_t size, size_t alignment)
+ {
+     // GNUC is used for things like mingw to (cross-)compile for windows
+-#ifdef _WIN32
++#if defined(_WIN32) && defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)
++# define EXR_NOT_POWER_OF_TWO(n) (((n) & ((n) - 1)))
++# define EXR_UI(p) ((uintptr_t) (p))
++# define EXR_PTR_ALIGN(p0, alignment) ((void*) ((EXR_UI(p0) + (alignment + sizeof(void*))) & (~EXR_UI(alignment - 1))))
++# define EXR_ORIG_PTR(p) (*(((void**) (EXR_UI(p) & (~EXR_UI(sizeof(void*) - 1)))) - 1))
++    if (EXR_NOT_POWER_OF_TWO (alignment))
++    {
++        errno = EINVAL;
++        return NULL;
++    }
++    if (size == 0)
++        return NULL;
++    if (alignment < sizeof (void*))
++        alignment = sizeof (void*);
++
++    void* p0 = malloc (size + (alignment + sizeof (void*)));
++    if (!p0)
++        return NULL;
++    void* p = EXR_PTR_ALIGN (p0, alignment);
++    EXR_ORIG_PTR (p) = p0;
++    return p;
++#elif defined(_WIN32)
+     return _aligned_malloc (size, alignment);
+ #elif defined(__INTEL_COMPILER) || defined(__ICL) || defined(__ICC) || defined(__ECC)
+     return _mm_malloc (size, alignment);
+@@ -76,7 +101,14 @@ EXRAllocAligned (size_t size, size_t alignment)
+ inline void
+ EXRFreeAligned (void* ptr)
+ {
+-#ifdef _WIN32
++#if defined(_WIN32) && defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)
++    if (ptr)
++      free (EXR_ORIG_PTR (ptr));
++# undef EXR_NOT_POWER_OF_TWO
++# undef EXR_UI
++# undef EXR_PTR_ALIGN
++# undef EXR_ORIG_PTR
++#elif defined(_WIN32)
+     _aligned_free (ptr);
+ #elif defined(__INTEL_COMPILER) || defined(__ICL) || defined(__ICC) ||         \
+     defined(__ECC)
+-- 
+2.20.1
+
