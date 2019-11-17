@@ -96,7 +96,11 @@ private:
         QStringList result;
         const QStringList globbed = glob(pattern);
         for(QStringList::ConstIterator it = globbed.constBegin(), itEnd = globbed.constEnd(); it != itEnd; ++it)
-            result.append(parseConf(*it));
+        {
+            const QStringList paths = parseConf(*it);
+            for(QStringList::ConstIterator jt = paths.constBegin(), jtEnd = paths.constEnd(); jt != jtEnd; ++jt)
+                result.append(*jt);
+        }
 
         return result;
     }
@@ -125,7 +129,9 @@ private:
             if(line.startsWith(QString::fromLatin1("include"), Qt::CaseInsensitive) && line[7].isSpace())
             {
                 line = line.mid(7).trimmed();
-                result.append(parseConfInclude(configFile, line));
+                const QStringList paths = parseConfInclude(configFile, line);
+                for(QStringList::ConstIterator jt = paths.constBegin(), jtEnd = paths.constEnd(); jt != jtEnd; ++jt)
+                    result.append(*jt);
             }
             else if(!(line.startsWith(QString::fromLatin1("hwcap"), Qt::CaseInsensitive) && line[5].isSpace()))
             {

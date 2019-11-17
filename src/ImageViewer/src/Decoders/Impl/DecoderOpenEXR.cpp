@@ -31,12 +31,22 @@
 #include <OpenEXR/ImfRgbaFile.h>
 #include <OpenEXR/Iex.h>
 
+#if defined (OPENEXR_VERSION_MAJOR) && defined (OPENEXR_VERSION_MINOR) && defined (OPENEXR_VERSION_PATCH)
+#define OPENEXR_VERSION_GREATER_OR_EQUAL(MAJOR, MINOR, PATCH) \
+    QT_VERSION_CHECK((OPENEXR_VERSION_MAJOR), (OPENEXR_VERSION_MINOR), (OPENEXR_VERSION_PATCH)) >= \
+    QT_VERSION_CHECK((MAJOR), (MINOR), (PATCH))
+#else
+#define OPENEXR_VERSION_GREATER_OR_EQUAL(MAJOR, MINOR, PATCH) 0
+#endif
+
 #include <OpenEXR/ImfAttribute.h>
 #include <OpenEXR/ImfBoxAttribute.h>
 #include <OpenEXR/ImfChannelListAttribute.h>
 #include <OpenEXR/ImfChromaticitiesAttribute.h>
 #include <OpenEXR/ImfCompressionAttribute.h>
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(2, 1, 0)
 #include <OpenEXR/ImfDeepImageStateAttribute.h>
+#endif
 #include <OpenEXR/ImfDoubleAttribute.h>
 #include <OpenEXR/ImfEnvmapAttribute.h>
 #include <OpenEXR/ImfFloatAttribute.h>
@@ -49,7 +59,9 @@
 #include <OpenEXR/ImfPreviewImageAttribute.h>
 #include <OpenEXR/ImfRationalAttribute.h>
 #include <OpenEXR/ImfStringAttribute.h>
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(1, 7, 0)
 #include <OpenEXR/ImfStringVectorAttribute.h>
+#endif
 #include <OpenEXR/ImfTileDescriptionAttribute.h>
 #include <OpenEXR/ImfTimeCodeAttribute.h>
 #include <OpenEXR/ImfVecAttribute.h>
@@ -63,7 +75,7 @@
 #include "Internal/ImageMetaData.h"
 #include "Internal/PayloadWithMetaData.h"
 
-#if defined (_MSC_VER)
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(2, 2, 0) && defined (_MSC_VER)
 template <>
 void OPENEXR_IMF_INTERNAL_NAMESPACE::TypedAttribute<std::vector<float> >::writeValueTo (OPENEXR_IMF_INTERNAL_NAMESPACE::OStream &os, int version) const;
 template <>
@@ -72,9 +84,9 @@ void OPENEXR_IMF_INTERNAL_NAMESPACE::TypedAttribute<std::vector<float> >::readVa
 
 namespace {
 
-using namespace IEX_NAMESPACE;
-using namespace IMATH_NAMESPACE;
-using namespace OPENEXR_IMF_NAMESPACE;
+using namespace Iex;
+using namespace Imath;
+using namespace Imf;
 
 // ====================================================================================================
 
@@ -186,14 +198,17 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
             ADD_CASE(PXR24_COMPRESSION);
             ADD_CASE(B44_COMPRESSION);
             ADD_CASE(B44A_COMPRESSION);
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(2, 2, 0)
             ADD_CASE(DWAA_COMPRESSION);
             ADD_CASE(DWAB_COMPRESSION);
+#endif
 #undef ADD_CASE
             default:
                 value = QString::fromLatin1("Unknown");
                 break;
             }
         }
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(2, 1, 0)
         else if(const DeepImageStateAttribute *deepImageStateAttribute = dynamic_cast<const DeepImageStateAttribute*>(attribute))
         {
             const DeepImageState &deepImageState = deepImageStateAttribute->value();
@@ -210,6 +225,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
                 break;
             }
         }
+#endif
         else if(const DoubleAttribute *doubleAttribute = dynamic_cast<const DoubleAttribute*>(attribute))
         {
             value = QString::number(static_cast<qreal>(doubleAttribute->value()));
@@ -232,6 +248,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
         {
             value = QString::number(static_cast<qreal>(floatAttribute->value()));
         }
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(2, 2, 0)
         else if(const TypedAttribute<std::vector<float> > *floatVectorAttribute = dynamic_cast<const TypedAttribute<std::vector<float> > *>(attribute))
         {
             const std::vector<float> &floatVector = floatVectorAttribute->value();
@@ -240,6 +257,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
                 list.append(QString::number(static_cast<qreal>(*vIt)));
             value = list.join(QString::fromLatin1(", "));
         }
+#endif
         else if(const IntAttribute *intAttribute = dynamic_cast<const IntAttribute*>(attribute))
         {
             value = QString::number(intAttribute->value());
@@ -279,6 +297,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
                     .arg(static_cast<qreal>(m33f[1][0])).arg(static_cast<qreal>(m33f[1][1])).arg(static_cast<qreal>(m33f[1][2]))
                     .arg(static_cast<qreal>(m33f[2][0])).arg(static_cast<qreal>(m33f[2][1])).arg(static_cast<qreal>(m33f[2][2]));
         }
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(1, 7, 0)
         else if(const M33dAttribute *m33dAttribute = dynamic_cast<const M33dAttribute*>(attribute))
         {
             const M33d &m33d = m33dAttribute->value();
@@ -287,6 +306,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
                     .arg(static_cast<qreal>(m33d[1][0])).arg(static_cast<qreal>(m33d[1][1])).arg(static_cast<qreal>(m33d[1][2]))
                     .arg(static_cast<qreal>(m33d[2][0])).arg(static_cast<qreal>(m33d[2][1])).arg(static_cast<qreal>(m33d[2][2]));
         }
+#endif
         else if(const M44fAttribute *m44fAttribute = dynamic_cast<const M44fAttribute*>(attribute))
         {
             const M44f &m44f = m44fAttribute->value();
@@ -296,6 +316,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
                     .arg(static_cast<qreal>(m44f[2][0])).arg(static_cast<qreal>(m44f[2][1])).arg(static_cast<qreal>(m44f[2][2])).arg(static_cast<qreal>(m44f[2][3]))
                     .arg(static_cast<qreal>(m44f[3][0])).arg(static_cast<qreal>(m44f[3][1])).arg(static_cast<qreal>(m44f[3][2])).arg(static_cast<qreal>(m44f[3][3]));
         }
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(1, 7, 0)
         else if(const M44dAttribute *m44dAttribute = dynamic_cast<const M44dAttribute*>(attribute))
         {
             const M44d &m44d = m44dAttribute->value();
@@ -305,6 +326,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
                     .arg(static_cast<qreal>(m44d[2][0])).arg(static_cast<qreal>(m44d[2][1])).arg(static_cast<qreal>(m44d[2][2])).arg(static_cast<qreal>(m44d[2][3]))
                     .arg(static_cast<qreal>(m44d[3][0])).arg(static_cast<qreal>(m44d[3][1])).arg(static_cast<qreal>(m44d[3][2])).arg(static_cast<qreal>(m44d[3][3]));
         }
+#endif
         else if(const OpaqueAttribute *opaqueAttribute = dynamic_cast<const OpaqueAttribute*>(attribute))
         {
             Q_UNUSED(opaqueAttribute);
@@ -324,6 +346,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
         {
             value = QString::fromUtf8(stringAttribute->value().c_str());
         }
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(1, 7, 0)
         else if(const StringVectorAttribute *stringVectorAttribute = dynamic_cast<const StringVectorAttribute*>(attribute))
         {
             const StringVector &stringVector = stringVectorAttribute->value();
@@ -332,6 +355,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
                 list.append(QString::fromUtf8(vIt->c_str()));
             value = QString::fromLatin1("\"") + list.join(QString::fromLatin1("\", \"")) + QString::fromLatin1("\"");
         }
+#endif
         else if(const TileDescriptionAttribute *tileDescriptionAttribute = dynamic_cast<const TileDescriptionAttribute*>(attribute))
         {
             const TileDescription &tileDescription = tileDescriptionAttribute->value();
@@ -383,11 +407,13 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
             const V2f &v2f = v2fAttribute->value();
             value = QString::fromLatin1("%1, %2").arg(static_cast<qreal>(v2f[0])).arg(static_cast<qreal>(v2f[1]));
         }
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(1, 7, 0)
         else if(const V2dAttribute *v2dAttribute = dynamic_cast<const V2dAttribute*>(attribute))
         {
             const V2d &v2d = v2dAttribute->value();
             value = QString::fromLatin1("%1, %2").arg(static_cast<qreal>(v2d[0])).arg(static_cast<qreal>(v2d[1]));
         }
+#endif
         else if(const V3iAttribute *v3iAttribute = dynamic_cast<const V3iAttribute*>(attribute))
         {
             const V3i &v3i = v3iAttribute->value();
@@ -398,11 +424,13 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
             const V3f &v3f = v3fAttribute->value();
             value = QString::fromLatin1("%1, %2, %3").arg(static_cast<qreal>(v3f[0])).arg(static_cast<qreal>(v3f[1])).arg(static_cast<qreal>(v3f[2]));
         }
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(1, 7, 0)
         else if(const V3dAttribute *v3dAttribute = dynamic_cast<const V3dAttribute*>(attribute))
         {
             const V3d &v3d = v3dAttribute->value();
             value = QString::fromLatin1("%1, %2, %3").arg(static_cast<qreal>(v3d[0])).arg(static_cast<qreal>(v3d[1])).arg(static_cast<qreal>(v3d[2]));
         }
+#endif
 
         metaData->addCustomEntry(headerMetaDataType, name, value);
     }

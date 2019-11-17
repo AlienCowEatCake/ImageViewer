@@ -28,13 +28,6 @@ DEFINES += TT_CONFIG_OPTION_SUBPIXEL_HINTING
 DEFINES += FT_CONFIG_OPTION_NO_ASSEMBLER
 
 SOURCES += \
-    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afangles.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afdummy.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afglobal.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afhints.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/aflatin.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afloader.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afmodule.c \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/autofit.c \
     $${THIRDPARTY_FREETYPE_PATH}/src/base/ftbase.c \
     $${THIRDPARTY_FREETYPE_PATH}/src/base/ftbitmap.c \
@@ -55,13 +48,6 @@ SOURCES += \
     $${THIRDPARTY_FREETYPE_PATH}/src/gzip/ftgzip.c \
     $${THIRDPARTY_FREETYPE_PATH}/src/lzw/ftlzw.c \
     $${THIRDPARTY_FREETYPE_PATH}/src/otvalid/otvalid.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/otvalid/otvbase.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/otvalid/otvcommn.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/otvalid/otvgdef.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/otvalid/otvgpos.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/otvalid/otvgsub.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/otvalid/otvjstf.c \
-    $${THIRDPARTY_FREETYPE_PATH}/src/otvalid/otvmod.c \
     $${THIRDPARTY_FREETYPE_PATH}/src/pcf/pcf.c \
     $${THIRDPARTY_FREETYPE_PATH}/src/pfr/pfr.c \
     $${THIRDPARTY_FREETYPE_PATH}/src/psaux/psaux.c \

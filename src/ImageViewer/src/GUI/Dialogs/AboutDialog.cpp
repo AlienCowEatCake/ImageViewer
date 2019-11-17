@@ -344,7 +344,13 @@ QString getTextBrowserContent()
     result.append(formatItem(
                       QString::fromLatin1("This software uses the OpenEXR library"),
                       QString::fromLatin1("openexr"),
+#if defined (OPENEXR_VERSION_STRING)
                       QString::fromLatin1(OPENEXR_VERSION_STRING),
+#elif defined (OPENEXR_VERSION_MAJOR) && defined (OPENEXR_VERSION_MINOR) && defined (OPENEXR_VERSION_PATCH)
+                      QString::fromLatin1("%1.%2.%3").arg(OPENEXR_VERSION_MAJOR).arg(OPENEXR_VERSION_MINOR).arg(OPENEXR_VERSION_PATCH),
+#else
+                      QString(),
+#endif
                       QString::fromLatin1("https://www.openexr.com/"),
                       QString::fromLatin1("3-clause BSD License"),
                       QString::fromLatin1("https://github.com/openexr/openexr/blob/master/LICENSE.md")
