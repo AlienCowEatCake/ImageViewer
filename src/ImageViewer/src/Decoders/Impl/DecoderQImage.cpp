@@ -103,6 +103,9 @@ public:
             return QSharedPointer<IImageData>();
         }
 
+        /// @note Supress '@2x' logic: https://github.com/qt/qtbase/blob/v5.9.8/src/gui/image/qimagereader.cpp#L1364
+        image.setDevicePixelRatio(1);
+
         ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
 #if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
         if(metaData)

@@ -103,6 +103,9 @@ Images from https://www.htmlgoodies.com/tutorials/web_graphics/article.php/34799
  * www.htmlgoodies.com/transpar1.gif
  * www.htmlgoodies.com/transpar2.gif
 
+Image from https://people-mozilla.org/~dolske/apng/demo.html with "@2x" suffix
+ * spinfox@2x.gif
+
 --------------------------------------------------------------------------------
 
 ::: JNG test images :::
@@ -160,6 +163,9 @@ Image from http://www.fnordware.com/j2k/jp2samples.html
 
 Test image which was created during the development of this project
  * exif_rotate90.jpg
+
+Test Lena image with "@2x" suffix
+ * lena@2x.jpg
 
 Image from http://regex.info/blog/photo-tech/color-spaces-page1
  * sample-wonky.profile.jpg

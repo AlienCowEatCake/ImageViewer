@@ -68,12 +68,18 @@ public:
 
     QPixmap currentPixmap() const Q_DECL_OVERRIDE
     {
-        return m_movie->currentPixmap();
+        QPixmap result = m_movie->currentPixmap();
+        /// @note Supress '@2x' logic: https://github.com/qt/qtbase/blob/v5.9.8/src/gui/image/qimagereader.cpp#L1364
+        result.setDevicePixelRatio(1);
+        return result;
     }
 
     QImage currentImage() const Q_DECL_OVERRIDE
     {
-        return m_movie->currentImage();
+        QImage result = m_movie->currentImage();
+        /// @note Supress '@2x' logic: https://github.com/qt/qtbase/blob/v5.9.8/src/gui/image/qimagereader.cpp#L1364
+        result.setDevicePixelRatio(1);
+        return result;
     }
 
 protected:
