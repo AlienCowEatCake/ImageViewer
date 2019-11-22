@@ -69,16 +69,20 @@ public:
     QPixmap currentPixmap() const Q_DECL_OVERRIDE
     {
         QPixmap result = m_movie->currentPixmap();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
         /// @note Supress '@2x' logic: https://github.com/qt/qtbase/blob/v5.9.8/src/gui/image/qimagereader.cpp#L1364
         result.setDevicePixelRatio(1);
+#endif
         return result;
     }
 
     QImage currentImage() const Q_DECL_OVERRIDE
     {
         QImage result = m_movie->currentImage();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
         /// @note Supress '@2x' logic: https://github.com/qt/qtbase/blob/v5.9.8/src/gui/image/qimagereader.cpp#L1364
         result.setDevicePixelRatio(1);
+#endif
         return result;
     }
 
