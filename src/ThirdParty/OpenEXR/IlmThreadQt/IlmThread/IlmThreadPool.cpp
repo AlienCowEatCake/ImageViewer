@@ -1,5 +1,7 @@
 #include "IlmThreadPool.h"
 
+#include <QDebug>
+
 ILMTHREAD_INTERNAL_NAMESPACE_SOURCE_ENTER
 
 TaskGroup::TaskGroup()
@@ -92,7 +94,10 @@ int ThreadPool::numThreads() const
 
 void ThreadPool::setNumThreads(int count)
 {
-    m_threadPool->setMaxThreadCount(count);
+    if(m_threadPool != QThreadPool::globalInstance())
+        m_threadPool->setMaxThreadCount(count);
+    else
+        qWarning() << "ThreadPool::setNumThreads() is not allowed for global thread pool";
 }
 
 void ThreadPool::addTask(Task *task)
