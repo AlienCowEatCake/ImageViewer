@@ -54,8 +54,12 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += libraw.lib
-        else: LIBS += -lraw
+        disable_pkgconfig {
+            *msvc*: LIBS += libraw.lib
+            else: LIBS += -lraw
+        } else {
+            PKGCONFIG += libraw
+        }
 
     }
 

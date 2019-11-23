@@ -44,8 +44,12 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += freetype.lib
-        else: LIBS += -lfreetype
+        disable_pkgconfig {
+            *msvc*: LIBS += freetype.lib
+            else: LIBS += -lfreetype
+        } else {
+            PKGCONFIG += freetype2
+        }
 
     }
 

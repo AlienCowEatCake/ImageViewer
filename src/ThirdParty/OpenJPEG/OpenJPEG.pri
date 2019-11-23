@@ -45,12 +45,11 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        unix : !macx {
-            CONFIG += link_pkgconfig
-            PKGCONFIG += libopenjp2
-        } else {
+        disable_pkgconfig {
             *msvc*: LIBS += libopenjp2.lib
             else: LIBS += -lopenjp2
+        } else {
+            PKGCONFIG += libopenjp2
         }
 
     }

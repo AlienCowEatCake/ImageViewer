@@ -43,8 +43,12 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += libde265.lib
-        else: LIBS += -lde265
+        disable_pkgconfig {
+            *msvc*: LIBS += libde265.lib
+            else: LIBS += -lde265
+        } else {
+            PKGCONFIG += libde265
+        }
 
     }
 

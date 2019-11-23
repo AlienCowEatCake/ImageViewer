@@ -60,6 +60,19 @@
 
 # ::::: System Libraries Configuration :::::
 
+# pkg-config options:
+#    disable_pkgconfig
+#    enable_pkgconfig
+!enable_pkgconfig {
+    !unix | macx {
+        CONFIG += disable_pkgconfig
+    }
+}
+!disable_pkgconfig {
+    QT_CONFIG -= no-pkg-config
+    CONFIG += link_pkgconfig
+}
+
 # ZLib options:
 #    disable_zlib
 #    system_zlib

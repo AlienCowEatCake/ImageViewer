@@ -44,8 +44,12 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += libtiff.lib
-        else: LIBS += -ltiff
+        disable_pkgconfig {
+            *msvc*: LIBS += libtiff.lib
+            else: LIBS += -ltiff
+        } else {
+            PKGCONFIG += libtiff-4
+        }
 
     }
 

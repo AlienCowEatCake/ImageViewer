@@ -43,8 +43,12 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += libexpat.lib
-        else: LIBS += -lexpat
+        disable_pkgconfig {
+            *msvc*: LIBS += libexpat.lib
+            else: LIBS += -lexpat
+        } else {
+            PKGCONFIG += expat
+        }
 
     }
 

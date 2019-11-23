@@ -44,8 +44,12 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += liblzma.lib
-        else: LIBS += -llzma
+        disable_pkgconfig {
+            *msvc*: LIBS += liblzma.lib
+            else: LIBS += -llzma
+        } else {
+            PKGCONFIG += liblzma
+        }
 
     }
 

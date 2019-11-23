@@ -56,8 +56,12 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += exiv2.lib
-        else: LIBS += -lexiv2
+        disable_pkgconfig {
+            *msvc*: LIBS += exiv2.lib
+            else: LIBS += -lexiv2
+        } else {
+            PKGCONFIG += exiv2
+        }
 
     }
 

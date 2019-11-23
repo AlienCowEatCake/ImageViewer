@@ -41,8 +41,12 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += libwebp.lib libwebpdemux.lib libwebpmux.lib
-        else: LIBS += -lwebp -lwebpdemux -lwebpmux
+        disable_pkgconfig {
+            *msvc*: LIBS += libwebp.lib libwebpdemux.lib libwebpmux.lib
+            else: LIBS += -lwebp -lwebpdemux -lwebpmux
+        } else {
+            PKGCONFIG += libwebp libwebpdemux libwebpmux
+        }
 
     }
 

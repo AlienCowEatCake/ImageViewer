@@ -43,8 +43,12 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += libheif.lib
-        else: LIBS += -lheif
+        disable_pkgconfig {
+            *msvc*: LIBS += libheif.lib
+            else: LIBS += -lheif
+        } else {
+            PKGCONFIG += libheif
+        }
 
     }
 

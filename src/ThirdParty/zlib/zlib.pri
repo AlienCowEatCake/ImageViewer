@@ -43,8 +43,12 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += zdll.lib
-        else: LIBS += -lz
+        disable_pkgconfig {
+            *msvc*: LIBS += zdll.lib
+            else: LIBS += -lz
+        } else {
+            PKGCONFIG += zlib
+        }
 
     }
 

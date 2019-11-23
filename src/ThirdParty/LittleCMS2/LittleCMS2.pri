@@ -41,8 +41,12 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += liblcms2.lib
-        else: LIBS += -llcms2
+        disable_pkgconfig {
+            *msvc*: LIBS += liblcms2.lib
+            else: LIBS += -llcms2
+        } else {
+            PKGCONFIG += lcms2
+        }
 
     }
 
