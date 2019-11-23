@@ -9,12 +9,12 @@
         <translation>Peter S. Zhigalov</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="520"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="526"/>
         <source>About</source>
         <translation>About</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="531"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="537"/>
         <source>License</source>
         <translation>License</translation>
     </message>
