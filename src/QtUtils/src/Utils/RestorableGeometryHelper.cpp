@@ -24,18 +24,20 @@
 #include <utility>
 
 #include <QWidget>
-#include <QDesktopWidget>
 #include <QByteArray>
 #include <QString>
 #include <QStringList>
 #include <QRegExp>
 #include <QRect>
+#include <QRegion>
 #include <QEvent>
 #include <QList>
 #include <QDateTime>
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
 #include <QDebug>
 #endif
+
+#include "ScreenUtils.h"
 
 namespace {
 
@@ -167,8 +169,7 @@ struct RestorableGeometryHelper::Impl : public QObject
 
     QRect getFallbackGeometry() const
     {
-        QDesktopWidget desktopWidget;
-        const QRect primaryScreenGeometry = desktopWidget.availableGeometry(desktopWidget.primaryScreen());
+        const QRect primaryScreenGeometry = ScreenProvider::primaryScreen().availableGeometry();
         const QPoint newPos = primaryScreenGeometry.center() - QPoint(normalGeometry.width() / 2, normalGeometry.height() / 2);
         return QRect(newPos, normalGeometry.size());
     }
@@ -235,8 +236,11 @@ void RestorableGeometryHelper::deserialize(const QByteArray &data)
     QRect newGeometry;
     if(regExp.indexIn(QString::fromLatin1(data)) != -1)
         newGeometry = QRect(regExp.cap(1).toInt(), regExp.cap(2).toInt(), regExp.cap(3).toInt(), regExp.cap(4).toInt());
-    QDesktopWidget desktopWidget;
-    if(newGeometry.isEmpty() || !desktopWidget.availableGeometry().contains(newGeometry) || newGeometry.topLeft().isNull())
+    QRegion availableRegion;
+    const QList<Screen> screens = ScreenProvider::screens();
+    for(QList<Screen>::ConstIterator it = screens.constBegin(), itEnd = screens.constEnd(); it != itEnd; ++it)
+        availableRegion += it->availableGeometry();
+    if(newGeometry.isEmpty() || availableRegion.intersected(newGeometry) != newGeometry || newGeometry.topLeft().isNull())
         newGeometry = m_impl->getFallbackGeometry();
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
     qDebug() << "[RGH] deserialize" << newGeometry;

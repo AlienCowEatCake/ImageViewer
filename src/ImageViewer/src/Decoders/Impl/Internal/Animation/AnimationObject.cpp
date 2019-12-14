@@ -24,7 +24,12 @@
 #include <QImage>
 #include <QPixmap>
 #include <QTimer>
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
+#include <QElapsedTimer>
+#else
 #include <QTime>
+typedef QTime QElapsedTimer;
+#endif
 
 #include "IAnimationProvider.h"
 
@@ -126,10 +131,10 @@ bool AnimationObject::isValid() const
 
 void AnimationObject::loadNextFrame()
 {
-    QTime time;
-    time.start();
+    QElapsedTimer timer;
+    timer.start();
     const bool processingStatus = m_impl->jumpToNextImage();
-    const int processingTime = time.elapsed();
+    const int processingTime = static_cast<int>(timer.elapsed());
     if(processingStatus)
     {
         if(m_impl->nextImageDelay >= 0)

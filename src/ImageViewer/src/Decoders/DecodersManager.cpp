@@ -26,8 +26,13 @@
 #include <QGraphicsItem>
 #include <QFileInfo>
 #include <QDebug>
-#include <QTime>
 #include <QMap>
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
+#include <QElapsedTimer>
+#else
+#include <QTime>
+typedef QTime QElapsedTimer;
+#endif
 
 #include "Utils/Global.h"
 #include "Utils/SettingsWrapper.h"
@@ -316,10 +321,10 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
             IDecoder *decoder = decoderData->decoder;
             if(m_impl->blacklistedDecoders.find(decoder) != m_impl->blacklistedDecoders.end())
                 continue;
-            QTime time;
-            time.start();
+            QElapsedTimer timer;
+            timer.start();
             QSharedPointer<IImageData> data = decoder->loadImage(filePath);
-            const int elapsed = time.elapsed();
+            const qint64 elapsed = static_cast<qint64>(timer.elapsed());
             if(data && !data->isEmpty())
             {
                 qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name();
@@ -340,10 +345,10 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
             continue;
         if(failedDecodres.find(decoder) != failedDecodres.end())
             continue;
-        QTime time;
-        time.start();
+        QElapsedTimer timer;
+        timer.start();
         QSharedPointer<IImageData> data = decoder->loadImage(filePath);
-        const int elapsed = time.elapsed();
+        const qint64 elapsed = static_cast<qint64>(timer.elapsed());
         if(data && !data->isEmpty())
         {
             qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name() << "(FALLBACK)";
@@ -373,10 +378,10 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath, c
         if(decoder->name() != decoderName)
             continue;
 
-        QTime time;
-        time.start();
+        QElapsedTimer timer;
+        timer.start();
         QSharedPointer<IImageData> data = decoder->loadImage(filePath);
-        const int elapsed = time.elapsed();
+        const qint64 elapsed = static_cast<qint64>(timer.elapsed());
         if(data && !data->isEmpty())
         {
             qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name();

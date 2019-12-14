@@ -75,6 +75,16 @@ static QFont getMonospaceFont()
     return font;
 }
 
+static int getWidth(const QFont &font, const QChar &symbol = QChar::fromLatin1('M'))
+{
+    const QFontMetrics fontMetrics(font);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+    return fontMetrics.horizontalAdvance(symbol);
+#else
+    return fontMetrics.width(symbol);
+#endif
+}
+
 } // namespace
 
 namespace StylesheetEditorImpl {
@@ -259,7 +269,7 @@ int CodeEditor::lineNumbersAreaWidth()
     int digits = 1;
     for(int max = qMax(1, blockCount()); max >= 10; max /= 10)
         digits++;
-    return 2 * LINE_NUMBER_AREA_MARGIN + fontMetrics().width(QChar::fromLatin1('M')) * digits;
+    return 2 * LINE_NUMBER_AREA_MARGIN + getWidth(font()) * digits;
 }
 
 void CodeEditor::updateLineNumbersAreaWidth()
@@ -465,7 +475,14 @@ void CodeEditor::changeEvent(QEvent *event)
 {
     QPlainTextEdit::changeEvent(event);
     if(event->type() == QEvent::StyleChange)
-        setTabStopWidth(CODE_EDITOR_TAB_WIDTH * fontMetrics().width(QChar::fromLatin1('M')));
+    {
+        const int tabStopWidth = CODE_EDITOR_TAB_WIDTH * getWidth(font());
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+        setTabStopDistance(static_cast<qreal>(tabStopWidth));
+#else
+        setTabStopWidth(tabStopWidth);
+#endif
+    }
 }
 
 void CodeEditor::keyPressEvent(QKeyEvent *event)

@@ -57,6 +57,15 @@ QString formatMetaDataEntryValue(const QString &value)
     return value.left(MAX_METADATA_ENTRY_VALUE_LENGTH).append(QString::fromUtf8("…"));
 }
 
+QDateTime getCreatedTime(const QFileInfo &fileInfo)
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+    return fileInfo.birthTime();
+#else
+    return fileInfo.created();
+#endif
+}
+
 } // namespace
 
 InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *parent)
@@ -105,7 +114,7 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
     tableWidget->insertRow(currentRow);
     tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
     tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Created")));
-    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.created().toString()));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(getCreatedTime(fileInfo).toString()));
     currentRow++;
 
     tableWidget->insertRow(currentRow);
