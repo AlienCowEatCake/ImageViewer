@@ -378,12 +378,11 @@ QPushButton::checked:disabled
 
 QPushButton
 {
-    min-width: 60px;
     min-height: 20px;
     max-height: 20px;
     padding: 0px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 16px;
+    padding-right: 16px;
     padding-bottom: 1px;
 }
 
@@ -772,7 +771,8 @@ QComboBox QAbstractItemView::item:selected
 QScrollArea,
 QTextBrowser,
 QAbstractItemView,
-QPlainTextEdit
+QPlainTextEdit,
+QTextEdit
 {
     border: 1px solid #1a1c1f;
     border-radius: 3px;
@@ -783,7 +783,8 @@ QPlainTextEdit
 QScrollArea QScrollBar:vertical,
 QTextBrowser QScrollBar:vertical,
 QAbstractItemView QScrollBar:vertical,
-QPlainTextEdit QScrollBar:vertical
+QPlainTextEdit QScrollBar:vertical,
+QTextEdit QScrollBar:vertical
 {
     border-right: none;
     margin: 14px 0px;
@@ -792,7 +793,8 @@ QPlainTextEdit QScrollBar:vertical
 QScrollArea QScrollBar::add-line:vertical,
 QTextBrowser QScrollBar::add-line:vertical,
 QAbstractItemView QScrollBar::add-line:vertical,
-QPlainTextEdit QScrollBar::add-line:vertical
+QPlainTextEdit QScrollBar::add-line:vertical,
+QTextEdit QScrollBar::add-line:vertical
 {
     border-right: none;
     border-bottom: none;
@@ -801,7 +803,8 @@ QPlainTextEdit QScrollBar::add-line:vertical
 QScrollArea QScrollBar::sub-line:vertical,
 QTextBrowser QScrollBar::sub-line:vertical,
 QAbstractItemView QScrollBar::sub-line:vertical,
-QPlainTextEdit QScrollBar::sub-line:vertical
+QPlainTextEdit QScrollBar::sub-line:vertical,
+QTextEdit QScrollBar::sub-line:vertical
 {
     border-right: none;
     border-top: none;
@@ -810,7 +813,8 @@ QPlainTextEdit QScrollBar::sub-line:vertical
 QScrollArea QScrollBar:horizontal,
 QTextBrowser QScrollBar:horizontal,
 QAbstractItemView QScrollBar:horizontal,
-QPlainTextEdit QScrollBar:horizontal
+QPlainTextEdit QScrollBar:horizontal,
+QTextEdit QScrollBar:horizontal
 {
     border-bottom: none;
     margin: 0px 14px;
@@ -819,7 +823,8 @@ QPlainTextEdit QScrollBar:horizontal
 QScrollArea QScrollBar::add-line:horizontal,
 QTextBrowser QScrollBar::add-line:horizontal,
 QAbstractItemView QScrollBar::add-line:horizontal,
-QPlainTextEdit QScrollBar::add-line:horizontal
+QPlainTextEdit QScrollBar::add-line:horizontal,
+QTextEdit QScrollBar::add-line:horizontal
 {
     border-bottom: none;
     border-right: none;
@@ -828,7 +833,8 @@ QPlainTextEdit QScrollBar::add-line:horizontal
 QScrollArea QScrollBar::sub-line:horizontal,
 QTextBrowser QScrollBar::sub-line:horizontal,
 QAbstractItemView QScrollBar::sub-line:horizontal,
-QPlainTextEdit QScrollBar::sub-line:horizontal
+QPlainTextEdit QScrollBar::sub-line:horizontal,
+QTextEdit QScrollBar::sub-line:horizontal
 {
     border-bottom: none;
     border-left: none;
@@ -837,7 +843,8 @@ QPlainTextEdit QScrollBar::sub-line:horizontal
 QScrollArea::corner,
 QTextBrowser::corner,
 QAbstractItemView::corner,
-QPlainTextEdit::corner
+QPlainTextEdit::corner,
+QTextEdit::corner
 {
     border-top: 1px solid #1a1c1f;
     border-left: 1px solid #1a1c1f;
@@ -846,7 +853,8 @@ QPlainTextEdit::corner
 QScrollArea[ScrollBorderRequired=true] QScrollBar::add-line:vertical,
 QTextBrowser[ScrollBorderRequired=true] QScrollBar::add-line:vertical,
 QAbstractItemView[ScrollBorderRequired=true] QScrollBar::add-line:vertical,
-QPlainTextEdit[ScrollBorderRequired=true] QScrollBar::add-line:vertical
+QPlainTextEdit[ScrollBorderRequired=true] QScrollBar::add-line:vertical,
+QTextEdit[ScrollBorderRequired=true] QScrollBar::add-line:vertical
 {
     border-bottom: 1px solid #1a1c1f;
 }
@@ -854,7 +862,8 @@ QPlainTextEdit[ScrollBorderRequired=true] QScrollBar::add-line:vertical
 QScrollArea[ScrollBorderRequired=true] QScrollBar::add-line:horizontal,
 QTextBrowser[ScrollBorderRequired=true] QScrollBar::add-line:horizontal,
 QAbstractItemView[ScrollBorderRequired=true] QScrollBar::add-line:horizontal,
-QPlainTextEdit[ScrollBorderRequired=true] QScrollBar::add-line:horizontal
+QPlainTextEdit[ScrollBorderRequired=true] QScrollBar::add-line:horizontal,
+QTextEdit[ScrollBorderRequired=true] QScrollBar::add-line:horizontal
 {
     border-right: 1px solid #1a1c1f;
 }

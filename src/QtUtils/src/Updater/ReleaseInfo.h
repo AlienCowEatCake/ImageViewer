@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -17,39 +17,26 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined (QTUTILS_GLOBAL_H_INCLUDED)
-#define QTUTILS_GLOBAL_H_INCLUDED
+#if !defined (UPDATER_RELEASE_INFO_H_INCLUDED)
+#define UPDATER_RELEASE_INFO_H_INCLUDED
 
-#include <cstddef>
+#include <QDateTime>
+#include <QString>
+#include <QUrl>
 
-#include <QtGlobal>
+#include "Version.h"
 
-#if (QT_VERSION < QT_VERSION_CHECK(4, 6, 0))
-
-static inline bool qFuzzyIsNull(double d)
+struct ReleaseInfo
 {
-    return qAbs(d) <= 0.000000000001;
-}
+    QUrl htmlUrl;
+    QString tagName;
+    QString name;
+    QString body;
+    bool prerelease;
+    QDateTime createdAt;
+    QDateTime publishedAt;
+    Version version;
+};
 
-static inline bool qFuzzyIsNull(float f)
-{
-    return qAbs(f) <= 0.00001f;
-}
-
-#endif
-
-#if !defined (Q_DECL_OVERRIDE)
-#define Q_DECL_OVERRIDE
-#endif
-#if !defined (Q_DECL_FINAL)
-#define Q_DECL_FINAL
-#endif
-#if !defined (Q_NULLPTR)
-#define Q_NULLPTR NULL
-#endif
-#if !defined (Q_FALLTHROUGH)
-#define Q_FALLTHROUGH() (void)0
-#endif
-
-#endif // QTUTILS_GLOBAL_H_INCLUDED
+#endif // UPDATER_RELEASE_INFO_H_INCLUDED
 

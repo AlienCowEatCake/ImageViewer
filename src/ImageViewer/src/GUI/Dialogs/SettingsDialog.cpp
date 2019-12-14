@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -103,6 +103,10 @@ struct SettingsDialog::Impl
         const QString theme = ui->themeComboBox->itemData(ui->themeComboBox->currentIndex()).toString();
         if(!theme.isEmpty() && theme != ThemeManager::instance()->currentTheme())
             ThemeManager::instance()->setTheme(theme, true, settingsDialog);
+
+#if defined(ENABLE_UPDATE_CHECKING)
+        SettingsWrapper(GROUP_UPDATE_MANAGER).setValue(KEY_AUTO_CHECK_FOR_UPDATES, ui->autoCheckForUpdatesCheckbox->isChecked());
+#endif
 
         settingsDialog->accept();
     }

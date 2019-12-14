@@ -88,6 +88,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     QAction * const actionShowToolBar;
     QAction * const actionAbout;
     QAction * const actionAboutQt;
+    QAction * const actionCheckForUpdates;
     QAction * const actionEditStylesheet;
 
     Impl(QWidget *parent, MenuBar *menubar)
@@ -129,6 +130,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         , CONSTRUCT_OBJECT_FROM_POINTER(actionShowToolBar           , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionAbout                 , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionAboutQt               , createWidgetAction(parent))
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionCheckForUpdates       , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionEditStylesheet        , createWidgetAction(parent))
     {
         menuFile->addAction(actionOpenFile);
@@ -242,7 +244,12 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionAbout->setMenuRole(QAction::AboutRole);
         menuHelp->addAction(actionAboutQt);
         actionAboutQt->setMenuRole(QAction::AboutQtRole);
-#if !defined NDEBUG
+#if defined(ENABLE_UPDATE_CHECKING)
+        menuHelp->addSeparator();
+        menuHelp->addAction(actionCheckForUpdates);
+        actionCheckForUpdates->setMenuRole(QAction::ApplicationSpecificRole);
+#endif
+#if !defined (NDEBUG)
         menuHelp->addSeparator();
         menuHelp->addAction(actionEditStylesheet);
         actionEditStylesheet->setMenuRole(QAction::NoRole);
@@ -306,6 +313,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionShowToolBar->setText(qApp->translate("MenuBar", "Show &Tool Bar"));
         actionAbout->setText(qApp->translate("MenuBar", "&About"));
         actionAboutQt->setText(qApp->translate("MenuBar", "About &Qt"));
+        actionCheckForUpdates->setText(qApp->translate("MenuBar", "Check for &Updates"));
 
         setSlideShowMode(isSlideShowMode);
     }
@@ -337,6 +345,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionZoomFullScreen->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_FULLSCREEN                , menuActionsHasDarkTheme));
         actionAbout->setIcon                    (ThemeUtils::GetIcon(ThemeUtils::ICON_ABOUT                     , menuActionsHasDarkTheme));
         actionAboutQt->setIcon                  (ThemeUtils::GetIcon(ThemeUtils::ICON_QT                        , menuActionsHasDarkTheme));
+        actionCheckForUpdates->setIcon          (ThemeUtils::GetIcon(ThemeUtils::ICON_RESET                     , menuActionsHasDarkTheme));
         actionEditStylesheet->setIcon           (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS                  , menuActionsHasDarkTheme));
         actionStartSlideShow->setIcon(ThemeUtils::GetIcon(isSlideShowMode ? ThemeUtils::ICON_STOP : ThemeUtils::ICON_PLAY, menuActionsHasDarkTheme));
     }
@@ -449,6 +458,7 @@ MenuBar::MenuBar(QWidget *parent)
     connect(m_impl->actionShowToolBar           , SIGNAL(triggered()), emitter, SIGNAL(showToolBarRequested())              );
     connect(m_impl->actionAbout                 , SIGNAL(triggered()), emitter, SIGNAL(aboutRequested())                    );
     connect(m_impl->actionAboutQt               , SIGNAL(triggered()), emitter, SIGNAL(aboutQtRequested())                  );
+    connect(m_impl->actionCheckForUpdates       , SIGNAL(triggered()), emitter, SIGNAL(checkForUpdatesRequested())          );
     connect(m_impl->actionEditStylesheet        , SIGNAL(triggered()), emitter, SIGNAL(editStylesheetRequested())           );
 }
 
@@ -516,6 +526,7 @@ CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setShowMenuBarEnabled, m_impl->acti
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setShowToolBarEnabled, m_impl->actionShowToolBar)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setAboutEnabled, m_impl->actionAbout)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setAboutQtEnabled, m_impl->actionAboutQt)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setCheckForUpdatesEnabled, m_impl->actionCheckForUpdates)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setEditStylesheetEnabled, m_impl->actionEditStylesheet)
 
 CONTROLS_CONTAINER_SET_CHECKED_IMPL(MenuBar, setZoomFitToWindowChecked, m_impl->actionZoomFitToWindow)

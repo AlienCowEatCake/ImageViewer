@@ -57,6 +57,11 @@ win32 {
     DEFINES += NOMINMAX
 }
 
+greaterThan(QT_MAJOR_VERSION, 4) : enable_update_checking {
+    DEFINES += ENABLE_UPDATE_CHECKING
+    QT += network
+}
+
 SOURCES += \
     src/GUI/FileManager.cpp \
     src/GUI/GUISettings.cpp \

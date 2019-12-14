@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -41,6 +41,11 @@
 #include <QPixmap>
 
 #include "Utils/ObjectsUtils.h"
+#include "Utils/SettingsWrapper.h"
+
+#if defined(ENABLE_UPDATE_CHECKING)
+#include "Updater/SettingsKeys.h"
+#endif
 
 #include "../GUISettings.h"
 
@@ -57,6 +62,9 @@ struct SettingsDialog::UI
         : settingsDialog(widget)
         , CONSTRUCT_OBJECT(tabWidget, QTabWidget, (settingsDialog))
         , CONSTRUCT_OBJECT(generalTabFrame, QFrame, (tabWidget))
+#if defined(ENABLE_UPDATE_CHECKING)
+        , CONSTRUCT_OBJECT(autoCheckForUpdatesCheckbox, QCheckBox, (generalTabFrame))
+#endif
         , CONSTRUCT_OBJECT(askBeforeDeleteCheckbox, QCheckBox, (generalTabFrame))
         , CONSTRUCT_OBJECT(moveToTrashCheckbox, QCheckBox, (generalTabFrame))
         , CONSTRUCT_OBJECT(smoothTransformationCheckbox, QCheckBox, (generalTabFrame))
@@ -88,6 +96,11 @@ struct SettingsDialog::UI
         tabWidget->addTab(generalTabFrame, qApp->translate("SettingsDialog", "General"));
         tabWidget->addTab(interfaceTabFrame, qApp->translate("SettingsDialog", "Interface"));
         tabWidget->addTab(decodersTabFrame, qApp->translate("SettingsDialog", "Decoders"));
+
+#if defined(ENABLE_UPDATE_CHECKING)
+        autoCheckForUpdatesCheckbox->setText(qApp->translate("SettingsDialog", "Automatically check for updates"));
+        autoCheckForUpdatesCheckbox->setChecked(SettingsWrapper(GROUP_UPDATE_MANAGER).value(KEY_AUTO_CHECK_FOR_UPDATES).toBool());
+#endif
 
         askBeforeDeleteCheckbox->setText(qApp->translate("SettingsDialog", "Ask before deleting images"));
         askBeforeDeleteCheckbox->setChecked(settings->askBeforeDelete());
@@ -131,6 +144,9 @@ struct SettingsDialog::UI
         wheelModeLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 2);
 
         QVBoxLayout *generalTabLayout = new QVBoxLayout(generalTabFrame);
+#if defined(ENABLE_UPDATE_CHECKING)
+        generalTabLayout->addWidget(autoCheckForUpdatesCheckbox);
+#endif
         generalTabLayout->addWidget(askBeforeDeleteCheckbox);
         generalTabLayout->addWidget(moveToTrashCheckbox);
         generalTabLayout->addWidget(smoothTransformationCheckbox);
@@ -201,6 +217,9 @@ struct SettingsDialog::UI
     SettingsDialog *settingsDialog;
     QTabWidget *tabWidget;
     QFrame *generalTabFrame;
+#if defined(ENABLE_UPDATE_CHECKING)
+    QCheckBox *autoCheckForUpdatesCheckbox;
+#endif
     QCheckBox *askBeforeDeleteCheckbox;
     QCheckBox *moveToTrashCheckbox;
     QCheckBox *smoothTransformationCheckbox;

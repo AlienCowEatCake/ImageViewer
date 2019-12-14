@@ -32,6 +32,10 @@
 #include "Utils/SignalBlocker.h"
 #include "Widgets/StylesheetEditor.h"
 
+#if defined(ENABLE_UPDATE_CHECKING)
+#include "Updater/UpdateManager.h"
+#endif
+
 #include "Decoders/DecodersManager.h"
 #include "Dialogs/AboutDialog.h"
 #include "Dialogs/InfoDialog.h"
@@ -46,6 +50,9 @@ struct MainController::Impl
     GUISettings settings;
     MainWindow mainWindow;
     QScopedPointer<StylesheetEditor> stylesheetEditor;
+#if defined(ENABLE_UPDATE_CHECKING)
+    UpdateManager updateManager;
+#endif
 
     QSharedPointer<IImageData> imageData;
 
@@ -56,9 +63,16 @@ struct MainController::Impl
         : mainController(mainController)
         , fileManager()
         , mainWindow(&settings)
+#if defined(ENABLE_UPDATE_CHECKING)
+        , updateManager(RemoteTypeGitHub, QString::fromLatin1("AlienCowEatCake"), QString::fromLatin1("ImageViewer"), qApp->applicationVersion(), true)
+#endif
         , lastHasCurrentFile(false)
         , lastHasCurrentFileIndex(false)
-    {}
+    {
+#if defined(ENABLE_UPDATE_CHECKING)
+        updateManager.setParentForDialogs(&mainWindow);
+#endif
+    }
 
     bool hasCurrentFile() const
     {
@@ -120,6 +134,7 @@ MainController::MainController(QObject *parent)
     connect(mainWindow, SIGNAL(preferencesRequested())                  , this, SLOT(showPreferences())                     );
     connect(mainWindow, SIGNAL(aboutRequested())                        , this, SLOT(showAbout())                           );
     connect(mainWindow, SIGNAL(aboutQtRequested())                      , qApp, SLOT(aboutQt())                             );
+    connect(mainWindow, SIGNAL(checkForUpdatesRequested())              , this, SLOT(checkForUpdates())                     );
     connect(mainWindow, SIGNAL(editStylesheetRequested())               , this, SLOT(showStylesheetEditor())                );
     connect(mainWindow, SIGNAL(closed())                                , qApp, SLOT(quit())                                );
 }
@@ -294,6 +309,13 @@ void MainController::openNewWindow()
     m_impl->mainWindow.saveGeometrySettings();
     m_impl->settings.flush();
     QProcess::startDetached(QApplication::applicationFilePath(), m_impl->fileManager.currentOpenArguments(), QDir::currentPath());
+}
+
+void MainController::checkForUpdates()
+{
+#if defined(ENABLE_UPDATE_CHECKING)
+    m_impl->updateManager.checkForUpdates();
+#endif
 }
 
 void MainController::onReopenWithRequested(const QString &decoderName)

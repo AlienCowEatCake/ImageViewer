@@ -244,6 +244,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
         connect(object, SIGNAL(showToolBarRequested())              , this                      , SLOT(switchShowToolBar())                 );
         connect(object, SIGNAL(aboutRequested())                    , this                      , SIGNAL(aboutRequested())                  );
         connect(object, SIGNAL(aboutQtRequested())                  , this                      , SIGNAL(aboutQtRequested())                );
+        connect(object, SIGNAL(checkForUpdatesRequested())          , this                      , SIGNAL(checkForUpdatesRequested())        );
         connect(object, SIGNAL(editStylesheetRequested())           , this                      , SIGNAL(editStylesheetRequested())         );
     }
 

@@ -75,6 +75,16 @@ macx {
         $$files(src/Utils/*.mm)
 }
 
+greaterThan(QT_MAJOR_VERSION, 4) : enable_update_checking {
+    QT += network
+
+    HEADERS += \
+        $$files(src/Updater/*.h)
+
+    SOURCES += \
+        $$files(src/Updater/*.cpp)
+}
+
 RESOURCES += \
     resources/icons/qtutils_icons.qrc \
     resources/style/qtutils_style.qrc \
