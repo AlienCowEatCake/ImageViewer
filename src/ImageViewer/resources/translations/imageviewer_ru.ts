@@ -47,65 +47,65 @@
         <translation>%1 ТиБ</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="71"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="80"/>
         <source>Image Information</source>
         <translation>Информация об изображении</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="82"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="88"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="94"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="100"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="106"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="112"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="119"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="125"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="131"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="91"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="97"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="103"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="109"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="115"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="121"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="128"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="134"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="140"/>
         <source>General Info</source>
         <translation>Общая информация</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="83"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="92"/>
         <source>File Name</source>
         <translation>Имя файла</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="89"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="98"/>
         <source>Resolution</source>
         <translation>Разрешение</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="95"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="104"/>
         <source>Decoder</source>
         <translation>Декодер</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="101"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="110"/>
         <source>File Size</source>
         <translation>Размер файла</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="107"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="116"/>
         <source>Created</source>
         <translation>Дата создания</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="113"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="122"/>
         <source>Last Modified</source>
         <translation>Дата изменения</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="120"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="129"/>
         <source>Owner</source>
         <translation>Владелец</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="126"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="135"/>
         <source>Group</source>
         <translation>Группа</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="132"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="141"/>
         <source>Permissions</source>
         <translation>Права доступа</translation>
     </message>
@@ -317,64 +317,64 @@
 <context>
     <name>MainController</name>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="146"/>
+        <location filename="../../src/GUI/MainController.cpp" line="161"/>
         <source>All Supported Images</source>
         <translation>Все поддерживаемые изображения</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="146"/>
+        <location filename="../../src/GUI/MainController.cpp" line="161"/>
         <source>All Files</source>
         <translation>Все файлы</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="147"/>
+        <location filename="../../src/GUI/MainController.cpp" line="162"/>
         <source>Open File</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="154"/>
-        <location filename="../../src/GUI/MainController.cpp" line="320"/>
-        <location filename="../../src/GUI/MainController.cpp" line="367"/>
+        <location filename="../../src/GUI/MainController.cpp" line="169"/>
+        <location filename="../../src/GUI/MainController.cpp" line="342"/>
+        <location filename="../../src/GUI/MainController.cpp" line="389"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>Не удалось открыть файл &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="155"/>
+        <location filename="../../src/GUI/MainController.cpp" line="170"/>
         <source>Failed to open files &quot;%1&quot;</source>
         <translation>Не удалось открыть файлы &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="164"/>
+        <location filename="../../src/GUI/MainController.cpp" line="179"/>
         <source>Open Directory</source>
         <translation>Открыть папку</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="169"/>
+        <location filename="../../src/GUI/MainController.cpp" line="184"/>
         <source>Failed to open folder &quot;%1&quot;</source>
         <translation>Не удалось открыть папку &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="180"/>
+        <location filename="../../src/GUI/MainController.cpp" line="195"/>
         <source>Delete File</source>
         <translation>Удалить файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="180"/>
+        <location filename="../../src/GUI/MainController.cpp" line="195"/>
         <source>Are you sure you want to delete current file?</source>
         <translation>Вы уверены что хотите удалить этот файл?</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="156"/>
-        <location filename="../../src/GUI/MainController.cpp" line="169"/>
-        <location filename="../../src/GUI/MainController.cpp" line="190"/>
-        <location filename="../../src/GUI/MainController.cpp" line="198"/>
-        <location filename="../../src/GUI/MainController.cpp" line="320"/>
-        <location filename="../../src/GUI/MainController.cpp" line="367"/>
+        <location filename="../../src/GUI/MainController.cpp" line="171"/>
+        <location filename="../../src/GUI/MainController.cpp" line="184"/>
+        <location filename="../../src/GUI/MainController.cpp" line="205"/>
+        <location filename="../../src/GUI/MainController.cpp" line="213"/>
+        <location filename="../../src/GUI/MainController.cpp" line="342"/>
+        <location filename="../../src/GUI/MainController.cpp" line="389"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="198"/>
+        <location filename="../../src/GUI/MainController.cpp" line="213"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation>Не удалось удалить файл &quot;%1&quot;</translation>
     </message>
@@ -382,17 +382,17 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="308"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="309"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="413"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="414"/>
         <source>Zoom</source>
         <translation>Масштабирование</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="414"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="415"/>
         <source>Zoom Factor (%):</source>
         <translation>Масштаб (%):</translation>
     </message>
@@ -400,162 +400,167 @@
 <context>
     <name>MenuBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="278"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="285"/>
         <source>&amp;File</source>
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="279"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="286"/>
         <source>&amp;Edit</source>
         <translation>&amp;Правка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="280"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="287"/>
         <source>&amp;View</source>
         <translation>&amp;Вид</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="281"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="288"/>
         <source>&amp;Help</source>
         <translation>&amp;Справка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="282"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="289"/>
         <source>&amp;Reopen With</source>
         <translation>&amp;Переоткрыть с помощью</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="284"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="291"/>
         <source>&amp;Open File</source>
         <translation>&amp;Открыть файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="285"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="292"/>
         <source>Open &amp;Folder</source>
         <translation>От&amp;крыть папку</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="286"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="293"/>
         <source>&amp;Save As</source>
         <translation>&amp;Сохранить как</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="287"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="294"/>
         <source>New &amp;Window</source>
         <translation>&amp;Новое окно</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="288"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="295"/>
         <source>Pre&amp;vious</source>
         <translation>П&amp;редыдущий</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="289"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="296"/>
         <source>&amp;Next</source>
         <translation>С&amp;ледующий</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="290"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="297"/>
         <source>Image &amp;Information</source>
         <translation>&amp;Информация об изображении</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="291"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
         <source>&amp;Preferences</source>
         <translation>Нас&amp;тройки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="292"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
         <source>&amp;Exit</source>
         <translation>&amp;Выход</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="293"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
         <source>Rotate &amp;Counterclockwise</source>
         <translation>&amp;Повернуть против часовой стрелки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="294"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="301"/>
         <source>&amp;Rotate Clockwise</source>
         <translation>Повернуть по &amp;часовой стрелке</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="295"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="302"/>
         <source>Flip &amp;Horizontal</source>
         <translation>Перевернуть по &amp;горизонтали</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="296"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="303"/>
         <source>Flip &amp;Vertical</source>
         <translation>Перевернуть по &amp;вертикали</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="297"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
         <source>&amp;Delete File</source>
         <translation>&amp;Удалить файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
         <source>Zoom &amp;Out</source>
         <translation>&amp;Уменьшить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
         <source>Zoom &amp;In</source>
         <translation>У&amp;величить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
         <source>&amp;Reset Zoom</source>
         <translation>С&amp;бросить масштаб</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="301"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
         <source>&amp;Zoom...</source>
         <translation>&amp;Масштаб…</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="302"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
         <source>Fit Image To &amp;Window Size</source>
         <translation>Масштабировать к размеру &amp;окна</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="303"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
         <source>Original &amp;Size</source>
         <translation>Масштаб &amp;1:1</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
         <source>&amp;Full Screen</source>
         <translation>На полный &amp;экран</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
         <source>Show &amp;Menu Bar</source>
         <translation>Показать &amp;строку меню</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
         <source>Show &amp;Tool Bar</source>
         <translation>Показать &amp;панель инструментов</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
         <source>&amp;About</source>
         <translation>&amp;О программе</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
         <source>About &amp;Qt</source>
         <translation>О &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="349"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
+        <source>Check for &amp;Updates</source>
+        <translation>&amp;Проверить обновления</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="358"/>
         <source>Start S&amp;lideshow</source>
         <translation>Запуск слайд&amp;шоу</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="354"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="363"/>
         <source>Stop S&amp;lideshow</source>
         <translation>Останов слайд&amp;шоу</translation>
     </message>
@@ -563,99 +568,104 @@
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="131"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="135"/>
         <source>Select Background Color</source>
         <translation>Выберите цвет фона</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="88"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="96"/>
         <source>General</source>
         <translation>Основные</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="89"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="97"/>
         <source>Interface</source>
         <translation>Интерфейс</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="90"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="98"/>
         <source>Decoders</source>
         <translation>Декодеры</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="92"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="101"/>
+        <source>Automatically check for updates</source>
+        <translation>Автоматически проверять обновления</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="105"/>
         <source>Ask before deleting images</source>
         <translation>Спросить перед удалением изображений</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="95"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="108"/>
         <source>Move deleted images to trash</source>
         <translation>Удалять изображения в корзину</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="98"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="111"/>
         <source>Use smooth image rendering</source>
         <translation>Использовать сглаженный режим отрисовки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="101"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="114"/>
         <source>Slideshow interval</source>
         <translation>Интервал слайдшоу</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="102"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="115"/>
         <source>sec</source>
         <translation>сек</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="141"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="157"/>
         <source>&lt;b&gt;Language&lt;/b&gt;</source>
         <translation>&lt;b&gt;Язык&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="142"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="158"/>
         <source>&lt;b&gt;Theme&lt;/b&gt;</source>
         <translation>&lt;b&gt;Тема&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="144"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="160"/>
         <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
         <translation>&lt;b&gt;Цвета фона&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="145"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="161"/>
         <source>Normal:</source>
         <translation>Обычный:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="146"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="162"/>
         <source>Fullscreen:</source>
         <translation>На полный экран:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="106"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="119"/>
         <source>&lt;b&gt;Mouse wheel action&lt;/b&gt;</source>
         <translation>&lt;b&gt;Действие при вращении колёсика мыши&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="107"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="120"/>
         <source>Scroll</source>
         <comment>WheelMode</comment>
         <translation>Прокрутка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="108"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="121"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
         <translation>Масштабирование</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="173"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="189"/>
         <source>&lt;b&gt;Enabled decoders:&lt;/b&gt;</source>
         <translation>&lt;b&gt;Разрешённые декодеры:&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="169"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="173"/>
         <source>Preferences</source>
         <translation>Настройки</translation>
     </message>

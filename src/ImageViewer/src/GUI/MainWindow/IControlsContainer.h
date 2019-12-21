@@ -26,7 +26,7 @@
 
 /*
 
-ALL_LIST="OpenFile OpenFolder SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow ImageInformation Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomCustom ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt EditStylesheet"
+ALL_LIST="OpenFile OpenFolder SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow ImageInformation Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomCustom ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt CheckForUpdates EditStylesheet"
 CHECKABLE_LIST="ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar"
 
 # signals
@@ -80,6 +80,7 @@ signals:
     void showToolBarRequested();
     void aboutRequested();
     void aboutQtRequested();
+    void checkForUpdatesRequested();
     void editStylesheetRequested();
 
 public:
@@ -117,6 +118,7 @@ public:
         virtual void setShowToolBarEnabled(bool) FUNCTION_BODY \
         virtual void setAboutEnabled(bool) FUNCTION_BODY \
         virtual void setAboutQtEnabled(bool) FUNCTION_BODY \
+        virtual void setCheckForUpdatesEnabled(bool) FUNCTION_BODY \
         virtual void setEditStylesheetEnabled(bool) FUNCTION_BODY \
 
 #define DECLARE_CONTROLS_CONTAINER_FUNCTIONS_HELPER_SET_CHECKED(ACCESS_SPECIFIER, FUNCTION_BODY) \

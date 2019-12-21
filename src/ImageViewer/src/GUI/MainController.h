@@ -60,6 +60,7 @@ public slots:
     void showImageInformation();
     void showStylesheetEditor();
     void openNewWindow();
+    void checkForUpdates();
 
 private slots:
     void onReopenWithRequested(const QString &decoderName);

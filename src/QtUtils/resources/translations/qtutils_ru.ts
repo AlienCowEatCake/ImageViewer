@@ -120,4 +120,70 @@
         <translation>Изменение темы вступит в силу только после перезапуска приложения.</translation>
     </message>
 </context>
+<context>
+    <name>UpdateManager</name>
+    <message>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="90"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="184"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="91"/>
+        <source>An update is already in progress. Check back later.</source>
+        <translation>Обновление уже запущено. Попробуйте проверить обновления позже.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="119"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="142"/>
+        <source>Information</source>
+        <translation>Информация</translation>
+    </message>
+    <message>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="122"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="145"/>
+        <source>Your version:</source>
+        <translation>Ваша версия:</translation>
+    </message>
+    <message>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="120"/>
+        <source>You have the latest version.</source>
+        <translation>У вас установлена последняя версия программы.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="143"/>
+        <source>New updates are available.</source>
+        <translation>Доступна новая версия программы.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="147"/>
+        <source>Latest version:</source>
+        <translation>Последняя версия:</translation>
+    </message>
+    <message>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="150"/>
+        <source>&amp;Download</source>
+        <translation>&amp;Загрузить</translation>
+    </message>
+    <message>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="151"/>
+        <source>&amp;Cancel</source>
+        <translation>&amp;Отмена</translation>
+    </message>
+    <message>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="152"/>
+        <source>&amp;Skip This Version</source>
+        <translation>&amp;Пропустить версию</translation>
+    </message>
+    <message>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="165"/>
+        <source>Automatically check for updates</source>
+        <translation>Автоматически проверять обновления</translation>
+    </message>
+    <message>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="185"/>
+        <source>Can&apos;t check for updates. Try again later.</source>
+        <translation>Не удалось проверить наличие обновлений. Попробуйте попозже.</translation>
+    </message>
+</context>
 </TS>
