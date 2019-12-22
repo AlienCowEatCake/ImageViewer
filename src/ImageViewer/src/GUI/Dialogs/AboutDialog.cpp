@@ -250,7 +250,13 @@ QString getTextBrowserContent()
     result.append(formatItem(
                       QString::fromLatin1("This software uses the Multiple-image Network Graphics (MNG) reference library"),
                       QString::fromLatin1("libmng"),
+#if defined (MNG_VERSION_MAJOR) && defined (MNG_VERSION_MINOR) && defined (MNG_VERSION_RELEASE)
                       QString::fromLatin1("%1.%2.%3").arg(MNG_VERSION_MAJOR).arg(MNG_VERSION_MINOR).arg(MNG_VERSION_RELEASE),
+#elif defined (MNG_VERSION_TEXT)
+                      QString::fromLatin1(MNG_VERSION_TEXT),
+#else
+                      QString(),
+#endif
                       QString::fromLatin1("https://sourceforge.net/projects/libmng/"),
                       QString::fromLatin1("Zlib License"),
                       QString::fromLatin1("https://opensource.org/licenses/Zlib")

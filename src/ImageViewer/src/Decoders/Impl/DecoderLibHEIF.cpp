@@ -37,9 +37,16 @@
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
 #include "Internal/PayloadWithMetaData.h"
+#include "Internal/Utils/MappedBuffer.h"
+
+#if defined (LIBHEIF_NUMERIC_VERSION) && (LIBHEIF_NUMERIC_VERSION >= 0x01030000)
+#define USE_STREAM_READER_API
+#endif
 
 namespace
 {
+
+#if defined (USE_STREAM_READER_API)
 
 int64_t getPositionCallback(void *userdata)
 {
@@ -67,8 +74,11 @@ heif_reader_grow_status waitForFileSizeCallback(int64_t target_size, void *userd
             : heif_reader_grow_status_size_beyond_eof;
 }
 
+#endif
+
 PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
 {
+#if defined (USE_STREAM_READER_API)
     QFile inFile(filePath);
     if(!inFile.open(QIODevice::ReadOnly))
     {
@@ -85,6 +95,14 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     reader.seek = &seekCallback;
     reader.wait_for_file_size = &waitForFileSizeCallback;
     heif_error error = heif_context_read_from_reader(ctx, &reader, &inFile, Q_NULLPTR);
+#else
+    const MappedBuffer inBuffer(filePath);
+    if(!inBuffer.isValid())
+        return QImage();
+
+    heif_context *ctx = heif_context_alloc();
+    heif_error error = heif_context_read_from_memory(ctx, inBuffer.dataAs<const void*>(), inBuffer.sizeAs<size_t>(), Q_NULLPTR);
+#endif
     if(error.code != heif_error_Ok)
     {
         qWarning() << "Can't read:" << error.message;
