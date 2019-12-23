@@ -43,7 +43,7 @@
     greaterThan(QT_MAJOR_VERSION, 5) {
         CONFIG += test_cxx11_compatible_qt
     }
-    c++11 | c++14 | c++1z {
+    c++11 | c++1y | c++14 | c++1z | c++17 | c++2a | c++20 {
         CONFIG += test_cxx11_compatible_config
     }
     test_cxx11_compatible_qt | test_cxx11_compatible_config | test_cxx11_compatible_msvc | enable_cxx11 {
