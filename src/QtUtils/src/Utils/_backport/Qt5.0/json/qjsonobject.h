@@ -42,7 +42,7 @@
 #ifndef QJSONOBJECT_H
 #define QJSONOBJECT_H
 
-#include <QtCore/qjsonvalue.h>
+#include "qjsonvalue.h"
 #include <QtCore/qiterator.h>
 
 QT_BEGIN_HEADER
@@ -53,7 +53,7 @@ class QDebug;
 template <class Key, class T> class QMap;
 typedef QMap<QString, QVariant> QVariantMap;
 
-class Q_CORE_EXPORT QJsonObject
+class /*Q_CORE_EXPORT*/ QJsonObject
 {
 public:
     QJsonObject();
@@ -98,8 +98,8 @@ public:
 //        typedef T *pointer;
         typedef QJsonValueRef reference;
 
-        Q_DECL_CONSTEXPR inline iterator() : o(0), i(0) {}
-        Q_DECL_CONSTEXPR inline iterator(QJsonObject *obj, int index) : o(obj), i(index) {}
+        /*Q_DECL_CONSTEXPR*/ inline iterator() : o(0), i(0) {}
+        /*Q_DECL_CONSTEXPR*/ inline iterator(QJsonObject *obj, int index) : o(obj), i(index) {}
 
         inline QString key() const { return o->keyAt(i); }
         inline QJsonValueRef value() const { return QJsonValueRef(o, i); }
@@ -136,8 +136,8 @@ public:
         typedef QJsonValue value_type;
         typedef QJsonValue reference;
 
-        Q_DECL_CONSTEXPR inline const_iterator() : o(0), i(0) {}
-        Q_DECL_CONSTEXPR inline const_iterator(const QJsonObject *obj, int index)
+        /*Q_DECL_CONSTEXPR*/ inline const_iterator() : o(0), i(0) {}
+        /*Q_DECL_CONSTEXPR*/ inline const_iterator(const QJsonObject *obj, int index)
             : o(obj), i(index) {}
         inline const_iterator(const iterator &other)
             : o(other.o), i(other.i) {}
@@ -194,7 +194,7 @@ private:
     friend class QJsonDocument;
     friend class QJsonValueRef;
 
-    friend Q_CORE_EXPORT QDebug operator<<(QDebug, const QJsonObject &);
+    friend /*Q_CORE_EXPORT*/ QDebug operator<<(QDebug, const QJsonObject &);
 
     QJsonObject(QJsonPrivate::Data *data, QJsonPrivate::Object *object);
     void detach(uint reserve = 0);
@@ -209,7 +209,7 @@ private:
 };
 
 #ifndef QT_NO_DEBUG_STREAM
-Q_CORE_EXPORT QDebug operator<<(QDebug, const QJsonObject &);
+/*Q_CORE_EXPORT*/ QDebug operator<<(QDebug, const QJsonObject &);
 #endif
 
 QT_END_NAMESPACE

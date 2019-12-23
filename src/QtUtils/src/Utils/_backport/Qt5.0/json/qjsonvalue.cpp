@@ -39,9 +39,16 @@
 **
 ****************************************************************************/
 
-#include <qjsonobject.h>
-#include <qjsonvalue.h>
-#include <qjsonarray.h>
+// ### WORKAROUND: Use private QString member
+#define _ALLOW_KEYWORD_MACROS
+#define private public
+#include <qstring.h>
+#undef private
+#undef _ALLOW_KEYWORD_MACROS
+
+#include "qjsonobject.h"
+#include "qjsonvalue.h"
+#include "qjsonarray.h"
 #include <qvariant.h>
 #include <qstringlist.h>
 #include <qdebug.h>
@@ -161,7 +168,7 @@ QJsonValue::QJsonValue(int n)
 QJsonValue::QJsonValue(const QString &s)
     : d(0), t(String)
 {
-    stringData = *(QStringData **)(&s);
+    stringData = *(QString::DataPtr *)(&s);
     stringData->ref.ref();
 }
 
@@ -173,7 +180,7 @@ QJsonValue::QJsonValue(QLatin1String s)
 {
     // ### FIXME: Avoid creating the temp QString below
     QString str(s);
-    stringData = *(QStringData **)(&str);
+    stringData = *(QString::DataPtr *)(&str);
     stringData->ref.ref();
 }
 
@@ -453,9 +460,11 @@ QString QJsonValue::toString(const QString &defaultValue) const
 {
     if (t != String)
         return defaultValue;
-    stringData->ref.ref(); // the constructor below doesn't add a ref.
-    QStringDataPtr holder = { stringData };
-    return QString(holder);
+    QString result;
+    result.d->ref.deref();
+    stringData->ref.ref();
+    result.d = stringData;
+    return result;
 }
 
 /*!

@@ -57,7 +57,7 @@ static inline uchar hexdig(uint u)
 static QByteArray escapedString(const QString &s)
 {
     const uchar replacement = '?';
-    QByteArray ba(s.length(), Qt::Uninitialized);
+    QByteArray ba(s.length(), /*Qt::Uninitialized*/0);
 
     uchar *cursor = (uchar *)ba.data();
     const uchar *ba_end = cursor + ba.length();
@@ -139,13 +139,13 @@ static QByteArray escapedString(const QString &s)
                 *cursor++ = 0xc0 | ((uchar) (u >> 6));
             } else {
                 // is it one of the Unicode non-characters?
-                if (QChar::isNonCharacter(u)) {
+                if (/*QChar::isNonCharacter(u)*/(u >= 0xfdd0 && (u <= 0xfdef || (u & 0xfffe) == 0xfffe))) {
                     *cursor++ = replacement;
                     ++ch;
                     continue;
                 }
 
-                if (QChar::requiresSurrogates(u)) {
+                if (/*QChar::requiresSurrogates(u)*/(u >= 0x10000)) {
                     *cursor++ = 0xf0 | ((uchar) (u >> 18));
                     *cursor++ = 0x80 | (((uchar) (u >> 12)) & 0x3f);
                 } else {

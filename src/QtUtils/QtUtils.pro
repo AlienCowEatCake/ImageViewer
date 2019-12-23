@@ -75,6 +75,13 @@ macx {
         $$files(src/Utils/*.mm)
 }
 
+!greaterThan(QT_MAJOR_VERSION, 4) {
+    BACKPORT50_JSON_PATH = $${PWD}/src/Utils/_backport/Qt5.0/json
+    INCLUDEPATH += $${BACKPORT50_JSON_PATH}
+    HEADERS += $$files($${BACKPORT50_JSON_PATH}/*.h)
+    SOURCES += $$files($${BACKPORT50_JSON_PATH}/*.cpp)
+}
+
 greaterThan(QT_MAJOR_VERSION, 4) : enable_update_checking {
     QT += network
 

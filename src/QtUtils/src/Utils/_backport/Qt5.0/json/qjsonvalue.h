@@ -64,7 +64,7 @@ namespace QJsonPrivate {
     class Entry;
 }
 
-class Q_CORE_EXPORT QJsonValue
+class /*Q_CORE_EXPORT*/ QJsonValue
 {
 public:
     enum Type {
@@ -120,7 +120,7 @@ private:
     friend class QJsonPrivate::Value;
     friend class QJsonArray;
     friend class QJsonObject;
-    friend Q_CORE_EXPORT QDebug operator<<(QDebug, const QJsonValue &);
+    friend /*Q_CORE_EXPORT*/ QDebug operator<<(QDebug, const QJsonValue &);
 
     QJsonValue(QJsonPrivate::Data *d, QJsonPrivate::Base *b, const QJsonPrivate::Value& v);
 
@@ -130,14 +130,14 @@ private:
         quint64 ui;
         bool b;
         double dbl;
-        QStringData *stringData;
+        QString::DataPtr stringData;
         QJsonPrivate::Base *base;
     };
     QJsonPrivate::Data *d; // needed for Objects and Arrays
     Type t;
 };
 
-class Q_CORE_EXPORT QJsonValueRef
+class /*Q_CORE_EXPORT*/ QJsonValueRef
 {
 public:
     QJsonValueRef(QJsonArray *array, int idx)
@@ -179,7 +179,7 @@ private:
 };
 
 #ifndef QT_NO_DEBUG_STREAM
-Q_CORE_EXPORT QDebug operator<<(QDebug, const QJsonValue &);
+/*Q_CORE_EXPORT*/ QDebug operator<<(QDebug, const QJsonValue &);
 #endif
 
 QT_END_NAMESPACE

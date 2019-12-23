@@ -53,10 +53,10 @@
 // We mean it.
 //
 
-#include <qjsonobject.h>
-#include <qjsonvalue.h>
-#include <qjsondocument.h>
-#include <qjsonarray.h>
+#include "qjsonobject.h"
+#include "qjsonvalue.h"
+#include "qjsondocument.h"
+#include "qjsonarray.h"
 #include <qatomic.h>
 #include <qstring.h>
 #include <qendian.h>
@@ -391,13 +391,13 @@ public:
     }
 
     inline bool operator ==(const QString &str) const {
-        return QLatin1String(d->latin1, d->length) == str;
+        return QString::fromLatin1(d->latin1, d->length) == str;
     }
     inline bool operator !=(const QString &str) const {
         return !operator ==(str);
     }
     inline bool operator >=(const QString &str) const {
-        return QLatin1String(d->latin1, d->length) >= str;
+        return QString::fromLatin1(d->latin1, d->length) >= str;
     }
 
     inline bool operator ==(const Latin1String &str) const {
@@ -745,7 +745,7 @@ public:
     Data *clone(Base *b, int reserve = 0)
     {
         int size = sizeof(Header) + b->size;
-        if (b == header->root() && ref.load() == 1 && alloc >= size + reserve)
+        if (b == header->root() && ref.fetchAndAddRelaxed(0) == 1 && alloc >= size + reserve)
             return this;
 
         if (reserve) {

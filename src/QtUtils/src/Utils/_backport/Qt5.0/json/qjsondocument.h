@@ -42,7 +42,7 @@
 #ifndef QJSONDOCUMENT_H
 #define QJSONDOCUMENT_H
 
-#include <QtCore/qjsonvalue.h>
+#include "qjsonvalue.h"
 
 QT_BEGIN_HEADER
 
@@ -54,7 +54,7 @@ namespace QJsonPrivate {
     class Parser;
 }
 
-struct Q_CORE_EXPORT QJsonParseError
+struct /*Q_CORE_EXPORT*/ QJsonParseError
 {
     enum ParseError {
         NoError = 0,
@@ -78,7 +78,7 @@ struct Q_CORE_EXPORT QJsonParseError
     ParseError error;
 };
 
-class Q_CORE_EXPORT QJsonDocument
+class /*Q_CORE_EXPORT*/ QJsonDocument
 {
 public:
 #ifdef Q_LITTLE_ENDIAN
@@ -131,7 +131,7 @@ private:
     friend class QJsonValue;
     friend class QJsonPrivate::Data;
     friend class QJsonPrivate::Parser;
-    friend Q_CORE_EXPORT QDebug operator<<(QDebug, const QJsonDocument &);
+    friend /*Q_CORE_EXPORT*/ QDebug operator<<(QDebug, const QJsonDocument &);
 
     QJsonDocument(QJsonPrivate::Data *data);
 
@@ -139,7 +139,7 @@ private:
 };
 
 #ifndef QT_NO_DEBUG_STREAM
-Q_CORE_EXPORT QDebug operator<<(QDebug, const QJsonDocument &);
+/*Q_CORE_EXPORT*/ QDebug operator<<(QDebug, const QJsonDocument &);
 #endif
 
 QT_END_NAMESPACE

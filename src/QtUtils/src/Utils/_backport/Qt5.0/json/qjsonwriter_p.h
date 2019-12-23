@@ -52,7 +52,7 @@
 //
 // We mean it.
 //
-#include <qjsonvalue.h>
+#include "qjsonvalue.h"
 
 QT_BEGIN_NAMESPACE
 

@@ -39,9 +39,9 @@
 **
 ****************************************************************************/
 
-#include <qjsonobject.h>
-#include <qjsonvalue.h>
-#include <qjsonarray.h>
+#include "qjsonobject.h"
+#include "qjsonvalue.h"
+#include "qjsonarray.h"
 #include <qstringlist.h>
 #include <qvariant.h>
 #include <qdebug.h>
@@ -1054,7 +1054,7 @@ void QJsonArray::detach(uint reserve)
         d->ref.ref();
         return;
     }
-    if (reserve == 0 && d->ref.load() == 1)
+    if (reserve == 0 && d->ref.fetchAndAddRelaxed(0) == 1)
         return;
 
     QJsonPrivate::Data *x = d->clone(a, reserve);

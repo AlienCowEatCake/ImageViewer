@@ -40,9 +40,10 @@
 ****************************************************************************/
 
 #ifndef QT_BOOTSTRAPPED
-#include <qcoreapplication.h>
+#include <qapplication.h>
 #endif
 #include <qdebug.h>
+#include <qvarlengtharray.h>
 #include "qjsonparser_p.h"
 #include "qjson_p.h"
 
@@ -830,8 +831,8 @@ static inline bool scanUtf8Char(const char *&json, const char *end, uint *result
         uc = (uc << 6) | (ch & 0x3f);
     }
 
-    if (uc < min_uc || QChar::isNonCharacter(uc) ||
-        QChar::isSurrogate(uc) || uc > QChar::LastValidCodePoint) {
+    if (uc < min_uc || /*QChar::isNonCharacter(uc)*/(uc >= 0xfdd0 && (uc <= 0xfdef || (uc & 0xfffe) == 0xfffe)) ||
+        /*QChar::isSurrogate(uc)*/((uc - 0xd800u < 2048u)) || uc > /*QChar::LastValidCodePoint*/0x10ffff) {
         return false;
     }
 
@@ -912,7 +913,7 @@ bool Parser::parseString(bool *latin1)
                 return false;
             }
         }
-        if (QChar::requiresSurrogates(ch)) {
+        if (/*QChar::requiresSurrogates(ch)*/(ch >= 0x10000)) {
             int pos = reserveSpace(4);
             *(QJsonPrivate::qle_ushort *)(data + pos) = QChar::highSurrogate(ch);
             *(QJsonPrivate::qle_ushort *)(data + pos + 2) = QChar::lowSurrogate(ch);
