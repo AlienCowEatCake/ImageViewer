@@ -25,9 +25,10 @@
 #include <QDebug>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
+
+#include "Utils/JsonArray.h"
+#include "Utils/JsonDocument.h"
+#include "Utils/JsonObject.h"
 
 #include "ReleaseInfo.h"
 
