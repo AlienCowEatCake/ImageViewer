@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <cassert>
 
+#include <QApplication>
 #include <QDebug>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -75,7 +76,10 @@ void UpdateChecker::checkForUpdates()
         m_impl->networkManager = new QNetworkAccessManager(this);
         connect(m_impl->networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
     }
-    m_impl->activeReply = m_impl->networkManager->get(QNetworkRequest(QUrl(QString::fromLatin1("https://api.github.com/repos/%1/%2/releases").arg(m_impl->owner).arg(m_impl->repo))));
+    QNetworkRequest request;
+    request.setUrl(QUrl(QString::fromLatin1("https://api.github.com/repos/%1/%2/releases").arg(m_impl->owner).arg(m_impl->repo)));
+    request.setRawHeader("User-Agent", QString::fromLatin1("%1/%2").arg(qApp->applicationName()).arg(qApp->applicationVersion()).toLatin1());
+    m_impl->activeReply = m_impl->networkManager->get(request);
 }
 
 void UpdateChecker::cancel()
