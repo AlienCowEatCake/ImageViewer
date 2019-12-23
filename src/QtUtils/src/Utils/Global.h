@@ -38,17 +38,63 @@ static inline bool qFuzzyIsNull(float f)
 
 #endif
 
-#if !defined (Q_DECL_OVERRIDE)
-#define Q_DECL_OVERRIDE
+#if !defined (QT_HAS_ATTRIBUTE)
+#   if defined (__has_attribute)
+#       define QT_HAS_ATTRIBUTE(x) __has_attribute(x)
+#   else
+#       define QT_HAS_ATTRIBUTE(x) 0
+#   endif
 #endif
-#if !defined (Q_DECL_FINAL)
-#define Q_DECL_FINAL
+
+#if !defined (QT_HAS_CPP_ATTRIBUTE)
+#   if defined (__has_cpp_attribute)
+#       define QT_HAS_CPP_ATTRIBUTE(x) __has_cpp_attribute(x)
+#   else
+#       define QT_HAS_CPP_ATTRIBUTE(x) 0
+#   endif
 #endif
-#if !defined (Q_NULLPTR)
-#define Q_NULLPTR NULL
-#endif
+
 #if !defined (Q_FALLTHROUGH)
-#define Q_FALLTHROUGH() (void)0
+#   if defined (__cplusplus)
+#       if QT_HAS_CPP_ATTRIBUTE(clang::fallthrough)
+#           define Q_FALLTHROUGH() [[clang::fallthrough]]
+#       elif QT_HAS_CPP_ATTRIBUTE(gnu::fallthrough)
+#           define Q_FALLTHROUGH() [[gnu::fallthrough]]
+#       elif QT_HAS_CPP_ATTRIBUTE(fallthrough)
+#           define Q_FALLTHROUGH() [[fallthrough]]
+#       endif
+#   endif
+#   if !defined (Q_FALLTHROUGH)
+#       if (defined(Q_CC_GNU) && Q_CC_GNU >= 700) && !defined(Q_CC_INTEL)
+#           define Q_FALLTHROUGH() __attribute__((fallthrough))
+#       else
+#           define Q_FALLTHROUGH() (void)0
+#       endif
+#   endif
+#endif
+
+#if !defined (Q_DECL_OVERRIDE)
+#   if defined (__cplusplus) && (__cplusplus >= 201103L)
+#       define Q_DECL_OVERRIDE override
+#   else
+#       define Q_DECL_OVERRIDE
+#   endif
+#endif
+
+#if !defined (Q_DECL_FINAL)
+#   if defined (__cplusplus) && (__cplusplus >= 201103L)
+#       define Q_DECL_FINAL final
+#   else
+#       define Q_DECL_FINAL
+#   endif
+#endif
+
+#if !defined (Q_NULLPTR)
+#   if defined (__cplusplus) && (__cplusplus >= 201103L)
+#       define Q_NULLPTR nullptr
+#   else
+#       define Q_NULLPTR NULL
+#   endif
 #endif
 
 #endif // QTUTILS_GLOBAL_H_INCLUDED
