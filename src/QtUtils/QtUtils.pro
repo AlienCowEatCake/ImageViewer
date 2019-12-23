@@ -82,7 +82,7 @@ macx {
     SOURCES += $$files($${BACKPORT50_JSON_PATH}/*.cpp)
 }
 
-greaterThan(QT_MAJOR_VERSION, 4) : enable_update_checking {
+enable_update_checking {
     QT += network
 
     HEADERS += \
