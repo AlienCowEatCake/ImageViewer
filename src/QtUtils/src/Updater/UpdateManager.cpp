@@ -21,6 +21,7 @@
 
 #include <QApplication>
 #include <QCheckBox>
+#include <QDateTime>
 #include <QDebug>
 #include <QDesktopServices>
 #include <QMessageBox>
@@ -34,6 +35,8 @@
 #include "ReleaseInfo.h"
 #include "SettingsKeys.h"
 #include "UpdateChecker.h"
+
+static const qint64 DAYS_TO_NEXT_AUTO_CHECK = 1;
 
 struct UpdateManager::Impl
 {
@@ -52,6 +55,7 @@ struct UpdateManager::Impl
     {
         updaterSettings.setValue(KEY_AUTO_CHECK_FOR_UPDATES, updaterSettings.value(KEY_AUTO_CHECK_FOR_UPDATES, autoCheck));
         updaterSettings.setValue(KEY_SKIPPED_VERSION, updaterSettings.value(KEY_SKIPPED_VERSION, QString()));
+        updaterSettings.setValue(KEY_LAST_CHECK_TIMESTAMP, updaterSettings.value(KEY_LAST_CHECK_TIMESTAMP, QString::fromLatin1("1970-01-01T00:00:00Z")));
     }
 };
 
@@ -69,7 +73,11 @@ UpdateManager::UpdateManager(RemoteType remoteType, const QString &owner, const 
     m_impl->updateTimer.setTimerType(Qt::VeryCoarseTimer);
 #endif
     if(autoCheck && m_impl->updaterSettings.value(KEY_AUTO_CHECK_FOR_UPDATES).toBool())
-        m_impl->updateTimer.start();
+    {
+        const QDateTime lastCheck = QDateTime::fromString(m_impl->updaterSettings.value(KEY_LAST_CHECK_TIMESTAMP).toString(), Qt::ISODate);
+        if(!lastCheck.isValid() || QDateTime::currentDateTime() >= lastCheck.addDays(DAYS_TO_NEXT_AUTO_CHECK))
+            m_impl->updateTimer.start();
+    }
 }
 
 UpdateManager::~UpdateManager()
@@ -100,6 +108,7 @@ void UpdateManager::checkForUpdates(bool silent)
     m_impl->inProgress = true;
     m_impl->silent = silent;
     m_impl->checker->checkForUpdates();
+    m_impl->updaterSettings.setValue(KEY_LAST_CHECK_TIMESTAMP, QDateTime::currentDateTime().toString(Qt::ISODate));
 }
 
 void UpdateManager::checkForUpdates()

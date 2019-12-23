@@ -26,6 +26,7 @@ static const QString GROUP_UPDATE_MANAGER       = QString::fromLatin1("UpdateMan
 
 static const QString KEY_SKIPPED_VERSION        = QString::fromLatin1("SkippedVersion");
 static const QString KEY_AUTO_CHECK_FOR_UPDATES = QString::fromLatin1("AutoCheckForUpdates");
+static const QString KEY_LAST_CHECK_TIMESTAMP   = QString::fromLatin1("LastCheckTimestamp");
 
 #endif // UPDATER_SETTINGS_KEYS_H_INCLUDED
 
