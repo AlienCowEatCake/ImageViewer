@@ -39,13 +39,6 @@
 **
 ****************************************************************************/
 
-// ### WORKAROUND: Use private QString member
-#define _ALLOW_KEYWORD_MACROS
-#define private public
-#include <qstring.h>
-#undef private
-#undef _ALLOW_KEYWORD_MACROS
-
 #include "qjsonobject.h"
 #include "qjsonvalue.h"
 #include "qjsonarray.h"
@@ -460,11 +453,7 @@ QString QJsonValue::toString(const QString &defaultValue) const
 {
     if (t != String)
         return defaultValue;
-    QString result;
-    result.d->ref.deref();
-    stringData->ref.ref();
-    result.d = stringData;
-    return result;
+    return QString(*(const QString *)(&stringData));
 }
 
 /*!
