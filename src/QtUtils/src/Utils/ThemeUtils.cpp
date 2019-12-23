@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -83,7 +83,12 @@ bool WidgetHasDarkTheme(const QWidget *widget)
 /// @brief Функция для определения темная используемая тема системы или нет
 bool SystemHasDarkTheme()
 {
-    return qApp->palette().color(QPalette::Background).toHsv().value() < 128;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+    const QPalette::ColorRole backgroundRole = QPalette::Window;
+#else
+    const QPalette::ColorRole backgroundRole = QPalette::Background;
+#endif
+    return qApp->palette().color(backgroundRole).toHsv().value() < 128;
 }
 #endif
 
