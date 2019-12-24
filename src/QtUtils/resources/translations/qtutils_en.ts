@@ -108,14 +108,82 @@
     </message>
 </context>
 <context>
+    <name>QJsonParseError</name>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="67"/>
+        <source>no error occurred</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="68"/>
+        <source>unterminated object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="69"/>
+        <source>missing name separator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="70"/>
+        <source>unterminated array</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="71"/>
+        <source>missing value separator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="72"/>
+        <source>illegal value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="73"/>
+        <source>invalid termination by number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="74"/>
+        <source>illegal number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="75"/>
+        <source>invalid escape sequence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="76"/>
+        <source>invalid UTF8 string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="77"/>
+        <source>unterminated string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="78"/>
+        <source>object is missing after a comma</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="79"/>
+        <source>too deeply nested document</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ThemeManager</name>
     <message>
-        <location filename="../../src/Utils/ThemeManager.cpp" line="364"/>
+        <location filename="../../src/Utils/ThemeManager.cpp" line="402"/>
         <source>Restart Required</source>
         <translation>Restart Required</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/ThemeManager.cpp" line="365"/>
+        <location filename="../../src/Utils/ThemeManager.cpp" line="403"/>
         <source>The theme change will take effect after a restart of application.</source>
         <translation>The theme change will take effect after a restart of application.</translation>
     </message>
@@ -123,65 +191,65 @@
 <context>
     <name>UpdateManager</name>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="90"/>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="184"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="100"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="197"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="91"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="101"/>
         <source>An update is already in progress. Check back later.</source>
         <translation>An update is already in progress. Check back later.</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="119"/>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="142"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="130"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="153"/>
         <source>Information</source>
         <translation>Information</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="122"/>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="145"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="133"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="156"/>
         <source>Your version:</source>
         <translation>Your version:</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="120"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="131"/>
         <source>You have the latest version.</source>
         <translation>You have the latest version.</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="143"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="154"/>
         <source>New updates are available.</source>
         <translation>New updates are available.</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="147"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="158"/>
         <source>Latest version:</source>
         <translation>Latest version:</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="150"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="161"/>
         <source>&amp;Download</source>
         <translation>&amp;Download</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="151"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="162"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Cancel</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="152"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="163"/>
         <source>&amp;Skip This Version</source>
         <translation>&amp;Skip This Version</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="165"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="176"/>
         <source>Automatically check for updates</source>
         <translation>Automatically check for updates</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="185"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="198"/>
         <source>Can&apos;t check for updates. Try again later.</source>
         <translation>Can&apos;t check for updates. Try again later.</translation>
     </message>

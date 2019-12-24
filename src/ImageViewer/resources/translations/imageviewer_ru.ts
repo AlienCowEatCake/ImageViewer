@@ -9,12 +9,12 @@
         <translation>Жигалов Петр</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="526"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="532"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="537"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="543"/>
         <source>License</source>
         <translation>Лицензия</translation>
     </message>
