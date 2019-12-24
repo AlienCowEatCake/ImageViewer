@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.6.0
+THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.6.1
 THIRDPARTY_LIBHEIF_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -24,6 +24,7 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/bitstream.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/box.cc \
 \ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/box_fuzzer.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/color_conversion_fuzzer.cc \
 \ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/encoder_fuzzer.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/error.cc \
 \ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/file_fuzzer.cc \
