@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBDE265_PATH = $${PWD}/libde265-1.0.3
+THIRDPARTY_LIBDE265_PATH = $${PWD}/libde265-1.0.4
 THIRDPARTY_LIBDE265_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
