@@ -15,7 +15,7 @@ cd "$(dirname $0)"/..
 rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
-${CMD_QMAKE} -r CONFIG+="release" CONFIG+=c++11 "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="release" CONFIG+=c++11 CONFIG+="enable_update_checking" "../${PROJECT}.pro"
 make
 strip --strip-all "${APP_PATH}/${PROJECT}"
 
