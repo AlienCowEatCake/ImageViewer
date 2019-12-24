@@ -56,6 +56,7 @@ struct UpdateChecker::Impl
         , repo(repo)
         , currentVersion(currentVersion)
         , networkManager(Q_NULLPTR)
+        , activeReply(Q_NULLPTR)
     {}
 };
 
@@ -64,6 +65,7 @@ UpdateChecker::UpdateChecker(RemoteType remoteType, const QString &owner, const 
     , m_impl(new Impl(owner, repo, currentVersion))
 {
     assert(remoteType == RemoteTypeGitHub);
+    Q_UNUSED(remoteType);
 }
 
 UpdateChecker::~UpdateChecker()

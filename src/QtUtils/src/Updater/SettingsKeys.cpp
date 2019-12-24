@@ -17,16 +17,11 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined (UPDATER_SETTINGS_KEYS_H_INCLUDED)
-#define UPDATER_SETTINGS_KEYS_H_INCLUDED
+#include "SettingsKeys.h"
 
-#include <QString>
+const QString GROUP_UPDATE_MANAGER          = QString::fromLatin1("UpdateManager");
 
-extern const QString GROUP_UPDATE_MANAGER;
-
-extern const QString KEY_SKIPPED_VERSION;
-extern const QString KEY_AUTO_CHECK_FOR_UPDATES;
-extern const QString KEY_LAST_CHECK_TIMESTAMP;
-
-#endif // UPDATER_SETTINGS_KEYS_H_INCLUDED
+const QString KEY_SKIPPED_VERSION           = QString::fromLatin1("SkippedVersion");
+const QString KEY_AUTO_CHECK_FOR_UPDATES    = QString::fromLatin1("AutoCheckForUpdates");
+const QString KEY_LAST_CHECK_TIMESTAMP      = QString::fromLatin1("LastCheckTimestamp");
 
