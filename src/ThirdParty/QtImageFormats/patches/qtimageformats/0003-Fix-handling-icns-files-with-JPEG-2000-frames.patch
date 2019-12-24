@@ -1,4 +1,4 @@
-From ae0ad8ea1d723fa01085507e7b1cb5bd3404b738 Mon Sep 17 00:00:00 2001
+From 55986bef901c10a12f412a8177e7e9a3906e50e1 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 15 May 2017 00:06:30 +0700
 Subject: [PATCH 3/6] Fix handling icns files with JPEG 2000 frames

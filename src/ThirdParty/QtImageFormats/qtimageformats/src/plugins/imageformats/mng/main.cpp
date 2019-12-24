@@ -66,12 +66,12 @@ QImageIOPlugin::Capabilities QMngPlugin::capabilities(QIODevice *device, const Q
 {
     if (format == "mng")
         return Capabilities(CanRead);
-    if (!format.isEmpty())
-        return 0;
-    if (!device->isOpen())
-        return 0;
-
     Capabilities cap;
+    if (!format.isEmpty())
+        return cap;
+    if (!device->isOpen())
+        return cap;
+
     if (device->isReadable() && QMngHandler::canRead(device))
         cap |= CanRead;
     return cap;

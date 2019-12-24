@@ -1,4 +1,4 @@
-From bcf755531bd8f6e35e1fb1d4567b3ebc6c763552 Mon Sep 17 00:00:00 2001
+From 1cc6a34cf47d441911f2bcdf303af61b5b1fe157 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 17 Nov 2019 01:42:45 +0700
 Subject: [PATCH 6/6] Dont use colorspace with old Qt verson
@@ -10,7 +10,7 @@ Subject: [PATCH 6/6] Dont use colorspace with old Qt verson
  3 files changed, 16 insertions(+)
 
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index 8cfe74f..9ceaa09 100644
+index 7d3063a..450f540 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
 @@ -39,7 +39,9 @@
@@ -23,7 +23,7 @@ index 8cfe74f..9ceaa09 100644
  #include <qdebug.h>
  #include <qimage.h>
  #include <qglobal.h>
-@@ -518,6 +520,7 @@ bool QTiffHandler::read(QImage *image)
+@@ -523,6 +525,7 @@ bool QTiffHandler::read(QImage *image)
          }
      }
  
@@ -31,7 +31,7 @@ index 8cfe74f..9ceaa09 100644
      uint32 count;
      void *profile;
      if (TIFFGetField(tiff, TIFFTAG_ICCPROFILE, &count, &profile)) {
-@@ -526,6 +529,7 @@ bool QTiffHandler::read(QImage *image)
+@@ -531,6 +534,7 @@ bool QTiffHandler::read(QImage *image)
      }
      // We do not handle colorimetric metadat not on ICC profile form, it seems to be a lot
      // less common, and would need additional API in QColorSpace.
@@ -39,7 +39,7 @@ index 8cfe74f..9ceaa09 100644
  
      return true;
  }
-@@ -633,6 +637,7 @@ bool QTiffHandler::write(const QImage &image)
+@@ -638,6 +642,7 @@ bool QTiffHandler::write(const QImage &image)
          TIFFClose(tiff);
          return false;
      }
@@ -47,7 +47,7 @@ index 8cfe74f..9ceaa09 100644
      // set color space
      if (image.colorSpace().isValid()) {
          QByteArray iccProfile = image.colorSpace().iccProfile();
-@@ -641,6 +646,7 @@ bool QTiffHandler::write(const QImage &image)
+@@ -646,6 +651,7 @@ bool QTiffHandler::write(const QImage &image)
              return false;
          }
      }

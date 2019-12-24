@@ -58,16 +58,16 @@ QImageIOPlugin::Capabilities QMacHeifPlugin::capabilities(QIODevice *device, con
 {
     static const Capabilities sysCaps = QIIOFHelpers::systemCapabilities(QStringLiteral("public.heic"));
 
+    Capabilities cap;
     if (!sysCaps)
-        return 0;
+        return cap;
     if (format == "heic" || format == "heif")
         return sysCaps;
     if (!format.isEmpty())
-        return 0;
+        return cap;
     if (!device->isOpen())
-        return 0;
+        return cap;
 
-    Capabilities cap;
     if (sysCaps.testFlag(CanRead) && device->isReadable() && QMacHeifHandler::canRead(device))
         cap |= CanRead;
     if (sysCaps.testFlag(CanWrite) && device->isWritable())

@@ -90,6 +90,9 @@ private slots:
     void colorSpace_data();
     void colorSpace();
 
+    void bigtiff_data();
+    void bigtiff();
+
 private:
     QString prefix;
 };
@@ -173,6 +176,10 @@ void tst_qtiff::readImage_data()
     QTest::newRow("tiled_oddsize_mono") << QString("tiled_oddsize_mono.tiff") << QSize(59, 71);
     QTest::newRow("16bpc") << QString("16bpc.tiff") << QSize(64, 46);
     QTest::newRow("gray16") << QString("gray16.tiff") << QSize(64, 46);
+    QTest::newRow("big_rgb") << QString("big_rgb.tiff") << QSize(64, 64);
+    QTest::newRow("big_rgb_bigendian") << QString("big_rgb_bigendian.tiff") << QSize(64, 64);
+    QTest::newRow("big_grayscale") << QString("big_grayscale.tiff") << QSize(64, 64);
+    QTest::newRow("big_16bpc") << QString("big_16bpc.tiff") << QSize(64, 46);
 }
 
 void tst_qtiff::readImage()
@@ -660,6 +667,28 @@ void tst_qtiff::colorSpace()
 
     QCOMPARE(image2.colorSpace(), namedColorSpace);
     QCOMPARE(image2, image);
+}
+
+void tst_qtiff::bigtiff_data()
+{
+    QTest::addColumn<QString>("expectedFile");
+    QTest::addColumn<QString>("bigtiffFile");
+
+    QTest::newRow("big_rgb") << QString("original_rgb.tiff") << QString("big_rgb.tiff");
+    QTest::newRow("big_rgb_bigendian") << QString("original_rgb.tiff") << QString("big_rgb_bigendian.tiff");
+    QTest::newRow("big_grayscale") << QString("original_grayscale.tiff") << QString("big_grayscale.tiff");
+    QTest::newRow("big_16bpc") << QString("16bpc.tiff") << QString("big_16bpc.tiff");
+}
+
+void tst_qtiff::bigtiff()
+{
+    QFETCH(QString, expectedFile);
+    QFETCH(QString, bigtiffFile);
+
+    QImage expectedImage(prefix + expectedFile);
+    QImage bigtiffImage(prefix + bigtiffFile);
+    QVERIFY(!bigtiffImage.isNull());
+    QCOMPARE(expectedImage, bigtiffImage);
 }
 
 QTEST_MAIN(tst_qtiff)

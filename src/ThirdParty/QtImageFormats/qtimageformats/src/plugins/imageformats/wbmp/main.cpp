@@ -64,13 +64,13 @@ QImageIOPlugin::Capabilities QWbmpPlugin::capabilities(QIODevice *device, const 
     if (format == "wbmp")
         return Capabilities(CanRead | CanWrite);
 
+    Capabilities cap;
     if (!format.isEmpty())
-        return 0;
+        return cap;
 
     if (!device->isOpen())
-        return 0;
+        return cap;
 
-    Capabilities cap;
     if (device->isReadable() && QWbmpHandler::canRead(device))
         cap |= CanRead;
 

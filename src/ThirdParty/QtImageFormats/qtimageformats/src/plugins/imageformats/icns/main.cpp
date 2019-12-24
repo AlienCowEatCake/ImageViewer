@@ -60,12 +60,12 @@ QImageIOPlugin::Capabilities QICNSPlugin::capabilities(QIODevice *device, const 
 {
     if (format == QByteArrayLiteral("icns"))
         return Capabilities(CanRead | CanWrite);
-    if (!format.isEmpty())
-        return 0;
-    if (!device || !device->isOpen())
-        return 0;
-
     Capabilities cap;
+    if (!format.isEmpty())
+        return cap;
+    if (!device || !device->isOpen())
+        return cap;
+
     if (device->isReadable() && QICNSHandler::canRead(device))
         cap |= CanRead;
     if (device->isWritable())

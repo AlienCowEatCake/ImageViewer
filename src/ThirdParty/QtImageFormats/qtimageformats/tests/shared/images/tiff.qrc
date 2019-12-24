@@ -52,5 +52,9 @@
         <file>tiff/oddsize_mono.tiff</file>
         <file>tiff/tiled_rgb.tiff</file>
         <file>tiff/gray16.tiff</file>
+        <file>tiff/big_rgb.tiff</file>
+        <file>tiff/big_16bpc.tiff</file>
+        <file>tiff/big_grayscale.tiff</file>
+        <file>tiff/big_rgb_bigendian.tiff</file>
     </qresource>
 </RCC>
