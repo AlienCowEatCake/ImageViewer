@@ -193,7 +193,8 @@ void readTiffTagToMetaData(TIFF *tiff, ImageMetaData *&metaData, quint32 tag, co
     if(!TIFFReadEXIFDirectory(tiff, exifOffset))
         return;
     qDebug() << "Found EXIF metadata (" << tagDescription << ")";
-    metaData = new ImageMetaData;
+    if(!metaData)
+        metaData = new ImageMetaData;
     for(int i = 0, tagListCount = TIFFGetTagListCount(tiff); i < tagListCount; i++)
     {
         ttag_t tag = TIFFGetTagListEntry(tiff, i);
