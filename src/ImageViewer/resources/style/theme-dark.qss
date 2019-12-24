@@ -87,7 +87,7 @@ QMenu::item
     background: #454545;
     color: #d2d2d2;
     border: none;
-    padding: 3px 25px 3px 2px;
+    padding: 3px 25px 3px 8px;
 }
 QMenu::item:selected
 {

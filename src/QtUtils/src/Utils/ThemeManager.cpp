@@ -82,9 +82,11 @@ struct ThemeData
     {}
 };
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
-
+#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0)) && !defined (DISABLE_TEXTDOCUMENT_STYLER)
 #define USE_TEXTDOCUMENT_STYLER
+#endif
+
+#if defined (USE_TEXTDOCUMENT_STYLER)
 
 /// @note https://bugreports.qt.io/browse/QTBUG-34114
 class TextDocumentStyler : public QObject
@@ -113,9 +115,11 @@ protected:
 
 #endif
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
-
+#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0)) && !defined (DISABLE_SCROLLBAR_STYLER)
 #define USE_SCROLLBAR_STYLER
+#endif
+
+#if defined (USE_SCROLLBAR_STYLER)
 
 class ScrollBarStyler : public QObject
 {
@@ -140,10 +144,14 @@ protected:
 
 #endif
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))
-
+#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 1)) && !defined (DISABLE_MENU_STYLER)
 #define USE_MENU_STYLER
+#endif
 
+#if defined (USE_MENU_STYLER)
+
+/// @note https://bugreports.qt.io/browse/QTBUG-78238
+/// @note https://bugreports.qt.io/browse/QTBUG-74655
 class MenuStyler : public QObject
 {
     Q_DISABLE_COPY(MenuStyler)
