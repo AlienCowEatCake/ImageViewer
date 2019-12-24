@@ -18,7 +18,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.10 "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.10 CONFIG+="enable_update_checking" "../${PROJECT}.pro"
 make -j3
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "10.10" "${APPNAME}.app/Contents/Info.plist"
@@ -35,7 +35,7 @@ for unused_plugins_subdir in virtualkeyboard platforminputcontexts ; do
 	rm -r "${PLUGINS_PATH}/${unused_plugins_subdir}"
 done
 FRAMEWORKS_PATH="${APPNAME}.app/Contents/Frameworks"
-for unused_framework in QtQml.framework QtQuick.framework QtNetwork.framework QtVirtualKeyboard.framework ; do
+for unused_framework in QtQml.framework QtQuick.framework QtVirtualKeyboard.framework ; do
 	rm -r "${FRAMEWORKS_PATH}/${unused_framework}"
 done
 cd "${BUILD_PATH}"
