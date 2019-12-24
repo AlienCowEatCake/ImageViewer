@@ -13,6 +13,6 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="enable_update_checking" -tp vc ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="enable_update_checking" DEFINES+="DISABLE_MENU_STYLER" -tp vc ..\%PROJECT%.pro
 
 pause

@@ -82,9 +82,11 @@ struct ThemeData
     {}
 };
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
-
+#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0)) && !defined (DISABLE_TEXTDOCUMENT_STYLER)
 #define USE_TEXTDOCUMENT_STYLER
+#endif
+
+#if defined (USE_TEXTDOCUMENT_STYLER)
 
 /// @note https://bugreports.qt.io/browse/QTBUG-34114
 class TextDocumentStyler : public QObject
@@ -113,9 +115,11 @@ protected:
 
 #endif
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
-
+#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0)) && !defined (DISABLE_SCROLLBAR_STYLER)
 #define USE_SCROLLBAR_STYLER
+#endif
+
+#if defined (USE_SCROLLBAR_STYLER)
 
 class ScrollBarStyler : public QObject
 {
@@ -133,6 +137,37 @@ protected:
         {
             if(QAbstractScrollArea *scrollArea = qobject_cast<QAbstractScrollArea*>(object))
                 scrollArea->setProperty("ScrollBorderRequired", true);
+        }
+        return QObject::eventFilter(object, event);
+    }
+};
+
+#endif
+
+#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 1)) && !defined (DISABLE_MENU_STYLER)
+#define USE_MENU_STYLER
+#endif
+
+#if defined (USE_MENU_STYLER)
+
+/// @note https://bugreports.qt.io/browse/QTBUG-78238
+/// @note https://bugreports.qt.io/browse/QTBUG-74655
+class MenuStyler : public QObject
+{
+    Q_DISABLE_COPY(MenuStyler)
+
+public:
+    MenuStyler(QObject *parent = Q_NULLPTR)
+        : QObject(parent)
+    {}
+
+protected:
+    bool eventFilter(QObject *object, QEvent *event) Q_DECL_OVERRIDE
+    {
+        if(event->type() == QEvent::ChildAdded)
+        {
+            if(QMenu *menu = qobject_cast<QMenu*>(object))
+                menu->setProperty("LeftPaddingRequired", true);
         }
         return QObject::eventFilter(object, event);
     }
@@ -162,6 +197,9 @@ struct ThemeManager::Impl
 #endif
 #if defined (USE_SCROLLBAR_STYLER)
         qApp->installEventFilter(new ScrollBarStyler(qApp));
+#endif
+#if defined (USE_MENU_STYLER)
+        qApp->installEventFilter(new MenuStyler(qApp));
 #endif
     }
 
