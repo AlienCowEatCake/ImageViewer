@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -93,23 +93,23 @@ qint64 AbstractScalingWorker::getScaledDataId() const
 void AbstractScalingWorker::process()
 {
     m_workerAborted = false;
-    emit started();
+    Q_EMIT started();
     if(isAborted())
     {
-        emit aborted();
+        Q_EMIT aborted();
         return;
     }
     if(!scaleImpl())
     {
-        emit aborted();
+        Q_EMIT aborted();
         return;
     }
     if(isAborted())
     {
-        emit aborted();
+        Q_EMIT aborted();
         return;
     }
-    emit finished();
+    Q_EMIT finished();
 }
 
 void AbstractScalingWorker::abort()

@@ -63,7 +63,7 @@ bool Application::event(QEvent *event)
             m_lastOpenFilePath = fileOpenEvent->file();
             if(hasLastOpenFilePath())
             {
-                emit openFileEvent(m_lastOpenFilePath);
+                Q_EMIT openFileEvent(m_lastOpenFilePath);
                 return true;
             }
         }

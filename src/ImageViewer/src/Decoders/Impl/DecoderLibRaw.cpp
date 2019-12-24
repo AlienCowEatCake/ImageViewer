@@ -378,7 +378,7 @@ private:
             m_provider->m_isFinal = true;
             m_provider->m_rawImageProcessor.reset();
             m_provider->m_mutex.unlock();
-            emit m_provider->updated();
+            Q_EMIT m_provider->updated();
         }
 
     private:

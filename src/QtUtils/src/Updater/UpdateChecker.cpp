@@ -99,7 +99,7 @@ void UpdateChecker::replyFinished(QNetworkReply *reply)
     if(reply->error() != QNetworkReply::NoError)
     {
         qWarning() << "[UpdateChecker]" << reply->errorString();
-        emit updateError(reply->errorString());
+        Q_EMIT updateError(reply->errorString());
         return;
     }
 
@@ -108,7 +108,7 @@ void UpdateChecker::replyFinished(QNetworkReply *reply)
     if(error.error != QJsonParseError::NoError)
     {
         qWarning() << "[UpdateChecker]" << error.errorString();
-        emit updateError(error.errorString());
+        Q_EMIT updateError(error.errorString());
         return;
     }
 
@@ -146,11 +146,11 @@ void UpdateChecker::replyFinished(QNetworkReply *reply)
 
     if(newReleases.empty())
     {
-        emit updateNotFound(currentRelease);
+        Q_EMIT updateNotFound(currentRelease);
         return;
     }
 
     std::sort(newReleases.begin(), newReleases.end(), releaseInfoGreater);
-    emit updateFound(currentRelease, newReleases);
+    Q_EMIT updateFound(currentRelease, newReleases);
 }
 

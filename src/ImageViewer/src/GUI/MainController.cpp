@@ -331,13 +331,13 @@ void MainController::onReopenWithRequested(const QString &decoderName)
         if(m_impl->imageData)
         {
             m_impl->imageData = DecodersManager::getInstance().generateStub(m_impl->imageData);
-            emit uiStateChanged(m_impl->createUIState(), UICF_ImageData);
+            Q_EMIT uiStateChanged(m_impl->createUIState(), UICF_ImageData);
         }
         m_impl->imageData = DecodersManager::getInstance().loadImage(currentFilePath, decoderName);
     }
     UIState uiState = m_impl->createUIState();
     UIChangeFlags uiChangeFlags = UICF_ImageData;
-    emit uiStateChanged(uiState, uiChangeFlags);
+    Q_EMIT uiStateChanged(uiState, uiChangeFlags);
     if(!currentFilePath.isEmpty() && !m_impl->imageData)
         QMessageBox::critical(&m_impl->mainWindow, tr("Error"), tr("Failed to open file \"%1\"").arg(uiState.currentFilePath));
 }
@@ -359,7 +359,7 @@ void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &c
             if(m_impl->imageData)
             {
                 m_impl->imageData = DecodersManager::getInstance().generateStub(m_impl->imageData);
-                emit uiStateChanged(m_impl->createUIState(), UICF_ImageData);
+                Q_EMIT uiStateChanged(m_impl->createUIState(), UICF_ImageData);
             }
             m_impl->imageData = DecodersManager::getInstance().loadImage(currentFilePath);
         }
@@ -383,7 +383,7 @@ void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &c
     m_impl->lastHasCurrentFile = uiState.hasCurrentFile;
     m_impl->lastHasCurrentFileIndex = uiState.hasCurrentFileIndex;
 
-    emit uiStateChanged(uiState, uiChangeFlags);
+    Q_EMIT uiStateChanged(uiState, uiChangeFlags);
 
     if(!currentFilePath.isEmpty() && !m_impl->imageData)
         QMessageBox::critical(&m_impl->mainWindow, tr("Error"), tr("Failed to open file \"%1\"").arg(uiState.currentFilePath));

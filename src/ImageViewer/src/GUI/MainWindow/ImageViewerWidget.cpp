@@ -115,7 +115,7 @@ struct ImageViewerWidget::Impl
 
         if(qAbs(previousZoomLevel - currentZoomLevel) / qMax(previousZoomLevel, currentZoomLevel) > ZOOM_CHANGE_EPSILON)
         {
-            emit imageViewerWidget->zoomLevelChanged(currentZoomLevel);
+            Q_EMIT imageViewerWidget->zoomLevelChanged(currentZoomLevel);
             previousZoomLevel = currentZoomLevel;
         }
     }

@@ -508,7 +508,7 @@ void MainWindow::onActionReopenWithTriggered(QAction *action)
     assert(m_impl->uiState.hasCurrentFile);
     if(!m_impl->uiState.hasCurrentFile)
         return;
-    emit reopenWithRequested(action->data().toString());
+    Q_EMIT reopenWithRequested(action->data().toString());
     updateWindowTitle();
 }
 
@@ -541,7 +541,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     saveGeometrySettings();
     QMainWindow::closeEvent(event);
-    emit closed();
+    Q_EMIT closed();
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -569,9 +569,9 @@ void MainWindow::dropEvent(QDropEvent *event)
         for(QList<QUrl>::ConstIterator it = urlList.constBegin(), itEnd = urlList.constEnd(); it != itEnd; ++it)
             pathsList.append(it->toLocalFile());
         if(pathsList.size() == 1)
-            emit openPathRequested(pathsList.first());
+            Q_EMIT openPathRequested(pathsList.first());
         else
-            emit openPathsRequested(pathsList);
+            Q_EMIT openPathsRequested(pathsList);
     }
 }
 
@@ -580,10 +580,10 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     switch(event->key())
     {
     case Qt::Key_Home:
-        emit selectFirstRequested();
+        Q_EMIT selectFirstRequested();
         break;
     case Qt::Key_End:
-        emit selectLastRequested();
+        Q_EMIT selectLastRequested();
         break;
     case Qt::Key_Escape:
         if(m_impl->isFullScreenMode)

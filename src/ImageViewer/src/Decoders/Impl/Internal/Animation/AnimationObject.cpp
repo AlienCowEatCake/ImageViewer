@@ -108,7 +108,7 @@ void AnimationObject::setProvider(IAnimationProvider *provider)
     m_impl->nextImageDelay = provider->nextImageDelay();
     if(m_impl->nextImageDelay >= 0)
         m_impl->nextImageTimer.start(m_impl->nextImageDelay);
-    emit updated();
+    Q_EMIT updated();
 }
 
 IAnimationProvider *AnimationObject::provider() const
@@ -139,6 +139,6 @@ void AnimationObject::loadNextFrame()
     {
         if(m_impl->nextImageDelay >= 0)
             m_impl->nextImageTimer.start(std::max(0, m_impl->nextImageDelay - processingTime));
-        emit updated();
+        Q_EMIT updated();
     }
 }

@@ -29,7 +29,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += warn_on
 
-DEFINES += QT_NO_CAST_FROM_ASCII
+DEFINES += QT_NO_CAST_FROM_ASCII QT_NO_KEYWORDS
 
 *g++*|*clang* {
     QMAKE_CXXFLAGS_RELEASE -= -O2

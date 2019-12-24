@@ -343,7 +343,7 @@ public:
         if(m_canDeleteCurrentFile != m_manager->canDeleteCurrentFile())
             flags |= FileManager::FlagCanDeleteCurrentFile;
         if(flags != FileManager::ChangeFlags())
-            emit m_manager->stateChanged(flags);
+            Q_EMIT m_manager->stateChanged(flags);
     }
 
 private:

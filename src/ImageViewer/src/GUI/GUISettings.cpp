@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -120,7 +120,7 @@ void GUISettings::setAskBeforeDelete(bool enabled)
     const bool oldValue = askBeforeDelete();
     m_impl->settings.setValue(ASK_BEFORE_DELETE_KEY, enabled);
     if(enabled != oldValue)
-        emit askBeforeDeleteChanged(enabled);
+        Q_EMIT askBeforeDeleteChanged(enabled);
 }
 
 bool GUISettings::moveToTrash() const
@@ -135,7 +135,7 @@ void GUISettings::setMoveToTrash(bool enabled)
     const bool oldValue = moveToTrash();
     m_impl->settings.setValue(MOVE_TO_TRASH_KEY, enabled);
     if(enabled != oldValue)
-        emit moveToTrashChanged(enabled);
+        Q_EMIT moveToTrashChanged(enabled);
 }
 
 ImageViewerWidget::ZoomMode GUISettings::zoomMode() const
@@ -151,7 +151,7 @@ void GUISettings::setZoomMode(ImageViewerWidget::ZoomMode mode)
     const ImageViewerWidget::ZoomMode oldValue = zoomMode();
     m_impl->settings.setValue(ZOOM_MODE_KEY, zoomModeToVariant(mode));
     if(mode != oldValue)
-        emit zoomModeChanged(mode);
+        Q_EMIT zoomModeChanged(mode);
 }
 
 qreal GUISettings::zoomLevel() const
@@ -170,7 +170,7 @@ void GUISettings::setZoomLevel(qreal level)
     const qreal oldValue = zoomLevel();
     m_impl->settings.setValue(ZOOM_LEVEL_KEY, level);
     if(level != oldValue)
-        emit zoomLevelChanged(level);
+        Q_EMIT zoomLevelChanged(level);
 }
 
 ImageViewerWidget::WheelMode GUISettings::wheelMode() const
@@ -186,7 +186,7 @@ void GUISettings::setWheelMode(ImageViewerWidget::WheelMode mode)
     const ImageViewerWidget::WheelMode oldValue = wheelMode();
     m_impl->settings.setValue(WHEEL_MODE_KEY, wheelModeToVariant(mode));
     if(mode != oldValue)
-        emit wheelModeChanged(mode);
+        Q_EMIT wheelModeChanged(mode);
 }
 
 QColor GUISettings::normalBackgroundColor() const
@@ -201,7 +201,7 @@ void GUISettings::setNormalBackgroundColor(const QColor &color)
     const QColor oldValue = normalBackgroundColor();
     m_impl->settings.setValue(NORMAL_BACKGROUND_COLOR_KEY, color);
     if(color != oldValue)
-        emit normalBackgroundColorChanged(color);
+        Q_EMIT normalBackgroundColorChanged(color);
 }
 
 QColor GUISettings::fullScreenBackgroundColor() const
@@ -216,7 +216,7 @@ void GUISettings::setFullScreenBackgroundColor(const QColor &color)
     const QColor oldValue = fullScreenBackgroundColor();
     m_impl->settings.setValue(FULLSCREEN_BACKGROUND_COLOR_KEY, color);
     if(color != oldValue)
-        emit fullScreenBackgroundColorChanged(color);
+        Q_EMIT fullScreenBackgroundColorChanged(color);
 }
 
 QString GUISettings::lastOpenedPath() const
@@ -231,7 +231,7 @@ void GUISettings::setLastOpenedPath(const QString &path)
     const QString oldValue = lastOpenedPath();
     m_impl->settings.setValue(LAST_OPENED_PATH_KEY, path);
     if(path != oldValue)
-        emit lastOpenedPathChanged(path);
+        Q_EMIT lastOpenedPathChanged(path);
 }
 
 bool GUISettings::smoothTransformation() const
@@ -246,7 +246,7 @@ void GUISettings::setSmoothTransformation(bool enabled)
     const bool oldValue = smoothTransformation();
     m_impl->settings.setValue(SMOOTH_TRANSFORMATION_KEY, enabled);
     if(enabled != oldValue)
-        emit smoothTransformationChanged(enabled);
+        Q_EMIT smoothTransformationChanged(enabled);
 }
 
 QByteArray GUISettings::mainWindowGeometry() const
@@ -260,7 +260,7 @@ void GUISettings::setMainWindowGeometry(const QByteArray &geometry)
     const QByteArray oldValue = mainWindowGeometry();
     m_impl->settings.setValue(MAIN_WINDOW_GEOMETRY_KEY, geometry);
     if(geometry != oldValue)
-        emit mainWindowGeometryChanged(geometry);
+        Q_EMIT mainWindowGeometryChanged(geometry);
 }
 
 int GUISettings::slideShowInterval() const
@@ -279,7 +279,7 @@ void GUISettings::setSlideShowInterval(int seconds)
     const int oldValue = slideShowInterval();
     m_impl->settings.setValue(SLIDESHOW_INTERVAL_KEY, seconds);
     if(seconds != oldValue)
-        emit slideShowIntervalChanged(seconds);
+        Q_EMIT slideShowIntervalChanged(seconds);
 }
 
 bool GUISettings::menuBarVisible() const
@@ -294,7 +294,7 @@ void GUISettings::setMenuBarVisible(bool visible)
     const bool oldValue = menuBarVisible();
     m_impl->settings.setValue(MENUBAR_VISIBLE_KEY, visible);
     if(visible != oldValue)
-        emit menuBarVisibleChanged(visible);
+        Q_EMIT menuBarVisibleChanged(visible);
 }
 
 bool GUISettings::toolBarVisible() const
@@ -309,5 +309,5 @@ void GUISettings::setToolBarVisible(bool visible)
     const bool oldValue = toolBarVisible();
     m_impl->settings.setValue(TOOLBAR_VISIBLE_KEY, visible);
     if(visible != oldValue)
-        emit toolBarVisibleChanged(visible);
+        Q_EMIT toolBarVisibleChanged(visible);
 }

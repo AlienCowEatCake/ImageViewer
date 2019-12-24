@@ -367,7 +367,7 @@ void ThemeManager::setTheme(const QString &themeId, const bool showMessage, QWid
     m_impl->settings.setValue(SETTINGS_KEY, theme->themeId);
     m_impl->updateActions();
     m_impl->updateComboBoxes();
-    emit themeChanged(theme->themeId);
+    Q_EMIT themeChanged(theme->themeId);
 }
 
 /// @brief Заполнить меню элементами для выбора темы. Все необходимые
