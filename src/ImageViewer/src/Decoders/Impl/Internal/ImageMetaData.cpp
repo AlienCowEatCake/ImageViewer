@@ -1216,7 +1216,7 @@ bool ImageMetaData::readFile(const QByteArray &fileData)
     qDebug() << "EXIF header detected";
     return true;
 #else
-    Q_UNUSED(filePath);
+    Q_UNUSED(fileData);
     return false;
 #endif
 }
