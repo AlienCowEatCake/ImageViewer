@@ -1,21 +1,24 @@
 #!/bin/bash -e
 PROJECT="ImageViewer"
-BUILDDIR="build_linux_qt5.12_gcc"
+BUILDDIR="build_linux_qt5.12_clang"
 SUFFIX="_qt5.12_$(gcc -dumpmachine)"
 APP_PATH="src/${PROJECT}"
 DESKTOP_PATH="src/${PROJECT}/resources/platform/linux/${PROJECT}.desktop"
 ICON_PATH="src/${PROJECT}/resources/icon/icon.svg"
 
-QTDIR="/opt/Qt5.12.6/5.12.6/gcc_64"
+QTDIR="/opt/qt-5.12.6_clang"
+CLANGDIR="/opt/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-14.04"
 CMD_QMAKE="${QTDIR}/bin/qmake"
 CMD_DEPLOY="/opt/linuxdeployqt-6-x86_64.AppImage"
 CMD_APPIMAGETOOL="/opt/appimagetool-x86_64.AppImage"
+
+export PATH="${CLANGDIR}/bin:${PATH}"
 
 cd "$(dirname $0)"/..
 rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
-${CMD_QMAKE} -r CONFIG+="release" CONFIG+=c++11 CONFIG+="enable_update_checking" "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="release" CONFIG+=c++1z CONFIG+="enable_update_checking" "../${PROJECT}.pro"
 make
 strip --strip-all "${APP_PATH}/${PROJECT}"
 
@@ -24,6 +27,6 @@ mkdir -p "AppDir/usr/bin" "AppDir/usr/lib" "AppDir/usr/share/applications" "AppD
 cp -a "${APP_PATH}/${PROJECT}" "AppDir/usr/bin/"
 cp -a "../${DESKTOP_PATH}" "AppDir/usr/share/applications/${PROJECT}.desktop"
 cp -a "../${ICON_PATH}" "AppDir/usr/share/icons/hicolor/scalable/apps/${PROJECT}.svg"
-"${CMD_DEPLOY}" "AppDir/usr/share/applications/${PROJECT}.desktop" -always-overwrite -qmake="${CMD_QMAKE}"
+"${CMD_DEPLOY}" "AppDir/usr/share/applications/${PROJECT}.desktop" -always-overwrite -qmake="${CMD_QMAKE}" -extra-plugins=styles,platformthemes
 "${CMD_APPIMAGETOOL}" --no-appstream "AppDir" ../"${PROJECT}${SUFFIX}.AppImage"
 cd ..
