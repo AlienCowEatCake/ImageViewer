@@ -140,6 +140,33 @@ protected:
 
 #endif
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))
+
+#define USE_MENU_STYLER
+
+class MenuStyler : public QObject
+{
+    Q_DISABLE_COPY(MenuStyler)
+
+public:
+    MenuStyler(QObject *parent = Q_NULLPTR)
+        : QObject(parent)
+    {}
+
+protected:
+    bool eventFilter(QObject *object, QEvent *event) Q_DECL_OVERRIDE
+    {
+        if(event->type() == QEvent::ChildAdded)
+        {
+            if(QMenu *menu = qobject_cast<QMenu*>(object))
+                menu->setProperty("LeftPaddingRequired", true);
+        }
+        return QObject::eventFilter(object, event);
+    }
+};
+
+#endif
+
 typedef QList<QAction*> ActionList;
 typedef QMap<QString, ActionList> ActionListMap;
 
@@ -162,6 +189,9 @@ struct ThemeManager::Impl
 #endif
 #if defined (USE_SCROLLBAR_STYLER)
         qApp->installEventFilter(new ScrollBarStyler(qApp));
+#endif
+#if defined (USE_MENU_STYLER)
+        qApp->installEventFilter(new MenuStyler(qApp));
 #endif
     }
 
