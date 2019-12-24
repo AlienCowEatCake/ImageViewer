@@ -36,11 +36,11 @@ public:
     explicit AnimationWidget(QWidget *parent = Q_NULLPTR, Qt::WindowFlags flags = Qt::WindowFlags());
     ~AnimationWidget();
 
-public slots:
+public Q_SLOTS:
     void setAnimationProvider(IAnimationProvider *provider);
     void clear();
 
-private slots:
+private Q_SLOTS:
     void animationUpdated();
 
 private:

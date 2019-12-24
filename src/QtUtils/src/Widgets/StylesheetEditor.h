@@ -37,7 +37,7 @@ public:
     bool isProtected() const;
     void setProtected(bool isProtected);
 
-private slots:
+private Q_SLOTS:
     void applyStylesheet();
     void resetStyleSheet();
     void readStyleSheet();

@@ -48,7 +48,7 @@ public:
         WHEEL_ZOOM          = 2
     };
 
-signals:
+Q_SIGNALS:
     void zoomLevelChanged(qreal zoomLevel);
 
 public:
@@ -64,7 +64,7 @@ public:
     QSize imageSize() const;
     QImage grabImage() const;
 
-public slots:
+public Q_SLOTS:
 
     void setGraphicsItem(QGraphicsItem *graphicsItem);
     void clear();

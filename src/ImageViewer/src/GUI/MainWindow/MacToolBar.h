@@ -42,7 +42,7 @@ public:
 
     void setVisible(bool isVisible);
 
-private slots:
+private Q_SLOTS:
     void retranslate();
 
 private:

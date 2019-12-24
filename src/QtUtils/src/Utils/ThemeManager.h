@@ -37,7 +37,7 @@ class ThemeManager : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(ThemeManager)
 
-signals:
+Q_SIGNALS:
     /// @brief Сигнал об изменении темы.
     /// @param themeId - Идентификатор новой темы.
     void themeChanged(const QString &themeId);
@@ -87,7 +87,7 @@ private:
     ThemeManager();
     ~ThemeManager();
 
-private slots:
+private Q_SLOTS:
     void onActionTriggered(QAction *action);
     void onComboBoxActivated(int index);
     void onActionDestroyed(QObject *object);

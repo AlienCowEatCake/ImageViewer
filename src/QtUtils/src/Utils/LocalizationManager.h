@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -40,7 +40,7 @@ class LocalizationManager : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(LocalizationManager)
 
-signals:
+Q_SIGNALS:
     /// @brief Сигнал об изменении локализации.
     /// @param locale - Новая локаль.
     void localeChanged(const QString &locale);
@@ -78,7 +78,7 @@ private:
     LocalizationManager();
     ~LocalizationManager();
 
-private slots:
+private Q_SLOTS:
     void onActionEnglishTriggered();
     void onActionRussianTriggered();
     void onComboBoxActivated(int index);

@@ -45,7 +45,7 @@ public:
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE;
 
-private slots:
+private Q_SLOTS:
     void onUpdateRequested();
     void onRenderProcessTerminated(int terminationStatus);
 

@@ -36,14 +36,14 @@ class MainController : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(MainController)
 
-signals:
+Q_SIGNALS:
     void uiStateChanged(const UIState &state, const UIChangeFlags &changeFlags);
 
 public:
     explicit MainController(QObject *parent = Q_NULLPTR);
     ~MainController();
 
-public slots:
+public Q_SLOTS:
     bool openPath(const QString &path);
     bool openPaths(const QStringList &paths);
     bool openFileWithDialog();
@@ -62,7 +62,7 @@ public slots:
     void openNewWindow();
     void checkForUpdates();
 
-private slots:
+private Q_SLOTS:
     void onReopenWithRequested(const QString &decoderName);
     void onFileManagerStateChanged(const FileManager::ChangeFlags &changedFlags);
 

@@ -39,7 +39,7 @@ public:
 protected:
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
 
-protected slots:
+protected Q_SLOTS:
     void onSettingsAccepted();
     void onNormalBackgroundColorChanged(const QColor &color);
     void onFullScreenBackgroundColorChanged(const QColor &color);

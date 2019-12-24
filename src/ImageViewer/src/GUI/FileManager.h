@@ -47,7 +47,7 @@ public:
     };
     Q_DECLARE_FLAGS(ChangeFlags, ChangeFlag)
 
-signals:
+Q_SIGNALS:
     void stateChanged(const FileManager::ChangeFlags& changedFlags);
 
 public:
@@ -64,7 +64,7 @@ public:
 
     QStringList currentOpenArguments() const;
 
-public slots:
+public Q_SLOTS:
     void reset();
     void update();
     bool openPath(const QString &filePath);

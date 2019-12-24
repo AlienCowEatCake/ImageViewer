@@ -62,7 +62,7 @@ protected:
      */
     bool event(QEvent *event) Q_DECL_OVERRIDE;
 
-signals:
+Q_SIGNALS:
     /**
      * @brief Сигнал о том, что пришло событие QFileOpenEvent
      * @param filePath Имя файла

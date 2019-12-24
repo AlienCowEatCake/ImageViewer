@@ -38,7 +38,7 @@ public:
     explicit EffectsStorage(QObject *parent = Q_NULLPTR);
     ~EffectsStorage();
 
-public slots:
+public Q_SLOTS:
     void updateUIState(const UIState &state, const UIChangeFlags &changeFlags);
     void applySavedEffects(ImageViewerWidget *imageViewerWidget);
 

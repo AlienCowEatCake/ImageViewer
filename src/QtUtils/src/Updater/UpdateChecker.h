@@ -35,7 +35,7 @@ class UpdateChecker : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(UpdateChecker)
 
-signals:
+Q_SIGNALS:
     void updateNotFound(const ReleaseInfo &currentRelease);
     void updateFound(const ReleaseInfo &currentRelease, const QList<ReleaseInfo> &newReleases);
     void updateError(const QString &errorString);
@@ -44,11 +44,11 @@ public:
     UpdateChecker(RemoteType remoteType, const QString &owner, const QString &repo, const QString &currentVersion, QObject *parent = Q_NULLPTR);
     ~UpdateChecker();
 
-public slots:
+public Q_SLOTS:
     void checkForUpdates();
     void cancel();
 
-private slots:
+private Q_SLOTS:
     void replyFinished(QNetworkReply *reply);
 
 private:

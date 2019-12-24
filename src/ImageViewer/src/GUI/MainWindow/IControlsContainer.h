@@ -29,7 +29,7 @@
 ALL_LIST="OpenFile OpenFolder SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow ImageInformation Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomCustom ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt CheckForUpdates EditStylesheet"
 CHECKABLE_LIST="ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar"
 
-# signals
+# Q_SIGNALS
 for i in ${ALL_LIST}
 do
     echo ${i} | sed 's|^\(.\)|\L\1| ; s|^\(.*\)$|void \1Requested();|'
@@ -53,7 +53,7 @@ class ControlsContainerEmitter : public QObject
 {
     Q_OBJECT
 
-signals:
+Q_SIGNALS:
     void openFileRequested();
     void openFolderRequested();
     void saveAsRequested();

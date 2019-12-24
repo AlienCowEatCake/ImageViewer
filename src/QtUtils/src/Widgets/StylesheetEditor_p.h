@@ -41,7 +41,7 @@ class CodeEditor : public QPlainTextEdit
     Q_OBJECT
     Q_DISABLE_COPY(CodeEditor)
 
-signals:
+Q_SIGNALS:
     void applyRequested();
 
 public:
@@ -69,7 +69,7 @@ private:
         DIRECTION_BACKWARD
     };
 
-private slots:
+private Q_SLOTS:
     void updateLineNumbersAreaWidth();
     void updateLineNumbersArea(const QRect &rect, int dy);
     void showSearchDialog();
@@ -113,7 +113,7 @@ public:
     explicit SearchDialog(CodeEditor *editor);
     void setText(const QString &text);
 
-public slots:
+public Q_SLOTS:
     void onSearchClicked();
 
 protected:

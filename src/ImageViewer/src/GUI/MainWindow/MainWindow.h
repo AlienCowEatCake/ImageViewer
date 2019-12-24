@@ -37,7 +37,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     Q_DISABLE_COPY(MainWindow)
 
-signals:
+Q_SIGNALS:
     void selectFirstRequested();
     void selectLastRequested();
     void selectPreviousRequested();
@@ -63,7 +63,7 @@ public:
     MainWindow(GUISettings *settings, QWidget *parent = Q_NULLPTR);
     ~MainWindow();
 
-public slots:
+public Q_SLOTS:
     void updateWindowTitle();
     void switchFullScreenMode();
     void switchSlideShowMode();
@@ -81,7 +81,7 @@ public slots:
 
     void saveGeometrySettings();
 
-private slots:
+private Q_SLOTS:
     void updateSlideShowInterval();
     void updateBackgroundColor();
     void onActionReopenWithTriggered(QAction *action);

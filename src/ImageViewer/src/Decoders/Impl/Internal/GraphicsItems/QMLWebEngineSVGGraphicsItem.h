@@ -48,7 +48,7 @@ public:
 private:
     QByteArray getSvgData() Q_DECL_OVERRIDE;
 
-private slots:
+private Q_SLOTS:
     void onUpdateRequested();
 
 private:

@@ -35,7 +35,7 @@ class GUISettings : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(GUISettings)
 
-signals:
+Q_SIGNALS:
     void askBeforeDeleteChanged(bool enabled);
     void moveToTrashChanged(bool enabled);
     void zoomModeChanged(ImageViewerWidget::ZoomMode mode);

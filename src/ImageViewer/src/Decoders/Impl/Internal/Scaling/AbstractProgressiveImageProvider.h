@@ -32,7 +32,7 @@ class AbstractProgressiveImageProvider : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(AbstractProgressiveImageProvider)
 
-signals:
+Q_SIGNALS:
     void updated();
 
 public:

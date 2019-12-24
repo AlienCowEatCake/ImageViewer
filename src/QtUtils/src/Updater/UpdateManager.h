@@ -40,12 +40,12 @@ public:
 
     void setParentForDialogs(QWidget *parentWidget);
 
-public slots:
+public Q_SLOTS:
     void checkForUpdates(bool silent);
     void checkForUpdates();
     void silentCheckForUpdates();
 
-private slots:
+private Q_SLOTS:
     void onUpdateNotFound(const ReleaseInfo &currentRelease);
     void onUpdateFound(const ReleaseInfo &currentRelease, const QList<ReleaseInfo> &newReleases);
     void onUpdateError(const QString &errorString);

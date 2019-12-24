@@ -45,10 +45,10 @@ public:
 
     bool isValid() const;
 
-signals:
+Q_SIGNALS:
     void updated();
 
-private slots:
+private Q_SLOTS:
     void loadNextFrame();
 
 private:
