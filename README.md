@@ -77,7 +77,7 @@ cp -a src/ImageViewer/ImageViewer /path/to/install/
 
 See the [buildscripts/](buildscripts/) directory.
 
-### Configuratoin options
+### Configuration options
 
 **Languages Configuration:**
 * C++11 options: `disable_cxx11`, `enable_cxx11` *(auto by default)*
