@@ -235,6 +235,7 @@ public:
                 /// @note Нативные форматы JPEG 2000
 #if !defined(EXCLUDE_JP2_SUPPORT)
                 << QString::fromLatin1("jp2")
+                << QString::fromLatin1("jpf")
 #endif
 #if !defined(EXCLUDE_JPC_SUPPORT)
                 << QString::fromLatin1("j2k")

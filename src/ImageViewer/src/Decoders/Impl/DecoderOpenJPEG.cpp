@@ -661,6 +661,7 @@ public:
                 << QString::fromLatin1("jpc")
                 << QString::fromLatin1("j2c")
                 << QString::fromLatin1("jpt")
+                << QString::fromLatin1("jpf")
                    ;
     }
 
