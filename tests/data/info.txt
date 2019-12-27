@@ -146,6 +146,13 @@ Images from http://libmng.com/JNGsuite/
 
 ::: JP2 test images :::
 
+Images from http://opf-labs.org/format-corpus/jp2k-formats/
+ * jp2k-formats/balloon.j2c
+ * jp2k-formats/balloon.jp2
+ * jp2k-formats/balloon.jpf
+ * jp2k-formats/balloon.jpm
+ * jp2k-formats/Speedway.mj2
+
 Test Lena images
  * lena.jp2
  * lena.jpc
