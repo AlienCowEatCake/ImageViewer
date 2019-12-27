@@ -1,9 +1,10 @@
 #!/bin/bash -e
 PROJECT="ImageViewer"
+IDENTIFIER="ru.codefreak.fami.imageviewer"
 BUILDDIR="build_linux_qt5.12_clang"
 SUFFIX="_qt5.12_$(gcc -dumpmachine)"
 APP_PATH="src/${PROJECT}"
-DESKTOP_PATH="src/${PROJECT}/resources/platform/linux/${PROJECT}.desktop"
+DESKTOP_PATH="src/${PROJECT}/resources/platform/linux/${IDENTIFIER}.desktop"
 ICON_PATH="src/${PROJECT}/resources/icon/icon.svg"
 
 QTDIR="/opt/qt-5.12.6_clang"
@@ -25,8 +26,8 @@ strip --strip-all "${APP_PATH}/${PROJECT}"
 rm -rf "AppDir"
 mkdir -p "AppDir/usr/bin" "AppDir/usr/lib" "AppDir/usr/share/applications" "AppDir/usr/share/icons/hicolor/scalable/apps"
 cp -a "${APP_PATH}/${PROJECT}" "AppDir/usr/bin/"
-cp -a "../${DESKTOP_PATH}" "AppDir/usr/share/applications/${PROJECT}.desktop"
-cp -a "../${ICON_PATH}" "AppDir/usr/share/icons/hicolor/scalable/apps/${PROJECT}.svg"
-"${CMD_DEPLOY}" "AppDir/usr/share/applications/${PROJECT}.desktop" -always-overwrite -qmake="${CMD_QMAKE}" -extra-plugins=styles,platformthemes
+cp -a "../${DESKTOP_PATH}" "AppDir/usr/share/applications/${IDENTIFIER}.desktop"
+cp -a "../${ICON_PATH}" "AppDir/usr/share/icons/hicolor/scalable/apps/${IDENTIFIER}.svg"
+"${CMD_DEPLOY}" "AppDir/usr/share/applications/${IDENTIFIER}.desktop" -always-overwrite -qmake="${CMD_QMAKE}" -extra-plugins=styles,platformthemes
 "${CMD_APPIMAGETOOL}" --no-appstream "AppDir" ../"${PROJECT}${SUFFIX}.AppImage"
 cd ..
