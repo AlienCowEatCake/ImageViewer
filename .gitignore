@@ -75,6 +75,7 @@ Makefile*
 /ImageViewer_*.zip
 /ImageViewer_*.gz
 /ImageViewer_*.AppImage
+/imageviewer_*.deb
 
 # OS X garbage
 .DS_Store

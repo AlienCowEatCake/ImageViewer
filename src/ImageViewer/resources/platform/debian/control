@@ -1,0 +1,27 @@
+Source: imageviewer
+Section: graphics
+Priority: optional
+Maintainer: Peter Zhigalov <peter.zhigalov@gmail.com>
+Build-Depends: debhelper (>= 9), sed
+Homepage: https://github.com/AlienCowEatCake/ImageViewer
+
+Package: imageviewer
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Recommends: librsvg2-2
+Description: simple, cross-platform image viewer
+ Image Viewer is a simple, cross-platform image viewer inspired by GPicView.
+ .
+ Features:
+  * Just a viewer, not an editor or organizer;
+  * Support a large number of image formats;
+  * Support an embedded ICC Profiles;
+  * Support EXIF, XMP and other metadata;
+  * Lightweight and fast;
+  * Very suitable for default image viewer of desktop system;
+  * Simple and intuitive interface;
+  * Cross platform: GNU/Linux, macOS, Windows, Haiku and other systems;
+  * Minimal external lib dependency: only pure Qt and system libraries are used;
+  * Flexible and configurable;
+  * Desktop independent: doesn't require any specific desktop environment;
+  * Open source, licensed under GNU GPL v3 or later;

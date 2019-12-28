@@ -6,6 +6,7 @@ SUFFIX="_qt5.12_$(gcc -dumpmachine)"
 APP_PATH="src/${PROJECT}"
 DESKTOP_PATH="src/${PROJECT}/resources/platform/linux/${IDENTIFIER}.desktop"
 ICON_PATH="src/${PROJECT}/resources/icon/icon.svg"
+DEBIAN_DIR_PATH="src/${PROJECT}/resources/platform/debian"
 
 QTDIR="/opt/qt-5.12.6_clang"
 CLANGDIR="/opt/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-14.04"
@@ -30,4 +31,10 @@ cp -a "../${DESKTOP_PATH}" "AppDir/usr/share/applications/${IDENTIFIER}.desktop"
 cp -a "../${ICON_PATH}" "AppDir/usr/share/icons/hicolor/scalable/apps/${IDENTIFIER}.svg"
 "${CMD_DEPLOY}" "AppDir/usr/share/applications/${IDENTIFIER}.desktop" -always-overwrite -qmake="${CMD_QMAKE}" -extra-plugins=styles,platformthemes
 "${CMD_APPIMAGETOOL}" --no-appstream "AppDir" ../"${PROJECT}${SUFFIX}.AppImage"
+
+cd "AppDir"
+cp -a "../../${DEBIAN_DIR_PATH}" ./
+dpkg-buildpackage -rfakeroot -b -uc
+cd ..
+cp -a *.deb ../
 cd ..

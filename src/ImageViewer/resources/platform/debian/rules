@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+
+build: build-arch build-indep
+build-arch: build-stamp
+build-indep: build-stamp
+
+build-stamp:
+	dh_testdir
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp
+	dh_clean
+
+binary-indep: build
+
+binary-arch: build
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+	cp -a usr/* debian/imageviewer/opt/ImageViewer
+	ln -s /opt/ImageViewer/share/applications/ru.codefreak.fami.imageviewer.desktop debian/imageviewer/usr/share/applications/ru.codefreak.fami.imageviewer.desktop
+	ln -s /opt/ImageViewer/share/icons/hicolor/scalable/apps/ru.codefreak.fami.imageviewer.svg debian/imageviewer/usr/share/icons/hicolor/scalable/apps/ru.codefreak.fami.imageviewer.svg
+	sed -i 's|^Exec=ImageViewer|Exec=/opt/ImageViewer/bin/ImageViewer|' debian/imageviewer/opt/ImageViewer/share/applications/ru.codefreak.fami.imageviewer.desktop
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps --exclude=debian/imageviewer/opt/ImageViewer/plugins/platformthemes --exclude=debian/imageviewer/opt/ImageViewer/plugins/styles
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+source diff:
+	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary
