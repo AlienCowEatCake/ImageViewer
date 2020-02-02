@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -25,6 +25,7 @@
 #include <QString>
 #include <QDir>
 #include <QFile>
+#include <QUrl>
 #include <QTextStream>
 #include <QByteArray>
 #include <QDebug>
@@ -153,6 +154,69 @@ private:
 
 #endif
 
+#if defined (Q_OS_MAC)
+
+#include <CoreFoundation/CoreFoundation.h>
+#include "Utils/CFTypePtr.h"
+
+namespace {
+
+class StandardLibraryPathProvider
+{
+public:
+    StandardLibraryPathProvider()
+    {
+        CFTypePtr<CFBundleRef> currentBundle = CFTypePtrFromGet(CFBundleGetMainBundle());
+        if(!currentBundle)
+            return;
+        appendPath(CFTypePtrFromCreate(CFBundleCopyPrivateFrameworksURL(currentBundle)));
+        appendPath(CFTypePtrFromCreate(CFBundleCopySharedFrameworksURL(currentBundle)));
+        qDebug() << "[StandardLibraryPathProvider] Paths order:" << m_standardPaths;
+    }
+
+    QStringList getPaths() const
+    {
+        return m_standardPaths;
+    }
+
+private:
+    void appendPath(const CFTypePtr<CFURLRef> &url)
+    {
+        const QString path = extractPath(url);
+        if(path.isEmpty())
+            return;
+        if(m_standardPaths.contains(path))
+            return;
+        m_standardPaths.append(path);
+    }
+
+    QString extractPath(const CFTypePtr<CFURLRef> &url) const
+    {
+        if(url)
+            if(CFTypePtr<CFURLRef> absoluteUrl = CFTypePtrFromCreate(CFURLCopyAbsoluteURL(url)))
+                if(CFTypePtr<CFStringRef> path = CFTypePtrFromCreate(CFURLCopyFileSystemPath(absoluteUrl, kCFURLPOSIXPathStyle)))
+                    return QStringFromCFString(path);
+        return QString();
+    }
+
+    QString QStringFromCFString(const CFTypePtr<CFStringRef> &str) const
+    {
+        const CFIndex strLength = CFStringGetLength(str);
+        CFIndex byteLength = strLength * 6;
+        CFStringGetBytes(str, CFRangeMake(0, strLength), kCFStringEncodingUTF8, 0, false, Q_NULLPTR, byteLength, &byteLength);
+        QByteArray buffer(static_cast<int>(byteLength) + 1, '\0');
+        CFStringGetBytes(str, CFRangeMake(0, strLength), kCFStringEncodingUTF8, 0, false, reinterpret_cast<UInt8*>(buffer.data()), buffer.size(), Q_NULLPTR);
+        return QString::fromUtf8(buffer);
+    }
+
+private:
+    QStringList m_standardPaths;
+};
+
+} // namespace
+
+#endif
+
 namespace LibraryUtils {
 
 bool LoadQLibrary(QLibrary &library, const char *name)
@@ -189,6 +253,36 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
             if(QFileInfo(*it).isAbsolute())
                 continue;
             const QStringList nameFilter(*it + QString::fromLatin1("*.so*"));
+            const QDir directory(*dIt);
+            const QStringList libraries = directory.entryList(nameFilter, QDir::Files | QDir::NoDotAndDotDot | QDir::Readable, QDir::Name);
+            for(QStringList::ConstIterator lIt = libraries.constBegin(), lItEnd = libraries.constEnd(); lIt != lItEnd; ++lIt)
+            {
+                const QString libraryPath = QDir(*dIt).filePath(*lIt);
+                if(!QFileInfo(libraryPath).exists())
+                    continue;
+                if(!QLibrary::isLibrary(libraryPath))
+                    continue;
+                library.setFileName(libraryPath);
+                if(library.load())
+                    break;
+                qDebug() << "[LoadLibrary]" << "Error:" << library.errorString();
+            }
+            if(library.isLoaded())
+                break;
+        }
+        if(library.isLoaded())
+            break;
+#endif
+#if defined (Q_OS_MAC)
+        qDebug() << "[LoadLibrary]" << "Loading" << *it << "from standard directories ...";
+        static const QStringList standardLibDirs = StandardLibraryPathProvider().getPaths();
+        for(QStringList::ConstIterator dIt = standardLibDirs.constBegin(), dItEnd = standardLibDirs.constEnd(); dIt != dItEnd; ++dIt)
+        {
+            if(!QFileInfo(*dIt).exists())
+                continue;
+            if(QFileInfo(*it).isAbsolute())
+                continue;
+            const QStringList nameFilter(*it + QString::fromLatin1("*.dylib*"));
             const QDir directory(*dIt);
             const QStringList libraries = directory.entryList(nameFilter, QDir::Files | QDir::NoDotAndDotDot | QDir::Readable, QDir::Name);
             for(QStringList::ConstIterator lIt = libraries.constBegin(), lItEnd = libraries.constEnd(); lIt != lItEnd; ++lIt)
