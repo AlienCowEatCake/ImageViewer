@@ -96,6 +96,9 @@
 #if defined (HAS_LIBDE256)
 #include <libde265/de265.h>
 #endif
+#if defined (HAS_MAGICKCORE)
+#include <magick/MagickCore.h>
+#endif
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -371,6 +374,21 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://www.cl.cam.ac.uk/~mgk25/jbigkit/"),
                       QString::fromLatin1("GNU GPL v2 or Commercial"),
                       QString::fromLatin1("https://www.cl.cam.ac.uk/~mgk25/jbigkit/#licensing")
+                      ));
+#endif
+
+#if defined (HAS_MAGICKCORE)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the MagickCore library"),
+                      QString::fromLatin1("MagickCore"),
+#if defined (MAGICKCORE_VERSION)
+                      QString::fromLatin1(MAGICKCORE_VERSION),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("https://imagemagick.org/"),
+                      QString::fromLatin1("ImageMagick License"),
+                      QString::fromLatin1("https://imagemagick.org/script/license.php")
                       ));
 #endif
 

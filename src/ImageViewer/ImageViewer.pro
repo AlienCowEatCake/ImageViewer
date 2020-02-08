@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -251,6 +251,11 @@ HEADERS += \
 !disable_openexr {
     SOURCES += \
         src/Decoders/Impl/DecoderOpenEXR.cpp
+}
+
+!disable_magickcore {
+    SOURCES += \
+        src/Decoders/Impl/DecoderMagickCore.cpp
 }
 
 !disable_qtsvg {

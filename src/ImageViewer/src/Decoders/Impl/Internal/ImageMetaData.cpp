@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -1016,17 +1016,10 @@ ImageMetaData *ImageMetaData::createExifMetaData(const QByteArray &rawExifData)
     return Q_NULLPTR;
 }
 
-ImageMetaData::ImageMetaData()
-    : m_impl(new Impl())
-{}
-
-ImageMetaData::~ImageMetaData()
-{}
-
 // https://bugreports.qt.io/browse/QTBUG-37946
 // https://codereview.qt-project.org/#/c/110668/2
 // https://github.com/qt/qtbase/blob/v5.4.0/src/gui/image/qjpeghandler.cpp
-void ImageMetaData::applyExifOrientation(QImage *image) const
+void ImageMetaData::applyExifOrientation(QImage *image, quint16 orientation)
 {
     if(!image || image->isNull())
         return;
@@ -1034,7 +1027,7 @@ void ImageMetaData::applyExifOrientation(QImage *image) const
     // This is not an optimized implementation, but easiest to maintain
     QTransform transform;
 
-    switch(m_impl->getExifOrientation())
+    switch(orientation)
     {
         case 1: // normal
             break;
@@ -1069,6 +1062,18 @@ void ImageMetaData::applyExifOrientation(QImage *image) const
         default:
             qWarning("This should never happen");
     }
+}
+
+ImageMetaData::ImageMetaData()
+    : m_impl(new Impl())
+{}
+
+ImageMetaData::~ImageMetaData()
+{}
+
+void ImageMetaData::applyExifOrientation(QImage *image) const
+{
+    applyExifOrientation(image, m_impl->getExifOrientation());
 }
 
 void ImageMetaData::addExifEntry(const QString &type, int tag, const QString &tagString, const QString &value)

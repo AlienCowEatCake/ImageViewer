@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -37,6 +37,7 @@ public:
     static ImageMetaData *createMetaData(const QString &filePath);
     static ImageMetaData *createMetaData(const QByteArray &fileData);
     static ImageMetaData *createExifMetaData(const QByteArray &rawExifData);
+    static void applyExifOrientation(QImage *image, quint16 orientation);
 
 public:
     ImageMetaData();

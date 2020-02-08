@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -308,6 +308,14 @@ disable_zlib : !system_openexr {
             CONFIG += disable_openexr # FIXME: C99/C++11
         }
     }
+}
+
+# MagickCore options:
+#    disable_magickcore
+#    enable_magickcore
+!enable_magickcore {
+    CONFIG += disable_magickcore
+}
 }
 
 # ::::: Optional Third Party Components Configuration :::::
