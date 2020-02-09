@@ -258,6 +258,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderMagickCore.cpp
 }
 
+!disable_magickwand {
+    SOURCES += \
+        src/Decoders/Impl/DecoderMagickWand.cpp
+}
+
 !disable_qtsvg {
     QT += svg
     SOURCES += \

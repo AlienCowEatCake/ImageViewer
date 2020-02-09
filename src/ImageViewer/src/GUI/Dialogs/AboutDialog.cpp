@@ -99,6 +99,9 @@
 #if defined (HAS_MAGICKCORE)
 #include <magick/MagickCore.h>
 #endif
+#if defined (HAS_MAGICKWAND)
+#include <wand/MagickWand.h>
+#endif
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -381,6 +384,21 @@ QString getTextBrowserContent()
     result.append(formatItem(
                       QString::fromLatin1("This software uses the MagickCore library"),
                       QString::fromLatin1("MagickCore"),
+#if defined (MAGICKCORE_VERSION)
+                      QString::fromLatin1(MAGICKCORE_VERSION),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("https://imagemagick.org/"),
+                      QString::fromLatin1("ImageMagick License"),
+                      QString::fromLatin1("https://imagemagick.org/script/license.php")
+                      ));
+#endif
+
+#if defined (HAS_MAGICKWAND)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the MagickWand library"),
+                      QString::fromLatin1("MagickWand"),
 #if defined (MAGICKCORE_VERSION)
                       QString::fromLatin1(MAGICKCORE_VERSION),
 #else

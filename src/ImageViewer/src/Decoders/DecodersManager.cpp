@@ -81,6 +81,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderQImage"               ,  200, 20); ///< Умеет все, что умеет Qt. Не поддерживает EXIF и ICCP.
         P("DecoderQtImageFormatsImage"  ,  300, -1); ///< Экзотические и deprecated декодеры Qt. Должен быть выше QImage.
         P("DecoderMagickCore"           ,  350, -1); ///< Умеет очень много разных форматов, в том числе анимированные.
+        P("DecoderMagickWand"           ,  360, -1); ///< Умеет очень много разных форматов, в том числе анимированные. Более высокоуровневое API, чем MagickCore.
         P("DecoderNSImage"              ,  400, -1); ///< Умеет очень много разных форматов. Должен быть выше декодеров общего назначения, но ниже специализированных декодеров.
         P("DecoderLibJpeg"              ,  500, 80); ///< Умеет jpeg форматы. Поддерживает EXIF и ICCP. Должен быть выше QImage.
         P("DecoderLibJasPer"            ,  510, 90); ///< Умеет формат JPEG 2000 и несколько побочных. Поддержка хуже, чем в QtImageFormatsImage, но имеет ряд дополнительных проверок от крашей.

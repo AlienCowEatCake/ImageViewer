@@ -316,6 +316,12 @@ disable_zlib : !system_openexr {
 !enable_magickcore {
     CONFIG += disable_magickcore
 }
+
+# MagickWand options:
+#    disable_magickwand
+#    enable_magickwand
+!enable_magickwand {
+    CONFIG += disable_magickwand
 }
 
 # ::::: Optional Third Party Components Configuration :::::
