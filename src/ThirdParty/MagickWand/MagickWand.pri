@@ -5,10 +5,14 @@ include($${PWD}/../../Features.pri)
 
 !disable_magickwand {
 
-    DEFINES += HAS_MAGICKWAND
+    system_magickwand {
 
-    !disable_pkgconfig {
-        PKGCONFIG += MagickWand
+        DEFINES += HAS_MAGICKWAND
+
+        !disable_pkgconfig {
+            PKGCONFIG += MagickWand
+        }
+
     }
 
 }

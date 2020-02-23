@@ -17,12 +17,25 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#if defined (HAS_MAGICKWAND)
+#define LINKED_MAGICKWAND
+#endif
+
+#if defined (LINKED_MAGICKWAND)
 #include <wand/MagickWand.h>
+#endif
 
 #include <QFileInfo>
 #include <QImage>
 #include <QByteArray>
 #include <QDebug>
+#include <QLibrary>
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QFunctionPointer>
+#else
+typedef void* QFunctionPointer;
+#endif
 
 #include "Utils/Global.h"
 
@@ -35,10 +48,422 @@
 #include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Animation/FramesCompositor.h"
 #include "Internal/Utils/CmsUtils.h"
+#include "Internal/Utils/LibraryUtils.h"
 #include "Internal/Utils/MappedBuffer.h"
 
 namespace
 {
+
+// ====================================================================================================
+
+#if !defined (LINKED_MAGICKWAND)
+
+const QStringList MAGICKCORE_LIBRARY_NAMES = QStringList()
+        << QString::fromLatin1("libMagickCore-6")
+        << QString::fromLatin1("libMagickCore-7")
+        << QString::fromLatin1("cygMagickCore-6")
+        << QString::fromLatin1("cygMagickCore-7")
+           ;
+const QStringList MAGICKWAND_LIBRARY_NAMES = QStringList()
+        << QString::fromLatin1("libMagickWand-6")
+        << QString::fromLatin1("libMagickWand-7")
+        << QString::fromLatin1("cygMagickWand-6")
+        << QString::fromLatin1("cygMagickWand-7")
+           ;
+
+enum MagickBooleanType
+{
+    MagickFalse = 0,
+    MagickTrue = 1
+};
+
+enum StorageType
+{
+    CharPixel = 1,
+};
+
+enum DisposeType
+{
+    UndefinedDispose = 0,
+    NoneDispose = 1,
+    BackgroundDispose = 2,
+    PreviousDispose = 3
+};
+
+enum CompositeOperator
+{
+    OverCompositeOp = 40
+};
+
+typedef int OrientationType;
+
+struct ExceptionInfo;
+struct MagickWand;
+
+struct MagickInfo
+{
+    char *name;
+};
+
+class MagickCoreLib
+{
+public:
+    static MagickCoreLib *instance()
+    {
+        static MagickCoreLib _;
+        if(!_.isValid())
+        {
+            qWarning() << "Failed to load MagickCore";
+            return Q_NULLPTR;
+        }
+        return &_;
+    }
+
+    ExceptionInfo *AcquireExceptionInfo_()
+    {
+        typedef ExceptionInfo *(*AcquireExceptionInfo_t)();
+        AcquireExceptionInfo_t AcquireExceptionInfo_f = (AcquireExceptionInfo_t)m_AcquireExceptionInfo;
+        return AcquireExceptionInfo_f();
+    }
+
+    ExceptionInfo *DestroyExceptionInfo_(ExceptionInfo *exception)
+    {
+        typedef ExceptionInfo *(*DestroyExceptionInfo_t)(ExceptionInfo *);
+        DestroyExceptionInfo_t DestroyExceptionInfo_f = (DestroyExceptionInfo_t)m_DestroyExceptionInfo;
+        return DestroyExceptionInfo_f(exception);
+    }
+
+    void GetExceptionInfo_(ExceptionInfo *exception)
+    {
+        typedef void (*GetExceptionInfo_t)(ExceptionInfo *);
+        GetExceptionInfo_t GetExceptionInfo_f = (GetExceptionInfo_t)m_GetExceptionInfo;
+        GetExceptionInfo_f(exception);
+    }
+
+    const MagickInfo **GetMagickInfoList_(const char *pattern, size_t *number_formats, ExceptionInfo *exception)
+    {
+        typedef const MagickInfo **(*GetMagickInfoList_t)(const char *, size_t *, ExceptionInfo *);
+        GetMagickInfoList_t GetMagickInfoList_f = (GetMagickInfoList_t)m_GetMagickInfoList;
+        return GetMagickInfoList_f(pattern, number_formats, exception);
+    }
+
+private:
+    MagickCoreLib()
+        : m_AcquireExceptionInfo(Q_NULLPTR)
+        , m_DestroyExceptionInfo(Q_NULLPTR)
+        , m_GetExceptionInfo(Q_NULLPTR)
+        , m_GetMagickInfoList(Q_NULLPTR)
+    {
+        if(!LibraryUtils::LoadQLibrary(m_library, MAGICKCORE_LIBRARY_NAMES))
+            return;
+
+        m_AcquireExceptionInfo = m_library.resolve("AcquireExceptionInfo");
+        m_DestroyExceptionInfo = m_library.resolve("DestroyExceptionInfo");
+        m_GetExceptionInfo = m_library.resolve("GetExceptionInfo");
+        m_GetMagickInfoList = m_library.resolve("GetMagickInfoList");
+    }
+
+    ~MagickCoreLib()
+    {}
+
+    bool isValid() const
+    {
+        return m_library.isLoaded()
+                && m_AcquireExceptionInfo
+                && m_DestroyExceptionInfo
+                && m_GetExceptionInfo
+                && m_GetMagickInfoList
+                ;
+    }
+
+    QLibrary m_library;
+    QFunctionPointer m_AcquireExceptionInfo;
+    QFunctionPointer m_DestroyExceptionInfo;
+    QFunctionPointer m_GetExceptionInfo;
+    QFunctionPointer m_GetMagickInfoList;
+};
+
+class MagickWandLib
+{
+public:
+    static MagickWandLib *instance()
+    {
+        static MagickWandLib _;
+        if(!_.isValid())
+        {
+            qWarning() << "Failed to load MagickWand";
+            return Q_NULLPTR;
+        }
+        return &_;
+    }
+
+    void MagickWandGenesis_()
+    {
+        typedef void (*MagickWandGenesis_t)();
+        MagickWandGenesis_t MagickWandGenesis_f = (MagickWandGenesis_t)m_MagickWandGenesis;
+        MagickWandGenesis_f();
+    }
+
+    void MagickWandTerminus_()
+    {
+        typedef void (*MagickWandTerminus_t)();
+        MagickWandTerminus_t MagickWandTerminus_f = (MagickWandTerminus_t)m_MagickWandTerminus;
+        MagickWandTerminus_f();
+    }
+
+    MagickWand *NewMagickWand_()
+    {
+        typedef MagickWand *(*NewMagickWand_t)();
+        NewMagickWand_t NewMagickWand_f = (NewMagickWand_t)m_NewMagickWand;
+        return NewMagickWand_f();
+    }
+
+    MagickWand *DestroyMagickWand_(MagickWand *wand)
+    {
+        typedef MagickWand *(*DestroyMagickWand_t)(MagickWand *);
+        DestroyMagickWand_t DestroyMagickWand_f = (DestroyMagickWand_t)m_DestroyMagickWand;
+        return DestroyMagickWand_f(wand);
+    }
+
+    MagickBooleanType MagickReadImageBlob_(MagickWand *wand, const void *blob, const size_t length)
+    {
+        typedef MagickBooleanType (*MagickReadImageBlob_t)(MagickWand *, const void *, const size_t);
+        MagickReadImageBlob_t MagickReadImageBlob_f = (MagickReadImageBlob_t)m_MagickReadImageBlob;
+        return MagickReadImageBlob_f(wand, blob, length);
+    }
+
+    size_t MagickGetNumberImages_(MagickWand *wand)
+    {
+        typedef size_t (*MagickGetNumberImages_t)(MagickWand *);
+        MagickGetNumberImages_t MagickGetNumberImages_f = (MagickGetNumberImages_t)m_MagickGetNumberImages;
+        return MagickGetNumberImages_f(wand);
+    }
+
+    MagickBooleanType MagickGetImagePage_(MagickWand *wand, size_t *width, size_t *height, ssize_t *x, ssize_t *y)
+    {
+        typedef MagickBooleanType (*MagickGetImagePage_t)(MagickWand *, size_t *, size_t *, ssize_t *, ssize_t *);
+        MagickGetImagePage_t MagickGetImagePage_f = (MagickGetImagePage_t)m_MagickGetImagePage;
+        return MagickGetImagePage_f(wand, width, height, x, y);
+    }
+
+    MagickBooleanType MagickNextImage_(MagickWand *wand)
+    {
+        typedef MagickBooleanType (*MagickNextImage_t)(MagickWand *);
+        MagickNextImage_t MagickNextImage_f = (MagickNextImage_t)m_MagickNextImage;
+        return MagickNextImage_f(wand);
+    }
+
+    size_t MagickGetImageDelay_(MagickWand *wand)
+    {
+        typedef size_t (*MagickGetImageDelay_t)(MagickWand *);
+        MagickGetImageDelay_t MagickGetImageDelay_f = (MagickGetImageDelay_t)m_MagickGetImageDelay;
+        return MagickGetImageDelay_f(wand);
+    }
+
+    size_t MagickGetImageTicksPerSecond_(MagickWand *wand)
+    {
+        typedef size_t (*MagickGetImageTicksPerSecond_t)(MagickWand *);
+        MagickGetImageTicksPerSecond_t MagickGetImageTicksPerSecond_f = (MagickGetImageTicksPerSecond_t)m_MagickGetImageTicksPerSecond;
+        return MagickGetImageTicksPerSecond_f(wand);
+    }
+
+    size_t MagickGetImageIterations_(MagickWand *wand)
+    {
+        typedef size_t (*MagickGetImageIterations_t)(MagickWand *);
+        MagickGetImageIterations_t MagickGetImageIterations_f = (MagickGetImageIterations_t)m_MagickGetImageIterations;
+        return MagickGetImageIterations_f(wand);
+    }
+
+    size_t MagickGetImageWidth_(MagickWand *wand)
+    {
+        typedef size_t (*MagickGetImageWidth_t)(MagickWand *);
+        MagickGetImageWidth_t MagickGetImageWidth_f = (MagickGetImageWidth_t)m_MagickGetImageWidth;
+        return MagickGetImageWidth_f(wand);
+    }
+
+    size_t MagickGetImageHeight_(MagickWand *wand)
+    {
+        typedef size_t (*MagickGetImageHeight_t)(MagickWand *);
+        MagickGetImageHeight_t MagickGetImageHeight_f = (MagickGetImageHeight_t)m_MagickGetImageHeight;
+        return MagickGetImageHeight_f(wand);
+    }
+
+    OrientationType MagickGetImageOrientation_(MagickWand *wand)
+    {
+        typedef OrientationType (*MagickGetImageOrientation_t)(MagickWand *);
+        MagickGetImageOrientation_t MagickGetImageOrientation_f = (MagickGetImageOrientation_t)m_MagickGetImageOrientation;
+        return MagickGetImageOrientation_f(wand);
+    }
+
+    MagickBooleanType MagickExportImagePixels_(MagickWand *wand, const ssize_t x, const ssize_t y, const size_t columns, const size_t rows, const char *map, const StorageType storage, void *pixels)
+    {
+        typedef MagickBooleanType (*MagickExportImagePixels_t)(MagickWand *, const ssize_t, const ssize_t, const size_t, const size_t, const char *, const StorageType, void *);
+        MagickExportImagePixels_t MagickExportImagePixels_f = (MagickExportImagePixels_t)m_MagickExportImagePixels;
+        return MagickExportImagePixels_f(wand, x, y, columns, rows, map, storage, pixels);
+    }
+
+    DisposeType MagickGetImageDispose_(MagickWand *wand)
+    {
+        typedef DisposeType (*MagickGetImageDispose_t)(MagickWand *);
+        MagickGetImageDispose_t MagickGetImageDispose_f = (MagickGetImageDispose_t)m_MagickGetImageDispose;
+        return MagickGetImageDispose_f(wand);
+    }
+
+    CompositeOperator MagickGetImageCompose_(MagickWand *wand)
+    {
+        typedef CompositeOperator (*MagickGetImageCompose_t)(MagickWand *);
+        MagickGetImageCompose_t MagickGetImageCompose_f = (MagickGetImageCompose_t)m_MagickGetImageCompose;
+        return MagickGetImageCompose_f(wand);
+    }
+
+    void MagickResetIterator_(MagickWand *wand)
+    {
+        typedef void (*MagickResetIterator_t)(MagickWand *);
+        MagickResetIterator_t MagickResetIterator_f = (MagickResetIterator_t)m_MagickResetIterator;
+        MagickResetIterator_f(wand);
+    }
+
+    unsigned char *MagickGetImageProfile_(MagickWand *wand, const char *name, size_t *length)
+    {
+        typedef unsigned char *(*MagickGetImageProfile_t)(MagickWand *, const char *, size_t *);
+        MagickGetImageProfile_t MagickGetImageProfile_f = (MagickGetImageProfile_t)m_MagickGetImageProfile;
+        return MagickGetImageProfile_f(wand, name, length);
+    }
+
+private:
+    MagickWandLib()
+        : m_MagickWandGenesis(Q_NULLPTR)
+        , m_MagickWandTerminus(Q_NULLPTR)
+        , m_NewMagickWand(Q_NULLPTR)
+        , m_DestroyMagickWand(Q_NULLPTR)
+        , m_MagickReadImageBlob(Q_NULLPTR)
+        , m_MagickGetNumberImages(Q_NULLPTR)
+        , m_MagickGetImagePage(Q_NULLPTR)
+        , m_MagickNextImage(Q_NULLPTR)
+        , m_MagickGetImageDelay(Q_NULLPTR)
+        , m_MagickGetImageTicksPerSecond(Q_NULLPTR)
+        , m_MagickGetImageIterations(Q_NULLPTR)
+        , m_MagickGetImageWidth(Q_NULLPTR)
+        , m_MagickGetImageHeight(Q_NULLPTR)
+        , m_MagickGetImageOrientation(Q_NULLPTR)
+        , m_MagickExportImagePixels(Q_NULLPTR)
+        , m_MagickGetImageDispose(Q_NULLPTR)
+        , m_MagickGetImageCompose(Q_NULLPTR)
+        , m_MagickResetIterator(Q_NULLPTR)
+        , m_MagickGetImageProfile(Q_NULLPTR)
+    {
+        if(!LibraryUtils::LoadQLibrary(m_library, MAGICKWAND_LIBRARY_NAMES))
+            return;
+
+        m_MagickWandGenesis = m_library.resolve("MagickWandGenesis");
+        m_MagickWandTerminus = m_library.resolve("MagickWandTerminus");
+        m_NewMagickWand = m_library.resolve("NewMagickWand");
+        m_DestroyMagickWand = m_library.resolve("DestroyMagickWand");
+        m_MagickReadImageBlob = m_library.resolve("MagickReadImageBlob");
+        m_MagickGetNumberImages = m_library.resolve("MagickGetNumberImages");
+        m_MagickGetImagePage = m_library.resolve("MagickGetImagePage");
+        m_MagickNextImage = m_library.resolve("MagickNextImage");
+        m_MagickGetImageDelay = m_library.resolve("MagickGetImageDelay");
+        m_MagickGetImageTicksPerSecond = m_library.resolve("MagickGetImageTicksPerSecond");
+        m_MagickGetImageIterations = m_library.resolve("MagickGetImageIterations");
+        m_MagickGetImageWidth = m_library.resolve("MagickGetImageWidth");
+        m_MagickGetImageHeight = m_library.resolve("MagickGetImageHeight");
+        m_MagickGetImageOrientation = m_library.resolve("MagickGetImageOrientation");
+        m_MagickExportImagePixels = m_library.resolve("MagickExportImagePixels");
+        m_MagickGetImageDispose = m_library.resolve("MagickGetImageDispose");
+        m_MagickGetImageCompose = m_library.resolve("MagickGetImageCompose");
+        m_MagickResetIterator = m_library.resolve("MagickResetIterator");
+        m_MagickGetImageProfile = m_library.resolve("MagickGetImageProfile");
+    }
+
+    ~MagickWandLib()
+    {}
+
+    bool isValid() const
+    {
+        return m_library.isLoaded()
+                && m_MagickWandGenesis
+                && m_MagickWandTerminus
+                && m_NewMagickWand
+                && m_DestroyMagickWand
+                && m_MagickReadImageBlob
+                && m_MagickGetNumberImages
+                && m_MagickGetImagePage
+                && m_MagickNextImage
+                && m_MagickGetImageDelay
+                && m_MagickGetImageTicksPerSecond
+                && m_MagickGetImageIterations
+                && m_MagickGetImageWidth
+                && m_MagickGetImageHeight
+                && m_MagickGetImageOrientation
+                && m_MagickExportImagePixels
+                && m_MagickGetImageDispose
+                && m_MagickGetImageCompose
+                && m_MagickResetIterator
+                && m_MagickGetImageProfile
+                ;
+    }
+
+    QLibrary m_library;
+    QFunctionPointer m_MagickWandGenesis;
+    QFunctionPointer m_MagickWandTerminus;
+    QFunctionPointer m_NewMagickWand;
+    QFunctionPointer m_DestroyMagickWand;
+    QFunctionPointer m_MagickReadImageBlob;
+    QFunctionPointer m_MagickGetNumberImages;
+    QFunctionPointer m_MagickGetImagePage;
+    QFunctionPointer m_MagickNextImage;
+    QFunctionPointer m_MagickGetImageDelay;
+    QFunctionPointer m_MagickGetImageTicksPerSecond;
+    QFunctionPointer m_MagickGetImageIterations;
+    QFunctionPointer m_MagickGetImageWidth;
+    QFunctionPointer m_MagickGetImageHeight;
+    QFunctionPointer m_MagickGetImageOrientation;
+    QFunctionPointer m_MagickExportImagePixels;
+    QFunctionPointer m_MagickGetImageDispose;
+    QFunctionPointer m_MagickGetImageCompose;
+    QFunctionPointer m_MagickResetIterator;
+    QFunctionPointer m_MagickGetImageProfile;
+};
+
+#define AcquireExceptionInfo            MagickCoreLib::instance()->AcquireExceptionInfo_
+#define DestroyExceptionInfo            MagickCoreLib::instance()->DestroyExceptionInfo_
+#define GetExceptionInfo                MagickCoreLib::instance()->GetExceptionInfo_
+#define GetMagickInfoList               MagickCoreLib::instance()->GetMagickInfoList_
+
+#define MagickWandGenesis               MagickWandLib::instance()->MagickWandGenesis_
+#define MagickWandTerminus              MagickWandLib::instance()->MagickWandTerminus_
+#define NewMagickWand                   MagickWandLib::instance()->NewMagickWand_
+#define DestroyMagickWand               MagickWandLib::instance()->DestroyMagickWand_
+#define MagickReadImageBlob             MagickWandLib::instance()->MagickReadImageBlob_
+#define MagickGetNumberImages           MagickWandLib::instance()->MagickGetNumberImages_
+#define MagickGetImagePage              MagickWandLib::instance()->MagickGetImagePage_
+#define MagickNextImage                 MagickWandLib::instance()->MagickNextImage_
+#define MagickGetImageDelay             MagickWandLib::instance()->MagickGetImageDelay_
+#define MagickGetImageTicksPerSecond    MagickWandLib::instance()->MagickGetImageTicksPerSecond_
+#define MagickGetImageIterations        MagickWandLib::instance()->MagickGetImageIterations_
+#define MagickGetImageWidth             MagickWandLib::instance()->MagickGetImageWidth_
+#define MagickGetImageHeight            MagickWandLib::instance()->MagickGetImageHeight_
+#define MagickGetImageOrientation       MagickWandLib::instance()->MagickGetImageOrientation_
+#define MagickExportImagePixels         MagickWandLib::instance()->MagickExportImagePixels_
+#define MagickGetImageDispose           MagickWandLib::instance()->MagickGetImageDispose_
+#define MagickGetImageCompose           MagickWandLib::instance()->MagickGetImageCompose_
+#define MagickResetIterator             MagickWandLib::instance()->MagickResetIterator_
+#define MagickGetImageProfile           MagickWandLib::instance()->MagickGetImageProfile_
+
+bool isReady()
+{
+    return !!MagickCoreLib::instance() && !!MagickWandLib::instance();
+}
+
+#else
+
+bool isReady()
+{
+    return true;
+}
+
+#endif
 
 // ====================================================================================================
 
@@ -212,7 +637,7 @@ public:
 
     bool isAvailable() const Q_DECL_OVERRIDE
     {
-        return true;
+        return isReady();
     }
 
     QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
