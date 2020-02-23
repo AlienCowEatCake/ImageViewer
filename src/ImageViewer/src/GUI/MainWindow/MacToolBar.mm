@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -324,6 +324,7 @@ struct ButtonedToolBarItem : SimpleToolBarItem
         AUTORELEASE_POOL;
         BOOL value = isEnabled ? YES : NO;
         [button setEnabled:value];
+        [item setEnabled:value];
     }
 
     void setChecked(bool isChecked)
