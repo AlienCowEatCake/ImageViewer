@@ -97,10 +97,18 @@
 #include <libde265/de265.h>
 #endif
 #if defined (HAS_MAGICKCORE)
+#if QT_HAS_INCLUDE(<MagickCore/MagickCore.h>)
+#include <MagickCore/MagickCore.h>
+#else
 #include <magick/MagickCore.h>
 #endif
+#endif
 #if defined (HAS_MAGICKWAND)
+#if QT_HAS_INCLUDE(<MagickWand/MagickWand.h>)
+#include <MagickWand/MagickWand.h>
+#else
 #include <wand/MagickWand.h>
+#endif
 #endif
 
 #define STRINGIFY(x) #x

@@ -21,8 +21,14 @@
 #define LINKED_MAGICKWAND
 #endif
 
+#include "Utils/Global.h"
+
 #if defined (LINKED_MAGICKWAND)
+#if QT_HAS_INCLUDE(<MagickWand/MagickWand.h>)
+#include <MagickWand/MagickWand.h>
+#else
 #include <wand/MagickWand.h>
+#endif
 #endif
 
 #include <QFileInfo>
@@ -36,8 +42,6 @@
 #else
 typedef void* QFunctionPointer;
 #endif
-
-#include "Utils/Global.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -133,13 +137,6 @@ public:
         return DestroyExceptionInfo_f(exception);
     }
 
-    void GetExceptionInfo_(ExceptionInfo *exception)
-    {
-        typedef void (*GetExceptionInfo_t)(ExceptionInfo *);
-        GetExceptionInfo_t GetExceptionInfo_f = (GetExceptionInfo_t)m_GetExceptionInfo;
-        GetExceptionInfo_f(exception);
-    }
-
     const MagickInfo **GetMagickInfoList_(const char *pattern, size_t *number_formats, ExceptionInfo *exception)
     {
         typedef const MagickInfo **(*GetMagickInfoList_t)(const char *, size_t *, ExceptionInfo *);
@@ -151,7 +148,6 @@ private:
     MagickCoreLib()
         : m_AcquireExceptionInfo(Q_NULLPTR)
         , m_DestroyExceptionInfo(Q_NULLPTR)
-        , m_GetExceptionInfo(Q_NULLPTR)
         , m_GetMagickInfoList(Q_NULLPTR)
     {
         if(!LibraryUtils::LoadQLibrary(m_library, MAGICKCORE_LIBRARY_NAMES))
@@ -159,7 +155,6 @@ private:
 
         m_AcquireExceptionInfo = m_library.resolve("AcquireExceptionInfo");
         m_DestroyExceptionInfo = m_library.resolve("DestroyExceptionInfo");
-        m_GetExceptionInfo = m_library.resolve("GetExceptionInfo");
         m_GetMagickInfoList = m_library.resolve("GetMagickInfoList");
     }
 
@@ -171,7 +166,6 @@ private:
         return m_library.isLoaded()
                 && m_AcquireExceptionInfo
                 && m_DestroyExceptionInfo
-                && m_GetExceptionInfo
                 && m_GetMagickInfoList
                 ;
     }
@@ -179,7 +173,6 @@ private:
     QLibrary m_library;
     QFunctionPointer m_AcquireExceptionInfo;
     QFunctionPointer m_DestroyExceptionInfo;
-    QFunctionPointer m_GetExceptionInfo;
     QFunctionPointer m_GetMagickInfoList;
 };
 
@@ -428,7 +421,6 @@ private:
 
 #define AcquireExceptionInfo            MagickCoreLib::instance()->AcquireExceptionInfo_
 #define DestroyExceptionInfo            MagickCoreLib::instance()->DestroyExceptionInfo_
-#define GetExceptionInfo                MagickCoreLib::instance()->GetExceptionInfo_
 #define GetMagickInfoList               MagickCoreLib::instance()->GetMagickInfoList_
 
 #define MagickWandGenesis               MagickWandLib::instance()->MagickWandGenesis_
@@ -518,6 +510,7 @@ private:
         if(!inBuffer.isValid())
             return false;
 
+        const MagickWandGuard magickWandGuard;
         QScopedPointer<MagickWand, MagickWandDeleter> mw(NewMagickWand());
         if(!MagickReadImageBlob(mw.data(), inBuffer.dataAs<const void*>(), inBuffer.sizeAs<size_t>()))
         {
@@ -619,7 +612,6 @@ public:
     {
         const MagickWandGuard magickWandGuard;
         QScopedPointer<ExceptionInfo, ExceptionInfoDeleter> exception(AcquireExceptionInfo());
-        GetExceptionInfo(exception.data());
 
         QStringList formatNames;
         size_t num = 0;

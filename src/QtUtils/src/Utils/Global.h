@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -51,6 +51,22 @@ static inline bool qFuzzyIsNull(float f)
 #       define QT_HAS_CPP_ATTRIBUTE(x) __has_cpp_attribute(x)
 #   else
 #       define QT_HAS_CPP_ATTRIBUTE(x) 0
+#   endif
+#endif
+
+#if !defined (QT_HAS_INCLUDE)
+#   if defined (__has_include)
+#       define QT_HAS_INCLUDE(x) __has_include(x)
+#   else
+#       define QT_HAS_INCLUDE(x) 0
+#   endif
+#endif
+
+#if !defined (QT_HAS_INCLUDE_NEXT)
+#   if defined (__has_include_next)
+#       define QT_HAS_INCLUDE_NEXT(x) __has_include_next(x)
+#   else
+#       define QT_HAS_INCLUDE_NEXT(x) 0
 #   endif
 #endif
 

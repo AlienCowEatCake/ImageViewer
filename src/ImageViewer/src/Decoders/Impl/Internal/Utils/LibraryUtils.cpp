@@ -171,6 +171,8 @@ public:
             return;
         appendPath(CFTypePtrFromCreate(CFBundleCopyPrivateFrameworksURL(currentBundle)));
         appendPath(CFTypePtrFromCreate(CFBundleCopySharedFrameworksURL(currentBundle)));
+        appendPath(QString::fromLatin1("/usr/local/lib"));
+        appendPath(QString::fromLatin1("/usr/lib"));
         qDebug() << "[StandardLibraryPathProvider] Paths order:" << m_standardPaths;
     }
 
@@ -183,6 +185,11 @@ private:
     void appendPath(const CFTypePtr<CFURLRef> &url)
     {
         const QString path = extractPath(url);
+        appendPath(path);
+    }
+
+    void appendPath(const QString &path)
+    {
         if(path.isEmpty())
             return;
         if(m_standardPaths.contains(path))

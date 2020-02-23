@@ -17,14 +17,18 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "Utils/Global.h"
+
+#if QT_HAS_INCLUDE(<MagickCore/MagickCore.h>)
+#include <MagickCore/MagickCore.h>
+#else
 #include <magick/MagickCore.h>
+#endif
 
 #include <QFileInfo>
 #include <QImage>
 #include <QByteArray>
 #include <QDebug>
-
-#include "Utils/Global.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -104,7 +108,6 @@ private:
 
         const MagickCoreGuard magickCoreGuard(Q_NULLPTR, MagickFalse);
         QScopedPointer<ExceptionInfo, ExceptionInfoDeleter> exception(AcquireExceptionInfo());
-        GetExceptionInfo(exception.data());
         QScopedPointer<ImageInfo, ImageInfoDeleter> info(CloneImageInfo(Q_NULLPTR));
         QScopedPointer<Image, ImageDeleter> image(BlobToImage(info.data(), inBuffer.dataAs<const void*>(), inBuffer.sizeAs<size_t>(), exception.data()));
         if(!image)
@@ -206,7 +209,6 @@ public:
     {
         const MagickCoreGuard magickCoreGuard(Q_NULLPTR, MagickFalse);
         QScopedPointer<ExceptionInfo, ExceptionInfoDeleter> exception(AcquireExceptionInfo());
-        GetExceptionInfo(exception.data());
 
         QStringList formatNames;
         size_t num = 0;
