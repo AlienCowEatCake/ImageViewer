@@ -415,6 +415,12 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
     CONFIG += disable_mactoolbar
 }
 
+# MacTouchBar options:
+#    disable_mactouchbar
+!macx {
+    CONFIG += disable_mactouchbar
+}
+
 # ::::: Cleanup Unised :::::
 
 disable_libtiff | system_libtiff {

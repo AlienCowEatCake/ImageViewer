@@ -340,6 +340,14 @@ HEADERS += \
         src/GUI/MainWindow/ToolBar.h
 }
 
+!disable_mactouchbar {
+    DEFINES += HAS_MAC_TOUCHBAR
+    OBJECTIVE_SOURCES += \
+        src/GUI/MainWindow/MacTouchBar.mm
+    HEADERS += \
+        src/GUI/MainWindow/MacTouchBar.h
+}
+
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
     resources/translations/imageviewer_ru.ts

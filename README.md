@@ -127,5 +127,6 @@ See the [buildscripts/](buildscripts/) directory.
 * DecoderNSImage options: `disable_nsimage` *(enabled by default for macOS)*
 * DecoderMacWebKit options: `disable_macwebkit` *(enabled by default for macOS)*
 * MacToolBar options: `disable_mactoolbar` *(enabled by default for macOS)*
+* MacTouchBar options: `disable_mactouchbar` *(enabled by default for macOS)*
 * Updater options: `enable_update_checking` *(disabled by default)*
 
