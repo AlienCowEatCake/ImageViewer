@@ -264,14 +264,16 @@ disable_libjpeg : !system_libwmf {
 #    system_libraw
 
 
-# librsvg options:
+# libRSVG options:
 #    disable_librsvg
+#    system_librsvg
 
 
 # resvg options:
 #    disable_resvg
 #    enable_resvg
-!enable_resvg {
+#    system_resvg
+!enable_resvg : !system_resvg {
     CONFIG += disable_resvg
 }
 

@@ -43,6 +43,9 @@
 #include <jasper/jasper.h>
 #include "Workarounds/EndIgnoreShiftNegative.h"
 #endif
+#if defined (HAS_LIBRSVG)
+#include <librsvg/rsvg.h>
+#endif
 #if defined (HAS_LIBMNG)
 #include <libmng.h>
 #endif
@@ -257,6 +260,32 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://www.ece.uvic.ca/~frodo/jasper/"),
                       QString::fromLatin1("JasPer License v2.0"),
                       QString::fromLatin1("https://www.ece.uvic.ca/~frodo/jasper/LICENSE")
+                      ));
+#endif
+
+#if defined (HAS_LIBRSVG)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the libRSVG library"),
+                      QString::fromLatin1("libRSVG"),
+#if defined (LIBRSVG_VERSION)
+                      QString::fromLatin1(LIBRSVG_VERSION),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("https://wiki.gnome.org/Projects/LibRsvg"),
+                      QString::fromLatin1("GNU LGPLv2.1"),
+                      QString::fromLatin1("https://gitlab.gnome.org/GNOME/librsvg/blob/master/COPYING.LIB")
+                      ));
+#endif
+
+#if defined (HAS_RESVG)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the resvg library"),
+                      QString::fromLatin1("resvg"),
+                      QString(),
+                      QString::fromLatin1("https://github.com/RazrFalcon/resvg"),
+                      QString::fromLatin1("Mozilla Public License 2.0"),
+                      QString::fromLatin1("https://github.com/RazrFalcon/resvg/blob/master/LICENSE.txt")
                       ));
 #endif
 

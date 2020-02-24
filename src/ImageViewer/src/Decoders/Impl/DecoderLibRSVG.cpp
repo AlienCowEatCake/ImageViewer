@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,7 +17,9 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#define LINKED_LIBRSVG
+#if defined (HAS_LIBRSVG)
+#define LINKED_LIBRSVG
+#endif
 
 #include <cmath>
 #include <algorithm>

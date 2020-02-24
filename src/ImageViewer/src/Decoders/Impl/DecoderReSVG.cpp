@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,8 +17,19 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#if defined (HAS_RESVG)
+#define LINKED_RESVG
+#endif
+
 #include <cmath>
 #include <algorithm>
+
+#if defined (LINKED_RESVG)
+#define RESVG_QT_BACKEND
+extern "C" {
+#include <resvg.h>
+}
+#endif
 
 #include <QFileInfo>
 #include <QImage>
@@ -48,6 +59,8 @@ namespace
 {
 
 // ====================================================================================================
+
+#if !defined (LINKED_RESVG)
 
 const QStringList RESVG_LIBRARY_NAMES = QStringList()
         << QString::fromLatin1("resvg")
@@ -318,6 +331,15 @@ bool isReady()
     return !!ReSVG::instance();
 }
 
+#else
+
+bool isReady()
+{
+    return true;
+}
+
+#endif
+
 // ====================================================================================================
 
 const qreal MAX_IMAGE_DIMENSION = 16384;
@@ -339,6 +361,11 @@ public:
         , m_minScaleFactor(1)
         , m_maxScaleFactor(1)
     {
+#if defined (LINKED_RESVG)
+        m_optData.resize(sizeof(resvg_options));
+        m_opt = reinterpret_cast<resvg_options*>(m_optData.data());
+        resvg_init_options(m_opt);
+#else
         const quint8 flagBit = 0xff;
         m_optData.resize(sizeof(resvg_options) * 3);
         m_optData.fill(*reinterpret_cast<const char*>(&flagBit), m_optData.size());
@@ -377,6 +404,7 @@ public:
             qWarning() << "Expected:" << RESVG_OPTIONS_SIZE_V020 << RESVG_OPTIONS_SIZE_V040 << RESVG_OPTIONS_SIZE_V070;
             return;
         }
+#endif
 
         MappedBuffer inBuffer(filePath);
         if(!inBuffer.isValid())
