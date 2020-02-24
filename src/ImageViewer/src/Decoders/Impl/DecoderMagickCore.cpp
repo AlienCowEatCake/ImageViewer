@@ -19,10 +19,18 @@
 
 #include "Utils/Global.h"
 
+#include <cstdlib>
+
 #if QT_HAS_INCLUDE(<MagickCore/MagickCore.h>)
 #include <MagickCore/MagickCore.h>
 #else
 #include <magick/MagickCore.h>
+#endif
+/// @note https://github.com/umlaeute/Gem/blob/v0.94/plugins/imageMAGICK/imageMAGICK.cpp#L52
+#if (defined (MagickLibInterface) && (MagickLibInterface > 3)) || (defined (MagickLibVersion) && (MagickLibVersion >= 0x662))
+typedef size_t magick_size_t;
+#else
+typedef unsigned long magick_size_t;
 #endif
 
 #include <QFileInfo>
@@ -211,7 +219,7 @@ public:
         QScopedPointer<ExceptionInfo, ExceptionInfoDeleter> exception(AcquireExceptionInfo());
 
         QStringList formatNames;
-        size_t num = 0;
+        magick_size_t num = 0;
         const MagickInfo **info = GetMagickInfoList("*", &num, exception.data());
         for(size_t i = 0; i < num; i++)
             formatNames.append(QString::fromLatin1(info[i]->name).toLower());

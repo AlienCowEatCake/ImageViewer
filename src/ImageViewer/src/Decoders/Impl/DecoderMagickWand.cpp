@@ -23,12 +23,25 @@
 
 #include "Utils/Global.h"
 
+#include <cstdlib>
+
 #if defined (LINKED_MAGICKWAND)
 #if QT_HAS_INCLUDE(<MagickWand/MagickWand.h>)
 #include <MagickWand/MagickWand.h>
 #else
 #include <wand/MagickWand.h>
 #endif
+/// @note https://github.com/umlaeute/Gem/blob/v0.94/plugins/imageMAGICK/imageMAGICK.cpp#L52
+#if (defined (MagickLibInterface) && (MagickLibInterface > 3)) || (defined (MagickLibVersion) && (MagickLibVersion >= 0x662))
+typedef size_t magick_size_t;
+typedef ssize_t magick_ssize_t;
+#else
+typedef unsigned long magick_size_t;
+typedef long magick_ssize_t;
+#endif
+#else
+typedef size_t magick_size_t;
+typedef ssize_t magick_ssize_t;
 #endif
 
 #include <QFileInfo>
@@ -520,8 +533,8 @@ private:
 
         const size_t num = MagickGetNumberImages(mw.data());
         MagickResetIterator(mw.data());
-        ssize_t x = 0, y = 0;
-        size_t width = 0, height = 0;
+        magick_ssize_t x = 0, y = 0;
+        magick_size_t width = 0, height = 0;
         MagickGetImagePage(mw.data(), &width, &height, &x, &y);
         FramesCompositor compositor;
         compositor.startComposition(width, height);
@@ -614,7 +627,7 @@ public:
         QScopedPointer<ExceptionInfo, ExceptionInfoDeleter> exception(AcquireExceptionInfo());
 
         QStringList formatNames;
-        size_t num = 0;
+        magick_size_t num = 0;
         const MagickInfo **info = GetMagickInfoList("*", &num, exception.data());
         for(size_t i = 0; i < num; i++)
             formatNames.append(QString::fromLatin1(info[i]->name).toLower());
