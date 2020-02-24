@@ -40,6 +40,9 @@ public:
     void attachToWindow(QWidget *widget);
     void detachFromWindow();
 
+private Q_SLOTS:
+    void retranslate();
+
 private:
     struct Impl;
     QScopedPointer<Impl> m_impl;

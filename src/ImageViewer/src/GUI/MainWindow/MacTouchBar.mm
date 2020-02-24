@@ -26,6 +26,7 @@
 #include <QWidget>
 
 #include "Utils/InfoUtils.h"
+#include "Utils/LocalizationManager.h"
 #include "Utils/ObjectiveCUtils.h"
 #include "Utils/ThemeUtils.h"
 #include "Utils/WindowUtils.h"
@@ -56,6 +57,7 @@ struct SimpleTouchBarItem
 
     NSString *identifier() const
     {
+        AUTORELEASE_POOL;
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_2_AND_LATER)
         if(@available(macOS 10.12.2, *))
         {
@@ -64,6 +66,70 @@ struct SimpleTouchBarItem
         }
 #endif
         return nil;
+    }
+
+    void setCustomizationLabel(const QString& label)
+    {
+        AUTORELEASE_POOL;
+        (void)(label);
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_2_AND_LATER)
+        if(@available(macOS 10.12.2, *))
+        {
+            if(NSCustomTouchBarItem *touchBarItem = reinterpret_cast<NSCustomTouchBarItem*>(item))
+                [touchBarItem setCustomizationLabel:ObjCUtils::QStringToNSString(label)];
+        }
+#endif
+    }
+};
+
+struct SegmentedTouchBarItem : SimpleTouchBarItem
+{
+    NSSegmentedControl *segmentedControl;
+
+    SegmentedTouchBarItem()
+        : segmentedControl(nil)
+    {}
+
+    ~SegmentedTouchBarItem()
+    {
+        AUTORELEASE_POOL;
+        if(segmentedControl)
+            [segmentedControl release];
+    }
+};
+
+struct GroupedTouchBarItem
+{
+    SegmentedTouchBarItem *parentItem;
+    NSInteger segmentNum;
+
+    GroupedTouchBarItem()
+        : parentItem(Q_NULLPTR)
+        , segmentNum(-1)
+    {}
+
+    void setEnabled(bool isEnabled)
+    {
+        if(!parentItem || !parentItem->item || !parentItem->segmentedControl)
+            return;
+        AUTORELEASE_POOL;
+        BOOL value = isEnabled ? YES : NO;
+        if(segmentNum < 0)
+            return;
+        [parentItem->segmentedControl setEnabled:value forSegment:segmentNum];
+    }
+
+    bool actionSenderMatch(id sender) const
+    {
+        if(!parentItem || !parentItem->item || !parentItem->segmentedControl)
+            return false;
+        if(!sender || sender != parentItem->segmentedControl)
+            return false;
+        AUTORELEASE_POOL;
+        NSSegmentedControl *segmentedControl = parentItem->segmentedControl;
+        if(segmentNum < 0 || [segmentedControl selectedSegment] != segmentNum)
+            return false;
+        return true;
     }
 };
 
@@ -123,17 +189,36 @@ namespace {
 
 struct TouchBarData
 {
-    ButtonedTouchBarItem navigatePrevious;
-    ButtonedTouchBarItem navigateNext;
+    SimpleTouchBarItem space;
+    SimpleTouchBarItem flexibleSpace;
+
+    GroupedTouchBarItem navigatePrevious;
+    GroupedTouchBarItem navigateNext;
+    SegmentedTouchBarItem navigateGroup;
+
     ButtonedTouchBarItem startSlideShow;
-    ButtonedTouchBarItem zoomOut;
-    ButtonedTouchBarItem zoomIn;
+
+    GroupedTouchBarItem zoomOut;
+    GroupedTouchBarItem zoomIn;
+    SegmentedTouchBarItem zoomGroup;
+
+    ButtonedTouchBarItem zoomFitToWindow;
+    ButtonedTouchBarItem zoomOriginalSize;
     ButtonedTouchBarItem zoomFullScreen;
-    ButtonedTouchBarItem rotateCounterclockwise;
-    ButtonedTouchBarItem rotateClockwise;
+
+    GroupedTouchBarItem rotateCounterclockwise;
+    GroupedTouchBarItem rotateClockwise;
+    SegmentedTouchBarItem rotateGroup;
+
+    GroupedTouchBarItem flipHorizontal;
+    GroupedTouchBarItem flipVertical;
+    SegmentedTouchBarItem flipGroup;
+
     ButtonedTouchBarItem openFile;
     ButtonedTouchBarItem saveFileAs;
     ButtonedTouchBarItem deleteFile;
+    ButtonedTouchBarItem preferences;
+    ButtonedTouchBarItem exit;
 };
 
 } // namespace
@@ -151,6 +236,14 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType)
     NSImage *image = ObjCUtils::QPixmapToNSImage(iconPixmap, iconSize);
     [image setTemplate:YES];
     return image;
+}
+
+NSImage *NSImageForNameOrIconType(NSImageName name, ThemeUtils::IconTypes iconType)
+{
+    if(name)
+        if(NSImage *result = [NSImage imageNamed:name])
+            return result;
+    return NSImageForIconType(iconType);
 }
 
 } // namespace
@@ -185,25 +278,46 @@ API_AVAILABLE(macos(10.12.2))
     m_touchBarData = touchBarData;
     m_emitterObject = emitterObject;
 
-#define MAKE_BUTTONED_ITEM(ITEM, ICON) \
-    m_touchBarData->ITEM.button = [NSButton buttonWithImage:NSImageForIconType(ThemeUtils::ICON) target:self action:@selector(itemClicked:)]; \
+    m_touchBarData->space.item = [[NSTouchBarItem alloc] initWithIdentifier:NSTouchBarItemIdentifierFixedSpaceSmall];
+    m_touchBarData->flexibleSpace.item = [[NSTouchBarItem alloc] initWithIdentifier:NSTouchBarItemIdentifierFlexibleSpace];
+
+#define MAKE_BUTTONED_ITEM(ITEM, ICON, TEMPLATE) \
+    m_touchBarData->ITEM.button = [NSButton buttonWithImage:NSImageForNameOrIconType(TEMPLATE, ThemeUtils::ICON) target:self action:@selector(itemClicked:)]; \
     NSCustomTouchBarItem *ITEM = [[NSCustomTouchBarItem alloc] initWithIdentifier:@"touchbar_"#ITEM]; \
     [ITEM setView:m_touchBarData->ITEM.button]; \
     m_touchBarData->ITEM.item = ITEM
-    MAKE_BUTTONED_ITEM(navigatePrevious, ICON_LEFT);
-    MAKE_BUTTONED_ITEM(navigateNext, ICON_RIGHT);
-    MAKE_BUTTONED_ITEM(startSlideShow, ICON_PLAY);
-    MAKE_BUTTONED_ITEM(zoomOut, ICON_ZOOM_OUT);
-    MAKE_BUTTONED_ITEM(zoomIn, ICON_ZOOM_IN);
-    MAKE_BUTTONED_ITEM(zoomFullScreen, ICON_FULLSCREEN);
-    MAKE_BUTTONED_ITEM(rotateCounterclockwise, ICON_ROTATE_COUNTERCLOCKWISE);
-    MAKE_BUTTONED_ITEM(rotateClockwise, ICON_ROTATE_CLOCKWISE);
-    MAKE_BUTTONED_ITEM(openFile, ICON_OPEN);
-    MAKE_BUTTONED_ITEM(saveFileAs, ICON_SAVE_AS);
-    MAKE_BUTTONED_ITEM(deleteFile, ICON_DELETE);
+#define MAKE_SEGMENTED_PAIR_ITEM(GROUP, ITEM1, ICON1, TEMPLATE1, ITEM2, ICON2, TEMPLATE2) \
+    m_touchBarData->GROUP.item = [[NSCustomTouchBarItem alloc] initWithIdentifier:@"touchbar_"#GROUP]; \
+    m_touchBarData->GROUP.segmentedControl = [NSSegmentedControl \
+        segmentedControlWithImages:@[NSImageForNameOrIconType(TEMPLATE1, ThemeUtils::ICON1), NSImageForNameOrIconType(TEMPLATE2, ThemeUtils::ICON2)] \
+                      trackingMode:NSSegmentSwitchTrackingMomentary \
+                            target:self \
+                            action:@selector(itemClicked:)]; \
+    [reinterpret_cast<NSCustomTouchBarItem*>(m_touchBarData->GROUP.item) setView:m_touchBarData->GROUP.segmentedControl]; \
+    m_touchBarData->ITEM1.parentItem = &m_touchBarData->GROUP; \
+    m_touchBarData->ITEM1.segmentNum = 0; \
+    m_touchBarData->ITEM2.parentItem = &m_touchBarData->GROUP; \
+    m_touchBarData->ITEM2.segmentNum = 1
+
+    MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, navigatePrevious, ICON_LEFT, NSImageNameTouchBarGoBackTemplate, navigateNext, ICON_RIGHT, NSImageNameTouchBarGoForwardTemplate);
+    MAKE_BUTTONED_ITEM(startSlideShow, ICON_PLAY, NSImageNameTouchBarSlideshowTemplate);
+    MAKE_SEGMENTED_PAIR_ITEM(zoomGroup, zoomOut, ICON_ZOOM_OUT, nil, zoomIn, ICON_ZOOM_IN, nil);
+    MAKE_BUTTONED_ITEM(zoomFitToWindow, ICON_ZOOM_EMPTY, nil);
+    MAKE_BUTTONED_ITEM(zoomOriginalSize, ICON_ZOOM_IDENTITY, nil);
+    MAKE_BUTTONED_ITEM(zoomFullScreen, ICON_FULLSCREEN, NSImageNameTouchBarEnterFullScreenTemplate);
+    MAKE_SEGMENTED_PAIR_ITEM(rotateGroup, rotateCounterclockwise, ICON_ROTATE_COUNTERCLOCKWISE, NSImageNameTouchBarRotateLeftTemplate, rotateClockwise, ICON_ROTATE_CLOCKWISE, NSImageNameTouchBarRotateRightTemplate);
+    MAKE_SEGMENTED_PAIR_ITEM(flipGroup, flipHorizontal, ICON_FLIP_HORIZONTAL, nil, flipVertical, ICON_FLIP_VERTICAL, nil);
+    MAKE_BUTTONED_ITEM(openFile, ICON_OPEN, nil);
+    MAKE_BUTTONED_ITEM(saveFileAs, ICON_SAVE_AS, nil);
+    MAKE_BUTTONED_ITEM(deleteFile, ICON_DELETE, NSImageNameTouchBarDeleteTemplate);
+    MAKE_BUTTONED_ITEM(preferences, ICON_SETTINGS, nil);
+    MAKE_BUTTONED_ITEM(exit, ICON_EXIT, nil);
+
+#undef MAKE_SEGMENTED_PAIR_ITEM
 #undef MAKE_BUTTONED_ITEM
 
-    m_touchBarData->zoomFullScreen.setCheckable(true);
+    m_touchBarData->zoomFitToWindow.setCheckable(true);
+    m_touchBarData->zoomOriginalSize.setCheckable(true);
 
     return self;
 }
@@ -214,19 +328,38 @@ API_AVAILABLE(macos(10.12.2))
     [bar setDelegate:self];
     [bar setDefaultItemIdentifiers:@[
 #define GET_IDENTIFIER(ITEM) m_touchBarData->ITEM.identifier()
-        GET_IDENTIFIER(navigatePrevious),
-        GET_IDENTIFIER(navigateNext),
+        GET_IDENTIFIER(navigateGroup),
         GET_IDENTIFIER(startSlideShow),
-        GET_IDENTIFIER(zoomOut),
-        GET_IDENTIFIER(zoomIn),
+        GET_IDENTIFIER(zoomGroup),
         GET_IDENTIFIER(zoomFullScreen),
-        GET_IDENTIFIER(rotateCounterclockwise),
-        GET_IDENTIFIER(rotateClockwise),
+        GET_IDENTIFIER(rotateGroup),
         GET_IDENTIFIER(openFile),
         GET_IDENTIFIER(saveFileAs),
         GET_IDENTIFIER(deleteFile),
 #undef GET_IDENTIFIER
     ]];
+    [bar setCustomizationAllowedItemIdentifiers:@[
+#define GET_IDENTIFIER(ITEM) m_touchBarData->ITEM.identifier()
+        GET_IDENTIFIER(space),
+        GET_IDENTIFIER(flexibleSpace),
+        GET_IDENTIFIER(navigateGroup),
+        GET_IDENTIFIER(startSlideShow),
+        GET_IDENTIFIER(zoomGroup),
+        GET_IDENTIFIER(zoomFitToWindow),
+        GET_IDENTIFIER(zoomOriginalSize),
+        GET_IDENTIFIER(zoomFullScreen),
+        GET_IDENTIFIER(rotateGroup),
+        GET_IDENTIFIER(flipGroup),
+        GET_IDENTIFIER(openFile),
+        GET_IDENTIFIER(saveFileAs),
+        GET_IDENTIFIER(deleteFile),
+        GET_IDENTIFIER(preferences),
+        GET_IDENTIFIER(exit),
+#undef GET_IDENTIFIER
+    ]];
+    if(NSBundle *bundle = [NSBundle mainBundle])
+        if(NSString *identifier = [bundle bundleIdentifier])
+            [bar setCustomizationIdentifier:[identifier stringByAppendingString:@".maintouchbar"]];
     return bar;
 }
 
@@ -236,17 +369,21 @@ API_AVAILABLE(macos(10.12.2))
 #define CHECK(ITEM) \
     if([identifier isEqualToString:m_touchBarData->ITEM.identifier()]) \
         return reinterpret_cast<NSCustomTouchBarItem*>(m_touchBarData->ITEM.item)
-    CHECK(navigatePrevious);
-    CHECK(navigateNext);
+    CHECK(space);
+    CHECK(flexibleSpace);
+    CHECK(navigateGroup);
     CHECK(startSlideShow);
-    CHECK(zoomOut);
-    CHECK(zoomIn);
+    CHECK(zoomGroup);
+    CHECK(zoomFitToWindow);
+    CHECK(zoomOriginalSize);
     CHECK(zoomFullScreen);
-    CHECK(rotateCounterclockwise);
-    CHECK(rotateClockwise);
+    CHECK(rotateGroup);
+    CHECK(flipGroup);
     CHECK(openFile);
     CHECK(saveFileAs);
     CHECK(deleteFile);
+    CHECK(preferences);
+    CHECK(exit);
 #undef CHECK
    return nil;
 }
@@ -286,12 +423,18 @@ API_AVAILABLE(macos(10.12.2))
     INVOKE_IF_MATCH(startSlideShow          , "startSlideShowRequested"         )
     INVOKE_IF_MATCH(zoomOut                 , "zoomOutRequested"                )
     INVOKE_IF_MATCH(zoomIn                  , "zoomInRequested"                 )
+    INVOKE_IF_MATCH(zoomFitToWindow         , "zoomFitToWindowRequested"        )
+    INVOKE_IF_MATCH(zoomOriginalSize        , "zoomOriginalSizeRequested"       )
     INVOKE_IF_MATCH(zoomFullScreen          , "zoomFullScreenRequested"         )
     INVOKE_IF_MATCH(rotateCounterclockwise  , "rotateCounterclockwiseRequested" )
     INVOKE_IF_MATCH(rotateClockwise         , "rotateClockwiseRequested"        )
+    INVOKE_IF_MATCH(flipHorizontal          , "flipHorizontalRequested"         )
+    INVOKE_IF_MATCH(flipVertical            , "flipVerticalRequested"           )
     INVOKE_IF_MATCH(openFile                , "openFileRequested"               )
     INVOKE_IF_MATCH(saveFileAs              , "saveAsRequested"                 )
     INVOKE_IF_MATCH(deleteFile              , "deleteFileRequested"             )
+    INVOKE_IF_MATCH(preferences             , "preferencesRequested"            )
+    INVOKE_IF_MATCH(exit                    , "exitRequested"                   )
 #undef INVOKE_IF_MATCH
 }
 
@@ -307,18 +450,22 @@ struct MacTouchBar::Impl
     id touchBarProvider;
     QWidget *widget;
     bool isSlideShowMode;
+    bool isZoomFullScreenMode;
 
     explicit Impl(MacTouchBar *macTouchBar)
         : macTouchBar(macTouchBar)
         , touchBarProvider(nil)
         , widget(Q_NULLPTR)
         , isSlideShowMode(false)
+        , isZoomFullScreenMode(false)
     {
         AUTORELEASE_POOL;
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_2_AND_LATER)
         if(@available(macOS 10.12.2, *))
         {
             touchBarProvider = [[TouchBarProvider alloc] initWithTouchBarData:&touchBarData andEmitterObject:macTouchBar];
+            [[NSApplication sharedApplication] setAutomaticCustomizeTouchBarMenuItemEnabled:YES];
+            retranslate();
         }
 #endif
     }
@@ -335,18 +482,70 @@ struct MacTouchBar::Impl
 //#endif
 //    }
 
+    void retranslate()
+    {
+        touchBarData.navigateGroup.setCustomizationLabel(qApp->translate("MacTouchBar", "Navigate"));
+        touchBarData.startSlideShow.setCustomizationLabel(qApp->translate("MacTouchBar", "Slideshow"));
+        touchBarData.zoomGroup.setCustomizationLabel(qApp->translate("MacTouchBar", "Zoom"));
+        touchBarData.zoomFitToWindow.setCustomizationLabel(qApp->translate("MacTouchBar", "Fit Image To Window Size"));
+        touchBarData.zoomOriginalSize.setCustomizationLabel(qApp->translate("MacTouchBar", "Original Size"));
+        touchBarData.rotateGroup.setCustomizationLabel(qApp->translate("MacTouchBar", "Rotate"));
+        touchBarData.flipGroup.setCustomizationLabel(qApp->translate("MacTouchBar", "Flip"));
+        touchBarData.openFile.setCustomizationLabel(qApp->translate("MacTouchBar", "Open File"));
+        touchBarData.saveFileAs.setCustomizationLabel(qApp->translate("MacTouchBar", "Save File As"));
+        touchBarData.deleteFile.setCustomizationLabel(qApp->translate("MacTouchBar", "Delete File"));
+        touchBarData.preferences.setCustomizationLabel(qApp->translate("MacTouchBar", "Preferences"));
+        touchBarData.exit.setCustomizationLabel(qApp->translate("MacTouchBar", "Exit"));
+
+        setSlideShowMode(isSlideShowMode);
+        setZoomFullScreenMode(isZoomFullScreenMode);
+    }
+
     void setSlideShowMode(bool isSlideShow)
     {
         AUTORELEASE_POOL;
         isSlideShowMode = isSlideShow;
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_2_AND_LATER)
-        NSButton *button = touchBarData.startSlideShow.button;
-        if(!button)
-            return;
-        if(!isSlideShowMode)
-            [button setImage:NSImageForIconType(ThemeUtils::ICON_PLAY)];
-        else
-            [button setImage:NSImageForIconType(ThemeUtils::ICON_STOP)];
+        if(@available(macOS 10.12.2, *))
+        {
+            NSButton *button = touchBarData.startSlideShow.button;
+            if(!button)
+                return;
+            if(!isSlideShow)
+            {
+                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarSlideshowTemplate, ThemeUtils::ICON_PLAY)];
+                touchBarData.startSlideShow.setCustomizationLabel(qApp->translate("MacTouchBar", "Start Slideshow"));
+            }
+            else
+            {
+                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarRecordStopTemplate, ThemeUtils::ICON_STOP)];
+                touchBarData.startSlideShow.setCustomizationLabel(qApp->translate("MacTouchBar", "Stop Slideshow"));
+            }
+        }
+#endif
+    }
+
+    void setZoomFullScreenMode(bool isFullScreen)
+    {
+        AUTORELEASE_POOL;
+        isZoomFullScreenMode = isFullScreen;
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_2_AND_LATER)
+        if(@available(macOS 10.12.2, *))
+        {
+            NSButton *button = touchBarData.zoomFullScreen.button;
+            if(!button)
+                return;
+            if(!isFullScreen)
+            {
+                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarEnterFullScreenTemplate, ThemeUtils::ICON_FULLSCREEN)];
+                touchBarData.zoomFullScreen.setCustomizationLabel(qApp->translate("MacTouchBar", "Enter Full Screen"));
+            }
+            else
+            {
+                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarExitFullScreenTemplate, ThemeUtils::ICON_FULLSCREEN)];
+                touchBarData.zoomFullScreen.setCustomizationLabel(qApp->translate("MacTouchBar", "Exit Full Screen"));
+            }
+        }
 #endif
     }
 };
@@ -356,7 +555,9 @@ struct MacTouchBar::Impl
 MacTouchBar::MacTouchBar(QObject *parent)
     : ControlsContainerEmitter(parent)
     , m_impl(new Impl(this))
-{}
+{
+    connect(LocalizationManager::instance(), SIGNAL(localeChanged(const QString&)), this, SLOT(retranslate()));
+}
 
 MacTouchBar::~MacTouchBar()
 {}
@@ -393,6 +594,11 @@ void MacTouchBar::detachFromWindow()
     m_impl->widget = Q_NULLPTR;
 }
 
+void MacTouchBar::retranslate()
+{
+    m_impl->retranslate();
+}
+
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setOpenFileEnabled, &m_impl->touchBarData.openFile)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setOpenFolderEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setSaveAsEnabled, &m_impl->touchBarData.saveFileAs)
@@ -401,19 +607,19 @@ CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setNavigatePreviousEnabled, &m_
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setNavigateNextEnabled, &m_impl->touchBarData.navigateNext)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setStartSlideShowEnabled, &m_impl->touchBarData.startSlideShow)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setImageInformationEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setPreferencesEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setExitEnabled)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setPreferencesEnabled, &m_impl->touchBarData.preferences)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setExitEnabled, &m_impl->touchBarData.exit)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setRotateCounterclockwiseEnabled, &m_impl->touchBarData.rotateCounterclockwise)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setRotateClockwiseEnabled, &m_impl->touchBarData.rotateClockwise)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setFlipHorizontalEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setFlipVerticalEnabled)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setFlipHorizontalEnabled, &m_impl->touchBarData.flipHorizontal)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setFlipVerticalEnabled, &m_impl->touchBarData.flipVertical)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setDeleteFileEnabled, &m_impl->touchBarData.deleteFile)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setZoomOutEnabled, &m_impl->touchBarData.zoomOut)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setZoomInEnabled, &m_impl->touchBarData.zoomIn)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setZoomResetEnabled)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setZoomCustomEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setZoomFitToWindowEnabled)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setZoomOriginalSizeEnabled)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setZoomFitToWindowEnabled, &m_impl->touchBarData.zoomFitToWindow)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setZoomOriginalSizeEnabled, &m_impl->touchBarData.zoomOriginalSize)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setZoomFullScreenEnabled, &m_impl->touchBarData.zoomFullScreen)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setShowMenuBarEnabled)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setShowToolBarEnabled)
@@ -422,9 +628,9 @@ CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setAboutQtEnabled)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setCheckForUpdatesEnabled)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setEditStylesheetEnabled)
 
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setZoomFitToWindowChecked)
-CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setZoomOriginalSizeChecked)
-CONTROLS_CONTAINER_SET_CHECKED_IMPL(MacTouchBar, setZoomFullScreenChecked, &m_impl->touchBarData.zoomFullScreen)
+CONTROLS_CONTAINER_SET_CHECKED_IMPL(MacTouchBar, setZoomFitToWindowChecked, &m_impl->touchBarData.zoomFitToWindow)
+CONTROLS_CONTAINER_SET_CHECKED_IMPL(MacTouchBar, setZoomOriginalSizeChecked, &m_impl->touchBarData.zoomOriginalSize)
+CONTROLS_CONTAINER_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setZoomFullScreenChecked, m_impl, setZoomFullScreenMode)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setShowMenuBarChecked)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setShowToolBarChecked)
 
