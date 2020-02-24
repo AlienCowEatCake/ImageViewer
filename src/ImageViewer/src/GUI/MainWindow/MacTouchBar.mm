@@ -449,15 +449,11 @@ struct MacTouchBar::Impl
     TouchBarData touchBarData;
     id touchBarProvider;
     QWidget *widget;
-    bool isSlideShowMode;
-    bool isZoomFullScreenMode;
 
     explicit Impl(MacTouchBar *macTouchBar)
         : macTouchBar(macTouchBar)
         , touchBarProvider(nil)
         , widget(Q_NULLPTR)
-        , isSlideShowMode(false)
-        , isZoomFullScreenMode(false)
     {
         AUTORELEASE_POOL;
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_2_AND_LATER)
@@ -489,6 +485,7 @@ struct MacTouchBar::Impl
         touchBarData.zoomGroup.setCustomizationLabel(qApp->translate("MacTouchBar", "Zoom"));
         touchBarData.zoomFitToWindow.setCustomizationLabel(qApp->translate("MacTouchBar", "Fit Image To Window Size"));
         touchBarData.zoomOriginalSize.setCustomizationLabel(qApp->translate("MacTouchBar", "Original Size"));
+        touchBarData.zoomFullScreen.setCustomizationLabel(qApp->translate("MacTouchBar", "Full Screen"));
         touchBarData.rotateGroup.setCustomizationLabel(qApp->translate("MacTouchBar", "Rotate"));
         touchBarData.flipGroup.setCustomizationLabel(qApp->translate("MacTouchBar", "Flip"));
         touchBarData.openFile.setCustomizationLabel(qApp->translate("MacTouchBar", "Open File"));
@@ -496,15 +493,11 @@ struct MacTouchBar::Impl
         touchBarData.deleteFile.setCustomizationLabel(qApp->translate("MacTouchBar", "Delete File"));
         touchBarData.preferences.setCustomizationLabel(qApp->translate("MacTouchBar", "Preferences"));
         touchBarData.exit.setCustomizationLabel(qApp->translate("MacTouchBar", "Exit"));
-
-        setSlideShowMode(isSlideShowMode);
-        setZoomFullScreenMode(isZoomFullScreenMode);
     }
 
     void setSlideShowMode(bool isSlideShow)
     {
         AUTORELEASE_POOL;
-        isSlideShowMode = isSlideShow;
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_2_AND_LATER)
         if(@available(macOS 10.12.2, *))
         {
@@ -512,15 +505,9 @@ struct MacTouchBar::Impl
             if(!button)
                 return;
             if(!isSlideShow)
-            {
                 [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarSlideshowTemplate, ThemeUtils::ICON_PLAY)];
-                touchBarData.startSlideShow.setCustomizationLabel(qApp->translate("MacTouchBar", "Start Slideshow"));
-            }
             else
-            {
                 [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarRecordStopTemplate, ThemeUtils::ICON_STOP)];
-                touchBarData.startSlideShow.setCustomizationLabel(qApp->translate("MacTouchBar", "Stop Slideshow"));
-            }
         }
 #endif
     }
@@ -528,7 +515,6 @@ struct MacTouchBar::Impl
     void setZoomFullScreenMode(bool isFullScreen)
     {
         AUTORELEASE_POOL;
-        isZoomFullScreenMode = isFullScreen;
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_2_AND_LATER)
         if(@available(macOS 10.12.2, *))
         {
@@ -536,15 +522,9 @@ struct MacTouchBar::Impl
             if(!button)
                 return;
             if(!isFullScreen)
-            {
                 [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarEnterFullScreenTemplate, ThemeUtils::ICON_FULLSCREEN)];
-                touchBarData.zoomFullScreen.setCustomizationLabel(qApp->translate("MacTouchBar", "Enter Full Screen"));
-            }
             else
-            {
                 [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarExitFullScreenTemplate, ThemeUtils::ICON_FULLSCREEN)];
-                touchBarData.zoomFullScreen.setCustomizationLabel(qApp->translate("MacTouchBar", "Exit Full Screen"));
-            }
         }
 #endif
     }
