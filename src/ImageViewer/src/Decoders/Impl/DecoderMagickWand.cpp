@@ -41,7 +41,15 @@ typedef long magick_ssize_t;
 #endif
 #else
 typedef size_t magick_size_t;
+#if !defined (_MSC_VER)
 typedef ssize_t magick_ssize_t;
+#else
+#if defined (_WIN64)
+typedef qint64 magick_ssize_t;
+#else
+typedef qint32 magick_ssize_t;
+#endif
+#endif
 #endif
 
 #include <QFileInfo>
@@ -245,9 +253,9 @@ public:
         return MagickGetNumberImages_f(wand);
     }
 
-    MagickBooleanType MagickGetImagePage_(MagickWand *wand, size_t *width, size_t *height, ssize_t *x, ssize_t *y)
+    MagickBooleanType MagickGetImagePage_(MagickWand *wand, size_t *width, size_t *height, magick_ssize_t *x, magick_ssize_t *y)
     {
-        typedef MagickBooleanType (*MagickGetImagePage_t)(MagickWand *, size_t *, size_t *, ssize_t *, ssize_t *);
+        typedef MagickBooleanType (*MagickGetImagePage_t)(MagickWand *, size_t *, size_t *, magick_ssize_t *, magick_ssize_t *);
         MagickGetImagePage_t MagickGetImagePage_f = (MagickGetImagePage_t)m_MagickGetImagePage;
         return MagickGetImagePage_f(wand, width, height, x, y);
     }
@@ -301,9 +309,9 @@ public:
         return MagickGetImageOrientation_f(wand);
     }
 
-    MagickBooleanType MagickExportImagePixels_(MagickWand *wand, const ssize_t x, const ssize_t y, const size_t columns, const size_t rows, const char *map, const StorageType storage, void *pixels)
+    MagickBooleanType MagickExportImagePixels_(MagickWand *wand, const magick_ssize_t x, const magick_ssize_t y, const size_t columns, const size_t rows, const char *map, const StorageType storage, void *pixels)
     {
-        typedef MagickBooleanType (*MagickExportImagePixels_t)(MagickWand *, const ssize_t, const ssize_t, const size_t, const size_t, const char *, const StorageType, void *);
+        typedef MagickBooleanType (*MagickExportImagePixels_t)(MagickWand *, const magick_ssize_t, const magick_ssize_t, const size_t, const size_t, const char *, const StorageType, void *);
         MagickExportImagePixels_t MagickExportImagePixels_f = (MagickExportImagePixels_t)m_MagickExportImagePixels;
         return MagickExportImagePixels_f(wand, x, y, columns, rows, map, storage, pixels);
     }
