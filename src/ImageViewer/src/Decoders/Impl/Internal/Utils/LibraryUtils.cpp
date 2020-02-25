@@ -224,6 +224,42 @@ private:
 
 #endif
 
+#if defined (Q_OS_WIN)
+
+namespace {
+
+class StandardLibraryPathProvider
+{
+public:
+    StandardLibraryPathProvider()
+    {
+        appendPath(qApp->applicationDirPath());
+        qDebug() << "[StandardLibraryPathProvider] Paths order:" << m_standardPaths;
+    }
+
+    QStringList getPaths() const
+    {
+        return m_standardPaths;
+    }
+
+private:
+    void appendPath(const QString &path)
+    {
+        if(path.isEmpty())
+            return;
+        if(m_standardPaths.contains(path))
+            return;
+        m_standardPaths.append(path);
+    }
+
+private:
+    QStringList m_standardPaths;
+};
+
+} // namespace
+
+#endif
+
 namespace LibraryUtils {
 
 bool LoadQLibrary(QLibrary &library, const char *name)
@@ -290,6 +326,36 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
             if(QFileInfo(*it).isAbsolute())
                 continue;
             const QStringList nameFilter(*it + QString::fromLatin1("*.dylib*"));
+            const QDir directory(*dIt);
+            const QStringList libraries = directory.entryList(nameFilter, QDir::Files | QDir::NoDotAndDotDot | QDir::Readable, QDir::Name);
+            for(QStringList::ConstIterator lIt = libraries.constBegin(), lItEnd = libraries.constEnd(); lIt != lItEnd; ++lIt)
+            {
+                const QString libraryPath = QDir(*dIt).filePath(*lIt);
+                if(!QFileInfo(libraryPath).exists())
+                    continue;
+                if(!QLibrary::isLibrary(libraryPath))
+                    continue;
+                library.setFileName(libraryPath);
+                if(library.load())
+                    break;
+                qDebug() << "[LoadLibrary]" << "Error:" << library.errorString();
+            }
+            if(library.isLoaded())
+                break;
+        }
+        if(library.isLoaded())
+            break;
+#endif
+#if defined (Q_OS_WIN)
+        qDebug() << "[LoadLibrary]" << "Loading" << *it << "from standard directories ...";
+        static const QStringList standardLibDirs = StandardLibraryPathProvider().getPaths();
+        for(QStringList::ConstIterator dIt = standardLibDirs.constBegin(), dItEnd = standardLibDirs.constEnd(); dIt != dItEnd; ++dIt)
+        {
+            if(!QFileInfo(*dIt).exists())
+                continue;
+            if(QFileInfo(*it).isAbsolute())
+                continue;
+            const QStringList nameFilter(*it + QString::fromLatin1("*.dll"));
             const QDir directory(*dIt);
             const QStringList libraries = directory.entryList(nameFilter, QDir::Files | QDir::NoDotAndDotDot | QDir::Readable, QDir::Name);
             for(QStringList::ConstIterator lIt = libraries.constBegin(), lItEnd = libraries.constEnd(); lIt != lItEnd; ++lIt)
