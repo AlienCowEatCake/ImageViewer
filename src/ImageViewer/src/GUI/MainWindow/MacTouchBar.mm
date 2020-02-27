@@ -455,7 +455,7 @@ struct MacTouchBar::Impl
         , touchBarProvider(nil)
         , widget(Q_NULLPTR)
     {
-        AUTORELEASE_POOL;
+//        AUTORELEASE_POOL;
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_2_AND_LATER)
         if(@available(macOS 10.12.2, *))
         {
