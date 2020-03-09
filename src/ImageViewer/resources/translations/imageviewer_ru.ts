@@ -4,17 +4,17 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="123"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="126"/>
         <source>Peter S. Zhigalov</source>
         <translation>Жигалов Петр</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="576"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="605"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="587"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="616"/>
         <source>License</source>
         <translation>Лицензия</translation>
     </message>

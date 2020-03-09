@@ -4,54 +4,54 @@
 <context>
     <name>FileUtils</name>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="301"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="557"/>
         <source>The specified path was not found</source>
         <translation>Указанный путь не найден</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="315"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="571"/>
         <source>Permission denied</source>
         <translation>Доступ запрещен</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="341"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="597"/>
         <source>Could not find mount point for specified path</source>
         <translation>Не удалось найти точку монтирования для указанного пути</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="350"/>
-        <location filename="../../src/Utils/FileUtils.cpp" line="386"/>
-        <location filename="../../src/Utils/FileUtils.cpp" line="629"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="79"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="606"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="628"/>
         <source>The specified path could not be moved to Trash</source>
         <translation>Указанный путь не может быть перемещен в Корзину</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="442"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="659"/>
         <source>The specified path does not exist</source>
         <translation>Указанный путь не существует</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="548"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="240"/>
         <source>Failed to init BEntry for specified path: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="558"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="250"/>
         <source>Failed to get entry_ref for specified path: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="568"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="260"/>
         <source>Failed to find Trash: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="578"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="270"/>
         <source>Failed to init BDirectory for %1: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="603"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="295"/>
         <source>Failed to move entry into trash %1: %2</source>
         <translation type="unfinished"></translation>
     </message>
