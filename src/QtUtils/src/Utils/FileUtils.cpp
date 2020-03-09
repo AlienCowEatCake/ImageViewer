@@ -36,7 +36,18 @@
 #include <QStringList>
 #include <QDebug>
 
-#if defined (Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+
+namespace MoveToTrashInternal {
+
+static bool MoveToTrashImpl(const QString &absolutePath, QString */*errorDescription*/)
+{
+    return QFile::moveToTrash(absolutePath);
+}
+
+} // namespace MoveToTrashInternal
+
+#elif defined (Q_OS_MAC)
 
 #include <CoreServices/CoreServices.h>
 
