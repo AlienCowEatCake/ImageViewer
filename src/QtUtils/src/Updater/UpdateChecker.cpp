@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -96,7 +96,11 @@ void UpdateChecker::replyFinished(QNetworkReply *reply)
 {
     m_impl->activeReply = Q_NULLPTR;
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    if(reply->networkError() != QNetworkReply::NoError)
+#else
     if(reply->error() != QNetworkReply::NoError)
+#endif
     {
         qWarning() << "[UpdateChecker]" << reply->errorString();
         Q_EMIT updateError(reply->errorString());

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -24,9 +24,19 @@
 #include <QScrollBar>
 #include <QGraphicsPixmapItem>
 #include <QStyleOptionGraphicsItem>
-#include <QMatrix>
 #include <QMouseEvent>
 #include <QWheelEvent>
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#define IMAGEVIEWERWIDGET_NO_QMATRIX
+#endif
+#if defined (IMAGEVIEWERWIDGET_NO_QMATRIX)
+#include <QTransform>
+typedef QTransform TransformMatrix;
+#else
+#include <QMatrix>
+typedef QMatrix TransformMatrix;
+#endif
 
 #if (QT_VERSION < QT_VERSION_CHECK(4, 6, 0))
 #define IMAGEVIEWERWIDGET_NO_GESTURES
@@ -76,7 +86,7 @@ struct ImageViewerWidget::Impl
 
     qreal getFitToWindowZoomLevel() const
     {
-        QMatrix rotationMatrix;
+        TransformMatrix rotationMatrix;
         rotationMatrix.rotate(currentRotationAngle);
         const QRectF boundingRect = rotationMatrix.mapRect(currentGraphicsItem->boundingRect());
         const QSize imageSize = boundingRect.size().toSize();
@@ -107,11 +117,15 @@ struct ImageViewerWidget::Impl
             break;
         }
 
-        QMatrix matrix;
+        TransformMatrix matrix;
         matrix.scale(currentZoomLevel, currentZoomLevel);
         matrix.rotate(currentRotationAngle);
         matrix.scale(flipHorizontal ? -1 : 1, flipVertical ? -1 : 1);
+#if defined (IMAGEVIEWERWIDGET_NO_QMATRIX)
+        imageViewerWidget->setTransform(matrix);
+#else
         imageViewerWidget->setMatrix(matrix);
+#endif
 
         if(qAbs(previousZoomLevel - currentZoomLevel) / qMax(previousZoomLevel, currentZoomLevel) > ZOOM_CHANGE_EPSILON)
         {
@@ -287,7 +301,11 @@ void ImageViewerWidget::clear()
 {
     m_impl->currentGraphicsItem = Q_NULLPTR;
     scene()->clear();
+#if defined (IMAGEVIEWERWIDGET_NO_QMATRIX)
+    resetTransform();
+#else
     resetMatrix();
+#endif
     ensureVisible(QRectF(0, 0, 0, 0));
     setSceneRect(0, 0, 1, 1);
     m_impl->currentRotationAngle = 0;
