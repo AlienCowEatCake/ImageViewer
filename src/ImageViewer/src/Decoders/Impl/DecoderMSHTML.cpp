@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -486,6 +486,7 @@ public:
 //            qWarning() << "Can't get CLSID for mshtml" << QString::number(hr, 16);
 //            return;
 //        }
+        Q_UNUSED(CLSIDFromProgID);
 
         hr = CoCreateInstance(CLSID_HTMLDocument, Q_NULLPTR, CLSCTX_INPROC_SERVER, IID_IHTMLDocument2, (void**)&m_htmlDocument2);
         if(!SUCCEEDED(hr))
