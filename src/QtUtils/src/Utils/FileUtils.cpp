@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -24,26 +24,6 @@
 #include <algorithm>
 #include <cstdlib>
 
-#include <QtGlobal>
-#if defined (Q_OS_MAC)
-#include <CoreServices/CoreServices.h>
-#elif defined (Q_OS_WIN)
-#include <windows.h>
-#include <shellapi.h>
-#elif defined (Q_OS_HAIKU)
-#include <Directory.h>
-#include <Entry.h>
-#include <File.h>
-#include <FindDirectory.h>
-#include <Path.h>
-#include <String.h>
-#else
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-#endif
-
 #include <QApplication>
 #include <QString>
 #include <QFileInfo>
@@ -56,11 +36,276 @@
 #include <QStringList>
 #include <QDebug>
 
-#if !defined (Q_OS_MAC) && !defined (Q_OS_WIN) && !defined (Q_OS_HAIKU)
+#if defined (Q_OS_MAC)
+
+#include <CoreServices/CoreServices.h>
+
+namespace MoveToTrashInternal {
+
+static bool MoveToTrashViaFinderScript(const QString &absolutePath, QString *errorDescription)
+{
+    int status = QProcess::execute(QString::fromLatin1("osascript"), QStringList()
+            << QString::fromLatin1("-e")
+            << QString::fromLatin1("tell application \"Finder\"\n"
+                                   "move POSIX file \"%1\" to trash\n"
+                                   "end tell").arg(absolutePath));
+    switch(status)
+    {
+    case -2:
+        qWarning() << "[FileUtils::MoveToTrash]: osascript process cannot be started";
+        break;
+    case -1:
+        qWarning() << "[FileUtils::MoveToTrash]: osascript process crashed";
+        break;
+    case 0:
+        return true;
+    default:
+        qWarning() << "[FileUtils::MoveToTrash]: The specified path could not be moved to Trash" << absolutePath << QString::fromLatin1(" (%1)").arg(status);
+        break;
+    }
+
+    if(errorDescription)
+        *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash").append(QString::fromLatin1(" (%1)").arg(status));
+
+    return false;
+}
+
+static bool MoveToTrashViaFSMoveObject(const QString &absolutePath, QString *errorDescription)
+{
+    // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_osx.py
+
+    FSRef ref;
+    memset(&ref, 0, sizeof(ref));
+    const QByteArray utf8Path = absolutePath.toUtf8();
+    const UInt8 *utf8PathData = reinterpret_cast<const UInt8*>(utf8Path.data());
+    OSStatus status = FSPathMakeRefWithOptions(utf8PathData, kFSPathMakeRefDoNotFollowLeafSymlink, &ref, Q_NULLPTR);
+    if(status)
+    {
+        const QString description = QString::fromUtf8(GetMacOSStatusCommentString(status));
+        if(errorDescription)
+            *errorDescription = description;
+        qWarning() << "[FileUtils::MoveToTrash]: Unable to FSPathMakeRefWithOptions for file" << absolutePath;
+        qWarning() << "[FileUtils::MoveToTrash]: Status Comment:" << description;
+        return false;
+    }
+    status = FSMoveObjectToTrashSync(&ref, Q_NULLPTR, kFSFileOperationDefaultOptions);
+    if(status)
+    {
+        const QString description = QString::fromUtf8(GetMacOSStatusCommentString(status));
+        if(errorDescription)
+            *errorDescription = description;
+        qWarning() << "[FileUtils::MoveToTrash]: Unable to FSMoveObjectToTrashSync for file" << absolutePath;
+        qWarning() << "[FileUtils::MoveToTrash]: Status Comment:" << description;
+        return false;
+    }
+    return true;
+}
+
+static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescription)
+{
+    if(MoveToTrashViaFinderScript(absolutePath, errorDescription))
+        return true;
+    if(MoveToTrashViaFSMoveObject(absolutePath, errorDescription))
+        return true;
+    return false;
+}
+
+} // namespace MoveToTrashInternal
+
+#elif defined (Q_OS_WIN)
+
+#include <windows.h>
+#include <shellapi.h>
+
+namespace MoveToTrashInternal {
+
+static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescription)
+{
+    // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_win.py
+
+    HMODULE hShell32 = LoadLibraryA("shell32.dll");
+    typedef int(*SHFileOperationW_t)(LPSHFILEOPSTRUCTW);
+    SHFileOperationW_t SHFileOperationW_f = reinterpret_cast<SHFileOperationW_t>(GetProcAddress(hShell32, "SHFileOperationW"));
+
+    HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
+    typedef DWORD(WINAPI *FormatMessageW_t)(DWORD, LPCVOID, DWORD, DWORD, LPWSTR, DWORD, va_list);
+    FormatMessageW_t FormatMessageW_f = reinterpret_cast<FormatMessageW_t>(GetProcAddress(hKernel32, "FormatMessageW"));
+
+    if(SHFileOperationW_f && FormatMessageW_f)
+    {
+        std::wstring wstringPath = absolutePath.toStdWString();
+        std::replace(wstringPath.begin(), wstringPath.end(), L'/', L'\\');
+        wstringPath.push_back(L'\0');
+        SHFILEOPSTRUCTW fileop;
+        memset(&fileop, 0, sizeof(fileop));
+        fileop.hwnd = 0;
+        fileop.wFunc = FO_DELETE;
+        fileop.pFrom = wstringPath.c_str();
+        fileop.pTo = Q_NULLPTR;
+        fileop.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
+        fileop.fAnyOperationsAborted = 0;
+        fileop.hNameMappings = 0;
+        fileop.lpszProgressTitle = Q_NULLPTR;
+        DWORD status = static_cast<DWORD>(SHFileOperationW_f(&fileop));
+        if(status)
+        {
+            WCHAR * errorRawStr = Q_NULLPTR;
+            FormatMessageW_f(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                           Q_NULLPTR, status, 0, reinterpret_cast<LPWSTR>(&errorRawStr), 0, Q_NULLPTR);
+            const QString description = QString::fromStdWString(std::wstring(errorRawStr));
+            LocalFree(errorRawStr);
+            if(errorDescription)
+                *errorDescription = description;
+            qWarning() << "[FileUtils::MoveToTrash]: Unable to SHFileOperationW for file" << absolutePath;
+            qWarning() << "[FileUtils::MoveToTrash]: Description:" << description;
+            FreeLibrary(hShell32);
+            FreeLibrary(hKernel32);
+            return false;
+        }
+        FreeLibrary(hShell32);
+        FreeLibrary(hKernel32);
+        return true;
+    }
+    else
+    {
+        FreeLibrary(hShell32);
+        FreeLibrary(hKernel32);
+        std::string stringPath = absolutePath.toStdString();
+        std::replace(stringPath.begin(), stringPath.end(), '/', '\\');
+        stringPath.push_back('\0');
+        SHFILEOPSTRUCTA fileop;
+        memset(&fileop, 0, sizeof(fileop));
+        fileop.hwnd = 0;
+        fileop.wFunc = FO_DELETE;
+        fileop.pFrom = stringPath.c_str();
+        fileop.pTo = Q_NULLPTR;
+        fileop.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
+        fileop.fAnyOperationsAborted = 0;
+        fileop.hNameMappings = 0;
+        fileop.lpszProgressTitle = Q_NULLPTR;
+        DWORD status = static_cast<DWORD>(SHFileOperationA(&fileop));
+        if(status)
+        {
+            char * errorRawStr = Q_NULLPTR;
+            FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                           Q_NULLPTR, status, 0, reinterpret_cast<LPSTR>(&errorRawStr), 0, Q_NULLPTR);
+            const QString description = QString::fromLocal8Bit(errorRawStr);
+            LocalFree(errorRawStr);
+            if(errorDescription)
+                *errorDescription = description;
+            qWarning() << "[FileUtils::MoveToTrash]: Unable to SHFileOperationA for file" << absolutePath;
+            qWarning() << "[FileUtils::MoveToTrash]: Description:" << description;
+            return false;
+        }
+        return true;
+    }
+}
+
+} // namespace MoveToTrashInternal
+
+#elif defined (Q_OS_HAIKU)
+
+#include <Directory.h>
+#include <Entry.h>
+#include <File.h>
+#include <FindDirectory.h>
+#include <Path.h>
+#include <String.h>
+
+namespace MoveToTrashInternal {
+
+static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescription)
+{
+    // https://github.com/haiku/haiku/blob/r1beta1/src/apps/mediaplayer/playlist/FilePlaylistItem.cpp#L485
+
+    const QByteArray absolutePathData = absolutePath.toLocal8Bit();
+
+    BEntry entry(absolutePathData.data(), false);
+    status_t err = entry.InitCheck();
+    if(err != B_OK)
+    {
+        qWarning() << "[FileUtils::MoveToTrash]: Failed to init BEntry for specified path:" << strerror(err);
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "Failed to init BEntry for specified path: %1").arg(QString::fromLocal8Bit(strerror(err)));
+        return false;
+    }
+
+    entry_ref entryRef;
+    err = entry.GetRef(&entryRef);
+    if(err != B_OK)
+    {
+        qWarning() << "[FileUtils::MoveToTrash]: Failed to get entry_ref for specified path:" << strerror(err);
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "Failed to get entry_ref for specified path: %1").arg(QString::fromLocal8Bit(strerror(err)));
+        return false;
+    }
+
+    char trashPath[B_PATH_NAME_LENGTH];
+    err = find_directory(B_TRASH_DIRECTORY, entryRef.device, true, trashPath, B_PATH_NAME_LENGTH);
+    if(err != B_OK)
+    {
+        qWarning() << "[FileUtils::MoveToTrash]: Failed to find Trash" << strerror(err);
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "Failed to find Trash: %1").arg(QString::fromLocal8Bit(strerror(err)));
+        return false;
+    }
+
+    BDirectory trashDir(trashPath);
+    err = trashDir.InitCheck();
+    if(err != B_OK)
+    {
+        qWarning() << "[FileUtils::MoveToTrash]: Failed to init BDirectory for" << trashPath << ":" << strerror(err);
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "Failed to init BDirectory for %1: %2").arg(QString::fromLocal8Bit(trashPath), QString::fromLocal8Bit(strerror(err)));
+        return false;
+    }
+
+    // Find a unique name for the entry in the trash
+    BString nameInTrash = entryRef.name;
+    for(int32 uniqueNameIndex = 1; true; uniqueNameIndex++)
+    {
+        BEntry test(&trashDir, nameInTrash.String());
+        if(!test.Exists())
+            break;
+        nameInTrash = entryRef.name;
+        nameInTrash << ' ' << uniqueNameIndex;
+    }
+
+    // Remember the original path
+    BPath originalPath;
+    entry.GetPath(&originalPath);
+
+    // Finally, move the entry into the trash
+    err = entry.MoveTo(&trashDir, nameInTrash.String());
+    if(err != B_OK)
+    {
+        qWarning() << "[FileUtils::MoveToTrash]: Failed to move entry into trash" << trashPath << ":" << strerror(err);
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "Failed to move entry into trash %1: %2").arg(QString::fromLocal8Bit(trashPath), QString::fromLocal8Bit(strerror(err)));
+        return false;
+    }
+
+    // Allow Tracker to restore this entry
+    BNode node(&entry);
+    BString originalPathString(originalPath.Path());
+    node.WriteAttrString("_trk/original_path", &originalPathString);
+
+    return true;
+}
+
+} // namespace MoveToTrashInternal
+
+#else
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+
 // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_other.py
 namespace MoveToTrashInternal {
 
-QString getEnvironment(const QString &name, const QString &defaultValue = QString())
+static QString getEnvironment(const QString &name, const QString &defaultValue = QString())
 {
     const char *value = getenv(name.toLocal8Bit().data());
     if(value)
@@ -354,72 +599,33 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
     return true;
 }
 
-} // namespace MoveToTrashInternal
-#endif
-
-#if defined (Q_OS_MAC)
-namespace MoveToTrashInternal {
-
-bool MoveToTrashViaFinderScript(const QString &absolutePath, QString *errorDescription)
+static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescription)
 {
-    int status = QProcess::execute(QString::fromLatin1("osascript"), QStringList()
-            << QString::fromLatin1("-e")
-            << QString::fromLatin1("tell application \"Finder\"\n"
-                                   "move POSIX file \"%1\" to trash\n"
-                                   "end tell").arg(absolutePath));
+    int status = QProcess::execute(QString::fromLatin1("gvfs-trash"), QStringList() << absolutePath);
     switch(status)
     {
     case -2:
-        qWarning() << "[FileUtils::MoveToTrash]: osascript process cannot be started";
+        qDebug() << "[FileUtils::MoveToTrash]: gvfs-trash process cannot be started";
         break;
     case -1:
-        qWarning() << "[FileUtils::MoveToTrash]: osascript process crashed";
+        qDebug() << "[FileUtils::MoveToTrash]: gvfs-trash process crashed";
         break;
     case 0:
         return true;
     default:
-        qWarning() << "[FileUtils::MoveToTrash]: The specified path could not be moved to Trash" << absolutePath << QString::fromLatin1(" (%1)").arg(status);
-        break;
-    }
-
-    if(errorDescription)
-        *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash").append(QString::fromLatin1(" (%1)").arg(status));
-
-    return false;
-}
-
-bool MoveToTrashViaFSMoveObject(const QString &absolutePath, QString *errorDescription)
-{
-    // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_osx.py
-
-    FSRef ref;
-    memset(&ref, 0, sizeof(ref));
-    const QByteArray utf8Path = absolutePath.toUtf8();
-    const UInt8 *utf8PathData = reinterpret_cast<const UInt8*>(utf8Path.data());
-    OSStatus status = FSPathMakeRefWithOptions(utf8PathData, kFSPathMakeRefDoNotFollowLeafSymlink, &ref, Q_NULLPTR);
-    if(status)
-    {
-        const QString description = QString::fromUtf8(GetMacOSStatusCommentString(status));
         if(errorDescription)
-            *errorDescription = description;
-        qWarning() << "[FileUtils::MoveToTrash]: Unable to FSPathMakeRefWithOptions for file" << absolutePath;
-        qWarning() << "[FileUtils::MoveToTrash]: Status Comment:" << description;
+            *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash");
+        qWarning() << "[FileUtils::MoveToTrash]: The specified path could not be moved to Trash" << absolutePath;
         return false;
     }
-    status = FSMoveObjectToTrashSync(&ref, Q_NULLPTR, kFSFileOperationDefaultOptions);
-    if(status)
-    {
-        const QString description = QString::fromUtf8(GetMacOSStatusCommentString(status));
-        if(errorDescription)
-            *errorDescription = description;
-        qWarning() << "[FileUtils::MoveToTrash]: Unable to FSMoveObjectToTrashSync for file" << absolutePath;
-        qWarning() << "[FileUtils::MoveToTrash]: Status Comment:" << description;
-        return false;
-    }
-    return true;
+
+    // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_other.py
+
+    return sendToTrash(absolutePath, errorDescription);
 }
 
 } // namespace MoveToTrashInternal
+
 #endif
 
 namespace FileUtils {
@@ -443,200 +649,7 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
         return false;
     }
     const QString absolutePath = info.absoluteFilePath();
-
-#if defined (Q_OS_MAC)
-
-    if(MoveToTrashInternal::MoveToTrashViaFinderScript(absolutePath, errorDescription))
-        return true;
-    if(MoveToTrashInternal::MoveToTrashViaFSMoveObject(absolutePath, errorDescription))
-        return true;
-    return false;
-
-#elif defined (Q_OS_WIN)
-
-    // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_win.py
-
-    HMODULE hShell32 = LoadLibraryA("shell32.dll");
-    typedef int(*SHFileOperationW_t)(LPSHFILEOPSTRUCTW);
-    SHFileOperationW_t SHFileOperationW_f = reinterpret_cast<SHFileOperationW_t>(GetProcAddress(hShell32, "SHFileOperationW"));
-
-    HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
-    typedef DWORD(WINAPI *FormatMessageW_t)(DWORD, LPCVOID, DWORD, DWORD, LPWSTR, DWORD, va_list);
-    FormatMessageW_t FormatMessageW_f = reinterpret_cast<FormatMessageW_t>(GetProcAddress(hKernel32, "FormatMessageW"));
-
-    if(SHFileOperationW_f && FormatMessageW_f)
-    {
-        std::wstring wstringPath = absolutePath.toStdWString();
-        std::replace(wstringPath.begin(), wstringPath.end(), L'/', L'\\');
-        wstringPath.push_back(L'\0');
-        SHFILEOPSTRUCTW fileop;
-        memset(&fileop, 0, sizeof(fileop));
-        fileop.hwnd = 0;
-        fileop.wFunc = FO_DELETE;
-        fileop.pFrom = wstringPath.c_str();
-        fileop.pTo = Q_NULLPTR;
-        fileop.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
-        fileop.fAnyOperationsAborted = 0;
-        fileop.hNameMappings = 0;
-        fileop.lpszProgressTitle = Q_NULLPTR;
-        DWORD status = static_cast<DWORD>(SHFileOperationW_f(&fileop));
-        if(status)
-        {
-            WCHAR * errorRawStr = Q_NULLPTR;
-            FormatMessageW_f(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                           Q_NULLPTR, status, 0, reinterpret_cast<LPWSTR>(&errorRawStr), 0, Q_NULLPTR);
-            const QString description = QString::fromStdWString(std::wstring(errorRawStr));
-            LocalFree(errorRawStr);
-            if(errorDescription)
-                *errorDescription = description;
-            qWarning() << "[FileUtils::MoveToTrash]: Unable to SHFileOperationW for file" << absolutePath;
-            qWarning() << "[FileUtils::MoveToTrash]: Description:" << description;
-            FreeLibrary(hShell32);
-            FreeLibrary(hKernel32);
-            return false;
-        }
-        FreeLibrary(hShell32);
-        FreeLibrary(hKernel32);
-        return true;
-    }
-    else
-    {
-        FreeLibrary(hShell32);
-        FreeLibrary(hKernel32);
-        std::string stringPath = absolutePath.toStdString();
-        std::replace(stringPath.begin(), stringPath.end(), '/', '\\');
-        stringPath.push_back('\0');
-        SHFILEOPSTRUCTA fileop;
-        memset(&fileop, 0, sizeof(fileop));
-        fileop.hwnd = 0;
-        fileop.wFunc = FO_DELETE;
-        fileop.pFrom = stringPath.c_str();
-        fileop.pTo = Q_NULLPTR;
-        fileop.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
-        fileop.fAnyOperationsAborted = 0;
-        fileop.hNameMappings = 0;
-        fileop.lpszProgressTitle = Q_NULLPTR;
-        DWORD status = static_cast<DWORD>(SHFileOperationA(&fileop));
-        if(status)
-        {
-            char * errorRawStr = Q_NULLPTR;
-            FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                           Q_NULLPTR, status, 0, reinterpret_cast<LPSTR>(&errorRawStr), 0, Q_NULLPTR);
-            const QString description = QString::fromLocal8Bit(errorRawStr);
-            LocalFree(errorRawStr);
-            if(errorDescription)
-                *errorDescription = description;
-            qWarning() << "[FileUtils::MoveToTrash]: Unable to SHFileOperationA for file" << absolutePath;
-            qWarning() << "[FileUtils::MoveToTrash]: Description:" << description;
-            return false;
-        }
-        return true;
-    }
-
-#elif defined (Q_OS_HAIKU)
-
-    // https://github.com/haiku/haiku/blob/r1beta1/src/apps/mediaplayer/playlist/FilePlaylistItem.cpp#L485
-
-    const QByteArray absolutePathData = absolutePath.toLocal8Bit();
-
-    BEntry entry(absolutePathData.data(), false);
-    status_t err = entry.InitCheck();
-    if(err != B_OK)
-    {
-        qWarning() << "[FileUtils::MoveToTrash]: Failed to init BEntry for specified path:" << strerror(err);
-        if(errorDescription)
-            *errorDescription = qApp->translate("FileUtils", "Failed to init BEntry for specified path: %1").arg(QString::fromLocal8Bit(strerror(err)));
-        return false;
-    }
-
-    entry_ref entryRef;
-    err = entry.GetRef(&entryRef);
-    if(err != B_OK)
-    {
-        qWarning() << "[FileUtils::MoveToTrash]: Failed to get entry_ref for specified path:" << strerror(err);
-        if(errorDescription)
-            *errorDescription = qApp->translate("FileUtils", "Failed to get entry_ref for specified path: %1").arg(QString::fromLocal8Bit(strerror(err)));
-        return false;
-    }
-
-    char trashPath[B_PATH_NAME_LENGTH];
-    err = find_directory(B_TRASH_DIRECTORY, entryRef.device, true, trashPath, B_PATH_NAME_LENGTH);
-    if(err != B_OK)
-    {
-        qWarning() << "[FileUtils::MoveToTrash]: Failed to find Trash" << strerror(err);
-        if(errorDescription)
-            *errorDescription = qApp->translate("FileUtils", "Failed to find Trash: %1").arg(QString::fromLocal8Bit(strerror(err)));
-        return false;
-    }
-
-    BDirectory trashDir(trashPath);
-    err = trashDir.InitCheck();
-    if(err != B_OK)
-    {
-        qWarning() << "[FileUtils::MoveToTrash]: Failed to init BDirectory for" << trashPath << ":" << strerror(err);
-        if(errorDescription)
-            *errorDescription = qApp->translate("FileUtils", "Failed to init BDirectory for %1: %2").arg(QString::fromLocal8Bit(trashPath), QString::fromLocal8Bit(strerror(err)));
-        return false;
-    }
-
-    // Find a unique name for the entry in the trash
-    BString nameInTrash = entryRef.name;
-    for(int32 uniqueNameIndex = 1; true; uniqueNameIndex++)
-    {
-        BEntry test(&trashDir, nameInTrash.String());
-        if(!test.Exists())
-            break;
-        nameInTrash = entryRef.name;
-        nameInTrash << ' ' << uniqueNameIndex;
-    }
-
-    // Remember the original path
-    BPath originalPath;
-    entry.GetPath(&originalPath);
-
-    // Finally, move the entry into the trash
-    err = entry.MoveTo(&trashDir, nameInTrash.String());
-    if(err != B_OK)
-    {
-        qWarning() << "[FileUtils::MoveToTrash]: Failed to move entry into trash" << trashPath << ":" << strerror(err);
-        if(errorDescription)
-            *errorDescription = qApp->translate("FileUtils", "Failed to move entry into trash %1: %2").arg(QString::fromLocal8Bit(trashPath), QString::fromLocal8Bit(strerror(err)));
-        return false;
-    }
-
-    // Allow Tracker to restore this entry
-    BNode node(&entry);
-    BString originalPathString(originalPath.Path());
-    node.WriteAttrString("_trk/original_path", &originalPathString);
-
-    return true;
-
-#else
-
-    int status = QProcess::execute(QString::fromLatin1("gvfs-trash"), QStringList() << absolutePath);
-    switch(status)
-    {
-    case -2:
-        qDebug() << "[FileUtils::MoveToTrash]: gvfs-trash process cannot be started";
-        break;
-    case -1:
-        qDebug() << "[FileUtils::MoveToTrash]: gvfs-trash process crashed";
-        break;
-    case 0:
-        return true;
-    default:
-        if(errorDescription)
-            *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash");
-        qWarning() << "[FileUtils::MoveToTrash]: The specified path could not be moved to Trash" << absolutePath;
-        return false;
-    }
-
-    // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_other.py
-
-    return MoveToTrashInternal::sendToTrash(absolutePath, errorDescription);
-
-#endif
-
+    return MoveToTrashInternal::MoveToTrashImpl(absolutePath, errorDescription);
 }
 
 } // namespace FileUtils
