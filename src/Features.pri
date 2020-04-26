@@ -312,6 +312,11 @@ disable_zlib : !system_openexr {
     }
 }
 
+# libavif options:
+#    disable_libavif
+#    system_libavif
+
+
 # MagickCore options:
 #    disable_magickcore
 #    enable_magickcore

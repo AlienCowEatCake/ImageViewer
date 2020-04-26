@@ -96,6 +96,10 @@ SUBDIRS =
     SUBDIRS += OpenEXR/OpenEXR.pro
 }
 
+!disable_libavif : !system_libavif {
+    SUBDIRS += libavif/libavif.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }
