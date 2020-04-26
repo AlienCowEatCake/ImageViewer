@@ -253,6 +253,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderOpenEXR.cpp
 }
 
+!disable_libavif {
+    SOURCES += \
+        src/Decoders/Impl/DecoderLibAvif.cpp
+}
+
 !disable_magickcore {
     SOURCES += \
         src/Decoders/Impl/DecoderMagickCore.cpp
