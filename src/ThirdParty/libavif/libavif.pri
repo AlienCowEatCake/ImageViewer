@@ -41,8 +41,12 @@ include($${PWD}/../../Features.pri)
 
     } else {
 
-        *msvc*: LIBS += avif.lib
-        else: LIBS += -lavif
+        disable_pkgconfig {
+            *msvc*: LIBS += avif.lib
+            else: LIBS += -lavif
+        } else {
+            PKGCONFIG += libavif
+        }
 
     }
 
