@@ -109,6 +109,7 @@ See the [buildscripts/](buildscripts/) directory.
 * libde265 options: `disable_libde265`, `system_libde265` *(bundled package by default)*
 * libheif options: `disable_libheif`, `system_libheif` *(bundled package by default)*
 * OpenEXR options: `disable_openexr`, `system_openexr` *(bundled package by default)*
+* libavif options: `disable_libavif`, `system_libavif` *(bundled package by default)*
 * MagickCore options: `disable_magickcore`, `enable_magickcore` *(disabled by default)*
 * MagickWand options: `disable_magickwand`, `system_magickwand` *(dynamic loading by default)*
 

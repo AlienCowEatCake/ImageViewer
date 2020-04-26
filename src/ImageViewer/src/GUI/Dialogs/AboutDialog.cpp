@@ -69,6 +69,9 @@
 #if defined (HAS_OPENEXR)
 #include <OpenEXR/OpenEXRConfig.h>
 #endif
+#if defined (HAS_LIBAVIF)
+#include <avif/avif.h>
+#endif
 #if defined (HAS_JBIGKIT)
 #include <jbig.h>
 #endif
@@ -403,6 +406,17 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://www.openexr.com/"),
                       QString::fromLatin1("3-clause BSD License"),
                       QString::fromLatin1("https://github.com/openexr/openexr/blob/master/LICENSE.md")
+                      ));
+#endif
+
+#if defined (HAS_LIBAVIF)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the libavif library"),
+                      QString::fromLatin1("libavif"),
+                      QString::fromLatin1(avifVersion()),
+                      QString::fromLatin1("https://github.com/AOMediaCodec/libavif"),
+                      QString::fromLatin1("2-clause BSD License"),
+                      QString::fromLatin1("https://github.com/AOMediaCodec/libavif/blob/master/LICENSE")
                       ));
 #endif
 
