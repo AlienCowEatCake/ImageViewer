@@ -329,6 +329,18 @@ disable_zlib : !system_openexr {
 #    system_magickwand
 
 
+# GraphicsMagick options:
+#    disable_graphicsmagick
+#    enable_graphicsmagick
+!enable_graphicsmagick {
+    CONFIG += disable_graphicsmagick
+}
+
+# GraphicsMagickWand options:
+#    disable_graphicsmagickwand
+#    system_graphicsmagickwand
+
+
 # ::::: Optional Third Party Components Configuration :::::
 
 # QtExtended options:

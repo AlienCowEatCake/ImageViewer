@@ -116,7 +116,12 @@
 #include <wand/MagickWand.h>
 #endif
 #endif
-
+#if defined (HAS_GRAPHICSMAGICK)
+#include <magick/api.h>
+#endif
+#if defined (HAS_GRAPHICSMAGICKWAND)
+#include <wand/wand_api.h>
+#endif
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
@@ -458,6 +463,36 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://imagemagick.org/"),
                       QString::fromLatin1("ImageMagick License"),
                       QString::fromLatin1("https://imagemagick.org/script/license.php")
+                      ));
+#endif
+
+#if defined (HAS_GRAPHICSMAGICK)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the GraphicsMagick library"),
+                      QString::fromLatin1("GraphicsMagick"),
+#if defined (MagickLibVersionText)
+                      QString::fromLatin1(MagickLibVersionText),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("http://www.graphicsmagick.org/"),
+                      QString::fromLatin1("GraphicsMagick License"),
+                      QString::fromLatin1("https://sourceforge.net/p/graphicsmagick/code/ci/default/tree/Copyright.txt")
+                      ));
+#endif
+
+#if defined (HAS_GRAPHICSMAGICKWAND)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the GraphicsMagickWand library"),
+                      QString::fromLatin1("GraphicsMagickWand"),
+#if defined (MagickLibVersionText)
+                      QString::fromLatin1(MagickLibVersionText),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("http://www.graphicsmagick.org/"),
+                      QString::fromLatin1("GraphicsMagick License"),
+                      QString::fromLatin1("https://sourceforge.net/p/graphicsmagick/code/ci/default/tree/Copyright.txt")
                       ));
 #endif
 
