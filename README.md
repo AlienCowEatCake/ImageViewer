@@ -111,9 +111,9 @@ See the [buildscripts/](buildscripts/) directory.
 * OpenEXR options: `disable_openexr`, `system_openexr` *(bundled package by default)*
 * libavif options: `disable_libavif`, `system_libavif` *(bundled package by default)*
 * MagickCore options: `disable_magickcore`, `enable_magickcore` *(disabled by default)*
-* MagickWand options: `disable_magickwand`, `system_magickwand` *(dynamic loading by default)*
+* MagickWand options: `disable_magickwand`, `enable_magickwand`, `system_magickwand` *(disabled by default)*
 * GraphicsMagick options: `disable_graphicsmagick`, `enable_graphicsmagick` *(disabled by default)*
-* GraphicsMagickWand options: `disable_graphicsmagickwand`, `system_graphicsmagickwand` *(dynamic loading by default)*
+* GraphicsMagickWand options: `disable_graphicsmagickwand`, `enable_graphicsmagickwand`, `system_graphicsmagickwand` *(disabled by default)*
 
 **Optional Third Party Components Configuration:**
 * QtExtended options: `disable_qtextended` *(enabled by default)*

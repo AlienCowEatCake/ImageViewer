@@ -326,8 +326,11 @@ disable_zlib : !system_openexr {
 
 # MagickWand options:
 #    disable_magickwand
+#    enable_magickwand
 #    system_magickwand
-
+!enable_magickwand {
+    CONFIG += disable_magickwand
+}
 
 # GraphicsMagick options:
 #    disable_graphicsmagick
@@ -338,8 +341,11 @@ disable_zlib : !system_openexr {
 
 # GraphicsMagickWand options:
 #    disable_graphicsmagickwand
+#    enable_graphicsmagickwand
 #    system_graphicsmagickwand
-
+!enable_graphicsmagickwand {
+    CONFIG += disable_graphicsmagickwand
+}
 
 # ::::: Optional Third Party Components Configuration :::::
 
