@@ -93,12 +93,11 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
             break;
         case BPG_EXTENSION_TAG_EXIF:
             qDebug() << "Found EXIF metadata";
-            if(!metaData)
-                metaData = ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf + 1), static_cast<int>(extension->buf_len - 1)));
+            metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf + 1), static_cast<int>(extension->buf_len - 1))));
             break;
         case BPG_EXTENSION_TAG_XMP:
-            /// @todo
             qDebug() << "Found XMP metadata";
+            metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf), static_cast<int>(extension->buf_len))));
             break;
         default:
             break;

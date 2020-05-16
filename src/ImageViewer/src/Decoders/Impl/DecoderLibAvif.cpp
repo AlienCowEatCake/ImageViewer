@@ -111,13 +111,12 @@ public:
             if(decoder->image->exif.size)
             {
                 qDebug() << "Found EXIF metadata for frame" << m_numFrames;
-                if(!metaData)
-                    metaData = ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(decoder->image->exif.data), static_cast<int>(decoder->image->exif.size)));
+                metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(decoder->image->exif.data), static_cast<int>(decoder->image->exif.size))));
             }
             if(decoder->image->xmp.size)
             {
                 qDebug() << "Found XMP metadata for frame" << m_numFrames;
-                /// @todo
+                metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(decoder->image->xmp.data), static_cast<int>(decoder->image->xmp.size))));
             }
 
             m_frames.push_back(Frame(frame, DelayCalculator::calculate(static_cast<int>(decoder->imageTiming.duration * 1000.0), DelayCalculator::MODE_NORMAL)));

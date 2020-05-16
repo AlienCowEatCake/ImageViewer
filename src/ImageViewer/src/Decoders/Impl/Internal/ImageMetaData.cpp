@@ -839,6 +839,7 @@ struct ImageMetaData::Impl
 #if defined (USE_EXIV2)
     Exiv2ImagePtr image;
     Exiv2::ExifData exifData;
+    Exiv2::XmpData xmpData;
 #elif defined (USE_LIBEXIF)
     ExifData *exifData;
 #elif defined (USE_QTEXTENDED)
@@ -905,9 +906,12 @@ struct ImageMetaData::Impl
             fillXmpMetaData(image->xmpData(), entryListMap);
             fillCommentMetaData(image->comment(), entryListMap);
         }
-        else if(!exifData.empty())
+        else
         {
-            fillExifMetaData(exifData, entryListMap);
+            if(!exifData.empty())
+                fillExifMetaData(exifData, entryListMap);
+            if(!xmpData.empty())
+                fillXmpMetaData(xmpData, entryListMap);
         }
     }
 
@@ -1016,6 +1020,35 @@ ImageMetaData *ImageMetaData::createExifMetaData(const QByteArray &rawExifData)
     return Q_NULLPTR;
 }
 
+ImageMetaData *ImageMetaData::createXmpMetaData(const QByteArray &rawXmpData)
+{
+    ImageMetaData *metaData = new ImageMetaData();
+    if(metaData->readXmpData(rawXmpData))
+        return metaData;
+    delete metaData;
+    return Q_NULLPTR;
+}
+
+ImageMetaData *ImageMetaData::joinMetaData(ImageMetaData *first, ImageMetaData *second)
+{
+    if(!first)
+        return second;
+    if(!second)
+        return first;
+
+    first->m_impl->ensureMetaDataFilled();
+    const QList<MetaDataType> secondTypes = second->types();
+    for(QList<MetaDataType>::ConstIterator it = secondTypes.constBegin(), itEnd = secondTypes.constEnd(); it != itEnd; ++it)
+    {
+        const MetaDataEntryList secondMetaData = second->metaData(*it);
+        for(MetaDataEntryList::ConstIterator jt = secondMetaData.constBegin(), jtEnd = secondMetaData.constEnd(); jt != jtEnd; ++jt)
+            first->addCustomEntry(*it, *jt);
+    }
+
+    delete second;
+    return first;
+}
+
 // https://bugreports.qt.io/browse/QTBUG-37946
 // https://codereview.qt-project.org/#/c/110668/2
 // https://github.com/qt/qtbase/blob/v5.4.0/src/gui/image/qjpeghandler.cpp
@@ -1084,7 +1117,7 @@ void ImageMetaData::addExifEntry(const QString &type, int tag, const QString &ta
     const char *description = exif_tag_get_description(static_cast<ExifTag>(tag));
     if(name && title)
     {
-        m_impl->entryListMap[type].append(IImageMetaData::MetaDataEntry(QString::fromUtf8(name), QString::fromUtf8(title), QString::fromUtf8(description), value));
+        addCustomEntry(type, IImageMetaData::MetaDataEntry(QString::fromUtf8(name), QString::fromUtf8(title), QString::fromUtf8(description), value));
         return;
     }
 #else
@@ -1095,7 +1128,14 @@ void ImageMetaData::addExifEntry(const QString &type, int tag, const QString &ta
 
 void ImageMetaData::addCustomEntry(const QString &type, const QString &tag, const QString &value)
 {
-    m_impl->entryListMap[type].append(IImageMetaData::MetaDataEntry(tag, value));
+    addCustomEntry(type, IImageMetaData::MetaDataEntry(tag, value));
+}
+
+void ImageMetaData::addCustomEntry(const QString &type, const IImageMetaData::MetaDataEntry &entry)
+{
+    IImageMetaData::MetaDataEntryList &list = m_impl->entryListMap[type];
+    if(!list.contains(entry))
+        list.append(entry);
 }
 
 QList<IImageMetaData::MetaDataType> ImageMetaData::types()
@@ -1118,6 +1158,7 @@ bool ImageMetaData::readFile(const QString &filePath)
     {
         m_impl->image.reset();
         m_impl->exifData.clear();
+        m_impl->xmpData.clear();
         m_impl->image = Exiv2::ImageFactory::open(Exiv2BasicIoPtr(new QFileIo(filePath)));
         if(!m_impl->image.get())
             return false;
@@ -1171,6 +1212,7 @@ bool ImageMetaData::readFile(const QByteArray &fileData)
     {
         m_impl->image.reset();
         m_impl->exifData.clear();
+        m_impl->xmpData.clear();
         const Exiv2::byte *data = reinterpret_cast<const Exiv2::byte*>(fileData.constData());
         const long dataSize = static_cast<long>(fileData.size());
         m_impl->image = Exiv2::ImageFactory::open(data, dataSize);
@@ -1234,6 +1276,7 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
     {
         m_impl->image.reset();
         m_impl->exifData.clear();
+        m_impl->xmpData.clear();
         const Exiv2::byte *data = reinterpret_cast<const Exiv2::byte*>(rawExifData.constData());
         const uint32_t dataSize = static_cast<uint32_t>(rawExifData.size());
         Exiv2::ExifParser::decode(m_impl->exifData, data, dataSize);
@@ -1275,6 +1318,32 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
     return true;
 #else
     Q_UNUSED(rawExifData);
+    return false;
+#endif
+}
+
+bool ImageMetaData::readXmpData(const QByteArray &rawXmpData)
+{
+    m_impl->entryListMap.clear();
+#if defined (USE_EXIV2)
+    try
+    {
+        m_impl->image.reset();
+        m_impl->exifData.clear();
+        m_impl->xmpData.clear();
+        const std::string packet = std::string(reinterpret_cast<const char*>(rawXmpData.constData()), static_cast<size_t>(rawXmpData.size()));
+        Exiv2::XmpParser::decode(m_impl->xmpData, packet);
+        if(m_impl->xmpData.empty())
+            return false;
+        qDebug() << "XMP data detected";
+        return true;
+    }
+    catch(...)
+    {
+        return false;
+    }
+#else
+    Q_UNUSED(rawXmpData);
     return false;
 #endif
 }

@@ -37,6 +37,8 @@ public:
     static ImageMetaData *createMetaData(const QString &filePath);
     static ImageMetaData *createMetaData(const QByteArray &fileData);
     static ImageMetaData *createExifMetaData(const QByteArray &rawExifData);
+    static ImageMetaData *createXmpMetaData(const QByteArray &rawXmpData);
+    static ImageMetaData *joinMetaData(ImageMetaData *first, ImageMetaData *second);
     static void applyExifOrientation(QImage *image, quint16 orientation);
 
 public:
@@ -47,6 +49,7 @@ public:
 
     void addExifEntry(const QString &type, int tag, const QString &tagString, const QString &value);
     void addCustomEntry(const QString &type, const QString &tag, const QString &value);
+    void addCustomEntry(const QString &type, const MetaDataEntry &entry);
 
 public: // IImageMetaData
     QList<MetaDataType> types() Q_DECL_OVERRIDE;
@@ -56,6 +59,7 @@ protected:
     bool readFile(const QString &filePath);
     bool readFile(const QByteArray &fileData);
     bool readExifData(const QByteArray &rawExifData);
+    bool readXmpData(const QByteArray &rawXmpData);
 
 private:
     struct Impl;
