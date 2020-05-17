@@ -53,10 +53,6 @@ class QDDSHandler : public QImageIOHandler
 public:
     QDDSHandler();
 
-#if QT_DEPRECATED_SINCE(5, 13)
-    QByteArray name() const Q_DECL_OVERRIDE;
-#endif
-
     bool canRead() const Q_DECL_OVERRIDE;
     bool read(QImage *image) Q_DECL_OVERRIDE;
     bool write(const QImage &image) Q_DECL_OVERRIDE;

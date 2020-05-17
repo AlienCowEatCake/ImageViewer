@@ -1,4 +1,4 @@
-From eb437b1b7fa32a39bde9c2c1eac84ecd8c4509c0 Mon Sep 17 00:00:00 2001
+From b960df7d91cef59906ed3500fe9b791612ae4b4a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 17 Jun 2018 21:58:03 +0700
 Subject: [PATCH 4/6] Dont use C++11 'default' constructors

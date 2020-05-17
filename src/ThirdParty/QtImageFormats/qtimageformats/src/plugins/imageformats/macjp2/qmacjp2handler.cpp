@@ -118,10 +118,4 @@ bool QMacJp2Handler::supportsOption(ImageOption option) const
     return (option == Quality);
 }
 
-QByteArray QMacJp2Handler::name() const
-{
-    return QByteArrayLiteral("jp2");
-}
-
-
 QT_END_NAMESPACE

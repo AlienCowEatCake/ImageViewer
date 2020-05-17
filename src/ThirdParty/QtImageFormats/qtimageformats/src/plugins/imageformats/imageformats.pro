@@ -21,9 +21,3 @@ qtConfig(jasper) {
 } else:darwin: {
     SUBDIRS += macjp2
 }
-
-winrt {
-    SUBDIRS -= tiff \
-               tga \
-               webp
-}

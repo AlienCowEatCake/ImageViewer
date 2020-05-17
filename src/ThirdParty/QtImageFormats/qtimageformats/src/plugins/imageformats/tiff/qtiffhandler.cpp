@@ -288,7 +288,7 @@ bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
         format = QImage::Format_Indexed8;
     else if (samplesPerPixel < 4)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-        if (bitPerSample > 8 && photometric == PHOTOMETRIC_RGB)
+        if (bitPerSample == 16 && photometric == PHOTOMETRIC_RGB)
             format = QImage::Format_RGBX64;
         else
 #endif
@@ -306,7 +306,7 @@ bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
             premultiplied = false;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-        if (bitPerSample > 8 && photometric == PHOTOMETRIC_RGB) {
+        if (bitPerSample == 16 && photometric == PHOTOMETRIC_RGB) {
             // We read 64-bit raw, so unassoc remains unpremultiplied.
             if (gotField && count && extrasamples[0] == EXTRASAMPLE_UNASSALPHA)
                 premultiplied = false;
@@ -868,13 +868,6 @@ bool QTiffHandler::write(const QImage &image)
 
     return true;
 }
-
-#if QT_DEPRECATED_SINCE(5, 13)
-QByteArray QTiffHandler::name() const
-{
-    return "tiff";
-}
-#endif
 
 QVariant QTiffHandler::option(ImageOption option) const
 {

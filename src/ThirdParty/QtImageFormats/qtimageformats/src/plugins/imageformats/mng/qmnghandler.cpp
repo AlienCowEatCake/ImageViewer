@@ -403,12 +403,6 @@ bool QMngHandler::canRead(QIODevice *device)
 }
 
 /*! \reimp */
-QByteArray QMngHandler::name() const
-{
-    return "mng";
-}
-
-/*! \reimp */
 bool QMngHandler::read(QImage *image)
 {
     Q_D(QMngHandler);

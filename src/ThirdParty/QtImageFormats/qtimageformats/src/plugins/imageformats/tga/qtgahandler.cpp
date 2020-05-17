@@ -98,13 +98,6 @@ bool QTgaHandler::read(QImage *image)
     return !image->isNull();
 }
 
-#if QT_DEPRECATED_SINCE(5, 13)
-QByteArray QTgaHandler::name() const
-{
-    return "tga";
-}
-#endif
-
 QVariant QTgaHandler::option(ImageOption option) const
 {
     if (option == Size && canRead()) {

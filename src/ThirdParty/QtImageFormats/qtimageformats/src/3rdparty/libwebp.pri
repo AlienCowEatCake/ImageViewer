@@ -136,7 +136,7 @@ SOURCES_FOR_NEON += \
 
 
 android {
-    arm64-v8a|equals(QT_ARCH, arm64): SOURCES += $$SOURCES_FOR_NEON
+    arm64-v8a | armeabi-v7a: SOURCES += $$SOURCES_FOR_NEON
 } else: equals(QT_ARCH, arm)|equals(QT_ARCH, arm64) {
     contains(QT_CPU_FEATURES.$$QT_ARCH, neon) {
         # Default compiler settings include this feature, so just add to SOURCES

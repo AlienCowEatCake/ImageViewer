@@ -1382,13 +1382,6 @@ QDDSHandler::QDDSHandler() :
 {
 }
 
-#if QT_DEPRECATED_SINCE(5, 13)
-QByteArray QDDSHandler::name() const
-{
-    return QByteArrayLiteral("dds");
-}
-#endif
-
 bool QDDSHandler::canRead() const
 {
     if (m_scanState == ScanNotScanned && !canRead(device()))

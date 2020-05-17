@@ -57,7 +57,6 @@ class QMngHandler : public QImageIOHandler
     QMngHandler();
     ~QMngHandler();
     bool canRead() const Q_DECL_OVERRIDE;
-    QByteArray name() const Q_DECL_OVERRIDE;
     bool read(QImage *image) Q_DECL_OVERRIDE;
     bool write(const QImage &image) Q_DECL_OVERRIDE;
     int currentImageNumber() const Q_DECL_OVERRIDE;

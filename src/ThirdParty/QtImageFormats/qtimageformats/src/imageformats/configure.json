@@ -34,7 +34,8 @@
                 ]
             },
             "sources": [
-                "-ljasper"
+                { "type": "pkgConfig", "args": "jasper" },
+                { "libs": "-ljasper" }
             ]
         },
         "mng": {
@@ -55,7 +56,8 @@
                 ]
             },
             "sources": [
-                "-lmng"
+                { "type": "pkgConfig", "args": "libmng" },
+                { "libs": "-lmng" }
             ]
         },
         "tiff": {
@@ -82,7 +84,8 @@
                 ]
             },
             "sources": [
-                "-ltiff"
+                { "type": "pkgConfig", "args": "libtiff-4" },
+                { "libs": "-ltiff" }
             ]
         },
         "webp": {
@@ -112,7 +115,8 @@
                 ]
             },
             "sources": [
-                "-lwebp -lwebpdemux -lwebpmux"
+                { "type": "pkgConfig", "args": "libwebp libwebpmux libwebpdemux" },
+                { "libs": "-lwebp -lwebpdemux -lwebpmux" }
             ]
         }
     },
@@ -136,7 +140,7 @@
         "tiff": {
             "label": "TIFF",
             "disable": "input.tiff == 'no'",
-            "condition": "features.imageformatplugin",
+            "condition": "features.imageformatplugin && !(config.winrt && arch.i386)",
             "output": [
                 "privateFeature"
             ]
