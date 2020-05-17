@@ -159,6 +159,7 @@
 #define jpeg_start_decompress                   tp_jpeg_start_decompress
 #define jpeg_start_output                       tp_jpeg_start_output
 #define jpeg_std_error                          tp_jpeg_std_error
+#define jpeg_std_huff_table                     tp_jpeg_std_huff_table
 #define jpeg_std_message_table                  tp_jpeg_std_message_table
 #define jpeg_stdio_dest                         tp_jpeg_stdio_dest
 #define jpeg_stdio_src                          tp_jpeg_stdio_src
