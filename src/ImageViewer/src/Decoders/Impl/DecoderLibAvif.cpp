@@ -146,7 +146,11 @@ public:
 
     QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
-        return QStringList();
+        /// @note https://aomediacodec.github.io/av1-avif/
+        return QStringList()
+                << QString::fromLatin1("heif")
+                << QString::fromLatin1("heifs")
+                << QString::fromLatin1("hif");
     }
 
     bool isAvailable() const Q_DECL_OVERRIDE
