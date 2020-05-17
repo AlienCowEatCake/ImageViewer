@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBDE265_PATH = $${PWD}/libde265-1.0.4
+THIRDPARTY_LIBDE265_PATH = $${PWD}/libde265-1.0.5
 THIRDPARTY_LIBDE265_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -51,6 +51,8 @@ SOURCES += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/algo/tb-transform.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-context.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-core.cc \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-intrapred.cc \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-motion.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-params.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-syntax.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-types.cc \
@@ -114,6 +116,8 @@ HEADERS += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/algo/tb-transform.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-context.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-core.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-intrapred.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-motion.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-params.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-syntax.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-types.h \
