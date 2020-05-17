@@ -200,7 +200,8 @@ public:
     {
         return QStringList()
                 << QString::fromLatin1("heif")
-                << QString::fromLatin1("heic");
+                << QString::fromLatin1("heic")
+                << QString::fromLatin1("heix");
     }
 
     QStringList advancedFormats() const Q_DECL_OVERRIDE
