@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBAVIF_PATH = $${PWD}/libavif-0.7.2
+THIRDPARTY_LIBAVIF_PATH = $${PWD}/libavif-0.7.3
 THIRDPARTY_AOM_PATH = $${PWD}/aom-v1.0.0-errata1-avif
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/aom_config
 

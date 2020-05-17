@@ -226,7 +226,7 @@ avifImageAllocatePlanes(image, AVIF_PLANES_RGB);
 uint32_t rgbDepth = ...;                        // [8, 10, 12, 16]; Does not need to match image->depth.
                                                 // If >8, rgb->pixels is uint16_t*
 avifRGBFormat rgbFormat = AVIF_RGB_FORMAT_RGBA; // See choices in avif.h
-avifRGBImage * rgb = avifRGBImageCreate(image->width, image->width, rgbDepth, rgbFormat);
+avifRGBImage * rgb = avifRGBImageCreate(image->width, image->height, rgbDepth, rgbFormat);
 ... rgb->pixels;  // fill these pixels; all channel data must be full range
 ... rgb->rowBytes;
 avifImageRGBToYUV(image, rgb); // if alpha is present, it will also be copied/converted
@@ -254,7 +254,7 @@ avifImageAllocatePlanes(image, AVIF_PLANES_A);
 // Optional: Set color profile based on NCLX box
 avifNclxColorProfile nclx;
 nclx.colourPrimaries = AVIF_NCLX_COLOUR_PRIMARIES_BT709;
-nclx.transferCharacteristics = AVIF_NCLX_TRANSFER_CHARACTERISTICS_GAMMA22;
+nclx.transferCharacteristics = AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB;
 nclx.matrixCoefficients = AVIF_NCLX_MATRIX_COEFFICIENTS_BT709;
 nclx.fullRangeFlag = AVIF_NCLX_FULL_RANGE;
 avifImageSetProfileNCLX(image, &nclx);
