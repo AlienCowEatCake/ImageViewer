@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -106,7 +106,12 @@ QSizeF AbstractSVGWebBrowser::svgSizeAttribute()
 QRectF AbstractSVGWebBrowser::svgViewBoxAttribute()
 {
     const QStringList viewBoxData = evalJS("document.rootElement.getAttribute('viewBox');").toString()
-            .split(QRegExp(QString::fromLatin1("\\s")), QString::SkipEmptyParts);
+            .split(QRegExp(QString::fromLatin1("\\s")),
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+                   Qt::SkipEmptyParts);
+#else
+                   QString::SkipEmptyParts);
+#endif
     return (viewBoxData.size() == 4)
             ? QRectF(parseLength(viewBoxData.at(0)),
                      parseLength(viewBoxData.at(1)),

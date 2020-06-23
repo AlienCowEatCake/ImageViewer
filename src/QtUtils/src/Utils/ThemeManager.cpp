@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -223,7 +223,12 @@ struct ThemeManager::Impl
     {
         StylableTheme theme;
         const QStringList availableStyles = QStyleFactory::keys();
-        const QStringList preferredStyles = theme.preferredStyles().split(QChar::fromLatin1(','), QString::SkipEmptyParts);
+        const QStringList preferredStyles = theme.preferredStyles().split(QChar::fromLatin1(','),
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+                                                                          Qt::SkipEmptyParts);
+#else
+                                                                          QString::SkipEmptyParts);
+#endif
         QString matchedStyle;
         for(QStringList::ConstIterator it = preferredStyles.constBegin(), itEnd = preferredStyles.constEnd(); it != itEnd; ++it)
         {

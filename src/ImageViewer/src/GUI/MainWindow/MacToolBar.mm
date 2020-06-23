@@ -440,7 +440,12 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 #endif
     QImage iconImage(iconPixmap.size(), QImage::Format_ARGB32_Premultiplied);
     iconImage.fill(darkBackground ? BUTTON_ALTERNATE_COLOR : BUTTON_BASE_COLOR);
-    iconImage.setAlphaChannel(iconPixmap.toImage().alphaChannel());
+    iconImage.setAlphaChannel(iconPixmap.toImage()
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+                              .convertToFormat(QImage::Format_Alpha8));
+#else
+                              .alphaChannel());
+#endif
     return ObjCUtils::QPixmapToNSImage(QPixmap::fromImage(iconImage), iconSize);
 }
 

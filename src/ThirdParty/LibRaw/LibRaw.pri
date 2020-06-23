@@ -8,7 +8,7 @@ include($${PWD}/../../Features.pri)
     DEFINES += HAS_LIBRAW
 
     *clang* {
-        DEFINES *= _LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR
+        DEFINES *= _LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR _LIBCPP_DISABLE_DEPRECATION_WARNINGS
     }
 
     !system_libraw {
