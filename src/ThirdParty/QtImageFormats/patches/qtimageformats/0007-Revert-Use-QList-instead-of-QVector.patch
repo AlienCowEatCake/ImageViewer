@@ -1,0 +1,165 @@
+From ce8c5a133bca6a11003b97d2fe99214878fed91f Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Wed, 24 Jun 2020 19:53:15 +0700
+Subject: [PATCH 7/7] Revert "Use QList instead of QVector"
+
+This reverts commit c64f19516dd2467bf5746eb24afe883bdbc15b25.
+---
+ src/plugins/imageformats/icns/qicnshandler.cpp   |  6 +++---
+ src/plugins/imageformats/icns/qicnshandler_p.h   |  6 +++---
+ src/plugins/imageformats/shared/qiiofhelpers_p.h |  4 ++--
+ src/plugins/imageformats/tiff/qtiffhandler.cpp   | 12 ++++++------
+ tests/auto/tiff/tst_qtiff.cpp                    |  6 +++---
+ 5 files changed, 17 insertions(+), 17 deletions(-)
+
+diff --git a/src/plugins/imageformats/icns/qicnshandler.cpp b/src/plugins/imageformats/icns/qicnshandler.cpp
+index 42207c4..dcad444 100644
+--- a/src/plugins/imageformats/icns/qicnshandler.cpp
++++ b/src/plugins/imageformats/icns/qicnshandler.cpp
+@@ -400,9 +400,9 @@ static inline QByteArray nameForCompressedIcon(quint8 iconNumber)
+     return base + QByteArray::number(iconNumber);
+ }
+ 
+-static inline QList<QRgb> getColorTable(ICNSEntry::Depth depth)
++static inline QVector<QRgb> getColorTable(ICNSEntry::Depth depth)
+ {
+-    QList<QRgb> table;
++    QVector<QRgb> table;
+     uint n = 1 << depth;
+     const QRgb *data;
+     switch (depth) {
+@@ -565,7 +565,7 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
+ 
+     const bool isMono = depth == ICNSEntry::DepthMono;
+     const QImage::Format format = isMono ? QImage::Format_Mono : QImage::Format_Indexed8;
+-    const QList<QRgb> colortable = getColorTable(depth);
++    const QVector<QRgb> colortable = getColorTable(depth);
+     if (colortable.isEmpty())
+         return QImage();
+     QImage img(icon.width, icon.height, format);
+diff --git a/src/plugins/imageformats/icns/qicnshandler_p.h b/src/plugins/imageformats/icns/qicnshandler_p.h
+index d2560be..9639c04 100644
+--- a/src/plugins/imageformats/icns/qicnshandler_p.h
++++ b/src/plugins/imageformats/icns/qicnshandler_p.h
+@@ -42,7 +42,7 @@
+ #define QICNSHANDLER_P_H
+ 
+ #include <QtGui/qimageiohandler.h>
+-#include <QtCore/qlist.h>
++#include <QtCore/qvector.h>
+ 
+ #ifndef QT_NO_DATASTREAM
+ 
+@@ -155,8 +155,8 @@ private:
+     };
+ 
+     int m_currentIconIndex;
+-    QList<ICNSEntry> m_icons;
+-    QList<ICNSEntry> m_masks;
++    QVector<ICNSEntry> m_icons;
++    QVector<ICNSEntry> m_masks;
+     ScanState m_state;
+ };
+ 
+diff --git a/src/plugins/imageformats/shared/qiiofhelpers_p.h b/src/plugins/imageformats/shared/qiiofhelpers_p.h
+index 18862f1..1b1771b 100644
+--- a/src/plugins/imageformats/shared/qiiofhelpers_p.h
++++ b/src/plugins/imageformats/shared/qiiofhelpers_p.h
+@@ -54,7 +54,7 @@
+ #include <QImageIOPlugin>
+ #include <private/qcore_mac_p.h>
+ #include <ImageIO/ImageIO.h>
+-#include <QList>
++#include <QVector>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+@@ -85,7 +85,7 @@ protected:
+     bool getIntProperty(CFStringRef property, int *value);
+ 
+     QImageIOHandler *q_ptr = nullptr;
+-    QList<QVariant> writeOptions;
++    QVector<QVariant> writeOptions;
+     QCFType<CGDataProviderRef> cgDataProvider = nullptr;
+     QCFType<CGImageSourceRef> cgImageSource = nullptr;
+     QCFType<CFDictionaryRef> cfImageDict = nullptr;
+diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+index 123ea0a..1336d6d 100644
+--- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
++++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+@@ -388,7 +388,7 @@ bool QTiffHandler::read(QImage *image)
+    if (format == QImage::Format_Mono || format == QImage::Format_Indexed8 || format == QImage::Format_Grayscale8) {
+ #endif
+         if (format == QImage::Format_Mono) {
+-            QList<QRgb> colortable(2);
++            QVector<QRgb> colortable(2);
+             if (d->photometric == PHOTOMETRIC_MINISBLACK) {
+                 colortable[0] = 0xff000000;
+                 colortable[1] = 0xffffffff;
+@@ -399,7 +399,7 @@ bool QTiffHandler::read(QImage *image)
+             image->setColorTable(colortable);
+         } else if (format == QImage::Format_Indexed8) {
+             const uint16 tableSize = 256;
+-            QList<QRgb> qtColorTable(tableSize);
++            QVector<QRgb> qtColorTable(tableSize);
+             if (d->grayscale) {
+                 for (int i = 0; i<tableSize; ++i) {
+                     const int c = (d->photometric == PHOTOMETRIC_MINISBLACK) ? i : (255 - i);
+@@ -539,7 +539,7 @@ bool QTiffHandler::read(QImage *image)
+     return true;
+ }
+ 
+-static bool checkGrayscale(const QList<QRgb> &colorTable)
++static bool checkGrayscale(const QVector<QRgb> &colorTable)
+ {
+     if (colorTable.size() != 256)
+         return false;
+@@ -553,9 +553,9 @@ static bool checkGrayscale(const QList<QRgb> &colorTable)
+     return true;
+ }
+ 
+-static QList<QRgb> effectiveColorTable(const QImage &image)
++static QVector<QRgb> effectiveColorTable(const QImage &image)
+ {
+-    QList<QRgb> colors;
++    QVector<QRgb> colors;
+     switch (image.format()) {
+     case QImage::Format_Indexed8:
+         colors = image.colorTable();
+@@ -695,7 +695,7 @@ bool QTiffHandler::write(const QImage &image)
+                || format == QImage::Format_Grayscale16
+ #endif
+                || format == QImage::Format_Alpha8) {
+-        QList<QRgb> colorTable = effectiveColorTable(image);
++        QVector<QRgb> colorTable = effectiveColorTable(image);
+         bool isGrayscale = checkGrayscale(colorTable);
+         if (isGrayscale) {
+             uint16 photometric = PHOTOMETRIC_MINISBLACK;
+diff --git a/tests/auto/tiff/tst_qtiff.cpp b/tests/auto/tiff/tst_qtiff.cpp
+index 073e77f..267a29c 100644
+--- a/tests/auto/tiff/tst_qtiff.cpp
++++ b/tests/auto/tiff/tst_qtiff.cpp
+@@ -552,9 +552,9 @@ void tst_qtiff::multipage_data()
+ {
+     QTest::addColumn<QString>("filename");
+     QTest::addColumn<int>("expectedNumPages");
+-    QTest::addColumn<QList<QSize>>("expectedSizes");
++    QTest::addColumn<QVector<QSize>>("expectedSizes");
+ 
+-    QList<QSize> sizes = QList<QSize>() << QSize(640, 480) << QSize(800, 600) << QSize(320, 240);
++    QVector<QSize> sizes = QVector<QSize>() << QSize(640, 480) << QSize(800, 600) << QSize(320, 240);
+     QTest::newRow("3 page TIFF") << ("multipage.tiff") << 3 << sizes;
+ }
+ 
+@@ -562,7 +562,7 @@ void tst_qtiff::multipage()
+ {
+     QFETCH(QString, filename);
+     QFETCH(int, expectedNumPages);
+-    QFETCH(QList<QSize>, expectedSizes);
++    QFETCH(QVector<QSize>, expectedSizes);
+ 
+     QImageReader reader(prefix + filename);
+     QCOMPARE(reader.imageCount(), expectedNumPages);
+-- 
+2.20.1
+

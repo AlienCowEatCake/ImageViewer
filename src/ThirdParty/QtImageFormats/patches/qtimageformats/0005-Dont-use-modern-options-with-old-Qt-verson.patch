@@ -1,7 +1,7 @@
-From 71ca6fb35bba8b1129c7978cf71ae3d8b0be3efb Mon Sep 17 00:00:00 2001
+From f5795a27534ab6d9a90dc3269591c433c0d5b197 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 7 Jan 2019 21:11:00 +0700
-Subject: [PATCH 5/6] Dont use modern options with old Qt verson
+Subject: [PATCH 5/7] Dont use modern options with old Qt verson
 
 ---
  src/plugins/imageformats/dds/qddshandler.cpp  |  7 ++-
@@ -58,7 +58,7 @@ index e9a470c..c97c611 100644
      }
  
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index 091e640..097d991 100644
+index b6c50b8..e90aeb3 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
 @@ -278,14 +278,18 @@ bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
@@ -125,7 +125,7 @@ index 091e640..097d991 100644
 +   if (format == QImage::Format_Mono || format == QImage::Format_Indexed8 || format == QImage::Format_Grayscale8) {
 +#endif
          if (format == QImage::Format_Mono) {
-             QVector<QRgb> colortable(2);
+             QList<QRgb> colortable(2);
              if (d->photometric == PHOTOMETRIC_MINISBLACK) {
 @@ -409,9 +428,14 @@ bool QTiffHandler::read(QImage *image)
              image->setColorTable(qtColorTable);
@@ -163,7 +163,7 @@ index 091e640..097d991 100644
      } else {
          const int stopOnError = 1;
          if (TIFFReadRGBAImageOriented(tiff, width, height, reinterpret_cast<uint32 *>(image->bits()), qt2Exif(d->transformation), stopOnError)) {
-@@ -533,7 +562,9 @@ static QVector<QRgb> effectiveColorTable(const QImage &image)
+@@ -533,7 +562,9 @@ static QList<QRgb> effectiveColorTable(const QImage &image)
              colors[i] = qRgba(0, 0, 0, i);
          break;
      case QImage::Format_Grayscale8:
@@ -193,7 +193,7 @@ index 091e640..097d991 100644
                 || format == QImage::Format_Grayscale16
 +#endif
                 || format == QImage::Format_Alpha8) {
-         QVector<QRgb> colorTable = effectiveColorTable(image);
+         QList<QRgb> colorTable = effectiveColorTable(image);
          bool isGrayscale = checkGrayscale(colorTable);
 @@ -705,6 +742,7 @@ bool QTiffHandler::write(const QImage &image)
              }
@@ -266,10 +266,10 @@ index 1650caf..afae3e8 100644
      bool ensureHaveDirectoryCount() const;
  };
 diff --git a/src/plugins/imageformats/webp/qwebphandler.cpp b/src/plugins/imageformats/webp/qwebphandler.cpp
-index c1898d0..eb8220e 100644
+index 82d38cb..b82bb05 100644
 --- a/src/plugins/imageformats/webp/qwebphandler.cpp
 +++ b/src/plugins/imageformats/webp/qwebphandler.cpp
-@@ -194,7 +194,11 @@ bool QWebpHandler::read(QImage *image)
+@@ -197,7 +197,11 @@ bool QWebpHandler::read(QImage *image)
      QImage::Format format = m_features.has_alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
      QImage frame(m_iter.width, m_iter.height, format);
      uint8_t *output = frame.bits();
@@ -281,7 +281,7 @@ index c1898d0..eb8220e 100644
  #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
      if (!WebPDecodeBGRAInto(
          reinterpret_cast<const uint8_t*>(m_iter.fragment.bytes), m_iter.fragment.size,
-@@ -244,7 +248,11 @@ bool QWebpHandler::write(const QImage &image)
+@@ -247,7 +251,11 @@ bool QWebpHandler::write(const QImage &image)
  
      QImage srcImage = image;
      bool alpha = srcImage.hasAlphaChannel();
@@ -293,7 +293,7 @@ index c1898d0..eb8220e 100644
      if (srcImage.format() != newFormat)
          srcImage = srcImage.convertToFormat(newFormat);
  
-@@ -260,10 +268,22 @@ bool QWebpHandler::write(const QImage &image)
+@@ -263,10 +271,22 @@ bool QWebpHandler::write(const QImage &image)
      picture.height = srcImage.height();
      picture.use_argb = 1;
      bool failed = false;

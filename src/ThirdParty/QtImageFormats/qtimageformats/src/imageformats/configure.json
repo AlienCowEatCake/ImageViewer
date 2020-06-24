@@ -140,7 +140,7 @@
         "tiff": {
             "label": "TIFF",
             "disable": "input.tiff == 'no'",
-            "condition": "features.imageformatplugin && !(config.winrt && arch.i386)",
+            "condition": "features.imageformatplugin",
             "output": [
                 "privateFeature"
             ]

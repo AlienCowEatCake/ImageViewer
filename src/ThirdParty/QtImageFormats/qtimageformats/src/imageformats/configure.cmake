@@ -14,9 +14,9 @@ set_property(CACHE INPUT_webp PROPERTY STRINGS undefined no qt system)
 
 #### Libraries
 
-qt_find_package(WrapJasper PROVIDED_TARGETS WrapJasper::WrapJasper)
-qt_find_package(TIFF PROVIDED_TARGETS TIFF::TIFF)
-qt_find_package(WrapWebP PROVIDED_TARGETS WrapWebP::WrapWebP)
+qt_find_package(WrapJasper PROVIDED_TARGETS WrapJasper::WrapJasper MODULE_NAME imageformats QMAKE_LIB jasper)
+qt_find_package(TIFF PROVIDED_TARGETS TIFF::TIFF MODULE_NAME imageformats QMAKE_LIB tiff)
+qt_find_package(WrapWebP PROVIDED_TARGETS WrapWebP::WrapWebP MODULE_NAME imageformats QMAKE_LIB webp)
 
 
 #### Tests
@@ -41,7 +41,7 @@ qt_feature("tiff" PRIVATE
     CONDITION QT_FEATURE_imageformatplugin AND TIFF_FOUND
     DISABLE INPUT_tiff STREQUAL 'no'
 )
-qt_feature("system_tiff" PRIVATE
+qt_feature("system-tiff" PRIVATE
     LABEL "  Using system libtiff"
     CONDITION QT_FEATURE_tiff AND TIFF_FOUND
     ENABLE INPUT_tiff STREQUAL 'system'
@@ -52,9 +52,17 @@ qt_feature("webp" PRIVATE
     CONDITION QT_FEATURE_imageformatplugin AND WrapWebP_FOUND
     DISABLE INPUT_webp STREQUAL 'no'
 )
-qt_feature("system_webp" PRIVATE
+qt_feature("system-webp" PRIVATE
     LABEL "  Using system libwebp"
     CONDITION QT_FEATURE_webp AND WrapWebP_FOUND
     ENABLE INPUT_webp STREQUAL 'system'
     DISABLE INPUT_webp STREQUAL 'qt'
 )
+qt_configure_add_summary_section(NAME "Further Image Formats")
+qt_configure_add_summary_entry(ARGS "jasper")
+qt_configure_add_summary_entry(ARGS "mng")
+qt_configure_add_summary_entry(ARGS "tiff")
+qt_configure_add_summary_entry(ARGS "system-tiff")
+qt_configure_add_summary_entry(ARGS "webp")
+qt_configure_add_summary_entry(ARGS "system-webp")
+qt_configure_end_summary_section() # end of "Further Image Formats" section

@@ -1,7 +1,7 @@
-From 07f23591a42d8f3bb399566b19d0bd60f1125769 Mon Sep 17 00:00:00 2001
+From a37a530852bb14bda2afe95601f092a216e51daf Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 10 Mar 2018 15:40:08 +0700
-Subject: [PATCH 1/6] Use "Q_DECL_OVERRIDE" instead of "override"
+Subject: [PATCH 1/7] Use "Q_DECL_OVERRIDE" instead of "override"
 
 ---
  src/plugins/imageformats/dds/qddshandler.h    | 16 ++++++-------
@@ -45,7 +45,7 @@ index 0c6449a..2749819 100644
      static bool canRead(QIODevice *device);
  
 diff --git a/src/plugins/imageformats/icns/qicnshandler_p.h b/src/plugins/imageformats/icns/qicnshandler_p.h
-index e83d4eb..9639c04 100644
+index dc6aba1..d2560be 100644
 --- a/src/plugins/imageformats/icns/qicnshandler_p.h
 +++ b/src/plugins/imageformats/icns/qicnshandler_p.h
 @@ -128,16 +128,16 @@ class QICNSHandler : public QImageIOHandler

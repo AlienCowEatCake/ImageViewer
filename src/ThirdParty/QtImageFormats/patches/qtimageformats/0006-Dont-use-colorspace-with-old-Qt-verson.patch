@@ -1,7 +1,7 @@
-From 0922e86167336d72c61263cc173cb3e2b464c05b Mon Sep 17 00:00:00 2001
+From dbbfc22bbc07522bb16eb296f135beda9efe0caa Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 17 Nov 2019 01:42:45 +0700
-Subject: [PATCH 6/6] Dont use colorspace with old Qt verson
+Subject: [PATCH 6/7] Dont use colorspace with old Qt verson
 
 ---
  src/plugins/imageformats/tiff/qtiffhandler.cpp | 6 ++++++
@@ -10,7 +10,7 @@ Subject: [PATCH 6/6] Dont use colorspace with old Qt verson
  3 files changed, 16 insertions(+)
 
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index 097d991..1336d6d 100644
+index e90aeb3..123ea0a 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
 @@ -39,7 +39,9 @@
@@ -56,7 +56,7 @@ index 097d991..1336d6d 100644
      const QImage::Format format = image.format();
      if (format == QImage::Format_Mono || format == QImage::Format_MonoLSB) {
 diff --git a/src/plugins/imageformats/webp/qwebphandler.cpp b/src/plugins/imageformats/webp/qwebphandler.cpp
-index eb8220e..e6a43db 100644
+index b82bb05..87ccc27 100644
 --- a/src/plugins/imageformats/webp/qwebphandler.cpp
 +++ b/src/plugins/imageformats/webp/qwebphandler.cpp
 @@ -164,6 +164,7 @@ bool QWebpHandler::read(QImage *image)
@@ -67,7 +67,7 @@ index eb8220e..e6a43db 100644
          // Read global meta-data chunks first
          WebPChunkIterator metaDataIter;
          if ((m_formatFlags & ICCP_FLAG) && WebPDemuxGetChunk(m_demuxer, "ICCP", 1, &metaDataIter)) {
-@@ -173,6 +174,7 @@ bool QWebpHandler::read(QImage *image)
+@@ -176,6 +177,7 @@ bool QWebpHandler::read(QImage *image)
              // ### consider parsing EXIF and/or XMP metadata too.
              WebPDemuxReleaseChunkIterator(&metaDataIter);
          }
@@ -75,7 +75,7 @@ index eb8220e..e6a43db 100644
  
          // Go to first frame
          if (!WebPDemuxGetFrame(m_demuxer, 1, &m_iter))
-@@ -230,7 +232,9 @@ bool QWebpHandler::read(QImage *image)
+@@ -233,7 +235,9 @@ bool QWebpHandler::read(QImage *image)
  
          *image = *m_composited;
      }
@@ -85,7 +85,7 @@ index eb8220e..e6a43db 100644
  
      return true;
  }
-@@ -312,6 +316,7 @@ bool QWebpHandler::write(const QImage &image)
+@@ -316,6 +320,7 @@ bool QWebpHandler::write(const QImage &image)
      }
  
      bool res = false;
@@ -93,7 +93,7 @@ index eb8220e..e6a43db 100644
      if (image.colorSpace().isValid()) {
          int copy_data = 0;
          WebPMux *mux = WebPMuxNew();
-@@ -351,6 +356,7 @@ bool QWebpHandler::write(const QImage &image)
+@@ -355,6 +360,7 @@ bool QWebpHandler::write(const QImage &image)
          }
          WebPMuxDelete(mux);
      }
