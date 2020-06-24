@@ -7,5 +7,8 @@
 #if !defined(_MSC_VER)
 #define HAVE_UNISTD_H
 #endif
+#if defined(HAS_AOM)
+#define HAVE_AOM 1
+#endif
 
 #endif // THIRDPARTY_LIBHEIF_CONFIG_H_INCLUDED

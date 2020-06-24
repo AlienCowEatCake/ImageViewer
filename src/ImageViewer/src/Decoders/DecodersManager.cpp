@@ -91,7 +91,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderLibTiff"              ,  530, -1); ///< Умеет формат tiff. Поддерживает EXIF(?) и ICCP. Должен быть выше QImage и QtImageFormatsImage.
         P("DecoderJbigKit"              ,  540, -1); ///< Умеет формат JBIG1.
         P("DecoderLibRaw"               ,  550, -1); ///< Умеет форматы RAW.
-        P("DecoderLibHEIF"              ,  560, -1); ///< Умеет формат HEIF с кодеком HEVC.
+        P("DecoderLibHEIF"              ,  560, -1); ///< Умеет формат HEIF с кодеками HEVC и AV1, а также некоторые AVIF.
         P("DecoderOpenEXR"              ,  570, -1); ///< Умеет формат EXR.
         /// @note Декодеры анимированных изображений
         P("DecoderQMovie"               , 1090, -1); ///< Умеет анимированные gif.

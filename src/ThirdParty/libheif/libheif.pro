@@ -14,6 +14,7 @@ THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.7.0
 THIRDPARTY_LIBHEIF_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
+include(../aom/aom.pri)
 include(../libde265/libde265.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LIBHEIF_CONFIG_PATH} $${THIRDPARTY_LIBHEIF_PATH} $${INCLUDEPATH}
@@ -41,6 +42,12 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_image.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_plugin.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_plugin_registry.cc \
+
+!disable_aom {
+    SOURCES += \
+        $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_decoder_aom.cc \
+        $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_encoder_aom.cc
+}
 
 HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/bitstream.h \

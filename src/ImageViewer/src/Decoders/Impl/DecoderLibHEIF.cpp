@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -120,7 +120,13 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     }
 
     heif_image *img = Q_NULLPTR;
-    error = heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, Q_NULLPTR);
+    heif_decoding_options *options = heif_decoding_options_alloc();
+#if defined (LIBHEIF_NUMERIC_VERSION) && (LIBHEIF_NUMERIC_VERSION >= 0x01070000)
+    if(options->version >= 2)
+        options->convert_hdr_to_8bit = 1;
+#endif
+    error = heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, options);
+    heif_decoding_options_free(options);
     if(error.code != heif_error_Ok)
     {
         qWarning() << "Can't decode image:" << error.message;
@@ -133,10 +139,12 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     const int height = static_cast<int>(heif_image_get_height(img, heif_channel_interleaved));
     int stride = 0;
     const uint8_t *planeData = heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride);
-    QImage result = QImage(reinterpret_cast<const uchar*>(planeData), width, height, stride, QImage::Format_ARGB32).rgbSwapped();
+    QImage result = (heif_image_get_chroma_format(img) == heif_chroma_interleaved_RGB) ///< libheif-1.7.0, WTF?
+            ? QImage(reinterpret_cast<const uchar*>(planeData), width, height, stride, QImage::Format_RGB888).convertToFormat(QImage::Format_RGB32)
+            : QImage(reinterpret_cast<const uchar*>(planeData), width, height, stride, QImage::Format_ARGB32).rgbSwapped();
     if(result.isNull())
     {
-        qWarning() << "Invalid image size:" << width << "x" << height;
+        qWarning() << "Invalid image size:" << width << "x" << height << "chroma_format:" << heif_image_get_chroma_format(img);
         heif_image_release(img);
         heif_image_handle_release(handle);
         heif_context_free(ctx);
@@ -201,7 +209,11 @@ public:
         return QStringList()
                 << QString::fromLatin1("heif")
                 << QString::fromLatin1("heic")
-                << QString::fromLatin1("heix");
+                << QString::fromLatin1("heix")
+#if defined (LIBHEIF_NUMERIC_VERSION) && (LIBHEIF_NUMERIC_VERSION >= 0x01070000)
+                << QString::fromLatin1("avif")
+#endif
+                   ;
     }
 
     QStringList advancedFormats() const Q_DECL_OVERRIDE
