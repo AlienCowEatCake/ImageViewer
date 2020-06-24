@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-2.4.0
+THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-2.5.2
 THIRDPARTY_OPENEXR_CONFIG_PATH = $${PWD}/config
 THIRDPARTY_ILM_THREAD_QT = $${PWD}/IlmThreadQt
 THIRDPARTY_OPENEXR_INCLUDE_PATH = $${PWD}/include
@@ -162,10 +162,12 @@ SOURCES += \
     $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfSampleCountChannel.cpp \
 
 HEADERS += \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/eLut.h \
     $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/halfExport.h \
     $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/halfFunction.h \
     $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/half.h \
     $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/halfLimits.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/toFloat.h \
     $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexBaseExc.h \
     $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexErrnoExc.h \
     $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexExport.h \
@@ -218,6 +220,8 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathSphere.h \
     $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathVecAlgo.h \
     $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathVec.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/b44ExpLogTable.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/dwaLookups.h \
     $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfAcesFile.h \
     $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfArray.h \
     $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfAttribute.h \
@@ -346,14 +350,10 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfUtilExport.h \
 
 HEADERS += \
-    $${THIRDPARTY_OPENEXR_CONFIG_PATH}/b44ExpLogTable.h \
-    $${THIRDPARTY_OPENEXR_CONFIG_PATH}/dwaLookups.h \
-    $${THIRDPARTY_OPENEXR_CONFIG_PATH}/eLut.h \
     $${THIRDPARTY_OPENEXR_CONFIG_PATH}/IlmBaseConfig.h \
     $${THIRDPARTY_OPENEXR_CONFIG_PATH}/IlmBaseConfigInternal.h \
     $${THIRDPARTY_OPENEXR_CONFIG_PATH}/OpenEXRConfig.h \
     $${THIRDPARTY_OPENEXR_CONFIG_PATH}/OpenEXRConfigInternal.h \
-    $${THIRDPARTY_OPENEXR_CONFIG_PATH}/toFloat.h \
 
 SOURCES += \
     $${THIRDPARTY_ILM_THREAD_QT}/IlmThread/IlmThread.cpp \

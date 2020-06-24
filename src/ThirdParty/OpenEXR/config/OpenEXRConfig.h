@@ -12,7 +12,7 @@
 // Current internal library namepace name
 //
 #define OPENEXR_IMF_INTERNAL_NAMESPACE_CUSTOM 0
-#define OPENEXR_IMF_INTERNAL_NAMESPACE Imf_2_4
+#define OPENEXR_IMF_INTERNAL_NAMESPACE Imf_2_5
 
 //
 // Current public user namepace name
@@ -25,12 +25,12 @@
 // Version string for runtime access
 //
 
-#define OPENEXR_VERSION_STRING "2.4.0"
-#define OPENEXR_PACKAGE_STRING "IlmBase "
+#define OPENEXR_VERSION_STRING "2.5.2"
+#define OPENEXR_PACKAGE_STRING "OpenEXR 2.5.2"
 
 #define OPENEXR_VERSION_MAJOR 2
-#define OPENEXR_VERSION_MINOR 4
-#define OPENEXR_VERSION_PATCH 0
+#define OPENEXR_VERSION_MINOR 5
+#define OPENEXR_VERSION_PATCH 2
 
 // Version as a single hex number, e.g. 0x01000300 == 1.0.3
 #define OPENEXR_VERSION_HEX ((uint32_t(OPENEXR_VERSION_MAJOR) << 24) | \

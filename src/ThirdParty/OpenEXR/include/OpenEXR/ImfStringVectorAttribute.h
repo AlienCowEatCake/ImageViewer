@@ -1,1 +1,1 @@
-#include "../../openexr-2.4.0/OpenEXR/IlmImf/ImfStringVectorAttribute.h"
+#include "../../openexr-2.5.2/OpenEXR/IlmImf/ImfStringVectorAttribute.h"
