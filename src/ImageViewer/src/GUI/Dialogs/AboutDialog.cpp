@@ -522,7 +522,7 @@ QString getTextBrowserContent()
     result.append(formatItem(
                       QString::fromLatin1("This software uses the Little CMS 2 library"),
                       QString::fromLatin1("lcms2"),
-                      QString::fromLatin1("%1.%2").arg(LCMS_VERSION / 1000).arg(LCMS_VERSION % 100 / 10),
+                      QString::fromLatin1("%1.%2").arg(LCMS_VERSION / 1000).arg(LCMS_VERSION % 1000 / 10),
                       QString::fromLatin1("http://www.littlecms.com/"),
                       QString::fromLatin1("MIT License"),
                       QString::fromLatin1("https://opensource.org/licenses/mit-license")
