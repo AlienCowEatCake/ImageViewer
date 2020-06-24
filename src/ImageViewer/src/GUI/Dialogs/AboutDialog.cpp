@@ -584,6 +584,17 @@ QString getTextBrowserContent()
                       ));
 #endif
 
+#if defined (HAS_AOM)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the AOM AV1 Codec Library"),
+                      QString::fromLatin1("aom"),
+                      QString(),
+                      QString::fromLatin1("https://aomedia.googlesource.com/aom/"),
+                      QString::fromLatin1("2-clause BSD License"),
+                      QString::fromLatin1("https://aomedia.googlesource.com/aom/+/refs/heads/master/LICENSE")
+                      ));
+#endif
+
 #if defined (HAS_LIBDE256)
     result.append(formatItem(
                       QString::fromLatin1("This software uses the libde265 library"),

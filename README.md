@@ -106,6 +106,7 @@ See the [buildscripts/](buildscripts/) directory.
 * LibRaw options: `disable_libraw`, `system_libraw` *(bundled package by default)*
 * libRSVG options: `disable_librsvg`, `system_librsvg` *(dynamic loading by default)*
 * resvg options: `disable_resvg`, `enable_resvg`, `system_resvg` *(disabled by default)*
+* aom options: `disable_aom`, `system_aom` *(bundled package by default)*
 * libde265 options: `disable_libde265`, `system_libde265` *(bundled package by default)*
 * libheif options: `disable_libheif`, `system_libheif` *(bundled package by default)*
 * OpenEXR options: `disable_openexr`, `system_openexr` *(bundled package by default)*

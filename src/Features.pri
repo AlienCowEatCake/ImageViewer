@@ -277,6 +277,11 @@ disable_libjpeg : !system_libwmf {
     CONFIG += disable_resvg
 }
 
+# aom options:
+#    disable_aom
+#    system_aom
+
+
 # libde265 options:
 #    disable_libde265
 #    system_libde265
@@ -315,7 +320,9 @@ disable_zlib : !system_openexr {
 # libavif options:
 #    disable_libavif
 #    system_libavif
-
+disable_aom : !system_libavif {
+    CONFIG += disable_libavif
+}
 
 # MagickCore options:
 #    disable_magickcore
@@ -463,4 +470,10 @@ system_libheif | disable_libheif {
 
 disable_exiv2 | system_exiv2 {
     CONFIG += disable_libexpat
+}
+
+disable_libavif | system_libavif {
+    disable_libheif | system_libheif {
+        CONFIG += disable_aom
+    }
 }
