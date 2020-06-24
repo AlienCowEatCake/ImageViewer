@@ -64,7 +64,7 @@
 #define PACKAGE_NAME "EXIF library"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "EXIF library 0.6.21.1"
+#define PACKAGE_STRING "EXIF library 0.6.22.1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libexif"
@@ -73,13 +73,13 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.6.21.1"
+#define PACKAGE_VERSION "0.6.22.1"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.6.21.1"
+#define VERSION "0.6.22.1"
 
 /* Enable large inode numbers on Mac OS X 10.5.  */
 #ifndef _DARWIN_USE_64_BIT_INODE
