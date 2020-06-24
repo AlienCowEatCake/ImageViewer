@@ -85,14 +85,15 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderMagickCore"           ,  350, -1); ///< Умеет очень много разных форматов, в том числе анимированные.
         P("DecoderMagickWand"           ,  360, -1); ///< Умеет очень много разных форматов, в том числе анимированные. Более высокоуровневое API, чем MagickCore.
         P("DecoderNSImage"              ,  400, -1); ///< Умеет очень много разных форматов. Должен быть выше декодеров общего назначения, но ниже специализированных декодеров.
-        P("DecoderLibJpeg"              ,  500, 80); ///< Умеет jpeg форматы. Поддерживает EXIF и ICCP. Должен быть выше QImage.
-        P("DecoderLibJasPer"            ,  510, 90); ///< Умеет формат JPEG 2000 и несколько побочных. Поддержка хуже, чем в QtImageFormatsImage, но имеет ряд дополнительных проверок от крашей.
+        P("DecoderLibJpeg"              ,  500, 70); ///< Умеет jpeg форматы. Поддерживает EXIF и ICCP. Должен быть выше QImage.
+        P("DecoderLibJasPer"            ,  510, 80); ///< Умеет формат JPEG 2000 и несколько побочных. Поддержка хуже, чем в QtImageFormatsImage, но имеет ряд дополнительных проверок от крашей.
         P("DecoderOpenJPEG"             ,  520, -1); ///< Умеет формат JPEG 2000. Поддерживает ICCP. Поддержка в чем-то лучше LibJasPer, в чем-то хуже.
         P("DecoderLibTiff"              ,  530, -1); ///< Умеет формат tiff. Поддерживает EXIF(?) и ICCP. Должен быть выше QImage и QtImageFormatsImage.
         P("DecoderJbigKit"              ,  540, -1); ///< Умеет формат JBIG1.
         P("DecoderLibRaw"               ,  550, -1); ///< Умеет форматы RAW.
         P("DecoderLibHEIF"              ,  560, -1); ///< Умеет формат HEIF с кодеками HEVC и AV1, а также некоторые AVIF.
         P("DecoderOpenEXR"              ,  570, -1); ///< Умеет формат EXR.
+        P("DecoderLibAvif"              ,  580, 90); ///< Умеет формат AVIF, некоторые HEIF с кодеком AV1.
         /// @note Декодеры анимированных изображений
         P("DecoderQMovie"               , 1090, -1); ///< Умеет анимированные gif.
         P("DecoderGifLib"               , 1100, -1); ///< Умеет анимированные gif, но медленнее, чем QMovie, зато поддерживает ICCP и более всеяден.
