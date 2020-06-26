@@ -119,7 +119,11 @@ template <class T> class Matrix22
     // Destructor
     //------------
 
+#if __cplusplus >= 201103L
     ~Matrix22 () = default;
+#else
+    ~Matrix22 () {}
+#endif
 	
     //----------------------
     // Compatibility with Sb
@@ -393,7 +397,11 @@ template <class T> class Matrix33
     // Destructor
     //------------
 
+#if __cplusplus >= 201103L
     ~Matrix33 () = default;
+#else
+    ~Matrix33 () {}
+#endif
 	
     //----------------------
     // Compatibility with Sb
@@ -754,7 +762,11 @@ template <class T> class Matrix44
     // Destructor
     //------------
 
+#if __cplusplus >= 201103L
     ~Matrix44 () = default;
+#else
+    ~Matrix44 () {}
+#endif
 
     //--------------------------------
     // Copy constructor and assignment

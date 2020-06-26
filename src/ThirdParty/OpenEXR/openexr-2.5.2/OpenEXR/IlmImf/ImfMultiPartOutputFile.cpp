@@ -125,10 +125,17 @@ struct MultiPartOutputFile::Data: public OutputStreamMutex
                 delete parts[i];
         }
 
+#if __cplusplus >= 201103L
     Data (const Data& other) = delete;
     Data& operator = (const Data& other) = delete;
     Data (Data&& other) = delete;
     Data& operator = (Data&& other) = delete;
+#else
+  private:
+    Data (const Data& other);
+    Data& operator = (const Data& other);
+  public:
+#endif
     
 };
 

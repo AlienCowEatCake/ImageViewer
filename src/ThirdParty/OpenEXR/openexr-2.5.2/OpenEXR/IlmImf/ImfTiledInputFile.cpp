@@ -149,10 +149,17 @@ struct TileBuffer
      TileBuffer (Compressor * const comp);
     ~TileBuffer ();
 
+#if __cplusplus >= 201103L
     TileBuffer (const TileBuffer& other) = delete;
     TileBuffer& operator = (const TileBuffer& other) = delete;
     TileBuffer (TileBuffer&& other) = delete;
     TileBuffer& operator = (TileBuffer&& other) = delete;
+#else
+  private:
+    TileBuffer (const TileBuffer& other);
+    TileBuffer& operator = (const TileBuffer& other);
+  public:
+#endif
 
     inline void		wait () {_sem.wait();}
     inline void		post () {_sem.post();}
@@ -248,10 +255,17 @@ struct TiledInputFile::Data: public Mutex
      Data (int numThreads);
     ~Data ();
 
+#if __cplusplus >= 201103L
     Data (const Data& other) = delete;
     Data& operator = (const Data& other) = delete;
     Data (Data&& other) = delete;
     Data& operator = (Data&& other) = delete;
+#else
+  private:
+    Data (const Data& other);
+    Data& operator = (const Data& other);
+  public:
+#endif
 
     inline TileBuffer * getTileBuffer (int number);
 					    // hash function from tile indices
@@ -265,7 +279,7 @@ TiledInputFile::Data::Data (int numThreads):
     partNumber (-1),
     multiPartBackwardSupport(false),
     numThreads(numThreads),
-    multiPartFile(nullptr),
+    multiPartFile(NULL),
     memoryMapped(false),
     _streamData(NULL),
     _deleteStream(false)

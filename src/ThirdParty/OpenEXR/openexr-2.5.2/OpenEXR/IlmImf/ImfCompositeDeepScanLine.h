@@ -143,10 +143,15 @@ class CompositeDeepScanLine
     private :  
       struct Data *_Data;
       
+#if __cplusplus >= 201103L
     CompositeDeepScanLine(const CompositeDeepScanLine &) = delete;
     CompositeDeepScanLine & operator=(const CompositeDeepScanLine &) = delete;
     CompositeDeepScanLine(CompositeDeepScanLine &&) = delete;
     CompositeDeepScanLine & operator=(CompositeDeepScanLine &&) = delete;
+#else
+    CompositeDeepScanLine(const CompositeDeepScanLine &);
+    CompositeDeepScanLine & operator=(const CompositeDeepScanLine &);
+#endif
 };
 
 OPENEXR_IMF_INTERNAL_NAMESPACE_HEADER_EXIT

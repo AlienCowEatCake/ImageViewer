@@ -121,6 +121,7 @@ BaseExc::operator = (const BaseExc& be) throw ()
     return *this;
 }
 
+#if __cplusplus >= 201103L
 BaseExc &
 BaseExc::operator = (BaseExc&& be) throw ()
 {
@@ -131,6 +132,7 @@ BaseExc::operator = (BaseExc&& be) throw ()
     }
     return *this;
 }
+#endif
 
 const char *
 BaseExc::what () const throw ()

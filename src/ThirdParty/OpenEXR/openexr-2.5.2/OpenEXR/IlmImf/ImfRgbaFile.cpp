@@ -196,10 +196,17 @@ class RgbaOutputFile::ToYca: public Mutex
      ToYca (OutputFile &outputFile, RgbaChannels rgbaChannels);
     ~ToYca ();
 
+#if __cplusplus >= 201103L
     ToYca (const ToYca& other) = delete;
     ToYca& operator = (const ToYca& other) = delete;
     ToYca (ToYca&& other) = delete;
     ToYca& operator = (ToYca&& other) = delete;
+#else
+  private:
+    ToYca (const ToYca& other);
+    ToYca& operator = (const ToYca& other);
+  public:
+#endif
 
     void		setYCRounding (unsigned int roundY,
 	    			       unsigned int roundC);
@@ -817,10 +824,17 @@ class RgbaInputFile::FromYca: public Mutex
      FromYca (InputFile &inputFile, RgbaChannels rgbaChannels);
     ~FromYca ();
 
+#if __cplusplus >= 201103L
     FromYca (const FromYca& other) = delete;
     FromYca& operator = (const FromYca& other) = delete;
     FromYca (FromYca&& other) = delete;
     FromYca& operator = (FromYca&& other) = delete;
+#else
+  private:
+    FromYca (const FromYca& other);
+    FromYca& operator = (const FromYca& other);
+  public:
+#endif
 
     void		setFrameBuffer (Rgba *base,
 					size_t xStride,

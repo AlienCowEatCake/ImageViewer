@@ -266,10 +266,17 @@ struct DeepTiledInputFile::Data: public Mutex
      Data (int numThreads);
     ~Data ();
 
+#if __cplusplus >= 201103L
     Data (const Data& other) = delete;
     Data& operator = (const Data& other) = delete;
     Data (Data&& other) = delete;
     Data& operator = (Data&& other) = delete;
+#else
+  private:
+    Data (const Data& other);
+    Data& operator = (const Data& other);
+  public:
+#endif
     
     inline TileBuffer * getTileBuffer (int number);
                                                     // hash function from tile indices
@@ -288,8 +295,8 @@ DeepTiledInputFile::Data::Data (int numThreads):
     multiPartBackwardSupport(false),
     numThreads(numThreads),
     memoryMapped(false),
-    sampleCountTableComp(nullptr),
-    _streamData(nullptr),
+    sampleCountTableComp(NULL),
+    _streamData(NULL),
     _deleteStream(false)
 {
     //

@@ -171,7 +171,7 @@ typedef struct {
   int q_1_frame;
   int q_2_frame;
 
-  float_t arf_boost_factor;
+  float arf_boost_factor;
   // Q index used for ALT frame
   int arf_q;
   int active_worst_quality;

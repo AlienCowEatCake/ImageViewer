@@ -92,10 +92,17 @@ class FastHufDecoder
     IMF_EXPORT
     ~FastHufDecoder ();
 
+#if __cplusplus >= 201103L
     FastHufDecoder (const FastHufDecoder& other) = delete;
     FastHufDecoder& operator = (const FastHufDecoder& other) = delete;
     FastHufDecoder (FastHufDecoder&& other) = delete;
     FastHufDecoder& operator = (FastHufDecoder&& other) = delete;
+#else
+  private:
+    FastHufDecoder (const FastHufDecoder& other);
+    FastHufDecoder& operator = (const FastHufDecoder& other);
+  public:
+#endif
 
     IMF_EXPORT
     static bool enabled ();

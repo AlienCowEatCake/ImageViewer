@@ -482,10 +482,15 @@ class DeepTiledOutputFile : public GenericOutputFile
     // ----------------------------------------------------------------
     DeepTiledOutputFile (const OutputPartData* part);
 
+#if __cplusplus >= 201103L
     DeepTiledOutputFile (const DeepTiledOutputFile &) = delete;
     DeepTiledOutputFile & operator = (const DeepTiledOutputFile &) = delete;
     DeepTiledOutputFile (DeepTiledOutputFile &&) = delete;
     DeepTiledOutputFile & operator = (DeepTiledOutputFile &&) = delete;
+#else
+    DeepTiledOutputFile (const DeepTiledOutputFile &);
+    DeepTiledOutputFile & operator = (const DeepTiledOutputFile &);
+#endif
 
     void                initialize (const Header &header);
 

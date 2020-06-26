@@ -71,10 +71,17 @@ class DwaCompressor: public Compressor
     IMF_EXPORT
     virtual ~DwaCompressor ();
 
+#if __cplusplus >= 201103L
     DwaCompressor (const DwaCompressor& other) = delete;
     DwaCompressor& operator = (const DwaCompressor& other) = delete;
     DwaCompressor (DwaCompressor&& other) = delete;
     DwaCompressor& operator = (DwaCompressor&& other) = delete;
+#else
+  private:
+    DwaCompressor (const DwaCompressor& other);
+    DwaCompressor& operator = (const DwaCompressor& other);
+  public:
+#endif
     
     IMF_EXPORT
     virtual int numScanLines () const;

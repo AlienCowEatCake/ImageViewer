@@ -261,10 +261,17 @@ struct DeepScanLineInputFile::Data: public Mutex
     Data (int numThreads);
     ~Data ();
 
+#if __cplusplus >= 201103L
     Data (const Data& data) = delete;
     Data& operator = (const Data& data) = delete;
     Data (Data&& data) = delete;
     Data& operator = (Data&& data) = delete;
+#else
+  private:
+    Data (const Data& data);
+    Data& operator = (const Data& data);
+  public:
+#endif
     
     inline LineBuffer * getLineBuffer (int number); // hash function from line
                                                     // buffer indices into our

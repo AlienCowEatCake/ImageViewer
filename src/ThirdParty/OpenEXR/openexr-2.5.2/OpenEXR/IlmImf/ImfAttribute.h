@@ -147,6 +147,7 @@ class TypedAttribute: public Attribute
     // that the type T is copyable/assignable/moveable.
     //------------------------------------------------------------
 
+#if __cplusplus >= 201103L
     TypedAttribute () = default;
     TypedAttribute (const T &value);
     TypedAttribute (const TypedAttribute<T> &other) = default;
@@ -156,6 +157,15 @@ class TypedAttribute: public Attribute
 
     TypedAttribute& operator = (const TypedAttribute<T>& other) = default;
     TypedAttribute& operator = (TypedAttribute<T>&& other) = default;
+#else
+    TypedAttribute () {}
+    TypedAttribute (const T &value);
+    TypedAttribute (const TypedAttribute<T> &other) { _value = other._value; }
+
+    virtual ~TypedAttribute () {}
+
+    TypedAttribute& operator = (const TypedAttribute<T>& other) { _value = other._value; return *this; }
+#endif
     
     //--------------------------------
     // Access to the attribute's value

@@ -150,10 +150,17 @@ struct LineBuffer
     LineBuffer (Compressor * const comp);
     ~LineBuffer ();
 
+#if __cplusplus >= 201103L
     LineBuffer (const LineBuffer& other) = delete;
     LineBuffer& operator = (const LineBuffer& other) = delete;
     LineBuffer (LineBuffer&& other) = delete;
     LineBuffer& operator = (LineBuffer&& other) = delete;
+#else
+  private:
+    LineBuffer (const LineBuffer& other);
+    LineBuffer& operator = (const LineBuffer& other);
+  public:
+#endif
 
     inline void		wait () {_sem.wait();}
     inline void		post () {_sem.post();}
@@ -244,10 +251,17 @@ struct ScanLineInputFile::Data: public Mutex
     Data (int numThreads);
     ~Data ();
 
+#if __cplusplus >= 201103L
     Data (const Data& other) = delete;
     Data& operator = (const Data& other) = delete;
     Data (Data&& other) = delete;
     Data& operator = (Data&& other) = delete;
+#else
+  private:
+    Data (const Data& other);
+    Data& operator = (const Data& other);
+  public:
+#endif
     
     inline LineBuffer * getLineBuffer (int number); // hash function from line
     						    // buffer indices into our
@@ -1184,7 +1198,7 @@ ScanLineInputFile::ScanLineInputFile(InputPartData* part)
                 if( _data->lineBuffers[i] )
                 {
                    EXRFreeAligned(_data->lineBuffers[i]->buffer);
-                   _data->lineBuffers[i]->buffer=nullptr;
+                   _data->lineBuffers[i]->buffer=NULL;
                 }
             }
         }
@@ -1242,7 +1256,7 @@ ScanLineInputFile::ScanLineInputFile
                  if( _data->lineBuffers[i] )
                  {
                    EXRFreeAligned(_data->lineBuffers[i]->buffer);
-                   _data->lineBuffers[i]->buffer=nullptr;
+                   _data->lineBuffers[i]->buffer=NULL;
                  }
               }
            }

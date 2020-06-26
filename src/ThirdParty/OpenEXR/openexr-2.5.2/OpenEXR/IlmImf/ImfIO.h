@@ -147,10 +147,15 @@ class IStream
 
   private:
 
+#if __cplusplus >= 201103L
     IStream (const IStream &) = delete;
     IStream & operator = (const IStream &) = delete;
     IStream (IStream &&) = delete;
     IStream & operator = (IStream &&) = delete;
+#else
+    IStream (const IStream &);
+    IStream & operator = (const IStream &);
+#endif
 
     std::string		_fileName;
 };
@@ -215,10 +220,15 @@ class OStream
 
   private:
 
+#if __cplusplus >= 201103L
     OStream (const OStream &) = delete;
     OStream & operator = (const OStream &) = delete;
     OStream (OStream &&) = delete;
     OStream & operator = (OStream &&) = delete;
+#else
+    OStream (const OStream &);
+    OStream & operator = (const OStream &);
+#endif
 
     std::string		_fileName;
 };

@@ -60,10 +60,17 @@ class Pxr24Compressor: public Compressor
     IMF_EXPORT
     virtual ~Pxr24Compressor ();
 
+#if __cplusplus >= 201103L
     Pxr24Compressor (const Pxr24Compressor& other) = delete;
     Pxr24Compressor& operator = (const Pxr24Compressor& other) = delete;
     Pxr24Compressor (Pxr24Compressor&& other) = delete;
     Pxr24Compressor& operator = (Pxr24Compressor&& other) = delete;
+#else
+  private:
+    Pxr24Compressor (const Pxr24Compressor& other);
+    Pxr24Compressor& operator = (const Pxr24Compressor& other);
+  public:
+#endif
 
     IMF_EXPORT
     virtual int		numScanLines () const;

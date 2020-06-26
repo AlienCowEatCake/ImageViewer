@@ -63,10 +63,17 @@ class B44Compressor: public Compressor
     IMF_EXPORT
     virtual ~B44Compressor ();
 
+#if __cplusplus >= 201103L
     B44Compressor (const B44Compressor& other) = delete;
     B44Compressor& operator = (const B44Compressor& other) = delete;
     B44Compressor (B44Compressor&& other) = delete;
     B44Compressor& operator = (B44Compressor&& other) = delete;
+#else
+  private:
+    B44Compressor (const B44Compressor& other);
+    B44Compressor& operator = (const B44Compressor& other);
+  public:
+#endif
     
     IMF_EXPORT
     virtual int		numScanLines () const;

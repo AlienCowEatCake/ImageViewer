@@ -64,9 +64,14 @@ std::set<std::unique_ptr<struct heif_encoder_descriptor>,
 
 
 
-static class Register_Default_Plugins
+class Register_Default_Plugins
 {
 public:
+  static void ensure_registered() {
+      static Register_Default_Plugins dummy;
+  }
+
+private:
   Register_Default_Plugins() {
 #if HAVE_LIBDE265
     heif::register_decoder(get_decoder_plugin_libde265());
@@ -81,7 +86,7 @@ public:
     heif::register_decoder(get_decoder_plugin_aom());
 #endif
   }
-} dummy;
+};
 
 
 void heif::register_decoder(const heif_decoder_plugin* decoder_plugin)
@@ -99,6 +104,7 @@ const struct heif_decoder_plugin* heif::get_decoder(enum heif_compression_format
   int highest_priority = 0;
   const struct heif_decoder_plugin* best_plugin = nullptr;
 
+  Register_Default_Plugins::ensure_registered();
   for (const auto* plugin : s_decoder_plugins) {
     int priority = plugin->does_support_format(type);
     if (priority > highest_priority) {
@@ -141,6 +147,7 @@ heif::get_filtered_encoder_descriptors(enum heif_compression_format format,
 {
   std::vector<const struct heif_encoder_descriptor*> filtered_descriptors;
 
+  Register_Default_Plugins::ensure_registered();
   for (const auto& descr : s_encoder_descriptors) {
     const struct heif_encoder_plugin* plugin = descr->plugin;
 

@@ -102,7 +102,11 @@ class Quat
     // Destructor
     //-------------
 
+#if __cplusplus >= 201103L
     ~Quat () = default;
+#else
+    ~Quat () {}
+#endif
 
     //-------------------------------------------------
     //	Basic Algebra - Operators and Methods

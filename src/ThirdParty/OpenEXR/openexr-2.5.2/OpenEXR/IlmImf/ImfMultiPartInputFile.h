@@ -97,10 +97,15 @@ class MultiPartInputFile : public GenericInputFile
   private:
     Data*                           _data;
 
+#if __cplusplus >= 201103L
     MultiPartInputFile(const MultiPartInputFile &) = delete;
     MultiPartInputFile& operator = (const MultiPartInputFile &) = delete;
     MultiPartInputFile(MultiPartInputFile &&) = delete;
     MultiPartInputFile& operator = (MultiPartInputFile &&) = delete;
+#else
+    MultiPartInputFile(const MultiPartInputFile &);
+    MultiPartInputFile& operator = (const MultiPartInputFile &);
+#endif
 
     
     //

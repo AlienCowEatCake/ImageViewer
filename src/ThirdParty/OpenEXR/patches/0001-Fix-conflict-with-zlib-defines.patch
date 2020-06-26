@@ -1,7 +1,7 @@
-From 092952699427d5f788dc100dbd8a83bb7408d05a Mon Sep 17 00:00:00 2001
+From 093934f3b6abe2462f39b9a0390d23548f908438 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 11 Nov 2019 02:35:05 +0700
-Subject: [PATCH 1/3] Fix conflict with zlib defines
+Subject: [PATCH 1/4] Fix conflict with zlib defines
 
 ---
  OpenEXR/IlmImf/ImfDwaCompressor.cpp   |  1 +
@@ -13,10 +13,10 @@ Subject: [PATCH 1/3] Fix conflict with zlib defines
  create mode 100644 OpenEXR/IlmImf/ImfZlibWorkaround.h
 
 diff --git a/OpenEXR/IlmImf/ImfDwaCompressor.cpp b/OpenEXR/IlmImf/ImfDwaCompressor.cpp
-index d029121..fe98745 100644
+index fb359aae..acec1025 100644
 --- a/OpenEXR/IlmImf/ImfDwaCompressor.cpp
 +++ b/OpenEXR/IlmImf/ImfDwaCompressor.cpp
-@@ -167,6 +167,7 @@
+@@ -168,6 +168,7 @@
  	#define NOMINMAX
  #endif
  #include <zlib.h>
@@ -25,7 +25,7 @@ index d029121..fe98745 100644
  
  OPENEXR_IMF_INTERNAL_NAMESPACE_SOURCE_ENTER
 diff --git a/OpenEXR/IlmImf/ImfPxr24Compressor.cpp b/OpenEXR/IlmImf/ImfPxr24Compressor.cpp
-index 6489576..5c63a40 100644
+index 6489576a..5c63a406 100644
 --- a/OpenEXR/IlmImf/ImfPxr24Compressor.cpp
 +++ b/OpenEXR/IlmImf/ImfPxr24Compressor.cpp
 @@ -75,6 +75,7 @@
@@ -37,7 +37,7 @@ index 6489576..5c63a40 100644
  #include <algorithm>
  
 diff --git a/OpenEXR/IlmImf/ImfZip.cpp b/OpenEXR/IlmImf/ImfZip.cpp
-index 4e6a62f..1371fa7 100644
+index 4e6a62fb..1371fa7b 100644
 --- a/OpenEXR/IlmImf/ImfZip.cpp
 +++ b/OpenEXR/IlmImf/ImfZip.cpp
 @@ -40,6 +40,7 @@
@@ -49,7 +49,7 @@ index 4e6a62f..1371fa7 100644
  OPENEXR_IMF_INTERNAL_NAMESPACE_SOURCE_ENTER
  
 diff --git a/OpenEXR/IlmImf/ImfZipCompressor.cpp b/OpenEXR/IlmImf/ImfZipCompressor.cpp
-index 988549b..26304aa 100644
+index 988549b5..26304aa3 100644
 --- a/OpenEXR/IlmImf/ImfZipCompressor.cpp
 +++ b/OpenEXR/IlmImf/ImfZipCompressor.cpp
 @@ -44,6 +44,7 @@
@@ -62,7 +62,7 @@ index 988549b..26304aa 100644
  OPENEXR_IMF_INTERNAL_NAMESPACE_SOURCE_ENTER
 diff --git a/OpenEXR/IlmImf/ImfZlibWorkaround.h b/OpenEXR/IlmImf/ImfZlibWorkaround.h
 new file mode 100644
-index 0000000..26ea72b
+index 00000000..26ea72b0
 --- /dev/null
 +++ b/OpenEXR/IlmImf/ImfZlibWorkaround.h
 @@ -0,0 +1,44 @@

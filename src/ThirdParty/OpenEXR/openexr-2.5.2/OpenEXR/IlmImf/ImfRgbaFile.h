@@ -291,10 +291,15 @@ class RgbaOutputFile
 						char c);
   private:
 
+#if __cplusplus >= 201103L
     RgbaOutputFile (const RgbaOutputFile &) = delete;
     RgbaOutputFile & operator = (const RgbaOutputFile &) = delete;
     RgbaOutputFile (RgbaOutputFile &&) = delete;
     RgbaOutputFile & operator = (RgbaOutputFile &&) = delete;
+#else
+    RgbaOutputFile (const RgbaOutputFile &);
+    RgbaOutputFile & operator = (const RgbaOutputFile &);
+#endif
 
     class ToYca;
 
@@ -430,10 +435,15 @@ class RgbaInputFile
 
   private:
 
+#if __cplusplus >= 201103L
     RgbaInputFile (const RgbaInputFile &) = delete;
     RgbaInputFile & operator = (const RgbaInputFile &) = delete;
     RgbaInputFile (RgbaInputFile &&) = delete;
     RgbaInputFile & operator = (RgbaInputFile &&) = delete;
+#else
+    RgbaInputFile (const RgbaInputFile &);
+    RgbaInputFile & operator = (const RgbaInputFile &);
+#endif
 
     class FromYca;
 

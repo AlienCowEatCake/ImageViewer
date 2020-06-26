@@ -257,10 +257,15 @@ class InputFile : public GenericInputFile
 
     InputFile (InputPartData* part);
 
+#if __cplusplus >= 201103L
     InputFile (const InputFile &) = delete;
     InputFile & operator = (const InputFile &) = delete;
     InputFile (InputFile &&) = delete;
     InputFile & operator = (InputFile &&) = delete;
+#else
+    InputFile (const InputFile &);
+    InputFile & operator = (const InputFile &);
+#endif
 
     void		initialize ();
     void                multiPartInitialize(InputPartData* part);

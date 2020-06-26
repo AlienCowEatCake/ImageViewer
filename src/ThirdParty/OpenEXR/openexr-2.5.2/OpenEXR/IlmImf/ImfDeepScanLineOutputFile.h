@@ -238,10 +238,15 @@ class DeepScanLineOutputFile : public GenericOutputFile
     //------------------------------------------------------------
     DeepScanLineOutputFile (const OutputPartData* part);
 
+#if __cplusplus >= 201103L
     DeepScanLineOutputFile (const DeepScanLineOutputFile &) = delete;
     DeepScanLineOutputFile & operator = (const DeepScanLineOutputFile &) = delete;
     DeepScanLineOutputFile (DeepScanLineOutputFile &&) = delete;
     DeepScanLineOutputFile & operator = (DeepScanLineOutputFile &&) = delete;
+#else
+    DeepScanLineOutputFile (const DeepScanLineOutputFile &);
+    DeepScanLineOutputFile & operator = (const DeepScanLineOutputFile &);
+#endif
 
     void                initialize (const Header &header);
     void                initializeLineBuffer();

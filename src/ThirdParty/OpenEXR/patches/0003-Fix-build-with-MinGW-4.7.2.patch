@@ -1,7 +1,7 @@
-From e2607a81df7b164c620f6900cbb7f0dd09e3f110 Mon Sep 17 00:00:00 2001
+From 594fa8b8c6943dc0c7a456080fcda8e1c10bd2dd Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 19:25:07 +0700
-Subject: [PATCH 3/3] Fix build with MinGW 4.7.2
+Subject: [PATCH 3/4] Fix build with MinGW 4.7.2
 
 ---
  OpenEXR/IlmImf/ImfMisc.cpp      | 2 +-
@@ -9,10 +9,10 @@ Subject: [PATCH 3/3] Fix build with MinGW 4.7.2
  2 files changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/OpenEXR/IlmImf/ImfMisc.cpp b/OpenEXR/IlmImf/ImfMisc.cpp
-index 2775543..e6a5bf8 100644
+index d0b6fb26..f9611b43 100644
 --- a/OpenEXR/IlmImf/ImfMisc.cpp
 +++ b/OpenEXR/IlmImf/ImfMisc.cpp
-@@ -1388,7 +1388,7 @@ namespace
+@@ -1389,7 +1389,7 @@ namespace
  // for architectures that require 32-bit alignment for float reading
  //
  
@@ -22,7 +22,7 @@ index 2775543..e6a5bf8 100644
    FBytes b;
    float f;
 diff --git a/OpenEXR/IlmImf/ImfTiledMisc.cpp b/OpenEXR/IlmImf/ImfTiledMisc.cpp
-index d262f73..e101957 100644
+index 8552ada2..bd865a18 100644
 --- a/OpenEXR/IlmImf/ImfTiledMisc.cpp
 +++ b/OpenEXR/IlmImf/ImfTiledMisc.cpp
 @@ -45,6 +45,7 @@

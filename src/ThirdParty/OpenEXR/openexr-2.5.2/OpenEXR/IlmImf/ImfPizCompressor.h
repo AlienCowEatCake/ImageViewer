@@ -63,10 +63,17 @@ class PizCompressor: public Compressor
     IMF_EXPORT
     virtual ~PizCompressor ();
 
+#if __cplusplus >= 201103L
     PizCompressor (const PizCompressor& other) = delete;
     PizCompressor& operator = (const PizCompressor& other) = delete;
     PizCompressor (PizCompressor&& other) = delete;
     PizCompressor& operator = (PizCompressor&& other) = delete;
+#else
+  private:
+    PizCompressor (const PizCompressor& other);
+    PizCompressor& operator = (const PizCompressor& other);
+  public:
+#endif
 
     IMF_EXPORT
     virtual int		numScanLines () const;

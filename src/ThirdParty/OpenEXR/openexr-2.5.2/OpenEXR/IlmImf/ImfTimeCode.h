@@ -167,7 +167,11 @@ class TimeCode
     IMF_EXPORT
     TimeCode (const TimeCode &other);
 
+#if __cplusplus >= 201103L
     ~TimeCode () = default;
+#else
+    ~TimeCode () {}
+#endif
 
     IMF_EXPORT
     TimeCode & operator = (const TimeCode &other);

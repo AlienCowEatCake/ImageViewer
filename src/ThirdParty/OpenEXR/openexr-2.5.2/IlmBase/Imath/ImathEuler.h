@@ -230,7 +230,11 @@ class Euler : public Vec3<T>
     //  Destructor
     //-------------
 	
+#if __cplusplus >= 201103L
 	~Euler() = default;
+#else
+    ~Euler() {}
+#endif
 
     //---------------------------------
     //  Algebraic functions/ Operators

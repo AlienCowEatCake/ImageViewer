@@ -100,10 +100,17 @@ class MultiPartOutputFile : public GenericOutputFile
         IMF_EXPORT
         ~MultiPartOutputFile();
 
+#if __cplusplus >= 201103L
         MultiPartOutputFile(const MultiPartOutputFile& other) = delete;
         MultiPartOutputFile& operator = (const MultiPartOutputFile& other) = delete;
         MultiPartOutputFile(MultiPartOutputFile&& other) = delete;
         MultiPartOutputFile& operator = (MultiPartOutputFile&& other) = delete;
+#else
+      private:
+        MultiPartOutputFile(const MultiPartOutputFile& other);
+        MultiPartOutputFile& operator = (const MultiPartOutputFile& other);
+      public:
+#endif
 
         struct Data;
 

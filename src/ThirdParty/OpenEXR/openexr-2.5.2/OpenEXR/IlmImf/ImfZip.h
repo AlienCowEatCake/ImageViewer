@@ -53,10 +53,17 @@ class Zip
         IMF_EXPORT
         ~Zip();
 
+#if __cplusplus >= 201103L
         Zip (const Zip& other) = delete;
         Zip& operator = (const Zip& other) = delete;
         Zip (Zip&& other) = delete;
         Zip& operator = (Zip&& other) = delete;
+#else
+      private:
+        Zip (const Zip& other);
+        Zip& operator = (const Zip& other);
+      public:
+#endif
 
         IMF_EXPORT
         size_t maxRawSize();

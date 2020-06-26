@@ -257,10 +257,15 @@ class OutputFile : public GenericOutputFile
     //------------------------------------------------------------
     OutputFile (const OutputPartData* part);
 
+#if __cplusplus >= 201103L
     OutputFile (const OutputFile &) = delete;
     OutputFile & operator = (const OutputFile &) = delete;
     OutputFile (OutputFile &&) = delete;
     OutputFile & operator = (OutputFile &&) = delete;
+#else
+    OutputFile (const OutputFile &);
+    OutputFile & operator = (const OutputFile &);
+#endif
 
     void		initialize (const Header &header);
 

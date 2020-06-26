@@ -503,10 +503,15 @@ class TiledOutputFile : public GenericOutputFile
     // ----------------------------------------------------------------
     TiledOutputFile (const OutputPartData* part);
 
+#if __cplusplus >= 201103L
     TiledOutputFile (const TiledOutputFile &) = delete;
     TiledOutputFile & operator = (const TiledOutputFile &) = delete;
     TiledOutputFile (TiledOutputFile &&) = delete;
     TiledOutputFile & operator = (TiledOutputFile &&) = delete;
+#else
+    TiledOutputFile (const TiledOutputFile &);
+    TiledOutputFile & operator = (const TiledOutputFile &);
+#endif
 
     void		initialize (const Header &header);
 

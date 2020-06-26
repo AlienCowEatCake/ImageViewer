@@ -39,7 +39,9 @@ it under the terms of the one of two licenses as you choose:
 #define CRX_BUF_SIZE 0x10000
 #if !defined(_WIN32) || (defined (__GNUC__) && !defined(__INTRINSIC_SPECIAL__BitScanReverse))  
 /* __INTRINSIC_SPECIAL__BitScanReverse found in MinGW32-W64 v7.30 headers, may be there is a better solution? */
+#if !defined(_WIN32)
 typedef uint32_t DWORD;
+#endif
 libraw_inline void _BitScanReverse(DWORD *Index, unsigned long Mask)
 {
   *Index = sizeof(unsigned long) * 8 - 1 - __builtin_clzl(Mask);
@@ -47,7 +49,7 @@ libraw_inline void _BitScanReverse(DWORD *Index, unsigned long Mask)
 #if LibRawBigEndian
 #define _byteswap_ulong(x) (x)
 #else
-#define _byteswap_ulong(x) __builtin_bswap32(x)
+#define _byteswap_ulong(x) ((((x) & 0xff000000) >> 24) | (((x) & 0x00ff0000) >>  8) | (((x) & 0x0000ff00) <<  8) | (((x) & 0x000000ff) << 24))
 #endif
 #endif
 

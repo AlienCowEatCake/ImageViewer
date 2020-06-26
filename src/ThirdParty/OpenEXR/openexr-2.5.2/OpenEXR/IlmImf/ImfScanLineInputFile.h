@@ -75,10 +75,17 @@ class ScanLineInputFile : public GenericInputFile
     IMF_EXPORT
     virtual ~ScanLineInputFile ();
 
+#if __cplusplus >= 201103L
     ScanLineInputFile (const ScanLineInputFile& other) = delete;
     ScanLineInputFile& operator = (const ScanLineInputFile& other) = delete;
     ScanLineInputFile (ScanLineInputFile&& other) = delete;
     ScanLineInputFile& operator = (ScanLineInputFile&& other) = delete;
+#else
+  private:
+    ScanLineInputFile (const ScanLineInputFile& other);
+    ScanLineInputFile& operator = (const ScanLineInputFile& other);
+  public:
+#endif
 
 
     //------------------------

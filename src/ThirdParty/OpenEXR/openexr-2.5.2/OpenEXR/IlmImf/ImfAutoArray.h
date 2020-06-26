@@ -61,10 +61,17 @@ OPENEXR_IMF_INTERNAL_NAMESPACE_HEADER_ENTER
 	 AutoArray (): _data (new T [size]) { memset(_data, 0, size*sizeof(T)); }
 	~AutoArray () {delete [] _data;}
 
+#if __cplusplus >= 201103L
         AutoArray (const AutoArray& other) = delete;
         AutoArray& operator = (const AutoArray& other) = delete;
         AutoArray (AutoArray&& other) = delete;
         AutoArray& operator = (AutoArray&& other) = delete;
+#else
+      private:
+        AutoArray (const AutoArray& other);
+        AutoArray& operator = (const AutoArray& other);
+      public:
+#endif
         
 	operator T * ()			{return _data;}
 	operator const T * () const	{return _data;}

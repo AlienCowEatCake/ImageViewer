@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -20,8 +20,8 @@
 #include <cassert>
 
 #include "Workarounds/BeginIgnoreDeprecated.h"
+#include <libraw/libraw.h> ///< Order matters
 #include <libraw/libraw_datastream.h>
-#include <libraw/libraw.h>
 #include "Workarounds/EndIgnoreDeprecated.h"
 
 #include <QtGlobal>

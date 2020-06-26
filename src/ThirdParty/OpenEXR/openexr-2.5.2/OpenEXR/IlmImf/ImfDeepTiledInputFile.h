@@ -440,10 +440,15 @@ class DeepTiledInputFile : public GenericInputFile
 
     DeepTiledInputFile (InputPartData* part);
 
+#if __cplusplus >= 201103L
     DeepTiledInputFile (const DeepTiledInputFile &) = delete;
     DeepTiledInputFile & operator = (const DeepTiledInputFile &) = delete;
     DeepTiledInputFile (DeepTiledInputFile &&) = delete;
     DeepTiledInputFile & operator = (DeepTiledInputFile &&) = delete;
+#else
+    DeepTiledInputFile (const DeepTiledInputFile &);
+    DeepTiledInputFile & operator = (const DeepTiledInputFile &);
+#endif
 
     DeepTiledInputFile (const Header &header, OPENEXR_IMF_INTERNAL_NAMESPACE::IStream *is, int version,
                     int numThreads);

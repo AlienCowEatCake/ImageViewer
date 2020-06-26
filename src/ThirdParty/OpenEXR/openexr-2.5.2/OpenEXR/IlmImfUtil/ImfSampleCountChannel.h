@@ -224,10 +224,17 @@ class SampleCountChannel : public ImageChannel
          IMFUTIL_EXPORT
         ~Edit ();
 
+#if __cplusplus >= 201103L
         Edit (const Edit& other) = delete;
         Edit& operator = (const Edit& other) = delete;
         Edit (Edit&& other) = delete;
         Edit& operator = (Edit&& other) = delete;
+#else
+      private:
+        Edit (const Edit& other);
+        Edit& operator = (const Edit& other);
+      public:
+#endif
 
         //
         // Access to the writable sample count array.

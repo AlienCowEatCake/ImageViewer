@@ -316,10 +316,15 @@ class TiledRgbaOutputFile
     // Copy constructor and assignment are not implemented
     //
 
+#if __cplusplus >= 201103L
     TiledRgbaOutputFile (const TiledRgbaOutputFile &) = delete;	
     TiledRgbaOutputFile & operator = (const TiledRgbaOutputFile &) = delete;
     TiledRgbaOutputFile (TiledRgbaOutputFile &&) = delete;	
     TiledRgbaOutputFile & operator = (TiledRgbaOutputFile &&) = delete;
+#else
+    TiledRgbaOutputFile (const TiledRgbaOutputFile &);
+    TiledRgbaOutputFile & operator = (const TiledRgbaOutputFile &);
+#endif
 
     class ToYa;
 
@@ -541,10 +546,15 @@ class TiledRgbaInputFile
     // Copy constructor and assignment are not implemented
     //
 
+#if __cplusplus >= 201103L
     TiledRgbaInputFile (const TiledRgbaInputFile &) = delete;
     TiledRgbaInputFile & operator = (const TiledRgbaInputFile &) = delete;
     TiledRgbaInputFile (TiledRgbaInputFile &&) = delete;
     TiledRgbaInputFile & operator = (TiledRgbaInputFile &&) = delete;
+#else
+    TiledRgbaInputFile (const TiledRgbaInputFile &);
+    TiledRgbaInputFile & operator = (const TiledRgbaInputFile &);
+#endif
 
     class FromYa;
 

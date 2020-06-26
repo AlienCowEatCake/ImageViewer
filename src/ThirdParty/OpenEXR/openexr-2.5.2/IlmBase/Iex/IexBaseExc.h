@@ -65,16 +65,20 @@ class BaseExc: public std::exception
     // Constructors and destructor
     //----------------------------
 
-    IEX_EXPORT BaseExc (const char *s = nullptr) throw();     // std::string (s)
+    IEX_EXPORT BaseExc (const char *s = NULL) throw();        // std::string (s)
     IEX_EXPORT BaseExc (const std::string &s) throw();        // std::string (s)
     IEX_EXPORT BaseExc (std::stringstream &s) throw();        // std::string (s.str())
 
     IEX_EXPORT BaseExc (const BaseExc &be) throw();
+#if __cplusplus >= 201103L
     IEX_EXPORT BaseExc (BaseExc &&be) throw();
+#endif
     IEX_EXPORT virtual ~BaseExc () throw ();
 
     IEX_EXPORT BaseExc & operator = (const BaseExc& be) throw ();
+#if __cplusplus >= 201103L
     IEX_EXPORT BaseExc & operator = (BaseExc&& be) throw ();
+#endif
 
     //---------------------------------------------------
     // what() method -- e.what() returns _message.c_str()
@@ -132,6 +136,8 @@ class BaseExc: public std::exception
 // class derived directly or indirectly from BaseExc:
 //-----------------------------------------------------
 
+#if __cplusplus >= 201103L
+
 #define DEFINE_EXC_EXP(exp, name, base)                             \
     class name: public base                                         \
     {                                                               \
@@ -157,6 +163,32 @@ exp name::name (name &&other) throw() : base (other) {}            \
 exp name& name::operator = (name &other) throw() { base::operator=(other); return *this; } \
 exp name& name::operator = (name &&other) throw() { base::operator=(other); return *this; } \
 exp name::~name () throw () {}
+
+#else
+
+#define DEFINE_EXC_EXP(exp, name, base)                             \
+    class name: public base                                         \
+    {                                                               \
+      public:                                                       \
+        exp name() throw();                                         \
+        exp name (const char* text) throw();                        \
+        exp name (const std::string &text) throw();                 \
+        exp name (std::stringstream &text) throw();                 \
+        exp name (const name &other) throw();                       \
+        exp name& operator = (name &other) throw();                 \
+        exp ~name() throw();                                        \
+    };
+
+#define DEFINE_EXC_EXP_IMPL(exp, name, base)                       \
+exp name::name () throw () : base () {}                            \
+exp name::name (const char* text) throw () : base (text) {}        \
+exp name::name (const std::string& text) throw () : base (text) {} \
+exp name::name (std::stringstream& text) throw () : base (text) {} \
+exp name::name (const name &other) throw() : base (other) {}       \
+exp name& name::operator = (name &other) throw() { base::operator=(other); return *this; } \
+exp name::~name () throw () {}
+
+#endif
 
 // For backward compatibility.
 #define DEFINE_EXC(name, base) DEFINE_EXC_EXP(, name, base)

@@ -102,7 +102,11 @@ template <class T> class Vec2
     // Destructor
     //------------
 	
+#if __cplusplus >= 201103L
     ~Vec2 () = default;
+#else
+    ~Vec2 () {}
+#endif
 
     //----------------------
     // Compatibility with Sb
@@ -305,7 +309,11 @@ template <class T> class Vec3
     // Destructor
     //-----------
 	
+#if __cplusplus >= 201103L
     ~Vec3 () = default;
+#else
+    ~Vec3 () {}
+#endif
 
     //---------------------------------------------------------
     // Vec4 to Vec3 conversion, divides x, y and z by w:
@@ -523,7 +531,11 @@ template <class T> class Vec4
     // Destructor
     //-----------
 	
+#if __cplusplus >= 201103L
     ~Vec4 () = default;
+#else
+    ~Vec4 () {}
+#endif
 
     //-------------------------------------
     // Vec3 to Vec4 conversion, sets w to 1

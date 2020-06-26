@@ -120,10 +120,15 @@ class Array
 
   private:
 
+#if __cplusplus >= 201103L
     Array (const Array &) = delete;
     Array & operator = (const Array &) = delete;
     Array (Array &&) = delete;
     Array & operator = (Array &&) = delete;
+#else
+    Array (const Array &);
+    Array & operator = (const Array &);
+#endif
 
     long _size;
     T * _data;
@@ -178,10 +183,15 @@ class Array2D
 
   private:
 
+#if __cplusplus >= 201103L
     Array2D (const Array2D &) = delete;
     Array2D & operator = (const Array2D &) = delete;
     Array2D (Array2D &&) = delete;
     Array2D & operator = (Array2D &&) = delete;
+#else
+    Array2D (const Array2D &);
+    Array2D & operator = (const Array2D &);
+#endif
 
     long        _sizeX;
     long	_sizeY;

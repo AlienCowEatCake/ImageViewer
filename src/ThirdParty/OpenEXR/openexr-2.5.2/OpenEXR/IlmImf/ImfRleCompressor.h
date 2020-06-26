@@ -58,10 +58,17 @@ class RleCompressor: public Compressor
     IMF_EXPORT
     virtual ~RleCompressor ();
 
+#if __cplusplus >= 201103L
     RleCompressor (const RleCompressor& other) = delete;
     RleCompressor& operator = (const RleCompressor& other) = delete;
     RleCompressor (RleCompressor&& other) = delete;
     RleCompressor& operator = (RleCompressor&& other) = delete;
+#else
+  private:
+    RleCompressor (const RleCompressor& other);
+    RleCompressor& operator = (const RleCompressor& other);
+  public:
+#endif
 
     IMF_EXPORT
     virtual int numScanLines () const;

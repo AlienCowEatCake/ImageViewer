@@ -103,10 +103,17 @@ class DeepImageChannel: public ImageChannel
     IMFUTIL_EXPORT DeepImageChannel (DeepImageLevel &level, bool pLinear);
     IMFUTIL_EXPORT virtual ~DeepImageChannel();
 
+#if __cplusplus >= 201103L
     DeepImageChannel (const DeepImageChannel& other) = delete;
     DeepImageChannel& operator = (const DeepImageChannel& other) = delete;
     DeepImageChannel (DeepImageChannel&& other) = delete;
     DeepImageChannel& operator = (DeepImageChannel&& other) = delete;
+#else
+  private:
+    DeepImageChannel (const DeepImageChannel& other);
+    DeepImageChannel& operator = (const DeepImageChannel& other);
+  public:
+#endif
 
     virtual void setSamplesToZero
                         (size_t i,
@@ -195,10 +202,15 @@ class TypedDeepImageChannel: public DeepImageChannel
     TypedDeepImageChannel (DeepImageLevel &level, bool pLinear);
     virtual ~TypedDeepImageChannel ();
 
+#if __cplusplus >= 201103L
     TypedDeepImageChannel (const TypedDeepImageChannel& other) = delete;
     TypedDeepImageChannel& operator = (const TypedDeepImageChannel& other) = delete;    
     TypedDeepImageChannel (TypedDeepImageChannel&& other) = delete;
     TypedDeepImageChannel& operator = (TypedDeepImageChannel&& other) = delete;    
+#else
+    TypedDeepImageChannel (const TypedDeepImageChannel& other);
+    TypedDeepImageChannel& operator = (const TypedDeepImageChannel& other);
+#endif
 
     virtual void setSamplesToZero
                             (size_t i,

@@ -1,0 +1,44 @@
+diff -Nur libheif-1.7.0.orig/libheif/heif_plugin_registry.cc libheif-1.7.0/libheif/heif_plugin_registry.cc
+--- libheif-1.7.0.orig/libheif/heif_plugin_registry.cc	2020-05-06 19:00:28.000000000 +0700
++++ libheif-1.7.0/libheif/heif_plugin_registry.cc	2020-06-27 03:44:03.909976585 +0700
+@@ -64,9 +64,14 @@
+ 
+ 
+ 
+-static class Register_Default_Plugins
++class Register_Default_Plugins
+ {
+ public:
++  static void ensure_registered() {
++      static Register_Default_Plugins dummy;
++  }
++
++private:
+   Register_Default_Plugins() {
+ #if HAVE_LIBDE265
+     heif::register_decoder(get_decoder_plugin_libde265());
+@@ -81,7 +86,7 @@
+     heif::register_decoder(get_decoder_plugin_aom());
+ #endif
+   }
+-} dummy;
++};
+ 
+ 
+ void heif::register_decoder(const heif_decoder_plugin* decoder_plugin)
+@@ -99,6 +104,7 @@
+   int highest_priority = 0;
+   const struct heif_decoder_plugin* best_plugin = nullptr;
+ 
++  Register_Default_Plugins::ensure_registered();
+   for (const auto* plugin : s_decoder_plugins) {
+     int priority = plugin->does_support_format(type);
+     if (priority > highest_priority) {
+@@ -141,6 +147,7 @@
+ {
+   std::vector<const struct heif_encoder_descriptor*> filtered_descriptors;
+ 
++  Register_Default_Plugins::ensure_registered();
+   for (const auto& descr : s_encoder_descriptors) {
+     const struct heif_encoder_plugin* plugin = descr->plugin;
+ 

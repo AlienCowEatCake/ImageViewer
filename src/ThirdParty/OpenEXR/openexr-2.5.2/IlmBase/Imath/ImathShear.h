@@ -95,7 +95,11 @@ template <class T> class Shear6
     // Destructor
     //------------
 
+#if __cplusplus >= 201103L
 	~Shear6() = default;
+#else
+    ~Shear6() {}
+#endif
 
     //----------------------
     // Compatibility with Sb

@@ -241,10 +241,10 @@ int LibRaw::parse_tiff_ifd(int base)
         }
         break;
       case 0x1202:
-        if (ilm.LensID != 0xffffffffffffffff) {
+        if (ilm.LensID != 0xffffffffffffffffULL) {
           utmp = (fgetc(ifp) << 8) | fgetc(ifp);
           if (utmp) ilm.LensID += utmp;
-          else ilm.LensID = 0xffffffffffffffff;
+          else ilm.LensID = 0xffffffffffffffffULL;
         }
         break;
       case 0x1203: /* 4611, FocalLengthIn35mmFormat, contained in 0x0120

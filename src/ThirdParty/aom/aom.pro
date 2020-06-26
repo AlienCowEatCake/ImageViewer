@@ -15,6 +15,10 @@ THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
 
+*g++*|*clang* {
+    QMAKE_CFLAGS += -std=gnu99
+}
+
 INCLUDEPATH = $${THIRDPARTY_AOM_PATH} $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include $${THIRDPARTY_AOM_CONFIG_PATH} $${INCLUDEPATH}
 
 # find . -name '*.c' | egrep -v '(arm|x86|ppc|mips|/examples/|/apps/|/tools/|vmaf|inspection)' | sort
@@ -76,12 +80,12 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_rtcd.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_txfm.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/blockd.c \
-    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_avx2.c \
+\#    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_avx2.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block.c \
-    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_neon.c \
-    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_sse2.c \
-    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_sse4.c \
-    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_ssse3.c \
+\#    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_neon.c \
+\#    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_sse2.c \
+\#    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_sse4.c \
+\#    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_ssse3.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/cdef.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/cfl.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/convolve.c \

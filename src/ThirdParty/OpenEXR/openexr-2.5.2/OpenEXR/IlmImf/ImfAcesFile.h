@@ -234,10 +234,15 @@ class AcesOutputFile
 
   private:
 
+#if __cplusplus >= 201103L
     AcesOutputFile (const AcesOutputFile &) = delete;
     AcesOutputFile & operator = (const AcesOutputFile &) = delete;
     AcesOutputFile (AcesOutputFile &&) = delete;
     AcesOutputFile & operator = (AcesOutputFile &&) = delete;
+#else
+    AcesOutputFile (const AcesOutputFile &);
+    AcesOutputFile & operator = (const AcesOutputFile &);
+#endif
 
     class Data;
 
@@ -345,10 +350,15 @@ class AcesInputFile
 
   private:
 
+#if __cplusplus >= 201103L
     AcesInputFile (const AcesInputFile &) = delete;
     AcesInputFile & operator = (const AcesInputFile &) = delete;
     AcesInputFile (AcesInputFile &&) = delete;
     AcesInputFile & operator = (AcesInputFile &&) = delete;
+#else
+    AcesInputFile (const AcesInputFile &);
+    AcesInputFile & operator = (const AcesInputFile &);
+#endif
 
     class Data;
 

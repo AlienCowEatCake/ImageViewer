@@ -93,10 +93,17 @@ class TiledInputFile : public GenericInputFile
     IMF_EXPORT
     virtual ~TiledInputFile ();
 
+#if __cplusplus >= 201103L
     TiledInputFile (const TiledInputFile& other) = delete;
     TiledInputFile& operator = (const TiledInputFile& other) = delete;
     TiledInputFile (TiledInputFile&& other) = delete;
     TiledInputFile& operator = (TiledInputFile&& other) = delete;
+#else
+  private:
+    TiledInputFile (const TiledInputFile& other);
+    TiledInputFile& operator = (const TiledInputFile& other);
+  public:
+#endif
 
 
     //------------------------

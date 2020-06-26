@@ -102,10 +102,17 @@ class FlatImageChannel: public ImageChannel
     IMFUTIL_EXPORT
     virtual ~FlatImageChannel();
 
+#if __cplusplus >= 201103L
     FlatImageChannel (const FlatImageChannel& other) = delete;
     FlatImageChannel& operator = (const FlatImageChannel& other) = delete;
     FlatImageChannel (FlatImageChannel&& other) = delete;
     FlatImageChannel& operator = (FlatImageChannel&& other) = delete;
+#else
+  private:
+    FlatImageChannel (const FlatImageChannel& other);
+    FlatImageChannel& operator = (const FlatImageChannel& other);
+  protected:
+#endif
 
     IMFUTIL_EXPORT
     virtual void            resize ();
@@ -179,10 +186,15 @@ class TypedFlatImageChannel: public FlatImageChannel
 
     virtual ~TypedFlatImageChannel ();
 
+#if __cplusplus >= 201103L
     TypedFlatImageChannel (const TypedFlatImageChannel& other) = delete;
     TypedFlatImageChannel& operator = (const TypedFlatImageChannel& other) = delete;    
     TypedFlatImageChannel (TypedFlatImageChannel&& other) = delete;
     TypedFlatImageChannel& operator = (TypedFlatImageChannel&& other) = delete;    
+#else
+    TypedFlatImageChannel (const TypedFlatImageChannel& other);
+    TypedFlatImageChannel& operator = (const TypedFlatImageChannel& other);
+#endif
 
     virtual void        resize ();
 
