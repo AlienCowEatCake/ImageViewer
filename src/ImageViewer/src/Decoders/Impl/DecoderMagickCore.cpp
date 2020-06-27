@@ -221,9 +221,12 @@ public:
         QStringList formatNames;
         magick_size_t num = 0;
         const MagickInfo **info = GetMagickInfoList("*", &num, exception.data());
-        for(size_t i = 0; i < num; i++)
-            formatNames.append(QString::fromLatin1(info[i]->name).toLower());
-
+        if(info)
+        {
+            for(size_t i = 0; i < num; i++)
+                formatNames.append(QString::fromLatin1(info[i]->name).toLower());
+            RelinquishMagickMemory(info);
+        }
         return formatNames;
     }
 

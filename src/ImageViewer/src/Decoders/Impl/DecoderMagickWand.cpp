@@ -165,11 +165,19 @@ public:
         return GetMagickInfoList_f(pattern, number_formats, exception);
     }
 
+    void *RelinquishMagickMemory_(void *memory)
+    {
+        typedef void *(*RelinquishMagickMemory_t)(void *);
+        RelinquishMagickMemory_t RelinquishMagickMemory_f = (RelinquishMagickMemory_t)m_RelinquishMagickMemory;
+        return RelinquishMagickMemory_f(memory);
+    }
+
 private:
     MagickCoreLib()
         : m_AcquireExceptionInfo(Q_NULLPTR)
         , m_DestroyExceptionInfo(Q_NULLPTR)
         , m_GetMagickInfoList(Q_NULLPTR)
+        , m_RelinquishMagickMemory(Q_NULLPTR)
     {
         if(!LibraryUtils::LoadQLibrary(m_library, MAGICKCORE_LIBRARY_NAMES))
             return;
@@ -177,6 +185,7 @@ private:
         m_AcquireExceptionInfo = m_library.resolve("AcquireExceptionInfo");
         m_DestroyExceptionInfo = m_library.resolve("DestroyExceptionInfo");
         m_GetMagickInfoList = m_library.resolve("GetMagickInfoList");
+        m_RelinquishMagickMemory = m_library.resolve("RelinquishMagickMemory");
     }
 
     ~MagickCoreLib()
@@ -188,6 +197,7 @@ private:
                 && m_AcquireExceptionInfo
                 && m_DestroyExceptionInfo
                 && m_GetMagickInfoList
+                && m_RelinquishMagickMemory
                 ;
     }
 
@@ -195,6 +205,7 @@ private:
     QFunctionPointer m_AcquireExceptionInfo;
     QFunctionPointer m_DestroyExceptionInfo;
     QFunctionPointer m_GetMagickInfoList;
+    QFunctionPointer m_RelinquishMagickMemory;
 };
 
 class MagickWandLib
@@ -443,6 +454,7 @@ private:
 #define AcquireExceptionInfo            MagickCoreLib::instance()->AcquireExceptionInfo_
 #define DestroyExceptionInfo            MagickCoreLib::instance()->DestroyExceptionInfo_
 #define GetMagickInfoList               MagickCoreLib::instance()->GetMagickInfoList_
+#define RelinquishMagickMemory          MagickCoreLib::instance()->RelinquishMagickMemory_
 
 #define MagickWandGenesis               MagickWandLib::instance()->MagickWandGenesis_
 #define MagickWandTerminus              MagickWandLib::instance()->MagickWandTerminus_
@@ -637,9 +649,12 @@ public:
         QStringList formatNames;
         magick_size_t num = 0;
         const MagickInfo **info = GetMagickInfoList("*", &num, exception.data());
-        for(size_t i = 0; i < num; i++)
-            formatNames.append(QString::fromLatin1(info[i]->name).toLower());
-
+        if(info)
+        {
+            for(size_t i = 0; i < num; i++)
+                formatNames.append(QString::fromLatin1(info[i]->name).toLower());
+            RelinquishMagickMemory(info);
+        }
         return formatNames;
     }
 
