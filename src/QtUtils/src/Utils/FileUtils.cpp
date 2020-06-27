@@ -40,7 +40,7 @@
 
 namespace MoveToTrashInternal {
 
-static bool MoveToTrashImpl(const QString &absolutePath, QString */*errorDescription*/)
+static bool MoveToTrashImpl(const QString &absolutePath, QString * /*errorDescription*/)
 {
     return QFile::moveToTrash(absolutePath);
 }
