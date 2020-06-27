@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -184,6 +184,11 @@ public:
         m_error = !readGif(filePath);
     }
 
+    ImageMetaData *takeMetaData()
+    {
+        return m_metaData.take();
+    }
+
 private:
     bool readGif(const QString &filePath)
     {
@@ -229,6 +234,25 @@ private:
             for(int i = 0; i < gifFrame->ExtensionBlockCount; i++)
             {
                 ExtensionBlock *extensionHeader = gifFrame->ExtensionBlocks + i;
+
+                if(extensionHeader->Function == COMMENT_EXT_FUNC_CODE)
+                {
+                    // https://www.fileformat.info/format/gif/egff.htm#GIF.SPEC.COMEXB
+                    // The Comment Extension block is used to insert a human-readable
+                    // string of text into a GIF file or data stream. Each comment may
+                    // contain up to 255 7-bit ASCII characters, including all the ASCII
+                    // control codes. Any number of Comment Extension blocks may occur
+                    // in a GIF file, and they may appear anywhere after the Global Color
+                    // Table. It is suggested, however, that comments should appear before
+                    // or after all image data in the GIF file.
+                    const QByteArray commentData = QByteArray(reinterpret_cast<const char*>(extensionHeader->Bytes), extensionHeader->ByteCount);
+                    if(!m_metaData)
+                        m_metaData.reset(new ImageMetaData);
+                    m_metaData->addCustomEntry(QString::fromLatin1("Comment"), QString::fromLatin1("Comment Extension block #%1").arg(i), QString::fromLatin1(commentData));
+                    qDebug() << "Found comment";
+                    continue;
+                }
+
                 if(extensionHeader->Function != APPLICATION_EXT_FUNC_CODE)
                     continue;
                 if(!extensionHeader->Bytes || extensionHeader->ByteCount != 11)
@@ -248,9 +272,32 @@ private:
                     i++;
                     continue;
                 }
-                if(!memcmp(extensionHeader->Bytes, "XMP dataXMP", 11))
+                if(!memcmp(extensionHeader->Bytes, "XMP DataXMP", 11))
                 {
-                    /// @todo
+                    QByteArray xmpData;
+                    ExtensionBlock *extensionData = extensionHeader + 1;
+                    while(i + 1 != gifFrame->ExtensionBlockCount && extensionData->Function == CONTINUE_EXT_FUNC_CODE)
+                    {
+                        // Usual case (including ICC profile): In each sub-block, the
+                        // first byte specifies its size in bytes (0 to 255) and the
+                        // rest of the bytes contain the data.
+                        // Special case for XMP data: In each sub-block, the first byte
+                        // is also part of the XMP payload. XMP in GIF also has a 257
+                        // byte padding data. See the XMP specification for details.
+                        const unsigned char c = static_cast<unsigned char>(extensionData->ByteCount);
+                        xmpData += QByteArray(reinterpret_cast<const char*>(&c), 1);
+
+                        xmpData += QByteArray(reinterpret_cast<const char*>(extensionData->Bytes), extensionData->ByteCount);
+                        extensionData++;
+                        i++;
+                    }
+
+                    // XMP padding data is 0x01, 0xff, 0xfe ... 0x01, 0x00.
+                    const int xmpPadingSize = 257;
+                    if(xmpData.size() > xmpPadingSize)
+                        xmpData.resize(xmpData.size() - xmpPadingSize);
+
+                    m_metaData.reset(ImageMetaData::joinMetaData(m_metaData.take(), ImageMetaData::createXmpMetaData(xmpData)));
                     qDebug() << "Found XMP metadata";
                     continue;
                 }
@@ -323,6 +370,9 @@ private:
         m_numFrames = m_frames.size();
         return m_numFrames > 0;
     }
+
+private:
+    QScopedPointer<ImageMetaData> m_metaData;
 };
 
 // ====================================================================================================
@@ -356,9 +406,9 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
-        IAnimationProvider *provider = new GifAnimationProvider(filePath);
+        GifAnimationProvider *provider = new GifAnimationProvider(filePath);
+        IImageMetaData *metaData = ImageMetaData::joinMetaData(ImageMetaData::createMetaData(filePath), provider->takeMetaData());
         QGraphicsItem *item = GraphicsItemsFactory::instance().createAnimatedItem(provider);
-        IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
         return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
 };
