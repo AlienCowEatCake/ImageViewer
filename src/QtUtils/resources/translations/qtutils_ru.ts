@@ -178,12 +178,12 @@
 <context>
     <name>ThemeManager</name>
     <message>
-        <location filename="../../src/Utils/ThemeManager.cpp" line="402"/>
+        <location filename="../../src/Utils/ThemeManager.cpp" line="407"/>
         <source>Restart Required</source>
         <translation>Требуется перезапуск</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/ThemeManager.cpp" line="403"/>
+        <location filename="../../src/Utils/ThemeManager.cpp" line="408"/>
         <source>The theme change will take effect after a restart of application.</source>
         <translation>Изменение темы вступит в силу только после перезапуска приложения.</translation>
     </message>
