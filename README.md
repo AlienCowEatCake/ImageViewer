@@ -35,7 +35,7 @@ Full configuration:
 * Qt 5.5 or later
 * Modern GCC, Clang or MSVC compiler with C++11 support
 
-### Building with bundled libraries example (Ubuntu 18.04)
+### Building with bundled libraries example (Ubuntu 20.04)
 
 ```bash
 sudo apt-get install git g++ make qt5-default libqt5svg5-dev
@@ -48,28 +48,33 @@ make
 cp -a src/ImageViewer/ImageViewer /path/to/install/
 ```
 
-### Building with all system libraries example (Ubuntu 18.04)
+### Building with all system libraries example (Ubuntu 20.04)
 
 ```bash
 sudo apt-get install git g++ make qt5-default libqt5svg5-dev zlib1g-dev \
     liblcms2-dev libexif-dev libexiv2-dev libjpeg-dev libmng-dev libpng-dev \
     libjbig-dev libtiff-dev libwebp-dev libfreetype6-dev libwmf-dev \
-    libopenjp2-7-dev libgif-dev libraw-dev libheif-dev libilmbase-dev \
-    libopenexr-dev qt5-image-formats-plugins libqt5webkit5-dev qtwebengine5-dev
+    libopenjp2-7-dev libgif-dev libraw-dev librsvg2-dev libheif-dev \
+    libilmbase-dev libopenexr-dev libmagickcore-dev libmagickwand-dev \
+    qt5-image-formats-plugins libqt5webkit5-dev qtwebengine5-dev
 git clone https://github.com/AlienCowEatCake/ImageViewer.git
 cd ImageViewer
 mkdir build
 cd build
-qmake CONFIG+="release" \
+qmake CONFIG+="release enable_pkgconfig" \
     CONFIG+="system_zlib disable_zstd disable_xzutils disable_libexpat" \
     CONFIG+="system_liblcms2 system_libexif system_exiv2 system_libjpeg" \
     CONFIG+="disable_libjasper system_libmng system_libpng system_jbigkit" \
     CONFIG+="system_libtiff system_libwebp disable_libbpg disable_freetype" \
     CONFIG+="system_libwmf system_openjpeg system_giflib system_libraw" \
-    CONFIG+="disable_libde265 system_libheif system_openexr" \
+    CONFIG+="system_librsvg disable_resvg disable_aom disable_libde265 " \
+    CONFIG+="system_libheif system_openexr disable_libavif" \
+    CONFIG+="enable_magickcore system_magickwand" \
+    CONFIG+="disable_graphicsmagick disable_graphicsmagickwand" \
     CONFIG+="disable_qtextended disable_stb disable_nanosvg" \
     CONFIG+="disable_qtimageformats enable_qtwebkit enable_qtwebengine" \
-    INCLUDEPATH+=/usr/include/freetype2 -r ../ImageViewer.pro
+    -r ../ImageViewer.pro
+make
 cp -a src/ImageViewer/ImageViewer /path/to/install/
 ```
 
