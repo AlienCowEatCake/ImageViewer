@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -90,10 +90,10 @@ Version::Version(const QString &version, const QString &delimeter)
 }
 
 Version::Version(const Version &version)
-    : m_major(version.major())
-    , m_minor(version.minor())
-    , m_patch(version.patch())
-    , m_build(version.build())
+    : m_major(version.getMajor())
+    , m_minor(version.getMinor())
+    , m_patch(version.getPatch())
+    , m_build(version.getBuild())
 {}
 
 Version::~Version()
@@ -101,16 +101,16 @@ Version::~Version()
 
 Version &Version::operator = (const Version &other)
 {
-    setMajor(other.major());
-    setMinor(other.minor());
-    setPatch(other.patch());
-    setBuild(other.build());
+    setMajor(other.getMajor());
+    setMinor(other.getMinor());
+    setPatch(other.getPatch());
+    setBuild(other.getBuild());
     return *this;
 }
 
 bool Version::operator == (const Version &other) const
 {
-    return major() == other.major() && minor() == other.minor() && patch() == other.patch() && build() == other.build();
+    return getMajor() == other.getMajor() && getMinor() == other.getMinor() && getPatch() == other.getPatch() && getBuild() == other.getBuild();
 }
 
 bool Version::operator != (const Version &other) const
@@ -120,24 +120,24 @@ bool Version::operator != (const Version &other) const
 
 bool Version::operator < (const Version &other) const
 {
-    if(major() < other.major())
+    if(getMajor() < other.getMajor())
         return true;
-    if(major() > other.major())
+    if(getMajor() > other.getMajor())
         return false;
 
-    if(minor() < other.minor())
+    if(getMinor() < other.getMinor())
         return true;
-    if(minor() > other.minor())
+    if(getMinor() > other.getMinor())
         return false;
 
-    if(patch() < other.patch())
+    if(getPatch() < other.getPatch())
         return true;
-    if(patch() > other.patch())
+    if(getPatch() > other.getPatch())
         return false;
 
-    if(build() < other.build())
+    if(getBuild() < other.getBuild())
         return true;
-    if(build() > other.build())
+    if(getBuild() > other.getBuild())
         return false;
 
     return false;
@@ -165,40 +165,40 @@ bool Version::isValid() const
 
 bool Version::hasMajor() const
 {
-    return major() >= 0;
+    return getMajor() >= 0;
 }
 
 bool Version::hasMinor() const
 {
-    return minor() >= 0;
+    return getMinor() >= 0;
 }
 
 bool Version::hasPatch() const
 {
-    return patch() >= 0;
+    return getPatch() >= 0;
 }
 
 bool Version::hasBuild() const
 {
-    return build() >= 0;
+    return getBuild() >= 0;
 }
 
-int Version::major() const
+int Version::getMajor() const
 {
     return m_major;
 }
 
-int Version::minor() const
+int Version::getMinor() const
 {
     return m_minor;
 }
 
-int Version::patch() const
+int Version::getPatch() const
 {
     return m_patch;
 }
 
-int Version::build() const
+int Version::getBuild() const
 {
     return m_build;
 }
@@ -265,16 +265,16 @@ QString Version::string(int detail, const QString &delimeter) const
     switch(detail)
     {
     case DetailBuild:
-        result.prepend(delimeter + QString::number(build()));
+        result.prepend(delimeter + QString::number(getBuild()));
         Q_FALLTHROUGH();
     case DetailPatch:
-        result.prepend(delimeter + QString::number(patch()));
+        result.prepend(delimeter + QString::number(getPatch()));
         Q_FALLTHROUGH();
     case DetailMinor:
-        result.prepend(delimeter + QString::number(minor()));
+        result.prepend(delimeter + QString::number(getMinor()));
         Q_FALLTHROUGH();
     case DetailMajor:
-        result.prepend(QString::number(major()));
+        result.prepend(QString::number(getMajor()));
         Q_FALLTHROUGH();
     default:
         break;
