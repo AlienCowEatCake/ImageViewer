@@ -509,6 +509,8 @@ struct MacTouchBar::Impl
             else
                 [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarRecordStopTemplate, ThemeUtils::ICON_STOP)];
         }
+#else
+        Q_UNUSED(isSlideShow);
 #endif
     }
 
@@ -526,6 +528,8 @@ struct MacTouchBar::Impl
             else
                 [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarExitFullScreenTemplate, ThemeUtils::ICON_FULLSCREEN)];
         }
+#else
+        Q_UNUSED(isFullScreen);
 #endif
     }
 };
