@@ -375,7 +375,13 @@ QPixmap QPixmapFromNSImage(const NSImage *image)
             return QPixmap();
         [NSGraphicsContext saveGraphicsState];
         [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:bmp]];
-        [image drawInRect:NSMakeRect(0, 0, width, height) fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1];
+        [image drawInRect:NSMakeRect(0, 0, width, height) fromRect:NSZeroRect operation:
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_AND_LATER)
+                NSCompositingOperationSourceOver
+#else
+                NSCompositeSourceOver
+#endif
+                fraction:1];
         [NSGraphicsContext restoreGraphicsState];
         pixmap = QPixmapFromCGImageRef(CFTypePtrFromGet([bmp CGImage]));
         [bmp release];

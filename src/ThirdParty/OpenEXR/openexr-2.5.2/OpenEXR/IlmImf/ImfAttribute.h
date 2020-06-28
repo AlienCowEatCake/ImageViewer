@@ -313,7 +313,7 @@ TypedAttribute<T>::copy () const
 template <class T>
 void		
 TypedAttribute<T>::writeValueTo (OPENEXR_IMF_INTERNAL_NAMESPACE::OStream &os,
-                                    int version) const
+                                    int /*version*/) const
 {
     OPENEXR_IMF_INTERNAL_NAMESPACE::Xdr::write <OPENEXR_IMF_INTERNAL_NAMESPACE::StreamIO> (os, _value);
 }
@@ -322,8 +322,8 @@ TypedAttribute<T>::writeValueTo (OPENEXR_IMF_INTERNAL_NAMESPACE::OStream &os,
 template <class T>
 void		
 TypedAttribute<T>::readValueFrom (OPENEXR_IMF_INTERNAL_NAMESPACE::IStream &is,
-                                     int size,
-                                     int version)
+                                     int /*size*/,
+                                     int /*version*/)
 {
     OPENEXR_IMF_INTERNAL_NAMESPACE::Xdr::read <OPENEXR_IMF_INTERNAL_NAMESPACE::StreamIO> (is, _value);
 }

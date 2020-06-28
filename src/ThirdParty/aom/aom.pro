@@ -95,7 +95,7 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/common/entropymv.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/frame_buffers.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/idct.c \
-    $${THIRDPARTY_AOM_PATH}/av1/common/loopfiltermask.c \
+\#    $${THIRDPARTY_AOM_PATH}/av1/common/loopfiltermask.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/mvref_common.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/obu_util.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/odintrin.c \
