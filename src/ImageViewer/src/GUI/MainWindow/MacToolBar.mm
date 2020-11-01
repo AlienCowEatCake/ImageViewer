@@ -23,6 +23,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include <QApplication>
+#include <QDebug>
 #include <QWidget>
 
 #include "Utils/InfoUtils.h"
@@ -179,7 +180,7 @@ struct SimpleToolBarItem
 
     bool actionSenderMatch(id sender) const
     {
-        return item && item == sender;
+        return (item && item == sender) || (sender && item && [item menuFormRepresentation] == sender);
     }
 
     void setLabel(const QString &label)
@@ -338,7 +339,7 @@ struct ButtonedToolBarItem : SimpleToolBarItem
 
     bool actionSenderMatch(id sender) const
     {
-        return button && button == sender;
+        return (button && button == sender) || (sender && item && [item menuFormRepresentation] == sender);
     }
 
     void setToolTip(const QString &toolTip)
@@ -618,6 +619,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     INVOKE_IF_MATCH(m_toolBarData->preferences              , "preferencesRequested"            )
     INVOKE_IF_MATCH(m_toolBarData->exit                     , "exitRequested"                   )
 #undef INVOKE_IF_MATCH
+    qWarning() << "No match for" << sender;
 }
 
 - (void)makeSegmentedPairItem:(SegmentedToolBarItem &)groupItem
