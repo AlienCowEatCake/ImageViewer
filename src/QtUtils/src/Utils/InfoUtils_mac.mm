@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -131,77 +131,78 @@ bool MacVersionGreatOrEqual(const int major, const int minor, const int patch)
 /// @brief Получить человеко-читаемую информацию о системе
 QString GetSystemDescription()
 {
-    QString result;
-
     const Version version = GetCurrentMacVersion();
 
-    if(version.major < 10)
-        result.append(QString::fromLatin1("Mac OS"));
-    else if(version.major == 10 && version.minor < 8)
-        result.append(QString::fromLatin1("Mac OS X"));
-    else if(version.major == 10 && version.minor < 12)
-        result.append(QString::fromLatin1("OS X"));
-    else
-        result.append(QString::fromLatin1("macOS"));
-
-    result.append(QString::fromLatin1(" %1.%2").arg(version.major).arg(version.minor));
-    if(version.patch > 0)
-        result.append(QString::fromLatin1(".%1").arg(version.patch));
-
+    QString osName;
     switch(version.major * 100 + version.minor)
     {
     case 1000:
-        result.append(QString::fromLatin1(" \"Cheetah\""));
+        osName = QString::fromLatin1("Cheetah");
         break;
     case 1001:
-        result.append(QString::fromLatin1(" \"Puma\""));
+        osName = QString::fromLatin1("Puma");
         break;
     case 1002:
-        result.append(QString::fromLatin1(" \"Jaguar\""));
+        osName = QString::fromLatin1("Jaguar");
         break;
     case 1003:
-        result.append(QString::fromLatin1(" \"Panther\""));
+        osName = QString::fromLatin1("Panther");
         break;
     case 1004:
-        result.append(QString::fromLatin1(" \"Tiger\""));
+        osName = QString::fromLatin1("Tiger");
         break;
     case 1005:
-        result.append(QString::fromLatin1(" \"Leopard\""));
+        osName = QString::fromLatin1("Leopard");
         break;
     case 1006:
-        result.append(QString::fromLatin1(" \"Snow Leopard\""));
+        osName = QString::fromLatin1("Snow Leopard");
         break;
     case 1007:
-        result.append(QString::fromLatin1(" \"Lion\""));
+        osName = QString::fromLatin1("Lion");
         break;
     case 1008:
-        result.append(QString::fromLatin1(" \"Mountain Lion\""));
+        osName = QString::fromLatin1("Mountain Lion");
         break;
     case 1009:
-        result.append(QString::fromLatin1(" \"Mavericks\""));
+        osName = QString::fromLatin1("Mavericks");
         break;
     case 1010:
-        result.append(QString::fromLatin1(" \"Yosemite\""));
+        osName = QString::fromLatin1("Yosemite");
         break;
     case 1011:
-        result.append(QString::fromLatin1(" \"El Capitan\""));
+        osName = QString::fromLatin1("El Capitan");
         break;
     case 1012:
-        result.append(QString::fromLatin1(" \"Sierra\""));
+        osName = QString::fromLatin1("Sierra");
         break;
     case 1013:
-        result.append(QString::fromLatin1(" \"High Sierra\""));
+        osName = QString::fromLatin1("High Sierra");
         break;
     case 1014:
-        result.append(QString::fromLatin1(" \"Mojave\""));
+        osName = QString::fromLatin1("Mojave");
         break;
     case 1015:
-        result.append(QString::fromLatin1(" \"Catalina\""));
+        osName = QString::fromLatin1("Catalina");
+        break;
+    case 1016:
+    case 1100:
+        osName = QString::fromLatin1("Big Sur");
         break;
     default:
         break;
     }
 
+    const QString osPrefix =
+            version.major < 10                          ? QString::fromLatin1("Mac OS")     :
+            version.major == 10 && version.minor < 8    ? QString::fromLatin1("Mac OS X")   :
+            version.major == 10 && version.minor < 12   ? QString::fromLatin1("OS X")       :
+                                                          QString::fromLatin1("macOS")      ;
+
+    QString result = QString::fromLatin1("%1 %2.%3").arg(osPrefix).arg(version.major).arg(version.minor);
+    if(version.patch > 0)
+        result.append(QString::fromLatin1(".%1").arg(version.patch));
+    if(!osName.isEmpty())
+        result.append(QString::fromLatin1(" \"%1\"").arg(osName));
     return result;
 }
 
