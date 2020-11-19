@@ -134,7 +134,7 @@ QString GetSystemDescription()
     const Version version = GetCurrentMacVersion();
 
     QString osName;
-    switch(version.major * 100 + version.minor)
+    switch(version.major * 100 + (version.major < 11 ? version.minor : 0))
     {
     case 1000:
         osName = QString::fromLatin1("Cheetah");
