@@ -85,24 +85,67 @@ static bool MoveToTrashViaFSMoveObject(const QString &absolutePath, QString *err
 {
     // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_osx.py
 
+    typedef OSStatus (*FSPathMakeRefWithOptions_t)(const UInt8 *path, OptionBits options, FSRef *ref, Boolean *isDirectory);
+    typedef OSStatus (*FSMoveObjectToTrashSync_t)(const FSRef *source, FSRef *target, OptionBits options);
+    typedef const char *(*GetMacOSStatusCommentString_t)(OSStatus err);
+#if !defined (AVAILABLE_MAC_OS_X_VERSION_10_8_AND_LATER)
+    const FSPathMakeRefWithOptions_t FSPathMakeRefWithOptions_f = &FSPathMakeRefWithOptions;
+    const FSMoveObjectToTrashSync_t FSMoveObjectToTrashSync_f = &FSMoveObjectToTrashSync;
+    const GetMacOSStatusCommentString_t GetMacOSStatusCommentString_f = &GetMacOSStatusCommentString;
+#else
+    CFBundleRef coreServicesBundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.CoreServices"));
+    if(!coreServicesBundle)
+    {
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "The bundle with identifier `com.apple.CoreServices` was not found.");
+        qWarning() << "[FileUtils::MoveToTrash]: The bundle with identifier `com.apple.CoreServices` was not found.";
+        return false;
+    }
+
+    const FSPathMakeRefWithOptions_t FSPathMakeRefWithOptions_f = reinterpret_cast<FSPathMakeRefWithOptions_t>(CFBundleGetFunctionPointerForName(coreServicesBundle, CFSTR("FSPathMakeRefWithOptions")));
+    const FSMoveObjectToTrashSync_t FSMoveObjectToTrashSync_f = reinterpret_cast<FSMoveObjectToTrashSync_t>(CFBundleGetFunctionPointerForName(coreServicesBundle, CFSTR("FSMoveObjectToTrashSync")));
+    const GetMacOSStatusCommentString_t GetMacOSStatusCommentString_f = reinterpret_cast<GetMacOSStatusCommentString_t>(CFBundleGetFunctionPointerForName(coreServicesBundle, CFSTR("GetMacOSStatusCommentString")));
+#endif
+    if(!FSPathMakeRefWithOptions_f)
+    {
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "The function with name `FSPathMakeRefWithOptions` was not found.");
+        qWarning() << "[FileUtils::MoveToTrash]: The function with name `FSPathMakeRefWithOptions` was not found.";
+        return false;
+    }
+    if(!FSMoveObjectToTrashSync_f)
+    {
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "The function with name `FSMoveObjectToTrashSync` was not found.");
+        qWarning() << "[FileUtils::MoveToTrash]: The function with name `FSMoveObjectToTrashSync` was not found.";
+        return false;
+    }
+    if(!GetMacOSStatusCommentString_f)
+    {
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "The function with name `GetMacOSStatusCommentString` was not found.");
+        qWarning() << "[FileUtils::MoveToTrash]: The function with name `GetMacOSStatusCommentString` was not found.";
+        return false;
+    }
+
     FSRef ref;
     memset(&ref, 0, sizeof(ref));
     const QByteArray utf8Path = absolutePath.toUtf8();
     const UInt8 *utf8PathData = reinterpret_cast<const UInt8*>(utf8Path.data());
-    OSStatus status = FSPathMakeRefWithOptions(utf8PathData, kFSPathMakeRefDoNotFollowLeafSymlink, &ref, Q_NULLPTR);
+    OSStatus status = FSPathMakeRefWithOptions_f(utf8PathData, kFSPathMakeRefDoNotFollowLeafSymlink, &ref, Q_NULLPTR);
     if(status)
     {
-        const QString description = QString::fromUtf8(GetMacOSStatusCommentString(status));
+        const QString description = QString::fromUtf8(GetMacOSStatusCommentString_f(status));
         if(errorDescription)
             *errorDescription = description;
         qWarning() << "[FileUtils::MoveToTrash]: Unable to FSPathMakeRefWithOptions for file" << absolutePath;
         qWarning() << "[FileUtils::MoveToTrash]: Status Comment:" << description;
         return false;
     }
-    status = FSMoveObjectToTrashSync(&ref, Q_NULLPTR, kFSFileOperationDefaultOptions);
+    status = FSMoveObjectToTrashSync_f(&ref, Q_NULLPTR, kFSFileOperationDefaultOptions);
     if(status)
     {
-        const QString description = QString::fromUtf8(GetMacOSStatusCommentString(status));
+        const QString description = QString::fromUtf8(GetMacOSStatusCommentString_f(status));
         if(errorDescription)
             *errorDescription = description;
         qWarning() << "[FileUtils::MoveToTrash]: Unable to FSMoveObjectToTrashSync for file" << absolutePath;
