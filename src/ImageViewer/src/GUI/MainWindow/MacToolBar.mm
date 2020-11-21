@@ -180,7 +180,13 @@ struct SimpleToolBarItem
 
     bool actionSenderMatch(id sender) const
     {
-        return (item && item == sender) || (sender && item && [item menuFormRepresentation] == sender);
+        if(item && item == sender)
+            return true;
+        if(sender && item && [item menuFormRepresentation] == sender)
+            return true;
+        if(sender && item && [sender conformsToProtocol:@protocol(NSUserInterfaceItemIdentification)] && [[item itemIdentifier] isEqualToString:[sender identifier]])
+            return true;
+        return false;
     }
 
     void setLabel(const QString &label)
@@ -205,6 +211,14 @@ struct SimpleToolBarItem
             return;
         AUTORELEASE_POOL;
         [item setPaletteLabel:ObjCUtils::QStringToNSString(paletteLabel)];
+    }
+
+    void setMenuTitle(const QString &menuTitle)
+    {
+        if(!item)
+            return;
+        AUTORELEASE_POOL;
+        [[item menuFormRepresentation] setTitle:ObjCUtils::QStringToNSString(menuTitle)];
     }
 };
 
@@ -240,7 +254,8 @@ struct GroupedToolBarItem : SimpleToolBarItem
             return;
         AUTORELEASE_POOL;
         BOOL value = isEnabled ? YES : NO;
-        [item setEnabled: value];
+        [item setEnabled:value];
+        [[item menuFormRepresentation] setEnabled:value];
         [group setEnabled:NO];
         for(NSToolbarItem *subitem in [group subitems])
         {
@@ -258,7 +273,7 @@ struct GroupedToolBarItem : SimpleToolBarItem
 
     bool actionSenderMatch(id sender) const
     {
-        if(item && item == sender)
+        if(SimpleToolBarItem::actionSenderMatch(sender))
             return true;
         if(!sender || sender != segmentedControl)
             return false;
@@ -326,6 +341,7 @@ struct ButtonedToolBarItem : SimpleToolBarItem
         BOOL value = isEnabled ? YES : NO;
         [button setEnabled:value];
         [item setEnabled:value];
+        [[item menuFormRepresentation] setEnabled:value];
     }
 
     void setChecked(bool isChecked)
@@ -593,6 +609,11 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     return nil;
 }
 
+- (BOOL)validateMenuItem:(NSMenuItem *)item
+{
+    return [item isEnabled];
+}
+
 - (IBAction)itemClicked:(id)sender
 {
 #define INVOKE_IF_MATCH(ITEM, METHOD) \
@@ -635,11 +656,17 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     NSToolbarItem *first = [[NSToolbarItem alloc] initWithItemIdentifier:firstIdentifier];
 //    [first setTarget:self];
 //    [first setAction:@selector(itemClicked:)];
+    [[first menuFormRepresentation] setIdentifier:firstIdentifier];
+    [[first menuFormRepresentation] setTarget:self];
+    [[first menuFormRepresentation] setAction:@selector(itemClicked:)];
     firstItem.item = first;
 
     NSToolbarItem *second = [[NSToolbarItem alloc] initWithItemIdentifier:secondIdentifier];
 //    [second setTarget:self];
 //    [second setAction:@selector(itemClicked:)];
+    [[second menuFormRepresentation] setIdentifier:secondIdentifier];
+    [[second menuFormRepresentation] setTarget:self];
+    [[second menuFormRepresentation] setAction:@selector(itemClicked:)];
     secondItem.item = second;
 
     NSSegmentedControl *segmentedControl = [[NSSegmentedControl alloc] initWithFrame:NSMakeRect(0, 0, 2 * GROUPED_BUTTON_WIDTH + SEGMENTED_OFFSET, BUTTON_HEIGHT)];
@@ -730,7 +757,9 @@ struct MacToolBar::Impl
     void retranslate()
     {
         toolBarData.navigatePrevious.setToolTip(qApp->translate("MacToolBar", "Previous", "Long"));
+        toolBarData.navigatePrevious.setMenuTitle(qApp->translate("MacToolBar", "Previous", "Short"));
         toolBarData.navigateNext.setToolTip(qApp->translate("MacToolBar", "Next", "Long"));
+        toolBarData.navigateNext.setMenuTitle(qApp->translate("MacToolBar", "Next", "Short"));
         const QString navigateGroupText = qApp->translate("MacToolBar", "Navigate", "Short");
         toolBarData.navigateGroup.setPaletteLabel(navigateGroupText);
         toolBarData.navigateGroup.setLabel(navigateGroupText);
@@ -740,7 +769,9 @@ struct MacToolBar::Impl
         toolBarData.startSlideShow.setLabel(slideShowShortText);
 
         toolBarData.zoomOut.setToolTip(qApp->translate("MacToolBar", "Zoom Out", "Long"));
+        toolBarData.zoomOut.setMenuTitle(qApp->translate("MacToolBar", "Zoom Out", "Short"));
         toolBarData.zoomIn.setToolTip(qApp->translate("MacToolBar", "Zoom In", "Long"));
+        toolBarData.zoomIn.setMenuTitle(qApp->translate("MacToolBar", "Zoom In", "Short"));
         const QString zoomGroupText = qApp->translate("MacToolBar", "Zoom", "Short");
         toolBarData.zoomGroup.setPaletteLabel(zoomGroupText);
         toolBarData.zoomGroup.setLabel(zoomGroupText);
@@ -764,13 +795,17 @@ struct MacToolBar::Impl
         toolBarData.zoomFullScreen.setLabel(zoomFullScreenShortText);
 
         toolBarData.rotateCounterclockwise.setToolTip(qApp->translate("MacToolBar", "Rotate Counterclockwise", "Long"));
+        toolBarData.rotateCounterclockwise.setMenuTitle(qApp->translate("MacToolBar", "Rotate Counterclockwise", "Short"));
         toolBarData.rotateClockwise.setToolTip(qApp->translate("MacToolBar", "Rotate Clockwise", "Long"));
+        toolBarData.rotateClockwise.setMenuTitle(qApp->translate("MacToolBar", "Rotate Clockwise", "Short"));
         const QString rotateGroupText = qApp->translate("MacToolBar", "Rotate", "Short");
         toolBarData.rotateGroup.setPaletteLabel(rotateGroupText);
         toolBarData.rotateGroup.setLabel(rotateGroupText);
 
         toolBarData.flipHorizontal.setToolTip(qApp->translate("MacToolBar", "Flip Horizontal", "Long"));
+        toolBarData.flipHorizontal.setMenuTitle(qApp->translate("MacToolBar", "Flip Horizontal", "Short"));
         toolBarData.flipVertical.setToolTip(qApp->translate("MacToolBar", "Flip Vertical", "Long"));
+        toolBarData.flipVertical.setMenuTitle(qApp->translate("MacToolBar", "Flip Vertical", "Short"));
         const QString flipGroupText = qApp->translate("MacToolBar", "Flip", "Short");
         toolBarData.flipGroup.setPaletteLabel(flipGroupText);
         toolBarData.flipGroup.setLabel(flipGroupText);
