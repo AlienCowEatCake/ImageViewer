@@ -1,4 +1,4 @@
-From ddf0d540cb57b2f5b2dc27af5b042f3ba4f18125 Mon Sep 17 00:00:00 2001
+From d5cdb580a194eabf49689bcd51764fadc8f1fc1e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:37:35 +0700
 Subject: [PATCH 6/9] Use Qt convertStringCharset

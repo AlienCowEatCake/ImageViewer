@@ -1,4 +1,4 @@
-From e531d83c48b9c9f9043cdabcf38d9e8722862d4f Mon Sep 17 00:00:00 2001
+From df1af8de1ba90268e531e5b569ae6bfcc3a27b58 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:38:50 +0700
 Subject: [PATCH 7/9] Dont use register keyword

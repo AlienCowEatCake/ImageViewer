@@ -1,4 +1,4 @@
-From b009303a7dcc7872fe02359f81797fb664900a92 Mon Sep 17 00:00:00 2001
+From f9c2ef163edc8b6c432386ec3f89ec504c8fd32f Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:36:47 +0700
 Subject: [PATCH 5/9] Fix launch on Win98
@@ -8,7 +8,7 @@ Subject: [PATCH 5/9] Fix launch on Win98
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/src/makernote_int.cpp b/src/makernote_int.cpp
-index 20cd7629..789a53e5 100644
+index 25bb3d3f..40f71fb1 100644
 --- a/src/makernote_int.cpp
 +++ b/src/makernote_int.cpp
 @@ -97,10 +97,14 @@ namespace Exiv2 {
