@@ -97,6 +97,41 @@ public:
             rgb.rowBytes = static_cast<uint32_t>(frame.width() * 4);
             avifImageYUVToRGB(decoder->image, &rgb);
 
+            if(decoder->image->transformFlags & AVIF_TRANSFORM_PASP)
+            {
+                qDebug() << "Found PixelAspectRatioBox transform for frame" << m_numFrames;
+                if(decoder->image->pasp.hSpacing != 1 && decoder->image->pasp.vSpacing != 1)
+                {
+                    qDebug() << "pasp.hSpacing =" << decoder->image->pasp.hSpacing;
+                    qDebug() << "pasp.vSpacing =" << decoder->image->pasp.vSpacing;
+                    /// @todo ?
+                }
+            }
+            if(decoder->image->transformFlags & AVIF_TRANSFORM_CLAP)
+            {
+                qDebug() << "Found CleanApertureBox transform for frame" << m_numFrames;
+                const avifCleanApertureBox &clap = decoder->image->clap;
+                const int width = static_cast<int>(clap.widthN / clap.widthD);
+                const int height = static_cast<int>(clap.heightN / clap.heightD);
+                const int horizOff = static_cast<int>(clap.horizOffN / clap.horizOffD);
+                const int vertOff = static_cast<int>(clap.vertOffN / clap.vertOffD);
+                const int left = horizOff + (static_cast<int>(decoder->image->width)  - 1) / 2 - (width  - 1) / 2;
+                const int top  = vertOff  + (static_cast<int>(decoder->image->height) - 1) / 2 - (height - 1) / 2;
+                frame = frame.copy(QRect(left, top, width, height));
+            }
+            if(decoder->image->transformFlags & AVIF_TRANSFORM_IROT)
+            {
+                qDebug() << "Found ImageRotation transform for frame" << m_numFrames;
+                QTransform transform;
+                transform.rotate(-static_cast<qreal>(decoder->image->irot.angle) * 90);
+                frame = frame.transformed(transform);
+            }
+            if(decoder->image->transformFlags & AVIF_TRANSFORM_IMIR)
+            {
+                qDebug() << "Found ImageMirror transform for frame" << m_numFrames;
+                frame = frame.mirrored(decoder->image->imir.axis == 1, decoder->image->imir.axis == 0);
+            }
+
             if(decoder->image->profileFormat == AVIF_PROFILE_FORMAT_ICC)
             {
                 qDebug() << "Found ICC profile for frame" << m_numFrames;
