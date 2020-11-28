@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.7.0
+THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.9.1
 THIRDPARTY_LIBHEIF_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -25,23 +25,26 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/bitstream.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/box.cc \
 \ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/box_fuzzer.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/color_conversion_fuzzer.cc \
+\ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/color_conversion_fuzzer.cc \
 \ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/encoder_fuzzer.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/error.cc \
 \ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/file_fuzzer.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_avif.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_colorconversion.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_context.cc \
 \ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_decoder_aom.cc \
+\ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_decoder_dav1d.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_decoder_libde265.cc \
 \ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_encoder_aom.cc \
+\ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_encoder_rav1e.cc \
 \ #    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_encoder_x265.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_file.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_hevc.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_image.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_plugin.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_plugin_registry.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/nclx.cc \
 
 !disable_aom {
     SOURCES += \
@@ -59,9 +62,11 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_context.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_cxx.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_decoder_aom.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_decoder_dav1d.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_decoder_libde265.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_emscripten.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_encoder_aom.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_encoder_rav1e.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_encoder_x265.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_file.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif.h \
@@ -72,6 +77,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_plugin_registry.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_version.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/logging.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/nclx.h \
     $${THIRDPARTY_LIBHEIF_CONFIG_PATH}/config.h
 
 TR_EXCLUDE += $${THIRDPARTY_LIBHEIF_PATH}/*
