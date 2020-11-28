@@ -1,6 +1,6 @@
-diff -Nur LibRaw-0.20-Beta3.orig/src/decoders/crx.cpp LibRaw-0.20-Beta3/src/decoders/crx.cpp
---- LibRaw-0.20-Beta3.orig/src/decoders/crx.cpp	2020-06-18 13:51:24.000000000 +0700
-+++ LibRaw-0.20-Beta3/src/decoders/crx.cpp	2020-06-27 02:16:08.317780218 +0700
+diff -Nur LibRaw-0.20.2_orig/src/decoders/crx.cpp LibRaw-0.20.2/src/decoders/crx.cpp
+--- LibRaw-0.20.2_orig/src/decoders/crx.cpp	2020-10-15 12:06:07.000000000 +0700
++++ LibRaw-0.20.2/src/decoders/crx.cpp	2020-11-29 03:57:07.776453899 +0700
 @@ -39,7 +39,9 @@
  #define CRX_BUF_SIZE 0x10000
  #if !defined(_WIN32) || (defined (__GNUC__) && !defined(__INTRINSIC_SPECIAL__BitScanReverse))  
@@ -20,9 +20,9 @@ diff -Nur LibRaw-0.20-Beta3.orig/src/decoders/crx.cpp LibRaw-0.20-Beta3/src/deco
  #endif
  #endif
  
-diff -Nur LibRaw-0.20-Beta3.orig/src/metadata/tiff.cpp LibRaw-0.20-Beta3/src/metadata/tiff.cpp
---- LibRaw-0.20-Beta3.orig/src/metadata/tiff.cpp	2020-06-18 13:51:24.000000000 +0700
-+++ LibRaw-0.20-Beta3/src/metadata/tiff.cpp	2020-06-27 02:16:08.321780231 +0700
+diff -Nur LibRaw-0.20.2_orig/src/metadata/tiff.cpp LibRaw-0.20.2/src/metadata/tiff.cpp
+--- LibRaw-0.20.2_orig/src/metadata/tiff.cpp	2020-10-15 12:06:07.000000000 +0700
++++ LibRaw-0.20.2/src/metadata/tiff.cpp	2020-11-29 03:57:07.776453899 +0700
 @@ -241,10 +241,10 @@
          }
          break;
@@ -36,9 +36,9 @@ diff -Nur LibRaw-0.20-Beta3.orig/src/metadata/tiff.cpp LibRaw-0.20-Beta3/src/met
          }
          break;
        case 0x1203: /* 4611, FocalLengthIn35mmFormat, contained in 0x0120
-diff -Nur LibRaw-0.20-Beta3.orig/src/utils/utils_libraw.cpp LibRaw-0.20-Beta3/src/utils/utils_libraw.cpp
---- LibRaw-0.20-Beta3.orig/src/utils/utils_libraw.cpp	2020-06-18 13:51:24.000000000 +0700
-+++ LibRaw-0.20-Beta3/src/utils/utils_libraw.cpp	2020-06-27 02:16:08.321780231 +0700
+diff -Nur LibRaw-0.20.2_orig/src/utils/utils_libraw.cpp LibRaw-0.20.2/src/utils/utils_libraw.cpp
+--- LibRaw-0.20.2_orig/src/utils/utils_libraw.cpp	2020-10-15 12:06:07.000000000 +0700
++++ LibRaw-0.20.2/src/utils/utils_libraw.cpp	2020-11-29 03:57:07.776453899 +0700
 @@ -291,6 +291,8 @@
  {
  #ifdef _MSC_VER

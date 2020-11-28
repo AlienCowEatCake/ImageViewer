@@ -1,7 +1,7 @@
-diff -Nur LibRaw-0.20-Beta1_orig/src/libraw_datastream.cpp LibRaw-0.20-Beta1/src/libraw_datastream.cpp
---- LibRaw-0.20-Beta1_orig/src/libraw_datastream.cpp	2020-05-07 13:20:44.000000000 +0700
-+++ LibRaw-0.20-Beta1/src/libraw_datastream.cpp	2020-05-18 00:41:56.632572167 +0700
-@@ -682,6 +682,35 @@
+diff -Nur LibRaw-0.20.2_orig/src/libraw_datastream.cpp LibRaw-0.20.2/src/libraw_datastream.cpp
+--- LibRaw-0.20.2_orig/src/libraw_datastream.cpp	2020-10-15 12:06:07.000000000 +0700
++++ LibRaw-0.20.2/src/libraw_datastream.cpp	2020-11-29 03:56:11.432703574 +0700
+@@ -686,6 +686,35 @@
      ::CloseHandle(hMap_);
  }
  
@@ -37,7 +37,7 @@ diff -Nur LibRaw-0.20-Beta1_orig/src/libraw_datastream.cpp LibRaw-0.20-Beta1/src
  void LibRaw_windows_datastream::Open(HANDLE hFile)
  {
    // create a file mapping handle on the file handle
-@@ -690,7 +719,7 @@
+@@ -694,7 +723,7 @@
      throw std::runtime_error("failed to create file mapping");
  
    // now map the whole file base view
