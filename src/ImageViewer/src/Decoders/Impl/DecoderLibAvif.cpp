@@ -54,12 +54,25 @@ public:
         if(!inBuffer.isValid())
             return false;
 
+#if QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) < QT_VERSION_CHECK(0, 8, 2)
         avifROData raw;
         raw.data = inBuffer.dataAs<const uint8_t*>();
         raw.size = inBuffer.sizeAs<size_t>();
 
         avifDecoder *decoder = avifDecoderCreate();
         avifResult decodeResult = avifDecoderParse(decoder, &raw);
+#else
+        avifDecoder *decoder = avifDecoderCreate();
+        avifResult decodeResult = avifDecoderSetIOMemory(decoder, inBuffer.dataAs<const uint8_t*>(), inBuffer.sizeAs<size_t>());
+        if(decodeResult != AVIF_RESULT_OK)
+        {
+            qWarning() << "ERROR: Cannot set IO on avifDecoder:" << avifResultToString(decodeResult);
+            avifDecoderDestroy(decoder);
+            return false;
+        }
+
+        decodeResult = avifDecoderParse(decoder);
+#endif
         if(decodeResult != AVIF_RESULT_OK)
         {
             qWarning() << "ERROR: Failed to decode:" << avifResultToString(decodeResult);
@@ -132,15 +145,14 @@ public:
                 frame = frame.mirrored(decoder->image->imir.axis == 1, decoder->image->imir.axis == 0);
             }
 
+#if QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) < QT_VERSION_CHECK(0, 8, 0)
             if(decoder->image->profileFormat == AVIF_PROFILE_FORMAT_ICC)
+#else
+            if(decoder->image->icc.data && decoder->image->icc.size)
+#endif
             {
                 qDebug() << "Found ICC profile for frame" << m_numFrames;
                 ICCProfile(QByteArray::fromRawData(reinterpret_cast<const char*>(decoder->image->icc.data), static_cast<int>(decoder->image->icc.size))).applyToImage(&frame);
-            }
-            else if(decoder->image->profileFormat == AVIF_PROFILE_FORMAT_NCLX)
-            {
-                qDebug() << "Found NCLX profile for frame" << m_numFrames;
-                /// @todo
             }
 
             if(decoder->image->exif.size)
