@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.2.9
+THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.2.10
 
 include(../CommonSettings.pri)
 include(../libpng/libpng.pri)

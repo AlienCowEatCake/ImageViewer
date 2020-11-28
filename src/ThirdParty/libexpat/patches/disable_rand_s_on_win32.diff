@@ -1,16 +1,16 @@
-diff -Nur expat-2.2.9_orig/lib/xmlparse.c expat-2.2.9/lib/xmlparse.c
---- expat-2.2.9_orig/lib/xmlparse.c	2019-09-26 05:03:02.000000000 +0700
-+++ expat-2.2.9/lib/xmlparse.c	2019-10-24 00:11:42.224621505 +0700
-@@ -734,7 +734,7 @@
+diff -Nur expat-2.2.10_orig/lib/xmlparse.c expat-2.2.10/lib/xmlparse.c
+--- expat-2.2.10_orig/lib/xmlparse.c	2020-10-03 22:14:57.000000000 +0700
++++ expat-2.2.10/lib/xmlparse.c	2020-11-29 02:54:35.396579397 +0700
+@@ -743,7 +743,7 @@
  
  #endif /* defined(HAVE_ARC4RANDOM) && ! defined(HAVE_ARC4RANDOM_BUF) */
  
 -#ifdef _WIN32
 +#if defined(_WIN32) && ! defined(XML_POOR_ENTROPY)
  
- /* Obtain entropy on Windows using the rand_s() function which
-  * generates cryptographically secure random numbers.  Internally it
-@@ -813,7 +813,7 @@
+ /* Provide declaration of rand_s() for MinGW-32 (not 64, which has it),
+    as it didn't declare it in its header prior to version 5.3.0 of its
+@@ -831,7 +831,7 @@
    return ENTROPY_DEBUG("arc4random", entropy);
  #else
    /* Try high quality providers first .. */
