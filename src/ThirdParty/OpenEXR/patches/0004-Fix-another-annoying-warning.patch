@@ -1,0 +1,36 @@
+From 155f8e62c62c27567d6fea4da2ac48605a6608c6 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 28 Jun 2020 17:12:07 +0700
+Subject: [PATCH 4/4] Fix another annoying warning
+
+---
+ OpenEXR/IlmImf/ImfAttribute.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/OpenEXR/IlmImf/ImfAttribute.h b/OpenEXR/IlmImf/ImfAttribute.h
+index a2ade5d2..c609860e 100644
+--- a/OpenEXR/IlmImf/ImfAttribute.h
++++ b/OpenEXR/IlmImf/ImfAttribute.h
+@@ -313,7 +313,7 @@ TypedAttribute<T>::copy () const
+ template <class T>
+ void		
+ TypedAttribute<T>::writeValueTo (OPENEXR_IMF_INTERNAL_NAMESPACE::OStream &os,
+-                                    int version) const
++                                    int /*version*/) const
+ {
+     OPENEXR_IMF_INTERNAL_NAMESPACE::Xdr::write <OPENEXR_IMF_INTERNAL_NAMESPACE::StreamIO> (os, _value);
+ }
+@@ -322,8 +322,8 @@ TypedAttribute<T>::writeValueTo (OPENEXR_IMF_INTERNAL_NAMESPACE::OStream &os,
+ template <class T>
+ void		
+ TypedAttribute<T>::readValueFrom (OPENEXR_IMF_INTERNAL_NAMESPACE::IStream &is,
+-                                     int size,
+-                                     int version)
++                                     int /*size*/,
++                                     int /*version*/)
+ {
+     OPENEXR_IMF_INTERNAL_NAMESPACE::Xdr::read <OPENEXR_IMF_INTERNAL_NAMESPACE::StreamIO> (is, _value);
+ }
+-- 
+2.20.1
+

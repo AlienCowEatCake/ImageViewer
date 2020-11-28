@@ -1,4 +1,4 @@
-From e1c15b4299dfd0e235abd4f38530bea0281d561e Mon Sep 17 00:00:00 2001
+From d3e3c22bfac0f161c57458081cf48d05103aeeca Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 18:20:28 +0700
 Subject: [PATCH 2/4] Fix build with MinGW 3.4.2
@@ -704,7 +704,7 @@ index 3c1ecc17..73420ff6 100644
      void                initialize (const Header &header);
      void                initializeLineBuffer();
 diff --git a/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp b/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp
-index 5cca1bbc..8b86da2e 100644
+index 6be42cb7..1028f5a1 100644
 --- a/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp
 +++ b/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp
 @@ -266,10 +266,17 @@ struct DeepTiledInputFile::Data: public Mutex
@@ -757,7 +757,7 @@ index f7f13623..faa7af65 100644
      DeepTiledInputFile (const Header &header, OPENEXR_IMF_INTERNAL_NAMESPACE::IStream *is, int version,
                      int numThreads);
 diff --git a/OpenEXR/IlmImf/ImfDeepTiledOutputFile.cpp b/OpenEXR/IlmImf/ImfDeepTiledOutputFile.cpp
-index 9654e311..b910cb5c 100644
+index 887c0329..a61511d3 100644
 --- a/OpenEXR/IlmImf/ImfDeepTiledOutputFile.cpp
 +++ b/OpenEXR/IlmImf/ImfDeepTiledOutputFile.cpp
 @@ -203,10 +203,17 @@ struct BufferedTile
@@ -968,7 +968,7 @@ index 58986a4a..28a11060 100644
      KeyCode & operator = (const KeyCode &other);
  
 diff --git a/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp b/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
-index 0c574fa8..fec1c039 100644
+index 1e047269..33152d53 100644
 --- a/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
 +++ b/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
 @@ -118,10 +118,15 @@ struct MultiPartInputFile::Data: public InputStreamMutex
@@ -1008,7 +1008,7 @@ index f3651d9e..178b6d0d 100644
      
      //
 diff --git a/OpenEXR/IlmImf/ImfMultiPartOutputFile.cpp b/OpenEXR/IlmImf/ImfMultiPartOutputFile.cpp
-index 89501c40..f9dbf2f1 100644
+index 082efc27..61706311 100644
 --- a/OpenEXR/IlmImf/ImfMultiPartOutputFile.cpp
 +++ b/OpenEXR/IlmImf/ImfMultiPartOutputFile.cpp
 @@ -125,10 +125,17 @@ struct MultiPartOutputFile::Data: public OutputStreamMutex

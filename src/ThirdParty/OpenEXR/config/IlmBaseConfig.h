@@ -40,12 +40,12 @@
 //
 // Version information
 //
-#define ILMBASE_VERSION_STRING "2.5.2"
-#define ILMBASE_PACKAGE_STRING "IlmBase 2.5.2"
+#define ILMBASE_VERSION_STRING "2.5.3"
+#define ILMBASE_PACKAGE_STRING "IlmBase 2.5.3"
 
 #define ILMBASE_VERSION_MAJOR 2
 #define ILMBASE_VERSION_MINOR 5
-#define ILMBASE_VERSION_PATCH 2
+#define ILMBASE_VERSION_PATCH 3
 
 #define ILMBASE_VERSION_HEX ((uint32_t(ILMBASE_VERSION_MAJOR) << 24) | \
                              (uint32_t(ILMBASE_VERSION_MINOR) << 16) | \
