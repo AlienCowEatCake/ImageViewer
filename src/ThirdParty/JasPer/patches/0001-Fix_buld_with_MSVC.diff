@@ -1,8 +1,8 @@
 diff --git a/src/libjasper/include/jasper/jas_types.h b/src/libjasper/include/jasper/jas_types.h
-index 3e15573..ccd72ac 100644
+index a4ee693..63c7aa7 100644
 --- a/src/libjasper/include/jasper/jas_types.h
 +++ b/src/libjasper/include/jasper/jas_types.h
-@@ -110,9 +110,11 @@
+@@ -87,9 +87,11 @@
  #define jas_ulonglong unsigned long long
  
  #if defined(_MSC_VER) && (_MSC_VER < 1800)

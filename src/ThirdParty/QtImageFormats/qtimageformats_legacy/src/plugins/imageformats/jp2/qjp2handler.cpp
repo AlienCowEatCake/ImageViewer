@@ -42,6 +42,7 @@
 #define JAS_WIN_MSVC_BUILD
 #endif
 #include <jasper/jasper.h>
+#include <math.h> // for pow
 
 QT_BEGIN_NAMESPACE
 

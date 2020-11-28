@@ -1,5 +1,5 @@
-# URL: https://www.ece.uvic.ca/~frodo/jasper/ + https://github.com/mdadams/jasper
-# License: JasPer License v2.0 - https://www.ece.uvic.ca/~frodo/jasper/LICENSE
+# URL: https://github.com/jasper-software/jasper
+# License: JasPer License v2.0 - https://github.com/jasper-software/jasper/blob/master/LICENSE
 
 include($${PWD}/../../Features.pri)
 
@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libjasper {
 
-        THIRDPARTY_JASPER_PATH = $${PWD}/jasper-9aef6d9
+        THIRDPARTY_JASPER_PATH = $${PWD}/jasper-9975856
         THIRDPARTY_JASPER_CONFIG_PATH = $${PWD}/config
 
         INCLUDEPATH += $${THIRDPARTY_JASPER_CONFIG_PATH} $${THIRDPARTY_JASPER_PATH}/src/libjasper/include

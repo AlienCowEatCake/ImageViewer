@@ -45,6 +45,7 @@
 #include "qcolor.h"
 
 #include <jasper/jasper.h>
+#include <math.h> // for pow
 
 QT_BEGIN_NAMESPACE
 

@@ -1,5 +1,5 @@
-# URL: https://www.ece.uvic.ca/~frodo/jasper/ + https://github.com/mdadams/jasper
-# License: JasPer License v2.0 - https://www.ece.uvic.ca/~frodo/jasper/LICENSE
+# URL: https://github.com/jasper-software/jasper
+# License: JasPer License v2.0 - https://github.com/jasper-software/jasper/blob/master/LICENSE
 
 TEMPLATE = lib
 CONFIG += staticlib
@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_JASPER_PATH = $${PWD}/jasper-9aef6d9
+THIRDPARTY_JASPER_PATH = $${PWD}/jasper-9975856
 THIRDPARTY_JASPER_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -18,7 +18,7 @@ include(../libjpeg/libjpeg.pri)
 
 INCLUDEPATH = $${THIRDPARTY_JASPER_CONFIG_PATH} $${THIRDPARTY_JASPER_PATH}/src/libjasper/include $${INCLUDEPATH}
 
-*msvc*: DEFINES += JAS_WIN_MSVC_BUILD
+# cmake -DCMAKE_BUILD_TYPE=Release -DJAS_ENABLE_SHARED=0 -DJAS_ENABLE_OPENGL=0 -DJAS_ENABLE_AUTOMATIC_DEPENDENCIES=0 -DJAS_ENABLE_DOC=0 -DJAS_ENABLE_PROGRAMS=0 -DJAS_ENABLE_DANGEROUS_INTERNAL_TESTING_MODE=1 ..
 
 SOURCES += \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/base/jas_cm.c \
@@ -119,6 +119,7 @@ HEADERS += \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/ras/ras_cod.h \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/ras/ras_enc.h \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_cm.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_compiler.h \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_debug.h \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_dll.h \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_fix.h \
