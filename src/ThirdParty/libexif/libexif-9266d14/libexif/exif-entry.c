@@ -708,7 +708,7 @@ static const struct {
 static const struct {
   ExifTag tag;
   struct {
-    int index;
+    ExifShort index;
     const char *values[4]; /*!< list of progressively shorter string
 			    descriptions; the longest one that fits will be
 			    selected */
@@ -1371,8 +1371,8 @@ exif_entry_get_value (ExifEntry *e, char *val, unsigned int maxlen)
 	{
 		unsigned char *utf16;
 
-		/* Sanity check the size to prevent overflow */
-		if (e->size+sizeof(uint16_t)+1 < e->size) break;
+		/* Sanity check the size to prevent overflow. Note EXIF files are 64kb at most. */
+		if (e->size >= 65536 - sizeof(uint16_t)*2) break;
 
 		/* The tag may not be U+0000-terminated , so make a local
 		   U+0000-terminated copy before converting it */
