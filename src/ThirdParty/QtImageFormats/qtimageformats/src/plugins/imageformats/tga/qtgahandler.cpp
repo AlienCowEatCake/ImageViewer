@@ -66,6 +66,7 @@ bool QTgaHandler::canRead() const
         setFormat("tga");
         return true;
     }
+    qWarning("QTgaHandler::canRead(): %s", qPrintable(tga->errorMessage()));
     return false;
 }
 

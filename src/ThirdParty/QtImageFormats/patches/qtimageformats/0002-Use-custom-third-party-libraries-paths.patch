@@ -1,4 +1,4 @@
-From d49d88d285eb27aa5c00aade7711dafc91b93e3a Mon Sep 17 00:00:00 2001
+From c4cf17d9f3f363510801c29017d56f055d405d6b Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 May 2017 23:13:29 +0700
 Subject: [PATCH 2/7] Use custom third-party libraries paths

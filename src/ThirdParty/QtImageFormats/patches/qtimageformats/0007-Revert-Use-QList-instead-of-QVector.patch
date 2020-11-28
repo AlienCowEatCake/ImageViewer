@@ -1,4 +1,4 @@
-From ce8c5a133bca6a11003b97d2fe99214878fed91f Mon Sep 17 00:00:00 2001
+From 19bb6ee6afbc39ae0a463bd729d2f7889bef416f Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 24 Jun 2020 19:53:15 +0700
 Subject: [PATCH 7/7] Revert "Use QList instead of QVector"
@@ -136,7 +136,7 @@ index 123ea0a..1336d6d 100644
          if (isGrayscale) {
              uint16 photometric = PHOTOMETRIC_MINISBLACK;
 diff --git a/tests/auto/tiff/tst_qtiff.cpp b/tests/auto/tiff/tst_qtiff.cpp
-index 073e77f..267a29c 100644
+index 671ade3..028b6d8 100644
 --- a/tests/auto/tiff/tst_qtiff.cpp
 +++ b/tests/auto/tiff/tst_qtiff.cpp
 @@ -552,9 +552,9 @@ void tst_qtiff::multipage_data()

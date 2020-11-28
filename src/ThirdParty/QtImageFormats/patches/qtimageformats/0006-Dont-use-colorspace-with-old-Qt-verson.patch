@@ -1,4 +1,4 @@
-From dbbfc22bbc07522bb16eb296f135beda9efe0caa Mon Sep 17 00:00:00 2001
+From 7584df0f02af8a9d94c94b1e4bd38d5aab42ed7a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 17 Nov 2019 01:42:45 +0700
 Subject: [PATCH 6/7] Dont use colorspace with old Qt verson

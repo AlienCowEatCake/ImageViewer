@@ -10,7 +10,7 @@ find_library(FWCoreGraphics CoreGraphics)
 find_library(FWImageIO ImageIO)
 # special case end
 
-qt_add_plugin(QMacHeifPlugin
+qt_internal_add_plugin(QMacHeifPlugin
     OUTPUT_NAME qmacheif
     TYPE imageformats
     SOURCES

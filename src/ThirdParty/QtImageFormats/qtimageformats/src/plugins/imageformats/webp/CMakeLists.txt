@@ -4,7 +4,7 @@
 ## QWebpPlugin Plugin:
 #####################################################################
 
-qt_add_plugin(QWebpPlugin
+qt_internal_add_plugin(QWebpPlugin
     OUTPUT_NAME qwebp
     TYPE imageformats
     SOURCES

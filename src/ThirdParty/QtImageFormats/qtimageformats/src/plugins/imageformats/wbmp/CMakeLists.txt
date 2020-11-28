@@ -4,7 +4,7 @@
 ## QWbmpPlugin Plugin:
 #####################################################################
 
-qt_add_plugin(QWbmpPlugin
+qt_internal_add_plugin(QWbmpPlugin
     OUTPUT_NAME qwbmp
     TYPE imageformats
     SOURCES

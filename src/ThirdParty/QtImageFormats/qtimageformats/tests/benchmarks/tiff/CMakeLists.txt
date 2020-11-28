@@ -4,7 +4,7 @@
 ## tst_bench_qtiff Binary:
 #####################################################################
 
-qt_add_benchmark(tst_bench_qtiff
+qt_internal_add_benchmark(tst_bench_qtiff
     SOURCES
         tst_qtiff.cpp
     PUBLIC_LIBRARIES
@@ -240,7 +240,7 @@ set(tiff_resource_files
     "tiff/tiled_rgb.tiff"
 )
 
-qt_add_resource(tst_bench_qtiff "tiff"
+qt_internal_add_resource(tst_bench_qtiff "tiff"
     PREFIX
         "/"
     BASE

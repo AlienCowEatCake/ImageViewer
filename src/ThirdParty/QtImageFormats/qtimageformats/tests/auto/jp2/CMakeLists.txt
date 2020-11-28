@@ -4,7 +4,7 @@
 ## tst_qjp2 Test:
 #####################################################################
 
-qt_add_test(tst_qjp2
+qt_internal_add_test(tst_qjp2
     SOURCES
         tst_qjp2.cpp
     PUBLIC_LIBRARIES
@@ -23,7 +23,7 @@ set(jp2_resource_files
     "jp2/logo.jp2"
 )
 
-qt_add_resource(tst_qjp2 "jp2"
+qt_internal_add_resource(tst_qjp2 "jp2"
     PREFIX
         "/"
     BASE

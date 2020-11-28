@@ -13,7 +13,7 @@ elseif(NOT TARGET ZLIB::ZLIB)
 endif()
 # special case end
 
-qt_add_plugin(QTiffPlugin
+qt_internal_add_plugin(QTiffPlugin
     OUTPUT_NAME qtiff
     TYPE imageformats
     SOURCES
@@ -31,12 +31,12 @@ qt_add_plugin(QTiffPlugin
 ## Scopes:
 #####################################################################
 
-qt_extend_target(QTiffPlugin CONDITION QT_FEATURE_system_tiff
+qt_internal_extend_target(QTiffPlugin CONDITION QT_FEATURE_system_tiff
     LIBRARIES
         TIFF::TIFF
 )
 
-qt_extend_target(QTiffPlugin CONDITION NOT QT_FEATURE_system_tiff
+qt_internal_extend_target(QTiffPlugin CONDITION NOT QT_FEATURE_system_tiff
     SOURCES
         ../../../3rdparty/libtiff/libtiff/tif_aux.c
         ../../../3rdparty/libtiff/libtiff/tif_close.c
@@ -76,27 +76,27 @@ qt_extend_target(QTiffPlugin CONDITION NOT QT_FEATURE_system_tiff
         ../../../3rdparty/libtiff/libtiff
 )
 
-qt_extend_target(QTiffPlugin CONDITION WIN32 AND NOT QT_FEATURE_system_tiff
+qt_internal_extend_target(QTiffPlugin CONDITION WIN32 AND NOT QT_FEATURE_system_tiff
     SOURCES
         ../../../3rdparty/libtiff/libtiff/tif_win32.c
 )
 
-qt_extend_target(QTiffPlugin CONDITION UNIX AND NOT QT_FEATURE_system_tiff
+qt_internal_extend_target(QTiffPlugin CONDITION UNIX AND NOT QT_FEATURE_system_tiff
     SOURCES
         ../../../3rdparty/libtiff/libtiff/tif_unix.c
 )
 
-qt_extend_target(QTiffPlugin CONDITION ANDROID AND NOT QT_FEATURE_system_tiff
+qt_internal_extend_target(QTiffPlugin CONDITION ANDROID AND NOT QT_FEATURE_system_tiff
     SOURCES
         ../../../3rdparty/libtiff/port/lfind.c
 )
 
-qt_extend_target(QTiffPlugin CONDITION QT_FEATURE_system_zlib AND NOT QT_FEATURE_system_tiff
+qt_internal_extend_target(QTiffPlugin CONDITION QT_FEATURE_system_zlib AND NOT QT_FEATURE_system_tiff
     LIBRARIES
         ZLIB::ZLIB
 )
 
-qt_extend_target(QTiffPlugin CONDITION NOT QT_FEATURE_system_tiff AND NOT QT_FEATURE_system_zlib
+qt_internal_extend_target(QTiffPlugin CONDITION NOT QT_FEATURE_system_tiff AND NOT QT_FEATURE_system_zlib
     LIBRARIES
         Qt::ZlibPrivate
 )

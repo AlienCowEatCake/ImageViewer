@@ -4,7 +4,7 @@
 ## tst_qmng Test:
 #####################################################################
 
-qt_add_test(tst_qmng
+qt_internal_add_test(tst_qmng
     SOURCES
         tst_qmng.cpp
     PUBLIC_LIBRARIES
@@ -35,7 +35,7 @@ set(mng_resource_files
     "mng/fire.mng"
 )
 
-qt_add_resource(tst_qmng "mng"
+qt_internal_add_resource(tst_qmng "mng"
     PREFIX
         "/"
     BASE

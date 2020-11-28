@@ -4,7 +4,7 @@
 ## QICNSPlugin Plugin:
 #####################################################################
 
-qt_add_plugin(QICNSPlugin
+qt_internal_add_plugin(QICNSPlugin
     OUTPUT_NAME qicns
     TYPE imageformats
     SOURCES

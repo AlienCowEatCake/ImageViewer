@@ -28,7 +28,7 @@
 /*!
 \title Qt Image Formats
 \page qtimageformats-index.html
-\brief Qt Image Formats module provides support for extra image file formats
+\brief Qt Image Formats module provides support for extra image file formats.
 
 The core Qt Gui library by default supports reading and writing image
 files of the most common file formats: \c PNG, \c JPEG, \c BMP, \c GIF
@@ -77,7 +77,11 @@ plugins/imageformats), together with the default image format
 plugins. They may be deployed to the target system in the same way as
 other plugins, see the \l{Deploying Plugins} documentation.
 
-\section2 Licenses and Attributions
+\section1 Module Evolution
+\l{Changes to Qt Image Formats} lists important changes in the module
+API and functionality that were done for the Qt 6 series of Qt.
+
+\section1 Licenses and Attributions
 
 Qt Image Formats is available under commercial licenses from \l{The Qt Company}.
 In addition, it is available under the
@@ -90,7 +94,7 @@ modules under following permissive licenses:
 
 \generatelist{groupsbymodule attributions-qtimageformats}
 
-\section2 Security considerations
+\section1 Security Considerations
 
 Since these file formats are more rarely used, the codecs may be less
 thoroughly debugged against potential security holes. As always, care

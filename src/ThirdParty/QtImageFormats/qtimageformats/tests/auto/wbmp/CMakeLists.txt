@@ -4,7 +4,7 @@
 ## tst_qwbmp Test:
 #####################################################################
 
-qt_add_test(tst_qwbmp
+qt_internal_add_test(tst_qwbmp
     SOURCES
         tst_qwbmp.cpp
     PUBLIC_LIBRARIES
@@ -23,7 +23,7 @@ set(wbmp_resource_files
     "wbmp/qt-logo-small.wbmp"
 )
 
-qt_add_resource(tst_qwbmp "wbmp"
+qt_internal_add_resource(tst_qwbmp "wbmp"
     PREFIX
         "/"
     BASE

@@ -4,7 +4,7 @@
 ## tst_qtga Test:
 #####################################################################
 
-qt_add_test(tst_qtga
+qt_internal_add_test(tst_qtga
     SOURCES
         tst_qtga.cpp
     PUBLIC_LIBRARIES
@@ -19,7 +19,7 @@ set(tga_resource_files
     "tga/test-flag.tga"
 )
 
-qt_add_resource(tst_qtga "tga"
+qt_internal_add_resource(tst_qtga "tga"
     PREFIX
         "/"
     BASE

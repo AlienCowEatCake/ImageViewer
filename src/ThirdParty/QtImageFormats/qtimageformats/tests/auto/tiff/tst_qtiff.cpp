@@ -113,7 +113,7 @@ void tst_qtiff::formatHandler()
 
     bool formatSupported = false;
     for (QList<QByteArray>::Iterator it = formats.begin(); it != formats.end(); ++it) {
-        if (*it == testFormat.toLower()) {
+        if (*it == testFormat.toLatin1().toLower()) {
             formatSupported = true;
             break;
         }

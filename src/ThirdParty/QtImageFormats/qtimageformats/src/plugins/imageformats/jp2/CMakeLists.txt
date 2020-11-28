@@ -4,7 +4,7 @@
 ## QJp2Plugin Plugin:
 #####################################################################
 
-qt_add_plugin(QJp2Plugin
+qt_internal_add_plugin(QJp2Plugin
     OUTPUT_NAME qjp2
     TYPE imageformats
     SOURCES

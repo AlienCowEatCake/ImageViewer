@@ -4,7 +4,7 @@
 ## tst_bench_qmng Binary:
 #####################################################################
 
-qt_add_benchmark(tst_bench_qmng
+qt_internal_add_benchmark(tst_bench_qmng
     SOURCES
         tst_qmng.cpp
     PUBLIC_LIBRARIES
@@ -36,7 +36,7 @@ set(mng_resource_files
     "mng/fire.mng"
 )
 
-qt_add_resource(tst_bench_qmng "mng"
+qt_internal_add_resource(tst_bench_qmng "mng"
     PREFIX
         "/"
     BASE

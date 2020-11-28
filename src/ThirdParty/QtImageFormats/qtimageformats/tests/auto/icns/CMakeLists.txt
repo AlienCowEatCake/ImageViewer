@@ -4,7 +4,7 @@
 ## tst_qicns Test:
 #####################################################################
 
-qt_add_test(tst_qicns
+qt_internal_add_test(tst_qicns
     SOURCES
         tst_qicns.cpp
     PUBLIC_LIBRARIES
@@ -63,7 +63,7 @@ set(icns_resource_files
     "icns/test-write-64.png"
 )
 
-qt_add_resource(tst_qicns "icns"
+qt_internal_add_resource(tst_qicns "icns"
     PREFIX
         "/"
     BASE

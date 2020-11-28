@@ -4,7 +4,7 @@
 ## QMacHeifPlugin Plugin:
 #####################################################################
 
-qt_add_plugin(QMacHeifPlugin
+qt_internal_add_plugin(QMacHeifPlugin
     OUTPUT_NAME qmacheif
     TYPE imageformats
     SOURCES

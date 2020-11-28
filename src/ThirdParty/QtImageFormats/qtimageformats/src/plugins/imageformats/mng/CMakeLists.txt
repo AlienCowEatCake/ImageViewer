@@ -4,7 +4,7 @@
 ## QMngPlugin Plugin:
 #####################################################################
 
-qt_add_plugin(QMngPlugin
+qt_internal_add_plugin(QMngPlugin
     OUTPUT_NAME qmng
     TYPE imageformats
     SOURCES

@@ -4,7 +4,7 @@
 ## QMacJp2Plugin Plugin:
 #####################################################################
 
-qt_add_plugin(QMacJp2Plugin
+qt_internal_add_plugin(QMacJp2Plugin
     OUTPUT_NAME qmacjp2
     TYPE imageformats
     SOURCES

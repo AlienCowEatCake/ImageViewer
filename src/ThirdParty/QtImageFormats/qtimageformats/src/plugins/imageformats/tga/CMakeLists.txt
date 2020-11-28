@@ -4,7 +4,7 @@
 ## QTgaPlugin Plugin:
 #####################################################################
 
-qt_add_plugin(QTgaPlugin
+qt_internal_add_plugin(QTgaPlugin
     OUTPUT_NAME qtga
     TYPE imageformats
     SOURCES
