@@ -21,6 +21,7 @@
 #define LINKED_RESVG
 #endif
 
+#include <cassert>
 #include <cmath>
 #include <algorithm>
 
@@ -65,15 +66,25 @@ namespace
 const QStringList RESVG_LIBRARY_NAMES = QStringList()
         << QString::fromLatin1("resvg")
         << QString::fromLatin1("libresvg")
+        << QString::fromLatin1("resvg_qt")
+        << QString::fromLatin1("libresvg_qt")
            ;
 
 typedef struct resvg_handle resvg_handle;
 typedef struct resvg_render_tree resvg_render_tree;
+typedef struct resvg_image resvg_image;
 typedef int resvg_error;
-typedef int resvg_fit_to_type;
 typedef int resvg_shape_rendering;
 typedef int resvg_text_rendering;
 typedef int resvg_image_rendering;
+
+typedef enum resvg_fit_to_type
+{
+    RESVG_FIT_TO_ORIGINAL,
+    RESVG_FIT_TO_WIDTH,
+    RESVG_FIT_TO_HEIGHT,
+    RESVG_FIT_TO_ZOOM,
+} resvg_fit_to_type;
 
 struct resvg_color
 {
@@ -151,9 +162,33 @@ struct resvg_size
     quint32 height;
 };
 
-class ReSVG
+struct ReSVG
 {
-public:
+    QLibrary library;
+    QFunctionPointer resvg_init_log;
+    QFunctionPointer resvg_init_options;
+    QFunctionPointer resvg_options_create;
+    QFunctionPointer resvg_options_destroy;
+    QFunctionPointer resvg_options_set_file_path;
+    QFunctionPointer resvg_options_set_font_family;
+    QFunctionPointer resvg_options_set_serif_family;
+    QFunctionPointer resvg_options_set_sans_serif_family;
+    QFunctionPointer resvg_options_set_cursive_family;
+    QFunctionPointer resvg_options_set_fantasy_family;
+    QFunctionPointer resvg_options_set_monospace_family;
+    QFunctionPointer resvg_options_set_languages;
+    QFunctionPointer resvg_parse_tree_from_data;
+    QFunctionPointer resvg_is_image_empty;
+    QFunctionPointer resvg_get_image_size;
+    QFunctionPointer resvg_get_image_viewbox;
+    QFunctionPointer resvg_tree_destroy;
+    QFunctionPointer resvg_qt_render_to_canvas;
+    QFunctionPointer resvg_render;
+    QFunctionPointer resvg_image_get_width;
+    QFunctionPointer resvg_image_get_height;
+    QFunctionPointer resvg_image_get_data;
+    QFunctionPointer resvg_image_destroy;
+
     static ReSVG *instance()
     {
         static ReSVG _;
@@ -165,166 +200,77 @@ public:
         return &_;
     }
 
-    void resvg_init_options(resvg_options *opt)
-    {
-        typedef void (*func_t)(resvg_options*);
-        func_t func = (func_t)m_resvg_init_options;
-        if(func)
-            return func(opt);
-        memset(opt, 0, RESVG_OPTIONS_SIZE_V020);
-        opt->opt_v020.dpi = 96;
-    }
-
-    int resvg_parse_tree_from_data(const char *data, const size_t len, const resvg_options *opt, resvg_render_tree **tree)
-    {
-        typedef int (*func_t)(const char*, const size_t, const resvg_options*, resvg_render_tree**);
-        func_t func = (func_t)m_resvg_parse_tree_from_data;
-        return func(data, len, opt, tree);
-    }
-
-//    bool resvg_is_image_empty(const resvg_render_tree *tree)
-//    {
-//        typedef bool (*func_t)(const resvg_render_tree*);
-//        func_t func = (func_t)m_resvg_is_image_empty;
-//        return func(tree);
-//    }
-
-    resvg_size resvg_get_image_size(const resvg_render_tree *tree)
-    {
-        typedef resvg_size (*func_t)(const resvg_render_tree*);
-        func_t func = (func_t)m_resvg_get_image_size;
-        return func(tree);
-    }
-
-    resvg_rect resvg_get_image_viewbox(const resvg_render_tree *tree)
-    {
-        typedef resvg_rect (*func_t)(const resvg_render_tree*);
-        func_t func = (func_t)m_resvg_get_image_viewbox;
-        return func(tree);
-    }
-
-    void resvg_tree_destroy(resvg_render_tree *tree)
-    {
-        typedef void (*func_t)(resvg_render_tree*);
-        func_t func = (func_t)m_resvg_tree_destroy;
-        return func(tree);
-    }
-
-    void resvg_qt_render_to_canvas(const resvg_render_tree *tree, const resvg_options *opt, resvg_size size, void *painter)
-    {
-        typedef void (*func_t)(const resvg_render_tree*, const resvg_options*, resvg_size size, void*);
-        func_t func = (func_t)m_resvg_qt_render_to_canvas;
-        return func(tree, opt, size, painter);
-    }
-
 private:
     ReSVG()
-        : m_resvg_init_log(Q_NULLPTR)
-        , m_resvg_init_options(Q_NULLPTR)
-        , m_resvg_parse_tree_from_data(Q_NULLPTR)
-//        , m_resvg_is_image_empty(Q_NULLPTR)
-        , m_resvg_get_image_size(Q_NULLPTR)
-        , m_resvg_get_image_viewbox(Q_NULLPTR)
-        , m_resvg_tree_destroy(Q_NULLPTR)
-        , m_resvg_qt_render_to_canvas(Q_NULLPTR)
+        : resvg_init_log(Q_NULLPTR)
+        , resvg_init_options(Q_NULLPTR)
+        , resvg_options_create(Q_NULLPTR)
+        , resvg_options_destroy(Q_NULLPTR)
+        , resvg_options_set_file_path(Q_NULLPTR)
+        , resvg_options_set_font_family(Q_NULLPTR)
+        , resvg_options_set_serif_family(Q_NULLPTR)
+        , resvg_options_set_sans_serif_family(Q_NULLPTR)
+        , resvg_options_set_cursive_family(Q_NULLPTR)
+        , resvg_options_set_fantasy_family(Q_NULLPTR)
+        , resvg_options_set_monospace_family(Q_NULLPTR)
+        , resvg_options_set_languages(Q_NULLPTR)
+        , resvg_parse_tree_from_data(Q_NULLPTR)
+        , resvg_is_image_empty(Q_NULLPTR)
+        , resvg_get_image_size(Q_NULLPTR)
+        , resvg_get_image_viewbox(Q_NULLPTR)
+        , resvg_tree_destroy(Q_NULLPTR)
+        , resvg_qt_render_to_canvas(Q_NULLPTR)
+        , resvg_render(Q_NULLPTR)
+        , resvg_image_get_width(Q_NULLPTR)
+        , resvg_image_get_height(Q_NULLPTR)
+        , resvg_image_get_data(Q_NULLPTR)
+        , resvg_image_destroy(Q_NULLPTR)
         {
-            if(!LibraryUtils::LoadQLibrary(m_library, RESVG_LIBRARY_NAMES))
+            if(!LibraryUtils::LoadQLibrary(library, RESVG_LIBRARY_NAMES))
                 return;
 
-            m_resvg_init_log = m_library.resolve("resvg_init_log");
-            m_resvg_init_options = m_library.resolve("resvg_init_options");
-            m_resvg_parse_tree_from_data = m_library.resolve("resvg_parse_tree_from_data");
-//            m_resvg_is_image_empty = m_library.resolve("resvg_is_image_empty");
-            m_resvg_get_image_size = m_library.resolve("resvg_get_image_size");
-            m_resvg_get_image_viewbox = m_library.resolve("resvg_get_image_viewbox");
-            m_resvg_tree_destroy = m_library.resolve("resvg_tree_destroy");
-            m_resvg_qt_render_to_canvas = m_library.resolve("resvg_qt_render_to_canvas");
+            resvg_init_log = library.resolve("resvg_init_log");
+            resvg_init_options = library.resolve("resvg_init_options");
+            resvg_options_create = library.resolve("resvg_options_create");
+            resvg_options_destroy = library.resolve("resvg_options_destroy");
+            resvg_options_set_file_path = library.resolve("resvg_options_set_file_path");
+            resvg_options_set_font_family = library.resolve("resvg_options_set_font_family");
+            resvg_options_set_serif_family = library.resolve("resvg_options_set_serif_family");
+            resvg_options_set_sans_serif_family = library.resolve("resvg_options_set_sans_serif_family");
+            resvg_options_set_cursive_family = library.resolve("resvg_options_set_cursive_family");
+            resvg_options_set_fantasy_family = library.resolve("resvg_options_set_fantasy_family");
+            resvg_options_set_monospace_family = library.resolve("resvg_options_set_monospace_family");
+            resvg_options_set_languages = library.resolve("resvg_options_set_languages");
+            resvg_parse_tree_from_data = library.resolve("resvg_parse_tree_from_data");
+            resvg_is_image_empty = library.resolve("resvg_is_image_empty");
+            resvg_get_image_size = library.resolve("resvg_get_image_size");
+            resvg_get_image_viewbox = library.resolve("resvg_get_image_viewbox");
+            resvg_tree_destroy = library.resolve("resvg_tree_destroy");
+            resvg_qt_render_to_canvas = library.resolve("resvg_qt_render_to_canvas");
+            resvg_render = library.resolve("resvg_render");
+            resvg_image_get_width = library.resolve("resvg_image_get_width");
+            resvg_image_get_height = library.resolve("resvg_image_get_height");
+            resvg_image_get_data = library.resolve("resvg_image_get_data");
+            resvg_image_destroy = library.resolve("resvg_image_destroy");
 
-            if(m_resvg_init_log)
+            if(resvg_init_log)
             {
                 typedef void (*func_t)();
-                func_t func = (func_t)m_resvg_init_log;
+                func_t func = (func_t)resvg_init_log;
                 func();
             }
     }
 
-    ~ReSVG()
-    {}
-
     bool isValid() const
     {
-        return m_library.isLoaded() /*&& m_resvg_init_options*/ && m_resvg_parse_tree_from_data
-                /*&& m_resvg_is_image_empty*/ && m_resvg_get_image_size && m_resvg_get_image_viewbox
-                && m_resvg_tree_destroy && m_resvg_qt_render_to_canvas;
+        return library.isLoaded()
+                /*&& resvg_init_options*/
+                && resvg_parse_tree_from_data && resvg_tree_destroy
+                /*&& resvg_is_image_empty*/
+                && resvg_get_image_size && resvg_get_image_viewbox
+                && (resvg_qt_render_to_canvas || (resvg_render && resvg_image_get_width && resvg_image_get_height && resvg_image_get_data));
     }
-
-    QLibrary m_library;
-    QFunctionPointer m_resvg_init_log;
-    QFunctionPointer m_resvg_init_options;
-    QFunctionPointer m_resvg_parse_tree_from_data;
-//    QFunctionPointer m_resvg_is_image_empty;
-    QFunctionPointer m_resvg_get_image_size;
-    QFunctionPointer m_resvg_get_image_viewbox;
-    QFunctionPointer m_resvg_tree_destroy;
-    QFunctionPointer m_resvg_qt_render_to_canvas;
 };
-
-void resvg_init_options(resvg_options *opt)
-{
-    if(ReSVG *resvg = ReSVG::instance())
-        return resvg->resvg_init_options(opt);
-    qWarning() << "Failed to load resvg";
-}
-
-int resvg_parse_tree_from_data(const char *data, const size_t len, const resvg_options *opt, resvg_render_tree **tree)
-{
-    if(ReSVG *resvg = ReSVG::instance())
-        return resvg->resvg_parse_tree_from_data(data, len, opt, tree);
-    qWarning() << "Failed to load resvg";
-    return -1;
-}
-
-//bool resvg_is_image_empty(const resvg_render_tree *tree)
-//{
-//    if(ReSVG *resvg = ReSVG::instance())
-//        return resvg->resvg_is_image_empty(tree);
-//    qWarning() << "Failed to load resvg";
-//    return true;
-//}
-
-resvg_size resvg_get_image_size(const resvg_render_tree *tree)
-{
-    if(ReSVG *resvg = ReSVG::instance())
-        return resvg->resvg_get_image_size(tree);
-    qWarning() << "Failed to load resvg";
-    resvg_size result;
-    memset(&result, 0, sizeof(resvg_size));
-    return result;
-}
-
-resvg_rect resvg_get_image_viewbox(const resvg_render_tree *tree)
-{
-    if(ReSVG *resvg = ReSVG::instance())
-        return resvg->resvg_get_image_viewbox(tree);
-    qWarning() << "Failed to load resvg";
-    resvg_rect result;
-    memset(&result, 0, sizeof(resvg_rect));
-    return result;
-}
-
-void resvg_tree_destroy(resvg_render_tree *tree)
-{
-    if(ReSVG *resvg = ReSVG::instance())
-        return resvg->resvg_tree_destroy(tree);
-    qWarning() << "Failed to load resvg";
-}
-
-void resvg_qt_render_to_canvas(const resvg_render_tree *tree, const resvg_options *opt, resvg_size size, void *painter)
-{
-    if(ReSVG *resvg = ReSVG::instance())
-        return resvg->resvg_qt_render_to_canvas(tree, opt, size, painter);
-    qWarning() << "Failed to load resvg";
-}
 
 bool isReady()
 {
@@ -342,12 +288,640 @@ bool isReady()
 
 // ====================================================================================================
 
+#if defined (RESVG_MAJOR_VERSION) && defined (RESVG_MINOR_VERSION) && defined (RESVG_PATCH_VERSION)
+#define LINKED_RESVG_VERSION QT_VERSION_CHECK(RESVG_MAJOR_VERSION, RESVG_MINOR_VERSION, RESVG_PATCH_VERSION)
+#else
+#define LINKED_RESVG_VERSION QT_VERSION_CHECK(0, 0, 0)
+#endif
+
+class ReSVGWrapper
+{
+public:
+#if defined (LINKED_RESVG) && (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+    typedef void resvg_image;
+#endif
+
+    ReSVGWrapper()
+        : m_opt(Q_NULLPTR)
+        , m_optABI(ABI_UNKNOWN)
+    {
+        Q_UNUSED(&ReSVGWrapper::resvg_render_pre_0_11_0);
+        Q_UNUSED(&ReSVGWrapper::resvg_image_get_width_pre_0_11_0);
+        Q_UNUSED(&ReSVGWrapper::resvg_image_get_height_pre_0_11_0);
+        Q_UNUSED(&ReSVGWrapper::resvg_image_get_data_pre_0_11_0);
+        Q_UNUSED(&ReSVGWrapper::resvg_image_destroy_pre_0_11_0);
+        Q_UNUSED(m_opt);
+        Q_UNUSED(m_optABI);
+    }
+
+    ~ReSVGWrapper()
+    {}
+
+    resvg_options *resvg_options_create()
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        m_opt = new resvg_options;
+        memset(m_opt, 0, sizeof(resvg_options));
+        ::resvg_init_options(m_opt);
+        return m_opt;
+    #else
+        return ::resvg_options_create();
+    #endif
+#else
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return Q_NULLPTR;
+        if(resvg->resvg_options_create)
+        {
+            qDebug() << "Detected v0.11.0 ABI for resvg_options";
+            m_optABI = ABI_0_11_0;
+            typedef resvg_options *(*func_t)(void);
+            func_t func = (func_t)resvg->resvg_options_create;
+            m_opt = func();
+        }
+        else
+        {
+            const quint8 flagBit = 0xff;
+            const size_t optionsSize = sizeof(resvg_options) * 5;
+            quint8* optData = new quint8[optionsSize];
+            memset(optData, *reinterpret_cast<const char*>(&flagBit), optionsSize);
+            m_opt = reinterpret_cast<resvg_options*>(optData);
+            if(resvg->resvg_init_options)
+            {
+                typedef void (*func_t)(resvg_options*);
+                func_t func = (func_t)resvg->resvg_init_options;
+                func(m_opt);
+            }
+            else
+            {
+                memset(m_opt, 0, RESVG_OPTIONS_SIZE_V020);
+                m_opt->opt_v020.dpi = 96;
+            }
+            size_t effectiveOptSize = optionsSize;
+            while(effectiveOptSize > 0)
+            {
+                if(optData[effectiveOptSize - 1] != flagBit)
+                    break;
+                else
+                    effectiveOptSize--;
+            }
+            switch(effectiveOptSize)
+            {
+            case RESVG_OPTIONS_SIZE_V020:
+                qDebug() << "Detected v0.2.0 ABI for resvg_options";
+                m_optABI = ABI_0_2_0;
+                break;
+            case RESVG_OPTIONS_SIZE_V040:
+                qDebug() << "Detected v0.4.0 ABI for resvg_options";
+                m_optABI = ABI_0_4_0;
+                break;
+            case RESVG_OPTIONS_SIZE_V070:
+                qDebug() << "Detected v0.7.0 ABI for resvg_options";
+                m_optABI = ABI_0_7_0;
+                break;
+            default:
+                qWarning() << "Can't detect ABI for resvg_options";
+                qWarning() << "Got:" << effectiveOptSize;
+                qWarning() << "Expected:" << RESVG_OPTIONS_SIZE_V020 << RESVG_OPTIONS_SIZE_V040 << RESVG_OPTIONS_SIZE_V070;
+            }
+        }
+        return m_opt;
+#endif
+    }
+
+    void resvg_options_destroy(resvg_options *opt)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        assert(opt == m_opt);
+        delete opt;
+        m_opt = Q_NULLPTR;
+    #else
+        ::resvg_options_destroy(opt);
+    #endif
+#else
+        assert(opt == m_opt);
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(resvg->resvg_options_destroy)
+        {
+            typedef void (*func_t)(resvg_options*);
+            func_t func = (func_t)resvg->resvg_options_destroy;
+            func(opt);
+        }
+        else
+        {
+            quint8* optData = reinterpret_cast<quint8*>(opt);
+            delete [] optData;
+        }
+#endif
+    }
+
+    void resvg_options_set_file_path(resvg_options *opt, const char *path)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        opt->path = path;
+    #else
+        ::resvg_options_set_file_path(opt, path);
+    #endif
+#else
+        assert(opt == m_opt);
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(resvg->resvg_options_set_file_path)
+        {
+            typedef void (*func_t)(resvg_options*, const char*);
+            func_t func = (func_t)resvg->resvg_options_set_file_path;
+            func(opt, path);
+        }
+        else
+        {
+            switch(m_optABI)
+            {
+            case ABI_0_2_0:
+                opt->opt_v020.path = path;
+                break;
+            case ABI_0_4_0:
+                opt->opt_v040.path = path;
+                break;
+            case ABI_0_7_0:
+                opt->opt_v070.path = path;
+                break;
+            default:
+                break;
+            }
+        }
+#endif
+    }
+
+    void resvg_options_set_font_family(resvg_options *opt, const char *family)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        opt->font_family = family;
+    #else
+        ::resvg_options_set_font_family(opt, family);
+    #endif
+#else
+        assert(opt == m_opt);
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(resvg->resvg_options_set_font_family)
+        {
+            typedef void (*func_t)(resvg_options*, const char*);
+            func_t func = (func_t)resvg->resvg_options_set_font_family;
+            func(opt, family);
+        }
+        else
+        {
+            switch(m_optABI)
+            {
+            case ABI_0_4_0:
+                opt->opt_v040.font_family = family;
+                break;
+            case ABI_0_7_0:
+                opt->opt_v070.font_family = family;
+                break;
+            default:
+                break;
+            }
+        }
+#endif
+    }
+
+    void resvg_options_set_serif_family(resvg_options *opt, const char *family)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        Q_UNUSED(opt);
+        Q_UNUSED(family);
+    #else
+        ::resvg_options_set_serif_family(opt, family);
+    #endif
+#else
+        assert(opt == m_opt);
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(!resvg->resvg_options_set_serif_family)
+            return;
+        typedef void (*func_t)(resvg_options*, const char*);
+        func_t func = (func_t)resvg->resvg_options_set_serif_family;
+        func(opt, family);
+#endif
+    }
+
+    void resvg_options_set_sans_serif_family(resvg_options *opt, const char *family)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        Q_UNUSED(opt);
+        Q_UNUSED(family);
+    #else
+        ::resvg_options_set_sans_serif_family(opt, family);
+    #endif
+#else
+        assert(opt == m_opt);
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(!resvg->resvg_options_set_sans_serif_family)
+            return;
+        typedef void (*func_t)(resvg_options*, const char*);
+        func_t func = (func_t)resvg->resvg_options_set_sans_serif_family;
+        func(opt, family);
+#endif
+    }
+
+    void resvg_options_set_cursive_family(resvg_options *opt, const char *family)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        Q_UNUSED(opt);
+        Q_UNUSED(family);
+    #else
+        ::resvg_options_set_cursive_family(opt, family);
+    #endif
+#else
+        assert(opt == m_opt);
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(!resvg->resvg_options_set_cursive_family)
+            return;
+        typedef void (*func_t)(resvg_options*, const char*);
+        func_t func = (func_t)resvg->resvg_options_set_cursive_family;
+        func(opt, family);
+#endif
+    }
+
+    void resvg_options_set_fantasy_family(resvg_options *opt, const char *family)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        Q_UNUSED(opt);
+        Q_UNUSED(family);
+    #else
+        ::resvg_options_set_fantasy_family(opt, family);
+    #endif
+#else
+        assert(opt == m_opt);
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(!resvg->resvg_options_set_fantasy_family)
+            return;
+        typedef void (*func_t)(resvg_options*, const char*);
+        func_t func = (func_t)resvg->resvg_options_set_fantasy_family;
+        func(opt, family);
+#endif
+    }
+
+    void resvg_options_set_monospace_family(resvg_options *opt, const char *family)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        Q_UNUSED(opt);
+        Q_UNUSED(family);
+    #else
+        ::resvg_options_set_monospace_family(opt, family);
+    #endif
+#else
+        assert(opt == m_opt);
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(!resvg->resvg_options_set_monospace_family)
+            return;
+        typedef void (*func_t)(resvg_options*, const char*);
+        func_t func = (func_t)resvg->resvg_options_set_monospace_family;
+        func(opt, family);
+#endif
+    }
+
+    void resvg_options_set_languages(resvg_options *opt, const char *languages)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        opt->languages = languages;
+    #else
+        ::resvg_options_set_languages(opt, languages);
+    #endif
+#else
+        assert(opt == m_opt);
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(resvg->resvg_options_set_languages)
+        {
+            typedef void (*func_t)(resvg_options*, const char*);
+            func_t func = (func_t)resvg->resvg_options_set_languages;
+            func(opt, languages);
+        }
+        else
+        {
+            switch(m_optABI)
+            {
+            case ABI_0_4_0:
+                opt->opt_v040.languages = languages;
+                break;
+            case ABI_0_7_0:
+                opt->opt_v070.languages = languages;
+                break;
+            default:
+                break;
+            }
+        }
+#endif
+    }
+
+    int resvg_parse_tree_from_data(const char *data, const size_t len, const resvg_options *opt, resvg_render_tree **tree)
+    {
+#if defined (LINKED_RESVG)
+        return ::resvg_parse_tree_from_data(data, len, opt, tree);
+#else
+        assert(opt == m_opt);
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return -1;
+        if(!resvg->resvg_parse_tree_from_data)
+            return -1;
+        typedef int (*func_t)(const char*, const size_t, const resvg_options*, resvg_render_tree**);
+        func_t func = (func_t)resvg->resvg_parse_tree_from_data;
+        return func(data, len, opt, tree);
+#endif
+    }
+
+    void resvg_tree_destroy(resvg_render_tree *tree)
+    {
+#if defined (LINKED_RESVG)
+        ::resvg_tree_destroy(tree);
+#else
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(!resvg->resvg_tree_destroy)
+            return;
+        typedef void (*func_t)(resvg_render_tree*);
+        func_t func = (func_t)resvg->resvg_tree_destroy;
+        return func(tree);
+#endif
+    }
+
+    bool resvg_is_image_empty(const resvg_render_tree *tree)
+    {
+#if defined (LINKED_RESVG)
+        return ::resvg_is_image_empty(tree);
+#else
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return true;
+        if(!resvg->resvg_is_image_empty)
+            return false;
+        typedef bool (*func_t)(const resvg_render_tree*);
+        func_t func = (func_t)resvg->resvg_is_image_empty;
+        return func(tree);
+#endif
+    }
+
+    resvg_rect resvg_get_image_viewbox(const resvg_render_tree *tree)
+    {
+#if defined (LINKED_RESVG)
+        return ::resvg_get_image_viewbox(tree);
+#else
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return resvg_rect();
+        if(!resvg->resvg_get_image_viewbox)
+            return resvg_rect();
+        typedef resvg_rect (*func_t)(const resvg_render_tree*);
+        func_t func = (func_t)resvg->resvg_get_image_viewbox;
+        return func(tree);
+#endif
+    }
+
+    resvg_size resvg_get_image_size(const resvg_render_tree *tree)
+    {
+#if defined (LINKED_RESVG)
+        return ::resvg_get_image_size(tree);
+#else
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return resvg_size();
+        if(!resvg->resvg_get_image_size)
+            return resvg_size();
+        typedef resvg_size (*func_t)(const resvg_render_tree*);
+        func_t func = (func_t)resvg->resvg_get_image_size;
+        return func(tree);
+#endif
+    }
+
+    resvg_image *resvg_render(const resvg_render_tree *tree, resvg_fit_to fit_to, resvg_color *background)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        return resvg_render_pre_0_11_0(tree, fit_to, background);
+    #else
+        return ::resvg_render(tree, fit_to, background);
+    #endif
+#else
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return Q_NULLPTR;
+        if(!resvg->resvg_render)
+            return resvg_render_pre_0_11_0(tree, fit_to, background);
+        typedef resvg_image *(*func_t)(const resvg_render_tree*, resvg_fit_to, resvg_color*);
+        func_t func = (func_t)resvg->resvg_render;
+        return func(tree, fit_to, background);
+#endif
+    }
+
+    uint32_t resvg_image_get_width(resvg_image *image)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        return resvg_image_get_width_pre_0_11_0(image);
+    #else
+        return ::resvg_image_get_width(image);
+    #endif
+#else
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return 0;
+        if(!resvg->resvg_image_get_width)
+            return resvg_image_get_width_pre_0_11_0(image);
+        typedef uint32_t (*func_t)(resvg_image*);
+        func_t func = (func_t)resvg->resvg_image_get_width;
+        return func(image);
+#endif
+    }
+
+    uint32_t resvg_image_get_height(resvg_image *image)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        return resvg_image_get_height_pre_0_11_0(image);
+    #else
+        return ::resvg_image_get_height(image);
+    #endif
+#else
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return 0;
+        if(!resvg->resvg_image_get_height)
+            return resvg_image_get_height_pre_0_11_0(image);
+        typedef uint32_t (*func_t)(resvg_image*);
+        func_t func = (func_t)resvg->resvg_image_get_height;
+        return func(image);
+#endif
+    }
+
+    const char *resvg_image_get_data(resvg_image *image, size_t *len)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        return resvg_image_get_data_pre_0_11_0(image, len);
+    #else
+        return ::resvg_image_get_data(image, len);
+    #endif
+#else
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return 0;
+        if(!resvg->resvg_image_get_data)
+            return resvg_image_get_data_pre_0_11_0(image, len);
+        typedef const char *(*func_t)(resvg_image*, size_t*);
+        func_t func = (func_t)resvg->resvg_image_get_data;
+        return func(image, len);
+#endif
+    }
+
+    void resvg_image_destroy(resvg_image *image)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        resvg_image_destroy_pre_0_11_0(image);
+    #else
+        ::resvg_image_destroy(image);
+    #endif
+#else
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(!resvg->resvg_image_destroy)
+        {
+            resvg_image_destroy_pre_0_11_0(image);
+            return;
+        }
+        typedef void (*func_t)(resvg_image*);
+        func_t func = (func_t)resvg->resvg_image_destroy;
+        func(image);
+#endif
+    }
+
+private:
+    void resvg_qt_render_to_canvas(const resvg_render_tree *tree, const resvg_options *opt, resvg_size size, void *painter)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        ::resvg_qt_render_to_canvas(tree, opt, size, painter);
+    #else
+        Q_UNUSED(tree);
+        Q_UNUSED(opt);
+        Q_UNUSED(size);
+        Q_UNUSED(painter);
+    #endif
+#else
+        assert(opt == m_opt);
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(!resvg->resvg_qt_render_to_canvas)
+            return;
+        typedef void (*func_t)(const resvg_render_tree*, const resvg_options*, resvg_size, void*);
+        func_t func = (func_t)resvg->resvg_qt_render_to_canvas;
+        return func(tree, opt, size, painter);
+#endif
+    }
+
+    resvg_image *resvg_render_pre_0_11_0(const resvg_render_tree *tree, resvg_fit_to fit_to, resvg_color *background)
+    {
+        Q_UNUSED(background);
+        assert(background == Q_NULLPTR);
+        assert(fit_to.type == RESVG_FIT_TO_ZOOM);
+        const qreal scaleFactor = static_cast<qreal>(fit_to.value);
+        resvg_size size = resvg_get_image_size(tree);
+        const int width  = static_cast<int>(std::ceil(size.width * scaleFactor));
+        const int height = static_cast<int>(std::ceil(size.height * scaleFactor));
+        QImage image(width, height, QImage::Format_ARGB32);
+        if(image.isNull())
+            return Q_NULLPTR;
+        image.fill(Qt::transparent);
+        QPainter painter(&image);
+        painter.setRenderHint(QPainter::Antialiasing);
+        const QRectF r = painter.viewport();
+        const resvg_rect viewBox = resvg_get_image_viewbox(tree);
+        const double sx = r.width() / viewBox.width;
+        const double sy = r.height() / viewBox.height;
+        painter.setTransform(QTransform(sx, 0, 0, sy, r.x(), r.y()), true);
+        resvg_size imgSize;
+        imgSize.width = static_cast<quint32>(viewBox.width);
+        imgSize.height = static_cast<quint32>(viewBox.height);
+        resvg_qt_render_to_canvas(tree, m_opt, imgSize, &painter);
+        painter.end();
+        return reinterpret_cast<resvg_image*>(new QImage(image.rgbSwapped()));
+    }
+
+    uint32_t resvg_image_get_width_pre_0_11_0(resvg_image *image)
+    {
+        return image ? static_cast<uint32_t>(reinterpret_cast<const QImage*>(image)->width()) : 0;
+    }
+
+    uint32_t resvg_image_get_height_pre_0_11_0(resvg_image *image)
+    {
+        return image ? static_cast<uint32_t>(reinterpret_cast<const QImage*>(image)->height()) : 0;
+    }
+
+    const char *resvg_image_get_data_pre_0_11_0(resvg_image *image, size_t *len)
+    {
+        if(len)
+            *len = 0;
+        if(!image)
+            return Q_NULLPTR;
+        return reinterpret_cast<const char*>(reinterpret_cast<const QImage*>(image)->bits());
+    }
+
+    void resvg_image_destroy_pre_0_11_0(resvg_image *image)
+    {
+       delete reinterpret_cast<QImage*>(image);
+    }
+
+private:
+    resvg_options *m_opt;
+    enum OptABI
+    {
+        ABI_UNKNOWN,
+        ABI_0_2_0,
+        ABI_0_4_0,
+        ABI_0_7_0,
+        ABI_0_11_0,
+    };
+    OptABI m_optABI;
+};
+
+// ====================================================================================================
+
 const qreal MAX_IMAGE_DIMENSION = 16384;
 const qreal MIN_IMAGE_DIMENSION = 1;
 
 // ====================================================================================================
 
-class ReSVGPixmapProvider : public IScaledImageProvider
+class ReSVGPixmapProvider : public IScaledImageProvider, public ReSVGWrapper
 {
     Q_DISABLE_COPY(ReSVGPixmapProvider)
 
@@ -356,55 +930,16 @@ public:
         : m_isValid(false)
         , m_filePath8bit(filePath.toLocal8Bit())
         , m_tree(Q_NULLPTR)
+        , m_opt(Q_NULLPTR)
         , m_width(0)
         , m_height(0)
         , m_minScaleFactor(1)
         , m_maxScaleFactor(1)
     {
-#if defined (LINKED_RESVG)
-        m_optData.resize(sizeof(resvg_options));
-        m_opt = reinterpret_cast<resvg_options*>(m_optData.data());
-        resvg_init_options(m_opt);
-#else
-        const quint8 flagBit = 0xff;
-        m_optData.resize(sizeof(resvg_options) * 3);
-        m_optData.fill(*reinterpret_cast<const char*>(&flagBit), m_optData.size());
-        m_opt = reinterpret_cast<resvg_options*>(m_optData.data());
-        resvg_init_options(m_opt);
-        int effectiveOptSize = m_optData.size();
-        while(effectiveOptSize > 0)
-        {
-            if(m_optData[effectiveOptSize - 1] != *reinterpret_cast<const char*>(&flagBit))
-                break;
-            else
-                effectiveOptSize--;
-        }
-
-        switch(effectiveOptSize)
-        {
-        case RESVG_OPTIONS_SIZE_V020:
-            m_opt->opt_v020.path = m_filePath8bit.constData();
-            qDebug() << "Detected v0.2.0 ABI for resvg_options";
-            break;
-        case RESVG_OPTIONS_SIZE_V040:
-            m_opt->opt_v040.path = m_filePath8bit.constData();
-            m_opt->opt_v040.font_family = "Times New Roman";
-            m_opt->opt_v040.languages = "";
-            qDebug() << "Detected v0.4.0 ABI for resvg_options";
-            break;
-        case RESVG_OPTIONS_SIZE_V070:
-            m_opt->opt_v070.path = m_filePath8bit.constData();
-            m_opt->opt_v070.font_family = "Times New Roman";
-            m_opt->opt_v070.languages = "";
-            qDebug() << "Detected v0.7.0 ABI for resvg_options";
-            break;
-        default:
-            qWarning() << "Can't detect ABI for resvg_options";
-            qWarning() << "Got:" << effectiveOptSize;
-            qWarning() << "Expected:" << RESVG_OPTIONS_SIZE_V020 << RESVG_OPTIONS_SIZE_V040 << RESVG_OPTIONS_SIZE_V070;
-            return;
-        }
-#endif
+        m_opt = resvg_options_create();
+        resvg_options_set_file_path(m_opt, m_filePath8bit.constData());
+        resvg_options_set_font_family(m_opt, "Times New Roman");
+        resvg_options_set_languages(m_opt, "");
 
         MappedBuffer inBuffer(filePath);
         if(!inBuffer.isValid())
@@ -424,7 +959,6 @@ public:
 //            return;
 //        }
 
-        m_viewBox = resvg_get_image_viewbox(m_tree);
         resvg_size size = resvg_get_image_size(m_tree);
         m_width = static_cast<int>(size.width);
         m_height = static_cast<int>(size.height);
@@ -443,6 +977,8 @@ public:
     {
         if(m_tree)
             resvg_tree_destroy(m_tree);
+        if(m_opt)
+            resvg_options_destroy(m_opt);
     }
 
     bool isValid() const Q_DECL_OVERRIDE
@@ -464,23 +1000,19 @@ public:
     {
         if(!isValid())
             return QImage();
-        const int width  = static_cast<int>(std::ceil(m_width * scaleFactor));
-        const int height = static_cast<int>(std::ceil(m_height * scaleFactor));
-        QImage image(width, height, QImage::Format_ARGB32_Premultiplied);
-        if(image.isNull())
-            return image;
-        QPainter painter(&image);
-        image.fill(Qt::transparent);
-        painter.setRenderHint(QPainter::Antialiasing);
-        const QRectF r = painter.viewport();
-        const double sx = r.width() / m_viewBox.width;
-        const double sy = r.height() / m_viewBox.height;
-        painter.setTransform(QTransform(sx, 0, 0, sy, r.x(), r.y()), true);
-        resvg_size imgSize;
-        imgSize.width = static_cast<quint32>(m_viewBox.width);
-        imgSize.height = static_cast<quint32>(m_viewBox.height);
-        resvg_qt_render_to_canvas(m_tree, m_opt, imgSize, &painter);
-        painter.end();
+        resvg_fit_to fitTo;
+        fitTo.type = RESVG_FIT_TO_ZOOM;
+        fitTo.value = static_cast<float>(scaleFactor);
+        resvg_image *resvgImg = resvg_render(m_tree, fitTo, Q_NULLPTR);
+        if(!resvgImg)
+            return QImage();
+        size_t len;
+        const char* imgData = resvg_image_get_data(resvgImg, &len);
+        QImage image = QImage(reinterpret_cast<const uchar*>(imgData),
+                              static_cast<int>(resvg_image_get_width(resvgImg)),
+                              static_cast<int>(resvg_image_get_height(resvgImg)),
+                              QImage::Format_ARGB32).rgbSwapped();
+        resvg_image_destroy(resvgImg);
         return image;
     }
 
@@ -498,9 +1030,7 @@ private:
     bool m_isValid;
     QByteArray m_filePath8bit;
     resvg_render_tree *m_tree;
-    QByteArray m_optData;
     resvg_options *m_opt;
-    resvg_rect m_viewBox;
     int m_width;
     int m_height;
     qreal m_minScaleFactor;
