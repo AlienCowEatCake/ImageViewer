@@ -202,12 +202,5 @@ HEADERS += \
         $${THIRDPARTY_EXIV2_PATH}/include/exiv2/pngimage.hpp
 }
 
-win32 | haiku {
-    *g++*|*clang* {
-        SOURCES += \
-            $${THIRDPARTY_EXIV2_PATH}/src/localtime.c
-    }
-}
-
 TR_EXCLUDE += $${THIRDPARTY_EXIV2_PATH}/*
 
