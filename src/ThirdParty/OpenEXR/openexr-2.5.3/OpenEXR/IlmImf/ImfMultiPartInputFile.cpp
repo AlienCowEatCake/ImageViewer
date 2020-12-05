@@ -456,8 +456,8 @@ MultiPartInputFile::Data::createTileOffsets(const Header& header)
     // Precompute level and tile information
     //
 
-    int* numXTiles = nullptr;
-    int* numYTiles = nullptr;
+    int* numXTiles = NULL;
+    int* numYTiles = NULL;
     int numXLevels, numYLevels;
     TileDescription tileDesc = header.tileDescription();
     try

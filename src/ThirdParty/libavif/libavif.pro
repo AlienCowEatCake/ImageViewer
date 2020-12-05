@@ -22,6 +22,7 @@ include(../aom/aom.pri)
 INCLUDEPATH = $${THIRDPARTY_LIBAVIF_PATH}/include $${INCLUDEPATH}
 
 DEFINES += AVIF_CODEC_AOM=1 AVIF_CODEC_AOM_ENCODE=1 AVIF_CODEC_AOM_DECODE=1
+*msvc*: DEFINES += inline=__inline
 
 SOURCES += \
     $${THIRDPARTY_LIBAVIF_PATH}/src/alpha.c \

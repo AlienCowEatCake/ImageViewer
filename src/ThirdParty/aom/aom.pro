@@ -19,7 +19,7 @@ include(../CommonSettings.pri)
     QMAKE_CFLAGS += -std=gnu99
 }
 
-INCLUDEPATH = $${THIRDPARTY_AOM_PATH} $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include $${THIRDPARTY_AOM_CONFIG_PATH} $${INCLUDEPATH}
+INCLUDEPATH = $${THIRDPARTY_AOM_PATH} $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include $${THIRDPARTY_AOM_CONFIG_PATH} $${PWD} $${INCLUDEPATH}
 
 # find . -name '*.c' | egrep -v '(arm|x86|ppc|mips|/examples/|/apps/|/tools/|vmaf|inspection)' | sort
 SOURCES += \

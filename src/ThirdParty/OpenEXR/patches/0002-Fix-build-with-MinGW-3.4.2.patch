@@ -1,4 +1,4 @@
-From d3e3c22bfac0f161c57458081cf48d05103aeeca Mon Sep 17 00:00:00 2001
+From d0767729774ccd743f8248a3401b88f34015c7cb Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 18:20:28 +0700
 Subject: [PATCH 2/4] Fix build with MinGW 3.4.2
@@ -37,7 +37,7 @@ Subject: [PATCH 2/4] Fix build with MinGW 3.4.2
  OpenEXR/IlmImf/ImfInputFile.cpp              |  7 ++++
  OpenEXR/IlmImf/ImfInputFile.h                |  5 +++
  OpenEXR/IlmImf/ImfKeyCode.h                  |  4 +++
- OpenEXR/IlmImf/ImfMultiPartInputFile.cpp     |  5 +++
+ OpenEXR/IlmImf/ImfMultiPartInputFile.cpp     |  9 +++--
  OpenEXR/IlmImf/ImfMultiPartInputFile.h       |  5 +++
  OpenEXR/IlmImf/ImfMultiPartOutputFile.cpp    |  7 ++++
  OpenEXR/IlmImf/ImfMultiPartOutputFile.h      |  7 ++++
@@ -54,6 +54,7 @@ Subject: [PATCH 2/4] Fix build with MinGW 3.4.2
  OpenEXR/IlmImf/ImfSystemSpecific.h           | 36 ++++++++++++++++++--
  OpenEXR/IlmImf/ImfTiledInputFile.cpp         | 16 ++++++++-
  OpenEXR/IlmImf/ImfTiledInputFile.h           |  7 ++++
+ OpenEXR/IlmImf/ImfTiledMisc.cpp              |  4 +--
  OpenEXR/IlmImf/ImfTiledOutputFile.cpp        | 14 ++++++++
  OpenEXR/IlmImf/ImfTiledOutputFile.h          |  5 +++
  OpenEXR/IlmImf/ImfTiledRgbaFile.h            | 10 ++++++
@@ -62,7 +63,7 @@ Subject: [PATCH 2/4] Fix build with MinGW 3.4.2
  OpenEXR/IlmImfUtil/ImfDeepImageChannel.h     | 12 +++++++
  OpenEXR/IlmImfUtil/ImfFlatImageChannel.h     | 12 +++++++
  OpenEXR/IlmImfUtil/ImfSampleCountChannel.h   |  7 ++++
- 58 files changed, 519 insertions(+), 34 deletions(-)
+ 59 files changed, 523 insertions(+), 38 deletions(-)
 
 diff --git a/IlmBase/Half/half.h b/IlmBase/Half/half.h
 index 6a5ee23d..415fcef9 100644
@@ -968,7 +969,7 @@ index 58986a4a..28a11060 100644
      KeyCode & operator = (const KeyCode &other);
  
 diff --git a/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp b/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
-index 1e047269..33152d53 100644
+index 1e047269..f1807e05 100644
 --- a/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
 +++ b/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
 @@ -118,10 +118,15 @@ struct MultiPartInputFile::Data: public InputStreamMutex
@@ -987,6 +988,17 @@ index 1e047269..33152d53 100644
      
      template <class T>
      T*    createInputPartT(int partNumber)
+@@ -451,8 +456,8 @@ MultiPartInputFile::Data::createTileOffsets(const Header& header)
+     // Precompute level and tile information
+     //
+ 
+-    int* numXTiles = nullptr;
+-    int* numYTiles = nullptr;
++    int* numXTiles = NULL;
++    int* numYTiles = NULL;
+     int numXLevels, numYLevels;
+     TileDescription tileDesc = header.tileDescription();
+     try
 diff --git a/OpenEXR/IlmImf/ImfMultiPartInputFile.h b/OpenEXR/IlmImf/ImfMultiPartInputFile.h
 index f3651d9e..178b6d0d 100644
 --- a/OpenEXR/IlmImf/ImfMultiPartInputFile.h
@@ -1527,6 +1539,21 @@ index f919df40..37e747af 100644
  
  
      //------------------------
+diff --git a/OpenEXR/IlmImf/ImfTiledMisc.cpp b/OpenEXR/IlmImf/ImfTiledMisc.cpp
+index c9e8731f..d78b76e4 100644
+--- a/OpenEXR/IlmImf/ImfTiledMisc.cpp
++++ b/OpenEXR/IlmImf/ImfTiledMisc.cpp
+@@ -352,8 +352,8 @@ getTiledChunkOffsetTableSize(const Header& header)
+     // Precompute level and tile information.
+     //
+ 
+-    int* numXTiles=nullptr;
+-    int* numYTiles=nullptr;
++    int* numXTiles=NULL;
++    int* numYTiles=NULL;
+     int numXLevels;
+     int numYLevels;
+     try
 diff --git a/OpenEXR/IlmImf/ImfTiledOutputFile.cpp b/OpenEXR/IlmImf/ImfTiledOutputFile.cpp
 index 0f24381e..9411352f 100644
 --- a/OpenEXR/IlmImf/ImfTiledOutputFile.cpp

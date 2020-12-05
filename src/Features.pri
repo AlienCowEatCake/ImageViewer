@@ -148,11 +148,11 @@
 #    system_libjasper
 *msvc* {
     isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
             CONFIG += disable_libjasper # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1600) { # MSVC2010
+        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
             CONFIG += disable_libjasper # FIXME: C99
         }
     }

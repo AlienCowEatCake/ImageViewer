@@ -353,8 +353,8 @@ getTiledChunkOffsetTableSize(const Header& header)
     // Precompute level and tile information.
     //
 
-    int* numXTiles=nullptr;
-    int* numYTiles=nullptr;
+    int* numXTiles=NULL;
+    int* numYTiles=NULL;
     int numXLevels;
     int numYLevels;
     try

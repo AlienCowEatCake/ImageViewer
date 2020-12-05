@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -135,7 +135,7 @@ QImage renderRgbImage(jas_image_t *jasImage)
 QImage renderGrayImage(jas_image_t *jasImage)
 {
     const int cmptno = 0;
-    if(cmptno >= jasImage->numcmpts_)
+    if(cmptno >= static_cast<int>(jasImage->numcmpts_))
     {
         qWarning() << "Incorrect component number";
         return QImage();

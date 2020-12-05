@@ -108,7 +108,7 @@ struct resvg_options_v020
     resvg_color background;
     bool keep_named_groups;
 };
-const size_t RESVG_OPTIONS_SIZE_V020 = offsetof(resvg_options_v020, keep_named_groups) + sizeof(resvg_options_v020::keep_named_groups);
+const size_t RESVG_OPTIONS_SIZE_V020 = offsetof(resvg_options_v020, keep_named_groups) + sizeof(((resvg_options_v020*)(Q_NULLPTR))->keep_named_groups);
 
 struct resvg_options_v040
 {
@@ -122,7 +122,7 @@ struct resvg_options_v040
     resvg_color background;
     bool keep_named_groups;
 };
-const size_t RESVG_OPTIONS_SIZE_V040 = offsetof(resvg_options_v040, keep_named_groups) + sizeof(resvg_options_v040::keep_named_groups);
+const size_t RESVG_OPTIONS_SIZE_V040 = offsetof(resvg_options_v040, keep_named_groups) + sizeof(((resvg_options_v020*)(Q_NULLPTR))->keep_named_groups);
 
 struct resvg_options_v070
 {
@@ -139,7 +139,7 @@ struct resvg_options_v070
     resvg_color background;
     bool keep_named_groups;
 };
-const size_t RESVG_OPTIONS_SIZE_V070 = offsetof(resvg_options_v070, keep_named_groups) + sizeof(resvg_options_v070::keep_named_groups);
+const size_t RESVG_OPTIONS_SIZE_V070 = offsetof(resvg_options_v070, keep_named_groups) + sizeof(((resvg_options_v020*)(Q_NULLPTR))->keep_named_groups);
 
 union resvg_options
 {
@@ -741,7 +741,7 @@ public:
 #endif
     }
 
-    uint32_t resvg_image_get_width(resvg_image *image)
+    quint32 resvg_image_get_width(resvg_image *image)
     {
 #if defined (LINKED_RESVG)
     #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
@@ -755,13 +755,13 @@ public:
             return 0;
         if(!resvg->resvg_image_get_width)
             return resvg_image_get_width_pre_0_11_0(image);
-        typedef uint32_t (*func_t)(resvg_image*);
+        typedef quint32 (*func_t)(resvg_image*);
         func_t func = (func_t)resvg->resvg_image_get_width;
         return func(image);
 #endif
     }
 
-    uint32_t resvg_image_get_height(resvg_image *image)
+    quint32 resvg_image_get_height(resvg_image *image)
     {
 #if defined (LINKED_RESVG)
     #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
@@ -775,7 +775,7 @@ public:
             return 0;
         if(!resvg->resvg_image_get_height)
             return resvg_image_get_height_pre_0_11_0(image);
-        typedef uint32_t (*func_t)(resvg_image*);
+        typedef quint32 (*func_t)(resvg_image*);
         func_t func = (func_t)resvg->resvg_image_get_height;
         return func(image);
 #endif
@@ -792,7 +792,7 @@ public:
 #else
         ReSVG *resvg = ReSVG::instance();
         if(!resvg)
-            return 0;
+            return Q_NULLPTR;
         if(!resvg->resvg_image_get_data)
             return resvg_image_get_data_pre_0_11_0(image, len);
         typedef const char *(*func_t)(resvg_image*, size_t*);
@@ -877,14 +877,14 @@ private:
         return reinterpret_cast<resvg_image*>(new QImage(image.rgbSwapped()));
     }
 
-    uint32_t resvg_image_get_width_pre_0_11_0(resvg_image *image)
+    quint32 resvg_image_get_width_pre_0_11_0(resvg_image *image)
     {
-        return image ? static_cast<uint32_t>(reinterpret_cast<const QImage*>(image)->width()) : 0;
+        return image ? static_cast<quint32>(reinterpret_cast<const QImage*>(image)->width()) : 0;
     }
 
-    uint32_t resvg_image_get_height_pre_0_11_0(resvg_image *image)
+    quint32 resvg_image_get_height_pre_0_11_0(resvg_image *image)
     {
-        return image ? static_cast<uint32_t>(reinterpret_cast<const QImage*>(image)->height()) : 0;
+        return image ? static_cast<quint32>(reinterpret_cast<const QImage*>(image)->height()) : 0;
     }
 
     const char *resvg_image_get_data_pre_0_11_0(resvg_image *image, size_t *len)

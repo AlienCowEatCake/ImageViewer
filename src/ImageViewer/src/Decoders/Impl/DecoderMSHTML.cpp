@@ -486,7 +486,7 @@ public:
 //            qWarning() << "Can't get CLSID for mshtml" << QString::number(hr, 16);
 //            return;
 //        }
-        Q_UNUSED(CLSIDFromProgID);
+        Q_UNUSED(&CLSIDFromProgID);
 
         hr = CoCreateInstance(CLSID_HTMLDocument, Q_NULLPTR, CLSCTX_INPROC_SERVER, IID_IHTMLDocument2, (void**)&m_htmlDocument2);
         if(!SUCCEEDED(hr))

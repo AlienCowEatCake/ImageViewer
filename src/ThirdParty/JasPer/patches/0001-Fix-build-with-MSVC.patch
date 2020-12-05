@@ -1,3 +1,12 @@
+From e058dd3d39c3b8c4d345f4a593feefe914d75558 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sat, 5 Dec 2020 17:35:12 +0700
+Subject: [PATCH 1/2] Fix build with MSVC
+
+---
+ src/libjasper/include/jasper/jas_types.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
 diff --git a/src/libjasper/include/jasper/jas_types.h b/src/libjasper/include/jasper/jas_types.h
 index a4ee693..63c7aa7 100644
 --- a/src/libjasper/include/jasper/jas_types.h
@@ -14,3 +23,6 @@ index a4ee693..63c7aa7 100644
  
  #define PRIxFAST32 "x"
  #define PRIxFAST16 PRIxFAST32
+-- 
+2.20.1
+
