@@ -17,6 +17,7 @@ include(../CommonSettings.pri)
 include(../libjpeg/libjpeg.pri)
 include(../JasPer/JasPer.pri)
 include(../LittleCMS2/LittleCMS2.pri)
+include(../zlib/zlib.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LIBRAW_PATH} $${INCLUDEPATH}
 
@@ -38,6 +39,12 @@ DEFINES += LIBRAW_NOTHREADS
     DEFINES += USE_JASPER
 } else {
     DEFINES += NO_JASPER
+}
+
+!disable_zlib {
+    DEFINES += USE_ZLIB
+} else {
+    DEFINES += NO_ZLIB
 }
 
 win32 {
