@@ -1,0 +1,447 @@
+version: '1.1.0-{branch}-{build}'
+clone_depth: 5
+shallow_clone: true
+
+environment:
+  matrix:
+    - job_name: macOS, Qt 5.12.10, Testing
+      job_group: macos_test
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_VERSION: qt/5.12.10@bincrafters/stable
+    - job_name: macOS, Qt 5.15.2, Testing
+      job_group: macos_test
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_VERSION: qt/5.15.2@bincrafters/stable
+    # # - job_name: macOS, Qt 5.6, MacSDK 10.6
+    # #   job_group: macos_buildscript
+    # #   APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+    # #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+    # #   SDK_DIST: https://github.com/alexey-lysiuk/macos-sdk/releases/download/10.6/MacOSX10.6.tar.bz2
+    # #   BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    - job_name: macOS, Qt 5.6, MacSDK 10.7
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+      SDK_DIST: https://bitcoincore.org/depends-sources/sdks/MacOSX10.7.sdk.tar.gz
+      BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    - job_name: macOS, Qt 5.6, MacSDK 10.8
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+      SDK_DIST: https://bitcoincore.org/depends-sources/sdks/MacOSX10.8.sdk.tar.gz
+      BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    - job_name: macOS, Qt 5.6, MacSDK 10.9
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+      SDK_DIST: https://bitcoincore.org/depends-sources/sdks/MacOSX10.9.sdk.tar.gz
+      BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    - job_name: macOS, Qt 5.6, MacSDK 10.10
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.10.sdk.tar.xz
+      BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    - job_name: macOS, Qt 5.6, MacSDK 10.11
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.11.sdk.tar.xz
+      BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    - job_name: macOS, Qt 5.6, MacSDK 10.12
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz
+      BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    - job_name: macOS, Qt 5.6, MacSDK 10.13
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz
+      BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    - job_name: macOS, Qt 5.12, MacSDK 10.10
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.10.sdk.tar.xz
+      BUILD_ID: osx_qt5.12_clang64_target10.10
+    - job_name: macOS, Qt 5.12, MacSDK 10.11
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.11.sdk.tar.xz
+      BUILD_ID: osx_qt5.12_clang64_target10.10
+    - job_name: macOS, Qt 5.12, MacSDK 10.12
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz
+      BUILD_ID: osx_qt5.12_clang64_target10.10
+    - job_name: macOS, Qt 5.12, MacSDK 10.13
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz
+      BUILD_ID: osx_qt5.12_clang64_target10.10
+    - job_name: macOS, Qt 5.12, MacSDK 10.14
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.14.sdk.tar.xz
+      BUILD_ID: osx_qt5.12_clang64_target10.10
+    - job_name: macOS, Qt 5.12, MacSDK 10.15
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.15.sdk.tar.xz
+      BUILD_ID: osx_qt5.12_clang64_target10.10
+    - job_name: macOS, Qt 5.15, MacSDK 10.10
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.10.sdk.tar.xz
+      BUILD_ID: osx_qt5.15_clang64_target10.10
+    - job_name: macOS, Qt 5.15, MacSDK 10.11
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.11.sdk.tar.xz
+      BUILD_ID: osx_qt5.15_clang64_target10.10
+    - job_name: macOS, Qt 5.15, MacSDK 10.12
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz
+      BUILD_ID: osx_qt5.15_clang64_target10.10
+    - job_name: macOS, Qt 5.15, MacSDK 10.13
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz
+      BUILD_ID: osx_qt5.15_clang64_target10.10
+    - job_name: macOS, Qt 5.15, MacSDK 10.14
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.14.sdk.tar.xz
+      BUILD_ID: osx_qt5.15_clang64_target10.10
+    - job_name: macOS, Qt 5.15, MacSDK 10.15
+      job_group: macos_buildscript
+      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
+      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.15.sdk.tar.xz
+      BUILD_ID: osx_qt5.15_clang64_target10.10
+    # # - job_name: Windows, Qt 4.4, MinGW 3.4.2 x86
+    # #   job_group: windows_buildscript_mingw
+    # #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    # #   QT_DIST: https://fami.codefreak.ru/mirrors/qt/unofficial_builds/qt4.4.3-mingw342-static/qt4.4.3-mingw342-static.7z
+    # #   MINGW_DIST: https://fami.codefreak.ru/mirrors/qt/unofficial_builds/qt4.4.3-mingw342-static/mingw-3.4.2.7z
+    # #   QTDIR: C:\Qt\4.4.3\mingw342_32_static
+    # #   MINGW_DIR: C:\Qt\Tools\mingw342_32
+    # #   QT_PREFIX: C:/Qt/4.4.3/mingw342_32_static
+    # #   BUILD_ID: win_qt4.4_mingw32
+    # - job_name: Windows, Qt 4.8, MSVC 2015 x86
+    #   job_group: windows_buildscript_msvc
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #   QT_DIST: https://fami.codefreak.ru/mirrors/qt/unofficial_builds/qt4.8.7-msvc2015-static/qt4.8.7-msvc2015-x86-static.7z
+    #   VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat
+    #   ARCH: x86
+    #   QTDIR: C:\Qt\4.8.7\msvc2015_static
+    #   BUILD_ID: win_qt4.8_msvc2015_x86
+    # - job_name: Windows, Qt 4.8, MSVC 2015 x64
+    #   job_group: windows_buildscript_msvc
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    #   QT_DIST: https://fami.codefreak.ru/mirrors/qt/unofficial_builds/qt4.8.7-msvc2015-static/qt4.8.7-msvc2015-x64-static.7z
+    #   VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat
+    #   ARCH: x64
+    #   QTDIR: C:\Qt\4.8.7\msvc2015_64_static
+    #   BUILD_ID: win_qt4.8_msvc2015_x64
+    - job_name: Windows, Qt 5.3, MSVC 2013 x86, Testing
+      job_group: windows_test_msvc
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
+      ARCH: x86
+      QTDIR: C:\Qt\5.3\msvc2013_opengl
+    - job_name: Windows, Qt 5.3, MSVC 2013 x64, Testing
+      job_group: windows_test_msvc
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
+      ARCH: x64
+      QTDIR: C:\Qt\5.3\msvc2013_64_opengl
+    - job_name: Windows, Qt 5.3, MinGW 4.8.2 x86, Testing
+      job_group: windows_test_mingw
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      QTDIR: C:\Qt\5.3\mingw482_32
+      MINGW_DIR: C:\Qt\Tools\mingw482_32
+    - job_name: Windows, Qt 5.6, MSVC 2013 x86, Testing
+      job_group: windows_test_msvc
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
+      ARCH: x86
+      QTDIR: C:\Qt\5.6\msvc2013
+    - job_name: Windows, Qt 5.6, MSVC 2013 x64, Testing
+      job_group: windows_test_msvc
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
+      ARCH: x64
+      QTDIR: C:\Qt\5.6\msvc2013_64
+    - job_name: Windows, Qt 5.6, MinGW 4.9.2 x86, Testing
+      job_group: windows_test_mingw
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      QTDIR: C:\Qt\5.6\mingw49_32
+      MINGW_DIR: C:\Qt\Tools\mingw492_32
+    - job_name: Windows, Qt 5.9, MSVC 2015 x86, Testing
+      job_group: windows_test_msvc
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat
+      ARCH: x86
+      QTDIR: C:\Qt\5.9\msvc2015
+    - job_name: Windows, Qt 5.9, MSVC 2015 x64, Testing
+      job_group: windows_test_msvc
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat
+      ARCH: x64
+      QTDIR: C:\Qt\5.9\msvc2015_64
+    - job_name: Windows, Qt 5.9, MinGW 5.3.0 x86, Testing
+      job_group: windows_test_mingw
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      QTDIR: C:\Qt\5.9\mingw53_32
+      MINGW_DIR: C:\Qt\Tools\mingw530_32
+    - job_name: Windows, Qt 5.12, MSVC 2017 x86, Testing
+      job_group: windows_test_msvc
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat
+      ARCH: x64_x86
+      QTDIR: C:\Qt\5.12\msvc2017
+    - job_name: Windows, Qt 5.12, MSVC 2017 x64, Testing
+      job_group: windows_test_msvc
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat
+      ARCH: x64
+      QTDIR: C:\Qt\5.12\msvc2017_64
+    - job_name: Windows, Qt 5.12, MinGW 7.3.0 x86, Testing
+      job_group: windows_test_mingw
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      QTDIR: C:\Qt\5.12\mingw73_32
+      MINGW_DIR: C:\Qt\Tools\mingw730_32
+    - job_name: Windows, Qt 5.12, MinGW 7.3.0 x64, Testing
+      job_group: windows_test_mingw
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      QTDIR: C:\Qt\5.12\mingw73_64
+      MINGW_DIR: C:\Qt\Tools\mingw730_64
+    - job_name: Windows, Qt 5.15, MSVC 2019 x86, Testing
+      job_group: windows_test_msvc
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat
+      ARCH: x64_x86
+      QTDIR: C:\Qt\5.15\msvc2019
+    - job_name: Windows, Qt 5.15, MSVC 2019 x64, Testing
+      job_group: windows_test_msvc
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat
+      ARCH: x64
+      QTDIR: C:\Qt\5.15\msvc2019_64
+    - job_name: Windows, Qt 5.15, MinGW 8.1.0 x86, Testing
+      job_group: windows_test_mingw
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      QTDIR: C:\Qt\5.15\mingw81_32
+      MINGW_DIR: C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32
+    - job_name: Windows, Qt 5.15, MinGW 8.1.0 x64, Testing
+      job_group: windows_test_mingw
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      QTDIR: C:\Qt\5.15\mingw81_64
+      MINGW_DIR: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64
+    - job_name: GNU/Linux, Ubuntu 16.04, Qt 4.x, Testing
+      job_group: linux_test_qt4
+      APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu1604
+    - job_name: GNU/Linux, Ubuntu 16.04, Qt 5.x, Testing
+      job_group: linux_test_qt5
+      APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu1604
+    - job_name: GNU/Linux, Ubuntu 18.04, Qt 4.x, Testing
+      job_group: linux_test_qt4
+      APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    - job_name: GNU/Linux, Ubuntu 18.04, Qt 5.x, Testing
+      job_group: linux_test_qt5
+      APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    - job_name: GNU/Linux, Ubuntu 20.04, Qt 5.x, Testing
+      job_group: linux_test_qt5
+      APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
+
+for:
+-
+  matrix:
+    only:
+      - job_group: macos_test
+  install:
+    - sudo pip3 install conan
+    - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+    - conan install --update --build=missing "${QT_VERSION}"
+    - export PATH="$(echo ${HOME}/.conan/data/qt/*/*/*/package/*/bin):${PATH}"
+  build_script:
+    - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
+    - cd "${APPVEYOR_BUILD_FOLDER}/build"
+    - qmake -r CONFIG+=release CONFIG+="enable_resvg enable_magickwand enable_graphicsmagickwand enable_update_checking disable_qtsvg" ..
+    - make -j3
+
+-
+  matrix:
+    only:
+      - job_group: macos_buildscript
+  install:
+    - sudo mkdir -p "/opt"
+    - cd "/opt"
+    - sudo curl "${QT_DIST}" --output "qt_dist" --location
+    - sudo tar -xpf "qt_dist"
+    - sudo rm "qt_dist"
+    - cd "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs"
+    - sudo curl "${SDK_DIST}" --output "sdk_dist" --location
+    - sudo tar -xpf "sdk_dist"
+    - sudo rm "sdk_dist"
+    - sudo plutil -replace "MinimumSDKVersion" -string "10.6" "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Info.plist"
+    - sudo xcode-select -s "/Applications/Xcode.app/Contents/Developer"
+  build_script:
+    - "${APPVEYOR_BUILD_FOLDER}/buildscripts/${BUILD_ID}.sh"
+  # artifacts:
+  #   - path: "build_${BUILD_ID}/artifacts/*.dmg"
+
+-
+  matrix:
+    only:
+      - job_group: windows_test_msvc
+  install:
+    - call "%QTDIR%\bin\qtenv2.bat"
+    - call "%VCVARS%" %ARCH%
+  build_script:
+    - mkdir "%APPVEYOR_BUILD_FOLDER%\build"
+    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_resvg enable_magickwand enable_graphicsmagickwand enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
+    - cd "%APPVEYOR_BUILD_FOLDER%\build"
+    - call "C:\Qt\Tools\QtCreator\bin\jom.exe" -j3
+
+-
+  matrix:
+    only:
+      - job_group: windows_test_mingw
+  install:
+    - call "%QTDIR%\bin\qtenv2.bat"
+    - set "PATH=%MINGW_DIR%\bin;%PATH%"
+  build_script:
+    - mkdir "%APPVEYOR_BUILD_FOLDER%\build"
+    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_resvg enable_magickwand enable_graphicsmagickwand enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
+    - cd "%APPVEYOR_BUILD_FOLDER%\build"
+    - mingw32-make -j3
+
+-
+  matrix:
+    only:
+      - job_group: windows_buildscript_mingw
+  install:
+    - cd "%APPVEYOR_BUILD_FOLDER%\.."
+    - mkdir "tmp"
+    - cd "tmp"
+    - appveyor DownloadFile "%QT_DIST%" -FileName "Qt.7z"
+    - 7z x "Qt.7z"
+    - del "Qt.7z"
+    - mkdir "%QTDIR%"
+    - rmdir "%QTDIR%"
+    - ps: Move-Item -Path * -Destination $Env:QTDIR
+    - echo [Paths]> "%QTDIR%\bin\qt.conf"
+    - echo Prefix=%QT_PREFIX%>> "%QTDIR%\bin\qt.conf"
+    - echo Documentation=doc>> "%QTDIR%\bin\qt.conf"
+    - echo Translations=translations>> "%QTDIR%\bin\qt.conf"
+    - echo Plugins=plugins>> "%QTDIR%\bin\qt.conf"
+    - appveyor DownloadFile "%MINGW_DIST%" -FileName "MinGW.7z"
+    - 7z x "MinGW.7z"
+    - del "MinGW.7z"
+    - mkdir "%MINGW_DIR%"
+    - rmdir "%MINGW_DIR%"
+    - ps: Move-Item -Path * -Destination $Env:MINGW_DIR
+  build_script:
+    - call "%APPVEYOR_BUILD_FOLDER%\buildscripts\%BUILD_ID%.bat" <nul
+  # artifacts:
+  #   - path: "*.zip"
+
+-
+  matrix:
+    only:
+      - job_group: windows_buildscript_msvc
+  install:
+    - cd "%APPVEYOR_BUILD_FOLDER%\.."
+    - mkdir "tmp"
+    - cd "tmp"
+    - appveyor DownloadFile "%QT_DIST%" -FileName "Qt.7z"
+    - 7z x "Qt.7z"
+    - del "Qt.7z"
+    - mkdir "%QTDIR%"
+    - rmdir "%QTDIR%"
+    - ps: Move-Item -Path * -Destination $Env:QTDIR
+    - call "%VCVARS%" %ARCH%
+  build_script:
+    - call "%APPVEYOR_BUILD_FOLDER%\buildscripts\%BUILD_ID%.bat" <nul
+  # artifacts:
+  #   - path: "*.zip"
+
+-
+  matrix:
+    only:
+      - job_group: linux_test_qt5
+  install:
+    - export DEBIAN_FRONTEND=noninteractive
+    - sudo apt-get update
+    - sudo apt-get -y install qtbase5-dev libqt5svg5-dev
+    - sudo apt-get -y install qt5-default || true
+    - sudo apt-get -y install qtwebengine5-dev || export NO_QTWEBENGINE=true
+    - sudo apt-get -y install qml-module-qtwebengine || export NO_QMLWEBENGINE=true
+    - sudo apt-get -y install libqt5webkit5-dev || export NO_QTWEBKIT=true
+  build_script:
+    - echo "NO_QTWEBENGINE = ${NO_QTWEBENGINE}"
+    - echo "NO_QMLWEBENGINE = ${NO_QMLWEBENGINE}"
+    - echo "NO_QTWEBKIT = ${NO_QTWEBKIT}"
+    - EXTRA_CONFIGS="enable_resvg enable_magickwand enable_graphicsmagickwand enable_update_checking"
+    - if [ -z ${NO_QTWEBENGINE} ]; then
+        EXTRA_CONFIGS="${EXTRA_CONFIGS} enable_qtwebengine";
+      else
+        EXTRA_CONFIGS="${EXTRA_CONFIGS} disable_qtwebengine";
+      fi
+    - if [ -z ${NO_QMLWEBENGINE} ]; then
+        EXTRA_CONFIGS="${EXTRA_CONFIGS} enable_qmlwebengine";
+      else
+        EXTRA_CONFIGS="${EXTRA_CONFIGS} disable_qmlwebengine";
+      fi
+    - if [ -z ${NO_QTWEBKIT} ]; then
+        EXTRA_CONFIGS="${EXTRA_CONFIGS} enable_qtwebkit";
+      else
+        EXTRA_CONFIGS="${EXTRA_CONFIGS} disable_qtwebkit";
+      fi
+    - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
+    - qmake -o "${APPVEYOR_BUILD_FOLDER}/build" -r CONFIG+=release CONFIG+="${EXTRA_CONFIGS}" "${APPVEYOR_BUILD_FOLDER}"
+    - cd "${APPVEYOR_BUILD_FOLDER}/build"
+    - make -j3
+
+-
+  matrix:
+    only:
+      - job_group: linux_test_qt4
+  install:
+    - export DEBIAN_FRONTEND=noninteractive
+    - sudo apt-get update
+    - sudo apt-get -y install libqt4-dev qt4-default
+    - sudo apt-get -y install libqtwebkit-dev || export NO_QTWEBKIT=true
+  build_script:
+    - echo "NO_QTWEBKIT = ${NO_QTWEBKIT}"
+    - EXTRA_CONFIGS="enable_resvg enable_magickwand enable_graphicsmagickwand enable_update_checking"
+    - if [ -z ${NO_QTWEBKIT} ]; then
+        EXTRA_CONFIGS="${EXTRA_CONFIGS} enable_qtwebkit";
+      else
+        EXTRA_CONFIGS="${EXTRA_CONFIGS} disable_qtwebkit";
+      fi
+    - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
+    - cd "${APPVEYOR_BUILD_FOLDER}/build"
+    - qmake -r CONFIG+=release CONFIG+="${EXTRA_CONFIGS}" ..
+    - make -j3
+
+notifications:
+  - provider: Email
+    to:
+      - peter.zhigalov@gmail.com
+    on_build_status_changed: true
