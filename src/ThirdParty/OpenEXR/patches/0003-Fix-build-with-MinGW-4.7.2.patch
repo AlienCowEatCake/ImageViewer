@@ -1,7 +1,7 @@
-From 10954308290f340696f027ae81ab92861184fcfc Mon Sep 17 00:00:00 2001
+From 21a2bbc9815b243de7ff29ea3eaf26654886f52f Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 19:25:07 +0700
-Subject: [PATCH 3/4] Fix build with MinGW 4.7.2
+Subject: [PATCH 3/5] Fix build with MinGW 4.7.2
 
 ---
  OpenEXR/IlmImf/ImfMisc.cpp      | 2 +-

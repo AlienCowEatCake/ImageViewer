@@ -158,6 +158,8 @@
 #include <algorithm>
 
 #include <cstddef>
+#include <stdint.h>
+#include <inttypes.h>
 
 
 // Windows specific addition to prevent the indirect import of the redefined min/max macros

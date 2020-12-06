@@ -1,7 +1,7 @@
-From 1f2b90121a1e7c3f3deb726b60a5d7c0103ae69b Mon Sep 17 00:00:00 2001
+From f8f6c676149d822d55add7af67848899db89678e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Jun 2020 17:12:07 +0700
-Subject: [PATCH 4/4] Fix annoying warning
+Subject: [PATCH 4/5] Fix annoying warning
 
 ---
  OpenEXR/IlmImf/ImfAttribute.h | 6 +++---

@@ -1,7 +1,7 @@
-From d0767729774ccd743f8248a3401b88f34015c7cb Mon Sep 17 00:00:00 2001
+From 2fab471d2620f358b423171d9be27a9be2f56481 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 18:20:28 +0700
-Subject: [PATCH 2/4] Fix build with MinGW 3.4.2
+Subject: [PATCH 2/5] Fix build with MinGW 3.4.2
 
 ---
  IlmBase/Half/half.h                          | 13 +++++++

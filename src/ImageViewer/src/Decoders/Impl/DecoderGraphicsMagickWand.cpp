@@ -89,7 +89,7 @@ typedef int OrientationType;
 
 struct ExceptionInfo
 {
-    uint8_t _[256];
+    quint8 _[256];
 };
 
 struct MagickWand;

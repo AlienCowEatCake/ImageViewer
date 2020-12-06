@@ -1,7 +1,7 @@
-From 33cbafb68a289be8805061e15b4c7298fa11f6b7 Mon Sep 17 00:00:00 2001
+From 7f6dc34504aed47628e258ef7570676e0a8ad0c0 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 11 Nov 2019 02:35:05 +0700
-Subject: [PATCH 1/4] Fix conflict with zlib defines
+Subject: [PATCH 1/5] Fix conflict with zlib defines
 
 ---
  OpenEXR/IlmImf/ImfDwaCompressor.cpp   |  1 +
