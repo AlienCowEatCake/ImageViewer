@@ -28,7 +28,7 @@
 #define JAS_HAVE_SYS_TIME_H 1
 #define JAS_HAVE_SYS_TYPES_H 1
 
-#define JAS_HAVE_MKOSTEMP 1
+/* #undef JAS_HAVE_MKOSTEMP */
 #define JAS_HAVE_GETTIMEOFDAY 1
 #define JAS_HAVE_GETRUSAGE 1
 #endif

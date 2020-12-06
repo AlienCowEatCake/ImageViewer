@@ -184,8 +184,10 @@ struct SimpleToolBarItem
             return true;
         if(sender && item && [item menuFormRepresentation] == sender)
             return true;
-        if(sender && item && [sender conformsToProtocol:@protocol(NSUserInterfaceItemIdentification)] && [[item itemIdentifier] isEqualToString:[sender identifier]])
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_7_AND_LATER)
+        if(sender && item && [sender conformsToProtocol:@protocol(NSUserInterfaceItemIdentification)] && [sender respondsToSelector:@selector(identifier)] && [[item itemIdentifier] isEqualToString:[sender identifier]])
             return true;
+#endif
         return false;
     }
 
@@ -656,7 +658,10 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     NSToolbarItem *first = [[NSToolbarItem alloc] initWithItemIdentifier:firstIdentifier];
 //    [first setTarget:self];
 //    [first setAction:@selector(itemClicked:)];
-    [[first menuFormRepresentation] setIdentifier:firstIdentifier];
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_7_AND_LATER)
+    if([[first menuFormRepresentation] respondsToSelector:@selector(setIdentifier:)])
+        [[first menuFormRepresentation] setIdentifier:firstIdentifier];
+#endif
     [[first menuFormRepresentation] setTarget:self];
     [[first menuFormRepresentation] setAction:@selector(itemClicked:)];
     firstItem.item = first;
@@ -664,7 +669,10 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     NSToolbarItem *second = [[NSToolbarItem alloc] initWithItemIdentifier:secondIdentifier];
 //    [second setTarget:self];
 //    [second setAction:@selector(itemClicked:)];
-    [[second menuFormRepresentation] setIdentifier:secondIdentifier];
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_7_AND_LATER)
+    if([[second menuFormRepresentation] respondsToSelector:@selector(setIdentifier:)])
+        [[second menuFormRepresentation] setIdentifier:secondIdentifier];
+#endif
     [[second menuFormRepresentation] setTarget:self];
     [[second menuFormRepresentation] setAction:@selector(itemClicked:)];
     secondItem.item = second;
