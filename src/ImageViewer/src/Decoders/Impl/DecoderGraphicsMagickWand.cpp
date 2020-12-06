@@ -572,7 +572,7 @@ private:
             ImageMetaData::applyExifOrientation(&qImage, static_cast<quint16>(orientation));
         }
 
-        size_t length = 0;
+        unsigned long length = 0;
         if(const unsigned char *datum = MagickGetImageProfile(mw, "ICC", &length))
         {
             qDebug() << "[DecoderGraphicsMagickWand] ICC profile found";

@@ -46,6 +46,11 @@
     c++11 | c++1y | c++14 | c++1z | c++17 | c++2a | c++20 {
         CONFIG += test_cxx11_compatible_config
     }
+    # Workaround: MSVC 2013 is not a C++11-conformant compiler
+    test_cxx11_incompatible_msvc {
+        CONFIG -= test_cxx11_compatible_qt
+        CONFIG -= test_cxx11_compatible_config
+    }
     test_cxx11_compatible_qt | test_cxx11_compatible_config | test_cxx11_compatible_msvc | enable_cxx11 {
         CONFIG -= disable_cxx11
         CONFIG += enable_cxx11
