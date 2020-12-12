@@ -176,19 +176,19 @@ integrity {
     QMAKE_CFLAGS += -c99
 }
 
-equals(QT_ARCH, arm)|equals(QT_ARCH, arm64) {
-    SOURCES_FOR_NEON += \
-        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_neon.c \
-        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_neon.c \
-        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_neon.c \
-        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_neon.c \
-        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/filters_neon.c \
-        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_neon.c \
-        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_neon.c \
-        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_neon.c \
-        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_neon.c \
-        $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_neon.c
+SOURCES_FOR_NEON += \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_neon.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_neon.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_neon.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_neon.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/filters_neon.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_neon.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_neon.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_neon.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_neon.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_neon.c
 
+equals(QT_ARCH, arm)|equals(QT_ARCH, arm64) {
     contains(QT_CPU_FEATURES.$$QT_ARCH, neon) {
         # Default compiler settings include this feature, so just add to SOURCES
         SOURCES += $$SOURCES_FOR_NEON
@@ -205,6 +205,11 @@ equals(QT_ARCH, arm)|equals(QT_ARCH, arm64) {
         neon_comp.name = compiling[neon] ${QMAKE_FILE_IN}
         silent: neon_comp.commands = @echo compiling[neon] ${QMAKE_FILE_IN} && $$neon_comp.commands
         QMAKE_EXTRA_COMPILERS += neon_comp
+    }
+} else {
+    macx {
+        # Universal builds should contain neon sources
+        SOURCES += $$SOURCES_FOR_NEON
     }
 }
 
