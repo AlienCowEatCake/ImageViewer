@@ -167,16 +167,16 @@ QString targetDescriptionInt()
     return QString::fromLatin1("x86-64");
 #elif defined (Q_PROCESSOR_ALPHA)
     return QString::fromLatin1("Alpha");
-#elif defined (Q_PROCESSOR_ARM_V5)
-    return QString::fromLatin1("ARM V5");
-#elif defined (Q_PROCESSOR_ARM_V6)
-    return QString::fromLatin1("ARM V6");
-#elif defined (Q_PROCESSOR_ARM_V7)
-    return QString::fromLatin1("ARM V7");
-#elif defined (Q_PROCESSOR_ARM_V8)
-    return QString::fromLatin1("ARM V8");
 #elif defined (Q_PROCESSOR_ARM_64)
     return QString::fromLatin1("ARM64");
+#elif defined (Q_PROCESSOR_ARM_V8)
+    return QString::fromLatin1("ARM V8");
+#elif defined (Q_PROCESSOR_ARM_V7)
+    return QString::fromLatin1("ARM V7");
+#elif defined (Q_PROCESSOR_ARM_V6)
+    return QString::fromLatin1("ARM V6");
+#elif defined (Q_PROCESSOR_ARM_V5)
+    return QString::fromLatin1("ARM V5");
 #elif defined (Q_PROCESSOR_ARM)
     return QString::fromLatin1("ARM");
 #elif defined (Q_PROCESSOR_AVR32)
@@ -185,24 +185,30 @@ QString targetDescriptionInt()
     return QString::fromLatin1("Blackfin");
 #elif defined (Q_PROCESSOR_IA64)
     return QString::fromLatin1("IA-64");
-#elif defined (Q_PROCESSOR_MIPS_I)
-    return QString::fromLatin1("MIPS I");
-#elif defined (Q_PROCESSOR_MIPS_II)
-    return QString::fromLatin1("MIPS II");
-#elif defined (Q_PROCESSOR_MIPS_III)
-    return QString::fromLatin1("MIPS III");
-#elif defined (Q_PROCESSOR_MIPS_IV)
-    return QString::fromLatin1("MIPS IV");
-#elif defined (Q_PROCESSOR_MIPS_V)
-    return QString::fromLatin1("MIPS V");
 #elif defined (Q_PROCESSOR_MIPS_64)
     return QString::fromLatin1("MIPS64");
+#elif defined (Q_PROCESSOR_MIPS_V)
+    return QString::fromLatin1("MIPS V");
+#elif defined (Q_PROCESSOR_MIPS_IV)
+    return QString::fromLatin1("MIPS IV");
+#elif defined (Q_PROCESSOR_MIPS_III)
+    return QString::fromLatin1("MIPS III");
+#elif defined (Q_PROCESSOR_MIPS_II)
+    return QString::fromLatin1("MIPS II");
+#elif defined (Q_PROCESSOR_MIPS_I)
+    return QString::fromLatin1("MIPS I");
 #elif defined (Q_PROCESSOR_MIPS)
     return QString::fromLatin1("MIPS");
 #elif defined (Q_PROCESSOR_POWER_64)
     return QString::fromLatin1("Power 64");
 #elif defined (Q_PROCESSOR_POWER)
     return QString::fromLatin1("Power");
+#elif defined (Q_PROCESSOR_RISCV_64)
+    return QString::fromLatin1("RISC-V (64-bit)");
+#elif defined (Q_PROCESSOR_RISCV_32)
+    return QString::fromLatin1("RISC-V (32-bit)");
+#elif defined (Q_PROCESSOR_RISCV)
+    return QString::fromLatin1("RISC-V");
 #elif defined (Q_PROCESSOR_S390_X)
     return QString::fromLatin1("S390X (64-bit)");
 #elif defined (Q_PROCESSOR_S390)
@@ -219,8 +225,12 @@ QString targetDescriptionInt()
     return QString::fromLatin1("SPARC");
 #elif defined (Q_PROCESSOR_X86_64)
     return QString::fromLatin1("x86-64");
+#elif defined (Q_PROCESSOR_X86_32)
+    return QString::fromLatin1("x86");
 #elif defined (Q_PROCESSOR_X86)
     return QString::fromLatin1("x86");
+#elif defined (Q_PROCESSOR_WASM)
+    return QString::fromLatin1("Web Assembly");
 #else
     return QString();
 #endif
