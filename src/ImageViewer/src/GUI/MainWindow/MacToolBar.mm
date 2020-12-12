@@ -293,10 +293,10 @@ struct GroupedToolBarItem : SimpleToolBarItem
 
     void setToolTip(const QString &toolTip)
     {
+        SimpleToolBarItem::setToolTip(toolTip);
         if(!item || !segmentedControl)
             return;
         AUTORELEASE_POOL;
-        [item setToolTip:ObjCUtils::QStringToNSString(toolTip)];
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_13_AND_LATER)
         if(@available(macOS 10.13, *))
         {
@@ -357,7 +357,19 @@ struct ButtonedToolBarItem : SimpleToolBarItem
 
     bool actionSenderMatch(id sender) const
     {
-        return (button && button == sender) || (sender && item && [item menuFormRepresentation] == sender);
+        if(SimpleToolBarItem::actionSenderMatch(sender))
+            return true;
+        if(button && button == sender)
+            return true;
+        if(sender && item && [item menuFormRepresentation] == sender)
+            return true;
+        return false;
+    }
+
+    void setLabel(const QString &label)
+    {
+        SimpleToolBarItem::setLabel(label);
+        SimpleToolBarItem::setMenuTitle(label);
     }
 
     void setToolTip(const QString &toolTip)
@@ -395,6 +407,10 @@ struct ToolBarData;
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar *)toolbar;
 
 - (NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar;
+
+- (BOOL)validateMenuItem:(NSMenuItem *)item;
+
+- (BOOL)validateToolbarItem:(NSToolbarItem *)item;
 
 - (IBAction)itemClicked:(id)sender;
 
@@ -616,6 +632,11 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     return [item isEnabled];
 }
 
+- (BOOL)validateToolbarItem:(NSToolbarItem *)item
+{
+    return [item isEnabled];
+}
+
 - (IBAction)itemClicked:(id)sender
 {
 #define INVOKE_IF_MATCH(ITEM, METHOD) \
@@ -717,8 +738,18 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     [button setTarget:self];
     [button setAction:@selector(itemClicked:)];
 
+    NSMenuItem* menuItem = [[NSMenuItem alloc] init];
+    [menuItem setTitle:@""];
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_7_AND_LATER)
+    if([menuItem respondsToSelector:@selector(setIdentifier:)])
+        [menuItem setIdentifier:identifier];
+#endif
+    [menuItem setTarget:self];
+    [menuItem setAction:@selector(itemClicked:)];
+
     NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier:identifier];
     [item setView:button];
+    [item setMenuFormRepresentation:menuItem];
     [item setVisibilityPriority:visibilityPriority];
     buttonedItem.item = item;
     buttonedItem.button = button;
