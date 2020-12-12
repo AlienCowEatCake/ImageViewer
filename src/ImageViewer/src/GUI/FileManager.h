@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -21,12 +21,12 @@
 #define FILEMANAGER_H_INCLUDED
 
 #include <QObject>
+#include <QStringList>
 
 #include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 class QString;
-class QStringList;
 
 class FileManager : public QObject
 {

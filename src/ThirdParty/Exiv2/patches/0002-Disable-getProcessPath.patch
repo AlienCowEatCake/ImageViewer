@@ -1,4 +1,4 @@
-From 948a9b45c962d2aee1042684bd66f85b2f6881c7 Mon Sep 17 00:00:00 2001
+From c3405d5a0be4ec61c75ee28a92b0e906e3f81335 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:34:14 +0700
 Subject: [PATCH 2/9] Disable getProcessPath

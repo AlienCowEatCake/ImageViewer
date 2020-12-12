@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -20,9 +20,10 @@
 #if !defined(DECODER_LIBRARY_UTILS_H_INCLUDED)
 #define DECODER_LIBRARY_UTILS_H_INCLUDED
 
+#include <QStringList>
+
 class QLibrary;
 class QString;
-class QStringList;
 
 namespace LibraryUtils {
 

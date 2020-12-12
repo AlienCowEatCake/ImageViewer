@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -25,7 +25,11 @@
 #include <set>
 
 #include <QtGlobal>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QRegularExpression>
+#else
 #include <QRegExp>
+#endif
 #include <QPixmap>
 #include <QImage>
 #include <QFileInfo>
@@ -59,8 +63,13 @@ public:
         {
             for(NSString *fileType in [NSImage performSelector:@selector(imageFileTypes)])
             {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+                typedef QRegularExpression QRE;
+#else
+                typedef QRegExp QRE;
+#endif
                 QString simplifiedFileType = ObjCUtils::QStringFromNSString(fileType).toLower();
-                simplifiedFileType.replace(QRegExp(QString::fromLatin1("[^\\w]")), QString::fromLatin1(""));
+                simplifiedFileType.replace(QRE(QString::fromLatin1("[^\\w]")), QString::fromLatin1(""));
                 fileTypes.insert(simplifiedFileType.simplified());
             }
         }

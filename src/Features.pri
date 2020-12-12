@@ -384,7 +384,9 @@ disable_aom : !system_libavif {
 
 # QtExtended options:
 #    disable_qtextended
-
+greaterThan(QT_MAJOR_VERSION, 5) {
+    CONFIG += disable_qtextended
+}
 
 # STB options:
 #    disable_stb

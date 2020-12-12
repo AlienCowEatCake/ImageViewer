@@ -31,8 +31,6 @@
 #include "Utils/JsonDocument.h"
 #include "Utils/JsonObject.h"
 
-#include "ReleaseInfo.h"
-
 static bool releaseInfoGreater(const ReleaseInfo &lhs, const ReleaseInfo &rhs)
 {
     return lhs.version > rhs.version;

@@ -22,7 +22,11 @@
 #include <QByteArray>
 #include <QDebug>
 #include <QRect>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QRegularExpression>
+#else
 #include <QRegExp>
+#endif
 #include <QSize>
 #include <QString>
 #include <QStringList>
@@ -63,8 +67,13 @@ QRectF AbstractSVGWebBrowserNoJS::svgViewBoxAttribute()
     while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
     if(reader.atEnd())
         return QRectF();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    typedef QRegularExpression QRE;
+#else
+    typedef QRegExp QRE;
+#endif
     const QStringList viewBoxData = reader.attributes().value(QString::fromLatin1("viewBox")).toString()
-            .split(QRegExp(QString::fromLatin1("\\s")),
+            .split(QRE(QString::fromLatin1("\\s")),
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
                    Qt::SkipEmptyParts);
 #else

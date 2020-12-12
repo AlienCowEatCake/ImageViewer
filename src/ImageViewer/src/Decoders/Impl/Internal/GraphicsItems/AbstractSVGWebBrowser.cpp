@@ -25,7 +25,11 @@
 #include <QVariant>
 #include <QString>
 #include <QStringList>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QRegularExpression>
+#else
 #include <QRegExp>
+#endif
 #include <QSizeF>
 #include <QRectF>
 
@@ -105,8 +109,13 @@ QSizeF AbstractSVGWebBrowser::svgSizeAttribute()
 
 QRectF AbstractSVGWebBrowser::svgViewBoxAttribute()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    typedef QRegularExpression QRE;
+#else
+    typedef QRegExp QRE;
+#endif
     const QStringList viewBoxData = evalJS("document.rootElement.getAttribute('viewBox');").toString()
-            .split(QRegExp(QString::fromLatin1("\\s")),
+            .split(QRE(QString::fromLatin1("\\s")),
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
                    Qt::SkipEmptyParts);
 #else

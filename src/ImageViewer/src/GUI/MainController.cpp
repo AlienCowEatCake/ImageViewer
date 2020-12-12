@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -26,7 +26,6 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QStringList>
 
 #include "Utils/ScopedPointer.h"
 #include "Utils/SignalBlocker.h"

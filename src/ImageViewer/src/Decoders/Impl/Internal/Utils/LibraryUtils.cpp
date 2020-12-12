@@ -21,7 +21,6 @@
 
 #include <QApplication>
 #include <QLibrary>
-#include <QStringList>
 #include <QString>
 #include <QDir>
 #include <QFile>

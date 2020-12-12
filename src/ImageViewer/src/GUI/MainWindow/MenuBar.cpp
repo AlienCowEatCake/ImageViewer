@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -137,7 +137,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionOpenFile->setShortcut(QKeySequence::Open);
         actionOpenFile->setMenuRole(QAction::NoRole);
         menuFile->addAction(actionOpenFolder);
-        actionOpenFolder->setShortcut(Qt::CTRL + Qt::ALT + Qt::Key_O);
+        actionOpenFolder->setShortcut((Qt::CTRL | Qt::ALT) + Qt::Key_O);
         actionOpenFolder->setMenuRole(QAction::NoRole);
         menuFile->addAction(actionSaveAs);
         actionSaveAs->setShortcut(QKeySequence::Save);
@@ -222,9 +222,9 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menuView->addSeparator();
         menuView->addAction(actionZoomFullScreen);
 #if defined (Q_OS_MAC)
-        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::META + Qt::Key_F << Qt::Key_F11);
+        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << (Qt::CTRL | Qt::META) + Qt::Key_F << Qt::Key_F11);
 #else
-        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::Key_F11 << Qt::CTRL + Qt::META + Qt::Key_F);
+        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::Key_F11 << (Qt::CTRL | Qt::META) + Qt::Key_F);
 #endif
         actionZoomFullScreen->setMenuRole(QAction::NoRole);
         actionZoomFullScreen->setCheckable(true);
@@ -381,17 +381,17 @@ struct MenuBar::Impl : public ControlsContainerEmitter
                 << Qt::META
                 << Qt::CTRL
                 << Qt::ALT
-                << Qt::SHIFT + Qt::META
-                << Qt::SHIFT + Qt::CTRL
-                << Qt::SHIFT + Qt::ALT
-                << Qt::META + Qt::CTRL
-                << Qt::META + Qt::ALT
-                << Qt::CTRL + Qt::ALT
-                << Qt::SHIFT + Qt::META + Qt::CTRL
-                << Qt::SHIFT + Qt::META + Qt::ALT
-                << Qt::SHIFT + Qt::CTRL + Qt::ALT
-                << Qt::META + Qt::CTRL + Qt::ALT
-                << Qt::SHIFT + Qt::META + Qt::CTRL + Qt::ALT;
+                << (Qt::SHIFT | Qt::META)
+                << (Qt::SHIFT | Qt::CTRL)
+                << (Qt::SHIFT | Qt::ALT)
+                << (Qt::META | Qt::CTRL)
+                << (Qt::META | Qt::ALT)
+                << (Qt::CTRL | Qt::ALT)
+                << (Qt::SHIFT | Qt::META | Qt::CTRL)
+                << (Qt::SHIFT | Qt::META | Qt::ALT)
+                << (Qt::SHIFT | Qt::CTRL | Qt::ALT)
+                << (Qt::META | Qt::CTRL | Qt::ALT)
+                << (Qt::SHIFT | Qt::META | Qt::CTRL | Qt::ALT);
         QList<QKeySequence> result;
         result.append(key + defaultModifier);
         for(QList<int>::ConstIterator it = modifiers.constBegin(); it != modifiers.constEnd(); ++it)
@@ -410,10 +410,10 @@ struct MenuBar::Impl : public ControlsContainerEmitter
                 << Qt::META
                 << Qt::CTRL
                 << Qt::ALT
-                << Qt::META + Qt::CTRL
-                << Qt::META + Qt::ALT
-                << Qt::CTRL + Qt::ALT
-                << Qt::META + Qt::CTRL + Qt::ALT;
+                << (Qt::META | Qt::CTRL)
+                << (Qt::META | Qt::ALT)
+                << (Qt::CTRL | Qt::ALT)
+                << (Qt::META | Qt::CTRL | Qt::ALT);
         QList<QKeySequence> result;
         result.append(master + defaultModifier);
         for(QList<int>::ConstIterator it = modifiers.constBegin(); it != modifiers.constEnd(); ++it)

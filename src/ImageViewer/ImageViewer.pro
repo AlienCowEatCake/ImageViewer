@@ -280,6 +280,7 @@ HEADERS += \
 
 !disable_qtsvg {
     QT += svg
+    greaterThan(QT_MAJOR_VERSION, 5): QT += svgwidgets
     SOURCES += \
         src/Decoders/Impl/DecoderQtSVG.cpp
 }

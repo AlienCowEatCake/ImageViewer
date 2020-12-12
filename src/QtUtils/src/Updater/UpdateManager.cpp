@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -32,7 +32,6 @@
 
 #include "Utils/SettingsWrapper.h"
 
-#include "ReleaseInfo.h"
 #include "SettingsKeys.h"
 #include "UpdateChecker.h"
 

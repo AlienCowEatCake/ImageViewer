@@ -13,6 +13,9 @@
 #include <QList>
 #include <QBuffer>
 #include <QDir>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QElapsedTimer>
+#endif
 
 #define QMOVIE_INVALID_DELAY -1
 
@@ -260,7 +263,11 @@ QtImageFormatsFrameInfo QtImageFormatsMovie::Impl::infoForFrame(int frameNumber)
 
 bool QtImageFormatsMovie::Impl::next()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QElapsedTimer time;
+#else
     QTime time;
+#endif
     time.start();
     QtImageFormatsFrameInfo info = infoForFrame(nextFrameNumber);
     if(!info.isValid())

@@ -24,7 +24,12 @@
 
 #include <QApplication>
 #include <QSysInfo>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#else
 #include <QRegExp>
+#endif
 
 #include "Utils/InfoUtils.h"
 #include "Decoders/DecodersManager.h"
@@ -318,11 +323,19 @@ QString getTextBrowserContent()
 #endif
 
 #if defined (HAS_LIBTIFF)
-    QRegExp tiffVersionRegExp(QString::fromLatin1("(\\d*\\.\\d*)(\\.\\d*)?"));
+    const QString tiffVersionRegExpStr = QString::fromLatin1("(\\d*\\.\\d*)(\\.\\d*)?");
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QRegularExpression tiffVersionRegExp(tiffVersionRegExpStr);
+    const QRegularExpressionMatch tiffVersionRegExpMatch = tiffVersionRegExp.match(QString::fromLatin1(TIFFGetVersion()));
+    const QString tiffVersion = tiffVersionRegExpMatch.hasMatch() ? tiffVersionRegExpMatch.captured(0) : QString();
+#else
+    QRegExp tiffVersionRegExp(tiffVersionRegExpStr);
+    const QString tiffVersion = (tiffVersionRegExp.indexIn(QString::fromLatin1(TIFFGetVersion())) >= 0) ? tiffVersionRegExp.cap(0) : QString();
+#endif
     result.append(formatItem(
                       QString::fromLatin1("This software uses the LibTIFF library"),
                       QString::fromLatin1("libtiff"),
-                      (tiffVersionRegExp.indexIn(QString::fromLatin1(TIFFGetVersion())) >= 0) ? tiffVersionRegExp.cap(0) : QString(),
+                      tiffVersion,
                       QString::fromLatin1("http://www.simplesystems.org/libtiff/"),
                       QString::fromLatin1("LibTiff License"),
                       QString::fromLatin1("https://gitlab.com/libtiff/libtiff/blob/master/COPYRIGHT")

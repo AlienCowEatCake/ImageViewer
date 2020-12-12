@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -27,7 +27,12 @@
 #include <QByteArray>
 #include <QString>
 #include <QStringList>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#else
 #include <QRegExp>
+#endif
 #include <QRect>
 #include <QRegion>
 #include <QEvent>
@@ -232,10 +237,18 @@ QByteArray RestorableGeometryHelper::serialize() const
 
 void RestorableGeometryHelper::deserialize(const QByteArray &data)
 {
-    QRegExp regExp(QString::fromLatin1("FormatVersion:%1;NormalGeometry:\\((\\d+),(\\d+) (\\d+)x(\\d+)\\)").arg(SERIALIZER_FORMAT_VERSION));
+    const QString regExpString = QString::fromLatin1("FormatVersion:%1;NormalGeometry:\\((\\d+),(\\d+) (\\d+)x(\\d+)\\)").arg(SERIALIZER_FORMAT_VERSION);
     QRect newGeometry;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QRegularExpression regExp(regExpString);
+    const QRegularExpressionMatch match = regExp.match(QString::fromLatin1(data));
+    if(match.hasMatch())
+        newGeometry = QRect(match.captured(1).toInt(), match.captured(2).toInt(), match.captured(3).toInt(), match.captured(4).toInt());
+#else
+    QRegExp regExp(regExpString);
     if(regExp.indexIn(QString::fromLatin1(data)) != -1)
         newGeometry = QRect(regExp.cap(1).toInt(), regExp.cap(2).toInt(), regExp.cap(3).toInt(), regExp.cap(4).toInt());
+#endif
     QRegion availableRegion;
     const QList<Screen> screens = ScreenProvider::screens();
     for(QList<Screen>::ConstIterator it = screens.constBegin(), itEnd = screens.constEnd(); it != itEnd; ++it)

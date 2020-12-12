@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -23,6 +23,7 @@
 #include <cassert>
 
 #include <QApplication>
+#include <QActionGroup>
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
 #include <QDragMoveEvent>
@@ -30,7 +31,6 @@
 #include <QMimeData>
 #include <QUrl>
 #include <QString>
-#include <QStringList>
 #include <QGraphicsItem>
 #include <QInputDialog>
 #include <QFileInfo>

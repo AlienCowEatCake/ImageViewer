@@ -1,4 +1,4 @@
-From f9c2ef163edc8b6c432386ec3f89ec504c8fd32f Mon Sep 17 00:00:00 2001
+From 5f002f82f6ccd00d4bed3cd36391300e57c84a12 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:36:47 +0700
 Subject: [PATCH 5/9] Fix launch on Win98

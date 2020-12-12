@@ -20,7 +20,11 @@
 #include "Version.h"
 
 #include <QDebug>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QRegularExpression>
+#else
 #include <QRegExp>
+#endif
 #include <QStringList>
 
 #include "Utils/Global.h"
@@ -50,8 +54,13 @@ static int prepareDetail(const Version &version, int detail)
 
 static int versionComponentFromString(const QString &component)
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    typedef QRegularExpression QRE;
+#else
+    typedef QRegExp QRE;
+#endif
     QString string = component;
-    string.remove(QRegExp(QString::fromLatin1("[^\\d]")));
+    string.remove(QRE(QString::fromLatin1("[^\\d]")));
     return string.toInt();
 }
 

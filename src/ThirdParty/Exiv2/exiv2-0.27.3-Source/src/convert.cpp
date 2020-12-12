@@ -61,7 +61,12 @@
 # define EXV_HAVE_QT
 # include <QByteArray>
 # include <QString>
-# include <QTextCodec>
+# if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#  include <QTextCodec>
+# else
+#  include <QSharedPointer>
+#  include <QStringConverter>
+# endif
 # include <QMap>
 #endif
 
@@ -88,8 +93,8 @@ namespace {
     bool convertStringCharsetIconv(std::string& str, const char* from, const char* to);
 #endif
 #if defined EXV_HAVE_QT
-    // Convert string charset with QTextCodec.
-    bool convertStringCharsetQTextCodec(std::string& str, const char* from, const char* to);
+    // Convert string charset with QTextCodec/QStringConverter.
+    bool convertStringCharsetQt(std::string& str, const char* from, const char* to);
 #endif
     /*!
       @brief Get the text value of an XmpDatum \em pos.
@@ -1366,7 +1371,7 @@ namespace Exiv2 {
 #elif defined WIN32 && !defined __CYGWIN__
         ret = convertStringCharsetWindows(str, from, to);
 #elif defined EXV_HAVE_QT
-        ret = convertStringCharsetQTextCodec(str, from, to);
+        ret = convertStringCharsetQt(str, from, to);
 #else
 # ifndef SUPPRESS_WARNINGS
         EXV_WARNING << "Charset conversion required but no character mapping functionality available.\n";
@@ -1585,6 +1590,7 @@ namespace {
 
 #endif // EXV_HAVE_ICONV
 #if defined EXV_HAVE_QT
+#if(QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     static QTextCodec* codecForCharset(const char* charset)
     {
         if (QTextCodec* codec = QTextCodec::codecForName(charset))
@@ -1604,7 +1610,7 @@ namespace {
         return NULL;
     }
 
-    bool convertStringCharsetQTextCodec(std::string& str, const char* from, const char* to)
+    bool convertStringCharsetQt(std::string& str, const char* from, const char* to)
     {
         if (strcmp(from, to) == 0)
             return true;
@@ -1619,6 +1625,46 @@ namespace {
         str = std::string(outArray.constData(), static_cast<size_t>(outArray.size()));
         return true;
     }
+#else
+    template<typename T>
+    static QSharedPointer<T> converterForCharset(const char* charset)
+    {
+        QSharedPointer<T> result(new T(charset));
+        if (result->isValid())
+            return result;
+
+        QMap<QByteArray, QByteArray> codecsMap;
+        codecsMap["UTF-8"]      = "UTF-8";
+        codecsMap["UCS-2BE"]    = "UTF-16BE";
+        codecsMap["UCS-2LE"]    = "UTF-16LE";
+        codecsMap["ISO-8859-1"] = "ISO-8859-1";
+        codecsMap["ASCII"]      = "ISO-8859-1";
+
+        QMap<QByteArray, QByteArray>::ConstIterator it = codecsMap.find(charset);
+        if (it != codecsMap.constEnd())
+            result.reset(new T(it.value()));
+        else
+            result.reset();
+
+        return result;
+    }
+
+    bool convertStringCharsetQt(std::string& str, const char* from, const char* to)
+    {
+        if (strcmp(from, to) == 0)
+            return true;
+
+        QSharedPointer<QStringDecoder> decoder = converterForCharset<QStringDecoder>(from);
+        QSharedPointer<QStringEncoder> encoder = converterForCharset<QStringEncoder>(to);
+        if (!decoder || !encoder)
+            return false;
+
+        const QByteArray inArray = QByteArray(str.c_str(), static_cast<int>(str.length()));
+        const QByteArray outArray = encoder->encode(decoder->decode(inArray));
+        str = std::string(outArray.constData(), static_cast<size_t>(outArray.size()));
+        return true;
+    }
+#endif
 
 #endif // EXV_HAVE_QT
     bool getTextValue(std::string& value, const XmpData::iterator& pos)

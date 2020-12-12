@@ -437,7 +437,11 @@ bool QtImageFormatsImageReader::Impl::initHandler()
             // Try the most probable extension first
             int currentFormatIndex = extensions.indexOf(format.toLower());
             if(currentFormatIndex > 0)
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                 extensions.swap(0, currentFormatIndex);
+#else
+                extensions.swapItemsAt(0, currentFormatIndex);
+#endif
         }
 
         int currentExtension = 0;
@@ -680,8 +684,10 @@ bool QtImageFormatsImageReader::autoTransform() const
     case Impl::DoNotApplyTransform:
         return false;
     case Impl::UsePluginDefault:
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         if(m_impl->initHandler())
             return m_impl->handler->supportsOption(QImageIOHandler::TransformedByDefault);
+#endif
         break;
     }
     return false;

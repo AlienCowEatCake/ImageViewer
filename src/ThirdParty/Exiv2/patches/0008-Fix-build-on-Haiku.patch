@@ -1,4 +1,4 @@
-From ad6c63755700c65cad62f301cd4fe515a9d7fd5b Mon Sep 17 00:00:00 2001
+From edc1749e14d04621c4cea2bdea40ed8a9609e564 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:41:15 +0700
 Subject: [PATCH 8/9] Fix build on Haiku
