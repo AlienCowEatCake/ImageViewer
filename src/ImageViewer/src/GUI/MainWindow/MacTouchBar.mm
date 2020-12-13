@@ -238,7 +238,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType)
     return image;
 }
 
-NSImage *NSImageForNameOrIconType(NSImageName name, ThemeUtils::IconTypes iconType)
+NSImage *NSImageForNameOrIconType(NSString *name, ThemeUtils::IconTypes iconType)
 {
     if(name)
         if(NSImage *result = [NSImage imageNamed:name])
