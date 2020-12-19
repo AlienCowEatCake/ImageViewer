@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_JASPER_PATH = $${PWD}/jasper-9975856
+THIRDPARTY_JASPER_PATH = $${PWD}/jasper-0e54fdf
 THIRDPARTY_JASPER_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)

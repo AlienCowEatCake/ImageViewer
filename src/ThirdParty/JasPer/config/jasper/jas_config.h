@@ -7,7 +7,7 @@
 #include <jasper/jas_dll.h>
 
 /* This preprocessor symbol identifies the version of JasPer. */
-#define	JAS_VERSION "2.0.22"
+#define	JAS_VERSION "2.0.23"
 
 /* #undef JAS_ENABLE_32BIT */
 
