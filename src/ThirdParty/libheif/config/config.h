@@ -9,6 +9,8 @@
 #endif
 #if defined(HAS_AOM)
 #define HAVE_AOM 1
+#define HAVE_AOM_DECODER 1
+#define HAVE_AOM_ENCODER 1
 #endif
 
 #endif // THIRDPARTY_LIBHEIF_CONFIG_H_INCLUDED
