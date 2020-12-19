@@ -6,10 +6,10 @@
 # paths as hints.
 
 find_package(WebP QUIET)
-if(TARGET WebP::webp AND TARGET WebP::webpdemux AND TARGET WebP::webpmux)
+if(TARGET WebP::webp AND TARGET WebP::webpdemux AND TARGET WebP::libwebpmux)
     set(WrapWebP_FOUND ON)
     add_library(WrapWebP::WrapWebP INTERFACE IMPORTED)
-    target_link_libraries(WrapWebP::WrapWebP INTERFACE WebP::webp WebP::webpdemux Webp::webpmux)
+    target_link_libraries(WrapWebP::WrapWebP INTERFACE WebP::webp WebP::webpdemux WebP::libwebpmux)
     return()
 endif()
 

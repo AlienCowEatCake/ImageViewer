@@ -15,8 +15,8 @@ project(QtImageFormats # special case
 set(QT_NO_INTERNAL_COMPATIBILITY_FUNCTIONS TRUE)
 # special case end
 
-find_package(Qt6 ${PROJECT_VERSION} CONFIG REQUIRED COMPONENTS BuildInternals Gui) # special case
-
+find_package(Qt6 ${PROJECT_VERSION} CONFIG REQUIRED COMPONENTS BuildInternals Core) # special case
+find_package(Qt6 ${PROJECT_VERSION} QUIET CONFIG OPTIONAL_COMPONENTS Gui) # special case
 if(NOT TARGET Qt::Gui)
     message(NOTICE "Skipping the build as the condition \"TARGET Qt::Gui\" is not met.")
     return()
