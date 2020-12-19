@@ -161,7 +161,7 @@ void LocalizationManager::setLocale(const QString &locale)
         m_impl->setCurrentLocale(newLocale);
 
     qApp->removeTranslator(&m_impl->qtTranslator);
-    m_impl->qtTranslator.load(QString::fromLatin1("qt_%1").arg(newLocale), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    (void)m_impl->qtTranslator.load(QString::fromLatin1("qt_%1").arg(newLocale), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     qApp->installTranslator(&m_impl->qtTranslator);
 
     for(TranslatorList::Iterator it = m_impl->customTranslators.begin(), itEnd = m_impl->customTranslators.end(); it != itEnd; ++it)
@@ -173,7 +173,7 @@ void LocalizationManager::setLocale(const QString &locale)
     for(QStringList::ConstIterator it = m_impl->resourceTemplates.constBegin(), itEnd = m_impl->resourceTemplates.constEnd(); it != itEnd; ++it)
     {
         QTranslator *translator = new QTranslator(qApp);
-        translator->load((*it).arg(newLocale));
+        (void)translator->load((*it).arg(newLocale));
         m_impl->customTranslators.append(translator);
         qApp->installTranslator(translator);
     }

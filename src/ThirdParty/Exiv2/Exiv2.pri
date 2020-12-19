@@ -10,6 +10,9 @@ include($${PWD}/../../Features.pri)
     *clang* {
         DEFINES *= _LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR _LIBCPP_DISABLE_DEPRECATION_WARNINGS
     }
+    *msvc* {
+        DEFINES *= _HAS_AUTO_PTR_ETC=1
+    }
 
     !system_exiv2 {
 

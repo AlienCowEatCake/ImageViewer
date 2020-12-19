@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -87,6 +87,7 @@ void FontsFix(const QString &language)
     else
         qApp->setFont(defaultFont);    // Если умеет, то вернем его обратно
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     // Для Win98 форсированно заменяем шрифты на Tahoma для всех не-английских локалей
     if(QSysInfo::windowsVersion() <= QSysInfo::WV_Me)
     {
@@ -95,6 +96,7 @@ void FontsFix(const QString &language)
         else
             qApp->setFont(defaultFont);
     }
+#endif
 
 #else
 
@@ -108,6 +110,8 @@ void FontsFix(const QString &language)
 /// @attention Актуально только для Qt 5.4+
 void HighDPIFix()
 {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+
     if(!IsRemoteSession())
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
@@ -119,12 +123,17 @@ void HighDPIFix()
         if(!getenv("QT_DEVICE_PIXEL_RATIO"))
             putenv(newEnv);
 #endif
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+#endif
     }
 
     // Qt::AA_UseHighDpiPixmaps доступен и в более ранних версиях,
     // однако без поддержки HighDPI его применение нецелесообразно
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
+
 #endif
 }
 

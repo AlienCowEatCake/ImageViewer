@@ -416,7 +416,11 @@ QImage QImageFromHBITMAP(HBITMAP bitmap)
     return result;
 }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+int compare(const QStringView &s1, const QString &s2, Qt::CaseSensitivity cs)
+#else
 int compare(const QStringRef &s1, const QString &s2, Qt::CaseSensitivity cs)
+#endif
 {
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
     return s1.compare(s2, cs);
@@ -792,12 +796,14 @@ public:
         if(state != Qt::Unchecked)
             return state == Qt::Checked;
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         if(QSysInfo::windowsVersion() < QSysInfo::WV_VISTA)
         {
             qDebug() << "DecoderMSHTML unavailable, reason: windowsVersion() < QSysInfo::WV_VISTA";
             state = Qt::PartiallyChecked;
             return false;
         }
+#endif
 
         QSettings settings(QString::fromLatin1("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Internet Explorer"), QSettings::NativeFormat);
         const QString ieVersion = settings.value(QString::fromLatin1("Version")).toString();
@@ -809,7 +815,13 @@ public:
         }
 
         qDebug() << "IE version:" << ieVersion;
-        if(ieVersion.split(QChar::fromLatin1('.'), QString::SkipEmptyParts).first().toInt() < 9)
+        if(ieVersion.split(QChar::fromLatin1('.'),
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+                           Qt::SkipEmptyParts
+#else
+                           QString::SkipEmptyParts
+#endif
+                           ).first().toInt() < 9)
         {
             qDebug() << "DecoderMSHTML unavailable, reason: Required IE >= 9";
             state = Qt::PartiallyChecked;
