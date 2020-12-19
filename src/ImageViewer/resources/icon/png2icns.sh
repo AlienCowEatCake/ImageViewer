@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 pngdir="${PWD}"
 iconset="icon.iconset"
