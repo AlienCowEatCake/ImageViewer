@@ -169,6 +169,7 @@ struct ReSVG
     QFunctionPointer resvg_init_options;
     QFunctionPointer resvg_options_create;
     QFunctionPointer resvg_options_destroy;
+    QFunctionPointer resvg_options_load_system_fonts;
     QFunctionPointer resvg_options_set_file_path;
     QFunctionPointer resvg_options_set_font_family;
     QFunctionPointer resvg_options_set_serif_family;
@@ -206,6 +207,7 @@ private:
         , resvg_init_options(Q_NULLPTR)
         , resvg_options_create(Q_NULLPTR)
         , resvg_options_destroy(Q_NULLPTR)
+        , resvg_options_load_system_fonts(Q_NULLPTR)
         , resvg_options_set_file_path(Q_NULLPTR)
         , resvg_options_set_font_family(Q_NULLPTR)
         , resvg_options_set_serif_family(Q_NULLPTR)
@@ -233,6 +235,7 @@ private:
             resvg_init_options = library.resolve("resvg_init_options");
             resvg_options_create = library.resolve("resvg_options_create");
             resvg_options_destroy = library.resolve("resvg_options_destroy");
+            resvg_options_load_system_fonts = library.resolve("resvg_options_load_system_fonts");
             resvg_options_set_file_path = library.resolve("resvg_options_set_file_path");
             resvg_options_set_font_family = library.resolve("resvg_options_set_font_family");
             resvg_options_set_serif_family = library.resolve("resvg_options_set_serif_family");
@@ -415,6 +418,28 @@ public:
         {
             quint8* optData = reinterpret_cast<quint8*>(opt);
             delete [] optData;
+        }
+#endif
+    }
+
+    void resvg_options_load_system_fonts(resvg_options *opt)
+    {
+#if defined (LINKED_RESVG)
+    #if (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 11, 0))
+        Q_UNUSED(opt);
+    #else
+        ::resvg_options_load_system_fonts(opt);
+    #endif
+#else
+        assert(opt == m_opt);
+        ReSVG *resvg = ReSVG::instance();
+        if(!resvg)
+            return;
+        if(resvg->resvg_options_load_system_fonts)
+        {
+            typedef void (*func_t)(resvg_options*);
+            func_t func = (func_t)resvg->resvg_options_load_system_fonts;
+            func(opt);
         }
 #endif
     }
@@ -937,6 +962,7 @@ public:
         , m_maxScaleFactor(1)
     {
         m_opt = resvg_options_create();
+        resvg_options_load_system_fonts(m_opt);
         resvg_options_set_file_path(m_opt, m_filePath8bit.constData());
         resvg_options_set_font_family(m_opt, "Times New Roman");
         resvg_options_set_languages(m_opt, "");
