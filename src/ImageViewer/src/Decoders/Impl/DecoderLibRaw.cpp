@@ -309,7 +309,9 @@ public:
             return;
         }
 
+#if !defined (DISABLE_EXCEPTIONS_IN_THREADS)
         m_image = m_rawImageProcessor->getThumbnail();
+#endif
         if(m_image.isNull())
         {
             m_image = m_rawImageProcessor->getImage();

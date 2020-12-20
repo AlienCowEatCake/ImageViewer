@@ -21,7 +21,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="use_static_qgif use_static_qtiff use_static_qjpeg use_static_qico use_static_qmng use_static_qsvg" CONFIG+="exceptions" QMAKE_CXXFLAGS_EXCEPTIONS_ON="-fexceptions" QMAKE_LFLAGS_EXCEPTIONS_ON="" ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="use_static_qgif use_static_qtiff use_static_qjpeg use_static_qico use_static_qmng use_static_qsvg" CONFIG+="exceptions" QMAKE_CXXFLAGS_EXCEPTIONS_ON="-fexceptions" QMAKE_LFLAGS_EXCEPTIONS_ON="" DEFINES+="DISABLE_EXCEPTIONS_IN_THREADS" ..\%PROJECT%.pro
 mingw32-make
 strip --strip-all %APP_PATH%\release\%PROJECT%.exe
 copy %APP_PATH%\release\%PROJECT%.exe ..\%PROJECT%%SUFFIX%.exe
