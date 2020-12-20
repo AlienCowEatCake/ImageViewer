@@ -1,6 +1,7 @@
 version: '1.1.0-{branch}-{build}'
 clone_depth: 5
 shallow_clone: true
+max_jobs: 1
 
 environment:
   matrix:
@@ -18,120 +19,120 @@ environment:
     # #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
     # #   SDK_DIST: https://github.com/alexey-lysiuk/macos-sdk/releases/download/10.6/MacOSX10.6.tar.bz2
     # #   BUILD_ID: osx_qt5.6_clang64_libstdcxx
-    - job_name: macOS, Qt 5.6, MacSDK 10.7
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
-      SDK_DIST: https://bitcoincore.org/depends-sources/sdks/MacOSX10.7.sdk.tar.gz
-      BUILD_ID: osx_qt5.6_clang64_libstdcxx
-    - job_name: macOS, Qt 5.6, MacSDK 10.8
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
-      SDK_DIST: https://bitcoincore.org/depends-sources/sdks/MacOSX10.8.sdk.tar.gz
-      BUILD_ID: osx_qt5.6_clang64_libstdcxx
-    - job_name: macOS, Qt 5.6, MacSDK 10.9
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
-      SDK_DIST: https://bitcoincore.org/depends-sources/sdks/MacOSX10.9.sdk.tar.gz
-      BUILD_ID: osx_qt5.6_clang64_libstdcxx
-    - job_name: macOS, Qt 5.6, MacSDK 10.10
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.10.sdk.tar.xz
-      BUILD_ID: osx_qt5.6_clang64_libstdcxx
-    - job_name: macOS, Qt 5.6, MacSDK 10.11
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.11.sdk.tar.xz
-      BUILD_ID: osx_qt5.6_clang64_libstdcxx
-    - job_name: macOS, Qt 5.6, MacSDK 10.12
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz
-      BUILD_ID: osx_qt5.6_clang64_libstdcxx
-    - job_name: macOS, Qt 5.6, MacSDK 10.13
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz
-      BUILD_ID: osx_qt5.6_clang64_libstdcxx
-    - job_name: macOS, Qt 5.12, MacSDK 10.10
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.10.sdk.tar.xz
-      BUILD_ID: osx_qt5.12_clang64_target10.10
-    - job_name: macOS, Qt 5.12, MacSDK 10.11
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.11.sdk.tar.xz
-      BUILD_ID: osx_qt5.12_clang64_target10.10
-    - job_name: macOS, Qt 5.12, MacSDK 10.12
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz
-      BUILD_ID: osx_qt5.12_clang64_target10.10
-    - job_name: macOS, Qt 5.12, MacSDK 10.13
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz
-      BUILD_ID: osx_qt5.12_clang64_target10.10
-    - job_name: macOS, Qt 5.12, MacSDK 10.14
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.14.sdk.tar.xz
-      BUILD_ID: osx_qt5.12_clang64_target10.10
-    - job_name: macOS, Qt 5.12, MacSDK 10.15
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.15.sdk.tar.xz
-      BUILD_ID: osx_qt5.12_clang64_target10.10
-    - job_name: macOS, Qt 5.15, MacSDK 10.10
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.10.sdk.tar.xz
-      BUILD_ID: osx_qt5.15_clang64_target10.10
-    - job_name: macOS, Qt 5.15, MacSDK 10.11
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.11.sdk.tar.xz
-      BUILD_ID: osx_qt5.15_clang64_target10.10
-    - job_name: macOS, Qt 5.15, MacSDK 10.12
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz
-      BUILD_ID: osx_qt5.15_clang64_target10.10
-    - job_name: macOS, Qt 5.15, MacSDK 10.13
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz
-      BUILD_ID: osx_qt5.15_clang64_target10.10
-    - job_name: macOS, Qt 5.15, MacSDK 10.14
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.14.sdk.tar.xz
-      BUILD_ID: osx_qt5.15_clang64_target10.10
-    - job_name: macOS, Qt 5.15, MacSDK 10.15
-      job_group: macos_buildscript
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
-      SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.15.sdk.tar.xz
-      BUILD_ID: osx_qt5.15_clang64_target10.10
+    # - job_name: macOS, Qt 5.6, MacSDK 10.7
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+    #   SDK_DIST: https://bitcoincore.org/depends-sources/sdks/MacOSX10.7.sdk.tar.gz
+    #   BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    # - job_name: macOS, Qt 5.6, MacSDK 10.8
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+    #   SDK_DIST: https://bitcoincore.org/depends-sources/sdks/MacOSX10.8.sdk.tar.gz
+    #   BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    # - job_name: macOS, Qt 5.6, MacSDK 10.9
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+    #   SDK_DIST: https://bitcoincore.org/depends-sources/sdks/MacOSX10.9.sdk.tar.gz
+    #   BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    # - job_name: macOS, Qt 5.6, MacSDK 10.10
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.10.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    # - job_name: macOS, Qt 5.6, MacSDK 10.11
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.11.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    # - job_name: macOS, Qt 5.6, MacSDK 10.12
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    # - job_name: macOS, Qt 5.6, MacSDK 10.13
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.6.3_osx-10.6/Qt_5.6.3_macx_clang_64_libstdc++_sdk10.10.tar.gz
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.6_clang64_libstdcxx
+    # - job_name: macOS, Qt 5.12, MacSDK 10.10
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.10.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.12_clang64_target10.10
+    # - job_name: macOS, Qt 5.12, MacSDK 10.11
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.11.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.12_clang64_target10.10
+    # - job_name: macOS, Qt 5.12, MacSDK 10.12
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.12_clang64_target10.10
+    # - job_name: macOS, Qt 5.12, MacSDK 10.13
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.12_clang64_target10.10
+    # - job_name: macOS, Qt 5.12, MacSDK 10.14
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.14.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.12_clang64_target10.10
+    # - job_name: macOS, Qt 5.12, MacSDK 10.15
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.12.6_osx-10.10/Qt_5.12.6_clang_64_target10.10.tar.gz
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.15.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.12_clang64_target10.10
+    # - job_name: macOS, Qt 5.15, MacSDK 10.10
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.10.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.15_clang64_target10.10
+    # - job_name: macOS, Qt 5.15, MacSDK 10.11
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.11.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.15_clang64_target10.10
+    # - job_name: macOS, Qt 5.15, MacSDK 10.12
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.15_clang64_target10.10
+    # - job_name: macOS, Qt 5.15, MacSDK 10.13
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.15_clang64_target10.10
+    # - job_name: macOS, Qt 5.15, MacSDK 10.14
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.14.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.15_clang64_target10.10
+    # - job_name: macOS, Qt 5.15, MacSDK 10.15
+    #   job_group: macos_buildscript
+    #   APPVEYOR_BUILD_WORKER_IMAGE: macos
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.0_osx-10.10/Qt_5.15.0_clang_64_target10.10.tar.bz2
+    #   SDK_DIST: https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.15.sdk.tar.xz
+    #   BUILD_ID: osx_qt5.15_clang64_target10.10
     # # - job_name: Windows, Qt 4.4, MinGW 3.4.2 x86
     # #   job_group: windows_buildscript_mingw
     # #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
