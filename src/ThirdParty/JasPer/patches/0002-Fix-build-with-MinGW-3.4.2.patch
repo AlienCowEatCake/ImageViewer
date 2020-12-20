@@ -1,7 +1,7 @@
-From f660930f46876cc3df182cda7555914b02b5ba5a Mon Sep 17 00:00:00 2001
+From d5c259603097cf7e13610370ff09cec6710af4d6 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 5 Dec 2020 17:36:52 +0700
-Subject: [PATCH 2/2] Fix build with MinGW 3.4.2
+Subject: [PATCH 2/3] Fix build with MinGW 3.4.2
 
 ---
  src/libjasper/include/jasper/jas_compiler.h | 2 +-
@@ -21,5 +21,5 @@ index d0b7f05..ffee163 100644
  #define JAS_UNLIKELY(x) __builtin_expect (!!(x), 0)
  #else
 -- 
-2.20.1
+1.8.3.4 (Apple Git-47)
 
