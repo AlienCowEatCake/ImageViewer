@@ -107,22 +107,22 @@
 <context>
     <name>LocalizationManager</name>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="105"/>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="104"/>
         <source>&amp;English</source>
         <translation>&amp;English</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="109"/>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="108"/>
         <source>&amp;Russian</source>
         <translation>&amp;Русский</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="115"/>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="114"/>
         <source>English</source>
         <translation>English</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="116"/>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="115"/>
         <source>Russian</source>
         <translation>Русский</translation>
     </message>
@@ -211,65 +211,65 @@
 <context>
     <name>UpdateManager</name>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="100"/>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="197"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="99"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="196"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="101"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="100"/>
         <source>An update is already in progress. Check back later.</source>
         <translation>Обновление уже запущено. Попробуйте проверить обновления позже.</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="130"/>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="153"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="129"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="152"/>
         <source>Information</source>
         <translation>Информация</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="133"/>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="156"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="132"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="155"/>
         <source>Your version:</source>
         <translation>Ваша версия:</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="131"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="130"/>
         <source>You have the latest version.</source>
         <translation>У вас установлена последняя версия программы.</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="154"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="153"/>
         <source>New updates are available.</source>
         <translation>Доступна новая версия программы.</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="158"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="157"/>
         <source>Latest version:</source>
         <translation>Последняя версия:</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="161"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="160"/>
         <source>&amp;Download</source>
         <translation>&amp;Загрузить</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="162"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="161"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Отмена</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="163"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="162"/>
         <source>&amp;Skip This Version</source>
         <translation>&amp;Пропустить версию</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="176"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="175"/>
         <source>Automatically check for updates</source>
         <translation>Автоматически проверять обновления</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="198"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="197"/>
         <source>Can&apos;t check for updates. Try again later.</source>
         <translation>Не удалось проверить наличие обновлений. Попробуйте попозже.</translation>
     </message>
