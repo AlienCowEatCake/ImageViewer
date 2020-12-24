@@ -11,7 +11,7 @@ DEBIAN_DIR_PATH="src/${PROJECT}/resources/platform/debian"
 QTDIR="/opt/qt-5.12.6_clang"
 CLANGDIR="/opt/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-14.04"
 CMD_QMAKE="${QTDIR}/bin/qmake"
-CMD_DEPLOY="/opt/linuxdeployqt-6-x86_64.AppImage"
+CMD_DEPLOY="/opt/linuxdeployqt-7-x86_64.AppImage"
 CMD_APPIMAGETOOL="/opt/appimagetool-x86_64.AppImage"
 
 export PATH="${CLANGDIR}/bin:${PATH}"
