@@ -8,7 +8,7 @@ DESKTOP_PATH="src/${PROJECT}/resources/platform/linux/${IDENTIFIER}.desktop"
 ICON_PATH="src/${PROJECT}/resources/icon/icon.svg"
 DEBIAN_DIR_PATH="src/${PROJECT}/resources/platform/debian"
 
-QTDIR="/opt/qt-5.15.0_clang"
+QTDIR="/opt/qt-5.15.2_clang"
 CLANGDIR="/opt/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-14.04"
 CMD_QMAKE="${QTDIR}/bin/qmake"
 CMD_DEPLOY="/opt/linuxdeployqt-6-x86_64.AppImage"
