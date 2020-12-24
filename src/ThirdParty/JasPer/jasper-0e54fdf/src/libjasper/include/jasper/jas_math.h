@@ -213,11 +213,15 @@ inline static int_fast32_t jas_fast32_asl(int_fast32_t x, unsigned n)
 * Safe integer arithmetic (i.e., with overflow checking).
 \******************************************************************************/
 
-#define JAS_HAVE_MATH_BUILTINS (0 \
+#if (0 \
     || (defined(__GNUC__) && !defined(__clang__) && __GNUC__ > 5) \
     || (defined(__clang__) && !defined(__apple_build_version__) && __clang_major__ >= 4) \
     || (defined(__clang__) && defined(__apple_build_version__) && __clang_major__ >= 8) \
     )
+#define JAS_HAVE_MATH_BUILTINS 1
+#else
+#define JAS_HAVE_MATH_BUILTINS 0
+#endif
 
 /* Compute the product of two size_t integers with overflow checking. */
 inline static bool jas_safe_size_mul(size_t x, size_t y, size_t *result)
