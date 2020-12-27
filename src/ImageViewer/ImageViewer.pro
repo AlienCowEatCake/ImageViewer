@@ -240,6 +240,7 @@ HEADERS += \
 
 !disable_resvg {
     SOURCES += \
+        src/Decoders/Impl/DecoderReSVGLt001100.cpp \
         src/Decoders/Impl/DecoderReSVG.cpp
 }
 
