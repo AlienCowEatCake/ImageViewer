@@ -32,7 +32,6 @@ extern "C" {
 
 #include <QFileInfo>
 #include <QImage>
-#include <QDir>
 #include <QFile>
 #include <QByteArray>
 #include <QDebug>
@@ -61,7 +60,7 @@ typedef void* QFunctionPointer;
 #define LINKED_RESVG_VERSION QT_VERSION_CHECK(0, 0, 0)
 #endif
 
-#if !defined (LINKED_RESVG) || (LINKED_RESVG_VERSION >= QT_VERSION_CHECK(0, 13, 0))
+#if !defined (LINKED_RESVG) || (LINKED_RESVG_VERSION >= QT_VERSION_CHECK(0, 11, 0) && LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 13, 0))
 namespace
 {
 
@@ -76,6 +75,7 @@ const QStringList RESVG_LIBRARY_NAMES = QStringList()
 
 typedef struct resvg_options resvg_options;
 typedef struct resvg_render_tree resvg_render_tree;
+typedef struct resvg_image resvg_image;
 
 typedef enum resvg_fit_to_type
 {
@@ -85,6 +85,13 @@ typedef enum resvg_fit_to_type
     RESVG_FIT_TO_ZOOM,
 } resvg_fit_to_type;
 
+struct resvg_color
+{
+    quint8 r;
+    quint8 g;
+    quint8 b;
+};
+
 struct resvg_fit_to
 {
     resvg_fit_to_type type;
@@ -93,8 +100,8 @@ struct resvg_fit_to
 
 struct resvg_size
 {
-    double width;
-    double height;
+    quint32 width;
+    quint32 height;
 };
 
 struct ReSVG
@@ -104,12 +111,16 @@ struct ReSVG
     QFunctionPointer resvg_options_create;
     QFunctionPointer resvg_options_destroy;
     QFunctionPointer resvg_options_load_system_fonts;
-    QFunctionPointer resvg_options_set_resources_dir;
+    QFunctionPointer resvg_options_set_file_path;
     QFunctionPointer resvg_parse_tree_from_data;
     QFunctionPointer resvg_is_image_empty;
     QFunctionPointer resvg_get_image_size;
     QFunctionPointer resvg_tree_destroy;
     QFunctionPointer resvg_render;
+    QFunctionPointer resvg_image_get_width;
+    QFunctionPointer resvg_image_get_height;
+    QFunctionPointer resvg_image_get_data;
+    QFunctionPointer resvg_image_destroy;
 
     static ReSVG *instance()
     {
@@ -128,12 +139,16 @@ private:
         , resvg_options_create(Q_NULLPTR)
         , resvg_options_destroy(Q_NULLPTR)
         , resvg_options_load_system_fonts(Q_NULLPTR)
-        , resvg_options_set_resources_dir(Q_NULLPTR)
+        , resvg_options_set_file_path(Q_NULLPTR)
         , resvg_parse_tree_from_data(Q_NULLPTR)
         , resvg_is_image_empty(Q_NULLPTR)
         , resvg_get_image_size(Q_NULLPTR)
         , resvg_tree_destroy(Q_NULLPTR)
         , resvg_render(Q_NULLPTR)
+        , resvg_image_get_width(Q_NULLPTR)
+        , resvg_image_get_height(Q_NULLPTR)
+        , resvg_image_get_data(Q_NULLPTR)
+        , resvg_image_destroy(Q_NULLPTR)
         {
             if(!LibraryUtils::LoadQLibrary(library, RESVG_LIBRARY_NAMES))
                 return;
@@ -142,12 +157,16 @@ private:
             resvg_options_create = library.resolve("resvg_options_create");
             resvg_options_destroy = library.resolve("resvg_options_destroy");
             resvg_options_load_system_fonts = library.resolve("resvg_options_load_system_fonts");
-            resvg_options_set_resources_dir = library.resolve("resvg_options_set_resources_dir");
+            resvg_options_set_file_path = library.resolve("resvg_options_set_file_path");
             resvg_parse_tree_from_data = library.resolve("resvg_parse_tree_from_data");
             resvg_is_image_empty = library.resolve("resvg_is_image_empty");
             resvg_get_image_size = library.resolve("resvg_get_image_size");
             resvg_tree_destroy = library.resolve("resvg_tree_destroy");
             resvg_render = library.resolve("resvg_render");
+            resvg_image_get_width = library.resolve("resvg_image_get_width");
+            resvg_image_get_height = library.resolve("resvg_image_get_height");
+            resvg_image_get_data = library.resolve("resvg_image_get_data");
+            resvg_image_destroy = library.resolve("resvg_image_destroy");
 
             if(resvg_init_log)
             {
@@ -165,11 +184,12 @@ private:
         return library.isLoaded()
                 && resvg_options_create && resvg_options_destroy
                 && resvg_options_load_system_fonts
-                && resvg_options_set_resources_dir
+                && resvg_options_set_file_path
                 && resvg_parse_tree_from_data && resvg_tree_destroy
                 && resvg_is_image_empty
                 && resvg_get_image_size
                 && resvg_render
+                && resvg_image_get_width && resvg_image_get_height && resvg_image_get_data && resvg_image_destroy
                 ;
     }
 };
@@ -204,13 +224,13 @@ void resvg_options_load_system_fonts(resvg_options *opt)
     func(opt);
 }
 
-void resvg_options_set_resources_dir(resvg_options *opt, const char *path)
+void resvg_options_set_file_path(resvg_options *opt, const char *path)
 {
     ReSVG *resvg = ReSVG::instance();
-    if(!resvg || !resvg->resvg_options_set_resources_dir)
+    if(!resvg || !resvg->resvg_options_set_file_path)
         return;
     typedef void (*func_t)(resvg_options*, const char*);
-    func_t func = (func_t)resvg->resvg_options_set_resources_dir;
+    func_t func = (func_t)resvg->resvg_options_set_file_path;
     func(opt, path);
 }
 
@@ -254,14 +274,54 @@ resvg_size resvg_get_image_size(const resvg_render_tree *tree)
     return func(tree);
 }
 
-void resvg_render(const resvg_render_tree *tree, resvg_fit_to fit_to, quint32 width, quint32 height, char *pixmap)
+resvg_image *resvg_render(const resvg_render_tree *tree, resvg_fit_to fit_to, resvg_color *background)
 {
     ReSVG *resvg = ReSVG::instance();
     if(!resvg || !resvg->resvg_render)
-        return;
-    typedef void (*func_t)(const resvg_render_tree*, resvg_fit_to, quint32, quint32, char*);
+        return Q_NULLPTR;
+    typedef resvg_image *(*func_t)(const resvg_render_tree*, resvg_fit_to, resvg_color*);
     func_t func = (func_t)resvg->resvg_render;
-    func(tree, fit_to, width, height, pixmap);
+    return func(tree, fit_to, background);
+}
+
+quint32 resvg_image_get_width(resvg_image *image)
+{
+    ReSVG *resvg = ReSVG::instance();
+    if(!resvg || !resvg->resvg_image_get_width)
+        return 0;
+    typedef quint32 (*func_t)(resvg_image*);
+    func_t func = (func_t)resvg->resvg_image_get_width;
+    return func(image);
+}
+
+quint32 resvg_image_get_height(resvg_image *image)
+{
+    ReSVG *resvg = ReSVG::instance();
+    if(!resvg || !resvg->resvg_image_get_height)
+        return 0;
+    typedef quint32 (*func_t)(resvg_image*);
+    func_t func = (func_t)resvg->resvg_image_get_height;
+    return func(image);
+}
+
+const char *resvg_image_get_data(resvg_image *image, size_t *len)
+{
+    ReSVG *resvg = ReSVG::instance();
+    if(!resvg || !resvg->resvg_image_get_data)
+        return Q_NULLPTR;
+    typedef const char *(*func_t)(resvg_image*, size_t*);
+    func_t func = (func_t)resvg->resvg_image_get_data;
+    return func(image, len);
+}
+
+void resvg_image_destroy(resvg_image *image)
+{
+    ReSVG *resvg = ReSVG::instance();
+    if(!resvg || !resvg->resvg_image_destroy)
+        return;
+    typedef void (*func_t)(resvg_image*);
+    func_t func = (func_t)resvg->resvg_image_destroy;
+    func(image);
 }
 
 bool isReady()
@@ -292,7 +352,7 @@ class ReSVGPixmapProvider : public IScaledImageProvider
 public:
     explicit ReSVGPixmapProvider(const QString &filePath)
         : m_isValid(false)
-        , m_fileDirUtf8(QFileInfo(filePath).dir().absolutePath().toUtf8())
+        , m_filePathUtf8(filePath.toUtf8())
         , m_tree(Q_NULLPTR)
         , m_opt(Q_NULLPTR)
         , m_width(0)
@@ -302,7 +362,7 @@ public:
     {
         m_opt = resvg_options_create();
         resvg_options_load_system_fonts(m_opt);
-        resvg_options_set_resources_dir(m_opt, m_fileDirUtf8.constData());
+        resvg_options_set_file_path(m_opt, m_filePathUtf8.constData());
 
         MappedBuffer inBuffer(filePath);
         if(!inBuffer.isValid())
@@ -362,37 +422,20 @@ public:
     {
         if(!isValid())
             return QImage();
-
-#define USE_RGBA_8888 (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0) && Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
-        const int w = static_cast<int>(m_width * scaleFactor);
-        const int h = static_cast<int>(m_height * scaleFactor);
-        QImage img(w, h,
-#if (USE_RGBA_8888)
-                   QImage::Format_RGBA8888_Premultiplied);
-#else
-                   QImage::Format_ARGB32_Premultiplied);
-#endif
-
-        if(img.isNull())
-        {
-            qWarning() << "Invalid image size";
-            return img;
-        }
-
         resvg_fit_to fitTo;
         fitTo.type = RESVG_FIT_TO_ZOOM;
         fitTo.value = static_cast<float>(scaleFactor);
-
-        img.fill(Qt::transparent);
-        resvg_render(m_tree, fitTo,
-                     static_cast<quint32>(img.width()),
-                     static_cast<quint32>(img.height()),
-                     reinterpret_cast<char*>(img.bits()));
-
-#if (!USE_RGBA_8888)
-        img = img.rgbSwapped();
-#endif
-        return img;
+        resvg_image *resvgImg = resvg_render(m_tree, fitTo, Q_NULLPTR);
+        if(!resvgImg)
+            return QImage();
+        size_t len;
+        const char* imgData = resvg_image_get_data(resvgImg, &len);
+        QImage image = QImage(reinterpret_cast<const uchar*>(imgData),
+                              static_cast<int>(resvg_image_get_width(resvgImg)),
+                              static_cast<int>(resvg_image_get_height(resvgImg)),
+                              QImage::Format_ARGB32).rgbSwapped();
+        resvg_image_destroy(resvgImg);
+        return image;
     }
 
     qreal minScaleFactor() const Q_DECL_OVERRIDE
@@ -407,7 +450,7 @@ public:
 
 private:
     bool m_isValid;
-    QByteArray m_fileDirUtf8;
+    QByteArray m_filePathUtf8;
     resvg_render_tree *m_tree;
     resvg_options *m_opt;
     int m_width;
@@ -418,12 +461,12 @@ private:
 
 // ====================================================================================================
 
-class DecoderReSVG : public IDecoder
+class DecoderReSVGLt001300 : public IDecoder
 {
 public:
     QString name() const Q_DECL_OVERRIDE
     {
-        return QString::fromLatin1("DecoderReSVG");
+        return QString::fromLatin1("DecoderReSVGLt001300");
     }
 
     QStringList supportedFormats() const Q_DECL_OVERRIDE
@@ -455,7 +498,7 @@ public:
     }
 };
 
-DecoderAutoRegistrator registrator(new DecoderReSVG);
+DecoderAutoRegistrator registrator(new DecoderReSVGLt001300);
 
 // ====================================================================================================
 
