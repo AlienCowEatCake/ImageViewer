@@ -1,10 +1,11 @@
 #!/bin/bash -e
 
 SOURCE_DIR="$(cd "$(dirname "${0}")/.." && pwd)"
-FORWARD_SCRIPT="${0##*/docker_}"
-DOCKER_IMAGE="aliencoweatcake/amd64-trusty-qt5projects:qt5.15.2"
+DOCKER_ARCH="$(echo "${0##*/docker_}" | sed 's|_.*||')"
+DOCKER_IMAGE="aliencoweatcake/${DOCKER_ARCH}-trusty-qt5projects:qt5.15.2"
 DOCKER_USER="user"
 DOCKER_WORKSACE="/home/${DOCKER_USER}/workspace"
+FORWARD_SCRIPT="${0##*/docker_${DOCKER_ARCH}_}"
 
 ADDITIONAL_DOCKER_ARGS=
 if [ -t 1 ]; then
