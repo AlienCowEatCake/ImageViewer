@@ -29,6 +29,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#d
 #define TIFFCreateCustomDirectory tp_TIFFCreateCustomDirectory
 #define TIFFCreateDirectory tp_TIFFCreateDirectory
 #define TIFFCreateEXIFDirectory tp_TIFFCreateEXIFDirectory
+#define TIFFCreateGPSDirectory tp_TIFFCreateGPSDirectory
 #define TIFFCurrentDirOffset tp_TIFFCurrentDirOffset
 #define TIFFCurrentDirectory tp_TIFFCurrentDirectory
 #define TIFFCurrentRow tp_TIFFCurrentRow
@@ -135,6 +136,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#d
 #define TIFFReadEncodedStrip tp_TIFFReadEncodedStrip
 #define TIFFReadEncodedTile tp_TIFFReadEncodedTile
 #define TIFFReadFromUserBuffer tp_TIFFReadFromUserBuffer
+#define TIFFReadGPSDirectory tp_TIFFReadGPSDirectory
 #define TIFFReadRGBAImage tp_TIFFReadRGBAImage
 #define TIFFReadRGBAImageOriented tp_TIFFReadRGBAImageOriented
 #define TIFFReadRGBAStrip tp_TIFFReadRGBAStrip
@@ -224,6 +226,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#d
 #define _TIFFFindOrRegisterField tp__TIFFFindOrRegisterField
 #define _TIFFGetExifFields tp__TIFFGetExifFields
 #define _TIFFGetFields tp__TIFFGetFields
+#define _TIFFGetGpsFields tp__TIFFGetGpsFields
 #define _TIFFMergeFields tp__TIFFMergeFields
 #define _TIFFMultiply32 tp__TIFFMultiply32
 #define _TIFFMultiply64 tp__TIFFMultiply64
@@ -244,6 +247,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#d
 #define _TIFFRewriteField tp__TIFFRewriteField
 #define _TIFFSeekOK tp__TIFFSeekOK
 #define _TIFFSetDefaultCompressionState tp__TIFFSetDefaultCompressionState
+#define _TIFFSetGetFieldSize tp__TIFFSetGetFieldSize
 #define _TIFFSetupFields tp__TIFFSetupFields
 #define _TIFFSwab16BitData tp__TIFFSwab16BitData
 #define _TIFFSwab24BitData tp__TIFFSwab24BitData

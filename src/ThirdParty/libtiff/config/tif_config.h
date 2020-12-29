@@ -174,6 +174,9 @@
 #define JPEG_SUPPORT 1
 #endif
 
+/* Support libdeflate enhanced compression */
+/* #undef LIBDEFLATE_SUPPORT */
+
 /* 12bit libjpeg primary include file with path */
 /* #undef LIBJPEG_12_PATH */
 
@@ -212,7 +215,7 @@
 #define PACKAGE_NAME "LibTIFF Software"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "LibTIFF Software 4.1.0"
+#define PACKAGE_STRING "LibTIFF Software 4.2.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "tiff"
@@ -221,7 +224,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.1.0"
+#define PACKAGE_VERSION "4.2.0"
 
 /* Support Macintosh PackBits algorithm */
 #define PACKBITS_SUPPORT 1
@@ -349,7 +352,7 @@
 #endif
 
 /* Version number of package */
-#define VERSION "4.1.0"
+#define VERSION "4.2.0"
 
 /* Support webp compression */
 #if defined(HAS_LIBWEBP)

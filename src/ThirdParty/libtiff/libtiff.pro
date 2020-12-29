@@ -10,7 +10,7 @@ TARGET = tp_libtiff
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.1.0
+THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.2.0
 THIRDPARTY_LIBTIFF_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
