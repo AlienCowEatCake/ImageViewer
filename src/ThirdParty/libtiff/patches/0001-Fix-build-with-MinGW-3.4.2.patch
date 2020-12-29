@@ -1,0 +1,47 @@
+From 7405d700906783089183fc183f8a1658a2a5873b Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Tue, 29 Dec 2020 17:43:53 +0700
+Subject: [PATCH] Fix build with MinGW 3.4.2
+
+---
+ libtiff/tif_win32.c | 23 ++++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/libtiff/tif_win32.c b/libtiff/tif_win32.c
+index 89645693..7d89af32 100644
+--- a/libtiff/tif_win32.c
++++ b/libtiff/tif_win32.c
+@@ -156,10 +156,27 @@ static uint64
+ _tiffSizeProc(thandle_t fd)
+ {
+ 	LARGE_INTEGER m;
+-	if (GetFileSizeEx(fd,&m))
+-		return(m.QuadPart);
++	uint64 result;
++	HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
++	typedef BOOL(WINAPI* GetFileSizeEx_t)(HANDLE, PLARGE_INTEGER);
++	GetFileSizeEx_t GetFileSizeEx_f = (GetFileSizeEx_t)(GetProcAddress(hKernel32, "GetFileSizeEx"));
++	if (GetFileSizeEx_f)
++	{
++		if (GetFileSizeEx_f(fd, &m))
++			result = (uint64)m.QuadPart;
++		else
++			result = 0;
++	}
+ 	else
+-		return(0);
++	{
++		m.LowPart = GetFileSize(fd, (LPDWORD)(&m.HighPart));
++		if (m.LowPart != INVALID_FILE_SIZE)
++			result = (uint64)m.QuadPart;
++		else
++			result = 0;
++	}
++	FreeLibrary(hKernel32);
++	return (result);
+ }
+ 
+ static int
+-- 
+2.20.1
+

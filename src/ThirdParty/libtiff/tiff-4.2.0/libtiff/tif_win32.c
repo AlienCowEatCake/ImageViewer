@@ -156,10 +156,27 @@ static uint64
 _tiffSizeProc(thandle_t fd)
 {
 	LARGE_INTEGER m;
-	if (GetFileSizeEx(fd,&m))
-		return(m.QuadPart);
+	uint64 result;
+	HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
+	typedef BOOL(WINAPI* GetFileSizeEx_t)(HANDLE, PLARGE_INTEGER);
+	GetFileSizeEx_t GetFileSizeEx_f = (GetFileSizeEx_t)(GetProcAddress(hKernel32, "GetFileSizeEx"));
+	if (GetFileSizeEx_f)
+	{
+		if (GetFileSizeEx_f(fd, &m))
+			result = (uint64)m.QuadPart;
+		else
+			result = 0;
+	}
 	else
-		return(0);
+	{
+		m.LowPart = GetFileSize(fd, (LPDWORD)(&m.HighPart));
+		if (m.LowPart != INVALID_FILE_SIZE)
+			result = (uint64)m.QuadPart;
+		else
+			result = 0;
+	}
+	FreeLibrary(hKernel32);
+	return (result);
 }
 
 static int
