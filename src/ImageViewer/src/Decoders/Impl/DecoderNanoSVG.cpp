@@ -138,6 +138,7 @@ public:
         img = img.rgbSwapped();
 #endif
         return img;
+#undef USE_RGBA_8888
     }
 
     QRectF boundingRect() const Q_DECL_OVERRIDE

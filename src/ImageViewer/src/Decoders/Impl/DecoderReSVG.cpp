@@ -393,6 +393,7 @@ public:
         img = img.rgbSwapped();
 #endif
         return img;
+#undef USE_RGBA_8888
     }
 
     qreal minScaleFactor() const Q_DECL_OVERRIDE
