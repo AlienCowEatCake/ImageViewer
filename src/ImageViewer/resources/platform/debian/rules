@@ -23,8 +23,13 @@ binary-arch: build
 	dh_installdirs
 	cp -a usr/* debian/imageviewer/opt/ImageViewer
 	ln -s /opt/ImageViewer/share/applications/ru.codefreak.fami.imageviewer.desktop debian/imageviewer/usr/share/applications/ru.codefreak.fami.imageviewer.desktop
-	ln -s /opt/ImageViewer/share/icons/hicolor/scalable/apps/ru.codefreak.fami.imageviewer.svg debian/imageviewer/usr/share/icons/hicolor/scalable/apps/ru.codefreak.fami.imageviewer.svg
 	sed -i 's|^Exec=ImageViewer|Exec=/opt/ImageViewer/bin/ImageViewer|' debian/imageviewer/opt/ImageViewer/share/applications/ru.codefreak.fami.imageviewer.desktop
+	find debian/imageviewer/opt/ImageViewer/share/icons -name 'ru.codefreak.fami.imageviewer.*' -print | while read -r ICON_PATH ; do \
+		ICON_LINK_TARGET=$$(echo $${ICON_PATH} | sed 's|^debian/imageviewer||') ; \
+		ICON_LINK_PATH=$$(echo $${ICON_PATH} | sed 's|/opt/ImageViewer/|/usr/|') ; \
+		mkdir -p $$(dirname $${ICON_LINK_PATH}) ; \
+		ln -s $${ICON_LINK_TARGET} $${ICON_LINK_PATH} ; \
+	done
 	dh_fixperms
 	dh_installdeb
 	dh_shlibdeps --exclude=debian/imageviewer/opt/ImageViewer/plugins/platformthemes --exclude=debian/imageviewer/opt/ImageViewer/plugins/styles

@@ -5,7 +5,7 @@ if [ ! -z "$(uname -s | grep -E -i 'darwin')" ] ; then
 	export PATH="${PATH}:/Applications/GIMP-2.10.app/Contents/MacOS"
 fi
 
-sizes="16 32 48 64 128 256 512 1024"
+sizes="16 20 22 24 32 36 40 42 48 64 72 96 128 192 256 480 512 1024"
 
 for size in ${sizes} ; do
 	name="icon_${size}"
