@@ -1,4 +1,4 @@
-# URL: https://github.com/AOMediaCodec/libavif + https://aomedia.googlesource.com/aom/
+# URL: https://github.com/AOMediaCodec/libavif
 # License: 2-clause BSD License - https://github.com/AOMediaCodec/libavif/blob/master/LICENSE
 
 TEMPLATE = lib
