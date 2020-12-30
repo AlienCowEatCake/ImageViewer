@@ -22,6 +22,7 @@
 #endif
 
 #include <cmath>
+#include <cstring>
 #include <algorithm>
 
 #if defined (LINKED_RESVG)
@@ -149,12 +150,12 @@ private:
             resvg_tree_destroy = library.resolve("resvg_tree_destroy");
             resvg_render = library.resolve("resvg_render");
 
-            if(resvg_init_log)
-            {
-                typedef void (*func_t)();
-                func_t func = (func_t)resvg_init_log;
-                func();
-            }
+//            if(resvg_init_log)
+//            {
+//                typedef void (*func_t)();
+//                func_t func = (func_t)resvg_init_log;
+//                func();
+//            }
     }
 
     ~ReSVG()

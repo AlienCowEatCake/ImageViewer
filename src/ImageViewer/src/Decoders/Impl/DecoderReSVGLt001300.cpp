@@ -22,6 +22,7 @@
 #endif
 
 #include <cmath>
+#include <cstring>
 #include <algorithm>
 
 #if defined (LINKED_RESVG)
@@ -168,12 +169,12 @@ private:
             resvg_image_get_data = library.resolve("resvg_image_get_data");
             resvg_image_destroy = library.resolve("resvg_image_destroy");
 
-            if(resvg_init_log)
-            {
-                typedef void (*func_t)();
-                func_t func = (func_t)resvg_init_log;
-                func();
-            }
+//            if(resvg_init_log)
+//            {
+//                typedef void (*func_t)();
+//                func_t func = (func_t)resvg_init_log;
+//                func();
+//            }
     }
 
     ~ReSVG()
