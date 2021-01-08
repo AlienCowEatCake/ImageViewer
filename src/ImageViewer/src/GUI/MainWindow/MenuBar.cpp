@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -460,6 +460,8 @@ MenuBar::MenuBar(QWidget *parent)
     connect(m_impl->actionAboutQt               , SIGNAL(triggered()), emitter, SIGNAL(aboutQtRequested())                  );
     connect(m_impl->actionCheckForUpdates       , SIGNAL(triggered()), emitter, SIGNAL(checkForUpdatesRequested())          );
     connect(m_impl->actionEditStylesheet        , SIGNAL(triggered()), emitter, SIGNAL(editStylesheetRequested())           );
+
+    connect(this, SIGNAL(polished()), this, SLOT(onPolished()), Qt::QueuedConnection);
 }
 
 MenuBar::~MenuBar()
@@ -478,6 +480,19 @@ QMenu *MenuBar::contextMenu()
 QMenu *MenuBar::menuReopenWith()
 {
     return m_impl->menuReopenWith;
+}
+
+void MenuBar::onPolished()
+{
+    m_impl->updateIcons();
+}
+
+bool MenuBar::event(QEvent *event)
+{
+    const bool result = QMenuBar::event(event);
+    if(event->type() == QEvent::Polish)
+        Q_EMIT polished();
+    return result;
 }
 
 void MenuBar::changeEvent(QEvent *event)

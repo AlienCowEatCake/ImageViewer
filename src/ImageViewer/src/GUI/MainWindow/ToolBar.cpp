@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -209,6 +209,8 @@ ToolBar::ToolBar(QWidget *parent)
     connect(m_impl->deleteFile              , SIGNAL(clicked()), emitter(), SIGNAL(deleteFileRequested())               );
     connect(m_impl->preferences             , SIGNAL(clicked()), emitter(), SIGNAL(preferencesRequested())              );
     connect(m_impl->exit                    , SIGNAL(clicked()), emitter(), SIGNAL(exitRequested())                     );
+
+    connect(this, SIGNAL(polished()), this, SLOT(onPolished()), Qt::QueuedConnection);
 }
 
 ToolBar::~ToolBar()
@@ -217,6 +219,19 @@ ToolBar::~ToolBar()
 ControlsContainerEmitter *ToolBar::emitter()
 {
     return m_impl.data();
+}
+
+void ToolBar::onPolished()
+{
+    m_impl->updateIcons();
+}
+
+bool ToolBar::event(QEvent *event)
+{
+    const bool result = AdjustableFrame::event(event);
+    if(event->type() == QEvent::Polish)
+        Q_EMIT polished();
+    return result;
 }
 
 void ToolBar::changeEvent(QEvent *event)
