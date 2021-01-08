@@ -12,7 +12,7 @@ resource app_version {
 	internal = 0,
 
 	short_info = "Image Viewer",
-	long_info = "Image Viewer\n(c) Peter S. Zhigalov, 2017-2020"
+	long_info = "Image Viewer\n(c) Peter S. Zhigalov, 2017-2021"
 };
 
 resource vector_icon array {

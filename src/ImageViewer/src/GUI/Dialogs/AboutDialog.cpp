@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -138,7 +138,7 @@ namespace {
 const char *ABOUT_PIXMAP_PATH     = ":/icon/icon_64.png";
 const char *ABOUT_URL_STRING      = "https://github.com/AlienCowEatCake/ImageViewer";
 const char *ABOUT_LICENSE_STRIG   = "<a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU GPL v3</a>";
-const char *ABOUT_YEAR_STRING     = "2017-2020";
+const char *ABOUT_YEAR_STRING     = "2017-2021";
 const char *ABOUT_AUTHOR_STRING   = QT_TRANSLATE_NOOP("AboutDialog", "Peter S. Zhigalov");
 const char *ABOUT_EMAIL_STRING    = "peter.zhigalov@gmail.com";
 
