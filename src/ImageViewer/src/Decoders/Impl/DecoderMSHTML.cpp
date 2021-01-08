@@ -816,7 +816,7 @@ public:
 
         qDebug() << "IE version:" << ieVersion;
         if(ieVersion.split(QChar::fromLatin1('.'),
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
                            Qt::SkipEmptyParts
 #else
                            QString::SkipEmptyParts
