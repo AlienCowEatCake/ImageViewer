@@ -5,20 +5,20 @@ TEMPLATE = lib
 CONFIG += staticlib
 TARGET = tp_libexpat
 
-QT -= core gui
+#QT -= core gui
 
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.2.10
+THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.4.1
+THIRDPARTY_LIBEXPAT_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
-include(../libpng/libpng.pri)
 include(../zlib/zlib.pri)
 
-INCLUDEPATH = $${THIRDPARTY_LIBEXPAT_PATH}/lib $${INCLUDEPATH}
+INCLUDEPATH = $${THIRDPARTY_LIBEXPAT_CONFIG_PATH} $${THIRDPARTY_LIBEXPAT_PATH}/lib $${INCLUDEPATH}
 
-DEFINES += HAVE_MEMMOVE XML_POOR_ENTROPY XML_STATIC
+DEFINES += XML_POOR_ENTROPY XML_STATIC
 
 SOURCES += \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/xmlparse.c \
@@ -42,6 +42,7 @@ HEADERS += \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/xmlrole.h \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/xmltok.h \
     $${THIRDPARTY_LIBEXPAT_PATH}/lib/xmltok_impl.h \
+    $${THIRDPARTY_LIBEXPAT_CONFIG_PATH}/expat_config.h
 
 TR_EXCLUDE += $${THIRDPARTY_LIBEXPAT_PATH}/*
 

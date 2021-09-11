@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -106,7 +106,17 @@
 # libexpat options:
 #    disable_libexpat
 #    system_libexpat
-
+*msvc* {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+            CONFIG += disable_libexpat # FIXME: C99
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+            CONFIG += disable_libexpat # FIXME: C99
+        }
+    }
+}
 
 # LCMS options:
 #    disable_liblcms2
