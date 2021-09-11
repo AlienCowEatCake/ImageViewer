@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -69,6 +69,19 @@ typedef Exiv2::Image::AutoPtr Exiv2ImagePtr;
 typedef Exiv2::BasicIo::UniquePtr Exiv2BasicIoPtr;
 typedef Exiv2::Image::UniquePtr Exiv2ImagePtr;
 #endif
+
+bool exiv2Initialize()
+{
+    bool result = true;
+    result &= Exiv2::XmpParser::initialize();
+    ::atexit(Exiv2::XmpParser::terminate);
+#if defined (EXV_ENABLE_BMFF)
+    result &= Exiv2::enableBMFF(true);
+#endif
+    return result;
+}
+
+const bool EXIV2_INITIALIZED = exiv2Initialize();
 
 class QFileIo : public Exiv2::BasicIo
 {
@@ -426,6 +439,7 @@ QString formatValue(const Exiv2::Value &value)
 
 void fillExifMetaData(const Exiv2::ExifData &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
 {
+    Q_UNUSED(EXIV2_INITIALIZED);
     try
     {
         for(Exiv2::ExifData::const_iterator it = data.begin(), end = data.end(); it != end; ++it)
@@ -447,6 +461,7 @@ void fillExifMetaData(const Exiv2::ExifData &data, IImageMetaData::MetaDataEntry
 
 void fillIptcMetaData(const Exiv2::IptcData &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
 {
+    Q_UNUSED(EXIV2_INITIALIZED);
     try
     {
         for(Exiv2::IptcData::const_iterator it = data.begin(), end = data.end(); it != end; ++it)
@@ -468,6 +483,7 @@ void fillIptcMetaData(const Exiv2::IptcData &data, IImageMetaData::MetaDataEntry
 
 void fillXmpMetaData(const Exiv2::XmpData &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
 {
+    Q_UNUSED(EXIV2_INITIALIZED);
     try
     {
         for(Exiv2::XmpData::const_iterator it = data.begin(), end = data.end(); it != end; ++it)
@@ -489,6 +505,7 @@ void fillXmpMetaData(const Exiv2::XmpData &data, IImageMetaData::MetaDataEntryLi
 
 void fillCommentMetaData(const std::string &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
 {
+    Q_UNUSED(EXIV2_INITIALIZED);
     if(data.empty())
         return;
     const IImageMetaData::MetaDataType type = QString::fromLatin1("Comment");
@@ -499,6 +516,7 @@ void fillCommentMetaData(const std::string &data, IImageMetaData::MetaDataEntryL
 
 quint16 getOrientation(const Exiv2::ExifData &data)
 {
+    Q_UNUSED(EXIV2_INITIALIZED);
     try
     {
         Exiv2::ExifData::const_iterator it = Exiv2::orientation(data);
@@ -1154,6 +1172,7 @@ bool ImageMetaData::readFile(const QString &filePath)
 {
     m_impl->entryListMap.clear();
 #if defined (USE_EXIV2)
+    Q_UNUSED(EXIV2_INITIALIZED);
     try
     {
         m_impl->image.reset();
@@ -1208,6 +1227,7 @@ bool ImageMetaData::readFile(const QByteArray &fileData)
 {
     m_impl->entryListMap.clear();
 #if defined (USE_EXIV2)
+    Q_UNUSED(EXIV2_INITIALIZED);
     try
     {
         m_impl->image.reset();
@@ -1272,6 +1292,7 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
 {
     m_impl->entryListMap.clear();
 #if defined (USE_EXIV2)
+    Q_UNUSED(EXIV2_INITIALIZED);
     try
     {
         m_impl->image.reset();
@@ -1326,6 +1347,7 @@ bool ImageMetaData::readXmpData(const QByteArray &rawXmpData)
 {
     m_impl->entryListMap.clear();
 #if defined (USE_EXIV2)
+    Q_UNUSED(EXIV2_INITIALIZED);
     try
     {
         m_impl->image.reset();

@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.27.3-Source
+THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.27.4-Source
 THIRDPARTY_EXIV2_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -57,7 +57,7 @@ SOURCES += \
     $${THIRDPARTY_EXIV2_PATH}/src/tiffvisitor_int.cpp \
 \ #    $${THIRDPARTY_EXIV2_PATH}/src/asfvideo.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/basicio.cpp \
-    $${THIRDPARTY_EXIV2_PATH}/src/bigtiffimage.cpp \
+    $${THIRDPARTY_EXIV2_PATH}/src/bmffimage.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/bmpimage.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/convert.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/cr2image.cpp \
@@ -127,6 +127,7 @@ HEADERS += \
     $${THIRDPARTY_EXIV2_PATH}/src/unused.h \
     $${THIRDPARTY_EXIV2_PATH}/include/exiv2/asfvideo.hpp \
     $${THIRDPARTY_EXIV2_PATH}/include/exiv2/basicio.hpp \
+    $${THIRDPARTY_EXIV2_PATH}/include/exiv2/bmffimage.hpp \
     $${THIRDPARTY_EXIV2_PATH}/include/exiv2/bmpimage.hpp \
     $${THIRDPARTY_EXIV2_PATH}/include/exiv2/convert.hpp \
     $${THIRDPARTY_EXIV2_PATH}/include/exiv2/cr2image.hpp \
