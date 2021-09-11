@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/aom-v2.0.1
+THIRDPARTY_AOM_PATH = $${PWD}/aom-v3.1.2
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -19,19 +19,24 @@ include(../CommonSettings.pri)
     QMAKE_CFLAGS += -std=gnu99
 }
 
-INCLUDEPATH = $${THIRDPARTY_AOM_PATH} $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include $${THIRDPARTY_AOM_CONFIG_PATH} $${PWD} $${INCLUDEPATH}
+INCLUDEPATH = $${THIRDPARTY_AOM_PATH} $${THIRDPARTY_AOM_CONFIG_PATH} $${PWD} $${INCLUDEPATH}
 
-# find . -name '*.c' | egrep -v '(arm|x86|ppc|mips|/examples/|/apps/|/tools/|vmaf|inspection)' | sort
+# find . -name '*.c' | egrep -v '(arm|x86|ppc|mips|/examples/|/apps/|/tools/|vmaf|inspection|butteraugli|temporal_denoiser|_sse2|_ssse3|_sse4|_avx|_neon)' | sort | sed 's|^\.|    $${THIRDPARTY_AOM_PATH}| ; s|$| \\|'
 SOURCES += \
+    $${THIRDPARTY_AOM_PATH}/aom/src/aom_codec.c \
+    $${THIRDPARTY_AOM_PATH}/aom/src/aom_decoder.c \
+    $${THIRDPARTY_AOM_PATH}/aom/src/aom_encoder.c \
+    $${THIRDPARTY_AOM_PATH}/aom/src/aom_image.c \
+    $${THIRDPARTY_AOM_PATH}/aom/src/aom_integer.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_convolve.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_dsp_rtcd.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/avg.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/binary_codes_reader.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/binary_codes_writer.c \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/bitreader_buffer.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/bitreader.c \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/bitwriter_buffer.c \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/bitreader_buffer.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/bitwriter.c \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/bitwriter_buffer.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/blend_a64_hmask.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/blend_a64_mask.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/blend_a64_vmask.c \
@@ -51,8 +56,8 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/psnr.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/psnrhvs.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/quantize.c \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/sad_av1.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/sad.c \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/sad_av1.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/sse.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/ssim.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/subtract.c \
@@ -64,13 +69,9 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/aom_scale/generic/gen_scalers.c \
     $${THIRDPARTY_AOM_PATH}/aom_scale/generic/yv12config.c \
     $${THIRDPARTY_AOM_PATH}/aom_scale/generic/yv12extend.c \
-    $${THIRDPARTY_AOM_PATH}/aom/src/aom_codec.c \
-    $${THIRDPARTY_AOM_PATH}/aom/src/aom_decoder.c \
-    $${THIRDPARTY_AOM_PATH}/aom/src/aom_encoder.c \
-    $${THIRDPARTY_AOM_PATH}/aom/src/aom_image.c \
-    $${THIRDPARTY_AOM_PATH}/aom/src/aom_integer.c \
     $${THIRDPARTY_AOM_PATH}/aom_util/aom_thread.c \
     $${THIRDPARTY_AOM_PATH}/aom_util/debug_util.c \
+    $${THIRDPARTY_AOM_PATH}/av1/arg_defs.c \
     $${THIRDPARTY_AOM_PATH}/av1/av1_cx_iface.c \
     $${THIRDPARTY_AOM_PATH}/av1/av1_dx_iface.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/alloccommon.c \
@@ -80,13 +81,8 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_rtcd.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_txfm.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/blockd.c \
-\#    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_avx2.c \
-    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block.c \
-\#    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_neon.c \
-\#    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_sse2.c \
-\#    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_sse4.c \
-\#    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_ssse3.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/cdef.c \
+    $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/cfl.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/convolve.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/debugmodes.c \
@@ -125,7 +121,7 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_variance.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm2d.c \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_multi_thread.c \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_noise_estimate.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_quantize.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/bitstream.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/blockiness.c \
@@ -136,16 +132,19 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/corner_match.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/cost.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/dwt.c \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/encode_strategy.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/encodeframe.c \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/encodeframe_utils.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/encodemb.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/encodemv.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/encoder.c \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/encode_strategy.c \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/encoder_utils.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/encodetxb.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/ethread.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/extend.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/firstpass.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/global_motion.c \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/global_motion_facade.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/gop_structure.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/hash.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/hash_motion.c \
@@ -159,7 +158,9 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/motion_search_facade.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/mv_prec.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/nonrd_pickmode.c \
+\#    $${THIRDPARTY_AOM_PATH}/av1/encoder/optical_flow.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/palette.c \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/partition_search.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/partition_strategy.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/pass2_strategy.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/pickcdef.c \
@@ -171,15 +172,19 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/rdopt.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/reconinter_enc.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/segmentation.c \
+\#    $${THIRDPARTY_AOM_PATH}/av1/encoder/sparse_linear_solver.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/speed_features.c \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/superres_scale.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/svc_layercontext.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/temporal_filter.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/tokenize.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/tpl_model.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/tx_search.c \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/txb_rdopt.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/var_based_part.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/wedge_utils.c \
     $${THIRDPARTY_AOM_PATH}/common/args.c \
+    $${THIRDPARTY_AOM_PATH}/common/args_helper.c \
     $${THIRDPARTY_AOM_PATH}/common/av1_config.c \
     $${THIRDPARTY_AOM_PATH}/common/ivfdec.c \
     $${THIRDPARTY_AOM_PATH}/common/ivfenc.c \
@@ -194,22 +199,25 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/common/y4minput.c \
     $${THIRDPARTY_AOM_PATH}/stats/aomstats.c \
     $${THIRDPARTY_AOM_PATH}/stats/rate_hist.c \
-    $${THIRDPARTY_AOM_PATH}/third_party/fastfeat/fast_9.c \
     $${THIRDPARTY_AOM_PATH}/third_party/fastfeat/fast.c \
+    $${THIRDPARTY_AOM_PATH}/third_party/fastfeat/fast_9.c \
     $${THIRDPARTY_AOM_PATH}/third_party/fastfeat/nonmax.c \
     $${THIRDPARTY_AOM_PATH}/third_party/vector/vector.c \
     $${THIRDPARTY_AOM_CONFIG_PATH}/aom_config.c \
 
+# find . -name '*.h' | sort | sed 's|^\.|    $${THIRDPARTY_AOM_PATH}| ; s|$| \\|'
 HEADERS += \
+    $${THIRDPARTY_AOM_PATH}/aom/aom.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_codec.h \
-    $${THIRDPARTY_AOM_PATH}/aom/aomcx.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_decoder.h \
-    $${THIRDPARTY_AOM_PATH}/aom/aomdx.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_encoder.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_frame_buffer.h \
-    $${THIRDPARTY_AOM_PATH}/aom/aom.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_image.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_integer.h \
+    $${THIRDPARTY_AOM_PATH}/aom/aomcx.h \
+    $${THIRDPARTY_AOM_PATH}/aom/aomdx.h \
+    $${THIRDPARTY_AOM_PATH}/aom/internal/aom_codec_internal.h \
+    $${THIRDPARTY_AOM_PATH}/aom/internal/aom_image_internal.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_dsp_common.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_filter.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_simd.h \
@@ -217,11 +225,12 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/sum_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/binary_codes_reader.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/binary_codes_writer.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/bitreader_buffer.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/bitreader.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/bitwriter_buffer.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/bitreader_buffer.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/bitwriter.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/bitwriter_buffer.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/blend.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/butteraugli.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entcode.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entdec.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entenc.h \
@@ -243,18 +252,18 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/psnr.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/quantize.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/recenter.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics_arm.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics_c.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics_x86.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v256_intrinsics.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v256_intrinsics_arm.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v256_intrinsics_c.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v256_intrinsics.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v256_intrinsics_v128.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v256_intrinsics_x86.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v64_intrinsics.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v64_intrinsics_arm.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v64_intrinsics_c.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v64_intrinsics.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v64_intrinsics_x86.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/ssim.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/txfm_common.h \
@@ -265,11 +274,12 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/blend_mask_sse4.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/blend_sse4.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/common_avx2.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/convolve.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/convolve_avx2.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/convolve_common_intrin.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/convolve.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/convolve_sse2.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/convolve_sse4_1.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/convolve_ssse3.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/fwd_txfm_impl_sse2.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/fwd_txfm_sse2.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/intrapred_x86.h \
@@ -281,13 +291,11 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/obmc_intrinsic_ssse3.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/quantize_x86.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/sum_squares_sse2.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/synonyms_avx2.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/synonyms.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/synonyms_avx2.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/transpose_sse2.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/txfm_common_avx2.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/txfm_common_sse2.h \
-    $${THIRDPARTY_AOM_PATH}/aom/internal/aom_codec_internal.h \
-    $${THIRDPARTY_AOM_PATH}/aom/internal/aom_image_internal.h \
     $${THIRDPARTY_AOM_PATH}/aom_mem/aom_mem.h \
     $${THIRDPARTY_AOM_PATH}/aom_mem/include/aom_mem_intrnl.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/aom_once.h \
@@ -296,8 +304,8 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_ports/bitops.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/emmintrin_compat.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/mem.h \
-    $${THIRDPARTY_AOM_PATH}/aom_ports/mem_ops_aligned.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/mem_ops.h \
+    $${THIRDPARTY_AOM_PATH}/aom_ports/mem_ops_aligned.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/msvc.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/ppc.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/sanitizer.h \
@@ -309,6 +317,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_util/debug_util.h \
     $${THIRDPARTY_AOM_PATH}/aom_util/endian_inl.h \
     $${THIRDPARTY_AOM_PATH}/apps/aomenc.h \
+    $${THIRDPARTY_AOM_PATH}/av1/arg_defs.h \
     $${THIRDPARTY_AOM_PATH}/av1/av1_iface_common.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/alloccommon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/av1_inv_txfm_neon.h \
@@ -316,17 +325,17 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/mem_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/transpose_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_common_int.h \
-    $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d_cfg.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d_cfg.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_loopfilter.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_txfm.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/blockd.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/cdef.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block_simd.h \
-    $${THIRDPARTY_AOM_PATH}/av1/common/cdef.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/cfl.h \
-    $${THIRDPARTY_AOM_PATH}/av1/common/common_data.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/common.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/common_data.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/convolve.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/entropy.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/entropymode.h \
@@ -373,10 +382,12 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_complexity.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_cyclicrefresh.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_variance.h \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d_cfg.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d.h \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_multi_thread.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d_cfg.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_ml_partition_models.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_noise_estimate.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_quantize.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_temporal_denoiser.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/bitstream.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/block.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/cnn.h \
@@ -387,16 +398,20 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/cost.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/dwt.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/enc_enums.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/encode_strategy.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/encodeframe.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/encodeframe_utils.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/encodemb.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/encodemv.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/encoder.h \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/encode_strategy.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/encoder_alloc.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/encoder_utils.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/encodetxb.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/ethread.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/extend.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/firstpass.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/global_motion.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/global_motion_facade.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/gop_structure.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/grain_test_vectors.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/hash.h \
@@ -404,6 +419,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/hybrid_fwd_txfm.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/interp_search.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/intra_mode_search.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/intra_mode_search_utils.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/k_means_template.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/level.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/lookahead.h \
@@ -411,42 +427,51 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/mcomp.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/misc_model_weights.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/ml.h \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/model_rd.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/mode_prune_model_weights.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/model_rd.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/motion_search_facade.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/mv_prec.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/optical_flow.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/palette.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/partition_cnn_weights.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/partition_model_weights.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/partition_search.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/partition_strategy.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/pass2_strategy.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/pickcdef.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/picklpf.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/pickrst.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/pustats.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/random.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/ransac.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/ratectrl.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/rc_utils.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/rd.h \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/rdopt_data_defs.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/rdopt.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/rdopt_data_defs.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/rdopt_utils.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/reconinter_enc.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/segmentation.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/sparse_linear_solver.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/speed_features.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/superres_scale.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/svc_layercontext.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/temporal_filter.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/tokenize.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/tpl_model.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/tune_butteraugli.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/tune_vmaf.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/tx_prune_model_weights.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/tx_search.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/txb_rdopt.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/txb_rdopt_utils.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/use_flat_gop_model_params.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/var_based_part.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_fwd_txfm_avx2.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_fwd_txfm_sse2.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_txfm1d_sse4.h \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/temporal_filter_constants.h \
     $${THIRDPARTY_AOM_PATH}/common/args.h \
+    $${THIRDPARTY_AOM_PATH}/common/args_helper.h \
     $${THIRDPARTY_AOM_PATH}/common/av1_config.h \
     $${THIRDPARTY_AOM_PATH}/common/ivfdec.h \
     $${THIRDPARTY_AOM_PATH}/common/ivfenc.h \
@@ -466,7 +491,6 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/stats/aomstats.h \
     $${THIRDPARTY_AOM_PATH}/stats/rate_hist.h \
     $${THIRDPARTY_AOM_PATH}/test/acm_random.h \
-    $${THIRDPARTY_AOM_PATH}/test/av1_convolve_2d_test_util.h \
     $${THIRDPARTY_AOM_PATH}/test/av1_txfm_test.h \
     $${THIRDPARTY_AOM_PATH}/test/clear_system_state.h \
     $${THIRDPARTY_AOM_PATH}/test/codec_factory.h \
@@ -492,19 +516,19 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/test/yuv_video_source.h \
     $${THIRDPARTY_AOM_PATH}/third_party/fastfeat/fast.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-death-test.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-matchers.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-message.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-param-test.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest_pred_impl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-printers.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest_prod.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-spi.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-test-part.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-typed-test.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/internal/custom/gtest.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest_pred_impl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest_prod.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/internal/custom/gtest-port.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/internal/custom/gtest-printers.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/internal/custom/gtest.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/internal/gtest-death-test-internal.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/internal/gtest-filepath.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/internal/gtest-internal.h \
@@ -525,20 +549,21 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/third_party/libwebm/mkvparser/mkvreader.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/basic_types.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/compare.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/convert_argb.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/convert_from_argb.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/convert_from.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/convert.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/convert_argb.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/convert_from.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/convert_from_argb.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/cpu_id.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/mjpeg_decoder.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/planar_functions.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/rotate_argb.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/rotate.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/rotate_argb.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/rotate_row.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/row.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/scale_argb.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/scale.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/scale_argb.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/scale_row.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/scale_uv.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/version.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libyuv/include/libyuv/video_common.h \
     $${THIRDPARTY_AOM_PATH}/third_party/vector/vector.h \

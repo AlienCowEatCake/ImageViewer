@@ -82,8 +82,12 @@ int aom_yv12_realloc_with_new_border_c(struct yv12_buffer_config *ybf, int new_b
 
 void aom_scale_rtcd(void);
 
+#include "config/aom_config.h"
+
 #ifdef RTCD_C
-static void setup_rtcd_internal(void) {}
+static void setup_rtcd_internal(void)
+{
+}
 #endif
 
 #ifdef __cplusplus
