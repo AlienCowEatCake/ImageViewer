@@ -273,7 +273,7 @@ QString getTextBrowserContent()
                       QString::fromLatin1("This software uses the JasPer image processing/coding tool kit"),
                       QString::fromLatin1("libjasper"),
                       strcmp(JAS_VERSION, "unknown") ? QString::fromLatin1(JAS_VERSION) : QString(),
-                      QString::fromLatin1("https://jasper-software.github.io/jasper/"),
+                      QString::fromLatin1("http://www.ece.uvic.ca/~mdadams/jasper"),
                       QString::fromLatin1("JasPer License v2.0"),
                       QString::fromLatin1("https://github.com/jasper-software/jasper/blob/master/LICENSE")
                       ));
