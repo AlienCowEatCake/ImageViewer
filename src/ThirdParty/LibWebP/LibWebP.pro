@@ -10,11 +10,20 @@ TARGET = tp_LibWebP
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.1.0
+THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.2.1
 
 include(../CommonSettings.pri)
 
-INCLUDEPATH = $${THIRDPARTY_LIBWEBP_PATH} $${INCLUDEPATH}
+INCLUDEPATH = \
+    $${THIRDPARTY_LIBWEBP_PATH} \
+    $${THIRDPARTY_LIBWEBP_PATH}/src \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dec \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/mux \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/webp \
+    $${INCLUDEPATH}
 
 SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/alpha_dec.c \
@@ -36,6 +45,7 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_mips_dsp_r2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cpu.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec.c \
@@ -78,6 +88,7 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_mips_dsp_r2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_sse2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_sse41.c \
@@ -178,7 +189,6 @@ integrity {
 
 SOURCES_FOR_NEON += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_neon.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/filters_neon.c \
@@ -188,7 +198,9 @@ SOURCES_FOR_NEON += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_neon.c
 
-equals(QT_ARCH, arm)|equals(QT_ARCH, arm64) {
+android {
+    arm64-v8a | armeabi-v7a: SOURCES += $$SOURCES_FOR_NEON
+} else: equals(QT_ARCH, arm)|equals(QT_ARCH, arm64) {
     contains(QT_CPU_FEATURES.$$QT_ARCH, neon) {
         # Default compiler settings include this feature, so just add to SOURCES
         SOURCES += $$SOURCES_FOR_NEON

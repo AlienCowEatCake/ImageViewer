@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libwebp {
 
-        THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.1.0
+        THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.2.1
 
         INCLUDEPATH += $${THIRDPARTY_LIBWEBP_PATH}/src
         DEPENDPATH += $${THIRDPARTY_LIBWEBP_PATH}/src
