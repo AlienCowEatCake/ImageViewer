@@ -195,7 +195,17 @@ disable_zlib : !system_libpng {
 # libtiff options:
 #    disable_libtiff
 #    system_libtiff
-
+*msvc* : !system_libtiff {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
+            CONFIG += disable_libtiff # FIXME: C99
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1900) { # MSVC2015
+            CONFIG += disable_libtiff # FIXME: C99
+        }
+    }
+}
 
 # LibWebP options:
 #    disable_libwebp

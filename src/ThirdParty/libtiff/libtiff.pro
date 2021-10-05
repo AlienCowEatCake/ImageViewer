@@ -10,7 +10,7 @@ TARGET = tp_libtiff
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.2.0
+THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.3.0
 THIRDPARTY_LIBTIFF_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -48,6 +48,7 @@ SOURCES += \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_jbig.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_jpeg.c \
 \#    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_jpeg_12.c \
+    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_lerc.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_luv.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_lzma.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_lzw.c \
@@ -68,7 +69,7 @@ SOURCES += \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_webp.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_write.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_zip.c \
-    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_zstd.c
+    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_zstd.c \
 
 win32 {
     SOURCES += \
@@ -78,21 +79,16 @@ win32 {
         $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_unix.c
 }
 
-*msvc* {
-    SOURCES += \
-        $${THIRDPARTY_LIBTIFF_PATH}/port/snprintf.c
-}
-
 HEADERS += \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/t4.h \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_dir.h \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_fax3.h \
+    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_predict.h \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tiff.h \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tiffio.h \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tiffiop.h \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tiffvers.h \
-    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_predict.h \
-    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/uvcode.h
+    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/uvcode.h \
 
 HEADERS += \
     $${THIRDPARTY_LIBTIFF_CONFIG_PATH}/tif_config.h \

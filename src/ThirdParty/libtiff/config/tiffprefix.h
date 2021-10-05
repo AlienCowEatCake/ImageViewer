@@ -4,7 +4,11 @@
 #define TIFFOpenW tp_TIFFOpenW
 
 /*
+Linux:
 nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#define \1 tp_\1|' | LANG=C sort -u
+
+macOS:
+nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|#define \1 tp_\1|' | LANG=C sort -u
 */
 
 #define LogL10fromY tp_LogL10fromY

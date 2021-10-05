@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -310,7 +310,13 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
 
     img.req_orientation = ORIENTATION_TOPLEFT;
 
-    if(!TIFFRGBAImageGet(&img, reinterpret_cast<uint32*>(result.bits()), img.width, img.height))
+#if defined (TIFFLIB_VERSION) && (TIFFLIB_VERSION >= 20210416)
+    typedef uint32_t TiffImageBitsType;
+#else
+    typedef uint32 TiffImageBitsType;
+#endif
+
+    if(!TIFFRGBAImageGet(&img, reinterpret_cast<TiffImageBitsType*>(result.bits()), img.width, img.height))
     {
         qWarning() << "Can't TIFFRGBAImageGet for" << filename;
         TIFFClose(tiff);

@@ -14,53 +14,34 @@
 
 #include <qglobal.h>
 
-#if !defined (Q_OS_HAIKU)
+#include <stddef.h>
+#include <stdint.h>
+#include <inttypes.h>
+
 
 /* Signed 16-bit type */
-#define TIFF_INT16_T qint16
+/* #undef TIFF_INT16_T */
 
 /* Signed 32-bit type */
-#define TIFF_INT32_T qint32
+/* #undef TIFF_INT32_T */
 
 /* Signed 64-bit type */
-#define TIFF_INT64_T qint64
+/* #undef TIFF_INT64_T */
 
 /* Signed 8-bit type */
-#define TIFF_INT8_T qint8
+/* #undef TIFF_INT8_T */
 
 /* Unsigned 16-bit type */
-#define TIFF_UINT16_T quint16
+/* #undef TIFF_UINT16_T */
 
 /* Unsigned 32-bit type */
-#define TIFF_UINT32_T quint32
+/* #undef TIFF_UINT32_T */
 
 /* Unsigned 64-bit type */
-#define TIFF_UINT64_T quint64
+/* #undef TIFF_UINT64_T */
 
 /* Unsigned 8-bit type */
-#define TIFF_UINT8_T quint8
-
-#else
-
-#include <SupportDefs.h>
-
-#define TIFF_INT8_T     __haiku_int8
-#define TIFF_UINT8_T    __haiku_uint8
-#define TIFF_INT16_T    __haiku_int16
-#define TIFF_UINT16_T   __haiku_uint16
-#define TIFF_INT32_T    __haiku_int32
-#define TIFF_UINT32_T   __haiku_uint32
-#define TIFF_INT64_T    __haiku_int64
-#define TIFF_UINT64_T   __haiku_uint64
-
-#endif
-
-/* Unsigned size type */
-#if defined(QT_POINTER_SIZE) && (QT_POINTER_SIZE == 4)
-#define TIFF_SIZE_T quint32
-#else
-#define TIFF_SIZE_T quint64
-#endif
+/* #undef TIFF_UINT8_T */
 
 /* Signed size type */
 #if defined(QT_POINTER_SIZE) && (QT_POINTER_SIZE == 4)
@@ -69,12 +50,9 @@
 #define TIFF_SSIZE_T qint64
 #endif
 
-/* Pointer difference type */
-#define TIFF_PTRDIFF_T ptrdiff_t
-
 /* Compatibility stuff. */
 
-/* Define as 0 or 1 according to the floating point format suported by the
+/* Define as 0 or 1 according to the floating point format supported by the
    machine */
 #define HAVE_IEEEFP 1
 
@@ -101,6 +79,9 @@
 #if defined(HAS_JBIGKIT)
 #define JBIG_SUPPORT 1
 #endif
+
+/* Support LERC compression */
+/* #undef LERC_SUPPORT */
 
 /* Support LogLuv high dynamic range encoding */
 #define LOGLUV_SUPPORT 1
@@ -137,7 +118,7 @@
 /* #undef LIBDEFLATE_SUPPORT */
 
 /* Support strip chopping (whether or not to convert single-strip uncompressed
-   images to mutiple strips of ~8Kb to reduce memory usage) */
+   images to multiple strips of ~8Kb to reduce memory usage) */
 #define STRIPCHOP_DEFAULT TIFF_STRIPCHOP
 
 /* Enable SubIFD tag (330) support */
