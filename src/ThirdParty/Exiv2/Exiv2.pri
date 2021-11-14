@@ -16,7 +16,7 @@ include($${PWD}/../../Features.pri)
 
     !system_exiv2 {
 
-        THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.27.4-Source
+        THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.27.5-Source
         THIRDPARTY_EXIV2_CONFIG_PATH = $${PWD}/config
 
         INCLUDEPATH += $${THIRDPARTY_EXIV2_PATH}/include $${THIRDPARTY_EXIV2_CONFIG_PATH}
