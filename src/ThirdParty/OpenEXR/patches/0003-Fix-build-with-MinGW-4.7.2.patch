@@ -1,12 +1,11 @@
-From 21a2bbc9815b243de7ff29ea3eaf26654886f52f Mon Sep 17 00:00:00 2001
+From 44a5673ffea867f09c5c9fa46ede90028a3ff1d8 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 19:25:07 +0700
 Subject: [PATCH 3/5] Fix build with MinGW 4.7.2
 
 ---
- OpenEXR/IlmImf/ImfMisc.cpp      | 2 +-
- OpenEXR/IlmImf/ImfTiledMisc.cpp | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ OpenEXR/IlmImf/ImfMisc.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/OpenEXR/IlmImf/ImfMisc.cpp b/OpenEXR/IlmImf/ImfMisc.cpp
 index d2c84787..2ba46085 100644
@@ -21,18 +20,6 @@ index d2c84787..2ba46085 100644
  union bytesOrFloat {
    FBytes b;
    float f;
-diff --git a/OpenEXR/IlmImf/ImfTiledMisc.cpp b/OpenEXR/IlmImf/ImfTiledMisc.cpp
-index d78b76e4..c33c6c24 100644
---- a/OpenEXR/IlmImf/ImfTiledMisc.cpp
-+++ b/OpenEXR/IlmImf/ImfTiledMisc.cpp
-@@ -45,6 +45,7 @@
- #include <ImfChannelList.h>
- #include <ImfTileDescription.h>
- #include <algorithm>
-+#include <limits>
- 
- #include "ImfNamespace.h"
- 
 -- 
-2.20.1
+2.33.1
 

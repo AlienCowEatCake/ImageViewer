@@ -1,4 +1,4 @@
-From c52cf4f21132e3553dc343fc85ed407e95a22ce7 Mon Sep 17 00:00:00 2001
+From 5e3d3d0bda0fdc967b31c68268dbf11514461332 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 6 Dec 2020 19:57:40 +0700
 Subject: [PATCH 5/5] Fix build with Ubuntu 16.04
@@ -8,11 +8,11 @@ Subject: [PATCH 5/5] Fix build with Ubuntu 16.04
  1 file changed, 2 insertions(+)
 
 diff --git a/OpenEXR/IlmImf/ImfDwaCompressor.cpp b/OpenEXR/IlmImf/ImfDwaCompressor.cpp
-index db8e47e2..7a781ad4 100644
+index eb0702ea..77930838 100644
 --- a/OpenEXR/IlmImf/ImfDwaCompressor.cpp
 +++ b/OpenEXR/IlmImf/ImfDwaCompressor.cpp
-@@ -158,6 +158,8 @@
- #include <algorithm>
+@@ -159,6 +159,8 @@
+ #include <limits>
  
  #include <cstddef>
 +#include <stdint.h>
@@ -21,5 +21,5 @@ index db8e47e2..7a781ad4 100644
  
  // Windows specific addition to prevent the indirect import of the redefined min/max macros
 -- 
-2.20.1
+2.33.1
 

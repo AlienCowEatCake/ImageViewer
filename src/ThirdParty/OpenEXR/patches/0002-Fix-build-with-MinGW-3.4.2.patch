@@ -1,4 +1,4 @@
-From 2fab471d2620f358b423171d9be27a9be2f56481 Mon Sep 17 00:00:00 2001
+From 678928162e5ef0d5fa50a2a2c6eae0406c885550 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 18:20:28 +0700
 Subject: [PATCH 2/5] Fix build with MinGW 3.4.2
@@ -619,10 +619,10 @@ index 3ed06da4..85eec7ae 100644
  
  OPENEXR_IMF_INTERNAL_NAMESPACE_HEADER_EXIT
 diff --git a/OpenEXR/IlmImf/ImfDeepScanLineInputFile.cpp b/OpenEXR/IlmImf/ImfDeepScanLineInputFile.cpp
-index 0844d234..ee63a922 100644
+index ead43c72..a5d3198a 100644
 --- a/OpenEXR/IlmImf/ImfDeepScanLineInputFile.cpp
 +++ b/OpenEXR/IlmImf/ImfDeepScanLineInputFile.cpp
-@@ -261,10 +261,17 @@ struct DeepScanLineInputFile::Data: public Mutex
+@@ -260,10 +260,17 @@ struct DeepScanLineInputFile::Data: public Mutex
      Data (int numThreads);
      ~Data ();
  
@@ -705,10 +705,10 @@ index 3c1ecc17..73420ff6 100644
      void                initialize (const Header &header);
      void                initializeLineBuffer();
 diff --git a/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp b/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp
-index 6be42cb7..1028f5a1 100644
+index f7ee6a4d..ab420301 100644
 --- a/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp
 +++ b/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp
-@@ -266,10 +266,17 @@ struct DeepTiledInputFile::Data: public Mutex
+@@ -268,10 +268,17 @@ struct DeepTiledInputFile::Data: public Mutex
       Data (int numThreads);
      ~Data ();
  
@@ -726,7 +726,7 @@ index 6be42cb7..1028f5a1 100644
      
      inline TileBuffer * getTileBuffer (int number);
                                                      // hash function from tile indices
-@@ -288,8 +295,8 @@ DeepTiledInputFile::Data::Data (int numThreads):
+@@ -290,8 +297,8 @@ DeepTiledInputFile::Data::Data (int numThreads):
      multiPartBackwardSupport(false),
      numThreads(numThreads),
      memoryMapped(false),
@@ -818,7 +818,7 @@ index c119e339..0f5609b5 100644
      void                initialize (const Header &header);
  
 diff --git a/OpenEXR/IlmImf/ImfDwaCompressor.h b/OpenEXR/IlmImf/ImfDwaCompressor.h
-index 04550a1d..81c9946f 100644
+index 012819c7..924a0784 100644
 --- a/OpenEXR/IlmImf/ImfDwaCompressor.h
 +++ b/OpenEXR/IlmImf/ImfDwaCompressor.h
 @@ -71,10 +71,17 @@ class DwaCompressor: public Compressor
@@ -911,7 +911,7 @@ index e93676bd..fb823d97 100644
      std::string		_fileName;
  };
 diff --git a/OpenEXR/IlmImf/ImfInputFile.cpp b/OpenEXR/IlmImf/ImfInputFile.cpp
-index 8695c65b..cb86ba1a 100644
+index 600c7023..62bbf9c7 100644
 --- a/OpenEXR/IlmImf/ImfInputFile.cpp
 +++ b/OpenEXR/IlmImf/ImfInputFile.cpp
 @@ -112,10 +112,17 @@ struct InputFile::Data : public Mutex
@@ -969,7 +969,7 @@ index 58986a4a..28a11060 100644
      KeyCode & operator = (const KeyCode &other);
  
 diff --git a/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp b/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
-index 1e047269..f1807e05 100644
+index f271f9e9..8a291682 100644
 --- a/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
 +++ b/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
 @@ -118,10 +118,15 @@ struct MultiPartInputFile::Data: public InputStreamMutex
@@ -988,7 +988,7 @@ index 1e047269..f1807e05 100644
      
      template <class T>
      T*    createInputPartT(int partNumber)
-@@ -451,8 +456,8 @@ MultiPartInputFile::Data::createTileOffsets(const Header& header)
+@@ -456,8 +461,8 @@ MultiPartInputFile::Data::createTileOffsets(const Header& header)
      // Precompute level and tile information
      //
  
@@ -1150,7 +1150,7 @@ index 2c79c459..1ea878df 100644
      IMF_EXPORT
      virtual int		numScanLines () const;
 diff --git a/OpenEXR/IlmImf/ImfRgbaFile.cpp b/OpenEXR/IlmImf/ImfRgbaFile.cpp
-index 1b7c8670..483dc24a 100644
+index b020f4e8..4f82aa52 100644
 --- a/OpenEXR/IlmImf/ImfRgbaFile.cpp
 +++ b/OpenEXR/IlmImf/ImfRgbaFile.cpp
 @@ -196,10 +196,17 @@ class RgbaOutputFile::ToYca: public Mutex
@@ -1248,7 +1248,7 @@ index e0118db0..fe18d4ad 100644
      IMF_EXPORT
      virtual int numScanLines () const;
 diff --git a/OpenEXR/IlmImf/ImfScanLineInputFile.cpp b/OpenEXR/IlmImf/ImfScanLineInputFile.cpp
-index 1ef4eba3..05e6f7d2 100644
+index d5d72ef7..4f2cbe66 100644
 --- a/OpenEXR/IlmImf/ImfScanLineInputFile.cpp
 +++ b/OpenEXR/IlmImf/ImfScanLineInputFile.cpp
 @@ -150,10 +150,17 @@ struct LineBuffer
@@ -1287,7 +1287,7 @@ index 1ef4eba3..05e6f7d2 100644
      
      inline LineBuffer * getLineBuffer (int number); // hash function from line
      						    // buffer indices into our
-@@ -1184,7 +1198,7 @@ ScanLineInputFile::ScanLineInputFile(InputPartData* part)
+@@ -1188,7 +1202,7 @@ ScanLineInputFile::ScanLineInputFile(InputPartData* part)
                  if( _data->lineBuffers[i] )
                  {
                     EXRFreeAligned(_data->lineBuffers[i]->buffer);
@@ -1296,7 +1296,7 @@ index 1ef4eba3..05e6f7d2 100644
                  }
              }
          }
-@@ -1242,7 +1256,7 @@ ScanLineInputFile::ScanLineInputFile
+@@ -1246,7 +1260,7 @@ ScanLineInputFile::ScanLineInputFile
                   if( _data->lineBuffers[i] )
                   {
                     EXRFreeAligned(_data->lineBuffers[i]->buffer);
@@ -1408,7 +1408,7 @@ index a264c207..fe154d16 100644
      {
          ret->clear ();
 diff --git a/OpenEXR/IlmImf/ImfSystemSpecific.h b/OpenEXR/IlmImf/ImfSystemSpecific.h
-index fa801b2a..b47cc91f 100644
+index 706c4eb9..9830c1e2 100644
 --- a/OpenEXR/IlmImf/ImfSystemSpecific.h
 +++ b/OpenEXR/IlmImf/ImfSystemSpecific.h
 @@ -37,6 +37,10 @@
@@ -1421,8 +1421,8 @@ index fa801b2a..b47cc91f 100644
 +#endif
  #include <stdlib.h>
  #include "ImfExport.h"
- 
-@@ -55,7 +59,28 @@ inline void*
+ #include "OpenEXRConfig.h"
+@@ -70,7 +74,28 @@ inline void*
  EXRAllocAligned (size_t size, size_t alignment)
  {
      // GNUC is used for things like mingw to (cross-)compile for windows
@@ -1452,7 +1452,7 @@ index fa801b2a..b47cc91f 100644
      return _aligned_malloc (size, alignment);
  #elif defined(__INTEL_COMPILER) || defined(__ICL) || defined(__ICC) || defined(__ECC)
      return _mm_malloc (size, alignment);
-@@ -76,7 +101,14 @@ EXRAllocAligned (size_t size, size_t alignment)
+@@ -91,7 +116,14 @@ EXRAllocAligned (size_t size, size_t alignment)
  inline void
  EXRFreeAligned (void* ptr)
  {
@@ -1469,7 +1469,7 @@ index fa801b2a..b47cc91f 100644
  #elif defined(__INTEL_COMPILER) || defined(__ICL) || defined(__ICC) ||         \
      defined(__ECC)
 diff --git a/OpenEXR/IlmImf/ImfTiledInputFile.cpp b/OpenEXR/IlmImf/ImfTiledInputFile.cpp
-index e1159797..bbadf2ab 100644
+index 68e0662e..9dad02c1 100644
 --- a/OpenEXR/IlmImf/ImfTiledInputFile.cpp
 +++ b/OpenEXR/IlmImf/ImfTiledInputFile.cpp
 @@ -149,10 +149,17 @@ struct TileBuffer
@@ -1506,9 +1506,9 @@ index e1159797..bbadf2ab 100644
 +  public:
 +#endif
  
-     inline TileBuffer * getTileBuffer (int number);
- 					    // hash function from tile indices
-@@ -265,7 +279,7 @@ TiledInputFile::Data::Data (int numThreads):
+     static const int gLargeChunkTableSize = 1024*1024;
+     void validateStreamSize();                       // throw an exception if the file is significantly
+@@ -270,7 +284,7 @@ TiledInputFile::Data::Data (int numThreads):
      partNumber (-1),
      multiPartBackwardSupport(false),
      numThreads(numThreads),
@@ -1540,7 +1540,7 @@ index f919df40..37e747af 100644
  
      //------------------------
 diff --git a/OpenEXR/IlmImf/ImfTiledMisc.cpp b/OpenEXR/IlmImf/ImfTiledMisc.cpp
-index c9e8731f..d78b76e4 100644
+index 06ea3144..77843a71 100644
 --- a/OpenEXR/IlmImf/ImfTiledMisc.cpp
 +++ b/OpenEXR/IlmImf/ImfTiledMisc.cpp
 @@ -352,8 +352,8 @@ getTiledChunkOffsetTableSize(const Header& header)
@@ -1555,7 +1555,7 @@ index c9e8731f..d78b76e4 100644
      int numYLevels;
      try
 diff --git a/OpenEXR/IlmImf/ImfTiledOutputFile.cpp b/OpenEXR/IlmImf/ImfTiledOutputFile.cpp
-index 0f24381e..9411352f 100644
+index 52f7577a..8e8b9f07 100644
 --- a/OpenEXR/IlmImf/ImfTiledOutputFile.cpp
 +++ b/OpenEXR/IlmImf/ImfTiledOutputFile.cpp
 @@ -188,10 +188,17 @@ struct BufferedTile
@@ -1787,5 +1787,5 @@ index 8e8086c6..5af6d048 100644
          //
          // Access to the writable sample count array.
 -- 
-2.20.1
+2.33.1
 
