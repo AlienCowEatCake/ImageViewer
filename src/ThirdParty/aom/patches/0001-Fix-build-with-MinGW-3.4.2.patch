@@ -1,7 +1,18 @@
-diff -Nur aom-v3.1.2.orig/aom/aom_codec.h aom-v3.1.2/aom/aom_codec.h
---- aom-v3.1.2.orig/aom/aom_codec.h	2021-09-12 00:34:33.000000000 +0700
-+++ aom-v3.1.2/aom/aom_codec.h	2021-09-12 01:35:24.000000000 +0700
-@@ -132,7 +132,7 @@
+From be199aa88476960ae350bdcf3f2f91613670ff3f Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 14 Nov 2021 17:11:43 +0700
+Subject: [PATCH] Fix build with MinGW 3.4.2
+
+---
+ aom/aom_codec.h        | 2 +-
+ av1/encoder/ratectrl.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/aom/aom_codec.h b/aom/aom_codec.h
+index a2a9efaef..113f03d84 100644
+--- a/aom/aom_codec.h
++++ b/aom/aom_codec.h
+@@ -132,7 +132,7 @@ extern "C" {
  
  /*!\brief Decorator indicating that given struct/union/enum is packed */
  #ifndef ATTRIBUTE_PACKED
@@ -10,15 +21,19 @@ diff -Nur aom-v3.1.2.orig/aom/aom_codec.h aom-v3.1.2/aom/aom_codec.h
  #define ATTRIBUTE_PACKED __attribute__((packed))
  #elif defined(_MSC_VER)
  #define ATTRIBUTE_PACKED
-diff -Nur aom-v3.1.2.orig/av1/encoder/ratectrl.h aom-v3.1.2/av1/encoder/ratectrl.h
---- aom-v3.1.2.orig/av1/encoder/ratectrl.h	2021-09-12 00:34:35.000000000 +0700
-+++ aom-v3.1.2/av1/encoder/ratectrl.h	2021-09-12 01:34:41.000000000 +0700
-@@ -293,7 +293,7 @@
-   int q_1_frame;
-   int q_2_frame;
+diff --git a/av1/encoder/ratectrl.h b/av1/encoder/ratectrl.h
+index f6689680d..a80a1f976 100644
+--- a/av1/encoder/ratectrl.h
++++ b/av1/encoder/ratectrl.h
+@@ -299,7 +299,7 @@ typedef struct {
+   int arf_q;
  
+   /*!\cond */
 -  float_t arf_boost_factor;
 +  float arf_boost_factor;
  
-   /*!\endcond */
-   /*!
+   int base_layer_qp;
+ 
+-- 
+2.33.1
+
