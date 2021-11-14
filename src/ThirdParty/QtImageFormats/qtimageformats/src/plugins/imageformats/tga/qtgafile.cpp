@@ -42,6 +42,7 @@
 #include <QtCore/QIODevice>
 #include <QtCore/QDebug>
 #include <QtCore/QDateTime>
+#include <QtGui/QImageIOHandler>
 
 struct TgaReader
 {
@@ -238,8 +239,13 @@ QImage QTgaFile::readImage()
     //unsigned char xCorner = desc & 0x10; // 0 = left, 1 = right
     unsigned char yCorner = desc & 0x20; // 0 = lower, 1 = upper
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QImage im;
+    if (!QImageIOHandler::allocateImage(QSize(imageWidth, imageHeight), QImage::Format_ARGB32, &im))
+#else
     QImage im(imageWidth, imageHeight, QImage::Format_ARGB32);
     if (im.isNull())
+#endif
         return QImage();
     TgaReader *reader = 0;
     if (bitsPerPixel == 16)
@@ -248,6 +254,8 @@ QImage QTgaFile::readImage()
         reader = new Tga24Reader();
     else if (bitsPerPixel == 32)
         reader = new Tga32Reader();
+    else
+        return QImage();
     TgaReader &read = *reader;
 
     // For now only deal with yCorner, since no one uses xCorner == 1

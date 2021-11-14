@@ -12,15 +12,9 @@ qt_internal_add_test(tst_qwbmp
 )
 
 # Resources:
-set_source_files_properties("../../shared/images/wbmp/qt-logo-big.wbmp"
-    PROPERTIES QT_RESOURCE_ALIAS "wbmp/qt-logo-big.wbmp"
-)
-set_source_files_properties("../../shared/images/wbmp/qt-logo-small.wbmp"
-    PROPERTIES QT_RESOURCE_ALIAS "wbmp/qt-logo-small.wbmp"
-)
 set(wbmp_resource_files
-    "wbmp/qt-logo-big.wbmp"
-    "wbmp/qt-logo-small.wbmp"
+    "../../shared/images/wbmp/qt-logo-big.wbmp"
+    "../../shared/images/wbmp/qt-logo-small.wbmp"
 )
 
 qt_internal_add_resource(tst_qwbmp "wbmp"
@@ -31,4 +25,3 @@ qt_internal_add_resource(tst_qwbmp "wbmp"
     FILES
         ${wbmp_resource_files}
 )
-

@@ -6,11 +6,11 @@
 
 qt_internal_add_plugin(QWebpPlugin
     OUTPUT_NAME qwebp
-    TYPE imageformats
+    PLUGIN_TYPE imageformats
     SOURCES
         main.cpp
         qwebphandler.cpp qwebphandler_p.h
-    PUBLIC_LIBRARIES
+    LIBRARIES
         Qt::Core
         Qt::Gui
 )
@@ -23,7 +23,7 @@ qt_internal_add_plugin(QWebpPlugin
 #####################################################################
 
 qt_internal_extend_target(QWebpPlugin CONDITION QT_FEATURE_system_webp
-    PUBLIC_LIBRARIES
+    LIBRARIES
         WrapWebP::WrapWebP
 )
 
@@ -77,6 +77,7 @@ qt_internal_extend_target(QWebpPlugin CONDITION NOT QT_FEATURE_system_webp
         ../../../3rdparty/libwebp/src/dsp/lossless_enc_sse41.c
         ../../../3rdparty/libwebp/src/dsp/lossless_mips_dsp_r2.c
         ../../../3rdparty/libwebp/src/dsp/lossless_sse2.c
+        ../../../3rdparty/libwebp/src/dsp/lossless_sse41.c
         ../../../3rdparty/libwebp/src/dsp/rescaler.c
         ../../../3rdparty/libwebp/src/dsp/rescaler_mips32.c
         ../../../3rdparty/libwebp/src/dsp/rescaler_mips_dsp_r2.c
@@ -152,10 +153,7 @@ qt_internal_extend_target(QWebpPlugin CONDITION ANDROID AND NOT ANDROID_EMBEDDED
 )
 
 # special case begin
-qt_internal_extend_target(QWebpPlugin
-    CONDITION (CMAKE_ANDROID_ARM_NEON OR CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
-              AND NOT QT_FEATURE_system_webp
-    SOURCES
+set(neon_sources
         ../../../3rdparty/libwebp/src/dsp/alpha_processing_neon.c
         ../../../3rdparty/libwebp/src/dsp/dec_neon.c
         ../../../3rdparty/libwebp/src/dsp/enc_neon.c
@@ -166,6 +164,18 @@ qt_internal_extend_target(QWebpPlugin
         ../../../3rdparty/libwebp/src/dsp/upsampling_neon.c
         ../../../3rdparty/libwebp/src/dsp/yuv_neon.c
 )
+
+if(NOT QT_FEATURE_system_webp)
+    if(ANDROID)
+        qt_internal_extend_target(QWebpPlugin
+            CONDITION (CMAKE_ANDROID_ARM_NEON OR CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
+            SOURCES ${neon_sources}
+        )
+    else()
+        # For universal macOS and iOS, and other platforms that support neon
+        qt_internal_add_simd_part(QWebpPlugin SIMD neon SOURCES ${neon_sources})
+    endif()
+endif()
 # special case end
 
 #### Keys ignored in scope 6:.:../../../3rdparty:../../../3rdparty/libwebp.pri:INTEGRITY:

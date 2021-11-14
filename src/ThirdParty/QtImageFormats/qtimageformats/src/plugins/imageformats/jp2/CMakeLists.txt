@@ -6,13 +6,13 @@
 
 qt_internal_add_plugin(QJp2Plugin
     OUTPUT_NAME qjp2
-    TYPE imageformats
+    PLUGIN_TYPE imageformats
     SOURCES
         main.cpp
         qjp2handler.cpp qjp2handler_p.h
     LIBRARIES
         WrapJasper::WrapJasper
-    PUBLIC_LIBRARIES
+    LIBRARIES
         Qt::Core
         Qt::Gui
 )

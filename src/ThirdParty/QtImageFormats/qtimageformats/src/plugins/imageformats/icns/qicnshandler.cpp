@@ -538,7 +538,13 @@ static QImage readMask(const ICNSEntry &mask, QDataStream &stream)
     const qint64 oldPos = stream.device()->pos();
     if (!stream.device()->seek(pos))
         return QImage();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QImage img;
+    if (!QImageIOHandler::allocateImage(QSize(mask.width, mask.height), QImage::Format_RGB32, &img))
+        return QImage();
+#else
     QImage img(mask.width, mask.height, QImage::Format_RGB32);
+#endif
     quint8 byte = 0;
     quint32 pixel = 0;
     for (quint32 y = 0; y < mask.height; y++) {
@@ -568,7 +574,13 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
     const QVector<QRgb> colortable = getColorTable(depth);
     if (colortable.isEmpty())
         return QImage();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QImage img;
+    if (!QImageIOHandler::allocateImage(QSize(icon.width, icon.height), format, &img))
+        return QImage();
+#else
     QImage img(icon.width, icon.height, format);
+#endif
     img.setColorTable(colortable);
     quint32 pixel = 0;
     quint8 byte = 0;
@@ -599,7 +611,13 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
 
 static QImage read32bitIcon(const ICNSEntry &icon, QDataStream &stream)
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QImage img;
+    if (!QImageIOHandler::allocateImage(QSize(icon.width, icon.height), QImage::Format_RGB32, &img))
+        return QImage();
+#else
     QImage img = QImage(icon.width, icon.height, QImage::Format_RGB32);
+#endif
     if (icon.dataFormat != ICNSEntry::RLE24) {
         for (quint32 y = 0; y < icon.height; y++) {
             QRgb *line = reinterpret_cast<QRgb *>(img.scanLine(y));

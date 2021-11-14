@@ -6,14 +6,14 @@
 
 qt_internal_add_plugin(QMacJp2Plugin
     OUTPUT_NAME qmacjp2
-    TYPE imageformats
+    PLUGIN_TYPE imageformats
     SOURCES
         ../shared/qiiofhelpers.cpp ../shared/qiiofhelpers_p.h
         main.cpp
         qmacjp2handler.cpp qmacjp2handler.h
     INCLUDE_DIRECTORIES
         ../shared
-    PUBLIC_LIBRARIES
+    LIBRARIES
         ${FWCoreFoundation}
         ${FWCoreGraphics}
         ${FWImageIO}

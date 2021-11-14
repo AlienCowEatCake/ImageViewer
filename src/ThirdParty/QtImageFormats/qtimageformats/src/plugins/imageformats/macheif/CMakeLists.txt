@@ -12,14 +12,14 @@ find_library(FWImageIO ImageIO)
 
 qt_internal_add_plugin(QMacHeifPlugin
     OUTPUT_NAME qmacheif
-    TYPE imageformats
+    PLUGIN_TYPE imageformats
     SOURCES
         ../shared/qiiofhelpers.cpp ../shared/qiiofhelpers_p.h
         main.cpp
         qmacheifhandler.cpp qmacheifhandler.h
     INCLUDE_DIRECTORIES
         ../shared
-    PUBLIC_LIBRARIES
+    LIBRARIES
         ${FWCoreFoundation}
         ${FWCoreGraphics}
         ${FWImageIO}

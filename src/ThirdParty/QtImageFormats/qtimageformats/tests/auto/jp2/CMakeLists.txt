@@ -12,15 +12,9 @@ qt_internal_add_test(tst_qjp2
 )
 
 # Resources:
-set_source_files_properties("../../shared/images/jp2/logo.bmp"
-    PROPERTIES QT_RESOURCE_ALIAS "jp2/logo.bmp"
-)
-set_source_files_properties("../../shared/images/jp2/logo.jp2"
-    PROPERTIES QT_RESOURCE_ALIAS "jp2/logo.jp2"
-)
 set(jp2_resource_files
-    "jp2/logo.bmp"
-    "jp2/logo.jp2"
+    "../../shared/images/jp2/logo.bmp"
+    "../../shared/images/jp2/logo.jp2"
 )
 
 qt_internal_add_resource(tst_qjp2 "jp2"
@@ -31,4 +25,3 @@ qt_internal_add_resource(tst_qjp2 "jp2"
     FILES
         ${jp2_resource_files}
 )
-

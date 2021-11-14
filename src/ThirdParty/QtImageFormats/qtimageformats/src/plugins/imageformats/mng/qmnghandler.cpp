@@ -80,7 +80,7 @@ class QMngHandlerPrivate
     QMngHandler *q_ptr;
 };
 
-static mng_bool myerror(mng_handle /*hMNG*/,
+static mng_bool MNG_DECL myerror(mng_handle /*hMNG*/,
     mng_int32   iErrorcode,
     mng_int8    /*iSeverity*/,
     mng_chunkid iChunkname,
@@ -99,29 +99,29 @@ static mng_bool myerror(mng_handle /*hMNG*/,
     return MNG_TRUE;
 }
 
-static mng_ptr myalloc(mng_size_t iSize)
+static mng_ptr MNG_DECL myalloc(mng_size_t iSize)
 {
     return (mng_ptr)calloc(1, iSize);
 }
 
-static void myfree(mng_ptr pPtr, mng_size_t /*iSize*/)
+static void MNG_DECL myfree(mng_ptr pPtr, mng_size_t /*iSize*/)
 {
     free(pPtr);
 }
 
-static mng_bool myopenstream(mng_handle)
+static mng_bool MNG_DECL myopenstream(mng_handle)
 {
     return MNG_TRUE;
 }
 
-static mng_bool myclosestream(mng_handle hMNG)
+static mng_bool MNG_DECL myclosestream(mng_handle hMNG)
 {
     QMngHandlerPrivate *pMydata = reinterpret_cast<QMngHandlerPrivate *>(mng_get_userdata(hMNG));
     pMydata->haveReadAll = true;
     return MNG_TRUE;
 }
 
-static mng_bool myreaddata(mng_handle hMNG,
+static mng_bool MNG_DECL myreaddata(mng_handle hMNG,
                     mng_ptr    pBuf,
                     mng_uint32 iSize,
                     mng_uint32p pRead)
@@ -130,7 +130,7 @@ static mng_bool myreaddata(mng_handle hMNG,
     return pMydata->readData(pBuf, iSize, pRead);
 }
 
-static mng_bool mywritedata(mng_handle hMNG,
+static mng_bool MNG_DECL mywritedata(mng_handle hMNG,
                      mng_ptr pBuf,
                      mng_uint32 iSize,
                      mng_uint32p pWritten)
@@ -139,7 +139,7 @@ static mng_bool mywritedata(mng_handle hMNG,
     return pMydata->writeData(pBuf, iSize, pWritten);
 }
 
-static mng_bool myprocessheader(mng_handle hMNG,
+static mng_bool MNG_DECL myprocessheader(mng_handle hMNG,
                                 mng_uint32 iWidth,
                                 mng_uint32 iHeight)
 {
@@ -147,14 +147,14 @@ static mng_bool myprocessheader(mng_handle hMNG,
     return pMydata->processHeader(iWidth, iHeight);
 }
 
-static mng_ptr mygetcanvasline(mng_handle hMNG,
+static mng_ptr MNG_DECL mygetcanvasline(mng_handle hMNG,
                                mng_uint32 iLinenr)
 {
     QMngHandlerPrivate *pMydata = reinterpret_cast<QMngHandlerPrivate *>(mng_get_userdata(hMNG));
     return (mng_ptr)pMydata->image.scanLine(iLinenr);
 }
 
-static mng_bool myrefresh(mng_handle /*hMNG*/,
+static mng_bool MNG_DECL myrefresh(mng_handle /*hMNG*/,
                           mng_uint32 /*iX*/,
                           mng_uint32 /*iY*/,
                           mng_uint32 /*iWidth*/,
@@ -163,13 +163,13 @@ static mng_bool myrefresh(mng_handle /*hMNG*/,
     return MNG_TRUE;
 }
 
-static mng_uint32 mygettickcount(mng_handle hMNG)
+static mng_uint32 MNG_DECL mygettickcount(mng_handle hMNG)
 {
     QMngHandlerPrivate *pMydata = reinterpret_cast<QMngHandlerPrivate *>(mng_get_userdata(hMNG));
     return pMydata->elapsed++;
 }
 
-static mng_bool mysettimer(mng_handle hMNG,
+static mng_bool MNG_DECL mysettimer(mng_handle hMNG,
                            mng_uint32 iMsecs)
 {
     QMngHandlerPrivate *pMydata = reinterpret_cast<QMngHandlerPrivate *>(mng_get_userdata(hMNG));
@@ -178,7 +178,7 @@ static mng_bool mysettimer(mng_handle hMNG,
     return MNG_TRUE;
 }
 
-static mng_bool myprocessterm(mng_handle hMNG,
+static mng_bool MNG_DECL myprocessterm(mng_handle hMNG,
                         mng_uint8   iTermaction,
                         mng_uint8   /*iIteraction*/,
                         mng_uint32  /*iDelay*/,
@@ -190,7 +190,7 @@ static mng_bool myprocessterm(mng_handle hMNG,
     return MNG_TRUE;
 }
 
-static mng_bool mytrace(mng_handle,
+static mng_bool MNG_DECL mytrace(mng_handle,
                         mng_int32   iFuncnr,
                         mng_int32   iFuncseq,
                         mng_pchar   zFuncname)
@@ -247,7 +247,12 @@ mng_bool QMngHandlerPrivate::processHeader(mng_uint32 iWidth, mng_uint32 iHeight
 {
     if (mng_set_canvasstyle(hMNG, iStyle) != MNG_NOERROR)
         return MNG_FALSE;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    if (!QImageIOHandler::allocateImage(QSize(iWidth, iHeight), QImage::Format_ARGB32, &image))
+        return MNG_FALSE;
+#else
     image = QImage(iWidth, iHeight, QImage::Format_ARGB32);
+#endif
     image.fill(0);
     return MNG_TRUE;
 }

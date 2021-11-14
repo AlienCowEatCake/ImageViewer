@@ -407,6 +407,20 @@ void tst_qtiff::readWriteNonDestructive_data()
     QTest::newRow("tiff rgb64") << QImage::Format_RGBX64 << QImage::Format_RGBX64 << QImageIOHandler::TransformationNone;
     QTest::newRow("tiff rgba64") << QImage::Format_RGBA64 << QImage::Format_RGBA64 << QImageIOHandler::TransformationRotate90;
     QTest::newRow("tiff rgba64pm") << QImage::Format_RGBA64_Premultiplied << QImage::Format_RGBA64_Premultiplied << QImageIOHandler::TransformationNone;
+    QTest::newRow("tiff rgb16fpx4") << QImage::Format_RGBX16FPx4 << QImage::Format_RGBX16FPx4
+                                    << QImageIOHandler::TransformationNone;
+    QTest::newRow("tiff rgba16fpx4") << QImage::Format_RGBA16FPx4 << QImage::Format_RGBA16FPx4
+                                     << QImageIOHandler::TransformationRotate90;
+    QTest::newRow("tiff rgba16fpx4pm") << QImage::Format_RGBA16FPx4_Premultiplied
+                                       << QImage::Format_RGBA16FPx4_Premultiplied
+                                       << QImageIOHandler::TransformationNone;
+    QTest::newRow("tiff rgb32fpx4") << QImage::Format_RGBX32FPx4 << QImage::Format_RGBX32FPx4
+                                    << QImageIOHandler::TransformationNone;
+    QTest::newRow("tiff rgba32fpx4") << QImage::Format_RGBA32FPx4 << QImage::Format_RGBA32FPx4
+                                     << QImageIOHandler::TransformationRotate90;
+    QTest::newRow("tiff rgba32fpx4pm") << QImage::Format_RGBA32FPx4_Premultiplied
+                                       << QImage::Format_RGBA32FPx4_Premultiplied
+                                       << QImageIOHandler::TransformationNone;
 }
 
 void tst_qtiff::readWriteNonDestructive()

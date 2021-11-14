@@ -71,6 +71,7 @@ SOURCES += \
     $$PWD/libwebp/src/dsp/yuv.c \
     $$PWD/libwebp/src/dsp/yuv_mips_dsp_r2.c \
     $$PWD/libwebp/src/dsp/lossless_sse2.c \
+    $$PWD/libwebp/src/dsp/lossless_sse41.c \
     $$PWD/libwebp/src/dsp/yuv_mips32.c \
     $$PWD/libwebp/src/dsp/yuv_sse2.c \
     $$PWD/libwebp/src/dsp/yuv_sse41.c \

@@ -9,29 +9,36 @@
 
 #include <qglobal.h>
 
+#define TIFF_DISABLE_DEPRECATED 1
+
+#include <stddef.h>
+#include <stdint.h>
+#include <inttypes.h>
+
+
 /* Signed 16-bit type */
-#define TIFF_INT16_T qint16
+/* #undef TIFF_INT16_T */
 
 /* Signed 32-bit type */
-#define TIFF_INT32_T qint32
+/* #undef TIFF_INT32_T */
 
 /* Signed 64-bit type */
-#define TIFF_INT64_T qint64
+/* #undef TIFF_INT64_T */
 
 /* Signed 8-bit type */
-#define TIFF_INT8_T qint8
+/* #undef TIFF_INT8_T */
 
 /* Unsigned 16-bit type */
-#define TIFF_UINT16_T quint16
+/* #undef TIFF_UINT16_T */
 
 /* Unsigned 32-bit type */
-#define TIFF_UINT32_T quint32
+/* #undef TIFF_UINT32_T */
 
 /* Unsigned 64-bit type */
-#define TIFF_UINT64_T quint64
+/* #undef TIFF_UINT64_T */
 
 /* Unsigned 8-bit type */
-#define TIFF_UINT8_T quint8
+/* #undef TIFF_UINT8_T */
 
 /* Signed size type */
 #if QT_POINTER_SIZE == 4
@@ -40,21 +47,9 @@
 #define TIFF_SSIZE_T qint64
 #endif
 
-/* Pointer difference type */
-#define TIFF_PTRDIFF_T ptrdiff_t
-
-/* Define to 1 if the system has the type `int16'. */
-/* #undef HAVE_INT16 */
-
-/* Define to 1 if the system has the type `int32'. */
-/* #undef HAVE_INT32 */
-
-/* Define to 1 if the system has the type `int8'. */
-/* #undef HAVE_INT8 */
-
 /* Compatibility stuff. */
 
-/* Define as 0 or 1 according to the floating point format suported by the
+/* Define as 0 or 1 according to the floating point format supported by the
    machine */
 #define HAVE_IEEEFP 1
 
@@ -74,6 +69,12 @@
 
 /* Support JPEG compression (requires IJG JPEG library) */
 /* #undef JPEG_SUPPORT */
+
+/* Support JBIG compression (requires JBIG-KIT library) */
+/* #undef JBIG_SUPPORT */
+
+/* Support LERC compression */
+/* #undef LERC_SUPPORT */
 
 /* Support LogLuv high dynamic range encoding */
 #define LOGLUV_SUPPORT 1
@@ -100,8 +101,11 @@
 /* Support Deflate compression */
 #define ZIP_SUPPORT 1
 
+/* Support libdeflate enhanced compression */
+/* #undef LIBDEFLATE_SUPPORT */
+
 /* Support strip chopping (whether or not to convert single-strip uncompressed
-   images to mutiple strips of ~8Kb to reduce memory usage) */
+   images to multiple strips of ~8Kb to reduce memory usage) */
 #define STRIPCHOP_DEFAULT TIFF_STRIPCHOP
 
 /* Enable SubIFD tag (330) support */
@@ -114,7 +118,7 @@
 
 /* Pick up YCbCr subsampling info from the JPEG data stream to support files
    lacking the tag (default enabled). */
-#define CHECK_JPEG_YCBCR_SUBSAMPLING 1
+/* #undef CHECK_JPEG_YCBCR_SUBSAMPLING */
 
 /* Support MS MDI magic number files as TIFF */
 #define MDI_SUPPORT 1

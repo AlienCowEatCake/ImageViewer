@@ -6,12 +6,12 @@
 
 qt_internal_add_plugin(QTgaPlugin
     OUTPUT_NAME qtga
-    TYPE imageformats
+    PLUGIN_TYPE imageformats
     SOURCES
         main.cpp
         qtgafile.cpp qtgafile.h
         qtgahandler.cpp qtgahandler.h
-    PUBLIC_LIBRARIES
+    LIBRARIES
         Qt::Core
         Qt::Gui
 )

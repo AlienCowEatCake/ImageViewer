@@ -1,3 +1,10 @@
+# We can't create the same interface imported target multiple times, CMake will complain if we do
+# that. This can happen if the find_package call is done in multiple different subdirectories.
+if(TARGET WrapJasper::WrapJasper)
+    set(WrapJasper_FOUND TRUE)
+    return()
+endif()
+
 set(WrapJasper_FOUND OFF)
 find_package(Jasper)
 

@@ -24,7 +24,7 @@ endif()
 if(QT_FEATURE_regularexpression)
     add_subdirectory(icns)
 endif()
-if(QT_FEATURE_mng AND OFF) # special case: FIXME
+if(QT_FEATURE_mng)
     add_subdirectory(mng)
 endif()
 if(QT_FEATURE_jasper)

@@ -197,7 +197,13 @@ QImage WBMPReader::readImage()
     if (!readWBMPHeader(iodev, &hdr))
         return QImage();
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QImage image;
+    if (!QImageIOHandler::allocateImage(QSize(hdr.width, hdr.height), QImage::Format_Mono, &image))
+        return QImage();
+#else
     QImage image(hdr.width, hdr.height, QImage::Format_Mono);
+#endif
     if (!readWBMPData(iodev, image))
         return QImage();
 

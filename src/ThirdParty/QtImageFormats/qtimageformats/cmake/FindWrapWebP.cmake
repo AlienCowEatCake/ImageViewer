@@ -5,6 +5,13 @@
 # So try config files first, and then use the regular find_library / find_path dance with pkg-config
 # paths as hints.
 
+# We can't create the same interface imported target multiple times, CMake will complain if we do
+# that. This can happen if the find_package call is done in multiple different subdirectories.
+if(TARGET WrapWebP::WrapWebP)
+    set(WrapWebP_FOUND TRUE)
+    return()
+endif()
+
 find_package(WebP QUIET)
 if(TARGET WebP::webp AND TARGET WebP::webpdemux AND TARGET WebP::libwebpmux)
     set(WrapWebP_FOUND ON)
@@ -13,7 +20,7 @@ if(TARGET WebP::webp AND TARGET WebP::webpdemux AND TARGET WebP::libwebpmux)
     return()
 endif()
 
-find_package(PkgConfig)
+find_package(PkgConfig QUIET)
 pkg_check_modules(PC_WebP libwebp)
 pkg_check_modules(PC_WebPDemux libwebpdemux)
 pkg_check_modules(PC_WebPMux libwebpmux)
@@ -33,13 +40,13 @@ find_path(WebP_mux_INCLUDE_DIR NAMES "webp/mux.h"
                                HINTS ${PC_WebPMux_INCLUDEDIR})
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(WebP DEFAULT_MSG WebP_INCLUDE_DIR WebP_LIBRARY
-                                                   WebP_demux_INCLUDE_DIR WebP_demux_LIBRARY
-                                                   WebP_mux_INCLUDE_DIR WebP_mux_LIBRARY)
+find_package_handle_standard_args(WrapWebP DEFAULT_MSG WebP_INCLUDE_DIR WebP_LIBRARY
+                                                       WebP_demux_INCLUDE_DIR WebP_demux_LIBRARY
+                                                       WebP_mux_INCLUDE_DIR WebP_mux_LIBRARY)
 
 mark_as_advanced(WebP_INCLUDE_DIR WebP_LIBRARY WebP_demux_INCLUDE_DIR WebP_demux_LIBRARY WebP_mux_INCLUDE_DIR WebP_mux_LIBRARY)
-if(WebP_FOUND)
-    set(WrapWebP_FOUND ON)
+if(WrapWebP_FOUND)
+    set(WebP_FOUND ON)
     add_library(WrapWebP::WrapWebP INTERFACE IMPORTED)
     target_link_libraries(WrapWebP::WrapWebP INTERFACE ${WebP_LIBRARY} ${WebP_demux_LIBRARY} ${WebP_mux_LIBRARY})
     target_include_directories(WrapWebP::WrapWebP

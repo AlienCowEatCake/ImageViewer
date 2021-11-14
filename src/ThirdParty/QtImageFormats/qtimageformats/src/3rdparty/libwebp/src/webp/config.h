@@ -81,7 +81,7 @@
 #define PACKAGE_NAME "libwebp"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libwebp 1.1.0"
+#define PACKAGE_STRING "libwebp 1.2.1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libwebp"
@@ -90,7 +90,7 @@
 #define PACKAGE_URL "http://developers.google.com/speed/webp"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.1.0"
+#define PACKAGE_VERSION "1.2.1"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -100,7 +100,7 @@
 /* #undef STDC_HEADERS */
 
 /* Version number of package */
-#define VERSION "1.1.0"
+#define VERSION "1.2.1"
 
 /* Enable experimental code */
 /* #undef WEBP_EXPERIMENTAL_FEATURES */

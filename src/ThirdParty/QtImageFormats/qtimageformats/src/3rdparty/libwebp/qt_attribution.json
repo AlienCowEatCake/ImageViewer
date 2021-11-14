@@ -6,7 +6,7 @@
 
     "Description": "WebP is a new image format that provides lossless and lossy compression for images on the web.",
     "Homepage": "https://developers.google.com/speed/webp/",
-    "Version": "1.1.0",
+    "Version": "1.2.1",
     "License": "BSD 3-clause \"New\" or \"Revised\" License",
     "LicenseId": "BSD-3-Clause",
     "LicenseFile": "COPYING",

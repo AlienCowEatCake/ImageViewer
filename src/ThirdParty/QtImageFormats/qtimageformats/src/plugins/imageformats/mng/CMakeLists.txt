@@ -6,13 +6,12 @@
 
 qt_internal_add_plugin(QMngPlugin
     OUTPUT_NAME qmng
-    TYPE imageformats
+    PLUGIN_TYPE imageformats
     SOURCES
         main.cpp
         qmnghandler.cpp qmnghandler_p.h
     LIBRARIES
-        mng
-    PUBLIC_LIBRARIES
+        Libmng::Libmng
         Qt::Core
         Qt::Gui
 )

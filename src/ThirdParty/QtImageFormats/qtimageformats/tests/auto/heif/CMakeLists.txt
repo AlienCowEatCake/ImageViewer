@@ -12,15 +12,9 @@ qt_internal_add_test(tst_qheif
 )
 
 # Resources:
-set_source_files_properties("../../shared/images/heif/col320x480.heic"
-    PROPERTIES QT_RESOURCE_ALIAS "heif/col320x480.heic"
-)
-set_source_files_properties("../../shared/images/heif/newlogoCCW.heic"
-    PROPERTIES QT_RESOURCE_ALIAS "heif/newlogoCCW.heic"
-)
 set(heif_resource_files
-    "heif/col320x480.heic"
-    "heif/newlogoCCW.heic"
+    "../../shared/images/heif/col320x480.heic"
+    "../../shared/images/heif/newlogoCCW.heic"
 )
 
 qt_internal_add_resource(tst_qheif "heif"
@@ -31,4 +25,3 @@ qt_internal_add_resource(tst_qheif "heif"
     FILES
         ${heif_resource_files}
 )
-

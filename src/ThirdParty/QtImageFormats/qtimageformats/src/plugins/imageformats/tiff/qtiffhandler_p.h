@@ -73,7 +73,10 @@ public:
 private:
     void convert32BitOrder(void *buffer, int width);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-    void rgb48fixup(QImage *image);
+    void rgb48fixup(QImage *image, bool floatingPoint);
+#endif
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+    void rgb96fixup(QImage *image);
 #endif
     const QScopedPointer<QTiffHandlerPrivate> d;
     bool ensureHaveDirectoryCount() const;

@@ -17,6 +17,7 @@ set_property(CACHE INPUT_webp PROPERTY STRINGS undefined no qt system)
 qt_find_package(WrapJasper PROVIDED_TARGETS WrapJasper::WrapJasper MODULE_NAME imageformats QMAKE_LIB jasper)
 qt_find_package(TIFF PROVIDED_TARGETS TIFF::TIFF MODULE_NAME imageformats QMAKE_LIB tiff)
 qt_find_package(WrapWebP PROVIDED_TARGETS WrapWebP::WrapWebP MODULE_NAME imageformats QMAKE_LIB webp)
+qt_find_package(Libmng PROVIDED_TARGETS Libmng::Libmng MODULE_NAME imageformats QMAKE_LIB mng)
 
 
 #### Tests
@@ -33,7 +34,7 @@ qt_feature("jasper" PRIVATE
 qt_feature_definition("jasper" "QT_NO_IMAGEFORMAT_JASPER" NEGATE)
 qt_feature("mng" PRIVATE
     LABEL "MNG"
-    CONDITION libs.mng OR FIXME
+    CONDITION Libmng_FOUND
     DISABLE INPUT_mng STREQUAL 'no'
 )
 qt_feature("tiff" PRIVATE

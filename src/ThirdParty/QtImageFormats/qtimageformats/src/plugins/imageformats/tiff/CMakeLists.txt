@@ -7,19 +7,19 @@
 # special case begin
 # Handle the conditional finding of either system zlib or qt zlib.
 if(NOT QT_FEATURE_system_zlib)
-    find_package(Qt6 COMPONENTS Zlib)
-elseif(NOT TARGET ZLIB::ZLIB)
-    qt_find_package(ZLIB PROVIDED_TARGETS ZLIB::ZLIB)
+    find_package(Qt6 COMPONENTS ZlibPrivate)
+elseif(NOT TARGET WrapZLIB::WrapZLIB)
+    qt_find_package(WrapZLIB PROVIDED_TARGETS WrapZLIB::WrapZLIB)
 endif()
 # special case end
 
 qt_internal_add_plugin(QTiffPlugin
     OUTPUT_NAME qtiff
-    TYPE imageformats
+    PLUGIN_TYPE imageformats
     SOURCES
         main.cpp
         qtiffhandler.cpp qtiffhandler_p.h
-    PUBLIC_LIBRARIES
+    LIBRARIES
         Qt::Core
         Qt::Gui
 )
@@ -71,7 +71,6 @@ qt_internal_extend_target(QTiffPlugin CONDITION NOT QT_FEATURE_system_tiff
         ../../../3rdparty/libtiff/libtiff/tif_warning.c
         ../../../3rdparty/libtiff/libtiff/tif_write.c
         ../../../3rdparty/libtiff/libtiff/tif_zip.c
-        ../../../3rdparty/libtiff/port/snprintf.c
     INCLUDE_DIRECTORIES
         ../../../3rdparty/libtiff/libtiff
 )
@@ -86,14 +85,9 @@ qt_internal_extend_target(QTiffPlugin CONDITION UNIX AND NOT QT_FEATURE_system_t
         ../../../3rdparty/libtiff/libtiff/tif_unix.c
 )
 
-qt_internal_extend_target(QTiffPlugin CONDITION ANDROID AND NOT QT_FEATURE_system_tiff
-    SOURCES
-        ../../../3rdparty/libtiff/port/lfind.c
-)
-
 qt_internal_extend_target(QTiffPlugin CONDITION QT_FEATURE_system_zlib AND NOT QT_FEATURE_system_tiff
     LIBRARIES
-        ZLIB::ZLIB
+        WrapZLIB::WrapZLIB
 )
 
 qt_internal_extend_target(QTiffPlugin CONDITION NOT QT_FEATURE_system_tiff AND NOT QT_FEATURE_system_zlib
