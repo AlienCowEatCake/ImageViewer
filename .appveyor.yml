@@ -104,8 +104,8 @@ environment:
     # # - job_name: Windows, Qt 4.4, MinGW 3.4.2 x86
     # #   job_group: windows_buildscript_mingw
     # #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    # #   QT_DIST: https://fami.codefreak.ru/mirrors/qt/unofficial_builds/qt4.4.3-mingw342-static/qt4.4.3-mingw342-static.7z
-    # #   MINGW_DIST: https://fami.codefreak.ru/mirrors/qt/unofficial_builds/qt4.4.3-mingw342-static/mingw-3.4.2.7z
+    # #   QT_DIST: https://fami-net.no-ip.org/mirrors/qt/unofficial_builds/qt4.4.3-mingw342-static/qt4.4.3-mingw342-static.7z
+    # #   MINGW_DIST: https://fami-net.no-ip.org/mirrors/qt/unofficial_builds/qt4.4.3-mingw342-static/mingw-3.4.2.7z
     # #   QTDIR: C:\Qt\4.4.3\mingw342_32_static
     # #   MINGW_DIR: C:\Qt\Tools\mingw342_32
     # #   QT_PREFIX: C:/Qt/4.4.3/mingw342_32_static
@@ -113,7 +113,7 @@ environment:
     # - job_name: Windows, Qt 4.8, MSVC 2015 x86
     #   job_group: windows_buildscript_msvc
     #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    #   QT_DIST: https://fami.codefreak.ru/mirrors/qt/unofficial_builds/qt4.8.7-msvc2015-static/qt4.8.7-msvc2015-x86-static.7z
+    #   QT_DIST: https://fami-net.no-ip.org/mirrors/qt/unofficial_builds/qt4.8.7-msvc2015-static/qt4.8.7-msvc2015-x86-static.7z
     #   VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat
     #   ARCH: x86
     #   QTDIR: C:\Qt\4.8.7\msvc2015_static
@@ -121,7 +121,7 @@ environment:
     # - job_name: Windows, Qt 4.8, MSVC 2015 x64
     #   job_group: windows_buildscript_msvc
     #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    #   QT_DIST: https://fami.codefreak.ru/mirrors/qt/unofficial_builds/qt4.8.7-msvc2015-static/qt4.8.7-msvc2015-x64-static.7z
+    #   QT_DIST: https://fami-net.no-ip.org/mirrors/qt/unofficial_builds/qt4.8.7-msvc2015-static/qt4.8.7-msvc2015-x64-static.7z
     #   VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat
     #   ARCH: x64
     #   QTDIR: C:\Qt\4.8.7\msvc2015_64_static

@@ -1,5 +1,5 @@
 
-resource app_signature "application/x-vnd.ru-codefreak-fami-imageviewer";
+resource app_signature "application/x-vnd.com-github-aliencoweatcake-imageviewer";
 
 resource app_flags B_MULTIPLE_LAUNCH;
 

@@ -1,6 +1,6 @@
 #!/bin/bash -e
 PROJECT="ImageViewer"
-IDENTIFIER="ru.codefreak.fami.imageviewer"
+IDENTIFIER="com.github.aliencoweatcake.imageviewer"
 BUILDDIR="build_linux_qt5.15_clang"
 SUFFIX="_qt5.15_$(gcc -dumpmachine)"
 APP_PATH="src/${PROJECT}"

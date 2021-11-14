@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-DESKTOP_NAME="ru.codefreak.fami.imageviewer.desktop"
+DESKTOP_NAME="com.github.aliencoweatcake.imageviewer.desktop"
 
 function FindDesktopFile()
 {

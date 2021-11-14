@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -51,8 +51,8 @@ int main(int argc, char *argv[])
     Workarounds::HighDPIFix();
     Workarounds::StyleFix();
     Application app(argc, argv);
-    app.setOrganizationDomain(QString::fromLatin1("fami.codefreak.ru"));
-    app.setOrganizationName(QString::fromLatin1("FAMI Net Team"));
+    app.setOrganizationDomain(QString::fromLatin1("aliencoweatcake.github.com"));
+    app.setOrganizationName(QString::fromLatin1("AlienCowEatCake"));
     app.setApplicationName(QString::fromLatin1("Image Viewer"));
     app.setApplicationVersion(QString::fromLatin1("1.2.0"));
 #if !defined (Q_OS_MAC)
