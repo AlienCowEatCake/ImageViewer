@@ -10,7 +10,7 @@ TARGET = tp_openjp2
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_OPENJPEG_PATH = $${PWD}/openjpeg-2.3.1
+THIRDPARTY_OPENJPEG_PATH = $${PWD}/openjpeg-2.4.0
 THIRDPARTY_OPENJPEG_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
