@@ -28,15 +28,15 @@ mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"
 PLUGINS_PATH="${APPNAME}.app/Contents/PlugIns"
 mkdir -p "${PLUGINS_PATH}/iconengines"
 for iconengines_plugin in libqsvgicon.dylib ; do
-	cp -a "${QTPLUGINS_PATH}/iconengines/${iconengines_plugin}" "${PLUGINS_PATH}/iconengines/"
+    cp -a "${QTPLUGINS_PATH}/iconengines/${iconengines_plugin}" "${PLUGINS_PATH}/iconengines/"
 done
 ${CMD_DEPLOY} "${APPNAME}.app" -verbose=2
 for unused_plugins_subdir in virtualkeyboard platforminputcontexts ; do
-	rm -r "${PLUGINS_PATH}/${unused_plugins_subdir}"
+    rm -r "${PLUGINS_PATH}/${unused_plugins_subdir}"
 done
 FRAMEWORKS_PATH="${APPNAME}.app/Contents/Frameworks"
 for unused_framework in QtQml.framework QtQmlModels.framework QtQuick.framework QtVirtualKeyboard.framework ; do
-	rm -r "${FRAMEWORKS_PATH}/${unused_framework}"
+    rm -r "${FRAMEWORKS_PATH}/${unused_framework}"
 done
 cd "${BUILD_PATH}"
 

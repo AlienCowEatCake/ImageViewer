@@ -6,10 +6,10 @@ DMGNAME="${PROJECT}_qt5.6_clang64_libstdcxx"
 OUT_PATH="src/${PROJECT}"
 ALL_SDK_VERSIONS="$(xcodebuild -showsdks | grep '\-sdk macosx' | sed 's|.*-sdk macosx||')"
 for SDK_VERSION in ${ALL_SDK_VERSIONS} ; do
-	SDK_PATH="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SDK_VERSION}.sdk"
-	if [[ $(find "${SDK_PATH}/usr/lib" -name 'libstdc++*' -maxdepth 1 | wc -l | xargs) > 0 ]] ; then
-		MAC_SDK="macosx${SDK_VERSION}"
-	fi
+    SDK_PATH="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SDK_VERSION}.sdk"
+    if [[ $(find "${SDK_PATH}/usr/lib" -name 'libstdc++*' -maxdepth 1 | wc -l | xargs) > 0 ]] ; then
+        MAC_SDK="macosx${SDK_VERSION}"
+    fi
 done
 
 QT_PATH="/opt/Qt/5.6.3/clang_64_libstdc++_sdk10.10"
@@ -34,7 +34,7 @@ mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"
 PLUGINS_PATH="${APPNAME}.app/Contents/PlugIns"
 mkdir -p "${PLUGINS_PATH}/iconengines"
 for iconengines_plugin in libqsvgicon.dylib ; do
-	cp -a "${QTPLUGINS_PATH}/iconengines/${iconengines_plugin}" "${PLUGINS_PATH}/iconengines/"
+    cp -a "${QTPLUGINS_PATH}/iconengines/${iconengines_plugin}" "${PLUGINS_PATH}/iconengines/"
 done
 ${CMD_DEPLOY} "${APPNAME}.app" -verbose=2
 cd "${BUILD_PATH}"

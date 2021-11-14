@@ -34,15 +34,15 @@ mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"
 PLUGINS_PATH="${APPNAME}.app/Contents/PlugIns"
 mkdir -p "${PLUGINS_PATH}/iconengines"
 for iconengines_plugin in libqsvgicon.dylib ; do
-	cp -a "${QTPLUGINS_PATH}/iconengines/${iconengines_plugin}" "${PLUGINS_PATH}/iconengines/"
+    cp -a "${QTPLUGINS_PATH}/iconengines/${iconengines_plugin}" "${PLUGINS_PATH}/iconengines/"
 done
 ${CMD_DEPLOY} "${APPNAME}.app" -verbose=2
 for unused_plugins_subdir in virtualkeyboard platforminputcontexts ; do
-	rm -r "${PLUGINS_PATH}/${unused_plugins_subdir}"
+    rm -r "${PLUGINS_PATH}/${unused_plugins_subdir}"
 done
 FRAMEWORKS_PATH="${APPNAME}.app/Contents/Frameworks"
 for unused_framework in QtQml.framework QtQmlModels.framework QtQuick.framework QtVirtualKeyboard.framework ; do
-	rm -r "${FRAMEWORKS_PATH}/${unused_framework}"
+    rm -r "${FRAMEWORKS_PATH}/${unused_framework}"
 done
 cd "${BUILD_PATH}"
 
@@ -56,43 +56,43 @@ find "${APPNAME}.app/Contents/PlugIns" -name "*_debug.dylib" -delete
 cd "${BUILD_PATH}"
 
 function sign() {
-	if [ -z "${NO_SIGN+x}" ] ; then
-		local max_retry=10
-		local last_retry=$((${max_retry}-1))
-		for ((i=0; i<${max_retry}; i++)) ; do
-			if /usr/bin/codesign \
-					--sign "${APP_CERT}" \
-					--deep \
-					--force \
-					--timestamp \
-					--options runtime \
-					--entitlements "${SOURCE_PATH}/${ENTITLEMENTS_PATH}" \
-					--verbose \
-					--strict \
-					"${1}" ; then
-				if [ ${i} != 0 ] ; then
-					echo "Sign completed at ${i} retry"
-				fi
-				break
-			else
-				if [ ${i} != ${last_retry} ] ; then
-					echo "Signing failed, retry ..."
-					sleep 5
-				else
-					exit 2
-				fi
-			fi
-		done
-	fi
+    if [ -z "${NO_SIGN+x}" ] ; then
+        local max_retry=10
+        local last_retry=$((${max_retry}-1))
+        for ((i=0; i<${max_retry}; i++)) ; do
+            if /usr/bin/codesign \
+                    --sign "${APP_CERT}" \
+                    --deep \
+                    --force \
+                    --timestamp \
+                    --options runtime \
+                    --entitlements "${SOURCE_PATH}/${ENTITLEMENTS_PATH}" \
+                    --verbose \
+                    --strict \
+                    "${1}" ; then
+                if [ ${i} != 0 ] ; then
+                    echo "Sign completed at ${i} retry"
+                fi
+                break
+            else
+                if [ ${i} != ${last_retry} ] ; then
+                    echo "Signing failed, retry ..."
+                    sleep 5
+                else
+                    exit 2
+                fi
+            fi
+        done
+    fi
 }
 function notarize() {
-	if [ -z "${NO_SIGN+x}" ] ; then
-		/usr/bin/python3 "${SOURCE_PATH}/buildscripts/helpers/MacNotarizer.py" \
-			--application "${1}" \
-			--primary-bundle-id "${2}" \
-			--username "${NOTARIZE_USERNAME}" \
-			--password "${NOTARIZE_PASSWORD}"
-	fi
+    if [ -z "${NO_SIGN+x}" ] ; then
+        /usr/bin/python3 "${SOURCE_PATH}/buildscripts/helpers/MacNotarizer.py" \
+            --application "${1}" \
+            --primary-bundle-id "${2}" \
+            --username "${NOTARIZE_USERNAME}" \
+            --password "${NOTARIZE_PASSWORD}"
+    fi
 }
 find "${INSTALL_PATH}/${APPNAME}.app/Contents/Frameworks" \( -name '*.framework' -or -name '*.dylib' \) -print0 | while IFS= read -r -d '' item ; do sign "${item}" ; done
 find "${INSTALL_PATH}/${APPNAME}.app/Contents/PlugIns"       -name '*.dylib'                            -print0 | while IFS= read -r -d '' item ; do sign "${item}" ; done
