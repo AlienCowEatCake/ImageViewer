@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBEXIF_PATH = $${PWD}/libexif-795fcbb
+THIRDPARTY_LIBEXIF_PATH = $${PWD}/libexif-4bd5cd6
 THIRDPARTY_LIBEXIF_CONFIG_PATH = $${PWD}/config
 THIRDPARTY_LIBEXIF_INCLUDE_PATH = $${PWD}/include
 
