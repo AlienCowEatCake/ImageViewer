@@ -8,6 +8,7 @@ ENTITLEMENTS_PATH="src/${PROJECT}/resources/platform/macosx/${PROJECT}.entitleme
 APP_CERT="Developer ID Application: Petr Zhigalov (48535TNTA7)"
 NOTARIZE_USERNAME="peter.zhigalov@gmail.com"
 NOTARIZE_PASSWORD="@keychain:Notarize: ${NOTARIZE_USERNAME}"
+NOTARIZE_ASC_PROVIDER="${APP_CERT: -11:10}"
 MAC_SDK="$(xcodebuild -showsdks | grep '\-sdk macosx' | tail -1 | sed 's|.*-sdk ||')"
 
 QT_PATH="/opt/Qt/5.15.2/clang_universal_target10.10"
@@ -91,7 +92,8 @@ function notarize() {
             --application "${1}" \
             --primary-bundle-id "${2}" \
             --username "${NOTARIZE_USERNAME}" \
-            --password "${NOTARIZE_PASSWORD}"
+            --password "${NOTARIZE_PASSWORD}" \
+            --asc-provider "${NOTARIZE_ASC_PROVIDER}"
     fi
 }
 find "${INSTALL_PATH}/${APPNAME}.app/Contents/Frameworks" \( -name '*.framework' -or -name '*.dylib' \) -print0 | while IFS= read -r -d '' item ; do sign "${item}" ; done
