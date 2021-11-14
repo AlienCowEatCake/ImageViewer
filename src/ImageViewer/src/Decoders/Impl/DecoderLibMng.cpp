@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -79,7 +79,7 @@ public:
 
 // ====================================================================================================
 
-mng_bool proc_mng_error(mng_handle  hMNG,
+mng_bool MNG_DECL proc_mng_error(mng_handle  hMNG,
                         mng_int32   iErrorcode,
                         mng_int8    iSeverity,
                         mng_chunkid iChunkname,
@@ -101,30 +101,30 @@ mng_bool proc_mng_error(mng_handle  hMNG,
     return MNG_TRUE;
 }
 
-mng_ptr proc_mng_alloc(mng_size_t iSize)
+mng_ptr MNG_DECL proc_mng_alloc(mng_size_t iSize)
 {
     return reinterpret_cast<mng_ptr>(calloc(1, iSize));
 }
 
-void proc_mng_free(mng_ptr pPtr, mng_size_t /*iSize*/)
+void MNG_DECL proc_mng_free(mng_ptr pPtr, mng_size_t /*iSize*/)
 {
     free(pPtr);
 }
 
-mng_bool proc_mng_openstream(mng_handle hMNG)
+mng_bool MNG_DECL proc_mng_openstream(mng_handle hMNG)
 {
     MngAnimationProvider *provider = reinterpret_cast<MngAnimationProvider*>(mng_get_userdata(hMNG));
     return provider->file.open(QIODevice::ReadOnly) ? MNG_TRUE : MNG_FALSE;
 }
 
-mng_bool proc_mng_closestream(mng_handle hMNG)
+mng_bool MNG_DECL proc_mng_closestream(mng_handle hMNG)
 {
     MngAnimationProvider *provider = reinterpret_cast<MngAnimationProvider*>(mng_get_userdata(hMNG));
     provider->file.close();
     return MNG_TRUE;
 }
 
-mng_bool proc_mng_readstream(mng_handle  hMNG,
+mng_bool MNG_DECL proc_mng_readstream(mng_handle  hMNG,
                              mng_ptr     pBuf,
                              mng_uint32  iSize,
                              mng_uint32p pRead)
@@ -134,7 +134,7 @@ mng_bool proc_mng_readstream(mng_handle  hMNG,
     return (*pRead > 0) ? MNG_TRUE : MNG_FALSE;
 }
 
-mng_bool proc_mng_processheader(mng_handle hMNG,
+mng_bool MNG_DECL proc_mng_processheader(mng_handle hMNG,
                                 mng_uint32 iWidth,
                                 mng_uint32 iHeight)
 {
@@ -153,14 +153,14 @@ mng_bool proc_mng_processheader(mng_handle hMNG,
     return MNG_TRUE;
 }
 
-mng_ptr proc_mng_getcanvasline(mng_handle hMNG,
+mng_ptr MNG_DECL proc_mng_getcanvasline(mng_handle hMNG,
                                mng_uint32 iLinenr)
 {
     MngAnimationProvider *provider = reinterpret_cast<MngAnimationProvider*>(mng_get_userdata(hMNG));
     return reinterpret_cast<mng_ptr>(provider->image.scanLine(static_cast<int>(iLinenr)));
 }
 
-mng_bool proc_mng_refresh(mng_handle /*hMNG*/,
+mng_bool MNG_DECL proc_mng_refresh(mng_handle /*hMNG*/,
                           mng_uint32 /*iX*/,
                           mng_uint32 /*iY*/,
                           mng_uint32 /*iWidth*/,
@@ -169,13 +169,13 @@ mng_bool proc_mng_refresh(mng_handle /*hMNG*/,
     return MNG_TRUE;
 }
 
-mng_uint32 proc_mng_gettickcount(mng_handle hMNG)
+mng_uint32 MNG_DECL proc_mng_gettickcount(mng_handle hMNG)
 {
     MngAnimationProvider *provider = reinterpret_cast<MngAnimationProvider*>(mng_get_userdata(hMNG));
     return static_cast<mng_uint32>(provider->elapsed);
 }
 
-mng_bool proc_mng_settimer(mng_handle hMNG,
+mng_bool MNG_DECL proc_mng_settimer(mng_handle hMNG,
                            mng_uint32 iMsecs)
 {
     MngAnimationProvider *provider = reinterpret_cast<MngAnimationProvider*>(mng_get_userdata(hMNG));
@@ -184,7 +184,7 @@ mng_bool proc_mng_settimer(mng_handle hMNG,
     return MNG_TRUE;
 }
 
-mng_bool proc_mng_trace(mng_handle /*hMNG*/,
+mng_bool MNG_DECL proc_mng_trace(mng_handle /*hMNG*/,
                         mng_int32  iFuncnr,
                         mng_int32  iFuncseq,
                         mng_pchar  zFuncname)
