@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -196,6 +196,11 @@ HEADERS += \
 !disable_jbigkit {
     SOURCES += \
         src/Decoders/Impl/DecoderJbigKit.cpp
+}
+
+!disable_lerc {
+    SOURCES += \
+        src/Decoders/Impl/DecoderLERC.cpp
 }
 
 !disable_libtiff {

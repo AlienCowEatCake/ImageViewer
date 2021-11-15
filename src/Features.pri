@@ -192,6 +192,11 @@ disable_zlib : !system_libpng {
 #    system_jbigkit
 
 
+# LERC options:
+#    disable_lerc
+#    system_lerc
+
+
 # libtiff options:
 #    disable_libtiff
 #    system_libtiff

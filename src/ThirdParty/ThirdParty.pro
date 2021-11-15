@@ -52,6 +52,10 @@ SUBDIRS =
     SUBDIRS += JBIGKit/JBIGKit.pro
 }
 
+!disable_lerc : !system_lerc {
+    SUBDIRS += LERC/LERC.pro
+}
+
 !disable_libtiff : !system_libtiff {
     SUBDIRS += libtiff/libtiff.pro
 }

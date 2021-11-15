@@ -213,6 +213,17 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>lerc1</string>
+				<string>lerc2</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Limited Error Raster Compression Format Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>mif</string>
 			</array>
 			<key>CFBundleTypeName</key>

@@ -80,6 +80,9 @@
 #if defined (HAS_JBIGKIT)
 #include <jbig.h>
 #endif
+#if defined (HAS_LERC)
+#include <Lerc_c_api.h>
+#endif
 #if defined (HAS_EXIV2)
 #include "Workarounds/BeginIgnoreDeprecated.h"
 #include <exiv2/exiv2.hpp>
@@ -449,6 +452,21 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://www.cl.cam.ac.uk/~mgk25/jbigkit/"),
                       QString::fromLatin1("GNU GPL v2 or Commercial"),
                       QString::fromLatin1("https://www.cl.cam.ac.uk/~mgk25/jbigkit/#licensing")
+                      ));
+#endif
+
+#if defined (HAS_LERC)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the LERC library"),
+                      QString::fromLatin1("lerc"),
+#if defined (LERC_VERSION_MAJOR) && defined (LERC_VERSION_MINOR) && defined (LERC_VERSION_PATCH)
+                      QString::fromLatin1("%1.%2.%3").arg(LERC_VERSION_MAJOR).arg(LERC_VERSION_MINOR).arg(LERC_VERSION_PATCH),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("https://github.com/Esri/lerc"),
+                      QString::fromLatin1("Apache License, Version 2.0"),
+                      QString::fromLatin1("https://github.com/Esri/lerc/blob/master/LICENSE")
                       ));
 #endif
 

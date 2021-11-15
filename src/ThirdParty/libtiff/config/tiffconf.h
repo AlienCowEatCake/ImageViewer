@@ -81,7 +81,9 @@
 #endif
 
 /* Support LERC compression */
-/* #undef LERC_SUPPORT */
+#if defined(HAS_LERC)
+#define LERC_SUPPORT 1
+#endif
 
 /* Support LogLuv high dynamic range encoding */
 #define LOGLUV_SUPPORT 1

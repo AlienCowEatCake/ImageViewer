@@ -68,7 +68,7 @@ qmake CONFIG+="release enable_pkgconfig" \
     CONFIG+="system_libtiff system_libwebp disable_libbpg disable_freetype" \
     CONFIG+="system_libwmf system_openjpeg system_giflib system_libraw" \
     CONFIG+="system_librsvg disable_resvg disable_aom disable_libde265 " \
-    CONFIG+="system_libheif system_openexr disable_libavif" \
+    CONFIG+="system_libheif system_openexr disable_libavif disable_lerc" \
     CONFIG+="enable_magickcore system_magickwand" \
     CONFIG+="disable_graphicsmagick disable_graphicsmagickwand" \
     CONFIG+="disable_qtextended disable_stb disable_nanosvg" \
@@ -101,6 +101,7 @@ See the [buildscripts/](buildscripts/) directory.
 * libmng options: `disable_libmng`, `system_libmng` *(bundled package by default)*
 * libpng options: `disable_libpng`, `system_libpng` *(bundled package by default)*
 * jbigkit options: `disable_jbigkit`, `system_jbigkit` *(bundled package by default)*
+* LERC options: `disable_lerc`, `system_lerc` *(bundled package by default)*
 * libtiff options: `disable_libtiff`, `system_libtiff` *(bundled package by default)*
 * LibWebP options: `disable_libwebp`, `system_libwebp` *(bundled package by default)*
 * libbpg options: `disable_libbpg`, `system_libbpg` *(bundled package by default)*
