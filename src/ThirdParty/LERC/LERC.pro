@@ -41,5 +41,5 @@ HEADERS += \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/include/Lerc_c_api.h \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/include/Lerc_types.h \
 
-TR_EXCLUDE += $${THIRDPARTY_LIBPNG_PATH}/*
+TR_EXCLUDE += $${THIRDPARTY_LERC_PATH}/*
 

@@ -168,5 +168,5 @@ HEADERS += \
     $${THIRDPARTY_LIBRAW_PATH}/libraw/libraw_types.h \
     $${THIRDPARTY_LIBRAW_PATH}/libraw/libraw_version.h \
 
-TR_EXCLUDE += $${THIRDPARTY_LIBPNG_PATH}/*
+TR_EXCLUDE += $${THIRDPARTY_LIBRAW_PATH}/*
 

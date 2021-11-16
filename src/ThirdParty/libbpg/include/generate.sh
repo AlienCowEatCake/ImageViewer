@@ -8,5 +8,5 @@ INCLUDE_BASE=`echo "${LIBBPG_ROOT}" | cut -c $((${#SCRIPT_ROOT} + 2))-`
 
 for i in "bpgenc.h" "libbpg.h"
 do
-	echo "#include \"${INCLUDE_BASE}/${i}\"" > "${SCRIPT_ROOT}/${i##*/}"
+    echo "#include \"${INCLUDE_BASE}/${i}\"" > "${SCRIPT_ROOT}/${i##*/}"
 done

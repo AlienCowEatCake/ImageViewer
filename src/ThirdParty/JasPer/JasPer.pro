@@ -143,5 +143,5 @@ HEADERS += \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_version.h \
     $${THIRDPARTY_JASPER_CONFIG_PATH}/jasper/jas_config.h
 
-TR_EXCLUDE += $${THIRDPARTY_JASPER_PATH}/*
+TR_EXCLUDE += $${THIRDPARTY_JASPER_PATH}/* $${THIRDPARTY_JASPER_CONFIG_PATH}/*
 
