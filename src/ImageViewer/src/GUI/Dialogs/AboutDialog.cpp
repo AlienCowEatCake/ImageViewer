@@ -444,6 +444,17 @@ QString getTextBrowserContent()
                       ));
 #endif
 
+#if defined (HAS_FLIF)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the FLIF reference implementation library"),
+                      QString::fromLatin1("flif"),
+                      QString(),
+                      QString::fromLatin1("https://flif.info/"),
+                      QString::fromLatin1("GNU GPL v3+ / Apache License 2.0 (decoder)"),
+                      QString::fromLatin1("https://github.com/FLIF-hub/FLIF/blob/master/README.md#license")
+                      ));
+#endif
+
 #if defined (HAS_JBIGKIT)
     result.append(formatItem(
                       QString::fromLatin1("This software uses the JBIG-KIT library"),

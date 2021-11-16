@@ -110,6 +110,16 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>flif</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Free Lossless Image Format Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>gif</string>
 			</array>
 			<key>CFBundleTypeName</key>

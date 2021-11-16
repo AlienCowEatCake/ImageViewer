@@ -1,0 +1,12 @@
+*/
+
+*.zip
+*.dll
+*.flif
+*.png
+
+!getopt/
+
+!include/
+include/*
+

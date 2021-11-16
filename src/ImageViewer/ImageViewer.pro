@@ -265,6 +265,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderLibAvif.cpp
 }
 
+!disable_flif {
+    SOURCES += \
+        src/Decoders/Impl/DecoderFLIF.cpp
+}
+
 !disable_magickcore {
     SOURCES += \
         src/Decoders/Impl/DecoderMagickCore.cpp

@@ -81,6 +81,26 @@ Image from http://regex.info/blog/photo-tech/color-spaces-page1 (converted to bp
 
 --------------------------------------------------------------------------------
 
+::: FLIF test images :::
+
+Images from https://sveinbjorn.org/images/flif/
+ * 2_webp_ll.flif
+ * 3_webp_ll.flif
+ * 5_webp_ll.flif
+ * kodim07.flif
+ * kodim08.flif
+ * kodim12.flif
+ * kodim13.flif
+ * monkey.flif
+ * spinfox.flif
+ * train.flif
+ * watch_by8.flif
+
+Image from http://regex.info/blog/photo-tech/color-spaces-page1 (converted to flif)
+ * sample-wonky.profile.flif
+
+--------------------------------------------------------------------------------
+
 ::: GIF test images :::
 
 Images from http://littlesvr.ca/apng/gif_apng_webp.html

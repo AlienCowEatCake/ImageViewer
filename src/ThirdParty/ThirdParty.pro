@@ -108,6 +108,10 @@ SUBDIRS =
     SUBDIRS += libavif/libavif.pro
 }
 
+!disable_flif : !system_flif {
+    SUBDIRS += FLIF/FLIF.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }

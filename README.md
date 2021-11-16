@@ -69,7 +69,7 @@ qmake CONFIG+="release enable_pkgconfig" \
     CONFIG+="system_libwmf system_openjpeg system_giflib system_libraw" \
     CONFIG+="system_librsvg disable_resvg disable_aom disable_libde265 " \
     CONFIG+="system_libheif system_openexr disable_libavif disable_lerc" \
-    CONFIG+="enable_magickcore system_magickwand" \
+    CONFIG+="disable_flif enable_magickcore system_magickwand" \
     CONFIG+="disable_graphicsmagick disable_graphicsmagickwand" \
     CONFIG+="disable_qtextended disable_stb disable_nanosvg" \
     CONFIG+="disable_qtimageformats enable_qtwebkit enable_qtwebengine" \
@@ -117,6 +117,7 @@ See the [buildscripts/](buildscripts/) directory.
 * libheif options: `disable_libheif`, `system_libheif` *(bundled package by default)*
 * OpenEXR options: `disable_openexr`, `system_openexr` *(bundled package by default)*
 * libavif options: `disable_libavif`, `system_libavif` *(bundled package by default)*
+* FLIF options: `disable_flif`, `system_flif` *(bundled package by default)*
 * MagickCore options: `disable_magickcore`, `enable_magickcore` *(disabled by default)*
 * MagickWand options: `disable_magickwand`, `enable_magickwand`, `system_magickwand` *(disabled by default)*
 * GraphicsMagick options: `disable_graphicsmagick`, `enable_graphicsmagick` *(disabled by default)*

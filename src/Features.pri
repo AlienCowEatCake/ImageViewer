@@ -375,6 +375,13 @@ disable_aom : !system_libavif {
     }
 }
 
+# FLIF options:
+#    disable_flif
+#    system_flif
+disable_cxx11 : !system_flif {
+    CONFIG += disable_flif
+}
+
 # MagickCore options:
 #    disable_magickcore
 #    enable_magickcore
