@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -49,7 +49,11 @@ QtWebKitSVGGraphicsItem::QtWebKitSVGGraphicsItem(QGraphicsItem *parentItem)
 #endif
 
     QPalette palette = m_impl->page.palette();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+    palette.setColor(QPalette::Window, Qt::transparent);
+#else
     palette.setColor(QPalette::Background, Qt::transparent);
+#endif
     palette.setBrush(QPalette::Base, Qt::transparent);
     m_impl->page.setPalette(palette);
 
