@@ -56,7 +56,8 @@ sudo apt-get install git g++ make qt5-default libqt5svg5-dev zlib1g-dev \
     libjbig-dev libtiff-dev libwebp-dev libfreetype6-dev libwmf-dev \
     libopenjp2-7-dev libgif-dev libraw-dev librsvg2-dev libheif-dev \
     libilmbase-dev libopenexr-dev libmagickcore-dev libmagickwand-dev \
-    qt5-image-formats-plugins libqt5webkit5-dev qtwebengine5-dev
+    qt5-image-formats-plugins libqt5webkit5-dev qtwebengine5-dev \
+    libjxr-dev
 git clone https://github.com/AlienCowEatCake/ImageViewer.git
 cd ImageViewer
 mkdir build
@@ -69,10 +70,11 @@ qmake CONFIG+="release enable_pkgconfig" \
     CONFIG+="system_libwmf system_openjpeg system_giflib system_libraw" \
     CONFIG+="system_librsvg disable_resvg disable_aom disable_libde265 " \
     CONFIG+="system_libheif system_openexr disable_libavif disable_lerc" \
-    CONFIG+="disable_flif enable_magickcore system_magickwand" \
+    CONFIG+="disable_flif system_jxrlib enable_magickcore system_magickwand" \
     CONFIG+="disable_graphicsmagick disable_graphicsmagickwand" \
     CONFIG+="disable_qtextended disable_stb disable_nanosvg" \
     CONFIG+="disable_qtimageformats enable_qtwebkit enable_qtwebengine" \
+    INCLUDEPATH+="/usr/include/jxrlib" \
     -r ../ImageViewer.pro
 make
 cp -a src/ImageViewer/ImageViewer /path/to/install/
@@ -118,6 +120,7 @@ See the [buildscripts/](buildscripts/) directory.
 * OpenEXR options: `disable_openexr`, `system_openexr` *(bundled package by default)*
 * libavif options: `disable_libavif`, `system_libavif` *(bundled package by default)*
 * FLIF options: `disable_flif`, `system_flif` *(bundled package by default)*
+* jxrlib options: `disable_jxrlib`, `system_jxrlib` *(bundled package by default)*
 * MagickCore options: `disable_magickcore`, `enable_magickcore` *(disabled by default)*
 * MagickWand options: `disable_magickwand`, `enable_magickwand`, `system_magickwand` *(disabled by default)*
 * GraphicsMagick options: `disable_graphicsmagick`, `enable_graphicsmagick` *(disabled by default)*

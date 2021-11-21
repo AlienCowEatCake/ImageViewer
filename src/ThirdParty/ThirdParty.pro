@@ -112,6 +112,10 @@ SUBDIRS =
     SUBDIRS += FLIF/FLIF.pro
 }
 
+!disable_jxrlib : !system_jxrlib {
+    SUBDIRS += jxrlib/jxrlib.pro
+}
+
 !disable_qtextended {
     SUBDIRS += QtExtended/QtExtended.pro
 }

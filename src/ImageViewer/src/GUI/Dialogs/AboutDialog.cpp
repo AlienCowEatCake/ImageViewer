@@ -77,6 +77,18 @@
 #if defined (HAS_LIBAVIF)
 #include <avif/avif.h>
 #endif
+#if defined (HAS_JXRLIB)
+#if !defined (__ANSI__)
+#define __ANSI__
+#endif
+#include <JXRGlue.h>
+#if defined (min)
+#undef min
+#endif
+#if defined (max)
+#undef max
+#endif
+#endif
 #if defined (HAS_JBIGKIT)
 #include <jbig.h>
 #endif
@@ -166,7 +178,9 @@ QString formatItem(const QString &title, const QString &name, const QString &ver
     result.append(QString::fromLatin1("<b>%1</b>").arg(name));
     if(!version.isEmpty())
         result.append(QString::fromLatin1(", version %1").arg(version));
-    if(!url.isEmpty())
+    if(!url.isEmpty() && (url.startsWith(QString::fromLatin1("<a")) || url.startsWith(QString::fromLatin1("<A"))))
+        result.append(QString::fromLatin1("<br>%1").arg(url));
+    else if(!url.isEmpty())
         result.append(QString::fromLatin1("<br><a href=\"%1\">%1</a>").arg(url));
     if(!license.isEmpty() && !licenseUrl.isEmpty())
         result.append(QString::fromLatin1("<br>License: <a href=\"%2\" title=\"%2\">%1</a>").arg(license).arg(licenseUrl));
@@ -452,6 +466,21 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://flif.info/"),
                       QString::fromLatin1("GNU GPL v3+ / Apache License 2.0 (decoder)"),
                       QString::fromLatin1("https://github.com/FLIF-hub/FLIF/blob/master/README.md#license")
+                      ));
+#endif
+
+#if defined (HAS_JXRLIB)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the JPEG XR Porting Kit"),
+                      QString::fromLatin1("jxrlib"),
+#if defined (WMP_SDK_VERSION)
+                      QString::fromLatin1("%1.%2.%3").arg((WMP_SDK_VERSION & 0x0f00) >> 8).arg((WMP_SDK_VERSION & 0x00f0) >> 4).arg((WMP_SDK_VERSION & 0x000f) >> 0),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("<a href=\"http://web.archive.org/web/20180116001029/http://jxrlib.codeplex.com/\">https://jxrlib.codeplex.com/</a>"),
+                      QString::fromLatin1("2-clause BSD License"),
+                      QString()
                       ));
 #endif
 

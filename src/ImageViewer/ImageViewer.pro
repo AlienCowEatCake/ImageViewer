@@ -270,6 +270,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderFLIF.cpp
 }
 
+!disable_jxrlib {
+    SOURCES += \
+        src/Decoders/Impl/DecoderJxrLib.cpp
+}
+
 !disable_magickcore {
     SOURCES += \
         src/Decoders/Impl/DecoderMagickCore.cpp

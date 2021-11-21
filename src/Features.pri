@@ -382,6 +382,11 @@ disable_cxx11 : !system_flif {
     CONFIG += disable_flif
 }
 
+# jxrlib options:
+#    disable_jxrlib
+#    system_jxrlib
+
+
 # MagickCore options:
 #    disable_magickcore
 #    enable_magickcore
