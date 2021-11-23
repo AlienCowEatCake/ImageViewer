@@ -494,6 +494,12 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
     CONFIG += disable_mshtml
 }
 
+# DecoderWIC options
+#    disable_wic
+!win32 {
+    CONFIG += disable_wic
+}
+
 # DecoderNSImage options:
 #    disable_nsimage
 !macx {

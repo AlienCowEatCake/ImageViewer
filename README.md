@@ -138,6 +138,7 @@ See the [buildscripts/](buildscripts/) directory.
 * DecoderQtWebEngine options: `disable_qtwebengine`, `enable_qtwebengine` *(disabled by default)*
 * DecoderQMLWebEngine options: `disable_qmlwebengine`, `enable_qmlwebengine` *(disabled by default)*
 * DecoderMSHTML options: `disable_mshtml` *(enabled by default for Windows)*
+* DecoderWIC options: `disable_wic` *(enabled by default for Windows)*
 * DecoderNSImage options: `disable_nsimage` *(enabled by default for macOS)*
 * DecoderMacWebKit options: `disable_macwebkit` *(enabled by default for macOS)*
 * MacToolBar options: `disable_mactoolbar` *(enabled by default for macOS)*

@@ -77,6 +77,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
     {
 #define P(NAME, MAIN_PRIORITY, ADVANCED_PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = ComplexPriotiry(MAIN_PRIORITY, ADVANCED_PRIORITY)
         /// @note Декодеры статических изображений
+        P("DecoderWIC"                  ,   60, -1); ///< Умеет много разных форматов, но плохо. Годится только в качестве резервного.
         P("DecoderSTB"                  ,  100, 10); ///< Резервный декодер, так как мало что умеет.
         P("DecoderQImage"               ,  200, 20); ///< Умеет все, что умеет Qt. Не поддерживает EXIF и ICCP.
         P("DecoderQtImageFormatsImage"  ,  300, -1); ///< Экзотические и deprecated декодеры Qt. Должен быть выше QImage.

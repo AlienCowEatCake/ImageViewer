@@ -346,6 +346,17 @@ HEADERS += \
     }
 }
 
+!disable_wic {
+    SOURCES += \
+        src/Decoders/Impl/DecoderWIC.cpp
+    *msvc* {
+        QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
+        QMAKE_CFLAGS_RELEASE -= -Zc:strictStrings
+        QMAKE_CFLAGS -= -Zc:strictStrings
+        QMAKE_CXXFLAGS -= -Zc:strictStrings
+    }
+}
+
 !disable_nsimage {
     OBJECTIVE_SOURCES += \
         src/Decoders/Impl/DecoderNSImage.mm
