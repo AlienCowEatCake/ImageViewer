@@ -1,17 +1,26 @@
-From a52bfc7f1e79e0c5a56754d8ab24d9683ff59cd5 Mon Sep 17 00:00:00 2001
+From 91f5be1f4c24fd44c52d32bbaea041af97168da6 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 24 Nov 2021 02:09:39 +0700
 Subject: [PATCH] Fix build with MSVC 2019 with __ANSI__ definition
 
 ---
- image/sys/ansi.h | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ image/sys/ansi.h | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/image/sys/ansi.h b/image/sys/ansi.h
-index 74900c9..072b159 100644
+index 74900c9..4400d91 100644
 --- a/image/sys/ansi.h
 +++ b/image/sys/ansi.h
-@@ -44,13 +44,8 @@
+@@ -27,6 +27,8 @@
+ //*@@@---@@@@******************************************************************
+ #pragma once
+ 
++#include <stdint.h>
++
+ //================================
+ // bitio functions
+ //================================
+@@ -44,13 +46,8 @@
  //================================
  #define FORCE_INLINE
  #define CDECL
