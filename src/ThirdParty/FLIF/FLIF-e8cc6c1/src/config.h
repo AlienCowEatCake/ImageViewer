@@ -40,7 +40,7 @@
 #define LARGE_BINARY 1
 
 #ifndef __clang__
-#define USE_SIMD 1
+//#define USE_SIMD 1
 #endif
 
 /**************************/

@@ -44,13 +44,8 @@
 //================================
 #define FORCE_INLINE
 #define CDECL
-#if __LP64__
-#define UINTPTR_T unsigned long long
-#define INTPTR_T long long
-#else
-#define UINTPTR_T unsigned int
-#define INTPTR_T int
-#endif
+#define UINTPTR_T uintptr_t
+#define INTPTR_T intptr_t
 
 
 //================================

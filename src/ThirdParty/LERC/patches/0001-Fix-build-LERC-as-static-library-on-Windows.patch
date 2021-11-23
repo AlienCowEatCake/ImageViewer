@@ -1,0 +1,34 @@
+From 68dad18602787156fbd3b854b86063f66afb7036 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Wed, 24 Nov 2021 02:15:28 +0700
+Subject: [PATCH] Fix build LERC as static library on Windows
+
+---
+ src/LercLib/include/Lerc_c_api.h | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/src/LercLib/include/Lerc_c_api.h b/src/LercLib/include/Lerc_c_api.h
+index f9ab0b0..4490a39 100644
+--- a/src/LercLib/include/Lerc_c_api.h
++++ b/src/LercLib/include/Lerc_c_api.h
+@@ -46,11 +46,12 @@ extern "C" {
+     (LERC_VERSION_NUMBER >= LERC_COMPUTE_VERSION(maj,min,patch))
+ 
+ #if defined _WIN32 || defined __CYGWIN__
+-#  ifdef LERC_EXPORTS
+-#    define LERCDLL_API __declspec(dllexport)
+-#  else
+-#    define LERCDLL_API __declspec(dllimport)
+-#  endif
++//#  ifdef LERC_EXPORTS
++//#    define LERCDLL_API __declspec(dllexport)
++//#  else
++//#    define LERCDLL_API __declspec(dllimport)
++//#  endif
++  #define LERCDLL_API
+ #elif __GNUC__ >= 4
+   #define LERCDLL_API __attribute__((visibility("default")))
+ #else
+-- 
+2.33.1
+

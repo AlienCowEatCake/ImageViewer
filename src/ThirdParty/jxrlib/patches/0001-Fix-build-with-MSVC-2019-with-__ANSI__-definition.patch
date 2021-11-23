@@ -1,0 +1,32 @@
+From a52bfc7f1e79e0c5a56754d8ab24d9683ff59cd5 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Wed, 24 Nov 2021 02:09:39 +0700
+Subject: [PATCH] Fix build with MSVC 2019 with __ANSI__ definition
+
+---
+ image/sys/ansi.h | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/image/sys/ansi.h b/image/sys/ansi.h
+index 74900c9..072b159 100644
+--- a/image/sys/ansi.h
++++ b/image/sys/ansi.h
+@@ -44,13 +44,8 @@
+ //================================
+ #define FORCE_INLINE
+ #define CDECL
+-#if __LP64__
+-#define UINTPTR_T unsigned long long
+-#define INTPTR_T long long
+-#else
+-#define UINTPTR_T unsigned int
+-#define INTPTR_T int
+-#endif
++#define UINTPTR_T uintptr_t
++#define INTPTR_T intptr_t
+ 
+ 
+ //================================
+-- 
+2.33.1
+

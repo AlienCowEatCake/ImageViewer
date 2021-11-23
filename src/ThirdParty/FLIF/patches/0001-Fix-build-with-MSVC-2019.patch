@@ -1,0 +1,25 @@
+From c61a329623291f84298073ec08a2fb39711ded95 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Wed, 24 Nov 2021 02:21:35 +0700
+Subject: [PATCH] Fix build with MSVC 2019
+
+---
+ src/config.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/config.h b/src/config.h
+index 22478f1..85e0380 100644
+--- a/src/config.h
++++ b/src/config.h
+@@ -40,7 +40,7 @@
+ #define LARGE_BINARY 1
+ 
+ #ifndef __clang__
+-#define USE_SIMD 1
++//#define USE_SIMD 1
+ #endif
+ 
+ /**************************/
+-- 
+2.33.1
+
