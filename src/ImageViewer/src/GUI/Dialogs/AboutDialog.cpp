@@ -77,18 +77,6 @@
 #if defined (HAS_LIBAVIF)
 #include <avif/avif.h>
 #endif
-#if defined (HAS_JXRLIB)
-#if !defined (__ANSI__)
-#define __ANSI__
-#endif
-#include <JXRGlue.h>
-#if defined (min)
-#undef min
-#endif
-#if defined (max)
-#undef max
-#endif
-#endif
 #if defined (HAS_JBIGKIT)
 #include <jbig.h>
 #endif
@@ -473,11 +461,7 @@ QString getTextBrowserContent()
     result.append(formatItem(
                       QString::fromLatin1("This software uses the JPEG XR Porting Kit"),
                       QString::fromLatin1("jxrlib"),
-#if defined (WMP_SDK_VERSION)
-                      QString::fromLatin1("%1.%2.%3").arg((WMP_SDK_VERSION & 0x0f00) >> 8).arg((WMP_SDK_VERSION & 0x00f0) >> 4).arg((WMP_SDK_VERSION & 0x000f) >> 0),
-#else
                       QString(),
-#endif
                       QString::fromLatin1("<a href=\"http://web.archive.org/web/20180116001029/http://jxrlib.codeplex.com/\">https://jxrlib.codeplex.com/</a>"),
                       QString::fromLatin1("2-clause BSD License"),
                       QString()

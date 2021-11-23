@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_JXRLIB_PATH = $${PWD}/jxrlib
+THIRDPARTY_JXRLIB_PATH = $${PWD}/jxrlib-e922fa5
 
 include(../CommonSettings.pri)
 

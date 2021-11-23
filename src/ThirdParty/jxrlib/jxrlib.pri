@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_jxrlib {
 
-        THIRDPARTY_JXRLIB_PATH = $${PWD}/jxrlib
+        THIRDPARTY_JXRLIB_PATH = $${PWD}/jxrlib-e922fa5
 
         INCLUDEPATH += $${THIRDPARTY_JXRLIB_PATH}/jxrgluelib $${THIRDPARTY_JXRLIB_PATH}/common/include $${THIRDPARTY_JXRLIB_PATH}/image/sys
         DEPENDPATH += $${THIRDPARTY_JXRLIB_PATH}/jxrgluelib $${THIRDPARTY_JXRLIB_PATH}/common/include $${THIRDPARTY_JXRLIB_PATH}/image/sys
