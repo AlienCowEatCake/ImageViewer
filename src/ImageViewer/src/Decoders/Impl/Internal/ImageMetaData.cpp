@@ -23,6 +23,7 @@
 #include <string>
 #include <sstream>
 
+#include <QApplication>
 #include <QImage>
 #include <QTransform>
 #include <QBuffer>
@@ -70,18 +71,33 @@ typedef Exiv2::BasicIo::UniquePtr Exiv2BasicIoPtr;
 typedef Exiv2::Image::UniquePtr Exiv2ImagePtr;
 #endif
 
-bool exiv2Initialize()
+class Exiv2Initializer : public QObject
 {
-    bool result = true;
-    result &= Exiv2::XmpParser::initialize();
-    ::atexit(Exiv2::XmpParser::terminate);
+public:
+    explicit Exiv2Initializer(QObject *parent = Q_NULLPTR)
+        : QObject(parent)
+    {
+        Exiv2::XmpParser::initialize();
 #if defined (EXV_ENABLE_BMFF)
-    result &= Exiv2::enableBMFF(true);
+        Exiv2::enableBMFF(true);
 #endif
-    return result;
-}
+    }
 
-const bool EXIV2_INITIALIZED = exiv2Initialize();
+    ~Exiv2Initializer()
+    {
+        Exiv2::XmpParser::terminate();
+    }
+};
+
+void exiv2Initialize()
+{
+    static bool initialized = false;
+    if(!initialized)
+    {
+        new Exiv2Initializer(qApp);
+        initialized = true;
+    }
+}
 
 class QFileIo : public Exiv2::BasicIo
 {
@@ -439,7 +455,7 @@ QString formatValue(const Exiv2::Value &value)
 
 void fillExifMetaData(const Exiv2::ExifData &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
 {
-    Q_UNUSED(EXIV2_INITIALIZED);
+    exiv2Initialize();
     try
     {
         for(Exiv2::ExifData::const_iterator it = data.begin(), end = data.end(); it != end; ++it)
@@ -461,7 +477,7 @@ void fillExifMetaData(const Exiv2::ExifData &data, IImageMetaData::MetaDataEntry
 
 void fillIptcMetaData(const Exiv2::IptcData &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
 {
-    Q_UNUSED(EXIV2_INITIALIZED);
+    exiv2Initialize();
     try
     {
         for(Exiv2::IptcData::const_iterator it = data.begin(), end = data.end(); it != end; ++it)
@@ -483,7 +499,7 @@ void fillIptcMetaData(const Exiv2::IptcData &data, IImageMetaData::MetaDataEntry
 
 void fillXmpMetaData(const Exiv2::XmpData &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
 {
-    Q_UNUSED(EXIV2_INITIALIZED);
+    exiv2Initialize();
     try
     {
         for(Exiv2::XmpData::const_iterator it = data.begin(), end = data.end(); it != end; ++it)
@@ -505,9 +521,9 @@ void fillXmpMetaData(const Exiv2::XmpData &data, IImageMetaData::MetaDataEntryLi
 
 void fillCommentMetaData(const std::string &data, IImageMetaData::MetaDataEntryListMap &entryListMap)
 {
-    Q_UNUSED(EXIV2_INITIALIZED);
     if(data.empty())
         return;
+    exiv2Initialize();
     const IImageMetaData::MetaDataType type = QString::fromLatin1("Comment");
     IImageMetaData::MetaDataEntryList list = entryListMap[type];
     list.append(IImageMetaData::MetaDataEntry(type, formatValue(data)));
@@ -516,7 +532,7 @@ void fillCommentMetaData(const std::string &data, IImageMetaData::MetaDataEntryL
 
 quint16 getOrientation(const Exiv2::ExifData &data)
 {
-    Q_UNUSED(EXIV2_INITIALIZED);
+    exiv2Initialize();
     try
     {
         Exiv2::ExifData::const_iterator it = Exiv2::orientation(data);
@@ -1172,7 +1188,7 @@ bool ImageMetaData::readFile(const QString &filePath)
 {
     m_impl->entryListMap.clear();
 #if defined (USE_EXIV2)
-    Q_UNUSED(EXIV2_INITIALIZED);
+    exiv2Initialize();
     try
     {
         m_impl->image.reset();
@@ -1227,7 +1243,7 @@ bool ImageMetaData::readFile(const QByteArray &fileData)
 {
     m_impl->entryListMap.clear();
 #if defined (USE_EXIV2)
-    Q_UNUSED(EXIV2_INITIALIZED);
+    exiv2Initialize();
     try
     {
         m_impl->image.reset();
@@ -1292,7 +1308,7 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
 {
     m_impl->entryListMap.clear();
 #if defined (USE_EXIV2)
-    Q_UNUSED(EXIV2_INITIALIZED);
+    exiv2Initialize();
     try
     {
         m_impl->image.reset();
@@ -1347,7 +1363,7 @@ bool ImageMetaData::readXmpData(const QByteArray &rawXmpData)
 {
     m_impl->entryListMap.clear();
 #if defined (USE_EXIV2)
-    Q_UNUSED(EXIV2_INITIALIZED);
+    exiv2Initialize();
     try
     {
         m_impl->image.reset();
