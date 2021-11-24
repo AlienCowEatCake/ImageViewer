@@ -103,6 +103,18 @@
     }
 }
 
+# brotli options:
+#    disable_brotli
+#    system_brotli
+
+
+# highway options:
+#    disable_highway
+#    system_highway
+disable_cxx11 : !system_highway {
+    CONFIG += disable_highway
+}
+
 # libexpat options:
 #    disable_libexpat
 #    system_libexpat
@@ -387,6 +399,15 @@ disable_cxx11 : !system_flif {
 #    system_jxrlib
 
 
+# libjxl options:
+#    disable_libjxl
+#    system_libjxl
+!system_libjxl {
+    disable_cxx11 | disable_brotli | disable_highway {
+        CONFIG += disable_libjxl
+    }
+}
+
 # MagickCore options:
 #    disable_magickcore
 #    enable_magickcore
@@ -547,4 +568,9 @@ disable_libavif | system_libavif {
     disable_libheif | system_libheif {
         CONFIG += disable_aom
     }
+}
+
+disable_libjxl | system_libjxl {
+    CONFIG += disable_brotli
+    CONFIG += disable_highway
 }

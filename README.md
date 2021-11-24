@@ -70,7 +70,8 @@ qmake CONFIG+="release enable_pkgconfig" \
     CONFIG+="system_libwmf system_openjpeg system_giflib system_libraw" \
     CONFIG+="system_librsvg disable_resvg disable_aom disable_libde265 " \
     CONFIG+="system_libheif system_openexr disable_libavif disable_lerc" \
-    CONFIG+="disable_flif system_jxrlib enable_magickcore system_magickwand" \
+    CONFIG+="disable_flif system_jxrlib disable_brotli disable_highway" \
+    CONFIG+="disable_libjxl enable_magickcore system_magickwand" \
     CONFIG+="disable_graphicsmagick disable_graphicsmagickwand" \
     CONFIG+="disable_qtextended disable_stb disable_nanosvg" \
     CONFIG+="disable_qtimageformats enable_qtwebkit enable_qtwebengine" \
@@ -94,6 +95,8 @@ See the [buildscripts/](buildscripts/) directory.
 * ZLib options: `disable_zlib`, `system_zlib` *(bundled package by default)*
 * Zstandard options: `disable_zstd`, `system_zstd` *(bundled package by default)*
 * XZUtils options: `disable_xzutils`, `system_xzutils` *(bundled package by default)*
+* brotli options: `disable_brotli`, `system_brotli` *(bundled package by default)*
+* highway options: `disable_highway`, `system_highway` *(bundled package by default)*
 * libexpat options: `disable_libexpat`, `system_libexpat` *(bundled package by default)*
 * LCMS options: `disable_liblcms2`, `system_liblcms2` *(bundled package by default)*
 * libexif options: `disable_libexif`, `system_libexif` *(bundled package by default)*
@@ -121,6 +124,7 @@ See the [buildscripts/](buildscripts/) directory.
 * libavif options: `disable_libavif`, `system_libavif` *(bundled package by default)*
 * FLIF options: `disable_flif`, `system_flif` *(bundled package by default)*
 * jxrlib options: `disable_jxrlib`, `system_jxrlib` *(bundled package by default)*
+* libjxl options: `disable_libjxl`, `system_libjxl` *(bundled package by default)*
 * MagickCore options: `disable_magickcore`, `enable_magickcore` *(disabled by default)*
 * MagickWand options: `disable_magickwand`, `enable_magickwand`, `system_magickwand` *(disabled by default)*
 * GraphicsMagick options: `disable_graphicsmagick`, `enable_graphicsmagick` *(disabled by default)*

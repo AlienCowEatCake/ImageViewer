@@ -1,0 +1,25 @@
+
+#ifndef JXL_EXPORT_H
+#define JXL_EXPORT_H
+
+#ifndef JXL_EXPORT
+#  define JXL_EXPORT
+#endif
+
+#ifndef JXL_NO_EXPORT
+#  define JXL_NO_EXPORT
+#endif
+
+#ifndef JXL_DEPRECATED
+#  define JXL_DEPRECATED
+#endif
+
+#ifndef JXL_DEPRECATED_EXPORT
+#  define JXL_DEPRECATED_EXPORT JXL_EXPORT JXL_DEPRECATED
+#endif
+
+#ifndef JXL_DEPRECATED_NO_EXPORT
+#  define JXL_DEPRECATED_NO_EXPORT JXL_NO_EXPORT JXL_DEPRECATED
+#endif
+
+#endif /* JXL_EXPORT_H */

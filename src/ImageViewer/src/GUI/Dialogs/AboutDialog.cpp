@@ -77,6 +77,9 @@
 #if defined (HAS_LIBAVIF)
 #include <avif/avif.h>
 #endif
+#if defined (HAS_LIBJXL)
+#include <jxl/decode.h>
+#endif
 #if defined (HAS_JBIGKIT)
 #include <jbig.h>
 #endif
@@ -99,6 +102,12 @@
 #endif
 #if defined (HAS_XZUTILS)
 #include <lzma.h>
+#endif
+#if defined (HAS_BROTLI)
+#include <brotli/decode.h>
+#endif
+#if defined (HAS_HIGHWAY)
+#include <hwy/highway.h>
 #endif
 #if defined (HAS_LIBEXPAT)
 #include <expat.h>
@@ -468,6 +477,17 @@ QString getTextBrowserContent()
                       ));
 #endif
 
+#if defined (HAS_LIBJXL)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the JPEG XL reference implementation"),
+                      QString::fromLatin1("libjxl"),
+                      QString::fromLatin1("%1.%2.%3").arg(JxlDecoderVersion() / 1000000).arg((JxlDecoderVersion() % 1000000) / 1000).arg(JxlDecoderVersion() % 1000),
+                      QString::fromLatin1("https://github.com/libjxl/libjxl"),
+                      QString::fromLatin1("BSD-style License"),
+                      QString::fromLatin1("https://github.com/libjxl/libjxl/blob/main/LICENSE")
+                      ));
+#endif
+
 #if defined (HAS_JBIGKIT)
     result.append(formatItem(
                       QString::fromLatin1("This software uses the JBIG-KIT library"),
@@ -617,6 +637,32 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://tukaani.org/xz/"),
                       QString::fromLatin1("Public Domain"),
                       QString::fromLatin1("https://git.tukaani.org/?p=xz.git;a=blob;f=COPYING")
+                      ));
+#endif
+
+#if defined (HAS_BROTLI)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the Brotli data compression library"),
+                      QString::fromLatin1("brotli"),
+                      QString::fromLatin1("%1.%2.%3").arg(BrotliDecoderVersion() >> 24).arg((BrotliDecoderVersion() >> 12) & 0x0fff).arg(BrotliDecoderVersion() & 0x0fff),
+                      QString::fromLatin1("https://github.com/google/brotli"),
+                      QString::fromLatin1("MIT License"),
+                      QString::fromLatin1("https://github.com/google/brotli/blob/master/LICENSE")
+                      ));
+#endif
+
+#if defined (HAS_HIGHWAY)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the Highway library"),
+                      QString::fromLatin1("highway"),
+#if defined (HWY_MAJOR) && defined (HWY_MINOR) && defined (HWY_PATCH)
+                      QString::fromLatin1("%1.%2.%3").arg(HWY_MAJOR).arg(HWY_MINOR).arg(HWY_PATCH),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("https://github.com/google/highway"),
+                      QString::fromLatin1("Apache License, Version 2.0"),
+                      QString::fromLatin1("https://github.com/google/highway/blob/master/LICENSE")
                       ));
 #endif
 

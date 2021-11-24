@@ -16,6 +16,14 @@ SUBDIRS =
     SUBDIRS += XZUtils/XZUtils.pro
 }
 
+!disable_brotli : !system_brotli {
+    SUBDIRS += brotli/brotli.pro
+}
+
+!disable_highway : !system_highway {
+    SUBDIRS += highway/highway.pro
+}
+
 !disable_libexpat : !system_libexpat {
     SUBDIRS += libexpat/libexpat.pro
 }
@@ -114,6 +122,10 @@ SUBDIRS =
 
 !disable_jxrlib : !system_jxrlib {
     SUBDIRS += jxrlib/jxrlib.pro
+}
+
+!disable_libjxl : !system_libjxl {
+    SUBDIRS += libjxl/libjxl.pro
 }
 
 !disable_qtextended {

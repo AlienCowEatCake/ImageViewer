@@ -275,6 +275,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderJxrLib.cpp
 }
 
+!disable_libjxl {
+    SOURCES += \
+        src/Decoders/Impl/DecoderLibJxl.cpp
+}
+
 !disable_magickcore {
     SOURCES += \
         src/Decoders/Impl/DecoderMagickCore.cpp

@@ -199,6 +199,16 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>jxl</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>JPEG XL Image</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>jxr</string>
 				<string>hdp</string>
 				<string>wdp</string>

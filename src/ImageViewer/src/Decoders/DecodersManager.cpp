@@ -106,6 +106,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderLibWebP"              , 1310, -1); ///< Умеет анимированные webp. Поддержка лучше, чем в QtImageFormatsMovie.
         P("DecoderLibBpg"               , 1320, -1); ///< Умеет анимированные bpg. Поддерживает EXIF и ICCP.
         P("DecoderFLIF"                 , 1330, -1); ///< Умеет анимированные flif.
+        P("DecoderLibJxl"               , 1340, -1); ///< Умеет анимированные jxl.
         /// @note Декодеры векторных изображений
         P("DecoderNanoSVG"              , 2000, -1); ///< Умеет только самые простые неинтерактивные svg без текста.
         P("DecoderMSHTML"               , 2010, -1); ///< Умеет неинтерактивные svg без прозрачности, требует IE9+.
