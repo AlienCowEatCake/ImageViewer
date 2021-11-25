@@ -49,7 +49,7 @@ public:
     FlifAnimationProvider()
     {}
 
-    PayloadWithMetaData<bool> readAvifFile(const QString &filePath)
+    PayloadWithMetaData<bool> readFlifFile(const QString &filePath)
     {
         const MappedBuffer inBuffer(filePath);
         if(!inBuffer.isValid())
@@ -162,7 +162,7 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
         FlifAnimationProvider *provider = new FlifAnimationProvider();
-        const PayloadWithMetaData<bool> readResult = provider->readAvifFile(filePath);
+        const PayloadWithMetaData<bool> readResult = provider->readFlifFile(filePath);
         QGraphicsItem *item = GraphicsItemsFactory::instance().createAnimatedItem(provider);
         return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), readResult.metaData()));
     }
