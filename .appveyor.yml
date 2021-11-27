@@ -5,17 +5,13 @@ max_jobs: 1
 
 environment:
   matrix:
-    - job_name: macOS, Qt 5.12, Testing
-      job_group: macos_test
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
-      QTDIR: Qt/5.12/clang_64
     - job_name: macOS, Qt 5.15, Testing
       job_group: macos_test
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      APPVEYOR_BUILD_WORKER_IMAGE: macos-bigsur
       QTDIR: Qt/5.15/clang_64
     - job_name: macOS, Qt 6.0, Testing
       job_group: macos_test
-      APPVEYOR_BUILD_WORKER_IMAGE: macos
+      APPVEYOR_BUILD_WORKER_IMAGE: macos-bigsur
       QTDIR: Qt/6.0/clang_64
     # # - job_name: macOS, Qt 5.6, MacSDK 10.6
     # #   job_group: macos_buildscript
@@ -126,52 +122,20 @@ environment:
     #   ARCH: x64
     #   QTDIR: C:\Qt\4.8.7\msvc2015_64_static
     #   BUILD_ID: win_qt4.8_msvc2015_x64
-    - job_name: Windows, Qt 5.3, MSVC 2013 x86, Testing
-      job_group: windows_test_msvc
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
-      ARCH: x86
-      QTDIR: C:\Qt\5.3\msvc2013_opengl
-    - job_name: Windows, Qt 5.3, MSVC 2013 x64, Testing
-      job_group: windows_test_msvc
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
-      ARCH: x64
-      QTDIR: C:\Qt\5.3\msvc2013_64_opengl
-    - job_name: Windows, Qt 5.3, MinGW 4.8.2 x86, Testing
-      job_group: windows_test_mingw
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-      QTDIR: C:\Qt\5.3\mingw482_32
-      MINGW_DIR: C:\Qt\Tools\mingw482_32
-    - job_name: Windows, Qt 5.6, MSVC 2013 x86, Testing
-      job_group: windows_test_msvc
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
-      ARCH: x86
-      QTDIR: C:\Qt\5.6\msvc2013
-    - job_name: Windows, Qt 5.6, MSVC 2013 x64, Testing
-      job_group: windows_test_msvc
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
-      ARCH: x64
-      QTDIR: C:\Qt\5.6\msvc2013_64
-    - job_name: Windows, Qt 5.6, MinGW 4.9.2 x86, Testing
-      job_group: windows_test_mingw
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-      QTDIR: C:\Qt\5.6\mingw49_32
-      MINGW_DIR: C:\Qt\Tools\mingw492_32
     - job_name: Windows, Qt 5.9, MSVC 2015 x86, Testing
       job_group: windows_test_msvc
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat
       ARCH: x86
       QTDIR: C:\Qt\5.9\msvc2015
+      JOMDIR: C:\Qt\Tools\QtCreator\bin
     - job_name: Windows, Qt 5.9, MSVC 2015 x64, Testing
       job_group: windows_test_msvc
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       VCVARS: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat
       ARCH: x64
       QTDIR: C:\Qt\5.9\msvc2015_64
+      JOMDIR: C:\Qt\Tools\QtCreator\bin
     - job_name: Windows, Qt 5.9, MinGW 5.3.0 x86, Testing
       job_group: windows_test_mingw
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
@@ -183,12 +147,14 @@ environment:
       VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat
       ARCH: x64_x86
       QTDIR: C:\Qt\5.12\msvc2017
+      JOMDIR: C:\Qt\Tools\QtCreator\bin
     - job_name: Windows, Qt 5.12, MSVC 2017 x64, Testing
       job_group: windows_test_msvc
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat
       ARCH: x64
       QTDIR: C:\Qt\5.12\msvc2017_64
+      JOMDIR: C:\Qt\Tools\QtCreator\bin
     - job_name: Windows, Qt 5.12, MinGW 7.3.0 x86, Testing
       job_group: windows_test_mingw
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
@@ -205,12 +171,14 @@ environment:
       VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat
       ARCH: x64_x86
       QTDIR: C:\Qt\5.15\msvc2019
+      JOMDIR: C:\Qt\Tools\QtCreator\bin\jom
     - job_name: Windows, Qt 5.15, MSVC 2019 x64, Testing
       job_group: windows_test_msvc
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat
       ARCH: x64
       QTDIR: C:\Qt\5.15\msvc2019_64
+      JOMDIR: C:\Qt\Tools\QtCreator\bin\jom
     - job_name: Windows, Qt 5.15, MinGW 8.1.0 x86, Testing
       job_group: windows_test_mingw
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
@@ -221,16 +189,17 @@ environment:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       QTDIR: C:\Qt\5.15\mingw81_64
       MINGW_DIR: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64
-    - job_name: Windows, Qt 6.0, MSVC 2019 x64, Testing
+    - job_name: Windows, Qt 6.2, MSVC 2022 x64, Testing
       job_group: windows_test_msvc
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      VCVARS: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+      VCVARS: C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat
       ARCH: x64
-      QTDIR: C:\Qt\6.0\msvc2019_64
-    - job_name: Windows, Qt 6.0, MinGW 8.1.0 x64, Testing
+      QTDIR: C:\Qt\6.2\msvc2019_64
+      JOMDIR: C:\Qt\Tools\QtCreator\bin\jom
+    - job_name: Windows, Qt 6.2, MinGW 8.1.0 x64, Testing
       job_group: windows_test_mingw
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      QTDIR: C:\Qt\6.0\mingw81_64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+      QTDIR: C:\Qt\6.2\mingw81_64
       MINGW_DIR: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64
     - job_name: GNU/Linux, Ubuntu 16.04, Qt 4.x, Testing
       job_group: linux_test_qt4
@@ -247,18 +216,14 @@ environment:
     - job_name: GNU/Linux, Ubuntu 20.04, Qt 5.x, Testing
       job_group: linux_test_qt5
       APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
-    - job_name: GNU/Linux, Ubuntu 20.04, Qt 5.12, Testing
-      job_group: linux_test
-      APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
-      QTDIR: Qt/5.12/gcc_64
     - job_name: GNU/Linux, Ubuntu 20.04, Qt 5.15, Testing
       job_group: linux_test
       APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
       QTDIR: Qt/5.15/gcc_64
-    - job_name: GNU/Linux, Ubuntu 20.04, Qt 6.0, Testing
+    - job_name: GNU/Linux, Ubuntu 20.04, Qt 6.2, Testing
       job_group: linux_test
       APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
-      QTDIR: Qt/6.0/gcc_64
+      QTDIR: Qt/6.2/gcc_64
 
 for:
 -
@@ -305,7 +270,7 @@ for:
     - mkdir "%APPVEYOR_BUILD_FOLDER%\build"
     - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_resvg enable_magickwand enable_graphicsmagickwand enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
     - cd "%APPVEYOR_BUILD_FOLDER%\build"
-    - call "C:\Qt\Tools\QtCreator\bin\jom.exe" -j3
+    - call "%JOMDIR%\jom.exe" -j3
 
 -
   matrix:
