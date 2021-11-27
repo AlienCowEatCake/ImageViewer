@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_FLIF_PATH = $${PWD}/FLIF-e8cc6c1
+THIRDPARTY_FLIF_PATH = $${PWD}/FLIF-0.4
 
 include(../CommonSettings.pri)
 
