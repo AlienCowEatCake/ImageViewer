@@ -27,9 +27,9 @@
 //*@@@---@@@@******************************************************************
 #pragma once
 
-#include <windowsmediaphoto.h>
-#ifndef WIN32
-#include <wmspecstring.h>
+#include "../image/sys/windowsmediaphoto.h"
+#ifndef _MSC_VER
+#include "../common/include/wmspecstring.h"
 #endif
 
 #ifndef UNREFERENCED_PARAMETER
@@ -106,7 +106,7 @@
 #define WMP_valWMPhotoID WMP_valCompression
 
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #define __in_win    __in
 #define __out_win   __out
 #endif

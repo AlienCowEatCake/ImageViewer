@@ -19,6 +19,9 @@
 
 #include <algorithm>
 
+#if !defined (TIFF_DISABLE_DEPRECATED)
+#define TIFF_DISABLE_DEPRECATED
+#endif
 #include <tiffio.h>
 
 #include <QFileInfo>

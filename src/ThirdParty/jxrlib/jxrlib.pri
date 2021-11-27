@@ -11,8 +11,8 @@ include($${PWD}/../../Features.pri)
 
         THIRDPARTY_JXRLIB_PATH = $${PWD}/jxrlib-e922fa5
 
-        INCLUDEPATH += $${THIRDPARTY_JXRLIB_PATH}/jxrgluelib $${THIRDPARTY_JXRLIB_PATH}/common/include $${THIRDPARTY_JXRLIB_PATH}/image/sys
-        DEPENDPATH += $${THIRDPARTY_JXRLIB_PATH}/jxrgluelib $${THIRDPARTY_JXRLIB_PATH}/common/include $${THIRDPARTY_JXRLIB_PATH}/image/sys
+        INCLUDEPATH += $${THIRDPARTY_JXRLIB_PATH}/jxrgluelib
+        DEPENDPATH += $${THIRDPARTY_JXRLIB_PATH}/jxrgluelib
 
         OUT_LIB_TARGET = tp_jxrlib
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/jxrlib

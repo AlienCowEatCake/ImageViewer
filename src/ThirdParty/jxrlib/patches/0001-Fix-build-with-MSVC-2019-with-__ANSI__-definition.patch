@@ -1,7 +1,7 @@
-From 91f5be1f4c24fd44c52d32bbaea041af97168da6 Mon Sep 17 00:00:00 2001
+From 50c29a117e490e490eff54ad7dacf6bc0402c209 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 24 Nov 2021 02:09:39 +0700
-Subject: [PATCH] Fix build with MSVC 2019 with __ANSI__ definition
+Subject: [PATCH 1/3] Fix build with MSVC 2019 with __ANSI__ definition
 
 ---
  image/sys/ansi.h | 11 ++++-------
@@ -37,5 +37,5 @@ index 74900c9..4400d91 100644
  
  //================================
 -- 
-2.33.1
+2.34.0
 

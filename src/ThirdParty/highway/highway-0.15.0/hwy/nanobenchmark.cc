@@ -346,7 +346,20 @@ void Cpuid(const uint32_t level, const uint32_t count,
   uint32_t b;
   uint32_t c;
   uint32_t d;
+#if HWY_COMPILER_CLANG && !defined __cpuid_count
+#if __i386__
+  __asm("cpuid" : "=a"(a), "=b" (b), "=c"(c), "=d"(d) \
+      : "0"(level), "2"(count))
+#else
+  __asm("  xchgq  %%rbx,%q1\n" \
+        "  cpuid\n" \
+        "  xchgq  %%rbx,%q1" \
+      : "=a"(a), "=r" (b), "=c"(c), "=d"(d) \
+      : "0"(level), "2"(count));
+#endif
+#else
   __cpuid_count(level, count, a, b, c, d);
+#endif
   abcd[0] = a;
   abcd[1] = b;
   abcd[2] = c;

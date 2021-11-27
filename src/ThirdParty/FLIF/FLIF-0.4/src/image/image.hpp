@@ -539,11 +539,11 @@ public:
     }
 
     // move constructor
-    Image(Image&& other) {
+    Image(Image&& other) noexcept {
       // reuse implementation from assignment operator
       operator=(std::move(other));
     }
-    Image& operator=(Image&& other) {
+    Image& operator=(Image&& other) noexcept {
       width = other.width;
       height = other.height;
       minval = other.minval;

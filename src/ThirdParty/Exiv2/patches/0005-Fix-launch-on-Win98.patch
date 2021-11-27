@@ -1,14 +1,14 @@
-From 5f002f82f6ccd00d4bed3cd36391300e57c84a12 Mon Sep 17 00:00:00 2001
+From fc7337d8e03b27d2ce6a2f00d94342c6f8dc1867 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:36:47 +0700
-Subject: [PATCH 5/9] Fix launch on Win98
+Subject: [PATCH 05/10] Fix launch on Win98
 
 ---
  src/makernote_int.cpp | 6 +++++-
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/src/makernote_int.cpp b/src/makernote_int.cpp
-index 25bb3d3f..40f71fb1 100644
+index 4db41f46..9d6b6928 100644
 --- a/src/makernote_int.cpp
 +++ b/src/makernote_int.cpp
 @@ -97,10 +97,14 @@ namespace Exiv2 {
@@ -28,5 +28,5 @@ index 25bb3d3f..40f71fb1 100644
              struct passwd* pw = getpwuid(getuid());
              homedir = std::string(pw?pw->pw_dir:"");
 -- 
-2.20.1
+2.34.0
 

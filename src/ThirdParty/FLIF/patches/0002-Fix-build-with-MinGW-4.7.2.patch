@@ -1,0 +1,87 @@
+From ed2a6e8223db5fe04cba9921758d675b74813940 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 28 Nov 2021 20:25:56 +0700
+Subject: [PATCH 2/2] Fix build with MinGW 4.7.2
+
+---
+ src/image/crc32k.hpp | 21 ++-------------------
+ src/image/image.hpp  |  4 ++--
+ 2 files changed, 4 insertions(+), 21 deletions(-)
+
+diff --git a/src/image/crc32k.hpp b/src/image/crc32k.hpp
+index 3faf4fa..65e6fee 100644
+--- a/src/image/crc32k.hpp
++++ b/src/image/crc32k.hpp
+@@ -13,23 +13,14 @@
+   #define __ORDER_LITTLE_ENDIAN__ 1234
+   #define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__
+ 
+-  #include <xmmintrin.h>
+-  #ifdef __MINGW32__
+-    #define PREFETCH(location) __builtin_prefetch(location)
+-  #else
+-    #define PREFETCH(location) _mm_prefetch(location, _MM_HINT_T0)
+-  #endif
++  #define PREFETCH(location)
+ #else
+   // uint8_t, uint32_t, in32_t
+   #include <stdint.h>
+   // defines __BYTE_ORDER as __LITTLE_ENDIAN or __BIG_ENDIAN
+   #include <sys/param.h>
+ 
+-  #ifdef __GNUC__
+-    #define PREFETCH(location) __builtin_prefetch(location)
+-  #else
+-    #define PREFETCH(location) ;
+-  #endif
++  #define PREFETCH(location)
+ #endif
+ 
+ 
+@@ -39,25 +30,17 @@ const uint32_t Polynomial = 0xEDB88320;
+ /// swap endianess
+ static inline uint32_t swap(uint32_t x)
+ {
+-#if defined(__GNUC__) || defined(__clang__)
+-  return __builtin_bswap32(x);
+-#else
+   return (x >> 24) |
+         ((x >>  8) & 0x0000FF00) |
+         ((x <<  8) & 0x00FF0000) |
+          (x << 24);
+-#endif
+ }
+ 
+ /// swap endianess
+ inline uint16_t swap16(uint16_t x)
+ {
+-#if defined(__GNUC__) || defined(__clang__)
+-  return __builtin_bswap16(x);
+-#else
+   return (x >> 8) |
+          (x << 8);
+-#endif
+ }
+ 
+ uint32_t crc32_fast(const void* data, size_t length, uint32_t previousCrc32 = 0);
+diff --git a/src/image/image.hpp b/src/image/image.hpp
+index eb65d7d..5057d21 100644
+--- a/src/image/image.hpp
++++ b/src/image/image.hpp
+@@ -539,11 +539,11 @@ public:
+     }
+ 
+     // move constructor
+-    Image(Image&& other) {
++    Image(Image&& other) noexcept {
+       // reuse implementation from assignment operator
+       operator=(std::move(other));
+     }
+-    Image& operator=(Image&& other) {
++    Image& operator=(Image&& other) noexcept {
+       width = other.width;
+       height = other.height;
+       minval = other.minval;
+-- 
+2.34.0
+

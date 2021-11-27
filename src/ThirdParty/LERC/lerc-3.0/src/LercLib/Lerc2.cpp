@@ -172,7 +172,7 @@ unsigned int Lerc2::ComputeNumBytesNeededToWrite(const T* arr, double maxZError,
 
   m_maxValToQuantize = GetMaxValToQuantize(m_headerInfo.dt);
 
-  Byte* ptr = nullptr;    // only emulate the writing and just count the bytes needed
+  Byte* ptr = NULL;    // only emulate the writing and just count the bytes needed
   int nBytesTiling = 0;
 
   if (!ComputeMinMaxRanges(arr, m_zMinVec, m_zMaxVec))    // need this for diff encoding before WriteTiles()
@@ -978,8 +978,26 @@ bool Lerc2::TryRaiseMaxZError(const T* data, double& maxZError) const
   const HeaderInfo& hd = m_headerInfo;
   const int nDim = hd.nDim;
 
-  std::vector<double> roundErr, zErr, zErrCand = { 1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001 };
-  std::vector<int> zFac, zFacCand = { 1, 2, 10, 20, 100, 200, 1000, 2000, 10000 };
+  std::vector<double> roundErr, zErr, zErrCand;
+  zErrCand.push_back(1);
+  zErrCand.push_back(0.5);
+  zErrCand.push_back(0.1);
+  zErrCand.push_back(0.05);
+  zErrCand.push_back(0.01);
+  zErrCand.push_back(0.005);
+  zErrCand.push_back(0.001);
+  zErrCand.push_back(0.0005);
+  zErrCand.push_back(0.0001);
+  std::vector<int> zFac, zFacCand;
+  zFacCand.push_back(1);
+  zFacCand.push_back(2);
+  zFacCand.push_back(10);
+  zFacCand.push_back(20);
+  zFacCand.push_back(100);
+  zFacCand.push_back(200);
+  zFacCand.push_back(1000);
+  zFacCand.push_back(2000);
+  zFacCand.push_back(10000);
 
   for (size_t i = 0; i < zErrCand.size(); i++)
     if (zErrCand[i] / 2 > maxZError)
@@ -1878,7 +1896,7 @@ bool Lerc2::ReadTile(const Byte** ppByte, size_t& nBytesRemainingInOut, T* data,
         return false;
 
       double invScale = 2 * hd.maxZError;    // for int types this is int
-      const unsigned int* srcPtr = bufferVec.data();
+      const unsigned int* srcPtr = &(bufferVec[0]);
 
       if (bufferVec.size() == maxElementCount)    // all valid
       {
@@ -1987,6 +2005,14 @@ Lerc2::DataType Lerc2::GetDataType(T z)
 
 // -------------------------------------------------------------------------- ;
 
+struct MyLessThanOp
+{
+  inline bool operator() (const pair<unsigned int, unsigned int>& p0,
+                          const pair<unsigned int, unsigned int>& p1) { return p0.first < p1.first; }
+};
+
+// -------------------------------------------------------------------------- ;
+
 void Lerc2::SortQuantArray(const vector<unsigned int>& quantVec, vector<pair<unsigned int, unsigned int> >& sortedQuantVec)
 {
   int numElem = (int)quantVec.size();
@@ -1995,9 +2021,7 @@ void Lerc2::SortQuantArray(const vector<unsigned int>& quantVec, vector<pair<uns
   for (int i = 0; i < numElem; i++)
     sortedQuantVec[i] = pair<unsigned int, unsigned int>(quantVec[i], i);
 
-  std::sort(sortedQuantVec.begin(), sortedQuantVec.end(),
-    [](const pair<unsigned int, unsigned int>& p0,
-       const pair<unsigned int, unsigned int>& p1) { return p0.first < p1.first; });
+  std::sort(sortedQuantVec.begin(), sortedQuantVec.end(), MyLessThanOp());
 }
 
 // -------------------------------------------------------------------------- ;

@@ -1,7 +1,7 @@
-From 2e0ff9afd07c7d93eeeb899b6c3981278977b76c Mon Sep 17 00:00:00 2001
+From b4d678740a72e1840d0a4cfa24d357e1deaec5a5 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:32:20 +0700
-Subject: [PATCH 1/9] Disable dumpLibraryInfo
+Subject: [PATCH 01/10] Disable dumpLibraryInfo
 
 ---
  include/exiv2/version.hpp | 2 ++
@@ -9,10 +9,10 @@ Subject: [PATCH 1/9] Disable dumpLibraryInfo
  2 files changed, 6 insertions(+)
 
 diff --git a/include/exiv2/version.hpp b/include/exiv2/version.hpp
-index f5df8150..7e47154f 100644
+index d83e2596..9ca63e91 100644
 --- a/include/exiv2/version.hpp
 +++ b/include/exiv2/version.hpp
-@@ -155,11 +155,13 @@ namespace Exiv2 {
+@@ -145,11 +145,13 @@ namespace Exiv2 {
        The fourth version number is designated a "tweak" an used by Release Candidates
      */
      EXIV2API bool testVersion(int major, int minor, int patch);
@@ -27,7 +27,7 @@ index f5df8150..7e47154f 100644
  
  
 diff --git a/src/version.cpp b/src/version.cpp
-index 0cd62c40..101368b0 100644
+index faa80840..1fd0d574 100644
 --- a/src/version.cpp
 +++ b/src/version.cpp
 @@ -56,6 +56,7 @@
@@ -46,7 +46,7 @@ index 0cd62c40..101368b0 100644
  
  namespace Exiv2 {
      int versionNumber()
-@@ -112,6 +114,7 @@ namespace Exiv2 {
+@@ -111,6 +113,7 @@ namespace Exiv2 {
      }
  }   // namespace Exiv2
  
@@ -54,11 +54,11 @@ index 0cd62c40..101368b0 100644
  static bool shouldOutput(const exv_grep_keys_t& greps,const char* key,const std::string& value)
  {
      bool bPrint = greps.empty();
-@@ -573,3 +576,4 @@ void Exiv2::dumpLibraryInfo(std::ostream& os,const exv_grep_keys_t& keys)
+@@ -575,3 +578,4 @@ void Exiv2::dumpLibraryInfo(std::ostream& os,const exv_grep_keys_t& keys)
      }
  #endif
  }
 +#endif
 -- 
-2.20.1
+2.34.0
 

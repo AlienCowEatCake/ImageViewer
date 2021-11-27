@@ -55,6 +55,9 @@
 #include <libmng.h>
 #endif
 #if defined (HAS_LIBTIFF)
+#if !defined (TIFF_DISABLE_DEPRECATED)
+#define TIFF_DISABLE_DEPRECATED
+#endif
 #include <tiffio.h>
 #endif
 #if defined (HAS_LIBWEBP)

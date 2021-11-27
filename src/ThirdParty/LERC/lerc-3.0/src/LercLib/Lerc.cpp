@@ -24,6 +24,7 @@ Contributors:  Thomas Maurer
 #include "Defines.h"
 #include "Lerc.h"
 #include "Lerc2.h"
+#include <cstdio>
 #include <typeinfo>
 #include <limits>
 
@@ -51,7 +52,7 @@ ErrCode Lerc::ComputeCompressedSize(const void* pData, int version, DataType dt,
   case DT_Double:  return ComputeCompressedSizeTempl((const double*)pData, version, nDim, nCols, nRows, nBands, nMasks, pValidBytes, maxZErr, numBytesNeeded);
 
   default:
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
   }
 }
 
@@ -72,7 +73,7 @@ ErrCode Lerc::Encode(const void* pData, int version, DataType dt, int nDim, int 
   case DT_Double:  return EncodeTempl((const double*)pData, version, nDim, nCols, nRows, nBands, nMasks, pValidBytes, maxZErr, pBuffer, numBytesBuffer, numBytesWritten);
 
   default:
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
   }
 }
 
@@ -105,7 +106,7 @@ ErrCode Lerc::GetLercInfo(const Byte* pLercBlob, unsigned int numBytesBlob, stru
       nMasks = 1;
 
     if (lercInfo.blobSize > (int)numBytesBlob)    // truncated blob, we won't be able to read this band
-      return ErrCode::BufferTooSmall;
+      return ErrCode_BufferTooSmall;
 
     struct Lerc2::HeaderInfo hdInfo;
     while (Lerc2::GetHeaderInfo(pLercBlob + lercInfo.blobSize, numBytesBlob - lercInfo.blobSize, hdInfo, bHasMask))
@@ -116,19 +117,19 @@ ErrCode Lerc::GetLercInfo(const Byte* pLercBlob, unsigned int numBytesBlob, stru
        || (int)hdInfo.dt != (int)lercInfo.dt)
        //|| hdInfo.maxZError != lercInfo.maxZError)    // with the new bitplane compression, maxZError can vary between bands
       {
-        return ErrCode::Failed;
+        return ErrCode_Failed;
       }
 
       if (bHasMask || hdInfo.numValidPixel != lercInfo.numValidPixel)    // support mask per band
         nMasks = 2;
 
       if (lercInfo.blobSize > std::numeric_limits<int>::max() - hdInfo.blobSize)
-        return ErrCode::Failed;
+        return ErrCode_Failed;
 
       lercInfo.blobSize += hdInfo.blobSize;
 
       if (lercInfo.blobSize > (int)numBytesBlob)    // truncated blob, we won't be able to read this band
-        return ErrCode::BufferTooSmall;
+        return ErrCode_BufferTooSmall;
 
       lercInfo.nBands++;
       lercInfo.zMin = min(lercInfo.zMin, hdInfo.zMin);
@@ -138,7 +139,7 @@ ErrCode Lerc::GetLercInfo(const Byte* pLercBlob, unsigned int numBytesBlob, stru
 
     lercInfo.nMasks = nMasks > 1 ? lercInfo.nBands : nMasks;
 
-    return ErrCode::Ok;
+    return ErrCode_Ok;
   }
 
 
@@ -158,7 +159,7 @@ ErrCode Lerc::GetLercInfo(const Byte* pLercBlob, unsigned int numBytesBlob, stru
     size_t nBytesNeeded = 10 + 4 * sizeof(int) + 1 * sizeof(double);
 
     if (nBytesRead < nBytesNeeded)
-      return ErrCode::Failed;
+      return ErrCode_Failed;
 
     Byte* ptr = const_cast<Byte*>(pLercBlob);
     ptr += 10 + 2 * sizeof(int);
@@ -170,7 +171,7 @@ ErrCode Lerc::GetLercInfo(const Byte* pLercBlob, unsigned int numBytesBlob, stru
     memcpy(&maxZErrorInFile, ptr, sizeof(double));
 
     if (height > 20000 || width > 20000)    // guard against bogus numbers; size limitation for old Lerc1
-      return ErrCode::Failed;
+      return ErrCode_Failed;
 
     lercInfo.nDim = 1;
     lercInfo.nCols = width;
@@ -184,7 +185,7 @@ ErrCode Lerc::GetLercInfo(const Byte* pLercBlob, unsigned int numBytesBlob, stru
     while (lercInfo.blobSize + numBytesHeaderBand1 < numBytesBlob)    // means there could be another band
     {
       if (!cntZImg.read(&pByte, 1e12, false, onlyZPart))
-        return (lercInfo.nBands > 0) ? ErrCode::Ok : ErrCode::Failed;    // no other band, we are done
+        return (lercInfo.nBands > 0) ? ErrCode_Ok : ErrCode_Failed;    // no other band, we are done
 
       onlyZPart = true;
 
@@ -214,11 +215,11 @@ ErrCode Lerc::GetLercInfo(const Byte* pLercBlob, unsigned int numBytesBlob, stru
       lercInfo.nMasks = numValidPixels < width * height ? 1 : 0;
     }
 
-    return ErrCode::Ok;
+    return ErrCode_Ok;
   }
 #endif
 
-  return ErrCode::Failed;
+  return ErrCode_Failed;
 }
 
 // -------------------------------------------------------------------------- ;
@@ -238,7 +239,7 @@ ErrCode Lerc::Decode(const Byte* pLercBlob, unsigned int numBytesBlob, int nMask
   case DT_Double:  return DecodeTempl((double*)pData, pLercBlob, numBytesBlob, nDim, nCols, nRows, nBands, nMasks, pValidBytes);
 
   default:
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
   }
 }
 
@@ -258,7 +259,7 @@ ErrCode Lerc::ConvertToDouble(const void* pDataIn, DataType dt, size_t nDataValu
   //case DT_Double:  no convert double to double
 
   default:
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
   }
 }
 
@@ -272,15 +273,15 @@ ErrCode Lerc::ComputeCompressedSizeTempl(const T* pData, int version, int nDim, 
   numBytesNeeded = 0;
 
   if (!pData || nDim <= 0 || nCols <= 0 || nRows <= 0 || nBands <= 0 || maxZErr < 0)
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
 
   if (!(nMasks == 0 || nMasks == 1 || nMasks == nBands) || (nMasks > 0 && !pValidBytes))
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
 
   unsigned int numBytesWritten = 0;
 
   return EncodeInternal(pData, version, nDim, nCols, nRows, nBands, nMasks, pValidBytes, maxZErr,
-    numBytesNeeded, nullptr, 0, numBytesWritten);
+    numBytesNeeded, NULL, 0, numBytesWritten);
 }
 
 // -------------------------------------------------------------------------- ;
@@ -292,10 +293,10 @@ ErrCode Lerc::EncodeTempl(const T* pData, int version, int nDim, int nCols, int 
   numBytesWritten = 0;
 
   if (!pData || nDim <= 0 || nCols <= 0 || nRows <= 0 || nBands <= 0 || maxZErr < 0 || !pBuffer || !numBytesBuffer)
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
 
   if (!(nMasks == 0 || nMasks == 1 || nMasks == nBands) || (nMasks > 0 && !pValidBytes))
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
 
   unsigned int numBytesNeeded = 0;
 
@@ -310,10 +311,10 @@ ErrCode Lerc::DecodeTempl(T* pData, const Byte* pLercBlob, unsigned int numBytes
   int nDim, int nCols, int nRows, int nBands, int nMasks, Byte* pValidBytes)
 {
   if (!pData || nDim <= 0 || nCols <= 0 || nRows <= 0 || nBands <= 0 || !pLercBlob || !numBytesBlob)
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
 
   if (!(nMasks == 0 || nMasks == 1 || nMasks == nBands) || (nMasks > 0 && !pValidBytes))
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
 
   const Byte* pByte = pLercBlob;
   Lerc2::HeaderInfo hdInfo;
@@ -323,13 +324,13 @@ ErrCode Lerc::DecodeTempl(T* pData, const Byte* pLercBlob, unsigned int numBytes
   {
     LercInfo lercInfo;
     ErrCode errCode = GetLercInfo(pLercBlob, numBytesBlob, lercInfo);    // fast for Lerc2
-    if (errCode != ErrCode::Ok)
+    if (errCode != ErrCode_Ok)
       return errCode;
 
     const int nMasksEncoded = lercInfo.nMasks;    // 0, 1, or nBands
 
     if (nMasks < nMasksEncoded)
-      return ErrCode::WrongParam;
+      return ErrCode_WrongParam;
 
     size_t nBytesRemaining = numBytesBlob;
     Lerc2 lerc2;
@@ -340,10 +341,10 @@ ErrCode Lerc::DecodeTempl(T* pData, const Byte* pLercBlob, unsigned int numBytes
       if (((size_t)(pByte - pLercBlob) < numBytesBlob) && Lerc2::GetHeaderInfo(pByte, nBytesRemaining, hdInfo, bHasMask))
       {
         if (hdInfo.nDim != nDim || hdInfo.nCols != nCols || hdInfo.nRows != nRows)
-          return ErrCode::Failed;
+          return ErrCode_Failed;
 
         if ((pByte - pLercBlob) + (size_t)hdInfo.blobSize > numBytesBlob)
-          return ErrCode::BufferTooSmall;
+          return ErrCode_BufferTooSmall;
 
         size_t nPix = (size_t)iBand * nRows * nCols;
         T* arr = pData + nPix * nDim;
@@ -351,13 +352,13 @@ ErrCode Lerc::DecodeTempl(T* pData, const Byte* pLercBlob, unsigned int numBytes
         bool bGetMask = iBand < nMasks;
 
         if (bGetMask && !bitMask.SetSize(nCols, nRows))
-          return ErrCode::Failed;
+          return ErrCode_Failed;
 
-        if (!lerc2.Decode(&pByte, nBytesRemaining, arr, bGetMask ? bitMask.Bits() : nullptr))
-          return ErrCode::Failed;
+        if (!lerc2.Decode(&pByte, nBytesRemaining, arr, bGetMask ? bitMask.Bits() : NULL))
+          return ErrCode_Failed;
 
         if (bGetMask && !Convert(bitMask, pValidBytes + nPix))
-          return ErrCode::Failed;
+          return ErrCode_Failed;
       }
     }  // iBand
   }  // Lerc2
@@ -374,28 +375,28 @@ ErrCode Lerc::DecodeTempl(T* pData, const Byte* pLercBlob, unsigned int numBytes
     {
       unsigned int numBytesHeader = iBand == 0 ? numBytesHeaderBand0 : numBytesHeaderBand1;
       if ((size_t)(pByte - pLercBlob) + numBytesHeader > numBytesBlob)
-        return ErrCode::BufferTooSmall;
+        return ErrCode_BufferTooSmall;
 
       bool onlyZPart = iBand > 0;
       if (!zImg.read(&pByte1, 1e12, false, onlyZPart))
-        return ErrCode::Failed;
+        return ErrCode_Failed;
 
       if (zImg.getWidth() != nCols || zImg.getHeight() != nRows)
-        return ErrCode::Failed;
+        return ErrCode_Failed;
 
       size_t nPix = (size_t)iBand * nRows * nCols;
       T* arr = pData + nPix;
-      Byte* pDst = iBand < nMasks ? pValidBytes + nPix : nullptr;
+      Byte* pDst = iBand < nMasks ? pValidBytes + nPix : NULL;
 
       if (!Convert(zImg, arr, pDst, iBand == 0))
-        return ErrCode::Failed;
+        return ErrCode_Failed;
     }
 #else
-    return ErrCode::Failed;
+    return ErrCode_Failed;
 #endif
   }
 
-  return ErrCode::Ok;
+  return ErrCode_Ok;
 }
 
 // -------------------------------------------------------------------------- ;
@@ -411,14 +412,14 @@ ErrCode Lerc::EncodeInternal(const T* pData, int version, int nDim, int nCols, i
 
   Lerc2 lerc2;
   if (version >= 0 && !lerc2.SetEncoderToOldVersion(version))
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
 
   Byte* pDst = pBuffer;
 
   const size_t nPix = (size_t)nCols * nRows;
   const size_t nElem = nPix * nDim;
 
-  const Byte* pPrevByteMask = nullptr;
+  const Byte* pPrevByteMask = NULL;
   vector<T> dataBuffer;
   vector<Byte> maskBuffer, prevMaskBuffer;
   BitMask bitMask;
@@ -430,22 +431,22 @@ ErrCode Lerc::EncodeInternal(const T* pData, int version, int nDim, int nCols, i
 
     // using the proper section of valid bytes, check this band for NaN
     const T* arr = pData + nElem * iBand;
-    const Byte* pByteMask = (nMasks > 0) ? (pValidBytes + ((nMasks > 1) ? nPix * iBand : 0)) : nullptr;
+    const Byte* pByteMask = (nMasks > 0) ? (pValidBytes + ((nMasks > 1) ? nPix * iBand : 0)) : NULL;
 
     ErrCode errCode = CheckForNaN(arr, nDim, nCols, nRows, pByteMask);
-    if (errCode != ErrCode::Ok && errCode != ErrCode::NaN)
+    if (errCode != ErrCode_Ok && errCode != ErrCode_NaN)
       return errCode;
 
-    if (errCode == ErrCode::NaN)    // found NaN values
+    if (errCode == ErrCode_NaN)    // found NaN values
     {
       if (!Resize(dataBuffer, nElem) || !Resize(maskBuffer, nPix))
-        return ErrCode::Failed;
+        return ErrCode_Failed;
 
       memcpy(&dataBuffer[0], arr, nElem * sizeof(T));
       pByteMask ? memcpy(&maskBuffer[0], pByteMask, nPix) : memset(&maskBuffer[0], 1, nPix);
 
       if (!ReplaceNaNValues(dataBuffer, maskBuffer, nDim, nCols, nRows))
-        return ErrCode::Failed;
+        return ErrCode_Failed;
 
       if (iBand > 0 && MasksDiffer(&maskBuffer[0], pPrevByteMask, nPix))
         bEncMsk = true;
@@ -472,30 +473,30 @@ ErrCode Lerc::EncodeInternal(const T* pData, int version, int nDim, int nCols, i
     if (bEncMsk)
     {
       if (pByteMask && !Convert(pByteMask, nCols, nRows, bitMask))
-        return ErrCode::Failed;
+        return ErrCode_Failed;
 
-      if (!lerc2.Set(nDim, nCols, nRows, pByteMask ? bitMask.Bits() : nullptr))
-        return ErrCode::Failed;
+      if (!lerc2.Set(nDim, nCols, nRows, pByteMask ? bitMask.Bits() : NULL))
+        return ErrCode_Failed;
     }
 
     unsigned int nBytes = lerc2.ComputeNumBytesNeededToWrite(arr, maxZErr, bEncMsk);
     if (nBytes <= 0)
-      return ErrCode::Failed;
+      return ErrCode_Failed;
 
     numBytesNeeded += nBytes;
 
     if (pBuffer)
     {
       if ((size_t)(pDst - pBuffer) + nBytes > numBytesBuffer)    // check we have enough space left
-        return ErrCode::BufferTooSmall;
+        return ErrCode_BufferTooSmall;
 
       if (!lerc2.Encode(arr, &pDst))
-        return ErrCode::Failed;
+        return ErrCode_Failed;
     }
   }
 
   numBytesWritten = (unsigned int)(pDst - pBuffer);
-  return ErrCode::Ok;
+  return ErrCode_Ok;
 }
 
 // -------------------------------------------------------------------------- ;
@@ -558,12 +559,12 @@ template<class T>
 ErrCode Lerc::ConvertToDoubleTempl(const T* pDataIn, size_t nDataValues, double* pDataOut)
 {
   if (!pDataIn || !nDataValues || !pDataOut)
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
 
   for (size_t k = 0; k < nDataValues; k++)
     pDataOut[k] = pDataIn[k];
 
-  return ErrCode::Ok;
+  return ErrCode_Ok;
 }
 
 // -------------------------------------------------------------------------- ;
@@ -571,10 +572,10 @@ ErrCode Lerc::ConvertToDoubleTempl(const T* pDataIn, size_t nDataValues, double*
 template<class T> ErrCode Lerc::CheckForNaN(const T* arr, int nDim, int nCols, int nRows, const Byte* pByteMask)
 {
   if (!arr || nDim <= 0 || nCols <= 0 || nRows <= 0)
-    return ErrCode::WrongParam;
+    return ErrCode_WrongParam;
 
   if (typeid(T) != typeid(double) && typeid(T) != typeid(float))
-    return ErrCode::Ok;
+    return ErrCode_Ok;
 
   for (size_t k = 0, i = 0; i < (size_t)nRows; i++)
   {
@@ -600,10 +601,10 @@ template<class T> ErrCode Lerc::CheckForNaN(const T* arr, int nDim, int nCols, i
     }
 
     if (bFoundNaN)
-      return ErrCode::NaN;
+      return ErrCode_NaN;
   }
 
-  return ErrCode::Ok;
+  return ErrCode_Ok;
 }
 
 // -------------------------------------------------------------------------- ;

@@ -25,6 +25,7 @@ Contributors:  Thomas Maurer
 #define HUFFMAN_H
 
 #include <vector>
+#include <cstdio>
 #include <cstring>
 #include <utility>
 #include "Defines.h"
@@ -34,7 +35,7 @@ NAMESPACE_LERC_START
 class Huffman
 {
 public:
-  Huffman() : m_maxHistoSize(1 << 15), m_maxNumBitsLUT(12), m_numBitsToSkipInTree(0), m_root(nullptr) {}
+  Huffman() : m_maxHistoSize(1 << 15), m_maxNumBitsLUT(12), m_numBitsToSkipInTree(0), m_root(NULL) {}
   ~Huffman() { Clear(); }
 
   // Limitation: We limit the max Huffman code length to 32 bit. If this happens, the function ComputeCodes()
@@ -71,7 +72,7 @@ private:
     {
       value = val;
       weight = -cnt;
-      child0 = child1 = nullptr;
+      child0 = child1 = NULL;
     }
 
     Node(Node* c0, Node* c1)    // new internal node from children c0 and c1
@@ -107,14 +108,14 @@ private:
       {
         child0->FreeTree(n);
         delete child0;
-        child0 = nullptr;
+        child0 = NULL;
         n--;
       }
       if (child1)
       {
         child1->FreeTree(n);
         delete child1;
-        child1 = nullptr;
+        child1 = NULL;
         n--;
       }
     }

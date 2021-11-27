@@ -1,7 +1,19 @@
-diff -Nur LibRaw-0.20.2_orig/src/decoders/crx.cpp LibRaw-0.20.2/src/decoders/crx.cpp
---- LibRaw-0.20.2_orig/src/decoders/crx.cpp	2020-10-15 12:06:07.000000000 +0700
-+++ LibRaw-0.20.2/src/decoders/crx.cpp	2020-11-29 03:57:07.776453899 +0700
-@@ -39,7 +39,9 @@
+From ca945903b71b78d9870e2aa64e3b10794e846e50 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 28 Nov 2021 20:18:16 +0700
+Subject: [PATCH 2/3] Fix build with MinGW 3.4.2
+
+---
+ src/decoders/crx.cpp       | 4 +++-
+ src/metadata/tiff.cpp      | 4 ++--
+ src/utils/utils_libraw.cpp | 9 +++++++++
+ 3 files changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/src/decoders/crx.cpp b/src/decoders/crx.cpp
+index b5fd1577..6a5a7543 100644
+--- a/src/decoders/crx.cpp
++++ b/src/decoders/crx.cpp
+@@ -39,7 +39,9 @@ it under the terms of the one of two licenses as you choose:
  #define CRX_BUF_SIZE 0x10000
  #if !defined(_WIN32) || (defined (__GNUC__) && !defined(__INTRINSIC_SPECIAL__BitScanReverse))  
  /* __INTRINSIC_SPECIAL__BitScanReverse found in MinGW32-W64 v7.30 headers, may be there is a better solution? */
@@ -11,7 +23,7 @@ diff -Nur LibRaw-0.20.2_orig/src/decoders/crx.cpp LibRaw-0.20.2/src/decoders/crx
  libraw_inline void _BitScanReverse(DWORD *Index, unsigned long Mask)
  {
    *Index = sizeof(unsigned long) * 8 - 1 - __builtin_clzl(Mask);
-@@ -47,7 +49,7 @@
+@@ -47,7 +49,7 @@ libraw_inline void _BitScanReverse(DWORD *Index, unsigned long Mask)
  #if LibRawBigEndian
  #define _byteswap_ulong(x) (x)
  #else
@@ -20,10 +32,11 @@ diff -Nur LibRaw-0.20.2_orig/src/decoders/crx.cpp LibRaw-0.20.2/src/decoders/crx
  #endif
  #endif
  
-diff -Nur LibRaw-0.20.2_orig/src/metadata/tiff.cpp LibRaw-0.20.2/src/metadata/tiff.cpp
---- LibRaw-0.20.2_orig/src/metadata/tiff.cpp	2020-10-15 12:06:07.000000000 +0700
-+++ LibRaw-0.20.2/src/metadata/tiff.cpp	2020-11-29 03:57:07.776453899 +0700
-@@ -241,10 +241,10 @@
+diff --git a/src/metadata/tiff.cpp b/src/metadata/tiff.cpp
+index cd2406d6..0fe8e118 100644
+--- a/src/metadata/tiff.cpp
++++ b/src/metadata/tiff.cpp
+@@ -241,10 +241,10 @@ int LibRaw::parse_tiff_ifd(int base)
          }
          break;
        case 0x1202:
@@ -36,10 +49,11 @@ diff -Nur LibRaw-0.20.2_orig/src/metadata/tiff.cpp LibRaw-0.20.2/src/metadata/ti
          }
          break;
        case 0x1203: /* 4611, FocalLengthIn35mmFormat, contained in 0x0120
-diff -Nur LibRaw-0.20.2_orig/src/utils/utils_libraw.cpp LibRaw-0.20.2/src/utils/utils_libraw.cpp
---- LibRaw-0.20.2_orig/src/utils/utils_libraw.cpp	2020-10-15 12:06:07.000000000 +0700
-+++ LibRaw-0.20.2/src/utils/utils_libraw.cpp	2020-11-29 03:57:07.776453899 +0700
-@@ -291,6 +291,8 @@
+diff --git a/src/utils/utils_libraw.cpp b/src/utils/utils_libraw.cpp
+index 8228e9f7..47bf5b9f 100644
+--- a/src/utils/utils_libraw.cpp
++++ b/src/utils/utils_libraw.cpp
+@@ -291,6 +291,8 @@ void LibRaw::clearCancelFlag()
  {
  #ifdef _MSC_VER
    InterlockedExchange(&_exitflag, 0);
@@ -48,7 +62,7 @@ diff -Nur LibRaw-0.20.2_orig/src/utils/utils_libraw.cpp LibRaw-0.20.2/src/utils/
  #else
    __sync_fetch_and_and(&_exitflag, 0);
  #endif
-@@ -308,6 +310,8 @@
+@@ -308,6 +310,8 @@ void LibRaw::setCancelFlag()
  {
  #ifdef _MSC_VER
    InterlockedExchange(&_exitflag, 1);
@@ -57,7 +71,7 @@ diff -Nur LibRaw-0.20.2_orig/src/utils/utils_libraw.cpp LibRaw-0.20.2/src/utils/
  #else
    __sync_fetch_and_add(&_exitflag, 1);
  #endif
-@@ -326,6 +330,11 @@
+@@ -326,6 +330,11 @@ void LibRaw::checkCancel()
  #ifdef _MSC_VER
    if (InterlockedExchange(&_exitflag, 0))
      throw LIBRAW_EXCEPTION_CANCELLED_BY_CALLBACK;
@@ -69,3 +83,6 @@ diff -Nur LibRaw-0.20.2_orig/src/utils/utils_libraw.cpp LibRaw-0.20.2/src/utils/
  #else
    if (__sync_fetch_and_and(&_exitflag, 0))
      throw LIBRAW_EXCEPTION_CANCELLED_BY_CALLBACK;
+-- 
+2.34.0
+

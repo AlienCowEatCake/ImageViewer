@@ -91,12 +91,20 @@ public:
         return IIDFromString_f(lpsz, lpiid);
     }
 
+    HRESULT CLSIDFromString(LPCOLESTR lpsz, LPCLSID pclsid)
+    {
+        typedef HRESULT(*CLSIDFromString_t)(LPCOLESTR, LPCLSID);
+        CLSIDFromString_t CLSIDFromString_f = (CLSIDFromString_t)m_CLSIDFromString;
+        return CLSIDFromString_f(lpsz, pclsid);
+    }
+
 private:
     OLE32()
         : m_CoInitialize(Q_NULLPTR)
         , m_CoUninitialize(Q_NULLPTR)
         , m_CoCreateInstance(Q_NULLPTR)
         , m_IIDFromString(Q_NULLPTR)
+        , m_CLSIDFromString(Q_NULLPTR)
     {
         if(!LibraryUtils::LoadQLibrary(m_library, "ole32"))
             return;
@@ -105,6 +113,7 @@ private:
         m_CoUninitialize = m_library.resolve("CoUninitialize");
         m_CoCreateInstance = m_library.resolve("CoCreateInstance");
         m_IIDFromString = m_library.resolve("IIDFromString");
+        m_CLSIDFromString = m_library.resolve("CLSIDFromString");
     }
 
     ~OLE32()
@@ -113,7 +122,7 @@ private:
     bool isValid() const
     {
         return m_library.isLoaded() && m_CoInitialize && m_CoUninitialize
-                && m_CoCreateInstance && m_IIDFromString;
+                && m_CoCreateInstance && m_IIDFromString && m_CLSIDFromString;
     }
 
     QLibrary m_library;
@@ -121,6 +130,7 @@ private:
     QFunctionPointer m_CoUninitialize;
     QFunctionPointer m_CoCreateInstance;
     QFunctionPointer m_IIDFromString;
+    QFunctionPointer m_CLSIDFromString;
 };
 
 HRESULT CoInitialize_WRAP(LPVOID pvReserved)
@@ -159,6 +169,15 @@ HRESULT IIDFromString_WRAP(LPCOLESTR lpsz, LPIID lpiid)
 }
 #define IIDFromString IIDFromString_WRAP
 
+HRESULT CLSIDFromString_WRAP(LPCOLESTR lpsz, LPCLSID pclsid)
+{
+    if(OLE32 *ole32 = OLE32::instance())
+        return ole32->CLSIDFromString(lpsz, pclsid);
+    qWarning() << "Failed to load ole32.dll";
+    return E_FAIL;
+}
+#define CLSIDFromString CLSIDFromString_WRAP
+
 // ====================================================================================================
 
 IID GetIID(LPCOLESTR lpsz)
@@ -172,6 +191,21 @@ IID GetIID(LPCOLESTR lpsz)
 }
 
 #define IID_IWICImagingFactory GetIID(L"{ec5ec8a9-c395-4314-9c77-54d7a935ff70}")
+
+CLSID GetCLSID(LPCOLESTR lpsz)
+{
+    CLSID result;
+    memset(&result, 0, sizeof(CLSID));
+    HRESULT hr = CLSIDFromString(lpsz, &result);
+    if(!SUCCEEDED(hr))
+        qWarning() << "Can't get CLSID for" << QString::fromStdWString(lpsz);
+    return result;
+}
+
+#define CLSID_WICImagingFactory GetCLSID(L"{cacaf262-9370-4615-a13b-9f5539da4c0a}")
+
+const GUID GUID_WICPixelFormat32bppBGRA_WRAP = { 0x6fddc324, 0x4e03, 0x4bfe, { 0xb1, 0x85, 0x3d, 0x77, 0x76, 0x8d, 0xc9, 0x0f} };
+#define GUID_WICPixelFormat32bppBGRA GUID_WICPixelFormat32bppBGRA_WRAP
 
 // ====================================================================================================
 
@@ -221,17 +255,21 @@ public:
         for(QStringList::ConstIterator it = wicCodecs.constBegin(); it != wicCodecs.constEnd(); ++it)
         {
             const QSettings settings(QString::fromLatin1("HKEY_CLASSES_ROOT\\CLSID\\%1").arg(*it), QSettings::NativeFormat);
-            result.append(
-                        settings.value(QString::fromLatin1("FileExtensions"))
-                        .toString()
-                        .toLower()
-                        .remove(QChar::fromLatin1('.'))
-                        .remove(QChar::fromLatin1(' '))
-                        .split(QChar::fromLatin1(','))
-                        );
+            const QStringList extensions = settings.value(QString::fromLatin1("FileExtensions"))
+                    .toString()
+                    .toLower()
+                    .remove(QChar::fromLatin1('.'))
+                    .remove(QChar::fromLatin1(' '))
+                    .split(QChar::fromLatin1(','));
+            for(QStringList::ConstIterator jt = extensions.constBegin(); jt != extensions.constEnd(); ++jt)
+                result.append(*jt);
         }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
         result.removeDuplicates();
+#else
+        result = QStringList::fromSet(result.toSet());
+#endif
         return result;
     }
 

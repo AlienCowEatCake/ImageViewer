@@ -1102,7 +1102,7 @@ hufUncompress (const char compressed[],
 
     const char *ptr = compressed + 20;
 
-    uint64_t nBytes = (static_cast<uint64_t>(nBits)+7) / 8 ;
+    Int64 nBytes = (static_cast<Int64>(nBits)+7) / 8 ;
 
     if ( ptr + nBytes > compressed+nCompressed)
     {

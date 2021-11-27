@@ -43,7 +43,9 @@
 #include <qcolorspace.h>
 #endif
 #include <qdebug.h>
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 #include <qfloat16.h>
+#endif
 #include <qimage.h>
 #include <qvariant.h>
 

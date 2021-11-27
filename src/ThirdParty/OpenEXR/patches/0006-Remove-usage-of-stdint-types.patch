@@ -1,0 +1,49 @@
+From a61cf84f35377324d62ea6f3d106c541a8432951 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 28 Nov 2021 20:47:04 +0700
+Subject: [PATCH 6/6] Remove usage of stdint types
+
+---
+ OpenEXR/IlmImf/ImfHuf.cpp       | 2 +-
+ OpenEXR/IlmImf/ImfTiledMisc.cpp | 8 ++++----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/OpenEXR/IlmImf/ImfHuf.cpp b/OpenEXR/IlmImf/ImfHuf.cpp
+index 271849b7..9d092094 100644
+--- a/OpenEXR/IlmImf/ImfHuf.cpp
++++ b/OpenEXR/IlmImf/ImfHuf.cpp
+@@ -1102,7 +1102,7 @@ hufUncompress (const char compressed[],
+ 
+     const char *ptr = compressed + 20;
+ 
+-    uint64_t nBytes = (static_cast<uint64_t>(nBits)+7) / 8 ;
++    Int64 nBytes = (static_cast<Int64>(nBits)+7) / 8 ;
+ 
+     if ( ptr + nBytes > compressed+nCompressed)
+     {
+diff --git a/OpenEXR/IlmImf/ImfTiledMisc.cpp b/OpenEXR/IlmImf/ImfTiledMisc.cpp
+index 77843a71..66cca708 100644
+--- a/OpenEXR/IlmImf/ImfTiledMisc.cpp
++++ b/OpenEXR/IlmImf/ImfTiledMisc.cpp
+@@ -98,14 +98,14 @@ dataWindowForTile (const TileDescription &tileDesc,
+     V2i tileMin = V2i (minX + dx * tileDesc.xSize,
+ 		       minY + dy * tileDesc.ySize);
+ 
+-    int64_t tileMaxX = int64_t(tileMin[0]) + tileDesc.xSize - 1;
+-    int64_t tileMaxY = int64_t(tileMin[1]) + tileDesc.ySize - 1;
++    SInt64 tileMaxX = SInt64(tileMin[0]) + tileDesc.xSize - 1;
++    SInt64 tileMaxY = SInt64(tileMin[1]) + tileDesc.ySize - 1;
+ 
+     V2i levelMax = dataWindowForLevel
+ 		       (tileDesc, minX, maxX, minY, maxY, lx, ly).max;
+ 
+-    V2i tileMax = V2i (std::min (tileMaxX, int64_t(levelMax[0])),
+-		   std::min (tileMaxY, int64_t(levelMax[1])));
++    V2i tileMax = V2i (std::min (tileMaxX, SInt64(levelMax[0])),
++		   std::min (tileMaxY, SInt64(levelMax[1])));
+ 
+     return Box2i (tileMin, tileMax);
+ }
+-- 
+2.34.0
+

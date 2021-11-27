@@ -1,0 +1,88 @@
+From 9c6603ddec6dce58ffe63f9fc67d976e9656b76c Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 28 Nov 2021 21:07:50 +0700
+Subject: [PATCH 3/3] Use relative includes
+
+---
+ common/include/wmspecstring.h         | 6 +++---
+ common/include/wmspecstrings_strict.h | 2 +-
+ jxrgluelib/JXRGlue.h                  | 2 +-
+ jxrgluelib/JXRMeta.h                  | 4 ++--
+ 4 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/common/include/wmspecstring.h b/common/include/wmspecstring.h
+index 1b4767e..2b6d9ca 100644
+--- a/common/include/wmspecstring.h
++++ b/common/include/wmspecstring.h
+@@ -37,7 +37,7 @@
+ #if _MSC_VER
+ #pragma once
+ #endif
+-#include <wmsal.h>  
++#include "wmsal.h"
+ 
+ #ifndef __SAL_H_FULL_VER
+ #define __SAL_H_FULL_VER 140050727
+@@ -301,7 +301,7 @@ __inner_assume_bound_dec
+ #ifdef  __cplusplus
+ }
+ #endif
+-#include <wmspecstrings_adt.h>
++#include "wmspecstrings_adt.h"
+ #ifdef _PREFIX_
+ /**************************************************************************
+ * Defintion of __pfx_assume and __pfx_assert. Thse should be the only
+@@ -328,7 +328,7 @@ void __pfx_assume(int, const char *);
+ * Must avoid redfinitions of macros to workaround rc.exe issues. 
+ ***************************************************************************/
+ #if !(defined(RC_INVOKED) || defined(SORTPP_PASS))
+-#include <wmspecstrings_strict.h>
++#include "wmspecstrings_strict.h"
+ #endif /* if !(defined(RC_INVOKED) || defined(SORTPP_PASS)) */
+ #endif /* #ifndef SPECSTRINGS_H */
+ 
+diff --git a/common/include/wmspecstrings_strict.h b/common/include/wmspecstrings_strict.h
+index 46b44c2..fe41b81 100644
+--- a/common/include/wmspecstrings_strict.h
++++ b/common/include/wmspecstrings_strict.h
+@@ -210,7 +210,7 @@
+ ************************************************************************/
+ #if (_MSC_VER >= 1400) && !defined(__midl) && !defined(_PREFAST_) && (__SPECSTRINGS_STRICT_LEVEL > 0)
+ #pragma once
+-#include <wmspecstrings_undef.h>
++#include "wmspecstrings_undef.h"
+ #define __ecount(size)                                __allowed(on_return)
+ #define __bcount(size)                                __allowed(on_return)
+ #define __xcount(size)                                __allowed(on_return)
+diff --git a/jxrgluelib/JXRGlue.h b/jxrgluelib/JXRGlue.h
+index 382763f..a996aa9 100644
+--- a/jxrgluelib/JXRGlue.h
++++ b/jxrgluelib/JXRGlue.h
+@@ -32,7 +32,7 @@ extern "C" {
+ #endif
+ 
+ #include <JXRMeta.h>
+-#include <guiddef.h>
++#include "../common/include/guiddef.h"
+ 
+ //================================================================
+ #define WMP_SDK_VERSION 0x0101
+diff --git a/jxrgluelib/JXRMeta.h b/jxrgluelib/JXRMeta.h
+index 843938d..c21e9cf 100644
+--- a/jxrgluelib/JXRMeta.h
++++ b/jxrgluelib/JXRMeta.h
+@@ -27,9 +27,9 @@
+ //*@@@---@@@@******************************************************************
+ #pragma once
+ 
+-#include <windowsmediaphoto.h>
++#include "../image/sys/windowsmediaphoto.h"
+ #ifndef _MSC_VER
+-#include <wmspecstring.h>
++#include "../common/include/wmspecstring.h"
+ #endif
+ 
+ #ifndef UNREFERENCED_PARAMETER
+-- 
+2.34.0
+

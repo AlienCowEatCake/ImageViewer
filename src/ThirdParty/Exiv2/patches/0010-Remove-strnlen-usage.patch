@@ -1,0 +1,33 @@
+From 9282334f55df709ce9d326b85351e4f17272f73b Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 28 Nov 2021 20:12:27 +0700
+Subject: [PATCH 10/10] Remove strnlen usage
+
+---
+ src/bmffimage.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/bmffimage.cpp b/src/bmffimage.cpp
+index 44874036..912a159d 100644
+--- a/src/bmffimage.cpp
++++ b/src/bmffimage.cpp
+@@ -39,6 +39,7 @@
+ #include "unused.h"
+ 
+ // + standard includes
++#include <algorithm>
+ #include <cassert>
+ #include <cstdio>
+ #include <cstring>
+@@ -308,7 +309,7 @@ namespace Exiv2
+                 // Check that the string has a '\0' terminator.
+                 const char* str = reinterpret_cast<const char*>(data.pData_) + skip;
+                 const size_t maxlen = static_cast<size_t>(data.size_ - skip);
+-                enforce(strnlen(str, maxlen) < maxlen, Exiv2::kerCorruptedMetadata);
++                enforce((std::find(str, str + maxlen, '\0') - str) < maxlen, Exiv2::kerCorruptedMetadata);
+                 std::string name(str);
+                 if (name.find("Exif") != std::string::npos) {  // "Exif" or "ExifExif"
+                     exifID_ = ID;
+-- 
+2.34.0
+

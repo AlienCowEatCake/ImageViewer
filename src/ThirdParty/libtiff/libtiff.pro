@@ -22,6 +22,10 @@ include(../libjpeg/libjpeg.pri)
 include(../XZUtils/XZUtils.pri)
 include(../LibWebP/LibWebP.pri)
 
+*g++*|*clang* {
+    QMAKE_CFLAGS += -std=c99
+}
+
 INCLUDEPATH = $${THIRDPARTY_LIBTIFF_CONFIG_PATH} $${THIRDPARTY_LIBTIFF_PATH}/libtiff $${INCLUDEPATH}
 
 DEFINES += TIFF_PREFIX DISABLE_CHECK_TIFFSWABMACROS

@@ -26,6 +26,7 @@ Contributors:  Thomas Maurer
 
 #include <cfloat>
 #include <cmath>
+#include <cstdio>
 #include <algorithm>
 #include <string>
 #include "BitMask.h"
@@ -70,14 +71,14 @@ class Lerc2
 {
 public:
   Lerc2();
-  Lerc2(int nDim, int nCols, int nRows, const Byte* pMaskBits = nullptr);    // valid / invalid bits as byte array
+  Lerc2(int nDim, int nCols, int nRows, const Byte* pMaskBits = NULL);    // valid / invalid bits as byte array
   virtual ~Lerc2()  {}
 
   static int CurrentVersion() { return 5; }
 
   bool SetEncoderToOldVersion(int version);    // call this to encode compatible to an old decoder
 
-  bool Set(int nDim, int nCols, int nRows, const Byte* pMaskBits = nullptr);
+  bool Set(int nDim, int nCols, int nRows, const Byte* pMaskBits = NULL);
 
   template<class T>
   unsigned int ComputeNumBytesNeededToWrite(const T* arr, double maxZError, bool encodeMask);
@@ -115,7 +116,7 @@ public:
 
   /// dst buffer already allocated;  byte ptr is moved like a file pointer
   template<class T>
-  bool Decode(const Byte** ppByte, size_t& nBytesRemaining, T* arr, Byte* pMaskBits = nullptr);    // if mask ptr is not 0, mask bits are returned (even if all valid or same as previous)
+  bool Decode(const Byte** ppByte, size_t& nBytesRemaining, T* arr, Byte* pMaskBits = NULL);    // if mask ptr is not 0, mask bits are returned (even if all valid or same as previous)
 
 private:
 

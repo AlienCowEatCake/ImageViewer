@@ -57,6 +57,7 @@ static U32 _FORCEINLINE _load4(void* pv)
 #ifdef _BIG__ENDIAN_
     return (*(U32*)pv);
 #else // _BIG__ENDIAN_
+#define _byteswap_ulong(x)  jxrlib_byteswap_ulong_impl_le(x)
 #if defined(_M_IA64) || defined(_ARM_)
     U32  v;
     v = ((U16 *) pv)[0];

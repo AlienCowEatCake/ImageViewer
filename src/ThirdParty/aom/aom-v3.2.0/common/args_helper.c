@@ -8,6 +8,7 @@
  * Media Patent License 1.0 was not distributed with this source code in the
  * PATENTS file, you can obtain it at www.aomedia.org/license/patent.
  */
+#include "aom_ports/msvc.h"
 #include "common/args_helper.h"
 
 #include <assert.h>

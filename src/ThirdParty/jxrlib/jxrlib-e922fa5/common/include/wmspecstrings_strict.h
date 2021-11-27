@@ -210,7 +210,7 @@
 ************************************************************************/
 #if (_MSC_VER >= 1400) && !defined(__midl) && !defined(_PREFAST_) && (__SPECSTRINGS_STRICT_LEVEL > 0)
 #pragma once
-#include <wmspecstrings_undef.h>
+#include "wmspecstrings_undef.h"
 #define __ecount(size)                                __allowed(on_return)
 #define __bcount(size)                                __allowed(on_return)
 #define __xcount(size)                                __allowed(on_return)

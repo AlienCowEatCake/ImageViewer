@@ -1,7 +1,7 @@
-From be199aa88476960ae350bdcf3f2f91613670ff3f Mon Sep 17 00:00:00 2001
+From 65109241daa71e38f46818ada9fb2aa4674bb5ae Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 Nov 2021 17:11:43 +0700
-Subject: [PATCH] Fix build with MinGW 3.4.2
+Subject: [PATCH 1/2] Fix build with MinGW 3.4.2
 
 ---
  aom/aom_codec.h        | 2 +-
@@ -35,5 +35,5 @@ index f6689680d..a80a1f976 100644
    int base_layer_qp;
  
 -- 
-2.33.1
+2.34.0
 

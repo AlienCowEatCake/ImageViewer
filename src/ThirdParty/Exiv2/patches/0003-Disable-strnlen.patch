@@ -1,17 +1,17 @@
-From 22ca906fef2095d95e8bd81f31f4b6a0044355c1 Mon Sep 17 00:00:00 2001
+From aa2fc9407dbdbb18169a7bad557cbbdaee73b3c5 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:35:21 +0700
-Subject: [PATCH 3/9] Disable strnlen
+Subject: [PATCH 03/10] Disable strnlen
 
 ---
  src/helper_functions.cpp | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/src/helper_functions.cpp b/src/helper_functions.cpp
-index 8c0a357f..8b46da19 100644
+index e01a8bf2..e5d30efd 100644
 --- a/src/helper_functions.cpp
 +++ b/src/helper_functions.cpp
-@@ -32,7 +32,8 @@
+@@ -23,7 +23,8 @@
  
  std::string string_from_unterminated(const char* data, size_t data_length)
  {
@@ -22,5 +22,5 @@ index 8c0a357f..8b46da19 100644
      return std::string(data, StringLength);
  }
 -- 
-2.20.1
+2.34.0
 

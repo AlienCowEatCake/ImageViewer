@@ -40,7 +40,7 @@
 
 //================================================================
 #ifdef ENABLE_OPTIMIZATIONS
-#if defined(WIN32) && !defined(_WIN64)
+#if defined(_MSC_VER) && !defined(_WIN64)
 #define WMP_OPT_SSE2
 
 #define WMP_OPT_CC_ENC
@@ -57,7 +57,7 @@
 
 //================================================================
 //#ifdef WIN32
-#if defined(WIN32) && !defined(UNDER_CE)   // WIN32 seems to be defined always in VS2005 for ARM platform
+#if defined(_MSC_VER) && !defined(UNDER_CE)   // WIN32 seems to be defined always in VS2005 for ARM platform
 #define PLATFORM_X86
 #include "..\x86\x86.h"
 #endif
@@ -450,7 +450,7 @@ typedef struct CWMImageStrCodec {
 
     struct WMPStream ** ppWStream;
 
-#ifdef WIN32
+#ifdef _MSC_VER
     TCHAR **ppTempFile;
 #else
     char **ppTempFile;

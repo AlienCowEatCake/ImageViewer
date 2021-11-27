@@ -281,7 +281,7 @@ ERR CreateWS_File(struct WMPStream** ppWS, const char* szFilename, const char* s
     pWS->SetPos = SetPosWS_File;
     pWS->GetPos = GetPosWS_File;
 
-#ifdef WIN32
+#ifdef _MSC_VER
     FailIf(0 != fopen_s(&pWS->state.file.pFile, szFilename, szMode), WMP_errFileIO);
 #else
     pWS->state.file.pFile = fopen(szFilename, szMode);
@@ -664,13 +664,10 @@ ERR detach_SB(SimpleBitIO* pSB)
 //================================================================
 // Memory access functions
 //================================================================
-#if (defined(WIN32) && !defined(UNDER_CE)) || (defined(UNDER_CE) && defined(_ARM_))
-// WinCE ARM and Desktop x86
-#else
-// other platform
 #ifdef _BIG__ENDIAN_
 #define _byteswap_ulong(x)  (x)
 #else // _BIG__ENDIAN_
+#define _byteswap_ulong(x)  jxrlib_byteswap_ulong_impl_le(x)
 U32 _byteswap_ulong(U32 bits)
 {
     U32 r = (bits & 0xffu) << 24;
@@ -681,7 +678,6 @@ U32 _byteswap_ulong(U32 bits)
     return r;
 }
 #endif // _BIG__ENDIAN_
-#endif
 
 U32 load4BE(void* pv)
 {

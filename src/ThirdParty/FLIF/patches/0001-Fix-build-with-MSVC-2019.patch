@@ -1,7 +1,7 @@
-From c61a329623291f84298073ec08a2fb39711ded95 Mon Sep 17 00:00:00 2001
+From 394a003de5c0288e9edc72afe0f7b26d7c333c2e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 24 Nov 2021 02:21:35 +0700
-Subject: [PATCH] Fix build with MSVC 2019
+Subject: [PATCH 1/2] Fix build with MSVC 2019
 
 ---
  src/config.h | 2 +-
@@ -21,5 +21,5 @@ index 22478f1..85e0380 100644
  
  /**************************/
 -- 
-2.33.1
+2.34.0
 

@@ -1,0 +1,30 @@
+From 2ce348aa349410e681f14ffe67c40f233f78e960 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 28 Nov 2021 20:21:07 +0700
+Subject: [PATCH 3/3] Fix build with MinGW 4.7.2
+
+---
+ src/decoders/decoders_dcraw.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/decoders/decoders_dcraw.cpp b/src/decoders/decoders_dcraw.cpp
+index 4642dca6..8abaf3c3 100644
+--- a/src/decoders/decoders_dcraw.cpp
++++ b/src/decoders/decoders_dcraw.cpp
+@@ -19,6 +19,13 @@
+ #include "../../internal/dcraw_defs.h"
+ #include "../../internal/libraw_cameraids.h"
+ 
++#ifndef M_PI
++#define M_PI 3.14159265358979323846
++#endif
++#ifndef M_SQRT1_2
++#define M_SQRT1_2 0.707106781186547524401
++#endif
++
+ unsigned LibRaw::getbithuff(int nbits, ushort *huff)
+ {
+ #ifdef LIBRAW_NOTHREADS
+-- 
+2.34.0
+

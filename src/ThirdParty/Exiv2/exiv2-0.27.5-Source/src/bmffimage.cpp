@@ -39,6 +39,7 @@
 #include "unused.h"
 
 // + standard includes
+#include <algorithm>
 #include <cassert>
 #include <cstdio>
 #include <cstring>
@@ -308,7 +309,7 @@ namespace Exiv2
                 // Check that the string has a '\0' terminator.
                 const char* str = reinterpret_cast<const char*>(data.pData_) + skip;
                 const size_t maxlen = static_cast<size_t>(data.size_ - skip);
-                enforce(strnlen(str, maxlen) < maxlen, Exiv2::kerCorruptedMetadata);
+                enforce((std::find(str, str + maxlen, '\0') - str) < maxlen, Exiv2::kerCorruptedMetadata);
                 std::string name(str);
                 if (name.find("Exif") != std::string::npos) {  // "Exif" or "ExifExif"
                     exifID_ = ID;

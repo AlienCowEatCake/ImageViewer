@@ -347,7 +347,7 @@ void Huffman::ClearTree()
     int n = 0;
     m_root->FreeTree(n);
     delete m_root;
-    m_root = nullptr;
+    m_root = NULL;
   }
 }
 
@@ -551,11 +551,11 @@ bool Huffman::BitUnStuffCodes(const Byte** ppByte, size_t& nBytesRemainingInOut,
 
 // -------------------------------------------------------------------------- ;
 
-//struct MyLargerThanOp
-//{
-//  inline bool operator() (const pair<int, unsigned int>& p0,
-//                          const pair<int, unsigned int>& p1)  { return p0.first > p1.first; }
-//};
+struct MyLargerThanOp
+{
+  inline bool operator() (const pair<int, unsigned int>& p0,
+                          const pair<int, unsigned int>& p1)  { return p0.first > p1.first; }
+};
 
 // -------------------------------------------------------------------------- ;
 
@@ -573,11 +573,7 @@ bool Huffman::ConvertCodesToCanonical()
       sortVec[i] = pair<int, unsigned int>(m_codeTable[i].first * tableSize - i, i);
 
   // sort descending
-  //std::sort(sortVec.begin(), sortVec.end(), MyLargerThanOp());
-
-  std::sort(sortVec.begin(), sortVec.end(),
-    [](const pair<int, unsigned int>& p0,
-       const pair<int, unsigned int>& p1) { return p0.first > p1.first; });
+  std::sort(sortVec.begin(), sortVec.end(), MyLargerThanOp());
 
   // create canonical codes and assign to orig code table
   unsigned int index = sortVec[0].second;

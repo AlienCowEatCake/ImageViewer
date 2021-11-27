@@ -8,45 +8,45 @@
 
 namespace LercNS
 {
-  enum class ErrCode : int
+  enum ErrCode
   {
-    Ok = 0,
-    Failed,
-    WrongParam,
-    BufferTooSmall,
-    NaN
+    ErrCode_Ok = 0,
+    ErrCode_Failed,
+    ErrCode_WrongParam,
+    ErrCode_BufferTooSmall,
+    ErrCode_NaN
   };
 
-  enum class DataType : int
+  enum DataType
   {
-    dt_char = 0,
-    dt_uchar,
-    dt_short,
-    dt_ushort,
-    dt_int,
-    dt_uint,
-    dt_float,
-    dt_double
+    DataType_dt_char = 0,
+    DataType_dt_uchar,
+    DataType_dt_short,
+    DataType_dt_ushort,
+    DataType_dt_int,
+    DataType_dt_uint,
+    DataType_dt_float,
+    DataType_dt_double
   };
 
-  enum class InfoArrOrder : int
+  enum InfoArrOrder
   {
-    version = 0,
-    dataType,
-    nDim,
-    nCols,
-    nRows,
-    nBands,
-    nValidPixels,  // for 1st band
-    blobSize,
-    nMasks  // 0 - all valid, 1 - same mask for all bands, nBands - masks can differ between bands
+    InfoArrOrder_version = 0,
+    InfoArrOrder_dataType,
+    InfoArrOrder_nDim,
+    InfoArrOrder_nCols,
+    InfoArrOrder_nRows,
+    InfoArrOrder_nBands,
+    InfoArrOrder_nValidPixels,  // for 1st band
+    InfoArrOrder_blobSize,
+    InfoArrOrder_nMasks  // 0 - all valid, 1 - same mask for all bands, nBands - masks can differ between bands
   };
 
-  enum class DataRangeArrOrder : int
+  enum DataRangeArrOrder
   {
-    zMin = 0,
-    zMax,
-    maxZErrUsed
+    DataRangeArrOrder_zMin = 0,
+    DataRangeArrOrder_zMax,
+    DataRangeArrOrder_maxZErrUsed
   };
 
 }    // namespace

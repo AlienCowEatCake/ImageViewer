@@ -1,17 +1,17 @@
-From 8b9c5c2aa49670ce9e864ea602c6f9989a41aa36 Mon Sep 17 00:00:00 2001
+From 97a6d817fa3144a0e1b8eb873fe8a5cb807b2d91 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:41:51 +0700
-Subject: [PATCH 9/9] Fix build with Clang 3.3
+Subject: [PATCH 09/10] Fix build with Clang 3.3
 
 ---
  src/safe_op.hpp | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/safe_op.hpp b/src/safe_op.hpp
-index 116e81fe..ae50caff 100644
+index ddcc44b8..5f8f8994 100644
 --- a/src/safe_op.hpp
 +++ b/src/safe_op.hpp
-@@ -205,7 +205,9 @@ namespace Safe
+@@ -198,7 +198,9 @@ namespace Safe
          }
  
  #if defined(__GNUC__) || defined(__clang__)
@@ -23,5 +23,5 @@ index 116e81fe..ae50caff 100644
  /*!
   * This macro pastes a specialization of builtin_add_overflow using gcc's &
 -- 
-2.20.1
+2.34.0
 

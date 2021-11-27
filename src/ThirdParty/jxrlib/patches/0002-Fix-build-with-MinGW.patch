@@ -1,0 +1,116 @@
+From c62da15eebdcfca0898ed4e37b38fa71dec1521e Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 28 Nov 2021 21:04:32 +0700
+Subject: [PATCH 2/3] Fix build with MinGW
+
+---
+ image/decode/segdec.c | 1 +
+ image/sys/strcodec.c  | 8 ++------
+ image/sys/strcodec.h  | 6 +++---
+ jxrgluelib/JXRMeta.h  | 4 ++--
+ 4 files changed, 8 insertions(+), 11 deletions(-)
+
+diff --git a/image/decode/segdec.c b/image/decode/segdec.c
+index fb83f2b..6c47b0e 100644
+--- a/image/decode/segdec.c
++++ b/image/decode/segdec.c
+@@ -57,6 +57,7 @@ static U32 _FORCEINLINE _load4(void* pv)
+ #ifdef _BIG__ENDIAN_
+     return (*(U32*)pv);
+ #else // _BIG__ENDIAN_
++#define _byteswap_ulong(x)  jxrlib_byteswap_ulong_impl_le(x)
+ #if defined(_M_IA64) || defined(_ARM_)
+     U32  v;
+     v = ((U16 *) pv)[0];
+diff --git a/image/sys/strcodec.c b/image/sys/strcodec.c
+index c746d6f..52ad82f 100644
+--- a/image/sys/strcodec.c
++++ b/image/sys/strcodec.c
+@@ -281,7 +281,7 @@ ERR CreateWS_File(struct WMPStream** ppWS, const char* szFilename, const char* s
+     pWS->SetPos = SetPosWS_File;
+     pWS->GetPos = GetPosWS_File;
+ 
+-#ifdef WIN32
++#ifdef _MSC_VER
+     FailIf(0 != fopen_s(&pWS->state.file.pFile, szFilename, szMode), WMP_errFileIO);
+ #else
+     pWS->state.file.pFile = fopen(szFilename, szMode);
+@@ -664,13 +664,10 @@ ERR detach_SB(SimpleBitIO* pSB)
+ //================================================================
+ // Memory access functions
+ //================================================================
+-#if (defined(WIN32) && !defined(UNDER_CE)) || (defined(UNDER_CE) && defined(_ARM_))
+-// WinCE ARM and Desktop x86
+-#else
+-// other platform
+ #ifdef _BIG__ENDIAN_
+ #define _byteswap_ulong(x)  (x)
+ #else // _BIG__ENDIAN_
++#define _byteswap_ulong(x)  jxrlib_byteswap_ulong_impl_le(x)
+ U32 _byteswap_ulong(U32 bits)
+ {
+     U32 r = (bits & 0xffu) << 24;
+@@ -681,7 +678,6 @@ U32 _byteswap_ulong(U32 bits)
+     return r;
+ }
+ #endif // _BIG__ENDIAN_
+-#endif
+ 
+ U32 load4BE(void* pv)
+ {
+diff --git a/image/sys/strcodec.h b/image/sys/strcodec.h
+index 695a454..7dd447c 100644
+--- a/image/sys/strcodec.h
++++ b/image/sys/strcodec.h
+@@ -40,7 +40,7 @@
+ 
+ //================================================================
+ #ifdef ENABLE_OPTIMIZATIONS
+-#if defined(WIN32) && !defined(_WIN64)
++#if defined(_MSC_VER) && !defined(_WIN64)
+ #define WMP_OPT_SSE2
+ 
+ #define WMP_OPT_CC_ENC
+@@ -57,7 +57,7 @@
+ 
+ //================================================================
+ //#ifdef WIN32
+-#if defined(WIN32) && !defined(UNDER_CE)   // WIN32 seems to be defined always in VS2005 for ARM platform
++#if defined(_MSC_VER) && !defined(UNDER_CE)   // WIN32 seems to be defined always in VS2005 for ARM platform
+ #define PLATFORM_X86
+ #include "..\x86\x86.h"
+ #endif
+@@ -450,7 +450,7 @@ typedef struct CWMImageStrCodec {
+ 
+     struct WMPStream ** ppWStream;
+ 
+-#ifdef WIN32
++#ifdef _MSC_VER
+     TCHAR **ppTempFile;
+ #else
+     char **ppTempFile;
+diff --git a/jxrgluelib/JXRMeta.h b/jxrgluelib/JXRMeta.h
+index b7b5880..843938d 100644
+--- a/jxrgluelib/JXRMeta.h
++++ b/jxrgluelib/JXRMeta.h
+@@ -28,7 +28,7 @@
+ #pragma once
+ 
+ #include <windowsmediaphoto.h>
+-#ifndef WIN32
++#ifndef _MSC_VER
+ #include <wmspecstring.h>
+ #endif
+ 
+@@ -106,7 +106,7 @@
+ #define WMP_valWMPhotoID WMP_valCompression
+ 
+ 
+-#ifdef WIN32
++#ifdef _MSC_VER
+ #define __in_win    __in
+ #define __out_win   __out
+ #endif
+-- 
+2.34.0
+

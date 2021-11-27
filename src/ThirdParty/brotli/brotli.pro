@@ -14,6 +14,10 @@ THIRDPARTY_BROTLI_PATH = $${PWD}/brotli-1.0.9
 
 include(../CommonSettings.pri)
 
+*g++*|*clang* {
+    QMAKE_CFLAGS += -std=c99
+}
+
 INCLUDEPATH = \
     $${THIRDPARTY_BROTLI_PATH}/c/include \
     $${THIRDPARTY_BROTLI_PATH}/c/common \

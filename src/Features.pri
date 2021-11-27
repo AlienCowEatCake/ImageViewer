@@ -114,6 +114,25 @@
 disable_cxx11 : !system_highway {
     CONFIG += disable_highway
 }
+*msvc* : !system_highway {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 | win32-msvc2015 {
+            CONFIG += disable_highway
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1910) { # MSVC2017
+            CONFIG += disable_highway
+        }
+    }
+}
+*g++*|*clang* {
+    win32 : !system_highway {
+        CONFIG += disable_highway # FIXME: FTBFS
+    }
+    haiku : !system_highway {
+        CONFIG += disable_highway # FIXME: FTBFS
+    }
+}
 
 # libexpat options:
 #    disable_libexpat
@@ -207,7 +226,17 @@ disable_zlib : !system_libpng {
 # LERC options:
 #    disable_lerc
 #    system_lerc
-
+*msvc* : !system_lerc {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+            CONFIG += disable_lerc # FIXME: C99/C++11
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+            CONFIG += disable_lerc # FIXME: C99/C++11
+        }
+    }
+}
 
 # libtiff options:
 #    disable_libtiff
@@ -519,6 +548,11 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
 #    disable_wic
 !win32 {
     CONFIG += disable_wic
+}
+*g++*|*clang* {
+    disable_cxx11 {
+        CONFIG += disable_wic
+    }
 }
 
 # DecoderNSImage options:

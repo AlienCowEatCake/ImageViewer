@@ -1,7 +1,7 @@
-From 6a1e3a3b324d9d16e8b88832d8a8f5e51cc67f9e Mon Sep 17 00:00:00 2001
+From a735b7a9fd4a8ca631bfccf2e5ec3ce7af8617f2 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:38:50 +0700
-Subject: [PATCH 7/9] Dont use register keyword
+Subject: [PATCH 07/10] Dont use register keyword
 
 ---
  xmpsdk/src/MD5.cpp | 2 +-
@@ -21,5 +21,5 @@ index f162b728..b040bd2c 100644
  	a = buf[0];
  	b = buf[1];
 -- 
-2.20.1
+2.34.0
 

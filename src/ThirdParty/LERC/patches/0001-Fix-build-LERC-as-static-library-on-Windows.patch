@@ -1,7 +1,7 @@
-From 68dad18602787156fbd3b854b86063f66afb7036 Mon Sep 17 00:00:00 2001
+From c883e1d7a6ee9f1204d62698c7f0f1c30ab14dae Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 24 Nov 2021 02:15:28 +0700
-Subject: [PATCH] Fix build LERC as static library on Windows
+Subject: [PATCH 1/2] Fix build LERC as static library on Windows
 
 ---
  src/LercLib/include/Lerc_c_api.h | 11 ++++++-----
@@ -30,5 +30,5 @@ index f9ab0b0..4490a39 100644
    #define LERCDLL_API __attribute__((visibility("default")))
  #else
 -- 
-2.33.1
+2.34.0
 

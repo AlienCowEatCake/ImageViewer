@@ -1,17 +1,17 @@
-From edc1749e14d04621c4cea2bdea40ed8a9609e564 Mon Sep 17 00:00:00 2001
+From c9ae74af89aacc9f122a7d7f240074fff4fc2bbf Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:41:15 +0700
-Subject: [PATCH 8/9] Fix build on Haiku
+Subject: [PATCH 08/10] Fix build on Haiku
 
 ---
  src/timegm.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/timegm.h b/src/timegm.h
-index cb45a594..89dea0dc 100644
+index c95189d5..cacfce0f 100644
 --- a/src/timegm.h
 +++ b/src/timegm.h
-@@ -15,7 +15,7 @@ extern "C" {
+@@ -11,7 +11,7 @@ extern "C" {
  #define timegm _mkgmtime
  #endif
  
@@ -21,5 +21,5 @@ index cb45a594..89dea0dc 100644
  #endif
  
 -- 
-2.20.1
+2.34.0
 
