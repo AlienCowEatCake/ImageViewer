@@ -1,6 +1,7 @@
 @echo off
 set PROJECT=ImageViewer
 set ARCH=x86
+set VCVARS_ARCH=x64_x86
 set VCVARS="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat"
 set QTDIR=C:\Qt\5.15.2\msvc2019_static
 set BUILDDIR=build_win_qt5.15_msvc2019_%ARCH%
@@ -8,7 +9,7 @@ set SUFFIX=_qt5.15_msvc2019_%ARCH%
 set APP_PATH=src\%PROJECT%
 set ZIP_CMD=C:\MinGW\msys\1.0\bin\zip.exe
 
-call %VCVARS% %ARCH%
+call %VCVARS% %VCVARS_ARCH%
 set PATH=%QTDIR%\bin;%PATH%
 
 cd "%~dp0"

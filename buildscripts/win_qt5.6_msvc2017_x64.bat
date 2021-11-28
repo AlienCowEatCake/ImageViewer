@@ -1,6 +1,7 @@
 @echo off
 set PROJECT=ImageViewer
 set ARCH=x64
+set VCVARS_ARCH=x64
 set VCVARS="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
 set QTDIR=C:\Qt\5.6.3\msvc2017_64_static
 set BUILDDIR=build_win_qt5.6_msvc2017_%ARCH%
@@ -8,7 +9,7 @@ set SUFFIX=_qt5.6_msvc2017_%ARCH%
 set APP_PATH=src\%PROJECT%
 set ZIP_CMD=C:\MinGW\msys\1.0\bin\zip.exe
 
-call %VCVARS% %ARCH%
+call %VCVARS% %VCVARS_ARCH%
 set PATH=%QTDIR%\bin;%PATH%
 
 cd "%~dp0"
