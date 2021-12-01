@@ -1,7 +1,7 @@
-From b9baff13c5bd68154c64407995316ca9ecd23b4d Mon Sep 17 00:00:00 2001
+From 352d02598dca649300be83fdc69a38e0f3a510f3 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 23:41:00 +0700
-Subject: [PATCH] Fix build with old Clang
+Subject: [PATCH 1/2] Fix build with old Clang
 
 ---
  hwy/nanobenchmark.cc | 13 +++++++++++++

@@ -1,0 +1,98 @@
+From 21714935145c98eea7bbf603c73ac94afdf359a8 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Tue, 30 Nov 2021 15:30:06 +0700
+Subject: [PATCH 2/2] Fix build with old GCC
+
+---
+ hwy/nanobenchmark.cc | 42 +++++++++++++++++++-----------------------
+ 1 file changed, 19 insertions(+), 23 deletions(-)
+
+diff --git a/hwy/nanobenchmark.cc b/hwy/nanobenchmark.cc
+index d754e61..6d434db 100644
+--- a/hwy/nanobenchmark.cc
++++ b/hwy/nanobenchmark.cc
+@@ -515,10 +515,9 @@ timer::Ticks SampleUntilStable(const double max_rel_mad, double* rel_mad,
+ 
+     if (*rel_mad <= max_rel_mad || abs_mad <= max_abs_mad) {
+       if (p.verbose) {
+-        printf("%6" PRIu64 " samples => %5" PRIu64 " (abs_mad=%4" PRIu64
+-               ", rel_mad=%4.2f%%)\n",
+-               static_cast<uint64_t>(samples.size()),
+-               static_cast<uint64_t>(est), static_cast<uint64_t>(abs_mad),
++        printf("%6llu samples => %5llu (abs_mad=%4llu, rel_mad=%4.2f%%)\n",
++               static_cast<unsigned long long>(samples.size()),
++               static_cast<unsigned long long>(est), static_cast<unsigned long long>(abs_mad),
+                *rel_mad * 100.0);
+       }
+       return est;
+@@ -526,10 +525,9 @@ timer::Ticks SampleUntilStable(const double max_rel_mad, double* rel_mad,
+   }
+ 
+   if (p.verbose) {
+-    printf("WARNING: rel_mad=%4.2f%% still exceeds %4.2f%% after %6" PRIu64
+-           " samples.\n",
++    printf("WARNING: rel_mad=%4.2f%% still exceeds %4.2f%% after %6llu samples.\n",
+            *rel_mad * 100.0, max_rel_mad * 100.0,
+-           static_cast<uint64_t>(samples.size()));
++           static_cast<unsigned long long>(samples.size()));
+   }
+   return est;
+ }
+@@ -566,11 +564,10 @@ size_t NumSkip(const Func func, const uint8_t* arg, const InputVec& unique,
+           ? 0
+           : static_cast<size_t>((max_skip + min_duration - 1) / min_duration);
+   if (p.verbose) {
+-    printf("res=%" PRIu64 " max_skip=%" PRIu64 " min_dur=%" PRIu64
+-           " num_skip=%" PRIu64 "\n",
+-           static_cast<uint64_t>(timer_resolution),
+-           static_cast<uint64_t>(max_skip), static_cast<uint64_t>(min_duration),
+-           static_cast<uint64_t>(num_skip));
++    printf("res=%llu max_skip=%llu min_dur=%llu num_skip=%llu\n",
++           static_cast<unsigned long long>(timer_resolution),
++           static_cast<unsigned long long>(max_skip), static_cast<unsigned long long>(min_duration),
++           static_cast<unsigned long long>(num_skip));
+   }
+   return num_skip;
+ }
+@@ -697,19 +694,18 @@ size_t Measure(const Func func, const uint8_t* arg, const FuncInput* inputs,
+   const timer::Ticks overhead = Overhead(arg, &full, p);
+   const timer::Ticks overhead_skip = Overhead(arg, &subset, p);
+   if (overhead < overhead_skip) {
+-    fprintf(stderr, "Measurement failed: overhead %" PRIu64 " < %" PRIu64 "\n",
+-            static_cast<uint64_t>(overhead),
+-            static_cast<uint64_t>(overhead_skip));
++    fprintf(stderr, "Measurement failed: overhead %llu < %llu\n",
++            static_cast<unsigned long long>(overhead),
++            static_cast<unsigned long long>(overhead_skip));
+     return 0;
+   }
+ 
+   if (p.verbose) {
+-    printf("#inputs=%5" PRIu64 ",%5" PRIu64 " overhead=%5" PRIu64 ",%5" PRIu64
+-           "\n",
+-           static_cast<uint64_t>(full.size()),
+-           static_cast<uint64_t>(subset.size()),
+-           static_cast<uint64_t>(overhead),
+-           static_cast<uint64_t>(overhead_skip));
++    printf("#inputs=%5llu,%5llu overhead=%5llu,%5llu\n",
++           static_cast<unsigned long long>(full.size()),
++           static_cast<unsigned long long>(subset.size()),
++           static_cast<unsigned long long>(overhead),
++           static_cast<unsigned long long>(overhead_skip));
+   }
+ 
+   double max_rel_mad = 0.0;
+@@ -721,8 +717,8 @@ size_t Measure(const Func func, const uint8_t* arg, const FuncInput* inputs,
+         TotalDuration(func, arg, &subset, p, &max_rel_mad);
+ 
+     if (total < total_skip) {
+-      fprintf(stderr, "Measurement failed: total %" PRIu64 " < %" PRIu64 "\n",
+-              static_cast<uint64_t>(total), static_cast<uint64_t>(total_skip));
++      fprintf(stderr, "Measurement failed: total %llu < %llu\n",
++              static_cast<unsigned long long>(total), static_cast<unsigned long long>(total_skip));
+       return 0;
+     }
+ 
+-- 
+2.34.0
+
