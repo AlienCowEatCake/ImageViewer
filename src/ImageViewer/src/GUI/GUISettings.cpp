@@ -113,7 +113,7 @@ bool GUISettings::askBeforeDelete() const
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     const QMetaType type(QMetaType::Bool);
 #else
-    const int type = QVariant::Bool;
+    const QVariant::Type type = QVariant::Bool;
 #endif
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(ASK_BEFORE_DELETE_KEY, defaultValue);
@@ -133,7 +133,7 @@ bool GUISettings::moveToTrash() const
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     const QMetaType type(QMetaType::Bool);
 #else
-    const int type = QVariant::Bool;
+    const QVariant::Type type = QVariant::Bool;
 #endif
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(MOVE_TO_TRASH_KEY, defaultValue);
@@ -169,7 +169,7 @@ qreal GUISettings::zoomLevel() const
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     const QMetaType type(QMetaType::Double);
 #else
-    const int type = QVariant::Double;
+    const QVariant::Type type = QVariant::Double;
 #endif
     const qreal defaultValue = 1;
     QVariant variant = m_impl->settings.value(ZOOM_LEVEL_KEY);
@@ -209,7 +209,7 @@ QColor GUISettings::normalBackgroundColor() const
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     const QMetaType type(QMetaType::QColor);
 #else
-    const int type = QVariant::Color;
+    const QVariant::Type type = QVariant::Color;
 #endif
     const QColor defaultValue(255, 255, 255, 128);
     QVariant value = m_impl->settings.value(NORMAL_BACKGROUND_COLOR_KEY, defaultValue);
@@ -229,7 +229,7 @@ QColor GUISettings::fullScreenBackgroundColor() const
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     const QMetaType type(QMetaType::QColor);
 #else
-    const int type = QVariant::Color;
+    const QVariant::Type type = QVariant::Color;
 #endif
     const QColor defaultValue(0, 0, 0, 128);
     QVariant value = m_impl->settings.value(FULLSCREEN_BACKGROUND_COLOR_KEY, defaultValue);
@@ -249,7 +249,7 @@ QString GUISettings::lastOpenedPath() const
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     const QMetaType type(QMetaType::QString);
 #else
-    const int type = QVariant::String;
+    const QVariant::Type type = QVariant::String;
 #endif
     const QString defaultValue;
     QVariant value = m_impl->settings.value(LAST_OPENED_PATH_KEY, defaultValue);
@@ -269,7 +269,7 @@ bool GUISettings::smoothTransformation() const
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     const QMetaType type(QMetaType::Bool);
 #else
-    const int type = QVariant::Bool;
+    const QVariant::Type type = QVariant::Bool;
 #endif
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(SMOOTH_TRANSFORMATION_KEY, defaultValue);
@@ -289,7 +289,7 @@ QByteArray GUISettings::mainWindowGeometry() const
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     const QMetaType type(QMetaType::QByteArray);
 #else
-    const int type = QVariant::ByteArray;
+    const QVariant::Type type = QVariant::ByteArray;
 #endif
     QVariant value = m_impl->settings.value(MAIN_WINDOW_GEOMETRY_KEY);
     return value.isValid() && value.canConvert(type) ? value.toByteArray() : QByteArray();
@@ -308,7 +308,7 @@ int GUISettings::slideShowInterval() const
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     const QMetaType type(QMetaType::Int);
 #else
-    const int type = QVariant::Int;
+    const QVariant::Type type = QVariant::Int;
 #endif
     const int defaultValue = 5;
     QVariant variant = m_impl->settings.value(SLIDESHOW_INTERVAL_KEY);
@@ -332,7 +332,7 @@ bool GUISettings::menuBarVisible() const
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     const QMetaType type(QMetaType::Bool);
 #else
-    const int type = QVariant::Bool;
+    const QVariant::Type type = QVariant::Bool;
 #endif
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(MENUBAR_VISIBLE_KEY, defaultValue);
@@ -352,7 +352,7 @@ bool GUISettings::toolBarVisible() const
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     const QMetaType type(QMetaType::Bool);
 #else
-    const int type = QVariant::Bool;
+    const QVariant::Type type = QVariant::Bool;
 #endif
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(TOOLBAR_VISIBLE_KEY, defaultValue);
