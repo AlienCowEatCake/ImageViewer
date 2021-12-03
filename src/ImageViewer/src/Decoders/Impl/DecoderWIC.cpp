@@ -202,6 +202,9 @@ CLSID GetCLSID(LPCOLESTR lpsz)
     return result;
 }
 
+#if defined (CLSID_WICImagingFactory)
+#undef CLSID_WICImagingFactory
+#endif
 #define CLSID_WICImagingFactory GetCLSID(L"{cacaf262-9370-4615-a13b-9f5539da4c0a}")
 
 const GUID GUID_WICPixelFormat32bppBGRA_WRAP = { 0x6fddc324, 0x4e03, 0x4bfe, { 0xb1, 0x85, 0x3d, 0x77, 0x76, 0x8d, 0xc9, 0x0f} };
