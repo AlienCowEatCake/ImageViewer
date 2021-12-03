@@ -5,7 +5,7 @@ set MINGWDIR=C:\Qt\Tools\mingw342_32
 set BUILDDIR=build_win_qt4.4_mingw342
 set SUFFIX=_qt4.4_mingw32
 set APP_PATH=src\%PROJECT%
-set ZIP_CMD=C:\MinGW\msys\1.0\bin\zip.exe
+set ZIP_CMD=buildscripts\helpers\zip.exe
 
 set PATH=%QTDIR%\bin;%MINGWDIR%\bin;%MINGWDIR%\libexec\gcc\mingw32\3.4.2;%WINDIR%;%WINDIR%\System32
 set CPLUS_INCLUDE_PATH=%MINGWDIR%\include\c++

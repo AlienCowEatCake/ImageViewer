@@ -6,7 +6,7 @@ set QTDIR=C:\Qt\4.8.7\msvc2015_64_static
 set BUILDDIR=build_win_qt4.8_msvc2015_%ARCH%
 set SUFFIX=_qt4.8_msvc2015_%ARCH%
 set APP_PATH=src\%PROJECT%
-set ZIP_CMD=C:\MinGW\msys\1.0\bin\zip.exe
+set ZIP_CMD=buildscripts\helpers\zip.exe
 
 call %VCVARS% %ARCH%
 set PATH=%QTDIR%\bin;%PATH%
