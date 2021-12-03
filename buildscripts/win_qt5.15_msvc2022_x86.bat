@@ -8,6 +8,7 @@ set BUILDDIR=build_win_qt5.15_msvc2022_%ARCH%
 set SUFFIX=_qt5.15_msvc2022_%ARCH%
 set APP_PATH=src\%PROJECT%
 set ZIP_CMD=C:\cygwin64\bin\zip.exe
+set WIXPY_CMD="C:\Program Files\WiX.Py-0.1\wix.py.exe"
 
 call %VCVARS% %VCVARS_ARCH%
 set PATH=%QTDIR%\bin;%PATH%
@@ -20,6 +21,10 @@ cd %BUILDDIR%
 qmake -r CONFIG+="release" QTPLUGIN.imageformats="qico qsvg qtiff" CONFIG+="enable_update_checking" ..\%PROJECT%.pro
 nmake
 copy %APP_PATH%\release\%PROJECT%.exe ..\%PROJECT%%SUFFIX%.exe
+mkdir build_msi
+copy %APP_PATH%\release\%PROJECT%.exe build_msi\%PROJECT%.exe
+%WIXPY_CMD% ..\src\ImageViewer\resources\platform\windows\wixpy_%ARCH%.json
+copy %PROJECT%.msi ..\%PROJECT%%SUFFIX%.msi
 cd ..
 %ZIP_CMD% -9r %PROJECT%%SUFFIX%.zip %PROJECT%%SUFFIX%.exe
 

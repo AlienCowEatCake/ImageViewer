@@ -73,6 +73,7 @@ Makefile*
 /ImageViewer
 /ImageViewer_*.dmg
 /ImageViewer_*.zip
+/ImageViewer_*.msi
 /ImageViewer_*.gz
 /ImageViewer_*.AppImage
 /imageviewer_*.deb
