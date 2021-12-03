@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2020-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -162,7 +162,11 @@ struct ButtonedTouchBarItem : SimpleTouchBarItem
         if(!item || !button)
             return;
         AUTORELEASE_POOL;
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER)
+        NSButtonType newType = (isCheckable ? NSButtonTypePushOnPushOff : NSButtonTypeMomentaryLight);
+#else
         NSButtonType newType = (isCheckable ? NSPushOnPushOffButton : NSMomentaryLightButton);
+#endif
         [button setButtonType:newType];
     }
 
@@ -171,7 +175,11 @@ struct ButtonedTouchBarItem : SimpleTouchBarItem
         if(!item || !button)
             return;
         AUTORELEASE_POOL;
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER)
+        NSControlStateValue newState = isChecked ? NSControlStateValueOn : NSControlStateValueOff;
+#else
         NSCellStateValue newState = isChecked ? NSOnState : NSOffState;
+#endif
         [button setState:newState];
     }
 

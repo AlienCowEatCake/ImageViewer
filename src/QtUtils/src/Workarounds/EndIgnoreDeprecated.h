@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -16,6 +16,11 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+#if defined (WA_DEPRECATED_IGNORED_CLANG)
+#pragma clang diagnostic pop
+#undef WA_DEPRECATED_IGNORED_CLANG
+#endif
 
 #if defined (WA_DEPRECATED_IGNORED_GCC)
 #pragma GCC diagnostic pop

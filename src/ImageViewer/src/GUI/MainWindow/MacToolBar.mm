@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -82,7 +82,11 @@ const QColor BUTTON_ALTERNATE_COLOR = Qt::white;
 
 - (void)setCheckable:(BOOL)isCheckable
 {
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER)
+    NSButtonType newType = (isCheckable ? NSButtonTypePushOnPushOff : NSButtonTypeMomentaryLight);
+#else
     NSButtonType newType = (isCheckable ? NSPushOnPushOffButton : NSMomentaryLightButton);
+#endif
     [self setButtonType:newType];
     m_isCheckable = isCheckable;
 }
@@ -94,7 +98,11 @@ const QColor BUTTON_ALTERNATE_COLOR = Qt::white;
 
 - (void)setChecked:(BOOL)isChecked
 {
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER)
+    NSControlStateValue newState = isChecked ? NSControlStateValueOn : NSControlStateValueOff;
+#else
     NSCellStateValue newState = isChecked ? NSOnState : NSOffState;
+#endif
     [self setState:newState];
     if((![self isChecked] && isChecked) || ([self isChecked] && !isChecked))
     {
@@ -731,7 +739,11 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
       withAlternateImage:(NSImage *)alternateImage
 {
     CheckableNSButton *button = [[CheckableNSButton alloc] initWithFrame:NSMakeRect(0, 0, ALONE_BUTTON_WIDTH, BUTTON_HEIGHT)];
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER)
+    [button setBezelStyle:NSBezelStyleTexturedRounded];
+#else
     [button setBezelStyle:NSTexturedRoundedBezelStyle];
+#endif
     [button setImage:image];
     [button setAlternateImage:alternateImage];
     [button setTitle:@""];

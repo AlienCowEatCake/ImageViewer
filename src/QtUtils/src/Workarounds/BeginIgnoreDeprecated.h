@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -17,9 +17,15 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined (WA_DEPRECATED_IGNORED_GCC) && defined (__GNUC__) && ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
+#if !defined (WA_DEPRECATED_IGNORED_GCC) && defined (__GNUC__) && ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 4))
 #define WA_DEPRECATED_IGNORED_GCC
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
+#if !defined (WA_DEPRECATED_IGNORED_CLANG) && defined (__clang__)
+#define WA_DEPRECATED_IGNORED_CLANG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #endif
 

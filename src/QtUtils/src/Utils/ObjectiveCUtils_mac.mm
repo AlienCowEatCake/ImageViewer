@@ -430,7 +430,11 @@ QPixmap QPixmapFromNSImage(const NSImage *image)
                                 hasAlpha:YES
                                 isPlanar:NO
                           colorSpaceName:NSCalibratedRGBColorSpace
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER)
+                            bitmapFormat:NSBitmapFormatAlphaFirst
+#else
                             bitmapFormat:NSAlphaFirstBitmapFormat
+#endif
                              bytesPerRow:0
                             bitsPerPixel:0
         ];
@@ -483,7 +487,11 @@ NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize &sizeInPoints)
                                 hasAlpha:YES
                                 isPlanar:NO
                           colorSpaceName:NSCalibratedRGBColorSpace
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER)
+                            bitmapFormat:NSBitmapFormatAlphaFirst
+#else
                             bitmapFormat:NSAlphaFirstBitmapFormat
+#endif
                              bytesPerRow:0
                             bitsPerPixel:0
         ];
@@ -492,7 +500,9 @@ NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize &sizeInPoints)
         [NSGraphicsContext saveGraphicsState];
         NSGraphicsContext *context = [NSGraphicsContext graphicsContextWithBitmapImageRep:bmp];
         [NSGraphicsContext setCurrentContext:context];
+#include "Workarounds/BeginIgnoreDeprecated.h"
         CGContextDrawImage(reinterpret_cast<CGContextRef>([context graphicsPort]), *reinterpret_cast<const CGRect*>(&rect), imageRef);
+#include "Workarounds/EndIgnoreDeprecated.h"
         [NSGraphicsContext restoreGraphicsState];
         NSImage *image = [[NSImage alloc] initWithSize:rect.size];
         [image addRepresentation:bmp];
