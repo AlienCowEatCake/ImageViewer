@@ -43,7 +43,7 @@
     greaterThan(QT_MAJOR_VERSION, 5) {
         CONFIG += test_cxx11_compatible_qt
     }
-    c++11 | c++1y | c++14 | c++1z | c++17 | c++2a | c++20 {
+    c++latest | c++11 | c++1y | c++14 | c++1z | c++17 | c++2a | c++20 | c++2b | c++23 {
         CONFIG += test_cxx11_compatible_config
     }
     # Workaround: MSVC 2013 is not a C++11-conformant compiler
