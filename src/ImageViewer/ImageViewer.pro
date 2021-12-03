@@ -308,7 +308,7 @@ HEADERS += \
 }
 
 !disable_qtwebkit {
-    QT +=  webkit network
+    QT += webkit network
     greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
     SOURCES += \
         src/Decoders/Impl/Internal/GraphicsItems/QtWebKitSVGGraphicsItem.cpp \
@@ -318,7 +318,7 @@ HEADERS += \
 }
 
 !disable_qtwebengine {
-    QT +=  webenginewidgets
+    QT += webenginecore webenginewidgets
     SOURCES += \
         src/Decoders/Impl/Internal/GraphicsItems/QtWebEngineSVGGraphicsItem.cpp \
         src/Decoders/Impl/DecoderQtWebEngine.cpp
@@ -327,7 +327,12 @@ HEADERS += \
 }
 
 !disable_qmlwebengine {
-    QT += webengine quick
+    QT += webenginecore quick
+    greaterThan(QT_MAJOR_VERSION, 5) {
+        QT += webenginequick
+    } else {
+        QT += webengine
+    }
     SOURCES += \
         src/Decoders/Impl/Internal/GraphicsItems/QMLWebEngineSVGGraphicsItem.cpp \
         src/Decoders/Impl/DecoderQMLWebEngine.cpp

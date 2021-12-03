@@ -278,7 +278,11 @@ QString toString(const DPKPROPVARIANT& prop)
     case DPKVT_LPSTR:
         return QString::fromLocal8Bit(prop.VT.pszVal);
     case DPKVT_LPWSTR:
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        return QString::fromUtf16(reinterpret_cast<const char16_t*>(prop.VT.pwszVal));
+#else
         return QString::fromUtf16(prop.VT.pwszVal);
+#endif
 //    case DPKVT_BYREF | DPKVT_UI1:
 //        return QString::fromLatin1(QByteArray(reinterpret_cast<char*>(prop.VT.pbVal)).toHex());
     default:

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -161,7 +161,12 @@ void LocalizationManager::setLocale(const QString &locale)
         m_impl->setCurrentLocale(newLocale);
 
     qApp->removeTranslator(&m_impl->qtTranslator);
-    (void)m_impl->qtTranslator.load(QString::fromLatin1("qt_%1").arg(newLocale), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    (void)m_impl->qtTranslator.load(QString::fromLatin1("qt_%1").arg(newLocale),
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+                                    QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+#else
+                                    QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#endif
     qApp->installTranslator(&m_impl->qtTranslator);
 
     for(TranslatorList::Iterator it = m_impl->customTranslators.begin(), itEnd = m_impl->customTranslators.end(); it != itEnd; ++it)

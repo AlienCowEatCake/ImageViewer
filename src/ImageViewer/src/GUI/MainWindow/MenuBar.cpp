@@ -137,13 +137,13 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionOpenFile->setShortcut(QKeySequence::Open);
         actionOpenFile->setMenuRole(QAction::NoRole);
         menuFile->addAction(actionOpenFolder);
-        actionOpenFolder->setShortcut((Qt::CTRL | Qt::ALT) + Qt::Key_O);
+        actionOpenFolder->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_O);
         actionOpenFolder->setMenuRole(QAction::NoRole);
         menuFile->addAction(actionSaveAs);
         actionSaveAs->setShortcut(QKeySequence::Save);
         actionSaveAs->setMenuRole(QAction::NoRole);
         menuFile->addAction(actionNewWindow);
-        actionNewWindow->setShortcut(Qt::CTRL + Qt::Key_N);
+        actionNewWindow->setShortcut(Qt::CTRL | Qt::Key_N);
         actionNewWindow->setMenuRole(QAction::NoRole);
         menuFile->addSeparator();
         menuFile->addMenu(menuReopenWith);
@@ -164,17 +164,17 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menuFile->addSeparator();
         menuFile->addAction(actionPreferences);
 #if defined (Q_OS_MAC)
-        actionPreferences->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_Comma << createAnyModifierShortcuts(Qt::Key_P));
+        actionPreferences->setShortcuts(QList<QKeySequence>() << (Qt::CTRL | Qt::Key_Comma) << createAnyModifierShortcuts(Qt::Key_P));
 #else
-        actionPreferences->setShortcuts(QList<QKeySequence>() << createAnyModifierShortcuts(Qt::Key_P) << Qt::CTRL + Qt::Key_Comma);
+        actionPreferences->setShortcuts(QList<QKeySequence>() << createAnyModifierShortcuts(Qt::Key_P) << (Qt::CTRL | Qt::Key_Comma));
 #endif
         actionPreferences->setMenuRole(QAction::PreferencesRole);
         menuFile->addSeparator();
         menuFile->addAction(actionExit);
 #if defined (Q_OS_WIN)
-        actionExit->setShortcuts(QList<QKeySequence>() << Qt::ALT + Qt::Key_F4 << Qt::CTRL + Qt::Key_Q);
+        actionExit->setShortcuts(QList<QKeySequence>() << (Qt::ALT | Qt::Key_F4) << (Qt::CTRL | Qt::Key_Q));
 #else
-        actionExit->setShortcuts(QList<QKeySequence>() << Qt::CTRL + Qt::Key_Q << Qt::ALT + Qt::Key_F4);
+        actionExit->setShortcuts(QList<QKeySequence>() << (Qt::CTRL | Qt::Key_Q) << (Qt::ALT | Qt::Key_F4));
 #endif
         actionExit->setMenuRole(QAction::QuitRole);
 
@@ -222,9 +222,9 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menuView->addSeparator();
         menuView->addAction(actionZoomFullScreen);
 #if defined (Q_OS_MAC)
-        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << (Qt::CTRL | Qt::META) + Qt::Key_F << Qt::Key_F11);
+        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << (Qt::CTRL | Qt::META | Qt::Key_F) << Qt::Key_F11);
 #else
-        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::Key_F11 << (Qt::CTRL | Qt::META) + Qt::Key_F);
+        actionZoomFullScreen->setShortcuts(QList<QKeySequence>() << Qt::Key_F11 << (Qt::CTRL | Qt::META | Qt::Key_F));
 #endif
         actionZoomFullScreen->setMenuRole(QAction::NoRole);
         actionZoomFullScreen->setCheckable(true);

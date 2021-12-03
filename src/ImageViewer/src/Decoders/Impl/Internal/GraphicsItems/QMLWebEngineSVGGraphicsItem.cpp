@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -34,14 +34,22 @@
 #include <QEventLoop>
 #include <QTimer>
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QtWebEngineQuick>
+#else
 #include <QtWebEngine>
+#endif
 #include <QQuickView>
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QQuickItem>
 #include <QQmlProperty>
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QStringConverter>
+#else
 #include <QTextCodec>
+#endif
 #include <QXmlStreamReader>
 
 #include <QOpenGLContext>
@@ -53,6 +61,7 @@
 #include "GraphicsItemUtils.h"
 
 class QQuickWebEngineLoadRequest;
+class QWebEngineLoadingInfo;
 
 namespace {
 
@@ -156,18 +165,24 @@ QByteArray getWebEngineComponentQml()
     return qml;
 }
 
+struct WebEngineInitializer
+{
+    WebEngineInitializer()
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        QtWebEngineQuick::initialize();
+#else
+        QtWebEngine::initialize();
+#endif
+    }
+};
+
+WebEngineInitializer webEngineInitializer;
+
 } // namespace
 
 struct QMLWebEngineSVGGraphicsItem::Impl
 {
-    struct WebEngineInitializer
-    {
-        WebEngineInitializer()
-        {
-            QtWebEngine::initialize();
-        }
-    };
-    WebEngineInitializer webEngineInitializer;
     QQuickView quickView;
     QQuickItem *webEngineView;
     QByteArray svgData;
@@ -262,12 +277,20 @@ bool QMLWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &ba
     QString svgDataString;
     const QString encoding = m_impl->detectEncoding(svgData);
     if(!encoding.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        svgDataString = QStringDecoder(encoding.toLatin1()).decode(svgData);
+#else
         svgDataString = QTextCodec::codecForName(encoding.toLatin1())->toUnicode(svgData);
+#endif
     else
         svgDataString = QString::fromUtf8(svgData);
 
     QEventLoop loop;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QMetaObject::Connection connection = connect(m_impl->webEngineView, SIGNAL(loadingChanged(QWebEngineLoadingInfo)), &loop, SLOT(quit()));
+#else
     QMetaObject::Connection connection = connect(m_impl->webEngineView, SIGNAL(loadingChanged(QQuickWebEngineLoadRequest*)), &loop, SLOT(quit()));
+#endif
     QMetaObject::invokeMethod(m_impl->webEngineView, "loadHtml", Q_ARG(QString, svgDataString), Q_ARG(QUrl, baseUrl));
     loop.exec(QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers);
     disconnect(connection);

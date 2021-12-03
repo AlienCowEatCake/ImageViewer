@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -151,61 +151,124 @@ QVariant QVariantFromObject(const id obj)
     if(!([obj isKindOfClass:[NSNumber class]]))
         return QVariant();
 
-    if(!strcmp([(NSNumber*)obj objCType], @encode(BOOL)))
+    const char *numberType = [(NSNumber*)obj objCType];
+    if(!strcmp(numberType, @encode(BOOL)))
         return QVariant([obj boolValue] ? true : false);
-    if(!strcmp([(NSNumber*)obj objCType], @encode(signed char)))
+    if(!strcmp(numberType, @encode(signed char)) || !strcmp(numberType, @encode(char)))
         return QVariant([obj charValue]);
-    if(!strcmp([(NSNumber*)obj objCType], @encode(unsigned char)))
+    if(!strcmp(numberType, @encode(unsigned char)))
         return QVariant([obj unsignedCharValue]);
-    if(!strcmp([(NSNumber*)obj objCType], @encode(signed short)))
+    if(!strcmp(numberType, @encode(signed short)))
         return QVariant([obj shortValue]);
-    if(!strcmp([(NSNumber*)obj objCType], @encode(unsigned short)))
+    if(!strcmp(numberType, @encode(unsigned short)))
         return QVariant([obj unsignedShortValue]);
-    if(!strcmp([(NSNumber*)obj objCType], @encode(signed int)))
+    if(!strcmp(numberType, @encode(signed int)))
         return QVariant([obj intValue]);
-    if(!strcmp([(NSNumber*)obj objCType], @encode(unsigned int)))
+    if(!strcmp(numberType, @encode(unsigned int)))
         return QVariant([obj unsignedIntValue]);
-    if(!strcmp([(NSNumber*)obj objCType], @encode(signed long long)))
+    if(!strcmp(numberType, @encode(signed long)))
+        return QVariant(static_cast<signed long long>([obj longValue]));
+    if(!strcmp(numberType, @encode(unsigned long)))
+        return QVariant(static_cast<unsigned long long>([obj unsignedLongValue]));
+    if(!strcmp(numberType, @encode(signed long long)))
         return QVariant([obj longLongValue]);
-    if(!strcmp([(NSNumber*)obj objCType], @encode(unsigned long long)))
+    if(!strcmp(numberType, @encode(unsigned long long)))
         return QVariant([obj unsignedLongLongValue]);
-    if(!strcmp([(NSNumber*)obj objCType], @encode(float)))
+    if(!strcmp(numberType, @encode(float)))
         return QVariant([obj floatValue]);
-    if(!strcmp([(NSNumber*)obj objCType], @encode(double)))
+    if(!strcmp(numberType, @encode(double)))
         return QVariant([obj doubleValue]);
     return QVariant([obj doubleValue]);
 }
 
 id QVariantToObject(const QVariant &variant)
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    enum Types
+    {
+        QMetaType_QVariantMap   = QMetaType::QVariantMap,
+        QMetaType_QVariantList  = QMetaType::QVariantList,
+        QMetaType_QString       = QMetaType::QString,
+        QMetaType_QByteArray    = QMetaType::QByteArray,
+        QMetaType_QTime         = QMetaType::QTime,
+        QMetaType_QDate         = QMetaType::QDate,
+        QMetaType_QDateTime     = QMetaType::QDateTime,
+        QMetaType_QUrl          = QMetaType::QUrl,
+        QMetaType_QPixmap       = QMetaType::QPixmap,
+        QMetaType_QImage        = QMetaType::QImage,
+        QMetaType_Bool          = QMetaType::Bool,
+        QMetaType_QChar         = QMetaType::QChar,
+        QMetaType_Char          = QMetaType::Char,
+        QMetaType_UChar         = QMetaType::UChar,
+        QMetaType_Short         = QMetaType::Short,
+        QMetaType_UShort        = QMetaType::UShort,
+        QMetaType_Int           = QMetaType::Int,
+        QMetaType_UInt          = QMetaType::UInt,
+        QMetaType_Long          = QMetaType::Long,
+        QMetaType_ULong         = QMetaType::ULong,
+        QMetaType_LongLong      = QMetaType::LongLong,
+        QMetaType_ULongLong     = QMetaType::ULongLong,
+        QMetaType_Float         = QMetaType::Float,
+        QMetaType_Double        = QMetaType::Double
+    };
+    const int type = variant.typeId();
+#else
+    enum Types
+    {
+        QMetaType_QVariantMap   = QVariant::Map,
+        QMetaType_QVariantList  = QVariant::List,
+        QMetaType_QString       = QVariant::String,
+        QMetaType_QByteArray    = QVariant::ByteArray,
+        QMetaType_QTime         = QVariant::Time,
+        QMetaType_QDate         = QVariant::Date,
+        QMetaType_QDateTime     = QVariant::DateTime,
+        QMetaType_QUrl          = QVariant::Url,
+        QMetaType_QPixmap       = QVariant::Pixmap,
+        QMetaType_QImage        = QVariant::Image,
+        QMetaType_Bool          = QVariant::Bool,
+        QMetaType_QChar         = QVariant::Char,
+        QMetaType_Char          = QVariant::Int,        ///< !
+        QMetaType_UChar         = QVariant::UInt,       ///< !
+        QMetaType_Short         = QVariant::Int,        ///< !
+        QMetaType_UShort        = QVariant::UInt,       ///< !
+        QMetaType_Int           = QVariant::Int,
+        QMetaType_UInt          = QVariant::UInt,
+        QMetaType_Long          = QVariant::LongLong,   ///< !
+        QMetaType_ULong         = QVariant::ULongLong,  ///< !
+        QMetaType_LongLong      = QVariant::LongLong,
+        QMetaType_ULongLong     = QVariant::ULongLong,
+        QMetaType_Float         = QVariant::Double,     ///< !
+        QMetaType_Double        = QVariant::Double,
+    };
     const QVariant::Type type = variant.type();
-    if(type == QVariant::Map)
+#endif
+    if(type == QMetaType_QVariantMap)
         return QVariantMapToNSDictionary(variant.toMap());
-    if(type == QVariant::List)
+    if(type == QMetaType_QVariantList)
         return QVariantListToNSArray(variant.toList());
-    if(type == QVariant::String)
+    if(type == QMetaType_QString)
         return QStringToNSString(variant.toString());
-    if(type == QVariant::ByteArray)
+    if(type == QMetaType_QByteArray)
         return QByteArrayToNSData(variant.toByteArray());
-    if(type == QVariant::Time || type == QVariant::Date || type == QVariant::DateTime)
+    if(type == QMetaType_QTime || type == QMetaType_QDate || type == QMetaType_QDateTime)
         return QDateTimeToNSDate(variant.toDateTime());
-    if(type == QVariant::Url)
+    if(type == QMetaType_QUrl)
         return QUrlToNSURL(variant.toUrl());
-    if(type == QVariant::Pixmap)
+    if(type == QMetaType_QPixmap)
         return QPixmapToNSImage(variant.value<QPixmap>());
-    if(type == QVariant::Image)
+    if(type == QMetaType_QImage)
         return QPixmapToNSImage(QPixmap::fromImage(variant.value<QImage>()));
-    if(type == QVariant::Bool)
+    if(type == QMetaType_Bool)
         return [NSNumber numberWithBool:(variant.toBool() ? YES : NO)];
-    if(type == QVariant::Char || type == QVariant::Int)
+    if(type == QMetaType_QChar || type == QMetaType_Char || type == QMetaType_Short || type == QMetaType_Int)
         return [NSNumber numberWithInt:variant.toInt()];
-    if(type == QVariant::UInt)
+    if(type == QMetaType_UChar || type == QMetaType_UShort || type == QMetaType_UInt)
         return [NSNumber numberWithUnsignedInt:variant.toUInt()];
-    if(type == QVariant::LongLong)
+    if(type == QMetaType_Long || type == QMetaType_LongLong)
         return [NSNumber numberWithLongLong:variant.toLongLong()];
-    if(type == QVariant::ULongLong)
+    if(type == QMetaType_ULong || type == QMetaType_ULongLong)
         return [NSNumber numberWithUnsignedLongLong:variant.toULongLong()];
-    if(type == QVariant::Double)
+    if(type == QMetaType_Float || type == QMetaType_Double)
         return [NSNumber numberWithDouble:variant.toDouble()];
     return [NSNull null];
 }

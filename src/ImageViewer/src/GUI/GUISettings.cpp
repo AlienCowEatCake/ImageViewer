@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -110,9 +110,14 @@ void GUISettings::flush()
 
 bool GUISettings::askBeforeDelete() const
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::Bool);
+#else
+    const int type = QVariant::Bool;
+#endif
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(ASK_BEFORE_DELETE_KEY, defaultValue);
-    return value.isValid() && value.canConvert(QVariant::Bool) ? value.toBool() : defaultValue;
+    return value.isValid() && value.canConvert(type) ? value.toBool() : defaultValue;
 }
 
 void GUISettings::setAskBeforeDelete(bool enabled)
@@ -125,9 +130,14 @@ void GUISettings::setAskBeforeDelete(bool enabled)
 
 bool GUISettings::moveToTrash() const
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::Bool);
+#else
+    const int type = QVariant::Bool;
+#endif
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(MOVE_TO_TRASH_KEY, defaultValue);
-    return value.isValid() && value.canConvert(QVariant::Bool) ? value.toBool() : defaultValue;
+    return value.isValid() && value.canConvert(type) ? value.toBool() : defaultValue;
 }
 
 void GUISettings::setMoveToTrash(bool enabled)
@@ -156,9 +166,14 @@ void GUISettings::setZoomMode(ImageViewerWidget::ZoomMode mode)
 
 qreal GUISettings::zoomLevel() const
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::Double);
+#else
+    const int type = QVariant::Double;
+#endif
     const qreal defaultValue = 1;
     QVariant variant = m_impl->settings.value(ZOOM_LEVEL_KEY);
-    if(!variant.isValid() || !variant.canConvert(QVariant::Double))
+    if(!variant.isValid() || !variant.canConvert(type))
         return defaultValue;
     bool ok;
     qreal value = variant.toDouble(&ok);
@@ -191,9 +206,14 @@ void GUISettings::setWheelMode(ImageViewerWidget::WheelMode mode)
 
 QColor GUISettings::normalBackgroundColor() const
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::QColor);
+#else
+    const int type = QVariant::Color;
+#endif
     const QColor defaultValue(255, 255, 255, 128);
     QVariant value = m_impl->settings.value(NORMAL_BACKGROUND_COLOR_KEY, defaultValue);
-    return (value.isValid() && value.canConvert(QVariant::Color) ? value.value<QColor>() : defaultValue);
+    return (value.isValid() && value.canConvert(type) ? value.value<QColor>() : defaultValue);
 }
 
 void GUISettings::setNormalBackgroundColor(const QColor &color)
@@ -206,9 +226,14 @@ void GUISettings::setNormalBackgroundColor(const QColor &color)
 
 QColor GUISettings::fullScreenBackgroundColor() const
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::QColor);
+#else
+    const int type = QVariant::Color;
+#endif
     const QColor defaultValue(0, 0, 0, 128);
     QVariant value = m_impl->settings.value(FULLSCREEN_BACKGROUND_COLOR_KEY, defaultValue);
-    return (value.isValid() && value.canConvert(QVariant::Color) ? value.value<QColor>() : defaultValue);
+    return (value.isValid() && value.canConvert(type) ? value.value<QColor>() : defaultValue);
 }
 
 void GUISettings::setFullScreenBackgroundColor(const QColor &color)
@@ -221,9 +246,14 @@ void GUISettings::setFullScreenBackgroundColor(const QColor &color)
 
 QString GUISettings::lastOpenedPath() const
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::QString);
+#else
+    const int type = QVariant::String;
+#endif
     const QString defaultValue;
     QVariant value = m_impl->settings.value(LAST_OPENED_PATH_KEY, defaultValue);
-    return (value.isValid() && value.canConvert(QVariant::String) ? value.toString() : defaultValue);
+    return (value.isValid() && value.canConvert(type) ? value.toString() : defaultValue);
 }
 
 void GUISettings::setLastOpenedPath(const QString &path)
@@ -236,9 +266,14 @@ void GUISettings::setLastOpenedPath(const QString &path)
 
 bool GUISettings::smoothTransformation() const
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::Bool);
+#else
+    const int type = QVariant::Bool;
+#endif
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(SMOOTH_TRANSFORMATION_KEY, defaultValue);
-    return value.isValid() && value.canConvert(QVariant::Bool) ? value.toBool() : defaultValue;
+    return value.isValid() && value.canConvert(type) ? value.toBool() : defaultValue;
 }
 
 void GUISettings::setSmoothTransformation(bool enabled)
@@ -251,8 +286,13 @@ void GUISettings::setSmoothTransformation(bool enabled)
 
 QByteArray GUISettings::mainWindowGeometry() const
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::QByteArray);
+#else
+    const int type = QVariant::ByteArray;
+#endif
     QVariant value = m_impl->settings.value(MAIN_WINDOW_GEOMETRY_KEY);
-    return value.isValid() && value.canConvert(QVariant::ByteArray) ? value.toByteArray() : QByteArray();
+    return value.isValid() && value.canConvert(type) ? value.toByteArray() : QByteArray();
 }
 
 void GUISettings::setMainWindowGeometry(const QByteArray &geometry)
@@ -265,9 +305,14 @@ void GUISettings::setMainWindowGeometry(const QByteArray &geometry)
 
 int GUISettings::slideShowInterval() const
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::Int);
+#else
+    const int type = QVariant::Int;
+#endif
     const int defaultValue = 5;
     QVariant variant = m_impl->settings.value(SLIDESHOW_INTERVAL_KEY);
-    if(!variant.isValid() || !variant.canConvert(QVariant::Int))
+    if(!variant.isValid() || !variant.canConvert(type))
         return defaultValue;
     bool ok;
     int value = variant.toInt(&ok);
@@ -284,9 +329,14 @@ void GUISettings::setSlideShowInterval(int seconds)
 
 bool GUISettings::menuBarVisible() const
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::Bool);
+#else
+    const int type = QVariant::Bool;
+#endif
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(MENUBAR_VISIBLE_KEY, defaultValue);
-    return value.isValid() && value.canConvert(QVariant::Bool) ? value.toBool() : defaultValue;
+    return value.isValid() && value.canConvert(type) ? value.toBool() : defaultValue;
 }
 
 void GUISettings::setMenuBarVisible(bool visible)
@@ -299,9 +349,14 @@ void GUISettings::setMenuBarVisible(bool visible)
 
 bool GUISettings::toolBarVisible() const
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::Bool);
+#else
+    const int type = QVariant::Bool;
+#endif
     const bool defaultValue = true;
     QVariant value = m_impl->settings.value(TOOLBAR_VISIBLE_KEY, defaultValue);
-    return value.isValid() && value.canConvert(QVariant::Bool) ? value.toBool() : defaultValue;
+    return value.isValid() && value.canConvert(type) ? value.toBool() : defaultValue;
 }
 
 void GUISettings::setToolBarVisible(bool visible)

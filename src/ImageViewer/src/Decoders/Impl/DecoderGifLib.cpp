@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -179,14 +179,23 @@ class GifAnimationProvider : public AbstractAnimationProvider
 
 public:
     explicit GifAnimationProvider(const QString &filePath)
+        : m_metaData(Q_NULLPTR)
     {
         m_numLoops = 1;
         m_error = !readGif(filePath);
     }
 
+    ~GifAnimationProvider()
+    {
+        if(m_metaData)
+            delete m_metaData;
+    }
+
     ImageMetaData *takeMetaData()
     {
-        return m_metaData.take();
+        ImageMetaData *result = m_metaData;
+        m_metaData = Q_NULLPTR;
+        return result;
     }
 
 private:
@@ -247,7 +256,7 @@ private:
                     // or after all image data in the GIF file.
                     const QByteArray commentData = QByteArray(reinterpret_cast<const char*>(extensionHeader->Bytes), extensionHeader->ByteCount);
                     if(!m_metaData)
-                        m_metaData.reset(new ImageMetaData);
+                        m_metaData = new ImageMetaData;
                     m_metaData->addCustomEntry(QString::fromLatin1("Comment"), QString::fromLatin1("Comment Extension block #%1").arg(i), QString::fromLatin1(commentData));
                     qDebug() << "Found comment";
                     continue;
@@ -297,7 +306,7 @@ private:
                     if(xmpData.size() > xmpPadingSize)
                         xmpData.resize(xmpData.size() - xmpPadingSize);
 
-                    m_metaData.reset(ImageMetaData::joinMetaData(m_metaData.take(), ImageMetaData::createXmpMetaData(xmpData)));
+                    m_metaData = ImageMetaData::joinMetaData(takeMetaData(), ImageMetaData::createXmpMetaData(xmpData));
                     qDebug() << "Found XMP metadata";
                     continue;
                 }
@@ -372,7 +381,7 @@ private:
     }
 
 private:
-    QScopedPointer<ImageMetaData> m_metaData;
+    ImageMetaData *m_metaData;
 };
 
 // ====================================================================================================

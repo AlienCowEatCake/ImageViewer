@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -49,10 +49,18 @@ QString ByteToHex(int value)
 /// @return Кодированные данные
 QString Encode(const QVariant &data)
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    switch(data.typeId())
+#else
     switch(data.type())
+#endif
     {
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    case QMetaType::Bool:
+#else
     case QVariant::Bool:
+#endif
     {
         const bool value = data.toBool();
         QString result = QString::fromLatin1("BOOL:");
@@ -60,8 +68,16 @@ QString Encode(const QVariant &data)
         return result;
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    case QMetaType::Char:
+    case QMetaType::Short:
+    case QMetaType::Int:
+    case QMetaType::Long:
+    case QMetaType::LongLong:
+#else
     case QVariant::Int:
     case QVariant::LongLong:
+#endif
     {
         const qlonglong value = data.toLongLong();
         QString result = QString::fromLatin1("INTEGER:");
@@ -69,8 +85,16 @@ QString Encode(const QVariant &data)
         return result;
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    case QMetaType::UChar:
+    case QMetaType::UShort:
+    case QMetaType::UInt:
+    case QMetaType::ULong:
+    case QMetaType::ULongLong:
+#else
     case QVariant::UInt:
     case QVariant::ULongLong:
+#endif
     {
         const qulonglong value = data.toULongLong();
         QString result = QString::fromLatin1("UNSIGNED:");
@@ -78,8 +102,13 @@ QString Encode(const QVariant &data)
         return result;
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    case QMetaType::QChar:
+    case QMetaType::QString:
+#else
     case QVariant::Char:
     case QVariant::String:
+#endif
     {
         const QString value = data.toString();
         QString result = QString::fromLatin1("STRING:");
@@ -87,7 +116,12 @@ QString Encode(const QVariant &data)
         return result;
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    case QMetaType::Float:
+    case QMetaType::Double:
+#else
     case QVariant::Double:
+#endif
     {
         const double value = data.toDouble();
         QString result = QString::fromLatin1("REAL:");
@@ -95,7 +129,11 @@ QString Encode(const QVariant &data)
         return result;
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    case QMetaType::QColor:
+#else
     case QVariant::Color:
+#endif
     {
         const QColor color = data.value<QColor>();
         QString result = QString::fromLatin1("COLOR:");
@@ -129,7 +167,7 @@ QVariant Decode(const QString &data)
     const QString dataSimplified = data.simplified().toUpper();
     const int delimeter = data.indexOf(QChar::fromLatin1(':'));
     if(delimeter <= 0)
-        return QVariant(QVariant::Invalid);
+        return QVariant();
     QString dataValue = QString(data).remove(0, delimeter + 1);
 
     if(dataSimplified.startsWith(QString::fromLatin1("BOOL:")))
@@ -143,7 +181,7 @@ QVariant Decode(const QString &data)
            dataValue == QString::fromLatin1("1") ||
            dataValue == QString::fromLatin1("true"))
             return QVariant(true);
-        return QVariant(QVariant::Invalid);
+        return QVariant();
     }
 
     if(dataSimplified.startsWith(QString::fromLatin1("INTEGER:")))
@@ -153,7 +191,7 @@ QVariant Decode(const QString &data)
         const qlonglong value = dataValue.toLongLong(&ok);
         if(ok)
             return QVariant(value);
-        return QVariant(QVariant::Invalid);
+        return QVariant();
     }
 
     if(dataSimplified.startsWith(QString::fromLatin1("UNSIGNED:")))
@@ -163,7 +201,7 @@ QVariant Decode(const QString &data)
         const qulonglong value = dataValue.toULongLong(&ok);
         if(ok)
             return QVariant(value);
-        return QVariant(QVariant::Invalid);
+        return QVariant();
     }
 
     if(dataSimplified.startsWith(QString::fromLatin1("STRING:")))
@@ -178,57 +216,57 @@ QVariant Decode(const QString &data)
         const double value = dataValue.toDouble(&ok);
         if(ok)
             return QVariant(value);
-        return QVariant(QVariant::Invalid);
+        return QVariant();
     }
 
     if(dataSimplified.startsWith(QString::fromLatin1("COLOR:")))
     {
         dataValue = dataValue.simplified();
         if(dataValue.size() < 1 || dataValue[0] != QChar::fromLatin1('#'))
-            return QVariant(QVariant::Invalid);
+            return QVariant();
         bool ok = false;
         if(dataValue.size() == 4) // "#RGB"
         {
             const int r = dataValue.mid(1, 1).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             const int g = dataValue.mid(2, 1).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             const int b = dataValue.mid(3, 1).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             return QVariant(QColor(r, g, b));
         }
         else if(dataValue.size() == 5) // "#RGBA"
         {
             const int r = dataValue.mid(1, 1).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             const int g = dataValue.mid(2, 1).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             const int b = dataValue.mid(3, 1).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             const int a = dataValue.mid(4, 1).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             return QVariant(QColor(r, g, b, a));
         }
         else if(dataValue.size() == 7) // "#RRGGBB"
         {
             const int r = dataValue.mid(1, 2).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             const int g = dataValue.mid(3, 2).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             const int b = dataValue.mid(5, 2).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             return QVariant(QColor(r, g, b));
         }
         else if(dataValue.size() == 9) // "#RRGGBBAA"
         {
             const int r = dataValue.mid(1, 2).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             const int g = dataValue.mid(3, 2).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             const int b = dataValue.mid(5, 2).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             const int a = dataValue.mid(7, 2).toInt(&ok, 16);
-            if(!ok) return QVariant(QVariant::Invalid);
+            if(!ok) return QVariant();
             return QVariant(QColor(r, g, b, a));
         }
     }
@@ -239,7 +277,7 @@ QVariant Decode(const QString &data)
         return QVariant(QByteArray::fromHex(dataValue.toLatin1()));
     }
 
-    return QVariant(QVariant::Invalid);
+    return QVariant();
 }
 
 } // namespace SettingsEncoder
