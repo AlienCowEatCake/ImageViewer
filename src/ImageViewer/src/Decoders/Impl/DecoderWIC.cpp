@@ -25,13 +25,6 @@
 #include <QDebug>
 #include <QSettings>
 #include <QVariant>
-#include <QLibrary>
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#include <QFunctionPointer>
-#else
-typedef void* QFunctionPointer;
-#endif
 
 #include "Utils/Global.h"
 
@@ -40,7 +33,6 @@ typedef void* QFunctionPointer;
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
-#include "Internal/Utils/LibraryUtils.h"
 
 //#pragma comment(lib, "ole32.lib") // CoInitialize, CoUninitialize, CoCreateInstance
 //#pragma comment(lib, "windowscodecs.lib")
@@ -106,14 +98,15 @@ private:
         , m_IIDFromString(Q_NULLPTR)
         , m_CLSIDFromString(Q_NULLPTR)
     {
-        if(!LibraryUtils::LoadQLibrary(m_library, "ole32"))
+        HMODULE library = ::LoadLibraryA("ole32");
+        if(!library)
             return;
 
-        m_CoInitialize = m_library.resolve("CoInitialize");
-        m_CoUninitialize = m_library.resolve("CoUninitialize");
-        m_CoCreateInstance = m_library.resolve("CoCreateInstance");
-        m_IIDFromString = m_library.resolve("IIDFromString");
-        m_CLSIDFromString = m_library.resolve("CLSIDFromString");
+        m_CoInitialize = ::GetProcAddress(library, "CoInitialize");
+        m_CoUninitialize = ::GetProcAddress(library, "CoUninitialize");
+        m_CoCreateInstance = ::GetProcAddress(library, "CoCreateInstance");
+        m_IIDFromString = ::GetProcAddress(library, "IIDFromString");
+        m_CLSIDFromString = ::GetProcAddress(library, "CLSIDFromString");
     }
 
     ~OLE32()
@@ -121,16 +114,15 @@ private:
 
     bool isValid() const
     {
-        return m_library.isLoaded() && m_CoInitialize && m_CoUninitialize
-                && m_CoCreateInstance && m_IIDFromString && m_CLSIDFromString;
+        return m_CoInitialize && m_CoUninitialize && m_CoCreateInstance &&
+                m_IIDFromString && m_CLSIDFromString;
     }
 
-    QLibrary m_library;
-    QFunctionPointer m_CoInitialize;
-    QFunctionPointer m_CoUninitialize;
-    QFunctionPointer m_CoCreateInstance;
-    QFunctionPointer m_IIDFromString;
-    QFunctionPointer m_CLSIDFromString;
+    FARPROC m_CoInitialize;
+    FARPROC m_CoUninitialize;
+    FARPROC m_CoCreateInstance;
+    FARPROC m_IIDFromString;
+    FARPROC m_CLSIDFromString;
 };
 
 HRESULT CoInitialize_WRAP(LPVOID pvReserved)

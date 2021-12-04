@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -81,8 +81,13 @@ void FontsFix(const QString &language)
     fallbackFont.setFamily(QString::fromLatin1("Tahoma"));
 
     // Проверим, умеет ли стандартный шрифт писать на новом языке
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QStringList currentWritingSystemFamilies = QFontDatabase::families(currentWritingSystem);
+#else
     static const QFontDatabase fontDatabase;
-    if(!fontDatabase.families(currentWritingSystem).contains(defaultFont.family(), Qt::CaseInsensitive))
+    const QStringList currentWritingSystemFamilies = fontDatabase.families(currentWritingSystem);
+#endif
+    if(!currentWritingSystemFamilies.contains(defaultFont.family(), Qt::CaseInsensitive))
         qApp->setFont(fallbackFont);   // Если не умеет - заменим на Tahoma
     else
         qApp->setFont(defaultFont);    // Если умеет, то вернем его обратно

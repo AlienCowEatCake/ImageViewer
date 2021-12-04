@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -32,19 +32,12 @@
 #include <QByteArray>
 #include <QVariant>
 #include <QDebug>
-#include <QLibrary>
 #include <QSysInfo>
 #include <QSettings>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QXmlStreamAttributes>
 #include <QXmlStreamNamespaceDeclarations>
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#include <QFunctionPointer>
-#else
-typedef void* QFunctionPointer;
-#endif
 
 #include "Utils/Global.h"
 
@@ -54,7 +47,6 @@ typedef void* QFunctionPointer;
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
-#include "Internal/Utils/LibraryUtils.h"
 #if defined (HAS_ZLIB)
 #include "Internal/Utils/ZLibUtils.h"
 #endif
@@ -138,15 +130,16 @@ private:
         , m_IIDFromString(Q_NULLPTR)
         , m_CLSIDFromString(Q_NULLPTR)
     {
-        if(!LibraryUtils::LoadQLibrary(m_library, "ole32"))
+        HMODULE library = ::LoadLibraryA("ole32");
+        if(!library)
             return;
 
-        m_CoInitializeEx = m_library.resolve("CoInitializeEx");
-        m_CoUninitialize = m_library.resolve("CoUninitialize");
-        m_CoCreateInstance = m_library.resolve("CoCreateInstance");
-        m_CLSIDFromProgID = m_library.resolve("CLSIDFromProgID");
-        m_IIDFromString = m_library.resolve("IIDFromString");
-        m_CLSIDFromString = m_library.resolve("CLSIDFromString");
+        m_CoInitializeEx = ::GetProcAddress(library, "CoInitializeEx");
+        m_CoUninitialize = ::GetProcAddress(library, "CoUninitialize");
+        m_CoCreateInstance = ::GetProcAddress(library, "CoCreateInstance");
+        m_CLSIDFromProgID = ::GetProcAddress(library, "CLSIDFromProgID");
+        m_IIDFromString = ::GetProcAddress(library, "IIDFromString");
+        m_CLSIDFromString = ::GetProcAddress(library, "CLSIDFromString");
     }
 
     ~OLE32()
@@ -154,18 +147,16 @@ private:
 
     bool isValid() const
     {
-        return m_library.isLoaded() && m_CoInitializeEx && m_CoUninitialize
-                && m_CoCreateInstance && m_CLSIDFromProgID && m_IIDFromString
-                && m_CLSIDFromString;
+        return m_CoInitializeEx && m_CoUninitialize && m_CoCreateInstance &&
+                m_CLSIDFromProgID && m_IIDFromString && m_CLSIDFromString;
     }
 
-    QLibrary m_library;
-    QFunctionPointer m_CoInitializeEx;
-    QFunctionPointer m_CoUninitialize;
-    QFunctionPointer m_CoCreateInstance;
-    QFunctionPointer m_CLSIDFromProgID;
-    QFunctionPointer m_IIDFromString;
-    QFunctionPointer m_CLSIDFromString;
+    FARPROC m_CoInitializeEx;
+    FARPROC m_CoUninitialize;
+    FARPROC m_CoCreateInstance;
+    FARPROC m_CLSIDFromProgID;
+    FARPROC m_IIDFromString;
+    FARPROC m_CLSIDFromString;
 };
 
 HRESULT CoInitializeEx_WRAP(LPVOID pvReserved, DWORD dwCoInit)
@@ -281,14 +272,15 @@ private:
         , m_SafeArrayAccessData(Q_NULLPTR)
         , m_SafeArrayDestroy(Q_NULLPTR)
     {
-        if(!LibraryUtils::LoadQLibrary(m_library, "oleaut32"))
+        HMODULE library = ::LoadLibraryA("oleaut32");
+        if(!library)
             return;
 
-        m_SysAllocString = m_library.resolve("SysAllocString");
-        m_SysFreeString = m_library.resolve("SysFreeString");
-        m_SafeArrayCreateVector = m_library.resolve("SafeArrayCreateVector");
-        m_SafeArrayAccessData = m_library.resolve("SafeArrayAccessData");
-        m_SafeArrayDestroy = m_library.resolve("SafeArrayDestroy");
+        m_SysAllocString = ::GetProcAddress(library, "SysAllocString");
+        m_SysFreeString = ::GetProcAddress(library, "SysFreeString");
+        m_SafeArrayCreateVector = ::GetProcAddress(library, "SafeArrayCreateVector");
+        m_SafeArrayAccessData = ::GetProcAddress(library, "SafeArrayAccessData");
+        m_SafeArrayDestroy = ::GetProcAddress(library, "SafeArrayDestroy");
     }
 
     ~OLEAut32()
@@ -296,16 +288,15 @@ private:
 
     bool isValid() const
     {
-        return m_library.isLoaded() && m_SysAllocString && m_SysFreeString
+        return m_SysAllocString && m_SysFreeString
                 && m_SafeArrayCreateVector && m_SafeArrayAccessData && m_SafeArrayDestroy;
     }
 
-    QLibrary m_library;
-    QFunctionPointer m_SysAllocString;
-    QFunctionPointer m_SysFreeString;
-    QFunctionPointer m_SafeArrayCreateVector;
-    QFunctionPointer m_SafeArrayAccessData;
-    QFunctionPointer m_SafeArrayDestroy;
+    FARPROC m_SysAllocString;
+    FARPROC m_SysFreeString;
+    FARPROC m_SafeArrayCreateVector;
+    FARPROC m_SafeArrayAccessData;
+    FARPROC m_SafeArrayDestroy;
 };
 
 BSTR SysAllocString_WRAP(const OLECHAR *psz)
