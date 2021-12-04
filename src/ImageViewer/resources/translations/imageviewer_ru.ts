@@ -128,235 +128,235 @@
 <context>
     <name>MacToolBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="798"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="810"/>
         <source>Previous</source>
         <comment>Long</comment>
         <translation>Предыдущий</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="799"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="811"/>
         <source>Previous</source>
         <comment>Short</comment>
         <translation>Предыдущий</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="800"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="812"/>
         <source>Next</source>
         <comment>Long</comment>
         <translation>Следующий</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="801"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="813"/>
         <source>Next</source>
         <comment>Short</comment>
         <translation>Следующий</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="802"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="814"/>
         <source>Navigate</source>
         <comment>Short</comment>
         <translation>Навигация</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="806"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="818"/>
         <source>Slideshow</source>
         <comment>Short</comment>
         <translation>Слайдшоу</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="810"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="822"/>
         <source>Zoom Out</source>
         <comment>Long</comment>
         <translation>Уменьшить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="811"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="823"/>
         <source>Zoom Out</source>
         <comment>Short</comment>
         <translation>Уменьшить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="812"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="824"/>
         <source>Zoom In</source>
         <comment>Long</comment>
         <translation>Увеличить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="813"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="825"/>
         <source>Zoom In</source>
         <comment>Short</comment>
         <translation>Увеличить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="814"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="826"/>
         <source>Zoom</source>
         <comment>Short</comment>
         <translation>Масштаб</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="818"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="830"/>
         <source>Fit Image To Window Size</source>
         <comment>Long</comment>
         <translation>Масштабировать к размеру окна</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="819"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="831"/>
         <source>Fit Image To Window Size</source>
         <comment>Short</comment>
         <translation>Вписать</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="824"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="836"/>
         <source>Original Size</source>
         <comment>Long</comment>
         <translation>Масштаб 1:1</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="825"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="837"/>
         <source>Original Size</source>
         <comment>Short</comment>
         <translation>1:1</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="830"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="842"/>
         <source>Full Screen</source>
         <comment>Long</comment>
         <translation>На полный экран</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="831"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="843"/>
         <source>Full Screen</source>
         <comment>Short</comment>
         <translation>Полный экран</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="836"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="848"/>
         <source>Rotate Counterclockwise</source>
         <comment>Long</comment>
         <translation>Повернуть против часовой стрелки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="837"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="849"/>
         <source>Rotate Counterclockwise</source>
         <comment>Short</comment>
         <translation>Повернуть против часовой стрелки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="838"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="850"/>
         <source>Rotate Clockwise</source>
         <comment>Long</comment>
         <translation>Повернуть по часовой стрелке</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="839"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="851"/>
         <source>Rotate Clockwise</source>
         <comment>Short</comment>
         <translation>Повернуть по часовой стрелке</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="844"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="856"/>
         <source>Flip Horizontal</source>
         <comment>Long</comment>
         <translation>Перевернуть по горизонтали</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="845"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="857"/>
         <source>Flip Horizontal</source>
         <comment>Short</comment>
         <translation>Перевернуть по горизонтали</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="846"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="858"/>
         <source>Flip Vertical</source>
         <comment>Long</comment>
         <translation>Перевернуть по вертикали</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="840"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="852"/>
         <source>Rotate</source>
         <comment>Short</comment>
         <translation>Повернуть</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="847"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="859"/>
         <source>Flip Vertical</source>
         <comment>Short</comment>
         <translation>Перевернуть по вертикали</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="848"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="860"/>
         <source>Flip</source>
         <comment>Short</comment>
         <translation>Перевернуь</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="852"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="864"/>
         <source>Open File</source>
         <comment>Long</comment>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="853"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="865"/>
         <source>Open File</source>
         <comment>Short</comment>
         <translation>Открыть</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="857"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="869"/>
         <source>Save File As</source>
         <comment>Long</comment>
         <translation>Сохранить файл как</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="858"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="870"/>
         <source>Save File As</source>
         <comment>Short</comment>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="862"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="874"/>
         <source>Delete File</source>
         <comment>Long</comment>
         <translation>Удалить файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="863"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="875"/>
         <source>Delete File</source>
         <comment>Short</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="867"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="879"/>
         <source>Preferences</source>
         <comment>Long</comment>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="868"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="880"/>
         <source>Preferences</source>
         <comment>Short</comment>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="872"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="884"/>
         <source>Exit</source>
         <comment>Long</comment>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="873"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="885"/>
         <source>Exit</source>
         <comment>Short</comment>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="891"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="903"/>
         <source>Start Slideshow</source>
         <comment>Long</comment>
         <translation>Запуск слайдшоу</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="896"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="908"/>
         <source>Stop Slideshow</source>
         <comment>Long</comment>
         <translation>Останов слайдшоу</translation>
@@ -365,67 +365,67 @@
 <context>
     <name>MacTouchBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="483"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="491"/>
         <source>Navigate</source>
         <translation>Навигация</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="484"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="492"/>
         <source>Slideshow</source>
         <translation>Слайдшоу</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="485"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="493"/>
         <source>Zoom</source>
         <translation>Масштаб</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="486"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="494"/>
         <source>Fit Image To Window Size</source>
         <translation>Масштабировать к размеру окна</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="487"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="495"/>
         <source>Original Size</source>
         <translation>Масштаб 1:1</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="488"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="496"/>
         <source>Full Screen</source>
         <translation>Полный экран</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="489"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="497"/>
         <source>Rotate</source>
         <translation>Повернуть</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="490"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="498"/>
         <source>Flip</source>
         <translation>Перевернуь</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="491"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="499"/>
         <source>Open File</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="492"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="500"/>
         <source>Save File As</source>
         <translation>Сохранить файл как</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="493"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="501"/>
         <source>Delete File</source>
         <translation>Удалить файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="494"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="502"/>
         <source>Preferences</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="495"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="503"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
