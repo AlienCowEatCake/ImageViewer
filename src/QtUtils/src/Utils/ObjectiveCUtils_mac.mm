@@ -240,7 +240,7 @@ id QVariantToObject(const QVariant &variant)
         QMetaType_Float         = QVariant::Double,     ///< !
         QMetaType_Double        = QVariant::Double,
     };
-    const QVariant::Type type = variant.type();
+    const int type = static_cast<int>(variant.type());
 #endif
     if(type == QMetaType_QVariantMap)
         return QVariantMapToNSDictionary(variant.toMap());
