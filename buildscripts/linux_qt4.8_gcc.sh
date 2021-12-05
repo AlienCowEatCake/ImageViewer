@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 PROJECT="ImageViewer"
 BUILDDIR="build_linux_qt4.8_gcc"
 SUFFIX="_qt4.8_$(gcc -dumpmachine)"

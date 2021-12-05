@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 PROJECT="ImageViewer"
 BUILDDIR="build_haiku_qt5_gcc"
 SUFFIX="_qt5_$(gcc -dumpmachine | sed 's|-unknown-|-| ; s|-pc-|-|')"
