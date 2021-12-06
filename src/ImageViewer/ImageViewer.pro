@@ -402,6 +402,16 @@ HEADERS += \
         src/GUI/MainWindow/MacTouchBar.h
 }
 
+!disable_printsupport {
+    QT += printsupport
+    DEFINES += ENABLE_PRINT_SUPPORT
+    SOURCES += \
+        src/GUI/Dialogs/PrintDialog.cpp
+    HEADERS += \
+        src/GUI/Dialogs/PrintDialog.h \
+        src/GUI/Dialogs/PrintDialog_p.h
+}
+
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
     resources/translations/imageviewer_ru.ts

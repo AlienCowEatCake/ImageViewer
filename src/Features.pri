@@ -579,6 +579,10 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
     CONFIG += disable_mactouchbar
 }
 
+# Print Support options:
+#    disable_printsupport
+
+
 # ::::: Cleanup Unised :::::
 
 disable_libtiff | system_libtiff {

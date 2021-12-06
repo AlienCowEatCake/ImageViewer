@@ -225,6 +225,7 @@ struct TouchBarData
     ButtonedTouchBarItem openFile;
     ButtonedTouchBarItem saveFileAs;
     ButtonedTouchBarItem deleteFile;
+    ButtonedTouchBarItem print;
     ButtonedTouchBarItem preferences;
     ButtonedTouchBarItem exit;
 };
@@ -318,6 +319,7 @@ API_AVAILABLE(macos(10.12.2))
     MAKE_BUTTONED_ITEM(openFile, ICON_OPEN, nil);
     MAKE_BUTTONED_ITEM(saveFileAs, ICON_SAVE_AS, nil);
     MAKE_BUTTONED_ITEM(deleteFile, ICON_DELETE, NSImageNameTouchBarDeleteTemplate);
+    MAKE_BUTTONED_ITEM(print, ICON_PRINT, nil);
     MAKE_BUTTONED_ITEM(preferences, ICON_SETTINGS, nil);
     MAKE_BUTTONED_ITEM(exit, ICON_EXIT, nil);
 
@@ -361,6 +363,9 @@ API_AVAILABLE(macos(10.12.2))
         GET_IDENTIFIER(openFile),
         GET_IDENTIFIER(saveFileAs),
         GET_IDENTIFIER(deleteFile),
+#if defined (ENABLE_PRINT_SUPPORT)
+        GET_IDENTIFIER(print),
+#endif
         GET_IDENTIFIER(preferences),
         GET_IDENTIFIER(exit),
 #undef GET_IDENTIFIER
@@ -390,6 +395,7 @@ API_AVAILABLE(macos(10.12.2))
     CHECK(openFile);
     CHECK(saveFileAs);
     CHECK(deleteFile);
+    CHECK(print);
     CHECK(preferences);
     CHECK(exit);
 #undef CHECK
@@ -441,6 +447,7 @@ API_AVAILABLE(macos(10.12.2))
     INVOKE_IF_MATCH(openFile                , "openFileRequested"               )
     INVOKE_IF_MATCH(saveFileAs              , "saveAsRequested"                 )
     INVOKE_IF_MATCH(deleteFile              , "deleteFileRequested"             )
+    INVOKE_IF_MATCH(print                   , "printRequested"                  )
     INVOKE_IF_MATCH(preferences             , "preferencesRequested"            )
     INVOKE_IF_MATCH(exit                    , "exitRequested"                   )
 #undef INVOKE_IF_MATCH
@@ -499,6 +506,7 @@ struct MacTouchBar::Impl
         touchBarData.openFile.setCustomizationLabel(qApp->translate("MacTouchBar", "Open File"));
         touchBarData.saveFileAs.setCustomizationLabel(qApp->translate("MacTouchBar", "Save File As"));
         touchBarData.deleteFile.setCustomizationLabel(qApp->translate("MacTouchBar", "Delete File"));
+        touchBarData.print.setCustomizationLabel(qApp->translate("MacTouchBar", "Print"));
         touchBarData.preferences.setCustomizationLabel(qApp->translate("MacTouchBar", "Preferences"));
         touchBarData.exit.setCustomizationLabel(qApp->translate("MacTouchBar", "Exit"));
     }
@@ -599,6 +607,7 @@ CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setNavigatePreviousEnabled, &m_
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setNavigateNextEnabled, &m_impl->touchBarData.navigateNext)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setStartSlideShowEnabled, &m_impl->touchBarData.startSlideShow)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setImageInformationEnabled)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setPrintEnabled, &m_impl->touchBarData.print)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setPreferencesEnabled, &m_impl->touchBarData.preferences)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setExitEnabled, &m_impl->touchBarData.exit)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setRotateCounterclockwiseEnabled, &m_impl->touchBarData.rotateCounterclockwise)

@@ -458,6 +458,7 @@ struct ToolBarData
     ButtonedToolBarItem openFile;
     ButtonedToolBarItem saveFileAs;
     ButtonedToolBarItem deleteFile;
+    ButtonedToolBarItem print;
     ButtonedToolBarItem preferences;
     ButtonedToolBarItem exit;
 };
@@ -542,6 +543,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     MAKE_BUTTONED_ITEM(openFile, high, ICON_OPEN);
     MAKE_BUTTONED_ITEM(saveFileAs, std, ICON_SAVE_AS);
     MAKE_BUTTONED_ITEM(deleteFile, std, ICON_DELETE);
+    MAKE_BUTTONED_ITEM(print, low, ICON_PRINT);
     MAKE_BUTTONED_ITEM(preferences, low, ICON_SETTINGS);
     MAKE_BUTTONED_ITEM(exit, low, ICON_EXIT);
 
@@ -577,6 +579,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     CHECK(openFile);
     CHECK(saveFileAs);
     CHECK(deleteFile);
+    CHECK(print);
     CHECK(preferences);
     CHECK(exit);
 #undef CHECK
@@ -598,6 +601,9 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
             m_toolBarData->openFile.identifier(),
             m_toolBarData->saveFileAs.identifier(),
             m_toolBarData->deleteFile.identifier(),
+#if defined (ENABLE_PRINT_SUPPORT)
+            m_toolBarData->print.identifier(),
+#endif
             m_toolBarData->preferences.identifier(),
             m_toolBarData->exit.identifier(),
             m_toolBarData->space.identifier(),
@@ -668,6 +674,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     INVOKE_IF_MATCH(m_toolBarData->openFile                 , "openFileRequested"               )
     INVOKE_IF_MATCH(m_toolBarData->saveFileAs               , "saveAsRequested"                 )
     INVOKE_IF_MATCH(m_toolBarData->deleteFile               , "deleteFileRequested"             )
+    INVOKE_IF_MATCH(m_toolBarData->print                    , "printRequested"                  )
     INVOKE_IF_MATCH(m_toolBarData->preferences              , "preferencesRequested"            )
     INVOKE_IF_MATCH(m_toolBarData->exit                     , "exitRequested"                   )
 #undef INVOKE_IF_MATCH
@@ -876,6 +883,11 @@ struct MacToolBar::Impl
         toolBarData.deleteFile.setPaletteLabel(deleteFileShortText);
         toolBarData.deleteFile.setToolTip(deleteFileFullText);
         toolBarData.deleteFile.setLabel(deleteFileShortText);
+        const QString printFullText = qApp->translate("MacToolBar", "Print", "Long");
+        const QString printShortText = qApp->translate("MacToolBar", "Print", "Short");
+        toolBarData.print.setPaletteLabel(printShortText);
+        toolBarData.print.setToolTip(printFullText);
+        toolBarData.print.setLabel(printShortText);
         const QString preferencesFullText = qApp->translate("MacToolBar", "Preferences", "Long");
         const QString preferencesShortText = qApp->translate("MacToolBar", "Preferences", "Short");
         toolBarData.preferences.setPaletteLabel(preferencesShortText);
@@ -971,6 +983,7 @@ CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setNavigatePreviousEnabled, &m_i
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setNavigateNextEnabled, &m_impl->toolBarData.navigateNext)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setStartSlideShowEnabled, &m_impl->toolBarData.startSlideShow)
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setImageInformationEnabled)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setPrintEnabled, &m_impl->toolBarData.print)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setPreferencesEnabled, &m_impl->toolBarData.preferences)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setExitEnabled, &m_impl->toolBarData.exit)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setRotateCounterclockwiseEnabled, &m_impl->toolBarData.rotateCounterclockwise)

@@ -128,235 +128,247 @@
 <context>
     <name>MacToolBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="810"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="817"/>
         <source>Previous</source>
         <comment>Long</comment>
         <translation>Previous</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="811"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="818"/>
         <source>Previous</source>
         <comment>Short</comment>
         <translation>Previous</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="812"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="819"/>
         <source>Next</source>
         <comment>Long</comment>
         <translation>Next</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="813"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="820"/>
         <source>Next</source>
         <comment>Short</comment>
         <translation>Next</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="814"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="821"/>
         <source>Navigate</source>
         <comment>Short</comment>
         <translation>Navigate</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="818"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="825"/>
         <source>Slideshow</source>
         <comment>Short</comment>
         <translation>Slideshow</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="822"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="829"/>
         <source>Zoom Out</source>
         <comment>Long</comment>
         <translation>Zoom Out</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="823"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="830"/>
         <source>Zoom Out</source>
         <comment>Short</comment>
         <translation>Zoom Out</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="824"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="831"/>
         <source>Zoom In</source>
         <comment>Long</comment>
         <translation>Zoom In</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="825"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="832"/>
         <source>Zoom In</source>
         <comment>Short</comment>
         <translation>Zoom In</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="826"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="833"/>
         <source>Zoom</source>
         <comment>Short</comment>
         <translation>Zoom</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="830"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="837"/>
         <source>Fit Image To Window Size</source>
         <comment>Long</comment>
         <translation>Fit Image To Window Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="831"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="838"/>
         <source>Fit Image To Window Size</source>
         <comment>Short</comment>
         <translation>Fit</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="836"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="843"/>
         <source>Original Size</source>
         <comment>Long</comment>
         <translation>Original Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="837"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="844"/>
         <source>Original Size</source>
         <comment>Short</comment>
         <translation>1:1</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="842"/>
-        <source>Full Screen</source>
-        <comment>Long</comment>
-        <translation>Full Screen</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="843"/>
-        <source>Full Screen</source>
-        <comment>Short</comment>
-        <translation>Full Screen</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="848"/>
-        <source>Rotate Counterclockwise</source>
-        <comment>Long</comment>
-        <translation>Rotate Counterclockwise</translation>
-    </message>
-    <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="849"/>
-        <source>Rotate Counterclockwise</source>
-        <comment>Short</comment>
-        <translation>Rotate Counterclockwise</translation>
+        <source>Full Screen</source>
+        <comment>Long</comment>
+        <translation>Full Screen</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="850"/>
-        <source>Rotate Clockwise</source>
-        <comment>Long</comment>
-        <translation>Rotate Clockwise</translation>
+        <source>Full Screen</source>
+        <comment>Short</comment>
+        <translation>Full Screen</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="851"/>
-        <source>Rotate Clockwise</source>
-        <comment>Short</comment>
-        <translation>Rotate Clockwise</translation>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="855"/>
+        <source>Rotate Counterclockwise</source>
+        <comment>Long</comment>
+        <translation>Rotate Counterclockwise</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="856"/>
+        <source>Rotate Counterclockwise</source>
+        <comment>Short</comment>
+        <translation>Rotate Counterclockwise</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="857"/>
+        <source>Rotate Clockwise</source>
+        <comment>Long</comment>
+        <translation>Rotate Clockwise</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="858"/>
+        <source>Rotate Clockwise</source>
+        <comment>Short</comment>
+        <translation>Rotate Clockwise</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="863"/>
         <source>Flip Horizontal</source>
         <comment>Long</comment>
         <translation>Flip Horizontal</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="857"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="864"/>
         <source>Flip Horizontal</source>
         <comment>Short</comment>
         <translation>Flip Horizontal</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="858"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="865"/>
         <source>Flip Vertical</source>
         <comment>Long</comment>
         <translation>Flip Vertical</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="852"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="859"/>
         <source>Rotate</source>
         <comment>Short</comment>
         <translation>Rotate</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="859"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="866"/>
         <source>Flip Vertical</source>
         <comment>Short</comment>
         <translation>Flip Vertical</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="860"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="867"/>
         <source>Flip</source>
         <comment>Short</comment>
         <translation>Flip</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="864"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="871"/>
         <source>Open File</source>
         <comment>Long</comment>
         <translation>Open File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="865"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="872"/>
         <source>Open File</source>
         <comment>Short</comment>
         <translation>Open</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="869"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="876"/>
         <source>Save File As</source>
         <comment>Long</comment>
         <translation>Save File As</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="870"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="877"/>
         <source>Save File As</source>
         <comment>Short</comment>
         <translation>Save</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="874"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="881"/>
         <source>Delete File</source>
         <comment>Long</comment>
         <translation>Delete File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="875"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="882"/>
         <source>Delete File</source>
         <comment>Short</comment>
         <translation>Delete</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="879"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="886"/>
+        <source>Print</source>
+        <comment>Long</comment>
+        <translation>Print</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="887"/>
+        <source>Print</source>
+        <comment>Short</comment>
+        <translation>Print</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="891"/>
         <source>Preferences</source>
         <comment>Long</comment>
         <translation>Preferences</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="880"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="892"/>
         <source>Preferences</source>
         <comment>Short</comment>
         <translation>Preferences</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="884"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="896"/>
         <source>Exit</source>
         <comment>Long</comment>
         <translation>Quit</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="885"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="897"/>
         <source>Exit</source>
         <comment>Short</comment>
         <translation>Quit</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="903"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="915"/>
         <source>Start Slideshow</source>
         <comment>Long</comment>
         <translation>Start Slideshow</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="908"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="920"/>
         <source>Stop Slideshow</source>
         <comment>Long</comment>
         <translation>Stop Slideshow</translation>
@@ -365,67 +377,72 @@
 <context>
     <name>MacTouchBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="491"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="498"/>
         <source>Navigate</source>
         <translation>Navigate</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="492"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="499"/>
         <source>Slideshow</source>
         <translation>Slideshow</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="493"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="500"/>
         <source>Zoom</source>
         <translation>Zoom</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="494"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="501"/>
         <source>Fit Image To Window Size</source>
         <translation>Fit Image To Window Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="495"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="502"/>
         <source>Original Size</source>
         <translation>Original Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="496"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="503"/>
         <source>Full Screen</source>
         <translation>Full Screen</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="497"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="504"/>
         <source>Rotate</source>
         <translation>Rotate</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="498"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="505"/>
         <source>Flip</source>
         <translation>Flip</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="499"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="506"/>
         <source>Open File</source>
         <translation>Open File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="500"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="507"/>
         <source>Save File As</source>
         <translation>Save File As</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="501"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="508"/>
         <source>Delete File</source>
         <translation>Delete File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="502"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="509"/>
+        <source>Print</source>
+        <translation>Print</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="510"/>
         <source>Preferences</source>
         <translation>Preferences</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="503"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="511"/>
         <source>Exit</source>
         <translation>Quit</translation>
     </message>
@@ -498,17 +515,17 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="309"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="315"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="414"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="436"/>
         <source>Zoom</source>
         <translation>Zoom</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="415"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="437"/>
         <source>Zoom Factor (%):</source>
         <translation>Zoom Factor (%):</translation>
     </message>
@@ -516,167 +533,172 @@
 <context>
     <name>MenuBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="285"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="293"/>
         <source>&amp;File</source>
         <translation>&amp;File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="286"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="294"/>
         <source>&amp;Edit</source>
         <translation>&amp;Edit</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="287"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="295"/>
         <source>&amp;View</source>
         <translation>&amp;View</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="288"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="296"/>
         <source>&amp;Help</source>
         <translation>&amp;Help</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="289"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="297"/>
         <source>&amp;Reopen With</source>
         <translation>&amp;Reopen With</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="291"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
         <source>&amp;Open File</source>
         <translation>&amp;Open File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="292"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
         <source>Open &amp;Folder</source>
         <translation>Open &amp;Folder</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="293"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="301"/>
         <source>&amp;Save As</source>
         <translation>&amp;Save As</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="294"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="302"/>
         <source>New &amp;Window</source>
         <translation>New &amp;Window</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="295"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="303"/>
         <source>Pre&amp;vious</source>
         <translation>Pre&amp;vious</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="296"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
         <source>&amp;Next</source>
         <translation>&amp;Next</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="297"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
         <source>Image &amp;Information</source>
         <translation>Image &amp;Information</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
-        <source>&amp;Preferences</source>
-        <translation>&amp;Preferences</translation>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
+        <source>&amp;Print</source>
+        <translation>&amp;Print</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
-        <source>&amp;Exit</source>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
+        <source>Pr&amp;eferences</source>
+        <translation>Pr&amp;eferences</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
+        <source>&amp;Quit</source>
         <translation>&amp;Quit</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
         <source>Rotate &amp;Counterclockwise</source>
         <translation>Rotate &amp;Counterclockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="301"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
         <source>&amp;Rotate Clockwise</source>
         <translation>&amp;Rotate Clockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="302"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
         <source>Flip &amp;Horizontal</source>
         <translation>Flip &amp;Horizontal</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="303"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
         <source>Flip &amp;Vertical</source>
         <translation>Flip &amp;Vertical</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
         <source>&amp;Delete File</source>
         <translation>&amp;Delete File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
         <source>Zoom &amp;Out</source>
         <translation>Zoom &amp;Out</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
         <source>Zoom &amp;In</source>
         <translation>Zoom &amp;In</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
         <source>&amp;Reset Zoom</source>
         <translation>&amp;Reset Zoom</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
         <source>&amp;Zoom...</source>
         <translation>&amp;Zoom…</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="318"/>
         <source>Fit Image To &amp;Window Size</source>
         <translation>Fit Image To &amp;Window Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
         <source>Original &amp;Size</source>
         <translation>Original &amp;Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
         <source>&amp;Full Screen</source>
         <translation>&amp;Full Screen</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
         <source>Show &amp;Menu Bar</source>
         <translation>Show &amp;Menu Bar</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
         <source>Show &amp;Tool Bar</source>
         <translation>Show &amp;Tool Bar</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
         <source>&amp;About</source>
         <translation>&amp;About</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
         <source>About &amp;Qt</source>
         <translation>About &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
         <source>Check for &amp;Updates</source>
         <translation>Check for &amp;Updates</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="358"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="368"/>
         <source>Start S&amp;lideshow</source>
         <translation>Start S&amp;lideshow</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="363"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="373"/>
         <source>Stop S&amp;lideshow</source>
         <translation>Stop S&amp;lideshow</translation>
     </message>

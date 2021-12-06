@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -281,6 +281,11 @@ QImage ImageViewerWidget::grabImage() const
     if(m_impl->flipHorizontal || m_impl->flipVertical)
         image = image.mirrored(m_impl->flipHorizontal, m_impl->flipVertical);
     return image;
+}
+
+QGraphicsItem *ImageViewerWidget::graphicsItem() const
+{
+    return m_impl->currentGraphicsItem;
 }
 
 void ImageViewerWidget::setGraphicsItem(QGraphicsItem *graphicsItem)

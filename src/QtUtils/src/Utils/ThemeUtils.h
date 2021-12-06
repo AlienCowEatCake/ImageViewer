@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -68,6 +68,7 @@ enum IconTypes
     ICON_SAVE_AS,
     ICON_CLOSE,
     ICON_EXIT,
+    ICON_PRINT,
     ICON_NEW,
     ICON_NEW_WINDOW,
     ICON_OPEN,

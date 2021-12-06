@@ -70,6 +70,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     QAction * const actionNavigateNext;
     QAction * const actionStartSlideShow;
     QAction * const actionImageInformation;
+    QAction * const actionPrint;
     QAction * const actionPreferences;
     QAction * const actionExit;
     QAction * const actionRotateCounterclockwise;
@@ -112,6 +113,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         , CONSTRUCT_OBJECT_FROM_POINTER(actionNavigateNext          , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionStartSlideShow        , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionImageInformation      , createWidgetAction(parent))
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionPrint                 , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionPreferences           , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionExit                  , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionRotateCounterclockwise, createWidgetAction(parent))
@@ -161,6 +163,12 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menuFile->addAction(actionImageInformation);
         actionImageInformation->setShortcuts(createAnyModifierShortcuts(Qt::Key_I));
         actionImageInformation->setMenuRole(QAction::NoRole);
+#if defined (ENABLE_PRINT_SUPPORT)
+        menuFile->addSeparator();
+        menuFile->addAction(actionPrint);
+        actionPrint->setMenuRole(QAction::NoRole);
+        actionPrint->setShortcut(QKeySequence::Print);
+#endif
         menuFile->addSeparator();
         menuFile->addAction(actionPreferences);
 #if defined (Q_OS_MAC)
@@ -295,8 +303,9 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionNavigatePrevious->setText(qApp->translate("MenuBar", "Pre&vious"));
         actionNavigateNext->setText(qApp->translate("MenuBar", "&Next"));
         actionImageInformation->setText(qApp->translate("MenuBar", "Image &Information"));
-        actionPreferences->setText(qApp->translate("MenuBar", "&Preferences"));
-        actionExit->setText(qApp->translate("MenuBar", "&Exit"));
+        actionPrint->setText(qApp->translate("MenuBar", "&Print"));
+        actionPreferences->setText(qApp->translate("MenuBar", "Pr&eferences"));
+        actionExit->setText(qApp->translate("MenuBar", "&Quit"));
         actionRotateCounterclockwise->setText(qApp->translate("MenuBar", "Rotate &Counterclockwise"));
         actionRotateClockwise->setText(qApp->translate("MenuBar", "&Rotate Clockwise"));
         actionFlipHorizontal->setText(qApp->translate("MenuBar", "Flip &Horizontal"));
@@ -329,6 +338,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionNavigatePrevious->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_LEFT                      , menuActionsHasDarkTheme));
         actionNavigateNext->setIcon             (ThemeUtils::GetIcon(ThemeUtils::ICON_RIGHT                     , menuActionsHasDarkTheme));
         actionImageInformation->setIcon         (ThemeUtils::GetIcon(ThemeUtils::ICON_ABOUT                     , menuActionsHasDarkTheme));
+        actionPrint->setIcon                    (ThemeUtils::GetIcon(ThemeUtils::ICON_PRINT                     , menuActionsHasDarkTheme));
         actionPreferences->setIcon              (ThemeUtils::GetIcon(ThemeUtils::ICON_SETTINGS                  , menuActionsHasDarkTheme));
         actionExit->setIcon                     (ThemeUtils::GetIcon(ThemeUtils::ICON_EXIT                      , menuActionsHasDarkTheme));
         actionRotateCounterclockwise->setIcon   (ThemeUtils::GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE   , menuActionsHasDarkTheme));
@@ -440,6 +450,7 @@ MenuBar::MenuBar(QWidget *parent)
     connect(m_impl->actionNavigateNext          , SIGNAL(triggered()), emitter, SIGNAL(navigateNextRequested())             );
     connect(m_impl->actionStartSlideShow        , SIGNAL(triggered()), emitter, SIGNAL(startSlideShowRequested())           );
     connect(m_impl->actionImageInformation      , SIGNAL(triggered()), emitter, SIGNAL(imageInformationRequested())         );
+    connect(m_impl->actionPrint                 , SIGNAL(triggered()), emitter, SIGNAL(printRequested())                    );
     connect(m_impl->actionPreferences           , SIGNAL(triggered()), emitter, SIGNAL(preferencesRequested())              );
     connect(m_impl->actionExit                  , SIGNAL(triggered()), emitter, SIGNAL(exitRequested())                     );
     connect(m_impl->actionRotateCounterclockwise, SIGNAL(triggered()), emitter, SIGNAL(rotateCounterclockwiseRequested())   );
@@ -523,6 +534,7 @@ CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setNavigatePreviousEnabled, m_impl-
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setNavigateNextEnabled, m_impl->actionNavigateNext)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setStartSlideShowEnabled, m_impl->actionStartSlideShow)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setImageInformationEnabled, m_impl->actionImageInformation)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setPrintEnabled, m_impl->actionPrint)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setPreferencesEnabled, m_impl->actionPreferences)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setExitEnabled, m_impl->actionExit)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setRotateCounterclockwiseEnabled, m_impl->actionRotateCounterclockwise)

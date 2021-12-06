@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -35,6 +35,10 @@
 #include <QInputDialog>
 #include <QFileInfo>
 #include <QTimer>
+
+#if defined (ENABLE_PRINT_SUPPORT)
+#include "../Dialogs/PrintDialog.h"
+#endif
 
 #include "Utils/SettingsWrapper.h"
 #include "Utils/SignalBlocker.h"
@@ -89,6 +93,7 @@ struct MainWindow::Impl
             container->setRotateClockwiseEnabled(isEnabled);
             container->setSaveAsEnabled(isEnabled);
             container->setImageInformationEnabled(isEnabled);
+            container->setPrintEnabled(isEnabled);
         }
         updateMenuReopenWith();
     }
@@ -222,6 +227,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
         connect(object, SIGNAL(navigateNextRequested())             , this                      , SIGNAL(selectNextRequested())             );
         connect(object, SIGNAL(startSlideShowRequested())           , this                      , SLOT(switchSlideShowMode())               );
         connect(object, SIGNAL(imageInformationRequested())         , this                      , SIGNAL(imageInformationRequested())       );
+        connect(object, SIGNAL(printRequested())                    , this                      , SLOT(onPrintRequested())                  );
         connect(object, SIGNAL(preferencesRequested())              , this                      , SIGNAL(preferencesRequested())            );
         connect(object, SIGNAL(exitRequested())                     , this                      , SLOT(close())                             );
         connect(object, SIGNAL(rotateCounterclockwiseRequested())   , imageViewerWidget         , SLOT(rotateCounterclockwise())            );
@@ -403,6 +409,22 @@ void MainWindow::onSaveAsRequested()
     const QString openedPath = m_impl->uiState.currentFilePath;
     m_impl->imageSaver.setDefaultFilePath(openedPath);
     m_impl->imageSaver.save(m_impl->ui.imageViewerWidget->grabImage(), openedPath);
+}
+
+void MainWindow::onPrintRequested()
+{
+#if defined (ENABLE_PRINT_SUPPORT)
+    if(!m_impl->isFileOpened())
+        return;
+
+    QGraphicsItem *item = m_impl->ui.imageViewerWidget->graphicsItem();
+    if(!item)
+        return;
+
+    PrintDialog *dialog = new PrintDialog(item, this);
+    dialog->exec();
+    dialog->deleteLater();
+#endif
 }
 
 void MainWindow::onZoomCustomRequested()

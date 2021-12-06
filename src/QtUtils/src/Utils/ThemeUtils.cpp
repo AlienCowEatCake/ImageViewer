@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -160,6 +160,7 @@ QIcon GetIcon(IconTypes type, bool darkBackground)
     ADD_ICON_CASE(ICON_SAVE_AS)
     ADD_ICON_CASE(ICON_CLOSE)
     ADD_ICON_CASE(ICON_EXIT)
+    ADD_ICON_CASE(ICON_PRINT)
     ADD_ICON_CASE(ICON_NEW)
     ADD_ICON_CASE(ICON_NEW_WINDOW)
     ADD_ICON_CASE(ICON_OPEN)
