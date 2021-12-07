@@ -26,6 +26,7 @@
 #include "Utils/ScopedPointer.h"
 
 class QGraphicsItem;
+class QPrinterInfo;
 
 class PrintDialog : public QDialog
 {
@@ -36,9 +37,17 @@ public:
     PrintDialog(QGraphicsItem *graphicsItem, QWidget *parent = Q_NULLPTR);
     ~PrintDialog();
 
+private Q_SLOTS:
+    void onCurrentPrinterChanged(int index);
+    void onPrintClicked();
+
+    void updatePrinterInfo(const QPrinterInfo& info);
+
 private:
     struct UI;
     QScopedPointer<UI> m_ui;
+    struct Impl;
+    QScopedPointer<Impl> m_impl;
 };
 
 #endif // PRINT_DIALOG_H_INCLUDED

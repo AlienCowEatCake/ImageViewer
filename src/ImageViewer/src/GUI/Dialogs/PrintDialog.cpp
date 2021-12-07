@@ -20,17 +20,159 @@
 #include "PrintDialog.h"
 #include "PrintDialog_p.h"
 
-PrintDialog::PrintDialog(QGraphicsItem */*graphicsItem*/, QWidget *parent)
+#include <QDebug>
+#include <QGraphicsItem>
+#include <QPainter>
+#include <QPrintDialog>
+#include <QPageSetupDialog>
+#include <QPrinter>
+#include <QPrinterInfo>
+
+struct PrintDialog::Impl
+{
+    const QList<QPrinterInfo> availablePrinters;
+    QGraphicsItem * const graphicsItem;
+
+    Impl(QGraphicsItem *graphicsItem)
+        : availablePrinters(QPrinterInfo::availablePrinters())
+        , graphicsItem(graphicsItem)
+    {}
+};
+
+PrintDialog::PrintDialog(QGraphicsItem *graphicsItem, QWidget *parent)
     : QDialog(parent)
     , m_ui(new UI(this))
+    , m_impl(new Impl(graphicsItem))
 {
     setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint |
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
                    Qt::WindowCloseButtonHint |
 #endif
-                   Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint | Qt::WindowMaximizeButtonHint);
+                   Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
+    setWindowTitle(qApp->translate("PrintDialog", "Print"));
     setWindowModality(Qt::ApplicationModal);
+
+    connect(m_ui->printerSelectComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentPrinterChanged(int)));
+    connect(m_ui->dialogButtonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(onPrintClicked()));
+    connect(m_ui->dialogButtonBox->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), this, SLOT(close()));
+
+    ensurePolished();
+    adjustSize();
+    setFixedSize(minimumSizeHint());
+
+    const QList<QPrinterInfo> printers = m_impl->availablePrinters;
+    for(QList<QPrinterInfo>::ConstIterator it = printers.begin(); it != printers.end(); ++it)
+    {
+        m_ui->printerSelectComboBox->addItem(it->printerName());
+        if(it->isDefault())
+            m_ui->printerSelectComboBox->setCurrentIndex(m_ui->printerSelectComboBox->count() - 1);
+    }
 }
 
 PrintDialog::~PrintDialog()
 {}
+
+void PrintDialog::onCurrentPrinterChanged(int index)
+{
+    if(index < 0 || index >= m_impl->availablePrinters.size())
+        return;
+
+    const QPrinterInfo& info = m_impl->availablePrinters[index];
+    updatePrinterInfo(info);
+}
+
+void PrintDialog::onPrintClicked()
+{
+    if(!m_impl->graphicsItem)
+        return;
+
+    const int index = m_ui->printerSelectComboBox->currentIndex();
+    if(index < 0 || index >= m_impl->availablePrinters.size())
+        return;
+
+    const QPrinterInfo& info = m_impl->availablePrinters[index];
+    if(info.isNull())
+        return;
+
+    QPrinter printer(info, QPrinter::HighResolution);
+    QPageSetupDialog(&printer, Q_NULLPTR).accept();
+    QPrintDialog(&printer, Q_NULLPTR).accept();
+
+    /// @todo mirror/rotate
+    /// @todo dpi
+    QPainter painter(&printer);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::TextAntialiasing);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    QStyleOptionGraphicsItem options;
+    options.exposedRect = m_impl->graphicsItem->boundingRect();
+    m_impl->graphicsItem->paint(&painter, &options);
+    painter.end();
+
+    close();
+}
+
+void PrintDialog::updatePrinterInfo(const QPrinterInfo& info)
+{
+    m_ui->printerNameLabel->setText(info.printerName());
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    m_ui->printerDescriptionLabel->setText(info.description());
+#else
+    m_ui->printerDescriptionHeaderLabel->setEnabled(false);
+    m_ui->printerDescriptionLabel->setEnabled(false);
+#endif
+
+    if(info.isDefault())
+        m_ui->printerDefaultLabel->setText(qApp->translate("PrintDialog", "Yes", "Default"));
+    else
+        m_ui->printerDefaultLabel->setText(qApp->translate("PrintDialog", "No", "Default"));
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
+    if(info.isRemote())
+        m_ui->printerRemoteLabel->setText(qApp->translate("PrintDialog", "Yes", "Remote"));
+    else
+        m_ui->printerRemoteLabel->setText(qApp->translate("PrintDialog", "No", "Remote"));
+#else
+    m_ui->printerRemoteHeaderLabel->setEnabled(false);
+    m_ui->printerRemoteLabel->setEnabled(false);
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    m_ui->printerLocationLabel->setText(info.location());
+#else
+    m_ui->printerLocationHeaderLabel->setEnabled(false);
+    m_ui->printerLocationLabel->setEnabled(false);
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    m_ui->printerMakeAndModelLabel->setText(info.makeAndModel());
+#else
+    m_ui->printerMakeAndModelHeaderLabel->setEnabled(false);
+    m_ui->printerMakeAndModelLabel->setEnabled(false);
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
+    switch(info.state())
+    {
+    case QPrinter::Idle:
+        m_ui->printerStateLabel->setText(qApp->translate("PrintDialog", "Idle", "State"));
+        break;
+    case QPrinter::Active:
+        m_ui->printerStateLabel->setText(qApp->translate("PrintDialog", "Active", "State"));
+        break;
+    case QPrinter::Aborted:
+        m_ui->printerStateLabel->setText(qApp->translate("PrintDialog", "Aborted", "State"));
+        break;
+    case QPrinter::Error:
+        m_ui->printerStateLabel->setText(qApp->translate("PrintDialog", "Error", "State"));
+        break;
+    default:
+        m_ui->printerStateLabel->setText(qApp->translate("PrintDialog", "Unknown (%1)", "State").arg(static_cast<int>(info.state())));
+        break;
+    }
+#else
+    m_ui->printerStateHeaderLabel->setEnabled(false);
+    m_ui->printerStateLabel->setEnabled(false);
+#endif
+}
