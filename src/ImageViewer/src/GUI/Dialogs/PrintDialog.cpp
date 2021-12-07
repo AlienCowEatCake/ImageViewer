@@ -32,6 +32,7 @@ struct PrintDialog::Impl
 {
     const QList<QPrinterInfo> availablePrinters;
     QGraphicsItem * const graphicsItem;
+    QScopedPointer<QPrinter> printer;
 
     Impl(QGraphicsItem *graphicsItem)
         : availablePrinters(QPrinterInfo::availablePrinters())
@@ -44,11 +45,11 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem, QWidget *parent)
     , m_ui(new UI(this))
     , m_impl(new Impl(graphicsItem))
 {
-    setWindowFlags(Qt::Window | Qt::CustomizeWindowHint | Qt::WindowTitleHint |
+    setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint |
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
                    Qt::WindowCloseButtonHint |
 #endif
-                   Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
+                   Qt::WindowSystemMenuHint | Qt::MSWindowsFixedSizeDialogHint);
     setWindowTitle(qApp->translate("PrintDialog", "Print"));
     setWindowModality(Qt::ApplicationModal);
 
@@ -58,7 +59,7 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem, QWidget *parent)
 
     ensurePolished();
     adjustSize();
-    setFixedSize(minimumSizeHint());
+    setFixedSize(minimumSize());
 
     const QList<QPrinterInfo> printers = m_impl->availablePrinters;
     for(QList<QPrinterInfo>::ConstIterator it = printers.begin(); it != printers.end(); ++it)
@@ -74,36 +75,34 @@ PrintDialog::~PrintDialog()
 
 void PrintDialog::onCurrentPrinterChanged(int index)
 {
+    m_impl->printer.reset();
     if(index < 0 || index >= m_impl->availablePrinters.size())
         return;
 
     const QPrinterInfo& info = m_impl->availablePrinters[index];
     updatePrinterInfo(info);
+    m_impl->printer.reset(new QPrinter(info, QPrinter::HighResolution));
+    QPageSetupDialog(m_impl->printer.get(), Q_NULLPTR).accept();
+    QPrintDialog(m_impl->printer.get(), Q_NULLPTR).accept();
 }
 
 void PrintDialog::onPrintClicked()
 {
-    if(!m_impl->graphicsItem)
+    if(!m_impl->graphicsItem || !m_impl->printer)
         return;
-
-    const int index = m_ui->printerSelectComboBox->currentIndex();
-    if(index < 0 || index >= m_impl->availablePrinters.size())
-        return;
-
-    const QPrinterInfo& info = m_impl->availablePrinters[index];
-    if(info.isNull())
-        return;
-
-    QPrinter printer(info, QPrinter::HighResolution);
-    QPageSetupDialog(&printer, Q_NULLPTR).accept();
-    QPrintDialog(&printer, Q_NULLPTR).accept();
 
     /// @todo mirror/rotate
     /// @todo dpi
-    QPainter painter(&printer);
+    QPainter painter(m_impl->printer.get());
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::TextAntialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
+
+    const qreal defaultDpi = 96;
+    const qreal scaleX = static_cast<qreal>(painter.device()->logicalDpiX()) / defaultDpi;
+    const qreal scaleY = static_cast<qreal>(painter.device()->logicalDpiY()) / defaultDpi;
+    painter.scale(scaleX, scaleY);
+
     QStyleOptionGraphicsItem options;
     options.exposedRect = m_impl->graphicsItem->boundingRect();
     m_impl->graphicsItem->paint(&painter, &options);

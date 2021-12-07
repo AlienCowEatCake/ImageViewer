@@ -562,6 +562,30 @@ QTabBar::tab:last
 }
 
 /*************
+ * QGroupBox *
+ *************/
+
+QGroupBox
+{
+    border: 1px solid #1a1c1f;
+    border-radius: 3px;
+    margin-top: 8px;
+}
+QGroupBox:disabled
+{
+    border: 1px solid #353535;
+}
+QGroupBox::title
+{
+    background-color: #454545;
+    subcontrol-position: top left;
+    padding: 0px 2px;
+    subcontrol-origin: margin;
+    left: 4px;
+    top: 0px;
+}
+
+/*************
  * QLineEdit *
  *************/
 
