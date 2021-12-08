@@ -40,8 +40,17 @@ public:
 private Q_SLOTS:
     void onCurrentPrinterChanged(int index);
     void onPrintClicked();
+    void onPageSetupClicked();
+    void onAutoRotateStateChanged();
+    void onPortraitToggled(bool checked);
+    void onLandscapeToggled(bool checked);
+    void onNumCopiesChanged(int value);
+    void onColorModeChanged(int index);
 
+private:
     void updatePrinterInfo(const QPrinterInfo& info);
+    void updatePageInfo();
+    void updatePageOrientation();
 
 private:
     struct UI;

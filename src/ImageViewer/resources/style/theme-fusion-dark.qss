@@ -48,3 +48,9 @@ MainWindow #toolbar #separator
     margin-left: 1px;
     margin-right: 1px;
 }
+
+PrintDialog #keepAspectLabelTop,
+PrintDialog #keepAspectLabelBottom
+{
+    color: rgba(255, 255, 255, 13%);
+}

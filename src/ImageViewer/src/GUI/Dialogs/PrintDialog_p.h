@@ -86,6 +86,8 @@ struct PrintDialog::UI
     QSpinBox * const xResolutionSpinBox;
     QLabel * const yResolutionLabel;
     QSpinBox * const yResolutionSpinBox;
+    QLabel * const keepAspectLabelTop;
+    QLabel * const keepAspectLabelBottom;
     QCheckBox * const keepAspectCheckBox;
     QComboBox * const resolutionUnitsComboBox;
     QPushButton * const loadDefaultsButton;
@@ -150,6 +152,8 @@ struct PrintDialog::UI
         , CONSTRUCT_OBJECT(xResolutionSpinBox, QSpinBox, (sizeGroup))
         , CONSTRUCT_OBJECT(yResolutionLabel, QLabel, (sizeGroup))
         , CONSTRUCT_OBJECT(yResolutionSpinBox, QSpinBox, (sizeGroup))
+        , CONSTRUCT_OBJECT(keepAspectLabelTop, QLabel, (sizeGroup))
+        , CONSTRUCT_OBJECT(keepAspectLabelBottom, QLabel, (sizeGroup))
         , CONSTRUCT_OBJECT(keepAspectCheckBox, QCheckBox, (sizeGroup))
         , CONSTRUCT_OBJECT(resolutionUnitsComboBox, QComboBox, (sizeGroup))
         , CONSTRUCT_OBJECT(loadDefaultsButton, QPushButton, (sizeGroup))
@@ -219,6 +223,8 @@ struct PrintDialog::UI
         sizeLayout->addWidget(xResolutionSpinBox, 2, 1, Qt::AlignVCenter);
         sizeLayout->addWidget(yResolutionLabel, 3, 0, Qt::AlignVCenter);
         sizeLayout->addWidget(yResolutionSpinBox, 3, 1, Qt::AlignVCenter);
+        sizeLayout->addWidget(keepAspectLabelTop, 2, 2, Qt::AlignVCenter | Qt::AlignLeft);
+        sizeLayout->addWidget(keepAspectLabelBottom, 3, 2, Qt::AlignVCenter | Qt::AlignLeft);
         sizeLayout->addWidget(keepAspectCheckBox, 2, 2, 2, 1, Qt::AlignVCenter | Qt::AlignLeft);
         sizeLayout->addWidget(resolutionUnitsComboBox, 2, 3, 2, 1, Qt::AlignVCenter);
         sizeLayout->addWidget(loadDefaultsButton, 4, 0, 1, 4, Qt::AlignVCenter);
@@ -282,7 +288,7 @@ struct PrintDialog::UI
         autoRotateCheckBox->setText(qApp->translate("PrintDialog", "Auto-rotate"));
         pageSetupButton->setText(qApp->translate("PrintDialog", "Page setup"));
 
-        detailsGroup->setTitle(qApp->translate("PrintDialog", "Copies"));
+        detailsGroup->setTitle(qApp->translate("PrintDialog", "Details"));
         copiesLabel->setText(qApp->translate("PrintDialog", "Copies:"));
         colorModeLabel->setText(qApp->translate("PrintDialog", "Color Mode:"));
 
@@ -292,6 +298,8 @@ struct PrintDialog::UI
         xResolutionLabel->setText(qApp->translate("PrintDialog", "X Resolution:"));
         yResolutionLabel->setText(qApp->translate("PrintDialog", "Y Resolution:"));
         loadDefaultsButton->setText(qApp->translate("PrintDialog", "Load Defaults"));
+        keepAspectLabelTop->setText(qApp->translate("PrintDialog", "<b>&#9582;</b>"));
+        keepAspectLabelBottom->setText(qApp->translate("PrintDialog", "<b>&#9583;</b>"));
 
         positionGroup->setTitle(qApp->translate("PrintDialog", "Position"));
         leftLabel->setText(qApp->translate("PrintDialog", "Left:"));

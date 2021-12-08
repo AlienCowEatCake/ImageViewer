@@ -28,6 +28,8 @@
 #include <QPrinter>
 #include <QPrinterInfo>
 
+#include "Utils/SignalBlocker.h"
+
 struct PrintDialog::Impl
 {
     const QList<QPrinterInfo> availablePrinters;
@@ -38,6 +40,15 @@ struct PrintDialog::Impl
         : availablePrinters(QPrinterInfo::availablePrinters())
         , graphicsItem(graphicsItem)
     {}
+
+    Qt::Orientation itemOrientation() const
+    {
+        if(!graphicsItem)
+            return Qt::Vertical;
+        /// @todo mirror/rotate
+        const QRectF boundingRect = graphicsItem->boundingRect();
+        return boundingRect.height() >= boundingRect.width() ? Qt::Vertical : Qt::Horizontal;
+    }
 };
 
 PrintDialog::PrintDialog(QGraphicsItem *graphicsItem, QWidget *parent)
@@ -53,13 +64,8 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem, QWidget *parent)
     setWindowTitle(qApp->translate("PrintDialog", "Print"));
     setWindowModality(Qt::ApplicationModal);
 
-    connect(m_ui->printerSelectComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentPrinterChanged(int)));
-    connect(m_ui->dialogButtonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(onPrintClicked()));
-    connect(m_ui->dialogButtonBox->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), this, SLOT(close()));
-
-    ensurePolished();
-    adjustSize();
-    setFixedSize(minimumSize());
+    m_ui->copiesSpinBox->setMinimum(1);
+    m_ui->copiesSpinBox->setMaximum(999);
 
     const QList<QPrinterInfo> printers = m_impl->availablePrinters;
     for(QList<QPrinterInfo>::ConstIterator it = printers.begin(); it != printers.end(); ++it)
@@ -68,6 +74,24 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem, QWidget *parent)
         if(it->isDefault())
             m_ui->printerSelectComboBox->setCurrentIndex(m_ui->printerSelectComboBox->count() - 1);
     }
+    onCurrentPrinterChanged(m_ui->printerSelectComboBox->currentIndex());
+
+    m_ui->autoRotateCheckBox->setChecked(true);
+    onAutoRotateStateChanged();
+
+    connect(m_ui->printerSelectComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentPrinterChanged(int)));
+    connect(m_ui->pageSetupButton, SIGNAL(clicked()), this, SLOT(onPageSetupClicked()));
+    connect(m_ui->autoRotateCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onAutoRotateStateChanged()));
+    connect(m_ui->portraitRadioButton, SIGNAL(toggled(bool)), this, SLOT(onPortraitToggled(bool)));
+    connect(m_ui->landscapeRadioButton, SIGNAL(toggled(bool)), this, SLOT(onLandscapeToggled(bool)));
+    connect(m_ui->copiesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onNumCopiesChanged(int)));
+    connect(m_ui->colorModeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onColorModeChanged(int)));
+    connect(m_ui->dialogButtonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(onPrintClicked()));
+    connect(m_ui->dialogButtonBox->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), this, SLOT(close()));
+
+    ensurePolished();
+    adjustSize();
+    setFixedSize(minimumSize());
 }
 
 PrintDialog::~PrintDialog()
@@ -76,14 +100,45 @@ PrintDialog::~PrintDialog()
 void PrintDialog::onCurrentPrinterChanged(int index)
 {
     m_impl->printer.reset();
+    updatePrinterInfo(QPrinterInfo());
+    updatePageInfo();
+    m_ui->dialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     if(index < 0 || index >= m_impl->availablePrinters.size())
         return;
 
     const QPrinterInfo& info = m_impl->availablePrinters[index];
-    updatePrinterInfo(info);
     m_impl->printer.reset(new QPrinter(info, QPrinter::HighResolution));
     QPageSetupDialog(m_impl->printer.get(), Q_NULLPTR).accept();
     QPrintDialog(m_impl->printer.get(), Q_NULLPTR).accept();
+
+    if(true)
+    {
+        const QSignalBlocker guard(m_ui->copiesSpinBox);
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
+        m_ui->copiesSpinBox->setValue(m_impl->printer->copyCount());
+#else
+        m_ui->copiesSpinBox->setValue(m_impl->printer->numCopies());
+#endif
+    }
+    if(true)
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+        const QList<QPrinter::ColorMode> supportedColorModes = info.supportedColorModes();
+#else
+        const QList<QPrinter::ColorMode> supportedColorModes = QList<QPrinter::ColorMode>() << QPrinter::Color << QPrinter::GrayScale;
+#endif
+        const QSignalBlocker guard(m_ui->colorModeComboBox);
+        m_ui->colorModeComboBox->clear();
+        if(supportedColorModes.contains(QPrinter::Color))
+            m_ui->colorModeComboBox->addItem(qApp->translate("PrintDialog", "Color"), static_cast<int>(QPrinter::Color));
+        if(supportedColorModes.contains(QPrinter::GrayScale))
+            m_ui->colorModeComboBox->addItem(qApp->translate("PrintDialog", "Grayscale"), static_cast<int>(QPrinter::GrayScale));
+        m_ui->colorModeComboBox->setCurrentIndex(m_ui->colorModeComboBox->findData(static_cast<int>(m_impl->printer->colorMode())));
+    }
+
+    updatePrinterInfo(info);
+    updatePageInfo();
+    m_ui->dialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(m_impl->graphicsItem);
 }
 
 void PrintDialog::onPrintClicked()
@@ -109,6 +164,76 @@ void PrintDialog::onPrintClicked()
     painter.end();
 
     close();
+}
+
+void PrintDialog::onPageSetupClicked()
+{
+    if(!m_impl->graphicsItem || !m_impl->printer)
+        return;
+
+    QPageSetupDialog *dialog = new QPageSetupDialog(m_impl->printer.get(), this);
+    if(dialog->exec() == QDialog::Accepted)
+        updatePageInfo();
+    dialog->hide();
+    dialog->deleteLater();
+}
+
+void PrintDialog::onAutoRotateStateChanged()
+{
+    const bool autoRotate = m_ui->autoRotateCheckBox->checkState() == Qt::Checked;
+    m_ui->portraitRadioButton->setDisabled(autoRotate);
+    m_ui->landscapeRadioButton->setDisabled(autoRotate);
+    updatePageOrientation();
+}
+
+void PrintDialog::onPortraitToggled(bool checked)
+{
+    if(!checked || !m_impl->printer)
+        return;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
+    m_impl->printer->setPageOrientation(QPageLayout::Portrait);
+#else
+    m_impl->printer->setOrientation(QPrinter::Portrait);
+#endif
+    updatePageOrientation();
+}
+
+void PrintDialog::onLandscapeToggled(bool checked)
+{
+    if(!checked || !m_impl->printer)
+        return;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
+    m_impl->printer->setPageOrientation(QPageLayout::Landscape);
+#else
+    m_impl->printer->setOrientation(QPrinter::Landscape);
+#endif
+    updatePageOrientation();
+}
+
+void PrintDialog::onNumCopiesChanged(int value)
+{
+    if(!m_impl->printer)
+        return;
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
+    m_impl->printer->setCopyCount(value);
+#else
+    m_impl->printer->setNumCopies(value);
+#endif
+    const QSignalBlocker guard(m_ui->copiesSpinBox);
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
+    m_ui->copiesSpinBox->setValue(m_impl->printer->copyCount());
+#else
+    m_ui->copiesSpinBox->setValue(m_impl->printer->numCopies());
+#endif
+}
+
+void PrintDialog::onColorModeChanged(int index)
+{
+    if(!m_impl->printer)
+        return;
+    m_impl->printer->setColorMode(static_cast<QPrinter::ColorMode>(m_ui->colorModeComboBox->itemData(index).toInt()));
+    const QSignalBlocker guard(m_ui->colorModeComboBox);
+    m_ui->colorModeComboBox->setCurrentIndex(m_ui->colorModeComboBox->findData(static_cast<int>(m_impl->printer->colorMode())));
 }
 
 void PrintDialog::updatePrinterInfo(const QPrinterInfo& info)
@@ -174,4 +299,47 @@ void PrintDialog::updatePrinterInfo(const QPrinterInfo& info)
     m_ui->printerStateHeaderLabel->setEnabled(false);
     m_ui->printerStateLabel->setEnabled(false);
 #endif
+}
+
+void PrintDialog::updatePageInfo()
+{
+    updatePageOrientation();
+}
+
+void PrintDialog::updatePageOrientation()
+{
+    if(!m_impl->printer)
+        return;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
+    QPageLayout::Orientation orientation;
+    const QPageLayout::Orientation portrait = QPageLayout::Portrait;
+    const QPageLayout::Orientation landscape = QPageLayout::Landscape;
+#else
+    QPrinter::Orientation orientation;
+    const QPrinter::Orientation portrait = QPrinter::Portrait;
+    const QPrinter::Orientation landscape = QPrinter::Landscape;
+#endif
+
+    const bool autoRotate = m_ui->autoRotateCheckBox->checkState() == Qt::Checked;
+    if(autoRotate)
+    {
+        orientation = (m_impl->itemOrientation() == Qt::Vertical) ? portrait : landscape;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
+        m_impl->printer->setPageOrientation(orientation);
+#else
+        m_impl->printer->setOrientation(orientation);
+#endif
+    }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
+    orientation = m_impl->printer->pageLayout().orientation();
+#else
+    orientation = m_impl->printer->orientation();
+#endif
+
+    const QSignalBlocker portraitRadioButtonBlocker(m_ui->portraitRadioButton);
+    const QSignalBlocker landscapeRadioButtonBlocker(m_ui->landscapeRadioButton);
+    m_ui->portraitRadioButton->setChecked(orientation == portrait);
+    m_ui->landscapeRadioButton->setChecked(orientation == landscape);
 }

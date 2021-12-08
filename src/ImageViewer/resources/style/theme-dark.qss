@@ -46,6 +46,10 @@ StylableTheme
     background: #606060;
     color: #858585;
 }
+QFrame:disabled
+{
+    background: #454545;
+}
 
 /************
  * QMenuBar *
@@ -398,6 +402,14 @@ QCheckBox,
 QRadioButton
 {
     spacing: 6px;
+    background: #454545;
+    color: #d2d2d2;
+}
+QCheckBox:disabled,
+QRadioButton:disabled
+{
+    background: #454545;
+    color: #858585;
 }
 
 QCheckBox::indicator,
@@ -569,11 +581,13 @@ QGroupBox
 {
     border: 1px solid #1a1c1f;
     border-radius: 3px;
+    background: #454545;
     margin-top: 8px;
 }
 QGroupBox:disabled
 {
     border: 1px solid #353535;
+    background: #454545;
 }
 QGroupBox::title
 {
@@ -991,4 +1005,10 @@ MainWindow #toolbar #separator
     max-width: 1px;
     margin-left: 1px;
     margin-right: 1px;
+}
+
+PrintDialog #keepAspectLabelTop,
+PrintDialog #keepAspectLabelBottom
+{
+    color: #1a1c1f;
 }
