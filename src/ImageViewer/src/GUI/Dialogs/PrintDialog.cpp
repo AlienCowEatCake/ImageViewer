@@ -20,7 +20,9 @@
 #include "PrintDialog.h"
 #include "PrintDialog_p.h"
 
+#include <QApplication>
 #include <QDebug>
+#include <QFileInfo>
 #include <QGraphicsItem>
 #include <QPainter>
 #include <QPrintDialog>
@@ -34,27 +36,39 @@ struct PrintDialog::Impl
 {
     const QList<QPrinterInfo> availablePrinters;
     QGraphicsItem * const graphicsItem;
+    const int rotateAngle;
+    const Qt::Orientations flipOrientations;
+    const QString filePath;
     QScopedPointer<QPrinter> printer;
 
-    Impl(QGraphicsItem *graphicsItem)
+    Impl(QGraphicsItem *graphicsItem, int rotateAngle, const Qt::Orientations &flipOrientations, const QString &filePath)
         : availablePrinters(QPrinterInfo::availablePrinters())
         , graphicsItem(graphicsItem)
+        , rotateAngle(rotateAngle)
+        , flipOrientations(flipOrientations)
+        , filePath(filePath)
     {}
 
     Qt::Orientation itemOrientation() const
     {
         if(!graphicsItem)
             return Qt::Vertical;
-        /// @todo mirror/rotate
-        const QRectF boundingRect = graphicsItem->boundingRect();
+        QRectF boundingRect = graphicsItem->boundingRect().normalized();
+        QPointF center = boundingRect.center();
+        QTransform t = QTransform().translate(center.x(), center.y()).rotate(rotateAngle).translate(-center.x(), -center.y());
+        boundingRect = t.mapRect(boundingRect);
         return boundingRect.height() >= boundingRect.width() ? Qt::Vertical : Qt::Horizontal;
     }
 };
 
-PrintDialog::PrintDialog(QGraphicsItem *graphicsItem, QWidget *parent)
+PrintDialog::PrintDialog(QGraphicsItem *graphicsItem,
+                         int rotateAngle,
+                         const Qt::Orientations &flipOrientations,
+                         const QString &filePath,
+                         QWidget *parent)
     : QDialog(parent)
     , m_ui(new UI(this))
-    , m_impl(new Impl(graphicsItem))
+    , m_impl(new Impl(graphicsItem, rotateAngle, flipOrientations, filePath))
 {
     setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint |
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
@@ -110,6 +124,9 @@ void PrintDialog::onCurrentPrinterChanged(int index)
     m_impl->printer.reset(new QPrinter(info, QPrinter::HighResolution));
     QPageSetupDialog(m_impl->printer.get(), Q_NULLPTR).accept();
     QPrintDialog(m_impl->printer.get(), Q_NULLPTR).accept();
+
+    m_impl->printer->setDocName(QFileInfo(m_impl->filePath).fileName());
+    m_impl->printer->setCreator(qApp->applicationName() + QString::fromLatin1(" ") + qApp->applicationVersion());
 
     if(true)
     {

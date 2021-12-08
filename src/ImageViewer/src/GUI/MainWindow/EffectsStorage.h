@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -35,8 +35,28 @@ class EffectsStorage : public QObject
     Q_DISABLE_COPY(EffectsStorage)
 
 public:
+    struct EffectsData
+    {
+        int rotationAngle;
+        bool flipHorizontal;
+        bool flipVertical;
+
+        EffectsData()
+            : rotationAngle(0)
+            , flipHorizontal(false)
+            , flipVertical(false)
+        {}
+
+        bool isDefault() const
+        {
+            return rotationAngle == 0 && !flipHorizontal && !flipVertical;
+        }
+    };
+
     explicit EffectsStorage(QObject *parent = Q_NULLPTR);
     ~EffectsStorage();
+
+    EffectsData effectsData() const;
 
 public Q_SLOTS:
     void updateUIState(const UIState &state, const UIChangeFlags &changeFlags);
@@ -51,7 +71,6 @@ private:
     void rotate(int angle);
 
 private:
-    struct EffectsData;
     QHash<QString, EffectsData> m_storage;
     QString m_currentFilePath;
 };

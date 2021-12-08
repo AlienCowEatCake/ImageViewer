@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -20,30 +20,20 @@
 #include "EffectsStorage.h"
 #include "ImageViewerWidget.h"
 
-struct EffectsStorage::EffectsData
-{
-    int rotationAngle;
-    bool flipHorizontal;
-    bool flipVertical;
-
-    EffectsData()
-        : rotationAngle(0)
-        , flipHorizontal(false)
-        , flipVertical(false)
-    {}
-
-    bool isDefault() const
-    {
-        return rotationAngle == 0 && !flipHorizontal && !flipVertical;
-    }
-};
-
 EffectsStorage::EffectsStorage(QObject *parent)
     : QObject(parent)
 {}
 
 EffectsStorage::~EffectsStorage()
 {}
+
+EffectsStorage::EffectsData EffectsStorage::effectsData() const
+{
+    QHash<QString, EffectsData>::ConstIterator effectsData = m_storage.find(m_currentFilePath);
+    if(effectsData == m_storage.constEnd())
+        return EffectsData();
+    return effectsData.value();
+}
 
 void EffectsStorage::updateUIState(const UIState &state, const UIChangeFlags &changeFlags)
 {

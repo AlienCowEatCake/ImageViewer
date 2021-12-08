@@ -34,7 +34,11 @@ class PrintDialog : public QDialog
     Q_DISABLE_COPY(PrintDialog)
 
 public:
-    PrintDialog(QGraphicsItem *graphicsItem, QWidget *parent = Q_NULLPTR);
+    PrintDialog(QGraphicsItem *graphicsItem,
+                int rotateAngle,
+                const Qt::Orientations &flipOrientations,
+                const QString &filePath,
+                QWidget *parent = Q_NULLPTR);
     ~PrintDialog();
 
 private Q_SLOTS:
