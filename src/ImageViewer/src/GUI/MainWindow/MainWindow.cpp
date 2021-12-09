@@ -423,8 +423,10 @@ void MainWindow::onPrintRequested()
 
     const EffectsStorage::EffectsData effectsData = m_impl->effectsStorage.effectsData();
     Qt::Orientations flipOrientations;
-    flipOrientations.setFlag(Qt::Horizontal, effectsData.flipHorizontal);
-    flipOrientations.setFlag(Qt::Vertical, effectsData.flipVertical);
+    if(effectsData.flipHorizontal)
+        flipOrientations |= Qt::Horizontal;
+    if(effectsData.flipVertical)
+        flipOrientations |= Qt::Vertical;
     PrintDialog *dialog = new PrintDialog(item, effectsData.rotationAngle, flipOrientations, m_impl->uiState.currentFilePath, this);
     dialog->exec();
     dialog->deleteLater();

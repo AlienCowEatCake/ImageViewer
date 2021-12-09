@@ -122,8 +122,8 @@ void PrintDialog::onCurrentPrinterChanged(int index)
 
     const QPrinterInfo& info = m_impl->availablePrinters[index];
     m_impl->printer.reset(new QPrinter(info, QPrinter::HighResolution));
-    QPageSetupDialog(m_impl->printer.get(), Q_NULLPTR).accept();
-    QPrintDialog(m_impl->printer.get(), Q_NULLPTR).accept();
+    QPageSetupDialog(m_impl->printer.data(), Q_NULLPTR).accept();
+    QPrintDialog(m_impl->printer.data(), Q_NULLPTR).accept();
 
     m_impl->printer->setDocName(QFileInfo(m_impl->filePath).fileName());
     m_impl->printer->setCreator(qApp->applicationName() + QString::fromLatin1(" ") + qApp->applicationVersion());
@@ -165,7 +165,7 @@ void PrintDialog::onPrintClicked()
 
     /// @todo mirror/rotate
     /// @todo dpi
-    QPainter painter(m_impl->printer.get());
+    QPainter painter(m_impl->printer.data());
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::TextAntialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
@@ -188,7 +188,7 @@ void PrintDialog::onPageSetupClicked()
     if(!m_impl->graphicsItem || !m_impl->printer)
         return;
 
-    QPageSetupDialog *dialog = new QPageSetupDialog(m_impl->printer.get(), this);
+    QPageSetupDialog *dialog = new QPageSetupDialog(m_impl->printer.data(), this);
     if(dialog->exec() == QDialog::Accepted)
         updatePageInfo();
     dialog->hide();

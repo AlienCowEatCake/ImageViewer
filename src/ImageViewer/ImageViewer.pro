@@ -403,7 +403,7 @@ HEADERS += \
 }
 
 !disable_printsupport {
-    QT += printsupport
+    greaterThan(QT_MAJOR_VERSION, 4): QT += printsupport
     DEFINES += ENABLE_PRINT_SUPPORT
     SOURCES += \
         src/GUI/Dialogs/PrintDialog.cpp
