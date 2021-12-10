@@ -30,10 +30,48 @@
 #include <QPrinter>
 #include <QPrinterInfo>
 
+#include "Utils/SettingsWrapper.h"
 #include "Utils/SignalBlocker.h"
+
+namespace {
+
+QPrinter::Unit unitFromVariant(const QVariant &variant, QPrinter::Unit defaultValue)
+{
+    if(!variant.isValid())
+        return defaultValue;
+    bool ok = false;
+    int value = variant.toInt(&ok);
+    if(!ok)
+        return defaultValue;
+    switch(value)
+    {
+#define ADD_CASE(X) case X: return X
+    ADD_CASE(QPrinter::Millimeter);
+    ADD_CASE(QPrinter::Point);
+    ADD_CASE(QPrinter::Inch);
+    ADD_CASE(QPrinter::Pica);
+    ADD_CASE(QPrinter::Didot);
+    ADD_CASE(QPrinter::Cicero);
+#undef ADD_CASE
+    default:
+        break;
+    }
+    return defaultValue;
+}
+
+QVariant unitToVariant(QPrinter::Unit unit)
+{
+    return static_cast<int>(unit);
+}
+
+const QString SIZE_UNIT_KEY         = QString::fromLatin1("SizeUnit");
+const QString RESOLUTION_UNIT_KEY   = QString::fromLatin1("ResolutionUnit");
+
+} // namespace
 
 struct PrintDialog::Impl
 {
+    SettingsWrapper settings;
     const QList<QPrinterInfo> availablePrinters;
     QGraphicsItem * const graphicsItem;
     const int rotateAngle;
@@ -43,7 +81,8 @@ struct PrintDialog::Impl
     QRectF itemPrintRect;
 
     Impl(QGraphicsItem *graphicsItem, int rotateAngle, const Qt::Orientations &flipOrientations, const QString &filePath)
-        : availablePrinters(QPrinterInfo::availablePrinters())
+        : settings(QString::fromLatin1("PrintDialogSettings"))
+        , availablePrinters(QPrinterInfo::availablePrinters())
         , graphicsItem(graphicsItem)
         , rotateAngle(rotateAngle)
         , flipOrientations(flipOrientations)
@@ -193,6 +232,7 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem,
         sizeUnit = QPrinter::Millimeter;
         break;
     }
+    sizeUnit = unitFromVariant(m_impl->settings.value(SIZE_UNIT_KEY, unitToVariant(sizeUnit)), sizeUnit);
     m_ui->sizeUnitsComboBox->setCurrentIndex(m_ui->sizeUnitsComboBox->findData(static_cast<int>(sizeUnit)));
 
     m_ui->resolutionUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pixels/Millimeter", "Resolution unit"), static_cast<int>(QPrinter::Millimeter));
@@ -201,7 +241,9 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem,
     m_ui->resolutionUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pixels/Pica"      , "Resolution unit"), static_cast<int>(QPrinter::Pica));
     m_ui->resolutionUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pixels/Didot"     , "Resolution unit"), static_cast<int>(QPrinter::Didot));
     m_ui->resolutionUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pixels/Cicero"    , "Resolution unit"), static_cast<int>(QPrinter::Cicero));
-    m_ui->resolutionUnitsComboBox->setCurrentIndex(m_ui->resolutionUnitsComboBox->findData(static_cast<int>(QPrinter::Inch)));
+    QPrinter::Unit resolutionUnit = QPrinter::Inch;
+    resolutionUnit = unitFromVariant(m_impl->settings.value(RESOLUTION_UNIT_KEY, unitToVariant(resolutionUnit)), resolutionUnit);
+    m_ui->resolutionUnitsComboBox->setCurrentIndex(m_ui->resolutionUnitsComboBox->findData(static_cast<int>(resolutionUnit)));
 
     m_ui->centerComboBox->addItem(qApp->translate("PrintDialog", "None"        , "Centering option"), static_cast<int>(0));
     m_ui->centerComboBox->addItem(qApp->translate("PrintDialog", "Horizontally", "Centering option"), static_cast<int>(Qt::Horizontal));
@@ -320,6 +362,8 @@ void PrintDialog::onPrintClicked()
         return;
 
     QPainter painter(m_impl->printer.data());
+    if(!painter.isActive())
+        return;
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::TextAntialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
@@ -454,8 +498,9 @@ void PrintDialog::onHeightChanged(double value)
 
 void PrintDialog::onSizeUnitsChanged(int index)
 {
-    Q_UNUSED(index);
     updateImageGeometry();
+    const QPrinter::Unit sizeUnit = static_cast<QPrinter::Unit>(m_ui->sizeUnitsComboBox->itemData(index).toInt());
+    m_impl->settings.setValue(SIZE_UNIT_KEY, unitToVariant(sizeUnit));
 }
 
 void PrintDialog::onXResolutionChanged(double value)
@@ -493,8 +538,9 @@ void PrintDialog::onKeepAspectStateChanged()
 
 void PrintDialog::onResolutionUnitsChanged(int index)
 {
-    Q_UNUSED(index);
     updateImageGeometry();
+    const QPrinter::Unit resolutionUnit = static_cast<QPrinter::Unit>(m_ui->resolutionUnitsComboBox->itemData(index).toInt());
+    m_impl->settings.setValue(RESOLUTION_UNIT_KEY, unitToVariant(resolutionUnit));
 }
 
 void PrintDialog::onLoadDefaultsClicked()
