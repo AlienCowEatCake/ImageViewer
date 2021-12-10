@@ -50,11 +50,26 @@ private Q_SLOTS:
     void onLandscapeToggled(bool checked);
     void onNumCopiesChanged(int value);
     void onColorModeChanged(int index);
+    void onWidthChanged(double value);
+    void onHeightChanged(double value);
+    void onSizeUnitsChanged(int index);
+    void onXResolutionChanged(double value);
+    void onYResolutionChanged(double value);
+    void onKeepAspectStateChanged();
+    void onResolutionUnitsChanged(int index);
+    void onLoadDefaultsClicked();
+    void onLeftChanged(double value);
+    void onRightChanged(double value);
+    void onTopChanged(double value);
+    void onBottomChanged(double value);
+    void onCenterChanged(int index);
+    void onIgnorePageMarginsStateChanged();
 
 private:
     void updatePrinterInfo(const QPrinterInfo& info);
     void updatePageInfo();
     void updatePageOrientation();
+    void updateImageGeometry();
 
 private:
     struct UI;

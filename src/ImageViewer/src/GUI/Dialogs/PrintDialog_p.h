@@ -26,18 +26,132 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QDialogButtonBox>
+#include <QDoubleSpinBox>
 #include <QFrame>
+#include <QGraphicsItem>
 #include <QGroupBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPainter>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSpinBox>
+#include <QStyleOptionGraphicsItem>
 #include <QTabWidget>
+#include <QTransform>
 #include <QVBoxLayout>
 
 #include "Utils/ObjectsUtils.h"
+
+class PrintPreviewWidget : public QWidget
+{
+public:
+    PrintPreviewWidget(QWidget *parent = Q_NULLPTR)
+        : QWidget(parent)
+        , m_graphicsItem(Q_NULLPTR)
+        , m_rotateAngle(0)
+    {}
+
+    void setGraphicsItem(QGraphicsItem *item, int rotateAngle, const Qt::Orientations &flipOrientations)
+    {
+        m_graphicsItem = item;
+        m_rotateAngle = rotateAngle;
+        m_flipOrientations = flipOrientations;
+        update();
+    }
+
+    void setPaperRect(const QRectF &rect)
+    {
+        m_paperRect = rect;
+        update();
+    }
+
+    void setPageRect(const QRectF &rect)
+    {
+        m_pageRect = rect;
+        update();
+    }
+
+    void setItemRect(const QRectF &rect)
+    {
+        m_itemRect = rect;
+        update();
+    }
+
+protected:
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE
+    {
+        QWidget::paintEvent(event);
+        const qreal paperOffset = 10;
+        const qreal xscale = (width() - paperOffset) / m_paperRect.width();
+        const qreal yscale = (height() - paperOffset) / m_paperRect.height();
+        const qreal scale = qMin(xscale, yscale);
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setRenderHint(QPainter::TextAntialiasing);
+        painter.setRenderHint(QPainter::SmoothPixmapTransform);
+        painter.fillRect(0, 0, width(), height(), Qt::black);
+        painter.translate(width() / 2, height() / 2);
+        painter.scale(scale, scale);
+        painter.translate(-m_paperRect.width() / 2, -m_paperRect.height() / 2);
+        const qreal paperShadowOffset = 2 / scale;
+        painter.fillRect(m_paperRect.adjusted(paperShadowOffset, paperShadowOffset, paperShadowOffset, paperShadowOffset), Qt::darkGray);
+        painter.fillRect(m_paperRect, Qt::white);
+        if(m_graphicsItem)
+        {
+            painter.save();
+            const QRectF boundingRect = m_graphicsItem->boundingRect();
+            const QRectF rotatedBoundingRect = QTransform()
+                    .translate(boundingRect.center().x(), boundingRect.center().y())
+                    .rotate(m_rotateAngle)
+                    .translate(-boundingRect.center().x(), -boundingRect.center().y())
+                    .mapRect(boundingRect);
+            painter.translate(m_itemRect.x(), m_itemRect.y());
+            painter.scale(m_itemRect.width() / rotatedBoundingRect.width(), m_itemRect.height() / rotatedBoundingRect.height());
+            painter.translate(-rotatedBoundingRect.x(), -rotatedBoundingRect.y());
+            painter.translate(rotatedBoundingRect.center().x(), rotatedBoundingRect.center().y());
+            painter.rotate(m_rotateAngle);
+            painter.translate(-rotatedBoundingRect.center().x(), -rotatedBoundingRect.center().y());
+            if(m_flipOrientations & Qt::Horizontal)
+            {
+                painter.scale(-1, 1);
+                painter.translate(-boundingRect.width(), 0);
+            }
+            if(m_flipOrientations & Qt::Vertical)
+            {
+                painter.scale(1, -1);
+                painter.translate(0, -boundingRect.height());
+            }
+            QStyleOptionGraphicsItem options;
+            options.exposedRect = boundingRect;
+            m_graphicsItem->paint(&painter, &options);
+            painter.restore();
+        }
+        else
+        {
+            painter.fillRect(m_itemRect, QBrush(Qt::green, Qt::Dense4Pattern));
+        }
+        painter.setBrush(Qt::NoBrush);
+        painter.setPen(QPen(Qt::white, 1, Qt::SolidLine));
+        painter.drawRect(m_itemRect);
+        painter.setPen(QPen(Qt::black, 1, Qt::DotLine));
+        painter.drawRect(m_itemRect);
+        painter.setBrush(Qt::NoBrush);
+        painter.setPen(QPen(Qt::white, 1, Qt::SolidLine));
+        painter.drawRect(m_pageRect);
+        painter.setPen(QPen(Qt::black, 1, Qt::DashLine));
+        painter.drawRect(m_pageRect);
+    }
+
+private:
+    QGraphicsItem *m_graphicsItem;
+    int m_rotateAngle;
+    Qt::Orientations m_flipOrientations;
+    QRectF m_paperRect;
+    QRectF m_pageRect;
+    QRectF m_itemRect;
+};
 
 struct PrintDialog::UI
 {
@@ -78,14 +192,14 @@ struct PrintDialog::UI
 
     QGroupBox * const sizeGroup;
     QLabel * const widthLabel;
-    QSpinBox * const widthSpinBox;
+    QDoubleSpinBox * const widthSpinBox;
     QLabel * const heightLabel;
-    QSpinBox * const heightSpinBox;
+    QDoubleSpinBox * const heightSpinBox;
     QComboBox * const sizeUnitsComboBox;
     QLabel * const xResolutionLabel;
-    QSpinBox * const xResolutionSpinBox;
+    QDoubleSpinBox * const xResolutionSpinBox;
     QLabel * const yResolutionLabel;
-    QSpinBox * const yResolutionSpinBox;
+    QDoubleSpinBox * const yResolutionSpinBox;
     QLabel * const keepAspectLabelTop;
     QLabel * const keepAspectLabelBottom;
     QCheckBox * const keepAspectCheckBox;
@@ -94,20 +208,20 @@ struct PrintDialog::UI
 
     QGroupBox * const positionGroup;
     QLabel * const leftLabel;
-    QSpinBox * const leftSpinBox;
+    QDoubleSpinBox * const leftSpinBox;
     QLabel * const rightLabel;
-    QSpinBox * const rightSpinBox;
+    QDoubleSpinBox * const rightSpinBox;
     QLabel * const topLabel;
-    QSpinBox * const topSpinBox;
+    QDoubleSpinBox * const topSpinBox;
     QLabel * const bottomLabel;
-    QSpinBox * const bottomSpinBox;
+    QDoubleSpinBox * const bottomSpinBox;
     QLabel * const centerLabel;
     QComboBox * const centerComboBox;
 
     QCheckBox * const ignorePageMarginsCheckBox;
 
     QGroupBox * const previewGroup;
-    QFrame * const previewFrame;
+    PrintPreviewWidget * const previewWidget;
 
     QDialogButtonBox * const dialogButtonBox;
 
@@ -144,14 +258,14 @@ struct PrintDialog::UI
         , CONSTRUCT_OBJECT(colorModeComboBox, QComboBox, (detailsGroup))
         , CONSTRUCT_OBJECT(sizeGroup, QGroupBox, (imageSettingsTabFrame))
         , CONSTRUCT_OBJECT(widthLabel, QLabel, (sizeGroup))
-        , CONSTRUCT_OBJECT(widthSpinBox, QSpinBox, (sizeGroup))
+        , CONSTRUCT_OBJECT(widthSpinBox, QDoubleSpinBox, (sizeGroup))
         , CONSTRUCT_OBJECT(heightLabel, QLabel, (sizeGroup))
-        , CONSTRUCT_OBJECT(heightSpinBox, QSpinBox, (sizeGroup))
+        , CONSTRUCT_OBJECT(heightSpinBox, QDoubleSpinBox, (sizeGroup))
         , CONSTRUCT_OBJECT(sizeUnitsComboBox, QComboBox, (sizeGroup))
         , CONSTRUCT_OBJECT(xResolutionLabel, QLabel, (sizeGroup))
-        , CONSTRUCT_OBJECT(xResolutionSpinBox, QSpinBox, (sizeGroup))
+        , CONSTRUCT_OBJECT(xResolutionSpinBox, QDoubleSpinBox, (sizeGroup))
         , CONSTRUCT_OBJECT(yResolutionLabel, QLabel, (sizeGroup))
-        , CONSTRUCT_OBJECT(yResolutionSpinBox, QSpinBox, (sizeGroup))
+        , CONSTRUCT_OBJECT(yResolutionSpinBox, QDoubleSpinBox, (sizeGroup))
         , CONSTRUCT_OBJECT(keepAspectLabelTop, QLabel, (sizeGroup))
         , CONSTRUCT_OBJECT(keepAspectLabelBottom, QLabel, (sizeGroup))
         , CONSTRUCT_OBJECT(keepAspectCheckBox, QCheckBox, (sizeGroup))
@@ -159,18 +273,18 @@ struct PrintDialog::UI
         , CONSTRUCT_OBJECT(loadDefaultsButton, QPushButton, (sizeGroup))
         , CONSTRUCT_OBJECT(positionGroup, QGroupBox, (imageSettingsTabFrame))
         , CONSTRUCT_OBJECT(leftLabel, QLabel, (positionGroup))
-        , CONSTRUCT_OBJECT(leftSpinBox, QSpinBox, (positionGroup))
+        , CONSTRUCT_OBJECT(leftSpinBox, QDoubleSpinBox, (positionGroup))
         , CONSTRUCT_OBJECT(rightLabel, QLabel, (positionGroup))
-        , CONSTRUCT_OBJECT(rightSpinBox, QSpinBox, (positionGroup))
+        , CONSTRUCT_OBJECT(rightSpinBox, QDoubleSpinBox, (positionGroup))
         , CONSTRUCT_OBJECT(topLabel, QLabel, (positionGroup))
-        , CONSTRUCT_OBJECT(topSpinBox, QSpinBox, (positionGroup))
+        , CONSTRUCT_OBJECT(topSpinBox, QDoubleSpinBox, (positionGroup))
         , CONSTRUCT_OBJECT(bottomLabel, QLabel, (positionGroup))
-        , CONSTRUCT_OBJECT(bottomSpinBox, QSpinBox, (positionGroup))
+        , CONSTRUCT_OBJECT(bottomSpinBox, QDoubleSpinBox, (positionGroup))
         , CONSTRUCT_OBJECT(centerLabel, QLabel, (positionGroup))
         , CONSTRUCT_OBJECT(centerComboBox, QComboBox, (positionGroup))
         , CONSTRUCT_OBJECT(ignorePageMarginsCheckBox, QCheckBox, (imageSettingsTabFrame))
         , CONSTRUCT_OBJECT(previewGroup, QGroupBox, (imageSettingsTabFrame))
-        , CONSTRUCT_OBJECT(previewFrame, QFrame, (previewGroup))
+        , CONSTRUCT_OBJECT(previewWidget, PrintPreviewWidget, (previewGroup))
         , CONSTRUCT_OBJECT(dialogButtonBox, QDialogButtonBox, (printDialog))
     {
         QGridLayout *printerInfoLayout = new QGridLayout();
@@ -244,11 +358,10 @@ struct PrintDialog::UI
         positionLayout->addItem(new QSpacerItem(72, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Fixed), 0, 1, 2, 1);
         positionLayout->addItem(new QSpacerItem(72, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Fixed), 0, 3, 2, 1);
 
-        previewFrame->setFixedSize(200, 200);
-        previewFrame->setFrameStyle(QFrame::StyledPanel);
+        previewWidget->setFixedSize(200, 200);
 
         QVBoxLayout *previewLayout = new QVBoxLayout(previewGroup);
-        previewLayout->addWidget(previewFrame);
+        previewLayout->addWidget(previewWidget);
         previewLayout->addStretch();
 
         QGridLayout *imageSettingsTabLayout = new QGridLayout(imageSettingsTabFrame);

@@ -414,6 +414,8 @@ void MainWindow::onSaveAsRequested()
 void MainWindow::onPrintRequested()
 {
 #if defined (ENABLE_PRINT_SUPPORT)
+    const QSignalBlocker blocker(m_impl->slideShowTimer);
+
     if(!m_impl->isFileOpened())
         return;
 
