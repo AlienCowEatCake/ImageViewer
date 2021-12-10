@@ -313,6 +313,7 @@ void PrintDialog::onCurrentPrinterChanged(int index)
     m_impl->printer.reset();
     updatePrinterInfo(QPrinterInfo());
     updatePageInfo();
+    m_ui->miscGroup->setEnabled(false);
     m_ui->dialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     if(index < 0 || index >= m_impl->availablePrinters.size())
         return;
@@ -353,6 +354,7 @@ void PrintDialog::onCurrentPrinterChanged(int index)
 
     updatePrinterInfo(info);
     updatePageInfo();
+    m_ui->miscGroup->setEnabled(true);
     m_ui->dialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(m_impl->graphicsItem);
 }
 
@@ -679,6 +681,17 @@ void PrintDialog::updatePrinterInfo(const QPrinterInfo& info)
     m_ui->printerStateHeaderLabel->setEnabled(false);
     m_ui->printerStateLabel->setEnabled(false);
 #endif
+
+    if(info.isNull())
+    {
+        m_ui->printerNameLabel->setText(QString());
+        m_ui->printerDescriptionLabel->setText(QString());
+        m_ui->printerDefaultLabel->setText(QString());
+        m_ui->printerRemoteLabel->setText(QString());
+        m_ui->printerLocationLabel->setText(QString());
+        m_ui->printerMakeAndModelLabel->setText(QString());
+        m_ui->printerStateLabel->setText(QString());
+    }
 }
 
 void PrintDialog::updatePageInfo()
@@ -690,8 +703,18 @@ void PrintDialog::updatePageInfo()
 
 void PrintDialog::updatePageOrientation()
 {
-    if(!m_impl->printer)
+    const QSignalBlocker portraitRadioButtonBlocker(m_ui->portraitRadioButton);
+    const QSignalBlocker landscapeRadioButtonBlocker(m_ui->landscapeRadioButton);
+
+    if(!m_impl->printer || !m_impl->graphicsItem)
+    {
+        m_ui->pageGroup->setEnabled(false);
+        m_ui->portraitRadioButton->setChecked(false);
+        m_ui->landscapeRadioButton->setChecked(false);
         return;
+    }
+
+    m_ui->pageGroup->setEnabled(true);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
     QPageLayout::Orientation orientation;
@@ -720,21 +743,12 @@ void PrintDialog::updatePageOrientation()
     orientation = m_impl->printer->orientation();
 #endif
 
-    const QSignalBlocker portraitRadioButtonBlocker(m_ui->portraitRadioButton);
-    const QSignalBlocker landscapeRadioButtonBlocker(m_ui->landscapeRadioButton);
     m_ui->portraitRadioButton->setChecked(orientation == portrait);
     m_ui->landscapeRadioButton->setChecked(orientation == landscape);
 }
 
 void PrintDialog::updateImageGeometry()
 {
-    if(!m_impl->printer || !m_impl->graphicsItem)
-    {
-        m_ui->imageSettingsTabFrame->setEnabled(false);
-        return;
-    }
-
-    m_ui->imageSettingsTabFrame->setEnabled(true);
     const QSignalBlocker widthSpinBoxGuard(m_ui->widthSpinBox);
     const QSignalBlocker heightSpinBoxGuard(m_ui->heightSpinBox);
     const QSignalBlocker xResolutionSpinBoxGuard(m_ui->xResolutionSpinBox);
@@ -743,6 +757,45 @@ void PrintDialog::updateImageGeometry()
     const QSignalBlocker rightSpinBoxGuard(m_ui->rightSpinBox);
     const QSignalBlocker topSpinBoxGuard(m_ui->topSpinBox);
     const QSignalBlocker bottomSpinBoxGuard(m_ui->bottomSpinBox);
+
+    if(!m_impl->printer || !m_impl->graphicsItem)
+    {
+        m_ui->imageSettingsTabFrame->setEnabled(false);
+
+        m_ui->widthSpinBox->setMinimum(0.0);
+        m_ui->widthSpinBox->setMaximum(0.0);
+        m_ui->widthSpinBox->setValue(0.0);
+        m_ui->heightSpinBox->setMinimum(0.0);
+        m_ui->heightSpinBox->setMaximum(0.0);
+        m_ui->heightSpinBox->setValue(0.0);
+        m_ui->leftSpinBox->setMinimum(0.0);
+        m_ui->leftSpinBox->setMaximum(0.0);
+        m_ui->leftSpinBox->setValue(0.0);
+        m_ui->rightSpinBox->setMinimum(0.0);
+        m_ui->rightSpinBox->setMaximum(0.0);
+        m_ui->rightSpinBox->setValue(0.0);
+        m_ui->topSpinBox->setMinimum(0.0);
+        m_ui->topSpinBox->setMaximum(0.0);
+        m_ui->topSpinBox->setValue(0.0);
+        m_ui->bottomSpinBox->setMinimum(0.0);
+        m_ui->bottomSpinBox->setMaximum(0.0);
+        m_ui->bottomSpinBox->setValue(0.0);
+
+        m_ui->xResolutionSpinBox->setMinimum(0.0);
+        m_ui->xResolutionSpinBox->setMaximum(0.0);
+        m_ui->xResolutionSpinBox->setValue(0.0);
+        m_ui->yResolutionSpinBox->setMinimum(0.0);
+        m_ui->yResolutionSpinBox->setMaximum(0.0);
+        m_ui->yResolutionSpinBox->setValue(0.0);
+
+        m_ui->previewWidget->setPaperRect(QRectF());
+        m_ui->previewWidget->setPageRect(QRectF());
+        m_ui->previewWidget->setItemRect(QRectF());
+
+        return;
+    }
+
+    m_ui->imageSettingsTabFrame->setEnabled(true);
 
     const bool ignoreMargins = m_ui->ignorePageMarginsCheckBox->isChecked();
     const bool keepAspect = m_ui->keepAspectCheckBox->isChecked();

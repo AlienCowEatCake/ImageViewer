@@ -184,7 +184,7 @@ struct PrintDialog::UI
     QCheckBox * const autoRotateCheckBox;
     QPushButton * const pageSetupButton;
 
-    QGroupBox * const detailsGroup;
+    QGroupBox * const miscGroup;
     QLabel * const copiesLabel;
     QSpinBox * const copiesSpinBox;
     QLabel * const colorModeLabel;
@@ -251,11 +251,11 @@ struct PrintDialog::UI
         , CONSTRUCT_OBJECT(landscapeRadioButton, QRadioButton, (pageGroup))
         , CONSTRUCT_OBJECT(autoRotateCheckBox, QCheckBox, (pageGroup))
         , CONSTRUCT_OBJECT(pageSetupButton, QPushButton, (pageGroup))
-        , CONSTRUCT_OBJECT(detailsGroup, QGroupBox, (generalTabFrame))
-        , CONSTRUCT_OBJECT(copiesLabel, QLabel, (detailsGroup))
-        , CONSTRUCT_OBJECT(copiesSpinBox, QSpinBox, (detailsGroup))
-        , CONSTRUCT_OBJECT(colorModeLabel, QLabel, (detailsGroup))
-        , CONSTRUCT_OBJECT(colorModeComboBox, QComboBox, (detailsGroup))
+        , CONSTRUCT_OBJECT(miscGroup, QGroupBox, (generalTabFrame))
+        , CONSTRUCT_OBJECT(copiesLabel, QLabel, (miscGroup))
+        , CONSTRUCT_OBJECT(copiesSpinBox, QSpinBox, (miscGroup))
+        , CONSTRUCT_OBJECT(colorModeLabel, QLabel, (miscGroup))
+        , CONSTRUCT_OBJECT(colorModeComboBox, QComboBox, (miscGroup))
         , CONSTRUCT_OBJECT(sizeGroup, QGroupBox, (imageSettingsTabFrame))
         , CONSTRUCT_OBJECT(widthLabel, QLabel, (sizeGroup))
         , CONSTRUCT_OBJECT(widthSpinBox, QDoubleSpinBox, (sizeGroup))
@@ -315,7 +315,7 @@ struct PrintDialog::UI
         pageLayout->addWidget(pageSetupButton, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
         pageLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding), 2, 2);
 
-        QGridLayout *detailsLayout = new QGridLayout(detailsGroup);
+        QGridLayout *detailsLayout = new QGridLayout(miscGroup);
         detailsLayout->addWidget(copiesLabel, 0, 0, Qt::AlignLeft | Qt::AlignVCenter);
         detailsLayout->addWidget(copiesSpinBox, 0, 1, Qt::AlignVCenter);
         detailsLayout->addWidget(colorModeLabel, 1, 0, Qt::AlignLeft | Qt::AlignVCenter);
@@ -325,7 +325,7 @@ struct PrintDialog::UI
         QGridLayout *generalTabLayout = new QGridLayout(generalTabFrame);
         generalTabLayout->addWidget(printerSelectGroup, 0, 0, 1, 2);
         generalTabLayout->addWidget(pageGroup, 1, 0, 1, 1);
-        generalTabLayout->addWidget(detailsGroup, 1, 1, 1, 1);
+        generalTabLayout->addWidget(miscGroup, 1, 1, 1, 1);
 
         QGridLayout *sizeLayout = new QGridLayout(sizeGroup);
         sizeLayout->addWidget(widthLabel, 0, 0, Qt::AlignVCenter);
@@ -401,7 +401,7 @@ struct PrintDialog::UI
         autoRotateCheckBox->setText(qApp->translate("PrintDialog", "Auto-rotate"));
         pageSetupButton->setText(qApp->translate("PrintDialog", "Page setup"));
 
-        detailsGroup->setTitle(qApp->translate("PrintDialog", "Misc"));
+        miscGroup->setTitle(qApp->translate("PrintDialog", "Misc"));
         copiesLabel->setText(qApp->translate("PrintDialog", "Copies:"));
         colorModeLabel->setText(qApp->translate("PrintDialog", "Color Mode:"));
 
