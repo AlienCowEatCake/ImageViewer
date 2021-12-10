@@ -172,9 +172,9 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menuFile->addSeparator();
         menuFile->addAction(actionPreferences);
 #if defined (Q_OS_MAC)
-        actionPreferences->setShortcuts(QList<QKeySequence>() << (Qt::CTRL | Qt::Key_Comma) << createAnyModifierShortcuts(Qt::Key_P));
+        actionPreferences->setShortcuts(QList<QKeySequence>() << (Qt::CTRL | Qt::Key_Comma) << createAnyModifierShortcuts(Qt::Key_P, 0, (QList<QKeySequence>() << QKeySequence::Print)));
 #else
-        actionPreferences->setShortcuts(QList<QKeySequence>() << createAnyModifierShortcuts(Qt::Key_P) << (Qt::CTRL | Qt::Key_Comma));
+        actionPreferences->setShortcuts(QList<QKeySequence>() << createAnyModifierShortcuts(Qt::Key_P, 0, (QList<QKeySequence>() << QKeySequence::Print)) << (Qt::CTRL | Qt::Key_Comma));
 #endif
         actionPreferences->setMenuRole(QAction::PreferencesRole);
         menuFile->addSeparator();
@@ -383,7 +383,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         return action;
     }
 
-    QList<QKeySequence> createAnyModifierShortcuts(Qt::Key key, int defaultModifier = 0)
+    QList<QKeySequence> createAnyModifierShortcuts(Qt::Key key, int defaultModifier = 0, const QList<QKeySequence> &blacklist = QList<QKeySequence>()) const
     {
         static const QList<int> modifiers = QList<int>()
                 << 0
@@ -407,13 +407,13 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         for(QList<int>::ConstIterator it = modifiers.constBegin(); it != modifiers.constEnd(); ++it)
         {
             const int modifier = *it;
-            if(modifier != defaultModifier)
+            if(modifier != defaultModifier && !match(key + modifier, blacklist))
                 result.append(key + modifier);
         }
         return result;
     }
 
-    QList<QKeySequence> createAnyModifierConjugatedShortcuts(Qt::Key master, Qt::Key slave, int defaultModifier = 0)
+    QList<QKeySequence> createAnyModifierConjugatedShortcuts(Qt::Key master, Qt::Key slave, int defaultModifier = 0, const QList<QKeySequence> &blacklist = QList<QKeySequence>()) const
     {
         static const QList<int> modifiers = QList<int>()
                 << 0
@@ -429,11 +429,20 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         for(QList<int>::ConstIterator it = modifiers.constBegin(); it != modifiers.constEnd(); ++it)
         {
             const int modifier = *it;
-            if(modifier != defaultModifier)
+            if(modifier != defaultModifier && !match(master + modifier, blacklist))
                 result.append(master + modifier);
-            result.append(slave + modifier);
+            if(!match(slave + modifier, blacklist))
+                result.append(slave + modifier);
         }
         return result;
+    }
+
+    bool match(const QKeySequence &sequence, const QList<QKeySequence> &list) const
+    {
+        for(QList<QKeySequence>::ConstIterator it = list.begin(); it != list.end(); ++it)
+            if(it->matches(sequence) == QKeySequence::ExactMatch)
+                return true;
+        return false;
     }
 };
 
