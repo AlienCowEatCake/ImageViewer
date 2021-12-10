@@ -401,7 +401,7 @@ struct PrintDialog::UI
         autoRotateCheckBox->setText(qApp->translate("PrintDialog", "Auto-rotate"));
         pageSetupButton->setText(qApp->translate("PrintDialog", "Page setup"));
 
-        detailsGroup->setTitle(qApp->translate("PrintDialog", "Details"));
+        detailsGroup->setTitle(qApp->translate("PrintDialog", "Misc"));
         copiesLabel->setText(qApp->translate("PrintDialog", "Copies:"));
         colorModeLabel->setText(qApp->translate("PrintDialog", "Color Mode:"));
 

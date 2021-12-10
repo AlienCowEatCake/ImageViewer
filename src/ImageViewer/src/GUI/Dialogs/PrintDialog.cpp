@@ -24,8 +24,9 @@
 
 #include <QDebug>
 #include <QFileInfo>
-#include <QPrintDialog>
+#include <QLocale>
 #include <QPageSetupDialog>
+#include <QPrintDialog>
 #include <QPrinter>
 #include <QPrinterInfo>
 
@@ -177,7 +178,22 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem,
     m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pica"      , "Size unit"), static_cast<int>(QPrinter::Pica));
     m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Didot"     , "Size unit"), static_cast<int>(QPrinter::Didot));
     m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Cicero"    , "Size unit"), static_cast<int>(QPrinter::Cicero));
-    m_ui->sizeUnitsComboBox->setCurrentIndex(m_ui->sizeUnitsComboBox->findData(static_cast<int>(QPrinter::Millimeter)));
+    QPrinter::Unit sizeUnit = QPrinter::Millimeter;
+    switch(QLocale::system().measurementSystem())
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    case QLocale::ImperialUSSystem:
+    case QLocale::ImperialUKSystem:
+#else
+    case QLocale::ImperialSystem:
+#endif
+        sizeUnit = QPrinter::Inch;
+        break;
+    default:
+        sizeUnit = QPrinter::Millimeter;
+        break;
+    }
+    m_ui->sizeUnitsComboBox->setCurrentIndex(m_ui->sizeUnitsComboBox->findData(static_cast<int>(sizeUnit)));
 
     m_ui->resolutionUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pixels/Millimeter", "Resolution unit"), static_cast<int>(QPrinter::Millimeter));
     m_ui->resolutionUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pixels/Point"     , "Resolution unit"), static_cast<int>(QPrinter::Point));
