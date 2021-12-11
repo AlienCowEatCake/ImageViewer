@@ -25,6 +25,7 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDebug>
 #include <QDialogButtonBox>
 #include <QDoubleSpinBox>
 #include <QFrame>
@@ -32,6 +33,7 @@
 #include <QGroupBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
+#include <QImage>
 #include <QLabel>
 #include <QPainter>
 #include <QPushButton>
@@ -43,6 +45,8 @@
 #include <QVBoxLayout>
 
 #include "Utils/ObjectsUtils.h"
+
+#include "Decoders/GraphicsItemFeatures/IGrabImage.h"
 
 class PrintPreviewWidget : public QWidget
 {
@@ -123,9 +127,24 @@ protected:
                 painter.scale(1, -1);
                 painter.translate(0, -boundingRect.height());
             }
-            QStyleOptionGraphicsItem options;
-            options.exposedRect = boundingRect;
-            m_graphicsItem->paint(&painter, &options);
+            if(IGrabImage *itemWithGrabImage = dynamic_cast<IGrabImage*>(m_graphicsItem))
+            {
+                QImage image = itemWithGrabImage->grabImage();
+                const QTransform worldTransform = painter.worldTransform();
+                const QRect deviceRect = worldTransform.mapRect(boundingRect).toAlignedRect();
+                const QImage scaledImage = image.scaled(deviceRect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                if(!scaledImage.isNull())
+                    image = scaledImage;
+                else
+                    qWarning() << "Image scaling failed, target size =" << deviceRect.size();
+                painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
+            }
+            else
+            {
+                QStyleOptionGraphicsItem options;
+                options.exposedRect = boundingRect;
+                m_graphicsItem->paint(&painter, &options);
+            }
             painter.restore();
         }
         else

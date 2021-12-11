@@ -22,7 +22,6 @@
 
 #include <cmath>
 
-#include <QDebug>
 #include <QFileInfo>
 #include <QLocale>
 #include <QPageSetupDialog>
@@ -392,9 +391,24 @@ void PrintDialog::onPrintClicked()
         painter.scale(1, -1);
         painter.translate(0, -boundingRect.height());
     }
-    QStyleOptionGraphicsItem options;
-    options.exposedRect = boundingRect;
-    m_impl->graphicsItem->paint(&painter, &options);
+    if(IGrabImage *itemWithGrabImage = dynamic_cast<IGrabImage*>(m_impl->graphicsItem))
+    {
+        QImage image = itemWithGrabImage->grabImage();
+        const QTransform worldTransform = painter.worldTransform();
+        const QRect deviceRect = worldTransform.mapRect(boundingRect).toAlignedRect();
+        const QImage scaledImage = image.scaled(deviceRect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        if(!scaledImage.isNull())
+            image = scaledImage;
+        else
+            qWarning() << "Image scaling failed, target size =" << deviceRect.size();
+        painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
+    }
+    else
+    {
+        QStyleOptionGraphicsItem options;
+        options.exposedRect = boundingRect;
+        m_impl->graphicsItem->paint(&painter, &options);
+    }
     painter.end();
 
     close();
