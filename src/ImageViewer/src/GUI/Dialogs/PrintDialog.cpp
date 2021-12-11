@@ -400,7 +400,7 @@ void PrintDialog::onPrintClicked()
         if(!scaledImage.isNull())
             image = scaledImage;
         else
-            qWarning() << "Image scaling failed, target size =" << deviceRect.size();
+            qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
         painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
     }
     else
