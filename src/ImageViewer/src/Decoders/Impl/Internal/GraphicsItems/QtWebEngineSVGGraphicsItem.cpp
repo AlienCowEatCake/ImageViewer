@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -36,6 +36,7 @@
 #include <QTimer>
 
 #include <QWebEnginePage>
+#include <QWebEngineSettings>
 #include <QWebEngineView>
 
 #include <QXmlStreamReader>
@@ -153,10 +154,17 @@ private:
 
 struct QtWebEngineSVGGraphicsItem::Impl
 {
+    enum ScaleMethod
+    {
+        SCALE_BY_RESIZE_FRAME,
+        SCALE_BY_RESIZE_FRAME_AND_SCALE_CONTENT
+    };
+
     QWebEngineView *view;
     QRectF svgRect;
     qreal minScaleFactor;
     qreal maxScaleFactor;
+    ScaleMethod scaleMethod;
     SyncExecutor syncExecutor;
     QTimer timer;
     bool renderProcessTerminated;
@@ -165,6 +173,7 @@ struct QtWebEngineSVGGraphicsItem::Impl
         : view(createWebEngineView())
         , minScaleFactor(1)
         , maxScaleFactor(1)
+        , scaleMethod(SCALE_BY_RESIZE_FRAME)
         , syncExecutor(view)
         , renderProcessTerminated(false)
     {}
@@ -179,7 +188,8 @@ struct QtWebEngineSVGGraphicsItem::Impl
     void setScaleFactor(qreal scaleFactor)
     {
         view->resize((svgRect.united(QRectF(0, 0, 1, 1)).size() * scaleFactor).toSize());
-        view->setZoomFactor(scaleFactor);
+        if(scaleMethod == SCALE_BY_RESIZE_FRAME_AND_SCALE_CONTENT)
+            view->setZoomFactor(scaleFactor);
     }
 
     QString detectEncoding(const QByteArray &svgData)
@@ -272,21 +282,30 @@ bool QtWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &bas
 
     removeRootOverflowAttribute();
 
+    if(svgSizeAttribute().isEmpty() && svgViewBoxAttribute().isValid())
+        m_impl->scaleMethod = Impl::SCALE_BY_RESIZE_FRAME;
+    else
+        m_impl->scaleMethod = Impl::SCALE_BY_RESIZE_FRAME_AND_SCALE_CONTENT;
+
     m_impl->svgRect = detectSvgRect();
     m_impl->svgRect = QRectF(m_impl->svgRect.topLeft(), m_impl->svgRect.size().expandedTo(QSizeF(1, 1)));
     m_impl->setScaleFactor(1);
 
     const qreal maxImageDimension = std::min(MAX_IMAGE_DIMENSION, static_cast<qreal>(getMaxTextureSize()));
     m_impl->minScaleFactor = std::max(std::max(MIN_IMAGE_DIMENSION / m_impl->svgRect.width(), MIN_IMAGE_DIMENSION / m_impl->svgRect.height()), static_cast<qreal>(1));
-    m_impl->maxScaleFactor = std::min(maxImageDimension / m_impl->svgRect.width(), maxImageDimension / m_impl->svgRect.height());
+    m_impl->maxScaleFactor = std::min(std::min(maxImageDimension / m_impl->svgRect.width(), maxImageDimension / m_impl->svgRect.height()), static_cast<qreal>(5));
     if(m_impl->maxScaleFactor < m_impl->minScaleFactor)
     {
         qWarning() << "[QtWebEngineSVGGraphicsItem] Error: too large SVG size, max =" << maxImageDimension << "x" << maxImageDimension;
         return false;
     }
 
-//    m_impl->page.mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
-//    m_impl->page.mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 7, 0))
+    m_impl->view->settings()->setAttribute(QWebEngineSettings::Accelerated2dCanvasEnabled, false);
+#endif
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+    m_impl->view->settings()->setAttribute(QWebEngineSettings::ShowScrollBars, false);
+#endif
 
     m_impl->timer.start();
 
