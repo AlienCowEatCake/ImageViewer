@@ -263,8 +263,10 @@ bool MacVersionGreatOrEqual(const int major, const int minor, const int patch)
 QString GetSystemDescription()
 {
     // https://stackoverflow.com/questions/2877295/get-os-in-c-win32-for-all-versions-of-win
+    // https://lore.kernel.org/all/20210914121420.183499-2-konstantin@daynix.com/
     HMODULE hNetapi32 = LoadLibraryA("netapi32.dll");
     HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
+    HMODULE hNtdll = LoadLibraryA("ntdll.dll");
 
     SYSTEM_INFO sysInfo;
     memset(&sysInfo, 0, sizeof(sysInfo));
@@ -279,6 +281,7 @@ QString GetSystemDescription()
 
     DWORD osMajorVersion = 0;
     DWORD osMinorVersion = 0;
+    DWORD osBuildNumber = 0;
     WORD osProductType = VER_NT_WORKSTATION;
     WORD osServicePack = 0;
     WORD osSuiteMask = 0;
@@ -300,6 +303,7 @@ QString GetSystemDescription()
             {
                 osMajorVersion = osver.dwMajorVersion;
                 osMinorVersion = osver.dwMinorVersion;
+                osBuildNumber = osver.dwBuildNumber;
                 osProductType = osver.wProductType;
                 osServicePack = osver.wServicePackMajor;
                 osSuiteMask = osver.wSuiteMask;
@@ -317,6 +321,7 @@ QString GetSystemDescription()
             {
                 osMajorVersion = osver.dwMajorVersion;
                 osMinorVersion = osver.dwMinorVersion;
+                osBuildNumber = osver.dwBuildNumber;
                 osPlatform = osver.dwPlatformId;
                 osCSDVersion = QString::fromLocal8Bit(osver.szCSDVersion).simplified();
             }
@@ -360,11 +365,41 @@ QString GetSystemDescription()
         }
     }
 
+    if(hNtdll)
+    {
+        typedef LONG(WINAPI *RtlGetVersion_t)(LPOSVERSIONINFOEXW);
+        RtlGetVersion_t RtlGetVersion_f = reinterpret_cast<RtlGetVersion_t>(GetProcAddress(hNtdll, "RtlGetVersion"));
+        if(RtlGetVersion_f)
+        {
+            OSVERSIONINFOEXW osver;
+            memset(&osver, 0, sizeof(osver));
+            osver.dwOSVersionInfoSize = sizeof(osver);
+            if(RtlGetVersion_f(&osver) == 0)
+            {
+                osMajorVersion = osver.dwMajorVersion;
+                osMinorVersion = osver.dwMinorVersion;
+                osBuildNumber = osver.dwBuildNumber;
+                osProductType = osver.wProductType;
+                osServicePack = osver.wServicePackMajor;
+                osSuiteMask = osver.wSuiteMask;
+                osPlatform = osver.dwPlatformId;
+                osCSDVersion = QString::fromWCharArray(osver.szCSDVersion).simplified();
+            }
+        }
+    }
+
     FreeLibrary(hNetapi32);
     FreeLibrary(hKernel32);
+    FreeLibrary(hNtdll);
 
     QString winVersion;
-    if     (osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osProductType != VER_NT_WORKSTATION)
+    if     (osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 22000 && osProductType == VER_NT_WORKSTATION)
+        winVersion = QString::fromLatin1("Windows 11");
+    else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 20344 && osProductType != VER_NT_WORKSTATION)
+        winVersion = QString::fromLatin1("Windows Server 2022");
+    else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 17763 && osProductType != VER_NT_WORKSTATION)
+        winVersion = QString::fromLatin1("Windows Server 2019");
+    else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osProductType != VER_NT_WORKSTATION)
         winVersion = QString::fromLatin1("Windows Server 2016");
     else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osProductType == VER_NT_WORKSTATION)
         winVersion = QString::fromLatin1("Windows 10");
@@ -415,7 +450,7 @@ QString GetSystemDescription()
     else if(osMajorVersion == 4 && osMinorVersion == 0)
         winVersion = QString::fromLatin1("Windows 95");
     else
-        winVersion = QString::fromLatin1("Windows %1.%2").arg(osMajorVersion).arg(osMinorVersion);
+        winVersion = QString::fromLatin1("Windows %1.%2.%3").arg(osMajorVersion).arg(osMinorVersion).arg(osBuildNumber);
 
     if(osMajorVersion > 5 || (osMajorVersion == 5 && osMinorVersion == 2  && osProductType != VER_NT_WORKSTATION))
     {
