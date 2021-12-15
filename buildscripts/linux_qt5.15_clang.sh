@@ -22,7 +22,7 @@ cd "$(dirname $0)"/..
 rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
-${CMD_QMAKE} -r CONFIG+="release" CONFIG+=c++2a CONFIG+="enable_update_checking" "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="release" CONFIG+=c++2a CONFIG+="enable_librsvg" CONFIG+="enable_update_checking" "../${PROJECT}.pro"
 make
 strip --strip-all "${APP_PATH}/${PROJECT}"
 

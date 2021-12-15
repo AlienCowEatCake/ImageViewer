@@ -337,8 +337,11 @@ disable_libjpeg : !system_libwmf {
 
 # libRSVG options:
 #    disable_librsvg
+#    enable_librsvg
 #    system_librsvg
-
+!enable_librsvg : !system_librsvg {
+    CONFIG += disable_librsvg
+}
 
 # resvg options:
 #    disable_resvg

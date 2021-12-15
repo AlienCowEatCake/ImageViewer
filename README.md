@@ -115,7 +115,7 @@ See the [buildscripts/](buildscripts/) directory.
 * OpenJPEG options: `disable_openjpeg`, `system_openjpeg` *(bundled package by default)*
 * GIFLIB options: `disable_giflib`, `system_giflib` *(bundled package by default)*
 * LibRaw options: `disable_libraw`, `system_libraw` *(bundled package by default)*
-* libRSVG options: `disable_librsvg`, `system_librsvg` *(dynamic loading by default)*
+* libRSVG options: `disable_librsvg`, `enable_librsvg`, `system_librsvg` *(disabled by default)*
 * resvg options: `disable_resvg`, `enable_resvg`, `system_resvg` *(disabled by default)*
 * aom options: `disable_aom`, `system_aom` *(bundled package by default)*
 * libde265 options: `disable_libde265`, `system_libde265` *(bundled package by default)*
