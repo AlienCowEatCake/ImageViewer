@@ -420,9 +420,6 @@ QString GetSystemDescription()
             winVersion = QString::fromLatin1("Windows 95");
         else
             winVersion = QString::fromLatin1("Windows %1.%2").arg(osMajorVersion).arg(osMinorVersion);
-
-        if(osServicePack)
-            winVersion.append(QString::fromLatin1(" Service Pack %1").arg(osServicePack));
     }
 
     if(osMajorVersion > 5 || (osMajorVersion == 5 && osMinorVersion == 2  && osProductType != VER_NT_WORKSTATION))
@@ -430,15 +427,18 @@ QString GetSystemDescription()
         switch(sysInfo.wProcessorArchitecture)
         {
         case PROCESSOR_ARCHITECTURE_INTEL:
-            winVersion.append(QString::fromLatin1(", x86"));
+            winVersion.append(QString::fromLatin1(" x86"));
             break;
         case PROCESSOR_ARCHITECTURE_AMD64:
-            winVersion.append(QString::fromLatin1(", x64"));
+            winVersion.append(QString::fromLatin1(" x64"));
             break;
         default:
             break;
         }
     }
+
+    if(osServicePack)
+        winVersion.append(QString::fromLatin1(" Service Pack %1").arg(osServicePack));
 
     return winVersion;
 }
