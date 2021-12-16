@@ -24,7 +24,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.10 QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64" CONFIG+=c++2a CONFIG+="enable_update_checking" "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.10 QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64" CONFIG+=c++2a CONFIG+="enable_qtwebkit" CONFIG+="enable_update_checking" "../${PROJECT}.pro"
 make -j3
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "10.10" "${APPNAME}.app/Contents/Info.plist"
