@@ -5,6 +5,7 @@ set VCVARS_ARCH=x64
 set VCVARS="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat"
 set CRT_DIR="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\14.30.30704\x64\Microsoft.VC143.CRT"
 set UCRT_DIR="C:\Program Files (x86)\Windows Kits\10\Redist\10.0.22000.0\ucrt\DLLs\x64"
+set OPENSSL_DIR=C:\Qt\Tools\openssl-1.1.1m\openssl-1.1\x64\bin
 set QTDIR=C:\Qt\5.15.2\msvc2019_64
 set BUILDDIR=build_win_qt5.15_msvc2022_%ARCH%
 set SUFFIX=_qt5.15_msvc2022_%ARCH%
@@ -27,6 +28,7 @@ copy %APP_PATH%\release\%PROJECT%.exe %PROJECT%%SUFFIX%\%PROJECT%.exe
 windeployqt --release --no-compiler-runtime --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw --translations en,ru %PROJECT%%SUFFIX%
 copy %QTDIR%\bin\libxml2.dll %PROJECT%%SUFFIX%\
 copy %QTDIR%\bin\libxslt.dll %PROJECT%%SUFFIX%\
+copy %OPENSSL_DIR%\*.dll %PROJECT%%SUFFIX%\
 copy %CRT_DIR%\*.dll %PROJECT%%SUFFIX%\
 copy %UCRT_DIR%\*.dll %PROJECT%%SUFFIX%\
 rmdir /S /Q %PROJECT%%SUFFIX%\position 2>nul >nul
