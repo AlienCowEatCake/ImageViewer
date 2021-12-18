@@ -3,11 +3,13 @@ set PROJECT=ImageViewer
 set ARCH=x64
 set VCVARS_ARCH=x64
 set VCVARS="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat"
-set QTDIR=C:\Qt\5.15.2\msvc2022_64_static
+set CRT_DIR="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\14.30.30704\x64\Microsoft.VC143.CRT"
+set UCRT_DIR="C:\Program Files (x86)\Windows Kits\10\Redist\10.0.22000.0\ucrt\DLLs\x64"
+set QTDIR=C:\Qt\5.15.2\msvc2019_64
 set BUILDDIR=build_win_qt5.15_msvc2022_%ARCH%
 set SUFFIX=_qt5.15_msvc2022_%ARCH%
 set APP_PATH=src\%PROJECT%
-set ZIP_CMD=buildscripts\helpers\zip.exe
+set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
 set WIXPY_CMD="C:\Program Files\WiX.Py-0.1\wix.py.exe"
 
 call %VCVARS% %VCVARS_ARCH%
@@ -18,14 +20,22 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" QTPLUGIN.imageformats="qico qsvg qtiff" CONFIG+="enable_update_checking" ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="enable_qtwebkit enable_update_checking" ..\%PROJECT%.pro
 nmake
-copy %APP_PATH%\release\%PROJECT%.exe ..\%PROJECT%%SUFFIX%.exe
-mkdir build_msi
-copy %APP_PATH%\release\%PROJECT%.exe build_msi\%PROJECT%.exe
+mkdir %PROJECT%%SUFFIX%
+copy %APP_PATH%\release\%PROJECT%.exe %PROJECT%%SUFFIX%\%PROJECT%.exe
+windeployqt --release --no-compiler-runtime --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw --translations en,ru %PROJECT%%SUFFIX%
+copy %QTDIR%\bin\libxml2.dll %PROJECT%%SUFFIX%\
+copy %QTDIR%\bin\libxslt.dll %PROJECT%%SUFFIX%\
+copy %CRT_DIR%\*.dll %PROJECT%%SUFFIX%\
+copy %UCRT_DIR%\*.dll %PROJECT%%SUFFIX%\
+rmdir /S /Q %PROJECT%%SUFFIX%\position 2>nul >nul
+rmdir /S /Q %PROJECT%%SUFFIX%\sensorgestures 2>nul >nul
+rmdir /S /Q %PROJECT%%SUFFIX%\sensors 2>nul >nul
+%ZIP_CMD% -9r ..\%PROJECT%%SUFFIX%.zip %PROJECT%%SUFFIX%
+move %PROJECT%%SUFFIX% build_msi
 %WIXPY_CMD% ..\src\ImageViewer\resources\platform\windows\wixpy_%ARCH%.json
-copy %PROJECT%.msi ..\%PROJECT%%SUFFIX%.msi
+move %PROJECT%.msi ..\%PROJECT%%SUFFIX%.msi
 cd ..
-%ZIP_CMD% -9r %PROJECT%%SUFFIX%.zip %PROJECT%%SUFFIX%.exe
 
 pause
