@@ -405,7 +405,7 @@ void PrintDialog::onPrintClicked()
     painter.setRenderHint(QPainter::TextAntialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
     QRectF itemRect = m_impl->convert(m_impl->itemPrintRect, QPrinter::Point, QPrinter::DevicePixel);
-    itemRect.moveTopLeft(itemRect.topLeft() - m_impl->printerPageRect(QPrinter::DevicePixel).topLeft());
+    itemRect.moveTopLeft(itemRect.topLeft() - m_impl->convert(m_impl->printerPageRect(QPrinter::Point), QPrinter::Point, QPrinter::DevicePixel).topLeft());
     const QRectF boundingRect = m_impl->graphicsItem->boundingRect();
     const QRectF rotatedBoundingRect = QTransform()
             .translate(boundingRect.center().x(), boundingRect.center().y())
