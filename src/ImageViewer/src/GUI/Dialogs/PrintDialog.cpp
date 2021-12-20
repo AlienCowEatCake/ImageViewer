@@ -123,8 +123,8 @@ struct PrintDialog::Impl
     {
         if(!printer)
             return QSizeF();
-        const QRectF paperRect = printer->paperRect(unit);
-        const QRectF pageRect = printer->pageRect(unit);
+        const QRectF paperRect = printerPaperRect(unit);
+        const QRectF pageRect = printerPageRect(unit);
         const QRectF availableRect = ignoreMargins ? paperRect : pageRect;
         QSizeF availableSize = availableRect.size();
         if(keepAspect)
@@ -143,6 +143,20 @@ struct PrintDialog::Impl
         if(originalSize.width() <= availableSize.width() && originalSize.height() <= availableSize.height())
             return originalSize;
         return availableSize;
+    }
+
+    QRectF printerPaperRect(QPrinter::Unit unit) const
+    {
+        if(!printer)
+            return QRectF();
+        return fixOrientation(printer->paperRect(unit), unit);
+    }
+
+    QRectF printerPageRect(QPrinter::Unit unit) const
+    {
+        if(!printer)
+            return QRectF();
+        return fixOrientation(printer->pageRect(unit), unit);
     }
 
     double convert(double value, QPrinter::Unit from, QPrinter::Unit to) const
@@ -167,6 +181,28 @@ struct PrintDialog::Impl
     }
 
 private:
+    QRectF fixOrientation(const QRectF &rect, QPrinter::Unit unit) const
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
+        const bool isPortrait = printer->pageLayout().orientation() == QPageLayout::Portrait;
+#else
+        const bool isPortrait = printer->orientation() == QPrinter::Portrait;
+#endif
+        const QRectF paperRectPoint = printer->paperRect(QPrinter::Point);
+        const bool isPaperPortrait = paperRectPoint.height() >= paperRectPoint.width();
+        if((isPortrait && isPaperPortrait) || (!isPortrait && !isPaperPortrait) || qFuzzyCompare(paperRectPoint.height(), paperRectPoint.width()))
+            return rect;
+        qWarning() << "Invalid paper orientation, x =" << paperRectPoint.x() << "y =" << paperRectPoint.y() << "width =" << paperRectPoint.width() << "height =" << paperRectPoint.height()
+                   << "expected =" << (isPortrait ? "portrait," : "landscape,") << "trying to fix this";
+        const QRectF paperRect = printer->paperRect(unit);
+        const qreal ml = rect.left() - paperRect.left();
+        const qreal mr = paperRect.right() - rect.right();
+        const qreal mt = rect.top() - paperRect.top();
+        const qreal mb = paperRect.bottom() - rect.bottom();
+        const qreal sizeCorrection = ml + mr - mt - mb;
+        return QRectF(ml, mt, rect.height() - sizeCorrection, rect.width() + sizeCorrection);
+    }
+
     static double multiplierForUnit(QPrinter::Unit unit, int resolution)
     {
         switch(unit)
@@ -368,7 +404,8 @@ void PrintDialog::onPrintClicked()
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::TextAntialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
-    const QRectF itemRect = m_impl->convert(m_impl->itemPrintRect, QPrinter::Point, QPrinter::DevicePixel);
+    QRectF itemRect = m_impl->convert(m_impl->itemPrintRect, QPrinter::Point, QPrinter::DevicePixel);
+    itemRect.moveTopLeft(itemRect.topLeft() - m_impl->printerPageRect(QPrinter::DevicePixel).topLeft());
     const QRectF boundingRect = m_impl->graphicsItem->boundingRect();
     const QRectF rotatedBoundingRect = QTransform()
             .translate(boundingRect.center().x(), boundingRect.center().y())
@@ -815,8 +852,8 @@ void PrintDialog::updateImageGeometry()
     const bool keepAspect = m_ui->keepAspectCheckBox->isChecked();
     const int centering = m_ui->centerComboBox->itemData(m_ui->centerComboBox->currentIndex()).toInt();
 
-    const QRectF paperRect = m_impl->printer->paperRect(QPrinter::Point);
-    const QRectF pageRect = m_impl->printer->pageRect(QPrinter::Point);
+    const QRectF paperRect = m_impl->printerPaperRect(QPrinter::Point);
+    const QRectF pageRect = m_impl->printerPageRect(QPrinter::Point);
     const QRectF availableRect = ignoreMargins ? paperRect : pageRect;
     const QSizeF preferredSize = m_impl->preferredItemSize(QPrinter::Point, ignoreMargins);
 
@@ -903,7 +940,7 @@ void PrintDialog::updateImageGeometry()
     m_ui->yResolutionSpinBox->setMaximum(originalSize.height() / m_impl->convert(m_ui->heightSpinBox->minimum(), sizeUnit, resolutionUnit));
     m_ui->yResolutionSpinBox->setValue(originalSize.height() / m_impl->convert(m_impl->itemPrintRect.height(), QPrinter::Point, resolutionUnit));
 
-    m_ui->previewWidget->setPaperRect(m_impl->printer->paperRect(QPrinter::Point));
-    m_ui->previewWidget->setPageRect(m_impl->printer->pageRect(QPrinter::Point));
+    m_ui->previewWidget->setPaperRect(m_impl->printerPaperRect(QPrinter::Point));
+    m_ui->previewWidget->setPageRect(m_impl->printerPageRect(QPrinter::Point));
     m_ui->previewWidget->setItemRect(m_impl->itemPrintRect);
 }
