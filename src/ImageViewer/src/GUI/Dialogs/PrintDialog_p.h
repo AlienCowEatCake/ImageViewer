@@ -96,6 +96,8 @@ protected:
         painter.setRenderHint(QPainter::TextAntialiasing);
         painter.setRenderHint(QPainter::SmoothPixmapTransform);
         painter.fillRect(0, 0, width(), height(), Qt::black);
+        if(m_paperRect.isEmpty())
+            return;
         painter.translate(width() / 2, height() / 2);
         painter.scale(scale, scale);
         painter.translate(-m_paperRect.width() / 2, -m_paperRect.height() / 2);
