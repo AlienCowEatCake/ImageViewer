@@ -184,6 +184,7 @@ struct PrintDialog::UI
 
     QGroupBox * const printerSelectGroup;
     QComboBox * const printerSelectComboBox;
+    QPushButton * const printDialogButton;
     QLabel * const printerNameHeaderLabel;
     QLabel * const printerNameLabel;
     QLabel * const printerDescriptionHeaderLabel;
@@ -253,6 +254,7 @@ struct PrintDialog::UI
         , CONSTRUCT_OBJECT(imageSettingsTabFrame, QFrame, (printDialog))
         , CONSTRUCT_OBJECT(printerSelectGroup, QGroupBox, (generalTabFrame))
         , CONSTRUCT_OBJECT(printerSelectComboBox, QComboBox, (printerSelectGroup))
+        , CONSTRUCT_OBJECT(printDialogButton, QPushButton, (printerSelectGroup))
         , CONSTRUCT_OBJECT(printerNameHeaderLabel, QLabel, (printerSelectGroup))
         , CONSTRUCT_OBJECT(printerNameLabel, QLabel, (printerSelectGroup))
         , CONSTRUCT_OBJECT(printerDescriptionHeaderLabel, QLabel, (printerSelectGroup))
@@ -325,9 +327,11 @@ struct PrintDialog::UI
         printerInfoLayout->addWidget(printerStateLabel, 6, 1, Qt::AlignVCenter);
         printerInfoLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed), 0, 1);
 
-        QVBoxLayout *printerSelectLayout = new QVBoxLayout(printerSelectGroup);
-        printerSelectLayout->addWidget(printerSelectComboBox);
-        printerSelectLayout->addLayout(printerInfoLayout);
+        QGridLayout *printerSelectLayout = new QGridLayout(printerSelectGroup);
+        printerSelectLayout->addWidget(printerSelectComboBox, 0, 0, Qt::AlignVCenter);
+        printerSelectLayout->addWidget(printDialogButton, 0, 1, Qt::AlignVCenter);
+        printerSelectLayout->addLayout(printerInfoLayout, 1, 0, 1, 2);
+        printerSelectLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed), 0, 0);
 
         QGridLayout *pageLayout = new QGridLayout(pageGroup);
         pageLayout->addWidget(landscapeRadioButton, 0, 0, Qt::AlignLeft | Qt::AlignVCenter);
@@ -408,6 +412,7 @@ struct PrintDialog::UI
     void retranslate()
     {
         printerSelectGroup->setTitle(qApp->translate("PrintDialog", "Printer"));
+        printDialogButton->setText(qApp->translate("PrintDialog", "..."));
         printerNameHeaderLabel->setText(qApp->translate("PrintDialog", "Name:"));
         printerDescriptionHeaderLabel->setText(qApp->translate("PrintDialog", "Description:"));
         printerDefaultHeaderLabel->setText(qApp->translate("PrintDialog", "Default:"));

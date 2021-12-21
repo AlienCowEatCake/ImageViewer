@@ -43,6 +43,7 @@ public:
 
 private Q_SLOTS:
     void onCurrentPrinterChanged(int index);
+    void onPrintDialogButtonClicked();
     void onPrintClicked();
     void onPageSetupClicked();
     void onAutoRotateStateChanged();
@@ -67,6 +68,8 @@ private Q_SLOTS:
 
 private:
     void updatePrinterInfo(const QPrinterInfo& info);
+    void updateColorMode(const QPrinterInfo& info);
+    void updateNumCopies();
     void updatePageInfo();
     void updatePageOrientation();
     void updateImageGeometry();

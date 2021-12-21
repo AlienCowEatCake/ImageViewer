@@ -71,7 +71,7 @@ const QString RESOLUTION_UNIT_KEY   = QString::fromLatin1("ResolutionUnit");
 struct PrintDialog::Impl
 {
     SettingsWrapper settings;
-    const QList<QPrinterInfo> availablePrinters;
+    QList<QPrinterInfo> availablePrinters;
     QGraphicsItem * const graphicsItem;
     const int rotateAngle;
     const Qt::Orientations flipOrientations;
@@ -299,8 +299,7 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem,
     m_ui->topSpinBox->setDecimals(3);
     m_ui->bottomSpinBox->setDecimals(3);
 
-    const QList<QPrinterInfo> printers = m_impl->availablePrinters;
-    for(QList<QPrinterInfo>::ConstIterator it = printers.begin(); it != printers.end(); ++it)
+    for(QList<QPrinterInfo>::ConstIterator it = m_impl->availablePrinters.begin(); it != m_impl->availablePrinters.end(); ++it)
     {
         m_ui->printerSelectComboBox->addItem(it->printerName());
         if(it->isDefault())
@@ -312,6 +311,7 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem,
     onAutoRotateStateChanged();
 
     connect(m_ui->printerSelectComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentPrinterChanged(int)));
+    connect(m_ui->printDialogButton, SIGNAL(clicked()), this, SLOT(onPrintDialogButtonClicked()));
     connect(m_ui->pageSetupButton, SIGNAL(clicked()), this, SLOT(onPageSetupClicked()));
     connect(m_ui->autoRotateCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onAutoRotateStateChanged()));
     connect(m_ui->portraitRadioButton, SIGNAL(toggled(bool)), this, SLOT(onPortraitToggled(bool)));
@@ -348,6 +348,7 @@ void PrintDialog::onCurrentPrinterChanged(int index)
     m_impl->printer.reset();
     updatePrinterInfo(QPrinterInfo());
     updatePageInfo();
+    m_ui->printDialogButton->setEnabled(false);
     m_ui->miscGroup->setEnabled(false);
     m_ui->dialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     if(index < 0 || index >= m_impl->availablePrinters.size())
@@ -361,36 +362,78 @@ void PrintDialog::onCurrentPrinterChanged(int index)
     m_impl->printer->setDocName(QFileInfo(m_impl->filePath).fileName());
     m_impl->printer->setCreator(qApp->applicationName() + QString::fromLatin1(" ") + qApp->applicationVersion());
 
-    if(true)
-    {
-        const QSignalBlocker guard(m_ui->copiesSpinBox);
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
-        m_ui->copiesSpinBox->setValue(m_impl->printer->copyCount());
-        m_ui->copiesSpinBox->setEnabled(m_impl->printer->supportsMultipleCopies());
-#else
-        m_ui->copiesSpinBox->setValue(m_impl->printer->numCopies());
-#endif
-    }
-    if(true)
-    {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
-        const QList<QPrinter::ColorMode> supportedColorModes = info.supportedColorModes();
-#else
-        const QList<QPrinter::ColorMode> supportedColorModes = QList<QPrinter::ColorMode>() << QPrinter::Color << QPrinter::GrayScale;
-#endif
-        const QSignalBlocker guard(m_ui->colorModeComboBox);
-        m_ui->colorModeComboBox->clear();
-        if(supportedColorModes.contains(QPrinter::Color))
-            m_ui->colorModeComboBox->addItem(qApp->translate("PrintDialog", "Color", "Color mode"), static_cast<int>(QPrinter::Color));
-        if(supportedColorModes.contains(QPrinter::GrayScale))
-            m_ui->colorModeComboBox->addItem(qApp->translate("PrintDialog", "Grayscale", "Color mode"), static_cast<int>(QPrinter::GrayScale));
-        m_ui->colorModeComboBox->setCurrentIndex(m_ui->colorModeComboBox->findData(static_cast<int>(m_impl->printer->colorMode())));
-    }
-
+    updateNumCopies();
+    updateColorMode(info);
     updatePrinterInfo(info);
     updatePageInfo();
+    m_ui->printDialogButton->setEnabled(true);
     m_ui->miscGroup->setEnabled(true);
     m_ui->dialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(m_impl->graphicsItem);
+}
+
+void PrintDialog::onPrintDialogButtonClicked()
+{
+    if(!m_impl->printer)
+        return;
+
+    QPrintDialog *dialog = new QPrintDialog(m_impl->printer.data(), this);
+    dialog->setMinMax(1, 1);
+    dialog->setFromTo(1, 1);
+    dialog->setPrintRange(QPrintDialog::CurrentPage);
+    dialog->setOptions(QPrintDialog::PrintShowPageSize | QPrintDialog::PrintCurrentPage);
+#if (QT_VERSION < QT_VERSION_CHECK(4, 5, 0))
+    dialog->setOption(QPrintDialog::DontUseSheet);
+#endif
+    if(dialog->exec() == QDialog::Accepted)
+    {
+        QPrinterInfo info = m_impl->availablePrinters[m_ui->printerSelectComboBox->currentIndex()];
+        const QString printerName = m_impl->printer->printerName();
+        if(printerName != info.printerName())
+        {
+            int newIndex = -1;
+            const QSignalBlocker guard(m_ui->printerSelectComboBox);
+            for(int i = 0; i < m_impl->availablePrinters.size(); ++i)
+            {
+                if(m_impl->availablePrinters[i].printerName() != printerName)
+                    continue;
+                newIndex = i;
+                break;
+            }
+            if(newIndex < 0)
+            {
+                QList<QPrinterInfo> printers = QPrinterInfo::availablePrinters();
+                for(QList<QPrinterInfo>::ConstIterator it = printers.begin(); it != printers.end(); ++it)
+                {
+                    if(it->printerName() != printerName)
+                        continue;
+                    newIndex = it - printers.begin();
+                    break;
+                }
+                if(newIndex >= 0)
+                {
+                    m_impl->availablePrinters.swap(printers);
+                    m_ui->printerSelectComboBox->clear();
+                    for(QList<QPrinterInfo>::ConstIterator it = m_impl->availablePrinters.begin(); it != m_impl->availablePrinters.end(); ++it)
+                        m_ui->printerSelectComboBox->addItem(it->printerName());
+                }
+            }
+            if(newIndex >= 0)
+            {
+                info = m_impl->availablePrinters[newIndex];
+                m_ui->printerSelectComboBox->setCurrentIndex(newIndex);
+            }
+            else
+            {
+                qWarning() << "Can't find info for printer" << printerName;
+            }
+        }
+        updateNumCopies();
+        updateColorMode(info);
+        updatePrinterInfo(info);
+        updatePageInfo();
+    }
+    dialog->hide();
+    dialog->deleteLater();
 }
 
 void PrintDialog::onPrintClicked()
@@ -453,7 +496,7 @@ void PrintDialog::onPrintClicked()
 
 void PrintDialog::onPageSetupClicked()
 {
-    if(!m_impl->graphicsItem || !m_impl->printer)
+    if(!m_impl->printer)
         return;
 
     QPageSetupDialog *dialog = new QPageSetupDialog(m_impl->printer.data(), this);
@@ -743,6 +786,34 @@ void PrintDialog::updatePrinterInfo(const QPrinterInfo& info)
         m_ui->printerMakeAndModelLabel->setText(QString());
         m_ui->printerStateLabel->setText(QString());
     }
+}
+
+void PrintDialog::updateColorMode(const QPrinterInfo &info)
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+    const QList<QPrinter::ColorMode> supportedColorModes = info.supportedColorModes();
+#else
+    Q_UNUSED(info);
+    const QList<QPrinter::ColorMode> supportedColorModes = QList<QPrinter::ColorMode>() << QPrinter::Color << QPrinter::GrayScale;
+#endif
+    const QSignalBlocker guard(m_ui->colorModeComboBox);
+    m_ui->colorModeComboBox->clear();
+    if(supportedColorModes.contains(QPrinter::Color))
+        m_ui->colorModeComboBox->addItem(qApp->translate("PrintDialog", "Color", "Color mode"), static_cast<int>(QPrinter::Color));
+    if(supportedColorModes.contains(QPrinter::GrayScale))
+        m_ui->colorModeComboBox->addItem(qApp->translate("PrintDialog", "Grayscale", "Color mode"), static_cast<int>(QPrinter::GrayScale));
+    m_ui->colorModeComboBox->setCurrentIndex(m_ui->colorModeComboBox->findData(static_cast<int>(m_impl->printer->colorMode())));
+}
+
+void PrintDialog::updateNumCopies()
+{
+    const QSignalBlocker guard(m_ui->copiesSpinBox);
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
+    m_ui->copiesSpinBox->setValue(m_impl->printer->copyCount());
+    m_ui->copiesSpinBox->setEnabled(m_impl->printer->supportsMultipleCopies());
+#else
+    m_ui->copiesSpinBox->setValue(m_impl->printer->numCopies());
+#endif
 }
 
 void PrintDialog::updatePageInfo()
