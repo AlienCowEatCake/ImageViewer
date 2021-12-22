@@ -136,11 +136,11 @@ struct PrintDialog::Impl
         return availableSize;
     }
 
-    QSizeF preferredItemSize(QPrinter::Unit unit, bool ignoreMargins) const
+    QSizeF preferredItemSize(QPrinter::Unit unit, bool ignoreMargins, bool ignoreBounds) const
     {
         const QSizeF availableSize = availableItemSize(unit, ignoreMargins, true);
         const QSizeF originalSize = itemSize(unit);
-        if(originalSize.width() <= availableSize.width() && originalSize.height() <= availableSize.height())
+        if(ignoreBounds || (originalSize.width() <= availableSize.width() && originalSize.height() <= availableSize.height()))
             return originalSize;
         return availableSize;
     }
@@ -289,6 +289,7 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem,
     m_ui->previewWidget->setGraphicsItem(graphicsItem, rotateAngle, flipOrientations);
     m_ui->keepAspectCheckBox->setChecked(true);
     m_ui->ignorePageMarginsCheckBox->setChecked(false);
+    m_ui->ignorePaperBoundsCheckBox->setChecked(false);
 
     m_ui->widthSpinBox->setDecimals(3);
     m_ui->heightSpinBox->setDecimals(3);
@@ -332,6 +333,7 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem,
     connect(m_ui->bottomSpinBox, SIGNAL(valueChanged(double)), this, SLOT(onBottomChanged(double)));
     connect(m_ui->centerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onCenterChanged(int)));
     connect(m_ui->ignorePageMarginsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onIgnorePageMarginsStateChanged()));
+    connect(m_ui->ignorePaperBoundsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onIgnorePaperBoundsStateChanged()));
     connect(m_ui->dialogButtonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(onPrintClicked()));
     connect(m_ui->dialogButtonBox->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), this, SLOT(close()));
 
@@ -476,11 +478,19 @@ void PrintDialog::onPrintClicked()
         QImage image = itemWithGrabImage->grabImage();
         const QTransform worldTransform = painter.worldTransform();
         const QRect deviceRect = worldTransform.mapRect(boundingRect).toAlignedRect();
-        const QImage scaledImage = image.scaled(deviceRect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        if(!scaledImage.isNull())
-            image = scaledImage;
-        else
-            qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
+        Qt::TransformationMode transformationMode = Qt::SmoothTransformation;
+        if(QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(m_impl->graphicsItem))
+            transformationMode = pixmapItem->transformationMode();
+        if(ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(m_impl->graphicsItem))
+            transformationMode = itemWithTransformationMode->transformationMode();
+        if(transformationMode == Qt::SmoothTransformation/* && deviceRect.width() < image.width() && deviceRect.height() < image.height()*/)
+        {
+            const QImage scaledImage = image.scaled(deviceRect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+            if(!scaledImage.isNull())
+                image = scaledImage;
+            else
+                qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
+        }
         painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
     }
     else
@@ -712,6 +722,12 @@ void PrintDialog::onIgnorePageMarginsStateChanged()
     updateImageGeometry();
 }
 
+void PrintDialog::onIgnorePaperBoundsStateChanged()
+{
+    m_ui->ignorePageMarginsCheckBox->setEnabled(!m_ui->ignorePaperBoundsCheckBox->isChecked());
+    updateImageGeometry();
+}
+
 void PrintDialog::updatePrinterInfo(const QPrinterInfo& info)
 {
     m_ui->printerNameLabel->setText(info.printerName());
@@ -920,13 +936,20 @@ void PrintDialog::updateImageGeometry()
     m_ui->imageSettingsTabFrame->setEnabled(true);
 
     const bool ignoreMargins = m_ui->ignorePageMarginsCheckBox->isChecked();
+    const bool ignoreBounds = m_ui->ignorePaperBoundsCheckBox->isChecked();
     const bool keepAspect = m_ui->keepAspectCheckBox->isChecked();
     const int centering = m_ui->centerComboBox->itemData(m_ui->centerComboBox->currentIndex()).toInt();
 
     const QRectF paperRect = m_impl->printerPaperRect(QPrinter::Point);
     const QRectF pageRect = m_impl->printerPageRect(QPrinter::Point);
-    const QRectF availableRect = ignoreMargins ? paperRect : pageRect;
-    const QSizeF preferredSize = m_impl->preferredItemSize(QPrinter::Point, ignoreMargins);
+    const QSizeF preferredSize = m_impl->preferredItemSize(QPrinter::Point, ignoreMargins, ignoreBounds);
+    QRectF availableRect = ignoreMargins ? paperRect : pageRect;
+    if(ignoreBounds)
+    {
+        const qreal scale = 100;
+        const QSizeF adjust = QSizeF(availableRect.width() * scale, availableRect.height() * scale);
+        availableRect.adjust(-adjust.width(), -adjust.height(), adjust.width(), adjust.height());
+    }
 
     if(m_impl->itemPrintRect.isEmpty())
     {
@@ -941,7 +964,7 @@ void PrintDialog::updateImageGeometry()
         m_impl->itemPrintRect.moveCenter(targetCenter);
     }
 
-    if(m_impl->itemPrintRect.width() > availableRect.width() || m_impl->itemPrintRect.height() > availableRect.height())
+    if(!ignoreBounds && (m_impl->itemPrintRect.width() > availableRect.width() || m_impl->itemPrintRect.height() > availableRect.height()))
     {
         QSizeF targetSize = m_impl->itemPrintRect.size();
         targetSize.scale(availableRect.size(), keepAspect ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio);
@@ -973,14 +996,17 @@ void PrintDialog::updateImageGeometry()
     if(centering & Qt::Vertical && !qFuzzyCompare(m_impl->itemPrintRect.center().y(), availableRect.center().y()))
         m_impl->itemPrintRect.moveCenter(QPointF(m_impl->itemPrintRect.center().x(), availableRect.center().y()));
 
-    if(m_impl->itemPrintRect.right() > availableRect.right())
-        m_impl->itemPrintRect.moveRight(availableRect.right());
-    if(m_impl->itemPrintRect.bottom() > availableRect.bottom())
-        m_impl->itemPrintRect.moveBottom(availableRect.bottom());
-    if(m_impl->itemPrintRect.top() < availableRect.top())
-        m_impl->itemPrintRect.moveTop(availableRect.top());
-    if(m_impl->itemPrintRect.left() < availableRect.left())
-        m_impl->itemPrintRect.moveLeft(availableRect.left());
+    if(!ignoreBounds)
+    {
+        if(m_impl->itemPrintRect.right() > availableRect.right())
+            m_impl->itemPrintRect.moveRight(availableRect.right());
+        if(m_impl->itemPrintRect.bottom() > availableRect.bottom())
+            m_impl->itemPrintRect.moveBottom(availableRect.bottom());
+        if(m_impl->itemPrintRect.top() < availableRect.top())
+            m_impl->itemPrintRect.moveTop(availableRect.top());
+        if(m_impl->itemPrintRect.left() < availableRect.left())
+            m_impl->itemPrintRect.moveLeft(availableRect.left());
+    }
 
     const QPrinter::Unit sizeUnit = static_cast<QPrinter::Unit>(m_ui->sizeUnitsComboBox->itemData(m_ui->sizeUnitsComboBox->currentIndex()).toInt());
     m_ui->widthSpinBox->setMinimum(m_impl->convert(std::pow(10.0, static_cast<double>(-m_ui->widthSpinBox->decimals())), QPrinter::Point, sizeUnit));

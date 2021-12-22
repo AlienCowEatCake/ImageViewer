@@ -65,6 +65,7 @@ private Q_SLOTS:
     void onBottomChanged(double value);
     void onCenterChanged(int index);
     void onIgnorePageMarginsStateChanged();
+    void onIgnorePaperBoundsStateChanged();
 
 private:
     void updatePrinterInfo(const QPrinterInfo& info);

@@ -47,6 +47,7 @@
 #include "Utils/ObjectsUtils.h"
 
 #include "Decoders/GraphicsItemFeatures/IGrabImage.h"
+#include "Decoders/GraphicsItemFeatures/ITransformationMode.h"
 
 class PrintPreviewWidget : public QWidget
 {
@@ -107,6 +108,7 @@ protected:
         if(m_graphicsItem)
         {
             painter.save();
+            painter.setClipRect(m_paperRect);
             const QRectF boundingRect = m_graphicsItem->boundingRect();
             const QRectF rotatedBoundingRect = QTransform()
                     .translate(boundingRect.center().x(), boundingRect.center().y())
@@ -134,11 +136,19 @@ protected:
                 QImage image = itemWithGrabImage->grabImage();
                 const QTransform worldTransform = painter.worldTransform();
                 const QRect deviceRect = worldTransform.mapRect(boundingRect).toAlignedRect();
-                const QImage scaledImage = image.scaled(deviceRect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-                if(!scaledImage.isNull())
-                    image = scaledImage;
-                else
-                    qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
+                Qt::TransformationMode transformationMode = Qt::SmoothTransformation;
+                if(QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(m_graphicsItem))
+                    transformationMode = pixmapItem->transformationMode();
+                if(ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(m_graphicsItem))
+                    transformationMode = itemWithTransformationMode->transformationMode();
+                if(transformationMode == Qt::SmoothTransformation && deviceRect.width() < image.width() && deviceRect.height() < image.height())
+                {
+                    const QImage scaledImage = image.scaled(deviceRect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                    if(!scaledImage.isNull())
+                        image = scaledImage;
+                    else
+                        qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
+                }
                 painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
             }
             else
@@ -241,6 +251,7 @@ struct PrintDialog::UI
     QComboBox * const centerComboBox;
 
     QCheckBox * const ignorePageMarginsCheckBox;
+    QCheckBox * const ignorePaperBoundsCheckBox;
 
     QGroupBox * const previewGroup;
     PrintPreviewWidget * const previewWidget;
@@ -306,6 +317,7 @@ struct PrintDialog::UI
         , CONSTRUCT_OBJECT(centerLabel, QLabel, (positionGroup))
         , CONSTRUCT_OBJECT(centerComboBox, QComboBox, (positionGroup))
         , CONSTRUCT_OBJECT(ignorePageMarginsCheckBox, QCheckBox, (imageSettingsTabFrame))
+        , CONSTRUCT_OBJECT(ignorePaperBoundsCheckBox, QCheckBox, (imageSettingsTabFrame))
         , CONSTRUCT_OBJECT(previewGroup, QGroupBox, (imageSettingsTabFrame))
         , CONSTRUCT_OBJECT(previewWidget, PrintPreviewWidget, (previewGroup))
         , CONSTRUCT_OBJECT(dialogButtonBox, QDialogButtonBox, (printDialog))
@@ -390,10 +402,11 @@ struct PrintDialog::UI
         previewLayout->addStretch();
 
         QGridLayout *imageSettingsTabLayout = new QGridLayout(imageSettingsTabFrame);
-        imageSettingsTabLayout->addWidget(sizeGroup, 0, 0, Qt::AlignTop);
-        imageSettingsTabLayout->addWidget(positionGroup, 1, 0, Qt::AlignTop);
+        imageSettingsTabLayout->addWidget(sizeGroup, 0, 0, 1, 2, Qt::AlignTop);
+        imageSettingsTabLayout->addWidget(positionGroup, 1, 0, 1, 2, Qt::AlignTop);
         imageSettingsTabLayout->addWidget(ignorePageMarginsCheckBox, 2, 0, Qt::AlignTop);
-        imageSettingsTabLayout->addWidget(previewGroup, 0, 1, 2, 1);
+        imageSettingsTabLayout->addWidget(ignorePaperBoundsCheckBox, 2, 1, Qt::AlignTop);
+        imageSettingsTabLayout->addWidget(previewGroup, 0, 2, 2, 1);
 
         tabWidget->addTab(generalTabFrame, QString());
         tabWidget->addTab(imageSettingsTabFrame, QString());
@@ -448,6 +461,7 @@ struct PrintDialog::UI
         centerLabel->setText(qApp->translate("PrintDialog", "Center:"));
 
         ignorePageMarginsCheckBox->setText(qApp->translate("PrintDialog", "Ignore Page Margins"));
+        ignorePaperBoundsCheckBox->setText(qApp->translate("PrintDialog", "Ignore Paper Bounds"));
 
         previewGroup->setTitle(qApp->translate("PrintDialog", "Preview"));
 
