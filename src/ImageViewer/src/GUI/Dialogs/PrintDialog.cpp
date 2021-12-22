@@ -824,7 +824,7 @@ void PrintDialog::updateColorMode(const QPrinterInfo &info)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
     if(!info.isNull())
         supportedColorModes = info.supportedColorModes();
-    else
+    if(!supportedColorModes.contains(m_impl->printer->colorMode()))
 #else
     Q_UNUSED(info);
     if(true)
