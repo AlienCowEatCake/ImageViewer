@@ -35,6 +35,7 @@
 #include <QHBoxLayout>
 #include <QImage>
 #include <QLabel>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPushButton>
 #include <QRadioButton>
@@ -51,11 +52,38 @@
 
 class PrintPreviewWidget : public QWidget
 {
+    Q_OBJECT
+    Q_DISABLE_COPY(PrintPreviewWidget)
+
+Q_SIGNALS:
+    void geometryChangeRequested(const QRectF &newGeometry);
+
+private:
+    enum Position
+    {
+        POS_NONE,
+        POS_LEFT,
+        POS_RIGHT,
+        POS_TOP,
+        POS_BOTTOM,
+        POS_TOP_LEFT,
+        POS_TOP_RIGHT,
+        POS_BOTTOM_LEFT,
+        POS_BOTTOM_RIGHT,
+        POS_INSIDE
+    };
+
 public:
     PrintPreviewWidget(QWidget *parent = Q_NULLPTR)
         : QWidget(parent)
         , m_graphicsItem(Q_NULLPTR)
         , m_rotateAngle(0)
+        , m_operation(POS_NONE)
+    {
+        setAttribute(Qt::WA_MouseTracking);
+    }
+
+    ~PrintPreviewWidget()
     {}
 
     void setGraphicsItem(QGraphicsItem *item, int rotateAngle, const Qt::Orientations &flipOrientations)
@@ -88,10 +116,7 @@ protected:
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE
     {
         QWidget::paintEvent(event);
-        const qreal paperOffset = 10;
-        const qreal xscale = (width() - paperOffset) / m_paperRect.width();
-        const qreal yscale = (height() - paperOffset) / m_paperRect.height();
-        const qreal scale = qMin(xscale, yscale);
+        const qreal scale = this->scale();
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setRenderHint(QPainter::TextAntialiasing);
@@ -175,6 +200,209 @@ protected:
         painter.drawRect(m_pageRect);
     }
 
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE
+    {
+        QWidget::mouseMoveEvent(event);
+        if(m_paperRect.isEmpty() || m_itemRect.isEmpty())
+            return;
+
+        if(m_operation == POS_NONE)
+            updateCursor(event->pos());
+        else
+            applyGeometryChanges(event->pos());
+    }
+
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE
+    {
+        QWidget::mousePressEvent(event);
+        if(m_paperRect.isEmpty() || m_itemRect.isEmpty())
+            return;
+
+        m_operation = currentPosition(event->pos());
+        m_startOffset = event->pos() - transform().map(m_itemRect.center()).toPoint();
+        updateCursor(event->pos());
+    }
+
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE
+    {
+        QWidget::mouseReleaseEvent(event);
+        if(m_paperRect.isEmpty() || m_itemRect.isEmpty())
+            return;
+
+        if(m_operation != POS_NONE)
+        {
+            applyGeometryChanges(event->pos());
+            m_operation = POS_NONE;
+            updateCursor(event->pos());
+        }
+    }
+
+private:
+    qreal scale() const
+    {
+        const qreal paperOffset = 10;
+        const qreal xscale = (width() - paperOffset) / m_paperRect.width();
+        const qreal yscale = (height() - paperOffset) / m_paperRect.height();
+        return qMin(xscale, yscale);
+    }
+
+    QTransform transform() const
+    {
+        const qreal scale = this->scale();
+        QTransform t;
+        t.translate(width() / 2, height() / 2);
+        t.scale(scale, scale);
+        t.translate(-m_paperRect.width() / 2, -m_paperRect.height() / 2);
+        return t;
+    }
+
+    bool isNear(int lhs, int rhs) const
+    {
+        return qAbs(lhs - rhs) < 4;
+    }
+
+    bool isNear(const QPoint &lhs, const QPoint &rhs) const
+    {
+        return isNear((lhs - rhs).manhattanLength(), 0);
+    }
+
+    Position currentPosition(const QPoint &localPos) const
+    {
+        const QRect itemRect = transform().mapRect(m_itemRect).toAlignedRect();
+        if(isNear(localPos, itemRect.topLeft()))
+            return POS_TOP_LEFT;
+        if(isNear(localPos, itemRect.topRight()))
+            return POS_TOP_RIGHT;
+        if(isNear(localPos, itemRect.bottomLeft()))
+            return POS_BOTTOM_LEFT;
+        if(isNear(localPos, itemRect.bottomRight()))
+            return POS_BOTTOM_RIGHT;
+        if(isNear(localPos.x(), itemRect.left()) && qBound(itemRect.top(), localPos.y(), itemRect.bottom()) == localPos.y())
+            return POS_LEFT;
+        if(isNear(localPos.x(), itemRect.right()) && qBound(itemRect.top(), localPos.y(), itemRect.bottom()) == localPos.y())
+            return POS_RIGHT;
+        if(isNear(localPos.y(), itemRect.top()) && qBound(itemRect.left(), localPos.x(), itemRect.right()) == localPos.x())
+            return POS_TOP;
+        if(isNear(localPos.y(), itemRect.bottom()) && qBound(itemRect.left(), localPos.x(), itemRect.right()) == localPos.x())
+            return POS_BOTTOM;
+        if(itemRect.contains(localPos, true))
+            return POS_INSIDE;
+        return POS_NONE;
+    }
+
+    void updateCursor(const QPoint &localPos)
+    {
+        switch(currentPosition(localPos))
+        {
+        case POS_LEFT:
+        case POS_RIGHT:
+            setCursor(Qt::SizeHorCursor);
+            break;
+        case POS_TOP:
+        case POS_BOTTOM:
+            setCursor(Qt::SizeVerCursor);
+            break;
+        case POS_TOP_LEFT:
+        case POS_BOTTOM_RIGHT:
+            setCursor(Qt::SizeFDiagCursor);
+            break;
+        case POS_TOP_RIGHT:
+        case POS_BOTTOM_LEFT:
+            setCursor(Qt::SizeBDiagCursor);
+            break;
+        case POS_INSIDE:
+            if(m_operation == POS_INSIDE)
+                setCursor(Qt::ClosedHandCursor);
+            else
+                setCursor(Qt::OpenHandCursor);
+            break;
+        default:
+            unsetCursor();
+            break;
+        }
+    }
+
+    void applyGeometryChanges(const QPoint &localPos)
+    {
+        const QTransform transform = this->transform();
+        QRectF itemRect = transform.mapRect(m_itemRect);
+        switch(m_operation)
+        {
+        case POS_LEFT:
+        {
+            itemRect.setLeft(qMin(static_cast<qreal>(localPos.x()), itemRect.right() - 1));
+            break;
+        }
+        case POS_RIGHT:
+        {
+            itemRect.setRight(qMax(static_cast<qreal>(localPos.x()), itemRect.left() + 1));
+            break;
+        }
+        case POS_TOP:
+        {
+            itemRect.setTop(qMin(static_cast<qreal>(localPos.y()), itemRect.bottom() - 1));
+            break;
+        }
+        case POS_BOTTOM:
+        {
+            itemRect.setBottom(qMax(static_cast<qreal>(localPos.y()), itemRect.top() + 1));
+            break;
+        }
+        case POS_TOP_LEFT:
+        {
+            QRectF newRect = itemRect;
+            newRect.setTopLeft(QPointF(qMin(static_cast<qreal>(localPos.x()), newRect.right() - 1), qMin(static_cast<qreal>(localPos.y()), newRect.bottom() - 1)));
+            QSizeF newSize = itemRect.size();
+            newSize.scale(newRect.size(), Qt::KeepAspectRatio);
+            newRect.setSize(newSize);
+            newRect.moveBottomRight(itemRect.bottomRight());
+            itemRect = newRect;
+            break;
+        }
+        case POS_BOTTOM_RIGHT:
+        {
+            QRectF newRect = itemRect;
+            newRect.setBottomRight(QPointF(qMax(static_cast<qreal>(localPos.x()), newRect.left() + 1), qMax(static_cast<qreal>(localPos.y()), newRect.top() + 1)));
+            QSizeF newSize = itemRect.size();
+            newSize.scale(newRect.size(), Qt::KeepAspectRatio);
+            newRect.setSize(newSize);
+            newRect.moveTopLeft(itemRect.topLeft());
+            itemRect = newRect;
+            break;
+        }
+        case POS_TOP_RIGHT:
+        {
+            QRectF newRect = itemRect;
+            newRect.setTopRight(QPointF(qMax(static_cast<qreal>(localPos.x()), newRect.left() + 1), qMin(static_cast<qreal>(localPos.y()), newRect.bottom() - 1)));
+            QSizeF newSize = itemRect.size();
+            newSize.scale(newRect.size(), Qt::KeepAspectRatio);
+            newRect.setSize(newSize);
+            newRect.moveBottomLeft(itemRect.bottomLeft());
+            itemRect = newRect;
+            break;
+        }
+        case POS_BOTTOM_LEFT:
+        {
+            QRectF newRect = itemRect;
+            newRect.setBottomLeft(QPointF(qMin(static_cast<qreal>(localPos.x()), newRect.right() - 1), qMax(static_cast<qreal>(localPos.y()), newRect.top() + 1)));
+            QSizeF newSize = itemRect.size();
+            newSize.scale(newRect.size(), Qt::KeepAspectRatio);
+            newRect.setSize(newSize);
+            newRect.moveTopRight(itemRect.topRight());
+            itemRect = newRect;
+            break;
+        }
+        case POS_INSIDE:
+        {
+            itemRect.moveCenter(localPos - m_startOffset);
+            break;
+        }
+        default:
+            break;
+        }
+        Q_EMIT geometryChangeRequested(transform.inverted().mapRect(itemRect));
+    }
+
 private:
     QGraphicsItem *m_graphicsItem;
     int m_rotateAngle;
@@ -182,6 +410,8 @@ private:
     QRectF m_paperRect;
     QRectF m_pageRect;
     QRectF m_itemRect;
+    Position m_operation;
+    QPoint m_startOffset;
 };
 
 struct PrintDialog::UI

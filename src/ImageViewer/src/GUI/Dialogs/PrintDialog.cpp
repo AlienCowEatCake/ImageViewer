@@ -319,6 +319,7 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem,
     connect(m_ui->landscapeRadioButton, SIGNAL(toggled(bool)), this, SLOT(onLandscapeToggled(bool)));
     connect(m_ui->copiesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onNumCopiesChanged(int)));
     connect(m_ui->colorModeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onColorModeChanged(int)));
+    connect(m_ui->previewWidget, SIGNAL(geometryChangeRequested(const QRectF&)), this, SLOT(onGeometryChangeRequested(const QRectF&)));
     connect(m_ui->widthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(onWidthChanged(double)));
     connect(m_ui->heightSpinBox, SIGNAL(valueChanged(double)), this, SLOT(onHeightChanged(double)));
     connect(m_ui->sizeUnitsComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSizeUnitsChanged(int)));
@@ -579,6 +580,72 @@ void PrintDialog::onColorModeChanged(int index)
     m_impl->printer->setColorMode(static_cast<QPrinter::ColorMode>(m_ui->colorModeComboBox->itemData(index).toInt()));
     const QSignalBlocker guard(m_ui->colorModeComboBox);
     m_ui->colorModeComboBox->setCurrentIndex(m_ui->colorModeComboBox->findData(static_cast<int>(m_impl->printer->colorMode())));
+}
+
+void PrintDialog::onGeometryChangeRequested(const QRectF &newGeometry)
+{
+    if(!qFuzzyCompare(newGeometry.center().x(), m_impl->itemPrintRect.center().x()))
+    {
+        const QSignalBlocker guard(m_ui->centerComboBox);
+        int centeringOrientation = m_ui->centerComboBox->itemData(m_ui->centerComboBox->currentIndex()).toInt();
+        centeringOrientation &= ~Qt::Horizontal;
+        m_ui->centerComboBox->setCurrentIndex(m_ui->centerComboBox->findData(centeringOrientation));
+    }
+    if(!qFuzzyCompare(newGeometry.center().y(), m_impl->itemPrintRect.center().y()))
+    {
+        const QSignalBlocker guard(m_ui->centerComboBox);
+        int centeringOrientation = m_ui->centerComboBox->itemData(m_ui->centerComboBox->currentIndex()).toInt();
+        centeringOrientation &= ~Qt::Vertical;
+        m_ui->centerComboBox->setCurrentIndex(m_ui->centerComboBox->findData(centeringOrientation));
+    }
+    const bool keepAspect = m_ui->keepAspectCheckBox->isChecked();
+    if(keepAspect && !qFuzzyCompare(newGeometry.width() / newGeometry.height(), m_impl->itemPrintRect.width() / m_impl->itemPrintRect.height()))
+    {
+        const QSignalBlocker guard(m_ui->keepAspectCheckBox);
+        m_ui->keepAspectCheckBox->setChecked(false);
+    }
+    const bool ignoreMargins = m_ui->ignorePageMarginsCheckBox->isChecked();
+    const bool ignoreBounds = m_ui->ignorePaperBoundsCheckBox->isChecked();
+    const QRectF availableRect = ignoreMargins ? m_impl->printerPaperRect(QPrinter::Point) : m_impl->printerPageRect(QPrinter::Point);
+    if(!ignoreBounds && availableRect.intersected(newGeometry) != newGeometry)
+    {
+        if(m_impl->itemPrintRect.size() == newGeometry.size())
+        {
+            QRectF fixedGeometry = newGeometry;
+            fixedGeometry.moveBottom(qMin(newGeometry.bottom(), availableRect.bottom()));
+            fixedGeometry.moveTop(qMax(newGeometry.top(), availableRect.top()));
+            fixedGeometry.moveRight(qMin(newGeometry.right(), availableRect.right()));
+            fixedGeometry.moveLeft(qMax(newGeometry.left(), availableRect.left()));
+            m_impl->itemPrintRect = fixedGeometry;
+        }
+        else
+        {
+            const bool keepAspect = qFuzzyCompare(newGeometry.width() / newGeometry.height(), m_impl->itemPrintRect.width() / m_impl->itemPrintRect.height());
+            QSizeF size = m_impl->itemPrintRect.size();
+            size.scale(availableRect.intersected(newGeometry).size(), keepAspect ? Qt::KeepAspectRatio : Qt::IgnoreAspectRatio);
+            QRectF fixedGeometry(0, 0, size.width(), size.height());
+            if(qFuzzyCompare(m_impl->itemPrintRect.left(), newGeometry.left()))
+            {
+                if(qFuzzyCompare(m_impl->itemPrintRect.top(), newGeometry.top()))
+                    fixedGeometry.moveTopLeft(newGeometry.topLeft());
+                else
+                    fixedGeometry.moveBottomLeft(newGeometry.bottomLeft());
+            }
+            else
+            {
+                if(qFuzzyCompare(m_impl->itemPrintRect.top(), newGeometry.top()))
+                    fixedGeometry.moveTopRight(newGeometry.topRight());
+                else
+                    fixedGeometry.moveBottomRight(newGeometry.bottomRight());
+            }
+            m_impl->itemPrintRect = fixedGeometry;
+        }
+    }
+    else
+    {
+        m_impl->itemPrintRect = newGeometry;
+    }
+    updateImageGeometry();
 }
 
 void PrintDialog::onWidthChanged(double value)

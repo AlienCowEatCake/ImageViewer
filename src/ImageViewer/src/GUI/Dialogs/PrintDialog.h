@@ -51,6 +51,7 @@ private Q_SLOTS:
     void onLandscapeToggled(bool checked);
     void onNumCopiesChanged(int value);
     void onColorModeChanged(int index);
+    void onGeometryChangeRequested(const QRectF &newGeometry);
     void onWidthChanged(double value);
     void onHeightChanged(double value);
     void onSizeUnitsChanged(int index);
