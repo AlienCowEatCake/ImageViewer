@@ -165,17 +165,17 @@ struct PrintDialog::Impl
         return value * multiplierForUnit(from, resolution) / multiplierForUnit(to, resolution);
     }
 
-    QPointF convert(QPointF value, QPrinter::Unit from, QPrinter::Unit to) const
+    QPointF convert(const QPointF &value, QPrinter::Unit from, QPrinter::Unit to) const
     {
         return QPointF(convert(value.x(), from, to), convert(value.y(), from, to));
     }
 
-    QSizeF convert(QSizeF value, QPrinter::Unit from, QPrinter::Unit to) const
+    QSizeF convert(const QSizeF &value, QPrinter::Unit from, QPrinter::Unit to) const
     {
         return QSizeF(convert(value.width(), from, to), convert(value.height(), from, to));
     }
 
-    QRectF convert(QRectF value, QPrinter::Unit from, QPrinter::Unit to) const
+    QRectF convert(const QRectF &value, QPrinter::Unit from, QPrinter::Unit to) const
     {
         return QRectF(convert(value.topLeft(), from, to), convert(value.size(), from, to));
     }
