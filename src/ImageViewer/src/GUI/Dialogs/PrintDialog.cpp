@@ -811,6 +811,15 @@ void PrintDialog::updatePrinterInfo(const QPrinterInfo& info)
 
 void PrintDialog::updateColorMode(const QPrinterInfo &info)
 {
+    const QSignalBlocker guard(m_ui->colorModeComboBox);
+
+    if(!m_impl->printer)
+    {
+        m_ui->colorModeComboBox->clear();
+        m_ui->colorModeComboBox->setCurrentIndex(-1);
+        return;
+    }
+
     QList<QPrinter::ColorMode> supportedColorModes;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
     if(!info.isNull())
@@ -821,7 +830,6 @@ void PrintDialog::updateColorMode(const QPrinterInfo &info)
     if(true)
 #endif
         supportedColorModes = QList<QPrinter::ColorMode>() << QPrinter::Color << QPrinter::GrayScale;
-    const QSignalBlocker guard(m_ui->colorModeComboBox);
     m_ui->colorModeComboBox->clear();
     if(supportedColorModes.contains(QPrinter::Color))
         m_ui->colorModeComboBox->addItem(qApp->translate("PrintDialog", "Color", "Color mode"), static_cast<int>(QPrinter::Color));
@@ -833,11 +841,20 @@ void PrintDialog::updateColorMode(const QPrinterInfo &info)
 void PrintDialog::updateNumCopies()
 {
     const QSignalBlocker guard(m_ui->copiesSpinBox);
+
+    if(!m_impl->printer)
+    {
+        m_ui->copiesSpinBox->setValue(1);
+        m_ui->copiesSpinBox->setEnabled(false);
+        return;
+    }
+
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
     m_ui->copiesSpinBox->setValue(m_impl->printer->copyCount());
     m_ui->copiesSpinBox->setEnabled(m_impl->printer->supportsMultipleCopies());
 #else
     m_ui->copiesSpinBox->setValue(m_impl->printer->numCopies());
+    m_ui->copiesSpinBox->setEnabled(true);
 #endif
 }
 
