@@ -381,10 +381,12 @@ void PrintDialog::onPrintDialogButtonClicked()
     QPrintDialog *dialog = new QPrintDialog(m_impl->printer.data(), this);
     dialog->setMinMax(1, 1);
     dialog->setFromTo(1, 1);
-    dialog->setPrintRange(QPrintDialog::CurrentPage);
-    dialog->setOptions(QPrintDialog::PrintToFile | QPrintDialog::PrintShowPageSize);
-#if (QT_VERSION < QT_VERSION_CHECK(4, 5, 0))
-    dialog->setOption(QPrintDialog::DontUseSheet);
+    dialog->setPrintRange(QPrintDialog::AllPages);
+    const QPrintDialog::PrintDialogOptions options = QPrintDialog::PrintToFile | QPrintDialog::PrintShowPageSize;
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
+    dialog->setOptions(options);
+#else
+    dialog->setEnabledOptions(options | QPrintDialog::DontUseSheet);
 #endif
     if(dialog->exec() == QDialog::Accepted)
     {
@@ -416,7 +418,7 @@ void PrintDialog::onPrintDialogButtonClicked()
                 }
                 if(newIndex >= 0)
                 {
-                    m_impl->availablePrinters.swap(printers);
+                    m_impl->availablePrinters = printers;
                     m_ui->printerSelectComboBox->clear();
                     for(QList<QPrinterInfo>::ConstIterator it = m_impl->availablePrinters.begin(); it != m_impl->availablePrinters.end(); ++it)
                         m_ui->printerSelectComboBox->addItem(it->printerName());
