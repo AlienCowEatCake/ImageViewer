@@ -706,350 +706,360 @@
 <context>
     <name>PrintDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="207"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="243"/>
         <source>Print</source>
         <comment>Title</comment>
         <translation>Print</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="213"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="249"/>
         <source>Millimeter</source>
         <comment>Size unit</comment>
         <translation>Millimeters</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="214"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="250"/>
         <source>Point</source>
         <comment>Size unit</comment>
         <translation>Points</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="215"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="251"/>
         <source>Inch</source>
         <comment>Size unit</comment>
         <translation>Inches</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="216"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="252"/>
         <source>Pica</source>
         <comment>Size unit</comment>
         <translation>Picas</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="217"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="253"/>
         <source>Didot</source>
         <comment>Size unit</comment>
         <translation>Didot points</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="218"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="254"/>
         <source>Cicero</source>
         <comment>Size unit</comment>
         <translation>Cicero</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="237"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="273"/>
         <source>Pixels/Millimeter</source>
         <comment>Resolution unit</comment>
         <translation>Pixels per millimeter</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="238"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="274"/>
         <source>Pixels/Point</source>
         <comment>Resolution unit</comment>
         <translation>Pixels per point</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="239"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="275"/>
         <source>Pixels/Inch</source>
         <comment>Resolution unit</comment>
         <translation>Pixels per inch</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="240"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="276"/>
         <source>Pixels/Pica</source>
         <comment>Resolution unit</comment>
         <translation>Pixels per pica</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="241"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="277"/>
         <source>Pixels/Didot</source>
         <comment>Resolution unit</comment>
         <translation>Pixels per Didot point</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="242"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="278"/>
         <source>Pixels/Cicero</source>
         <comment>Resolution unit</comment>
         <translation>Pixels per cicero</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="247"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="283"/>
         <source>None</source>
         <comment>Centering option</comment>
         <translation>None</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="248"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="284"/>
         <source>Horizontally</source>
         <comment>Centering option</comment>
         <translation>Horizontally</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="249"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="285"/>
         <source>Vertically</source>
         <comment>Centering option</comment>
         <translation>Vertically</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="250"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="286"/>
         <source>Both</source>
         <comment>Centering option</comment>
         <translation>Both</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="348"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="837"/>
         <source>Color</source>
         <comment>Color mode</comment>
         <translation>Color</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="350"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="839"/>
         <source>Grayscale</source>
         <comment>Color mode</comment>
         <translation>Grayscale</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="647"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="750"/>
         <source>Yes</source>
         <comment>Default</comment>
         <translation>Yes</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="649"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="752"/>
         <source>No</source>
         <comment>Default</comment>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="653"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="756"/>
         <source>Yes</source>
         <comment>Remote</comment>
         <translation>Yes</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="655"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="758"/>
         <source>No</source>
         <comment>Remote</comment>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="679"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="782"/>
         <source>Idle</source>
         <comment>State</comment>
         <translation>Idle</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="682"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="785"/>
         <source>Active</source>
         <comment>State</comment>
         <translation>Active</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="685"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="788"/>
         <source>Aborted</source>
         <comment>State</comment>
         <translation>Aborted</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="688"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="791"/>
         <source>Error</source>
         <comment>State</comment>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="691"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="794"/>
         <source>Unknown (%1)</source>
         <comment>State</comment>
         <translation>Unknown (%1)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="408"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="427"/>
         <source>Printer</source>
         <translation>Printer</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="409"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="428"/>
+        <source>...</source>
+        <translation>…</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="429"/>
         <source>Name:</source>
         <translation>Name:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="410"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="430"/>
         <source>Description:</source>
         <translation>Description:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="411"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="431"/>
         <source>Default:</source>
         <translation>Default:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="412"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="432"/>
         <source>Remote:</source>
         <translation>Remote:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="413"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="433"/>
         <source>Location:</source>
         <translation>Location:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="414"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="434"/>
         <source>Make and model:</source>
         <translation>Make and model:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="415"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="435"/>
         <source>State:</source>
         <translation>State:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="417"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="437"/>
         <source>Page</source>
         <translation>Page</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="418"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="438"/>
         <source>Portrait</source>
         <translation>Portrait</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="419"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="439"/>
         <source>Landscape</source>
         <translation>Landscape</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="420"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="440"/>
         <source>Auto-rotate</source>
         <translation>Auto-Rotate</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="421"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="441"/>
         <source>Page setup</source>
         <translation>Page Setup</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="423"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="443"/>
         <source>Misc</source>
         <translation>Misc</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="424"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="444"/>
         <source>Copies:</source>
         <translation>Copies:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="425"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="445"/>
         <source>Color Mode:</source>
         <translation>Color Mode:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="427"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="447"/>
         <source>Size</source>
         <translation>Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="428"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="448"/>
         <source>Width:</source>
         <translation>Width:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="429"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="449"/>
         <source>Height:</source>
         <translation>Height:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="430"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="450"/>
         <source>X Resolution:</source>
         <translation>X Resolution:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="431"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="451"/>
         <source>Y Resolution:</source>
         <translation>Y Resolution:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="432"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="452"/>
         <source>Load Defaults</source>
         <translation>Load Defaults</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="433"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="453"/>
         <source>&lt;b&gt;&amp;#9582;&lt;/b&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="434"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="454"/>
         <source>&lt;b&gt;&amp;#9583;&lt;/b&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="436"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="456"/>
         <source>Position</source>
         <translation>Position</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="437"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="457"/>
         <source>Left:</source>
         <translation>Left:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="438"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="458"/>
         <source>Right:</source>
         <translation>Right:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="439"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="459"/>
         <source>Top:</source>
         <translation>Top:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="440"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="460"/>
         <source>Bottom:</source>
         <translation>Bottom:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="441"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="461"/>
         <source>Center:</source>
         <translation>Center:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="443"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="463"/>
         <source>Ignore Page Margins</source>
         <translation>Ignore Page Margins</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="445"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="464"/>
+        <source>Ignore Paper Bounds</source>
+        <translation>Ignore Paper Bounds</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="466"/>
         <source>Preview</source>
         <translation>Preview</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="447"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="468"/>
         <source>General</source>
         <translation>General</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="448"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="469"/>
         <source>Image Settings</source>
         <translation>Image Settings</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="450"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="471"/>
         <source>Print</source>
         <translation>Print</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="451"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="472"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
