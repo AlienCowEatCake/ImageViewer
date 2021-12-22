@@ -382,13 +382,16 @@ void PrintDialog::onPrintDialogButtonClicked()
     dialog->setMinMax(1, 1);
     dialog->setFromTo(1, 1);
     dialog->setPrintRange(QPrintDialog::CurrentPage);
-    dialog->setOptions(QPrintDialog::PrintShowPageSize | QPrintDialog::PrintCurrentPage);
+    dialog->setOptions(QPrintDialog::PrintToFile | QPrintDialog::PrintShowPageSize);
 #if (QT_VERSION < QT_VERSION_CHECK(4, 5, 0))
     dialog->setOption(QPrintDialog::DontUseSheet);
 #endif
     if(dialog->exec() == QDialog::Accepted)
     {
-        QPrinterInfo info = m_impl->availablePrinters[m_ui->printerSelectComboBox->currentIndex()];
+        QPrinterInfo info;
+        const int currentIndex = m_ui->printerSelectComboBox->currentIndex();
+        if(currentIndex >= 0 && currentIndex < m_impl->availablePrinters.size())
+            info = m_impl->availablePrinters[currentIndex];
         const QString printerName = m_impl->printer->printerName();
         if(printerName != info.printerName())
         {
@@ -427,6 +430,8 @@ void PrintDialog::onPrintDialogButtonClicked()
             else
             {
                 qWarning() << "Can't find info for printer" << printerName;
+                info = QPrinterInfo();
+                m_ui->printerSelectComboBox->setCurrentIndex(-1);
             }
         }
         updateNumCopies();
@@ -806,12 +811,16 @@ void PrintDialog::updatePrinterInfo(const QPrinterInfo& info)
 
 void PrintDialog::updateColorMode(const QPrinterInfo &info)
 {
+    QList<QPrinter::ColorMode> supportedColorModes;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
-    const QList<QPrinter::ColorMode> supportedColorModes = info.supportedColorModes();
+    if(!info.isNull())
+        supportedColorModes = info.supportedColorModes();
+    else
 #else
     Q_UNUSED(info);
-    const QList<QPrinter::ColorMode> supportedColorModes = QList<QPrinter::ColorMode>() << QPrinter::Color << QPrinter::GrayScale;
+    if(true)
 #endif
+        supportedColorModes = QList<QPrinter::ColorMode>() << QPrinter::Color << QPrinter::GrayScale;
     const QSignalBlocker guard(m_ui->colorModeComboBox);
     m_ui->colorModeComboBox->clear();
     if(supportedColorModes.contains(QPrinter::Color))
