@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -43,6 +43,7 @@ public:
     QString decoderName() const Q_DECL_OVERRIDE;
     QString filePath() const Q_DECL_OVERRIDE;
     QSize size() const Q_DECL_OVERRIDE;
+    QPair<qreal, qreal> dpi() const Q_DECL_OVERRIDE;
     IImageMetaData *metaData() const Q_DECL_OVERRIDE;
 
 private:
@@ -50,6 +51,7 @@ private:
     const QString m_decoderName;
     const QString m_filePath;
     const QSize m_size;
+    const QPair<qreal, qreal> m_dpi;
     IImageMetaData * const m_metaData;
 };
 

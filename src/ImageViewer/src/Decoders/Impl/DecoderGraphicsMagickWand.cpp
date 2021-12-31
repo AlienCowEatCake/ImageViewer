@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2020-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -650,7 +650,8 @@ public:
             return QSharedPointer<IImageData>();
         IAnimationProvider *provider = new GraphicsMagickWandAnimationProvider(filePath);
         QGraphicsItem *item = GraphicsItemsFactory::instance().createAnimatedItem(provider);
-        return QSharedPointer<IImageData>(new ImageData(item, filePath, name()));
+        IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
 };
 

@@ -32,6 +32,8 @@
 #include "Utils/SettingsWrapper.h"
 #include "Utils/SignalBlocker.h"
 
+#include "Decoders/IImageData.h"
+
 namespace {
 
 QPrinter::Unit unitFromVariant(const QVariant &variant, QPrinter::Unit defaultValue)
@@ -72,6 +74,7 @@ struct PrintDialog::Impl
 {
     SettingsWrapper settings;
     QList<QPrinterInfo> availablePrinters;
+    const QSharedPointer<IImageData> imageData;
     QGraphicsItem * const graphicsItem;
     const int rotateAngle;
     const Qt::Orientations flipOrientations;
@@ -79,10 +82,11 @@ struct PrintDialog::Impl
     QScopedPointer<QPrinter> printer;
     QRectF itemPrintRect;
 
-    Impl(QGraphicsItem *graphicsItem, int rotateAngle, const Qt::Orientations &flipOrientations, const QString &filePath)
+    Impl(const QSharedPointer<IImageData> &imageData, int rotateAngle, const Qt::Orientations &flipOrientations, const QString &filePath)
         : settings(QString::fromLatin1("PrintDialogSettings"))
         , availablePrinters(QPrinterInfo::availablePrinters())
-        , graphicsItem(graphicsItem)
+        , imageData(imageData)
+        , graphicsItem(imageData ? imageData->graphicsItem() : Q_NULLPTR)
         , rotateAngle(rotateAngle)
         , flipOrientations(flipOrientations)
         , filePath(filePath)
@@ -106,17 +110,13 @@ struct PrintDialog::Impl
         return boundingRect.height() >= boundingRect.width() ? Qt::Vertical : Qt::Horizontal;
     }
 
-    QSizeF itemDpi() const
-    {
-        /// @todo
-        return QSizeF(72, 72);
-    }
-
     QSizeF itemSize(QPrinter::Unit unit) const
     {
+        if(!graphicsItem || !imageData)
+            return QSizeF();
         const QSizeF bounds = itemBounds().size();
-        const QSizeF dpi = itemDpi();
-        return QSizeF(convert(bounds.width() / dpi.width(), QPrinter::Inch, unit), convert(bounds.height() / dpi.height(), QPrinter::Inch, unit));
+        const QPair<qreal, qreal> dpi = imageData->dpi();
+        return QSizeF(convert(bounds.width() / dpi.first, QPrinter::Inch, unit), convert(bounds.height() / dpi.second, QPrinter::Inch, unit));
     }
 
     QSizeF availableItemSize(QPrinter::Unit unit, bool ignoreMargins, bool keepAspect) const
@@ -226,14 +226,14 @@ private:
     }
 };
 
-PrintDialog::PrintDialog(QGraphicsItem *graphicsItem,
+PrintDialog::PrintDialog(const QSharedPointer<IImageData> &imageData,
                          int rotateAngle,
                          const Qt::Orientations &flipOrientations,
                          const QString &filePath,
                          QWidget *parent)
     : QDialog(parent)
     , m_ui(new UI(this))
-    , m_impl(new Impl(graphicsItem, rotateAngle, flipOrientations, filePath))
+    , m_impl(new Impl(imageData, rotateAngle, flipOrientations, filePath))
 {
     setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint |
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
@@ -286,7 +286,7 @@ PrintDialog::PrintDialog(QGraphicsItem *graphicsItem,
     m_ui->centerComboBox->addItem(qApp->translate("PrintDialog", "Both"        , "Centering option"), static_cast<int>(Qt::Horizontal | Qt::Vertical));
     m_ui->centerComboBox->setCurrentIndex(m_ui->centerComboBox->findData(static_cast<int>(Qt::Horizontal | Qt::Vertical)));
 
-    m_ui->previewWidget->setGraphicsItem(graphicsItem, rotateAngle, flipOrientations);
+    m_ui->previewWidget->setGraphicsItem(m_impl->graphicsItem, rotateAngle, flipOrientations);
     m_ui->keepAspectCheckBox->setChecked(true);
     m_ui->ignorePageMarginsCheckBox->setChecked(false);
     m_ui->ignorePaperBoundsCheckBox->setChecked(false);

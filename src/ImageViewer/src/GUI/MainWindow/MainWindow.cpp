@@ -419,8 +419,8 @@ void MainWindow::onPrintRequested()
     if(!m_impl->isFileOpened())
         return;
 
-    QGraphicsItem *item = m_impl->ui.imageViewerWidget->graphicsItem();
-    if(!item)
+    QSharedPointer<IImageData> imageData = m_impl->uiState.imageData;
+    if(!imageData || !imageData->graphicsItem())
         return;
 
     const EffectsStorage::EffectsData effectsData = m_impl->effectsStorage.effectsData();
@@ -429,7 +429,7 @@ void MainWindow::onPrintRequested()
         flipOrientations |= Qt::Horizontal;
     if(effectsData.flipVertical)
         flipOrientations |= Qt::Vertical;
-    PrintDialog *dialog = new PrintDialog(item, effectsData.rotationAngle, flipOrientations, m_impl->uiState.currentFilePath, this);
+    PrintDialog *dialog = new PrintDialog(imageData, effectsData.rotationAngle, flipOrientations, m_impl->uiState.currentFilePath, this);
     dialog->exec();
     dialog->deleteLater();
 #endif

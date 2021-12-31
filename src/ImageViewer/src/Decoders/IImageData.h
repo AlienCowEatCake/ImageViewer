@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -20,6 +20,8 @@
 #if !defined(IIMAGEDATA_H_INCLUDED)
 #define IIMAGEDATA_H_INCLUDED
 
+#include <QPair>
+
 class QGraphicsItem;
 class QString;
 class QSize;
@@ -37,6 +39,7 @@ public:
     virtual QString decoderName() const = 0;
     virtual QString filePath() const = 0;
     virtual QSize size() const = 0;
+    virtual QPair<qreal, qreal> dpi() const = 0;
     virtual IImageMetaData *metaData() const = 0;
 };
 

@@ -1140,7 +1140,7 @@ ImageMetaData::~ImageMetaData()
 
 void ImageMetaData::applyExifOrientation(QImage *image) const
 {
-    applyExifOrientation(image, m_impl->getExifOrientation());
+    applyExifOrientation(image, orientation());
 }
 
 void ImageMetaData::addExifEntry(const QString &type, int tag, const QString &tagString, const QString &value)
@@ -1178,10 +1178,21 @@ QList<IImageMetaData::MetaDataType> ImageMetaData::types()
     return m_impl->entryListMap.keys();
 }
 
-IImageMetaData::MetaDataEntryList ImageMetaData::metaData(IImageMetaData::MetaDataType type)
+IImageMetaData::MetaDataEntryList ImageMetaData::metaData(const IImageMetaData::MetaDataType &type)
 {
     m_impl->ensureMetaDataFilled();
     return m_impl->entryListMap.value(type);
+}
+
+quint16 ImageMetaData::orientation() const
+{
+    return m_impl->getExifOrientation();
+}
+
+QPair<qreal, qreal> ImageMetaData::dpi() const
+{
+    /// @todo
+    return qMakePair<qreal, qreal>(72, 72);
 }
 
 bool ImageMetaData::readFile(const QString &filePath)

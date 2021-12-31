@@ -24,9 +24,11 @@
 
 #include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
+#include "Utils/SharedPointer.h"
 
-class QGraphicsItem;
 class QPrinterInfo;
+
+class IImageData;
 
 class PrintDialog : public QDialog
 {
@@ -34,7 +36,7 @@ class PrintDialog : public QDialog
     Q_DISABLE_COPY(PrintDialog)
 
 public:
-    PrintDialog(QGraphicsItem *graphicsItem,
+    PrintDialog(const QSharedPointer<IImageData> &imageData,
                 int rotateAngle,
                 const Qt::Orientations &flipOrientations,
                 const QString &filePath,

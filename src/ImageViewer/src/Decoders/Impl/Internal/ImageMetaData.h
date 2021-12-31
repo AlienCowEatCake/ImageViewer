@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -53,7 +53,10 @@ public:
 
 public: // IImageMetaData
     QList<MetaDataType> types() Q_DECL_OVERRIDE;
-    MetaDataEntryList metaData(MetaDataType type) Q_DECL_OVERRIDE;
+    MetaDataEntryList metaData(const MetaDataType &type) Q_DECL_OVERRIDE;
+
+    quint16 orientation() const Q_DECL_OVERRIDE;
+    QPair<qreal, qreal> dpi() const Q_DECL_OVERRIDE;
 
 protected:
     bool readFile(const QString &filePath);
