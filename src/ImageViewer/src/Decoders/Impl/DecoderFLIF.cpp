@@ -63,7 +63,7 @@ public:
             return false;
         }
 
-        ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+        ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
 
         m_numFrames = static_cast<int>(flif_decoder_num_images(d));
         m_numLoops = static_cast<int>(flif_decoder_num_loops(d));

@@ -416,8 +416,8 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
         GifAnimationProvider *provider = new GifAnimationProvider(filePath);
-        IImageMetaData *metaData = ImageMetaData::joinMetaData(ImageMetaData::createMetaData(filePath), provider->takeMetaData());
         QGraphicsItem *item = GraphicsItemsFactory::instance().createAnimatedItem(provider);
+        IImageMetaData *metaData = item ? ImageMetaData::joinMetaData(ImageMetaData::createMetaData(filePath), provider->takeMetaData()) : Q_NULLPTR;
         return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
 };

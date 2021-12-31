@@ -174,7 +174,7 @@ public:
                 break;
         }
 
-        ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+        ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
         m_error = m_frames.empty();
         m_numFrames = m_frames.size();
         return PayloadWithMetaData<bool>(true, metaData);

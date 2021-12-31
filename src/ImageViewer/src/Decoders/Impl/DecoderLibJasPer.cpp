@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -36,6 +36,7 @@
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
+#include "Internal/PayloadWithMetaData.h"
 #include "Internal/Utils/MappedBuffer.h"
 
 namespace
@@ -175,7 +176,7 @@ QImage renderGrayImage(jas_image_t *jasImage)
     return result;
 }
 
-QImage readJp2File(const QString &filename)
+PayloadWithMetaData<QImage> readJp2File(const QString &filename)
 {
     const MappedBuffer inBuffer(filename);
     if(!inBuffer.isValid())
@@ -216,7 +217,8 @@ QImage readJp2File(const QString &filename)
     jas_image_destroy(jasImage);
     jas_image_clearfmts();
 
-    return result;
+    ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
+    return PayloadWithMetaData<QImage>(result, metaData);
 }
 
 // ====================================================================================================
@@ -285,9 +287,9 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
-        QGraphicsItem *item = GraphicsItemsFactory::instance().createImageItem(readJp2File(filePath));
-        IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
-        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
+        const PayloadWithMetaData<QImage> readResult = readJp2File(filePath);
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createImageItem(readResult);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), readResult.metaData()));
     }
 };
 

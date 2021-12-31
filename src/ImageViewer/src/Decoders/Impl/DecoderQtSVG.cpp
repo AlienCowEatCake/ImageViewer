@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -31,6 +31,7 @@
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/ImageData.h"
+#include "Internal/ImageMetaData.h"
 
 namespace {
 
@@ -74,7 +75,10 @@ public:
 #if defined (QT_SVG_LIB)
         QGraphicsSvgItem *graphicsSvgItem = new QGraphicsSvgItem(filePath);
         if(graphicsSvgItem->renderer()->isValid())
-            return QSharedPointer<IImageData>(new ImageData(graphicsSvgItem, filePath, name()));
+        {
+            IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+            return QSharedPointer<IImageData>(new ImageData(graphicsSvgItem, filePath, name(), metaData));
+        }
         delete graphicsSvgItem;
 #endif
         return QSharedPointer<IImageData>();

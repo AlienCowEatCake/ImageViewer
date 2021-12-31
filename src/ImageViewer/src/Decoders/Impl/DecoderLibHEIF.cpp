@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -151,7 +151,11 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
         return QImage();
     }
 
+#if defined (USE_STREAM_READER_API)
     ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+#else
+    ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
+#endif
     const int numberOfMetadataBlocks = heif_image_handle_get_number_of_metadata_blocks(handle, Q_NULLPTR);
     if(numberOfMetadataBlocks > 0)
     {

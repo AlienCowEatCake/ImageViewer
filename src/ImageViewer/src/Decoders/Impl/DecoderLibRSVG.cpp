@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -47,6 +47,7 @@ typedef void* QFunctionPointer;
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
+#include "Internal/ImageMetaData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
 #include "Internal/Utils/LibraryUtils.h"
 #include "Internal/Utils/MappedBuffer.h"
@@ -616,7 +617,8 @@ public:
             return QSharedPointer<IImageData>();
         IScaledImageProvider *provider = new RSVGPixmapProvider(filePath);
         QGraphicsItem *item = GraphicsItemsFactory::instance().createScalableItem(provider);
-        return QSharedPointer<IImageData>(new ImageData(item, filePath, name()));
+        IImageMetaData *metaData = item ? ImageMetaData::createMetaData(filePath) : Q_NULLPTR;
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
 };
 

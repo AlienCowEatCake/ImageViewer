@@ -295,7 +295,7 @@ public:
             return QSharedPointer<IImageData>();
         IAnimationProvider *provider = new MngAnimationProvider(filePath);
         QGraphicsItem *item = GraphicsItemsFactory::instance().createAnimatedItem(provider);
-        IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+        IImageMetaData *metaData = item ? ImageMetaData::createMetaData(filePath) : Q_NULLPTR;
         return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
 };

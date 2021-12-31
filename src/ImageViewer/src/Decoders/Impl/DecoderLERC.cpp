@@ -260,7 +260,7 @@ PayloadWithMetaData<QImage> readLercFile(const QString &filePath)
         return QImage();
     }
 
-    ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+    ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
     if(!metaData)
         metaData = new ImageMetaData;
 

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -38,12 +38,13 @@ extern "C" {
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
+#include "Internal/PayloadWithMetaData.h"
 #include "Internal/Utils/MappedBuffer.h"
 
 namespace
 {
 
-QImage readJbigFile(const QString &filePath)
+PayloadWithMetaData<QImage> readJbigFile(const QString &filePath)
 {
     const MappedBuffer inBuffer(filePath);
     if(!inBuffer.isValid())
@@ -78,7 +79,9 @@ QImage readJbigFile(const QString &filePath)
     result.invertPixels();
 
     jbg_dec_free(&decoder);
-    return result;
+
+    ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
+    return PayloadWithMetaData<QImage>(result, metaData);
 }
 
 class DecoderJbigKit : public IDecoder
@@ -111,9 +114,9 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
-        QGraphicsItem *item = GraphicsItemsFactory::instance().createImageItem(readJbigFile(filePath));
-        IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
-        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
+        const PayloadWithMetaData<QImage> readResult = readJbigFile(filePath);
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createImageItem(readResult);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), readResult.metaData()));
     }
 };
 

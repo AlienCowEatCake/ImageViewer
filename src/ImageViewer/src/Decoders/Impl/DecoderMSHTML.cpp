@@ -46,6 +46,7 @@
 #include "Internal/GraphicsItems/AbstractSVGWebBrowserNoJS.h"
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
+#include "Internal/ImageMetaData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
 #if defined (HAS_ZLIB)
 #include "Internal/Utils/ZLibUtils.h"
@@ -831,7 +832,8 @@ public:
             return QSharedPointer<IImageData>();
         IScaledImageProvider *provider = new MSHTMLPixmapProvider(filePath);
         QGraphicsItem *item = GraphicsItemsFactory::instance().createScalableItem(provider);
-        return QSharedPointer<IImageData>(new ImageData(item, filePath, name()));
+        IImageMetaData *metaData = item ? ImageMetaData::createMetaData(filePath) : Q_NULLPTR;
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
 };
 

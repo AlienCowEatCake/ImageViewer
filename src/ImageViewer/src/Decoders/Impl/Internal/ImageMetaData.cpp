@@ -58,6 +58,7 @@
 #endif
 
 #include "Utils/Global.h"
+#include "Utils/MappedBuffer.h"
 
 namespace {
 
@@ -859,7 +860,7 @@ IImageMetaData::MetaDataEntry makeEntry(int tagID, const QExifValue &value)
     default:
         break;
     }
-    return IImageMetaData::MetaDataEntry(QString::fromLatin1("Unknown (Dec: %1, Hex: 0x%2)"), toStringValue(value));
+    return IImageMetaData::MetaDataEntry(QString::fromLatin1("Unknown (Dec: %1, Hex: 0x%2)").arg(tagID).arg(QString::number(tagID, 16)), toStringValue(value));
 }
 
 #endif
@@ -1197,57 +1198,10 @@ QPair<qreal, qreal> ImageMetaData::dpi() const
 
 bool ImageMetaData::readFile(const QString &filePath)
 {
-    m_impl->entryListMap.clear();
-#if defined (USE_EXIV2)
-    exiv2Initialize();
-    try
-    {
-        m_impl->image.reset();
-        m_impl->exifData.clear();
-        m_impl->xmpData.clear();
-        m_impl->image = Exiv2::ImageFactory::open(Exiv2BasicIoPtr(new QFileIo(filePath)));
-        if(!m_impl->image.get())
-            return false;
-        m_impl->image->readMetadata();
-        if(m_impl->image->exifData().empty() && m_impl->image->iptcData().empty() && m_impl->image->xmpData().empty())
-            return false;
-        if(!m_impl->image->exifData().empty())
-            qDebug() << "EXIF data detected";
-        if(!m_impl->image->iptcData().empty())
-            qDebug() << "IPTC data detected";
-        if(!m_impl->image->xmpData().empty())
-            qDebug() << "XMP data detected";
-        return true;
-    }
-    catch(...)
-    {
+    const MappedBuffer inBuffer(filePath);
+    if(!inBuffer.isValid())
         return false;
-    }
-#elif defined (USE_LIBEXIF)
-    if(m_impl->exifData)
-        exif_data_unref(m_impl->exifData);
-    m_impl->exifData = exif_data_new_from_file(filePath.toLocal8Bit());
-    if(!m_impl->exifData)
-        return false;
-//#if defined (QT_DEBUG)
-//    fflush(stdout);
-//    fflush(stderr);
-//    exif_data_dump(m_impl->exifData);
-//    fflush(stdout);
-//    fflush(stderr);
-//#endif
-    qDebug() << "EXIF header detected";
-    return true;
-#elif defined (USE_QTEXTENDED)
-    m_impl->exifHeader.clear();
-    if(!m_impl->exifHeader.loadFromJpeg(filePath))
-        return false;
-    qDebug() << "EXIF header detected";
-    return true;
-#else
-    Q_UNUSED(filePath);
-    return false;
-#endif
+    return readFile(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
 }
 
 bool ImageMetaData::readFile(const QByteArray &fileData)
