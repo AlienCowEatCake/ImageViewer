@@ -206,6 +206,10 @@ Test Lena image with "@2x" suffix
 Image from http://regex.info/blog/photo-tech/color-spaces-page1
  * sample-wonky.profile.jpg
 
+Images from https://www.exiv2.org/examples.html
+ * img_2158.jpg
+ * smiley1.jpg
+
 --------------------------------------------------------------------------------
 
 ::: MNG test images :::
