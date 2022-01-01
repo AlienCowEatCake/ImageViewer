@@ -11,7 +11,7 @@ IDI_ICON1 ICON DISCARDABLE "../../icon/icon.ico"
 #define VER_LEGALCOPYRIGHT_STR      "(c) Peter S. Zhigalov, 2017-2022"
 #define VER_ORIGINALFILENAME_STR    "ImageViewer.exe"
 #define VER_PRODUCTNAME_STR         "Image Viewer"
-#define VER_COMPANYNAME_STR         "AlienCowEatCake"
+#define VER_COMPANYNAME_STR         "Peter S. Zhigalov"
 
 VS_VERSION_INFO VERSIONINFO
 FILEVERSION     VER_FILEVERSION
