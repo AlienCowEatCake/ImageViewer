@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -474,6 +474,10 @@ disable_cxx11 : !system_flif {
 
 # QtExtended options:
 #    disable_qtextended
+#    enable_qtextended
+!enable_qtextended {
+    CONFIG += disable_qtextended
+}
 greaterThan(QT_MAJOR_VERSION, 5) {
     CONFIG += disable_qtextended
 }

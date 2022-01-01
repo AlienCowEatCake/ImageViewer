@@ -235,7 +235,7 @@ for:
   build_script:
     - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
     - cd "${APPVEYOR_BUILD_FOLDER}/build"
-    - qmake -r CONFIG+=release CONFIG+="enable_resvg enable_magickwand enable_graphicsmagickwand enable_update_checking" ..
+    - qmake -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_update_checking" ..
     - make -j3
 
 -
@@ -268,7 +268,7 @@ for:
     - call "%VCVARS%" %ARCH%
   build_script:
     - mkdir "%APPVEYOR_BUILD_FOLDER%\build"
-    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_resvg enable_magickwand enable_graphicsmagickwand enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
+    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
     - cd "%APPVEYOR_BUILD_FOLDER%\build"
     - call "%JOMDIR%\jom.exe" -j3
 
@@ -281,7 +281,7 @@ for:
     - set "PATH=%MINGW_DIR%\bin;%PATH%"
   build_script:
     - mkdir "%APPVEYOR_BUILD_FOLDER%\build"
-    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_resvg enable_magickwand enable_graphicsmagickwand enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
+    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
     - cd "%APPVEYOR_BUILD_FOLDER%\build"
     - mingw32-make -j3
 
@@ -351,7 +351,7 @@ for:
     - echo "NO_QTWEBENGINE = ${NO_QTWEBENGINE}"
     - echo "NO_QMLWEBENGINE = ${NO_QMLWEBENGINE}"
     - echo "NO_QTWEBKIT = ${NO_QTWEBKIT}"
-    - EXTRA_CONFIGS="enable_resvg enable_magickwand enable_graphicsmagickwand enable_update_checking"
+    - EXTRA_CONFIGS="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_update_checking"
     - if [ -z ${NO_QTWEBENGINE} ]; then
         EXTRA_CONFIGS="${EXTRA_CONFIGS} enable_qtwebengine";
       else
@@ -383,7 +383,7 @@ for:
     - sudo apt-get -y install libqtwebkit-dev || export NO_QTWEBKIT=true
   build_script:
     - echo "NO_QTWEBKIT = ${NO_QTWEBKIT}"
-    - EXTRA_CONFIGS="enable_resvg enable_magickwand enable_graphicsmagickwand enable_update_checking"
+    - EXTRA_CONFIGS="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_update_checking"
     - if [ -z ${NO_QTWEBKIT} ]; then
         EXTRA_CONFIGS="${EXTRA_CONFIGS} enable_qtwebkit";
       else
@@ -406,7 +406,7 @@ for:
   build_script:
     - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
     - cd "${APPVEYOR_BUILD_FOLDER}/build"
-    - qmake -r CONFIG+=release CONFIG+="enable_resvg enable_magickwand enable_graphicsmagickwand enable_update_checking" ..
+    - qmake -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_update_checking" ..
     - make -j3
 
 notifications:

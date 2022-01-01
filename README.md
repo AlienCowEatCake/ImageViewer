@@ -131,7 +131,7 @@ See the [buildscripts/](buildscripts/) directory.
 * GraphicsMagickWand options: `disable_graphicsmagickwand`, `enable_graphicsmagickwand`, `system_graphicsmagickwand` *(disabled by default)*
 
 **Optional Third Party Components Configuration:**
-* QtExtended options: `disable_qtextended` *(enabled by default for Qt < 6.0.0)*
+* QtExtended options: `disable_qtextended`, `enable_qtextended` *(disabled by default)*
 * STB options: `disable_stb` *(enabled by default)*
 * NanoSVG options: `disable_nanosvg` *(enabled by default)*
 * QtImageFormats options: `disable_qtimageformats` *(enabled by default)*
