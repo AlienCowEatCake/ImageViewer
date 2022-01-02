@@ -63,7 +63,6 @@ SOURCES += \
     $${THIRDPARTY_ZSTD_PATH}/lib/legacy/zstd_v05.c \
     $${THIRDPARTY_ZSTD_PATH}/lib/legacy/zstd_v06.c \
     $${THIRDPARTY_ZSTD_PATH}/lib/legacy/zstd_v07.c \
-    $${THIRDPARTY_ZSTD_WORKAROUND_PATH}/wa_xxhash.c
 
 HEADERS += \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/bitstream.h \
@@ -75,11 +74,13 @@ HEADERS += \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/huf.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/mem.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/pool.h \
+    $${THIRDPARTY_ZSTD_PATH}/lib/common/portability_macros.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/threading.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/xxhash.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/zstd_deps.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/zstd_internal.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/zstd_trace.h \
+    $${THIRDPARTY_ZSTD_PATH}/lib/compress/clevels.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/hist.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_compress_internal.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_compress_literals.h \
