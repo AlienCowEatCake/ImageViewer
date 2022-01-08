@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -67,6 +67,129 @@ QVariant unitToVariant(QPrinter::Unit unit)
 
 const QString SIZE_UNIT_KEY         = QString::fromLatin1("SizeUnit");
 const QString RESOLUTION_UNIT_KEY   = QString::fromLatin1("ResolutionUnit");
+
+class ScopedFullPageGuard
+{
+private:
+    struct Margins
+    {
+        qreal left;
+        qreal top;
+        qreal right;
+        qreal bottom;
+
+        Margins()
+            : left(0)
+            , top(0)
+            , right(0)
+            , bottom(0)
+        {}
+
+        Margins(qreal value)
+            : left(value)
+            , top(value)
+            , right(value)
+            , bottom(value)
+        {}
+
+        Margins(qreal left, qreal top, qreal right, qreal bottom)
+            : left(left)
+            , top(top)
+            , right(right)
+            , bottom(bottom)
+        {}
+    };
+
+public:
+    ScopedFullPageGuard(QPrinter *printer, bool fullPage = true)
+        : m_printer(fullPage ? printer : Q_NULLPTR)
+        , m_wasFullPage(false)
+    {
+        scopeEnter();
+    }
+
+    ~ScopedFullPageGuard()
+    {
+        scopeLeave();
+    }
+
+private:
+    void scopeEnter()
+    {
+        if(!m_printer)
+            return;
+
+        m_wasFullPage = m_printer->fullPage();
+        m_wasMargins = getMargins();
+        setMargins(Margins());
+        m_printer->setFullPage(true);
+        if(setMargins(Margins()))
+            return;
+
+        qWarning() << "Can't set zero page margins, trying to fix this";
+        const QList<qreal> fixValues = QList<qreal>() << 0.01 << 0.1 << 1;
+        for(QList<qreal>::ConstIterator it = fixValues.begin(); it != fixValues.end(); ++it)
+            if(setMargins(Margins(*it)))
+                return;
+
+        qWarning() << "Can't set any minimal page margins, disabling full page mode";
+        scopeLeave();
+        m_printer = Q_NULLPTR;
+    }
+
+    void scopeLeave()
+    {
+        if(!m_printer)
+            return;
+
+        m_printer->setFullPage(m_wasFullPage);
+        setMargins(m_wasMargins);
+    }
+
+    Margins getMargins() const
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
+        const QMarginsF margins = m_printer->pageLayout().margins(QPageLayout::Millimeter);
+        return Margins(margins.left(), margins.top(), margins.right(), margins.bottom());
+#else
+        Margins result;
+        m_printer->getPageMargins(&result.left, &result.top, &result.right, &result.bottom, QPrinter::Millimeter);
+        return result;
+#endif
+    }
+
+    bool setMargins(const Margins &margins)
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
+        m_printer->setPageMargins(QMarginsF(margins.left, margins.top, margins.right, margins.bottom), QPageLayout::Millimeter);
+#else
+        m_printer->setPageMargins(margins.left, margins.top, margins.right, margins.bottom, QPrinter::Millimeter);
+#endif
+        const Margins effectiveMargins = getMargins();
+        return true
+                && isEqual(effectiveMargins.left, margins.left)
+                && isEqual(effectiveMargins.top, margins.top)
+                && isEqual(effectiveMargins.right, margins.right)
+                && isEqual(effectiveMargins.bottom, margins.bottom)
+                ;
+    }
+
+    static bool isEqual(qreal lhs, qreal rhs)
+    {
+        const bool lnull = qFuzzyIsNull(lhs);
+        const bool rnull = qFuzzyIsNull(rhs);
+        if(lnull && rnull)
+            return true;
+        if((!lnull && rnull) || (lnull && !rnull))
+            return false;
+        return qFuzzyCompare(lhs, rhs);
+    }
+
+private:
+    QPrinter *m_printer;
+    bool m_wasFullPage;
+    Margins m_wasMargins;
+};
 
 } // namespace
 
@@ -451,6 +574,7 @@ void PrintDialog::onPrintClicked()
     if(!m_impl->graphicsItem || !m_impl->printer)
         return;
 
+    const ScopedFullPageGuard fullPageGuard(m_impl->printer.data(), m_ui->ignorePageMarginsCheckBox->isChecked() || m_ui->ignorePaperBoundsCheckBox->isChecked());
     QPainter painter(m_impl->printer.data());
     if(!painter.isActive())
         return;
