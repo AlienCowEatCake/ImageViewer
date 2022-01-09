@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain(QString::fromLatin1("aliencoweatcake.github.com"));
     app.setOrganizationName(QString::fromLatin1("AlienCowEatCake"));
     app.setApplicationName(QString::fromLatin1("Image Viewer"));
-    app.setApplicationVersion(QString::fromLatin1("1.4.4"));
+    app.setApplicationVersion(QString::fromLatin1("1.4.5"));
 #if !defined (Q_OS_MAC)
     app.setWindowIcon(QIcon(QString::fromLatin1(":/icon/icon.ico")));
     app.setAttribute(Qt::AA_DontShowIconsInMenus, false);
