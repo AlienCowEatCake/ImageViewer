@@ -3,16 +3,19 @@ clone_depth: 5
 shallow_clone: true
 max_jobs: 1
 
+init:
+  - git config --global http.sslVerify false
+
 environment:
   matrix:
     - job_name: macOS, Qt 5.15, Testing
       job_group: macos_test
       APPVEYOR_BUILD_WORKER_IMAGE: macos-bigsur
       QTDIR: Qt/5.15/clang_64
-    - job_name: macOS, Qt 6.0, Testing
+    - job_name: macOS, Qt 6.2, Testing
       job_group: macos_test
       APPVEYOR_BUILD_WORKER_IMAGE: macos-bigsur
-      QTDIR: Qt/6.0/clang_64
+      QTDIR: Qt/6.2/macos
     # # - job_name: macOS, Qt 5.6, MacSDK 10.6
     # #   job_group: macos_buildscript
     # #   APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
@@ -196,11 +199,11 @@ environment:
       ARCH: x64
       QTDIR: C:\Qt\6.2\msvc2019_64
       JOMDIR: C:\Qt\Tools\QtCreator\bin\jom
-    - job_name: Windows, Qt 6.2, MinGW 8.1.0 x64, Testing
+    - job_name: Windows, Qt 6.2, MinGW 9.0.0 x64, Testing
       job_group: windows_test_mingw
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-      QTDIR: C:\Qt\6.2\mingw81_64
-      MINGW_DIR: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64
+      QTDIR: C:\Qt\6.2\mingw_64
+      MINGW_DIR: C:\Qt\Tools\mingw900_64
     - job_name: GNU/Linux, Ubuntu 16.04, Qt 4.x, Testing
       job_group: linux_test_qt4
       APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu1604
@@ -245,11 +248,11 @@ for:
   install:
     - sudo mkdir -p "/opt"
     - cd "/opt"
-    - sudo curl "${QT_DIST}" --output "qt_dist" --location
+    - sudo curl "${QT_DIST}" --output "qt_dist" --location --insecure
     - sudo tar -xpf "qt_dist"
     - sudo rm "qt_dist"
     - cd "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs"
-    - sudo curl "${SDK_DIST}" --output "sdk_dist" --location
+    - sudo curl "${SDK_DIST}" --output "sdk_dist" --location --insecure
     - sudo tar -xpf "sdk_dist"
     - sudo rm "sdk_dist"
     - sudo plutil -replace "MinimumSDKVersion" -string "10.6" "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Info.plist"
