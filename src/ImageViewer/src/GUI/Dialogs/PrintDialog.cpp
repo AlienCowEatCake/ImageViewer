@@ -24,6 +24,7 @@
 
 #include <QFileInfo>
 #include <QLocale>
+#include <QMessageBox>
 #include <QPageSetupDialog>
 #include <QPrintDialog>
 #include <QPrinter>
@@ -282,6 +283,11 @@ struct PrintDialog::Impl
         return fixOrientation(printer->pageRect(unit), unit);
     }
 
+    bool hasValidPage() const
+    {
+        return !printerPaperRect(QPrinter::DevicePixel).isEmpty() && !printerPageRect(QPrinter::DevicePixel).isEmpty();
+    }
+
     double convert(double value, QPrinter::Unit from, QPrinter::Unit to) const
     {
         const int resolution = printer ? printer->resolution() : 1;
@@ -494,7 +500,7 @@ void PrintDialog::onCurrentPrinterChanged(int index)
     updatePageInfo();
     m_ui->printDialogButton->setEnabled(true);
     m_ui->miscGroup->setEnabled(true);
-    m_ui->dialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(m_impl->graphicsItem);
+    m_ui->dialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(m_impl->graphicsItem && m_impl->hasValidPage());
 }
 
 void PrintDialog::onPrintDialogButtonClicked()
@@ -514,6 +520,7 @@ void PrintDialog::onPrintDialogButtonClicked()
 #endif
     if(dialog->exec() == QDialog::Accepted)
     {
+        dialog->hide();
         QPrinterInfo info;
         const int currentIndex = m_ui->printerSelectComboBox->currentIndex();
         if(currentIndex >= 0 && currentIndex < m_impl->availablePrinters.size())
@@ -564,6 +571,16 @@ void PrintDialog::onPrintDialogButtonClicked()
         updateColorMode(info);
         updatePrinterInfo(info);
         updatePageInfo();
+        if(!m_impl->hasValidPage())
+        {
+            qWarning() << "Invalid page detected";
+            const QString title = qApp->translate("PrintDialog", "Error");
+            const QString text = qApp->translate("PrintDialog", "Invalid Paper Size");
+            QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, title, text, QMessageBox::Ok, this);
+            msgBox->exec();
+            msgBox->deleteLater();
+        }
+        m_ui->dialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(m_impl->graphicsItem && m_impl->hasValidPage());
     }
     dialog->hide();
     dialog->deleteLater();
@@ -571,7 +588,7 @@ void PrintDialog::onPrintDialogButtonClicked()
 
 void PrintDialog::onPrintClicked()
 {
-    if(!m_impl->graphicsItem || !m_impl->printer)
+    if(!m_impl->graphicsItem || !m_impl->printer || !m_impl->hasValidPage())
         return;
 
     const ScopedFullPageGuard fullPageGuard(m_impl->printer.data(), m_ui->ignorePageMarginsCheckBox->isChecked() || m_ui->ignorePaperBoundsCheckBox->isChecked());
@@ -643,7 +660,19 @@ void PrintDialog::onPageSetupClicked()
 
     QPageSetupDialog *dialog = new QPageSetupDialog(m_impl->printer.data(), this);
     if(dialog->exec() == QDialog::Accepted)
+    {
         updatePageInfo();
+        if(!m_impl->hasValidPage())
+        {
+            qWarning() << "Invalid page detected";
+            const QString title = qApp->translate("PrintDialog", "Error");
+            const QString text = qApp->translate("PrintDialog", "Invalid Paper Size");
+            QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, title, text, QMessageBox::Ok, this);
+            msgBox->exec();
+            msgBox->deleteLater();
+        }
+        m_ui->dialogButtonBox->button(QDialogButtonBox::Ok)->setEnabled(m_impl->graphicsItem && m_impl->hasValidPage());
+    }
     dialog->hide();
     dialog->deleteLater();
 }
@@ -1115,7 +1144,7 @@ void PrintDialog::updateImageGeometry()
     const QSignalBlocker topSpinBoxGuard(m_ui->topSpinBox);
     const QSignalBlocker bottomSpinBoxGuard(m_ui->bottomSpinBox);
 
-    if(!m_impl->printer || !m_impl->graphicsItem)
+    if(!m_impl->printer || !m_impl->graphicsItem || !m_impl->hasValidPage())
     {
         m_ui->imageSettingsTabFrame->setEnabled(false);
 
