@@ -258,6 +258,7 @@ for:
     - sudo plutil -replace "MinimumSDKVersion" -string "10.6" "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Info.plist"
     - sudo xcode-select -s "/Applications/Xcode.app/Contents/Developer"
   build_script:
+    - export NO_SIGN=1
     - "${APPVEYOR_BUILD_FOLDER}/buildscripts/${BUILD_ID}.sh"
   # artifacts:
   #   - path: "build_${BUILD_ID}/artifacts/*.dmg"

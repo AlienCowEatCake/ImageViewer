@@ -38,6 +38,7 @@ cd "${BUILD_PATH}"
 
 INSTALL_PATH="${PWD}/install"
 ARTIFACTS_PATH="${PWD}/artifacts"
+rm -rf "${INSTALL_PATH}" "${ARTIFACTS_PATH}"
 mkdir -p "${INSTALL_PATH}" "${ARTIFACTS_PATH}"
 mv "${OUT_PATH}/${APPNAME}.app" "${INSTALL_PATH}/"
 cd "${INSTALL_PATH}"
