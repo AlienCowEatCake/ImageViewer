@@ -381,6 +381,15 @@ HEADERS += \
     LIBS += -framework WebKit
 }
 
+!disable_macwkwebview {
+    OBJECTIVE_SOURCES += \
+        src/Decoders/Impl/Internal/GraphicsItems/MacWKWebViewRasterizerGraphicsItem.mm \
+        src/Decoders/Impl/DecoderMacWKWebView.mm
+    HEADERS += \
+        src/Decoders/Impl/Internal/GraphicsItems/MacWKWebViewRasterizerGraphicsItem.h
+    LIBS += -framework WebKit
+}
+
 !disable_mactoolbar {
     DEFINES += HAS_MAC_TOOLBAR
     OBJECTIVE_SOURCES += \

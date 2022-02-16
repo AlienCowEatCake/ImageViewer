@@ -574,6 +574,12 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
     CONFIG += disable_macwebview
 }
 
+# DecoderMacWKWebView options:
+#    disable_macwkwebview
+!macx {
+    CONFIG += disable_macwkwebview
+}
+
 # MacToolBar options:
 #    disable_mactoolbar
 !macx {
