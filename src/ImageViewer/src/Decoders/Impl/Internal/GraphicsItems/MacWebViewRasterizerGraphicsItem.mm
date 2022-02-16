@@ -34,8 +34,13 @@
 #include <QString>
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
-#include <QTime>
 #include <QDebug>
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
+#include <QElapsedTimer>
+#else
+#include <QTime>
+typedef QTime QElapsedTimer;
+#endif
 
 #include "Utils/InfoUtils.h"
 #include "Utils/ObjectiveCUtils.h"
@@ -224,7 +229,7 @@ public:
         }
 
 #if defined (MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-        QTime time;
+        QElapsedTimer time;
         time.start();
 #endif
 
