@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -30,7 +30,6 @@
 #else
 #include <QRegExp>
 #endif
-#include <QPixmap>
 #include <QImage>
 #include <QFileInfo>
 #include <QDebug>
@@ -118,7 +117,7 @@ public:
         NSImage *picture = [[[NSImage alloc] initWithContentsOfFile: ObjCUtils::QStringToNSString(filePath)] autorelease];
         if(picture == nil)
             return QSharedPointer<IImageData>();
-        QGraphicsItem *result = GraphicsItemsFactory::instance().createPixmapItem(ObjCUtils::QPixmapFromNSImage(picture));
+        QGraphicsItem *result = GraphicsItemsFactory::instance().createImageItem(ObjCUtils::QImageFromNSImage(picture));
         IImageMetaData *metaData = result ? ImageMetaData::createMetaData(filePath) : Q_NULLPTR;
         return QSharedPointer<IImageData>(new ImageData(result, filePath, name(), metaData));
     }

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -50,6 +50,8 @@ private:
 QPixmap QPixmapFromCGImageRef(const CFTypePtr<CGImageRef> &image);
 CFTypePtr<CGImageRef> QPixmapToCGImageRef(const QPixmap &pixmap);
 
+QImage QImageFromCGImageRef(const CFTypePtr<CGImageRef> &image);
+CFTypePtr<CGImageRef> QImageToCGImageRef(const QImage &image);
 
 QVariant QVariantFromObject(const id obj);
 id QVariantToObject(const QVariant &variant);
@@ -74,6 +76,9 @@ NSURL *QUrlToNSURL(const QUrl &url);
 
 QPixmap QPixmapFromNSImage(const NSImage *image);
 NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize& sizeInPoints = QSize());
+
+QImage QImageFromNSImage(const NSImage *image);
+NSImage *QImageToNSImage(const QImage &image, const QSize& sizeInPoints = QSize());
 
 QRectF QRectFFromNSRect(const NSRect &rect);
 NSRect QRectFToNSRect(const QRectF &rect);

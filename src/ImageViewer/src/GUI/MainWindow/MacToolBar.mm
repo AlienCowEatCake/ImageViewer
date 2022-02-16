@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -490,7 +490,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 #else
                               .alphaChannel());
 #endif
-    return ObjCUtils::QPixmapToNSImage(QPixmap::fromImage(iconImage), iconSize);
+    return ObjCUtils::QImageToNSImage(iconImage, iconSize);
 }
 
 } // namespace
