@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -19,10 +19,10 @@
 
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/SVGWebBrowserDecoderTemplate.h"
-#include "Internal/GraphicsItems/MacWebKitRasterizerGraphicsItem.h"
+#include "Internal/GraphicsItems/MacWebViewRasterizerGraphicsItem.h"
 
 namespace {
 
-DecoderAutoRegistrator registrator(new SVGWebBrowserDecoderTemplate<MacWebKitRasterizerGraphicsItem>("DecoderMacWebKit"));
+DecoderAutoRegistrator registrator(new SVGWebBrowserDecoderTemplate<MacWebViewRasterizerGraphicsItem>("DecoderMacWebView"));
 
 } // namespace

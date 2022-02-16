@@ -144,7 +144,7 @@ See the [buildscripts/](buildscripts/) directory.
 * DecoderMSHTML options: `disable_mshtml` *(enabled by default for Windows)*
 * DecoderWIC options: `disable_wic` *(enabled by default for Windows)*
 * DecoderNSImage options: `disable_nsimage` *(enabled by default for macOS)*
-* DecoderMacWebKit options: `disable_macwebkit` *(enabled by default for macOS)*
+* DecoderMacWebView options: `disable_macwebview` *(enabled by default for macOS)*
 * MacToolBar options: `disable_mactoolbar` *(enabled by default for macOS)*
 * MacTouchBar options: `disable_mactouchbar` *(enabled by default for macOS)*
 * Print Support options: `disable_printsupport` *(enabled by default)*

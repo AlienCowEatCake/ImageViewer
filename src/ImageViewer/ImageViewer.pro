@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -372,12 +372,12 @@ HEADERS += \
         src/Decoders/Impl/DecoderNSImage.mm
 }
 
-!disable_macwebkit {
+!disable_macwebview {
     OBJECTIVE_SOURCES += \
-        src/Decoders/Impl/Internal/GraphicsItems/MacWebKitRasterizerGraphicsItem.mm \
-        src/Decoders/Impl/DecoderMacWebKit.mm
+        src/Decoders/Impl/Internal/GraphicsItems/MacWebViewRasterizerGraphicsItem.mm \
+        src/Decoders/Impl/DecoderMacWebView.mm
     HEADERS += \
-        src/Decoders/Impl/Internal/GraphicsItems/MacWebKitRasterizerGraphicsItem.h
+        src/Decoders/Impl/Internal/GraphicsItems/MacWebViewRasterizerGraphicsItem.h
     LIBS += -framework WebKit
 }
 

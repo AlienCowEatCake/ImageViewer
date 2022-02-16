@@ -568,10 +568,10 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
     CONFIG += disable_nsimage
 }
 
-# DecoderMacWebKit options:
-#    disable_macwebkit
+# DecoderMacWebView options:
+#    disable_macwebview
 !macx {
-    CONFIG += disable_macwebkit
+    CONFIG += disable_macwebview
 }
 
 # MacToolBar options:

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,8 +17,8 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined(MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_H_INCLUDED)
-#define MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_H_INCLUDED
+#if !defined(MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_H_INCLUDED)
+#define MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_H_INCLUDED
 
 #include <QObject>
 #include <QGraphicsItem>
@@ -33,7 +33,7 @@
 class QByteArray;
 class QUrl;
 
-class MacWebKitRasterizerGraphicsItem :
+class MacWebViewRasterizerGraphicsItem :
         public QObject,
         public QGraphicsItem,
         public AbstractSVGWebBrowser,
@@ -41,11 +41,11 @@ class MacWebKitRasterizerGraphicsItem :
 {
     Q_OBJECT
 //    Q_INTERFACES(QGraphicsItem)
-    Q_DISABLE_COPY(MacWebKitRasterizerGraphicsItem)
+    Q_DISABLE_COPY(MacWebViewRasterizerGraphicsItem)
 
 public:
-    MacWebKitRasterizerGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
-    ~MacWebKitRasterizerGraphicsItem();
+    MacWebViewRasterizerGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
+    ~MacWebViewRasterizerGraphicsItem();
 
     bool load(const QByteArray &svgData, const QUrl &baseUrl);
 
@@ -62,4 +62,4 @@ private:
     QScopedPointer<Impl> m_impl;
 };
 
-#endif // MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_H_INCLUDED
+#endif // MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_H_INCLUDED

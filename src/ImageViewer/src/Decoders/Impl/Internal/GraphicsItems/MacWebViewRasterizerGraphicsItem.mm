@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,7 +22,7 @@
 #import <AppKit/AppKit.h>
 #import <WebKit/WebKit.h>
 
-#include "MacWebKitRasterizerGraphicsItem.h"
+#include "MacWebViewRasterizerGraphicsItem.h"
 
 #include <cmath>
 #include <algorithm>
@@ -42,9 +42,9 @@
 
 #include "GraphicsItemUtils.h"
 
-//#define MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG
+//#define MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG
 
-#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+#if defined (MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
 #define DLOG qDebug() << QString::fromLatin1("[%1]").arg(QString::fromLatin1(__FUNCTION__)).toLatin1().data()
 #endif
 
@@ -65,7 +65,7 @@ enum State
 
 } // namespace
 
-@interface MacWebKitRasterizerViewDelegate : NSObject
+@interface MacWebViewRasterizerViewDelegate : NSObject
 {
     @private
     State m_state;
@@ -78,7 +78,7 @@ enum State
 
 @end
 
-@implementation MacWebKitRasterizerViewDelegate
+@implementation MacWebViewRasterizerViewDelegate
 
 -(id)init
 {
@@ -119,7 +119,7 @@ enum State
 
 // ====================================================================================================
 
-struct MacWebKitRasterizerGraphicsItem::Impl
+struct MacWebViewRasterizerGraphicsItem::Impl
 {
 public:
     enum ScaleMethod
@@ -135,9 +135,9 @@ public:
         qreal scaleFactor;
     };
 
-    MacWebKitRasterizerGraphicsItem *item;
+    MacWebViewRasterizerGraphicsItem *item;
     WebView *view;
-    MacWebKitRasterizerViewDelegate *delegate;
+    MacWebViewRasterizerViewDelegate *delegate;
     QWidget *container;
     RasterizerCache rasterizerCache;
     QRectF rect;
@@ -145,13 +145,13 @@ public:
     qreal maxScaleFactor;
     ScaleMethod scaleMethod;
 
-    Impl(MacWebKitRasterizerGraphicsItem *item)
+    Impl(MacWebViewRasterizerGraphicsItem *item)
         : item(item)
     {
         AUTORELEASE_POOL;
         view = [[WebView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)];
         container = new QWidget;
-        delegate = [[MacWebKitRasterizerViewDelegate alloc] init];
+        delegate = [[MacWebViewRasterizerViewDelegate alloc] init];
         [view setFrameLoadDelegate:reinterpret_cast<id>(delegate)];
         [reinterpret_cast<NSView*>(container->winId()) addSubview:view];
         [view setDrawsBackground:NO];
@@ -183,13 +183,13 @@ public:
     {
         AUTORELEASE_POOL;
         const qreal actualScaleFactor = std::max(std::min(scaleFactor, maxScaleFactor), minScaleFactor);
-#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+#if defined (MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
         DLOG << "actualScaleFactor:" << actualScaleFactor;
 #endif
         if(actualScaleFactor < scaleFactor)
         {
             qWarning() << QString::fromLatin1("%1 Extremely large scale factor requested! Requested: %2; Max: %3; Will be used: %4.")
-                          .arg(QString::fromLatin1("[MacWebKitRasterizerGraphicsItem]"))
+                          .arg(QString::fromLatin1("[MacWebViewRasterizerGraphicsItem]"))
                           .arg(scaleFactor)
                           .arg(maxScaleFactor)
                           .arg(actualScaleFactor)
@@ -223,7 +223,7 @@ public:
         }
         }
 
-#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+#if defined (MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
         QTime time;
         time.start();
 #endif
@@ -250,7 +250,7 @@ public:
         [webFrameViewDocView displayRectIgnoringOpacity:cacheRect inContext:graphicsContext];
         [NSGraphicsContext restoreGraphicsState];
 
-#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+#if defined (MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
         DLOG << "Offscreen rendering time =" << time.elapsed() << "ms";
         time.restart();
 #endif
@@ -268,7 +268,7 @@ public:
             }
         }
 
-#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+#if defined (MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
         DLOG << "Image converting time =" << time.elapsed() << "ms";
 #endif
 
@@ -279,7 +279,7 @@ public:
 
 // ====================================================================================================
 
-MacWebKitRasterizerGraphicsItem::MacWebKitRasterizerGraphicsItem(QGraphicsItem *parentItem)
+MacWebViewRasterizerGraphicsItem::MacWebViewRasterizerGraphicsItem(QGraphicsItem *parentItem)
     : QGraphicsItem(parentItem)
     , m_impl(new Impl(this))
 {
@@ -288,10 +288,10 @@ MacWebKitRasterizerGraphicsItem::MacWebKitRasterizerGraphicsItem(QGraphicsItem *
 #endif
 }
 
-MacWebKitRasterizerGraphicsItem::~MacWebKitRasterizerGraphicsItem()
+MacWebViewRasterizerGraphicsItem::~MacWebViewRasterizerGraphicsItem()
 {}
 
-bool MacWebKitRasterizerGraphicsItem::load(const QByteArray &svgData, const QUrl &baseUrl)
+bool MacWebViewRasterizerGraphicsItem::load(const QByteArray &svgData, const QUrl &baseUrl)
 {
     AUTORELEASE_POOL;
     m_impl->Reset();
@@ -307,13 +307,13 @@ bool MacWebKitRasterizerGraphicsItem::load(const QByteArray &svgData, const QUrl
 
     if([m_impl->delegate state] != STATE_SUCCEED)
     {
-        qWarning() << "[MacWebKitRasterizerGraphicsItem] Error: can't load content";
+        qWarning() << "[MacWebViewRasterizerGraphicsItem] Error: can't load content";
         return false;
     }
 
     if(!rootElementIsSvg())
     {
-        qWarning() << "[MacWebKitRasterizerGraphicsItem] Error: not an SVG";
+        qWarning() << "[MacWebViewRasterizerGraphicsItem] Error: not an SVG";
         return false;
     }
 
@@ -324,7 +324,7 @@ bool MacWebKitRasterizerGraphicsItem::load(const QByteArray &svgData, const QUrl
     const QSizeF size = svgSizeAttribute();
     m_impl->rect = detectSvgRect();
 
-#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+#if defined (MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
     qDebug() << "***** ----------------------------------------";
     qDebug() << "***** Detected SVG document";
     qDebug() << "***** ----------------------------------------";
@@ -350,7 +350,7 @@ bool MacWebKitRasterizerGraphicsItem::load(const QByteArray &svgData, const QUrl
         const qreal w = fakeViewBoxRect.width() + 2 * DIMENSION_DELTA;
         const qreal h = fakeViewBoxRect.height() + 2 * DIMENSION_DELTA;
         evalJS(QString::fromLatin1("document.rootElement.setAttribute('viewBox', '%1 %2 %3 %4');").arg(x).arg(y).arg(w).arg(h));
-#if defined (MAC_WEBKIT_RASTERIZER_GRAPHICS_ITEM_DEBUG)
+#if defined (MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
         DLOG << "Set fake ViewBox:" << x << y << w << h;
 #endif
     }
@@ -361,17 +361,17 @@ bool MacWebKitRasterizerGraphicsItem::load(const QByteArray &svgData, const QUrl
     return true;
 }
 
-QImage MacWebKitRasterizerGraphicsItem::grabImage()
+QImage MacWebViewRasterizerGraphicsItem::grabImage()
 {
     return m_impl->grabImage(1.0, boundingRect());
 }
 
-QRectF MacWebKitRasterizerGraphicsItem::boundingRect() const
+QRectF MacWebViewRasterizerGraphicsItem::boundingRect() const
 {
     return m_impl->rect;
 }
 
-void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void MacWebViewRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
     const qreal newScaleFactor = GraphicsItemUtils::GetDeviceScaleFactor(painter);
@@ -388,7 +388,7 @@ void MacWebKitRasterizerGraphicsItem::paint(QPainter *painter, const QStyleOptio
     painter->drawImage(exposedRect, image, QRectF(image.rect()));
 }
 
-QVariant MacWebKitRasterizerGraphicsItem::evalJSImpl(const QString &scriptSource)
+QVariant MacWebViewRasterizerGraphicsItem::evalJSImpl(const QString &scriptSource)
 {
     AUTORELEASE_POOL;
     return ObjCUtils::QStringFromNSString([m_impl->view stringByEvaluatingJavaScriptFromString: ObjCUtils::QStringToNSString(scriptSource)]);

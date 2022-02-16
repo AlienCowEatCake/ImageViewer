@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -115,7 +115,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderReSVGLt001300"        , 2201, -1); ///< Умеет неинтерактивные svg, подгружает внешние библиотеки. Нестабильное API/ABI. Весьма медленная отрисовка.
         P("DecoderReSVG"                , 2202, -1); ///< Умеет неинтерактивные svg, подгружает внешние библиотеки. Нестабильное API/ABI. Весьма медленная отрисовка.
         P("DecoderLibRSVG"              , 2300, -1); ///< Умеет неинтерактивные svg, подгружает внешние библиотеки. Весьма медленная отрисовка.
-        P("DecoderMacWebKit"            , 2400, -1); ///< Умеет неинтерактивные svg, только под macOS. Весьма медленная отрисовка.
+        P("DecoderMacWebView"           , 2400, -1); ///< Умеет неинтерактивные svg, только под macOS. Весьма медленная отрисовка.
         P("DecoderQMLWebEngine"         , 2500, -1); ///< Умеет чуть меньше, чем QtWebEngine, к тому же еще медленнее.
         P("DecoderQtWebEngine"          , 2510, -1); ///< Умеет анимированные svg, в том числе и с JavaScript. Весьма медленная отрисовка.
         P("DecoderQtWebKit"             , 2600, -1); ///< Умеет анимированные svg, в том числе и с JavaScript. Очень быстр, но deprecated.
