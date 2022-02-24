@@ -506,6 +506,12 @@ greaterThan(QT_MAJOR_VERSION, 5) {
     CONFIG += disable_qtimageformats
 }
 
+# MSEdgeWebView2 options:
+#    disable_msedgewebview2
+!*msvc* {
+    CONFIG += disable_msedgewebview2
+}
+
 # ::::: Optional Built-in Components Configuration :::::
 
 # DecoderQtSVG options:

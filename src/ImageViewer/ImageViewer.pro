@@ -173,6 +173,20 @@ HEADERS += \
         src/Decoders/Impl/DecoderQtImageFormatsMovie.cpp
 }
 
+!disable_msedgewebview2 {
+    SOURCES += \
+        src/Decoders/Impl/Internal/GraphicsItems/MSEdgeWebView2SVGGraphicsItem.cpp \
+        src/Decoders/Impl/DecoderMSEdgeWebView2.cpp
+    HEADERS += \
+        src/Decoders/Impl/Internal/GraphicsItems/MSEdgeWebView2SVGGraphicsItem.h
+    *msvc* {
+        QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
+        QMAKE_CFLAGS_RELEASE -= -Zc:strictStrings
+        QMAKE_CFLAGS -= -Zc:strictStrings
+        QMAKE_CXXFLAGS -= -Zc:strictStrings
+    }
+}
+
 !disable_libjpeg {
     SOURCES += \
         src/Decoders/Impl/DecoderLibJpeg.cpp
