@@ -511,6 +511,17 @@ greaterThan(QT_MAJOR_VERSION, 5) {
 !*msvc* {
     CONFIG += disable_msedgewebview2
 }
+*msvc* {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 {
+            CONFIG += disable_msedgewebview2
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
+            CONFIG += disable_msedgewebview2
+        }
+    }
+}
 
 # ::::: Optional Built-in Components Configuration :::::
 

@@ -32,7 +32,6 @@
 #include <QDebug>
 #include <QEventLoop>
 #include <QImageReader>
-#include <QJsonDocument>
 #include <QPainter>
 #include <QString>
 #include <QStyleOptionGraphicsItem>
@@ -40,6 +39,10 @@
 #include <QWidget>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+
+#include "Utils/JsonDocument.h"
+#include "Utils/JsonObject.h"
+#include "Utils/JsonValue.h"
 
 #include "GraphicsItemUtils.h"
 
@@ -218,7 +221,19 @@ struct MSEdgeWebView2SVGGraphicsItem::Impl
         if(!environment)
             return;
 
-        container = new QWidget(Q_NULLPTR, Qt::Window | Qt::FramelessWindowHint | Qt::CustomizeWindowHint | Qt::BypassWindowManagerHint | Qt::Tool | Qt::WindowStaysOnBottomHint | Qt::NoDropShadowWindowHint | Qt::WindowTransparentForInput | Qt::WindowDoesNotAcceptFocus);
+        container = new QWidget(Q_NULLPTR);
+        container->setWindowFlags(Qt::Window
+                | Qt::Tool
+                | Qt::FramelessWindowHint
+                | Qt::CustomizeWindowHint
+                | Qt::WindowStaysOnBottomHint
+                | Qt::X11BypassWindowManagerHint
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+                | Qt::NoDropShadowWindowHint
+                | Qt::WindowTransparentForInput
+                | Qt::WindowDoesNotAcceptFocus
+#endif
+            );
         container->setAttribute(Qt::WA_TranslucentBackground, true);
         container->setAutoFillBackground(false);
         container->setFixedSize(1, 1);
@@ -291,8 +306,9 @@ struct MSEdgeWebView2SVGGraphicsItem::Impl
                 ).adjusted(VIEWPORT_MARGINS, VIEWPORT_MARGINS, VIEWPORT_MARGINS, VIEWPORT_MARGINS);
         QByteArray array = QByteArray::fromBase64(evaluateDevToolsProtocolMethod(QString::fromLatin1("Page.captureScreenshot"), QString::fromLatin1("{"
                 "\"format\":\"png\","
-                "\"clip\":{\"x\":%1,\"y\":%2,\"width\":%3,\"height\":%4,\"scale\":%5}"
-            "}").arg(targetRect.left()).arg(targetRect.top()).arg(targetRect.width()).arg(targetRect.height()).arg(scale))[QString::fromLatin1("data")].toString().toLatin1());
+                "\"clip\":{\"x\":%1,\"y\":%2,\"width\":%3,\"height\":%4,\"scale\":%5},"
+                "\"captureBeyondViewport\":true"
+            "}").arg(targetRect.left()).arg(targetRect.top()).arg(targetRect.width()).arg(targetRect.height()).arg(scale)).object().value(QString::fromLatin1("data")).toString().toLatin1());
         QBuffer buffer(&array);
         QImage image = QImageReader(&buffer, "png").read();
 
@@ -326,8 +342,11 @@ struct MSEdgeWebView2SVGGraphicsItem::Impl
     QRect getContentSize()
     {
         const QJsonDocument metrics = evaluateDevToolsProtocolMethod(QString::fromLatin1("Page.getLayoutMetrics"), QString::fromLatin1("{}"));
-        const QJsonValue contentSize = metrics[QString::fromLatin1("contentSize")];
-        return QRect(contentSize[QString::fromLatin1("x")].toInt(), contentSize[QString::fromLatin1("y")].toInt(), contentSize[QString::fromLatin1("width")].toInt(), contentSize[QString::fromLatin1("height")].toInt());
+        const QJsonValue contentSize = metrics.object().value(QString::fromLatin1("contentSize"));
+        return QRect(contentSize.toObject().value(QString::fromLatin1("x")).toVariant().toInt(),
+                     contentSize.toObject().value(QString::fromLatin1("y")).toVariant().toInt(),
+                     contentSize.toObject().value(QString::fromLatin1("width")).toVariant().toInt(),
+                     contentSize.toObject().value(QString::fromLatin1("height")).toVariant().toInt());
     }
 
     void adjustViewPort()
@@ -458,7 +477,11 @@ void MSEdgeWebView2SVGGraphicsItem::onUpdateCacheRequested(QRect exposedRect, qr
 {
     if(scaleFactor > 1)
     {
-        m_impl->rasterizerCache.image = m_impl->grabImage(exposedRect, scaleFactor);
+        const int roundedScaleFactor = static_cast<int>(std::ceil(scaleFactor));
+        QImage image = m_impl->grabImage(exposedRect, roundedScaleFactor);
+        if(static_cast<qreal>(roundedScaleFactor) > scaleFactor)
+            image = image.scaled(m_impl->originalImage.size() * scaleFactor, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        m_impl->rasterizerCache.image = image;
         m_impl->rasterizerCache.exposedRect = exposedRect;
     }
     else

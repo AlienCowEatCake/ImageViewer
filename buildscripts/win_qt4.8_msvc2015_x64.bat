@@ -16,7 +16,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="disable_msedgewebview2" ..\%PROJECT%.pro
 nmake
 copy %APP_PATH%\release\%PROJECT%.exe ..\%PROJECT%%SUFFIX%.exe
 cd ..
