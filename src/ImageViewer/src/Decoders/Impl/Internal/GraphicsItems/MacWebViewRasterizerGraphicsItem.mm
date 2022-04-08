@@ -368,7 +368,12 @@ bool MacWebViewRasterizerGraphicsItem::load(const QByteArray &svgData, const QUr
 
 QImage MacWebViewRasterizerGraphicsItem::grabImage()
 {
-    return m_impl->grabImage(1.0, boundingRect());
+    return grabImage(static_cast<qreal>(1.0));
+}
+
+QImage MacWebViewRasterizerGraphicsItem::grabImage(qreal scaleFactor)
+{
+    return m_impl->grabImage(scaleFactor, boundingRect());
 }
 
 QRectF MacWebViewRasterizerGraphicsItem::boundingRect() const

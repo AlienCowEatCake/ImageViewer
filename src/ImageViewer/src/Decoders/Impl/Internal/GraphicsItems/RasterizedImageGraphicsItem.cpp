@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -192,14 +192,18 @@ void RasterizedImageGraphicsItem::setTransformationMode(Qt::TransformationMode m
 
 QImage RasterizedImageGraphicsItem::grabImage()
 {
+    return grabImage(static_cast<qreal>(1.0));
+}
+
+QImage RasterizedImageGraphicsItem::grabImage(qreal scaleFactor)
+{
     const QSharedPointer<IScaledImageProvider> &provider = m_impl->provider;
     if(!provider || !provider->isValid())
         return QImage();
 
-    const qreal deviceScaleFactor = 1.0;
     const qreal maxScaleFactor = provider->maxScaleFactor();
     const qreal minScaleFactor = provider->minScaleFactor();
-    const qreal newScaleFactor = std::max(std::min(deviceScaleFactor, maxScaleFactor), minScaleFactor);
+    const qreal newScaleFactor = std::max(std::min(scaleFactor, maxScaleFactor), minScaleFactor);
 
     RasterizerManager *rasterizerManager = m_impl->rasterizerManager.data();
     if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(newScaleFactor, rasterizerManager->getScaledScaleFactor(), 1e-7))

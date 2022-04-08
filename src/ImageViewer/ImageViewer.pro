@@ -120,6 +120,7 @@ HEADERS += \
     src/Decoders/IImageData.h \
     src/Decoders/IImageMetaData.h \
     src/Decoders/GraphicsItemFeatures/IGrabImage.h \
+    src/Decoders/GraphicsItemFeatures/IGrabScaledImage.h \
     src/Decoders/GraphicsItemFeatures/ITransformationMode.h \
     src/Decoders/Impl/Internal/Animation/AnimationObject.h \
     src/Decoders/Impl/Internal/Animation/AnimationWidget.h \

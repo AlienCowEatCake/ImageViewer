@@ -27,6 +27,7 @@
 #include "Utils/ScopedPointer.h"
 
 #include "../../../GraphicsItemFeatures/IGrabImage.h"
+#include "../../../GraphicsItemFeatures/IGrabScaledImage.h"
 
 #include "AbstractSVGWebBrowser.h"
 
@@ -37,7 +38,8 @@ class MacWebViewRasterizerGraphicsItem :
         public QObject,
         public QGraphicsItem,
         public AbstractSVGWebBrowser,
-        public IGrabImage
+        public IGrabImage,
+        public IGrabScaledImage
 {
     Q_OBJECT
 //    Q_INTERFACES(QGraphicsItem)
@@ -50,6 +52,7 @@ public:
     bool load(const QByteArray &svgData, const QUrl &baseUrl);
 
     QImage grabImage() Q_DECL_OVERRIDE;
+    QImage grabImage(qreal scaleFactor) Q_DECL_OVERRIDE;
 
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE;

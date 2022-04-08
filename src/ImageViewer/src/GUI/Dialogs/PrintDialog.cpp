@@ -622,7 +622,28 @@ void PrintDialog::onPrintClicked()
         painter.scale(1, -1);
         painter.translate(0, -boundingRect.height());
     }
-    if(IGrabImage *itemWithGrabImage = dynamic_cast<IGrabImage*>(m_impl->graphicsItem))
+    if(IGrabScaledImage *itemWithGrabScaledImage = dynamic_cast<IGrabScaledImage*>(m_impl->graphicsItem))
+    {
+        const QTransform worldTransform = painter.worldTransform();
+        const QRect deviceRect = worldTransform.mapRect(boundingRect).toAlignedRect();
+        const qreal scaleFactor = qMax(qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height()), static_cast<qreal>(1.0));
+        QImage image = itemWithGrabScaledImage->grabImage(scaleFactor);
+        Qt::TransformationMode transformationMode = Qt::SmoothTransformation;
+        if(QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(m_impl->graphicsItem))
+            transformationMode = pixmapItem->transformationMode();
+        if(ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(m_impl->graphicsItem))
+            transformationMode = itemWithTransformationMode->transformationMode();
+        if(transformationMode == Qt::SmoothTransformation/* && deviceRect.width() < image.width() && deviceRect.height() < image.height()*/)
+        {
+            const QImage scaledImage = image.scaled(deviceRect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+            if(!scaledImage.isNull())
+                image = scaledImage;
+            else
+                qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
+        }
+        painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
+    }
+    else if(IGrabImage *itemWithGrabImage = dynamic_cast<IGrabImage*>(m_impl->graphicsItem))
     {
         QImage image = itemWithGrabImage->grabImage();
         const QTransform worldTransform = painter.worldTransform();

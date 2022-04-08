@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -27,6 +27,7 @@
 #include "Utils/ScopedPointer.h"
 
 #include "../../../GraphicsItemFeatures/IGrabImage.h"
+#include "../../../GraphicsItemFeatures/IGrabScaledImage.h"
 #include "../../../GraphicsItemFeatures/ITransformationMode.h"
 
 class IScaledImageProvider;
@@ -34,7 +35,8 @@ class IScaledImageProvider;
 class RasterizedImageGraphicsItem :
         public QGraphicsItem,
         public ITransformationMode,
-        public IGrabImage
+        public IGrabImage,
+        public IGrabScaledImage
 {
     Q_DISABLE_COPY(RasterizedImageGraphicsItem)
 
@@ -50,6 +52,7 @@ public:
     void setTransformationMode(Qt::TransformationMode mode) Q_DECL_OVERRIDE;
 
     QImage grabImage() Q_DECL_OVERRIDE;
+    QImage grabImage(qreal scaleFactor) Q_DECL_OVERRIDE;
 
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE;
