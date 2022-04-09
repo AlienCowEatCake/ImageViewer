@@ -22,6 +22,8 @@
 
 #include "PrintDialog.h"
 
+#include <cmath>
+
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
@@ -39,6 +41,7 @@
 #include <QPainter>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QSlider>
 #include <QSpinBox>
 #include <QStyleOptionGraphicsItem>
 #include <QTabWidget>
@@ -50,6 +53,141 @@
 #include "Decoders/GraphicsItemFeatures/IGrabImage.h"
 #include "Decoders/GraphicsItemFeatures/IGrabScaledImage.h"
 #include "Decoders/GraphicsItemFeatures/ITransformationMode.h"
+
+class PrintEffect
+{
+    Q_DISABLE_COPY(PrintEffect)
+
+public:
+    PrintEffect()
+        : m_desaturate(false)
+        , m_brightness(0)
+        , m_contrast(0)
+        , m_exposure(0)
+    {}
+
+    ~PrintEffect()
+    {}
+
+    void setDesaturate(bool desaturate)
+    {
+        m_desaturate = desaturate;
+    }
+
+    void setBrightness(int level)
+    {
+        m_brightness = level;
+    }
+
+    void setContrast(int level)
+    {
+        m_contrast = level;
+    }
+
+    void setExposure(int level)
+    {
+        m_exposure = level;
+    }
+
+    QImage apply(const QImage &src) const
+    {
+        if(!m_desaturate && !m_brightness && !m_contrast && !m_exposure)
+            return src;
+
+        const bool useRgbTransform = m_brightness || m_contrast;
+        QVector<int> rgbTransform[3];
+        if(useRgbTransform)
+        {
+            for(int i = 0; i < 3; ++i)
+                rgbTransform[i].resize(256);
+
+            for(int i = 0; i < 256; ++i)
+            {
+                int r = i, g = i, b = i;
+                if(m_brightness)
+                {
+                    r = qBound(0, r + m_brightness, 255);
+                    g = qBound(0, g + m_brightness, 255);
+                    b = qBound(0, b + m_brightness, 255);
+                }
+                if(m_contrast)
+                {
+                    // https://ie.nitk.ac.in/blog/2020/01/19/algorithms-for-adjusting-brightness-and-contrast-of-an-image/
+                    const qreal f = (259.0 * (m_contrast + 255.0)) / (255.0 * (259.0 - m_contrast));
+                    r = qBound(0, static_cast<int>(f * (r - 128) + 128), 255);
+                    g = qBound(0, static_cast<int>(f * (g - 128) + 128), 255);
+                    b = qBound(0, static_cast<int>(f * (b - 128) + 128), 255);
+                }
+                rgbTransform[0][i] = r;
+                rgbTransform[1][i] = g;
+                rgbTransform[2][i] = b;
+            }
+        }
+
+        const bool useHsvTransform = m_exposure || m_desaturate;
+        QVector<int> hsvTransform[3];
+        if(useHsvTransform)
+        {
+            hsvTransform[0].resize(360);
+            for(int i = 1; i < 3; ++i)
+                hsvTransform[i].resize(256);
+
+            for(int i = 0; i < 360; ++i)
+            {
+                int h = i, s = i, v = i;
+                if(m_exposure && i < 256)
+                {
+                    // https://habr.com/ru/post/268115/
+                    v = qBound(0, v + static_cast<int>(std::sin(v * 0.01255) * m_exposure), 255);
+                }
+                if(m_desaturate && i < 256)
+                {
+                    s = 0;
+                }
+                hsvTransform[0][i] = h;
+                if(i < 256)
+                {
+                    hsvTransform[1][i] = s;
+                    hsvTransform[2][i] = v;
+                }
+            }
+        }
+
+        QImage result = src.convertToFormat(QImage::Format_ARGB32);
+        for(int j = 0, height = result.height(); j < height; ++j)
+        {
+            QRgb *line = reinterpret_cast<QRgb*>(result.scanLine(j));
+            for(int i = 0, width = result.width(); i < width; ++i)
+            {
+                QRgb &pixel = line[i];
+                const int a = qAlpha(pixel);
+                if(useRgbTransform)
+                {
+                    pixel = qRgba(rgbTransform[0][qRed(pixel)], rgbTransform[1][qGreen(pixel)], rgbTransform[2][qBlue(pixel)], a);
+                }
+                if(useHsvTransform)
+                {
+                    QColor color(pixel);
+                    color.toHsv();
+                    int h = 0, s = 0, v = 0;
+                    color.getHsv(&h, &s, &v);
+                    color.setHsv((h >= 0 ? hsvTransform[0][h] : h), hsvTransform[1][s], hsvTransform[2][v]);
+                    color.toRgb();
+                    int r = 0, g = 0, b = 0;
+                    color.getRgb(&r, &g, &b);
+                    pixel = qRgba(r, g, b, a);
+                }
+            }
+        }
+        return result;
+    }
+
+private:
+    bool m_desaturate;
+    int m_brightness;
+    int m_contrast;
+    int m_exposure;
+};
 
 class PrintPreviewWidget : public QWidget
 {
@@ -80,6 +218,7 @@ public:
         , m_graphicsItem(Q_NULLPTR)
         , m_rotateAngle(0)
         , m_operation(POS_NONE)
+        , m_editable(false)
     {
         setAttribute(Qt::WA_MouseTracking);
     }
@@ -93,6 +232,11 @@ public:
         m_rotateAngle = rotateAngle;
         m_flipOrientations = flipOrientations;
         update();
+    }
+
+    void setEditable(bool editable)
+    {
+        m_editable = editable;
     }
 
     void setPaperRect(const QRectF &rect)
@@ -110,6 +254,30 @@ public:
     void setItemRect(const QRectF &rect)
     {
         m_itemRect = rect;
+        update();
+    }
+
+    void setDesaturate(bool desaturate)
+    {
+        m_printEffect.setDesaturate(desaturate);
+        update();
+    }
+
+    void setBrightness(int level)
+    {
+        m_printEffect.setBrightness(level);
+        update();
+    }
+
+    void setContrast(int level)
+    {
+        m_printEffect.setContrast(level);
+        update();
+    }
+
+    void setExposure(int level)
+    {
+        m_printEffect.setExposure(level);
         update();
     }
 
@@ -188,6 +356,7 @@ protected:
                 m_graphicsItem->paint(&painterLocal, &options);
                 painterLocal.end();
             }
+            image = m_printEffect.apply(image);
             if(m_flipOrientations)
                 image = image.mirrored(m_flipOrientations & Qt::Horizontal, m_flipOrientations & Qt::Vertical);
             QSize unrotatedDeviceSize = deviceRect.size();
@@ -227,7 +396,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE
     {
         QWidget::mouseMoveEvent(event);
-        if(m_paperRect.isEmpty() || m_itemRect.isEmpty())
+        if(m_paperRect.isEmpty() || m_itemRect.isEmpty() || !m_editable)
             return;
 
         if(m_operation == POS_NONE)
@@ -239,7 +408,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE
     {
         QWidget::mousePressEvent(event);
-        if(m_paperRect.isEmpty() || m_itemRect.isEmpty())
+        if(m_paperRect.isEmpty() || m_itemRect.isEmpty() || !m_editable)
             return;
 
         m_operation = currentPosition(event->pos());
@@ -250,7 +419,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE
     {
         QWidget::mouseReleaseEvent(event);
-        if(m_paperRect.isEmpty() || m_itemRect.isEmpty())
+        if(m_paperRect.isEmpty() || m_itemRect.isEmpty() || !m_editable)
             return;
 
         if(m_operation != POS_NONE)
@@ -436,6 +605,8 @@ private:
     QRectF m_itemRect;
     Position m_operation;
     QPoint m_startOffset;
+    PrintEffect m_printEffect;
+    bool m_editable;
 };
 
 struct PrintDialog::UI
@@ -445,6 +616,7 @@ struct PrintDialog::UI
 
     QFrame * const generalTabFrame;
     QFrame * const imageSettingsTabFrame;
+    QFrame * const effectsTabFrame;
 
     QGroupBox * const printerSelectGroup;
     QComboBox * const printerSelectComboBox;
@@ -510,6 +682,21 @@ struct PrintDialog::UI
     QGroupBox * const previewGroup;
     PrintPreviewWidget * const previewWidget;
 
+    QGroupBox * const effectsControlGroup;
+    QLabel * const brightnessLabel;
+    QSlider * const brightnessSlider;
+    QSpinBox * const brightnessSpinBox;
+    QLabel * const contrastLabel;
+    QSlider * const contrastSlider;
+    QSpinBox * const contrastSpinBox;
+    QLabel * const exposureLabel;
+    QSlider * const exposureSlider;
+    QSpinBox * const exposureSpinBox;
+    QCheckBox * const desaturateCheckBox;
+
+    QGroupBox * const effectsPreviewGroup;
+    PrintPreviewWidget * const effectsPreviewWidget;
+
     QDialogButtonBox * const dialogButtonBox;
 
     explicit UI(PrintDialog *printDialog)
@@ -517,6 +704,7 @@ struct PrintDialog::UI
         , CONSTRUCT_OBJECT(tabWidget, QTabWidget, (printDialog))
         , CONSTRUCT_OBJECT(generalTabFrame, QFrame, (printDialog))
         , CONSTRUCT_OBJECT(imageSettingsTabFrame, QFrame, (printDialog))
+        , CONSTRUCT_OBJECT(effectsTabFrame, QFrame, (printDialog))
         , CONSTRUCT_OBJECT(printerSelectGroup, QGroupBox, (generalTabFrame))
         , CONSTRUCT_OBJECT(printerSelectComboBox, QComboBox, (printerSelectGroup))
         , CONSTRUCT_OBJECT(printDialogButton, QPushButton, (printerSelectGroup))
@@ -574,6 +762,19 @@ struct PrintDialog::UI
         , CONSTRUCT_OBJECT(ignorePaperBoundsCheckBox, QCheckBox, (imageSettingsTabFrame))
         , CONSTRUCT_OBJECT(previewGroup, QGroupBox, (imageSettingsTabFrame))
         , CONSTRUCT_OBJECT(previewWidget, PrintPreviewWidget, (previewGroup))
+        , CONSTRUCT_OBJECT(effectsControlGroup, QGroupBox, (effectsTabFrame))
+        , CONSTRUCT_OBJECT(brightnessLabel, QLabel, (effectsControlGroup))
+        , CONSTRUCT_OBJECT(brightnessSlider, QSlider, (effectsControlGroup))
+        , CONSTRUCT_OBJECT(brightnessSpinBox, QSpinBox, (effectsControlGroup))
+        , CONSTRUCT_OBJECT(contrastLabel, QLabel, (effectsControlGroup))
+        , CONSTRUCT_OBJECT(contrastSlider, QSlider, (effectsControlGroup))
+        , CONSTRUCT_OBJECT(contrastSpinBox, QSpinBox, (effectsControlGroup))
+        , CONSTRUCT_OBJECT(exposureLabel, QLabel, (effectsControlGroup))
+        , CONSTRUCT_OBJECT(exposureSlider, QSlider, (effectsControlGroup))
+        , CONSTRUCT_OBJECT(exposureSpinBox, QSpinBox, (effectsControlGroup))
+        , CONSTRUCT_OBJECT(desaturateCheckBox, QCheckBox, (effectsControlGroup))
+        , CONSTRUCT_OBJECT(effectsPreviewGroup, QGroupBox, (effectsTabFrame))
+        , CONSTRUCT_OBJECT(effectsPreviewWidget, PrintPreviewWidget, (effectsPreviewGroup))
         , CONSTRUCT_OBJECT(dialogButtonBox, QDialogButtonBox, (printDialog))
     {
         QGridLayout *printerInfoLayout = new QGridLayout();
@@ -650,6 +851,7 @@ struct PrintDialog::UI
         positionLayout->addItem(new QSpacerItem(72, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Fixed), 0, 3, 2, 1);
 
         previewWidget->setFixedSize(200, 200);
+        previewWidget->setEditable(true);
 
         QVBoxLayout *previewLayout = new QVBoxLayout(previewGroup);
         previewLayout->addWidget(previewWidget);
@@ -662,8 +864,39 @@ struct PrintDialog::UI
         imageSettingsTabLayout->addWidget(ignorePaperBoundsCheckBox, 2, 1, Qt::AlignTop);
         imageSettingsTabLayout->addWidget(previewGroup, 0, 2, 2, 1);
 
+        brightnessSlider->setOrientation(Qt::Horizontal);
+        contrastSlider->setOrientation(Qt::Horizontal);
+        exposureSlider->setOrientation(Qt::Horizontal);
+
+        QGridLayout *effectsControlLayout = new QGridLayout(effectsControlGroup);
+        effectsControlLayout->addWidget(brightnessLabel, 0, 0, 1, 2);
+        effectsControlLayout->addWidget(brightnessSlider, 1, 0, 1, 1);
+        effectsControlLayout->addWidget(brightnessSpinBox, 1, 1, 1, 1);
+        effectsControlLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::MinimumExpanding), 2, 0, 1, 2);
+        effectsControlLayout->addWidget(contrastLabel, 3, 0, 1, 2);
+        effectsControlLayout->addWidget(contrastSlider, 4, 0, 1, 1);
+        effectsControlLayout->addWidget(contrastSpinBox, 4, 1, 1, 1);
+        effectsControlLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::MinimumExpanding), 5, 0, 1, 2);
+        effectsControlLayout->addWidget(exposureLabel, 6, 0, 1, 2);
+        effectsControlLayout->addWidget(exposureSlider, 7, 0, 1, 1);
+        effectsControlLayout->addWidget(exposureSpinBox, 7, 1, 1, 1);
+        effectsControlLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::MinimumExpanding), 8, 0, 1, 2);
+        effectsControlLayout->addWidget(desaturateCheckBox, 9, 0, 1, 2);
+        effectsControlLayout->addItem(new QSpacerItem(50, 1, QSizePolicy::Fixed, QSizePolicy::Fixed), 0, 1, 8, 1);
+
+        effectsPreviewWidget->setFixedSize(200, 200);
+
+        QVBoxLayout *effectsPreviewLayout = new QVBoxLayout(effectsPreviewGroup);
+        effectsPreviewLayout->addWidget(effectsPreviewWidget);
+        effectsPreviewLayout->addStretch();
+
+        QHBoxLayout *effectsTabLayout = new QHBoxLayout(effectsTabFrame);
+        effectsTabLayout->addWidget(effectsControlGroup);
+        effectsTabLayout->addWidget(effectsPreviewGroup);
+
         tabWidget->addTab(generalTabFrame, QString());
         tabWidget->addTab(imageSettingsTabFrame, QString());
+        tabWidget->addTab(effectsTabFrame, QString());
 
         dialogButtonBox->addButton(QDialogButtonBox::Ok);
         dialogButtonBox->addButton(QDialogButtonBox::Cancel);
@@ -719,8 +952,17 @@ struct PrintDialog::UI
 
         previewGroup->setTitle(qApp->translate("PrintDialog", "Preview"));
 
+        effectsControlGroup->setTitle(qApp->translate("PrintDialog", "Effects", "Effects"));
+        brightnessLabel->setText(qApp->translate("PrintDialog", "Brightness:", "Effects"));
+        contrastLabel->setText(qApp->translate("PrintDialog", "Contrast:", "Effects"));
+        exposureLabel->setText(qApp->translate("PrintDialog", "Exposure:", "Effects"));
+        desaturateCheckBox->setText(qApp->translate("PrintDialog", "Desaturate", "Effects"));
+
+        effectsPreviewGroup->setTitle(qApp->translate("PrintDialog", "Preview", "Effects"));
+
         tabWidget->setTabText(tabWidget->indexOf(generalTabFrame), qApp->translate("PrintDialog", "General"));
         tabWidget->setTabText(tabWidget->indexOf(imageSettingsTabFrame), qApp->translate("PrintDialog", "Image Settings"));
+        tabWidget->setTabText(tabWidget->indexOf(effectsTabFrame), qApp->translate("PrintDialog", "Effects"));
 
         dialogButtonBox->button(QDialogButtonBox::Ok)->setText(qApp->translate("PrintDialog", "Print"));
         dialogButtonBox->button(QDialogButtonBox::Cancel)->setText(qApp->translate("PrintDialog", "Cancel"));

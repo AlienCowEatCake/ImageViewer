@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -69,6 +69,10 @@ private Q_SLOTS:
     void onCenterChanged(int index);
     void onIgnorePageMarginsStateChanged();
     void onIgnorePaperBoundsStateChanged();
+    void onBrightnessChanged(int value);
+    void onContrastChanged(int value);
+    void onExposureChanged(int value);
+    void onDesaturateToggled(bool checked);
 
 private:
     void updatePrinterInfo(const QPrinterInfo& info);
@@ -77,6 +81,7 @@ private:
     void updatePageInfo();
     void updatePageOrientation();
     void updateImageGeometry();
+    void updateEffects();
 
 private:
     struct UI;

@@ -20,8 +20,6 @@
 #include "PrintDialog.h"
 #include "PrintDialog_p.h"
 
-#include <cmath>
-
 #include <QFileInfo>
 #include <QLocale>
 #include <QMessageBox>
@@ -205,6 +203,7 @@ struct PrintDialog::Impl
     const QString filePath;
     QScopedPointer<QPrinter> printer;
     QRectF itemPrintRect;
+    PrintEffect printEffect;
 
     Impl(const QSharedPointer<IImageData> &imageData, int rotateAngle, const Qt::Orientations &flipOrientations, const QString &filePath)
         : settings(QString::fromLatin1("PrintDialogSettings"))
@@ -420,6 +419,30 @@ PrintDialog::PrintDialog(const QSharedPointer<IImageData> &imageData,
     m_ui->ignorePageMarginsCheckBox->setChecked(false);
     m_ui->ignorePaperBoundsCheckBox->setChecked(false);
 
+    m_ui->brightnessSlider->setMaximum(100);
+    m_ui->brightnessSlider->setMinimum(-m_ui->brightnessSlider->maximum());
+    m_ui->brightnessSlider->setValue(0);
+    m_ui->brightnessSpinBox->setMaximum(m_ui->brightnessSlider->maximum());
+    m_ui->brightnessSpinBox->setMinimum(m_ui->brightnessSlider->minimum());
+    m_ui->brightnessSpinBox->setValue(m_ui->brightnessSlider->value());
+
+    m_ui->contrastSlider->setMaximum(100);
+    m_ui->contrastSlider->setMinimum(-m_ui->contrastSlider->maximum());
+    m_ui->contrastSlider->setValue(0);
+    m_ui->contrastSpinBox->setMaximum(m_ui->contrastSlider->maximum());
+    m_ui->contrastSpinBox->setMinimum(m_ui->contrastSlider->minimum());
+    m_ui->contrastSpinBox->setValue(m_ui->contrastSlider->value());
+
+    m_ui->exposureSlider->setMaximum(100);
+    m_ui->exposureSlider->setMinimum(-m_ui->exposureSlider->maximum());
+    m_ui->exposureSlider->setValue(0);
+    m_ui->exposureSpinBox->setMaximum(m_ui->exposureSlider->maximum());
+    m_ui->exposureSpinBox->setMinimum(m_ui->exposureSlider->minimum());
+    m_ui->exposureSpinBox->setValue(m_ui->exposureSlider->value());
+
+    m_ui->desaturateCheckBox->setChecked(false);
+    m_ui->effectsPreviewWidget->setGraphicsItem(m_impl->graphicsItem, rotateAngle, flipOrientations);
+
     m_ui->widthSpinBox->setDecimals(3);
     m_ui->heightSpinBox->setDecimals(3);
     m_ui->xResolutionSpinBox->setDecimals(3);
@@ -464,6 +487,13 @@ PrintDialog::PrintDialog(const QSharedPointer<IImageData> &imageData,
     connect(m_ui->centerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onCenterChanged(int)));
     connect(m_ui->ignorePageMarginsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onIgnorePageMarginsStateChanged()));
     connect(m_ui->ignorePaperBoundsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onIgnorePaperBoundsStateChanged()));
+    connect(m_ui->brightnessSlider, SIGNAL(valueChanged(int)), this, SLOT(onBrightnessChanged(int)));
+    connect(m_ui->brightnessSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onBrightnessChanged(int)));
+    connect(m_ui->contrastSlider, SIGNAL(valueChanged(int)), this, SLOT(onContrastChanged(int)));
+    connect(m_ui->contrastSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onContrastChanged(int)));
+    connect(m_ui->exposureSlider, SIGNAL(valueChanged(int)), this, SLOT(onExposureChanged(int)));
+    connect(m_ui->exposureSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onExposureChanged(int)));
+    connect(m_ui->desaturateCheckBox, SIGNAL(toggled(bool)), this, SLOT(onDesaturateToggled(bool)));
     connect(m_ui->dialogButtonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(onPrintClicked()));
     connect(m_ui->dialogButtonBox->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), this, SLOT(close()));
 
@@ -653,6 +683,7 @@ void PrintDialog::onPrintClicked()
         m_impl->graphicsItem->paint(&painterLocal, &options);
         painterLocal.end();
     }
+    image = m_impl->printEffect.apply(image);
     if(m_impl->flipOrientations)
         image = image.mirrored(m_impl->flipOrientations & Qt::Horizontal, m_impl->flipOrientations & Qt::Vertical);
     QSize unrotatedDeviceSize = deviceRect.size();
@@ -978,6 +1009,38 @@ void PrintDialog::onIgnorePaperBoundsStateChanged()
     updateImageGeometry();
 }
 
+void PrintDialog::onBrightnessChanged(int value)
+{
+    const QSignalBlocker sliderGuard(m_ui->brightnessSlider);
+    m_ui->brightnessSlider->setValue(value);
+    const QSignalBlocker spinBoxGuard(m_ui->brightnessSpinBox);
+    m_ui->brightnessSpinBox->setValue(value);
+    updateEffects();
+}
+
+void PrintDialog::onContrastChanged(int value)
+{
+    const QSignalBlocker sliderGuard(m_ui->contrastSlider);
+    m_ui->contrastSlider->setValue(value);
+    const QSignalBlocker spinBoxGuard(m_ui->contrastSpinBox);
+    m_ui->contrastSpinBox->setValue(value);
+    updateEffects();
+}
+
+void PrintDialog::onExposureChanged(int value)
+{
+    const QSignalBlocker sliderGuard(m_ui->exposureSlider);
+    m_ui->exposureSlider->setValue(value);
+    const QSignalBlocker spinBoxGuard(m_ui->exposureSpinBox);
+    m_ui->exposureSpinBox->setValue(value);
+    updateEffects();
+}
+
+void PrintDialog::onDesaturateToggled(bool /*checked*/)
+{
+    updateEffects();
+}
+
 void PrintDialog::updatePrinterInfo(const QPrinterInfo& info)
 {
     m_ui->printerNameLabel->setText(info.printerName());
@@ -1170,6 +1233,7 @@ void PrintDialog::updateImageGeometry()
     if(!m_impl->printer || !m_impl->graphicsItem || !m_impl->hasValidPage())
     {
         m_ui->imageSettingsTabFrame->setEnabled(false);
+        m_ui->effectsTabFrame->setEnabled(false);
 
         m_ui->widthSpinBox->setMinimum(0.0);
         m_ui->widthSpinBox->setMaximum(0.0);
@@ -1201,10 +1265,14 @@ void PrintDialog::updateImageGeometry()
         m_ui->previewWidget->setPageRect(QRectF());
         m_ui->previewWidget->setItemRect(QRectF());
 
+        m_ui->effectsPreviewWidget->setPaperRect(QRectF());
+        m_ui->effectsPreviewWidget->setPageRect(QRectF());
+        m_ui->effectsPreviewWidget->setItemRect(QRectF());
         return;
     }
 
     m_ui->imageSettingsTabFrame->setEnabled(true);
+    m_ui->effectsTabFrame->setEnabled(true);
 
     const bool ignoreMargins = m_ui->ignorePageMarginsCheckBox->isChecked();
     const bool ignoreBounds = m_ui->ignorePaperBoundsCheckBox->isChecked();
@@ -1311,4 +1379,31 @@ void PrintDialog::updateImageGeometry()
     m_ui->previewWidget->setPaperRect(m_impl->printerPaperRect(QPrinter::Point));
     m_ui->previewWidget->setPageRect(m_impl->printerPageRect(QPrinter::Point));
     m_ui->previewWidget->setItemRect(m_impl->itemPrintRect);
+
+    m_ui->effectsPreviewWidget->setPaperRect(m_impl->printerPaperRect(QPrinter::Point));
+    m_ui->effectsPreviewWidget->setPageRect(m_impl->printerPageRect(QPrinter::Point));
+    m_ui->effectsPreviewWidget->setItemRect(m_impl->itemPrintRect);
+}
+
+void PrintDialog::updateEffects()
+{
+    const int brightness = m_ui->brightnessSlider->value();
+    m_ui->previewWidget->setBrightness(brightness);
+    m_ui->effectsPreviewWidget->setBrightness(brightness);
+    m_impl->printEffect.setBrightness(brightness);
+
+    const int contrast = m_ui->contrastSlider->value();
+    m_ui->previewWidget->setContrast(contrast);
+    m_ui->effectsPreviewWidget->setContrast(contrast);
+    m_impl->printEffect.setContrast(contrast);
+
+    const int exposure = m_ui->exposureSlider->value();
+    m_ui->previewWidget->setExposure(exposure);
+    m_ui->effectsPreviewWidget->setExposure(exposure);
+    m_impl->printEffect.setExposure(exposure);
+
+    const bool desaturate = m_ui->desaturateCheckBox->isChecked();
+    m_ui->previewWidget->setDesaturate(desaturate);
+    m_ui->effectsPreviewWidget->setDesaturate(desaturate);
+    m_impl->printEffect.setDesaturate(desaturate);
 }
