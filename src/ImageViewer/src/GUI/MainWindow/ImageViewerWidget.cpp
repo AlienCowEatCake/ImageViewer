@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -262,13 +262,15 @@ QImage ImageViewerWidget::grabImage() const
     {
         image = QImage(imageSize(), QImage::Format_ARGB32_Premultiplied);
         image.fill(Qt::transparent);
+        const QRectF boundingRect = m_impl->currentGraphicsItem->boundingRect();
         QPainter painter;
         painter.begin(&image);
+        painter.translate(-boundingRect.x(), -boundingRect.y());
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setRenderHint(QPainter::TextAntialiasing);
         painter.setRenderHint(QPainter::SmoothPixmapTransform);
         QStyleOptionGraphicsItem options;
-        options.exposedRect = m_impl->currentGraphicsItem->boundingRect();
+        options.exposedRect = boundingRect;
         m_impl->currentGraphicsItem->paint(&painter, &options);
         painter.end();
     }
