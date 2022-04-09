@@ -612,63 +612,65 @@ void PrintDialog::onPrintClicked()
     painter.translate(rotatedBoundingRect.center().x(), rotatedBoundingRect.center().y());
     painter.rotate(m_impl->rotateAngle);
     painter.translate(-rotatedBoundingRect.center().x(), -rotatedBoundingRect.center().y());
-    if(m_impl->flipOrientations & Qt::Horizontal)
-    {
-        painter.scale(-1, 1);
-        painter.translate(-boundingRect.width(), 0);
-    }
-    if(m_impl->flipOrientations & Qt::Vertical)
-    {
-        painter.scale(1, -1);
-        painter.translate(0, -boundingRect.height());
-    }
+    const QTransform worldTransform = painter.worldTransform();
+    const QRect deviceRect = worldTransform.mapRect(boundingRect).toAlignedRect();
+    Qt::TransformationMode transformationMode = Qt::SmoothTransformation;
+    if(QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(m_impl->graphicsItem))
+        transformationMode = pixmapItem->transformationMode();
+    if(ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(m_impl->graphicsItem))
+        transformationMode = itemWithTransformationMode->transformationMode();
+    QImage image;
     if(IGrabScaledImage *itemWithGrabScaledImage = dynamic_cast<IGrabScaledImage*>(m_impl->graphicsItem))
     {
-        const QTransform worldTransform = painter.worldTransform();
-        const QRect deviceRect = worldTransform.mapRect(boundingRect).toAlignedRect();
         const qreal scaleFactor = qMax(qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height()), static_cast<qreal>(1.0));
-        QImage image = itemWithGrabScaledImage->grabImage(scaleFactor);
-        Qt::TransformationMode transformationMode = Qt::SmoothTransformation;
-        if(QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(m_impl->graphicsItem))
-            transformationMode = pixmapItem->transformationMode();
-        if(ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(m_impl->graphicsItem))
-            transformationMode = itemWithTransformationMode->transformationMode();
-        if(transformationMode == Qt::SmoothTransformation/* && deviceRect.width() < image.width() && deviceRect.height() < image.height()*/)
-        {
-            const QImage scaledImage = image.scaled(deviceRect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-            if(!scaledImage.isNull())
-                image = scaledImage;
-            else
-                qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
-        }
-        painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
+        image = itemWithGrabScaledImage->grabImage(scaleFactor);
     }
     else if(IGrabImage *itemWithGrabImage = dynamic_cast<IGrabImage*>(m_impl->graphicsItem))
     {
-        QImage image = itemWithGrabImage->grabImage();
-        const QTransform worldTransform = painter.worldTransform();
-        const QRect deviceRect = worldTransform.mapRect(boundingRect).toAlignedRect();
-        Qt::TransformationMode transformationMode = Qt::SmoothTransformation;
-        if(QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(m_impl->graphicsItem))
-            transformationMode = pixmapItem->transformationMode();
-        if(ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(m_impl->graphicsItem))
-            transformationMode = itemWithTransformationMode->transformationMode();
-        if(transformationMode == Qt::SmoothTransformation/* && deviceRect.width() < image.width() && deviceRect.height() < image.height()*/)
-        {
-            const QImage scaledImage = image.scaled(deviceRect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-            if(!scaledImage.isNull())
-                image = scaledImage;
-            else
-                qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
-        }
-        painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
+        image = itemWithGrabImage->grabImage();
     }
     else
     {
+        const qreal scaleFactor = qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height());
+        QSize size = (boundingRect.size() * scaleFactor).toSize();
+        image = QImage(size, QImage::Format_ARGB32_Premultiplied);
+        while(image.isNull() && !size.isEmpty())
+        {
+            qWarning() << "Image rendering failed, target size =" << size.width() << "x" << size.height();
+            size = QSize(size.width() / 2, size.height() / 2);
+            image = QImage(size, QImage::Format_ARGB32_Premultiplied);
+        }
+        image.fill(Qt::transparent);
+        QPainter painterLocal;
+        painterLocal.begin(&image);
+        painterLocal.scale(image.width() / boundingRect.width(), image.height() / boundingRect.height());
+        painterLocal.translate(-boundingRect.x(), -boundingRect.y());
+        painterLocal.setRenderHint(QPainter::Antialiasing, transformationMode == Qt::SmoothTransformation);
+        painterLocal.setRenderHint(QPainter::TextAntialiasing, transformationMode == Qt::SmoothTransformation);
+        painterLocal.setRenderHint(QPainter::SmoothPixmapTransform, transformationMode == Qt::SmoothTransformation);
         QStyleOptionGraphicsItem options;
         options.exposedRect = boundingRect;
-        m_impl->graphicsItem->paint(&painter, &options);
+        m_impl->graphicsItem->paint(&painterLocal, &options);
+        painterLocal.end();
     }
+    if(m_impl->flipOrientations)
+        image = image.mirrored(m_impl->flipOrientations & Qt::Horizontal, m_impl->flipOrientations & Qt::Vertical);
+    QSize unrotatedDeviceSize = deviceRect.size();
+    if(m_impl->rotateAngle)
+    {
+        QTransform transform;
+        transform.rotate(-m_impl->rotateAngle);
+        unrotatedDeviceSize = transform.mapRect(deviceRect).size();
+    }
+    if(transformationMode == Qt::SmoothTransformation/* && unrotatedDeviceSize.width() < image.width() && unrotatedDeviceSize.height() < image.height()*/)
+    {
+        const QImage scaledImage = image.scaled(unrotatedDeviceSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        if(!scaledImage.isNull())
+            image = scaledImage;
+        else
+            qWarning() << "Image scaling failed, target size =" << unrotatedDeviceSize.width() << "x" << unrotatedDeviceSize.height();
+    }
+    painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
     painter.end();
 
     close();
