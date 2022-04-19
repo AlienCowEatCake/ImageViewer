@@ -48,6 +48,31 @@
 
 namespace {
 
+#if !defined (LINKED_MSEDGEWEBVIEW2)
+HRESULT CreateCoreWebView2EnvironmentWithOptions_WRAP(PCWSTR browserExecutableFolder, PCWSTR userDataFolder, ICoreWebView2EnvironmentOptions* environmentOptions, ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler* environmentCreatedHandler)
+{
+    HRESULT result = E_NOTIMPL;
+    HMODULE library = ::LoadLibraryA("WebView2Loader");
+    if(!library)
+    {
+        qWarning() << "WebView2Loader.dll is not loaded!";
+        return result;
+    }
+
+    typedef HRESULT(STDAPICALLTYPE *CreateCoreWebView2EnvironmentWithOptions_t)(PCWSTR, PCWSTR, ICoreWebView2EnvironmentOptions*, ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler*);
+    CreateCoreWebView2EnvironmentWithOptions_t CreateCoreWebView2EnvironmentWithOptions_f = (CreateCoreWebView2EnvironmentWithOptions_t)(::GetProcAddress(library, "CreateCoreWebView2EnvironmentWithOptions"));
+    if(!CreateCoreWebView2EnvironmentWithOptions_f)
+    {
+        qWarning() << "CreateCoreWebView2EnvironmentWithOptions is not found in WebView2Loader.dll!";
+        return result;
+    }
+
+    result = CreateCoreWebView2EnvironmentWithOptions_f(browserExecutableFolder, userDataFolder, environmentOptions, environmentCreatedHandler);
+    return result;
+}
+#define CreateCoreWebView2EnvironmentWithOptions CreateCoreWebView2EnvironmentWithOptions_WRAP
+#endif
+
 template<typename Interface, typename Arg1Type, typename Arg2Type, typename ResultType>
 class Handler : public Interface
 {

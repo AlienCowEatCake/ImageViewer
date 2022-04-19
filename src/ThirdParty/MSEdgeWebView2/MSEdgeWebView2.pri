@@ -20,7 +20,8 @@ include($${PWD}/../../Features.pri)
     }
     OUT_LIB_NAME = WebView2LoaderStatic.lib
 
-    LIBS += -L$${OUT_LIB_DIR} $${OUT_LIB_NAME}
+#    LIBS += -L$${OUT_LIB_DIR} $${OUT_LIB_NAME}
+#    DEFINES += LINKED_MSEDGEWEBVIEW2
 
     *g++*|*clang* {
         LIBS += -ladvapi32

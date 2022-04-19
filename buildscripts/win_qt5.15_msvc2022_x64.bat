@@ -12,6 +12,7 @@ set BUILDDIR=build_win_qt5.15_msvc2022_%ARCH%
 set SUFFIX=_qt5.15_msvc2022_%ARCH%
 set APP_PATH=src\%PROJECT%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
+set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.webview2.1.0.1108.44\build\native\%ARCH%\WebView2Loader.dll"
 
 call %VCVARS% %VCVARS_ARCH%
 set PATH=%QTDIR%\bin;%WIX_DIR%\bin;%PATH%
@@ -26,6 +27,7 @@ nmake
 mkdir %PROJECT%%SUFFIX%
 copy %APP_PATH%\release\%PROJECT%.exe %PROJECT%%SUFFIX%\%PROJECT%.exe
 windeployqt --release --no-compiler-runtime --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw --translations en,ru %PROJECT%%SUFFIX%
+copy %WEBVIEW2LOADER_DLL% %PROJECT%%SUFFIX%\
 copy %QTDIR%\bin\libxml2.dll %PROJECT%%SUFFIX%\
 copy %QTDIR%\bin\libxslt.dll %PROJECT%%SUFFIX%\
 copy %OPENSSL_DIR%\*.dll %PROJECT%%SUFFIX%\
