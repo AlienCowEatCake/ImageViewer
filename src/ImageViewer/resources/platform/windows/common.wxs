@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <?include $(sys.CURRENTDIR)..\src\ImageViewer\resources\platform\windows\variables.wxi ?>
+
+    <Fragment>
+        <DirectoryRef Id="TARGETDIR">
+            <Directory Id="ProgramMenuFolder">
+                <Directory Id="mnu1F9DC0353B2D43D08B214E51A02BDEB8" Name="$(var.ProductName)" />
+            </Directory>
+        </DirectoryRef>
+        <DirectoryRef Id="mnu1F9DC0353B2D43D08B214E51A02BDEB8">
+            <Component Id="cmpB5DB27D9540644709E68C09D8AEAD4AB">
+                <Shortcut
+                  Name="$(var.ProductName)"
+                  Id="i04C0DF413B5343FC981B31515E28909E"
+                  Target="[INSTALLLOCATION]$(var.ExeProcessName)"
+                  WorkingDirectory="INSTALLLOCATION"
+                  Description="$(var.Description)" />
+                <RemoveFolder On="uninstall" Id="mnu1F9DC0353B2D43D08B214E51A02BDEB8" />
+                <RegistryValue
+                  Name="$(var.ProductNameSafe)"
+                  Type="integer"
+                  Value="1"
+                  Key="$(var.HKCURegPath)"
+                  Root="HKCU"
+                  Id="regD481365872C1468A8631EA9FA6A6B582"
+                  KeyPath="yes" />
+                <RegistryValue
+                  Root="HKCR"
+                  Type="string"
+                  Value="$(var.ProductName) image"
+                  Key="$(var.ProductNameSafe)"
+                  Id="reg776156BD9EA34B4D884409330A86288D" />
+                <RegistryValue
+                  Root="HKCR"
+                  Type="string"
+                  Value="Open with $(var.ProductName)"
+                  Key="$(var.ProductNameSafe)\shell\open"
+                  Id="regA1E340C0BA6541A49D5B3CEEE26DE40A" />
+                <RegistryValue
+                  Root="HKCR"
+                  Type="string"
+                  Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+                  Key="$(var.ProductNameSafe)\shell\open\command"
+                  Id="reg968019ED4ECA4985BC1C44511E04C650" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".3fr\OpenWithProgids" Id="reg_3fr" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".arw\OpenWithProgids" Id="reg_arw" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".avif\OpenWithProgids" Id="reg_avif" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".avifs\OpenWithProgids" Id="reg_avifs" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".bay\OpenWithProgids" Id="reg_bay" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".bmp\OpenWithProgids" Id="reg_bmp" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".bmq\OpenWithProgids" Id="reg_bmq" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".bpg\OpenWithProgids" Id="reg_bpg" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".cine\OpenWithProgids" Id="reg_cine" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".cr2\OpenWithProgids" Id="reg_cr2" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".crw\OpenWithProgids" Id="reg_crw" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".cs1\OpenWithProgids" Id="reg_cs1" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".cur\OpenWithProgids" Id="reg_cur" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".dc2\OpenWithProgids" Id="reg_dc2" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".dcr\OpenWithProgids" Id="reg_dcr" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".dds\OpenWithProgids" Id="reg_dds" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".dib\OpenWithProgids" Id="reg_dib" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".dng\OpenWithProgids" Id="reg_dng" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".erf\OpenWithProgids" Id="reg_erf" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".exr\OpenWithProgids" Id="reg_exr" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".fff\OpenWithProgids" Id="reg_fff" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".flif\OpenWithProgids" Id="reg_flif" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".gif\OpenWithProgids" Id="reg_gif" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".hdp\OpenWithProgids" Id="reg_hdp" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".hdr\OpenWithProgids" Id="reg_hdr" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".heic\OpenWithProgids" Id="reg_heic" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".heif\OpenWithProgids" Id="reg_heif" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".heifs\OpenWithProgids" Id="reg_heifs" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".heix\OpenWithProgids" Id="reg_heix" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".hif\OpenWithProgids" Id="reg_hif" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".ia\OpenWithProgids" Id="reg_ia" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".icns\OpenWithProgids" Id="reg_icns" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".ico\OpenWithProgids" Id="reg_ico" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".j2c\OpenWithProgids" Id="reg_j2c" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".j2k\OpenWithProgids" Id="reg_j2k" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".jbg\OpenWithProgids" Id="reg_jbg" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".jbig\OpenWithProgids" Id="reg_jbig" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".jng\OpenWithProgids" Id="reg_jng" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".jp2\OpenWithProgids" Id="reg_jp2" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".jpc\OpenWithProgids" Id="reg_jpc" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".jpe\OpenWithProgids" Id="reg_jpe" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".jpeg\OpenWithProgids" Id="reg_jpeg" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".jpf\OpenWithProgids" Id="reg_jpf" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".jpg\OpenWithProgids" Id="reg_jpg" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".jpt\OpenWithProgids" Id="reg_jpt" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".jxl\OpenWithProgids" Id="reg_jxl" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".jxr\OpenWithProgids" Id="reg_jxr" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".k25\OpenWithProgids" Id="reg_k25" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".kc2\OpenWithProgids" Id="reg_kc2" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".kdc\OpenWithProgids" Id="reg_kdc" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".lerc1\OpenWithProgids" Id="reg_lerc1" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".lerc2\OpenWithProgids" Id="reg_lerc2" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".mdc\OpenWithProgids" Id="reg_mdc" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".mef\OpenWithProgids" Id="reg_mef" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".mif\OpenWithProgids" Id="reg_mif" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".mng\OpenWithProgids" Id="reg_mng" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".mos\OpenWithProgids" Id="reg_mos" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".mrw\OpenWithProgids" Id="reg_mrw" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".nef\OpenWithProgids" Id="reg_nef" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".nrw\OpenWithProgids" Id="reg_nrw" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".orf\OpenWithProgids" Id="reg_orf" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".pbm\OpenWithProgids" Id="reg_pbm" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".pef\OpenWithProgids" Id="reg_pef" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".pgm\OpenWithProgids" Id="reg_pgm" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".pgx\OpenWithProgids" Id="reg_pgx" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".pic\OpenWithProgids" Id="reg_pic" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".png\OpenWithProgids" Id="reg_png" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".pnm\OpenWithProgids" Id="reg_pnm" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".ppm\OpenWithProgids" Id="reg_ppm" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".psd\OpenWithProgids" Id="reg_psd" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".pxn\OpenWithProgids" Id="reg_pxn" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".qtk\OpenWithProgids" Id="reg_qtk" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".raf\OpenWithProgids" Id="reg_raf" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".ras\OpenWithProgids" Id="reg_ras" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".raw\OpenWithProgids" Id="reg_raw" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".rdc\OpenWithProgids" Id="reg_rdc" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".rw2\OpenWithProgids" Id="reg_rw2" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".rwl\OpenWithProgids" Id="reg_rwl" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".sr2\OpenWithProgids" Id="reg_sr2" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".srf\OpenWithProgids" Id="reg_srf" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".srw\OpenWithProgids" Id="reg_srw" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".sti\OpenWithProgids" Id="reg_sti" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".sun\OpenWithProgids" Id="reg_sun" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".svg\OpenWithProgids" Id="reg_svg" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".svgz\OpenWithProgids" Id="reg_svgz" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".targa\OpenWithProgids" Id="reg_targa" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".tga\OpenWithProgids" Id="reg_tga" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".tif\OpenWithProgids" Id="reg_tif" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".tiff\OpenWithProgids" Id="reg_tiff" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".wbmp\OpenWithProgids" Id="reg_wbmp" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".wdp\OpenWithProgids" Id="reg_wdp" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".webp\OpenWithProgids" Id="reg_webp" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".wmf\OpenWithProgids" Id="reg_wmf" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".wmz\OpenWithProgids" Id="reg_wmz" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".x3f\OpenWithProgids" Id="reg_x3f" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".xbm\OpenWithProgids" Id="reg_xbm" />
+                <RegistryValue Root="HKCR" Type="string" Value="" Name="$(var.ProductNameSafe)" Key=".xpm\OpenWithProgids" Id="reg_xpm" />
+            </Component>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="CommonGroup">
+            <ComponentRef Id="cmpB5DB27D9540644709E68C09D8AEAD4AB" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>

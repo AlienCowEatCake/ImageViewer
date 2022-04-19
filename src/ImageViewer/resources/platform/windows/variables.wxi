@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+    <?define ProductName="Image Viewer" ?>
+    <?define ManufacturerName="Peter S. Zhigalov" ?>
+    <?define MajorVersion="1" ?>
+    <?define MinorVersion="4" ?>
+    <?define BuildVersion="5" ?>
+    <?define Revision="0" ?>
+    <?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.BuildVersion).$(var.Revision)" ?>
+    <?define UpgradeCode="C2D228E5-76F1-4811-B4BE-57A42A2C1E4D" ?>
+    <?define Keywords="photo, image, viewer" ?>
+    <?define ExeProcessName="ImageViewer.exe" ?>
+    <?define ProductNameSafe="ImageViewer" ?>
+    <?define HKCURegPath="Software\AlienCowEatCake\Image Viewer" ?>
+    <?define Description="Simple, cross-platform image viewer" ?>
+</Include>
