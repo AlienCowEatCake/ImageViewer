@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -178,7 +178,7 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
     // http://programtalk.com/vs2/?source=python/5435/send2trash/send2trash/plat_win.py
 
     HMODULE hShell32 = LoadLibraryA("shell32.dll");
-    typedef int(*SHFileOperationW_t)(LPSHFILEOPSTRUCTW);
+    typedef int(WINAPI *SHFileOperationW_t)(LPSHFILEOPSTRUCTW);
     SHFileOperationW_t SHFileOperationW_f = reinterpret_cast<SHFileOperationW_t>(GetProcAddress(hShell32, "SHFileOperationW"));
 
     HMODULE hKernel32 = LoadLibraryA("kernel32.dll");

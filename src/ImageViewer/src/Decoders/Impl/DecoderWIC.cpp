@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -57,35 +57,35 @@ public:
 
     HRESULT CoInitialize(LPVOID pvReserved)
     {
-        typedef HRESULT(*CoInitialize_t)(LPVOID);
+        typedef HRESULT(WINAPI *CoInitialize_t)(LPVOID);
         CoInitialize_t CoInitialize_f = (CoInitialize_t)m_CoInitialize;
         return CoInitialize_f(pvReserved);
     }
 
     HRESULT CoUninitialize()
     {
-        typedef HRESULT(*CoUninitialize_t)();
+        typedef HRESULT(WINAPI *CoUninitialize_t)();
         CoUninitialize_t CoUninitialize_f = (CoUninitialize_t)m_CoUninitialize;
         return CoUninitialize_f();
     }
 
     HRESULT CoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID *ppv)
     {
-        typedef HRESULT(*CoCreateInstance_t)(REFCLSID, LPUNKNOWN, DWORD, REFIID, LPVOID*);
+        typedef HRESULT(WINAPI *CoCreateInstance_t)(REFCLSID, LPUNKNOWN, DWORD, REFIID, LPVOID*);
         CoCreateInstance_t CoCreateInstance_f = (CoCreateInstance_t)m_CoCreateInstance;
         return CoCreateInstance_f(rclsid, pUnkOuter, dwClsContext, riid, ppv);
     }
 
     HRESULT IIDFromString(LPCOLESTR lpsz, LPIID lpiid)
     {
-        typedef HRESULT(*IIDFromString_t)(LPCOLESTR, LPIID);
+        typedef HRESULT(WINAPI *IIDFromString_t)(LPCOLESTR, LPIID);
         IIDFromString_t IIDFromString_f = (IIDFromString_t)m_IIDFromString;
         return IIDFromString_f(lpsz, lpiid);
     }
 
     HRESULT CLSIDFromString(LPCOLESTR lpsz, LPCLSID pclsid)
     {
-        typedef HRESULT(*CLSIDFromString_t)(LPCOLESTR, LPCLSID);
+        typedef HRESULT(WINAPI *CLSIDFromString_t)(LPCOLESTR, LPCLSID);
         CLSIDFromString_t CLSIDFromString_f = (CLSIDFromString_t)m_CLSIDFromString;
         return CLSIDFromString_f(lpsz, pclsid);
     }

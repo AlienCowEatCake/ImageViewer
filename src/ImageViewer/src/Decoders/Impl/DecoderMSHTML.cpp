@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -82,42 +82,42 @@ public:
 
     HRESULT CoInitializeEx(LPVOID pvReserved, DWORD dwCoInit)
     {
-        typedef HRESULT(*CoInitializeEx_t)(LPVOID, DWORD);
+        typedef HRESULT(WINAPI *CoInitializeEx_t)(LPVOID, DWORD);
         CoInitializeEx_t CoInitializeEx_f = (CoInitializeEx_t)m_CoInitializeEx;
         return CoInitializeEx_f(pvReserved, dwCoInit);
     }
 
     HRESULT CoUninitialize()
     {
-        typedef HRESULT(*CoUninitialize_t)();
+        typedef HRESULT(WINAPI *CoUninitialize_t)();
         CoUninitialize_t CoUninitialize_f = (CoUninitialize_t)m_CoUninitialize;
         return CoUninitialize_f();
     }
 
     HRESULT CoCreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsContext, REFIID riid, LPVOID *ppv)
     {
-        typedef HRESULT(*CoCreateInstance_t)(REFCLSID, LPUNKNOWN, DWORD, REFIID, LPVOID*);
+        typedef HRESULT(WINAPI *CoCreateInstance_t)(REFCLSID, LPUNKNOWN, DWORD, REFIID, LPVOID*);
         CoCreateInstance_t CoCreateInstance_f = (CoCreateInstance_t)m_CoCreateInstance;
         return CoCreateInstance_f(rclsid, pUnkOuter, dwClsContext, riid, ppv);
     }
 
     HRESULT CLSIDFromProgID(LPCOLESTR lpszProgID, LPCLSID lpclsid)
     {
-        typedef HRESULT(*CLSIDFromProgID_t)(LPCOLESTR, LPCLSID);
+        typedef HRESULT(WINAPI *CLSIDFromProgID_t)(LPCOLESTR, LPCLSID);
         CLSIDFromProgID_t CLSIDFromProgID_f = (CLSIDFromProgID_t)m_CLSIDFromProgID;
         return CLSIDFromProgID_f(lpszProgID, lpclsid);
     }
 
     HRESULT IIDFromString(LPCOLESTR lpsz, LPIID lpiid)
     {
-        typedef HRESULT(*IIDFromString_t)(LPCOLESTR, LPIID);
+        typedef HRESULT(WINAPI *IIDFromString_t)(LPCOLESTR, LPIID);
         IIDFromString_t IIDFromString_f = (IIDFromString_t)m_IIDFromString;
         return IIDFromString_f(lpsz, lpiid);
     }
 
     HRESULT CLSIDFromString(LPCOLESTR lpsz, LPCLSID pclsid)
     {
-        typedef HRESULT(*CLSIDFromString_t)(LPCOLESTR, LPCLSID);
+        typedef HRESULT(WINAPI *CLSIDFromString_t)(LPCOLESTR, LPCLSID);
         CLSIDFromString_t CLSIDFromString_f = (CLSIDFromString_t)m_CLSIDFromString;
         return CLSIDFromString_f(lpsz, pclsid);
     }
@@ -232,35 +232,35 @@ public:
 
     BSTR SysAllocString(const OLECHAR *psz)
     {
-        typedef BSTR(*ft)(const OLECHAR*);
+        typedef BSTR(WINAPI *ft)(const OLECHAR*);
         ft fp = (ft)m_SysAllocString;
         return fp(psz);
     }
 
     void SysFreeString(BSTR bstrString)
     {
-        typedef void(*ft)(const BSTR);
+        typedef void(WINAPI *ft)(const BSTR);
         ft fp = (ft)m_SysFreeString;
         return fp(bstrString);
     }
 
     SAFEARRAY *SafeArrayCreateVector(VARTYPE vt, LONG lLbound, ULONG cElements)
     {
-        typedef SAFEARRAY*(*ft)(VARTYPE, LONG, ULONG);
+        typedef SAFEARRAY*(WINAPI *ft)(VARTYPE, LONG, ULONG);
         ft fp = (ft)m_SafeArrayCreateVector;
         return fp(vt, lLbound, cElements);
     }
 
     HRESULT SafeArrayAccessData(SAFEARRAY *psa, void **ppvData)
     {
-        typedef HRESULT(*ft)(SAFEARRAY*, void**);
+        typedef HRESULT(WINAPI *ft)(SAFEARRAY*, void**);
         ft fp = (ft)m_SafeArrayAccessData;
         return fp(psa, ppvData);
     }
 
     HRESULT SafeArrayDestroy(SAFEARRAY *psa)
     {
-        typedef HRESULT(*ft)(SAFEARRAY*);
+        typedef HRESULT(WINAPI *ft)(SAFEARRAY*);
         ft fp = (ft)m_SafeArrayDestroy;
         return fp(psa);
     }
