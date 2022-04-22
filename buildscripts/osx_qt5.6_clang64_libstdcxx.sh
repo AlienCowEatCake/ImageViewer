@@ -3,6 +3,8 @@ PROJECT=ImageViewer
 BUILDDIR=build_osx_qt5.6_clang64_libstdcxx
 APPNAME="Image Viewer"
 DMGNAME="${PROJECT}_qt5.6_clang64_libstdcxx"
+SCRIPT_PATH="src/${PROJECT}/resources/platform/macosx/set_associations.sh"
+LICENSE_PATH="LICENSE.GPLv3"
 OUT_PATH="src/${PROJECT}"
 ENTITLEMENTS_PATH="src/${PROJECT}/resources/platform/macosx/${PROJECT}.entitlements"
 APP_CERT="Developer ID Application: Petr Zhigalov (48535TNTA7)"
@@ -37,6 +39,7 @@ plutil -replace LSMinimumSystemVersion -string "10.6" "${APPNAME}.app/Contents/I
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -f "${RES_PATH}/empty.lproj"
 mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"
+cp -a "${SOURCE_PATH}/${SCRIPT_PATH}" "${RES_PATH}/"
 PLUGINS_PATH="${APPNAME}.app/Contents/PlugIns"
 mkdir -p "${PLUGINS_PATH}/iconengines"
 for iconengines_plugin in libqsvgicon.dylib ; do
@@ -52,6 +55,7 @@ mkdir -p "${INSTALL_PATH}" "${ARTIFACTS_PATH}"
 mv "${OUT_PATH}/${APPNAME}.app" "${INSTALL_PATH}/"
 cd "${INSTALL_PATH}"
 ln -s /Applications ./Applications
+cp -a "${SOURCE_PATH}/${LICENSE_PATH}" "./"
 find "${APPNAME}.app/Contents/PlugIns" -name "*_debug.dylib" -delete
 cd "${BUILD_PATH}"
 
