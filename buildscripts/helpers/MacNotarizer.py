@@ -37,7 +37,7 @@ def main():
     args = parser.parse_args(sys.argv[1:])
 
     uploadable_app = args.application
-    if os.path.isdir(uploadable_app):
+    if os.path.isdir(uploadable_app) or os.path.splitext(uploadable_app)[1] not in ['.zip', '.pkg', '.dmg']:
         uploadable_app = args.application + '.zip'
         subprocess.call(['/usr/bin/ditto', '-c', '-k', '--keepParent', args.application, uploadable_app])
 
