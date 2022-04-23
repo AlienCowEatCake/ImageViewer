@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBJPEG_PATH = $${PWD}/jpeg-9d
+THIRDPARTY_LIBJPEG_PATH = $${PWD}/jpeg-9e
 THIRDPARTY_LIBJPEG_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
