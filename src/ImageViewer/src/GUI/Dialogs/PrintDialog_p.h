@@ -882,7 +882,7 @@ struct PrintDialog::UI
         effectsControlLayout->addWidget(exposureSpinBox, 7, 1, 1, 1);
         effectsControlLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::MinimumExpanding), 8, 0, 1, 2);
         effectsControlLayout->addWidget(desaturateCheckBox, 9, 0, 1, 2);
-        effectsControlLayout->addItem(new QSpacerItem(50, 1, QSizePolicy::Fixed, QSizePolicy::Fixed), 0, 1, 8, 1);
+        effectsControlLayout->addItem(new QSpacerItem(64, 1, QSizePolicy::Fixed, QSizePolicy::Fixed), 0, 1, 8, 1);
 
         effectsPreviewWidget->setFixedSize(200, 200);
 

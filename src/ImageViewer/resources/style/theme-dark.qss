@@ -987,6 +987,105 @@ QHeaderView::down-arrow:disabled
     border-image:url(":/style/dark/arrow_down_5_disabled@2x.png");
 }
 
+/***********
+ * QSlider *
+ ***********/
+
+QSlider::groove:horizontal
+{
+    height: 6px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #a9a9aa, stop:1 #878889);
+    border: 1px solid #1e2021;
+    border-radius: 3px;
+}
+QSlider::groove:horizontal:disabled
+{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #777778, stop:1 #686969);
+    border: 1px solid #2f3032;
+}
+QSlider::groove:vertical
+{
+    width: 6px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #a9a9aa, stop:1 #878889);
+    border: 1px solid #1e2021;
+    border-radius: 3px;
+}
+QSlider::groove:vertical:disabled
+{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #777778, stop:1 #686969);
+    border: 1px solid #2f3032;
+}
+
+QSlider::sub-page:horizontal
+{
+    height: 6px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1d82cc, stop:1 #176aa6);
+    border: 1px solid #1e2021;
+    border-radius: 3px;
+}
+QSlider::sub-page:horizontal:disabled
+{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #4a7da2, stop:1 #406b8a);
+    border: 1px solid #2f3032;
+}
+QSlider::sub-page:vertical
+{
+    height: 6px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #1d82cc, stop:1 #176aa6);
+    border: 1px solid #1e2021;
+    border-radius: 3px;
+}
+QSlider::sub-page:vertical:disabled
+{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #4a7da2, stop:1 #406b8a);
+    border: 1px solid #2f3032;
+}
+
+QSlider::handle:horizontal
+{
+    width: 7px;
+    height: 14px;
+    margin: -5px -1px -5px -1px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d2d2d2, stop:1 #808080);
+    border: 1px solid #1a1c1f;
+    border-radius: 3px;
+}
+QSlider::handle:horizontal:hover
+{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2197eb, stop:1 #1d83cd);
+}
+QSlider::handle:horizontal:pressed
+{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #ffffff, stop:1 #dadada);
+}
+QSlider::handle:horizontal:disabled
+{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #9e9e9e, stop:1 #4d4d4d);
+    border: 1px solid #353535;
+}
+QSlider::handle:vertical
+{
+    width: 14px;
+    height: 7px;
+    margin: -1px -5px -1px -5px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #d2d2d2, stop:1 #808080);
+    border: 1px solid #1a1c1f;
+    border-radius: 3px;
+}
+QSlider::handle:vertical:hover
+{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #2197eb, stop:1 #1d83cd);
+}
+QSlider::handle:vertical:pressed
+{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #ffffff, stop:1 #dadada);
+}
+QSlider::handle:vertical:disabled
+{
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #9e9e9e, stop:1 #4d4d4d);
+    border: 1px solid #353535;
+}
+
 /**********
  * Custom *
  **********/
