@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/aom-v3.2.0
+THIRDPARTY_AOM_PATH = $${PWD}/aom-v3.3.0
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -21,7 +21,7 @@ include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_AOM_PATH} $${THIRDPARTY_AOM_CONFIG_PATH} $${PWD} $${INCLUDEPATH}
 
-# find . -name '*.c' | egrep -v '(arm|x86|ppc|mips|/examples/|/apps/|/tools/|vmaf|inspection|butteraugli|temporal_denoiser|_sse2|_ssse3|_sse4|_avx|_neon)' | sort | sed 's|^\.|    $${THIRDPARTY_AOM_PATH}| ; s|$| \\|'
+# find . -name '*.c' | egrep -v '(arm|x86|ppc|mips|/examples/|/apps/|/tools/|vmaf|inspection|butteraugli|temporal_denoiser|_sse2|_ssse3|_sse4|_avx|_neon)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_AOM_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_AOM_PATH}/aom/src/aom_codec.c \
     $${THIRDPARTY_AOM_PATH}/aom/src/aom_decoder.c \
@@ -47,7 +47,6 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/fastssim.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/fft.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/fwd_txfm.c \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/grain_synthesis.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/grain_table.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/intrapred.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/loopfilter.c \
@@ -114,6 +113,7 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/decoder.c \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/decodetxb.c \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/detokenize.c \
+    $${THIRDPARTY_AOM_PATH}/av1/decoder/grain_synthesis.c \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/obu.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/allintra_vis.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_complexity.c \
@@ -207,7 +207,7 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/third_party/vector/vector.c \
     $${THIRDPARTY_AOM_CONFIG_PATH}/aom_config.c \
 
-# find . -name '*.h' | sort | sed 's|^\.|    $${THIRDPARTY_AOM_PATH}| ; s|$| \\|'
+# find . -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_AOM_PATH}| ; s|$| \\|'
 HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom/aom.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_codec.h \
@@ -240,7 +240,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entdec.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entenc.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/fft_common.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/grain_synthesis.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/grain_params.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/grain_table.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/intrapred_common.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/mathutils.h \
@@ -380,6 +380,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/decodetxb.h \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/detokenize.h \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/dthread.h \
+    $${THIRDPARTY_AOM_PATH}/av1/decoder/grain_synthesis.h \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/inspection.h \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/obu.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/allintra_vis.h \

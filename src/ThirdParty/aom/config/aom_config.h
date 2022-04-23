@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Alliance for Open Media. All rights reserved
+ * Copyright (c) 2022, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -39,7 +39,9 @@
 #define CONFIG_DIST_8X8 0
 #define CONFIG_ENTROPY_STATS 0
 #define CONFIG_EXCLUDE_SIMD_MISMATCH 0
+#define CONFIG_FPMT_TEST 0
 #define CONFIG_FRAME_PARALLEL_ENCODE 0
+#define CONFIG_FRAME_PARALLEL_ENCODE_2 0
 #define CONFIG_GCC 0
 #define CONFIG_GCOV 0
 #define CONFIG_GPROF 0

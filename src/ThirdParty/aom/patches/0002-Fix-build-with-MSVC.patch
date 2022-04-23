@@ -1,4 +1,4 @@
-From df6539247f25e82f181727f07055aba4d1aba46c Mon Sep 17 00:00:00 2001
+From 5f5958ff76b636b21ab97426fb4779ccd70a04bd Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 21:00:39 +0700
 Subject: [PATCH 2/2] Fix build with MSVC
@@ -20,5 +20,5 @@ index 220186833..c7e008812 100644
  
  #include <assert.h>
 -- 
-2.34.0
+2.30.2
 
