@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -18,6 +18,7 @@
 */
 
 #include <algorithm>
+#include <cstddef>
 
 #include "Workarounds/BeginIgnoreShiftNegative.h"
 #include <jasper/jasper.h>
@@ -133,6 +134,39 @@ QImage renderRgbImage(jas_image_t *jasImage)
     return result;
 }
 
+bool initializeJasPer()
+{
+#if defined (JAS_VERSION_MAJOR) && (JAS_VERSION_MAJOR >= 3)
+    jas_conf_clear();
+#if defined (JAS_DEFAULT_MAX_MEM_USAGE)
+    jas_conf_set_max_mem_usage(JAS_DEFAULT_MAX_MEM_USAGE);
+#endif
+    jas_conf_set_multithread(0);
+    if(jas_init_library())
+    {
+        return false;
+    }
+    if(jas_init_thread())
+    {
+        jas_cleanup_library();
+        return false;
+    }
+    return true;
+#else
+    return !jas_init();
+#endif
+}
+
+void deinitializeJasPer()
+{
+#if defined (JAS_VERSION_MAJOR) && (JAS_VERSION_MAJOR >= 3)
+    jas_cleanup_thread();
+    jas_cleanup_library();
+#else
+    jas_cleanup();
+#endif
+}
+
 QImage renderGrayImage(jas_image_t *jasImage)
 {
     const int cmptno = 0;
@@ -182,7 +216,7 @@ PayloadWithMetaData<QImage> readJp2File(const QString &filename)
     if(!inBuffer.isValid())
         return QImage();
 
-    if(jas_init())
+    if(!initializeJasPer())
     {
         qWarning() << "Can't init libjasper";
         return QImage();
@@ -195,6 +229,7 @@ PayloadWithMetaData<QImage> readJp2File(const QString &filename)
         qWarning() << "Image has unknown format";
 //        jas_stream_close(stream);
 //        jas_image_clearfmts();
+//        deinitializeJasPer();
 //        return QImage();
     }
     jas_image_t *jasImage = jas_image_decode(stream, format, Q_NULLPTR);
@@ -203,6 +238,7 @@ PayloadWithMetaData<QImage> readJp2File(const QString &filename)
         qWarning() << "Can't load image data";
         jas_stream_close(stream);
         jas_image_clearfmts();
+        deinitializeJasPer();
         return QImage();
     }
     to_sRGB(jasImage);
@@ -216,6 +252,7 @@ PayloadWithMetaData<QImage> readJp2File(const QString &filename)
     jas_stream_close(stream);
     jas_image_destroy(jasImage);
     jas_image_clearfmts();
+    deinitializeJasPer();
 
     ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
     return PayloadWithMetaData<QImage>(result, metaData);
@@ -231,20 +268,22 @@ public:
         return QString::fromLatin1("DecoderLibJasPer");
     }
 
+#define USE_EXCLUDE (QT_VERSION_CHECK(JAS_VERSION_MAJOR, JAS_VERSION_MINOR, JAS_VERSION_PATCH) < QT_VERSION_CHECK(2, 0, 20))
+
     QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
                 /// @note Нативные форматы JPEG 2000
-#if !defined(EXCLUDE_JP2_SUPPORT)
+#if (USE_EXCLUDE && !defined(EXCLUDE_JP2_SUPPORT)) || (!USE_EXCLUDE && defined(JAS_INCLUDE_JP2_CODEC))
                 << QString::fromLatin1("jp2")
                 << QString::fromLatin1("jpf")
 #endif
-#if !defined(EXCLUDE_JPC_SUPPORT)
+#if (USE_EXCLUDE && !defined(EXCLUDE_JPC_SUPPORT)) || (!USE_EXCLUDE && defined(JAS_INCLUDE_JPC_CODEC))
                 << QString::fromLatin1("j2k")
                 << QString::fromLatin1("jpc")
                 << QString::fromLatin1("j2c")
 #endif
-#if !defined(EXCLUDE_PGX_SUPPORT)
+#if (USE_EXCLUDE && !defined(EXCLUDE_PGX_SUPPORT)) || (!USE_EXCLUDE && defined(JAS_INCLUDE_PGX_CODEC))
                 << QString::fromLatin1("pgx") // PGX (JPEG 2000)
 #endif
                    ;
@@ -254,28 +293,35 @@ public:
     {
         return QStringList()
                    /// @note Дополнительные форматы, открываемые libjasper
-//#if !defined(EXCLUDE_JPG_SUPPORT)
-//                << QString::fromLatin1("jpg")
-//#endif
-#if !defined(EXCLUDE_MIF_SUPPORT)
+#if (USE_EXCLUDE && !defined(EXCLUDE_JPG_SUPPORT)) || (!USE_EXCLUDE && defined(JAS_INCLUDE_JPG_CODEC))
+                << QString::fromLatin1("jpg")
+#endif
+#if (USE_EXCLUDE && !defined(EXCLUDE_MIF_SUPPORT)) || (!USE_EXCLUDE && defined(JAS_INCLUDE_MIF_CODEC))
                 << QString::fromLatin1("mif") // Magick Image File Format
 #endif
-#if !defined(EXCLUDE_PNM_SUPPORT)
+#if (USE_EXCLUDE && !defined(EXCLUDE_PNM_SUPPORT)) || (!USE_EXCLUDE && defined(JAS_INCLUDE_PNM_CODEC))
                 << QString::fromLatin1("pnm") // Portable anymap format
                 << QString::fromLatin1("ppm") // Portable pixmap format
                 << QString::fromLatin1("pgm") // Portable graymap format
                 << QString::fromLatin1("pbm") // Portable bitmap format
 #endif
-#if !defined(EXCLUDE_RAS_SUPPORT)
+#if (USE_EXCLUDE && !defined(EXCLUDE_RAS_SUPPORT)) || (!USE_EXCLUDE && defined(JAS_INCLUDE_RAS_CODEC))
                 << QString::fromLatin1("ras") // Sun Raster
                 << QString::fromLatin1("sun")
 #endif
-#if !defined(EXCLUDE_BMP_SUPPORT)
+#if (USE_EXCLUDE && !defined(EXCLUDE_BMP_SUPPORT)) || (!USE_EXCLUDE && defined(JAS_INCLUDE_BMP_CODEC))
                 << QString::fromLatin1("bmp")
                 << QString::fromLatin1("dib")
 #endif
+#if (!USE_EXCLUDE && defined(JAS_INCLUDE_HEIC_CODEC))
+                << QString::fromLatin1("heif")
+                << QString::fromLatin1("heic")
+                << QString::fromLatin1("heix")
+#endif
                    ;
     }
+
+#undef USE_EXCLUDE
 
     bool isAvailable() const Q_DECL_OVERRIDE
     {

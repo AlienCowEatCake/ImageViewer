@@ -20,6 +20,7 @@
 #include "AboutDialog.h"
 #include "AboutDialog_p.h"
 
+#include <cstddef>
 #include <cstring>
 
 #include <QApplication>

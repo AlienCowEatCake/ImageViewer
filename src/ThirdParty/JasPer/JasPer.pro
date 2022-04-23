@@ -10,11 +10,12 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_JASPER_PATH = $${PWD}/jasper-2.0.33
+THIRDPARTY_JASPER_PATH = $${PWD}/jasper-3.0.3
 THIRDPARTY_JASPER_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
 include(../libjpeg/libjpeg.pri)
+include(../libheif/libheif.pri)
 
 *g++*|*clang* {
     QMAKE_CFLAGS += -std=c99
@@ -22,8 +23,9 @@ include(../libjpeg/libjpeg.pri)
 
 INCLUDEPATH = $${THIRDPARTY_JASPER_CONFIG_PATH} $${THIRDPARTY_JASPER_PATH}/src/libjasper/include $${INCLUDEPATH}
 
-# cmake -DCMAKE_BUILD_TYPE=Release -DJAS_ENABLE_SHARED=0 -DJAS_ENABLE_OPENGL=0 -DJAS_ENABLE_AUTOMATIC_DEPENDENCIES=0 -DJAS_ENABLE_DOC=0 -DJAS_ENABLE_PROGRAMS=0 -DJAS_ENABLE_DANGEROUS_INTERNAL_TESTING_MODE=1 ..
+# cmake -DCMAKE_BUILD_TYPE=Release -DJAS_ENABLE_SHARED=0 -DJAS_ENABLE_OPENGL=0 -DJAS_ENABLE_LATEX=0 -DJAS_ENABLE_MULTITHREADING_SUPPORT=0 -DJAS_ENABLE_DOC=0 -DJAS_ENABLE_PROGRAMS=0 -DJAS_ENABLE_DANGEROUS_INTERNAL_TESTING_MODE=1 ..
 
+# find ./src/libjasper/ -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_JASPER_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/base/jas_cm.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/base/jas_debug.c \
@@ -46,6 +48,7 @@ SOURCES += \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/jp2/jp2_dec.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/jp2/jp2_enc.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpc/jpc_bs.c \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpc/jpc_cod.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpc/jpc_cs.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpc/jpc_dec.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpc/jpc_enc.c \
@@ -64,7 +67,6 @@ SOURCES += \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpc/jpc_tagtree.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpc/jpc_tsfb.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpc/jpc_util.c \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpg/jpg_val.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/mif/mif_cod.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/pgx/pgx_cod.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/pgx/pgx_dec.c \
@@ -74,20 +76,47 @@ SOURCES += \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/pnm/pnm_enc.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/ras/ras_cod.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/ras/ras_dec.c \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/ras/ras_enc.c
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/ras/ras_enc.c \
 
 !disable_libjpeg {
     SOURCES += \
         $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpg/jpg_dec.c \
-        $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpg/jpg_enc.c
-} else {
-    SOURCES += \
-        $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpg/jpg_dummy.c
+        $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpg/jpg_enc.c \
+        $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpg/jpg_val.c
 }
 
+!disable_libheif {
+    SOURCES += \
+        $${THIRDPARTY_JASPER_PATH}/src/libjasper/heic/heic_dec.c \
+        $${THIRDPARTY_JASPER_PATH}/src/libjasper/heic/heic_enc.c \
+        $${THIRDPARTY_JASPER_PATH}/src/libjasper/heic/heic_val.c
+}
+
+# find . -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_JASPER_PATH}| ; s|$| \\|'
 HEADERS += \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/bmp/bmp_cod.h \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/bmp/bmp_enc.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_cm.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_compiler.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_debug.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_dll.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_fix.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_getopt.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_icc.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_image.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_init.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_log.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_malloc.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_math.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_seq.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_stream.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_string.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_thread.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_tmr.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_tvp.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_types.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_version.h \
+    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jasper.h \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/jp2/jp2_cod.h \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/jp2/jp2_dec.h \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/jpc/jpc_bs.h \
@@ -122,26 +151,8 @@ HEADERS += \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/pnm/pnm_enc.h \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/ras/ras_cod.h \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/ras/ras_enc.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_cm.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_compiler.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_debug.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_dll.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_fix.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_getopt.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_icc.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_image.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_init.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_malloc.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_math.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jasper.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_seq.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_stream.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_string.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_tmr.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_tvp.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_types.h \
-    $${THIRDPARTY_JASPER_PATH}/src/libjasper/include/jasper/jas_version.h \
-    $${THIRDPARTY_JASPER_CONFIG_PATH}/jasper/jas_config.h
+    $${THIRDPARTY_JASPER_CONFIG_PATH}/jasper/jas_config.h \
+    $${THIRDPARTY_JASPER_CONFIG_PATH}/jasper/jas_export_cmake.h
 
 TR_EXCLUDE += $${THIRDPARTY_JASPER_PATH}/* $${THIRDPARTY_JASPER_CONFIG_PATH}/*
 
