@@ -63,6 +63,65 @@
     CONFIG -= enable_cxx11
 }
 
+# ::::: Misc Configuration :::::
+
+# ThirdParty options:
+#    disable_thirdparty
+disable_thirdparty {
+    CONFIG += disable_aom
+    CONFIG += disable_brotli
+    CONFIG += disable_exiv2
+    CONFIG += disable_flif
+    CONFIG += disable_freetype
+    CONFIG += disable_giflib
+    CONFIG += disable_graphicsmagick
+    CONFIG += disable_graphicsmagickwand
+    CONFIG += disable_highway
+    CONFIG += disable_jbigkit
+    CONFIG += disable_jxrlib
+    CONFIG += disable_lerc
+    CONFIG += disable_libavif
+    CONFIG += disable_libbpg
+    CONFIG += disable_libde265
+    CONFIG += disable_libexif
+    CONFIG += disable_libexpat
+    CONFIG += disable_libheif
+    CONFIG += disable_libjasper
+    CONFIG += disable_libjpeg
+    CONFIG += disable_libjxl
+    CONFIG += disable_liblcms2
+    CONFIG += disable_libmng
+    CONFIG += disable_libpng
+    CONFIG += disable_libraw
+    CONFIG += disable_librsvg
+    CONFIG += disable_libtiff
+    CONFIG += disable_libwebp
+    CONFIG += disable_libwmf
+    CONFIG += disable_macwebview
+    CONFIG += disable_macwkwebview
+    CONFIG += disable_magickcore
+    CONFIG += disable_magickwand
+    CONFIG += disable_msedgewebview2
+    CONFIG += disable_mshtml
+    CONFIG += disable_nanosvg
+    CONFIG += disable_nsimage
+    CONFIG += disable_openexr
+    CONFIG += disable_openjpeg
+    CONFIG += disable_pkgconfig
+    CONFIG += disable_qmlwebengine
+    CONFIG += disable_qtextended
+    CONFIG += disable_qtimageformats
+    CONFIG += disable_qtsvg
+    CONFIG += disable_qtwebengine
+    CONFIG += disable_qtwebkit
+    CONFIG += disable_resvg
+    CONFIG += disable_stb
+    CONFIG += disable_wic
+    CONFIG += disable_xzutils
+    CONFIG += disable_zlib
+    CONFIG += disable_zstd
+}
+
 # ::::: System Libraries Configuration :::::
 
 # pkg-config options:
