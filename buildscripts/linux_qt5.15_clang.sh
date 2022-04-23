@@ -8,6 +8,7 @@ DESKTOP_PATH="src/${PROJECT}/resources/platform/linux/${IDENTIFIER}.desktop"
 ICON_PATH="src/${PROJECT}/resources/icon/icon.svg"
 ICONS_DIR_PATH="src/${PROJECT}/resources/icon"
 DEBIAN_DIR_PATH="src/${PROJECT}/resources/platform/debian"
+SCRIPT_PATH="src/${PROJECT}/resources/platform/linux/set_associations.sh"
 
 QTDIR="/opt/qt-5.15.3_clang"
 CLANGDIR="/opt/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-14.04"
@@ -27,8 +28,9 @@ make
 strip --strip-all "${APP_PATH}/${PROJECT}"
 
 rm -rf "AppDir"
-mkdir -p "AppDir/usr/bin" "AppDir/usr/lib" "AppDir/usr/share/applications" "AppDir/usr/share/icons/hicolor/scalable/apps"
+mkdir -p "AppDir/usr/bin" "AppDir/usr/lib" "AppDir/usr/share/applications" "AppDir/usr/share/icons/hicolor/scalable/apps" "AppDir/usr/share/ImageViewer"
 cp -a "${APP_PATH}/${PROJECT}" "AppDir/usr/bin/"
+cp -a "../${SCRIPT_PATH}" "AppDir/usr/share/ImageViewer/"
 cp -a "../${DESKTOP_PATH}" "AppDir/usr/share/applications/${IDENTIFIER}.desktop"
 cp -a "../${ICON_PATH}" "AppDir/usr/share/icons/hicolor/scalable/apps/${IDENTIFIER}.svg"
 find "../${ICONS_DIR_PATH}" -name '*.png' -print0 | while IFS= read -r -d '' RASTER_ICON_PATH ; do
