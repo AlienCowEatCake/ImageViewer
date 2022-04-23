@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBAVIF_PATH = $${PWD}/libavif-0.9.0
+THIRDPARTY_LIBAVIF_PATH = $${PWD}/libavif-0.10.1
 
 include(../CommonSettings.pri)
 include(../aom/aom.pri)
@@ -24,6 +24,7 @@ INCLUDEPATH = $${THIRDPARTY_LIBAVIF_PATH}/include $${INCLUDEPATH}
 DEFINES += AVIF_CODEC_AOM=1 AVIF_CODEC_AOM_ENCODE=1 AVIF_CODEC_AOM_DECODE=1
 *msvc*: DEFINES += inline=__inline
 
+# find ./src -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBAVIF_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBAVIF_PATH}/src/alpha.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/avif.c \
@@ -33,6 +34,7 @@ SOURCES += \
 \#    $${THIRDPARTY_LIBAVIF_PATH}/src/codec_rav1e.c \
 \#    $${THIRDPARTY_LIBAVIF_PATH}/src/codec_svt.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/colr.c \
+    $${THIRDPARTY_LIBAVIF_PATH}/src/diag.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/io.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/mem.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/obu.c \
@@ -40,10 +42,12 @@ SOURCES += \
     $${THIRDPARTY_LIBAVIF_PATH}/src/read.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/reformat.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/reformat_libyuv.c \
+    $${THIRDPARTY_LIBAVIF_PATH}/src/scale.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/stream.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/utils.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/write.c \
 
+# find ./include -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBAVIF_PATH}| ; s|$| \\|'
 HEADERS += \
     $${THIRDPARTY_LIBAVIF_PATH}/include/avif/avif.h \
     $${THIRDPARTY_LIBAVIF_PATH}/include/avif/internal.h \
