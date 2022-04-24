@@ -182,6 +182,13 @@ QString letterByNumFrom1(int num)
     return letterByNumFrom0(num - 1);
 }
 
+QString versionWithOptionalPatch(int major, int minor, int patch)
+{
+    return patch
+            ? QString::fromLatin1("%1.%2.%3").arg(major).arg(minor).arg(patch)
+            : QString::fromLatin1("%1.%2").arg(major).arg(minor);
+}
+
 QString formatItem(const QString &title, const QString &name, const QString &version, const QString &url, const QString& license, const QString& licenseUrl)
 {
     QString result;
@@ -615,12 +622,13 @@ QString getTextBrowserContent()
     result.append(formatItem(
                       QString::fromLatin1("This software uses the Little CMS 2 library"),
                       QString::fromLatin1("lcms2"),
-                      QString::fromLatin1("%1.%2").arg(LCMS_VERSION / 1000).arg(LCMS_VERSION % 1000 / 10),
+                      versionWithOptionalPatch(LCMS_VERSION / 1000, LCMS_VERSION % 1000 / 10, LCMS_VERSION % 10),
                       QString::fromLatin1("http://www.littlecms.com/"),
                       QString::fromLatin1("MIT License"),
                       QString::fromLatin1("https://opensource.org/licenses/mit-license")
                       ));
 #endif
+    Q_UNUSED(versionWithOptionalPatch(0, 0, 0));
 
 #if defined (HAS_ZLIB)
     result.append(formatItem(
