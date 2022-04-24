@@ -120,7 +120,6 @@ class KeyCode
 
     IMF_EXPORT
     KeyCode (const KeyCode &other);
-    IMF_EXPORT
 #if __cplusplus >= 201103L
     ~KeyCode() = default;
 #else

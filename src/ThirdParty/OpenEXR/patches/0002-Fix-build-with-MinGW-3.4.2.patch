@@ -1,4 +1,4 @@
-From 3ca16b295f41ab236f114374873c3c09584db483 Mon Sep 17 00:00:00 2001
+From 16355ac3adfd425381c91d33b95f8aa60b6d709c Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 18:20:28 +0700
 Subject: [PATCH 2/6] Fix build with MinGW 3.4.2
@@ -953,13 +953,13 @@ index f2bd11fc..efb08d47 100644
      void		initialize ();
      void                multiPartInitialize(InputPartData* part);
 diff --git a/OpenEXR/IlmImf/ImfKeyCode.h b/OpenEXR/IlmImf/ImfKeyCode.h
-index 58986a4a..28a11060 100644
+index 231c7848..e22ade98 100644
 --- a/OpenEXR/IlmImf/ImfKeyCode.h
 +++ b/OpenEXR/IlmImf/ImfKeyCode.h
-@@ -121,7 +121,11 @@ class KeyCode
+@@ -120,7 +120,11 @@ class KeyCode
+ 
      IMF_EXPORT
      KeyCode (const KeyCode &other);
-     IMF_EXPORT
 +#if __cplusplus >= 201103L
      ~KeyCode() = default;
 +#else
@@ -1787,5 +1787,5 @@ index 8e8086c6..5af6d048 100644
          //
          // Access to the writable sample count array.
 -- 
-2.34.0
+2.30.2
 

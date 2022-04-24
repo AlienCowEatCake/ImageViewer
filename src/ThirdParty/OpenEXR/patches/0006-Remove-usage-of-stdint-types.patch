@@ -1,4 +1,4 @@
-From a61cf84f35377324d62ea6f3d106c541a8432951 Mon Sep 17 00:00:00 2001
+From 3cf91dd1d27c0e50aa5fcb2d54b32b9573aaac69 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 20:47:04 +0700
 Subject: [PATCH 6/6] Remove usage of stdint types
@@ -45,5 +45,5 @@ index 77843a71..66cca708 100644
      return Box2i (tileMin, tileMax);
  }
 -- 
-2.34.0
+2.30.2
 

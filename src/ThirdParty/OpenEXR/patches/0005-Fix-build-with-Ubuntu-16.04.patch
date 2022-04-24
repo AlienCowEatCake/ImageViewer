@@ -1,4 +1,4 @@
-From 296df1d74ba089c0ce995b85286845dcb72efbd5 Mon Sep 17 00:00:00 2001
+From d47d07da1fe32a99381634680c161486ac4e319c Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 6 Dec 2020 19:57:40 +0700
 Subject: [PATCH 5/6] Fix build with Ubuntu 16.04
@@ -21,5 +21,5 @@ index eb0702ea..77930838 100644
  
  // Windows specific addition to prevent the indirect import of the redefined min/max macros
 -- 
-2.34.0
+2.30.2
 

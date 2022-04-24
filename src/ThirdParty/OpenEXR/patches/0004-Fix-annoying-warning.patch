@@ -1,4 +1,4 @@
-From 708e6173b5157bb8c72f77f56e6b773961a2596e Mon Sep 17 00:00:00 2001
+From 887d042285c987290d93f323f8b83ebf14be07d9 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Jun 2020 17:12:07 +0700
 Subject: [PATCH 4/6] Fix annoying warning
@@ -32,5 +32,5 @@ index a2ade5d2..c609860e 100644
      OPENEXR_IMF_INTERNAL_NAMESPACE::Xdr::read <OPENEXR_IMF_INTERNAL_NAMESPACE::StreamIO> (is, _value);
  }
 -- 
-2.34.0
+2.30.2
 
