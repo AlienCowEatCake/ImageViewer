@@ -100,6 +100,9 @@ void tst_qicns::writeIcons_data()
 
 void tst_qicns::writeIcons()
 {
+#ifdef Q_OS_INTEGRITY
+    QSKIP("Unable to create temp dir on INTEGRITY device.");
+#endif
     QTemporaryDir temp(QDir::tempPath() + QStringLiteral("/tst_qincs"));
     QVERIFY2(temp.isValid(), "Unable to create temp dir.");
 

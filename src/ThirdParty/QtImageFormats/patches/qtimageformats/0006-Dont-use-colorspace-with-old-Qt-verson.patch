@@ -1,4 +1,4 @@
-From 89f6361823b429298c6c9abc5de047731d6a4014 Mon Sep 17 00:00:00 2001
+From 9cf3f5d686d83864b3c04570fe8baac21cc0d92d Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 17 Nov 2019 01:42:45 +0700
 Subject: [PATCH 6/7] Dont use colorspace with old Qt verson
@@ -10,7 +10,7 @@ Subject: [PATCH 6/7] Dont use colorspace with old Qt verson
  3 files changed, 16 insertions(+)
 
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index 687512e..8548e4e 100644
+index 1cfb0f0..8e19623 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
 @@ -39,7 +39,9 @@
@@ -23,7 +23,7 @@ index 687512e..8548e4e 100644
  #include <qdebug.h>
  #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
  #include <qfloat16.h>
-@@ -596,6 +598,7 @@ bool QTiffHandler::read(QImage *image)
+@@ -597,6 +599,7 @@ bool QTiffHandler::read(QImage *image)
          }
      }
  
@@ -31,7 +31,7 @@ index 687512e..8548e4e 100644
      uint32_t count;
      void *profile;
      if (TIFFGetField(tiff, TIFFTAG_ICCPROFILE, &count, &profile)) {
-@@ -604,6 +607,7 @@ bool QTiffHandler::read(QImage *image)
+@@ -605,6 +608,7 @@ bool QTiffHandler::read(QImage *image)
      }
      // We do not handle colorimetric metadat not on ICC profile form, it seems to be a lot
      // less common, and would need additional API in QColorSpace.
@@ -39,7 +39,7 @@ index 687512e..8548e4e 100644
  
      return true;
  }
-@@ -711,6 +715,7 @@ bool QTiffHandler::write(const QImage &image)
+@@ -712,6 +716,7 @@ bool QTiffHandler::write(const QImage &image)
          TIFFClose(tiff);
          return false;
      }
@@ -47,7 +47,7 @@ index 687512e..8548e4e 100644
      // set color space
      if (image.colorSpace().isValid()) {
          QByteArray iccProfile = image.colorSpace().iccProfile();
-@@ -719,6 +724,7 @@ bool QTiffHandler::write(const QImage &image)
+@@ -720,6 +725,7 @@ bool QTiffHandler::write(const QImage &image)
              return false;
          }
      }
@@ -126,5 +126,5 @@ index 87ce1b7..9ae663e 100644
  };
  
 -- 
-2.34.0
+2.30.2
 

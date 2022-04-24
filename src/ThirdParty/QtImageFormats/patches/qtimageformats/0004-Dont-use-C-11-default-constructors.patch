@@ -1,4 +1,4 @@
-From 71492ce986646861778ab7675cc89fa769765b40 Mon Sep 17 00:00:00 2001
+From ca044a582178af7c09c648927d7088903def5dbb Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 17 Jun 2018 21:58:03 +0700
 Subject: [PATCH 4/7] Dont use C++11 'default' constructors
@@ -21,5 +21,5 @@ index 545368a..b3888ae 100644
      virtual ~TgaReader() {}
      virtual QRgb operator()(QIODevice *s) const = 0;
 -- 
-2.34.0
+2.30.2
 

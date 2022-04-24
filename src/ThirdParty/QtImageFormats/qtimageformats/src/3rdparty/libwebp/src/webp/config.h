@@ -29,9 +29,6 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 /* #undef HAVE_INTTYPES_H */
 
-/* Define to 1 if you have the <memory.h> header file. */
-/* #undef HAVE_MEMORY_H */
-
 /* Define to 1 if you have the <OpenGL/glut.h> header file. */
 /* #undef HAVE_OPENGL_GLUT_H */
 
@@ -43,6 +40,9 @@
 
 /* Define to 1 if you have the <stdint.h> header file. */
 /* #undef HAVE_STDINT_H */
+
+/* Define to 1 if you have the <stdio.h> header file. */
+/* #undef HAVE_STDIO_H */
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 /* #undef HAVE_STDLIB_H */
@@ -81,7 +81,7 @@
 #define PACKAGE_NAME "libwebp"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libwebp 1.2.1"
+#define PACKAGE_STRING "libwebp 1.2.2"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libwebp"
@@ -90,17 +90,19 @@
 #define PACKAGE_URL "http://developers.google.com/speed/webp"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.2.1"
+#define PACKAGE_VERSION "1.2.2"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
 /* #undef PTHREAD_CREATE_JOINABLE */
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 /* #undef STDC_HEADERS */
 
 /* Version number of package */
-#define VERSION "1.2.1"
+#define VERSION "1.2.2"
 
 /* Enable experimental code */
 /* #undef WEBP_EXPERIMENTAL_FEATURES */
