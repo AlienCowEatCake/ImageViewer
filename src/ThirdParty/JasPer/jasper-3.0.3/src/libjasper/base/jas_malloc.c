@@ -94,7 +94,6 @@
 #	include <unistd.h>
 #elif defined(_WIN32)
 #	include <windows.h>
-#	include <sysinfoapi.h>
 #endif
 
 /******************************************************************************\
@@ -654,7 +653,14 @@ size_t jas_get_total_mem_size()
 	https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getphysicallyinstalledsystemmemory
 	*/
 	ULONGLONG size;
-	if (!GetPhysicallyInstalledSystemMemory(&size)) {
+	HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
+	typedef BOOL(WINAPI * GetPhysicallyInstalledSystemMemory_t)(PULONGLONG);
+	GetPhysicallyInstalledSystemMemory_t GetPhysicallyInstalledSystemMemory_f =
+	  (GetPhysicallyInstalledSystemMemory_t)(GetProcAddress(hKernel32, "GetPhysicallyInstalledSystemMemory"));
+	if (!GetPhysicallyInstalledSystemMemory_f) {
+		return 0;
+	}
+	if (!GetPhysicallyInstalledSystemMemory_f(&size)) {
 		return 0;
 	}
 	return 1024 * size;

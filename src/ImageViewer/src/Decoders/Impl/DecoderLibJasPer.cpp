@@ -21,7 +21,18 @@
 #include <cstddef>
 
 #include "Workarounds/BeginIgnoreShiftNegative.h"
+#if !defined (max_align_t)
 #include <jasper/jasper.h>
+#if defined (max_align_t)
+#undef max_align_t
+#endif
+#elif !defined (JAS_NO_SET_MAX_ALIGN_T)
+#define JAS_NO_SET_MAX_ALIGN_T
+#include <jasper/jasper.h>
+#undef JAS_NO_SET_MAX_ALIGN_T
+#else
+#include <jasper/jasper.h>
+#endif
 #include "Workarounds/EndIgnoreShiftNegative.h"
 
 #include <QFileInfo>
