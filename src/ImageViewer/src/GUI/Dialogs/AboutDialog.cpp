@@ -755,6 +755,17 @@ QString getTextBrowserContent()
                       ));
 #endif
 
+#if defined (HAS_KIMAGEFORMATS)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses part of the KImageFormats framework"),
+                      QString::fromLatin1("kimageformats"),
+                      QString(),
+                      QString::fromLatin1("https://invent.kde.org/frameworks/kimageformats"),
+                      QString::fromLatin1("GNU LGPL v2.1"),
+                      QString::fromLatin1("https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html#SEC1")
+                      ));
+#endif
+
 #if defined (HAS_STB)
     result.append(formatItem(
                       QString::fromLatin1("This software uses part of the STB library"),

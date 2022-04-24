@@ -1,0 +1,52 @@
+From c615c8681ad04436482af1024783111e0f8f8ca6 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Mon, 25 Apr 2022 01:44:31 +0700
+Subject: [PATCH 1/2] Add ability to disable JXL encoder and threads
+
+---
+ src/imageformats/jxl.cpp | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
+index 4f2c783..d36bbeb 100644
+--- a/src/imageformats/jxl.cpp
++++ b/src/imageformats/jxl.cpp
+@@ -10,8 +10,35 @@
+ #include <QtGlobal>
+ 
+ #include "jxl_p.h"
++#if !defined (DISABLE_JXL_ENCODER)
+ #include <jxl/encode.h>
++#else
++typedef struct JxlEncoderStruct JxlEncoder;
++typedef struct JxlEncoderOptionsStruct JxlEncoderOptions;
++typedef enum {JXL_ENC_SUCCESS, JXL_ENC_ERROR, JXL_ENC_NEED_MORE_OUTPUT, JXL_ENC_NOT_SUPPORTED} JxlEncoderStatus;
++#define JxlColorEncodingSetToSRGB(_1, _2)
++#define JxlEncoderCreate(_1) nullptr
++#define JxlEncoderDestroy(_1)
++#define JxlEncoderOptionsCreate(_1, _2) nullptr
++#define JxlEncoderOptionsSetDistance(_1, _2)
++#define JxlEncoderInitBasicInfo(_1)
++#define JxlEncoderOptionsSetLossless(_1, _2)
++#define JxlEncoderSetBasicInfo(_1, _2) JXL_ENC_ERROR
++#define JxlEncoderSetICCProfile(_1, _2, _3) JXL_ENC_ERROR
++#define JxlEncoderSetColorEncoding(_1, _2) JXL_ENC_ERROR
++#define JxlEncoderAddImageFrame(_1, _2, _3, _4) JXL_ENC_ERROR
++#define JxlEncoderCloseInput(_1)
++#define JxlEncoderProcessOutput(_1, _2, _3) JXL_ENC_ERROR
++#endif
++#if !defined (DISABLE_JXL_THREADS)
+ #include <jxl/thread_parallel_runner.h>
++#else
++#define JxlThreadParallelRunner nullptr
++#define JxlThreadParallelRunnerDestroy(_1)
++#define JxlThreadParallelRunnerCreate(_1, _2) nullptr
++#define JxlDecoderSetParallelRunner(_1, _2, _3) JXL_DEC_SUCCESS
++#define JxlEncoderSetParallelRunner(_1, _2, _3) JXL_ENC_SUCCESS
++#endif
+ #include <string.h>
+ 
+ QJpegXLHandler::QJpegXLHandler()
+-- 
+2.30.2
+

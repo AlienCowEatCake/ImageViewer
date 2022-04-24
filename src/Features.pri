@@ -79,6 +79,7 @@ disable_thirdparty {
     CONFIG += disable_highway
     CONFIG += disable_jbigkit
     CONFIG += disable_jxrlib
+    CONFIG += disable_kimageformats
     CONFIG += disable_lerc
     CONFIG += disable_libavif
     CONFIG += disable_libbpg
@@ -563,6 +564,15 @@ greaterThan(QT_MAJOR_VERSION, 5) {
 #    disable_qtimageformats
 !greaterThan(QT_MAJOR_VERSION, 4) {
     CONFIG += disable_qtimageformats
+}
+
+# KImageFormats options:
+#    disable_kimageformats
+!greaterThan(QT_MAJOR_VERSION, 4) {
+    CONFIG += disable_kimageformats
+}
+equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 15) {
+    CONFIG += disable_kimageformats
 }
 
 # MSEdgeWebView2 options:

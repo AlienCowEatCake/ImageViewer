@@ -144,3 +144,7 @@ SUBDIRS =
     SUBDIRS += QtImageFormats/QtImageFormats.pro
 }
 
+!disable_kimageformats {
+    SUBDIRS += KImageFormats/KImageFormats.pro
+}
+

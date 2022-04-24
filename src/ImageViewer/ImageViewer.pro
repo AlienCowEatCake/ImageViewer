@@ -174,6 +174,12 @@ HEADERS += \
         src/Decoders/Impl/DecoderQtImageFormatsMovie.cpp
 }
 
+!disable_kimageformats {
+    SOURCES += \
+        src/Decoders/Impl/DecoderKImageFormatsImage.cpp \
+        src/Decoders/Impl/DecoderKImageFormatsMovie.cpp
+}
+
 !disable_msedgewebview2 {
     SOURCES += \
         src/Decoders/Impl/Internal/GraphicsItems/MSEdgeWebView2SVGGraphicsItem.cpp \

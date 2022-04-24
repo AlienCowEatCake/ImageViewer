@@ -85,6 +85,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderGraphicsMagickWand"   ,  340, -1); ///< Умеет очень много разных форматов, в том числе анимированные. Более высокоуровневое API, чем GraphicsMagick.
         P("DecoderMagickCore"           ,  350, -1); ///< Умеет очень много разных форматов, в том числе анимированные.
         P("DecoderMagickWand"           ,  360, -1); ///< Умеет очень много разных форматов, в том числе анимированные. Более высокоуровневое API, чем MagickCore.
+        P("DecoderKImageFormatsImage"   ,  380, -1); ///< Декодеры KDE. Должен быть выше QtImageFormatsImage и Magick*.
         P("DecoderNSImage"              ,  400, -1); ///< Умеет очень много разных форматов. Должен быть выше декодеров общего назначения, но ниже специализированных декодеров.
         P("DecoderLibJpeg"              ,  500, 70); ///< Умеет jpeg форматы. Поддерживает EXIF и ICCP. Должен быть выше QImage.
         P("DecoderLibJasPer"            ,  510, 80); ///< Умеет формат JPEG 2000 и несколько побочных. Поддержка хуже, чем в QtImageFormatsImage, но имеет ряд дополнительных проверок от крашей.
@@ -102,6 +103,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderGifLib"               , 1100, -1); ///< Умеет анимированные gif, но медленнее, чем QMovie, зато поддерживает ICCP и более всеяден.
         P("DecoderLibMng"               , 1110, -1); ///< Умеет анимированные mng и jng. Поддержка mng хуже, чем в QtImageFormatsMovie.
         P("DecoderQtImageFormatsMovie"  , 1200, -1); ///< Умеет анимированные mng.
+        P("DecoderKImageFormatsMovie"   , 1210, -1); ///< Умеет анимированные форматы из KDE. Должен быть выше DecoderQtImageFormatsMovie.
         P("DecoderLibPng"               , 1300, -1); ///< Умеет анимированные png. Поддерживает EXIF и ICCP.
         P("DecoderLibWebP"              , 1310, -1); ///< Умеет анимированные webp. Поддержка лучше, чем в QtImageFormatsMovie.
         P("DecoderLibBpg"               , 1320, -1); ///< Умеет анимированные bpg. Поддерживает EXIF и ICCP.

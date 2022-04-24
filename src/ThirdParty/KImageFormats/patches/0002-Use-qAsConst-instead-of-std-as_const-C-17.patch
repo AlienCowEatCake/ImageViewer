@@ -1,0 +1,34 @@
+From 87a70d1d4b5bbb3090c622375e3a10b8179c99bb Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Mon, 25 Apr 2022 01:45:25 +0700
+Subject: [PATCH 2/2] Use qAsConst instead of std::as_const (C++17)
+
+---
+ src/imageformats/pic.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/imageformats/pic.cpp b/src/imageformats/pic.cpp
+index f2adb34..92bd380 100644
+--- a/src/imageformats/pic.cpp
++++ b/src/imageformats/pic.cpp
+@@ -226,7 +226,7 @@ bool SoftimagePICHandler::read(QImage *image)
+     }
+ 
+     QImage::Format fmt = QImage::Format_RGB32;
+-    for (const PicChannel &channel : std::as_const(m_channels)) {
++    for (const PicChannel &channel : qAsConst(m_channels)) {
+         if (channel.size != 8) {
+             // we cannot read images that do not come in bytes
+             qDebug() << "Channel size was" << channel.size;
+@@ -405,7 +405,7 @@ QVariant SoftimagePICHandler::option(ImageOption option) const
+         return QString();
+     case ImageFormat:
+         if (const_cast<SoftimagePICHandler *>(this)->readChannels()) {
+-            for (const PicChannel &channel : std::as_const(m_channels)) {
++            for (const PicChannel &channel : qAsConst(m_channels)) {
+                 if (channel.code & ALPHA) {
+                     return QImage::Format_ARGB32;
+                 }
+-- 
+2.30.2
+
