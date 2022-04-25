@@ -32,13 +32,13 @@ Minimal configuration:
 * GCC 3.4 or later
 
 Full configuration:
-* Qt 5.5 or later
-* Modern GCC, Clang or MSVC compiler with C++11 support
+* Qt 5.15 or later
+* Modern GCC, Clang or MSVC compiler with C++14 support
 
-### Building with bundled libraries example (Ubuntu 20.04)
+### Building with bundled libraries example (Ubuntu 22.04)
 
 ```bash
-sudo apt-get install git g++ make qt5-default libqt5svg5-dev
+sudo apt-get install git g++ make qtbase5-dev libqt5svg5-dev
 git clone https://github.com/AlienCowEatCake/ImageViewer.git
 cd ImageViewer
 mkdir build
@@ -48,33 +48,34 @@ make
 cp -a src/ImageViewer/ImageViewer /path/to/install/
 ```
 
-### Building with all system libraries example (Ubuntu 20.04)
+### Building with all system libraries example (Ubuntu 22.04)
 
 ```bash
-sudo apt-get install git g++ make qt5-default libqt5svg5-dev zlib1g-dev \
-    liblcms2-dev libexif-dev libexiv2-dev libjpeg-dev libmng-dev libpng-dev \
-    libjbig-dev libtiff-dev libwebp-dev libfreetype6-dev libwmf-dev \
-    libopenjp2-7-dev libgif-dev libraw-dev librsvg2-dev libheif-dev \
-    libilmbase-dev libopenexr-dev libmagickcore-dev libmagickwand-dev \
+sudo apt-get install git g++ make qtbase5-dev libqt5svg5-dev \
     qt5-image-formats-plugins libqt5webkit5-dev qtwebengine5-dev \
-    libjxr-dev
+    zlib1g-dev liblcms2-dev libexif-dev libexiv2-dev libjpeg-dev \
+    libmng-dev libpng-dev libjbig-dev liblerc-dev libtiff-dev \
+    libwebp-dev libwmf-dev libopenjp2-7-dev libgif-dev libraw-dev \
+    librsvg2-dev libresvg-dev libheif-dev libopenexr-dev libavif-dev \
+    libjxr-dev libmagickcore-dev libmagickwand-dev
 git clone https://github.com/AlienCowEatCake/ImageViewer.git
 cd ImageViewer
 mkdir build
 cd build
 qmake CONFIG+="release enable_pkgconfig" \
-    CONFIG+="system_zlib disable_zstd disable_xzutils disable_libexpat" \
-    CONFIG+="system_liblcms2 system_libexif system_exiv2 system_libjpeg" \
-    CONFIG+="disable_libjasper system_libmng system_libpng system_jbigkit" \
-    CONFIG+="system_libtiff system_libwebp disable_libbpg disable_freetype" \
-    CONFIG+="system_libwmf system_openjpeg system_giflib system_libraw" \
-    CONFIG+="system_librsvg disable_resvg disable_aom disable_libde265 " \
-    CONFIG+="system_libheif system_openexr disable_libavif disable_lerc" \
-    CONFIG+="disable_flif system_jxrlib disable_brotli disable_highway" \
+    CONFIG+="system_zlib disable_zstd disable_xzutils disable_brotli" \
+    CONFIG+="disable_highway disable_libexpat system_liblcms2 system_libexif" \
+    CONFIG+="system_exiv2 system_libjpeg disable_libjasper system_libmng" \
+    CONFIG+="system_libpng system_jbigkit system_lerc system_libtiff" \
+    CONFIG+="system_libwebp disable_libbpg disable_freetype system_libwmf" \
+    CONFIG+="system_openjpeg system_giflib system_libraw system_librsvg" \
+    CONFIG+="system_resvg disable_aom disable_libde265 system_libheif" \
+    CONFIG+="system_openexr system_libavif disable_flif system_jxrlib" \
     CONFIG+="disable_libjxl enable_magickcore system_magickwand" \
     CONFIG+="disable_graphicsmagick disable_graphicsmagickwand" \
     CONFIG+="disable_qtextended disable_stb disable_nanosvg" \
-    CONFIG+="disable_qtimageformats enable_qtwebkit enable_qtwebengine" \
+    CONFIG+="disable_qtimageformats disable_kimageformats" \
+    CONFIG+="enable_qtwebkit enable_qtwebengine" \
     INCLUDEPATH+="/usr/include/jxrlib" \
     -r ../ImageViewer.pro
 make
