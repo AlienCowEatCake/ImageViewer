@@ -583,7 +583,7 @@ bool KImageFormatsImageReader::Impl::initHandler()
             // Try the most probable extension first
             int currentFormatIndex = extensions.indexOf(format.toLower());
             if(currentFormatIndex > 0)
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#if (QT_VERSION < QT_VERSION_CHECK(5, 13, 0))
                 extensions.swap(0, currentFormatIndex);
 #else
                 extensions.swapItemsAt(0, currentFormatIndex);

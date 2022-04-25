@@ -13,7 +13,7 @@
 #include <QList>
 #include <QBuffer>
 #include <QDir>
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 #include <QElapsedTimer>
 #endif
 
@@ -263,7 +263,7 @@ KImageFormatsFrameInfo KImageFormatsMovie::Impl::infoForFrame(int frameNumber)
 
 bool KImageFormatsMovie::Impl::next()
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QElapsedTimer time;
 #else
     QTime time;
