@@ -25,7 +25,7 @@ public:
 class RASPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "ras.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "ras.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

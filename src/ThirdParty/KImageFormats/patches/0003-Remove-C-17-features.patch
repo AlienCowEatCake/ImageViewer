@@ -1,0 +1,75 @@
+From be2a5f79500695043cbc883bb0012f2e0884d886 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Mon, 25 Apr 2022 01:45:25 +0700
+Subject: [PATCH 3/3] Remove C++17 features
+
+---
+ src/imageformats/pic.cpp | 4 ++--
+ src/imageformats/xcf.cpp | 8 ++++----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/imageformats/pic.cpp b/src/imageformats/pic.cpp
+index f2adb34..92bd380 100644
+--- a/src/imageformats/pic.cpp
++++ b/src/imageformats/pic.cpp
+@@ -226,7 +226,7 @@ bool SoftimagePICHandler::read(QImage *image)
+     }
+ 
+     QImage::Format fmt = QImage::Format_RGB32;
+-    for (const PicChannel &channel : std::as_const(m_channels)) {
++    for (const PicChannel &channel : qAsConst(m_channels)) {
+         if (channel.size != 8) {
+             // we cannot read images that do not come in bytes
+             qDebug() << "Channel size was" << channel.size;
+@@ -405,7 +405,7 @@ QVariant SoftimagePICHandler::option(ImageOption option) const
+         return QString();
+     case ImageFormat:
+         if (const_cast<SoftimagePICHandler *>(this)->readChannels()) {
+-            for (const PicChannel &channel : std::as_const(m_channels)) {
++            for (const PicChannel &channel : qAsConst(m_channels)) {
+                 if (channel.code & ALPHA) {
+                     return QImage::Format_ARGB32;
+                 }
+diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
+index bd27634..e1700d7 100644
+--- a/src/imageformats/xcf.cpp
++++ b/src/imageformats/xcf.cpp
+@@ -32,7 +32,7 @@ namespace
+ {
+ struct RandomTable {
+     // From glibc
+-    static constexpr int rand_r(unsigned int *seed)
++    static int rand_r(unsigned int *seed)
+     {
+         unsigned int next = *seed;
+         int result = 0;
+@@ -56,7 +56,7 @@ struct RandomTable {
+         return result;
+     }
+ 
+-    constexpr RandomTable()
++    RandomTable()
+         : values{}
+     {
+         unsigned int next = RANDOM_SEED;
+@@ -381,7 +381,7 @@ private:
+     static int random_table[RANDOM_TABLE_SIZE];
+     static bool random_table_initialized;
+ 
+-    static constexpr RandomTable randomTable{};
++    static const RandomTable randomTable;
+ 
+     //! This table is used as a shared grayscale ramp to be set on grayscale
+     //! images. This is because Qt does not differentiate between indexed and
+@@ -445,7 +445,7 @@ private:
+ int XCFImageFormat::random_table[RANDOM_TABLE_SIZE];
+ bool XCFImageFormat::random_table_initialized;
+ 
+-constexpr RandomTable XCFImageFormat::randomTable;
++const RandomTable XCFImageFormat::randomTable{};
+ 
+ QVector<QRgb> XCFImageFormat::grayTable;
+ 
+-- 
+2.35.1
+

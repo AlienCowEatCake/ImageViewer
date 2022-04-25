@@ -26,7 +26,7 @@ public:
 class EXRPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "exr.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "exr.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

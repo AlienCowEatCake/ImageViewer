@@ -185,7 +185,7 @@ private:
 class SoftimagePICPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pic.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pic.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

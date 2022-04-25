@@ -24,7 +24,7 @@ public:
 class HDRPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "hdr.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "hdr.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

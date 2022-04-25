@@ -24,7 +24,7 @@ public:
 class KraPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "kra.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "kra.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

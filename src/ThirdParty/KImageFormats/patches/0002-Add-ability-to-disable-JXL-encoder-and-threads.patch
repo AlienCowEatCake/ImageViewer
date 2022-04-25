@@ -1,7 +1,7 @@
-From c615c8681ad04436482af1024783111e0f8f8ca6 Mon Sep 17 00:00:00 2001
+From fe66883f7378e5ea4a5f19cf045dd59716f6eb64 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:44:31 +0700
-Subject: [PATCH 1/2] Add ability to disable JXL encoder and threads
+Subject: [PATCH 2/3] Add ability to disable JXL encoder and threads
 
 ---
  src/imageformats/jxl.cpp | 27 +++++++++++++++++++++++++++
@@ -48,5 +48,5 @@ index 4f2c783..d36bbeb 100644
  
  QJpegXLHandler::QJpegXLHandler()
 -- 
-2.30.2
+2.35.1
 

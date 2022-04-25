@@ -1,0 +1,235 @@
+From 2aab4d37737284cfc309cff77c8b0cbb8dbfa9ec Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Mon, 25 Apr 2022 04:03:37 +0700
+Subject: [PATCH 1/3] Remove plugin metadata declarations
+
+---
+ src/imageformats/ani_p.h  | 2 +-
+ src/imageformats/avif_p.h | 2 +-
+ src/imageformats/eps_p.h  | 2 +-
+ src/imageformats/exr_p.h  | 2 +-
+ src/imageformats/hdr_p.h  | 2 +-
+ src/imageformats/heif_p.h | 2 +-
+ src/imageformats/jxl_p.h  | 2 +-
+ src/imageformats/kra.h    | 2 +-
+ src/imageformats/ora.h    | 2 +-
+ src/imageformats/pcx_p.h  | 2 +-
+ src/imageformats/pic_p.h  | 2 +-
+ src/imageformats/psd_p.h  | 2 +-
+ src/imageformats/ras_p.h  | 2 +-
+ src/imageformats/rgb_p.h  | 2 +-
+ src/imageformats/tga_p.h  | 2 +-
+ src/imageformats/xcf_p.h  | 2 +-
+ 16 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/src/imageformats/ani_p.h b/src/imageformats/ani_p.h
+index e33eee4..9093432 100644
+--- a/src/imageformats/ani_p.h
++++ b/src/imageformats/ani_p.h
+@@ -58,7 +58,7 @@ private:
+ class ANIPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "ani.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "ani.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/avif_p.h b/src/imageformats/avif_p.h
+index db8941f..8310701 100644
+--- a/src/imageformats/avif_p.h
++++ b/src/imageformats/avif_p.h
+@@ -72,7 +72,7 @@ private:
+ class QAVIFPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "avif.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "avif.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/eps_p.h b/src/imageformats/eps_p.h
+index 307ad6f..c4c3c93 100644
+--- a/src/imageformats/eps_p.h
++++ b/src/imageformats/eps_p.h
+@@ -25,7 +25,7 @@ public:
+ class EPSPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "eps.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "eps.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/exr_p.h b/src/imageformats/exr_p.h
+index 5bce059..a4f2cfa 100644
+--- a/src/imageformats/exr_p.h
++++ b/src/imageformats/exr_p.h
+@@ -26,7 +26,7 @@ public:
+ class EXRPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "exr.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "exr.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/hdr_p.h b/src/imageformats/hdr_p.h
+index afd7089..61e751c 100644
+--- a/src/imageformats/hdr_p.h
++++ b/src/imageformats/hdr_p.h
+@@ -24,7 +24,7 @@ public:
+ class HDRPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "hdr.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "hdr.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/heif_p.h b/src/imageformats/heif_p.h
+index ec57705..78b6898 100644
+--- a/src/imageformats/heif_p.h
++++ b/src/imageformats/heif_p.h
+@@ -48,7 +48,7 @@ private:
+ class HEIFPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "heif.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "heif.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/jxl_p.h b/src/imageformats/jxl_p.h
+index 8339d7e..8a0c01b 100644
+--- a/src/imageformats/jxl_p.h
++++ b/src/imageformats/jxl_p.h
+@@ -86,7 +86,7 @@ private:
+ class QJpegXLPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "jxl.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "jxl.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/kra.h b/src/imageformats/kra.h
+index 3b42d72..0a96835 100644
+--- a/src/imageformats/kra.h
++++ b/src/imageformats/kra.h
+@@ -24,7 +24,7 @@ public:
+ class KraPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "kra.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "kra.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/ora.h b/src/imageformats/ora.h
+index 58d134d..e419a66 100644
+--- a/src/imageformats/ora.h
++++ b/src/imageformats/ora.h
+@@ -24,7 +24,7 @@ public:
+ class OraPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "ora.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "ora.json")
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+     QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const override;
+diff --git a/src/imageformats/pcx_p.h b/src/imageformats/pcx_p.h
+index 3a9b817..b563c6a 100644
+--- a/src/imageformats/pcx_p.h
++++ b/src/imageformats/pcx_p.h
+@@ -25,7 +25,7 @@ public:
+ class PCXPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pcx.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pcx.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/pic_p.h b/src/imageformats/pic_p.h
+index 874d0e8..1d03125 100644
+--- a/src/imageformats/pic_p.h
++++ b/src/imageformats/pic_p.h
+@@ -185,7 +185,7 @@ private:
+ class SoftimagePICPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pic.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pic.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/psd_p.h b/src/imageformats/psd_p.h
+index 0ad483c..216cc2f 100644
+--- a/src/imageformats/psd_p.h
++++ b/src/imageformats/psd_p.h
+@@ -24,7 +24,7 @@ public:
+ class PSDPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "psd.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "psd.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/ras_p.h b/src/imageformats/ras_p.h
+index 044e1e8..79426dd 100644
+--- a/src/imageformats/ras_p.h
++++ b/src/imageformats/ras_p.h
+@@ -25,7 +25,7 @@ public:
+ class RASPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "ras.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "ras.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/rgb_p.h b/src/imageformats/rgb_p.h
+index 3d7b14c..967ce85 100644
+--- a/src/imageformats/rgb_p.h
++++ b/src/imageformats/rgb_p.h
+@@ -25,7 +25,7 @@ public:
+ class RGBPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "rgb.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "rgb.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/tga_p.h b/src/imageformats/tga_p.h
+index 17f54b6..62cef18 100644
+--- a/src/imageformats/tga_p.h
++++ b/src/imageformats/tga_p.h
+@@ -25,7 +25,7 @@ public:
+ class TGAPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "tga.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "tga.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/xcf_p.h b/src/imageformats/xcf_p.h
+index 419515b..002c749 100644
+--- a/src/imageformats/xcf_p.h
++++ b/src/imageformats/xcf_p.h
+@@ -26,7 +26,7 @@ public:
+ class XCFPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "xcf.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "xcf.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+-- 
+2.35.1
+

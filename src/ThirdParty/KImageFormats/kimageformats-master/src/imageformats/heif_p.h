@@ -48,7 +48,7 @@ private:
 class HEIFPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "heif.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "heif.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

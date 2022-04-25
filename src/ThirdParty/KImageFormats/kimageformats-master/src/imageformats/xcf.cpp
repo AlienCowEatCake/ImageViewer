@@ -32,7 +32,7 @@ namespace
 {
 struct RandomTable {
     // From glibc
-    static constexpr int rand_r(unsigned int *seed)
+    static int rand_r(unsigned int *seed)
     {
         unsigned int next = *seed;
         int result = 0;
@@ -56,7 +56,7 @@ struct RandomTable {
         return result;
     }
 
-    constexpr RandomTable()
+    RandomTable()
         : values{}
     {
         unsigned int next = RANDOM_SEED;
@@ -381,7 +381,7 @@ private:
     static int random_table[RANDOM_TABLE_SIZE];
     static bool random_table_initialized;
 
-    static constexpr RandomTable randomTable{};
+    static const RandomTable randomTable;
 
     //! This table is used as a shared grayscale ramp to be set on grayscale
     //! images. This is because Qt does not differentiate between indexed and
@@ -445,7 +445,7 @@ private:
 int XCFImageFormat::random_table[RANDOM_TABLE_SIZE];
 bool XCFImageFormat::random_table_initialized;
 
-constexpr RandomTable XCFImageFormat::randomTable;
+const RandomTable XCFImageFormat::randomTable{};
 
 QVector<QRgb> XCFImageFormat::grayTable;
 

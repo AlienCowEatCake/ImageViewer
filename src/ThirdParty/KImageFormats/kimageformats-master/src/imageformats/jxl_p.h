@@ -86,7 +86,7 @@ private:
 class QJpegXLPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "jxl.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "jxl.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

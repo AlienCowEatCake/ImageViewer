@@ -72,7 +72,7 @@ private:
 class QAVIFPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "avif.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "avif.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

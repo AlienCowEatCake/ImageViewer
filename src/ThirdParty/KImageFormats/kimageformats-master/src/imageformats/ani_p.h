@@ -58,7 +58,7 @@ private:
 class ANIPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "ani.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "ani.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

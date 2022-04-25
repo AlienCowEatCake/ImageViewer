@@ -24,7 +24,7 @@ public:
 class PSDPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "psd.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "psd.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

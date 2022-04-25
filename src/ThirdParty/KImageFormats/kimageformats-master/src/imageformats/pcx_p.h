@@ -25,7 +25,7 @@ public:
 class PCXPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pcx.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pcx.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

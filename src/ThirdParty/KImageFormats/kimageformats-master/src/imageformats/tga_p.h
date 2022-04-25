@@ -25,7 +25,7 @@ public:
 class TGAPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "tga.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "tga.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

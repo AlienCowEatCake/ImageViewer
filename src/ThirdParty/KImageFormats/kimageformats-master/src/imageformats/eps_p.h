@@ -25,7 +25,7 @@ public:
 class EPSPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "eps.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "eps.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
