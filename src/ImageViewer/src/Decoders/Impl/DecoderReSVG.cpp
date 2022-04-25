@@ -67,6 +67,13 @@ typedef void* QFunctionPointer;
 namespace
 {
 
+#if defined (LINKED_RESVG) && (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 20, 0))
+#define RESVG_FIT_TO_TYPE_ORIGINAL  RESVG_FIT_TO_ORIGINAL
+#define RESVG_FIT_TO_TYPE_WIDTH     RESVG_FIT_TO_WIDTH
+#define RESVG_FIT_TO_TYPE_HEIGHT    RESVG_FIT_TO_HEIGHT
+#define RESVG_FIT_TO_TYPE_ZOOM      RESVG_FIT_TO_ZOOM
+#endif
+
 // ====================================================================================================
 
 #if !defined (LINKED_RESVG)
@@ -81,10 +88,10 @@ typedef struct resvg_render_tree resvg_render_tree;
 
 typedef enum resvg_fit_to_type
 {
-    RESVG_FIT_TO_ORIGINAL,
-    RESVG_FIT_TO_WIDTH,
-    RESVG_FIT_TO_HEIGHT,
-    RESVG_FIT_TO_ZOOM,
+    RESVG_FIT_TO_TYPE_ORIGINAL,
+    RESVG_FIT_TO_TYPE_WIDTH,
+    RESVG_FIT_TO_TYPE_HEIGHT,
+    RESVG_FIT_TO_TYPE_ZOOM,
 } resvg_fit_to_type;
 
 struct resvg_fit_to
@@ -97,6 +104,16 @@ struct resvg_size
 {
     double width;
     double height;
+};
+
+struct resvg_transform
+{
+    double a;
+    double b;
+    double c;
+    double d;
+    double e;
+    double f;
 };
 
 struct ReSVG
@@ -112,6 +129,7 @@ struct ReSVG
     QFunctionPointer resvg_get_image_size;
     QFunctionPointer resvg_tree_destroy;
     QFunctionPointer resvg_render;
+    QFunctionPointer resvg_transform_identity; ///< @note v0.20.0+
 
     static ReSVG *instance()
     {
@@ -136,6 +154,7 @@ private:
         , resvg_get_image_size(Q_NULLPTR)
         , resvg_tree_destroy(Q_NULLPTR)
         , resvg_render(Q_NULLPTR)
+        , resvg_transform_identity(Q_NULLPTR)
         {
             if(!LibraryUtils::LoadQLibrary(library, RESVG_LIBRARY_NAMES))
                 return;
@@ -150,6 +169,7 @@ private:
             resvg_get_image_size = library.resolve("resvg_get_image_size");
             resvg_tree_destroy = library.resolve("resvg_tree_destroy");
             resvg_render = library.resolve("resvg_render");
+            resvg_transform_identity = library.resolve("resvg_transform_identity");
 
 //            if(resvg_init_log)
 //            {
@@ -256,14 +276,33 @@ resvg_size resvg_get_image_size(const resvg_render_tree *tree)
     return func(tree);
 }
 
-void resvg_render(const resvg_render_tree *tree, resvg_fit_to fit_to, quint32 width, quint32 height, char *pixmap)
+void resvg_render(const resvg_render_tree *tree, resvg_fit_to fit_to, resvg_transform transform, quint32 width, quint32 height, char *pixmap)
 {
     ReSVG *resvg = ReSVG::instance();
     if(!resvg || !resvg->resvg_render)
         return;
-    typedef void (*func_t)(const resvg_render_tree*, resvg_fit_to, quint32, quint32, char*);
-    func_t func = (func_t)resvg->resvg_render;
-    func(tree, fit_to, width, height, pixmap);
+    if(resvg->resvg_transform_identity) ///< @note v0.20.0+
+    {
+        typedef void (*func_t)(const resvg_render_tree*, resvg_fit_to, resvg_transform, quint32, quint32, char*);
+        func_t func = (func_t)resvg->resvg_render;
+        func(tree, fit_to, transform, width, height, pixmap);
+    }
+    else
+    {
+        typedef void (*func_t)(const resvg_render_tree*, resvg_fit_to, quint32, quint32, char*);
+        func_t func = (func_t)resvg->resvg_render;
+        func(tree, fit_to, width, height, pixmap);
+    }
+}
+
+resvg_transform resvg_transform_identity()
+{
+    ReSVG *resvg = ReSVG::instance();
+    if(!resvg || !resvg->resvg_transform_identity)
+        return resvg_transform();
+    typedef resvg_transform (*func_t)(void);
+    func_t func = (func_t)resvg->resvg_transform_identity;
+    return func();
 }
 
 bool isReady()
@@ -382,11 +421,14 @@ public:
         }
 
         resvg_fit_to fitTo;
-        fitTo.type = RESVG_FIT_TO_ZOOM;
+        fitTo.type = RESVG_FIT_TO_TYPE_ZOOM;
         fitTo.value = static_cast<float>(scaleFactor);
 
         img.fill(Qt::transparent);
         resvg_render(m_tree, fitTo,
+#if !defined (LINKED_RESVG) || (LINKED_RESVG_VERSION >= QT_VERSION_CHECK(0, 20, 0))
+                     resvg_transform_identity(),
+#endif
                      static_cast<quint32>(img.width()),
                      static_cast<quint32>(img.height()),
                      reinterpret_cast<char*>(img.bits()));
