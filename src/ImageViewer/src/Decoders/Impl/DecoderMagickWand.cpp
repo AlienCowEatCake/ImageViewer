@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2020-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2020-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -23,6 +23,8 @@
 
 #include "Utils/Global.h"
 
+#include <cstddef>
+#include <cstdio>
 #include <cstdlib>
 
 #if defined (LINKED_MAGICKWAND)
