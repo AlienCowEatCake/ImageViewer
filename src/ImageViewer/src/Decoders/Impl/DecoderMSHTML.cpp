@@ -436,11 +436,10 @@ public:
     {
         CoInitializeEx(Q_NULLPTR, COINIT_APARTMENTTHREADED);
 
-        QByteArray inBuffer;
 #if defined (HAS_ZLIB)
         if(QFileInfo(filePath).suffix().toLower() == QString::fromLatin1("svgz"))
         {
-            inBuffer = ZLibUtils::InflateFile(filePath);
+            m_svgData = ZLibUtils::InflateFile(filePath);
         }
         else
 #endif
@@ -451,16 +450,15 @@ public:
                 qWarning() << "Can't open" << filePath;
                 return;
             }
-            inBuffer = inFile.readAll();
+            m_svgData = inFile.readAll();
         }
 
-        if(inBuffer.isEmpty())
+        if(m_svgData.isEmpty())
         {
             qWarning() << "Can't read" << filePath;
             return;
         }
 
-        m_svgData = inBuffer;
         if(!rootElementIsSvg())
         {
             qWarning() << "Root element is not svg";

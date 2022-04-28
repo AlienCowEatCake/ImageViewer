@@ -367,11 +367,11 @@ struct MSEdgeWebView2SVGGraphicsItem::Impl
     QRect getContentSize()
     {
         const QJsonDocument metrics = evaluateDevToolsProtocolMethod(QString::fromLatin1("Page.getLayoutMetrics"), QString::fromLatin1("{}"));
-        const QJsonValue contentSize = metrics.object().value(QString::fromLatin1("contentSize"));
-        return QRect(contentSize.toObject().value(QString::fromLatin1("x")).toVariant().toInt(),
-                     contentSize.toObject().value(QString::fromLatin1("y")).toVariant().toInt(),
-                     contentSize.toObject().value(QString::fromLatin1("width")).toVariant().toInt(),
-                     contentSize.toObject().value(QString::fromLatin1("height")).toVariant().toInt());
+        const QJsonObject contentSize = metrics.object().value(QString::fromLatin1("contentSize")).toObject();
+        return QRect(contentSize.value(QString::fromLatin1("x")).toVariant().toInt(),
+                     contentSize.value(QString::fromLatin1("y")).toVariant().toInt(),
+                     contentSize.value(QString::fromLatin1("width")).toVariant().toInt(),
+                     contentSize.value(QString::fromLatin1("height")).toVariant().toInt());
     }
 
     void adjustViewPort()
