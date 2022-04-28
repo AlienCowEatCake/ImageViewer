@@ -3,10 +3,7 @@ set PROJECT=ImageViewer
 set ARCH=x86
 set VCVARS_ARCH=x64_x86
 set VCVARS="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat"
-set CRT_DIR="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Redist\MSVC\14.31.31103\x86\Microsoft.VC143.CRT"
-set UCRT_DIR="C:\Program Files (x86)\Windows Kits\10\Redist\10.0.22000.0\ucrt\DLLs\x86"
 set OPENSSL_DIR=C:\Qt\Tools\openssl-1.1.1n\openssl-1.1\x86\bin
-set WIX_DIR="C:\Program Files (x86)\WiX Toolset v3.11"
 set QTDIR=C:\Qt\5.15.2\msvc2019
 set BUILDDIR=build_win_qt5.15_msvc2022_%ARCH%
 set SUFFIX=_qt5.15_msvc2022_%ARCH%
@@ -15,7 +12,9 @@ set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
 set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.webview2.1.0.1185.39\build\native\%ARCH%\WebView2Loader.dll"
 
 call %VCVARS% %VCVARS_ARCH%
-set PATH=%QTDIR%\bin;%WIX_DIR%\bin;%PATH%
+set PATH=%QTDIR%\bin;%WIX%\bin;%PATH%
+set CRT_DIR="%VCToolsRedistDir%\x86\Microsoft.VC143.CRT"
+set UCRT_DIR="%UniversalCRTSdkDir%\Redist\%UCRTVersion%\ucrt\DLLs\x86"
 
 cd "%~dp0"
 cd ..
