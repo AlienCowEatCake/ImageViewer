@@ -4,6 +4,7 @@
 #define HAVE_STDINT_H
 
 #if defined(__MINGW32__)
+#define HAVE_MALLOC_H
 #define HAVE___MINGW_ALIGNED_MALLOC
 #elif !defined(_WIN32)
 #define HAVE_POSIX_MEMALIGN

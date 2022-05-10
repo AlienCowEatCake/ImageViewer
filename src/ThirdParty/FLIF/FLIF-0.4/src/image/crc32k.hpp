@@ -4,10 +4,15 @@
 
 // define endianess and some integer data types
 #if defined(_MSC_VER) || defined(__MINGW32__)
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
   typedef unsigned __int8  uint8_t;
   typedef unsigned __int16 uint16_t;
   typedef unsigned __int32 uint32_t;
   typedef   signed __int32  int32_t;
+#else
+  // uint8_t, uint32_t, in32_t
+  #include <stdint.h>
+#endif
 
   #define __ORDER_BIG_ENDIAN__ 4321
   #define __ORDER_LITTLE_ENDIAN__ 1234

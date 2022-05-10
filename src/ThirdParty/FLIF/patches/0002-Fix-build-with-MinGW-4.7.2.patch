@@ -1,7 +1,7 @@
-From ed2a6e8223db5fe04cba9921758d675b74813940 Mon Sep 17 00:00:00 2001
+From 3a627de47f8c3ec2e96f84b970409ca6ff37bd5b Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 20:25:56 +0700
-Subject: [PATCH 2/2] Fix build with MinGW 4.7.2
+Subject: [PATCH 2/3] Fix build with MinGW 4.7.2
 
 ---
  src/image/crc32k.hpp | 21 ++-------------------
@@ -83,5 +83,5 @@ index eb65d7d..5057d21 100644
        height = other.height;
        minval = other.minval;
 -- 
-2.34.0
+2.36.0
 
