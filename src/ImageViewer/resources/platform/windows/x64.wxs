@@ -30,7 +30,7 @@
 
         <WixVariable Id="WixUILicenseRtf" Value="../src/ImageViewer/resources/platform/windows/gpl-3.0.rtf" />
 
-        <UIRef Id="WixUI_InstallDir" />
+        <UIRef Id="WixUI_Mondo" />
         <UI>
             <DialogRef Id="FilesInUse" />
             <DialogRef Id="MsiRMFilesInUse" />
@@ -47,11 +47,12 @@
             </Directory>
         </Directory>
 
-        <Property Id="WIXUI_INSTALLDIR" Value="INSTALLLOCATION" />
-
-        <Feature Id="Feature" Title="$(var.ProductName)" Level="1">
+        <Feature Id="FeatureApplication" Title="$(var.ProductName)" Description="$(var.ProductName)" Level="1" ConfigurableDirectory="INSTALLLOCATION" Display="expand" AllowAdvertise="no">
             <ComponentGroupRef Id="ApplicationFiles" />
             <ComponentGroupRef Id="CommonGroup" />
+            <Feature Id="FeatureAssociations" Title="Register File Associations" Description="Register File Associations" Level="2" AllowAdvertise="no">
+                <ComponentGroupRef Id="AssociationsGroup" />
+            </Feature>
         </Feature>
     </Product>
 </Wix>

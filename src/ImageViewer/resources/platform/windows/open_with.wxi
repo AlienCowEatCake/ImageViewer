@@ -1,0 +1,3010 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Include>
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avif"
+      Value="AV1 Image File Format Image"
+      Id="reg_type_avif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avif\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_avif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avif\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_avif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avif\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_avif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".avif\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).avif"
+      Id="reg_avif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avifs"
+      Value="AV1 Image File Format Image"
+      Id="reg_type_avifs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avifs\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_avifs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avifs\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_avifs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avifs\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_avifs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".avifs\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).avifs"
+      Id="reg_avifs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bmp"
+      Value="Windows Bitmap Image"
+      Id="reg_type_bmp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bmp\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_bmp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bmp\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_bmp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bmp\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_bmp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".bmp\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).bmp"
+      Id="reg_bmp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dib"
+      Value="Windows Bitmap Image"
+      Id="reg_type_dib" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dib\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_dib" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dib\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_dib" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dib\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_dib" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".dib\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).dib"
+      Id="reg_dib" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bpg"
+      Value="Better Portable Graphics Image"
+      Id="reg_type_bpg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bpg\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_bpg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bpg\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_bpg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bpg\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_bpg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".bpg\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).bpg"
+      Id="reg_bpg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cur"
+      Value="Windows Cursor Image"
+      Id="reg_type_cur" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cur\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_cur" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cur\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_cur" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cur\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_cur" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".cur\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).cur"
+      Id="reg_cur" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dds"
+      Value="DirectDraw Surface Image"
+      Id="reg_type_dds" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dds\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_dds" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dds\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_dds" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dds\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_dds" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".dds\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).dds"
+      Id="reg_dds" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).exr"
+      Value="OpenEXR Image"
+      Id="reg_type_exr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).exr\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_exr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).exr\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_exr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).exr\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_exr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".exr\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).exr"
+      Id="reg_exr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).flif"
+      Value="Free Lossless Image Format Image"
+      Id="reg_type_flif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).flif\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_flif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).flif\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_flif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).flif\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_flif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".flif\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).flif"
+      Id="reg_flif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).gif"
+      Value="Graphic Interchange Format Image"
+      Id="reg_type_gif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).gif\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_gif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).gif\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_gif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).gif\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_gif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".gif\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).gif"
+      Id="reg_gif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).icns"
+      Value="Apple Icon Image"
+      Id="reg_type_icns" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).icns\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_icns" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).icns\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_icns" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).icns\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_icns" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".icns\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).icns"
+      Id="reg_icns" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ico"
+      Value="Windows Icon Image"
+      Id="reg_type_ico" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ico\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_ico" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ico\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_ico" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ico\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_ico" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".ico\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).ico"
+      Id="reg_ico" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jbg"
+      Value="JBIG1 Image"
+      Id="reg_type_jbg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jbg\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_jbg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jbg\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_jbg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jbg\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_jbg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".jbg\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).jbg"
+      Id="reg_jbg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jbig"
+      Value="JBIG1 Image"
+      Id="reg_type_jbig" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jbig\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_jbig" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jbig\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_jbig" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jbig\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_jbig" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".jbig\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).jbig"
+      Id="reg_jbig" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jng"
+      Value="JPEG Network Graphics Image"
+      Id="reg_type_jng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jng\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_jng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jng\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_jng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jng\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_jng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".jng\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).jng"
+      Id="reg_jng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpg"
+      Value="Joint Photographic Experts Group Image"
+      Id="reg_type_jpg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpg\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_jpg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpg\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_jpg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpg\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_jpg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".jpg\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).jpg"
+      Id="reg_jpg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpeg"
+      Value="Joint Photographic Experts Group Image"
+      Id="reg_type_jpeg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpeg\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_jpeg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpeg\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_jpeg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpeg\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_jpeg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".jpeg\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).jpeg"
+      Id="reg_jpeg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpe"
+      Value="Joint Photographic Experts Group Image"
+      Id="reg_type_jpe" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpe\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_jpe" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpe\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_jpe" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpe\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_jpe" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".jpe\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).jpe"
+      Id="reg_jpe" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jp2"
+      Value="JPEG 2000 Image"
+      Id="reg_type_jp2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jp2\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_jp2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jp2\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_jp2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jp2\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_jp2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".jp2\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).jp2"
+      Id="reg_jp2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).j2k"
+      Value="JPEG 2000 Image"
+      Id="reg_type_j2k" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).j2k\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_j2k" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).j2k\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_j2k" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).j2k\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_j2k" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".j2k\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).j2k"
+      Id="reg_j2k" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpc"
+      Value="JPEG 2000 Image"
+      Id="reg_type_jpc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpc\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_jpc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpc\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_jpc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpc\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_jpc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".jpc\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).jpc"
+      Id="reg_jpc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).j2c"
+      Value="JPEG 2000 Image"
+      Id="reg_type_j2c" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).j2c\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_j2c" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).j2c\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_j2c" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).j2c\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_j2c" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".j2c\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).j2c"
+      Id="reg_j2c" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pgx"
+      Value="JPEG 2000 Image"
+      Id="reg_type_pgx" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pgx\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_pgx" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pgx\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_pgx" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pgx\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_pgx" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".pgx\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).pgx"
+      Id="reg_pgx" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpt"
+      Value="JPEG 2000 Image"
+      Id="reg_type_jpt" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpt\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_jpt" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpt\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_jpt" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpt\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_jpt" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".jpt\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).jpt"
+      Id="reg_jpt" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpf"
+      Value="JPEG 2000 Image"
+      Id="reg_type_jpf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpf\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_jpf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpf\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_jpf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jpf\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_jpf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".jpf\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).jpf"
+      Id="reg_jpf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jxl"
+      Value="JPEG XL Image"
+      Id="reg_type_jxl" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jxl\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_jxl" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jxl\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_jxl" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jxl\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_jxl" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".jxl\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).jxl"
+      Id="reg_jxl" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jxr"
+      Value="JPEG XR Image"
+      Id="reg_type_jxr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jxr\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_jxr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jxr\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_jxr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).jxr\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_jxr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".jxr\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).jxr"
+      Id="reg_jxr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hdp"
+      Value="JPEG XR Image"
+      Id="reg_type_hdp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hdp\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_hdp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hdp\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_hdp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hdp\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_hdp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".hdp\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).hdp"
+      Id="reg_hdp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wdp"
+      Value="JPEG XR Image"
+      Id="reg_type_wdp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wdp\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_wdp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wdp\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_wdp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wdp\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_wdp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".wdp\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).wdp"
+      Id="reg_wdp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heif"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_heif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heif\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_heif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heif\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_heif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heif\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_heif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".heif\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).heif"
+      Id="reg_heif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heic"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_heic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heic\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_heic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heic\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_heic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heic\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_heic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".heic\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).heic"
+      Id="reg_heic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heix"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_heix" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heix\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_heix" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heix\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_heix" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heix\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_heix" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".heix\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).heix"
+      Id="reg_heix" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heifs"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_heifs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heifs\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_heifs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heifs\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_heifs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heifs\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_heifs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".heifs\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).heifs"
+      Id="reg_heifs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hif"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_hif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hif\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_hif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hif\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_hif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hif\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_hif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".hif\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).hif"
+      Id="reg_hif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).lerc1"
+      Value="Limited Error Raster Compression Format Image"
+      Id="reg_type_lerc1" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).lerc1\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_lerc1" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).lerc1\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_lerc1" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).lerc1\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_lerc1" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".lerc1\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).lerc1"
+      Id="reg_lerc1" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).lerc2"
+      Value="Limited Error Raster Compression Format Image"
+      Id="reg_type_lerc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).lerc2\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_lerc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).lerc2\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_lerc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).lerc2\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_lerc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".lerc2\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).lerc2"
+      Id="reg_lerc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mif"
+      Value="Magick Image File Format Image"
+      Id="reg_type_mif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mif\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_mif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mif\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_mif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mif\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_mif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".mif\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).mif"
+      Id="reg_mif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mng"
+      Value="Multiple-image Network Graphics Image"
+      Id="reg_type_mng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mng\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_mng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mng\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_mng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mng\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_mng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".mng\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).mng"
+      Id="reg_mng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).png"
+      Value="Portable Network Graphics Image"
+      Id="reg_type_png" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).png\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_png" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).png\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_png" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).png\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_png" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".png\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).png"
+      Id="reg_png" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pbm"
+      Value="Portable Bitmap Image"
+      Id="reg_type_pbm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pbm\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_pbm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pbm\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_pbm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pbm\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_pbm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".pbm\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).pbm"
+      Id="reg_pbm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pgm"
+      Value="Portable Graymap Image"
+      Id="reg_type_pgm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pgm\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_pgm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pgm\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_pgm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pgm\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_pgm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".pgm\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).pgm"
+      Id="reg_pgm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pic"
+      Value="Softimage PIC Image"
+      Id="reg_type_pic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pic\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_pic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pic\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_pic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pic\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_pic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".pic\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).pic"
+      Id="reg_pic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pnm"
+      Value="Portable Anymap Image"
+      Id="reg_type_pnm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pnm\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_pnm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pnm\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_pnm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pnm\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_pnm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".pnm\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).pnm"
+      Id="reg_pnm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ppm"
+      Value="Portable Pixmap Image"
+      Id="reg_type_ppm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ppm\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_ppm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ppm\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_ppm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ppm\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_ppm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".ppm\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).ppm"
+      Id="reg_ppm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).psd"
+      Value="Adobe Photoshop Image"
+      Id="reg_type_psd" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).psd\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_psd" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).psd\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_psd" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).psd\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_psd" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".psd\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).psd"
+      Id="reg_psd" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bay"
+      Value="Camera Raw Image"
+      Id="reg_type_bay" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bay\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_bay" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bay\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_bay" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bay\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_bay" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".bay\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).bay"
+      Id="reg_bay" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bmq"
+      Value="Camera Raw Image"
+      Id="reg_type_bmq" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bmq\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_bmq" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bmq\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_bmq" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).bmq\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_bmq" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".bmq\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).bmq"
+      Id="reg_bmq" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cr2"
+      Value="Camera Raw Image"
+      Id="reg_type_cr2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cr2\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_cr2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cr2\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_cr2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cr2\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_cr2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".cr2\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).cr2"
+      Id="reg_cr2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).crw"
+      Value="Camera Raw Image"
+      Id="reg_type_crw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).crw\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_crw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).crw\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_crw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).crw\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_crw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".crw\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).crw"
+      Id="reg_crw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cs1"
+      Value="Camera Raw Image"
+      Id="reg_type_cs1" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cs1\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_cs1" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cs1\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_cs1" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cs1\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_cs1" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".cs1\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).cs1"
+      Id="reg_cs1" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dc2"
+      Value="Camera Raw Image"
+      Id="reg_type_dc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dc2\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_dc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dc2\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_dc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dc2\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_dc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".dc2\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).dc2"
+      Id="reg_dc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dcr"
+      Value="Camera Raw Image"
+      Id="reg_type_dcr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dcr\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_dcr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dcr\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_dcr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dcr\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_dcr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".dcr\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).dcr"
+      Id="reg_dcr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dng"
+      Value="Camera Raw Image"
+      Id="reg_type_dng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dng\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_dng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dng\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_dng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).dng\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_dng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".dng\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).dng"
+      Id="reg_dng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).erf"
+      Value="Camera Raw Image"
+      Id="reg_type_erf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).erf\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_erf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).erf\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_erf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).erf\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_erf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".erf\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).erf"
+      Id="reg_erf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).fff"
+      Value="Camera Raw Image"
+      Id="reg_type_fff" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).fff\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_fff" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).fff\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_fff" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).fff\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_fff" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".fff\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).fff"
+      Id="reg_fff" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hdr"
+      Value="Camera Raw Image"
+      Id="reg_type_hdr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hdr\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_hdr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hdr\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_hdr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hdr\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_hdr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".hdr\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).hdr"
+      Id="reg_hdr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).k25"
+      Value="Camera Raw Image"
+      Id="reg_type_k25" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).k25\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_k25" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).k25\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_k25" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).k25\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_k25" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".k25\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).k25"
+      Id="reg_k25" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).kdc"
+      Value="Camera Raw Image"
+      Id="reg_type_kdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).kdc\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_kdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).kdc\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_kdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).kdc\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_kdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".kdc\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).kdc"
+      Id="reg_kdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mdc"
+      Value="Camera Raw Image"
+      Id="reg_type_mdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mdc\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_mdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mdc\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_mdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mdc\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_mdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".mdc\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).mdc"
+      Id="reg_mdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mos"
+      Value="Camera Raw Image"
+      Id="reg_type_mos" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mos\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_mos" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mos\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_mos" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mos\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_mos" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".mos\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).mos"
+      Id="reg_mos" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mrw"
+      Value="Camera Raw Image"
+      Id="reg_type_mrw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mrw\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_mrw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mrw\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_mrw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mrw\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_mrw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".mrw\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).mrw"
+      Id="reg_mrw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).nef"
+      Value="Camera Raw Image"
+      Id="reg_type_nef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).nef\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_nef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).nef\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_nef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).nef\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_nef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".nef\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).nef"
+      Id="reg_nef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).orf"
+      Value="Camera Raw Image"
+      Id="reg_type_orf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).orf\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_orf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).orf\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_orf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).orf\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_orf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".orf\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).orf"
+      Id="reg_orf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pef"
+      Value="Camera Raw Image"
+      Id="reg_type_pef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pef\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_pef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pef\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_pef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pef\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_pef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".pef\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).pef"
+      Id="reg_pef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pxn"
+      Value="Camera Raw Image"
+      Id="reg_type_pxn" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pxn\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_pxn" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pxn\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_pxn" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).pxn\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_pxn" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".pxn\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).pxn"
+      Id="reg_pxn" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).raf"
+      Value="Camera Raw Image"
+      Id="reg_type_raf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).raf\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_raf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).raf\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_raf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).raf\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_raf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".raf\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).raf"
+      Id="reg_raf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).raw"
+      Value="Camera Raw Image"
+      Id="reg_type_raw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).raw\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_raw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).raw\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_raw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).raw\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_raw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".raw\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).raw"
+      Id="reg_raw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).rdc"
+      Value="Camera Raw Image"
+      Id="reg_type_rdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).rdc\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_rdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).rdc\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_rdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).rdc\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_rdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".rdc\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).rdc"
+      Id="reg_rdc" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).sr2"
+      Value="Camera Raw Image"
+      Id="reg_type_sr2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).sr2\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_sr2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).sr2\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_sr2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).sr2\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_sr2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".sr2\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).sr2"
+      Id="reg_sr2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).srf"
+      Value="Camera Raw Image"
+      Id="reg_type_srf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).srf\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_srf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).srf\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_srf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).srf\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_srf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".srf\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).srf"
+      Id="reg_srf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).x3f"
+      Value="Camera Raw Image"
+      Id="reg_type_x3f" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).x3f\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_x3f" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).x3f\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_x3f" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).x3f\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_x3f" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".x3f\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).x3f"
+      Id="reg_x3f" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).arw"
+      Value="Camera Raw Image"
+      Id="reg_type_arw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).arw\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_arw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).arw\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_arw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).arw\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_arw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".arw\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).arw"
+      Id="reg_arw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).3fr"
+      Value="Camera Raw Image"
+      Id="reg_type_3fr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).3fr\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_3fr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).3fr\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_3fr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).3fr\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_3fr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".3fr\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).3fr"
+      Id="reg_3fr" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cine"
+      Value="Camera Raw Image"
+      Id="reg_type_cine" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cine\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_cine" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cine\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_cine" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).cine\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_cine" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".cine\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).cine"
+      Id="reg_cine" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ia"
+      Value="Camera Raw Image"
+      Id="reg_type_ia" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ia\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_ia" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ia\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_ia" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ia\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_ia" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".ia\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).ia"
+      Id="reg_ia" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).kc2"
+      Value="Camera Raw Image"
+      Id="reg_type_kc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).kc2\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_kc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).kc2\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_kc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).kc2\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_kc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".kc2\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).kc2"
+      Id="reg_kc2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mef"
+      Value="Camera Raw Image"
+      Id="reg_type_mef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mef\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_mef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mef\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_mef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).mef\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_mef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".mef\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).mef"
+      Id="reg_mef" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).nrw"
+      Value="Camera Raw Image"
+      Id="reg_type_nrw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).nrw\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_nrw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).nrw\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_nrw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).nrw\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_nrw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".nrw\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).nrw"
+      Id="reg_nrw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).qtk"
+      Value="Camera Raw Image"
+      Id="reg_type_qtk" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).qtk\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_qtk" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).qtk\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_qtk" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).qtk\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_qtk" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".qtk\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).qtk"
+      Id="reg_qtk" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).rw2"
+      Value="Camera Raw Image"
+      Id="reg_type_rw2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).rw2\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_rw2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).rw2\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_rw2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).rw2\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_rw2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".rw2\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).rw2"
+      Id="reg_rw2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).sti"
+      Value="Camera Raw Image"
+      Id="reg_type_sti" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).sti\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_sti" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).sti\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_sti" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).sti\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_sti" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".sti\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).sti"
+      Id="reg_sti" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).rwl"
+      Value="Camera Raw Image"
+      Id="reg_type_rwl" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).rwl\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_rwl" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).rwl\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_rwl" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).rwl\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_rwl" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".rwl\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).rwl"
+      Id="reg_rwl" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).srw"
+      Value="Camera Raw Image"
+      Id="reg_type_srw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).srw\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_srw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).srw\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_srw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).srw\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_srw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".srw\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).srw"
+      Id="reg_srw" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).sun"
+      Value="Sun Raster Image"
+      Id="reg_type_sun" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).sun\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_sun" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).sun\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_sun" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).sun\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_sun" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".sun\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).sun"
+      Id="reg_sun" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ras"
+      Value="Sun Raster Image"
+      Id="reg_type_ras" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ras\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_ras" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ras\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_ras" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).ras\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_ras" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".ras\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).ras"
+      Id="reg_ras" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).svg"
+      Value="Scalable Vector Graphics Image"
+      Id="reg_type_svg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).svg\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_svg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).svg\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_svg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).svg\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_svg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".svg\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).svg"
+      Id="reg_svg" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).svgz"
+      Value="Scalable Vector Graphics Image"
+      Id="reg_type_svgz" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).svgz\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_svgz" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).svgz\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_svgz" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).svgz\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_svgz" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".svgz\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).svgz"
+      Id="reg_svgz" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).tga"
+      Value="Truevision TGA Image"
+      Id="reg_type_tga" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).tga\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_tga" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).tga\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_tga" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).tga\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_tga" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".tga\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).tga"
+      Id="reg_tga" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).targa"
+      Value="Truevision TGA Image"
+      Id="reg_type_targa" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).targa\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_targa" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).targa\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_targa" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).targa\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_targa" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".targa\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).targa"
+      Id="reg_targa" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).tif"
+      Value="Tagged Image File Format Image"
+      Id="reg_type_tif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).tif\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_tif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).tif\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_tif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).tif\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_tif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".tif\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).tif"
+      Id="reg_tif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).tiff"
+      Value="Tagged Image File Format Image"
+      Id="reg_type_tiff" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).tiff\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_tiff" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).tiff\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_tiff" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).tiff\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_tiff" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".tiff\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).tiff"
+      Id="reg_tiff" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wbmp"
+      Value="Wireless Application Protocol Bitmap Format Image"
+      Id="reg_type_wbmp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wbmp\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_wbmp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wbmp\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_wbmp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wbmp\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_wbmp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".wbmp\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).wbmp"
+      Id="reg_wbmp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).webp"
+      Value="WebP Image"
+      Id="reg_type_webp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).webp\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_webp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).webp\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_webp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).webp\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_webp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".webp\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).webp"
+      Id="reg_webp" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wmf"
+      Value="Windows Metafile Image"
+      Id="reg_type_wmf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wmf\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_wmf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wmf\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_wmf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wmf\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_wmf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".wmf\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).wmf"
+      Id="reg_wmf" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wmz"
+      Value="Windows Metafile Image"
+      Id="reg_type_wmz" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wmz\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_wmz" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wmz\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_wmz" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).wmz\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_wmz" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".wmz\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).wmz"
+      Id="reg_wmz" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).xbm"
+      Value="X11 Bitmap Image"
+      Id="reg_type_xbm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).xbm\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_xbm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).xbm\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_xbm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).xbm\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_xbm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".xbm\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).xbm"
+      Id="reg_xbm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).xpm"
+      Value="X11 Pixmap Image"
+      Id="reg_type_xpm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).xpm\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_xpm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).xpm\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_xpm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).xpm\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_xpm" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".xpm\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).xpm"
+      Id="reg_xpm" />
+</Include>
