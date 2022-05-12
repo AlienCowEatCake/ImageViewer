@@ -110,6 +110,7 @@ QString compilerDescriptionInt()
     case 1929: return QString::fromLatin1("MSVC++ 14.29 (Visual Studio 2019 version 16.10/16.11)");
     case 1930: return QString::fromLatin1("MSVC++ 14.30 (Visual Studio 2022 version 17.0)");
     case 1931: return QString::fromLatin1("MSVC++ 14.31 (Visual Studio 2022 version 17.1)");
+    case 1932: return QString::fromLatin1("MSVC++ 14.32 (Visual Studio 2022 version 17.2)");
     default:   return QString::fromLatin1("MSVC++ (_MSC_VER=%1)").arg(_MSC_VER);
     }
 #elif defined (Q_CC_SYM)
