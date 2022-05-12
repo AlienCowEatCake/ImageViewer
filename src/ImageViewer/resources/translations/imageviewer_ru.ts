@@ -4,17 +4,17 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="157"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="169"/>
         <source>Peter S. Zhigalov</source>
         <translation>Жигалов Петр</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="772"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="803"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="783"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="814"/>
         <source>License</source>
         <translation>Лицензия</translation>
     </message>
@@ -450,64 +450,64 @@
 <context>
     <name>MainController</name>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="160"/>
+        <location filename="../../src/GUI/MainController.cpp" line="161"/>
         <source>All Supported Images</source>
         <translation>Все поддерживаемые изображения</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="160"/>
+        <location filename="../../src/GUI/MainController.cpp" line="161"/>
         <source>All Files</source>
         <translation>Все файлы</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="161"/>
+        <location filename="../../src/GUI/MainController.cpp" line="162"/>
         <source>Open File</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="168"/>
-        <location filename="../../src/GUI/MainController.cpp" line="341"/>
-        <location filename="../../src/GUI/MainController.cpp" line="388"/>
+        <location filename="../../src/GUI/MainController.cpp" line="174"/>
+        <location filename="../../src/GUI/MainController.cpp" line="347"/>
+        <location filename="../../src/GUI/MainController.cpp" line="394"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>Не удалось открыть файл &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="169"/>
+        <location filename="../../src/GUI/MainController.cpp" line="175"/>
         <source>Failed to open files &quot;%1&quot;</source>
         <translation>Не удалось открыть файлы &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="178"/>
+        <location filename="../../src/GUI/MainController.cpp" line="184"/>
         <source>Open Directory</source>
         <translation>Открыть папку</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="183"/>
+        <location filename="../../src/GUI/MainController.cpp" line="189"/>
         <source>Failed to open folder &quot;%1&quot;</source>
         <translation>Не удалось открыть папку &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="194"/>
+        <location filename="../../src/GUI/MainController.cpp" line="200"/>
         <source>Delete File</source>
         <translation>Удалить файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="194"/>
+        <location filename="../../src/GUI/MainController.cpp" line="200"/>
         <source>Are you sure you want to delete current file?</source>
         <translation>Вы уверены что хотите удалить этот файл?</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="170"/>
-        <location filename="../../src/GUI/MainController.cpp" line="183"/>
-        <location filename="../../src/GUI/MainController.cpp" line="204"/>
-        <location filename="../../src/GUI/MainController.cpp" line="212"/>
-        <location filename="../../src/GUI/MainController.cpp" line="341"/>
-        <location filename="../../src/GUI/MainController.cpp" line="388"/>
+        <location filename="../../src/GUI/MainController.cpp" line="176"/>
+        <location filename="../../src/GUI/MainController.cpp" line="189"/>
+        <location filename="../../src/GUI/MainController.cpp" line="210"/>
+        <location filename="../../src/GUI/MainController.cpp" line="218"/>
+        <location filename="../../src/GUI/MainController.cpp" line="347"/>
+        <location filename="../../src/GUI/MainController.cpp" line="394"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="212"/>
+        <location filename="../../src/GUI/MainController.cpp" line="218"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation>Не удалось удалить файл &quot;%1&quot;</translation>
     </message>
