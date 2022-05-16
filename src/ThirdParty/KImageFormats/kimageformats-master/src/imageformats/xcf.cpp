@@ -3270,6 +3270,52 @@ bool XCFHandler::write(const QImage &)
     return false;
 }
 
+bool XCFHandler::supportsOption(ImageOption option) const
+{
+    if (option == QImageIOHandler::Size)
+        return true;
+    return false;
+}
+
+QVariant XCFHandler::option(ImageOption option) const
+{
+    QVariant v;
+
+    if (option == QImageIOHandler::Size) {
+        /*
+         * The image structure always starts at offset 0 in the XCF file.
+         * byte[9]     "gimp xcf " File type identification
+         * byte[4]     version     XCF version
+         *                          "file": version 0
+         *                          "v001": version 1
+         *                          "v002": version 2
+         *                          "v003": version 3
+         * byte        0            Zero marks the end of the version tag.
+         * uint32      width        Width of canvas
+         * uint32      height       Height of canvas
+         */
+        if (auto d = device()) {
+            // transactions works on both random and sequential devices
+            d->startTransaction();
+            auto ba9 = d->read(9);      // "gimp xcf "
+            auto ba5 = d->read(4+1);    // version + null terminator
+            auto ba = d->read(8);       // width and height
+            d->rollbackTransaction();
+            if (ba9 == QByteArray("gimp xcf ") && ba5.size() == 5) {
+                QDataStream ds(ba);
+                quint32 width;
+                ds >> width;
+                quint32 height;
+                ds >> height;
+                if (ds.status() == QDataStream::Ok)
+                    v = QVariant::fromValue(QSize(width, height));
+            }
+        }
+    }
+
+    return v;
+}
+
 bool XCFHandler::canRead(QIODevice *device)
 {
     if (!device) {

@@ -820,6 +820,38 @@ bool PSDHandler::read(QImage *image)
     return true;
 }
 
+bool PSDHandler::supportsOption(ImageOption option) const
+{
+    if (option == QImageIOHandler::Size)
+        return true;
+    return false;
+}
+
+QVariant PSDHandler::option(ImageOption option) const
+{
+    QVariant v;
+
+    if (option == QImageIOHandler::Size) {
+        if (auto d = device()) {
+            // transactions works on both random and sequential devices
+            d->startTransaction();
+            auto ba = d->read(sizeof(PSDHeader));
+            d->rollbackTransaction();
+
+            QDataStream s(ba);
+            s.setByteOrder(QDataStream::BigEndian);
+
+            PSDHeader header;
+            s >> header;
+
+            if (s.status() == QDataStream::Ok && IsValid(header))
+                v = QVariant::fromValue(QSize(header.width, header.height));
+        }
+    }
+
+    return v;
+}
+
 bool PSDHandler::canRead(QIODevice *device)
 {
     if (!device) {

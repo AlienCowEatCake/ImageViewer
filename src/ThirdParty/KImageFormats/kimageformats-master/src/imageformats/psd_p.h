@@ -18,6 +18,9 @@ public:
     bool canRead() const override;
     bool read(QImage *image) override;
 
+    bool supportsOption(QImageIOHandler::ImageOption option) const override;
+    QVariant option(QImageIOHandler::ImageOption option) const override;
+
     static bool canRead(QIODevice *device);
 };
 
