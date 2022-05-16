@@ -76,6 +76,7 @@ qmake CONFIG+="release enable_pkgconfig" \
     CONFIG+="disable_qtextended disable_stb disable_nanosvg" \
     CONFIG+="disable_qtimageformats disable_kimageformats" \
     CONFIG+="enable_qtwebkit enable_qtwebengine" \
+    INCLUDEPATH+="/usr/include/freetype2" \
     INCLUDEPATH+="/usr/include/jxrlib" \
     -r ../ImageViewer.pro
 make
