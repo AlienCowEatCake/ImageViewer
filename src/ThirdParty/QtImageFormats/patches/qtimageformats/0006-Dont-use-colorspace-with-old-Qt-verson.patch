@@ -1,4 +1,4 @@
-From 9cf3f5d686d83864b3c04570fe8baac21cc0d92d Mon Sep 17 00:00:00 2001
+From d60e01bc95e29b389cefaeefffadd7114813e502 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 17 Nov 2019 01:42:45 +0700
 Subject: [PATCH 6/7] Dont use colorspace with old Qt verson
@@ -126,5 +126,5 @@ index 87ce1b7..9ae663e 100644
  };
  
 -- 
-2.30.2
+2.35.1.windows.2
 

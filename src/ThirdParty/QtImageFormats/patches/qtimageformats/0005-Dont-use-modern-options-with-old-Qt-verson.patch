@@ -1,4 +1,4 @@
-From 05bcb3a5abf5287aff3d45df6814d4bab0553088 Mon Sep 17 00:00:00 2001
+From f68abc04411af10fd5dead286826d2edd24d2a0a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 7 Jan 2019 21:11:00 +0700
 Subject: [PATCH 5/7] Dont use modern options with old Qt verson
@@ -43,10 +43,10 @@ index a0ac19b..a4f16f2 100644
  
  int QDDSHandler::imageCount() const
 diff --git a/src/plugins/imageformats/icns/qicnshandler.cpp b/src/plugins/imageformats/icns/qicnshandler.cpp
-index 9dad1a0..f75265c 100644
+index c05859e..1911e3b 100644
 --- a/src/plugins/imageformats/icns/qicnshandler.cpp
 +++ b/src/plugins/imageformats/icns/qicnshandler.cpp
-@@ -538,9 +538,13 @@ static QImage readMask(const ICNSEntry &mask, QDataStream &stream)
+@@ -541,9 +541,13 @@ static QImage readMask(const ICNSEntry &mask, QDataStream &stream)
      const qint64 oldPos = stream.device()->pos();
      if (!stream.device()->seek(pos))
          return QImage();
@@ -60,7 +60,7 @@ index 9dad1a0..f75265c 100644
      quint8 byte = 0;
      quint32 pixel = 0;
      for (quint32 y = 0; y < mask.height; y++) {
-@@ -570,9 +574,13 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
+@@ -573,9 +577,13 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
      const QList<QRgb> colortable = getColorTable(depth);
      if (colortable.isEmpty())
          return QImage();
@@ -74,7 +74,7 @@ index 9dad1a0..f75265c 100644
      img.setColorTable(colortable);
      quint32 pixel = 0;
      quint8 byte = 0;
-@@ -603,9 +611,13 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
+@@ -606,9 +614,13 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
  
  static QImage read32bitIcon(const ICNSEntry &icon, QDataStream &stream)
  {
@@ -593,5 +593,5 @@ index eb375ec..23108ce 100644
      if (failed) {
          qWarning() << "failed to import image data to webp picture.";
 -- 
-2.30.2
+2.35.1.windows.2
 
