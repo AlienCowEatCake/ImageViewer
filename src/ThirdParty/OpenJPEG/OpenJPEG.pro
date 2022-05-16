@@ -10,7 +10,7 @@ TARGET = tp_openjp2
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_OPENJPEG_PATH = $${PWD}/openjpeg-2.4.0
+THIRDPARTY_OPENJPEG_PATH = $${PWD}/openjpeg-2.5.0
 THIRDPARTY_OPENJPEG_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -40,6 +40,7 @@ SOURCES += \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/dwt.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/event.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/function_list.c \
+    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/ht_dec.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/image.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/invert.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/j2k.c \
@@ -55,6 +56,7 @@ SOURCES += \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/sparse_array.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1.c \
 \#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1_generate_luts.c \
+\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1_ht_generate_luts.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t2.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/tcd.c \
 \#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/test_sparse_array.c \
@@ -90,6 +92,7 @@ HEADERS += \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/pi.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/sparse_array.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1.h \
+    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1_ht_luts.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1_luts.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t2.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/tcd.h \

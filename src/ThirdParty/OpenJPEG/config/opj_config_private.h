@@ -5,7 +5,7 @@
 
 #include <qglobal.h>
 
-#define OPJ_PACKAGE_VERSION "2.4.0"
+#define OPJ_PACKAGE_VERSION "2.5.0"
 
 /* Not used by openjp2*/
 /*#define HAVE_MEMORY_H 1*/
