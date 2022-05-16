@@ -30,7 +30,7 @@
 #include <libexif/i18n.h>
 #include <libexif/exif-system.h>
 
-#include <libexif/apple/exif-mnote-data-apple.h>
+/*#include <libexif/apple/exif-mnote-data-apple.h>*/
 #include <libexif/canon/exif-mnote-data-canon.h>
 #include <libexif/fuji/exif-mnote-data-fuji.h>
 #include <libexif/olympus/exif-mnote-data-olympus.h>
@@ -48,7 +48,7 @@
 #undef JPEG_MARKER_APP1
 #define JPEG_MARKER_APP1 0xe1
 
-#define CHECKOVERFLOW(offset,datasize,structsize) (( offset >= datasize) || (structsize > datasize) || (offset > datasize - structsize ))
+#define CHECKOVERFLOW(offset,datasize,structsize) (( (offset) >= (datasize)) || ((structsize) > (datasize)) || ((offset) > (datasize) - (structsize) ))
 
 static const unsigned char ExifHeader[] = {0x45, 0x78, 0x69, 0x66, 0x00, 0x00};
 
@@ -817,11 +817,14 @@ interpret_maker_note(ExifData *data, const unsigned char *d, unsigned int ds)
 		exif_log (data->priv->log, EXIF_LOG_CODE_DEBUG,
 			"ExifData", "Pentax MakerNote variant type %d", mnoteid);
 		data->priv->md = exif_mnote_data_pentax_new (data->priv->mem);
-	} else if ((mnoteid = exif_mnote_data_apple_identify (data, e)) != 0) {
+	}
+/* Marcus: disabled until apple makernote can also be saved
+	else if ((mnoteid = exif_mnote_data_apple_identify (data, e)) != 0) {
 		exif_log (data->priv->log, EXIF_LOG_CODE_DEBUG,
 			"ExifData", "Apple MakerNote variant type %d", mnoteid);
 		data->priv->md = exif_mnote_data_apple_new (data->priv->mem);
 	}
+*/
 
 	/* 
 	 * If we are able to interpret the maker note, do so.
