@@ -56,6 +56,8 @@
 #include <Path.h>
 #elif !defined (Q_OS_MAC)
 #include <sys/utsname.h>
+#else
+#include <sys/sysctl.h>
 #endif
 
 namespace {
@@ -520,6 +522,22 @@ QString GetSystemDescription()
 #endif
 }
 
+#else
+
+/// @brief Returns 1 if running in Rosetta
+int processIsTranslated()
+{
+    int ret = 0;
+    size_t size = sizeof(ret);
+    // Call the sysctl and if successful return the result
+    if(sysctlbyname("sysctl.proc_translated", &ret, &size, Q_NULLPTR, 0) != -1)
+        return ret;
+    // If "sysctl.proc_translated" is not present then must be native
+    if(errno == ENOENT)
+        return 0;
+    return -1;
+}
+
 #endif
 
 /// @brief Получить человеко-читаемую информацию о компиляторе
@@ -529,8 +547,15 @@ QString GetCompilerDescription()
     const QString target = targetDescriptionInt();
     if(!target.isEmpty())
     {
-        const QString byteOrder = QString::fromLatin1(QSysInfo::ByteOrder == QSysInfo::BigEndian ? "BE" : "LE");
-        description.append(QString::fromLatin1(", %1 (%2)").arg(target).arg(byteOrder));
+        QString extraInfo = QString::fromLatin1(QSysInfo::ByteOrder == QSysInfo::BigEndian ? "BE" : "LE");
+#if defined (Q_OS_MAC)
+        const int translated = processIsTranslated();
+        if(translated > 0)
+            extraInfo = QString::fromLatin1("Rosetta, ") + extraInfo;
+        else if(translated == 0)
+            extraInfo = QString::fromLatin1("Native, ") + extraInfo;
+#endif
+        description.append(QString::fromLatin1(", %1 (%2)").arg(target).arg(extraInfo));
     }
     return description;
 }

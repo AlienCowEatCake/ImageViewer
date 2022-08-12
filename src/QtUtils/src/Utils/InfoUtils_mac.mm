@@ -191,6 +191,9 @@ QString GetSystemDescription()
     case 1200:
         osName = QString::fromLatin1("Monterey");
         break;
+    case 1300:
+        osName = QString::fromLatin1("Ventura");
+        break;
     default:
         break;
     }
