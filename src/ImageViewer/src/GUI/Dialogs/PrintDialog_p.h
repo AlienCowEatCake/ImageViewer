@@ -60,7 +60,8 @@ class PrintEffect
 
 public:
     PrintEffect()
-        : m_desaturate(false)
+        : m_legacyRenderer(false)
+        , m_desaturate(false)
         , m_brightness(0)
         , m_contrast(0)
         , m_exposure(0)
@@ -68,6 +69,16 @@ public:
 
     ~PrintEffect()
     {}
+
+    bool legacyRenderer() const
+    {
+        return m_legacyRenderer;
+    }
+
+    void setLegacyRenderer(bool legacyRenderer)
+    {
+        m_legacyRenderer = legacyRenderer;
+    }
 
     void setDesaturate(bool desaturate)
     {
@@ -91,6 +102,9 @@ public:
 
     QImage apply(const QImage &src) const
     {
+        if(m_legacyRenderer)
+            return src;
+
         if(!m_desaturate && !m_brightness && !m_contrast && !m_exposure)
             return src;
 
@@ -183,6 +197,7 @@ public:
     }
 
 private:
+    bool m_legacyRenderer;
     bool m_desaturate;
     int m_brightness;
     int m_contrast;
@@ -257,6 +272,12 @@ public:
         update();
     }
 
+    void setLegacyRenderer(bool legacyRenderer)
+    {
+        m_printEffect.setLegacyRenderer(legacyRenderer);
+        update();
+    }
+
     void setDesaturate(bool desaturate)
     {
         m_printEffect.setDesaturate(desaturate);
@@ -315,66 +336,129 @@ protected:
             painter.translate(rotatedBoundingRect.center().x(), rotatedBoundingRect.center().y());
             painter.rotate(m_rotateAngle);
             painter.translate(-rotatedBoundingRect.center().x(), -rotatedBoundingRect.center().y());
-            const QTransform worldTransform = painter.worldTransform();
-            const QRect deviceRect = worldTransform.mapRect(boundingRect).toAlignedRect();
-            Qt::TransformationMode transformationMode = Qt::SmoothTransformation;
-            if(QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(m_graphicsItem))
-                transformationMode = pixmapItem->transformationMode();
-            if(ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(m_graphicsItem))
-                transformationMode = itemWithTransformationMode->transformationMode();
-            QImage image;
-            if(IGrabScaledImage *itemWithGrabScaledImage = dynamic_cast<IGrabScaledImage*>(m_graphicsItem))
+            if(!m_printEffect.legacyRenderer())
             {
-                const qreal scaleFactor = qMax(qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height()), static_cast<qreal>(1.0));
-                image = itemWithGrabScaledImage->grabImage(scaleFactor);
-            }
-            else if(IGrabImage *itemWithGrabImage = dynamic_cast<IGrabImage*>(m_graphicsItem))
-            {
-                image = itemWithGrabImage->grabImage();
+                const QTransform worldTransform = painter.worldTransform();
+                const QRect deviceRect = worldTransform.mapRect(boundingRect).toAlignedRect();
+                Qt::TransformationMode transformationMode = Qt::SmoothTransformation;
+                if(QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(m_graphicsItem))
+                    transformationMode = pixmapItem->transformationMode();
+                if(ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(m_graphicsItem))
+                    transformationMode = itemWithTransformationMode->transformationMode();
+                QImage image;
+                if(IGrabScaledImage *itemWithGrabScaledImage = dynamic_cast<IGrabScaledImage*>(m_graphicsItem))
+                {
+                    const qreal scaleFactor = qMax(qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height()), static_cast<qreal>(1.0));
+                    image = itemWithGrabScaledImage->grabImage(scaleFactor);
+                }
+                else if(IGrabImage *itemWithGrabImage = dynamic_cast<IGrabImage*>(m_graphicsItem))
+                {
+                    image = itemWithGrabImage->grabImage();
+                }
+                else
+                {
+                    const qreal scaleFactor = qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height());
+                    QSize size = (boundingRect.size() * scaleFactor).toSize();
+                    image = QImage(size, QImage::Format_ARGB32_Premultiplied);
+                    while(image.isNull() && !size.isEmpty())
+                    {
+                        qWarning() << "Image rendering failed, target size =" << size.width() << "x" << size.height();
+                        size = QSize(size.width() / 2, size.height() / 2);
+                        image = QImage(size, QImage::Format_ARGB32_Premultiplied);
+                    }
+                    image.fill(Qt::transparent);
+                    QPainter painterLocal;
+                    painterLocal.begin(&image);
+                    painterLocal.scale(image.width() / boundingRect.width(), image.height() / boundingRect.height());
+                    painterLocal.translate(-boundingRect.x(), -boundingRect.y());
+                    painterLocal.setRenderHint(QPainter::Antialiasing, transformationMode == Qt::SmoothTransformation);
+                    painterLocal.setRenderHint(QPainter::TextAntialiasing, transformationMode == Qt::SmoothTransformation);
+                    painterLocal.setRenderHint(QPainter::SmoothPixmapTransform, transformationMode == Qt::SmoothTransformation);
+                    QStyleOptionGraphicsItem options;
+                    options.exposedRect = boundingRect;
+                    m_graphicsItem->paint(&painterLocal, &options);
+                    painterLocal.end();
+                }
+                image = m_printEffect.apply(image);
+                if(m_flipOrientations)
+                    image = image.mirrored(m_flipOrientations & Qt::Horizontal, m_flipOrientations & Qt::Vertical);
+                QSize unrotatedDeviceSize = deviceRect.size();
+                if(m_rotateAngle)
+                {
+                    QTransform transform;
+                    transform.rotate(-m_rotateAngle);
+                    unrotatedDeviceSize = transform.mapRect(deviceRect).size();
+                }
+                if(transformationMode == Qt::SmoothTransformation/* && unrotatedDeviceSize.width() < image.width() && unrotatedDeviceSize.height() < image.height()*/)
+                {
+                    const QImage scaledImage = image.scaled(unrotatedDeviceSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                    if(!scaledImage.isNull())
+                        image = scaledImage;
+                    else
+                        qWarning() << "Image scaling failed, target size =" << unrotatedDeviceSize.width() << "x" << unrotatedDeviceSize.height();
+                }
+                painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
             }
             else
             {
-                const qreal scaleFactor = qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height());
-                QSize size = (boundingRect.size() * scaleFactor).toSize();
-                image = QImage(size, QImage::Format_ARGB32_Premultiplied);
-                while(image.isNull() && !size.isEmpty())
+                if(m_flipOrientations & Qt::Horizontal)
                 {
-                    qWarning() << "Image rendering failed, target size =" << size.width() << "x" << size.height();
-                    size = QSize(size.width() / 2, size.height() / 2);
-                    image = QImage(size, QImage::Format_ARGB32_Premultiplied);
+                    painter.scale(-1, 1);
+                    painter.translate(-boundingRect.width(), 0);
                 }
-                image.fill(Qt::transparent);
-                QPainter painterLocal;
-                painterLocal.begin(&image);
-                painterLocal.scale(image.width() / boundingRect.width(), image.height() / boundingRect.height());
-                painterLocal.translate(-boundingRect.x(), -boundingRect.y());
-                painterLocal.setRenderHint(QPainter::Antialiasing, transformationMode == Qt::SmoothTransformation);
-                painterLocal.setRenderHint(QPainter::TextAntialiasing, transformationMode == Qt::SmoothTransformation);
-                painterLocal.setRenderHint(QPainter::SmoothPixmapTransform, transformationMode == Qt::SmoothTransformation);
-                QStyleOptionGraphicsItem options;
-                options.exposedRect = boundingRect;
-                m_graphicsItem->paint(&painterLocal, &options);
-                painterLocal.end();
-            }
-            image = m_printEffect.apply(image);
-            if(m_flipOrientations)
-                image = image.mirrored(m_flipOrientations & Qt::Horizontal, m_flipOrientations & Qt::Vertical);
-            QSize unrotatedDeviceSize = deviceRect.size();
-            if(m_rotateAngle)
-            {
-                QTransform transform;
-                transform.rotate(-m_rotateAngle);
-                unrotatedDeviceSize = transform.mapRect(deviceRect).size();
-            }
-            if(transformationMode == Qt::SmoothTransformation/* && unrotatedDeviceSize.width() < image.width() && unrotatedDeviceSize.height() < image.height()*/)
-            {
-                const QImage scaledImage = image.scaled(unrotatedDeviceSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-                if(!scaledImage.isNull())
-                    image = scaledImage;
+                if(m_flipOrientations & Qt::Vertical)
+                {
+                    painter.scale(1, -1);
+                    painter.translate(0, -boundingRect.height());
+                }
+                if(IGrabScaledImage *itemWithGrabScaledImage = dynamic_cast<IGrabScaledImage*>(m_graphicsItem))
+                {
+                    const QTransform worldTransform = painter.worldTransform();
+                    const QRect deviceRect = worldTransform.mapRect(boundingRect).toAlignedRect();
+                    const qreal scaleFactor = qMax(qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height()), static_cast<qreal>(1.0));
+                    QImage image = itemWithGrabScaledImage->grabImage(scaleFactor);
+                    Qt::TransformationMode transformationMode = Qt::SmoothTransformation;
+                    if(QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(m_graphicsItem))
+                        transformationMode = pixmapItem->transformationMode();
+                    if(ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(m_graphicsItem))
+                        transformationMode = itemWithTransformationMode->transformationMode();
+                    if(transformationMode == Qt::SmoothTransformation && deviceRect.width() < image.width() && deviceRect.height() < image.height())
+                    {
+                        const QImage scaledImage = image.scaled(deviceRect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                        if(!scaledImage.isNull())
+                            image = scaledImage;
+                        else
+                            qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
+                    }
+                    painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
+                }
+                else if(IGrabImage *itemWithGrabImage = dynamic_cast<IGrabImage*>(m_graphicsItem))
+                {
+                    QImage image = itemWithGrabImage->grabImage();
+                    const QTransform worldTransform = painter.worldTransform();
+                    const QRect deviceRect = worldTransform.mapRect(boundingRect).toAlignedRect();
+                    Qt::TransformationMode transformationMode = Qt::SmoothTransformation;
+                    if(QGraphicsPixmapItem *pixmapItem = dynamic_cast<QGraphicsPixmapItem*>(m_graphicsItem))
+                        transformationMode = pixmapItem->transformationMode();
+                    if(ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(m_graphicsItem))
+                        transformationMode = itemWithTransformationMode->transformationMode();
+                    if(transformationMode == Qt::SmoothTransformation && deviceRect.width() < image.width() && deviceRect.height() < image.height())
+                    {
+                        const QImage scaledImage = image.scaled(deviceRect.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                        if(!scaledImage.isNull())
+                            image = scaledImage;
+                        else
+                            qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
+                    }
+                    painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
+                }
                 else
-                    qWarning() << "Image scaling failed, target size =" << unrotatedDeviceSize.width() << "x" << unrotatedDeviceSize.height();
+                {
+                    QStyleOptionGraphicsItem options;
+                    options.exposedRect = boundingRect;
+                    m_graphicsItem->paint(&painter, &options);
+                }
             }
-            painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
             painter.restore();
         }
         else
@@ -693,6 +777,7 @@ struct PrintDialog::UI
     QSlider * const exposureSlider;
     QSpinBox * const exposureSpinBox;
     QCheckBox * const desaturateCheckBox;
+    QCheckBox * const legacyRendererCheckBox;
 
     QGroupBox * const effectsPreviewGroup;
     PrintPreviewWidget * const effectsPreviewWidget;
@@ -773,6 +858,7 @@ struct PrintDialog::UI
         , CONSTRUCT_OBJECT(exposureSlider, QSlider, (effectsControlGroup))
         , CONSTRUCT_OBJECT(exposureSpinBox, QSpinBox, (effectsControlGroup))
         , CONSTRUCT_OBJECT(desaturateCheckBox, QCheckBox, (effectsControlGroup))
+        , CONSTRUCT_OBJECT(legacyRendererCheckBox, QCheckBox, (effectsControlGroup))
         , CONSTRUCT_OBJECT(effectsPreviewGroup, QGroupBox, (effectsTabFrame))
         , CONSTRUCT_OBJECT(effectsPreviewWidget, PrintPreviewWidget, (effectsPreviewGroup))
         , CONSTRUCT_OBJECT(dialogButtonBox, QDialogButtonBox, (printDialog))
@@ -882,6 +968,8 @@ struct PrintDialog::UI
         effectsControlLayout->addWidget(exposureSpinBox, 7, 1, 1, 1);
         effectsControlLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::MinimumExpanding), 8, 0, 1, 2);
         effectsControlLayout->addWidget(desaturateCheckBox, 9, 0, 1, 2);
+        effectsControlLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::MinimumExpanding), 10, 0, 1, 2);
+        effectsControlLayout->addWidget(legacyRendererCheckBox, 11, 0, 1, 2);
         effectsControlLayout->addItem(new QSpacerItem(64, 1, QSizePolicy::Fixed, QSizePolicy::Fixed), 0, 1, 8, 1);
 
         effectsPreviewWidget->setFixedSize(200, 200);
@@ -957,6 +1045,7 @@ struct PrintDialog::UI
         contrastLabel->setText(qApp->translate("PrintDialog", "Contrast:", "Effects"));
         exposureLabel->setText(qApp->translate("PrintDialog", "Exposure:", "Effects"));
         desaturateCheckBox->setText(qApp->translate("PrintDialog", "Desaturate", "Effects"));
+        legacyRendererCheckBox->setText(qApp->translate("PrintDialog", "Use Legacy Rendering Algorithm", "Effects"));
 
         effectsPreviewGroup->setTitle(qApp->translate("PrintDialog", "Preview", "Effects"));
 

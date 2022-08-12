@@ -73,6 +73,7 @@ private Q_SLOTS:
     void onContrastChanged(int value);
     void onExposureChanged(int value);
     void onDesaturateToggled(bool checked);
+    void onLegacyRendererToggled(bool checked);
 
 private:
     void updatePrinterInfo(const QPrinterInfo& info);

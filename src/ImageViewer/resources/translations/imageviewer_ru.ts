@@ -808,311 +808,317 @@
         <translation>Оба</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="607"/>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="722"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="609"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="787"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="608"/>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="723"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="610"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="788"/>
         <source>Invalid Paper Size</source>
         <translation>Недопустимый размер бумаги</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1143"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1213"/>
         <source>Color</source>
         <comment>Color mode</comment>
         <translation>Цветной</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1145"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1215"/>
         <source>Grayscale</source>
         <comment>Color mode</comment>
         <translation>Чёрно-белый</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1056"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1126"/>
         <source>Yes</source>
         <comment>Default</comment>
         <translation>Да</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1058"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1128"/>
         <source>No</source>
         <comment>Default</comment>
         <translation>Нет</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1062"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1132"/>
         <source>Yes</source>
         <comment>Remote</comment>
         <translation>Да</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1064"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1134"/>
         <source>No</source>
         <comment>Remote</comment>
         <translation>Нет</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1088"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1158"/>
         <source>Idle</source>
         <comment>State</comment>
         <translation>Простаивает</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1091"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1161"/>
         <source>Active</source>
         <comment>State</comment>
         <translation>Идёт печать</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1094"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1164"/>
         <source>Aborted</source>
         <comment>State</comment>
         <translation>Печать прервана</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1097"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1167"/>
         <source>Error</source>
         <comment>State</comment>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1100"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1170"/>
         <source>Unknown (%1)</source>
         <comment>State</comment>
         <translation>Неизвестно (%1)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="914"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1002"/>
         <source>Printer</source>
         <translation>Принтер</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="915"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1003"/>
         <source>...</source>
         <translation>…</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="916"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1004"/>
         <source>Name:</source>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="917"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1005"/>
         <source>Description:</source>
         <translation>Описание:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="918"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1006"/>
         <source>Default:</source>
         <translation>По умолчанию:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="919"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1007"/>
         <source>Remote:</source>
         <translation>Удалённый:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="920"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1008"/>
         <source>Location:</source>
         <translation>Расположение:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="921"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1009"/>
         <source>Make and model:</source>
         <translation>Изготовитель и модель:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="922"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1010"/>
         <source>State:</source>
         <translation>Состояние:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="924"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1012"/>
         <source>Page</source>
         <translation>Страница</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="925"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1013"/>
         <source>Portrait</source>
         <translation>Книжная</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="926"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1014"/>
         <source>Landscape</source>
         <translation>Альбомная</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="927"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1015"/>
         <source>Auto-rotate</source>
         <translation>Автоматическое переворачивание</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="928"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1016"/>
         <source>Page setup</source>
         <translation>Параметры страницы</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="930"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1018"/>
         <source>Misc</source>
         <translation>Разное</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="931"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1019"/>
         <source>Copies:</source>
         <translation>Число копий:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="932"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1020"/>
         <source>Color Mode:</source>
         <translation>Цветовой режим:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="934"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1022"/>
         <source>Size</source>
         <translation>Размер</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="935"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1023"/>
         <source>Width:</source>
         <translation>Ширина:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="936"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1024"/>
         <source>Height:</source>
         <translation>Высота:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="937"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1025"/>
         <source>X Resolution:</source>
         <translation>Разрешение по X:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="938"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1026"/>
         <source>Y Resolution:</source>
         <translation>Разрешение по Y:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="939"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1027"/>
         <source>Load Defaults</source>
         <translation>Загрузить исходные параметры</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="940"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1028"/>
         <source>&lt;b&gt;&amp;#9582;&lt;/b&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="941"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1029"/>
         <source>&lt;b&gt;&amp;#9583;&lt;/b&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="943"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1031"/>
         <source>Position</source>
         <translation>Позиция</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="944"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1032"/>
         <source>Left:</source>
         <translation>Слева:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="945"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1033"/>
         <source>Right:</source>
         <translation>Справа:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="946"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1034"/>
         <source>Top:</source>
         <translation>Сверху:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="947"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1035"/>
         <source>Bottom:</source>
         <translation>Снизу:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="948"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1036"/>
         <source>Center:</source>
         <translation>Центр:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="950"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1038"/>
         <source>Ignore Page Margins</source>
         <translation>Игнорировать поля страницы</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="951"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1039"/>
         <source>Ignore Paper Bounds</source>
         <translation>Игнорировать границы бумаги</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="953"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1041"/>
         <source>Preview</source>
         <translation>Просмотр</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="955"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1043"/>
         <source>Effects</source>
         <comment>Effects</comment>
         <translation>Эффекты</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="956"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1044"/>
         <source>Brightness:</source>
         <comment>Effects</comment>
         <translation>Яркость:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="957"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1045"/>
         <source>Contrast:</source>
         <comment>Effects</comment>
         <translation>Контрастность:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="958"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1046"/>
         <source>Exposure:</source>
         <comment>Effects</comment>
         <translation>Экспозиция:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="959"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1047"/>
         <source>Desaturate</source>
         <comment>Effects</comment>
         <translation>Обесцветить</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="961"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1048"/>
+        <source>Use Legacy Rendering Algorithm</source>
+        <comment>Effects</comment>
+        <translation>Использовать устаревший алгоритм отрисовки</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1050"/>
         <source>Preview</source>
         <comment>Effects</comment>
         <translation>Просмотр</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="963"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1052"/>
         <source>General</source>
         <translation>Общие</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="964"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1053"/>
         <source>Image Settings</source>
         <translation>Параметры изображения</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="965"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1054"/>
         <source>Effects</source>
         <translation>Эффекты</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="967"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1056"/>
         <source>Print</source>
         <translation>Печать</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="968"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1057"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
