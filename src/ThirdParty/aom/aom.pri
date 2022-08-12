@@ -1,4 +1,4 @@
-# URL: https://aomedia.googlesource.com/aom/
+# URL: https://aomedia.googlesource.com/aom/ + https://storage.googleapis.com/aom-releases/
 # License: 2-clause BSD License - https://aomedia.googlesource.com/aom/+/refs/heads/master/LICENSE
 
 include($${PWD}/../../Features.pri)
@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_aom {
 
-        THIRDPARTY_AOM_PATH = $${PWD}/aom-v3.3.0
+        THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.4.0
 
         INCLUDEPATH += $${THIRDPARTY_AOM_PATH}
         DEPENDPATH += $${THIRDPARTY_AOM_PATH}

@@ -1,4 +1,4 @@
-# URL: https://aomedia.googlesource.com/aom/
+# URL: https://aomedia.googlesource.com/aom/ + https://storage.googleapis.com/aom-releases/
 # License: 2-clause BSD License - https://aomedia.googlesource.com/aom/+/refs/heads/master/LICENSE
 
 TEMPLATE = lib
@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/aom-v3.3.0
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.4.0
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -131,6 +131,7 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/corner_detect.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/corner_match.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/cost.c \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/deltaq4_model.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/dwt.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/encode_strategy.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/encodeframe.c \
@@ -289,6 +290,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/convolve_ssse3.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/fwd_txfm_impl_sse2.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/fwd_txfm_sse2.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/intrapred_utils.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/intrapred_x86.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/lpf_common_sse2.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/masked_sad_intrin_ssse3.h \
@@ -436,6 +438,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/model_rd.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/motion_search_facade.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/mv_prec.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/nonrd_opt.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/optical_flow.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/palette.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/partition_cnn_weights.h \
@@ -476,6 +479,10 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_fwd_txfm_avx2.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_fwd_txfm_sse2.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_txfm1d_sse4.h \
+    $${THIRDPARTY_AOM_PATH}/av1/ratectrl_qmode.h \
+    $${THIRDPARTY_AOM_PATH}/av1/ratectrl_qmode_interface.h \
+    $${THIRDPARTY_AOM_PATH}/av1/ratectrl_rtc.h \
+    $${THIRDPARTY_AOM_PATH}/av1/reference_manager.h \
     $${THIRDPARTY_AOM_PATH}/common/args.h \
     $${THIRDPARTY_AOM_PATH}/common/args_helper.h \
     $${THIRDPARTY_AOM_PATH}/common/av1_config.h \
@@ -508,6 +515,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/test/i420_video_source.h \
     $${THIRDPARTY_AOM_PATH}/test/ivf_video_source.h \
     $${THIRDPARTY_AOM_PATH}/test/md5_helper.h \
+    $${THIRDPARTY_AOM_PATH}/test/mock_ratectrl_qmode.h \
     $${THIRDPARTY_AOM_PATH}/test/register_state_check.h \
     $${THIRDPARTY_AOM_PATH}/test/simd_cmp_impl.h \
     $${THIRDPARTY_AOM_PATH}/test/simd_impl.h \
@@ -520,6 +528,21 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/test/y4m_video_source.h \
     $${THIRDPARTY_AOM_PATH}/test/yuv_video_source.h \
     $${THIRDPARTY_AOM_PATH}/third_party/fastfeat/fast.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-actions.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-cardinalities.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-function-mocker.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-matchers.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-more-actions.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-more-matchers.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-nice-strict.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-spec-builders.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/custom/gmock-generated-actions.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/custom/gmock-matchers.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/custom/gmock-port.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/gmock-internal-utils.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/gmock-port.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/gmock-pp.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-death-test.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-matchers.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-message.h \
