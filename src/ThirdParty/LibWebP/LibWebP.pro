@@ -10,12 +10,13 @@ TARGET = tp_LibWebP
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.2.2
+THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.2.4
 
 include(../CommonSettings.pri)
 
 INCLUDEPATH = \
     $${THIRDPARTY_LIBWEBP_PATH} \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv \
     $${THIRDPARTY_LIBWEBP_PATH}/src \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc \
@@ -26,6 +27,11 @@ INCLUDEPATH = \
     $${INCLUDEPATH}
 
 SOURCES += \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_csp.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_dsp.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_gamma.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/alpha_dec.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/buffer_dec.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/frame_dec.c \
@@ -132,7 +138,12 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/thread_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/utils.c
 
+# (find ./src -name '*.h' && find ./sharpyuv -name '*.h') | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBWEBP_PATH}| ; s|$| \\|'
 HEADERS += \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_csp.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_dsp.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_gamma.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/alphai_dec.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/common_dec.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/vp8_dec.h \
@@ -141,9 +152,10 @@ HEADERS += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/webpi_dec.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/common_sse2.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/common_sse41.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cpu.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dsp.h \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_common.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_common.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/mips_macro.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/msa_macro.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/neon.h \
@@ -176,7 +188,7 @@ HEADERS += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/webp/format_constants.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/webp/mux.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/webp/mux_types.h \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/webp/types.h
+    $${THIRDPARTY_LIBWEBP_PATH}/src/webp/types.h \
 
 android:!android-embedded {
     SOURCES += $${NDK_ROOT}/sources/android/cpufeatures/cpu-features.c
@@ -188,6 +200,7 @@ integrity {
 }
 
 SOURCES_FOR_NEON += \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_neon.c \
