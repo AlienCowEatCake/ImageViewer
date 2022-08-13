@@ -1,4 +1,4 @@
-From c3c3f704f4d6ae1a5536762429650d34022a5fe0 Mon Sep 17 00:00:00 2001
+From b68e15de6d0df0ca3b051b69e3e06db66f6312f1 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
 Subject: [PATCH 3/3] Remove C++17 features
@@ -31,7 +31,7 @@ index f2adb34..92bd380 100644
                      return QImage::Format_ARGB32;
                  }
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index fc14f14..5ccab93 100644
+index 0a84f17..c46172f 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -32,7 +32,7 @@ namespace
@@ -71,5 +71,5 @@ index fc14f14..5ccab93 100644
  QVector<QRgb> XCFImageFormat::grayTable;
  
 -- 
-2.35.1.windows.2
+2.37.1
 

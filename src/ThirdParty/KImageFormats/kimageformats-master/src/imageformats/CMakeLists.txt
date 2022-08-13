@@ -4,6 +4,7 @@
 
 function(kimageformats_add_plugin plugin)
     set(options)
+    set(oneValueArgs)
     set(multiValueArgs SOURCES)
     cmake_parse_arguments(KIF_ADD_PLUGIN "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
     if(NOT KIF_ADD_PLUGIN_SOURCES)
@@ -86,6 +87,9 @@ endif()
 if (LibJXL_FOUND AND LibJXLThreads_FOUND)
     kimageformats_add_plugin(kimg_jxl SOURCES jxl.cpp)
     target_link_libraries(kimg_jxl PkgConfig::LibJXL PkgConfig::LibJXLThreads)
+    if (LibJXL_VERSION VERSION_GREATER_EQUAL "0.7.0")
+        target_compile_definitions(kimg_jxl PRIVATE KIMG_JXL_API_VERSION=70)
+    endif()
     install(FILES jxl.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
 endif()
 

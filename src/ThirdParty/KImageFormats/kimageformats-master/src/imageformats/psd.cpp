@@ -3,7 +3,7 @@
 
     SPDX-FileCopyrightText: 2003 Ignacio Castaño <castano@ludicon.com>
     SPDX-FileCopyrightText: 2015 Alex Merry <alex.merry@kde.org>
-    SPDX-FileCopyrightText: 2022 Mirco Miranda <mirco.miranda@systemceramics.com>
+    SPDX-FileCopyrightText: 2022 Mirco Miranda <mircomir@outlook.com>
 
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
@@ -22,13 +22,15 @@
  * Limitations of the current code:
  * - 32-bit float image are converted to 16-bit integer image.
  *   NOTE: Qt 6.2 allow 32-bit float images (RGB only)
- * - Other color spaces cannot be read due to lack of QImage support for
- *   color spaces other than RGB (and Grayscale): a conversion to
- *   RGB must be done.
- *   - The best way to convert between different color spaces is to use a
- *     color management engine (e.g. LittleCMS).
- *   - An approximate way is to ignore the color information and use
- *     literature formulas (possible but not recommended).
+ * - Other color spaces cannot directly be read due to lack of QImage support for
+ *   color spaces other than RGB (and Grayscale). Where possible, a conversion
+ *   to RGB is done:
+ *   - CMYK images are converted using an approximated way that ignores the color
+ *     information (ICC profile).
+ *   - LAB images are converted to sRGB using literature formulas.
+ *
+ *   NOTE: The best way to convert between different color spaces is to use a
+ *   color management engine (e.g. LittleCMS).
  */
 
 #include "psd_p.h"
@@ -40,13 +42,35 @@
 #include <QImage>
 #include <QColorSpace>
 
+#include <cmath>
+
 typedef quint32 uint;
 typedef quint16 ushort;
 typedef quint8 uchar;
 
+/* The fast LAB conversion converts the image to linear sRgb instead to sRgb.
+ * This should not be a problem because the Qt's QColorSpace supports the linear
+ * sRgb colorspace.
+ *
+ * Using linear conversion, the loading speed is improved by 4x. Anyway, if you are using
+ * an software that discard color info, you should comment it.
+ *
+ * At the time I'm writing (07/2022), Gwenview and Krita supports linear sRgb but KDE
+ * preview creator does not. This is the why, for now, it is disabled.
+ */
+//#define PSD_FAST_LAB_CONVERSION
+
 namespace // Private.
 {
-enum ColorMode {
+
+enum Signature : quint32 {
+    S_8BIM = 0x3842494D, // '8BIM'
+    S_8B64 = 0x38423634, // '8B64'
+
+    S_MeSa = 0x4D655361   // 'MeSa'
+};
+
+enum ColorMode : quint16 {
     CM_BITMAP = 0,
     CM_GRAYSCALE = 1,
     CM_INDEXED = 2,
@@ -63,6 +87,12 @@ enum ImageResourceId : quint16 {
     IRI_TRANSPARENCYINDEX = 0x0417,
     IRI_VERSIONINFO = 0x0421,
     IRI_XMPMETADATA = 0x0424
+};
+
+enum LayerId : quint32 {
+    LI_MT16 = 0x4D743136,   // 'Mt16',
+    LI_MT32 = 0x4D743332,   // 'Mt32',
+    LI_MTRN = 0x4D74726E    // 'Mtrn'
 };
 
 struct PSDHeader {
@@ -101,6 +131,57 @@ struct PSDColorModeDataSection {
 
 using PSDImageResourceSection = QHash<quint16, PSDImageResourceBlock>;
 
+struct PSDLayerInfo {
+    qint64 size = -1;
+    qint16 layerCount = 0;
+};
+
+struct PSDGlobalLayerMaskInfo {
+    qint64 size = -1;
+};
+
+struct PSDAdditionalLayerInfo {
+    Signature signature = Signature();
+    LayerId id = LayerId();
+    qint64 size = -1;
+};
+
+struct PSDLayerAndMaskSection {
+    qint64 size = -1;
+    PSDLayerInfo layerInfo;
+    PSDGlobalLayerMaskInfo globalLayerMaskInfo;
+    QHash<LayerId, PSDAdditionalLayerInfo> additionalLayerInfo;
+
+    bool isNull() const {
+        return (size <= 0);
+    }
+
+    bool hasAlpha() const {
+        return layerInfo.layerCount < 0 ||
+               additionalLayerInfo.contains(LI_MT16) ||
+               additionalLayerInfo.contains(LI_MT32) ||
+               additionalLayerInfo.contains(LI_MTRN);
+    }
+
+    bool atEnd(bool isPsb) const {
+        qint64 currentSize = 0;
+        if (layerInfo.size > -1) {
+            currentSize += layerInfo.size + 4;
+            if (isPsb)
+                currentSize += 4;
+        }
+        if (globalLayerMaskInfo.size > -1) {
+            currentSize += globalLayerMaskInfo.size + 4;
+        }
+        for (auto && v : additionalLayerInfo.values()) {
+            currentSize += (12 + v.size);
+            if (v.signature == S_8B64)
+                currentSize += 4;
+        }
+        return (size <= currentSize);
+    }
+};
+
 /*!
  * \brief fixedPointToDouble
  * Converts a fixed point number to floating point one.
@@ -110,6 +191,43 @@ static double fixedPointToDouble(qint32 fixedPoint)
     auto i = double(fixedPoint >> 16);
     auto d = double((fixedPoint & 0x0000FFFF) / 65536.0);
     return (i+d);
+}
+
+static qint64 readSize(QDataStream &s, bool psb = false)
+{
+    qint64 size = 0;
+    if (!psb) {
+        quint32 tmp;
+        s >> tmp;
+        size = tmp;
+    }
+    else {
+        s >> size;
+    }
+    if (s.status() != QDataStream::Ok) {
+        size = -1;
+    }
+    return size;
+}
+
+static bool skip_data(QDataStream &s, qint64 size)
+{
+    // Skip mode data.
+    for (qint32 i32 = 0; size; size -= i32) {
+        i32 = std::min(size, qint64(std::numeric_limits<qint32>::max()));
+        i32 = s.skipRawData(i32);
+        if (i32 < 1)
+            return false;
+    }
+    return true;
+}
+
+static bool skip_section(QDataStream &s, bool psb = false)
+{
+    auto section_length = readSize(s, psb);
+    if (section_length < 0)
+        return false;
+    return skip_data(s, section_length);
 }
 
 /*!
@@ -193,7 +311,7 @@ static PSDImageResourceSection readImageResourceSection(QDataStream &s, bool *ok
         s >> signature;
         size -= sizeof(signature);
         // NOTE: MeSa signature is not documented but found in some old PSD take from Photoshop 7.0 CD.
-        if (signature != 0x3842494D && signature != 0x4D655361) { // 8BIM and MeSa
+        if (signature != S_8BIM && signature != S_MeSa) { // 8BIM and MeSa
             qDebug() << "Invalid Image Resource Block Signature!";
             *ok = false;
             break;
@@ -218,12 +336,12 @@ static PSDImageResourceSection readImageResourceSection(QDataStream &s, bool *ok
         size -= sizeof(dataSize);
         // NOTE: Qt device::read() and QDataStream::readRawData() could read less data than specified.
         //       The read code should be improved.
-        if(auto dev = s.device())
+        if (auto dev = s.device())
             irb.data = dev->read(dataSize);
         auto read = irb.data.size();
         if (read > 0)
             size -= read;
-        if (read != dataSize) {
+        if (quint32(read) != dataSize) {
             qDebug() << "Image Resource Block Read Error!";
             *ok = false;
             break;
@@ -248,6 +366,79 @@ static PSDImageResourceSection readImageResourceSection(QDataStream &s, bool *ok
 #endif
 
     return irs;
+}
+
+PSDAdditionalLayerInfo readAdditionalLayer(QDataStream &s, bool *ok = nullptr)
+{
+    PSDAdditionalLayerInfo li;
+
+    bool tmp = true;
+    if (ok == nullptr)
+        ok = &tmp;
+
+    s >> li.signature;
+    *ok = li.signature == S_8BIM || li.signature == S_8B64;
+    if (!*ok)
+        return li;
+
+    s >> li.id;
+    *ok = s.status() == QDataStream::Ok;
+    if (!*ok)
+        return li;
+
+    li.size = readSize(s, li.signature == S_8B64);
+    *ok = li.size >= 0;
+    if (!*ok)
+        return li;
+
+    *ok = skip_data(s, li.size);
+
+    return li;
+}
+
+PSDLayerAndMaskSection readLayerAndMaskSection(QDataStream &s, bool isPsb, bool *ok = nullptr)
+{
+    PSDLayerAndMaskSection lms;
+
+    bool tmp = true;
+    if (ok == nullptr)
+        ok = &tmp;
+    *ok = true;
+
+    auto device = s.device();
+    device->startTransaction();
+
+    lms.size = readSize(s, isPsb);
+
+    // read layer info
+    if (s.status() == QDataStream::Ok && !lms.atEnd(isPsb)) {
+        lms.layerInfo.size = readSize(s, isPsb);
+        if (lms.layerInfo.size > 0) {
+            s >> lms.layerInfo.layerCount;
+            skip_data(s, lms.layerInfo.size - sizeof(lms.layerInfo.layerCount));
+        }
+    }
+
+    // read global layer mask info
+    if (s.status() == QDataStream::Ok && !lms.atEnd(isPsb)) {
+        lms.globalLayerMaskInfo.size = readSize(s, false); // always 32-bits
+        if (lms.globalLayerMaskInfo.size > 0) {
+            skip_data(s, lms.globalLayerMaskInfo.size);
+        }
+    }
+
+    // read additional layer info
+    if (s.status() == QDataStream::Ok) {
+        for (bool ok = true; ok && !lms.atEnd(isPsb);) {
+            auto al = readAdditionalLayer(s, &ok);
+            if (ok)
+                lms.additionalLayerInfo.insert(al.id, al);
+        }
+    }
+
+    device->rollbackTransaction();
+    *ok = skip_section(s, isPsb);
+    return lms;
 }
 
 /*!
@@ -424,16 +615,47 @@ static QDataStream &operator>>(QDataStream &s, PSDHeader &header)
     return s;
 }
 
-// Check that the header is a valid PSD.
+// Check that the header is a valid PSD (as written in the PSD specification).
 static bool IsValid(const PSDHeader &header)
 {
     if (header.signature != 0x38425053) { // '8BPS'
+        //qDebug() << "PSD header: invalid signature" << header.signature;
+        return false;
+    }
+    if (header.version != 1 && header.version != 2) {
+        qDebug() << "PSD header: invalid version" << header.version;
+        return false;
+    }
+    if (header.depth != 8 &&
+        header.depth != 16 &&
+        header.depth != 32 &&
+        header.depth != 1) {
+        qDebug() << "PSD header: invalid depth" << header.depth;
+        return false;
+    }
+    if (header.color_mode != CM_RGB &&
+        header.color_mode != CM_GRAYSCALE &&
+        header.color_mode != CM_INDEXED &&
+        header.color_mode != CM_DUOTONE &&
+        header.color_mode != CM_CMYK &&
+        header.color_mode != CM_LABCOLOR &&
+        header.color_mode != CM_MULTICHANNEL &&
+        header.color_mode != CM_BITMAP) {
+        qDebug() << "PSD header: invalid color mode" << header.color_mode;
+        return false;
+    }
+    if (header.channel_count < 1 || header.channel_count > 56) {
+        qDebug() << "PSD header: invalid number of channels" << header.channel_count;
+        return false;
+    }
+    if (header.width > 300000 || header.height > 300000) {
+        qDebug() << "PSD header: invalid image size" << header.width << "x" << header.height;
         return false;
     }
     return true;
 }
 
-// Check that the header is supported.
+// Check that the header is supported by this plugin.
 static bool IsSupported(const PSDHeader &header)
 {
     if (header.version != 1 && header.version != 2) {
@@ -449,30 +671,10 @@ static bool IsSupported(const PSDHeader &header)
         header.color_mode != CM_GRAYSCALE &&
         header.color_mode != CM_INDEXED &&
         header.color_mode != CM_DUOTONE &&
+        header.color_mode != CM_CMYK &&
+        header.color_mode != CM_LABCOLOR &&
         header.color_mode != CM_BITMAP) {
         return false;
-    }
-    return true;
-}
-
-static bool skip_section(QDataStream &s, bool psb = false)
-{
-    qint64 section_length;
-    if (!psb) {
-        quint32 tmp;
-        s >> tmp;
-        section_length = tmp;
-    }
-    else {
-        s >> section_length;
-    }
-
-    // Skip mode data.
-    for (qint32 i32 = 0; section_length; section_length -= i32) {
-        i32 = std::min(section_length, qint64(std::numeric_limits<qint32>::max()));
-        i32 = s.skipRawData(i32);
-        if (i32 < 1)
-            return false;
     }
     return true;
 }
@@ -490,14 +692,14 @@ qint64 decompress(const char *input, qint64 ilen, char *output, qint64 olen)
 {
     qint64  j = 0;
     for (qint64 ip = 0, rr = 0, available = olen; j < olen && ip < ilen; available = olen - j) {
-        char n = input[ip++];
-        if (static_cast<signed char>(n) == -128)
+        signed char n = static_cast<signed char>(input[ip++]);
+        if (n == -128)
             continue;
 
-        if (static_cast<signed char>(n) >= 0) {
+        if (n >= 0) {
             rr = qint64(n) + 1;
             if (available < rr) {
-                ip--;
+                --ip;
                 break;
             }
 
@@ -509,7 +711,7 @@ qint64 decompress(const char *input, qint64 ilen, char *output, qint64 olen)
         else if (ip < ilen) {
             rr = qint64(1-n);
             if (available < rr) {
-                ip--;
+                --ip;
                 break;
             }
             memset(output + j, input[ip++], size_t(rr));
@@ -525,7 +727,7 @@ qint64 decompress(const char *input, qint64 ilen, char *output, qint64 olen)
  * \param header The PSD header.
  * \return The Qt image format.
  */
-static QImage::Format imageFormat(const PSDHeader &header)
+static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
 {
     if (header.channel_count == 0) {
         return QImage::Format_Invalid;
@@ -535,9 +737,21 @@ static QImage::Format imageFormat(const PSDHeader &header)
     switch(header.color_mode) {
     case CM_RGB:
         if (header.depth == 16 || header.depth == 32)
-            format = header.channel_count < 4 ? QImage::Format_RGBX64 : QImage::Format_RGBA64;
+            format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64;
         else
-            format = header.channel_count < 4 ? QImage::Format_RGB888 : QImage::Format_RGBA8888;
+            format = header.channel_count < 4 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888;
+        break;
+    case CM_CMYK:       // Photoshop supports CMYK 8-bits and 16-bits only
+        if (header.depth == 16)
+            format = header.channel_count < 5 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64;
+        else if (header.depth == 8)
+            format = header.channel_count < 5 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888;
+        break;
+    case CM_LABCOLOR:   // Photoshop supports LAB 8-bits and 16-bits only
+        if (header.depth == 16)
+            format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64;
+        else if (header.depth == 8)
+            format = header.channel_count < 4 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888;
         break;
     case CM_GRAYSCALE:
     case CM_DUOTONE:
@@ -598,23 +812,24 @@ inline quint32 xchg(quint32 v) {
 }
 
 template<class T>
-inline void planarToChunchy(uchar *target, const char* source, qint32 width, qint32 c, qint32 cn)
+inline void planarToChunchy(uchar *target, const char *source, qint32 width, qint32 c, qint32 cn)
 {
     auto s = reinterpret_cast<const T*>(source);
     auto t = reinterpret_cast<T*>(target);
-    for (qint32 x = 0; x < width; ++x)
+    for (qint32 x = 0; x < width; ++x) {
         t[x*cn+c] = xchg(s[x]);
+    }
 }
 
-template<class T>
-inline void planarToChunchyFloat(uchar *target, const char* source, qint32 width, qint32 c, qint32 cn)
+template<class T, T min = 0, T max = 1>
+inline void planarToChunchyFloat(uchar *target, const char *source, qint32 width, qint32 c, qint32 cn)
 {
     auto s = reinterpret_cast<const T*>(source);
     auto t = reinterpret_cast<quint16*>(target);
     for (qint32 x = 0; x < width; ++x) {
         auto tmp = xchg(s[x]);
-        t[x*cn+c] = std::min(quint16(*reinterpret_cast<float*>(&tmp) * std::numeric_limits<quint16>::max() + 0.5),
-                             std::numeric_limits<quint16>::max());
+        auto ftmp = (*reinterpret_cast<float*>(&tmp) - double(min)) / (double(max) - double(min));
+        t[x*cn+c] = quint16(std::min(ftmp * std::numeric_limits<quint16>::max() + 0.5, double(std::numeric_limits<quint16>::max())));
     }
 }
 
@@ -622,8 +837,121 @@ inline void monoInvert(uchar *target, const char* source, qint32 bytes)
 {
     auto s = reinterpret_cast<const quint8*>(source);
     auto t = reinterpret_cast<quint8*>(target);
-    for (qint32 x = 0; x < bytes; ++x)
+    for (qint32 x = 0; x < bytes; ++x) {
         t[x] = ~s[x];
+    }
+}
+
+template<class T>
+inline void cmykToRgb(uchar *target, qint32 targetChannels, const char *source, qint32 sourceChannels, qint32 width, bool alpha = false)
+{
+    auto s = reinterpret_cast<const T*>(source);
+    auto t = reinterpret_cast<T*>(target);
+    auto max = double(std::numeric_limits<T>::max());
+
+    if (sourceChannels < 4) {
+        qDebug() << "cmykToRgb: image is not a valid CMYK!";
+        return;
+    }
+
+    for (qint32 w = 0; w < width; ++w) {
+        auto ps = s + sourceChannels * w;
+        auto C = 1 - *(ps + 0) / max;
+        auto M = 1 - *(ps + 1) / max;
+        auto Y = 1 - *(ps + 2) / max;
+        auto K = 1 - *(ps + 3) / max;
+
+        auto pt = t + targetChannels * w;
+        *(pt + 0) = T(std::min(max - (C * (1 - K) + K) * max + 0.5, max));
+        *(pt + 1) = T(std::min(max - (M * (1 - K) + K) * max + 0.5, max));
+        *(pt + 2) = T(std::min(max - (Y * (1 - K) + K) * max + 0.5, max));
+        if (targetChannels == 4) {
+            if (sourceChannels >= 5 && alpha)
+                *(pt + 3) = *(ps + 4);
+            else
+                *(pt + 3) = std::numeric_limits<T>::max();
+        }
+    }
+}
+
+inline double finv(double v)
+{
+    return (v > 6.0 / 29.0 ? v * v * v : (v - 16.0 / 116.0) / 7.787);
+}
+
+inline double gammaCorrection(double linear)
+{
+#ifdef PSD_FAST_LAB_CONVERSION
+    return linear;
+#else
+    // NOTE: pow() slow down the performance by a 4 factor :(
+    return (linear > 0.0031308 ? 1.055 * std::pow(linear, 1.0 / 2.4) - 0.055 : 12.92 * linear);
+#endif
+}
+
+template<class T>
+inline void labToRgb(uchar *target, qint32 targetChannels, const char *source, qint32 sourceChannels, qint32 width, bool alpha = false)
+{
+    auto s = reinterpret_cast<const T*>(source);
+    auto t = reinterpret_cast<T*>(target);
+    auto max = double(std::numeric_limits<T>::max());
+
+    if (sourceChannels < 3) {
+        qDebug() << "labToRgb: image is not a valid LAB!";
+        return;
+    }
+
+    for (qint32 w = 0; w < width; ++w) {
+        auto ps = s + sourceChannels * w;
+        auto L = (*(ps + 0) / max) * 100.0;
+        auto A = (*(ps + 1) / max) * 255.0 - 128.0;
+        auto B = (*(ps + 2) / max) * 255.0 - 128.0;
+
+        // converting LAB to XYZ (D65 illuminant)
+        auto Y = (L + 16.0) / 116.0;
+        auto X = A / 500.0 + Y;
+        auto Z = Y - B / 200.0;
+
+        // NOTE: use the constants of the illuminant of the target RGB color space
+        X = finv(X) * 0.9504;   // D50: * 0.9642
+        Y = finv(Y) * 1.0000;   // D50: * 1.0000
+        Z = finv(Z) * 1.0888;   // D50: * 0.8251
+
+        // converting XYZ to sRGB (sRGB illuminant is D65)
+        auto r = gammaCorrection(  3.24071   * X - 1.53726  * Y - 0.498571  * Z);
+        auto g = gammaCorrection(- 0.969258  * X + 1.87599  * Y + 0.0415557 * Z);
+        auto b = gammaCorrection(  0.0556352 * X - 0.203996 * Y + 1.05707   * Z);
+
+        auto pt = t + targetChannels * w;
+        *(pt + 0) = T(std::max(std::min(r * max + 0.5, max), 0.0));
+        *(pt + 1) = T(std::max(std::min(g * max + 0.5, max), 0.0));
+        *(pt + 2) = T(std::max(std::min(b * max + 0.5, max), 0.0));
+        if (targetChannels == 4) {
+            if (sourceChannels >= 4 && alpha)
+                *(pt + 3) = *(ps + 3);
+            else
+                *(pt + 3) = std::numeric_limits<T>::max();
+        }
+    }
+}
+
+bool readChannel(QByteArray& target, QDataStream &stream, quint32 compressedSize, quint16 compression)
+{
+    if (compression) {
+        QByteArray tmp;
+        tmp.resize(compressedSize);
+        if (stream.readRawData(tmp.data(), tmp.size()) != tmp.size()) {
+            return false;
+        }
+        if (decompress(tmp.data(), tmp.size(), target.data(), target.size()) < 0) {
+            return false;
+        }
+    }
+    else if (stream.readRawData(target.data(), target.size()) != target.size()) {
+        return false;
+    }
+
+    return stream.status() == QDataStream::Ok;
 }
 
 // Load the PSD image.
@@ -653,7 +981,8 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
     }
 
     // Layer and Mask section
-    if (!skip_section(stream, isPsb)) {
+    auto lms = readLayerAndMaskSection(stream, isPsb, &ok);
+    if (!ok) {
         qDebug() << "Error while skipping Layer and Mask section";
         return false;
     }
@@ -669,7 +998,13 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
         return false;
     }
 
-    const QImage::Format format = imageFormat(header);
+    // Try to identify the nature of spots: note that this is just one of many ways to identify the presence
+    // of alpha channels: should work in most cases where colorspaces != RGB/Gray
+    auto alpha = header.color_mode == CM_RGB;
+    if (!lms.isNull())
+        alpha = lms.hasAlpha();
+
+    const QImage::Format format = imageFormat(header, alpha);
     if (format == QImage::Format_Invalid) {
         qWarning() << "Unsupported image format. color_mode:" << header.color_mode << "depth:" << header.depth << "channel_count:" << header.channel_count;
         return false;
@@ -697,7 +1032,7 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
 
     QVector<quint32> strides(header.height * header.channel_count, raw_count);
     // Read the compressed stride sizes
-    if (compression)
+    if (compression) {
         for (auto&& v : strides) {
             if (isPsb) {
                 stream >> v;
@@ -707,47 +1042,99 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
             stream >> tmp;
             v = tmp;
         }
+    }
+    // calculate the absolute file positions of each stride (required when a colorspace conversion should be done)
+    auto device = stream.device();
+    QVector<quint64> stridePositions(strides.size());
+    if (!stridePositions.isEmpty()) {
+        stridePositions[0] = device->pos();
+    }
+    for (qsizetype i = 1, n = stridePositions.size(); i < n; ++i) {
+        stridePositions[i] = stridePositions[i-1] + strides.at(i-1);
+    }
 
     // Read the image
     QByteArray rawStride;
     rawStride.resize(raw_count);
-    for (qint32 c = 0; c < channel_num; ++c) {
-        for(qint32 y = 0, h = header.height; y < h; ++y) {
-            auto&& strideSize = strides.at(c*qsizetype(h)+y);
-            if (compression) {
-                QByteArray tmp;
-                tmp.resize(strideSize);
-                if (stream.readRawData(tmp.data(), tmp.size()) != tmp.size()) {
+
+    if (header.color_mode == CM_CMYK || header.color_mode == CM_LABCOLOR || header.color_mode == CM_MULTICHANNEL) {
+        // In order to make a colorspace transformation, we need all channels of a scanline
+        QByteArray psdScanline;
+        psdScanline.resize(qsizetype(header.width * std::min(header.depth, quint16(16)) * header.channel_count + 7) / 8);
+        for (qint32 y = 0, h = header.height; y < h; ++y) {
+            for (qint32 c = 0; c < header.channel_count; ++c) {
+                auto strideNumber = c * qsizetype(h) + y;
+                if (!device->seek(stridePositions.at(strideNumber))) {
+                    qDebug() << "Error while seeking the stream of channel" << c << "line" << y;
+                    return false;
+                }
+                auto&& strideSize = strides.at(strideNumber);
+                if (!readChannel(rawStride, stream, strideSize, compression)) {
                     qDebug() << "Error while reading the stream of channel" << c << "line" << y;
                     return false;
                 }
-                if (decompress(tmp.data(), tmp.size(), rawStride.data(), rawStride.size()) < 0) {
-                    qDebug() << "Error while decompressing the channel" << c << "line" << y;
-                    return false;
+
+                auto scanLine = reinterpret_cast<unsigned char*>(psdScanline.data());
+                if (header.depth == 8) {
+                    planarToChunchy<quint8>(scanLine, rawStride.data(), header.width, c, header.channel_count);
                 }
-            }
-            else {
-                if (stream.readRawData(rawStride.data(), rawStride.size()) != rawStride.size()) {
-                    qDebug() << "Error while reading the stream of channel" << c << "line" << y;
-                    return false;
+                else if (header.depth == 16) {
+                    planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, header.channel_count);
+                }
+                else if (header.depth == 32) { // Not currently used
+                    planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, header.channel_count);
                 }
             }
 
-            if (stream.status() != QDataStream::Ok) {
-                qDebug() << "Stream read error" << stream.status();
-                return false;
+            // Conversion to RGB
+            if (header.color_mode == CM_CMYK) {
+                if (header.depth == 8)
+                    cmykToRgb<quint8>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width, alpha);
+                else
+                    cmykToRgb<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width, alpha);
             }
-
-            auto scanLine = img.scanLine(y);
-            if (header.depth == 1)          // Bitmap
-                monoInvert(scanLine, rawStride.data(), std::min(rawStride.size(), img.bytesPerLine()));
-            else if (header.depth == 8)     // 8-bits images: Indexed, Grayscale, RGB/RGBA
-                planarToChunchy<quint8>(scanLine, rawStride.data(), header.width, c, imgChannels);
-            else if (header.depth == 16)    // 16-bits integer images: Grayscale, RGB/RGBA
-                planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, imgChannels);
-            else if (header.depth == 32)    // 32-bits float images: Grayscale, RGB/RGBA (coverted to equivalent integer 16-bits)
-                planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, imgChannels);
+            if (header.color_mode == CM_LABCOLOR) {
+                if (header.depth == 8)
+                    labToRgb<quint8>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width, alpha);
+                else
+                    labToRgb<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width, alpha);
+            }
         }
+    }
+    else {
+        // Linear read (no position jumps): optimized code usable only for the colorspaces supported by QImage
+        for (qint32 c = 0; c < channel_num; ++c) {
+            for (qint32 y = 0, h = header.height; y < h; ++y) {
+                auto&& strideSize = strides.at(c * qsizetype(h) + y);
+                if (!readChannel(rawStride, stream, strideSize, compression)) {
+                    qDebug() << "Error while reading the stream of channel" << c << "line" << y;
+                    return false;
+                }
+
+                auto scanLine = img.scanLine(y);
+                if (header.depth == 1) {        // Bitmap
+                    monoInvert(scanLine, rawStride.data(), std::min(rawStride.size(), img.bytesPerLine()));
+                }
+                else if (header.depth == 8) {   // 8-bits images: Indexed, Grayscale, RGB/RGBA
+                    planarToChunchy<quint8>(scanLine, rawStride.data(), header.width, c, imgChannels);
+                }
+                else if (header.depth == 16) {  // 16-bits integer images: Grayscale, RGB/RGBA
+                    planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, imgChannels);
+                }
+                else if (header.depth == 32) {  // 32-bits float images: Grayscale, RGB/RGBA (coverted to equivalent integer 16-bits)
+                    planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, imgChannels);
+                }
+            }
+        }
+    }
+
+    // LAB conversion generates a sRGB image
+    if (header.color_mode == CM_LABCOLOR) {
+#ifdef PSD_FAST_LAB_CONVERSION
+        img.setColorSpace(QColorSpace(QColorSpace::SRgbLinear));
+#else
+        img.setColorSpace(QColorSpace(QColorSpace::SRgb));
+#endif
     }
 
     // Resolution info

@@ -135,7 +135,7 @@ public:
         PROP_SAMPLE_POINTS = 39,
         MAX_SUPPORTED_PROPTYPE, // should always be at the end so its value is last + 1
     };
-    Q_ENUM(PropType);
+    Q_ENUM(PropType)
 
     //! Compression type used in layer tiles.
     enum XcfCompressionType {
@@ -145,7 +145,7 @@ public:
         COMPRESS_ZLIB = 2, /* unused */
         COMPRESS_FRACTAL = 3, /* unused */
     };
-    Q_ENUM(XcfCompressionType);
+    Q_ENUM(XcfCompressionType)
 
     enum LayerModeType {
         GIMP_LAYER_MODE_NORMAL_LEGACY,
@@ -212,7 +212,7 @@ public:
         GIMP_LAYER_MODE_PASS_THROUGH,
         GIMP_LAYER_MODE_COUNT,
     };
-    Q_ENUM(LayerModeType);
+    Q_ENUM(LayerModeType)
 
     //! Type of individual layers in an XCF file.
     enum GimpImageType {
@@ -223,7 +223,7 @@ public:
         INDEXED_GIMAGE,
         INDEXEDA_GIMAGE,
     };
-    Q_ENUM(GimpImageType);
+    Q_ENUM(GimpImageType)
 
     //! Type of individual layers in an XCF file.
     enum GimpColorSpace {
