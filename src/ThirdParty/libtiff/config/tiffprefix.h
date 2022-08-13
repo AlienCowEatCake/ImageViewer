@@ -53,9 +53,12 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define TIFFFaxWhiteTable tp_TIFFFaxWhiteTable
 #define TIFFFdOpen tp_TIFFFdOpen
 #define TIFFFieldDataType tp_TIFFFieldDataType
+#define TIFFFieldIsAnonymous tp_TIFFFieldIsAnonymous
 #define TIFFFieldName tp_TIFFFieldName
 #define TIFFFieldPassCount tp_TIFFFieldPassCount
 #define TIFFFieldReadCount tp_TIFFFieldReadCount
+#define TIFFFieldSetGetCountSize tp_TIFFFieldSetGetCountSize
+#define TIFFFieldSetGetSize tp_TIFFFieldSetGetSize
 #define TIFFFieldTag tp_TIFFFieldTag
 #define TIFFFieldWithName tp_TIFFFieldWithName
 #define TIFFFieldWithTag tp_TIFFFieldWithTag
@@ -98,6 +101,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define TIFFInitDumpMode tp_TIFFInitDumpMode
 #define TIFFInitJBIG tp_TIFFInitJBIG
 #define TIFFInitJPEG tp_TIFFInitJPEG
+#define TIFFInitLERC tp_TIFFInitLERC
 #define TIFFInitLZMA tp_TIFFInitLZMA
 #define TIFFInitLZW tp_TIFFInitLZW
 #define TIFFInitNeXT tp_TIFFInitNeXT
@@ -110,6 +114,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define TIFFInitZIP tp_TIFFInitZIP
 #define TIFFInitZSTD tp_TIFFInitZSTD
 #define TIFFIsBigEndian tp_TIFFIsBigEndian
+#define TIFFIsBigTIFF tp_TIFFIsBigTIFF
 #define TIFFIsByteSwapped tp_TIFFIsByteSwapped
 #define TIFFIsCODECConfigured tp_TIFFIsCODECConfigured
 #define TIFFIsMSB2LSB tp_TIFFIsMSB2LSB
