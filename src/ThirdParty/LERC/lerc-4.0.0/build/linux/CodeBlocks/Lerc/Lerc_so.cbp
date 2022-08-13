@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Lerc_so" />
+		<Option platforms="Unix;" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Lerc" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add option="-o bin/Debug/libLerc.so" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Lerc" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O3" />
+				</Compiler>
+				<Linker>
+					<Add option="-O3" />
+					<Add option="-s" />
+					<Add option="-Wl,-soname,libLerc.so.4 -o bin/Release/libLerc.so.4" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-std=c++17" />
+			<Add option="-fPIC" />
+		</Compiler>
+		<Unit filename="../../../../src/LercLib/BitMask.cpp" />
+		<Unit filename="../../../../src/LercLib/BitMask.h" />
+		<Unit filename="../../../../src/LercLib/BitStuffer2.cpp" />
+		<Unit filename="../../../../src/LercLib/BitStuffer2.h" />
+		<Unit filename="../../../../src/LercLib/Defines.h" />
+		<Unit filename="../../../../src/LercLib/Huffman.cpp" />
+		<Unit filename="../../../../src/LercLib/Huffman.h" />
+		<Unit filename="../../../../src/LercLib/Lerc.cpp" />
+		<Unit filename="../../../../src/LercLib/Lerc.h" />
+		<Unit filename="../../../../src/LercLib/Lerc1Decode/BitStuffer.cpp" />
+		<Unit filename="../../../../src/LercLib/Lerc1Decode/BitStuffer.h" />
+		<Unit filename="../../../../src/LercLib/Lerc1Decode/CntZImage.cpp" />
+		<Unit filename="../../../../src/LercLib/Lerc1Decode/CntZImage.h" />
+		<Unit filename="../../../../src/LercLib/Lerc1Decode/Image.h" />
+		<Unit filename="../../../../src/LercLib/Lerc1Decode/TImage.hpp" />
+		<Unit filename="../../../../src/LercLib/Lerc2.cpp" />
+		<Unit filename="../../../../src/LercLib/Lerc2.h" />
+		<Unit filename="../../../../src/LercLib/Lerc_c_api_impl.cpp" />
+		<Unit filename="../../../../src/LercLib/RLE.cpp" />
+		<Unit filename="../../../../src/LercLib/RLE.h" />
+		<Unit filename="../../../../src/LercLib/fpl_Compression.cpp" />
+		<Unit filename="../../../../src/LercLib/fpl_Compression.h" />
+		<Unit filename="../../../../src/LercLib/fpl_EsriHuffman.cpp" />
+		<Unit filename="../../../../src/LercLib/fpl_EsriHuffman.h" />
+		<Unit filename="../../../../src/LercLib/fpl_Lerc2Ext.cpp" />
+		<Unit filename="../../../../src/LercLib/fpl_Lerc2Ext.h" />
+		<Unit filename="../../../../src/LercLib/fpl_Predictor.cpp" />
+		<Unit filename="../../../../src/LercLib/fpl_Predictor.h" />
+		<Unit filename="../../../../src/LercLib/fpl_UnitTypes.cpp" />
+		<Unit filename="../../../../src/LercLib/fpl_UnitTypes.h" />
+		<Unit filename="../../../../src/LercLib/include/Lerc_c_api.h" />
+		<Unit filename="../../../../src/LercLib/include/Lerc_types.h" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

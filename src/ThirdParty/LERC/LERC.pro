@@ -10,12 +10,15 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LERC_PATH = $${PWD}/lerc-3.0
+THIRDPARTY_LERC_PATH = $${PWD}/lerc-4.0.0
 
 include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LERC_PATH}/src/LercLib/include $${THIRDPARTY_LERC_PATH}/src/LercLib $${INCLUDEPATH}
 
+DEFINES += LERC_STATIC
+
+# find ./src/LercLib -name '*.cpp' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LERC_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/BitMask.cpp \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/BitStuffer2.cpp \
@@ -26,7 +29,13 @@ SOURCES += \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/Lerc2.cpp \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/Lerc_c_api_impl.cpp \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/RLE.cpp \
+    $${THIRDPARTY_LERC_PATH}/src/LercLib/fpl_Compression.cpp \
+    $${THIRDPARTY_LERC_PATH}/src/LercLib/fpl_EsriHuffman.cpp \
+    $${THIRDPARTY_LERC_PATH}/src/LercLib/fpl_Lerc2Ext.cpp \
+    $${THIRDPARTY_LERC_PATH}/src/LercLib/fpl_Predictor.cpp \
+    $${THIRDPARTY_LERC_PATH}/src/LercLib/fpl_UnitTypes.cpp \
 
+# find ./src/LercLib -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LERC_PATH}| ; s|$| \\|'
 HEADERS += \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/BitMask.h \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/BitStuffer2.h \
@@ -38,6 +47,11 @@ HEADERS += \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/Lerc1Decode/Image.h \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/Lerc2.h \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/RLE.h \
+    $${THIRDPARTY_LERC_PATH}/src/LercLib/fpl_Compression.h \
+    $${THIRDPARTY_LERC_PATH}/src/LercLib/fpl_EsriHuffman.h \
+    $${THIRDPARTY_LERC_PATH}/src/LercLib/fpl_Lerc2Ext.h \
+    $${THIRDPARTY_LERC_PATH}/src/LercLib/fpl_Predictor.h \
+    $${THIRDPARTY_LERC_PATH}/src/LercLib/fpl_UnitTypes.h \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/include/Lerc_c_api.h \
     $${THIRDPARTY_LERC_PATH}/src/LercLib/include/Lerc_types.h \
 
