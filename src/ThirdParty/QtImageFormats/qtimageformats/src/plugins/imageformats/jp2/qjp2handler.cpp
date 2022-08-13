@@ -1,48 +1,13 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Copyright (C) 2016 Petroules Corporation.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the JP2 plugins in the Qt ImageFormats module.
-**
-** $QT_BEGIN_LICENSE:LGPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 3 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL3 included in the
-** packaging of this file. Please review the following information to
-** ensure the GNU Lesser General Public License version 3 requirements
-** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 2.0 or (at your option) the GNU General
-** Public license version 3 or any later version approved by the KDE Free
-** Qt Foundation. The licenses are as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-2.0.html and
-** https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+// Copyright (C) 2016 The Qt Company Ltd.
+// Copyright (C) 2016 Petroules Corporation.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #include "qjp2handler_p.h"
 
 #include "qimage.h"
 #include "qvariant.h"
 #include "qcolor.h"
+#include "qimagereader.h"
 
 #include <jasper/jasper.h>
 #include <math.h> // for pow
@@ -333,16 +298,46 @@ private:
 Jpeg2000JasperReader::Jpeg2000JasperReader(QIODevice *iod, SubFormat format)
     : jasperOk(true), ioDevice(iod), format(format), hasAlpha(false)
 {
+#if JAS_VERSION_MAJOR < 3
     if (jas_init()) {
         jasperOk = false;
         qDebug("Jasper Library initialization failed");
     }
+#else
+    jas_conf_clear();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    jas_conf_set_max_mem_usage(QImageReader::allocationLimit() * 1024 * 1024);
+#else
+    // 128MB seems to be enough.
+    jas_conf_set_max_mem_usage(128 * 1024 * 1024);
+#endif
+    if (jas_init_library()) {
+        jasperOk = false;
+        qDebug("Jasper library initialization failed");
+    }
+    if (jas_init_thread()) {
+        jas_cleanup_library();
+        jasperOk = false;
+        qDebug("Jasper thread initialization failed");
+    }
+#endif
 }
 
 Jpeg2000JasperReader::~Jpeg2000JasperReader()
 {
+#if JAS_VERSION_MAJOR < 3
     if (jasperOk)
         jas_cleanup();
+#else
+    if (jasperOk) {
+        if (jas_cleanup_thread()) {
+            qDebug("Jasper thread cleanup failed");
+        }
+        if (jas_cleanup_library()) {
+            qDebug("Jasper library cleanup failed");
+        }
+    }
+#endif
 }
 
 /*! \internal
@@ -874,7 +869,7 @@ bool Jpeg2000JasperReader::write(const QImage &image, int quality)
     }
 
     // Open an empty jasper stream that grows automatically
-    jas_stream_t * memory_stream = jas_stream_memopen(0, -1);
+    jas_stream_t * memory_stream = jas_stream_memopen(0, 0);
 
     // Jasper wants a non-const string.
     char *str = qstrdup(jasperFormatString.toLatin1().constData());

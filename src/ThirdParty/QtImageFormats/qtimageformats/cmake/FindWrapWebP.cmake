@@ -1,3 +1,6 @@
+# Copyright (C) 2022 The Qt Company Ltd.
+# SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+
 # Latest upstream package provides both CMake and autotools building.
 # Unfortunately Linux distros and homebrew build the package with autotools,
 # so they do not ship the CMake Config file, but only the pkg-config files.

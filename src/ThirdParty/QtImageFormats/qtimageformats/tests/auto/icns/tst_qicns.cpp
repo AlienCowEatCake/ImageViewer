@@ -1,31 +1,6 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Copyright (C) 2016 Alex Char.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the ICNS autotests in the Qt ImageFormats module.
-**
-** $QT_BEGIN_LICENSE:GPL-EXCEPT$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3 as published by the Free Software
-** Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+// Copyright (C) 2022 The Qt Company Ltd.
+// Copyright (C) 2016 Alex Char.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
 
 #include <QtTest/QtTest>
 #include <QtGui/QtGui>
@@ -40,6 +15,8 @@ private slots:
     void readIcons();
     void writeIcons_data();
     void writeIcons();
+    void ossFuzz_data();
+    void ossFuzz();
 };
 
 void tst_qicns::initTestCase()
@@ -121,6 +98,26 @@ void tst_qicns::writeIcons()
     QVERIFY2(writer.write(image), qPrintable(writer.errorString()));
 
     QVERIFY(image == QImage(distPath));
+}
+
+void tst_qicns::ossFuzz_data()
+{
+    QTest::addColumn<QByteArray>("data");
+    QTest::addColumn<QByteArrayList>("ignoredMessages");
+    QTest::newRow("47415") << QByteArray::fromRawData("icns\0\0\0\0", 8)
+                           << QByteArrayList({"QICNSHandler::scanDevice(): Failed, bad header at "
+                                              "pos 8. OSType \"icns\", length 0",
+                                              "QICNSHandler::read(): The device wasn't parsed "
+                                              "properly!"});
+}
+
+void tst_qicns::ossFuzz()
+{
+    QFETCH(QByteArray, data);
+    QFETCH(QByteArrayList, ignoredMessages);
+    for (auto msg: ignoredMessages)
+        QTest::ignoreMessage(QtWarningMsg, msg.data());
+    QImage().loadFromData(data);
 }
 
 QTEST_MAIN(tst_qicns)

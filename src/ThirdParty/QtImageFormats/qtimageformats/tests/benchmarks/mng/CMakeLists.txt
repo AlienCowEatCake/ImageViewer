@@ -1,3 +1,6 @@
+# Copyright (C) 2022 The Qt Company Ltd.
+# SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+
 # Generated from mng.pro.
 
 #####################################################################
@@ -7,7 +10,7 @@
 qt_internal_add_benchmark(tst_bench_qmng
     SOURCES
         tst_qmng.cpp
-    PUBLIC_LIBRARIES
+    LIBRARIES
         Qt::Gui
         Qt::Test
 )

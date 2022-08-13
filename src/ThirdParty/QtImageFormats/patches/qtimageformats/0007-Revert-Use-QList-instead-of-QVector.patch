@@ -1,7 +1,7 @@
-From 36a4cecff584c4f447aa0892b8c3022ab46a8029 Mon Sep 17 00:00:00 2001
+From 093bc89d6a4e1f8395bd02038a2bac28b6be63d5 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 24 Jun 2020 19:53:15 +0700
-Subject: [PATCH 7/7] Revert "Use QList instead of QVector"
+Subject: [PATCH 7/8] Revert "Use QList instead of QVector"
 
 This reverts commit c64f19516dd2467bf5746eb24afe883bdbc15b25.
 ---
@@ -13,10 +13,10 @@ This reverts commit c64f19516dd2467bf5746eb24afe883bdbc15b25.
  5 files changed, 17 insertions(+), 17 deletions(-)
 
 diff --git a/src/plugins/imageformats/icns/qicnshandler.cpp b/src/plugins/imageformats/icns/qicnshandler.cpp
-index 1911e3b..46e82d7 100644
+index 24f6863..ef31d68 100644
 --- a/src/plugins/imageformats/icns/qicnshandler.cpp
 +++ b/src/plugins/imageformats/icns/qicnshandler.cpp
-@@ -400,9 +400,9 @@ static inline QByteArray nameForCompressedIcon(quint8 iconNumber)
+@@ -364,9 +364,9 @@ static inline QByteArray nameForCompressedIcon(quint8 iconNumber)
      return base + QByteArray::number(iconNumber);
  }
  
@@ -28,7 +28,7 @@ index 1911e3b..46e82d7 100644
      uint n = 1 << depth;
      const QRgb *data;
      switch (depth) {
-@@ -574,7 +574,7 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
+@@ -542,7 +542,7 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
  
      const bool isMono = depth == ICNSEntry::DepthMono;
      const QImage::Format format = isMono ? QImage::Format_Mono : QImage::Format_Indexed8;
@@ -38,10 +38,10 @@ index 1911e3b..46e82d7 100644
          return QImage();
  #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 diff --git a/src/plugins/imageformats/icns/qicnshandler_p.h b/src/plugins/imageformats/icns/qicnshandler_p.h
-index d2560be..9639c04 100644
+index 15ce6d7..ef6aa13 100644
 --- a/src/plugins/imageformats/icns/qicnshandler_p.h
 +++ b/src/plugins/imageformats/icns/qicnshandler_p.h
-@@ -42,7 +42,7 @@
+@@ -6,7 +6,7 @@
  #define QICNSHANDLER_P_H
  
  #include <QtGui/qimageiohandler.h>
@@ -50,7 +50,7 @@ index d2560be..9639c04 100644
  
  #ifndef QT_NO_DATASTREAM
  
-@@ -155,8 +155,8 @@ private:
+@@ -119,8 +119,8 @@ private:
      };
  
      int m_currentIconIndex;
@@ -62,10 +62,10 @@ index d2560be..9639c04 100644
  };
  
 diff --git a/src/plugins/imageformats/shared/qiiofhelpers_p.h b/src/plugins/imageformats/shared/qiiofhelpers_p.h
-index 18862f1..1b1771b 100644
+index 7ebb079..deb7014 100644
 --- a/src/plugins/imageformats/shared/qiiofhelpers_p.h
 +++ b/src/plugins/imageformats/shared/qiiofhelpers_p.h
-@@ -54,7 +54,7 @@
+@@ -18,7 +18,7 @@
  #include <QImageIOPlugin>
  #include <private/qcore_mac_p.h>
  #include <ImageIO/ImageIO.h>
@@ -74,7 +74,7 @@ index 18862f1..1b1771b 100644
  
  QT_BEGIN_NAMESPACE
  
-@@ -85,7 +85,7 @@ protected:
+@@ -49,7 +49,7 @@ protected:
      bool getIntProperty(CFStringRef property, int *value);
  
      QImageIOHandler *q_ptr = nullptr;
@@ -84,10 +84,10 @@ index 18862f1..1b1771b 100644
      QCFType<CGImageSourceRef> cgImageSource = nullptr;
      QCFType<CFDictionaryRef> cfImageDict = nullptr;
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index 8e19623..028e36d 100644
+index 01b153e..5449058 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-@@ -426,7 +426,7 @@ bool QTiffHandler::read(QImage *image)
+@@ -390,7 +390,7 @@ bool QTiffHandler::read(QImage *image)
     if (format == QImage::Format_Mono || format == QImage::Format_Indexed8 || format == QImage::Format_Grayscale8) {
  #endif
          if (format == QImage::Format_Mono) {
@@ -96,7 +96,7 @@ index 8e19623..028e36d 100644
              if (d->photometric == PHOTOMETRIC_MINISBLACK) {
                  colortable[0] = 0xff000000;
                  colortable[1] = 0xffffffff;
-@@ -437,7 +437,7 @@ bool QTiffHandler::read(QImage *image)
+@@ -401,7 +401,7 @@ bool QTiffHandler::read(QImage *image)
              image->setColorTable(colortable);
          } else if (format == QImage::Format_Indexed8) {
              const uint16_t tableSize = 256;
@@ -105,7 +105,7 @@ index 8e19623..028e36d 100644
              if (d->grayscale) {
                  for (int i = 0; i<tableSize; ++i) {
                      const int c = (d->photometric == PHOTOMETRIC_MINISBLACK) ? i : (255 - i);
-@@ -613,7 +613,7 @@ bool QTiffHandler::read(QImage *image)
+@@ -577,7 +577,7 @@ bool QTiffHandler::read(QImage *image)
      return true;
  }
  
@@ -114,7 +114,7 @@ index 8e19623..028e36d 100644
  {
      if (colorTable.size() != 256)
          return false;
-@@ -627,9 +627,9 @@ static bool checkGrayscale(const QList<QRgb> &colorTable)
+@@ -591,9 +591,9 @@ static bool checkGrayscale(const QList<QRgb> &colorTable)
      return true;
  }
  
@@ -126,7 +126,7 @@ index 8e19623..028e36d 100644
      switch (image.format()) {
      case QImage::Format_Indexed8:
          colors = image.colorTable();
-@@ -769,7 +769,7 @@ bool QTiffHandler::write(const QImage &image)
+@@ -733,7 +733,7 @@ bool QTiffHandler::write(const QImage &image)
                 || format == QImage::Format_Grayscale16
  #endif
                 || format == QImage::Format_Alpha8) {
@@ -136,10 +136,10 @@ index 8e19623..028e36d 100644
          if (isGrayscale) {
              uint16_t photometric = PHOTOMETRIC_MINISBLACK;
 diff --git a/tests/auto/tiff/tst_qtiff.cpp b/tests/auto/tiff/tst_qtiff.cpp
-index 4fa4848..8e075e8 100644
+index 05ebae5..b7ac4f9 100644
 --- a/tests/auto/tiff/tst_qtiff.cpp
 +++ b/tests/auto/tiff/tst_qtiff.cpp
-@@ -566,9 +566,9 @@ void tst_qtiff::multipage_data()
+@@ -541,9 +541,9 @@ void tst_qtiff::multipage_data()
  {
      QTest::addColumn<QString>("filename");
      QTest::addColumn<int>("expectedNumPages");
@@ -151,7 +151,7 @@ index 4fa4848..8e075e8 100644
      QTest::newRow("3 page TIFF") << ("multipage.tiff") << 3 << sizes;
  }
  
-@@ -576,7 +576,7 @@ void tst_qtiff::multipage()
+@@ -551,7 +551,7 @@ void tst_qtiff::multipage()
  {
      QFETCH(QString, filename);
      QFETCH(int, expectedNumPages);
@@ -161,5 +161,5 @@ index 4fa4848..8e075e8 100644
      QImageReader reader(prefix + filename);
      QCOMPARE(reader.imageCount(), expectedNumPages);
 -- 
-2.35.1.windows.2
+2.37.1
 

@@ -1,0 +1,27 @@
+From 5a0fe54a6c63da23a596085d096edca67195690f Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 14 Aug 2022 03:45:30 +0700
+Subject: [PATCH 8/8] Revert "Replace discouraged Q_MOVABLE_TYPE by
+ Q_RELOCATABLE_TYPE"
+
+This reverts commit 761b00d340924264f3c18c43c7f596e723b04d68.
+---
+ src/plugins/imageformats/icns/qicnshandler_p.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/plugins/imageformats/icns/qicnshandler_p.h b/src/plugins/imageformats/icns/qicnshandler_p.h
+index ef6aa13..80f79ce 100644
+--- a/src/plugins/imageformats/icns/qicnshandler_p.h
++++ b/src/plugins/imageformats/icns/qicnshandler_p.h
+@@ -85,7 +85,7 @@ struct ICNSEntry
+     {
+     }
+ };
+-Q_DECLARE_TYPEINFO(ICNSEntry, Q_RELOCATABLE_TYPE);
++Q_DECLARE_TYPEINFO(ICNSEntry, Q_MOVABLE_TYPE);
+ 
+ class QICNSHandler : public QImageIOHandler
+ {
+-- 
+2.37.1
+

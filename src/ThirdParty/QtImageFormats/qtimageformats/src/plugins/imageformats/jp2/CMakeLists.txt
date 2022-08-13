@@ -1,3 +1,6 @@
+# Copyright (C) 2022 The Qt Company Ltd.
+# SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+
 # Generated from jp2.pro.
 
 #####################################################################
@@ -12,7 +15,6 @@ qt_internal_add_plugin(QJp2Plugin
         qjp2handler.cpp qjp2handler_p.h
     LIBRARIES
         WrapJasper::WrapJasper
-    LIBRARIES
         Qt::Core
         Qt::Gui
 )
