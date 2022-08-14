@@ -10,7 +10,7 @@ ICONS_DIR_PATH="src/${PROJECT}/resources/icon"
 DEBIAN_DIR_PATH="src/${PROJECT}/resources/platform/debian"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/linux/set_associations.sh"
 
-QTDIR="/opt/qt-5.15.4_clang"
+QTDIR="/opt/qt-5.15.5_clang"
 CLANGDIR="/opt/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-14.04"
 CMD_QMAKE="${QTDIR}/bin/qmake"
 CMD_DEPLOY="/opt/linuxdeployqt-7-x86_64.AppImage"
