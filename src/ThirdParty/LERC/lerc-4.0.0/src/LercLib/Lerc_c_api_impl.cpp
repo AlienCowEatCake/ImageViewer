@@ -43,19 +43,19 @@ lerc_status lerc_computeCompressedSizeForVersion(const void* pData, int version,
   int nMasks, const unsigned char* pValidBytes, double maxZErr, unsigned int* numBytes)
 {
   if (!numBytes)
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   *numBytes = 0;
 
   if (!pData || dataType >= Lerc::DT_Undefined || nDepth <= 0 || nCols <= 0 || nRows <= 0 || nBands <= 0 || maxZErr < 0)
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   if (!(nMasks == 0 || nMasks == 1 || nMasks == nBands) || (nMasks > 0 && !pValidBytes))
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   Lerc::DataType dt = (Lerc::DataType)dataType;
   return (lerc_status)Lerc::ComputeCompressedSize(pData, version, dt, nDepth, nCols, nRows, nBands, nMasks,
-    pValidBytes, maxZErr, *numBytes, nullptr, nullptr);
+    pValidBytes, maxZErr, *numBytes, NULL, NULL);
 }
 
 // -------------------------------------------------------------------------- ;
@@ -75,19 +75,19 @@ lerc_status lerc_encodeForVersion(const void* pData, int version, unsigned int d
   unsigned int* nBytesWritten)
 {
   if (!nBytesWritten)
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   *nBytesWritten = 0;
 
   if (!pData || dataType >= Lerc::DT_Undefined || nDepth <= 0 || nCols <= 0 || nRows <= 0 || nBands <= 0 || maxZErr < 0 || !pOutBuffer || !outBufferSize)
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   if (!(nMasks == 0 || nMasks == 1 || nMasks == nBands) || (nMasks > 0 && !pValidBytes))
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   Lerc::DataType dt = (Lerc::DataType)dataType;
   return (lerc_status)Lerc::Encode(pData, version, dt, nDepth, nCols, nRows, nBands, nMasks, pValidBytes,
-    maxZErr, pOutBuffer, outBufferSize, *nBytesWritten, nullptr, nullptr);
+    maxZErr, pOutBuffer, outBufferSize, *nBytesWritten, NULL, NULL);
 }
 
 // -------------------------------------------------------------------------- ;
@@ -96,11 +96,11 @@ lerc_status lerc_getBlobInfo(const unsigned char* pLercBlob, unsigned int blobSi
   unsigned int* infoArray, double* dataRangeArray, int infoArraySize, int dataRangeArraySize)
 {
   if (!pLercBlob || !blobSize || (!infoArray && !dataRangeArray) || ((infoArraySize <= 0) && (dataRangeArraySize <= 0)))
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   Lerc::LercInfo lercInfo;
   ErrCode errCode = Lerc::GetLercInfo(pLercBlob, blobSize, lercInfo);
-  if (errCode != ErrCode::Ok)
+  if (errCode != ErrCode_Ok)
     return (lerc_status)errCode;
 
   if (infoArray)
@@ -154,7 +154,7 @@ lerc_status lerc_getBlobInfo(const unsigned char* pLercBlob, unsigned int blobSi
       dataRangeArray[i++] = lercInfo.maxZError;
   }
 
-  return (lerc_status)ErrCode::Ok;
+  return (lerc_status)ErrCode_Ok;
 }
 
 // -------------------------------------------------------------------------- ;
@@ -163,14 +163,14 @@ lerc_status lerc_getDataRanges(const unsigned char* pLercBlob, unsigned int blob
   int nDepth, int nBands, double* pMins, double* pMaxs)
 {
   if (!pLercBlob || !blobSize || !pMins || !pMaxs || nDepth <= 0 || nBands <= 0)
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   Lerc::LercInfo lercInfo;
   ErrCode errCode = Lerc::GetLercInfo(pLercBlob, blobSize, lercInfo, pMins, pMaxs, (size_t)nDepth * (size_t)nBands);
-  if (errCode != ErrCode::Ok)
+  if (errCode != ErrCode_Ok)
     return (lerc_status)errCode;
 
-  return (lerc_status)ErrCode::Ok;
+  return (lerc_status)ErrCode_Ok;
 }
 
 // -------------------------------------------------------------------------- ;
@@ -179,7 +179,7 @@ lerc_status lerc_decode(const unsigned char* pLercBlob, unsigned int blobSize, i
   unsigned char* pValidBytes, int nDepth, int nCols, int nRows, int nBands, unsigned int dataType, void* pData)
 {
   return lerc_decode_4D(pLercBlob, blobSize, nMasks, pValidBytes,
-    nDepth, nCols, nRows, nBands, dataType, pData, nullptr, nullptr);
+    nDepth, nCols, nRows, nBands, dataType, pData, NULL, NULL);
 }
 // -------------------------------------------------------------------------- ;
 
@@ -187,7 +187,7 @@ lerc_status lerc_decodeToDouble(const unsigned char* pLercBlob, unsigned int blo
   unsigned char* pValidBytes, int nDepth, int nCols, int nRows, int nBands, double* pData)
 {
   return lerc_decodeToDouble_4D(pLercBlob, blobSize, nMasks, pValidBytes,
-    nDepth, nCols, nRows, nBands, pData, nullptr, nullptr);
+    nDepth, nCols, nRows, nBands, pData, NULL, NULL);
 }
 
 // -------------------------------------------------------------------------- ;
@@ -197,15 +197,15 @@ lerc_status lerc_computeCompressedSize_4D(const void* pData, unsigned int dataTy
   int nMasks, const unsigned char* pValidBytes, double maxZErr, unsigned int* numBytes, const unsigned char* pUsesNoData, const double* noDataValues)
 {
   if (!numBytes)
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   *numBytes = 0;
 
   if (!pData || dataType >= Lerc::DT_Undefined || nDepth <= 0 || nCols <= 0 || nRows <= 0 || nBands <= 0 || maxZErr < 0)
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   if (!(nMasks == 0 || nMasks == 1 || nMasks == nBands) || (nMasks > 0 && !pValidBytes))
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   Lerc::DataType dt = (Lerc::DataType)dataType;
   return (lerc_status)Lerc::ComputeCompressedSize(pData, -1, dt, nDepth, nCols, nRows, nBands, nMasks,
@@ -219,15 +219,15 @@ lerc_status lerc_encode_4D(const void* pData, unsigned int dataType, int nDepth,
   unsigned int* nBytesWritten, const unsigned char* pUsesNoData, const double* noDataValues)
 {
   if (!nBytesWritten)
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   *nBytesWritten = 0;
 
   if (!pData || dataType >= Lerc::DT_Undefined || nDepth <= 0 || nCols <= 0 || nRows <= 0 || nBands <= 0 || maxZErr < 0 || !pOutBuffer || !outBufferSize)
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   if (!(nMasks == 0 || nMasks == 1 || nMasks == nBands) || (nMasks > 0 && !pValidBytes))
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   Lerc::DataType dt = (Lerc::DataType)dataType;
   return (lerc_status)Lerc::Encode(pData, -1, dt, nDepth, nCols, nRows, nBands, nMasks, pValidBytes,
@@ -241,10 +241,10 @@ lerc_status lerc_decode_4D(const unsigned char* pLercBlob, unsigned int blobSize
   unsigned char* pUsesNoData, double* noDataValues)
 {
   if (!pLercBlob || !blobSize || !pData || dataType >= Lerc::DT_Undefined || nDepth <= 0 || nCols <= 0 || nRows <= 0 || nBands <= 0)
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   if (!(nMasks == 0 || nMasks == 1 || nMasks == nBands) || (nMasks > 0 && !pValidBytes))
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   Lerc::DataType dt = (Lerc::DataType)dataType;
 
@@ -258,24 +258,24 @@ lerc_status lerc_decodeToDouble_4D(const unsigned char* pLercBlob, unsigned int 
   unsigned char* pUsesNoData, double* noDataValues)
 {
   if (!pLercBlob || !blobSize || !pData || nDepth <= 0 || nCols <= 0 || nRows <= 0 || nBands <= 0)
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   if (!(nMasks == 0 || nMasks == 1 || nMasks == nBands) || (nMasks > 0 && !pValidBytes))
-    return (lerc_status)ErrCode::WrongParam;
+    return (lerc_status)ErrCode_WrongParam;
 
   Lerc::LercInfo lercInfo;
   ErrCode errCode;
-  if ((errCode = Lerc::GetLercInfo(pLercBlob, blobSize, lercInfo)) != ErrCode::Ok)
+  if ((errCode = Lerc::GetLercInfo(pLercBlob, blobSize, lercInfo)) != ErrCode_Ok)
     return (lerc_status)errCode;
 
   Lerc::DataType dt = lercInfo.dt;
   if (dt > Lerc::DT_Double)
-    return (lerc_status)ErrCode::Failed;
+    return (lerc_status)ErrCode_Failed;
 
   if (dt == Lerc::DT_Double)
   {
     if ((errCode = Lerc::Decode(pLercBlob, blobSize, nMasks, pValidBytes,
-      nDepth, nCols, nRows, nBands, dt, pData, pUsesNoData, noDataValues)) != ErrCode::Ok)
+      nDepth, nCols, nRows, nBands, dt, pData, pUsesNoData, noDataValues)) != ErrCode_Ok)
     {
       return (lerc_status)errCode;
     }
@@ -288,16 +288,16 @@ lerc_status lerc_decodeToDouble_4D(const unsigned char* pLercBlob, unsigned int 
     void* ptrDec = (Byte*)pData + nDataValues * (sizeof(double) - sizeofDt[dt]);
 
     if ((errCode = Lerc::Decode(pLercBlob, blobSize, nMasks, pValidBytes,
-      nDepth, nCols, nRows, nBands, dt, ptrDec, pUsesNoData, noDataValues)) != ErrCode::Ok)
+      nDepth, nCols, nRows, nBands, dt, ptrDec, pUsesNoData, noDataValues)) != ErrCode_Ok)
     {
       return (lerc_status)errCode;
     }
 
-    if ((errCode = Lerc::ConvertToDouble(ptrDec, dt, nDataValues, pData)) != ErrCode::Ok)
+    if ((errCode = Lerc::ConvertToDouble(ptrDec, dt, nDataValues, pData)) != ErrCode_Ok)
       return (lerc_status)errCode;
   }
 
-  return (lerc_status)ErrCode::Ok;
+  return (lerc_status)ErrCode_Ok;
 }
 
 // -------------------------------------------------------------------------- ;

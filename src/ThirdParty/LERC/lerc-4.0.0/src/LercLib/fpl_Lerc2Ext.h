@@ -72,9 +72,9 @@ private:
 
     ~compressedDataSlice()
     {
-      for (auto b : m_buffers)
+      for (size_t i = 0; i < m_buffers.size(); ++i)
       {
-        delete b;
+        delete m_buffers[i];
       }
 
       m_buffers.clear();
@@ -92,7 +92,7 @@ private:
 
 
 public:
-  LosslessFPCompression() : m_data_slice (nullptr) { }
+  LosslessFPCompression() : m_data_slice (NULL) { }
   ~LosslessFPCompression();
 
   bool ComputeHuffmanCodesFlt(const void * pInput, bool nIsDouble, int iCols, int iRows, int iDepth);

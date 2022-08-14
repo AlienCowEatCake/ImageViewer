@@ -286,9 +286,6 @@ disable_zlib : !system_libpng {
 # LERC options:
 #    disable_lerc
 #    system_lerc
-disable_cxx11 : !system_lerc {
-    CONFIG += disable_lerc
-}
 *msvc* : !system_lerc {
     isEmpty(QMAKE_MSC_VER) {
         win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {

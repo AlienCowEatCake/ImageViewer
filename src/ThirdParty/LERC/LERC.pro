@@ -16,7 +16,7 @@ include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LERC_PATH}/src/LercLib/include $${THIRDPARTY_LERC_PATH}/src/LercLib $${INCLUDEPATH}
 
-DEFINES += LERC_STATIC
+DEFINES += LERC_STATIC __STDC_LIMIT_MACROS
 
 # find ./src/LercLib -name '*.cpp' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LERC_PATH}| ; s|$| \\|'
 SOURCES += \

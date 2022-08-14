@@ -23,6 +23,7 @@ Contributors:  Thomas Maurer
 
 #pragma once
 
+#include <cstdio>
 #include <cstring>
 #include <vector>
 #include "include/Lerc_types.h"
@@ -132,8 +133,8 @@ NAMESPACE_LERC_START
     static ErrCode GetLercInfo(const Byte* pLercBlob,       // Lerc blob to decode
       unsigned int numBytesBlob,   // size of Lerc blob in bytes
       struct LercInfo& lercInfo,
-      double* pMins = nullptr,     // pass array of size (nDepth * nBands) to get the min values per dimension and band
-      double* pMaxs = nullptr,     // same as pMins, to get the max values
+      double* pMins = NULL,     // pass array of size (nDepth * nBands) to get the min values per dimension and band
+      double* pMaxs = NULL,     // same as pMins, to get the max values
       size_t nElem = 0);           // (nDepth * nBands), if passed
 
     // setup outgoing arrays accordingly, then call Decode()

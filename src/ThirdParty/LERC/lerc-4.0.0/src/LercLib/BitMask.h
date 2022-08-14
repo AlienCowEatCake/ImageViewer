@@ -25,6 +25,7 @@ Contributors:  Thomas Maurer
 #define BITMASK_H
 
 #include "Defines.h"
+#include <cstdio>
 
 NAMESPACE_LERC_START
 
@@ -35,8 +36,8 @@ NAMESPACE_LERC_START
 class BitMask
 {
 public:
-  BitMask() : m_pBits(nullptr), m_nCols(0), m_nRows(0)  {}
-  BitMask(int nCols, int nRows) : m_pBits(nullptr), m_nCols(0), m_nRows(0) { SetSize(nCols, nRows); }
+  BitMask() : m_pBits(NULL), m_nCols(0), m_nRows(0)  {}
+  BitMask(int nCols, int nRows) : m_pBits(NULL), m_nCols(0), m_nRows(0) { SetSize(nCols, nRows); }
   BitMask(const BitMask& src);
   virtual ~BitMask()                        { Clear(); }
 

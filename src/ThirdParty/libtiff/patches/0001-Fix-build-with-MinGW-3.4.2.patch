@@ -1,12 +1,32 @@
-From 03ce28a7533386c29256965350db1547771f800a Mon Sep 17 00:00:00 2001
+From 1f79c5645b4c43ce7c381c545a04a243df9af7c7 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Tue, 29 Dec 2020 17:43:53 +0700
 Subject: [PATCH] Fix build with MinGW 3.4.2
 
 ---
+ libtiff/tif_lzw.c   |  6 +++---
  libtiff/tif_win32.c | 23 ++++++++++++++++++++---
- 1 file changed, 20 insertions(+), 3 deletions(-)
+ 2 files changed, 23 insertions(+), 6 deletions(-)
 
+diff --git a/libtiff/tif_lzw.c b/libtiff/tif_lzw.c
+index 096824d2..f612a42f 100644
+--- a/libtiff/tif_lzw.c
++++ b/libtiff/tif_lzw.c
+@@ -338,11 +338,11 @@ LZWPreDecode(TIFF* tif, uint16_t s)
+                                                  (((uint64_t)bp[7]))
+ #  endif
+ #elif SIZEOF_WORDTYPE == 4
+-#  if defined(__GNUC__) && defined(__i386__)
++#  if defined(__GNUC__) && defined(__i386__) && !(defined(__MINGW32__) && (__GNUC__ < 4))
+ #    define GetNextData(nextdata, bp) nextdata = __builtin_bswap32(*(uint32_t*)(bp))
+-#  elif defined(_M_X86)
++#  elif defined(_M_X86) && !(defined(__MINGW32__) && (__GNUC__ < 4))
+ #    define GetNextData(nextdata, bp) nextdata = _byteswap_ulong(*(unsigned long*)(bp))
+-#  elif defined(__GNUC__)
++#  elif defined(__GNUC__) && !(defined(__MINGW32__) && (__GNUC__ < 4))
+ #    define GetNextData(nextdata, bp) memcpy(&nextdata, bp, sizeof(nextdata)); \
+                                       nextdata = __builtin_bswap32(nextdata)
+ #  else
 diff --git a/libtiff/tif_win32.c b/libtiff/tif_win32.c
 index d617a0f4..7ceb0bfd 100644
 --- a/libtiff/tif_win32.c

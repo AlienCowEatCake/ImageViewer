@@ -28,6 +28,7 @@ Original coding 2021 Yuriy Yakimenko
 #include <cmath>
 #include <cstring>
 #include <stdint.h>
+#include <algorithm>
 
 USING_NAMESPACE_LERC
 
@@ -392,8 +393,9 @@ int LosslessFPCompression::compressedLength() const
 {
   int ret = 1; // predictor code
 
-  for (auto b : m_data_slice->m_buffers)
+  for (size_t i = 0; i < m_data_slice->m_buffers.size(); ++i)
   {
+    outBlockBuffer * b = m_data_slice->m_buffers[i];
     ret += b->compressed_size;
     ret += 6; // 2 bytes plus compr. size. We can use 1 byte in place of 2 by packing level and byte index.
   }
@@ -406,8 +408,9 @@ bool LosslessFPCompression::EncodeHuffmanFlt(unsigned char ** ppByte)
   memcpy(*ppByte, &(m_data_slice->m_predictor_code), sizeof(m_data_slice->m_predictor_code));
   *ppByte += sizeof(m_data_slice->m_predictor_code);
 
-  for (auto b : m_data_slice->m_buffers)
+  for (size_t i = 0; i < m_data_slice->m_buffers.size(); ++i)
   {
+      outBlockBuffer * b = m_data_slice->m_buffers[i];
       memcpy(*ppByte, &(b->byte_index), sizeof(b->byte_index));
       *ppByte += sizeof(b->byte_index);
       memcpy(*ppByte, &(b->best_level), sizeof(b->best_level));
@@ -418,8 +421,9 @@ bool LosslessFPCompression::EncodeHuffmanFlt(unsigned char ** ppByte)
       *ppByte += b->compressed_size;
   }
 
-  for (auto v : m_data_slice->m_buffers)
+  for (size_t i = 0; i < m_data_slice->m_buffers.size(); ++i)
   {
+    outBlockBuffer * v = m_data_slice->m_buffers[i];
     delete v;
   }
 
@@ -437,8 +441,9 @@ bool LosslessFPCompression::ComputeHuffmanCodesFlt(const void* input, bool bIsDo
     {
       // we decided not to write compressed output last time.
       // in this case, old compressed content must be removed.
-      for (auto v : m_data_slice->m_buffers)
+      for (size_t i = 0; i < m_data_slice->m_buffers.size(); ++i)
       {
+        outBlockBuffer * v = m_data_slice->m_buffers[i];
         delete v;
       }
 
