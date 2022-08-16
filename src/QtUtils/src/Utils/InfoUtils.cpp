@@ -57,6 +57,7 @@
 #elif !defined (Q_OS_MAC)
 #include <sys/utsname.h>
 #else
+#include <errno.h>
 #include <sys/sysctl.h>
 #endif
 
