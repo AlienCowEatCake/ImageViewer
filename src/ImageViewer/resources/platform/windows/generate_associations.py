@@ -50,6 +50,8 @@ def main():
             f_open_with.write('      Value=""\n')
             f_open_with.write('      Name="$(var.ProductNameSafe).{}"\n'.format(ext))
             f_open_with.write('      Id="reg_{}" />\n'.format(ext))
+            if ext in ['ico', 'cur', 'psd']:
+                continue
             f_open.write('    <RegistryValue\n')
             f_open.write('      Root="HKCR"\n')
             f_open.write('      Type="string"\n')

@@ -33,12 +33,6 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
-      Key=".cur"
-      Value="$(var.ProductNameSafe).cur"
-      Id="reg_assoc_cur" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
       Key=".dds"
       Value="$(var.ProductNameSafe).dds"
       Id="reg_assoc_dds" />
@@ -66,12 +60,6 @@
       Key=".icns"
       Value="$(var.ProductNameSafe).icns"
       Id="reg_assoc_icns" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key=".ico"
-      Value="$(var.ProductNameSafe).ico"
-      Id="reg_assoc_ico" />
     <RegistryValue
       Root="HKCR"
       Type="string"
@@ -264,12 +252,6 @@
       Key=".ppm"
       Value="$(var.ProductNameSafe).ppm"
       Id="reg_assoc_ppm" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key=".psd"
-      Value="$(var.ProductNameSafe).psd"
-      Id="reg_assoc_psd" />
     <RegistryValue
       Root="HKCR"
       Type="string"
