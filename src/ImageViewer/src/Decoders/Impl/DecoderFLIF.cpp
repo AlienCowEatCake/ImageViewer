@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,8 +17,8 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <FLIF/flif.h>
-#include <FLIF/flif_dec.h>
+#include <flif.h>
+#include <flif_dec.h>
 
 #include <QFileInfo>
 #include <QImage>

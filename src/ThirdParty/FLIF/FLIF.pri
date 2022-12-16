@@ -10,7 +10,7 @@ include($${PWD}/../../Features.pri)
     !system_flif {
 
         THIRDPARTY_FLIF_PATH = $${PWD}/FLIF-0.4
-        THIRDPARTY_FLIF_INCLUDE_PATH = $${PWD}/include
+        THIRDPARTY_FLIF_INCLUDE_PATH = $${PWD}/include/FLIF
 
         INCLUDEPATH += $${THIRDPARTY_FLIF_INCLUDE_PATH}
         DEPENDPATH += $${THIRDPARTY_FLIF_INCLUDE_PATH}
