@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -93,6 +93,12 @@ using namespace Imf;
 class QFileIStream : public IStream
 {
 public:
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(3, 0, 0)
+    typedef uint64_t ISInt64;
+#else
+    typedef Int64 ISInt64;
+#endif
+
     explicit QFileIStream(const QString &filePath)
         : IStream(filePath.toLocal8Bit())
         , m_file(filePath)
@@ -123,14 +129,14 @@ public:
     /// @brief Get the current reading position, in bytes from the
     /// beginning of the file.  If the next call to read() will
     /// read the first byte in the file, tellg() returns 0.
-    Int64 tellg() Q_DECL_OVERRIDE
+    ISInt64 tellg() Q_DECL_OVERRIDE
     {
-        return static_cast<Int64>(m_file.pos());
+        return static_cast<ISInt64>(m_file.pos());
     }
 
     /// @brief Set the current reading position.
     /// After calling seekg(i), tellg() returns i.
-    void seekg(Int64 pos) Q_DECL_OVERRIDE
+    void seekg(ISInt64 pos) Q_DECL_OVERRIDE
     {
         m_file.seek(static_cast<qint64>(pos));
     }

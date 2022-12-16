@@ -49,7 +49,8 @@ include($${PWD}/../../Features.pri)
             *msvc*: LIBS += IlmImf.lib IlmImfUtil.lib Iex.lib Half.lib
             else: LIBS += -lIlmImf -lIlmImfUtil -lIex -lHalf
         } else {
-            PKGCONFIG += OpenEXR IlmBase
+            PKGCONFIG += OpenEXR
+            packagesExist(IlmBase): PKGCONFIG += IlmBase
         }
 
     }
