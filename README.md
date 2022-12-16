@@ -138,7 +138,7 @@ See the [buildscripts/](buildscripts/) directory.
 * NanoSVG options: `disable_nanosvg` *(enabled by default)*
 * QtImageFormats options: `disable_qtimageformats` *(enabled by default)*
 * KImageFormats options: `disable_kimageformats` *(enabled by default)*
-* MSEdgeWebView2 options: `disable_msedgewebview2` *(enabled by default for Windows)*
+* MSEdgeWebView2 options: `enable_msedgewebview2`, `disable_msedgewebview2` *(enabled by default for Windows with MSVC)*
 
 **Optional Built-in Components Configuration:**
 * DecoderQtSVG options: `disable_qtsvg` *(enabled by default)*

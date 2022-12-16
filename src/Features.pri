@@ -576,9 +576,15 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 15) {
 }
 
 # MSEdgeWebView2 options:
+#    enable_msedgewebview2
 #    disable_msedgewebview2
-!*msvc* {
+!win32 {
     CONFIG += disable_msedgewebview2
+}
+!*msvc* {
+    !enable_msedgewebview2 {
+        CONFIG += disable_msedgewebview2
+    }
 }
 *msvc* {
     isEmpty(QMAKE_MSC_VER) {
