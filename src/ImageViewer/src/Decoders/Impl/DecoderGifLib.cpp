@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -416,8 +416,9 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
         GifAnimationProvider *provider = new GifAnimationProvider(filePath);
+        ImageMetaData *metaData = provider->takeMetaData();
         QGraphicsItem *item = GraphicsItemsFactory::instance().createAnimatedItem(provider);
-        IImageMetaData *metaData = item ? ImageMetaData::joinMetaData(ImageMetaData::createMetaData(filePath), provider->takeMetaData()) : Q_NULLPTR;
+        metaData = item ? ImageMetaData::joinMetaData(ImageMetaData::createMetaData(filePath), metaData) : metaData;
         return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
 };
