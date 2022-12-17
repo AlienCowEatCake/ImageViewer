@@ -183,6 +183,7 @@ IID GetIID(LPCOLESTR lpsz)
 }
 
 #define IID_IWICImagingFactory GetIID(L"{ec5ec8a9-c395-4314-9c77-54d7a935ff70}")
+#define IID_IWICBitmapCodecInfo GetIID(L"{E87A44C4-B76E-4c47-8B09-298EB12A2714}")
 
 CLSID GetCLSID(LPCOLESTR lpsz)
 {
@@ -217,7 +218,7 @@ public:
         if(!isAvailable())
             return QStringList();
 
-        QStringList result = QStringList()
+        QStringList result = GetWICDecodersExtensions()
                 // https://docs.microsoft.com/en-us/windows/win32/wic/bmp-format-overview
                 << QString::fromLatin1("bmp")
                 << QString::fromLatin1("dib")
@@ -391,6 +392,75 @@ public:
 
         QGraphicsItem *item = GraphicsItemsFactory::instance().createImageItem(image);
         return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
+    }
+
+private:
+    QStringList GetWICDecodersExtensions() const
+    {
+        const HRESULT coInitResult = CoInitialize(Q_NULLPTR);
+
+        IWICImagingFactory *factory = Q_NULLPTR;
+        if(FAILED(CoCreateInstance(CLSID_WICImagingFactory, Q_NULLPTR, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, reinterpret_cast<LPVOID*>(&factory))))
+        {
+            qWarning() << "[DecoderWIC] Error: CoCreateInstance failed";
+            if(coInitResult == S_OK || coInitResult == S_FALSE)
+                CoUninitialize();
+            return QStringList();
+        }
+
+        IEnumUnknown *enumerator = Q_NULLPTR;
+        if(FAILED(factory->CreateComponentEnumerator(WICDecoder, WICComponentEnumerateRefresh, &enumerator)))
+        {
+            qWarning() << "[DecoderWIC] Error: CreateComponentEnumerator failed";
+            factory->Release();
+            if(coInitResult == S_OK || coInitResult == S_FALSE)
+                CoUninitialize();
+            return QStringList();
+        }
+
+        QStringList allExtensions;
+        ULONG num = 0;
+        IUnknown *unk = Q_NULLPTR;
+        while(enumerator->Next(1, &unk, &num) == S_OK && num == 1)
+        {
+            IWICBitmapCodecInfo *codecInfo = Q_NULLPTR;
+            if(SUCCEEDED(unk->QueryInterface(IID_IWICBitmapCodecInfo, (void**)&codecInfo)))
+            {
+                UINT strLen = 0;
+                QString friendlyName;
+                if(SUCCEEDED(codecInfo->GetFriendlyName(0, 0, &strLen)) && strLen > 0)
+                {
+                    QVector<WCHAR> friendlyNameData(strLen + 1, 0);
+                    codecInfo->GetFriendlyName(strLen, friendlyNameData.data(), &strLen);
+                    friendlyName = QString::fromStdWString(std::wstring(friendlyNameData.data(), strLen - 1));
+                }
+                QString fileExtensions;
+                if(SUCCEEDED(codecInfo->GetFileExtensions(0, 0, &strLen)) && strLen > 0)
+                {
+                    QVector<WCHAR> fileExtensionsData(strLen + 1, 0);
+                    codecInfo->GetFileExtensions(strLen, fileExtensionsData.data(), &strLen);
+                    fileExtensions = QString::fromStdWString(std::wstring(fileExtensionsData.data(), strLen - 1));
+                }
+                qDebug() << "[DecoderWIC]" << friendlyName << "-" << fileExtensions;
+
+                const QStringList extensionsList = fileExtensions
+                        .toLower()
+                        .remove(QChar::fromLatin1('.'))
+                        .remove(QChar::fromLatin1(' '))
+                        .split(QChar::fromLatin1(','));
+                for(QStringList::ConstIterator jt = extensionsList.constBegin(); jt != extensionsList.constEnd(); ++jt)
+                    allExtensions.append(*jt);
+
+                codecInfo->Release();
+            }
+            unk->Release();
+        }
+
+        enumerator->Release();
+        factory->Release();
+        if(coInitResult == S_OK || coInitResult == S_FALSE)
+            CoUninitialize();
+        return allExtensions;
     }
 };
 
