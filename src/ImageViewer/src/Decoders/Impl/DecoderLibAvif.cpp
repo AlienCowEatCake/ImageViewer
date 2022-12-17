@@ -54,15 +54,25 @@ public:
         if(!inBuffer.isValid())
             return false;
 
+        avifDecoder *decoder = avifDecoderCreate();
+#if QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) >= QT_VERSION_CHECK(0, 4, 3)
+        /// @note Default dav1d can crash in some configurations, so try to use aom
+        ///
+        /// (lldb) bt
+        /// * thread #1, stop reason = Exception 0xc0000005 encountered at address 0x59033779: Access violation reading location 0xffffffff
+        ///   * frame #0: 0x59033779 libdav1d.dll`dav1d_data_wrap + 9
+        ///     frame #1: 0x6143acbd libavif.dll`avifEncoderWrite + 3341
+        ///     frame #2: 0x6142c5f5 libavif.dll`avifDecoderNextImage + 1013
+        ///
+        if(avifCodecName(AVIF_CODEC_CHOICE_AOM, AVIF_CODEC_FLAG_CAN_DECODE))
+            decoder->codecChoice = AVIF_CODEC_CHOICE_AOM;
+#endif
 #if QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) < QT_VERSION_CHECK(0, 8, 2)
         avifROData raw;
         raw.data = inBuffer.dataAs<const uint8_t*>();
         raw.size = inBuffer.sizeAs<size_t>();
-
-        avifDecoder *decoder = avifDecoderCreate();
         avifResult decodeResult = avifDecoderParse(decoder, &raw);
 #else
-        avifDecoder *decoder = avifDecoderCreate();
         avifResult decodeResult = avifDecoderSetIOMemory(decoder, inBuffer.dataAs<const uint8_t*>(), inBuffer.sizeAs<size_t>());
         if(decodeResult != AVIF_RESULT_OK)
         {
@@ -70,7 +80,6 @@ public:
             avifDecoderDestroy(decoder);
             return false;
         }
-
         decodeResult = avifDecoderParse(decoder);
 #endif
         if(decodeResult != AVIF_RESULT_OK)
