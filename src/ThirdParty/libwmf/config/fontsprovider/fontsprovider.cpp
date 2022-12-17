@@ -71,21 +71,21 @@ public:
         if(!m_wmfXtraFontmap.isNull())
             return m_wmfXtraFontmap.constData();
         if(fontCacheDir().isEmpty())
-            return (m_wmfSysFontmap = "").constData();
+            return (m_wmfXtraFontmap = "").constData();
         const QString fontmapPath = QDir(fontCacheDir()).absoluteFilePath(QString::fromLatin1("fontmap"));
         const QFileInfo currentFontmapInfo(fontmapPath);
         if(currentFontmapInfo.exists() && currentFontmapInfo.isFile())
-            return (m_wmfSysFontmap = fontmapPath.toLocal8Bit()).constData();
+            return (m_wmfXtraFontmap = fontmapPath.toLocal8Bit()).constData();
         QFile inFile(QString::fromLatin1(":/libwmf/fontsprovider/fontmap.in"));
         if(!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
-            return (m_wmfSysFontmap = "").constData();
+            return (m_wmfXtraFontmap = "").constData();
         QFile outFile(fontmapPath);
         if(!outFile.open(QIODevice::WriteOnly | QIODevice::Text))
-            return (m_wmfSysFontmap = "").constData();
+            return (m_wmfXtraFontmap = "").constData();
         outFile.write(QString::fromLatin1(inFile.readAll())
                    .replace(QString::fromLatin1("@WMF_FONTDIR@"), fontCacheDir())
                    .toLocal8Bit());
-        return (m_wmfSysFontmap = fontmapPath.toLocal8Bit()).constData();
+        return (m_wmfXtraFontmap = fontmapPath.toLocal8Bit()).constData();
     }
 
     const char *wmfGsFontmap()
