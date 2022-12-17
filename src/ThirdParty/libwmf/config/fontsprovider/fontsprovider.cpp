@@ -149,9 +149,22 @@ private:
 #else
             QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #endif
-        if(!appDataLocation.isEmpty() && QDir().mkpath(appDataLocation))
-            return (m_fontCacheDir = QFileInfo(appDataLocation).absoluteFilePath());
-        return (m_fontCacheDir = QString::fromLatin1(""));
+        if(appDataLocation.isEmpty())
+            return (m_fontCacheDir = QString::fromLatin1(""));
+        if(fileExists(appDataLocation, QString::fromLatin1("n019003l.afm")) || fileExists(appDataLocation, QString::fromLatin1("fontmap")))
+            return (m_fontCacheDir = QFileInfo(appDataLocation).absoluteFilePath()); ///< Previous version compatibility
+        const QString fontCacheDir = QDir(appDataLocation).absoluteFilePath(QString::fromLatin1("libwmf/fonts"));
+        if(fontCacheDir.isEmpty() || !QDir().mkpath(fontCacheDir))
+            return (m_fontCacheDir = QString::fromLatin1(""));
+        return (m_fontCacheDir = QFileInfo(fontCacheDir).absoluteFilePath());
+    }
+
+    static bool fileExists(const QString &root, const QString &fileName)
+    {
+        if(root.isEmpty() || fileName.isEmpty())
+            return false;
+        const QFileInfo fi = QFileInfo(QDir(root).absoluteFilePath(fileName));
+        return fi.exists() && fi.isFile();
     }
 
     bool copyResource(const QString &fileName)
