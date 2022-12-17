@@ -69,6 +69,10 @@ QString compilerDescriptionInt()
     QString prefix;
 #if defined (__apple_build_version__)
     prefix = QString::fromLatin1("Apple ");
+#elif defined (__MINGW32__)
+    prefix = QString::fromLatin1("MinGW ");
+#elif defined (__CYGWIN__)
+    prefix = QString::fromLatin1("Cygwin ");
 #endif
     return QString::fromLatin1("%1Clang %2.%3.%4").arg(prefix).arg(__clang_major__).arg(__clang_minor__).arg(__clang_patchlevel__);
 #elif defined (__GNUC__)
@@ -115,6 +119,7 @@ QString compilerDescriptionInt()
     case 1931: return QString::fromLatin1("MSVC++ 14.31 (Visual Studio 2022 version 17.1)");
     case 1932: return QString::fromLatin1("MSVC++ 14.32 (Visual Studio 2022 version 17.2)");
     case 1933: return QString::fromLatin1("MSVC++ 14.33 (Visual Studio 2022 version 17.3)");
+    case 1934: return QString::fromLatin1("MSVC++ 14.34 (Visual Studio 2022 version 17.4)");
     default:   return QString::fromLatin1("MSVC++ (_MSC_VER=%1)").arg(_MSC_VER);
     }
 #elif defined (Q_CC_SYM)
@@ -456,18 +461,87 @@ QString GetSystemDescription()
     else if(osMajorVersion == 4 && osMinorVersion == 0)
         winVersion = QString::fromLatin1("Windows 95");
     else
-        winVersion = QString::fromLatin1("Windows %1.%2.%3").arg(osMajorVersion).arg(osMinorVersion).arg(osBuildNumber);
+        winVersion = QString::fromLatin1("Windows");
 
     if(osMajorVersion > 5 || (osMajorVersion == 5 && osMinorVersion == 2  && osProductType != VER_NT_WORKSTATION))
     {
         switch(sysInfo.wProcessorArchitecture)
         {
+#if defined (PROCESSOR_ARCHITECTURE_INTEL)
         case PROCESSOR_ARCHITECTURE_INTEL:
             winVersion.append(QString::fromLatin1(" x86"));
             break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_MIPS)
+        case PROCESSOR_ARCHITECTURE_MIPS:
+            winVersion.append(QString::fromLatin1(" MIPS"));
+            break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_ALPHA)
+        case PROCESSOR_ARCHITECTURE_ALPHA:
+            winVersion.append(QString::fromLatin1(" ALPHA"));
+            break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_PPC)
+        case PROCESSOR_ARCHITECTURE_PPC:
+            winVersion.append(QString::fromLatin1(" PPC"));
+            break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_SHX)
+        case PROCESSOR_ARCHITECTURE_SHX:
+            winVersion.append(QString::fromLatin1(" SHX"));
+            break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_ARM)
+        case PROCESSOR_ARCHITECTURE_ARM:
+            winVersion.append(QString::fromLatin1(" ARM"));
+            break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_IA64)
+        case PROCESSOR_ARCHITECTURE_IA64:
+            winVersion.append(QString::fromLatin1(" IA64"));
+            break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_ALPHA64)
+        case PROCESSOR_ARCHITECTURE_ALPHA64:
+            winVersion.append(QString::fromLatin1(" ALPHA64"));
+            break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_MSIL)
+        case PROCESSOR_ARCHITECTURE_MSIL:
+            winVersion.append(QString::fromLatin1(" MSIL"));
+            break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_AMD64)
         case PROCESSOR_ARCHITECTURE_AMD64:
             winVersion.append(QString::fromLatin1(" x64"));
             break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_IA32_ON_WIN64)
+        case PROCESSOR_ARCHITECTURE_IA32_ON_WIN64:
+            winVersion.append(QString::fromLatin1(" IA32_ON_WIN64"));
+            break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_NEUTRAL)
+        case PROCESSOR_ARCHITECTURE_NEUTRAL:
+            winVersion.append(QString::fromLatin1(" NEUTRAL"));
+            break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_ARM64)
+        case PROCESSOR_ARCHITECTURE_ARM64:
+            winVersion.append(QString::fromLatin1(" ARM64"));
+            break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_ARM32_ON_WIN64)
+        case PROCESSOR_ARCHITECTURE_ARM32_ON_WIN64:
+            winVersion.append(QString::fromLatin1(" ARM32_ON_WIN64"));
+            break;
+#endif
+#if defined (PROCESSOR_ARCHITECTURE_IA32_ON_ARM64)
+        case PROCESSOR_ARCHITECTURE_IA32_ON_ARM64:
+            winVersion.append(QString::fromLatin1(" IA32_ON_ARM64"));
+            break;
+#endif
         default:
             break;
         }
@@ -476,6 +550,7 @@ QString GetSystemDescription()
     if(osServicePack)
         winVersion.append(QString::fromLatin1(" Service Pack %1").arg(osServicePack));
 
+    winVersion.append(QString::fromLatin1(" (%1.%2.%3)").arg(osMajorVersion).arg(osMinorVersion).arg(osBuildNumber));
     return winVersion;
 }
 
