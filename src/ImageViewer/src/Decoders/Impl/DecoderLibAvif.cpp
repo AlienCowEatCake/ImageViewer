@@ -67,6 +67,9 @@ public:
         if(avifCodecName(AVIF_CODEC_CHOICE_AOM, AVIF_CODEC_FLAG_CAN_DECODE))
             decoder->codecChoice = AVIF_CODEC_CHOICE_AOM;
 #endif
+#if QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) >= QT_VERSION_CHECK(0, 9, 1)
+        decoder->strictFlags = AVIF_STRICT_DISABLED;
+#endif
 #if QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) < QT_VERSION_CHECK(0, 8, 2)
         avifROData raw;
         raw.data = inBuffer.dataAs<const uint8_t*>();
