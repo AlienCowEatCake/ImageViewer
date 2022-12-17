@@ -39,6 +39,13 @@
 #include <QWidget>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+#include <QDir>
+#include <QFileInfo>
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QStandardPaths>
+#else
+#include <QDesktopServices>
+#endif
 
 #include "Utils/JsonDocument.h"
 #include "Utils/JsonObject.h"
@@ -238,8 +245,9 @@ struct MSEdgeWebView2SVGGraphicsItem::Impl
     {
         rasterizerCache.scaleFactor = 0;
 
+        const std::wstring userDataFolder = getUserDataFolder();
         CoreWebView2CreateCoreWebView2EnvironmentCompletedHandler *environmentHandler = CoreWebView2CreateCoreWebView2EnvironmentCompletedHandler::create();
-        if(SUCCEEDED(CreateCoreWebView2EnvironmentWithOptions(Q_NULLPTR, Q_NULLPTR, Q_NULLPTR, environmentHandler)))
+        if(SUCCEEDED(CreateCoreWebView2EnvironmentWithOptions(Q_NULLPTR, userDataFolder.empty() ? Q_NULLPTR : userDataFolder.c_str(), Q_NULLPTR, environmentHandler)))
             environmentHandler->waitForFinish();
         environment = environmentHandler->result();
         environmentHandler->Release();
@@ -302,6 +310,24 @@ struct MSEdgeWebView2SVGGraphicsItem::Impl
             environment->Release();
         if(container)
             container->deleteLater();
+    }
+
+    static std::wstring getUserDataFolder()
+    {
+        const QString appDataLocation =
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
+            QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+#elif (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+            QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+#else
+            QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+#endif
+        if(appDataLocation.isEmpty())
+            return std::wstring();
+        const QString dataLocation = QDir(appDataLocation).absoluteFilePath(QString::fromLatin1("WebView2"));
+        if(dataLocation.isEmpty() || !QDir().mkpath(dataLocation))
+            return std::wstring();
+        return QDir::toNativeSeparators(dataLocation).toStdWString();
     }
 
     QByteArray prepareSvgData(const QByteArray &svgData)
