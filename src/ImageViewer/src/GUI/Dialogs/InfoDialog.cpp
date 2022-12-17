@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -21,6 +21,7 @@
 #include "InfoDialog_p.h"
 
 #include <QDateTime>
+#include <QDir>
 #include <QFileInfo>
 
 #include "Decoders/IImageData.h"
@@ -142,6 +143,12 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
     tableWidget->setItem(currentRow, 2, new QTableWidgetItem(QString::number(fileInfo.permissions() & ~0xf000, 16)));
     currentRow++;
 #endif
+
+    tableWidget->insertRow(currentRow);
+    tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
+    tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Absolute Path")));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(QDir::toNativeSeparators(fileInfo.absoluteFilePath())));
+    currentRow++;
 
     IImageMetaData *metaData = imageData->metaData();
     if(!metaData)

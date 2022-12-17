@@ -22,92 +22,98 @@
 <context>
     <name>InfoDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="38"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="39"/>
         <source>%1 B</source>
         <translation>%1 Б</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="39"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="40"/>
         <source>%1 KiB</source>
         <translation>%1 КиБ</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="40"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="41"/>
         <source>%1 MiB</source>
         <translation>%1 МиБ</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="41"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="42"/>
         <source>%1 GiB</source>
         <translation>%1 ГиБ</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="42"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="43"/>
         <source>%1 TiB</source>
         <translation>%1 ТиБ</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="80"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="81"/>
         <source>Image Information</source>
         <translation>Информация об изображении</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="91"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="97"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="103"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="109"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="115"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="121"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="128"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="134"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="140"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="92"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="98"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="104"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="110"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="116"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="122"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="129"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="135"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="141"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="148"/>
         <source>General Info</source>
         <translation>Общая информация</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="92"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="93"/>
         <source>File Name</source>
         <translation>Имя файла</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="98"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="99"/>
         <source>Resolution</source>
         <translation>Разрешение</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="104"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="105"/>
         <source>Decoder</source>
         <translation>Декодер</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="110"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="111"/>
         <source>File Size</source>
         <translation>Размер файла</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="116"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="117"/>
         <source>Created</source>
         <translation>Дата создания</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="122"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="123"/>
         <source>Last Modified</source>
         <translation>Дата изменения</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="129"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="130"/>
         <source>Owner</source>
         <translation>Владелец</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="135"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="136"/>
         <source>Group</source>
         <translation>Группа</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="141"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="142"/>
         <source>Permissions</source>
         <translation>Права доступа</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="149"/>
+        <source>Absolute Path</source>
+        <translation>Абсолютный путь</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog_p.h" line="52"/>
