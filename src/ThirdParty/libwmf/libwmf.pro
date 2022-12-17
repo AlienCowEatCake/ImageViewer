@@ -18,6 +18,7 @@ include(../FreeType/FreeType.pri)
 include(../libjpeg/libjpeg.pri)
 include(../libpng/libpng.pri)
 include(../zlib/zlib.pri)
+include(../libexpat/libexpat.pri)
 
 INCLUDEPATH = \
     $${THIRDPARTY_LIBWMF_CONFIG_PATH} \
@@ -35,6 +36,9 @@ win32 {
     DEFINES += MSWIN32
 } else {
     DEFINES += HAVE_UNISTD_H
+}
+!disable_libexpat {
+    DEFINES += HAVE_EXPAT
 }
 
 SOURCES += \

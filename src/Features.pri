@@ -704,7 +704,9 @@ system_libheif | disable_libheif {
 }
 
 disable_exiv2 | system_exiv2 {
-    CONFIG += disable_libexpat
+    disable_libwmf | system_libwmf {
+        CONFIG += disable_libexpat
+    }
 }
 
 disable_libavif | system_libavif {
