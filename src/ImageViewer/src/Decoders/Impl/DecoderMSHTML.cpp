@@ -430,11 +430,12 @@ class MSHTMLPixmapProvider : public IScaledImageProvider, public AbstractSVGWebB
 public:
     explicit MSHTMLPixmapProvider(const QString &filePath)
         : m_isValid(false)
+        , m_coInitResult(S_OK)
         , m_htmlDocument2(Q_NULLPTR)
         , m_minScaleFactor(1)
         , m_maxScaleFactor(1)
     {
-        CoInitializeEx(Q_NULLPTR, COINIT_APARTMENTTHREADED);
+        m_coInitResult = CoInitializeEx(Q_NULLPTR, COINIT_APARTMENTTHREADED);
 
 #if defined (HAS_ZLIB)
         if(QFileInfo(filePath).suffix().toLower() == QString::fromLatin1("svgz"))
@@ -521,7 +522,8 @@ public:
     {
         if(m_htmlDocument2)
             m_htmlDocument2->Release();
-        CoUninitialize();
+        if(m_coInitResult == S_OK || m_coInitResult == S_FALSE)
+            CoUninitialize();
     }
 
     bool isValid() const Q_DECL_OVERRIDE
@@ -748,6 +750,7 @@ private:
 
 private:
     bool m_isValid;
+    HRESULT m_coInitResult;
     IHTMLDocument2 *m_htmlDocument2;
     QRectF m_svgRect;
     QByteArray m_svgData;

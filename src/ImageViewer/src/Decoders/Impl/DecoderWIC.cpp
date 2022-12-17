@@ -284,13 +284,14 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
 
-        CoInitialize(Q_NULLPTR);
+        const HRESULT coInitResult = CoInitialize(Q_NULLPTR);
 
         IWICImagingFactory *factory = Q_NULLPTR;
         if(FAILED(CoCreateInstance(CLSID_WICImagingFactory, Q_NULLPTR, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, reinterpret_cast<LPVOID*>(&factory))))
         {
             qWarning() << "[DecoderWIC] Error: CoCreateInstance failed";
-            CoUninitialize();
+            if(coInitResult == S_OK || coInitResult == S_FALSE)
+                CoUninitialize();
             return QSharedPointer<IImageData>();
         }
 
@@ -299,7 +300,8 @@ public:
         {
             qWarning() << "[DecoderWIC] Error: factory->CreateDecoderFromFilename failed";
             factory->Release();
-            CoUninitialize();
+            if(coInitResult == S_OK || coInitResult == S_FALSE)
+                CoUninitialize();
             return QSharedPointer<IImageData>();
         }
 
@@ -309,7 +311,8 @@ public:
             qWarning() << "[DecoderWIC] Error: decoder->GetFrame failed";
             decoder->Release();
             factory->Release();
-            CoUninitialize();
+            if(coInitResult == S_OK || coInitResult == S_FALSE)
+                CoUninitialize();
             return QSharedPointer<IImageData>();
         }
 
@@ -321,7 +324,8 @@ public:
             frame->Release();
             decoder->Release();
             factory->Release();
-            CoUninitialize();
+            if(coInitResult == S_OK || coInitResult == S_FALSE)
+                CoUninitialize();
             return QSharedPointer<IImageData>();
         }
 
@@ -332,7 +336,8 @@ public:
             frame->Release();
             decoder->Release();
             factory->Release();
-            CoUninitialize();
+            if(coInitResult == S_OK || coInitResult == S_FALSE)
+                CoUninitialize();
             return QSharedPointer<IImageData>();
         }
 
@@ -343,7 +348,8 @@ public:
             frame->Release();
             decoder->Release();
             factory->Release();
-            CoUninitialize();
+            if(coInitResult == S_OK || coInitResult == S_FALSE)
+                CoUninitialize();
             return QSharedPointer<IImageData>();
         }
 
@@ -355,7 +361,8 @@ public:
             frame->Release();
             decoder->Release();
             factory->Release();
-            CoUninitialize();
+            if(coInitResult == S_OK || coInitResult == S_FALSE)
+                CoUninitialize();
             return QSharedPointer<IImageData>();
         }
 
@@ -366,7 +373,8 @@ public:
             frame->Release();
             decoder->Release();
             factory->Release();
-            CoUninitialize();
+            if(coInitResult == S_OK || coInitResult == S_FALSE)
+                CoUninitialize();
             return QSharedPointer<IImageData>();
         }
 
@@ -374,7 +382,8 @@ public:
         frame->Release();
         decoder->Release();
         factory->Release();
-        CoUninitialize();
+        if(coInitResult == S_OK || coInitResult == S_FALSE)
+            CoUninitialize();
 
         ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
         if(metaData)
