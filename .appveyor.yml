@@ -192,13 +192,13 @@ environment:
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       QTDIR: C:\Qt\5.15\mingw81_64
       MINGW_DIR: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64
-    - job_name: Windows, Qt 6.2, MSVC 2022 x64, Testing
-      job_group: windows_test_msvc
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-      VCVARS: C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat
-      ARCH: x64
-      QTDIR: C:\Qt\6.2\msvc2019_64
-      JOMDIR: C:\Qt\Tools\QtCreator\bin\jom
+    # - job_name: Windows, Qt 6.2, MSVC 2022 x64, Testing
+    #   job_group: windows_test_msvc
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    #   VCVARS: C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat
+    #   ARCH: x64
+    #   QTDIR: C:\Qt\6.2\msvc2019_64
+    #   JOMDIR: C:\Qt\Tools\QtCreator\bin\jom
     - job_name: Windows, Qt 6.2, MinGW 11.2.0 x64, Testing
       job_group: windows_test_mingw
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
