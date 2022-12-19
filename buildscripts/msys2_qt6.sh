@@ -14,6 +14,7 @@ VCVARS_ARCH=""
 CRT_ARCH=""
 UCRT_ARCH=""
 WIX_ARCH=""
+WIX_OS_VER="10"
 if [ "${MSYSTEM}" == "UCRT64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-ucrt-x86_64"
     VCVARS_ARCH="x64"
@@ -172,7 +173,7 @@ mv "${DIST_PREFIX}" "build_msi"
 heat dir build_msi -cg ApplicationFiles -dr INSTALLLOCATION -gg -scom -sfrag -srd -sreg -svb6 -out appfiles.wxs
 candle -out appfiles.wixobj appfiles.wxs -arch "${WIX_ARCH}"
 candle -out common.wixobj "../src/ImageViewer/resources/platform/windows/common.wxs" -arch "${WIX_ARCH}"
-candle -out main.wixobj "../src/ImageViewer/resources/platform/windows/${WIX_ARCH}.wxs" -ext WixUIExtension -ext WixUtilExtension -arch "${WIX_ARCH}"
+candle -out main.wixobj "../src/ImageViewer/resources/platform/windows/w${WIX_OS_VER}_${WIX_ARCH}.wxs" -ext WixUIExtension -ext WixUtilExtension -arch "${WIX_ARCH}"
 light -out "${PROJECT}.msi" -b build_msi main.wixobj appfiles.wixobj common.wixobj -ext WixUIExtension -ext WixUtilExtension -dcl:high
 mv "${PROJECT}.msi" "../${DIST_PREFIX}.msi"
 cd ..
