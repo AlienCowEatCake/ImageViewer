@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -159,12 +159,26 @@ bool PngAnimationProvider::readPng()
     // set up your own error handlers in the png_create_read_struct() earlier.
     if(setjmp(png_jmpbuf(pngPtr)))
     {
-       // Free all of the memory associated with the png_ptr and info_ptr
-       png_destroy_read_struct(&pngPtr, &infoPtr, Q_NULLPTR);
-       file.close();
-       // If we get here, we had a problem reading the file
-       qWarning() << "Can't read PNG file";
-       return false;
+        // Free all of the memory associated with the png_ptr and info_ptr
+        png_destroy_read_struct(&pngPtr, &infoPtr, Q_NULLPTR);
+        file.close();
+#if defined (PNG_APNG_SUPPORTED)
+        // TODO: PNG_ROWBYTES returns wrong values for some animated images with
+        // first frame width != next frame width.
+        // So we have "internal row size calculation error" here
+        // See pngrutil.c:png_combine_row()
+        if(m_frames.size() > 0 && !m_frames[0].image.isNull() && m_frames[0].delay >= 0)
+        {
+            qWarning() << "Can't read PNG file as APNG, use the first frame without animation";
+            m_numFrames = 1;
+            m_numLoops = 0;
+            m_frames.resize(m_numFrames);
+            return true;
+        }
+#endif
+        // If we get here, we had a problem reading the file
+        qWarning() << "Can't read PNG file";
+        return false;
     }
 
     // If you are using replacement read functions, instead of calling
