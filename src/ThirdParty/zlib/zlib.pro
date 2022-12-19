@@ -18,6 +18,11 @@ INCLUDEPATH = $${THIRDPARTY_ZLIB_PATH} $${INCLUDEPATH}
 
 DEFINES += Z_PREFIX
 DEFINES += z_errmsg=tp_z_errmsg
+# @todo Begin remove after upgrade to 1.2.13+
+DEFINES += crc32_combine_gen64=tp_z_crc32_combine_gen64
+DEFINES += crc32_combine_gen=tp_z_crc32_combine_gen
+DEFINES += crc32_combine_op=tp_z_crc32_combine_op
+# @todo End remove after upgrade to 1.2.13+
 
 SOURCES += \
     $${THIRDPARTY_ZLIB_PATH}/adler32.c \
