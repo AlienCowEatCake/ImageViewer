@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBAVIF_PATH = $${PWD}/libavif-0.10.1
+THIRDPARTY_LIBAVIF_PATH = $${PWD}/libavif-0.11.1
 
 include(../CommonSettings.pri)
 include(../aom/aom.pri)
@@ -35,12 +35,14 @@ SOURCES += \
 \#    $${THIRDPARTY_LIBAVIF_PATH}/src/codec_svt.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/colr.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/diag.c \
+    $${THIRDPARTY_LIBAVIF_PATH}/src/exif.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/io.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/mem.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/obu.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/rawdata.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/read.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/reformat.c \
+    $${THIRDPARTY_LIBAVIF_PATH}/src/reformat_libsharpyuv.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/reformat_libyuv.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/scale.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/stream.c \
