@@ -19,8 +19,6 @@ AM_INIT_AUTOMAKE([
 ])
 AM_MAINTAINER_MODE
 
-# Use the silent-rules feature when possible.
-m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
 AM_SILENT_RULES([yes])
 
 GP_CHECK_SHELL_ENVIRONMENT
@@ -31,6 +29,7 @@ dnl ---------------------------------------------------------------------------
 dnl Advanced information about versioning:
 dnl   * "Writing shared libraries" by Mike Hearn
 dnl         http://plan99.net/~mike/writing-shared-libraries.html
+dnl         originally http://navi.cx/~mike/writing-shared-libraries.html
 dnl   * libtool.info chapter "Versioning"
 dnl   * libtool.info chapter "Updating library version information"
 dnl ---------------------------------------------------------------------------
