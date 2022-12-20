@@ -45,12 +45,13 @@ elif [ "${MSYSTEM}" == "CLANG64" ] ; then
     CRT_ARCH="x64"
     UCRT_ARCH="x64"
     WIX_ARCH="x64"
-# elif [ "${MSYSTEM}" == "CLANGARM64" ] ; then
-#     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-aarch64"
-#     VCVARS_ARCH="arm64"
-#     CRT_ARCH="arm64"
-#     UCRT_ARCH="arm"
-#     WIX_ARCH="x64"
+elif [ "${MSYSTEM}" == "CLANGARM64" ] ; then
+    MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-aarch64"
+    VCVARS_ARCH="arm64"
+    CRT_ARCH="arm64"
+    UCRT_ARCH="arm"
+    WIX_ARCH="arm64"
+    WIX_OS_VER="10"
 else
     echo "Unknown or broken MSYSTEM: ${MSYSTEM}"
     exit 1
