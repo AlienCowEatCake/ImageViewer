@@ -532,14 +532,14 @@ void aom_hadamard_4x4_c(const int16_t *src_diff, ptrdiff_t src_stride, tran_low_
 void aom_hadamard_8x8_c(const int16_t *src_diff, ptrdiff_t src_stride, tran_low_t *coeff);
 #define aom_hadamard_8x8 aom_hadamard_8x8_c
 
-void aom_hadamard_8x8_dual_c(const int16_t *src_diff, ptrdiff_t src_stride, int16_t *coeff);
-#define aom_hadamard_8x8_dual aom_hadamard_8x8_dual_c
-
 void aom_hadamard_lp_16x16_c(const int16_t *src_diff, ptrdiff_t src_stride, int16_t *coeff);
 #define aom_hadamard_lp_16x16 aom_hadamard_lp_16x16_c
 
 void aom_hadamard_lp_8x8_c(const int16_t *src_diff, ptrdiff_t src_stride, int16_t *coeff);
 #define aom_hadamard_lp_8x8 aom_hadamard_lp_8x8_c
+
+void aom_hadamard_lp_8x8_dual_c(const int16_t *src_diff, ptrdiff_t src_stride, int16_t *coeff);
+#define aom_hadamard_lp_8x8_dual aom_hadamard_lp_8x8_dual_c
 
 uint32_t aom_highbd_10_dist_wtd_sub_pixel_avg_variance128x128_c(const uint8_t *src_ptr, int source_stride, int xoffset, int  yoffset, const uint8_t *ref_ptr, int ref_stride, uint32_t *sse, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS* jcp_param);
 #define aom_highbd_10_dist_wtd_sub_pixel_avg_variance128x128 aom_highbd_10_dist_wtd_sub_pixel_avg_variance128x128_c

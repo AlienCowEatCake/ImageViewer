@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.4.0
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.5.0
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -326,6 +326,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_util/endian_inl.h \
     $${THIRDPARTY_AOM_PATH}/apps/aomenc.h \
     $${THIRDPARTY_AOM_PATH}/av1/arg_defs.h \
+    $${THIRDPARTY_AOM_PATH}/av1/av1_cx_iface.h \
     $${THIRDPARTY_AOM_PATH}/av1/av1_iface_common.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/alloccommon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/av1_inv_txfm_neon.h \
@@ -385,6 +386,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/grain_synthesis.h \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/inspection.h \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/obu.h \
+    $${THIRDPARTY_AOM_PATH}/av1/ducky_encode.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/allintra_vis.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_complexity.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_cyclicrefresh.h \
@@ -432,6 +434,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/level.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/lookahead.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/mcomp.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/mcomp_structs.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/misc_model_weights.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/ml.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/mode_prune_model_weights.h \
