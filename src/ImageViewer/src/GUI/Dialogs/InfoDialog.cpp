@@ -88,10 +88,13 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
     QFileInfo fileInfo = QFileInfo(imageData->filePath());
     QTableWidget * const tableWidget = m_ui->tableWidget;
 
+    const QString fileName = fileInfo.fileName();
     tableWidget->insertRow(currentRow);
     tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
     tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "File Name")));
-    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileInfo.fileName()));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(fileName));
+    for(int i = 0; i < 3; i++)
+        tableWidget->item(currentRow, i)->setToolTip(FORCE_RICH_TEXT_TEMPLATE.arg(fileName));
     currentRow++;
 
     tableWidget->insertRow(currentRow);
@@ -144,10 +147,13 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
     currentRow++;
 #endif
 
+    const QString absolutePath = QDir::toNativeSeparators(fileInfo.absoluteFilePath());
     tableWidget->insertRow(currentRow);
     tableWidget->setItem(currentRow, 0, new QTableWidgetItem(qApp->translate("InfoDialog", "General Info")));
     tableWidget->setItem(currentRow, 1, new QTableWidgetItem(qApp->translate("InfoDialog", "Absolute Path")));
-    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(QDir::toNativeSeparators(fileInfo.absoluteFilePath())));
+    tableWidget->setItem(currentRow, 2, new QTableWidgetItem(absolutePath));
+    for(int i = 0; i < 3; i++)
+        tableWidget->item(currentRow, i)->setToolTip(FORCE_RICH_TEXT_TEMPLATE.arg(absolutePath));
     currentRow++;
 
     IImageMetaData *metaData = imageData->metaData();

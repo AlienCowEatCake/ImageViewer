@@ -52,66 +52,66 @@
         <translation>Image Information</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="92"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="98"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="104"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="110"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="116"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="122"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="129"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="135"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="141"/>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="148"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="93"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="101"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="107"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="113"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="119"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="125"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="132"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="138"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="144"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="152"/>
         <source>General Info</source>
         <translation>General Info</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="93"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="94"/>
         <source>File Name</source>
         <translation>File Name</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="99"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="102"/>
         <source>Resolution</source>
         <translation>Resolution</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="105"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="108"/>
         <source>Decoder</source>
         <translation>Decoder</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="111"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="114"/>
         <source>File Size</source>
         <translation>File Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="117"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="120"/>
         <source>Created</source>
         <translation>Created</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="123"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="126"/>
         <source>Last Modified</source>
         <translation>Last Modified</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="130"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="133"/>
         <source>Owner</source>
         <translation>Owner</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="136"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="139"/>
         <source>Group</source>
         <translation>Group</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="142"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="145"/>
         <source>Permissions</source>
         <translation>Permissions</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="149"/>
+        <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="153"/>
         <source>Absolute Path</source>
         <translation>Absolute Path</translation>
     </message>
