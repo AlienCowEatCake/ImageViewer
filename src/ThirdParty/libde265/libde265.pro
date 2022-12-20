@@ -10,13 +10,12 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBDE265_PATH = $${PWD}/libde265-1.0.8
-THIRDPARTY_LIBDE265_INCLUDE_PATH = $${PWD}/include
+THIRDPARTY_LIBDE265_PATH = $${PWD}/libde265-1.0.9
 THIRDPARTY_LIBDE265_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
 
-INCLUDEPATH = $${THIRDPARTY_LIBDE265_CONFIG_PATH} $${THIRDPARTY_LIBDE265_INCLUDE_PATH} $${THIRDPARTY_LIBDE265_PATH} $${THIRDPARTY_LIBDE265_PATH}/libde265 $${INCLUDEPATH}
+INCLUDEPATH = $${THIRDPARTY_LIBDE265_CONFIG_PATH} $${THIRDPARTY_LIBDE265_PATH} $${THIRDPARTY_LIBDE265_PATH}/libde265 $${INCLUDEPATH}
 
 DEFINES += HAVE_CONFIG_H LIBDE265_STATIC_BUILD
 
@@ -24,6 +23,7 @@ win32 {
     DEFINES += NOMINMAX
 }
 
+# find ./libde265 -name '*.cc' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBDE265_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/alloc_pool.cc \
 \ #    $${THIRDPARTY_LIBDE265_PATH}/libde265/arm/arm.cc \
@@ -59,16 +59,16 @@ SOURCES += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encoder-types.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encpicbuf.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/sop.cc \
-    $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback-dct.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback-motion.cc \
-    $${THIRDPARTY_LIBDE265_PATH}/libde265/image.cc \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/image-io.cc \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/image.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/intrapred.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/md5.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/motion.cc \
-    $${THIRDPARTY_LIBDE265_PATH}/libde265/nal.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/nal-parser.cc \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/nal.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/pps.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/quality.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/refpic.cc \
@@ -83,10 +83,11 @@ SOURCES += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/visualize.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/vps.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/vui.cc \
-\ #    $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse.cc \
 \ #    $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse-dct.cc \
 \ #    $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse-motion.cc \
+\ #    $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse.cc \
 
+# find ./libde265 -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBDE265_PATH}| ; s|$| \\|'
 HEADERS += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/acceleration.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/alloc_pool.h \
@@ -95,6 +96,7 @@ HEADERS += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/cabac.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/configparam.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/contextmodel.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/de265-version.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/de265.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/deblock.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/decctx.h \
@@ -124,15 +126,15 @@ HEADERS += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/encpicbuf.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/encoder/sop.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback-dct.h \
-    $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback-motion.h \
-    $${THIRDPARTY_LIBDE265_PATH}/libde265/image.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/image-io.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/image.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/intrapred.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/md5.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/motion.h \
-    $${THIRDPARTY_LIBDE265_PATH}/libde265/nal.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/nal-parser.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/nal.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/pps.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/quality.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/refpic.h \
@@ -148,10 +150,8 @@ HEADERS += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/vps.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/vui.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse-dct.h \
-    $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse-motion.h \
-    $${THIRDPARTY_LIBDE265_PATH}/extra/libde265/de265-version.h \
-    $${THIRDPARTY_LIBDE265_INCLUDE_PATH}/libde265/de265-version.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse.h \
     $${THIRDPARTY_LIBDE265_CONFIG_PATH}/config.h
 
 win32 {
@@ -161,5 +161,5 @@ win32 {
         $${THIRDPARTY_LIBDE265_PATH}/extra/win32cond.h
 }
 
-TR_EXCLUDE += $${THIRDPARTY_LIBDE265_PATH}/* $${THIRDPARTY_LIBDE265_INCLUDE_PATH}/* $${THIRDPARTY_LIBDE265_CONFIG_PATH}/*
+TR_EXCLUDE += $${THIRDPARTY_LIBDE265_PATH}/* $${THIRDPARTY_LIBDE265_CONFIG_PATH}/*
 
