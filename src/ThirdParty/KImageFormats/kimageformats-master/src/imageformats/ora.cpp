@@ -15,8 +15,8 @@
 
 #include <kzip.h>
 
-static constexpr char s_magic[] = "image/openraster";
-static constexpr int s_magic_size = sizeof(s_magic) - 1; // -1 to remove the last \0
+static const char s_magic[] = "image/openraster";
+static const int s_magic_size = sizeof(s_magic) - 1; // -1 to remove the last \0
 
 OraHandler::OraHandler()
 {
@@ -54,6 +54,9 @@ bool OraHandler::canRead(QIODevice *device)
 {
     if (!device) {
         qWarning("OraHandler::canRead() called with no device");
+        return false;
+    }
+    if (device->isSequential()) {
         return false;
     }
 

@@ -1,4 +1,4 @@
-From 99e464e1674a2f32601d8b5b8ec90a32a2c8be91 Mon Sep 17 00:00:00 2001
+From 729ba13e82aafd3fd0085b700bf09a35e2be30b4 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:44:31 +0700
 Subject: [PATCH 2/3] Add ability to disable JXL encoder and threads
@@ -8,13 +8,13 @@ Subject: [PATCH 2/3] Add ability to disable JXL encoder and threads
  1 file changed, 33 insertions(+)
 
 diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
-index 975d1b6..b4cc656 100644
+index 2501086..1b02377 100644
 --- a/src/imageformats/jxl.cpp
 +++ b/src/imageformats/jxl.cpp
-@@ -10,8 +10,41 @@
- #include <QtGlobal>
- 
+@@ -12,8 +12,41 @@
  #include "jxl_p.h"
+ #include "util_p.h"
+ 
 +#if !defined (DISABLE_JXL_ENCODER)
  #include <jxl/encode.h>
 +#else
@@ -54,5 +54,5 @@ index 975d1b6..b4cc656 100644
  
  QJpegXLHandler::QJpegXLHandler()
 -- 
-2.37.1
+2.30.2
 

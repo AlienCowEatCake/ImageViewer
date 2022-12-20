@@ -9,6 +9,7 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
 #include <QImage>
 #include <QImageReader>
@@ -17,6 +18,44 @@
 #include "../tests/format-enum.h"
 
 #include "fuzzyeq.cpp"
+
+/**
+ * @brief The SequentialFile class
+ * Class to make a file a sequential access device. This class is used to check if the plugins could works
+ * on a sequential device such as a socket.
+ */
+class SequentialFile : public QFile
+{
+public:
+    SequentialFile()
+        : QFile()
+    {
+    }
+    explicit SequentialFile(const QString &name)
+        : QFile(name)
+    {
+    }
+#ifndef QT_NO_QOBJECT
+    explicit SequentialFile(QObject *parent)
+        : QFile(parent)
+    {
+    }
+    SequentialFile(const QString &name, QObject *parent)
+        : QFile(name, parent)
+    {
+    }
+#endif
+
+    bool isSequential() const override
+    {
+        return true;
+    }
+
+    qint64 size() const override
+    {
+        return bytesAvailable();
+    }
+};
 
 static void writeImageData(const char *name, const QString &filename, const QImage &image)
 {
@@ -56,7 +95,7 @@ int main(int argc, char **argv)
     QCoreApplication::removeLibraryPath(QStringLiteral(PLUGIN_DIR));
     QCoreApplication::addLibraryPath(QStringLiteral(PLUGIN_DIR));
     QCoreApplication::setApplicationName(QStringLiteral("readtest"));
-    QCoreApplication::setApplicationVersion(QStringLiteral("1.0.0"));
+    QCoreApplication::setApplicationVersion(QStringLiteral("1.1.0"));
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("Performs basic image conversion checking."));
@@ -94,11 +133,11 @@ int main(int argc, char **argv)
     QByteArray format = suffix.toLatin1();
 
     QDir imgdir(QLatin1String(IMAGEDIR "/") + suffix);
-    imgdir.setNameFilters(QStringList(QLatin1String("*.") + suffix));
     imgdir.setFilter(QDir::Files);
 
     int passed = 0;
     int failed = 0;
+    int skipped = 0;
 
     QTextStream(stdout) << "********* "
                         << "Starting basic read tests for " << suffix << " images *********\n";
@@ -112,69 +151,91 @@ int main(int argc, char **argv)
     QTextStream(stdout) << "QImageReader::supportedImageFormats: " << formatStrings.join(", ") << "\n";
 
     const QFileInfoList lstImgDir = imgdir.entryInfoList();
-    for (const QFileInfo &fi : lstImgDir) {
-        int suffixPos = fi.filePath().count() - suffix.count();
-        QString inputfile = fi.filePath();
-        QString expfile = fi.filePath().replace(suffixPos, suffix.count(), QStringLiteral("png"));
-        QString expfilename = QFileInfo(expfile).fileName();
-
-        QImageReader inputReader(inputfile, format);
-        QImageReader expReader(expfile, "png");
-
-        QImage inputImage;
-        QImage expImage;
-
-        if (!expReader.read(&expImage)) {
-            QTextStream(stdout) << "ERROR: " << fi.fileName() << ": could not load " << expfilename << ": " << expReader.errorString() << "\n";
-            ++failed;
-            continue;
-        }
-        if (!inputReader.canRead()) {
-            QTextStream(stdout) << "FAIL : " << fi.fileName() << ": failed can read: " << inputReader.errorString() << "\n";
-            ++failed;
-            continue;
-        }
-        if (!inputReader.read(&inputImage)) {
-            QTextStream(stdout) << "FAIL : " << fi.fileName() << ": failed to load: " << inputReader.errorString() << "\n";
-            ++failed;
-            continue;
-        }
-        if (expImage.width() != inputImage.width()) {
-            QTextStream(stdout) << "FAIL : " << fi.fileName() << ": width was " << inputImage.width() << " but " << expfilename << " width was "
-                                << expImage.width() << "\n";
-            ++failed;
-        } else if (expImage.height() != inputImage.height()) {
-            QTextStream(stdout) << "FAIL : " << fi.fileName() << ": height was " << inputImage.height() << " but " << expfilename << " height was "
-                                << expImage.height() << "\n";
-            ++failed;
+    // Launch 2 runs for each test: first run on a random access device, second run on a sequential access device
+    for (int seq = 0; seq < 2; ++seq) {
+        if (seq) {
+            QTextStream(stdout) << "* Run on SEQUENTIAL ACCESS device\n";
         } else {
-            QImage::Format inputFormat = preferredFormat(inputImage.format());
-            QImage::Format expFormat = preferredFormat(expImage.format());
-            QImage::Format cmpFormat = inputFormat == expFormat ? inputFormat : QImage::Format_ARGB32;
+            QTextStream(stdout) << "* Run on RANDOM ACCESS device\n";
+        }
+        for (const QFileInfo &fi : lstImgDir) {
+            if (!fi.suffix().compare("png", Qt::CaseInsensitive)) {
+                continue;
+            }
+            int suffixPos = fi.filePath().count() - suffix.count();
+            QString inputfile = fi.filePath();
+            QString expfile = fi.filePath().replace(suffixPos, suffix.count(), QStringLiteral("png"));
+            QString expfilename = QFileInfo(expfile).fileName();
 
-            if (inputImage.format() != cmpFormat) {
-                QTextStream(stdout) << "INFO : " << fi.fileName() << ": converting " << fi.fileName() << " from " << formatToString(inputImage.format())
-                                    << " to " << formatToString(cmpFormat) << '\n';
-                inputImage = inputImage.convertToFormat(cmpFormat);
-            }
-            if (expImage.format() != cmpFormat) {
-                QTextStream(stdout) << "INFO : " << fi.fileName() << ": converting " << expfilename << " from " << formatToString(expImage.format()) << " to "
-                                    << formatToString(cmpFormat) << '\n';
-                expImage = expImage.convertToFormat(cmpFormat);
-            }
-            if (fuzzyeq(inputImage, expImage, fuzziness)) {
-                QTextStream(stdout) << "PASS : " << fi.fileName() << "\n";
-                ++passed;
-            } else {
-                QTextStream(stdout) << "FAIL : " << fi.fileName() << ": differs from " << expfilename << "\n";
-                writeImageData("expected data", fi.fileName() + QLatin1String("-expected.data"), expImage);
-                writeImageData("actual data", fi.fileName() + QLatin1String("-actual.data"), inputImage);
+            std::unique_ptr<QIODevice> inputDevice(seq ? new SequentialFile(inputfile) : new QFile(inputfile));
+            QImageReader inputReader(inputDevice.get(), format);
+            QImageReader expReader(expfile, "png");
+
+            QImage inputImage;
+            QImage expImage;
+
+            // inputImage is auto-rotated to final orientation
+            inputReader.setAutoTransform(true);
+
+            if (!expReader.read(&expImage)) {
+                QTextStream(stdout) << "ERROR: " << fi.fileName() << ": could not load " << expfilename << ": " << expReader.errorString() << "\n";
                 ++failed;
+                continue;
+            }
+            if (!inputReader.canRead()) {
+                // All plugins must pass the test on a random device.
+                // canRead() must also return false if the plugin is unable to run on a sequential device.
+                if (inputDevice->isSequential()) {
+                    QTextStream(stdout) << "SKIP : " << fi.fileName() << ": cannot read on a sequential device (don't worry, it's ok)\n";
+                    ++skipped;
+                } else {
+                    QTextStream(stdout) << "FAIL : " << fi.fileName() << ": failed can read: " << inputReader.errorString() << "\n";
+                    ++failed;
+                }
+                continue;
+            }
+            if (!inputReader.read(&inputImage)) {
+                QTextStream(stdout) << "FAIL : " << fi.fileName() << ": failed to load: " << inputReader.errorString() << "\n";
+                ++failed;
+                continue;
+            }
+            if (expImage.width() != inputImage.width()) {
+                QTextStream(stdout) << "FAIL : " << fi.fileName() << ": width was " << inputImage.width() << " but " << expfilename << " width was "
+                                    << expImage.width() << "\n";
+                ++failed;
+            } else if (expImage.height() != inputImage.height()) {
+                QTextStream(stdout) << "FAIL : " << fi.fileName() << ": height was " << inputImage.height() << " but " << expfilename << " height was "
+                                    << expImage.height() << "\n";
+                ++failed;
+            } else {
+                QImage::Format inputFormat = preferredFormat(inputImage.format());
+                QImage::Format expFormat = preferredFormat(expImage.format());
+                QImage::Format cmpFormat = inputFormat == expFormat ? inputFormat : QImage::Format_ARGB32;
+
+                if (inputImage.format() != cmpFormat) {
+                    QTextStream(stdout) << "INFO : " << fi.fileName() << ": converting " << fi.fileName() << " from " << formatToString(inputImage.format())
+                                        << " to " << formatToString(cmpFormat) << '\n';
+                    inputImage = inputImage.convertToFormat(cmpFormat);
+                }
+                if (expImage.format() != cmpFormat) {
+                    QTextStream(stdout) << "INFO : " << fi.fileName() << ": converting " << expfilename << " from " << formatToString(expImage.format())
+                                        << " to " << formatToString(cmpFormat) << '\n';
+                    expImage = expImage.convertToFormat(cmpFormat);
+                }
+                if (fuzzyeq(inputImage, expImage, fuzziness)) {
+                    QTextStream(stdout) << "PASS : " << fi.fileName() << "\n";
+                    ++passed;
+                } else {
+                    QTextStream(stdout) << "FAIL : " << fi.fileName() << ": differs from " << expfilename << "\n";
+                    writeImageData("expected data", fi.fileName() + QLatin1String("-expected.data"), expImage);
+                    writeImageData("actual data", fi.fileName() + QLatin1String("-actual.data"), inputImage);
+                    ++failed;
+                }
             }
         }
     }
 
-    QTextStream(stdout) << "Totals: " << passed << " passed, " << failed << " failed\n";
+    QTextStream(stdout) << "Totals: " << passed << " passed, " << skipped << " skipped, " << failed << " failed\n";
     QTextStream(stdout) << "********* "
                         << "Finished basic read tests for " << suffix << " images *********\n";
 

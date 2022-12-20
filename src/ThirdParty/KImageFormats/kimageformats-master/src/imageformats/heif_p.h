@@ -13,6 +13,7 @@
 #include <QByteArray>
 #include <QImage>
 #include <QImageIOPlugin>
+#include <QMutex>
 
 class HEIFHandler : public QImageIOHandler
 {
@@ -29,6 +30,9 @@ public:
     void setOption(ImageOption option, const QVariant &value) override;
     bool supportsOption(ImageOption option) const override;
 
+    static bool isHeifDecoderAvailable();
+    static bool isHeifEncoderAvailable();
+
 private:
     static bool isSupportedBMFFType(const QByteArray &header);
     bool ensureParsed() const;
@@ -43,6 +47,18 @@ private:
     ParseHeicState m_parseState;
     int m_quality;
     QImage m_current_image;
+
+    bool write_helper(const QImage &image);
+
+    static void startHeifLib();
+    static void finishHeifLib();
+    static size_t m_initialized_count;
+
+    static bool m_plugins_queried;
+    static bool m_heif_decoder_available;
+    static bool m_heif_encoder_available;
+
+    static QMutex &getHEIFHandlerMutex();
 };
 
 class HEIFPlugin : public QImageIOPlugin

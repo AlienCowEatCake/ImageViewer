@@ -136,7 +136,15 @@ kimageformats_write_tests(
 #    kimageformats_write_tests(eps)
 #endif()
 if (OpenEXR_FOUND)
-    # FIXME: OpenEXR tests
+    kimageformats_read_tests(
+        exr
+    )
+endif()
+
+if (LibRaw_FOUND)
+    kimageformats_read_tests(
+        raw
+    )
 endif()
 
 find_package(Qt${QT_MAJOR_VERSION}Test ${REQUIRED_QT_VERSION} CONFIG QUIET)

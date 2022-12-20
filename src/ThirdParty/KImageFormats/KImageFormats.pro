@@ -23,6 +23,7 @@ include(../libavif/libavif.pri)
 include(../OpenEXR/OpenEXR.pri)
 include(../libheif/libheif.pri)
 include(../libjxl/libjxl.pri)
+include(../LibRaw/LibRaw.pri)
 
 INCLUDEPATH += $${THIRDPARTY_KIMAGEFORMATS_WRAPPER_PATH}
 
@@ -217,6 +218,21 @@ DEFINES += WRAPPER_USE_RAS_HANDLER
 
 DEFINES += RASHandler=tp_RASHandler
 DEFINES += RASPlugin=tp_RASPlugin
+
+# --------------------------------------------------------------------------------
+
+!disable_libraw {
+    SOURCES += \
+        $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/raw.cpp
+
+    HEADERS += \
+        $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/raw_p.h
+
+    DEFINES += WRAPPER_USE_RAW_HANDLER
+
+    DEFINES += RAWHandler=tp_RAWHandler
+    DEFINES += RAWPlugin=tp_RAWPlugin
+}
 
 # --------------------------------------------------------------------------------
 

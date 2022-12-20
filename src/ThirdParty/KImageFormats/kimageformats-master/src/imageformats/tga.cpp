@@ -17,6 +17,7 @@
  */
 
 #include "tga_p.h"
+#include "util_p.h"
 
 #include <assert.h>
 
@@ -172,7 +173,7 @@ struct TgaHeaderInfo {
 static bool LoadTGA(QDataStream &s, const TgaHeader &tga, QImage &img)
 {
     // Create image.
-    img = QImage(tga.width, tga.height, QImage::Format_RGB32);
+    img = imageAlloc(tga.width, tga.height, QImage::Format_RGB32);
     if (img.isNull()) {
         qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(tga.width, tga.height);
         return false;
@@ -184,7 +185,7 @@ static bool LoadTGA(QDataStream &s, const TgaHeader &tga, QImage &img)
     const int numAlphaBits = tga.flags & 0xf;
     // However alpha exists only in the 32 bit format.
     if ((tga.pixel_size == 32) && (tga.flags & 0xf)) {
-        img = QImage(tga.width, tga.height, QImage::Format_ARGB32);
+        img = imageAlloc(tga.width, tga.height, QImage::Format_ARGB32);
         if (img.isNull()) {
             qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(tga.width, tga.height);
             return false;

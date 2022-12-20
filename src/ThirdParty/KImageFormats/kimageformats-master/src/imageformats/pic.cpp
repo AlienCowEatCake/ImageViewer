@@ -14,8 +14,8 @@
  */
 
 #include "pic_p.h"
-
 #include "rle_p.h"
+#include "util_p.h"
 
 #include <QDataStream>
 #include <QDebug>
@@ -238,7 +238,7 @@ bool SoftimagePICHandler::read(QImage *image)
         }
     }
 
-    QImage img(m_header.width, m_header.height, fmt);
+    QImage img = imageAlloc(m_header.width, m_header.height, fmt);
     if (img.isNull()) {
         qDebug() << "Failed to allocate image, invalid dimensions?" << QSize(m_header.width, m_header.height) << fmt;
         return false;

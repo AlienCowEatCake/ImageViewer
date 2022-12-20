@@ -55,6 +55,7 @@ private:
         ParseAvifNotParsed = 0,
         ParseAvifSuccess = 1,
         ParseAvifMetadata = 2,
+        ParseAvifFinished = 3,
     };
 
     ParseAvifState m_parseState;

@@ -7,6 +7,7 @@
 */
 
 #include "hdr_p.h"
+#include "util_p.h"
 
 #include <QDataStream>
 #include <QImage>
@@ -93,7 +94,7 @@ static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &i
     uchar code;
 
     // Create dst image.
-    img = QImage(width, height, QImage::Format_RGB32);
+    img = imageAlloc(width, height, QImage::Format_RGB32);
     if (img.isNull()) {
         qCDebug(HDRPLUGIN) << "Couldn't create image with size" << width << height << "and format RGB32";
         return false;

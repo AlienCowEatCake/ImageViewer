@@ -34,7 +34,6 @@
  */
 
 #include "psd_p.h"
-
 #include "util_p.h"
 
 #include <QDataStream>
@@ -173,7 +172,8 @@ struct PSDLayerAndMaskSection {
         if (globalLayerMaskInfo.size > -1) {
             currentSize += globalLayerMaskInfo.size + 4;
         }
-        for (auto && v : additionalLayerInfo.values()) {
+        auto aliv = additionalLayerInfo.values();
+        for (auto &&v : aliv) {
             currentSize += (12 + v.size);
             if (v.signature == S_8B64)
                 currentSize += 4;
@@ -287,12 +287,6 @@ static PSDImageResourceSection readImageResourceSection(QDataStream &s, bool *ok
     qint32 sectioSize;
     s >> sectioSize;
 
-#ifdef QT_DEBUG
-    auto pos = qint64();
-    if (auto dev = s.device())
-        pos = dev->pos();
-#endif
-
     // Reading Image resource block
     for (auto size = sectioSize; size > 0;) {
         // Length      Description
@@ -356,14 +350,6 @@ static PSDImageResourceSection readImageResourceSection(QDataStream &s, bool *ok
         // insert IRB
         irs.insert(id, irb);
     }
-
-#ifdef QT_DEBUG
-    if (auto dev = s.device()) {
-        if ((dev->pos() - pos) != sectioSize) {
-            *ok = false;
-        }
-    }
-#endif
 
     return irs;
 }
@@ -644,7 +630,9 @@ static bool IsValid(const PSDHeader &header)
         qDebug() << "PSD header: invalid color mode" << header.color_mode;
         return false;
     }
-    if (header.channel_count < 1 || header.channel_count > 56) {
+    // Specs tells: "Supported range is 1 to 56" but the limit is 57:
+    // Photoshop does not make you add more (see also 53alphas.psd test case).
+    if (header.channel_count < 1 || header.channel_count > 57) {
         qDebug() << "PSD header: invalid number of channels" << header.channel_count;
         return false;
     }
@@ -658,6 +646,9 @@ static bool IsValid(const PSDHeader &header)
 // Check that the header is supported by this plugin.
 static bool IsSupported(const PSDHeader &header)
 {
+    if (!IsValid(header)) {
+        return false;
+    }
     if (header.version != 1 && header.version != 2) {
         return false;
     }
@@ -672,8 +663,13 @@ static bool IsSupported(const PSDHeader &header)
         header.color_mode != CM_INDEXED &&
         header.color_mode != CM_DUOTONE &&
         header.color_mode != CM_CMYK &&
+        header.color_mode != CM_MULTICHANNEL &&
         header.color_mode != CM_LABCOLOR &&
         header.color_mode != CM_BITMAP) {
+        return false;
+    }
+    if (header.color_mode == CM_MULTICHANNEL &&
+        header.channel_count < 4) {
         return false;
     }
     return true;
@@ -741,13 +737,14 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
         else
             format = header.channel_count < 4 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888;
         break;
-    case CM_CMYK:       // Photoshop supports CMYK 8-bits and 16-bits only
+    case CM_MULTICHANNEL:       // Treat MCH as CMYK (number of channel check is done in IsSupported())
+    case CM_CMYK:               // Photoshop supports CMYK/MCH 8-bits and 16-bits only
         if (header.depth == 16)
             format = header.channel_count < 5 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64;
         else if (header.depth == 8)
             format = header.channel_count < 5 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888;
         break;
-    case CM_LABCOLOR:   // Photoshop supports LAB 8-bits and 16-bits only
+    case CM_LABCOLOR:           // Photoshop supports LAB 8-bits and 16-bits only
         if (header.depth == 16)
             format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64;
         else if (header.depth == 8)
@@ -938,6 +935,9 @@ inline void labToRgb(uchar *target, qint32 targetChannels, const char *source, q
 bool readChannel(QByteArray& target, QDataStream &stream, quint32 compressedSize, quint16 compression)
 {
     if (compression) {
+        if (compressedSize > kMaxQVectorSize) {
+            return false;
+        }
         QByteArray tmp;
         tmp.resize(compressedSize);
         if (stream.readRawData(tmp.data(), tmp.size()) != tmp.size()) {
@@ -1010,7 +1010,7 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
         return false;
     }
 
-    img = QImage(header.width, header.height, format);
+    img = imageAlloc(header.width, header.height, format);
     if (img.isNull()) {
         qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(header.width, header.height);
         return false;
@@ -1087,7 +1087,7 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
             }
 
             // Conversion to RGB
-            if (header.color_mode == CM_CMYK) {
+            if (header.color_mode == CM_CMYK || header.color_mode == CM_MULTICHANNEL) {
                 if (header.depth == 8)
                     cmykToRgb<quint8>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width, alpha);
                 else
@@ -1246,35 +1246,27 @@ bool PSDHandler::canRead(QIODevice *device)
         return false;
     }
 
-    qint64 oldPos = device->pos();
+    device->startTransaction();
 
-    char head[4];
-    qint64 readBytes = device->read(head, sizeof(head));
-    if (readBytes < 0) {
-        qWarning() << "Read failed" << device->errorString();
-        return false;
-    }
+    QDataStream s(device);
+    s.setByteOrder(QDataStream::BigEndian);
 
-    if (readBytes != sizeof(head)) {
-        if (device->isSequential()) {
-            while (readBytes > 0) {
-                device->ungetChar(head[readBytes-- - 1]);
-            }
-        } else {
-            device->seek(oldPos);
-        }
+    PSDHeader header;
+    s >> header;
+
+    device->rollbackTransaction();
+
+    if (s.status() != QDataStream::Ok) {
         return false;
     }
 
     if (device->isSequential()) {
-        while (readBytes > 0) {
-            device->ungetChar(head[readBytes-- - 1]);
+        if (header.color_mode == CM_CMYK || header.color_mode == CM_LABCOLOR || header.color_mode == CM_MULTICHANNEL) {
+            return false;
         }
-    } else {
-        device->seek(oldPos);
     }
 
-    return qstrncmp(head, "8BPS", 4) == 0;
+    return IsSupported(header);
 }
 
 QImageIOPlugin::Capabilities PSDPlugin::capabilities(QIODevice *device, const QByteArray &format) const

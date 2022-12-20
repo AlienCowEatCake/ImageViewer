@@ -8,7 +8,6 @@
 */
 
 #include "ras_p.h"
-
 #include "util_p.h"
 
 #include <QDataStream>
@@ -152,8 +151,7 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
     }
 
     // Allocate image
-    img = QImage(ras.Width, ras.Height, QImage::Format_ARGB32);
-
+    img = imageAlloc(ras.Width, ras.Height, QImage::Format_ARGB32);
     if (img.isNull()) {
         return false;
     }

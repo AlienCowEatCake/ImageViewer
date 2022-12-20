@@ -59,6 +59,9 @@
 #if defined (WRAPPER_USE_RAS_HANDLER)
 #include "../kimageformats-master/src/imageformats/ras_p.h"
 #endif
+#if defined (WRAPPER_USE_RAW_HANDLER)
+#include "../kimageformats-master/src/imageformats/raw_p.h"
+#endif
 #if defined (WRAPPER_USE_RGB_HANDLER)
 #include "../kimageformats-master/src/imageformats/rgb_p.h"
 #endif
@@ -111,6 +114,9 @@ enum BuiltInFormatType
 #endif
 #if defined (WRAPPER_USE_RAS_HANDLER)
     RasFormat,
+#endif
+#if defined (WRAPPER_USE_RAW_HANDLER)
+    RawFormat,
 #endif
 #if defined (WRAPPER_USE_RGB_HANDLER)
     RgbFormat,
@@ -171,6 +177,28 @@ static const BuiltInFormatStruct BuiltInFormats[] =
 #endif
 #if defined (WRAPPER_USE_RAS_HANDLER)
     { RasFormat , QList<QByteArray>() << "ras" },
+#endif
+#if defined (WRAPPER_USE_RAW_HANDLER)
+    { RawFormat , QList<QByteArray>()
+      << "3fr"
+      << "arw" << "arq"
+      << "bay" << "bmq"
+      << "crw" << "cr2" << "cr3" << "cap" << "cine" << "cs1"
+      << "dcs" << "dc2" << "dcr" << "dng" << "drf" << "dxo"
+      << "eip" << "erf"
+      << "fff"
+      << "hdr"
+      << "iiq"
+      << "k25" << "kdc" << "kc2"
+      << "mdc" << "mef" << "mfw" << "mos" << "mrw"
+      << "nef" << "nrw"
+      << "obm" << "orf" << "ori"
+      << "pef" << "ptx" << "pxn"
+      << "qtk"
+      << "r3d" << "raf" << "raw" << "rdc" << "rwl" << "rw2" << "rwz"
+      << "sr2" << "srf" << "srw" << "sti"
+      << "x3f"
+    },
 #endif
 #if defined (WRAPPER_USE_RGB_HANDLER)
     { RgbFormat , QList<QByteArray>() << "rgb" << "rgba" << "bw" << "sgi" },
@@ -293,6 +321,11 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
 #if defined (WRAPPER_USE_RAS_HANDLER)
         case RasFormat:
             handler = new RASHandler;
+            break;
+#endif
+#if defined (WRAPPER_USE_RAW_HANDLER)
+        case RawFormat:
+            handler = new RAWHandler;
             break;
 #endif
 #if defined (WRAPPER_USE_RGB_HANDLER)
@@ -421,6 +454,12 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
             case RasFormat:
                 if(RASHandler::canRead(device))
                     handler = new RASHandler;
+                break;
+#endif
+#if defined (WRAPPER_USE_RAW_HANDLER)
+            case RawFormat:
+                if(RAWHandler::canRead(device))
+                    handler = new RAWHandler;
                 break;
 #endif
 #if defined (WRAPPER_USE_RGB_HANDLER)
@@ -1151,6 +1190,76 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
 #endif
 #if defined (WRAPPER_USE_RAS_HANDLER)
     result.append(QByteArrayLiteral("image/x-sun-raster"));
+#endif
+#if defined (WRAPPER_USE_RAW_HANDLER)
+    result.append(QByteArrayLiteral("image/x-hasselblad-3fr"));
+
+    result.append(QByteArrayLiteral("image/x-sony-arw"));
+    result.append(QByteArrayLiteral("image/x-arq"));
+
+    result.append(QByteArrayLiteral("image/x-bay"));
+    result.append(QByteArrayLiteral("image/x-bmq"));
+
+    result.append(QByteArrayLiteral("image/x-canon-crw"));
+    result.append(QByteArrayLiteral("image/x-canon-cr2"));
+    result.append(QByteArrayLiteral("image/x-canon-cr3"));
+    result.append(QByteArrayLiteral("image/x-cap"));
+    result.append(QByteArrayLiteral("image/x-cine"));
+    result.append(QByteArrayLiteral("image/x-cs1"));
+
+    result.append(QByteArrayLiteral("image/x-kodak-dcs"));
+    result.append(QByteArrayLiteral("image/x-dc2"));
+    result.append(QByteArrayLiteral("image/x-kodak-dcr"));
+    result.append(QByteArrayLiteral("image/x-adobe-dng"));
+    result.append(QByteArrayLiteral("image/x-drf"));
+    result.append(QByteArrayLiteral("image/x-dxo"));
+
+    result.append(QByteArrayLiteral("image/x-epson-eip"));
+    result.append(QByteArrayLiteral("image/x-epson-erf"));
+
+    result.append(QByteArrayLiteral("image/x-fff"));
+
+    result.append(QByteArrayLiteral("image/x-hdr"));
+
+    result.append(QByteArrayLiteral("image/x-iiq"));
+
+    result.append(QByteArrayLiteral("image/x-kodak-k25"));
+    result.append(QByteArrayLiteral("image/x-kodak-kdc"));
+    result.append(QByteArrayLiteral("image/x-kodak-kc2"));
+
+    result.append(QByteArrayLiteral("image/x-minolta-mdc"));
+    result.append(QByteArrayLiteral("image/x-mamiya-mef"));
+    result.append(QByteArrayLiteral("image/x-mfw"));
+    result.append(QByteArrayLiteral("image/x-aptus-mos"));
+    result.append(QByteArrayLiteral("image/x-minolta-mrw"));
+
+    result.append(QByteArrayLiteral("image/x-nikon-nef"));
+    result.append(QByteArrayLiteral("image/x-nikon-nrw"));
+
+    result.append(QByteArrayLiteral("image/x-obm"));
+    result.append(QByteArrayLiteral("image/x-olympus-orf"));
+    result.append(QByteArrayLiteral("image/x-ori"));
+
+    result.append(QByteArrayLiteral("image/x-pentax-pef"));
+    result.append(QByteArrayLiteral("image/x-ptx"));
+    result.append(QByteArrayLiteral("image/x-pxn"));
+
+    result.append(QByteArrayLiteral("image/x-qtk"));
+
+    result.append(QByteArrayLiteral("image/x-r3d"));
+    result.append(QByteArrayLiteral("image/x-fuji-raf"));
+    result.append(QByteArrayLiteral("image/x-raw"));
+    result.append(QByteArrayLiteral("image/x-rdc"));
+    result.append(QByteArrayLiteral("image/x-rwl"));
+    result.append(QByteArrayLiteral("image/x-panasonic-rw2"));
+    result.append(QByteArrayLiteral("image/x-rwz"));
+
+    result.append(QByteArrayLiteral("image/x-sony-sr2"));
+    result.append(QByteArrayLiteral("image/x-sony-srf"));
+    result.append(QByteArrayLiteral("image/x-samsung-srw"));
+    result.append(QByteArrayLiteral("image/x-sti"));
+
+    result.append(QByteArrayLiteral("image/x-sigma-x3f"));
 #endif
 #if defined (WRAPPER_USE_RGB_HANDLER)
     result.append(QByteArrayLiteral("image/x-rgb"));

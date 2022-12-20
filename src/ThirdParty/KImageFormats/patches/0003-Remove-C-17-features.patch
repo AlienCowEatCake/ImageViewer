@@ -1,15 +1,48 @@
-From b68e15de6d0df0ca3b051b69e3e06db66f6312f1 Mon Sep 17 00:00:00 2001
+From d909f3882bc94f60c71fb7acbe64302c5e586442 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
 Subject: [PATCH 3/3] Remove C++17 features
 
 ---
- src/imageformats/pic.cpp | 4 ++--
- src/imageformats/xcf.cpp | 8 ++++----
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ src/imageformats/kra.cpp  |  4 ++--
+ src/imageformats/ora.cpp  |  4 ++--
+ src/imageformats/pic.cpp  |  4 ++--
+ src/imageformats/util_p.h |  2 +-
+ src/imageformats/xcf.cpp  | 10 +++++-----
+ 5 files changed, 12 insertions(+), 12 deletions(-)
 
+diff --git a/src/imageformats/kra.cpp b/src/imageformats/kra.cpp
+index fff976c..23d7bcb 100644
+--- a/src/imageformats/kra.cpp
++++ b/src/imageformats/kra.cpp
+@@ -16,8 +16,8 @@
+ #include <QIODevice>
+ #include <QImage>
+ 
+-static constexpr char s_magic[] = "application/x-krita";
+-static constexpr int s_magic_size = sizeof(s_magic) - 1; // -1 to remove the last \0
++static const char s_magic[] = "application/x-krita";
++static const int s_magic_size = sizeof(s_magic) - 1; // -1 to remove the last \0
+ 
+ KraHandler::KraHandler()
+ {
+diff --git a/src/imageformats/ora.cpp b/src/imageformats/ora.cpp
+index 79c5353..9ad3ff8 100644
+--- a/src/imageformats/ora.cpp
++++ b/src/imageformats/ora.cpp
+@@ -15,8 +15,8 @@
+ 
+ #include <kzip.h>
+ 
+-static constexpr char s_magic[] = "image/openraster";
+-static constexpr int s_magic_size = sizeof(s_magic) - 1; // -1 to remove the last \0
++static const char s_magic[] = "image/openraster";
++static const int s_magic_size = sizeof(s_magic) - 1; // -1 to remove the last \0
+ 
+ OraHandler::OraHandler()
+ {
 diff --git a/src/imageformats/pic.cpp b/src/imageformats/pic.cpp
-index f2adb34..92bd380 100644
+index 350044c..06fcb1a 100644
 --- a/src/imageformats/pic.cpp
 +++ b/src/imageformats/pic.cpp
 @@ -226,7 +226,7 @@ bool SoftimagePICHandler::read(QImage *image)
@@ -30,11 +63,24 @@ index f2adb34..92bd380 100644
                  if (channel.code & ALPHA) {
                      return QImage::Format_ARGB32;
                  }
+diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
+index 7a0d5de..82178da 100644
+--- a/src/imageformats/util_p.h
++++ b/src/imageformats/util_p.h
+@@ -17,7 +17,7 @@
+ #endif
+ 
+ // QVector uses some extra space for stuff, hence the 32 here suggested by Thiago Macieira
+-static constexpr int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
++static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
+ 
+ // On Qt 6 to make the plugins fail to allocate if the image size is greater than QImageReader::allocationLimit()
+ // it is necessary to allocate the image with QImageIOHandler::allocateImage().
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index 0a84f17..c46172f 100644
+index fa04267..48d746f 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
-@@ -32,7 +32,7 @@ namespace
+@@ -36,7 +36,7 @@ namespace
  {
  struct RandomTable {
      // From glibc
@@ -43,7 +89,7 @@ index 0a84f17..c46172f 100644
      {
          unsigned int next = *seed;
          int result = 0;
-@@ -56,7 +56,7 @@ struct RandomTable {
+@@ -60,7 +60,7 @@ struct RandomTable {
          return result;
      }
  
@@ -52,7 +98,7 @@ index 0a84f17..c46172f 100644
          : values{}
      {
          unsigned int next = RANDOM_SEED;
-@@ -381,7 +381,7 @@ private:
+@@ -385,7 +385,7 @@ private:
      static int random_table[RANDOM_TABLE_SIZE];
      static bool random_table_initialized;
  
@@ -61,7 +107,7 @@ index 0a84f17..c46172f 100644
  
      //! This table is used as a shared grayscale ramp to be set on grayscale
      //! images. This is because Qt does not differentiate between indexed and
-@@ -445,7 +445,7 @@ private:
+@@ -449,7 +449,7 @@ private:
  int XCFImageFormat::random_table[RANDOM_TABLE_SIZE];
  bool XCFImageFormat::random_table_initialized;
  
@@ -70,6 +116,15 @@ index 0a84f17..c46172f 100644
  
  QVector<QRgb> XCFImageFormat::grayTable;
  
+@@ -1270,7 +1270,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
+ {
+     auto&& p = xcf_image.parasites;
+     auto keys = p.keys();
+-    for (auto &&key : std::as_const(keys)) {
++    for (auto &&key : qAsConst(keys)) {
+         auto value = p.value(key);
+         if(value.isEmpty())
+             continue;
 -- 
-2.37.1
+2.30.2
 

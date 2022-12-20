@@ -6,6 +6,7 @@
     SPDX-License-Identifier: LGPL-2.1-or-later
 */
 
+#include "util_p.h"
 #include "xcf_p.h"
 
 #include <QDebug>
@@ -17,6 +18,9 @@
 #include <QVector>
 #include <QtEndian>
 #include <QColorSpace>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QImageReader>
+#endif
 
 #include <stdlib.h>
 #include <string.h>
@@ -1093,11 +1097,26 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
     qCDebug(XCFPLUGIN) << "LAYER: height=" << layer.height << ", width=" << layer.width;
     qCDebug(XCFPLUGIN) << "LAYER: rows=" << layer.nrows << ", columns=" << layer.ncols;
 
+    // NOTE: starting from GIMP 2.10, images can be very large. The 32K limit for width and height is obsolete
+    //       and it was changed to 300000 (the same as Photoshop Big image). This plugin was able to open an RGB
+    //       image of 108000x40000 pixels saved with GIMP 2.10
     // SANITY CHECK: Catch corrupted XCF image file where the width or height
     // of a tile is reported are bogus. See Bug# 234030.
-    if (layer.width > 32767 || layer.height > 32767 || (sizeof(void *) == 4 && layer.width * layer.height > 16384 * 16384)) {
+    if (layer.width > 300000 || layer.height > 300000 || (sizeof(void *) == 4 && layer.width * layer.height > 16384 * 16384)) {
         return false;
     }
+
+    // Qt 6 image allocation limit calculation: we have to check the limit here because the image is splitted in
+    // tiles of 64x64 pixels. The required memory to build the image is at least doubled because tiles are loaded
+    // and then the final image is created by copying the tiles inside it.
+    // NOTE: on Windows to open a 10GiB image the plugin uses 28GiB of RAM
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    qint64 channels = 1 + (layer.type == RGB_GIMAGE ? 2 : 0) + (layer.type == RGBA_GIMAGE ? 3 : 0);
+    if (qint64(layer.width) * qint64(layer.height) * channels * 2ll / 1024ll / 1024ll > QImageReader::allocationLimit()) {
+        qCDebug(XCFPLUGIN) << "Rejecting image as it exceeds the current allocation limit of" << QImageReader::allocationLimit() << "megabytes";
+        return false;
+    }
+#endif
 
     layer.image_tiles.resize(layer.nrows);
 
@@ -1251,7 +1270,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
 {
     auto&& p = xcf_image.parasites;
     auto keys = p.keys();
-    for (auto&& key : qAsConst(keys)) {
+    for (auto &&key : qAsConst(keys)) {
         auto value = p.value(key);
         if(value.isEmpty())
             continue;
@@ -1917,7 +1936,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
     switch (layer.type) {
     case RGB_GIMAGE:
         if (layer.opacity == OPAQUE_OPACITY) {
-            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_RGB32);
+            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_RGB32);
             if (image.isNull()) {
                 return false;
             }
@@ -1926,7 +1945,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
         } // else, fall through to 32-bit representation
         Q_FALLTHROUGH();
     case RGBA_GIMAGE:
-        image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
+        image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
         if (image.isNull()) {
             return false;
         }
@@ -1935,7 +1954,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
 
     case GRAY_GIMAGE:
         if (layer.opacity == OPAQUE_OPACITY) {
-            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
+            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
             image.setColorCount(256);
             if (image.isNull()) {
                 return false;
@@ -1946,7 +1965,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
         } // else, fall through to 32-bit representation
         Q_FALLTHROUGH();
     case GRAYA_GIMAGE:
-        image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
+        image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
         if (image.isNull()) {
             return false;
         }
@@ -1967,7 +1986,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
         // or two-color palette. Have to ask about this...
 
         if (xcf_image.num_colors <= 2) {
-            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
+            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
             image.setColorCount(xcf_image.num_colors);
             if (image.isNull()) {
                 return false;
@@ -1975,7 +1994,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
             image.fill(0);
             setPalette(xcf_image, image);
         } else if (xcf_image.num_colors <= 256) {
-            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
+            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
             image.setColorCount(xcf_image.num_colors);
             if (image.isNull()) {
                 return false;
@@ -1993,7 +2012,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
             xcf_image.palette[1] = xcf_image.palette[0];
             xcf_image.palette[0] = qRgba(255, 255, 255, 0);
 
-            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
+            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
             image.setColorCount(xcf_image.num_colors);
             if (image.isNull()) {
                 return false;
@@ -2009,7 +2028,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
             }
 
             xcf_image.palette[0] = qRgba(255, 255, 255, 0);
-            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
+            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
             image.setColorCount(xcf_image.num_colors);
             if (image.isNull()) {
                 return false;
@@ -2020,7 +2039,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
             // No room for a transparent color, so this has to be promoted to
             // true color. (There is no equivalent PNG representation output
             // from The GIMP as of v1.2.)
-            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
+            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
             if (image.isNull()) {
                 return false;
             }
@@ -2031,11 +2050,11 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
 
     if (xcf_image.x_resolution > 0 && xcf_image.y_resolution > 0) {
         const float dpmx = xcf_image.x_resolution * INCHESPERMETER;
-        if (dpmx > std::numeric_limits<int>::max()) {
+        if (dpmx > float(std::numeric_limits<int>::max())) {
             return false;
         }
         const float dpmy = xcf_image.y_resolution * INCHESPERMETER;
-        if (dpmy > std::numeric_limits<int>::max()) {
+        if (dpmy > float(std::numeric_limits<int>::max())) {
             return false;
         }
         image.setDotsPerMeterX((int)dpmx);
@@ -3320,6 +3339,9 @@ bool XCFHandler::canRead(QIODevice *device)
 {
     if (!device) {
         qCDebug(XCFPLUGIN) << "XCFHandler::canRead() called with no device";
+        return false;
+    }
+    if (device->isSequential()) {
         return false;
     }
 

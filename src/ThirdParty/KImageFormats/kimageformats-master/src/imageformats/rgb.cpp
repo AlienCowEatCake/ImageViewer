@@ -20,6 +20,7 @@
  */
 
 #include "rgb_p.h"
+#include "util_p.h"
 
 #include <QMap>
 #include <QVector>
@@ -324,7 +325,7 @@ bool SGIImage::readImage(QImage &img)
         return false;
     }
 
-    img = QImage(_xsize, _ysize, QImage::Format_RGB32);
+    img = imageAlloc(_xsize, _ysize, QImage::Format_RGB32);
     if (img.isNull()) {
         qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(_xsize, _ysize);
         return false;

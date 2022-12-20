@@ -16,8 +16,8 @@
 #include <QIODevice>
 #include <QImage>
 
-static constexpr char s_magic[] = "application/x-krita";
-static constexpr int s_magic_size = sizeof(s_magic) - 1; // -1 to remove the last \0
+static const char s_magic[] = "application/x-krita";
+static const int s_magic_size = sizeof(s_magic) - 1; // -1 to remove the last \0
 
 KraHandler::KraHandler()
 {
@@ -55,6 +55,9 @@ bool KraHandler::canRead(QIODevice *device)
 {
     if (!device) {
         qWarning("KraHandler::canRead() called with no device");
+        return false;
+    }
+    if (device->isSequential()) {
         return false;
     }
 

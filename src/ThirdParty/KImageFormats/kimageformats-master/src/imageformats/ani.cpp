@@ -521,6 +521,9 @@ bool ANIHandler::canRead(QIODevice *device)
         qWarning("ANIHandler::canRead() called with no device");
         return false;
     }
+    if (device->isSequential()) {
+        return false;
+    }
 
     const QByteArray riffIntro = device->peek(12);
 

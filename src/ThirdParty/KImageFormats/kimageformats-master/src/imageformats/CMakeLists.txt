@@ -20,19 +20,26 @@ endfunction()
 ##################################
 
 kimageformats_add_plugin(kimg_ani SOURCES ani.cpp)
-install(FILES ani.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+
+if (QT_MAJOR_VERSION STREQUAL "5")
+    install(FILES ani.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+endif()
 
 ##################################
 
 if (TARGET avif)
     kimageformats_add_plugin(kimg_avif SOURCES "avif.cpp")
     target_link_libraries(kimg_avif "avif")
-    install(FILES avif.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+    if (QT_MAJOR_VERSION STREQUAL "5")
+        install(FILES avif.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+    endif()
 endif()
 
 ##################################
 
-install(FILES dds-qt.desktop RENAME dds.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+if (QT_MAJOR_VERSION STREQUAL "5")
+    install(FILES dds-qt.desktop RENAME dds.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+endif()
 
 ##################################
 
@@ -40,14 +47,18 @@ if (BUILD_EPS_PLUGIN)
     if (TARGET Qt${QT_MAJOR_VERSION}::PrintSupport)
         kimageformats_add_plugin(kimg_eps SOURCES eps.cpp)
         target_link_libraries(kimg_eps Qt${QT_MAJOR_VERSION}::PrintSupport)
-        install(FILES eps.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+        if (QT_MAJOR_VERSION STREQUAL "5")
+            install(FILES eps.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+        endif()
     endif()
 endif()
 
 ##################################
 
-# need this for Qt's version of the plugin
-install(FILES jp2.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+if (QT_MAJOR_VERSION STREQUAL "5")
+    # need this for Qt's version of the plugin
+    install(FILES jp2.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+endif()
 
 ##################################
 
@@ -65,21 +76,27 @@ if(OpenEXR_FOUND)
     endif()
     kde_target_enable_exceptions(kimg_exr PRIVATE)
 
-    install(FILES exr.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+    if (QT_MAJOR_VERSION STREQUAL "5")
+        install(FILES exr.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+    endif()
 endif()
 
 ##################################
 
 kimageformats_add_plugin(kimg_hdr SOURCES hdr.cpp)
-install(FILES hdr.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+if (QT_MAJOR_VERSION STREQUAL "5")
+    install(FILES hdr.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+endif()
 
 ##################################
 
 if (LibHeif_FOUND)
     kimageformats_add_plugin(kimg_heif SOURCES heif.cpp)
     target_link_libraries(kimg_heif PkgConfig::LibHeif)
-    kde_target_enable_exceptions(kimg_heif PRIVATE)
-    install(FILES heif.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+
+    if (QT_MAJOR_VERSION STREQUAL "5")
+        install(FILES heif.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+    endif()
 endif()
 
 ##################################
@@ -90,43 +107,71 @@ if (LibJXL_FOUND AND LibJXLThreads_FOUND)
     if (LibJXL_VERSION VERSION_GREATER_EQUAL "0.7.0")
         target_compile_definitions(kimg_jxl PRIVATE KIMG_JXL_API_VERSION=70)
     endif()
-    install(FILES jxl.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+
+    if (QT_MAJOR_VERSION STREQUAL "5")
+        install(FILES jxl.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+    endif()
 endif()
 
 ##################################
 
 kimageformats_add_plugin(kimg_pcx SOURCES pcx.cpp)
-install(FILES pcx.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+if (QT_MAJOR_VERSION STREQUAL "5")
+    install(FILES pcx.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+endif()
 
 ##################################
 
 kimageformats_add_plugin(kimg_pic SOURCES pic.cpp)
-install(FILES pic.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+if (QT_MAJOR_VERSION STREQUAL "5")
+    install(FILES pic.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+endif()
 
 ##################################
 
 kimageformats_add_plugin(kimg_psd SOURCES psd.cpp)
-install(FILES psd.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+if (QT_MAJOR_VERSION STREQUAL "5")
+    install(FILES psd.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+endif()
 
 ##################################
 
 kimageformats_add_plugin(kimg_ras SOURCES ras.cpp)
-install(FILES ras.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+if (QT_MAJOR_VERSION STREQUAL "5")
+    install(FILES ras.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+endif()
 
 ##################################
 
 kimageformats_add_plugin(kimg_rgb SOURCES rgb.cpp)
-install(FILES rgb.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+if (QT_MAJOR_VERSION STREQUAL "5")
+    install(FILES rgb.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+endif()
 
 ##################################
 
 kimageformats_add_plugin(kimg_tga SOURCES tga.cpp)
-install(FILES tga.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+if (QT_MAJOR_VERSION STREQUAL "5")
+    install(FILES tga.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+endif()
 
 ##################################
 
 kimageformats_add_plugin(kimg_xcf SOURCES xcf.cpp)
-install(FILES xcf.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+if (QT_MAJOR_VERSION STREQUAL "5")
+    install(FILES xcf.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+endif()
+
+##################################
+
+if (LibRaw_FOUND)
+    kimageformats_add_plugin(kimg_raw SOURCES raw.cpp)
+    kde_enable_exceptions()
+    target_link_libraries(kimg_raw LibRaw::LibRaw)
+    if (QT_MAJOR_VERSION STREQUAL "5")
+        install(FILES raw.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+    endif()
+endif()
 
 ##################################
 
@@ -134,10 +179,14 @@ if (KF5Archive_FOUND)
 
     kimageformats_add_plugin(kimg_kra SOURCES kra.cpp)
     target_link_libraries(kimg_kra KF5::Archive)
-    install(FILES kra.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+    if (QT_MAJOR_VERSION STREQUAL "5")
+        install(FILES kra.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+    endif()
 
     kimageformats_add_plugin(kimg_ora SOURCES ora.cpp)
     target_link_libraries(kimg_ora KF5::Archive)
-    install(FILES ora.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+    if (QT_MAJOR_VERSION STREQUAL "5")
+        install(FILES ora.desktop DESTINATION ${KDE_INSTALL_KSERVICESDIR}/qimageioplugins/)
+    endif()
 
 endif()

@@ -8,6 +8,7 @@
 */
 
 #include "exr_p.h"
+#include "util_p.h"
 
 #include <IexThrowErrnoExc.h>
 #include <ImathBox.h>
@@ -191,7 +192,7 @@ bool EXRHandler::read(QImage *outImage)
         width = dw.max.x - dw.min.x + 1;
         height = dw.max.y - dw.min.y + 1;
 
-        QImage image(width, height, QImage::Format_RGB32);
+        QImage image = imageAlloc(width, height, QImage::Format_RGB32);
         if (image.isNull()) {
             qWarning() << "Failed to allocate image, invalid size?" << QSize(width, height);
             return false;
