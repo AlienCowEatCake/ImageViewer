@@ -16,6 +16,7 @@ THIRDPARTY_LIBJXL_CONFIG_PATH = $${PWD}/config
 include(../CommonSettings.pri)
 include(../brotli/brotli.pri)
 include(../highway/highway.pri)
+include(../LittleCMS2/LittleCMS2.pri)
 
 INCLUDEPATH = \
     $${THIRDPARTY_LIBJXL_PATH}/lib/include \

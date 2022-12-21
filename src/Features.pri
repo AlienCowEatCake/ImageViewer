@@ -495,7 +495,7 @@ disable_cxx11 : !system_flif {
 #    disable_libjxl
 #    system_libjxl
 !system_libjxl {
-    disable_cxx11 | disable_brotli | disable_highway {
+    disable_cxx11 | disable_brotli | disable_highway | disable_liblcms2 {
         CONFIG += disable_libjxl
     }
 }
