@@ -25,9 +25,6 @@ INCLUDEPATH = \
     $${INCLUDEPATH}
 
 DEFINES += JPEGXL_MAJOR_VERSION=0 JPEGXL_MINOR_VERSION=7 JPEGXL_PATCH_VERSION=0
-# @todo Begin workaround for old highway
-!system_highway: DEFINES += VFromD=Vec
-# @todo End workaround for old highway
 
 # find ./lib/jxl -name '*.cc' | egrep -v '(_test|_gbench)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBJXL_PATH}| ; s|$| \\|'
 SOURCES += \

@@ -1,17 +1,18 @@
-From 21714935145c98eea7bbf603c73ac94afdf359a8 Mon Sep 17 00:00:00 2001
+From 6dd57c3f13ac7123a05fb82550bd0941faf6772d Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Tue, 30 Nov 2021 15:30:06 +0700
 Subject: [PATCH 2/2] Fix build with old GCC
 
 ---
  hwy/nanobenchmark.cc | 42 +++++++++++++++++++-----------------------
- 1 file changed, 19 insertions(+), 23 deletions(-)
+ hwy/print.cc         |  8 ++++----
+ 2 files changed, 23 insertions(+), 27 deletions(-)
 
 diff --git a/hwy/nanobenchmark.cc b/hwy/nanobenchmark.cc
-index d754e61..6d434db 100644
+index 89f73a4..0de7838 100644
 --- a/hwy/nanobenchmark.cc
 +++ b/hwy/nanobenchmark.cc
-@@ -515,10 +515,9 @@ timer::Ticks SampleUntilStable(const double max_rel_mad, double* rel_mad,
+@@ -550,10 +550,9 @@ timer::Ticks SampleUntilStable(const double max_rel_mad, double* rel_mad,
  
      if (*rel_mad <= max_rel_mad || abs_mad <= max_abs_mad) {
        if (p.verbose) {
@@ -25,7 +26,7 @@ index d754e61..6d434db 100644
                 *rel_mad * 100.0);
        }
        return est;
-@@ -526,10 +525,9 @@ timer::Ticks SampleUntilStable(const double max_rel_mad, double* rel_mad,
+@@ -561,10 +560,9 @@ timer::Ticks SampleUntilStable(const double max_rel_mad, double* rel_mad,
    }
  
    if (p.verbose) {
@@ -38,7 +39,7 @@ index d754e61..6d434db 100644
    }
    return est;
  }
-@@ -566,11 +564,10 @@ size_t NumSkip(const Func func, const uint8_t* arg, const InputVec& unique,
+@@ -601,11 +599,10 @@ size_t NumSkip(const Func func, const uint8_t* arg, const InputVec& unique,
            ? 0
            : static_cast<size_t>((max_skip + min_duration - 1) / min_duration);
    if (p.verbose) {
@@ -54,7 +55,7 @@ index d754e61..6d434db 100644
    }
    return num_skip;
  }
-@@ -697,19 +694,18 @@ size_t Measure(const Func func, const uint8_t* arg, const FuncInput* inputs,
+@@ -733,19 +730,18 @@ HWY_DLLEXPORT size_t Measure(const Func func, const uint8_t* arg,
    const timer::Ticks overhead = Overhead(arg, &full, p);
    const timer::Ticks overhead_skip = Overhead(arg, &subset, p);
    if (overhead < overhead_skip) {
@@ -82,7 +83,7 @@ index d754e61..6d434db 100644
    }
  
    double max_rel_mad = 0.0;
-@@ -721,8 +717,8 @@ size_t Measure(const Func func, const uint8_t* arg, const FuncInput* inputs,
+@@ -757,8 +753,8 @@ HWY_DLLEXPORT size_t Measure(const Func func, const uint8_t* arg,
          TotalDuration(func, arg, &subset, p, &max_rel_mad);
  
      if (total < total_skip) {
@@ -93,6 +94,35 @@ index d754e61..6d434db 100644
        return 0;
      }
  
+diff --git a/hwy/print.cc b/hwy/print.cc
+index 0b52cde..3676e18 100644
+--- a/hwy/print.cc
++++ b/hwy/print.cc
+@@ -74,11 +74,11 @@ HWY_DLLEXPORT void ToString(const TypeInfo& info, const void* ptr,
+     } else if (info.is_signed) {
+       int64_t value;
+       CopyBytes<8>(ptr, &value);
+-      snprintf(string100, 100, "%" PRIi64 "", value);  // NOLINT
++      snprintf(string100, 100, "%lld", static_cast<long long>(value));  // NOLINT
+     } else {
+       uint64_t value;
+       CopyBytes<8>(ptr, &value);
+-      snprintf(string100, 100, "%" PRIu64 "", value);  // NOLINT
++      snprintf(string100, 100, "%llu", static_cast<unsigned long long>(value));  // NOLINT
+     }
+   }
+ }
+@@ -94,8 +94,8 @@ HWY_DLLEXPORT void PrintArray(const TypeInfo& info, const char* caption,
+   const intptr_t lane = intptr_t(lane_u);
+   const size_t begin = static_cast<size_t>(HWY_MAX(0, lane - 2));
+   const size_t end = HWY_MIN(begin + max_lanes, N);
+-  fprintf(stderr, "%s %s [%" PRIu64 "+ ->]:\n  ", type_name, caption,
+-          static_cast<uint64_t>(begin));
++  fprintf(stderr, "%s %s [%llu+ ->]:\n  ", type_name, caption,
++          static_cast<unsigned long long>(begin));
+   for (size_t i = begin; i < end; ++i) {
+     const void* ptr = array_bytes + i * info.sizeof_t;
+     char str[100];
 -- 
-2.34.0
+2.30.2
 
