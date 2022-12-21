@@ -1,20 +1,20 @@
-From 3ab066b8472f57538220d49dcf834e1ff568028d Mon Sep 17 00:00:00 2001
+From a14fc11165d01f0a3e14cfc0d282e999492ab232 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 19 Dec 2020 20:24:59 +0700
-Subject: [PATCH 1/2] Fix MSVC crash on static build
+Subject: [PATCH] Fix MSVC crash on static build
 
 ---
  libheif/heif_plugin_registry.cc | 12 ++++++++++--
  1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/libheif/heif_plugin_registry.cc b/libheif/heif_plugin_registry.cc
-index 15a7cf7..f1bce8e 100644
+index 58b03fd..559cafa 100644
 --- a/libheif/heif_plugin_registry.cc
 +++ b/libheif/heif_plugin_registry.cc
-@@ -72,9 +72,15 @@ std::set<std::unique_ptr<struct heif_encoder_descriptor>,
-          encoder_descriptor_priority_order> s_encoder_descriptors;
+@@ -66,14 +66,20 @@ std::multiset<std::unique_ptr<struct heif_encoder_descriptor>,
  
- 
+ // Note: we cannot move this to 'heif_init' because we have to make sure that this is initialized
+ // AFTER the two global std::set above.
 -static class Register_Default_Plugins
 +class Register_Default_Plugins
  {
@@ -27,17 +27,14 @@ index 15a7cf7..f1bce8e 100644
 +private:
    Register_Default_Plugins()
    {
- #if HAVE_LIBDE265
-@@ -101,7 +107,7 @@ public:
-     heif::register_decoder(get_decoder_plugin_dav1d());
- #endif
+     register_default_plugins();
    }
 -} dummy;
 +};
  
  
- void heif::register_decoder(const heif_decoder_plugin* decoder_plugin)
-@@ -119,6 +125,7 @@ const struct heif_decoder_plugin* heif::get_decoder(enum heif_compression_format
+ void heif::register_default_plugins()
+@@ -123,6 +129,7 @@ const struct heif_decoder_plugin* heif::get_decoder(enum heif_compression_format
    int highest_priority = 0;
    const struct heif_decoder_plugin* best_plugin = nullptr;
  
@@ -45,7 +42,7 @@ index 15a7cf7..f1bce8e 100644
    for (const auto* plugin : s_decoder_plugins) {
      int priority = plugin->does_support_format(type);
      if (priority > highest_priority) {
-@@ -161,6 +168,7 @@ heif::get_filtered_encoder_descriptors(enum heif_compression_format format,
+@@ -165,6 +172,7 @@ heif::get_filtered_encoder_descriptors(enum heif_compression_format format,
  {
    std::vector<const struct heif_encoder_descriptor*> filtered_descriptors;
  
@@ -54,5 +51,5 @@ index 15a7cf7..f1bce8e 100644
      const struct heif_encoder_plugin* plugin = descr->plugin;
  
 -- 
-2.20.1
+2.30.2
 

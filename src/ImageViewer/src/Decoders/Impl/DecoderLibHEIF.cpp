@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -41,6 +41,9 @@
 
 #if defined (LIBHEIF_NUMERIC_VERSION) && (LIBHEIF_NUMERIC_VERSION >= 0x01030000)
 #define USE_STREAM_READER_API
+#endif
+#if defined (LIBHEIF_HAVE_VERSION) && (LIBHEIF_HAVE_VERSION(1, 13, 0))
+#define USE_LIBHEIF_INIT_API
 #endif
 
 namespace
@@ -86,6 +89,9 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
         return QImage();
     }
 
+#if defined (USE_LIBHEIF_INIT_API)
+    heif_init(Q_NULLPTR);
+#endif
     heif_context *ctx = heif_context_alloc();
     heif_reader reader;
     memset(&reader, 0, sizeof(heif_reader));
@@ -100,6 +106,9 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     if(!inBuffer.isValid())
         return QImage();
 
+#if defined (USE_LIBHEIF_INIT_API)
+    heif_init(Q_NULLPTR);
+#endif
     heif_context *ctx = heif_context_alloc();
     heif_error error = heif_context_read_from_memory(ctx, inBuffer.dataAs<const void*>(), inBuffer.sizeAs<size_t>(), Q_NULLPTR);
 #endif
@@ -107,6 +116,9 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     {
         qWarning() << "Can't read:" << error.message;
         heif_context_free(ctx);
+#if defined (USE_LIBHEIF_INIT_API)
+        heif_deinit();
+#endif
         return QImage();
     }
 
@@ -116,6 +128,9 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     {
         qWarning() << "Can't get primary image handle:" << error.message;
         heif_context_free(ctx);
+#if defined (USE_LIBHEIF_INIT_API)
+        heif_deinit();
+#endif
         return QImage();
     }
 
@@ -132,6 +147,9 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
         qWarning() << "Can't decode image:" << error.message;
         heif_image_handle_release(handle);
         heif_context_free(ctx);
+#if defined (USE_LIBHEIF_INIT_API)
+        heif_deinit();
+#endif
         return QImage();
     }
 
@@ -148,6 +166,9 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
         heif_image_release(img);
         heif_image_handle_release(handle);
         heif_context_free(ctx);
+#if defined (USE_LIBHEIF_INIT_API)
+        heif_deinit();
+#endif
         return QImage();
     }
 
@@ -197,6 +218,9 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     heif_image_release(img);
     heif_image_handle_release(handle);
     heif_context_free(ctx);
+#if defined (USE_LIBHEIF_INIT_API)
+    heif_deinit();
+#endif
     return PayloadWithMetaData<QImage>(result, metaData);
 }
 
