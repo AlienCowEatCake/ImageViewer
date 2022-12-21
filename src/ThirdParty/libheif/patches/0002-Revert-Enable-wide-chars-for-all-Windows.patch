@@ -1,0 +1,79 @@
+From 63cbc4f49a2a350caa7c8d5f62ce474d6df4289a Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Wed, 21 Dec 2022 23:23:25 +0700
+Subject: [PATCH 2/2] Revert "Enable wide chars for all Windows"
+
+This reverts commit 0d7c5a181905eeb6b5bc2c8f91012a2abb0c5bfc.
+---
+ libheif/heif.cc      | 2 +-
+ libheif/heif_file.cc | 8 ++++----
+ libheif/heif_file.h  | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/libheif/heif.cc b/libheif/heif.cc
+index 955f129..3e0fff9 100644
+--- a/libheif/heif.cc
++++ b/libheif/heif.cc
+@@ -1674,7 +1674,7 @@ static struct heif_error heif_file_writer_write(struct heif_context* ctx,
+ {
+   const char* filename = static_cast<const char*>(userdata);
+ 
+-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
++#ifdef _MSC_VER
+   std::ofstream ostr(HeifFile::convert_utf8_path_to_utf16(filename).c_str(), std::ios_base::binary);
+ #else
+   std::ofstream ostr(filename, std::ios_base::binary);
+diff --git a/libheif/heif_file.cc b/libheif/heif_file.cc
+index efbc662..ca6fc6e 100644
+--- a/libheif/heif_file.cc
++++ b/libheif/heif_file.cc
+@@ -27,13 +27,13 @@
+ #include <cstring>
+ #include <cassert>
+ 
+-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
++#ifdef _MSC_VER
+ 
+ #ifndef NOMINMAX
+ #define NOMINMAX 1
+ #endif
+ 
+-#include <windows.h>
++#include <Windows.h>
+ #endif
+ 
+ #include "metadata_compression.h"
+@@ -62,7 +62,7 @@ std::vector<heif_item_id> HeifFile::get_item_IDs() const
+ 
+ Error HeifFile::read_from_file(const char* input_filename)
+ {
+-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
++#ifdef _MSC_VER
+   auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(convert_utf8_path_to_utf16(input_filename).c_str(), std::ios_base::binary));
+ #else
+   auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(input_filename, std::ios_base::binary));
+@@ -955,7 +955,7 @@ void HeifFile::set_hdlr_library_info(const std::string& encoder_plugin_version)
+ }
+ 
+ 
+-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
++#ifdef _MSC_VER
+ std::wstring HeifFile::convert_utf8_path_to_utf16(std::string str)
+ {
+   std::wstring ret;
+diff --git a/libheif/heif_file.h b/libheif/heif_file.h
+index 96ed182..7b9afed 100644
+--- a/libheif/heif_file.h
++++ b/libheif/heif_file.h
+@@ -158,7 +158,7 @@ namespace heif {
+     // TODO: the hdlr box is probably not the right place for this. Into which box should we write comments?
+     void set_hdlr_library_info(const std::string& encoder_plugin_version);
+ 
+-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
++#ifdef _MSC_VER
+     static std::wstring convert_utf8_path_to_utf16(std::string pathutf8);
+ #endif
+ 
+-- 
+2.30.2
+
