@@ -1,4 +1,4 @@
-From 1f79c5645b4c43ce7c381c545a04a243df9af7c7 Mon Sep 17 00:00:00 2001
+From a2b137c4ba17cab6887646f0edad796eef0aa521 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Tue, 29 Dec 2020 17:43:53 +0700
 Subject: [PATCH] Fix build with MinGW 3.4.2
@@ -9,59 +9,61 @@ Subject: [PATCH] Fix build with MinGW 3.4.2
  2 files changed, 23 insertions(+), 6 deletions(-)
 
 diff --git a/libtiff/tif_lzw.c b/libtiff/tif_lzw.c
-index 096824d2..f612a42f 100644
+index ba75a07e..85121f7d 100644
 --- a/libtiff/tif_lzw.c
 +++ b/libtiff/tif_lzw.c
-@@ -338,11 +338,11 @@ LZWPreDecode(TIFF* tif, uint16_t s)
-                                                  (((uint64_t)bp[7]))
- #  endif
+@@ -346,13 +346,13 @@ static int LZWPreDecode(TIFF *tif, uint16_t s)
+                (((uint64_t)bp[6]) << 8) | (((uint64_t)bp[7]))
+ #endif
  #elif SIZEOF_WORDTYPE == 4
--#  if defined(__GNUC__) && defined(__i386__)
-+#  if defined(__GNUC__) && defined(__i386__) && !(defined(__MINGW32__) && (__GNUC__ < 4))
- #    define GetNextData(nextdata, bp) nextdata = __builtin_bswap32(*(uint32_t*)(bp))
--#  elif defined(_M_X86)
-+#  elif defined(_M_X86) && !(defined(__MINGW32__) && (__GNUC__ < 4))
- #    define GetNextData(nextdata, bp) nextdata = _byteswap_ulong(*(unsigned long*)(bp))
--#  elif defined(__GNUC__)
-+#  elif defined(__GNUC__) && !(defined(__MINGW32__) && (__GNUC__ < 4))
- #    define GetNextData(nextdata, bp) memcpy(&nextdata, bp, sizeof(nextdata)); \
-                                       nextdata = __builtin_bswap32(nextdata)
- #  else
+-#if defined(__GNUC__) && defined(__i386__)
++#if defined(__GNUC__) && defined(__i386__) && !(defined(__MINGW32__) && (__GNUC__ < 4))
+ #define GetNextData(nextdata, bp)                                              \
+     nextdata = __builtin_bswap32(*(uint32_t *)(bp))
+-#elif defined(_M_X86)
++#elif defined(_M_X86) && !(defined(__MINGW32__) && (__GNUC__ < 4))
+ #define GetNextData(nextdata, bp)                                              \
+     nextdata = _byteswap_ulong(*(unsigned long *)(bp))
+-#elif defined(__GNUC__)
++#elif defined(__GNUC__) && !(defined(__MINGW32__) && (__GNUC__ < 4))
+ #define GetNextData(nextdata, bp)                                              \
+     memcpy(&nextdata, bp, sizeof(nextdata));                                   \
+     nextdata = __builtin_bswap32(nextdata)
 diff --git a/libtiff/tif_win32.c b/libtiff/tif_win32.c
-index d617a0f4..7ceb0bfd 100644
+index 8b476506..6cedc220 100644
 --- a/libtiff/tif_win32.c
 +++ b/libtiff/tif_win32.c
-@@ -157,10 +157,27 @@ static uint64_t
- _tiffSizeProc(thandle_t fd)
+@@ -148,10 +148,27 @@ static int _tiffCloseProc(thandle_t fd) { return (CloseHandle(fd) ? 0 : -1); }
+ static uint64_t _tiffSizeProc(thandle_t fd)
  {
- 	LARGE_INTEGER m;
--	if (GetFileSizeEx(fd,&m))
--		return(m.QuadPart);
-+	uint64 result;
-+	HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
-+	typedef BOOL(WINAPI* GetFileSizeEx_t)(HANDLE, PLARGE_INTEGER);
-+	GetFileSizeEx_t GetFileSizeEx_f = (GetFileSizeEx_t)(GetProcAddress(hKernel32, "GetFileSizeEx"));
-+	if (GetFileSizeEx_f)
-+	{
-+		if (GetFileSizeEx_f(fd, &m))
-+			result = (uint64)m.QuadPart;
-+		else
-+			result = 0;
-+	}
- 	else
--		return(0);
-+	{
-+		m.LowPart = GetFileSize(fd, (LPDWORD)(&m.HighPart));
-+		if (m.LowPart != INVALID_FILE_SIZE)
-+			result = (uint64)m.QuadPart;
-+		else
-+			result = 0;
-+	}
-+	FreeLibrary(hKernel32);
-+	return (result);
+     LARGE_INTEGER m;
+-    if (GetFileSizeEx(fd, &m))
+-        return (m.QuadPart);
++    uint64 result;
++    HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
++    typedef BOOL(WINAPI* GetFileSizeEx_t)(HANDLE, PLARGE_INTEGER);
++    GetFileSizeEx_t GetFileSizeEx_f = (GetFileSizeEx_t)(GetProcAddress(hKernel32, "GetFileSizeEx"));
++    if (GetFileSizeEx_f)
++    {
++        if (GetFileSizeEx_f(fd, &m))
++            result = (uint64)m.QuadPart;
++        else
++            result = 0;
++    }
+     else
+-        return (0);
++    {
++        m.LowPart = GetFileSize(fd, (LPDWORD)(&m.HighPart));
++        if (m.LowPart != INVALID_FILE_SIZE)
++            result = (uint64)m.QuadPart;
++        else
++            result = 0;
++    }
++    FreeLibrary(hKernel32);
++    return (result);
  }
  
- static int
+ static int _tiffDummyMapProc(thandle_t fd, void **pbase, toff_t *psize)
 -- 
-2.37.1
+2.30.2
 

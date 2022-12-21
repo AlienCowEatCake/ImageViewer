@@ -10,7 +10,7 @@ TARGET = tp_libtiff
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.4.0
+THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.5.0
 THIRDPARTY_LIBTIFF_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -33,6 +33,7 @@ DEFINES += TIFF_PREFIX DISABLE_CHECK_TIFFSWABMACROS
 *msvc*: DEFINES += inline=__inline
 win32:  DEFINES += TIF_PLATFORM_CONSOLE
 
+# find ./libtiff -name '*.c' | egrep -v '(/mkg3states|/tif_win32|/tif_unix|/tif_jpeg_12)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBTIFF_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_aux.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_close.c \
@@ -50,9 +51,9 @@ SOURCES += \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_fax3sm.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_flush.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_getimage.c \
+    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_hash_set.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_jbig.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_jpeg.c \
-\#    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_jpeg_12.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_lerc.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_luv.c \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_lzma.c \
@@ -84,10 +85,12 @@ win32 {
         $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_unix.c
 }
 
+# find ./libtiff -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBTIFF_PATH}| ; s|$| \\|'
 HEADERS += \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/t4.h \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_dir.h \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_fax3.h \
+    $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_hash_set.h \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tif_predict.h \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tiff.h \
     $${THIRDPARTY_LIBTIFF_PATH}/libtiff/tiffio.h \

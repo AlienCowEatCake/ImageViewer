@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libtiff {
 
-        THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.4.0
+        THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.5.0
         THIRDPARTY_LIBTIFF_CONFIG_PATH = $${PWD}/config
 
         INCLUDEPATH += $${THIRDPARTY_LIBTIFF_CONFIG_PATH} $${THIRDPARTY_LIBTIFF_PATH}/libtiff

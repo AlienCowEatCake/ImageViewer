@@ -2,6 +2,7 @@
 #define TP_TIFF_PREFIX_H_INCLUDED
 
 #define TIFFOpenW tp_TIFFOpenW
+#define TIFFOpenWExt tp_TIFFOpenWExt
 
 /*
 Linux:
@@ -20,12 +21,14 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define LogLuv32fromXYZ tp_LogLuv32fromXYZ
 #define LogLuv32toXYZ tp_LogLuv32toXYZ
 #define TIFFAccessTagMethods tp_TIFFAccessTagMethods
+#define TIFFCIELab16ToXYZ tp_TIFFCIELab16ToXYZ
 #define TIFFCIELabToRGBInit tp_TIFFCIELabToRGBInit
 #define TIFFCIELabToXYZ tp_TIFFCIELabToXYZ
 #define TIFFCheckTile tp_TIFFCheckTile
 #define TIFFCheckpointDirectory tp_TIFFCheckpointDirectory
 #define TIFFCleanup tp_TIFFCleanup
 #define TIFFClientOpen tp_TIFFClientOpen
+#define TIFFClientOpenExt tp_TIFFClientOpenExt
 #define TIFFClientdata tp_TIFFClientdata
 #define TIFFClose tp_TIFFClose
 #define TIFFComputeStrip tp_TIFFComputeStrip
@@ -46,12 +49,14 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define TIFFDeferStrileArrayWriting tp_TIFFDeferStrileArrayWriting
 #define TIFFError tp_TIFFError
 #define TIFFErrorExt tp_TIFFErrorExt
+#define TIFFErrorExtR tp_TIFFErrorExtR
 #define TIFFFaxBlackCodes tp_TIFFFaxBlackCodes
 #define TIFFFaxBlackTable tp_TIFFFaxBlackTable
 #define TIFFFaxMainTable tp_TIFFFaxMainTable
 #define TIFFFaxWhiteCodes tp_TIFFFaxWhiteCodes
 #define TIFFFaxWhiteTable tp_TIFFFaxWhiteTable
 #define TIFFFdOpen tp_TIFFFdOpen
+#define TIFFFdOpenExt tp_TIFFFdOpenExt
 #define TIFFFieldDataType tp_TIFFFieldDataType
 #define TIFFFieldIsAnonymous tp_TIFFFieldIsAnonymous
 #define TIFFFieldName tp_TIFFFieldName
@@ -94,6 +99,11 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define TIFFGetUnmapFileProc tp_TIFFGetUnmapFileProc
 #define TIFFGetVersion tp_TIFFGetVersion
 #define TIFFGetWriteProc tp_TIFFGetWriteProc
+#define TIFFHashSetDestroy tp_TIFFHashSetDestroy
+#define TIFFHashSetInsert tp_TIFFHashSetInsert
+#define TIFFHashSetLookup tp_TIFFHashSetLookup
+#define TIFFHashSetNew tp_TIFFHashSetNew
+#define TIFFHashSetRemove tp_TIFFHashSetRemove
 #define TIFFInitCCITTFax3 tp_TIFFInitCCITTFax3
 #define TIFFInitCCITTFax4 tp_TIFFInitCCITTFax4
 #define TIFFInitCCITTRLE tp_TIFFInitCCITTRLE
@@ -127,6 +137,12 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define TIFFNumberOfStrips tp_TIFFNumberOfStrips
 #define TIFFNumberOfTiles tp_TIFFNumberOfTiles
 #define TIFFOpen tp_TIFFOpen
+#define TIFFOpenExt tp_TIFFOpenExt
+#define TIFFOpenOptionsAlloc tp_TIFFOpenOptionsAlloc
+#define TIFFOpenOptionsFree tp_TIFFOpenOptionsFree
+#define TIFFOpenOptionsSetErrorHandlerExtR tp_TIFFOpenOptionsSetErrorHandlerExtR
+#define TIFFOpenOptionsSetMaxSingleMemAlloc tp_TIFFOpenOptionsSetMaxSingleMemAlloc
+#define TIFFOpenOptionsSetWarningHandlerExtR tp_TIFFOpenOptionsSetWarningHandlerExtR
 #define TIFFPredictorCleanup tp_TIFFPredictorCleanup
 #define TIFFPredictorInit tp_TIFFPredictorInit
 #define TIFFPrintDirectory tp_TIFFPrintDirectory
@@ -206,6 +222,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define TIFFVTileSize64 tp_TIFFVTileSize64
 #define TIFFWarning tp_TIFFWarning
 #define TIFFWarningExt tp_TIFFWarningExt
+#define TIFFWarningExtR tp_TIFFWarningExtR
 #define TIFFWriteBufferSetup tp_TIFFWriteBufferSetup
 #define TIFFWriteCheck tp_TIFFWriteCheck
 #define TIFFWriteCustomDirectory tp_TIFFWriteCustomDirectory
@@ -222,17 +239,20 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define XYZtoRGB24 tp_XYZtoRGB24
 #define _TIFFBuiltinCODECS tp__TIFFBuiltinCODECS
 #define _TIFFCastUInt64ToSSize tp__TIFFCastUInt64ToSSize
+#define _TIFFCheckDirNumberAndOffset tp__TIFFCheckDirNumberAndOffset
 #define _TIFFCheckFieldIsValidForCodec tp__TIFFCheckFieldIsValidForCodec
 #define _TIFFCheckMalloc tp__TIFFCheckMalloc
 #define _TIFFCheckRealloc tp__TIFFCheckRealloc
 #define _TIFFClampDoubleToFloat tp__TIFFClampDoubleToFloat
+#define _TIFFClampDoubleToUInt32 tp__TIFFClampDoubleToUInt32
 #define _TIFFCreateAnonField tp__TIFFCreateAnonField
-#define _TIFFDataSize tp__TIFFDataSize
 #define _TIFFDefaultStripSize tp__TIFFDefaultStripSize
 #define _TIFFDefaultTileSize tp__TIFFDefaultTileSize
+#define _TIFFErrorEarly tp__TIFFErrorEarly
 #define _TIFFFax3fillruns tp__TIFFFax3fillruns
 #define _TIFFFillStriles tp__TIFFFillStriles
 #define _TIFFFindOrRegisterField tp__TIFFFindOrRegisterField
+#define _TIFFGetDirNumberFromOffset tp__TIFFGetDirNumberFromOffset
 #define _TIFFGetExifFields tp__TIFFGetExifFields
 #define _TIFFGetFields tp__TIFFGetFields
 #define _TIFFGetGpsFields tp__TIFFGetGpsFields
@@ -256,7 +276,6 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define _TIFFRewriteField tp__TIFFRewriteField
 #define _TIFFSeekOK tp__TIFFSeekOK
 #define _TIFFSetDefaultCompressionState tp__TIFFSetDefaultCompressionState
-#define _TIFFSetGetFieldSize tp__TIFFSetGetFieldSize
 #define _TIFFSetupFields tp__TIFFSetupFields
 #define _TIFFSwab16BitData tp__TIFFSwab16BitData
 #define _TIFFSwab24BitData tp__TIFFSwab24BitData
@@ -265,23 +284,31 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define _TIFFUInt64ToDouble tp__TIFFUInt64ToDouble
 #define _TIFFUInt64ToFloat tp__TIFFUInt64ToFloat
 #define _TIFFcalloc tp__TIFFcalloc
+#define _TIFFcallocExt tp__TIFFcallocExt
 #define _TIFFerrorHandler tp__TIFFerrorHandler
 #define _TIFFerrorHandlerExt tp__TIFFerrorHandlerExt
 #define _TIFFfree tp__TIFFfree
+#define _TIFFfreeExt tp__TIFFfreeExt
 #define _TIFFgetMode tp__TIFFgetMode
 #define _TIFFmalloc tp__TIFFmalloc
+#define _TIFFmallocExt tp__TIFFmallocExt
 #define _TIFFmemcmp tp__TIFFmemcmp
 #define _TIFFmemcpy tp__TIFFmemcpy
 #define _TIFFmemset tp__TIFFmemset
 #define _TIFFprintAscii tp__TIFFprintAscii
 #define _TIFFprintAsciiTag tp__TIFFprintAsciiTag
 #define _TIFFrealloc tp__TIFFrealloc
+#define _TIFFreallocExt tp__TIFFreallocExt
 #define _TIFFsetByteArray tp__TIFFsetByteArray
+#define _TIFFsetByteArrayExt tp__TIFFsetByteArrayExt
 #define _TIFFsetDoubleArray tp__TIFFsetDoubleArray
+#define _TIFFsetDoubleArrayExt tp__TIFFsetDoubleArrayExt
 #define _TIFFsetFloatArray tp__TIFFsetFloatArray
+#define _TIFFsetFloatArrayExt tp__TIFFsetFloatArrayExt
 #define _TIFFsetLongArray tp__TIFFsetLongArray
+#define _TIFFsetLongArrayExt tp__TIFFsetLongArrayExt
 #define _TIFFsetShortArray tp__TIFFsetShortArray
-#define _TIFFsetString tp__TIFFsetString
+#define _TIFFsetShortArrayExt tp__TIFFsetShortArrayExt
 #define _TIFFwarningHandler tp__TIFFwarningHandler
 #define _TIFFwarningHandlerExt tp__TIFFwarningHandlerExt
 #define uv_decode tp_uv_decode

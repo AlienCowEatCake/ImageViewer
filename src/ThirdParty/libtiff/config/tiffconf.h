@@ -20,28 +20,28 @@
 
 
 /* Signed 16-bit type */
-/* #undef TIFF_INT16_T */
+#define TIFF_INT16_T qint16
 
 /* Signed 32-bit type */
-/* #undef TIFF_INT32_T */
+#define TIFF_INT32_T qint32
 
 /* Signed 64-bit type */
-/* #undef TIFF_INT64_T */
+#define TIFF_INT64_T qint64
 
 /* Signed 8-bit type */
-/* #undef TIFF_INT8_T */
+#define TIFF_INT8_T qint8
 
 /* Unsigned 16-bit type */
-/* #undef TIFF_UINT16_T */
+#define TIFF_UINT16_T quint16
 
 /* Unsigned 32-bit type */
-/* #undef TIFF_UINT32_T */
+#define TIFF_UINT32_T quint32
 
 /* Unsigned 64-bit type */
-/* #undef TIFF_UINT64_T */
+#define TIFF_UINT64_T quint64
 
 /* Unsigned 8-bit type */
-/* #undef TIFF_UINT8_T */
+#define TIFF_UINT8_T quint8
 
 /* Signed size type */
 #if defined(QT_POINTER_SIZE) && (QT_POINTER_SIZE == 4)
