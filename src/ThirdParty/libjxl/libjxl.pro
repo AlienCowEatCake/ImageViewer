@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBJXL_PATH = $${PWD}/libjxl-0.6.1
+THIRDPARTY_LIBJXL_PATH = $${PWD}/libjxl-0.7.0
 THIRDPARTY_LIBJXL_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -23,22 +23,12 @@ INCLUDEPATH = \
     $${THIRDPARTY_LIBJXL_CONFIG_PATH} \
     $${INCLUDEPATH}
 
-DEFINES += JPEGXL_MAJOR_VERSION=0 JPEGXL_MINOR_VERSION=6 JPEGXL_PATCH_VERSION=1
+DEFINES += JPEGXL_MAJOR_VERSION=0 JPEGXL_MINOR_VERSION=7 JPEGXL_PATCH_VERSION=0
+# @todo Begin workaround for old highway
+!system_highway: DEFINES += VFromD=Vec
+# @todo End workaround for old highway
 
-HEADERS += \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/butteraugli.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/butteraugli_cxx.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/codestream_header.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/color_encoding.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/decode.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/decode_cxx.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/encode.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/encode_cxx.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/memory_manager.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/parallel_runner.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/types.h \
-    $${THIRDPARTY_LIBJXL_CONFIG_PATH}/jxl/jxl_export.h
-
+# find ./lib/jxl -name '*.cc' | egrep -v '(_test|_gbench)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBJXL_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/ac_strategy.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/alpha.cc \
@@ -46,16 +36,22 @@ SOURCES += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/aux_out.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/cache_aligned.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/data_parallel.cc \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/descriptive_statistics.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/padded_bytes.cc \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/status.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/random.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/blending.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/box_content_decoder.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/butteraugli/butteraugli.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/butteraugli_wrapper.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/chroma_from_luma.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/coeff_order.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/color_encoding_internal.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/color_management.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/compressed_dc.cc \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/convolve.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/convolve_separable5.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/convolve_separable7.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/convolve_slow.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/convolve_symmetric3.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/convolve_symmetric5.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dct_scales.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_ans.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_cache.cc \
@@ -68,20 +64,54 @@ SOURCES += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_modular.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_noise.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_patch_dictionary.cc \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_reconstruct.cc \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_upsample.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_xyb.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/decode.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/decode_to_jpeg.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_ac_strategy.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_adaptive_quantization.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_ans.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_ar_control_field.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_bit_writer.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_butteraugli_comparator.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_butteraugli_pnorm.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_cache.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_chroma_from_luma.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_cluster.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_coeff_order.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_color_management.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_comparator.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_context_map.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_detect_dots.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_dot_dictionary.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_entropy_coder.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_external_image.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_file.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_frame.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_group.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_heuristics.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_huffman.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_icc_codec.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_image_bundle.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_modular.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_noise.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_patch_dictionary.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_photon_noise.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_quant_weights.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_splines.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_toc.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_transforms.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_xyb.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/encode.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/entropy_coder.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/epf.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fast_dct.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fields.cc \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/filters.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/frame_header.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/gaborish.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/gauss_blur.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/headers.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/huffman_table.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/huffman_tree.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/icc_codec.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/icc_codec_common.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/image.cc \
@@ -89,23 +119,97 @@ SOURCES += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/image_metadata.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/dec_jpeg_data.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/dec_jpeg_data_writer.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/enc_jpeg_data.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/enc_jpeg_data_reader.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/enc_jpeg_huffman_decode.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/jpeg_data.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/linalg.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/loop_filter.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/luminance.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/memory_manager_internal.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/encoding/dec_ma.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/encoding/enc_debug_tree.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/encoding/enc_encoding.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/encoding/enc_ma.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/encoding/encoding.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/modular_image.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/enc_palette.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/enc_rct.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/enc_squeeze.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/enc_transform.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/rct.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/squeeze.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/transform.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/opsin_params.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/optimize.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/passes_state.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/progressive_split.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/quant_weights.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/quantizer.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/low_memory_render_pipeline.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/render_pipeline.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/simple_render_pipeline.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_blending.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_chroma_upsampling.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_epf.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_from_linear.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_gaborish.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_noise.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_patches.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_splines.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_spot.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_to_linear.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_tone_mapping.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_upsampling.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_write.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_xyb.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_ycbcr.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/splines.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/toc.cc \
 
+# find ./lib -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBJXL_PATH}| ; s|$| \\|'
 HEADERS += \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/codec.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/apng.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/color_description.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/color_hints.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/decode.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/exr.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/gif.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/jpg.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/jxl.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/pgx.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/pnm.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/apng.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/encode.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/exr.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/jpg.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/npy.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/pgx.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/pnm.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/exif.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/hlg.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/packed_image.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/packed_image_convert.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/render_hdr.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/time.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/tone_mapping.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/butteraugli.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/butteraugli_cxx.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/cms_interface.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/codestream_header.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/color_encoding.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/decode.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/decode_cxx.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/encode.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/encode_cxx.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/memory_manager.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/parallel_runner.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/resizable_parallel_runner.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/resizable_parallel_runner_cxx.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/thread_parallel_runner.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/thread_parallel_runner_cxx.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/types.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/ac_context.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/ac_strategy.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/alpha.h \
@@ -119,20 +223,25 @@ HEADERS += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/cache_aligned.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/compiler_specific.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/data_parallel.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/descriptive_statistics.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/file_io.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/iaca.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/os_macros.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/override.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/padded_bytes.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/printf_macros.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/profiler.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/robust_statistics.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/random.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/sanitizer_definitions.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/scope_guard.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/span.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/status.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/base/thread_pool_internal.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/blending.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/box_content_decoder.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/butteraugli/butteraugli.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/chroma_from_luma.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/codec_in_out.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/codec_y4m_testonly.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/coeff_order.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/coeff_order_fwd.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/color_encoding_internal.h \
@@ -143,6 +252,7 @@ HEADERS += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/convolve.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dct-inl.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dct_block-inl.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dct_for_test.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dct_scales.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dct_util.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_ans.h \
@@ -156,37 +266,88 @@ HEADERS += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_huffman.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_modular.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_noise.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_params.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_patch_dictionary.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_reconstruct.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_render_pipeline.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_tone_mapping-inl.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_transforms-inl.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_upsample.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_transforms_testonly.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_xyb-inl.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/dec_xyb.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/decode_to_jpeg.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_ac_strategy.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_adaptive_quantization.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_ans.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_ans_params.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_ar_control_field.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_bit_writer.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_butteraugli_comparator.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_butteraugli_pnorm.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_cache.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_chroma_from_luma.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_cluster.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_coeff_order.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_color_management.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_comparator.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_context_map.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_detect_dots.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_dot_dictionary.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_entropy_coder.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_external_image.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_file.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_frame.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_gamma_correct.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_group.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_heuristics.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_huffman.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_icc_codec.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_image_bundle.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_jxl_skcms.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_modular.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_noise.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_params.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_patch_dictionary.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_photon_noise.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_quant_weights.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_splines.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_toc.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_transforms-inl.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_transforms.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_xyb.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/encode_internal.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/entropy_coder.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/epf.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/exif.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fake_parallel_runner_testonly.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fast_dct-inl.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fast_dct.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fast_dct128-inl.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fast_dct16-inl.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fast_dct256-inl.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fast_dct32-inl.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fast_dct64-inl.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fast_dct8-inl.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fast_math-inl.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/field_encodings.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/fields.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/filters.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/filters_internal.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/frame_header.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/gaborish.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/gauss_blur.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/headers.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/huffman_table.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/huffman_tree.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/icc_codec.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/icc_codec_common.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/image.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/image_bundle.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/image_metadata.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/image_ops.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/image_test_utils.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/dec_jpeg_data.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/dec_jpeg_data_writer.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/dec_jpeg_output_chunk.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/dec_jpeg_serialization_state.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/enc_jpeg_data.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/enc_jpeg_data_reader.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/enc_jpeg_huffman_decode.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jpeg/jpeg_data.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/jxl_inspection.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/lehmer_code.h \
@@ -196,29 +357,66 @@ HEADERS += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/memory_manager_internal.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/encoding/context_predict.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/encoding/dec_ma.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/encoding/enc_debug_tree.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/encoding/enc_encoding.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/encoding/enc_ma.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/encoding/encoding.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/encoding/ma_common.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/modular_image.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/options.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/enc_palette.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/enc_rct.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/enc_squeeze.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/enc_transform.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/palette.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/rct.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/squeeze.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/modular/transform/transform.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/noise.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/noise_distributions.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/opsin_params.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/optimize.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/passes_state.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/patch_dictionary_internal.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/progressive_split.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/quant_weights.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/quantizer-inl.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/quantizer.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/rational_polynomial-inl.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/low_memory_render_pipeline.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/render_pipeline.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/render_pipeline_stage.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/simple_render_pipeline.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_blending.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_chroma_upsampling.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_epf.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_from_linear.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_gaborish.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_noise.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_patches.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_splines.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_spot.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_to_linear.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_tone_mapping.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_upsampling.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_write.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_xyb.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/stage_ycbcr.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/render_pipeline/test_render_pipeline_stages.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/sanitizers.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/simd_util-inl.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/size_constraints.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/splines.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/test_image.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/test_utils.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/testdata.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/toc.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/transfer_functions-inl.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/transpose-inl.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/xorshift128plus-inl.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/profiler/profiler.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/profiler/tsc_timer.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/threads/thread_parallel_runner_internal.h \
+    $${THIRDPARTY_LIBJXL_CONFIG_PATH}/jxl/jxl_export.h
 
 TR_EXCLUDE += $${THIRDPARTY_LIBJXL_PATH}/*
 
