@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -174,7 +174,11 @@ private:
             }
             else
             {
+#if defined (LIBRAW_COMPILE_CHECK_VERSION_NOTLESS) && (LIBRAW_COMPILE_CHECK_VERSION_NOTLESS(0, 21))
+                m_dataStream.reset(new LibRaw_bigfile_datastream(filePathLocal8Bit.constData()));
+#else
                 m_dataStream.reset(new LibRaw_file_datastream(filePathLocal8Bit.constData()));
+#endif
             }
 
             m_rawProcessor.set_progress_handler(progressCallback, this);

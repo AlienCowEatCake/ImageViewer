@@ -1,4 +1,4 @@
-From 8a631a17e9aeab3213755d35fbcd0dc7be322db9 Mon Sep 17 00:00:00 2001
+From 4dfb80ebb73fe6c5302e0064f4cfc39aed127ed2 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 20:17:26 +0700
 Subject: [PATCH 1/3] Fix launch on Win98
@@ -8,10 +8,10 @@ Subject: [PATCH 1/3] Fix launch on Win98
  1 file changed, 30 insertions(+), 1 deletion(-)
 
 diff --git a/src/libraw_datastream.cpp b/src/libraw_datastream.cpp
-index 606e5de7..473fc487 100644
+index 898761de..c881672a 100644
 --- a/src/libraw_datastream.cpp
 +++ b/src/libraw_datastream.cpp
-@@ -686,6 +686,35 @@ LibRaw_windows_datastream::~LibRaw_windows_datastream()
+@@ -702,6 +702,35 @@ LibRaw_windows_datastream::~LibRaw_windows_datastream()
      ::CloseHandle(hMap_);
  }
  
@@ -47,7 +47,7 @@ index 606e5de7..473fc487 100644
  void LibRaw_windows_datastream::Open(HANDLE hFile)
  {
    // create a file mapping handle on the file handle
-@@ -694,7 +723,7 @@ void LibRaw_windows_datastream::Open(HANDLE hFile)
+@@ -710,7 +739,7 @@ void LibRaw_windows_datastream::Open(HANDLE hFile)
      throw std::runtime_error("failed to create file mapping");
  
    // now map the whole file base view
@@ -57,5 +57,5 @@ index 606e5de7..473fc487 100644
  
    pView_ = ::MapViewOfFile(hMap_, FILE_MAP_READ, 0, 0, (size_t)cbView_);
 -- 
-2.34.0
+2.30.2
 

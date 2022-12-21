@@ -1,21 +1,20 @@
-From ca945903b71b78d9870e2aa64e3b10794e846e50 Mon Sep 17 00:00:00 2001
+From 19f3666f4eafb7e0a059301f6b8fb51d0089f8ea Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 20:18:16 +0700
 Subject: [PATCH 2/3] Fix build with MinGW 3.4.2
 
 ---
  src/decoders/crx.cpp       | 4 +++-
- src/metadata/tiff.cpp      | 4 ++--
  src/utils/utils_libraw.cpp | 9 +++++++++
- 3 files changed, 14 insertions(+), 3 deletions(-)
+ 2 files changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/src/decoders/crx.cpp b/src/decoders/crx.cpp
-index b5fd1577..6a5a7543 100644
+index 30a70205..63c23589 100644
 --- a/src/decoders/crx.cpp
 +++ b/src/decoders/crx.cpp
 @@ -39,7 +39,9 @@ it under the terms of the one of two licenses as you choose:
  #define CRX_BUF_SIZE 0x10000
- #if !defined(_WIN32) || (defined (__GNUC__) && !defined(__INTRINSIC_SPECIAL__BitScanReverse))  
+ #if !defined(_WIN32) || (defined(__GNUC__) && !defined(__INTRINSIC_SPECIAL__BitScanReverse))
  /* __INTRINSIC_SPECIAL__BitScanReverse found in MinGW32-W64 v7.30 headers, may be there is a better solution? */
 +#if !defined(_WIN32)
  typedef uint32_t DWORD;
@@ -32,28 +31,11 @@ index b5fd1577..6a5a7543 100644
  #endif
  #endif
  
-diff --git a/src/metadata/tiff.cpp b/src/metadata/tiff.cpp
-index cd2406d6..0fe8e118 100644
---- a/src/metadata/tiff.cpp
-+++ b/src/metadata/tiff.cpp
-@@ -241,10 +241,10 @@ int LibRaw::parse_tiff_ifd(int base)
-         }
-         break;
-       case 0x1202:
--        if (ilm.LensID != 0xffffffffffffffff) {
-+        if (ilm.LensID != 0xffffffffffffffffULL) {
-           utmp = (fgetc(ifp) << 8) | fgetc(ifp);
-           if (utmp) ilm.LensID += utmp;
--          else ilm.LensID = 0xffffffffffffffff;
-+          else ilm.LensID = 0xffffffffffffffffULL;
-         }
-         break;
-       case 0x1203: /* 4611, FocalLengthIn35mmFormat, contained in 0x0120
 diff --git a/src/utils/utils_libraw.cpp b/src/utils/utils_libraw.cpp
-index 8228e9f7..47bf5b9f 100644
+index 15a7b655..f608af04 100644
 --- a/src/utils/utils_libraw.cpp
 +++ b/src/utils/utils_libraw.cpp
-@@ -291,6 +291,8 @@ void LibRaw::clearCancelFlag()
+@@ -290,6 +290,8 @@ void LibRaw::clearCancelFlag()
  {
  #ifdef _MSC_VER
    InterlockedExchange(&_exitflag, 0);
@@ -62,7 +44,7 @@ index 8228e9f7..47bf5b9f 100644
  #else
    __sync_fetch_and_and(&_exitflag, 0);
  #endif
-@@ -308,6 +310,8 @@ void LibRaw::setCancelFlag()
+@@ -307,6 +309,8 @@ void LibRaw::setCancelFlag()
  {
  #ifdef _MSC_VER
    InterlockedExchange(&_exitflag, 1);
@@ -71,7 +53,7 @@ index 8228e9f7..47bf5b9f 100644
  #else
    __sync_fetch_and_add(&_exitflag, 1);
  #endif
-@@ -326,6 +330,11 @@ void LibRaw::checkCancel()
+@@ -325,6 +329,11 @@ void LibRaw::checkCancel()
  #ifdef _MSC_VER
    if (InterlockedExchange(&_exitflag, 0))
      throw LIBRAW_EXCEPTION_CANCELLED_BY_CALLBACK;
@@ -84,5 +66,5 @@ index 8228e9f7..47bf5b9f 100644
    if (__sync_fetch_and_and(&_exitflag, 0))
      throw LIBRAW_EXCEPTION_CANCELLED_BY_CALLBACK;
 -- 
-2.34.0
+2.30.2
 

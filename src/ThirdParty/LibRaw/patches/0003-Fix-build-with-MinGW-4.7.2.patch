@@ -1,4 +1,4 @@
-From 2ce348aa349410e681f14ffe67c40f233f78e960 Mon Sep 17 00:00:00 2001
+From e5b4d68ff1fc2f8070ca0883e980eaa8b57ad753 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 20:21:07 +0700
 Subject: [PATCH 3/3] Fix build with MinGW 4.7.2
@@ -8,7 +8,7 @@ Subject: [PATCH 3/3] Fix build with MinGW 4.7.2
  1 file changed, 7 insertions(+)
 
 diff --git a/src/decoders/decoders_dcraw.cpp b/src/decoders/decoders_dcraw.cpp
-index 4642dca6..8abaf3c3 100644
+index 721d3857..a8199710 100644
 --- a/src/decoders/decoders_dcraw.cpp
 +++ b/src/decoders/decoders_dcraw.cpp
 @@ -19,6 +19,13 @@
@@ -26,5 +26,5 @@ index 4642dca6..8abaf3c3 100644
  {
  #ifdef LIBRAW_NOTHREADS
 -- 
-2.34.0
+2.30.2
 
