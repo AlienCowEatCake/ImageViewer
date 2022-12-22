@@ -10,7 +10,7 @@ TARGET = tp_LibWebP
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.2.4
+THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.3.0-rc1
 
 include(../CommonSettings.pri)
 
@@ -26,8 +26,13 @@ INCLUDEPATH = \
     $${THIRDPARTY_LIBWEBP_PATH}/src/webp \
     $${INCLUDEPATH}
 
+# @todo include "src/dsp/cpu.c" in "sharpyuv/sharpyuv_cpu.c"
+DEFINES += VP8GetCPUInfo=SharpYuvGetCPUInfo
+
+# (find ./src -name '*.c' && find ./sharpyuv -name '*.c') | grep -v '_neon' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBWEBP_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_cpu.c \
     $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_csp.c \
     $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_dsp.c \
     $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_gamma.c \
@@ -42,8 +47,8 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/vp8_dec.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/vp8l_dec.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dec/webp_dec.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/demux/demux.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/demux/anim_decode.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/demux/demux.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_mips_dsp_r2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_sse2.c \
@@ -51,7 +56,6 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_mips_dsp_r2.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cpu.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec.c \
@@ -79,6 +83,9 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_mips_dsp_r2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_msa.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_sse2.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_mips_dsp_r2.c \
@@ -92,10 +99,8 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_mips_dsp_r2.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_sse2.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_mips32.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_mips_dsp_r2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_sse41.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/alpha_enc.c \
@@ -109,8 +114,8 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/histogram_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/iterator_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/near_lossless_enc.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_csp_enc.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_psnr_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_rescale_enc.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/enc/picture_tools_enc.c \
@@ -129,18 +134,19 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/bit_writer_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/color_cache_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/filters_utils.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/huffman_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/huffman_encode_utils.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/quant_levels_utils.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/huffman_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/quant_levels_dec_utils.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/quant_levels_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/random_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/rescaler_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/thread_utils.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/utils.c
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/utils.c \
 
 # (find ./src -name '*.h' && find ./sharpyuv -name '*.h') | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBWEBP_PATH}| ; s|$| \\|'
 HEADERS += \
     $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_cpu.h \
     $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_csp.h \
     $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_dsp.h \
     $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_gamma.h \
@@ -199,9 +205,11 @@ integrity {
     QMAKE_CFLAGS += -c99
 }
 
+# (find ./src -name '*.c' && find ./sharpyuv -name '*.c') | grep '_neon' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBWEBP_PATH}| ; s|$| \\|'
 SOURCES_FOR_NEON += \
     $${THIRDPARTY_LIBWEBP_PATH}/sharpyuv/sharpyuv_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/alpha_processing_neon.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/cost_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/dec_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/enc_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/filters_neon.c \
@@ -209,7 +217,7 @@ SOURCES_FOR_NEON += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/rescaler_neon.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/upsampling_neon.c \
-    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_neon.c
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/yuv_neon.c \
 
 android {
     arm64-v8a | armeabi-v7a: SOURCES += $$SOURCES_FOR_NEON
