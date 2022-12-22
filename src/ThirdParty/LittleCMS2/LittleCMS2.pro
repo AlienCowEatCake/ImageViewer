@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBLCMS2_PATH = $${PWD}/lcms2-2.13.1
+THIRDPARTY_LIBLCMS2_PATH = $${PWD}/lcms2-2.14
 
 include(../CommonSettings.pri)
 
@@ -20,6 +20,7 @@ include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LIBLCMS2_PATH}/include $${THIRDPARTY_LIBLCMS2_PATH}/src $${INCLUDEPATH}
 
+# (find ./src -name '*.c') | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBLCMS2_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBLCMS2_PATH}/src/cmsalpha.c \
     $${THIRDPARTY_LIBLCMS2_PATH}/src/cmscam02.c \
@@ -46,12 +47,13 @@ SOURCES += \
     $${THIRDPARTY_LIBLCMS2_PATH}/src/cmstypes.c \
     $${THIRDPARTY_LIBLCMS2_PATH}/src/cmsvirt.c \
     $${THIRDPARTY_LIBLCMS2_PATH}/src/cmswtpnt.c \
-    $${THIRDPARTY_LIBLCMS2_PATH}/src/cmsxform.c
+    $${THIRDPARTY_LIBLCMS2_PATH}/src/cmsxform.c \
 
+# (find ./src -name '*.h' && find ./include -name '*.h') | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBLCMS2_PATH}| ; s|$| \\|'
 HEADERS += \
     $${THIRDPARTY_LIBLCMS2_PATH}/include/lcms2.h \
     $${THIRDPARTY_LIBLCMS2_PATH}/include/lcms2_plugin.h \
-    $${THIRDPARTY_LIBLCMS2_PATH}/src/lcms2_internal.h
+    $${THIRDPARTY_LIBLCMS2_PATH}/src/lcms2_internal.h \
 
 TR_EXCLUDE += $${THIRDPARTY_LIBLCMS2_PATH}/*
 
