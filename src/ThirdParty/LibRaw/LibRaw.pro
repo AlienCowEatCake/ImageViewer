@@ -55,7 +55,7 @@ win32 {
     DEFINES *= _LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR _LIBCPP_DISABLE_DEPRECATION_WARNINGS
 }
 
-# find ./src -name '*.cpp' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBRAW_PATH}| ; s|$| \\|'
+# find ./src -name '*.cpp' | egrep -v '(_ph)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBRAW_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBRAW_PATH}/src/decoders/canon_600.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/decoders/crx.cpp \
@@ -109,11 +109,9 @@ SOURCES += \
     $${THIRDPARTY_LIBRAW_PATH}/src/postprocessing/dcraw_process.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/postprocessing/mem_image.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/postprocessing/postprocessing_aux.cpp \
-    $${THIRDPARTY_LIBRAW_PATH}/src/postprocessing/postprocessing_ph.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/postprocessing/postprocessing_utils.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/postprocessing/postprocessing_utils_dcrdefs.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/preprocessing/ext_preprocess.cpp \
-    $${THIRDPARTY_LIBRAW_PATH}/src/preprocessing/preprocessing_ph.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/preprocessing/raw2image.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/preprocessing/subtract_black.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/tables/cameralist.cpp \
@@ -132,7 +130,6 @@ SOURCES += \
     $${THIRDPARTY_LIBRAW_PATH}/src/write/apply_profile.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/write/file_write.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/write/tiff_writer.cpp \
-    $${THIRDPARTY_LIBRAW_PATH}/src/write/write_ph.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/x3f/x3f_parse_process.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/x3f/x3f_utils_patched.cpp \
 
