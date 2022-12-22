@@ -1,17 +1,17 @@
-diff --git a/src/3rdparty/libwebp/src/dsp/dsp.h b/src/3rdparty/libwebp/src/dsp/dsp.h
-index c4f57e4..607b2e2 100644
---- a/src/3rdparty/libwebp/src/dsp/dsp.h
-+++ b/src/3rdparty/libwebp/src/dsp/dsp.h
+diff --git a/src/3rdparty/libwebp/src/dsp/cpu.h b/src/3rdparty/libwebp/src/dsp/cpu.h
+index 57a40d8..8cf3e92 100644
+--- a/src/3rdparty/libwebp/src/dsp/cpu.h
++++ b/src/3rdparty/libwebp/src/dsp/cpu.h
 @@ -14,6 +14,8 @@
- #ifndef WEBP_DSP_DSP_H_
- #define WEBP_DSP_DSP_H_
+ #ifndef WEBP_DSP_CPU_H_
+ #define WEBP_DSP_CPU_H_
  
 +#include <qglobal.h>
 +
  #ifdef HAVE_CONFIG_H
  #include "src/webp/config.h"
  #endif
-@@ -70,12 +72,12 @@ extern "C" {
+@@ -43,12 +45,12 @@
  
  #if !defined(HAVE_CONFIG_H)
  #if defined(_MSC_VER) && _MSC_VER > 1310 && \
@@ -26,12 +26,13 @@ index c4f57e4..607b2e2 100644
  #define WEBP_MSC_SSE41  // Visual C++ SSE4.1 targets
  #endif
  #endif
-@@ -122,7 +124,7 @@ extern "C" {
- // Note: ARM64 is supported in Visual Studio 2017, but requires the direct
- // inclusion of arm64_neon.h; Visual Studio 2019 includes this file in
- // arm_neon.h.
--#if defined(_MSC_VER) && \
-+#if defined(_MSC_VER) && !defined(__clang__) && (QT_CONFIG_neon == 1) && \
-   ((_MSC_VER >= 1700 && defined(_M_ARM)) || \
-    (_MSC_VER >= 1920 && defined(_M_ARM64)))
+@@ -97,7 +99,8 @@
+ // arm_neon.h. Compile errors were seen with Visual Studio 2019 16.4 with
+ // vtbl4_u8(); a fix was made in 16.6.
+ #if defined(_MSC_VER) && ((_MSC_VER >= 1700 && defined(_M_ARM)) || \
+-                          (_MSC_VER >= 1926 && defined(_M_ARM64)))
++                          (_MSC_VER >= 1926 && defined(_M_ARM64))) && \
++                         !defined(__clang__) && (QT_CONFIG_neon == 1)
  #define WEBP_USE_NEON
+ #define WEBP_USE_INTRINSICS
+ #endif

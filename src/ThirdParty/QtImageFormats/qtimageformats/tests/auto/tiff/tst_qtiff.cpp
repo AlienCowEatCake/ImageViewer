@@ -495,7 +495,7 @@ void tst_qtiff::supportsOption()
         allOptions.remove(QImageIOHandler::ImageOption(options.at(i)));
     }
 
-    for (QImageIOHandler::ImageOption option : qAsConst(allOptions))
+    for (QImageIOHandler::ImageOption option : std::as_const(allOptions))
         QVERIFY(!writer.supportsOption(option));
 }
 

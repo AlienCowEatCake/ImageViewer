@@ -9,6 +9,7 @@
 #include <qdebug.h>
 #include <qpainter.h>
 #include <qvariant.h>
+#include <QtEndian>
 
 static const int riffHeaderSize = 12; // RIFF_HEADER_SIZE from webp/format_constants.h
 
@@ -66,21 +67,23 @@ bool QWebpHandler::ensureScanned() const
 
     m_scanState = ScanError;
 
-    if (device()->isSequential()) {
-        qWarning() << "Sequential devices are not supported";
+    QWebpHandler *that = const_cast<QWebpHandler *>(this);
+    const int headerBytesNeeded = sizeof(WebPBitstreamFeatures);
+    QByteArray header = device()->peek(headerBytesNeeded);
+    if (header.size() < headerBytesNeeded)
+        return false;
+
+    // We do no random access during decoding, just a readAll() of the whole image file. So if
+    // if it is all available already, we can accept a sequential device. The riff header contains
+    // the file size minus 8 bytes header
+    qint64 byteSize = qFromLittleEndian<quint32>(header.constData() + 4);
+    if (device()->isSequential() && device()->bytesAvailable() < byteSize + 8) {
+        qWarning() << "QWebpHandler: Insufficient data available in sequential device";
         return false;
     }
-
-    qint64 oldPos = device()->pos();
-    device()->seek(0);
-
-    QWebpHandler *that = const_cast<QWebpHandler *>(this);
-    QByteArray header = device()->peek(sizeof(WebPBitstreamFeatures));
     if (WebPGetFeatures((const uint8_t*)header.constData(), header.size(), &(that->m_features)) == VP8_STATUS_OK) {
         if (m_features.has_animation) {
             // For animation, we have to read and scan whole file to determine loop count and images count
-            device()->seek(oldPos);
-
             if (that->ensureDemuxer()) {
                 that->m_loop = WebPDemuxGetI(m_demuxer, WEBP_FF_LOOP_COUNT);
                 that->m_frameCount = WebPDemuxGetI(m_demuxer, WEBP_FF_FRAME_COUNT);
@@ -97,16 +100,12 @@ bool QWebpHandler::ensureScanned() const
                 if (that->m_features.has_alpha)
                     that->m_composited->fill(Qt::transparent);
 
-                // We do not reset device position since we have read in all data
                 m_scanState = ScanSuccess;
-                return true;
             }
         } else {
             m_scanState = ScanSuccess;
         }
     }
-
-    device()->seek(oldPos);
 
     return m_scanState == ScanSuccess;
 }
@@ -130,7 +129,7 @@ bool QWebpHandler::ensureDemuxer()
 
 bool QWebpHandler::read(QImage *image)
 {
-    if (!ensureScanned() || device()->isSequential() || !ensureDemuxer())
+    if (!ensureScanned() || !ensureDemuxer())
         return false;
 
     QRect prevFrameRect;

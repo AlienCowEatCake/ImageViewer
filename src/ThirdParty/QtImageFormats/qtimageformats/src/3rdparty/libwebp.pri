@@ -1,5 +1,6 @@
 INCLUDEPATH += \
     $$PWD/libwebp \
+    $$PWD/libwebp/sharpyuv \
     $$PWD/libwebp/src \
     $$PWD/libwebp/src/dec \
     $$PWD/libwebp/src/enc \
@@ -9,6 +10,11 @@ INCLUDEPATH += \
     $$PWD/libwebp/src/webp
 
 SOURCES += \
+    $$PWD/libwebp/sharpyuv/sharpyuv.c \
+    $$PWD/libwebp/sharpyuv/sharpyuv_csp.c \
+    $$PWD/libwebp/sharpyuv/sharpyuv_dsp.c \
+    $$PWD/libwebp/sharpyuv/sharpyuv_gamma.c \
+    $$PWD/libwebp/sharpyuv/sharpyuv_sse2.c \
     $$PWD/libwebp/src/dec/alpha_dec.c \
     $$PWD/libwebp/src/dec/buffer_dec.c \
     $$PWD/libwebp/src/dec/frame_dec.c \
@@ -125,6 +131,7 @@ integrity {
 }
 
 SOURCES_FOR_NEON += \
+    $$PWD/libwebp/sharpyuv/sharpyuv_neon.c \
     $$PWD/libwebp/src/dsp/alpha_processing_neon.c \
     $$PWD/libwebp/src/dsp/dec_neon.c \
     $$PWD/libwebp/src/dsp/enc_neon.c \

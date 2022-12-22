@@ -1,4 +1,4 @@
-From abce6dfe97e1fe08986f821202cff4997334b306 Mon Sep 17 00:00:00 2001
+From a4ac2d2acb547e160eff7a4f350cbf1a30fdfb8d Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 May 2017 23:13:29 +0700
 Subject: [PATCH 2/8] Use custom third-party libraries paths
@@ -25,5 +25,5 @@ index 2c714b3..34187a4 100644
 +#}
 +include($${PWD}/../../../../zlib/zlib.pri)
 -- 
-2.37.1
+2.30.2
 

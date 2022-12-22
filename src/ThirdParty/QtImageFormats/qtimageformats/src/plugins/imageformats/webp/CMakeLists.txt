@@ -1,5 +1,5 @@
 # Copyright (C) 2022 The Qt Company Ltd.
-# SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+# SPDX-License-Identifier: BSD-3-Clause
 
 # Generated from webp.pro.
 
@@ -32,6 +32,11 @@ qt_internal_extend_target(QWebpPlugin CONDITION QT_FEATURE_system_webp
 
 qt_internal_extend_target(QWebpPlugin CONDITION NOT QT_FEATURE_system_webp
     SOURCES
+        ../../../3rdparty/libwebp/sharpyuv/sharpyuv.c
+        ../../../3rdparty/libwebp/sharpyuv/sharpyuv_csp.c
+        ../../../3rdparty/libwebp/sharpyuv/sharpyuv_dsp.c
+        ../../../3rdparty/libwebp/sharpyuv/sharpyuv_gamma.c
+        ../../../3rdparty/libwebp/sharpyuv/sharpyuv_sse2.c
         ../../../3rdparty/libwebp/src/dec/alpha_dec.c
         ../../../3rdparty/libwebp/src/dec/buffer_dec.c
         ../../../3rdparty/libwebp/src/dec/frame_dec.c
@@ -139,6 +144,7 @@ qt_internal_extend_target(QWebpPlugin CONDITION NOT QT_FEATURE_system_webp
         ../../../3rdparty/libwebp/src/utils/utils.c
     INCLUDE_DIRECTORIES
         ../../../3rdparty/libwebp
+        ../../../3rdparty/libwebp/sharpyuv
         ../../../3rdparty/libwebp/src
         ../../../3rdparty/libwebp/src/dec
         ../../../3rdparty/libwebp/src/dsp
@@ -157,6 +163,7 @@ qt_internal_extend_target(QWebpPlugin CONDITION ANDROID AND NOT ANDROID_EMBEDDED
 
 # special case begin
 set(neon_sources
+        ../../../3rdparty/libwebp/sharpyuv/sharpyuv_neon.c
         ../../../3rdparty/libwebp/src/dsp/alpha_processing_neon.c
         ../../../3rdparty/libwebp/src/dsp/dec_neon.c
         ../../../3rdparty/libwebp/src/dsp/enc_neon.c
