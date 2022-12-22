@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_ZLIB_PATH = $${PWD}/zlib-1.2.12
+THIRDPARTY_ZLIB_PATH = $${PWD}/zlib-1.2.13
 
 include(../CommonSettings.pri)
 
@@ -18,12 +18,8 @@ INCLUDEPATH = $${THIRDPARTY_ZLIB_PATH} $${INCLUDEPATH}
 
 DEFINES += Z_PREFIX
 DEFINES += z_errmsg=tp_z_errmsg
-# @todo Begin remove after upgrade to 1.2.13+
-DEFINES += crc32_combine_gen64=tp_z_crc32_combine_gen64
-DEFINES += crc32_combine_gen=tp_z_crc32_combine_gen
-DEFINES += crc32_combine_op=tp_z_crc32_combine_op
-# @todo End remove after upgrade to 1.2.13+
 
+# find . -maxdepth 1 -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_ZLIB_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_ZLIB_PATH}/adler32.c \
     $${THIRDPARTY_ZLIB_PATH}/compress.c \
@@ -39,8 +35,9 @@ SOURCES += \
     $${THIRDPARTY_ZLIB_PATH}/inftrees.c \
     $${THIRDPARTY_ZLIB_PATH}/trees.c \
     $${THIRDPARTY_ZLIB_PATH}/uncompr.c \
-    $${THIRDPARTY_ZLIB_PATH}/zutil.c
+    $${THIRDPARTY_ZLIB_PATH}/zutil.c \
 
+# find . -maxdepth 1 -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_ZLIB_PATH}| ; s|$| \\|'
 HEADERS += \
     $${THIRDPARTY_ZLIB_PATH}/crc32.h \
     $${THIRDPARTY_ZLIB_PATH}/deflate.h \
@@ -52,7 +49,7 @@ HEADERS += \
     $${THIRDPARTY_ZLIB_PATH}/trees.h \
     $${THIRDPARTY_ZLIB_PATH}/zconf.h \
     $${THIRDPARTY_ZLIB_PATH}/zlib.h \
-    $${THIRDPARTY_ZLIB_PATH}/zutil.h
+    $${THIRDPARTY_ZLIB_PATH}/zutil.h \
 
 TR_EXCLUDE += $${THIRDPARTY_ZLIB_PATH}/*
 
