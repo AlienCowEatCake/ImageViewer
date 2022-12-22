@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -193,13 +193,6 @@ public:
         return func(data, len, opt, tree);
     }
 
-//    bool resvg_is_image_empty(const resvg_render_tree *tree)
-//    {
-//        typedef bool (*func_t)(const resvg_render_tree*);
-//        func_t func = (func_t)m_resvg_is_image_empty;
-//        return func(tree);
-//    }
-
     resvg_size resvg_get_image_size(const resvg_render_tree *tree)
     {
         typedef resvg_size (*func_t)(const resvg_render_tree*);
@@ -233,7 +226,6 @@ private:
         : m_resvg_init_log(Q_NULLPTR)
         , m_resvg_init_options(Q_NULLPTR)
         , m_resvg_parse_tree_from_data(Q_NULLPTR)
-//        , m_resvg_is_image_empty(Q_NULLPTR)
         , m_resvg_get_image_size(Q_NULLPTR)
         , m_resvg_get_image_viewbox(Q_NULLPTR)
         , m_resvg_tree_destroy(Q_NULLPTR)
@@ -245,7 +237,6 @@ private:
             m_resvg_init_log = m_library.resolve("resvg_init_log");
             m_resvg_init_options = m_library.resolve("resvg_init_options");
             m_resvg_parse_tree_from_data = m_library.resolve("resvg_parse_tree_from_data");
-//            m_resvg_is_image_empty = m_library.resolve("resvg_is_image_empty");
             m_resvg_get_image_size = m_library.resolve("resvg_get_image_size");
             m_resvg_get_image_viewbox = m_library.resolve("resvg_get_image_viewbox");
             m_resvg_tree_destroy = m_library.resolve("resvg_tree_destroy");
@@ -267,7 +258,6 @@ private:
         return m_library.isLoaded()
                 /*&& m_resvg_init_options*/
                 && m_resvg_parse_tree_from_data && m_resvg_tree_destroy
-                /*&& m_resvg_is_image_empty*/
                 && m_resvg_get_image_size
                 && m_resvg_get_image_viewbox
                 && m_resvg_qt_render_to_canvas
@@ -278,7 +268,6 @@ private:
     QFunctionPointer m_resvg_init_log;
     QFunctionPointer m_resvg_init_options;
     QFunctionPointer m_resvg_parse_tree_from_data;
-//    QFunctionPointer m_resvg_is_image_empty;
     QFunctionPointer m_resvg_get_image_size;
     QFunctionPointer m_resvg_get_image_viewbox;
     QFunctionPointer m_resvg_tree_destroy;
@@ -299,14 +288,6 @@ int resvg_parse_tree_from_data(const char *data, const size_t len, const resvg_o
     qWarning() << "Failed to load resvg";
     return -1;
 }
-
-//bool resvg_is_image_empty(const resvg_render_tree *tree)
-//{
-//    if(ReSVG *resvg = ReSVG::instance())
-//        return resvg->resvg_is_image_empty(tree);
-//    qWarning() << "Failed to load resvg";
-//    return true;
-//}
 
 resvg_size resvg_get_image_size(const resvg_render_tree *tree)
 {
@@ -432,13 +413,6 @@ public:
             qWarning() << "Can't parse file, error =" << err;
             return;
         }
-
-        /// @attention WTF?
-//        if(!resvg_is_image_empty(m_tree))
-//        {
-//            qWarning() << "Couldn't determine image nodes";
-//            return;
-//        }
 
         m_viewBox = resvg_get_image_viewbox(m_tree);
         resvg_size size = resvg_get_image_size(m_tree);

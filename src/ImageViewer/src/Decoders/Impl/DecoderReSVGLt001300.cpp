@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -115,7 +115,6 @@ struct ReSVG
     QFunctionPointer resvg_options_load_system_fonts;
     QFunctionPointer resvg_options_set_file_path;
     QFunctionPointer resvg_parse_tree_from_data;
-    QFunctionPointer resvg_is_image_empty;
     QFunctionPointer resvg_get_image_size;
     QFunctionPointer resvg_tree_destroy;
     QFunctionPointer resvg_render;
@@ -143,7 +142,6 @@ private:
         , resvg_options_load_system_fonts(Q_NULLPTR)
         , resvg_options_set_file_path(Q_NULLPTR)
         , resvg_parse_tree_from_data(Q_NULLPTR)
-        , resvg_is_image_empty(Q_NULLPTR)
         , resvg_get_image_size(Q_NULLPTR)
         , resvg_tree_destroy(Q_NULLPTR)
         , resvg_render(Q_NULLPTR)
@@ -161,7 +159,6 @@ private:
             resvg_options_load_system_fonts = library.resolve("resvg_options_load_system_fonts");
             resvg_options_set_file_path = library.resolve("resvg_options_set_file_path");
             resvg_parse_tree_from_data = library.resolve("resvg_parse_tree_from_data");
-            resvg_is_image_empty = library.resolve("resvg_is_image_empty");
             resvg_get_image_size = library.resolve("resvg_get_image_size");
             resvg_tree_destroy = library.resolve("resvg_tree_destroy");
             resvg_render = library.resolve("resvg_render");
@@ -188,7 +185,6 @@ private:
                 && resvg_options_load_system_fonts
                 && resvg_options_set_file_path
                 && resvg_parse_tree_from_data && resvg_tree_destroy
-                && resvg_is_image_empty
                 && resvg_get_image_size
                 && resvg_render
                 && resvg_image_get_width && resvg_image_get_height && resvg_image_get_data && resvg_image_destroy
@@ -253,16 +249,6 @@ void resvg_tree_destroy(resvg_render_tree *tree)
         return;
     typedef void (*func_t)(resvg_render_tree*);
     func_t func = (func_t)resvg->resvg_tree_destroy;
-    return func(tree);
-}
-
-bool resvg_is_image_empty(const resvg_render_tree *tree)
-{
-    ReSVG *resvg = ReSVG::instance();
-    if(!resvg || !resvg->resvg_is_image_empty)
-        return true;
-    typedef bool (*func_t)(const resvg_render_tree*);
-    func_t func = (func_t)resvg->resvg_is_image_empty;
     return func(tree);
 }
 
@@ -374,12 +360,6 @@ public:
         if(err)
         {
             qWarning() << "Can't parse file, error =" << err;
-            return;
-        }
-
-        if(!resvg_is_image_empty(m_tree))
-        {
-            qWarning() << "Couldn't determine image nodes";
             return;
         }
 
