@@ -10,7 +10,7 @@ TARGET = tp_XZUtils
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_XZUTILS_PATH = $${PWD}/xz-5.2.6
+THIRDPARTY_XZUTILS_PATH = $${PWD}/xz-5.4.0
 THIRDPARTY_XZUTILS_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -37,16 +37,11 @@ DEFINES += HAVE_CONFIG_H
 DEFINES += LZMA_API_STATIC
 DEFINES += TUKLIB_SYMBOL_PREFIX=tp_lzma_
 
+# find ./src/liblzma -name '*.c' | egrep -v '(_mt|_tablegen)' | egrep -v '(crc32|crc64|fastpos)(_fast|_table)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_XZUTILS_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/check.c \
-\#    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc32_fast.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc32_small.c \
-\#    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc32_table.c \
-\#    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc32_tablegen.c \
-\#    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc64_fast.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc64_small.c \
-\#    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc64_table.c \
-\#    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc64_tablegen.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/sha256.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/alone_decoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/alone_encoder.c \
@@ -64,6 +59,7 @@ SOURCES += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/easy_encoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/easy_encoder_memusage.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/easy_preset.c \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/file_info.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/filter_buffer_decoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/filter_buffer_encoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/filter_common.c \
@@ -77,15 +73,18 @@ SOURCES += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/index_decoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/index_encoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/index_hash.c \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/lzip_decoder.c \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/microlzma_decoder.c \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/microlzma_encoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/outqueue.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/stream_buffer_decoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/stream_buffer_encoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/stream_decoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/stream_encoder.c \
-\#    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/stream_encoder_mt.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/stream_flags_common.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/stream_flags_decoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/stream_flags_encoder.c \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/string_conversion.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/vli_decoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/vli_encoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/vli_size.c \
@@ -95,8 +94,6 @@ SOURCES += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/lz/lz_decoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/lz/lz_encoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/lz/lz_encoder_mf.c \
-\#    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/lzma/fastpos_table.c \
-\#    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/lzma/fastpos_tablegen.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/lzma/lzma2_decoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/lzma/lzma2_encoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/lzma/lzma_decoder.c \
@@ -105,8 +102,8 @@ SOURCES += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/lzma/lzma_encoder_optimum_normal.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/lzma/lzma_encoder_presets.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/rangecoder/price_table.c \
-\#    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/rangecoder/price_tablegen.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/arm.c \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/arm64.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/armthumb.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/ia64.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/powerpc.c \
@@ -114,9 +111,11 @@ SOURCES += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/simple_decoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/simple_encoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/sparc.c \
-    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/x86.c
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/x86.c \
 
+# find ./src/liblzma -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_XZUTILS_PATH}| ; s|$| \\|'
 HEADERS += \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma/base.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma/bcj.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma/block.h \
@@ -124,7 +123,6 @@ HEADERS += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma/container.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma/delta.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma/filter.h \
-    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma/hardware.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma/index.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma/index_hash.h \
@@ -147,8 +145,10 @@ HEADERS += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/filter_common.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/filter_decoder.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/filter_encoder.h \
-    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/index_encoder.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/index.h \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/index_decoder.h \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/index_encoder.h \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/lzip_decoder.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/memcmplen.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/outqueue.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/stream_decoder.h \
@@ -175,7 +175,7 @@ HEADERS += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/simple_coder.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/simple_decoder.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/simple_encoder.h \
-    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/simple_private.h
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/simple_private.h \
 
 HEADERS += \
     $${THIRDPARTY_XZUTILS_CONFIG_PATH}/config.h
