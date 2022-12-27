@@ -1,4 +1,4 @@
-From 1cd73038826014a9222d971c644abd2566b32f9b Mon Sep 17 00:00:00 2001
+From b8182c5ff25fed1ecd39109f810bfa72c12321f0 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 24 Jun 2020 19:53:15 +0700
 Subject: [PATCH 7/8] Revert "Use QList instead of QVector"
@@ -84,10 +84,10 @@ index 7ebb079..deb7014 100644
      QCFType<CGImageSourceRef> cgImageSource = nullptr;
      QCFType<CFDictionaryRef> cfImageDict = nullptr;
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index 3df800e..af4e084 100644
+index 7a888a0..1e1b859 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-@@ -392,7 +392,7 @@ bool QTiffHandler::read(QImage *image)
+@@ -396,7 +396,7 @@ bool QTiffHandler::read(QImage *image)
     if (format == QImage::Format_Mono || format == QImage::Format_Indexed8 || format == QImage::Format_Grayscale8) {
  #endif
          if (format == QImage::Format_Mono) {
@@ -96,7 +96,7 @@ index 3df800e..af4e084 100644
              if (d->photometric == PHOTOMETRIC_MINISBLACK) {
                  colortable[0] = 0xff000000;
                  colortable[1] = 0xffffffff;
-@@ -403,7 +403,7 @@ bool QTiffHandler::read(QImage *image)
+@@ -407,7 +407,7 @@ bool QTiffHandler::read(QImage *image)
              image->setColorTable(colortable);
          } else if (format == QImage::Format_Indexed8) {
              const uint16_t tableSize = 256;
@@ -105,7 +105,7 @@ index 3df800e..af4e084 100644
              if (d->grayscale) {
                  for (int i = 0; i<tableSize; ++i) {
                      const int c = (d->photometric == PHOTOMETRIC_MINISBLACK) ? i : (255 - i);
-@@ -579,7 +579,7 @@ bool QTiffHandler::read(QImage *image)
+@@ -583,7 +583,7 @@ bool QTiffHandler::read(QImage *image)
      return true;
  }
  
@@ -114,7 +114,7 @@ index 3df800e..af4e084 100644
  {
      if (colorTable.size() != 256)
          return false;
-@@ -593,9 +593,9 @@ static bool checkGrayscale(const QList<QRgb> &colorTable)
+@@ -597,9 +597,9 @@ static bool checkGrayscale(const QList<QRgb> &colorTable)
      return true;
  }
  
@@ -126,7 +126,7 @@ index 3df800e..af4e084 100644
      switch (image.format()) {
      case QImage::Format_Indexed8:
          colors = image.colorTable();
-@@ -735,7 +735,7 @@ bool QTiffHandler::write(const QImage &image)
+@@ -739,7 +739,7 @@ bool QTiffHandler::write(const QImage &image)
                 || format == QImage::Format_Grayscale16
  #endif
                 || format == QImage::Format_Alpha8) {

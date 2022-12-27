@@ -380,7 +380,11 @@ bool QTiffHandler::read(QImage *image)
     }
 
     TIFF *const tiff = d->tiff;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
     if (TIFFIsTiled(tiff) && TIFFTileSize64(tiff) > uint64_t(image->sizeInBytes())) // Corrupt image
+#else
+    if (TIFFIsTiled(tiff) && TIFFTileSize64(tiff) > uint64_t(image->byteCount())) // Corrupt image
+#endif
         return false;
     const quint32 width = d->size.width();
     const quint32 height = d->size.height();

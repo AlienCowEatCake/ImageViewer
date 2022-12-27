@@ -1,4 +1,4 @@
-From bf688b51241430f9aa4c27e78c3082c88f4ec2a7 Mon Sep 17 00:00:00 2001
+From 82de00c25d2edd0f889990145939c96f82ee1b42 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 Aug 2022 03:45:30 +0700
 Subject: [PATCH 8/8] Revert "Replace discouraged Q_MOVABLE_TYPE by
