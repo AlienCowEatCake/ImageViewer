@@ -63,7 +63,21 @@ public:
     {
         if(!m_wmfSysFontmap.isNull())
             return m_wmfSysFontmap.constData();
-        return (m_wmfSysFontmap = "/usr/share/fonts/fontmap").constData();
+        const QList<QByteArray> knownDirs = QList<QByteArray>()
+                << "/usr/share/fonts/fontmap"
+                << "/usr/share/libwmf/fonts/fontmap"
+                << "/ucrt64/share/libwmf/fonts/fontmap"
+                << "/mingw64/share/libwmf/fonts/fontmap"
+                << "/mingw32/share/libwmf/fonts/fontmap"
+                << "/clang64/share/libwmf/fonts/fontmap"
+                << "/clang32/share/libwmf/fonts/fontmap"
+                << "/clangarm64/share/libwmf/fonts/fontmap";
+        for(QList<QByteArray>::ConstIterator it = knownDirs.constBegin(); it != knownDirs.constEnd(); ++it)
+        {
+            if(QDir(QString::fromLatin1(*it)).exists())
+                return (m_wmfSysFontmap = *it).constData();
+        }
+        return (m_wmfSysFontmap = "").constData();
     }
 
     const char *wmfXtraFontmap()
@@ -152,7 +166,7 @@ private:
         if(appDataLocation.isEmpty())
             return (m_fontCacheDir = QString::fromLatin1(""));
         if(fileExists(appDataLocation, QString::fromLatin1("n019003l.afm")) || fileExists(appDataLocation, QString::fromLatin1("fontmap")))
-            return (m_fontCacheDir = QFileInfo(appDataLocation).absoluteFilePath()); ///< Previous version compatibility
+            cleanupPrevious(appDataLocation); ///< Previous version compatibility
         const QString fontCacheDir = QDir(appDataLocation).absoluteFilePath(QString::fromLatin1("libwmf/fonts"));
         if(fontCacheDir.isEmpty() || !QDir().mkpath(fontCacheDir))
             return (m_fontCacheDir = QString::fromLatin1(""));
@@ -187,33 +201,67 @@ private:
     bool copyWmfFonts()
     {
         bool status = true;
-        status &= copyResource(QString::fromLatin1("n019003l.afm"));
-        status &= copyResource(QString::fromLatin1("n019003l.pfb"));
-        status &= copyResource(QString::fromLatin1("n019004l.afm"));
-        status &= copyResource(QString::fromLatin1("n019004l.pfb"));
-        status &= copyResource(QString::fromLatin1("n019023l.afm"));
-        status &= copyResource(QString::fromLatin1("n019023l.pfb"));
-        status &= copyResource(QString::fromLatin1("n019024l.afm"));
-        status &= copyResource(QString::fromLatin1("n019024l.pfb"));
-        status &= copyResource(QString::fromLatin1("n021003l.afm"));
-        status &= copyResource(QString::fromLatin1("n021003l.pfb"));
-        status &= copyResource(QString::fromLatin1("n021004l.afm"));
-        status &= copyResource(QString::fromLatin1("n021004l.pfb"));
-        status &= copyResource(QString::fromLatin1("n021023l.afm"));
-        status &= copyResource(QString::fromLatin1("n021023l.pfb"));
-        status &= copyResource(QString::fromLatin1("n021024l.afm"));
-        status &= copyResource(QString::fromLatin1("n021024l.pfb"));
-        status &= copyResource(QString::fromLatin1("n022003l.afm"));
-        status &= copyResource(QString::fromLatin1("n022003l.pfb"));
-        status &= copyResource(QString::fromLatin1("n022004l.afm"));
-        status &= copyResource(QString::fromLatin1("n022004l.pfb"));
-        status &= copyResource(QString::fromLatin1("n022023l.afm"));
-        status &= copyResource(QString::fromLatin1("n022023l.pfb"));
-        status &= copyResource(QString::fromLatin1("n022024l.afm"));
-        status &= copyResource(QString::fromLatin1("n022024l.pfb"));
-        status &= copyResource(QString::fromLatin1("s050000l.afm"));
-        status &= copyResource(QString::fromLatin1("s050000l.pfb"));
+        status &= copyResource(QString::fromLatin1("NimbusSans-Regular.afm"));
+        status &= copyResource(QString::fromLatin1("NimbusSans-Regular.t1"));
+        status &= copyResource(QString::fromLatin1("NimbusSans-Bold.afm"));
+        status &= copyResource(QString::fromLatin1("NimbusSans-Bold.t1"));
+        status &= copyResource(QString::fromLatin1("NimbusSans-Italic.afm"));
+        status &= copyResource(QString::fromLatin1("NimbusSans-Italic.t1"));
+        status &= copyResource(QString::fromLatin1("NimbusSans-BoldItalic.afm"));
+        status &= copyResource(QString::fromLatin1("NimbusSans-BoldItalic.t1"));
+        status &= copyResource(QString::fromLatin1("NimbusRoman-Regular.afm"));
+        status &= copyResource(QString::fromLatin1("NimbusRoman-Regular.t1"));
+        status &= copyResource(QString::fromLatin1("NimbusRoman-Bold.afm"));
+        status &= copyResource(QString::fromLatin1("NimbusRoman-Bold.t1"));
+        status &= copyResource(QString::fromLatin1("NimbusRoman-Italic.afm"));
+        status &= copyResource(QString::fromLatin1("NimbusRoman-Italic.t1"));
+        status &= copyResource(QString::fromLatin1("NimbusRoman-BoldItalic.afm"));
+        status &= copyResource(QString::fromLatin1("NimbusRoman-BoldItalic.t1"));
+        status &= copyResource(QString::fromLatin1("NimbusMonoPS-Regular.afm"));
+        status &= copyResource(QString::fromLatin1("NimbusMonoPS-Regular.t1"));
+        status &= copyResource(QString::fromLatin1("NimbusMonoPS-Bold.afm"));
+        status &= copyResource(QString::fromLatin1("NimbusMonoPS-Bold.t1"));
+        status &= copyResource(QString::fromLatin1("NimbusMonoPS-Italic.afm"));
+        status &= copyResource(QString::fromLatin1("NimbusMonoPS-Italic.t1"));
+        status &= copyResource(QString::fromLatin1("NimbusMonoPS-BoldItalic.afm"));
+        status &= copyResource(QString::fromLatin1("NimbusMonoPS-BoldItalic.t1"));
+        status &= copyResource(QString::fromLatin1("StandardSymbolsPS.afm"));
+        status &= copyResource(QString::fromLatin1("StandardSymbolsPS.t1"));
         return status;
+    }
+
+    void cleanupPrevious(const QString &appDataLocation)
+    {
+        const QList<QByteArray> previousAppDataFiles = QList<QByteArray>()
+                << "n019003l.afm"
+                << "n019003l.pfb"
+                << "n019004l.afm"
+                << "n019004l.pfb"
+                << "n019023l.afm"
+                << "n019023l.pfb"
+                << "n019024l.afm"
+                << "n019024l.pfb"
+                << "n021003l.afm"
+                << "n021003l.pfb"
+                << "n021004l.afm"
+                << "n021004l.pfb"
+                << "n021023l.afm"
+                << "n021023l.pfb"
+                << "n021024l.afm"
+                << "n021024l.pfb"
+                << "n022003l.afm"
+                << "n022003l.pfb"
+                << "n022004l.afm"
+                << "n022004l.pfb"
+                << "n022023l.afm"
+                << "n022023l.pfb"
+                << "n022024l.afm"
+                << "n022024l.pfb"
+                << "s050000l.afm"
+                << "s050000l.pfb"
+                << "fontmap";
+        for(QList<QByteArray>::ConstIterator it = previousAppDataFiles.constBegin(); it != previousAppDataFiles.constEnd(); ++it)
+            QFile::remove(QString::fromLatin1("%1/%2").arg(appDataLocation).arg(QString::fromLatin1(*it)));
     }
 
     Q_DISABLE_COPY(FontsProvider)
@@ -228,27 +276,27 @@ private:
 
 } // namespace
 
-const char *ProvideWmfFontdir()
+const char *ProvideWmfFontdir(void)
 {
     return FontsProvider::getInstance().wmfFontdir();
 }
 
-const char *ProvideWmfGsFontdir()
+const char *ProvideWmfGsFontdir(void)
 {
     return FontsProvider::getInstance().wmfGsFontdir();
 }
 
-const char *ProvideWmfSysFontmap()
+const char *ProvideWmfSysFontmap(void)
 {
     return FontsProvider::getInstance().wmfSysFontmap();
 }
 
-const char *ProvideWmfXtraFontmap()
+const char *ProvideWmfXtraFontmap(void)
 {
     return FontsProvider::getInstance().wmfXtraFontmap();
 }
 
-const char *ProvideWmfGsFontmap()
+const char *ProvideWmfGsFontmap(void)
 {
     return FontsProvider::getInstance().wmfGsFontmap();
 }

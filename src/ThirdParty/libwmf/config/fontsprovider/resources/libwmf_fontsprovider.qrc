@@ -1,31 +1,31 @@
 <RCC>
     <qresource prefix="/libwmf/fontsprovider">
         <file>fontmap.in</file>
-        <file>n019003l.afm</file>
-        <file>n019003l.pfb</file>
-        <file>n019004l.afm</file>
-        <file>n019004l.pfb</file>
-        <file>n019023l.afm</file>
-        <file>n019023l.pfb</file>
-        <file>n019024l.afm</file>
-        <file>n019024l.pfb</file>
-        <file>n021003l.afm</file>
-        <file>n021003l.pfb</file>
-        <file>n021004l.afm</file>
-        <file>n021004l.pfb</file>
-        <file>n021023l.afm</file>
-        <file>n021023l.pfb</file>
-        <file>n021024l.afm</file>
-        <file>n021024l.pfb</file>
-        <file>n022003l.afm</file>
-        <file>n022003l.pfb</file>
-        <file>n022004l.afm</file>
-        <file>n022004l.pfb</file>
-        <file>n022023l.afm</file>
-        <file>n022023l.pfb</file>
-        <file>n022024l.afm</file>
-        <file>n022024l.pfb</file>
-        <file>s050000l.afm</file>
-        <file>s050000l.pfb</file>
+        <file>NimbusSans-Regular.afm</file>
+        <file>NimbusSans-Regular.t1</file>
+        <file>NimbusSans-Bold.afm</file>
+        <file>NimbusSans-Bold.t1</file>
+        <file>NimbusSans-Italic.afm</file>
+        <file>NimbusSans-Italic.t1</file>
+        <file>NimbusSans-BoldItalic.afm</file>
+        <file>NimbusSans-BoldItalic.t1</file>
+        <file>NimbusRoman-Regular.afm</file>
+        <file>NimbusRoman-Regular.t1</file>
+        <file>NimbusRoman-Bold.afm</file>
+        <file>NimbusRoman-Bold.t1</file>
+        <file>NimbusRoman-Italic.afm</file>
+        <file>NimbusRoman-Italic.t1</file>
+        <file>NimbusRoman-BoldItalic.afm</file>
+        <file>NimbusRoman-BoldItalic.t1</file>
+        <file>NimbusMonoPS-Regular.afm</file>
+        <file>NimbusMonoPS-Regular.t1</file>
+        <file>NimbusMonoPS-Bold.afm</file>
+        <file>NimbusMonoPS-Bold.t1</file>
+        <file>NimbusMonoPS-Italic.afm</file>
+        <file>NimbusMonoPS-Italic.t1</file>
+        <file>NimbusMonoPS-BoldItalic.afm</file>
+        <file>NimbusMonoPS-BoldItalic.t1</file>
+        <file>StandardSymbolsPS.afm</file>
+        <file>StandardSymbolsPS.t1</file>
     </qresource>
 </RCC>

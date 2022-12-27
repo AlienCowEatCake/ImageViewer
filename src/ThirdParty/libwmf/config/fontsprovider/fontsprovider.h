@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-const char *ProvideWmfFontdir();
-const char *ProvideWmfGsFontdir();
-const char *ProvideWmfSysFontmap();
-const char *ProvideWmfXtraFontmap();
-const char *ProvideWmfGsFontmap();
+const char *ProvideWmfFontdir(void);
+const char *ProvideWmfGsFontdir(void);
+const char *ProvideWmfSysFontmap(void);
+const char *ProvideWmfXtraFontmap(void);
+const char *ProvideWmfGsFontmap(void);
 
 #if defined (__cplusplus)
 }

@@ -1,0 +1,264 @@
+From 472d5a26bdbff86fccc9736d4124863488b716e7 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Wed, 28 Dec 2022 08:50:03 +0700
+Subject: [PATCH 2/3] Fix MSVC compatibility
+
+---
+ src/font.c         |  6 ++----
+ src/ipa/fig.c      | 15 +++++++++------
+ src/ipa/fig/draw.h |  5 +++--
+ src/ipa/foreign.c  | 12 ++++++++----
+ src/meta.c         |  5 +++--
+ src/player.c       | 17 +++++++++++------
+ src/player/color.h |  5 +++--
+ 7 files changed, 39 insertions(+), 26 deletions(-)
+
+diff --git a/src/font.c b/src/font.c
+index c1ecb53..ee7fcb6 100644
+--- a/src/font.c
++++ b/src/font.c
+@@ -496,8 +496,6 @@ static void ipa_font_add_api (wmfAPI* API,char* name)
+ float wmf_ipa_font_stringwidth (wmfAPI* API,wmfFont* font,char* str)
+ {	FT_Face face = WMF_FONT_FTFACE (font);
+ 
+-	if (!face) return 0.0;
+-
+ 	FT_Vector delta;
+ 
+ 	FT_Bool use_kerning;
+@@ -555,8 +553,6 @@ float wmf_ipa_font_stringwidth (wmfAPI* API,wmfFont* font,char* str)
+ static float ipa_char_position (wmfFont* font,char* str,char* last)
+ {	FT_Face face = WMF_FONT_FTFACE (font);
+ 
+-	if (!face) return 0.0;
+-
+ 	FT_Vector delta;
+ 
+ 	FT_Bool use_kerning;
+@@ -568,6 +564,8 @@ static float ipa_char_position (wmfFont* font,char* str,char* last)
+ 
+ 	char* ptr;
+ 
++	if (!face) return 0.0;
++
+ 	FT_Set_Char_Size (face,0,12 * 64,300,100);
+ 
+ 	FT_Set_Transform (face,0,0);
+diff --git a/src/ipa/fig.c b/src/ipa/fig.c
+index 635dc94..c26274f 100644
+--- a/src/ipa/fig.c
++++ b/src/ipa/fig.c
+@@ -286,11 +286,12 @@ static int fig_brushstyle (wmfAPI* API,wmfDC* dc)
+ }
+ 
+ static int fig_linestyle (wmfAPI* API,wmfDC* dc)
+-{	(void)API;
+-	wmfPen* pen = WMF_DC_PEN (dc);
++{	wmfPen* pen = WMF_DC_PEN (dc);
+ 
+ 	int linestyle = SOLID_LINE;
+ 
++	(void)API;
++
+ 	switch (WMF_PEN_STYLE (pen))
+ 	{
+ 	case PS_DASH: /* DASH_LINE */
+@@ -321,11 +322,12 @@ static int fig_linestyle (wmfAPI* API,wmfDC* dc)
+ }
+ 
+ static int fig_joinstyle (wmfAPI* API,wmfDC* dc)
+-{	(void)API;
+-	wmfPen* pen = WMF_DC_PEN (dc);
++{	wmfPen* pen = WMF_DC_PEN (dc);
+ 
+ 	int joinstyle = JOIN_ROUND;
+ 
++	(void)API;
++
+ 	switch (WMF_PEN_JOIN (pen))
+ 	{
+ 	case PS_JOIN_BEVEL:
+@@ -346,11 +348,12 @@ static int fig_joinstyle (wmfAPI* API,wmfDC* dc)
+ }
+ 
+ static int fig_capstyle (wmfAPI* API,wmfDC* dc)
+-{	(void)API;
+-	wmfPen* pen = WMF_DC_PEN (dc);
++{	wmfPen* pen = WMF_DC_PEN (dc);
+ 
+ 	int capstyle = CAP_ROUND;
+ 
++	(void)API;
++
+ 	switch (WMF_PEN_ENDCAP (pen))
+ 	{
+ 	case PS_ENDCAP_SQUARE:
+diff --git a/src/ipa/fig/draw.h b/src/ipa/fig/draw.h
+index 9695c1b..ab77126 100644
+--- a/src/ipa/fig/draw.h
++++ b/src/ipa/fig/draw.h
+@@ -114,10 +114,11 @@ static void wmf_fig_draw_pie (wmfAPI* API,wmfDrawArc_t* draw_arc)
+ }
+ 
+ static void wmf_fig_draw_chord (wmfAPI* API,wmfDrawArc_t* draw_arc)
+-{	(void)draw_arc;
+-	wmf_fig_t* ddata = WMF_FIG_GetData (API);
++{	wmf_fig_t* ddata = WMF_FIG_GetData (API);
+ 
+ 	wmfStream* out = ddata->out;
++
++	(void)draw_arc;
+ 	
+ 	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]draw_chord");
+ 
+diff --git a/src/ipa/foreign.c b/src/ipa/foreign.c
+index f08a09d..60eea4e 100644
+--- a/src/ipa/foreign.c
++++ b/src/ipa/foreign.c
+@@ -72,13 +72,14 @@ void wmf_foreign_function (wmfAPI* API)
+ }
+ 
+ int wmf_image_load_png (wmfAPI* API,FILE* png_in,wmfImage* image)
+-{	(void)API;
+-	/* wmf_foreign_t* ddata = WMF_FOREIGN_GetData (API); */
++{	/* wmf_foreign_t* ddata = WMF_FOREIGN_GetData (API); */
+ #ifdef HAVE_GD
+ 	gdImage* gd_image = 0;
+ #ifndef HAVE_LIBPNG
+ 	return (-1);
+ #endif
++	(void)API;
++
+ 	gd_image = gdImageCreateFromPng (png_in);
+ 
+ 	if (gd_image == 0) return (-1);
+@@ -92,18 +93,20 @@ int wmf_image_load_png (wmfAPI* API,FILE* png_in,wmfImage* image)
+ 
+ 	return (0);
+ #else /* HAVE_GD */
++	(void)API;
+ 	return (-1);
+ #endif /* HAVE_GD */
+ }
+ 
+ int wmf_image_load_jpg (wmfAPI* API,FILE* jpg_in,wmfImage* image)
+-{	(void)API;
+-	/* wmf_foreign_t* ddata = WMF_FOREIGN_GetData (API); */
++{	/* wmf_foreign_t* ddata = WMF_FOREIGN_GetData (API); */
+ #ifdef HAVE_GD
+ 	gdImage* gd_image = 0;
+ #ifndef HAVE_LIBJPEG
+ 	return (-1);
+ #endif
++	(void)API;
++
+ 	gd_image = gdImageCreateFromJpeg (jpg_in);
+ 
+ 	if (gd_image == 0) return (-1);
+@@ -117,6 +120,7 @@ int wmf_image_load_jpg (wmfAPI* API,FILE* jpg_in,wmfImage* image)
+ 
+ 	return (0);
+ #else /* HAVE_GD */
++	(void)API;
+ 	return (-1);
+ #endif /* HAVE_GD */
+ }
+diff --git a/src/meta.c b/src/meta.c
+index ea14f94..258dcb6 100644
+--- a/src/meta.c
++++ b/src/meta.c
+@@ -556,11 +556,12 @@ const char * wmf_attr_add (wmfAPI * API, wmfAttributes * list,
+ }
+ 
+ const char * wmf_attr_query (wmfAPI * API, wmfAttributes * list, const char* name)
+-{	(void)API;
+-	unsigned long i;
++{	unsigned long i;
+ 
+ 	const char * value = 0;
+ 
++	(void)API;
++
+ 	if (list == 0) return 0;
+ 	if (list->atts == 0) return 0;
+ 
+diff --git a/src/player.c b/src/player.c
+index 813a2bf..a50af8f 100644
+--- a/src/player.c
++++ b/src/player.c
+@@ -85,8 +85,11 @@ wmf_error_t wmf_player_init (wmfAPI* API)
+  * @return Returns the library error state (\b wmf_E_None on success).
+  */
+ wmf_error_t wmf_scan (wmfAPI* API,unsigned long flags,wmfD_Rect* d_r)
+-{	(void)flags;
+-	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
++{	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
++
++	U32 nMaxRecordSize;
++
++	(void)flags;
+ 
+ 	WMF_DEBUG (API,"~~~~~~~~wmf_scan");
+ 
+@@ -141,7 +144,7 @@ wmf_error_t wmf_scan (wmfAPI* API,unsigned long flags,wmfD_Rect* d_r)
+ 		return (API->err);
+ 	}
+ 
+-	U32 nMaxRecordSize = (MAX_REC_SIZE(API)  ) * 2 * sizeof (unsigned char);
++	nMaxRecordSize = (MAX_REC_SIZE(API)  ) * 2 * sizeof (unsigned char);
+ 	if (nMaxRecordSize)
+ 	{
+ 		//before allocating memory do a sanity check on size by seeking
+@@ -150,12 +153,13 @@ wmf_error_t wmf_scan (wmfAPI* API,unsigned long flags,wmfD_Rect* d_r)
+ 		//to SEEK_END. So use what we have to skip to the last byte and
+ 		//try and read it.
+ 		const long nPos = WMF_TELL (API);
++		int byte;
+ 		WMF_SEEK (API, nPos + nMaxRecordSize - 1);
+ 		if (ERR (API))
+ 		{	WMF_DEBUG (API,"bailing...");
+ 			return (API->err);
+ 		}
+-		int byte = WMF_READ (API);
++		byte = WMF_READ (API);
+ 		if (byte == (-1))
+ 		{	WMF_ERROR (API,"Unexpected EOF!");
+ 		       	API->err = wmf_E_EOF;
+@@ -312,10 +316,11 @@ wmf_error_t wmf_display_size (wmfAPI* API,unsigned int* width,unsigned int* heig
+  * @return Returns the library error state (\b wmf_E_None on success).
+  */
+ wmf_error_t wmf_play (wmfAPI* API,unsigned long flags,wmfD_Rect* d_r)
+-{	(void)flags;
+-	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
++{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+ 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
+ 
++	(void)flags;
++
+ 	WMF_DEBUG (API,"~~~~~~~~wmf_play");
+ 
+ 	if (ERR (API))
+diff --git a/src/player/color.h b/src/player/color.h
+index cf54b86..2b1b54e 100644
+--- a/src/player/color.h
++++ b/src/player/color.h
+@@ -386,13 +386,14 @@ wmfRGB wmf_rgb_black (void)
+  * @return Returns the color.
+  */
+ wmfRGB wmf_rgb_color (wmfAPI* API,float red,float green,float blue)
+-{	(void)API;
+-	wmfRGB color;
++{	wmfRGB color;
+ 
+ 	int i_red;
+ 	int i_green;
+ 	int i_blue;
+ 
++	(void)API;
++
+ 	if (red	  > 1) red   = 1;
+ 	if (green > 1) green = 1;
+ 	if (blue  > 1) blue  = 1;
+-- 
+2.30.2
+

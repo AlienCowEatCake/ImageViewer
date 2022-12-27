@@ -1,4 +1,4 @@
-# URL: http://wvware.sourceforge.net/libwmf.html
+# URL: http://wvware.sourceforge.net/libwmf.html + https://github.com/caolanm/libwmf + https://github.com/ArtifexSoftware/urw-base35-fonts
 # License: GNU GPL v2 - https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 include($${PWD}/../../Features.pri)
@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libwmf {
 
-        THIRDPARTY_LIBWMF_PATH = $${PWD}/libwmf-0.2.8.4
+        THIRDPARTY_LIBWMF_PATH = $${PWD}/libwmf-ad365e1
 
         INCLUDEPATH += $${THIRDPARTY_LIBWMF_PATH}/include $${THIRDPARTY_LIBWMF_PATH}
         DEPENDPATH += $${THIRDPARTY_LIBWMF_PATH}/include $${THIRDPARTY_LIBWMF_PATH}

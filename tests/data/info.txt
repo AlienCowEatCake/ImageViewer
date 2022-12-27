@@ -754,6 +754,12 @@ Image from https://university.prognoz.ru/biu/ru/Image:image114.wmz
 Image from http://comsquare.dynvpn.de/forums/viewtopic.php?f=54&t=35570
  * Example Bike.wmf
 
+Image from https://gitlab.gnome.org/GNOME/gimp/-/issues/4061#note_623512
+ * germany.wmf
+
+Image from https://github.com/tienfuc/gdcmdtools/blob/357ada27cdb6ef0cc155b8fb52b6f6368cd1f277/samples/sample.wmf
+ * sample.wmf
+
 --------------------------------------------------------------------------------
 
 ::: External test images :::

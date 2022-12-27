@@ -1,0 +1,316 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta http-equiv="keywords"
+content="GDI,mapping,modes,MM_ISOTROPIC,MM_ANISOTROPIC,MM_TEXT, SetViewportOrg,SetWindowOrg,SetViewportExt,SetWindowExt,Goldstein">
+<meta name="Author" content="Rich Goldstein, M.D.">
+<meta name="GENERATOR" content="Microsoft FrontPage 2.0">
+<meta name="KeyWords"
+content="GDI,mapping,modes,MM_ISOTROPIC,MM_ANISOTROPIC,MM_TEXT, SetViewportOrg,SetWindowOrg,SetViewportExt,SetWindowExt,Goldstein">
+<title>GDI Mapping Modes Explained</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000EE"
+vlink="#551A8B" alink="#FF0000">
+<!-- Item Title - must be same as page title above -->
+<h2><font face="Arial, Helvetica">GDI Mapping Modes Explained</font></h2>
+
+<h2><!-- Date and author information --></h2>
+
+<p align="left"><font size="2" face="Arial, Helvetica"><b>Date:</b>
+8 May 1997</font><font face="Times New Roman"><br>
+</font><font size="2" face="Arial, Helvetica"><b>Author:</b> Rich
+Goldstein, MD</font>&nbsp; (<a
+href="mailto:goldstei@interport.net">goldstei@interport.net</a>)</p>
+
+<h3 align="left"><font face="Arial, Helvetica">Overview</font></h3>
+
+<p align="left"><font face="Arial, Helvetica">Each device context
+(DC, represented by TDC and derivatives in OWL) has the ability
+to maintain a coordinate system separate and distinct from the
+device it represents. So while the display may be a 640x480 or
+800x600 or whatever pixels in dimension, we can tell the DC that
+the coordinate space uses some other units.</font></p>
+
+<p align="left"><font face="Arial, Helvetica">The result is the
+existence of 2 coordinate systems: the <strong>DEVICE</strong>
+coordinate system, and the <strong>LOGICAL</strong> coordinate
+system.</font></p>
+
+<p align="left"><font face="Arial, Helvetica">In general, <strong>DEVICE</strong>
+coordinates are established by the device or it's related
+drivers. So for the monitor, the display driver determines the <strong>DEVICE</strong>
+coordinates (0,0 in the top left, width,height in pixels in the
+lower right). These are rarely if ever changed programmatically
+(the exceptions, of course, include changing screen or printer
+resolution, or paper orientation, etc.).</font></p>
+
+<p align="left"><font face="Arial, Helvetica">The <strong>LOGICAL</strong>
+coordinates relate to the device context (DC) and are established
+by the mapping mode, viewport origin and extents, and window
+origin and extents. All DC related functions accept <strong>LOGICAL</strong>
+coordinates, unless explicitly stated (e.g. DPtoLP, which
+converts <strong>DEVICE</strong> coordinates to <strong>LOGICAL</strong>
+coordinates).</font></p>
+
+<p align="left"><font face="Arial, Helvetica">The system maps
+your <strong>LOGICAL</strong> coordinates to the <strong>DEVICE</strong>
+coordinates using the viewport/window origins and extents. </font></p>
+
+<p align="left"><font face="Arial, Helvetica">So WHAT ARE THEY,
+ALREADY???</font></p>
+
+<h3 align="left"><font face="Arial, Helvetica">Origins</font></h3>
+
+<p align="left"><font face="Arial, Helvetica">OK, let's start
+with the window, which is expressed in <strong>LOGICAL</strong>
+coordinates.</font></p>
+
+<p align="left"><font face="Arial, Helvetica"><strong>SetWindowOrg()</strong>
+tells the DC the <strong>LOGICAL</strong> point that maps to the <strong>DEVICE</strong>
+point (0,0). So if you call <strong>SetWindowOrg(100,100)</strong>
+for a window, the <strong>LOGICAL</strong> point (100,100) occurs
+in the top left corner. (Hold on, this was the easy one...)</font></p>
+
+<p align="left"><font face="Arial, Helvetica"><strong>SetViewportOrg()</strong>
+tells the DC which <strong>DEVICE</strong> coordinate maps to <strong>LOGICAL</strong>
+point (0,0). So calling <strong>SetViewportOrg()</strong>
+with half the width and height of your window (in pixels), for
+example, sets the <strong>LOGICAL</strong> point (0,0) to the
+center of the window.</font></p>
+
+<p align="left"><font face="Arial, Helvetica"><strong>SetWindowOrg()</strong>
+and <strong>SetViewportOrg()</strong> can be called on
+any Mapping Mode. They serve to offset the origin of one system
+within the other. They have no effect on the relative distances
+specified by the two coordinate systems.</font></p>
+
+<table border="0" cellpadding="2" width="100%">
+    <tr>
+        <td colspan="3"><font size="3" face="Arial, Helvetica"><strong>Advanced
+        Note:</strong></font></td>
+    </tr>
+    <tr>
+        <td width="10%"><font face="Arial, Helvetica"></font>&nbsp;</td>
+        <td width="80%"><font size="2" face="Arial, Helvetica">Believe
+        it or not, there are some (though few) reasons to use
+        BOTH SetWindowOrg() and SetViewportOrg(). OWL's TScroller
+        provides one such opportunity. In AutoOrg mode, the
+        TScroller calls SetViewportOrg in it's BeginView member
+        function, which is called before Paint is called. If your
+        <strong>LOGICAL </strong>coordinate system uses an origin
+        other that the top-left of the window, you can call
+        SetWindowOrg in the Paint method to choose some other
+        origin. Because both functions can be used safely
+        together, you can let TScroller adjust the Viewport
+        origin to facilitate scrolling, and you can adjust the
+        Window origin to facilitate alternative coordinate
+        systems.</font></td>
+        <td width="10%">&nbsp;</td>
+    </tr>
+</table>
+
+<h3 align="left"><font face="Arial, Helvetica">Mapping Modes</font></h3>
+
+<p align="left"><font face="Arial, Helvetica">There are several
+mapping modes, some of which are constrained to a fixed
+relationship between <strong>DEVICE</strong> and <strong>LOGICAL</strong>
+coordinate systems. Here is the list:</font></p>
+<div align="center"><center>
+
+<table border="1" cellspacing="1" width="63%">
+    <tr>
+        <th width="30%" nowrap><font size="2"
+        face="Arial,Helvetica">Name/Constant&nbsp;</font> </th>
+        <th width="20%"><font size="2" face="Arial,Helvetica">Constrained?&nbsp;</font>
+        </th>
+        <th width="40%"><font size="2" face="Arial,Helvetica">Logical
+        Unit&nbsp;</font> </th>
+    </tr>
+    <tr>
+        <td><font size="2" face="Arial,Helvetica">MM_TEXT
+        (default)&nbsp;</font> </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">Yes&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">Pixel&nbsp;</font>
+        </td>
+    </tr>
+    <tr>
+        <td><font size="2" face="Arial,Helvetica">MM_LOENGLISH&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">Yes&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">0.01
+        inch&nbsp;</font> </td>
+    </tr>
+    <tr>
+        <td width="25%"><font size="2" face="Arial,Helvetica">MM_HIENGLISH&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">Yes&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">0.001
+        inch&nbsp;</font> </td>
+    </tr>
+    <tr>
+        <td><font size="2" face="Arial,Helvetica">MM_LOMETRIC&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">Yes&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">0.1
+        mm&nbsp;</font> </td>
+    </tr>
+    <tr>
+        <td><font size="2" face="Arial,Helvetica">MM_HIMETRIC&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">Yes&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">0.01
+        mm&nbsp;</font> </td>
+    </tr>
+    <tr>
+        <td><font size="2" face="Arial,Helvetica">MM_TWIPS&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">Yes&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">1/20
+        of a point, or 1/1440 of an inch&nbsp;</font> </td>
+    </tr>
+    <tr>
+        <td><font size="2" face="Arial,Helvetica">MM_ISOTROPIC&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">No&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">User
+        Defined&nbsp;</font> </td>
+    </tr>
+    <tr>
+        <td><font size="2" face="Arial,Helvetica">MM_ANISOTROPIC&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">No&nbsp;</font>
+        </td>
+        <td align="center"><font size="2" face="Arial,Helvetica">User
+        Defined&nbsp;</font> </td>
+    </tr>
+</table>
+</center></div>
+
+<p><font face="Arial,Helvetica">For the 'constrained' modes, all
+you are allowed is to change the origin of the logical system
+using either <strong>SetWindowOrg</strong> or <strong>SetViewportOrg</strong>.</font></p>
+
+<p><font face="Arial,Helvetica">This means that if I set the
+mapping mode to <strong>MM_LOENGLISH</strong>, the point (0,0)
+and (0,100) are 1 inch apart (1 Logical inch, defined by the
+device capabilities, see <strong>GetDeviceCaps()</strong>)</font></p>
+
+<h3><font face="Arial,Helvetica">Extents</font></h3>
+
+<p><font face="Arial,Helvetica">Extents are a little trickier,
+because how they are interpreted depends on the mapping mode.
+They are only appropriate for the non-constrained modes, <strong>MM_ISOTROPIC</strong>
+and <strong>MM_ANISOTROPIC</strong>.</font></p>
+
+<p><font face="Arial,Helvetica">The difference between these two
+modes is that <strong>MM_ISOTROPIC</strong> takes the parameters
+you pass to <strong>SetViewportExt</strong> and <strong>SetWindowExt</strong>
+as 'suggestions' (</font><a href="#suggestion"><font
+face="Arial,Helvetica">see below</font></a><font
+face="Arial,Helvetica">) and adjusts the extents so the the x and
+y axis coordinates represent the same distance on the device.
+This way, a <strong>LOGICAL</strong> unit in the x direction is
+the same length (in terms of the output) as a <strong>LOGICAL</strong>
+unit in the y direction (this is not intuitive... some printers
+may have different resolutions in the two axes... this mode
+ensures that the <strong>LOGICAL</strong> units are equivalent in
+space).</font></p>
+
+<p><font face="Arial,Helvetica"><strong>MM_ANISOTROPIC</strong>
+differs in that the parameters passed to <strong>SetViewportExt</strong>
+and <strong>SetWindowExt</strong> are taken literally.
+Windows make no adjustment. Therefore, you can have very
+different coordinate systems in the two axes.</font></p>
+
+<p><font face="Arial,Helvetica"><strong>SetWindowExt</strong>
+and <strong>SetViewportExt</strong> are used as a team.
+These two functions set some internal members in the DC, which
+are used to map points between coordinate systems. As such, each
+is essentially meaningless taken alone.</font></p>
+
+<p><font face="Arial,Helvetica"><strong>SetWindowExt</strong>
+tells the DC that a rectangle with the <strong>LOGICAL</strong>
+width and height passed in, has the <strong>DEVICE</strong> width
+and height passed in via <strong>SetViewportExt</strong>.
+Confused yet?</font></p>
+
+<p><font face="Arial,Helvetica">Let's say that I call <strong>SetViewportExt</strong>
+for a display device with the parameters 100,50. Taken alone,
+that's rather meaningless. Now I call <strong>SetWindowExt</strong>
+with parameters 100,100. This means that for each <strong>LOGICAL</strong>
+unit in the x direction, I will move 1 <strong>DEVICE</strong>
+unit. On the other hand, for each <strong>LOGICAL</strong> unit I
+move in the y direction, I move 1/2 a unit in the <strong>DEVICE</strong>
+coordinate.</font></p>
+
+<p><font face="Arial,Helvetica">These functions can also be
+called with negative numbers. When the sign of the parameters to <strong>SetWindowExt</strong>
+and <strong>SetViewportExt</strong> a different, the
+direction of the axes changes. So that the positive y direction
+can be up,</font> <font face="Arial,Helvetica">instead of the
+usual default of down, if I call:</font></p>
+
+<pre><font face="Arial,Helvetica">SetWindowExt(1,-1);</font>
+<font face="Arial,Helvetica">SetViewportExt(1,1);</font></pre>
+
+<p><font face="Arial,Helvetica">One LOGICAL x unit translates to
+1 <strong>DEVICE</strong> x unit, but 1 <strong>LOGICAL</strong>
+y unit translates to 1 <strong>DEVICE</strong> y unit, in the
+opposite direction.</font></p>
+
+<p><font face="Arial,Helvetica">Basically, here is the formula
+used (by Windows) to convert <strong>LOGICAL</strong> points to <strong>DEVICE</strong>
+points:</font></p>
+
+<p><font face="Arial,Helvetica">where x<sub>D</sub> = the <strong>DEVICE</strong>
+coordinate</font><br>
+<font face="Arial,Helvetica">&nbsp; and x<sub>L</sub> = the <strong>LOGICAL</strong>
+coordinate</font></p>
+
+<p><font face="Arial,Helvetica">&nbsp;&nbsp;&nbsp;&nbsp; x<sub>D</sub>
+= (x<sub>L</sub> - xWindowOrg)*(xViewportExt/xWindowExt) +
+xViewportOrg</font> </p>
+
+<p><font face="Arial,Helvetica">If that makes anything clearer.</font></p>
+
+<h3><a name="suggestion"><font face="Arial,Helvetica"></font></a><font
+face="Arial,Helvetica">How Windows handles extents for
+MM_ISOTROPIC</font></h3>
+
+<p><font face="Arial,Helvetica">Assuming that <strong>SetWindowExt</strong>
+is called BEFORE <strong>SetViewportExt</strong>
+(recommended), how the adjustments are made depends on the actual
+physical dimensions of the extents passed to <strong>SetViewportExt</strong>.
+Since device coordinates are not necessarily in equal units in
+the two axes, they are probably adjusted internally according to
+LOGPIXELSX/LOGPIXELSY.</font></p>
+
+<p><font face="Arial,Helvetica">If the physical dimensions of the
+Viewport Extents are wider than they are tall, the x extent is
+adjusted so that it's <strong>LOGICAL</strong> units are equal to
+the <strong>LOGICAL</strong> units for the y axis (as defined by
+the y parameters passed to <strong>SetWindowExt</strong> /
+<strong>SetViewportExt</strong>).</font></p>
+
+<p><font face="Arial,Helvetica">If the physical dimensions of the
+Viewport Extents are taller than they are wide, the y extent is
+adjusted.</font></p>
+
+<hr>
+
+<p><font size="2" face="Arial,Helvetica"><em>Contents of this
+page Copyright © 1997, Rich Goldstein, MD. All Rights Reserved.</em></font></p>
+<p><a href="support.html">back</a>
+</body>
+</html>

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -115,7 +115,7 @@ public:
 
         wmf_error_t error;
 
-        unsigned long flags = WMF_OPT_FUNCTION | WMF_OPT_IGNORE_NONFATAL;
+        unsigned long flags = WMF_OPT_FUNCTION | WMF_OPT_IGNORE_NONFATAL | WMF_OPT_SYS_FONTS | WMF_OPT_XTRA_FONTS;
         error = wmf_api_create(&m_API, flags, &m_options);
         if(error != wmf_E_None)
         {

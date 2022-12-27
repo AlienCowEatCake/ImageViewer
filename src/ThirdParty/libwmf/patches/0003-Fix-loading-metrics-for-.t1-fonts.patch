@@ -1,0 +1,68 @@
+From 80205bb96dc540e3a202e297e9d3484bfb2b24a9 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Wed, 28 Dec 2022 22:14:56 +0700
+Subject: [PATCH 3/3] Fix loading metrics for .t1 fonts
+
+---
+ src/font.c | 28 ++++++++++++++++++++++++----
+ 1 file changed, 24 insertions(+), 4 deletions(-)
+
+diff --git a/src/font.c b/src/font.c
+index ee7fcb6..038c46c 100644
+--- a/src/font.c
++++ b/src/font.c
+@@ -1548,13 +1548,23 @@ static FT_Face ipa_font_face (wmfAPI* API,wmfFont* font,char* ps_name)
+ 
+ 	metrics = 0;
+ 	if (glyphs)
+-	{	if (strlen (name) > 3)
+-		{	suffix = name + strlen (name) - 4;
++	{	size_t name_length = strlen (name);
++		if (name_length > 3)
++		{	suffix = name + name_length - 4;
+ 			if ((strcmp (suffix,".pfa") == 0) || (strcmp (suffix,".pfb") == 0))
+ 			{	strcpy (suffix,".afm");
+ 				metrics = ipa_font_path_find (API,name);
+ 			}
+ 		}
++		if ((metrics == 0) && (name_length > 2))
++		{	suffix = name + name_length - 3;
++			if ((strcmp (suffix,".t1") == 0))
++			{	name = wmf_realloc (API,name,name_length+2);
++				suffix = name + name_length - 3;
++				strcpy (suffix,".afm");
++				metrics = ipa_font_path_find (API,name);
++			}
++		}
+ 
+ 		face = ipa_font_face_open (API,ps_name,glyphs,metrics);
+ 	}
+@@ -1585,13 +1595,23 @@ static FT_Face ipa_font_face (wmfAPI* API,wmfFont* font,char* ps_name)
+ 
+ 	metrics = 0;
+ 	if (glyphs)
+-	{	if (strlen (name) > 3)
+-		{	suffix = name + strlen (name) - 4;
++	{	size_t name_length = strlen (name);
++		if (name_length > 3)
++		{	suffix = name + name_length - 4;
+ 			if ((strcmp (suffix,".pfa") == 0) || (strcmp (suffix,".pfb") == 0))
+ 			{	strcpy (suffix,".afm");
+ 				metrics = ipa_font_path_find (API,name);
+ 			}
+ 		}
++		if ((metrics == 0) && (name_length > 2))
++		{	suffix = name + name_length - 3;
++			if ((strcmp (suffix,".t1") == 0))
++			{	name = wmf_realloc (API,name,name_length+2);
++				suffix = name + name_length - 3;
++				strcpy (suffix,".afm");
++				metrics = ipa_font_path_find (API,name);
++			}
++		}
+ 
+ 		face = ipa_font_face_open (API,ps_name,glyphs,metrics);
+ 	}
+-- 
+2.30.2
+
