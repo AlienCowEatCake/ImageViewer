@@ -1,4 +1,4 @@
-From b8182c5ff25fed1ecd39109f810bfa72c12321f0 Mon Sep 17 00:00:00 2001
+From 91cd6b258699d532bbcb0918cdba372289d102ad Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 24 Jun 2020 19:53:15 +0700
 Subject: [PATCH 7/8] Revert "Use QList instead of QVector"

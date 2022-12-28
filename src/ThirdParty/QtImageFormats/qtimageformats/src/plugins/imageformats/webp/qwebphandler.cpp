@@ -76,7 +76,11 @@ bool QWebpHandler::ensureScanned() const
     // We do no random access during decoding, just a readAll() of the whole image file. So if
     // if it is all available already, we can accept a sequential device. The riff header contains
     // the file size minus 8 bytes header
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 7, 0))
     qint64 byteSize = qFromLittleEndian<quint32>(header.constData() + 4);
+#else
+    qint64 byteSize = qFromLittleEndian<quint32>(reinterpret_cast<const uchar *>(header.constData() + 4));
+#endif
     if (device()->isSequential() && device()->bytesAvailable() < byteSize + 8) {
         qWarning() << "QWebpHandler: Insufficient data available in sequential device";
         return false;

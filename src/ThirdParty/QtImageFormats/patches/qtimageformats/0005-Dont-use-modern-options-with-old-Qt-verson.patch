@@ -1,4 +1,4 @@
-From 54fef4ae5018d1fb81777276fc86ab7c4230233f Mon Sep 17 00:00:00 2001
+From b2b14d4eb9b00821688896cd2731c966db9b73d6 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 7 Jan 2019 21:11:00 +0700
 Subject: [PATCH 5/8] Dont use modern options with old Qt verson
@@ -12,8 +12,8 @@ Subject: [PATCH 5/8] Dont use modern options with old Qt verson
  .../imageformats/tiff/qtiffhandler.cpp        | 110 ++++++++++++++++++
  .../imageformats/tiff/qtiffhandler_p.h        |   4 +
  .../imageformats/wbmp/qwbmphandler.cpp        |   4 +
- .../imageformats/webp/qwebphandler.cpp        |  28 +++++
- 9 files changed, 194 insertions(+), 1 deletion(-)
+ .../imageformats/webp/qwebphandler.cpp        |  32 +++++
+ 9 files changed, 198 insertions(+), 1 deletion(-)
 
 diff --git a/src/plugins/imageformats/dds/qddshandler.cpp b/src/plugins/imageformats/dds/qddshandler.cpp
 index 673718f..0196096 100644
@@ -526,10 +526,22 @@ index 581984d..d41ff93 100644
          return QImage();
  
 diff --git a/src/plugins/imageformats/webp/qwebphandler.cpp b/src/plugins/imageformats/webp/qwebphandler.cpp
-index 922868c..1904201 100644
+index 922868c..55603ad 100644
 --- a/src/plugins/imageformats/webp/qwebphandler.cpp
 +++ b/src/plugins/imageformats/webp/qwebphandler.cpp
-@@ -89,10 +89,14 @@ bool QWebpHandler::ensureScanned() const
+@@ -76,7 +76,11 @@ bool QWebpHandler::ensureScanned() const
+     // We do no random access during decoding, just a readAll() of the whole image file. So if
+     // if it is all available already, we can accept a sequential device. The riff header contains
+     // the file size minus 8 bytes header
++#if (QT_VERSION >= QT_VERSION_CHECK(5, 7, 0))
+     qint64 byteSize = qFromLittleEndian<quint32>(header.constData() + 4);
++#else
++    qint64 byteSize = qFromLittleEndian<quint32>(reinterpret_cast<const uchar *>(header.constData() + 4));
++#endif
+     if (device()->isSequential() && device()->bytesAvailable() < byteSize + 8) {
+         qWarning() << "QWebpHandler: Insufficient data available in sequential device";
+         return false;
+@@ -89,10 +93,14 @@ bool QWebpHandler::ensureScanned() const
                  that->m_frameCount = WebPDemuxGetI(m_demuxer, WEBP_FF_FRAME_COUNT);
                  that->m_bgColor = QColor::fromRgba(QRgb(WebPDemuxGetI(m_demuxer, WEBP_FF_BACKGROUND_COLOR)));
  
@@ -544,7 +556,7 @@ index 922868c..1904201 100644
                  if (that->m_features.has_alpha)
                      that->m_composited->fill(Qt::transparent);
  
-@@ -161,11 +165,19 @@ bool QWebpHandler::read(QImage *image)
+@@ -161,11 +169,19 @@ bool QWebpHandler::read(QImage *image)
          return false;
  
      QImage::Format format = m_features.has_alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
@@ -564,7 +576,7 @@ index 922868c..1904201 100644
  #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
      if (!WebPDecodeBGRAInto(
          reinterpret_cast<const uint8_t*>(m_iter.fragment.bytes), m_iter.fragment.size,
-@@ -215,7 +227,11 @@ bool QWebpHandler::write(const QImage &image)
+@@ -215,7 +231,11 @@ bool QWebpHandler::write(const QImage &image)
  
      QImage srcImage = image;
      bool alpha = srcImage.hasAlphaChannel();
@@ -576,7 +588,7 @@ index 922868c..1904201 100644
      if (srcImage.format() != newFormat)
          srcImage = srcImage.convertToFormat(newFormat);
  
-@@ -231,10 +247,22 @@ bool QWebpHandler::write(const QImage &image)
+@@ -231,10 +251,22 @@ bool QWebpHandler::write(const QImage &image)
      picture.height = srcImage.height();
      picture.use_argb = 1;
      bool failed = false;
