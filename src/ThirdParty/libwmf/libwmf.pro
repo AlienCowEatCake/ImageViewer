@@ -52,15 +52,11 @@ RESOURCES += \
 
 QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9
 
-# find ./src -name '*.c' | egrep -v '(/src/convert/|/src/extra/trio/|/src/io-)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBWMF_PATH}| ; s|$| \\|'
+# find ./src -name '*.c' | egrep -v "(/src/convert/|/src/extra/trio/|/src/io-|$(egrep -R '^main ' src/extra/gd | sed 's|:.*||' | xargs | sed 's/ /|/g'))" | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBWMF_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBWMF_PATH}/src/api.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/bbuf.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gd.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gd2copypal.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gd2time.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gd2topng.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gd_arc_f_buggy.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gd_clip.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gd_gd.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gd_gd2.c \
@@ -72,8 +68,6 @@ SOURCES += \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gd_png.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gd_ss.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gd_wbmp.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdcache.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gddemo.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdfontg.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdfontl.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdfontmb.c \
@@ -81,19 +75,8 @@ SOURCES += \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdfontt.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdft.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdhelpers.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdkanji.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdparttopng.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdtables.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdtest.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdtestft.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdtopng.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/gdxpm.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/mathmake.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/pngtogd.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/pngtogd2.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/testac.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/wbmp.c \
-    $${THIRDPARTY_LIBWMF_PATH}/src/extra/gd/webpng.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/font.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/ipa/eps.c \
     $${THIRDPARTY_LIBWMF_PATH}/src/ipa/fig.c \
