@@ -116,7 +116,7 @@ void LibRaw::subtract(const char *fname)
   std::vector<ushort> pixel(width, 0);
   for (row = 0; row < height; row++)
   {
-    fread(pixel.data(), 2, width, fp);
+    fread(&pixel[0], 2, width, fp);
     for (col = 0; col < width; col++)
       BAYER(row, col) = MAX(BAYER(row, col) - ntohs(pixel[col]), 0);
   }

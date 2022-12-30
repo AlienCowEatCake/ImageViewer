@@ -47,14 +47,14 @@ void LibRaw::packed_tiled_dng_load_raw()
         for (row = 0; row < tile_length && (row + trow) < raw_height; row++)
         {
           if (tiff_bps == 16)
-            read_shorts(pixel.data(), tile_width * tiff_samples);
+            read_shorts(&pixel[0], tile_width * tiff_samples);
           else
           {
             getbits(-1);
             for (col = 0; col < tile_width * tiff_samples; col++)
               pixel[col] = getbits(tiff_bps);
           }
-          for (rp = pixel.data(), col = 0; col < tile_width; col++)
+          for (rp = &pixel[0], col = 0; col < tile_width; col++)
             adobe_copy_pixel(trow+row, tcol+col, &rp);
         }
         fseek(ifp, save + 4, SEEK_SET);
@@ -215,10 +215,10 @@ void LibRaw::broadcom_load_raw()
 
   for (row = 0; row < raw_height; row++)
   {
-    if (fread(data.data() + raw_stride, 1, raw_stride, ifp) < raw_stride)
+    if (fread(&data[0] + raw_stride, 1, raw_stride, ifp) < raw_stride)
       derror();
     FORC(raw_stride) data[c] = data[raw_stride + (c ^ rev)];
-    for (dp = data.data(), col = 0; col < raw_width; dp += 5, col += 4)
+    for (dp = &data[0], col = 0; col < raw_width; dp += 5, col += 4)
       FORC4 RAW(row, col + c) = (dp[c] << 2) | (dp[4] >> (c << 1) & 3);
   }
 }

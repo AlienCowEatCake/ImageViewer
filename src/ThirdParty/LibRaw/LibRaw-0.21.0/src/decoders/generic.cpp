@@ -92,7 +92,7 @@ void LibRaw::eight_bit_load_raw()
   for (row = 0; row < raw_height; row++)
   {
       checkCancel();
-      if (fread(pixel.data(), 1, raw_width, ifp) < raw_width)
+      if (fread(&pixel[0], 1, raw_width, ifp) < raw_width)
           derror();
       for (col = 0; col < raw_width; col++)
           RAW(row, col) = curve[pixel[col]];

@@ -410,9 +410,9 @@ void LibRaw::panasonicC6_load_raw()
   {
     int rowstoread = MIN(rowstep, imgdata.sizes.raw_height - row);
     if (libraw_internal_data.internal_data.input->read(
-            iobuf.data(), rowbytes, rowstoread) != rowstoread)
+            &iobuf[0], rowbytes, rowstoread) != rowstoread)
       throw LIBRAW_EXCEPTION_IO_EOF;
-    pana_cs6_page_decoder page(iobuf.data(), rowbytes * rowstoread);
+    pana_cs6_page_decoder page(&iobuf[0], rowbytes * rowstoread);
     for (int crow = 0, col = 0; crow < rowstoread; crow++, col = 0)
     {
       unsigned short *rowptr =
@@ -853,9 +853,9 @@ void LibRaw::phase_one_load_raw_s()
 		if (readsz > maxsz)
 			throw LIBRAW_EXCEPTION_IO_CORRUPT;
 
-		if(libraw_internal_data.internal_data.input->read(datavec.data(), 1, readsz) != readsz)
+		if(libraw_internal_data.internal_data.input->read(&datavec[0], 1, readsz) != readsz)
 			derror(); // TODO: check read state
 
-		decode_S_type(imgdata.sizes.raw_width, (uint32_t *)datavec.data(), datap /*, 14 */);
+		decode_S_type(imgdata.sizes.raw_width, (uint32_t *)(&datavec[0]), datap /*, 14 */);
 	}
 }

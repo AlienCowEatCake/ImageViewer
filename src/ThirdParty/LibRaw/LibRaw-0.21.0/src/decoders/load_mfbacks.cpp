@@ -465,7 +465,7 @@ int LibRaw::phase_one_correct()
     }
     if (!badCols.empty())
     {
-      qsort(badCols.data(), badCols.size(), sizeof(unsigned), unsigned_cmp);
+      qsort(&badCols[0], badCols.size(), sizeof(unsigned), unsigned_cmp);
       bool prevIsolated = true;
       for (i = 0; i < (int)badCols.size(); ++i)
       {

@@ -385,10 +385,10 @@ void LibRaw::deflate_dng_load_raw()
       for (size_t x = 0; x < imgdata.sizes.raw_width; x += tiles.tileWidth, ++t)
       {
         libraw_internal_data.internal_data.input->seek(tiles.tOffsets[t], SEEK_SET);
-        libraw_internal_data.internal_data.input->read(cBuffer.data(), 1, tiles.tBytes[t]);
+        libraw_internal_data.internal_data.input->read(&cBuffer[0], 1, tiles.tBytes[t]);
         unsigned long dstLen = tileBytes;
         int err =
-            uncompress(uBuffer.data() + tileRowBytes, &dstLen, cBuffer.data(), (unsigned long)tiles.tBytes[t]);
+            uncompress(&uBuffer[0] + tileRowBytes, &dstLen, &cBuffer[0], (unsigned long)tiles.tBytes[t]);
         if (err != Z_OK)
         {
           throw LIBRAW_EXCEPTION_DECODE_RAW;
@@ -402,7 +402,7 @@ void LibRaw::deflate_dng_load_raw()
 
           for (size_t row = 0; row < rowsInTile; ++row) // do not process full tile if not needed
           {
-              unsigned char *dst = uBuffer.data() + row * tiles.tileWidth * bytesps * ifd->samples;
+              unsigned char *dst = &uBuffer[0] + row * tiles.tileWidth * bytesps * ifd->samples;
               unsigned char *src = dst + tileRowBytes;
               DecodeFPDelta(src, dst, tiles.tileWidth / xFactor, ifd->samples * xFactor, bytesps);
               float lmax = expandFloats(dst, tiles.tileWidth * ifd->samples, bytesps);
@@ -639,7 +639,7 @@ void LibRaw::uncompressed_fp_dng_load_raw()
 
             for (size_t row = 0; row < rowsInTile; ++row) // do not process full tile if not needed
             {
-                unsigned char *dst = fullrowbytes > inrowbytes ? rowbuf.data(): // last tile in row, use buffer
+                unsigned char *dst = fullrowbytes > inrowbytes ? &rowbuf[0]: // last tile in row, use buffer
                     (unsigned char *)&float_raw_image
                     [((y + row) * imgdata.sizes.raw_width + x) * ifd->samples];
                 libraw_internal_data.internal_data.input->read(dst, 1, fullrowbytes);

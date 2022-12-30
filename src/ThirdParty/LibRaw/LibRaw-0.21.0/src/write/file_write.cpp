@@ -183,7 +183,7 @@ void LibRaw::write_ppm_tiff()
             SWAP(height, width);
 
         std::vector<uchar> ppm(width * colors * output_bps / 8);
-        ppm2 = (ushort *)ppm.data();
+        ppm2 = (ushort *)(&ppm[0]);
         if (output_tiff)
         {
             tiff_head(&th, 1);
@@ -233,7 +233,7 @@ void LibRaw::write_ppm_tiff()
                     FORCC ppm2[col * colors + c] = curve[image[soff][c]];
             if (output_bps == 16 && !output_tiff && htons(0x55aa) != 0x55aa)
                 libraw_swab(ppm2, width * colors * 2);
-            fwrite(ppm.data(), colors * output_bps / 8, width, ofp);
+            fwrite(&ppm[0], colors * output_bps / 8, width, ofp);
         }
     }
     catch (...)

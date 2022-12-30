@@ -896,7 +896,7 @@ int LibRaw_bigfile_buffered_datastream::read(void *data, size_t size, size_t nme
         return int(r / size);
     }
 
-    unsigned char *fBuffer = (unsigned char*)iobuffers[0].data();
+    unsigned char *fBuffer = (unsigned char*)(&iobuffers[0][0]);
     while (count)
     {
         INT64 inbuffer = 0;
@@ -946,7 +946,7 @@ bool LibRaw_bigfile_buffered_datastream::fillBufferAt(int bi, INT64 off)
     iobuffers[bi]._bend = MIN(iobuffers[bi]._bstart + (INT64)iobuffers[bi].size(), _fsize);
     if (iobuffers[bi]._bend <= off) // Buffer alignment problem, fallback
         return false;
-    INT64 rr = readAt(iobuffers[bi].data(), (uint32_t)(iobuffers[bi]._bend - iobuffers[bi]._bstart), iobuffers[bi]._bstart);
+    INT64 rr = readAt(&iobuffers[bi][0], (uint32_t)(iobuffers[bi]._bend - iobuffers[bi]._bstart), iobuffers[bi]._bstart);
     if (rr > 0)
     {
         iobuffers[bi]._bend = iobuffers[bi]._bstart + rr;
@@ -993,7 +993,7 @@ char *LibRaw_bigfile_buffered_datastream::gets(char *s, int sz)
     if (bufindex < 0) return NULL;
     if (contains >= sz)
     {
-        unsigned char *buf = iobuffers[bufindex].data() + (_fpos - iobuffers[bufindex]._bstart);
+        unsigned char *buf = &iobuffers[bufindex][0] + (_fpos - iobuffers[bufindex]._bstart);
         int streampos = 0;
         int streamsize = contains;
         unsigned char *str = (unsigned char *)s;
@@ -1044,7 +1044,7 @@ int LibRaw_bigfile_buffered_datastream::scanf_one(const char *fmt, void *val)
     if (bufindex < 0) return -1;
     if (contains >= 24)
     {
-        unsigned char *bstart = iobuffers[bufindex].data() + (_fpos - iobuffers[bufindex]._bstart);
+        unsigned char *bstart = &iobuffers[bufindex][0] + (_fpos - iobuffers[bufindex]._bstart);
         int streampos = 0;
         int streamsize = contains;
         int

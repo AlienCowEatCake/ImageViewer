@@ -202,7 +202,7 @@ void LibRaw::kodak_jpeg_load_raw()
     }
 
     unsigned char *buf[1];
-    buf[0] = pixel_buf.data();
+    buf[0] = &pixel_buf[0];
 
     while (cinfo.output_scanline < cinfo.output_height)
     {
@@ -262,7 +262,7 @@ void LibRaw::kodak_c330_load_raw()
   for (row = 0; row < height; row++)
   {
       checkCancel();
-      if (fread(pixel.data(), raw_width, 2, ifp) < 2)
+      if (fread(&pixel[0], raw_width, 2, ifp) < 2)
           derror();
       if (load_flags && (row & 31) == 31)
           fseek(ifp, raw_width * 32, SEEK_CUR);
@@ -291,7 +291,7 @@ void LibRaw::kodak_c603_load_raw()
   {
       checkCancel();
       if (~row & 1)
-          if (fread(pixel.data(), raw_width, 3, ifp) < 3)
+          if (fread(&pixel[0], raw_width, 3, ifp) < 3)
               derror();
       for (col = 0; col < width; col++)
       {
@@ -320,7 +320,7 @@ void LibRaw::kodak_262_load_raw()
   FORC(2) huff[c] = make_decoder(kodak_tree[c]);
   ns = (raw_height + 63) >> 5;
   std::vector<uchar> pixel(raw_width * 32 + ns * 4);
-  strip = (int *)(pixel.data() + raw_width * 32);
+  strip = (int *)(&pixel[0] + raw_width * 32);
   order = 0x4d4d;
   FORC(ns) strip[c] = get4();
   try

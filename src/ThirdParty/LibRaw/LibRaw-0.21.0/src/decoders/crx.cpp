@@ -2463,9 +2463,9 @@ int crxReadImageHeaders(crx_data_header_t *hdr, CrxImage *img, uint8_t *mdatPtr,
       try
       {
         std::vector<int32_t> qpTable(totalQP + 2 * (qpWidth + 2));
-        int32_t *qpCurElem = qpTable.data();
+        int32_t *qpCurElem = &qpTable[0];
         // 2 lines padded with extra pixels at the start and at the end
-        int32_t *qpLineBuf = qpTable.data() + totalQP;
+        int32_t *qpLineBuf = &qpTable[0] + totalQP;
         int32_t kParam = 0;
         for (unsigned qpRow = 0; qpRow < qpHeight; ++qpRow)
         {
@@ -2482,7 +2482,7 @@ int crxReadImageHeaders(crx_data_header_t *hdr, CrxImage *img, uint8_t *mdatPtr,
         }
 
         // now we read QP data - build tile QStep
-        if (crxMakeQStep(img, tile, qpTable.data(), totalQP))
+        if (crxMakeQStep(img, tile, &qpTable[0], totalQP))
           return -1;
       }
       catch (...)
@@ -2689,7 +2689,7 @@ void LibRaw::crxLoadRaw()
     libraw_internal_data.internal_data.input->lock();
 #endif
     libraw_internal_data.internal_data.input->seek(libraw_internal_data.unpacker_data.data_offset, SEEK_SET);
-    bytes = libraw_internal_data.internal_data.input->read(hdrBuf.data(), 1, hdr.mdatHdrSize);
+    bytes = libraw_internal_data.internal_data.input->read(&hdrBuf[0], 1, hdr.mdatHdrSize);
 #ifndef LIBRAW_USE_OPENMP
     libraw_internal_data.internal_data.input->unlock();
 #endif
@@ -2701,7 +2701,7 @@ void LibRaw::crxLoadRaw()
   // parse and setup the image data
   if (crxSetupImageData(&hdr, &img, (int16_t *)imgdata.rawdata.raw_image,
 	  libraw_internal_data.unpacker_data.data_offset, libraw_internal_data.unpacker_data.data_size,
-	  hdrBuf.data(), hdr.mdatHdrSize))
+	  &hdrBuf[0], hdr.mdatHdrSize))
     throw LIBRAW_EXCEPTION_IO_CORRUPT;
 
   crxLoadDecodeLoop(&img, hdr.nPlanes);

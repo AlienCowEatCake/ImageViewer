@@ -1024,10 +1024,10 @@ void LibRaw::nokia_load_raw()
   for (row = 0; row < raw_height; row++)
   {
       checkCancel();
-      if (fread(data.data() + dwide, 1, dwide, ifp) < dwide)
+      if (fread(&data[0] + dwide, 1, dwide, ifp) < dwide)
           derror();
       FORC(dwide) data[c] = data[dwide + (c ^ rev)];
-      for (dp = data.data(), col = 0; col < raw_width; dp += 5, col += 4)
+      for (dp = &data[0], col = 0; col < raw_width; dp += 5, col += 4)
           FORC4 RAW(row, col + c) = (dp[c] << 2) | (dp[4] >> (c << 1) & 3);
   }
   maximum = 0x3ff;

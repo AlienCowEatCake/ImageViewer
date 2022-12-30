@@ -180,7 +180,7 @@ public:
         if ((_bend - _bstart) > (INT64)size()) 
             return -1;
         if (_fpos >= _bstart && _fpos < _bend)
-            return data()[_fpos - _bstart];
+            return (*this)[_fpos - _bstart];
         return -1;
     }
     bool contains(INT64 _fpos, INT64& contains)

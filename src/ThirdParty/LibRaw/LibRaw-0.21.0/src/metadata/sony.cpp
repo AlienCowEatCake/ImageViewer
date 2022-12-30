@@ -1973,7 +1973,7 @@ class checked_buffer_t
 public:
     // create with internal storage
     checked_buffer_t(short ord, int size) : _order(ord), storage(size+64) {
-        _data = storage.data();
+        _data = &storage[0];
         _len = size;
     }
     checked_buffer_t(short ord, unsigned char *dd, int ss): _order(ord), _data(dd),_len(ss){}
