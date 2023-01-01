@@ -35,7 +35,7 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>10.7</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>(c) Peter S. Zhigalov, 2017-2022</string>
+	<string>(c) Peter S. Zhigalov, 2017-2023</string>
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>en</string>
