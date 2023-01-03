@@ -10,11 +10,11 @@ ICONS_DIR_PATH="src/${PROJECT}/resources/icon"
 DEBIAN_DIR_PATH="src/${PROJECT}/resources/platform/debian"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/linux/set_associations.sh"
 
-QTDIR="/opt/qt-5.15.5_clang"
-CLANGDIR="/opt/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-14.04"
+QTDIR="/opt/qt5"
+CLANGDIR="/opt/clang"
 CMD_QMAKE="${QTDIR}/bin/qmake"
-CMD_DEPLOY="/opt/linuxdeployqt-7-x86_64.AppImage"
-CMD_APPIMAGETOOL="/opt/appimagetool-x86_64.AppImage"
+CMD_DEPLOY="/usr/local/bin/linuxdeployqt"
+CMD_APPIMAGETOOL="/usr/local/bin/appimagetool"
 
 export PATH="${CLANGDIR}/bin:${PATH}"
 export LD_LIBRARY_PATH="${CLANGDIR}/lib:${QTDIR}/lib:${LD_LIBRARY_PATH}"
@@ -41,10 +41,18 @@ find "../${ICONS_DIR_PATH}" -name '*.png' -print0 | while IFS= read -r -d '' RAS
     fi
 done
 "${CMD_DEPLOY}" "AppDir/usr/share/applications/${IDENTIFIER}.desktop" -always-overwrite -qmake="${CMD_QMAKE}" -extra-plugins=styles,platformthemes
-"${CMD_APPIMAGETOOL}" --no-appstream "AppDir" ../"${PROJECT}${SUFFIX}.AppImage"
+find "AppDir" -type d -exec chmod 755 \{\} \;
+find "AppDir" -type f -exec chmod 644 \{\} \;
+find "AppDir" -type f \( -name "${PROJECT}" -o -name "AppRun" -o -name "*.so*" -o -name "*.sh" -o -name "*.desktop" \) -exec chmod 755 \{\} \;
+if type "${CMD_APPIMAGETOOL}" &> /dev/null ; then
+    "${CMD_APPIMAGETOOL}" --no-appstream "AppDir" ../"${PROJECT}${SUFFIX}.AppImage"
+fi
 
 cd "AppDir"
 cp -a "../../${DEBIAN_DIR_PATH}" ./
+find "debian" -type d -exec chmod 755 \{\} \;
+find "debian" -type f -exec chmod 644 \{\} \;
+chmod 755 "debian/rules"
 dpkg-buildpackage -rfakeroot -b -uc
 cd ..
 cp -a *.deb ../

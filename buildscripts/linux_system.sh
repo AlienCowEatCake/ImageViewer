@@ -181,6 +181,9 @@ if type "dpkg-buildpackage" &> /dev/null ; then
             cp -a "${RASTER_ICON_PATH}" "AppDir/usr/share/icons/hicolor/${RASTER_ICON_SIZE}/apps/${IDENTIFIER}.${RASTER_ICON_PATH##*.}"
         fi
     done
+    find "AppDir" -type d -exec chmod 755 \{\} \;
+    find "AppDir" -type f -exec chmod 644 \{\} \;
+    find "AppDir" -type f \( -name "${PROJECT}" -o -name "AppRun" -o -name "*.so*" -o -name "*.sh" -o -name "*.desktop" \) -exec chmod 755 \{\} \;
     cd "AppDir"
     cp -a "../../${DEBIAN_DIR_PATH}" ./
     sed -i 's|^opt/ImageViewer$|usr/bin|' "debian/dirs"
@@ -188,6 +191,9 @@ if type "dpkg-buildpackage" &> /dev/null ; then
     sed -i -n '1,/^\tdh_shlibdeps/p;/^\tdh_gencontrol/,$p' "debian/rules"
     sed -i 's|^\(\tdh_shlibdeps\).*$|\1|' "debian/rules"
     sed -i 's|^\(\tcp -a usr/\* debian/imageviewer\).*$|\1/usr/|' "debian/rules"
+    find "debian" -type d -exec chmod 755 \{\} \;
+    find "debian" -type f -exec chmod 644 \{\} \;
+    chmod 755 "debian/rules"
     dpkg-buildpackage -rfakeroot -b -uc
     cd ..
     cp -a *.deb ../
