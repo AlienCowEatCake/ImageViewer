@@ -1,7 +1,7 @@
-From 8a41f0ba6c9068183408bd7512d640966afdfef7 Mon Sep 17 00:00:00 2001
+From 94e1944d482e5b0cbc709b6ae622a0fbfe8501b4 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 19:25:07 +0700
-Subject: [PATCH 3/6] Fix build with MinGW 4.7.2
+Subject: [PATCH 3/7] Fix build with MinGW 4.7.2
 
 ---
  OpenEXR/IlmImf/ImfMisc.cpp | 2 +-
@@ -21,5 +21,5 @@ index d2c84787..2ba46085 100644
    FBytes b;
    float f;
 -- 
-2.30.2
+2.39.0
 

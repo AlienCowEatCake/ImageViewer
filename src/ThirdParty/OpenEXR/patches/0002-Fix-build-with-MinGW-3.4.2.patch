@@ -1,7 +1,7 @@
-From 16355ac3adfd425381c91d33b95f8aa60b6d709c Mon Sep 17 00:00:00 2001
+From 6db60d42649362e71d1d28ef4f2382a7a551c4c5 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 18:20:28 +0700
-Subject: [PATCH 2/6] Fix build with MinGW 3.4.2
+Subject: [PATCH 2/7] Fix build with MinGW 3.4.2
 
 ---
  IlmBase/Half/half.h                          | 13 +++++++
@@ -1787,5 +1787,5 @@ index 8e8086c6..5af6d048 100644
          //
          // Access to the writable sample count array.
 -- 
-2.30.2
+2.39.0
 
