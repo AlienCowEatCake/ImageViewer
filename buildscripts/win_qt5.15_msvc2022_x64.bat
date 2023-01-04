@@ -9,6 +9,7 @@ set BUILDDIR=build_win_qt5.15_msvc2022_%ARCH%
 set SUFFIX=_qt5.15_msvc2022_%ARCH%
 set APP_PATH=src\%PROJECT%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
+set DLLRESOLVER_CMD="%~dp0\..\buildscripts\helpers\dllresolver.exe"
 set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.webview2.1.0.1462.37\build\native\%ARCH%\WebView2Loader.dll"
 
 call %VCVARS% %VCVARS_ARCH%
@@ -23,18 +24,16 @@ mkdir %BUILDDIR%
 cd %BUILDDIR%
 qmake -r CONFIG+="release" CONFIG+="enable_qtwebkit enable_update_checking" ..\%PROJECT%.pro
 nmake
+rmdir /S /Q %PROJECT%%SUFFIX% 2>nul >nul
 mkdir %PROJECT%%SUFFIX%
 copy %APP_PATH%\release\%PROJECT%.exe %PROJECT%%SUFFIX%\%PROJECT%.exe
 windeployqt --release --no-compiler-runtime --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw --translations en,ru %PROJECT%%SUFFIX%
 copy %WEBVIEW2LOADER_DLL% %PROJECT%%SUFFIX%\
-copy %QTDIR%\bin\libxml2.dll %PROJECT%%SUFFIX%\
-copy %QTDIR%\bin\libxslt.dll %PROJECT%%SUFFIX%\
 copy %OPENSSL_DIR%\*.dll %PROJECT%%SUFFIX%\
-copy %CRT_DIR%\*.dll %PROJECT%%SUFFIX%\
-copy %UCRT_DIR%\*.dll %PROJECT%%SUFFIX%\
 rmdir /S /Q %PROJECT%%SUFFIX%\position 2>nul >nul
 rmdir /S /Q %PROJECT%%SUFFIX%\sensorgestures 2>nul >nul
 rmdir /S /Q %PROJECT%%SUFFIX%\sensors 2>nul >nul
+%DLLRESOLVER_CMD% %PROJECT%%SUFFIX% %UCRT_DIR% %CRT_DIR% %QTDIR%\bin
 %ZIP_CMD% -9r ..\%PROJECT%%SUFFIX%.zip %PROJECT%%SUFFIX%
 rmdir /S /Q build_msi 2>nul >nul
 move %PROJECT%%SUFFIX% build_msi

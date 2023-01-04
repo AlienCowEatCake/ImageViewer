@@ -78,39 +78,8 @@ cd "$(dirname $0)"/..
 SOURCE_PATH="${PWD}"
 DIST_PREFIX="${PROJECT}${SUFFIX}"
 
-function getDeps() {
-    find "${DIST_PREFIX}" \( -name '*.exe' -o -name '*.dll' \) -exec objdump --private-headers \{\} \; | grep 'DLL Name:' | sort | uniq | sed 's|.* ||'
-}
-
-function checkDll() {
-    find "${DIST_PREFIX}" -name "${1}" | grep -E '*' >/dev/null 2>/dev/null
-}
-
 function copyDlls() {
-    local CHANGED
-    local RESOLVED
-    while true ; do
-        CHANGED=false
-        for i in $(getDeps) ; do
-            RESOLVED=false
-            if checkDll "${i}" ; then
-                continue
-            fi
-            for j in "${@}" ; do
-                if find "${j}" -maxdepth 1 -name "${i}" -print -exec cp -a \{\} "${DIST_PREFIX}/" \; | grep -E '*' ; then
-                    CHANGED=true
-                    RESOLVED=true
-                    break
-                fi
-            done
-            if ! ${RESOLVED} ; then
-                echo "Unresolved: ${i}"
-            fi
-        done
-        if ! ${CHANGED} ; then
-            break
-        fi
-    done
+    "${SOURCE_PATH}/buildscripts/helpers/dllresolver.exe" "${DIST_PREFIX}" "${@}"
 }
 
 function copyWebView2Loader() {
@@ -152,6 +121,7 @@ ${CMD_QMAKE} -r CONFIG+="release" \
     CONFIG+="system_libwebp system_freetype system_librsvg" \
     "${SOURCE_PATH}/${PROJECT}.pro"
 make -j4
+rm -rf "${DIST_PREFIX}"
 mkdir "${DIST_PREFIX}"
 cp -a "${APP_PATH}/release/${PROJECT}.exe" "${DIST_PREFIX}/"
 ${CMD_DEPLOY} \
@@ -165,10 +135,10 @@ ${CMD_DEPLOY} \
 find "${MSYSTEM_PREFIX}/bin" -type f \( -name 'libssl*.dll' -o -name 'libcrypto*.dll' \) -exec cp -a \{\} "${DIST_PREFIX}/" \;
 find "${DIST_PREFIX}/imageformats" -type f \( -name 'kimg_*.dll' -o -name 'qjp2.dll' -o -name 'qmng.dll' \) -delete
 find "${DIST_PREFIX}/platforms" -type f \( -name 'qdirect2d.dll' -o -name 'qminimal.dll' -o -name 'qoffscreen.dll' \) -delete
-copyDlls "${MSYSTEM_PREFIX}/bin"
+copyDlls "$(cygpath -w "${MSYSTEM_PREFIX}/bin")"
 stripAll
 copyWebView2Loader
-copyDlls "$(cygpath -u "$(getCRTPath)")" "$(cygpath -u "$(getUCRTPath)")"
+copyDlls "$(cygpath -w "$(getCRTPath)")" "$(cygpath -w "$(getUCRTPath)")"
 zip -9r "../${DIST_PREFIX}.zip" "${DIST_PREFIX}"
 rm -rf "build_msi"
 mv "${DIST_PREFIX}" "build_msi"
