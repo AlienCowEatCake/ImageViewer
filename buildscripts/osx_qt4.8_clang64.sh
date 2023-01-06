@@ -27,8 +27,8 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip CONFIG+="x86_64" -r -spec unsupported/macx-clang QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.5 "../${PROJECT}.pro"
-make
+arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip CONFIG+="x86_64" -r -spec unsupported/macx-clang QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.5 "../${PROJECT}.pro"
+arch -x86_64 make
 cd "${OUT_PATH}"
 cp -a "${SOURCE_PATH}/${INFO_PLIST_PATH}" "${APPNAME}.app/Contents/Info.plist"
 plutil -replace LSMinimumSystemVersion -string "10.5" "${APPNAME}.app/Contents/Info.plist"
