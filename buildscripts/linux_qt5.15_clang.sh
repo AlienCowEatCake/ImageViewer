@@ -24,7 +24,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 ${CMD_QMAKE} -r CONFIG+="release" CONFIG+=c++2a CONFIG+="enable_librsvg enable_qtwebkit" CONFIG+="enable_update_checking" "../${PROJECT}.pro"
-make
+make -j$(getconf _NPROCESSORS_ONLN)
 strip --strip-all "${APP_PATH}/${PROJECT}"
 
 rm -rf "AppDir"

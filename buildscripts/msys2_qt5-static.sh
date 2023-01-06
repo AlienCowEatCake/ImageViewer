@@ -49,7 +49,7 @@ ${CMD_QMAKE} -r CONFIG+="release" \
     CONFIG+="enable_update_checking" \
     CONFIG+="disable_msedgewebview2" \
     "${SOURCE_PATH}/${PROJECT}.pro"
-make -j4
+make -j$(getconf _NPROCESSORS_ONLN)
 mkdir "${DIST_PREFIX}"
 cp -a "${APP_PATH}/release/${PROJECT}.exe" "${DIST_PREFIX}/"
 stripAll

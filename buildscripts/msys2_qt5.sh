@@ -120,7 +120,7 @@ ${CMD_QMAKE} -r CONFIG+="release" \
     CONFIG+="system_zlib system_jbigkit system_lerc system_libtiff" \
     CONFIG+="system_libwebp system_freetype system_librsvg" \
     "${SOURCE_PATH}/${PROJECT}.pro"
-make -j4
+make -j$(getconf _NPROCESSORS_ONLN)
 rm -rf "${DIST_PREFIX}"
 mkdir "${DIST_PREFIX}"
 cp -a "${APP_PATH}/release/${PROJECT}.exe" "${DIST_PREFIX}/"

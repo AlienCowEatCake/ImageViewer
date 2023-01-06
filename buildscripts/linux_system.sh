@@ -164,7 +164,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 ${CMD_QMAKE} -r CONFIG+="${CONFIG_STR}" CONFIG+="enable_update_checking" INCLUDEPATH+="/usr/include/freetype2" INCLUDEPATH+="/usr/include/jxrlib" "../${PROJECT}.pro"
-make
+make -j$(getconf _NPROCESSORS_ONLN)
 strip --strip-all "${APP_PATH}/${PROJECT}"
 
 if type "dpkg-buildpackage" &> /dev/null ; then

@@ -12,7 +12,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 ${CMD_QMAKE} -r CONFIG+="release" CONFIG+="use_static_qico" CONFIG+="disable_highway disable_libjxl" CONFIG+="enable_librsvg" CONFIG+="enable_update_checking" CONFIG+="enable_cxx11" QMAKE_CXXFLAGS+="-std=gnu++1y" "../${PROJECT}.pro"
-make
+make -j$(getconf _NPROCESSORS_ONLN)
 strip --strip-all "${APP_PATH}/${PROJECT}"
 cp -a "${APP_PATH}/${PROJECT}" ../"${PROJECT}${SUFFIX}.elf"
 cd ..
