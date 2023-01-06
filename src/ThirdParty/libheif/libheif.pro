@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.14.0
+THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.14.1
 
 include(../CommonSettings.pri)
 include(../aom/aom.pri)
