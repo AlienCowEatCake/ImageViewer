@@ -75,7 +75,7 @@ function sign() {
         local max_retry=10
         local last_retry=$((${max_retry}-1))
         for ((i=0; i<${max_retry}; i++)) ; do
-            if /usr/bin/codesign \
+            if arch -x86_64 /usr/bin/codesign \
                     --sign "${APP_CERT}" \
                     --deep \
                     --force \
