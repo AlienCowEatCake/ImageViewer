@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -18,7 +18,10 @@
 */
 
 #include "Workarounds.h"
+
 #include <cstdlib>
+#include <cstring>
+
 #include <QtGlobal>
 #include <QSysInfo>
 #include <QApplication>
@@ -27,6 +30,12 @@
 #include <QFont>
 #include <QFontDatabase>
 #include <QStringList>
+
+#if defined (Q_OS_WIN)
+#include <windows.h>
+#endif
+
+#include "ThemeUtils.h"
 
 /// @brief Инициализация ресурсов статической библиотеки QtUtils
 /// @attention Функция должна быть в глобальном namespace
@@ -168,6 +177,41 @@ void StyleFix()
     const char *styleOverrideEnv = getenv("QT_STYLE_OVERRIDE");
     if(styleOverrideEnv && !QString::fromLatin1(styleOverrideEnv).compare(QString::fromLatin1("gtk2"), Qt::CaseInsensitive))
         putenv(newStyleOverrideEnv);
+#endif
+
+#if (defined (Q_OS_WIN) && QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    HIGHCONTRASTW highContrast;
+    memset(&highContrast, 0, sizeof(highContrast));
+    highContrast.cbSize = sizeof(highContrast);
+    bool isHighContrast = false;
+    if(SystemParametersInfoW(SPI_GETHIGHCONTRAST, sizeof(highContrast), &highContrast, FALSE))
+        isHighContrast = highContrast.dwFlags & HCF_HIGHCONTRASTON;
+
+    if(!isHighContrast && ThemeUtils::SystemHasDarkTheme())
+    {
+        // https://www.qt.io/blog/dark-mode-on-windows-11-with-qt-6.5
+#if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
+        static char newPlatformEnv[] = "QT_QPA_PLATFORM=windows:darkmode=1";
+        const char *platformEnv = getenv("QT_QPA_PLATFORM");
+        if(!platformEnv)
+            putenv(newPlatformEnv);
+#elif QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+        static char newPlatformEnv[] = "QT_QPA_PLATFORM=windows:darkmode=2";
+        const char *platformEnv = getenv("QT_QPA_PLATFORM");
+        static char newStyleOverrideEnv[] = "QT_STYLE_OVERRIDE=fusion";
+        const char *styleOverrideEnv = getenv("QT_STYLE_OVERRIDE");
+        if(!platformEnv && !styleOverrideEnv)
+        {
+            putenv(newPlatformEnv);
+            putenv(newStyleOverrideEnv);
+        }
+#else
+        static char newStyleOverrideEnv[] = "QT_STYLE_OVERRIDE=fusion";
+        const char *styleOverrideEnv = getenv("QT_STYLE_OVERRIDE");
+        if(!styleOverrideEnv)
+            putenv(newStyleOverrideEnv);
+#endif
+    }
 #endif
 }
 

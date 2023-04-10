@@ -252,6 +252,143 @@ QString targetDescriptionInt()
 #endif
 }
 
+#if defined (Q_OS_WIN)
+
+struct Version
+{
+    int major;
+    int minor;
+    int build;
+
+    Version(const int major = -1, const int minor = -1, const int build = -1)
+        : major(major)
+        , minor(minor)
+        , build(build)
+    {}
+};
+
+template <typename T>
+Version CreateVersion(const T major = -1, const T minor = -1, const T build = -1)
+{
+    return Version(static_cast<int>(major), static_cast<int>(minor), static_cast<int>(build));
+}
+
+Version GetCurrentWinVersionImpl()
+{
+    // https://stackoverflow.com/questions/2877295/get-os-in-c-win32-for-all-versions-of-win
+    // https://lore.kernel.org/all/20210914121420.183499-2-konstantin@daynix.com/
+    HMODULE hNetapi32 = LoadLibraryA("netapi32.dll");
+    HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
+    HMODULE hNtdll = LoadLibraryA("ntdll.dll");
+
+    DWORD osMajorVersion = 0;
+    DWORD osMinorVersion = 0;
+    DWORD osBuildNumber = 0;
+
+    if(hKernel32)
+    {
+        typedef BOOL(WINAPI *GetVersionExA_t)(LPOSVERSIONINFOEXA);
+        GetVersionExA_t GetVersionExA_f = reinterpret_cast<GetVersionExA_t>(GetProcAddress(hKernel32, "GetVersionExA"));
+        typedef BOOL(WINAPI *GetVersionA_t)(LPOSVERSIONINFOA);
+        GetVersionA_t GetVersionA_f = reinterpret_cast<GetVersionA_t>(GetProcAddress(hKernel32, "GetVersionA"));
+        bool exStatus = false;
+        if(GetVersionExA_f)
+        {
+            OSVERSIONINFOEXA osver;
+            memset(&osver, 0, sizeof(osver));
+            osver.dwOSVersionInfoSize = sizeof(osver);
+            if(GetVersionExA_f(&osver))
+            {
+                osMajorVersion = osver.dwMajorVersion;
+                osMinorVersion = osver.dwMinorVersion;
+                osBuildNumber = osver.dwBuildNumber;
+                exStatus = true;
+            }
+        }
+        if(!exStatus && GetVersionA_f)
+        {
+            OSVERSIONINFOA osver;
+            memset(&osver, 0, sizeof(osver));
+            osver.dwOSVersionInfoSize = sizeof(osver);
+            if(GetVersionA_f(&osver))
+            {
+                osMajorVersion = osver.dwMajorVersion;
+                osMinorVersion = osver.dwMinorVersion;
+                osBuildNumber = osver.dwBuildNumber;
+            }
+        }
+        if(osMajorVersion == 6 && osMinorVersion == 2)
+        {
+            typedef ULONGLONG(WINAPI *VerSetConditionMask_t)(ULONGLONG, DWORD, BYTE);
+            VerSetConditionMask_t VerSetConditionMask_f = reinterpret_cast<VerSetConditionMask_t>(GetProcAddress(hKernel32, "VerSetConditionMask"));
+            typedef BOOL(WINAPI *VerifyVersionInfoA_t)(LPOSVERSIONINFOEXA, DWORD, DWORDLONG);
+            VerifyVersionInfoA_t VerifyVersionInfoA_f = reinterpret_cast<VerifyVersionInfoA_t>(GetProcAddress(hKernel32, "VerifyVersionInfoA"));
+            if(VerSetConditionMask_f && VerifyVersionInfoA_f)
+            {
+                OSVERSIONINFOEXA osvi;
+                ULONGLONG cm = 0;
+                cm = VerSetConditionMask_f(cm, VER_MINORVERSION, VER_EQUAL);
+                memset(&osvi, 0, sizeof(osvi));
+                osvi.dwOSVersionInfoSize = sizeof(osvi);
+                osvi.dwMinorVersion = 3;
+                if(VerifyVersionInfoA_f(&osvi, VER_MINORVERSION, cm))
+                    osMinorVersion = 3;
+            }
+        }
+    }
+
+    if(hNetapi32)
+    {
+        typedef NET_API_STATUS(NET_API_FUNCTION *NetWkstaGetInfo_t)(LPWSTR, DWORD, LPBYTE*);
+        NetWkstaGetInfo_t NetWkstaGetInfo_f = reinterpret_cast<NetWkstaGetInfo_t>(GetProcAddress(hNetapi32, "NetWkstaGetInfo"));
+        typedef NET_API_STATUS(NET_API_FUNCTION *NetApiBufferFree_t)(LPVOID);
+        NetApiBufferFree_t NetApiBufferFree_f = reinterpret_cast<NetApiBufferFree_t>(GetProcAddress(hNetapi32, "NetApiBufferFree"));
+        if(NetWkstaGetInfo_f && NetApiBufferFree_f)
+        {
+            LPBYTE pinfoRawData = Q_NULLPTR;
+            if(NERR_Success == NetWkstaGetInfo_f(Q_NULLPTR, 100, &pinfoRawData) && pinfoRawData)
+            {
+                WKSTA_INFO_100* pworkstationInfo = reinterpret_cast<WKSTA_INFO_100*>(pinfoRawData);
+                osMajorVersion = pworkstationInfo->wki100_ver_major;
+                osMinorVersion = pworkstationInfo->wki100_ver_minor;
+                NetApiBufferFree_f(pinfoRawData);
+            }
+        }
+    }
+
+    if(hNtdll)
+    {
+        typedef LONG(WINAPI *RtlGetVersion_t)(LPOSVERSIONINFOEXW);
+        RtlGetVersion_t RtlGetVersion_f = reinterpret_cast<RtlGetVersion_t>(GetProcAddress(hNtdll, "RtlGetVersion"));
+        if(RtlGetVersion_f)
+        {
+            OSVERSIONINFOEXW osver;
+            memset(&osver, 0, sizeof(osver));
+            osver.dwOSVersionInfoSize = sizeof(osver);
+            if(RtlGetVersion_f(&osver) == 0)
+            {
+                osMajorVersion = osver.dwMajorVersion;
+                osMinorVersion = osver.dwMinorVersion;
+                osBuildNumber = osver.dwBuildNumber;
+            }
+        }
+    }
+
+    FreeLibrary(hNetapi32);
+    FreeLibrary(hKernel32);
+    FreeLibrary(hNtdll);
+
+    return CreateVersion(osMajorVersion, osMinorVersion, osBuildNumber);
+}
+
+Version GetCurrentWinVersion()
+{
+    static const Version version = GetCurrentWinVersionImpl();
+    return version;
+}
+
+#endif
+
 } // namespace
 
 namespace InfoUtils {
@@ -269,7 +406,39 @@ bool MacVersionGreatOrEqual(const int major, const int minor, const int patch)
 
 #endif
 
+#if !defined (Q_OS_WIN)
+
+/// @brief Проверить текущую версию Windows
+bool WinVersionGreatOrEqual(const int major, const int minor, const int build)
+{
+    Q_UNUSED(major);
+    Q_UNUSED(minor);
+    Q_UNUSED(build);
+    return false;
+}
+
+#endif
+
 #if defined (Q_OS_WIN)
+
+/// @brief Проверить текущую версию Windows
+bool WinVersionGreatOrEqual(const int major, const int minor, const int build)
+{
+    const Version version = GetCurrentWinVersion();
+    if(version.major > major)
+        return true;
+    if(version.major < major)
+        return false;
+    if(version.minor > minor)
+        return true;
+    if(version.minor < minor)
+        return false;
+    if(version.build > build)
+        return true;
+    if(version.build < build)
+        return false;
+    return true;
+}
 
 /// @brief Получить человеко-читаемую информацию о системе
 QString GetSystemDescription()
@@ -400,9 +569,12 @@ QString GetSystemDescription()
         }
     }
 
-    FreeLibrary(hNetapi32);
-    FreeLibrary(hKernel32);
-    FreeLibrary(hNtdll);
+    if(hNetapi32)
+        FreeLibrary(hNetapi32);
+    if(hKernel32)
+        FreeLibrary(hKernel32);
+    if(hNtdll)
+        FreeLibrary(hNtdll);
 
     QString winVersion;
     if     (osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 22000 && osProductType == VER_NT_WORKSTATION)

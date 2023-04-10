@@ -5,4 +5,47 @@
 StylableTheme
 {
     qproperty-preferredStyles: "fusion";
+    qproperty-paletteWindow: #efefef;
+    qproperty-paletteWindowDisabled: #efefef;
+    qproperty-paletteWindowText: #000000;
+    qproperty-paletteWindowTextDisabled: #bebebe;
+    qproperty-paletteBase: #ffffff;
+    qproperty-paletteBaseDisabled: #efefef;
+    qproperty-paletteAlternateBase: #f7f7f7;
+    qproperty-paletteAlternateBaseDisabled: #f7f7f7;
+    qproperty-paletteToolTipBase: #ffffdc;
+    qproperty-paletteToolTipBaseDisabled: #ffffdc;
+    qproperty-paletteToolTipText: #000000;
+    qproperty-paletteToolTipTextDisabled: #000000;
+    qproperty-paletteText: #000000;
+    qproperty-paletteTextDisabled: #bebebe;
+    qproperty-paletteButton: #efefef;
+    qproperty-paletteButtonDisabled: #efefef;
+    qproperty-paletteButtonText: #000000;
+    qproperty-paletteButtonTextDisabled: #bebebe;
+    qproperty-paletteBrightText: #ffffff;
+    qproperty-paletteBrightTextDisabled: #ffffff;
+    qproperty-paletteHighlight: #308cc6;
+    qproperty-paletteHighlightDisabled: #919191;
+    qproperty-paletteHighlightedText: #ffffff;
+    qproperty-paletteHighlightedTextDisabled: #ffffff;
+    qproperty-paletteLink: #0000ff;
+    qproperty-paletteLinkDisabled: #0000ff;
+    qproperty-paletteLinkVisited: #ff00ff;
+    qproperty-paletteLinkVisitedDisabled: #ff00ff;
+    qproperty-paletteLight: #ffffff;
+    qproperty-paletteLightDisabled: #ffffff;
+    qproperty-paletteMidlight: #cacaca;
+    qproperty-paletteMidlightDisabled: #cacaca;
+    qproperty-paletteDark: #9f9f9f;
+    qproperty-paletteDarkDisabled: #bebebe;
+    qproperty-paletteMid: #b8b8b8;
+    qproperty-paletteMidDisabled: #b8b8b8;
+    qproperty-paletteShadow: #767676;
+    qproperty-paletteShadowDisabled: #b1b1b1;
+}
+
+ImageViewerWidget[DarkMode=true]
+{
+    qproperty-backgroundTexture: url(:/style/background_pattern_light.png);
 }

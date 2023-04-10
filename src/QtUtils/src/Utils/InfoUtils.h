@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -26,6 +26,9 @@ namespace InfoUtils {
 
 /// @brief Проверить текущую версию macOS
 bool MacVersionGreatOrEqual(const int major, const int minor, const int patch = -1);
+
+/// @brief Проверить текущую версию Windows
+bool WinVersionGreatOrEqual(const int major, const int minor, const int build = -1);
 
 /// @brief Получить человеко-читаемую информацию о системе
 QString GetSystemDescription();

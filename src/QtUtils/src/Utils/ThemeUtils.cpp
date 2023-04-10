@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -26,6 +26,11 @@
 #include <QTextStream>
 #include <QFile>
 #include <QDebug>
+#if defined (Q_OS_WIN)
+#include <windows.h>
+#endif
+
+#include "InfoUtils.h"
 
 namespace ThemeUtils {
 
@@ -41,6 +46,28 @@ void AddPixmapToIcon(QIcon &icon, const QPixmap &pixmap)
     ADD_PIXMAP(QIcon::Active);
     ADD_PIXMAP(QIcon::Selected);
 #undef ADD_PIXMAP
+}
+
+int Lightness(const QColor &color)
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
+    return color.lightness();
+#else
+    const QColor rgb = color.toRgb();
+    const int r = rgb.red();
+    const int g = rgb.green();
+    const int b = rgb.blue();
+    const int cmax = qMax(qMax(r, g), b);
+    const int cmin = qMin(qMin(r, g), b);
+    const int l = (cmax + cmin) / 2;
+    return l;
+#endif
+}
+
+bool IsDarkTheme(const QPalette &palette, QPalette::ColorRole windowRole, QPalette::ColorRole windowTextRole)
+{
+    // https://www.qt.io/blog/dark-mode-on-windows-11-with-qt-6.5
+    return Lightness(palette.color(windowTextRole)) > Lightness(palette.color(windowRole));
 }
 
 } // namespace
@@ -76,19 +103,59 @@ bool LoadStyleSheet(const QStringList &filePaths)
 /// @param[in] widget - Виджет, для которого выполняется эта проверка
 bool WidgetHasDarkTheme(const QWidget *widget)
 {
-    return widget->palette().color(widget->backgroundRole()).toHsv().value() < 128;
+    return IsDarkTheme(widget->palette(), widget->backgroundRole(), widget->foregroundRole());
 }
 
 #if !defined (Q_OS_MAC)
 /// @brief Функция для определения темная используемая тема системы или нет
 bool SystemHasDarkTheme()
 {
+#if defined (Q_OS_WIN)
+    // https://github.com/ysc3839/win32-darkmode/blob/master/win32-darkmode
+    HMODULE library = ::LoadLibraryA("uxtheme.dll");
+    if(library)
+    {
+        // https://github.com/mintty/mintty/issues/983
+        // https://github.com/mintty/mintty/pull/984
+        // https://github.com/mintty/mintty/blob/eeaaed8/src/winmain.c
+//        // 1903 18362
+//        if(InfoUtils::WinVersionGreatOrEqual(10, 0, 18362))
+//        {
+//            typedef bool(WINAPI *ShouldSystemUseDarkMode_t)(); // ordinal 138
+//            ShouldSystemUseDarkMode_t ShouldSystemUseDarkMode_f = (ShouldSystemUseDarkMode_t)(::GetProcAddress(library, MAKEINTRESOURCEA(138)));
+//            if(ShouldSystemUseDarkMode_f)
+//            {
+//                bool result = !!ShouldSystemUseDarkMode_f();
+//                ::FreeLibrary(library);
+//                return result;
+//            }
+//        }
+
+        // 1809 17763
+        if(InfoUtils::WinVersionGreatOrEqual(10, 0, 17763))
+        {
+            typedef bool(WINAPI *ShouldAppsUseDarkMode_t)(); // ordinal 132
+            ShouldAppsUseDarkMode_t ShouldAppsUseDarkMode_f = (ShouldAppsUseDarkMode_t)(::GetProcAddress(library, MAKEINTRESOURCEA(132)));
+            if(ShouldAppsUseDarkMode_f)
+            {
+                bool result = !!ShouldAppsUseDarkMode_f();
+                ::FreeLibrary(library);
+                return result;
+            }
+        }
+
+        ::FreeLibrary(library);
+    }
+#endif
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
     const QPalette::ColorRole backgroundRole = QPalette::Window;
+    const QPalette::ColorRole foregroundRole = QPalette::WindowText;
 #else
     const QPalette::ColorRole backgroundRole = QPalette::Background;
+    const QPalette::ColorRole foregroundRole = QPalette::Foreground;
 #endif
-    return qApp->palette().color(backgroundRole).toHsv().value() < 128;
+    return qApp ? IsDarkTheme(qApp->palette(), backgroundRole, foregroundRole) : false;
 }
 #endif
 
