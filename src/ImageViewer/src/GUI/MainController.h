@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -64,6 +64,7 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void onReopenWithRequested(const QString &decoderName);
+    void onCloseRequested();
     void onFileManagerStateChanged(const FileManager::ChangeFlags &changedFlags);
 
 private:

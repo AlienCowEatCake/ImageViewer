@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -136,7 +136,7 @@ MainController::MainController(QObject *parent)
     connect(mainWindow, SIGNAL(aboutQtRequested())                      , qApp, SLOT(aboutQt())                             );
     connect(mainWindow, SIGNAL(checkForUpdatesRequested())              , this, SLOT(checkForUpdates())                     );
     connect(mainWindow, SIGNAL(editStylesheetRequested())               , this, SLOT(showStylesheetEditor())                );
-    connect(mainWindow, SIGNAL(closed())                                , qApp, SLOT(quit())                                );
+    connect(mainWindow, SIGNAL(closed())                                , this, SLOT(onCloseRequested())                    );
 }
 
 MainController::~MainController()
@@ -345,6 +345,17 @@ void MainController::onReopenWithRequested(const QString &decoderName)
     Q_EMIT uiStateChanged(uiState, uiChangeFlags);
     if(!currentFilePath.isEmpty() && !m_impl->imageData)
         QMessageBox::critical(&m_impl->mainWindow, tr("Error"), tr("Failed to open file \"%1\"").arg(uiState.currentFilePath));
+}
+
+void MainController::onCloseRequested()
+{
+    /// @note Avoid crash in some complex decoders, e.g. QtWebEngine
+    if(m_impl->imageData)
+    {
+        m_impl->imageData = DecodersManager::getInstance().generateStub(m_impl->imageData);
+        Q_EMIT uiStateChanged(m_impl->createUIState(), UICF_ImageData);
+    }
+    qApp->quit();
 }
 
 void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &changeFlags)
