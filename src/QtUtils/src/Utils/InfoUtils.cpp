@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -120,6 +120,7 @@ QString compilerDescriptionInt()
     case 1932: return QString::fromLatin1("MSVC++ 14.32 (Visual Studio 2022 version 17.2)");
     case 1933: return QString::fromLatin1("MSVC++ 14.33 (Visual Studio 2022 version 17.3)");
     case 1934: return QString::fromLatin1("MSVC++ 14.34 (Visual Studio 2022 version 17.4)");
+    case 1935: return QString::fromLatin1("MSVC++ 14.35 (Visual Studio 2022 version 17.5)");
     default:   return QString::fromLatin1("MSVC++ (_MSC_VER=%1)").arg(_MSC_VER);
     }
 #elif defined (Q_CC_SYM)
