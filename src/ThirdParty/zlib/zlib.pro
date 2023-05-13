@@ -18,6 +18,7 @@ INCLUDEPATH = $${THIRDPARTY_ZLIB_PATH} $${INCLUDEPATH}
 
 DEFINES += Z_PREFIX
 DEFINES += z_errmsg=tp_z_errmsg
+!win32: DEFINES += HAVE_UNISTD_H
 
 # find . -maxdepth 1 -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_ZLIB_PATH}| ; s|$| \\|'
 SOURCES += \

@@ -49,6 +49,11 @@ static Int DecodeSignificantAbsLevel (struct CAdaptiveHuffman *pAHexpt, BitIOInf
 #define _FORCEINLINE
 #endif // X86OPT_INLINE
 
+#ifndef _BIG__ENDIAN_
+// implemented in image/sys/strcodec.c
+U32 jxrlib_byteswap_ulong_impl_le(U32 bits);
+#endif // _BIG__ENDIAN_
+
 //================================================================
 // Memory access functions
 //================================================================

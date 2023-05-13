@@ -1,0 +1,49 @@
+From c87081c178e113aba7b91ffb6727c9e6518ee74a Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 14 May 2023 03:59:53 +0700
+Subject: [PATCH 4/4] Remove implicit function declaration
+
+error: call to undeclared function '...'; ISO C99 and later do not support
+implicit function declarations [-Wimplicit-function-declaration]
+
+macOS: 13.3.1 (a) (22E772610a)
+Xcode: 14.3 (14E222b)
+SDK: 13.3 (22E245)
+Clang: Apple 14.0.3 (clang-1403.0.22.14.1)
+Target: arm64-apple-darwin22.4.0
+---
+ image/decode/segdec.c   | 5 +++++
+ jxrgluelib/JXRGlueJxr.c | 1 +
+ 2 files changed, 6 insertions(+)
+
+diff --git a/image/decode/segdec.c b/image/decode/segdec.c
+index 6c47b0e..e612b81 100644
+--- a/image/decode/segdec.c
++++ b/image/decode/segdec.c
+@@ -49,6 +49,11 @@ static Int DecodeSignificantAbsLevel (struct CAdaptiveHuffman *pAHexpt, BitIOInf
+ #define _FORCEINLINE
+ #endif // X86OPT_INLINE
+ 
++#ifndef _BIG__ENDIAN_
++// implemented in image/sys/strcodec.c
++U32 jxrlib_byteswap_ulong_impl_le(U32 bits);
++#endif // _BIG__ENDIAN_
++
+ //================================================================
+ // Memory access functions
+ //================================================================
+diff --git a/jxrgluelib/JXRGlueJxr.c b/jxrgluelib/JXRGlueJxr.c
+index 1745acf..f60a2e3 100644
+--- a/jxrgluelib/JXRGlueJxr.c
++++ b/jxrgluelib/JXRGlueJxr.c
+@@ -27,6 +27,7 @@
+ //
+ //*@@@---@@@@******************************************************************
+ #include <limits.h>
++#include <wchar.h>
+ #include <JXRGlue.h>
+ 
+ 
+-- 
+2.40.1
+
