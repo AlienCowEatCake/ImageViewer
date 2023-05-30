@@ -25,4 +25,4 @@ copy %APP_PATH%\release\%PROJECT%.exe ..\%PROJECT%%SUFFIX%.exe
 cd ..
 %ZIP_CMD% -9r %PROJECT%%SUFFIX%.zip %PROJECT%%SUFFIX%.exe
 
-pause
+if NOT "%CI%" == "true" pause

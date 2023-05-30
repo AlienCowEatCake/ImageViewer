@@ -47,4 +47,4 @@ light -out %PROJECT%.msi -b build_msi main.wixobj appfiles.wixobj common.wixobj 
 move %PROJECT%.msi ..\%PROJECT%%SUFFIX%.msi
 cd ..
 
-pause
+if NOT "%CI%" == "true" pause
