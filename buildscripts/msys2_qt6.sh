@@ -136,7 +136,6 @@ cp -a "${APP_PATH}/release/${PROJECT}.exe" "${DIST_PREFIX}/"
 ${CMD_DEPLOY} \
     --no-compiler-runtime \
     --no-system-d3d-compiler \
-    --no-virtualkeyboard \
     --no-opengl-sw \
     --translations en,ru \
     "${DIST_PREFIX}/"
