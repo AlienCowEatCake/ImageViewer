@@ -2,7 +2,8 @@
 set PROJECT=ImageViewer
 set ARCH=x64
 set VCVARS_ARCH=x64
-set VCVARS="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
+call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2017
+set VCVARS="%VS2017_VCVARSALL%"
 set QTDIR=C:\Qt\5.6.3\msvc2017_64_static
 set BUILDDIR=build_win_qt5.6_msvc2017_%ARCH%
 set SUFFIX=_qt5.6_msvc2017_%ARCH%

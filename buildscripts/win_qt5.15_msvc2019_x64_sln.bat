@@ -1,7 +1,8 @@
 @echo off
 set PROJECT=ImageViewer
 set ARCH=x64
-set VCVARS="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat"
+call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2019
+set VCVARS="%VS2019_VCVARSALL%"
 set QTDIR=C:\Qt\5.15.2\msvc2019_64
 set BUILDDIR=build_win_qt5.15_msvc2019_%ARCH%_sln
 

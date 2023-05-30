@@ -2,7 +2,8 @@
 set PROJECT=ImageViewer
 set ARCH=x64
 set VCVARS_ARCH=x64
-set VCVARS="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat"
+call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2022
+set VCVARS="%VS2022_VCVARSALL%"
 set OPENSSL_DIR=C:\Qt\Tools\openssl-1.1.1s\openssl-1.1\x64\bin
 set QTDIR=C:\Qt\5.15.8\msvc2022_64
 set BUILDDIR=build_win_qt5.15_msvc2022_%ARCH%

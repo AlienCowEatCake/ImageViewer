@@ -1,6 +1,6 @@
 #!/bin/bash -e
 PROJECT="ImageViewer"
-VCVARS="C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat"
+VCVARS_VER="2022"
 BUILDDIR="build_msys2_qt6_${MSYSTEM,,?}"
 SUFFIX="_qt6_${MSYSTEM,,?}"
 APP_PATH="src/${PROJECT}"
@@ -88,7 +88,16 @@ function copyWebView2Loader() {
     fi
 }
 
+function getVCVARSPath() {
+    local VCVARS_HELPER="$(cygpath -w "${SOURCE_PATH}/buildscripts/helpers/find_vcvarsall.bat")"
+    cat << EOF | cmd | tail -3 | head -1
+call "${VCVARS_HELPER}" ${VCVARS_VER}
+echo %VS${VCVARS_VER}_VCVARSALL%
+EOF
+}
+
 function getCRTPath() {
+    local VCVARS="$(getVCVARSPath)"
     cat << EOF | cmd | tail -3 | head -1
 set VCVARS="${VCVARS}"
 call %VCVARS% ${VCVARS_ARCH}
@@ -97,6 +106,7 @@ EOF
 }
 
 function getUCRTPath() {
+    local VCVARS="$(getVCVARSPath)"
     cat << EOF | cmd | tail -3 | head -1
 set VCVARS="${VCVARS}"
 call %VCVARS% ${VCVARS_ARCH}
