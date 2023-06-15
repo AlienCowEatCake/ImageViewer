@@ -50,7 +50,7 @@ elif [ "${MSYSTEM}" == "CLANGARM64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-aarch64"
     VCVARS_ARCH="arm64"
     CRT_ARCH="arm64"
-    UCRT_ARCH="arm"
+    UCRT_ARCH="arm64"
     WIX_ARCH="arm64"
 else
     echo "Unknown or broken MSYSTEM: ${MSYSTEM}"

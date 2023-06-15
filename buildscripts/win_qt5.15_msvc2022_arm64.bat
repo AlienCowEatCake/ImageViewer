@@ -17,7 +17,7 @@ set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.web
 call %VCVARS% %VCVARS_ARCH%
 set PATH=%QTDIR%\bin;%WIX%\bin;%WIX%;%PATH%
 set CRT_DIR="%VCToolsRedistDir%\arm64\Microsoft.VC143.CRT"
-set UCRT_DIR="%UniversalCRTSdkDir%\Redist\%UCRTVersion%\ucrt\DLLs\arm"
+set UCRT_DIR="%UniversalCRTSdkDir%\Redist\%UCRTVersion%\ucrt\DLLs\arm64"
 
 cd "%~dp0"
 cd ..
