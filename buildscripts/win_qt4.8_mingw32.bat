@@ -7,7 +7,7 @@ set SUFFIX=_qt4.8_mingw32
 set APP_PATH=src\%PROJECT%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
 
-set PATH=%QTDIR%\bin;%MINGWDIR%\bin;%WIX%\bin;%WINDIR%;%WINDIR%\System32
+set PATH=%QTDIR%\bin;%MINGWDIR%\bin;%WIX%\bin;%WIX%;%WINDIR%;%WINDIR%\System32
 
 cd "%~dp0"
 cd ..

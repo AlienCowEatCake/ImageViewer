@@ -5,7 +5,8 @@ BUILDDIR="build_msys2_qt6_${MSYSTEM,,?}"
 SUFFIX="_qt6_${MSYSTEM,,?}"
 APP_PATH="src/${PROJECT}"
 
-export PATH="$(cygpath -u "${WIX}\bin"):${PATH}"
+WIX_PATH="$(cygpath -u "${WIX}")"
+export PATH="${WIX_PATH}/bin:${WIX_PATH}:${PATH}"
 CMD_QMAKE="qmake-qt6"
 CMD_DEPLOY="windeployqt-qt6"
 

@@ -15,7 +15,7 @@ set DLLRESOLVER_CMD="%~dp0\..\buildscripts\helpers\dllresolver.exe"
 set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.webview2.1.0.1462.37\build\native\%ARCH%\WebView2Loader.dll"
 
 call %VCVARS% %VCVARS_ARCH%
-set PATH=%QTDIR%\bin;%WIX%\bin;%PATH%
+set PATH=%QTDIR%\bin;%WIX%\bin;%WIX%;%PATH%
 set CRT_DIR="%VCToolsRedistDir%\x86\Microsoft.VC143.CRT"
 set UCRT_DIR="%UniversalCRTSdkDir%\Redist\%UCRTVersion%\ucrt\DLLs\x86"
 
