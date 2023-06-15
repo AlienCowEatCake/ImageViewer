@@ -19,7 +19,7 @@ for SDK_VERSION in ${ALL_SDK_VERSIONS} ; do
     fi
 done
 
-QT_PATH="/opt/Qt/5.6.3/clang_64_libstdc++_sdk10.10"
+QT_PATH="${QT_PATH:=/opt/Qt/5.6.3/clang_64_libstdc++_sdk10.10}"
 QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
