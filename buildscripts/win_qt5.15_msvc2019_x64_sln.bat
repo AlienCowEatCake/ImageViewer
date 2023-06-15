@@ -3,11 +3,11 @@ set PROJECT=ImageViewer
 set ARCH=x64
 call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2019
 set VCVARS="%VS2019_VCVARSALL%"
-set QTDIR=C:\Qt\5.15.2\msvc2019_64
+if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\5.15.2\msvc2019_64
 set BUILDDIR=build_win_qt5.15_msvc2019_%ARCH%_sln
 
 call %VCVARS% %ARCH%
-set PATH=%QTDIR%\bin;%PATH%
+set PATH=%QT_PATH%\bin;%PATH%
 
 cd "%~dp0"
 cd ..

@@ -4,7 +4,7 @@ set ARCH=x64
 set VCVARS_ARCH=x64
 call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2017
 set VCVARS="%VS2017_VCVARSALL%"
-set QTDIR=C:\Qt\5.6.3\msvc2017_64_static
+if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\5.6.3\msvc2017_64_static
 set BUILDDIR=build_win_qt5.6_msvc2017_%ARCH%
 set SUFFIX=_qt5.6_msvc2017_%ARCH%
 set APP_PATH=src\%PROJECT%
@@ -12,7 +12,7 @@ set NMAKE_CMD="%~dp0\..\buildscripts\helpers\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
 
 call %VCVARS% %VCVARS_ARCH%
-set PATH=%QTDIR%\bin;%PATH%
+set PATH=%QT_PATH%\bin;%PATH%
 
 cd "%~dp0"
 cd ..
