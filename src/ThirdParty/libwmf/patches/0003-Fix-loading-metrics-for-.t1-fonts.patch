@@ -1,7 +1,7 @@
-From 80205bb96dc540e3a202e297e9d3484bfb2b24a9 Mon Sep 17 00:00:00 2001
+From e2560c9d586cbf43c87503325d154967ff00aab7 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 28 Dec 2022 22:14:56 +0700
-Subject: [PATCH 3/3] Fix loading metrics for .t1 fonts
+Subject: [PATCH 3/4] Fix loading metrics for .t1 fonts
 
 ---
  src/font.c | 28 ++++++++++++++++++++++++----

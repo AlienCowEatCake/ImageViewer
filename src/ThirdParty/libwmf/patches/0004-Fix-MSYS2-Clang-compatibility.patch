@@ -1,0 +1,24 @@
+From f8f1f485a6cc60cd4b80b873cbf50b8ad7b3ff6b Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Wed, 21 Jun 2023 21:32:46 +0700
+Subject: [PATCH 4/4] Fix MSYS2/Clang compatibility
+
+---
+ src/extra/gd/gdft.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/extra/gd/gdft.c b/src/extra/gd/gdft.c
+index 33430f6..fe70c12 100644
+--- a/src/extra/gd/gdft.c
++++ b/src/extra/gd/gdft.c
+@@ -15,6 +15,7 @@
+ #ifndef MSWIN32
+ #include <unistd.h>
+ #else
++#include <io.h>
+ #define R_OK 2
+ #endif
+ 
+-- 
+2.30.2
+

@@ -10,7 +10,7 @@ QT += core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBWMF_PATH = $${PWD}/libwmf-ad365e1
+THIRDPARTY_LIBWMF_PATH = $${PWD}/libwmf-0.2.13
 THIRDPARTY_LIBWMF_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)

@@ -1,7 +1,7 @@
-From 472d5a26bdbff86fccc9736d4124863488b716e7 Mon Sep 17 00:00:00 2001
+From c153ea351294e9c34fb10a8f5b59c94b82050a9e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 28 Dec 2022 08:50:03 +0700
-Subject: [PATCH 2/3] Fix MSVC compatibility
+Subject: [PATCH 2/4] Fix MSVC compatibility
 
 ---
  src/font.c         |  6 ++----
