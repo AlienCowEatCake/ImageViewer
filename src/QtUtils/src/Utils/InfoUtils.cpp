@@ -121,6 +121,7 @@ QString compilerDescriptionInt()
     case 1933: return QString::fromLatin1("MSVC++ 14.33 (Visual Studio 2022 version 17.3)");
     case 1934: return QString::fromLatin1("MSVC++ 14.34 (Visual Studio 2022 version 17.4)");
     case 1935: return QString::fromLatin1("MSVC++ 14.35 (Visual Studio 2022 version 17.5)");
+    case 1936: return QString::fromLatin1("MSVC++ 14.36 (Visual Studio 2022 version 17.6)");
     default:   return QString::fromLatin1("MSVC++ (_MSC_VER=%1)").arg(_MSC_VER);
     }
 #elif defined (Q_CC_SYM)
@@ -172,8 +173,15 @@ QString compilerDescriptionInt()
 
 QString targetDescriptionInt()
 {
-#if (defined(__ILP32__) && defined(__x86_64__))
+#if defined(_M_ARM64EC)
+    return QString::fromLatin1("ARM64EC");
+#elif (defined(__ILP32__) && defined(__x86_64__))
     return QString::fromLatin1("x86-32");
+#elif (defined(_M_ARM64) || defined(__aarch64__))
+    return QString::fromLatin1("ARM64")
+#elif (defined(_M_ARM ) || defined(__arm) || defined(__arm__) || \
+    defined(_M_ARMT) || defined(_ARM ) || defined(__thumb__))
+    return QString::fromLatin1("ARM");
 #elif (defined(_M_IX86 ) || defined(__X86__ ) || defined(__i386  ) || \
     defined(__IA32__) || defined(__I86__ ) || defined(__i386__) || \
     defined(__i486__) || defined(__i586__) || defined(__i686__))
