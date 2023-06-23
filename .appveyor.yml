@@ -345,7 +345,7 @@ for:
       - job_group: linux_test_qt5
   install:
     - export DEBIAN_FRONTEND=noninteractive
-    - sudo apt-get update
+    - sudo apt-get update --allow-releaseinfo-change || sudo apt-get update
     - sudo apt-get -y install qtbase5-dev libqt5svg5-dev
     - sudo apt-get -y install qt5-default || true
     - sudo apt-get -y install qtwebengine5-dev || export NO_QTWEBENGINE=true
@@ -382,7 +382,7 @@ for:
       - job_group: linux_test_qt4
   install:
     - export DEBIAN_FRONTEND=noninteractive
-    - sudo apt-get update
+    - sudo apt-get update --allow-releaseinfo-change || sudo apt-get update
     - sudo apt-get -y install libqt4-dev qt4-default
     - sudo apt-get -y install libqtwebkit-dev || export NO_QTWEBKIT=true
   build_script:
@@ -404,7 +404,7 @@ for:
       - job_group: linux_test
   install:
     - export DEBIAN_FRONTEND=noninteractive
-    - sudo apt-get update
+    - sudo apt-get update --allow-releaseinfo-change || sudo apt-get update
     - sudo apt-get -y install libgl-dev libopengl-dev
     - export PATH="${HOME}/${QTDIR}/bin:${PATH}"
   build_script:
