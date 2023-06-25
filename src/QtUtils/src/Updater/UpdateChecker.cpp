@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -30,6 +30,8 @@
 #include "Utils/JsonArray.h"
 #include "Utils/JsonDocument.h"
 #include "Utils/JsonObject.h"
+
+static const qint64 RELEASES_LIMIT = 9999;
 
 static bool releaseInfoGreater(const ReleaseInfo &lhs, const ReleaseInfo &rhs)
 {
@@ -77,7 +79,7 @@ void UpdateChecker::checkForUpdates()
         connect(m_impl->networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
     }
     QNetworkRequest request;
-    request.setUrl(QUrl(QString::fromLatin1("https://api.github.com/repos/%1/%2/releases").arg(m_impl->owner).arg(m_impl->repo)));
+    request.setUrl(QUrl(QString::fromLatin1("https://api.github.com/repos/%1/%2/releases?per_page=%3").arg(m_impl->owner).arg(m_impl->repo).arg(RELEASES_LIMIT)));
     request.setRawHeader("User-Agent", QString::fromLatin1("%1/%2").arg(qApp->applicationName()).arg(qApp->applicationVersion()).toLatin1());
     m_impl->activeReply = m_impl->networkManager->get(request);
 }
