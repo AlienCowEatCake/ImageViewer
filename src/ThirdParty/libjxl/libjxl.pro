@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBJXL_PATH = $${PWD}/libjxl-0.7.0
+THIRDPARTY_LIBJXL_PATH = $${PWD}/libjxl-0.8.2
 THIRDPARTY_LIBJXL_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -24,7 +24,7 @@ INCLUDEPATH = \
     $${THIRDPARTY_LIBJXL_CONFIG_PATH} \
     $${INCLUDEPATH}
 
-DEFINES += JPEGXL_MAJOR_VERSION=0 JPEGXL_MINOR_VERSION=7 JPEGXL_PATCH_VERSION=0
+DEFINES += JPEGXL_MAJOR_VERSION=0 JPEGXL_MINOR_VERSION=8 JPEGXL_PATCH_VERSION=2
 
 # find ./lib/jxl -name '*.cc' | egrep -v '(_test|_gbench)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBJXL_PATH}| ; s|$| \\|'
 SOURCES += \
@@ -83,6 +83,7 @@ SOURCES += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_dot_dictionary.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_entropy_coder.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_external_image.cc \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_fast_lossless.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_file.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_frame.cc \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_group.cc \
@@ -174,6 +175,7 @@ HEADERS += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/decode.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/exr.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/gif.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/jpegli.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/jpg.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/jxl.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/dec/pgx.h \
@@ -181,7 +183,9 @@ HEADERS += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/apng.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/encode.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/exr.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/jpegli.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/jpg.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/jxl.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/npy.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/pgx.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/extras/enc/pnm.h \
@@ -208,6 +212,25 @@ HEADERS += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/thread_parallel_runner.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/thread_parallel_runner_cxx.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/include/jxl/types.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/color_transform.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/common.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/dct.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/decode.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/decode_internal.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/decode_marker.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/decode_scan.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/encode.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/encode_internal.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/entropy_coding.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/error.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/huffman.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/idct.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/memory_manager.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/quant.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/render.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/source_manager.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/test_utils.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jpegli/upsample.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/ac_context.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/ac_strategy.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/alpha.h \
@@ -239,7 +262,6 @@ HEADERS += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/butteraugli/butteraugli.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/chroma_from_luma.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/codec_in_out.h \
-    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/codec_y4m_testonly.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/coeff_order.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/coeff_order_fwd.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/color_encoding_internal.h \
@@ -290,6 +312,7 @@ HEADERS += \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_dot_dictionary.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_entropy_coder.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_external_image.h \
+    $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_fast_lossless.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_file.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_frame.h \
     $${THIRDPARTY_LIBJXL_PATH}/lib/jxl/enc_gamma_correct.h \
