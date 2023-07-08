@@ -10,8 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_ZSTD_PATH = $${PWD}/zstd-1.5.2
-THIRDPARTY_ZSTD_WORKAROUND_PATH = $${PWD}/workaround
+THIRDPARTY_ZSTD_PATH = $${PWD}/zstd-1.5.5
 
 include(../CommonSettings.pri)
 
@@ -23,6 +22,7 @@ DEFINES += XXH_NAMESPACE=tp_ZSTD_ ZSTD_LEGACY_SUPPORT=1 DYNAMIC_BMI2=0 ZSTD_HAVE
     DEFINES += ZSTD_HEAPMODE=0
 }
 
+# find ./lib -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_ZSTD_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/debug.c \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/entropy_common.c \
@@ -64,7 +64,10 @@ SOURCES += \
     $${THIRDPARTY_ZSTD_PATH}/lib/legacy/zstd_v06.c \
     $${THIRDPARTY_ZSTD_PATH}/lib/legacy/zstd_v07.c \
 
+# find ./lib -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_ZSTD_PATH}| ; s|$| \\|'
 HEADERS += \
+    $${THIRDPARTY_ZSTD_PATH}/lib/common/allocations.h \
+    $${THIRDPARTY_ZSTD_PATH}/lib/common/bits.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/bitstream.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/compiler.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/common/cpu.h \
@@ -112,5 +115,5 @@ HEADERS += \
     $${THIRDPARTY_ZSTD_PATH}/lib/zstd.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/zstd_errors.h \
 
-TR_EXCLUDE += $${THIRDPARTY_ZSTD_PATH}/* $${THIRDPARTY_ZSTD_WORKAROUND_PATH}/*
+TR_EXCLUDE += $${THIRDPARTY_ZSTD_PATH}/*
 
