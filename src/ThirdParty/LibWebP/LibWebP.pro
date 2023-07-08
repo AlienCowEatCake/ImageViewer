@@ -10,7 +10,7 @@ TARGET = tp_LibWebP
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.3.0-rc1
+THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.3.1
 
 include(../CommonSettings.pri)
 
