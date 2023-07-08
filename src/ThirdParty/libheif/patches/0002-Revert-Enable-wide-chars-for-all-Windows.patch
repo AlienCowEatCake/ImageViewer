@@ -1,35 +1,22 @@
-From 63cbc4f49a2a350caa7c8d5f62ce474d6df4289a Mon Sep 17 00:00:00 2001
+From bf707977fecc6a2f1910f45dd1064188b98fb2d9 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 21 Dec 2022 23:23:25 +0700
-Subject: [PATCH 2/2] Revert "Enable wide chars for all Windows"
+Subject: [PATCH 2/3] Revert "Enable wide chars for all Windows"
 
 This reverts commit 0d7c5a181905eeb6b5bc2c8f91012a2abb0c5bfc.
 ---
- libheif/heif.cc      | 2 +-
- libheif/heif_file.cc | 8 ++++----
- libheif/heif_file.h  | 2 +-
+ libheif/file.cc | 8 ++++----
+ libheif/file.h  | 2 +-
+ libheif/heif.cc | 2 +-
  3 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/libheif/heif.cc b/libheif/heif.cc
-index 955f129..3e0fff9 100644
---- a/libheif/heif.cc
-+++ b/libheif/heif.cc
-@@ -1674,7 +1674,7 @@ static struct heif_error heif_file_writer_write(struct heif_context* ctx,
- {
-   const char* filename = static_cast<const char*>(userdata);
- 
--#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
-+#ifdef _MSC_VER
-   std::ofstream ostr(HeifFile::convert_utf8_path_to_utf16(filename).c_str(), std::ios_base::binary);
- #else
-   std::ofstream ostr(filename, std::ios_base::binary);
-diff --git a/libheif/heif_file.cc b/libheif/heif_file.cc
-index efbc662..ca6fc6e 100644
---- a/libheif/heif_file.cc
-+++ b/libheif/heif_file.cc
-@@ -27,13 +27,13 @@
- #include <cstring>
+diff --git a/libheif/file.cc b/libheif/file.cc
+index 0530827..b6ccad8 100644
+--- a/libheif/file.cc
++++ b/libheif/file.cc
+@@ -30,13 +30,13 @@
  #include <cassert>
+ #include <algorithm>
  
 -#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
 +#ifdef _MSC_VER
@@ -43,7 +30,7 @@ index efbc662..ca6fc6e 100644
  #endif
  
  #include "metadata_compression.h"
-@@ -62,7 +62,7 @@ std::vector<heif_item_id> HeifFile::get_item_IDs() const
+@@ -67,7 +67,7 @@ std::vector<heif_item_id> HeifFile::get_item_IDs() const
  
  Error HeifFile::read_from_file(const char* input_filename)
  {
@@ -52,7 +39,7 @@ index efbc662..ca6fc6e 100644
    auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(convert_utf8_path_to_utf16(input_filename).c_str(), std::ios_base::binary));
  #else
    auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(input_filename, std::ios_base::binary));
-@@ -955,7 +955,7 @@ void HeifFile::set_hdlr_library_info(const std::string& encoder_plugin_version)
+@@ -1039,7 +1039,7 @@ void HeifFile::set_hdlr_library_info(const std::string& encoder_plugin_version)
  }
  
  
@@ -61,19 +48,32 @@ index efbc662..ca6fc6e 100644
  std::wstring HeifFile::convert_utf8_path_to_utf16(std::string str)
  {
    std::wstring ret;
-diff --git a/libheif/heif_file.h b/libheif/heif_file.h
-index 96ed182..7b9afed 100644
---- a/libheif/heif_file.h
-+++ b/libheif/heif_file.h
-@@ -158,7 +158,7 @@ namespace heif {
-     // TODO: the hdlr box is probably not the right place for this. Into which box should we write comments?
-     void set_hdlr_library_info(const std::string& encoder_plugin_version);
+diff --git a/libheif/file.h b/libheif/file.h
+index e527578..14e382a 100644
+--- a/libheif/file.h
++++ b/libheif/file.h
+@@ -178,7 +178,7 @@ public:
+   // TODO: the hdlr box is probably not the right place for this. Into which box should we write comments?
+   void set_hdlr_library_info(const std::string& encoder_plugin_version);
  
 -#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
 +#ifdef _MSC_VER
-     static std::wstring convert_utf8_path_to_utf16(std::string pathutf8);
+   static std::wstring convert_utf8_path_to_utf16(std::string pathutf8);
  #endif
  
+diff --git a/libheif/heif.cc b/libheif/heif.cc
+index bb546d3..eeb41a2 100644
+--- a/libheif/heif.cc
++++ b/libheif/heif.cc
+@@ -2151,7 +2151,7 @@ static struct heif_error heif_file_writer_write(struct heif_context* ctx,
+ {
+   const char* filename = static_cast<const char*>(userdata);
+ 
+-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
++#ifdef _MSC_VER
+   std::ofstream ostr(HeifFile::convert_utf8_path_to_utf16(filename).c_str(), std::ios_base::binary);
+ #else
+   std::ofstream ostr(filename, std::ios_base::binary);
 -- 
-2.30.2
+2.39.2
 
