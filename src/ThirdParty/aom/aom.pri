@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_aom {
 
-        THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.5.0
+        THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.6.1
 
         INCLUDEPATH += $${THIRDPARTY_AOM_PATH}
         DEPENDPATH += $${THIRDPARTY_AOM_PATH}

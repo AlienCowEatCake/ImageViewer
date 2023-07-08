@@ -143,10 +143,10 @@ void av1_build_compound_diffwtd_mask_highbd_c(uint8_t *mask, DIFFWTD_MASK_TYPE m
 int64_t av1_calc_frame_error_c(const uint8_t *const ref, int stride, const uint8_t *const dst, int p_width, int p_height, int p_stride);
 #define av1_calc_frame_error av1_calc_frame_error_c
 
-void av1_calc_indices_dim1_c(const int *data, const int *centroids, uint8_t *indices, int n, int k);
+void av1_calc_indices_dim1_c(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
 #define av1_calc_indices_dim1 av1_calc_indices_dim1_c
 
-void av1_calc_indices_dim2_c(const int *data, const int *centroids, uint8_t *indices, int n, int k);
+void av1_calc_indices_dim2_c(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
 #define av1_calc_indices_dim2 av1_calc_indices_dim2_c
 
 void av1_calc_proj_params_c( const uint8_t *src8, int width, int height, int src_stride, const uint8_t *dat8, int dat_stride, int32_t *flt0, int flt0_stride, int32_t *flt1, int flt1_stride, int64_t H[2][2], int64_t C[2], const sgr_params_type *params);
@@ -172,9 +172,6 @@ void av1_cnn_deconvolve_c( const float **input, int in_width, int in_height, int
 
 bool av1_cnn_predict_c( const float **input, int in_width, int in_height, int in_stride, const CNN_CONFIG *cnn_config, const CNN_THREAD_DATA *thread_data, CNN_MULTI_OUT *output_struct);
 #define av1_cnn_predict av1_cnn_predict_c
-
-double av1_compute_cross_correlation_c(unsigned char *im1, int stride1, int x1, int y1, unsigned char *im2, int stride2, int x2, int y2);
-#define av1_compute_cross_correlation av1_compute_cross_correlation_c
 
 void av1_compute_stats_c(int wiener_win, const uint8_t *dgd8, const uint8_t *src8, int h_start, int h_end, int v_start, int v_end, int dgd_stride, int src_stride, int64_t *M, int64_t *H, int use_downsampled_wiener_stats);
 #define av1_compute_stats av1_compute_stats_c
@@ -553,10 +550,10 @@ uint64_t av1_wedge_sse_from_residuals_c(const int16_t *r1, const int16_t *d, con
 void av1_wiener_convolve_add_src_c(const uint8_t *src, ptrdiff_t src_stride, uint8_t *dst, ptrdiff_t dst_stride, const int16_t *filter_x, int x_step_q4, const int16_t *filter_y, int y_step_q4, int w, int h, const ConvolveParams *conv_params);
 #define av1_wiener_convolve_add_src av1_wiener_convolve_add_src_c
 
-void cdef_copy_rect8_16bit_to_16bit_c(uint16_t *dst, int dstride, const uint16_t *src, int sstride, int v, int h);
+void cdef_copy_rect8_16bit_to_16bit_c(uint16_t *dst, int dstride, const uint16_t *src, int sstride, int width, int height);
 #define cdef_copy_rect8_16bit_to_16bit cdef_copy_rect8_16bit_to_16bit_c
 
-void cdef_copy_rect8_8bit_to_16bit_c(uint16_t *dst, int dstride, const uint8_t *src, int sstride, int v, int h);
+void cdef_copy_rect8_8bit_to_16bit_c(uint16_t *dst, int dstride, const uint8_t *src, int sstride, int width, int height);
 #define cdef_copy_rect8_8bit_to_16bit cdef_copy_rect8_8bit_to_16bit_c
 
 void cdef_filter_16_0_c(void *dst16, int dstride, const uint16_t *in, int pri_strength, int sec_strength, int dir, int pri_damping, int sec_damping, int coeff_shift, int block_width, int block_height);

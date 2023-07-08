@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.5.0
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.6.1
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -46,6 +46,11 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entenc.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/fastssim.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/fft.c \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/corner_detect.c \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/corner_match.c \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/disflow.c \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/flow_estimation.c \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/ransac.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/fwd_txfm.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/grain_table.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/intrapred.c \
@@ -84,6 +89,7 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/common/cdef.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/cdef_block.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/cfl.c \
+    $${THIRDPARTY_AOM_PATH}/av1/common/common_data.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/convolve.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/debugmodes.c \
     $${THIRDPARTY_AOM_PATH}/av1/common/entropy.c \
@@ -128,8 +134,6 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/cnn.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/compound_type.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/context_tree.c \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/corner_detect.c \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/corner_match.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/cost.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/deltaq4_model.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/dwt.c \
@@ -168,7 +172,6 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/pickcdef.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/picklpf.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/pickrst.c \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/ransac.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/ratectrl.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/rd.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/rdopt.c \
@@ -241,18 +244,15 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entdec.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entenc.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/fft_common.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/corner_detect.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/corner_match.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/disflow.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/flow_estimation.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/ransac.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/grain_params.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/grain_table.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/intrapred_common.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/mathutils.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/mips/aom_convolve_msa.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/mips/common_dspr2.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/mips/convolve_common_dspr2.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/mips/loopfilter_filters_dspr2.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/mips/loopfilter_macros_dspr2.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/mips/loopfilter_masks_dspr2.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/mips/loopfilter_msa.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/mips/macros_msa.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/noise_model.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/noise_util.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/odintrin.h \
@@ -260,6 +260,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/psnr.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/quantize.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/recenter.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/rect.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics_arm.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics_c.h \
@@ -386,7 +387,6 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/grain_synthesis.h \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/inspection.h \
     $${THIRDPARTY_AOM_PATH}/av1/decoder/obu.h \
-    $${THIRDPARTY_AOM_PATH}/av1/ducky_encode.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/allintra_vis.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_complexity.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_cyclicrefresh.h \
@@ -402,8 +402,6 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/cnn.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/compound_type.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/context_tree.h \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/corner_detect.h \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/corner_match.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/cost.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/dwt.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/enc_enums.h \
@@ -454,7 +452,6 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/pickrst.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/pustats.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/random.h \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/ransac.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/ratectrl.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/rc_utils.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/rd.h \
@@ -482,10 +479,11 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_fwd_txfm_avx2.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_fwd_txfm_sse2.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_txfm1d_sse4.h \
-    $${THIRDPARTY_AOM_PATH}/av1/ratectrl_qmode.h \
-    $${THIRDPARTY_AOM_PATH}/av1/ratectrl_qmode_interface.h \
+    $${THIRDPARTY_AOM_PATH}/av1/qmode_rc/ducky_encode.h \
+    $${THIRDPARTY_AOM_PATH}/av1/qmode_rc/ratectrl_qmode.h \
+    $${THIRDPARTY_AOM_PATH}/av1/qmode_rc/ratectrl_qmode_interface.h \
+    $${THIRDPARTY_AOM_PATH}/av1/qmode_rc/reference_manager.h \
     $${THIRDPARTY_AOM_PATH}/av1/ratectrl_rtc.h \
-    $${THIRDPARTY_AOM_PATH}/av1/reference_manager.h \
     $${THIRDPARTY_AOM_PATH}/common/args.h \
     $${THIRDPARTY_AOM_PATH}/common/args_helper.h \
     $${THIRDPARTY_AOM_PATH}/common/av1_config.h \
@@ -530,6 +528,11 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/test/webm_video_source.h \
     $${THIRDPARTY_AOM_PATH}/test/y4m_video_source.h \
     $${THIRDPARTY_AOM_PATH}/test/yuv_video_source.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/SVT-AV1/EbMemory_AVX2.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/SVT-AV1/EbMemory_SSE4_1.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/SVT-AV1/convolve_2d_avx2.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/SVT-AV1/convolve_avx2.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/SVT-AV1/synonyms.h \
     $${THIRDPARTY_AOM_PATH}/third_party/fastfeat/fast.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-actions.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-cardinalities.h \
@@ -546,6 +549,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/gmock-internal-utils.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/gmock-port.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/gmock-pp.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-assertion-result.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-death-test.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-matchers.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-message.h \

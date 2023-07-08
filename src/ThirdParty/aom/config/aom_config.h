@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Alliance for Open Media. All rights reserved
+ * Copyright (c) 2023, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -12,7 +12,6 @@
 #define AOM_CONFIG_H_
 #include <QtGlobal>
 #define ARCH_ARM 0
-#define ARCH_MIPS 0
 #define ARCH_PPC 0
 #define ARCH_X86 0
 #define ARCH_X86_64 0
@@ -34,6 +33,7 @@
 #define CONFIG_COLLECT_COMPONENT_TIMING 0
 #define CONFIG_COLLECT_PARTITION_STATS 0
 #define CONFIG_COLLECT_RD_STATS 0
+#define CONFIG_CWG_C013 0
 #define CONFIG_DEBUG 0
 #define CONFIG_DENOISE 1
 #define CONFIG_DISABLE_FULL_PIXEL_SPLIT_8X8 1
@@ -74,14 +74,11 @@
 #define DECODE_HEIGHT_LIMIT 0
 #define DECODE_WIDTH_LIMIT 0
 #define FORCE_HIGHBITDEPTH_DECODING 0
+#define HAVE_ARM_CRC32 0
 #define HAVE_AVX 0
 #define HAVE_AVX2 0
-#define HAVE_DSPR2 0
 #define HAVE_FEXCEPT 0
-#define HAVE_MIPS32 0
-#define HAVE_MIPS64 0
 #define HAVE_MMX 0
-#define HAVE_MSA 0
 #define HAVE_NEON 0
 #define HAVE_PTHREAD_H 0
 #define HAVE_SSE 0
