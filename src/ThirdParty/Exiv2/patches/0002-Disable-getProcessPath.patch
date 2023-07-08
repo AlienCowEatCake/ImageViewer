@@ -1,7 +1,7 @@
-From 6c64122c9866eebbe587dcc13b5856cc543dab9f Mon Sep 17 00:00:00 2001
+From 71a249e00100bfe4bad7301454011c4964d3f5ad Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:34:14 +0700
-Subject: [PATCH 02/10] Disable getProcessPath
+Subject: [PATCH 2/9] Disable getProcessPath
 
 ---
  include/exiv2/futils.hpp | 2 ++
@@ -42,5 +42,5 @@ index 6300b991..283ec033 100644
 +#endif
  }                                       // namespace Exiv2
 -- 
-2.34.0
+2.39.2
 

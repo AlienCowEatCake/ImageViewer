@@ -1,7 +1,7 @@
-From c9ae74af89aacc9f122a7d7f240074fff4fc2bbf Mon Sep 17 00:00:00 2001
+From 8b3bdce74ecd2d81ac913046778f9800ef45caf9 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:41:15 +0700
-Subject: [PATCH 08/10] Fix build on Haiku
+Subject: [PATCH 8/9] Fix build on Haiku
 
 ---
  src/timegm.h | 2 +-
@@ -21,5 +21,5 @@ index c95189d5..cacfce0f 100644
  #endif
  
 -- 
-2.34.0
+2.39.2
 

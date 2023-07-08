@@ -1,7 +1,7 @@
-From 6aa3394b6b961a9e96bec16f090df506290f1080 Mon Sep 17 00:00:00 2001
+From 607d6571c4a13c04865905e6dbde5ad8c376dbe4 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:35:53 +0700
-Subject: [PATCH 04/10] Use Qt RWLock
+Subject: [PATCH 4/9] Use Qt RWLock
 
 ---
  include/exiv2/rwlock.hpp | 78 +++++-----------------------------------
@@ -145,5 +145,5 @@ index 7dc24c9a..33d6d2cb 100644
          /*!
           @brief Class to provide a ScopedReadLock.
 -- 
-2.34.0
+2.39.2
 

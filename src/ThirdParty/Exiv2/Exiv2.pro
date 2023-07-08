@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.27.5-Source
+THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.27.7-Source
 THIRDPARTY_EXIV2_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -74,6 +74,7 @@ SOURCES += \
     $${THIRDPARTY_EXIV2_PATH}/src/ini.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/iptc.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/jp2image.cpp \
+    $${THIRDPARTY_EXIV2_PATH}/src/jp2image_int.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/jpgimage.cpp \
 \ #    $${THIRDPARTY_EXIV2_PATH}/src/matroskavideo.cpp \
     $${THIRDPARTY_EXIV2_PATH}/src/metadatum.cpp \
@@ -106,6 +107,7 @@ HEADERS += \
     $${THIRDPARTY_EXIV2_PATH}/src/fujimn_int.hpp \
     $${THIRDPARTY_EXIV2_PATH}/src/helper_functions.hpp \
     $${THIRDPARTY_EXIV2_PATH}/src/image_int.hpp \
+    $${THIRDPARTY_EXIV2_PATH}/src/jp2image_int.hpp \
     $${THIRDPARTY_EXIV2_PATH}/src/makernote_int.hpp \
     $${THIRDPARTY_EXIV2_PATH}/src/minoltamn_int.hpp \
     $${THIRDPARTY_EXIV2_PATH}/src/nikonmn_int.hpp \

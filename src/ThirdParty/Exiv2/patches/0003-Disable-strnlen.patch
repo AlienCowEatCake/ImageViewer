@@ -1,12 +1,34 @@
-From aa2fc9407dbdbb18169a7bad557cbbdaee73b3c5 Mon Sep 17 00:00:00 2001
+From 6cf8a094f358817fe118309e5ce0cf0a18a4b48a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:35:21 +0700
-Subject: [PATCH 03/10] Disable strnlen
+Subject: [PATCH 3/9] Disable strnlen
 
 ---
+ src/bmffimage.cpp        | 3 ++-
  src/helper_functions.cpp | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
+diff --git a/src/bmffimage.cpp b/src/bmffimage.cpp
+index fcf9d38a..ada0f288 100644
+--- a/src/bmffimage.cpp
++++ b/src/bmffimage.cpp
+@@ -39,6 +39,7 @@
+ #include "unused.h"
+ 
+ // + standard includes
++#include <algorithm>
+ #include <cassert>
+ #include <cstdio>
+ #include <cstring>
+@@ -313,7 +314,7 @@ namespace Exiv2
+                 // Check that the string has a '\0' terminator.
+                 const char* str = reinterpret_cast<const char*>(data.pData_) + skip;
+                 const size_t maxlen = static_cast<size_t>(data.size_ - skip);
+-                enforce(strnlen(str, maxlen) < maxlen, Exiv2::kerCorruptedMetadata);
++                enforce((std::find(str, str + maxlen, '\0') - str) < maxlen, Exiv2::kerCorruptedMetadata);
+                 std::string name(str);
+                 if (name.find("Exif") != std::string::npos) {  // "Exif" or "ExifExif"
+                     exifID_ = ID;
 diff --git a/src/helper_functions.cpp b/src/helper_functions.cpp
 index e01a8bf2..e5d30efd 100644
 --- a/src/helper_functions.cpp
@@ -22,5 +44,5 @@ index e01a8bf2..e5d30efd 100644
      return std::string(data, StringLength);
  }
 -- 
-2.34.0
+2.39.2
 

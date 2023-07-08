@@ -1,7 +1,7 @@
-From b4d678740a72e1840d0a4cfa24d357e1deaec5a5 Mon Sep 17 00:00:00 2001
+From 57cebf461516dc2843c05981d71f4585092a18b9 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:32:20 +0700
-Subject: [PATCH 01/10] Disable dumpLibraryInfo
+Subject: [PATCH 1/9] Disable dumpLibraryInfo
 
 ---
  include/exiv2/version.hpp | 2 ++
@@ -60,5 +60,5 @@ index faa80840..1fd0d574 100644
  }
 +#endif
 -- 
-2.34.0
+2.39.2
 

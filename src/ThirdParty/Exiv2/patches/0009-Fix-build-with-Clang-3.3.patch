@@ -1,7 +1,7 @@
-From 97a6d817fa3144a0e1b8eb873fe8a5cb807b2d91 Mon Sep 17 00:00:00 2001
+From 31c36768af75c9c91a1ec3c6b00121a2de581f5d Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:41:51 +0700
-Subject: [PATCH 09/10] Fix build with Clang 3.3
+Subject: [PATCH 9/9] Fix build with Clang 3.3
 
 ---
  src/safe_op.hpp | 4 +++-
@@ -23,5 +23,5 @@ index ddcc44b8..5f8f8994 100644
  /*!
   * This macro pastes a specialization of builtin_add_overflow using gcc's &
 -- 
-2.34.0
+2.39.2
 

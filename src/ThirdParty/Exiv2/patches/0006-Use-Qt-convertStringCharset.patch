@@ -1,21 +1,21 @@
-From 142e1de6fee0332cde4fe1dcc5f7a8ad18ee11e1 Mon Sep 17 00:00:00 2001
+From bfa85d421bbb2b045845591f05f604a31c9e247e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:37:35 +0700
-Subject: [PATCH 06/10] Use Qt convertStringCharset
+Subject: [PATCH 6/9] Use Qt convertStringCharset
 
 ---
  src/convert.cpp | 97 +++++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 97 insertions(+)
 
 diff --git a/src/convert.cpp b/src/convert.cpp
-index 038d86bf..4ae5a1da 100644
+index f9060540..2fcb7be2 100644
 --- a/src/convert.cpp
 +++ b/src/convert.cpp
 @@ -57,6 +57,19 @@
  # include <errno.h>
  #endif
  
-+#if !(defined WIN32 && !defined __CYGWIN__) && !defined EXV_HAVE_ICONV
++#if !(defined _WIN32 && !defined __CYGWIN__) && !defined EXV_HAVE_ICONV
 +# define EXV_HAVE_QT
 +# include <QByteArray>
 +# include <QString>
@@ -44,7 +44,7 @@ index 038d86bf..4ae5a1da 100644
        @brief Get the text value of an XmpDatum \em pos.
 @@ -1356,6 +1373,8 @@ namespace Exiv2 {
          ret = convertStringCharsetIconv(str, from, to);
- #elif defined WIN32 && !defined __CYGWIN__
+ #elif defined _WIN32 && !defined __CYGWIN__
          ret = convertStringCharsetWindows(str, from, to);
 +#elif defined EXV_HAVE_QT
 +        ret = convertStringCharsetQt(str, from, to);
@@ -137,5 +137,5 @@ index 038d86bf..4ae5a1da 100644
      {
          if (pos->typeId() == langAlt) {
 -- 
-2.34.0
+2.39.2
 
