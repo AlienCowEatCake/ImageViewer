@@ -1,4 +1,4 @@
-From 52ab006a0801fc84e8e0ee4ccf7bf2896ed4f84a Mon Sep 17 00:00:00 2001
+From e3acfc7356678c75e5cf0eaf77b22c0e059fd303 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 23:41:00 +0700
 Subject: [PATCH 1/2] Fix build with old Clang
@@ -9,10 +9,10 @@ Subject: [PATCH 1/2] Fix build with old Clang
  2 files changed, 26 insertions(+)
 
 diff --git a/hwy/nanobenchmark.cc b/hwy/nanobenchmark.cc
-index e03ed4c..89f73a4 100644
+index d13b5e7..3fda2a2 100644
 --- a/hwy/nanobenchmark.cc
 +++ b/hwy/nanobenchmark.cc
-@@ -390,7 +390,20 @@ void Cpuid(const uint32_t level, const uint32_t count,
+@@ -373,7 +373,20 @@ void Cpuid(const uint32_t level, const uint32_t count,
    uint32_t b;
    uint32_t c;
    uint32_t d;
@@ -34,10 +34,10 @@ index e03ed4c..89f73a4 100644
    abcd[1] = b;
    abcd[2] = c;
 diff --git a/hwy/targets.cc b/hwy/targets.cc
-index 2fde4db..271ba8c 100644
+index 1258cc4..8e31d54 100644
 --- a/hwy/targets.cc
 +++ b/hwy/targets.cc
-@@ -71,7 +71,20 @@ HWY_INLINE void Cpuid(const uint32_t level, const uint32_t count,
+@@ -79,7 +79,20 @@ HWY_INLINE void Cpuid(const uint32_t level, const uint32_t count,
    uint32_t b;
    uint32_t c;
    uint32_t d;
@@ -59,5 +59,5 @@ index 2fde4db..271ba8c 100644
    abcd[1] = b;
    abcd[2] = c;
 -- 
-2.30.2
+2.39.2
 

@@ -1,4 +1,4 @@
-From 6dd57c3f13ac7123a05fb82550bd0941faf6772d Mon Sep 17 00:00:00 2001
+From 99e1d07e88885af2da030c6c92c3e190e411bba5 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Tue, 30 Nov 2021 15:30:06 +0700
 Subject: [PATCH 2/2] Fix build with old GCC
@@ -9,10 +9,10 @@ Subject: [PATCH 2/2] Fix build with old GCC
  2 files changed, 23 insertions(+), 27 deletions(-)
 
 diff --git a/hwy/nanobenchmark.cc b/hwy/nanobenchmark.cc
-index 89f73a4..0de7838 100644
+index 3fda2a2..c5fd74b 100644
 --- a/hwy/nanobenchmark.cc
 +++ b/hwy/nanobenchmark.cc
-@@ -550,10 +550,9 @@ timer::Ticks SampleUntilStable(const double max_rel_mad, double* rel_mad,
+@@ -533,10 +533,9 @@ timer::Ticks SampleUntilStable(const double max_rel_mad, double* rel_mad,
  
      if (*rel_mad <= max_rel_mad || abs_mad <= max_abs_mad) {
        if (p.verbose) {
@@ -26,7 +26,7 @@ index 89f73a4..0de7838 100644
                 *rel_mad * 100.0);
        }
        return est;
-@@ -561,10 +560,9 @@ timer::Ticks SampleUntilStable(const double max_rel_mad, double* rel_mad,
+@@ -544,10 +543,9 @@ timer::Ticks SampleUntilStable(const double max_rel_mad, double* rel_mad,
    }
  
    if (p.verbose) {
@@ -39,7 +39,7 @@ index 89f73a4..0de7838 100644
    }
    return est;
  }
-@@ -601,11 +599,10 @@ size_t NumSkip(const Func func, const uint8_t* arg, const InputVec& unique,
+@@ -584,11 +582,10 @@ size_t NumSkip(const Func func, const uint8_t* arg, const InputVec& unique,
            ? 0
            : static_cast<size_t>((max_skip + min_duration - 1) / min_duration);
    if (p.verbose) {
@@ -55,7 +55,7 @@ index 89f73a4..0de7838 100644
    }
    return num_skip;
  }
-@@ -733,19 +730,18 @@ HWY_DLLEXPORT size_t Measure(const Func func, const uint8_t* arg,
+@@ -716,19 +713,18 @@ HWY_DLLEXPORT size_t Measure(const Func func, const uint8_t* arg,
    const timer::Ticks overhead = Overhead(arg, &full, p);
    const timer::Ticks overhead_skip = Overhead(arg, &subset, p);
    if (overhead < overhead_skip) {
@@ -83,7 +83,7 @@ index 89f73a4..0de7838 100644
    }
  
    double max_rel_mad = 0.0;
-@@ -757,8 +753,8 @@ HWY_DLLEXPORT size_t Measure(const Func func, const uint8_t* arg,
+@@ -740,8 +736,8 @@ HWY_DLLEXPORT size_t Measure(const Func func, const uint8_t* arg,
          TotalDuration(func, arg, &subset, p, &max_rel_mad);
  
      if (total < total_skip) {
@@ -124,5 +124,5 @@ index 0b52cde..3676e18 100644
      const void* ptr = array_bytes + i * info.sizeof_t;
      char str[100];
 -- 
-2.30.2
+2.39.2
 

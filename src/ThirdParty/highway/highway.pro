@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_HIGHWAY_PATH = $${PWD}/highway-1.0.2
+THIRDPARTY_HIGHWAY_PATH = $${PWD}/highway-1.0.4
 
 include(../CommonSettings.pri)
 
@@ -34,6 +34,7 @@ HEADERS += \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/algo/copy-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/algo/find-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/algo/transform-inl.h \
+    $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/bit_pack/bit_pack-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/dot/dot-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/image/image.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/math/math-inl.h \
@@ -57,6 +58,7 @@ HEADERS += \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/arm_sve-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/emu128-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/generic_ops-inl.h \
+    $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/ppc_vsx-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/rvv-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/scalar-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/set_macros-inl.h \
