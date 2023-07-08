@@ -59,13 +59,13 @@ SOURCES += \
 
 # find ./libheif -name '*.cc' | egrep '(_windows)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
 # find ./libheif -name '*.cc' | egrep '(_unix)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
-win32 {
-    SOURCES += \
-        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins_windows.cc
-} else {
-    SOURCES += \
-        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins_unix.cc
-}
+#win32 {
+#    SOURCES += \
+#        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins_windows.cc
+#} else {
+#    SOURCES += \
+#        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins_unix.cc
+#}
 
 # find ./libheif -name '*.cc' | egrep '(_aom)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
 !disable_aom {
