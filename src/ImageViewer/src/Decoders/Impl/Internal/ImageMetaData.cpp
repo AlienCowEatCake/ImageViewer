@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -57,8 +57,10 @@ namespace {
 
 #if (EXIV2_MAJOR_VERSION == 0 && EXIV2_MINOR_VERSION < 27) || (EXIV2_MAJOR_VERSION == 0 && EXIV2_MINOR_VERSION == 27 && EXIV2_PATCH_VERSION < 99)
 typedef Exiv2::Image::AutoPtr Exiv2ImagePtr;
+long Exiv2ValueToLong(const Exiv2::Value &value, long n = 0) { return value.toLong(n); }
 #else
 typedef Exiv2::Image::UniquePtr Exiv2ImagePtr;
+long Exiv2ValueToLong(const Exiv2::Value &value, long n = 0) { return static_cast<long>(value.toInt64(static_cast<size_t>(n))); }
 #endif
 
 class Exiv2Initializer : public QObject
@@ -759,7 +761,7 @@ quint16 ImageMetaData::orientation() const
             Exiv2::ExifData::const_iterator itData = Exiv2::orientation(data);
             if(itData == data.end())
                 continue;
-            const quint16 orientation = static_cast<quint16>(itData->toLong());
+            const quint16 orientation = static_cast<quint16>(Exiv2ValueToLong(itData->value()));
             qDebug() << "[EXIV2] EXIF orientation =" << orientation;
             return orientation;
         }
@@ -811,7 +813,7 @@ QPair<qreal, qreal> ImageMetaData::dpi() const
                 continue;
             const Exiv2::Rational vX = itX->value().toRational();
             const Exiv2::Rational vY = itY->value().toRational();
-            const qreal multiplier = (itU != data.end() && itU->value().toLong() == 3)
+            const qreal multiplier = (itU != data.end() && Exiv2ValueToLong(itU->value()) == 3)
                     ? static_cast<qreal>(2.54) // centimeter to inch conversion
                     : static_cast<qreal>(1.0); // no conversion
             if(vX.first > 0 && vX.second > 0 && vY.first > 0 && vY.second > 0)
