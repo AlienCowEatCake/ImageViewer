@@ -1,0 +1,301 @@
+From 0abf1a348a3ad5b72319bc0960fb29b1096503d9 Mon Sep 17 00:00:00 2001
+From: Michael Adams <mdadams@ece.uvic.ca>
+Date: Mon, 20 Mar 2023 11:41:20 -0700
+Subject: [PATCH 3/3] Fixes #353.
+
+Fixed an integer overflow bug in the PNM decoder.
+Added some new utility functions for performing safe integer arithmetic.
+
+(cherry picked from commit 71bb7509ddf8d85e1caa61e440405aeae0906da7)
+---
+ NEWS.txt                                 |   5 +
+ data/test/bad/353.pnm                    | Bin 0 -> 52 bytes
+ data/test/good/signed_pnm.pnm            | Bin 0 -> 332 bytes
+ src/libjasper/include/jasper/jas_math.h  | 143 +++++++++++++++++++++++
+ src/libjasper/include/jasper/jas_types.h |   9 ++
+ src/libjasper/pnm/pnm_dec.c              |  25 ++--
+ 6 files changed, 172 insertions(+), 10 deletions(-)
+ create mode 100644 data/test/bad/353.pnm
+ create mode 100644 data/test/good/signed_pnm.pnm
+
+diff --git a/NEWS.txt b/NEWS.txt
+index e9be60a..04fbc2b 100644
+--- a/NEWS.txt
++++ b/NEWS.txt
+@@ -1,3 +1,8 @@
++4.0.1 (YYYY-MM-DD)
++==================
++
++* Fix integer overflow bug in PNM decoder (#353).
++
+ 4.0.0 (2022-11-05)
+ ==================
+ 
+diff --git a/data/test/bad/353.pnm b/data/test/bad/353.pnm
+new file mode 100644
+index 0000000000000000000000000000000000000000..c36e1fbc0b43196fd6cff06cb64ab1cf150dc613
+GIT binary patch
+literal 52
+bcmWGAvQV(#GBGgVGB&^o6b!fw6c7*q_%;a$
+
+literal 0
+HcmV?d00001
+
+diff --git a/data/test/good/signed_pnm.pnm b/data/test/good/signed_pnm.pnm
+new file mode 100644
+index 0000000000000000000000000000000000000000..a6c7bae3b9b9229d959262e78748827c9c859164
+GIT binary patch
+literal 332
+zcmWm4u?@p83;?h_S7a{&Sh8gGjQ)R3!-W%nd4KQk^<?+;S!>-dfy73kaWL1j!V53F
+z@WKl(yzp|}FJ5}-rI%iM>1}TZyzOmod)wPydF55YE3drr%4@H^_Ikr>uf6t;cf8{r
+U?-ab_9dEqx#v5<EX?Qc&ACbj67ytkO
+
+literal 0
+HcmV?d00001
+
+diff --git a/src/libjasper/include/jasper/jas_math.h b/src/libjasper/include/jasper/jas_math.h
+index c27a1d9..17c0711 100644
+--- a/src/libjasper/include/jasper/jas_math.h
++++ b/src/libjasper/include/jasper/jas_math.h
+@@ -486,6 +486,123 @@ static inline jas_safeui32_t jas_safeui32_mul(jas_safeui32_t x,
+ 	return result;
+ }
+ 
++/******************************************************************************\
++* Safe 64-bit signed integer arithmetic (i.e., with overflow checking).
++\******************************************************************************/
++
++typedef struct {
++	bool valid;
++	int_least64_t value;
++} jas_safei64_t;
++
++JAS_ATTRIBUTE_CONST
++static inline
++jas_safei64_t jas_safei64_from_intmax(intmax_t x)
++{
++	jas_safei64_t result;
++	if (x >= INT_LEAST64_MIN && x <= INT_LEAST64_MAX) {
++		result.valid = true;
++		result.value = JAS_CAST(int_least64_t, x);
++	} else {
++		result.valid = false;
++		result.value = 0;
++	}
++	return result;
++}
++
++JAS_ATTRIBUTE_CONST
++static inline
++jas_safei64_t jas_safei64_add(jas_safei64_t x, jas_safei64_t y)
++{
++	jas_safei64_t result;
++	if (((y.value > 0) && (x.value > (INT_LEAST64_MAX - y.value))) ||
++	  ((y.value < 0) && (x.value < (INT_LEAST64_MIN - y.value)))) {
++		result.value = false;
++		result.value = 0;
++	} else {
++		result.valid = true;
++		result.value = x.value + y.value;
++	}
++	return result;
++}
++
++JAS_ATTRIBUTE_CONST
++static inline
++jas_safei64_t jas_safei64_sub(jas_safei64_t x, jas_safei64_t y)
++{
++	jas_safei64_t result;
++	if ((y.value > 0 && x.value < INT_LEAST64_MIN + y.value) ||
++	(y.value < 0 && x.value > INT_LEAST64_MAX + y.value)) {
++		result.valid = false;
++		result.value = 0;
++	} else {
++		result.valid = true;
++		result.value = x.value - y.value;
++	}
++	return result;
++}
++
++JAS_ATTRIBUTE_CONST
++static inline
++jas_safei64_t jas_safei64_mul(jas_safei64_t x, jas_safei64_t y)
++{
++	jas_safei64_t result;
++	if (x.value > 0) {  /* x.value is positive */
++		if (y.value > 0) {  /* x.value and y.value are positive */
++			if (x.value > (INT_LEAST64_MAX / y.value)) {
++				goto error;
++			}
++		} else { /* x.value positive, y.value nonpositive */
++			if (y.value < (INT_LEAST64_MIN / x.value)) {
++				goto error;
++			}
++		} /* x.value positive, y.value nonpositive */
++	} else { /* x.value is nonpositive */
++		if (y.value > 0) { /* x.value is nonpositive, y.value is positive */
++			if (x.value < (INT_LEAST64_MIN / y.value)) {
++				goto error;
++			}
++		} else { /* x.value and y.value are nonpositive */
++			if ( (x.value != 0) && (y.value < (INT_LEAST64_MAX / x.value))) {
++				goto error;
++			}
++		} /* End if x.value and y.value are nonpositive */
++	} /* End if x.value is nonpositive */
++	result.valid = true;
++	result.value = x.value * y.value;
++	return result;
++error:
++	result.valid = false;
++	result.value = 0;
++	return result;
++}
++
++#if 0
++JAS_ATTRIBUTE_CONST
++static inline
++jas_safei64_t jas_safei64_div(jas_safei64_t x, jas_safei64_t y)
++{
++	// TODO/FIXME: Not yet implemented.
++	jas_safei64_t result;
++	result.valid = false;
++	result.value = 0;
++	return result;
++}
++#endif
++
++JAS_ATTRIBUTE_CONST
++static inline
++jas_i32_t jas_safei64_to_i32(jas_safei64_t x, jas_i32_t invalid_value)
++{
++	jas_i32_t result;
++	if (x.valid && x.value >= JAS_I32_MIN && x.value <= JAS_I32_MAX) {
++		result = JAS_CAST(jas_i32_t, x.value);
++	} else {
++		result = invalid_value;
++	}
++	return result;
++}
++
+ /******************************************************************************\
+ * Safe 64-bit unsigned integer arithmetic (i.e., with overflow checking).
+ \******************************************************************************/
+@@ -599,6 +716,32 @@ int jas_safeui64_to_int(jas_safeui64_t x, int invalid_value)
+ 	return result;
+ }
+ 
++JAS_ATTRIBUTE_CONST
++static inline
++jas_ui32_t jas_safeui64_to_ui32(jas_safeui64_t x, jas_ui32_t invalid_value)
++{
++	jas_ui32_t result;
++	if (x.valid && x.value <= JAS_UI32_MAX) {
++		result = JAS_CAST(jas_ui32_t, x.value);
++	} else {
++		result = invalid_value;
++	}
++	return result;
++}
++
++JAS_ATTRIBUTE_CONST
++static inline
++jas_i32_t jas_safeui64_to_i32(jas_safeui64_t x, jas_i32_t invalid_value)
++{
++	jas_i32_t result;
++	if (x.valid && x.value >= JAS_I32_MIN && x.value <= JAS_I32_MAX) {
++		result = JAS_CAST(jas_i32_t, x.value);
++	} else {
++		result = invalid_value;
++	}
++	return result;
++}
++
+ /******************************************************************************\
+ \******************************************************************************/
+ 
+diff --git a/src/libjasper/include/jasper/jas_types.h b/src/libjasper/include/jasper/jas_types.h
+index 1ec6b0c..2bc226b 100644
+--- a/src/libjasper/include/jasper/jas_types.h
++++ b/src/libjasper/include/jasper/jas_types.h
+@@ -203,6 +203,15 @@ this behavior.
+ #endif
+ #endif
+ 
++/* 32-bit unsigned integer type */
++typedef uint_least32_t jas_ui32_t;
++#define JAS_UI32_MAX UINT_LEAST32_MAX
++
++/* 32-bit signed integer type */
++typedef int_least32_t jas_i32_t;
++#define JAS_I32_MIN INT_LEAST32_MIN
++#define JAS_I32_MAX INT_LEAST32_MAX
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff --git a/src/libjasper/pnm/pnm_dec.c b/src/libjasper/pnm/pnm_dec.c
+index 180009b..cef0610 100644
+--- a/src/libjasper/pnm/pnm_dec.c
++++ b/src/libjasper/pnm/pnm_dec.c
+@@ -549,7 +549,6 @@ static int pnm_getbitstr(jas_stream_t *in, int *val)
+ 
+ static int pnm_getuintstr(jas_stream_t *in, uint_fast32_t *val)
+ {
+-	uint_fast32_t v;
+ 	int c;
+ 
+ 	/* Discard any leading whitespace. */
+@@ -560,14 +559,21 @@ static int pnm_getuintstr(jas_stream_t *in, uint_fast32_t *val)
+ 	} while (isspace(JAS_CAST(unsigned char, c)));
+ 
+ 	/* Parse the number. */
+-	v = 0;
++	jas_safeui64_t value = jas_safeui64_from_intmax(0);
+ 	while (isdigit(JAS_CAST(unsigned char, c))) {
+-		v = 10 * v + c - '0';
++		int d = c - '0';
++		value = jas_safeui64_mul(value, jas_safeui64_from_intmax(10));
++		value = jas_safeui64_add(value, jas_safeui64_from_intmax(d));
+ 		if ((c = pnm_getc(in)) < 0) {
+ 			return -1;
+ 		}
+ 	}
+ 
++	uint_fast32_t v = jas_safeui64_to_ui32(value, JAS_UI32_MAX);
++	if (v == JAS_UI32_MAX) {
++		return -1;
++	}
++
+ 	/* The number must be followed by whitespace. */
+ 	if (!isspace(JAS_CAST(unsigned char, c))) {
+ 		return -1;
+@@ -604,19 +610,18 @@ static int pnm_getsintstr(jas_stream_t *in, int_fast32_t *val)
+ 		}
+ 	}
+ 
+-	jas_safeui32_t sv = jas_safeui32_from_ulong(0);
++	jas_safei64_t sv = jas_safei64_from_intmax(0);
+ 	while (isdigit(JAS_CAST(unsigned char, c))) {
+ 		// sv = 10 * sv + c - '0';
+-		sv = jas_safeui32_add(
+-		  jas_safeui32_mul(sv, jas_safeui32_from_ulong(10)),
+-		  jas_safeui32_sub(jas_safeui32_from_ulong(c),
+-		  jas_safeui32_from_ulong('0')));
++		int d = c - '0';
++		sv = jas_safei64_mul(sv, jas_safei64_from_intmax(10));
++		sv = jas_safei64_add(sv, jas_safei64_from_intmax(d));
+ 		if ((c = pnm_getc(in)) < 0) {
+ 			return -1;
+ 		}
+ 	}
+-	int_fast32_t v;
+-	if (!jas_safeui32_to_intfast32(sv, &v)) {
++	int_fast32_t v = jas_safei64_to_i32(sv, JAS_I32_MAX);
++	if (v == JAS_I32_MAX) {
+ 		return -1;
+ 	}
+ 
+-- 
+2.39.2
+
