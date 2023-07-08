@@ -12,7 +12,7 @@ set APP_PATH=src\%PROJECT%
 set NMAKE_CMD="%~dp0\..\buildscripts\helpers\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
 set DLLRESOLVER_CMD="%~dp0\..\buildscripts\helpers\dllresolver.exe"
-set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.webview2.1.0.1462.37\build\native\%ARCH%\WebView2Loader.dll"
+set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.webview2.1.0.1823.32\build\native\%ARCH%\WebView2Loader.dll"
 
 call %VCVARS% %VCVARS_ARCH%
 set PATH=%QT_PATH%\bin;%WIX%\bin;%WIX%;%PATH%
