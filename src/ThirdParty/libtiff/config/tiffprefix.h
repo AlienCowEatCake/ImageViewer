@@ -104,6 +104,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define TIFFHashSetLookup tp_TIFFHashSetLookup
 #define TIFFHashSetNew tp_TIFFHashSetNew
 #define TIFFHashSetRemove tp_TIFFHashSetRemove
+#define TIFFHashSetSize tp_TIFFHashSetSize
 #define TIFFInitCCITTFax3 tp_TIFFInitCCITTFax3
 #define TIFFInitCCITTFax4 tp_TIFFInitCCITTFax4
 #define TIFFInitCCITTRLE tp_TIFFInitCCITTRLE
@@ -245,6 +246,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define _TIFFCheckRealloc tp__TIFFCheckRealloc
 #define _TIFFClampDoubleToFloat tp__TIFFClampDoubleToFloat
 #define _TIFFClampDoubleToUInt32 tp__TIFFClampDoubleToUInt32
+#define _TIFFCleanupIFDOffsetAndNumberMaps tp__TIFFCleanupIFDOffsetAndNumberMaps
 #define _TIFFCreateAnonField tp__TIFFCreateAnonField
 #define _TIFFDefaultStripSize tp__TIFFDefaultStripSize
 #define _TIFFDefaultTileSize tp__TIFFDefaultTileSize
@@ -256,6 +258,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define _TIFFGetExifFields tp__TIFFGetExifFields
 #define _TIFFGetFields tp__TIFFGetFields
 #define _TIFFGetGpsFields tp__TIFFGetGpsFields
+#define _TIFFGetOffsetFromDirNumber tp__TIFFGetOffsetFromDirNumber
 #define _TIFFMergeFields tp__TIFFMergeFields
 #define _TIFFMultiply32 tp__TIFFMultiply32
 #define _TIFFMultiply64 tp__TIFFMultiply64
@@ -273,6 +276,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define _TIFFReadEncodedStripAndAllocBuffer tp__TIFFReadEncodedStripAndAllocBuffer
 #define _TIFFReadEncodedTileAndAllocBuffer tp__TIFFReadEncodedTileAndAllocBuffer
 #define _TIFFReadTileAndAllocBuffer tp__TIFFReadTileAndAllocBuffer
+#define _TIFFRemoveEntryFromDirectoryListByOffset tp__TIFFRemoveEntryFromDirectoryListByOffset
 #define _TIFFRewriteField tp__TIFFRewriteField
 #define _TIFFSeekOK tp__TIFFSeekOK
 #define _TIFFSetDefaultCompressionState tp__TIFFSetDefaultCompressionState
