@@ -193,7 +193,7 @@ QImage QTgaFile::readImage()
             cmapDepth = 16;
         if (cmapDepth != 16 && cmapDepth != 24 && cmapDepth != 32) {
             mErrorMessage = tr("Invalid color map depth (%1)").arg(cmapDepth);
-            return {};
+            return QImage();
         }
         offset += littleEndianInt(&mHeader[CMapLength]) * cmapDepth / 8;
     }

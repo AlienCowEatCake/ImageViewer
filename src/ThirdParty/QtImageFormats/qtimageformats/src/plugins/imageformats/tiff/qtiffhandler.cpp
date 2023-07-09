@@ -70,7 +70,7 @@ int qtiffMapProc(thandle_t fd, void **base, toff_t *size)
     QFileDevice *file = qobject_cast<QFileDevice *>(device);
     if (file) {
         *base = file->map(0, file->size());
-        if (*base != nullptr) {
+        if (*base != Q_NULLPTR) {
             *size = file->size();
             return 1;
         }

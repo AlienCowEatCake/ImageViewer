@@ -1,7 +1,7 @@
-From 33252ced212b055facc2bb5e26e715fda7c3f891 Mon Sep 17 00:00:00 2001
+From ca116f6f36dc53c095078464eafe98cfc1728248 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 May 2017 23:13:29 +0700
-Subject: [PATCH 2/8] Use custom third-party libraries paths
+Subject: [PATCH 2/6] Use custom third-party libraries paths
 
 ---
  src/3rdparty/zlib_dependency.pri | 11 ++++++-----

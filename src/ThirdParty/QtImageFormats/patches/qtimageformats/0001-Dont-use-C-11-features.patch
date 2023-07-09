@@ -1,19 +1,20 @@
-From ec8bc8dba87afc489caae383b378e4821a8c5c0e Mon Sep 17 00:00:00 2001
+From 9da6a89e41f114d5f4a3d7249972dd4f7eb6a60b Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 10 Mar 2018 15:40:08 +0700
-Subject: [PATCH 1/8] Use "Q_DECL_OVERRIDE" instead of "override"
+Subject: [PATCH 1/6] Dont use C++11 features
 
 ---
  src/plugins/imageformats/dds/qddshandler.h    | 16 ++++++-------
  .../imageformats/icns/qicnshandler_p.h        | 16 ++++++-------
  src/plugins/imageformats/jp2/qjp2handler_p.h  | 12 +++++-----
  src/plugins/imageformats/mng/qmnghandler_p.h  | 24 +++++++++----------
- src/plugins/imageformats/tga/qtgafile.cpp     |  6 ++---
+ src/plugins/imageformats/tga/qtgafile.cpp     | 10 ++++----
  src/plugins/imageformats/tga/qtgahandler.h    | 10 ++++----
+ .../imageformats/tiff/qtiffhandler.cpp        |  2 +-
  .../imageformats/tiff/qtiffhandler_p.h        | 20 ++++++++--------
  .../imageformats/wbmp/qwbmphandler_p.h        | 10 ++++----
  .../imageformats/webp/qwebphandler_p.h        | 22 ++++++++---------
- 9 files changed, 68 insertions(+), 68 deletions(-)
+ 10 files changed, 71 insertions(+), 71 deletions(-)
 
 diff --git a/src/plugins/imageformats/dds/qddshandler.h b/src/plugins/imageformats/dds/qddshandler.h
 index 6c11adf..71f25f2 100644
@@ -133,9 +134,18 @@ index 59d1615..73dd095 100644
      private:
      Q_DECLARE_PRIVATE(QMngHandler)
 diff --git a/src/plugins/imageformats/tga/qtgafile.cpp b/src/plugins/imageformats/tga/qtgafile.cpp
-index f1b9af3..35bb1ca 100644
+index f1b9af3..9cdabe0 100644
 --- a/src/plugins/imageformats/tga/qtgafile.cpp
 +++ b/src/plugins/imageformats/tga/qtgafile.cpp
+@@ -12,7 +12,7 @@ struct TgaReader
+ {
+     Q_DISABLE_COPY(TgaReader)
+ 
+-    TgaReader() = default;
++    TgaReader() {}
+ 
+     virtual ~TgaReader() {}
+     virtual QRgb operator()(QIODevice *s) const = 0;
 @@ -21,7 +21,7 @@ struct TgaReader
  struct Tga16Reader : public TgaReader
  {
@@ -163,6 +173,15 @@ index f1b9af3..35bb1ca 100644
      {
          char r, g, b, a;
          if (s->getChar(&b) && s->getChar(&g) && s->getChar(&r) && s->getChar(&a))
+@@ -193,7 +193,7 @@ QImage QTgaFile::readImage()
+             cmapDepth = 16;
+         if (cmapDepth != 16 && cmapDepth != 24 && cmapDepth != 32) {
+             mErrorMessage = tr("Invalid color map depth (%1)").arg(cmapDepth);
+-            return {};
++            return QImage();
+         }
+         offset += littleEndianInt(&mHeader[CMapLength]) * cmapDepth / 8;
+     }
 diff --git a/src/plugins/imageformats/tga/qtgahandler.h b/src/plugins/imageformats/tga/qtgahandler.h
 index 35b41c2..af8d9c1 100644
 --- a/src/plugins/imageformats/tga/qtgahandler.h
@@ -187,6 +206,19 @@ index 35b41c2..af8d9c1 100644
  
  private:
      mutable QTgaFile *tga;
+diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+index aadf134..7c967c7 100644
+--- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
++++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+@@ -66,7 +66,7 @@ int qtiffMapProc(thandle_t fd, void **base, toff_t *size)
+     QFileDevice *file = qobject_cast<QFileDevice *>(device);
+     if (file) {
+         *base = file->map(0, file->size());
+-        if (*base != nullptr) {
++        if (*base != Q_NULLPTR) {
+             *size = file->size();
+             return 1;
+         }
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler_p.h b/src/plugins/imageformats/tiff/qtiffhandler_p.h
 index 738b992..630fde0 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler_p.h
