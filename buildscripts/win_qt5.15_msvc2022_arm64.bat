@@ -26,6 +26,10 @@ mkdir %BUILDDIR%
 cd %BUILDDIR%
 qmake -r CONFIG+="release" CONFIG+="disable_qtwebkit enable_update_checking" ..\%PROJECT%.pro
 %NMAKE_CMD%
+if not exist %APP_PATH%\release\%PROJECT%.exe (
+    if NOT "%CI%" == "true" pause
+    exit /b 1
+)
 rmdir /S /Q %PROJECT%%SUFFIX% 2>nul >nul
 mkdir %PROJECT%%SUFFIX%
 copy %APP_PATH%\release\%PROJECT%.exe %PROJECT%%SUFFIX%\%PROJECT%.exe

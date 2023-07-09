@@ -16,6 +16,10 @@ mkdir %BUILDDIR%
 cd %BUILDDIR%
 qmake -r CONFIG+="release" CONFIG+="enable_qtwebkit disable_wic" CONFIG+="enable_cxx11" QMAKE_CXXFLAGS+="-std=gnu++1y" ..\%PROJECT%.pro
 mingw32-make
+if not exist %APP_PATH%\release\%PROJECT%.exe (
+    if NOT "%CI%" == "true" pause
+    exit /b 1
+)
 strip --strip-all %APP_PATH%\release\%PROJECT%.exe
 mkdir %PROJECT%%SUFFIX%
 copy %APP_PATH%\release\%PROJECT%.exe %PROJECT%%SUFFIX%\%PROJECT%.exe

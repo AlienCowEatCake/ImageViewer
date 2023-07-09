@@ -27,6 +27,10 @@ mkdir %BUILDDIR%
 cd %BUILDDIR%
 qmake -r QMAKE_CC="%QMAKE_CC%" QMAKE_CXX="%QMAKE_CXX%" QMAKE_LINK="%QMAKE_LINK%" CONFIG+="release" CONFIG+="use_static_qgif use_static_qtiff use_static_qjpeg use_static_qico use_static_qmng use_static_qsvg" CONFIG+="exceptions" QMAKE_CXXFLAGS_EXCEPTIONS_ON="-fexceptions" QMAKE_LFLAGS_EXCEPTIONS_ON="" DEFINES+="DISABLE_EXCEPTIONS_IN_THREADS" ..\%PROJECT%.pro
 mingw32-make
+if not exist %APP_PATH%\release\%PROJECT%.exe (
+    if NOT "%CI%" == "true" pause
+    exit /b 1
+)
 strip --strip-all %APP_PATH%\release\%PROJECT%.exe
 copy %APP_PATH%\release\%PROJECT%.exe ..\%PROJECT%%SUFFIX%.exe
 cd ..

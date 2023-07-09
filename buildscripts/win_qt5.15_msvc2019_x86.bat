@@ -21,6 +21,10 @@ mkdir %BUILDDIR%
 cd %BUILDDIR%
 qmake -r CONFIG+="release" QTPLUGIN.imageformats="qico qsvg qtiff" CONFIG+="enable_update_checking" CONFIG+="disable_msedgewebview2" ..\%PROJECT%.pro
 %NMAKE_CMD%
+if not exist %APP_PATH%\release\%PROJECT%.exe (
+    if NOT "%CI%" == "true" pause
+    exit /b 1
+)
 copy %APP_PATH%\release\%PROJECT%.exe ..\%PROJECT%%SUFFIX%.exe
 cd ..
 %ZIP_CMD% -9r %PROJECT%%SUFFIX%.zip %PROJECT%%SUFFIX%.exe
