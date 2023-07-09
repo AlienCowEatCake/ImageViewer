@@ -874,10 +874,13 @@ HWY_API Vec256<T> VecFromMask(const Mask256<T> v) {
   return Vec256<T>{v.raw};
 }
 
+// TODO: WTF?
+#if !HWY_COMPILER_MSVC || HWY_COMPILER_MSVC >= 1920
 template <class D, typename T = TFromD<D>>
 HWY_API Vec256<T> VecFromMask(D /* tag */, const Mask256<T> v) {
   return Vec256<T>{v.raw};
 }
+#endif
 
 // ------------------------------ IfThenElse
 
