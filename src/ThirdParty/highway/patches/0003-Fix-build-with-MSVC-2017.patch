@@ -1,0 +1,33 @@
+From ebb7f4ab7adfab8badad3fe201512b777bc4f951 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 9 Jul 2023 17:11:38 +0700
+Subject: [PATCH 3/3] Fix build with MSVC 2017
+
+---
+ hwy/ops/x86_128-inl.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/hwy/ops/x86_128-inl.h b/hwy/ops/x86_128-inl.h
+index c122ad5..c6d89af 100644
+--- a/hwy/ops/x86_128-inl.h
++++ b/hwy/ops/x86_128-inl.h
+@@ -1379,6 +1379,8 @@ template <class D, HWY_IF_V_SIZE_LE_D(D, 4), typename T = TFromD<D>>
+ HWY_API void Store(VFromD<D> v, D d, T* HWY_RESTRICT p) {
+   CopyBytes<d.MaxBytes()>(&v, p);  // not same size
+ }
++// TODO: WTF?
++#if !HWY_COMPILER_MSVC || HWY_COMPILER_MSVC >= 1920
+ template <class D, HWY_IF_V_SIZE_D(D, 4), HWY_IF_F32_D(D)>
+ HWY_API void Store(Vec32<float> v, D /* tag */, float* HWY_RESTRICT p) {
+ #if HWY_SAFE_PARTIAL_LOAD_STORE
+@@ -1387,6 +1389,7 @@ HWY_API void Store(Vec32<float> v, D /* tag */, float* HWY_RESTRICT p) {
+   _mm_store_ss(p, v.raw);
+ #endif
+ }
++#endif
+ 
+ // For < 128 bit, StoreU == Store.
+ template <class D, HWY_IF_V_SIZE_LE_D(D, 8), typename T = TFromD<D>>
+-- 
+2.39.2
+

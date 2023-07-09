@@ -1379,6 +1379,8 @@ template <class D, HWY_IF_V_SIZE_LE_D(D, 4), typename T = TFromD<D>>
 HWY_API void Store(VFromD<D> v, D d, T* HWY_RESTRICT p) {
   CopyBytes<d.MaxBytes()>(&v, p);  // not same size
 }
+// TODO: WTF?
+#if !HWY_COMPILER_MSVC || HWY_COMPILER_MSVC >= 1920
 template <class D, HWY_IF_V_SIZE_D(D, 4), HWY_IF_F32_D(D)>
 HWY_API void Store(Vec32<float> v, D /* tag */, float* HWY_RESTRICT p) {
 #if HWY_SAFE_PARTIAL_LOAD_STORE
@@ -1387,6 +1389,7 @@ HWY_API void Store(Vec32<float> v, D /* tag */, float* HWY_RESTRICT p) {
   _mm_store_ss(p, v.raw);
 #endif
 }
+#endif
 
 // For < 128 bit, StoreU == Store.
 template <class D, HWY_IF_V_SIZE_LE_D(D, 8), typename T = TFromD<D>>
