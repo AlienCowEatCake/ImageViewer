@@ -63,9 +63,16 @@ typedef void* QFunctionPointer;
 #define LINKED_RESVG_VERSION QT_VERSION_CHECK(0, 0, 0)
 #endif
 
-#if !defined (LINKED_RESVG) || (LINKED_RESVG_VERSION >= QT_VERSION_CHECK(0, 33, 0))
+#if !defined (LINKED_RESVG) || (LINKED_RESVG_VERSION >= QT_VERSION_CHECK(0, 13, 0) && LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 33, 0))
 namespace
 {
+
+#if defined (LINKED_RESVG) && (LINKED_RESVG_VERSION < QT_VERSION_CHECK(0, 20, 0))
+#define RESVG_FIT_TO_TYPE_ORIGINAL  RESVG_FIT_TO_ORIGINAL
+#define RESVG_FIT_TO_TYPE_WIDTH     RESVG_FIT_TO_WIDTH
+#define RESVG_FIT_TO_TYPE_HEIGHT    RESVG_FIT_TO_HEIGHT
+#define RESVG_FIT_TO_TYPE_ZOOM      RESVG_FIT_TO_ZOOM
+#endif
 
 // ====================================================================================================
 
@@ -79,27 +86,34 @@ const QStringList RESVG_LIBRARY_NAMES = QStringList()
 typedef struct resvg_options resvg_options;
 typedef struct resvg_render_tree resvg_render_tree;
 
-struct resvg_size
+typedef enum resvg_fit_to_type
 {
-    float width;
-    float height;
+    RESVG_FIT_TO_TYPE_ORIGINAL,
+    RESVG_FIT_TO_TYPE_WIDTH,
+    RESVG_FIT_TO_TYPE_HEIGHT,
+    RESVG_FIT_TO_TYPE_ZOOM,
+} resvg_fit_to_type;
+
+struct resvg_fit_to
+{
+    resvg_fit_to_type type;
+    float value;
 };
 
-struct resvg_rect {
-    float x;
-    float y;
-    float width;
-    float height;
+struct resvg_size
+{
+    double width;
+    double height;
 };
 
 struct resvg_transform
 {
-    float a;
-    float b;
-    float c;
-    float d;
-    float e;
-    float f;
+    double a;
+    double b;
+    double c;
+    double d;
+    double e;
+    double f;
 };
 
 struct ReSVG
@@ -114,9 +128,8 @@ struct ReSVG
     QFunctionPointer resvg_get_image_size;
     QFunctionPointer resvg_tree_destroy;
     QFunctionPointer resvg_render;
-    QFunctionPointer resvg_transform_identity;
+    QFunctionPointer resvg_transform_identity; ///< @note v0.20.0+
     QFunctionPointer resvg_options_set_keep_named_groups; ///< @note < v0.29.0
-    QFunctionPointer resvg_get_image_bbox;
 
     static ReSVG *instance()
     {
@@ -142,7 +155,6 @@ private:
         , resvg_render(Q_NULLPTR)
         , resvg_transform_identity(Q_NULLPTR)
         , resvg_options_set_keep_named_groups(Q_NULLPTR)
-        , resvg_get_image_bbox(Q_NULLPTR)
         {
             if(!LibraryUtils::LoadQLibrary(library, RESVG_LIBRARY_NAMES))
                 return;
@@ -158,7 +170,6 @@ private:
             resvg_render = library.resolve("resvg_render");
             resvg_transform_identity = library.resolve("resvg_transform_identity");
             resvg_options_set_keep_named_groups = library.resolve("resvg_options_set_keep_named_groups");
-            resvg_get_image_bbox = library.resolve("resvg_get_image_bbox");
 
 //            if(resvg_init_log)
 //            {
@@ -180,82 +191,8 @@ private:
                 && resvg_parse_tree_from_data && resvg_tree_destroy
                 && resvg_get_image_size
                 && resvg_render
-                && resvg_transform_identity
-                && resvg_get_image_bbox
-                && !resvg_options_set_keep_named_groups
-                && check_abi_003400()
+                && resvg_options_set_keep_named_groups ///< @note < v0.29.0
                 ;
-    }
-
-private:
-    bool check_abi_003400() const
-    {
-        static const bool result = do_check_abi_003400();
-        return result;
-    }
-
-    bool do_check_abi_003400() const
-    {
-        typedef resvg_options *(*resvg_options_create_t)(void);
-        resvg_options_create_t resvg_options_create_f = (resvg_options_create_t)resvg_options_create;
-        typedef void (*resvg_options_destroy_t)(resvg_options*);
-        resvg_options_destroy_t resvg_options_destroy_f = (resvg_options_destroy_t)resvg_options_destroy;
-        typedef int (*resvg_parse_tree_from_data_t)(const char*, const size_t, const resvg_options*, resvg_render_tree**);
-        resvg_parse_tree_from_data_t resvg_parse_tree_from_data_f = (resvg_parse_tree_from_data_t)resvg_parse_tree_from_data;
-        typedef void (*resvg_tree_destroy_t)(resvg_render_tree*);
-        resvg_tree_destroy_t resvg_tree_destroy_f = (resvg_tree_destroy_t)resvg_tree_destroy;
-        typedef bool (*resvg_get_image_bbox_t)(const resvg_render_tree*, resvg_rect*);
-        resvg_get_image_bbox_t resvg_get_image_bbox_f = (resvg_get_image_bbox_t)resvg_get_image_bbox;
-
-        bool result = false;
-        const QByteArray dataBuf("<svg xmlns='http://www.w3.org/2000/svg' viewBox='1 1 9 9'><circle cx='4' cy='4' r='2' fill='red'/></svg>");
-        const char *data = dataBuf.constData();
-        const size_t len = dataBuf.size();
-
-        resvg_options *opt = resvg_options_create_f();
-        if(!opt)
-            return result;
-
-        resvg_render_tree *tree = Q_NULLPTR;
-        const int err = resvg_parse_tree_from_data_f(data, len, opt, &tree);
-        if(err)
-        {
-            resvg_options_destroy_f(opt);
-            return result;
-        }
-
-        QByteArray bboxData;
-        const quint8 flagBit = 0xff;
-        bboxData.resize(sizeof(resvg_rect) * 3);
-        bboxData.fill(*reinterpret_cast<const char*>(&flagBit), bboxData.size());
-        resvg_rect *bbox = reinterpret_cast<resvg_rect*>(bboxData.data());
-        if(!resvg_get_image_bbox_f(tree, bbox))
-        {
-            resvg_tree_destroy_f(tree);
-            resvg_options_destroy_f(opt);
-            return result;
-        }
-
-        for(int i = sizeof(resvg_rect); i < bboxData.size(); ++i)
-        {
-            if(bboxData[i] != *reinterpret_cast<const char*>(&flagBit))
-            {
-                resvg_tree_destroy_f(tree);
-                resvg_options_destroy_f(opt);
-                return result;
-            }
-        }
-
-        result = true
-            && qFuzzyCompare(bbox->width, 4.0f)
-            && qFuzzyCompare(bbox->height, 4.0f)
-            && qFuzzyCompare(bbox->x, 2.0f)
-            && qFuzzyCompare(bbox->y, 2.0f)
-            ;
-
-        resvg_tree_destroy_f(tree);
-        resvg_options_destroy_f(opt);
-        return result;
     }
 };
 
@@ -329,14 +266,23 @@ resvg_size resvg_get_image_size(const resvg_render_tree *tree)
     return func(tree);
 }
 
-void resvg_render(const resvg_render_tree *tree, resvg_transform transform, quint32 width, quint32 height, char *pixmap)
+void resvg_render(const resvg_render_tree *tree, resvg_fit_to fit_to, resvg_transform transform, quint32 width, quint32 height, char *pixmap)
 {
     ReSVG *resvg = ReSVG::instance();
     if(!resvg || !resvg->resvg_render)
         return;
-    typedef void (*func_t)(const resvg_render_tree*, resvg_transform, quint32, quint32, char*);
-    func_t func = (func_t)resvg->resvg_render;
-    func(tree, transform, width, height, pixmap);
+    if(resvg->resvg_transform_identity) ///< @note v0.20.0+
+    {
+        typedef void (*func_t)(const resvg_render_tree*, resvg_fit_to, resvg_transform, quint32, quint32, char*);
+        func_t func = (func_t)resvg->resvg_render;
+        func(tree, fit_to, transform, width, height, pixmap);
+    }
+    else
+    {
+        typedef void (*func_t)(const resvg_render_tree*, resvg_fit_to, quint32, quint32, char*);
+        func_t func = (func_t)resvg->resvg_render;
+        func(tree, fit_to, width, height, pixmap);
+    }
 }
 
 resvg_transform resvg_transform_identity()
@@ -458,12 +404,15 @@ public:
             return img;
         }
 
-        resvg_transform ts = resvg_transform_identity();
-        ts.a = scaleFactor;
-        ts.d = scaleFactor;
+        resvg_fit_to fitTo;
+        fitTo.type = RESVG_FIT_TO_TYPE_ZOOM;
+        fitTo.value = static_cast<float>(scaleFactor);
 
         img.fill(Qt::transparent);
-        resvg_render(m_tree, ts,
+        resvg_render(m_tree, fitTo,
+#if !defined (LINKED_RESVG) || (LINKED_RESVG_VERSION >= QT_VERSION_CHECK(0, 20, 0))
+                     resvg_transform_identity(),
+#endif
                      static_cast<quint32>(img.width()),
                      static_cast<quint32>(img.height()),
                      reinterpret_cast<char*>(img.bits()));
@@ -498,12 +447,12 @@ private:
 
 // ====================================================================================================
 
-class DecoderReSVG : public IDecoder
+class DecoderReSVGLt003300 : public IDecoder
 {
 public:
     QString name() const Q_DECL_OVERRIDE
     {
-        return QString::fromLatin1("DecoderReSVG");
+        return QString::fromLatin1("DecoderReSVGLt003300");
     }
 
     QStringList supportedFormats() const Q_DECL_OVERRIDE
@@ -536,7 +485,7 @@ public:
     }
 };
 
-DecoderAutoRegistrator registrator(new DecoderReSVG);
+DecoderAutoRegistrator registrator(new DecoderReSVGLt003300);
 
 // ====================================================================================================
 
