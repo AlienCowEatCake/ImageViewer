@@ -68,14 +68,20 @@ std::multiset<std::unique_ptr<struct heif_encoder_descriptor>,
 
 // Note: we cannot move this to 'heif_init' because we have to make sure that this is initialized
 // AFTER the two global std::set above.
-static class Register_Default_Plugins
+class Register_Default_Plugins
 {
 public:
+  static void ensure_registered()
+  {
+    static Register_Default_Plugins dummy;
+  }
+
+private:
   Register_Default_Plugins()
   {
     register_default_plugins();
   }
-} dummy;
+};
 
 
 void register_default_plugins()
@@ -129,6 +135,7 @@ const struct heif_decoder_plugin* get_decoder(enum heif_compression_format type,
   int highest_priority = 0;
   const struct heif_decoder_plugin* best_plugin = nullptr;
 
+  Register_Default_Plugins::ensure_registered();
   for (const auto* plugin : s_decoder_plugins) {
 
     int priority = plugin->does_support_format(type);
@@ -180,6 +187,7 @@ get_filtered_encoder_descriptors(enum heif_compression_format format,
 {
   std::vector<const struct heif_encoder_descriptor*> filtered_descriptors;
 
+  Register_Default_Plugins::ensure_registered();
   for (const auto& descr : s_encoder_descriptors) {
     const struct heif_encoder_plugin* plugin = descr->plugin;
 
