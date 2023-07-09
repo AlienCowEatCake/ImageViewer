@@ -1,0 +1,40 @@
+From e3356a204c5ae02db3ec4552b6c1be354e9b6142 Mon Sep 17 00:00:00 2001
+From: Jia Tan <jiat0218@gmail.com>
+Date: Wed, 28 Jun 2023 20:22:38 +0800
+Subject: [PATCH] liblzma: Prevent warning for MSYS2 Windows build.
+
+In lzma_memcmplen(), the <intrin.h> header file is only included if
+_MSC_VER and _M_X64 are both defined but _BitScanForward64() was
+previously used if _M_X64 was defined. GCC for MSYS2 defines _M_X64 but
+not _MSC_VER so _BitScanForward64() was used without including
+<intrin.h>.
+
+Now, lzma_memcmplen() will use __builtin_ctzll() for MSYS2 GCC builds as
+expected.
+---
+ src/liblzma/common/memcmplen.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/src/liblzma/common/memcmplen.h b/src/liblzma/common/memcmplen.h
+index db3fff6..4392c1c 100644
+--- a/src/liblzma/common/memcmplen.h
++++ b/src/liblzma/common/memcmplen.h
+@@ -69,11 +69,13 @@ lzma_memcmplen(const uint8_t *buf1, const uint8_t *buf2,
+ 	while (len < limit) {
+ 		const uint64_t x = read64ne(buf1 + len) - read64ne(buf2 + len);
+ 		if (x != 0) {
+-#	if defined(_M_X64) // MSVC or Intel C compiler on Windows
++	// MSVC or Intel C compiler on Windows
++#	if defined(_M_X64) && defined(_MSC_VER)
+ 			unsigned long tmp;
+ 			_BitScanForward64(&tmp, x);
+ 			len += (uint32_t)tmp >> 3;
+-#	else // GCC, clang, or Intel C compiler
++	// GCC, clang, or Intel C compiler
++#	else
+ 			len += (uint32_t)__builtin_ctzll(x) >> 3;
+ #	endif
+ 			return my_min(len, limit);
+-- 
+2.39.2
+
