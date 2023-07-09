@@ -1,3 +1,5 @@
+CONFIG += compile_included_sources
+
 INCLUDEPATH += \
     $$PWD/libwebp \
     $$PWD/libwebp/sharpyuv \
@@ -11,6 +13,7 @@ INCLUDEPATH += \
 
 SOURCES += \
     $$PWD/libwebp/sharpyuv/sharpyuv.c \
+    $$PWD/libwebp/sharpyuv/sharpyuv_cpu.c \
     $$PWD/libwebp/sharpyuv/sharpyuv_csp.c \
     $$PWD/libwebp/sharpyuv/sharpyuv_dsp.c \
     $$PWD/libwebp/sharpyuv/sharpyuv_gamma.c \

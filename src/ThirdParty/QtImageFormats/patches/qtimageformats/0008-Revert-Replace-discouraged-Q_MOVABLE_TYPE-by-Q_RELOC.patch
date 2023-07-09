@@ -1,4 +1,4 @@
-From ec09210d5862d64a81d37058fbfec9b86ccf35a6 Mon Sep 17 00:00:00 2001
+From 7f761868184de8d71e69e5b27efe209de8b7ae5d Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 Aug 2022 03:45:30 +0700
 Subject: [PATCH 8/8] Revert "Replace discouraged Q_MOVABLE_TYPE by
@@ -23,5 +23,5 @@ index ef6aa13..80f79ce 100644
  class QICNSHandler : public QImageIOHandler
  {
 -- 
-2.30.2
+2.39.2
 

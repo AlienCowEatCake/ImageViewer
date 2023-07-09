@@ -42,6 +42,9 @@ private:
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
     void rgb96fixup(QImage *image);
 #endif
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+    void rgbFixup(QImage *image);
+#endif
     const QScopedPointer<QTiffHandlerPrivate> d;
     bool ensureHaveDirectoryCount() const;
 };

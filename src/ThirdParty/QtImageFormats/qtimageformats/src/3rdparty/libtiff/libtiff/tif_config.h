@@ -133,11 +133,14 @@
 /* Default size of the strip in bytes (when strip chopping enabled) */
 /* #undef STRIP_SIZE_DEFAULT */
 
+/* Maximum number of TIFF IFDs that libtiff can iterate through in a file. */
+/* #undef TIFF_MAX_DIR_COUNT */
+
 /* define to use win32 IO system */
 /* #undef USE_WIN32_FILEIO */
 
 /* Version number of package */
-#define VERSION "4.3.0"
+#define VERSION "4.5.1"
 
 /* Support webp compression */
 /* #undef WEBP_SUPPORT */

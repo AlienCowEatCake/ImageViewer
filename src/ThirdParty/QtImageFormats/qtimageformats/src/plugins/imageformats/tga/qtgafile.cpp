@@ -185,9 +185,18 @@ QImage QTgaFile::readImage()
 
     int offset = mHeader[IdLength];  // Mostly always zero
 
-    // Even in TrueColor files a color pallette may be present
-    if (mHeader[ColorMapType] == 1)
-        offset += littleEndianInt(&mHeader[CMapLength]) * littleEndianInt(&mHeader[CMapDepth]);
+    // Even in TrueColor files a color palette may be present so we have to check it here
+    // even we only support image type 2 (= uncompressed true-color image)
+    if (mHeader[ColorMapType] == 1) {
+        int cmapDepth = mHeader[CMapDepth];
+        if (cmapDepth == 15)    // 15 bit is stored as 16 bit + ignoring the highest bit (no alpha)
+            cmapDepth = 16;
+        if (cmapDepth != 16 && cmapDepth != 24 && cmapDepth != 32) {
+            mErrorMessage = tr("Invalid color map depth (%1)").arg(cmapDepth);
+            return {};
+        }
+        offset += littleEndianInt(&mHeader[CMapLength]) * cmapDepth / 8;
+    }
 
     mDevice->seek(HeaderSize + offset);
 

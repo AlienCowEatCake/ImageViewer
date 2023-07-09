@@ -13,6 +13,8 @@
 #include <qimage.h>
 #include <qvariant.h>
 #include <qvarlengtharray.h>
+#include <qbuffer.h>
+#include <qfiledevice.h>
 
 extern "C" {
 #include "tiffio.h"
@@ -61,13 +63,33 @@ toff_t qtiffSizeProc(thandle_t fd)
     return static_cast<QIODevice *>(fd)->size();
 }
 
-int qtiffMapProc(thandle_t /*fd*/, tdata_t* /*pbase*/, toff_t* /*psize*/)
+int qtiffMapProc(thandle_t fd, void **base, toff_t *size)
 {
+    QIODevice *device = static_cast<QIODevice *>(fd);
+
+    QFileDevice *file = qobject_cast<QFileDevice *>(device);
+    if (file) {
+        *base = file->map(0, file->size());
+        if (*base != nullptr) {
+            *size = file->size();
+            return 1;
+        }
+    } else {
+        QBuffer *buf = qobject_cast<QBuffer *>(device);
+        if (buf) {
+            *base = const_cast<char *>(buf->data().constData());
+            *size = buf->size();
+            return 1;
+        }
+    }
     return 0;
 }
 
-void qtiffUnmapProc(thandle_t /*fd*/, tdata_t /*base*/, toff_t /*size*/)
+void qtiffUnmapProc(thandle_t fd, void *base, toff_t /*size*/)
 {
+    QFileDevice *file = qobject_cast<QFileDevice *>(static_cast<QIODevice *>(fd));
+    if (file && base)
+        file->unmap(static_cast<uchar *>(base));
 }
 
 
@@ -266,10 +288,10 @@ bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
         format = QImage::Format_Indexed8;
     else if (samplesPerPixel < 4)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-        if (bitPerSample == 16 && photometric == PHOTOMETRIC_RGB)
+        if (bitPerSample == 16 && (photometric == PHOTOMETRIC_RGB || photometric == PHOTOMETRIC_MINISBLACK))
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
             format = floatingPoint ? QImage::Format_RGBX16FPx4 : QImage::Format_RGBX64;
-        else if (bitPerSample == 32 && floatingPoint && photometric == PHOTOMETRIC_RGB)
+        else if (bitPerSample == 32 && floatingPoint && (photometric == PHOTOMETRIC_RGB || photometric == PHOTOMETRIC_MINISBLACK))
             format = QImage::Format_RGBX32FPx4;
 #else
             format = QImage::Format_RGBX64;
@@ -463,10 +485,10 @@ bool QTiffHandler::read(QImage *image)
 #else
         if (format == QImage::Format_RGBX64)
 #endif
-            bytesPerPixel = 6;
+            bytesPerPixel = d->photometric == PHOTOMETRIC_RGB ? 6 : 2;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
         else if (format == QImage::Format_RGBX32FPx4)
-            bytesPerPixel = 12;
+            bytesPerPixel = d->photometric == PHOTOMETRIC_RGB ? 12 : 4;
 #endif
 #else
         int bytesPerPixel = 1; // 8bit
@@ -523,14 +545,24 @@ bool QTiffHandler::read(QImage *image)
                 }
             }
         }
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
-        if (format == QImage::Format_RGBX64 || format == QImage::Format_RGBX16FPx4)
-            rgb48fixup(image, d->floatingPoint);
-        else if (format == QImage::Format_RGBX32FPx4)
-            rgb96fixup(image);
-#elif (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-        if (format == QImage::Format_RGBX64)
-            rgb48fixup(image, d->floatingPoint);
+        if (format == QImage::Format_RGBX64 || format == QImage::Format_RGBX16FPx4) {
+#else
+        if (format == QImage::Format_RGBX64) {
+#endif
+            if (d->photometric == PHOTOMETRIC_RGB)
+                rgb48fixup(image, d->floatingPoint);
+            else
+                rgbFixup(image);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+        } else if (format == QImage::Format_RGBX32FPx4) {
+            if (d->photometric == PHOTOMETRIC_RGB)
+                rgb96fixup(image);
+            else
+                rgbFixup(image);
+#endif
+        }
 #endif
     } else {
         const int stopOnError = 1;
@@ -1073,7 +1105,7 @@ void QTiffHandler::rgb48fixup(QImage *image, bool floatingPoint)
     uchar *scanline = image->bits();
     const qsizetype bpl = image->bytesPerLine();
     quint16 mask = 0xffff;
-    const qfloat16 fp_mask = 1.0f;
+    const qfloat16 fp_mask = qfloat16(1.0f);
     if (floatingPoint)
         memcpy(&mask, &fp_mask, 2);
     for (int y = 0; y < h; ++y) {
@@ -1106,6 +1138,44 @@ void QTiffHandler::rgb96fixup(QImage *image)
             dst[x * 4 + 0] = dst[x * 3 + 0];
         }
         scanline += bpl;
+    }
+}
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+void QTiffHandler::rgbFixup(QImage *image)
+{
+    Q_ASSERT(d->floatingPoint);
+    if (image->depth() == 64) {
+        const int h = image->height();
+        const int w = image->width();
+        uchar *scanline = image->bits();
+        const qsizetype bpl = image->bytesPerLine();
+        for (int y = 0; y < h; ++y) {
+            qfloat16 *dst = reinterpret_cast<qfloat16 *>(scanline);
+            for (int x = w - 1; x >= 0; --x) {
+                dst[x * 4 + 3] = qfloat16(1.0f);
+                dst[x * 4 + 2] = dst[x];
+                dst[x * 4 + 1] = dst[x];
+                dst[x * 4 + 0] = dst[x];
+            }
+            scanline += bpl;
+        }
+    } else {
+        const int h = image->height();
+        const int w = image->width();
+        uchar *scanline = image->bits();
+        const qsizetype bpl = image->bytesPerLine();
+        for (int y = 0; y < h; ++y) {
+            float *dst = reinterpret_cast<float *>(scanline);
+            for (int x = w - 1; x >= 0; --x) {
+                dst[x * 4 + 3] = 1.0f;
+                dst[x * 4 + 2] = dst[x];
+                dst[x * 4 + 1] = dst[x];
+                dst[x * 4 + 0] = dst[x];
+            }
+            scanline += bpl;
+        }
     }
 }
 #endif

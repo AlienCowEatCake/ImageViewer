@@ -1,8 +1,6 @@
 # Copyright (C) 2022 The Qt Company Ltd.
 # SPDX-License-Identifier: BSD-3-Clause
 
-# Generated from webp.pro.
-
 #####################################################################
 ## QWebpPlugin Plugin:
 #####################################################################
@@ -18,9 +16,7 @@ qt_internal_add_plugin(QWebpPlugin
         Qt::Gui
 )
 
-#### Keys ignored in scope 1:.:.:webp.pro:<TRUE>:
-# OTHER_FILES = "webp.json"
-# QT_FOR_CONFIG = "imageformats-private"
+set_target_properties(QWebpPlugin PROPERTIES UNITY_BUILD OFF)
 
 ## Scopes:
 #####################################################################
@@ -33,6 +29,7 @@ qt_internal_extend_target(QWebpPlugin CONDITION QT_FEATURE_system_webp
 qt_internal_extend_target(QWebpPlugin CONDITION NOT QT_FEATURE_system_webp
     SOURCES
         ../../../3rdparty/libwebp/sharpyuv/sharpyuv.c
+        ../../../3rdparty/libwebp/sharpyuv/sharpyuv_cpu.c
         ../../../3rdparty/libwebp/sharpyuv/sharpyuv_csp.c
         ../../../3rdparty/libwebp/sharpyuv/sharpyuv_dsp.c
         ../../../3rdparty/libwebp/sharpyuv/sharpyuv_gamma.c
@@ -156,12 +153,11 @@ qt_internal_extend_target(QWebpPlugin CONDITION NOT QT_FEATURE_system_webp
 
 qt_internal_extend_target(QWebpPlugin CONDITION ANDROID AND NOT ANDROID_EMBEDDED AND NOT QT_FEATURE_system_webp
     SOURCES
-        ${CMAKE_ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c   # special case
+        ${CMAKE_ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c
     INCLUDE_DIRECTORIES
-        ${CMAKE_ANDROID_NDK}/sources/android/cpufeatures                  # special case
+        ${CMAKE_ANDROID_NDK}/sources/android/cpufeatures
 )
 
-# special case begin
 set(neon_sources
         ../../../3rdparty/libwebp/sharpyuv/sharpyuv_neon.c
         ../../../3rdparty/libwebp/src/dsp/alpha_processing_neon.c
@@ -186,25 +182,3 @@ if(NOT QT_FEATURE_system_webp)
         qt_internal_add_simd_part(QWebpPlugin SIMD neon SOURCES ${neon_sources})
     endif()
 endif()
-# special case end
-
-#### Keys ignored in scope 6:.:../../../3rdparty:../../../3rdparty/libwebp.pri:INTEGRITY:
-# QMAKE_CFLAGS = "-c99"
-
-#### Keys ignored in scope 12:.:../../../3rdparty:../../../3rdparty/libwebp.pri:else:
-# QMAKE_EXTRA_COMPILERS = "neon_comp"
-# neon_comp.commands = "$$QMAKE_CC" "-c" "$(CFLAGS)" "$$QMAKE_CFLAGS_NEON" "$(INCPATH)" "${QMAKE_FILE_IN}"
-# neon_comp.dependency_type = "TYPE_C"
-# neon_comp.input = "SOURCES_FOR_NEON"
-# neon_comp.name = "compiling[neon]" "${QMAKE_FILE_IN}"
-# neon_comp.output = "${QMAKE_VAR_OBJECTS_DIR}${QMAKE_FILE_BASE}$${firstQMAKE_EXT_OBJ}"
-# neon_comp.variable_out = "OBJECTS"
-
-#### Keys ignored in scope 13:.:../../../3rdparty:../../../3rdparty/libwebp.pri:MSVC:
-# neon_comp.commands = "-Fo${QMAKE_FILE_OUT}"
-
-#### Keys ignored in scope 14:.:../../../3rdparty:../../../3rdparty/libwebp.pri:else:
-# neon_comp.commands = "-o" "${QMAKE_FILE_OUT}"
-
-#### Keys ignored in scope 15:.:../../../3rdparty:../../../3rdparty/libwebp.pri:silent:
-# neon_comp.commands = "@echo" "compiling[neon]" "${QMAKE_FILE_IN}" "&&"

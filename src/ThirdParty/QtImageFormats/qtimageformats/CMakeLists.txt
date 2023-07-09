@@ -1,20 +1,20 @@
 # Copyright (C) 2022 The Qt Company Ltd.
 # SPDX-License-Identifier: BSD-3-Clause
 
-# Generated from qtimageformats.pro.
-
 cmake_minimum_required(VERSION 3.16)
 
 include(.cmake.conf)
-project(QtImageFormats # special case
+project(QtImageFormats
     VERSION "${QT_REPO_MODULE_VERSION}"
-    DESCRIPTION "Qt ImageFormats Libraries" # special case
+    DESCRIPTION "Qt ImageFormats Libraries"
     HOMEPAGE_URL "https://qt.io/"
     LANGUAGES CXX C
 )
 
-find_package(Qt6 ${PROJECT_VERSION} CONFIG REQUIRED COMPONENTS BuildInternals Core) # special case
-find_package(Qt6 ${PROJECT_VERSION} QUIET CONFIG OPTIONAL_COMPONENTS Gui) # special case
+find_package(Qt6 ${PROJECT_VERSION} CONFIG REQUIRED COMPONENTS BuildInternals Core)
+find_package(Qt6 ${PROJECT_VERSION} QUIET CONFIG OPTIONAL_COMPONENTS Gui)
+qt_internal_project_setup()
+
 if(NOT TARGET Qt::Gui)
     message(NOTICE "Skipping the build as the condition \"TARGET Qt::Gui\" is not met.")
     return()

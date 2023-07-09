@@ -1,9 +1,6 @@
 # Copyright (C) 2022 The Qt Company Ltd.
 # SPDX-License-Identifier: BSD-3-Clause
 
-# Generated from imageformats.pro.
-
-# special case begin
 qt_feature_module_begin(
     NO_MODULE
     PUBLIC_FILE "qtimageformats-config.h"
@@ -11,7 +8,6 @@ qt_feature_module_begin(
 )
 include(../../imageformats/configure.cmake)
 qt_feature_module_end(NO_MODULE)
-# special case end
 
 add_subdirectory(tga)
 add_subdirectory(wbmp)

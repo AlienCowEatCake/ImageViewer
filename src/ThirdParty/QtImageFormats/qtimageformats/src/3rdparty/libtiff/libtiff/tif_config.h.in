@@ -1,3 +1,9 @@
+/* clang-format off */
+/* clang-format disabled because CMake scripts are very sensitive to the
+ * formatting of this file. configure_file variables of type "@VAR@" are
+ * modified by clang-format and won't be substituted.
+ */
+
 /* libtiff/tif_config.h.in.  Not generated, but originated from autoheader.  */
 
 #include "tiffconf.h"
@@ -115,6 +121,9 @@
 /* Default size of the strip in bytes (when strip chopping enabled) */
 #undef STRIP_SIZE_DEFAULT
 
+/* Maximum number of TIFF IFDs that libtiff can iterate through in a file. */
+#undef TIFF_MAX_DIR_COUNT
+
 /* define to use win32 IO system */
 #undef USE_WIN32_FILEIO
 
@@ -169,3 +178,5 @@
 #else
 #  error "Unsupported size_t size; please submit a bug report"
 #endif
+
+/* clang-format on */

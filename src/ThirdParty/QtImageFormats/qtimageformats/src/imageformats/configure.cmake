@@ -19,6 +19,12 @@ set_property(CACHE INPUT_webp PROPERTY STRINGS undefined no qt system)
 
 qt_find_package(WrapJasper PROVIDED_TARGETS WrapJasper::WrapJasper MODULE_NAME imageformats QMAKE_LIB jasper)
 qt_find_package(TIFF PROVIDED_TARGETS TIFF::TIFF MODULE_NAME imageformats QMAKE_LIB tiff)
+# Threads::Threads might be brought in via a top-level CMakeLists.txt find_package dependency
+# in which case if the system WebpConfig.cmake depends Threads, it shouldn't try to promote it to
+# global to avoid a 'global promotion of a target in a different subdirectory' error.
+if(TARGET Threads::Threads)
+    qt_internal_disable_find_package_global_promotion(Threads::Threads)
+endif()
 qt_find_package(WrapWebP PROVIDED_TARGETS WrapWebP::WrapWebP MODULE_NAME imageformats QMAKE_LIB webp)
 qt_find_package(Libmng PROVIDED_TARGETS Libmng::Libmng MODULE_NAME imageformats QMAKE_LIB mng)
 

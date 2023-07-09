@@ -403,9 +403,9 @@ QtImageFormatsImageReader::Impl::Impl(QtImageFormatsImageReader *reader)
 
 QtImageFormatsImageReader::Impl::~Impl()
 {
+    delete handler;
     if(deleteDevice)
         delete device;
-    delete handler;
 }
 
 bool QtImageFormatsImageReader::Impl::initHandler()
