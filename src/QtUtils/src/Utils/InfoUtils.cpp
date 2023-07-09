@@ -178,7 +178,7 @@ QString targetDescriptionInt()
 #elif (defined(__ILP32__) && defined(__x86_64__))
     return QString::fromLatin1("x86-32");
 #elif (defined(_M_ARM64) || defined(__aarch64__))
-    return QString::fromLatin1("ARM64")
+    return QString::fromLatin1("ARM64");
 #elif (defined(_M_ARM ) || defined(__arm) || defined(__arm__) || \
     defined(_M_ARMT) || defined(_ARM ) || defined(__thumb__))
     return QString::fromLatin1("ARM");
