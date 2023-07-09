@@ -3400,3 +3400,5 @@ QImageIOHandler *XCFPlugin::create(QIODevice *device, const QByteArray &format) 
 
 // Just so I can get enum values printed
 #include "xcf.moc"
+
+#include "moc_xcf_p.cpp"

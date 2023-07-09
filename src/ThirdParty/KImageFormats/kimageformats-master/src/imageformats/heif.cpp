@@ -449,6 +449,14 @@ bool HEIFHandler::ensureDecoder()
         return false;
     }
 
+    if ((heif_image_handle_get_width(handle) == 0) || (heif_image_handle_get_height(handle) == 0)) {
+        m_parseState = ParseHeicError;
+        heif_image_handle_release(handle);
+        heif_context_free(ctx);
+        qWarning() << "HEIC image has zero dimension";
+        return false;
+    }
+
     const bool hasAlphaChannel = heif_image_handle_has_alpha_channel(handle);
     const int bit_depth = heif_image_handle_get_luma_bits_per_pixel(handle);
     heif_chroma chroma;
@@ -918,3 +926,5 @@ QImageIOHandler *HEIFPlugin::create(QIODevice *device, const QByteArray &format)
     handler->setFormat(format);
     return handler;
 }
+
+#include "moc_heif_p.cpp"

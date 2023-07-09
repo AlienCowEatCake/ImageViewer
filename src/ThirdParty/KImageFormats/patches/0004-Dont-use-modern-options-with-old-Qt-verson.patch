@@ -1,0 +1,148 @@
+From 5562d183b979ec608fa9155c403b040786e63bdc Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 9 Jul 2023 21:28:58 +0700
+Subject: [PATCH 4/4] Dont use modern options with old Qt verson
+
+---
+ src/imageformats/psd.cpp  | 20 ++++++++++++++++++++
+ src/imageformats/util_p.h |  7 +++++++
+ src/imageformats/xcf.cpp  |  8 ++++++--
+ 3 files changed, 33 insertions(+), 2 deletions(-)
+
+diff --git a/src/imageformats/psd.cpp b/src/imageformats/psd.cpp
+index 0d7ed39..f5f8f8a 100644
+--- a/src/imageformats/psd.cpp
++++ b/src/imageformats/psd.cpp
+@@ -732,9 +732,13 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
+     auto format = QImage::Format_Invalid;
+     switch(header.color_mode) {
+     case CM_RGB:
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+         if (header.depth == 32)
+             format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX32FPx4 : QImage::Format_RGBA32FPx4_Premultiplied;
+         else if (header.depth == 16)
++#else
++        if (header.depth == 16 || header.depth == 32)
++#endif
+             format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64_Premultiplied;
+         else
+             format = header.channel_count < 4 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888_Premultiplied;
+@@ -1162,7 +1166,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+                     planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, header.channel_count);
+                 }
+                 else if (header.depth == 32) {
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+                     planarToChunchy<float>(scanLine, rawStride.data(), header.width, c, header.channel_count);
++#else
++                    planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, header.channel_count);
++#endif
+                 }
+             }
+ 
+@@ -1187,7 +1195,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+                     else if (header.depth == 16)
+                         premulConversion<quint16>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
+                     else if (header.depth == 32)
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+                         premulConversion<float>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
++#else
++                        premulConversion<quint16>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
++#endif
+                 }
+             }
+ 
+@@ -1210,7 +1222,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+                 else if (header.depth == 16)
+                     rawChannelsCopy<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
+                 else if (header.depth == 32)
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+                     rawChannelsCopy<float>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
++#else
++                    rawChannelsCopy<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
++#endif
+             }
+         }
+     }
+@@ -1235,7 +1251,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+                     planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, imgChannels);
+                 }
+                 else if (header.depth == 32 && header.color_mode == CM_RGB) { // 32-bits float images: RGB/RGBA
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+                     planarToChunchy<float>(scanLine, rawStride.data(), header.width, c, imgChannels);
++#else
++                    planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, imgChannels);
++#endif
+                 }
+                 else if (header.depth == 32 && header.color_mode == CM_GRAYSCALE) { // 32-bits float images: Grayscale (coverted to equivalent integer 16-bits)
+                     planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, imgChannels);
+diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
+index 14e67c2..82178da 100644
+--- a/src/imageformats/util_p.h
++++ b/src/imageformats/util_p.h
+@@ -11,7 +11,10 @@
+ #include <limits>
+ 
+ #include <QImage>
++
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+ #include <QImageIOHandler>
++#endif
+ 
+ // QVector uses some extra space for stuff, hence the 32 here suggested by Thiago Macieira
+ static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
+@@ -21,9 +24,13 @@ static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
+ inline QImage imageAlloc(const QSize &size, const QImage::Format &format)
+ {
+     QImage img;
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++    img = QImage(size, format);
++#else
+     if (!QImageIOHandler::allocateImage(size, format, &img)) {
+         img = QImage(); // paranoia
+     }
++#endif
+     return img;
+ }
+ 
+diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
+index be1a830..09b7ae8 100644
+--- a/src/imageformats/xcf.cpp
++++ b/src/imageformats/xcf.cpp
+@@ -9,16 +9,18 @@
+ #include "util_p.h"
+ #include "xcf_p.h"
+ 
+-#include <QColorSpace>
+ #include <QDebug>
+ #include <QIODevice>
+ #include <QImage>
+-#include <QImageReader>
+ #include <QLoggingCategory>
+ #include <QPainter>
+ #include <QStack>
+ #include <QVector>
+ #include <QtEndian>
++#include <QColorSpace>
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#include <QImageReader>
++#endif
+ 
+ #include <stdlib.h>
+ #include <string.h>
+@@ -1108,11 +1110,13 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
+     // tiles of 64x64 pixels. The required memory to build the image is at least doubled because tiles are loaded
+     // and then the final image is created by copying the tiles inside it.
+     // NOTE: on Windows to open a 10GiB image the plugin uses 28GiB of RAM
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     qint64 channels = 1 + (layer.type == RGB_GIMAGE ? 2 : 0) + (layer.type == RGBA_GIMAGE ? 3 : 0);
+     if (qint64(layer.width) * qint64(layer.height) * channels * 2ll / 1024ll / 1024ll > QImageReader::allocationLimit()) {
+         qCDebug(XCFPLUGIN) << "Rejecting image as it exceeds the current allocation limit of" << QImageReader::allocationLimit() << "megabytes";
+         return false;
+     }
++#endif
+ 
+     layer.image_tiles.resize(layer.nrows);
+ 
+-- 
+2.39.2
+

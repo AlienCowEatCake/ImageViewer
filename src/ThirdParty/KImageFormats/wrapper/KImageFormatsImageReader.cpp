@@ -588,9 +588,9 @@ KImageFormatsImageReader::Impl::Impl(KImageFormatsImageReader *reader)
 
 KImageFormatsImageReader::Impl::~Impl()
 {
+    delete handler;
     if(deleteDevice)
         delete device;
-    delete handler;
 }
 
 bool KImageFormatsImageReader::Impl::initHandler()

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 project(KImageFormats)
 
 include(FeatureSummary)
-find_package(ECM 5.101.0  NO_MODULE)
+find_package(ECM 5.240.0  NO_MODULE)
 set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
 feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
@@ -19,11 +19,11 @@ include(ECMDeprecationSettings)
 include(CheckIncludeFiles)
 include(FindPkgConfig)
 
-set(REQUIRED_QT_VERSION 5.15.2)
-find_package(Qt${QT_MAJOR_VERSION}Gui ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
+set(REQUIRED_QT_VERSION 6.4.0)
+find_package(Qt6Gui ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
-find_package(KF5Archive)
-set_package_properties(KF5Archive PROPERTIES
+find_package(KF6Archive)
+set_package_properties(KF6Archive PROPERTIES
     TYPE OPTIONAL
     PURPOSE "Required for the QImage plugin for Krita and OpenRaster images"
 )
@@ -32,12 +32,12 @@ set_package_properties(KF5Archive PROPERTIES
 # this available in PATH
 set(BUILD_EPS_PLUGIN FALSE)
 if (UNIX)
-    find_package(Qt${QT_MAJOR_VERSION}PrintSupport ${REQUIRED_QT_VERSION} NO_MODULE)
-    set_package_properties(Qt${QT_MAJOR_VERSION}PrintSupport PROPERTIES
+    find_package(Qt6PrintSupport ${REQUIRED_QT_VERSION} NO_MODULE)
+    set_package_properties(Qt6PrintSupport PROPERTIES
         PURPOSE "Required for the QImage plugin for EPS images"
         TYPE OPTIONAL
     )
-    if (TARGET Qt${QT_MAJOR_VERSION}::PrintSupport)
+    if (TARGET Qt6::PrintSupport)
         set(BUILD_EPS_PLUGIN TRUE)
     endif()
 endif()
@@ -65,8 +65,8 @@ add_feature_info(LibHeif LibHeif_FOUND "required for the QImage plugin for HEIF/
 
 option(KIMAGEFORMATS_JXL "Enable plugin for JPEG XL format" ON)
 if(KIMAGEFORMATS_JXL)
-    pkg_check_modules(LibJXL IMPORTED_TARGET libjxl>=0.6.1)
-    pkg_check_modules(LibJXLThreads IMPORTED_TARGET libjxl_threads>=0.6.1)
+    pkg_check_modules(LibJXL IMPORTED_TARGET libjxl>=0.7.0)
+    pkg_check_modules(LibJXLThreads IMPORTED_TARGET libjxl_threads>=0.7.0)
 endif()
 add_feature_info(LibJXL LibJXL_FOUND "required for the QImage plugin for JPEG XL images")
 
@@ -78,8 +78,8 @@ set_package_properties(LibRaw PROPERTIES
 )
 
 ecm_set_disabled_deprecation_versions(
-    QT 5.15.2
-    KF 5.95
+    QT 6.4
+    KF 5.102
 )
 
 add_subdirectory(src)

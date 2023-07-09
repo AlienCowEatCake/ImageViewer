@@ -183,9 +183,7 @@ bool QJpegXLHandler::ensureDecoder()
         return false;
     }
 
-#ifdef KIMG_JXL_API_VERSION
     JxlDecoderCloseInput(m_decoder);
-#endif
 
     JxlDecoderStatus status = JxlDecoderSubscribeEvents(m_decoder, JXL_DEC_BASIC_INFO | JXL_DEC_COLOR_ENCODING | JXL_DEC_FRAME);
     if (status == JXL_DEC_ERROR) {
@@ -302,18 +300,31 @@ bool QJpegXLHandler::countALLFrames()
         }
     }
 
-    status = JxlDecoderGetColorAsEncodedProfile(m_decoder, &m_input_pixel_format, JXL_COLOR_PROFILE_TARGET_DATA, &color_encoding);
+    status = JxlDecoderGetColorAsEncodedProfile(m_decoder,
+#if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
+                                                &m_input_pixel_format,
+#endif
+                                                JXL_COLOR_PROFILE_TARGET_DATA,
+                                                &color_encoding);
 
     if (status == JXL_DEC_SUCCESS && color_encoding.color_space == JXL_COLOR_SPACE_RGB && color_encoding.white_point == JXL_WHITE_POINT_D65
         && color_encoding.primaries == JXL_PRIMARIES_SRGB && color_encoding.transfer_function == JXL_TRANSFER_FUNCTION_SRGB) {
         m_colorspace = QColorSpace(QColorSpace::SRgb);
     } else {
         size_t icc_size = 0;
-        if (JxlDecoderGetICCProfileSize(m_decoder, &m_input_pixel_format, JXL_COLOR_PROFILE_TARGET_DATA, &icc_size) == JXL_DEC_SUCCESS) {
+        if (JxlDecoderGetICCProfileSize(m_decoder,
+#if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
+                                        &m_input_pixel_format,
+#endif
+                                        JXL_COLOR_PROFILE_TARGET_DATA,
+                                        &icc_size)
+            == JXL_DEC_SUCCESS) {
             if (icc_size > 0) {
                 QByteArray icc_data(icc_size, 0);
                 if (JxlDecoderGetColorAsICCProfile(m_decoder,
+#if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
                                                    &m_input_pixel_format,
+#endif
                                                    JXL_COLOR_PROFILE_TARGET_DATA,
                                                    reinterpret_cast<uint8_t *>(icc_data.data()),
                                                    icc_data.size())
@@ -567,9 +578,7 @@ bool QJpegXLHandler::write(const QImage &image)
     if (save_depth == 16 && (image.hasAlphaChannel() || output_info.uses_original_profile)) {
         output_info.have_container = JXL_TRUE;
         JxlEncoderUseContainer(encoder, JXL_TRUE);
-#ifdef KIMG_JXL_API_VERSION
         JxlEncoderSetCodestreamLevel(encoder, 10);
-#endif
     }
 
     void *runner = nullptr;
@@ -683,19 +692,11 @@ bool QJpegXLHandler::write(const QImage &image)
         }
     }
 
-#ifdef KIMG_JXL_API_VERSION
     JxlEncoderFrameSettings *encoder_options = JxlEncoderFrameSettingsCreate(encoder, nullptr);
 
     JxlEncoderSetFrameDistance(encoder_options, (100.0f - m_quality) / 10.0f);
 
     JxlEncoderSetFrameLossless(encoder_options, (m_quality == 100) ? JXL_TRUE : JXL_FALSE);
-#else
-    JxlEncoderOptions *encoder_options = JxlEncoderOptionsCreate(encoder, nullptr);
-
-    JxlEncoderOptionsSetDistance(encoder_options, (100.0f - m_quality) / 10.0f);
-
-    JxlEncoderOptionsSetLossless(encoder_options, (m_quality == 100) ? JXL_TRUE : JXL_FALSE);
-#endif
 
     if (image.hasAlphaChannel() || ((save_depth == 8) && (xsize % 4 == 0))) {
         status = JxlEncoderAddImageFrame(encoder_options, &pixel_format, static_cast<const void *>(tmpimage.constBits()), buffer_size);
@@ -990,9 +991,7 @@ bool QJpegXLHandler::rewind()
         return false;
     }
 
-#ifdef KIMG_JXL_API_VERSION
     JxlDecoderCloseInput(m_decoder);
-#endif
 
     if (m_basicinfo.uses_original_profile) {
         if (JxlDecoderSubscribeEvents(m_decoder, JXL_DEC_FULL_IMAGE) != JXL_DEC_SUCCESS) {
@@ -1054,3 +1053,5 @@ QImageIOHandler *QJpegXLPlugin::create(QIODevice *device, const QByteArray &form
     handler->setFormat(format);
     return handler;
 }
+
+#include "moc_jxl_p.cpp"

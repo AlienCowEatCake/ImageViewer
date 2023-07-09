@@ -3,14 +3,14 @@
 
     SPDX-FileCopyrightText: 2003 Ignacio Castaño <castano@ludicon.com>
     SPDX-FileCopyrightText: 2015 Alex Merry <alex.merry@kde.org>
-    SPDX-FileCopyrightText: 2022 Mirco Miranda <mircomir@outlook.com>
+    SPDX-FileCopyrightText: 2022-2023 Mirco Miranda <mircomir@outlook.com>
 
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
 /*
- * This code is based on Thacher Ulrich PSD loading code released
- * into the public domain. See: http://tulrich.com/geekstuff/
+ * The early version of this code was based on Thacher Ulrich PSD loading code
+ * released into the public domain. See: http://tulrich.com/geekstuff/
  */
 
 /*
@@ -20,19 +20,19 @@
 
 /*
  * Limitations of the current code:
- * - 32-bit float image are converted to 16-bit integer image.
- *   NOTE: Qt 6.2 allow 32-bit float images (RGB only)
- * - Other color spaces cannot directly be read due to lack of QImage support for
- *   color spaces other than RGB (and Grayscale). Where possible, a conversion
- *   to RGB is done:
+ * - Color spaces other than RGB/Grayscale cannot be read due to lack of QImage
+ *   support. Where possible, a conversion to RGB is done:
  *   - CMYK images are converted using an approximated way that ignores the color
  *     information (ICC profile).
  *   - LAB images are converted to sRGB using literature formulas.
+ *   - MULICHANNEL images more than 3 channels are converted as CMYK images.
+ *   - DUOTONE images are considered as Grayscale images.
  *
  *   NOTE: The best way to convert between different color spaces is to use a
  *   color management engine (e.g. LittleCMS).
  */
 
+#include "fastmath_p.h"
 #include "psd_p.h"
 #include "util_p.h"
 
@@ -51,7 +51,7 @@ typedef quint8 uchar;
  * This should not be a problem because the Qt's QColorSpace supports the linear
  * sRgb colorspace.
  *
- * Using linear conversion, the loading speed is improved by 4x. Anyway, if you are using
+ * Using linear conversion, the loading speed is slightly improved. Anyway, if you are using
  * an software that discard color info, you should comment it.
  *
  * At the time I'm writing (07/2022), Gwenview and Krita supports linear sRgb but KDE
@@ -669,7 +669,7 @@ static bool IsSupported(const PSDHeader &header)
         return false;
     }
     if (header.color_mode == CM_MULTICHANNEL &&
-        header.channel_count < 4) {
+        header.channel_count < 3) {
         return false;
     }
     return true;
@@ -732,10 +732,16 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
     auto format = QImage::Format_Invalid;
     switch(header.color_mode) {
     case CM_RGB:
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+        if (header.depth == 32)
+            format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX32FPx4 : QImage::Format_RGBA32FPx4_Premultiplied;
+        else if (header.depth == 16)
+#else
         if (header.depth == 16 || header.depth == 32)
-            format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64;
+#endif
+            format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64_Premultiplied;
         else
-            format = header.channel_count < 4 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888;
+            format = header.channel_count < 4 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888_Premultiplied;
         break;
     case CM_MULTICHANNEL:       // Treat MCH as CMYK (number of channel check is done in IsSupported())
     case CM_CMYK:               // Photoshop supports CMYK/MCH 8-bits and 16-bits only
@@ -788,11 +794,13 @@ static qint32 imageChannels(const QImage::Format& format)
     return c;
 }
 
-inline quint8 xchg(quint8 v) {
+inline quint8 xchg(quint8 v)
+{
     return v;
 }
 
-inline quint16 xchg(quint16 v) {
+inline quint16 xchg(quint16 v)
+{
 #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
     return quint16( (v>>8) | (v<<8) );
 #else
@@ -800,9 +808,22 @@ inline quint16 xchg(quint16 v) {
 #endif
 }
 
-inline quint32 xchg(quint32 v) {
+inline quint32 xchg(quint32 v)
+{
 #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
     return quint32( (v>>24) | ((v & 0x00FF0000)>>8) | ((v & 0x0000FF00)<<8) | (v<<24) );
+#else
+    return v;  // never tested
+#endif
+}
+
+inline float xchg(float v)
+{
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    float *pf = &v;
+    quint32 f = xchg(*reinterpret_cast<quint32*>(pf));
+    quint32 *pi = &f;
+    return *reinterpret_cast<float*>(pi);
 #else
     return v;  // never tested
 #endif
@@ -814,7 +835,7 @@ inline void planarToChunchy(uchar *target, const char *source, qint32 width, qin
     auto s = reinterpret_cast<const T*>(source);
     auto t = reinterpret_cast<T*>(target);
     for (qint32 x = 0; x < width; ++x) {
-        t[x*cn+c] = xchg(s[x]);
+        t[x * cn + c] = xchg(s[x]);
     }
 }
 
@@ -826,7 +847,47 @@ inline void planarToChunchyFloat(uchar *target, const char *source, qint32 width
     for (qint32 x = 0; x < width; ++x) {
         auto tmp = xchg(s[x]);
         auto ftmp = (*reinterpret_cast<float*>(&tmp) - double(min)) / (double(max) - double(min));
-        t[x*cn+c] = quint16(std::min(ftmp * std::numeric_limits<quint16>::max() + 0.5, double(std::numeric_limits<quint16>::max())));
+        t[x * cn + c] = quint16(std::min(ftmp * std::numeric_limits<quint16>::max() + 0.5, double(std::numeric_limits<quint16>::max())));
+    }
+}
+
+enum class PremulConversion {
+    PS2P, // Photoshop premul to qimage premul (required by RGB)
+    PS2A, // Photoshop premul to unassociated alpha (required by RGB, CMYK and L* components of LAB)
+    PSLab2A // Photoshop premul to unassociated alpha (required by a* and b* components of LAB)
+};
+
+template<class T>
+inline void premulConversion(char *stride, qint32 width, qint32 ac, qint32 cn, const PremulConversion &conv)
+{
+    auto s = reinterpret_cast<T*>(stride);
+    // NOTE: to avoid overflows, max is casted to qint64: that is possible because max is always an integer (even if T is float)
+    auto max = qint64(std::numeric_limits<T>::is_integer ? std::numeric_limits<T>::max() : 1);
+
+    for (qint32 c = 0; c < ac; ++c) {
+        if (conv == PremulConversion::PS2P) {
+            for (qint32 x = 0; x < width; ++x) {
+                auto xcn = x * cn;
+                auto alpha = *(s + xcn + ac);
+                *(s + xcn + c) = *(s + xcn + c) + alpha - max;
+            }
+        }
+        else if (conv == PremulConversion::PS2A || (conv == PremulConversion::PSLab2A && c == 0)) {
+            for (qint32 x = 0; x < width; ++x) {
+                auto xcn = x * cn;
+                auto alpha = *(s + xcn + ac);
+                if (alpha > 0)
+                    *(s + xcn + c) = ((*(s + xcn + c) + alpha - max) * max + alpha / 2) / alpha;
+            }
+        }
+        else if (conv == PremulConversion::PSLab2A) {
+            for (qint32 x = 0; x < width; ++x) {
+                auto xcn = x * cn;
+                auto alpha = *(s + xcn + ac);
+                if (alpha > 0)
+                    *(s + xcn + c) = ((*(s + xcn + c) + (alpha - max + 1) / 2) * max + alpha / 2) / alpha;
+            }
+        }
     }
 }
 
@@ -840,23 +901,36 @@ inline void monoInvert(uchar *target, const char* source, qint32 bytes)
 }
 
 template<class T>
+inline void rawChannelsCopy(uchar *target, qint32 targetChannels, const char *source, qint32 sourceChannels, qint32 width)
+{
+    auto s = reinterpret_cast<const T*>(source);
+    auto t = reinterpret_cast<T*>(target);
+    for (qint32 c = 0, cs = std::min(targetChannels, sourceChannels); c < cs; ++c) {
+        for (qint32 x = 0; x < width; ++x) {
+            t[x * targetChannels + c] = s[x * sourceChannels + c];
+        }
+    }
+}
+
+template<class T>
 inline void cmykToRgb(uchar *target, qint32 targetChannels, const char *source, qint32 sourceChannels, qint32 width, bool alpha = false)
 {
     auto s = reinterpret_cast<const T*>(source);
     auto t = reinterpret_cast<T*>(target);
     auto max = double(std::numeric_limits<T>::max());
+    auto invmax = 1.0 / max; // speed improvements by ~10%
 
-    if (sourceChannels < 4) {
-        qDebug() << "cmykToRgb: image is not a valid CMYK!";
+    if (sourceChannels < 3) {
+        qDebug() << "cmykToRgb: image is not a valid CMY/CMYK!";
         return;
     }
 
     for (qint32 w = 0; w < width; ++w) {
         auto ps = s + sourceChannels * w;
-        auto C = 1 - *(ps + 0) / max;
-        auto M = 1 - *(ps + 1) / max;
-        auto Y = 1 - *(ps + 2) / max;
-        auto K = 1 - *(ps + 3) / max;
+        auto C = 1 - *(ps + 0) * invmax;
+        auto M = 1 - *(ps + 1) * invmax;
+        auto Y = 1 - *(ps + 2) * invmax;
+        auto K = sourceChannels > 3 ? 1 - *(ps + 3) * invmax : 0.0;
 
         auto pt = t + targetChannels * w;
         *(pt + 0) = T(std::min(max - (C * (1 - K) + K) * max + 0.5, max));
@@ -881,8 +955,9 @@ inline double gammaCorrection(double linear)
 #ifdef PSD_FAST_LAB_CONVERSION
     return linear;
 #else
-    // NOTE: pow() slow down the performance by a 4 factor :(
-    return (linear > 0.0031308 ? 1.055 * std::pow(linear, 1.0 / 2.4) - 0.055 : 12.92 * linear);
+    // Replacing fastPow with std::pow the conversion time is 2/3 times longer: using fastPow
+    // there are minimal differences in the conversion that are not visually noticeable.
+    return (linear > 0.0031308 ? 1.055 * fastPow(linear, 1.0 / 2.4) - 0.055 : 12.92 * linear);
 #endif
 }
 
@@ -892,6 +967,7 @@ inline void labToRgb(uchar *target, qint32 targetChannels, const char *source, q
     auto s = reinterpret_cast<const T*>(source);
     auto t = reinterpret_cast<T*>(target);
     auto max = double(std::numeric_limits<T>::max());
+    auto invmax = 1.0 / max;
 
     if (sourceChannels < 3) {
         qDebug() << "labToRgb: image is not a valid LAB!";
@@ -900,14 +976,14 @@ inline void labToRgb(uchar *target, qint32 targetChannels, const char *source, q
 
     for (qint32 w = 0; w < width; ++w) {
         auto ps = s + sourceChannels * w;
-        auto L = (*(ps + 0) / max) * 100.0;
-        auto A = (*(ps + 1) / max) * 255.0 - 128.0;
-        auto B = (*(ps + 2) / max) * 255.0 - 128.0;
+        auto L = (*(ps + 0) * invmax) * 100.0;
+        auto A = (*(ps + 1) * invmax) * 255.0 - 128.0;
+        auto B = (*(ps + 2) * invmax) * 255.0 - 128.0;
 
         // converting LAB to XYZ (D65 illuminant)
-        auto Y = (L + 16.0) / 116.0;
-        auto X = A / 500.0 + Y;
-        auto Z = Y - B / 200.0;
+        auto Y = (L + 16.0) * (1.0 / 116.0);
+        auto X = A * (1.0 / 500.0) + Y;
+        auto Z = Y - B * (1.0 / 200.0);
 
         // NOTE: use the constants of the illuminant of the target RGB color space
         X = finv(X) * 0.9504;   // D50: * 0.9642
@@ -1057,10 +1133,18 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
     QByteArray rawStride;
     rawStride.resize(raw_count);
 
-    if (header.color_mode == CM_CMYK || header.color_mode == CM_LABCOLOR || header.color_mode == CM_MULTICHANNEL) {
+    // clang-format off
+    // checks the need of color conversion (that requires random access to the image)
+    auto randomAccess = (header.color_mode == CM_CMYK) ||
+                        (header.color_mode == CM_LABCOLOR) ||
+                        (header.color_mode == CM_MULTICHANNEL) ||
+                        (header.color_mode != CM_INDEXED && img.hasAlphaChannel());
+    // clang-format on
+
+    if (randomAccess) {
         // In order to make a colorspace transformation, we need all channels of a scanline
         QByteArray psdScanline;
-        psdScanline.resize(qsizetype(header.width * std::min(header.depth, quint16(16)) * header.channel_count + 7) / 8);
+        psdScanline.resize(qsizetype(header.width * header.depth * header.channel_count + 7) / 8);
         for (qint32 y = 0, h = header.height; y < h; ++y) {
             for (qint32 c = 0; c < header.channel_count; ++c) {
                 auto strideNumber = c * qsizetype(h) + y;
@@ -1081,8 +1165,41 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                 else if (header.depth == 16) {
                     planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, header.channel_count);
                 }
-                else if (header.depth == 32) { // Not currently used
+                else if (header.depth == 32) {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+                    planarToChunchy<float>(scanLine, rawStride.data(), header.width, c, header.channel_count);
+#else
                     planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, header.channel_count);
+#endif
+                }
+            }
+
+            // Convert premultiplied data to unassociated data
+            if (img.hasAlphaChannel()) {
+                auto scanLine = reinterpret_cast<char*>(psdScanline.data());
+                if (header.color_mode == CM_CMYK) {
+                    if (header.depth == 8)
+                        premulConversion<quint8>(scanLine, header.width, 4, header.channel_count, PremulConversion::PS2A);
+                    else if (header.depth == 16)
+                        premulConversion<quint16>(scanLine, header.width, 4, header.channel_count, PremulConversion::PS2A);
+                }
+                if (header.color_mode == CM_LABCOLOR) {
+                    if (header.depth == 8)
+                        premulConversion<quint8>(scanLine, header.width, 3, header.channel_count, PremulConversion::PSLab2A);
+                    else if (header.depth == 16)
+                        premulConversion<quint16>(scanLine, header.width, 3, header.channel_count, PremulConversion::PSLab2A);
+                }
+                if (header.color_mode == CM_RGB) {
+                    if (header.depth == 8)
+                        premulConversion<quint8>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
+                    else if (header.depth == 16)
+                        premulConversion<quint16>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
+                    else if (header.depth == 32)
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+                        premulConversion<float>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
+#else
+                        premulConversion<quint16>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
+#endif
                 }
             }
 
@@ -1090,14 +1207,26 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
             if (header.color_mode == CM_CMYK || header.color_mode == CM_MULTICHANNEL) {
                 if (header.depth == 8)
                     cmykToRgb<quint8>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width, alpha);
-                else
+                else if (header.depth == 16)
                     cmykToRgb<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width, alpha);
             }
             if (header.color_mode == CM_LABCOLOR) {
                 if (header.depth == 8)
                     labToRgb<quint8>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width, alpha);
-                else
+                else if (header.depth == 16)
                     labToRgb<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width, alpha);
+            }
+            if (header.color_mode == CM_RGB) {
+                if (header.depth == 8)
+                    rawChannelsCopy<quint8>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
+                else if (header.depth == 16)
+                    rawChannelsCopy<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
+                else if (header.depth == 32)
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+                    rawChannelsCopy<float>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
+#else
+                    rawChannelsCopy<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
+#endif
             }
         }
     }
@@ -1112,30 +1241,29 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                 }
 
                 auto scanLine = img.scanLine(y);
-                if (header.depth == 1) {        // Bitmap
+                if (header.depth == 1) { // Bitmap
                     monoInvert(scanLine, rawStride.data(), std::min(rawStride.size(), img.bytesPerLine()));
                 }
-                else if (header.depth == 8) {   // 8-bits images: Indexed, Grayscale, RGB/RGBA
+                else if (header.depth == 8) { // 8-bits images: Indexed, Grayscale, RGB/RGBA
                     planarToChunchy<quint8>(scanLine, rawStride.data(), header.width, c, imgChannels);
                 }
-                else if (header.depth == 16) {  // 16-bits integer images: Grayscale, RGB/RGBA
+                else if (header.depth == 16) { // 16-bits integer images: Grayscale, RGB/RGBA
                     planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, imgChannels);
                 }
-                else if (header.depth == 32) {  // 32-bits float images: Grayscale, RGB/RGBA (coverted to equivalent integer 16-bits)
+                else if (header.depth == 32 && header.color_mode == CM_RGB) { // 32-bits float images: RGB/RGBA
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+                    planarToChunchy<float>(scanLine, rawStride.data(), header.width, c, imgChannels);
+#else
+                    planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, imgChannels);
+#endif
+                }
+                else if (header.depth == 32 && header.color_mode == CM_GRAYSCALE) { // 32-bits float images: Grayscale (coverted to equivalent integer 16-bits)
                     planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, imgChannels);
                 }
             }
         }
     }
 
-    // LAB conversion generates a sRGB image
-    if (header.color_mode == CM_LABCOLOR) {
-#ifdef PSD_FAST_LAB_CONVERSION
-        img.setColorSpace(QColorSpace(QColorSpace::SRgbLinear));
-#else
-        img.setColorSpace(QColorSpace(QColorSpace::SRgb));
-#endif
-    }
 
     // Resolution info
     if (!setResolution(img, irs)) {
@@ -1143,7 +1271,15 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
     }
 
     // ICC profile
-    if (!setColorSpace(img, irs)) {
+    if (header.color_mode == CM_LABCOLOR) {
+        // LAB conversion generates a sRGB image
+#ifdef PSD_FAST_LAB_CONVERSION
+        img.setColorSpace(QColorSpace(QColorSpace::SRgbLinear));
+#else
+        img.setColorSpace(QColorSpace(QColorSpace::SRgb));
+#endif
+    }
+    else if (!setColorSpace(img, irs)) {
         // qDebug() << "No colorspace info set!";
     }
 
@@ -1264,6 +1400,9 @@ bool PSDHandler::canRead(QIODevice *device)
         if (header.color_mode == CM_CMYK || header.color_mode == CM_LABCOLOR || header.color_mode == CM_MULTICHANNEL) {
             return false;
         }
+        if (header.color_mode == CM_RGB && header.channel_count > 3) {
+            return false; // supposing extra channel as alpha
+        }
     }
 
     return IsSupported(header);
@@ -1295,3 +1434,5 @@ QImageIOHandler *PSDPlugin::create(QIODevice *device, const QByteArray &format) 
     handler->setFormat(format);
     return handler;
 }
+
+#include "moc_psd_p.cpp"

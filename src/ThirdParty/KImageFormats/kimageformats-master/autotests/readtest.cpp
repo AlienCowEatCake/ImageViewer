@@ -159,17 +159,22 @@ int main(int argc, char **argv)
             QTextStream(stdout) << "* Run on RANDOM ACCESS device\n";
         }
         for (const QFileInfo &fi : lstImgDir) {
-            if (!fi.suffix().compare("png", Qt::CaseInsensitive)) {
+            if (!fi.suffix().compare("png", Qt::CaseInsensitive) || !fi.suffix().compare("tif", Qt::CaseInsensitive)) {
                 continue;
             }
-            int suffixPos = fi.filePath().count() - suffix.count();
+            int suffixPos = fi.filePath().size() - suffix.size();
             QString inputfile = fi.filePath();
-            QString expfile = fi.filePath().replace(suffixPos, suffix.count(), QStringLiteral("png"));
+            QString fmt = QStringLiteral("png");
+            QString expfile = fi.filePath().replace(suffixPos, suffix.size(), fmt);
+            if (!QFile::exists(expfile)) { // try with tiff
+                fmt = QStringLiteral("tif");
+                expfile = fi.filePath().replace(suffixPos, suffix.size(), fmt);
+            }
             QString expfilename = QFileInfo(expfile).fileName();
 
             std::unique_ptr<QIODevice> inputDevice(seq ? new SequentialFile(inputfile) : new QFile(inputfile));
             QImageReader inputReader(inputDevice.get(), format);
-            QImageReader expReader(expfile, "png");
+            QImageReader expReader(expfile, fmt.toLatin1());
 
             QImage inputImage;
             QImage expImage;

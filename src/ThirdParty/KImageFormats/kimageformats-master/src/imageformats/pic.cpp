@@ -452,3 +452,5 @@ QImageIOHandler *SoftimagePICPlugin::create(QIODevice *device, const QByteArray 
     handler->setFormat(format);
     return handler;
 }
+
+#include "moc_pic_p.cpp"

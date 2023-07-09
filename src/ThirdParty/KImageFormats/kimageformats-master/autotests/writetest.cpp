@@ -85,8 +85,8 @@ int main(int argc, char **argv)
         if (parser.isSet(ignoreDataCheck)) {
             pngfile = fi.filePath();
         } else {
-            int suffixPos = fi.filePath().count() - suffix.count();
-            pngfile = fi.filePath().replace(suffixPos, suffix.count(), QStringLiteral("png"));
+            int suffixPos = fi.filePath().size() - suffix.size();
+            pngfile = fi.filePath().replace(suffixPos, suffix.size(), QStringLiteral("png"));
         }
         QString pngfilename = QFileInfo(pngfile).fileName();
 

@@ -14,6 +14,7 @@
 #include <QDebug>
 #include <QImage>
 #include <QSet>
+#include <QTimeZone>
 
 #if defined(Q_OS_WINDOWS) && !defined(NOMINMAX)
 #define NOMINMAX
@@ -45,7 +46,6 @@ const auto supported_formats = QSet<QByteArray>{
     "dcs", "dc2", "dcr", "dng", "drf", "dxo",
     "eip", "erf",
     "fff",
-    "hdr",
     "iiq",
     "k25", "kc2", "kdc",
     "mdc", "mef", "mfw", "mos", "mrw",
@@ -223,7 +223,7 @@ QString createTag(char *asciiz, const char *tag)
 
 QString createTimeTag(time_t time, const char *tag)
 {
-    auto value = QDateTime::fromSecsSinceEpoch(time, Qt::UTC);
+    auto value = QDateTime::fromSecsSinceEpoch(time, QTimeZone::utc());
     if (value.isValid() && time > 0) {
         return createTag(value.toString(Qt::ISODate), tag);
     }
@@ -418,7 +418,7 @@ inline void rgbToRgbX(uchar *target, const uchar *source, qint32 targetSize, qin
 #define C_NR(a) (((a) & 0x3) << 17)
 #define C_FC(a) (((a) & 0x1) << 19)
 #define C_SR(a) (((a) & 0x1) << 20)
-#define C_PRESET(a) ((a) & 0xF)
+#define C_FLAGS(a) (((a) & 0x1) << 31) // flags mode
 
 #define T_IQ(a) (((a) >> 4) & 0xF)
 #define T_OC(a) (((a) >> 8) & 0xF)
@@ -430,10 +430,10 @@ inline void rgbToRgbX(uchar *target, const uchar *source, qint32 targetSize, qin
 #define T_NR(a) (((a) >> 17) & 0x3)
 #define T_FC(a) (((a) >> 19) & 0x1)
 #define T_SR(a) (((a) >> 20) & 0x1)
-#define T_PRESET(a) ((a) & 0xF)
+#define T_FLAGS(a) (((a) >> 31) & 0x1)
 // clang-format on
 
-#define DEFAULT_QUALITY (C_IQ(3) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0))
+#define DEFAULT_QUALITY (C_IQ(3) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0) | C_FLAGS(1))
 
 void setParams(QImageIOHandler *handler, LibRaw *rawProcessor)
 {
@@ -459,47 +459,45 @@ void setParams(QImageIOHandler *handler, LibRaw *rawProcessor)
     if (handler->supportsOption(QImageIOHandler::Quality)) {
         quality = handler->option(QImageIOHandler::Quality).toInt();
     }
-    if (quality < 0) {
+    if (quality > -1) {
+        switch (quality / 10) {
+        case 0:
+            quality = C_IQ(0) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(0) | C_HS(1);
+            break;
+        case 1:
+            quality = C_IQ(0) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(0) | C_HS(0);
+            break;
+        case 2:
+            quality = C_IQ(3) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(0) | C_HS(0);
+            break;
+        case 3:
+            quality = C_IQ(3) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0);
+            break;
+        case 4:
+            quality = C_IQ(3) | C_OC(2) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0);
+            break;
+        case 5:
+            quality = C_IQ(3) | C_OC(4) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0);
+            break;
+        case 6:
+            quality = C_IQ(11) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(0) | C_HS(0);
+            break;
+        case 7:
+            quality = C_IQ(11) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0);
+            break;
+        case 8:
+            quality = C_IQ(11) | C_OC(2) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0);
+            break;
+        default:
+            quality = C_IQ(11) | C_OC(4) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0);
+            break;
+        }
+        quality |= C_FLAGS(1);
+    }
+    if (quality == -1) {
         quality = DEFAULT_QUALITY;
     }
-
-    switch (T_PRESET(quality)) {
-    case 0:
-        break;
-    case 1:
-        quality = C_IQ(0) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(0) | C_HS(1);
-        break;
-    case 2:
-        quality = C_IQ(0) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(0) | C_HS(0);
-        break;
-    case 3:
-        quality = C_IQ(3) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(0) | C_HS(0);
-        break;
-    case 4:
-        quality = C_IQ(3) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0);
-        break;
-    case 5:
-        quality = C_IQ(3) | C_OC(2) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0);
-        break;
-    case 6:
-        quality = C_IQ(3) | C_OC(4) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0);
-        break;
-    case 7:
-        quality = C_IQ(11) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(0) | C_HS(0);
-        break;
-    case 8:
-        quality = C_IQ(11) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0);
-        break;
-    case 9:
-        quality = C_IQ(11) | C_OC(2) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0);
-        break;
-    case 10:
-        quality = C_IQ(11) | C_OC(4) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0);
-        break;
-    default:
-        quality = DEFAULT_QUALITY;
-        break;
-    }
+    Q_ASSERT(T_FLAGS(quality));
 
     auto &&params = rawProcessor->imgdata.params;
 
@@ -911,3 +909,5 @@ QImageIOHandler *RAWPlugin::create(QIODevice *device, const QByteArray &format) 
     handler->setFormat(format);
     return handler;
 }
+
+#include "moc_raw_p.cpp"
