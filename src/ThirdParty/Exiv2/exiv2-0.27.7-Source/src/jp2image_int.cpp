@@ -16,12 +16,12 @@ namespace Internal {
         }
 
         const size_t N = (boxData.size() - 8u) / 4u;
-        const uint32_t brand = getULong(boxData.data(), bigEndian);
-        const uint32_t minorVersion = getULong(boxData.data() + 4, bigEndian);
+        const uint32_t brand = getULong(&(boxData[0]), bigEndian);
+        const uint32_t minorVersion = getULong(&(boxData[0]) + 4, bigEndian);
 
         bool clWithRightBrand = false;
         for (size_t i = 0; i < N; i++) {
-            uint32_t compatibilityList = getULong(boxData.data() + 8 + i * 4, bigEndian);
+            uint32_t compatibilityList = getULong(&(boxData[0]) + 8 + i * 4, bigEndian);
             if (compatibilityList == brandJp2) {
                 clWithRightBrand = true;
                 break;

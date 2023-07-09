@@ -210,7 +210,7 @@ namespace Exiv2
                     }
                     boxFileTypeFound = true;
                     std::vector<byte> boxData(box.length - boxSize);
-                    io_->read(boxData.data(), static_cast<long>(boxData.size()));
+                    io_->read(&(boxData[0]), static_cast<long>(boxData.size()));
                     if (!Internal::isValidBoxFileType(boxData))
                         throw Error(kerCorruptedMetadata);
                     break;
@@ -477,7 +477,7 @@ namespace Exiv2
                         // This box shall immediately follow the JPEG 2000 Signature box
                         /// \todo  All files shall contain one and only one File Type box.
                         std::vector<byte> boxData(box.length - boxSize);
-                        io_->read(boxData.data(), static_cast<long>(boxData.size()));
+                        io_->read(&(boxData[0]), static_cast<long>(boxData.size()));
                         if (!Internal::isValidBoxFileType(boxData))
                             throw Error(kerCorruptedMetadata);
                         break;
