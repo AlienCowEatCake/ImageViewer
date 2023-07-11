@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -32,9 +32,7 @@
 #include "../../IDecoder.h"
 #include "ImageData.h"
 #include "ImageMetaData.h"
-#if defined (HAS_ZLIB)
-#include "Utils/ZLibUtils.h"
-#endif
+#include "Utils/MappedBuffer.h"
 
 template<typename T>
 class SVGWebBrowserDecoderTemplate : public IDecoder
@@ -75,25 +73,7 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
 
-        QByteArray svgData;
-#if defined (HAS_ZLIB)
-        if(fileInfo.suffix().toLower() == QString::fromLatin1("svgz"))
-        {
-            svgData = ZLibUtils::InflateFile(fileInfo.absoluteFilePath());
-        }
-        else
-#endif
-        {
-            QFile inFile(filePath);
-            if(!inFile.open(QIODevice::ReadOnly))
-            {
-                qWarning() << "Can't open" << filePath;
-                return QSharedPointer<IImageData>();
-            }
-            svgData = inFile.readAll();
-            inFile.close();
-        }
-
+        QByteArray svgData = MappedBuffer(filePath, MappedBuffer::AutoInflate).byteArray();
         if(svgData.isEmpty())
         {
             qWarning() << "Can't read content of" << filePath;

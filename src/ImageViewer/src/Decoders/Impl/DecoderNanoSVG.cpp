@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -32,9 +32,7 @@
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
-#if defined (HAS_ZLIB)
-#include "Internal/Utils/ZLibUtils.h"
-#endif
+#include "Internal/Utils/MappedBuffer.h"
 
 namespace {
 
@@ -52,24 +50,7 @@ public:
         , m_minScaleFactor(1)
         , m_maxScaleFactor(1)
     {
-        QByteArray inBuffer;
-#if defined (HAS_ZLIB)
-        if(QFileInfo(filePath).suffix().toLower() == QString::fromLatin1("svgz"))
-        {
-            inBuffer = ZLibUtils::InflateFile(filePath);
-        }
-        else
-#endif
-        {
-            QFile inFile(filePath);
-            if(!inFile.open(QIODevice::ReadOnly))
-            {
-                qWarning() << "Can't open" << filePath;
-                return;
-            }
-            inBuffer = inFile.readAll();
-        }
-
+        QByteArray inBuffer = MappedBuffer(filePath, MappedBuffer::AutoInflate | MappedBuffer::AutoConvertXmlToUtf8).byteArray();
         if(inBuffer.isEmpty())
         {
             qWarning() << "Can't read" << filePath;

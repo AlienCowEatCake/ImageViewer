@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -48,9 +48,7 @@
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
-#if defined (HAS_ZLIB)
-#include "Internal/Utils/ZLibUtils.h"
-#endif
+#include "Internal/Utils/MappedBuffer.h"
 
 //#pragma comment(lib, "ole32.lib") // CoInitializeEx, CoUninitialize, CoCreateInstance
 //#pragma comment(lib, "oleaut32.lib") // SysAllocString, SysFreeString, SafeArrayDestroy, SafeArrayAccessData, SafeArrayCreateVector
@@ -437,23 +435,7 @@ public:
     {
         m_coInitResult = CoInitializeEx(Q_NULLPTR, COINIT_APARTMENTTHREADED);
 
-#if defined (HAS_ZLIB)
-        if(QFileInfo(filePath).suffix().toLower() == QString::fromLatin1("svgz"))
-        {
-            m_svgData = ZLibUtils::InflateFile(filePath);
-        }
-        else
-#endif
-        {
-            QFile inFile(filePath);
-            if(!inFile.open(QIODevice::ReadOnly))
-            {
-                qWarning() << "Can't open" << filePath;
-                return;
-            }
-            m_svgData = inFile.readAll();
-        }
-
+        m_svgData = MappedBuffer(filePath, MappedBuffer::AutoInflate).byteArray();
         if(m_svgData.isEmpty())
         {
             qWarning() << "Can't read" << filePath;

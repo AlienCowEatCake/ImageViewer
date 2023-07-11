@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -478,13 +478,9 @@ public:
         , m_minScaleFactor(1)
         , m_maxScaleFactor(1)
     {
-        MappedBuffer inBuffer(filePath);
+        MappedBuffer inBuffer(filePath, MappedBuffer::AutoInflate);
         if(!inBuffer.isValid())
             return;
-#if defined (HAS_ZLIB)
-        if(QFileInfo(filePath).suffix().toLower() == QString::fromLatin1("svgz"))
-            inBuffer.doInflate();
-#endif
 
         GError *error = Q_NULLPTR;
         m_rsvg = rsvg_handle_new_from_data(inBuffer.dataAs<unsigned char*>(), inBuffer.sizeAs<size_t>(), &error);

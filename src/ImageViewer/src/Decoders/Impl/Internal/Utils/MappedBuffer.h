@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -20,8 +20,11 @@
 #if !defined(DECODER_MAPPED_BUFFER_H_INCLUDED)
 #define DECODER_MAPPED_BUFFER_H_INCLUDED
 
+#include <QFlags>
+
 #include "Utils/ScopedPointer.h"
 
+class QByteArray;
 class QString;
 
 class MappedBuffer
@@ -29,10 +32,20 @@ class MappedBuffer
     Q_DISABLE_COPY(MappedBuffer)
 
 public:
-    explicit MappedBuffer(const QString &filePath);
+    enum Option {
+        NoOptions               = 0,
+        AutoInflate             = 1 << 0,
+        AutoConvertXmlToUtf8    = 1 << 1
+    };
+    Q_DECLARE_FLAGS(Options, Option)
+
+    explicit MappedBuffer(const QByteArray &rawBuffer, const Options &options = NoOptions);
+    explicit MappedBuffer(const QString &filePath, const Options &options = NoOptions);
     ~MappedBuffer();
 
     bool isValid() const;
+
+    QByteArray byteArray() const;
 
     qint64 size() const;
     uchar *data() const;
@@ -43,11 +56,21 @@ public:
     template<typename T>
     T dataAs() const { return reinterpret_cast<T>(data()); }
 
+    bool isDeflated() const;
     bool doInflate(); ///< @note Not inflate() due to conflict with zlib
+
+    QString getXmlEncoding() const;
+    bool convertXmlToUtf8();
+
+private:
+    void autoInflate();
+    void autoConvertXmlToUtf8();
 
 private:
     struct Impl;
     QScopedPointer<Impl> m_impl;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(MappedBuffer::Options)
 
 #endif // DECODER_MAPPED_BUFFER_H_INCLUDED

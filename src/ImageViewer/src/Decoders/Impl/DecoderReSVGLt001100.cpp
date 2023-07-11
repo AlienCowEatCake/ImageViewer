@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -403,7 +403,7 @@ public:
         }
 #endif
 
-        MappedBuffer inBuffer(filePath);
+        MappedBuffer inBuffer(filePath, MappedBuffer::AutoInflate | MappedBuffer::AutoConvertXmlToUtf8);
         if(!inBuffer.isValid())
             return;
 

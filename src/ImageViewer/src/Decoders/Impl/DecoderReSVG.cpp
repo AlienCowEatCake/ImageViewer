@@ -389,7 +389,7 @@ public:
         resvg_options_load_system_fonts(m_opt);
         resvg_options_set_resources_dir(m_opt, m_fileDirUtf8.constData());
 
-        MappedBuffer inBuffer(filePath);
+        MappedBuffer inBuffer(filePath, MappedBuffer::AutoInflate | MappedBuffer::AutoConvertXmlToUtf8);
         if(!inBuffer.isValid())
             return;
 

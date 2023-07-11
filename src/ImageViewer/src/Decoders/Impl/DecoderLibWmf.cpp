@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -94,7 +94,7 @@ class WmfPixmapProvider : public IScaledImageProvider
 public:
     explicit WmfPixmapProvider(const QString &filePath)
         : m_isValid(false)
-        , m_inBuffer(filePath)
+        , m_inBuffer(filePath, MappedBuffer::AutoInflate)
         , m_API(Q_NULLPTR)
         , m_ddata(Q_NULLPTR)
         , m_width(0)
@@ -106,8 +106,6 @@ public:
 
         if(!m_inBuffer.isValid())
             return;
-        if(QFileInfo(filePath).suffix().toLower() == QString::fromLatin1("wmz"))
-            m_inBuffer.doInflate();
 
         wmfAPI_Options m_options;
         memset(&m_options, 0, sizeof(wmfAPI_Options));
