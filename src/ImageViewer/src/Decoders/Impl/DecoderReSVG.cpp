@@ -39,6 +39,10 @@ extern "C" {
 #include <QDebug>
 #include <QLibrary>
 #include <QPainter>
+#include <QGraphicsItem>
+#include <QStyleOptionGraphicsItem>
+#include <QVariant>
+#include <QXmlStreamReader>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QFunctionPointer>
@@ -49,8 +53,11 @@ typedef void* QFunctionPointer;
 #include "Utils/Global.h"
 
 #include "../IDecoder.h"
+#include "../GraphicsItemFeatures/IGrabImage.h"
+#include "../GraphicsItemFeatures/IGrabScaledImage.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
+#include "Internal/GraphicsItems/GraphicsItemUtils.h"
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
@@ -367,17 +374,23 @@ bool isReady()
 
 const qreal MAX_IMAGE_DIMENSION = 16384;
 const qreal MIN_IMAGE_DIMENSION = 1;
+const qreal MAX_SCALE_FOR_PARTIAL_RENDER = 1000;
 
 // ====================================================================================================
 
-class ReSVGPixmapProvider : public IScaledImageProvider
+class ReSVGGraphicsItem :
+        public QGraphicsItem,
+        public IGrabImage,
+        public IGrabScaledImage,
+        public IScaledImageProvider
 {
-    Q_DISABLE_COPY(ReSVGPixmapProvider)
+    Q_DISABLE_COPY(ReSVGGraphicsItem)
 
 public:
-    explicit ReSVGPixmapProvider(const QString &filePath)
-        : m_isValid(false)
-        , m_fileDirUtf8(QFileInfo(filePath).dir().absolutePath().toUtf8())
+    explicit ReSVGGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR)
+        : QGraphicsItem(parentItem)
+        , m_isValid(false)
+        , m_exposedRectSupported(false)
         , m_tree(Q_NULLPTR)
         , m_opt(Q_NULLPTR)
         , m_width(0)
@@ -385,36 +398,22 @@ public:
         , m_minScaleFactor(1)
         , m_maxScaleFactor(1)
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
+        setFlag(QGraphicsItem::ItemUsesExtendedStyleOption, true);
+#endif
+        m_rasterizerCache.scaleFactor = 0;
+
         m_opt = resvg_options_create();
         resvg_options_load_system_fonts(m_opt);
-        resvg_options_set_resources_dir(m_opt, m_fileDirUtf8.constData());
-
-        MappedBuffer inBuffer(filePath, MappedBuffer::AutoInflate | MappedBuffer::AutoConvertXmlToUtf8);
-        if(!inBuffer.isValid())
-            return;
-
-        const int err = resvg_parse_tree_from_data(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<size_t>(), m_opt, &m_tree);
-        if(err)
-        {
-            qWarning() << "Can't parse file, error =" << err;
-            return;
-        }
-
-        resvg_size size = resvg_get_image_size(m_tree);
-        m_width = static_cast<int>(size.width);
-        m_height = static_cast<int>(size.height);
-        if(m_width < 1 || m_height < 1)
-        {
-            qWarning() << "Couldn't determine image size";
-            return;
-        }
-
-        m_isValid = true;
-        m_minScaleFactor = std::max(MIN_IMAGE_DIMENSION / m_width, MIN_IMAGE_DIMENSION / m_height);
-        m_maxScaleFactor = std::min(MAX_IMAGE_DIMENSION / m_width, MAX_IMAGE_DIMENSION / m_height);
     }
 
-    ~ReSVGPixmapProvider()
+    explicit ReSVGGraphicsItem(const QString &filePath, QGraphicsItem *parentItem = Q_NULLPTR)
+        : ReSVGGraphicsItem(parentItem)
+    {
+        load(filePath);
+    }
+
+    ~ReSVGGraphicsItem()
     {
         if(m_tree)
             resvg_tree_destroy(m_tree);
@@ -422,29 +421,74 @@ public:
             resvg_options_destroy(m_opt);
     }
 
-    bool isValid() const Q_DECL_OVERRIDE
+    bool exposedRectSupported() const
     {
-        return m_isValid;
+        return m_exposedRectSupported;
     }
 
-    bool requiresMainThread() const Q_DECL_OVERRIDE
+    bool load(const QString &filePath)
     {
-        return false;
+        if(m_tree)
+            resvg_tree_destroy(m_tree);
+        m_tree = Q_NULLPTR;
+        m_isValid = false;
+        m_exposedRectSupported = false;
+        m_width = m_height = 0;
+        m_minScaleFactor = m_maxScaleFactor = 1;
+        m_rasterizerCache.scaleFactor = 0;
+
+        MappedBuffer inBuffer(filePath, MappedBuffer::AutoInflate | MappedBuffer::AutoConvertXmlToUtf8);
+        if(!inBuffer.isValid())
+            return false;
+
+        m_fileDirUtf8 = QFileInfo(filePath).dir().absolutePath().toUtf8();
+        resvg_options_set_resources_dir(m_opt, m_fileDirUtf8.constData());
+
+        const int err = resvg_parse_tree_from_data(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<size_t>(), m_opt, &m_tree);
+        if(err)
+        {
+            qWarning() << "Can't parse file, error =" << err;
+            return false;
+        }
+
+        resvg_size size = resvg_get_image_size(m_tree);
+        m_width = static_cast<qreal>(size.width);
+        m_height = static_cast<qreal>(size.height);
+        if(m_width < 1 || m_height < 1)
+        {
+            qWarning() << "Couldn't determine image size";
+            return false;
+        }
+
+        // https://github.com/RazrFalcon/resvg/issues/642
+        m_exposedRectSupported = !hasClipPath(inBuffer.dataAsByteArray());
+        if(!m_exposedRectSupported)
+            qWarning() << "Found clipPath, disable exposedRect";
+
+        m_isValid = true;
+        m_minScaleFactor = std::max(MIN_IMAGE_DIMENSION / m_width, MIN_IMAGE_DIMENSION / m_height);
+        m_maxScaleFactor = std::min(MAX_IMAGE_DIMENSION / m_width, MAX_IMAGE_DIMENSION / m_height);
+        return true;
     }
 
-    QRectF boundingRect() const Q_DECL_OVERRIDE
+    QImage grabImage() Q_DECL_OVERRIDE
     {
-        return QRectF(0, 0, m_width, m_height);
+        return grabImage(1.0);
     }
 
-    QImage image(const qreal scaleFactor) Q_DECL_OVERRIDE
+    QImage grabImage(qreal scaleFactor) Q_DECL_OVERRIDE
+    {
+        return grabImage(scaleFactor, boundingRect());
+    }
+
+    QImage grabImage(qreal scaleFactor, const QRectF &exposedRect)
     {
         if(!isValid())
             return QImage();
 
 #define USE_RGBA_8888 (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0) && Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
-        const int w = static_cast<int>(m_width * scaleFactor);
-        const int h = static_cast<int>(m_height * scaleFactor);
+        const int w = static_cast<int>(exposedRect.width() * scaleFactor);
+        const int h = static_cast<int>(exposedRect.height() * scaleFactor);
         QImage img(w, h,
 #if (USE_RGBA_8888)
                    QImage::Format_RGBA8888_Premultiplied);
@@ -461,6 +505,8 @@ public:
         resvg_transform ts = resvg_transform_identity();
         ts.a = scaleFactor;
         ts.d = scaleFactor;
+        ts.e = -exposedRect.x() * scaleFactor;
+        ts.f = -exposedRect.y() * scaleFactor;
 
         img.fill(Qt::transparent);
         resvg_render(m_tree, ts,
@@ -475,6 +521,45 @@ public:
 #undef USE_RGBA_8888
     }
 
+    QRectF boundingRect() const Q_DECL_OVERRIDE
+    {
+        return QRectF(0, 0, m_width, m_height);
+    }
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE
+    {
+        Q_UNUSED(widget);
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->setRenderHint(QPainter::TextAntialiasing);
+        painter->setRenderHint(QPainter::SmoothPixmapTransform);
+        const qreal scaleFactor = std::min(GraphicsItemUtils::GetDeviceScaleFactor(painter), std::max(MAX_SCALE_FOR_PARTIAL_RENDER, maxScaleFactor()));
+        qWarning() << scaleFactor;
+        const qreal offset = 2.0 / scaleFactor;
+        const QRectF exposedRect = option->exposedRect.adjusted(-offset, -offset, offset, offset).intersected(boundingRect());
+        if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(scaleFactor, m_rasterizerCache.scaleFactor) || !m_rasterizerCache.exposedRect.contains(exposedRect))
+        {
+            m_rasterizerCache.image = grabImage(scaleFactor, exposedRect);
+            m_rasterizerCache.exposedRect = exposedRect;
+            m_rasterizerCache.scaleFactor = scaleFactor;
+        }
+        painter->drawImage(m_rasterizerCache.exposedRect, m_rasterizerCache.image, m_rasterizerCache.image.rect());
+    }
+
+    bool isValid() const Q_DECL_OVERRIDE
+    {
+        return m_isValid;
+    }
+
+    bool requiresMainThread() const Q_DECL_OVERRIDE
+    {
+        return false;
+    }
+
+    QImage image(const qreal scaleFactor) Q_DECL_OVERRIDE
+    {
+        return grabImage(scaleFactor);
+    }
+
     qreal minScaleFactor() const Q_DECL_OVERRIDE
     {
         return m_minScaleFactor;
@@ -486,12 +571,34 @@ public:
     }
 
 private:
+    static bool hasClipPath(const QByteArray &svgData)
+    {
+        for(QXmlStreamReader reader(svgData); !reader.atEnd(); reader.readNext())
+        {
+            if(reader.tokenType() != QXmlStreamReader::StartElement)
+                continue;
+            if(!reader.name().toString().compare(QString::fromLatin1("clipPath"), Qt::CaseInsensitive))
+                return true;
+        }
+        return false;
+    }
+
+private:
+    struct RasterizerCache
+    {
+        QImage image;
+        qreal scaleFactor;
+        QRectF exposedRect;
+    };
+
     bool m_isValid;
+    bool m_exposedRectSupported;
     QByteArray m_fileDirUtf8;
     resvg_render_tree *m_tree;
     resvg_options *m_opt;
-    int m_width;
-    int m_height;
+    qreal m_width;
+    qreal m_height;
+    RasterizerCache m_rasterizerCache;
     qreal m_minScaleFactor;
     qreal m_maxScaleFactor;
 };
@@ -529,8 +636,14 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable() || !isAvailable())
             return QSharedPointer<IImageData>();
-        IScaledImageProvider *provider = new ReSVGPixmapProvider(filePath);
-        QGraphicsItem *item = GraphicsItemsFactory::instance().createScalableItem(provider);
+
+        ReSVGGraphicsItem *resvgItem = new ReSVGGraphicsItem(filePath);
+        QGraphicsItem *item = resvgItem;
+        if(!resvgItem->isValid() || !resvgItem->exposedRectSupported())
+        {
+            IScaledImageProvider *provider = resvgItem;
+            item = GraphicsItemsFactory::instance().createScalableItem(provider);
+        }
         IImageMetaData *metaData = item ? ImageMetaData::createMetaData(filePath) : Q_NULLPTR;
         return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }

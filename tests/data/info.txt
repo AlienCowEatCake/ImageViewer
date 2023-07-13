@@ -523,6 +523,9 @@ Images from https://github.com/RazrFalcon/resvg/tree/v0.7.0/capi/qtests
  * test.svg
  * vb.svg
 
+Image from https://github.com/RazrFalcon/resvg/issues/642
+ * 251931649-c8ac3a42-f27a-4058-8155-ebc14a481359.svg
+
 Unknown source (TODO)
  * bicycle.svg
 
