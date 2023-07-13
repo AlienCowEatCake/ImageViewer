@@ -874,7 +874,7 @@ bool ImageMetaData::readFile(const QString &filePath)
     const MappedBuffer inBuffer(filePath);
     if(!inBuffer.isValid())
         return false;
-    return readFile(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
+    return readFile(inBuffer.dataAsByteArray());
 }
 
 bool ImageMetaData::readFile(const QByteArray &fileData)

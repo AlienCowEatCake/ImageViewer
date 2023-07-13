@@ -110,6 +110,11 @@ QByteArray MappedBuffer::byteArray() const
     return QByteArray(dataAs<const char*>(), sizeAs<int>());
 }
 
+QByteArray MappedBuffer::dataAsByteArray() const
+{
+    return QByteArray::fromRawData(dataAs<const char*>(), sizeAs<int>());
+}
+
 qint64 MappedBuffer::size() const
 {
     return m_impl->size;
@@ -133,7 +138,7 @@ bool MappedBuffer::doInflate()
         return false;
     }
 #if defined (HAS_ZLIB)
-    const QByteArray rawData = QByteArray::fromRawData(dataAs<const char*>(), sizeAs<int>());
+    const QByteArray rawData = dataAsByteArray();
     const QByteArray inflatted = ZLibUtils::InflateData(rawData);
     if(inflatted.isEmpty())
     {
@@ -157,7 +162,7 @@ QString MappedBuffer::getXmlEncoding() const
         qWarning() << "[MappedBuffer] Invalid data";
         return QString();
     }
-    const QByteArray xmlData = QByteArray::fromRawData(dataAs<const char*>(), sizeAs<int>());
+    const QByteArray xmlData = dataAsByteArray();
     QXmlStreamReader reader(xmlData);
     while(reader.readNext() != QXmlStreamReader::StartDocument && !reader.atEnd());
     return reader.documentEncoding().toString().simplified().toLower();
@@ -178,7 +183,7 @@ bool MappedBuffer::convertXmlToUtf8()
     }
     if(encoding != QString::fromLatin1("utf-8"))
     {
-        const QByteArray xmlData = QByteArray::fromRawData(dataAs<const char*>(), sizeAs<int>());
+        const QByteArray xmlData = dataAsByteArray();
         QString xmlDataString;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
         xmlDataString = QStringDecoder(encoding.toLatin1()).decode(xmlData);

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -174,7 +174,7 @@ public:
                 break;
         }
 
-        ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
+        ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer.dataAsByteArray());
         m_error = m_frames.empty();
         m_numFrames = m_frames.size();
         return PayloadWithMetaData<bool>(true, metaData);

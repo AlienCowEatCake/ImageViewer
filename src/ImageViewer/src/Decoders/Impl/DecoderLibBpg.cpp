@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -81,7 +81,7 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
     bpg_decoder_get_info(decoderContext, &imageInfo);
 
     QScopedPointer<ICCProfile> profile;
-    ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
+    ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer.dataAsByteArray());
 
     for(BPGExtensionData *extension = bpg_decoder_get_extension_data(decoderContext); extension != Q_NULLPTR; extension = extension->next)
     {

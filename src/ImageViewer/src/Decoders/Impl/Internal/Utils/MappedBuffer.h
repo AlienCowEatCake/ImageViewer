@@ -46,6 +46,7 @@ public:
     bool isValid() const;
 
     QByteArray byteArray() const;
+    QByteArray dataAsByteArray() const;
 
     qint64 size() const;
     uchar *data() const;

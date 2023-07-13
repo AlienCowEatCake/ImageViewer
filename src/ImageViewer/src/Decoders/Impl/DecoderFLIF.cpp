@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -63,7 +63,7 @@ public:
             return false;
         }
 
-        ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
+        ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer.dataAsByteArray());
 
         m_numFrames = static_cast<int>(flif_decoder_num_images(d));
         m_numLoops = static_cast<int>(flif_decoder_num_loops(d));

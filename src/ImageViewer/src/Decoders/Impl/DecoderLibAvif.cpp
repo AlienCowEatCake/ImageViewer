@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2020-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2020-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -92,7 +92,7 @@ public:
             return false;
         }
 
-        ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
+        ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer.dataAsByteArray());
 
         for(m_numFrames = 0; ; m_numFrames++)
         {

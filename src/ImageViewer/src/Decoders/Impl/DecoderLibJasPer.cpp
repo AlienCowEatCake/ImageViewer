@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -265,7 +265,7 @@ PayloadWithMetaData<QImage> readJp2File(const QString &filename)
     jas_image_clearfmts();
     deinitializeJasPer();
 
-    ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
+    ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer.dataAsByteArray());
     return PayloadWithMetaData<QImage>(result, metaData);
 }
 
