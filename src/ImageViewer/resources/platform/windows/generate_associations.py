@@ -29,7 +29,11 @@ def main():
             f_open_with.write('      Root="HKCR"\n')
             f_open_with.write('      Type="string"\n')
             f_open_with.write('      Key="$(var.ProductNameSafe).{}\\DefaultIcon"\n'.format(ext))
-            f_open_with.write('      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"\n')
+            # https://github.com/AlienCowEatCake/ImageViewer/issues/7
+            if ext not in ['ico', 'cur', 'ani']:
+                f_open_with.write('      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"\n')
+            else:
+                f_open_with.write('      Value="%1"\n')
             f_open_with.write('      Id="reg_icon_{}" />\n'.format(ext))
             f_open_with.write('    <RegistryValue\n')
             f_open_with.write('      Root="HKCR"\n')
@@ -50,14 +54,14 @@ def main():
             f_open_with.write('      Value=""\n')
             f_open_with.write('      Name="$(var.ProductNameSafe).{}"\n'.format(ext))
             f_open_with.write('      Id="reg_{}" />\n'.format(ext))
-            if ext in ['ico', 'cur', 'psd']:
-                continue
-            f_open.write('    <RegistryValue\n')
-            f_open.write('      Root="HKCR"\n')
-            f_open.write('      Type="string"\n')
-            f_open.write('      Key=".{}"\n'.format(ext))
-            f_open.write('      Value="$(var.ProductNameSafe).{}"\n'.format(ext))
-            f_open.write('      Id="reg_assoc_{}" />\n'.format(ext))
+            # https://github.com/AlienCowEatCake/ImageViewer/issues/6
+            if ext not in ['ico', 'cur', 'ani', 'psd']:
+                f_open.write('    <RegistryValue\n')
+                f_open.write('      Root="HKCR"\n')
+                f_open.write('      Type="string"\n')
+                f_open.write('      Key=".{}"\n'.format(ext))
+                f_open.write('      Value="$(var.ProductNameSafe).{}"\n'.format(ext))
+                f_open.write('      Id="reg_assoc_{}" />\n'.format(ext))
     for f in [f_open, f_open_with]:
         f.write('</Include>\n')
         f.close()

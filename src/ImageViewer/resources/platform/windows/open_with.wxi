@@ -165,7 +165,7 @@
       Root="HKCR"
       Type="string"
       Key="$(var.ProductNameSafe).cur\DefaultIcon"
-      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Value="%1"
       Id="reg_icon_cur" />
     <RegistryValue
       Root="HKCR"
@@ -351,7 +351,7 @@
       Root="HKCR"
       Type="string"
       Key="$(var.ProductNameSafe).ico\DefaultIcon"
-      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Value="%1"
       Id="reg_icon_ico" />
     <RegistryValue
       Root="HKCR"
