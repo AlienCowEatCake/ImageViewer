@@ -63,6 +63,11 @@
 #if defined (HAS_LIBRSVG)
 #include <librsvg/rsvg.h>
 #endif
+#if defined (HAS_RESVG)
+extern "C" {
+#include <resvg.h>
+}
+#endif
 #if defined (HAS_LIBMNG)
 #include <libmng.h>
 #endif
@@ -334,7 +339,13 @@ QString getTextBrowserContent()
     result.append(formatItem(
                       QString::fromLatin1("This software uses the resvg library"),
                       QString::fromLatin1("resvg"),
+#if defined (RESVG_VERSION)
+                      QString::fromLatin1(RESVG_VERSION),
+#elif defined (RESVG_MAJOR_VERSION) && defined (RESVG_MINOR_VERSION) && defined (RESVG_PATCH_VERSION)
+                      QString::fromLatin1("%1.%2.%3").arg(RESVG_MAJOR_VERSION).arg(RESVG_MINOR_VERSION).arg(RESVG_PATCH_VERSION),
+#else
                       QString(),
+#endif
                       QString::fromLatin1("https://github.com/RazrFalcon/resvg"),
                       QString::fromLatin1("Mozilla Public License 2.0"),
                       QString::fromLatin1("https://github.com/RazrFalcon/resvg/blob/master/LICENSE.txt")
