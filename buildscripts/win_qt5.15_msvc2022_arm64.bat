@@ -4,8 +4,8 @@ set ARCH=arm64
 set VCVARS_ARCH=arm64
 call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2022
 set VCVARS="%VS2022_VCVARSALL%"
-if "x%OPENSSL_PATH%x" == "xx" set OPENSSL_PATH=C:\Qt\Tools\openssl-1.1.1s\openssl-1.1\arm64\bin
-if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\5.15.8\msvc2022_arm64
+if "x%OPENSSL_PATH%x" == "xx" set OPENSSL_PATH=C:\Qt\Tools\openssl-1.1.1u\openssl-1.1\arm64\bin
+if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\5.15.10\msvc2022_arm64
 set BUILDDIR=build_win_qt5.15_msvc2022_%ARCH%
 set SUFFIX=_qt5.15_msvc2022_%ARCH%
 set APP_PATH=src\%PROJECT%
