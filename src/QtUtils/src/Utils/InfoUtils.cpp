@@ -84,46 +84,80 @@ QString compilerDescriptionInt()
 #endif
     return QString::fromLatin1("%1GCC %2.%3.%4").arg(prefix).arg(__GNUC__).arg(__GNUC_MINOR__).arg(__GNUC_PATCHLEVEL__);
 #elif defined(_MSC_VER)
-    switch (_MSC_VER)
-    {
     // https://dev.to/yumetodo/list-of-mscver-and-mscfullver-8nd
     // https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B#Internal_version_numbering
-    case 1100: return QString::fromLatin1("MSVC++ 5.0 (Visual Studio 97 version 5.0)");
-    case 1200: return QString::fromLatin1("MSVC++ 6.0 (Visual Studio 6.0)");
-    case 1300: return QString::fromLatin1("MSVC++ 7.0 (Visual Studio .NET 2002 version 7.0)");
-    case 1310: return QString::fromLatin1("MSVC++ 7.1 (Visual Studio .NET 2003 version 7.1)");
-    case 1400: return QString::fromLatin1("MSVC++ 8.0 (Visual Studio 2005 version 8.0)");
-    case 1500: return QString::fromLatin1("MSVC++ 9.0 (Visual Studio 2008 version 9.0)");
-    case 1600: return QString::fromLatin1("MSVC++ 10.0 (Visual Studio 2010 version 10.0)");
-    case 1700: return QString::fromLatin1("MSVC++ 11.0 (Visual Studio 2012 version 11.0)");
-    case 1800: return QString::fromLatin1("MSVC++ 12.0 (Visual Studio 2013 version 12.0)");
-    case 1900: return QString::fromLatin1("MSVC++ 14.0 (Visual Studio 2015 version 14.0)");
-    case 1910: return QString::fromLatin1("MSVC++ 14.1 (Visual Studio 2017 version 15.0)");
-    case 1911: return QString::fromLatin1("MSVC++ 14.11 (Visual Studio 2017 version 15.3)");
-    case 1912: return QString::fromLatin1("MSVC++ 14.12 (Visual Studio 2017 version 15.5)");
-    case 1913: return QString::fromLatin1("MSVC++ 14.13 (Visual Studio 2017 version 15.6)");
-    case 1914: return QString::fromLatin1("MSVC++ 14.14 (Visual Studio 2017 version 15.7)");
-    case 1915: return QString::fromLatin1("MSVC++ 14.15 (Visual Studio 2017 version 15.8)");
-    case 1916: return QString::fromLatin1("MSVC++ 14.16 (Visual Studio 2017 version 15.9)");
-    case 1920: return QString::fromLatin1("MSVC++ 14.20 (Visual Studio 2019 version 16.0)");
-    case 1921: return QString::fromLatin1("MSVC++ 14.21 (Visual Studio 2019 version 16.1)");
-    case 1922: return QString::fromLatin1("MSVC++ 14.22 (Visual Studio 2019 version 16.2)");
-    case 1923: return QString::fromLatin1("MSVC++ 14.23 (Visual Studio 2019 version 16.3)");
-    case 1924: return QString::fromLatin1("MSVC++ 14.24 (Visual Studio 2019 version 16.4)");
-    case 1925: return QString::fromLatin1("MSVC++ 14.25 (Visual Studio 2019 version 16.5)");
-    case 1926: return QString::fromLatin1("MSVC++ 14.26 (Visual Studio 2019 version 16.6)");
-    case 1927: return QString::fromLatin1("MSVC++ 14.27 (Visual Studio 2019 version 16.7)");
-    case 1928: return QString::fromLatin1("MSVC++ 14.28 (Visual Studio 2019 version 16.8/16.9)");
-    case 1929: return QString::fromLatin1("MSVC++ 14.29 (Visual Studio 2019 version 16.10/16.11)");
-    case 1930: return QString::fromLatin1("MSVC++ 14.30 (Visual Studio 2022 version 17.0)");
-    case 1931: return QString::fromLatin1("MSVC++ 14.31 (Visual Studio 2022 version 17.1)");
-    case 1932: return QString::fromLatin1("MSVC++ 14.32 (Visual Studio 2022 version 17.2)");
-    case 1933: return QString::fromLatin1("MSVC++ 14.33 (Visual Studio 2022 version 17.3)");
-    case 1934: return QString::fromLatin1("MSVC++ 14.34 (Visual Studio 2022 version 17.4)");
-    case 1935: return QString::fromLatin1("MSVC++ 14.35 (Visual Studio 2022 version 17.5)");
-    case 1936: return QString::fromLatin1("MSVC++ 14.36 (Visual Studio 2022 version 17.6)");
-    default:   return QString::fromLatin1("MSVC++ (_MSC_VER=%1)").arg(_MSC_VER);
-    }
+#if (_MSC_VER == 1100)
+    return QString::fromLatin1("MSVC++ 5.0 (Visual Studio 97 version 5.0)");
+#elif (_MSC_VER == 1200)
+    return QString::fromLatin1("MSVC++ 6.0 (Visual Studio 6.0)");
+#elif (_MSC_VER == 1300)
+    return QString::fromLatin1("MSVC++ 7.0 (Visual Studio .NET 2002 version 7.0)");
+#elif (_MSC_VER == 1310)
+    return QString::fromLatin1("MSVC++ 7.1 (Visual Studio .NET 2003 version 7.1)");
+#elif (_MSC_VER == 1400)
+    return QString::fromLatin1("MSVC++ 8.0 (Visual Studio 2005 version 8.0)");
+#elif (_MSC_VER == 1500)
+    return QString::fromLatin1("MSVC++ 9.0 (Visual Studio 2008 version 9.0)");
+#elif (_MSC_VER == 1600)
+    return QString::fromLatin1("MSVC++ 10.0 (Visual Studio 2010 version 10.0)");
+#elif (_MSC_VER == 1700)
+    return QString::fromLatin1("MSVC++ 11.0 (Visual Studio 2012 version 11.0)");
+#elif (_MSC_VER == 1800)
+    return QString::fromLatin1("MSVC++ 12.0 (Visual Studio 2013 version 12.0)");
+#elif (_MSC_VER == 1900)
+    return QString::fromLatin1("MSVC++ 14.0 (Visual Studio 2015 version 14.0)");
+#elif (_MSC_VER == 1910)
+    return QString::fromLatin1("MSVC++ 14.1 (Visual Studio 2017 version 15.0)");
+#elif (_MSC_VER == 1911)
+    return QString::fromLatin1("MSVC++ 14.11 (Visual Studio 2017 version 15.3)");
+#elif (_MSC_VER == 1912)
+    return QString::fromLatin1("MSVC++ 14.12 (Visual Studio 2017 version 15.5)");
+#elif (_MSC_VER == 1913)
+    return QString::fromLatin1("MSVC++ 14.13 (Visual Studio 2017 version 15.6)");
+#elif (_MSC_VER == 1914)
+    return QString::fromLatin1("MSVC++ 14.14 (Visual Studio 2017 version 15.7)");
+#elif (_MSC_VER == 1915)
+    return QString::fromLatin1("MSVC++ 14.15 (Visual Studio 2017 version 15.8)");
+#elif (_MSC_VER == 1916)
+    return QString::fromLatin1("MSVC++ 14.16 (Visual Studio 2017 version 15.9)");
+#elif (_MSC_VER == 1920)
+    return QString::fromLatin1("MSVC++ 14.20 (Visual Studio 2019 version 16.0)");
+#elif (_MSC_VER == 1921)
+    return QString::fromLatin1("MSVC++ 14.21 (Visual Studio 2019 version 16.1)");
+#elif (_MSC_VER == 1922)
+    return QString::fromLatin1("MSVC++ 14.22 (Visual Studio 2019 version 16.2)");
+#elif (_MSC_VER == 1923)
+    return QString::fromLatin1("MSVC++ 14.23 (Visual Studio 2019 version 16.3)");
+#elif (_MSC_VER == 1924)
+    return QString::fromLatin1("MSVC++ 14.24 (Visual Studio 2019 version 16.4)");
+#elif (_MSC_VER == 1925)
+    return QString::fromLatin1("MSVC++ 14.25 (Visual Studio 2019 version 16.5)");
+#elif (_MSC_VER == 1926)
+    return QString::fromLatin1("MSVC++ 14.26 (Visual Studio 2019 version 16.6)");
+#elif (_MSC_VER == 1927)
+    return QString::fromLatin1("MSVC++ 14.27 (Visual Studio 2019 version 16.7)");
+#elif (_MSC_VER == 1928)
+    return QString::fromLatin1("MSVC++ 14.28 (Visual Studio 2019 version 16.8/16.9)");
+#elif (_MSC_VER == 1929)
+    return QString::fromLatin1("MSVC++ 14.29 (Visual Studio 2019 version 16.10/16.11)");
+#elif (_MSC_VER == 1930)
+    return QString::fromLatin1("MSVC++ 14.30 (Visual Studio 2022 version 17.0)");
+#elif (_MSC_VER == 1931)
+    return QString::fromLatin1("MSVC++ 14.31 (Visual Studio 2022 version 17.1)");
+#elif (_MSC_VER == 1932)
+    return QString::fromLatin1("MSVC++ 14.32 (Visual Studio 2022 version 17.2)");
+#elif (_MSC_VER == 1933)
+    return QString::fromLatin1("MSVC++ 14.33 (Visual Studio 2022 version 17.3)");
+#elif (_MSC_VER == 1934)
+    return QString::fromLatin1("MSVC++ 14.34 (Visual Studio 2022 version 17.4)");
+#elif (_MSC_VER == 1935)
+    return QString::fromLatin1("MSVC++ 14.35 (Visual Studio 2022 version 17.5)");
+#elif (_MSC_VER == 1936)
+    return QString::fromLatin1("MSVC++ 14.36 (Visual Studio 2022 version 17.6)");
+#else
+    return QString::fromLatin1("MSVC++ (_MSC_VER=%1)").arg(_MSC_VER);
+#endif
+    //
 #elif defined (Q_CC_SYM)
     return QString::fromLatin1("Digital Mars C/C++");
 #elif defined (Q_CC_INTEL)
