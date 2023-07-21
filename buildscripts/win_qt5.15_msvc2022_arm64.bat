@@ -13,6 +13,7 @@ set NMAKE_CMD="%~dp0\..\buildscripts\helpers\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
 set DLLRESOLVER_CMD="%~dp0\..\buildscripts\helpers\dllresolver.exe"
 set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.webview2.1.0.1823.32\build\native\%ARCH%\WebView2Loader.dll"
+set RESVG_PATH="%~dp0\resvg\aarch64-pc-windows-msvc"
 
 call %VCVARS% %VCVARS_ARCH%
 set PATH=%QT_PATH%\bin;%WIX%\bin;%WIX%;%PATH%
@@ -24,7 +25,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="disable_qtwebkit enable_update_checking" ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="disable_qtwebkit enable_update_checking" CONFIG+="system_resvg" INCLUDEPATH+=%RESVG_PATH% LIBS+=/LIBPATH:%RESVG_PATH% ..\%PROJECT%.pro
 %NMAKE_CMD%
 if not exist %APP_PATH%\release\%PROJECT%.exe (
     if NOT "%CI%" == "true" pause
@@ -39,7 +40,7 @@ copy %OPENSSL_PATH%\*.dll %PROJECT%%SUFFIX%\
 rmdir /S /Q %PROJECT%%SUFFIX%\position 2>nul >nul
 rmdir /S /Q %PROJECT%%SUFFIX%\sensorgestures 2>nul >nul
 rmdir /S /Q %PROJECT%%SUFFIX%\sensors 2>nul >nul
-%DLLRESOLVER_CMD% %PROJECT%%SUFFIX% %UCRT_DIR% %CRT_DIR% %QT_PATH%\bin
+%DLLRESOLVER_CMD% %PROJECT%%SUFFIX% %RESVG_PATH% %UCRT_DIR% %CRT_DIR% %QT_PATH%\bin
 %ZIP_CMD% -9r ..\%PROJECT%%SUFFIX%.zip %PROJECT%%SUFFIX%
 rmdir /S /Q build_msi 2>nul >nul
 move %PROJECT%%SUFFIX% build_msi

@@ -81,3 +81,7 @@ Makefile*
 # OS X garbage
 .DS_Store
 
+# ReSVG
+!/buildscripts/resvg/**/*.so
+!/buildscripts/resvg/**/*.lib
+!/buildscripts/resvg/**/*.dll

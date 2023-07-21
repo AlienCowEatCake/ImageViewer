@@ -9,6 +9,7 @@ ICON_PATH="src/${PROJECT}/resources/icon/icon.svg"
 ICONS_DIR_PATH="src/${PROJECT}/resources/icon"
 DEBIAN_DIR_PATH="src/${PROJECT}/resources/platform/debian"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/linux/set_associations.sh"
+RESVG_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/$(gcc -dumpmachine | sed 's|-.*||')-unknown-linux-gnu"
 
 QTDIR="/opt/qt5"
 CLANGDIR="/opt/clang"
@@ -17,13 +18,13 @@ CMD_DEPLOY="/usr/local/bin/linuxdeployqt"
 CMD_APPIMAGETOOL="/usr/local/bin/appimagetool"
 
 export PATH="${CLANGDIR}/bin:${PATH}"
-export LD_LIBRARY_PATH="${CLANGDIR}/lib:${QTDIR}/lib:${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH="${CLANGDIR}/lib:${QTDIR}/lib:${RESVG_PATH}:${LD_LIBRARY_PATH}"
 
 cd "$(dirname $0)"/..
 rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
-${CMD_QMAKE} -r CONFIG+="release" CONFIG+=c++2a CONFIG+="enable_librsvg enable_qtwebkit" CONFIG+="enable_update_checking" "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="release" CONFIG+=c++2a CONFIG+="enable_librsvg enable_qtwebkit" CONFIG+="enable_update_checking" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" "../${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 strip --strip-all "${APP_PATH}/${PROJECT}"
 
