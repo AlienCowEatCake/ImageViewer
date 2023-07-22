@@ -58,6 +58,7 @@ cd "${INSTALL_PATH}"
 ln -s /Applications ./Applications
 cp -a "${SOURCE_PATH}/${LICENSE_PATH}" "./"
 find "${APPNAME}.app/Contents/PlugIns" -name "*_debug.dylib" -delete
+find "${APPNAME}.app/Contents" -type f -name '*.prl' -delete
 cd "${BUILD_PATH}"
 
 function sign() {

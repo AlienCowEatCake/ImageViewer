@@ -38,6 +38,7 @@ mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"
 cp -a "${SOURCE_PATH}/${ICON_PATH}" "${RES_PATH}/"
 cp -a "${SOURCE_PATH}/${SCRIPT_PATH}" "${RES_PATH}/"
 arch -x86_64 ${CMD_DEPLOY} "${APPNAME}.app" -verbose=2
+find "${APPNAME}.app/Contents" -type f -name '*.prl' -delete
 cd "${BUILD_PATH}"
 
 INSTALL_PATH="${PWD}/install"
