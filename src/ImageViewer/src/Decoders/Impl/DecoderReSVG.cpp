@@ -533,7 +533,6 @@ public:
         painter->setRenderHint(QPainter::TextAntialiasing);
         painter->setRenderHint(QPainter::SmoothPixmapTransform);
         const qreal scaleFactor = std::min(GraphicsItemUtils::GetDeviceScaleFactor(painter), std::max(MAX_SCALE_FOR_PARTIAL_RENDER, maxScaleFactor()));
-        qWarning() << scaleFactor;
         const qreal offset = 2.0 / scaleFactor;
         const QRectF exposedRect = option->exposedRect.adjusted(-offset, -offset, offset, offset).intersected(boundingRect());
         if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(scaleFactor, m_rasterizerCache.scaleFactor) || !m_rasterizerCache.exposedRect.contains(exposedRect))
