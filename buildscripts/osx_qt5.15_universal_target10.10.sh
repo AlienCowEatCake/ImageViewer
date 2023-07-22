@@ -18,6 +18,16 @@ QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
 
+RESVG_X86_64_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/x86_64-apple-darwin"
+RESVG_ARM64_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/aarch64-apple-darwin"
+function make_universal_resvg() {
+    local RESVG_PATH="${1}"
+    rm -rf "${RESVG_PATH}"
+    mkdir -p "${RESVG_PATH}"
+    lipo "${RESVG_X86_64_PATH}/libresvg.dylib" "${RESVG_ARM64_PATH}/libresvg.dylib" -create -output "${RESVG_PATH}/libresvg.dylib"
+    cp -a "${RESVG_X86_64_PATH}/resvg.h" "${RESVG_PATH}/resvg.h"
+}
+
 echo "Using MAC_SDK=${MAC_SDK}"
 
 cd "$(dirname $0)"/..
@@ -26,7 +36,9 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.10 QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64" CONFIG+=c++2a CONFIG+="enable_qtwebkit" CONFIG+="enable_update_checking" "../${PROJECT}.pro"
+RESVG_PATH="${BUILD_PATH}/resvg/universal-apple-darwin"
+make_universal_resvg "${RESVG_PATH}"
+${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.10 QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64" CONFIG+=c++2a CONFIG+="enable_qtwebkit" CONFIG+="enable_update_checking" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" "../${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "10.10" "${APPNAME}.app/Contents/Info.plist"
@@ -48,6 +60,7 @@ FRAMEWORKS_PATH="${APPNAME}.app/Contents/Frameworks"
 for unused_framework in QtQml.framework QtQmlModels.framework QtQuick.framework QtVirtualKeyboard.framework ; do
     rm -r "${FRAMEWORKS_PATH}/${unused_framework}"
 done
+/usr/bin/python3 "${SOURCE_PATH}/buildscripts/helpers/dylibresolver.py" "${APPNAME}.app" "${RESVG_PATH}" "${QT_PATH}/lib"
 cd "${BUILD_PATH}"
 
 INSTALL_PATH="${PWD}/install"

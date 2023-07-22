@@ -85,3 +85,4 @@ Makefile*
 !/buildscripts/resvg/**/*.so
 !/buildscripts/resvg/**/*.lib
 !/buildscripts/resvg/**/*.dll
+!/buildscripts/resvg/**/*.dylib

@@ -18,6 +18,8 @@ QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
 
+RESVG_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/x86_64-apple-darwin"
+
 echo "Using MAC_SDK=${MAC_SDK}"
 
 cd "$(dirname $0)"/..
@@ -26,7 +28,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.10 CONFIG+=c++2a CONFIG+="enable_update_checking" "../${PROJECT}.pro"
+arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.10 CONFIG+=c++2a CONFIG+="enable_update_checking" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" "../${PROJECT}.pro"
 arch -x86_64 make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "10.10" "${APPNAME}.app/Contents/Info.plist"
@@ -47,6 +49,7 @@ FRAMEWORKS_PATH="${APPNAME}.app/Contents/Frameworks"
 for unused_framework in QtQml.framework QtQmlModels.framework QtQuick.framework QtVirtualKeyboard.framework ; do
     rm -r "${FRAMEWORKS_PATH}/${unused_framework}"
 done
+/usr/bin/python3 "${SOURCE_PATH}/buildscripts/helpers/dylibresolver.py" "${APPNAME}.app" "${RESVG_PATH}" "${QT_PATH}/lib"
 cd "${BUILD_PATH}"
 
 INSTALL_PATH="${PWD}/install"
