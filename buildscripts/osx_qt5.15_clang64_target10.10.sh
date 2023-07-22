@@ -39,7 +39,7 @@ mkdir -p "${PLUGINS_PATH}/iconengines"
 for iconengines_plugin in libqsvgicon.dylib ; do
     cp -a "${QTPLUGINS_PATH}/iconengines/${iconengines_plugin}" "${PLUGINS_PATH}/iconengines/"
 done
-${CMD_DEPLOY} "${APPNAME}.app" -verbose=2
+arch -x86_64 ${CMD_DEPLOY} "${APPNAME}.app" -verbose=2
 for unused_plugins_subdir in virtualkeyboard platforminputcontexts ; do
     rm -r "${PLUGINS_PATH}/${unused_plugins_subdir}"
 done
