@@ -1,4 +1,4 @@
-From 5562d183b979ec608fa9155c403b040786e63bdc Mon Sep 17 00:00:00 2001
+From f926c498660ac1b37dfc6a5918cd93290f58ef0c Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 9 Jul 2023 21:28:58 +0700
 Subject: [PATCH 4/4] Dont use modern options with old Qt verson
@@ -10,10 +10,10 @@ Subject: [PATCH 4/4] Dont use modern options with old Qt verson
  3 files changed, 33 insertions(+), 2 deletions(-)
 
 diff --git a/src/imageformats/psd.cpp b/src/imageformats/psd.cpp
-index 0d7ed39..f5f8f8a 100644
+index 710d1a6..969ea31 100644
 --- a/src/imageformats/psd.cpp
 +++ b/src/imageformats/psd.cpp
-@@ -732,9 +732,13 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
+@@ -733,9 +733,13 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
      auto format = QImage::Format_Invalid;
      switch(header.color_mode) {
      case CM_RGB:
@@ -27,19 +27,19 @@ index 0d7ed39..f5f8f8a 100644
              format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64_Premultiplied;
          else
              format = header.channel_count < 4 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888_Premultiplied;
-@@ -1162,7 +1166,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1169,7 +1173,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                      planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, header.channel_count);
                  }
                  else if (header.depth == 32) {
 +#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
                      planarToChunchy<float>(scanLine, rawStride.data(), header.width, c, header.channel_count);
 +#else
-+                    planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, header.channel_count);
++                    planarToChunchyFloatToUInt16<float>(scanLine, rawStride.data(), header.width, c, header.channel_count);
 +#endif
                  }
              }
  
-@@ -1187,7 +1195,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1194,7 +1202,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                      else if (header.depth == 16)
                          premulConversion<quint16>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
                      else if (header.depth == 32)
@@ -51,7 +51,7 @@ index 0d7ed39..f5f8f8a 100644
                  }
              }
  
-@@ -1210,7 +1222,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1217,7 +1229,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                  else if (header.depth == 16)
                      rawChannelsCopy<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
                  else if (header.depth == 32)
@@ -63,18 +63,18 @@ index 0d7ed39..f5f8f8a 100644
              }
          }
      }
-@@ -1235,7 +1251,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1242,7 +1258,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                      planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, imgChannels);
                  }
                  else if (header.depth == 32 && header.color_mode == CM_RGB) { // 32-bits float images: RGB/RGBA
 +#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
                      planarToChunchy<float>(scanLine, rawStride.data(), header.width, c, imgChannels);
 +#else
-+                    planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, imgChannels);
++                    planarToChunchyFloatToUInt16<float>(scanLine, rawStride.data(), header.width, c, imgChannels);
 +#endif
                  }
                  else if (header.depth == 32 && header.color_mode == CM_GRAYSCALE) { // 32-bits float images: Grayscale (coverted to equivalent integer 16-bits)
-                     planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, imgChannels);
+                     planarToChunchyFloatToUInt16<float>(scanLine, rawStride.data(), header.width, c, imgChannels);
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
 index 14e67c2..82178da 100644
 --- a/src/imageformats/util_p.h

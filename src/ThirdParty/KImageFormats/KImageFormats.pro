@@ -1,4 +1,4 @@
-# URL: https://invent.kde.org/frameworks/kimageformats
+# URL: https://invent.kde.org/frameworks/kimageformats + https://github.com/KDE/kimageformats
 # License: GNU LGPL v2.1 - https://invent.kde.org/frameworks/kimageformats/-/blob/master/README.md
 
 lessThan(QT_MAJOR_VERSION, 5): error(This project requires Qt 5.15 or later)

@@ -1,4 +1,4 @@
-# URL: https://invent.kde.org/frameworks/kimageformats
+# URL: https://invent.kde.org/frameworks/kimageformats + https://github.com/KDE/kimageformats
 # License: GNU LGPL v2.1 - https://invent.kde.org/frameworks/kimageformats/-/blob/master/README.md
 
 include($${PWD}/../../Features.pri)

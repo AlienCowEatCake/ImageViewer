@@ -13,6 +13,7 @@
 #include <QImage>
 #include <QLoggingCategory>
 #include <QRegularExpressionMatch>
+#include <QColorSpace>
 
 #include <QDebug>
 
@@ -242,6 +243,9 @@ bool HDRHandler::read(QImage *outImage)
         // qDebug() << "Error loading HDR file.";
         return false;
     }
+    // The images read by Gimp and Photoshop (including those of the tests) are interpreted with linear color space.
+    // By setting the linear color space, programs that support profiles display HDR files as in GIMP and Photoshop.
+    img.setColorSpace(QColorSpace(QColorSpace::SRgbLinear));
 
     *outImage = img;
     return true;

@@ -42,6 +42,7 @@
 #include <QColorSpace>
 
 #include <cmath>
+#include <cstring>
 
 typedef quint32 uint;
 typedef quint16 ushort;
@@ -820,10 +821,18 @@ inline quint32 xchg(quint32 v)
 inline float xchg(float v)
 {
 #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+#   ifdef Q_CC_MSVC
     float *pf = &v;
     quint32 f = xchg(*reinterpret_cast<quint32*>(pf));
     quint32 *pi = &f;
     return *reinterpret_cast<float*>(pi);
+#   else
+    quint32 t;
+    std::memcpy(&t, &v, sizeof(quint32));
+    t = xchg(t);
+    std::memcpy(&v, &t, sizeof(quint32));
+    return v;
+#   endif
 #else
     return v;  // never tested
 #endif
@@ -839,15 +848,13 @@ inline void planarToChunchy(uchar *target, const char *source, qint32 width, qin
     }
 }
 
-template<class T, T min = 0, T max = 1>
-inline void planarToChunchyFloat(uchar *target, const char *source, qint32 width, qint32 c, qint32 cn)
+template<class T>
+inline void planarToChunchyFloatToUInt16(uchar *target, const char *source, qint32 width, qint32 c, qint32 cn)
 {
     auto s = reinterpret_cast<const T*>(source);
     auto t = reinterpret_cast<quint16*>(target);
     for (qint32 x = 0; x < width; ++x) {
-        auto tmp = xchg(s[x]);
-        auto ftmp = (*reinterpret_cast<float*>(&tmp) - double(min)) / (double(max) - double(min));
-        t[x * cn + c] = quint16(std::min(ftmp * std::numeric_limits<quint16>::max() + 0.5, double(std::numeric_limits<quint16>::max())));
+        t[x * cn + c] = quint16(std::min(xchg(s[x]) * std::numeric_limits<quint16>::max() + 0.5, double(std::numeric_limits<quint16>::max())));
     }
 }
 
@@ -1169,7 +1176,7 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
                     planarToChunchy<float>(scanLine, rawStride.data(), header.width, c, header.channel_count);
 #else
-                    planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, header.channel_count);
+                    planarToChunchyFloatToUInt16<float>(scanLine, rawStride.data(), header.width, c, header.channel_count);
 #endif
                 }
             }
@@ -1254,11 +1261,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
                     planarToChunchy<float>(scanLine, rawStride.data(), header.width, c, imgChannels);
 #else
-                    planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, imgChannels);
+                    planarToChunchyFloatToUInt16<float>(scanLine, rawStride.data(), header.width, c, imgChannels);
 #endif
                 }
                 else if (header.depth == 32 && header.color_mode == CM_GRAYSCALE) { // 32-bits float images: Grayscale (coverted to equivalent integer 16-bits)
-                    planarToChunchyFloat<quint32>(scanLine, rawStride.data(), header.width, c, imgChannels);
+                    planarToChunchyFloatToUInt16<float>(scanLine, rawStride.data(), header.width, c, imgChannels);
                 }
             }
         }
