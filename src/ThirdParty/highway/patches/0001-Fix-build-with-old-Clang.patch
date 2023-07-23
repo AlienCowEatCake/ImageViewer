@@ -1,18 +1,18 @@
-From e3acfc7356678c75e5cf0eaf77b22c0e059fd303 Mon Sep 17 00:00:00 2001
+From 8f5501646dfc49509ba8cb1c63d0ac4332531ba7 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 23:41:00 +0700
 Subject: [PATCH 1/2] Fix build with old Clang
 
 ---
- hwy/nanobenchmark.cc | 13 +++++++++++++
- hwy/targets.cc       | 13 +++++++++++++
+ hwy/targets.cc | 13 +++++++++++++
+ hwy/timer.cc   | 13 +++++++++++++
  2 files changed, 26 insertions(+)
 
-diff --git a/hwy/nanobenchmark.cc b/hwy/nanobenchmark.cc
-index d13b5e7..3fda2a2 100644
---- a/hwy/nanobenchmark.cc
-+++ b/hwy/nanobenchmark.cc
-@@ -373,7 +373,20 @@ void Cpuid(const uint32_t level, const uint32_t count,
+diff --git a/hwy/targets.cc b/hwy/targets.cc
+index 8cf2005..1de1405 100644
+--- a/hwy/targets.cc
++++ b/hwy/targets.cc
+@@ -74,7 +74,20 @@ HWY_INLINE void Cpuid(const uint32_t level, const uint32_t count,
    uint32_t b;
    uint32_t c;
    uint32_t d;
@@ -33,11 +33,11 @@ index d13b5e7..3fda2a2 100644
    abcd[0] = a;
    abcd[1] = b;
    abcd[2] = c;
-diff --git a/hwy/targets.cc b/hwy/targets.cc
-index 1258cc4..8e31d54 100644
---- a/hwy/targets.cc
-+++ b/hwy/targets.cc
-@@ -79,7 +79,20 @@ HWY_INLINE void Cpuid(const uint32_t level, const uint32_t count,
+diff --git a/hwy/timer.cc b/hwy/timer.cc
+index 28b5892..dd25600 100644
+--- a/hwy/timer.cc
++++ b/hwy/timer.cc
+@@ -79,7 +79,20 @@ void Cpuid(const uint32_t level, const uint32_t count,
    uint32_t b;
    uint32_t c;
    uint32_t d;
