@@ -105,7 +105,11 @@ public:
             format.endianness = JXL_NATIVE_ENDIAN;
             format.align = 0;
             size_t iccBufferSize = 0;
-            if(JxlDecoderGetICCProfileSize(decoder, &format, JXL_COLOR_PROFILE_TARGET_DATA, &iccBufferSize) != JXL_DEC_SUCCESS)
+            if(JxlDecoderGetICCProfileSize(decoder,
+#if !defined(JPEGXL_NUMERIC_VERSION) || !defined(JPEGXL_COMPUTE_NUMERIC_VERSION) || (JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0))
+                                           &format,
+#endif
+                                           JXL_COLOR_PROFILE_TARGET_DATA, &iccBufferSize) != JXL_DEC_SUCCESS)
             {
                 qWarning() << "ERROR: JxlDecoderGetICCProfileSize";
                 JxlDecoderDestroy(decoder);
@@ -113,7 +117,11 @@ public:
             }
 
             QByteArray iccBuffer(static_cast<int>(iccBufferSize), 0);
-            if(JxlDecoderGetColorAsICCProfile(decoder, &format, JXL_COLOR_PROFILE_TARGET_DATA, reinterpret_cast<uint8_t*>(iccBuffer.data()), static_cast<size_t>(iccBuffer.size())) != JXL_DEC_SUCCESS)
+            if(JxlDecoderGetColorAsICCProfile(decoder,
+#if !defined(JPEGXL_NUMERIC_VERSION) || !defined(JPEGXL_COMPUTE_NUMERIC_VERSION) || (JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0))
+                                              &format,
+#endif
+                                              JXL_COLOR_PROFILE_TARGET_DATA, reinterpret_cast<uint8_t*>(iccBuffer.data()), static_cast<size_t>(iccBuffer.size())) != JXL_DEC_SUCCESS)
             {
                 qWarning() << "ERROR: JxlDecoderGetICCProfileSize";
                 JxlDecoderDestroy(decoder);
