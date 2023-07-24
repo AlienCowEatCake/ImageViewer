@@ -22,6 +22,7 @@
 #endif
 
 #include <cmath>
+#include <cstring>
 #include <algorithm>
 
 #if defined (LINKED_LIBRSVG)
@@ -34,6 +35,9 @@
 #include <QByteArray>
 #include <QDebug>
 #include <QLibrary>
+#include <QPainter>
+#include <QGraphicsItem>
+#include <QStyleOptionGraphicsItem>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QFunctionPointer>
@@ -44,8 +48,11 @@ typedef void* QFunctionPointer;
 #include "Utils/Global.h"
 
 #include "../IDecoder.h"
+#include "../GraphicsItemFeatures/IGrabImage.h"
+#include "../GraphicsItemFeatures/IGrabScaledImage.h"
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/GraphicsItemsFactory.h"
+#include "Internal/GraphicsItems/GraphicsItemUtils.h"
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
@@ -103,12 +110,21 @@ struct RsvgDimensionData
     double ex;
 };
 
+struct RsvgRectangle
+{
+    double x;
+    double y;
+    double width;
+    double height;
+};
+
 enum cairo_format_t
 {
     CAIRO_FORMAT_ARGB32 = 0,
 };
 
 typedef int gboolean;
+typedef double gdouble;
 typedef void* gpointer;
 typedef struct _cairo cairo_t;
 typedef struct _cairo_surface cairo_surface_t;
@@ -249,6 +265,13 @@ public:
         cairo_scale_f(cr, sx, sy);
     }
 
+    void cairo_translate(cairo_t *cr, double tx, double ty)
+    {
+        typedef void (*cairo_translate_t)(cairo_t*, double, double);
+        cairo_translate_t cairo_translate_f = (cairo_translate_t)m_cairo_translate;
+        cairo_translate_f(cr, tx, ty);
+    }
+
     void cairo_destroy(cairo_t *cr)
     {
         typedef void (*cairo_destroy_t)(cairo_t*);
@@ -268,6 +291,7 @@ private:
         : m_cairo_image_surface_create_for_data(Q_NULLPTR)
         , m_cairo_create(Q_NULLPTR)
         , m_cairo_scale(Q_NULLPTR)
+        , m_cairo_translate(Q_NULLPTR)
         , m_cairo_destroy(Q_NULLPTR)
         , m_cairo_surface_destroy(Q_NULLPTR)
     {
@@ -277,6 +301,7 @@ private:
         m_cairo_image_surface_create_for_data = m_library.resolve("cairo_image_surface_create_for_data");
         m_cairo_create = m_library.resolve("cairo_create");
         m_cairo_scale = m_library.resolve("cairo_scale");
+        m_cairo_translate = m_library.resolve("cairo_translate");
         m_cairo_destroy = m_library.resolve("cairo_destroy");
         m_cairo_surface_destroy = m_library.resolve("cairo_surface_destroy");
     }
@@ -287,13 +312,14 @@ private:
     bool isValid() const
     {
         return m_library.isLoaded() && m_cairo_image_surface_create_for_data && m_cairo_create
-                && m_cairo_scale && m_cairo_destroy && m_cairo_surface_destroy;
+                && m_cairo_scale && m_cairo_translate && m_cairo_destroy && m_cairo_surface_destroy;
     }
 
     QLibrary m_library;
     QFunctionPointer m_cairo_image_surface_create_for_data;
     QFunctionPointer m_cairo_create;
     QFunctionPointer m_cairo_scale;
+    QFunctionPointer m_cairo_translate;
     QFunctionPointer m_cairo_destroy;
     QFunctionPointer m_cairo_surface_destroy;
 };
@@ -318,6 +344,13 @@ void cairo_scale(cairo_t *cr, double sx, double sy)
 {
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_scale(cr, sx, sy);
+    qWarning() << "Failed to load libcairo";
+}
+
+void cairo_translate(cairo_t *cr, double tx, double ty)
+{
+    if(Cairo *cairo = Cairo::instance())
+        return cairo->cairo_translate(cr, tx, ty);
     qWarning() << "Failed to load libcairo";
 }
 
@@ -363,11 +396,33 @@ public:
         rsvg_handle_set_base_uri_f(handle, base_uri);
     }
 
+    bool has_rsvg_handle_get_dimensions() const
+    {
+        return !!m_rsvg_handle_get_dimensions;
+    }
+
     void rsvg_handle_get_dimensions(RsvgHandle *handle, RsvgDimensionData *dimension_data)
     {
         typedef void (*rsvg_handle_get_dimensions_t)(RsvgHandle*, RsvgDimensionData*);
         rsvg_handle_get_dimensions_t rsvg_handle_get_dimensions_f = (rsvg_handle_get_dimensions_t)m_rsvg_handle_get_dimensions;
         rsvg_handle_get_dimensions_f(handle, dimension_data);
+    }
+
+    bool has_rsvg_handle_get_intrinsic_size_in_pixels() const
+    {
+        return !!m_rsvg_handle_get_intrinsic_size_in_pixels;
+    }
+
+    gboolean rsvg_handle_get_intrinsic_size_in_pixels(RsvgHandle *handle, gdouble *out_width, gdouble *out_height)
+    {
+        typedef gboolean (*rsvg_handle_get_intrinsic_size_in_pixels_t)(RsvgHandle*, gdouble*, gdouble*);
+        rsvg_handle_get_intrinsic_size_in_pixels_t rsvg_handle_get_intrinsic_size_in_pixels_f = (rsvg_handle_get_intrinsic_size_in_pixels_t)m_rsvg_handle_get_intrinsic_size_in_pixels;
+        return rsvg_handle_get_intrinsic_size_in_pixels_f(handle, out_width, out_height);
+    }
+
+    bool has_rsvg_handle_render_cairo() const
+    {
+        return !!m_rsvg_handle_render_cairo;
     }
 
     gboolean rsvg_handle_render_cairo(RsvgHandle *handle, cairo_t *cr)
@@ -377,12 +432,26 @@ public:
         return rsvg_handle_render_cairo_f(handle, cr);
     }
 
+    bool has_rsvg_handle_render_document() const
+    {
+        return !!m_rsvg_handle_render_document;
+    }
+
+    gboolean rsvg_handle_render_document(RsvgHandle *handle, cairo_t *cr, const RsvgRectangle *viewport, GError **error)
+    {
+        typedef gboolean (*rsvg_handle_render_document_t)(RsvgHandle*, cairo_t*, const RsvgRectangle*, GError**);
+        rsvg_handle_render_document_t rsvg_handle_render_document_f = (rsvg_handle_render_document_t)m_rsvg_handle_render_document;
+        return rsvg_handle_render_document_f(handle, cr, viewport, error);
+    }
+
 private:
     RSVG()
         : m_rsvg_handle_new_from_data(Q_NULLPTR)
         , m_rsvg_handle_set_base_uri(Q_NULLPTR)
         , m_rsvg_handle_get_dimensions(Q_NULLPTR)
+        , m_rsvg_handle_get_intrinsic_size_in_pixels(Q_NULLPTR)
         , m_rsvg_handle_render_cairo(Q_NULLPTR)
+        , m_rsvg_handle_render_document(Q_NULLPTR)
     {
         if(!LibraryUtils::LoadQLibrary(m_library, RSVG_LIBRARY_NAMES))
             return;
@@ -390,7 +459,9 @@ private:
         m_rsvg_handle_new_from_data = m_library.resolve("rsvg_handle_new_from_data");
         m_rsvg_handle_set_base_uri = m_library.resolve("rsvg_handle_set_base_uri");
         m_rsvg_handle_get_dimensions = m_library.resolve("rsvg_handle_get_dimensions");
+        m_rsvg_handle_get_intrinsic_size_in_pixels = m_library.resolve("rsvg_handle_get_intrinsic_size_in_pixels");
         m_rsvg_handle_render_cairo = m_library.resolve("rsvg_handle_render_cairo");
+        m_rsvg_handle_render_document = m_library.resolve("rsvg_handle_render_document");
     }
 
     ~RSVG()
@@ -399,14 +470,17 @@ private:
     bool isValid() const
     {
         return m_library.isLoaded() && m_rsvg_handle_new_from_data && m_rsvg_handle_set_base_uri
-                && m_rsvg_handle_get_dimensions && m_rsvg_handle_render_cairo;
+                && (m_rsvg_handle_get_dimensions || m_rsvg_handle_get_intrinsic_size_in_pixels)
+                && (m_rsvg_handle_render_cairo || m_rsvg_handle_render_document);
     }
 
     QLibrary m_library;
     QFunctionPointer m_rsvg_handle_new_from_data;
     QFunctionPointer m_rsvg_handle_set_base_uri;
     QFunctionPointer m_rsvg_handle_get_dimensions;
+    QFunctionPointer m_rsvg_handle_get_intrinsic_size_in_pixels;
     QFunctionPointer m_rsvg_handle_render_cairo;
+    QFunctionPointer m_rsvg_handle_render_document;
 };
 
 RsvgHandle *rsvg_handle_new_from_data(const quint8 *data, size_t data_len, GError **error)
@@ -424,6 +498,13 @@ void rsvg_handle_set_base_uri(RsvgHandle *handle, const char *base_uri)
     qWarning() << "Failed to load librsvg";
 }
 
+bool has_rsvg_handle_get_dimensions()
+{
+    if(const RSVG *rsvg = RSVG::instance())
+        return rsvg->has_rsvg_handle_get_dimensions();
+    return false;
+}
+
 void rsvg_handle_get_dimensions(RsvgHandle *handle, RsvgDimensionData *dimension_data)
 {
     if(RSVG *rsvg = RSVG::instance())
@@ -431,10 +512,47 @@ void rsvg_handle_get_dimensions(RsvgHandle *handle, RsvgDimensionData *dimension
     qWarning() << "Failed to load librsvg";
 }
 
+bool has_rsvg_handle_get_intrinsic_size_in_pixels()
+{
+    if(const RSVG *rsvg = RSVG::instance())
+        return rsvg->has_rsvg_handle_get_intrinsic_size_in_pixels();
+    return false;
+}
+
+gboolean rsvg_handle_get_intrinsic_size_in_pixels(RsvgHandle *handle, gdouble *out_width, gdouble *out_height)
+{
+    if(RSVG *rsvg = RSVG::instance())
+        return rsvg->rsvg_handle_get_intrinsic_size_in_pixels(handle, out_width, out_height);
+    qWarning() << "Failed to load librsvg";
+    return 0;
+}
+
+bool has_rsvg_handle_render_cairo()
+{
+    if(const RSVG *rsvg = RSVG::instance())
+        return rsvg->has_rsvg_handle_render_cairo();
+    return false;
+}
+
 gboolean rsvg_handle_render_cairo(RsvgHandle *handle, cairo_t *cr)
 {
     if(RSVG *rsvg = RSVG::instance())
         return rsvg->rsvg_handle_render_cairo(handle, cr);
+    qWarning() << "Failed to load librsvg";
+    return 0;
+}
+
+bool has_rsvg_handle_render_document()
+{
+    if(const RSVG *rsvg = RSVG::instance())
+        return rsvg->has_rsvg_handle_render_document();
+    return false;
+}
+
+gboolean rsvg_handle_render_document(RsvgHandle *handle, cairo_t *cr, const RsvgRectangle *viewport, GError **error)
+{
+    if(RSVG *rsvg = RSVG::instance())
+        return rsvg->rsvg_handle_render_document(handle, cr, viewport, error);
     qWarning() << "Failed to load librsvg";
     return 0;
 }
@@ -451,6 +569,34 @@ bool isReady()
 
 #else
 
+bool has_rsvg_handle_get_intrinsic_size_in_pixels()
+{
+#if QT_VERSION_CHECK(LIBRSVG_MAJOR_VERSION, LIBRSVG_MINOR_VERSION, LIBRSVG_MICRO_VERSION) >= QT_VERSION_CHECK(2, 52, 0)
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool has_rsvg_handle_get_dimensions()
+{
+    return true;
+}
+
+bool has_rsvg_handle_render_document()
+{
+#if QT_VERSION_CHECK(LIBRSVG_MAJOR_VERSION, LIBRSVG_MINOR_VERSION, LIBRSVG_MICRO_VERSION) >= QT_VERSION_CHECK(2, 46, 0)
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool has_rsvg_handle_render_cairo()
+{
+    return !has_rsvg_handle_render_document();
+}
+
 bool isReady()
 {
     return true;
@@ -462,25 +608,66 @@ bool isReady()
 
 const qreal MAX_IMAGE_DIMENSION = 16384;
 const qreal MIN_IMAGE_DIMENSION = 1;
+const qreal MAX_SCALE_FOR_PARTIAL_RENDER = 1000;
 
 // ====================================================================================================
 
-class RSVGPixmapProvider : public IScaledImageProvider
+class RSVGGraphicsItem :
+        public QGraphicsItem,
+        public IGrabImage,
+        public IGrabScaledImage,
+        public IScaledImageProvider
 {
-    Q_DISABLE_COPY(RSVGPixmapProvider)
+    Q_DISABLE_COPY(RSVGGraphicsItem)
 
 public:
-    explicit RSVGPixmapProvider(const QString &filePath)
-        : m_isValid(false)
+    explicit RSVGGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR)
+        : QGraphicsItem(parentItem)
+        , m_isValid(false)
+        , m_exposedRectSupported(false)
         , m_rsvg(Q_NULLPTR)
         , m_width(0)
         , m_height(0)
         , m_minScaleFactor(1)
         , m_maxScaleFactor(1)
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
+        setFlag(QGraphicsItem::ItemUsesExtendedStyleOption, true);
+#endif
+        m_rasterizerCache.scaleFactor = 0;
+    }
+
+    explicit RSVGGraphicsItem(const QString &filePath, QGraphicsItem *parentItem = Q_NULLPTR)
+        : RSVGGraphicsItem(parentItem)
+    {
+        load(filePath);
+    }
+
+    ~RSVGGraphicsItem()
+    {
+        if(m_rsvg)
+            g_object_unref(m_rsvg);
+    }
+
+    bool exposedRectSupported() const
+    {
+        return m_exposedRectSupported;
+    }
+
+    bool load(const QString &filePath)
+    {
+        if(m_rsvg)
+            g_object_unref(m_rsvg);
+        m_rsvg = Q_NULLPTR;
+        m_isValid = false;
+        m_exposedRectSupported = false;
+        m_width = m_height = 0;
+        m_minScaleFactor = m_maxScaleFactor = 1;
+        m_rasterizerCache.scaleFactor = 0;
+
         MappedBuffer inBuffer(filePath, MappedBuffer::AutoInflate);
         if(!inBuffer.isValid())
-            return;
+            return false;
 
         GError *error = Q_NULLPTR;
         m_rsvg = rsvg_handle_new_from_data(inBuffer.dataAs<unsigned char*>(), inBuffer.sizeAs<size_t>(), &error);
@@ -489,33 +676,144 @@ public:
             qWarning() << "Error reading SVG:" << ((error && error->message) ? error->message : "Unknown error.");
             if(error)
                 g_error_free(error);
-            return;
+            return false;
         }
 
         const QByteArray baseUri = QFileInfo(filePath).absolutePath().toLocal8Bit();
         rsvg_handle_set_base_uri(m_rsvg, baseUri.data());
 
-        RsvgDimensionData dimensions;
-        memset(&dimensions, 0, sizeof(RsvgDimensionData));
-        rsvg_handle_get_dimensions(m_rsvg, &dimensions);
+        bool sizeDetected = false;
+        if(!sizeDetected && has_rsvg_handle_get_intrinsic_size_in_pixels())
+        {
+#if !defined(LINKED_LIBRSVG) || QT_VERSION_CHECK(LIBRSVG_MAJOR_VERSION, LIBRSVG_MINOR_VERSION, LIBRSVG_MICRO_VERSION) >= QT_VERSION_CHECK(2, 52, 0)
+            gdouble w = 0.0, h = 0.0;
+            if(rsvg_handle_get_intrinsic_size_in_pixels(m_rsvg, &w, &h))
+            {
+                m_width = w;
+                m_height = h;
+                sizeDetected = true;
+            }
+#endif
+        }
+        if(!sizeDetected && has_rsvg_handle_get_dimensions())
+        {
+            RsvgDimensionData dimensions;
+            memset(&dimensions, 0, sizeof(RsvgDimensionData));
+            rsvg_handle_get_dimensions(m_rsvg, &dimensions);
+            m_width = dimensions.width;
+            m_height = dimensions.height;
+            sizeDetected = true;
+        }
+        if(!sizeDetected)
+        {
+            m_width = m_height = 512.0;
+        }
 
-        m_width = dimensions.width;
-        m_height = dimensions.height;
         if(m_width < 1 || m_height < 1)
         {
             qWarning() << "Couldn't determine image size";
-            return;
+            return false;
         }
 
         m_isValid = true;
         m_minScaleFactor = std::max(MIN_IMAGE_DIMENSION / m_width, MIN_IMAGE_DIMENSION / m_height);
         m_maxScaleFactor = std::min(MAX_IMAGE_DIMENSION / m_width, MAX_IMAGE_DIMENSION / m_height);
+
+        m_exposedRectSupported = true;
+
+        return true;
     }
 
-    ~RSVGPixmapProvider()
+    QImage grabImage() Q_DECL_OVERRIDE
     {
-        if(m_rsvg)
-            g_object_unref(m_rsvg);
+        return grabImage(1.0);
+    }
+
+    QImage grabImage(qreal scaleFactor) Q_DECL_OVERRIDE
+    {
+        return grabImage(scaleFactor, boundingRect());
+    }
+
+    QImage grabImage(qreal scaleFactor, const QRectF &exposedRect)
+    {
+        if(!isValid())
+            return QImage();
+        const int width  = static_cast<int>(std::ceil(exposedRect.width() * scaleFactor));
+        const int height = static_cast<int>(std::ceil(exposedRect.height() * scaleFactor));
+        QImage image(width, height, QImage::Format_ARGB32_Premultiplied);
+        if(image.isNull())
+        {
+            qWarning() << "Invalid image size";
+            return image;
+        }
+        image.fill(Qt::transparent);
+        cairo_surface_t *surface = cairo_image_surface_create_for_data(image.bits(), CAIRO_FORMAT_ARGB32, width, height, image.bytesPerLine());
+        if(!surface)
+            return image;
+        cairo_t *cr = cairo_create(surface);
+        if(cr)
+        {
+            if(has_rsvg_handle_render_document())
+            {
+#if !defined(LINKED_LIBRSVG) || QT_VERSION_CHECK(LIBRSVG_MAJOR_VERSION, LIBRSVG_MINOR_VERSION, LIBRSVG_MICRO_VERSION) >= QT_VERSION_CHECK(2, 46, 0)
+                GError *error = Q_NULLPTR;
+                RsvgRectangle viewport;
+    #if 0 ///< @todo It works, but slower... ¯\_(ツ)_/¯
+                viewport.x = -exposedRect.x() * scaleFactor;
+                viewport.y = -exposedRect.y() * scaleFactor;
+                viewport.width = m_width * scaleFactor;
+                viewport.height = m_height * scaleFactor;
+    #else
+                viewport.x = 0;
+                viewport.y = 0;
+                viewport.width = m_width;
+                viewport.height = m_height;
+                cairo_scale(cr, scaleFactor, scaleFactor);
+                cairo_translate(cr, -exposedRect.x(), -exposedRect.y());
+    #endif
+                if(!rsvg_handle_render_document(m_rsvg, cr, &viewport, &error))
+                {
+                    qWarning() << "Error rendering SVG document:" << ((error && error->message) ? error->message : "Unknown error.");
+                    if(error)
+                        g_error_free(error);
+                }
+#endif
+            }
+            else if(has_rsvg_handle_render_cairo())
+            {
+#if !defined(LINKED_LIBRSVG) || QT_VERSION_CHECK(LIBRSVG_MAJOR_VERSION, LIBRSVG_MINOR_VERSION, LIBRSVG_MICRO_VERSION) < QT_VERSION_CHECK(2, 46, 0)
+                cairo_scale(cr, scaleFactor, scaleFactor);
+                cairo_translate(cr, -exposedRect.x(), -exposedRect.y());
+                rsvg_handle_render_cairo(m_rsvg, cr);
+#endif
+            }
+            cairo_destroy(cr);
+        }
+        cairo_surface_destroy(surface);
+        return image;
+    }
+
+    QRectF boundingRect() const Q_DECL_OVERRIDE
+    {
+        return QRectF(0, 0, m_width, m_height);
+    }
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE
+    {
+        Q_UNUSED(widget);
+        painter->setRenderHint(QPainter::Antialiasing);
+        painter->setRenderHint(QPainter::TextAntialiasing);
+        painter->setRenderHint(QPainter::SmoothPixmapTransform);
+        const qreal scaleFactor = std::min(GraphicsItemUtils::GetDeviceScaleFactor(painter), std::max(MAX_SCALE_FOR_PARTIAL_RENDER, maxScaleFactor()));
+        const qreal offset = 2.0 / scaleFactor;
+        const QRectF exposedRect = option->exposedRect.adjusted(-offset, -offset, offset, offset).intersected(boundingRect());
+        if(!GraphicsItemUtils::IsFuzzyEqualScaleFactors(scaleFactor, m_rasterizerCache.scaleFactor) || !m_rasterizerCache.exposedRect.contains(exposedRect))
+        {
+            m_rasterizerCache.image = grabImage(scaleFactor, exposedRect);
+            m_rasterizerCache.exposedRect = exposedRect;
+            m_rasterizerCache.scaleFactor = scaleFactor;
+        }
+        painter->drawImage(m_rasterizerCache.exposedRect, m_rasterizerCache.image, m_rasterizerCache.image.rect());
     }
 
     bool isValid() const Q_DECL_OVERRIDE
@@ -528,33 +826,9 @@ public:
         return false;
     }
 
-    QRectF boundingRect() const Q_DECL_OVERRIDE
-    {
-        return QRectF(0, 0, m_width, m_height);
-    }
-
     QImage image(const qreal scaleFactor) Q_DECL_OVERRIDE
     {
-        if(!isValid())
-            return QImage();
-        const int width  = static_cast<int>(std::ceil(m_width * scaleFactor));
-        const int height = static_cast<int>(std::ceil(m_height * scaleFactor));
-        QImage image(width, height, QImage::Format_ARGB32_Premultiplied);
-        if(image.isNull())
-            return image;
-        image.fill(Qt::transparent);
-        cairo_surface_t *surface = cairo_image_surface_create_for_data(image.bits(), CAIRO_FORMAT_ARGB32, width, height, image.bytesPerLine());
-        if(!surface)
-            return image;
-        cairo_t *cr = cairo_create(surface);
-        if(cr)
-        {
-            cairo_scale(cr, scaleFactor, scaleFactor);
-            rsvg_handle_render_cairo(m_rsvg, cr);
-            cairo_destroy(cr);
-        }
-        cairo_surface_destroy(surface);
-        return image;
+        return grabImage(scaleFactor);
     }
 
     qreal minScaleFactor() const Q_DECL_OVERRIDE
@@ -568,10 +842,19 @@ public:
     }
 
 private:
+    struct RasterizerCache
+    {
+        QImage image;
+        qreal scaleFactor;
+        QRectF exposedRect;
+    };
+
     bool m_isValid;
+    bool m_exposedRectSupported;
     RsvgHandle *m_rsvg;
-    int m_width;
-    int m_height;
+    qreal m_width;
+    qreal m_height;
+    RasterizerCache m_rasterizerCache;
     qreal m_minScaleFactor;
     qreal m_maxScaleFactor;
 };
@@ -611,8 +894,14 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable() || !isAvailable())
             return QSharedPointer<IImageData>();
-        IScaledImageProvider *provider = new RSVGPixmapProvider(filePath);
-        QGraphicsItem *item = GraphicsItemsFactory::instance().createScalableItem(provider);
+
+        RSVGGraphicsItem *rsvgItem = new RSVGGraphicsItem(filePath);
+        QGraphicsItem *item = rsvgItem;
+        if(!rsvgItem->isValid() || !rsvgItem->exposedRectSupported())
+        {
+            IScaledImageProvider *provider = rsvgItem;
+            item = GraphicsItemsFactory::instance().createScalableItem(provider);
+        }
         IImageMetaData *metaData = item ? ImageMetaData::createMetaData(filePath) : Q_NULLPTR;
         return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
     }
