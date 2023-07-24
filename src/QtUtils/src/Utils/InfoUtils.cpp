@@ -331,8 +331,8 @@ Version GetCurrentWinVersionImpl()
     {
         typedef BOOL(WINAPI *GetVersionExA_t)(LPOSVERSIONINFOEXA);
         GetVersionExA_t GetVersionExA_f = reinterpret_cast<GetVersionExA_t>(GetProcAddress(hKernel32, "GetVersionExA"));
-        typedef BOOL(WINAPI *GetVersionA_t)(LPOSVERSIONINFOA);
-        GetVersionA_t GetVersionA_f = reinterpret_cast<GetVersionA_t>(GetProcAddress(hKernel32, "GetVersionA"));
+        typedef DWORD(WINAPI *GetVersion_t)(void);
+        GetVersion_t GetVersion_f = reinterpret_cast<GetVersion_t>(GetProcAddress(hKernel32, "GetVersion"));
         bool exStatus = false;
         if(GetVersionExA_f)
         {
@@ -343,21 +343,35 @@ Version GetCurrentWinVersionImpl()
             {
                 osMajorVersion = osver.dwMajorVersion;
                 osMinorVersion = osver.dwMinorVersion;
-                osBuildNumber = osver.dwBuildNumber;
+                if(osver.dwMajorVersion < 5)
+                    osBuildNumber = static_cast<DWORD>(LOWORD(osver.dwBuildNumber));
+                else
+                    osBuildNumber = osver.dwBuildNumber;
                 exStatus = true;
             }
-        }
-        if(!exStatus && GetVersionA_f)
-        {
-            OSVERSIONINFOA osver;
-            memset(&osver, 0, sizeof(osver));
-            osver.dwOSVersionInfoSize = sizeof(osver);
-            if(GetVersionA_f(&osver))
+            if(!exStatus)
             {
-                osMajorVersion = osver.dwMajorVersion;
-                osMinorVersion = osver.dwMinorVersion;
-                osBuildNumber = osver.dwBuildNumber;
+                memset(&osver, 0, sizeof(osver));
+                osver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
+                if(GetVersionExA_f(&osver))
+                {
+                    osMajorVersion = osver.dwMajorVersion;
+                    osMinorVersion = osver.dwMinorVersion;
+                    if(osver.dwMajorVersion < 5)
+                        osBuildNumber = static_cast<DWORD>(LOWORD(osver.dwBuildNumber));
+                    else
+                        osBuildNumber = osver.dwBuildNumber;
+                    exStatus = true;
+                }
             }
+        }
+        if(!exStatus && GetVersion_f)
+        {
+            const DWORD dwVersion = GetVersion_f();
+            osMajorVersion = static_cast<DWORD>(LOBYTE(LOWORD(dwVersion)));
+            osMinorVersion = (DWORD)(HIBYTE(LOWORD(dwVersion)));
+            if(dwVersion < 0x80000000)
+                osBuildNumber = static_cast<DWORD>(HIWORD(dwVersion));
         }
         if(osMajorVersion == 6 && osMinorVersion == 2)
         {
@@ -514,8 +528,8 @@ QString GetSystemDescription()
     {
         typedef BOOL(WINAPI *GetVersionExA_t)(LPOSVERSIONINFOEXA);
         GetVersionExA_t GetVersionExA_f = reinterpret_cast<GetVersionExA_t>(GetProcAddress(hKernel32, "GetVersionExA"));
-        typedef BOOL(WINAPI *GetVersionA_t)(LPOSVERSIONINFOA);
-        GetVersionA_t GetVersionA_f = reinterpret_cast<GetVersionA_t>(GetProcAddress(hKernel32, "GetVersionA"));
+        typedef DWORD(WINAPI *GetVersion_t)(void);
+        GetVersion_t GetVersion_f = reinterpret_cast<GetVersion_t>(GetProcAddress(hKernel32, "GetVersion"));
         bool exStatus = false;
         if(GetVersionExA_f)
         {
@@ -526,7 +540,10 @@ QString GetSystemDescription()
             {
                 osMajorVersion = osver.dwMajorVersion;
                 osMinorVersion = osver.dwMinorVersion;
-                osBuildNumber = osver.dwBuildNumber;
+                if(osver.dwMajorVersion < 5)
+                    osBuildNumber = static_cast<DWORD>(LOWORD(osver.dwBuildNumber));
+                else
+                    osBuildNumber = osver.dwBuildNumber;
                 osProductType = osver.wProductType;
                 osServicePack = osver.wServicePackMajor;
                 osSuiteMask = osver.wSuiteMask;
@@ -534,20 +551,31 @@ QString GetSystemDescription()
                 osCSDVersion = QString::fromLocal8Bit(osver.szCSDVersion).simplified();
                 exStatus = true;
             }
-        }
-        if(!exStatus && GetVersionA_f)
-        {
-            OSVERSIONINFOA osver;
-            memset(&osver, 0, sizeof(osver));
-            osver.dwOSVersionInfoSize = sizeof(osver);
-            if(GetVersionA_f(&osver))
+            if(!exStatus)
             {
-                osMajorVersion = osver.dwMajorVersion;
-                osMinorVersion = osver.dwMinorVersion;
-                osBuildNumber = osver.dwBuildNumber;
-                osPlatform = osver.dwPlatformId;
-                osCSDVersion = QString::fromLocal8Bit(osver.szCSDVersion).simplified();
+                memset(&osver, 0, sizeof(osver));
+                osver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
+                if(GetVersionExA_f(&osver))
+                {
+                    osMajorVersion = osver.dwMajorVersion;
+                    osMinorVersion = osver.dwMinorVersion;
+                    if(osver.dwMajorVersion < 5)
+                        osBuildNumber = static_cast<DWORD>(LOWORD(osver.dwBuildNumber));
+                    else
+                        osBuildNumber = osver.dwBuildNumber;
+                    osPlatform = osver.dwPlatformId;
+                    osCSDVersion = QString::fromLocal8Bit(osver.szCSDVersion).simplified();
+                    exStatus = true;
+                }
             }
+        }
+        if(!exStatus && GetVersion_f)
+        {
+            const DWORD dwVersion = GetVersion_f();
+            osMajorVersion = static_cast<DWORD>(LOBYTE(LOWORD(dwVersion)));
+            osMinorVersion = (DWORD)(HIBYTE(LOWORD(dwVersion)));
+            if(dwVersion < 0x80000000)
+                osBuildNumber = static_cast<DWORD>(HIWORD(dwVersion));
         }
         if(osMajorVersion == 6 && osMinorVersion == 2)
         {
