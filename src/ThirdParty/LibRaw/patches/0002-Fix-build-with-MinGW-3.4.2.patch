@@ -1,4 +1,4 @@
-From 94d71c95c7975dacca2ce75db10d81d0202716f2 Mon Sep 17 00:00:00 2001
+From d950f92375d5bb52bddc7f26c4c6529cd127c89e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 20:18:16 +0700
 Subject: [PATCH 2/3] Fix build with MinGW 3.4.2
@@ -277,7 +277,7 @@ index 493c7859..1f28c04d 100644
        for (i = 0; i < (int)badCols.size(); ++i)
        {
 diff --git a/src/libraw_datastream.cpp b/src/libraw_datastream.cpp
-index c881672a..e57db71b 100644
+index 8b389e96..82338005 100644
 --- a/src/libraw_datastream.cpp
 +++ b/src/libraw_datastream.cpp
 @@ -896,7 +896,7 @@ int LibRaw_bigfile_buffered_datastream::read(void *data, size_t size, size_t nme
@@ -421,5 +421,5 @@ index bf17ea2b..c2a48b19 100644
      }
      catch (...)
 -- 
-2.30.2
+2.39.2
 

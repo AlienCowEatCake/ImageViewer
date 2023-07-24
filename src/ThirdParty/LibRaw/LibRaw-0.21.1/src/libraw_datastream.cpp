@@ -791,7 +791,7 @@ LibRaw_bigfile_buffered_datastream::LibRaw_bigfile_buffered_datastream(const cha
 #endif
         {
             LARGE_INTEGER fs;
-            if (GetFileSizeEx(fhandle, &fs))
+            if (GetFileSizeEx_Legacy(fhandle, &fs))
                 _fsize = fs.QuadPart;
         }
     }
@@ -817,7 +817,7 @@ LibRaw_bigfile_buffered_datastream::LibRaw_bigfile_buffered_datastream(const wch
 #endif
         {
             LARGE_INTEGER fs;
-            if (GetFileSizeEx(fhandle, &fs))
+            if (GetFileSizeEx_Legacy(fhandle, &fs))
                 _fsize = fs.QuadPart;
         }
 
