@@ -18,6 +18,13 @@ for SDK_VERSION in ${ALL_SDK_VERSIONS} ; do
         MAC_SDK="macosx${SDK_VERSION}"
     fi
 done
+APPLE_CLANG_MAJOR="$(clang --version | head -1 | grep 'Apple clang version' | sed 's|.* version \([0-9]*\)\..*|\1|')"
+if [ ! -z "${APPLE_CLANG_MAJOR}" ] ; then
+    if [ "${APPLE_CLANG_MAJOR}" -ge "15" ] ; then
+        echo "Error: libstdc++ version can not be built with Xcode 15 or newer" >&2
+        exit 1
+    fi
+fi
 
 QT_PATH="${QT_PATH:=/opt/Qt/5.6.3/clang_64_libstdc++_sdk10.10}"
 QTPLUGINS_PATH="${QT_PATH}/plugins"
