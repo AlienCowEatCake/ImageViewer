@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -85,6 +85,7 @@ public Q_SLOTS:
 private Q_SLOTS:
     void updateSlideShowInterval();
     void updateBackgroundColor();
+    void updateToolBarPosition();
     void onActionReopenWithTriggered(QAction *action);
 
 protected:

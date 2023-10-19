@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -73,6 +73,20 @@ struct SettingsDialog::Impl
         ui->enabledDecodersScrollArea->setWidgetResizable(true);
     }
 
+    void fillToolBarPositions()
+    {
+#if !defined(HAS_MAC_TOOLBAR)
+        QComboBox *comboBox = ui->toolBarPositionComboBox;
+        comboBox->clear();
+        comboBox->setEditable(false);
+        comboBox->addItem(qApp->translate("SettingsDialog", "Bottom", "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_BOTTOM);
+        comboBox->addItem(qApp->translate("SettingsDialog", "Top",    "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_TOP);
+        comboBox->addItem(qApp->translate("SettingsDialog", "Left",   "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_LEFT);
+        comboBox->addItem(qApp->translate("SettingsDialog", "Right",  "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_RIGHT);
+        comboBox->setCurrentIndex(comboBox->findData(settings->toolBarPosition()));
+#endif
+    }
+
     void onSettingsAccepted()
     {
         settings->setAskBeforeDelete(ui->askBeforeDeleteCheckbox->isChecked());
@@ -82,6 +96,9 @@ struct SettingsDialog::Impl
         settings->setFullScreenBackgroundColor(fullScreenBackground);
         settings->setSlideShowInterval(ui->slideShowSpinBox->value());
         settings->setWheelMode(ui->wheelZoomRadioButton->isChecked() ? ImageViewerWidget::WHEEL_ZOOM : ImageViewerWidget::WHEEL_SCROLL);
+#if !defined(HAS_MAC_TOOLBAR)
+        settings->setToolBarPosition(static_cast<GUISettings::ToolBarPosition>(ui->toolBarPositionComboBox->currentData().toInt()));
+#endif
 
         const QList<QCheckBox*> enabledDecodersCheckboxes = ui->enabledDecodersFrame->findChildren<QCheckBox*>();
         QStringList blacklistedDecoders;
@@ -185,6 +202,7 @@ SettingsDialog::SettingsDialog(GUISettings *settings, QWidget *parent)
 
     LocalizationManager::instance()->fillComboBox(m_ui->languageComboBox, false);
     ThemeManager::instance()->fillComboBox(m_ui->themeComboBox, false);
+    m_impl->fillToolBarPositions();
     m_impl->fillDecoders();
 }
 

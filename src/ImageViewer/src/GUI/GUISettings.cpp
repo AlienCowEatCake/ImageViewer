@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -71,6 +71,33 @@ QVariant wheelModeToVariant(ImageViewerWidget::WheelMode mode)
     return mode;
 }
 
+GUISettings::ToolBarPosition toolBarPositionFromVariant(const QVariant &variant, GUISettings::ToolBarPosition defaultValue)
+{
+    bool ok;
+    int value = variant.toInt(&ok);
+    if(!ok)
+        return defaultValue;
+    switch(value)
+    {
+    case GUISettings::ToolBarPosition::TOOLBAR_POSITION_BOTTOM:
+        return GUISettings::ToolBarPosition::TOOLBAR_POSITION_BOTTOM;
+    case GUISettings::ToolBarPosition::TOOLBAR_POSITION_TOP:
+        return GUISettings::ToolBarPosition::TOOLBAR_POSITION_TOP;
+    case GUISettings::ToolBarPosition::TOOLBAR_POSITION_LEFT:
+        return GUISettings::ToolBarPosition::TOOLBAR_POSITION_LEFT;
+    case GUISettings::ToolBarPosition::TOOLBAR_POSITION_RIGHT:
+        return GUISettings::ToolBarPosition::TOOLBAR_POSITION_RIGHT;
+    default:
+        break;
+    }
+    return defaultValue;
+}
+
+QVariant toolBarPositionToVariant(GUISettings::ToolBarPosition mode)
+{
+    return mode;
+}
+
 const QString ASK_BEFORE_DELETE_KEY             = QString::fromLatin1("AskBeforeDelete");
 const QString MOVE_TO_TRASH_KEY                 = QString::fromLatin1("MoveToTrash");
 const QString ZOOM_MODE_KEY                     = QString::fromLatin1("ZoomMode");
@@ -84,6 +111,7 @@ const QString MAIN_WINDOW_GEOMETRY_KEY          = QString::fromLatin1("MainWindo
 const QString SLIDESHOW_INTERVAL_KEY            = QString::fromLatin1("SlideShowInterval");
 const QString MENUBAR_VISIBLE_KEY               = QString::fromLatin1("MenuBarVisible");
 const QString TOOLBAR_VISIBLE_KEY               = QString::fromLatin1("ToolBarVisible");
+const QString TOOLBAR_POSITION_KEY              = QString::fromLatin1("ToolBarPosition");
 
 } // namespace
 
@@ -365,4 +393,20 @@ void GUISettings::setToolBarVisible(bool visible)
     m_impl->settings.setValue(TOOLBAR_VISIBLE_KEY, visible);
     if(visible != oldValue)
         Q_EMIT toolBarVisibleChanged(visible);
+}
+
+GUISettings::ToolBarPosition GUISettings::toolBarPosition() const
+{
+    const ToolBarPosition defaultPosition = ToolBarPosition::TOOLBAR_POSITION_DEFAULT;
+    const QVariant defaultValue = toolBarPositionToVariant(defaultPosition);
+    QVariant value = m_impl->settings.value(TOOLBAR_POSITION_KEY, defaultValue);
+    return toolBarPositionFromVariant((value.isValid() ? value : defaultValue), defaultPosition);
+}
+
+void GUISettings::setToolBarPosition(ToolBarPosition position)
+{
+    const ToolBarPosition oldValue = toolBarPosition();
+    m_impl->settings.setValue(TOOLBAR_POSITION_KEY, toolBarPositionToVariant(position));
+    if(position != oldValue)
+        Q_EMIT toolBarPositionChanged(position);
 }

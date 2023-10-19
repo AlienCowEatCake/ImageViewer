@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -35,6 +35,16 @@ class GUISettings : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(GUISettings)
 
+public:
+    enum ToolBarPosition
+    {
+        TOOLBAR_POSITION_BOTTOM  = 1,
+        TOOLBAR_POSITION_TOP     = 2,
+        TOOLBAR_POSITION_LEFT    = 3,
+        TOOLBAR_POSITION_RIGHT   = 4,
+        TOOLBAR_POSITION_DEFAULT = TOOLBAR_POSITION_BOTTOM
+    };
+
 Q_SIGNALS:
     void askBeforeDeleteChanged(bool enabled);
     void moveToTrashChanged(bool enabled);
@@ -49,6 +59,7 @@ Q_SIGNALS:
     void slideShowIntervalChanged(int seconds);
     void menuBarVisibleChanged(bool visible);
     void toolBarVisibleChanged(bool visible);
+    void toolBarPositionChanged(GUISettings::ToolBarPosition position);
 
 public:
     explicit GUISettings(QObject *parent = Q_NULLPTR);
@@ -94,6 +105,9 @@ public:
 
     bool toolBarVisible() const;
     void setToolBarVisible(bool visible);
+
+    ToolBarPosition toolBarPosition() const;
+    void setToolBarPosition(ToolBarPosition position);
 
 private:
     struct Impl;

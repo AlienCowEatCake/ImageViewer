@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -81,6 +81,10 @@ struct SettingsDialog::UI
         , CONSTRUCT_OBJECT(languageComboBox, QComboBox, (interfaceTabFrame))
         , CONSTRUCT_OBJECT(themeLabel, QLabel, (interfaceTabFrame))
         , CONSTRUCT_OBJECT(themeComboBox, QComboBox, (interfaceTabFrame))
+#if !defined(HAS_MAC_TOOLBAR)
+        , CONSTRUCT_OBJECT(toolBarPositionLabel, QLabel, (interfaceTabFrame))
+        , CONSTRUCT_OBJECT(toolBarPositionComboBox, QComboBox, (interfaceTabFrame))
+#endif
         , CONSTRUCT_OBJECT(backgroundColorsFrame, QFrame, (interfaceTabFrame))
         , CONSTRUCT_OBJECT(backgroundColorsLabel, QLabel, (backgroundColorsFrame))
         , CONSTRUCT_OBJECT(normalBackgroundColorLabel, QLabel, (backgroundColorsFrame))
@@ -156,6 +160,9 @@ struct SettingsDialog::UI
 
         languageLabel->setText(qApp->translate("SettingsDialog", "<b>Language</b>"));
         themeLabel->setText(qApp->translate("SettingsDialog", "<b>Theme</b>"));
+#if !defined(HAS_MAC_TOOLBAR)
+        toolBarPositionLabel->setText(qApp->translate("SettingsDialog", "<b>Toolbar Position</b>"));
+#endif
 
         backgroundColorsLabel->setText(qApp->translate("SettingsDialog", "<b>Background colors</b>"));
         normalBackgroundColorLabel->setText(qApp->translate("SettingsDialog", "Normal:"));
@@ -183,6 +190,10 @@ struct SettingsDialog::UI
         interfaceTabLayout->addWidget(languageComboBox);
         interfaceTabLayout->addWidget(themeLabel);
         interfaceTabLayout->addWidget(themeComboBox);
+#if !defined(HAS_MAC_TOOLBAR)
+        interfaceTabLayout->addWidget(toolBarPositionLabel);
+        interfaceTabLayout->addWidget(toolBarPositionComboBox);
+#endif
         interfaceTabLayout->addWidget(backgroundColorsFrame);
         interfaceTabLayout->addStretch();
 
@@ -236,6 +247,10 @@ struct SettingsDialog::UI
     QComboBox *languageComboBox;
     QLabel *themeLabel;
     QComboBox *themeComboBox;
+#if !defined(HAS_MAC_TOOLBAR)
+    QLabel *toolBarPositionLabel;
+    QComboBox *toolBarPositionComboBox;
+#endif
     QFrame *backgroundColorsFrame;
     QLabel *backgroundColorsLabel;
     QLabel *normalBackgroundColorLabel;

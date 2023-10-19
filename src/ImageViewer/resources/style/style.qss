@@ -24,6 +24,13 @@ MainWindow #toolbar
     qproperty-layoutMarginTop: 2;
     qproperty-layoutMarginBottom: 2;
 }
+MainWindow #toolbar[vertical=true]
+{
+    qproperty-layoutMarginLeft: 2;
+    qproperty-layoutMarginRight: 2;
+    qproperty-layoutMarginTop: 4;
+    qproperty-layoutMarginBottom: 4;
+}
 
 MainWindow #toolbar QToolButton
 {
@@ -37,6 +44,10 @@ MainWindow #toolbar #separator
 {
     qproperty-frameShape: VLine;
     qproperty-frameShadow: Sunken;
+}
+MainWindow #toolbar[vertical=true] #separator
+{
+    qproperty-frameShape: HLine;
 }
 
 AboutDialog #centralWidget

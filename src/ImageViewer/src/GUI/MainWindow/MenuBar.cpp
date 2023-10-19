@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -319,7 +319,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionZoomOriginalSize->setText(qApp->translate("MenuBar", "Original &Size"));
         actionZoomFullScreen->setText(qApp->translate("MenuBar", "&Full Screen"));
         actionShowMenuBar->setText(qApp->translate("MenuBar", "Show &Menu Bar"));
-        actionShowToolBar->setText(qApp->translate("MenuBar", "Show &Tool Bar"));
+        actionShowToolBar->setText(qApp->translate("MenuBar", "Show &Toolbar"));
         actionAbout->setText(qApp->translate("MenuBar", "&About"));
         actionAboutQt->setText(qApp->translate("MenuBar", "About &Qt"));
         actionCheckForUpdates->setText(qApp->translate("MenuBar", "Check for &Updates"));

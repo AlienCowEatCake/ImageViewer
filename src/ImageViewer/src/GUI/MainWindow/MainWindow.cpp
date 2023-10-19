@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -254,11 +254,12 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
         connect(object, SIGNAL(editStylesheetRequested())           , this                      , SIGNAL(editStylesheetRequested())         );
     }
 
-    connect(settings, SIGNAL(normalBackgroundColorChanged(const QColor&))       , this              , SLOT(updateBackgroundColor())                     );
-    connect(settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&))   , this              , SLOT(updateBackgroundColor())                     );
-    connect(settings, SIGNAL(smoothTransformationChanged(bool))                 , imageViewerWidget , SLOT(setSmoothTransformation(bool))               );
-    connect(settings, SIGNAL(slideShowIntervalChanged(int))                     , this              , SLOT(updateSlideShowInterval())                   );
-    connect(settings, SIGNAL(wheelModeChanged(ImageViewerWidget::WheelMode))    , imageViewerWidget , SLOT(setWheelMode(ImageViewerWidget::WheelMode))  );
+    connect(settings, SIGNAL(normalBackgroundColorChanged(const QColor&))           , this              , SLOT(updateBackgroundColor())                     );
+    connect(settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&))       , this              , SLOT(updateBackgroundColor())                     );
+    connect(settings, SIGNAL(smoothTransformationChanged(bool))                     , imageViewerWidget , SLOT(setSmoothTransformation(bool))               );
+    connect(settings, SIGNAL(slideShowIntervalChanged(int))                         , this              , SLOT(updateSlideShowInterval())                   );
+    connect(settings, SIGNAL(wheelModeChanged(ImageViewerWidget::WheelMode))        , imageViewerWidget , SLOT(setWheelMode(ImageViewerWidget::WheelMode))  );
+    connect(settings, SIGNAL(toolBarPositionChanged(GUISettings::ToolBarPosition))  , this              , SLOT(updateToolBarPosition())                     );
 
     connect(&m_impl->slideShowTimer, SIGNAL(timeout()), this, SIGNAL(selectNextRequested()));
 
@@ -268,6 +269,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     imageViewerWidget->setWheelMode(settings->wheelMode());
     onZoomModeChanged(settings->zoomMode());
     updateSlideShowInterval();
+    updateToolBarPosition();
 
     for(QList<IControlsContainer*>::Iterator it = ui.controlsContainers.begin(), itEnd = ui.controlsContainers.end(); it != itEnd; ++it)
     {
@@ -531,6 +533,52 @@ void MainWindow::updateBackgroundColor()
             ? m_impl->settings->fullScreenBackgroundColor()
             : m_impl->settings->normalBackgroundColor();
     m_impl->ui.imageViewerWidget->setBackgroundColor(color);
+}
+
+void MainWindow::updateToolBarPosition()
+{
+#if !defined (HAS_MAC_TOOLBAR)
+    QBoxLayout* centralLayout = qobject_cast<QBoxLayout*>(m_impl->ui.centralWidget->layout());
+    QBoxLayout* toolBarLayout = qobject_cast<QBoxLayout*>(m_impl->ui.toolbar->layout());
+    if(!centralLayout || !toolBarLayout)
+        return;
+
+    switch(m_impl->settings->toolBarPosition())
+    {
+    case GUISettings::TOOLBAR_POSITION_BOTTOM:
+        centralLayout->setDirection(QBoxLayout::TopToBottom);
+        toolBarLayout->setDirection(QBoxLayout::LeftToRight);
+        m_impl->ui.toolbar->setProperty("vertical", false);
+        break;
+    case GUISettings::TOOLBAR_POSITION_TOP:
+        centralLayout->setDirection(QBoxLayout::BottomToTop);
+        toolBarLayout->setDirection(QBoxLayout::LeftToRight);
+        m_impl->ui.toolbar->setProperty("vertical", false);
+        break;
+    case GUISettings::TOOLBAR_POSITION_LEFT:
+        centralLayout->setDirection(QBoxLayout::RightToLeft);
+        toolBarLayout->setDirection(QBoxLayout::TopToBottom);
+        m_impl->ui.toolbar->setProperty("vertical", true);
+        break;
+    case GUISettings::TOOLBAR_POSITION_RIGHT:
+        centralLayout->setDirection(QBoxLayout::LeftToRight);
+        toolBarLayout->setDirection(QBoxLayout::TopToBottom);
+        m_impl->ui.toolbar->setProperty("vertical", true);
+        break;
+    default:
+        break;
+    }
+
+    QList<QWidget*> widgets = m_impl->ui.toolbar->findChildren<QWidget*>();
+    widgets.prepend(m_impl->ui.toolbar);
+    for(QList<QWidget*>::Iterator it = widgets.begin(); it != widgets.end(); ++it)
+    {
+        QWidget* widget = *it;
+        QStyle* style = widget->style();
+        style->unpolish(widget);
+        style->polish(widget);
+    }
+#endif
 }
 
 void MainWindow::onActionReopenWithTriggered(QAction *action)
