@@ -18,6 +18,14 @@ QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
 
+QMAKE_EXTRA_ARGS=
+APPLE_CLANG_MAJOR="$(clang --version | head -1 | grep 'Apple clang version' | sed 's|.* version \([0-9]*\)\..*|\1|')"
+if [ ! -z "${APPLE_CLANG_MAJOR}" ] ; then
+    if [ "${APPLE_CLANG_MAJOR}" -ge "15" ] ; then
+        QMAKE_EXTRA_ARGS="LIBS+=-Wl,-ld_classic"
+    fi
+fi
+
 RESVG_X86_64_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/x86_64-apple-darwin"
 RESVG_ARM64_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/aarch64-apple-darwin"
 function make_universal_resvg() {
@@ -38,7 +46,7 @@ cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
 RESVG_PATH="${BUILD_PATH}/resvg/universal-apple-darwin"
 make_universal_resvg "${RESVG_PATH}"
-${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MAC_SDK_VERSION=${MAC_SDK:6} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.10 QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64" CONFIG+=c++2a CONFIG+="enable_qtwebkit" CONFIG+="enable_update_checking" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MAC_SDK_VERSION=${MAC_SDK:6} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.10 QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64" CONFIG+=c++2a CONFIG+="enable_qtwebkit" CONFIG+="enable_update_checking" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" ${QMAKE_EXTRA_ARGS} "../${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "10.10" "${APPNAME}.app/Contents/Info.plist"

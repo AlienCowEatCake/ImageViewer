@@ -18,6 +18,14 @@ QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
 
+QMAKE_EXTRA_ARGS=
+APPLE_CLANG_MAJOR="$(clang --version | head -1 | grep 'Apple clang version' | sed 's|.* version \([0-9]*\)\..*|\1|')"
+if [ ! -z "${APPLE_CLANG_MAJOR}" ] ; then
+    if [ "${APPLE_CLANG_MAJOR}" -ge "15" ] ; then
+        QMAKE_EXTRA_ARGS="LIBS+=-Wl,-ld_classic"
+    fi
+fi
+
 RESVG_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/x86_64-apple-darwin"
 
 echo "Using MAC_SDK=${MAC_SDK}"
@@ -28,7 +36,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MAC_SDK_VERSION=${MAC_SDK:6} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.10 CONFIG+=c++2a CONFIG+="enable_update_checking" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" "../${PROJECT}.pro"
+arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MAC_SDK_VERSION=${MAC_SDK:6} QMAKE_MACOSX_DEPLOYMENT_TARGET=10.10 CONFIG+=c++2a CONFIG+="enable_update_checking" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" ${QMAKE_EXTRA_ARGS} "../${PROJECT}.pro"
 arch -x86_64 make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "10.10" "${APPNAME}.app/Contents/Info.plist"

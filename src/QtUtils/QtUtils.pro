@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2011-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2011-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `QtUtils' library.
 #
@@ -72,7 +72,8 @@ TRANSLATIONS += \
 
 macx {
     OBJECTIVE_SOURCES += \
-        $$files(src/Utils/*.mm)
+        $$files(src/Utils/*.mm) \
+        $$files(src/Workarounds/*.mm)
 }
 
 !greaterThan(QT_MAJOR_VERSION, 4) {

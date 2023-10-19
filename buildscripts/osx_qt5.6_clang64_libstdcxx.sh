@@ -18,18 +18,19 @@ for SDK_VERSION in ${ALL_SDK_VERSIONS} ; do
         MAC_SDK="macosx${SDK_VERSION}"
     fi
 done
-APPLE_CLANG_MAJOR="$(clang --version | head -1 | grep 'Apple clang version' | sed 's|.* version \([0-9]*\)\..*|\1|')"
-if [ ! -z "${APPLE_CLANG_MAJOR}" ] ; then
-    if [ "${APPLE_CLANG_MAJOR}" -ge "15" ] ; then
-        echo "Error: libstdc++ version can not be built with Xcode 15 or newer" >&2
-        exit 1
-    fi
-fi
 
 QT_PATH="${QT_PATH:=/opt/Qt/5.6.3/clang_64_libstdc++_sdk10.10}"
 QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
+
+QMAKE_EXTRA_ARGS=
+APPLE_CLANG_MAJOR="$(clang --version | head -1 | grep 'Apple clang version' | sed 's|.* version \([0-9]*\)\..*|\1|')"
+if [ ! -z "${APPLE_CLANG_MAJOR}" ] ; then
+    if [ "${APPLE_CLANG_MAJOR}" -ge "15" ] ; then
+        QMAKE_EXTRA_ARGS="LIBS+=-Wl,-ld_classic"
+    fi
+fi
 
 echo "Using MAC_SDK=${MAC_SDK}"
 
@@ -39,7 +40,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} "../${PROJECT}.pro"
+arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} ${QMAKE_EXTRA_ARGS} "../${PROJECT}.pro"
 arch -x86_64 make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "10.6" "${APPNAME}.app/Contents/Info.plist"
