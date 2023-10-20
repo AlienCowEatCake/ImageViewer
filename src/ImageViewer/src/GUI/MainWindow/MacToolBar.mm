@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -510,8 +510,14 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     m_toolBarData->flexibleSpace.item = [[NSToolbarItem alloc] initWithItemIdentifier:NSToolbarFlexibleSpaceItemIdentifier];
 
     const NSInteger low = NSToolbarItemVisibilityPriorityLow;
+    const NSInteger aboveLow = low + 1;
+    const NSInteger belowLow = low - 1;
     const NSInteger std = NSToolbarItemVisibilityPriorityStandard;
+    const NSInteger aboveStd = std + 1;
+    const NSInteger belowStd = std - 1;
     const NSInteger high = NSToolbarItemVisibilityPriorityHigh;
+    const NSInteger aboveHigh = high + 1;
+    const NSInteger belowHigh = high - 1;
 
 #define MAKE_SEGMENTED_PAIR_ITEM(GROUP, PRIORITY, ITEM1, ICON1, ITEM2, ICON2) \
     [self makeSegmentedPairItem:m_toolBarData->GROUP \
@@ -532,20 +538,20 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
         withAlternateImage:NSImageForIconType(ThemeUtils::ICON, true) \
     ]
 
-    MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, high, navigatePrevious, ICON_LEFT, navigateNext, ICON_RIGHT);
+    MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, aboveHigh, navigatePrevious, ICON_LEFT, navigateNext, ICON_RIGHT);
     MAKE_BUTTONED_ITEM(startSlideShow, std, ICON_PLAY);
     MAKE_SEGMENTED_PAIR_ITEM(zoomGroup, high, zoomOut, ICON_ZOOM_OUT, zoomIn, ICON_ZOOM_IN);
-    MAKE_BUTTONED_ITEM(zoomFitToWindow, high, ICON_ZOOM_EMPTY);
-    MAKE_BUTTONED_ITEM(zoomOriginalSize, high, ICON_ZOOM_IDENTITY);
-    MAKE_BUTTONED_ITEM(zoomFullScreen, low, ICON_FULLSCREEN);
+    MAKE_BUTTONED_ITEM(zoomFitToWindow, belowHigh, ICON_ZOOM_EMPTY);
+    MAKE_BUTTONED_ITEM(zoomOriginalSize, belowHigh, ICON_ZOOM_IDENTITY);
+    MAKE_BUTTONED_ITEM(zoomFullScreen, aboveLow, ICON_FULLSCREEN);
     MAKE_SEGMENTED_PAIR_ITEM(rotateGroup, high, rotateCounterclockwise, ICON_ROTATE_COUNTERCLOCKWISE, rotateClockwise, ICON_ROTATE_CLOCKWISE);
-    MAKE_SEGMENTED_PAIR_ITEM(flipGroup, std, flipHorizontal, ICON_FLIP_HORIZONTAL, flipVertical, ICON_FLIP_VERTICAL);
-    MAKE_BUTTONED_ITEM(openFile, high, ICON_OPEN);
-    MAKE_BUTTONED_ITEM(saveFileAs, std, ICON_SAVE_AS);
-    MAKE_BUTTONED_ITEM(deleteFile, std, ICON_DELETE);
-    MAKE_BUTTONED_ITEM(print, low, ICON_PRINT);
+    MAKE_SEGMENTED_PAIR_ITEM(flipGroup, belowStd, flipHorizontal, ICON_FLIP_HORIZONTAL, flipVertical, ICON_FLIP_VERTICAL);
+    MAKE_BUTTONED_ITEM(openFile, aboveHigh, ICON_OPEN);
+    MAKE_BUTTONED_ITEM(saveFileAs, aboveStd, ICON_SAVE_AS);
+    MAKE_BUTTONED_ITEM(deleteFile, aboveStd, ICON_DELETE);
+    MAKE_BUTTONED_ITEM(print, aboveLow, ICON_PRINT);
     MAKE_BUTTONED_ITEM(preferences, low, ICON_SETTINGS);
-    MAKE_BUTTONED_ITEM(exit, low, ICON_EXIT);
+    MAKE_BUTTONED_ITEM(exit, belowLow, ICON_EXIT);
 
 #undef MAKE_SEGMENTED_PAIR_ITEM
 #undef MAKE_BUTTONED_ITEM
