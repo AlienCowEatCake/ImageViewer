@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -80,6 +80,7 @@ struct ImageViewerWidget::Impl
         , flipVertical(false)
         , transformationMode(Qt::SmoothTransformation)
         , wheelMode(WHEEL_SCROLL)
+        , upscaleOnFitToWindow(false)
     {
         widget->setScene(scene);
     }
@@ -91,7 +92,7 @@ struct ImageViewerWidget::Impl
         const QRectF boundingRect = rotationMatrix.mapRect(currentGraphicsItem->boundingRect());
         const QSize imageSize = boundingRect.size().toSize();
         const QSize windowSize = imageViewerWidget->viewport()->size();
-        if(imageSize.width() > windowSize.width() || imageSize.height() > windowSize.height())
+        if(upscaleOnFitToWindow || imageSize.width() > windowSize.width() || imageSize.height() > windowSize.height())
         {
             const qreal deltaWidth = static_cast<qreal>(windowSize.width() - ZOOM_FIT_SIZE_CORRECTION) / static_cast<qreal>(imageSize.width());
             const qreal deltaHeight = static_cast<qreal>(windowSize.height() - ZOOM_FIT_SIZE_CORRECTION) / static_cast<qreal>(imageSize.height());
@@ -207,6 +208,7 @@ struct ImageViewerWidget::Impl
     bool flipVertical;
     Qt::TransformationMode transformationMode;
     WheelMode wheelMode;
+    bool upscaleOnFitToWindow;
 };
 
 ImageViewerWidget::ImageViewerWidget(QWidget *parent)
@@ -428,6 +430,12 @@ void ImageViewerWidget::setSmoothTransformation(bool enabled)
 {
     m_impl->transformationMode = (enabled ? Qt::SmoothTransformation : Qt::FastTransformation);
     m_impl->applyTransformationMode();
+}
+
+void ImageViewerWidget::setUpscaleOnFitToWindow(bool enabled)
+{
+    m_impl->upscaleOnFitToWindow = enabled;
+    m_impl->updateTransformations();
 }
 
 void ImageViewerWidget::drawBackground(QPainter *painter, const QRectF &rect)

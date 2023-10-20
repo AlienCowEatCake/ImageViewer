@@ -92,6 +92,7 @@ struct SettingsDialog::Impl
         settings->setAskBeforeDelete(ui->askBeforeDeleteCheckbox->isChecked());
         settings->setMoveToTrash(ui->moveToTrashCheckbox->isChecked());
         settings->setSmoothTransformation(ui->smoothTransformationCheckbox->isChecked());
+        settings->setUpscaleOnFitToWindow(ui->upscaleOnFitToWindowCheckbox->isChecked());
         settings->setNormalBackgroundColor(normalBackground);
         settings->setFullScreenBackgroundColor(fullScreenBackground);
         settings->setSlideShowInterval(ui->slideShowSpinBox->value());

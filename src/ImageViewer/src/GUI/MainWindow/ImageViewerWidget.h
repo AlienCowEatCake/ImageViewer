@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -96,6 +96,8 @@ public Q_SLOTS:
     void setBackgroundTexture(const QImage &image);
 
     void setSmoothTransformation(bool enabled);
+
+    void setUpscaleOnFitToWindow(bool enabled);
 
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect) Q_DECL_OVERRIDE;

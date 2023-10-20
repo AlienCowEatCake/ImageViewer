@@ -55,6 +55,7 @@ Q_SIGNALS:
     void fullScreenBackgroundColorChanged(const QColor &color);
     void lastOpenedPathChanged(const QString &path);
     void smoothTransformationChanged(bool enabled);
+    void upscaleOnFitToWindowChanged(bool enabled);
     void mainWindowGeometryChanged(const QByteArray &state);
     void slideShowIntervalChanged(int seconds);
     void menuBarVisibleChanged(bool visible);
@@ -93,6 +94,9 @@ public:
 
     bool smoothTransformation() const;
     void setSmoothTransformation(bool enabled);
+
+    bool upscaleOnFitToWindow() const;
+    void setUpscaleOnFitToWindow(bool enabled);
 
     QByteArray mainWindowGeometry() const;
     void setMainWindowGeometry(const QByteArray &geometry);

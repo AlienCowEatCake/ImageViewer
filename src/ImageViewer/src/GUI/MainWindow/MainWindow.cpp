@@ -257,6 +257,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     connect(settings, SIGNAL(normalBackgroundColorChanged(const QColor&))           , this              , SLOT(updateBackgroundColor())                     );
     connect(settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&))       , this              , SLOT(updateBackgroundColor())                     );
     connect(settings, SIGNAL(smoothTransformationChanged(bool))                     , imageViewerWidget , SLOT(setSmoothTransformation(bool))               );
+    connect(settings, SIGNAL(upscaleOnFitToWindowChanged(bool))                     , imageViewerWidget , SLOT(setUpscaleOnFitToWindow(bool))               );
     connect(settings, SIGNAL(slideShowIntervalChanged(int))                         , this              , SLOT(updateSlideShowInterval())                   );
     connect(settings, SIGNAL(wheelModeChanged(ImageViewerWidget::WheelMode))        , imageViewerWidget , SLOT(setWheelMode(ImageViewerWidget::WheelMode))  );
     connect(settings, SIGNAL(toolBarPositionChanged(GUISettings::ToolBarPosition))  , this              , SLOT(updateToolBarPosition())                     );
@@ -266,6 +267,7 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     imageViewerWidget->setZoomLevel(settings->zoomLevel());
     imageViewerWidget->setBackgroundColor(settings->normalBackgroundColor());
     imageViewerWidget->setSmoothTransformation(settings->smoothTransformation());
+    imageViewerWidget->setUpscaleOnFitToWindow(settings->upscaleOnFitToWindow());
     imageViewerWidget->setWheelMode(settings->wheelMode());
     onZoomModeChanged(settings->zoomMode());
     updateSlideShowInterval();

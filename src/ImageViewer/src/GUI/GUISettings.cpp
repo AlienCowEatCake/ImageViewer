@@ -107,6 +107,7 @@ const QString NORMAL_BACKGROUND_COLOR_KEY       = QString::fromLatin1("NormalBac
 const QString FULLSCREEN_BACKGROUND_COLOR_KEY   = QString::fromLatin1("FullScreenBackgroundColor");
 const QString LAST_OPENED_PATH_KEY              = QString::fromLatin1("LastOpenedPath");
 const QString SMOOTH_TRANSFORMATION_KEY         = QString::fromLatin1("SmoothTransformation");
+const QString UPSCALE_ON_FIT_TO_WINDOW_KEY      = QString::fromLatin1("UpscaleOnFitToWindow");
 const QString MAIN_WINDOW_GEOMETRY_KEY          = QString::fromLatin1("MainWindowGeometry");
 const QString SLIDESHOW_INTERVAL_KEY            = QString::fromLatin1("SlideShowInterval");
 const QString MENUBAR_VISIBLE_KEY               = QString::fromLatin1("MenuBarVisible");
@@ -310,6 +311,26 @@ void GUISettings::setSmoothTransformation(bool enabled)
     m_impl->settings.setValue(SMOOTH_TRANSFORMATION_KEY, enabled);
     if(enabled != oldValue)
         Q_EMIT smoothTransformationChanged(enabled);
+}
+
+bool GUISettings::upscaleOnFitToWindow() const
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::Bool);
+#else
+    const QVariant::Type type = QVariant::Bool;
+#endif
+    const bool defaultValue = false;
+    QVariant value = m_impl->settings.value(UPSCALE_ON_FIT_TO_WINDOW_KEY, defaultValue);
+    return value.isValid() && value.canConvert(type) ? value.toBool() : defaultValue;
+}
+
+void GUISettings::setUpscaleOnFitToWindow(bool enabled)
+{
+    const bool oldValue = upscaleOnFitToWindow();
+    m_impl->settings.setValue(UPSCALE_ON_FIT_TO_WINDOW_KEY, enabled);
+    if(enabled != oldValue)
+        Q_EMIT upscaleOnFitToWindowChanged(enabled);
 }
 
 QByteArray GUISettings::mainWindowGeometry() const
