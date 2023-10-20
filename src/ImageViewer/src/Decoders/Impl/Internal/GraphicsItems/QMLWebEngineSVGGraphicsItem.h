@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -40,6 +40,7 @@ public:
     explicit QMLWebEngineSVGGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
     ~QMLWebEngineSVGGraphicsItem();
 
+    static bool isAvailable();
     bool load(const QByteArray &svgData, const QUrl &baseUrl);
 
     QRectF boundingRect() const Q_DECL_OVERRIDE;

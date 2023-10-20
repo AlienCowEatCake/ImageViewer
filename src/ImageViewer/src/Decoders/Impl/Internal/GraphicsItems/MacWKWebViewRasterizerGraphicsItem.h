@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -47,6 +47,7 @@ public:
     MacWKWebViewRasterizerGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
     ~MacWKWebViewRasterizerGraphicsItem();
 
+    static bool isAvailable();
     bool load(const QByteArray &svgData, const QUrl &baseUrl);
 
     QImage grabImage() Q_DECL_OVERRIDE;

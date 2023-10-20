@@ -64,7 +64,7 @@ public:
 
     bool isAvailable() const Q_DECL_OVERRIDE
     {
-        return true;
+        return T::isAvailable();
     }
 
     QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE

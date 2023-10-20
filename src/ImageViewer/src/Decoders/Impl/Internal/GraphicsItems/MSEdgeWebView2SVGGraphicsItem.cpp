@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2022-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -449,6 +449,12 @@ MSEdgeWebView2SVGGraphicsItem::MSEdgeWebView2SVGGraphicsItem(QGraphicsItem *pare
 
 MSEdgeWebView2SVGGraphicsItem::~MSEdgeWebView2SVGGraphicsItem()
 {}
+
+bool MSEdgeWebView2SVGGraphicsItem::isAvailable()
+{
+    static const bool available = !!(MSEdgeWebView2SVGGraphicsItem().m_impl->webviewWindow);
+    return available;
+}
 
 bool MSEdgeWebView2SVGGraphicsItem::load(const QByteArray &svgData, const QUrl &/*baseUrl*/)
 {

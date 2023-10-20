@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -254,6 +254,11 @@ QtWebEngineSVGGraphicsItem::~QtWebEngineSVGGraphicsItem()
 {
     m_impl->timer.disconnect();
     m_impl->timer.stop();
+}
+
+bool QtWebEngineSVGGraphicsItem::isAvailable()
+{
+    return true;
 }
 
 bool QtWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &baseUrl)

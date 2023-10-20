@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2022-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -47,6 +47,7 @@ public:
     explicit MSEdgeWebView2SVGGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR);
     ~MSEdgeWebView2SVGGraphicsItem();
 
+    static bool isAvailable();
     bool load(const QByteArray &svgData, const QUrl &baseUrl);
 
     QImage grabImage() Q_DECL_OVERRIDE;

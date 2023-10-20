@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -295,6 +295,11 @@ MacWebViewRasterizerGraphicsItem::MacWebViewRasterizerGraphicsItem(QGraphicsItem
 
 MacWebViewRasterizerGraphicsItem::~MacWebViewRasterizerGraphicsItem()
 {}
+
+bool MacWebViewRasterizerGraphicsItem::isAvailable()
+{
+    return true;
+}
 
 bool MacWebViewRasterizerGraphicsItem::load(const QByteArray &svgData, const QUrl &baseUrl)
 {
