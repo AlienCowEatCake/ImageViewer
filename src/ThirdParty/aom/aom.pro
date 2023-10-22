@@ -16,7 +16,17 @@ THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 include(../CommonSettings.pri)
 
 *g++*|*clang* {
-    QMAKE_CFLAGS += -std=gnu99
+    greaterThan(QT_MAJOR_VERSION, 6) {
+        CONFIG += aom_c11
+    }
+    equals(QT_MAJOR_VERSION, 6) : greaterThan(QT_MINOR_VERSION, 5) {
+        CONFIG += aom_c11
+    }
+    aom_c11 {
+        QMAKE_CFLAGS += -std=gnu11
+    } else {
+        QMAKE_CFLAGS += -std=gnu99
+    }
 }
 
 INCLUDEPATH = $${THIRDPARTY_AOM_PATH} $${THIRDPARTY_AOM_CONFIG_PATH} $${PWD} $${INCLUDEPATH}
