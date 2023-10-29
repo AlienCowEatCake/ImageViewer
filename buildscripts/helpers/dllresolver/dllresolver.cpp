@@ -94,6 +94,15 @@ QStringList getDeps(const QString &dir)
         const QStringList deps = getBinaryDeps(it.next());
         for(QStringList::ConstIterator jt = deps.constBegin(); jt != deps.constEnd(); ++jt)
             result.append(*jt);
+
+        // https://github.com/AlienCowEatCake/ImageViewer/issues/8
+        for(QStringList::ConstIterator jt = deps.constBegin(); jt != deps.constEnd(); ++jt)
+        {
+            if(!jt->startsWith("api-ms-win-crt-", Qt::CaseInsensitive))
+                continue;
+            result.append("ucrtbase.dll");
+            break;
+        }
     }
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
     result.sort();
