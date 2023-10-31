@@ -79,14 +79,14 @@ GUISettings::ToolBarPosition toolBarPositionFromVariant(const QVariant &variant,
         return defaultValue;
     switch(value)
     {
-    case GUISettings::ToolBarPosition::TOOLBAR_POSITION_BOTTOM:
-        return GUISettings::ToolBarPosition::TOOLBAR_POSITION_BOTTOM;
-    case GUISettings::ToolBarPosition::TOOLBAR_POSITION_TOP:
-        return GUISettings::ToolBarPosition::TOOLBAR_POSITION_TOP;
-    case GUISettings::ToolBarPosition::TOOLBAR_POSITION_LEFT:
-        return GUISettings::ToolBarPosition::TOOLBAR_POSITION_LEFT;
-    case GUISettings::ToolBarPosition::TOOLBAR_POSITION_RIGHT:
-        return GUISettings::ToolBarPosition::TOOLBAR_POSITION_RIGHT;
+    case GUISettings::TOOLBAR_POSITION_BOTTOM:
+        return GUISettings::TOOLBAR_POSITION_BOTTOM;
+    case GUISettings::TOOLBAR_POSITION_TOP:
+        return GUISettings::TOOLBAR_POSITION_TOP;
+    case GUISettings::TOOLBAR_POSITION_LEFT:
+        return GUISettings::TOOLBAR_POSITION_LEFT;
+    case GUISettings::TOOLBAR_POSITION_RIGHT:
+        return GUISettings::TOOLBAR_POSITION_RIGHT;
     default:
         break;
     }
@@ -418,7 +418,7 @@ void GUISettings::setToolBarVisible(bool visible)
 
 GUISettings::ToolBarPosition GUISettings::toolBarPosition() const
 {
-    const ToolBarPosition defaultPosition = ToolBarPosition::TOOLBAR_POSITION_DEFAULT;
+    const ToolBarPosition defaultPosition = TOOLBAR_POSITION_DEFAULT;
     const QVariant defaultValue = toolBarPositionToVariant(defaultPosition);
     QVariant value = m_impl->settings.value(TOOLBAR_POSITION_KEY, defaultValue);
     return toolBarPositionFromVariant((value.isValid() ? value : defaultValue), defaultPosition);

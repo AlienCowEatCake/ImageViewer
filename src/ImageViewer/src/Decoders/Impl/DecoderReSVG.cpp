@@ -387,7 +387,7 @@ class ReSVGGraphicsItem :
     Q_DISABLE_COPY(ReSVGGraphicsItem)
 
 public:
-    explicit ReSVGGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR)
+    explicit ReSVGGraphicsItem(const QString &filePath, QGraphicsItem *parentItem = Q_NULLPTR)
         : QGraphicsItem(parentItem)
         , m_isValid(false)
         , m_exposedRectSupported(false)
@@ -405,12 +405,9 @@ public:
 
         m_opt = resvg_options_create();
         resvg_options_load_system_fonts(m_opt);
-    }
 
-    explicit ReSVGGraphicsItem(const QString &filePath, QGraphicsItem *parentItem = Q_NULLPTR)
-        : ReSVGGraphicsItem(parentItem)
-    {
-        load(filePath);
+        if(!filePath.isEmpty())
+            load(filePath);
     }
 
     ~ReSVGGraphicsItem()

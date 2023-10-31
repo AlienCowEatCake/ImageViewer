@@ -621,7 +621,7 @@ class RSVGGraphicsItem :
     Q_DISABLE_COPY(RSVGGraphicsItem)
 
 public:
-    explicit RSVGGraphicsItem(QGraphicsItem *parentItem = Q_NULLPTR)
+    explicit RSVGGraphicsItem(const QString &filePath, QGraphicsItem *parentItem = Q_NULLPTR)
         : QGraphicsItem(parentItem)
         , m_isValid(false)
         , m_exposedRectSupported(false)
@@ -635,12 +635,9 @@ public:
         setFlag(QGraphicsItem::ItemUsesExtendedStyleOption, true);
 #endif
         m_rasterizerCache.scaleFactor = 0;
-    }
 
-    explicit RSVGGraphicsItem(const QString &filePath, QGraphicsItem *parentItem = Q_NULLPTR)
-        : RSVGGraphicsItem(parentItem)
-    {
-        load(filePath);
+        if(!filePath.isEmpty())
+            load(filePath);
     }
 
     ~RSVGGraphicsItem()
