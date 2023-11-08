@@ -154,7 +154,7 @@ public:
             if(decoder->image->transformFlags & AVIF_TRANSFORM_IMIR)
             {
                 qDebug() << "Found ImageMirror transform for frame" << m_numFrames;
-#if QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) < QT_VERSION_CHECK(0, 9, 2)
+#if QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) < QT_VERSION_CHECK(0, 9, 2) || QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) > QT_VERSION_CHECK(1, 0, 0)
                 // See discussion:
                 // https://github.com/AOMediaCodec/libavif/pull/665
                 // https://github.com/AOMediaCodec/libavif/issues/667
@@ -187,6 +187,11 @@ public:
 
             m_frames.push_back(Frame(frame, DelayCalculator::calculate(static_cast<int>(decoder->imageTiming.duration * 1000.0), DelayCalculator::MODE_NORMAL)));
         }
+
+#if QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) > QT_VERSION_CHECK(1, 0, 0)
+        if(decoder->repetitionCount >= 0)
+            m_numLoops = decoder->repetitionCount + 1;
+#endif
 
         avifDecoderDestroy(decoder);
 

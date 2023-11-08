@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBAVIF_PATH = $${PWD}/libavif-0.11.1
+THIRDPARTY_LIBAVIF_PATH = $${PWD}/libavif-1.0.1
 
 include(../CommonSettings.pri)
 include(../aom/aom.pri)
@@ -29,6 +29,7 @@ SOURCES += \
     $${THIRDPARTY_LIBAVIF_PATH}/src/alpha.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/avif.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/codec_aom.c \
+\#    $${THIRDPARTY_LIBAVIF_PATH}/src/codec_avm.c \
 \#    $${THIRDPARTY_LIBAVIF_PATH}/src/codec_dav1d.c \
 \#    $${THIRDPARTY_LIBAVIF_PATH}/src/codec_libgav1.c \
 \#    $${THIRDPARTY_LIBAVIF_PATH}/src/codec_rav1e.c \
