@@ -15,12 +15,12 @@
 #include "aom/aom_integer.h"
 #include "aom_dsp/odintrin.h"
 #include "aom_dsp/txfm_common.h"
-#include "av1/common/common.h"
-#include "av1/common/enums.h"
-#include "av1/common/quant_common.h"
-#include "av1/common/filter.h"
-#include "av1/common/convolve.h"
 #include "av1/common/av1_txfm.h"
+#include "av1/common/common.h"
+#include "av1/common/convolve.h"
+#include "av1/common/enums.h"
+#include "av1/common/filter.h"
+#include "av1/common/quant_common.h"
 #include "av1/common/restoration.h"
 
 struct macroblockd;
@@ -82,13 +82,6 @@ void aom_comp_avg_upsampled_pred_c(MACROBLOCKD *xd, const struct AV1Common *cons
                                                    int ref_stride, int subpel_search);
 #define aom_comp_avg_upsampled_pred aom_comp_avg_upsampled_pred_c
 
-void aom_comp_mask_upsampled_pred_c(MACROBLOCKD *xd, const struct AV1Common *const cm, int mi_row, int mi_col,
-                                                       const MV *const mv, uint8_t *comp_pred, const uint8_t *pred, int width,
-                                                       int height, int subpel_x_q3, int subpel_y_q3, const uint8_t *ref,
-                                                       int ref_stride, const uint8_t *mask, int mask_stride, int invert_mask,
-                                                       int subpel_search);
-#define aom_comp_mask_upsampled_pred aom_comp_mask_upsampled_pred_c
-
 void aom_dist_wtd_comp_avg_upsampled_pred_c(MACROBLOCKD *xd, const struct AV1Common *const cm, int mi_row, int mi_col,
                                                        const MV *const mv, uint8_t *comp_pred, const uint8_t *pred, int width,
                                                        int height, int subpel_x_q3, int subpel_y_q3, const uint8_t *ref,
@@ -122,7 +115,7 @@ void aom_upsampled_pred_c(MACROBLOCKD *xd, const struct AV1Common *const cm, int
 void av1_apply_selfguided_restoration_c(const uint8_t *dat, int width, int height, int stride, int eps, const int *xqd, uint8_t *dst, int dst_stride, int32_t *tmpbuf, int bit_depth, int highbd);
 #define av1_apply_selfguided_restoration av1_apply_selfguided_restoration_c
 
-void av1_apply_temporal_filter_c(const struct yv12_buffer_config *ref_frame, const struct macroblockd *mbd, const BLOCK_SIZE block_size, const int mb_row, const int mb_col, const int num_planes, const double *noise_levels, const MV *subblock_mvs, const int *subblock_mses, const int q_factor, const int filter_strength, const uint8_t *pred, uint32_t *accum, uint16_t *count);
+void av1_apply_temporal_filter_c(const struct yv12_buffer_config *frame_to_filter, const struct macroblockd *mbd, const BLOCK_SIZE block_size, const int mb_row, const int mb_col, const int num_planes, const double *noise_levels, const MV *subblock_mvs, const int *subblock_mses, const int q_factor, const int filter_strength, int tf_wgt_calc_lvl, const uint8_t *pred, uint32_t *accum, uint16_t *count);
 #define av1_apply_temporal_filter av1_apply_temporal_filter_c
 
 int64_t av1_block_error_c(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz);
@@ -173,7 +166,7 @@ void av1_cnn_deconvolve_c( const float **input, int in_width, int in_height, int
 bool av1_cnn_predict_c( const float **input, int in_width, int in_height, int in_stride, const CNN_CONFIG *cnn_config, const CNN_THREAD_DATA *thread_data, CNN_MULTI_OUT *output_struct);
 #define av1_cnn_predict av1_cnn_predict_c
 
-void av1_compute_stats_c(int wiener_win, const uint8_t *dgd8, const uint8_t *src8, int h_start, int h_end, int v_start, int v_end, int dgd_stride, int src_stride, int64_t *M, int64_t *H, int use_downsampled_wiener_stats);
+void av1_compute_stats_c(int wiener_win, const uint8_t *dgd8, const uint8_t *src8, int16_t *dgd_avg, int16_t *src_avg, int h_start, int h_end, int v_start, int v_end, int dgd_stride, int src_stride, int64_t *M, int64_t *H, int use_downsampled_wiener_stats);
 #define av1_compute_stats av1_compute_stats_c
 
 void av1_compute_stats_highbd_c(int wiener_win, const uint8_t *dgd8, const uint8_t *src8, int h_start, int h_end, int v_start, int v_end, int dgd_stride, int src_stride, int64_t *M, int64_t *H, aom_bit_depth_t bit_depth);
@@ -214,6 +207,9 @@ void av1_dr_prediction_z2_c(uint8_t *dst, ptrdiff_t stride, int bw, int bh, cons
 
 void av1_dr_prediction_z3_c(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_left, int dx, int dy);
 #define av1_dr_prediction_z3 av1_dr_prediction_z3_c
+
+double av1_estimate_noise_from_single_plane_c(const uint8_t *src, int height, int width, int stride, int edge_thresh);
+#define av1_estimate_noise_from_single_plane av1_estimate_noise_from_single_plane_c
 
 void av1_filter_intra_edge_c(uint8_t *p, int sz, int strength);
 #define av1_filter_intra_edge av1_filter_intra_edge_c
@@ -293,7 +289,7 @@ void av1_get_horver_correlation_full_c( const int16_t *diff, int stride, int w, 
 void av1_get_nz_map_contexts_c(const uint8_t *const levels, const int16_t *const scan, const uint16_t eob, const TX_SIZE tx_size, const TX_CLASS tx_class, int8_t *const coeff_contexts);
 #define av1_get_nz_map_contexts av1_get_nz_map_contexts_c
 
-void av1_highbd_apply_temporal_filter_c(const struct yv12_buffer_config *ref_frame, const struct macroblockd *mbd, const BLOCK_SIZE block_size, const int mb_row, const int mb_col, const int num_planes, const double *noise_levels, const MV *subblock_mvs, const int *subblock_mses, const int q_factor, const int filter_strength, const uint8_t *pred, uint32_t *accum, uint16_t *count);
+void av1_highbd_apply_temporal_filter_c(const struct yv12_buffer_config *frame_to_filter, const struct macroblockd *mbd, const BLOCK_SIZE block_size, const int mb_row, const int mb_col, const int num_planes, const double *noise_levels, const MV *subblock_mvs, const int *subblock_mses, const int q_factor, const int filter_strength, int tf_wgt_calc_lvl, const uint8_t *pred, uint32_t *accum, uint16_t *count);
 #define av1_highbd_apply_temporal_filter av1_highbd_apply_temporal_filter_c
 
 int64_t av1_highbd_block_error_c(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz, int bd);
@@ -350,8 +346,8 @@ void av1_highbd_dr_prediction_z2_c(uint16_t *dst, ptrdiff_t stride, int bw, int 
 void av1_highbd_dr_prediction_z3_c(uint16_t *dst, ptrdiff_t stride, int bw, int bh, const uint16_t *above, const uint16_t *left, int upsample_left, int dx, int dy, int bd);
 #define av1_highbd_dr_prediction_z3 av1_highbd_dr_prediction_z3_c
 
-void av1_highbd_fwht4x4_c(const int16_t *input, tran_low_t *output, int stride);
-#define av1_highbd_fwht4x4 av1_highbd_fwht4x4_c
+double av1_highbd_estimate_noise_from_single_plane_c(const uint16_t *src, int height, int width, int stride, int bit_depth, int edge_thresh);
+#define av1_highbd_estimate_noise_from_single_plane av1_highbd_estimate_noise_from_single_plane_c
 
 void av1_highbd_inv_txfm_add_c(const tran_low_t *input, uint8_t *dest, int stride, const TxfmParam *txfm_param);
 #define av1_highbd_inv_txfm_add av1_highbd_inv_txfm_add_c

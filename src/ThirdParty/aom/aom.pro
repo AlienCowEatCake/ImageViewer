@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.6.1
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.7.0
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -70,6 +70,7 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/odintrin.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/psnr.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/psnrhvs.c \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/pyramid.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/quantize.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/sad.c \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/sad_av1.c \
@@ -173,6 +174,7 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/ml.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/motion_search_facade.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/mv_prec.c \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/nonrd_opt.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/nonrd_pickmode.c \
 \#    $${THIRDPARTY_AOM_PATH}/av1/encoder/optical_flow.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/palette.c \
@@ -186,6 +188,7 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/rd.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/rdopt.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/reconinter_enc.c \
+\#    $${THIRDPARTY_AOM_PATH}/av1/encoder/saliency_map.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/segmentation.c \
 \#    $${THIRDPARTY_AOM_PATH}/av1/encoder/sparse_linear_solver.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/speed_features.c \
@@ -268,6 +271,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/odintrin.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/prob.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/psnr.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/pyramid.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/quantize.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/recenter.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/rect.h \
@@ -342,6 +346,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/common/alloccommon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/av1_inv_txfm_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/convolve_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_convolve_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_common_int.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d_cfg.h \
@@ -469,6 +474,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/rdopt_data_defs.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/rdopt_utils.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/reconinter_enc.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/saliency_map.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/segmentation.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/sorting_network.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/sparse_linear_solver.h \
@@ -489,10 +495,6 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_fwd_txfm_avx2.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_fwd_txfm_sse2.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_txfm1d_sse4.h \
-    $${THIRDPARTY_AOM_PATH}/av1/qmode_rc/ducky_encode.h \
-    $${THIRDPARTY_AOM_PATH}/av1/qmode_rc/ratectrl_qmode.h \
-    $${THIRDPARTY_AOM_PATH}/av1/qmode_rc/ratectrl_qmode_interface.h \
-    $${THIRDPARTY_AOM_PATH}/av1/qmode_rc/reference_manager.h \
     $${THIRDPARTY_AOM_PATH}/av1/ratectrl_rtc.h \
     $${THIRDPARTY_AOM_PATH}/common/args.h \
     $${THIRDPARTY_AOM_PATH}/common/args_helper.h \
@@ -526,7 +528,6 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/test/i420_video_source.h \
     $${THIRDPARTY_AOM_PATH}/test/ivf_video_source.h \
     $${THIRDPARTY_AOM_PATH}/test/md5_helper.h \
-    $${THIRDPARTY_AOM_PATH}/test/mock_ratectrl_qmode.h \
     $${THIRDPARTY_AOM_PATH}/test/register_state_check.h \
     $${THIRDPARTY_AOM_PATH}/test/simd_cmp_impl.h \
     $${THIRDPARTY_AOM_PATH}/test/simd_impl.h \

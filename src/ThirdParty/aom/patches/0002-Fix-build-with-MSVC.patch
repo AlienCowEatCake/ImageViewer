@@ -1,4 +1,4 @@
-From 62653a29214965869768679e448b0e5f9b203370 Mon Sep 17 00:00:00 2001
+From 46eec652fd57e0bf0d200979efd0ab379395cdb4 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 21:00:39 +0700
 Subject: [PATCH 2/2] Fix build with MSVC
@@ -8,7 +8,7 @@ Subject: [PATCH 2/2] Fix build with MSVC
  1 file changed, 1 insertion(+)
 
 diff --git a/common/args_helper.c b/common/args_helper.c
-index 220186833..c7e008812 100644
+index 2201868335..c7e008812a 100644
 --- a/common/args_helper.c
 +++ b/common/args_helper.c
 @@ -8,6 +8,7 @@
@@ -20,5 +20,5 @@ index 220186833..c7e008812 100644
  
  #include <assert.h>
 -- 
-2.37.1
+2.42.0
 
