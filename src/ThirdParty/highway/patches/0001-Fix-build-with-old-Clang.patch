@@ -1,4 +1,4 @@
-From 8f5501646dfc49509ba8cb1c63d0ac4332531ba7 Mon Sep 17 00:00:00 2001
+From 725563104d4a1b01726b91d5af60ae93147daf16 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 23:41:00 +0700
 Subject: [PATCH 1/2] Fix build with old Clang
@@ -9,7 +9,7 @@ Subject: [PATCH 1/2] Fix build with old Clang
  2 files changed, 26 insertions(+)
 
 diff --git a/hwy/targets.cc b/hwy/targets.cc
-index 8cf2005..1de1405 100644
+index e68f754..195504c 100644
 --- a/hwy/targets.cc
 +++ b/hwy/targets.cc
 @@ -74,7 +74,20 @@ HWY_INLINE void Cpuid(const uint32_t level, const uint32_t count,
@@ -59,5 +59,5 @@ index 28b5892..dd25600 100644
    abcd[1] = b;
    abcd[2] = c;
 -- 
-2.39.2
+2.42.0
 

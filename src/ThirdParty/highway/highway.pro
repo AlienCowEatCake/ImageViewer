@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_HIGHWAY_PATH = $${PWD}/highway-1.0.5
+THIRDPARTY_HIGHWAY_PATH = $${PWD}/highway-1.0.7
 
 include(../CommonSettings.pri)
 
