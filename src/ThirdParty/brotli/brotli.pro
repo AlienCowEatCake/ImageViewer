@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_BROTLI_PATH = $${PWD}/brotli-1.0.9
+THIRDPARTY_BROTLI_PATH = $${PWD}/brotli-1.1.0
 
 include(../CommonSettings.pri)
 
@@ -27,11 +27,13 @@ INCLUDEPATH = \
     $${THIRDPARTY_BROTLI_PATH} \
     $${INCLUDEPATH}
 
+# find ./c -name '*.c' | grep -v './c/tools/' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_BROTLI_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_BROTLI_PATH}/c/common/constants.c \
     $${THIRDPARTY_BROTLI_PATH}/c/common/context.c \
     $${THIRDPARTY_BROTLI_PATH}/c/common/dictionary.c \
     $${THIRDPARTY_BROTLI_PATH}/c/common/platform.c \
+    $${THIRDPARTY_BROTLI_PATH}/c/common/shared_dictionary.c \
     $${THIRDPARTY_BROTLI_PATH}/c/common/transform.c \
     $${THIRDPARTY_BROTLI_PATH}/c/dec/bit_reader.c \
     $${THIRDPARTY_BROTLI_PATH}/c/dec/decode.c \
@@ -44,6 +46,7 @@ SOURCES += \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/brotli_bit_stream.c \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/cluster.c \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/command.c \
+    $${THIRDPARTY_BROTLI_PATH}/c/enc/compound_dictionary.c \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/compress_fragment.c \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/compress_fragment_two_pass.c \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/dictionary_hash.c \
@@ -58,11 +61,13 @@ SOURCES += \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/static_dict.c \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/utf8_util.c \
 
+# find ./c -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_BROTLI_PATH}| ; s|$| \\|'
 HEADERS += \
     $${THIRDPARTY_BROTLI_PATH}/c/common/constants.h \
     $${THIRDPARTY_BROTLI_PATH}/c/common/context.h \
     $${THIRDPARTY_BROTLI_PATH}/c/common/dictionary.h \
     $${THIRDPARTY_BROTLI_PATH}/c/common/platform.h \
+    $${THIRDPARTY_BROTLI_PATH}/c/common/shared_dictionary_internal.h \
     $${THIRDPARTY_BROTLI_PATH}/c/common/transform.h \
     $${THIRDPARTY_BROTLI_PATH}/c/common/version.h \
     $${THIRDPARTY_BROTLI_PATH}/c/dec/bit_reader.h \
@@ -81,6 +86,7 @@ HEADERS += \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/cluster.h \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/cluster_inc.h \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/command.h \
+    $${THIRDPARTY_BROTLI_PATH}/c/enc/compound_dictionary.h \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/compress_fragment.h \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/compress_fragment_two_pass.h \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/dictionary_hash.h \
@@ -107,6 +113,7 @@ HEADERS += \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/prefix.h \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/quality.h \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/ringbuffer.h \
+    $${THIRDPARTY_BROTLI_PATH}/c/enc/state.h \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/static_dict.h \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/static_dict_lut.h \
     $${THIRDPARTY_BROTLI_PATH}/c/enc/utf8_util.h \
@@ -114,6 +121,7 @@ HEADERS += \
     $${THIRDPARTY_BROTLI_PATH}/c/include/brotli/decode.h \
     $${THIRDPARTY_BROTLI_PATH}/c/include/brotli/encode.h \
     $${THIRDPARTY_BROTLI_PATH}/c/include/brotli/port.h \
+    $${THIRDPARTY_BROTLI_PATH}/c/include/brotli/shared_dictionary.h \
     $${THIRDPARTY_BROTLI_PATH}/c/include/brotli/types.h \
 
 TR_EXCLUDE += $${THIRDPARTY_BROTLI_PATH}/*
