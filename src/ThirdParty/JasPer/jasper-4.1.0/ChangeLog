@@ -1,6 +1,279 @@
+commit 5010de0779d0a7de02426cfe63727bd9a84af7c3
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:   Sat Nov 4 21:39:06 2023 -0700
+
+    Made a few improvements to the WebAssembly support.
+
+M	CMakeLists.txt
+M	build/build_wasi_jasper
+M	src/libjasper/base/jas_malloc.c
+
+commit e7cbee671893992e11a1fc603019bc8112cf7d15
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 4 20:22:33 2023 -0700
+
+    Bumped the version number and updated the NEWS document.
+
+M	CMakeLists.txt
+M	NEWS.txt
+
+commit da765f5178cb3b38754bacd27386c16d4007980d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 4 16:19:03 2023 -0700
+
+    Added a comment to a GitHub Actions workflow file.
+
+M	.github/workflows/ci.yml
+
+commit e6b1dae6b21491a9e468eefdc36fa3784650ac65
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 4 16:07:59 2023 -0700
+
+    Disable the build with Ubuntu 20.04 and GCC in the CI workflow.
+
+M	.github/workflows/ci.yml
+
+commit a0ac8435bf2e8a013a0cd8e8e98e285cc1868187
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 4 15:50:14 2023 -0700
+
+    Disable the build with Ubuntu 20.04 and GCC in the CI workflow.
+
+M	.github/workflows/ci.yml
+
+commit 8335265dbfa2e539600602c391535033e3a82245
+Merge: 09233ab 304ffce
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 4 15:36:47 2023 -0700
+
+    Merge preliminary support for WebAssembly.
+
+commit 09233abec431253ba1a955f6641d707c88773d1d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 4 15:19:58 2023 -0700
+
+    Bumped the version number and updated the NEWS document.
+
+M	CMakeLists.txt
+M	NEWS.txt
+
+commit 304ffce7498eb38ec782785e853a8ac4419f4184
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 4 15:03:01 2023 -0700
+
+    Removed a comment from a GitHub Actions workflow file.
+
+M	build/github/prebuild
+
+commit a886dcd98f8bffb3c0bcd96b5fd26022e2d692b0
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 4 14:58:04 2023 -0700
+
+    Made some further build changes to experiment with WebAssembly
+    support.
+
+M	.github/workflows/release.yml
+M	build/build_wasi_jasper
+M	build/github/prebuild
+
+commit 7976385b6111f4a8ac7f26d28355769b30528556
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 4 14:42:30 2023 -0700
+
+    Made some changes to the GitHub Actions release workflow.
+
+M	.github/workflows/release.yml
+
+commit 0a013da1e7f4cde51f7b4d9fa06e836a4b9c93b1
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 4 13:26:04 2023 -0700
+
+    Added preliminary support for building and deploying JasPer for a
+    WebAssembly target that supports WASI.
+
+M	.github/workflows/release.yml
+M	CMakeLists.txt
+A	build/build_wasi_jasper
+A	build/install_wasi_sdk
+A	build/install_wasmtime
+M	build/make_release
+A	build/wasm_cc
+M	src/libjasper/base/jas_stream.c
+M	src/libjasper/include/jasper/jas_stream.h
+
+commit 354722a9a42e502092c31941913f4552bb72eb63
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Apr 10 19:36:07 2023 -0700
+
+    Moved some C++ related settings inside an if statement in the
+    top-level
+    CMakeLists.txt file just in case this might fix issue #356.
+
+M	CMakeLists.txt
+
+commit d1b8a3702319c0b6d992c2d0c2cb5744bb9dd8ac
+Merge: f1ae9d7 f2d2e5d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Mar 27 06:58:40 2023 -0700
+
+    Merge pull request #355 from jpalus/parallel-docs
+
+    doc/CMakeLists.txt: fix parallel build of api docs and pdf manual
+
+commit f2d2e5d6f06bdd60d3be8277726e238659bc56b5
+Author: Jan Palus <jpalus@fastmail.com>
+Date:	Mon Mar 27 13:55:04 2023 +0200
+
+    doc/CMakeLists.txt: fix prallel build of api docs and pdf manual
+
+    according to cmake docs DEPENDS in add_custom_command with file being
+    output of other custom command:
+
+    > If any dependency is an OUTPUT of another custom command in the same
+    > directory (CMakeLists.txt file), CMake automatically brings
+    the other
+    > custom command into the target in which this command is built.
+
+    this means "manual_pdf" target will not wait for previous doxygen
+    invocation but will trigger its own. in case of parallel build two
+    doxygen invocations with same input parameters might overwrite each
+    other's output resulting in broken files. it could be verified
+    with just
+    grepping cmake output:
+
+    ```
+    $ grep -r 'doxygen Doxyfile' builddir/doc
+    builddir/doc/CMakeFiles/doc.dir/build.make:     cd
+    /home/users/builder/rpm/BUILD/jasper-3.0.6/builddir/doc &&
+    /usr/bin/doxygen Doxyfile
+    builddir/doc/CMakeFiles/manual_pdf.dir/build.make:	    cd
+    /home/users/builder/rpm/BUILD/jasper-3.0.6/builddir/doc &&
+    /usr/bin/doxygen Doxyfile
+    ```
+
+    instead of putting dependency on "latex/index.tex" file, use "doc"
+    target as dependency resulting in ordering "doc" before "manual_pdf"
+    and
+    single doxygen invocation.
+
+M	doc/CMakeLists.txt
+
+commit f1ae9d7c329281534ca00474ec01c2382a016020
+Merge: 71bb750 6120ae4
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Mar 21 20:02:06 2023 -0700
+
+    Merge pull request #352 from kmilos/patch-1
+
+    Handle relative vs absolute paths for .pc file variables
+
+commit 71bb7509ddf8d85e1caa61e440405aeae0906da7
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Mar 20 11:41:20 2023 -0700
+
+    Fixes #353.
+
+    Fixed an integer overflow bug in the PNM decoder.
+    Added some new utility functions for performing safe integer
+    arithmetic.
+
+M	NEWS.txt
+A	data/test/bad/353.pnm
+A	data/test/good/signed_pnm.pnm
+M	src/libjasper/include/jasper/jas_math.h
+M	src/libjasper/include/jasper/jas_types.h
+M	src/libjasper/pnm/pnm_dec.c
+
+commit 6120ae4d5bffb318c9d6e137190edff6ff0c4efa
+Author: Miloš Komarčević <miloskomarcevic@aim.com>
+Date:	Mon Jan 9 12:15:15 2023 +0100
+
+    Handle relative vs absolute paths for .pc file variables
+
+M	CMakeLists.txt
+M	build/jasper.pc.in
+
+commit 294db12f949f38eebedde6e0e1c8b9d4befcc5b2
+Merge: d8ea0e0 f10e2c1
+Author: Michael Vetter <jubalh@iodoru.org>
+Date:	Fri Jan 6 17:33:42 2023 +0100
+
+    Merge pull request #351 from theta682/patch-1
+
+    Don't force debug suffix
+
+commit f10e2c1338544eba61450774985e96133b1bf49d
+Author: Timothy Lyanguzov <timothy.lyanguzov@sap.com>
+Date:	Thu Jan 5 13:31:47 2023 +1300
+
+    Don't force debug suffix
+
+    The external build system can specify debug suffix if it is needed.
+
+    Close https://github.com/jasper-software/jasper/issues/350
+
+M	CMakeLists.txt
+
+commit d8ea0e06435d8b99cf2072bdf7d2f42e61157955
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Jan 5 10:38:12 2023 -0800
+
+    Made some changes to the prebuild script for MacOS.
+
+M	build/github/prebuild-v2
+
+commit 9d990d233383ed4b7498568192d98f55558ffffd
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Jan 5 09:59:38 2023 -0800
+
+    Changed the version of the checkout action from 2 to 3 in the
+    GitHub CI workflow.
+
+M	.github/workflows/ci.yml
+M	.github/workflows/deploy_manual.yml
+M	.github/workflows/release.yml
+M	.github/workflows/win_ci.yml
+
+commit 62c394fa34b857e0d655bafc1485d956f6133306
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Jan 5 09:25:07 2023 -0800
+
+    Made some changes to the prebuild script for MacOS.
+    Added Ubuntu 20.04 and MacOS 12 to the test matrix for the
+    GitHub CI workflow.
+
+M	.github/workflows/ci.yml
+M	build/github/prebuild-v2
+
+commit 92168f7ef280fe894ff76f389ff33fdedac2116e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Jan 5 09:01:14 2023 -0800
+
+    Made some changes to the prebuild script for MacOS.
+
+M	build/github/prebuild-v2
+
+commit 348f3184b0eca6bf271efee7f798370869ef2a63
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Jan 5 08:48:45 2023 -0800
+
+    Made some changes to the prebuild script for MacOS.
+
+M	build/github/prebuild-v2
+
+commit 74c72b57c70d1ef1ae17d4ea74c33a152e981de0
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Jan 5 08:09:44 2023 -0800
+
+    Changed the GitHub CI workflow to explicitly specify the versions of
+    Ubuntu and MacOS to be used (instead of using the versions named as
+    "latest").
+
+M	.github/workflows/ci.yml
+
 commit 402d096b39f4f618ad9e6ff2b4fc1b5eb260a2e4
 Author: Michael Adams <mdadams@ece.uvic.ca>
-Date:   Sat Nov 5 10:06:53 2022 -0700
+Date:	Sat Nov 5 10:06:53 2022 -0700
 
     Bumped the version number and updated the NEWS document.
 

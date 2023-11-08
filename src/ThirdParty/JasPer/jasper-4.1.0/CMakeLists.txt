@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.12)
 
 # The major, minor, and micro version numbers of the project.
 set(JAS_VERSION_MAJOR 4)
-set(JAS_VERSION_MINOR 0)
+set(JAS_VERSION_MINOR 1)
 set(JAS_VERSION_PATCH 0)
 
 # The shared library versioning information.
@@ -130,7 +130,7 @@ option(JAS_INCLUDE_JPC_CODEC "Include (native) JPC codec support" ON)
 option(JAS_INCLUDE_JPG_CODEC
   "Include JPG codec support (via IJG JPEG Library)" ON)
 option(JAS_INCLUDE_HEIC_CODEC
-	"Include experimental HEIC codec support (via Libheif Library)" ON)
+  "Include experimental HEIC codec support (via Libheif Library)" ON)
 option(JAS_INCLUDE_MIF_CODEC "Include (native) MIF codec support" ON)
 option(JAS_INCLUDE_PGX_CODEC "Include (native) PGX codec support" ON)
 option(JAS_INCLUDE_PNM_CODEC "Include (native) PNM codec support" ON)
@@ -144,7 +144,7 @@ option(JAS_ENABLE_JPC_CODEC "Enable (native) JPC codec support" ON)
 option(JAS_ENABLE_JPG_CODEC
   "Enable JPG codec support (via IJG JPEG Library)" ON)
 option(JAS_ENABLE_HEIC_CODEC
-	"Enable experimental HEIC codec support (via Libheif Library)" OFF)
+  "Enable experimental HEIC codec support (via Libheif Library)" OFF)
 option(JAS_ENABLE_MIF_CODEC "Enable (native) MIF codec support" OFF)
 option(JAS_ENABLE_PGX_CODEC "Enable (native) PGX codec support" ON)
 option(JAS_ENABLE_PNM_CODEC "Enable (native) PNM codec support" ON)
@@ -191,6 +191,16 @@ option(JAS_ENABLE_DANGEROUS_INTERNAL_TESTING_MODE
 option(JAS_ENABLE_CXX "Enable C++ code (for testing)." OFF)
 option(JAS_ENABLE_CONFORMANCE_TESTS "Enable conformance tests." OFF)
 
+option(JAS_WASM "Enable WebAssembly mode" OFF)
+if(JAS_WASM)
+	set(JAS_CROSSCOMPILING 1)
+	set(JAS_STDC_VERSION "201112L")
+	set(JAS_ENABLE_MULTITHREADING_SUPPORT 0)
+	set(JAS_ENABLE_SHARED 0)
+	set(JAS_USE_JAS_INIT 0)
+	add_compile_definitions(JAS_WASI_LIBC)
+endif()
+
 ################################################################################
 #
 ################################################################################
@@ -225,8 +235,10 @@ set(CMAKE_C_EXTENSIONS ON)
 # This policy was added in CMake 3.8.
 cmake_policy(SET CMP0067 NEW)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_EXTENSIONS ON)
+if(JAS_ENABLE_CXX)
+	set(CMAKE_CXX_STANDARD 11)
+	set(CMAKE_CXX_EXTENSIONS ON)
+endif()
 
 # Eliminate a CMake warning.
 # Note: This policy was added in CMake 3.20.  Do not add this for now,
@@ -263,9 +275,6 @@ endif()
 # files are not placed in subdirectories (such as Debug and Release)
 # as this will cause the CTest test suite to fail.
 if(JAS_MULTICONFIGURATION_GENERATOR)
-	if(CMAKE_CONFIGURATION_TYPES)
-		set(CMAKE_DEBUG_POSTFIX d)
-	endif()
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY .)
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY .)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY .)
@@ -413,6 +422,7 @@ if((DEFINED JAS_CROSSCOMPILING AND JAS_CROSSCOMPILING) OR
 	# cross-compiling.  If cross-compiling, the value of JAS_STDC_VERSION
 	# will need to be set manually from the command line
 	# (e.g., using -DJAS_STDC_VERSION=YYYYMML) or by changing the line below.
+if(NOT JAS_WASM)
 	set(JAS_STDC_VERSION "0L" CACHE INTERNAL "The value of __STDC_VERSION__.")
 	if (JAS_STDC_VERSION STREQUAL "0L")
 		message(FATAL_ERROR
@@ -422,6 +432,7 @@ if((DEFINED JAS_CROSSCOMPILING AND JAS_CROSSCOMPILING) OR
 		  "option -DJAS_STDC_VERSION=...) or modify the CMakeLists.txt "
 		  "appropriately.")
 	endif()
+endif()
 else()
 	jas_get_stdc_version(status JAS_STDC_VERSION)
 	if(NOT status)
@@ -824,6 +835,17 @@ endif()
 # The package configuation (pc) file should be installed in
 # ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig.
 string(JOIN " " JAS_PKGCONFIG_REQUIRES ${JAS_PKGCONFIG_REQUIRES})
+# Handle both relative and absolute paths (e.g. NixOS) for a relocatable package
+if(IS_ABSOLUTE "${CMAKE_INSTALL_INCLUDEDIR}")
+    set(JAS_PC_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}")
+else()
+    set(JAS_PC_INCLUDEDIR "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+endif()
+if(IS_ABSOLUTE "${CMAKE_INSTALL_LIBDIR}")
+    set(JAS_PC_LIBDIR "${CMAKE_INSTALL_LIBDIR}")
+else()
+    set(JAS_PC_LIBDIR "\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}")
+endif()
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/build/jasper.pc.in"
   "${CMAKE_CURRENT_BINARY_DIR}/build/jasper.pc" @ONLY)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/build/jasper.pc"

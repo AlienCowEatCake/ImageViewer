@@ -14,7 +14,7 @@
 @brief
 A null-terminated string containing the JasPer library version
 */
-#define	JAS_VERSION "4.0.0"
+#define	JAS_VERSION "4.1.0"
 
 /*!
 @brief
@@ -26,7 +26,7 @@ The JasPer library major version number.
 @brief
 The JasPer library minor version number.
 */
-#define JAS_VERSION_MINOR 0
+#define JAS_VERSION_MINOR 1
 
 /*!
 @brief
@@ -40,6 +40,8 @@ The version of the C standard against which JasPer was built.
 #define JAS_STDC_VERSION (__STDC_VERSION__ - 0)
 
 /* #undef JAS_ENABLE_32BIT */
+
+/* #undef JAS_HAVE_INT128_T */
 
 #define JAS_SIZEOF_INT 4
 #define JAS_SIZEOF_LONG 4
