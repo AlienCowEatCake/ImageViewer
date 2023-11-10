@@ -1,4 +1,4 @@
-From 679274a7b46fa6759d97481cf629b1efce9ed17b Mon Sep 17 00:00:00 2001
+From c22101d26d54282408160538857c8d4c5b90faaa Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 9 Jul 2023 04:49:49 +0700
 Subject: [PATCH 3/3] Fix conflict with zlib prefix
@@ -11,10 +11,10 @@ Subject: [PATCH 3/3] Fix conflict with zlib prefix
  4 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/libheif/context.cc b/libheif/context.cc
-index e18245f..968dd8b 100644
+index cdb5dbc..b899cad 100644
 --- a/libheif/context.cc
 +++ b/libheif/context.cc
-@@ -2792,7 +2792,7 @@ Error HeifContext::add_generic_metadata(const std::shared_ptr<Image>& master_ima
+@@ -3371,7 +3371,7 @@ Error HeifContext::add_generic_metadata(const std::shared_ptr<Image>& master_ima
    std::vector<uint8_t> data_array;
    if (compression == heif_metadata_compression_deflate) {
  #if WITH_DEFLATE_HEADER_COMPRESSION
@@ -24,10 +24,10 @@ index e18245f..968dd8b 100644
  #else
      return Error(heif_error_Unsupported_feature,
 diff --git a/libheif/file.cc b/libheif/file.cc
-index b6ccad8..c599264 100644
+index cd56aea..cb3639e 100644
 --- a/libheif/file.cc
 +++ b/libheif/file.cc
-@@ -707,7 +707,7 @@ Error HeifFile::get_compressed_image_data(heif_item_id ID, std::vector<uint8_t>*
+@@ -887,7 +887,7 @@ Error HeifFile::get_compressed_image_data(heif_item_id ID, std::vector<uint8_t>*
          read_uncompressed = false;
          std::vector<uint8_t> compressed_data;
          error = m_iloc_box->read_data(*item, m_input_stream, m_idat_box, &compressed_data);
@@ -75,5 +75,5 @@ index 14c74bf..a30afcc 100644
  
  #endif //LIBHEIF_METADATA_COMPRESSION_H
 -- 
-2.39.2
+2.42.0
 

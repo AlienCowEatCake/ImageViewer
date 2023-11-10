@@ -1,4 +1,4 @@
-From bf707977fecc6a2f1910f45dd1064188b98fb2d9 Mon Sep 17 00:00:00 2001
+From a2dedb3a3f36c0ac29aa00e4c753590aad0bdd9b Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 21 Dec 2022 23:23:25 +0700
 Subject: [PATCH 2/3] Revert "Enable wide chars for all Windows"
@@ -11,10 +11,10 @@ This reverts commit 0d7c5a181905eeb6b5bc2c8f91012a2abb0c5bfc.
  3 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/libheif/file.cc b/libheif/file.cc
-index 0530827..b6ccad8 100644
+index 20ad689..cd56aea 100644
 --- a/libheif/file.cc
 +++ b/libheif/file.cc
-@@ -30,13 +30,13 @@
+@@ -35,13 +35,13 @@
  #include <cassert>
  #include <algorithm>
  
@@ -30,7 +30,7 @@ index 0530827..b6ccad8 100644
  #endif
  
  #include "metadata_compression.h"
-@@ -67,7 +67,7 @@ std::vector<heif_item_id> HeifFile::get_item_IDs() const
+@@ -73,7 +73,7 @@ std::vector<heif_item_id> HeifFile::get_item_IDs() const
  
  Error HeifFile::read_from_file(const char* input_filename)
  {
@@ -39,9 +39,9 @@ index 0530827..b6ccad8 100644
    auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(convert_utf8_path_to_utf16(input_filename).c_str(), std::ios_base::binary));
  #else
    auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(input_filename, std::ios_base::binary));
-@@ -1039,7 +1039,7 @@ void HeifFile::set_hdlr_library_info(const std::string& encoder_plugin_version)
+@@ -1236,7 +1236,7 @@ void HeifFile::set_hdlr_library_info(const std::string& encoder_plugin_version)
+   m_hdlr_box->set_name(sstr.str());
  }
- 
  
 -#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
 +#ifdef _MSC_VER
@@ -49,10 +49,10 @@ index 0530827..b6ccad8 100644
  {
    std::wstring ret;
 diff --git a/libheif/file.h b/libheif/file.h
-index e527578..14e382a 100644
+index 3715bab..1d0f9d4 100644
 --- a/libheif/file.h
 +++ b/libheif/file.h
-@@ -178,7 +178,7 @@ public:
+@@ -185,7 +185,7 @@ public:
    // TODO: the hdlr box is probably not the right place for this. Into which box should we write comments?
    void set_hdlr_library_info(const std::string& encoder_plugin_version);
  
@@ -62,10 +62,10 @@ index e527578..14e382a 100644
  #endif
  
 diff --git a/libheif/heif.cc b/libheif/heif.cc
-index bb546d3..eeb41a2 100644
+index 373fd99..c7ec66a 100644
 --- a/libheif/heif.cc
 +++ b/libheif/heif.cc
-@@ -2151,7 +2151,7 @@ static struct heif_error heif_file_writer_write(struct heif_context* ctx,
+@@ -1911,7 +1911,7 @@ static struct heif_error heif_file_writer_write(struct heif_context* ctx,
  {
    const char* filename = static_cast<const char*>(userdata);
  
@@ -75,5 +75,5 @@ index bb546d3..eeb41a2 100644
  #else
    std::ofstream ostr(filename, std::ios_base::binary);
 -- 
-2.39.2
+2.42.0
 

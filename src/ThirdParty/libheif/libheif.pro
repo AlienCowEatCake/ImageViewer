@@ -10,11 +10,13 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.16.2
+THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.17.3
 THIRDPARTY_LIBHEIF_INCLUDE_PATH = $${PWD}/include
 
 include(../CommonSettings.pri)
 include(../aom/aom.pri)
+include(../libjpeg/libjpeg.pri)
+include(../OpenJPEG/OpenJPEG.pri)
 include(../libde265/libde265.pri)
 include(../zlib/zlib.pri)
 
@@ -25,7 +27,7 @@ DEFINES += HAVE_INTTYPES_H HAVE_LIBDE265=1 WITH_UNCOMPRESSED_CODEC=1 HAVE_STDDEF
 !*msvc*: DEFINES += HAVE_UNISTD_H
 !disable_zlib: DEFINES += WITH_DEFLATE_HEADER_COMPRESSION=1
 
-# find ./libheif -name '*.cc' | egrep -v '(_fuzzer|_aom|_dav1d|_rav1e|_svt|_x265|_unix|_windows)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
+# find ./libheif -name '*.cc' | egrep -v '(_fuzzer|_aom|_dav1d|_rav1e|_svt|_x265|_ffmpeg|_jpeg|_openjpeg|_kvazaar|_unix|_windows)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/avif.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/bitstream.cc \
@@ -46,16 +48,23 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/file.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_plugin.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_properties.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_regions.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/hevc.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/init.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/jpeg.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/jpeg2000.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/mask_image.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/metadata_compression.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/nclx.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/pixelimage.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugin_registry.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_libde265.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_mask.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_uncompressed.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/region.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/uncompressed_image.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/vvc.cc \
 
 # find ./libheif -name '*.cc' | egrep '(_windows)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
 # find ./libheif -name '*.cc' | egrep '(_unix)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
@@ -74,6 +83,24 @@ SOURCES += \
         $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_aom.cc \
 
     DEFINES += HAVE_AOM=1 HAVE_AOM_DECODER=1 HAVE_AOM_ENCODER=1
+}
+
+# find ./libheif -name '*.cc' | egrep '(_jpeg)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
+!disable_libjpeg {
+    SOURCES += \
+        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_jpeg.cc \
+        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_jpeg.cc \
+
+    DEFINES += HAVE_JPEG_DECODER=1 HAVE_JPEG_ENCODER=1
+}
+
+# find ./libheif -name '*.cc' | egrep '(_openjpeg)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
+!disable_openjpeg {
+    SOURCES += \
+        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_openjpeg.cc \
+        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_openjpeg.cc \
+
+    DEFINES += HAVE_OPENJPEG_DECODER=1 HAVE_OPENJPEG_ENCODER=1
 }
 
 # find ./libheif -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
@@ -100,17 +127,29 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_cxx.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_emscripten.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_plugin.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_properties.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/heif_regions.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/hevc.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/init.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/jpeg.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/jpeg2000.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/logging.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/mask_image.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/metadata_compression.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/nclx.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/pixelimage.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugin_registry.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_aom.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_dav1d.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_ffmpeg.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_jpeg.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_libde265.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_openjpeg.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_aom.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_jpeg.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_kvazaar.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_mask.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_openjpeg.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_rav1e.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_svt.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_uncompressed.h \
@@ -120,6 +159,8 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/region.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/security_limits.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/uncompressed_image.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/vvc.h \
+    $${THIRDPARTY_LIBHEIF_INCLUDE_PATH}/libheif/heif_version.h
 
 TR_EXCLUDE += $${THIRDPARTY_LIBHEIF_PATH}/*
 

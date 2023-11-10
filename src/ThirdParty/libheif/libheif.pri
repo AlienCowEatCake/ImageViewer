@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libheif {
 
-        THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.16.2
+        THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.17.3
         THIRDPARTY_LIBHEIF_INCLUDE_PATH = $${PWD}/include
 
         INCLUDEPATH += $${THIRDPARTY_LIBHEIF_PATH} $${THIRDPARTY_LIBHEIF_INCLUDE_PATH}
