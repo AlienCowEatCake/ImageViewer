@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-RESVG_VERSION="0.35.0"
+RESVG_VERSION="0.36.0"
 RESVG_HOST="x86_64-apple-darwin"
 export MACOSX_DEPLOYMENT_TARGET=10.7
 
