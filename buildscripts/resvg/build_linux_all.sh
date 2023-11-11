@@ -5,7 +5,7 @@ DOCKER_USER="user"
 DOCKER_WORKSACE="/home/${DOCKER_USER}/workspace"
 FORWARD_SCRIPT="build_linux.sh"
 for DOCKER_ARCH in amd64 arm64 ; do
-    DOCKER_IMAGE="aliencoweatcake/${DOCKER_ARCH}-trusty-qt5projects:qt5.15.10"
+    DOCKER_IMAGE="aliencoweatcake/${DOCKER_ARCH}-trusty-qt5projects:qt5.15.11"
     ADDITIONAL_DOCKER_ARGS=
     if [ -t 1 ]; then
         if [ -z "$(uname -s | grep -E -i 'cygwin|mingw|msys')" ]; then
