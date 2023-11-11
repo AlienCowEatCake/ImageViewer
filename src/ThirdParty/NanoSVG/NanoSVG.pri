@@ -5,7 +5,7 @@ include($${PWD}/../../Features.pri)
 
 !disable_nanosvg {
 
-    THIRDPARTY_NANOSVG_PATH = $${PWD}/nanosvg-9da543e
+    THIRDPARTY_NANOSVG_PATH = $${PWD}/nanosvg-cb0ae54
 
     INCLUDEPATH += $${THIRDPARTY_NANOSVG_PATH}/src
     DEPENDPATH += $${THIRDPARTY_NANOSVG_PATH}/src

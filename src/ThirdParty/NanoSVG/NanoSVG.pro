@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off warn_off
 
-THIRDPARTY_NANOSVG_PATH = $${PWD}/nanosvg-9da543e
+THIRDPARTY_NANOSVG_PATH = $${PWD}/nanosvg-cb0ae54
 THIRDPARTY_NANOSVG_IMPL_PATH = $${PWD}/implementation
 
 INCLUDEPATH += $${THIRDPARTY_NANOSVG_PATH}/src
