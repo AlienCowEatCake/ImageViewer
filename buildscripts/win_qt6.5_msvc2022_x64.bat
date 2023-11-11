@@ -11,7 +11,7 @@ set APP_PATH=src\%PROJECT%
 set NMAKE_CMD="%~dp0\..\buildscripts\helpers\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
 set DLLRESOLVER_CMD="%~dp0\..\buildscripts\helpers\dllresolver.exe"
-set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.webview2.1.0.1823.32\build\native\%ARCH%\WebView2Loader.dll"
+set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.webview2.1.0.2151.40\build\native\%ARCH%\WebView2Loader.dll"
 set RESVG_PATH="%~dp0\resvg\x86_64-pc-windows-msvc"
 
 call %VCVARS% %VCVARS_ARCH%
