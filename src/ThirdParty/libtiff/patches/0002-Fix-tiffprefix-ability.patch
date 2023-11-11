@@ -1,4 +1,4 @@
-From 3bea1fabcf84decb5fced3215849dfa4cae35378 Mon Sep 17 00:00:00 2001
+From 981bd31d5c9eb21a6eff902af3ef8661ba4a62ab Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Thu, 22 Dec 2022 14:34:01 +0700
 Subject: [PATCH 2/2] Fix tiffprefix ability
@@ -8,7 +8,7 @@ Subject: [PATCH 2/2] Fix tiffprefix ability
  1 file changed, 2 insertions(+)
 
 diff --git a/libtiff/tif_hash_set.h b/libtiff/tif_hash_set.h
-index 1a3f8da6..4068fa82 100644
+index f60e2c67..45b81744 100644
 --- a/libtiff/tif_hash_set.h
 +++ b/libtiff/tif_hash_set.h
 @@ -31,6 +31,8 @@
@@ -21,5 +21,5 @@ index 1a3f8da6..4068fa82 100644
  
  /**
 -- 
-2.30.2
+2.42.0
 
