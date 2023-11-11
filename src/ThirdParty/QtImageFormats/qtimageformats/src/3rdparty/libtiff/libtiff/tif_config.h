@@ -4,10 +4,6 @@
 
 #include "tiffconf.h"
 
-#if defined(Q_OS_WINCE)
-#include <qfunctions_wince.h>
-#endif
-
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -36,27 +32,13 @@
 #define HAVE_DECL_OPTARG 0
 
 /* Define to 1 if you have the <fcntl.h> header file. */
-#if !defined(Q_OS_WINCE)
 #define HAVE_FCNTL_H 1
-#endif
 
 /* Define to 1 if fseeko (and presumably ftello) exists and is declared. */
 /* #undef HAVE_FSEEKO */
 
 /* Define to 1 if you have the `getopt' function. */
 /* #undef HAVE_GETOPT */
-
-/* Define to 1 if you have the <GLUT/glut.h> header file. */
-/* #undef HAVE_GLUT_GLUT_H */
-
-/* Define to 1 if you have the <GL/glut.h> header file. */
-/* #undef HAVE_GL_GLUT_H */
-
-/* Define to 1 if you have the <GL/glu.h> header file. */
-/* #undef HAVE_GL_GLU_H */
-
-/* Define to 1 if you have the <GL/gl.h> header file. */
-/* #undef HAVE_GL_GL_H */
 
 /* Define to 1 if you have the <io.h> header file. */
 /* #undef HAVE_IO_H */
@@ -66,12 +48,6 @@
 
 /* Define to 1 if you have the `mmap' function. */
 /* #undef HAVE_MMAP */
-
-/* Define to 1 if you have the <OpenGL/glu.h> header file. */
-/* #undef HAVE_OPENGL_GLU_H */
-
-/* Define to 1 if you have the <OpenGL/gl.h> header file. */
-/* #undef HAVE_OPENGL_GL_H */
 
 /* Define to 1 if you have the `setmode' function. */
 /* #undef HAVE_SETMODE */
@@ -111,17 +87,11 @@
 /* Define to the full name of this package. */
 /* #undef PACKAGE_NAME */
 
-/* Define to the full name and version of this package. */
-/* #undef PACKAGE_STRING */
-
 /* Define to the one symbol short name of this package. */
 /* #undef PACKAGE_TARNAME */
 
 /* Define to the home page for this package. */
 /* #undef PACKAGE_URL */
-
-/* Define to the version of this package. */
-/* #undef PACKAGE_VERSION */
 
 /* The size of `size_t', as computed by sizeof. */
 #if SIZE_MAX == 0xffffffff
@@ -138,9 +108,6 @@
 
 /* define to use win32 IO system */
 /* #undef USE_WIN32_FILEIO */
-
-/* Version number of package */
-#define VERSION "4.5.1"
 
 /* Support webp compression */
 /* #undef WEBP_SUPPORT */
