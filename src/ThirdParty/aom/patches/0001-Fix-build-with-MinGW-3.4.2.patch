@@ -1,12 +1,13 @@
-From 2a1a42523bae1a718a6a07581df8eacc18732c86 Mon Sep 17 00:00:00 2001
+From bace7a6cb9609c2444da36bc840c0a106f762290 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 Nov 2021 17:11:43 +0700
 Subject: [PATCH 1/2] Fix build with MinGW 3.4.2
 
 ---
  aom/aom_codec.h        | 2 +-
+ aom_ports/bitops.h     | 2 +-
  av1/encoder/ratectrl.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/aom/aom_codec.h b/aom/aom_codec.h
 index d5b8790a98..04f6fd667d 100644
@@ -21,6 +22,19 @@ index d5b8790a98..04f6fd667d 100644
  #define ATTRIBUTE_PACKED __attribute__((packed))
  #elif defined(_MSC_VER)
  #define ATTRIBUTE_PACKED
+diff --git a/aom_ports/bitops.h b/aom_ports/bitops.h
+index 3c5b992bde..df73ec6bdd 100644
+--- a/aom_ports/bitops.h
++++ b/aom_ports/bitops.h
+@@ -43,7 +43,7 @@ extern "C" {
+ 
+ // use GNU builtins where available.
+ #if defined(__GNUC__) && \
+-    ((__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || __GNUC__ >= 4)
++    ((__GNUC__ == 4 && __GNUC_MINOR__ >= 3) || __GNUC__ > 4)
+ static INLINE int get_msb(unsigned int n) {
+   assert(n != 0);
+   return 31 ^ __builtin_clz(n);
 diff --git a/av1/encoder/ratectrl.h b/av1/encoder/ratectrl.h
 index 4fb11791cb..13515dec51 100644
 --- a/av1/encoder/ratectrl.h

@@ -38,6 +38,10 @@ static const size_t xmpContentTypeSize = sizeof(xmpContentType);
 // can't be more than 4 unique tuples right now.
 #define MAX_IPMA_VERSION_AND_FLAGS_SEEN 4
 
+#if defined(_MSC_VER) && (_MSC_VER <= 1800)
+#define snprintf _snprintf
+#endif
+
 // ---------------------------------------------------------------------------
 // AVIF codec type (AV1 or AV2)
 

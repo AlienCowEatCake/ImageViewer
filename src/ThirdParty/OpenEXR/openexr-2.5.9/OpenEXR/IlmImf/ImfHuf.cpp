@@ -53,7 +53,7 @@
 #include <cstring>
 #include <cassert>
 #include <algorithm>
-#include <cstdint>
+#include <stdint.h>
 
 
 using namespace std;

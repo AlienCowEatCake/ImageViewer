@@ -1,0 +1,28 @@
+From 0b39b074d1b16b8ab57ee5c09dde06406c4fee81 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 12 Nov 2023 05:07:02 +0700
+Subject: [PATCH 4/4] Fix build with IJG libjpeg
+
+---
+ libheif/plugins/encoder_jpeg.cc | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/libheif/plugins/encoder_jpeg.cc b/libheif/plugins/encoder_jpeg.cc
+index d6c7854..21a5541 100644
+--- a/libheif/plugins/encoder_jpeg.cc
++++ b/libheif/plugins/encoder_jpeg.cc
+@@ -360,7 +360,11 @@ struct heif_error jpeg_encode_image(void* encoder_raw, const struct heif_image*
+   }
+ 
+   uint8_t* outbuffer = nullptr;
++#ifdef LIBJPEG_TURBO_VERSION
+   unsigned long outlength = 0;
++#else
++  size_t outlength = 0;
++#endif
+ 
+   jpeg_create_compress(&cinfo);
+   jpeg_mem_dest(&cinfo, &outbuffer, &outlength);
+-- 
+2.42.0
+

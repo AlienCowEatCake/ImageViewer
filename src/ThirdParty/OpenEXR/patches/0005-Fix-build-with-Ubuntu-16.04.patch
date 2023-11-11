@@ -1,22 +1,20 @@
-From 4ae79fea6ad7d4eaba0731d1da09fc04fac78d61 Mon Sep 17 00:00:00 2001
+From c9040b1eeef6e2de1bd6db26b9833381cb6e8b3e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 6 Dec 2020 19:57:40 +0700
 Subject: [PATCH 5/7] Fix build with Ubuntu 16.04
 
 ---
- OpenEXR/IlmImf/ImfDwaCompressor.cpp | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ OpenEXR/IlmImf/ImfDwaCompressor.cpp | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/OpenEXR/IlmImf/ImfDwaCompressor.cpp b/OpenEXR/IlmImf/ImfDwaCompressor.cpp
-index 6cd2099d..77930838 100644
+index 0b1a9787..77930838 100644
 --- a/OpenEXR/IlmImf/ImfDwaCompressor.cpp
 +++ b/OpenEXR/IlmImf/ImfDwaCompressor.cpp
-@@ -159,7 +159,8 @@
- #include <limits>
+@@ -160,6 +160,7 @@
  
  #include <cstddef>
--#include <cstdint>
-+#include <stdint.h>
+ #include <stdint.h>
 +#include <inttypes.h>
  
  

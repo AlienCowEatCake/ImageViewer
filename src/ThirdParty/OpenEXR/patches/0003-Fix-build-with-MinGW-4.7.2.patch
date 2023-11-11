@@ -1,4 +1,4 @@
-From d3fb2fa37170befe43ede33bb8561b3cacd37c01 Mon Sep 17 00:00:00 2001
+From 81ecdfb278d596f83871ce5e605d728996f5a1ef Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 19:25:07 +0700
 Subject: [PATCH 3/7] Fix build with MinGW 4.7.2
@@ -8,7 +8,7 @@ Subject: [PATCH 3/7] Fix build with MinGW 4.7.2
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/OpenEXR/IlmImf/ImfMisc.cpp b/OpenEXR/IlmImf/ImfMisc.cpp
-index 0451a339..b15c4a36 100644
+index 957190e9..8713650c 100644
 --- a/OpenEXR/IlmImf/ImfMisc.cpp
 +++ b/OpenEXR/IlmImf/ImfMisc.cpp
 @@ -1391,7 +1391,7 @@ namespace

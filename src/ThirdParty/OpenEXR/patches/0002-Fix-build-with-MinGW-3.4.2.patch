@@ -1,4 +1,4 @@
-From 08fc24b31520067173435f608da44e2fd77016aa Mon Sep 17 00:00:00 2001
+From 1687902088adb46e955e371c2f58d83fd8266e6b Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 18:20:28 +0700
 Subject: [PATCH 2/7] Fix build with MinGW 3.4.2
@@ -30,13 +30,16 @@ Subject: [PATCH 2/7] Fix build with MinGW 3.4.2
  OpenEXR/IlmImf/ImfDeepTiledInputFile.h       |  5 +++
  OpenEXR/IlmImf/ImfDeepTiledOutputFile.cpp    | 14 ++++++++
  OpenEXR/IlmImf/ImfDeepTiledOutputFile.h      |  5 +++
+ OpenEXR/IlmImf/ImfDwaCompressor.cpp          |  2 +-
  OpenEXR/IlmImf/ImfDwaCompressor.h            |  7 ++++
  OpenEXR/IlmImf/ImfFastHuf.h                  |  7 ++++
  OpenEXR/IlmImf/ImfFrameBuffer.h              |  2 +-
+ OpenEXR/IlmImf/ImfHuf.cpp                    |  2 +-
  OpenEXR/IlmImf/ImfIO.h                       | 10 ++++++
  OpenEXR/IlmImf/ImfInputFile.cpp              |  7 ++++
  OpenEXR/IlmImf/ImfInputFile.h                |  5 +++
  OpenEXR/IlmImf/ImfKeyCode.h                  |  4 +++
+ OpenEXR/IlmImf/ImfMisc.cpp                   |  2 +-
  OpenEXR/IlmImf/ImfMultiPartInputFile.cpp     |  9 +++--
  OpenEXR/IlmImf/ImfMultiPartInputFile.h       |  5 +++
  OpenEXR/IlmImf/ImfMultiPartOutputFile.cpp    |  7 ++++
@@ -63,7 +66,7 @@ Subject: [PATCH 2/7] Fix build with MinGW 3.4.2
  OpenEXR/IlmImfUtil/ImfDeepImageChannel.h     | 12 +++++++
  OpenEXR/IlmImfUtil/ImfFlatImageChannel.h     | 12 +++++++
  OpenEXR/IlmImfUtil/ImfSampleCountChannel.h   |  7 ++++
- 59 files changed, 523 insertions(+), 38 deletions(-)
+ 62 files changed, 526 insertions(+), 41 deletions(-)
 
 diff --git a/IlmBase/Half/half.h b/IlmBase/Half/half.h
 index 6a5ee23d..415fcef9 100644
@@ -817,6 +820,19 @@ index c119e339..0f5609b5 100644
  
      void                initialize (const Header &header);
  
+diff --git a/OpenEXR/IlmImf/ImfDwaCompressor.cpp b/OpenEXR/IlmImf/ImfDwaCompressor.cpp
+index 6cd2099d..0b1a9787 100644
+--- a/OpenEXR/IlmImf/ImfDwaCompressor.cpp
++++ b/OpenEXR/IlmImf/ImfDwaCompressor.cpp
+@@ -159,7 +159,7 @@
+ #include <limits>
+ 
+ #include <cstddef>
+-#include <cstdint>
++#include <stdint.h>
+ 
+ 
+ // Windows specific addition to prevent the indirect import of the redefined min/max macros
 diff --git a/OpenEXR/IlmImf/ImfDwaCompressor.h b/OpenEXR/IlmImf/ImfDwaCompressor.h
 index 012819c7..924a0784 100644
 --- a/OpenEXR/IlmImf/ImfDwaCompressor.h
@@ -874,6 +890,19 @@ index dca74b0f..02eaf55a 100644
  
  
  OPENEXR_IMF_INTERNAL_NAMESPACE_HEADER_ENTER
+diff --git a/OpenEXR/IlmImf/ImfHuf.cpp b/OpenEXR/IlmImf/ImfHuf.cpp
+index 165fac58..6fef2fdd 100644
+--- a/OpenEXR/IlmImf/ImfHuf.cpp
++++ b/OpenEXR/IlmImf/ImfHuf.cpp
+@@ -53,7 +53,7 @@
+ #include <cstring>
+ #include <cassert>
+ #include <algorithm>
+-#include <cstdint>
++#include <stdint.h>
+ 
+ 
+ using namespace std;
 diff --git a/OpenEXR/IlmImf/ImfIO.h b/OpenEXR/IlmImf/ImfIO.h
 index e93676bd..fb823d97 100644
 --- a/OpenEXR/IlmImf/ImfIO.h
@@ -967,6 +996,19 @@ index 231c7848..e22ade98 100644
 +#endif
      IMF_EXPORT
      KeyCode & operator = (const KeyCode &other);
+ 
+diff --git a/OpenEXR/IlmImf/ImfMisc.cpp b/OpenEXR/IlmImf/ImfMisc.cpp
+index 0451a339..957190e9 100644
+--- a/OpenEXR/IlmImf/ImfMisc.cpp
++++ b/OpenEXR/IlmImf/ImfMisc.cpp
+@@ -54,7 +54,7 @@
+ #include <ImfTileDescription.h>
+ #include "ImfNamespace.h"
+ 
+-#include <cstdint>
++#include <stdint.h>
+ 
+ OPENEXR_IMF_INTERNAL_NAMESPACE_SOURCE_ENTER
  
 diff --git a/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp b/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
 index f271f9e9..8a291682 100644
