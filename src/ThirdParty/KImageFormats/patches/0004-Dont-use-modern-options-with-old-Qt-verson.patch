@@ -1,19 +1,215 @@
-From f926c498660ac1b37dfc6a5918cd93290f58ef0c Mon Sep 17 00:00:00 2001
+From 420a42578686be52405e893b3eba12678f35f407 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 9 Jul 2023 21:28:58 +0700
-Subject: [PATCH 4/4] Dont use modern options with old Qt verson
+Subject: [PATCH 4/5] Dont use modern options with old Qt verson
 
 ---
- src/imageformats/psd.cpp  | 20 ++++++++++++++++++++
+ src/imageformats/ani.cpp  |  4 ++++
+ src/imageformats/ani_p.h  | 16 +++++++++++++++
+ src/imageformats/hdr.cpp  | 23 ++++++++++++++++++++++
+ src/imageformats/jxl_p.h  |  8 ++++++++
+ src/imageformats/psd.cpp  | 40 ++++++++++++++++++++++++++++++++++++++
+ src/imageformats/ras.cpp  | 17 +++++++++++++++-
+ src/imageformats/rgb.cpp  | 24 +++++++++++++++++++++++
  src/imageformats/util_p.h |  7 +++++++
- src/imageformats/xcf.cpp  |  8 ++++++--
- 3 files changed, 33 insertions(+), 2 deletions(-)
+ src/imageformats/xcf.cpp  | 41 +++++++++++++++++++++++++++++++++++++--
+ 9 files changed, 177 insertions(+), 3 deletions(-)
 
+diff --git a/src/imageformats/ani.cpp b/src/imageformats/ani.cpp
+index 5fa0d46..4c13315 100644
+--- a/src/imageformats/ani.cpp
++++ b/src/imageformats/ani.cpp
+@@ -383,7 +383,11 @@ bool ANIHandler::ensureScanned() const
+ 
+             // TODO should we check that the number of rate entries matches nSteps?
+             auto *dataPtr = data.data();
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+             QList<int> list;
++#else
++            QVector<int> list;
++#endif
+             for (int i = 0; i < data.size(); i += sizeof(quint32_le)) {
+                 const auto entry = *(reinterpret_cast<const quint32_le *>(dataPtr + i));
+                 list.append(entry);
+diff --git a/src/imageformats/ani_p.h b/src/imageformats/ani_p.h
+index bfce9ef..7b8435b 100644
+--- a/src/imageformats/ani_p.h
++++ b/src/imageformats/ani_p.h
+@@ -10,6 +10,10 @@
+ #include <QImageIOPlugin>
+ #include <QSize>
+ 
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++#include <QVector>
++#endif
++
+ class ANIHandler : public QImageIOHandler
+ {
+ public:
+@@ -41,14 +45,26 @@ private:
+     int m_frameCount = 0; // "physical" frames
+     int m_imageCount = 0; // logical images
+     // Stores a custom sequence of images
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<int> m_imageSequence;
++#else
++    QVector<int> m_imageSequence;
++#endif
+     // and the corresponding offsets where they are
+     // since we can't read the image data sequentally in this case then
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<qint64> m_frameOffsets;
++#else
++    QVector<qint64> m_frameOffsets;
++#endif
+     qint64 m_firstFrameOffset = 0;
+ 
+     int m_displayRate = 0;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<int> m_displayRates;
++#else
++    QVector<int> m_displayRates;
++#endif
+ 
+     QString m_name;
+     QString m_artist;
+diff --git a/src/imageformats/hdr.cpp b/src/imageformats/hdr.cpp
+index 3d4e384..f76883e 100644
+--- a/src/imageformats/hdr.cpp
++++ b/src/imageformats/hdr.cpp
+@@ -33,6 +33,17 @@ namespace // Private.
+ #define MINELEN 8 // minimum scanline length for encoding
+ #define MAXELEN 0x7fff // maximum scanline length for encoding
+ 
++#if QT_VERSION < QT_VERSION_CHECK(6, 2, 0)
++static inline uchar ClipToByte(float value)
++{
++    if (value > 255.0f) {
++        return 255;
++    }
++    // else if (value < 0.0f) return 0;  // we know value is positive.
++    return uchar(value);
++}
++#endif
++
+ // read an old style line from the hdr image file
+ // if 'first' is true the first byte is already read
+ static bool Read_Old_Line(uchar *image, int width, QDataStream &s)
+@@ -88,23 +99,31 @@ void RGBE_To_QRgbLine(uchar *image, float_T *scanline, int width)
+             v = 1.0f / float(1 << -e);
+         }
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+         auto j4 = j * 4;
+         auto vn = v / 255.0f;
+         scanline[j4] = float_T(std::min(float(image[0]) * vn, 1.0f));
+         scanline[j4 + 1] = float_T(std::min(float(image[1]) * vn, 1.0f));
+         scanline[j4 + 2] = float_T(std::min(float(image[2]) * vn, 1.0f));
+         scanline[j4 + 3] = float_T(1.0f);
++#else
++        scanline[j] = qRgb(ClipToByte(float(image[0]) * v), ClipToByte(float(image[1]) * v), ClipToByte(float(image[2]) * v));
++#endif
+         image += 4;
+     }
+ }
+ 
+ QImage::Format imageFormat()
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+ #ifdef HDR_HALF_QUALITY
+     return QImage::Format_RGBX16FPx4;
+ #else
+     return QImage::Format_RGBX32FPx4;
+ #endif
++#else
++    return QImage::Format_RGB32;
++#endif
+ }
+ 
+ // Load the HDR image.
+@@ -125,11 +144,15 @@ static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &i
+     uchar *image = reinterpret_cast<uchar *>(lineArray.data());
+ 
+     for (int cline = 0; cline < height; cline++) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+ #ifdef HDR_HALF_QUALITY
+         auto scanline = reinterpret_cast<qfloat16 *>(img.scanLine(cline));
+ #else
+         auto scanline = reinterpret_cast<float *>(img.scanLine(cline));
+ #endif
++#else
++        auto scanline = reinterpret_cast<QRgb *>(img.scanLine(cline));
++#endif
+ 
+         // determine scanline type
+         if ((width < MINELEN) || (MAXELEN < width)) {
+diff --git a/src/imageformats/jxl_p.h b/src/imageformats/jxl_p.h
+index 9f6b581..bc8c46b 100644
+--- a/src/imageformats/jxl_p.h
++++ b/src/imageformats/jxl_p.h
+@@ -17,6 +17,10 @@
+ #include <QList>
+ #include <QVariant>
+ 
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++#include <QVector>
++#endif
++
+ #include <jxl/decode.h>
+ 
+ class QJpegXLHandler : public QImageIOHandler
+@@ -71,7 +75,11 @@ private:
+     void *m_runner;
+     JxlBasicInfo m_basicinfo;
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<int> m_framedelays;
++#else
++    QVector<int> m_framedelays;
++#endif
+     int m_next_image_delay;
+ 
+     QImage m_current_image;
 diff --git a/src/imageformats/psd.cpp b/src/imageformats/psd.cpp
-index 710d1a6..969ea31 100644
+index 85ef237..011f096 100644
 --- a/src/imageformats/psd.cpp
 +++ b/src/imageformats/psd.cpp
-@@ -733,9 +733,13 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
+@@ -41,6 +41,10 @@
+ #include <QImage>
+ #include <QColorSpace>
+ 
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++#include <QVector>
++#endif
++
+ #include <cmath>
+ #include <cstring>
+ 
+@@ -126,7 +130,11 @@ struct PSDDuotoneOptions {
+  */
+ struct PSDColorModeDataSection {
+     PSDDuotoneOptions duotone;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<QRgb> palette;
++#else
++    QVector<QRgb> palette;
++#endif
+ };
+ 
+ using PSDImageResourceSection = QHash<quint16, PSDImageResourceBlock>;
+@@ -458,7 +466,11 @@ PSDColorModeDataSection readColorModeDataSection(QDataStream &s, bool *ok = null
+     }
+     else {              // read the palette (768 bytes)
+         auto&& palette = cms.palette;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+         QList<quint8> vect(size);
++#else
++        QVector<quint8> vect(size);
++#endif
+         for (auto&& v : vect)
+             s >> v;
+         for (qsizetype i = 0, n = vect.size()/3; i < n; ++i)
+@@ -733,9 +745,13 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
      auto format = QImage::Format_Invalid;
      switch(header.color_mode) {
      case CM_RGB:
@@ -27,7 +223,31 @@ index 710d1a6..969ea31 100644
              format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64_Premultiplied;
          else
              format = header.channel_count < 4 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888_Premultiplied;
-@@ -1169,7 +1173,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1109,7 +1125,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+         return false;
+     }
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<quint32> strides(header.height * header.channel_count, raw_count);
++#else
++    QVector<quint32> strides(header.height * header.channel_count, raw_count);
++#endif
+     // Read the compressed stride sizes
+     if (compression) {
+         for (auto&& v : strides) {
+@@ -1124,7 +1144,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+     }
+     // calculate the absolute file positions of each stride (required when a colorspace conversion should be done)
+     auto device = stream.device();
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<quint64> stridePositions(strides.size());
++#else
++    QVector<quint64> stridePositions(strides.size());
++#endif
+     if (!stridePositions.isEmpty()) {
+         stridePositions[0] = device->pos();
+     }
+@@ -1169,7 +1193,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                      planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, header.channel_count);
                  }
                  else if (header.depth == 32) {
@@ -39,7 +259,7 @@ index 710d1a6..969ea31 100644
                  }
              }
  
-@@ -1194,7 +1202,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1194,7 +1222,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                      else if (header.depth == 16)
                          premulConversion<quint16>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
                      else if (header.depth == 32)
@@ -51,7 +271,7 @@ index 710d1a6..969ea31 100644
                  }
              }
  
-@@ -1217,7 +1229,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1217,7 +1249,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                  else if (header.depth == 16)
                      rawChannelsCopy<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
                  else if (header.depth == 32)
@@ -63,7 +283,7 @@ index 710d1a6..969ea31 100644
              }
          }
      }
-@@ -1242,7 +1258,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1242,7 +1278,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                      planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, imgChannels);
                  }
                  else if (header.depth == 32 && header.color_mode == CM_RGB) { // 32-bits float images: RGB/RGBA
@@ -75,8 +295,117 @@ index 710d1a6..969ea31 100644
                  }
                  else if (header.depth == 32 && header.color_mode == CM_GRAYSCALE) { // 32-bits float images: Grayscale (coverted to equivalent integer 16-bits)
                      planarToChunchyFloatToUInt16<float>(scanLine, rawStride.data(), header.width, c, imgChannels);
+diff --git a/src/imageformats/ras.cpp b/src/imageformats/ras.cpp
+index bd250ff..c73b581 100644
+--- a/src/imageformats/ras.cpp
++++ b/src/imageformats/ras.cpp
+@@ -15,6 +15,13 @@
+ #include <QDebug>
+ #include <QImage>
+ 
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++#include <QVector>
++#endif
++
++#include <algorithm>
++#include <cstring>
++
+ namespace // Private.
+ {
+ // format info from http://www.fileformat.info/format/sunraster/egff.htm
+@@ -221,11 +228,19 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
+ 
+     // Read palette if needed.
+     if (ras.ColorMapType == RAS_COLOR_MAP_TYPE_RGB) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+         QList<quint8> palette(ras.ColorMapLength);
++#else
++        QVector<quint8> palette(ras.ColorMapLength);
++#endif
+         for (quint32 i = 0; i < ras.ColorMapLength; ++i) {
+             s >> palette[i];
+         }
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+         QList<QRgb> colorTable;
++#else
++        QVector<QRgb> colorTable;
++#endif
+         for (quint32 i = 0, n = ras.ColorMapLength / 3; i < n; ++i) {
+             colorTable << qRgb(palette.at(i), palette.at(i + n), palette.at(i + 2 * n));
+         }
+@@ -239,7 +254,7 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
+     }
+ 
+     LineDecoder dec(s.device(), ras);
+-    auto bytesPerLine = std::min(img.bytesPerLine(), qsizetype(rasLineSize));
++    auto bytesPerLine = std::min(qsizetype(img.bytesPerLine()), qsizetype(rasLineSize));
+     for (quint32 y = 0; y < ras.Height; ++y) {
+         auto rasLine = dec.readLine(rasLineSize);
+         if (rasLine.size() != rasLineSize) {
+diff --git a/src/imageformats/rgb.cpp b/src/imageformats/rgb.cpp
+index bfd92d3..0ab8550 100644
+--- a/src/imageformats/rgb.cpp
++++ b/src/imageformats/rgb.cpp
+@@ -28,7 +28,15 @@
+ #include <QDebug>
+ #include <QImage>
+ 
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++#include <QVector>
++#endif
++
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+ class RLEData : public QList<uchar>
++#else
++class RLEData : public QVector<uchar>
++#endif
+ {
+ public:
+     RLEData()
+@@ -61,7 +69,11 @@ public:
+     {
+     }
+     uint insert(const uchar *d, uint l);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<const RLEData *> vector();
++#else
++    QVector<const RLEData *> vector();
++#endif
+     void setBaseOffset(uint o)
+     {
+         _offset = o;
+@@ -107,7 +119,11 @@ private:
+     QByteArray _data;
+     QByteArray::Iterator _pos;
+     RLEMap _rlemap;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<const RLEData *> _rlevector;
++#else
++    QVector<const RLEData *> _rlevector;
++#endif
+     uint _numrows;
+ 
+     bool readData(QImage &);
+@@ -421,9 +437,17 @@ uint RLEMap::insert(const uchar *d, uint l)
+     return QMap<RLEData, uint>::insert(data, _counter++).value();
+ }
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+ QList<const RLEData *> RLEMap::vector()
++#else
++QVector<const RLEData *> RLEMap::vector()
++#endif
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<const RLEData *> v(size());
++#else
++    QVector<const RLEData *> v(size());
++#endif
+     for (Iterator it = begin(); it != end(); ++it) {
+         v.replace(it.value(), &it.key());
+     }
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
-index 14e67c2..82178da 100644
+index fac9ae3..2f496a3 100644
 --- a/src/imageformats/util_p.h
 +++ b/src/imageformats/util_p.h
 @@ -11,7 +11,10 @@
@@ -88,7 +417,7 @@ index 14e67c2..82178da 100644
  #include <QImageIOHandler>
 +#endif
  
- // QVector uses some extra space for stuff, hence the 32 here suggested by Thiago Macieira
+ // QList uses some extra space for stuff, hence the 32 here suggested by Thiago Macieira
  static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
 @@ -21,9 +24,13 @@ static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
  inline QImage imageAlloc(const QSize &size, const QImage::Format &format)
@@ -105,10 +434,10 @@ index 14e67c2..82178da 100644
  }
  
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index be1a830..09b7ae8 100644
+index d0c16ae..ba39ef0 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
-@@ -9,16 +9,18 @@
+@@ -9,21 +9,32 @@
  #include "util_p.h"
  #include "xcf_p.h"
  
@@ -117,19 +446,93 @@ index be1a830..09b7ae8 100644
  #include <QIODevice>
  #include <QImage>
 -#include <QImageReader>
+ #include <QList>
  #include <QLoggingCategory>
  #include <QPainter>
  #include <QStack>
- #include <QVector>
  #include <QtEndian>
 +#include <QColorSpace>
 +#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 +#include <QImageReader>
 +#endif
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++#include <QVector>
++#endif
++
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++#define XCF_QT5_SUPPORT
++#endif
  
- #include <stdlib.h>
- #include <string.h>
-@@ -1108,11 +1110,13 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
+ #ifndef XCF_QT5_SUPPORT
+ // Float images are not supported by Qt 5 and can be disabled in QT 6 to reduce memory usage.
+ // Unfortunately enabling/disabling this define results in slightly different images, so leave the default if possible.
++#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+ #define USE_FLOAT_IMAGES // default uncommented
++#endif
+ 
+ // Let's set a "reasonable" maximum size
+ #define MAX_IMAGE_WIDTH 300000
+@@ -110,7 +121,11 @@ struct RandomTable {
+  * parallel processing on a tile-by-tile basis. Here, though,
+  * we just read them in en-masse and store them in a matrix.
+  */
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+ typedef QList<QList<QImage>> Tiles;
++#else
++typedef QVector<QVector<QImage>> Tiles;
++#endif
+ 
+ class XCFImageFormat
+ {
+@@ -492,7 +507,11 @@ public:
+         qint32 tattoo; //!< (unique identifier?)
+         quint32 unit; //!< Units of The GIMP (inch, mm, pica, etc...)
+         qint32 num_colors = 0; //!< number of colors in an indexed image
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+         QList<QRgb> palette; //!< indexed image color palette
++#else
++        QVector<QRgb> palette; //!< indexed image color palette
++#endif
+ 
+         int num_layers; //!< number of layers
+         Layer layer; //!< most recently read layer
+@@ -545,7 +564,11 @@ private:
+     //! This table is used as a shared grayscale ramp to be set on grayscale
+     //! images. This is because Qt does not differentiate between indexed and
+     //! grayscale images.
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     static QList<QRgb> grayTable;
++#else
++    static QVector<QRgb> grayTable;
++#endif
+ 
+     //! This table provides the add_pixel saturation values (i.e. 250 + 250 = 255).
+     // static int add_lut[256][256]; - this is so lame waste of 256k of memory
+@@ -646,7 +669,11 @@ bool XCFImageFormat::random_table_initialized;
+ 
+ const RandomTable XCFImageFormat::randomTable{};
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+ QList<QRgb> XCFImageFormat::grayTable;
++#else
++QVector<QRgb> XCFImageFormat::grayTable;
++#endif
+ 
+ bool XCFImageFormat::modeAffectsSourceAlpha(const quint32 type)
+ {
+@@ -993,7 +1020,11 @@ bool XCFImageFormat::loadImageProperties(QDataStream &xcf_io, XCFImage &xcf_imag
+                 return false;
+             }
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+             xcf_image.palette = QList<QRgb>();
++#else
++            xcf_image.palette = QVector<QRgb>();
++#endif
+             xcf_image.palette.reserve(xcf_image.num_colors);
+ 
+             for (int i = 0; i < xcf_image.num_colors; i++) {
+@@ -1379,11 +1410,13 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
      // tiles of 64x64 pixels. The required memory to build the image is at least doubled because tiles are loaded
      // and then the final image is created by copying the tiles inside it.
      // NOTE: on Windows to open a 10GiB image the plugin uses 28GiB of RAM
@@ -140,9 +543,21 @@ index be1a830..09b7ae8 100644
          return false;
      }
 +#endif
+ #endif
  
      layer.image_tiles.resize(layer.nrows);
+@@ -2013,7 +2046,11 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
  
+     const uint blockSize = TILE_WIDTH * TILE_HEIGHT * bpp * 1.5;
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<uchar> buffer;
++#else
++    QVector<uchar> buffer;
++#endif
+     if (needConvert) {
+         buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
+     }
 -- 
-2.39.2
+2.42.0
 

@@ -46,33 +46,6 @@ typedef enum {
 
 // From GIMP "libgimp/gimpenums.h" v2.4
 
-//! Effect to apply when layers are merged together.
-
-typedef enum {
-    NORMAL_MODE,
-    DISSOLVE_MODE,
-    BEHIND_MODE,
-    MULTIPLY_MODE,
-    SCREEN_MODE,
-    OVERLAY_MODE,
-    DIFFERENCE_MODE,
-    ADDITION_MODE,
-    SUBTRACT_MODE,
-    DARKEN_ONLY_MODE,
-    LIGHTEN_ONLY_MODE,
-    HUE_MODE,
-    SATURATION_MODE,
-    COLOR_MODE,
-    VALUE_MODE,
-    DIVIDE_MODE,
-    DODGE_MODE,
-    BURN_MODE,
-    HARDLIGHT_MODE,
-    SOFTLIGHT_MODE,
-    GRAIN_EXTRACT_MODE,
-    GRAIN_MERGE_MODE
-} LayerModeEffects;
-
 // From GIMP "paint_funcs.c" v1.2
 
 /*!

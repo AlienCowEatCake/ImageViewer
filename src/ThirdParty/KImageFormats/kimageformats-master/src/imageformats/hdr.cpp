@@ -9,13 +9,19 @@
 #include "hdr_p.h"
 #include "util_p.h"
 
+#include <QColorSpace>
 #include <QDataStream>
+#include <QFloat16>
 #include <QImage>
 #include <QLoggingCategory>
 #include <QRegularExpressionMatch>
-#include <QColorSpace>
 
 #include <QDebug>
+
+/* *** HDR_HALF_QUALITY ***
+ * If defined, a 16-bits float image is created, otherwise a 32-bits float ones (default).
+ */
+//#define HDR_HALF_QUALITY // default commented -> you should define it in your cmake file
 
 typedef unsigned char uchar;
 
@@ -27,6 +33,7 @@ namespace // Private.
 #define MINELEN 8 // minimum scanline length for encoding
 #define MAXELEN 0x7fff // maximum scanline length for encoding
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 2, 0)
 static inline uchar ClipToByte(float value)
 {
     if (value > 255.0f) {
@@ -35,6 +42,7 @@ static inline uchar ClipToByte(float value)
     // else if (value < 0.0f) return 0;  // we know value is positive.
     return uchar(value);
 }
+#endif
 
 // read an old style line from the hdr image file
 // if 'first' is true the first byte is already read
@@ -43,6 +51,7 @@ static bool Read_Old_Line(uchar *image, int width, QDataStream &s)
     int rshift = 0;
     int i;
 
+    uchar *start = image;
     while (width > 0) {
         s >> image[0];
         s >> image[1];
@@ -54,7 +63,14 @@ static bool Read_Old_Line(uchar *image, int width, QDataStream &s)
         }
 
         if ((image[0] == 1) && (image[1] == 1) && (image[2] == 1)) {
-            for (i = image[3] << rshift; i > 0; i--) {
+            // NOTE: we don't have an image sample that cover this code
+            if (rshift > 31) {
+                return false;
+            }
+            for (i = image[3] << rshift; i > 0 && width > 0; i--) {
+                if (image == start) {
+                    return false; // you cannot be here at the first run
+                }
                 // memcpy(image, image-4, 4);
                 (uint &)image[0] = (uint &)image[0 - 4];
                 image += 4;
@@ -70,22 +86,44 @@ static bool Read_Old_Line(uchar *image, int width, QDataStream &s)
     return true;
 }
 
-static void RGBE_To_QRgbLine(uchar *image, QRgb *scanline, int width)
+template<class float_T>
+void RGBE_To_QRgbLine(uchar *image, float_T *scanline, int width)
 {
     for (int j = 0; j < width; j++) {
         // v = ldexp(1.0, int(image[3]) - 128);
         float v;
-        int e = int(image[3]) - 128;
+        int e = qBound(-31, int(image[3]) - 128, 31);
         if (e > 0) {
             v = float(1 << e);
         } else {
             v = 1.0f / float(1 << -e);
         }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+        auto j4 = j * 4;
+        auto vn = v / 255.0f;
+        scanline[j4] = float_T(std::min(float(image[0]) * vn, 1.0f));
+        scanline[j4 + 1] = float_T(std::min(float(image[1]) * vn, 1.0f));
+        scanline[j4 + 2] = float_T(std::min(float(image[2]) * vn, 1.0f));
+        scanline[j4 + 3] = float_T(1.0f);
+#else
         scanline[j] = qRgb(ClipToByte(float(image[0]) * v), ClipToByte(float(image[1]) * v), ClipToByte(float(image[2]) * v));
-
+#endif
         image += 4;
     }
+}
+
+QImage::Format imageFormat()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+#ifdef HDR_HALF_QUALITY
+    return QImage::Format_RGBX16FPx4;
+#else
+    return QImage::Format_RGBX32FPx4;
+#endif
+#else
+    return QImage::Format_RGB32;
+#endif
 }
 
 // Load the HDR image.
@@ -95,7 +133,7 @@ static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &i
     uchar code;
 
     // Create dst image.
-    img = imageAlloc(width, height, QImage::Format_RGB32);
+    img = imageAlloc(width, height, imageFormat());
     if (img.isNull()) {
         qCDebug(HDRPLUGIN) << "Couldn't create image with size" << width << height << "and format RGB32";
         return false;
@@ -103,10 +141,18 @@ static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &i
 
     QByteArray lineArray;
     lineArray.resize(4 * width);
-    uchar *image = (uchar *)lineArray.data();
+    uchar *image = reinterpret_cast<uchar *>(lineArray.data());
 
     for (int cline = 0; cline < height; cline++) {
-        QRgb *scanline = (QRgb *)img.scanLine(cline);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+#ifdef HDR_HALF_QUALITY
+        auto scanline = reinterpret_cast<qfloat16 *>(img.scanLine(cline));
+#else
+        auto scanline = reinterpret_cast<float *>(img.scanLine(cline));
+#endif
+#else
+        auto scanline = reinterpret_cast<QRgb *>(img.scanLine(cline));
+#endif
 
         // determine scanline type
         if ((width < MINELEN) || (MAXELEN < width)) {
@@ -149,7 +195,7 @@ static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &i
         }
 
         // read each component
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0, len = int(lineArray.size()); i < 4; i++) {
             for (int j = 0; j < width;) {
                 s >> code;
                 if (s.atEnd()) {
@@ -161,14 +207,20 @@ static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &i
                     code &= 127;
                     s >> val;
                     while (code != 0) {
-                        image[i + j * 4] = val;
+                        auto idx = i + j * 4;
+                        if (idx < len) {
+                            image[idx] = val;
+                        }
                         j++;
                         code--;
                     }
                 } else {
                     // non-run
                     while (code != 0) {
-                        s >> image[i + j * 4];
+                        auto idx = i + j * 4;
+                        if (idx < len) {
+                            s >> image[idx];
+                        }
                         j++;
                         code--;
                     }
@@ -182,9 +234,7 @@ static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &i
     return true;
 }
 
-} // namespace
-
-bool HDRHandler::read(QImage *outImage)
+static QSize readHeaderSize(QIODevice *device)
 {
     int len;
     QByteArray line(MAXLINE + 1, Qt::Uninitialized);
@@ -192,7 +242,7 @@ bool HDRHandler::read(QImage *outImage)
 
     // Parse header
     do {
-        len = device()->readLine(line.data(), MAXLINE);
+        len = device->readLine(line.data(), MAXLINE);
 
         if (line.startsWith("FORMAT=")) {
             format = line.mid(7, len - 7 - 1 /*\n*/);
@@ -202,10 +252,10 @@ bool HDRHandler::read(QImage *outImage)
 
     if (format != "32-bit_rle_rgbe") {
         qCDebug(HDRPLUGIN) << "Unknown HDR format:" << format;
-        return false;
+        return QSize();
     }
 
-    len = device()->readLine(line.data(), MAXLINE);
+    len = device->readLine(line.data(), MAXLINE);
     line.resize(len);
 
     /*
@@ -225,21 +275,30 @@ bool HDRHandler::read(QImage *outImage)
     QRegularExpressionMatch match = resolutionRegExp.match(QString::fromLatin1(line));
     if (!match.hasMatch()) {
         qCDebug(HDRPLUGIN) << "Invalid HDR file, the first line after the header didn't have the expected format:" << line;
-        return false;
+        return QSize();
     }
 
     if ((match.captured(1).at(1) != u'Y') || (match.captured(3).at(1) != u'X')) {
         qCDebug(HDRPLUGIN) << "Unsupported image orientation in HDR file.";
+        return QSize();
+    }
+
+    return QSize(match.captured(4).toInt(), match.captured(2).toInt());
+}
+
+} // namespace
+
+bool HDRHandler::read(QImage *outImage)
+{
+    QDataStream s(device());
+
+    QSize size = readHeaderSize(s.device());
+    if (!size.isValid()) {
         return false;
     }
 
-    const int width = match.captured(4).toInt();
-    const int height = match.captured(2).toInt();
-
-    QDataStream s(device());
-
     QImage img;
-    if (!LoadHDR(s, width, height, img)) {
+    if (!LoadHDR(s, size.width(), size.height(), img)) {
         // qDebug() << "Error loading HDR file.";
         return false;
     }
@@ -249,6 +308,40 @@ bool HDRHandler::read(QImage *outImage)
 
     *outImage = img;
     return true;
+}
+
+bool HDRHandler::supportsOption(ImageOption option) const
+{
+    if (option == QImageIOHandler::Size) {
+        return true;
+    }
+    if (option == QImageIOHandler::ImageFormat) {
+        return true;
+    }
+    return false;
+}
+
+QVariant HDRHandler::option(ImageOption option) const
+{
+    QVariant v;
+
+    if (option == QImageIOHandler::Size) {
+        if (auto d = device()) {
+            // transactions works on both random and sequential devices
+            d->startTransaction();
+            auto size = readHeaderSize(d);
+            d->rollbackTransaction();
+            if (size.isValid()) {
+                v = QVariant::fromValue(size);
+            }
+        }
+    }
+
+    if (option == QImageIOHandler::ImageFormat) {
+        v = QVariant::fromValue(imageFormat());
+    }
+
+    return v;
 }
 
 HDRHandler::HDRHandler()
@@ -271,7 +364,20 @@ bool HDRHandler::canRead(QIODevice *device)
         return false;
     }
 
-    return device->peek(11) == "#?RADIANCE\n" || device->peek(7) == "#?RGBE\n";
+    // the .pic taken from official test cases does not start with this string but can be loaded.
+    if(device->peek(11) == "#?RADIANCE\n" || device->peek(7) == "#?RGBE\n") {
+        return true;
+    }
+
+    // allow to load offical test cases: https://radsite.lbl.gov/radiance/framed.html
+    device->startTransaction();
+    QSize size = readHeaderSize(device);
+    device->rollbackTransaction();
+    if (size.isValid()) {
+        return true;
+    }
+
+    return false;
 }
 
 QImageIOPlugin::Capabilities HDRPlugin::capabilities(QIODevice *device, const QByteArray &format) const

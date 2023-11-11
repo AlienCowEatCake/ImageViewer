@@ -12,14 +12,41 @@
 #include <QDebug>
 #include <QIODevice>
 #include <QImage>
+#include <QList>
 #include <QLoggingCategory>
 #include <QPainter>
 #include <QStack>
-#include <QVector>
 #include <QtEndian>
 #include <QColorSpace>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QImageReader>
+#endif
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QVector>
+#endif
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#define XCF_QT5_SUPPORT
+#endif
+
+#ifndef XCF_QT5_SUPPORT
+// Float images are not supported by Qt 5 and can be disabled in QT 6 to reduce memory usage.
+// Unfortunately enabling/disabling this define results in slightly different images, so leave the default if possible.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+#define USE_FLOAT_IMAGES // default uncommented
+#endif
+
+// Let's set a "reasonable" maximum size
+#define MAX_IMAGE_WIDTH 300000
+#define MAX_IMAGE_HEIGHT 300000
+#else
+// While it is possible to have images larger than 32767 pixels, QPainter seems unable to go beyond this threshold using Qt 5.
+#define MAX_IMAGE_WIDTH 32767
+#define MAX_IMAGE_HEIGHT 32767
+#endif
+
+#ifdef USE_FLOAT_IMAGES
+#include <qrgbafloat.h>
 #endif
 
 #include <stdlib.h>
@@ -29,6 +56,11 @@
 
 Q_DECLARE_LOGGING_CATEGORY(XCFPLUGIN)
 Q_LOGGING_CATEGORY(XCFPLUGIN, "kf.imageformats.plugins.xcf", QtWarningMsg)
+
+//#define DISABLE_TILE_PROFILE // default commented (comment to use the conversion as intended by Martin)
+#define DISABLE_IMAGE_PROFILE // default uncommented (comment to use the conversion as intended by Martin)
+#define DISABLE_TILE_PROFILE_CONV // default uncommented (comment to use the conversion as intended by Martin)
+#define DISABLE_IMAGE_PROFILE_CONV // default uncommented (comment to use the conversion as intended by Martin)
 
 const float INCHESPERMETER = (100.0f / 2.54f);
 
@@ -89,7 +121,11 @@ struct RandomTable {
  * parallel processing on a tile-by-tile basis. Here, though,
  * we just read them in en-masse and store them in a matrix.
  */
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+typedef QList<QList<QImage>> Tiles;
+#else
 typedef QVector<QVector<QImage>> Tiles;
+#endif
 
 class XCFImageFormat
 {
@@ -142,7 +178,7 @@ public:
     Q_ENUM(PropType)
 
     //! Compression type used in layer tiles.
-    enum XcfCompressionType {
+    enum XcfCompressionType : qint8 {
         COMPRESS_INVALID = -1, /* our own */
         COMPRESS_NONE = 0,
         COMPRESS_RLE = 1,
@@ -151,7 +187,7 @@ public:
     };
     Q_ENUM(XcfCompressionType)
 
-    enum LayerModeType {
+    enum LayerModeType : quint32 {
         GIMP_LAYER_MODE_NORMAL_LEGACY,
         GIMP_LAYER_MODE_DISSOLVE,
         GIMP_LAYER_MODE_BEHIND_LEGACY,
@@ -219,7 +255,7 @@ public:
     Q_ENUM(LayerModeType)
 
     //! Type of individual layers in an XCF file.
-    enum GimpImageType {
+    enum GimpImageType : qint32 {
         RGB_GIMAGE,
         RGBA_GIMAGE,
         GRAY_GIMAGE,
@@ -230,25 +266,49 @@ public:
     Q_ENUM(GimpImageType)
 
     //! Type of individual layers in an XCF file.
-    enum GimpColorSpace {
+    enum GimpColorSpace : qint32 {
+        AutoColorSpace,
         RgbLinearSpace,
         RgbPerceptualSpace,
         LabSpace,
     };
+    Q_ENUM(GimpColorSpace);
 
     //! Mode to use when compositing layer
-    enum GimpCompositeMode {
-        CompositeOver,
+    enum GimpCompositeMode : qint32 {
+        CompositeAuto,
         CompositeUnion,
         CompositeClipBackdrop,
         CompositeClipLayer,
         CompositeIntersect,
     };
+    Q_ENUM(GimpCompositeMode);
+
+    enum GimpPrecision : qint32 {
+        GIMP_PRECISION_U8_LINEAR = 100, /*< desc="8-bit linear integer"         >*/
+        GIMP_PRECISION_U8_NON_LINEAR = 150, /*< desc="8-bit non-linear integer"          >*/
+        GIMP_PRECISION_U8_PERCEPTUAL = 175, /*< desc="8-bit perceptual integer"          >*/
+        GIMP_PRECISION_U16_LINEAR = 200, /*< desc="16-bit linear integer"        >*/
+        GIMP_PRECISION_U16_NON_LINEAR = 250, /*< desc="16-bit non-linear integer"         >*/
+        GIMP_PRECISION_U16_PERCEPTUAL = 275, /*< desc="16-bit perceptual integer"         >*/
+        GIMP_PRECISION_U32_LINEAR = 300, /*< desc="32-bit linear integer"        >*/
+        GIMP_PRECISION_U32_NON_LINEAR = 350, /*< desc="32-bit non-linear integer"         >*/
+        GIMP_PRECISION_U32_PERCEPTUAL = 375, /*< desc="32-bit perceptual integer"         >*/
+        GIMP_PRECISION_HALF_LINEAR = 500, /*< desc="16-bit linear floating point" >*/
+        GIMP_PRECISION_HALF_NON_LINEAR = 550, /*< desc="16-bit non-linear floating point"  >*/
+        GIMP_PRECISION_HALF_PERCEPTUAL = 575, /*< desc="16-bit perceptual floating point"  >*/
+        GIMP_PRECISION_FLOAT_LINEAR = 600, /*< desc="32-bit linear floating point" >*/
+        GIMP_PRECISION_FLOAT_NON_LINEAR = 650, /*< desc="32-bit non-linear floating point"  >*/
+        GIMP_PRECISION_FLOAT_PERCEPTUAL = 675, /*< desc="32-bit perceptual floating point"  >*/
+        GIMP_PRECISION_DOUBLE_LINEAR = 700, /*< desc="64-bit linear floating point" >*/
+        GIMP_PRECISION_DOUBLE_NON_LINEAR = 750, /*< desc="64-bit non-linear floating point"  >*/
+        GIMP_PRECISION_DOUBLE_PERCEPTUAL = 775, /*< desc="64-bit perceptual floating point"  >*/
+    };
+    Q_ENUM(GimpPrecision);
 
     XCFImageFormat();
     bool readXCF(QIODevice *device, QImage *image);
 
-private:
     /*!
      * Each GIMP image is composed of one or more layers. A layer can
      * be one of any three basic types: RGB, grayscale or indexed. With an
@@ -262,7 +322,7 @@ private:
     public:
         quint32 width; //!< Width of the layer
         quint32 height; //!< Height of the layer
-        qint32 type; //!< Type of the layer (GimpImageType)
+        GimpImageType type; //!< Type of the layer (GimpImageType)
         char *name; //!< Name of the layer
         qint64 hierarchy_offset; //!< File position of Tile hierarchy
         qint64 mask_offset; //!< File position of mask image
@@ -302,20 +362,24 @@ private:
         quint32 show_mask; //!< Show the layer mask rather than the image?
         qint32 x_offset = 0; //!< x offset of the layer relative to the image
         qint32 y_offset = 0; //!< y offset of the layer relative to the image
-        quint32 mode = 0; //!< Combining mode of layer (LayerModeEffects)
+        LayerModeType mode = GIMP_LAYER_MODE_NORMAL_LEGACY; //!< Combining mode of layer (LayerModeEffects)
         quint32 tattoo; //!< (unique identifier?)
-        qint32 blendSpace = 0; //!< What colorspace to use when blending
-        qint32 compositeSpace = 0; //!< What colorspace to use when compositing
-        qint32 compositeMode = 0; //!< How to composite layer (union, clip, etc.)
+        GimpColorSpace blendSpace = RgbLinearSpace; //!< What colorspace to use when blending
+        GimpColorSpace compositeSpace = RgbLinearSpace; //!< What colorspace to use when compositing
+        GimpCompositeMode compositeMode = CompositeUnion; //!< How to composite layer (union, clip, etc.)
 
         //! As each tile is read from the file, it is buffered here.
-        uchar tile[TILE_WIDTH * TILE_HEIGHT * sizeof(QRgb)];
+#ifdef USE_FLOAT_IMAGES
+        uchar tile[quint64(TILE_WIDTH * TILE_HEIGHT * sizeof(QRgbaFloat32) * 1.5)];
+#else
+        uchar tile[quint64(TILE_WIDTH * TILE_HEIGHT * sizeof(QRgba64) * 1.5)];
+#endif
 
         //! The data from tile buffer is copied to the Tile by this
         //! method.  Depending on the type of the tile (RGB, Grayscale,
         //! Indexed) and use (image or mask), the bytes in the buffer are
         //! copied in different ways.
-        void (*assignBytes)(Layer &layer, uint i, uint j);
+        bool (*assignBytes)(Layer &layer, uint i, uint j, const GimpPrecision &precision);
 
         Layer(void)
             : name(nullptr)
@@ -328,6 +392,99 @@ private:
 
         Layer(const Layer &) = delete;
         Layer &operator=(const Layer &) = delete;
+
+        QImage::Format qimageFormat(const GimpPrecision precision, uint num_colors = 0, bool legacyMode = false) const
+        {
+            int bpc = bytesPerChannel(precision);
+#ifdef USE_FLOAT_IMAGES
+            bool float16 = !legacyMode && precision >= GIMP_PRECISION_HALF_LINEAR && precision <= GIMP_PRECISION_HALF_PERCEPTUAL;
+            bool float32 = !legacyMode && precision >= GIMP_PRECISION_FLOAT_LINEAR && precision <= GIMP_PRECISION_FLOAT_PERCEPTUAL;
+#endif
+
+            if (legacyMode) {
+                bpc = std::min(bpc, 1);
+            }
+
+            switch (type) {
+            case RGB_GIMAGE:
+                if (opacity == OPAQUE_OPACITY) {
+#ifdef USE_FLOAT_IMAGES
+                    if (float16) {
+                        return QImage::Format_RGBX16FPx4;
+                    }
+                    if (float32) {
+                        return QImage::QImage::Format_RGBX32FPx4;
+                    }
+#endif
+
+                    if (bpc == 1) {
+                        return QImage::Format_RGBX8888;
+                    } else if (bpc == 2 || bpc == 4) {
+                        return QImage::Format_RGBX64;
+                    } else {
+                        qCDebug(XCFPLUGIN) << "Layer has invalid bpc" << bpc << precision;
+                        return QImage::Format_Invalid;
+                    }
+                }
+                Q_FALLTHROUGH();
+            case RGBA_GIMAGE:
+#ifdef USE_FLOAT_IMAGES
+                if (float16) {
+                    return QImage::Format_RGBA16FPx4;
+                }
+                if (float32) {
+                    return QImage::QImage::Format_RGBA32FPx4;
+                }
+#endif
+                if (bpc == 1) {
+                    return QImage::Format_RGBA8888;
+                } else if (bpc == 2 || bpc == 4) {
+                    return QImage::Format_RGBA64;
+                } else {
+                    qCDebug(XCFPLUGIN) << "Layer has invalid bpc" << bpc;
+                    return QImage::Format_Invalid;
+                }
+                break;
+
+            case GRAY_GIMAGE:
+                if (opacity == OPAQUE_OPACITY) {
+                    return QImage::Format_Indexed8;
+                } // else, fall through to 32-bit representation
+                Q_FALLTHROUGH();
+            case GRAYA_GIMAGE:
+                return QImage::Format_RGBA8888;
+                break;
+
+            case INDEXED_GIMAGE:
+                // As noted in the table above, there are quite a few combinations
+                // which are possible with indexed images, depending on the
+                // presence of transparency (note: not translucency, which is not
+                // supported by The GIMP for indexed images) and the number of
+                // individual colors.
+
+                // Note: Qt treats a bitmap with a Black and White color palette
+                // as a mask, so only the "on" bits are drawn, regardless of the
+                // order color table entries. Otherwise (i.e., at least one of the
+                // color table entries is not black or white), it obeys the one-
+                // or two-color palette. Have to ask about this...
+
+                if (num_colors == 1 || num_colors == 2) {
+                    return QImage::Format_MonoLSB;
+                } else {
+                    return QImage::Format_Indexed8;
+                }
+                break;
+
+            case INDEXEDA_GIMAGE:
+                if (num_colors == 1) {
+                    return QImage::Format_MonoLSB;
+                } else {
+                    return QImage::Format_Indexed8;
+                }
+            }
+            qCWarning(XCFPLUGIN) << "Unhandled layer mode" << XCFImageFormat::LayerModeType(type);
+            return QImage::Format_Invalid;
+        }
     };
 
     /*!
@@ -337,18 +494,24 @@ private:
     class XCFImage
     {
     public:
-        qint32 precision = 0;
-        quint32 width; //!< width of the XCF image
-        quint32 height; //!< height of the XCF image
-        qint32 type; //!< type of the XCF image (GimpImageBaseType)
+        struct Header {
+            GimpPrecision precision = GIMP_PRECISION_U8_LINEAR; //!< Default precision (GimpPrecision)
+            quint32 width; //!< width of the XCF image
+            quint32 height; //!< height of the XCF image
+            qint32 type; //!< type of the XCF image (GimpImageBaseType)
+        } header;
 
-        quint8 compression = COMPRESS_RLE; //!< tile compression method (CompressionType)
+        XcfCompressionType compression = COMPRESS_RLE; //!< tile compression method (CompressionType)
         float x_resolution = -1; //!< x resolution in dots per inch
         float y_resolution = -1; //!< y resolution in dots per inch
         qint32 tattoo; //!< (unique identifier?)
         quint32 unit; //!< Units of The GIMP (inch, mm, pica, etc...)
         qint32 num_colors = 0; //!< number of colors in an indexed image
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QList<QRgb> palette; //!< indexed image color palette
+#else
         QVector<QRgb> palette; //!< indexed image color palette
+#endif
 
         int num_layers; //!< number of layers
         Layer layer; //!< most recently read layer
@@ -362,8 +525,19 @@ private:
             : initialized(false)
         {
         }
+
+        QImage::Format qimageFormat() const
+        {
+            return layer.qimageFormat(header.precision, num_colors, true);
+        }
+
+        uint bytesPerChannel() const
+        {
+            return XCFImageFormat::bytesPerChannel(header.precision);
+        }
     };
 
+private:
     static qint64 readOffsetPtr(QDataStream &stream)
     {
         if (stream.version() >= 11) {
@@ -390,7 +564,11 @@ private:
     //! This table is used as a shared grayscale ramp to be set on grayscale
     //! images. This is because Qt does not differentiate between indexed and
     //! grayscale images.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    static QList<QRgb> grayTable;
+#else
     static QVector<QRgb> grayTable;
+#endif
 
     //! This table provides the add_pixel saturation values (i.e. 250 + 250 = 255).
     // static int add_lut[256][256]; - this is so lame waste of 256k of memory
@@ -401,7 +579,7 @@ private:
     typedef void (*PixelCopyOperation)(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
 
     //! Higher layers are merged into the final QImage by this routine.
-    typedef void (*PixelMergeOperation)(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
+    typedef bool (*PixelMergeOperation)(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
 
     static bool modeAffectsSourceAlpha(const quint32 type);
 
@@ -413,14 +591,14 @@ private:
     void setGrayPalette(QImage &image);
     void setPalette(XCFImage &xcf_image, QImage &image);
     void setImageParasites(const XCFImage &xcf_image, QImage &image);
-    static void assignImageBytes(Layer &layer, uint i, uint j);
-    bool loadHierarchy(QDataStream &xcf_io, Layer &layer);
-    bool loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp);
-    static void assignMaskBytes(Layer &layer, uint i, uint j);
-    bool loadMask(QDataStream &xcf_io, Layer &layer);
+    static bool assignImageBytes(Layer &layer, uint i, uint j, const GimpPrecision &precision);
+    bool loadHierarchy(QDataStream &xcf_io, Layer &layer, const GimpPrecision precision);
+    bool loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, const GimpPrecision precision);
+    static bool assignMaskBytes(Layer &layer, uint i, uint j, const GimpPrecision &precision);
+    bool loadMask(QDataStream &xcf_io, Layer &layer, const GimpPrecision precision);
     bool loadChannelProperties(QDataStream &xcf_io, Layer &layer);
     bool initializeImage(XCFImage &xcf_image);
-    bool loadTileRLE(QDataStream &xcf_io, uchar *tile, int size, int data_length, qint32 bpp);
+    bool loadTileRLE(QDataStream &xcf_io, uchar *tile, int size, int data_length, qint32 bpp, qint64 *bytesParsed);
 
     static void copyLayerToImage(XCFImage &xcf_image);
     static void copyRGBToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
@@ -432,18 +610,58 @@ private:
     static void copyIndexedAToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
 
     static void mergeLayerIntoImage(XCFImage &xcf_image);
-    static void mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
-    static void mergeGrayToGray(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
-    static void mergeGrayAToGray(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
-    static void mergeGrayToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
-    static void mergeGrayAToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
-    static void mergeIndexedToIndexed(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
-    static void mergeIndexedAToIndexed(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
-    static void mergeIndexedAToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
+    static bool mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
+    static bool mergeGrayToGray(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
+    static bool mergeGrayAToGray(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
+    static bool mergeGrayToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
+    static bool mergeGrayAToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
+    static bool mergeIndexedToIndexed(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
+    static bool mergeIndexedAToIndexed(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
+    static bool mergeIndexedAToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n);
 
     static void initializeRandomTable();
     static void dissolveRGBPixels(QImage &image, int x, int y);
     static void dissolveAlphaPixels(QImage &image, int x, int y);
+
+    static uint bytesPerChannel(const GimpPrecision precision)
+    {
+        switch (precision) {
+        case GIMP_PRECISION_U8_LINEAR:
+        case GIMP_PRECISION_U8_NON_LINEAR:
+        case GIMP_PRECISION_U8_PERCEPTUAL:
+            return 1;
+            break;
+        case GIMP_PRECISION_U16_LINEAR:
+        case GIMP_PRECISION_U16_NON_LINEAR:
+        case GIMP_PRECISION_U16_PERCEPTUAL:
+        case GIMP_PRECISION_HALF_LINEAR:
+        case GIMP_PRECISION_HALF_NON_LINEAR:
+        case GIMP_PRECISION_HALF_PERCEPTUAL:
+            return 2;
+            break;
+
+        case GIMP_PRECISION_U32_LINEAR:
+        case GIMP_PRECISION_U32_NON_LINEAR:
+        case GIMP_PRECISION_U32_PERCEPTUAL:
+        case GIMP_PRECISION_FLOAT_LINEAR:
+        case GIMP_PRECISION_FLOAT_NON_LINEAR:
+        case GIMP_PRECISION_FLOAT_PERCEPTUAL:
+            return 4;
+            break;
+        case GIMP_PRECISION_DOUBLE_LINEAR:
+        case GIMP_PRECISION_DOUBLE_NON_LINEAR:
+        case GIMP_PRECISION_DOUBLE_PERCEPTUAL:
+            return 8;
+            break;
+
+        default:
+            qCDebug(XCFPLUGIN) << "Layer has invalid precision" << precision;
+            return 0;
+        }
+    }
+
+public:
+    static bool readXCFHeader(QDataStream &ds, XCFImage::Header *header);
 };
 
 int XCFImageFormat::random_table[RANDOM_TABLE_SIZE];
@@ -451,7 +669,11 @@ bool XCFImageFormat::random_table_initialized;
 
 const RandomTable XCFImageFormat::randomTable{};
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+QList<QRgb> XCFImageFormat::grayTable;
+#else
 QVector<QRgb> XCFImageFormat::grayTable;
+#endif
 
 bool XCFImageFormat::modeAffectsSourceAlpha(const quint32 type)
 {
@@ -574,11 +796,8 @@ inline int XCFImageFormat::add_lut(int a, int b)
     return qMin(a + b, 255);
 }
 
-bool XCFImageFormat::readXCF(QIODevice *device, QImage *outImage)
+bool XCFImageFormat::readXCFHeader(QDataStream &xcf_io, XCFImage::Header *header)
 {
-    XCFImage xcf_image;
-    QDataStream xcf_io(device);
-
     QByteArray tag(14, '\0');
 
     if (xcf_io.readRawData(tag.data(), tag.size()) != tag.size()) {
@@ -606,22 +825,69 @@ bool XCFImageFormat::readXCF(QIODevice *device, QImage *outImage)
     }
     qCDebug(XCFPLUGIN) << "version" << xcf_io.version();
 
-    if (xcf_io.version() > 11) {
+    if (xcf_io.version() > 12) {
         qCDebug(XCFPLUGIN) << "Unsupported version" << xcf_io.version();
         return false;
     }
 
-    xcf_io >> xcf_image.width >> xcf_image.height >> xcf_image.type;
+    xcf_io >> header->width >> header->height >> header->type;
 
     if (xcf_io.version() >= 4) {
-        xcf_io >> xcf_image.precision;
-        qCDebug(XCFPLUGIN) << "Precision" << xcf_image.precision;
+        int precision;
+        xcf_io >> precision;
+        qCDebug(XCFPLUGIN) << "Precision" << GimpPrecision(precision);
         if (xcf_io.version() < 7) {
-            qCDebug(XCFPLUGIN) << "Conversion of image precision not supported";
+            switch (precision) {
+            case 0:
+                precision = GIMP_PRECISION_U8_NON_LINEAR;
+                break;
+            case 1:
+                precision = GIMP_PRECISION_U16_NON_LINEAR;
+                break;
+            case 2:
+                precision = GIMP_PRECISION_U32_LINEAR;
+                break;
+            case 3:
+                precision = GIMP_PRECISION_HALF_LINEAR;
+                break;
+            case 4:
+                precision = GIMP_PRECISION_FLOAT_LINEAR;
+                break;
+            default:
+                if (precision < GIMP_PRECISION_U8_LINEAR) {
+                    qCWarning(XCFPLUGIN) << "Invalid precision read" << precision;
+                    return false;
+                } else {
+                    qCDebug(XCFPLUGIN) << "Unexpected precision" << precision << "in version" << xcf_io.version();
+                }
+            }
         }
+        header->precision = GimpPrecision(precision);
+    }
+    qCDebug(XCFPLUGIN) << "tag:" << tag << " height: " << header->width << " width: " << header->height << " type: " << header->type;
+
+    if ((sizeof(void *) == 4 && qint64(header->width) * header->height > 16384 * 16384)) {
+        qCWarning(XCFPLUGIN) << "On 32-bits programs the maximum image size is limited to" << 16384 << "x" << 16384 << "px";
+        return false;
     }
 
-    qCDebug(XCFPLUGIN) << tag << " " << xcf_image.width << " " << xcf_image.height << " " << xcf_image.type;
+    if (header->width > MAX_IMAGE_WIDTH || header->height > MAX_IMAGE_HEIGHT) {
+        qCWarning(XCFPLUGIN) << "The maximum image size is limited to" << MAX_IMAGE_WIDTH << "x" << MAX_IMAGE_HEIGHT << "px";
+        return false;
+    }
+
+    return true;
+}
+
+bool XCFImageFormat::readXCF(QIODevice *device, QImage *outImage)
+{
+    XCFImage xcf_image;
+    QDataStream xcf_io(device);
+
+    if (!readXCFHeader(xcf_io, &xcf_image.header)) {
+        return false;
+    }
+
     if (!loadImageProperties(xcf_io, xcf_image)) {
         return false;
     }
@@ -731,7 +997,7 @@ bool XCFImageFormat::loadImageProperties(QDataStream &xcf_io, XCFImage &xcf_imag
 
                 // WARNING: you cannot add metadata to QImage here because it can be null.
                 // Adding a metadata to a QImage when it is null, does nothing (metas are lost).
-                if(tag) // store metadata for future use
+                if (tag) // store metadata for future use
                     xcf_image.parasites.insert(QString::fromUtf8(tag), data);
 
                 delete[] tag;
@@ -754,7 +1020,11 @@ bool XCFImageFormat::loadImageProperties(QDataStream &xcf_io, XCFImage &xcf_imag
                 return false;
             }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            xcf_image.palette = QList<QRgb>();
+#else
             xcf_image.palette = QVector<QRgb>();
+#endif
             xcf_image.palette.reserve(xcf_image.num_colors);
 
             for (int i = 0; i < xcf_image.num_colors; i++) {
@@ -890,9 +1160,9 @@ bool XCFImageFormat::loadLayer(QDataStream &xcf_io, XCFImage &xcf_image)
         return false;
     }
 
-    qCDebug(XCFPLUGIN) << "layer: \"" << layer.name << "\", size: " << layer.width << " x " << layer.height << ", type: " << GimpImageType(layer.type)
+    qCDebug(XCFPLUGIN) << "layer: \"" << layer.name << "\", size: " << layer.width << " x " << layer.height << ", type: " << layer.type
                        << ", mode: " << layer.mode << ", opacity: " << layer.opacity << ", visible: " << layer.visible << ", offset: " << layer.x_offset << ", "
-                       << layer.y_offset;
+                       << layer.y_offset << ", compression" << layer.compression;
 
     // Skip reading the rest of it if it is not visible. Typically, when
     // you export an image from the The GIMP it flattens (or merges) only
@@ -931,7 +1201,7 @@ bool XCFImageFormat::loadLayer(QDataStream &xcf_io, XCFImage &xcf_image)
 
     layer.assignBytes = assignImageBytes;
 
-    if (!loadHierarchy(xcf_io, layer)) {
+    if (!loadHierarchy(xcf_io, layer, xcf_image.header.precision)) {
         return false;
     }
 
@@ -943,7 +1213,7 @@ bool XCFImageFormat::loadLayer(QDataStream &xcf_io, XCFImage &xcf_image)
 
         xcf_io.device()->seek(layer.mask_offset);
 
-        if (!loadMask(xcf_io, layer)) {
+        if (!loadMask(xcf_io, layer, xcf_image.header.precision)) {
             return false;
         }
     } else {
@@ -962,7 +1232,12 @@ bool XCFImageFormat::loadLayer(QDataStream &xcf_io, XCFImage &xcf_image)
         copyLayerToImage(xcf_image);
         xcf_image.initialized = true;
     } else {
+        const QColorSpace colorspaceBefore = xcf_image.image.colorSpace();
         mergeLayerIntoImage(xcf_image);
+        if (xcf_image.image.colorSpace() != colorspaceBefore) {
+            qCDebug(XCFPLUGIN) << "Converting color space back to" << colorspaceBefore << "after layer composition";
+            xcf_image.image.convertToColorSpace(colorspaceBefore);
+        }
     }
 
     return true;
@@ -1044,7 +1319,7 @@ bool XCFImageFormat::loadLayerProperties(QDataStream &xcf_io, Layer &layer)
             property >> layer.mode;
             if (layer.mode >= GIMP_LAYER_MODE_COUNT) {
                 qCDebug(XCFPLUGIN) << "Found layer with unsupported mode" << LayerModeType(layer.mode) << "Defaulting to mode 0";
-                layer.mode = 0;
+                layer.mode = GIMP_LAYER_MODE_NORMAL_LEGACY;
             }
             break;
 
@@ -1054,14 +1329,23 @@ bool XCFImageFormat::loadLayerProperties(QDataStream &xcf_io, Layer &layer)
 
         case PROP_COMPOSITE_SPACE:
             property >> layer.compositeSpace;
+            if (layer.compositeSpace < 0) {
+                layer.compositeSpace = GimpColorSpace(-layer.compositeSpace);
+            }
             break;
 
         case PROP_COMPOSITE_MODE:
             property >> layer.compositeMode;
+            if (layer.compositeMode < 0) {
+                layer.compositeMode = XCFImageFormat::GimpCompositeMode(-layer.compositeMode);
+            }
             break;
 
         case PROP_BLEND_SPACE:
             property >> layer.blendSpace;
+            if (layer.blendSpace) {
+                layer.blendSpace = GimpColorSpace(-layer.blendSpace);
+            }
             break;
 
         // Just for organization in the UI, doesn't influence rendering
@@ -1093,7 +1377,7 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
     layer.nrows = (layer.height + TILE_HEIGHT - 1) / TILE_HEIGHT;
     layer.ncols = (layer.width + TILE_WIDTH - 1) / TILE_WIDTH;
 
-    qCDebug(XCFPLUGIN) << "IMAGE: height=" << xcf_image.height << ", width=" << xcf_image.width;
+    qCDebug(XCFPLUGIN) << "IMAGE: height=" << xcf_image.header.height << ", width=" << xcf_image.header.width;
     qCDebug(XCFPLUGIN) << "LAYER: height=" << layer.height << ", width=" << layer.width;
     qCDebug(XCFPLUGIN) << "LAYER: rows=" << layer.nrows << ", columns=" << layer.ncols;
 
@@ -1101,11 +1385,27 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
     //       and it was changed to 300000 (the same as Photoshop Big image). This plugin was able to open an RGB
     //       image of 108000x40000 pixels saved with GIMP 2.10
     // SANITY CHECK: Catch corrupted XCF image file where the width or height
-    // of a tile is reported are bogus. See Bug# 234030.
-    if (layer.width > 300000 || layer.height > 300000 || (sizeof(void *) == 4 && layer.width * layer.height > 16384 * 16384)) {
+    //               of a tile is reported are bogus. See Bug# 234030.
+    if ((sizeof(void *) == 4 && qint64(layer.width) * layer.height > 16384 * 16384)) {
+        qCWarning(XCFPLUGIN) << "On 32-bits programs the maximum layer size is limited to" << 16384 << "x" << 16384 << "px";
+        return false;
+    }
+    if (layer.width > MAX_IMAGE_WIDTH || layer.height > MAX_IMAGE_HEIGHT) {
+        qCWarning(XCFPLUGIN) << "The maximum layer size is limited to" << MAX_IMAGE_WIDTH << "x" << MAX_IMAGE_HEIGHT << "px";
         return false;
     }
 
+    // NOTE: A layer is a named rectangular area of pixels which has a definite position with respect to the canvas.
+    //       It may extend beyond the canvas or (more commonly) only cover some of it.
+    // SANITY CHECK: Avoid to load XCF with a layer grater than 10 times the final image
+    if (qint64(layer.width) * layer.height / 10 > qint64(xcf_image.header.width) * xcf_image.header.height) {
+        if (qint64(layer.width) * layer.height > 16384 * 16384) { // large layers only
+            qCWarning(XCFPLUGIN) << "Euristic sanity check: the image may be corrupted!";
+            return false;
+        }
+    }
+
+#ifndef XCF_QT5_SUPPORT
     // Qt 6 image allocation limit calculation: we have to check the limit here because the image is splitted in
     // tiles of 64x64 pixels. The required memory to build the image is at least doubled because tiles are loaded
     // and then the final image is created by copying the tiles inside it.
@@ -1116,6 +1416,7 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
         qCDebug(XCFPLUGIN) << "Rejecting image as it exceeds the current allocation limit of" << QImageReader::allocationLimit() << "megabytes";
         return false;
     }
+#endif
 #endif
 
     layer.image_tiles.resize(layer.nrows);
@@ -1140,6 +1441,8 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
         }
     }
 
+    const QImage::Format format = layer.qimageFormat(xcf_image.header.precision);
+
     for (uint j = 0; j < layer.nrows; j++) {
         for (uint i = 0; i < layer.ncols; i++) {
             uint tile_width = (i + 1) * TILE_WIDTH <= layer.width ? TILE_WIDTH : layer.width - i * TILE_WIDTH;
@@ -1151,27 +1454,20 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
 
             switch (layer.type) {
             case RGB_GIMAGE:
-                layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_RGB32);
-                layer.image_tiles[j][i].setColorCount(0);
-                if (layer.image_tiles[j][i].isNull()) {
-                    return false;
-                }
-                break;
-
             case RGBA_GIMAGE:
-                layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_ARGB32);
-                layer.image_tiles[j][i].setColorCount(0);
+                layer.image_tiles[j][i] = QImage(tile_width, tile_height, format);
                 if (layer.image_tiles[j][i].isNull()) {
                     return false;
                 }
+                layer.image_tiles[j][i].setColorCount(0);
                 break;
 
             case GRAY_GIMAGE:
                 layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                layer.image_tiles[j][i].setColorCount(256);
                 if (layer.image_tiles[j][i].isNull()) {
                     return false;
                 }
+                layer.image_tiles[j][i].setColorCount(256);
                 setGrayPalette(layer.image_tiles[j][i]);
                 break;
 
@@ -1184,10 +1480,10 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
                 setGrayPalette(layer.image_tiles[j][i]);
 
                 layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                layer.alpha_tiles[j][i].setColorCount(256);
                 if (layer.alpha_tiles[j][i].isNull()) {
                     return false;
                 }
+                layer.alpha_tiles[j][i].setColorCount(256);
                 setGrayPalette(layer.alpha_tiles[j][i]);
                 break;
 
@@ -1202,20 +1498,52 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
 
             case INDEXEDA_GIMAGE:
                 layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                layer.image_tiles[j][i].setColorCount(xcf_image.num_colors);
                 if (layer.image_tiles[j][i].isNull()) {
                     return false;
                 }
+                layer.image_tiles[j][i].setColorCount(xcf_image.num_colors);
                 setPalette(xcf_image, layer.image_tiles[j][i]);
 
                 layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                layer.alpha_tiles[j][i].setColorCount(256);
                 if (layer.alpha_tiles[j][i].isNull()) {
                     return false;
                 }
+                layer.alpha_tiles[j][i].setColorCount(256);
                 setGrayPalette(layer.alpha_tiles[j][i]);
             }
+            if (layer.type != GRAYA_GIMAGE && layer.image_tiles[j][i].format() != format) {
+                qCWarning(XCFPLUGIN) << "Selected wrong tile format" << layer.image_tiles[j][i].format() << "expected" << format;
+                return false;
+            }
 
+#ifndef DISABLE_TILE_PROFILE
+            switch (xcf_image.header.precision) {
+            case XCFImageFormat::GIMP_PRECISION_HALF_LINEAR:
+            case XCFImageFormat::GIMP_PRECISION_FLOAT_LINEAR:
+            case XCFImageFormat::GIMP_PRECISION_DOUBLE_LINEAR:
+            case XCFImageFormat::GIMP_PRECISION_U8_LINEAR:
+            case XCFImageFormat::GIMP_PRECISION_U16_LINEAR:
+            case XCFImageFormat::GIMP_PRECISION_U32_LINEAR:
+                layer.image_tiles[j][i].setColorSpace(QColorSpace::SRgbLinear);
+                break;
+            case XCFImageFormat::GIMP_PRECISION_HALF_NON_LINEAR:
+            case XCFImageFormat::GIMP_PRECISION_FLOAT_NON_LINEAR:
+            case XCFImageFormat::GIMP_PRECISION_DOUBLE_NON_LINEAR:
+            case XCFImageFormat::GIMP_PRECISION_U8_NON_LINEAR:
+            case XCFImageFormat::GIMP_PRECISION_U16_NON_LINEAR:
+            case XCFImageFormat::GIMP_PRECISION_U32_NON_LINEAR:
+                layer.image_tiles[j][i].setColorSpace(QColorSpace::SRgb);
+                break;
+            case XCFImageFormat::GIMP_PRECISION_HALF_PERCEPTUAL:
+            case XCFImageFormat::GIMP_PRECISION_FLOAT_PERCEPTUAL:
+            case XCFImageFormat::GIMP_PRECISION_DOUBLE_PERCEPTUAL:
+            case XCFImageFormat::GIMP_PRECISION_U8_PERCEPTUAL:
+            case XCFImageFormat::GIMP_PRECISION_U16_PERCEPTUAL:
+            case XCFImageFormat::GIMP_PRECISION_U32_PERCEPTUAL:
+                layer.image_tiles[j][i].setColorSpace(QColorSpace::SRgb);
+                break;
+            }
+#endif
             if (layer.mask_offset != 0) {
                 layer.mask_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
                 layer.mask_tiles[j][i].setColorCount(256);
@@ -1272,7 +1600,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
     auto keys = p.keys();
     for (auto &&key : qAsConst(keys)) {
         auto value = p.value(key);
-        if(value.isEmpty())
+        if (value.isEmpty())
             continue;
 
         // "icc-profile" (IMAGE, PERSISTENT | UNDOABLE)
@@ -1283,7 +1611,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
         //     for interchange between TIFF and PNG (identical profiles)
         if (key == QStringLiteral("icc-profile")) {
             auto cs = QColorSpace::fromIccProfile(value);
-            if(cs.isValid())
+            if (cs.isValid())
                 image.setColorSpace(cs);
             continue;
         }
@@ -1326,10 +1654,27 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
             continue;
         }
 #endif
-
     }
-}
 
+#ifdef DISABLE_IMAGE_PROFILE
+    // final colorspace checks
+    if (!image.colorSpace().isValid()) {
+        switch (xcf_image.header.precision) {
+        case XCFImageFormat::GIMP_PRECISION_HALF_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_FLOAT_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_DOUBLE_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_U8_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_U16_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_U32_LINEAR:
+            image.setColorSpace(QColorSpace::SRgbLinear);
+            break;
+        default:
+            image.setColorSpace(QColorSpace::SRgb);
+            break;
+        }
+    }
+#endif
+}
 
 /*!
  * Copy the bytes from the tile buffer into the image tile QImage, taking into
@@ -1338,38 +1683,176 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
  * \param i column index of current tile.
  * \param j row index of current tile.
  */
-void XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j)
+bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPrecision &precision)
 {
     QImage &image = layer.image_tiles[j][i];
+
     const uchar *tile = layer.tile;
     const int width = image.width();
     const int height = image.height();
     const int bytesPerLine = image.bytesPerLine();
     uchar *bits = image.bits();
 
-    switch (layer.type) {
-    case RGB_GIMAGE:
+    // Handle the special cases
+    if (layer.type == GRAYA_GIMAGE || layer.type == GRAY_GIMAGE || layer.type == INDEXEDA_GIMAGE) {
+        auto bpc = bytesPerChannel(precision);
         for (int y = 0; y < height; y++) {
-            QRgb *dataPtr = (QRgb *)(bits + y * bytesPerLine);
-            for (int x = 0; x < width; x++) {
-                *dataPtr++ = qRgb(tile[0], tile[1], tile[2]);
-                tile += sizeof(QRgb);
+            uchar *dataPtr = bits + y * bytesPerLine;
+            uchar *alphaPtr = nullptr;
+            if (!layer.alpha_tiles.isEmpty())
+                alphaPtr = layer.alpha_tiles[j][i].scanLine(y);
+            if (bpc == 4) {
+#ifdef USE_FLOAT_IMAGES
+                if (precision < GimpPrecision::GIMP_PRECISION_HALF_LINEAR) {
+                    for (int x = 0; x < width; x++) {
+                        auto src = (const quint16 *)tile;
+                        *dataPtr++ = qFromBigEndian<quint16>(src[0]) / 257;
+                        if (alphaPtr) {
+                            *alphaPtr++ = qFromBigEndian<quint16>(src[1]) / 257;
+                            tile += sizeof(quint16) * 2;
+                        } else {
+                            tile += sizeof(quint16);
+                        }
+                    }
+                } else {
+                    for (int x = 0; x < width; x++) {
+                        auto src = (const float *)tile;
+                        *dataPtr++ = qFromBigEndian<float>(src[0]) * 255;
+                        if (alphaPtr) {
+                            *alphaPtr++ = qFromBigEndian<float>(src[1]) * 255;
+                            tile += sizeof(float) * 2;
+                        } else {
+                            tile += sizeof(float);
+                        }
+                    }
+                }
+#else
+                for (int x = 0; x < width; x++) {
+                    auto src = (const quint16 *)tile;
+                    *dataPtr++ = qFromBigEndian<quint16>(src[0]) / 257;
+                    if (alphaPtr) {
+                        *alphaPtr++ = qFromBigEndian<quint16>(src[1]) / 257;
+                        tile += sizeof(quint16) * 2;
+                    } else {
+                        tile += sizeof(quint16);
+                    }
+                }
+#endif
+            } else if (bpc == 2) {
+#ifdef USE_FLOAT_IMAGES
+                if (precision < GimpPrecision::GIMP_PRECISION_HALF_LINEAR) {
+                    for (int x = 0; x < width; x++) {
+                        auto src = (const quint16 *)tile;
+                        *dataPtr++ = qFromBigEndian<quint16>(src[0]) / 257;
+                        if (alphaPtr)
+                            *alphaPtr++ = qFromBigEndian<quint16>(src[1]) / 257;
+                        tile += sizeof(QRgb);
+                    }
+                } else {
+                    for (int x = 0; x < width; x++) {
+                        auto src = (const qfloat16 *)tile;
+                        *dataPtr++ = qFromBigEndian<qfloat16>(src[0]) * 255;
+                        if (alphaPtr)
+                            *alphaPtr++ = qFromBigEndian<qfloat16>(src[1]) * 255;
+                        tile += sizeof(QRgb);
+                    }
+                }
+#else
+                for (int x = 0; x < width; x++) {
+                    auto src = (const quint16 *)tile;
+                    *dataPtr++ = qFromBigEndian<quint16>(src[0]) / 257;
+                    if (alphaPtr)
+                        *alphaPtr++ = qFromBigEndian<quint16>(src[1]) / 257;
+                    tile += sizeof(QRgb);
+                }
+#endif
+            } else {
+                for (int x = 0; x < width; x++) {
+                    if (tile[0] < image.colorCount())
+                        *dataPtr++ = tile[0];
+                    if (alphaPtr)
+                        *alphaPtr++ = tile[1];
+                    tile += sizeof(QRgb);
+                }
+            }
+        }
+        return true;
+    }
+
+    switch (image.format()) {
+    case QImage::Format_RGBX8888:
+        for (int y = 0; y < height; y++) {
+            uchar *dataPtr = image.scanLine(y);
+            for (int x = 0; x < width * 4; x += 4, tile += 4) {
+                dataPtr[x + 0] = tile[0];
+                dataPtr[x + 1] = tile[1];
+                dataPtr[x + 2] = tile[2];
+                dataPtr[x + 3] = 255;
             }
         }
         break;
-
-    case RGBA_GIMAGE:
+    case QImage::Format_RGBA8888:
         for (int y = 0; y < height; y++) {
-            QRgb *dataPtr = (QRgb *)(bits + y * bytesPerLine);
-            for (int x = 0; x < width; x++) {
-                *dataPtr++ = qRgba(tile[0], tile[1], tile[2], tile[3]);
-                tile += sizeof(QRgb);
+            const size_t bpl = width * 4;
+            memcpy(image.scanLine(y), tile + y * bpl, bpl);
+        }
+        break;
+    case QImage::Format_RGBX64:
+        for (int y = 0; y < height; y++) {
+            quint16 *dataPtr = (quint16 *)image.scanLine(y);
+            const size_t bpl = width * sizeof(QRgba64);
+            const quint16 *src = (const quint16 *)(tile + y * bpl);
+            for (int x = 0; x < width * 4; x += 4) {
+                dataPtr[x + 0] = qFromBigEndian(src[x + 0]);
+                dataPtr[x + 1] = qFromBigEndian(src[x + 1]);
+                dataPtr[x + 2] = qFromBigEndian(src[x + 2]);
+                dataPtr[x + 3] = 65535;
             }
         }
         break;
-
-    case GRAY_GIMAGE:
-    case INDEXED_GIMAGE:
+#ifdef USE_FLOAT_IMAGES
+    case QImage::Format_RGBX16FPx4:
+        for (int y = 0; y < height; y++) {
+            qfloat16 *dataPtr = (qfloat16 *)image.scanLine(y);
+            const qfloat16 *src = (const qfloat16 *)(tile + y * width * sizeof(QRgbaFloat16));
+            for (int x = 0; x < width * 4; x += 4) {
+                dataPtr[x + 0] = qFromBigEndian(src[x + 0]);
+                dataPtr[x + 1] = qFromBigEndian(src[x + 1]);
+                dataPtr[x + 2] = qFromBigEndian(src[x + 2]);
+                dataPtr[x + 3] = qfloat16(1);
+            }
+        }
+        break;
+    case QImage::Format_RGBA16FPx4:
+        static_assert(sizeof(QRgbaFloat16) == sizeof(QRgba64), "Different sizes for float and int 16 bit pixels");
+#endif
+    case QImage::Format_RGBA64:
+        for (int y = 0; y < height; y++) {
+            const size_t bpl = width * sizeof(QRgba64);
+            qFromBigEndian<qint16>(tile + y * bpl, width * 4, image.scanLine(y));
+        }
+        break;
+#ifdef USE_FLOAT_IMAGES
+    case QImage::Format_RGBA32FPx4:
+        for (int y = 0; y < height; y++) {
+            const size_t bpl = width * sizeof(QRgbaFloat32);
+            qFromBigEndian<qint32>(tile + y * bpl, width * 4, image.scanLine(y));
+        }
+        break;
+    case QImage::Format_RGBX32FPx4:
+        for (int y = 0; y < height; y++) {
+            float *dataPtr = (float *)image.scanLine(y);
+            const float *src = (const float *)(tile + y * width * sizeof(QRgbaFloat32));
+            for (int x = 0; x < width * 4; x += 4) {
+                dataPtr[x + 0] = qFromBigEndian(src[x + 0]);
+                dataPtr[x + 1] = qFromBigEndian(src[x + 1]);
+                dataPtr[x + 2] = qFromBigEndian(src[x + 2]);
+                dataPtr[x + 3] = 1.f;
+            }
+        }
+        break;
+#endif
+    case QImage::Format_Indexed8:
         for (int y = 0; y < height; y++) {
             uchar *dataPtr = bits + y * bytesPerLine;
             for (int x = 0; x < width; x++) {
@@ -1378,29 +1861,12 @@ void XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j)
             }
         }
         break;
-
-    case GRAYA_GIMAGE:
-    case INDEXEDA_GIMAGE:
-        for (int y = 0; y < height; y++) {
-            uchar *dataPtr = bits + y * bytesPerLine;
-            uchar *alphaPtr = layer.alpha_tiles[j][i].scanLine(y);
-            for (int x = 0; x < width; x++) {
-                // The "if" here should not be necessary, but apparently there
-                // are some cases where the image can contain larger indices
-                // than there are colors in the palette. (A bug in The GIMP?)
-
-                if (tile[0] < image.colorCount()) {
-                    *dataPtr = tile[0];
-                }
-
-                *alphaPtr = tile[1];
-                dataPtr += 1;
-                alphaPtr += 1;
-                tile += sizeof(QRgb);
-            }
-        }
-        break;
+    default:
+        qCWarning(XCFPLUGIN) << "Unhandled image format" << image.format() << "and/or layer type" << layer.type;
+        return false;
     }
+
+    return true;
 }
 
 /*!
@@ -1411,7 +1877,7 @@ void XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j)
  * \param layer the layer to collect the image.
  * \return true if there were no I/O errors.
  */
-bool XCFImageFormat::loadHierarchy(QDataStream &xcf_io, Layer &layer)
+bool XCFImageFormat::loadHierarchy(QDataStream &xcf_io, Layer &layer, const GimpPrecision precision)
 {
     qint32 width;
     qint32 height;
@@ -1432,7 +1898,7 @@ bool XCFImageFormat::loadHierarchy(QDataStream &xcf_io, Layer &layer)
     // make sure bpp is correct and complain if it is not
     switch (layer.type) {
     case RGB_GIMAGE:
-        if (bpp != 3) {
+        if (bpp != 3 * bytesPerChannel(precision)) {
             qCDebug(XCFPLUGIN) << "Found layer of type RGB but with bpp != 3" << bpp;
 
             if (!isMask) {
@@ -1441,7 +1907,7 @@ bool XCFImageFormat::loadHierarchy(QDataStream &xcf_io, Layer &layer)
         }
         break;
     case RGBA_GIMAGE:
-        if (bpp != 4) {
+        if (bpp != 4 * bytesPerChannel(precision)) {
             qCDebug(XCFPLUGIN) << "Found layer of type RGBA but with bpp != 4, got" << bpp << "bpp";
 
             if (!isMask) {
@@ -1450,13 +1916,13 @@ bool XCFImageFormat::loadHierarchy(QDataStream &xcf_io, Layer &layer)
         }
         break;
     case GRAY_GIMAGE:
-        if (bpp != 1) {
+        if (bpp != 1 * bytesPerChannel(precision)) {
             qCDebug(XCFPLUGIN) << "Found layer of type Gray but with bpp != 1" << bpp;
             return false;
         }
         break;
     case GRAYA_GIMAGE:
-        if (bpp != 2) {
+        if (bpp != 2 * bytesPerChannel(precision)) {
             qCDebug(XCFPLUGIN) << "Found layer of type Gray+Alpha but with bpp != 2" << bpp;
 
             if (!isMask) {
@@ -1465,13 +1931,13 @@ bool XCFImageFormat::loadHierarchy(QDataStream &xcf_io, Layer &layer)
         }
         break;
     case INDEXED_GIMAGE:
-        if (bpp != 1) {
+        if (bpp != 1 * bytesPerChannel(precision)) {
             qCDebug(XCFPLUGIN) << "Found layer of type Indexed but with bpp != 1" << bpp;
             return false;
         }
         break;
     case INDEXEDA_GIMAGE:
-        if (bpp != 2) {
+        if (bpp != 2 * bytesPerChannel(precision)) {
             qCDebug(XCFPLUGIN) << "Found layer of type Indexed+Alpha but with bpp != 2" << bpp;
 
             if (!isMask) {
@@ -1481,7 +1947,7 @@ bool XCFImageFormat::loadHierarchy(QDataStream &xcf_io, Layer &layer)
         break;
     }
 
-    if (bpp > 4) {
+    if (bpp > 4 * bytesPerChannel(precision)) {
         qCDebug(XCFPLUGIN) << "bpp is" << bpp << "We don't support layers with bpp > 4";
         return false;
     }
@@ -1503,11 +1969,21 @@ bool XCFImageFormat::loadHierarchy(QDataStream &xcf_io, Layer &layer)
     qint64 saved_pos = xcf_io.device()->pos();
 
     xcf_io.device()->seek(offset);
-    if (!loadLevel(xcf_io, layer, bpp)) {
+    if (!loadLevel(xcf_io, layer, bpp, precision)) {
         return false;
     }
 
     xcf_io.device()->seek(saved_pos);
+    return true;
+}
+
+template<typename SourceFormat>
+static bool convertFloatTo16Bit(uchar *output, quint64 outputSize, uchar *input)
+{
+    SourceFormat *source = (SourceFormat *)(input);
+    for (quint64 offset = 0; offset < outputSize; offset++) {
+        ((uint16_t *)output)[offset] = qToBigEndian(quint16(qBound(0., qFromBigEndian<SourceFormat>(source[offset]) * 65535. + 0.5, 65535.)));
+    }
     return true;
 }
 
@@ -1519,7 +1995,7 @@ bool XCFImageFormat::loadHierarchy(QDataStream &xcf_io, Layer &layer)
  * \return true if there were no I/O errors.
  * \sa loadTileRLE().
  */
-bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp)
+bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, const GimpPrecision precision)
 {
     qint32 width;
     qint32 height;
@@ -1546,6 +2022,38 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp)
         return true;
     }
 
+    bool needConvert = true;
+    switch (precision) {
+#ifdef USE_FLOAT_IMAGES
+    case GIMP_PRECISION_HALF_LINEAR:
+    case GIMP_PRECISION_HALF_NON_LINEAR:
+    case GIMP_PRECISION_HALF_PERCEPTUAL:
+    case GIMP_PRECISION_FLOAT_LINEAR:
+    case GIMP_PRECISION_FLOAT_NON_LINEAR:
+    case GIMP_PRECISION_FLOAT_PERCEPTUAL:
+#endif
+    case GIMP_PRECISION_U8_LINEAR:
+    case GIMP_PRECISION_U8_NON_LINEAR:
+    case GIMP_PRECISION_U8_PERCEPTUAL:
+    case GIMP_PRECISION_U16_LINEAR:
+    case GIMP_PRECISION_U16_NON_LINEAR:
+    case GIMP_PRECISION_U16_PERCEPTUAL:
+        needConvert = false;
+        break;
+    default:
+        break;
+    }
+
+    const uint blockSize = TILE_WIDTH * TILE_HEIGHT * bpp * 1.5;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<uchar> buffer;
+#else
+    QVector<uchar> buffer;
+#endif
+    if (needConvert) {
+        buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
+    }
     for (uint j = 0; j < layer.nrows; j++) {
         for (uint i = 0; i < layer.ncols; i++) {
             if (offset == 0) {
@@ -1563,19 +2071,20 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp)
 
             // Evidently, RLE can occasionally expand a tile instead of compressing it!
             if (offset2 == 0) {
-                offset2 = offset + (uint)(TILE_WIDTH * TILE_HEIGHT * 4 * 1.5);
+                offset2 = offset + blockSize;
             }
 
             xcf_io.device()->seek(offset);
+            qint64 bytesParsed = 0;
 
             switch (layer.compression) {
             case COMPRESS_NONE: {
-                if (xcf_io.version() > 11) {
+                if (xcf_io.version() > 11 || size_t(bpp) > sizeof(QRgba64)) {
                     qCDebug(XCFPLUGIN) << "Component reading not supported yet";
                     return false;
                 }
                 const int data_size = bpp * TILE_WIDTH * TILE_HEIGHT;
-                if (data_size > int(sizeof(layer.tile))) {
+                if (data_size > int(blockSize)) {
                     qCDebug(XCFPLUGIN) << "Tile data too big, we can only fit" << sizeof(layer.tile) << "but need" << data_size;
                     return false;
                 }
@@ -1584,12 +2093,30 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp)
                     qCDebug(XCFPLUGIN) << "short read, expected" << data_size << "got" << dataRead;
                     return false;
                 }
+                bytesParsed = dataRead;
                 break;
             }
             case COMPRESS_RLE: {
                 int size = layer.image_tiles[j][i].width() * layer.image_tiles[j][i].height();
-                if (!loadTileRLE(xcf_io, layer.tile, size, offset2 - offset, bpp)) {
-                    return true;
+                const uint data_size = size * bpp;
+                if (needConvert) {
+                    if (data_size >= unsigned(buffer.size())) {
+                        qCDebug(XCFPLUGIN) << "Tile data too big, we can only fit" << buffer.size() << "but need" << data_size;
+                        return false;
+                    }
+                } else {
+                    if (data_size > sizeof(layer.tile)) {
+                        qCDebug(XCFPLUGIN) << "Tile data too big, we can only fit" << sizeof(layer.tile) << "but need" << data_size;
+                        return false;
+                    }
+                    if (blockSize > sizeof(layer.tile)) {
+                        qCWarning(XCFPLUGIN) << "Too small tiles" << sizeof(layer.tile) << "this image requires" << blockSize << sizeof(QRgba64) << bpp;
+                        return false;
+                    }
+                }
+                if (!loadTileRLE(xcf_io, needConvert ? buffer.data() : layer.tile, size, offset2 - offset, bpp, &bytesParsed)) {
+                    qCDebug(XCFPLUGIN) << "Failed to read RLE";
+                    return false;
                 }
                 break;
             }
@@ -1598,11 +2125,61 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp)
                 return false;
             }
 
+            if (needConvert) {
+                if (bytesParsed > buffer.size()) {
+                    qCDebug(XCFPLUGIN) << "Invalid number of bytes parsed" << bytesParsed << buffer.size();
+                    return false;
+                }
+
+                switch (precision) {
+                case GIMP_PRECISION_U32_LINEAR:
+                case GIMP_PRECISION_U32_NON_LINEAR:
+                case GIMP_PRECISION_U32_PERCEPTUAL: {
+                    quint32 *source = (quint32 *)(buffer.data());
+                    for (quint64 offset = 0, len = buffer.size() / sizeof(quint32); offset < len; ++offset) {
+                        ((quint16 *)layer.tile)[offset] = qToBigEndian<quint16>(qFromBigEndian(source[offset]) / 65537);
+                    }
+                    break;
+                }
+#ifndef USE_FLOAT_IMAGES
+                case GIMP_PRECISION_HALF_LINEAR:
+                case GIMP_PRECISION_HALF_NON_LINEAR:
+                case GIMP_PRECISION_HALF_PERCEPTUAL:
+                    convertFloatTo16Bit<qfloat16>(layer.tile, buffer.size() / sizeof(qfloat16), buffer.data());
+                    break;
+                case GIMP_PRECISION_FLOAT_LINEAR:
+                case GIMP_PRECISION_FLOAT_NON_LINEAR:
+                case GIMP_PRECISION_FLOAT_PERCEPTUAL:
+                    convertFloatTo16Bit<float>(layer.tile, buffer.size() / sizeof(float), buffer.data());
+                    break;
+                case GIMP_PRECISION_DOUBLE_LINEAR:
+                case GIMP_PRECISION_DOUBLE_NON_LINEAR:
+                case GIMP_PRECISION_DOUBLE_PERCEPTUAL:
+                    convertFloatTo16Bit<double>(layer.tile, buffer.size() / sizeof(double), buffer.data());
+                    break;
+#else
+                case GIMP_PRECISION_DOUBLE_LINEAR:
+                case GIMP_PRECISION_DOUBLE_NON_LINEAR:
+                case GIMP_PRECISION_DOUBLE_PERCEPTUAL: {
+                    double *source = (double *)(buffer.data());
+                    for (quint64 offset = 0, len = buffer.size() / sizeof(double); offset < len; ++offset) {
+                        ((float *)layer.tile)[offset] = qToBigEndian<float>(float(qFromBigEndian(source[offset])));
+                    }
+                    break;
+                }
+#endif
+                default:
+                    qCWarning(XCFPLUGIN) << "Unsupported precision" << precision;
+                    return false;
+                }
+            }
+
             // The bytes in the layer tile are juggled differently depending on
             // the target QImage. The caller has set layer.assignBytes to the
             // appropriate routine.
-
-            layer.assignBytes(layer, i, j);
+            if (!layer.assignBytes(layer, i, j, precision)) {
+                return false;
+            }
 
             xcf_io.device()->seek(saved_pos);
             offset = readOffsetPtr(xcf_io);
@@ -1623,7 +2200,7 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp)
  * \param layer the layer to collect the mask image.
  * \return true if there were no I/O errors.
  */
-bool XCFImageFormat::loadMask(QDataStream &xcf_io, Layer &layer)
+bool XCFImageFormat::loadMask(QDataStream &xcf_io, Layer &layer, const GimpPrecision precision)
 {
     qint32 width;
     qint32 height;
@@ -1647,7 +2224,7 @@ bool XCFImageFormat::loadMask(QDataStream &xcf_io, Layer &layer)
     xcf_io.device()->seek(hierarchy_offset);
     layer.assignBytes = assignMaskBytes;
 
-    if (!loadHierarchy(xcf_io, layer)) {
+    if (!loadHierarchy(xcf_io, layer, precision)) {
         return false;
     }
 
@@ -1677,15 +2254,36 @@ bool XCFImageFormat::loadMask(QDataStream &xcf_io, Layer &layer)
  * \return true if there were no I/O errors and no obvious corruption of
  * the RLE data.
  */
-bool XCFImageFormat::loadTileRLE(QDataStream &xcf_io, uchar *tile, int image_size, int data_length, qint32 bpp)
+bool XCFImageFormat::loadTileRLE(QDataStream &xcf_io, uchar *tile, int image_size, int data_length, qint32 bpp, qint64 *bytesParsed)
 {
-    uchar *data;
+    uchar *data = tile;
 
     uchar *xcfdata;
     uchar *xcfodata;
     uchar *xcfdatalimit;
 
-    if (data_length < 0 || data_length > int(TILE_WIDTH * TILE_HEIGHT * 4 * 1.5)) {
+    int step = sizeof(QRgb);
+    switch (bpp) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        step = sizeof(QRgb);
+        break;
+    case 6:
+    case 8:
+        step = sizeof(QRgb) * 2;
+        break;
+    case 12:
+    case 16:
+        step = sizeof(QRgb) * 4;
+        break;
+    default:
+        qCDebug(XCFPLUGIN) << "XCF: unhandled bit depth" << bpp;
+        return false;
+    }
+
+    if (data_length < 0 || data_length > int(TILE_WIDTH * TILE_HEIGHT * step * 1.5)) {
         qCDebug(XCFPLUGIN) << "XCF: invalid tile data length" << data_length;
         return false;
     }
@@ -1714,7 +2312,6 @@ bool XCFImageFormat::loadTileRLE(QDataStream &xcf_io, uchar *tile, int image_siz
     for (int i = 0; i < bpp; ++i) {
         data = tile + i;
 
-        int count = 0;
         int size = image_size;
 
         while (size > 0) {
@@ -1737,7 +2334,6 @@ bool XCFImageFormat::loadTileRLE(QDataStream &xcf_io, uchar *tile, int image_siz
                     xcfdata += 2;
                 }
 
-                count += length;
                 size -= length;
 
                 if (size < 0) {
@@ -1750,7 +2346,7 @@ bool XCFImageFormat::loadTileRLE(QDataStream &xcf_io, uchar *tile, int image_siz
 
                 while (length-- > 0) {
                     *data = *xcfdata++;
-                    data += sizeof(QRgb);
+                    data += step;
                 }
             } else {
                 length += 1;
@@ -1763,7 +2359,6 @@ bool XCFImageFormat::loadTileRLE(QDataStream &xcf_io, uchar *tile, int image_siz
                     xcfdata += 2;
                 }
 
-                count += length;
                 size -= length;
 
                 if (size < 0) {
@@ -1774,15 +2369,23 @@ bool XCFImageFormat::loadTileRLE(QDataStream &xcf_io, uchar *tile, int image_siz
                     goto bogus_rle;
                 }
 
+                qintptr totalLength = qintptr(data - tile) + length * step;
+                if (totalLength >= image_size * step * 1.5) {
+                    qCDebug(XCFPLUGIN) << "Ran out of space when trying to unpack image, over:" << totalLength - image_size << totalLength << image_size
+                                       << length;
+                    goto bogus_rle;
+                }
+
                 val = *xcfdata++;
 
                 while (length-- > 0) {
                     *data = val;
-                    data += sizeof(QRgb);
+                    data += step;
                 }
             }
         }
     }
+    *bytesParsed = qintptr(data - tile);
 
     delete[] xcfodata;
     return true;
@@ -1881,22 +2484,75 @@ bool XCFImageFormat::loadChannelProperties(QDataStream &xcf_io, Layer &layer)
  * \param i column index of current tile.
  * \param j row index of current tile.
  */
-void XCFImageFormat::assignMaskBytes(Layer &layer, uint i, uint j)
+bool XCFImageFormat::assignMaskBytes(Layer &layer, uint i, uint j, const GimpPrecision &precision)
 {
     QImage &image = layer.mask_tiles[j][i];
+    if (image.depth() != 8) {
+        qCWarning(XCFPLUGIN) << "invalid bytes per pixel, we only do 8 bit masks" << image.depth();
+        return false;
+    }
+
     uchar *tile = layer.tile;
     const int width = image.width();
     const int height = image.height();
     const int bytesPerLine = image.bytesPerLine();
     uchar *bits = image.bits();
+    auto bpc = bytesPerChannel(precision);
 
+    // mask management is a house of cards: the mask is always treated as 8 bit by the plugin
+    // (I don't want to twist the code) so it needs a conversion here.
+    // If previously converted the step is the type size, otherwise is the one set in loadTileRLE().
     for (int y = 0; y < height; y++) {
         uchar *dataPtr = bits + y * bytesPerLine;
-        for (int x = 0; x < width; x++) {
-            *dataPtr++ = tile[0];
-            tile += sizeof(QRgb);
+#ifdef USE_FLOAT_IMAGES
+        if (bpc == 4) {
+            if (precision < GimpPrecision::GIMP_PRECISION_HALF_LINEAR) {
+                for (int x = 0; x < width; x++) {
+                    *dataPtr++ = qFromBigEndian<quint16>(*(const quint16 *)tile) / 257;
+                    tile += sizeof(quint16); // was converted to 16 bits in loadLevel()
+                }
+            } else {
+                for (int x = 0; x < width; x++) {
+                    *dataPtr++ = qFromBigEndian<float>(*(const float *)tile) * 255;
+                    tile += sizeof(QRgb); // yeah! see loadTileRLE()
+                }
+            }
+        } else if (bpc == 2) {
+            // when not converted, the step of a
+            if (precision < GimpPrecision::GIMP_PRECISION_HALF_LINEAR) {
+                for (int x = 0; x < width; x++) {
+                    *dataPtr++ = qFromBigEndian<quint16>(*(const quint16 *)tile) / 257;
+                    tile += sizeof(QRgb); // yeah! see loadTileRLE()
+                }
+            } else {
+                for (int x = 0; x < width; x++) {
+                    *dataPtr++ = qFromBigEndian<qfloat16>(*(const qfloat16 *)tile) * 255;
+                    tile += sizeof(QRgb); // yeah! see loadTileRLE()
+                }
+            }
+        }
+#else
+        if (bpc == 2) {
+            for (int x = 0; x < width; x++) {
+                *dataPtr++ = qFromBigEndian<quint16>(*(const quint16 *)tile) / 257;
+                tile += sizeof(QRgb); // yeah! see loadTileRLE() / loadLevel()
+            }
+        } else if (bpc == 4) {
+            for (int x = 0; x < width; x++) {
+                *dataPtr++ = qFromBigEndian<quint16>(*(const quint16 *)tile) / 257;
+                tile += sizeof(quint16); // was converted to 16 bits in loadLevel()
+            }
+        }
+#endif
+        else {
+            for (int x = 0; x < width; x++) {
+                *dataPtr++ = tile[0];
+                tile += sizeof(QRgb); // yeah! see loadTileRLE()
+            }
         }
     }
+
+    return true;
 }
 
 /*!
@@ -1934,27 +2590,9 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
     QImage &image(xcf_image.image);
 
     switch (layer.type) {
-    case RGB_GIMAGE:
-        if (layer.opacity == OPAQUE_OPACITY) {
-            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_RGB32);
-            if (image.isNull()) {
-                return false;
-            }
-            image.fill(qRgb(255, 255, 255));
-            break;
-        } // else, fall through to 32-bit representation
-        Q_FALLTHROUGH();
-    case RGBA_GIMAGE:
-        image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
-        if (image.isNull()) {
-            return false;
-        }
-        image.fill(qRgba(255, 255, 255, 0));
-        break;
-
     case GRAY_GIMAGE:
         if (layer.opacity == OPAQUE_OPACITY) {
-            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
+            image = imageAlloc(xcf_image.header.width, xcf_image.header.height, QImage::Format_Indexed8);
             image.setColorCount(256);
             if (image.isNull()) {
                 return false;
@@ -1965,11 +2603,17 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
         } // else, fall through to 32-bit representation
         Q_FALLTHROUGH();
     case GRAYA_GIMAGE:
-        image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
+    case RGB_GIMAGE:
+    case RGBA_GIMAGE:
+        image = imageAlloc(xcf_image.header.width, xcf_image.header.height, xcf_image.qimageFormat());
         if (image.isNull()) {
             return false;
         }
-        image.fill(qRgba(255, 255, 255, 0));
+        if (image.hasAlphaChannel()) {
+            image.fill(Qt::transparent);
+        } else {
+            image.fill(Qt::white);
+        }
         break;
 
     case INDEXED_GIMAGE:
@@ -1986,7 +2630,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
         // or two-color palette. Have to ask about this...
 
         if (xcf_image.num_colors <= 2) {
-            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
+            image = imageAlloc(xcf_image.header.width, xcf_image.header.height, QImage::Format_MonoLSB);
             image.setColorCount(xcf_image.num_colors);
             if (image.isNull()) {
                 return false;
@@ -1994,7 +2638,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
             image.fill(0);
             setPalette(xcf_image, image);
         } else if (xcf_image.num_colors <= 256) {
-            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
+            image = imageAlloc(xcf_image.header.width, xcf_image.header.height, QImage::Format_Indexed8);
             image.setColorCount(xcf_image.num_colors);
             if (image.isNull()) {
                 return false;
@@ -2012,7 +2656,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
             xcf_image.palette[1] = xcf_image.palette[0];
             xcf_image.palette[0] = qRgba(255, 255, 255, 0);
 
-            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
+            image = imageAlloc(xcf_image.header.width, xcf_image.header.height, QImage::Format_MonoLSB);
             image.setColorCount(xcf_image.num_colors);
             if (image.isNull()) {
                 return false;
@@ -2028,7 +2672,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
             }
 
             xcf_image.palette[0] = qRgba(255, 255, 255, 0);
-            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
+            image = imageAlloc(xcf_image.header.width, xcf_image.header.height, QImage::Format_Indexed8);
             image.setColorCount(xcf_image.num_colors);
             if (image.isNull()) {
                 return false;
@@ -2039,7 +2683,7 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
             // No room for a transparent color, so this has to be promoted to
             // true color. (There is no equivalent PNG representation output
             // from The GIMP as of v1.2.)
-            image = imageAlloc(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
+            image = imageAlloc(xcf_image.header.width, xcf_image.header.height, QImage::Format_ARGB32);
             if (image.isNull()) {
                 return false;
             }
@@ -2047,6 +2691,41 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
         }
         break;
     }
+    if (image.format() != xcf_image.qimageFormat()) {
+        qCWarning(XCFPLUGIN) << "Selected wrong format:" << image.format() << "expected" << layer.qimageFormat(xcf_image.header.precision);
+        return false;
+    }
+
+    // The final profile should be the one in the Parasite
+    // NOTE: if not set here, the colorSpace is aet in setImageParasites() (if no one defined in the parasites)
+#ifndef DISABLE_IMAGE_PROFILE
+    switch (xcf_image.header.precision) {
+    case XCFImageFormat::GIMP_PRECISION_HALF_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_FLOAT_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_DOUBLE_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_U8_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_U16_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_U32_LINEAR:
+        image.setColorSpace(QColorSpace::SRgbLinear);
+        break;
+    case XCFImageFormat::GIMP_PRECISION_HALF_NON_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_FLOAT_NON_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_DOUBLE_NON_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_U8_NON_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_U16_NON_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_U32_NON_LINEAR:
+        image.setColorSpace(QColorSpace::SRgb);
+        break;
+    case XCFImageFormat::GIMP_PRECISION_HALF_PERCEPTUAL:
+    case XCFImageFormat::GIMP_PRECISION_FLOAT_PERCEPTUAL:
+    case XCFImageFormat::GIMP_PRECISION_DOUBLE_PERCEPTUAL:
+    case XCFImageFormat::GIMP_PRECISION_U8_PERCEPTUAL:
+    case XCFImageFormat::GIMP_PRECISION_U16_PERCEPTUAL:
+    case XCFImageFormat::GIMP_PRECISION_U32_PERCEPTUAL:
+        image.setColorSpace(QColorSpace::SRgb);
+        break;
+    }
+#endif
 
     if (xcf_image.x_resolution > 0 && xcf_image.y_resolution > 0) {
         const float dpmx = xcf_image.x_resolution * INCHESPERMETER;
@@ -2117,7 +2796,7 @@ void XCFImageFormat::copyLayerToImage(XCFImage &xcf_image)
             // pixels. Apparently it's the only mode which can apply to a
             // single layer.
 
-            if (layer.mode == DISSOLVE_MODE) {
+            if (layer.mode == GIMP_LAYER_MODE_DISSOLVE) {
                 if (!random_table_initialized) {
                     initializeRandomTable();
                     random_table_initialized = true;
@@ -2136,7 +2815,10 @@ void XCFImageFormat::copyLayerToImage(XCFImage &xcf_image)
                 QPainter painter(&image);
                 painter.setOpacity(layer.opacity / 255.0);
                 painter.setCompositionMode(QPainter::CompositionMode_Source);
-                painter.drawImage(x + layer.x_offset, y + layer.y_offset, layer.image_tiles[j][i]);
+                if (x + layer.x_offset < MAX_IMAGE_WIDTH &&
+                    y + layer.y_offset < MAX_IMAGE_HEIGHT) {
+                    painter.drawImage(x + layer.x_offset, y + layer.y_offset, layer.image_tiles[j][i]);
+                }
                 continue;
             }
 
@@ -2171,20 +2853,38 @@ void XCFImageFormat::copyLayerToImage(XCFImage &xcf_image)
  */
 void XCFImageFormat::copyRGBToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
 {
-    QRgb src = layer.image_tiles[j][i].pixel(k, l);
-    uchar src_a = layer.opacity;
+    if (image.depth() == 32) {
+        QRgb src = layer.image_tiles[j][i].pixel(k, l);
+        uchar src_a = layer.opacity;
 
-    if (layer.type == RGBA_GIMAGE) {
-        src_a = INT_MULT(src_a, qAlpha(src));
+        if (layer.type == RGBA_GIMAGE) {
+            src_a = INT_MULT(src_a, qAlpha(src));
+        }
+
+        // Apply the mask (if any)
+
+        if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j && layer.mask_tiles[j].size() > (int)i) {
+            src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
+        }
+
+        image.setPixel(m, n, qRgba(src, src_a));
+    } else if (image.depth() == 64) {
+        QRgba64 src = layer.image_tiles[j][i].pixelColor(k, l).rgba64();
+        quint16 src_a = layer.opacity;
+
+        if (layer.type == RGBA_GIMAGE) {
+            src_a = INT_MULT(src_a, qAlpha(src));
+        }
+
+        // Apply the mask (if any)
+
+        if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j && layer.mask_tiles[j].size() > (int)i) {
+            src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
+        }
+        src.setAlpha(src_a);
+
+        image.setPixel(m, n, src);
     }
-
-    // Apply the mask (if any)
-
-    if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j && layer.mask_tiles[j].size() > (int)i) {
-        src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
-    }
-
-    image.setPixel(m, n, qRgba(src, src_a));
 }
 
 /*!
@@ -2347,80 +3047,27 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage &xcf_image)
     if (!layer.opacity) {
         return; // don't bother doing anything
     }
-    XCFImageFormat::GimpColorSpace blendSpace = XCFImageFormat::RgbLinearSpace;
-    switch (layer.blendSpace) {
-    case 0:
+
+    if (layer.blendSpace == XCFImageFormat::AutoColorSpace) {
+        qCDebug(XCFPLUGIN) << "Auto blend space, defaulting to RgbLinearSpace (same as Gimp when writing this)";
         layer.blendSpace = XCFImageFormat::RgbLinearSpace;
-        break;
-    case 1:
-        layer.blendSpace = XCFImageFormat::RgbPerceptualSpace;
-        break;
-    case 2:
-        layer.blendSpace = XCFImageFormat::LabSpace;
-        break;
-    default:
-        if (layer.blendSpace < 0) {
-            qCDebug(XCFPLUGIN) << "Auto blendspace not handled" << layer.blendSpace;
-        } else {
-            qCDebug(XCFPLUGIN) << "Unknown blend space" << layer.blendSpace;
-        }
-        break;
     }
 
-    if (blendSpace != XCFImageFormat::RgbLinearSpace) {
-        qCDebug(XCFPLUGIN) << "Unimplemented blend color space" << blendSpace;
+    if (layer.blendSpace != XCFImageFormat::RgbLinearSpace) {
+        qCDebug(XCFPLUGIN) << "Unimplemented blend color space" << layer.blendSpace;
     }
+    qCDebug(XCFPLUGIN) << "Blend color space" << layer.blendSpace;
 
-    if (layer.compositeSpace < 0) {
-        qCDebug(XCFPLUGIN) << "Auto composite space not handled" << layer.compositeSpace;
-    }
-    XCFImageFormat::GimpColorSpace compositeSpace = XCFImageFormat::RgbLinearSpace;
-    switch (qAbs(layer.compositeSpace)) {
-    case 0:
+    if (layer.compositeSpace == XCFImageFormat::AutoColorSpace) {
+        qCDebug(XCFPLUGIN) << "Auto composite space, defaulting to RgbLinearSpace (same as Gimp when writing this)";
         layer.compositeSpace = XCFImageFormat::RgbLinearSpace;
-        break;
-    case 1:
-        layer.compositeSpace = XCFImageFormat::RgbPerceptualSpace;
-        break;
-    case 2:
-        layer.compositeSpace = XCFImageFormat::LabSpace;
-        break;
-    default:
-        qCDebug(XCFPLUGIN) << "Unknown composite space" << layer.compositeSpace;
-        break;
     }
 
-    if (compositeSpace != XCFImageFormat::RgbLinearSpace) {
-        qCDebug(XCFPLUGIN) << "Unimplemented composite color space" << compositeSpace;
+    if (layer.compositeSpace != XCFImageFormat::RgbLinearSpace) {
+        qCDebug(XCFPLUGIN) << "Unimplemented composite color space" << layer.compositeSpace;
     }
-
-    if (layer.compositeMode < 0) {
-        qCDebug(XCFPLUGIN) << "Auto composite mode not handled" << layer.compositeMode;
-    }
-
-    XCFImageFormat::GimpCompositeMode compositeMode = XCFImageFormat::CompositeOver;
-    switch (qAbs(layer.compositeMode)) {
-    case 0:
-        compositeMode = XCFImageFormat::CompositeOver;
-        break;
-    case 1:
-        compositeMode = XCFImageFormat::CompositeUnion;
-        break;
-    case 2:
-        compositeMode = XCFImageFormat::CompositeClipBackdrop;
-        break;
-    case 3:
-        compositeMode = XCFImageFormat::CompositeClipLayer;
-        break;
-    case 4:
-        compositeMode = XCFImageFormat::CompositeIntersect;
-        break;
-    default:
-        qCDebug(XCFPLUGIN) << "Unknown composite mode" << layer.compositeMode;
-        break;
-    }
-    if (compositeMode != XCFImageFormat::CompositeOver) {
-        qCDebug(XCFPLUGIN) << "Unhandled composite mode" << compositeMode;
+    if (layer.compositeMode != XCFImageFormat::CompositeUnion) {
+        qCDebug(XCFPLUGIN) << "Unhandled composite mode" << layer.compositeMode;
     }
 
     switch (layer.type) {
@@ -2457,6 +3104,142 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage &xcf_image)
         return;
     }
 
+    if (merge == mergeRGBToRGB && layer.apply_mask != 1) {
+        int painterMode = -1;
+        switch (layer.mode) {
+        case GIMP_LAYER_MODE_NORMAL:
+        case GIMP_LAYER_MODE_NORMAL_LEGACY:
+            painterMode = QPainter::CompositionMode_SourceOver;
+            break;
+        case GIMP_LAYER_MODE_MULTIPLY:
+        case GIMP_LAYER_MODE_MULTIPLY_LEGACY:
+            painterMode = QPainter::CompositionMode_Multiply;
+            break;
+        case GIMP_LAYER_MODE_SCREEN:
+        case GIMP_LAYER_MODE_SCREEN_LEGACY:
+            painterMode = QPainter::CompositionMode_Screen;
+            break;
+        case GIMP_LAYER_MODE_OVERLAY:
+        case GIMP_LAYER_MODE_OVERLAY_LEGACY:
+            painterMode = QPainter::CompositionMode_Overlay;
+            break;
+        case GIMP_LAYER_MODE_DIFFERENCE:
+        case GIMP_LAYER_MODE_DIFFERENCE_LEGACY:
+            painterMode = QPainter::CompositionMode_Difference;
+            break;
+        case GIMP_LAYER_MODE_DARKEN_ONLY:
+        case GIMP_LAYER_MODE_DARKEN_ONLY_LEGACY:
+            painterMode = QPainter::CompositionMode_Darken;
+            break;
+        case GIMP_LAYER_MODE_LIGHTEN_ONLY:
+        case GIMP_LAYER_MODE_LIGHTEN_ONLY_LEGACY:
+            painterMode = QPainter::CompositionMode_Lighten;
+            break;
+        case GIMP_LAYER_MODE_DODGE:
+        case GIMP_LAYER_MODE_DODGE_LEGACY:
+            painterMode = QPainter::CompositionMode_ColorDodge;
+            break;
+        case GIMP_LAYER_MODE_BURN:
+        case GIMP_LAYER_MODE_BURN_LEGACY:
+            painterMode = QPainter::CompositionMode_ColorBurn;
+            break;
+        case GIMP_LAYER_MODE_HARDLIGHT:
+        case GIMP_LAYER_MODE_HARDLIGHT_LEGACY:
+            painterMode = QPainter::CompositionMode_HardLight;
+            break;
+        case GIMP_LAYER_MODE_SOFTLIGHT:
+        case GIMP_LAYER_MODE_SOFTLIGHT_LEGACY:
+            painterMode = QPainter::CompositionMode_SoftLight;
+            break;
+        case GIMP_LAYER_MODE_ADDITION:
+        case GIMP_LAYER_MODE_ADDITION_LEGACY:
+            painterMode = QPainter::CompositionMode_Plus;
+            break;
+        case GIMP_LAYER_MODE_EXCLUSION:
+            painterMode = QPainter::CompositionMode_Exclusion;
+            break;
+
+            // Not bothered to find what the QPainter equivalent is, or there is none
+        case GIMP_LAYER_MODE_GRAIN_EXTRACT:
+        case GIMP_LAYER_MODE_GRAIN_EXTRACT_LEGACY:
+        case GIMP_LAYER_MODE_GRAIN_MERGE:
+        case GIMP_LAYER_MODE_GRAIN_MERGE_LEGACY:
+        case GIMP_LAYER_MODE_COLOR_ERASE:
+        case GIMP_LAYER_MODE_COLOR_ERASE_LEGACY:
+        case GIMP_LAYER_MODE_LCH_HUE:
+        case GIMP_LAYER_MODE_LCH_CHROMA:
+        case GIMP_LAYER_MODE_LCH_COLOR:
+        case GIMP_LAYER_MODE_LCH_LIGHTNESS:
+        case GIMP_LAYER_MODE_BEHIND:
+        case GIMP_LAYER_MODE_BEHIND_LEGACY:
+        case GIMP_LAYER_MODE_SUBTRACT:
+        case GIMP_LAYER_MODE_SUBTRACT_LEGACY:
+        case GIMP_LAYER_MODE_HSV_HUE:
+        case GIMP_LAYER_MODE_HSV_SATURATION:
+        case GIMP_LAYER_MODE_HSL_COLOR:
+        case GIMP_LAYER_MODE_HSV_VALUE:
+        case GIMP_LAYER_MODE_DIVIDE:
+        case GIMP_LAYER_MODE_VIVID_LIGHT:
+        case GIMP_LAYER_MODE_PIN_LIGHT:
+        case GIMP_LAYER_MODE_LINEAR_LIGHT:
+        case GIMP_LAYER_MODE_HARD_MIX:
+        case GIMP_LAYER_MODE_LINEAR_BURN:
+        case GIMP_LAYER_MODE_LUMA_DARKEN_ONLY:
+        case GIMP_LAYER_MODE_LUMA_LIGHTEN_ONLY:
+        case GIMP_LAYER_MODE_LUMINANCE:
+        case GIMP_LAYER_MODE_ERASE:
+        case GIMP_LAYER_MODE_MERGE:
+        case GIMP_LAYER_MODE_SPLIT:
+        case GIMP_LAYER_MODE_PASS_THROUGH:
+        case GIMP_LAYER_MODE_HSV_HUE_LEGACY:
+        case GIMP_LAYER_MODE_HSV_SATURATION_LEGACY:
+        case GIMP_LAYER_MODE_HSL_COLOR_LEGACY:
+        case GIMP_LAYER_MODE_HSV_VALUE_LEGACY:
+        case GIMP_LAYER_MODE_DIVIDE_LEGACY:
+            qCDebug(XCFPLUGIN) << "No QPainter equivalent to" << layer.mode;
+            break;
+
+            // Special
+        case GIMP_LAYER_MODE_DISSOLVE:
+        case GIMP_LAYER_MODE_COUNT:
+            break;
+        }
+
+        if (painterMode != -1) {
+            QPainter painter(&image);
+            painter.setOpacity(layer.opacity / 255.0);
+            painter.setCompositionMode(QPainter::CompositionMode(painterMode));
+            qCDebug(XCFPLUGIN) << "Using QPainter for mode" << layer.mode;
+
+            for (uint j = 0; j < layer.nrows; j++) {
+                uint y = j * TILE_HEIGHT;
+
+                for (uint i = 0; i < layer.ncols; i++) {
+                    uint x = i * TILE_WIDTH;
+
+                    QImage &tile = layer.image_tiles[j][i];
+                    if (x + layer.x_offset < MAX_IMAGE_WIDTH &&
+                        y + layer.y_offset < MAX_IMAGE_HEIGHT) {
+                        painter.drawImage(x + layer.x_offset, y + layer.y_offset, tile);
+                    }
+                }
+            }
+
+            return;
+        }
+    }
+
+#ifndef DISABLE_IMAGE_PROFILE_CONV // The final profile should be the one in the Parasite
+    if (layer.compositeSpace == XCFImageFormat::RgbPerceptualSpace && image.colorSpace() != QColorSpace::SRgb) {
+        qCDebug(XCFPLUGIN) << "Converting to composite color space" << layer.compositeSpace;
+        image.convertToColorSpace(QColorSpace::SRgb);
+    }
+    if (layer.compositeSpace == XCFImageFormat::RgbLinearSpace && image.colorSpace() != QColorSpace::SRgbLinear) {
+        qCDebug(XCFPLUGIN) << "Converting to composite color space" << layer.compositeSpace;
+        image.convertToColorSpace(QColorSpace::SRgbLinear);
+    }
+#endif
+
     for (uint j = 0; j < layer.nrows; j++) {
         uint y = j * TILE_HEIGHT;
 
@@ -2468,7 +3251,7 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage &xcf_image)
             // pixels. Apparently it's the only mode which can apply to a
             // single layer.
 
-            if (layer.mode == DISSOLVE_MODE) {
+            if (layer.mode == GIMP_LAYER_MODE_DISSOLVE) {
                 if (!random_table_initialized) {
                     initializeRandomTable();
                     random_table_initialized = true;
@@ -2483,13 +3266,26 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage &xcf_image)
             }
 
             // Shortcut for common case
-            if (merge == mergeRGBToRGB && layer.apply_mask != 1 && layer.mode == NORMAL_MODE) {
+            if (merge == mergeRGBToRGB && layer.apply_mask != 1 && layer.mode == GIMP_LAYER_MODE_NORMAL_LEGACY) {
                 QPainter painter(&image);
                 painter.setOpacity(layer.opacity / 255.0);
                 painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-                painter.drawImage(x + layer.x_offset, y + layer.y_offset, layer.image_tiles[j][i]);
+                if (x + layer.x_offset < MAX_IMAGE_WIDTH &&
+                    y + layer.y_offset < MAX_IMAGE_HEIGHT) {
+                    painter.drawImage(x + layer.x_offset, y + layer.y_offset, layer.image_tiles[j][i]);
+                }
                 continue;
             }
+
+#ifndef DISABLE_TILE_PROFILE_CONV // not sure about that: left as old plugin
+            QImage &tile = layer.image_tiles[j][i];
+            if (layer.compositeSpace == XCFImageFormat::RgbPerceptualSpace && tile.colorSpace() != QColorSpace::SRgb) {
+                tile.convertToColorSpace(QColorSpace::SRgb);
+            }
+            if (layer.compositeSpace == XCFImageFormat::RgbLinearSpace && tile.colorSpace() != QColorSpace::SRgbLinear) {
+                tile.convertToColorSpace(QColorSpace::SRgbLinear);
+            }
+#endif
 
             for (int l = 0; l < layer.image_tiles[j][i].height(); l++) {
                 for (int k = 0; k < layer.image_tiles[j][i].width(); k++) {
@@ -2500,7 +3296,9 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage &xcf_image)
                         continue;
                     }
 
-                    (*merge)(layer, i, j, k, l, image, m, n);
+                    if (!(*merge)(layer, i, j, k, l, image, m, n)) {
+                        return;
+                    }
                 }
             }
         }
@@ -2520,7 +3318,7 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage &xcf_image)
  * \param m x pixel of destination image.
  * \param n y pixel of destination image.
  */
-void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
+bool XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
 {
     QRgb src = layer.image_tiles[j][i].pixel(k, l);
     QRgb dst = image.pixel(m, n);
@@ -2536,7 +3334,7 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
     uchar dst_a = qAlpha(dst);
 
     if (!src_a) {
-        return; // nothing to merge
+        return false; // nothing to merge
     }
 
     switch (layer.mode) {
@@ -2606,6 +3404,7 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
         src_b = dst_b < src_b ? src_b : dst_b;
         src_a = qMin(src_a, dst_a);
         break;
+    case GIMP_LAYER_MODE_HSV_HUE:
     case GIMP_LAYER_MODE_HSV_HUE_LEGACY: {
         uchar new_r = dst_r;
         uchar new_g = dst_g;
@@ -2623,6 +3422,7 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
         src_b = new_b;
         src_a = qMin(src_a, dst_a);
     } break;
+    case GIMP_LAYER_MODE_HSV_SATURATION:
     case GIMP_LAYER_MODE_HSV_SATURATION_LEGACY: {
         uchar new_r = dst_r;
         uchar new_g = dst_g;
@@ -2640,6 +3440,7 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
         src_b = new_b;
         src_a = qMin(src_a, dst_a);
     } break;
+    case GIMP_LAYER_MODE_HSV_VALUE:
     case GIMP_LAYER_MODE_HSV_VALUE_LEGACY: {
         uchar new_r = dst_r;
         uchar new_g = dst_g;
@@ -2657,6 +3458,7 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
         src_b = new_b;
         src_a = qMin(src_a, dst_a);
     } break;
+    case GIMP_LAYER_MODE_HSL_COLOR:
     case GIMP_LAYER_MODE_HSL_COLOR_LEGACY: {
         uchar new_r = dst_r;
         uchar new_g = dst_g;
@@ -2675,6 +3477,7 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
         src_b = new_b;
         src_a = qMin(src_a, dst_a);
     } break;
+    case GIMP_LAYER_MODE_DODGE:
     case GIMP_LAYER_MODE_DODGE_LEGACY: {
         uint tmp;
 
@@ -2692,6 +3495,7 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
 
         src_a = qMin(src_a, dst_a);
     } break;
+    case GIMP_LAYER_MODE_BURN:
     case GIMP_LAYER_MODE_BURN_LEGACY: {
         uint tmp;
 
@@ -2712,6 +3516,7 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
 
         src_a = qMin(src_a, dst_a);
     } break;
+    case GIMP_LAYER_MODE_HARDLIGHT:
     case GIMP_LAYER_MODE_HARDLIGHT_LEGACY: {
         uint tmp;
         if (src_r > 128) {
@@ -2739,6 +3544,7 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
         }
         src_a = qMin(src_a, dst_a);
     } break;
+    case GIMP_LAYER_MODE_SOFTLIGHT:
     case GIMP_LAYER_MODE_SOFTLIGHT_LEGACY: {
         uint tmpS;
         uint tmpM;
@@ -2757,6 +3563,7 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
 
         src_a = qMin(src_a, dst_a);
     } break;
+    case GIMP_LAYER_MODE_GRAIN_EXTRACT:
     case GIMP_LAYER_MODE_GRAIN_EXTRACT_LEGACY: {
         int tmp;
 
@@ -2777,6 +3584,7 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
 
         src_a = qMin(src_a, dst_a);
     } break;
+    case GIMP_LAYER_MODE_GRAIN_MERGE:
     case GIMP_LAYER_MODE_GRAIN_MERGE_LEGACY: {
         int tmp;
 
@@ -2797,8 +3605,52 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
 
         src_a = qMin(src_a, dst_a);
     } break;
+    case GIMP_LAYER_MODE_LINEAR_LIGHT: {
+        if (src_r <= 128) {
+            src_r = qBound(0, dst_r + 2 * src_r - 255, 255);
+        } else {
+            src_r = qBound(0, dst_r + 2 * (src_r - 128), 255);
+        }
+        if (src_g <= 128) {
+            src_g = qBound(0, dst_g + 2 * src_g - 255, 255);
+        } else {
+            src_g = qBound(0, dst_g + 2 * (src_g - 127), 255);
+        }
+        if (src_b <= 128) {
+            src_b = qBound(0, dst_b + 2 * src_b - 255, 255);
+        } else {
+            src_b = qBound(0, dst_b + 2 * (src_b - 127), 255);
+        }
+    } break;
+    case GIMP_LAYER_MODE_VIVID_LIGHT: {
+        // From http://www.simplefilter.de/en/basics/mixmods.html
+        float A[3];
+        A[0] = src_r / 255.;
+        A[1] = src_g / 255.;
+        A[2] = src_b / 255.;
+        float B[3];
+        B[0] = dst_r / 255.;
+        B[1] = dst_g / 255.;
+        B[2] = dst_b / 255.;
+        float C[3]{};
+        for (int i = 0; i < 3; i++) {
+            if (A[i] <= 0.5f) {
+                if (A[i] > 0.f) {
+                    C[i] = 1.f - (1.f - B[i]) / (2.f * A[i]);
+                }
+            } else {
+                if (A[i] < 1.f) {
+                    C[i] = B[i] / (2.f * (1.f - A[i]));
+                }
+            }
+        }
+        src_r = qBound(0.f, C[0] * 255.f, 255.f);
+        src_g = qBound(0.f, C[1] * 255.f, 255.f);
+        src_b = qBound(0.f, C[2] * 255.f, 255.f);
+    } break;
     default:
-        break;
+        qCWarning(XCFPLUGIN) << "Unhandled mode" << layer.mode;
+        return false;
     }
 
     src_a = INT_MULT(src_a, layer.opacity);
@@ -2827,6 +3679,7 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
     }
 
     image.setPixel(m, n, qRgba(new_r, new_g, new_b, new_a));
+    return true;
 }
 
 /*!
@@ -2840,10 +3693,11 @@ void XCFImageFormat::mergeRGBToRGB(const Layer &layer, uint i, uint j, int k, in
  * \param m x pixel of destination image.
  * \param n y pixel of destination image.
  */
-void XCFImageFormat::mergeGrayToGray(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
+bool XCFImageFormat::mergeGrayToGray(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
 {
     int src = layer.image_tiles[j][i].pixelIndex(k, l);
     image.setPixel(m, n, src);
+    return true;
 }
 
 /*!
@@ -2857,7 +3711,7 @@ void XCFImageFormat::mergeGrayToGray(const Layer &layer, uint i, uint j, int k, 
  * \param m x pixel of destination image.
  * \param n y pixel of destination image.
  */
-void XCFImageFormat::mergeGrayAToGray(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
+bool XCFImageFormat::mergeGrayAToGray(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
 {
     int src = qGray(layer.image_tiles[j][i].pixel(k, l));
     int dst = image.pixelIndex(m, n);
@@ -2865,49 +3719,61 @@ void XCFImageFormat::mergeGrayAToGray(const Layer &layer, uint i, uint j, int k,
     uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
 
     if (!src_a) {
-        return; // nothing to merge
+        return false; // nothing to merge
     }
 
     switch (layer.mode) {
-    case MULTIPLY_MODE: {
+    case GIMP_LAYER_MODE_MULTIPLY:
+    case GIMP_LAYER_MODE_MULTIPLY_LEGACY: {
         src = INT_MULT(src, dst);
     } break;
-    case DIVIDE_MODE: {
+    case GIMP_LAYER_MODE_DIVIDE:
+    case GIMP_LAYER_MODE_DIVIDE_LEGACY: {
         src = qMin((dst * 256) / (1 + src), 255);
     } break;
-    case SCREEN_MODE: {
+    case GIMP_LAYER_MODE_SCREEN:
+    case GIMP_LAYER_MODE_SCREEN_LEGACY: {
         src = 255 - INT_MULT(255 - dst, 255 - src);
     } break;
-    case OVERLAY_MODE: {
+    case GIMP_LAYER_MODE_OVERLAY:
+    case GIMP_LAYER_MODE_OVERLAY_LEGACY: {
         src = INT_MULT(dst, dst + INT_MULT(2 * src, 255 - dst));
     } break;
-    case DIFFERENCE_MODE: {
+    case GIMP_LAYER_MODE_DIFFERENCE:
+    case GIMP_LAYER_MODE_DIFFERENCE_LEGACY: {
         src = dst > src ? dst - src : src - dst;
     } break;
-    case ADDITION_MODE: {
+    case GIMP_LAYER_MODE_ADDITION:
+    case GIMP_LAYER_MODE_ADDITION_LEGACY: {
         src = add_lut(dst, src);
     } break;
-    case SUBTRACT_MODE: {
+    case GIMP_LAYER_MODE_SUBTRACT:
+    case GIMP_LAYER_MODE_SUBTRACT_LEGACY: {
         src = dst > src ? dst - src : 0;
     } break;
-    case DARKEN_ONLY_MODE: {
+    case GIMP_LAYER_MODE_DARKEN_ONLY:
+    case GIMP_LAYER_MODE_DARKEN_ONLY_LEGACY: {
         src = dst < src ? dst : src;
     } break;
-    case LIGHTEN_ONLY_MODE: {
+    case GIMP_LAYER_MODE_LIGHTEN_ONLY:
+    case GIMP_LAYER_MODE_LIGHTEN_ONLY_LEGACY: {
         src = dst < src ? src : dst;
     } break;
-    case DODGE_MODE: {
+    case GIMP_LAYER_MODE_DODGE:
+    case GIMP_LAYER_MODE_DODGE_LEGACY: {
         uint tmp = dst << 8;
         tmp /= 256 - src;
         src = (uchar)qMin(tmp, 255u);
     } break;
-    case BURN_MODE: {
+    case GIMP_LAYER_MODE_BURN:
+    case GIMP_LAYER_MODE_BURN_LEGACY: {
         uint tmp = (255 - dst) << 8;
         tmp /= src + 1;
         src = (uchar)qMin(tmp, 255u);
         src = 255 - src;
     } break;
-    case HARDLIGHT_MODE: {
+    case GIMP_LAYER_MODE_HARDLIGHT:
+    case GIMP_LAYER_MODE_HARDLIGHT_LEGACY: {
         uint tmp;
         if (src > 128) {
             tmp = ((int)255 - dst) * ((int)255 - ((src - 128) << 1));
@@ -2917,7 +3783,8 @@ void XCFImageFormat::mergeGrayAToGray(const Layer &layer, uint i, uint j, int k,
             src = (uchar)qMin(tmp >> 8, 255u);
         }
     } break;
-    case SOFTLIGHT_MODE: {
+    case GIMP_LAYER_MODE_SOFTLIGHT:
+    case GIMP_LAYER_MODE_SOFTLIGHT_LEGACY: {
         uint tmpS;
         uint tmpM;
 
@@ -2926,7 +3793,8 @@ void XCFImageFormat::mergeGrayAToGray(const Layer &layer, uint i, uint j, int k,
         src = INT_MULT((255 - dst), tmpM) + INT_MULT(dst, tmpS);
 
     } break;
-    case GRAIN_EXTRACT_MODE: {
+    case GIMP_LAYER_MODE_GRAIN_EXTRACT:
+    case GIMP_LAYER_MODE_GRAIN_EXTRACT_LEGACY: {
         int tmp;
 
         tmp = dst - src + 128;
@@ -2935,7 +3803,8 @@ void XCFImageFormat::mergeGrayAToGray(const Layer &layer, uint i, uint j, int k,
 
         src = (uchar)tmp;
     } break;
-    case GRAIN_MERGE_MODE: {
+    case GIMP_LAYER_MODE_GRAIN_MERGE:
+    case GIMP_LAYER_MODE_GRAIN_MERGE_LEGACY: {
         int tmp;
 
         tmp = dst + src - 128;
@@ -2944,6 +3813,9 @@ void XCFImageFormat::mergeGrayAToGray(const Layer &layer, uint i, uint j, int k,
 
         src = (uchar)tmp;
     } break;
+    default:
+        qCWarning(XCFPLUGIN) << "Unhandled mode" << layer.mode;
+        return false;
     }
 
     src_a = INT_MULT(src_a, layer.opacity);
@@ -2962,6 +3834,7 @@ void XCFImageFormat::mergeGrayAToGray(const Layer &layer, uint i, uint j, int k,
     uchar new_g = (uchar)(src_ratio * src + dst_ratio * dst + EPSILON);
 
     image.setPixel(m, n, new_g);
+    return true;
 }
 
 /*!
@@ -2977,11 +3850,12 @@ void XCFImageFormat::mergeGrayAToGray(const Layer &layer, uint i, uint j, int k,
  * \param m x pixel of destination image.
  * \param n y pixel of destination image.
  */
-void XCFImageFormat::mergeGrayToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
+bool XCFImageFormat::mergeGrayToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
 {
     QRgb src = layer.image_tiles[j][i].pixel(k, l);
     uchar src_a = layer.opacity;
     image.setPixel(m, n, qRgba(src, src_a));
+    return true;
 }
 
 /*!
@@ -2997,7 +3871,7 @@ void XCFImageFormat::mergeGrayToRGB(const Layer &layer, uint i, uint j, int k, i
  * \param m x pixel of destination image.
  * \param n y pixel of destination image.
  */
-void XCFImageFormat::mergeGrayAToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
+bool XCFImageFormat::mergeGrayAToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
 {
     int src = qGray(layer.image_tiles[j][i].pixel(k, l));
     int dst = qGray(image.pixel(m, n));
@@ -3006,60 +3880,72 @@ void XCFImageFormat::mergeGrayAToRGB(const Layer &layer, uint i, uint j, int k, 
     uchar dst_a = qAlpha(image.pixel(m, n));
 
     if (!src_a) {
-        return; // nothing to merge
+        return false; // nothing to merge
     }
 
     switch (layer.mode) {
-    case MULTIPLY_MODE: {
+    case GIMP_LAYER_MODE_MULTIPLY:
+    case GIMP_LAYER_MODE_MULTIPLY_LEGACY: {
         src = INT_MULT(src, dst);
         src_a = qMin(src_a, dst_a);
     } break;
-    case DIVIDE_MODE: {
+    case GIMP_LAYER_MODE_DIVIDE:
+    case GIMP_LAYER_MODE_DIVIDE_LEGACY: {
         src = qMin((dst * 256) / (1 + src), 255);
         src_a = qMin(src_a, dst_a);
     } break;
-    case SCREEN_MODE: {
+    case GIMP_LAYER_MODE_SCREEN:
+    case GIMP_LAYER_MODE_SCREEN_LEGACY: {
         src = 255 - INT_MULT(255 - dst, 255 - src);
         src_a = qMin(src_a, dst_a);
     } break;
-    case OVERLAY_MODE: {
+    case GIMP_LAYER_MODE_OVERLAY:
+    case GIMP_LAYER_MODE_OVERLAY_LEGACY: {
         src = INT_MULT(dst, dst + INT_MULT(2 * src, 255 - dst));
         src_a = qMin(src_a, dst_a);
     } break;
-    case DIFFERENCE_MODE: {
+    case GIMP_LAYER_MODE_DIFFERENCE:
+    case GIMP_LAYER_MODE_DIFFERENCE_LEGACY: {
         src = dst > src ? dst - src : src - dst;
         src_a = qMin(src_a, dst_a);
     } break;
-    case ADDITION_MODE: {
+    case GIMP_LAYER_MODE_ADDITION:
+    case GIMP_LAYER_MODE_ADDITION_LEGACY: {
         src = add_lut(dst, src);
         src_a = qMin(src_a, dst_a);
     } break;
-    case SUBTRACT_MODE: {
+    case GIMP_LAYER_MODE_SUBTRACT:
+    case GIMP_LAYER_MODE_SUBTRACT_LEGACY: {
         src = dst > src ? dst - src : 0;
         src_a = qMin(src_a, dst_a);
     } break;
-    case DARKEN_ONLY_MODE: {
+    case GIMP_LAYER_MODE_DARKEN_ONLY:
+    case GIMP_LAYER_MODE_DARKEN_ONLY_LEGACY: {
         src = dst < src ? dst : src;
         src_a = qMin(src_a, dst_a);
     } break;
-    case LIGHTEN_ONLY_MODE: {
+    case GIMP_LAYER_MODE_LIGHTEN_ONLY:
+    case GIMP_LAYER_MODE_LIGHTEN_ONLY_LEGACY: {
         src = dst < src ? src : dst;
         src_a = qMin(src_a, dst_a);
     } break;
-    case DODGE_MODE: {
+    case GIMP_LAYER_MODE_DODGE:
+    case GIMP_LAYER_MODE_DODGE_LEGACY: {
         uint tmp = dst << 8;
         tmp /= 256 - src;
         src = (uchar)qMin(tmp, 255u);
         src_a = qMin(src_a, dst_a);
     } break;
-    case BURN_MODE: {
+    case GIMP_LAYER_MODE_BURN:
+    case GIMP_LAYER_MODE_BURN_LEGACY: {
         uint tmp = (255 - dst) << 8;
         tmp /= src + 1;
         src = (uchar)qMin(tmp, 255u);
         src = 255 - src;
         src_a = qMin(src_a, dst_a);
     } break;
-    case HARDLIGHT_MODE: {
+    case GIMP_LAYER_MODE_HARDLIGHT:
+    case GIMP_LAYER_MODE_HARDLIGHT_LEGACY: {
         uint tmp;
         if (src > 128) {
             tmp = ((int)255 - dst) * ((int)255 - ((src - 128) << 1));
@@ -3070,7 +3956,8 @@ void XCFImageFormat::mergeGrayAToRGB(const Layer &layer, uint i, uint j, int k, 
         }
         src_a = qMin(src_a, dst_a);
     } break;
-    case SOFTLIGHT_MODE: {
+    case GIMP_LAYER_MODE_SOFTLIGHT:
+    case GIMP_LAYER_MODE_SOFTLIGHT_LEGACY: {
         uint tmpS;
         uint tmpM;
 
@@ -3080,7 +3967,8 @@ void XCFImageFormat::mergeGrayAToRGB(const Layer &layer, uint i, uint j, int k, 
 
         src_a = qMin(src_a, dst_a);
     } break;
-    case GRAIN_EXTRACT_MODE: {
+    case GIMP_LAYER_MODE_GRAIN_EXTRACT:
+    case GIMP_LAYER_MODE_GRAIN_EXTRACT_LEGACY: {
         int tmp;
 
         tmp = dst - src + 128;
@@ -3090,7 +3978,8 @@ void XCFImageFormat::mergeGrayAToRGB(const Layer &layer, uint i, uint j, int k, 
         src = (uchar)tmp;
         src_a = qMin(src_a, dst_a);
     } break;
-    case GRAIN_MERGE_MODE: {
+    case GIMP_LAYER_MODE_GRAIN_MERGE:
+    case GIMP_LAYER_MODE_GRAIN_MERGE_LEGACY: {
         int tmp;
 
         tmp = dst + src - 128;
@@ -3100,6 +3989,9 @@ void XCFImageFormat::mergeGrayAToRGB(const Layer &layer, uint i, uint j, int k, 
         src = (uchar)tmp;
         src_a = qMin(src_a, dst_a);
     } break;
+    default:
+        qCWarning(XCFPLUGIN) << "Unhandled mode" << layer.mode;
+        return false;
     }
 
     src_a = INT_MULT(src_a, layer.opacity);
@@ -3121,6 +4013,7 @@ void XCFImageFormat::mergeGrayAToRGB(const Layer &layer, uint i, uint j, int k, 
     }
 
     image.setPixel(m, n, qRgba(new_g, new_g, new_g, new_a));
+    return true;
 }
 
 /*!
@@ -3134,10 +4027,11 @@ void XCFImageFormat::mergeGrayAToRGB(const Layer &layer, uint i, uint j, int k, 
  * \param m x pixel of destination image.
  * \param n y pixel of destination image.
  */
-void XCFImageFormat::mergeIndexedToIndexed(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
+bool XCFImageFormat::mergeIndexedToIndexed(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
 {
     int src = layer.image_tiles[j][i].pixelIndex(k, l);
     image.setPixel(m, n, src);
+    return true;
 }
 
 /*!
@@ -3151,7 +4045,7 @@ void XCFImageFormat::mergeIndexedToIndexed(const Layer &layer, uint i, uint j, i
  * \param m x pixel of destination image.
  * \param n y pixel of destination image.
  */
-void XCFImageFormat::mergeIndexedAToIndexed(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
+bool XCFImageFormat::mergeIndexedAToIndexed(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
 {
     uchar src = layer.image_tiles[j][i].pixelIndex(k, l);
     uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
@@ -3165,6 +4059,7 @@ void XCFImageFormat::mergeIndexedAToIndexed(const Layer &layer, uint i, uint j, 
         src++;
         image.setPixel(m, n, src);
     }
+    return true;
 }
 
 /*!
@@ -3180,7 +4075,7 @@ void XCFImageFormat::mergeIndexedAToIndexed(const Layer &layer, uint i, uint j, 
  * \param m x pixel of destination image.
  * \param n y pixel of destination image.
  */
-void XCFImageFormat::mergeIndexedAToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
+bool XCFImageFormat::mergeIndexedAToRGB(const Layer &layer, uint i, uint j, int k, int l, QImage &image, int m, int n)
 {
     QRgb src = layer.image_tiles[j][i].pixel(k, l);
     uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
@@ -3199,6 +4094,7 @@ void XCFImageFormat::mergeIndexedAToRGB(const Layer &layer, uint i, uint j, int 
     }
 
     image.setPixel(m, n, qRgba(src, src_a));
+    return true;
 }
 
 /*!
@@ -3345,7 +4241,44 @@ bool XCFHandler::canRead(QIODevice *device)
         return false;
     }
 
-    qint64 oldPos = device->pos();
+    const qint64 oldPos = device->pos();
+    if (!device->isSequential()) {
+        QDataStream ds(device);
+        XCFImageFormat::XCFImage::Header header;
+        bool failed = !XCFImageFormat::readXCFHeader(ds, &header);
+        ds.setDevice(nullptr);
+        device->seek(oldPos);
+        if (failed) {
+            return false;
+        }
+
+        switch (header.precision) {
+        case XCFImageFormat::GIMP_PRECISION_HALF_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_HALF_NON_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_HALF_PERCEPTUAL:
+        case XCFImageFormat::GIMP_PRECISION_FLOAT_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_FLOAT_NON_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_FLOAT_PERCEPTUAL:
+        case XCFImageFormat::GIMP_PRECISION_U8_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_U8_NON_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_U8_PERCEPTUAL:
+        case XCFImageFormat::GIMP_PRECISION_U16_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_U16_NON_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_U16_PERCEPTUAL:
+        case XCFImageFormat::GIMP_PRECISION_U32_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_U32_NON_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_U32_PERCEPTUAL:
+            break;
+        case XCFImageFormat::GIMP_PRECISION_DOUBLE_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_DOUBLE_NON_LINEAR:
+        case XCFImageFormat::GIMP_PRECISION_DOUBLE_PERCEPTUAL:
+        default:
+            qCDebug(XCFPLUGIN) << "unsupported precision" << header.precision;
+            return false;
+        }
+
+        return true;
+    }
 
     char head[8];
     qint64 readBytes = device->read(head, sizeof(head));

@@ -19,7 +19,7 @@ include(ECMDeprecationSettings)
 include(CheckIncludeFiles)
 include(FindPkgConfig)
 
-set(REQUIRED_QT_VERSION 6.4.0)
+set(REQUIRED_QT_VERSION 6.5.0)
 find_package(Qt6Gui ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
 find_package(KF6Archive)
@@ -51,7 +51,10 @@ set_package_properties(OpenEXR PROPERTIES
     PURPOSE "Required for the QImage plugin for OpenEXR images"
 )
 
-find_package(libavif 0.8.2 CONFIG)
+find_package(libavif 0.8.2 CONFIG QUIET)
+if(NOT libavif_FOUND)
+    find_package(libavif 1 CONFIG)
+endif()
 set_package_properties(libavif PROPERTIES
     TYPE OPTIONAL
     PURPOSE "Required for the QImage plugin for AVIF images"

@@ -10,6 +10,10 @@
 #include <QImageIOPlugin>
 #include <QSize>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QVector>
+#endif
+
 class ANIHandler : public QImageIOHandler
 {
 public:
@@ -41,14 +45,26 @@ private:
     int m_frameCount = 0; // "physical" frames
     int m_imageCount = 0; // logical images
     // Stores a custom sequence of images
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<int> m_imageSequence;
+#else
     QVector<int> m_imageSequence;
+#endif
     // and the corresponding offsets where they are
     // since we can't read the image data sequentally in this case then
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<qint64> m_frameOffsets;
+#else
     QVector<qint64> m_frameOffsets;
+#endif
     qint64 m_firstFrameOffset = 0;
 
     int m_displayRate = 0;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<int> m_displayRates;
+#else
     QVector<int> m_displayRates;
+#endif
 
     QString m_name;
     QString m_artist;

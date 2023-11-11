@@ -41,5 +41,6 @@ include($${PWD}/../../Features.pri)
     LIBS += -L$${OUT_LIB_DIR2} -L$${OUT_LIB_DIR} $${OUT_LIB_LINK}
 #    PRE_TARGETDEPS += $${OUT_LIB_DIR}/$${OUT_LIB_NAME}
 
+#    LIBS += -lKF5Archive
 }
 

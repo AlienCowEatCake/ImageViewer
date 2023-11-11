@@ -1,4 +1,4 @@
 {
-    "Keys": [ "ras" ],
-    "MimeTypes": [ "image/x-sun-raster" ]
+    "Keys": [ "im1", "im8", "im24", "im32", "ras", "sun" ],
+    "MimeTypes": [ "image/x-sun-raster", "image/x-sun-raster", "image/x-sun-raster", "image/x-sun-raster", "image/x-sun-raster", "image/x-sun-raster" ]
 }

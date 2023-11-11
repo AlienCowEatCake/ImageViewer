@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include <QBuffer>
+#include <QColorSpace>
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDir>
@@ -23,8 +24,8 @@ int main(int argc, char **argv)
     QCoreApplication app(argc, argv);
     QCoreApplication::removeLibraryPath(QStringLiteral(PLUGIN_DIR));
     QCoreApplication::addLibraryPath(QStringLiteral(PLUGIN_DIR));
-    QCoreApplication::setApplicationName(QStringLiteral("readtest"));
-    QCoreApplication::setApplicationVersion(QStringLiteral("1.0.0"));
+    QCoreApplication::setApplicationName(QStringLiteral("writetest"));
+    QCoreApplication::setApplicationVersion(QStringLiteral("1.1.0"));
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("Performs basic image conversion checking."));
@@ -147,6 +148,14 @@ int main(int argc, char **argv)
                 QTextStream(stdout) << "FAIL : " << fi.fileName() << ": could not read back the written data\n";
                 ++failed;
                 continue;
+            }
+            if (reReadImage.colorSpace().isValid()) {
+                QColorSpace toColorSpace;
+                if (pngImage.colorSpace().isValid()) {
+                    reReadImage.convertToColorSpace(pngImage.colorSpace());
+                } else {
+                    reReadImage.convertToColorSpace(QColorSpace(QColorSpace::SRgb));
+                }
             }
             reReadImage = reReadImage.convertToFormat(pngImage.format());
         }

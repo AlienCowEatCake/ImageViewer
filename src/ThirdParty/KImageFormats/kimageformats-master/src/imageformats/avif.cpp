@@ -330,6 +330,10 @@ bool QAVIFHandler::decode_one_frame()
     avifRGBImage rgb;
     avifRGBImageSetDefaults(&rgb, m_decoder->image);
 
+#if AVIF_VERSION >= 1000000
+    rgb.maxThreads = m_decoder->maxThreads;
+#endif
+
     if (m_decoder->image->depth > 8) {
         rgb.depth = 16;
         rgb.format = AVIF_RGB_FORMAT_RGBA;
@@ -424,7 +428,7 @@ bool QAVIFHandler::decode_one_frame()
     }
 
     if (m_decoder->image->transformFlags & AVIF_TRANSFORM_IMIR) {
-#if AVIF_VERSION > 90100
+#if AVIF_VERSION > 90100 && AVIF_VERSION < 1000000
         switch (m_decoder->image->imir.mode) {
 #else
         switch (m_decoder->image->imir.axis) {
@@ -714,9 +718,9 @@ bool QAVIFHandler::write(const QImage &image)
                     if (save_depth == 8) {
                         save_depth = 10;
                         if (tmpcolorimage.hasAlphaChannel()) {
-                            tmpcolorimage = tmpcolorimage.convertToFormat(QImage::Format_RGBA64);
+                            tmpcolorimage.convertTo(QImage::Format_RGBA64);
                         } else {
-                            tmpcolorimage = tmpcolorimage.convertToFormat(QImage::Format_RGBX64);
+                            tmpcolorimage.convertTo(QImage::Format_RGBX64);
                         }
                     }
 
@@ -1039,6 +1043,11 @@ int QAVIFHandler::loopCount() const
         return 0;
     }
 
+#if AVIF_VERSION >= 1000000
+    if (m_decoder->repetitionCount >= 0) {
+        return m_decoder->repetitionCount;
+    }
+#endif
     // Endless loop to work around https://github.com/AOMediaCodec/libavif/issues/347
     return -1;
 }

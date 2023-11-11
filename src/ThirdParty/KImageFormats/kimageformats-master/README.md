@@ -14,11 +14,13 @@ image formats.
 The following image formats have read-only support:
 
 - Animated Windows cursors (ani)
-- Gimp (xcf)
-- OpenEXR (exr)
-- Photoshop documents (psd, psb, pdd, psdt)
-- Sun Raster (ras)
 - Camera RAW images (arw, cr2, cr3, dcs, dng, ...)
+- Gimp (xcf)
+- Krita (kra)
+- OpenRaster (ora)
+- Photoshop documents (psd, psb, pdd, psdt)
+- Radiance HDR (hdr)
+- Sun Raster (im1, im8, im24, im32, ras, sun)
 
 The following image formats have read and write support:
 
@@ -26,11 +28,12 @@ The following image formats have read and write support:
 - Encapsulated PostScript (eps)
 - High Efficiency Image File Format (heif). Can be enabled with the KIMAGEFORMATS_HEIF build option.
 - JPEG XL (jxl)
+- OpenEXR (exr)
 - Personal Computer Exchange (pcx)
+- Quite OK Image format (qoi)
 - SGI images (rgb, rgba, sgi, bw)
 - Softimage PIC (pic)
 - Targa (tga): supports more formats than Qt's version
-- XView (xv)
 
 ## Contributing
 
@@ -41,10 +44,6 @@ The main difference between this framework and the qimageformats module
 of Qt is the license.  As such, if you write an imageformat plugin and
 you are willing to sign the Qt Project contributor agreement, it may be
 better to submit the plugin directly to the Qt Project.
-
-Note that the imageformat plugins provided by this module also provide a
-desktop file.  This is for the benefit of KImageIO in the KDE4 Support
-framework.
 
 ## Duplicated Plugins
 

@@ -1,5 +1,4 @@
 include(ECMMarkAsTest)
-include(CMakeParseArguments)
 
 add_definitions(-DPLUGIN_DIR="${CMAKE_CURRENT_BINARY_DIR}/../bin")
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
@@ -68,6 +67,7 @@ kimageformats_read_tests(
     hdr
     pcx
     psd
+    qoi
     ras
     rgb
     tga
@@ -123,6 +123,7 @@ kimageformats_read_tests(FUZZ 1
 kimageformats_write_tests(
     pcx-lossless
     pic-lossless
+    qoi-lossless
     rgb-lossless
     tga # fixme: the alpha images appear not to be written properly
 )
@@ -136,6 +137,11 @@ kimageformats_write_tests(
 if (OpenEXR_FOUND)
     kimageformats_read_tests(
         exr
+    )
+    # Color space conversions from sRGB to linear on saving and
+    # from linear to sRGB on loading result in some rounding errors.
+    kimageformats_write_tests(FUZZ 5
+        exr-nodatacheck-lossless
     )
 endif()
 

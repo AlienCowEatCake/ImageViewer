@@ -1,7 +1,7 @@
-From 311565acc2cbf777544e0895c560ed10371c740d Mon Sep 17 00:00:00 2001
+From c37cffdd7a4edc8ed134fa3d42106d3311170179 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
-Subject: [PATCH 3/4] Remove C++17 features
+Subject: [PATCH 3/5] Remove C++17 features
 
 ---
  src/imageformats/kra.cpp  |  4 ++--
@@ -80,23 +80,23 @@ index 59f6efd..8f587ba 100644
      for (int i = 0; i < 12; i++) {
          s << targaMagic[i];
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
-index 2429ffe..14e67c2 100644
+index c318ea3..fac9ae3 100644
 --- a/src/imageformats/util_p.h
 +++ b/src/imageformats/util_p.h
 @@ -14,7 +14,7 @@
  #include <QImageIOHandler>
  
- // QVector uses some extra space for stuff, hence the 32 here suggested by Thiago Macieira
+ // QList uses some extra space for stuff, hence the 32 here suggested by Thiago Macieira
 -static constexpr int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
 +static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
  
  // On Qt 6 to make the plugins fail to allocate if the image size is greater than QImageReader::allocationLimit()
  // it is necessary to allocate the image with QImageIOHandler::allocateImage().
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index 3c2d666..be1a830 100644
+index 9a20cbe..d0c16ae 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
-@@ -34,7 +34,7 @@ namespace
+@@ -57,7 +57,7 @@ namespace
  {
  struct RandomTable {
      // From glibc
@@ -105,7 +105,7 @@ index 3c2d666..be1a830 100644
      {
          unsigned int next = *seed;
          int result = 0;
-@@ -58,7 +58,7 @@ struct RandomTable {
+@@ -81,7 +81,7 @@ struct RandomTable {
          return result;
      }
  
@@ -114,7 +114,7 @@ index 3c2d666..be1a830 100644
          : values{}
      {
          unsigned int next = RANDOM_SEED;
-@@ -383,7 +383,7 @@ private:
+@@ -540,7 +540,7 @@ private:
      static int random_table[RANDOM_TABLE_SIZE];
      static bool random_table_initialized;
  
@@ -123,24 +123,24 @@ index 3c2d666..be1a830 100644
  
      //! This table is used as a shared grayscale ramp to be set on grayscale
      //! images. This is because Qt does not differentiate between indexed and
-@@ -447,7 +447,7 @@ private:
+@@ -644,7 +644,7 @@ public:
  int XCFImageFormat::random_table[RANDOM_TABLE_SIZE];
  bool XCFImageFormat::random_table_initialized;
  
 -constexpr RandomTable XCFImageFormat::randomTable;
 +const RandomTable XCFImageFormat::randomTable{};
  
- QVector<QRgb> XCFImageFormat::grayTable;
+ QList<QRgb> XCFImageFormat::grayTable;
  
-@@ -1266,7 +1266,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
+@@ -1565,7 +1565,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
  {
      auto&& p = xcf_image.parasites;
      auto keys = p.keys();
 -    for (auto &&key : std::as_const(keys)) {
 +    for (auto &&key : qAsConst(keys)) {
          auto value = p.value(key);
-         if(value.isEmpty())
+         if (value.isEmpty())
              continue;
 -- 
-2.39.2
+2.42.0
 

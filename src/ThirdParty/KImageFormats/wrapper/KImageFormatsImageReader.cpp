@@ -56,6 +56,9 @@
 #if defined (WRAPPER_USE_PSD_HANDLER)
 #include "../kimageformats-master/src/imageformats/psd_p.h"
 #endif
+#if defined (WRAPPER_USE_QOI_HANDLER)
+#include "../kimageformats-master/src/imageformats/qoi_p.h"
+#endif
 #if defined (WRAPPER_USE_RAS_HANDLER)
 #include "../kimageformats-master/src/imageformats/ras_p.h"
 #endif
@@ -111,6 +114,9 @@ enum BuiltInFormatType
 #endif
 #if defined (WRAPPER_USE_PSD_HANDLER)
     PsdFormat,
+#endif
+#if defined (WRAPPER_USE_QOI_HANDLER)
+    QoiFormat,
 #endif
 #if defined (WRAPPER_USE_RAS_HANDLER)
     RasFormat,
@@ -174,6 +180,9 @@ static const BuiltInFormatStruct BuiltInFormats[] =
 #endif
 #if defined (WRAPPER_USE_PSD_HANDLER)
     { PsdFormat , QList<QByteArray>() << "psd" << "psb" << "pdd" << "psdt" },
+#endif
+#if defined (WRAPPER_USE_QOI_HANDLER)
+    { QoiFormat , QList<QByteArray>() << "qoi" },
 #endif
 #if defined (WRAPPER_USE_RAS_HANDLER)
     { RasFormat , QList<QByteArray>() << "ras" },
@@ -318,6 +327,11 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
             handler = new PSDHandler;
             break;
 #endif
+#if defined (WRAPPER_USE_QOI_HANDLER)
+        case QoiFormat:
+            handler = new QOIHandler;
+            break;
+#endif
 #if defined (WRAPPER_USE_RAS_HANDLER)
         case RasFormat:
             handler = new RASHandler;
@@ -448,6 +462,12 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
             case PsdFormat:
                 if(PSDHandler::canRead(device))
                     handler = new PSDHandler;
+                break;
+#endif
+#if defined (WRAPPER_USE_QOI_HANDLER)
+            case QoiFormat:
+                if(QOIHandler::canRead(device))
+                    handler = new QOIHandler;
                 break;
 #endif
 #if defined (WRAPPER_USE_RAS_HANDLER)
@@ -1187,6 +1207,9 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
 #endif
 #if defined (WRAPPER_USE_PSD_HANDLER)
     result.append(QByteArrayLiteral("image/vnd.adobe.photoshop"));
+#endif
+#if defined (WRAPPER_USE_QOI_HANDLER)
+    result.append(QByteArrayLiteral("image/qoi"));
 #endif
 #if defined (WRAPPER_USE_RAS_HANDLER)
     result.append(QByteArrayLiteral("image/x-sun-raster"));

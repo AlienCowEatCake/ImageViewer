@@ -27,11 +27,17 @@ include(../LibRaw/LibRaw.pri)
 
 INCLUDEPATH += $${THIRDPARTY_KIMAGEFORMATS_WRAPPER_PATH}
 
+#INCLUDEPATH += /usr/include/KF5/KArchive
+
 # --------------------------------------------------------------------------------
+
+SOURCES += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/scanlineconverter.cpp \
 
 HEADERS += \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/gimp_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/rle_p.h \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/scanlineconverter_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/util_p.h \
 
 # --------------------------------------------------------------------------------
@@ -205,6 +211,19 @@ DEFINES += WRAPPER_USE_PSD_HANDLER
 
 DEFINES += PSDHandler=tp_PSDHandler
 DEFINES += PSDPlugin=tp_PSDPlugin
+
+# --------------------------------------------------------------------------------
+
+SOURCES += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/qoi.cpp
+
+HEADERS += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/qoi_p.h
+
+DEFINES += WRAPPER_USE_QOI_HANDLER
+
+DEFINES += QOIHandler=tp_QOIHandler
+DEFINES += QOIPlugin=tp_QOIPlugin
 
 # --------------------------------------------------------------------------------
 

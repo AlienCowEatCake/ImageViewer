@@ -14,8 +14,12 @@
 #include <QImage>
 #include <QImageIOHandler>
 #include <QImageIOPlugin>
+#include <QList>
 #include <QVariant>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QVector>
+#endif
 
 #include <jxl/decode.h>
 
@@ -71,7 +75,11 @@ private:
     void *m_runner;
     JxlBasicInfo m_basicinfo;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<int> m_framedelays;
+#else
     QVector<int> m_framedelays;
+#endif
     int m_next_image_delay;
 
     QImage m_current_image;

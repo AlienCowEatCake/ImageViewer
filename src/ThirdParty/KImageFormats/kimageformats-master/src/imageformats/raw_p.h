@@ -74,6 +74,12 @@ private:
      * When the quality is -1, default quality is used.
      */
     qint32 m_quality;
+
+    /*!
+     * \brief m_startPos
+     * The initial device position to allow multi image load (cache value).
+     */
+    qint64 m_startPos;
 };
 
 class RAWPlugin : public QImageIOPlugin

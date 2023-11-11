@@ -22,13 +22,21 @@
 #include "rgb_p.h"
 #include "util_p.h"
 
+#include <QList>
 #include <QMap>
-#include <QVector>
 
 #include <QDebug>
 #include <QImage>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QVector>
+#endif
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+class RLEData : public QList<uchar>
+#else
 class RLEData : public QVector<uchar>
+#endif
 {
 public:
     RLEData()
@@ -61,7 +69,11 @@ public:
     {
     }
     uint insert(const uchar *d, uint l);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<const RLEData *> vector();
+#else
     QVector<const RLEData *> vector();
+#endif
     void setBaseOffset(uint o)
     {
         _offset = o;
@@ -107,7 +119,11 @@ private:
     QByteArray _data;
     QByteArray::Iterator _pos;
     RLEMap _rlemap;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<const RLEData *> _rlevector;
+#else
     QVector<const RLEData *> _rlevector;
+#endif
     uint _numrows;
 
     bool readData(QImage &);
@@ -421,9 +437,17 @@ uint RLEMap::insert(const uchar *d, uint l)
     return QMap<RLEData, uint>::insert(data, _counter++).value();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+QList<const RLEData *> RLEMap::vector()
+#else
 QVector<const RLEData *> RLEMap::vector()
+#endif
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<const RLEData *> v(size());
+#else
     QVector<const RLEData *> v(size());
+#endif
     for (Iterator it = begin(); it != end(); ++it) {
         v.replace(it.value(), &it.key());
     }
