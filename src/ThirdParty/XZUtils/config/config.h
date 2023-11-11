@@ -61,6 +61,9 @@
 /* Define to 1 if you have the `clock_gettime' function. */
 /* #undef HAVE_CLOCK_GETTIME */
 
+/* Define to 1 if `CLOCK_MONOTONIC' is declared in <time.h>. */
+/* #undef HAVE_CLOCK_MONOTONIC */
+
 /* Define to 1 if you have the <CommonCrypto/CommonDigest.h> header file. */
 /* #undef HAVE_COMMONCRYPTO_COMMONDIGEST_H */
 
@@ -70,14 +73,6 @@
 /* Define if the GNU dcgettext() function is already present or preinstalled.
    */
 /* #undef HAVE_DCGETTEXT */
-
-/* Define to 1 if you have the declaration of `CLOCK_MONOTONIC', and to 0 if
-   you don't. */
-/* #undef HAVE_DECL_CLOCK_MONOTONIC */
-
-/* Define to 1 if you have the declaration of `program_invocation_name', and
-   to 0 if you don't. */
-/* #undef HAVE_DECL_PROGRAM_INVOCATION_NAME */
 
 /* Define to 1 if any of HAVE_DECODER_foo have been defined. */
 #define HAVE_DECODERS 1
@@ -379,7 +374,7 @@
 #define PACKAGE_NAME "XZ Utils"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "XZ Utils 5.4.3"
+#define PACKAGE_STRING "XZ Utils 5.4.5"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "xz"
@@ -388,7 +383,7 @@
 #define PACKAGE_URL "https://tukaani.org/xz/"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "5.4.3"
+#define PACKAGE_VERSION "5.4.5"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -548,7 +543,7 @@
 
 
 /* Version number of package */
-#define VERSION "5.4.3"
+#define VERSION "5.4.5"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
