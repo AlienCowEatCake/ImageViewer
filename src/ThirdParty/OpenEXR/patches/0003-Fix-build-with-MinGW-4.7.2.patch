@@ -1,4 +1,4 @@
-From 94e1944d482e5b0cbc709b6ae622a0fbfe8501b4 Mon Sep 17 00:00:00 2001
+From d3fb2fa37170befe43ede33bb8561b3cacd37c01 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 16 Nov 2019 19:25:07 +0700
 Subject: [PATCH 3/7] Fix build with MinGW 4.7.2
@@ -8,10 +8,10 @@ Subject: [PATCH 3/7] Fix build with MinGW 4.7.2
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/OpenEXR/IlmImf/ImfMisc.cpp b/OpenEXR/IlmImf/ImfMisc.cpp
-index d2c84787..2ba46085 100644
+index 0451a339..b15c4a36 100644
 --- a/OpenEXR/IlmImf/ImfMisc.cpp
 +++ b/OpenEXR/IlmImf/ImfMisc.cpp
-@@ -1389,7 +1389,7 @@ namespace
+@@ -1391,7 +1391,7 @@ namespace
  // for architectures that require 32-bit alignment for float reading
  //
  
@@ -21,5 +21,5 @@ index d2c84787..2ba46085 100644
    FBytes b;
    float f;
 -- 
-2.39.0
+2.42.0
 

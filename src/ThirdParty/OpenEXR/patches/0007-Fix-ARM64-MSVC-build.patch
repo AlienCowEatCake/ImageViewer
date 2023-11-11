@@ -1,4 +1,4 @@
-From 8bd3e2f21c8c42bc33c3d04b6463bf9c719caf1a Mon Sep 17 00:00:00 2001
+From 52573df98358473a0ae63d674ca726e0740f840a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 4 Jan 2023 05:51:15 +0700
 Subject: [PATCH 7/7] Fix ARM64 MSVC build
@@ -21,5 +21,5 @@ index 3489bd0c..9625499f 100644
  #endif
  
 -- 
-2.39.0
+2.42.0
 

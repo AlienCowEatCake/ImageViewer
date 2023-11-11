@@ -1,4 +1,4 @@
-From 96312957bc81aa73ea6e3b1956b09cc3e979fbc5 Mon Sep 17 00:00:00 2001
+From 6812569182d47754d49dddf43a4ecdeb3047e35d Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 20:47:04 +0700
 Subject: [PATCH 6/7] Remove usage of stdint types
@@ -9,10 +9,10 @@ Subject: [PATCH 6/7] Remove usage of stdint types
  2 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/OpenEXR/IlmImf/ImfHuf.cpp b/OpenEXR/IlmImf/ImfHuf.cpp
-index 271849b7..9d092094 100644
+index 165fac58..f6e34931 100644
 --- a/OpenEXR/IlmImf/ImfHuf.cpp
 +++ b/OpenEXR/IlmImf/ImfHuf.cpp
-@@ -1102,7 +1102,7 @@ hufUncompress (const char compressed[],
+@@ -1103,7 +1103,7 @@ hufUncompress (const char compressed[],
  
      const char *ptr = compressed + 20;
  
@@ -45,5 +45,5 @@ index 77843a71..66cca708 100644
      return Box2i (tileMin, tileMax);
  }
 -- 
-2.39.0
+2.42.0
 
