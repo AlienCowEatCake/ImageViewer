@@ -430,6 +430,9 @@ void aom_fdct4x4_c(const int16_t *input, tran_low_t *output, int stride);
 void aom_fdct4x4_lp_c(const int16_t *input, int16_t *output, int stride);
 #define aom_fdct4x4_lp aom_fdct4x4_lp_c
 
+void aom_fdct8x8_c(const int16_t *input, tran_low_t *output, int stride);
+#define aom_fdct8x8 aom_fdct8x8_c
+
 void aom_fft16x16_float_c(const float *input, float *temp, float *output);
 #define aom_fft16x16_float aom_fft16x16_float_c
 
@@ -2181,6 +2184,9 @@ unsigned int aom_highbd_dist_wtd_sad8x4_avg_c(const uint8_t *src_ptr, int src_st
 
 unsigned int aom_highbd_dist_wtd_sad8x8_avg_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride, const uint8_t *second_pred, const DIST_WTD_COMP_PARAMS* jcp_param);
 #define aom_highbd_dist_wtd_sad8x8_avg aom_highbd_dist_wtd_sad8x8_avg_c
+
+void aom_highbd_fdct8x8_c(const int16_t *input, tran_low_t *output, int stride);
+#define aom_highbd_fdct8x8 aom_highbd_fdct8x8_c
 
 void aom_highbd_h_predictor_16x16_c(uint16_t *dst, ptrdiff_t y_stride, const uint16_t *above, const uint16_t *left, int bd);
 #define aom_highbd_h_predictor_16x16 aom_highbd_h_predictor_16x16_c
@@ -4440,6 +4446,9 @@ void aom_smooth_v_predictor_8x8_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_
 
 int64_t aom_sse_c(const uint8_t *a, int a_stride, const uint8_t *b,int b_stride, int width, int height);
 #define aom_sse aom_sse_c
+
+void aom_ssim_parms_16x16_c(const uint8_t *s, int sp, const uint8_t *r, int rp, uint32_t *sum_s, uint32_t *sum_r, uint32_t *sum_sq_s, uint32_t *sum_sq_r, uint32_t *sum_sxr);
+#define aom_ssim_parms_16x16 aom_ssim_parms_16x16_c
 
 void aom_ssim_parms_8x8_c(const uint8_t *s, int sp, const uint8_t *r, int rp, uint32_t *sum_s, uint32_t *sum_r, uint32_t *sum_sq_s, uint32_t *sum_sq_r, uint32_t *sum_sxr);
 #define aom_ssim_parms_8x8 aom_ssim_parms_8x8_c
