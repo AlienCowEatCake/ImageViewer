@@ -37,7 +37,7 @@ def _get_framework_binary(framework_path):
 
 def _run_otool(filepath):
     result = []
-    otool_process = subprocess.run(['otool', '-L', os.path.abspath(filepath)],
+    otool_process = subprocess.run(['otool', '-L', '-arch', 'all', os.path.abspath(filepath)],
                                    check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     if otool_process.returncode == 0:
         for string in otool_process.stdout.decode('utf-8').splitlines():
