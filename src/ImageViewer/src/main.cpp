@@ -60,6 +60,9 @@ int main(int argc, char *argv[])
     app.setApplicationName(QString::fromLatin1("Image Viewer"));
     app.setApplicationVersion(QString::fromLatin1("1.5.5"));
 #if !defined (Q_OS_MAC)
+#if !defined (Q_OS_WIN) && (QT_VERSION >= QT_VERSION_CHECK(5, 7, 0))
+    app.setDesktopFileName(QString::fromLatin1("com.github.aliencoweatcake.imageviewer"));
+#endif
     app.setWindowIcon(QIcon(QString::fromLatin1(":/icon/icon.ico")));
     app.setAttribute(Qt::AA_DontShowIconsInMenus, false);
 #else
