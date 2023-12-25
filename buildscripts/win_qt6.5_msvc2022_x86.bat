@@ -1,10 +1,10 @@
 @echo off
 set PROJECT=ImageViewer
-set ARCH=x64
-set VCVARS_ARCH=x64
+set ARCH=x86
+set VCVARS_ARCH=x64_x86
 call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2022
 set VCVARS="%VS2022_VCVARSALL%"
-if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\6.5.3\msvc2022_64
+if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\6.5.3\msvc2022
 set BUILDDIR=build_win_qt6.5_msvc2022_%ARCH%
 set SUFFIX=_qt6.5_msvc2022_%ARCH%
 set APP_PATH=src\%PROJECT%
@@ -12,12 +12,12 @@ set NMAKE_CMD="%~dp0\..\buildscripts\helpers\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
 set DLLRESOLVER_CMD="%~dp0\..\buildscripts\helpers\dllresolver.exe"
 set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.webview2.1.0.2151.40\build\native\%ARCH%\WebView2Loader.dll"
-set RESVG_PATH="%~dp0\resvg\x86_64-pc-windows-msvc"
+set RESVG_PATH="%~dp0\resvg\i686-pc-windows-msvc"
 
 call %VCVARS% %VCVARS_ARCH%
 set PATH=%QT_PATH%\bin;%WIX%\bin;%WIX%;%PATH%
-set CRT_DIR="%VCToolsRedistDir%\x64\Microsoft.VC143.CRT"
-set UCRT_DIR="%UniversalCRTSdkDir%\Redist\%UCRTVersion%\ucrt\DLLs\x64"
+set CRT_DIR="%VCToolsRedistDir%\x86\Microsoft.VC143.CRT"
+set UCRT_DIR="%UniversalCRTSdkDir%\Redist\%UCRTVersion%\ucrt\DLLs\x86"
 
 cd "%~dp0"
 cd ..
