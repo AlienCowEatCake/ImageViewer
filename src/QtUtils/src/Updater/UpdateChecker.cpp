@@ -81,7 +81,7 @@ void UpdateChecker::checkForUpdates()
     QNetworkRequest request;
     request.setUrl(QUrl(QString::fromLatin1("https://api.github.com/repos/%1/%2/releases?per_page=%3").arg(m_impl->owner).arg(m_impl->repo).arg(RELEASES_LIMIT)));
     request.setRawHeader("User-Agent", QString::fromLatin1("%1/%2").arg(qApp->applicationName()).arg(qApp->applicationVersion()).toLatin1());
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
 #elif (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);

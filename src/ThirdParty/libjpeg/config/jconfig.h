@@ -112,6 +112,14 @@ typedef unsigned char boolean;
 #define TRUE	1
 #endif
 #define HAVE_BOOLEAN		/* prevent jmorecfg.h from redefining it */
+#else
+typedef int boolean;
+#ifndef FALSE
+#define FALSE	0
+#endif
+#ifndef TRUE
+#define TRUE	1
+#endif
 #endif
 
 

@@ -1,7 +1,7 @@
 #ifndef JAS_CONFIG_H
 #define JAS_CONFIG_H
 
-#if 0
+#if !defined(_MSC_VER) && !defined(_POSIX_C_SOURCE)
 #define _POSIX_C_SOURCE 200809L
 #endif
 
