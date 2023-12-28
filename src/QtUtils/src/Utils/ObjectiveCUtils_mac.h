@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -47,10 +47,10 @@ private:
 };
 
 
-QPixmap QPixmapFromCGImageRef(const CFTypePtr<CGImageRef> &image);
+QPixmap QPixmapFromCGImageRef(const CFTypePtr<CGImageRef> &image, const QSize &sizeInPixels = QSize());
 CFTypePtr<CGImageRef> QPixmapToCGImageRef(const QPixmap &pixmap);
 
-QImage QImageFromCGImageRef(const CFTypePtr<CGImageRef> &image);
+QImage QImageFromCGImageRef(const CFTypePtr<CGImageRef> &image, const QSize &sizeInPixels = QSize());
 CFTypePtr<CGImageRef> QImageToCGImageRef(const QImage &image);
 
 QVariant QVariantFromObject(const id obj);
@@ -75,10 +75,10 @@ QUrl QUrlFromNSURL(const NSURL *url);
 NSURL *QUrlToNSURL(const QUrl &url);
 
 QPixmap QPixmapFromNSImage(const NSImage *image);
-NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize& sizeInPoints = QSize());
+NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize &sizeInPoints = QSize());
 
 QImage QImageFromNSImage(const NSImage *image);
-NSImage *QImageToNSImage(const QImage &image, const QSize& sizeInPoints = QSize());
+NSImage *QImageToNSImage(const QImage &image, const QSize &sizeInPoints = QSize());
 
 QRectF QRectFFromNSRect(const NSRect &rect);
 NSRect QRectFToNSRect(const QRectF &rect);

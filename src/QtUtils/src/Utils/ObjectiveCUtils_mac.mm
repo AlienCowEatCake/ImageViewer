@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -36,9 +36,6 @@
 #include <QSizeF>
 #include <QPointF>
 #include <QSysInfo>
-//#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-//#include <QtMac>
-//#endif
 
 #include "Global.h"
 #include "InfoUtils.h"
@@ -55,27 +52,17 @@ AutoReleasePool::~AutoReleasePool()
     [m_pool release];
 }
 
-//#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0) && QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-namespace {
-void imageDeleter(void *image, const void *, std::size_t)
+static void imageDeleter(void *image, const void *, std::size_t)
 {
     delete static_cast<QImage*>(image);
 }
-} // namespace
-//#endif
 
-QPixmap QPixmapFromCGImageRef(const CFTypePtr<CGImageRef> &image)
+QPixmap QPixmapFromCGImageRef(const CFTypePtr<CGImageRef> &image, const QSize &sizeInPixels)
 {
     if(!image)
         return QPixmap();
 
-//#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-//    return QtMac::fromCGImageRef(image);
-//#elif (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-//    return QPixmap::fromMacCGImageRef(image);
-//#else
-    return QPixmap::fromImage(QImageFromCGImageRef(image));
-//#endif
+    return QPixmap::fromImage(QImageFromCGImageRef(image, sizeInPixels));
 }
 
 CFTypePtr<CGImageRef> QPixmapToCGImageRef(const QPixmap &pixmap)
@@ -83,22 +70,16 @@ CFTypePtr<CGImageRef> QPixmapToCGImageRef(const QPixmap &pixmap)
     if(pixmap.isNull())
         return Q_NULLPTR;
 
-//#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-//    return CFTypePtrFromCreate(QtMac::toCGImageRef(pixmap));
-//#elif (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-//    return CFTypePtrFromCreate(pixmap.toMacCGImageRef());
-//#else
     return QImageToCGImageRef(pixmap.toImage());
-//#endif
 }
 
-QImage QImageFromCGImageRef(const CFTypePtr<CGImageRef> &image)
+QImage QImageFromCGImageRef(const CFTypePtr<CGImageRef> &image, const QSize &sizeInPixels)
 {
     if(!image)
         return QImage();
 
-    const std::size_t width = CGImageGetWidth(image);
-    const std::size_t height = CGImageGetHeight(image);
+    const std::size_t width = sizeInPixels.isEmpty() ? CGImageGetWidth(image) : static_cast<std::size_t>(sizeInPixels.width());
+    const std::size_t height = sizeInPixels.isEmpty() ? CGImageGetHeight(image) : static_cast<std::size_t>(sizeInPixels.height());
     QImage result(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32_Premultiplied);
     if(result.isNull())
         return QImage();
@@ -427,25 +408,34 @@ QImage QImageFromNSImage(const NSImage *image)
     if(!image)
         return result;
 
+    // https://stackoverflow.com/questions/9264051/nsimage-size-not-real-size-with-some-pictures
+    NSArray *imageReps = [image representations];
+    NSInteger width = 0;
+    NSInteger height = 0;
+    for(NSImageRep *imageRep in imageReps)
+    {
+        width = std::max(width, [imageRep pixelsWide]);
+        height = std::max(height, [imageRep pixelsHigh]);
+    }
+    if(width == 0 || height == 0)
+    {
+        width = std::max(width, static_cast<NSInteger>([image size].width));
+        height = std::max(height, static_cast<NSInteger>([image size].height));
+    }
+    // CGImageForProposedRect is broken for some configurations
+    // (e.g. produces @2x image for svg input with Retina display)
+    const QSize targetSize = QSize(static_cast<int>(width), static_cast<int>(height));
+
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER)
     if(InfoUtils::MacVersionGreatOrEqual(10, 6))
     {
         // https://stackoverflow.com/questions/2548059/turning-an-nsimage-into-a-cgimageref
         NSRect imageRect = NSMakeRect(0, 0, image.size.width, image.size.height);
-        result = QImageFromCGImageRef(CFTypePtrFromGet([image CGImageForProposedRect:&imageRect context:nil hints:nil]));
+        result = QImageFromCGImageRef(CFTypePtrFromGet([image CGImageForProposedRect:&imageRect context:nil hints:nil]), targetSize);
     }
     else
 #endif
     {
-        // https://stackoverflow.com/questions/9264051/nsimage-size-not-real-size-with-some-pictures
-        NSArray *imageReps = [image representations];
-        NSInteger width = 0;
-        NSInteger height = 0;
-        for(NSImageRep *imageRep in imageReps)
-        {
-            width = std::max(width, [imageRep pixelsWide]);
-            height = std::max(height, [imageRep pixelsHigh]);
-        }
         // https://stackoverflow.com/questions/2468811/load-nsimage-into-qpixmap-or-qimage
         NSBitmapImageRep *bmp = [[NSBitmapImageRep alloc]
                 initWithBitmapDataPlanes:nil
@@ -476,7 +466,7 @@ QImage QImageFromNSImage(const NSImage *image)
 #endif
                 fraction:1];
         [NSGraphicsContext restoreGraphicsState];
-        result = QImageFromCGImageRef(CFTypePtrFromGet([bmp CGImage]));
+        result = QImageFromCGImageRef(CFTypePtrFromGet([bmp CGImage]), targetSize);
         [bmp release];
     }
 
