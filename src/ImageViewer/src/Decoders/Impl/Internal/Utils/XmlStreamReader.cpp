@@ -52,7 +52,7 @@ QString XmlStreamReader::getDecodedString(const QByteArray &data)
     if(!encoding.isEmpty() && encoding != QString::fromLatin1("utf-8"))
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-        QStringDecoder decoder = QStringDecoder(encoding.toLatin1());
+        QStringDecoder decoder = QStringDecoder(encoding.toLatin1(), QStringConverter::Flag::Stateless);
         if(decoder.isValid())
             return decoder.decode(data);
 #endif
@@ -61,6 +61,21 @@ QString XmlStreamReader::getDecodedString(const QByteArray &data)
             return codec->toUnicode(data);
 #endif
     }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const std::optional<QStringConverter::Encoding> encodingForData = QStringConverter::encodingForData(data);
+    if(encodingForData.has_value())
+        return QStringDecoder(encodingForData.value(), QStringConverter::Flag::Stateless).decode(data);
+#endif
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0)) || defined (QT_CORE5COMPAT_LIB)
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
+    if(QTextCodec *codec = QTextCodec::codecForUtfText(data, Q_NULLPTR))
+#else
+    if(QTextCodec *codec = QTextCodec::codecForUtfText(data))
+#endif
+        return codec->toUnicode(data);
+#endif
+
     return QString::fromUtf8(data);
 }
 
