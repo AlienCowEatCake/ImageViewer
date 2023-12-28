@@ -18,7 +18,7 @@ include(../libjpeg/libjpeg.pri)
 include(../libheif/libheif.pri)
 
 *g++*|*clang* {
-    QMAKE_CFLAGS += -std=c99
+    QMAKE_CFLAGS += -std=gnu99
 }
 
 INCLUDEPATH = $${THIRDPARTY_JASPER_CONFIG_PATH} $${THIRDPARTY_JASPER_PATH}/src/libjasper/include $${INCLUDEPATH}
