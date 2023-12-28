@@ -110,6 +110,7 @@ disable_thirdparty {
     CONFIG += disable_openjpeg
     CONFIG += disable_pkgconfig
     CONFIG += disable_qmlwebengine
+    CONFIG += disable_qtcore5compat
     CONFIG += disable_qtextended
     CONFIG += disable_qtimageformats
     CONFIG += disable_qtsvg
