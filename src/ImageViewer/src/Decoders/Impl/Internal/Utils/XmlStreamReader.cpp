@@ -28,6 +28,8 @@
 #include <QTextCodec>
 #endif
 
+#include "Utils/Global.h"
+
 QString XmlStreamReader::getEncoding(const QByteArray &data)
 {
     QXmlStreamReader reader(data);
