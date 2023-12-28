@@ -93,6 +93,7 @@ SOURCES += \
     src/Decoders/Impl/Internal/Utils/CmsUtils.cpp \
     src/Decoders/Impl/Internal/Utils/LibraryUtils.cpp \
     src/Decoders/Impl/Internal/Utils/MappedBuffer.cpp \
+    src/Decoders/Impl/Internal/Utils/XmlStreamReader.cpp \
     src/Decoders/Impl/Internal/GraphicsItemsFactory.cpp \
     src/Decoders/Impl/Internal/ImageData.cpp \
     src/Decoders/Impl/Internal/ImageMetaData.cpp \
@@ -144,6 +145,7 @@ HEADERS += \
     src/Decoders/Impl/Internal/Utils/CmsUtils.h \
     src/Decoders/Impl/Internal/Utils/LibraryUtils.h \
     src/Decoders/Impl/Internal/Utils/MappedBuffer.h \
+    src/Decoders/Impl/Internal/Utils/XmlStreamReader.h \
     src/Decoders/Impl/Internal/DecoderAutoRegistrator.h \
     src/Decoders/Impl/Internal/GraphicsItemsFactory.h \
     src/Decoders/Impl/Internal/ImageData.h \
@@ -441,6 +443,10 @@ HEADERS += \
     HEADERS += \
         src/GUI/Dialogs/PrintDialog.h \
         src/GUI/Dialogs/PrintDialog_p.h
+}
+
+!disable_qtcore5compat {
+    QT += core5compat
 }
 
 TRANSLATIONS += \

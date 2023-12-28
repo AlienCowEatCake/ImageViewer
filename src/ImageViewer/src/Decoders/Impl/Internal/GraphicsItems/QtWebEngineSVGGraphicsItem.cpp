@@ -39,13 +39,13 @@
 #include <QWebEngineSettings>
 #include <QWebEngineView>
 
-#include <QXmlStreamReader>
-
 #include <QOpenGLContext>
 #include <QOffscreenSurface>
 #include <QOpenGLFunctions>
 
 #include <QDebug>
+
+#include "../Utils/XmlStreamReader.h"
 
 #include "GraphicsItemUtils.h"
 
@@ -192,13 +192,6 @@ struct QtWebEngineSVGGraphicsItem::Impl
             view->setZoomFactor(scaleFactor);
     }
 
-    QString detectEncoding(const QByteArray &svgData)
-    {
-        QXmlStreamReader reader(svgData);
-        while(reader.readNext() != QXmlStreamReader::StartDocument && !reader.atEnd());
-        return reader.documentEncoding().toString().simplified().toLower();
-    }
-
     QWebEngineView *createWebEngineView() const
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
@@ -269,7 +262,7 @@ bool QtWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &bas
     m_impl->setScaleFactor(1);
 
     QString mimeType = QString::fromLatin1("image/svg+xml");
-    const QString encoding = m_impl->detectEncoding(svgData);
+    const QString encoding = XmlStreamReader::getEncoding(svgData).toLower();
     if(!encoding.isEmpty())
         mimeType.append(QString::fromLatin1(";charset=") + encoding);
 

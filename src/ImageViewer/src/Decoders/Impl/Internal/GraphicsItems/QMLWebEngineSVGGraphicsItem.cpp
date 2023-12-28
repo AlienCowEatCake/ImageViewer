@@ -45,18 +45,13 @@
 #include <QQuickItem>
 #include <QQmlProperty>
 
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-#include <QStringConverter>
-#else
-#include <QTextCodec>
-#endif
-#include <QXmlStreamReader>
-
 #include <QOpenGLContext>
 #include <QOffscreenSurface>
 #include <QOpenGLFunctions>
 
 #include <QDebug>
+
+#include "../Utils/XmlStreamReader.h"
 
 #include "GraphicsItemUtils.h"
 
@@ -203,13 +198,6 @@ struct QMLWebEngineSVGGraphicsItem::Impl
         QQmlProperty(webEngineView, QString::fromLatin1("zoomFactor")).write(scaleFactor / quickView.devicePixelRatio());
     }
 
-    QString detectEncoding(const QByteArray &svgData)
-    {
-        QXmlStreamReader reader(svgData);
-        while(reader.readNext() != QXmlStreamReader::StartDocument && !reader.atEnd());
-        return reader.documentEncoding().toString().simplified().toLower();
-    }
-
     QQuickItem *createWebEngineView(QQuickView *quickView) const
     {
         QQmlEngine *engine = quickView->engine();
@@ -279,16 +267,7 @@ bool QMLWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &ba
     m_impl->setScaleFactor(1);
 
     m_impl->svgData = svgData;
-    QString svgDataString;
-    const QString encoding = m_impl->detectEncoding(svgData);
-    if(!encoding.isEmpty())
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-        svgDataString = QStringDecoder(encoding.toLatin1()).decode(svgData);
-#else
-        svgDataString = QTextCodec::codecForName(encoding.toLatin1())->toUnicode(svgData);
-#endif
-    else
-        svgDataString = QString::fromUtf8(svgData);
+    const QString svgDataString = XmlStreamReader::getDecodedString(svgData);
 
     QEventLoop loop;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))

@@ -42,7 +42,6 @@ extern "C" {
 #include <QGraphicsItem>
 #include <QStyleOptionGraphicsItem>
 #include <QVariant>
-#include <QXmlStreamReader>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QFunctionPointer>
@@ -63,6 +62,7 @@ typedef void* QFunctionPointer;
 #include "Internal/Scaling/IScaledImageProvider.h"
 #include "Internal/Utils/LibraryUtils.h"
 #include "Internal/Utils/MappedBuffer.h"
+#include "Internal/Utils/XmlStreamReader.h"
 
 #if defined (RESVG_MAJOR_VERSION) && defined (RESVG_MINOR_VERSION) && defined (RESVG_PATCH_VERSION)
 #define LINKED_RESVG_VERSION QT_VERSION_CHECK(RESVG_MAJOR_VERSION, RESVG_MINOR_VERSION, RESVG_PATCH_VERSION)
@@ -569,7 +569,7 @@ public:
 private:
     static bool hasClipPath(const QByteArray &svgData)
     {
-        for(QXmlStreamReader reader(svgData); !reader.atEnd(); reader.readNext())
+        for(XmlStreamReader reader(svgData); !reader.atEnd(); reader.readNext())
         {
             if(reader.tokenType() != QXmlStreamReader::StartElement)
                 continue;

@@ -35,7 +35,6 @@
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
 #include <QDebug>
-#include <QXmlStreamReader>
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
 #include <QElapsedTimer>
 #else
@@ -44,6 +43,8 @@ typedef QTime QElapsedTimer;
 #endif
 
 #include "Utils/ObjectiveCUtils.h"
+
+#include "../Utils/XmlStreamReader.h"
 
 #include "GraphicsItemUtils.h"
 
@@ -216,9 +217,7 @@ public:
 
     QString detectEncoding(const QByteArray &svgData)
     {
-        QXmlStreamReader reader(svgData);
-        while(reader.readNext() != QXmlStreamReader::StartDocument && !reader.atEnd());
-        QString encoding = reader.documentEncoding().toString().simplified();
+        QString encoding = XmlStreamReader::getEncoding(svgData);
         if(encoding.isEmpty())
             encoding = QString::fromLatin1("UTF-8");
 #if defined (MAC_WKWEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)

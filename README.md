@@ -153,5 +153,6 @@ See the [buildscripts/](buildscripts/) directory.
 * MacToolBar options: `disable_mactoolbar` *(enabled by default for macOS)*
 * MacTouchBar options: `disable_mactouchbar` *(enabled by default for macOS)*
 * Print Support options: `disable_printsupport` *(enabled by default)*
+* QtCore5Compat options: `enable_qtcore5compat`, `disable_qtcore5compat` *(disabled by default)*
 * Updater options: `enable_update_checking` *(disabled by default)*
 

@@ -23,14 +23,10 @@
 #include <QByteArray>
 #include <QString>
 #include <QDebug>
-#include <QXmlStreamReader>
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-#include <QStringConverter>
-#else
-#include <QTextCodec>
-#endif
 
 #include "Utils/Global.h"
+
+#include "XmlStreamReader.h"
 
 #if defined (HAS_ZLIB)
 #include "ZLibUtils.h"
@@ -163,9 +159,7 @@ QString MappedBuffer::getXmlEncoding() const
         return QString();
     }
     const QByteArray xmlData = dataAsByteArray();
-    QXmlStreamReader reader(xmlData);
-    while(reader.readNext() != QXmlStreamReader::StartDocument && !reader.atEnd());
-    return reader.documentEncoding().toString().simplified().toLower();
+    return XmlStreamReader::getEncoding(xmlData).toLower();
 }
 
 bool MappedBuffer::convertXmlToUtf8()
@@ -183,14 +177,7 @@ bool MappedBuffer::convertXmlToUtf8()
     }
     if(encoding != QString::fromLatin1("utf-8"))
     {
-        const QByteArray xmlData = dataAsByteArray();
-        QString xmlDataString;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-        xmlDataString = QStringDecoder(encoding.toLatin1()).decode(xmlData);
-#else
-        xmlDataString = QTextCodec::codecForName(encoding.toLatin1())->toUnicode(xmlData);
-#endif
-        m_impl->data = xmlDataString.toUtf8();
+        m_impl->data = XmlStreamReader::getDecodedString(dataAsByteArray()).toUtf8();
         m_impl->size = m_impl->data.size();
         m_impl->mapped = reinterpret_cast<uchar*>(m_impl->data.data());
     }

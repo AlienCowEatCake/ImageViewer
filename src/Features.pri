@@ -688,6 +688,16 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
 #    disable_printsupport
 
 
+# QtCore5Compat options:
+#    enable_qtcore5compat
+#    disable_qtcore5compat
+!enable_qtcore5compat {
+    CONFIG += disable_qtcore5compat
+}
+!equals(QT_MAJOR_VERSION, 6) {
+    CONFIG += disable_qtcore5compat
+}
+
 # ::::: Cleanup Unised :::::
 
 disable_libtiff | system_libtiff {

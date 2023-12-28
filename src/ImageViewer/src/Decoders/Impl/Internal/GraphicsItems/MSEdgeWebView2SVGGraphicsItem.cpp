@@ -37,7 +37,6 @@
 #include <QStyleOptionGraphicsItem>
 #include <QUrl>
 #include <QWidget>
-#include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QDir>
 #include <QFileInfo>
@@ -50,6 +49,8 @@
 #include "Utils/JsonDocument.h"
 #include "Utils/JsonObject.h"
 #include "Utils/JsonValue.h"
+
+#include "../Utils/XmlStreamReader.h"
 
 #include "GraphicsItemUtils.h"
 
@@ -334,7 +335,7 @@ struct MSEdgeWebView2SVGGraphicsItem::Impl
     {
         QString preparedData;
         QXmlStreamWriter writer(&preparedData);
-        QXmlStreamReader reader(svgData);
+        XmlStreamReader reader(svgData);
         reader.setNamespaceProcessing(false);
         while(!reader.atEnd())
         {

@@ -32,6 +32,8 @@
 #include "Internal/DecoderAutoRegistrator.h"
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
+#include "Internal/Utils/MappedBuffer.h"
+#include "Internal/Utils/XmlStreamReader.h"
 
 namespace {
 
@@ -73,7 +75,18 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
 #if defined (QT_SVG_LIB)
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        MappedBuffer inBuffer(filePath, MappedBuffer::AutoInflate);
+        if(!inBuffer.isValid())
+            return QSharedPointer<IImageData>();
+        QGraphicsSvgItem *graphicsSvgItem = new QGraphicsSvgItem();
+        QSvgRenderer* renderer = new QSvgRenderer(graphicsSvgItem);
+        XmlStreamReader reader(inBuffer.dataAsByteArray());
+        renderer->load(&reader);
+        graphicsSvgItem->setSharedRenderer(renderer);
+#else
         QGraphicsSvgItem *graphicsSvgItem = new QGraphicsSvgItem(filePath);
+#endif
         if(graphicsSvgItem->renderer()->isValid())
         {
             IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);

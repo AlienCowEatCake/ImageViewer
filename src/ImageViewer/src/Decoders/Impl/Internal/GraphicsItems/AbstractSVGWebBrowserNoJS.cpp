@@ -32,7 +32,8 @@
 #include <QStringList>
 #include <QVariant>
 #include <QXmlStreamAttributes>
-#include <QXmlStreamReader>
+
+#include "../Utils/XmlStreamReader.h"
 
 AbstractSVGWebBrowserNoJS::AbstractSVGWebBrowserNoJS()
 {}
@@ -50,7 +51,7 @@ QVariant AbstractSVGWebBrowserNoJS::evalJSImpl(const QString &scriptSource)
 QSizeF AbstractSVGWebBrowserNoJS::svgSizeAttribute()
 {
     const QByteArray svgData = getSvgData();
-    QXmlStreamReader reader(svgData);
+    XmlStreamReader reader(svgData);
     while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
     if(reader.atEnd())
         return QSizeF();
@@ -63,7 +64,7 @@ QSizeF AbstractSVGWebBrowserNoJS::svgSizeAttribute()
 QRectF AbstractSVGWebBrowserNoJS::svgViewBoxAttribute()
 {
     const QByteArray svgData = getSvgData();
-    QXmlStreamReader reader(svgData);
+    XmlStreamReader reader(svgData);
     while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
     if(reader.atEnd())
         return QRectF();
@@ -100,7 +101,7 @@ QRectF AbstractSVGWebBrowserNoJS::svgBoundingClientRect()
 bool AbstractSVGWebBrowserNoJS::rootElementIsSvg()
 {
     const QByteArray svgData = getSvgData();
-    QXmlStreamReader reader(svgData);
+    XmlStreamReader reader(svgData);
     while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
     return !reader.name().toString().compare(QString::fromLatin1("svg"), Qt::CaseInsensitive);
 }

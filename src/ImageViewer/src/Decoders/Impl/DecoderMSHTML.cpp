@@ -34,7 +34,6 @@
 #include <QDebug>
 #include <QSysInfo>
 #include <QSettings>
-#include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QXmlStreamAttributes>
 #include <QXmlStreamNamespaceDeclarations>
@@ -49,6 +48,7 @@
 #include "Internal/ImageMetaData.h"
 #include "Internal/Scaling/IScaledImageProvider.h"
 #include "Internal/Utils/MappedBuffer.h"
+#include "Internal/Utils/XmlStreamReader.h"
 
 //#pragma comment(lib, "ole32.lib") // CoInitializeEx, CoUninitialize, CoCreateInstance
 //#pragma comment(lib, "oleaut32.lib") // SysAllocString, SysFreeString, SafeArrayDestroy, SafeArrayAccessData, SafeArrayCreateVector
@@ -601,7 +601,7 @@ private:
         writer.setAutoFormatting(true);
         writer.setAutoFormattingIndent(-1);
 
-        QXmlStreamReader reader(m_svgData);
+        XmlStreamReader reader(m_svgData);
         while(!reader.atEnd())
         {
             reader.readNext();
