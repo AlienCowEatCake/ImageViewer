@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBAVIF_PATH = $${PWD}/libavif-1.0.2
+THIRDPARTY_LIBAVIF_PATH = $${PWD}/libavif-1.0.3
 
 include(../CommonSettings.pri)
 include(../aom/aom.pri)
