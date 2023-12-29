@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.7.0
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.8.0
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -31,7 +31,7 @@ include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_AOM_PATH} $${THIRDPARTY_AOM_CONFIG_PATH} $${PWD} $${INCLUDEPATH}
 
-# find . -name '*.c' | egrep -v '(arm|x86|ppc|mips|/examples/|/apps/|/tools/|vmaf|inspection|butteraugli|temporal_denoiser|_sse2|_ssse3|_sse4|_avx|_neon)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_AOM_PATH}| ; s|$| \\|'
+# find . -name '*.c' | egrep -v '(arm|x86|ppc|mips|/examples/|/apps/|/tools/|vmaf|inspection|butteraugli|temporal_denoiser|_cpudetect|_sse2|_ssse3|_sse4|_avx|_neon)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_AOM_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_AOM_PATH}/aom/src/aom_codec.c \
     $${THIRDPARTY_AOM_PATH}/aom/src/aom_decoder.c \
@@ -242,6 +242,8 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_filter.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_simd.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_simd_inline.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/blend_neon.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/dist_wtd_avg_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/mem_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/sum_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/transpose_neon.h \
@@ -325,6 +327,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_ports/aom_once.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/aom_timer.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/arm.h \
+    $${THIRDPARTY_AOM_PATH}/aom_ports/arm_cpudetect.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/bitops.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/emmintrin_compat.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/mem.h \
@@ -345,8 +348,10 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/av1_iface_common.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/alloccommon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/av1_inv_txfm_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/compound_convolve_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/convolve_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_convolve_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/warp_plane_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_common_int.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d_cfg.h \
@@ -406,6 +411,9 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_complexity.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_cyclicrefresh.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_variance.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/neon/pickrst_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/neon/shift_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/neon/txfm_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d_cfg.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_ml_partition_models.h \
@@ -495,6 +503,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_fwd_txfm_avx2.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_fwd_txfm_sse2.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/av1_txfm1d_sse4.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/x86/ml_sse3.h \
     $${THIRDPARTY_AOM_PATH}/av1/ratectrl_rtc.h \
     $${THIRDPARTY_AOM_PATH}/common/args.h \
     $${THIRDPARTY_AOM_PATH}/common/args_helper.h \
