@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.20)
+# Version 3.20 needed for cmake_path.
+# Version 3.19 needed for file(REAL_PATH ...).
 # Version 3.12 needed for FindJPEG imported targets.
 # Version 3.10 needed for FindOpenGL imported targets.
 # Version 3.1 needed for FindGLUT imported targets.
@@ -10,7 +12,7 @@ cmake_minimum_required(VERSION 3.12)
 # The major, minor, and micro version numbers of the project.
 set(JAS_VERSION_MAJOR 4)
 set(JAS_VERSION_MINOR 1)
-set(JAS_VERSION_PATCH 0)
+set(JAS_VERSION_PATCH 1)
 
 # The shared library versioning information.
 # Guidelines on how to change this information can be found below.

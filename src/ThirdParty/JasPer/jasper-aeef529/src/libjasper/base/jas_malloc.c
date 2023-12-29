@@ -660,7 +660,7 @@ size_t jas_get_total_mem_size()
 	Reference:
 	https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getphysicallyinstalledsystemmemory
 	*/
-	ULONGLONG size;
+	ULONGLONG mem_size_in_kb;
 	HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
 	typedef BOOL(WINAPI * GetPhysicallyInstalledSystemMemory_t)(PULONGLONG);
 	GetPhysicallyInstalledSystemMemory_t GetPhysicallyInstalledSystemMemory_f =
@@ -668,10 +668,11 @@ size_t jas_get_total_mem_size()
 	if (!GetPhysicallyInstalledSystemMemory_f) {
 		return 0;
 	}
-	if (!GetPhysicallyInstalledSystemMemory_f(&size)) {
+	if (!GetPhysicallyInstalledSystemMemory_f(&mem_size_in_kb)) {
 		return 0;
 	}
-	return 1024 * size;
+	return (mem_size_in_kb < SIZE_MAX / JAS_CAST(size_t, 1024)) ?
+	  JAS_CAST(size_t, 1024) * mem_size_in_kb : SIZE_MAX;
 #else
 	return 0;
 #endif

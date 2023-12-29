@@ -1,4 +1,4 @@
-From dbed22797d6759fb48a1735ad3eb55be7a560ef8 Mon Sep 17 00:00:00 2001
+From 319ca94376d4a6dc44ffbf92c1317d313ff5d01c Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 24 Apr 2022 19:09:08 +0700
 Subject: [PATCH 2/2] Fix build with MinGW 3.4.2
@@ -8,7 +8,7 @@ Subject: [PATCH 2/2] Fix build with MinGW 3.4.2
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/src/libjasper/base/jas_malloc.c b/src/libjasper/base/jas_malloc.c
-index 9b54000..badebf5 100644
+index 7233f64..bb16078 100644
 --- a/src/libjasper/base/jas_malloc.c
 +++ b/src/libjasper/base/jas_malloc.c
 @@ -94,7 +94,6 @@
@@ -22,8 +22,8 @@ index 9b54000..badebf5 100644
 @@ -662,7 +661,14 @@ size_t jas_get_total_mem_size()
  	https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getphysicallyinstalledsystemmemory
  	*/
- 	ULONGLONG size;
--	if (!GetPhysicallyInstalledSystemMemory(&size)) {
+ 	ULONGLONG mem_size_in_kb;
+-	if (!GetPhysicallyInstalledSystemMemory(&mem_size_in_kb)) {
 +	HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
 +	typedef BOOL(WINAPI * GetPhysicallyInstalledSystemMemory_t)(PULONGLONG);
 +	GetPhysicallyInstalledSystemMemory_t GetPhysicallyInstalledSystemMemory_f =
@@ -31,10 +31,10 @@ index 9b54000..badebf5 100644
 +	if (!GetPhysicallyInstalledSystemMemory_f) {
 +		return 0;
 +	}
-+	if (!GetPhysicallyInstalledSystemMemory_f(&size)) {
++	if (!GetPhysicallyInstalledSystemMemory_f(&mem_size_in_kb)) {
  		return 0;
  	}
- 	return 1024 * size;
+ 	return (mem_size_in_kb < SIZE_MAX / JAS_CAST(size_t, 1024)) ?
 -- 
-2.42.0
+2.39.2
 
