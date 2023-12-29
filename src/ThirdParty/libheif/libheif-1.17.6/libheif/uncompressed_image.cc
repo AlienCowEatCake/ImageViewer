@@ -48,7 +48,8 @@ enum heif_uncompressed_component_type
   component_type_cyan = 13,
   component_type_magenta = 14,
   component_type_yellow = 15,
-  component_type_key_black = 16
+  component_type_key_black = 16,
+  component_type_max_valid = component_type_key_black
 };
 
 bool is_predefined_component_type(uint16_t type)
@@ -467,8 +468,10 @@ static Error get_heif_chroma_uncompressed(std::shared_ptr<Box_uncC>& uncC, std::
     uint16_t component_index = component.component_index;
     uint16_t component_type = cmpd->get_components()[component_index].component_type;
 
-    if (component_type >= 16) {
-      return { heif_error_Unsupported_feature, heif_suberror_Invalid_parameter_value, "a component_type >= 16 is not supported"};
+    if (component_type > component_type_max_valid) {
+      std::stringstream sstr;
+      sstr << "a component_type > " << component_type_max_valid << " is not supported";
+      return { heif_error_Unsupported_feature, heif_suberror_Invalid_parameter_value, sstr.str()};
     }
 
     componentSet |= (1 << component_type);
@@ -531,6 +534,9 @@ int UncompressedImageCodec::get_luma_bits_per_pixel_from_configuration_unci(cons
   int alternate_channel_bits = 0;
   for (Box_uncC::Component component : uncC_box->get_components()) {
     uint16_t component_index = component.component_index;
+    if (component_index >= cmpd_box->get_components().size()) {
+      return -1;
+    }
     auto component_type = cmpd_box->get_components()[component_index].component_type;
     switch (component_type) {
       case component_type_monochrome:
@@ -603,6 +609,12 @@ Error UncompressedImageCodec::decode_uncompressed_image(const std::shared_ptr<co
                                                         uint32_t maximum_image_height_limit,
                                                         const std::vector<uint8_t>& uncompressed_data)
 {
+  if (uncompressed_data.empty()) {
+    return {heif_error_Invalid_input,
+            heif_suberror_Unspecified,
+            "Uncompressed image data is empty"};
+  }
+
   // Get the properties for this item
   // We need: ispe, cmpd, uncC
   std::vector<std::shared_ptr<Box>> item_properties;
@@ -610,6 +622,7 @@ Error UncompressedImageCodec::decode_uncompressed_image(const std::shared_ptr<co
   if (error) {
     return error;
   }
+
   uint32_t width = 0;
   uint32_t height = 0;
   bool found_ispe = false;

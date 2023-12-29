@@ -1,7 +1,7 @@
-From a2dedb3a3f36c0ac29aa00e4c753590aad0bdd9b Mon Sep 17 00:00:00 2001
+From 739f41e11140da2df6d01e6790dab9d242a6d98f Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 21 Dec 2022 23:23:25 +0700
-Subject: [PATCH 2/3] Revert "Enable wide chars for all Windows"
+Subject: [PATCH 2/4] Revert "Enable wide chars for all Windows"
 
 This reverts commit 0d7c5a181905eeb6b5bc2c8f91012a2abb0c5bfc.
 ---
@@ -11,7 +11,7 @@ This reverts commit 0d7c5a181905eeb6b5bc2c8f91012a2abb0c5bfc.
  3 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/libheif/file.cc b/libheif/file.cc
-index 20ad689..cd56aea 100644
+index cea8f9f..4a335c6 100644
 --- a/libheif/file.cc
 +++ b/libheif/file.cc
 @@ -35,13 +35,13 @@
@@ -39,7 +39,7 @@ index 20ad689..cd56aea 100644
    auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(convert_utf8_path_to_utf16(input_filename).c_str(), std::ios_base::binary));
  #else
    auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(input_filename, std::ios_base::binary));
-@@ -1236,7 +1236,7 @@ void HeifFile::set_hdlr_library_info(const std::string& encoder_plugin_version)
+@@ -1239,7 +1239,7 @@ void HeifFile::set_hdlr_library_info(const std::string& encoder_plugin_version)
    m_hdlr_box->set_name(sstr.str());
  }
  
@@ -75,5 +75,5 @@ index 373fd99..c7ec66a 100644
  #else
    std::ofstream ostr(filename, std::ios_base::binary);
 -- 
-2.42.0
+2.39.2
 
