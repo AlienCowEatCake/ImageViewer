@@ -212,6 +212,13 @@ Images from https://www.exiv2.org/examples.html
 
 --------------------------------------------------------------------------------
 
+::: JXL test images :::
+
+Image from http://regex.info/blog/photo-tech/color-spaces-page1 (converted to jxl)
+ * sample-wonky.profile.jxl
+
+--------------------------------------------------------------------------------
+
 ::: MNG test images :::
 
 Images from http://libmng.com/MNGsuite/
