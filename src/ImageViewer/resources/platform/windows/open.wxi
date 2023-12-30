@@ -219,6 +219,12 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
+      Key=".apng"
+      Value="$(var.ProductNameSafe).apng"
+      Id="reg_assoc_apng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
       Key=".png"
       Value="$(var.ProductNameSafe).png"
       Id="reg_assoc_png" />

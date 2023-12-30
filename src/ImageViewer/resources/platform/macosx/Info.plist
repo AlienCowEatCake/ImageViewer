@@ -266,6 +266,7 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>apng</string>
 				<string>png</string>
 			</array>
 			<key>CFBundleTypeName</key>

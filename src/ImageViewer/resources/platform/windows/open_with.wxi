@@ -1181,6 +1181,37 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
+      Key="$(var.ProductNameSafe).apng"
+      Value="Portable Network Graphics Image"
+      Id="reg_type_apng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).apng\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_apng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).apng\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_apng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).apng\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_apng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".apng\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).apng"
+      Id="reg_apng" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
       Key="$(var.ProductNameSafe).png"
       Value="Portable Network Graphics Image"
       Id="reg_type_png" />

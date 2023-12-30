@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -383,7 +383,9 @@ public:
     QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
-                << QString::fromLatin1("png");
+                << QString::fromLatin1("png")
+                << QString::fromLatin1("apng")
+                   ;
     }
 
     QStringList advancedFormats() const Q_DECL_OVERRIDE
