@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-RESVG_VERSION="0.36.0"
+RESVG_VERSION="0.37.0"
 RESVG_TARGET="$(gcc -dumpmachine | sed 's|-.*||')-unknown-linux-gnu"
 
 cd "$(dirname $0)"
