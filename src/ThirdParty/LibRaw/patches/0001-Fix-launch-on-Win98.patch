@@ -1,4 +1,4 @@
-From 0b9f891a6367ce8aa70182037cbe6948fb0ae4da Mon Sep 17 00:00:00 2001
+From f8c7b467c37d433b93de8b0bc5db66d29ff0f2cc Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 20:17:26 +0700
 Subject: [PATCH 1/3] Fix launch on Win98
@@ -8,7 +8,7 @@ Subject: [PATCH 1/3] Fix launch on Win98
  1 file changed, 32 insertions(+), 3 deletions(-)
 
 diff --git a/src/libraw_datastream.cpp b/src/libraw_datastream.cpp
-index 898761de..8b389e96 100644
+index 60593b42..358ba5bf 100644
 --- a/src/libraw_datastream.cpp
 +++ b/src/libraw_datastream.cpp
 @@ -702,6 +702,35 @@ LibRaw_windows_datastream::~LibRaw_windows_datastream()

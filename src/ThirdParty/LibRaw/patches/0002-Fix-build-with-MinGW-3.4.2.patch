@@ -1,4 +1,4 @@
-From d950f92375d5bb52bddc7f26c4c6529cd127c89e Mon Sep 17 00:00:00 2001
+From 7cf51eee61da6bdd7385d6f8bb109b0d43c7f62f Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 20:18:16 +0700
 Subject: [PATCH 2/3] Fix build with MinGW 3.4.2
@@ -97,10 +97,10 @@ index 30a70205..b9cf40d9 100644
  
    crxLoadDecodeLoop(&img, hdr.nPlanes);
 diff --git a/src/decoders/decoders_dcraw.cpp b/src/decoders/decoders_dcraw.cpp
-index 721d3857..85df3bc8 100644
+index 090a6b72..4cd9af12 100644
 --- a/src/decoders/decoders_dcraw.cpp
 +++ b/src/decoders/decoders_dcraw.cpp
-@@ -1017,10 +1017,10 @@ void LibRaw::nokia_load_raw()
+@@ -1026,10 +1026,10 @@ void LibRaw::nokia_load_raw()
    for (row = 0; row < raw_height; row++)
    {
        checkCancel();
@@ -114,10 +114,10 @@ index 721d3857..85df3bc8 100644
    }
    maximum = 0x3ff;
 diff --git a/src/decoders/decoders_libraw.cpp b/src/decoders/decoders_libraw.cpp
-index 332e2af2..64827207 100644
+index bc62a6c2..e91d3d78 100644
 --- a/src/decoders/decoders_libraw.cpp
 +++ b/src/decoders/decoders_libraw.cpp
-@@ -410,9 +410,9 @@ void LibRaw::panasonicC6_load_raw()
+@@ -413,9 +413,9 @@ void LibRaw::panasonicC6_load_raw()
    {
      int rowstoread = MIN(rowstep, imgdata.sizes.raw_height - row);
      if (libraw_internal_data.internal_data.input->read(
@@ -129,7 +129,7 @@ index 332e2af2..64827207 100644
      for (int crow = 0, col = 0; crow < rowstoread; crow++, col = 0)
      {
        unsigned short *rowptr =
-@@ -853,9 +853,9 @@ void LibRaw::phase_one_load_raw_s()
+@@ -856,9 +856,9 @@ void LibRaw::phase_one_load_raw_s()
  		if (readsz > maxsz)
  			throw LIBRAW_EXCEPTION_IO_CORRUPT;
  
@@ -176,7 +176,7 @@ index 89d82595..926266a3 100644
    }
  }
 diff --git a/src/decoders/fp_dng.cpp b/src/decoders/fp_dng.cpp
-index 0566ad2c..448644a9 100644
+index 72631dbb..e2a1c3e0 100644
 --- a/src/decoders/fp_dng.cpp
 +++ b/src/decoders/fp_dng.cpp
 @@ -385,10 +385,10 @@ void LibRaw::deflate_dng_load_raw()
@@ -264,10 +264,10 @@ index e4b1b395..e8f90f65 100644
    FORC(ns) strip[c] = get4();
    try
 diff --git a/src/decoders/load_mfbacks.cpp b/src/decoders/load_mfbacks.cpp
-index 493c7859..1f28c04d 100644
+index cddc33eb..aec05a05 100644
 --- a/src/decoders/load_mfbacks.cpp
 +++ b/src/decoders/load_mfbacks.cpp
-@@ -465,7 +465,7 @@ int LibRaw::phase_one_correct()
+@@ -472,7 +472,7 @@ int LibRaw::phase_one_correct()
      }
      if (!badCols.empty())
      {
@@ -277,7 +277,7 @@ index 493c7859..1f28c04d 100644
        for (i = 0; i < (int)badCols.size(); ++i)
        {
 diff --git a/src/libraw_datastream.cpp b/src/libraw_datastream.cpp
-index 8b389e96..82338005 100644
+index 358ba5bf..91594d22 100644
 --- a/src/libraw_datastream.cpp
 +++ b/src/libraw_datastream.cpp
 @@ -896,7 +896,7 @@ int LibRaw_bigfile_buffered_datastream::read(void *data, size_t size, size_t nme
