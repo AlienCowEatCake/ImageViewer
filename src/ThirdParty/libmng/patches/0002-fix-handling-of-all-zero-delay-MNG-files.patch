@@ -1,0 +1,128 @@
+From aa9ea2b5ba191c10f3f8caad317af6e8f714d04c Mon Sep 17 00:00:00 2001
+From: glennrp <glennrp>
+Date: Tue, 24 Jul 2007 16:20:45 +0000
+Subject: [PATCH 02/10] fix handling of all-zero-delay MNG files.
+
+---
+ CHANGES        | 26 ++++++++++++++++++++++++++
+ libmng_data.h  |  7 ++++++-
+ libmng_hlapi.c | 12 ++++++++++--
+ 3 files changed, 42 insertions(+), 3 deletions(-)
+
+diff --git a/CHANGES b/CHANGES
+index 05c9332..b267535 100644
+--- a/CHANGES
++++ b/CHANGES
+@@ -23,6 +23,32 @@ and 'cmake-compile.bat' resp. 'clean.bat'
+ szukw000@arcor.de
+ -----------------------------------------------------------
+ 
++1.0.11 (xxx xxth 2007)
++----------------------
++
++in short:
++
++intermediate CVS
++
++-------------------
++
++bugfixes:
++
++core:
++- handle MNG datastreams with all-zero delays
++
++samples:
++
++contrib:
++
++doc:
++
++makefiles:
++
++autoconf:
++
++-----------------------------------------------------------
++
+ 1.0.10 (Jul 13th 2007)
+ ----------------------
+ 
+diff --git a/libmng_data.h b/libmng_data.h
+index 430dca9..f2b52d5 100644
+--- a/libmng_data.h
++++ b/libmng_data.h
+@@ -5,7 +5,7 @@
+ /* *                                                                        * */
+ /* * project   : libmng                                                     * */
+ /* * file      : libmng_data.h             copyright (c) 2000-2007 G.Juyn   * */
+-/* * version   : 1.0.10                                                     * */
++/* * version   : 1.0.11                                                     * */
+ /* *                                                                        * */
+ /* * purpose   : main data structure definition                             * */
+ /* *                                                                        * */
+@@ -153,6 +153,8 @@
+ /* *             1.0.10 - 04/12/2007 - G.Juyn                               * */
+ /* *             - added support for ANG proposal                           * */
+ /* *                                                                        * */
++/* *             1.0.11 - 07/24/2007 - G.R-P bugfix for all-zero delays     * */
++/* *                                                                        * */
+ /* ************************************************************************** */
+ 
+ #if defined(__BORLANDC__) && defined(MNG_STRICT_ANSI)
+@@ -658,6 +660,9 @@ typedef struct mng_data_struct {
+            mng_int32         iFrameclipb;
+ 
+            mng_uint32        iNextdelay;         /* delay *after* next image */
++
++           mng_bool bForcedelay;
++           mng_uint32 iAccumdelay;
+ #endif
+ 
+ #ifndef MNG_SKIPCHUNK_SHOW
+diff --git a/libmng_hlapi.c b/libmng_hlapi.c
+index 93cdb9f..a9cf840 100644
+--- a/libmng_hlapi.c
++++ b/libmng_hlapi.c
+@@ -6,7 +6,7 @@
+ /* *                                                                        * */
+ /* * project   : libmng                                                     * */
+ /* * file      : libmng_hlapi.c            copyright (c) 2000-2007 G.Juyn   * */
+-/* * version   : 1.0.10                                                     * */
++/* * version   : 1.0.11                                                     * */
+ /* *                                                                        * */
+ /* * purpose   : high-level application API (implementation)                * */
+ /* *                                                                        * */
+@@ -197,8 +197,10 @@
+ /* *             - added support for ANG proposal                           * */
+ /* *             1.0.10 - 07/06/2007 - G.R-P bugfix by Lucas Quintana       * */
+ /* *                                                                        * */
++/* *             1.0.11 - 07/24/2007 - G.R-P bugfix for all-zero delays     * */
++/* *                                                                        * */
+ /* ************************************************************************** */
+-
++#ifndef MNG_SKIPCHUNK_SHOW
+ #include "libmng.h"
+ #include "libmng_data.h"
+ #include "libmng_error.h"
+@@ -447,6 +449,9 @@ MNG_LOCAL mng_retcode mng_reset_rundata (mng_datap pData)
+   pData->iFrameclipb           = 0;
+ 
+   pData->iNextdelay            = 1;
++
++  pData->bForcedelay = MNG_FALSE;
++  pData->iAccumdelay = 0;
+ #endif
+ 
+ #ifndef MNG_SKIPCHUNK_SHOW
+@@ -1738,6 +1743,9 @@ mng_retcode MNG_DECL mng_reset (mng_handle hHandle)
+   pData->iFrameclipb           = 0;
+ 
+   pData->iNextdelay            = 1;
++
++  pData->bForcedelay = MNG_FALSE;
++  pData->iAccumdelay = 0;
+ #endif
+ 
+ #ifndef MNG_SKIPCHUNK_SHOW
+-- 
+2.39.2
+

@@ -1,0 +1,27 @@
+From d21ab96f3912c8ddd9b78265bdc349352afe843e Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sat, 27 May 2017 01:47:59 +0700
+Subject: [PATCH 10/10] Add MNG_PREFIX configuration
+
+---
+ libmng_conf.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/libmng_conf.h b/libmng_conf.h
+index 8441ee0..cfe9d9b 100644
+--- a/libmng_conf.h
++++ b/libmng_conf.h
+@@ -60,6 +60,10 @@
+ #ifndef _libmng_conf_h_
+ #define _libmng_conf_h_
+ 
++#if defined (MNG_PREFIX)
++#include "mngprefix.h"
++#endif
++
+ #ifdef MNG_MOZILLA_CFG
+ #include "special\mozcfg\mozlibmngconf.h"
+ #endif
+-- 
+2.39.2
+

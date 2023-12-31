@@ -1,0 +1,39 @@
+From 47904f59b87398b53a195f340d0008a9de3176b8 Mon Sep 17 00:00:00 2001
+From: glennrp <glennrp>
+Date: Thu, 19 Mar 2009 15:12:30 +0000
+Subject: [PATCH 07/10] Fix typo (.0 should be .o)
+
+---
+ makefiles/makefile.dj    | 2 +-
+ makefiles/makefile.linux | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/makefiles/makefile.dj b/makefiles/makefile.dj
+index 2cef088..7b227d4 100644
+--- a/makefiles/makefile.dj
++++ b/makefiles/makefile.dj
+@@ -74,7 +74,7 @@ OBJS = \
+ 	libmng_write.o \
+ 	libmng_zlib.o
+ 
+-OBJSDLL = $(OBJS:.0=.pic.o)
++OBJSDLL = $(OBJS:.o=.pic.o)
+ 
+ .SUFFIXES:      .c .o .pic.o
+ 
+diff --git a/makefiles/makefile.linux b/makefiles/makefile.linux
+index 0633f6b..6547ac7 100644
+--- a/makefiles/makefile.linux
++++ b/makefiles/makefile.linux
+@@ -91,7 +91,7 @@ OBJS = \
+ 	libmng_write.o \
+ 	libmng_zlib.o
+ 
+-OBJSDLL = $(OBJS:.0=.pic.o)
++OBJSDLL = $(OBJS:.o=.pic.o)
+ 
+ .SUFFIXES:      .c .o .pic.o
+ 
+-- 
+2.39.2
+

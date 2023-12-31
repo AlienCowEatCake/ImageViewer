@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBMNG_PATH = $${PWD}/libmng-1.0.10
+THIRDPARTY_LIBMNG_PATH = $${PWD}/libmng-2.0.3
 THIRDPARTY_LIBMNG_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -29,7 +29,7 @@ disable_libjpeg {
 }
 
 !disable_liblcms2 {
-    DEFINES += MNG_FULL_CMS
+    DEFINES += MNG_FULL_CMS HAVE_LIBLCMS2
 }
 
 SOURCES += \

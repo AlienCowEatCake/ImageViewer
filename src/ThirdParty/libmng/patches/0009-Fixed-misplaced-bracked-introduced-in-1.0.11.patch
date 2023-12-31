@@ -1,0 +1,97 @@
+From dee0f4dc7fd059b3a8e3dd9ea312cd453cb59a94 Mon Sep 17 00:00:00 2001
+From: glennrp <glennrp>
+Date: Mon, 22 Nov 2010 12:15:22 +0000
+Subject: [PATCH 09/10] Fixed misplaced bracked introduced in 1.0.11
+
+---
+ libmng_display.c | 37 ++++++++++++++++++-------------------
+ libmng_hlapi.c   |  2 +-
+ 2 files changed, 19 insertions(+), 20 deletions(-)
+
+diff --git a/libmng_display.c b/libmng_display.c
+index 6a364aa..da44bfe 100644
+--- a/libmng_display.c
++++ b/libmng_display.c
+@@ -390,24 +390,24 @@ MNG_LOCAL mng_retcode interframe_delay (mng_datap pData)
+ #ifndef MNG_SKIPCHUNK_FRAM
+   if (pData->iFramedelay > 0 || pData->bForcedelay) /* real delay ? */
+   { /* let the app refresh first ? */
+-  pData->bForcedelay = MNG_FALSE;
+-  if ((pData->bRunning) && (!pData->bSkipping) &&
+-  (pData->iUpdatetop < pData->iUpdatebottom) &&
+-  (pData->iUpdateleft < pData->iUpdateright))
+-      if (!pData->fRefresh (((mng_handle)pData),
++     pData->bForcedelay = MNG_FALSE;
++     if ((pData->bRunning) && (!pData->bSkipping) &&
++         (pData->iUpdatetop < pData->iUpdatebottom) &&
++         (pData->iUpdateleft < pData->iUpdateright))
++       if (!pData->fRefresh (((mng_handle)pData),
+                               pData->iUpdateleft,  pData->iUpdatetop,
+                               pData->iUpdateright - pData->iUpdateleft,
+                               pData->iUpdatebottom - pData->iUpdatetop))
+           MNG_ERROR (pData, MNG_APPMISCERROR);
+ 
+-      pData->iUpdateleft   = 0;        /* reset update-region */
+-      pData->iUpdateright  = 0;
+-      pData->iUpdatetop    = 0;
+-      pData->iUpdatebottom = 0;        /* reset refreshneeded indicator */
+-      pData->bNeedrefresh  = MNG_FALSE;
++     pData->iUpdateleft   = 0;        /* reset update-region */
++     pData->iUpdateright  = 0;
++     pData->iUpdatetop    = 0;
++     pData->iUpdatebottom = 0;        /* reset refreshneeded indicator */
++     pData->bNeedrefresh  = MNG_FALSE;
+ 
+ #ifndef MNG_SKIPCHUNK_TERM
+-      if (pData->bOnlyfirstframe)      /* only processing first frame after TERM ? */
++     if (pData->bOnlyfirstframe) /* only processing first frame after TERM ? */
+       {
+         pData->iFramesafterTERM++;
+                                        /* did we do a frame yet ? */
+@@ -421,7 +421,7 @@ MNG_LOCAL mng_retcode interframe_delay (mng_datap pData)
+       }
+ #endif
+ 
+-      if (pData->fGettickcount)
++     if (pData->fGettickcount)
+       {                                /* get current tickcount */
+         pData->iRuntime = pData->fGettickcount ((mng_handle)pData);
+                                        /* calculate interval since last sync-point */
+@@ -455,15 +455,14 @@ MNG_LOCAL mng_retcode interframe_delay (mng_datap pData)
+         if (iRetcode)                  /* on error bail out */
+           return iRetcode;
+       }
+-    }
++  }
+ 
+-    if (!pData->bSkipping)             /* increase frametime in advance */
+-      pData->iFrametime = pData->iFrametime + iWaitfor;
+-                                       /* setup for next delay */
+-    pData->iFramedelay = pData->iNextdelay;
+-    pData->iAccumdelay += pData->iFramedelay;
++  if (!pData->bSkipping)             /* increase frametime in advance */
++    pData->iFrametime = pData->iFrametime + iWaitfor;
++                                     /* setup for next delay */
++  pData->iFramedelay = pData->iNextdelay;
++  pData->iAccumdelay += pData->iFramedelay;
+ #endif
+-  }
+ 
+ #ifdef MNG_SUPPORT_TRACE
+   MNG_TRACE (pData, MNG_FN_INTERFRAME_DELAY, MNG_LC_END);
+diff --git a/libmng_hlapi.c b/libmng_hlapi.c
+index a9cf840..86f0ef1 100644
+--- a/libmng_hlapi.c
++++ b/libmng_hlapi.c
+@@ -200,7 +200,7 @@
+ /* *             1.0.11 - 07/24/2007 - G.R-P bugfix for all-zero delays     * */
+ /* *                                                                        * */
+ /* ************************************************************************** */
+-#ifndef MNG_SKIPCHUNK_SHOW
++
+ #include "libmng.h"
+ #include "libmng_data.h"
+ #include "libmng_error.h"
+-- 
+2.39.2
+

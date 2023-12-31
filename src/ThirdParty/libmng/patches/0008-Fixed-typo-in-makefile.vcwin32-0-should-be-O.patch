@@ -1,0 +1,25 @@
+From fe0839601059f535110383e54fc544accd2e4a2b Mon Sep 17 00:00:00 2001
+From: glennrp <glennrp>
+Date: Sat, 24 Apr 2010 10:43:22 +0000
+Subject: [PATCH 08/10] Fixed typo in makefile.vcwin32 ("(0)" should be "(O)")
+
+---
+ makefiles/makefile.vcwin32 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/makefiles/makefile.vcwin32 b/makefiles/makefile.vcwin32
+index 6f9c2c0..50ec073 100644
+--- a/makefiles/makefile.vcwin32
++++ b/makefiles/makefile.vcwin32
+@@ -19,7 +19,7 @@ O=.obj
+ #ERRFILE= >> mngerrs
+ 
+ # variables
+-OBJS1 = libmng_callback_xs$(O) libmng_chunk_io$(O) libmng_chunk_prc$(O) libmng_chunk_descr$(0)
++OBJS1 = libmng_callback_xs$(O) libmng_chunk_io$(O) libmng_chunk_prc$(O) libmng_chunk_descr$(O)
+ OBJS2 = libmng_chunk_xs$(O) libmng_cms$(O) libmng_display$(O) libmng_dither$(O)
+ OBJS3 = libmng_error$(O) libmng_filter$(O) libmng_hlapi$(O) libmng_jpeg$(O)
+ OBJS4 = libmng_object_prc$(O) libmng_pixels$(O) libmng_prop_xs$(O)
+-- 
+2.39.2
+

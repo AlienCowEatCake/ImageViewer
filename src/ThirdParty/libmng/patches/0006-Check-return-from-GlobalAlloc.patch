@@ -1,0 +1,42 @@
+From 0c6b5b67a874054cd94108000d59d9a25be6bef0 Mon Sep 17 00:00:00 2001
+From: glennrp <glennrp>
+Date: Sat, 29 Mar 2008 20:59:58 +0000
+Subject: [PATCH 06/10] Check return from GlobalAlloc()
+
+---
+ contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c b/contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c
+index c57677b..a3959c1 100644
+--- a/contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c
++++ b/contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c
+@@ -1325,16 +1325,20 @@ static void CopyToClipboard(PluginInstance *This,unsigned char *mem,int size,UIN
+ 
+ 	if(EmptyClipboard()) {
+ 		hClip=GlobalAlloc(GMEM_ZEROINIT|GMEM_MOVEABLE|GMEM_DDESHARE,size);
+-		lpClip=GlobalLock(hClip);
+-		if(lpClip) {
++                if(hClip) {
++		  lpClip=GlobalLock(hClip);
++		  if(lpClip) {
+ 			CopyMemory(lpClip,mem,size);
+ 			GlobalUnlock(hClip);
+ 			if(!SetClipboardData(format,hClip)) {
+ 				warn(This,"Can't set clipboard data");
+ 			}
+-		}
+-		else {
+-			warn(This,"Can't allocate memory for clipboard");
++		  }
++		  else {
++			warn(This,"Can't lock clipboard");
++	        }
++	        else {
++	  	  warn(This,"Can't allocate memory for clipboard");
+ 		}
+ 	}
+ 	else {
+-- 
+2.39.2
+

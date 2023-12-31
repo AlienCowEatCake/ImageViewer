@@ -1,0 +1,25 @@
+From 250d8f6d78b8f6c38920652dfd8fe3bbd981a3ab Mon Sep 17 00:00:00 2001
+From: glennrp <glennrp>
+Date: Sat, 29 Mar 2008 20:22:16 +0000
+Subject: [PATCH 05/10] Fixed typo (old_ should just be old)
+
+---
+ contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c b/contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c
+index 975115c..c57677b 100644
+--- a/contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c
++++ b/contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c
+@@ -1018,7 +1018,7 @@ static int32 NPP_Write(NPP instance, NPStream *stream, int32 offset, int32 len,
+ 		}
+ 		if(!This->mngdata) {
+ 			warn(This,"Cannot allocate memory for image (%d,%d,%p",offset,len,buffer);
+-                        if(oldmngdata) free(old_mngdata);
++                        if(oldmngdata) free(oldmngdata);
+ 			return -1;
+ 		}
+ 	}
+-- 
+2.39.2
+

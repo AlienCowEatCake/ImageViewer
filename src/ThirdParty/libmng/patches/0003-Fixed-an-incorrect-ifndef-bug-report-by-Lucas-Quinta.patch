@@ -1,0 +1,45 @@
+From c3dea12a6bf0b6c9d9c39c6238f4cb1dee5fa56f Mon Sep 17 00:00:00 2001
+From: glennrp <glennrp>
+Date: Fri, 3 Aug 2007 18:13:02 +0000
+Subject: [PATCH 03/10] Fixed an incorrect #ifndef (bug report by Lucas
+ Quintana)
+
+---
+ libmng_chunk_xs.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/libmng_chunk_xs.c b/libmng_chunk_xs.c
+index b5513fd..4f56bcf 100644
+--- a/libmng_chunk_xs.c
++++ b/libmng_chunk_xs.c
+@@ -6,7 +6,7 @@
+ /* *                                                                        * */
+ /* * project   : libmng                                                     * */
+ /* * file      : libmng_chunk_xs.c         copyright (c) 2000-2007 G.Juyn   * */
+-/* * version   : 1.0.10                                                     * */
++/* * version   : 1.0.11                                                     * */
+ /* *                                                                        * */
+ /* * purpose   : chunk access functions (implementation)                    * */
+ /* *                                                                        * */
+@@ -92,6 +92,9 @@
+ /* *             1.0.10 - 04/08/2007 - G.Juyn                               * */
+ /* *             - added support for mPNG proposal                          * */
+ /* *                                                                        * */
++/* *             1.0.11 - 08/03/2007 - G.R-P                                * */
++/* *             - fixed incorrect #ifndef                                  * */
++/* *                                                                        * */
+ /* ************************************************************************** */
+ 
+ #include "libmng.h"
+@@ -2364,7 +2367,7 @@ MNG_EXT mng_retcode MNG_DECL mng_getchunk_mpng_frame (mng_handle hHandle,
+ 
+ /* ************************************************************************** */
+ 
+-#ifndef MNG_SKIPCHUNK_evNT
++#ifdef MNG_SKIPCHUNK_evNT
+ mng_retcode MNG_DECL mng_getchunk_evnt (mng_handle hHandle,
+                                         mng_handle hChunk,
+                                         mng_uint32 *iCount)
+-- 
+2.39.2
+

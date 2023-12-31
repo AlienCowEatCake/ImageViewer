@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libmng {
 
-        THIRDPARTY_LIBMNG_PATH = $${PWD}/libmng-1.0.10
+        THIRDPARTY_LIBMNG_PATH = $${PWD}/libmng-2.0.3
         THIRDPARTY_LIBMNG_CONFIG_PATH = $${PWD}/config
 
         INCLUDEPATH += $${THIRDPARTY_LIBMNG_CONFIG_PATH} $${THIRDPARTY_LIBMNG_PATH}
@@ -21,10 +21,6 @@ include($${PWD}/../../Features.pri)
 
         disable_libjpeg {
             DEFINES += MNG_NO_INCLUDE_JNG
-        }
-
-        !disable_liblcms2 {
-            DEFINES += MNG_FULL_CMS
         }
 
         OUT_LIB_TARGET = tp_libmng
