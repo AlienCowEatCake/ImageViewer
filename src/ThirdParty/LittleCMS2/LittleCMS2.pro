@@ -1,4 +1,4 @@
-# URL: http://www.littlecms.com/
+# URL: http://www.littlecms.com/ + https://sourceforge.net/projects/lcms/files/lcms/
 # License: MIT License - https://opensource.org/licenses/mit-license
 
 TEMPLATE = lib
@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBLCMS2_PATH = $${PWD}/lcms2-2.15
+THIRDPARTY_LIBLCMS2_PATH = $${PWD}/lcms2-2.16
 
 include(../CommonSettings.pri)
 
