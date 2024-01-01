@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -161,6 +161,10 @@ public:
         for(int i = 0; i < m_filesList.size(); ++i)
             if(QDir(m_directoryPath).absoluteFilePath(m_filesList[i]) == absolutePath)
                 return selectByIndex(i);
+        const QString absolutePathC = absolutePath.normalized(QString::NormalizationForm_C);
+        for(int i = 0; i < m_filesList.size(); ++i)
+            if(QDir(m_directoryPath).absoluteFilePath(m_filesList[i]).normalized(QString::NormalizationForm_C) == absolutePathC)
+                return selectByIndex(i);
         return false;
     }
 
@@ -188,6 +192,18 @@ public:
             m_filesList.append(name);
             if(m_currentIndex == INVALID_INDEX && name == fileName)
                 m_currentIndex = m_filesList.size() - 1;
+        }
+        if(m_currentIndex == INVALID_INDEX)
+        {
+            const QString fileNameC = fileName.normalized(QString::NormalizationForm_C);
+            for(int i = 0; i < m_filesList.size(); ++i)
+            {
+                if(m_filesList[i].normalized(QString::NormalizationForm_C) != fileNameC)
+                    continue;
+                m_currentIndex = i;
+                m_currentFilePath = QDir(m_directoryPath).absoluteFilePath(m_filesList[i]);
+                break;
+            }
         }
         if(m_currentIndex < 0)
             m_filesList.clear();
@@ -231,6 +247,10 @@ public:
         const QString absolutePath = QFileInfo(path).absoluteFilePath();
         for(int i = 0; i < m_pathsList.size(); ++i)
             if(QFileInfo(m_pathsList[i]).absoluteFilePath() == absolutePath)
+                return selectByIndex(i);
+        const QString absolutePathC = absolutePath.normalized(QString::NormalizationForm_C);
+        for(int i = 0; i < m_pathsList.size(); ++i)
+            if(QFileInfo(m_pathsList[i]).absoluteFilePath().normalized(QString::NormalizationForm_C) == absolutePathC)
                 return selectByIndex(i);
         return false;
     }
