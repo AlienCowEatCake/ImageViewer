@@ -63,6 +63,47 @@
     CONFIG -= enable_cxx11
 }
 
+# C++14 options:
+#    disable_cxx14
+#    enable_cxx14
+!disable_cxx14 {
+    *msvc* {
+        isEmpty(QMAKE_MSC_VER) {
+            win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 | win32-msvc2015 {
+                CONFIG += test_cxx14_incompatible_msvc
+            }
+        } else {
+            !greaterThan(QMAKE_MSC_VER, 1919) { # MSVC2017
+                CONFIG += test_cxx14_incompatible_msvc
+            }
+        }
+        !test_cxx14_incompatible_msvc {
+            CONFIG += test_cxx14_compatible_msvc
+        }
+    }
+    greaterThan(QT_MAJOR_VERSION, 5) {
+        CONFIG += test_cxx14_compatible_qt
+    }
+    c++latest | c++14 | c++1z | c++17 | c++2a | c++20 | c++2b | c++23 {
+        CONFIG += test_cxx14_compatible_config
+    }
+    # Workaround: MSVC 2015 is not a C++14-conformant compiler
+    test_cxx14_incompatible_msvc {
+        CONFIG -= test_cxx14_compatible_qt
+        CONFIG -= test_cxx14_compatible_config
+    }
+    test_cxx14_compatible_qt | test_cxx14_compatible_config | test_cxx14_compatible_msvc | enable_cxx14 {
+        CONFIG -= disable_cxx14
+        CONFIG += enable_cxx14
+    } else {
+        CONFIG += disable_cxx14
+        CONFIG -= enable_cxx14
+    }
+} else {
+    CONFIG += disable_cxx14
+    CONFIG -= enable_cxx14
+}
+
 # ::::: Misc Configuration :::::
 
 # ThirdParty options:

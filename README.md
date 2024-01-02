@@ -91,6 +91,7 @@ See the [buildscripts/](buildscripts/) directory.
 
 **Languages Configuration:**
 * C++11 options: `disable_cxx11`, `enable_cxx11` *(auto by default)*
+* C++14 options: `disable_cxx14`, `enable_cxx14` *(auto by default)*
 
 **System Libraries Configuration:**
 * pkg-config options: `disable_pkgconfig`, `enable_pkgconfig` *(auto by default)*
