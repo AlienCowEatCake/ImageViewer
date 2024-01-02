@@ -1,7 +1,7 @@
-From d21ab96f3912c8ddd9b78265bdc349352afe843e Mon Sep 17 00:00:00 2001
+From 1cddda68c41fe648c510ab1154ac878bc971ed6e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 27 May 2017 01:47:59 +0700
-Subject: [PATCH 10/10] Add MNG_PREFIX configuration
+Subject: [PATCH 10/11] Add MNG_PREFIX configuration
 
 ---
  libmng_conf.h | 4 ++++

@@ -1,7 +1,7 @@
-From ee0d6988a51397f33767571a3311d106e18f4eeb Mon Sep 17 00:00:00 2001
+From 386b1e55b73203019478f1db1279b741c9c8bbd5 Mon Sep 17 00:00:00 2001
 From: glennrp <glennrp>
 Date: Sat, 29 Mar 2008 20:15:12 +0000
-Subject: [PATCH 04/10] Attempting to fix bugs reported on the bug tracker, bug
+Subject: [PATCH 04/11] Attempting to fix bugs reported on the bug tracker, bug
  #1896227
 
 ---

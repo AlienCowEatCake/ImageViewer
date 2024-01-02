@@ -1,7 +1,7 @@
-From dee0f4dc7fd059b3a8e3dd9ea312cd453cb59a94 Mon Sep 17 00:00:00 2001
+From 1f994dc2e4acb852ed79f26cb8a7d0e9090cab38 Mon Sep 17 00:00:00 2001
 From: glennrp <glennrp>
 Date: Mon, 22 Nov 2010 12:15:22 +0000
-Subject: [PATCH 09/10] Fixed misplaced bracked introduced in 1.0.11
+Subject: [PATCH 09/11] Fixed misplaced bracked introduced in 1.0.11
 
 ---
  libmng_display.c | 37 ++++++++++++++++++-------------------

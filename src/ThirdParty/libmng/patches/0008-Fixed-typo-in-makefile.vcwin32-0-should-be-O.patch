@@ -1,7 +1,7 @@
-From fe0839601059f535110383e54fc544accd2e4a2b Mon Sep 17 00:00:00 2001
+From bde902c3c8fbfe1f81b2f5ff3e25449a77ddecf9 Mon Sep 17 00:00:00 2001
 From: glennrp <glennrp>
 Date: Sat, 24 Apr 2010 10:43:22 +0000
-Subject: [PATCH 08/10] Fixed typo in makefile.vcwin32 ("(0)" should be "(O)")
+Subject: [PATCH 08/11] Fixed typo in makefile.vcwin32 ("(0)" should be "(O)")
 
 ---
  makefiles/makefile.vcwin32 | 2 +-

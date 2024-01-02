@@ -1,7 +1,7 @@
-From aa9ea2b5ba191c10f3f8caad317af6e8f714d04c Mon Sep 17 00:00:00 2001
+From 74c35bb1b9d1ab04691b10d479547b8d5e306922 Mon Sep 17 00:00:00 2001
 From: glennrp <glennrp>
 Date: Tue, 24 Jul 2007 16:20:45 +0000
-Subject: [PATCH 02/10] fix handling of all-zero-delay MNG files.
+Subject: [PATCH 02/11] fix handling of all-zero-delay MNG files.
 
 ---
  CHANGES        | 26 ++++++++++++++++++++++++++

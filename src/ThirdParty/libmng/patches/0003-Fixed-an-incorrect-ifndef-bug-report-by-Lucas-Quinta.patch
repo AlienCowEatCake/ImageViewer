@@ -1,7 +1,7 @@
-From c3dea12a6bf0b6c9d9c39c6238f4cb1dee5fa56f Mon Sep 17 00:00:00 2001
+From 44e122903d54c4a72e2161d13378c70b595ee998 Mon Sep 17 00:00:00 2001
 From: glennrp <glennrp>
 Date: Fri, 3 Aug 2007 18:13:02 +0000
-Subject: [PATCH 03/10] Fixed an incorrect #ifndef (bug report by Lucas
+Subject: [PATCH 03/11] Fixed an incorrect #ifndef (bug report by Lucas
  Quintana)
 
 ---

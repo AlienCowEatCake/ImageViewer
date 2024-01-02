@@ -1,0 +1,26 @@
+From 45e66cac653d963af63e07d973e7b08586a164f8 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Tue, 2 Jan 2024 20:22:51 +0700
+Subject: [PATCH 11/11] Fix Windows build
+
+---
+ config.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/config.h b/config.h
+index 2857772..982821c 100644
+--- a/config.h
++++ b/config.h
+@@ -44,7 +44,9 @@
+ #define HAVE_SYS_TYPES_H 1
+ 
+ /* Define to 1 if you have the <unistd.h> header file. */
++#ifndef _WIN32
+ #define HAVE_UNISTD_H 1
++#endif
+ 
+ /* Define to the sub-directory in which libtool stores uninstalled libraries.
+    */
+-- 
+2.39.2
+

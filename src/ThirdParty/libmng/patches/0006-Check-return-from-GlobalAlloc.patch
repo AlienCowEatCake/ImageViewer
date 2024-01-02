@@ -1,7 +1,7 @@
-From 0c6b5b67a874054cd94108000d59d9a25be6bef0 Mon Sep 17 00:00:00 2001
+From 3be0497d9f9b16cb07f41c1a46af7d1b2988fcd8 Mon Sep 17 00:00:00 2001
 From: glennrp <glennrp>
 Date: Sat, 29 Mar 2008 20:59:58 +0000
-Subject: [PATCH 06/10] Check return from GlobalAlloc()
+Subject: [PATCH 06/11] Check return from GlobalAlloc()
 
 ---
  contrib/msvc/mngplg/mngplg-src-1.0.1/npmngplg.c | 14 +++++++++-----

@@ -1,7 +1,7 @@
-From 47904f59b87398b53a195f340d0008a9de3176b8 Mon Sep 17 00:00:00 2001
+From 2c51c88353345b1da9635caf0aa4c2e3aaad9dd2 Mon Sep 17 00:00:00 2001
 From: glennrp <glennrp>
 Date: Thu, 19 Mar 2009 15:12:30 +0000
-Subject: [PATCH 07/10] Fix typo (.0 should be .o)
+Subject: [PATCH 07/11] Fix typo (.0 should be .o)
 
 ---
  makefiles/makefile.dj    | 2 +-
