@@ -104,6 +104,24 @@
     CONFIG -= enable_cxx14
 }
 
+# Cleanup C++
+disable_cxx11 {
+    enable_cxx14 {
+        CONFIG -= enable_cxx14
+    }
+    !disable_cxx14 {
+        CONFIG += disable_cxx14
+    }
+}
+enable_cxx14 {
+    disable_cxx11 {
+        CONFIG -= disable_cxx11
+    }
+    !enable_cxx11 {
+        CONFIG += enable_cxx11
+    }
+}
+
 # ::::: Misc Configuration :::::
 
 # ThirdParty options:
