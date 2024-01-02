@@ -13,7 +13,7 @@ NOTARIZE_PASSWORD="@keychain:Notarize: ${NOTARIZE_USERNAME}"
 NOTARIZE_ASC_PROVIDER="${APP_CERT: -11:10}"
 MAC_SDK="$(xcodebuild -showsdks | grep '\-sdk macosx' | tail -1 | sed 's|.*-sdk ||')"
 
-QT_PATH="${QT_PATH:=/opt/Qt/5.15.11/clang_universal_target10.10}"
+QT_PATH="${QT_PATH:=/opt/Qt/5.15.12/clang_universal_target10.10}"
 QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
