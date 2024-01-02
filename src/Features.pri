@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -577,8 +577,8 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 15) {
 }
 
 # MSEdgeWebView2 options:
-#    enable_msedgewebview2
 #    disable_msedgewebview2
+#    enable_msedgewebview2
 !win32 {
     CONFIG += disable_msedgewebview2
 }
@@ -690,8 +690,8 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
 
 
 # QtCore5Compat options:
-#    enable_qtcore5compat
 #    disable_qtcore5compat
+#    enable_qtcore5compat
 !enable_qtcore5compat {
     CONFIG += disable_qtcore5compat
 }

@@ -138,7 +138,7 @@ See the [buildscripts/](buildscripts/) directory.
 * NanoSVG options: `disable_nanosvg` *(enabled by default)*
 * QtImageFormats options: `disable_qtimageformats` *(enabled by default)*
 * KImageFormats options: `disable_kimageformats` *(enabled by default)*
-* MSEdgeWebView2 options: `enable_msedgewebview2`, `disable_msedgewebview2` *(enabled by default for Windows with MSVC)*
+* MSEdgeWebView2 options: `disable_msedgewebview2`, `enable_msedgewebview2` *(enabled by default for Windows with MSVC)*
 
 **Optional Built-in Components Configuration:**
 * DecoderQtSVG options: `disable_qtsvg` *(enabled by default)*
@@ -153,6 +153,6 @@ See the [buildscripts/](buildscripts/) directory.
 * MacToolBar options: `disable_mactoolbar` *(enabled by default for macOS)*
 * MacTouchBar options: `disable_mactouchbar` *(enabled by default for macOS)*
 * Print Support options: `disable_printsupport` *(enabled by default)*
-* QtCore5Compat options: `enable_qtcore5compat`, `disable_qtcore5compat` *(disabled by default)*
+* QtCore5Compat options: `disable_qtcore5compat`, `enable_qtcore5compat` *(disabled by default)*
 * Updater options: `enable_update_checking` *(disabled by default)*
 
