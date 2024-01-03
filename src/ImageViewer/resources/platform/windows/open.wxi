@@ -189,9 +189,21 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
+      Key=".heics"
+      Value="$(var.ProductNameSafe).heics"
+      Id="reg_assoc_heics" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
       Key=".hif"
       Value="$(var.ProductNameSafe).hif"
       Id="reg_assoc_hif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".hej2"
+      Value="$(var.ProductNameSafe).hej2"
+      Id="reg_assoc_hej2" />
     <RegistryValue
       Root="HKCR"
       Type="string"

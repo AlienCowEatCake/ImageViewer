@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2020-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2020-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -220,7 +220,10 @@ public:
         /// @note https://aomediacodec.github.io/av1-avif/
         return QStringList()
                 << QString::fromLatin1("heif")
+                << QString::fromLatin1("heic")
+                << QString::fromLatin1("heix")
                 << QString::fromLatin1("heifs")
+                << QString::fromLatin1("heics")
                 << QString::fromLatin1("hif");
     }
 

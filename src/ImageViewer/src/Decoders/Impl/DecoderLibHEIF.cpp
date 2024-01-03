@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -238,8 +238,15 @@ public:
                 << QString::fromLatin1("heif")
                 << QString::fromLatin1("heic")
                 << QString::fromLatin1("heix")
+                << QString::fromLatin1("heifs")
+                << QString::fromLatin1("heics")
+                << QString::fromLatin1("hif")
 #if defined (LIBHEIF_NUMERIC_VERSION) && (LIBHEIF_NUMERIC_VERSION >= 0x01070000)
                 << QString::fromLatin1("avif")
+                << QString::fromLatin1("avifs")
+#endif
+#if defined (LIBHEIF_NUMERIC_VERSION) && (LIBHEIF_NUMERIC_VERSION >= 0x010D0000)
+                << QString::fromLatin1("hej2")
 #endif
                    ;
     }

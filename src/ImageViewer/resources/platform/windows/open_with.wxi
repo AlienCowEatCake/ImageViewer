@@ -1026,6 +1026,37 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
+      Key="$(var.ProductNameSafe).heics"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_heics" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heics\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_heics" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heics\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_heics" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heics\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_heics" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".heics\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).heics"
+      Id="reg_heics" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
       Key="$(var.ProductNameSafe).hif"
       Value="High Efficiency Image File Format Image"
       Id="reg_type_hif" />
@@ -1054,6 +1085,37 @@
       Value=""
       Name="$(var.ProductNameSafe).hif"
       Id="reg_hif" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hej2"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_hej2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hej2\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_hej2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hej2\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_hej2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hej2\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_hej2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".hej2\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).hej2"
+      Id="reg_hej2" />
     <RegistryValue
       Root="HKCR"
       Type="string"

@@ -225,7 +225,9 @@
 				<string>heic</string>
 				<string>heix</string>
 				<string>heifs</string>
+				<string>heics</string>
 				<string>hif</string>
+				<string>hej2</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>High Efficiency Image File Format Image</string>
