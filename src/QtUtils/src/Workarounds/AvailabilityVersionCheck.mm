@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2023-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -18,7 +18,12 @@
 */
 
 #include <mach-o/dyld.h>
+#include <mach-o/loader.h>
 #include "Utils/InfoUtils.h"
+
+#if !defined (PLATFORM_MACOS)
+#define PLATFORM_MACOS 1
+#endif
 
 namespace {
 
