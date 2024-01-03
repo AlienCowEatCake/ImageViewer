@@ -306,7 +306,8 @@ Jpeg2000JasperReader::Jpeg2000JasperReader(QIODevice *iod, SubFormat format)
 #else
     jas_conf_clear();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    jas_conf_set_max_mem_usage(QImageReader::allocationLimit() * 1024 * 1024);
+    if (QImageReader::allocationLimit() > 0)
+        jas_conf_set_max_mem_usage(qsizetype(QImageReader::allocationLimit()) * 1024 * 1024);
 #else
     // 128MB seems to be enough.
     jas_conf_set_max_mem_usage(128 * 1024 * 1024);

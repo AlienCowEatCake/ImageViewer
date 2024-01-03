@@ -90,10 +90,10 @@ index 572193d..24f6863 100644
          for (quint32 y = 0; y < icon.height; y++) {
              QRgb *line = reinterpret_cast<QRgb *>(img.scanLine(y));
 diff --git a/src/plugins/imageformats/jp2/qjp2handler.cpp b/src/plugins/imageformats/jp2/qjp2handler.cpp
-index fe08995..0dd1a61 100644
+index 09a1c11..6e0eba6 100644
 --- a/src/plugins/imageformats/jp2/qjp2handler.cpp
 +++ b/src/plugins/imageformats/jp2/qjp2handler.cpp
-@@ -568,6 +568,7 @@ bool Jpeg2000JasperReader::read(QImage *pImage)
+@@ -569,6 +569,7 @@ bool Jpeg2000JasperReader::read(QImage *pImage)
      }
  
      // Create a QImage of the correct type
@@ -101,7 +101,7 @@ index fe08995..0dd1a61 100644
      QImage::Format qtFormat = QImage::Format_Invalid;
      if (jasperColorspaceFamily == JAS_CLRSPC_FAM_RGB)
          qtFormat = hasAlpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
-@@ -575,6 +576,26 @@ bool Jpeg2000JasperReader::read(QImage *pImage)
+@@ -576,6 +577,26 @@ bool Jpeg2000JasperReader::read(QImage *pImage)
          qtFormat = hasAlpha ? QImage::Format_ARGB32 : QImage::Format_Grayscale8;
      if (!QImageIOHandler::allocateImage(QSize(qtWidth, qtHeight), qtFormat, &qtImage))
          return false;
