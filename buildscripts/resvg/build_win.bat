@@ -1,6 +1,6 @@
 @echo off
 
-set "RESVG_VERSION=0.36.0"
+set "RESVG_VERSION=0.37.0"
 
 if "%1" == "x86_64-pc-windows-msvc"     goto :x86_64
 if "%1" == "i686-pc-windows-msvc"       goto :i686
