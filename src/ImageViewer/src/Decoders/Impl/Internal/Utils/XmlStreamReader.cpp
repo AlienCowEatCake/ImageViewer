@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -69,12 +69,8 @@ QString XmlStreamReader::getDecodedString(const QByteArray &data)
     if(encodingForData.has_value())
         return QStringDecoder(encodingForData.value(), QStringConverter::Flag::Stateless).decode(data);
 #endif
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0)) || defined (QT_CORE5COMPAT_LIB)
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
+#if ((QT_VERSION >= QT_VERSION_CHECK(4, 6, 0)) && (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))) || defined (QT_CORE5COMPAT_LIB)
     if(QTextCodec *codec = QTextCodec::codecForUtfText(data, Q_NULLPTR))
-#else
-    if(QTextCodec *codec = QTextCodec::codecForUtfText(data))
-#endif
         return codec->toUnicode(data);
 #endif
 
