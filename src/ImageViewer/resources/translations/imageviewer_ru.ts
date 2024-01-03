@@ -1271,22 +1271,22 @@
 <context>
     <name>Themes</name>
     <message>
-        <location filename="../../src/main.cpp" line="71"/>
+        <location filename="../../src/main.cpp" line="74"/>
         <source>System</source>
         <translation>Системная</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="79"/>
+        <location filename="../../src/main.cpp" line="82"/>
         <source>Fusion_Light</source>
         <translation>Fusion светлая</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="83"/>
+        <location filename="../../src/main.cpp" line="86"/>
         <source>Fusion_Dark</source>
         <translation>Fusion тёмная</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="74"/>
+        <location filename="../../src/main.cpp" line="77"/>
         <source>Dark</source>
         <translation>Тёмная</translation>
     </message>
