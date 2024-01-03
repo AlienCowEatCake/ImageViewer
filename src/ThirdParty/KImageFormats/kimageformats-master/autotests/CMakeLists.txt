@@ -97,6 +97,12 @@ if (LibHeif_FOUND)
     kimageformats_write_tests(FUZZ 1
         heif-nodatacheck-lossless
     )
+
+    if (LibHeif_VERSION VERSION_GREATER_EQUAL "1.17.0")
+        kimageformats_read_tests(FUZZ 1
+            hej2
+        )
+    endif()
 endif()
 
 if (LibJXL_FOUND AND LibJXLThreads_FOUND)

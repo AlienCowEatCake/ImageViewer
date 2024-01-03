@@ -22,6 +22,7 @@ size_t HEIFHandler::m_initialized_count = 0;
 bool HEIFHandler::m_plugins_queried = false;
 bool HEIFHandler::m_heif_decoder_available = false;
 bool HEIFHandler::m_heif_encoder_available = false;
+bool HEIFHandler::m_hej2_decoder_available = false;
 
 extern "C" {
 static struct heif_error heifhandler_write_callback(struct heif_context * /* ctx */, const void *data, size_t size, void *userdata)
@@ -59,12 +60,25 @@ HEIFHandler::HEIFHandler()
 
 bool HEIFHandler::canRead() const
 {
-    if (m_parseState == ParseHeicNotParsed && !canRead(device())) {
+    if (m_parseState == ParseHeicNotParsed) {
+        QIODevice *dev = device();
+        if (dev) {
+            const QByteArray header = dev->peek(28);
+
+            if (HEIFHandler::isSupportedBMFFType(header)) {
+                setFormat("heif");
+                return true;
+            }
+
+            if (HEIFHandler::isSupportedHEJ2(header)) {
+                setFormat("hej2");
+                return true;
+            }
+        }
         return false;
     }
 
     if (m_parseState != ParseHeicError) {
-        setFormat("heif");
         return true;
     }
     return false;
@@ -300,17 +314,6 @@ bool HEIFHandler::write_helper(const QImage &image)
     return true;
 }
 
-bool HEIFHandler::canRead(QIODevice *device)
-{
-    if (!device) {
-        qWarning("HEIFHandler::canRead() called with no device");
-        return false;
-    }
-
-    const QByteArray header = device->peek(28);
-    return HEIFHandler::isSupportedBMFFType(header);
-}
-
 bool HEIFHandler::isSupportedBMFFType(const QByteArray &header)
 {
     if (header.size() < 28) {
@@ -343,6 +346,22 @@ bool HEIFHandler::isSupportedBMFFType(const QByteArray &header)
             return true;
         }
         if (qstrncmp(buffer + 8, "msf1", 4) == 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool HEIFHandler::isSupportedHEJ2(const QByteArray &header)
+{
+    if (header.size() < 28) {
+        return false;
+    }
+
+    const char *buffer = header.constData();
+    if (qstrncmp(buffer + 4, "ftyp", 4) == 0) {
+        if (qstrncmp(buffer + 8, "j2ki", 4) == 0) {
             return true;
         }
     }
@@ -425,7 +444,7 @@ bool HEIFHandler::ensureDecoder()
     }
 
     const QByteArray buffer = device()->readAll();
-    if (!HEIFHandler::isSupportedBMFFType(buffer)) {
+    if (!HEIFHandler::isSupportedBMFFType(buffer) && !HEIFHandler::isSupportedHEJ2(buffer)) {
         m_parseState = ParseHeicError;
         return false;
     }
@@ -814,6 +833,9 @@ bool HEIFHandler::isHeifDecoderAvailable()
         }
 #endif
 
+#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+        m_hej2_decoder_available = heif_have_decoder_for_format(heif_compression_JPEG2000);
+#endif
         m_heif_encoder_available = heif_have_encoder_for_format(heif_compression_HEVC);
         m_heif_decoder_available = heif_have_decoder_for_format(heif_compression_HEVC);
         m_plugins_queried = true;
@@ -839,6 +861,9 @@ bool HEIFHandler::isHeifEncoderAvailable()
         }
 #endif
 
+#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+        m_hej2_decoder_available = heif_have_decoder_for_format(heif_compression_JPEG2000);
+#endif
         m_heif_decoder_available = heif_have_decoder_for_format(heif_compression_HEVC);
         m_heif_encoder_available = heif_have_encoder_for_format(heif_compression_HEVC);
         m_plugins_queried = true;
@@ -851,6 +876,34 @@ bool HEIFHandler::isHeifEncoderAvailable()
     }
 
     return m_heif_encoder_available;
+}
+
+bool HEIFHandler::isHej2DecoderAvailable()
+{
+    QMutexLocker locker(&getHEIFHandlerMutex());
+
+    if (!m_plugins_queried) {
+#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+        if (m_initialized_count == 0) {
+            heif_init(nullptr);
+        }
+#endif
+
+        m_heif_encoder_available = heif_have_encoder_for_format(heif_compression_HEVC);
+        m_heif_decoder_available = heif_have_decoder_for_format(heif_compression_HEVC);
+#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+        m_hej2_decoder_available = heif_have_decoder_for_format(heif_compression_JPEG2000);
+#endif
+        m_plugins_queried = true;
+
+#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+        if (m_initialized_count == 0) {
+            heif_deinit();
+        }
+#endif
+    }
+
+    return m_hej2_decoder_available;
 }
 
 void HEIFHandler::startHeifLib()
@@ -901,6 +954,15 @@ QImageIOPlugin::Capabilities HEIFPlugin::capabilities(QIODevice *device, const Q
         }
         return format_cap;
     }
+
+    if (format == "hej2") {
+        Capabilities format_cap;
+        if (HEIFHandler::isHej2DecoderAvailable()) {
+            format_cap |= CanRead;
+        }
+        return format_cap;
+    }
+
     if (!format.isEmpty()) {
         return {};
     }
@@ -909,8 +971,16 @@ QImageIOPlugin::Capabilities HEIFPlugin::capabilities(QIODevice *device, const Q
     }
 
     Capabilities cap;
-    if (device->isReadable() && HEIFHandler::canRead(device) && HEIFHandler::isHeifDecoderAvailable()) {
-        cap |= CanRead;
+    if (device->isReadable()) {
+        const QByteArray header = device->peek(28);
+
+        if (HEIFHandler::isSupportedBMFFType(header) && HEIFHandler::isHeifDecoderAvailable()) {
+            cap |= CanRead;
+        }
+
+        if (HEIFHandler::isSupportedHEJ2(header) && HEIFHandler::isHej2DecoderAvailable()) {
+            cap |= CanRead;
+        }
     }
 
     if (device->isWritable() && HEIFHandler::isHeifEncoderAvailable()) {

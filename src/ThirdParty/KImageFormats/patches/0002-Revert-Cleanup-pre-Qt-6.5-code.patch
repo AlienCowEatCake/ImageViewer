@@ -1,0 +1,54 @@
+From aff63afbf1d517ee2869d02a9d5d3b654817c4f0 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Wed, 3 Jan 2024 08:33:45 +0700
+Subject: [PATCH 2/7] Revert "Cleanup pre-Qt 6.5 code"
+
+This reverts commit 91a342e90d9def496d683244f467755846875f67.
+---
+ CMakeLists.txt           | 2 +-
+ src/imageformats/exr.cpp | 7 +++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 43fdca7..29d6ce5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -81,7 +81,7 @@ set_package_properties(LibRaw PROPERTIES
+ )
+ 
+ ecm_set_disabled_deprecation_versions(
+-    QT 6.5
++    QT 6.4
+     KF 5.102
+ )
+ 
+diff --git a/src/imageformats/exr.cpp b/src/imageformats/exr.cpp
+index 042bbe7..b7121d5 100644
+--- a/src/imageformats/exr.cpp
++++ b/src/imageformats/exr.cpp
+@@ -90,7 +90,10 @@
+ #include <QImageIOPlugin>
+ #include <QLocale>
+ #include <QThread>
++
++#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+ #include <QTimeZone>
++#endif
+ 
+ // Allow the code to works on all QT versions supported by KDE
+ // project (Qt 5.15 and Qt 6.x) to easy backports fixes.
+@@ -316,7 +319,11 @@ static void readMetadata(const Imf::Header &header, QImage &image)
+         }
+         auto dateTime = QDateTime::fromString(QString::fromStdString(capDate->value()), QStringLiteral("yyyy:MM:dd HH:mm:ss"));
+         if (dateTime.isValid()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+             dateTime.setTimeZone(QTimeZone::fromSecondsAheadOfUtc(off));
++#else
++            dateTime.setOffsetFromUtc(off);
++#endif
+             image.setText(QStringLiteral("CreationDate"), dateTime.toString(Qt::ISODate));
+         }
+     }
+-- 
+2.39.2
+

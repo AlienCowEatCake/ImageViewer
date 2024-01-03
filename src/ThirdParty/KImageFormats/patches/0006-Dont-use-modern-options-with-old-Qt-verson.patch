@@ -1,7 +1,7 @@
-From 420a42578686be52405e893b3eba12678f35f407 Mon Sep 17 00:00:00 2001
+From 3ac1dfe7b39dd9e1ac72cacc4a753037d04f6ae7 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 9 Jul 2023 21:28:58 +0700
-Subject: [PATCH 4/5] Dont use modern options with old Qt verson
+Subject: [PATCH 6/7] Dont use modern options with old Qt verson
 
 ---
  src/imageformats/ani.cpp  |  4 ++++
@@ -171,7 +171,7 @@ index 9f6b581..bc8c46b 100644
  
      QImage m_current_image;
 diff --git a/src/imageformats/psd.cpp b/src/imageformats/psd.cpp
-index 85ef237..011f096 100644
+index badd95d..4166f3c 100644
 --- a/src/imageformats/psd.cpp
 +++ b/src/imageformats/psd.cpp
 @@ -41,6 +41,10 @@
@@ -434,7 +434,7 @@ index fac9ae3..2f496a3 100644
  }
  
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index d0c16ae..ba39ef0 100644
+index 5786efc..7f2a907 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -9,21 +9,32 @@
@@ -520,7 +520,7 @@ index d0c16ae..ba39ef0 100644
  
  bool XCFImageFormat::modeAffectsSourceAlpha(const quint32 type)
  {
-@@ -993,7 +1020,11 @@ bool XCFImageFormat::loadImageProperties(QDataStream &xcf_io, XCFImage &xcf_imag
+@@ -997,7 +1024,11 @@ bool XCFImageFormat::loadImageProperties(QDataStream &xcf_io, XCFImage &xcf_imag
                  return false;
              }
  
@@ -532,7 +532,7 @@ index d0c16ae..ba39ef0 100644
              xcf_image.palette.reserve(xcf_image.num_colors);
  
              for (int i = 0; i < xcf_image.num_colors; i++) {
-@@ -1379,11 +1410,13 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
+@@ -1383,11 +1414,13 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
      // tiles of 64x64 pixels. The required memory to build the image is at least doubled because tiles are loaded
      // and then the final image is created by copying the tiles inside it.
      // NOTE: on Windows to open a 10GiB image the plugin uses 28GiB of RAM
@@ -546,7 +546,7 @@ index d0c16ae..ba39ef0 100644
  #endif
  
      layer.image_tiles.resize(layer.nrows);
-@@ -2013,7 +2046,11 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
+@@ -2017,7 +2050,11 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
  
      const uint blockSize = TILE_WIDTH * TILE_HEIGHT * bpp * 1.5;
  
@@ -559,5 +559,5 @@ index d0c16ae..ba39ef0 100644
          buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
      }
 -- 
-2.42.0
+2.39.2
 

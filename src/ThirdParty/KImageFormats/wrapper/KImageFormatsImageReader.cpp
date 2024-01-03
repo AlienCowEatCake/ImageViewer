@@ -161,7 +161,7 @@ static const BuiltInFormatStruct BuiltInFormats[] =
     { HdrFormat , QList<QByteArray>() << "hdr" },
 #endif
 #if defined (WRAPPER_USE_HEIF_HANDLER)
-    { HeifFormat , QList<QByteArray>() << "heif" << "heic" },
+    { HeifFormat , QList<QByteArray>() << "heif" << "heic" << "hej2" },
 #endif
 #if defined (WRAPPER_USE_JXL_HANDLER)
     { JxlFormat , QList<QByteArray>() << "jxl" },
@@ -424,8 +424,13 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
 #endif
 #if defined (WRAPPER_USE_HEIF_HANDLER)
             case HeifFormat:
-                if(HEIFHandler::canRead(device))
-                    handler = new HEIFHandler;
+                handler = new HEIFHandler;
+                handler->setDevice(device);
+                if(!handler->canRead())
+                {
+                    delete handler;
+                    handler = 0;
+                }
                 break;
 #endif
 #if defined (WRAPPER_USE_JXL_HANDLER)

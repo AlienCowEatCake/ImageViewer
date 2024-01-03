@@ -1,0 +1,26 @@
+From 2295eae6be7615815b5b57a47f93cbf86f31a06e Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Wed, 3 Jan 2024 08:33:37 +0700
+Subject: [PATCH 1/7] Revert "Code is qt6 only now. Remove unused check"
+
+This reverts commit 8d1ef536be03202abedcf245d39b18ea8bfa207c.
+---
+ src/imageformats/exr.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/imageformats/exr.cpp b/src/imageformats/exr.cpp
+index 3c0bf1a..042bbe7 100644
+--- a/src/imageformats/exr.cpp
++++ b/src/imageformats/exr.cpp
+@@ -94,7 +94,7 @@
+ 
+ // Allow the code to works on all QT versions supported by KDE
+ // project (Qt 5.15 and Qt 6.x) to easy backports fixes.
+-#if !defined(EXR_USE_LEGACY_CONVERSIONS)
++#if (QT_VERSION_MAJOR >= 6) && !defined(EXR_USE_LEGACY_CONVERSIONS)
+ // If uncommented, the image is rendered in a float16 format, the result is very precise
+ #define EXR_USE_QT6_FLOAT_IMAGE // default uncommented
+ #endif
+-- 
+2.39.2
+

@@ -643,7 +643,7 @@ static bool IsValid(const PSDHeader &header)
         qDebug() << "PSD header: invalid color mode" << header.color_mode;
         return false;
     }
-    // Specs tells: "Supported range is 1 to 56" but the limit is 57:
+    // Specs tells: "Supported range is 1 to 56" but when the alpha channel is present the limit is 57:
     // Photoshop does not make you add more (see also 53alphas.psd test case).
     if (header.channel_count < 1 || header.channel_count > 57) {
         qDebug() << "PSD header: invalid number of channels" << header.channel_count;

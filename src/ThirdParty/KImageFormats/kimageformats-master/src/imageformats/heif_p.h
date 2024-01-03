@@ -24,17 +24,18 @@ public:
     bool read(QImage *image) override;
     bool write(const QImage &image) override;
 
-    static bool canRead(QIODevice *device);
-
     QVariant option(ImageOption option) const override;
     void setOption(ImageOption option, const QVariant &value) override;
     bool supportsOption(ImageOption option) const override;
 
     static bool isHeifDecoderAvailable();
     static bool isHeifEncoderAvailable();
+    static bool isHej2DecoderAvailable();
+
+    static bool isSupportedBMFFType(const QByteArray &header);
+    static bool isSupportedHEJ2(const QByteArray &header);
 
 private:
-    static bool isSupportedBMFFType(const QByteArray &header);
     bool ensureParsed() const;
     bool ensureDecoder();
 
@@ -57,6 +58,7 @@ private:
     static bool m_plugins_queried;
     static bool m_heif_decoder_available;
     static bool m_heif_encoder_available;
+    static bool m_hej2_decoder_available;
 
     static QMutex &getHEIFHandlerMutex();
 };

@@ -1,7 +1,7 @@
-From d00881ce10102840fe02230b40c41aae336f4e1d Mon Sep 17 00:00:00 2001
+From bded79d968a7360576258a5625061b16123094e4 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 04:03:37 +0700
-Subject: [PATCH 1/5] Remove plugin metadata declarations
+Subject: [PATCH 3/7] Remove plugin metadata declarations
 
 ---
  src/imageformats/ani_p.h  | 2 +-
@@ -90,10 +90,10 @@ index e1450c6..014ca0d 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/heif_p.h b/src/imageformats/heif_p.h
-index 9fbe0ea..e21576d 100644
+index 8bfafff..feeabfd 100644
 --- a/src/imageformats/heif_p.h
 +++ b/src/imageformats/heif_p.h
-@@ -64,7 +64,7 @@ private:
+@@ -66,7 +66,7 @@ private:
  class HEIFPlugin : public QImageIOPlugin
  {
      Q_OBJECT
@@ -259,5 +259,5 @@ index 4c31d4f..8cd298e 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 -- 
-2.42.0
+2.39.2
 
