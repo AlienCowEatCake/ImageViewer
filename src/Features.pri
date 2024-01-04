@@ -638,6 +638,9 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 15) {
 # MSEdgeWebView2 options:
 #    disable_msedgewebview2
 #    enable_msedgewebview2
+!enable_msedgewebview2 {
+    CONFIG += disable_msedgewebview2
+}
 !win32 {
     CONFIG += disable_msedgewebview2
 }
@@ -699,6 +702,10 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
 
 # DecoderMSHTML options:
 #    disable_mshtml
+#    enable_mshtml
+!enable_mshtml {
+    CONFIG += disable_mshtml
+}
 !win32 {
     CONFIG += disable_mshtml
 }
@@ -722,12 +729,20 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
 
 # DecoderMacWebView options:
 #    disable_macwebview
+#    enable_macwebview
+!enable_macwebview {
+    CONFIG += disable_macwebview
+}
 !macx {
     CONFIG += disable_macwebview
 }
 
 # DecoderMacWKWebView options:
 #    disable_macwkwebview
+#    enable_macwkwebview
+!enable_macwkwebview {
+    CONFIG += disable_macwkwebview
+}
 !macx {
     CONFIG += disable_macwkwebview
 }

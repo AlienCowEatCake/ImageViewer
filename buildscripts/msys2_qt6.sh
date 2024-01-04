@@ -126,7 +126,8 @@ mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 ${CMD_QMAKE} -r CONFIG+="release" \
     CONFIG+=c++2a \
-    CONFIG+="enable_pkgconfig enable_update_checking enable_msedgewebview2" \
+    CONFIG+="enable_pkgconfig enable_update_checking" \
+    CONFIG+="enable_msedgewebview2 enable_mshtml" \
     CONFIG+="system_zlib system_jbigkit system_lerc system_libtiff" \
     CONFIG+="system_libwebp system_freetype system_librsvg" \
     "${SOURCE_PATH}/${PROJECT}.pro"

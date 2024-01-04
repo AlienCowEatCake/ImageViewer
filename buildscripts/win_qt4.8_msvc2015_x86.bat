@@ -18,7 +18,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="disable_msedgewebview2" ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="enable_mshtml" ..\%PROJECT%.pro
 %NMAKE_CMD%
 if not exist %APP_PATH%\release\%PROJECT%.exe (
     if NOT "%CI%" == "true" pause

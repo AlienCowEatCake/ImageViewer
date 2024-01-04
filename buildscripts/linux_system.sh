@@ -151,11 +151,6 @@ if [ -f "$(${CMD_QMAKE} -query QT_INSTALL_HEADERS)/QtWebKitWidgets/QtWebKitWidge
 else
     CONFIG_STR="${CONFIG_STR} disable_qtwebkit"
 fi
-if [ -f "$(${CMD_QMAKE} -query QT_INSTALL_HEADERS)/QtWebEngineWidgets/QtWebEngineWidgets" ] ; then
-    CONFIG_STR="${CONFIG_STR} enable_qtwebengine"
-else
-    CONFIG_STR="${CONFIG_STR} disable_qtwebengine"
-fi
 echo "Config: ${CONFIG_STR}"
 echo
 

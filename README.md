@@ -38,7 +38,8 @@ Full configuration:
 ### Building with bundled libraries example (Ubuntu 22.04)
 
 ```bash
-sudo apt-get install git g++ make qt6-base-dev libqt6svg6-dev libgl-dev
+sudo apt-get install git g++ make qt6-base-dev libqt6svg6-dev \
+    qt6-image-formats-plugins libgl-dev
 git clone https://github.com/AlienCowEatCake/ImageViewer.git
 cd ImageViewer
 mkdir build
@@ -51,8 +52,8 @@ cp -a src/ImageViewer/ImageViewer /path/to/install/
 ### Building with all system libraries example (Ubuntu 22.04)
 
 ```bash
-sudo apt-get install git g++ make qt6-base-dev libqt6svg6-dev libgl-dev \
-    qt6-image-formats-plugins qt6-webengine-dev \
+sudo apt-get install git g++ make qt6-base-dev libqt6svg6-dev \
+    qt6-image-formats-plugins libgl-dev \
     zlib1g-dev liblcms2-dev libexif-dev libexiv2-dev libjpeg-dev \
     libmng-dev libpng-dev libjbig-dev liblerc-dev libtiff-dev \
     libwebp-dev libwmf-dev libopenjp2-7-dev libgif-dev libraw-dev \
@@ -75,7 +76,6 @@ qmake6 CONFIG+="release enable_pkgconfig" \
     CONFIG+="disable_graphicsmagick disable_graphicsmagickwand" \
     CONFIG+="disable_qtextended disable_stb disable_nanosvg" \
     CONFIG+="disable_qtimageformats disable_kimageformats" \
-    CONFIG+="enable_qtwebengine" \
     INCLUDEPATH+="/usr/include/freetype2" \
     INCLUDEPATH+="/usr/include/jxrlib" \
     -r ../ImageViewer.pro
@@ -139,18 +139,18 @@ See the [buildscripts/](buildscripts/) directory.
 * NanoSVG options: `disable_nanosvg` *(enabled by default)*
 * QtImageFormats options: `disable_qtimageformats` *(enabled by default)*
 * KImageFormats options: `disable_kimageformats` *(enabled by default)*
-* MSEdgeWebView2 options: `disable_msedgewebview2`, `enable_msedgewebview2` *(enabled by default for Windows with MSVC)*
+* MSEdgeWebView2 options: `disable_msedgewebview2`, `enable_msedgewebview2` *(disabled by default)*
 
 **Optional Built-in Components Configuration:**
 * DecoderQtSVG options: `disable_qtsvg` *(enabled by default)*
 * DecoderQtWebKit options: `disable_qtwebkit`, `enable_qtwebkit` *(disabled by default)*
 * DecoderQtWebEngine options: `disable_qtwebengine`, `enable_qtwebengine` *(disabled by default)*
 * DecoderQMLWebEngine options: `disable_qmlwebengine`, `enable_qmlwebengine` *(disabled by default)*
-* DecoderMSHTML options: `disable_mshtml` *(enabled by default for Windows)*
+* DecoderMSHTML options: `disable_mshtml`, `enable_mshtml` *(disabled by default)*
 * DecoderWIC options: `disable_wic` *(enabled by default for Windows)*
 * DecoderNSImage options: `disable_nsimage` *(enabled by default for macOS)*
-* DecoderMacWebView options: `disable_macwebview` *(enabled by default for macOS)*
-* DecoderMacWKWebView options: `disable_macwkwebview` *(enabled by default for macOS)*
+* DecoderMacWebView options: `disable_macwebview`, `enable_macwebview` *(disabled by default)*
+* DecoderMacWKWebView options: `disable_macwkwebview`, `enable_macwkwebview` *(disabled by default)*
 * MacToolBar options: `disable_mactoolbar` *(enabled by default for macOS)*
 * MacTouchBar options: `disable_mactouchbar` *(enabled by default for macOS)*
 * Print Support options: `disable_printsupport` *(enabled by default)*

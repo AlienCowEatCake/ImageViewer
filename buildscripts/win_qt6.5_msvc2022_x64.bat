@@ -11,7 +11,6 @@ set APP_PATH=src\%PROJECT%
 set NMAKE_CMD="%~dp0\..\buildscripts\helpers\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
 set DLLRESOLVER_CMD="%~dp0\..\buildscripts\helpers\dllresolver.exe"
-set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.webview2.1.0.2210.55\build\native\%ARCH%\WebView2Loader.dll"
 set RESVG_PATH="%~dp0\resvg\x86_64-pc-windows-msvc"
 
 call %VCVARS% %VCVARS_ARCH%
@@ -34,7 +33,6 @@ rmdir /S /Q %PROJECT%%SUFFIX% 2>nul >nul
 mkdir %PROJECT%%SUFFIX%
 copy %APP_PATH%\release\%PROJECT%.exe %PROJECT%%SUFFIX%\%PROJECT%.exe
 windeployqt --release --no-compiler-runtime --no-system-d3d-compiler --no-virtualkeyboard --no-opengl-sw --translations en,ru %PROJECT%%SUFFIX%
-copy %WEBVIEW2LOADER_DLL% %PROJECT%%SUFFIX%\
 %DLLRESOLVER_CMD% %PROJECT%%SUFFIX% %RESVG_PATH% %UCRT_DIR% %CRT_DIR% %QT_PATH%\bin
 %ZIP_CMD% -9r ..\%PROJECT%%SUFFIX%.zip %PROJECT%%SUFFIX%
 rmdir /S /Q build_msi 2>nul >nul
