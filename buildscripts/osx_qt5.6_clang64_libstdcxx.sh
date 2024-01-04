@@ -11,6 +11,7 @@ APP_CERT="Developer ID Application: Petr Zhigalov (48535TNTA7)"
 NOTARIZE_USERNAME="peter.zhigalov@gmail.com"
 NOTARIZE_PASSWORD="@keychain:Notarize: ${NOTARIZE_USERNAME}"
 NOTARIZE_ASC_PROVIDER="${APP_CERT: -11:10}"
+MAC_TARGET="10.6"
 ALL_SDK_VERSIONS="$(xcodebuild -showsdks | grep '\-sdk macosx' | sed 's|.*-sdk macosx||')"
 for SDK_VERSION in ${ALL_SDK_VERSIONS} ; do
     SDK_PATH="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SDK_VERSION}.sdk"
@@ -43,7 +44,7 @@ BUILD_PATH="${PWD}"
 arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} ${QMAKE_EXTRA_ARGS} "../${PROJECT}.pro"
 arch -x86_64 make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
-plutil -replace LSMinimumSystemVersion -string "10.6" "${APPNAME}.app/Contents/Info.plist"
+plutil -replace LSMinimumSystemVersion -string "${MAC_TARGET}" "${APPNAME}.app/Contents/Info.plist"
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -f "${RES_PATH}/empty.lproj"
 mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"
@@ -76,7 +77,7 @@ function fix_sdk() {
             sdk="${SDK_VERSION}"
         done
         echo "Override LC_VERSION_MIN_MACOSX sdk to ${sdk} in ${binary}"
-        vtool -set-version-min "macos" "10.6" "${sdk}" -replace -output "${binary}" "${binary}"
+        vtool -set-version-min "macos" "${MAC_TARGET}" "${sdk}" -replace -output "${binary}" "${binary}"
     fi
 }
 function sign() {
