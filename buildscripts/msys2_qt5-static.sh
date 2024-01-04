@@ -47,7 +47,7 @@ ${CMD_QMAKE} -r CONFIG+="release" \
     QTPLUGIN.imageformats="qico qsvg qtiff" \
     QTPLUGIN.platforms="qwindows" \
     CONFIG+="enable_update_checking" \
-    CONFIG+="enable_mshtml" \
+    CONFIG+="enable_mshtml enable_nanosvg" \
     "${SOURCE_PATH}/${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 mkdir "${DIST_PREFIX}"

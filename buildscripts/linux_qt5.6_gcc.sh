@@ -11,7 +11,7 @@ cd "$(dirname $0)"/..
 rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
-${CMD_QMAKE} -r CONFIG+="release" QTPLUGIN.imageformats="qico qsvg qtiff" CONFIG+=c++11 CONFIG+="disable_highway disable_libjxl" CONFIG+="enable_librsvg" CONFIG+="enable_update_checking" "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="release" QTPLUGIN.imageformats="qico qsvg qtiff" CONFIG+=c++11 CONFIG+="disable_highway disable_libjxl" CONFIG+="enable_librsvg enable_nanosvg" CONFIG+="enable_update_checking" CONFIG+="enable_nanosvg" "../${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 strip --strip-all "${APP_PATH}/${PROJECT}"
 cp -a "${APP_PATH}/${PROJECT}" ../"${PROJECT}${SUFFIX}.elf"

@@ -608,6 +608,10 @@ greaterThan(QT_MAJOR_VERSION, 5) {
 
 # NanoSVG options:
 #    disable_nanosvg
+#    enable_nanosvg
+!enable_nanosvg {
+    CONFIG += disable_nanosvg
+}
 *msvc* {
     isEmpty(QMAKE_MSC_VER) {
         win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {

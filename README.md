@@ -57,8 +57,7 @@ sudo apt-get install git g++ make qt6-base-dev libqt6svg6-dev \
     zlib1g-dev liblcms2-dev libexif-dev libexiv2-dev libjpeg-dev \
     libmng-dev libpng-dev libjbig-dev liblerc-dev libtiff-dev \
     libwebp-dev libwmf-dev libopenjp2-7-dev libgif-dev libraw-dev \
-    librsvg2-dev libresvg-dev libheif-dev libopenexr-dev libavif-dev \
-    libjxr-dev libmagickcore-dev libmagickwand-dev
+    librsvg2-dev libheif-dev libopenexr-dev libavif-dev libjxr-dev
 git clone https://github.com/AlienCowEatCake/ImageViewer.git
 cd ImageViewer
 mkdir build
@@ -70,12 +69,9 @@ qmake6 CONFIG+="release enable_pkgconfig" \
     CONFIG+="system_libpng system_jbigkit system_lerc system_libtiff" \
     CONFIG+="system_libwebp disable_libbpg disable_freetype system_libwmf" \
     CONFIG+="system_openjpeg system_giflib system_libraw system_librsvg" \
-    CONFIG+="system_resvg disable_aom disable_libde265 system_libheif" \
-    CONFIG+="system_openexr system_libavif disable_flif system_jxrlib" \
-    CONFIG+="disable_libjxl enable_magickcore system_magickwand" \
-    CONFIG+="disable_graphicsmagick disable_graphicsmagickwand" \
-    CONFIG+="disable_qtextended disable_stb disable_nanosvg" \
-    CONFIG+="disable_qtimageformats disable_kimageformats" \
+    CONFIG+="disable_aom disable_libde265 system_libheif system_openexr" \
+    CONFIG+="system_libavif disable_flif system_jxrlib disable_libjxl" \
+    CONFIG+="disable_stb disable_qtimageformats disable_kimageformats" \
     INCLUDEPATH+="/usr/include/freetype2" \
     INCLUDEPATH+="/usr/include/jxrlib" \
     -r ../ImageViewer.pro
@@ -136,7 +132,7 @@ See the [buildscripts/](buildscripts/) directory.
 **Optional Third Party Components Configuration:**
 * QtExtended options: `disable_qtextended`, `enable_qtextended` *(disabled by default)*
 * STB options: `disable_stb` *(enabled by default)*
-* NanoSVG options: `disable_nanosvg` *(enabled by default)*
+* NanoSVG options: `disable_nanosvg`, `enable_nanosvg` *(disabled by default)*
 * QtImageFormats options: `disable_qtimageformats` *(enabled by default)*
 * KImageFormats options: `disable_kimageformats` *(enabled by default)*
 * MSEdgeWebView2 options: `disable_msedgewebview2`, `enable_msedgewebview2` *(disabled by default)*

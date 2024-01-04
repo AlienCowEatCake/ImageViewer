@@ -37,7 +37,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MAC_SDK_VERSION=${MAC_SDK:6} QMAKE_MACOSX_DEPLOYMENT_TARGET=${MAC_TARGET} CONFIG+=c++2a CONFIG+="enable_update_checking" CONFIG+="enable_macwebview enable_macwkwebview" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" ${QMAKE_EXTRA_ARGS} "../${PROJECT}.pro"
+arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MAC_SDK_VERSION=${MAC_SDK:6} QMAKE_MACOSX_DEPLOYMENT_TARGET=${MAC_TARGET} CONFIG+=c++2a CONFIG+="enable_update_checking" CONFIG+="enable_macwebview enable_macwkwebview enable_nanosvg" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" ${QMAKE_EXTRA_ARGS} "../${PROJECT}.pro"
 arch -x86_64 make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "${MAC_TARGET}" "${APPNAME}.app/Contents/Info.plist"

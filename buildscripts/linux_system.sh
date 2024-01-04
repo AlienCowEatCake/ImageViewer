@@ -10,7 +10,7 @@ DEBIAN_DIR_PATH="src/${PROJECT}/resources/platform/debian"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/linux/set_associations.sh"
 
 CMD_QMAKE="qmake"
-CONFIG_STR="release enable_pkgconfig disable_zstd disable_xzutils disable_brotli disable_highway disable_libexpat disable_libbpg disable_freetype disable_aom disable_libde265 disable_flif disable_qtextended disable_stb disable_nanosvg disable_qtimageformats disable_kimageformats"
+CONFIG_STR="release enable_pkgconfig disable_zstd disable_xzutils disable_brotli disable_highway disable_libexpat disable_libbpg disable_freetype disable_aom disable_libde265 disable_flif disable_qtextended disable_stb disable_qtimageformats disable_kimageformats"
 if pkg-config zlib ; then
     CONFIG_STR="${CONFIG_STR} system_zlib"
 else
@@ -125,26 +125,6 @@ if pkg-config libjxl ; then
     CONFIG_STR="${CONFIG_STR} system_libjxl"
 else
     CONFIG_STR="${CONFIG_STR} disable_libjxl"
-fi
-if pkg-config MagickCore ; then
-    CONFIG_STR="${CONFIG_STR} enable_magickcore disable_graphicsmagick"
-else
-    CONFIG_STR="${CONFIG_STR} disable_magickcore"
-    if pkg-config GraphicsMagick ; then
-        CONFIG_STR="${CONFIG_STR} enable_graphicsmagick"
-    else
-        CONFIG_STR="${CONFIG_STR} disable_graphicsmagick"
-    fi
-fi
-if pkg-config MagickWand ; then
-    CONFIG_STR="${CONFIG_STR} system_magickwand disable_graphicsmagickwand"
-else
-    CONFIG_STR="${CONFIG_STR} disable_magickwand"
-    if pkg-config GraphicsMagickWand ; then
-        CONFIG_STR="${CONFIG_STR} system_graphicsmagickwand"
-    else
-        CONFIG_STR="${CONFIG_STR} disable_graphicsmagickwand"
-    fi
 fi
 if [ -f "$(${CMD_QMAKE} -query QT_INSTALL_HEADERS)/QtWebKitWidgets/QtWebKitWidgets" ] ; then
     CONFIG_STR="${CONFIG_STR} enable_qtwebkit"

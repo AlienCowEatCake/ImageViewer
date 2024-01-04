@@ -25,7 +25,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="enable_qtwebkit enable_update_checking" CONFIG+="enable_msedgewebview2 enable_mshtml" CONFIG+="system_resvg" INCLUDEPATH+=%RESVG_PATH% LIBS+=/LIBPATH:%RESVG_PATH% ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="enable_qtwebkit enable_update_checking" CONFIG+="enable_msedgewebview2 enable_mshtml enable_nanosvg" CONFIG+="system_resvg" INCLUDEPATH+=%RESVG_PATH% LIBS+=/LIBPATH:%RESVG_PATH% ..\%PROJECT%.pro
 %NMAKE_CMD%
 if not exist %APP_PATH%\release\%PROJECT%.exe (
     if NOT "%CI%" == "true" pause
