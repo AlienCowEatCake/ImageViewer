@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain(QString::fromLatin1("aliencoweatcake.github.com"));
     app.setOrganizationName(QString::fromLatin1("AlienCowEatCake"));
     app.setApplicationName(QString::fromLatin1("Image Viewer"));
-    app.setApplicationVersion(QString::fromLatin1("1.5.5"));
+    app.setApplicationVersion(QString::fromLatin1("1.5.6"));
 #if !defined (Q_OS_MAC)
 #if !defined (Q_OS_WIN) && (QT_VERSION >= QT_VERSION_CHECK(5, 7, 0))
     app.setDesktopFileName(QString::fromLatin1("com.github.aliencoweatcake.imageviewer"));
