@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.8.0
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.8.1
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
