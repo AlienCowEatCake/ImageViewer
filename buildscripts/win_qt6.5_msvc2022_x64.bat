@@ -4,9 +4,9 @@ set ARCH=x64
 set VCVARS_ARCH=x64
 call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2022
 set VCVARS="%VS2022_VCVARSALL%"
-if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\6.5.3\msvc2022_64
-set BUILDDIR=build_win_qt6.5_msvc2022_%ARCH%
-set SUFFIX=_qt6.5_msvc2022_%ARCH%
+if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\6.6.3\msvc2022_64
+set BUILDDIR=build_win_qt6.6_msvc2022_%ARCH%
+set SUFFIX=_qt6.6_msvc2022_%ARCH%
 set APP_PATH=src\%PROJECT%
 set NMAKE_CMD="%~dp0\..\buildscripts\helpers\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"

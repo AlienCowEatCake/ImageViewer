@@ -1,8 +1,8 @@
 #!/bin/bash -e
 PROJECT="ImageViewer"
 IDENTIFIER="com.github.aliencoweatcake.imageviewer"
-BUILDDIR="build_linux_qt6.5_clang"
-SUFFIX="_qt6.5_$(gcc -dumpmachine)"
+BUILDDIR="build_linux_qt6.6_clang"
+SUFFIX="_qt6.6_$(gcc -dumpmachine)"
 APP_PATH="src/${PROJECT}"
 DESKTOP_PATH="src/${PROJECT}/resources/platform/linux/${IDENTIFIER}.desktop"
 ICON_PATH="src/${PROJECT}/resources/icon/icon.svg"
