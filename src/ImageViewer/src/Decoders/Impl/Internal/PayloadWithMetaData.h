@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -69,8 +69,8 @@ public:
     }
 
 private:
-    T const m_payload;
-    IImageMetaData * const m_metaData;
+    T m_payload;
+    IImageMetaData *m_metaData;
 };
 
 #endif // PAYLOAD_WITH_METADATA_H_INCLUDED

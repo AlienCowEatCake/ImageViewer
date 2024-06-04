@@ -1,8 +1,104 @@
+# ATTENTION! Dependency modules should be lower
+
+# Dependencies:
+#  * libmng
+#  * JasPer
+#  * libtiff
+#  * libjpeg
+#  * LibWebP
+#  * LittleCMS2
+#  * libexif
+#  * zlib
+include(QtImageFormats/QtImageFormats.pri)
+
+# Dependencies:
+#  * libavif
+#  * OpenEXR
+#  * libheif
+#  * libjxl
+#  * LibRaw
+include(KImageFormats/KImageFormats.pri)
+
+# Dependencies:
+#  * zlib
+include(OpenEXR/OpenEXR.pri)
+
+# Dependencies:
+#  * aom
+include(libavif/libavif.pri)
+
+# Dependencies:
+#  * brotli
+#  * highway
+#  * LittleCMS2
+include(libjxl/libjxl.pri)
+
+# Dependencies:
+#  * libjpeg
+#  * JasPer
+#  * LittleCMS2
+#  * zlib
+include(LibRaw/LibRaw.pri)
+
+# Dependencies:
+#  * FreeType
+#  * libjpeg
+#  * libpng
+#  * zlib
+#  * libexpat
+include(libwmf/libwmf.pri)
+
+# Dependencies:
+#  * libjpeg
+#  * LittleCMS2
+#  * zlib
+include(libmng/libmng.pri)
+
+# Dependencies:
+#  * libjpeg
+#  * libheif
+include(JasPer/JasPer.pri)
+
+# Dependencies:
+#  * zlib
+#  * Zstandard
+#  * JBIGKit
+#  * LERC
+#  * libjpeg
+#  * XZUtils
+#  * LibWebP
+include(libtiff/libtiff.pri)
+
+# Dependencies:
+#  * zlib
+#  * libexpat
+include(Exiv2/Exiv2.pri)
+
+# Dependencies:
+#  * libpng
+#  * zlib
+include(FreeType/FreeType.pri)
+
+# Dependencies:
+#  * zlib
+include(libpng/libpng.pri)
+
+# Dependencies:
+#  * zlib
+include(libexpat/libexpat.pri)
+
+# Dependencies:
+#  * aom
+#  * libjpeg
+#  * OpenJPEG
+#  * libde265
+#  * zlib
+include(libheif/libheif.pri)
+
+# Modules without dependencies
 include(QtExtended/QtExtended.pri)
 include(STB/STB.pri)
 include(NanoSVG/NanoSVG.pri)
-include(QtImageFormats/QtImageFormats.pri)
-include(KImageFormats/KImageFormats.pri)
 include(MSEdgeWebView2/MSEdgeWebView2.pri)
 include(MagickWand/MagickWand.pri)
 include(MagickCore/MagickCore.pri)
@@ -10,17 +106,8 @@ include(GraphicsMagickWand/GraphicsMagickWand.pri)
 include(GraphicsMagick/GraphicsMagick.pri)
 include(libRSVG/libRSVG.pri)
 include(resvg/resvg.pri)
-include(OpenEXR/OpenEXR.pri)
-include(libavif/libavif.pri)
 include(FLIF/FLIF.pri)
 include(jxrlib/jxrlib.pri)
-include(libjxl/libjxl.pri)
-include(LibRaw/LibRaw.pri)
-include(libwmf/libwmf.pri)
-include(libmng/libmng.pri)
-include(libpng/libpng.pri)
-include(JasPer/JasPer.pri)
-include(libtiff/libtiff.pri)
 include(libjpeg/libjpeg.pri)
 include(LibWebP/LibWebP.pri)
 include(libbpg/libbpg.pri)
@@ -28,16 +115,12 @@ include(OpenJPEG/OpenJPEG.pri)
 include(giflib/giflib.pri)
 include(LittleCMS2/LittleCMS2.pri)
 include(libexif/libexif.pri)
-include(Exiv2/Exiv2.pri)
 include(LERC/LERC.pri)
 include(JBIGKit/JBIGKit.pri)
 include(XZUtils/XZUtils.pri)
-include(FreeType/FreeType.pri)
 include(zlib/zlib.pri)
 include(Zstandard/Zstandard.pri)
 include(brotli/brotli.pri)
 include(highway/highway.pri)
-include(libexpat/libexpat.pri)
-include(libheif/libheif.pri)
 include(libde265/libde265.pri)
 include(aom/aom.pri)
