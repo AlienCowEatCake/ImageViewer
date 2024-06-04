@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -190,6 +190,7 @@ void StyleFix()
     if(!isHighContrast && ThemeUtils::SystemHasDarkTheme())
     {
         // https://www.qt.io/blog/dark-mode-on-windows-11-with-qt-6.5
+        // https://doc.qt.io/qt-6/whatsnew67.html#qt-widgets-module
 #if QT_VERSION < QT_VERSION_CHECK(6, 4, 0)
         static char newPlatformEnv[] = "QT_QPA_PLATFORM=windows:darkmode=1";
         const char *platformEnv = getenv("QT_QPA_PLATFORM");
@@ -205,7 +206,7 @@ void StyleFix()
             putenv(newPlatformEnv);
             putenv(newStyleOverrideEnv);
         }
-#else
+#elif QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
         static char newStyleOverrideEnv[] = "QT_STYLE_OVERRIDE=fusion";
         const char *styleOverrideEnv = getenv("QT_STYLE_OVERRIDE");
         if(!styleOverrideEnv)
