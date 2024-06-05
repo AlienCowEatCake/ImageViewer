@@ -451,7 +451,8 @@ HEADERS += \
 
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
-    resources/translations/imageviewer_ru.ts
+    resources/translations/imageviewer_ru.ts \
+    resources/translations/imageviewer_zh.ts
 
 win32 {
     RC_FILE += resources/platform/windows/Resources.rc
