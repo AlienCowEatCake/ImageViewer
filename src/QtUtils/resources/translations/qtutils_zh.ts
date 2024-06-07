@@ -114,7 +114,7 @@
     <message>
         <location filename="../../src/Utils/LocalizationManager.cpp" line="109"/>
         <source>&amp;Russian</source>
-        <translation>&amp;Russian</translation>
+        <translation>&amp;Русский</translation>
     </message>
     <message>
         <location filename="../../src/Utils/LocalizationManager.cpp" line="113"/>
@@ -229,7 +229,7 @@
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="100"/>
         <source>An update is already in progress. Check back later.</source>
-        <translation>更新已在进行中，请稍后。</translation>
+        <translation>正在检查更新，请稍后再试。</translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="129"/>
@@ -246,12 +246,12 @@
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="130"/>
         <source>You have the latest version.</source>
-        <translation>您使用的是最新版本。</translation>
+        <translation>已是最新版本。</translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="153"/>
         <source>New updates are available.</source>
-        <translation>有新的更新。</translation>
+        <translation>有新版本可供升级。</translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="157"/>
