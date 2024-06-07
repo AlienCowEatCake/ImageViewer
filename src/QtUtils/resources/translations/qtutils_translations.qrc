@@ -2,6 +2,7 @@
     <qresource prefix="/translations">
         <file>qtutils_en.qm</file>
         <file>qtutils_ru.qm</file>
+        <file>qtutils_zh.qm</file>
     </qresource>
 </RCC>
 
