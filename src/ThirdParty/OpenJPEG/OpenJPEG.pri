@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_openjpeg {
 
-        THIRDPARTY_OPENJPEG_PATH = $${PWD}/openjpeg-2.5.0
+        THIRDPARTY_OPENJPEG_PATH = $${PWD}/openjpeg-2.5.2
         THIRDPARTY_OPENJPEG_CONFIG_PATH = $${PWD}/config
         THIRDPARTY_OPENJPEG_INCLUDE_PATH = $${PWD}/include
 

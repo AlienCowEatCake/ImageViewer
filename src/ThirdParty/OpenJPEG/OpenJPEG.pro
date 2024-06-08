@@ -10,7 +10,7 @@ TARGET = tp_openjp2
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_OPENJPEG_PATH = $${PWD}/openjpeg-2.5.0
+THIRDPARTY_OPENJPEG_PATH = $${PWD}/openjpeg-2.5.2
 THIRDPARTY_OPENJPEG_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -32,6 +32,7 @@ DEFINES += OPJ_STATIC
     DEFINES += _SCL_SECURE_NO_DEPRECATE
 }
 
+# find ./src/lib/openjp2 -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_OPENJPEG_PATH}| ; s|$| \\|'
 SOURCES += \
 \#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/bench_dwt.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/bio.c \
@@ -65,6 +66,7 @@ SOURCES += \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/thread.c \
 \#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/tpix_manager.c \
 
+# find ./src/lib/openjp2 -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_OPENJPEG_PATH}| ; s|$| \\|'
 HEADERS += \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/bio.h \
 \#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/cidx_manager.h \
@@ -86,9 +88,7 @@ HEADERS += \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/opj_common.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/opj_includes.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/opj_intmath.h \
-    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/opj_inttypes.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/opj_malloc.h \
-    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/opj_stdint.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/pi.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/sparse_array.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1.h \

@@ -1,35 +1,33 @@
 /* create opj_config_private.h for CMake */
 
-#include <qglobal.h>
-
-#define OPJ_PACKAGE_VERSION "2.5.2"
+#define OPJ_PACKAGE_VERSION "@PACKAGE_VERSION@"
 
 /* Not used by openjp2*/
-/*#define HAVE_MEMORY_H 1*/
-/*#define HAVE_STDLIB_H 1*/
-/*#define HAVE_STRINGS_H 1*/
-/*#define HAVE_STRING_H 1*/
-/*#define HAVE_SYS_STAT_H 1*/
-/*#define HAVE_SYS_TYPES_H 1 */
-/*#define HAVE_UNISTD_H 1*/
-/*#define HAVE_INTTYPES_H 1 */
-/*#define HAVE_STDINT_H 1 */
+/*#cmakedefine HAVE_MEMORY_H @HAVE_MEMORY_H@*/
+/*#cmakedefine HAVE_STDLIB_H @HAVE_STDLIB_H@*/
+/*#cmakedefine HAVE_STRINGS_H @HAVE_STRINGS_H@*/
+/*#cmakedefine HAVE_STRING_H @HAVE_STRING_H@*/
+/*#cmakedefine HAVE_SYS_STAT_H @HAVE_SYS_STAT_H@*/
+/*#cmakedefine HAVE_SYS_TYPES_H @HAVE_SYS_TYPES_H@ */
+/*#cmakedefine HAVE_UNISTD_H @HAVE_UNISTD_H@*/
+/*#cmakedefine HAVE_INTTYPES_H @HAVE_INTTYPES_H@ */
+/*#cmakedefine HAVE_STDINT_H @HAVE_STDINT_H@ */
 
-/* #undef _LARGEFILE_SOURCE */
-/* #undef _LARGE_FILES */
-/* #undef _FILE_OFFSET_BITS */
-/* #undef OPJ_HAVE_FSEEKO */
+#cmakedefine _LARGEFILE_SOURCE
+#cmakedefine _LARGE_FILES
+#cmakedefine _FILE_OFFSET_BITS @_FILE_OFFSET_BITS@
+#cmakedefine OPJ_HAVE_FSEEKO @OPJ_HAVE_FSEEKO@
 
 /* find whether or not have <malloc.h> */
-/* #undef OPJ_HAVE_MALLOC_H */
+#cmakedefine OPJ_HAVE_MALLOC_H
 /* check if function `aligned_alloc` exists */
-/* #undef OPJ_HAVE_ALIGNED_ALLOC */
+#cmakedefine OPJ_HAVE_ALIGNED_ALLOC
 /* check if function `_aligned_malloc` exists */
-/* #undef OPJ_HAVE__ALIGNED_MALLOC */
+#cmakedefine OPJ_HAVE__ALIGNED_MALLOC
 /* check if function `memalign` exists */
-/* #undef OPJ_HAVE_MEMALIGN */
+#cmakedefine OPJ_HAVE_MEMALIGN
 /* check if function `posix_memalign` exists */
-/* #undef OPJ_HAVE_POSIX_MEMALIGN */
+#cmakedefine OPJ_HAVE_POSIX_MEMALIGN
 
 #if !defined(_POSIX_C_SOURCE)
 #if defined(OPJ_HAVE_FSEEKO) || defined(OPJ_HAVE_POSIX_MEMALIGN)
@@ -46,9 +44,7 @@ machine doing the building. In order to support Universal Binaries on
 Mac OS X, we prefer those defines to decide the endianness.
 On other platforms we use the result of the TRY_RUN. */
 #if !defined(__APPLE__)
-#if defined(Q_BYTE_ORDER) && (Q_BYTE_ORDER == Q_BIG_ENDIAN)
-# define OPJ_BIG_ENDIAN
-#endif
+#cmakedefine OPJ_BIG_ENDIAN
 #elif defined(__BIG_ENDIAN__)
 # define OPJ_BIG_ENDIAN
 #endif
