@@ -10,7 +10,7 @@ TARGET = tp_XZUtils
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_XZUTILS_PATH = $${PWD}/xz-5.4.5
+THIRDPARTY_XZUTILS_PATH = $${PWD}/xz-5.6.2
 THIRDPARTY_XZUTILS_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -117,6 +117,7 @@ SOURCES += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/armthumb.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/ia64.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/powerpc.c \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/riscv.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/simple_coder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/simple_decoder.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/simple/simple_encoder.c \
@@ -141,11 +142,13 @@ HEADERS += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma/version.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma/vli.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/check.h \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc32_arm64.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc32_table_be.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc32_table_le.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc64_table_be.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc64_table_le.h \
-    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc_macros.h \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc_common.h \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc_x86_clmul.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/alone_decoder.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/block_buffer_encoder.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/common/block_decoder.h \
