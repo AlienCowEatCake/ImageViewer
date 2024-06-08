@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libavif {
 
-        THIRDPARTY_LIBAVIF_PATH = $${PWD}/libavif-1.0.3
+        THIRDPARTY_LIBAVIF_PATH = $${PWD}/libavif-1.0.4
 
         INCLUDEPATH += $${THIRDPARTY_LIBAVIF_PATH}/include
         DEPENDPATH += $${THIRDPARTY_LIBAVIF_PATH}/include
