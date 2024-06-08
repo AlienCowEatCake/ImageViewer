@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_ZLIB_PATH = $${PWD}/zlib-1.3
+THIRDPARTY_ZLIB_PATH = $${PWD}/zlib-1.3.1
 
 include(../CommonSettings.pri)
 
