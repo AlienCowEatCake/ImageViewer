@@ -10,6 +10,7 @@ cat << EOF > "${TEMP_PRO_FILE}"
 TRANSLATIONS += \\
     resources/translations/imageviewer_en.ts \\
     resources/translations/imageviewer_ru.ts \\
+    resources/translations/imageviewer_zh.ts \\
 
 HEADERS += \\
 ${HEADERS}
