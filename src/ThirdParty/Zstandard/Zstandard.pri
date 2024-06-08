@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_zstd {
 
-        THIRDPARTY_ZSTD_PATH = $${PWD}/zstd-1.5.5
+        THIRDPARTY_ZSTD_PATH = $${PWD}/zstd-1.5.6
 
         INCLUDEPATH += $${THIRDPARTY_ZSTD_PATH}/lib
         DEPENDPATH += $${THIRDPARTY_ZSTD_PATH}/lib

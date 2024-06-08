@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_ZSTD_PATH = $${PWD}/zstd-1.5.5
+THIRDPARTY_ZSTD_PATH = $${PWD}/zstd-1.5.6
 
 include(../CommonSettings.pri)
 
