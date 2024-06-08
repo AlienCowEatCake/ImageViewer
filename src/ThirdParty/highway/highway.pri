@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_highway {
 
-        THIRDPARTY_HIGHWAY_PATH = $${PWD}/highway-1.0.7
+        THIRDPARTY_HIGHWAY_PATH = $${PWD}/highway-1.2.0
 
         INCLUDEPATH += $${THIRDPARTY_HIGHWAY_PATH}
         DEPENDPATH += $${THIRDPARTY_HIGHWAY_PATH}
