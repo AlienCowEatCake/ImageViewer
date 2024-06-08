@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.8.1
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.9.0
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -242,9 +242,12 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_filter.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_simd.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_simd_inline.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/aom_neon_sve2_bridge.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/aom_neon_sve_bridge.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/blend_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/dist_wtd_avg_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/mem_neon.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/reinterpret_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/sum_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/transpose_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/binary_codes_reader.h \
@@ -276,18 +279,14 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/pyramid.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/quantize.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/recenter.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/rect.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics_arm.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics_c.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics_x86.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v256_intrinsics.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v256_intrinsics_arm.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v256_intrinsics_c.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v256_intrinsics_v128.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v256_intrinsics_x86.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v64_intrinsics.h \
-    $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v64_intrinsics_arm.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v64_intrinsics_c.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v64_intrinsics_x86.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/ssim.h \
@@ -339,6 +338,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_ports/x86.h \
     $${THIRDPARTY_AOM_PATH}/aom_scale/aom_scale.h \
     $${THIRDPARTY_AOM_PATH}/aom_scale/yv12config.h \
+    $${THIRDPARTY_AOM_PATH}/aom_util/aom_pthread.h \
     $${THIRDPARTY_AOM_PATH}/aom_util/aom_thread.h \
     $${THIRDPARTY_AOM_PATH}/aom_util/debug_util.h \
     $${THIRDPARTY_AOM_PATH}/aom_util/endian_inl.h \
@@ -350,7 +350,9 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/av1_inv_txfm_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/compound_convolve_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/convolve_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_compound_convolve_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_convolve_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_warp_plane_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/warp_plane_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_common_int.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d.h \
