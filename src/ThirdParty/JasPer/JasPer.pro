@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_JASPER_PATH = $${PWD}/jasper-aeef529
+THIRDPARTY_JASPER_PATH = $${PWD}/jasper-8766848
 THIRDPARTY_JASPER_CONFIG_PATH = $${PWD}/config
 
 include(../CommonSettings.pri)
@@ -25,7 +25,7 @@ INCLUDEPATH = $${THIRDPARTY_JASPER_CONFIG_PATH} $${THIRDPARTY_JASPER_PATH}/src/l
 
 # cmake -DCMAKE_BUILD_TYPE=Release -DJAS_ENABLE_SHARED=0 -DJAS_ENABLE_OPENGL=0 -DJAS_ENABLE_LATEX=0 -DJAS_ENABLE_MULTITHREADING_SUPPORT=0 -DJAS_ENABLE_DOC=0 -DJAS_ENABLE_PROGRAMS=0 -DJAS_ENABLE_DANGEROUS_INTERNAL_TESTING_MODE=1 -DALLOW_IN_SOURCE_BUILD=1 ..
 
-# find ./src/libjasper/ -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_JASPER_PATH}| ; s|$| \\|'
+# find ./src/libjasper -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_JASPER_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/base/jas_cm.c \
     $${THIRDPARTY_JASPER_PATH}/src/libjasper/base/jas_debug.c \
