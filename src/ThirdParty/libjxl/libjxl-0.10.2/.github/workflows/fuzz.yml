@@ -1,0 +1,65 @@
+# Copyright (c) the JPEG XL Project Authors. All rights reserved.
+#
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+# CI on pull-requests to run the fuzzer from oss-fuzz. See:
+#
+#   https://google.github.io/oss-fuzz/getting-started/continuous-integration/
+
+name: CIFuzz
+on:
+  merge_group:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - '**.c'
+      - '**.cc'
+      - '**.cmake'
+      - '**.h'
+      - '**CMakeLists.txt'
+      - .github/workflows/fuzz.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  fuzzing:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+      with:
+        egress-policy: audit
+
+    - name: Checkout source
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      id: checkout
+      with:
+        # The build_fuzzers action checks out the code to the storage/libjxl
+        # directory already, but doesn't check out the submodules. This step
+        # is a workaround for checking out the submodules.
+        path: storage/libjxl
+        submodules: true
+    - name: Build Fuzzers
+      id: build
+      uses: google/oss-fuzz/infra/cifuzz/actions/build_fuzzers@71ecd5d4e4bf9a6edc19c9fa6d2422fb528bca4f # master
+      with:
+        oss-fuzz-project-name: 'libjxl'
+        language: c++
+    - name: Run Fuzzers
+      uses: google/oss-fuzz/infra/cifuzz/actions/run_fuzzers@71ecd5d4e4bf9a6edc19c9fa6d2422fb528bca4f # master
+      with:
+        oss-fuzz-project-name: 'libjxl'
+        language: c++
+        fuzz-seconds: 600
+    - name: Upload Crash
+      uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+      if: failure() && steps.build.outcome == 'success'
+      with:
+        name: artifacts
+        path: ./out/artifacts
