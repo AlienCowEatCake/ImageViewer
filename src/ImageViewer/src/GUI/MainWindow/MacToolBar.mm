@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -246,6 +246,12 @@ struct SegmentedToolBarItem : SimpleToolBarItem
         if(segmentedControl)
             [segmentedControl release];
     }
+
+    void setLabel(const QString &label)
+    {
+        SimpleToolBarItem::setLabel(label);
+        SimpleToolBarItem::setMenuTitle(label);
+    }
 };
 
 struct GroupedToolBarItem : SimpleToolBarItem
@@ -266,15 +272,20 @@ struct GroupedToolBarItem : SimpleToolBarItem
         BOOL value = isEnabled ? YES : NO;
         [item setEnabled:value];
         [[item menuFormRepresentation] setEnabled:value];
-        [group setEnabled:NO];
-        for(NSToolbarItem *subitem in [group subitems])
+        BOOL groupEnabled = isEnabled;
+        if(!isEnabled)
         {
-            if([subitem isEnabled])
+            for(NSToolbarItem *subitem in [group subitems])
             {
-                [group setEnabled:YES];
-                break;
+                if([subitem isEnabled])
+                {
+                    groupEnabled = YES;
+                    break;
+                }
             }
         }
+        [group setEnabled:groupEnabled];
+        [[group menuFormRepresentation] setEnabled:groupEnabled];
         NSInteger segmentNum = segmentNumber();
         if(segmentNum < 0)
             return;
@@ -698,6 +709,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
               withSecondImage:(NSImage *)secondImage
 {
     NSToolbarItem *first = [[NSToolbarItem alloc] initWithItemIdentifier:firstIdentifier];
+    [first setMenuFormRepresentation:[[NSMenuItem alloc] init]];
 //    [first setTarget:self];
 //    [first setAction:@selector(itemClicked:)];
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_7_AND_LATER)
@@ -709,6 +721,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     firstItem.item = first;
 
     NSToolbarItem *second = [[NSToolbarItem alloc] initWithItemIdentifier:secondIdentifier];
+    [second setMenuFormRepresentation:[[NSMenuItem alloc] init]];
 //    [second setTarget:self];
 //    [second setAction:@selector(itemClicked:)];
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_7_AND_LATER)
@@ -736,9 +749,21 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     [segmentedControl setTarget:self];
     [segmentedControl setAction:@selector(itemClicked:)];
 
+    NSMenu *groupSubMenu = [[NSMenu alloc] init];
+    [groupSubMenu addItem:[first menuFormRepresentation]];
+    [groupSubMenu addItem:[second menuFormRepresentation]];
+
+    NSMenuItem *groupSubMenuItem = [[NSMenuItem alloc] init];
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_7_AND_LATER)
+    if([groupSubMenuItem respondsToSelector:@selector(setIdentifier:)])
+        [groupSubMenuItem setIdentifier:groupIdentifier];
+#endif
+    [groupSubMenuItem setSubmenu:groupSubMenu];
+
     NSToolbarItemGroup *group = [[NSToolbarItemGroup alloc] initWithItemIdentifier:groupIdentifier];
     [group setSubitems:[NSArray arrayWithObjects:first, second, nil]];
     [group setView:segmentedControl];
+    [group setMenuFormRepresentation:groupSubMenuItem];
     [group setVisibilityPriority:visibilityPriority];
     groupItem.item = group;
     firstItem.group = group;
