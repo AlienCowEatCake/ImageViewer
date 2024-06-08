@@ -107,24 +107,34 @@
 <context>
     <name>LocalizationManager</name>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="104"/>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="107"/>
         <source>&amp;English</source>
         <translation>&amp;English</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="108"/>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="111"/>
         <source>&amp;Russian</source>
         <translation>&amp;Russian</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="114"/>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="115"/>
+        <source>&amp;Chinese</source>
+        <translation>&amp;Chinese</translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="121"/>
         <source>English</source>
         <translation>English</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="115"/>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="122"/>
         <source>Russian</source>
         <translation>Russian</translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="123"/>
+        <source>Chinese</source>
+        <translation>Chinese</translation>
     </message>
 </context>
 <context>

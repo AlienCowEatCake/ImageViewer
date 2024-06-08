@@ -65,6 +65,10 @@ void InitQtUtilsResources()
 void FontsFix(const QString &language)
 {
 #if defined (Q_OS_WIN)
+    /// @todo This is very old and legacy hack. It was designed to support
+    /// Cyrillic characters in some Windows 9x and older versions of Wine.
+    /// I don't know if this code is needed now. I don't know if Tahoma is
+    /// suitable as fallback font for other WritingSystems.
 
     // Отображение название языка -> соответствующая ему WritingSystem
     static const QList<QPair<QString, QFontDatabase::WritingSystem> > writingSystemMap =
@@ -85,6 +89,14 @@ void FontsFix(const QString &language)
 
     // Шрифт стандартный, по умолчанию
     static const QFont defaultFont = qApp->font();
+
+    // We need to restore default font for any unspecified languages
+    if(currentWritingSystem == QFontDatabase::Any)
+    {
+        qApp->setFont(defaultFont);
+        return;
+    }
+
     // Шрифт Tahoma, если стандартный не поддерживает выбранный язык
     QFont fallbackFont = defaultFont;
     fallbackFont.setFamily(QString::fromLatin1("Tahoma"));

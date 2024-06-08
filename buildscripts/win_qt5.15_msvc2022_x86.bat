@@ -34,7 +34,7 @@ if not exist %APP_PATH%\release\%PROJECT%.exe (
 rmdir /S /Q %PROJECT%%SUFFIX% 2>nul >nul
 mkdir %PROJECT%%SUFFIX%
 copy %APP_PATH%\release\%PROJECT%.exe %PROJECT%%SUFFIX%\%PROJECT%.exe
-windeployqt --release --no-compiler-runtime --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw --translations en,ru %PROJECT%%SUFFIX%
+windeployqt --release --no-compiler-runtime --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw --translations en,ru,zh_CN %PROJECT%%SUFFIX%
 copy %WEBVIEW2LOADER_DLL% %PROJECT%%SUFFIX%\
 copy %OPENSSL_PATH%\*.dll %PROJECT%%SUFFIX%\
 rmdir /S /Q %PROJECT%%SUFFIX%\position 2>nul >nul

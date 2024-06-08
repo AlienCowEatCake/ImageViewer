@@ -31,7 +31,7 @@ namespace Locale {
 
 extern const QString EN;
 extern const QString RU;
-extern const QString ZH;
+extern const QString ZH_CN;
 
 } // namespace Locale
 

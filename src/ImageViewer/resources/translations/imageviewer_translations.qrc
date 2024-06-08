@@ -2,6 +2,6 @@
     <qresource prefix="/translations">
         <file>imageviewer_en.qm</file>
         <file>imageviewer_ru.qm</file>
-        <file>imageviewer_zh.qm</file>
+        <file>imageviewer_zh_CN.qm</file>
     </qresource>
 </RCC>

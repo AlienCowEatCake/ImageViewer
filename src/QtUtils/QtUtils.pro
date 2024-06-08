@@ -69,7 +69,7 @@ SOURCES += \
 TRANSLATIONS += \
     resources/translations/qtutils_en.ts \
     resources/translations/qtutils_ru.ts \
-    resources/translations/qtutils_zh.ts
+    resources/translations/qtutils_zh_CN.ts
 
 macx {
     OBJECTIVE_SOURCES += \

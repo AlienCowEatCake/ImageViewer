@@ -39,7 +39,7 @@ namespace Locale {
 
 const QString EN = QString::fromLatin1("en");
 const QString RU = QString::fromLatin1("ru");
-const QString ZH = QString::fromLatin1("zh");
+const QString ZH_CN = QString::fromLatin1("zh_CN");
 
 } // namespace Locale
 
@@ -53,10 +53,12 @@ typedef QList<QTranslator*> TranslatorList;
 
 QString findBestLocaleForSystem(const QStringList& localesList)
 {
-    const QString systemLocale = QLocale::system().name().toLower();
+    const QString systemLocale = QLocale::system().name().replace(QChar::fromLatin1('-'), QChar::fromLatin1('_'));
     for(QStringList::ConstIterator it = localesList.constBegin(), itEnd = localesList.constEnd(); it != itEnd; ++it)
-        if(systemLocale.startsWith(*it))
+        if(systemLocale.startsWith(*it, Qt::CaseInsensitive))
             return *it;
+    if(systemLocale.startsWith(QString::fromLatin1("zh_Hans"), Qt::CaseInsensitive))
+        return Locale::ZH_CN;
     return Locale::EN;
 }
 
@@ -76,7 +78,7 @@ struct LocalizationManager::Impl
     QStringList resourceTemplates;
 
     Impl()
-        : supportedLocales(QStringList() << Locale::EN << Locale::RU << Locale::ZH)
+        : supportedLocales(QStringList() << Locale::EN << Locale::RU << Locale::ZH_CN)
         , systemLocale(findBestLocaleForSystem(supportedLocales))
     {
         assert(supportedLocales.contains(systemLocale));
@@ -108,7 +110,7 @@ struct LocalizationManager::Impl
         for(ActionList::Iterator it = actionsRussian.begin(), itEnd = actionsRussian.end(); it != itEnd; ++it)
             (*it)->setText(QApplication::translate("LocalizationManager", "&Russian"));
 
-        ActionList &actionsChinese = actionsMap[Locale::ZH];
+        ActionList &actionsChinese = actionsMap[Locale::ZH_CN];
         for(ActionList::Iterator it = actionsChinese.begin(), itEnd = actionsChinese.end(); it != itEnd; ++it)
             (*it)->setText(QApplication::translate("LocalizationManager", "&Chinese"));
     }
@@ -118,7 +120,7 @@ struct LocalizationManager::Impl
         QMap<QString, QString> itemTexts;
         itemTexts[Locale::EN] = QApplication::translate("LocalizationManager", "English");
         itemTexts[Locale::RU] = QApplication::translate("LocalizationManager", "Russian");
-        itemTexts[Locale::ZH] = QApplication::translate("LocalizationManager", "Chinese");
+        itemTexts[Locale::ZH_CN] = QApplication::translate("LocalizationManager", "Chinese");
         for(QList<QComboBox*>::Iterator it = comboBoxList.begin(), itEnd = comboBoxList.end(); it != itEnd; ++it)
         {
             QComboBox *comboBox = *it;
@@ -160,11 +162,9 @@ QString LocalizationManager::locale() const
 /// @param locale - Новая локаль.
 void LocalizationManager::setLocale(const QString &locale)
 {
-    QString newLocale = locale;
-    if(newLocale.isEmpty())
-        newLocale = m_impl->currentLocale();
-    else
-        m_impl->setCurrentLocale(newLocale);
+    if(!locale.isEmpty())
+        m_impl->setCurrentLocale(locale);
+    const QString newLocale = m_impl->currentLocale();
 
     qApp->removeTranslator(&m_impl->qtTranslator);
     (void)m_impl->qtTranslator.load(QString::fromLatin1("qt_%1").arg(newLocale),
@@ -227,7 +227,7 @@ void LocalizationManager::fillMenu(QMenu *menu)
 
     m_impl->actionsMap[Locale::EN].append(actionEnglish);
     m_impl->actionsMap[Locale::RU].append(actionRussian);
-    m_impl->actionsMap[Locale::ZH].append(actionChinese);
+    m_impl->actionsMap[Locale::ZH_CN].append(actionChinese);
 
     m_impl->updateActions(m_impl->currentLocale());
 }
@@ -270,7 +270,7 @@ void LocalizationManager::onActionRussianTriggered()
 
 void LocalizationManager::onActionChineseTriggered()
 {
-    setLocale(Locale::ZH);
+    setLocale(Locale::ZH_CN);
 }
 
 void LocalizationManager::onComboBoxActivated(int index)

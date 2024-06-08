@@ -139,7 +139,7 @@ ${CMD_DEPLOY} \
     --no-compiler-runtime \
     --no-system-d3d-compiler \
     --no-opengl-sw \
-    --translations en,ru \
+    --translations en,ru,zh_CN \
     "${DIST_PREFIX}/"
 find "${MSYSTEM_PREFIX}/bin" -type f \( -name 'libssl*.dll' -o -name 'libcrypto*.dll' \) -exec cp -a \{\} "${DIST_PREFIX}/" \;
 find "${DIST_PREFIX}/imageformats" -type f \( -name 'kimg_*.dll' -o -name 'qjp2.dll' -o -name 'qmng.dll' \) -delete

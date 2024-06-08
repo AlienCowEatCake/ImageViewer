@@ -35,7 +35,7 @@ cp -a "${SOURCE_PATH}/${INFO_PLIST_PATH}" "${APPNAME}.app/Contents/Info.plist"
 plutil -replace LSMinimumSystemVersion -string "${MAC_TARGET}" "${APPNAME}.app/Contents/Info.plist"
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -f "${RES_PATH}/empty.lproj"
-mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj"
+mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj" "${RES_PATH}/zh_CN.lproj"
 cp -a "${SOURCE_PATH}/${ICON_PATH}" "${RES_PATH}/"
 cp -a "${SOURCE_PATH}/${SCRIPT_PATH}" "${RES_PATH}/"
 arch -x86_64 ${CMD_DEPLOY} "${APPNAME}.app" -verbose=2
