@@ -10,7 +10,7 @@ TARGET = tp_LibWebP
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.3.2
+THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.4.0
 
 include(../CommonSettings.pri)
 
@@ -136,6 +136,7 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/filters_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/huffman_encode_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/huffman_utils.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/palette.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/quant_levels_dec_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/quant_levels_utils.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/random_utils.c \
@@ -182,6 +183,7 @@ HEADERS += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/filters_utils.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/huffman_encode_utils.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/huffman_utils.h \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/utils/palette.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/quant_levels_dec_utils.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/quant_levels_utils.h \
     $${THIRDPARTY_LIBWEBP_PATH}/src/utils/random_utils.h \
