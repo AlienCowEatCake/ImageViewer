@@ -55,6 +55,16 @@ for iconengines_plugin in libqsvgicon.dylib ; do
     cp -a "${QTPLUGINS_PATH}/iconengines/${iconengines_plugin}" "${PLUGINS_PATH}/iconengines/"
 done
 arch -x86_64 ${CMD_DEPLOY} "${APPNAME}.app" -verbose=2
+TRANSLATIONS_PATH="${RES_PATH}/translations"
+mkdir -p "${TRANSLATIONS_PATH}"
+for lang in $(find "${RES_PATH}" -name '*.lproj' | sed 's|.*/|| ; s|\..*||') ; do
+    if [ -f "${QT_PATH}/translations/qtbase_${lang}.qm" ] ; then
+        cp -a "${QT_PATH}/translations/qtbase_${lang}.qm" "${TRANSLATIONS_PATH}/qt_${lang}.qm"
+    elif [ -f "${QT_PATH}/translations/qt_${lang}.qm" ] ; then
+        cp -a "${QT_PATH}/translations/qt_${lang}.qm" "${TRANSLATIONS_PATH}/qt_${lang}.qm"
+    fi
+done
+echo 'Translations = Resources/translations' >> "${RES_PATH}/qt.conf"
 cd "${BUILD_PATH}"
 
 INSTALL_PATH="${PWD}/install"

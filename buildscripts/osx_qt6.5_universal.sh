@@ -70,6 +70,16 @@ for unused_framework in QtPdf.framework QtQml.framework QtQmlModels.framework Qt
     rm -rf "${FRAMEWORKS_PATH}/${unused_framework}"
 done
 /usr/bin/python3 "${SOURCE_PATH}/buildscripts/helpers/dylibresolver.py" "${APPNAME}.app" "${RESVG_PATH}" "${QT_PATH}/lib"
+TRANSLATIONS_PATH="${RES_PATH}/translations"
+mkdir -p "${TRANSLATIONS_PATH}"
+for lang in $(find "${RES_PATH}" -name '*.lproj' | sed 's|.*/|| ; s|\..*||') ; do
+    if [ -f "${QT_PATH}/translations/qtbase_${lang}.qm" ] ; then
+        cp -a "${QT_PATH}/translations/qtbase_${lang}.qm" "${TRANSLATIONS_PATH}/qt_${lang}.qm"
+    elif [ -f "${QT_PATH}/translations/qt_${lang}.qm" ] ; then
+        cp -a "${QT_PATH}/translations/qt_${lang}.qm" "${TRANSLATIONS_PATH}/qt_${lang}.qm"
+    fi
+done
+echo 'Translations = Resources/translations' >> "${RES_PATH}/qt.conf"
 cd "${BUILD_PATH}"
 
 INSTALL_PATH="${PWD}/install"
