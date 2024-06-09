@@ -41,6 +41,7 @@
         <file>tiff/rgb_orientation_7.tiff</file>
         <file>tiff/rgb_orientation_8.tiff</file>
         <file>tiff/teapot.tiff</file>
+        <file>tiff/teapot_cmyk.tiff</file>
         <file>tiff/colorful.bmp</file>
         <file>tiff/tiled_grayscale.tiff</file>
         <file>tiff/tiled_oddsize_grayscale.tiff</file>

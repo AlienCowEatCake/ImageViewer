@@ -14,6 +14,8 @@ qt_internal_add_plugin(QMacJp2Plugin
         qmacjp2handler.cpp qmacjp2handler.h
     INCLUDE_DIRECTORIES
         ../shared
+    DEFINES
+        NS_IIOF_HELPERS=QMacJp2
     LIBRARIES
         ${FWCoreFoundation}
         ${FWCoreGraphics}

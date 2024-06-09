@@ -4,7 +4,6 @@
 #ifndef QT_NO_IMAGEFORMATPLUGIN
 
 #include <qmacheifhandler.h>
-#include <qiiofhelpers_p.h>
 
 QT_BEGIN_NAMESPACE
 

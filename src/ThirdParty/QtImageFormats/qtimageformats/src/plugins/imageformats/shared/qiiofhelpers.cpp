@@ -11,6 +11,12 @@
 
 QT_BEGIN_NAMESPACE
 
+// QImage <-> CGImage conversion functions from QtGui on darwin
+CGImageRef qt_mac_toCGImage(const QImage &qImage);
+QImage qt_mac_toQImage(CGImageRef image);
+
+namespace NS_IIOF_HELPERS {
+
 // Callbacks for sequential data provider & consumer:
 
 static size_t cbGetBytes(void *info, void *buffer, size_t count)
@@ -54,10 +60,6 @@ static size_t cbPutBytes(void *info, const void *buffer, size_t count)
     return size_t(qMax(qint64(0), res));
 }
 
-
-// QImage <-> CGImage conversion functions from QtGui on darwin
-CGImageRef qt_mac_toCGImage(const QImage &qImage);
-QImage qt_mac_toQImage(CGImageRef image);
 
 QImageIOPlugin::Capabilities QIIOFHelpers::systemCapabilities(const QString &uti)
 {
@@ -284,6 +286,8 @@ bool QIIOFHelper::writeImage(const QImage &in, const QString &uti)
 
     CGImageDestinationAddImage(cgImageDest, cgImage, cfProps);
     return CGImageDestinationFinalize(cgImageDest);
+}
+
 }
 
 QT_END_NAMESPACE

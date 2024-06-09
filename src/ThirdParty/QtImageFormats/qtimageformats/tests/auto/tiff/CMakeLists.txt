@@ -65,6 +65,7 @@ set(tiff_resource_files
     "../../shared/images/tiff/rgba_packbits_littleendian.tif"
     "../../shared/images/tiff/rgba_zipdeflate_littleendian.tif"
     "../../shared/images/tiff/teapot.tiff"
+    "../../shared/images/tiff/teapot_cmyk.tiff"
     "../../shared/images/tiff/tiled_grayscale.tiff"
     "../../shared/images/tiff/tiled_indexed.tiff"
     "../../shared/images/tiff/tiled_mono.tiff"

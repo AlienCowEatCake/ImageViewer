@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #include "qmacheifhandler.h"
-#include "qiiofhelpers_p.h"
 #include <QVariant>
 
 QT_BEGIN_NAMESPACE

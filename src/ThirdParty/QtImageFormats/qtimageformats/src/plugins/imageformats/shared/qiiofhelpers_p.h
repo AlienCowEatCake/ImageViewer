@@ -22,6 +22,8 @@
 
 QT_BEGIN_NAMESPACE
 
+namespace NS_IIOF_HELPERS {
+
 /*
 Functions to utilize the native ImageIO Framework in OS X and iOS
 */
@@ -54,6 +56,8 @@ protected:
     QCFType<CGImageSourceRef> cgImageSource = nullptr;
     QCFType<CFDictionaryRef> cfImageDict = nullptr;
 };
+
+}
 
 QT_END_NAMESPACE
 

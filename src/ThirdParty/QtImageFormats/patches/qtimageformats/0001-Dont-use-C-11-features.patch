@@ -1,4 +1,4 @@
-From 9da6a89e41f114d5f4a3d7249972dd4f7eb6a60b Mon Sep 17 00:00:00 2001
+From 764fcef7da8fc151d2468d1d649f74c4f3715362 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 10 Mar 2018 15:40:08 +0700
 Subject: [PATCH 1/6] Dont use C++11 features
@@ -207,10 +207,10 @@ index 35b41c2..af8d9c1 100644
  private:
      mutable QTgaFile *tga;
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index aadf134..7c967c7 100644
+index 95d30d7..d61d45a 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-@@ -66,7 +66,7 @@ int qtiffMapProc(thandle_t fd, void **base, toff_t *size)
+@@ -69,7 +69,7 @@ int qtiffMapProc(thandle_t fd, void **base, toff_t *size)
      QFileDevice *file = qobject_cast<QFileDevice *>(device);
      if (file) {
          *base = file->map(0, file->size());

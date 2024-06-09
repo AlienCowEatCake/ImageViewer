@@ -133,6 +133,7 @@ qt_internal_extend_target(QWebpPlugin CONDITION NOT QT_FEATURE_system_webp
         ../../../3rdparty/libwebp/src/utils/filters_utils.c
         ../../../3rdparty/libwebp/src/utils/huffman_encode_utils.c
         ../../../3rdparty/libwebp/src/utils/huffman_utils.c
+        ../../../3rdparty/libwebp/src/utils/palette.c
         ../../../3rdparty/libwebp/src/utils/quant_levels_dec_utils.c
         ../../../3rdparty/libwebp/src/utils/quant_levels_utils.c
         ../../../3rdparty/libwebp/src/utils/random_utils.c

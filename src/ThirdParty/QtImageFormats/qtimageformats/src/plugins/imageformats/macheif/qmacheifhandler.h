@@ -6,14 +6,16 @@
 
 #include <QScopedPointer>
 #include <QImageIOHandler>
+#include "qiiofhelpers_p.h"
 
 QT_BEGIN_NAMESPACE
+
+using namespace NS_IIOF_HELPERS;
 
 class QImage;
 class QByteArray;
 class QIODevice;
 class QVariant;
-class QIIOFHelper;
 
 class QMacHeifHandler : public QImageIOHandler
 {

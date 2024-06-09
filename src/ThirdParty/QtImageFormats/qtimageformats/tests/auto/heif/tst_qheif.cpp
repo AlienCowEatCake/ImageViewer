@@ -1,5 +1,5 @@
 // Copyright (C) 2017 The Qt Company Ltd.
-// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
 #include <QtTest/QtTest>
 #include <QtGui/QtGui>
@@ -115,6 +115,7 @@ void tst_qheif::writeImage()
         QImage rimg2;
         buf2.open(QIODevice::ReadOnly);
         QImageReader reader(&buf2);
+        QCOMPARE(reader.format(), "heic");
         reader.setAutoTransform(true);
         QVERIFY(reader.read(&rimg2));
         buf2.close();

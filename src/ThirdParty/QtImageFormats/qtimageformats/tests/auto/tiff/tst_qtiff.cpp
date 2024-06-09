@@ -1,5 +1,5 @@
 // Copyright (C) 2016 The Qt Company Ltd.
-// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
 #include <QtTest/QtTest>
 #include <QtGui/QtGui>
@@ -141,6 +141,7 @@ void tst_qtiff::readImage_data()
     QTest::newRow("rgb_orientation_7") << QString("rgb_orientation_7.tiff") << QSize(64, 64);
     QTest::newRow("rgb_orientation_8") << QString("rgb_orientation_8.tiff") << QSize(64, 64);
     QTest::newRow("teapot") << QString("teapot.tiff") << QSize(256, 256);
+    QTest::newRow("teapot_cmyk") << QString("teapot_cmyk.tiff") << QSize(256, 256);
     QTest::newRow("oddsize_grayscale") << QString("oddsize_grayscale.tiff") << QSize(59, 71);
     QTest::newRow("oddsize_mono") << QString("oddsize_mono.tiff") << QSize(59, 71);
     QTest::newRow("tiled_rgb") << QString("tiled_rgb.tiff") << QSize(64, 64);
@@ -396,6 +397,9 @@ void tst_qtiff::readWriteNonDestructive_data()
     QTest::newRow("tiff rgba32fpx4pm") << QImage::Format_RGBA32FPx4_Premultiplied
                                        << QImage::Format_RGBA32FPx4_Premultiplied
                                        << QImageIOHandler::TransformationNone;
+    QTest::newRow("tiff cmyk") << QImage::Format_CMYK8888
+                               << QImage::Format_CMYK8888
+                               << QImageIOHandler::TransformationNone;
 }
 
 void tst_qtiff::readWriteNonDestructive()
