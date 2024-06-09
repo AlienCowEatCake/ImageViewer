@@ -16,6 +16,7 @@
 #include <QTextStream>
 
 #include "../tests/format-enum.h"
+#include "templateimage.h"
 
 #include "fuzzyeq.cpp"
 
@@ -95,7 +96,7 @@ int main(int argc, char **argv)
     QCoreApplication::removeLibraryPath(QStringLiteral(PLUGIN_DIR));
     QCoreApplication::addLibraryPath(QStringLiteral(PLUGIN_DIR));
     QCoreApplication::setApplicationName(QStringLiteral("readtest"));
-    QCoreApplication::setApplicationVersion(QStringLiteral("1.1.0"));
+    QCoreApplication::setApplicationVersion(QStringLiteral("1.2.0"));
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("Performs basic image conversion checking."));
@@ -159,22 +160,30 @@ int main(int argc, char **argv)
             QTextStream(stdout) << "* Run on RANDOM ACCESS device\n";
         }
         for (const QFileInfo &fi : lstImgDir) {
-            if (!fi.suffix().compare("png", Qt::CaseInsensitive) || !fi.suffix().compare("tif", Qt::CaseInsensitive)) {
+            TemplateImage timg(fi);
+            if (timg.isTemplate()) {
                 continue;
             }
-            int suffixPos = fi.filePath().size() - suffix.size();
-            QString inputfile = fi.filePath();
-            QString fmt = QStringLiteral("png");
-            QString expfile = fi.filePath().replace(suffixPos, suffix.size(), fmt);
-            if (!QFile::exists(expfile)) { // try with tiff
-                fmt = QStringLiteral("tif");
-                expfile = fi.filePath().replace(suffixPos, suffix.size(), fmt);
-            }
-            QString expfilename = QFileInfo(expfile).fileName();
 
-            std::unique_ptr<QIODevice> inputDevice(seq ? new SequentialFile(inputfile) : new QFile(inputfile));
+            bool skipTest = false;
+            QFileInfo expFileInfo = timg.compareImage(skipTest);
+            if (skipTest) {
+                QTextStream(stdout) << "SKIP : " << fi.fileName() << ": image format not supported by current Qt version!\n";
+                ++skipped;
+                continue;
+            }
+            if (!formatStrings.contains(expFileInfo.suffix(), Qt::CaseInsensitive)) {
+                // Work Around for CCBUG: 468288
+                QTextStream(stdout) << "SKIP : " << fi.fileName() << ": comparison image " << expFileInfo.fileName() << " cannot be loaded due to the lack of "
+                                    << expFileInfo.suffix().toUpper() << " plugin!\n";
+                ++skipped;
+                continue;
+            }
+            QString expfilename = expFileInfo.fileName();
+
+            std::unique_ptr<QIODevice> inputDevice(seq ? new SequentialFile(fi.filePath()) : new QFile(fi.filePath()));
             QImageReader inputReader(inputDevice.get(), format);
-            QImageReader expReader(expfile, fmt.toLatin1());
+            QImageReader expReader(expFileInfo.filePath());
 
             QImage inputImage;
             QImage expImage;

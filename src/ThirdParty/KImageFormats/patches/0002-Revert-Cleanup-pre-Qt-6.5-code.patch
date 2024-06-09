@@ -1,7 +1,7 @@
-From aff63afbf1d517ee2869d02a9d5d3b654817c4f0 Mon Sep 17 00:00:00 2001
+From 3414af5846a4e1a56ebf83c3d4d861392cdb67df Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 3 Jan 2024 08:33:45 +0700
-Subject: [PATCH 2/7] Revert "Cleanup pre-Qt 6.5 code"
+Subject: [PATCH 2/8] Revert "Cleanup pre-Qt 6.5 code"
 
 This reverts commit 91a342e90d9def496d683244f467755846875f67.
 ---
@@ -10,11 +10,11 @@ This reverts commit 91a342e90d9def496d683244f467755846875f67.
  2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 43fdca7..29d6ce5 100644
+index 3effaa5..50c2899 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -81,7 +81,7 @@ set_package_properties(LibRaw PROPERTIES
- )
+@@ -88,7 +88,7 @@ endif()
+ add_feature_info(LibJXR LibJXR_FOUND "required for the QImage plugin for JPEG XR images")
  
  ecm_set_disabled_deprecation_versions(
 -    QT 6.5
@@ -23,7 +23,7 @@ index 43fdca7..29d6ce5 100644
  )
  
 diff --git a/src/imageformats/exr.cpp b/src/imageformats/exr.cpp
-index 042bbe7..b7121d5 100644
+index 56ec857..686ec1e 100644
 --- a/src/imageformats/exr.cpp
 +++ b/src/imageformats/exr.cpp
 @@ -90,7 +90,10 @@
@@ -46,7 +46,7 @@ index 042bbe7..b7121d5 100644
 +#else
 +            dateTime.setOffsetFromUtc(off);
 +#endif
-             image.setText(QStringLiteral("CreationDate"), dateTime.toString(Qt::ISODate));
+             image.setText(QStringLiteral(META_KEY_CREATIONDATE), dateTime.toString(Qt::ISODate));
          }
      }
 -- 

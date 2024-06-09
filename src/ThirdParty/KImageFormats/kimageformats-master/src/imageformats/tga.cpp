@@ -88,10 +88,6 @@ static QDataStream &operator>>(QDataStream &s, TgaHeader &head)
     s >> head.height;
     s >> head.pixel_size;
     s >> head.flags;
-    /*qDebug() << "id_length: " << head.id_length << " - colormap_type: " << head.colormap_type << " - image_type: " << head.image_type;
-    qDebug() << "colormap_index: " << head.colormap_index << " - colormap_length: " << head.colormap_length << " - colormap_size: " << head.colormap_size;
-    qDebug() << "x_origin: " << head.x_origin << " - y_origin: " << head.y_origin << " - width:" << head.width << " - height:" << head.height << " - pixelsize:
-    " << head.pixel_size << " - flags: " << head.flags;*/
     return s;
 }
 
@@ -115,6 +111,10 @@ static bool IsSupported(const TgaHeader &head)
         return false;
     }
     if (head.pixel_size != 8 && head.pixel_size != 16 && head.pixel_size != 24 && head.pixel_size != 32) {
+        return false;
+    }
+    // If the colormap_type field is set to zero, indicating that no color map exists, then colormap_size, colormap_index and colormap_length should be set to zero.
+    if (head.colormap_type == 0 && (head.colormap_size != 0 || head.colormap_index != 0 || head.colormap_length != 0)) {
         return false;
     }
     return true;
@@ -170,10 +170,57 @@ struct TgaHeaderInfo {
     }
 };
 
+static QImage::Format imageFormat(const TgaHeader &head)
+{
+    auto format = QImage::Format_Invalid;
+    if (IsSupported(head)) {
+        // Bits 0-3 are the numbers of alpha bits (can be zero!)
+        const int numAlphaBits = head.flags & 0xf;
+        // However alpha exists only in the 32 bit format.
+        if ((head.pixel_size == 32) && (head.flags & 0xf)) {
+            if (numAlphaBits <= 8) {
+                format = QImage::Format_ARGB32;
+            }
+        }
+        else {
+            format = QImage::Format_RGB32;
+        }
+    }
+    return format;
+}
+
+/*!
+ * \brief peekHeader
+ * Reads the header but does not change the position in the device.
+ */
+static bool peekHeader(QIODevice *device, TgaHeader &header)
+{
+    qint64 oldPos = device->pos();
+    QByteArray head = device->read(TgaHeader::SIZE);
+    int readBytes = head.size();
+
+    if (device->isSequential()) {
+        for (int pos = readBytes - 1; pos >= 0; --pos) {
+            device->ungetChar(head[pos]);
+        }
+    } else {
+        device->seek(oldPos);
+    }
+
+    if (readBytes < TgaHeader::SIZE) {
+        return false;
+    }
+
+    QDataStream stream(head);
+    stream.setByteOrder(QDataStream::LittleEndian);
+    stream >> header;
+
+    return true;
+}
+
 static bool LoadTGA(QDataStream &s, const TgaHeader &tga, QImage &img)
 {
-    // Create image.
-    img = imageAlloc(tga.width, tga.height, QImage::Format_RGB32);
+    img = imageAlloc(tga.width, tga.height, imageFormat(tga));
     if (img.isNull()) {
         qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(tga.width, tga.height);
         return false;
@@ -181,21 +228,7 @@ static bool LoadTGA(QDataStream &s, const TgaHeader &tga, QImage &img)
 
     TgaHeaderInfo info(tga);
 
-    // Bits 0-3 are the numbers of alpha bits (can be zero!)
     const int numAlphaBits = tga.flags & 0xf;
-    // However alpha exists only in the 32 bit format.
-    if ((tga.pixel_size == 32) && (tga.flags & 0xf)) {
-        img = imageAlloc(tga.width, tga.height, QImage::Format_ARGB32);
-        if (img.isNull()) {
-            qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(tga.width, tga.height);
-            return false;
-        }
-
-        if (numAlphaBits > 8) {
-            return false;
-        }
-    }
-
     uint pixel_size = (tga.pixel_size / 8);
     qint64 size = qint64(tga.width) * qint64(tga.height) * pixel_size;
 
@@ -391,23 +424,25 @@ bool TGAHandler::read(QImage *outImage)
 {
     // qDebug() << "Loading TGA file!";
 
-    QDataStream s(device());
-    s.setByteOrder(QDataStream::LittleEndian);
-
-    // Read image header.
+    auto d = device();
     TgaHeader tga;
-    s >> tga;
-    s.device()->seek(TgaHeader::SIZE + tga.id_length);
-
-    // Check image file format.
-    if (s.atEnd()) {
+    if (!peekHeader(d, tga) || !IsSupported(tga)) {
         //         qDebug() << "This TGA file is not valid.";
         return false;
     }
 
-    // Check supported file types.
-    if (!IsSupported(tga)) {
-        //         qDebug() << "This TGA file is not supported.";
+    if (d->isSequential()) {
+        d->read(TgaHeader::SIZE + tga.id_length);
+    } else {
+        d->seek(TgaHeader::SIZE + tga.id_length);
+    }
+
+    QDataStream s(d);
+    s.setByteOrder(QDataStream::LittleEndian);
+
+    // Check image file format.
+    if (s.atEnd()) {
+        //         qDebug() << "This TGA file is not valid.";
         return false;
     }
 
@@ -468,6 +503,42 @@ bool TGAHandler::write(const QImage &image)
     return true;
 }
 
+bool TGAHandler::supportsOption(ImageOption option) const
+{
+    if (option == QImageIOHandler::Size) {
+        return true;
+    }
+    if (option == QImageIOHandler::ImageFormat) {
+        return true;
+    }
+    return false;
+}
+
+QVariant TGAHandler::option(ImageOption option) const
+{
+    QVariant v;
+
+    if (option == QImageIOHandler::Size) {
+        if (auto d = device()) {
+            TgaHeader header;
+            if (peekHeader(d, header) && IsSupported(header)) {
+                v = QVariant::fromValue(QSize(header.width, header.height));
+            }
+        }
+    }
+
+    if (option == QImageIOHandler::ImageFormat) {
+        if (auto d = device()) {
+            TgaHeader header;
+            if (peekHeader(d, header) && IsSupported(header)) {
+                v = QVariant::fromValue(imageFormat(header));
+            }
+        }
+    }
+
+    return v;
+}
+
 bool TGAHandler::canRead(QIODevice *device)
 {
     if (!device) {
@@ -491,10 +562,12 @@ bool TGAHandler::canRead(QIODevice *device)
         return false;
     }
 
-    QDataStream stream(head);
-    stream.setByteOrder(QDataStream::LittleEndian);
     TgaHeader tga;
-    stream >> tga;
+    if (!peekHeader(device, tga)) {
+        qWarning("TGAHandler::canRead() error while reading the header");
+        return false;
+    }
+
     return IsSupported(tga);
 }
 

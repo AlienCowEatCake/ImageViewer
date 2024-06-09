@@ -1,19 +1,20 @@
-From 3ac1dfe7b39dd9e1ac72cacc4a753037d04f6ae7 Mon Sep 17 00:00:00 2001
+From eb0162676f95c428005e984bec4f137e95155b32 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 9 Jul 2023 21:28:58 +0700
-Subject: [PATCH 6/7] Dont use modern options with old Qt verson
+Subject: [PATCH 6/8] Dont use modern options with old Qt verson
 
 ---
  src/imageformats/ani.cpp  |  4 ++++
  src/imageformats/ani_p.h  | 16 +++++++++++++++
  src/imageformats/hdr.cpp  | 23 ++++++++++++++++++++++
  src/imageformats/jxl_p.h  |  8 ++++++++
+ src/imageformats/jxr.cpp  |  5 ++++-
  src/imageformats/psd.cpp  | 40 ++++++++++++++++++++++++++++++++++++++
  src/imageformats/ras.cpp  | 17 +++++++++++++++-
  src/imageformats/rgb.cpp  | 24 +++++++++++++++++++++++
  src/imageformats/util_p.h |  7 +++++++
  src/imageformats/xcf.cpp  | 41 +++++++++++++++++++++++++++++++++++++--
- 9 files changed, 177 insertions(+), 3 deletions(-)
+ 10 files changed, 181 insertions(+), 4 deletions(-)
 
 diff --git a/src/imageformats/ani.cpp b/src/imageformats/ani.cpp
 index 5fa0d46..4c13315 100644
@@ -170,11 +171,34 @@ index 9f6b581..bc8c46b 100644
      int m_next_image_delay;
  
      QImage m_current_image;
+diff --git a/src/imageformats/jxr.cpp b/src/imageformats/jxr.cpp
+index 906d8a7..528d7d1 100644
+--- a/src/imageformats/jxr.cpp
++++ b/src/imageformats/jxr.cpp
+@@ -42,6 +42,9 @@ Q_LOGGING_CATEGORY(LOG_JXRPLUGIN, "kf.imageformats.plugins.jxr", QtWarningMsg)
+  * NOTE: Float images have values greater than 1 so they need an additional in place conversion.
+  */
+ // #define JXR_DENY_FLOAT_IMAGE
++#if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
++#define JXR_DENY_FLOAT_IMAGE
++#endif
+ 
+ /*!
+  * Remove the neeeds of additional memory by disabling the conversion between
+@@ -855,7 +858,7 @@ bool JXRHandler::read(QImage *outImage)
+                 return false;
+             }
+             for (qint32 y = 0, h = img.height(); y < h; ++y) {
+-                std::memcpy(img.scanLine(y), ba.data() + convStrideSize * y, (std::min)(convStrideSize, img.bytesPerLine()));
++                std::memcpy(img.scanLine(y), ba.data() + convStrideSize * y, (std::min<size_t>)(convStrideSize, img.bytesPerLine()));
+             }
+         }
+         PKFormatConverter_Release(&pConverter);
 diff --git a/src/imageformats/psd.cpp b/src/imageformats/psd.cpp
-index badd95d..4166f3c 100644
+index ba7b54a..01960fc 100644
 --- a/src/imageformats/psd.cpp
 +++ b/src/imageformats/psd.cpp
-@@ -41,6 +41,10 @@
+@@ -42,6 +42,10 @@
  #include <QImage>
  #include <QColorSpace>
  
@@ -185,7 +209,7 @@ index badd95d..4166f3c 100644
  #include <cmath>
  #include <cstring>
  
-@@ -126,7 +130,11 @@ struct PSDDuotoneOptions {
+@@ -142,7 +146,11 @@ struct PSDDuotoneOptions {
   */
  struct PSDColorModeDataSection {
      PSDDuotoneOptions duotone;
@@ -197,7 +221,7 @@ index badd95d..4166f3c 100644
  };
  
  using PSDImageResourceSection = QHash<quint16, PSDImageResourceBlock>;
-@@ -458,7 +466,11 @@ PSDColorModeDataSection readColorModeDataSection(QDataStream &s, bool *ok = null
+@@ -474,7 +482,11 @@ PSDColorModeDataSection readColorModeDataSection(QDataStream &s, bool *ok = null
      }
      else {              // read the palette (768 bytes)
          auto&& palette = cms.palette;
@@ -209,7 +233,7 @@ index badd95d..4166f3c 100644
          for (auto&& v : vect)
              s >> v;
          for (qsizetype i = 0, n = vect.size()/3; i < n; ++i)
-@@ -733,9 +745,13 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
+@@ -749,9 +761,13 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
      auto format = QImage::Format_Invalid;
      switch(header.color_mode) {
      case CM_RGB:
@@ -223,7 +247,7 @@ index badd95d..4166f3c 100644
              format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64_Premultiplied;
          else
              format = header.channel_count < 4 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888_Premultiplied;
-@@ -1109,7 +1125,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1164,7 +1180,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
          return false;
      }
  
@@ -235,7 +259,7 @@ index badd95d..4166f3c 100644
      // Read the compressed stride sizes
      if (compression) {
          for (auto&& v : strides) {
-@@ -1124,7 +1144,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1179,7 +1199,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
      }
      // calculate the absolute file positions of each stride (required when a colorspace conversion should be done)
      auto device = stream.device();
@@ -247,7 +271,7 @@ index badd95d..4166f3c 100644
      if (!stridePositions.isEmpty()) {
          stridePositions[0] = device->pos();
      }
-@@ -1169,7 +1193,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1236,7 +1260,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                      planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, header.channel_count);
                  }
                  else if (header.depth == 32) {
@@ -259,7 +283,7 @@ index badd95d..4166f3c 100644
                  }
              }
  
-@@ -1194,7 +1222,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1261,7 +1289,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                      else if (header.depth == 16)
                          premulConversion<quint16>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
                      else if (header.depth == 32)
@@ -271,7 +295,7 @@ index badd95d..4166f3c 100644
                  }
              }
  
-@@ -1217,7 +1249,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1300,7 +1332,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                  else if (header.depth == 16)
                      rawChannelsCopy<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
                  else if (header.depth == 32)
@@ -283,8 +307,8 @@ index badd95d..4166f3c 100644
              }
          }
      }
-@@ -1242,7 +1278,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
-                     planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, imgChannels);
+@@ -1331,7 +1367,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+                         planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, imgChannels);
                  }
                  else if (header.depth == 32 && header.color_mode == CM_RGB) { // 32-bits float images: RGB/RGBA
 +#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
@@ -405,7 +429,7 @@ index bfd92d3..0ab8550 100644
          v.replace(it.value(), &it.key());
      }
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
-index fac9ae3..2f496a3 100644
+index e4fc67b..8f504e7 100644
 --- a/src/imageformats/util_p.h
 +++ b/src/imageformats/util_p.h
 @@ -11,7 +11,10 @@
@@ -417,9 +441,9 @@ index fac9ae3..2f496a3 100644
  #include <QImageIOHandler>
 +#endif
  
- // QList uses some extra space for stuff, hence the 32 here suggested by Thiago Macieira
- static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
-@@ -21,9 +24,13 @@ static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
+ // Image metadata keys to use in plugins (so they are consistent)
+ #define META_KEY_ALTITUDE "Altitude"
+@@ -41,9 +44,13 @@ static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
  inline QImage imageAlloc(const QSize &size, const QImage::Format &format)
  {
      QImage img;
@@ -434,7 +458,7 @@ index fac9ae3..2f496a3 100644
  }
  
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index 5786efc..7f2a907 100644
+index 7f08840..1e76b19 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -9,21 +9,32 @@
@@ -532,7 +556,7 @@ index 5786efc..7f2a907 100644
              xcf_image.palette.reserve(xcf_image.num_colors);
  
              for (int i = 0; i < xcf_image.num_colors; i++) {
-@@ -1383,11 +1414,13 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
+@@ -1385,11 +1416,13 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
      // tiles of 64x64 pixels. The required memory to build the image is at least doubled because tiles are loaded
      // and then the final image is created by copying the tiles inside it.
      // NOTE: on Windows to open a 10GiB image the plugin uses 28GiB of RAM
@@ -546,7 +570,7 @@ index 5786efc..7f2a907 100644
  #endif
  
      layer.image_tiles.resize(layer.nrows);
-@@ -2017,7 +2050,11 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
+@@ -2019,7 +2052,11 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
  
      const uint blockSize = TILE_WIDTH * TILE_HEIGHT * bpp * 1.5;
  

@@ -41,6 +41,9 @@
 #if defined (WRAPPER_USE_JXL_HANDLER)
 #include "../kimageformats-master/src/imageformats/jxl_p.h"
 #endif
+#if defined (WRAPPER_USE_JXR_HANDLER)
+#include "../kimageformats-master/src/imageformats/jxr_p.h"
+#endif
 #if defined (WRAPPER_USE_KRA_HANDLER)
 #include "../kimageformats-master/src/imageformats/kra.h"
 #endif
@@ -99,6 +102,9 @@ enum BuiltInFormatType
 #endif
 #if defined (WRAPPER_USE_JXL_HANDLER)
     JxlFormat,
+#endif
+#if defined (WRAPPER_USE_JXR_HANDLER)
+    JxrFormat,
 #endif
 #if defined (WRAPPER_USE_KRA_HANDLER)
     KraFormat,
@@ -166,6 +172,9 @@ static const BuiltInFormatStruct BuiltInFormats[] =
 #if defined (WRAPPER_USE_JXL_HANDLER)
     { JxlFormat , QList<QByteArray>() << "jxl" },
 #endif
+#if defined (WRAPPER_USE_JXR_HANDLER)
+    { JxrFormat , QList<QByteArray>() << "jxr" << "wdp" << "hdp" },
+#endif
 #if defined (WRAPPER_USE_KRA_HANDLER)
     { KraFormat , QList<QByteArray>() << "kra" },
 #endif
@@ -185,7 +194,7 @@ static const BuiltInFormatStruct BuiltInFormats[] =
     { QoiFormat , QList<QByteArray>() << "qoi" },
 #endif
 #if defined (WRAPPER_USE_RAS_HANDLER)
-    { RasFormat , QList<QByteArray>() << "ras" },
+    { RasFormat , QList<QByteArray>() << "im1" << "im8" << "im24" << "im32" << "ras" << "sun" },
 #endif
 #if defined (WRAPPER_USE_RAW_HANDLER)
     { RawFormat , QList<QByteArray>()
@@ -300,6 +309,11 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
 #if defined (WRAPPER_USE_JXL_HANDLER)
         case JxlFormat:
             handler = new QJpegXLHandler;
+            break;
+#endif
+#if defined (WRAPPER_USE_JXR_HANDLER)
+        case JxrFormat:
+            handler = new JXRHandler;
             break;
 #endif
 #if defined (WRAPPER_USE_KRA_HANDLER)
@@ -437,6 +451,12 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
             case JxlFormat:
                 if(QJpegXLHandler::canRead(device))
                     handler = new QJpegXLHandler;
+                break;
+#endif
+#if defined (WRAPPER_USE_JXR_HANDLER)
+            case JxrFormat:
+                if(JXRHandler::canRead(device))
+                    handler = new JXRHandler;
                 break;
 #endif
 #if defined (WRAPPER_USE_KRA_HANDLER)
@@ -1194,9 +1214,15 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
 #endif
 #if defined (WRAPPER_USE_HEIF_HANDLER)
     result.append(QByteArrayLiteral("image/heif"));
+    result.append(QByteArrayLiteral("image/hej2k"));
 #endif
 #if defined (WRAPPER_USE_JXL_HANDLER)
     result.append(QByteArrayLiteral("image/jxl"));
+#endif
+#if defined (WRAPPER_USE_JXR_HANDLER)
+    result.append(QByteArrayLiteral("image/jxr"));
+    result.append(QByteArrayLiteral("image/vnd.ms-photo"));
+    result.append(QByteArrayLiteral("image/vnd.ms-photo"));
 #endif
 #if defined (WRAPPER_USE_KRA_HANDLER)
     result.append(QByteArrayLiteral("application/x-krita"));

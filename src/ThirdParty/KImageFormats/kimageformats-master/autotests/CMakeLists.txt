@@ -11,7 +11,7 @@ macro(kimageformats_read_tests)
     endif()
 
     if (NOT TARGET readtest)
-        add_executable(readtest readtest.cpp)
+        add_executable(readtest readtest.cpp templateimage.cpp)
         target_link_libraries(readtest Qt6::Gui)
         target_compile_definitions(readtest
             PRIVATE IMAGEDIR="${CMAKE_CURRENT_SOURCE_DIR}/read")
@@ -111,6 +111,15 @@ if (LibJXL_FOUND AND LibJXLThreads_FOUND)
     )
     kimageformats_write_tests(
         jxl-nodatacheck-lossless
+    )
+endif()
+
+if (LibJXR_FOUND)
+    kimageformats_read_tests(
+        jxr
+    )
+    kimageformats_write_tests(
+        jxr-nodatacheck
     )
 endif()
 

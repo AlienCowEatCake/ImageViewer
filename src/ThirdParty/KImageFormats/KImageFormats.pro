@@ -24,6 +24,7 @@ include(../OpenEXR/OpenEXR.pri)
 include(../libheif/libheif.pri)
 include(../libjxl/libjxl.pri)
 include(../LibRaw/LibRaw.pri)
+include(../jxrlib/jxrlib.pri)
 
 INCLUDEPATH += $${THIRDPARTY_KIMAGEFORMATS_WRAPPER_PATH}
 
@@ -140,6 +141,21 @@ DEFINES += HDRPlugin=tp_HDRPlugin
     DEFINES += QJpegXLHandler=tp_QJpegXLHandler
     DEFINES += QJpegXLPlugin=tp_QJpegXLPlugin
     DEFINES += DISABLE_JXL_ENCODER DISABLE_JXL_THREADS
+}
+
+# --------------------------------------------------------------------------------
+
+!disable_jxrlib {
+    SOURCES += \
+        $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/jxr.cpp
+
+    HEADERS += \
+        $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/jxr_p.h
+
+    DEFINES += WRAPPER_USE_JXR_HANDLER
+
+    DEFINES += JXRHandler=tp_JXRHandler
+    DEFINES += JXRPlugin=tp_JXRPlugin
 }
 
 # --------------------------------------------------------------------------------

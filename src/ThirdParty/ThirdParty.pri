@@ -17,6 +17,7 @@ include(QtImageFormats/QtImageFormats.pri)
 #  * libheif
 #  * libjxl
 #  * LibRaw
+#  * jxrlib
 include(KImageFormats/KImageFormats.pri)
 
 # Dependencies:

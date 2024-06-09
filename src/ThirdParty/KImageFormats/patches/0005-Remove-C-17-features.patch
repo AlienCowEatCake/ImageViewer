@@ -1,7 +1,7 @@
-From 9e9efa583450cd5b66d9ade9f9ceebb246326f69 Mon Sep 17 00:00:00 2001
+From 10253d0781eacc596c8922f6db1a105909e264f0 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
-Subject: [PATCH 5/7] Remove C++17 features
+Subject: [PATCH 5/8] Remove C++17 features
 
 ---
  src/imageformats/kra.cpp  |  4 ++--
@@ -65,10 +65,10 @@ index 1196bc0..f23e3b3 100644
                      return QImage::Format_ARGB32;
                  }
 diff --git a/src/imageformats/tga.cpp b/src/imageformats/tga.cpp
-index 59f6efd..8f587ba 100644
+index f78f216..afd6b98 100644
 --- a/src/imageformats/tga.cpp
 +++ b/src/imageformats/tga.cpp
-@@ -439,8 +439,8 @@ bool TGAHandler::write(const QImage &image)
+@@ -474,8 +474,8 @@ bool TGAHandler::write(const QImage &image)
          qDebug() << "TGAHandler::write: image conversion to 32 bits failed!";
          return false;
      }
@@ -80,11 +80,11 @@ index 59f6efd..8f587ba 100644
      for (int i = 0; i < 12; i++) {
          s << targaMagic[i];
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
-index c318ea3..fac9ae3 100644
+index ab69702..e4fc67b 100644
 --- a/src/imageformats/util_p.h
 +++ b/src/imageformats/util_p.h
-@@ -14,7 +14,7 @@
- #include <QImageIOHandler>
+@@ -34,7 +34,7 @@
+ #define META_KEY_XMP_ADOBE "XML:com.adobe.xmp"
  
  // QList uses some extra space for stuff, hence the 32 here suggested by Thiago Macieira
 -static constexpr int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
@@ -93,7 +93,7 @@ index c318ea3..fac9ae3 100644
  // On Qt 6 to make the plugins fail to allocate if the image size is greater than QImageReader::allocationLimit()
  // it is necessary to allocate the image with QImageIOHandler::allocateImage().
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index 7d8bccf..5786efc 100644
+index ac3511b..7f08840 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -57,7 +57,7 @@ namespace
@@ -132,7 +132,7 @@ index 7d8bccf..5786efc 100644
  
  QList<QRgb> XCFImageFormat::grayTable;
  
-@@ -1569,7 +1569,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
+@@ -1571,7 +1571,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
  {
      auto&& p = xcf_image.parasites;
      auto keys = p.keys();

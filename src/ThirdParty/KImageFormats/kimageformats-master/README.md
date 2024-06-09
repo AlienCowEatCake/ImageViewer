@@ -28,6 +28,7 @@ The following image formats have read and write support:
 - Encapsulated PostScript (eps)
 - High Efficiency Image File Format (heif). Can be enabled with the KIMAGEFORMATS_HEIF build option.
 - JPEG XL (jxl)
+- JPEG XR (jxr)
 - OpenEXR (exr)
 - Personal Computer Exchange (pcx)
 - Quite OK Image format (qoi)

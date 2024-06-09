@@ -83,7 +83,7 @@ kimageformats_add_plugin(kimg_pic SOURCES pic.cpp)
 
 ##################################
 
-kimageformats_add_plugin(kimg_psd SOURCES psd.cpp)
+kimageformats_add_plugin(kimg_psd SOURCES psd.cpp scanlineconverter.cpp)
 
 ##################################
 
@@ -111,6 +111,20 @@ if (LibRaw_FOUND)
     kimageformats_add_plugin(kimg_raw SOURCES raw.cpp)
     kde_enable_exceptions()
     target_link_libraries(kimg_raw PRIVATE LibRaw::LibRaw)
+endif()
+
+##################################
+
+if (LibJXR_FOUND)
+    kimageformats_add_plugin(kimg_jxr SOURCES jxr.cpp)
+    kde_enable_exceptions()
+    target_include_directories(kimg_jxr PRIVATE ${LIBJXR_INCLUDE_DIRS})
+    target_link_libraries(kimg_jxr PRIVATE jpegxr jxrglue)
+    target_compile_definitions(kimg_jxr PRIVATE INITGUID)
+    if (NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=undef")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=undef")
+    endif()
 endif()
 
 ##################################

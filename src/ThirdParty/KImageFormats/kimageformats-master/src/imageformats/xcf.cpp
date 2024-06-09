@@ -990,7 +990,7 @@ bool XCFImageFormat::loadImageProperties(QDataStream &xcf_io, XCFImage &xcf_imag
 #if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
                 quint32 size;
 #else
-                qsizetype size;
+                qint64 size;
 #endif
 
                 property.readBytes(tag, size);
@@ -1122,7 +1122,9 @@ bool XCFImageFormat::loadProperty(QDataStream &xcf_io, PropType &type, QByteArra
         size = 0;
     } else {
         xcf_io >> size;
-        if (size > 256000) {
+        if (size > 256000 * 4) {
+            // NOTE: I didn't find any reference to maximum property dimensions in the specs, so I assume it's just a sanity check.
+            qCDebug(XCFPLUGIN) << "XCF: loadProperty skips" << type << "due to size being too large";
             return false;
         }
         data = new char[size];
@@ -1627,7 +1629,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
         //    comments may also be present in the "gimp-metadata" parasite.
         if (key == QStringLiteral("gimp-comment")) {
             value.replace('\0', QByteArray());
-            image.setText(QStringLiteral("Comment"), QString::fromUtf8(value));
+            image.setText(QStringLiteral(META_KEY_COMMENT), QString::fromUtf8(value));
             continue;
         }
 
@@ -1638,7 +1640,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
             // NOTE: I arbitrary defined the metadata "XML:org.gimp.xml" because it seems
             //       a GIMP proprietary XML format (no xmlns defined)
             value.replace('\0', QByteArray());
-            image.setText(QStringLiteral("XML:org.gimp.xml"), QString::fromUtf8(value));
+            image.setText(QStringLiteral(META_KEY_XML_GIMP), QString::fromUtf8(value));
             continue;
         }
 
@@ -1654,7 +1656,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
             //       XMP packet is found (e.g. when reading a PNG saved by Photoshop).
             //       I reused the same key because some programs could search for it.
             value.replace('\0', QByteArray());
-            image.setText(QStringLiteral("XML:com.adobe.xmp"), QString::fromUtf8(value));
+            image.setText(QStringLiteral(META_KEY_XMP_ADOBE), QString::fromUtf8(value));
             continue;
         }
 #endif

@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(KImageFormats)
+set(KF_VERSION "6.4.0") # handled by release scripts
+set(KF_DEP_VERSION "6.3.0") # handled by release scripts
+project(KImageFormats VERSION ${KF_VERSION})
 
 include(FeatureSummary)
-find_package(ECM 5.240.0  NO_MODULE)
+find_package(ECM 6.3.0  NO_MODULE)
 set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
 feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
@@ -22,7 +24,7 @@ include(FindPkgConfig)
 set(REQUIRED_QT_VERSION 6.5.0)
 find_package(Qt6Gui ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
-find_package(KF6Archive)
+find_package(KF6Archive ${KF_DEP_VERSION})
 set_package_properties(KF6Archive PROPERTIES
     TYPE OPTIONAL
     PURPOSE "Required for the QImage plugin for Krita and OpenRaster images"
@@ -73,12 +75,17 @@ if(KIMAGEFORMATS_JXL)
 endif()
 add_feature_info(LibJXL LibJXL_FOUND "required for the QImage plugin for JPEG XL images")
 
-# note: module FindLibRaw missing from https://invent.kde.org/frameworks/extra-cmake-modules
 find_package(LibRaw 0.20.2)
 set_package_properties(LibRaw PROPERTIES
     TYPE OPTIONAL
     PURPOSE "Required for the QImage plugin for RAW images"
 )
+
+option(KIMAGEFORMATS_JXR "Enable plugin for JPEG XR format" ON)
+if(KIMAGEFORMATS_JXR)
+    find_package(LibJXR)
+endif()
+add_feature_info(LibJXR LibJXR_FOUND "required for the QImage plugin for JPEG XR images")
 
 ecm_set_disabled_deprecation_versions(
     QT 6.4
@@ -91,6 +98,7 @@ if (BUILD_TESTING)
     add_subdirectory(tests)
 endif()
 
-feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
+include(ECMFeatureSummary)
+ecm_feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
 kde_configure_git_pre_commit_hook(CHECKS CLANG_FORMAT)

@@ -1,7 +1,7 @@
-From bded79d968a7360576258a5625061b16123094e4 Mon Sep 17 00:00:00 2001
+From 003dd15bb29ab31bb986a2a7d41aa962a7bfe419 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 04:03:37 +0700
-Subject: [PATCH 3/7] Remove plugin metadata declarations
+Subject: [PATCH 3/8] Remove plugin metadata declarations
 
 ---
  src/imageformats/ani_p.h  | 2 +-
@@ -11,6 +11,7 @@ Subject: [PATCH 3/7] Remove plugin metadata declarations
  src/imageformats/hdr_p.h  | 2 +-
  src/imageformats/heif_p.h | 2 +-
  src/imageformats/jxl_p.h  | 2 +-
+ src/imageformats/jxr_p.h  | 2 +-
  src/imageformats/kra.h    | 2 +-
  src/imageformats/ora.h    | 2 +-
  src/imageformats/pcx_p.h  | 2 +-
@@ -22,7 +23,7 @@ Subject: [PATCH 3/7] Remove plugin metadata declarations
  src/imageformats/rgb_p.h  | 2 +-
  src/imageformats/tga_p.h  | 2 +-
  src/imageformats/xcf_p.h  | 2 +-
- 18 files changed, 18 insertions(+), 18 deletions(-)
+ 19 files changed, 19 insertions(+), 19 deletions(-)
 
 diff --git a/src/imageformats/ani_p.h b/src/imageformats/ani_p.h
 index f5cbca6..bfce9ef 100644
@@ -112,6 +113,19 @@ index 3e93808..9f6b581 100644
      Q_OBJECT
 -    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "jxl.json")
 +//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "jxl.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/jxr_p.h b/src/imageformats/jxr_p.h
+index f8da9c0..a97540a 100644
+--- a/src/imageformats/jxr_p.h
++++ b/src/imageformats/jxr_p.h
+@@ -37,7 +37,7 @@ private:
+ class JXRPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "jxr.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "jxr.json")
  
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
@@ -233,10 +247,10 @@ index 3d7b14c..967ce85 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/tga_p.h b/src/imageformats/tga_p.h
-index 17f54b6..62cef18 100644
+index 9354227..9dfdd05 100644
 --- a/src/imageformats/tga_p.h
 +++ b/src/imageformats/tga_p.h
-@@ -25,7 +25,7 @@ public:
+@@ -28,7 +28,7 @@ public:
  class TGAPlugin : public QImageIOPlugin
  {
      Q_OBJECT

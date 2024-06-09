@@ -293,23 +293,23 @@ static void readMetadata(const Imf::Header &header, QImage &image)
 {
     // set some useful metadata
     if (auto comments = header.findTypedAttribute<Imf::StringAttribute>("comments")) {
-        image.setText(QStringLiteral("Comment"), QString::fromStdString(comments->value()));
+        image.setText(QStringLiteral(META_KEY_COMMENT), QString::fromStdString(comments->value()));
     }
 
     if (auto owner = header.findTypedAttribute<Imf::StringAttribute>("owner")) {
-        image.setText(QStringLiteral("Owner"), QString::fromStdString(owner->value()));
+        image.setText(QStringLiteral(META_KEY_OWNER), QString::fromStdString(owner->value()));
     }
 
     if (auto lat = header.findTypedAttribute<Imf::FloatAttribute>("latitude")) {
-        image.setText(QStringLiteral("Latitude"), QLocale::c().toString(lat->value()));
+        image.setText(QStringLiteral(META_KEY_LATITUDE), QLocale::c().toString(lat->value()));
     }
 
     if (auto lon = header.findTypedAttribute<Imf::FloatAttribute>("longitude")) {
-        image.setText(QStringLiteral("Longitude"), QLocale::c().toString(lon->value()));
+        image.setText(QStringLiteral(META_KEY_LONGITUDE), QLocale::c().toString(lon->value()));
     }
 
     if (auto alt = header.findTypedAttribute<Imf::FloatAttribute>("altitude")) {
-        image.setText(QStringLiteral("Altitude"), QLocale::c().toString(alt->value()));
+        image.setText(QStringLiteral(META_KEY_ALTITUDE), QLocale::c().toString(alt->value()));
     }
 
     if (auto capDate = header.findTypedAttribute<Imf::StringAttribute>("capDate")) {
@@ -324,7 +324,7 @@ static void readMetadata(const Imf::Header &header, QImage &image)
 #else
             dateTime.setOffsetFromUtc(off);
 #endif
-            image.setText(QStringLiteral("CreationDate"), dateTime.toString(Qt::ISODate));
+            image.setText(QStringLiteral(META_KEY_CREATIONDATE), dateTime.toString(Qt::ISODate));
         }
     }
 
@@ -339,7 +339,7 @@ static void readMetadata(const Imf::Header &header, QImage &image)
 
     // Non-standard attribute
     if (auto xmp = header.findTypedAttribute<Imf::StringAttribute>("xmp")) {
-        image.setText(QStringLiteral("XML:com.adobe.xmp"), QString::fromStdString(xmp->value()));
+        image.setText(QStringLiteral(META_KEY_XMP_ADOBE), QString::fromStdString(xmp->value()));
     }
 
     /* TODO: OpenEXR 3.2 metadata
@@ -537,18 +537,18 @@ static void setMetadata(const QImage &image, Imf::Header &header)
     auto dateTime = QDateTime::currentDateTime();
     for (auto &&key : image.textKeys()) {
         auto text = image.text(key);
-        if (!key.compare(QStringLiteral("Comment"), Qt::CaseInsensitive)) {
+        if (!key.compare(QStringLiteral(META_KEY_COMMENT), Qt::CaseInsensitive)) {
             header.insert("comments", Imf::StringAttribute(text.toStdString()));
         }
 
-        if (!key.compare(QStringLiteral("Owner"), Qt::CaseInsensitive)) {
+        if (!key.compare(QStringLiteral(META_KEY_OWNER), Qt::CaseInsensitive)) {
             header.insert("owner", Imf::StringAttribute(text.toStdString()));
         }
 
         // clang-format off
-        if (!key.compare(QStringLiteral("Latitude"), Qt::CaseInsensitive) ||
-            !key.compare(QStringLiteral("Longitude"), Qt::CaseInsensitive) ||
-            !key.compare(QStringLiteral("Altitude"), Qt::CaseInsensitive)) {
+        if (!key.compare(QStringLiteral(META_KEY_LATITUDE), Qt::CaseInsensitive) ||
+            !key.compare(QStringLiteral(META_KEY_LONGITUDE), Qt::CaseInsensitive) ||
+            !key.compare(QStringLiteral(META_KEY_ALTITUDE), Qt::CaseInsensitive)) {
             // clang-format on
             auto ok = false;
             auto value = QLocale::c().toFloat(text, &ok);
@@ -557,7 +557,7 @@ static void setMetadata(const QImage &image, Imf::Header &header)
             }
         }
 
-        if (!key.compare(QStringLiteral("CreationDate"), Qt::CaseInsensitive)) {
+        if (!key.compare(QStringLiteral(META_KEY_CREATIONDATE), Qt::CaseInsensitive)) {
             auto dt = QDateTime::fromString(text, Qt::ISODate);
             if (dt.isValid()) {
                 dateTime = dt;
@@ -565,7 +565,7 @@ static void setMetadata(const QImage &image, Imf::Header &header)
         }
 
 #ifndef EXR_DISABLE_XMP_ATTRIBUTE // warning: Non-standard attribute!
-        if (!key.compare(QStringLiteral("XML:com.adobe.xmp"), Qt::CaseInsensitive)) {
+        if (!key.compare(QStringLiteral(META_KEY_XMP_ADOBE), Qt::CaseInsensitive)) {
             header.insert("xmp", Imf::StringAttribute(text.toStdString()));
         }
 #endif
@@ -630,7 +630,14 @@ bool EXRHandler::write(const QImage &image)
 
         // write the EXR
         K_OStream ostr(device(), QByteArray());
-        Imf::RgbaOutputFile file(ostr, header, image.hasAlphaChannel() ? Imf::RgbaChannels::WRITE_RGBA : Imf::RgbaChannels::WRITE_RGB);
+        auto channelsType = image.hasAlphaChannel() ? Imf::RgbaChannels::WRITE_RGBA : Imf::RgbaChannels::WRITE_RGB;
+        if (image.format() == QImage::Format_Mono ||
+            image.format() == QImage::Format_MonoLSB ||
+            image.format() == QImage::Format_Grayscale16 ||
+            image.format() == QImage::Format_Grayscale8) {
+            channelsType = Imf::RgbaChannels::WRITE_Y;
+        }
+        Imf::RgbaOutputFile file(ostr, header, channelsType);
         Imf::Array2D<Imf::Rgba> pixels;
         pixels.resizeErase(EXR_LINES_PER_BLOCK, width);
 

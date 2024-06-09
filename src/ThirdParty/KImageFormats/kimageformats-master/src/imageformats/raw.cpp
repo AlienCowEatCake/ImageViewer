@@ -690,29 +690,29 @@ bool LoadRAW(QImageIOHandler *handler, QImage &img)
             xmpPacket = QString::fromUtf8(xmpdata, xmplen);
     }
     // Add info from LibRAW structs (e.g. GPS position, info about lens, info about shot and flash, etc...)
-    img.setText(QStringLiteral("XML:com.adobe.xmp"), updateXmpPacket(xmpPacket, rawProcessor.get()));
+    img.setText(QStringLiteral(META_KEY_XMP_ADOBE), updateXmpPacket(xmpPacket, rawProcessor.get()));
 
     auto model = QString::fromUtf8(iparams.normalized_model);
     if (!model.isEmpty()) {
-        img.setText(QStringLiteral("Model"), model);
+        img.setText(QStringLiteral(META_KEY_MODEL), model);
     }
     auto manufacturer = QString::fromUtf8(iparams.normalized_make);
     if (!manufacturer.isEmpty()) {
-        img.setText(QStringLiteral("Manufacturer"), manufacturer);
+        img.setText(QStringLiteral(META_KEY_MANUFACTURER), manufacturer);
     }
     auto software = QString::fromUtf8(iparams.software);
     if (!software.isEmpty()) {
-        img.setText(QStringLiteral("Software"), software);
+        img.setText(QStringLiteral(META_KEY_SOFTWARE), software);
     }
 
     auto &&iother = rawProcessor->imgdata.other;
     auto description = QString::fromUtf8(iother.desc);
     if (!description.isEmpty()) {
-        img.setText(QStringLiteral("Description"), description);
+        img.setText(QStringLiteral(META_KEY_DESCRIPTION), description);
     }
     auto artist = QString::fromUtf8(iother.artist);
     if (!artist.isEmpty()) {
-        img.setText(QStringLiteral("Author"), artist);
+        img.setText(QStringLiteral(META_KEY_AUTHOR), artist);
     }
 
     return true;
