@@ -1,26 +1,26 @@
-From ca66a7007a539df9cc0756c55748e3078f57fa0e Mon Sep 17 00:00:00 2001
+From 9706ad6e5f2bf291368f9a3c06bc06bf640f2190 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 10 Jun 2024 03:39:12 +0700
-Subject: [PATCH 8/8] Add INITGUID defie to jxr.cpp
+Subject: [PATCH 8/8] Add __ANSI__ defie to jxr.cpp
 
 ---
  src/imageformats/jxr.cpp | 3 +++
  1 file changed, 3 insertions(+)
 
 diff --git a/src/imageformats/jxr.cpp b/src/imageformats/jxr.cpp
-index 528d7d1..4a183f9 100644
+index 528d7d1..a171e58 100644
 --- a/src/imageformats/jxr.cpp
 +++ b/src/imageformats/jxr.cpp
 @@ -30,6 +30,9 @@
  #include <QSharedData>
  #include <QTemporaryDir>
  
-+#if !defined (INITGUID)
-+#define INITGUID
++#if !defined (__ANSI__)
++#define __ANSI__
 +#endif
  #include <JXRGlue.h>
  #include <cstring>
  
 -- 
-2.39.2
+2.44.0.windows.1
 

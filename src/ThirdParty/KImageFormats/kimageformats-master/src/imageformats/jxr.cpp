@@ -30,8 +30,8 @@
 #include <QSharedData>
 #include <QTemporaryDir>
 
-#if !defined (INITGUID)
-#define INITGUID
+#if !defined (__ANSI__)
+#define __ANSI__
 #endif
 #include <JXRGlue.h>
 #include <cstring>
