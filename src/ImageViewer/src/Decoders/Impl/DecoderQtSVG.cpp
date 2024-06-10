@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -81,6 +81,7 @@ public:
             return QSharedPointer<IImageData>();
         QGraphicsSvgItem *graphicsSvgItem = new QGraphicsSvgItem();
         QSvgRenderer* renderer = new QSvgRenderer(graphicsSvgItem);
+        QObject::connect(renderer, &QSvgRenderer::repaintNeeded, graphicsSvgItem, [graphicsSvgItem]{ graphicsSvgItem->update(); });
         XmlStreamReader reader(inBuffer.dataAsByteArray());
         renderer->load(&reader);
         graphicsSvgItem->setSharedRenderer(renderer);
