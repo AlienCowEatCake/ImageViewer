@@ -22,24 +22,24 @@ if [ "${MSYSTEM}" == "UCRT64" ] ; then
     CRT_ARCH="x64"
     UCRT_ARCH="x64"
     WIX_ARCH="x64"
-elif [ "${MSYSTEM}" == "MINGW32" ] ; then
-    MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-i686"
-    VCVARS_ARCH="x64_x86"
-    CRT_ARCH="x86"
-    UCRT_ARCH="x86"
-    WIX_ARCH="x86"
+# elif [ "${MSYSTEM}" == "MINGW32" ] ; then
+#     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-i686"
+#     VCVARS_ARCH="x64_x86"
+#     CRT_ARCH="x86"
+#     UCRT_ARCH="x86"
+#     WIX_ARCH="x86"
 elif [ "${MSYSTEM}" == "MINGW64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-x86_64"
     VCVARS_ARCH="x64"
     CRT_ARCH="x64"
     UCRT_ARCH="x64"
     WIX_ARCH="x64"
-elif [ "${MSYSTEM}" == "CLANG32" ] ; then
-    MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-i686"
-    VCVARS_ARCH="x64_x86"
-    CRT_ARCH="x86"
-    UCRT_ARCH="x86"
-    WIX_ARCH="x86"
+# elif [ "${MSYSTEM}" == "CLANG32" ] ; then
+#     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-i686"
+#     VCVARS_ARCH="x64_x86"
+#     CRT_ARCH="x86"
+#     UCRT_ARCH="x86"
+#     WIX_ARCH="x86"
 elif [ "${MSYSTEM}" == "CLANG64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-x86_64"
     VCVARS_ARCH="x64"

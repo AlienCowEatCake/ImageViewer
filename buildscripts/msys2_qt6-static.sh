@@ -1,20 +1,16 @@
 #!/bin/bash -e
 PROJECT="ImageViewer"
-BUILDDIR="build_msys2_qt5-static_${MSYSTEM,,?}"
-SUFFIX="_qt5-static_${MSYSTEM,,?}"
+BUILDDIR="build_msys2_qt6-static_${MSYSTEM,,?}"
+SUFFIX="_qt6-static_${MSYSTEM,,?}"
 APP_PATH="src/${PROJECT}"
 
-CMD_QMAKE="${MSYSTEM_PREFIX}/qt5-static/bin/qmake.exe"
+CMD_QMAKE="${MSYSTEM_PREFIX}/qt6-static/bin/qmake.exe"
 
 MSYSTEM_PKG_PREFIX="mingw-w64"
 if [ "${MSYSTEM}" == "UCRT64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-ucrt-x86_64"
-elif [ "${MSYSTEM}" == "MINGW32" ] ; then
-    MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-i686"
 elif [ "${MSYSTEM}" == "MINGW64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-x86_64"
-elif [ "${MSYSTEM}" == "CLANG32" ] ; then
-    MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-i686"
 elif [ "${MSYSTEM}" == "CLANG64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-x86_64"
 elif [ "${MSYSTEM}" == "CLANGARM64" ] ; then
@@ -27,7 +23,7 @@ pacman -S --needed --noconfirm \
     base-devel \
     zip \
     ${MSYSTEM_PKG_PREFIX}-toolchain \
-    ${MSYSTEM_PKG_PREFIX}-qt5-static
+    ${MSYSTEM_PKG_PREFIX}-qt6-static
 
 cd "$(dirname $0)"/..
 SOURCE_PATH="${PWD}"
