@@ -29,7 +29,7 @@
                 CONFIG += test_cxx11_incompatible_msvc
             }
         } else {
-            !greaterThan(QMAKE_MSC_VER, 1900) { # MSVC2015
+            !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
                 CONFIG += test_cxx11_incompatible_msvc
             }
         }
@@ -73,7 +73,7 @@
                 CONFIG += test_cxx14_incompatible_msvc
             }
         } else {
-            !greaterThan(QMAKE_MSC_VER, 1919) { # MSVC2017
+            !greaterThan(QMAKE_MSC_VER, 1900) { # MSVC2015
                 CONFIG += test_cxx14_incompatible_msvc
             }
         }
@@ -217,7 +217,7 @@ disable_thirdparty {
             CONFIG += disable_xzutils # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
             CONFIG += disable_xzutils # FIXME: C99
         }
     }
@@ -226,7 +226,17 @@ disable_thirdparty {
 # brotli options:
 #    disable_brotli
 #    system_brotli
-
+*msvc* {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+            CONFIG += disable_brotli # FIXME: C99
+        }
+    } else {
+        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
+            CONFIG += disable_brotli # FIXME: C99
+        }
+    }
+}
 
 # highway options:
 #    disable_highway
@@ -240,7 +250,7 @@ disable_cxx11 : !system_highway {
             CONFIG += disable_highway
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1910) { # MSVC2017
+        !greaterThan(QMAKE_MSC_VER, 1900) { # MSVC2015
             CONFIG += disable_highway
         }
     }
@@ -263,7 +273,7 @@ disable_cxx11 : !system_highway {
             CONFIG += disable_libexpat # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
             CONFIG += disable_libexpat # FIXME: C99
         }
     }
@@ -283,7 +293,7 @@ disable_cxx11 : !system_highway {
             CONFIG += disable_libexif # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1900) { # MSVC2015
+        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
             CONFIG += disable_libexif # FIXME: C99
         }
     }
@@ -298,7 +308,7 @@ disable_cxx11 : !system_highway {
             CONFIG += disable_exiv2 # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1600) { # MSVC2010
+        !greaterThan(QMAKE_MSC_VER, 1500) { # MSVC2008
             CONFIG += disable_exiv2 # FIXME: C99
         }
     }
@@ -318,7 +328,7 @@ disable_cxx11 : !system_highway {
             CONFIG += disable_libjasper # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
             CONFIG += disable_libjasper # FIXME: C99
         }
     }
@@ -352,7 +362,7 @@ disable_zlib : !system_libpng {
             CONFIG += disable_lerc # FIXME: C99/C++11
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
             CONFIG += disable_lerc # FIXME: C99/C++11
         }
     }
@@ -367,7 +377,7 @@ disable_zlib : !system_libpng {
             CONFIG += disable_libtiff # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1900) { # MSVC2015
+        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
             CONFIG += disable_libtiff # FIXME: C99
         }
     }
@@ -387,7 +397,7 @@ disable_zlib : !system_libpng {
             CONFIG += disable_libbpg # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
             CONFIG += disable_libbpg # FIXME: C99
         }
     }
@@ -412,7 +422,7 @@ disable_zlib : !system_freetype {
             CONFIG += disable_libwmf # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1600) { # MSVC2010
+        !greaterThan(QMAKE_MSC_VER, 1500) { # MSVC2008
             CONFIG += disable_libwmf # FIXME: C99
         }
     }
@@ -454,7 +464,7 @@ disable_libjpeg : !system_libwmf {
             CONFIG += disable_giflib # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
             CONFIG += disable_giflib # FIXME: C99
         }
     }
@@ -490,7 +500,7 @@ disable_libjpeg : !system_libwmf {
             CONFIG += disable_aom # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
             CONFIG += disable_aom # FIXME: C99
         }
     }
@@ -525,7 +535,7 @@ disable_zlib : !system_openexr {
             CONFIG += disable_openexr # FIXME: C99/C++11
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
             CONFIG += disable_openexr # FIXME: C99/C++11
         }
     }
@@ -543,7 +553,7 @@ disable_aom : !system_libavif {
             CONFIG += disable_libavif # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
             CONFIG += disable_libavif # FIXME: C99
         }
     }
@@ -628,7 +638,7 @@ greaterThan(QT_MAJOR_VERSION, 5) {
             CONFIG += disable_nanosvg # FIXME: C99
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
+        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
             CONFIG += disable_nanosvg # FIXME: C99
         }
     }
@@ -669,7 +679,7 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 15) {
             CONFIG += disable_msedgewebview2
         }
     } else {
-        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
+        !greaterThan(QMAKE_MSC_VER, 1600) { # MSVC2010
             CONFIG += disable_msedgewebview2
         }
     }
@@ -787,7 +797,7 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
     CONFIG += disable_qtcore5compat
 }
 
-# ::::: Cleanup Unised :::::
+# ::::: Cleanup Unused :::::
 
 disable_libtiff | system_libtiff {
     CONFIG += disable_zstd
