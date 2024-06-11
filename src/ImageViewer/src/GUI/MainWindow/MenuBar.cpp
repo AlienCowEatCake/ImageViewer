@@ -157,7 +157,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionNavigateNext->setShortcuts(QList<QKeySequence>() << Qt::Key_Right << Qt::Key_Down << Qt::Key_Space << Qt::Key_Return << Qt::Key_Enter);
         actionNavigateNext->setMenuRole(QAction::NoRole);
         menuFile->addAction(actionStartSlideShow);
-        actionStartSlideShow->setShortcuts(createAnyModifierShortcuts(Qt::Key_W));
+        actionStartSlideShow->setShortcuts(createAnyModifierShortcuts(Qt::Key_W, 0, (QList<QKeySequence>() << (Qt::CTRL | Qt::Key_W))));
         actionStartSlideShow->setMenuRole(QAction::NoRole);
         menuFile->addSeparator();
         menuFile->addAction(actionImageInformation);
@@ -180,9 +180,9 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menuFile->addSeparator();
         menuFile->addAction(actionExit);
 #if defined (Q_OS_WIN)
-        actionExit->setShortcuts(QList<QKeySequence>() << (Qt::ALT | Qt::Key_F4) << (Qt::CTRL | Qt::Key_Q));
+        actionExit->setShortcuts(QList<QKeySequence>() << (Qt::ALT | Qt::Key_F4) << (Qt::CTRL | Qt::Key_Q) << (Qt::CTRL | Qt::Key_W));
 #else
-        actionExit->setShortcuts(QList<QKeySequence>() << (Qt::CTRL | Qt::Key_Q) << (Qt::ALT | Qt::Key_F4));
+        actionExit->setShortcuts(QList<QKeySequence>() << (Qt::CTRL | Qt::Key_Q) << (Qt::ALT | Qt::Key_F4) << (Qt::CTRL | Qt::Key_W));
 #endif
         actionExit->setMenuRole(QAction::QuitRole);
 
@@ -220,7 +220,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionZoomCustom->setShortcuts(createAnyModifierShortcuts(Qt::Key_Z));
         actionZoomCustom->setMenuRole(QAction::NoRole);
         menuView->addAction(actionZoomFitToWindow);
-        actionZoomFitToWindow->setShortcuts(createAnyModifierShortcuts(Qt::Key_F));
+        actionZoomFitToWindow->setShortcuts(createAnyModifierShortcuts(Qt::Key_F, 0, (QList<QKeySequence>() << (Qt::CTRL | Qt::META | Qt::Key_F))));
         actionZoomFitToWindow->setMenuRole(QAction::NoRole);
         actionZoomFitToWindow->setCheckable(true);
         menuView->addAction(actionZoomOriginalSize);
