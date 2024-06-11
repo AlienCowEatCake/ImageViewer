@@ -1,10 +1,10 @@
 diff --git a/include/freetype/internal/ftcalc.h b/include/freetype/internal/ftcalc.h
-index c9ac9d8..734bbc5 100644
+index d9aea2360..e9697fcd2 100644
 --- a/include/freetype/internal/ftcalc.h
 +++ b/include/freetype/internal/ftcalc.h
-@@ -357,7 +357,7 @@ FT_BEGIN_HEADER
- #endif /* __GNUC__ */
+@@ -472,7 +472,7 @@ FT_BEGIN_HEADER
  #endif /* !FT_CONFIG_OPTION_NO_ASSEMBLER */
+ 
  
 -#ifndef FT_MSB
 +#if !defined (FT_MSB) || defined (FT_MSB_USE_C_IMPL)
@@ -12,7 +12,7 @@ index c9ac9d8..734bbc5 100644
    FT_BASE( FT_Int )
    FT_MSB( FT_UInt32  z );
 diff --git a/include/ft2build.h b/include/ft2build.h
-index e7d808f..212642c 100644
+index 58491ceea..abd1ccf5c 100644
 --- a/include/ft2build.h
 +++ b/include/ft2build.h
 @@ -34,6 +34,10 @@
@@ -27,7 +27,7 @@ index e7d808f..212642c 100644
  
  #endif /* FT2BUILD_H_ */
 diff --git a/src/base/ftcalc.c b/src/base/ftcalc.c
-index f052550..18f6cdc 100644
+index c5bc7e3b1..8c20fc270 100644
 --- a/src/base/ftcalc.c
 +++ b/src/base/ftcalc.c
 @@ -107,7 +107,7 @@
@@ -37,5 +37,5 @@ index f052550..18f6cdc 100644
 -#ifndef FT_MSB
 +#if !defined (FT_MSB) || defined (FT_MSB_USE_C_IMPL)
  
-   FT_BASE_DEF ( FT_Int )
+   FT_BASE_DEF( FT_Int )
    FT_MSB( FT_UInt32 z )
