@@ -124,6 +124,7 @@ struct ReSVG
     QFunctionPointer resvg_transform_identity;
     QFunctionPointer resvg_options_set_keep_named_groups; ///< @note < v0.29.0
     QFunctionPointer resvg_get_image_bbox;
+    QFunctionPointer resvg_get_node_stroke_bbox; ///< @note v0.38.0+
 
     static ReSVG *instance()
     {
@@ -150,6 +151,7 @@ private:
         , resvg_transform_identity(Q_NULLPTR)
         , resvg_options_set_keep_named_groups(Q_NULLPTR)
         , resvg_get_image_bbox(Q_NULLPTR)
+        , resvg_get_node_stroke_bbox(Q_NULLPTR)
         {
             if(!LibraryUtils::LoadQLibrary(library, RESVG_LIBRARY_NAMES))
                 return;
@@ -166,6 +168,7 @@ private:
             resvg_transform_identity = library.resolve("resvg_transform_identity");
             resvg_options_set_keep_named_groups = library.resolve("resvg_options_set_keep_named_groups");
             resvg_get_image_bbox = library.resolve("resvg_get_image_bbox");
+            resvg_get_node_stroke_bbox = library.resolve("resvg_get_node_stroke_bbox");
 
 //            if(resvg_init_log)
 //            {
@@ -190,7 +193,7 @@ private:
                 && resvg_transform_identity
                 && resvg_get_image_bbox
                 && !resvg_options_set_keep_named_groups
-                && check_abi_003400()
+                && (resvg_get_node_stroke_bbox || check_abi_003400())
                 ;
     }
 
