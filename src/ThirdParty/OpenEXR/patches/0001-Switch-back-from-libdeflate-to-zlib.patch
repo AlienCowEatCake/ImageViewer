@@ -8,7 +8,7 @@ Subject: [PATCH] Switch back from libdeflate to zlib
  1 file changed, 20 insertions(+), 74 deletions(-)
 
 diff --git a/src/lib/OpenEXRCore/compression.c b/src/lib/OpenEXRCore/compression.c
-index 1d2eaea5..3c6c880a 100644
+index 1d2eaea5..3a4c5bf4 100644
 --- a/src/lib/OpenEXRCore/compression.c
 +++ b/src/lib/OpenEXRCore/compression.c
 @@ -8,13 +8,7 @@
@@ -67,7 +67,7 @@ index 1d2eaea5..3c6c880a 100644
 -    comp = libdeflate_alloc_compressor (level);
 -#endif
 -    if (comp)
-+    res = compress2 ((Bytef*)out, &outsz, in, (const Bytef*)in_bytes, level);
++    res = compress2 ((Bytef*)out, &outsz, (const Bytef*)in, in_bytes, level);
 +    if (res == Z_OK)
      {
 -        size_t outsz;

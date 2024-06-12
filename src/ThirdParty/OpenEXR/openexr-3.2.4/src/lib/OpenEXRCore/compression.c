@@ -64,7 +64,7 @@ exr_compress_buffer (
         if (level < 0) level = EXR_DEFAULT_ZLIB_COMPRESS_LEVEL;
     }
 
-    res = compress2 ((Bytef*)out, &outsz, in, (const Bytef*)in_bytes, level);
+    res = compress2 ((Bytef*)out, &outsz, (const Bytef*)in, in_bytes, level);
     if (res == Z_OK)
     {
         if (actual_out) *actual_out = outsz;
