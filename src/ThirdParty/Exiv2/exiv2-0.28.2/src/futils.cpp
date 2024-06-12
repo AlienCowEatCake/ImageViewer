@@ -342,6 +342,7 @@ Uri Uri::Parse(const std::string& uri) {
   return result;
 }
 
+#if 0
 std::string getProcessPath() {
 #if defined(__FreeBSD__)
   std::string ret("unknown");
@@ -385,4 +386,5 @@ std::string getProcessPath() {
   }
 #endif
 }
+#endif
 }  // namespace Exiv2

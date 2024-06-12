@@ -97,11 +97,13 @@ EXIV2API const char* version();
   The fourth version number is designated a "tweak" an used by Release Candidates
 */
 EXIV2API bool testVersion(uint32_t major, uint32_t minor, uint32_t patch);
+#if 0
 /*!
   @brief dumpLibraryInfo implements the exiv2 option --version --verbose
          used by exiv2 test suite to inspect libraries loaded at run-time
  */
 EXIV2API void dumpLibraryInfo(std::ostream& os, const std::vector<std::regex>& keys);
+#endif
 }  // namespace Exiv2
 
 #endif  // VERSION_HPP_

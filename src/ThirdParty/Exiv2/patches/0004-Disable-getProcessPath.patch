@@ -1,0 +1,46 @@
+From 0d08ae2066875be78250636c0712b65cfe10a753 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Mon, 22 Jul 2019 04:34:14 +0700
+Subject: [PATCH 4/4] Disable getProcessPath
+
+---
+ include/exiv2/futils.hpp | 2 ++
+ src/futils.cpp           | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/include/exiv2/futils.hpp b/include/exiv2/futils.hpp
+index 46a29289c..f0c5f150e 100644
+--- a/include/exiv2/futils.hpp
++++ b/include/exiv2/futils.hpp
+@@ -89,8 +89,10 @@ EXIV2API bool fileExists(const std::string& path);
+  */
+ EXIV2API std::string strError();
+ 
++#if 0
+ //! @brief Return the path of the current process.
+ EXIV2API std::string getProcessPath();
++#endif
+ 
+ /*!
+   @brief A container for URL components. It also provides the method to parse a
+diff --git a/src/futils.cpp b/src/futils.cpp
+index d65cc9fbe..6ddefc024 100644
+--- a/src/futils.cpp
++++ b/src/futils.cpp
+@@ -342,6 +342,7 @@ Uri Uri::Parse(const std::string& uri) {
+   return result;
+ }
+ 
++#if 0
+ std::string getProcessPath() {
+ #if defined(__FreeBSD__)
+   std::string ret("unknown");
+@@ -385,4 +386,5 @@ std::string getProcessPath() {
+   }
+ #endif
+ }
++#endif
+ }  // namespace Exiv2
+-- 
+2.39.2
+

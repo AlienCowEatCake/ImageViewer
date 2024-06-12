@@ -31,6 +31,7 @@
 #define _MAX_PATH 512
 #endif
 
+#if 0
 // platform specific support for getLoadedLibraries
 #if defined(_WIN32) || defined(__CYGWIN__)
 // clang-format off
@@ -57,6 +58,7 @@
 #elif defined(__sun__)
 #include <dlfcn.h>
 #include <link.h>
+#endif
 #endif
 
 namespace Exiv2 {
@@ -85,6 +87,7 @@ bool testVersion(uint32_t major, uint32_t minor, uint32_t patch) {
 }
 }  // namespace Exiv2
 
+#if 0
 static bool shouldOutput(const std::vector<std::regex>& greps, const char* key, const std::string& value) {
   bool bPrint = greps.empty();
   for (auto const& g : greps) {
@@ -500,3 +503,4 @@ void Exiv2::dumpLibraryInfo(std::ostream& os, const std::vector<std::regex>& key
   }
 #endif
 }
+#endif

@@ -89,8 +89,10 @@ EXIV2API bool fileExists(const std::string& path);
  */
 EXIV2API std::string strError();
 
+#if 0
 //! @brief Return the path of the current process.
 EXIV2API std::string getProcessPath();
+#endif
 
 /*!
   @brief A container for URL components. It also provides the method to parse a
