@@ -1,4 +1,4 @@
-From 048ab8e349665485d54dc98933a4dfc40f738b9f Mon Sep 17 00:00:00 2001
+From 63f2ca250690b56fff7aac6b46ef434051f8d628 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 24 Jun 2020 19:53:15 +0700
 Subject: [PATCH 5/6] Revert "Use QList instead of QVector"
@@ -84,7 +84,7 @@ index b572f20..ff16afb 100644
      QCFType<CGImageSourceRef> cgImageSource = nullptr;
      QCFType<CFDictionaryRef> cfImageDict = nullptr;
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index 298bb62..93fee94 100644
+index 345f7b8..e5660ab 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
 @@ -486,7 +486,7 @@ bool QTiffHandler::read(QImage *image)
@@ -161,5 +161,5 @@ index c5083f3..1cf2418 100644
      QImageReader reader(prefix + filename);
      QCOMPARE(reader.imageCount(), expectedNumPages);
 -- 
-2.39.2
+2.45.2
 

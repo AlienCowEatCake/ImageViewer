@@ -1,4 +1,4 @@
-From 45676a1e9b15f6811f09f4c789ab34dac865e4c2 Mon Sep 17 00:00:00 2001
+From 8ad6a35c625a7a4ea21c8809e4e881627228ca6a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 7 Jan 2019 21:11:00 +0700
 Subject: [PATCH 4/6] Dont use modern options with old Qt verson
@@ -164,7 +164,7 @@ index 9cdabe0..31b6e6f 100644
      TgaReader *reader = 0;
      if (bitsPerPixel == 16)
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index d61d45a..298bb62 100644
+index dd55e29..345f7b8 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
 @@ -3,9 +3,13 @@
@@ -761,5 +761,5 @@ index 45c56ac..57eae37 100644
  };
  
 -- 
-2.39.2
+2.45.2
 

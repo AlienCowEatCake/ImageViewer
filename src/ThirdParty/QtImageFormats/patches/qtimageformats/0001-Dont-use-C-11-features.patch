@@ -1,4 +1,4 @@
-From 764fcef7da8fc151d2468d1d649f74c4f3715362 Mon Sep 17 00:00:00 2001
+From 151b2f6ea0c29f12fdc4fe177ad1f340a1f5289b Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 10 Mar 2018 15:40:08 +0700
 Subject: [PATCH 1/6] Dont use C++11 features
@@ -10,11 +10,11 @@ Subject: [PATCH 1/6] Dont use C++11 features
  src/plugins/imageformats/mng/qmnghandler_p.h  | 24 +++++++++----------
  src/plugins/imageformats/tga/qtgafile.cpp     | 10 ++++----
  src/plugins/imageformats/tga/qtgahandler.h    | 10 ++++----
- .../imageformats/tiff/qtiffhandler.cpp        |  2 +-
+ .../imageformats/tiff/qtiffhandler.cpp        |  4 ++--
  .../imageformats/tiff/qtiffhandler_p.h        | 20 ++++++++--------
  .../imageformats/wbmp/qwbmphandler_p.h        | 10 ++++----
  .../imageformats/webp/qwebphandler_p.h        | 22 ++++++++---------
- 10 files changed, 71 insertions(+), 71 deletions(-)
+ 10 files changed, 72 insertions(+), 72 deletions(-)
 
 diff --git a/src/plugins/imageformats/dds/qddshandler.h b/src/plugins/imageformats/dds/qddshandler.h
 index 6c11adf..71f25f2 100644
@@ -207,7 +207,7 @@ index 35b41c2..af8d9c1 100644
  private:
      mutable QTgaFile *tga;
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index 95d30d7..d61d45a 100644
+index 95d30d7..dd55e29 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
 @@ -69,7 +69,7 @@ int qtiffMapProc(thandle_t fd, void **base, toff_t *size)
@@ -219,6 +219,15 @@ index 95d30d7..d61d45a 100644
              *size = file->size();
              return 1;
          }
+@@ -281,7 +281,7 @@ bool QTiffHandlerPrivate::openForRead(QIODevice *device)
+         return false;
+ 
+     tiff = openInternal("rh", device);
+-    return tiff != nullptr;
++    return tiff != Q_NULLPTR;
+ }
+ 
+ bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler_p.h b/src/plugins/imageformats/tiff/qtiffhandler_p.h
 index 738b992..630fde0 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler_p.h
@@ -314,5 +323,5 @@ index 69e8404..45c56ac 100644
  private:
      bool ensureScanned() const;
 -- 
-2.39.2
+2.45.2
 

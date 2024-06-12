@@ -285,7 +285,7 @@ bool QTiffHandlerPrivate::openForRead(QIODevice *device)
         return false;
 
     tiff = openInternal("rh", device);
-    return tiff != nullptr;
+    return tiff != Q_NULLPTR;
 }
 
 bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
