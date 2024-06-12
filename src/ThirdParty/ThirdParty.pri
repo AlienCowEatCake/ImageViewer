@@ -73,6 +73,8 @@ include(libtiff/libtiff.pri)
 # Dependencies:
 #  * zlib
 #  * libexpat
+#  * brotli
+#  * ghc_filesystem
 include(Exiv2/Exiv2.pri)
 
 # Dependencies:
@@ -125,3 +127,4 @@ include(brotli/brotli.pri)
 include(highway/highway.pri)
 include(libde265/libde265.pri)
 include(aom/aom.pri)
+include(ghc_filesystem/ghc_filesystem.pri)

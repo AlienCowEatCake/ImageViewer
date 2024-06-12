@@ -88,6 +88,7 @@ See the [buildscripts/](buildscripts/) directory.
 **Languages Configuration:**
 * C++11 options: `disable_cxx11`, `enable_cxx11` *(auto by default)*
 * C++14 options: `disable_cxx14`, `enable_cxx14` *(auto by default)*
+* C++17 options: `disable_cxx17`, `enable_cxx17` *(auto by default)*
 
 **System Libraries Configuration:**
 * pkg-config options: `disable_pkgconfig`, `enable_pkgconfig` *(auto by default)*
@@ -136,6 +137,7 @@ See the [buildscripts/](buildscripts/) directory.
 * QtImageFormats options: `disable_qtimageformats` *(enabled by default)*
 * KImageFormats options: `disable_kimageformats` *(enabled by default)*
 * MSEdgeWebView2 options: `disable_msedgewebview2`, `enable_msedgewebview2` *(disabled by default)*
+* ghc::filesystem options: `disable_ghc_filesystem` *(enabled by default)*
 
 **Optional Built-in Components Configuration:**
 * DecoderQtSVG options: `disable_qtsvg` *(enabled by default)*

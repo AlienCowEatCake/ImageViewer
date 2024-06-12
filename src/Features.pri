@@ -19,6 +19,22 @@
 
 # ::::: Languages Configuration :::::
 
+!c++latest : !c++03 : !c++0x : !c++11 : !c++1y : !c++14 : !c++1z : !c++17 : !c++2a : !c++20 : !c++2b : !c++23 {
+    contains(QT_CONFIG, c++17) {
+        CONFIG += c++17
+    } else : contains(QT_CONFIG, c++1z) {
+        CONFIG += c++1z
+    } else : contains(QT_CONFIG, c++14) {
+        CONFIG += c++14
+    } else : contains(QT_CONFIG, c++1y) {
+        CONFIG += c++1y
+    } else : contains(QT_CONFIG, c++11) {
+        CONFIG += c++11
+    } else : contains(QT_CONFIG, c++0x) {
+        CONFIG += c++0x
+    }
+}
+
 # C++11 options:
 #    disable_cxx11
 #    enable_cxx11
@@ -104,6 +120,47 @@
     CONFIG -= enable_cxx14
 }
 
+# C++17 options:
+#    disable_cxx17
+#    enable_cxx17
+!disable_cxx17 {
+    *msvc* {
+        isEmpty(QMAKE_MSC_VER) {
+            win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 | win32-msvc2015 | win32-msvc2017 {
+                CONFIG += test_cxx17_incompatible_msvc
+            }
+        } else {
+            !greaterThan(QMAKE_MSC_VER, 1919) { # MSVC2017
+                CONFIG += test_cxx17_incompatible_msvc
+            }
+        }
+        !test_cxx17_incompatible_msvc {
+            CONFIG += test_cxx17_compatible_msvc
+        }
+    }
+    greaterThan(QT_MAJOR_VERSION, 5) {
+        CONFIG += test_cxx17_compatible_qt
+    }
+    c++latest | c++17 | c++2a | c++20 | c++2b | c++23 {
+        CONFIG += test_cxx17_compatible_config
+    }
+    # Workaround: MSVC 2017 is not a C++17-conformant compiler
+    test_cxx17_incompatible_msvc {
+        CONFIG -= test_cxx17_compatible_qt
+        CONFIG -= test_cxx17_compatible_config
+    }
+    test_cxx17_compatible_qt | test_cxx17_compatible_config | test_cxx17_compatible_msvc | enable_cxx17 {
+        CONFIG -= disable_cxx17
+        CONFIG += enable_cxx17
+    } else {
+        CONFIG += disable_cxx17
+        CONFIG -= enable_cxx17
+    }
+} else {
+    CONFIG += disable_cxx17
+    CONFIG -= enable_cxx17
+}
+
 # Cleanup C++
 disable_cxx11 {
     enable_cxx14 {
@@ -112,6 +169,12 @@ disable_cxx11 {
     !disable_cxx14 {
         CONFIG += disable_cxx14
     }
+    enable_cxx17 {
+        CONFIG -= enable_cxx17
+    }
+    !disable_cxx17 {
+        CONFIG += disable_cxx17
+    }
 }
 enable_cxx14 {
     disable_cxx11 {
@@ -119,6 +182,28 @@ enable_cxx14 {
     }
     !enable_cxx11 {
         CONFIG += enable_cxx11
+    }
+}
+disable_cxx14 {
+    enable_cxx17 {
+        CONFIG -= enable_cxx17
+    }
+    !disable_cxx17 {
+        CONFIG += disable_cxx17
+    }
+}
+enable_cxx17 {
+    disable_cxx11 {
+        CONFIG -= disable_cxx11
+    }
+    !enable_cxx11 {
+        CONFIG += enable_cxx11
+    }
+    disable_cxx14 {
+        CONFIG -= disable_cxx14
+    }
+    !enable_cxx14 {
+        CONFIG += enable_cxx14
     }
 }
 
@@ -302,16 +387,8 @@ disable_cxx11 : !system_highway {
 # exiv2 options:
 #    disable_exiv2
 #    system_exiv2
-*msvc* {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 {
-            CONFIG += disable_exiv2 # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1500) { # MSVC2008
-            CONFIG += disable_exiv2 # FIXME: C99
-        }
-    }
+disable_cxx17 {
+    CONFIG += disable_exiv2
 }
 
 # LibJPEG options:
@@ -685,6 +762,12 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 15) {
     }
 }
 
+# ghc::filesystem options:
+#    disable_ghc_filesystem
+disable_cxx11 {
+    CONFIG += disable_ghc_filesystem
+}
+
 # ::::: Optional Built-in Components Configuration :::::
 
 # DecoderQtSVG options:
@@ -818,6 +901,10 @@ disable_exiv2 | system_exiv2 {
     }
 }
 
+disable_exiv2 | system_exiv2 {
+    CONFIG += disable_ghc_filesystem
+}
+
 disable_libavif | system_libavif {
     disable_libheif | system_libheif {
         CONFIG += disable_aom
@@ -825,6 +912,11 @@ disable_libavif | system_libavif {
 }
 
 disable_libjxl | system_libjxl {
-    CONFIG += disable_brotli
+    disable_exiv2 | system_exiv2 {
+        CONFIG += disable_brotli
+    }
+}
+
+disable_libjxl | system_libjxl {
     CONFIG += disable_highway
 }
