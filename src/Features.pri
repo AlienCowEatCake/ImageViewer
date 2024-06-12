@@ -430,7 +430,7 @@ disable_cxx11 : !system_highway {
 # exiv2 options:
 #    disable_exiv2
 #    system_exiv2
-disable_cxx17 {
+disable_cxx17 : !system_exiv2 {
     CONFIG += disable_exiv2
 }
 
