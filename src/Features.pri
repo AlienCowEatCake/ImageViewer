@@ -19,6 +19,7 @@
 
 # ::::: Languages Configuration :::::
 
+# Autodetect C++ standard if not specified in CONFIG
 !c++latest : !c++03 : !c++0x : !c++11 : !c++1y : !c++14 : !c++1z : !c++17 : !c++2a : !c++20 : !c++2b : !c++23 {
     contains(QT_CONFIG, c++17) {
         CONFIG += c++17
@@ -204,6 +205,48 @@ enable_cxx17 {
     }
     !enable_cxx14 {
         CONFIG += enable_cxx14
+    }
+}
+
+# Upgrade lower C++ standard if possible
+enable_cxx17 {
+    c++0x | c++11 | c++1y | c++14 | c++1z {
+        contains(QT_CONFIG, c++17) {
+            CONFIG -= c++0x
+            CONFIG -= c++11
+            CONFIG -= c++1y
+            CONFIG -= c++14
+            CONFIG -= c++1z
+            CONFIG *= c++17
+        } else : contains(QT_CONFIG, c++1z) {
+            CONFIG -= c++0x
+            CONFIG -= c++11
+            CONFIG -= c++1y
+            CONFIG -= c++14
+            CONFIG *= c++1z
+        }
+    }
+} else : enable_cxx14 {
+    c++0x | c++11 | c++1y {
+        contains(QT_CONFIG, c++14) {
+            CONFIG -= c++0x
+            CONFIG -= c++11
+            CONFIG -= c++1y
+            CONFIG *= c++14
+        } else : contains(QT_CONFIG, c++1y) {
+            CONFIG -= c++0x
+            CONFIG -= c++11
+            CONFIG *= c++1y
+        }
+    }
+} else : enable_cxx11 {
+    c++0x {
+        contains(QT_CONFIG, c++11) {
+            CONFIG -= c++0x
+            CONFIG *= c++11
+        } else : contains(QT_CONFIG, c++0x) {
+            CONFIG *= c++0x
+        }
     }
 }
 
