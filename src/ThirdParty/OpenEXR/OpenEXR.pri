@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH = \
             $${THIRDPARTY_OPENEXR_INCLUDE_PATH} \
+            $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath \
             $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR \
             $${INCLUDEPATH}
         DEPENDPATH += \

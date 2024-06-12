@@ -1,1 +1,1 @@
-#include "../../openexr-2.5.10/OpenEXR/IlmImf/ImfDwaCompressorSimd.h"
+#include "../../openexr-3.2.4/src/lib/OpenEXR/ImfDwaCompressorSimd.h"

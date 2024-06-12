@@ -1,0 +1,61 @@
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright Contributors to the OpenEXR Project.
+
+name: OSS-Fuzz
+
+# Skip the run on *.md changes and on changes to the website.
+# Also, no need to run on changes to the bazel setup.
+
+on:
+  push:
+    branches-ignore:
+      - RB-2.*
+    tags-ignore:
+      - v1.*
+      - v2.*
+    paths:
+      - '**'
+      - '!**.md'
+      - '!website/**'
+      - '!bazel/**'
+      - '!src/wrappers/**'
+  pull_request:
+    branches-ignore:
+      - RB-2.*
+    tags-ignore:
+      - v1.*
+      - v2.*
+    paths:
+      - '**'
+      - '!**.md'
+      - '!website/**'
+      - '!bazel/**'
+      - '!src/wrappers/**'
+
+permissions:
+  contents: read
+
+jobs:
+  Fuzzing:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Build Fuzzers
+      id: build
+      uses: google/oss-fuzz/infra/cifuzz/actions/build_fuzzers@master
+      with:
+        oss-fuzz-project-name: 'openexr'
+        dry-run: false
+        language: c++
+    - name: Run Fuzzers
+      uses: google/oss-fuzz/infra/cifuzz/actions/run_fuzzers@master
+      with:
+        oss-fuzz-project-name: 'openexr'
+        fuzz-seconds: 300
+        dry-run: false
+        language: c++
+    - name: Upload Crash
+      uses: actions/upload-artifact@v3
+      if: failure() && steps.build.outcome == 'success'
+      with:
+        name: artifacts
+        path: ./out/artifacts
