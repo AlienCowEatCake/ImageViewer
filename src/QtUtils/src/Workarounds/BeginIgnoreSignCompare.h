@@ -17,7 +17,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined (WA_SIGN_COMPARE_IGNORED_GCC) && defined (__GNUC__) && !defined (__clang__)
+#if !defined (WA_SIGN_COMPARE_IGNORED_GCC) && defined (__GNUC__) && !defined (__clang__) && ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
 #define WA_SIGN_COMPARE_IGNORED_GCC
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-compare"
