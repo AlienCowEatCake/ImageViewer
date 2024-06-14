@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -196,6 +196,9 @@ QString GetSystemDescription()
         break;
     case 1400:
         osName = QString::fromLatin1("Sonoma");
+        break;
+    case 1500:
+        osName = QString::fromLatin1("Sequoia");
         break;
     default:
         break;
