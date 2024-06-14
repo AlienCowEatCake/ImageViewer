@@ -181,8 +181,8 @@ SOURCES += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfWav.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZip.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZipCompressor.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/b44ExpLogTable.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/dwaLookups.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/b44ExpLogTable.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/dwaLookups.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/attributes.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/base.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/channel_list.c \
