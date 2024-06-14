@@ -23,8 +23,8 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
-#if !defined (WA_UNUSED_PARAMETER_IGNORED_CLANG) && defined (__clang__)
-#if defined (__has_warning) && __has_warning ("-Wunused-parameter")
+#if !defined (WA_UNUSED_PARAMETER_IGNORED_CLANG) && defined (__clang__) && defined (__has_warning)
+#if __has_warning ("-Wunused-parameter")
 #define WA_UNUSED_PARAMETER_IGNORED_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"

@@ -23,8 +23,8 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 #endif
 
-#if !defined (WA_PARENTHESES_IGNORED_CLANG) && defined (__clang__)
-#if defined (__has_warning) && __has_warning ("-Wparentheses")
+#if !defined (WA_PARENTHESES_IGNORED_CLANG) && defined (__clang__) && defined (__has_warning)
+#if __has_warning ("-Wparentheses")
 #define WA_PARENTHESES_IGNORED_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wparentheses"

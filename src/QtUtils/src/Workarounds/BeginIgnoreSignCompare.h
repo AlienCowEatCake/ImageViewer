@@ -23,8 +23,8 @@
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #endif
 
-#if !defined (WA_SIGN_COMPARE_IGNORED_CLANG) && defined (__clang__)
-#if defined (__has_warning) && __has_warning ("-Wsign-compare")
+#if !defined (WA_SIGN_COMPARE_IGNORED_CLANG) && defined (__clang__) && defined (__has_warning)
+#if __has_warning ("-Wsign-compare")
 #define WA_SIGN_COMPARE_IGNORED_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wsign-compare"
