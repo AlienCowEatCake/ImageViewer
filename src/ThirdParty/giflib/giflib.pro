@@ -14,6 +14,7 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_GIFLIB_PATH = $${PWD}/giflib-5.2.2
 THIRDPARTY_GIFLIB_CONFIG_PATH = $${PWD}/config
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_GIFLIB_PATH} $${INCLUDEPATH}

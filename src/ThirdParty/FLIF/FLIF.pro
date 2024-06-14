@@ -12,6 +12,7 @@ CONFIG += warn_off
 
 THIRDPARTY_FLIF_PATH = $${PWD}/FLIF-0.4
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_FLIF_PATH}/src/library $${INCLUDEPATH}

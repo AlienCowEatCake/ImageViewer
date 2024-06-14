@@ -12,6 +12,7 @@ CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.4.0
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 INCLUDEPATH = \

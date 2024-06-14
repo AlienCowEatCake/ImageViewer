@@ -13,6 +13,7 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_LIBMNG_PATH = $${PWD}/libmng-2.0.3
 THIRDPARTY_LIBMNG_CONFIG_PATH = $${PWD}/config
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../libjpeg/libjpeg.pri)
 include(../LittleCMS2/LittleCMS2.pri)

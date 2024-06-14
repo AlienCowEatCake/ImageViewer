@@ -12,6 +12,7 @@ CONFIG += exceptions_off warn_off
 
 THIRDPARTY_STB_PATH = $${PWD}/stb
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 HEADERS += \

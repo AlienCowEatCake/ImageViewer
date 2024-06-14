@@ -13,6 +13,7 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.6.2
 THIRDPARTY_LIBEXPAT_CONFIG_PATH = $${PWD}/config
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../zlib/zlib.pri)
 

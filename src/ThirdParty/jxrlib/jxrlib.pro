@@ -12,6 +12,7 @@ CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_JXRLIB_PATH = $${PWD}/jxrlib-e922fa5
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 INCLUDEPATH = \

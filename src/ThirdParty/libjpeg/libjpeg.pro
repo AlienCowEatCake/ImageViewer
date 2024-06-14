@@ -13,6 +13,7 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_LIBJPEG_PATH = $${PWD}/jpeg-9f
 THIRDPARTY_LIBJPEG_CONFIG_PATH = $${PWD}/config
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LIBJPEG_CONFIG_PATH} $${THIRDPARTY_LIBJPEG_PATH} $${INCLUDEPATH}

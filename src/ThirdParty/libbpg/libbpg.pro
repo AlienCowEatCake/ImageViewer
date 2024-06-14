@@ -13,6 +13,7 @@ CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_LIBBPG_PATH = $${PWD}/libbpg-0.9.8
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LIBBPG_PATH} $${INCLUDEPATH}

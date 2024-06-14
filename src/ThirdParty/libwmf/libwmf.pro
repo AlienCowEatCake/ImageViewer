@@ -13,6 +13,7 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_LIBWMF_PATH = $${PWD}/libwmf-0.2.13
 THIRDPARTY_LIBWMF_CONFIG_PATH = $${PWD}/config
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../FreeType/FreeType.pri)
 include(../libjpeg/libjpeg.pri)

@@ -13,6 +13,7 @@ CONFIG += warn_off
 THIRDPARTY_LIBJXL_PATH = $${PWD}/libjxl-0.10.2
 THIRDPARTY_LIBJXL_CONFIG_PATH = $${PWD}/config
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../brotli/brotli.pri)
 include(../highway/highway.pri)

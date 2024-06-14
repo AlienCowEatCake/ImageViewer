@@ -12,6 +12,7 @@ CONFIG += warn_off
 
 THIRDPARTY_HIGHWAY_PATH = $${PWD}/highway-1.2.0
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 INCLUDEPATH = \

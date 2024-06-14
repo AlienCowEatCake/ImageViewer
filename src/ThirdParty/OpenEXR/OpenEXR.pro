@@ -15,6 +15,7 @@ THIRDPARTY_OPENEXR_CONFIG_PATH = $${PWD}/config
 THIRDPARTY_IMATH_PATH = $${PWD}/Imath-3.1.11
 THIRDPARTY_OPENEXR_INCLUDE_PATH = $${PWD}/include
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../zlib/zlib.pri)
 

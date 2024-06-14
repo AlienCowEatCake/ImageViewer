@@ -12,6 +12,7 @@ CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_ZSTD_PATH = $${PWD}/zstd-1.5.6
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_ZSTD_PATH}/lib $${THIRDPARTY_ZSTD_PATH}/lib/common $${THIRDPARTY_ZSTD_PATH}/lib/legacy $${INCLUDEPATH}

@@ -12,6 +12,7 @@ CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_JBIGKIT_PATH = $${PWD}/jbigkit-2.1
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_JBIGKIT_PATH}/libjbig $${INCLUDEPATH}

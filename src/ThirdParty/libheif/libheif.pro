@@ -13,6 +13,7 @@ CONFIG += warn_off
 THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.17.6
 THIRDPARTY_LIBHEIF_INCLUDE_PATH = $${PWD}/include
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../aom/aom.pri)
 include(../libjpeg/libjpeg.pri)

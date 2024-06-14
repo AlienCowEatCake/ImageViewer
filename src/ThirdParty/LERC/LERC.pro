@@ -12,6 +12,7 @@ CONFIG += warn_off
 
 THIRDPARTY_LERC_PATH = $${PWD}/lerc-4.0.0
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LERC_PATH}/src/LercLib/include $${THIRDPARTY_LERC_PATH}/src/LercLib $${INCLUDEPATH}

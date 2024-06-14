@@ -13,6 +13,7 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_FREETYPE_PATH = $${PWD}/freetype-2.13.2
 THIRDPARTY_FREETYPE_CONFIG_PATH = $${PWD}/config
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../libpng/libpng.pri)
 include(../zlib/zlib.pri)

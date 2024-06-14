@@ -13,6 +13,7 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_OPENJPEG_PATH = $${PWD}/openjpeg-2.5.2
 THIRDPARTY_OPENJPEG_CONFIG_PATH = $${PWD}/config
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 INCLUDEPATH = $${THIRDPARTY_OPENJPEG_CONFIG_PATH} $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2 $${INCLUDEPATH}

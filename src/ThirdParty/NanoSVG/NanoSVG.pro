@@ -15,6 +15,7 @@ THIRDPARTY_NANOSVG_IMPL_PATH = $${PWD}/implementation
 
 INCLUDEPATH += $${THIRDPARTY_NANOSVG_PATH}/src
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 HEADERS += \

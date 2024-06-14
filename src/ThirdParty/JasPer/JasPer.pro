@@ -13,6 +13,7 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_JASPER_PATH = $${PWD}/jasper-8766848
 THIRDPARTY_JASPER_CONFIG_PATH = $${PWD}/config
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../libjpeg/libjpeg.pri)
 include(../libheif/libheif.pri)

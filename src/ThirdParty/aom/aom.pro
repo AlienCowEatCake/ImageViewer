@@ -13,6 +13,7 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.9.0
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 *g++*|*clang* {

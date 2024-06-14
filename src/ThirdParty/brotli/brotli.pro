@@ -12,6 +12,7 @@ CONFIG += exceptions_off rtti_off warn_off
 
 THIRDPARTY_BROTLI_PATH = $${PWD}/brotli-1.1.0
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 *g++*|*clang* {

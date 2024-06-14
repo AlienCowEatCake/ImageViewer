@@ -13,6 +13,7 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_XZUTILS_PATH = $${PWD}/xz-5.6.2
 THIRDPARTY_XZUTILS_CONFIG_PATH = $${PWD}/config
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 *g++*|*clang* {

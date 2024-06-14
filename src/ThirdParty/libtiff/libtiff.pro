@@ -13,6 +13,7 @@ CONFIG += exceptions_off rtti_off warn_off
 THIRDPARTY_LIBTIFF_PATH = $${PWD}/tiff-4.6.0
 THIRDPARTY_LIBTIFF_CONFIG_PATH = $${PWD}/config
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../zlib/zlib.pri)
 include(../Zstandard/Zstandard.pri)

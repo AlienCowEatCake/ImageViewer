@@ -12,6 +12,7 @@ CONFIG += exceptions_off warn_off
 
 THIRDPARTY_QTEXTENDED_PATH = $${PWD}/src
 
+include(../../Features.pri)
 include(../CommonSettings.pri)
 
 INCLUDEPATH += $${THIRDPARTY_QTEXTENDED_PATH}
