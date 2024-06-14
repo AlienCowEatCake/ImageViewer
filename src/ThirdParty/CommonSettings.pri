@@ -23,7 +23,7 @@
 }
 
 macx {
-    QMAKE_CXXFLAGS += -Wno-invalid-constexpr
-    QMAKE_CFLAGS   += -Wno-invalid-constexpr
+    QMAKE_CXXFLAGS *= -Wno-invalid-constexpr
+    QMAKE_CFLAGS   *= -Wno-invalid-constexpr
 }
 
