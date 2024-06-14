@@ -26,10 +26,12 @@
 #include <QFile>
 #include <QDebug>
 
+#include "Workarounds/BeginIgnoreUnusedParameter.h"
 #include <OpenEXR/ImfArray.h>
 #include <OpenEXR/ImfIO.h>
 #include <OpenEXR/ImfRgbaFile.h>
 #include <OpenEXR/Iex.h>
+#include "Workarounds/EndIgnoreUnusedParameter.h"
 
 #if defined (OPENEXR_VERSION_MAJOR) && defined (OPENEXR_VERSION_MINOR) && defined (OPENEXR_VERSION_PATCH)
 #define OPENEXR_VERSION_GREATER_OR_EQUAL(MAJOR, MINOR, PATCH) \

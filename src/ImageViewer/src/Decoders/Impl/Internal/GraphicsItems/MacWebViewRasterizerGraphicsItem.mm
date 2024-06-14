@@ -53,6 +53,8 @@ typedef QTime QElapsedTimer;
 #define DLOG qDebug() << QString::fromLatin1("[%1]").arg(QString::fromLatin1(__FUNCTION__)).toLatin1().data()
 #endif
 
+#include "Workarounds/BeginIgnoreDeprecated.h"
+
 // ====================================================================================================
 
 namespace {
@@ -410,4 +412,6 @@ QVariant MacWebViewRasterizerGraphicsItem::evalJSImpl(const QString &scriptSourc
 }
 
 // ====================================================================================================
+
+#include "Workarounds/EndIgnoreDeprecated.h"
 

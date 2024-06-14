@@ -46,6 +46,7 @@
 #endif
 #if defined (HAS_LIBJASPER)
 #include "Workarounds/BeginIgnoreShiftNegative.h"
+#include "Workarounds/BeginIgnoreSignCompare.h"
 #if !defined (max_align_t)
 #include <jasper/jasper.h>
 #if defined (max_align_t)
@@ -58,6 +59,7 @@
 #else
 #include <jasper/jasper.h>
 #endif
+#include "Workarounds/EndIgnoreSignCompare.h"
 #include "Workarounds/EndIgnoreShiftNegative.h"
 #endif
 #if defined (HAS_LIBRSVG)
