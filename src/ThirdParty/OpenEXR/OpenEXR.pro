@@ -38,7 +38,7 @@ SOURCES += \
     $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathMatrixAlgo.cpp \
     $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathRandom.cpp \
     $${THIRDPARTY_IMATH_PATH}/src/Imath/half.cpp \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/toFloat.cpp \
+\#    $${THIRDPARTY_IMATH_PATH}/src/Imath/toFloat.cpp \
 
 # find ./src/Imath -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_IMATH_PATH}| ; s|$| \\|'
 HEADERS += \
