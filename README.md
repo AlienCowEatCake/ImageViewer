@@ -137,7 +137,7 @@ See the [buildscripts/](buildscripts/) directory.
 * QtImageFormats options: `disable_qtimageformats` *(enabled by default)*
 * KImageFormats options: `disable_kimageformats` *(enabled by default)*
 * MSEdgeWebView2 options: `disable_msedgewebview2`, `enable_msedgewebview2` *(disabled by default)*
-* ghc::filesystem options: `disable_ghc_filesystem` *(enabled by default)*
+* ghc::filesystem options: `disable_ghc_filesystem`, `enable_ghc_filesystem` *(auto by default)*
 
 **Optional Built-in Components Configuration:**
 * DecoderQtSVG options: `disable_qtsvg` *(enabled by default)*

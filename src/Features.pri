@@ -709,17 +709,20 @@ lessThan(QT_VERSION_NUMERIC, 51500) {
 
 # ghc::filesystem options:
 #    disable_ghc_filesystem
+#    enable_ghc_filesystem
 disable_cxx11 {
     CONFIG *= disable_ghc_filesystem
 }
-*msvc* : !lessThan(MSVC_VERSION, 2019) : !disable_cxx17 {
-    CONFIG *= disable_ghc_filesystem
-}
-macx : !lessThan(QT_VERSION_NUMERIC, 60500) : !disable_cxx17 {
-    CONFIG *= disable_ghc_filesystem
-}
-*g++* : !lessThan(GCC_VERSION_NUMERIC, 90000) : !disable_cxx17 {
-    CONFIG *= disable_ghc_filesystem
+!enable_ghc_filesystem : !disable_cxx17 {
+    *msvc* : !lessThan(MSVC_VERSION, 2019) {
+        CONFIG *= disable_ghc_filesystem
+    }
+    macx : !lessThan(QT_VERSION_NUMERIC, 60500) {
+        CONFIG *= disable_ghc_filesystem
+    }
+    *g++* : !lessThan(GCC_VERSION_NUMERIC, 90000) {
+        CONFIG *= disable_ghc_filesystem
+    }
 }
 
 # ::::: Optional Built-in Components Configuration :::::
