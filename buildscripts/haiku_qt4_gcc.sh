@@ -12,7 +12,7 @@ cd "$(dirname $0)"/..
 rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
-${CMD_QMAKE} -spec haiku-g++ -r CONFIG+="release" CONFIG+=enable_cxx11 QMAKE_CXXFLAGS+=-std=c++11 CONFIG+="enable_update_checking" CONFIG+="enable_nanosvg" "../${PROJECT}.pro"
+${CMD_QMAKE} -spec haiku-g++ -r CONFIG+="release" CONFIG+="enable_update_checking" CONFIG+="enable_nanosvg" "../${PROJECT}.pro"
 make
 strip --strip-all "${APP_PATH}/${PROJECT}"
 cp -a "${APP_PATH}/${PROJECT}" ../"${PROJECT}${SUFFIX}"

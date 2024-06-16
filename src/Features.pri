@@ -19,20 +19,114 @@
 
 # ::::: Languages Configuration :::::
 
-# Autodetect C++ standard if not specified in CONFIG
-!c++latest : !c++03 : !c++0x : !c++11 : !c++1y : !c++14 : !c++1z : !c++17 : !c++2a : !c++20 : !c++2b : !c++23 {
-    contains(QT_CONFIG, c++17) {
-        CONFIG *= c++17
-    } else : contains(QT_CONFIG, c++1z) {
-        CONFIG *= c++1z
-    } else : contains(QT_CONFIG, c++14) {
-        CONFIG *= c++14
-    } else : contains(QT_CONFIG, c++1y) {
-        CONFIG *= c++1y
-    } else : contains(QT_CONFIG, c++11) {
-        CONFIG *= c++11
-    } else : contains(QT_CONFIG, c++0x) {
-        CONFIG *= c++0x
+# Get Qt and GCC/Clang/MSVC versions
+isEmpty(QT_VERSION_NUMERIC) {
+    QT_VERSION_NUMERIC = "$${QT_MAJOR_VERSION}"
+    greaterThan(QT_MINOR_VERSION, 9) {
+        QT_VERSION_NUMERIC = "$${QT_VERSION_NUMERIC}$${QT_MINOR_VERSION}"
+    } else {
+        QT_VERSION_NUMERIC = "$${QT_VERSION_NUMERIC}0$${QT_MINOR_VERSION}"
+    }
+    greaterThan(QT_PATCH_VERSION, 9) {
+        QT_VERSION_NUMERIC = "$${QT_VERSION_NUMERIC}$${QT_PATCH_VERSION}"
+    } else {
+        QT_VERSION_NUMERIC = "$${QT_VERSION_NUMERIC}0$${QT_PATCH_VERSION}"
+    }
+}
+*g++* : isEmpty(GCC_VERSION_NUMERIC) {
+    GCC_VERSION_STR = $$system("$${QMAKE_CXX} -dumpversion")
+    GCC_VERSION_LIST = $$split(GCC_VERSION_STR, .)
+    GCC_MAJOR_VERSION = $$member(GCC_VERSION_LIST, 0)
+    GCC_MINOR_VERSION = $$member(GCC_VERSION_LIST, 1)
+    GCC_PATCH_VERSION = $$member(GCC_VERSION_LIST, 2)
+    GCC_PATCH_VERSION_LIST = $$split(GCC_PATCH_VERSION, -)
+    GCC_PATCH_VERSION = $$member(GCC_PATCH_VERSION_LIST, 0)
+    GCC_VERSION_NUMERIC = "$${GCC_MAJOR_VERSION}"
+    greaterThan(GCC_MINOR_VERSION, 9) {
+        GCC_VERSION_NUMERIC = "$${GCC_VERSION_NUMERIC}$${GCC_MINOR_VERSION}"
+    } else {
+        GCC_VERSION_NUMERIC = "$${GCC_VERSION_NUMERIC}0$${GCC_MINOR_VERSION}"
+    }
+    greaterThan(GCC_PATCH_VERSION, 9) {
+        GCC_VERSION_NUMERIC = "$${GCC_VERSION_NUMERIC}$${GCC_PATCH_VERSION}"
+    } else {
+        GCC_VERSION_NUMERIC = "$${GCC_VERSION_NUMERIC}0$${GCC_PATCH_VERSION}"
+    }
+}
+*clang* : isEmpty(CLANG_VERSION_NUMERIC) {
+    CLANG_VERSION_STR = $$system("$${QMAKE_CXX} -dumpversion")
+    CLANG_VERSION_LIST = $$split(CLANG_VERSION_STR, .)
+    CLANG_MAJOR_VERSION = $$member(CLANG_VERSION_LIST, 0)
+    CLANG_MINOR_VERSION = $$member(CLANG_VERSION_LIST, 1)
+    CLANG_PATCH_VERSION = $$member(CLANG_VERSION_LIST, 2)
+    CLANG_PATCH_VERSION_LIST = $$split(CLANG_PATCH_VERSION, -)
+    CLANG_PATCH_VERSION = $$member(CLANG_PATCH_VERSION_LIST, 0)
+    CLANG_VERSION_NUMERIC = "$${CLANG_MAJOR_VERSION}"
+    greaterThan(CLANG_MINOR_VERSION, 9) {
+        CLANG_VERSION_NUMERIC = "$${CLANG_VERSION_NUMERIC}$${CLANG_MINOR_VERSION}"
+    } else {
+        CLANG_VERSION_NUMERIC = "$${CLANG_VERSION_NUMERIC}0$${CLANG_MINOR_VERSION}"
+    }
+    greaterThan(CLANG_PATCH_VERSION, 9) {
+        CLANG_VERSION_NUMERIC = "$${CLANG_VERSION_NUMERIC}$${CLANG_PATCH_VERSION}"
+    } else {
+        CLANG_VERSION_NUMERIC = "$${CLANG_VERSION_NUMERIC}0$${CLANG_PATCH_VERSION}"
+    }
+}
+*msvc* : isEmpty(MSVC_VERSION) {
+    isEmpty(QMAKE_MSC_VER) {
+        win32-msvc2022 {
+            QMAKE_MSC_VER = 1930
+        } else : win32-msvc2019 {
+            QMAKE_MSC_VER = 1920
+        } else : win32-msvc2017 {
+            QMAKE_MSC_VER = 1910
+        } else : win32-msvc2015 {
+            QMAKE_MSC_VER = 1900
+        } else : win32-msvc2013 {
+            QMAKE_MSC_VER = 1800
+        } else : win32-msvc2012 {
+            QMAKE_MSC_VER = 1700
+        } else : win32-msvc2010 {
+            QMAKE_MSC_VER = 1600
+        } else : win32-msvc2008 {
+            QMAKE_MSC_VER = 1500
+        } else : win32-msvc2005 {
+            QMAKE_MSC_VER = 1400
+        } else : win32-msvc2003 {
+            QMAKE_MSC_VER = 1310
+        } else : win32-msvc2002 {
+            QMAKE_MSC_VER = 1300
+        } else : win32-msvc.net {
+            QMAKE_MSC_VER = 1300
+        } else {
+            QMAKE_MSC_VER = 1200
+        }
+    }
+    lessThan(QMAKE_MSC_VER, 1300) {
+        MSVC_VERSION = 1998
+    } else : lessThan(QMAKE_MSC_VER, 1310) {
+        MSVC_VERSION = 2002
+    } else : lessThan(QMAKE_MSC_VER, 1400) {
+        MSVC_VERSION = 2003
+    } else : lessThan(QMAKE_MSC_VER, 1500) {
+        MSVC_VERSION = 2005
+    } else : lessThan(QMAKE_MSC_VER, 1600) {
+        MSVC_VERSION = 2008
+    } else : lessThan(QMAKE_MSC_VER, 1700) {
+        MSVC_VERSION = 2010
+    } else : lessThan(QMAKE_MSC_VER, 1800) {
+        MSVC_VERSION = 2012
+    } else : lessThan(QMAKE_MSC_VER, 1900) {
+        MSVC_VERSION = 2013
+    } else : lessThan(QMAKE_MSC_VER, 1910) {
+        MSVC_VERSION = 2015
+    } else : lessThan(QMAKE_MSC_VER, 1920) {
+        MSVC_VERSION = 2017
+    } else : lessThan(QMAKE_MSC_VER, 1930) {
+        MSVC_VERSION = 2019
+    } else {
+        MSVC_VERSION = 2022
     }
 }
 
@@ -40,212 +134,138 @@
 #    disable_cxx11
 #    enable_cxx11
 !disable_cxx11 {
-    *msvc* {
-        isEmpty(QMAKE_MSC_VER) {
-            win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
-                CONFIG *= test_cxx11_incompatible_msvc
-            }
-        } else {
-            !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
-                CONFIG *= test_cxx11_incompatible_msvc
-            }
-        }
-        !test_cxx11_incompatible_msvc {
-            CONFIG *= test_cxx11_compatible_msvc
-        }
-    }
-    equals(QT_MAJOR_VERSION, 5) : greaterThan(QT_MINOR_VERSION, 6) {
-        CONFIG *= test_cxx11_compatible_qt
-    }
-    greaterThan(QT_MAJOR_VERSION, 5) {
-        CONFIG *= test_cxx11_compatible_qt
-    }
-    c++latest | c++11 | c++1y | c++14 | c++1z | c++17 | c++2a | c++20 | c++2b | c++23 {
-        CONFIG *= test_cxx11_compatible_config
-    }
-    # Workaround: MSVC 2013 is not a C++11-conformant compiler
-    test_cxx11_incompatible_msvc {
-        CONFIG -= test_cxx11_compatible_qt
-        CONFIG -= test_cxx11_compatible_config
-    }
-    test_cxx11_compatible_qt | test_cxx11_compatible_config | test_cxx11_compatible_msvc | enable_cxx11 {
-        CONFIG -= disable_cxx11
-        CONFIG *= enable_cxx11
-    } else {
+    # MSVC 2013 is not a C++11-conformant compiler
+    *msvc* : greaterThan(MSVC_VERSION, 2013) : CONFIG *= test_cxx11_compatible_compiler
+    # GCC < 4.8.1 is not a C++11-conformant compiler: https://gcc.gnu.org/projects/cxx-status.html#cxx11
+    *g++* : !lessThan(GCC_VERSION_NUMERIC, 40801) : CONFIG *= test_cxx11_compatible_compiler
+    # Clang < 3.3 is not a C++11-conformant compiler: https://clang.llvm.org/cxx_status.html#cxx11
+    *clang* : !mac : !lessThan(CLANG_VERSION_NUMERIC, 30300) : CONFIG *= test_cxx11_compatible_compiler
+    # Assume that clang on macOS is compatible if Qt is *definitely* built with libc++ (Qt 5.7+)
+    *clang* : mac : !lessThan(QT_VERSION_NUMERIC, 50700) : CONFIG *= test_cxx11_compatible_compiler
+    !lessThan(QT_VERSION_NUMERIC, 50700) : CONFIG *= test_cxx11_compatible_qt
+    !test_cxx11_compatible_qt : !test_cxx11_compatible_compiler : !enable_cxx11 : !enable_cxx14 : !enable_cxx17 {
         CONFIG *= disable_cxx11
-        CONFIG -= enable_cxx11
     }
-} else {
-    CONFIG *= disable_cxx11
-    CONFIG -= enable_cxx11
 }
 
 # C++14 options:
 #    disable_cxx14
 #    enable_cxx14
 !disable_cxx14 {
-    *msvc* {
-        isEmpty(QMAKE_MSC_VER) {
-            win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 | win32-msvc2015 {
-                CONFIG *= test_cxx14_incompatible_msvc
-            }
-        } else {
-            !greaterThan(QMAKE_MSC_VER, 1900) { # MSVC2015
-                CONFIG *= test_cxx14_incompatible_msvc
-            }
-        }
-        !test_cxx14_incompatible_msvc {
-            CONFIG *= test_cxx14_compatible_msvc
-        }
-    }
-    greaterThan(QT_MAJOR_VERSION, 5) {
-        CONFIG *= test_cxx14_compatible_qt
-    }
-    c++latest | c++14 | c++1z | c++17 | c++2a | c++20 | c++2b | c++23 {
-        CONFIG *= test_cxx14_compatible_config
-    }
-    # Workaround: MSVC 2015 is not a C++14-conformant compiler
-    test_cxx14_incompatible_msvc {
-        CONFIG -= test_cxx14_compatible_qt
-        CONFIG -= test_cxx14_compatible_config
-    }
-    test_cxx14_compatible_qt | test_cxx14_compatible_config | test_cxx14_compatible_msvc | enable_cxx14 {
-        CONFIG -= disable_cxx14
-        CONFIG *= enable_cxx14
-    } else {
+    # MSVC 2015 is not a C++14-conformant compiler
+    *msvc* : greaterThan(MSVC_VERSION, 2015) : CONFIG *= test_cxx14_compatible_compiler
+    # GCC < 5.0 is not a C++14-conformant compiler: https://gcc.gnu.org/projects/cxx-status.html#cxx14
+    *g++* : !lessThan(GCC_VERSION_NUMERIC, 50000) : CONFIG *= test_cxx14_compatible_compiler
+    # Clang < 3.4 is not a C++14-conformant compiler: https://clang.llvm.org/cxx_status.html#cxx14
+    *clang* : !mac : !lessThan(CLANG_VERSION_NUMERIC, 30400) : CONFIG *= test_cxx14_compatible_compiler
+    # Assume that clang on macOS is compatible if Qt is *definitely* built with libc++ (Qt 5.7+)
+    *clang* : mac : !lessThan(QT_VERSION_NUMERIC, 50700) : CONFIG *= test_cxx14_compatible_compiler
+    greaterThan(QT_MAJOR_VERSION, 5) : CONFIG *= test_cxx14_compatible_qt
+    !test_cxx14_compatible_qt : !test_cxx14_compatible_compiler : !enable_cxx14 : !enable_cxx17 {
         CONFIG *= disable_cxx14
-        CONFIG -= enable_cxx14
     }
-} else {
-    CONFIG *= disable_cxx14
-    CONFIG -= enable_cxx14
 }
 
 # C++17 options:
 #    disable_cxx17
 #    enable_cxx17
 !disable_cxx17 {
-    *msvc* {
-        isEmpty(QMAKE_MSC_VER) {
-            win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 | win32-msvc2015 | win32-msvc2017 {
-                CONFIG *= test_cxx17_incompatible_msvc
-            }
-        } else {
-            !greaterThan(QMAKE_MSC_VER, 1919) { # MSVC2017
-                CONFIG *= test_cxx17_incompatible_msvc
-            }
-        }
-        !test_cxx17_incompatible_msvc {
-            CONFIG *= test_cxx17_compatible_msvc
-        }
-    }
-    greaterThan(QT_MAJOR_VERSION, 5) {
-        CONFIG *= test_cxx17_compatible_qt
-    }
-    c++latest | c++17 | c++2a | c++20 | c++2b | c++23 {
-        CONFIG *= test_cxx17_compatible_config
-    }
-    # Workaround: MSVC 2017 is not a C++17-conformant compiler
-    test_cxx17_incompatible_msvc {
-        CONFIG -= test_cxx17_compatible_qt
-        CONFIG -= test_cxx17_compatible_config
-    }
-    test_cxx17_compatible_qt | test_cxx17_compatible_config | test_cxx17_compatible_msvc | enable_cxx17 {
-        CONFIG -= disable_cxx17
-        CONFIG *= enable_cxx17
-    } else {
+    # MSVC 2017 is not a C++17-conformant compiler
+    *msvc* : greaterThan(MSVC_VERSION, 2017) : CONFIG *= test_cxx17_compatible_compiler
+    # GCC < 8.0 is not a C++17-conformant compiler: https://gcc.gnu.org/projects/cxx-status.html#cxx17
+    *g++* : !lessThan(GCC_VERSION_NUMERIC, 80000) : CONFIG *= test_cxx17_compatible_compiler
+    # Clang < 5.0 is not a C++17-conformant compiler: https://clang.llvm.org/cxx_status.html#cxx17
+    *clang* : !mac : !lessThan(CLANG_VERSION_NUMERIC, 50000) : CONFIG *= test_cxx17_compatible_compiler
+    # Assume that clang on macOS is compatible if Qt is *definitely* built with libc++ (Qt 5.7+)
+    *clang* : mac : !lessThan(QT_VERSION_NUMERIC, 50700) : CONFIG *= test_cxx17_compatible_compiler
+    greaterThan(QT_MAJOR_VERSION, 5) : CONFIG *= test_cxx17_compatible_qt
+    !test_cxx17_compatible_qt : !test_cxx17_compatible_compiler : !enable_cxx17 {
         CONFIG *= disable_cxx17
-        CONFIG -= enable_cxx17
     }
-} else {
-    CONFIG *= disable_cxx17
-    CONFIG -= enable_cxx17
 }
 
 # Cleanup C++
 disable_cxx11 {
-    enable_cxx14 {
-        CONFIG -= enable_cxx14
-    }
-    !disable_cxx14 {
-        CONFIG *= disable_cxx14
-    }
-    enable_cxx17 {
-        CONFIG -= enable_cxx17
-    }
-    !disable_cxx17 {
-        CONFIG *= disable_cxx17
-    }
-}
-enable_cxx14 {
-    disable_cxx11 {
-        CONFIG -= disable_cxx11
-    }
-    !enable_cxx11 {
-        CONFIG *= enable_cxx11
-    }
+    CONFIG *= disable_cxx14
+    CONFIG *= disable_cxx17
 }
 disable_cxx14 {
-    enable_cxx17 {
-        CONFIG -= enable_cxx17
-    }
-    !disable_cxx17 {
-        CONFIG *= disable_cxx17
-    }
+    CONFIG *= disable_cxx17
 }
-enable_cxx17 {
-    disable_cxx11 {
-        CONFIG -= disable_cxx11
-    }
-    !enable_cxx11 {
-        CONFIG *= enable_cxx11
-    }
-    disable_cxx14 {
-        CONFIG -= disable_cxx14
-    }
-    !enable_cxx14 {
-        CONFIG *= enable_cxx14
-    }
+!disable_cxx17 {
+    CONFIG *= enable_cxx11
+    CONFIG *= enable_cxx14
+    CONFIG *= enable_cxx17
+} else {
+    CONFIG -= enable_cxx17
+}
+!disable_cxx14 {
+    CONFIG *= enable_cxx11
+    CONFIG *= enable_cxx14
+} else {
+    CONFIG -= enable_cxx14
+}
+!disable_cxx11 {
+    CONFIG *= enable_cxx11
+} else {
+    CONFIG -= enable_cxx11
 }
 
 # Upgrade lower C++ standard if possible
+!c++latest : !c++03 : !c++0x : !c++11 : !c++1y : !c++14 : !c++1z : !c++17 : !c++2a : !c++20 : !c++2b : !c++23 {
+    CONFIG *= unconfigured_cxx
+}
 enable_cxx17 {
-    c++0x | c++11 | c++1y | c++14 | c++1z {
-        contains(QT_CONFIG, c++17) {
-            CONFIG -= c++0x
-            CONFIG -= c++11
-            CONFIG -= c++1y
-            CONFIG -= c++14
-            CONFIG -= c++1z
+    unconfigured_cxx | c++03 | c++0x | c++11 | c++1y | c++14 | c++1z | c++17 {
+        CONFIG -= c++03
+        CONFIG -= c++0x
+        CONFIG -= c++11
+        CONFIG -= c++1y
+        CONFIG -= c++14
+        CONFIG -= c++1z
+        CONFIG -= c++17
+        !lessThan(QT_VERSION_NUMERIC, 60100) {
             CONFIG *= c++17
-        } else : contains(QT_CONFIG, c++1z) {
-            CONFIG -= c++0x
-            CONFIG -= c++11
-            CONFIG -= c++1y
-            CONFIG -= c++14
+        } else : !lessThan(QT_VERSION_NUMERIC, 51200) {
             CONFIG *= c++1z
+        } else : *msvc* {
+            greaterThan(MSVC_VERSION, 2017) {
+                QMAKE_CXXFLAGS *= /std:c++17
+            } else {
+                QMAKE_CXXFLAGS *= /std:c++latest
+            }
+        } else : *g++* {
+            QMAKE_CXXFLAGS *= -std=gnu++1z
+        } else : *clang* {
+            QMAKE_CXXFLAGS *= -std=gnu++1z
         }
     }
 } else : enable_cxx14 {
-    c++0x | c++11 | c++1y {
-        contains(QT_CONFIG, c++14) {
-            CONFIG -= c++0x
-            CONFIG -= c++11
-            CONFIG -= c++1y
+    unconfigured_cxx | c++03 | c++0x | c++11 | c++1y | c++14 {
+        CONFIG -= c++03
+        CONFIG -= c++0x
+        CONFIG -= c++11
+        CONFIG -= c++1y
+        CONFIG -= c++14
+        !lessThan(QT_VERSION_NUMERIC, 50500) {
             CONFIG *= c++14
-        } else : contains(QT_CONFIG, c++1y) {
-            CONFIG -= c++0x
-            CONFIG -= c++11
-            CONFIG *= c++1y
+        } else : *g++* {
+            QMAKE_CXXFLAGS *= -std=gnu++1y
+        } else : *clang* {
+            QMAKE_CXXFLAGS *= -std=gnu++1y
         }
     }
 } else : enable_cxx11 {
-    c++0x {
-        contains(QT_CONFIG, c++11) {
-            CONFIG -= c++0x
+    unconfigured_cxx | c++03 | c++0x | c++11 {
+        CONFIG -= c++03
+        CONFIG -= c++0x
+        CONFIG -= c++11
+        !lessThan(QT_VERSION_NUMERIC, 50200) {
             CONFIG *= c++11
-        } else : contains(QT_CONFIG, c++0x) {
-            CONFIG *= c++0x
+        } else : *g++* {
+            QMAKE_CXXFLAGS *= -std=gnu++0x
+        } else : *clang* {
+            QMAKE_CXXFLAGS *= -std=gnu++0x
         }
     }
 }
@@ -339,31 +359,15 @@ disable_thirdparty {
 # XZUtils options:
 #    disable_xzutils
 #    system_xzutils
-*msvc* {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-            CONFIG *= disable_xzutils # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
-            CONFIG *= disable_xzutils # FIXME: C99
-        }
-    }
+*msvc* : !system_xzutils : lessThan(MSVC_VERSION, 2013) {
+    CONFIG *= disable_xzutils
 }
 
 # brotli options:
 #    disable_brotli
 #    system_brotli
-*msvc* {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-            CONFIG *= disable_brotli # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
-            CONFIG *= disable_brotli # FIXME: C99
-        }
-    }
+*msvc* : !system_brotli : lessThan(MSVC_VERSION, 2013) {
+    CONFIG *= disable_brotli
 }
 
 # highway options:
@@ -372,39 +376,21 @@ disable_thirdparty {
 disable_cxx11 : !system_highway {
     CONFIG *= disable_highway
 }
-*msvc* : !system_highway {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 | win32-msvc2015 {
-            CONFIG *= disable_highway
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1900) { # MSVC2015
-            CONFIG *= disable_highway
-        }
-    }
+*msvc* : !system_highway : lessThan(MSVC_VERSION, 2017) {
+    CONFIG *= disable_highway
 }
-*g++*|*clang* {
-    win32 : !system_highway {
-        CONFIG *= disable_highway # FIXME: FTBFS
-    }
-    haiku : !system_highway {
-        CONFIG *= disable_highway # FIXME: FTBFS
-    }
+*g++* : !system_highway : lessThan(GCC_VERSION_NUMERIC, 80400) {
+    CONFIG *= disable_highway
+}
+haiku : !system_highway { # FIXME: Re-check on beta4 or nightly
+    CONFIG *= disable_highway
 }
 
 # libexpat options:
 #    disable_libexpat
 #    system_libexpat
-*msvc* {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-            CONFIG *= disable_libexpat # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
-            CONFIG *= disable_libexpat # FIXME: C99
-        }
-    }
+*msvc* : !system_libexpat : lessThan(MSVC_VERSION, 2013) {
+    CONFIG *= disable_libexpat
 }
 
 # LCMS options:
@@ -415,16 +401,8 @@ disable_cxx11 : !system_highway {
 # libexif options:
 #    disable_libexif
 #    system_libexif
-*msvc* {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
-            CONFIG *= disable_libexif # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
-            CONFIG *= disable_libexif # FIXME: C99
-        }
-    }
+*msvc* : !system_libexif : lessThan(MSVC_VERSION, 2015) {
+    CONFIG *= disable_libexif
 }
 
 # exiv2 options:
@@ -442,16 +420,8 @@ disable_cxx17 : !system_exiv2 {
 # LibJasPer options:
 #    disable_libjasper
 #    system_libjasper
-*msvc* {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-            CONFIG *= disable_libjasper # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
-            CONFIG *= disable_libjasper # FIXME: C99
-        }
-    }
+*msvc* : !system_libjasper : lessThan(MSVC_VERSION, 2013) {
+    CONFIG *= disable_libjasper
 }
 
 # libmng options:
@@ -476,31 +446,15 @@ disable_zlib : !system_libpng {
 # LERC options:
 #    disable_lerc
 #    system_lerc
-*msvc* : !system_lerc {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-            CONFIG *= disable_lerc # FIXME: C99/C++11
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
-            CONFIG *= disable_lerc # FIXME: C99/C++11
-        }
-    }
+*msvc* : !system_lerc : lessThan(MSVC_VERSION, 2013) {
+    CONFIG *= disable_lerc
 }
 
 # libtiff options:
 #    disable_libtiff
 #    system_libtiff
-*msvc* : !system_libtiff {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
-            CONFIG *= disable_libtiff # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
-            CONFIG *= disable_libtiff # FIXME: C99
-        }
-    }
+*msvc* : !system_libtiff : lessThan(MSVC_VERSION, 2015) {
+    CONFIG *= disable_libtiff
 }
 
 # LibWebP options:
@@ -511,21 +465,16 @@ disable_zlib : !system_libpng {
 # libbpg options:
 #    disable_libbpg
 #    system_libbpg
-*msvc* {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-            CONFIG *= disable_libbpg # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
-            CONFIG *= disable_libbpg # FIXME: C99
-        }
-    }
+*msvc* : !system_libbpg : lessThan(MSVC_VERSION, 2013) {
+    CONFIG *= disable_libbpg
 }
 
 # FreeType options:
 #    disable_freetype
 #    system_freetype
+*msvc* : !system_freetype : lessThan(MSVC_VERSION, 2015) {
+    CONFIG *= disable_freetype
+}
 disable_zlib : !system_freetype {
     CONFIG *= disable_freetype
 }
@@ -536,16 +485,8 @@ disable_zlib : !system_freetype {
 # libwmf options:
 #    disable_libwmf
 #    system_libwmf
-*msvc* {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 {
-            CONFIG *= disable_libwmf # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1500) { # MSVC2008
-            CONFIG *= disable_libwmf # FIXME: C99
-        }
-    }
+*msvc* : !system_libwmf : lessThan(MSVC_VERSION, 2010) {
+    CONFIG *= disable_libwmf
 }
 disable_zlib : !system_libwmf {
     CONFIG *= disable_libwmf
@@ -563,31 +504,15 @@ disable_libjpeg : !system_libwmf {
 # OpenJPEG options:
 #    disable_openjpeg
 #    system_openjpeg
-*msvc* {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
-            CONFIG *= disable_openjpeg # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
-            CONFIG *= disable_openjpeg # FIXME: C99
-        }
-    }
+*msvc* : !system_openjpeg : lessThan(MSVC_VERSION, 2015) {
+    CONFIG *= disable_openjpeg
 }
 
 # GIFLIB options:
 #    disable_giflib
 #    system_giflib
-*msvc* {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-            CONFIG *= disable_giflib # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
-            CONFIG *= disable_giflib # FIXME: C99
-        }
-    }
+*msvc* : !system_giflib : lessThan(MSVC_VERSION, 2013) {
+    CONFIG *= disable_giflib
 }
 
 # LibRaw options:
@@ -614,21 +539,19 @@ disable_libjpeg : !system_libwmf {
 # aom options:
 #    disable_aom
 #    system_aom
-*msvc* : !system_aom {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-            CONFIG *= disable_aom # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
-            CONFIG *= disable_aom # FIXME: C99
-        }
-    }
+*msvc* : !system_aom : lessThan(MSVC_VERSION, 2013) {
+    CONFIG *= disable_aom
 }
 
 # libde265 options:
 #    disable_libde265
 #    system_libde265
+*msvc* : !system_libde265 : lessThan(MSVC_VERSION, 2012) {
+    CONFIG *= disable_libde265
+}
+win32 : *g++* : lessThan(GCC_VERSION_NUMERIC, 50100) { # FIXME: Find exact version
+    CONFIG *= disable_libde265
+}
 disable_cxx11 : !system_libde265 {
     CONFIG *= disable_libde265
 }
@@ -637,6 +560,9 @@ disable_cxx11 : !system_libde265 {
 #    disable_libheif
 #    system_libheif
 disable_libde265 : !system_libheif {
+    CONFIG *= disable_libheif
+}
+*msvc* : !system_libheif : lessThan(MSVC_VERSION, 2015) {
     CONFIG *= disable_libheif
 }
 disable_cxx11 : !system_libheif {
@@ -649,16 +575,11 @@ disable_cxx11 : !system_libheif {
 disable_zlib : !system_openexr {
     CONFIG *= disable_openexr
 }
-*msvc* : !system_openexr {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
-            CONFIG *= disable_openexr # FIXME: C99/C++11
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1800) { # MSVC2013
-            CONFIG *= disable_openexr # FIXME: C99/C++11
-        }
-    }
+*msvc* : !system_openexr : lessThan(MSVC_VERSION, 2017) {
+    CONFIG *= disable_openexr
+}
+win32 : *g++* : !system_openexr : lessThan(GCC_VERSION_NUMERIC, 80100) { # FIXME: Find exact version
+    CONFIG *= disable_openexr
 }
 disable_cxx14 : !system_openexr {
     CONFIG *= disable_openexr
@@ -670,21 +591,16 @@ disable_cxx14 : !system_openexr {
 disable_aom : !system_libavif {
     CONFIG *= disable_libavif
 }
-*msvc* : !system_libavif {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-            CONFIG *= disable_libavif # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
-            CONFIG *= disable_libavif # FIXME: C99
-        }
-    }
+*msvc* : !system_libavif : lessThan(MSVC_VERSION, 2013) {
+    CONFIG *= disable_libavif
 }
 
 # FLIF options:
 #    disable_flif
 #    system_flif
+*msvc* : !system_flif : lessThan(MSVC_VERSION, 2015) {
+    CONFIG *= disable_flif
+}
 disable_cxx11 : !system_flif {
     CONFIG *= disable_flif
 }
@@ -692,7 +608,9 @@ disable_cxx11 : !system_flif {
 # jxrlib options:
 #    disable_jxrlib
 #    system_jxrlib
-
+*msvc* : !system_jxrlib : lessThan(MSVC_VERSION, 2010) {
+    CONFIG *= disable_jxrlib
+}
 
 # libjxl options:
 #    disable_libjxl
@@ -755,16 +673,8 @@ greaterThan(QT_MAJOR_VERSION, 5) {
 !enable_nanosvg {
     CONFIG *= disable_nanosvg
 }
-*msvc* {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
-            CONFIG *= disable_nanosvg # FIXME: C99
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1700) { # MSVC2012
-            CONFIG *= disable_nanosvg # FIXME: C99
-        }
-    }
+*msvc* : lessThan(MSVC_VERSION, 2013) {
+    CONFIG *= disable_nanosvg
 }
 
 # QtImageFormats options:
@@ -775,10 +685,7 @@ greaterThan(QT_MAJOR_VERSION, 5) {
 
 # KImageFormats options:
 #    disable_kimageformats
-!greaterThan(QT_MAJOR_VERSION, 4) {
-    CONFIG *= disable_kimageformats
-}
-equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 15) {
+lessThan(QT_VERSION_NUMERIC, 51500) {
     CONFIG *= disable_kimageformats
 }
 
@@ -796,16 +703,8 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 15) {
         CONFIG *= disable_msedgewebview2
     }
 }
-*msvc* {
-    isEmpty(QMAKE_MSC_VER) {
-        win32-msvc | win32-msvc.net | win32-msvc2002 | win32-msvc2003 | win32-msvc2005 | win32-msvc2008 | win32-msvc2010 {
-            CONFIG *= disable_msedgewebview2
-        }
-    } else {
-        !greaterThan(QMAKE_MSC_VER, 1600) { # MSVC2010
-            CONFIG *= disable_msedgewebview2
-        }
-    }
+*msvc* : lessThan(MSVC_VERSION, 2012) {
+    CONFIG *= disable_msedgewebview2
 }
 
 # ghc::filesystem options:
@@ -833,10 +732,7 @@ disable_cxx11 {
 !enable_qtwebengine {
     CONFIG *= disable_qtwebengine
 }
-!greaterThan(QT_MAJOR_VERSION, 4) {
-    CONFIG *= disable_qtwebengine
-}
-equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
+lessThan(QT_VERSION_NUMERIC, 50400) {
     CONFIG *= disable_qtwebengine
 }
 
@@ -846,10 +742,7 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
 !enable_qmlwebengine {
     CONFIG *= disable_qmlwebengine
 }
-!greaterThan(QT_MAJOR_VERSION, 4) {
-    CONFIG *= disable_qmlwebengine
-}
-equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
+lessThan(QT_VERSION_NUMERIC, 50400) {
     CONFIG *= disable_qmlwebengine
 }
 
@@ -868,10 +761,11 @@ equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
 !win32 {
     CONFIG *= disable_wic
 }
-*g++*|*clang* {
-    disable_cxx11 {
-        CONFIG *= disable_wic
-    }
+*msvc* : lessThan(MSVC_VERSION, 2008) {
+    CONFIG *= disable_wic
+}
+win32 : *g++* : lessThan(GCC_VERSION_NUMERIC, 80100) { # FIXME: Find exact version
+    CONFIG *= disable_wic
 }
 
 # DecoderNSImage options:

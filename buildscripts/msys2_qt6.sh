@@ -125,7 +125,6 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 ${CMD_QMAKE} -r CONFIG+="release" \
-    CONFIG+=c++2a \
     CONFIG+="enable_pkgconfig enable_update_checking" \
     CONFIG+="enable_msedgewebview2 enable_mshtml enable_nanosvg" \
     CONFIG+="system_zlib system_jbigkit system_lerc system_libtiff" \

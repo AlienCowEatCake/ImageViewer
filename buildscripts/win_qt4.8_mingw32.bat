@@ -14,7 +14,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="enable_qtwebkit disable_wic" CONFIG+="enable_mshtml enable_nanosvg" CONFIG+="enable_cxx11" QMAKE_CXXFLAGS+="-std=gnu++1y" ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="enable_qtwebkit" CONFIG+="enable_mshtml enable_nanosvg" ..\%PROJECT%.pro
 mingw32-make
 if not exist %APP_PATH%\release\%PROJECT%.exe (
     if NOT "%CI%" == "true" pause

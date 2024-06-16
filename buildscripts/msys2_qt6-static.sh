@@ -39,7 +39,6 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 ${CMD_QMAKE} -r CONFIG+="release" \
-    CONFIG+=c++2a \
     QTPLUGIN.imageformats="qgif qicns qico qsvg qtga qtiff qwbmp" \
     QTPLUGIN.platforms="qwindows" \
     CONFIG+="enable_update_checking" \
