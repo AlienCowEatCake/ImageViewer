@@ -280,6 +280,7 @@ disable_thirdparty {
     CONFIG *= disable_exiv2
     CONFIG *= disable_flif
     CONFIG *= disable_freetype
+    CONFIG *= disable_ghc_filesystem
     CONFIG *= disable_giflib
     CONFIG *= disable_graphicsmagick
     CONFIG *= disable_graphicsmagickwand
