@@ -16,42 +16,35 @@ CRT_ARCH=""
 UCRT_ARCH=""
 WIX_ARCH=""
 WIX_OS_VER="10"
+RESVG_TARGET=""
 if [ "${MSYSTEM}" == "UCRT64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-ucrt-x86_64"
     VCVARS_ARCH="x64"
     CRT_ARCH="x64"
     UCRT_ARCH="x64"
     WIX_ARCH="x64"
-# elif [ "${MSYSTEM}" == "MINGW32" ] ; then
-#     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-i686"
-#     VCVARS_ARCH="x64_x86"
-#     CRT_ARCH="x86"
-#     UCRT_ARCH="x86"
-#     WIX_ARCH="x86"
+    RESVG_TARGET="x86_64-pc-windows-msvc"
 elif [ "${MSYSTEM}" == "MINGW64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-x86_64"
     VCVARS_ARCH="x64"
     CRT_ARCH="x64"
     UCRT_ARCH="x64"
     WIX_ARCH="x64"
-# elif [ "${MSYSTEM}" == "CLANG32" ] ; then
-#     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-i686"
-#     VCVARS_ARCH="x64_x86"
-#     CRT_ARCH="x86"
-#     UCRT_ARCH="x86"
-#     WIX_ARCH="x86"
+    RESVG_TARGET="x86_64-pc-windows-msvc"
 elif [ "${MSYSTEM}" == "CLANG64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-x86_64"
     VCVARS_ARCH="x64"
     CRT_ARCH="x64"
     UCRT_ARCH="x64"
     WIX_ARCH="x64"
+    RESVG_TARGET="x86_64-pc-windows-msvc"
 elif [ "${MSYSTEM}" == "CLANGARM64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-aarch64"
     VCVARS_ARCH="arm64"
     CRT_ARCH="arm64"
     UCRT_ARCH="arm64"
     WIX_ARCH="arm64"
+    RESVG_TARGET="aarch64-pc-windows-msvc"
 else
     echo "Unknown or broken MSYSTEM: ${MSYSTEM}"
     exit 1
@@ -72,21 +65,18 @@ pacman -S --needed --noconfirm \
     ${MSYSTEM_PKG_PREFIX}-libtiff \
     ${MSYSTEM_PKG_PREFIX}-libwebp \
     ${MSYSTEM_PKG_PREFIX}-freetype \
+    ${MSYSTEM_PKG_PREFIX}-brotli \
+    ${MSYSTEM_PKG_PREFIX}-expat \
+    ${MSYSTEM_PKG_PREFIX}-libjpeg-turbo \
     ${MSYSTEM_PKG_PREFIX}-librsvg
 
 cd "$(dirname $0)"/..
 SOURCE_PATH="${PWD}"
+RESVG_PATH="${SOURCE_PATH}/buildscripts/resvg/${RESVG_TARGET}"
 DIST_PREFIX="${PROJECT}${SUFFIX}"
 
 function copyDlls() {
     "${SOURCE_PATH}/buildscripts/helpers/dllresolver.exe" "${DIST_PREFIX}" "${@}"
-}
-
-function copyWebView2Loader() {
-    local dll="$(find "${SOURCE_PATH}/src/ThirdParty/MSEdgeWebView2" -name 'WebView2Loader.dll' | grep "/native/${VCVARS_ARCH##*_}/" || true)"
-    if [ ! -z "${dll}" ] ; then
-        cp -a "${dll}" "${DIST_PREFIX}/"
-    fi
 }
 
 function getVCVARSPath() {
@@ -125,15 +115,19 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 ${CMD_QMAKE} -r CONFIG+="release" \
+    CONFIG+="hide_symbols" \
+    CONFIG+="disable_ghc_filesystem" \
     CONFIG+="enable_pkgconfig enable_update_checking" \
-    CONFIG+="enable_msedgewebview2 enable_mshtml enable_nanosvg" \
     CONFIG+="system_zlib system_jbigkit system_lerc system_libtiff" \
     CONFIG+="system_libwebp system_freetype system_librsvg" \
+    CONFIG+="system_brotli system_libexpat system_libjpeg" \
+    CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" \
     "${SOURCE_PATH}/${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 rm -rf "${DIST_PREFIX}"
 mkdir "${DIST_PREFIX}"
 cp -a "${APP_PATH}/release/${PROJECT}.exe" "${DIST_PREFIX}/"
+cp -a "${RESVG_PATH}/resvg.dll" "${DIST_PREFIX}/"
 ${CMD_DEPLOY} \
     --no-compiler-runtime \
     --no-system-d3d-compiler \
@@ -147,7 +141,6 @@ find "${DIST_PREFIX}/imageformats" -type f \( -name 'kimg_*.dll' -o -name 'qjp2.
 find "${DIST_PREFIX}/platforms" -type f \( -name 'qdirect2d.dll' -o -name 'qminimal.dll' -o -name 'qoffscreen.dll' \) -delete
 copyDlls "$(cygpath -w "${MSYSTEM_PREFIX}/bin")"
 stripAll
-copyWebView2Loader
 copyDlls "$(cygpath -w "$(getCRTPath)")" "$(cygpath -w "$(getUCRTPath)")"
 zip -9r "../${DIST_PREFIX}.zip" "${DIST_PREFIX}"
 rm -rf "build_msi"
