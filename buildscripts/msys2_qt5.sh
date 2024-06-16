@@ -143,6 +143,8 @@ ${CMD_DEPLOY} \
     --no-opengl-sw \
     --translations en,ru,zh_CN \
     "${DIST_PREFIX}/"
+[ -f "${DIST_PREFIX}/qt.conf" ] || echo '[Paths]' > "${DIST_PREFIX}/qt.conf"
+echo 'Translations = translations' >> "${DIST_PREFIX}/qt.conf"
 find "${MSYSTEM_PREFIX}/bin" -type f \( -name 'libssl*.dll' -o -name 'libcrypto*.dll' \) -exec cp -a \{\} "${DIST_PREFIX}/" \;
 find "${DIST_PREFIX}/imageformats" -type f \( -name 'kimg_*.dll' -o -name 'qjp2.dll' -o -name 'qmng.dll' \) -delete
 find "${DIST_PREFIX}/platforms" -type f \( -name 'qdirect2d.dll' -o -name 'qminimal.dll' -o -name 'qoffscreen.dll' \) -delete
