@@ -55,7 +55,7 @@ QString formatMetaDataEntryValue(const QString &value)
 {
     if(value.length() <= MAX_METADATA_ENTRY_VALUE_LENGTH)
         return value;
-    return value.left(MAX_METADATA_ENTRY_VALUE_LENGTH).append(QString::fromUtf8("…"));
+    return value.left(MAX_METADATA_ENTRY_VALUE_LENGTH).append(QChar(0x2026));
 }
 
 QDateTime getCreatedTime(const QFileInfo &fileInfo)
