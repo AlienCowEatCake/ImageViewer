@@ -45,9 +45,6 @@ typedef QMatrix TransformMatrix;
 #include <QGesture>
 #include <QGestureEvent>
 #include <QPinchGesture>
-#else
-class QGestureEvent {};
-class QPinchGesture {};
 #endif
 
 #include "Utils/Global.h"
@@ -153,21 +150,18 @@ struct ImageViewerWidget::Impl
         }
     }
 
+#if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
     bool gestureEvent(QGestureEvent *event)
     {
-#if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
         if(QGesture *pinch = event->gesture(Qt::PinchGesture))
             pinchTriggered(static_cast<QPinchGesture*>(pinch));
         return true;
-#else
-        Q_UNUSED(event);
-        return true;
-#endif
     }
+#endif
 
+#if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
     void pinchTriggered(QPinchGesture *gesture)
     {
-#if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
         const QPinchGesture::ChangeFlags changeFlags = gesture->changeFlags();
         if(changeFlags.testFlag(QPinchGesture::ScaleFactorChanged))
         {
@@ -189,11 +183,8 @@ struct ImageViewerWidget::Impl
                 gesture->setRotationAngle(0);
             }
         }
-#else
-        Q_UNUSED(gesture);
-        Q_UNUSED(ROTATION_TRESHOLD);
-#endif
     }
+#endif
 
     ImageViewerWidget *imageViewerWidget;
     QGraphicsScene *scene;
