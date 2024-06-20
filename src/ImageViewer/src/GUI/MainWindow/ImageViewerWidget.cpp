@@ -38,7 +38,7 @@ typedef QTransform TransformMatrix;
 typedef QMatrix TransformMatrix;
 #endif
 
-#if (QT_VERSION < QT_VERSION_CHECK(4, 6, 0))
+#if (QT_VERSION < QT_VERSION_CHECK(4, 6, 0)) || defined (QT_NO_GESTURES)
 #define IMAGEVIEWERWIDGET_NO_GESTURES
 #endif
 #if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
