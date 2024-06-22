@@ -1,8 +1,8 @@
 #!/bin/bash -e
 PROJECT=ImageViewer
-BUILDDIR=build_osx_qt6.6_universal
+BUILDDIR=build_osx_qt6.7_universal
 APPNAME="Image Viewer"
-DMGNAME="${PROJECT}_qt6.6_universal"
+DMGNAME="${PROJECT}_qt6.7_universal"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/macosx/set_associations.sh"
 LICENSE_PATH="LICENSE.GPLv3"
 OUT_PATH="src/${PROJECT}"
@@ -14,7 +14,7 @@ NOTARIZE_ASC_PROVIDER="${APP_CERT: -11:10}"
 MAC_TARGET="11.0"
 MAC_SDK="$(xcodebuild -showsdks | grep '\-sdk macosx' | tail -1 | sed 's|.*-sdk ||')"
 
-QT_PATH="${QT_PATH:=/opt/Qt/6.6.3/macos}"
+QT_PATH="${QT_PATH:=/opt/Qt/6.7.2/macos_target10.15}"
 QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
