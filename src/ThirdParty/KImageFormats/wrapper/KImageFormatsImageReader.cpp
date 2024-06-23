@@ -53,11 +53,17 @@
 #if defined (WRAPPER_USE_PCX_HANDLER)
 #include "../kimageformats-master/src/imageformats/pcx_p.h"
 #endif
+#if defined (WRAPPER_USE_PFM_HANDLER)
+#include "../kimageformats-master/src/imageformats/pfm_p.h"
+#endif
 #if defined (WRAPPER_USE_PIC_HANDLER)
 #include "../kimageformats-master/src/imageformats/pic_p.h"
 #endif
 #if defined (WRAPPER_USE_PSD_HANDLER)
 #include "../kimageformats-master/src/imageformats/psd_p.h"
+#endif
+#if defined (WRAPPER_USE_PXR_HANDLER)
+#include "../kimageformats-master/src/imageformats/pxr_p.h"
 #endif
 #if defined (WRAPPER_USE_QOI_HANDLER)
 #include "../kimageformats-master/src/imageformats/qoi_p.h"
@@ -115,11 +121,17 @@ enum BuiltInFormatType
 #if defined (WRAPPER_USE_PCX_HANDLER)
     PcxFormat,
 #endif
+#if defined (WRAPPER_USE_PFM_HANDLER)
+    PfmFormat,
+#endif
 #if defined (WRAPPER_USE_PIC_HANDLER)
     PicFormat,
 #endif
 #if defined (WRAPPER_USE_PSD_HANDLER)
     PsdFormat,
+#endif
+#if defined (WRAPPER_USE_PXR_HANDLER)
+    PxrFormat,
 #endif
 #if defined (WRAPPER_USE_QOI_HANDLER)
     QoiFormat,
@@ -184,11 +196,17 @@ static const BuiltInFormatStruct BuiltInFormats[] =
 #if defined (WRAPPER_USE_PCX_HANDLER)
     { PcxFormat , QList<QByteArray>() << "pcx" },
 #endif
+#if defined (WRAPPER_USE_PFM_HANDLER)
+    { PfmFormat , QList<QByteArray>() << "pfm" },
+#endif
 #if defined (WRAPPER_USE_PIC_HANDLER)
     { PicFormat , QList<QByteArray>() << "pic" },
 #endif
 #if defined (WRAPPER_USE_PSD_HANDLER)
     { PsdFormat , QList<QByteArray>() << "psd" << "psb" << "pdd" << "psdt" },
+#endif
+#if defined (WRAPPER_USE_PXR_HANDLER)
+    { PxrFormat , QList<QByteArray>() << "pxr" },
 #endif
 #if defined (WRAPPER_USE_QOI_HANDLER)
     { QoiFormat , QList<QByteArray>() << "qoi" },
@@ -331,6 +349,11 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
             handler = new PCXHandler;
             break;
 #endif
+#if defined (WRAPPER_USE_PFM_HANDLER)
+        case PfmFormat:
+            handler = new PFMHandler;
+            break;
+#endif
 #if defined (WRAPPER_USE_PIC_HANDLER)
         case PicFormat:
             handler = new SoftimagePICHandler;
@@ -339,6 +362,11 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
 #if defined (WRAPPER_USE_PSD_HANDLER)
         case PsdFormat:
             handler = new PSDHandler;
+            break;
+#endif
+#if defined (WRAPPER_USE_PXR_HANDLER)
+        case PxrFormat:
+            handler = new PXRHandler;
             break;
 #endif
 #if defined (WRAPPER_USE_QOI_HANDLER)
@@ -477,6 +505,12 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
                     handler = new PCXHandler;
                 break;
 #endif
+#if defined (WRAPPER_USE_PFM_HANDLER)
+            case PfmFormat:
+                if(PFMHandler::canRead(device))
+                    handler = new PFMHandler;
+                break;
+#endif
 #if defined (WRAPPER_USE_PIC_HANDLER)
             case PicFormat:
                 if(SoftimagePICHandler::canRead(device))
@@ -487,6 +521,12 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
             case PsdFormat:
                 if(PSDHandler::canRead(device))
                     handler = new PSDHandler;
+                break;
+#endif
+#if defined (WRAPPER_USE_PXR_HANDLER)
+            case PxrFormat:
+                if(PXRHandler::canRead(device))
+                    handler = new PXRHandler;
                 break;
 #endif
 #if defined (WRAPPER_USE_QOI_HANDLER)
@@ -1233,11 +1273,17 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
 #if defined (WRAPPER_USE_PCX_HANDLER)
     result.append(QByteArrayLiteral("image/x-pcx"));
 #endif
+#if defined (WRAPPER_USE_PFM_HANDLER)
+    result.append(QByteArrayLiteral("image/x-pfm"));
+#endif
 #if defined (WRAPPER_USE_PIC_HANDLER)
     result.append(QByteArrayLiteral("image/x-pic"));
 #endif
 #if defined (WRAPPER_USE_PSD_HANDLER)
     result.append(QByteArrayLiteral("image/vnd.adobe.photoshop"));
+#endif
+#if defined (WRAPPER_USE_PXR_HANDLER)
+    result.append(QByteArrayLiteral("image/x-pxr"));
 #endif
 #if defined (WRAPPER_USE_QOI_HANDLER)
     result.append(QByteArrayLiteral("image/qoi"));

@@ -1,25 +1,24 @@
 /*
     This file is part of the KDE project
-    SPDX-FileCopyrightText: 2023 Ernest Gupik <ernestgupik@wp.pl>
+    SPDX-FileCopyrightText: 2024 Mirco Miranda <mircomir@outlook.com>
 
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#ifndef KIMG_QOI_P_H
-#define KIMG_QOI_P_H
+#ifndef KIMG_PXR_P_H
+#define KIMG_PXR_P_H
 
 #include <QImageIOPlugin>
 #include <QScopedPointer>
 
-class QOIHandlerPrivate;
-class QOIHandler : public QImageIOHandler
+class PXRHandlerPrivate;
+class PXRHandler : public QImageIOHandler
 {
 public:
-    QOIHandler();
+    PXRHandler();
 
     bool canRead() const override;
     bool read(QImage *image) override;
-    bool write(const QImage &image) override;
 
     bool supportsOption(QImageIOHandler::ImageOption option) const override;
     QVariant option(QImageIOHandler::ImageOption option) const override;
@@ -27,17 +26,17 @@ public:
     static bool canRead(QIODevice *device);
 
 private:
-    const QScopedPointer<QOIHandlerPrivate> d;
+    const QScopedPointer<PXRHandlerPrivate> d;
 };
 
-class QOIPlugin : public QImageIOPlugin
+class PXRPlugin : public QImageIOPlugin
 {
     Q_OBJECT
-//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "qoi.json")
+//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pxr.json")
 
 public:
     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
     QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const override;
 };
 
-#endif // KIMG_QOI_P_H
+#endif // KIMG_PXR_P_H

@@ -18,17 +18,19 @@ The following image formats have read-only support:
 - Gimp (xcf)
 - Krita (kra)
 - OpenRaster (ora)
+- Pixar raster (pxr)
+- Portable FloatMap (pfm)
 - Photoshop documents (psd, psb, pdd, psdt)
 - Radiance HDR (hdr)
 - Sun Raster (im1, im8, im24, im32, ras, sun)
 
 The following image formats have read and write support:
 
-- AV1 Image File Format (AVIF)
+- AV1 Image File Format (avif)
 - Encapsulated PostScript (eps)
 - High Efficiency Image File Format (heif). Can be enabled with the KIMAGEFORMATS_HEIF build option.
 - JPEG XL (jxl)
-- JPEG XR (jxr)
+- JPEG XR (jxr). Can be enabled with the KIMAGEFORMATS_JXR build option.
 - OpenEXR (exr)
 - Personal Computer Exchange (pcx)
 - Quite OK Image format (qoi)

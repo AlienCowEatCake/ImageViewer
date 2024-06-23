@@ -1,7 +1,7 @@
-From 9706ad6e5f2bf291368f9a3c06bc06bf640f2190 Mon Sep 17 00:00:00 2001
+From c1daffa6659b42adda23ac679c825818a8846155 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 10 Jun 2024 03:39:12 +0700
-Subject: [PATCH 8/8] Add __ANSI__ defie to jxr.cpp
+Subject: [PATCH 8/9] Add __ANSI__ defie to jxr.cpp
 
 ---
  src/imageformats/jxr.cpp | 3 +++
@@ -22,5 +22,5 @@ index 528d7d1..a171e58 100644
  #include <cstring>
  
 -- 
-2.44.0.windows.1
+2.39.2
 

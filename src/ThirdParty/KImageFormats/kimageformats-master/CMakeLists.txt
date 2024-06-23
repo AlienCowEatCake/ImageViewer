@@ -81,7 +81,7 @@ set_package_properties(LibRaw PROPERTIES
     PURPOSE "Required for the QImage plugin for RAW images"
 )
 
-option(KIMAGEFORMATS_JXR "Enable plugin for JPEG XR format" ON)
+option(KIMAGEFORMATS_JXR "Enable plugin for JPEG XR format" OFF)
 if(KIMAGEFORMATS_JXR)
     find_package(LibJXR)
 endif()

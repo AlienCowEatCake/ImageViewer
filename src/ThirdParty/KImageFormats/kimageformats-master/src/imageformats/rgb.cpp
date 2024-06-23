@@ -376,9 +376,13 @@ bool SGIImage::readImage(QImage &img)
         }
 
         _lengthtab = new quint32[_numrows];
-        for (l = 0; l < _numrows; l++) {
+        for (l = 0; !_stream.atEnd() && l < _numrows; l++) {
             _stream >> _lengthtab[l];
         }
+    }
+
+    if (_stream.status() != QDataStream::Ok) {
+        return false;
     }
 
     _data = _dev->readAll();

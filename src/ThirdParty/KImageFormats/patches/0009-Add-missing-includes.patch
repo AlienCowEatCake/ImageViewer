@@ -1,0 +1,39 @@
+From fc03c0655b26bdfc8ee6fb3a870e05bd2a716ea3 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 23 Jun 2024 19:58:27 +0700
+Subject: [PATCH 9/9] Add missing includes
+
+---
+ src/imageformats/hdr_p.h | 1 +
+ src/imageformats/pfm.cpp | 3 +++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/src/imageformats/hdr_p.h b/src/imageformats/hdr_p.h
+index 582a6e7..12b1012 100644
+--- a/src/imageformats/hdr_p.h
++++ b/src/imageformats/hdr_p.h
+@@ -9,6 +9,7 @@
+ #define KIMG_HDR_P_H
+ 
+ #include <QImageIOPlugin>
++#include <QSize>
+ 
+ class HDRHandler : public QImageIOHandler
+ {
+diff --git a/src/imageformats/pfm.cpp b/src/imageformats/pfm.cpp
+index 370c560..257179c 100644
+--- a/src/imageformats/pfm.cpp
++++ b/src/imageformats/pfm.cpp
+@@ -12,6 +12,9 @@
+ #include "pfm_p.h"
+ #include "util_p.h"
+ 
++#include <algorithm>
++#include <cmath>
++
+ #include <QColorSpace>
+ #include <QDataStream>
+ #include <QIODevice>
+-- 
+2.39.2
+

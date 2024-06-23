@@ -292,13 +292,13 @@ bool HDRHandler::read(QImage *outImage)
 {
     QDataStream s(device());
 
-    QSize size = readHeaderSize(s.device());
-    if (!size.isValid()) {
+    m_imageSize = readHeaderSize(s.device());
+    if (!m_imageSize.isValid()) {
         return false;
     }
 
     QImage img;
-    if (!LoadHDR(s, size.width(), size.height(), img)) {
+    if (!LoadHDR(s, m_imageSize.width(), m_imageSize.height(), img)) {
         // qDebug() << "Error loading HDR file.";
         return false;
     }
@@ -326,7 +326,9 @@ QVariant HDRHandler::option(ImageOption option) const
     QVariant v;
 
     if (option == QImageIOHandler::Size) {
-        if (auto d = device()) {
+        if (!m_imageSize.isEmpty()) {
+            v = QVariant::fromValue(m_imageSize);
+        } else if (auto d = device()) {
             // transactions works on both random and sequential devices
             d->startTransaction();
             auto size = readHeaderSize(d);

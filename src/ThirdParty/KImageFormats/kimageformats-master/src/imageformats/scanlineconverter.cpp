@@ -72,9 +72,18 @@ const uchar *ScanLineConverter::convertedScanLine(const QImage &image, qint32 y)
         if (!cs.isValid()) {
             cs = _defaultColorSpace;
         }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+        if (tmp.depth() < 8 && cs.colorModel() == QColorSpace::ColorModel::Gray) {
+            tmp.convertTo(QImage::Format_Grayscale8);
+        }
+        else if (tmp.depth() < 24 && cs.colorModel() == QColorSpace::ColorModel::Rgb) {
+            tmp.convertTo(tmp.hasAlphaChannel() ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+        }
+#else
         if (tmp.depth() < 24) {
             tmp.convertTo(tmp.hasAlphaChannel() ? QImage::Format_ARGB32 : QImage::Format_RGB32);
         }
+#endif
         tmp.setColorSpace(cs);
         tmp.convertToColorSpace(_colorSpace);
     }

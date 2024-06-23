@@ -31,6 +31,18 @@ namespace // Private
 #define QOI_END_STREAM_PAD 8
 
 struct QoiHeader {
+    QoiHeader()
+        : MagicNumber(0)
+        , Width(0)
+        , Height(0)
+        , Channels(0)
+        , Colorspace(2)
+    {
+    }
+
+    QoiHeader(const QoiHeader&) = default;
+    QoiHeader& operator=(const QoiHeader&) = default;
+
     quint32 MagicNumber;
     quint32 Width;
     quint32 Height;
@@ -297,7 +309,19 @@ static bool SaveQOI(QIODevice *device, const QoiHeader &qoi, const QImage &img)
 
 } // namespace
 
+class QOIHandlerPrivate
+{
+public:
+    QOIHandlerPrivate() {}
+    ~QOIHandlerPrivate() {}
+
+    QoiHeader m_header;
+};
+
+
 QOIHandler::QOIHandler()
+    : QImageIOHandler()
+    , d(new QOIHandlerPrivate)
 {
 }
 
@@ -328,7 +352,7 @@ bool QOIHandler::canRead(QIODevice *device)
 
     QDataStream stream(head);
     stream.setByteOrder(QDataStream::BigEndian);
-    QoiHeader qoi = {0, 0, 0, 0, 2};
+    QoiHeader qoi;
     stream >> qoi;
 
     return IsSupported(qoi);
@@ -340,7 +364,7 @@ bool QOIHandler::read(QImage *image)
     s.setByteOrder(QDataStream::BigEndian);
 
     // Read image header
-    QoiHeader qoi = {0, 0, 0, 0, 2};
+    auto&& qoi = d->m_header;
     s >> qoi;
 
     // Check if file is supported
@@ -402,7 +426,10 @@ QVariant QOIHandler::option(ImageOption option) const
     QVariant v;
 
     if (option == QImageIOHandler::Size) {
-        if (auto d = device()) {
+        auto&& header = d->m_header;
+        if (IsSupported(header)) {
+            v = QVariant::fromValue(QSize(header.Width, header.Height));
+        } else if (auto d = device()) {
             // transactions works on both random and sequential devices
             d->startTransaction();
             auto ba = d->read(sizeof(QoiHeader));
@@ -410,10 +437,7 @@ QVariant QOIHandler::option(ImageOption option) const
 
             QDataStream s(ba);
             s.setByteOrder(QDataStream::BigEndian);
-
-            QoiHeader header = {0, 0, 0, 0, 2};
             s >> header;
-
             if (s.status() == QDataStream::Ok && IsSupported(header)) {
                 v = QVariant::fromValue(QSize(header.Width, header.Height));
             }
@@ -421,7 +445,10 @@ QVariant QOIHandler::option(ImageOption option) const
     }
 
     if (option == QImageIOHandler::ImageFormat) {
-        if (auto d = device()) {
+        auto&& header = d->m_header;
+        if (IsSupported(header)) {
+            v = QVariant::fromValue(imageFormat(header));
+        } else if (auto d = device()) {
             // transactions works on both random and sequential devices
             d->startTransaction();
             auto ba = d->read(sizeof(QoiHeader));
@@ -429,10 +456,7 @@ QVariant QOIHandler::option(ImageOption option) const
 
             QDataStream s(ba);
             s.setByteOrder(QDataStream::BigEndian);
-
-            QoiHeader header = {0, 0, 0, 0, 2};
             s >> header;
-
             if (s.status() == QDataStream::Ok && IsSupported(header)) {
                 v = QVariant::fromValue(imageFormat(header));
             }

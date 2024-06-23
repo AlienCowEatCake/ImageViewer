@@ -1,7 +1,7 @@
-From eb0162676f95c428005e984bec4f137e95155b32 Mon Sep 17 00:00:00 2001
+From 939f348c3bb105ef00749046c2b5ca04b12ec6f5 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 9 Jul 2023 21:28:58 +0700
-Subject: [PATCH 6/8] Dont use modern options with old Qt verson
+Subject: [PATCH 6/9] Dont use modern options with old Qt verson
 
 ---
  src/imageformats/ani.cpp  |  4 ++++
@@ -9,12 +9,14 @@ Subject: [PATCH 6/8] Dont use modern options with old Qt verson
  src/imageformats/hdr.cpp  | 23 ++++++++++++++++++++++
  src/imageformats/jxl_p.h  |  8 ++++++++
  src/imageformats/jxr.cpp  |  5 ++++-
+ src/imageformats/pfm.cpp  | 30 +++++++++++++++++++++++++++-
  src/imageformats/psd.cpp  | 40 ++++++++++++++++++++++++++++++++++++++
+ src/imageformats/pxr.cpp  |  2 +-
  src/imageformats/ras.cpp  | 17 +++++++++++++++-
  src/imageformats/rgb.cpp  | 24 +++++++++++++++++++++++
  src/imageformats/util_p.h |  7 +++++++
  src/imageformats/xcf.cpp  | 41 +++++++++++++++++++++++++++++++++++++--
- 10 files changed, 181 insertions(+), 4 deletions(-)
+ 12 files changed, 211 insertions(+), 6 deletions(-)
 
 diff --git a/src/imageformats/ani.cpp b/src/imageformats/ani.cpp
 index 5fa0d46..4c13315 100644
@@ -75,7 +77,7 @@ index bfce9ef..7b8435b 100644
      QString m_name;
      QString m_artist;
 diff --git a/src/imageformats/hdr.cpp b/src/imageformats/hdr.cpp
-index 3d4e384..f76883e 100644
+index 0db702a..a498eee 100644
 --- a/src/imageformats/hdr.cpp
 +++ b/src/imageformats/hdr.cpp
 @@ -33,6 +33,17 @@ namespace // Private.
@@ -194,8 +196,89 @@ index 906d8a7..528d7d1 100644
              }
          }
          PKFormatConverter_Release(&pConverter);
+diff --git a/src/imageformats/pfm.cpp b/src/imageformats/pfm.cpp
+index 5c462f0..370c560 100644
+--- a/src/imageformats/pfm.cpp
++++ b/src/imageformats/pfm.cpp
+@@ -109,7 +109,14 @@ public:
+     QImage::Format format() const
+     {
+         if (isValid()) {
+-            return isBlackAndWhite() ? QImage::Format_Grayscale16 : QImage::Format_RGBX32FPx4;
++            if (isBlackAndWhite()) {
++                return QImage::Format_Grayscale16;
++            }
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
++            return QImage::Format_RGBX32FPx4;
++#else
++            return QImage::Format_RGB32;
++#endif
+         }
+         return QImage::Format_Invalid;
+     }
+@@ -230,15 +237,32 @@ bool PFMHandler::read(QImage *image)
+                 }
+             }
+         } else {
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+             auto line = reinterpret_cast<float*>(img.scanLine(header.isPhotoshop() ? y : h - y - 1));
++#else
++            auto line = reinterpret_cast<quint8*>(img.scanLine(header.isPhotoshop() ? y : h - y - 1));
++#endif
+             for (auto x = 0, n = img.width() * 4; x < n; x += 4) {
+                 s >> f;
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+                 line[x] = std::clamp(f, float(0), float(1));
++#else
++                const int r = std::clamp(int(f * 255.0f), int(0), int(255));
++#endif
+                 s >> f;
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+                 line[x + 1] = std::clamp(f, float(0), float(1));
++#else
++                const int g = std::clamp(int(f * 255.0f), int(0), int(255));
++#endif
+                 s >> f;
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+                 line[x + 2] = std::clamp(f, float(0), float(1));
+                 line[x + 3] = float(1);
++#else
++                const int b = std::clamp(int(f * 255.0f), int(0), int(255));
++                *reinterpret_cast<QRgb*>(&line[x]) = qRgb(r, g, b);
++#endif
+ 
+                 if (s.status() != QDataStream::Ok) {
+                     qCWarning(LOG_PFMPLUGIN) << "PFMHandler::read() detected corrupted data";
+@@ -264,9 +288,11 @@ bool PFMHandler::supportsOption(ImageOption option) const
+     if (option == QImageIOHandler::ImageFormat) {
+         return true;
+     }
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+     if (option == QImageIOHandler::Endianness) {
+         return true;
+     }
++#endif
+     return false;
+ }
+ 
+@@ -296,6 +322,7 @@ QVariant PFMHandler::option(ImageOption option) const
+         }
+     }
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+     if (option == QImageIOHandler::Endianness) {
+         auto&& h = d->m_header;
+         if (h.isValid()) {
+@@ -306,6 +333,7 @@ QVariant PFMHandler::option(ImageOption option) const
+             }
+         }
+     }
++#endif
+ 
+     return v;
+ }
 diff --git a/src/imageformats/psd.cpp b/src/imageformats/psd.cpp
-index ba7b54a..01960fc 100644
+index 21bd30d..97cea83 100644
 --- a/src/imageformats/psd.cpp
 +++ b/src/imageformats/psd.cpp
 @@ -42,6 +42,10 @@
@@ -209,7 +292,7 @@ index ba7b54a..01960fc 100644
  #include <cmath>
  #include <cstring>
  
-@@ -142,7 +146,11 @@ struct PSDDuotoneOptions {
+@@ -146,7 +150,11 @@ struct PSDDuotoneOptions {
   */
  struct PSDColorModeDataSection {
      PSDDuotoneOptions duotone;
@@ -221,7 +304,7 @@ index ba7b54a..01960fc 100644
  };
  
  using PSDImageResourceSection = QHash<quint16, PSDImageResourceBlock>;
-@@ -474,7 +482,11 @@ PSDColorModeDataSection readColorModeDataSection(QDataStream &s, bool *ok = null
+@@ -478,7 +486,11 @@ PSDColorModeDataSection readColorModeDataSection(QDataStream &s, bool *ok = null
      }
      else {              // read the palette (768 bytes)
          auto&& palette = cms.palette;
@@ -233,7 +316,7 @@ index ba7b54a..01960fc 100644
          for (auto&& v : vect)
              s >> v;
          for (qsizetype i = 0, n = vect.size()/3; i < n; ++i)
-@@ -749,9 +761,13 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
+@@ -753,9 +765,13 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
      auto format = QImage::Format_Invalid;
      switch(header.color_mode) {
      case CM_RGB:
@@ -247,7 +330,7 @@ index ba7b54a..01960fc 100644
              format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64_Premultiplied;
          else
              format = header.channel_count < 4 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888_Premultiplied;
-@@ -1164,7 +1180,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1168,7 +1184,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
          return false;
      }
  
@@ -259,7 +342,7 @@ index ba7b54a..01960fc 100644
      // Read the compressed stride sizes
      if (compression) {
          for (auto&& v : strides) {
-@@ -1179,7 +1199,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1183,7 +1203,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
      }
      // calculate the absolute file positions of each stride (required when a colorspace conversion should be done)
      auto device = stream.device();
@@ -271,7 +354,7 @@ index ba7b54a..01960fc 100644
      if (!stridePositions.isEmpty()) {
          stridePositions[0] = device->pos();
      }
-@@ -1236,7 +1260,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1240,7 +1264,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                      planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, header.channel_count);
                  }
                  else if (header.depth == 32) {
@@ -283,7 +366,7 @@ index ba7b54a..01960fc 100644
                  }
              }
  
-@@ -1261,7 +1289,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1265,7 +1293,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                      else if (header.depth == 16)
                          premulConversion<quint16>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
                      else if (header.depth == 32)
@@ -295,7 +378,7 @@ index ba7b54a..01960fc 100644
                  }
              }
  
-@@ -1300,7 +1332,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1304,7 +1336,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                  else if (header.depth == 16)
                      rawChannelsCopy<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
                  else if (header.depth == 32)
@@ -307,7 +390,7 @@ index ba7b54a..01960fc 100644
              }
          }
      }
-@@ -1331,7 +1367,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
+@@ -1335,7 +1371,11 @@ static bool LoadPSD(QDataStream &stream, const PSDHeader &header, QImage &img)
                          planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, imgChannels);
                  }
                  else if (header.depth == 32 && header.color_mode == CM_RGB) { // 32-bits float images: RGB/RGBA
@@ -319,8 +402,21 @@ index ba7b54a..01960fc 100644
                  }
                  else if (header.depth == 32 && header.color_mode == CM_GRAYSCALE) { // 32-bits float images: Grayscale (coverted to equivalent integer 16-bits)
                      planarToChunchyFloatToUInt16<float>(scanLine, rawStride.data(), header.width, c, imgChannels);
+diff --git a/src/imageformats/pxr.cpp b/src/imageformats/pxr.cpp
+index 181bddb..ab1ebad 100644
+--- a/src/imageformats/pxr.cpp
++++ b/src/imageformats/pxr.cpp
+@@ -199,7 +199,7 @@ bool PXRHandler::read(QImage *image)
+         return false;
+     }
+ 
+-    auto size = std::min(img.bytesPerLine(), header.strideSize());
++    auto size = std::min<qint64>(img.bytesPerLine(), header.strideSize());
+     for (auto y = 0, h = img.height(); y < h; ++y) {
+         auto line = reinterpret_cast<char*>(img.scanLine(y));
+         if (d->read(line, size) != size) {
 diff --git a/src/imageformats/ras.cpp b/src/imageformats/ras.cpp
-index bd250ff..c73b581 100644
+index 801dfa0..0f93cfe 100644
 --- a/src/imageformats/ras.cpp
 +++ b/src/imageformats/ras.cpp
 @@ -15,6 +15,13 @@
@@ -337,10 +433,10 @@ index bd250ff..c73b581 100644
  namespace // Private.
  {
  // format info from http://www.fileformat.info/format/sunraster/egff.htm
-@@ -221,11 +228,19 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
- 
-     // Read palette if needed.
-     if (ras.ColorMapType == RAS_COLOR_MAP_TYPE_RGB) {
+@@ -225,14 +232,22 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
+         if (ras.ColorMapLength > 768) {
+             return false;
+         }
 +#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
          QList<quint8> palette(ras.ColorMapLength);
 +#else
@@ -348,6 +444,9 @@ index bd250ff..c73b581 100644
 +#endif
          for (quint32 i = 0; i < ras.ColorMapLength; ++i) {
              s >> palette[i];
+             if (s.status() != QDataStream::Ok) {
+                 return false;
+             }
          }
 +#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
          QList<QRgb> colorTable;
@@ -357,7 +456,7 @@ index bd250ff..c73b581 100644
          for (quint32 i = 0, n = ras.ColorMapLength / 3; i < n; ++i) {
              colorTable << qRgb(palette.at(i), palette.at(i + n), palette.at(i + 2 * n));
          }
-@@ -239,7 +254,7 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
+@@ -243,7 +258,7 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
      }
  
      LineDecoder dec(s.device(), ras);
@@ -367,7 +466,7 @@ index bd250ff..c73b581 100644
          auto rasLine = dec.readLine(rasLineSize);
          if (rasLine.size() != rasLineSize) {
 diff --git a/src/imageformats/rgb.cpp b/src/imageformats/rgb.cpp
-index bfd92d3..0ab8550 100644
+index f10251e..42d94a7 100644
 --- a/src/imageformats/rgb.cpp
 +++ b/src/imageformats/rgb.cpp
 @@ -28,7 +28,15 @@
@@ -410,7 +509,7 @@ index bfd92d3..0ab8550 100644
      uint _numrows;
  
      bool readData(QImage &);
-@@ -421,9 +437,17 @@ uint RLEMap::insert(const uchar *d, uint l)
+@@ -425,9 +441,17 @@ uint RLEMap::insert(const uchar *d, uint l)
      return QMap<RLEData, uint>::insert(data, _counter++).value();
  }
  
@@ -458,7 +557,7 @@ index e4fc67b..8f504e7 100644
  }
  
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index 7f08840..1e76b19 100644
+index d214c9e..08d6294 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -9,21 +9,32 @@

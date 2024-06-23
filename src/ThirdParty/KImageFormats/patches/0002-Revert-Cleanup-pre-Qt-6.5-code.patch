@@ -1,7 +1,7 @@
-From 3414af5846a4e1a56ebf83c3d4d861392cdb67df Mon Sep 17 00:00:00 2001
+From 886dc0a8f236ef3b2ef465367c3e0db5617bdfb4 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 3 Jan 2024 08:33:45 +0700
-Subject: [PATCH 2/8] Revert "Cleanup pre-Qt 6.5 code"
+Subject: [PATCH 2/9] Revert "Cleanup pre-Qt 6.5 code"
 
 This reverts commit 91a342e90d9def496d683244f467755846875f67.
 ---
@@ -10,7 +10,7 @@ This reverts commit 91a342e90d9def496d683244f467755846875f67.
  2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 3effaa5..50c2899 100644
+index 837aef3..3fb8293 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -88,7 +88,7 @@ endif()
@@ -23,7 +23,7 @@ index 3effaa5..50c2899 100644
  )
  
 diff --git a/src/imageformats/exr.cpp b/src/imageformats/exr.cpp
-index 56ec857..686ec1e 100644
+index a296b44..f7d12a2 100644
 --- a/src/imageformats/exr.cpp
 +++ b/src/imageformats/exr.cpp
 @@ -90,7 +90,10 @@
@@ -37,7 +37,7 @@ index 56ec857..686ec1e 100644
  
  // Allow the code to works on all QT versions supported by KDE
  // project (Qt 5.15 and Qt 6.x) to easy backports fixes.
-@@ -316,7 +319,11 @@ static void readMetadata(const Imf::Header &header, QImage &image)
+@@ -326,7 +329,11 @@ static void readMetadata(const Imf::Header &header, QImage &image)
          }
          auto dateTime = QDateTime::fromString(QString::fromStdString(capDate->value()), QStringLiteral("yyyy:MM:dd HH:mm:ss"));
          if (dateTime.isValid()) {

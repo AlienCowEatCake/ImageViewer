@@ -66,7 +66,9 @@ endmacro()
 kimageformats_read_tests(
     hdr
     pcx
+    pfm
     psd
+    pxr
     qoi
     ras
     rgb

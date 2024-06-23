@@ -10,7 +10,9 @@
 #define KIMG_RAS_P_H
 
 #include <QImageIOPlugin>
+#include <QScopedPointer>
 
+class RASHandlerPrivate;
 class RASHandler : public QImageIOHandler
 {
 public:
@@ -23,6 +25,9 @@ public:
     QVariant option(QImageIOHandler::ImageOption option) const override;
 
     static bool canRead(QIODevice *device);
+
+private:
+    const QScopedPointer<RASHandlerPrivate> d;
 };
 
 class RASPlugin : public QImageIOPlugin

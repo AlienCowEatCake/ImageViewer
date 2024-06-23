@@ -1,7 +1,7 @@
-From 003dd15bb29ab31bb986a2a7d41aa962a7bfe419 Mon Sep 17 00:00:00 2001
+From d5b4d89193c35ed017c826504c2682a0447947eb Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 04:03:37 +0700
-Subject: [PATCH 3/8] Remove plugin metadata declarations
+Subject: [PATCH 3/9] Remove plugin metadata declarations
 
 ---
  src/imageformats/ani_p.h  | 2 +-
@@ -15,15 +15,17 @@ Subject: [PATCH 3/8] Remove plugin metadata declarations
  src/imageformats/kra.h    | 2 +-
  src/imageformats/ora.h    | 2 +-
  src/imageformats/pcx_p.h  | 2 +-
+ src/imageformats/pfm_p.h  | 2 +-
  src/imageformats/pic_p.h  | 2 +-
  src/imageformats/psd_p.h  | 2 +-
+ src/imageformats/pxr_p.h  | 2 +-
  src/imageformats/qoi_p.h  | 2 +-
  src/imageformats/ras_p.h  | 2 +-
  src/imageformats/raw_p.h  | 2 +-
  src/imageformats/rgb_p.h  | 2 +-
  src/imageformats/tga_p.h  | 2 +-
  src/imageformats/xcf_p.h  | 2 +-
- 19 files changed, 19 insertions(+), 19 deletions(-)
+ 21 files changed, 21 insertions(+), 21 deletions(-)
 
 diff --git a/src/imageformats/ani_p.h b/src/imageformats/ani_p.h
 index f5cbca6..bfce9ef 100644
@@ -78,10 +80,10 @@ index 031cb02..83a38e7 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/hdr_p.h b/src/imageformats/hdr_p.h
-index e1450c6..014ca0d 100644
+index f0ac600..582a6e7 100644
 --- a/src/imageformats/hdr_p.h
 +++ b/src/imageformats/hdr_p.h
-@@ -27,7 +27,7 @@ public:
+@@ -34,7 +34,7 @@ private:
  class HDRPlugin : public QImageIOPlugin
  {
      Q_OBJECT
@@ -168,6 +170,19 @@ index 3a9b817..b563c6a 100644
  
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/pfm_p.h b/src/imageformats/pfm_p.h
+index 3ef73a8..fb8cda9 100644
+--- a/src/imageformats/pfm_p.h
++++ b/src/imageformats/pfm_p.h
+@@ -32,7 +32,7 @@ private:
+ class PFMPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pfm.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pfm.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/pic_p.h b/src/imageformats/pic_p.h
 index 874d0e8..1d03125 100644
 --- a/src/imageformats/pic_p.h
@@ -182,10 +197,10 @@ index 874d0e8..1d03125 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/psd_p.h b/src/imageformats/psd_p.h
-index f0014a0..63cbe3e 100644
+index b2be87a..c51ee35 100644
 --- a/src/imageformats/psd_p.h
 +++ b/src/imageformats/psd_p.h
-@@ -27,7 +27,7 @@ public:
+@@ -32,7 +32,7 @@ private:
  class PSDPlugin : public QImageIOPlugin
  {
      Q_OBJECT
@@ -194,11 +209,24 @@ index f0014a0..63cbe3e 100644
  
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/pxr_p.h b/src/imageformats/pxr_p.h
+index c3e1586..e4e2965 100644
+--- a/src/imageformats/pxr_p.h
++++ b/src/imageformats/pxr_p.h
+@@ -32,7 +32,7 @@ private:
+ class PXRPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pxr.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pxr.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/qoi_p.h b/src/imageformats/qoi_p.h
-index b125e9f..e845801 100644
+index 992623c..00f7f25 100644
 --- a/src/imageformats/qoi_p.h
 +++ b/src/imageformats/qoi_p.h
-@@ -28,7 +28,7 @@ public:
+@@ -33,7 +33,7 @@ private:
  class QOIPlugin : public QImageIOPlugin
  {
      Q_OBJECT
@@ -208,10 +236,10 @@ index b125e9f..e845801 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/ras_p.h b/src/imageformats/ras_p.h
-index 99a82a0..09ae28e 100644
+index 702f8f1..5f68d8d 100644
 --- a/src/imageformats/ras_p.h
 +++ b/src/imageformats/ras_p.h
-@@ -28,7 +28,7 @@ public:
+@@ -33,7 +33,7 @@ private:
  class RASPlugin : public QImageIOPlugin
  {
      Q_OBJECT
@@ -247,10 +275,10 @@ index 3d7b14c..967ce85 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/tga_p.h b/src/imageformats/tga_p.h
-index 9354227..9dfdd05 100644
+index 64a451c..9484857 100644
 --- a/src/imageformats/tga_p.h
 +++ b/src/imageformats/tga_p.h
-@@ -28,7 +28,7 @@ public:
+@@ -33,7 +33,7 @@ private:
  class TGAPlugin : public QImageIOPlugin
  {
      Q_OBJECT
@@ -260,10 +288,10 @@ index 9354227..9dfdd05 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/xcf_p.h b/src/imageformats/xcf_p.h
-index 4c31d4f..8cd298e 100644
+index 0324797..d21e6e1 100644
 --- a/src/imageformats/xcf_p.h
 +++ b/src/imageformats/xcf_p.h
-@@ -29,7 +29,7 @@ public:
+@@ -36,7 +36,7 @@ private:
  class XCFPlugin : public QImageIOPlugin
  {
      Q_OBJECT

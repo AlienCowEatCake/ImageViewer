@@ -102,6 +102,11 @@
 #define EXR_USE_QT6_FLOAT_IMAGE // default uncommented
 #endif
 
+// Qt 6.8 allow to create and use Gray profile, so we can load a Gray image as Grayscale format instead RGB one.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+#define EXR_GRAY_SUPPORT_ENABLED
+#endif
+
 class K_IStream : public Imf::IStream
 {
 public:
@@ -251,10 +256,15 @@ bool EXRHandler::canRead() const
 static QImage::Format imageFormat(const Imf::RgbaInputFile &file)
 {
     auto isRgba = file.channels() & Imf::RgbaChannels::WRITE_A;
+#ifdef EXR_GRAY_SUPPORT_ENABLED
+    auto isGray = file.channels() & Imf::RgbaChannels::WRITE_Y;
+#else
+    auto isGray = false;
+#endif
 #if defined(EXR_USE_LEGACY_CONVERSIONS)
     return (isRgba ? QImage::Format_ARGB32 : QImage::Format_RGB32);
 #elif defined(EXR_USE_QT6_FLOAT_IMAGE)
-    return (isRgba ? QImage::Format_RGBA16FPx4 : QImage::Format_RGBX16FPx4);
+    return (isRgba ? QImage::Format_RGBA16FPx4 : isGray ? QImage::Format_Grayscale16 : QImage::Format_RGBX16FPx4);
 #else
     return (isRgba ? QImage::Format_RGBA64 : QImage::Format_RGBX64);
 #endif
@@ -380,7 +390,16 @@ static void readColorSpace(const Imf::Header &header, QImage &image)
                          QColorSpace::TransferFunction::Linear);
     }
     if (!cs.isValid()) {
+#ifdef EXR_GRAY_SUPPORT_ENABLED
+        if (image.format() == QImage::Format_Grayscale16 || image.format() == QImage::Format_Grayscale8) {
+            cs = QColorSpace(QPointF(0.31271, 0.32902), QColorSpace::TransferFunction::Linear);
+            cs.setDescription(QStringLiteral("Gray Linear build-in"));
+        } else {
+            cs = QColorSpace(QColorSpace::SRgbLinear);
+        }
+#else
         cs = QColorSpace(QColorSpace::SRgbLinear);
+#endif
     }
     image.setColorSpace(cs);
 
@@ -450,6 +469,13 @@ bool EXRHandler::read(QImage *outImage)
             file.readPixels(my, std::min(my + EXR_LINES_PER_BLOCK - 1, dw.max.y));
 
             for (n = 0; n < std::min(EXR_LINES_PER_BLOCK, height - y); ++n) {
+                if (image.format() == QImage::Format_Grayscale16) { // grayscale image
+                    auto scanLine = reinterpret_cast<quint16 *>(image.scanLine(y + n));
+                    for (int x = 0; x < width; ++x) {
+                        *(scanLine + x) = quint16(qBound(0.f, float(pixels[n][x].r) * 65535.f + 0.5f, 65535.f));
+                    }
+                    continue;
+                }
 #if defined(EXR_USE_LEGACY_CONVERSIONS)
                 Q_UNUSED(isRgba)
                 auto scanLine = reinterpret_cast<QRgb *>(image.scanLine(y + n));
@@ -648,7 +674,16 @@ bool EXRHandler::write(const QImage &image)
         auto convFormat = image.hasAlphaChannel() ? QImage::Format_RGBA64 : QImage::Format_RGBX64;
 #endif
         ScanLineConverter slc(convFormat);
+#ifdef EXR_GRAY_SUPPORT_ENABLED
+        if (channelsType == Imf::RgbaChannels::WRITE_Y) {
+            slc.setDefaultSourceColorSpace(QColorSpace(QColorSpace(QColorSpace::SRgb).whitePoint(), QColorSpace::TransferFunction::SRgb)); // Creates a custom grayscale color space
+        } else {
+            slc.setDefaultSourceColorSpace(QColorSpace(QColorSpace::SRgb));
+        }
+#else
         slc.setDefaultSourceColorSpace(QColorSpace(QColorSpace::SRgb));
+#endif
+
         slc.setTargetColorSpace(QColorSpace(QColorSpace::SRgbLinear));
         for (int y = 0, n = 0; y < height; y += n) {
             for (n = 0; n < std::min(EXR_LINES_PER_BLOCK, height - y); ++n) {
@@ -708,10 +743,12 @@ void EXRHandler::setOption(ImageOption option, const QVariant &value)
 bool EXRHandler::supportsOption(ImageOption option) const
 {
     if (option == QImageIOHandler::Size) {
-        return true;
+        if (auto d = device())
+            return !d->isSequential();
     }
     if (option == QImageIOHandler::ImageFormat) {
-        return true;
+        if (auto d = device())
+            return !d->isSequential();
     }
     if (option == QImageIOHandler::CompressionRatio) {
         return true;
@@ -730,6 +767,9 @@ QVariant EXRHandler::option(ImageOption option) const
         if (auto d = device()) {
             // transactions works on both random and sequential devices
             d->startTransaction();
+            if (m_startPos > -1) {
+                d->seek(m_startPos);
+            }
             try {
                 K_IStream istr(d, QByteArray());
                 Imf::RgbaInputFile file(istr);
@@ -752,6 +792,9 @@ QVariant EXRHandler::option(ImageOption option) const
         if (auto d = device()) {
             // transactions works on both random and sequential devices
             d->startTransaction();
+            if (m_startPos > -1) {
+                d->seek(m_startPos);
+            }
             try {
                 K_IStream istr(d, QByteArray());
                 Imf::RgbaInputFile file(istr);

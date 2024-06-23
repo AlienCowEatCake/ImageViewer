@@ -56,18 +56,18 @@ enum TGAType {
 
 /** Tga Header. */
 struct TgaHeader {
-    uchar id_length;
-    uchar colormap_type;
-    uchar image_type;
-    ushort colormap_index;
-    ushort colormap_length;
-    uchar colormap_size;
-    ushort x_origin;
-    ushort y_origin;
-    ushort width;
-    ushort height;
-    uchar pixel_size;
-    uchar flags;
+    uchar id_length = 0;
+    uchar colormap_type = 0;
+    uchar image_type = 0;
+    ushort colormap_index = 0;
+    ushort colormap_length = 0;
+    uchar colormap_size = 0;
+    ushort x_origin = 0;
+    ushort y_origin = 0;
+    ushort width = 0;
+    ushort height = 0;
+    uchar pixel_size = 0;
+    uchar flags = 0;
 
     enum {
         SIZE = 18,
@@ -407,7 +407,18 @@ static bool LoadTGA(QDataStream &s, const TgaHeader &tga, QImage &img)
 
 } // namespace
 
+class TGAHandlerPrivate
+{
+public:
+    TGAHandlerPrivate() {}
+    ~TGAHandlerPrivate() {}
+
+    TgaHeader m_header;
+};
+
 TGAHandler::TGAHandler()
+    : QImageIOHandler()
+    , d(new TGAHandlerPrivate)
 {
 }
 
@@ -424,20 +435,20 @@ bool TGAHandler::read(QImage *outImage)
 {
     // qDebug() << "Loading TGA file!";
 
-    auto d = device();
-    TgaHeader tga;
-    if (!peekHeader(d, tga) || !IsSupported(tga)) {
+    auto dev = device();
+    auto&& tga = d->m_header;
+    if (!peekHeader(dev, tga) || !IsSupported(tga)) {
         //         qDebug() << "This TGA file is not valid.";
         return false;
     }
 
-    if (d->isSequential()) {
-        d->read(TgaHeader::SIZE + tga.id_length);
+    if (dev->isSequential()) {
+        dev->read(TgaHeader::SIZE + tga.id_length);
     } else {
-        d->seek(TgaHeader::SIZE + tga.id_length);
+        dev->seek(TgaHeader::SIZE + tga.id_length);
     }
 
-    QDataStream s(d);
+    QDataStream s(dev);
     s.setByteOrder(QDataStream::LittleEndian);
 
     // Check image file format.
@@ -519,18 +530,22 @@ QVariant TGAHandler::option(ImageOption option) const
     QVariant v;
 
     if (option == QImageIOHandler::Size) {
-        if (auto d = device()) {
-            TgaHeader header;
-            if (peekHeader(d, header) && IsSupported(header)) {
+        auto&& header = d->m_header;
+        if (IsSupported(header)) {
+            v = QVariant::fromValue(QSize(header.width, header.height));
+        } else if (auto dev = device()) {
+            if (peekHeader(dev, header) && IsSupported(header)) {
                 v = QVariant::fromValue(QSize(header.width, header.height));
             }
         }
     }
 
     if (option == QImageIOHandler::ImageFormat) {
-        if (auto d = device()) {
-            TgaHeader header;
-            if (peekHeader(d, header) && IsSupported(header)) {
+        auto&& header = d->m_header;
+        if (IsSupported(header)) {
+            v = QVariant::fromValue(imageFormat(header));
+        } else if (auto dev = device()) {
+            if (peekHeader(dev, header) && IsSupported(header)) {
                 v = QVariant::fromValue(imageFormat(header));
             }
         }

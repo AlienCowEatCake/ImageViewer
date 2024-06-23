@@ -90,6 +90,107 @@ static QImage::Format preferredFormat(QImage::Format fmt)
     }
 }
 
+/*!
+ * \brief The OptionTest class
+ * Class for testing image options.
+ * Supports the most common options:
+ * - Size
+ * - ImageFormat
+ * - ImageTransformation (rotations)
+ * \todo Add missing options if needed.
+ */
+class OptionTest
+{
+public:
+    OptionTest()
+        : m_size(QSize())
+        , m_format(QImage::Format_Invalid)
+        , m_transformations(QImageIOHandler::TransformationNone)
+    {
+    }
+
+    OptionTest(const OptionTest&) = default;
+    OptionTest& operator =(const OptionTest&) = default;
+
+    /*!
+     * \brief store
+     * Stores the supported options of the reader.
+     * \param reader
+     * \return True on success, otherwise false.
+     */
+    bool store(const QImageReader *reader = nullptr)
+    {
+        if (reader == nullptr) {
+            return false;
+        }
+        bool ok = true;
+        if (reader->supportsOption(QImageIOHandler::Size)) {
+            m_size = reader->size();
+            if (m_size.isEmpty())
+                ok = false;
+        }
+        if (reader->supportsOption(QImageIOHandler::ImageFormat)) {
+            m_format = reader->imageFormat();
+            if (m_format == QImage::Format_Invalid)
+                ok = false;
+        }
+        if (reader->supportsOption(QImageIOHandler::ImageTransformation)) {
+            m_transformations = reader->transformation();
+            if (m_transformations < 0 || m_transformations > 7)
+                ok = false;
+        }
+        return ok;
+    }
+
+
+    /*!
+     * \brief compare
+     * Compare the stored values with the ones read from the image reader.
+     * \param reader
+     * \return True on success, otherwise false.
+     */
+    bool compare(const QImageReader *reader)
+    {
+        if (reader == nullptr) {
+            return false;
+        }
+        bool ok = true;
+        if (reader->supportsOption(QImageIOHandler::Size)) {
+            ok = ok && (m_size == reader->size());
+        }
+        if (reader->supportsOption(QImageIOHandler::ImageFormat)) {
+            ok = ok && (m_format == reader->imageFormat());
+        }
+        if (reader->supportsOption(QImageIOHandler::ImageTransformation)) {
+            ok = ok && (m_transformations == reader->transformation());
+        }
+        return ok;
+    }
+
+    /*!
+     * \brief compare
+     * Compare the image properties with the ones stored.
+     * \param image
+     * \return True on success, otherwise false.
+     */
+    bool compare(const QImage& image)
+    {
+        bool ok = true;
+        if (!m_size.isEmpty()) {
+            ok = ok && (m_size == image.size());
+        }
+        if (m_format != QImage::Format_Invalid) {
+            ok = ok && (m_format == image.format());
+        }
+        return ok;
+    }
+
+private:
+    QSize m_size;
+    QImage::Format m_format;
+    QImageIOHandler::Transformations m_transformations;
+};
+
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
@@ -208,11 +309,32 @@ int main(int argc, char **argv)
                 }
                 continue;
             }
+
+            OptionTest optionTest;
+            if (!optionTest.store(&inputReader)) {
+                QTextStream(stdout) << "FAIL : " << fi.fileName() << ": error while reading options\n";
+                ++failed;
+                continue;
+            }
+
             if (!inputReader.read(&inputImage)) {
                 QTextStream(stdout) << "FAIL : " << fi.fileName() << ": failed to load: " << inputReader.errorString() << "\n";
                 ++failed;
                 continue;
             }
+
+            if (!optionTest.compare(&inputReader)) {
+                QTextStream(stdout) << "FAIL : " << fi.fileName() << ": error while comparing options\n";
+                ++failed;
+                continue;
+            }
+
+            if (!optionTest.compare(inputImage)) {
+                QTextStream(stdout) << "FAIL : " << fi.fileName() << ": error while comparing the image properties with options\n";
+                ++failed;
+                continue;
+            }
+
             if (expImage.width() != inputImage.width()) {
                 QTextStream(stdout) << "FAIL : " << fi.fileName() << ": width was " << inputImage.width() << " but " << expfilename << " width was "
                                     << expImage.width() << "\n";

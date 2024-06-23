@@ -9,7 +9,9 @@
 #define KIMG_PSD_P_H
 
 #include <QImageIOPlugin>
+#include <QScopedPointer>
 
+class PSDHandlerPrivate;
 class PSDHandler : public QImageIOHandler
 {
 public:
@@ -22,6 +24,9 @@ public:
     QVariant option(QImageIOHandler::ImageOption option) const override;
 
     static bool canRead(QIODevice *device);
+
+private:
+    const QScopedPointer<PSDHandlerPrivate> d;
 };
 
 class PSDPlugin : public QImageIOPlugin

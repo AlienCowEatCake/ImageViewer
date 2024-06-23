@@ -156,6 +156,7 @@ DEFINES += HDRPlugin=tp_HDRPlugin
 
     DEFINES += JXRHandler=tp_JXRHandler
     DEFINES += JXRPlugin=tp_JXRPlugin
+    DEFINES += JXRHandlerPrivate=tp_JXRHandlerPrivate
 }
 
 # --------------------------------------------------------------------------------
@@ -203,6 +204,20 @@ DEFINES += PCXHEADER=tp_PCXHEADER
 # --------------------------------------------------------------------------------
 
 SOURCES += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/pfm.cpp
+
+HEADERS += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/pfm_p.h
+
+DEFINES += WRAPPER_USE_PFM_HANDLER
+
+DEFINES += PFMHandler=tp_PFMHandler
+DEFINES += PFMPlugin=tp_PFMPlugin
+DEFINES += PFMHeader=tp_PFMHeader
+
+# --------------------------------------------------------------------------------
+
+SOURCES += \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/pic.cpp
 
 HEADERS += \
@@ -227,6 +242,20 @@ DEFINES += WRAPPER_USE_PSD_HANDLER
 
 DEFINES += PSDHandler=tp_PSDHandler
 DEFINES += PSDPlugin=tp_PSDPlugin
+
+# --------------------------------------------------------------------------------
+
+SOURCES += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/pxr.cpp
+
+HEADERS += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/pxr_p.h
+
+DEFINES += WRAPPER_USE_PXR_HANDLER
+
+DEFINES += PXRHandler=tp_PXRHandler
+DEFINES += PXRPlugin=tp_PXRPlugin
+DEFINES += PXRHandlerPrivate=tp_PXRHandlerPrivate
 
 # --------------------------------------------------------------------------------
 

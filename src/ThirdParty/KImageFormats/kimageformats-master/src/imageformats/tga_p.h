@@ -9,7 +9,9 @@
 #define KIMG_TGA_P_H
 
 #include <QImageIOPlugin>
+#include <QScopedPointer>
 
+class TGAHandlerPrivate;
 class TGAHandler : public QImageIOHandler
 {
 public:
@@ -23,6 +25,9 @@ public:
     QVariant option(QImageIOHandler::ImageOption option) const override;
 
     static bool canRead(QIODevice *device);
+
+private:
+    const QScopedPointer<TGAHandlerPrivate> d;
 };
 
 class TGAPlugin : public QImageIOPlugin
