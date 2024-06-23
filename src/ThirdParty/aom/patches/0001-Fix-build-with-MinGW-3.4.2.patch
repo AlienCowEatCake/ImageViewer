@@ -23,10 +23,10 @@ index d5b8790a98..04f6fd667d 100644
  #elif defined(_MSC_VER)
  #define ATTRIBUTE_PACKED
 diff --git a/aom_ports/bitops.h b/aom_ports/bitops.h
-index 7f4c165f5a..15a73106da 100644
+index 0795855083..70a45042f4 100644
 --- a/aom_ports/bitops.h
 +++ b/aom_ports/bitops.h
-@@ -38,7 +38,7 @@ extern "C" {
+@@ -39,7 +39,7 @@ extern "C" {
  
  // use GNU builtins where available.
  #if defined(__GNUC__) && \
@@ -36,10 +36,10 @@ index 7f4c165f5a..15a73106da 100644
    assert(n != 0);
    return 31 ^ __builtin_clz(n);
 diff --git a/av1/encoder/ratectrl.h b/av1/encoder/ratectrl.h
-index 6802ad42d0..28e475bf20 100644
+index 0dd8e32b78..29bb147bf9 100644
 --- a/av1/encoder/ratectrl.h
 +++ b/av1/encoder/ratectrl.h
-@@ -350,7 +350,7 @@ typedef struct {
+@@ -353,7 +353,7 @@ typedef struct {
    int arf_q;
  
    /*!\cond */
