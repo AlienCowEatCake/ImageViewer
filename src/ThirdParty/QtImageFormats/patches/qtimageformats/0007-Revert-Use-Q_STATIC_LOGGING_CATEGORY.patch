@@ -1,0 +1,26 @@
+From 690fb8a0f4eb49b151ee1521ddf81ebb377c3333 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 23 Jun 2024 18:23:38 +0700
+Subject: [PATCH 7/7] Revert "Use Q_STATIC_LOGGING_CATEGORY"
+
+This reverts commit 73c92eb99feb2908dec552f984643af28b9cda42.
+---
+ src/plugins/imageformats/tiff/qtiffhandler.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+index b4d0748..e5660ab 100644
+--- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
++++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
+@@ -25,7 +25,7 @@ extern "C" {
+ 
+ QT_BEGIN_NAMESPACE
+ 
+-Q_STATIC_LOGGING_CATEGORY(lcTiff, "qt.imageformats.tiff")
++static Q_LOGGING_CATEGORY(lcTiff, "qt.imageformats.tiff")
+ 
+ tsize_t qtiffReadProc(thandle_t fd, tdata_t buf, tsize_t size)
+ {
+-- 
+2.39.2
+

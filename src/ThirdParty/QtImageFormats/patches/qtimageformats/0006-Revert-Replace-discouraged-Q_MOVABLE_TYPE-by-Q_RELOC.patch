@@ -1,7 +1,7 @@
-From 595ab47530fe9889a65f722cbfa3caabb5a97286 Mon Sep 17 00:00:00 2001
+From a860f964ffdd8a7111d09b9cfc8e78cc3d635c55 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 Aug 2022 03:45:30 +0700
-Subject: [PATCH 6/6] Revert "Replace discouraged Q_MOVABLE_TYPE by
+Subject: [PATCH 6/7] Revert "Replace discouraged Q_MOVABLE_TYPE by
  Q_RELOCATABLE_TYPE"
 
 This reverts commit 761b00d340924264f3c18c43c7f596e723b04d68.

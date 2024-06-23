@@ -51,7 +51,7 @@ qt_feature("tiff" PRIVATE
     CONDITION QT_FEATURE_imageformatplugin
     DISABLE INPUT_tiff STREQUAL 'no'
 )
-qt_feature("system-tiff" PRIVATE
+qt_feature("system-tiff" PRIVATE SYSTEM_LIBRARY
     LABEL "  Using system libtiff"
     CONDITION QT_FEATURE_tiff AND TIFF_FOUND
     ENABLE INPUT_tiff STREQUAL 'system'
@@ -62,7 +62,7 @@ qt_feature("webp" PRIVATE
     CONDITION QT_FEATURE_imageformatplugin
     DISABLE INPUT_webp STREQUAL 'no'
 )
-qt_feature("system-webp" PRIVATE
+qt_feature("system-webp" PRIVATE SYSTEM_LIBRARY
     LABEL "  Using system libwebp"
     CONDITION QT_FEATURE_webp AND WrapWebP_FOUND
     ENABLE INPUT_webp STREQUAL 'system'
