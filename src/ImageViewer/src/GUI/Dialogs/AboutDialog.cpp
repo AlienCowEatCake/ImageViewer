@@ -19,12 +19,14 @@
 
 #include "AboutDialog.h"
 #include "AboutDialog_p.h"
+#include "Contributors.h"
 
 #include <cstddef>
 #include <cstring>
 
 #include <QApplication>
 #include <QSysInfo>
+#include <QTextDocument>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
@@ -251,6 +253,20 @@ QString getTextBrowserContent()
     result.append(QString::fromLatin1("<b>%1</b> %2<br><br>")
             .arg(QString::fromLatin1("Available image decoders:"))
             .arg(availableDecoders.join(QString::fromLatin1(", "))));
+
+    result.append(QString::fromLatin1("<b>%1</b><br>")
+            .arg(QString::fromLatin1("Contributors:")));
+    for(QStringList::ConstIterator it = CONTRIBUTORS.begin(); it != CONTRIBUTORS.end(); ++it)
+    {
+        result.append(QString::fromLatin1("- %1<br>").arg(
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+                it->toHtmlEscaped()
+#else
+                Qt::escape(*it);
+#endif
+                ));
+    }
+    result.append(QString::fromLatin1("<br>"));
 
     result.append(formatItem(
                       QString::fromLatin1("This software uses the Qt framework"),

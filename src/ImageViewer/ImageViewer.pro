@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -106,6 +106,7 @@ HEADERS += \
     src/GUI/UIState.h \
     src/GUI/Dialogs/AboutDialog.h \
     src/GUI/Dialogs/AboutDialog_p.h \
+    src/GUI/Dialogs/Contributors.h \
     src/GUI/Dialogs/InfoDialog.h \
     src/GUI/Dialogs/InfoDialog_p.h \
     src/GUI/Dialogs/SettingsDialog.h \
