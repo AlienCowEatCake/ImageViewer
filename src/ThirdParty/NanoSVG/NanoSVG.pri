@@ -1,5 +1,5 @@
 # URL: https://github.com/memononen/nanosvg
-# License: zlib License - https://github.com/memononen/nanosvg/blob/master/LICENSE.txt
+# License: Zlib License - https://github.com/memononen/nanosvg/blob/master/LICENSE.txt
 
 include($${PWD}/../../Features.pri)
 

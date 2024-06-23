@@ -1,5 +1,5 @@
 # URL: https://aomedia.googlesource.com/aom/ + https://storage.googleapis.com/aom-releases/
-# License: 2-clause BSD License - https://aomedia.googlesource.com/aom/+/refs/heads/master/LICENSE
+# License: 2-Clause BSD License - https://aomedia.googlesource.com/aom/+/refs/heads/master/LICENSE
 
 include($${PWD}/../../Features.pri)
 

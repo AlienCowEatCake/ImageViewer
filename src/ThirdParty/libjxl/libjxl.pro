@@ -1,5 +1,5 @@
 # URL: https://github.com/libjxl/libjxl
-# License: BSD-style License - https://github.com/libjxl/libjxl/blob/main/LICENSE
+# License: 3-Clause BSD License - https://github.com/libjxl/libjxl/blob/main/LICENSE
 
 TEMPLATE = lib
 CONFIG += staticlib

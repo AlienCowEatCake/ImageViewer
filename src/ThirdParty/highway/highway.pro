@@ -1,5 +1,5 @@
 # URL: https://github.com/google/highway
-# License: Apache-2.0 License - https://github.com/google/highway/blob/master/LICENSE
+# License: Apache License 2.0 - https://github.com/google/highway/blob/master/LICENSE
 
 TEMPLATE = lib
 CONFIG += staticlib

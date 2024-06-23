@@ -1,5 +1,5 @@
 # URL: https://www.nuget.org/packages/Microsoft.Web.WebView2
-# License: 3-clause BSD License - https://www.nuget.org/packages/Microsoft.Web.WebView2/1.0.2535.41/License
+# License: 3-Clause BSD License - https://www.nuget.org/packages/Microsoft.Web.WebView2/1.0.2535.41/License
 
 include($${PWD}/../../Features.pri)
 

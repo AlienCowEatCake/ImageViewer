@@ -1,5 +1,5 @@
 # URL: http://www.openjpeg.org/
-# License: 2-clause BSD License - https://github.com/uclouvain/openjpeg/blob/master/LICENSE
+# License: 2-Clause BSD License - https://github.com/uclouvain/openjpeg/blob/master/LICENSE
 
 include($${PWD}/../../Features.pri)
 

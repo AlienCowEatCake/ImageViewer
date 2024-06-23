@@ -1,5 +1,5 @@
 # URL: http://web.archive.org/web/20180116001029/http://jxrlib.codeplex.com/
-# License: 2-clause BSD License
+# License: 2-Clause BSD License
 
 include($${PWD}/../../Features.pri)
 

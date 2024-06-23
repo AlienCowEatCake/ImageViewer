@@ -1,5 +1,5 @@
 # URL: https://github.com/Esri/lerc
-# License: Apache License, Version 2.0 - https://github.com/Esri/lerc/blob/master/LICENSE
+# License: Apache License 2.0 - https://github.com/Esri/lerc/blob/master/LICENSE
 
 TEMPLATE = lib
 CONFIG += staticlib

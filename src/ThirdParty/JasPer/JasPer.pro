@@ -1,5 +1,5 @@
 # URL: https://github.com/jasper-software/jasper
-# License: JasPer License v2.0 - https://github.com/jasper-software/jasper/blob/master/LICENSE
+# License: JasPer License v2.0 - https://github.com/jasper-software/jasper/blob/master/LICENSE.txt
 
 TEMPLATE = lib
 CONFIG += staticlib

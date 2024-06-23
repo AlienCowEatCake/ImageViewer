@@ -1,5 +1,5 @@
-# URL: https://github.com/openexr/openexr
-# License: 3-clause BSD License - https://github.com/openexr/openexr/blob/master/LICENSE.md
+# URL: https://github.com/AcademySoftwareFoundation/openexr + https://github.com/AcademySoftwareFoundation/imath
+# License: 3-Clause BSD License - https://github.com/AcademySoftwareFoundation/openexr/blob/main/LICENSE.md
 
 include($${PWD}/../../Features.pri)
 

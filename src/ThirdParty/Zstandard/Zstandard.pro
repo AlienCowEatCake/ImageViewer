@@ -1,5 +1,5 @@
 # URL: https://github.com/facebook/zstd
-# License: 3-clause BSD License - https://github.com/facebook/zstd/blob/dev/LICENSE
+# License: 3-Clause BSD License - https://github.com/facebook/zstd/blob/dev/LICENSE
 
 TEMPLATE = lib
 CONFIG += staticlib

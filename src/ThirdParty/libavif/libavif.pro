@@ -1,5 +1,5 @@
 # URL: https://github.com/AOMediaCodec/libavif
-# License: 2-clause BSD License - https://github.com/AOMediaCodec/libavif/blob/master/LICENSE
+# License: 2-Clause BSD License - https://github.com/AOMediaCodec/libavif/blob/master/LICENSE
 
 TEMPLATE = lib
 CONFIG += staticlib

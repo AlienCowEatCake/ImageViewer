@@ -1,5 +1,5 @@
 # URL: https://tukaani.org/xz/
-# License: Public Domain - https://git.tukaani.org/?p=xz.git;a=blob;f=COPYING
+# License: Zero-Clause BSD License - https://git.tukaani.org/?p=xz.git;a=blob;f=COPYING
 
 include($${PWD}/../../Features.pri)
 

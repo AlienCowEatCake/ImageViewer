@@ -1,5 +1,5 @@
 # URL: http://www.simplesystems.org/libtiff/
-# License: LibTiff License - https://gitlab.com/libtiff/libtiff/blob/master/COPYRIGHT
+# License: LibTiff License - https://gitlab.com/libtiff/libtiff/blob/master/LICENSE.md
 
 include($${PWD}/../../Features.pri)
 
