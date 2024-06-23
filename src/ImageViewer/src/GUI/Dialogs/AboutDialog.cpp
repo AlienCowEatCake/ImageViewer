@@ -262,7 +262,7 @@ QString getTextBrowserContent()
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
                 it->toHtmlEscaped()
 #else
-                Qt::escape(*it);
+                Qt::escape(*it)
 #endif
                 ));
     }
