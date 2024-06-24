@@ -36,10 +36,13 @@ SOURCES += \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/scanlineconverter.cpp \
 
 HEADERS += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/fastmath_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/gimp_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/rle_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/scanlineconverter_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/util_p.h \
+
+DEFINES += ScanLineConverter=tp_ScanLineConverter
 
 # --------------------------------------------------------------------------------
 
@@ -81,6 +84,7 @@ DEFINES += ANIPlugin=tp_ANIPlugin
 #
 #DEFINES += EPSHandler=tp_EPSHandler
 #DEFINES += EPSPlugin=tp_EPSPlugin
+#DEFINES += EPSPLUGIN=tp_EPSPLUGIN
 
 # --------------------------------------------------------------------------------
 
@@ -96,7 +100,10 @@ DEFINES += ANIPlugin=tp_ANIPlugin
     DEFINES += EXRHandler=tp_EXRHandler
     DEFINES += EXRPlugin=tp_EXRPlugin
     DEFINES += K_IStream=tp_K_IStream
+    DEFINES += K_OStream=tp_K_OStream
+    DEFINES += gamma=tp_gamma
     DEFINES += RgbaToQrgba=tp_RgbaToQrgba
+    DEFINES += makePreview=tp_makePreview
 }
 
 # --------------------------------------------------------------------------------
@@ -111,6 +118,8 @@ DEFINES += WRAPPER_USE_HDR_HANDLER
 
 DEFINES += HDRHandler=tp_HDRHandler
 DEFINES += HDRPlugin=tp_HDRPlugin
+DEFINES += HDRPLUGIN=tp_HDRPLUGIN
+DEFINES += imageFormat=tp_imageFormat
 
 # --------------------------------------------------------------------------------
 
@@ -157,6 +166,7 @@ DEFINES += HDRPlugin=tp_HDRPlugin
     DEFINES += JXRHandler=tp_JXRHandler
     DEFINES += JXRPlugin=tp_JXRPlugin
     DEFINES += JXRHandlerPrivate=tp_JXRHandlerPrivate
+    DEFINES += LOG_JXRPLUGIN=tp_LOG_JXRPLUGIN
 }
 
 # --------------------------------------------------------------------------------
@@ -213,6 +223,8 @@ DEFINES += WRAPPER_USE_PFM_HANDLER
 
 DEFINES += PFMHandler=tp_PFMHandler
 DEFINES += PFMPlugin=tp_PFMPlugin
+DEFINES += PFMHandlerPrivate=tp_PFMHandlerPrivate
+DEFINES += LOG_PFMPLUGIN=tp_LOG_PFMPLUGIN
 DEFINES += PFMHeader=tp_PFMHeader
 
 # --------------------------------------------------------------------------------
@@ -242,6 +254,7 @@ DEFINES += WRAPPER_USE_PSD_HANDLER
 
 DEFINES += PSDHandler=tp_PSDHandler
 DEFINES += PSDPlugin=tp_PSDPlugin
+DEFINES += PSDHandlerPrivate=tp_PSDHandlerPrivate
 
 # --------------------------------------------------------------------------------
 
@@ -256,6 +269,8 @@ DEFINES += WRAPPER_USE_PXR_HANDLER
 DEFINES += PXRHandler=tp_PXRHandler
 DEFINES += PXRPlugin=tp_PXRPlugin
 DEFINES += PXRHandlerPrivate=tp_PXRHandlerPrivate
+DEFINES += LOG_PXRPLUGIN=tp_LOG_PXRPLUGIN
+DEFINES += PXRHeader=tp_PXRHeader
 
 # --------------------------------------------------------------------------------
 
@@ -269,6 +284,7 @@ DEFINES += WRAPPER_USE_QOI_HANDLER
 
 DEFINES += QOIHandler=tp_QOIHandler
 DEFINES += QOIPlugin=tp_QOIPlugin
+DEFINES += QOIHandlerPrivate=tp_QOIHandlerPrivate
 
 # --------------------------------------------------------------------------------
 
@@ -282,6 +298,7 @@ DEFINES += WRAPPER_USE_RAS_HANDLER
 
 DEFINES += RASHandler=tp_RASHandler
 DEFINES += RASPlugin=tp_RASPlugin
+DEFINES += RASHandlerPrivate=tp_RASHandlerPrivate
 
 # --------------------------------------------------------------------------------
 
@@ -326,6 +343,7 @@ DEFINES += WRAPPER_USE_TGA_HANDLER
 
 DEFINES += TGAHandler=tp_TGAHandler
 DEFINES += TGAPlugin=tp_TGAPlugin
+DEFINES += TGAHandlerPrivate=tp_TGAHandlerPrivate
 
 # --------------------------------------------------------------------------------
 
@@ -339,6 +357,8 @@ DEFINES += WRAPPER_USE_XCF_HANDLER
 
 DEFINES += XCFHandler=tp_XCFHandler
 DEFINES += XCFPlugin=tp_XCFPlugin
+DEFINES += XCFPLUGIN=tp_XCFPLUGIN
+DEFINES += XCFImageFormat=tp_XCFImageFormat
 
 # --------------------------------------------------------------------------------
 

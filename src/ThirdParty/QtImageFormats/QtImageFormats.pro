@@ -74,6 +74,7 @@ DEFINES += QICNSHandler=tp_QICNSHandler
 
     DEFINES += QJp2HandlerPrivate=tp_QJp2HandlerPrivate
     DEFINES += QJp2Handler=tp_QJp2Handler
+    DEFINES += Jpeg2000JasperReader=tp_Jpeg2000JasperReader
 
 }
 
@@ -108,6 +109,10 @@ DEFINES += WRAPPER_USE_TGA_HANDLER
 
 DEFINES += QTgaFile=tp_QTgaFile
 DEFINES += QTgaHandler=tp_QTgaHandler
+DEFINES += TgaReader=tp_TgaReader
+DEFINES += Tga16Reader=tp_Tga16Reader
+DEFINES += Tga24Reader=tp_Tga24Reader
+DEFINES += Tga32Reader=tp_Tga32Reader
 
 # --------------------------------------------------------------------------------
 
