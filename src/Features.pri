@@ -37,7 +37,7 @@ isEmpty(QT_VERSION_NUMERIC) {
         QT_VERSION_NUMERIC = "$${QT_VERSION_NUMERIC}0$${QT_PATCH_VERSION}"
     }
 }
-*g++* : isEmpty(GCC_VERSION_NUMERIC) {
+*g++* : !*clang* : isEmpty(GCC_VERSION_NUMERIC) {
     GCC_VERSION_STR = $$system("$${QMAKE_CXX} -dumpversion")
     GCC_VERSION_LIST = $$split(GCC_VERSION_STR, -)
     GCC_VERSION_STR = $$member(GCC_VERSION_LIST, 0)
@@ -155,7 +155,7 @@ isEmpty(QT_VERSION_NUMERIC) {
     # MSVC 2013 is not a C++11-conformant compiler
     *msvc* : greaterThan(MSVC_VERSION, 2013) : CONFIG *= test_cxx11_compatible_compiler
     # GCC < 4.8.1 is not a C++11-conformant compiler: https://gcc.gnu.org/projects/cxx-status.html#cxx11
-    *g++* : !lessThan(GCC_VERSION_NUMERIC, 40801) : CONFIG *= test_cxx11_compatible_compiler
+    *g++* : !*clang* : !lessThan(GCC_VERSION_NUMERIC, 40801) : CONFIG *= test_cxx11_compatible_compiler
     # Clang < 3.3 is not a C++11-conformant compiler: https://clang.llvm.org/cxx_status.html#cxx11
     *clang* : !mac : !lessThan(CLANG_VERSION_NUMERIC, 30300) : CONFIG *= test_cxx11_compatible_compiler
     # Assume that clang on macOS is compatible if Qt is *definitely* built with libc++ (Qt 5.7+)
@@ -173,7 +173,7 @@ isEmpty(QT_VERSION_NUMERIC) {
     # MSVC 2015 is not a C++14-conformant compiler
     *msvc* : greaterThan(MSVC_VERSION, 2015) : CONFIG *= test_cxx14_compatible_compiler
     # GCC < 5.0 is not a C++14-conformant compiler: https://gcc.gnu.org/projects/cxx-status.html#cxx14
-    *g++* : !lessThan(GCC_VERSION_NUMERIC, 50000) : CONFIG *= test_cxx14_compatible_compiler
+    *g++* : !*clang* : !lessThan(GCC_VERSION_NUMERIC, 50000) : CONFIG *= test_cxx14_compatible_compiler
     # Clang < 3.4 is not a C++14-conformant compiler: https://clang.llvm.org/cxx_status.html#cxx14
     *clang* : !mac : !lessThan(CLANG_VERSION_NUMERIC, 30400) : CONFIG *= test_cxx14_compatible_compiler
     # Assume that clang on macOS is compatible if Qt is *definitely* built with libc++ (Qt 5.7+)
@@ -191,7 +191,7 @@ isEmpty(QT_VERSION_NUMERIC) {
     # MSVC 2017 is not a C++17-conformant compiler
     *msvc* : greaterThan(MSVC_VERSION, 2017) : CONFIG *= test_cxx17_compatible_compiler
     # GCC < 8.0 is not a C++17-conformant compiler: https://gcc.gnu.org/projects/cxx-status.html#cxx17
-    *g++* : !lessThan(GCC_VERSION_NUMERIC, 80000) : CONFIG *= test_cxx17_compatible_compiler
+    *g++* : !*clang* : !lessThan(GCC_VERSION_NUMERIC, 80000) : CONFIG *= test_cxx17_compatible_compiler
     # Clang < 5.0 is not a C++17-conformant compiler: https://clang.llvm.org/cxx_status.html#cxx17
     *clang* : !mac : !lessThan(CLANG_VERSION_NUMERIC, 50000) : CONFIG *= test_cxx17_compatible_compiler
     # Assume that clang on macOS is compatible if Qt is *definitely* built with libc++ (Qt 5.7+)
@@ -252,9 +252,9 @@ enable_cxx17 {
             } else {
                 QMAKE_CXXFLAGS *= /std:c++latest
             }
-        } else : *g++* {
-            QMAKE_CXXFLAGS *= -std=gnu++1z
         } else : *clang* {
+            QMAKE_CXXFLAGS *= -std=gnu++1z
+        } else : *g++* {
             QMAKE_CXXFLAGS *= -std=gnu++1z
         }
     }
@@ -267,9 +267,9 @@ enable_cxx17 {
         CONFIG -= c++14
         !lessThan(QT_VERSION_NUMERIC, 50500) {
             CONFIG *= c++14
-        } else : *g++* {
-            QMAKE_CXXFLAGS *= -std=gnu++1y
         } else : *clang* {
+            QMAKE_CXXFLAGS *= -std=gnu++1y
+        } else : *g++* {
             QMAKE_CXXFLAGS *= -std=gnu++1y
         }
     }
@@ -280,9 +280,9 @@ enable_cxx17 {
         CONFIG -= c++11
         !lessThan(QT_VERSION_NUMERIC, 50200) {
             CONFIG *= c++11
-        } else : *g++* {
-            QMAKE_CXXFLAGS *= -std=gnu++0x
         } else : *clang* {
+            QMAKE_CXXFLAGS *= -std=gnu++0x
+        } else : *g++* {
             QMAKE_CXXFLAGS *= -std=gnu++0x
         }
     }
@@ -398,7 +398,7 @@ disable_cxx11 : !system_highway {
 *msvc* : !system_highway : lessThan(MSVC_VERSION, 2017) {
     CONFIG *= disable_highway
 }
-*g++* : !system_highway : lessThan(GCC_VERSION_NUMERIC, 80400) {
+*g++* : !*clang* : !system_highway : lessThan(GCC_VERSION_NUMERIC, 80400) {
     CONFIG *= disable_highway
 }
 haiku : !system_highway { # FIXME: Re-check on beta4 or nightly
@@ -568,7 +568,7 @@ disable_libjpeg : !system_libwmf {
 *msvc* : !system_libde265 : lessThan(MSVC_VERSION, 2012) {
     CONFIG *= disable_libde265
 }
-win32 : *g++* : lessThan(GCC_VERSION_NUMERIC, 50100) { # FIXME: Find exact version
+win32 : *g++* : !*clang* : lessThan(GCC_VERSION_NUMERIC, 50100) { # FIXME: Find exact version
     CONFIG *= disable_libde265
 }
 disable_cxx11 : !system_libde265 {
@@ -597,7 +597,7 @@ disable_zlib : !system_openexr {
 *msvc* : !system_openexr : lessThan(MSVC_VERSION, 2017) {
     CONFIG *= disable_openexr
 }
-win32 : *g++* : !system_openexr : lessThan(GCC_VERSION_NUMERIC, 80100) { # FIXME: Find exact version
+win32 : *g++* : !*clang* : !system_openexr : lessThan(GCC_VERSION_NUMERIC, 80100) { # FIXME: Find exact version
     CONFIG *= disable_openexr
 }
 disable_cxx14 : !system_openexr {
@@ -739,7 +739,7 @@ disable_cxx11 {
     macx : !lessThan(QT_VERSION_NUMERIC, 60500) {
         CONFIG *= disable_ghc_filesystem
     }
-    *g++* : !lessThan(GCC_VERSION_NUMERIC, 90000) {
+    *g++* : !*clang* : !lessThan(GCC_VERSION_NUMERIC, 90000) {
         CONFIG *= disable_ghc_filesystem
     }
 }
@@ -795,7 +795,7 @@ lessThan(QT_VERSION_NUMERIC, 50400) {
 *msvc* : lessThan(MSVC_VERSION, 2008) {
     CONFIG *= disable_wic
 }
-win32 : *g++* : lessThan(GCC_VERSION_NUMERIC, 80100) { # FIXME: Find exact version
+win32 : *g++* : !*clang* : lessThan(GCC_VERSION_NUMERIC, 80100) { # FIXME: Find exact version
     CONFIG *= disable_wic
 }
 
