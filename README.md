@@ -35,11 +35,11 @@ Full configuration:
 * Qt 6.2 or later
 * Modern GCC, Clang or MSVC compiler with C++17 support
 
-### Building with bundled libraries example (Ubuntu 22.04)
+### Building with bundled libraries example (Ubuntu 24.04)
 
 ```bash
 sudo apt-get install git g++ make qt6-base-dev libqt6svg6-dev \
-    qt6-image-formats-plugins libgl-dev
+    qt6-image-formats-plugins
 git clone https://github.com/AlienCowEatCake/ImageViewer.git
 cd ImageViewer
 mkdir build
@@ -49,15 +49,16 @@ make
 cp -a src/ImageViewer/ImageViewer /path/to/install/
 ```
 
-### Building with all system libraries example (Ubuntu 22.04)
+### Building with all system libraries example (Ubuntu 24.04)
 
 ```bash
 sudo apt-get install git g++ make qt6-base-dev libqt6svg6-dev \
-    qt6-image-formats-plugins libgl-dev \
+    qt6-image-formats-plugins \
     zlib1g-dev liblcms2-dev libexif-dev libexiv2-dev libjpeg-dev \
     libmng-dev libpng-dev libjbig-dev liblerc-dev libtiff-dev \
     libwebp-dev libwmf-dev libopenjp2-7-dev libgif-dev libraw-dev \
-    librsvg2-dev libheif-dev libopenexr-dev libavif-dev libjxr-dev
+    librsvg2-dev libheif-dev libopenexr-dev libavif-dev libjxr-dev \
+    libjxl-dev
 git clone https://github.com/AlienCowEatCake/ImageViewer.git
 cd ImageViewer
 mkdir build
@@ -70,9 +71,8 @@ qmake6 CONFIG+="release enable_pkgconfig" \
     CONFIG+="system_libwebp disable_libbpg disable_freetype system_libwmf" \
     CONFIG+="system_openjpeg system_giflib system_libraw system_librsvg" \
     CONFIG+="disable_aom disable_libde265 system_libheif system_openexr" \
-    CONFIG+="system_libavif disable_flif system_jxrlib disable_libjxl" \
+    CONFIG+="system_libavif disable_flif system_jxrlib system_libjxl" \
     CONFIG+="disable_stb disable_qtimageformats disable_kimageformats" \
-    INCLUDEPATH+="/usr/include/freetype2" \
     INCLUDEPATH+="/usr/include/jxrlib" \
     -r ../ImageViewer.pro
 make
