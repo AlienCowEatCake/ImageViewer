@@ -651,7 +651,7 @@ disable_cxx11 : !system_flif {
 #    disable_magickwand
 #    enable_magickwand
 #    system_magickwand
-!enable_magickwand {
+!enable_magickwand : !system_magickwand {
     CONFIG *= disable_magickwand
 }
 
@@ -666,7 +666,7 @@ disable_cxx11 : !system_flif {
 #    disable_graphicsmagickwand
 #    enable_graphicsmagickwand
 #    system_graphicsmagickwand
-!enable_graphicsmagickwand {
+!enable_graphicsmagickwand : !system_graphicsmagickwand {
     CONFIG *= disable_graphicsmagickwand
 }
 
