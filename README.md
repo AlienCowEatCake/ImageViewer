@@ -63,16 +63,8 @@ git clone https://github.com/AlienCowEatCake/ImageViewer.git
 cd ImageViewer
 mkdir build
 cd build
-qmake6 CONFIG+="release enable_pkgconfig" \
-    CONFIG+="system_zlib disable_zstd disable_xzutils disable_brotli" \
-    CONFIG+="disable_highway disable_libexpat system_liblcms2 system_libexif" \
-    CONFIG+="system_exiv2 system_libjpeg disable_libjasper system_libmng" \
-    CONFIG+="system_libpng system_jbigkit system_lerc system_libtiff" \
-    CONFIG+="system_libwebp disable_libbpg disable_freetype system_libwmf" \
-    CONFIG+="system_openjpeg system_giflib system_libraw system_librsvg" \
-    CONFIG+="disable_aom disable_libde265 system_libheif system_openexr" \
-    CONFIG+="system_libavif disable_flif system_jxrlib system_libjxl" \
-    CONFIG+="disable_stb disable_qtimageformats disable_kimageformats" \
+qmake6 CONFIG+="release system_thirdparty" \
+    CONFIG+="disable_libjasper disable_libbpg disable_flif" \
     INCLUDEPATH+="/usr/include/jxrlib" \
     -r ../ImageViewer.pro
 make
@@ -89,6 +81,10 @@ See the [buildscripts/](buildscripts/) directory.
 * C++11 options: `disable_cxx11`, `enable_cxx11` *(auto by default)*
 * C++14 options: `disable_cxx14`, `enable_cxx14` *(auto by default)*
 * C++17 options: `disable_cxx17`, `enable_cxx17` *(auto by default)*
+
+**Third Party Components Configuration Presets:**
+* `disable_thirdparty` - disable all third party components, extra small and fast build for UI or installer debugging
+* `system_thirdparty` - disable all bundled packages and switch to system versions of third party components
 
 **System Libraries Configuration:**
 * pkg-config options: `disable_pkgconfig`, `enable_pkgconfig` *(auto by default)*
@@ -115,7 +111,7 @@ See the [buildscripts/](buildscripts/) directory.
 * OpenJPEG options: `disable_openjpeg`, `system_openjpeg` *(bundled package by default)*
 * GIFLIB options: `disable_giflib`, `system_giflib` *(bundled package by default)*
 * LibRaw options: `disable_libraw`, `system_libraw` *(bundled package by default)*
-* libRSVG options: `disable_librsvg`, `enable_librsvg`, `system_librsvg` *(disabled by default)*
+* libRSVG options: `disable_librsvg`, `enable_librsvg`, `system_librsvg` *(system package by default for `system_thirdparty`, disabled by default otherwise)*
 * resvg options: `disable_resvg`, `enable_resvg`, `system_resvg` *(disabled by default)*
 * aom options: `disable_aom`, `system_aom` *(bundled package by default)*
 * libde265 options: `disable_libde265`, `system_libde265` *(bundled package by default)*

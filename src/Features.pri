@@ -292,6 +292,7 @@ enable_cxx17 {
 
 # ThirdParty options:
 #    disable_thirdparty
+#    system_thirdparty
 disable_thirdparty {
     CONFIG *= disable_aom
     CONFIG *= disable_brotli
@@ -348,6 +349,57 @@ disable_thirdparty {
     CONFIG *= disable_xzutils
     CONFIG *= disable_zlib
     CONFIG *= disable_zstd
+}
+system_thirdparty {
+    # Use pkg-config if not disabled explicitly
+    !disable_pkgconfig : CONFIG *= enable_pkgconfig
+    # Unused in "system" configuration
+    CONFIG *= disable_aom
+    CONFIG *= disable_brotli
+    CONFIG *= disable_freetype
+    CONFIG *= disable_ghc_filesystem
+    CONFIG *= disable_highway
+    CONFIG *= disable_libde265
+    CONFIG *= disable_libexpat
+    CONFIG *= disable_xzutils
+    CONFIG *= disable_zstd
+    # No rules for build as system packages
+    CONFIG *= disable_msedgewebview2
+    CONFIG *= disable_nanosvg
+    CONFIG *= disable_qtextended
+    CONFIG *= disable_stb
+    # Should be installed as Qt plugins in "system" configuration
+    CONFIG *= disable_kimageformats
+    CONFIG *= disable_qtimageformats
+    # System packages
+    CONFIG *= system_exiv2
+    CONFIG *= system_flif
+    CONFIG *= system_giflib
+    CONFIG *= system_jbigkit
+    CONFIG *= system_jxrlib
+    CONFIG *= system_lerc
+    CONFIG *= system_libavif
+    CONFIG *= system_libbpg
+    CONFIG *= system_libexif
+    CONFIG *= system_libheif
+    CONFIG *= system_libjasper
+    CONFIG *= system_libjpeg
+    CONFIG *= system_libjxl
+    CONFIG *= system_liblcms2
+    CONFIG *= system_libmng
+    CONFIG *= system_libpng
+    CONFIG *= system_libraw
+    CONFIG *= system_librsvg
+    CONFIG *= system_libtiff
+    CONFIG *= system_libwebp
+    CONFIG *= system_libwmf
+    CONFIG *= system_openexr
+    CONFIG *= system_openjpeg
+    CONFIG *= system_zlib
+    # Runtime loaders are inappropriate for "system" configuration
+    enable_graphicsmagickwand : CONFIG *= system_graphicsmagickwand
+    enable_magickwand         : CONFIG *= system_magickwand
+    enable_resvg              : CONFIG *= system_resvg
 }
 
 # ::::: System Libraries Configuration :::::
