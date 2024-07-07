@@ -18,7 +18,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="enable_mshtml enable_nanosvg" ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="enable_mshtml enable_nanosvg enable_j40" ..\%PROJECT%.pro
 %NMAKE_CMD%
 if not exist %APP_PATH%\release\%PROJECT%.exe (
     if NOT "%CI%" == "true" pause

@@ -171,6 +171,11 @@ HEADERS += \
         src/Decoders/Impl/DecoderNanoSVG.cpp
 }
 
+!disable_j40 {
+    SOURCES += \
+        src/Decoders/Impl/DecoderJ40.cpp
+}
+
 !disable_qtimageformats {
     SOURCES += \
         src/Decoders/Impl/DecoderQtImageFormatsImage.cpp \

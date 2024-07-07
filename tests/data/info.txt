@@ -214,6 +214,12 @@ Images from https://www.exiv2.org/examples.html
 
 ::: JXL test images :::
 
+Test Lena image (converted to jxl via https://github.com/libjxl/libjxl/tree/v0.7.0/experimental/fast_lossless)
+ * lena_fjxl.jxl
+
+Image from https://en.wikipedia.org/wiki/Portable_Network_Graphics (converted to jxl via https://github.com/libjxl/libjxl/tree/v0.7.0/experimental/fast_lossless)
+ * PNG_transparency_demonstration_1_fjxl.jxl
+
 Image from http://regex.info/blog/photo-tech/color-spaces-page1 (converted to jxl)
  * sample-wonky.profile.jxl
 

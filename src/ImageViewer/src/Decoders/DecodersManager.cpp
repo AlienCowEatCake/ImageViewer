@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -77,6 +77,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
     {
 #define P(NAME, MAIN_PRIORITY, ADVANCED_PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = ComplexPriotiry(MAIN_PRIORITY, ADVANCED_PRIORITY)
         /// @note Декодеры статических изображений
+        P("DecoderJ40"                  ,   50, -1); ///< Умеет формат jxl, но очень-очень плохо. WIC выглядит перспективнее.
         P("DecoderWIC"                  ,   60, -1); ///< Умеет много разных форматов, но плохо. Годится только в качестве резервного.
         P("DecoderSTB"                  ,  100, 10); ///< Резервный декодер, так как мало что умеет.
         P("DecoderQImage"               ,  200, 20); ///< Умеет все, что умеет Qt. Не поддерживает EXIF и ICCP.

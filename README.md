@@ -130,6 +130,7 @@ See the [buildscripts/](buildscripts/) directory.
 * QtExtended options: `disable_qtextended`, `enable_qtextended` *(disabled by default)*
 * STB options: `disable_stb` *(enabled by default)*
 * NanoSVG options: `disable_nanosvg`, `enable_nanosvg` *(disabled by default)*
+* J40 options: `disable_j40`, `enable_j40` *(disabled by default)*
 * QtImageFormats options: `disable_qtimageformats` *(enabled by default)*
 * KImageFormats options: `disable_kimageformats` *(enabled by default)*
 * MSEdgeWebView2 options: `disable_msedgewebview2`, `enable_msedgewebview2` *(disabled by default)*

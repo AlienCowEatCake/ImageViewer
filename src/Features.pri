@@ -304,6 +304,7 @@ disable_thirdparty {
     CONFIG *= disable_graphicsmagick
     CONFIG *= disable_graphicsmagickwand
     CONFIG *= disable_highway
+    CONFIG *= disable_j40
     CONFIG *= disable_jbigkit
     CONFIG *= disable_jxrlib
     CONFIG *= disable_kimageformats
@@ -364,6 +365,7 @@ system_thirdparty {
     CONFIG *= disable_xzutils
     CONFIG *= disable_zstd
     # No rules for build as system packages
+    CONFIG *= disable_j40
     CONFIG *= disable_msedgewebview2
     CONFIG *= disable_nanosvg
     CONFIG *= disable_qtextended
@@ -746,6 +748,16 @@ greaterThan(QT_MAJOR_VERSION, 5) {
 }
 *msvc* : lessThan(MSVC_VERSION, 2013) {
     CONFIG *= disable_nanosvg
+}
+
+# J40 options:
+#    disable_j40
+#    enable_j40
+!enable_j40 {
+    CONFIG *= disable_j40
+}
+*msvc* : lessThan(MSVC_VERSION, 2010) {
+    CONFIG *= disable_j40
 }
 
 # QtImageFormats options:
