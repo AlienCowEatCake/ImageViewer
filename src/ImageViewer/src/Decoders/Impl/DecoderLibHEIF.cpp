@@ -157,9 +157,28 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     const int height = static_cast<int>(heif_image_get_height(img, heif_channel_interleaved));
     int stride = 0;
     const uint8_t *planeData = heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride);
-    QImage result = (heif_image_get_chroma_format(img) == heif_chroma_interleaved_RGB) ///< libheif-1.7.0, WTF?
-            ? QImage(reinterpret_cast<const uchar*>(planeData), width, height, stride, QImage::Format_RGB888).convertToFormat(QImage::Format_RGB32)
-            : QImage(reinterpret_cast<const uchar*>(planeData), width, height, stride, QImage::Format_ARGB32).rgbSwapped();
+    QImage result;
+    if(heif_image_get_chroma_format(img) == heif_chroma_interleaved_RGB) ///< libheif-1.7.0, WTF?
+    {
+        result = QImage(reinterpret_cast<const uchar*>(planeData), width, height, stride, QImage::Format_RGB888).convertToFormat(QImage::Format_RGB32);
+    }
+    else
+    {
+#if (Q_BYTE_ORDER != Q_BIG_ENDIAN)
+        result = QImage(reinterpret_cast<const uchar*>(planeData), width, height, stride, QImage::Format_ARGB32).rgbSwapped();
+#elif (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+        result = QImage(reinterpret_cast<const uchar*>(planeData), width, height, stride, QImage::Format_RGBA8888).copy();
+#else
+        result = QImage(width, height, QImage::Format_ARGB32);
+        for(int y = 0; y < result.height(); ++y)
+        {
+            QRgb* lineOut = reinterpret_cast<QRgb*>(result.scanLine(y));
+            const QRgb* lineIn = reinterpret_cast<const QRgb*>(planeData + stride * y);
+            for(int x = 0; x < result.width(); ++x)
+                lineOut[x] = qRgba(qAlpha(lineIn[x]), qRed(lineIn[x]), qGreen(lineIn[x]), qBlue(lineIn[x]));
+        }
+#endif
+    }
     if(result.isNull())
     {
         qWarning() << "Invalid image size:" << width << "x" << height << "chroma_format:" << heif_image_get_chroma_format(img);

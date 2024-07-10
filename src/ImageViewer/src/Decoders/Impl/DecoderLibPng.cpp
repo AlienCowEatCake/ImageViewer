@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -285,8 +285,6 @@ bool PngAnimationProvider::readPng()
         }
         else // ARGB
         {
-            /// @todo Проверить работоспособность на Big Endian системах
-
             // Swap the RGBA or GA data to ARGB or AG (or BGRA to ABGR)
             png_set_swap_alpha(pngPtr);
 

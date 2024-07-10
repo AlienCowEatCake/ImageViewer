@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -99,7 +99,7 @@ public:
 
     QImage image(const qreal scaleFactor) Q_DECL_OVERRIDE
     {
-#define USE_RGBA_8888 (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0) && Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
+#define USE_RGBA_8888 (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
         const int w = static_cast<int>(m_width * scaleFactor);
         const int h = static_cast<int>(m_height * scaleFactor);
         QImage img(w, h,
@@ -116,7 +116,16 @@ public:
         }
         nsvgRasterize(m_rasterizer, m_image, 0, 0, static_cast<float>(scaleFactor), img.bits(), w, h, img.bytesPerLine());
 #if (!USE_RGBA_8888)
+#if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
         img = img.rgbSwapped();
+#else
+        for(int y = 0; y < img.height(); ++y)
+        {
+            QRgb* line = reinterpret_cast<QRgb*>(img.scanLine(y));
+            for(int x = 0; x < img.width(); ++x)
+                line[x] = qRgba(qAlpha(line[x]), qRed(line[x]), qGreen(line[x]), qBlue(line[x]));
+        }
+#endif
 #endif
         return img;
 #undef USE_RGBA_8888

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -128,7 +128,14 @@ public:
                 return false;
             }
 
-            QImage frame(static_cast<int>(info.xsize), static_cast<int>(info.ysize), /*info.alpha_premultiplied ? QImage::Format_ARGB32_Premultiplied :*/ QImage::Format_ARGB32);
+#define USE_RGBA_8888 (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0) && Q_BYTE_ORDER == Q_BIG_ENDIAN)
+
+            QImage frame(static_cast<int>(info.xsize), static_cast<int>(info.ysize),
+#if (USE_RGBA_8888)
+                         /*info.alpha_premultiplied ? QImage::Format_RGBA8888_Premultiplied :*/ QImage::Format_RGBA8888);
+#else
+                         /*info.alpha_premultiplied ? QImage::Format_ARGB32_Premultiplied :*/ QImage::Format_ARGB32);
+#endif
             if(frame.isNull())
             {
                 qWarning() << "Invalid image size";
@@ -171,7 +178,21 @@ public:
                 return false;
             }
 
+#if (!USE_RGBA_8888)
+#if (Q_BYTE_ORDER == Q_BIG_ENDIAN)
+            for(int y = 0; y < frame.height(); ++y)
+            {
+                QRgb* line = reinterpret_cast<QRgb*>(frame.scanLine(y));
+                for(int x = 0; x < frame.width(); ++x)
+                    line[x] = qRgba(qAlpha(line[x]), qRed(line[x]), qGreen(line[x]), qBlue(line[x]));
+            }
+#else
             frame = frame.rgbSwapped();
+#endif
+#endif
+
+#undef USE_RGBA_8888
+
             ICCProfile iccProfile(iccBuffer);
             iccProfile.applyToImage(&frame);
 

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2020-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2020-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -37,6 +37,7 @@ typedef unsigned long magick_size_t;
 #include <QImage>
 #include <QByteArray>
 #include <QDebug>
+#include <QSysInfo>
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -159,7 +160,7 @@ private:
             return qImage;
 
         qImage.fill(Qt::transparent);
-        ExportImagePixels(image, 0, 0, width, height, "BGRA", CharPixel, qImage.bits(), exception);
+        ExportImagePixels(image, 0, 0, width, height, ((QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? "BGRA" : "ARGB"), CharPixel, qImage.bits(), exception);
         if(exception->severity != UndefinedException)
             return QImage();
 

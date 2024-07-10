@@ -116,7 +116,11 @@ public:
 
             avifRGBImage rgb;
             avifRGBImageSetDefaults(&rgb, decoder->image);
+#if (Q_BYTE_ORDER == Q_BIG_ENDIAN)
+            rgb.format = AVIF_RGB_FORMAT_ARGB;
+#else
             rgb.format = AVIF_RGB_FORMAT_BGRA;
+#endif
             rgb.depth = 8;
             rgb.pixels = reinterpret_cast<uint8_t*>(frame.bits());
             rgb.rowBytes = static_cast<uint32_t>(frame.width() * 4);

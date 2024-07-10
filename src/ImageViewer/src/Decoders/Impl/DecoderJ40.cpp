@@ -83,7 +83,7 @@ PayloadWithMetaData<QImage> readJ40File(const QString &filePath)
     j40_frame frame = j40_current_frame(&image);
     j40_pixels_u8x4 pixels = j40_frame_pixels_u8x4(&frame, J40_RGBA);
 
-#define USE_RGBA_8888 (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0) && Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
+#define USE_RGBA_8888 (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
 
     QImage result = QImage(static_cast<int>(pixels.width), static_cast<int>(pixels.height),
 #if (USE_RGBA_8888)
@@ -94,7 +94,16 @@ PayloadWithMetaData<QImage> readJ40File(const QString &filePath)
     for(int y = 0; y < result.height(); ++y)
         memcpy(result.scanLine(y), j40_row_u8x4(pixels, y), result.width() * 4);
 #if (!USE_RGBA_8888)
+#if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
     result = result.rgbSwapped();
+#else
+    for(int y = 0; y < result.height(); ++y)
+    {
+        QRgb* line = reinterpret_cast<QRgb*>(result.scanLine(y));
+        for(int x = 0; x < result.width(); ++x)
+            line[x] = qRgba(qAlpha(line[x]), qRed(line[x]), qGreen(line[x]), qBlue(line[x]));
+    }
+#endif
 #endif
 
 #undef USE_RGBA_8888

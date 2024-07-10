@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2020-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2020-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -59,6 +59,7 @@ typedef qint32 magick_ssize_t;
 #include <QByteArray>
 #include <QDebug>
 #include <QLibrary>
+#include <QSysInfo>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QFunctionPointer>
@@ -589,7 +590,7 @@ private:
             return qImage;
 
         qImage.fill(Qt::transparent);
-        if(!MagickExportImagePixels(mw, 0, 0, width, height, "BGRA", CharPixel, qImage.bits()))
+        if(!MagickExportImagePixels(mw, 0, 0, width, height, ((QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? "BGRA" : "ARGB"), CharPixel, qImage.bits()))
             return QImage();
 
         if(OrientationType orientation = MagickGetImageOrientation(mw))
