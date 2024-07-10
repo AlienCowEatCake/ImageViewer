@@ -35,7 +35,22 @@
     HWY_OS_LINUX
 // sys/auxv.h does not always include asm/hwcap.h, or define HWCAP*, hence we
 // still include this directly. See #1199.
-#ifndef TOOLCHAIN_MISS_ASM_HWCAP_H
+#ifndef HWY_HAVE_HWCAP  // allow override
+#ifdef TOOLCHAIN_MISS_ASM_HWCAP_H
+#define HWY_HAVE_HWCAP 0  // CMake failed to find the header
+#elif defined(__has_include)  // note: wrapper macro fails on Clang ~17
+// clang-format off
+#if __has_include(<asm/hwcap.h>)
+// clang-format on
+#define HWY_HAVE_HWCAP 1  // header present
+#else
+#define HWY_HAVE_HWCAP 0  // header not present
+#endif                    // __has_include
+#else                     // compiler lacks __has_include
+#define HWY_HAVE_HWCAP 1  // old defaults
+#endif
+#endif  // HWY_HAVE_HWCAP
+#if HWY_HAVE_HWCAP
 #include <asm/hwcap.h>
 #endif
 #if HWY_HAVE_AUXV
