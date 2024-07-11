@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -19,7 +19,7 @@
 
 #include "CmsUtils.h"
 
-#include <cassert>
+#include <cmath>
 #include <map>
 
 #if defined (HAS_LCMS2)
@@ -111,13 +111,12 @@ struct ICCProfile::Impl
 ICCProfile::ICCProfile(const QByteArray &profileData)
     : m_impl(new Impl())
 {
-#if defined (HAS_LCMS2)
     if(profileData.isEmpty())
         return;
+
+#if defined (HAS_LCMS2)
     m_impl->outProfile = cmsCreate_sRGBProfile();
     m_impl->inProfile = cmsOpenProfileFromMem(profileData.constData(), static_cast<cmsUInt32Number>(profileData.size()));
-#else
-    Q_UNUSED(profileData);
 #endif
 }
 
@@ -125,43 +124,104 @@ ICCProfile::ICCProfile(float *whitePoint,
                        float *primaryChromaticities,
                        unsigned short *transferFunctionRed,
                        unsigned short *transferFunctionGreen,
-                       unsigned short *transferFunctionBlue)
+                       unsigned short *transferFunctionBlue,
+                       std::size_t transferFunctionSize)
     : m_impl(new Impl())
 {
 #if defined (HAS_LCMS2)
-    if(!whitePoint)
-        return;
-    if(!primaryChromaticities)
-        return;
-    if(!transferFunctionRed)
-        return;
-    if(!transferFunctionGreen)
-        return;
-    if(!transferFunctionBlue)
-        return;
+    /// @note LittleCMS may not work with some incomplete profile and fails with error
+    /// "cmsERROR_NOT_SUITABLE" : Couldn't link the profiles. So fill default values
 
     cmsCIExyY cmsWhitePoint;
-    cmsWhitePoint.x = static_cast<cmsFloat64Number>(whitePoint[0]);
-    cmsWhitePoint.y = static_cast<cmsFloat64Number>(whitePoint[1]);
-    cmsWhitePoint.Y = static_cast<cmsFloat64Number>(1.0);
+    if(whitePoint)
+    {
+        cmsWhitePoint.x = static_cast<cmsFloat64Number>(whitePoint[0]);
+        cmsWhitePoint.y = static_cast<cmsFloat64Number>(whitePoint[1]);
+        cmsWhitePoint.Y = static_cast<cmsFloat64Number>(1.0);
+    }
+    else
+    {
+        /// @note CIE D65
+        cmsWhitePoint.x = static_cast<cmsFloat64Number>(0.31271);
+        cmsWhitePoint.y = static_cast<cmsFloat64Number>(0.32902);
+        cmsWhitePoint.Y = static_cast<cmsFloat64Number>(1.0);
+    }
 
     cmsCIExyYTRIPLE cmsPrimaries;
-    cmsPrimaries.Red.x = static_cast<cmsFloat64Number>(primaryChromaticities[0]);
-    cmsPrimaries.Red.y = static_cast<cmsFloat64Number>(primaryChromaticities[1]);
-    cmsPrimaries.Red.Y = static_cast<cmsFloat64Number>(1.0);
-    cmsPrimaries.Green.x = static_cast<cmsFloat64Number>(primaryChromaticities[2]);
-    cmsPrimaries.Green.y = static_cast<cmsFloat64Number>(primaryChromaticities[3]);
-    cmsPrimaries.Green.Y = static_cast<cmsFloat64Number>(1.0);
-    cmsPrimaries.Blue.x = static_cast<cmsFloat64Number>(primaryChromaticities[4]);
-    cmsPrimaries.Blue.y = static_cast<cmsFloat64Number>(primaryChromaticities[5]);
-    cmsPrimaries.Blue.Y = static_cast<cmsFloat64Number>(1.0);
-
-    cmsToneCurve* cmsTransferFunction[3] =
+    if(primaryChromaticities)
     {
-        cmsBuildTabulatedToneCurve16(Q_NULLPTR, 256, transferFunctionRed),
-        cmsBuildTabulatedToneCurve16(Q_NULLPTR, 256, transferFunctionGreen),
-        cmsBuildTabulatedToneCurve16(Q_NULLPTR, 256, transferFunctionBlue)
-    };
+        cmsPrimaries.Red.x = static_cast<cmsFloat64Number>(primaryChromaticities[0]);
+        cmsPrimaries.Red.y = static_cast<cmsFloat64Number>(primaryChromaticities[1]);
+        cmsPrimaries.Red.Y = static_cast<cmsFloat64Number>(1.0);
+        cmsPrimaries.Green.x = static_cast<cmsFloat64Number>(primaryChromaticities[2]);
+        cmsPrimaries.Green.y = static_cast<cmsFloat64Number>(primaryChromaticities[3]);
+        cmsPrimaries.Green.Y = static_cast<cmsFloat64Number>(1.0);
+        cmsPrimaries.Blue.x = static_cast<cmsFloat64Number>(primaryChromaticities[4]);
+        cmsPrimaries.Blue.y = static_cast<cmsFloat64Number>(primaryChromaticities[5]);
+        cmsPrimaries.Blue.Y = static_cast<cmsFloat64Number>(1.0);
+    }
+    else
+    {
+        /// @note sRGB
+        cmsPrimaries.Red.x = static_cast<cmsFloat64Number>(0.640);
+        cmsPrimaries.Red.y = static_cast<cmsFloat64Number>(0.330);
+        cmsPrimaries.Red.Y = static_cast<cmsFloat64Number>(1.0);
+        cmsPrimaries.Green.x = static_cast<cmsFloat64Number>(0.300);
+        cmsPrimaries.Green.y = static_cast<cmsFloat64Number>(0.600);
+        cmsPrimaries.Green.Y = static_cast<cmsFloat64Number>(1.0);
+        cmsPrimaries.Blue.x = static_cast<cmsFloat64Number>(0.150);
+        cmsPrimaries.Blue.y = static_cast<cmsFloat64Number>(0.060);
+        cmsPrimaries.Blue.Y = static_cast<cmsFloat64Number>(1.0);
+    }
+
+    cmsToneCurve* cmsTransferFunction[3];
+    if(transferFunctionRed && transferFunctionGreen && transferFunctionBlue && transferFunctionSize > 0)
+    {
+        /// @note LittleCMS not work with too smooth transfer functions and fails with error
+        /// "cmsERROR_RANGE" : Couldn't create tone curve of more than 65530 entries
+        if(transferFunctionSize > 65530)
+        {
+            QVector<unsigned short> reducedTransferFunctions[3];
+            const unsigned short *transferFunctions[3] = {
+                transferFunctionRed,
+                transferFunctionGreen,
+                transferFunctionBlue
+            };
+            for(int i = 0; i < 3; ++i)
+            {
+                reducedTransferFunctions[i].resize(256);
+                reducedTransferFunctions[i][0] = transferFunctions[i][0];
+                reducedTransferFunctions[i][reducedTransferFunctions[i].size() - 1] = transferFunctions[i][transferFunctionSize - 1];
+                for(int j = 1; j < reducedTransferFunctions[i].size() - 1; ++j)
+                {
+                    const double jd = static_cast<double>(j) / static_cast<double>(reducedTransferFunctions[i].size());
+                    const qint64 js = qBound(static_cast<qint64>(0), static_cast<qint64>(std::floor(jd * static_cast<double>(transferFunctionSize) + 0.5)), static_cast<qint64>(transferFunctionSize - 1));
+                    reducedTransferFunctions[i][j] = transferFunctions[i][static_cast<std::size_t>(js)];
+                }
+            }
+            for(std::size_t i = 0; i < 3; i++)
+                cmsTransferFunction[i] = cmsBuildTabulatedToneCurve16(Q_NULLPTR, static_cast<cmsUInt32Number>(reducedTransferFunctions[i].size()), reducedTransferFunctions[i].data());
+        }
+        else
+        {
+            cmsTransferFunction[0] = cmsBuildTabulatedToneCurve16(Q_NULLPTR, static_cast<cmsUInt32Number>(transferFunctionSize), transferFunctionRed);
+            cmsTransferFunction[1] = cmsBuildTabulatedToneCurve16(Q_NULLPTR, static_cast<cmsUInt32Number>(transferFunctionSize), transferFunctionGreen);
+            cmsTransferFunction[2] = cmsBuildTabulatedToneCurve16(Q_NULLPTR, static_cast<cmsUInt32Number>(transferFunctionSize), transferFunctionBlue);
+        }
+    }
+    else
+    {
+        QVector<unsigned short> linearTransferFunction;
+        linearTransferFunction.resize(256);
+        linearTransferFunction[0] = 0;
+        for(int i = 1; i < linearTransferFunction.size(); ++i)
+        {
+            const double t = static_cast<double>(i) / (static_cast<double>(linearTransferFunction.size()) - 1.0);
+            linearTransferFunction[i] = static_cast<unsigned short>(std::floor(65535.0 * std::pow(t, 2.2) + 0.5));
+        }
+        for(std::size_t i = 0; i < 3; i++)
+            cmsTransferFunction[i] = cmsBuildTabulatedToneCurve16(Q_NULLPTR, static_cast<cmsUInt32Number>(linearTransferFunction.size()), linearTransferFunction.data());
+    }
 
     m_impl->outProfile = cmsCreate_sRGBProfile();
     m_impl->inProfile = cmsCreateRGBProfileTHR(Q_NULLPTR, &cmsWhitePoint, &cmsPrimaries, cmsTransferFunction);
@@ -175,6 +235,7 @@ ICCProfile::ICCProfile(float *whitePoint,
     Q_UNUSED(transferFunctionRed);
     Q_UNUSED(transferFunctionGreen);
     Q_UNUSED(transferFunctionBlue);
+    Q_UNUSED(transferFunctionSize);
 #endif
 }
 
@@ -183,6 +244,9 @@ ICCProfile::~ICCProfile()
 
 void ICCProfile::applyToImage(QImage *image)
 {
+    if(!image)
+        return;
+
 #if defined (HAS_LCMS2)
     if(!m_impl->inProfile || !m_impl->outProfile)
         return;
@@ -211,28 +275,6 @@ void ICCProfile::applyToImage(QImage *image)
     unsigned char *rgba = reinterpret_cast<unsigned char*>(image->bits());
     cmsDoTransform(transform, rgba, rgba, static_cast<cmsUInt32Number>(image->width() * image->height()));
 
-#else
-    Q_UNUSED(image);
-#endif
-}
-
-void ICCProfile::applyToRGBData(void *rgbData, std::size_t pixelsNum)
-{
-#if defined (HAS_LCMS2)
-    m_impl->applyTransform(rgbData, static_cast<cmsUInt32Number>(pixelsNum), TYPE_RGB_8);
-#else
-    Q_UNUSED(rgbData);
-    Q_UNUSED(pixelsNum);
-#endif
-}
-
-void ICCProfile::applyToRGBAData(void *rgbaData, std::size_t pixelsNum)
-{
-#if defined (HAS_LCMS2)
-    m_impl->applyTransform(rgbaData, static_cast<cmsUInt32Number>(pixelsNum), TYPE_RGBA_8);
-#else
-    Q_UNUSED(rgbaData);
-    Q_UNUSED(pixelsNum);
 #endif
 }
 

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -38,12 +38,11 @@ public:
                float *primaryChromaticities,
                unsigned short *transferFunctionRed,
                unsigned short *transferFunctionGreen,
-               unsigned short *transferFunctionBlue);
+               unsigned short *transferFunctionBlue,
+               std::size_t transferFunctionSize);
     ~ICCProfile();
 
     void applyToImage(QImage *image);
-    void applyToRGBData(void *rgbData, std::size_t pixelsNum);
-    void applyToRGBAData(void *rgbaData, std::size_t pixelsNum);
 
 private:
     struct Impl;

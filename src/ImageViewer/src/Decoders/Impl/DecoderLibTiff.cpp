@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -106,13 +106,43 @@ ICCProfile *readICCProfile(TIFF *tiff)
         return new ICCProfile(QByteArray(reinterpret_cast<const char*>(iccProfileData), static_cast<int>(iccProfileSize)));
     }
 
+    quint16 samplesPerPixel = 0;
+    if(!TIFFGetFieldDefaulted(tiff, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel))
+        return Q_NULLPTR;
+
+    quint16 bitsPerSample = 0;
+    if(!TIFFGetFieldDefaulted(tiff, TIFFTAG_BITSPERSAMPLE, &bitsPerSample))
+        return Q_NULLPTR;
+
     float *whitePoint = Q_NULLPTR, *primaryChromaticities = Q_NULLPTR;
     unsigned short *transferFunctionRed = Q_NULLPTR, *transferFunctionGreen = Q_NULLPTR, *transferFunctionBlue = Q_NULLPTR;
-    if(TIFFGetField(tiff, TIFFTAG_WHITEPOINT, &whitePoint) && TIFFGetField(tiff, TIFFTAG_PRIMARYCHROMATICITIES, &primaryChromaticities) &&
-       TIFFGetFieldDefaulted(tiff, TIFFTAG_TRANSFERFUNCTION, &transferFunctionRed, &transferFunctionGreen, &transferFunctionBlue))
+    if(!TIFFGetField(tiff, TIFFTAG_WHITEPOINT, &whitePoint))
+        whitePoint = Q_NULLPTR;
+    if(!TIFFGetField(tiff, TIFFTAG_PRIMARYCHROMATICITIES, &primaryChromaticities))
+        primaryChromaticities = Q_NULLPTR;
+    if(samplesPerPixel == 1)
+    {
+        if(!TIFFGetField(tiff, TIFFTAG_TRANSFERFUNCTION, &transferFunctionRed))
+            transferFunctionRed = Q_NULLPTR;
+        else
+            transferFunctionGreen = transferFunctionBlue = transferFunctionRed;
+    }
+    else
+    {
+        if(!TIFFGetField(tiff, TIFFTAG_TRANSFERFUNCTION, &transferFunctionRed, &transferFunctionGreen, &transferFunctionBlue))
+            transferFunctionRed = transferFunctionGreen = transferFunctionBlue = Q_NULLPTR;
+    }
+
+    if(whitePoint || primaryChromaticities || transferFunctionRed || transferFunctionGreen || transferFunctionBlue)
     {
         qDebug() << "Found ICCP metadata (TIFFTAG_WHITEPOINT + TIFFTAG_PRIMARYCHROMATICITIES + TIFFTAG_TRANSFERFUNCTION)";
-        return new ICCProfile(whitePoint, primaryChromaticities, transferFunctionRed, transferFunctionGreen, transferFunctionBlue);
+
+        /// @note TIFF defaults (CIE D50) does not match sRGB defaults (CIE D65)
+        if(!whitePoint && !TIFFGetFieldDefaulted(tiff, TIFFTAG_WHITEPOINT, &whitePoint))
+            whitePoint = Q_NULLPTR;
+
+        const size_t transferFunctionSize = (static_cast<std::size_t>(1) << bitsPerSample);
+        return new ICCProfile(whitePoint, primaryChromaticities, transferFunctionRed, transferFunctionGreen, transferFunctionBlue, transferFunctionSize);
     }
 
     return Q_NULLPTR;
