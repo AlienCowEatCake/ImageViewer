@@ -22,6 +22,8 @@
 #include <cmath>
 #include <map>
 
+//#undef HAS_LCMS2
+
 #if defined (HAS_LCMS2)
 #include <lcms2.h>
 #endif
@@ -30,6 +32,10 @@
 #include <QImage>
 #include <QByteArray>
 #include <QSysInfo>
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+#include <QColorSpace>
+#endif
 
 #include "Utils/Global.h"
 
@@ -105,6 +111,9 @@ struct ICCProfile::Impl
     cmsHPROFILE inProfile;
     cmsHPROFILE outProfile;
     std::map<cmsUInt32Number, cmsHTRANSFORM> transforms;
+#elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    QColorSpace inColorSpace;
+    QColorSpace outColorSpace;
 #endif
 };
 
@@ -117,6 +126,11 @@ ICCProfile::ICCProfile(const QByteArray &profileData)
 #if defined (HAS_LCMS2)
     m_impl->outProfile = cmsCreate_sRGBProfile();
     m_impl->inProfile = cmsOpenProfileFromMem(profileData.constData(), static_cast<cmsUInt32Number>(profileData.size()));
+#elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    m_impl->outColorSpace = QColorSpace(QColorSpace::SRgb);
+    m_impl->inColorSpace = QColorSpace::fromIccProfile(profileData);
+    if(!m_impl->inColorSpace.isValid())
+        qWarning() << "[CmsUtils] Invalid colorspace";
 #endif
 }
 
@@ -229,6 +243,36 @@ ICCProfile::ICCProfile(float *whitePoint,
     for(std::size_t i = 0; i < 3; i++)
         cmsFreeToneCurve(cmsTransferFunction[i]);
 
+#elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    m_impl->outColorSpace = QColorSpace(QColorSpace::SRgb);
+    m_impl->inColorSpace = QColorSpace(QColorSpace::SRgb);
+    if(whitePoint && primaryChromaticities)
+    {
+        m_impl->inColorSpace.setPrimaries(
+            QPointF(whitePoint[0], whitePoint[1]),
+            QPointF(primaryChromaticities[0], primaryChromaticities[1]),
+            QPointF(primaryChromaticities[2], primaryChromaticities[3]),
+            QPointF(primaryChromaticities[4], primaryChromaticities[5]));
+    }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
+    if(transferFunctionRed && transferFunctionGreen && transferFunctionBlue && transferFunctionSize > 0)
+    {
+        m_impl->inColorSpace.setTransferFunctions(
+            QList<uint16_t>(transferFunctionRed, transferFunctionRed + transferFunctionSize),
+            QList<uint16_t>(transferFunctionGreen, transferFunctionGreen + transferFunctionSize),
+            QList<uint16_t>(transferFunctionBlue, transferFunctionBlue + transferFunctionSize));
+    }
+#else
+    Q_UNUSED(transferFunctionRed);
+    Q_UNUSED(transferFunctionGreen);
+    Q_UNUSED(transferFunctionBlue);
+    Q_UNUSED(transferFunctionSize);
+#endif
+
+    if(!m_impl->inColorSpace.isValid())
+        qWarning() << "[CmsUtils] Invalid colorspace";
+
 #else
     Q_UNUSED(whitePoint);
     Q_UNUSED(primaryChromaticities);
@@ -274,6 +318,13 @@ void ICCProfile::applyToImage(QImage *image)
 
     unsigned char *rgba = reinterpret_cast<unsigned char*>(image->bits());
     cmsDoTransform(transform, rgba, rgba, static_cast<cmsUInt32Number>(image->width() * image->height()));
+
+#elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    if(!m_impl->inColorSpace.isValid() || !m_impl->outColorSpace.isValid())
+        return;
+
+    image->setColorSpace(m_impl->inColorSpace);
+    image->convertToColorSpace(m_impl->outColorSpace);
 
 #endif
 }
