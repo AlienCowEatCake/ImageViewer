@@ -73,16 +73,6 @@ struct ICCProfile::Impl
         return transform;
     }
 
-    void applyTransform(void *data, cmsUInt32Number pixelsNum, cmsUInt32Number format)
-    {
-        if(!inProfile || !outProfile)
-            return;
-        cmsHTRANSFORM transform = getOrCreateTransform(format);
-        if(!transform)
-            return;
-        cmsDoTransform(getOrCreateTransform(format), data, data, pixelsNum);
-    }
-
     static void logErrorHandler(cmsContext /*contextID*/, cmsUInt32Number errorCode, const char *text)
     {
         QString errorCodeString;
