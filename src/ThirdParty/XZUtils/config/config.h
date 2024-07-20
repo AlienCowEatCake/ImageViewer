@@ -571,7 +571,9 @@
 # endif
 #else
 # ifndef WORDS_BIGENDIAN
-/* #  undef WORDS_BIGENDIAN */
+#  if defined(Q_BYTE_ORDER) && (Q_BYTE_ORDER == Q_BIG_ENDIAN)
+#   define WORDS_BIGENDIAN 1
+#  endif
 # endif
 #endif
 
