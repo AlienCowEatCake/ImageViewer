@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,6 +17,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#import <CoreServices/CoreServices.h>
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 #import <AppKit/AppKit.h>
@@ -46,6 +47,8 @@ typedef QTime QElapsedTimer;
 #include "Utils/ObjectiveCUtils.h"
 
 #include "GraphicsItemUtils.h"
+
+#include "Utils/MacNSInteger.h"
 
 //#define MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG
 
@@ -160,8 +163,24 @@ public:
         container = new QWidget;
         delegate = [[MacWebViewRasterizerViewDelegate alloc] init];
         [view setFrameLoadDelegate:reinterpret_cast<id>(delegate)];
-        [reinterpret_cast<NSView*>(container->winId()) addSubview:view];
-        [view setDrawsBackground:NO];
+        @try
+        {
+            [reinterpret_cast<NSView*>(container->winId()) addSubview:view];
+        }
+        @catch(NSException *exception)
+        {
+            qWarning() << "[MacWebViewRasterizerGraphicsItem]:" << ObjCUtils::QStringFromNSString([exception reason]);
+        }
+        if([view respondsToSelector:@selector(setDrawsBackground:)])
+        {
+            BOOL drawBackground = NO;
+            NSMethodSignature *signature = [[view class] instanceMethodSignatureForSelector:@selector(setDrawsBackground:)];
+            NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+            [invocation setTarget:view];
+            [invocation setSelector:@selector(setDrawsBackground:)];
+            [invocation setArgument:&drawBackground atIndex:2];
+            [invocation invoke];
+        }
         Reset();
     }
 
@@ -247,12 +266,12 @@ public:
                                 hasAlpha:YES
                                 isPlanar:NO
                           colorSpaceName:NSCalibratedRGBColorSpace
-                            bitmapFormat:0
                              bytesPerRow:4 * std::max(static_cast<NSInteger>(cacheRect.size.width), one)
                             bitsPerPixel:32
         ];
+        NSDictionary *contextAttr = [NSDictionary dictionaryWithObject:bitmapRep forKey:NSGraphicsContextDestinationAttributeName];
+        NSGraphicsContext *graphicsContext = [NSGraphicsContext graphicsContextWithAttributes:contextAttr];
         [NSGraphicsContext saveGraphicsState];
-        NSGraphicsContext *graphicsContext = [NSGraphicsContext graphicsContextWithBitmapImageRep:bitmapRep];
         [NSGraphicsContext setCurrentContext:graphicsContext];
         [webFrameViewDocView displayRectIgnoringOpacity:cacheRect inContext:graphicsContext];
         [NSGraphicsContext restoreGraphicsState];
@@ -300,7 +319,10 @@ MacWebViewRasterizerGraphicsItem::~MacWebViewRasterizerGraphicsItem()
 
 bool MacWebViewRasterizerGraphicsItem::isAvailable()
 {
-    return true;
+    /// @note WebView on 10.3 has no SVG support
+    if(InfoUtils::MacVersionGreatOrEqual(10, 4))
+       return true;
+    return false;
 }
 
 bool MacWebViewRasterizerGraphicsItem::load(const QByteArray &svgData, const QUrl &baseUrl)

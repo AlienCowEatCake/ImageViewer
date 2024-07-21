@@ -15,7 +15,7 @@ THIRDPARTY_LIBLCMS2_PATH = $${PWD}/lcms2-2.16
 include(../../Features.pri)
 include(../CommonSettings.pri)
 
-*g++*|*clang* {
+*g++*|*clang*|*llvm*|*xcode* {
     QMAKE_CFLAGS += -std=c99
 }
 

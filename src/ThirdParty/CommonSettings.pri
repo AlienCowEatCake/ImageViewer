@@ -1,4 +1,4 @@
-*g++*|*clang* {
+*g++*|*clang*|*llvm*|*xcode* {
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CFLAGS_RELEASE   -= -O2
     QMAKE_CXXFLAGS_RELEASE *= -O3
@@ -22,7 +22,7 @@
     QMAKE_CFLAGS_RELEASE   *= -DQT_NO_DEBUG_OUTPUT
 }
 
-macx {
+macx : *clang* {
     QMAKE_CXXFLAGS *= -Wno-invalid-constexpr
     QMAKE_CFLAGS   *= -Wno-invalid-constexpr
 }

@@ -1,4 +1,4 @@
-From 59e8e7838ca7f31fbdebeaba449b76c9df517e20 Mon Sep 17 00:00:00 2001
+From 3077a4fefd3572486e4a766159ca7a675bcec1d4 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Tue, 29 Dec 2020 17:43:53 +0700
 Subject: [PATCH 1/2] Fix build with MinGW 3.4.2
@@ -9,7 +9,7 @@ Subject: [PATCH 1/2] Fix build with MinGW 3.4.2
  2 files changed, 23 insertions(+), 6 deletions(-)
 
 diff --git a/libtiff/tif_lzw.c b/libtiff/tif_lzw.c
-index d631fa10..b5be9083 100644
+index d631fa1..87a24ca 100644
 --- a/libtiff/tif_lzw.c
 +++ b/libtiff/tif_lzw.c
 @@ -346,13 +346,13 @@ static int LZWPreDecode(TIFF *tif, uint16_t s)
@@ -17,20 +17,20 @@ index d631fa10..b5be9083 100644
  #endif
  #elif SIZEOF_WORDTYPE == 4
 -#if defined(__GNUC__) && defined(__i386__)
-+#if defined(__GNUC__) && defined(__i386__) && !(defined(__MINGW32__) && (__GNUC__ < 4))
++#if defined(__GNUC__) && defined(__i386__) && !((__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ < 3))
  #define GetNextData(nextdata, bp)                                              \
      nextdata = __builtin_bswap32(*(uint32_t *)(bp))
 -#elif defined(_M_X86)
-+#elif defined(_M_X86) && !(defined(__MINGW32__) && (__GNUC__ < 4))
++#elif defined(_M_X86) && defined(_MSC_VER)
  #define GetNextData(nextdata, bp)                                              \
      nextdata = _byteswap_ulong(*(unsigned long *)(bp))
 -#elif defined(__GNUC__)
-+#elif defined(__GNUC__) && !(defined(__MINGW32__) && (__GNUC__ < 4))
++#elif defined(__GNUC__) && !((__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ < 3))
  #define GetNextData(nextdata, bp)                                              \
      memcpy(&nextdata, bp, sizeof(nextdata));                                   \
      nextdata = __builtin_bswap32(nextdata)
 diff --git a/libtiff/tif_win32.c b/libtiff/tif_win32.c
-index 1a6b86df..7f0a991d 100644
+index 1a6b86d..7f0a991 100644
 --- a/libtiff/tif_win32.c
 +++ b/libtiff/tif_win32.c
 @@ -148,10 +148,27 @@ static int _tiffCloseProc(thandle_t fd) { return (CloseHandle(fd) ? 0 : -1); }
@@ -65,5 +65,5 @@ index 1a6b86df..7f0a991d 100644
  
  static int _tiffDummyMapProc(thandle_t fd, void **pbase, toff_t *psize)
 -- 
-2.42.0
+2.45.2
 

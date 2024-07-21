@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2020-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2020-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,6 +17,9 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/// @note qDebug macro conflicts
+#import <CoreServices/CoreServices.h>
+
 #include "MacTouchBar.h"
 
 #import <AppKit/AppKit.h>
@@ -30,6 +33,8 @@
 #include "Utils/ObjectiveCUtils.h"
 #include "Utils/ThemeUtils.h"
 #include "Utils/WindowUtils.h"
+
+#include "Utils/MacNSInteger.h"
 
 // ====================================================================================================
 

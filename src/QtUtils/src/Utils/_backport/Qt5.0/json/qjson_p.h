@@ -358,7 +358,7 @@ public:
         return QString((QChar *)d->utf16, d->length);
 #else
         int l = d->length;
-        QString str(l, Qt::Uninitialized);
+        QString str(l, QChar::fromLatin1('\0'));
         QChar *ch = str.data();
         for (int i = 0; i < l; ++i)
             ch[i] = QChar(d->utf16[i]);

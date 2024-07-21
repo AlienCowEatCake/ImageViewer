@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,8 +17,8 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <CoreFoundation/CoreFoundation.h>
-#include <CoreServices/CoreServices.h>
+#import <CoreFoundation/CoreFoundation.h>
+#import <CoreServices/CoreServices.h>
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
@@ -60,7 +60,10 @@ public:
         std::set<QString> fileTypes;
         if([NSImage respondsToSelector:@selector(imageFileTypes)])
         {
-            for(NSString *fileType in [NSImage performSelector:@selector(imageFileTypes)])
+            NSArray *imageFileTypes = [NSImage performSelector:@selector(imageFileTypes)];
+            NSEnumerator *enumerator = [imageFileTypes objectEnumerator];
+            NSString *fileType = nil;
+            while((fileType = [enumerator nextObject]) != nil)
             {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
                 typedef QRegularExpression QRE;
@@ -75,7 +78,10 @@ public:
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_10_AND_LATER)
         if(InfoUtils::MacVersionGreatOrEqual(10, 10))
         {
-            for(NSString *uti in [NSImage imageTypes])
+            NSArray *imageTypes = [NSImage imageTypes];
+            NSEnumerator *enumerator = [imageTypes objectEnumerator];
+            NSString *uti = nil;
+            while((uti = [enumerator nextObject]) != nil)
             {
                 if(!uti)
                     continue;

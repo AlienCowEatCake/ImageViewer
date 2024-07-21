@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -16,6 +16,11 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+/// @note qDebug macro conflicts
+#if defined (__APPLE__)
+#include <CoreServices/CoreServices.h>
+#endif
 
 #include "FileUtils.h"
 
@@ -88,11 +93,6 @@ static bool MoveToTrashViaFSMoveObject(const QString &absolutePath, QString *err
     typedef OSStatus (*FSPathMakeRefWithOptions_t)(const UInt8 *path, OptionBits options, FSRef *ref, Boolean *isDirectory);
     typedef OSStatus (*FSMoveObjectToTrashSync_t)(const FSRef *source, FSRef *target, OptionBits options);
     typedef const char *(*GetMacOSStatusCommentString_t)(OSStatus err);
-#if !defined (AVAILABLE_MAC_OS_X_VERSION_10_8_AND_LATER)
-    const FSPathMakeRefWithOptions_t FSPathMakeRefWithOptions_f = &FSPathMakeRefWithOptions;
-    const FSMoveObjectToTrashSync_t FSMoveObjectToTrashSync_f = &FSMoveObjectToTrashSync;
-    const GetMacOSStatusCommentString_t GetMacOSStatusCommentString_f = &GetMacOSStatusCommentString;
-#else
     CFBundleRef coreServicesBundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.CoreServices"));
     if(!coreServicesBundle)
     {
@@ -105,7 +105,6 @@ static bool MoveToTrashViaFSMoveObject(const QString &absolutePath, QString *err
     const FSPathMakeRefWithOptions_t FSPathMakeRefWithOptions_f = reinterpret_cast<FSPathMakeRefWithOptions_t>(CFBundleGetFunctionPointerForName(coreServicesBundle, CFSTR("FSPathMakeRefWithOptions")));
     const FSMoveObjectToTrashSync_t FSMoveObjectToTrashSync_f = reinterpret_cast<FSMoveObjectToTrashSync_t>(CFBundleGetFunctionPointerForName(coreServicesBundle, CFSTR("FSMoveObjectToTrashSync")));
     const GetMacOSStatusCommentString_t GetMacOSStatusCommentString_f = reinterpret_cast<GetMacOSStatusCommentString_t>(CFBundleGetFunctionPointerForName(coreServicesBundle, CFSTR("GetMacOSStatusCommentString")));
-#endif
     if(!FSPathMakeRefWithOptions_f)
     {
         if(errorDescription)

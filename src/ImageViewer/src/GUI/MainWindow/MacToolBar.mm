@@ -17,6 +17,9 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/// @note qDebug macro conflicts
+#import <CoreServices/CoreServices.h>
+
 #include "MacToolBar.h"
 
 #import <AppKit/AppKit.h>
@@ -32,6 +35,12 @@
 #include "Utils/ThemeUtils.h"
 #include "Utils/WindowUtils.h"
 
+#include "Utils/MacNSInteger.h"
+
+#if defined (QT_MAC_USE_CARBON) || ((QT_VERSION < QT_VERSION_CHECK(5, 0, 0)) && !defined (QT_MAC_USE_COCOA))
+#error "MacToolBar is designed for Cocoa Qt version and incompatible with Carbon Qt version"
+#endif
+
 // ====================================================================================================
 
 namespace {
@@ -40,7 +49,7 @@ const NSInteger BUTTON_HEIGHT = 32;
 const NSInteger ALONE_BUTTON_WIDTH = 40;
 const NSInteger GROUPED_BUTTON_WIDTH = 32; // InfoUtils::MacVersionGreatOrEqual(10, 13) ? 36 : 32;
 const NSInteger SEGMENTED_OFFSET = 8; // InfoUtils::MacVersionGreatOrEqual(10, 13) ? 0 : 8;
-const QColor BUTTON_BASE_COLOR = InfoUtils::MacVersionGreatOrEqual(10, 10) ? qRgb(85, 85, 85) : Qt::black;
+const QColor BUTTON_BASE_COLOR = InfoUtils::MacVersionGreatOrEqual(10, 10) ? QColor(qRgb(85, 85, 85)) : QColor(Qt::black);
 const QColor BUTTON_ALTERNATE_COLOR = Qt::white;
 
 } // namespace
@@ -408,7 +417,7 @@ namespace {
 struct ToolBarData;
 } // namespace
 
-@interface MacToolbarDelegate : NSObject <NSToolbarDelegate>
+@interface MacToolbarDelegate : NSObject //<NSToolbarDelegate>
 {
     ToolBarData *m_toolBarData;
     QObject *m_emitterObject;
@@ -432,6 +441,22 @@ struct ToolBarData;
 - (BOOL)validateToolbarItem:(NSToolbarItem *)item;
 
 - (IBAction)itemClicked:(id)sender;
+
+- (void)makeSegmentedPairItem:(SegmentedToolBarItem &)groupItem
+          withGroupIdentifier:(NSString *)groupIdentifier
+       withVisibilityPriority:(NSInteger)visibilityPriority
+                withFirstItem:(GroupedToolBarItem &)firstItem
+          withFirstIdentifier:(NSString *)firstIdentifier
+               withFirstImage:(NSImage *)firstImage
+               withSecondItem:(GroupedToolBarItem &)secondItem
+         withSecondIdentifier:(NSString *)secondIdentifier
+              withSecondImage:(NSImage *)secondImage;
+
+- (void)makeButtonedItem:(ButtonedToolBarItem &)buttonedItem
+          withIdentifier:(NSString *)identifier
+  withVisibilityPriority:(NSInteger)visibilityPriority
+               withImage:(NSImage *)image
+      withAlternateImage:(NSImage *)alternateImage;
 
 @end
 
@@ -494,7 +519,11 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     }
 #endif
     QImage iconImage(iconPixmap.size(), QImage::Format_ARGB32_Premultiplied);
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 8, 0))
     iconImage.fill(darkBackground ? BUTTON_ALTERNATE_COLOR : BUTTON_BASE_COLOR);
+#else
+    iconImage.fill((darkBackground ? BUTTON_ALTERNATE_COLOR : BUTTON_BASE_COLOR).rgb());
+#endif
     iconImage.setAlphaChannel(iconPixmap.toImage()
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
                               .convertToFormat(QImage::Format_Alpha8));

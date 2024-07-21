@@ -31,7 +31,7 @@ CONFIG += warn_on
 
 DEFINES += QT_NO_CAST_FROM_ASCII QT_NO_KEYWORDS
 
-*g++*|*clang* {
+*g++*|*clang*|*llvm*|*xcode* {
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CXXFLAGS_RELEASE *= -O3
     QMAKE_CXXFLAGS_RELEASE *= -DNDEBUG
@@ -53,7 +53,7 @@ win32 {
     DEFINES += NOMINMAX
 }
 
-macx {
+macx : *clang* {
     QMAKE_CXXFLAGS += -Wno-invalid-constexpr
 }
 

@@ -15,7 +15,7 @@ THIRDPARTY_BROTLI_PATH = $${PWD}/brotli-1.1.0
 include(../../Features.pri)
 include(../CommonSettings.pri)
 
-*g++*|*clang* {
+*g++*|*clang*|*llvm*|*xcode* {
     QMAKE_CFLAGS += -std=c99
 }
 

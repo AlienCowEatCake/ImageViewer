@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -16,6 +16,9 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+/// @note qDebug macro conflicts
+#import <CoreServices/CoreServices.h>
 
 #include "ObjectiveCUtils_mac.h"
 
@@ -39,6 +42,7 @@
 
 #include "Global.h"
 #include "InfoUtils.h"
+#include "MacNSInteger.h"
 
 namespace ObjCUtils {
 
@@ -73,6 +77,22 @@ CFTypePtr<CGImageRef> QPixmapToCGImageRef(const QPixmap &pixmap)
     return QImageToCGImageRef(pixmap.toImage());
 }
 
+static CFTypePtr<CGColorSpaceRef> CreateRgbColorSpace()
+{
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_5_AND_LATER) && defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1050)
+#if defined (MAC_OS_X_VERSION_MIN_REQUIRED) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1050)
+    return CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+#else
+    if(InfoUtils::MacVersionGreatOrEqual(10, 5))
+        return CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    else
+        return CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB));
+#endif
+#else
+    return CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB));
+#endif
+}
+
 QImage QImageFromCGImageRef(const CFTypePtr<CGImageRef> &image, const QSize &sizeInPixels)
 {
     if(!image)
@@ -86,7 +106,7 @@ QImage QImageFromCGImageRef(const CFTypePtr<CGImageRef> &image, const QSize &siz
 
     result.fill(Qt::transparent);
 
-    const CFTypePtr<CGColorSpaceRef> colorSpace = CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    const CFTypePtr<CGColorSpaceRef> colorSpace = CreateRgbColorSpace();
     if(!colorSpace)
         return QImage();
 
@@ -105,7 +125,7 @@ CFTypePtr<CGImageRef> QImageToCGImageRef(const QImage &image)
     if(image.isNull())
         return Q_NULLPTR;
 
-    const CFTypePtr<CGColorSpaceRef> colorSpace = CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    const CFTypePtr<CGColorSpaceRef> colorSpace = CreateRgbColorSpace();
     if(!colorSpace)
         return Q_NULLPTR;
 
@@ -275,7 +295,9 @@ QVariantMap QVariantMapFromNSDictionary(const NSDictionary *dict)
     QVariantMap map;
     if(!dict)
         return map;
-    for(NSString *key in dict)
+    NSEnumerator *enumerator = [dict keyEnumerator];
+    NSString *key = nil;
+    while((key = [enumerator nextObject]) != nil)
         map[QStringFromNSString(key)] = QVariantFromObject([dict objectForKey:key]);
     return map;
 }
@@ -293,7 +315,9 @@ QVariantList QVariantListFromNSArray(const NSArray *array)
     QVariantList list;
     if(!array)
         return list;
-    for(id obj in array)
+    NSEnumerator *enumerator = [array objectEnumerator];
+    id obj = nil;
+    while((obj = [enumerator nextObject]) != nil)
         list.append(QVariantFromObject(obj));
     return list;
 }
@@ -368,7 +392,7 @@ NSDate *QDateTimeToNSDate(const QDateTime &dateTime)
     return [NSDate dateWithTimeIntervalSince1970:static_cast<NSTimeInterval>(dateTime.toMSecsSinceEpoch()) / 1000];
 #else
     static const QDateTime epochStart(QDate(1970, 01, 01), QTime(0, 0), Qt::UTC);
-    return [NSDate dateWithTimeIntervalSince1970:static_cast<NSTimeInterval>(epochStart.msecsTo(dateTime)) / 1000];
+    return [NSDate dateWithTimeIntervalSince1970:static_cast<NSTimeInterval>(epochStart.secsTo(dateTime))];
 #endif
 }
 
@@ -412,7 +436,9 @@ QImage QImageFromNSImage(const NSImage *image)
     NSArray *imageReps = [image representations];
     NSInteger width = 0;
     NSInteger height = 0;
-    for(NSImageRep *imageRep in imageReps)
+    NSEnumerator *imageRepsEnumerator = [imageReps objectEnumerator];
+    NSImageRep *imageRep = nil;
+    while((imageRep = [imageRepsEnumerator nextObject]) != nil)
     {
         width = std::max(width, [imageRep pixelsWide]);
         height = std::max(height, [imageRep pixelsHigh]);
@@ -426,7 +452,7 @@ QImage QImageFromNSImage(const NSImage *image)
     // (e.g. produces @2x image for svg input with Retina display)
     const QSize targetSize = QSize(static_cast<int>(width), static_cast<int>(height));
 
-#if defined (AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER)
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER) && defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1060)
     if(InfoUtils::MacVersionGreatOrEqual(10, 6))
     {
         // https://stackoverflow.com/questions/2548059/turning-an-nsimage-into-a-cgimageref
@@ -446,18 +472,17 @@ QImage QImageFromNSImage(const NSImage *image)
                                 hasAlpha:YES
                                 isPlanar:NO
                           colorSpaceName:NSCalibratedRGBColorSpace
-#if defined (AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER)
-                            bitmapFormat:NSBitmapFormatAlphaFirst
-#else
-                            bitmapFormat:NSAlphaFirstBitmapFormat
-#endif
-                             bytesPerRow:0
-                            bitsPerPixel:0
+                             bytesPerRow:4 * width
+                            bitsPerPixel:32
         ];
         if(!bmp)
             return result;
+        NSDictionary *contextAttr = [NSDictionary dictionaryWithObject:bmp forKey:NSGraphicsContextDestinationAttributeName];
+        NSGraphicsContext *context = [NSGraphicsContext graphicsContextWithAttributes:contextAttr];
+        if(!context)
+            return result;
         [NSGraphicsContext saveGraphicsState];
-        [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:bmp]];
+        [NSGraphicsContext setCurrentContext:context];
         [image drawInRect:NSMakeRect(0, 0, width, height) fromRect:NSZeroRect operation:
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_AND_LATER)
                 NSCompositingOperationSourceOver
@@ -466,7 +491,35 @@ QImage QImageFromNSImage(const NSImage *image)
 #endif
                 fraction:1];
         [NSGraphicsContext restoreGraphicsState];
-        result = QImageFromCGImageRef(CFTypePtrFromGet([bmp CGImage]), targetSize);
+        /// @todo QImageFromCGImageRef produces artifacts for some images with alpha channel
+/*
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_5_AND_LATER) && defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1050)
+        if(InfoUtils::MacVersionGreatOrEqual(10, 5))
+        {
+            result = QImageFromCGImageRef(CFTypePtrFromGet([bmp CGImage]), targetSize);
+        }
+        else
+#endif
+*/
+        {
+            result = QImage(reinterpret_cast<const uchar*>([bmp bitmapData]),
+                            static_cast<int>([bmp pixelsWide]),
+                            static_cast<int>([bmp pixelsHigh]),
+                            static_cast<int>([bmp bytesPerRow]),
+                            QImage::Format_ARGB32_Premultiplied).copy();
+            for(int y = 0; y < result.height(); ++y)
+            {
+                QRgb* line = reinterpret_cast<QRgb*>(result.scanLine(y));
+                for(int x = 0; x < result.width(); ++x)
+                {
+#if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
+                    line[x] = qRgba(qBlue(line[x]), qGreen(line[x]), qRed(line[x]), qAlpha(line[x]));
+#else
+                    line[x] = qRgba(qAlpha(line[x]), qRed(line[x]), qGreen(line[x]), qBlue(line[x]));
+#endif
+                }
+            }
+        }
         [bmp release];
     }
 
@@ -475,7 +528,7 @@ QImage QImageFromNSImage(const NSImage *image)
 
 NSImage *QImageToNSImage(const QImage &image, const QSize &sizeInPoints)
 {
-#if defined (AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER)
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER) && defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1060)
     if(InfoUtils::MacVersionGreatOrEqual(10, 6))
     {
         const CFTypePtr<CGImageRef> imageRef = QImageToCGImageRef(image);
@@ -486,6 +539,7 @@ NSImage *QImageToNSImage(const QImage &image, const QSize &sizeInPoints)
     else
 #endif
     {
+        Q_UNUSED(sizeInPoints);
         // https://stackoverflow.com/questions/10627557/mac-os-x-drawing-into-an-offscreen-nsgraphicscontext-using-cgcontextref-c-funct
         // http://www.cocoabuilder.com/archive/cocoa/133768-converting-cgimagerefs-to-nsimages-how.html
         const CFTypePtr<CGImageRef> imageRef = QImageToCGImageRef(image);
@@ -503,18 +557,16 @@ NSImage *QImageToNSImage(const QImage &image, const QSize &sizeInPoints)
                                 hasAlpha:YES
                                 isPlanar:NO
                           colorSpaceName:NSCalibratedRGBColorSpace
-#if defined (AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER)
-                            bitmapFormat:NSBitmapFormatAlphaFirst
-#else
-                            bitmapFormat:NSAlphaFirstBitmapFormat
-#endif
-                             bytesPerRow:0
-                            bitsPerPixel:0
+                             bytesPerRow:4 * width
+                            bitsPerPixel:32
         ];
         if(!bmp)
             return nil;
+        NSDictionary *contextAttr = [NSDictionary dictionaryWithObject:bmp forKey:NSGraphicsContextDestinationAttributeName];
+        NSGraphicsContext *context = [NSGraphicsContext graphicsContextWithAttributes:contextAttr];
+        if(!context)
+            return nil;
         [NSGraphicsContext saveGraphicsState];
-        NSGraphicsContext *context = [NSGraphicsContext graphicsContextWithBitmapImageRep:bmp];
         [NSGraphicsContext setCurrentContext:context];
 #include "Workarounds/BeginIgnoreDeprecated.h"
         CGContextDrawImage(reinterpret_cast<CGContextRef>([context graphicsPort]), *reinterpret_cast<const CGRect*>(&rect), imageRef);

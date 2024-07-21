@@ -23,7 +23,7 @@ include(../libjpeg/libjpeg.pri)
 include(../XZUtils/XZUtils.pri)
 include(../LibWebP/LibWebP.pri)
 
-*g++*|*clang* {
+*g++*|*clang*|*llvm*|*xcode* {
     greaterThan(QT_MAJOR_VERSION, 6) {
         CONFIG += libtiff_c11
     }

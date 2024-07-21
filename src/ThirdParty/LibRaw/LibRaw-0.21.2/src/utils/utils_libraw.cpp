@@ -290,7 +290,7 @@ void LibRaw::clearCancelFlag()
 {
 #ifdef _MSC_VER
   InterlockedExchange(&_exitflag, 0);
-#elif defined (__GNUC__) && (__GNUC__ < 4) && defined (LIBRAW_NOTHREADS)
+#elif defined (__GNUC__) && ((__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ < 1)) && defined (LIBRAW_NOTHREADS)
   _exitflag = 0;
 #else
   __sync_fetch_and_and(&_exitflag, 0);
@@ -309,7 +309,7 @@ void LibRaw::setCancelFlag()
 {
 #ifdef _MSC_VER
   InterlockedExchange(&_exitflag, 1);
-#elif defined (__GNUC__) && (__GNUC__ < 4) && defined (LIBRAW_NOTHREADS)
+#elif defined (__GNUC__) && ((__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ < 1)) && defined (LIBRAW_NOTHREADS)
   ++_exitflag;
 #else
   __sync_fetch_and_add(&_exitflag, 1);
@@ -329,7 +329,7 @@ void LibRaw::checkCancel()
 #ifdef _MSC_VER
   if (InterlockedExchange(&_exitflag, 0))
     throw LIBRAW_EXCEPTION_CANCELLED_BY_CALLBACK;
-#elif defined (__GNUC__) && (__GNUC__ < 4) && defined (LIBRAW_NOTHREADS)
+#elif defined (__GNUC__) && ((__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ < 1)) && defined (LIBRAW_NOTHREADS)
   long exitflag = 0;
   std::swap(exitflag, _exitflag);
   if (exitflag)

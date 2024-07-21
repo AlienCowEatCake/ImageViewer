@@ -28,7 +28,7 @@ include($${PWD}/../../Features.pri)
             } else:CONFIG(debug, debug|release) {
                 OUT_LIB_DIR2 = $${OUT_LIB_DIR}/debug
             }
-            *g++*|*clang* {
+            *g++*|*clang*|*llvm*|*xcode* {
                 OUT_LIB_NAME = lib$${OUT_LIB_TARGET}.a
                 OUT_LIB_LINK = -l$${OUT_LIB_TARGET}
             } else {

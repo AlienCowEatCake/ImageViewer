@@ -59,6 +59,8 @@
 #else
 #include <errno.h>
 #include <sys/sysctl.h>
+#include <sys/utsname.h>
+#include <TargetConditionals.h>
 #endif
 
 namespace {
@@ -233,6 +235,13 @@ QString targetDescriptionInt()
 #elif (defined(_M_X64  ) || defined(__x86_64) || defined(__x86_64__) || \
     defined(_M_AMD64) || defined(__amd64 ) || defined(__amd64__ ))
     return QString::fromLatin1("x86-64");
+#elif (defined(__PPC64__) || defined(__ppc64__) || defined(__powerpc64__) || \
+    defined(__PPC64LE__) || defined(__ppc64le__))
+    return QString::fromLatin1("Power (64-bit)");
+#elif (defined(__PPC__) || defined(__ppc__) || defined(__powerpc__) || \
+    defined(__powerpc) || defined(__POWERPC__) || defined(_M_PPC) || \
+    defined(__PPC) || defined(_ARCH_PPC) || defined(__THW_PPC__))
+    return QString::fromLatin1("Power");
 #elif defined (Q_PROCESSOR_ALPHA)
     return QString::fromLatin1("Alpha");
 #elif defined (Q_PROCESSOR_ARM_64)
@@ -868,8 +877,23 @@ QString GetSystemDescription()
 
 #else
 
-/// @brief Returns 1 if running in Rosetta
-int processIsTranslated()
+/// @brief Returns 1 if running in Rosetta 1
+int isRunningViaRosetta1()
+{
+#if ((defined (TARGET_CPU_PPC) && (TARGET_CPU_PPC)) || (defined (TARGET_CPU_PPC64) && (TARGET_CPU_PPC64)))
+    utsname buf;
+    memset(&buf, 0, sizeof(buf));
+    if(uname(&buf))
+        return -1;
+    const QString version = QString::fromLocal8Bit(buf.version);
+    if(version.endsWith(QString::fromLatin1("_I386")) || version.endsWith(QString::fromLatin1("_X86_64")))
+        return 1;
+#endif
+    return 0;
+}
+
+/// @brief Returns 1 if running in Rosetta 2
+int isRunningViaRosetta2()
 {
     int ret = 0;
     size_t size = sizeof(ret);
@@ -880,6 +904,18 @@ int processIsTranslated()
     if(errno == ENOENT)
         return 0;
     return -1;
+}
+
+/// @brief Returns 1 if running in Rosetta
+int processIsTranslated()
+{
+    static const int r1 = isRunningViaRosetta1();
+    static const int r2 = isRunningViaRosetta2();
+    if(r1 > 0 || r2 > 0)
+        return 1;
+    if(r1 < 0 || r2 < 0)
+        return -1;
+    return 0;
 }
 
 #endif

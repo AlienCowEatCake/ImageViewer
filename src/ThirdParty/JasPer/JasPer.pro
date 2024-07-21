@@ -18,7 +18,7 @@ include(../CommonSettings.pri)
 include(../libjpeg/libjpeg.pri)
 include(../libheif/libheif.pri)
 
-*g++*|*clang* {
+*g++*|*clang*|*llvm*|*xcode* {
     QMAKE_CFLAGS += -std=gnu99
 }
 

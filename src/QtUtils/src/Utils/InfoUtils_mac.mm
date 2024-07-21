@@ -17,11 +17,15 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/// @note qDebug macro conflicts
+#import <CoreServices/CoreServices.h>
+
 #include "InfoUtils.h"
 
-#import <CoreServices/CoreServices.h>
 #import <Foundation/Foundation.h>
 #include <AvailabilityMacros.h>
+
+#include <stdlib.h>
 
 #include <QString>
 
@@ -39,16 +43,29 @@ struct Version
     int patch;
 
     Version(const int major = -1, const int minor = -1, const int patch = -1)
-        : major(major)
-        , minor(minor)
-        , patch(patch)
-    {}
+    {
+        this->major = major;
+        this->minor = minor;
+        this->patch = patch;
+    }
 };
 
 template <typename T>
 Version CreateVersion(const T major = -1, const T minor = -1, const T patch = -1)
 {
     return Version(static_cast<int>(major), static_cast<int>(minor), static_cast<int>(patch));
+}
+
+int NSStringToInt(const NSString *str)
+{
+    if(!str)
+        return 0;
+
+    const char *utfStr = [str UTF8String];
+    if(!utfStr)
+        return 0;
+
+    return atoi(utfStr);
 }
 
 Version GetCurrentMacVersionImpl()
@@ -72,9 +89,9 @@ Version GetCurrentMacVersionImpl()
             NSArray *components = [productVersion componentsSeparatedByString:@"."];
             if(components && [components count] >= 2)
             {
-                const NSInteger major = [(NSString*)[components objectAtIndex:0] integerValue];
-                const NSInteger minor = [(NSString*)[components objectAtIndex:1] integerValue];
-                const NSInteger patch = ([components count] >= 3 ? [(NSString*)[components objectAtIndex:2] integerValue] : -1);
+                const int major = NSStringToInt((NSString*)[components objectAtIndex:0]);
+                const int minor = NSStringToInt((NSString*)[components objectAtIndex:1]);
+                const int patch = ([components count] >= 3 ? NSStringToInt((NSString*)[components objectAtIndex:2]) : -1);
                 return CreateVersion(major, minor, patch);
             }
         }

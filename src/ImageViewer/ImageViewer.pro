@@ -34,7 +34,7 @@ include(../Features.pri)
 include(../QtUtils/QtUtils.pri)
 include(../ThirdParty/ThirdParty.pri)
 
-*g++*|*clang* {
+*g++*|*clang*|*llvm*|*xcode* {
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CXXFLAGS_RELEASE *= -O3
     QMAKE_CXXFLAGS_RELEASE *= -DNDEBUG
@@ -472,7 +472,9 @@ macx {
     QMAKE_INFO_PLIST = resources/platform/macosx/Info.plist
     ICON = resources/icon/icon.icns
     TARGET = "Image Viewer"
-    QMAKE_CXXFLAGS += -Wno-invalid-constexpr
+    *clang* {
+        QMAKE_CXXFLAGS += -Wno-invalid-constexpr
+    }
 }
 
 RESOURCES += \

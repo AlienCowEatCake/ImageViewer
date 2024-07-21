@@ -33,7 +33,7 @@
 		<string>x86_64</string>
 	</array>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.7</string>
+	<string>10.3</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>(c) Peter S. Zhigalov, 2017-2024</string>
 	<key>CFBundleLocalizations</key>

@@ -346,13 +346,13 @@ static int LZWPreDecode(TIFF *tif, uint16_t s)
                (((uint64_t)bp[6]) << 8) | (((uint64_t)bp[7]))
 #endif
 #elif SIZEOF_WORDTYPE == 4
-#if defined(__GNUC__) && defined(__i386__) && !(defined(__MINGW32__) && (__GNUC__ < 4))
+#if defined(__GNUC__) && defined(__i386__) && !((__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ < 3))
 #define GetNextData(nextdata, bp)                                              \
     nextdata = __builtin_bswap32(*(uint32_t *)(bp))
-#elif defined(_M_X86) && !(defined(__MINGW32__) && (__GNUC__ < 4))
+#elif defined(_M_X86) && defined(_MSC_VER)
 #define GetNextData(nextdata, bp)                                              \
     nextdata = _byteswap_ulong(*(unsigned long *)(bp))
-#elif defined(__GNUC__) && !(defined(__MINGW32__) && (__GNUC__ < 4))
+#elif defined(__GNUC__) && !((__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ < 3))
 #define GetNextData(nextdata, bp)                                              \
     memcpy(&nextdata, bp, sizeof(nextdata));                                   \
     nextdata = __builtin_bswap32(nextdata)

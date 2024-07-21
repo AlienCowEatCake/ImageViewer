@@ -81,6 +81,11 @@ Makefile*
 # OS X garbage
 .DS_Store
 
+# In-tree Xcode builds
+/src/ImageViewer/Info.plist
+*.xcodeproj
+build
+
 # ReSVG
 !/buildscripts/resvg/**/*.so
 !/buildscripts/resvg/**/*.lib

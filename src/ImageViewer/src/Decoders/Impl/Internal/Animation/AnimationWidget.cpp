@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -69,5 +69,6 @@ void AnimationWidget::animationUpdated()
         const QPixmap pixmap = m_impl->animation->currentPixmap();
         setPixmap(pixmap);
         resize(pixmap.size());
+        move(0, 0);
     }
 }

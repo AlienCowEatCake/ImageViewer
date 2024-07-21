@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -17,12 +17,16 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/// @note qDebug macro conflicts
+#import <CoreServices/CoreServices.h>
+
 #include "WindowUtils_mac.h"
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 #include <AvailabilityMacros.h>
 
+#include <QDebug>
 #include <QWidget>
 
 #include "InfoUtils.h"
@@ -38,10 +42,18 @@ NSWindow *GetNativeWindow(QWidget *widget)
     QWidget *qtWindow = widget->window();
     if(!qtWindow)
         return nil;
-    NSView *windowView = reinterpret_cast<NSView*>(qtWindow->winId());
-    if(!windowView)
-        return nil;
-    return [windowView window];
+    @try
+    {
+        NSView *windowView = reinterpret_cast<NSView*>(qtWindow->winId());
+        if(!windowView)
+            return nil;
+        return [windowView window];
+    }
+    @catch(NSException *exception)
+    {
+        qWarning() << "[WindowUtils::GetNativeWindow]:" << ObjCUtils::QStringFromNSString([exception reason]);
+    }
+    return nil;
 }
 
 /// @brief По возможности нативно переключить режим FullScreen
@@ -53,8 +65,11 @@ void ToggleFullScreenMode(QWidget* window)
     if(InfoUtils::MacVersionGreatOrEqual(10, 7))
     {
         NSWindow *nsWindow = GetNativeWindow(window);
-        [nsWindow toggleFullScreen:nil];
-        return;
+        if(nsWindow)
+        {
+            [nsWindow toggleFullScreen:nil];
+            return;
+        }
     }
 #endif
 

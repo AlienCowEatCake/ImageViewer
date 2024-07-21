@@ -16,7 +16,7 @@ include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../aom/aom.pri)
 
-*g++*|*clang* {
+*g++*|*clang*|*llvm*|*xcode* {
     QMAKE_CFLAGS += -std=gnu99
 }
 

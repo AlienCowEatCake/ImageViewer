@@ -26,6 +26,9 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
+#if !defined (_MSC_VER)
+#include <sys/types.h>
+#endif
 
 #if defined (LINKED_MAGICKWAND)
 #if QT_HAS_INCLUDE(<MagickWand/MagickWand.h>)
