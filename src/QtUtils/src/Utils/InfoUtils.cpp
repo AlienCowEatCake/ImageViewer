@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -208,6 +208,8 @@ QString compilerDescriptionInt()
     return QString::fromLatin1("ARM Realview Compiler Suite");
 #elif defined (Q_CC_CLANG)
     return QString::fromLatin1("C++ front-end for the LLVM compiler");
+#elif defined (Q_CC_COVERITY)
+    return QString::fromLatin1("Coverity cov-scan");
 #else
     return QString::fromLatin1("Unknown");
 #endif
@@ -249,8 +251,18 @@ QString targetDescriptionInt()
     return QString::fromLatin1("AVR32");
 #elif defined (Q_PROCESSOR_BLACKFIN)
     return QString::fromLatin1("Blackfin");
+#elif defined (Q_PROCESSOR_HPPA)
+    return QString::fromLatin1("PA-RISC");
 #elif defined (Q_PROCESSOR_IA64)
     return QString::fromLatin1("IA-64");
+#elif defined (Q_PROCESSOR_LOONGARCH_64)
+    return QString::fromLatin1("LoongArch (64-bit)");
+#elif defined (Q_PROCESSOR_LOONGARCH_32)
+    return QString::fromLatin1("LoongArch (32-bit)");
+#elif defined (Q_PROCESSOR_LOONGARCH)
+    return QString::fromLatin1("LoongArch");
+#elif defined (Q_PROCESSOR_M68K)
+    return QString::fromLatin1("Motorola 68000");
 #elif defined (Q_PROCESSOR_MIPS_64)
     return QString::fromLatin1("MIPS64");
 #elif defined (Q_PROCESSOR_MIPS_V)
@@ -266,7 +278,9 @@ QString targetDescriptionInt()
 #elif defined (Q_PROCESSOR_MIPS)
     return QString::fromLatin1("MIPS");
 #elif defined (Q_PROCESSOR_POWER_64)
-    return QString::fromLatin1("Power 64");
+    return QString::fromLatin1("Power (64-bit)");
+#elif defined (Q_PROCESSOR_POWER_32)
+    return QString::fromLatin1("Power (32-bit)");
 #elif defined (Q_PROCESSOR_POWER)
     return QString::fromLatin1("Power");
 #elif defined (Q_PROCESSOR_RISCV_64)
@@ -289,14 +303,16 @@ QString targetDescriptionInt()
     return QString::fromLatin1("SPARC64");
 #elif defined (Q_PROCESSOR_SPARC)
     return QString::fromLatin1("SPARC");
+#elif defined (Q_PROCESSOR_WASM_64)
+    return QString::fromLatin1("Web Assembly (64-bit)");
+#elif defined (Q_PROCESSOR_WASM)
+    return QString::fromLatin1("Web Assembly");
 #elif defined (Q_PROCESSOR_X86_64)
     return QString::fromLatin1("x86-64");
 #elif defined (Q_PROCESSOR_X86_32)
     return QString::fromLatin1("x86");
 #elif defined (Q_PROCESSOR_X86)
     return QString::fromLatin1("x86");
-#elif defined (Q_PROCESSOR_WASM)
-    return QString::fromLatin1("Web Assembly");
 #else
     return QString();
 #endif
