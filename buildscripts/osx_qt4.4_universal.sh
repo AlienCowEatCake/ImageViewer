@@ -78,7 +78,7 @@ for plugin in libqtaccessiblewidgets.dylib ; do
         cp -a "${QTPLUGINS_PATH}/accessible/${plugin}" "${PLUGINS_PATH}/accessible/"
     fi
 done
-for subdir in iconengines imageformats ; do
+for subdir in codecs iconengines imageformats ; do
     if [ -d "${QT_PLUGINS_PATH}/${subdir}" ] ; then
         cp -a "${QT_PLUGINS_PATH}/${subdir}" "${PLUGINS_PATH}/"
     fi
@@ -129,8 +129,11 @@ function sign() {
         done
     fi
 }
-find "${INSTALL_PATH}/${APPNAME}.app/Contents/Frameworks" \( -name '*.framework' -or -name '*.dylib' \) -print0 | while IFS= read -r -d '' item ; do sign "${item}" ; done
-find "${INSTALL_PATH}/${APPNAME}.app/Contents/PlugIns"       -name '*.dylib'                            -print0 | while IFS= read -r -d '' item ; do sign "${item}" ; done
+find "${INSTALL_PATH}/${APPNAME}.app/Contents/Frameworks" -name '*.framework' -print0 | while IFS= read -r -d '' framework ; do
+    find "${framework}/Versions" -mindepth 2 -maxdepth 2 -type f -print0 | while IFS= read -r -d '' item ; do sign "${item}" ; done
+done
+find "${INSTALL_PATH}/${APPNAME}.app/Contents/Frameworks" -name '*.dylib' -print0 | while IFS= read -r -d '' item ; do sign "${item}" ; done
+find "${INSTALL_PATH}/${APPNAME}.app/Contents/PlugIns"    -name '*.dylib' -print0 | while IFS= read -r -d '' item ; do sign "${item}" ; done
 sign "${INSTALL_PATH}/${APPNAME}.app"
 
 hdiutil create -format UDZO -fs HFS+ -srcfolder "${INSTALL_PATH}" -volname "${APPNAME}" "${ARTIFACTS_PATH}/${DMGNAME}.dmg"

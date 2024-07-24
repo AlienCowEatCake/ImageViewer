@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -47,6 +47,7 @@
 namespace {
 
 const int MILLISECONDS_NUMBER_FOR_DROP_AFTER_WINDOW_STATE_CHANGE = 1500;
+const int MILLISECONDS_NUMBER_FOR_DROP_RECENT_EVENTS = 500;
 const int MAX_RECORDS_NUMBER_FOR_AUTO_SAVING_GEOMETRY = 100;
 const int MAX_TRY_TO_CORRECTING_INVALID_GEOMETRY = 5;
 const int SERIALIZER_FORMAT_VERSION = 1;
@@ -140,6 +141,18 @@ struct RestorableGeometryHelper::Impl : public QObject
             autoSavedGeometry.removeFirst();
     }
 
+    void dropAutoSavedDataForMsec(int msec)
+    {
+        const QDateTime targetKey = QDateTime::currentDateTime().addMSecs(-msec);
+        while(!autoSavedGeometry.empty())
+        {
+            if(autoSavedGeometry.last().first > targetKey)
+                autoSavedGeometry.removeLast();
+            else
+                break;
+        }
+    }
+
     void forceSetGeometry(const QRect& geometry)
     {
         temporaryBlockedBySetGeometry = true;
@@ -192,16 +205,7 @@ struct RestorableGeometryHelper::Impl : public QObject
             isLastMaximized = window->isMaximized();
             isLastFullScreen = window->isFullScreen();
             if(window->isMaximized() || window->isFullScreen() || window->isMinimized())
-            {
-                const QDateTime targetKey = QDateTime::currentDateTime().addMSecs(-MILLISECONDS_NUMBER_FOR_DROP_AFTER_WINDOW_STATE_CHANGE);
-                while(!autoSavedGeometry.empty())
-                {
-                    if(autoSavedGeometry.last().first > targetKey)
-                        autoSavedGeometry.removeLast();
-                    else
-                        break;
-                }
-            }
+                dropAutoSavedDataForMsec(MILLISECONDS_NUMBER_FOR_DROP_AFTER_WINDOW_STATE_CHANGE);
             break;
         default:
             break;
@@ -279,5 +283,10 @@ void RestorableGeometryHelper::block()
 void RestorableGeometryHelper::unblock()
 {
     m_impl->blocked = false;
+}
+
+void RestorableGeometryHelper::skipRecentEvents()
+{
+    m_impl->dropAutoSavedDataForMsec(MILLISECONDS_NUMBER_FOR_DROP_RECENT_EVENTS);
 }
 

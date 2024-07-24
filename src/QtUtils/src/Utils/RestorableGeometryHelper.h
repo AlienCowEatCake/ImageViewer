@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -41,6 +41,8 @@ public:
 
     void block();
     void unblock();
+
+    void skipRecentEvents();
 
 private:
     struct Impl;

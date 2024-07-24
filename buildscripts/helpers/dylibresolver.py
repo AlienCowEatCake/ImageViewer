@@ -53,22 +53,59 @@ def _get_framework_bundle_executable(framework_path):
 
 def _get_framework_binary(framework_path):
     executable = _get_framework_bundle_executable(framework_path)
-    if not executable:
-        return None
     try:
-        executable_paths = [os.path.join(framework_path, executable)]
-        if executable_paths[0].endswith("_debug"):
-            executable_paths.append(executable_paths[0][:-6])
-        for executable_path in executable_paths:
-            if os.path.exists(executable_path):
-                executable_path = os.path.realpath(executable_path)
-                executable_path = re.sub('.*\\.framework/', '', executable_path)
-                executable_path = os.path.join(framework_path, executable_path)
+        if executable:
+            executable_paths = [os.path.join(framework_path, executable), os.path.join(framework_path, 'Versions', 'Current', executable)]
+            if executable_paths[0].endswith("_debug"):
+                executable_paths.append(executable_paths[0][:-6])
+                executable_paths.append(executable_paths[1][:-6])
+            for executable_path in executable_paths:
                 if os.path.exists(executable_path):
-                    return executable_path
+                    executable_path = os.path.realpath(executable_path)
+                    executable_path = re.sub('.*\\.framework/', '', executable_path)
+                    executable_path = os.path.join(framework_path, executable_path)
+                    if os.path.exists(executable_path):
+                        return executable_path
+    except Exception:
+        pass
+    try:
+        versions_dir = os.path.join(framework_path, 'Versions')
+        available_versions = os.listdir(versions_dir)
+        version_probe = None
+        if len(available_versions) == 1:
+            version_probe = available_versions[0]
+        elif 'Current' in available_versions:
+            version_probe = 'Current'
+        if version_probe:
+            version_probe_files = []
+            version_probe_dir = os.path.join(versions_dir, version_probe)
+            for item in os.listdir(version_probe_dir):
+                item_path = os.path.join(version_probe_dir, item)
+                if not os.path.islink(item_path) and not os.path.isdir(item_path):
+                    version_probe_files.append(os.path.abspath(os.path.realpath(item_path)))
+            if len(version_probe_files) == 1:
+                return version_probe_files[0]
     except Exception:
         pass
     return None
+
+
+def _get_version(filepath):
+    result = []
+    otool_process = subprocess.Popen(['otool', '-L', '-arch', 'all', os.path.abspath(filepath)],
+                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    otool_output = otool_process.communicate()[0]
+    if sys.version_info[0] > 2:
+        otool_output = otool_output.decode('utf-8')
+    otool_process.wait()
+    if otool_process.returncode == 0:
+        for string in otool_output.splitlines():
+            if string.startswith(' ') or string.startswith('\t'):
+                search = re.search('\\(compatibility version [0-9\\.]*, current version ([0-9\\.]*)\\)', string)
+                if search:
+                    return search.group(1)
+                break
+    return '0.0.0'
 
 
 def _run_otool(filepath):
@@ -140,6 +177,68 @@ def _collect_binaries(dir):
 def _can_use_rpath(dir):
     # @todo LC_RPATH is incompatible with < 10.5
     return False
+
+
+def _fix_legacy_framework_structure(framework_path):
+    framework_binary = os.path.abspath(os.path.realpath(_get_framework_binary(framework_path)))
+    resources_dir = os.path.join(os.path.dirname(framework_binary), 'Resources')
+    resources_link = os.path.join(framework_path, 'Resources')
+    if not os.path.exists(resources_dir) and os.path.exists(resources_link) and not os.path.islink(resources_link):
+        shutil.move(resources_link, resources_dir)
+        print('  move', os.path.relpath(resources_link, start=os.path.dirname(framework_path)), '=>', os.path.relpath(resources_dir, start=os.path.dirname(framework_path)))
+    if not os.path.exists(resources_dir):
+        os.makedirs(resources_dir)
+        print('  makedirs', os.path.relpath(resources_dir, start=os.path.dirname(framework_path)))
+    if not os.path.exists(resources_link):
+        resources_rel = os.path.relpath(resources_dir, start=os.path.dirname(resources_link))
+        os.symlink(resources_rel, resources_link)
+        print('  symlink', os.path.relpath(resources_link, start=os.path.dirname(framework_path)), '=>', resources_rel)
+    info_plist = os.path.join(resources_dir, 'Info.plist')
+    if not os.path.exists(info_plist):
+        contents_dir = os.path.join(framework_path, 'Contents')
+        contents_info_plist = os.path.join(contents_dir, 'Info.plist')
+        if os.path.exists(contents_info_plist):
+            shutil.move(contents_info_plist, info_plist)
+            print('  move', os.path.relpath(contents_info_plist, start=os.path.dirname(framework_path)), '=>', os.path.relpath(info_plist, start=os.path.dirname(framework_path)))
+            if not os.listdir(contents_dir):
+                shutil.rmtree(contents_dir)
+                print('  rmtree', os.path.relpath(contents_dir, start=os.path.dirname(framework_path)))
+    if not os.path.exists(info_plist):
+        with open(info_plist, "w") as f:
+            f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+            f.write('<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">\n')
+            f.write('<plist version="0.9">\n')
+            f.write('<dict>\n')
+            f.write('\t<key>CFBundlePackageType</key>\n')
+            f.write('\t<string>FMWK</string>\n')
+            f.write('\t<key>CFBundleShortVersionString</key>\n')
+            f.write('\t<string>{0}</string>\n'.format(_get_version(framework_binary)))
+            f.write('\t<key>CFBundleGetInfoString</key>\n')
+            f.write('\t<string>{0}</string>\n'.format(os.path.basename(framework_binary)))
+            f.write('\t<key>CFBundleSignature</key>\n')
+            f.write('\t<string>????</string>\n')
+            f.write('\t<key>CFBundleExecutable</key>\n')
+            f.write('\t<string>{0}</string>\n'.format(os.path.basename(framework_binary)))
+            f.write('</dict>\n')
+            f.write('</plist>\n')
+        print('  Info.plist stub', os.path.relpath(info_plist, start=os.path.dirname(framework_path)))
+    binary_link = os.path.join(framework_path, os.path.basename(framework_binary))
+    if not os.path.exists(binary_link):
+        binary_rel = os.path.relpath(framework_binary, start=os.path.dirname(binary_link))
+        os.symlink(binary_rel, binary_link)
+        print('  symlink', os.path.relpath(binary_link, start=os.path.dirname(framework_path)), '=>', binary_rel)
+    versions_dir = os.path.join(framework_path, 'Versions')
+    for subdir in os.listdir(versions_dir):
+        subdir_path = os.path.join(versions_dir, subdir)
+        if os.path.islink(subdir_path) and subdir != 'Current':
+            os.unlink(subdir_path)
+            print('  unlink', os.path.relpath(subdir_path, start=os.path.dirname(framework_path)))
+    current_link = os.path.join(versions_dir, 'Current')
+    if not os.path.exists(current_link):
+        versions = os.listdir(versions_dir)
+        if len(versions) == 1:
+            os.symlink(versions[0], current_link)
+            print('  symlink', os.path.relpath(current_link, start=os.path.dirname(framework_path)), '=>', versions[0])
 
 
 def get_binary_deps(filepath):
@@ -231,15 +330,6 @@ def fixup_binaries(dir):
                 if _int_id(binary, new_id):
                     print('  -id', new_id)
         elif len(binary_components) > 3 and binary_components[-4].endswith('.framework'):
-            binary_rel = re.sub('.*/{0}'.format(binary_components[-4]), binary_components[-4], binary)
-            new_id = '{0}/{1}'.format(prefix, binary_rel)
-            old_ids = []
-            for otool_result in otool_results:
-                if otool_result.endswith(binary_rel) and otool_result not in old_ids:
-                    old_ids.append(otool_result)
-            if len(old_ids) > 0 and old_ids[0] != new_id:
-                if _int_id(binary, new_id):
-                    print('  -id', new_id)
             framework_path = os.path.dirname(os.path.dirname(os.path.dirname(binary)))
             framework_bundle_executable = _get_framework_bundle_executable(framework_path)
             framework_binary = binary_components[-1]
@@ -258,6 +348,16 @@ def fixup_binaries(dir):
                     info["CFBundleExecutable"] = framework_binary
                     plistlib.writePlist(info, plist_path)
                     print('  CFBundleExecutable', framework_bundle_executable, "=>", framework_binary)
+            _fix_legacy_framework_structure(framework_path)
+            binary_rel = re.sub('.*/{0}'.format(binary_components[-4]), binary_components[-4], binary)
+            new_id = '{0}/{1}'.format(prefix, binary_rel)
+            old_ids = []
+            for otool_result in otool_results:
+                if otool_result.endswith(binary_rel) and otool_result not in old_ids:
+                    old_ids.append(otool_result)
+            if len(old_ids) > 0 and old_ids[0] != new_id:
+                if _int_id(binary, new_id):
+                    print('  -id', new_id)
         deps = get_binary_deps(binary)
         for dep in deps:
             if not check_dll(dir, dep):

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -384,6 +384,10 @@ void MainWindow::switchShowToolBar()
     if(m_impl->isFullScreenMode)
         return;
     RestorableGeometryHelper &geometryHelper = m_impl->geometryHelper;
+#if defined (HAS_MAC_TOOLBAR) && (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    geometryHelper.skipRecentEvents();
+    geometryHelper.restoreGeometry();
+#endif
     geometryHelper.saveGeometry();
     geometryHelper.block();
     m_impl->ui.toolbar->setVisible(newValue);

@@ -194,8 +194,8 @@ isEmpty(QT_VERSION_NUMERIC) {
     *g++* : !*clang* : !lessThan(GCC_VERSION_NUMERIC, 80000) : CONFIG *= test_cxx17_compatible_compiler
     # Clang < 5.0 is not a C++17-conformant compiler: https://clang.llvm.org/cxx_status.html#cxx17
     *clang* : !mac : !lessThan(CLANG_VERSION_NUMERIC, 50000) : CONFIG *= test_cxx17_compatible_compiler
-    # Assume that clang on macOS is compatible if Qt is *definitely* built with libc++ (Qt 5.7+)
-    *clang* : mac : !lessThan(QT_VERSION_NUMERIC, 50700) : CONFIG *= test_cxx17_compatible_compiler
+    # Assume that clang on macOS is compatible if Qt is *definitely* built with C++17-compatible libc++ (macOS 10.13, Qt 5.15+)
+    *clang* : mac : !lessThan(QT_VERSION_NUMERIC, 51500) : CONFIG *= test_cxx17_compatible_compiler
     greaterThan(QT_MAJOR_VERSION, 5) : CONFIG *= test_cxx17_compatible_qt
     !test_cxx17_compatible_qt : !test_cxx17_compatible_compiler : !enable_cxx17 {
         CONFIG *= disable_cxx17
@@ -458,6 +458,8 @@ disable_cxx11 : !system_highway {
 haiku : !system_highway { # FIXME: Re-check on beta4 or nightly
     CONFIG *= disable_highway
 }
+#DEFINES *= HWY_COMPILE_ONLY_SCALAR
+#DEFINES *= HWY_BROKEN_EMU128
 
 # libexpat options:
 #    disable_libexpat

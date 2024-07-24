@@ -59,17 +59,25 @@ NSWindow *GetNativeWindow(QWidget *widget)
 /// @brief По возможности нативно переключить режим FullScreen
 void ToggleFullScreenMode(QWidget* window)
 {
-    AUTORELEASE_POOL;
-
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_7_AND_LATER)
     if(InfoUtils::MacVersionGreatOrEqual(10, 7))
     {
-        NSWindow *nsWindow = GetNativeWindow(window);
-        if(nsWindow)
+        AUTORELEASE_POOL;
+        @try
         {
-            [nsWindow toggleFullScreen:nil];
-            return;
+            NSWindow *nsWindow = GetNativeWindow(window);
+            if(nsWindow)
+            {
+                const NSWindowCollectionBehavior behavior = [nsWindow collectionBehavior];
+                if((behavior & NSWindowCollectionBehaviorFullScreenPrimary) || (behavior & NSWindowCollectionBehaviorFullScreenAuxiliary))
+                {
+                    [nsWindow toggleFullScreen:nil];
+                    return;
+                }
+            }
         }
+        @catch(NSException*)
+        {}
     }
 #endif
 
