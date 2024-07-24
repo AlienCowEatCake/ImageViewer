@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -18,6 +18,9 @@
 */
 
 #include "ThemeUtils.h"
+
+#include <cassert>
+
 #include <QApplication>
 #include <QStyle>
 #include <QStyleOption>
@@ -25,7 +28,9 @@
 #include <QImage>
 #include <QTextStream>
 #include <QFile>
+#include <QFileInfo>
 #include <QDebug>
+
 #if defined (Q_OS_WIN)
 #include <windows.h>
 #endif
@@ -68,6 +73,39 @@ bool IsDarkTheme(const QPalette &palette, QPalette::ColorRole windowRole, QPalet
 {
     // https://www.qt.io/blog/dark-mode-on-windows-11-with-qt-6.5
     return Lightness(palette.color(windowTextRole)) > Lightness(palette.color(windowRole));
+}
+
+QIcon GetQtLogo()
+{
+    const QStringList knownPaths = QStringList()
+            << QString::fromLatin1(":/trolltech/qmessagebox/images/qtlogo-64.png")
+            << QString::fromLatin1(":/qt-project.org/qmessagebox/images/qtlogo-64.png");
+    for(QStringList::ConstIterator it = knownPaths.constBegin(); it != knownPaths.constEnd(); ++it)
+    {
+        QFileInfo info(*it);
+        if(info.exists())
+            return QIcon(info.filePath());
+    }
+    assert(false);
+    return QIcon();
+}
+
+QIcon GetIconFromTheme(const QStringList &namesList)
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
+    for(QStringList::ConstIterator it = namesList.begin(); it != namesList.end(); ++it)
+    {
+        if(QIcon::hasThemeIcon(*it))
+        {
+            QIcon icon = QIcon::fromTheme(*it, QIcon());
+            if(!icon.isNull())
+                return icon;
+        }
+    }
+#else
+    Q_UNUSED(namesList);
+#endif
+    return QIcon();
 }
 
 } // namespace
@@ -251,8 +289,252 @@ QIcon GetIcon(IconTypes type, bool darkBackground)
     ADD_ICON_CASE(ICON_PLAY)
     ADD_ICON_CASE(ICON_STOP)
     ADD_ICON_CASE(ICON_RESET)
+    ADD_NAMED_ICON_CASE(ICON_PROPERTIES, "icon_info")
 #undef ADD_ICON_CASE
 #undef ADD_NAMED_ICON_CASE
+    }
+    return QIcon();
+}
+
+/// @brief Get icon from current icon theme
+/// @param[in] type - Type of icon (see enum IconTypes)
+QIcon GetThemeIcon(IconTypes type)
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
+    switch(type)
+    {
+#define SKIP_ICON_CASE(ICON_TYPE) case ICON_TYPE: break;
+#define ADD_ICON_CASE(ICON_TYPE, ICON_NAME) \
+    case ICON_TYPE: \
+    { \
+        const QIcon::ThemeIcon iconName = QIcon::ThemeIcon::ICON_NAME; \
+        if(QIcon::hasThemeIcon(iconName)) \
+        { \
+            const QIcon icon = QIcon::fromTheme(iconName, QIcon()); \
+            if(!icon.isNull()) \
+                return icon; \
+        } \
+        break; \
+    }
+    SKIP_ICON_CASE(ICON_QT)
+    ADD_ICON_CASE(ICON_ABOUT, HelpAbout)
+    SKIP_ICON_CASE(ICON_HELP)
+    SKIP_ICON_CASE(ICON_AUTHORS)
+    SKIP_ICON_CASE(ICON_TEXT)
+    ADD_ICON_CASE(ICON_SAVE, DocumentSave)
+    ADD_ICON_CASE(ICON_SAVE_AS, DocumentSaveAs)
+    ADD_ICON_CASE(ICON_CLOSE, WindowClose)
+    ADD_ICON_CASE(ICON_EXIT, ApplicationExit)
+    ADD_ICON_CASE(ICON_PRINT, DocumentPrint)
+    ADD_ICON_CASE(ICON_NEW, DocumentNew)
+    ADD_ICON_CASE(ICON_NEW_WINDOW, WindowNew)
+    ADD_ICON_CASE(ICON_OPEN, DocumentOpen)
+    ADD_ICON_CASE(ICON_CUT, EditCut)
+    ADD_ICON_CASE(ICON_COPY, EditCopy)
+    ADD_ICON_CASE(ICON_PASTE, EditPaste)
+    ADD_ICON_CASE(ICON_DELETE, EditDelete)
+    ADD_ICON_CASE(ICON_ZOOM_IN, ZoomIn)
+    ADD_ICON_CASE(ICON_ZOOM_OUT, ZoomOut)
+    SKIP_ICON_CASE(ICON_ZOOM_IDENTITY)
+    ADD_ICON_CASE(ICON_ZOOM_EMPTY, ZoomFitBest)
+    SKIP_ICON_CASE(ICON_ZOOM_CUSTOM)
+    ADD_ICON_CASE(ICON_LEFT, GoPrevious)
+    ADD_ICON_CASE(ICON_RIGHT, GoNext)
+    ADD_ICON_CASE(ICON_ROTATE_CLOCKWISE, ObjectRotateRight)
+    ADD_ICON_CASE(ICON_ROTATE_COUNTERCLOCKWISE, ObjectRotateLeft)
+    SKIP_ICON_CASE(ICON_FLIP_HORIZONTAL)
+    SKIP_ICON_CASE(ICON_FLIP_VERTICAL)
+    SKIP_ICON_CASE(ICON_SETTINGS)
+    ADD_ICON_CASE(ICON_FULLSCREEN, ViewFullscreen)
+    ADD_ICON_CASE(ICON_PLAY, MediaPlaybackStart)
+    ADD_ICON_CASE(ICON_STOP, MediaPlaybackStop)
+    ADD_ICON_CASE(ICON_RESET, ViewRefresh)
+    ADD_ICON_CASE(ICON_PROPERTIES, DocumentProperties)
+#undef ADD_ICON_CASE
+#undef SKIP_ICON_CASE
+    }
+#endif
+
+    switch(type)
+    {
+    case ICON_QT:
+        return GetQtLogo();
+    case ICON_ABOUT:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("help-about")
+                                << QString::fromLatin1("gtk-about")
+                                << QString::fromLatin1("stock_about")
+                                << QString::fromLatin1("gnome-about-logo")
+                                );
+    case ICON_HELP:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("help-contents")
+                                << QString::fromLatin1("gtk-help")
+                                << QString::fromLatin1("stock_help")
+                                << QString::fromLatin1("help-browser")
+                                << QString::fromLatin1("stock_help-book")
+                                << QString::fromLatin1("gnome-help")
+                                << QString::fromLatin1("browser-help")
+                                << QString::fromLatin1("help")
+                                );
+    case ICON_AUTHORS:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("stock_people")
+                                << QString::fromLatin1("emblem-people")
+                                << QString::fromLatin1("authors")
+                                << QString::fromLatin1("text-x-authors")
+                                << QString::fromLatin1("gnome-mime-text-x-authors")
+                                );
+    case ICON_TEXT:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("text-x-generic")
+                                << QString::fromLatin1("gnome-mime-application-x-applix-word")
+                                << QString::fromLatin1("gnome-mime-application-msword")
+                                << QString::fromLatin1("application-msword")
+                                );
+    case ICON_SAVE:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("document-save")
+                                << QString::fromLatin1("gtk-save")
+                                << QString::fromLatin1("stock_save")
+                                );
+    case ICON_SAVE_AS:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("document-save-as")
+                                << QString::fromLatin1("gtk-save-as")
+                                << QString::fromLatin1("stock_save-as")
+                                );
+    case ICON_CLOSE:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("window-close")
+                                << QString::fromLatin1("gtk-close")
+                                << QString::fromLatin1("stock_close")
+                                );
+    case ICON_EXIT:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("application-exit")
+                                << QString::fromLatin1("gtk-quit")
+                                << QString::fromLatin1("stock_exit")
+                                << QString::fromLatin1("exit")
+                                );
+    case ICON_PRINT:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("document-print")
+                                << QString::fromLatin1("gtk-print")
+                                );
+    case ICON_NEW:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("document-new")
+                                << QString::fromLatin1("gtk-new")
+                                );
+    case ICON_NEW_WINDOW:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("window-new")
+                                );
+    case ICON_OPEN:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("document-open")
+                                << QString::fromLatin1("gtk-open")
+                                );
+    case ICON_CUT:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("edit-cut")
+                                << QString::fromLatin1("gtk-cut")
+                                );
+    case ICON_COPY:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("edit-copy")
+                                << QString::fromLatin1("gtk-copy")
+                                );
+    case ICON_PASTE:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("edit-paste")
+                                << QString::fromLatin1("gtk-paste")
+                                );
+    case ICON_DELETE:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("edit-delete")
+                                << QString::fromLatin1("gtk-delete")
+                                );
+    case ICON_ZOOM_IN:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("zoom-in")
+                                << QString::fromLatin1("gtk-zoom-in")
+                                );
+    case ICON_ZOOM_OUT:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("zoom-out")
+                                << QString::fromLatin1("gtk-zoom-out")
+                                );
+    case ICON_ZOOM_IDENTITY:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("zoom-original")
+                                << QString::fromLatin1("gtk-zoom-100")
+                                );
+    case ICON_ZOOM_EMPTY:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("zoom-fit-best")
+                                << QString::fromLatin1("gtk-zoom-fit")
+                                );
+    case ICON_ZOOM_CUSTOM:
+        break;
+    case ICON_LEFT:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("go-previous")
+                                << QString::fromLatin1("gtk-go-back")
+                                );
+    case ICON_RIGHT:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("go-next")
+                                << QString::fromLatin1("gtk-go-forward")
+                                );
+    case ICON_ROTATE_CLOCKWISE:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("object-rotate-right")
+                                );
+    case ICON_ROTATE_COUNTERCLOCKWISE:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("object-rotate-left")
+                                );
+    case ICON_FLIP_HORIZONTAL:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("object-flip-horizontal")
+                                );
+    case ICON_FLIP_VERTICAL:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("object-flip-vertical")
+                                );
+    case ICON_SETTINGS:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("edit-preferences")
+                                << QString::fromLatin1("gtk-preferences")
+                                << QString::fromLatin1("preferences-system")
+                                );
+    case ICON_FULLSCREEN:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("view-fullscreen")
+                                << QString::fromLatin1("gtk-fullscreen")
+                                );
+    case ICON_PLAY:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("media-playback-start")
+                                << QString::fromLatin1("gtk-media-play")
+                                );
+    case ICON_STOP:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("media-playback-stop")
+                                << QString::fromLatin1("gtk-media-stop")
+                                );
+    case ICON_RESET:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("view-refresh")
+                                << QString::fromLatin1("gtk-refresh")
+                                );
+    case ICON_PROPERTIES:
+        return GetIconFromTheme(QStringList()
+                                << QString::fromLatin1("document-properties")
+                                << QString::fromLatin1("gtk-properties")
+                                );
     }
     return QIcon();
 }

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -91,13 +91,18 @@ enum IconTypes
     ICON_FULLSCREEN,
     ICON_PLAY,
     ICON_STOP,
-    ICON_RESET
+    ICON_RESET,
+    ICON_PROPERTIES
 };
 
 /// @brief Функция для получения иконки
 /// @param[in] type - Тип иконки (см. enum IconTypes)
 /// @param[in] darkBackground - true, если иконка располагается на темном фоне
 QIcon GetIcon(IconTypes type, bool darkBackground = false);
+
+/// @brief Get icon from current icon theme
+/// @param[in] type - Type of icon (see enum IconTypes)
+QIcon GetThemeIcon(IconTypes type);
 
 } // namespace ThemeUtils
 

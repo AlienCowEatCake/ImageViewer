@@ -23,6 +23,7 @@
 #include <QStyleFactory>
 #include "GUI/MainController.h"
 #include "Utils/Application.h"
+#include "Utils/IconThemeManager.h"
 #include "Utils/LocalizationManager.h"
 #include "Utils/ThemeManager.h"
 #include "Utils/Workarounds.h"
@@ -89,6 +90,17 @@ int main(int argc, char *argv[])
                                 QString::fromLatin1("Themes"));
 #endif
     themeManager->applyCurrentTheme();
+
+    IconThemeManager *iconThemeManager = IconThemeManager::instance();
+    iconThemeManager->registerTheme(IconThemeManager::QTUTILS_THEME_ID,
+                                    QStringList(),
+                                    QString(),
+                                    true);
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
+    iconThemeManager->registerTheme(IconThemeManager::SYSTEM_THEME_ID,
+                                    QStringList(),
+                                    QString());
+#endif
 
     LocalizationManager::instance()->initializeResources(QStringList()
             << QString::fromLatin1(":/translations/imageviewer_%1")

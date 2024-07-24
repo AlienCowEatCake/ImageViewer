@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -49,6 +49,10 @@
 
 #include "../GUISettings.h"
 
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0)) && !defined(HAS_MAC_TOOLBAR)
+#define ENABLE_ICON_THEME_CHANGING
+#endif
+
 namespace {
 
 const QSize COLOR_BUTTON_SIZE   (40, 24);
@@ -82,6 +86,10 @@ struct SettingsDialog::UI
         , CONSTRUCT_OBJECT(languageComboBox, QComboBox, (interfaceTabFrame))
         , CONSTRUCT_OBJECT(themeLabel, QLabel, (interfaceTabFrame))
         , CONSTRUCT_OBJECT(themeComboBox, QComboBox, (interfaceTabFrame))
+#if defined (ENABLE_ICON_THEME_CHANGING)
+        , CONSTRUCT_OBJECT(iconThemeLabel, QLabel, (interfaceTabFrame))
+        , CONSTRUCT_OBJECT(iconThemeComboBox, QComboBox, (interfaceTabFrame))
+#endif
 #if !defined(HAS_MAC_TOOLBAR)
         , CONSTRUCT_OBJECT(toolBarPositionLabel, QLabel, (interfaceTabFrame))
         , CONSTRUCT_OBJECT(toolBarPositionComboBox, QComboBox, (interfaceTabFrame))
@@ -165,6 +173,9 @@ struct SettingsDialog::UI
 
         languageLabel->setText(qApp->translate("SettingsDialog", "<b>Language</b>"));
         themeLabel->setText(qApp->translate("SettingsDialog", "<b>Theme</b>"));
+#if defined (ENABLE_ICON_THEME_CHANGING)
+        iconThemeLabel->setText(qApp->translate("SettingsDialog", "<b>Icon Theme</b>"));
+#endif
 #if !defined(HAS_MAC_TOOLBAR)
         toolBarPositionLabel->setText(qApp->translate("SettingsDialog", "<b>Toolbar Position</b>"));
 #endif
@@ -195,6 +206,10 @@ struct SettingsDialog::UI
         interfaceTabLayout->addWidget(languageComboBox);
         interfaceTabLayout->addWidget(themeLabel);
         interfaceTabLayout->addWidget(themeComboBox);
+#if defined (ENABLE_ICON_THEME_CHANGING)
+        interfaceTabLayout->addWidget(iconThemeLabel);
+        interfaceTabLayout->addWidget(iconThemeComboBox);
+#endif
 #if !defined(HAS_MAC_TOOLBAR)
         interfaceTabLayout->addWidget(toolBarPositionLabel);
         interfaceTabLayout->addWidget(toolBarPositionComboBox);
@@ -253,6 +268,10 @@ struct SettingsDialog::UI
     QComboBox *languageComboBox;
     QLabel *themeLabel;
     QComboBox *themeComboBox;
+#if defined (ENABLE_ICON_THEME_CHANGING)
+    QLabel *iconThemeLabel;
+    QComboBox *iconThemeComboBox;
+#endif
 #if !defined(HAS_MAC_TOOLBAR)
     QLabel *toolBarPositionLabel;
     QComboBox *toolBarPositionComboBox;

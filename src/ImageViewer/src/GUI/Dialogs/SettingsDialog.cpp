@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -23,6 +23,7 @@
 #include <QColorDialog>
 #include <QVariant>
 
+#include "Utils/IconThemeManager.h"
 #include "Utils/LocalizationManager.h"
 #include "Utils/ThemeManager.h"
 
@@ -122,6 +123,12 @@ struct SettingsDialog::Impl
         if(!theme.isEmpty() && theme != ThemeManager::instance()->currentTheme())
             ThemeManager::instance()->setTheme(theme, true, settingsDialog);
 
+#if defined (ENABLE_ICON_THEME_CHANGING)
+        const QString iconTheme = ui->iconThemeComboBox->itemData(ui->iconThemeComboBox->currentIndex()).toString();
+        if(!iconTheme.isEmpty() && iconTheme != IconThemeManager::instance()->currentTheme())
+            IconThemeManager::instance()->setTheme(iconTheme);
+#endif
+
 #if defined(ENABLE_UPDATE_CHECKING)
         SettingsWrapper(GROUP_UPDATE_MANAGER).setValue(KEY_AUTO_CHECK_FOR_UPDATES, ui->autoCheckForUpdatesCheckbox->isChecked());
 #endif
@@ -203,6 +210,9 @@ SettingsDialog::SettingsDialog(GUISettings *settings, QWidget *parent)
 
     LocalizationManager::instance()->fillComboBox(m_ui->languageComboBox, false);
     ThemeManager::instance()->fillComboBox(m_ui->themeComboBox, false);
+#if defined (ENABLE_ICON_THEME_CHANGING)
+    IconThemeManager::instance()->fillComboBox(m_ui->iconThemeComboBox, false);
+#endif
     m_impl->fillToolBarPositions();
     m_impl->fillDecoders();
 }

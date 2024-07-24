@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -43,6 +43,7 @@ public:
 
 private Q_SLOTS:
     void onPolished();
+    void onIconThemeChanged();
 
 protected:
     bool event(QEvent *event) Q_DECL_OVERRIDE;
