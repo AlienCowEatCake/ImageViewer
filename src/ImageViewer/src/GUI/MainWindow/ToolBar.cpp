@@ -145,7 +145,7 @@ struct ToolBar::Impl : public ControlsContainerEmitter
         navigateNext->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_RIGHT                   , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         zoomOut->setIcon                (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_OUT                , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         zoomIn->setIcon                 (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_IN                 , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        zoomFitToWindow->setIcon        (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_EMPTY              , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        zoomFitToWindow->setIcon        (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_FIT                , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         zoomOriginalSize->setIcon       (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY           , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         zoomFullScreen->setIcon         (iconThemeManager->GetIcon(ThemeUtils::ICON_FULLSCREEN              , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         rotateCounterclockwise->setIcon (iconThemeManager->GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));

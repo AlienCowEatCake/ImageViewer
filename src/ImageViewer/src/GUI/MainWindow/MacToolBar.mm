@@ -584,7 +584,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, aboveHigh, navigatePrevious, ICON_LEFT, navigateNext, ICON_RIGHT);
     MAKE_BUTTONED_ITEM(startSlideShow, std, ICON_PLAY);
     MAKE_SEGMENTED_PAIR_ITEM(zoomGroup, high, zoomOut, ICON_ZOOM_OUT, zoomIn, ICON_ZOOM_IN);
-    MAKE_BUTTONED_ITEM(zoomFitToWindow, belowHigh, ICON_ZOOM_EMPTY);
+    MAKE_BUTTONED_ITEM(zoomFitToWindow, belowHigh, ICON_ZOOM_FIT);
     MAKE_BUTTONED_ITEM(zoomOriginalSize, belowHigh, ICON_ZOOM_IDENTITY);
     MAKE_BUTTONED_ITEM(zoomFullScreen, aboveLow, ICON_FULLSCREEN);
     MAKE_SEGMENTED_PAIR_ITEM(rotateGroup, high, rotateCounterclockwise, ICON_ROTATE_COUNTERCLOCKWISE, rotateClockwise, ICON_ROTATE_CLOCKWISE);

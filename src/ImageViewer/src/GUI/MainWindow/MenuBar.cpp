@@ -354,7 +354,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionZoomIn->setIcon                   (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_IN                 , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionZoomReset->setIcon                (iconThemeManager->GetIcon(ThemeUtils::ICON_RESET                   , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionZoomCustom->setIcon               (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_CUSTOM             , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionZoomFitToWindow->setIcon          (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_EMPTY              , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
+        actionZoomFitToWindow->setIcon          (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_FIT                , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionZoomOriginalSize->setIcon         (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY           , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionZoomFullScreen->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_FULLSCREEN              , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionAbout->setIcon                    (iconThemeManager->GetIcon(ThemeUtils::ICON_ABOUT                   , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));

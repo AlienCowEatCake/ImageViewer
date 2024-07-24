@@ -316,7 +316,7 @@ API_AVAILABLE(macos(10.12.2))
     MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, navigatePrevious, ICON_LEFT, NSImageNameTouchBarGoBackTemplate, navigateNext, ICON_RIGHT, NSImageNameTouchBarGoForwardTemplate);
     MAKE_BUTTONED_ITEM(startSlideShow, ICON_PLAY, NSImageNameTouchBarSlideshowTemplate);
     MAKE_SEGMENTED_PAIR_ITEM(zoomGroup, zoomOut, ICON_ZOOM_OUT, nil, zoomIn, ICON_ZOOM_IN, nil);
-    MAKE_BUTTONED_ITEM(zoomFitToWindow, ICON_ZOOM_EMPTY, nil);
+    MAKE_BUTTONED_ITEM(zoomFitToWindow, ICON_ZOOM_FIT, nil);
     MAKE_BUTTONED_ITEM(zoomOriginalSize, ICON_ZOOM_IDENTITY, nil);
     MAKE_BUTTONED_ITEM(zoomFullScreen, ICON_FULLSCREEN, NSImageNameTouchBarEnterFullScreenTemplate);
     MAKE_SEGMENTED_PAIR_ITEM(rotateGroup, rotateCounterclockwise, ICON_ROTATE_COUNTERCLOCKWISE, NSImageNameTouchBarRotateLeftTemplate, rotateClockwise, ICON_ROTATE_CLOCKWISE, NSImageNameTouchBarRotateRightTemplate);
