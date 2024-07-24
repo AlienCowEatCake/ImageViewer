@@ -73,6 +73,7 @@ struct SettingsDialog::UI
         , CONSTRUCT_OBJECT(moveToTrashCheckbox, QCheckBox, (generalTabFrame))
         , CONSTRUCT_OBJECT(smoothTransformationCheckbox, QCheckBox, (generalTabFrame))
         , CONSTRUCT_OBJECT(upscaleOnFitToWindowCheckbox, QCheckBox, (generalTabFrame))
+        , CONSTRUCT_OBJECT(rememberEffectsDuringSessionCheckbox, QCheckBox, (generalTabFrame))
         , CONSTRUCT_OBJECT(slideShowIntervalFrame, QFrame, (generalTabFrame))
         , CONSTRUCT_OBJECT(slideShowIntervalLabel, QLabel, (slideShowIntervalFrame))
         , CONSTRUCT_OBJECT(slideShowSpinBox, QSpinBox, (slideShowIntervalFrame))
@@ -127,6 +128,9 @@ struct SettingsDialog::UI
         upscaleOnFitToWindowCheckbox->setText(qApp->translate("SettingsDialog", "Allow fit to window for small images"));
         upscaleOnFitToWindowCheckbox->setChecked(settings->upscaleOnFitToWindow());
 
+        rememberEffectsDuringSessionCheckbox->setText(qApp->translate("SettingsDialog", "Remember flip and rotate during session"));
+        rememberEffectsDuringSessionCheckbox->setChecked(settings->rememberEffectsDuringSession());
+
         slideShowIntervalLabel->setText(qApp->translate("SettingsDialog", "Slideshow interval"));
         slideShowSecLabel->setText(qApp->translate("SettingsDialog", "sec"));
         slideShowSpinBox->setValue(settings->slideShowInterval());
@@ -167,6 +171,7 @@ struct SettingsDialog::UI
         generalTabLayout->addWidget(moveToTrashCheckbox);
         generalTabLayout->addWidget(smoothTransformationCheckbox);
         generalTabLayout->addWidget(upscaleOnFitToWindowCheckbox);
+        generalTabLayout->addWidget(rememberEffectsDuringSessionCheckbox);
         generalTabLayout->addWidget(slideShowIntervalFrame);
         generalTabLayout->addWidget(wheelModeFrame);
         generalTabLayout->addStretch();
@@ -255,6 +260,7 @@ struct SettingsDialog::UI
     QCheckBox *moveToTrashCheckbox;
     QCheckBox *smoothTransformationCheckbox;
     QCheckBox *upscaleOnFitToWindowCheckbox;
+    QCheckBox *rememberEffectsDuringSessionCheckbox;
     QFrame *slideShowIntervalFrame;
     QLabel *slideShowIntervalLabel;
     QSpinBox *slideShowSpinBox;

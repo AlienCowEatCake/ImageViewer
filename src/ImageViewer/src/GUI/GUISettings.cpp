@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -108,6 +108,7 @@ const QString FULLSCREEN_BACKGROUND_COLOR_KEY   = QString::fromLatin1("FullScree
 const QString LAST_OPENED_PATH_KEY              = QString::fromLatin1("LastOpenedPath");
 const QString SMOOTH_TRANSFORMATION_KEY         = QString::fromLatin1("SmoothTransformation");
 const QString UPSCALE_ON_FIT_TO_WINDOW_KEY      = QString::fromLatin1("UpscaleOnFitToWindow");
+const QString REMEMBER_EFFECTS_DURING_SESSION   = QString::fromLatin1("RememberEffectsDuringSession");
 const QString MAIN_WINDOW_GEOMETRY_KEY          = QString::fromLatin1("MainWindowGeometry");
 const QString SLIDESHOW_INTERVAL_KEY            = QString::fromLatin1("SlideShowInterval");
 const QString MENUBAR_VISIBLE_KEY               = QString::fromLatin1("MenuBarVisible");
@@ -331,6 +332,26 @@ void GUISettings::setUpscaleOnFitToWindow(bool enabled)
     m_impl->settings.setValue(UPSCALE_ON_FIT_TO_WINDOW_KEY, enabled);
     if(enabled != oldValue)
         Q_EMIT upscaleOnFitToWindowChanged(enabled);
+}
+
+bool GUISettings::rememberEffectsDuringSession() const
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::Bool);
+#else
+    const QVariant::Type type = QVariant::Bool;
+#endif
+    const bool defaultValue = true;
+    QVariant value = m_impl->settings.value(REMEMBER_EFFECTS_DURING_SESSION, defaultValue);
+    return value.isValid() && value.canConvert(type) ? value.toBool() : defaultValue;
+}
+
+void GUISettings::setRememberEffectsDuringSession(bool enabled)
+{
+    const bool oldValue = rememberEffectsDuringSession();
+    m_impl->settings.setValue(REMEMBER_EFFECTS_DURING_SESSION, enabled);
+    if(enabled != oldValue)
+        Q_EMIT rememberEffectsDuringSessionChanged(enabled);
 }
 
 QByteArray GUISettings::mainWindowGeometry() const

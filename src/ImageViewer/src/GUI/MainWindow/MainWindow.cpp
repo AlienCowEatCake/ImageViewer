@@ -188,6 +188,9 @@ struct MainWindow::Impl
 
     void loadImageData()
     {
+        if(!settings->rememberEffectsDuringSession())
+            effectsStorage.clearSavedEffects();
+
         if(uiState.imageData && !uiState.imageData->isEmpty())
         {
             ui.imageViewerWidget->setZoomMode(settings->zoomMode());

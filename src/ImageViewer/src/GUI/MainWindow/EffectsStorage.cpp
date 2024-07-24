@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -65,6 +65,16 @@ void EffectsStorage::applySavedEffects(ImageViewerWidget *imageViewerWidget)
         imageViewerWidget->flipVertical();
 }
 
+void EffectsStorage::clearSavedEffects(const QString &filePath)
+{
+    m_storage.remove(filePath);
+}
+
+void EffectsStorage::clearSavedEffects()
+{
+    m_storage.clear();
+}
+
 void EffectsStorage::rotateClockwise()
 {
     rotate(+90);
@@ -84,7 +94,7 @@ void EffectsStorage::flipHorizontal()
     {
         effectsData.value().flipHorizontal = !effectsData.value().flipHorizontal;
         if(effectsData.value().isDefault())
-            m_storage.remove(m_currentFilePath);
+            clearSavedEffects(m_currentFilePath);
         return;
     }
     EffectsData newData;
@@ -101,7 +111,7 @@ void EffectsStorage::flipVertical()
     {
         effectsData.value().flipVertical = !effectsData.value().flipVertical;
         if(effectsData.value().isDefault())
-            m_storage.remove(m_currentFilePath);
+            clearSavedEffects(m_currentFilePath);
         return;
     }
     EffectsData newData;
@@ -123,7 +133,7 @@ void EffectsStorage::rotate(int angle)
             actualAngle += 360;
         effectsData.value().rotationAngle = actualAngle;
         if(effectsData.value().isDefault())
-            m_storage.remove(m_currentFilePath);
+            clearSavedEffects(m_currentFilePath);
         return;
     }
     EffectsData newData;

@@ -521,17 +521,17 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="319"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="322"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="452"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="455"/>
         <source>Zoom</source>
         <translation>缩放</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="453"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="456"/>
         <source>Zoom Factor (%):</source>
         <translation>缩放因数 (%):</translation>
     </message>
@@ -1156,119 +1156,124 @@
         <translation>右边</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="160"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="161"/>
         <source>Select Background Color</source>
         <translation>背景色</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="109"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="110"/>
         <source>General</source>
         <translation>常规</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="110"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="111"/>
         <source>Interface</source>
         <translation>界面</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="111"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="112"/>
         <source>Decoders</source>
         <translation>编码</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="114"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="115"/>
         <source>Automatically check for updates</source>
         <translation>自动升级</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="118"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="119"/>
         <source>Ask before deleting images</source>
         <translation>删除文件前需要确认</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="121"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="122"/>
         <source>Move deleted images to trash</source>
         <translation>删除文件到回收站</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="124"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="125"/>
         <source>Use smooth image rendering</source>
         <translation>平滑图像渲染</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="127"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="128"/>
         <source>Allow fit to window for small images</source>
         <translation>小图像贴合窗口</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="130"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="131"/>
+        <source>Remember flip and rotate during session</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="134"/>
         <source>Slideshow interval</source>
         <translation>幻灯片播放间隔</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="131"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
         <source>sec</source>
         <translation>秒</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="174"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="179"/>
         <source>&lt;b&gt;Language&lt;/b&gt;</source>
         <translation>&lt;b&gt;语言&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="175"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="180"/>
         <source>&lt;b&gt;Theme&lt;/b&gt;</source>
         <translation>&lt;b&gt;主题&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="177"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="182"/>
         <source>&lt;b&gt;Icon Theme&lt;/b&gt;</source>
         <translation type="unfinished">&lt;b&gt;图标主题&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="180"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="185"/>
         <source>&lt;b&gt;Toolbar Position&lt;/b&gt;</source>
         <translation>&lt;b&gt;工具栏位置&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="183"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="188"/>
         <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
         <translation>&lt;b&gt;背景颜色&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="184"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="189"/>
         <source>Normal:</source>
         <translation>正常:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="185"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="190"/>
         <source>Fullscreen:</source>
         <translation>全屏:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="139"/>
         <source>&lt;b&gt;Mouse wheel action&lt;/b&gt;</source>
         <translation>&lt;b&gt;鼠标滚轮操作&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="136"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="140"/>
         <source>Scroll</source>
         <comment>WheelMode</comment>
         <translation>滚轴</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="137"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="141"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
         <translation>缩放</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="220"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="225"/>
         <source>&lt;b&gt;Enabled decoders:&lt;/b&gt;</source>
         <translation>&lt;b&gt;已启用的解码器:&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="198"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="199"/>
         <source>Preferences</source>
         <translation>首选项</translation>
     </message>

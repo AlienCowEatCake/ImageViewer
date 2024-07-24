@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -61,6 +61,8 @@ public:
 public Q_SLOTS:
     void updateUIState(const UIState &state, const UIChangeFlags &changeFlags);
     void applySavedEffects(ImageViewerWidget *imageViewerWidget);
+    void clearSavedEffects(const QString &filePath);
+    void clearSavedEffects();
 
     void rotateClockwise();
     void rotateCounterclockwise();

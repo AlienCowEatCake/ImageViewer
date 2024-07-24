@@ -94,6 +94,7 @@ struct SettingsDialog::Impl
         settings->setMoveToTrash(ui->moveToTrashCheckbox->isChecked());
         settings->setSmoothTransformation(ui->smoothTransformationCheckbox->isChecked());
         settings->setUpscaleOnFitToWindow(ui->upscaleOnFitToWindowCheckbox->isChecked());
+        settings->setRememberEffectsDuringSession(ui->rememberEffectsDuringSessionCheckbox->isChecked());
         settings->setNormalBackgroundColor(normalBackground);
         settings->setFullScreenBackgroundColor(fullScreenBackground);
         settings->setSlideShowInterval(ui->slideShowSpinBox->value());

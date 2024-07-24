@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -56,6 +56,7 @@ Q_SIGNALS:
     void lastOpenedPathChanged(const QString &path);
     void smoothTransformationChanged(bool enabled);
     void upscaleOnFitToWindowChanged(bool enabled);
+    void rememberEffectsDuringSessionChanged(bool enabled);
     void mainWindowGeometryChanged(const QByteArray &state);
     void slideShowIntervalChanged(int seconds);
     void menuBarVisibleChanged(bool visible);
@@ -97,6 +98,9 @@ public:
 
     bool upscaleOnFitToWindow() const;
     void setUpscaleOnFitToWindow(bool enabled);
+
+    bool rememberEffectsDuringSession() const;
+    void setRememberEffectsDuringSession(bool enabled);
 
     QByteArray mainWindowGeometry() const;
     void setMainWindowGeometry(const QByteArray &geometry);
