@@ -483,6 +483,11 @@ RESOURCES += \
     resources/style/style.qrc
 
 QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9
+!lessThan(QT_MAJOR_VERSION, 5) {
+    greaterThan(QT_MAJOR_VERSION, 5) | greaterThan(QT_MINOR_VERSION, 12) {
+        QMAKE_RESOURCE_FLAGS += -compress-algo zlib
+    }
+}
 
 # qmake CONFIG+=use_static_qjpeg
 use_static_qjpeg {
