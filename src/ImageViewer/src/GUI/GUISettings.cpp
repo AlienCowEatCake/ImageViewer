@@ -87,6 +87,8 @@ GUISettings::ToolBarPosition toolBarPositionFromVariant(const QVariant &variant,
         return GUISettings::TOOLBAR_POSITION_LEFT;
     case GUISettings::TOOLBAR_POSITION_RIGHT:
         return GUISettings::TOOLBAR_POSITION_RIGHT;
+    case GUISettings::TOOLBAR_POSITION_MOVABLE:
+        return GUISettings::TOOLBAR_POSITION_MOVABLE;
     default:
         break;
     }
@@ -110,6 +112,7 @@ const QString SMOOTH_TRANSFORMATION_KEY         = QString::fromLatin1("SmoothTra
 const QString UPSCALE_ON_FIT_TO_WINDOW_KEY      = QString::fromLatin1("UpscaleOnFitToWindow");
 const QString REMEMBER_EFFECTS_DURING_SESSION   = QString::fromLatin1("RememberEffectsDuringSession");
 const QString MAIN_WINDOW_GEOMETRY_KEY          = QString::fromLatin1("MainWindowGeometry");
+const QString MAIN_WINDOW_STATE_KEY             = QString::fromLatin1("MainWindowState");
 const QString SLIDESHOW_INTERVAL_KEY            = QString::fromLatin1("SlideShowInterval");
 const QString MENUBAR_VISIBLE_KEY               = QString::fromLatin1("MenuBarVisible");
 const QString TOOLBAR_VISIBLE_KEY               = QString::fromLatin1("ToolBarVisible");
@@ -371,6 +374,25 @@ void GUISettings::setMainWindowGeometry(const QByteArray &geometry)
     m_impl->settings.setValue(MAIN_WINDOW_GEOMETRY_KEY, geometry);
     if(geometry != oldValue)
         Q_EMIT mainWindowGeometryChanged(geometry);
+}
+
+QByteArray GUISettings::mainWindowState() const
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::QByteArray);
+#else
+    const QVariant::Type type = QVariant::ByteArray;
+#endif
+    QVariant value = m_impl->settings.value(MAIN_WINDOW_STATE_KEY);
+    return value.isValid() && value.canConvert(type) ? value.toByteArray() : QByteArray();
+}
+
+void GUISettings::setMainWindowState(const QByteArray &state)
+{
+    const QByteArray oldValue = mainWindowGeometry();
+    m_impl->settings.setValue(MAIN_WINDOW_STATE_KEY, state);
+    if(state != oldValue)
+        Q_EMIT mainWindowGeometryChanged(state);
 }
 
 int GUISettings::slideShowInterval() const

@@ -135,24 +135,28 @@
     <name>MacToolBar</name>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="880"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="96"/>
         <source>Previous</source>
         <comment>Long</comment>
         <translation>Previous</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="881"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="97"/>
         <source>Previous</source>
         <comment>Short</comment>
         <translation>Previous</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="882"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="98"/>
         <source>Next</source>
         <comment>Long</comment>
         <translation>Next</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="883"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="99"/>
         <source>Next</source>
         <comment>Short</comment>
         <translation>Next</translation>
@@ -165,30 +169,35 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="888"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="100"/>
         <source>Slideshow</source>
         <comment>Short</comment>
         <translation>Slideshow</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="892"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="101"/>
         <source>Zoom Out</source>
         <comment>Long</comment>
         <translation>Zoom Out</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="893"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="102"/>
         <source>Zoom Out</source>
         <comment>Short</comment>
         <translation>Zoom Out</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="894"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="103"/>
         <source>Zoom In</source>
         <comment>Long</comment>
         <translation>Zoom In</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="895"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="104"/>
         <source>Zoom In</source>
         <comment>Short</comment>
         <translation>Zoom In</translation>
@@ -201,78 +210,91 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="900"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="105"/>
         <source>Fit Image To Window Size</source>
         <comment>Long</comment>
         <translation>Fit Image To Window Size</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="901"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="106"/>
         <source>Fit Image To Window Size</source>
         <comment>Short</comment>
         <translation>Fit</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="906"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="107"/>
         <source>Original Size</source>
         <comment>Long</comment>
         <translation>Original Size</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="907"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="108"/>
         <source>Original Size</source>
         <comment>Short</comment>
         <translation>1:1</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="912"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="109"/>
         <source>Full Screen</source>
         <comment>Long</comment>
         <translation>Full Screen</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="913"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="110"/>
         <source>Full Screen</source>
         <comment>Short</comment>
         <translation>Full Screen</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="918"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="111"/>
         <source>Rotate Counterclockwise</source>
         <comment>Long</comment>
         <translation>Rotate Counterclockwise</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="919"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="112"/>
         <source>Rotate Counterclockwise</source>
         <comment>Short</comment>
         <translation>Rotate Counterclockwise</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="920"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="113"/>
         <source>Rotate Clockwise</source>
         <comment>Long</comment>
         <translation>Rotate Clockwise</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="921"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="114"/>
         <source>Rotate Clockwise</source>
         <comment>Short</comment>
         <translation>Rotate Clockwise</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="926"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="115"/>
         <source>Flip Horizontal</source>
         <comment>Long</comment>
         <translation>Flip Horizontal</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="927"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="116"/>
         <source>Flip Horizontal</source>
         <comment>Short</comment>
         <translation>Flip Horizontal</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="928"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="117"/>
         <source>Flip Vertical</source>
         <comment>Long</comment>
         <translation>Flip Vertical</translation>
@@ -285,6 +307,7 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="929"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="118"/>
         <source>Flip Vertical</source>
         <comment>Short</comment>
         <translation>Flip Vertical</translation>
@@ -297,36 +320,42 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="934"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="119"/>
         <source>Open File</source>
         <comment>Long</comment>
         <translation>Open File</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="935"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="120"/>
         <source>Open File</source>
         <comment>Short</comment>
         <translation>Open</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="939"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="121"/>
         <source>Save File As</source>
         <comment>Long</comment>
         <translation>Save File As</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="940"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="122"/>
         <source>Save File As</source>
         <comment>Short</comment>
         <translation>Save</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="944"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="123"/>
         <source>Delete File</source>
         <comment>Long</comment>
         <translation>Delete File</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="945"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="124"/>
         <source>Delete File</source>
         <comment>Short</comment>
         <translation>Delete</translation>
@@ -345,36 +374,42 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="954"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="125"/>
         <source>Preferences</source>
         <comment>Long</comment>
         <translation>Preferences</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="955"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="126"/>
         <source>Preferences</source>
         <comment>Short</comment>
         <translation>Preferences</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="959"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="127"/>
         <source>Exit</source>
         <comment>Long</comment>
         <translation>Quit</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="960"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="128"/>
         <source>Exit</source>
         <comment>Short</comment>
         <translation>Quit</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="978"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="160"/>
         <source>Start Slideshow</source>
         <comment>Long</comment>
         <translation>Start Slideshow</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="983"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="165"/>
         <source>Stop Slideshow</source>
         <comment>Long</comment>
         <translation>Stop Slideshow</translation>
@@ -521,17 +556,17 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="322"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="327"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="455"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="460"/>
         <source>Zoom</source>
         <translation>Zoom</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="456"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="461"/>
         <source>Zoom Factor (%):</source>
         <translation>Zoom Factor (%):</translation>
     </message>
@@ -539,162 +574,162 @@
 <context>
     <name>MenuBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="295"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="296"/>
         <source>&amp;File</source>
         <translation>&amp;File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="296"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="297"/>
         <source>&amp;Edit</source>
         <translation>&amp;Edit</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="297"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
         <source>&amp;View</source>
         <translation>&amp;View</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
         <source>&amp;Help</source>
         <translation>&amp;Help</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
         <source>&amp;Reopen With</source>
         <translation>&amp;Reopen With</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="301"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="302"/>
         <source>&amp;Open File</source>
         <translation>&amp;Open File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="302"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="303"/>
         <source>Open &amp;Folder</source>
         <translation>Open &amp;Folder</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="303"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
         <source>&amp;Save As</source>
         <translation>&amp;Save As</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
         <source>New &amp;Window</source>
         <translation>New &amp;Window</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
         <source>Pre&amp;vious</source>
         <translation>Pre&amp;vious</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
         <source>&amp;Next</source>
         <translation>&amp;Next</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
         <source>Image &amp;Information</source>
         <translation>Image &amp;Information</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
         <source>&amp;Print</source>
         <translation>&amp;Print</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
         <source>Pr&amp;eferences</source>
         <translation>Pr&amp;eferences</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
         <source>&amp;Quit</source>
         <translation>&amp;Quit</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
         <source>Rotate &amp;Counterclockwise</source>
         <translation>Rotate &amp;Counterclockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
         <source>&amp;Rotate Clockwise</source>
         <translation>&amp;Rotate Clockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
         <source>Flip &amp;Horizontal</source>
         <translation>Flip &amp;Horizontal</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
         <source>Flip &amp;Vertical</source>
         <translation>Flip &amp;Vertical</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
         <source>&amp;Delete File</source>
         <translation>&amp;Delete File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
         <source>Zoom &amp;Out</source>
         <translation>Zoom &amp;Out</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="318"/>
         <source>Zoom &amp;In</source>
         <translation>Zoom &amp;In</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="318"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
         <source>&amp;Reset Zoom</source>
         <translation>&amp;Reset Zoom</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
         <source>&amp;Zoom...</source>
         <translation>&amp;Zoom…</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
         <source>Fit Image To &amp;Window Size</source>
         <translation>Fit Image To &amp;Window Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
         <source>Original &amp;Size</source>
         <translation>Original &amp;Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
         <source>&amp;Full Screen</source>
         <translation>&amp;Full Screen</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
         <source>Show &amp;Menu Bar</source>
         <translation>Show &amp;Menu Bar</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
         <source>Show &amp;Toolbar</source>
         <translation>Show &amp;Toolbar</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
         <source>&amp;About</source>
         <translation>&amp;About</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
         <source>About &amp;Qt</source>
         <translation>About &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="328"/>
         <source>Check for &amp;Updates</source>
         <translation>Check for &amp;Updates</translation>
     </message>
@@ -1156,7 +1191,13 @@
         <translation>Right</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="161"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="87"/>
+        <source>Movable</source>
+        <comment>ToolBarPosition</comment>
+        <translation>Movable</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="162"/>
         <source>Select Background Color</source>
         <translation>Select Background Color</translation>
     </message>
@@ -1273,7 +1314,7 @@
         <translation>&lt;b&gt;Enabled decoders:&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="199"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="200"/>
         <source>Preferences</source>
         <translation>Preferences</translation>
     </message>
@@ -1304,82 +1345,82 @@
 <context>
     <name>ToolBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="120"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="121"/>
         <source>Previous</source>
         <translation>Previous</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="121"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="122"/>
         <source>Next</source>
         <translation>Next</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="122"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="123"/>
         <source>Zoom Out</source>
         <translation>Zoom Out</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="123"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="124"/>
         <source>Zoom In</source>
         <translation>Zoom In</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="124"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="125"/>
         <source>Fit Image To Window Size</source>
         <translation>Fit Image To Window Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="125"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="126"/>
         <source>Original Size</source>
         <translation>Original Size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="126"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="127"/>
         <source>Full Screen</source>
         <translation>Full Screen</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="127"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="128"/>
         <source>Rotate Counterclockwise</source>
         <translation>Rotate Counterclockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="128"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="129"/>
         <source>Rotate Clockwise</source>
         <translation>Rotate Clockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="129"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="130"/>
         <source>Flip Horizontal</source>
         <translation>Flip Horizontal</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="130"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="131"/>
         <source>Flip Vertical</source>
         <translation>Flip Vertical</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="131"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="132"/>
         <source>Open File</source>
         <translation>Open File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="132"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="133"/>
         <source>Save File As</source>
         <translation>Save File As</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="133"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="134"/>
         <source>Delete File</source>
         <translation>Delete File</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="134"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="135"/>
         <source>Preferences</source>
         <translation>Preferences</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="135"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="136"/>
         <source>Exit</source>
         <translation>Quit</translation>
     </message>

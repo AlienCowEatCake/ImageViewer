@@ -80,10 +80,11 @@ struct SettingsDialog::Impl
         QComboBox *comboBox = ui->toolBarPositionComboBox;
         comboBox->clear();
         comboBox->setEditable(false);
-        comboBox->addItem(qApp->translate("SettingsDialog", "Bottom", "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_BOTTOM);
-        comboBox->addItem(qApp->translate("SettingsDialog", "Top",    "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_TOP);
-        comboBox->addItem(qApp->translate("SettingsDialog", "Left",   "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_LEFT);
-        comboBox->addItem(qApp->translate("SettingsDialog", "Right",  "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_RIGHT);
+        comboBox->addItem(qApp->translate("SettingsDialog", "Bottom",  "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_BOTTOM);
+        comboBox->addItem(qApp->translate("SettingsDialog", "Top",     "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_TOP);
+        comboBox->addItem(qApp->translate("SettingsDialog", "Left",    "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_LEFT);
+        comboBox->addItem(qApp->translate("SettingsDialog", "Right",   "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_RIGHT);
+        comboBox->addItem(qApp->translate("SettingsDialog", "Movable", "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_MOVABLE);
         comboBox->setCurrentIndex(comboBox->findData(settings->toolBarPosition()));
 #endif
     }

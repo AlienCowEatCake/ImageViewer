@@ -428,9 +428,11 @@ HEADERS += \
         src/GUI/MainWindow/MacToolBar.h
 } else {
     SOURCES += \
-        src/GUI/MainWindow/ToolBar.cpp
+        src/GUI/MainWindow/ToolBar.cpp \
+        src/GUI/MainWindow/QtToolBar.cpp
     HEADERS += \
-        src/GUI/MainWindow/ToolBar.h
+        src/GUI/MainWindow/ToolBar.h \
+        src/GUI/MainWindow/QtToolBar.h
 }
 
 !disable_mactouchbar {

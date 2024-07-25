@@ -293,7 +293,12 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     ui.toolbar->setVisible(settings->toolBarVisible());
     geometryHelper.unblock();
     geometryHelper.restoreGeometry();
+#if !defined (HAS_MAC_TOOLBAR)
+    restoreState(settings->mainWindowState(), WINDOW_STATE_VERSION);
+#endif
     updateUIState(m_impl->uiState, UICF_All);
+
+    updateToolBarPosition();
 }
 
 MainWindow::~MainWindow()
@@ -529,6 +534,9 @@ void MainWindow::saveGeometrySettings()
     if(!m_impl->isFullScreenMode)
         m_impl->geometryHelper.saveGeometry();
     m_impl->settings->setMainWindowGeometry(m_impl->geometryHelper.serialize());
+#if !defined (HAS_MAC_TOOLBAR)
+    m_impl->settings->setMainWindowState(saveState(WINDOW_STATE_VERSION));
+#endif
 }
 
 void MainWindow::updateSlideShowInterval()
@@ -555,25 +563,36 @@ void MainWindow::updateToolBarPosition()
     switch(m_impl->settings->toolBarPosition())
     {
     case GUISettings::TOOLBAR_POSITION_BOTTOM:
+        m_impl->ui.toolbar->setVisible(true);
+        m_impl->ui.qtToolbar->setVisible(false);
         centralLayout->setDirection(QBoxLayout::TopToBottom);
         toolBarLayout->setDirection(QBoxLayout::LeftToRight);
         m_impl->ui.toolbar->setProperty("vertical", false);
         break;
     case GUISettings::TOOLBAR_POSITION_TOP:
+        m_impl->ui.toolbar->setVisible(true);
+        m_impl->ui.qtToolbar->setVisible(false);
         centralLayout->setDirection(QBoxLayout::BottomToTop);
         toolBarLayout->setDirection(QBoxLayout::LeftToRight);
         m_impl->ui.toolbar->setProperty("vertical", false);
         break;
     case GUISettings::TOOLBAR_POSITION_LEFT:
+        m_impl->ui.toolbar->setVisible(true);
+        m_impl->ui.qtToolbar->setVisible(false);
         centralLayout->setDirection(QBoxLayout::RightToLeft);
         toolBarLayout->setDirection(QBoxLayout::TopToBottom);
         m_impl->ui.toolbar->setProperty("vertical", true);
         break;
     case GUISettings::TOOLBAR_POSITION_RIGHT:
+        m_impl->ui.toolbar->setVisible(true);
+        m_impl->ui.qtToolbar->setVisible(false);
         centralLayout->setDirection(QBoxLayout::LeftToRight);
         toolBarLayout->setDirection(QBoxLayout::TopToBottom);
         m_impl->ui.toolbar->setProperty("vertical", true);
         break;
+    case GUISettings::TOOLBAR_POSITION_MOVABLE:
+        m_impl->ui.toolbar->setVisible(false);
+        m_impl->ui.qtToolbar->setVisible(true);
     default:
         break;
     }
@@ -697,5 +716,4 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 {
     m_impl->ui.menubar->contextMenu()->exec(event->globalPos());
-    QMainWindow::contextMenuEvent(event);
 }

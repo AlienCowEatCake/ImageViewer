@@ -1086,6 +1086,61 @@ QSlider::handle:vertical:disabled
     border: 1px solid #353535;
 }
 
+/************
+ * QToolBar *
+ ************/
+
+QToolBar
+{
+    border-color: none;
+    qproperty-iconSize: 16px 16px;
+}
+
+QToolBar QToolButton
+{
+    min-width: 26px;
+    max-width: 26px;
+    min-height: 26px;
+    max-height: 26px;
+    margin: 2px;
+}
+
+QToolBar::separator
+{
+    background-color: #1a1c1f;
+    border: none;
+    margin: 2px;
+}
+
+QToolBar::separator:horizontal
+{
+    width: 1px;
+}
+
+QToolBar::separator:vertical
+{
+    height: 1px;
+}
+
+QToolBar::handle
+{
+    border-radius: 2px;
+}
+
+QToolBar::handle:horizontal
+{
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #1a1c1f, stop: 0.2 #1a1c1f, stop: 0.25 transparent, stop: 0.4 transparent, stop: 0.41 #1a1c1f, stop: 0.59 #1a1c1f, stop: 0.6 transparent, stop: 0.75 transparent, stop: 0.8 #1a1c1f, stop: 1 #1a1c1f);
+    margin: 7px 2px;
+    width: 4px;
+}
+
+QToolBar::handle:vertical
+{
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #1a1c1f, stop: 0.2 #1a1c1f, stop: 0.25 transparent, stop: 0.4 transparent, stop: 0.41 #1a1c1f, stop: 0.59 #1a1c1f, stop: 0.6 transparent, stop: 0.75 transparent, stop: 0.8 #1a1c1f, stop: 1 #1a1c1f);
+    margin: 2px 7px;
+    height: 4px;
+}
+
 /**********
  * Custom *
  **********/

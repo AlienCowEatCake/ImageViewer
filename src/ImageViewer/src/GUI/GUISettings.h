@@ -42,6 +42,7 @@ public:
         TOOLBAR_POSITION_TOP     = 2,
         TOOLBAR_POSITION_LEFT    = 3,
         TOOLBAR_POSITION_RIGHT   = 4,
+        TOOLBAR_POSITION_MOVABLE = 5,
         TOOLBAR_POSITION_DEFAULT = TOOLBAR_POSITION_BOTTOM
     };
 
@@ -57,7 +58,8 @@ Q_SIGNALS:
     void smoothTransformationChanged(bool enabled);
     void upscaleOnFitToWindowChanged(bool enabled);
     void rememberEffectsDuringSessionChanged(bool enabled);
-    void mainWindowGeometryChanged(const QByteArray &state);
+    void mainWindowGeometryChanged(const QByteArray &geometry);
+    void mainWindowStateChanged(const QByteArray &state);
     void slideShowIntervalChanged(int seconds);
     void menuBarVisibleChanged(bool visible);
     void toolBarVisibleChanged(bool visible);
@@ -104,6 +106,9 @@ public:
 
     QByteArray mainWindowGeometry() const;
     void setMainWindowGeometry(const QByteArray &geometry);
+
+    QByteArray mainWindowState() const;
+    void setMainWindowState(const QByteArray &state);
 
     int slideShowInterval() const;
     void setSlideShowInterval(int seconds);

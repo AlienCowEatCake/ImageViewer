@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -35,6 +35,7 @@
 #include "MacToolBar.h"
 #else
 #include "ToolBar.h"
+#include "QtToolBar.h"
 #endif
 #if defined (HAS_MAC_TOUCHBAR)
 #include "MacTouchBar.h"
@@ -45,6 +46,7 @@ namespace {
 
 const int WINDOW_DEFAULT_WIDTH  = 640;
 const int WINDOW_DEFAULT_HEIGHT = 480;
+const int WINDOW_STATE_VERSION = 1;
 
 } // namespace
 
@@ -57,6 +59,7 @@ struct MainWindow::UI
     MacToolBar *toolbar;
 #else
     ToolBar *toolbar;
+    QtToolBar *qtToolbar;
 #endif
 #if defined (HAS_MAC_TOUCHBAR)
     MacTouchBar *touchbar;
@@ -72,6 +75,7 @@ struct MainWindow::UI
         , toolbar(new MacToolBar(mainWindow))
 #else
         , CONSTRUCT_OBJECT(toolbar, ToolBar, (centralWidget))
+        , CONSTRUCT_OBJECT(qtToolbar, QtToolBar, (mainWindow))
 #endif
 #if defined (HAS_MAC_TOUCHBAR)
         , CONSTRUCT_OBJECT(touchbar, MacTouchBar, (mainWindow))
@@ -103,6 +107,9 @@ struct MainWindow::UI
 
 #if defined (HAS_MAC_TOOLBAR)
         toolbar->attachToWindow(mainWindow);
+#else
+        controlsContainers.append(qtToolbar);
+        mainWindow->addToolBar(qtToolbar);
 #endif
 #if defined (HAS_MAC_TOUCHBAR)
         controlsContainers.append(touchbar);
