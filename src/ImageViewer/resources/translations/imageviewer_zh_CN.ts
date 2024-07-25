@@ -135,28 +135,24 @@
     <name>MacToolBar</name>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="880"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="96"/>
         <source>Previous</source>
         <comment>Long</comment>
         <translation>上一张</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="881"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="97"/>
         <source>Previous</source>
         <comment>Short</comment>
         <translation>上一张</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="882"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="98"/>
         <source>Next</source>
         <comment>Long</comment>
         <translation>下一张</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="883"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="99"/>
         <source>Next</source>
         <comment>Short</comment>
         <translation>下一张</translation>
@@ -169,35 +165,30 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="888"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="100"/>
         <source>Slideshow</source>
         <comment>Short</comment>
         <translation>幻灯片</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="892"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="101"/>
         <source>Zoom Out</source>
         <comment>Long</comment>
         <translation>缩小</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="893"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="102"/>
         <source>Zoom Out</source>
         <comment>Short</comment>
         <translation>缩小</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="894"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="103"/>
         <source>Zoom In</source>
         <comment>Long</comment>
         <translation>放大</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="895"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="104"/>
         <source>Zoom In</source>
         <comment>Short</comment>
         <translation>放大</translation>
@@ -210,91 +201,78 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="900"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="105"/>
         <source>Fit Image To Window Size</source>
         <comment>Long</comment>
         <translation>自适应窗体大小</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="901"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="106"/>
         <source>Fit Image To Window Size</source>
         <comment>Short</comment>
         <translation>自适应</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="906"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="107"/>
         <source>Original Size</source>
         <comment>Long</comment>
         <translation>原始尺寸</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="907"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="108"/>
         <source>Original Size</source>
         <comment>Short</comment>
         <translation>1:1</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="912"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="109"/>
         <source>Full Screen</source>
         <comment>Long</comment>
         <translation>全屏</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="913"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="110"/>
         <source>Full Screen</source>
         <comment>Short</comment>
         <translation>全屏</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="918"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="111"/>
         <source>Rotate Counterclockwise</source>
         <comment>Long</comment>
         <translation>逆时针旋转</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="919"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="112"/>
         <source>Rotate Counterclockwise</source>
         <comment>Short</comment>
         <translation>逆时针旋转</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="920"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="113"/>
         <source>Rotate Clockwise</source>
         <comment>Long</comment>
         <translation>顺时针旋转</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="921"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="114"/>
         <source>Rotate Clockwise</source>
         <comment>Short</comment>
         <translation>顺时针旋转</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="926"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="115"/>
         <source>Flip Horizontal</source>
         <comment>Long</comment>
         <translation>水平翻转</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="927"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="116"/>
         <source>Flip Horizontal</source>
         <comment>Short</comment>
         <translation>水平翻转</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="928"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="117"/>
         <source>Flip Vertical</source>
         <comment>Long</comment>
         <translation>垂直翻转</translation>
@@ -307,7 +285,6 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="929"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="118"/>
         <source>Flip Vertical</source>
         <comment>Short</comment>
         <translation>垂直翻转</translation>
@@ -320,42 +297,36 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="934"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="119"/>
         <source>Open File</source>
         <comment>Long</comment>
         <translation>打开文件</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="935"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="120"/>
         <source>Open File</source>
         <comment>Short</comment>
         <translation>打开</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="939"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="121"/>
         <source>Save File As</source>
         <comment>Long</comment>
         <translation>另存为</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="940"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="122"/>
         <source>Save File As</source>
         <comment>Short</comment>
         <translation>另存为</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="944"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="123"/>
         <source>Delete File</source>
         <comment>Long</comment>
         <translation>删除文件</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="945"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="124"/>
         <source>Delete File</source>
         <comment>Short</comment>
         <translation>删除</translation>
@@ -374,42 +345,36 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="954"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="125"/>
         <source>Preferences</source>
         <comment>Long</comment>
         <translation>首选项</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="955"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="126"/>
         <source>Preferences</source>
         <comment>Short</comment>
         <translation>首选项</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="959"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="127"/>
         <source>Exit</source>
         <comment>Long</comment>
         <translation>退出</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="960"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="128"/>
         <source>Exit</source>
         <comment>Short</comment>
         <translation>退出</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="978"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="160"/>
         <source>Start Slideshow</source>
         <comment>Long</comment>
         <translation>开始播放幻灯片</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="983"/>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="165"/>
         <source>Stop Slideshow</source>
         <comment>Long</comment>
         <translation>停止播放幻灯片</translation>
@@ -1162,6 +1127,219 @@
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1057"/>
         <source>Cancel</source>
         <translation>取消</translation>
+    </message>
+</context>
+<context>
+    <name>QtToolBar</name>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="96"/>
+        <source>Previous</source>
+        <comment>Long</comment>
+        <translation>上一张</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="97"/>
+        <source>Previous</source>
+        <comment>Short</comment>
+        <translation>上一张</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="98"/>
+        <source>Next</source>
+        <comment>Long</comment>
+        <translation>下一张</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="99"/>
+        <source>Next</source>
+        <comment>Short</comment>
+        <translation>下一张</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="100"/>
+        <source>Slideshow</source>
+        <comment>Short</comment>
+        <translation>幻灯片</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="101"/>
+        <source>Zoom Out</source>
+        <comment>Long</comment>
+        <translation>缩小</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="102"/>
+        <source>Zoom Out</source>
+        <comment>Short</comment>
+        <translation>缩小</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="103"/>
+        <source>Zoom In</source>
+        <comment>Long</comment>
+        <translation>放大</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="104"/>
+        <source>Zoom In</source>
+        <comment>Short</comment>
+        <translation>放大</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="105"/>
+        <source>Fit Image To Window Size</source>
+        <comment>Long</comment>
+        <translation>自适应窗体大小</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="106"/>
+        <source>Fit Image To Window Size</source>
+        <comment>Short</comment>
+        <translation>自适应</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="107"/>
+        <source>Original Size</source>
+        <comment>Long</comment>
+        <translation>原始尺寸</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="108"/>
+        <source>Original Size</source>
+        <comment>Short</comment>
+        <translation>1:1</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="109"/>
+        <source>Full Screen</source>
+        <comment>Long</comment>
+        <translation>全屏</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="110"/>
+        <source>Full Screen</source>
+        <comment>Short</comment>
+        <translation>全屏</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="111"/>
+        <source>Rotate Counterclockwise</source>
+        <comment>Long</comment>
+        <translation>逆时针旋转</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="112"/>
+        <source>Rotate Counterclockwise</source>
+        <comment>Short</comment>
+        <translation>逆时针旋转</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="113"/>
+        <source>Rotate Clockwise</source>
+        <comment>Long</comment>
+        <translation>顺时针旋转</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="114"/>
+        <source>Rotate Clockwise</source>
+        <comment>Short</comment>
+        <translation>顺时针旋转</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="115"/>
+        <source>Flip Horizontal</source>
+        <comment>Long</comment>
+        <translation>水平翻转</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="116"/>
+        <source>Flip Horizontal</source>
+        <comment>Short</comment>
+        <translation>水平翻转</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="117"/>
+        <source>Flip Vertical</source>
+        <comment>Long</comment>
+        <translation>垂直翻转</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="118"/>
+        <source>Flip Vertical</source>
+        <comment>Short</comment>
+        <translation>垂直翻转</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="119"/>
+        <source>Open File</source>
+        <comment>Long</comment>
+        <translation>打开文件</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="120"/>
+        <source>Open File</source>
+        <comment>Short</comment>
+        <translation>打开</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="121"/>
+        <source>Save File As</source>
+        <comment>Long</comment>
+        <translation>另存为</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="122"/>
+        <source>Save File As</source>
+        <comment>Short</comment>
+        <translation>另存为</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="123"/>
+        <source>Delete File</source>
+        <comment>Long</comment>
+        <translation>删除文件</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="124"/>
+        <source>Delete File</source>
+        <comment>Short</comment>
+        <translation>删除</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="125"/>
+        <source>Preferences</source>
+        <comment>Long</comment>
+        <translation>首选项</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="126"/>
+        <source>Preferences</source>
+        <comment>Short</comment>
+        <translation>首选项</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="127"/>
+        <source>Exit</source>
+        <comment>Long</comment>
+        <translation>退出</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="128"/>
+        <source>Exit</source>
+        <comment>Short</comment>
+        <translation>退出</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="160"/>
+        <source>Start Slideshow</source>
+        <comment>Long</comment>
+        <translation>开始播放幻灯片</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="165"/>
+        <source>Stop Slideshow</source>
+        <comment>Long</comment>
+        <translation>停止播放幻灯片</translation>
     </message>
 </context>
 <context>
