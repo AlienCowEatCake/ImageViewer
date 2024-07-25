@@ -37,6 +37,10 @@
 
 #include "InfoUtils.h"
 
+#if defined (DocumentProperties)
+#undef DocumentProperties
+#endif
+
 namespace ThemeUtils {
 
 namespace {
