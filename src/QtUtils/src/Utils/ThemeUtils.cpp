@@ -233,7 +233,7 @@ QIcon CreateScalableIcon(const QStringList &scaledImagePaths, bool invertPixels)
         {
             if(invertPixels)
             {
-                image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+                image = image.convertToFormat(QImage::Format_ARGB32);
                 image.invertPixels(QImage::InvertRgb);
             }
             AddPixmapToIcon(result, QPixmap::fromImage(image));
