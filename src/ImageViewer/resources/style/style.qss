@@ -50,6 +50,18 @@ MainWindow #toolbar[vertical=true] #separator
     qproperty-frameShape: HLine;
 }
 
+MainWindow #qtToolbar
+{
+    qproperty-iconSize: 16px 16px;
+    qproperty-toolButtonStyle: ToolButtonIconOnly;
+}
+
+MainWindow #qtToolbar QToolButton
+{
+    qproperty-minimumSize: 32px 32px;
+    qproperty-maximumSize: 32px 32px;
+}
+
 AboutDialog #centralWidget
 {
     qproperty-layoutSpacing: 14;

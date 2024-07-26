@@ -24,6 +24,8 @@
 #include <QDebug>
 #include <QEvent>
 #include <QString>
+#include <QStyle>
+#include <QStyleFactory>
 
 #include "Utils/IconThemeManager.h"
 #include "Utils/ThemeUtils.h"
@@ -84,8 +86,6 @@ struct QtToolBar::Impl : public ControlsContainerEmitter
         zoomFitToWindow->setCheckable(true);
         zoomOriginalSize->setCheckable(true);
         zoomFullScreen->setCheckable(true);
-        toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
-        toolbar->setIconSize(QSize(16, 16));
 
         retranslate();
         updateIcons();
@@ -173,6 +173,21 @@ QtToolBar::QtToolBar(QWidget *parent)
     : QToolBar(parent)
     , m_impl(new Impl(this))
 {
+#if defined (Q_OS_MAC)
+    QStyle *style = Q_NULLPTR;
+    if(QStyleFactory::keys().contains(QString::fromLatin1("Fusion"), Qt::CaseInsensitive))
+         style = QStyleFactory::create(QString::fromLatin1("Fusion"));
+    else if(QStyleFactory::keys().contains(QString::fromLatin1("Windows"), Qt::CaseInsensitive))
+        style = QStyleFactory::create(QString::fromLatin1("Windows"));
+    if(style)
+    {
+        setStyle(style);
+        const QList<QWidget*> toolbarChildren = findChildren<QWidget*>();
+        for(QList<QWidget*>::ConstIterator it = toolbarChildren.constBegin(); it != toolbarChildren.constEnd(); ++it)
+            (*it)->setStyle(style);
+    }
+#endif
+
     connect(m_impl->navigatePrevious        , SIGNAL(triggered()), emitter(), SIGNAL(navigatePreviousRequested())       );
     connect(m_impl->navigateNext            , SIGNAL(triggered()), emitter(), SIGNAL(navigateNextRequested())           );
     connect(m_impl->startSlideShow          , SIGNAL(triggered()), emitter(), SIGNAL(startSlideShowRequested())         );
