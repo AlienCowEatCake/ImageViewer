@@ -581,20 +581,20 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
         withAlternateImage:NSImageForIconType(ThemeUtils::ICON, true) \
     ]
 
-    MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, aboveHigh, navigatePrevious, ICON_LEFT, navigateNext, ICON_RIGHT);
-    MAKE_BUTTONED_ITEM(startSlideShow, std, ICON_PLAY);
+    MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, aboveHigh, navigatePrevious, ICON_GO_PREVIOUS, navigateNext, ICON_GO_NEXT);
+    MAKE_BUTTONED_ITEM(startSlideShow, std, ICON_MEDIA_PLAYBACK_START);
     MAKE_SEGMENTED_PAIR_ITEM(zoomGroup, high, zoomOut, ICON_ZOOM_OUT, zoomIn, ICON_ZOOM_IN);
-    MAKE_BUTTONED_ITEM(zoomFitToWindow, belowHigh, ICON_ZOOM_FIT);
-    MAKE_BUTTONED_ITEM(zoomOriginalSize, belowHigh, ICON_ZOOM_IDENTITY);
-    MAKE_BUTTONED_ITEM(zoomFullScreen, aboveLow, ICON_FULLSCREEN);
-    MAKE_SEGMENTED_PAIR_ITEM(rotateGroup, high, rotateCounterclockwise, ICON_ROTATE_COUNTERCLOCKWISE, rotateClockwise, ICON_ROTATE_CLOCKWISE);
-    MAKE_SEGMENTED_PAIR_ITEM(flipGroup, belowStd, flipHorizontal, ICON_FLIP_HORIZONTAL, flipVertical, ICON_FLIP_VERTICAL);
-    MAKE_BUTTONED_ITEM(openFile, aboveHigh, ICON_OPEN);
-    MAKE_BUTTONED_ITEM(saveFileAs, aboveStd, ICON_SAVE_AS);
-    MAKE_BUTTONED_ITEM(deleteFile, aboveStd, ICON_DELETE);
-    MAKE_BUTTONED_ITEM(print, aboveLow, ICON_PRINT);
-    MAKE_BUTTONED_ITEM(preferences, low, ICON_SETTINGS);
-    MAKE_BUTTONED_ITEM(exit, belowLow, ICON_EXIT);
+    MAKE_BUTTONED_ITEM(zoomFitToWindow, belowHigh, ICON_ZOOM_FIT_BEST);
+    MAKE_BUTTONED_ITEM(zoomOriginalSize, belowHigh, ICON_ZOOM_ORIGINAL);
+    MAKE_BUTTONED_ITEM(zoomFullScreen, aboveLow, ICON_VIEW_FULLSCREEN);
+    MAKE_SEGMENTED_PAIR_ITEM(rotateGroup, high, rotateCounterclockwise, ICON_OBJECT_ROTATE_LEFT, rotateClockwise, ICON_OBJECT_ROTATE_RIGHT);
+    MAKE_SEGMENTED_PAIR_ITEM(flipGroup, belowStd, flipHorizontal, ICON_OBJECT_FLIP_HORIZONTAL, flipVertical, ICON_OBJECT_FLIP_VERTICAL);
+    MAKE_BUTTONED_ITEM(openFile, aboveHigh, ICON_DOCUMENT_OPEN);
+    MAKE_BUTTONED_ITEM(saveFileAs, aboveStd, ICON_DOCUMENT_SAVE_AS);
+    MAKE_BUTTONED_ITEM(deleteFile, aboveStd, ICON_EDIT_DELETE);
+    MAKE_BUTTONED_ITEM(print, aboveLow, ICON_DOCUMENT_PRINT);
+    MAKE_BUTTONED_ITEM(preferences, low, ICON_EDIT_PREFERENCES);
+    MAKE_BUTTONED_ITEM(exit, belowLow, ICON_APPLICATION_EXIT);
 
 #undef MAKE_SEGMENTED_PAIR_ITEM
 #undef MAKE_BUTTONED_ITEM
@@ -974,12 +974,12 @@ struct MacToolBar::Impl
             return;
         if(!isSlideShowMode)
         {
-            [button setImage:NSImageForIconType(ThemeUtils::ICON_PLAY)];
+            [button setImage:NSImageForIconType(ThemeUtils::ICON_MEDIA_PLAYBACK_START)];
             toolBarData.startSlideShow.setToolTip(qApp->translate("MacToolBar", "Start Slideshow", "Long"));
         }
         else
         {
-            [button setImage:NSImageForIconType(ThemeUtils::ICON_STOP)];
+            [button setImage:NSImageForIconType(ThemeUtils::ICON_MEDIA_PLAYBACK_STOP)];
             toolBarData.startSlideShow.setToolTip(qApp->translate("MacToolBar", "Stop Slideshow", "Long"));
         }
     }

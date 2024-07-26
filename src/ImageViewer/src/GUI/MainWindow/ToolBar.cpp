@@ -141,23 +141,23 @@ struct ToolBar::Impl : public ControlsContainerEmitter
     {
         IconThemeManager *iconThemeManager = IconThemeManager::instance();
         toolBarButtonsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(openFile);
-        navigatePrevious->setIcon       (iconThemeManager->GetIcon(ThemeUtils::ICON_LEFT                    , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        navigateNext->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_RIGHT                   , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        navigatePrevious->setIcon       (iconThemeManager->GetIcon(ThemeUtils::ICON_GO_PREVIOUS             , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        navigateNext->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_GO_NEXT                 , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         zoomOut->setIcon                (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_OUT                , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         zoomIn->setIcon                 (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_IN                 , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        zoomFitToWindow->setIcon        (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_FIT                , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        zoomOriginalSize->setIcon       (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_IDENTITY           , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        zoomFullScreen->setIcon         (iconThemeManager->GetIcon(ThemeUtils::ICON_FULLSCREEN              , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        rotateCounterclockwise->setIcon (iconThemeManager->GetIcon(ThemeUtils::ICON_ROTATE_COUNTERCLOCKWISE , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        rotateClockwise->setIcon        (iconThemeManager->GetIcon(ThemeUtils::ICON_ROTATE_CLOCKWISE        , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        flipHorizontal->setIcon         (iconThemeManager->GetIcon(ThemeUtils::ICON_FLIP_HORIZONTAL         , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        flipVertical->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_FLIP_VERTICAL           , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        openFile->setIcon               (iconThemeManager->GetIcon(ThemeUtils::ICON_OPEN                    , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        saveFileAs->setIcon             (iconThemeManager->GetIcon(ThemeUtils::ICON_SAVE_AS                 , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        deleteFile->setIcon             (iconThemeManager->GetIcon(ThemeUtils::ICON_DELETE                  , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        preferences->setIcon            (iconThemeManager->GetIcon(ThemeUtils::ICON_SETTINGS                , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        exit->setIcon                   (iconThemeManager->GetIcon(ThemeUtils::ICON_EXIT                    , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        startSlideShow->setIcon         (iconThemeManager->GetIcon(isSlideShowMode ? ThemeUtils::ICON_STOP : ThemeUtils::ICON_PLAY, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        zoomFitToWindow->setIcon        (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_FIT_BEST           , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        zoomOriginalSize->setIcon       (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_ORIGINAL           , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        zoomFullScreen->setIcon         (iconThemeManager->GetIcon(ThemeUtils::ICON_VIEW_FULLSCREEN         , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        rotateCounterclockwise->setIcon (iconThemeManager->GetIcon(ThemeUtils::ICON_OBJECT_ROTATE_LEFT      , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        rotateClockwise->setIcon        (iconThemeManager->GetIcon(ThemeUtils::ICON_OBJECT_ROTATE_RIGHT     , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        flipHorizontal->setIcon         (iconThemeManager->GetIcon(ThemeUtils::ICON_OBJECT_FLIP_HORIZONTAL  , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        flipVertical->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_OBJECT_FLIP_VERTICAL    , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        openFile->setIcon               (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_OPEN           , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        saveFileAs->setIcon             (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_SAVE_AS        , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        deleteFile->setIcon             (iconThemeManager->GetIcon(ThemeUtils::ICON_EDIT_DELETE             , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        preferences->setIcon            (iconThemeManager->GetIcon(ThemeUtils::ICON_EDIT_PREFERENCES        , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        exit->setIcon                   (iconThemeManager->GetIcon(ThemeUtils::ICON_APPLICATION_EXIT        , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        startSlideShow->setIcon         (iconThemeManager->GetIcon(isSlideShowMode ? ThemeUtils::ICON_MEDIA_PLAYBACK_STOP : ThemeUtils::ICON_MEDIA_PLAYBACK_START, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
     }
 
     void setSlideShowMode(bool isSlideShow)
@@ -166,12 +166,12 @@ struct ToolBar::Impl : public ControlsContainerEmitter
         if(!isSlideShowMode)
         {
             startSlideShow->setToolTip(qApp->translate("ToolBar", "Start Slideshow"));
-            startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_PLAY, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+            startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_START, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         }
         else
         {
             startSlideShow->setToolTip(qApp->translate("ToolBar", "Stop Slideshow"));
-            startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_STOP, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+            startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_STOP, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         }
     }
 };

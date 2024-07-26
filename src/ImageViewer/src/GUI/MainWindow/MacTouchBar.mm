@@ -313,20 +313,20 @@ API_AVAILABLE(macos(10.12.2))
     m_touchBarData->ITEM2.parentItem = &m_touchBarData->GROUP; \
     m_touchBarData->ITEM2.segmentNum = 1
 
-    MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, navigatePrevious, ICON_LEFT, NSImageNameTouchBarGoBackTemplate, navigateNext, ICON_RIGHT, NSImageNameTouchBarGoForwardTemplate);
-    MAKE_BUTTONED_ITEM(startSlideShow, ICON_PLAY, NSImageNameTouchBarSlideshowTemplate);
+    MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, navigatePrevious, ICON_GO_PREVIOUS, NSImageNameTouchBarGoBackTemplate, navigateNext, ICON_GO_NEXT, NSImageNameTouchBarGoForwardTemplate);
+    MAKE_BUTTONED_ITEM(startSlideShow, ICON_MEDIA_PLAYBACK_START, NSImageNameTouchBarSlideshowTemplate);
     MAKE_SEGMENTED_PAIR_ITEM(zoomGroup, zoomOut, ICON_ZOOM_OUT, nil, zoomIn, ICON_ZOOM_IN, nil);
-    MAKE_BUTTONED_ITEM(zoomFitToWindow, ICON_ZOOM_FIT, nil);
-    MAKE_BUTTONED_ITEM(zoomOriginalSize, ICON_ZOOM_IDENTITY, nil);
-    MAKE_BUTTONED_ITEM(zoomFullScreen, ICON_FULLSCREEN, NSImageNameTouchBarEnterFullScreenTemplate);
-    MAKE_SEGMENTED_PAIR_ITEM(rotateGroup, rotateCounterclockwise, ICON_ROTATE_COUNTERCLOCKWISE, NSImageNameTouchBarRotateLeftTemplate, rotateClockwise, ICON_ROTATE_CLOCKWISE, NSImageNameTouchBarRotateRightTemplate);
-    MAKE_SEGMENTED_PAIR_ITEM(flipGroup, flipHorizontal, ICON_FLIP_HORIZONTAL, nil, flipVertical, ICON_FLIP_VERTICAL, nil);
-    MAKE_BUTTONED_ITEM(openFile, ICON_OPEN, nil);
-    MAKE_BUTTONED_ITEM(saveFileAs, ICON_SAVE_AS, nil);
-    MAKE_BUTTONED_ITEM(deleteFile, ICON_DELETE, NSImageNameTouchBarDeleteTemplate);
-    MAKE_BUTTONED_ITEM(print, ICON_PRINT, nil);
-    MAKE_BUTTONED_ITEM(preferences, ICON_SETTINGS, nil);
-    MAKE_BUTTONED_ITEM(exit, ICON_EXIT, nil);
+    MAKE_BUTTONED_ITEM(zoomFitToWindow, ICON_ZOOM_FIT_BEST, nil);
+    MAKE_BUTTONED_ITEM(zoomOriginalSize, ICON_ZOOM_ORIGINAL, nil);
+    MAKE_BUTTONED_ITEM(zoomFullScreen, ICON_VIEW_FULLSCREEN, NSImageNameTouchBarEnterFullScreenTemplate);
+    MAKE_SEGMENTED_PAIR_ITEM(rotateGroup, rotateCounterclockwise, ICON_OBJECT_ROTATE_LEFT, NSImageNameTouchBarRotateLeftTemplate, rotateClockwise, ICON_OBJECT_ROTATE_RIGHT, NSImageNameTouchBarRotateRightTemplate);
+    MAKE_SEGMENTED_PAIR_ITEM(flipGroup, flipHorizontal, ICON_OBJECT_FLIP_HORIZONTAL, nil, flipVertical, ICON_OBJECT_FLIP_VERTICAL, nil);
+    MAKE_BUTTONED_ITEM(openFile, ICON_DOCUMENT_OPEN, nil);
+    MAKE_BUTTONED_ITEM(saveFileAs, ICON_DOCUMENT_SAVE_AS, nil);
+    MAKE_BUTTONED_ITEM(deleteFile, ICON_EDIT_DELETE, NSImageNameTouchBarDeleteTemplate);
+    MAKE_BUTTONED_ITEM(print, ICON_DOCUMENT_PRINT, nil);
+    MAKE_BUTTONED_ITEM(preferences, ICON_EDIT_PREFERENCES, nil);
+    MAKE_BUTTONED_ITEM(exit, ICON_APPLICATION_EXIT, nil);
 
 #undef MAKE_SEGMENTED_PAIR_ITEM
 #undef MAKE_BUTTONED_ITEM
@@ -526,9 +526,9 @@ struct MacTouchBar::Impl
             if(!button)
                 return;
             if(!isSlideShow)
-                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarSlideshowTemplate, ThemeUtils::ICON_PLAY)];
+                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarSlideshowTemplate, ThemeUtils::ICON_MEDIA_PLAYBACK_START)];
             else
-                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarRecordStopTemplate, ThemeUtils::ICON_STOP)];
+                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarRecordStopTemplate, ThemeUtils::ICON_MEDIA_PLAYBACK_STOP)];
         }
 #else
         Q_UNUSED(isSlideShow);
@@ -545,9 +545,9 @@ struct MacTouchBar::Impl
             if(!button)
                 return;
             if(!isFullScreen)
-                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarEnterFullScreenTemplate, ThemeUtils::ICON_FULLSCREEN)];
+                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarEnterFullScreenTemplate, ThemeUtils::ICON_VIEW_FULLSCREEN)];
             else
-                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarExitFullScreenTemplate, ThemeUtils::ICON_FULLSCREEN)];
+                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarExitFullScreenTemplate, ThemeUtils::ICON_VIEW_FULLSCREEN)];
         }
 #else
         Q_UNUSED(isFullScreen);
