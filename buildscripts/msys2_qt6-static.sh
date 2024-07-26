@@ -7,10 +7,13 @@ APP_PATH="src/${PROJECT}"
 CMD_QMAKE="${MSYSTEM_PREFIX}/qt6-static/bin/qmake.exe"
 
 MSYSTEM_PKG_PREFIX="mingw-w64"
+EXTRA_LIBS=""
 if [ "${MSYSTEM}" == "UCRT64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-ucrt-x86_64"
+    EXTRA_LIBS="-Wl,--no-as-needed -Wl,--start-group"
 elif [ "${MSYSTEM}" == "MINGW64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-x86_64"
+    EXTRA_LIBS="-Wl,--no-as-needed -Wl,--start-group"
 elif [ "${MSYSTEM}" == "CLANG64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-x86_64"
 elif [ "${MSYSTEM}" == "CLANGARM64" ] ; then
@@ -45,6 +48,7 @@ ${CMD_QMAKE} -r CONFIG+="release" \
     CONFIG+="disable_ghc_filesystem" \
     CONFIG+="enable_update_checking" \
     CONFIG+="enable_mshtml enable_nanosvg" \
+    LIBS+="${EXTRA_LIBS}" \
     "${SOURCE_PATH}/${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 mkdir "${DIST_PREFIX}"

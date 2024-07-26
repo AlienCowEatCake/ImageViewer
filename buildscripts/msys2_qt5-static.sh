@@ -42,6 +42,10 @@ function stripAll() {
 rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
+mkdir -p lib
+find "${MSYSTEM_PREFIX}/lib" \( -name 'libz.a' -o -name 'libzstd.a' \) | while IFS= read -r item ; do
+    cp -a "${item}" "lib/lib$(basename "${item}").a"
+done
 ${CMD_QMAKE} -r CONFIG+="release" \
     CONFIG+="hide_symbols" \
     QTPLUGIN.imageformats="qgif qicns qico qsvg qtga qtiff qwbmp" \
@@ -49,6 +53,9 @@ ${CMD_QMAKE} -r CONFIG+="release" \
     CONFIG+="disable_ghc_filesystem" \
     CONFIG+="enable_update_checking" \
     CONFIG+="enable_mshtml enable_nanosvg" \
+    LIBS+="-L\"${MSYSTEM_PREFIX}/qt5-static/lib\"" \
+    LIBS+="-L\"${MSYSTEM_PREFIX}/lib\"" \
+    LIBS+="-L\"${PWD}/lib\"" \
     "${SOURCE_PATH}/${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 mkdir "${DIST_PREFIX}"
