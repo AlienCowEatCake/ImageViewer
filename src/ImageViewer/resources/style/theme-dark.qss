@@ -1104,6 +1104,10 @@ QToolBar QToolButton
     max-height: 26px;
     margin: 2px;
 }
+QToolBar QToolButton#qt_toolbar_ext_button
+{
+    qproperty-minimumSize: 22px 22px;
+}
 
 QToolBar::separator
 {
@@ -1183,6 +1187,11 @@ MainWindow #toolbar #separator
     max-width: 1px;
     margin-left: 1px;
     margin-right: 1px;
+}
+
+MainWindow #qtToolbar QToolButton#qt_toolbar_ext_button
+{
+    qproperty-minimumSize: 22px 22px;
 }
 
 PrintDialog #keepAspectLabelTop,

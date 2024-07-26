@@ -61,6 +61,10 @@ MainWindow #qtToolbar QToolButton
     qproperty-minimumSize: 32px 32px;
     qproperty-maximumSize: 32px 32px;
 }
+MainWindow #qtToolbar QToolButton#qt_toolbar_ext_button
+{
+    qproperty-minimumSize: 0px 0px;
+}
 
 AboutDialog #centralWidget
 {
