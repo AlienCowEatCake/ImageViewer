@@ -103,6 +103,27 @@ struct MainWindow::Impl
         return uiState.imageData && !uiState.imageData->isEmpty() && uiState.imageData->size().isValid();
     }
 
+    void setToolBarVisible(bool visible)
+    {
+#if defined (HAS_MAC_TOOLBAR)
+        ui.toolbar->setVisible(visible);
+#else
+        switch(settings->toolBarPosition())
+        {
+        case GUISettings::TOOLBAR_POSITION_BOTTOM:
+        case GUISettings::TOOLBAR_POSITION_TOP:
+        case GUISettings::TOOLBAR_POSITION_LEFT:
+        case GUISettings::TOOLBAR_POSITION_RIGHT:
+            ui.toolbar->setVisible(visible);
+            ui.qtToolbar->setVisible(false);
+            break;
+        case GUISettings::TOOLBAR_POSITION_MOVABLE:
+            ui.toolbar->setVisible(false);
+            ui.qtToolbar->setVisible(visible);
+        }
+#endif
+    }
+
     void syncFullScreen()
     {
         if((isFullScreenMode && mainWindow->isFullScreen()) || (!isFullScreenMode && !mainWindow->isFullScreen()))
@@ -114,14 +135,14 @@ struct MainWindow::Impl
         {
             geometryHelper.block();
             ui.menubar->setVisible(false);
-            ui.toolbar->setVisible(false);
+            setToolBarVisible(false);
             geometryHelper.unblock();
         }
         else
         {
             geometryHelper.block();
             ui.menubar->setVisible(settings->menuBarVisible());
-            ui.toolbar->setVisible(settings->toolBarVisible());
+            setToolBarVisible(settings->toolBarVisible());
             geometryHelper.unblock();
             geometryHelper.restoreGeometry();
         }
@@ -284,13 +305,13 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     }
 
     ui.menubar->setVisible(false);
-    ui.toolbar->setVisible(false);
+    m_impl->setToolBarVisible(false);
     RestorableGeometryHelper &geometryHelper = m_impl->geometryHelper;
     geometryHelper.saveGeometry();
     geometryHelper.deserialize(settings->mainWindowGeometry());
     geometryHelper.block();
     ui.menubar->setVisible(settings->menuBarVisible());
-    ui.toolbar->setVisible(settings->toolBarVisible());
+    m_impl->setToolBarVisible(settings->toolBarVisible());
     geometryHelper.unblock();
     geometryHelper.restoreGeometry();
 #if !defined (HAS_MAC_TOOLBAR)
@@ -398,7 +419,7 @@ void MainWindow::switchShowToolBar()
 #endif
     geometryHelper.saveGeometry();
     geometryHelper.block();
-    m_impl->ui.toolbar->setVisible(newValue);
+    m_impl->setToolBarVisible(newValue);
     geometryHelper.unblock();
     geometryHelper.restoreGeometry();
 }
@@ -560,42 +581,36 @@ void MainWindow::updateToolBarPosition()
     if(!centralLayout || !toolBarLayout)
         return;
 
+    m_impl->geometryHelper.saveGeometry();
+    m_impl->geometryHelper.block();
     switch(m_impl->settings->toolBarPosition())
     {
     case GUISettings::TOOLBAR_POSITION_BOTTOM:
-        m_impl->ui.toolbar->setVisible(true);
-        m_impl->ui.qtToolbar->setVisible(false);
         centralLayout->setDirection(QBoxLayout::TopToBottom);
         toolBarLayout->setDirection(QBoxLayout::LeftToRight);
         m_impl->ui.toolbar->setProperty("vertical", false);
         break;
     case GUISettings::TOOLBAR_POSITION_TOP:
-        m_impl->ui.toolbar->setVisible(true);
-        m_impl->ui.qtToolbar->setVisible(false);
         centralLayout->setDirection(QBoxLayout::BottomToTop);
         toolBarLayout->setDirection(QBoxLayout::LeftToRight);
         m_impl->ui.toolbar->setProperty("vertical", false);
         break;
     case GUISettings::TOOLBAR_POSITION_LEFT:
-        m_impl->ui.toolbar->setVisible(true);
-        m_impl->ui.qtToolbar->setVisible(false);
         centralLayout->setDirection(QBoxLayout::RightToLeft);
         toolBarLayout->setDirection(QBoxLayout::TopToBottom);
         m_impl->ui.toolbar->setProperty("vertical", true);
         break;
     case GUISettings::TOOLBAR_POSITION_RIGHT:
-        m_impl->ui.toolbar->setVisible(true);
-        m_impl->ui.qtToolbar->setVisible(false);
         centralLayout->setDirection(QBoxLayout::LeftToRight);
         toolBarLayout->setDirection(QBoxLayout::TopToBottom);
         m_impl->ui.toolbar->setProperty("vertical", true);
         break;
-    case GUISettings::TOOLBAR_POSITION_MOVABLE:
-        m_impl->ui.toolbar->setVisible(false);
-        m_impl->ui.qtToolbar->setVisible(true);
     default:
         break;
     }
+    m_impl->setToolBarVisible(m_impl->settings->toolBarVisible());
+    m_impl->geometryHelper.unblock();
+    m_impl->geometryHelper.restoreGeometry();
 
     QList<QWidget*> widgets = m_impl->ui.toolbar->findChildren<QWidget*>();
     widgets.prepend(m_impl->ui.toolbar);
