@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -118,7 +118,7 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
         else if(delayDen == 0)
             delayDen = 1;
 
-#define USE_RGBA_8888 (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0) && Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
+#define USE_RGBA_8888 (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
 
         QImage frame(static_cast<int>(imageInfo.width), static_cast<int>(imageInfo.height),
 #if (USE_RGBA_8888)
@@ -177,7 +177,11 @@ public:
 
     bool isAvailable() const Q_DECL_OVERRIDE
     {
+#if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
         return true;
+#else
+        return false;
+#endif
     }
 
     QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE

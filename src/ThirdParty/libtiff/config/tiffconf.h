@@ -96,7 +96,7 @@
 #endif
 
 /* Support LERC compression */
-#if defined(HAS_LERC)
+#if defined(HAS_LERC) && (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
 #define LERC_SUPPORT 1
 #endif
 

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -305,7 +305,11 @@ public:
 
     bool isAvailable() const Q_DECL_OVERRIDE
     {
+#if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
         return true;
+#else
+        return false;
+#endif
     }
 
     QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
