@@ -8,8 +8,13 @@ TEMPLATE = subdirs
 
 CONFIG += ordered
 
-SUBDIRS = \
-    src/ThirdParty/ThirdParty.pro \
+SUBDIRS =
+
+exists(src/ThirdParty/ThirdParty.pro) {
+    SUBDIRS += src/ThirdParty/ThirdParty.pro
+}
+
+SUBDIRS += \
     src/QtUtils/QtUtils.pro \
     src/ImageViewer/ImageViewer.pro
 

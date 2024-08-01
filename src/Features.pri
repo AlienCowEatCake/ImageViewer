@@ -293,6 +293,9 @@ enable_cxx17 {
 # ThirdParty options:
 #    disable_thirdparty
 #    system_thirdparty
+!exists($${PWD}/ThirdParty/ThirdParty.pro) {
+    CONFIG *= system_thirdparty
+}
 disable_thirdparty {
     CONFIG *= disable_aom
     CONFIG *= disable_brotli
