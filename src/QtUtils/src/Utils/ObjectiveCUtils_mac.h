@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -75,9 +75,11 @@ QUrl QUrlFromNSURL(const NSURL *url);
 NSURL *QUrlToNSURL(const QUrl &url);
 
 QPixmap QPixmapFromNSImage(const NSImage *image);
+QPixmap QPixmapFromNSImage(const NSImage *image, const QSize &sizeInPixels, Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio);
 NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize &sizeInPoints = QSize());
 
 QImage QImageFromNSImage(const NSImage *image);
+QImage QImageFromNSImage(const NSImage *image, const QSize &sizeInPixels, Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio);
 NSImage *QImageToNSImage(const QImage &image, const QSize &sizeInPoints = QSize());
 
 QRectF QRectFFromNSRect(const NSRect &rect);

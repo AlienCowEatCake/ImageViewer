@@ -32,6 +32,7 @@
 #include "Utils/LocalizationManager.h"
 #include "Utils/ObjectiveCUtils.h"
 #include "Utils/ThemeUtils.h"
+#include "Utils/ThemeUtils_mac.h"
 #include "Utils/WindowUtils.h"
 
 #include "Utils/MacNSInteger.h"
@@ -244,6 +245,9 @@ namespace {
 
 NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType)
 {
+    if(NSImage *systemImage = ThemeUtils::GetMacSystemImage(iconType))
+        return systemImage;
+
     const QIcon themeIcon = ThemeUtils::GetIcon(iconType);
     const QSize iconSize(20, 20);
     const QPixmap iconPixmap = themeIcon.pixmap(iconSize);
@@ -526,7 +530,7 @@ struct MacTouchBar::Impl
             if(!button)
                 return;
             if(!isSlideShow)
-                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarSlideshowTemplate, ThemeUtils::ICON_MEDIA_PLAYBACK_START)];
+                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarSlideshowTemplate, ThemeUtils::ICON_MEDIA_SLIDESHOW)];
             else
                 [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarRecordStopTemplate, ThemeUtils::ICON_MEDIA_PLAYBACK_STOP)];
         }

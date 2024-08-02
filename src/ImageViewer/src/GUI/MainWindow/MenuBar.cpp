@@ -361,7 +361,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionAboutQt->setIcon                  (iconThemeManager->GetIcon(ThemeUtils::ICON_HELP_ABOUT_QT           , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionCheckForUpdates->setIcon          (iconThemeManager->GetIcon(ThemeUtils::ICON_VIEW_REFRESH            , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionEditStylesheet->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_EDIT_PREFERENCES        , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionStartSlideShow->setIcon(iconThemeManager->GetIcon(isSlideShowMode ? ThemeUtils::ICON_MEDIA_PLAYBACK_STOP : ThemeUtils::ICON_MEDIA_PLAYBACK_START, menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
+        actionStartSlideShow->setIcon(iconThemeManager->GetIcon(isSlideShowMode ? ThemeUtils::ICON_MEDIA_PLAYBACK_STOP : ThemeUtils::ICON_MEDIA_SLIDESHOW, menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
     }
 
     void setSlideShowMode(bool isSlideShow)
@@ -370,7 +370,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         if(!isSlideShowMode)
         {
             actionStartSlideShow->setText(qApp->translate("MenuBar", "Start S&lideshow"));
-            actionStartSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_START, menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
+            actionStartSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_SLIDESHOW, menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         }
         else
         {

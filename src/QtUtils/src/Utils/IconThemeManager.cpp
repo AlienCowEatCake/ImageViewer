@@ -31,6 +31,9 @@
 
 #include "SettingsWrapper.h"
 #include "SignalBlocker.h"
+#if defined (Q_OS_MAC)
+#include "ThemeUtils_mac.h"
+#endif
 
 namespace {
 
@@ -247,6 +250,25 @@ void IconThemeManager::fillComboBox(QComboBox *comboBox, const bool autoApply)
 QIcon IconThemeManager::GetIcon(ThemeUtils::IconTypes type, bool fallbackRequired, bool darkBackground) const
 {
     const ThemeData *currentTheme = m_impl->currentTheme();
+#if defined (Q_OS_MAC)
+    if(currentTheme && currentTheme->themeId == SYSTEM_THEME_ID)
+    {
+        QList<QImage> iconImages;
+        static const QList<int> iconSizes = QList<int>() << 16 << 32;
+        for(QList<int>::ConstIterator it = iconSizes.begin(); it != iconSizes.end(); ++it)
+        {
+            QImage image = ThemeUtils::GetMacSystemImage(type, QSize(*it, *it));
+            if(!image.isNull())
+                iconImages.append(image);
+        }
+        if(!iconImages.isEmpty())
+        {
+            const QIcon result = ThemeUtils::CreateScalableIcon(iconImages, darkBackground);
+            if(!result.isNull())
+                return result;
+        }
+    }
+#endif
     if(currentTheme && currentTheme->themeId != QTUTILS_THEME_ID)
     {
         const QIcon result = ThemeUtils::GetThemeIcon(type);

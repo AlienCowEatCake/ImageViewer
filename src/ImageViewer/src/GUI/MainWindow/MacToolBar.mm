@@ -33,6 +33,7 @@
 #include "Utils/LocalizationManager.h"
 #include "Utils/ObjectiveCUtils.h"
 #include "Utils/ThemeUtils.h"
+#include "Utils/ThemeUtils_mac.h"
 #include "Utils/WindowUtils.h"
 
 #include "Utils/MacNSInteger.h"
@@ -510,6 +511,9 @@ namespace {
 
 NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground = false)
 {
+    if(NSImage *systemImage = ThemeUtils::GetMacSystemImage(iconType))
+        return systemImage;
+
     const QIcon themeIcon = ThemeUtils::GetIcon(iconType);
     const QSize iconSize(16, 16);
     const QPixmap iconPixmap = themeIcon.pixmap(iconSize);
@@ -974,7 +978,7 @@ struct MacToolBar::Impl
             return;
         if(!isSlideShowMode)
         {
-            [button setImage:NSImageForIconType(ThemeUtils::ICON_MEDIA_PLAYBACK_START)];
+            [button setImage:NSImageForIconType(ThemeUtils::ICON_MEDIA_SLIDESHOW)];
             toolBarData.startSlideShow.setToolTip(qApp->translate("MacToolBar", "Start Slideshow", "Long"));
         }
         else

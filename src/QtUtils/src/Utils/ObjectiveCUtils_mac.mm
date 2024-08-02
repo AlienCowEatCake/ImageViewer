@@ -418,7 +418,12 @@ NSURL *QUrlToNSURL(const QUrl &url)
 
 QPixmap QPixmapFromNSImage(const NSImage *image)
 {
-    return QPixmap::fromImage(QImageFromNSImage(image));
+    return QPixmapFromNSImage(image, QSize());
+}
+
+QPixmap QPixmapFromNSImage(const NSImage *image, const QSize &sizeInPixels, Qt::AspectRatioMode aspectRatioMode)
+{
+    return QPixmap::fromImage(QImageFromNSImage(image, sizeInPixels, aspectRatioMode));
 }
 
 NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize &sizeInPoints)
@@ -427,6 +432,11 @@ NSImage *QPixmapToNSImage(const QPixmap &pixmap, const QSize &sizeInPoints)
 }
 
 QImage QImageFromNSImage(const NSImage *image)
+{
+    return QImageFromNSImage(image, QSize());
+}
+
+QImage QImageFromNSImage(const NSImage *image, const QSize &sizeInPixels, Qt::AspectRatioMode aspectRatioMode)
 {
     QImage result;
     if(!image)
@@ -447,6 +457,37 @@ QImage QImageFromNSImage(const NSImage *image)
     {
         width = std::max(width, static_cast<NSInteger>([image size].width));
         height = std::max(height, static_cast<NSInteger>([image size].height));
+    }
+    if(!sizeInPixels.isEmpty())
+    {
+        const NSInteger sizeWidth = static_cast<NSInteger>(sizeInPixels.width());
+        const NSInteger sizeHeight = static_cast<NSInteger>(sizeInPixels.height());
+        if(aspectRatioMode == Qt::IgnoreAspectRatio)
+        {
+            width = sizeWidth;
+            height = sizeHeight;
+        }
+        else
+        {
+            const qint64 rw = qint64(sizeHeight) * qint64(width) / qint64(height);
+
+            bool useHeight;
+            if(aspectRatioMode == Qt::KeepAspectRatio)
+                useHeight = (rw <= sizeWidth);
+            else // aspectRatioMode == Qt::KeepAspectRatioByExpanding
+                useHeight = (rw >= sizeWidth);
+
+            if(useHeight)
+            {
+                width = static_cast<NSInteger>(rw);
+                height = sizeHeight;
+            }
+            else
+            {
+                width = sizeWidth;
+                height = static_cast<NSInteger>(qint64(sizeWidth) * qint64(height) / qint64(width));
+            }
+        }
     }
     // CGImageForProposedRect is broken for some configurations
     // (e.g. produces @2x image for svg input with Retina display)

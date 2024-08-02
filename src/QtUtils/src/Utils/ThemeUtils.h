@@ -21,6 +21,7 @@
 #define QTUTILS_THEMEUTILS_H_INCLUDED
 
 #include <QIcon>
+#include <QImage>
 #include <QMenu>
 #include <QString>
 #include <QStringList>
@@ -56,6 +57,12 @@ QIcon CreateScalableIcon(const QString &defaultImagePath, const QStringList &sca
 /// @return Масштабируемая иконка
 QIcon CreateScalableIcon(const QStringList &scaledImagePaths, bool invertPixels = false);
 
+/// @brief Create scalable icon from several images with different sizes
+/// @param[in] scaledImages - List of several images with different sizes
+/// @param[in] invertPixels - true if images should be inverted
+/// @return Scalable icon
+QIcon CreateScalableIcon(const QList<QImage> &scaledImages, bool invertPixels = false);
+
 /// @brief Типы иконок
 enum IconTypes
 {
@@ -80,6 +87,7 @@ enum IconTypes
     ICON_HELP_LICENSE,
     ICON_MEDIA_PLAYBACK_START,
     ICON_MEDIA_PLAYBACK_STOP,
+    ICON_MEDIA_SLIDESHOW,
     ICON_OBJECT_FLIP_HORIZONTAL,
     ICON_OBJECT_FLIP_VERTICAL,
     ICON_OBJECT_ROTATE_LEFT,

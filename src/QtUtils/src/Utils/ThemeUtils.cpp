@@ -57,6 +57,22 @@ void AddPixmapToIcon(QIcon &icon, const QPixmap &pixmap)
 #undef ADD_PIXMAP
 }
 
+void AddImageToIcon(QIcon &icon, const QImage &image, bool invertPixels)
+{
+    if(image.isNull())
+        return;
+
+    if(!invertPixels)
+    {
+        AddPixmapToIcon(icon, QPixmap::fromImage(image));
+        return;
+    }
+
+    QImage invertedImage = image.convertToFormat(QImage::Format_ARGB32);
+    invertedImage.invertPixels(QImage::InvertRgb);
+    AddPixmapToIcon(icon, QPixmap::fromImage(invertedImage));
+}
+
 int Lightness(const QColor &color)
 {
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
@@ -230,19 +246,22 @@ QIcon CreateScalableIcon(const QStringList &scaledImagePaths, bool invertPixels)
     {
         QImage image(*it);
         if(!image.isNull())
-        {
-            if(invertPixels)
-            {
-                image = image.convertToFormat(QImage::Format_ARGB32);
-                image.invertPixels(QImage::InvertRgb);
-            }
-            AddPixmapToIcon(result, QPixmap::fromImage(image));
-        }
+            AddImageToIcon(result, image, invertPixels);
         else
-        {
             qWarning() << "[ThemeUtils::CreateScalableIcon]: Unable to load image" << *it;
-        }
     }
+    return result;
+}
+
+/// @brief Create scalable icon from several images with different sizes
+/// @param[in] scaledImages - List of several images with different sizes
+/// @param[in] invertPixels - true if images should be inverted
+/// @return Scalable icon
+QIcon CreateScalableIcon(const QList<QImage> &scaledImages, bool invertPixels)
+{
+    QIcon result;
+    for(QList<QImage>::ConstIterator it = scaledImages.begin(), itEnd = scaledImages.end(); it != itEnd; ++it)
+        AddImageToIcon(result, *it, invertPixels);
     return result;
 }
 
@@ -284,6 +303,7 @@ QIcon GetIcon(IconTypes type, bool darkBackground)
     ADD_ICON_CASE(ICON_HELP_LICENSE)
     ADD_ICON_CASE(ICON_MEDIA_PLAYBACK_START)
     ADD_ICON_CASE(ICON_MEDIA_PLAYBACK_STOP)
+    ADD_NAMED_ICON_CASE(ICON_MEDIA_SLIDESHOW, "icon_media_playback_start")
     ADD_ICON_CASE(ICON_OBJECT_FLIP_HORIZONTAL)
     ADD_ICON_CASE(ICON_OBJECT_FLIP_VERTICAL)
     ADD_ICON_CASE(ICON_OBJECT_ROTATE_LEFT)
@@ -472,6 +492,10 @@ QIcon GetThemeIcon(IconTypes type)
     ADD_THEMED_ICON_CASE(ICON_MEDIA_PLAYBACK_STOP, QStringList()
             << QString::fromLatin1("media-playback-stop")
             << QString::fromLatin1("gtk-media-stop")
+            )
+    ADD_THEMED_ICON_CASE(ICON_MEDIA_SLIDESHOW, QStringList()
+            << QString::fromLatin1("media-playback-start")
+            << QString::fromLatin1("gtk-media-play")
             )
     ADD_THEMED_ICON_CASE(ICON_VIEW_FULLSCREEN, QStringList()
             << QString::fromLatin1("view-fullscreen")
