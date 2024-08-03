@@ -521,7 +521,10 @@ QImage QImageFromNSImage(const NSImage *image, const QSize &sizeInPixels, Qt::As
         NSDictionary *contextAttr = [NSDictionary dictionaryWithObject:bmp forKey:NSGraphicsContextDestinationAttributeName];
         NSGraphicsContext *context = [NSGraphicsContext graphicsContextWithAttributes:contextAttr];
         if(!context)
+        {
+            [bmp release];
             return result;
+        }
         [NSGraphicsContext saveGraphicsState];
         [NSGraphicsContext setCurrentContext:context];
         [image drawInRect:NSMakeRect(0, 0, width, height) fromRect:NSZeroRect operation:
@@ -606,7 +609,10 @@ NSImage *QImageToNSImage(const QImage &image, const QSize &sizeInPoints)
         NSDictionary *contextAttr = [NSDictionary dictionaryWithObject:bmp forKey:NSGraphicsContextDestinationAttributeName];
         NSGraphicsContext *context = [NSGraphicsContext graphicsContextWithAttributes:contextAttr];
         if(!context)
+        {
+            [bmp release];
             return nil;
+        }
         [NSGraphicsContext saveGraphicsState];
         [NSGraphicsContext setCurrentContext:context];
 #include "Workarounds/BeginIgnoreDeprecated.h"
