@@ -484,8 +484,8 @@ QImage QImageFromNSImage(const NSImage *image, const QSize &sizeInPixels, Qt::As
             }
             else
             {
-                width = sizeWidth;
                 height = static_cast<NSInteger>(qint64(sizeWidth) * qint64(height) / qint64(width));
+                width = sizeWidth;
             }
         }
     }
