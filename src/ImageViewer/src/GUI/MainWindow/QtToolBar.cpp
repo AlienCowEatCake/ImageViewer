@@ -230,7 +230,7 @@ void QtToolBar::onIconThemeChanged()
 
 bool QtToolBar::event(QEvent *event)
 {
-   bool result = QToolBar::event(event);
+    bool result = QToolBar::event(event);
     if(event->type() == QEvent::Polish)
         Q_EMIT polished();
     return result;

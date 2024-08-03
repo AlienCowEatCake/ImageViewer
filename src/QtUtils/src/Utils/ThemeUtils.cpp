@@ -30,6 +30,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDebug>
+#include <QToolBar>
 
 #if defined (Q_OS_WIN)
 #include <windows.h>
@@ -161,7 +162,14 @@ bool LoadStyleSheet(const QStringList &filePaths)
 /// @param[in] widget - Виджет, для которого выполняется эта проверка
 bool WidgetHasDarkTheme(const QWidget *widget)
 {
-    return IsDarkTheme(widget->palette(), widget->backgroundRole(), widget->foregroundRole());
+    assert(widget);
+    QPalette palette = widget->palette();
+#if defined (Q_OS_MAC)
+    /// @note Palette is broken for QToolBar on macOS
+    if(qobject_cast<const QToolBar*>(widget))
+        palette = qApp->palette();
+#endif
+    return IsDarkTheme(palette, widget->backgroundRole(), widget->foregroundRole());
 }
 
 #if !defined (Q_OS_MAC)
