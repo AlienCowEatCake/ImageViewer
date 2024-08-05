@@ -31,6 +31,10 @@
 #include <QFileInfo>
 #include <QDebug>
 #include <QToolBar>
+#include <QFont>
+#include <QFontDatabase>
+#include <QFontMetrics>
+#include <QPainter>
 
 #if defined (Q_OS_WIN)
 #include <windows.h>
@@ -293,6 +297,7 @@ QIcon GetIcon(IconTypes type, bool darkBackground)
     ADD_ICON_CASE(ICON_APPLICATION_EXIT)
     ADD_ICON_CASE(ICON_DOCUMENT_NEW)
     ADD_ICON_CASE(ICON_DOCUMENT_OPEN)
+    ADD_NAMED_ICON_CASE(ICON_DOCUMENT_OPEN_WITH, "icon_view_refresh")
     ADD_ICON_CASE(ICON_DOCUMENT_PRINT)
     ADD_NAMED_ICON_CASE(ICON_DOCUMENT_PROPERTIES, "icon_help_about")
     ADD_ICON_CASE(ICON_DOCUMENT_SAVE)
@@ -316,6 +321,7 @@ QIcon GetIcon(IconTypes type, bool darkBackground)
     ADD_ICON_CASE(ICON_OBJECT_FLIP_VERTICAL)
     ADD_ICON_CASE(ICON_OBJECT_ROTATE_LEFT)
     ADD_ICON_CASE(ICON_OBJECT_ROTATE_RIGHT)
+    ADD_NAMED_ICON_CASE(ICON_SYNC_SYNCHRONIZING, "icon_view_refresh")
     ADD_ICON_CASE(ICON_VIEW_FULLSCREEN)
     ADD_ICON_CASE(ICON_VIEW_REFRESH)
     ADD_ICON_CASE(ICON_WINDOW_CLOSE)
@@ -354,6 +360,7 @@ QIcon GetThemeIcon(IconTypes type)
     ADD_ICON_CASE(ICON_APPLICATION_EXIT, ApplicationExit)
     ADD_ICON_CASE(ICON_DOCUMENT_NEW, DocumentNew)
     ADD_ICON_CASE(ICON_DOCUMENT_OPEN, DocumentOpen)
+    ADD_ICON_CASE(ICON_DOCUMENT_OPEN_WITH, ViewRefresh)
     ADD_ICON_CASE(ICON_DOCUMENT_PRINT, DocumentPrint)
     ADD_ICON_CASE(ICON_DOCUMENT_PROPERTIES, DocumentProperties)
     ADD_ICON_CASE(ICON_DOCUMENT_SAVE, DocumentSave)
@@ -372,10 +379,12 @@ QIcon GetThemeIcon(IconTypes type)
     SKIP_ICON_CASE(ICON_HELP_LICENSE)
     ADD_ICON_CASE(ICON_MEDIA_PLAYBACK_START, MediaPlaybackStart)
     ADD_ICON_CASE(ICON_MEDIA_PLAYBACK_STOP, MediaPlaybackStop)
+    ADD_ICON_CASE(ICON_MEDIA_SLIDESHOW, MediaPlaybackStart)
     SKIP_ICON_CASE(ICON_OBJECT_FLIP_HORIZONTAL)
     SKIP_ICON_CASE(ICON_OBJECT_FLIP_VERTICAL)
     ADD_ICON_CASE(ICON_OBJECT_ROTATE_RIGHT, ObjectRotateRight)
     ADD_ICON_CASE(ICON_OBJECT_ROTATE_LEFT, ObjectRotateLeft)
+    ADD_ICON_CASE(ICON_SYNC_SYNCHRONIZING, SyncSynchronizing)
     ADD_ICON_CASE(ICON_VIEW_FULLSCREEN, ViewFullscreen)
     ADD_ICON_CASE(ICON_VIEW_REFRESH, ViewRefresh)
     ADD_ICON_CASE(ICON_WINDOW_CLOSE, WindowClose)
@@ -401,6 +410,7 @@ QIcon GetThemeIcon(IconTypes type)
         break; \
     }
 #define ADD_THEMED_ICON_CASE(ICON_TYPE, ICON_NAMES_LIST) ADD_ICON_CASE(ICON_TYPE, GetIconFromTheme(ICON_NAMES_LIST))
+#define ADD_THEMED_ICON_CASE2(ICON_TYPE1, ICON_TYPE2, ICON_NAMES_LIST) case ICON_TYPE1: ADD_THEMED_ICON_CASE(ICON_TYPE2, ICON_NAMES_LIST)
     ADD_THEMED_ICON_CASE(ICON_APPLICATION_EXIT, QStringList()
             << QString::fromLatin1("application-exit")
             << QString::fromLatin1("gtk-quit")
@@ -493,25 +503,13 @@ QIcon GetThemeIcon(IconTypes type)
             << QString::fromLatin1("gnome-mime-application-msword")
             << QString::fromLatin1("application-msword")
             )
-    ADD_THEMED_ICON_CASE(ICON_MEDIA_PLAYBACK_START, QStringList()
+    ADD_THEMED_ICON_CASE2(ICON_MEDIA_PLAYBACK_START, ICON_MEDIA_SLIDESHOW, QStringList()
             << QString::fromLatin1("media-playback-start")
             << QString::fromLatin1("gtk-media-play")
             )
     ADD_THEMED_ICON_CASE(ICON_MEDIA_PLAYBACK_STOP, QStringList()
             << QString::fromLatin1("media-playback-stop")
             << QString::fromLatin1("gtk-media-stop")
-            )
-    ADD_THEMED_ICON_CASE(ICON_MEDIA_SLIDESHOW, QStringList()
-            << QString::fromLatin1("media-playback-start")
-            << QString::fromLatin1("gtk-media-play")
-            )
-    ADD_THEMED_ICON_CASE(ICON_VIEW_FULLSCREEN, QStringList()
-            << QString::fromLatin1("view-fullscreen")
-            << QString::fromLatin1("gtk-fullscreen")
-            )
-    ADD_THEMED_ICON_CASE(ICON_VIEW_REFRESH, QStringList()
-            << QString::fromLatin1("view-refresh")
-            << QString::fromLatin1("gtk-refresh")
             )
     ADD_THEMED_ICON_CASE(ICON_OBJECT_ROTATE_LEFT, QStringList()
             << QString::fromLatin1("object-rotate-left")
@@ -524,6 +522,19 @@ QIcon GetThemeIcon(IconTypes type)
             )
     ADD_THEMED_ICON_CASE(ICON_OBJECT_FLIP_VERTICAL, QStringList()
             << QString::fromLatin1("object-flip-vertical")
+            )
+    ADD_THEMED_ICON_CASE(ICON_SYNC_SYNCHRONIZING, QStringList()
+            << QString::fromLatin1("sync-synchronizing")
+            << QString::fromLatin1("view-refresh")
+            << QString::fromLatin1("gtk-refresh")
+            )
+    ADD_THEMED_ICON_CASE(ICON_VIEW_FULLSCREEN, QStringList()
+            << QString::fromLatin1("view-fullscreen")
+            << QString::fromLatin1("gtk-fullscreen")
+            )
+    ADD_THEMED_ICON_CASE2(ICON_VIEW_REFRESH, ICON_DOCUMENT_OPEN_WITH, QStringList()
+            << QString::fromLatin1("view-refresh")
+            << QString::fromLatin1("gtk-refresh")
             )
     ADD_THEMED_ICON_CASE(ICON_WINDOW_CLOSE, QStringList()
             << QString::fromLatin1("window-close")
@@ -551,11 +562,108 @@ QIcon GetThemeIcon(IconTypes type)
             << QString::fromLatin1("gtk-zoom-out")
             )
 #undef ADD_THEMED_ICON_CASE
+#undef ADD_THEMED_ICON_CASE2
 #undef ADD_ICON_CASE
     }
 
     return QIcon();
 }
+
+#if defined (Q_OS_WIN)
+QImage GetWinSystemImage(IconTypes type, const QSize &size)
+{
+    if(!InfoUtils::WinVersionGreatOrEqual(10, 0, 0))
+        return QImage();
+
+    // https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font
+    // https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-fluent-icons-font
+    QString symbol;
+    switch(type)
+    {
+#define SKIP_ICON_CASE(ICON_TYPE) case ICON_TYPE: break;
+#define ADD_ICON_CASE(ICON_TYPE, SYMBOL) case ICON_TYPE: symbol = QString::fromUtf8(SYMBOL); break;
+    ADD_ICON_CASE(ICON_APPLICATION_EXIT,        "\xEE\xA2\xBB") // E8BB, ChromeClose
+    ADD_ICON_CASE(ICON_DOCUMENT_NEW,            "\xEE\xA2\xA5") // E8A5, Document
+    ADD_ICON_CASE(ICON_DOCUMENT_OPEN,           "\xEE\xB4\xA5") // ED25, OpenFolderHorizontal
+    ADD_ICON_CASE(ICON_DOCUMENT_OPEN_WITH,      "\xEE\x9E\xAC") // E7AC, OpenWith
+    ADD_ICON_CASE(ICON_DOCUMENT_PRINT,          "\xEE\x9D\x89") // E749, Print
+    ADD_ICON_CASE(ICON_DOCUMENT_PROPERTIES,     "\xEE\xA4\x8F") // E90F, Repair
+    ADD_ICON_CASE(ICON_DOCUMENT_SAVE,           "\xEE\x9D\x8E") // E74E, Save
+    ADD_ICON_CASE(ICON_DOCUMENT_SAVE_AS,        "\xEE\x9E\x92") // E792, SaveAs
+    ADD_ICON_CASE(ICON_EDIT_COPY,               "\xEE\xA3\x88") // E8C8, Copy
+    ADD_ICON_CASE(ICON_EDIT_CUT,                "\xEE\xA3\x86") // E8C6, Cut
+    ADD_ICON_CASE(ICON_EDIT_DELETE,             "\xEE\x9D\x8D") // E74D, Delete
+    ADD_ICON_CASE(ICON_EDIT_PASTE,              "\xEE\x9D\xBF") // E77F, Paste
+    ADD_ICON_CASE(ICON_EDIT_PREFERENCES,        "\xEE\x9C\x93") // E713, Setting
+    ADD_ICON_CASE(ICON_GO_NEXT,                 "\xEE\x9C\xAA") // E72A, Forward
+    ADD_ICON_CASE(ICON_GO_PREVIOUS,             "\xEE\x9C\xAB") // E72B, Back
+    ADD_ICON_CASE(ICON_HELP_ABOUT,              "\xEE\xA5\x86") // E946, Info
+    SKIP_ICON_CASE(ICON_HELP_ABOUT_QT)
+    ADD_ICON_CASE(ICON_HELP_AUTHORS,            "\xEE\x9C\x96") // E716, People
+    ADD_ICON_CASE(ICON_HELP_CONTENTS,           "\xEE\xA2\x97") // E897, Help
+    ADD_ICON_CASE(ICON_HELP_LICENSE,            "\xEF\x80\x80") // F000, KnowledgeArticle
+    ADD_ICON_CASE(ICON_MEDIA_PLAYBACK_START,    "\xEE\x9D\xA8") // E768, Play
+    ADD_ICON_CASE(ICON_MEDIA_PLAYBACK_STOP,     "\xEE\x9C\x9A") // E71A, Stop
+    ADD_ICON_CASE(ICON_MEDIA_SLIDESHOW,         "\xEE\x9E\x86") // E786, Slideshow
+    SKIP_ICON_CASE(ICON_OBJECT_FLIP_HORIZONTAL)
+    SKIP_ICON_CASE(ICON_OBJECT_FLIP_VERTICAL)
+    ADD_ICON_CASE(ICON_OBJECT_ROTATE_LEFT,      "\xEE\xA0\x8C") // E80C, RotateMapRight
+    ADD_ICON_CASE(ICON_OBJECT_ROTATE_RIGHT,     "\xEE\xA0\x8D") // E80D, RotateMapLeft
+    ADD_ICON_CASE(ICON_SYNC_SYNCHRONIZING,      "\xEE\xA2\x95") // E895, Sync
+    ADD_ICON_CASE(ICON_VIEW_FULLSCREEN,         "\xEE\x9D\x80") // E740, FullScreen
+    ADD_ICON_CASE(ICON_VIEW_REFRESH,            "\xEE\x9C\xAC") // E72C, Refresh
+    ADD_ICON_CASE(ICON_WINDOW_CLOSE,            "\xEE\xA2\xBB") // E8BB, ChromeClose
+    ADD_ICON_CASE(ICON_WINDOW_NEW,              "\xEE\x9E\x8B") // E78B, NewWindow
+    ADD_ICON_CASE(ICON_ZOOM_CUSTOM,             "\xEE\x9C\x9E") // E71E, Zoom
+    ADD_ICON_CASE(ICON_ZOOM_FIT_BEST,           "\xEE\xA6\xA6") // E9A6, FitPage
+    ADD_ICON_CASE(ICON_ZOOM_IN,                 "\xEE\xA2\xA3") // E8A3, ZoomIn
+    SKIP_ICON_CASE(ICON_ZOOM_ORIGINAL)
+    ADD_ICON_CASE(ICON_ZOOM_OUT,                "\xEE\x9C\x9F") // E71F, ZoomOut
+#undef ADD_ICON_CASE
+#undef SKIP_ICON_CASE
+    }
+    if(symbol.isEmpty())
+        return QImage();
+
+    static const QString fontName = InfoUtils::WinVersionGreatOrEqual(10, 0, 22000) ?
+            QString::fromLatin1("Segoe Fluent Icons") : QString::fromLatin1("Segoe MDL2 Assets");
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    if(!QFontDatabase::hasFamily(fontName))
+        return QImage();
+#else
+    static const QFontDatabase fontDatabase;
+    if(!fontDatabase.hasFamily(fontName))
+        return QImage();
+#endif
+    QFont font(fontName);
+    font.setPixelSize(size.height());
+    font.setStyleStrategy(QFont::NoFontMerging);
+    if(!QFontInfo(font).exactMatch())
+        return QImage();
+
+    // https://github.com/qt/qtbase/blob/v6.7.2/src/plugins/platforms/windows/qwindowsiconengine.cpp#L326-L330
+    const QChar c0 = symbol.at(0);
+    const QFontMetrics fontMetrics(font);
+    if(c0.category() == QChar::Other_Surrogate && symbol.size() > 1)
+    {
+        if(!fontMetrics.inFontUcs4(QChar::surrogateToUcs4(c0, symbol.at(1))))
+            return QImage();
+    }
+    else
+    {
+        if(!fontMetrics.inFont(c0))
+            return QImage();
+    }
+
+    QImage result(size, QImage::Format_ARGB32);
+    result.fill(Qt::transparent);
+    QPainter painter(&result);
+    painter.setFont(font);
+    painter.setPen(QPen(Qt::black));
+    painter.drawText(QRect(QPoint(0, 0), size), Qt::AlignCenter, symbol);
+    return result;
+}
+#endif
 
 } // namespace ThemeUtils
 

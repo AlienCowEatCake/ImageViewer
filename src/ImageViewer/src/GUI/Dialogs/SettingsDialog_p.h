@@ -40,6 +40,7 @@
 #include <QSpacerItem>
 #include <QPixmap>
 
+#include "Utils/IconThemeManager.h"
 #include "Utils/ObjectsUtils.h"
 #include "Utils/SettingsWrapper.h"
 
@@ -49,7 +50,7 @@
 
 #include "../GUISettings.h"
 
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0)) && !defined(HAS_MAC_TOOLBAR)
+#if defined(QTUTILS_ICONTHEMEMANAGER_SUPPORTS_SYSTEM_THEME) && !defined(HAS_MAC_TOOLBAR)
 #define ENABLE_ICON_THEME_CHANGING
 #endif
 

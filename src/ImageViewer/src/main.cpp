@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
                                     QStringList(),
                                     QString(),
                                     true);
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
+#if defined (QTUTILS_ICONTHEMEMANAGER_SUPPORTS_SYSTEM_THEME)
     iconThemeManager->registerTheme(IconThemeManager::SYSTEM_THEME_ID,
                                     QStringList(),
                                     QString());

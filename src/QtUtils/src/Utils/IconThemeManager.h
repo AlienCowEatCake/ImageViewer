@@ -24,9 +24,20 @@
 #include <QStringList>
 #include <QObject>
 
+#if defined (Q_OS_MAC)
+#include <AvailabilityMacros.h>
+#endif
+
 #include "Global.h"
 #include "ScopedPointer.h"
 #include "ThemeUtils.h"
+
+#if (defined (Q_OS_WIN) || \
+    (defined (Q_OS_MAC) && defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 110000)) || \
+    (!defined (Q_OS_WIN) && !defined (Q_OS_MAC) && (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))) || \
+    (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)))
+#define QTUTILS_ICONTHEMEMANAGER_SUPPORTS_SYSTEM_THEME
+#endif
 
 class QAction;
 class QComboBox;

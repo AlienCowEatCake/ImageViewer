@@ -334,7 +334,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     {
         IconThemeManager *iconThemeManager = IconThemeManager::instance();
         menuActionsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(menuFile);
-        menuReopenWith->setIcon                 (iconThemeManager->GetIcon(ThemeUtils::ICON_VIEW_REFRESH            , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
+        menuReopenWith->setIcon                 (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_OPEN_WITH      , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionOpenFile->setIcon                 (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_OPEN           , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionOpenFolder->setIcon               (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_OPEN           , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionSaveAs->setIcon                   (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_SAVE_AS        , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
@@ -359,7 +359,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionZoomFullScreen->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_VIEW_FULLSCREEN         , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionAbout->setIcon                    (iconThemeManager->GetIcon(ThemeUtils::ICON_HELP_ABOUT              , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionAboutQt->setIcon                  (iconThemeManager->GetIcon(ThemeUtils::ICON_HELP_ABOUT_QT           , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionCheckForUpdates->setIcon          (iconThemeManager->GetIcon(ThemeUtils::ICON_VIEW_REFRESH            , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
+        actionCheckForUpdates->setIcon          (iconThemeManager->GetIcon(ThemeUtils::ICON_SYNC_SYNCHRONIZING      , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionEditStylesheet->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_EDIT_PREFERENCES        , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionStartSlideShow->setIcon(iconThemeManager->GetIcon(isSlideShowMode ? ThemeUtils::ICON_MEDIA_PLAYBACK_STOP : ThemeUtils::ICON_MEDIA_SLIDESHOW, menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
     }

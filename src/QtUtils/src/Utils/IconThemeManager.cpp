@@ -250,14 +250,18 @@ void IconThemeManager::fillComboBox(QComboBox *comboBox, const bool autoApply)
 QIcon IconThemeManager::GetIcon(ThemeUtils::IconTypes type, bool fallbackRequired, bool darkBackground) const
 {
     const ThemeData *currentTheme = m_impl->currentTheme();
-#if defined (Q_OS_MAC)
+#if defined (Q_OS_MAC) || defined (Q_OS_WIN)
     if(currentTheme && currentTheme->themeId == SYSTEM_THEME_ID)
     {
         QList<QImage> iconImages;
         static const QList<int> iconSizes = QList<int>() << 16 << 32;
         for(QList<int>::ConstIterator it = iconSizes.begin(); it != iconSizes.end(); ++it)
         {
+#if defined (Q_OS_MAC)
             QImage image = ThemeUtils::GetMacSystemImage(type, QSize(*it, *it));
+#elif defined (Q_OS_WIN)
+            QImage image = ThemeUtils::GetWinSystemImage(type, QSize(*it, *it));
+#endif
             if(!image.isNull())
                 iconImages.append(image);
         }
@@ -267,6 +271,9 @@ QIcon IconThemeManager::GetIcon(ThemeUtils::IconTypes type, bool fallbackRequire
             if(!result.isNull())
                 return result;
         }
+        // Symbolic monochrome icons are used as system icon theme for Windows and macOS.
+        // So we can safely use QtUtils monochrome theme as fallback
+        return ThemeUtils::GetIcon(type, darkBackground);
     }
 #endif
     if(currentTheme && currentTheme->themeId != QTUTILS_THEME_ID)

@@ -69,6 +69,7 @@ enum IconTypes
     ICON_APPLICATION_EXIT,
     ICON_DOCUMENT_NEW,
     ICON_DOCUMENT_OPEN,
+    ICON_DOCUMENT_OPEN_WITH,
     ICON_DOCUMENT_PRINT,
     ICON_DOCUMENT_PROPERTIES,
     ICON_DOCUMENT_SAVE,
@@ -92,6 +93,7 @@ enum IconTypes
     ICON_OBJECT_FLIP_VERTICAL,
     ICON_OBJECT_ROTATE_LEFT,
     ICON_OBJECT_ROTATE_RIGHT,
+    ICON_SYNC_SYNCHRONIZING,
     ICON_VIEW_FULLSCREEN,
     ICON_VIEW_REFRESH,
     ICON_WINDOW_CLOSE,
@@ -111,6 +113,10 @@ QIcon GetIcon(IconTypes type, bool darkBackground = false);
 /// @brief Get icon from current icon theme
 /// @param[in] type - Type of icon (see enum IconTypes)
 QIcon GetThemeIcon(IconTypes type);
+
+#if defined (Q_OS_WIN)
+QImage GetWinSystemImage(IconTypes type, const QSize &size);
+#endif
 
 } // namespace ThemeUtils
 
