@@ -577,52 +577,52 @@ QImage GetWinSystemImage(IconTypes type, const QSize &size)
 
     // https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font
     // https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-fluent-icons-font
-    QString symbol;
+    QChar symbol;
     switch(type)
     {
 #define SKIP_ICON_CASE(ICON_TYPE) case ICON_TYPE: break;
-#define ADD_ICON_CASE(ICON_TYPE, SYMBOL) case ICON_TYPE: symbol = QString::fromUtf8(SYMBOL); break;
-    ADD_ICON_CASE(ICON_APPLICATION_EXIT,        "\xEE\xA2\xBB") // E8BB, ChromeClose
-    ADD_ICON_CASE(ICON_DOCUMENT_NEW,            "\xEE\xA2\xA5") // E8A5, Document
-    ADD_ICON_CASE(ICON_DOCUMENT_OPEN,           "\xEE\xB4\xA5") // ED25, OpenFolderHorizontal
-    ADD_ICON_CASE(ICON_DOCUMENT_OPEN_WITH,      "\xEE\x9E\xAC") // E7AC, OpenWith
-    ADD_ICON_CASE(ICON_DOCUMENT_PRINT,          "\xEE\x9D\x89") // E749, Print
-    ADD_ICON_CASE(ICON_DOCUMENT_PROPERTIES,     "\xEE\xA4\x8F") // E90F, Repair
-    ADD_ICON_CASE(ICON_DOCUMENT_SAVE,           "\xEE\x9D\x8E") // E74E, Save
-    ADD_ICON_CASE(ICON_DOCUMENT_SAVE_AS,        "\xEE\x9E\x92") // E792, SaveAs
-    ADD_ICON_CASE(ICON_EDIT_COPY,               "\xEE\xA3\x88") // E8C8, Copy
-    ADD_ICON_CASE(ICON_EDIT_CUT,                "\xEE\xA3\x86") // E8C6, Cut
-    ADD_ICON_CASE(ICON_EDIT_DELETE,             "\xEE\x9D\x8D") // E74D, Delete
-    ADD_ICON_CASE(ICON_EDIT_PASTE,              "\xEE\x9D\xBF") // E77F, Paste
-    ADD_ICON_CASE(ICON_EDIT_PREFERENCES,        "\xEE\x9C\x93") // E713, Setting
-    ADD_ICON_CASE(ICON_GO_NEXT,                 "\xEE\x9C\xAA") // E72A, Forward
-    ADD_ICON_CASE(ICON_GO_PREVIOUS,             "\xEE\x9C\xAB") // E72B, Back
-    ADD_ICON_CASE(ICON_HELP_ABOUT,              "\xEE\xA5\x86") // E946, Info
+#define ADD_ICON_CASE(ICON_TYPE, SYMBOL) case ICON_TYPE: symbol = QChar(static_cast<uint>(SYMBOL)); break;
+    ADD_ICON_CASE(ICON_APPLICATION_EXIT,        0xE8BB) // ChromeClose
+    ADD_ICON_CASE(ICON_DOCUMENT_NEW,            0xE8A5) // Document
+    ADD_ICON_CASE(ICON_DOCUMENT_OPEN,           0xED25) // OpenFolderHorizontal
+    ADD_ICON_CASE(ICON_DOCUMENT_OPEN_WITH,      0xE7AC) // OpenWith
+    ADD_ICON_CASE(ICON_DOCUMENT_PRINT,          0xE749) // Print
+    ADD_ICON_CASE(ICON_DOCUMENT_PROPERTIES,     0xE90F) // Repair
+    ADD_ICON_CASE(ICON_DOCUMENT_SAVE,           0xE74E) // Save
+    ADD_ICON_CASE(ICON_DOCUMENT_SAVE_AS,        0xE792) // SaveAs
+    ADD_ICON_CASE(ICON_EDIT_COPY,               0xE8C8) // Copy
+    ADD_ICON_CASE(ICON_EDIT_CUT,                0xE8C6) // Cut
+    ADD_ICON_CASE(ICON_EDIT_DELETE,             0xE74D) // Delete
+    ADD_ICON_CASE(ICON_EDIT_PASTE,              0xE77F) // Paste
+    ADD_ICON_CASE(ICON_EDIT_PREFERENCES,        0xE713) // Setting
+    ADD_ICON_CASE(ICON_GO_NEXT,                 0xE72A) // Forward
+    ADD_ICON_CASE(ICON_GO_PREVIOUS,             0xE72B) // Back
+    ADD_ICON_CASE(ICON_HELP_ABOUT,              0xE946) // Info
     SKIP_ICON_CASE(ICON_HELP_ABOUT_QT)
-    ADD_ICON_CASE(ICON_HELP_AUTHORS,            "\xEE\x9C\x96") // E716, People
-    ADD_ICON_CASE(ICON_HELP_CONTENTS,           "\xEE\xA2\x97") // E897, Help
-    ADD_ICON_CASE(ICON_HELP_LICENSE,            "\xEF\x80\x80") // F000, KnowledgeArticle
-    ADD_ICON_CASE(ICON_MEDIA_PLAYBACK_START,    "\xEE\x9D\xA8") // E768, Play
-    ADD_ICON_CASE(ICON_MEDIA_PLAYBACK_STOP,     "\xEE\x9C\x9A") // E71A, Stop
-    ADD_ICON_CASE(ICON_MEDIA_SLIDESHOW,         "\xEE\x9E\x86") // E786, Slideshow
+    ADD_ICON_CASE(ICON_HELP_AUTHORS,            0xE716) // People
+    ADD_ICON_CASE(ICON_HELP_CONTENTS,           0xE897) // Help
+    ADD_ICON_CASE(ICON_HELP_LICENSE,            0xF000) // KnowledgeArticle
+    ADD_ICON_CASE(ICON_MEDIA_PLAYBACK_START,    0xE768) // Play
+    ADD_ICON_CASE(ICON_MEDIA_PLAYBACK_STOP,     0xE71A) // Stop
+    ADD_ICON_CASE(ICON_MEDIA_SLIDESHOW,         0xE786) // Slideshow
     SKIP_ICON_CASE(ICON_OBJECT_FLIP_HORIZONTAL)
     SKIP_ICON_CASE(ICON_OBJECT_FLIP_VERTICAL)
-    ADD_ICON_CASE(ICON_OBJECT_ROTATE_LEFT,      "\xEE\xA0\x8C") // E80C, RotateMapRight
-    ADD_ICON_CASE(ICON_OBJECT_ROTATE_RIGHT,     "\xEE\xA0\x8D") // E80D, RotateMapLeft
-    ADD_ICON_CASE(ICON_SYNC_SYNCHRONIZING,      "\xEE\xA2\x95") // E895, Sync
-    ADD_ICON_CASE(ICON_VIEW_FULLSCREEN,         "\xEE\x9D\x80") // E740, FullScreen
-    ADD_ICON_CASE(ICON_VIEW_REFRESH,            "\xEE\x9C\xAC") // E72C, Refresh
-    ADD_ICON_CASE(ICON_WINDOW_CLOSE,            "\xEE\xA2\xBB") // E8BB, ChromeClose
-    ADD_ICON_CASE(ICON_WINDOW_NEW,              "\xEE\x9E\x8B") // E78B, NewWindow
-    ADD_ICON_CASE(ICON_ZOOM_CUSTOM,             "\xEE\x9C\x9E") // E71E, Zoom
-    ADD_ICON_CASE(ICON_ZOOM_FIT_BEST,           "\xEE\xA6\xA6") // E9A6, FitPage
-    ADD_ICON_CASE(ICON_ZOOM_IN,                 "\xEE\xA2\xA3") // E8A3, ZoomIn
+    ADD_ICON_CASE(ICON_OBJECT_ROTATE_LEFT,      0xE80C) // RotateMapRight
+    ADD_ICON_CASE(ICON_OBJECT_ROTATE_RIGHT,     0xE80D) // RotateMapLeft
+    ADD_ICON_CASE(ICON_SYNC_SYNCHRONIZING,      0xE895) // Sync
+    ADD_ICON_CASE(ICON_VIEW_FULLSCREEN,         0xE740) // FullScreen
+    ADD_ICON_CASE(ICON_VIEW_REFRESH,            0xE72C) // Refresh
+    ADD_ICON_CASE(ICON_WINDOW_CLOSE,            0xE8BB) // ChromeClose
+    ADD_ICON_CASE(ICON_WINDOW_NEW,              0xE78B) // NewWindow
+    ADD_ICON_CASE(ICON_ZOOM_CUSTOM,             0xE71E) // Zoom
+    ADD_ICON_CASE(ICON_ZOOM_FIT_BEST,           0xE9A6) // FitPage
+    ADD_ICON_CASE(ICON_ZOOM_IN,                 0xE8A3) // ZoomIn
     SKIP_ICON_CASE(ICON_ZOOM_ORIGINAL)
-    ADD_ICON_CASE(ICON_ZOOM_OUT,                "\xEE\x9C\x9F") // E71F, ZoomOut
+    ADD_ICON_CASE(ICON_ZOOM_OUT,                0xE71F) // ZoomOut
 #undef ADD_ICON_CASE
 #undef SKIP_ICON_CASE
     }
-    if(symbol.isEmpty())
+    if(symbol.isNull())
         return QImage();
 
     static const QString fontName = InfoUtils::WinVersionGreatOrEqual(10, 0, 22000) ?
@@ -630,30 +630,29 @@ QImage GetWinSystemImage(IconTypes type, const QSize &size)
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     if(!QFontDatabase::hasFamily(fontName))
         return QImage();
-#else
+#elif (QT_VERSION >= QT_VERSION_CHECK(4, 8, 0))
     static const QFontDatabase fontDatabase;
     if(!fontDatabase.hasFamily(fontName))
         return QImage();
+#else
+    static const QFontDatabase fontDatabase;
+    if(!fontDatabase.families().contains(fontName, Qt::CaseInsensitive))
+        return QImage();
 #endif
+
     QFont font(fontName);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     font.setPixelSize(size.height());
+#else
+    font.setPixelSize(size.height() - 1);
+#endif
     font.setStyleStrategy(QFont::NoFontMerging);
     if(!QFontInfo(font).exactMatch())
         return QImage();
 
-    // https://github.com/qt/qtbase/blob/v6.7.2/src/plugins/platforms/windows/qwindowsiconengine.cpp#L326-L330
-    const QChar c0 = symbol.at(0);
     const QFontMetrics fontMetrics(font);
-    if(c0.category() == QChar::Other_Surrogate && symbol.size() > 1)
-    {
-        if(!fontMetrics.inFontUcs4(QChar::surrogateToUcs4(c0, symbol.at(1))))
-            return QImage();
-    }
-    else
-    {
-        if(!fontMetrics.inFont(c0))
-            return QImage();
-    }
+    if(!fontMetrics.inFont(symbol))
+        return QImage();
 
     QImage result(size, QImage::Format_ARGB32);
     result.fill(Qt::transparent);
