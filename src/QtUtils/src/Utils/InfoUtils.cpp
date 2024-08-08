@@ -679,65 +679,63 @@ QString GetSystemDescription()
     if(hNtdll)
         FreeLibrary(hNtdll);
 
-    QString winVersion;
+    QString winVersion = QString::fromLatin1("Windows");
     if     (osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 22000 && osProductType == VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows 11");
+        winVersion.append(QString::fromLatin1(" 11"));
     else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 20344 && osProductType != VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows Server 2022");
+        winVersion.append(QString::fromLatin1(" Server 2022"));
     else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 17763 && osProductType != VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows Server 2019");
+        winVersion.append(QString::fromLatin1(" Server 2019"));
     else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osProductType != VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows Server 2016");
+        winVersion.append(QString::fromLatin1(" Server 2016"));
     else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osProductType == VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows 10");
+        winVersion.append(QString::fromLatin1(" 10"));
     else if(osMajorVersion == 6 && osMinorVersion == 3 && osProductType != VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows Server 2012 R2");
+        winVersion.append(QString::fromLatin1(" Server 2012 R2"));
     else if(osMajorVersion == 6 && osMinorVersion == 3 && osProductType == VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows 8.1");
+        winVersion.append(QString::fromLatin1(" 8.1"));
     else if(osMajorVersion == 6 && osMinorVersion == 2 && osProductType != VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows Server 2012");
+        winVersion.append(QString::fromLatin1(" Server 2012"));
     else if(osMajorVersion == 6 && osMinorVersion == 2 && osProductType == VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows 8");
+        winVersion.append(QString::fromLatin1(" 8"));
     else if(osMajorVersion == 6 && osMinorVersion == 1 && osProductType != VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows Server 2008 R2");
+        winVersion.append(QString::fromLatin1(" Server 2008 R2"));
     else if(osMajorVersion == 6 && osMinorVersion == 1 && osProductType == VER_NT_WORKSTATION && GetSystemMetrics(SM_STARTER))
-        winVersion = QString::fromLatin1("Windows 7 Starter Edition");
+        winVersion.append(QString::fromLatin1(" 7 Starter Edition"));
     else if(osMajorVersion == 6 && osMinorVersion == 1 && osProductType == VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows 7");
+        winVersion.append(QString::fromLatin1(" 7"));
     else if(osMajorVersion == 6 && osMinorVersion == 0 && osProductType != VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows Server 2008");
+        winVersion.append(QString::fromLatin1(" Server 2008"));
     else if(osMajorVersion == 6 && osMinorVersion == 0 && osProductType == VER_NT_WORKSTATION && GetSystemMetrics(SM_STARTER))
-        winVersion = QString::fromLatin1("Windows Vista Starter");
+        winVersion.append(QString::fromLatin1(" Vista Starter"));
     else if(osMajorVersion == 6 && osMinorVersion == 0 && osProductType == VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows Vista");
+        winVersion.append(QString::fromLatin1(" Vista"));
     else if(osMajorVersion == 5 && osMinorVersion == 2 && osSuiteMask & VER_SUITE_WH_SERVER)
-        winVersion = QString::fromLatin1("Windows Home Server");
+        winVersion.append(QString::fromLatin1(" Home Server"));
     else if(osMajorVersion == 5 && osMinorVersion == 2 && osProductType == VER_NT_WORKSTATION)
-        winVersion = QString::fromLatin1("Windows XP Professional x64 Edition");
+        winVersion.append(QString::fromLatin1(" XP Professional x64 Edition"));
     else if(osMajorVersion == 5 && osMinorVersion == 2 && GetSystemMetrics(SM_SERVERR2))
-        winVersion = QString::fromLatin1("Windows Server 2003 R2");
+        winVersion.append(QString::fromLatin1(" Server 2003 R2"));
     else if(osMajorVersion == 5 && osMinorVersion == 2)
-        winVersion = QString::fromLatin1("Windows Server 2003");
+        winVersion.append(QString::fromLatin1(" Server 2003"));
     else if(osMajorVersion == 5 && osMinorVersion == 1 && GetSystemMetrics(SM_MEDIACENTER))
-        winVersion = QString::fromLatin1("Windows XP Media Center Edition");
+        winVersion.append(QString::fromLatin1(" XP Media Center Edition"));
     else if(osMajorVersion == 5 && osMinorVersion == 1 && GetSystemMetrics(SM_STARTER))
-        winVersion = QString::fromLatin1("Windows XP Starter Edition");
+        winVersion.append(QString::fromLatin1(" XP Starter Edition"));
     else if(osMajorVersion == 5 && osMinorVersion == 1 && GetSystemMetrics(SM_TABLETPC))
-        winVersion = QString::fromLatin1("Windows XP Tablet PC Edition");
+        winVersion.append(QString::fromLatin1(" XP Tablet PC Edition"));
     else if(osMajorVersion == 5 && osMinorVersion == 1)
-        winVersion = QString::fromLatin1("Windows XP");
+        winVersion.append(QString::fromLatin1(" XP"));
     else if(osMajorVersion == 5 && osMinorVersion == 0)
-        winVersion = QString::fromLatin1("Windows 2000");
+        winVersion.append(QString::fromLatin1(" 2000"));
     else if(osMajorVersion == 4 && osMinorVersion == 90)
-        winVersion = QString::fromLatin1("Windows ME");
+        winVersion.append(QString::fromLatin1(" ME"));
     else if(osMajorVersion == 4 && osMinorVersion == 10)
-        winVersion = QString::fromLatin1("Windows 98") + (osCSDVersion.isEmpty() ? QString() : QString::fromLatin1(" SE"));
+        winVersion.append(QString::fromLatin1(" 98") + (osCSDVersion.isEmpty() ? QString() : QString::fromLatin1(" SE")));
     else if(osMajorVersion == 4 && osMinorVersion == 0 && osPlatform == VER_PLATFORM_WIN32_NT)
-        winVersion = QString::fromLatin1("Windows NT 4.0") + (osCSDVersion.isEmpty() ? QString() : QString::fromLatin1(" %1").arg(osCSDVersion));
+        winVersion.append(QString::fromLatin1(" NT 4.0") + (osCSDVersion.isEmpty() ? QString() : QString::fromLatin1(" %1").arg(osCSDVersion)));
     else if(osMajorVersion == 4 && osMinorVersion == 0)
-        winVersion = QString::fromLatin1("Windows 95");
-    else
-        winVersion = QString::fromLatin1("Windows");
+        winVersion.append(QString::fromLatin1(" 95"));
 
     if(osMajorVersion > 5 || (osMajorVersion == 5 && osMinorVersion == 2  && osProductType != VER_NT_WORKSTATION))
     {
