@@ -344,7 +344,7 @@ bool GUISettings::rememberEffectsDuringSession() const
 #else
     const QVariant::Type type = QVariant::Bool;
 #endif
-    const bool defaultValue = true;
+    const bool defaultValue = false;
     QVariant value = m_impl->settings.value(REMEMBER_EFFECTS_DURING_SESSION, defaultValue);
     return value.isValid() && value.canConvert(type) ? value.toBool() : defaultValue;
 }
