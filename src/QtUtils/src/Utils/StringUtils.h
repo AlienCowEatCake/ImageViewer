@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -17,26 +17,16 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined (UPDATER_RELEASE_INFO_H_INCLUDED)
-#define UPDATER_RELEASE_INFO_H_INCLUDED
+#if !defined (QTUTILS_STRINGUTILS_H_INCLUDED)
+#define QTUTILS_STRINGUTILS_H_INCLUDED
 
-#include <QDateTime>
-#include <QString>
-#include <QUrl>
+class QString;
 
-#include "ReleaseVersion.h"
+namespace StringUtils {
 
-struct ReleaseInfo
-{
-    QUrl htmlUrl;
-    QString tagName;
-    QString name;
-    QString body;
-    bool prerelease;
-    QDateTime createdAt;
-    QDateTime publishedAt;
-    ReleaseVersion version;
-};
+bool NumericLessThan(const QString &s1, const QString &s2);
 
-#endif // UPDATER_RELEASE_INFO_H_INCLUDED
+} // namespace StringUtils
+
+#endif // QTUTILS_STRINGUTILS_H_INCLUDED
 

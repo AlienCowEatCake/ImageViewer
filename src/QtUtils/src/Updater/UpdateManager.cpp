@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -130,7 +130,7 @@ void UpdateManager::onUpdateNotFound(const ReleaseInfo &currentRelease)
         box.setText(qApp->translate("UpdateManager", "You have the latest version."));
         box.setInformativeText(QString::fromLatin1("%1 <b>%2</b>")
                 .arg(qApp->translate("UpdateManager", "Your version:"))
-                .arg(currentRelease.version.string()));
+                .arg(currentRelease.version.toString()));
         box.setStandardButtons(QMessageBox::Ok);
         box.setDefaultButton(QMessageBox::Ok);
         box.exec();
@@ -140,7 +140,7 @@ void UpdateManager::onUpdateNotFound(const ReleaseInfo &currentRelease)
 
 void UpdateManager::onUpdateFound(const ReleaseInfo &currentRelease, const QList<ReleaseInfo> &newReleases)
 {
-    const Version skippedVersion = Version(m_impl->updaterSettings.value(KEY_SKIPPED_VERSION).toString());
+    const ReleaseVersion skippedVersion = ReleaseVersion(m_impl->updaterSettings.value(KEY_SKIPPED_VERSION).toString());
     if(m_impl->silent && skippedVersion.isValid() && newReleases.first().version <= skippedVersion)
     {
         onUpdateNotFound(currentRelease);
@@ -153,9 +153,9 @@ void UpdateManager::onUpdateFound(const ReleaseInfo &currentRelease, const QList
     box.setText(qApp->translate("UpdateManager", "New updates are available."));
     const QString informativeText = QString::fromLatin1("%1 <b>%2</b><br>%3 <b>%4</b>")
             .arg(qApp->translate("UpdateManager", "Your version:"))
-            .arg(currentRelease.version.string())
+            .arg(currentRelease.version.toString())
             .arg(qApp->translate("UpdateManager", "Latest version:"))
-            .arg(newReleases.first().version.string());
+            .arg(newReleases.first().version.toString());
     box.setInformativeText(informativeText);
     QPushButton *downloadButton = box.addButton(qApp->translate("UpdateManager", "&Download")           , QMessageBox::AcceptRole);
     QPushButton *cancelButton   = box.addButton(qApp->translate("UpdateManager", "&Cancel")             , QMessageBox::RejectRole);
@@ -179,7 +179,7 @@ void UpdateManager::onUpdateFound(const ReleaseInfo &currentRelease, const QList
     if(box.clickedButton() == downloadButton)
         QDesktopServices::openUrl(newReleases.first().htmlUrl);
     else if(box.clickedButton() == skipButton)
-        m_impl->updaterSettings.setValue(KEY_SKIPPED_VERSION, newReleases.first().version.string());
+        m_impl->updaterSettings.setValue(KEY_SKIPPED_VERSION, newReleases.first().version.toString());
     Q_UNUSED(cancelButton);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     m_impl->updaterSettings.setValue(KEY_AUTO_CHECK_FOR_UPDATES, checkBox->isChecked());

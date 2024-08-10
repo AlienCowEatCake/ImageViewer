@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -35,7 +35,27 @@ static const qint64 RELEASES_LIMIT = 9999;
 
 static bool releaseInfoGreater(const ReleaseInfo &lhs, const ReleaseInfo &rhs)
 {
-    return lhs.version > rhs.version;
+    if(lhs.version > rhs.version)
+        return true;
+    if(lhs.version < rhs.version)
+        return false;
+
+    if(!lhs.prerelease && rhs.prerelease)
+        return true;
+    if(lhs.prerelease && !rhs.prerelease)
+        return false;
+
+    if(lhs.publishedAt > rhs.publishedAt)
+        return true;
+    if(lhs.publishedAt < rhs.publishedAt)
+        return false;
+
+    if(lhs.createdAt > rhs.createdAt)
+        return true;
+    if(lhs.createdAt < rhs.createdAt)
+        return false;
+
+    return false;
 }
 
 static bool isPrerelase(const ReleaseInfo &info)
@@ -47,7 +67,7 @@ struct UpdateChecker::Impl
 {
     const QString owner;
     const QString repo;
-    const Version currentVersion;
+    const ReleaseVersion currentVersion;
     QNetworkAccessManager *networkManager;
     QNetworkReply *activeReply;
 
@@ -135,7 +155,7 @@ void UpdateChecker::replyFinished(QNetworkReply *reply)
         info.prerelease = object.value(QString::fromLatin1("prerelease")).toBool();
         info.createdAt = QDateTime::fromString(object.value(QString::fromLatin1("created_at")).toString(), Qt::ISODate);
         info.publishedAt = QDateTime::fromString(object.value(QString::fromLatin1("published_at")).toString(), Qt::ISODate);
-        info.version = Version(info.tagName);
+        info.version = ReleaseVersion::fromTag(info.tagName);
 
         if(info.version == m_impl->currentVersion)
             currentRelease = info;
@@ -155,7 +175,7 @@ void UpdateChecker::replyFinished(QNetworkReply *reply)
         return;
     }
 
-    std::sort(newReleases.begin(), newReleases.end(), releaseInfoGreater);
+    std::stable_sort(newReleases.begin(), newReleases.end(), releaseInfoGreater);
     Q_EMIT updateFound(currentRelease, newReleases);
 }
 
