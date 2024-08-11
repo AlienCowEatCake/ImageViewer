@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -31,6 +31,7 @@
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
+#include "Internal/Utils/CmsUtils.h"
 
 namespace {
 
@@ -85,6 +86,11 @@ public:
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
         /// @note Supress '@2x' logic: https://github.com/qt/qtbase/blob/v5.9.8/src/gui/image/qimagereader.cpp#L1364
         image.setDevicePixelRatio(1);
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+        if(image.format() == QImage::Format_CMYK8888)
+            ICCProfile(ICCProfile::defaultCmykProfileData()).applyToImage(&image);
 #endif
 
         ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);

@@ -227,6 +227,9 @@ See the [buildscripts/](buildscripts/) directory.
   Please note that MacTouchBar requires MacOS X SDK 10.12.2 or later.
 * Print Support options: `disable_printsupport` *(enabled by default)*  
   Disable it if you don't want to use printing features.
+* Fallback ICC Profiles options: `disable_fallback_iccprofiles` *(enabled by default)*  
+  Fallback ICC Profiles are used for opening non-RGB images without embedded color profiles.  
+  Disable it if you don't want to open these images or you want try to use system ICC profiles.
 * QtCore5Compat options: `disable_qtcore5compat`, `enable_qtcore5compat` *(disabled by default)*  
   Enable it if you use Qt 6.x without ICU and you want to open non-UTF-8 SVG files.
 * Updater options: `enable_update_checking` *(disabled by default)*  

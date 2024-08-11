@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/iccprofiles">
+        <file>ISOcoated_v2_bas.ICC</file>
+    </qresource>
+</RCC>

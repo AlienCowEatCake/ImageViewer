@@ -20,16 +20,24 @@
 #include "CmsUtils.h"
 
 #include <cmath>
+#include <cstdlib>
 #include <map>
 #include <utility>
 
 //#undef HAS_LCMS2
+//#undef HAS_FALLBACK_ICCPROFILES
+
+#if defined (Q_OS_WIN)
+#include <Windows.h>
+#endif
 
 #if defined (HAS_LCMS2)
 #include <lcms2.h>
 #endif
 
 #include <QDebug>
+#include <QDir>
+#include <QFile>
 #include <QImage>
 #include <QByteArray>
 #include <QSysInfo>
@@ -278,15 +286,27 @@ ICCProfile::ICCProfile(float *whitePoint,
 ICCProfile::~ICCProfile()
 {}
 
+bool ICCProfile::isValid() const
+{
+#if defined (HAS_LCMS2)
+    if(!m_impl->inProfile || !m_impl->outProfile)
+        return false;
+    return true;
+#elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    if(!m_impl->inColorSpace.isValid() || !m_impl->outColorSpace.isValid())
+        return false;
+    return true;
+#else
+    return false;
+#endif
+}
+
 void ICCProfile::applyToImage(QImage *image)
 {
-    if(!image)
+    if(!image || !isValid())
         return;
 
 #if defined (HAS_LCMS2)
-    if(!m_impl->inProfile || !m_impl->outProfile)
-        return;
-
     bool forceCmyk = false;
     cmsUInt32Number inFormat = 0;
     cmsUInt32Number outFormat = 0;
@@ -324,6 +344,7 @@ void ICCProfile::applyToImage(QImage *image)
     cmsHTRANSFORM transform = m_impl->getOrCreateTransform(inFormat, outFormat);
     if(!transform && inFormat != TYPE_CMYK_8)
     {
+        qWarning() << "[CmsUtils] Trying CMYK conversion transform";
         forceCmyk = true;
         inFormat = TYPE_CMYK_8;
         transform = m_impl->getOrCreateTransform(inFormat, outFormat);
@@ -386,12 +407,125 @@ void ICCProfile::applyToImage(QImage *image)
     }
 
 #elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    if(!m_impl->inColorSpace.isValid() || !m_impl->outColorSpace.isValid())
-        return;
-
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+    if(m_impl->inColorSpace.colorModel() == QColorSpace::ColorModel::Cmyk && image->format() != QImage::Format_CMYK8888)
+        *image = image->convertToFormat(QImage::Format_CMYK8888);
+#endif
     image->setColorSpace(m_impl->inColorSpace);
     image->convertToColorSpace(m_impl->outColorSpace);
 
 #endif
+}
+
+static QString defaultCmykProfilePath()
+{
+    QString filePath;
+#if defined (HAS_FALLBACK_ICCPROFILES)
+    filePath = QString::fromLatin1(":/iccprofiles/ISOcoated_v2_bas.ICC");
+#else
+    QStringList cmykProfiles = QStringList()
+            // Adobe Photoshop defaults
+            << QString::fromLatin1("USWebCoatedSWOP.icc")
+            // Recommended as the default Cmyk color space for untagged data:
+            // https://lists.freedesktop.org/archives/openicc/2011q2/004130.html
+            << QString::fromLatin1("ISOcoated_v2_bas.ICC")
+            << QString::fromLatin1("coated_FOGRA39L_argl.icc")
+            // Also try alternate versions
+            << QString::fromLatin1("ISOcoated_v2_eci.icc")
+            << QString::fromLatin1("ISOcoated_v2_300_bas.ICC")
+            << QString::fromLatin1("ISOcoated_v2_300_eci.icc")
+            // Adobe Photoshop alternate
+            << QString::fromLatin1("CoatedFOGRA39.icc")
+            ;
+#if defined (Q_OS_WIN)
+    cmykProfiles.append(QString::fromLatin1("RSWOP.icm"));
+    QStringList profilePlaces;
+
+    HMODULE hMscms = LoadLibraryA("mscms.dll");
+    typedef BOOL(WINAPI *GetColorDirectoryA_t)(PCSTR, PSTR, PDWORD);
+    GetColorDirectoryA_t GetColorDirectoryA_f = reinterpret_cast<GetColorDirectoryA_t>(GetProcAddress(hMscms, "GetColorDirectoryA"));
+    if(GetColorDirectoryA_f)
+    {
+        DWORD size = 0;
+        GetColorDirectoryA_f(Q_NULLPTR, Q_NULLPTR, &size);
+        if(size > 0)
+        {
+            QByteArray buffer;
+            buffer.resize(size + 1);
+            if(GetColorDirectoryA_f(Q_NULLPTR, reinterpret_cast<PSTR>(buffer.data()), &size))
+                profilePlaces.append(QDir::fromNativeSeparators(QString::fromLocal8Bit(buffer, size)));
+        }
+    }
+    FreeLibrary(hMscms);
+
+    const char *windir = getenv("windir");
+    if(!windir)
+        windir = getenv("SystemRoot");
+    if(windir)
+    {
+        const QString place = QDir::fromNativeSeparators(QString::fromLocal8Bit(windir) + QString::fromLatin1("\\System32\\spool\\drivers\\color"));
+        if(!profilePlaces.contains(place, Qt::CaseInsensitive))
+            profilePlaces.append(place);
+    }
+#elif defined (Q_OS_MAC)
+    cmykProfiles.append(QString::fromLatin1("Generic CMYK Profile.icc"));
+    const QStringList profilePlaces = QStringList()
+            << QDir::homePath() + QString::fromLatin1("/Library/ColorSync/Profiles")
+            << QString::fromLatin1("/Library/ColorSync/Profiles")
+            << QString::fromLatin1("/System/Library/ColorSync/Profiles")
+            ;
+#else
+    QString localShare;
+    if(const char *xdgDataHome = getenv("XDG_DATA_HOME"))
+        localShare = QString::fromLocal8Bit(xdgDataHome);
+    else
+        localShare = QDir::homePath() + QString::fromLatin1("/.local/share");
+    const QStringList profilePlaces = QStringList()
+            << localShare + QString::fromLatin1("/color/icc")
+            << QDir::homePath() + QString::fromLatin1("/.color/icc")
+            << QString::fromLatin1("/usr/local/share/color/icc")
+            << QString::fromLatin1("/usr/share/color/icc")
+            ;
+#endif
+    for(QStringList::ConstIterator it = profilePlaces.constBegin(); it != profilePlaces.constEnd() && filePath.isEmpty(); ++it)
+    {
+        const QDir &profilePlace(*it);
+        if(profilePlace.exists())
+        {
+            const QStringList entryList = profilePlace.entryList(QDir::Files | QDir::Readable);
+            for(QStringList::ConstIterator jt = cmykProfiles.constBegin(); jt != cmykProfiles.constEnd() && filePath.isEmpty(); ++jt)
+            {
+                for(QStringList::ConstIterator kt = entryList.constBegin(); kt != entryList.constEnd() && filePath.isEmpty(); ++kt)
+                {
+                    if(jt->compare(*kt, Qt::CaseInsensitive) == 0)
+                    {
+                        filePath = profilePlace.absoluteFilePath(*kt);
+                        qDebug() << "[CmsUtils] Default CMYK profile:" << filePath;
+                    }
+                }
+            }
+        }
+    }
+#endif
+    return filePath;
+}
+
+QByteArray ICCProfile::defaultCmykProfileData()
+{
+    static const QString filePath = defaultCmykProfilePath();
+    if(filePath.isEmpty())
+    {
+        qDebug() << "[CmsUtils] Can't find default CMYK profile";
+        return QByteArray();
+    }
+
+    QFile file(filePath);
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        qWarning() << "[CmsUtils] Can't open default CMYK profile" << filePath;
+        return QByteArray();
+    }
+
+    return file.readAll();
 }
 

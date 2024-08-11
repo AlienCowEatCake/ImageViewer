@@ -453,6 +453,12 @@ HEADERS += \
         src/GUI/Dialogs/PrintDialog_p.h
 }
 
+!disable_fallback_iccprofiles {
+    DEFINES += HAS_FALLBACK_ICCPROFILES
+    RESOURCES += \
+        resources/iccprofiles/iccprofiles.qrc
+}
+
 !disable_qtcore5compat {
     QT += core5compat
 }

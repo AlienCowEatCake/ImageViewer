@@ -42,7 +42,10 @@ public:
                std::size_t transferFunctionSize);
     ~ICCProfile();
 
+    bool isValid() const;
     void applyToImage(QImage *image);
+
+    static QByteArray defaultCmykProfileData();
 
 private:
     struct Impl;

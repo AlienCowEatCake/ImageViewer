@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -169,6 +169,32 @@ QRgb syccToQRgb(opj_image_t *img, int componentsData[])
                 qBound(0, static_cast<int>(yf + 1.772f * cbf), 255));
 }
 
+#define USE_CMYK_8888 (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+
+#if (USE_CMYK_8888)
+QRgb cmykToCmyk(opj_image_t *img, int componentsData[])
+{
+    const float sC = 1.0f / static_cast<float>((1 << img->comps[0].prec) - 1);
+    const float sM = 1.0f / static_cast<float>((1 << img->comps[1].prec) - 1);
+    const float sY = 1.0f / static_cast<float>((1 << img->comps[2].prec) - 1);
+    const float sK = 1.0f / static_cast<float>((1 << img->comps[3].prec) - 1);
+
+    // CMYK values from 0 to 1
+    float C = static_cast<float>(componentsData[0]) * sC;
+    float M = static_cast<float>(componentsData[1]) * sM;
+    float Y = static_cast<float>(componentsData[2]) * sY;
+    float K = static_cast<float>(componentsData[3]) * sK;
+
+    // CMYK -> CMYK : CMYK results from 0 to 255
+    QRgb result;
+    quint8 *data = reinterpret_cast<quint8*>(&result);
+    data[0] = qBound(0, static_cast<int>(255.0f * C), 255);
+    data[1] = qBound(0, static_cast<int>(255.0f * M), 255);
+    data[2] = qBound(0, static_cast<int>(255.0f * Y), 255);
+    data[3] = qBound(0, static_cast<int>(255.0f * K), 255);
+    return result;
+}
+#else
 QRgb cmykToQRgb(opj_image_t *img, int componentsData[])
 {
     const float sC = 1.0f / static_cast<float>((1 << img->comps[0].prec) - 1);
@@ -193,6 +219,7 @@ QRgb cmykToQRgb(opj_image_t *img, int componentsData[])
                 qBound(0, static_cast<int>(255.0f * M * K), 255),     // G
                 qBound(0, static_cast<int>(255.0f * Y * K), 255));    // B
 }
+#endif
 
 QRgb esyccToQRgb(opj_image_t *img, int componentsData[])
 {
@@ -338,6 +365,17 @@ QImage convertToQImage(opj_image_t *img, componentsDataToQRgb func)
     return result;
 }
 
+QImage convertCmykToQImage(opj_image_t *img)
+{
+#if (USE_CMYK_8888)
+    QImage result = convertToQImage<4>(img, cmykToCmyk);
+    result.reinterpretAsFormat(QImage::Format_CMYK8888);
+    return result;
+#else
+    return convertToQImage<4>(img, cmykToQRgb);
+#endif
+}
+
 QImage syccToQImage(opj_image_t *img)
 {
     CONSTRAINT_COMPONENTS_NUMBER_EQUAL(img, 3)
@@ -350,7 +388,7 @@ QImage cmykToQImage(opj_image_t *img)
 {
     CONSTRAINT_COMPONENTS_NUMBER_EQUAL(img, 4)
     CONSTRAINT_WITHOUT_ALPHA_CHANNEL(img)
-    RETURN_CONVERTATION_RESULT(convertToQImage<4>(img, cmykToQRgb));
+    RETURN_CONVERTATION_RESULT(convertCmykToQImage(img));
 }
 
 QImage esyccToQImage(opj_image_t *img)
@@ -638,6 +676,10 @@ QImage readFile(const QString &filePath)
         qDebug() << "Found ICCP metadata";
         ICCProfile profile(QByteArray::fromRawData(reinterpret_cast<const char*>(image->icc_profile_buf), static_cast<int>(image->icc_profile_len)));
         profile.applyToImage(&result);
+    }
+    else if(image->color_space == OPJ_CLRSPC_CMYK)
+    {
+        ICCProfile(ICCProfile::defaultCmykProfileData()).applyToImage(&result);
     }
 
     return result;

@@ -844,13 +844,13 @@ QString getTextBrowserContent()
 
 #if defined (HAS_J40)
     result.append(formatItem(
-        QString::fromLatin1("This software uses the J40 library"),
-        QString::fromLatin1("j40"),
-        QString(),
-        QString::fromLatin1("https://github.com/lifthrasiir/j40"),
-        QString::fromLatin1("MIT No Attribution License"),
-        QString::fromLatin1("https://github.com/lifthrasiir/j40/blob/main/LICENSE.txt")
-        ));
+                      QString::fromLatin1("This software uses the J40 library"),
+                      QString::fromLatin1("j40"),
+                      QString(),
+                      QString::fromLatin1("https://github.com/lifthrasiir/j40"),
+                      QString::fromLatin1("MIT No Attribution License"),
+                      QString::fromLatin1("https://github.com/lifthrasiir/j40/blob/main/LICENSE.txt")
+                      ));
 #endif
 
 #if defined (HAS_GHC_FILESYSTEM)
@@ -865,6 +865,17 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://github.com/gulrak/filesystem"),
                       QString::fromLatin1("MIT License"),
                       QString::fromLatin1("https://github.com/gulrak/filesystem/blob/master/LICENSE")
+                      ));
+#endif
+
+#if defined (HAS_FALLBACK_ICCPROFILES)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses basICColor ICC profiles"),
+                      QString::fromLatin1("ISOcoated_v2_bas.ICC"),
+                      QString(),
+                      QString::fromLatin1("https://www.colormanagement.org/en/isoprofile.html"),
+                      QString::fromLatin1("Zlib License"),
+                      QString::fromLatin1("https://web.archive.org/web/20141228151708/http://lists.freedesktop.org/archives/openicc/2010q3/002218.html")
                       ));
 #endif
 

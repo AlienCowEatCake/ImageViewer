@@ -300,6 +300,7 @@ disable_thirdparty {
     CONFIG *= disable_aom
     CONFIG *= disable_brotli
     CONFIG *= disable_exiv2
+    CONFIG *= disable_fallback_iccprofiles
     CONFIG *= disable_flif
     CONFIG *= disable_freetype
     CONFIG *= disable_ghc_filesystem
@@ -376,6 +377,8 @@ system_thirdparty {
     # Should be installed as Qt plugins in "system" configuration
     CONFIG *= disable_kimageformats
     CONFIG *= disable_qtimageformats
+    # System ICC profiles should be used for "system" configuration
+    CONFIG *= disable_fallback_iccprofiles
     # System packages
     CONFIG *= system_exiv2
     CONFIG *= system_flif
@@ -908,6 +911,10 @@ win32 : *g++* : !*clang* : lessThan(GCC_VERSION_NUMERIC, 80100) { # FIXME: Find 
 
 # Print Support options:
 #    disable_printsupport
+
+
+# Fallback ICC Profiles options:
+#    disable_fallback_iccprofiles
 
 
 # QtCore5Compat options:

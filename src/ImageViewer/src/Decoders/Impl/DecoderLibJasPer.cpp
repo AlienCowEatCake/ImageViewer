@@ -54,6 +54,7 @@
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
 #include "Internal/PayloadWithMetaData.h"
+#include "Internal/Utils/CmsUtils.h"
 #include "Internal/Utils/MappedBuffer.h"
 
 namespace
@@ -177,6 +178,8 @@ QImage renderCmykImage(jas_image_t *jasImage)
 #endif
         }
     }
+
+    ICCProfile(ICCProfile::defaultCmykProfileData()).applyToImage(&result);
     return result;
 }
 

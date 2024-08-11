@@ -347,6 +347,11 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
             }
         }
     }
+    if(!iccProfile->isValid() && isCMYK)
+    {
+        delete iccProfile;
+        iccProfile = new ICCProfile(ICCProfile::defaultCmykProfileData());
+    }
     iccProfile->applyToImage(&outImage);
 
     // Step 7: Finish decompression
