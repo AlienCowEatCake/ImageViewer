@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -270,6 +270,8 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
         cinfo.out_color_space = JCS_RGB;
     }
 
+#define USE_CMYK_8888 (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+
     // Step 5: Start decompressor
 
     if(!jpeg_start_decompress(&cinfo))
@@ -285,7 +287,12 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
     // output image dimensions available, as well as the output colormap
     // if we asked for color quantization.
     // In this example, we need to make an output work buffer of the right size.
-    outImage = QImage(static_cast<int>(cinfo.output_width), static_cast<int>(cinfo.output_height), QImage::Format_RGB32);
+    outImage = QImage(static_cast<int>(cinfo.output_width), static_cast<int>(cinfo.output_height),
+#if (USE_CMYK_8888)
+                      isCMYK ? QImage::Format_CMYK8888 : QImage::Format_RGB32);
+#else
+                      QImage::Format_RGB32);
+#endif
     if(outImage.isNull())
     {
         qWarning() << "Invalid image size";
@@ -319,8 +326,16 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
             for(JDIMENSION j = 0; j < cinfo.output_width; j++)
             {
                 unsigned char *inPixel = reinterpret_cast<unsigned char*>(buffer[0]) + j * static_cast<JDIMENSION>(cinfo.output_components);
+#if (USE_CMYK_8888)
+                quint8* outPixel = reinterpret_cast<quint8*>(outLine + j);
+                outPixel[0] = 255 - inPixel[0];
+                outPixel[1] = 255 - inPixel[1];
+                outPixel[2] = 255 - inPixel[2];
+                outPixel[3] = 255 - inPixel[3];
+#else
                 const int k = inPixel[3];
                 outLine[j] = qRgb(k * inPixel[0] / 255, k * inPixel[1] / 255, k * inPixel[2] / 255);
+#endif
             }
         }
         else

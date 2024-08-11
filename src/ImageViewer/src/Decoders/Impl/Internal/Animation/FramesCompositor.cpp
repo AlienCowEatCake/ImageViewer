@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -96,7 +96,9 @@ bool FramesCompositor::isStarted() const
 
 QImage FramesCompositor::compositeFrame(const QImage &frame, const QRect &rect, FramesCompositor::DisposeType dispose, FramesCompositor::BlendType blend)
 {
-    assert(frame.format() == QImage::Format_ARGB32 || frame.format() == QImage::Format_RGB32);
+    if(frame.format() != QImage::Format_ARGB32 && frame.format() != QImage::Format_RGB32)
+        return compositeFrame(frame.convertToFormat(QImage::Format_ARGB32), rect, dispose, blend);
+
     if(!isStarted())
         return frame;
 

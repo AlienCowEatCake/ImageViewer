@@ -182,6 +182,12 @@ Images from http://opf-labs.org/format-corpus/jp2k-formats/
  * jp2k-formats/balloon.jpm
  * jp2k-formats/Speedway.mj2
 
+Test images which was created during the development of this project
+ * cmyk.jpf
+ * cmyk16.jpf
+ * lab.jpf
+ * lab16.jpf
+
 Test Lena images
  * lena.jp2
  * lena.jpc
@@ -198,6 +204,8 @@ Image from http://www.fnordware.com/j2k/jp2samples.html
 ::: JPG test images :::
 
 Test image which was created during the development of this project
+ * cmyk.jpg
+ * cmyk_noicc.jpg
  * exif_rotate90.jpg
 
 Test Lena image with "@2x" suffix
@@ -485,6 +493,16 @@ Image from https://en.wikipedia.org/wiki/Portable_Network_Graphics
 
 --------------------------------------------------------------------------------
 
+::: PSD test images :::
+
+Test images which was created during the development of this project
+ * cmyk.psd
+ * cmyk16.psd
+ * lab.psd
+ * lab16.psd
+
+--------------------------------------------------------------------------------
+
 ::: SVG test images :::
 
 Images from https://en.wikipedia.org/wiki/SVG_animation
@@ -545,6 +563,14 @@ Unknown source (TODO)
 --------------------------------------------------------------------------------
 
 ::: TIFF test images :::
+
+Test image which was created during the development of this project
+ * cmyk.tif
+ * cmyk_noicc.tif
+ * cmyk16.tif
+ * cmyk16_noicc.tif
+ * lab.tif
+ * lab16.tif
 
 Test Lena images with various compression types
  * lena_jpeg.tif

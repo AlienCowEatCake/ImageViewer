@@ -21,6 +21,7 @@
 
 #include <cmath>
 #include <map>
+#include <utility>
 
 //#undef HAS_LCMS2
 
@@ -55,7 +56,7 @@ struct ICCProfile::Impl
             cmsCloseProfile(inProfile);
         if(outProfile)
             cmsCloseProfile(outProfile);
-        for(std::map<cmsUInt32Number, cmsHTRANSFORM>::iterator it = transforms.begin(); it != transforms.end(); ++it)
+        for(std::map<std::pair<cmsUInt32Number, cmsUInt32Number>, cmsHTRANSFORM>::iterator it = transforms.begin(); it != transforms.end(); ++it)
         {
             cmsHTRANSFORM transform = it->second;
             if(transform)
@@ -63,12 +64,13 @@ struct ICCProfile::Impl
         }
     }
 
-    cmsHTRANSFORM getOrCreateTransform(cmsUInt32Number format)
+    cmsHTRANSFORM getOrCreateTransform(cmsUInt32Number inFormat, cmsUInt32Number outFormat)
     {
-        std::map<cmsUInt32Number, cmsHTRANSFORM>::iterator it = transforms.find(format);
+        const std::pair<cmsUInt32Number, cmsUInt32Number> format = std::make_pair(inFormat, outFormat);
+        std::map<std::pair<cmsUInt32Number, cmsUInt32Number>, cmsHTRANSFORM>::iterator it = transforms.find(format);
         if(it != transforms.end())
             return it->second;
-        cmsHTRANSFORM transform = cmsCreateTransform(inProfile, format, outProfile, format, INTENT_PERCEPTUAL, 0);
+        cmsHTRANSFORM transform = cmsCreateTransform(inProfile, inFormat, outProfile, outFormat, INTENT_PERCEPTUAL, 0);
         transforms[format] = transform;
         return transform;
     }
@@ -100,7 +102,7 @@ struct ICCProfile::Impl
 
     cmsHPROFILE inProfile;
     cmsHPROFILE outProfile;
-    std::map<cmsUInt32Number, cmsHTRANSFORM> transforms;
+    std::map<std::pair<cmsUInt32Number, cmsUInt32Number>, cmsHTRANSFORM> transforms;
 #elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QColorSpace inColorSpace;
     QColorSpace outColorSpace;
@@ -285,29 +287,103 @@ void ICCProfile::applyToImage(QImage *image)
     if(!m_impl->inProfile || !m_impl->outProfile)
         return;
 
-    cmsHTRANSFORM transform = Q_NULLPTR;
+    bool forceCmyk = false;
+    cmsUInt32Number inFormat = 0;
+    cmsUInt32Number outFormat = 0;
+    QImage::Format outImageFormat = image->format();
     switch(image->format())
     {
+    case QImage::Format_ARGB32_Premultiplied:
+        inFormat = outFormat = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8_PREMUL : TYPE_ARGB_8_PREMUL;
+        break;
     case QImage::Format_ARGB32:
     case QImage::Format_RGB32:
-        transform = m_impl->getOrCreateTransform((QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8);
+        inFormat = outFormat = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8;
         break;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+    case QImage::Format_RGBA8888_Premultiplied:
+        inFormat = outFormat = TYPE_RGBA_8_PREMUL;
+        break;
     case QImage::Format_RGBA8888:
     case QImage::Format_RGBX8888:
-        transform = m_impl->getOrCreateTransform(TYPE_RGBA_8);
+        inFormat = outFormat = TYPE_RGBA_8;
+        break;
+#endif
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+    case QImage::Format_CMYK8888:
+        inFormat = TYPE_CMYK_8;
+        outFormat = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8;
+        outImageFormat = QImage::Format_RGB32;
         break;
 #endif
     default:
         *image = image->convertToFormat(QImage::Format_ARGB32);
-        transform = m_impl->getOrCreateTransform((QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8);
+        inFormat = outFormat = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8;
         break;
+    }
+    cmsHTRANSFORM transform = m_impl->getOrCreateTransform(inFormat, outFormat);
+    if(!transform && inFormat != TYPE_CMYK_8)
+    {
+        forceCmyk = true;
+        inFormat = TYPE_CMYK_8;
+        transform = m_impl->getOrCreateTransform(inFormat, outFormat);
     }
     if(!transform)
         return;
 
-    unsigned char *rgba = reinterpret_cast<unsigned char*>(image->bits());
-    cmsDoTransform(transform, rgba, rgba, static_cast<cmsUInt32Number>(image->width() * image->height()));
+    if(inFormat == outFormat)
+    {
+        unsigned char *buffer = reinterpret_cast<unsigned char*>(image->bits());
+        cmsDoTransform(transform, buffer, buffer, static_cast<cmsUInt32Number>(image->width() * image->height()));
+    }
+    else if(forceCmyk)
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+        QImage cmykBuffer = image->convertToFormat(QImage::Format_CMYK8888);
+#else
+        QImage cmykBuffer = image->convertToFormat(QImage::Format_ARGB32);
+        for(int j = 0; j < image->height(); ++j)
+        {
+            const QRgb *rgbScanLine = reinterpret_cast<const QRgb*>(image->constScanLine(j));
+            QRgb *cmykScanLine = reinterpret_cast<QRgb*>(cmykBuffer.scanLine(j));
+            for(int i = 0; i < image->width(); ++i)
+            {
+                const QRgb rgb = rgbScanLine[i];
+                int c = 255 - qRed(rgb);
+                int m = 255 - qGreen(rgb);
+                int y = 255 - qBlue(rgb);
+                const int k = std::min(c, std::min(m, y));
+                if(k != 255)
+                {
+                    c = (c - k) * 255 / (255 - k);
+                    m = (m - k) * 255 / (255 - k);
+                    y = (y - k) * 255 / (255 - k);
+                }
+                else
+                {
+                    c = m = y = 0;
+                }
+                quint8 *cmykPixel = reinterpret_cast<quint8*>(cmykScanLine + i);
+                cmykPixel[0] = qBound(0, c, 255);
+                cmykPixel[1] = qBound(0, m, 255);
+                cmykPixel[2] = qBound(0, y, 255);
+                cmykPixel[3] = qBound(0, k, 255);
+            }
+        }
+#endif
+        const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(cmykBuffer.constBits());
+        unsigned char *outBuffer = reinterpret_cast<unsigned char*>(image->bits());
+        cmsDoTransform(transform, inBuffer, outBuffer, static_cast<cmsUInt32Number>(image->width() * image->height()));
+    }
+    else
+    {
+        QImage outImage(image->width(), image->height(), outImageFormat);
+        outImage.fill(Qt::black);
+        unsigned char *outBuffer = reinterpret_cast<unsigned char*>(outImage.bits());
+        const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(image->constBits());
+        cmsDoTransform(transform, inBuffer, outBuffer, static_cast<cmsUInt32Number>(image->width() * image->height()));
+        *image = outImage;
+    }
 
 #elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     if(!m_impl->inColorSpace.isValid() || !m_impl->outColorSpace.isValid())
