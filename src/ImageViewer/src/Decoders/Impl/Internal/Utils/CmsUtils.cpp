@@ -365,7 +365,7 @@ void ICCProfile::applyToImage(QImage *image)
         QImage cmykBuffer = image->convertToFormat(QImage::Format_ARGB32);
         for(int j = 0; j < image->height(); ++j)
         {
-            const QRgb *rgbScanLine = reinterpret_cast<const QRgb*>(image->constScanLine(j));
+            const QRgb *rgbScanLine = reinterpret_cast<const QRgb*>(image->scanLine(j));
             QRgb *cmykScanLine = reinterpret_cast<QRgb*>(cmykBuffer.scanLine(j));
             for(int i = 0; i < image->width(); ++i)
             {
@@ -392,7 +392,7 @@ void ICCProfile::applyToImage(QImage *image)
             }
         }
 #endif
-        const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(cmykBuffer.constBits());
+        const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(cmykBuffer.bits());
         unsigned char *outBuffer = reinterpret_cast<unsigned char*>(image->bits());
         cmsDoTransform(transform, inBuffer, outBuffer, static_cast<cmsUInt32Number>(image->width() * image->height()));
     }
@@ -401,7 +401,7 @@ void ICCProfile::applyToImage(QImage *image)
         QImage outImage(image->width(), image->height(), outImageFormat);
         outImage.fill(Qt::black);
         unsigned char *outBuffer = reinterpret_cast<unsigned char*>(outImage.bits());
-        const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(image->constBits());
+        const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(image->bits());
         cmsDoTransform(transform, inBuffer, outBuffer, static_cast<cmsUInt32Number>(image->width() * image->height()));
         *image = outImage;
     }
