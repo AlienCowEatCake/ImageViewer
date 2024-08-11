@@ -468,7 +468,8 @@ static QString defaultCmykProfilePath()
             profilePlaces.append(place);
     }
 #elif defined (Q_OS_MAC)
-    cmykProfiles.append(QString::fromLatin1("Generic CMYK Profile.icc"));
+    // It looks like "Generic CMYK Profile.icc" is default CMYK profile for macOS
+    cmykProfiles.insert(0, QString::fromLatin1("Generic CMYK Profile.icc"));
     const QStringList profilePlaces = QStringList()
             << QDir::homePath() + QString::fromLatin1("/Library/ColorSync/Profiles")
             << QString::fromLatin1("/Library/ColorSync/Profiles")
@@ -487,21 +488,28 @@ static QString defaultCmykProfilePath()
             << QString::fromLatin1("/usr/share/color/icc")
             ;
 #endif
+    QList<std::pair<QString, QStringList> > entries;
     for(QStringList::ConstIterator it = profilePlaces.constBegin(); it != profilePlaces.constEnd() && filePath.isEmpty(); ++it)
     {
         const QDir &profilePlace(*it);
         if(profilePlace.exists())
         {
-            const QStringList entryList = profilePlace.entryList(QDir::Files | QDir::Readable);
-            for(QStringList::ConstIterator jt = cmykProfiles.constBegin(); jt != cmykProfiles.constEnd() && filePath.isEmpty(); ++jt)
+            QStringList entryList = profilePlace.entryList(QDir::Files | QDir::Readable);
+            if(!entryList.isEmpty())
+                entries.append(std::make_pair(profilePlace.absolutePath(), entryList));
+        }
+    }
+
+    for(QStringList::ConstIterator it = cmykProfiles.constBegin(); it != cmykProfiles.constEnd() && filePath.isEmpty(); ++it)
+    {
+        for(QList<std::pair<QString, QStringList> >::ConstIterator jt = entries.constBegin(); jt != entries.constEnd() && filePath.isEmpty(); ++jt)
+        {
+            for(QStringList::ConstIterator kt = jt->second.constBegin(); kt != jt->second.constEnd() && filePath.isEmpty(); ++kt)
             {
-                for(QStringList::ConstIterator kt = entryList.constBegin(); kt != entryList.constEnd() && filePath.isEmpty(); ++kt)
+                if(it->compare(*kt, Qt::CaseInsensitive) == 0)
                 {
-                    if(jt->compare(*kt, Qt::CaseInsensitive) == 0)
-                    {
-                        filePath = profilePlace.absoluteFilePath(*kt);
-                        qDebug() << "[CmsUtils] Default CMYK profile:" << filePath;
-                    }
+                    filePath = jt->first + QString::fromLatin1("/") + *kt;
+                    qDebug() << "[CmsUtils] Default CMYK profile:" << filePath;
                 }
             }
         }
