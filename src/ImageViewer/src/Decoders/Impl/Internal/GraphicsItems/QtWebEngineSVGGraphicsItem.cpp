@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -43,7 +43,7 @@
 #include <QOffscreenSurface>
 #include <QOpenGLFunctions>
 
-#include <QDebug>
+#include "Utils/Logging.h"
 
 #include "../Utils/XmlStreamReader.h"
 
@@ -82,7 +82,7 @@ int getMaxTextureSize()
         functions->glEnable(GL_TEXTURE_2D);
         functions->glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 
-        qDebug() << "GL_MAX_TEXTURE_SIZE =" << maxTextureSize;
+        LOG_INFO() << LOGGING_CTX << "GL_MAX_TEXTURE_SIZE =" << maxTextureSize;
     }
     return maxTextureSize;
 }
@@ -268,13 +268,13 @@ bool QtWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &bas
 
     if(!m_impl->syncExecutor.setContent(svgData, mimeType, baseUrl))
     {
-        qWarning() << "[QtWebEngineSVGGraphicsItem] Error: can't load content";
+        LOG_WARNING() << LOGGING_CTX << "Error: can't load content";
         return false;
     }
 
     if(!rootElementIsSvg())
     {
-        qWarning() << "[QtWebEngineSVGGraphicsItem] Error: not an SVG";
+        LOG_WARNING() << LOGGING_CTX << "Error: not an SVG";
         return false;
     }
 
@@ -294,7 +294,7 @@ bool QtWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &bas
     m_impl->maxScaleFactor = std::min(std::min(maxImageDimension / m_impl->svgRect.width(), maxImageDimension / m_impl->svgRect.height()), static_cast<qreal>(5));
     if(m_impl->maxScaleFactor < m_impl->minScaleFactor)
     {
-        qWarning() << "[QtWebEngineSVGGraphicsItem] Error: too large SVG size, max =" << maxImageDimension << "x" << maxImageDimension;
+        LOG_WARNING() << LOGGING_CTX << "Error: too large SVG size, max =" << maxImageDimension << "x" << maxImageDimension;
         return false;
     }
 
@@ -351,7 +351,7 @@ void QtWebEngineSVGGraphicsItem::onUpdateRequested()
 void QtWebEngineSVGGraphicsItem::onRenderProcessTerminated(int terminationStatus)
 {
     m_impl->renderProcessTerminated = true;
-    qWarning() << "[QtWebEngineSVGGraphicsItem] Error: render process is terminated, status =" << terminationStatus;
+    LOG_WARNING() << LOGGING_CTX << "Error: render process is terminated, status =" << terminationStatus;
 }
 
 QVariant QtWebEngineSVGGraphicsItem::evalJSImpl(const QString &scriptSource)

@@ -20,7 +20,6 @@
 #include "AbstractSVGWebBrowserNoJS.h"
 
 #include <QByteArray>
-#include <QDebug>
 #include <QRect>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 #include <QRegularExpression>
@@ -34,6 +33,7 @@
 #include <QXmlStreamAttributes>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../Utils/XmlStreamReader.h"
 
@@ -46,7 +46,7 @@ AbstractSVGWebBrowserNoJS::~AbstractSVGWebBrowserNoJS()
 QVariant AbstractSVGWebBrowserNoJS::evalJSImpl(const QString &scriptSource)
 {
     Q_UNUSED(scriptSource);
-    qWarning() << __FUNCTION__ << "JavaScript is not available for NoJS implementation";
+    LOG_WARNING() << LOGGING_CTX << "JavaScript is not available for NoJS implementation";
     return QVariant();
 }
 

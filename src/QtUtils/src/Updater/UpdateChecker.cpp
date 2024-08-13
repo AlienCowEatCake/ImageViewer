@@ -23,13 +23,13 @@
 #include <cassert>
 
 #include <QApplication>
-#include <QDebug>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
 #include "Utils/JsonArray.h"
 #include "Utils/JsonDocument.h"
 #include "Utils/JsonObject.h"
+#include "Utils/Logging.h"
 
 static const qint64 RELEASES_LIMIT = 9999;
 
@@ -123,7 +123,7 @@ void UpdateChecker::replyFinished(QNetworkReply *reply)
 
     if(reply->error() != QNetworkReply::NoError)
     {
-        qWarning() << "[UpdateChecker]" << reply->errorString();
+        LOG_WARNING() << LOGGING_CTX << reply->errorString();
         Q_EMIT updateError(reply->errorString());
         return;
     }
@@ -132,7 +132,7 @@ void UpdateChecker::replyFinished(QNetworkReply *reply)
     const QJsonDocument document = QJsonDocument::fromJson(reply->readAll(), &error);
     if(error.error != QJsonParseError::NoError)
     {
-        qWarning() << "[UpdateChecker]" << error.errorString();
+        LOG_WARNING() << LOGGING_CTX << error.errorString();
         Q_EMIT updateError(error.errorString());
         return;
     }

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,9 +22,9 @@
 #include <QFile>
 #include <QByteArray>
 #include <QString>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "XmlStreamReader.h"
 
@@ -48,14 +48,14 @@ struct MappedBuffer::Impl
     {
         if(!file.open(QIODevice::ReadOnly))
         {
-            qWarning() << "[MappedBuffer] Can't open" << filePath;
+            LOG_WARNING() << LOGGING_CTX << "Can't open" << filePath;
             return;
         }
         size = file.size();
         mapped = file.map(0, size);
         if(!mapped)
         {
-            qWarning() << "[MappedBuffer] Can't map" << filePath;
+            LOG_WARNING() << LOGGING_CTX << "Can't map" << filePath;
             data = file.readAll();
             size = data.size();
             mapped = reinterpret_cast<uchar*>(data.data());
@@ -130,7 +130,7 @@ bool MappedBuffer::doInflate()
 {
     if(!isValid())
     {
-        qWarning() << "[MappedBuffer] Invalid data";
+        LOG_WARNING() << LOGGING_CTX << "Invalid data";
         return false;
     }
 #if defined (HAS_ZLIB)
@@ -138,7 +138,7 @@ bool MappedBuffer::doInflate()
     const QByteArray inflatted = ZLibUtils::InflateData(rawData);
     if(inflatted.isEmpty())
     {
-        qWarning() << "[MappedBuffer] Can't inflate data";
+        LOG_WARNING() << LOGGING_CTX << "Can't inflate data";
         return false;
     }
     m_impl->data = inflatted;
@@ -146,7 +146,7 @@ bool MappedBuffer::doInflate()
     m_impl->mapped = reinterpret_cast<uchar*>(m_impl->data.data());
     return true;
 #else
-    qWarning() << "[MappedBuffer] ZLib is not supported";
+    LOG_WARNING() << LOGGING_CTX << "ZLib is not supported";
     return false;
 #endif
 }
@@ -155,7 +155,7 @@ QString MappedBuffer::getXmlEncoding() const
 {
     if(!isValid())
     {
-        qWarning() << "[MappedBuffer] Invalid data";
+        LOG_WARNING() << LOGGING_CTX << "Invalid data";
         return QString();
     }
     const QByteArray xmlData = dataAsByteArray();
@@ -166,13 +166,13 @@ bool MappedBuffer::convertXmlToUtf8()
 {
     if(!isValid())
     {
-        qWarning() << "[MappedBuffer] Invalid data";
+        LOG_WARNING() << LOGGING_CTX << "Invalid data";
         return false;
     }
     const QString encoding = getXmlEncoding();
     if(encoding.isEmpty())
     {
-        qWarning() << "[MappedBuffer] Can't detect encoding";
+        LOG_WARNING() << LOGGING_CTX << "Can't detect encoding";
         return false;
     }
     if(encoding != QString::fromLatin1("utf-8"))

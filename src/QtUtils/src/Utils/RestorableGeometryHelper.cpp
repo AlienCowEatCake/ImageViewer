@@ -38,10 +38,8 @@
 #include <QEvent>
 #include <QList>
 #include <QDateTime>
-#if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-#include <QDebug>
-#endif
 
+#include "Logging.h"
 #include "ScreenUtils.h"
 
 namespace {
@@ -101,7 +99,7 @@ struct RestorableGeometryHelper::Impl : public QObject
             autoSavedGeometry.clear();
             normalGeometry = window->normalGeometry();
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-            qDebug() << "[RGH] normalGeometry = " << normalGeometry;
+            LOG_INFO() << LOGGING_CTX << "normalGeometry = " << normalGeometry;
 #endif
         }
     }
@@ -114,14 +112,14 @@ struct RestorableGeometryHelper::Impl : public QObject
             {
                 forceSetGeometry(autoSavedGeometry.last().second);
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-                qDebug() << "[RGH] window->setGeometry (auto)" << autoSavedGeometry.last().second;
+                LOG_INFO() << LOGGING_CTX << "window->setGeometry (auto)" << autoSavedGeometry.last().second;
 #endif
             }
             else
             {
                 forceSetGeometry(normalGeometry);
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-                qDebug() << "[RGH] window->setGeometry (normal)" << normalGeometry;
+                LOG_INFO() << LOGGING_CTX << "window->setGeometry (normal)" << normalGeometry;
 #endif
             }
         }
@@ -133,7 +131,7 @@ struct RestorableGeometryHelper::Impl : public QObject
         {
             autoSavedGeometry.append(std::make_pair(QDateTime::currentDateTime(), window->normalGeometry()));
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-            qDebug() << "[RGH] autoSavedGeometry.append" << autoSavedGeometry.last().second;
+            LOG_INFO() << LOGGING_CTX << "autoSavedGeometry.append" << autoSavedGeometry.last().second;
 #endif
         }
 
@@ -161,7 +159,7 @@ struct RestorableGeometryHelper::Impl : public QObject
         {
             // Qt 4.8.7 + OS X 10.9.5
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-            qWarning() << "[RGH] Failed to set geometry! Trying to correct, attempt =" << i + 1;
+            LOG_WARNING() << LOGGING_CTX << "Failed to set geometry! Trying to correct, attempt =" << i + 1;
 #endif
             const QRect actualGeometry = window->normalGeometry();
             const QRect correctedGeometry(
@@ -180,7 +178,7 @@ struct RestorableGeometryHelper::Impl : public QObject
         normalGeometry = newGeometry;
         autoSavedGeometry.clear();
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-        qDebug() << "[RGH] overrideSavedGeometry" << newGeometry;
+        LOG_INFO() << LOGGING_CTX << "overrideSavedGeometry" << newGeometry;
 #endif
         restoreGeometry();
     }
@@ -228,7 +226,7 @@ QByteArray RestorableGeometryHelper::serialize() const
     if(normalGeometry.isEmpty())
         return QByteArray();
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-    qDebug() << "[RGH] serialize" << m_impl->normalGeometry;
+    LOG_INFO() << LOGGING_CTX << "serialize" << m_impl->normalGeometry;
 #endif
     return QString::fromLatin1("FormatVersion:%1;NormalGeometry:(%2,%3 %4x%5)")
             .arg(SERIALIZER_FORMAT_VERSION)
@@ -260,7 +258,7 @@ void RestorableGeometryHelper::deserialize(const QByteArray &data)
     if(newGeometry.isEmpty() || availableRegion.intersected(newGeometry) != newGeometry || newGeometry.topLeft().isNull())
         newGeometry = m_impl->getFallbackGeometry();
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-    qDebug() << "[RGH] deserialize" << newGeometry;
+    LOG_INFO() << LOGGING_CTX << "deserialize" << newGeometry;
 #endif
     m_impl->overrideSavedGeometry(newGeometry);
 }

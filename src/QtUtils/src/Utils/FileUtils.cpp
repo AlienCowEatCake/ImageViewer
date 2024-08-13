@@ -39,9 +39,9 @@
 #include <QUrl>
 #include <QProcess>
 #include <QStringList>
-#include <QDebug>
 
 #include "Global.h"
+#include "Logging.h"
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 
@@ -70,15 +70,15 @@ static bool MoveToTrashViaFinderScript(const QString &absolutePath, QString *err
     switch(status)
     {
     case -2:
-        qWarning() << "[FileUtils::MoveToTrash]: osascript process cannot be started";
+        LOG_WARNING() << LOGGING_CTX << "osascript process cannot be started";
         break;
     case -1:
-        qWarning() << "[FileUtils::MoveToTrash]: osascript process crashed";
+        LOG_WARNING() << LOGGING_CTX << "osascript process crashed";
         break;
     case 0:
         return true;
     default:
-        qWarning() << "[FileUtils::MoveToTrash]: The specified path could not be moved to Trash" << absolutePath << QString::fromLatin1(" (%1)").arg(status);
+        LOG_WARNING() << LOGGING_CTX << "The specified path could not be moved to Trash" << absolutePath << QString::fromLatin1(" (%1)").arg(status);
         break;
     }
 
@@ -100,7 +100,7 @@ static bool MoveToTrashViaFSMoveObject(const QString &absolutePath, QString *err
     {
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "The bundle with identifier `com.apple.CoreServices` was not found.");
-        qWarning() << "[FileUtils::MoveToTrash]: The bundle with identifier `com.apple.CoreServices` was not found.";
+        LOG_WARNING() << LOGGING_CTX << "The bundle with identifier `com.apple.CoreServices` was not found.";
         return false;
     }
 
@@ -111,21 +111,21 @@ static bool MoveToTrashViaFSMoveObject(const QString &absolutePath, QString *err
     {
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "The function with name `FSPathMakeRefWithOptions` was not found.");
-        qWarning() << "[FileUtils::MoveToTrash]: The function with name `FSPathMakeRefWithOptions` was not found.";
+        LOG_WARNING() << LOGGING_CTX << "The function with name `FSPathMakeRefWithOptions` was not found.";
         return false;
     }
     if(!FSMoveObjectToTrashSync_f)
     {
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "The function with name `FSMoveObjectToTrashSync` was not found.");
-        qWarning() << "[FileUtils::MoveToTrash]: The function with name `FSMoveObjectToTrashSync` was not found.";
+        LOG_WARNING() << LOGGING_CTX << "The function with name `FSMoveObjectToTrashSync` was not found.";
         return false;
     }
     if(!GetMacOSStatusCommentString_f)
     {
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "The function with name `GetMacOSStatusCommentString` was not found.");
-        qWarning() << "[FileUtils::MoveToTrash]: The function with name `GetMacOSStatusCommentString` was not found.";
+        LOG_WARNING() << LOGGING_CTX << "The function with name `GetMacOSStatusCommentString` was not found.";
         return false;
     }
 
@@ -139,8 +139,8 @@ static bool MoveToTrashViaFSMoveObject(const QString &absolutePath, QString *err
         const QString description = QString::fromUtf8(GetMacOSStatusCommentString_f(status));
         if(errorDescription)
             *errorDescription = description;
-        qWarning() << "[FileUtils::MoveToTrash]: Unable to FSPathMakeRefWithOptions for file" << absolutePath;
-        qWarning() << "[FileUtils::MoveToTrash]: Status Comment:" << description;
+        LOG_WARNING() << LOGGING_CTX << "Unable to FSPathMakeRefWithOptions for file" << absolutePath;
+        LOG_WARNING() << LOGGING_CTX << "Status Comment:" << description;
         return false;
     }
     status = FSMoveObjectToTrashSync_f(&ref, Q_NULLPTR, kFSFileOperationDefaultOptions);
@@ -149,8 +149,8 @@ static bool MoveToTrashViaFSMoveObject(const QString &absolutePath, QString *err
         const QString description = QString::fromUtf8(GetMacOSStatusCommentString_f(status));
         if(errorDescription)
             *errorDescription = description;
-        qWarning() << "[FileUtils::MoveToTrash]: Unable to FSMoveObjectToTrashSync for file" << absolutePath;
-        qWarning() << "[FileUtils::MoveToTrash]: Status Comment:" << description;
+        LOG_WARNING() << LOGGING_CTX << "Unable to FSMoveObjectToTrashSync for file" << absolutePath;
+        LOG_WARNING() << LOGGING_CTX << "Status Comment:" << description;
         return false;
     }
     return true;
@@ -211,8 +211,8 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
             LocalFree(errorRawStr);
             if(errorDescription)
                 *errorDescription = description;
-            qWarning() << "[FileUtils::MoveToTrash]: Unable to SHFileOperationW for file" << absolutePath;
-            qWarning() << "[FileUtils::MoveToTrash]: Description:" << description;
+            LOG_WARNING() << LOGGING_CTX << "Unable to SHFileOperationW for file" << absolutePath;
+            LOG_WARNING() << LOGGING_CTX << "Description:" << description;
             FreeLibrary(hShell32);
             FreeLibrary(hKernel32);
             return false;
@@ -248,8 +248,8 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
             LocalFree(errorRawStr);
             if(errorDescription)
                 *errorDescription = description;
-            qWarning() << "[FileUtils::MoveToTrash]: Unable to SHFileOperationA for file" << absolutePath;
-            qWarning() << "[FileUtils::MoveToTrash]: Description:" << description;
+            LOG_WARNING() << LOGGING_CTX << "Unable to SHFileOperationA for file" << absolutePath;
+            LOG_WARNING() << LOGGING_CTX << "Description:" << description;
             return false;
         }
         return true;
@@ -279,7 +279,7 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
     status_t err = entry.InitCheck();
     if(err != B_OK)
     {
-        qWarning() << "[FileUtils::MoveToTrash]: Failed to init BEntry for specified path:" << strerror(err);
+        LOG_WARNING() << LOGGING_CTX << "Failed to init BEntry for specified path:" << strerror(err);
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "Failed to init BEntry for specified path: %1").arg(QString::fromLocal8Bit(strerror(err)));
         return false;
@@ -289,7 +289,7 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
     err = entry.GetRef(&entryRef);
     if(err != B_OK)
     {
-        qWarning() << "[FileUtils::MoveToTrash]: Failed to get entry_ref for specified path:" << strerror(err);
+        LOG_WARNING() << LOGGING_CTX << "Failed to get entry_ref for specified path:" << strerror(err);
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "Failed to get entry_ref for specified path: %1").arg(QString::fromLocal8Bit(strerror(err)));
         return false;
@@ -299,7 +299,7 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
     err = find_directory(B_TRASH_DIRECTORY, entryRef.device, true, trashPath, B_PATH_NAME_LENGTH);
     if(err != B_OK)
     {
-        qWarning() << "[FileUtils::MoveToTrash]: Failed to find Trash" << strerror(err);
+        LOG_WARNING() << LOGGING_CTX << "Failed to find Trash" << strerror(err);
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "Failed to find Trash: %1").arg(QString::fromLocal8Bit(strerror(err)));
         return false;
@@ -309,7 +309,7 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
     err = trashDir.InitCheck();
     if(err != B_OK)
     {
-        qWarning() << "[FileUtils::MoveToTrash]: Failed to init BDirectory for" << trashPath << ":" << strerror(err);
+        LOG_WARNING() << LOGGING_CTX << "Failed to init BDirectory for" << trashPath << ":" << strerror(err);
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "Failed to init BDirectory for %1: %2").arg(QString::fromLocal8Bit(trashPath), QString::fromLocal8Bit(strerror(err)));
         return false;
@@ -334,7 +334,7 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
     err = entry.MoveTo(&trashDir, nameInTrash.String());
     if(err != B_OK)
     {
-        qWarning() << "[FileUtils::MoveToTrash]: Failed to move entry into trash" << trashPath << ":" << strerror(err);
+        LOG_WARNING() << LOGGING_CTX << "Failed to move entry into trash" << trashPath << ":" << strerror(err);
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "Failed to move entry into trash %1: %2").arg(QString::fromLocal8Bit(trashPath), QString::fromLocal8Bit(strerror(err)));
         return false;
@@ -599,7 +599,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
     {
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "The specified path was not found");
-        qWarning() << "[FileUtils::MoveToTrash]: The specified path was not found:" << pathInfo.absoluteFilePath();
+        LOG_WARNING() << LOGGING_CTX << "The specified path was not found:" << pathInfo.absoluteFilePath();
         return false;
     }
 
@@ -613,7 +613,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
     {
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "Permission denied");
-        qWarning() << "[FileUtils::MoveToTrash]: Permission denied:" << pathInfo.absoluteFilePath();
+        LOG_WARNING() << LOGGING_CTX << "Permission denied:" << pathInfo.absoluteFilePath();
         return false;
     }
 
@@ -639,7 +639,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
         {
             if(errorDescription)
                 *errorDescription = qApp->translate("FileUtils", "Could not find mount point for specified path");
-            qWarning() << "[FileUtils::MoveToTrash]: Could not find mount point for specified path:" << pathInfo.absoluteFilePath();
+            LOG_WARNING() << LOGGING_CTX << "Could not find mount point for specified path:" << pathInfo.absoluteFilePath();
             return false;
         }
         destTrash = findExtVolumeTrash(topDir);
@@ -648,7 +648,7 @@ static bool sendToTrash(const QString &path, QString *errorDescription)
     {
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash");
-        qWarning() << "[FileUtils::MoveToTrash]: The specified path could not be moved to Trash:" << pathInfo.absoluteFilePath();
+        LOG_WARNING() << LOGGING_CTX << "The specified path could not be moved to Trash:" << pathInfo.absoluteFilePath();
         return false;
     }
     return true;
@@ -660,17 +660,17 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
     switch(status)
     {
     case -2:
-        qDebug() << "[FileUtils::MoveToTrash]: gvfs-trash process cannot be started";
+        LOG_INFO() << LOGGING_CTX << "gvfs-trash process cannot be started";
         break;
     case -1:
-        qDebug() << "[FileUtils::MoveToTrash]: gvfs-trash process crashed";
+        LOG_INFO() << LOGGING_CTX << "gvfs-trash process crashed";
         break;
     case 0:
         return true;
     default:
         if(errorDescription)
             *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash");
-        qWarning() << "[FileUtils::MoveToTrash]: The specified path could not be moved to Trash" << absolutePath;
+        LOG_WARNING() << LOGGING_CTX << "The specified path could not be moved to Trash" << absolutePath;
         return false;
     }
 

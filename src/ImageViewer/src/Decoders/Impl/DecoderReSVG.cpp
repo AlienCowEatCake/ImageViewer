@@ -36,7 +36,6 @@ extern "C" {
 #include <QDir>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 #include <QLibrary>
 #include <QPainter>
 #include <QGraphicsItem>
@@ -50,6 +49,7 @@ typedef void* QFunctionPointer;
 #endif
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "../GraphicsItemFeatures/IGrabImage.h"
@@ -131,7 +131,7 @@ struct ReSVG
         static ReSVG _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load resvg";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load resvg";
             return Q_NULLPTR;
         }
         return &_;
@@ -447,7 +447,7 @@ public:
         const int err = resvg_parse_tree_from_data(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<size_t>(), m_opt, &m_tree);
         if(err)
         {
-            qWarning() << "Can't parse file, error =" << err;
+            LOG_WARNING() << LOGGING_CTX << "Can't parse file, error =" << err;
             return false;
         }
 
@@ -456,14 +456,14 @@ public:
         m_height = static_cast<qreal>(size.height);
         if(m_width < 1 || m_height < 1)
         {
-            qWarning() << "Couldn't determine image size";
+            LOG_WARNING() << LOGGING_CTX << "Couldn't determine image size";
             return false;
         }
 
         // https://github.com/RazrFalcon/resvg/issues/642
         m_exposedRectSupported = !hasClipPath(inBuffer.dataAsByteArray());
         if(!m_exposedRectSupported)
-            qWarning() << "Found clipPath, disable exposedRect";
+            LOG_WARNING() << LOGGING_CTX << "Found clipPath, disable exposedRect";
 
         m_isValid = true;
         m_minScaleFactor = std::max(MIN_IMAGE_DIMENSION / m_width, MIN_IMAGE_DIMENSION / m_height);
@@ -498,7 +498,7 @@ public:
 
         if(img.isNull())
         {
-            qWarning() << "Invalid image size";
+            LOG_WARNING() << LOGGING_CTX << "Invalid image size";
             return img;
         }
 

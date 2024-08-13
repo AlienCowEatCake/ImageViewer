@@ -27,9 +27,9 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -85,7 +85,7 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     QFile inFile(filePath);
     if(!inFile.open(QIODevice::ReadOnly))
     {
-        qWarning() << "Can't open" << filePath;
+        LOG_WARNING() << LOGGING_CTX << "Can't open" << filePath;
         return QImage();
     }
 
@@ -114,7 +114,7 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
 #endif
     if(error.code != heif_error_Ok)
     {
-        qWarning() << "Can't read:" << error.message;
+        LOG_WARNING() << LOGGING_CTX << "Can't read:" << error.message;
         heif_context_free(ctx);
 #if defined (USE_LIBHEIF_INIT_API)
         heif_deinit();
@@ -126,7 +126,7 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     error = heif_context_get_primary_image_handle(ctx, &handle);
     if(error.code != heif_error_Ok)
     {
-        qWarning() << "Can't get primary image handle:" << error.message;
+        LOG_WARNING() << LOGGING_CTX << "Can't get primary image handle:" << error.message;
         heif_context_free(ctx);
 #if defined (USE_LIBHEIF_INIT_API)
         heif_deinit();
@@ -144,7 +144,7 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     heif_decoding_options_free(options);
     if(error.code != heif_error_Ok)
     {
-        qWarning() << "Can't decode image:" << error.message;
+        LOG_WARNING() << LOGGING_CTX << "Can't decode image:" << error.message;
         heif_image_handle_release(handle);
         heif_context_free(ctx);
 #if defined (USE_LIBHEIF_INIT_API)
@@ -181,7 +181,7 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
     }
     if(result.isNull())
     {
-        qWarning() << "Invalid image size:" << width << "x" << height << "chroma_format:" << heif_image_get_chroma_format(img);
+        LOG_WARNING() << LOGGING_CTX << "Invalid image size:" << width << "x" << height << "chroma_format:" << heif_image_get_chroma_format(img);
         heif_image_release(img);
         heif_image_handle_release(handle);
         heif_context_free(ctx);
@@ -205,13 +205,13 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
         {
             if(strcmp(heif_image_handle_get_metadata_type(handle, ids[i]), "Exif") == 0)
             {
-                qDebug() << "Found EXIF metadata";
+                LOG_INFO() << LOGGING_CTX << "Found EXIF metadata";
                 const size_t metadataSize = heif_image_handle_get_metadata_size(handle, ids[i]);
                 QByteArray rawMetadata(static_cast<int>(metadataSize), 0);
                 error = heif_image_handle_get_metadata(handle, ids[i], rawMetadata.data());
                 if(error.code != heif_error_Ok)
                 {
-                    qWarning() << "Can't get EXIF metadata:" << error.message;
+                    LOG_WARNING() << LOGGING_CTX << "Can't get EXIF metadata:" << error.message;
                 }
                 else
                 {
@@ -221,12 +221,12 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
             }
             else if(strcmp(heif_image_handle_get_metadata_type(handle, ids[i]), "XMP") == 0)
             {
-                qDebug() << "Found XMP metadata";
+                LOG_INFO() << LOGGING_CTX << "Found XMP metadata";
                 const size_t metadataSize = heif_image_handle_get_metadata_size(handle, ids[i]);
                 QByteArray rawMetadata(static_cast<int>(metadataSize), 0);
                 error = heif_image_handle_get_metadata(handle, ids[i], rawMetadata.data());
                 if(error.code != heif_error_Ok)
-                    qWarning() << "Can't get XMP metadata:" << error.message;
+                    LOG_WARNING() << LOGGING_CTX << "Can't get XMP metadata:" << error.message;
                 else
                     metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(rawMetadata.constData(), rawMetadata.size())));
             }

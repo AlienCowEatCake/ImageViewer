@@ -29,7 +29,6 @@
 #include <QFile>
 #include <QString>
 #include <QStringList>
-#include <QDebug>
 
 //#undef HAS_EXIV2
 //#undef HAS_LIBEXIF
@@ -49,6 +48,8 @@
 #endif
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
+
 #include "Utils/MappedBuffer.h"
 
 namespace {
@@ -583,12 +584,12 @@ struct ImageMetaData::Impl
                 || exiv2FillCommentMetaData()
 #endif
                 ;
-        qDebug() << "Fill MetaData:"
-                 << "EXIF =" << exifLoaded
-                 << "IPTC =" << iptcLoaded
-                 << "XMP =" << xmpLoaded
-                 << "COMMENT =" << commentLoaded
-                    ;
+        LOG_INFO() << LOGGING_CTX << "Fill MetaData:"
+                << "EXIF =" << exifLoaded
+                << "IPTC =" << iptcLoaded
+                << "XMP =" << xmpLoaded
+                << "COMMENT =" << commentLoaded
+                ;
         isEntryListLoaded = true;
     }
 };
@@ -693,7 +694,7 @@ void ImageMetaData::applyExifOrientation(QImage *image, quint16 orientation)
             *image = image->transformed(transform);
             break;
         default:
-            qWarning("This should never happen");
+            LOG_WARNING() << LOGGING_CTX << "This should never happen";
     }
 }
 
@@ -773,7 +774,7 @@ quint16 ImageMetaData::orientation() const
                 uint result = it->value.toUInt(&ok);
                 if(ok && result >= 1 && result <= 8)
                 {
-                    qDebug() << "[CUSTOM] orientation =" << result;
+                    LOG_INFO() << LOGGING_CTX << "CUSTOM: orientation =" << result;
                     return static_cast<quint16>(result);
                 }
             }
@@ -796,7 +797,7 @@ quint16 ImageMetaData::orientation() const
             if(itData == data.end())
                 continue;
             const quint16 orientation = static_cast<quint16>(Exiv2ValueToLong(itData->value()));
-            qDebug() << "[EXIV2] EXIF orientation =" << orientation;
+            LOG_INFO() << LOGGING_CTX << "EXIV2: EXIF orientation =" << orientation;
             return orientation;
         }
         catch(...)
@@ -810,7 +811,7 @@ quint16 ImageMetaData::orientation() const
         if(entry && entry->parent && entry->parent->parent && entry->format == EXIF_FORMAT_SHORT && entry->components == 1)
         {
             const quint16 orientation = exif_get_short(entry->data, exif_data_get_byte_order(entry->parent->parent));
-            qDebug() << "[LIBEXIF] EXIF orientation =" << orientation;
+            LOG_INFO() << LOGGING_CTX << "LIBEXIF: EXIF orientation =" << orientation;
             return orientation;
         }
     }
@@ -819,7 +820,7 @@ quint16 ImageMetaData::orientation() const
     if(m_impl->qtExtendedExifHeader.contains(QExifImageHeader::Orientation))
     {
         const quint16 orientation = m_impl->qtExtendedExifHeader.value(QExifImageHeader::Orientation).toShort();
-        qDebug() << "[QTEXTENDED] EXIF orientation =" << orientation;
+        LOG_INFO() << LOGGING_CTX << "QTEXTENDED: EXIF orientation =" << orientation;
         return orientation;
     }
 #endif
@@ -853,7 +854,7 @@ QPair<qreal, qreal> ImageMetaData::dpi() const
         if(resX > 0 && resY > 0)
         {
             const QPair<qreal, qreal> dpi = qMakePair<qreal, qreal>(static_cast<qreal>(resX), static_cast<qreal>(resY));
-            qDebug() << "[CUSTOM] dpi =" << dpi.first << dpi.second;
+            LOG_INFO() << LOGGING_CTX << "CUSTOM: dpi =" << dpi.first << dpi.second;
             return dpi;
         }
     }
@@ -883,7 +884,7 @@ QPair<qreal, qreal> ImageMetaData::dpi() const
             if(vX.first > 0 && vX.second > 0 && vY.first > 0 && vY.second > 0)
             {
                 const QPair<qreal, qreal> dpi = qMakePair<qreal, qreal>(multiplier * vX.first / vX.second, multiplier * vY.first / vY.second);
-                qDebug() << "[EXIV2] EXIF dpi =" << dpi.first << dpi.second;
+                LOG_INFO() << LOGGING_CTX << "EXIV2: EXIF dpi =" << dpi.first << dpi.second;
                 return dpi;
             }
         }
@@ -907,7 +908,7 @@ QPair<qreal, qreal> ImageMetaData::dpi() const
             if(vX.numerator > 0 && vX.denominator > 0 && vY.numerator > 0 && vY.denominator > 0)
             {
                 const QPair<qreal, qreal> dpi = qMakePair<qreal, qreal>(multiplier * vX.numerator / vX.denominator, multiplier * vY.numerator / vY.denominator);
-                qDebug() << "[LIBEXIF] EXIF dpi =" << dpi.first << dpi.second;
+                LOG_INFO() << LOGGING_CTX << "LIBEXIF: EXIF dpi =" << dpi.first << dpi.second;
                 return dpi;
             }
         }
@@ -924,7 +925,7 @@ QPair<qreal, qreal> ImageMetaData::dpi() const
         if(vX.first > 0 && vX.second > 0 && vY.first > 0 && vY.second > 0)
         {
             const QPair<qreal, qreal> dpi = qMakePair<qreal, qreal>(multiplier * vX.first / vX.second, multiplier * vY.first / vY.second);
-            qDebug() << "[QTEXTENDED] EXIF dpi =" << dpi.first << dpi.second;
+            LOG_INFO() << LOGGING_CTX << "QTEXTENDED: EXIF dpi =" << dpi.first << dpi.second;
             return dpi;
         }
     }
@@ -961,13 +962,13 @@ bool ImageMetaData::readFile(const QByteArray &fileData)
         if(m_impl->exiv2Image->exifData().empty() && m_impl->exiv2Image->iptcData().empty() && m_impl->exiv2Image->xmpData().empty() && m_impl->exiv2Image->comment().empty())
             throw std::exception();
         if(!m_impl->exiv2Image->exifData().empty())
-            qDebug() << "[EXIV2] EXIF data detected";
+            LOG_INFO() << LOGGING_CTX << "EXIV2: EXIF data detected";
         if(!m_impl->exiv2Image->iptcData().empty())
-            qDebug() << "[EXIV2] IPTC data detected";
+            LOG_INFO() << LOGGING_CTX << "EXIV2: IPTC data detected";
         if(!m_impl->exiv2Image->xmpData().empty())
-            qDebug() << "[EXIV2] XMP data detected";
+            LOG_INFO() << LOGGING_CTX << "EXIV2: XMP data detected";
         if(!m_impl->exiv2Image->comment().empty())
-            qDebug() << "[EXIV2] Comment detected";
+            LOG_INFO() << LOGGING_CTX << "EXIV2: Comment detected";
         status |= true;
     }
     catch(...)
@@ -993,7 +994,7 @@ bool ImageMetaData::readFile(const QByteArray &fileData)
 //        fflush(stdout);
 //        fflush(stderr);
 //#endif
-        qDebug() << "[LIBEXIF] EXIF data detected";
+        LOG_INFO() << LOGGING_CTX << "LIBEXIF: EXIF data detected";
         status |= true;
     }
 #endif
@@ -1002,7 +1003,7 @@ bool ImageMetaData::readFile(const QByteArray &fileData)
     QBuffer buffer(const_cast<QByteArray*>(&fileData));
     if(buffer.open(QIODevice::ReadOnly) && m_impl->qtExtendedExifHeader.loadFromJpeg(&buffer))
     {
-        qDebug() << "[QTEXTENDED] EXIF data detected";
+        LOG_INFO() << LOGGING_CTX << "QTEXTENDED: EXIF data detected";
         status |= true;
     }
 #endif
@@ -1026,7 +1027,7 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
         Exiv2::ExifParser::decode(m_impl->exiv2ExifData, data, dataSize);
         if(m_impl->exiv2ExifData.empty())
             throw std::exception();
-        qDebug() << "[EXIV2] EXIF data detected";
+        LOG_INFO() << LOGGING_CTX << "EXIV2: EXIF data detected";
         status |= true;
     }
     catch(...)
@@ -1050,7 +1051,7 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
 //        fflush(stdout);
 //        fflush(stderr);
 //#endif
-        qDebug() << "[LIBEXIF] EXIF data detected";
+        LOG_INFO() << LOGGING_CTX << "LIBEXIF: EXIF data detected";
         status |= true;
     }
 #endif
@@ -1059,7 +1060,7 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
     QBuffer buffer(const_cast<QByteArray*>(&rawExifData));
     if(buffer.open(QIODevice::ReadOnly) && m_impl->qtExtendedExifHeader.read(&buffer))
     {
-        qDebug() << "[QTEXTENDED] EXIF data detected";
+        LOG_INFO() << LOGGING_CTX << "QTEXTENDED: EXIF data detected";
         status |= true;
     }
 #endif
@@ -1082,7 +1083,7 @@ bool ImageMetaData::readXmpData(const QByteArray &rawXmpData)
         Exiv2::XmpParser::decode(m_impl->exiv2XmpData, packet);
         if(m_impl->exiv2XmpData.empty())
             throw std::exception();
-        qDebug() << "[EXIV2] XMP data detected";
+        LOG_INFO() << LOGGING_CTX << "EXIV2: XMP data detected";
         status |= true;
     }
     catch(...)

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -27,7 +27,6 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
-#include <QDebug>
 #include <QDialogButtonBox>
 #include <QDoubleSpinBox>
 #include <QFrame>
@@ -48,6 +47,7 @@
 #include <QTransform>
 #include <QVBoxLayout>
 
+#include "Utils/Logging.h"
 #include "Utils/ObjectsUtils.h"
 
 #include "Decoders/GraphicsItemFeatures/IGrabImage.h"
@@ -362,7 +362,7 @@ protected:
                     image = QImage(size, QImage::Format_ARGB32_Premultiplied);
                     while(image.isNull() && !size.isEmpty())
                     {
-                        qWarning() << "Image rendering failed, target size =" << size.width() << "x" << size.height();
+                        LOG_WARNING() << LOGGING_CTX << "Image rendering failed, target size =" << size.width() << "x" << size.height();
                         size = QSize(size.width() / 2, size.height() / 2);
                         image = QImage(size, QImage::Format_ARGB32_Premultiplied);
                     }
@@ -395,7 +395,7 @@ protected:
                     if(!scaledImage.isNull())
                         image = scaledImage;
                     else
-                        qWarning() << "Image scaling failed, target size =" << unrotatedDeviceSize.width() << "x" << unrotatedDeviceSize.height();
+                        LOG_WARNING() << LOGGING_CTX << "Image scaling failed, target size =" << unrotatedDeviceSize.width() << "x" << unrotatedDeviceSize.height();
                 }
                 painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
             }
@@ -428,7 +428,7 @@ protected:
                         if(!scaledImage.isNull())
                             image = scaledImage;
                         else
-                            qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
+                            LOG_WARNING() << LOGGING_CTX << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
                     }
                     painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
                 }
@@ -448,7 +448,7 @@ protected:
                         if(!scaledImage.isNull())
                             image = scaledImage;
                         else
-                            qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
+                            LOG_WARNING() << LOGGING_CTX << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
                     }
                     painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
                 }

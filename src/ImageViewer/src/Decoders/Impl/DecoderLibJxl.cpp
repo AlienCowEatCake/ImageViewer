@@ -25,9 +25,9 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -60,7 +60,7 @@ public:
         JxlDecoder *decoder = JxlDecoderCreate(Q_NULLPTR);
         if(!decoder)
         {
-            qWarning() << "ERROR: JxlDecoderCreate";
+            LOG_WARNING() << LOGGING_CTX << "ERROR: JxlDecoderCreate";
             return false;
         }
 
@@ -69,7 +69,7 @@ public:
 
         if(JxlDecoderProcessInput(decoder) != JXL_DEC_BASIC_INFO)
         {
-            qWarning() << "ERROR: JxlDecoderProcessInput";
+            LOG_WARNING() << LOGGING_CTX << "ERROR: JxlDecoderProcessInput";
             JxlDecoderDestroy(decoder);
             return false;
         }
@@ -77,7 +77,7 @@ public:
         JxlBasicInfo info;
         if(JxlDecoderGetBasicInfo(decoder, &info) != JXL_DEC_SUCCESS)
         {
-            qWarning() << "ERROR: JxlDecoderGetBasicInfo";
+            LOG_WARNING() << LOGGING_CTX << "ERROR: JxlDecoderGetBasicInfo";
             JxlDecoderDestroy(decoder);
             return false;
         }
@@ -91,7 +91,7 @@ public:
 
         if(JxlDecoderProcessInput(decoder) != JXL_DEC_COLOR_ENCODING)
         {
-            qWarning() << "ERROR: JxlDecoderProcessInput != JXL_DEC_COLOR_ENCODING";
+            LOG_WARNING() << LOGGING_CTX << "ERROR: JxlDecoderProcessInput != JXL_DEC_COLOR_ENCODING";
             JxlDecoderDestroy(decoder);
             return false;
         }
@@ -111,7 +111,7 @@ public:
 #endif
                                            JXL_COLOR_PROFILE_TARGET_DATA, &iccBufferSize) != JXL_DEC_SUCCESS)
             {
-                qWarning() << "ERROR: JxlDecoderGetICCProfileSize";
+                LOG_WARNING() << LOGGING_CTX << "ERROR: JxlDecoderGetICCProfileSize";
                 JxlDecoderDestroy(decoder);
                 return false;
             }
@@ -123,7 +123,7 @@ public:
 #endif
                                               JXL_COLOR_PROFILE_TARGET_DATA, reinterpret_cast<uint8_t*>(iccBuffer.data()), static_cast<size_t>(iccBuffer.size())) != JXL_DEC_SUCCESS)
             {
-                qWarning() << "ERROR: JxlDecoderGetICCProfileSize";
+                LOG_WARNING() << LOGGING_CTX << "ERROR: JxlDecoderGetICCProfileSize";
                 JxlDecoderDestroy(decoder);
                 return false;
             }
@@ -138,14 +138,14 @@ public:
 #endif
             if(frame.isNull())
             {
-                qWarning() << "Invalid image size";
+                LOG_WARNING() << LOGGING_CTX << "Invalid image size";
                 JxlDecoderDestroy(decoder);
                 return false;
             }
 
             if(JxlDecoderProcessInput(decoder) != JXL_DEC_FRAME)
             {
-                qWarning() << "ERROR: JxlDecoderProcessInput != JXL_DEC_FRAME";
+                LOG_WARNING() << LOGGING_CTX << "ERROR: JxlDecoderProcessInput != JXL_DEC_FRAME";
                 JxlDecoderDestroy(decoder);
                 return false;
             }
@@ -154,26 +154,26 @@ public:
             memset(&frameHeader, 0, sizeof(frameHeader));
             if(JxlDecoderGetFrameHeader(decoder, &frameHeader) != JXL_DEC_SUCCESS)
             {
-                qWarning() << "ERROR: JxlDecoderGetFrameHeader";
+                LOG_WARNING() << LOGGING_CTX << "ERROR: JxlDecoderGetFrameHeader";
                 JxlDecoderDestroy(decoder);
                 return false;
             }
 
             if(JxlDecoderProcessInput(decoder) != JXL_DEC_NEED_IMAGE_OUT_BUFFER)
             {
-                qWarning() << "ERROR: JxlDecoderProcessInput != JXL_DEC_NEED_IMAGE_OUT_BUFFER";
+                LOG_WARNING() << LOGGING_CTX << "ERROR: JxlDecoderProcessInput != JXL_DEC_NEED_IMAGE_OUT_BUFFER";
                 JxlDecoderDestroy(decoder);
                 return false;
             }
             if(JxlDecoderSetImageOutBuffer(decoder, &format, frame.bits(), frame.bytesPerLine() * frame.height()) != JXL_DEC_SUCCESS)
             {
-                qWarning() << "ERROR: JxlDecoderProcessInput";
+                LOG_WARNING() << LOGGING_CTX << "ERROR: JxlDecoderProcessInput";
                 JxlDecoderDestroy(decoder);
                 return false;
             }
             if(JxlDecoderProcessInput(decoder) != JXL_DEC_FULL_IMAGE)
             {
-                qWarning() << "ERROR: JxlDecoderProcessInput != JXL_DEC_FULL_IMAGE";
+                LOG_WARNING() << LOGGING_CTX << "ERROR: JxlDecoderProcessInput != JXL_DEC_FULL_IMAGE";
                 JxlDecoderDestroy(decoder);
                 return false;
             }

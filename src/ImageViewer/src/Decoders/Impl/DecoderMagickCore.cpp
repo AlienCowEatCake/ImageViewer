@@ -36,8 +36,9 @@ typedef unsigned long magick_size_t;
 #include <QFileInfo>
 #include <QImage>
 #include <QByteArray>
-#include <QDebug>
 #include <QSysInfo>
+
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -122,9 +123,9 @@ private:
         if(!image)
         {
             if(exception->severity != UndefinedException)
-                qWarning() << "[DecoderMagickCore] Exception:" << exception->reason << exception->description;
+                LOG_WARNING() << LOGGING_CTX << "Exception:" << exception->reason << exception->description;
             else
-                qWarning() << "[DecoderMagickCore] BlobToImage error";
+                LOG_WARNING() << LOGGING_CTX << "BlobToImage error";
             return false;
         }
 
@@ -136,9 +137,9 @@ private:
             if(qImage.isNull())
             {
                 if(exception->severity != UndefinedException)
-                    qWarning() << "[DecoderMagickCore] Exception:" << exception->reason << exception->description;
+                    LOG_WARNING() << LOGGING_CTX << "Exception:" << exception->reason << exception->description;
                 else
-                    qWarning() << "[DecoderMagickCore] ExportImagePixels error";
+                    LOG_WARNING() << LOGGING_CTX << "ExportImagePixels error";
                 return false;
             }
             const QRect rect(static_cast<int>(frame->page.x), static_cast<int>(frame->page.y), qImage.width(), qImage.height());
@@ -166,13 +167,13 @@ private:
 
         if(image->orientation)
         {
-            qDebug() << "[DecoderMagickCore] Orientation found:" << image->orientation;
+            LOG_INFO() << LOGGING_CTX << "Orientation found:" << image->orientation;
             ImageMetaData::applyExifOrientation(&qImage, static_cast<quint16>(image->orientation));
         }
 
         if(const StringInfo *pinfo = GetImageProfile(image, "ICC"))
         {
-            qDebug() << "[DecoderMagickCore] ICC profile found";
+            LOG_INFO() << LOGGING_CTX << "ICC profile found";
             ICCProfile profile(QByteArray::fromRawData(reinterpret_cast<const char*>(pinfo->datum), static_cast<int>(pinfo->length)));
             profile.applyToImage(&qImage);
         }

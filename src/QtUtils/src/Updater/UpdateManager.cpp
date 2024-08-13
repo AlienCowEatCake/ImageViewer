@@ -22,7 +22,6 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QDateTime>
-#include <QDebug>
 #include <QDesktopServices>
 #include <QMessageBox>
 #include <QPointer>

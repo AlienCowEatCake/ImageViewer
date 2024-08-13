@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -49,7 +49,7 @@
 #include <QOffscreenSurface>
 #include <QOpenGLFunctions>
 
-#include <QDebug>
+#include "Utils/Logging.h"
 
 #include "../Utils/XmlStreamReader.h"
 
@@ -91,7 +91,7 @@ int getMaxTextureSize()
         functions->glEnable(GL_TEXTURE_2D);
         functions->glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 
-        qDebug() << "GL_MAX_TEXTURE_SIZE =" << maxTextureSize;
+        LOG_INFO() << LOGGING_CTX << "GL_MAX_TEXTURE_SIZE =" << maxTextureSize;
     }
     return maxTextureSize;
 }
@@ -149,12 +149,12 @@ QByteArray getWebEngineComponentQml()
         component.setData(qml, QUrl());
         if(component.status() == QQmlComponent::Ready)
         {
-            qDebug() << "[QMLWebEngineSVGGraphicsItem]" << it->second.data() << "detected";
+            LOG_INFO() << LOGGING_CTX << it->second.data() << "detected";
             return qml;
         }
         else
         {
-            qDebug() << "[QMLWebEngineSVGGraphicsItem]" << it->second.data() << "not detected:" << component.errorString();
+            LOG_INFO() << LOGGING_CTX << it->second.data() << "not detected:" << component.errorString();
         }
     }
     return qml;
@@ -203,7 +203,7 @@ struct QMLWebEngineSVGGraphicsItem::Impl
         QQmlEngine *engine = quickView->engine();
         if(!engine)
         {
-            qWarning() << "[QMLWebEngineSVGGraphicsItem] Error: can't get QQmlEngine";
+            LOG_WARNING() << LOGGING_CTX << "Error: can't get QQmlEngine";
             return Q_NULLPTR;
         }
 
@@ -211,14 +211,14 @@ struct QMLWebEngineSVGGraphicsItem::Impl
         component->setData(getWebEngineComponentQml(), QUrl());
         if(component->status() != QQmlComponent::Ready)
         {
-            qDebug() << "[QMLWebEngineSVGGraphicsItem] Error:" << component->errorString();
+            LOG_INFO() << LOGGING_CTX << "Error:" << component->errorString();
             return Q_NULLPTR;
         }
 
         QQuickItem *webEngineView = qobject_cast<QQuickItem*>(component->create(engine->rootContext()));
         if(!webEngineView)
         {
-            qWarning() << "[QMLWebEngineSVGGraphicsItem] Error: can't create WebEngineView component";
+            LOG_WARNING() << LOGGING_CTX << "Error: can't create WebEngineView component";
             return Q_NULLPTR;
         }
 
@@ -257,7 +257,7 @@ bool QMLWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &ba
 {
     if(!m_impl->webEngineView)
     {
-        qWarning() << "[QMLWebEngineSVGGraphicsItem] Error: WebEngineView component is null";
+        LOG_WARNING() << LOGGING_CTX << "Error: WebEngineView component is null";
         return false;
     }
 
@@ -280,13 +280,13 @@ bool QMLWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &ba
     disconnect(connection);
     if(!QQmlProperty(m_impl->webEngineView, QString::fromLatin1("loading")).read().toBool())
     {
-        qWarning() << "[QMLWebEngineSVGGraphicsItem] Error: can't load content";
+        LOG_WARNING() << LOGGING_CTX << "Error: can't load content";
         return false;
     }
 
     if(!rootElementIsSvg())
     {
-        qWarning() << "[QMLWebEngineSVGGraphicsItem] Error: not an SVG";
+        LOG_WARNING() << LOGGING_CTX << "Error: not an SVG";
         return false;
     }
 
@@ -299,7 +299,7 @@ bool QMLWebEngineSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &ba
     m_impl->maxScaleFactor = std::min(5.0, std::min(maxImageDimension / m_impl->svgRect.width(), maxImageDimension / m_impl->svgRect.height()));
     if(m_impl->maxScaleFactor < m_impl->minScaleFactor)
     {
-        qWarning() << "[QMLWebEngineSVGGraphicsItem] Error: too large SVG size, max =" << maxImageDimension << "x" << maxImageDimension;
+        LOG_WARNING() << LOGGING_CTX << "Error: too large SVG size, max =" << maxImageDimension << "x" << maxImageDimension;
         return false;
     }
 

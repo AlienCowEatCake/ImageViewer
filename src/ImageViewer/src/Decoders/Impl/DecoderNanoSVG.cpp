@@ -19,12 +19,12 @@
 
 #include <QImage>
 #include <QFileInfo>
-#include <QDebug>
 
 #include <nanosvg.h>
 #include <nanosvgrast.h>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -53,7 +53,7 @@ public:
         QByteArray inBuffer = MappedBuffer(filePath, MappedBuffer::AutoInflate | MappedBuffer::AutoConvertXmlToUtf8).byteArray();
         if(inBuffer.isEmpty())
         {
-            qWarning() << "Can't read" << filePath;
+            LOG_WARNING() << LOGGING_CTX << "Can't read" << filePath;
             return;
         }
 
@@ -62,14 +62,14 @@ public:
         m_image = nsvgParse(inBuffer.data(), "px", 96.0f);
         if(!m_image)
         {
-            qWarning() << "Could not open SVG image";
+            LOG_WARNING() << LOGGING_CTX << "Could not open SVG image";
             return;
         }
 
         m_rasterizer = nsvgCreateRasterizer();
         if(!m_rasterizer)
         {
-            qWarning() << "Could not init rasterizer";
+            LOG_WARNING() << LOGGING_CTX << "Could not init rasterizer";
             return;
         }
 
@@ -111,7 +111,7 @@ public:
 
         if(img.isNull())
         {
-            qWarning() << "Invalid image size";
+            LOG_WARNING() << LOGGING_CTX << "Invalid image size";
             return img;
         }
         nsvgRasterize(m_rasterizer, m_image, 0, 0, static_cast<float>(scaleFactor), img.bits(), w, h, img.bytesPerLine());

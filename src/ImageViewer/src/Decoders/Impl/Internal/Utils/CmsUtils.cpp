@@ -35,7 +35,6 @@
 #include <lcms2.h>
 #endif
 
-#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -48,6 +47,7 @@
 #endif
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 struct ICCProfile::Impl
 {
@@ -106,7 +106,7 @@ struct ICCProfile::Impl
         ADD_CASE(cmsERROR_NOT_SUITABLE);
 #undef ADD_CASE
         }
-        qWarning() << "[CmsUtils] Error" << errorCodeString << ":" << text;
+        LOG_WARNING() << LOGGING_CTX << "Error" << errorCodeString << ":" << text;
     }
 
     cmsHPROFILE inProfile;
@@ -131,7 +131,7 @@ ICCProfile::ICCProfile(const QByteArray &profileData)
     m_impl->outColorSpace = QColorSpace(QColorSpace::SRgb);
     m_impl->inColorSpace = QColorSpace::fromIccProfile(profileData);
     if(!m_impl->inColorSpace.isValid())
-        qWarning() << "[CmsUtils] Invalid colorspace";
+        LOG_WARNING() << LOGGING_CTX << "Invalid colorspace";
 #endif
 }
 
@@ -272,7 +272,7 @@ ICCProfile::ICCProfile(float *whitePoint,
 #endif
 
     if(!m_impl->inColorSpace.isValid())
-        qWarning() << "[CmsUtils] Invalid colorspace";
+        LOG_WARNING() << LOGGING_CTX << "Invalid colorspace";
 
 #else
     Q_UNUSED(whitePoint);
@@ -345,7 +345,7 @@ void ICCProfile::applyToImage(QImage *image)
     cmsHTRANSFORM transform = m_impl->getOrCreateTransform(inFormat, outFormat);
     if(!transform && inFormat != TYPE_CMYK_8)
     {
-        qWarning() << "[CmsUtils] Trying CMYK conversion transform";
+        LOG_WARNING() << LOGGING_CTX << "Trying CMYK conversion transform";
         forceCmyk = true;
         inFormat = TYPE_CMYK_8;
         transform = m_impl->getOrCreateTransform(inFormat, outFormat);
@@ -481,7 +481,7 @@ static QString defaultCmykProfilePath()
         const QString filePath = QString::fromLocal8Bit(defaultPathEnv);
         if(QFileInfo_exists(filePath))
         {
-            qDebug() << "[CmsUtils] Default CMYK profile:" << filePath;
+            LOG_INFO() << LOGGING_CTX << "Default CMYK profile:" << filePath;
             return filePath;
         }
     }
@@ -607,7 +607,7 @@ static QString defaultCmykProfilePath()
                 if(it->compare(*kt, Qt::CaseInsensitive) == 0)
                 {
                     filePath = jt->first + QString::fromLatin1("/") + *kt;
-                    qDebug() << "[CmsUtils] Default CMYK profile:" << filePath;
+                    LOG_INFO() << LOGGING_CTX << "Default CMYK profile:" << filePath;
                 }
             }
         }
@@ -618,7 +618,7 @@ static QString defaultCmykProfilePath()
     {
         filePath = defaultGsCmykProfilePath();
         if(!filePath.isEmpty())
-            qDebug() << "[CmsUtils] Default CMYK profile:" << filePath;
+            LOG_INFO() << LOGGING_CTX << "Default CMYK profile:" << filePath;
     }
 #endif
     return filePath;
@@ -629,14 +629,14 @@ QByteArray ICCProfile::defaultCmykProfileData()
     static const QString filePath = defaultCmykProfilePath();
     if(filePath.isEmpty())
     {
-        qDebug() << "[CmsUtils] Can't find default CMYK profile";
+        LOG_INFO() << LOGGING_CTX << "Can't find default CMYK profile";
         return QByteArray();
     }
 
     QFile file(filePath);
     if(!file.open(QIODevice::ReadOnly))
     {
-        qWarning() << "[CmsUtils] Can't open default CMYK profile" << filePath;
+        LOG_WARNING() << LOGGING_CTX << "Can't open default CMYK profile" << filePath;
         return QByteArray();
     }
 

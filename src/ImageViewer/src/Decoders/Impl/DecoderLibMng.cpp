@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -31,9 +31,9 @@
 #include <QFile>
 #include <QByteArray>
 #include <QSysInfo>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -91,13 +91,14 @@ mng_bool MNG_DECL proc_mng_error(mng_handle  hMNG,
     MngAnimationProvider *provider = reinterpret_cast<MngAnimationProvider*>(mng_get_userdata(hMNG));
     if(iSeverity > 2)
         provider->error = true;
-    qWarning("MNG error %d: %s; chunk %c%c%c%c; subcode %d:%d",
-             iErrorcode, zErrortext,
-             (iChunkname >> 24) & 0xff,
-             (iChunkname >> 16) & 0xff,
-             (iChunkname >> 8)  & 0xff,
-             (iChunkname >> 0)  & 0xff,
-             iExtra1, iExtra2);
+    LOG_INFO("%s MNG error %d: %s; chunk %c%c%c%c; subcode %d:%d",
+            LOGGING_CTX,
+            iErrorcode, zErrortext,
+            (iChunkname >> 24) & 0xff,
+            (iChunkname >> 16) & 0xff,
+            (iChunkname >> 8)  & 0xff,
+            (iChunkname >> 0)  & 0xff,
+            iExtra1, iExtra2);
     return MNG_TRUE;
 }
 
@@ -145,7 +146,7 @@ mng_bool MNG_DECL proc_mng_processheader(mng_handle hMNG,
     provider->image = QImage(static_cast<int>(iWidth), static_cast<int>(iHeight), QImage::Format_ARGB32);
     if(provider->image.isNull())
     {
-        qWarning() << "Invalid image size";
+        LOG_WARNING() << LOGGING_CTX << "Invalid image size";
         provider->error = true;
         return MNG_FALSE;
     }
@@ -189,7 +190,7 @@ mng_bool MNG_DECL proc_mng_trace(mng_handle /*hMNG*/,
                         mng_int32  iFuncseq,
                         mng_pchar  zFuncname)
 {
-    qDebug("mng trace: iFuncnr: %d iFuncseq: %d zFuncname: %s", iFuncnr, iFuncseq, zFuncname);
+    LOG_INFO("%s mng trace: iFuncnr: %d iFuncseq: %d zFuncname: %s", LOGGING_CTX, iFuncnr, iFuncseq, zFuncname);
     return MNG_TRUE;
 }
 

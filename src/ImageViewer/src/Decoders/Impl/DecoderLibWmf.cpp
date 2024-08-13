@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -38,9 +38,9 @@
 #include <QFile>
 #include <QByteArray>
 #include <QPainter>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -117,7 +117,7 @@ public:
         error = wmf_api_create(&m_API, flags, &m_options);
         if(error != wmf_E_None)
         {
-            qWarning() << "Couldn't create WMF reader:" << wmfErrorToString(error);
+            LOG_WARNING() << LOGGING_CTX << "Couldn't create WMF reader:" << wmfErrorToString(error);
             if(m_API)
                 wmf_api_destroy(m_API);
             return;
@@ -128,7 +128,7 @@ public:
         error = wmf_mem_open(m_API, m_inBuffer.dataAs<unsigned char*>(), m_inBuffer.sizeAs<long>());
         if(error != wmf_E_None)
         {
-            qWarning() << "Couldn't create reader API:" << wmfErrorToString(error);
+            LOG_WARNING() << LOGGING_CTX << "Couldn't create reader API:" << wmfErrorToString(error);
             wmf_api_destroy(m_API);
             return;
         }
@@ -136,7 +136,7 @@ public:
         error = wmf_scan(m_API, 0, &m_bbox);
         if(error != wmf_E_None)
         {
-            qWarning() << "Error scanning WMF file:" << wmfErrorToString(error);
+            LOG_WARNING() << LOGGING_CTX << "Error scanning WMF file:" << wmfErrorToString(error);
             wmf_mem_close(m_API);
             wmf_api_destroy(m_API);
             return;
@@ -146,7 +146,7 @@ public:
         error = wmf_display_size(m_API, &m_width, &m_height, resolution, resolution);
         if(error != wmf_E_None || m_width == 0 || m_height == 0)
         {
-            qWarning() << "Couldn't determine image size:" << wmfErrorToString(error);
+            LOG_WARNING() << LOGGING_CTX << "Couldn't determine image size:" << wmfErrorToString(error);
             wmf_mem_close(m_API);
             wmf_api_destroy(m_API);
             return;
@@ -193,14 +193,14 @@ public:
         const wmf_error_t error = wmf_play(m_API, 0, &m_ddata->bbox);
         if(error != wmf_E_None)
         {
-            qWarning() << "Couldn't decode WMF file into pixbuf:" << wmfErrorToString(error);
+            LOG_WARNING() << LOGGING_CTX << "Couldn't decode WMF file into pixbuf:" << wmfErrorToString(error);
             return QImage();
         }
 
         int *gdPixels = Q_NULLPTR;
         if(m_ddata->gd_image == Q_NULLPTR || (gdPixels = wmf_gd_image_pixels(m_ddata->gd_image)) == Q_NULLPTR)
         {
-            qWarning() << "Couldn't decode WMF file - no output (huh?)" << wmfErrorToString(error);
+            LOG_WARNING() << LOGGING_CTX << "Couldn't decode WMF file - no output (huh?)" << wmfErrorToString(error);
             return QImage();
         }
 

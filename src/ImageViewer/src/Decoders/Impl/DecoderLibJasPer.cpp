@@ -44,9 +44,9 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -67,19 +67,19 @@ bool to_sRGB(jas_image_t *& jasImage)
     jas_cmprof_t *outProf = jas_cmprof_createfromclrspc(JAS_CLRSPC_SRGB);
     if(!outProf)
     {
-        qWarning() << "Can't create sRGB profile";
+        LOG_WARNING() << LOGGING_CTX << "Can't create sRGB profile";
         return false;
     }
     if(!jas_image_cmprof(jasImage))
     {
-        qWarning() << "Image has NULL cmprof";
+        LOG_WARNING() << LOGGING_CTX << "Image has NULL cmprof";
         jas_cmprof_destroy(outProf);
         return false;
     }
     jas_image_t *newimage = jas_image_chclrspc(jasImage, outProf, JAS_CMXFORM_INTENT_PER);
     if(!newimage)
     {
-        qWarning() << "Can't convert to sRGB";
+        LOG_WARNING() << LOGGING_CTX << "Can't convert to sRGB";
         jas_cmprof_destroy(outProf);
         return false;
     }
@@ -93,7 +93,7 @@ QImage renderCmykImage(jas_image_t *jasImage)
 {
     if(static_cast<int>(jasImage->numcmpts_) < 4)
     {
-        qWarning() << "Incorrect number of components";
+        LOG_WARNING() << LOGGING_CTX << "Incorrect number of components";
         return QImage();
     }
     const int cmptlut[4] =
@@ -105,7 +105,7 @@ QImage renderCmykImage(jas_image_t *jasImage)
     };
     if(cmptlut[0] < 0 || cmptlut[1] < 0 || cmptlut[2] < 0 || cmptlut[3] < 0)
     {
-        qWarning() << "Incorrect component type";
+        LOG_WARNING() << LOGGING_CTX << "Incorrect component type";
         return QImage();
     }
 
@@ -124,7 +124,7 @@ QImage renderCmykImage(jas_image_t *jasImage)
         vs[i] = jas_image_cmptvstep(jasImage, cmptlut[i]);
         hs[i] = jas_image_cmpthstep(jasImage, cmptlut[i]);
         if(i != 0 && (width[i] != width[0] || height[i] != height[0]))
-            qWarning() << "Component geometry differs from image geometry";
+            LOG_WARNING() << LOGGING_CTX << "Component geometry differs from image geometry";
     }
 
 #define USE_CMYK_8888 (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
@@ -137,7 +137,7 @@ QImage renderCmykImage(jas_image_t *jasImage)
 #endif
     if(result.isNull())
     {
-        qWarning() << "Image is too large";
+        LOG_WARNING() << LOGGING_CTX << "Image is too large";
         return QImage();
     }
 
@@ -187,7 +187,7 @@ QImage renderRgbImage(jas_image_t *jasImage)
 {
     if(static_cast<int>(jasImage->numcmpts_) < 3)
     {
-        qWarning() << "Incorrect number of components";
+        LOG_WARNING() << LOGGING_CTX << "Incorrect number of components";
         return QImage();
     }
     const int cmptlut[3] =
@@ -198,7 +198,7 @@ QImage renderRgbImage(jas_image_t *jasImage)
     };
     if(cmptlut[0] < 0 || cmptlut[1] < 0 || cmptlut[2] < 0)
     {
-        qWarning() << "Incorrect component type";
+        LOG_WARNING() << LOGGING_CTX << "Incorrect component type";
         return QImage();
     }
 
@@ -217,13 +217,13 @@ QImage renderRgbImage(jas_image_t *jasImage)
         vs[i] = jas_image_cmptvstep(jasImage, cmptlut[i]);
         hs[i] = jas_image_cmpthstep(jasImage, cmptlut[i]);
         if(i != 0 && (width[i] != width[0] || height[i] != height[0]))
-            qWarning() << "Component geometry differs from image geometry";
+            LOG_WARNING() << LOGGING_CTX << "Component geometry differs from image geometry";
     }
 
     QImage result(static_cast<int>(jas_image_width(jasImage)), static_cast<int>(jas_image_height(jasImage)), QImage::Format_ARGB32);
     if(result.isNull())
     {
-        qWarning() << "Image is too large";
+        LOG_WARNING() << LOGGING_CTX << "Image is too large";
         return QImage();
     }
 
@@ -403,7 +403,7 @@ QImage renderGrayImage(jas_image_t *jasImage)
     const int cmptno = 0;
     if(cmptno >= static_cast<int>(jasImage->numcmpts_))
     {
-        qWarning() << "Incorrect component number";
+        LOG_WARNING() << LOGGING_CTX << "Incorrect component number";
         return QImage();
     }
 
@@ -417,7 +417,7 @@ QImage renderGrayImage(jas_image_t *jasImage)
     QImage result(static_cast<int>(jas_image_width(jasImage)), static_cast<int>(jas_image_height(jasImage)), QImage::Format_ARGB32);
     if(result.isNull())
     {
-        qWarning() << "Image is too large";
+        LOG_WARNING() << LOGGING_CTX << "Image is too large";
         return QImage();
     }
 
@@ -482,7 +482,7 @@ PayloadWithMetaData<QImage> readJp2File(const QString &filename)
 
     if(!initializeJasPer())
     {
-        qWarning() << "Can't init libjasper";
+        LOG_WARNING() << LOGGING_CTX << "Can't init libjasper";
         return QImage();
     }
 
@@ -490,7 +490,7 @@ PayloadWithMetaData<QImage> readJp2File(const QString &filename)
     int format = jas_image_getfmt(stream);
     if(format < 0)
     {
-        qWarning() << "Image has unknown format";
+        LOG_WARNING() << LOGGING_CTX << "Image has unknown format";
 //        jas_stream_close(stream);
 //        jas_image_clearfmts();
 //        deinitializeJasPer();
@@ -499,7 +499,7 @@ PayloadWithMetaData<QImage> readJp2File(const QString &filename)
     jas_image_t *jasImage = jas_image_decode(stream, format, Q_NULLPTR);
     if(!jasImage)
     {
-        qWarning() << "Can't load image data";
+        LOG_WARNING() << LOGGING_CTX << "Can't load image data";
         jas_stream_close(stream);
         jas_image_clearfmts();
         deinitializeJasPer();

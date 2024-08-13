@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -26,9 +26,9 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -73,16 +73,16 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
     VP8StatusCode status = WebPGetFeatures(inBuffer.dataAs<const uint8_t*>(), inBuffer.sizeAs<std::size_t>(), &features);
     if(status != VP8_STATUS_OK)
     {
-        qWarning() << "Can't WebPGetFeatures for" << filePath;
-        qWarning() << "Error code:" << status;
+        LOG_WARNING() << LOGGING_CTX << "Can't WebPGetFeatures for" << filePath;
+        LOG_WARNING() << LOGGING_CTX << "Error code:" << status;
         return false;
     }
 
-//    qDebug() << "features.width:" << features.width;
-//    qDebug() << "features.height:" << features.height;
-//    qDebug() << "features.has_alpha:" << features.has_alpha;
-//    qDebug() << "features.has_animation:" << features.has_animation;
-//    qDebug() << "features.format:" << features.format;
+//    LOG_INFO() << LOGGING_CTX << "features.width:" << features.width;
+//    LOG_INFO() << LOGGING_CTX << "features.height:" << features.height;
+//    LOG_INFO() << LOGGING_CTX << "features.has_alpha:" << features.has_alpha;
+//    LOG_INFO() << LOGGING_CTX << "features.has_animation:" << features.has_animation;
+//    LOG_INFO() << LOGGING_CTX << "features.format:" << features.format;
 
     if(!features.has_animation)
     {
@@ -90,7 +90,7 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
         QImage &frame = m_frames[0].image;
         if(frame.isNull())
         {
-            qWarning() << "Invalid image size";
+            LOG_WARNING() << LOGGING_CTX << "Invalid image size";
             return false;
         }
 
@@ -102,11 +102,11 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
 #if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
         if(!WebPDecodeBGRAInto(data, dataSize, output, size, stride))
         {
-            qWarning() << "Can't WebPDecodeBGRAInto for" << filePath;
+            LOG_WARNING() << LOGGING_CTX << "Can't WebPDecodeBGRAInto for" << filePath;
 #else
         if(!WebPDecodeARGBInto(data, dataSize, output, size, stride))
         {
-            qWarning() << "Can't WebPDecodeBGRAInto for" << filePath;
+            LOG_WARNING() << LOGGING_CTX << "Can't WebPDecodeBGRAInto for" << filePath;
 #endif
             return false;
         }
@@ -119,7 +119,7 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
         WebPDemuxer *demuxer = WebPDemux(&webpData);
         if(!demuxer)
         {
-            qWarning() << "Can't WebPDemux for" << filePath;
+            LOG_WARNING() << LOGGING_CTX << "Can't WebPDemux for" << filePath;
             return false;
         }
 
@@ -130,7 +130,7 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
         iter.duration = 100;
         if(!WebPDemuxGetFrame(demuxer, 1, &iter))
         {
-            qWarning() << "Can't WebPDemuxGetFrame for" << filePath;
+            LOG_WARNING() << LOGGING_CTX << "Can't WebPDemuxGetFrame for" << filePath;
             WebPDemuxDelete(demuxer);
             return false;
         }
@@ -143,9 +143,9 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
             status = WebPGetFeatures(iter.fragment.bytes, iter.fragment.size, &features);
             if(status != VP8_STATUS_OK)
             {
-                qWarning() << "Can't WebPGetFeatures for" << filePath;
-                qWarning() << "Error fragment:" << i;
-                qWarning() << "Error code:" << status;
+                LOG_WARNING() << LOGGING_CTX << "Can't WebPGetFeatures for" << filePath;
+                LOG_WARNING() << LOGGING_CTX << "Error fragment:" << i;
+                LOG_WARNING() << LOGGING_CTX << "Error code:" << status;
                 WebPDemuxReleaseIterator(&iter);
                 WebPDemuxDelete(demuxer);
                 return false;
@@ -154,7 +154,7 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
             QImage frame(iter.width, iter.height, QImage::Format_ARGB32);
             if(frame.isNull())
             {
-                qWarning() << "Invalid image size";
+                LOG_WARNING() << LOGGING_CTX << "Invalid image size";
                 WebPDemuxReleaseIterator(&iter);
                 WebPDemuxDelete(demuxer);
                 return false;
@@ -168,13 +168,13 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
 #if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
             if(!WebPDecodeBGRAInto(data, dataSize, output, size, stride))
             {
-                qWarning() << "Can't WebPDecodeBGRAInto for" << filePath;
+                LOG_WARNING() << LOGGING_CTX << "Can't WebPDecodeBGRAInto for" << filePath;
 #else
             if(!WebPDecodeARGBInto(data, dataSize, output, size, stride))
             {
-                qWarning() << "Can't WebPDecodeBGRAInto for" << filePath;
+                LOG_WARNING() << LOGGING_CTX << "Can't WebPDecodeBGRAInto for" << filePath;
 #endif
-                qWarning() << "Error fragment:" << i;
+                LOG_WARNING() << LOGGING_CTX << "Error fragment:" << i;
                 WebPDemuxReleaseIterator(&iter);
                 WebPDemuxDelete(demuxer);
                 return false;
@@ -198,8 +198,8 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
 
             if(i != m_numFrames - 1 && !WebPDemuxNextFrame(&iter))
             {
-                qWarning() << "Can't WebPDemuxNextFrame for" << filePath;
-                qWarning() << "Error fragment:" << i;
+                LOG_WARNING() << LOGGING_CTX << "Can't WebPDemuxNextFrame for" << filePath;
+                LOG_WARNING() << LOGGING_CTX << "Error fragment:" << i;
                 WebPDemuxReleaseIterator(&iter);
                 WebPDemuxDelete(demuxer);
                 return false;

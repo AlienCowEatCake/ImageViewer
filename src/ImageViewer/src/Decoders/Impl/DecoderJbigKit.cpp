@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -29,9 +29,9 @@ extern "C" {
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -57,10 +57,10 @@ PayloadWithMetaData<QImage> readJbigFile(const QString &filePath)
     int decodeStatus = jbg_dec_in(&decoder, inBuffer.dataAs<unsigned char*>(), inBuffer.sizeAs<std::size_t>(), Q_NULLPTR);
     if(decodeStatus != JBG_EOK)
     {
-        qWarning() << QString::fromLatin1("Error (%1) decoding: %2")
-                      .arg(decodeStatus)
-                      .arg(QString::fromLocal8Bit(jbg_strerror(decodeStatus)))
-                      .toLocal8Bit().data();
+        LOG_WARNING() << LOGGING_CTX << QString::fromLatin1("Error (%1) decoding: %2")
+                .arg(decodeStatus)
+                .arg(QString::fromLocal8Bit(jbg_strerror(decodeStatus)))
+                .toLocal8Bit().data();
         jbg_dec_free(&decoder);
         return QImage();
     }
@@ -70,7 +70,7 @@ PayloadWithMetaData<QImage> readJbigFile(const QString &filePath)
     QImage result(width, height, QImage::Format_Mono);
     if(result.isNull())
     {
-        qWarning() << "Invalid image size";
+        LOG_WARNING() << LOGGING_CTX << "Invalid image size";
         jbg_dec_free(&decoder);
         return QImage();
     }

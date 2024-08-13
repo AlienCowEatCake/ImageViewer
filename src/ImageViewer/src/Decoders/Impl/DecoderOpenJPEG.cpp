@@ -24,11 +24,11 @@
 #include <QFile>
 #include <QByteArray>
 #include <QRgb>
-#include <QDebug>
 
 #include <openjpeg.h>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -88,16 +88,16 @@ bool is444(opj_image_t *img)
 #define CONSTRAINT_COMPONENTS_NUMBER_EQUAL(IMG, NUM) \
     if((IMG)->numcomps != NUM) \
     { \
-        qDebug() << "Failed" << __FUNCTION__; \
-        qDebug() << " > Reason: numcomps" << (IMG)->numcomps << "!=" << NUM; \
+        LOG_INFO() << LOGGING_CTX << "Failed" << __FUNCTION__; \
+        LOG_INFO() << LOGGING_CTX << " > Reason: numcomps" << (IMG)->numcomps << "!=" << NUM; \
         return QImage(); \
     }
 
 #define CONSTRAINT_COMPONENTS_NUMBER_GREAT_OR_EQUAL(IMG, NUM) \
     if((IMG)->numcomps < NUM) \
     { \
-        qDebug() << "Failed" << __FUNCTION__; \
-        qDebug() << " > Reason: numcomps" << (IMG)->numcomps << "<" << NUM; \
+        LOG_INFO() << LOGGING_CTX << "Failed" << __FUNCTION__; \
+        LOG_INFO() << LOGGING_CTX << " > Reason: numcomps" << (IMG)->numcomps << "<" << NUM; \
         return QImage(); \
     }
 
@@ -106,8 +106,8 @@ bool is444(opj_image_t *img)
     { \
         if((IMG)->comps[i].alpha) \
         { \
-            qDebug() << "Failed" << __FUNCTION__; \
-            qDebug() << " > Reason: image contains alpha component" << i; \
+            LOG_INFO() << LOGGING_CTX << "Failed" << __FUNCTION__; \
+            LOG_INFO() << LOGGING_CTX << " > Reason: image contains alpha component" << i; \
             return QImage(); \
         } \
     }
@@ -115,16 +115,16 @@ bool is444(opj_image_t *img)
 #define CONSTRAINT_WITH_ALPHA_CHANNEL(IMG) \
     if(!hasAlphaChannel(IMG)) \
     { \
-        qDebug() << "Failed" << __FUNCTION__; \
-        qDebug() << " > Reason: image not contains alpha component"; \
+        LOG_INFO() << LOGGING_CTX << "Failed" << __FUNCTION__; \
+        LOG_INFO() << LOGGING_CTX << " > Reason: image not contains alpha component"; \
         return QImage(); \
     }
 
 #define CONSTRAINT_HAS_USUAL_YCC_COMPONENTS(IMG) \
     if(!(is420(IMG) || is422(IMG) || is444(IMG))) \
     { \
-        qDebug() << "Failed" << __FUNCTION__; \
-        qDebug() << " > Reason: image is not match usual YCC component configuration (444, 422 or 420)"; \
+        LOG_INFO() << LOGGING_CTX << "Failed" << __FUNCTION__; \
+        LOG_INFO() << LOGGING_CTX << " > Reason: image is not match usual YCC component configuration (444, 422 or 420)"; \
         return QImage(); \
     }
 
@@ -132,7 +132,7 @@ bool is444(opj_image_t *img)
     { \
         QImage result = (QIMG); \
         if(!result.isNull()) \
-            qDebug() << "Completed" << __FUNCTION__; \
+            LOG_INFO() << LOGGING_CTX << "Completed" << __FUNCTION__; \
         return result; \
     }
 
@@ -327,7 +327,7 @@ QImage convertToQImage(opj_image_t *img, componentsDataToQRgb func)
     QImage result(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32);
     if(result.isNull())
     {
-        qWarning() << "Image is too large";
+        LOG_WARNING() << LOGGING_CTX << "Image is too large";
         return QImage();
     }
 
@@ -438,13 +438,13 @@ QImage anyToQImage(opj_image *img)
 void errorCallback(const char *msg, void *client_data)
 {
     Q_UNUSED(client_data);
-    qWarning() << "[ERROR]" << QString::fromLatin1(msg).simplified().toLocal8Bit().constData();
+    LOG_WARNING() << LOGGING_CTX << "ERROR:" << QString::fromLatin1(msg).simplified().toLocal8Bit().constData();
 }
 
 void warningCallback(const char *msg, void *client_data)
 {
     Q_UNUSED(client_data);
-    qWarning() << "[WARNING]" << QString::fromLatin1(msg).simplified().toLocal8Bit().constData();
+    LOG_WARNING() << LOGGING_CTX << "WARNING:" << QString::fromLatin1(msg).simplified().toLocal8Bit().constData();
 }
 
 void infoCallback(const char *msg, void *client_data)
@@ -517,14 +517,14 @@ QImage readFile(const QString &filePath)
     QFile inFile(filePath);
     if(!inFile.open(QIODevice::ReadOnly))
     {
-        qWarning() << "Can't open" << filePath;
+        LOG_WARNING() << LOGGING_CTX << "Can't open" << filePath;
         return QImage();
     }
 
     opj_stream_t *stream = opj_stream_default_create(OPJ_TRUE);
     if(!stream)
     {
-        qWarning() << "ERROR -> failed to create the stream from the file" << filePath;
+        LOG_WARNING() << LOGGING_CTX << "ERROR -> failed to create the stream from the file" << filePath;
         return QImage();
     }
 
@@ -541,7 +541,7 @@ QImage readFile(const QString &filePath)
     const OPJ_CODEC_FORMAT codecFormat = getCodecFormat(filePath);
     if(codecFormat == OPJ_CODEC_UNKNOWN)
     {
-        qWarning() << "ERROR -> unknown codec for the file" << filePath;
+        LOG_WARNING() << LOGGING_CTX << "ERROR -> unknown codec for the file" << filePath;
         opj_stream_destroy(stream);
         return QImage();
     }
@@ -562,7 +562,7 @@ QImage readFile(const QString &filePath)
     // Setup the decoder decoding parameters using user parameters
     if(!opj_setup_decoder(codec, &parameters))
     {
-        qWarning() << "ERROR -> opj_decompress: failed to setup the decoder";
+        LOG_WARNING() << LOGGING_CTX << "ERROR -> opj_decompress: failed to setup the decoder";
         opj_stream_destroy(stream);
         opj_destroy_codec(codec);
         return QImage();
@@ -572,7 +572,7 @@ QImage readFile(const QString &filePath)
     // Read the main header of the codestream and if necessary the JP2 boxes
     if(!opj_read_header(stream, codec, &image))
     {
-        qWarning() << "ERROR -> opj_decompress: failed to read the header";
+        LOG_WARNING() << LOGGING_CTX << "ERROR -> opj_decompress: failed to read the header";
         opj_stream_destroy(stream);
         opj_destroy_codec(codec);
         opj_image_destroy(image);
@@ -582,7 +582,7 @@ QImage readFile(const QString &filePath)
     // Get the decoded image
     if(!(opj_decode(codec, stream, image) && opj_end_decompress(codec, stream)))
     {
-        qWarning() << "ERROR -> opj_decompress: failed to decode image!";
+        LOG_WARNING() << LOGGING_CTX << "ERROR -> opj_decompress: failed to decode image!";
         opj_destroy_codec(codec);
         opj_stream_destroy(stream);
         opj_image_destroy(image);
@@ -592,7 +592,7 @@ QImage readFile(const QString &filePath)
     // FIXME? Shouldn't that situation be considered as an error of opj_decode() / opj_get_decoded_tile() ?
     if(image->comps[0].data == Q_NULLPTR)
     {
-        qWarning() << "ERROR -> opj_decompress: no image data!";
+        LOG_WARNING() << LOGGING_CTX << "ERROR -> opj_decompress: no image data!";
         opj_destroy_codec(codec);
         opj_stream_destroy(stream);
         opj_image_destroy(image);
@@ -617,33 +617,33 @@ QImage readFile(const QString &filePath)
     switch(image->color_space)
     {
     case OPJ_CLRSPC_UNKNOWN:        // not supported by the library
-        qDebug() << "color_space = OPJ_CLRSPC_UNKNOWN";
+        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_UNKNOWN";
         break;
     case OPJ_CLRSPC_UNSPECIFIED:    // not specified in the codestream
-        qDebug() << "color_space = OPJ_CLRSPC_UNSPECIFIED";
+        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_UNSPECIFIED";
         break;
     case OPJ_CLRSPC_SRGB:           // sRGB
-        qDebug() << "color_space = OPJ_CLRSPC_SRGB";
+        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_SRGB";
         result = (hasAlpha ? rgbaToQImage(image) : rgbToQImage(image));
         break;
     case OPJ_CLRSPC_GRAY:           // grayscale
-        qDebug() << "color_space = OPJ_CLRSPC_GRAY";
+        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_GRAY";
         result = (hasAlpha ? grayAlphaToQImage(image) : grayToQImage(image));
         break;
     case OPJ_CLRSPC_SYCC:           // YUV
-        qDebug() << "color_space = OPJ_CLRSPC_SYCC";
+        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_SYCC";
         result = syccToQImage(image);
         break;
     case OPJ_CLRSPC_EYCC:           // e-YCC
-        qDebug() << "color_space = OPJ_CLRSPC_EYCC";
+        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_EYCC";
         result = esyccToQImage(image);
         break;
     case OPJ_CLRSPC_CMYK:           // CMYK
-        qDebug() << "color_space = OPJ_CLRSPC_CMYK";
+        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_CMYK";
         result = cmykToQImage(image);
         break;
     default:
-        qWarning() << "color_space = <INVALID>" << image->color_space;
+        LOG_WARNING() << LOGGING_CTX << "color_space = <INVALID>" << image->color_space;
         break;
     }
 
@@ -673,7 +673,7 @@ QImage readFile(const QString &filePath)
 
     if(image->icc_profile_buf && image->icc_profile_len)
     {
-        qDebug() << "Found ICCP metadata";
+        LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
         ICCProfile profile(QByteArray::fromRawData(reinterpret_cast<const char*>(image->icc_profile_buf), static_cast<int>(image->icc_profile_len)));
         profile.applyToImage(&result);
     }

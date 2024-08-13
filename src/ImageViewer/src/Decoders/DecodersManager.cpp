@@ -21,11 +21,9 @@
 
 #include <map>
 #include <set>
-#include <cassert>
 
 #include <QGraphicsItem>
 #include <QFileInfo>
-#include <QDebug>
 #include <QMap>
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
 #include <QElapsedTimer>
@@ -35,6 +33,7 @@ typedef QTime QElapsedTimer;
 #endif
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 #include "Utils/SettingsWrapper.h"
 
 #include "Impl/Internal/ImageData.h"
@@ -130,12 +129,12 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
     }
 
     QMap<QString, ComplexPriotiry>::ConstIterator it = decoderPriotities.find(decoder->name());
-    if(it != decoderPriotities.end())
+    if(it != decoderPriotities.constEnd())
         return it.value();
 
     static ComplexPriotiry unknownDecoderPriority(20000, 10000);
     decoderPriotities[decoder->name()] = unknownDecoderPriority;
-    qWarning() << "Unknown priority for decoder" << decoder->name();
+    LOG_WARNING() << LOGGING_CTX << "Unknown priority for decoder" << decoder->name();
     unknownDecoderPriority.mainPriority++;
     unknownDecoderPriority.advancedPriority++;
     return unknownDecoderPriority;
@@ -187,19 +186,19 @@ struct DecodersManager::Impl
                 const QStringList supportedFormats = decoder->supportedFormats();
                 for(QStringList::ConstIterator jt = supportedFormats.constBegin(); jt != supportedFormats.constEnd(); ++jt)
                     formats[*jt].insert(DecoderWithPriority(decoder, priority.mainPriority));
-                qDebug() << "Decoder" << decoder->name() << "was registered for" << supportedFormats << " with priority =" << priority.mainPriority;
+                LOG_INFO() << LOGGING_CTX << "Decoder" << decoder->name() << "was registered for" << supportedFormats << " with priority =" << priority.mainPriority;
 
                 if(priority.advancedPriority >= 0)
                 {
                     const QStringList advancedFormats = decoder->advancedFormats();
                     for(QStringList::ConstIterator jt = advancedFormats.constBegin(); jt != advancedFormats.constEnd(); ++jt)
                         formats[*jt].insert(DecoderWithPriority(decoder, priority.advancedPriority));
-                    qDebug() << "Decoder" << decoder->name() << "was registered for" << advancedFormats << " with priority =" << priority.advancedPriority;
+                    LOG_INFO() << LOGGING_CTX << "Decoder" << decoder->name() << "was registered for" << advancedFormats << " with priority =" << priority.advancedPriority;
                 }
             }
             else
             {
-                qDebug() << "Decoder" << decoder->name() << "was NOT registered with priority =" << priority.mainPriority;
+                LOG_INFO() << LOGGING_CTX << "Decoder" << decoder->name() << "was NOT registered with priority =" << priority.mainPriority;
             }
         }
         pendingDecoders.clear();
@@ -246,7 +245,7 @@ struct DecodersManager::Impl
 
 DecodersManager::~DecodersManager()
 {
-    qDebug() << "DecodersManager destroyed!";
+    LOG_INFO() << LOGGING_CTX << "DecodersManager destroyed!";
 }
 
 DecodersManager &DecodersManager::getInstance()
@@ -258,14 +257,14 @@ DecodersManager &DecodersManager::getInstance()
 void DecodersManager::registerDecoder(IDecoder *decoder)
 {
     m_impl->pendingDecoders.append(decoder);
-    qDebug() << "Decoder" << decoder->name() << "was planned for delayed registration";
+    LOG_INFO() << LOGGING_CTX << "Decoder" << decoder->name() << "was planned for delayed registration";
 }
 
 void DecodersManager::registerFallbackDecoder(IDecoder *decoder)
 {
     const int fallbackPriority = GetDecoderPriority(decoder).mainPriority;
     m_impl->fallbackDecoders.insert(DecoderWithPriority(decoder, fallbackPriority));
-    qDebug() << "Decoder" << decoder->name() << "was registered as FALLBACK with priority =" << fallbackPriority;
+    LOG_INFO() << LOGGING_CTX << "Decoder" << decoder->name() << "was registered as FALLBACK with priority =" << fallbackPriority;
 }
 
 QStringList DecodersManager::registeredDecoders() const
@@ -324,7 +323,7 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
     const QFileInfo fileInfo(filePath);
     if(!fileInfo.exists() || !fileInfo.isReadable())
     {
-        qDebug() << "File" << filePath << "is not exist or unreadable!";
+        LOG_INFO() << LOGGING_CTX << "File" << filePath << "is not exist or unreadable!";
         return QSharedPointer<IImageData>();
     }
 
@@ -345,17 +344,17 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
             const qint64 elapsed = static_cast<qint64>(timer.elapsed());
             if(data && !data->isEmpty())
             {
-                qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name();
-                qDebug() << "Elapsed time =" << elapsed << "ms";
+                LOG_INFO() << LOGGING_CTX << "Successfully opened" << filePath << "with decoder" << decoder->name();
+                LOG_INFO() << LOGGING_CTX << "Elapsed time =" << elapsed << "ms";
                 return data;
             }
-            qDebug() << "Failed to open" << filePath << "with decoder" << decoder->name();
-            qDebug() << "Elapsed time =" << elapsed << "ms";
+            LOG_INFO() << LOGGING_CTX << "Failed to open" << filePath << "with decoder" << decoder->name();
+            LOG_INFO() << LOGGING_CTX << "Elapsed time =" << elapsed << "ms";
             failedDecodres.insert(decoder);
         }
     }
 
-    qDebug() << "Unknown format for file" << filePath << "with extension" << extension;
+    LOG_INFO() << LOGGING_CTX << "Unknown format for file" << filePath << "with extension" << extension;
     for(std::set<DecoderWithPriority>::const_iterator decoderData = m_impl->fallbackDecoders.begin(); decoderData != m_impl->fallbackDecoders.end(); ++decoderData)
     {
         IDecoder *decoder = decoderData->decoder;
@@ -369,12 +368,12 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
         const qint64 elapsed = static_cast<qint64>(timer.elapsed());
         if(data && !data->isEmpty())
         {
-            qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name() << "(FALLBACK)";
-            qDebug() << "Elapsed time =" << elapsed << "ms";
+            LOG_INFO() << LOGGING_CTX << "Successfully opened" << filePath << "with decoder" << decoder->name() << "(FALLBACK)";
+            LOG_INFO() << LOGGING_CTX << "Elapsed time =" << elapsed << "ms";
             return data;
         }
-        qDebug() << "Failed to open" << filePath << "with decoder" << decoder->name() << "(FALLBACK)";
-        qDebug() << "Elapsed time =" << elapsed << "ms";
+        LOG_INFO() << LOGGING_CTX << "Failed to open" << filePath << "with decoder" << decoder->name() << "(FALLBACK)";
+        LOG_INFO() << LOGGING_CTX << "Elapsed time =" << elapsed << "ms";
         failedDecodres.insert(decoder);
     }
     return QSharedPointer<IImageData>();
@@ -386,7 +385,7 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath, c
     const QFileInfo fileInfo(filePath);
     if(!fileInfo.exists() || !fileInfo.isReadable())
     {
-        qDebug() << "File" << filePath << "is not exist or unreadable!";
+        LOG_INFO() << LOGGING_CTX << "File" << filePath << "is not exist or unreadable!";
         return QSharedPointer<IImageData>();
     }
 
@@ -402,19 +401,19 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath, c
         const qint64 elapsed = static_cast<qint64>(timer.elapsed());
         if(data && !data->isEmpty())
         {
-            qDebug() << "Successfully opened" << filePath << "with decoder" << decoder->name();
-            qDebug() << "Elapsed time =" << elapsed << "ms";
+            LOG_INFO() << LOGGING_CTX << "Successfully opened" << filePath << "with decoder" << decoder->name();
+            LOG_INFO() << LOGGING_CTX << "Elapsed time =" << elapsed << "ms";
         }
         else
         {
             data = QSharedPointer<IImageData>();
-            qDebug() << "Failed to open" << filePath << "with decoder" << decoder->name();
-            qDebug() << "Elapsed time =" << elapsed << "ms";
+            LOG_INFO() << LOGGING_CTX << "Failed to open" << filePath << "with decoder" << decoder->name();
+            LOG_INFO() << LOGGING_CTX << "Elapsed time =" << elapsed << "ms";
         }
         return data;
     }
 
-    qDebug() << "Decoder with name" << decoderName << "was not found";
+    LOG_INFO() << LOGGING_CTX << "Decoder with name" << decoderName << "was not found";
     return QSharedPointer<IImageData>();
 }
 
@@ -431,5 +430,5 @@ QSharedPointer<IImageData> DecodersManager::generateStub(const QSharedPointer<II
 DecodersManager::DecodersManager()
     : m_impl(new Impl())
 {
-    qDebug() << "DecodersManager created!";
+    LOG_INFO() << LOGGING_CTX << "DecodersManager created!";
 }

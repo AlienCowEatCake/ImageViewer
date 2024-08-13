@@ -20,11 +20,11 @@
 #include <QFileInfo>
 #include <QColor>
 #include <QImage>
-#include <QDebug>
 
 #include "KImageFormatsImageReader.h"
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -79,7 +79,7 @@ public:
         QImage image = imageReader.read();
         if(image.isNull())
         {
-            qDebug() << imageReader.errorString();
+            LOG_WARNING() << LOGGING_CTX << imageReader.errorString();
             return QSharedPointer<IImageData>();
         }
 

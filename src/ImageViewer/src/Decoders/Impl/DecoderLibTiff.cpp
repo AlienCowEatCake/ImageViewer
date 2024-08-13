@@ -28,9 +28,9 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -102,7 +102,7 @@ ICCProfile *readICCProfile(TIFF *tiff)
     void *iccProfileData = Q_NULLPTR;
     if(TIFFGetField(tiff, TIFFTAG_ICCPROFILE, &iccProfileSize, &iccProfileData))
     {
-        qDebug() << "Found ICCP metadata (TIFFTAG_ICCPROFILE)";
+        LOG_INFO() << LOGGING_CTX << "Found ICCP metadata (TIFFTAG_ICCPROFILE)";
         return new ICCProfile(QByteArray(reinterpret_cast<const char*>(iccProfileData), static_cast<int>(iccProfileSize)));
     }
 
@@ -135,7 +135,7 @@ ICCProfile *readICCProfile(TIFF *tiff)
 
     if(whitePoint || primaryChromaticities || transferFunctionRed || transferFunctionGreen || transferFunctionBlue)
     {
-        qDebug() << "Found ICCP metadata (TIFFTAG_WHITEPOINT + TIFFTAG_PRIMARYCHROMATICITIES + TIFFTAG_TRANSFERFUNCTION)";
+        LOG_INFO() << LOGGING_CTX << "Found ICCP metadata (TIFFTAG_WHITEPOINT + TIFFTAG_PRIMARYCHROMATICITIES + TIFFTAG_TRANSFERFUNCTION)";
 
         /// @note TIFF defaults (CIE D50) does not match sRGB defaults (CIE D65)
         if(!whitePoint && !TIFFGetFieldDefaulted(tiff, TIFFTAG_WHITEPOINT, &whitePoint))
@@ -217,7 +217,7 @@ void readTiffTagToMetaData(TIFF *tiff, ImageMetaData *&metaData, quint32 tag, co
         return;
     if(TIFFFieldDataType(tagField) != TIFF_IFD8)
     {
-        qWarning() << "TIFFFieldDataType for tag (" << tagDescription << ") is not TIFF_IFD8!";
+        LOG_WARNING() << LOGGING_CTX << "TIFFFieldDataType for tag (" << tagDescription << ") is not TIFF_IFD8!";
         return;
     }
     quint64 exifOffset = 0;
@@ -225,7 +225,7 @@ void readTiffTagToMetaData(TIFF *tiff, ImageMetaData *&metaData, quint32 tag, co
         return;
     if(!TIFFReadEXIFDirectory(tiff, exifOffset))
         return;
-    qDebug() << "Found EXIF metadata (" << tagDescription << ")";
+    LOG_INFO() << LOGGING_CTX << "Found EXIF metadata (" << tagDescription << ")";
     if(!metaData)
         metaData = new ImageMetaData;
     for(int i = 0, tagListCount = TIFFGetTagListCount(tiff); i < tagListCount; i++)
@@ -292,20 +292,20 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
     QFile inFile(filename);
     if(!inFile.open(QIODevice::ReadOnly))
     {
-        qWarning() << "Can't open" << filename;
+        LOG_WARNING() << LOGGING_CTX << "Can't open" << filename;
         return QImage();
     }
 
     TIFF *tiff = TIFFClientOpen("foo", "r", &inFile, readProc, writeProc, seekProc, closeProc, sizeProc, mapProc, unmapProc);
     if(!tiff)
     {
-        qWarning() << "Can't TIFFClientOpen for" << filename;
+        LOG_WARNING() << LOGGING_CTX << "Can't TIFFClientOpen for" << filename;
         return QImage();
     }
 
     if(!TIFFSetDirectory(tiff, 0))
     {
-        qWarning() << "Can't TIFFSetDirectory for" << filename;
+        LOG_WARNING() << LOGGING_CTX << "Can't TIFFSetDirectory for" << filename;
         TIFFClose(tiff);
         return QImage();
     }
@@ -316,8 +316,8 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
     char emsg[1024];
     if(!TIFFRGBAImageBegin(&img, tiff, 0, emsg))
     {
-        qWarning() << "Can't TIFFRGBAImageBegin for" << filename;
-        qWarning() << "Reason:" << emsg;
+        LOG_WARNING() << LOGGING_CTX << "Can't TIFFRGBAImageBegin for" << filename;
+        LOG_WARNING() << LOGGING_CTX << "Reason:" << emsg;
         TIFFClose(tiff);
         if(iccProfile)
             delete iccProfile;
@@ -334,7 +334,7 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
 #endif
     if(result.isNull())
     {
-        qWarning() << "Invalid image size";
+        LOG_WARNING() << LOGGING_CTX << "Invalid image size";
         TIFFClose(tiff);
         if(iccProfile)
             delete iccProfile;
@@ -351,7 +351,7 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
 
     if(!TIFFRGBAImageGet(&img, reinterpret_cast<TiffImageBitsType*>(result.bits()), img.width, img.height))
     {
-        qWarning() << "Can't TIFFRGBAImageGet for" << filename;
+        LOG_WARNING() << LOGGING_CTX << "Can't TIFFRGBAImageGet for" << filename;
         TIFFClose(tiff);
         if(iccProfile)
             delete iccProfile;

@@ -35,7 +35,6 @@
 #include <QString>
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
-#include <QDebug>
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
 #include <QElapsedTimer>
 #else
@@ -43,6 +42,7 @@
 typedef QTime QElapsedTimer;
 #endif
 
+#include "Utils/Logging.h"
 #include "Utils/ObjectiveCUtils.h"
 
 #include "../Utils/XmlStreamReader.h"
@@ -52,7 +52,7 @@ typedef QTime QElapsedTimer;
 //#define MAC_WKWEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG
 
 #if defined (MAC_WKWEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-#define DLOG qDebug() << QString::fromLatin1("[%1]").arg(QString::fromLatin1(__FUNCTION__)).toLatin1().data()
+#define DLOG LOG_INFO() << LOGGING_CTX
 #endif
 
 // ====================================================================================================
@@ -115,21 +115,21 @@ enum State
 - (void)webView:(WKWebView*)webView didFailProvisionalNavigation:(WKNavigation*)navigation withError:(NSError*)error
 {
     AUTORELEASE_POOL;
-    qWarning() << ObjCUtils::QStringFromNSString([error description]);
+    LOG_WARNING() << LOGGING_CTX << ObjCUtils::QStringFromNSString([error description]);
     m_state = STATE_FAILED;
 }
 
 - (void)webView:(WKWebView*)webView didFailNavigation:(WKNavigation*)navigation withError:(NSError*)error
 {
     AUTORELEASE_POOL;
-    qWarning() << ObjCUtils::QStringFromNSString([error description]);
+    LOG_WARNING() << LOGGING_CTX << ObjCUtils::QStringFromNSString([error description]);
     m_state = STATE_FAILED;
 }
 
 - (void)webViewWebContentProcessDidTerminate:(WKWebView*)webView
 {
     AUTORELEASE_POOL;
-    qWarning() << "webViewWebContentProcessDidTerminate";
+    LOG_WARNING() << LOGGING_CTX << "webViewWebContentProcessDidTerminate";
     m_state = STATE_FAILED;
 }
 
@@ -239,12 +239,11 @@ public:
 #endif
             if(actualScaleFactor < scaleFactor)
             {
-                qWarning() << QString::fromLatin1("%1 Extremely large scale factor requested! Requested: %2; Max: %3; Will be used: %4.")
-                              .arg(QString::fromLatin1("[MacWKWebViewRasterizerGraphicsItem]"))
-                              .arg(scaleFactor)
-                              .arg(maxScaleFactor)
-                              .arg(actualScaleFactor)
-                              .toLatin1().data();
+                LOG_WARNING() << LOGGING_CTX << QString::fromLatin1("Extremely large scale factor requested! Requested: %1; Max: %2; Will be used: %3.")
+                        .arg(scaleFactor)
+                        .arg(maxScaleFactor)
+                        .arg(actualScaleFactor)
+                        .toLatin1().data();
             }
             const QRectF scaledRect = QRectFIntegerized(QRectF(rect.topLeft() * actualScaleFactor, rect.size() * actualScaleFactor));
             const QRectF scaledPage = QRectFIntegerized(scaledRect.united(QRectF(0, 0, 1, 1)));
@@ -285,7 +284,7 @@ public:
             [view takeSnapshotWithConfiguration:wkSnapshotConfig completionHandler:^(NSImage *snapshotImage, NSError *error){
                 inProgress = false;
                 if(error)
-                    qWarning() << "[MacWKWebViewRasterizerGraphicsItem] Error in grabImage:" << ObjCUtils::QStringFromNSString([NSString stringWithFormat:@"%@", [error localizedDescription]]);
+                    LOG_WARNING() << LOGGING_CTX << "Error in grabImage:" << ObjCUtils::QStringFromNSString([NSString stringWithFormat:@"%@", [error localizedDescription]]);
                 else if(snapshotImage)
                     result = ObjCUtils::QImageFromNSImage(snapshotImage);
             }];
@@ -302,7 +301,7 @@ public:
 #else
         Q_UNUSED(scaleFactor);
 #endif
-        qWarning() << "[MacWKWebViewRasterizerGraphicsItem] Error in grabImage: WKWebView is not supported";
+        LOG_WARNING() << LOGGING_CTX << "Error in grabImage: WKWebView is not supported";
         return QImage();
     }
 };
@@ -351,13 +350,13 @@ bool MacWKWebViewRasterizerGraphicsItem::load(const QByteArray &svgData, const Q
 
         if([m_impl->delegate state] != STATE_SUCCEED)
         {
-            qWarning() << "[MacWKWebViewRasterizerGraphicsItem] Error: can't load content";
+            LOG_WARNING() << LOGGING_CTX << "Error: can't load content";
             return false;
         }
 
         if(!rootElementIsSvg())
         {
-            qWarning() << "[MacWKWebViewRasterizerGraphicsItem] Error: not an SVG";
+            LOG_WARNING() << LOGGING_CTX << "Error: not an SVG";
             return false;
         }
 
@@ -368,16 +367,16 @@ bool MacWKWebViewRasterizerGraphicsItem::load(const QByteArray &svgData, const Q
         m_impl->rect = detectSvgRect();
 
 #if defined (MAC_WKWEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-        qDebug() << "***** ----------------------------------------";
-        qDebug() << "***** Detected SVG document";
-        qDebug() << "***** ----------------------------------------";
-        qDebug() << "***** viewBox attribute:" << svgViewBoxAttribute();
-        qDebug() << "***** size attribute:" << svgSizeAttribute();
-        qDebug() << "***** getBBox() value:" << svgBoundingBoxRect();
-        qDebug() << "***** getBoundingClientRect() value:" << svgBoundingClientRect();
-        qDebug() << "***** ----------------------------------------";
-        qDebug() << "***** actual rect:" << m_impl->rect;
-        qDebug() << "***** ----------------------------------------";
+        LOG_INFO() << LOGGING_CTX << "***** ----------------------------------------";
+        LOG_INFO() << LOGGING_CTX << "***** Detected SVG document";
+        LOG_INFO() << LOGGING_CTX << "***** ----------------------------------------";
+        LOG_INFO() << LOGGING_CTX << "***** viewBox attribute:" << svgViewBoxAttribute();
+        LOG_INFO() << LOGGING_CTX << "***** size attribute:" << svgSizeAttribute();
+        LOG_INFO() << LOGGING_CTX << "***** getBBox() value:" << svgBoundingBoxRect();
+        LOG_INFO() << LOGGING_CTX << "***** getBoundingClientRect() value:" << svgBoundingClientRect();
+        LOG_INFO() << LOGGING_CTX << "***** ----------------------------------------";
+        LOG_INFO() << LOGGING_CTX << "***** actual rect:" << m_impl->rect;
+        LOG_INFO() << LOGGING_CTX << "***** ----------------------------------------";
 #endif
 
         if(size.isEmpty() && viewBox.isValid())
@@ -398,7 +397,7 @@ bool MacWKWebViewRasterizerGraphicsItem::load(const QByteArray &svgData, const Q
     Q_UNUSED(svgData);
     Q_UNUSED(baseUrl);
 #endif
-    qWarning() << "[MacWKWebViewRasterizerGraphicsItem] Error: WKWebView is not supported";
+    LOG_WARNING() << LOGGING_CTX << "Error: WKWebView is not supported";
     return false;
 }
 
@@ -442,7 +441,7 @@ QVariant MacWKWebViewRasterizerGraphicsItem::evalJSImpl(const QString &scriptSou
         [m_impl->view evaluateJavaScript:ObjCUtils::QStringToNSString(scriptSource) completionHandler:^(id result, NSError *error){
             inProgress = false;
             if(error)
-                qWarning() << "[MacWKWebViewRasterizerGraphicsItem] Error in evalJSImpl:" << ObjCUtils::QStringFromNSString([NSString stringWithFormat:@"%@", [error localizedDescription]]);
+                LOG_WARNING() << LOGGING_CTX << "Error in evalJSImpl:" << ObjCUtils::QStringFromNSString([NSString stringWithFormat:@"%@", [error localizedDescription]]);
             else if(result)
                 output = ObjCUtils::QStringFromNSString([NSString stringWithFormat:@"%@", result]);
         }];
@@ -453,7 +452,7 @@ QVariant MacWKWebViewRasterizerGraphicsItem::evalJSImpl(const QString &scriptSou
 #else
     Q_UNUSED(scriptSource);
 #endif
-    qWarning() << "[MacWKWebViewRasterizerGraphicsItem] Error in evalJSImpl: WKWebView is not supported";
+    LOG_WARNING() << LOGGING_CTX << "Error in evalJSImpl: WKWebView is not supported";
     return QVariant();
 }
 

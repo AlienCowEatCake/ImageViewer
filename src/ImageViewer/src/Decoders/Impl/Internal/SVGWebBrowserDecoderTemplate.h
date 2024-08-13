@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -25,9 +25,9 @@
 #include <QUrl>
 #include <QString>
 #include <QByteArray>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../../IDecoder.h"
 #include "ImageData.h"
@@ -76,7 +76,7 @@ public:
         QByteArray svgData = MappedBuffer(filePath, MappedBuffer::AutoInflate).byteArray();
         if(svgData.isEmpty())
         {
-            qWarning() << "Can't read content of" << filePath;
+            LOG_WARNING() << LOGGING_CTX << "Can't read content of" << filePath;
             return QSharedPointer<IImageData>();
         }
 
@@ -87,7 +87,7 @@ public:
             return QSharedPointer<IImageData>(new ImageData(result, filePath, name(), metaData));
         }
 
-        qWarning() << "Can't load content of" << filePath;
+        LOG_WARNING() << LOGGING_CTX << "Can't load content of" << filePath;
         delete result;
         return QSharedPointer<IImageData>();
     }

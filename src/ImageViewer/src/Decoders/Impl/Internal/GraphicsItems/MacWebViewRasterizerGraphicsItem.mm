@@ -35,7 +35,6 @@
 #include <QString>
 #include <QStyleOptionGraphicsItem>
 #include <QWidget>
-#include <QDebug>
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
 #include <QElapsedTimer>
 #else
@@ -44,6 +43,7 @@ typedef QTime QElapsedTimer;
 #endif
 
 #include "Utils/InfoUtils.h"
+#include "Utils/Logging.h"
 #include "Utils/ObjectiveCUtils.h"
 
 #include "GraphicsItemUtils.h"
@@ -53,7 +53,7 @@ typedef QTime QElapsedTimer;
 //#define MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG
 
 #if defined (MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-#define DLOG qDebug() << QString::fromLatin1("[%1]").arg(QString::fromLatin1(__FUNCTION__)).toLatin1().data()
+#define DLOG LOG_INFO() << LOGGING_CTX
 #endif
 
 #include "Workarounds/BeginIgnoreDeprecated.h"
@@ -120,7 +120,7 @@ enum State
     AUTORELEASE_POOL;
     if(frame == [view mainFrame])
     {
-        qWarning() << ObjCUtils::QStringFromNSString([error description]);
+        LOG_WARNING() << LOGGING_CTX << ObjCUtils::QStringFromNSString([error description]);
         m_state = STATE_FAILED;
     }
 }
@@ -169,7 +169,7 @@ public:
         }
         @catch(NSException *exception)
         {
-            qWarning() << "[MacWebViewRasterizerGraphicsItem]:" << ObjCUtils::QStringFromNSString([exception reason]);
+            LOG_WARNING() << LOGGING_CTX << ObjCUtils::QStringFromNSString([exception reason]);
         }
         if([view respondsToSelector:@selector(setDrawsBackground:)])
         {
@@ -214,12 +214,11 @@ public:
 #endif
         if(actualScaleFactor < scaleFactor)
         {
-            qWarning() << QString::fromLatin1("%1 Extremely large scale factor requested! Requested: %2; Max: %3; Will be used: %4.")
-                          .arg(QString::fromLatin1("[MacWebViewRasterizerGraphicsItem]"))
-                          .arg(scaleFactor)
-                          .arg(maxScaleFactor)
-                          .arg(actualScaleFactor)
-                          .toLatin1().data();
+            LOG_WARNING() << LOGGING_CTX << QString::fromLatin1("Extremely large scale factor requested! Requested: %1; Max: %2; Will be used: %3.")
+                    .arg(scaleFactor)
+                    .arg(maxScaleFactor)
+                    .arg(actualScaleFactor)
+                    .toLatin1().data();
         }
         const QRectF scaledRect = QRectFIntegerized(QRectF(rect.topLeft() * actualScaleFactor, rect.size() * actualScaleFactor));
         const QRectF scaledPage = QRectFIntegerized(scaledRect.united(QRectF(0, 0, 1, 1)));
@@ -341,13 +340,13 @@ bool MacWebViewRasterizerGraphicsItem::load(const QByteArray &svgData, const QUr
 
     if([m_impl->delegate state] != STATE_SUCCEED)
     {
-        qWarning() << "[MacWebViewRasterizerGraphicsItem] Error: can't load content";
+        LOG_WARNING() << LOGGING_CTX << "Error: can't load content";
         return false;
     }
 
     if(!rootElementIsSvg())
     {
-        qWarning() << "[MacWebViewRasterizerGraphicsItem] Error: not an SVG";
+        LOG_WARNING() << LOGGING_CTX << "Error: not an SVG";
         return false;
     }
 
@@ -359,16 +358,16 @@ bool MacWebViewRasterizerGraphicsItem::load(const QByteArray &svgData, const QUr
     m_impl->rect = detectSvgRect();
 
 #if defined (MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-    qDebug() << "***** ----------------------------------------";
-    qDebug() << "***** Detected SVG document";
-    qDebug() << "***** ----------------------------------------";
-    qDebug() << "***** viewBox attribute:" << svgViewBoxAttribute();
-    qDebug() << "***** size attribute:" << svgSizeAttribute();
-    qDebug() << "***** getBBox() value:" << svgBoundingBoxRect();
-    qDebug() << "***** getBoundingClientRect() value:" << svgBoundingClientRect();
-    qDebug() << "***** ----------------------------------------";
-    qDebug() << "***** actual rect:" << m_impl->rect;
-    qDebug() << "***** ----------------------------------------";
+    LOG_INFO() << LOGGING_CTX << "***** ----------------------------------------";
+    LOG_INFO() << LOGGING_CTX << "***** Detected SVG document";
+    LOG_INFO() << LOGGING_CTX << "***** ----------------------------------------";
+    LOG_INFO() << LOGGING_CTX << "***** viewBox attribute:" << svgViewBoxAttribute();
+    LOG_INFO() << LOGGING_CTX << "***** size attribute:" << svgSizeAttribute();
+    LOG_INFO() << LOGGING_CTX << "***** getBBox() value:" << svgBoundingBoxRect();
+    LOG_INFO() << LOGGING_CTX << "***** getBoundingClientRect() value:" << svgBoundingClientRect();
+    LOG_INFO() << LOGGING_CTX << "***** ----------------------------------------";
+    LOG_INFO() << LOGGING_CTX << "***** actual rect:" << m_impl->rect;
+    LOG_INFO() << LOGGING_CTX << "***** ----------------------------------------";
 #endif
 
     if(size.isEmpty() && (viewBox.isValid() || !emptySVGViewBoxSupported))

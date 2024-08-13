@@ -25,12 +25,12 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 #include <QVector>
 #include <QList>
 #include <QPair>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 #include "Utils/ScopedPointer.h"
 
 #include "../IDecoder.h"
@@ -223,17 +223,11 @@ const char *pixelFormatToString(const PKPixelFormatGUID &pixelFormat)
     return Q_NULLPTR;
 }
 
-#define Report_WARN(err, szExp, szFile, nLine) \
-    qWarning() << "FAILED:" << errorToString(err) << "in" << szExp; \
-    qWarning() << "       " << szFile << ":" << nLine; \
-    err = err
-#define Report_DEBUG(err, szExp, szFile, nLine) \
-    qWarning() << "FAILED:" << errorToString(err) << "in" << szExp; \
-    qWarning() << "       " << szFile << ":" << nLine; \
-    err = err
 #if defined (Report)
 #undef Report
-#define Report Report_WARN
+#define Report(err, szExp, szFile, nLine) \
+    LOG_WARNING() << LOGGING_CTX << "FAILED:" << errorToString(err) << "in" << szExp; \
+    err = err
 #endif
 
 ERR getMetadata(PKImageDecode *decoder, QByteArray &rawMetaData, U32 offset, U32 byteCount)
@@ -260,7 +254,7 @@ ERR getXmpMetadata(PKImageDecode *decoder, ImageMetaData **metaData)
     const U32 byteCount = decoder->WMP.wmiDEMisc.uXMPMetadataByteCount;
     if(offset && byteCount)
     {
-        qDebug() << "Found XMP metadata";
+        LOG_INFO() << LOGGING_CTX << "Found XMP metadata";
         Call(getMetadata(decoder, rawMetaData, offset, byteCount));
         *metaData = ImageMetaData::joinMetaData(*metaData, ImageMetaData::createXmpMetaData(rawMetaData));
     }
@@ -276,7 +270,7 @@ ERR getExifMetadata(PKImageDecode *decoder, ImageMetaData **metaData)
     const U32 byteCount = decoder->WMP.wmiDEMisc.uEXIFMetadataByteCount;
     if(offset && byteCount)
     {
-        qDebug() << "Found EXIF metadata";
+        LOG_INFO() << LOGGING_CTX << "Found EXIF metadata";
         Call(getMetadata(decoder, rawMetaData, offset, byteCount));
         *metaData = ImageMetaData::joinMetaData(*metaData, ImageMetaData::createExifMetaData(rawMetaData));
     }
@@ -292,7 +286,7 @@ ERR getIccProfileData(PKImageDecode *decoder, QByteArray *profileData)
     Call(decoder->GetColorContext(decoder, Q_NULLPTR, &size));
     if(size > 0)
     {
-        qDebug() << "Found ICCP metadata";
+        LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
         profileData->resize(size, 0);
         Call(decoder->GetColorContext(decoder, reinterpret_cast<U8*>(profileData->data()), &size));
     }
@@ -672,7 +666,7 @@ void directCopy(PKImageDecode *decoder, const PKRect &rect, QImage &image, QImag
     image = QImage(rect.Width, rect.Height, format);
     if(image.isNull())
     {
-        qWarning() << "Invalid image size";
+        LOG_WARNING() << LOGGING_CTX << "Invalid image size";
         return;
     }
     ERR err = WMP_errSuccess;
@@ -688,7 +682,7 @@ void copyViaBuffer(PKImageDecode *decoder, const PKRect &rect, QImage &image, QI
     image = QImage(rect.Width, rect.Height, format);
     if(image.isNull())
     {
-        qWarning() << "Invalid image size";
+        LOG_WARNING() << LOGGING_CTX << "Invalid image size";
         return;
     }
     const size_t bytesPerLine = image.width() * bytesPerPixel;
@@ -715,7 +709,7 @@ void copyViaBufferCMYKA(PKImageDecode *decoder, const PKRect &rect, QImage &imag
     image = QImage(rect.Width, rect.Height, QImage::Format_CMYK8888);
     if(image.isNull())
     {
-        qWarning() << "Invalid image size";
+        LOG_WARNING() << LOGGING_CTX << "Invalid image size";
         return;
     }
     const size_t bytesPerLine = image.width() * bytesPerPixel;
@@ -724,7 +718,7 @@ void copyViaBufferCMYKA(PKImageDecode *decoder, const PKRect &rect, QImage &imag
     QImage alphaChannel(image.width(), image.height(), QImage::Format_Alpha8);
     if(alphaChannel.isNull())
     {
-        qWarning() << "Invalid image size";
+        LOG_WARNING() << LOGGING_CTX << "Invalid image size";
         image = QImage();
         return;
     }
@@ -791,7 +785,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         const ERR err = PKCreateCodecFactory(&codecFactoryData, WMP_SDK_VERSION);
         if(Failed(err) || !codecFactoryData)
         {
-            qWarning() << "PKCreateCodecFactory failed:" << errorToString(err);
+            LOG_WARNING() << LOGGING_CTX << "PKCreateCodecFactory failed:" << errorToString(err);
             return QImage();
         }
         codecFactory.reset(codecFactoryData);
@@ -804,7 +798,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         const ERR err = codecFactory->CreateDecoderFromFile(filename.data(), &decoderData);
         if(Failed(err) || !decoderData)
         {
-            qWarning() << "CreateDecoderFromFile failed:" << errorToString(err);
+            LOG_WARNING() << LOGGING_CTX << "CreateDecoderFromFile failed:" << errorToString(err);
             return QImage();
         }
         decoder.reset(decoderData);
@@ -815,15 +809,16 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 
     if(const char *pixelFormatStr = pixelFormatToString(pixelFormat))
     {
-        qDebug("Color format: %s", pixelFormatStr);
+        LOG_INFO("%s Color format: %s", LOGGING_CTX, pixelFormatStr);
     }
     else
     {
-        qDebug("Color format: %08X-%04X-%04X-%02X%02X%02X%02X%02X%02X%02X%02X",
-               pixelFormat.Data1, pixelFormat.Data2, pixelFormat.Data3,
-               pixelFormat.Data4[0], pixelFormat.Data4[1], pixelFormat.Data4[2],
-               pixelFormat.Data4[3], pixelFormat.Data4[4], pixelFormat.Data4[5],
-               pixelFormat.Data4[6], pixelFormat.Data4[7]);
+        LOG_INFO("%s Color format: %08X-%04X-%04X-%02X%02X%02X%02X%02X%02X%02X%02X",
+                LOGGING_CTX,
+                pixelFormat.Data1, pixelFormat.Data2, pixelFormat.Data3,
+                pixelFormat.Data4[0], pixelFormat.Data4[1], pixelFormat.Data4[2],
+                pixelFormat.Data4[3], pixelFormat.Data4[4], pixelFormat.Data4[5],
+                pixelFormat.Data4[6], pixelFormat.Data4[7]);
     }
 
     PKRect rect;
@@ -864,7 +859,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
     { \
         const ERR err = FUNC(decoder.data(), &ARG); \
         if(Failed(err)) \
-            qWarning() << #FUNC " failed:" << errorToString(err); \
+            LOG_WARNING() << LOGGING_CTX << #FUNC " failed:" << errorToString(err); \
     } \
     while(false)
     ADD_METADATA(getXmpMetadata, metaData);
@@ -876,7 +871,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         Float resolutionX = 0.0f, resolutionY = 0.0f;
         const ERR err = decoder->GetResolution(decoder.data(), &resolutionX, &resolutionY);
         if(Failed(err))
-            qWarning() << "GetResolution failed:" << errorToString(err);
+            LOG_WARNING() << LOGGING_CTX << "GetResolution failed:" << errorToString(err);
         else
             metaData->addCustomDpi(resolutionX, resolutionY);
 

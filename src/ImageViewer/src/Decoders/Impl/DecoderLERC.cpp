@@ -25,10 +25,10 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 #include <QVector>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -110,7 +110,7 @@ QImage decodeLercBlob(const QVector<unsigned int> &infoArr, const QVector<double
     QImage result(width, height, QImage::Format_ARGB32);
     if(result.isNull())
     {
-        qWarning() << "Invalid image size";
+        LOG_WARNING() << LOGGING_CTX << "Invalid image size";
         return QImage();
     }
 
@@ -130,10 +130,10 @@ QImage decodeLercBlob(const QVector<unsigned int> &infoArr, const QVector<double
                                                  reinterpret_cast<void*>(zImg3.data()));
     if(decodeStatus)
     {
-        qWarning() << QString::fromLatin1("lerc_decode(...) failed, ErrCode = %1 (%2)")
-                      .arg(decodeStatus)
-                      .arg(GetErrorStrng(decodeStatus))
-                      .toLocal8Bit().data();
+        LOG_WARNING() << LOGGING_CTX << QString::fromLatin1("lerc_decode(...) failed, ErrCode = %1 (%2)")
+                .arg(decodeStatus)
+                .arg(GetErrorStrng(decodeStatus))
+                .toLocal8Bit().data();
         return QImage();
     }
 
@@ -208,25 +208,25 @@ PayloadWithMetaData<QImage> readLercFile(const QString &filePath)
                                                         infoArr.size(), dataRangeArr.size());
     if(blobInfoStatus)
     {
-        qWarning() << QString::fromLatin1("lerc_getBlobInfo(...) failed, ErrCode = %1 (%2)")
-                      .arg(blobInfoStatus)
-                      .arg(GetErrorStrng(blobInfoStatus))
-                      .toLocal8Bit().data();
+        LOG_WARNING() << LOGGING_CTX << QString::fromLatin1("lerc_getBlobInfo(...) failed, ErrCode = %1 (%2)")
+                .arg(blobInfoStatus)
+                .arg(GetErrorStrng(blobInfoStatus))
+                .toLocal8Bit().data();
         return QImage();
     }
 
-    qDebug() << "  version =" << infoArr[LercNS_InfoArrOrder_version];
-    qDebug() << "  dataType =" << infoArr[LercNS_InfoArrOrder_dataType];
-    qDebug() << "  nDim =" << infoArr[LercNS_InfoArrOrder_nDim];
-    qDebug() << "  nCols =" << infoArr[LercNS_InfoArrOrder_nCols];
-    qDebug() << "  nRows =" << infoArr[LercNS_InfoArrOrder_nRows];
-    qDebug() << "  nBands =" << infoArr[LercNS_InfoArrOrder_nBands];
-    qDebug() << "  nValidPixels =" << infoArr[LercNS_InfoArrOrder_nValidPixels];
-    qDebug() << "  blobSize =" << infoArr[LercNS_InfoArrOrder_blobSize];
-    qDebug() << "  nMasks =" << infoArr[LercNS_InfoArrOrder_nMasks];
-    qDebug() << "  zMin =" << dataRangeArr[LercNS_DataRangeArrOrder_zMin];
-    qDebug() << "  zMax =" << dataRangeArr[LercNS_DataRangeArrOrder_zMax];
-    qDebug() << "  maxZErrUsed =" << dataRangeArr[LercNS_DataRangeArrOrder_maxZErrUsed];
+    LOG_INFO() << LOGGING_CTX << "  version =" << infoArr[LercNS_InfoArrOrder_version];
+    LOG_INFO() << LOGGING_CTX << "  dataType =" << infoArr[LercNS_InfoArrOrder_dataType];
+    LOG_INFO() << LOGGING_CTX << "  nDim =" << infoArr[LercNS_InfoArrOrder_nDim];
+    LOG_INFO() << LOGGING_CTX << "  nCols =" << infoArr[LercNS_InfoArrOrder_nCols];
+    LOG_INFO() << LOGGING_CTX << "  nRows =" << infoArr[LercNS_InfoArrOrder_nRows];
+    LOG_INFO() << LOGGING_CTX << "  nBands =" << infoArr[LercNS_InfoArrOrder_nBands];
+    LOG_INFO() << LOGGING_CTX << "  nValidPixels =" << infoArr[LercNS_InfoArrOrder_nValidPixels];
+    LOG_INFO() << LOGGING_CTX << "  blobSize =" << infoArr[LercNS_InfoArrOrder_blobSize];
+    LOG_INFO() << LOGGING_CTX << "  nMasks =" << infoArr[LercNS_InfoArrOrder_nMasks];
+    LOG_INFO() << LOGGING_CTX << "  zMin =" << dataRangeArr[LercNS_DataRangeArrOrder_zMin];
+    LOG_INFO() << LOGGING_CTX << "  zMax =" << dataRangeArr[LercNS_DataRangeArrOrder_zMax];
+    LOG_INFO() << LOGGING_CTX << "  maxZErrUsed =" << dataRangeArr[LercNS_DataRangeArrOrder_maxZErrUsed];
 
     QImage result;
     switch(infoArr[LercNS_InfoArrOrder_dataType])
@@ -256,7 +256,7 @@ PayloadWithMetaData<QImage> readLercFile(const QString &filePath)
         result = decodeLercBlob<double>(infoArr, dataRangeArr, inBuffer);
         break;
     default:
-        qWarning() << "Unknown dataType";
+        LOG_WARNING() << LOGGING_CTX << "Unknown dataType";
         return QImage();
     }
 

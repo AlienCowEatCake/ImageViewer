@@ -28,15 +28,13 @@
 #define J40_CONFIRM_THAT_THIS_IS_EXPERIMENTAL_AND_POTENTIALLY_UNSAFE
 #include <j40.h>
 
-#include "Utils/Global.h"
-
 #include <QFileInfo>
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -61,21 +59,21 @@ PayloadWithMetaData<QImage> readJ40File(const QString &filePath)
     err = j40_from_memory(&image, inBuffer.dataAs<void*>(), inBuffer.sizeAs<size_t>(), Q_NULLPTR);
     if(err)
     {
-        qWarning() << "ERROR: j40_from_memory:" << j40_error_string(&image);
+        LOG_WARNING() << LOGGING_CTX << "ERROR: j40_from_memory:" << j40_error_string(&image);
         return QImage();
     }
 
     err = j40_output_format(&image, J40_RGBA, J40_U8X4);
     if(err)
     {
-        qWarning() << "ERROR: j40_output_format:" << j40_error_string(&image);
+        LOG_WARNING() << LOGGING_CTX << "ERROR: j40_output_format:" << j40_error_string(&image);
         j40_free(&image);
         return QImage();
     }
 
     if(!j40_next_frame(&image))
     {
-        qWarning() << "ERROR: j40_next_frame:" << j40_error_string(&image);
+        LOG_WARNING() << LOGGING_CTX << "ERROR: j40_next_frame:" << j40_error_string(&image);
         j40_free(&image);
         return QImage();
     }

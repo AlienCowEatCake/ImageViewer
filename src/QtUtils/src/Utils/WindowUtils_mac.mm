@@ -26,10 +26,10 @@
 #import <AppKit/AppKit.h>
 #include <AvailabilityMacros.h>
 
-#include <QDebug>
 #include <QWidget>
 
 #include "InfoUtils.h"
+#include "Logging.h"
 #include "ObjectiveCUtils.h"
 
 namespace WindowUtils {
@@ -51,7 +51,7 @@ NSWindow *GetNativeWindow(QWidget *widget)
     }
     @catch(NSException *exception)
     {
-        qWarning() << "[WindowUtils::GetNativeWindow]:" << ObjCUtils::QStringFromNSString([exception reason]);
+        LOG_WARNING() << LOGGING_CTX << ObjCUtils::QStringFromNSString([exception reason]);
     }
     return nil;
 }

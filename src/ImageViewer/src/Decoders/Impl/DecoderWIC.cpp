@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,11 +22,11 @@
 
 #include <QImage>
 #include <QFileInfo>
-#include <QDebug>
 #include <QSettings>
 #include <QVariant>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -49,7 +49,7 @@ public:
         static OLE32 _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load ole32.dll";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
             return Q_NULLPTR;
         }
         return &_;
@@ -129,7 +129,7 @@ HRESULT CoInitialize_WRAP(LPVOID pvReserved)
 {
     if(OLE32 *ole32 = OLE32::instance())
         return ole32->CoInitialize(pvReserved);
-    qWarning() << "Failed to load ole32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
     return E_FAIL;
 }
 #define CoInitialize CoInitialize_WRAP
@@ -138,7 +138,7 @@ HRESULT CoUninitialize_WRAP()
 {
     if(OLE32 *ole32 = OLE32::instance())
         return ole32->CoUninitialize();
-    qWarning() << "Failed to load ole32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
     return E_FAIL;
 }
 #define CoUninitialize CoUninitialize_WRAP
@@ -147,7 +147,7 @@ HRESULT CoCreateInstance_WRAP(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsC
 {
     if(OLE32 *ole32 = OLE32::instance())
         return ole32->CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
-    qWarning() << "Failed to load ole32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
     return E_FAIL;
 }
 #define CoCreateInstance CoCreateInstance_WRAP
@@ -156,7 +156,7 @@ HRESULT IIDFromString_WRAP(LPCOLESTR lpsz, LPIID lpiid)
 {
     if(OLE32 *ole32 = OLE32::instance())
         return ole32->IIDFromString(lpsz, lpiid);
-    qWarning() << "Failed to load ole32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
     return E_FAIL;
 }
 #define IIDFromString IIDFromString_WRAP
@@ -165,7 +165,7 @@ HRESULT CLSIDFromString_WRAP(LPCOLESTR lpsz, LPCLSID pclsid)
 {
     if(OLE32 *ole32 = OLE32::instance())
         return ole32->CLSIDFromString(lpsz, pclsid);
-    qWarning() << "Failed to load ole32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
     return E_FAIL;
 }
 #define CLSIDFromString CLSIDFromString_WRAP
@@ -178,7 +178,7 @@ IID GetIID(LPCOLESTR lpsz)
     memset(&result, 0, sizeof(IID));
     HRESULT hr = IIDFromString(lpsz, &result);
     if(!SUCCEEDED(hr))
-        qWarning() << "Can't get IID for" << QString::fromStdWString(lpsz);
+        LOG_WARNING() << LOGGING_CTX << "Can't get IID for" << QString::fromStdWString(lpsz);
     return result;
 }
 
@@ -191,7 +191,7 @@ CLSID GetCLSID(LPCOLESTR lpsz)
     memset(&result, 0, sizeof(CLSID));
     HRESULT hr = CLSIDFromString(lpsz, &result);
     if(!SUCCEEDED(hr))
-        qWarning() << "Can't get CLSID for" << QString::fromStdWString(lpsz);
+        LOG_WARNING() << LOGGING_CTX << "Can't get CLSID for" << QString::fromStdWString(lpsz);
     return result;
 }
 
@@ -290,7 +290,7 @@ public:
         IWICImagingFactory *factory = Q_NULLPTR;
         if(FAILED(CoCreateInstance(CLSID_WICImagingFactory, Q_NULLPTR, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, reinterpret_cast<LPVOID*>(&factory))))
         {
-            qWarning() << "[DecoderWIC] Error: CoCreateInstance failed";
+            LOG_WARNING() << LOGGING_CTX << "Error: CoCreateInstance failed";
             if(coInitResult == S_OK || coInitResult == S_FALSE)
                 CoUninitialize();
             return QSharedPointer<IImageData>();
@@ -299,7 +299,7 @@ public:
         IWICBitmapDecoder *decoder = Q_NULLPTR;
         if(FAILED(factory->CreateDecoderFromFilename(reinterpret_cast<LPCWSTR>(filePath.constData()), Q_NULLPTR, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &decoder)))
         {
-            qWarning() << "[DecoderWIC] Error: factory->CreateDecoderFromFilename failed";
+            LOG_WARNING() << LOGGING_CTX << "Error: factory->CreateDecoderFromFilename failed";
             factory->Release();
             if(coInitResult == S_OK || coInitResult == S_FALSE)
                 CoUninitialize();
@@ -309,7 +309,7 @@ public:
         IWICBitmapFrameDecode *frame = Q_NULLPTR;
         if(FAILED(decoder->GetFrame(0, &frame)))
         {
-            qWarning() << "[DecoderWIC] Error: decoder->GetFrame failed";
+            LOG_WARNING() << LOGGING_CTX << "Error: decoder->GetFrame failed";
             decoder->Release();
             factory->Release();
             if(coInitResult == S_OK || coInitResult == S_FALSE)
@@ -321,7 +321,7 @@ public:
         UINT height = 0;
         if(FAILED(frame->GetSize(&width, &height)))
         {
-            qWarning() << "[DecoderWIC] Error: frame->GetSize failed";
+            LOG_WARNING() << LOGGING_CTX << "Error: frame->GetSize failed";
             frame->Release();
             decoder->Release();
             factory->Release();
@@ -333,7 +333,7 @@ public:
         IWICFormatConverter *formatConverter = Q_NULLPTR;
         if(FAILED(factory->CreateFormatConverter(&formatConverter)))
         {
-            qWarning() << "[DecoderWIC] Error: factory->CreateFormatConverter failed";
+            LOG_WARNING() << LOGGING_CTX << "Error: factory->CreateFormatConverter failed";
             frame->Release();
             decoder->Release();
             factory->Release();
@@ -344,7 +344,7 @@ public:
 
         if(FAILED(formatConverter->Initialize(frame, GUID_WICPixelFormat32bppBGRA, WICBitmapDitherTypeNone, Q_NULLPTR, 0.0f, WICBitmapPaletteTypeCustom)))
         {
-            qWarning() << "[DecoderWIC] Error: formatConverter->Initialize failed";
+            LOG_WARNING() << LOGGING_CTX << "Error: formatConverter->Initialize failed";
             formatConverter->Release();
             frame->Release();
             decoder->Release();
@@ -357,7 +357,7 @@ public:
         QImage image(width, height, QImage::Format_ARGB32);
         if(image.isNull())
         {
-            qWarning() << "[DecoderWIC] Error: invalid image size";
+            LOG_WARNING() << LOGGING_CTX << "Error: invalid image size";
             formatConverter->Release();
             frame->Release();
             decoder->Release();
@@ -369,7 +369,7 @@ public:
 
         if(FAILED(formatConverter->CopyPixels(Q_NULLPTR, static_cast<UINT>(image.bytesPerLine()), static_cast<UINT>(image.bytesPerLine() * image.height()), reinterpret_cast<BYTE*>(image.bits()))))
         {
-            qWarning() << "[DecoderWIC] Error: formatConverter->CopyPixels failed";
+            LOG_WARNING() << LOGGING_CTX << "Error: formatConverter->CopyPixels failed";
             formatConverter->Release();
             frame->Release();
             decoder->Release();
@@ -402,7 +402,7 @@ private:
         IWICImagingFactory *factory = Q_NULLPTR;
         if(FAILED(CoCreateInstance(CLSID_WICImagingFactory, Q_NULLPTR, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, reinterpret_cast<LPVOID*>(&factory))))
         {
-            qWarning() << "[DecoderWIC] Error: CoCreateInstance failed";
+            LOG_WARNING() << LOGGING_CTX << "Error: CoCreateInstance failed";
             if(coInitResult == S_OK || coInitResult == S_FALSE)
                 CoUninitialize();
             return QStringList();
@@ -411,7 +411,7 @@ private:
         IEnumUnknown *enumerator = Q_NULLPTR;
         if(FAILED(factory->CreateComponentEnumerator(WICDecoder, WICComponentEnumerateRefresh, &enumerator)))
         {
-            qWarning() << "[DecoderWIC] Error: CreateComponentEnumerator failed";
+            LOG_WARNING() << LOGGING_CTX << "Error: CreateComponentEnumerator failed";
             factory->Release();
             if(coInitResult == S_OK || coInitResult == S_FALSE)
                 CoUninitialize();
@@ -441,7 +441,7 @@ private:
                     codecInfo->GetFileExtensions(strLen, fileExtensionsData.data(), &strLen);
                     fileExtensions = QString::fromStdWString(std::wstring(fileExtensionsData.data(), strLen - 1));
                 }
-                qDebug() << "[DecoderWIC]" << friendlyName << "-" << fileExtensions;
+                LOG_INFO() << LOGGING_CTX << friendlyName << "-" << fileExtensions;
 
                 const QStringList extensionsList = fileExtensions
                         .toLower()

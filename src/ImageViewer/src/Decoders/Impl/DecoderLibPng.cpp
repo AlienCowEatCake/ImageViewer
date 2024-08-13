@@ -21,7 +21,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
-#include <cassert>
 
 #include <png.h>
 #include <zlib.h>
@@ -31,9 +30,9 @@
 #include <QFile>
 #include <QByteArray>
 #include <QSysInfo>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -116,7 +115,7 @@ void PngAnimationProvider::applyICCProfile(png_const_structrp pngPtr, png_inforp
     png_uint_32 proflen;
     if(png_get_iCCP(pngPtr, infoPtr, &name, &compressionType, &profile, &proflen) == PNG_INFO_iCCP)
     {
-        qDebug() << "Found ICCP metadata";
+        LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
         ICCProfile icc(QByteArray::fromRawData(reinterpret_cast<char*>(profile), static_cast<int>(proflen)));
         icc.applyToImage(image);
     }
@@ -139,7 +138,7 @@ bool PngAnimationProvider::readPng()
     pngPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
     if(!pngPtr)
     {
-        qWarning() << "Can't initialize png_struct";
+        LOG_WARNING() << LOGGING_CTX << "Can't initialize png_struct";
         file.close();
         return false;
     }
@@ -148,7 +147,7 @@ bool PngAnimationProvider::readPng()
     infoPtr = png_create_info_struct(pngPtr);
     if(!infoPtr)
     {
-        qWarning() << "Can't initialize png_info";
+        LOG_WARNING() << LOGGING_CTX << "Can't initialize png_info";
         png_destroy_read_struct(&pngPtr, Q_NULLPTR, Q_NULLPTR);
         file.close();
         return false;
@@ -169,7 +168,7 @@ bool PngAnimationProvider::readPng()
         // See pngrutil.c:png_combine_row()
         if(m_frames.size() > 0 && !m_frames[0].image.isNull() && m_frames[0].delay >= 0)
         {
-            qWarning() << "Can't read PNG file as APNG, use the first frame without animation";
+            LOG_WARNING() << LOGGING_CTX << "Can't read PNG file as APNG, use the first frame without animation";
             m_numFrames = 1;
             m_numLoops = 0;
             m_frames.resize(m_numFrames);
@@ -177,7 +176,7 @@ bool PngAnimationProvider::readPng()
         }
 #endif
         // If we get here, we had a problem reading the file
-        qWarning() << "Can't read PNG file";
+        LOG_WARNING() << LOGGING_CTX << "Can't read PNG file";
         return false;
     }
 
@@ -311,7 +310,7 @@ bool PngAnimationProvider::readPng()
         QImage &image = m_frames[count].image;
         if(image.isNull())
         {
-            qWarning() << "Invalid image size";
+            LOG_WARNING() << LOGGING_CTX << "Invalid image size";
             longjmp(png_jmpbuf(pngPtr), 1);
         }
         image.fill(Qt::transparent);

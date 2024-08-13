@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -33,9 +33,9 @@
 #include <QMutexLocker>
 #include <QThread>
 #include <QPointer>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -99,7 +99,7 @@ public:
             libraw_processed_image_t *output = m_rawProcessor.dcraw_make_mem_thumb(&errorCode);
             if(!output)
             {
-                qWarning() << "Error:" << libraw_strerror(errorCode);
+                LOG_WARNING() << LOGGING_CTX << "Error:" << libraw_strerror(errorCode);
                 return QImage();
             }
             CHECK_CANCEL;
@@ -109,7 +109,7 @@ public:
         }
         catch(...)
         {
-            qWarning() << "Exception";
+            LOG_WARNING() << LOGGING_CTX << "Exception";
         }
         return QImage();
 #undef CHECK_CANCEL
@@ -133,7 +133,7 @@ public:
             libraw_processed_image_t *output = m_rawProcessor.dcraw_make_mem_image(&errorCode);
             if(!output)
             {
-                qWarning() << "Error:" << libraw_strerror(errorCode);
+                LOG_WARNING() << LOGGING_CTX << "Error:" << libraw_strerror(errorCode);
                 return QImage();
             }
             CHECK_CANCEL;
@@ -143,7 +143,7 @@ public:
         }
         catch(...)
         {
-            qWarning() << "Exception";
+            LOG_WARNING() << LOGGING_CTX << "Exception";
         }
         return QImage();
 #undef CHECK_CANCEL
@@ -152,11 +152,11 @@ public:
 private:
     static int progressCallback(void *data, enum LibRaw_progress p, int iteration, int expected)
     {
-        qDebug() << libraw_strprogress(p) << "pass" << iteration << "of" << expected;
+        LOG_INFO() << LOGGING_CTX << libraw_strprogress(p) << "pass" << iteration << "of" << expected;
         RawImageProcessor *processor = reinterpret_cast<RawImageProcessor*>(data);
         if(!processor->isCancelled())
             return 0;
-        qDebug() << "Progress is cancelled!";
+        LOG_INFO() << LOGGING_CTX << "Progress is cancelled!";
         return 1;
     }
 
@@ -184,7 +184,7 @@ private:
             m_rawProcessor.set_progress_handler(progressCallback, this);
             if(m_rawProcessor.open_datastream(m_dataStream.data()) != LIBRAW_SUCCESS)
             {
-                qWarning() << "Can't open datastream for" << filePath;
+                LOG_WARNING() << LOGGING_CTX << "Can't open datastream for" << filePath;
                 return false;
             }
 
@@ -198,7 +198,7 @@ private:
         }
         catch(...)
         {
-            qWarning() << "Exception";
+            LOG_WARNING() << LOGGING_CTX << "Exception";
         }
         return false;
     }
@@ -214,7 +214,7 @@ private:
             image.loadFromData(output->data, static_cast<int>(output->data_size), "JPG");
             if(image.isNull())
             {
-                qWarning() << "Invalid image size";
+                LOG_WARNING() << LOGGING_CTX << "Invalid image size";
                 return image;
             }
 
@@ -247,7 +247,7 @@ private:
         {
             if(output->bits != 8)
             {
-                qWarning() << "Error: Output BPS must be equals to 8!";
+                LOG_WARNING() << LOGGING_CTX << "Error: Output BPS must be equals to 8!";
                 assert(output->bits == 8);
                 return image;
             }
@@ -255,12 +255,12 @@ private:
             image = QImage(output->width, output->height, QImage::Format_RGB32);
             if(image.isNull())
             {
-                qWarning() << "Invalid image size";
+                LOG_WARNING() << LOGGING_CTX << "Invalid image size";
                 return image;
             }
 
             if(output->colors != 1 && output->colors != 3)
-                qWarning() << "Error: Unknown output->colors =" << output->colors;
+                LOG_WARNING() << LOGGING_CTX << "Error: Unknown output->colors =" << output->colors;
 
             for(int i = 0; i < output->height; i++)
             {
@@ -282,7 +282,7 @@ private:
         }
         else
         {
-            qWarning() << "Error: Unknown output->type =" << output->type;
+            LOG_WARNING() << LOGGING_CTX << "Error: Unknown output->type =" << output->type;
         }
         return image;
     }

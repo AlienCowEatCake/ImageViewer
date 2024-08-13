@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -32,7 +32,7 @@
 #include <QWebFrame>
 #include <QWebPage>
 
-#include <QDebug>
+#include "Utils/Logging.h"
 
 struct QtWebKitSVGGraphicsItem::Impl
 {
@@ -77,7 +77,7 @@ bool QtWebKitSVGGraphicsItem::load(const QByteArray &svgData, const QUrl &baseUr
 
     if(!rootElementIsSvg())
     {
-        qWarning() << "[QtWebKitSVGGraphicsItem] Error: not an SVG";
+        LOG_WARNING() << LOGGING_CTX << "Error: not an SVG";
         return false;
     }
 

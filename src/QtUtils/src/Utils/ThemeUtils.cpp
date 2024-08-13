@@ -29,7 +29,6 @@
 #include <QTextStream>
 #include <QFile>
 #include <QFileInfo>
-#include <QDebug>
 #include <QToolBar>
 #include <QFont>
 #include <QFontDatabase>
@@ -41,6 +40,7 @@
 #endif
 
 #include "InfoUtils.h"
+#include "Logging.h"
 
 #if defined (DocumentProperties)
 #undef DocumentProperties
@@ -242,7 +242,7 @@ QIcon CreateScalableIcon(const QString &defaultImagePath, const QStringList &sca
         if(!pixmap.isNull())
             AddPixmapToIcon(result, pixmap);
         else
-            qWarning() << "[ThemeUtils::CreateScalableIcon]: Unable to load pixmap" << *it;
+            LOG_WARNING() << LOGGING_CTX << "Unable to load pixmap" << *it;
     }
     return result;
 }
@@ -260,7 +260,7 @@ QIcon CreateScalableIcon(const QStringList &scaledImagePaths, bool invertPixels)
         if(!image.isNull())
             AddImageToIcon(result, image, invertPixels);
         else
-            qWarning() << "[ThemeUtils::CreateScalableIcon]: Unable to load image" << *it;
+            LOG_WARNING() << LOGGING_CTX << "Unable to load image" << *it;
     }
     return result;
 }

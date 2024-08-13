@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -36,7 +36,6 @@ extern "C" {
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 #include <QLibrary>
 #include <QPainter>
 
@@ -47,6 +46,7 @@ typedef void* QFunctionPointer;
 #endif
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -170,7 +170,7 @@ public:
         static ReSVG _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load resvg";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load resvg";
             return Q_NULLPTR;
         }
         return &_;
@@ -278,14 +278,14 @@ void resvg_init_options(resvg_options *opt)
 {
     if(ReSVG *resvg = ReSVG::instance())
         return resvg->resvg_init_options(opt);
-    qWarning() << "Failed to load resvg";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load resvg";
 }
 
 int resvg_parse_tree_from_data(const char *data, const size_t len, const resvg_options *opt, resvg_render_tree **tree)
 {
     if(ReSVG *resvg = ReSVG::instance())
         return resvg->resvg_parse_tree_from_data(data, len, opt, tree);
-    qWarning() << "Failed to load resvg";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load resvg";
     return -1;
 }
 
@@ -293,7 +293,7 @@ resvg_size resvg_get_image_size(const resvg_render_tree *tree)
 {
     if(ReSVG *resvg = ReSVG::instance())
         return resvg->resvg_get_image_size(tree);
-    qWarning() << "Failed to load resvg";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load resvg";
     resvg_size result;
     memset(&result, 0, sizeof(resvg_size));
     return result;
@@ -303,7 +303,7 @@ resvg_rect resvg_get_image_viewbox(const resvg_render_tree *tree)
 {
     if(ReSVG *resvg = ReSVG::instance())
         return resvg->resvg_get_image_viewbox(tree);
-    qWarning() << "Failed to load resvg";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load resvg";
     resvg_rect result;
     memset(&result, 0, sizeof(resvg_rect));
     return result;
@@ -313,14 +313,14 @@ void resvg_tree_destroy(resvg_render_tree *tree)
 {
     if(ReSVG *resvg = ReSVG::instance())
         return resvg->resvg_tree_destroy(tree);
-    qWarning() << "Failed to load resvg";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load resvg";
 }
 
 void resvg_qt_render_to_canvas(const resvg_render_tree *tree, const resvg_options *opt, resvg_size size, void *painter)
 {
     if(ReSVG *resvg = ReSVG::instance())
         return resvg->resvg_qt_render_to_canvas(tree, opt, size, painter);
-    qWarning() << "Failed to load resvg";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load resvg";
 }
 
 bool isReady()
@@ -381,24 +381,24 @@ public:
         {
         case RESVG_OPTIONS_SIZE_V020:
             m_opt->opt_v020.path = m_filePath8bit.constData();
-            qDebug() << "Detected v0.2.0 ABI for resvg_options";
+            LOG_INFO() << LOGGING_CTX << "Detected v0.2.0 ABI for resvg_options";
             break;
         case RESVG_OPTIONS_SIZE_V040:
             m_opt->opt_v040.path = m_filePath8bit.constData();
             m_opt->opt_v040.font_family = "Times New Roman";
             m_opt->opt_v040.languages = "";
-            qDebug() << "Detected v0.4.0 ABI for resvg_options";
+            LOG_INFO() << LOGGING_CTX << "Detected v0.4.0 ABI for resvg_options";
             break;
         case RESVG_OPTIONS_SIZE_V070:
             m_opt->opt_v070.path = m_filePath8bit.constData();
             m_opt->opt_v070.font_family = "Times New Roman";
             m_opt->opt_v070.languages = "";
-            qDebug() << "Detected v0.7.0 ABI for resvg_options";
+            LOG_INFO() << LOGGING_CTX << "Detected v0.7.0 ABI for resvg_options";
             break;
         default:
-            qWarning() << "Can't detect ABI for resvg_options";
-            qWarning() << "Got:" << effectiveOptSize;
-            qWarning() << "Expected:" << RESVG_OPTIONS_SIZE_V020 << RESVG_OPTIONS_SIZE_V040 << RESVG_OPTIONS_SIZE_V070;
+            LOG_WARNING() << LOGGING_CTX << "Can't detect ABI for resvg_options";
+            LOG_WARNING() << LOGGING_CTX << "Got:" << effectiveOptSize;
+            LOG_WARNING() << LOGGING_CTX << "Expected:" << RESVG_OPTIONS_SIZE_V020 << RESVG_OPTIONS_SIZE_V040 << RESVG_OPTIONS_SIZE_V070;
             return;
         }
 #endif
@@ -410,7 +410,7 @@ public:
         const int err = resvg_parse_tree_from_data(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<size_t>(), m_opt, &m_tree);
         if(err)
         {
-            qWarning() << "Can't parse file, error =" << err;
+            LOG_WARNING() << LOGGING_CTX << "Can't parse file, error =" << err;
             return;
         }
 
@@ -420,7 +420,7 @@ public:
         m_height = static_cast<int>(size.height);
         if(m_width < 1 || m_height < 1)
         {
-            qWarning() << "Couldn't determine image size";
+            LOG_WARNING() << LOGGING_CTX << "Couldn't determine image size";
             return;
         }
 

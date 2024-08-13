@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -24,9 +24,9 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -58,7 +58,7 @@ public:
         FLIF_DECODER *d = flif_create_decoder();
         if(!flif_decoder_decode_memory(d, inBuffer.dataAs<const void*>(), inBuffer.sizeAs<size_t>()))
         {
-            qWarning() << "ERROR: Cannot decode FLIF image";
+            LOG_WARNING() << LOGGING_CTX << "ERROR: Cannot decode FLIF image";
             flif_destroy_decoder(d);
             return false;
         }
@@ -72,7 +72,7 @@ public:
             FLIF_IMAGE* image = flif_decoder_get_image(d, i);
             if(!image)
             {
-                qWarning() << "ERROR: Failed to get frame" << i;
+                LOG_WARNING() << LOGGING_CTX << "ERROR: Failed to get frame" << i;
                 continue;
             }
 
@@ -83,7 +83,7 @@ public:
             QImage frame(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32);
             if(frame.isNull())
             {
-                qWarning() << "Invalid image size for frame" << i;
+                LOG_WARNING() << LOGGING_CTX << "Invalid image size for frame" << i;
                 continue;
             }
 
@@ -100,7 +100,7 @@ public:
             size_t length = 0;
             if(flif_image_get_metadata(image, "iCCP", &data, &length))
             {
-                qDebug() << "Found ICC profile for frame" << i;
+                LOG_INFO() << LOGGING_CTX << "Found ICC profile for frame" << i;
                 ICCProfile(QByteArray::fromRawData(reinterpret_cast<const char*>(data), static_cast<int>(length))).applyToImage(&frame);
                 flif_image_free_metadata(image, data);
                 data = Q_NULLPTR;
@@ -108,7 +108,7 @@ public:
             }
             if(flif_image_get_metadata(image, "eXmp", &data, &length))
             {
-                qDebug() << "Found XMP metadata for frame" << i;
+                LOG_INFO() << LOGGING_CTX << "Found XMP metadata for frame" << i;
                 metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(data), static_cast<int>(length))));
                 flif_image_free_metadata(image, data);
                 data = Q_NULLPTR;
@@ -116,7 +116,7 @@ public:
             }
             if(flif_image_get_metadata(image, "eXif", &data, &length))
             {
-                qDebug() << "Found EXIF metadata for frame" << i;
+                LOG_INFO() << LOGGING_CTX << "Found EXIF metadata for frame" << i;
                 metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(data), static_cast<int>(length))));
                 flif_image_free_metadata(image, data);
                 data = Q_NULLPTR;

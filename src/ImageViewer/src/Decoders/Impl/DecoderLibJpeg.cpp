@@ -27,9 +27,9 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -209,7 +209,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
     // Establish the setjmp return context for my_error_exit to use.
     if(setjmp(jerr.setjmpBuffer))
     {
-        qDebug() << "Error lonjgmp completed";
+        LOG_WARNING() << LOGGING_CTX << "Error lonjgmp completed";
         // If we get here, the JPEG code has signaled an error.
         // We need to clean up the JPEG object, close the input file, and return.
         jpeg_destroy_decompress(&cinfo);
@@ -231,7 +231,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 
     if(!jpeg_read_header(&cinfo, TRUE))
     {
-        qWarning() << "Can't read JPEG header";
+        LOG_WARNING() << LOGGING_CTX << "Can't read JPEG header";
         longjmp(jerr.setjmpBuffer, 1);
     }
     // We can ignore the return value from jpeg_read_header since
@@ -246,10 +246,10 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
         switch(marker->marker)
         {
         case EXIF_MARKER:
-            qDebug() << "Found EXIF metadata";
+            LOG_INFO() << LOGGING_CTX << "Found EXIF metadata";
             break;
         case ICCP_MARKER:
-            qDebug() << "Found ICCP metadata";
+            LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
             break;
         default:
             break;
@@ -276,7 +276,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 
     if(!jpeg_start_decompress(&cinfo))
     {
-        qWarning() << "Can't start JPEG decompress";
+        LOG_WARNING() << LOGGING_CTX << "Can't start JPEG decompress";
         longjmp(jerr.setjmpBuffer, 1);
     }
     // We can ignore the return value since suspension is not possible
@@ -295,7 +295,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 #endif
     if(outImage.isNull())
     {
-        qWarning() << "Invalid image size";
+        LOG_WARNING() << LOGGING_CTX << "Invalid image size";
         longjmp(jerr.setjmpBuffer, 1);
     }
 
@@ -316,7 +316,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
         // more than one scanline at a time if that's more convenient.
         if(!jpeg_read_scanlines(&cinfo, buffer, 1))
         {
-            qWarning() << "Can't read JPEG scanlines";
+            LOG_WARNING() << LOGGING_CTX << "Can't read JPEG scanlines";
             longjmp(jerr.setjmpBuffer, 1);
         }
         // Assume put_scanline_someplace wants a pointer and sample count.
@@ -358,7 +358,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 
     if(!jpeg_finish_decompress(&cinfo))
     {
-        qWarning() << "Can't finish JPEG decompress";
+        LOG_WARNING() << LOGGING_CTX << "Can't finish JPEG decompress";
         longjmp(jerr.setjmpBuffer, 1);
     }
     // We can ignore the return value since suspension is not possible

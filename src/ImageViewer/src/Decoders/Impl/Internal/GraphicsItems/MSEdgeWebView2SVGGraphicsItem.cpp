@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2022-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2022-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -29,7 +29,6 @@
 
 #include <QBuffer>
 #include <QByteArray>
-#include <QDebug>
 #include <QEventLoop>
 #include <QImageReader>
 #include <QPainter>
@@ -49,6 +48,7 @@
 #include "Utils/JsonDocument.h"
 #include "Utils/JsonObject.h"
 #include "Utils/JsonValue.h"
+#include "Utils/Logging.h"
 
 #include "../Utils/XmlStreamReader.h"
 
@@ -63,7 +63,7 @@ HRESULT CreateCoreWebView2EnvironmentWithOptions_WRAP(PCWSTR browserExecutableFo
     HMODULE library = ::LoadLibraryA("WebView2Loader");
     if(!library)
     {
-        qWarning() << "WebView2Loader.dll is not loaded!";
+        LOG_WARNING() << LOGGING_CTX << "WebView2Loader.dll is not loaded!";
         return result;
     }
 
@@ -71,7 +71,7 @@ HRESULT CreateCoreWebView2EnvironmentWithOptions_WRAP(PCWSTR browserExecutableFo
     CreateCoreWebView2EnvironmentWithOptions_t CreateCoreWebView2EnvironmentWithOptions_f = (CreateCoreWebView2EnvironmentWithOptions_t)(::GetProcAddress(library, "CreateCoreWebView2EnvironmentWithOptions"));
     if(!CreateCoreWebView2EnvironmentWithOptions_f)
     {
-        qWarning() << "CreateCoreWebView2EnvironmentWithOptions is not found in WebView2Loader.dll!";
+        LOG_WARNING() << LOGGING_CTX << "CreateCoreWebView2EnvironmentWithOptions is not found in WebView2Loader.dll!";
         return result;
     }
 
@@ -170,7 +170,7 @@ HRESULT STDMETHODCALLTYPE CoreWebView2CreateCoreWebView2EnvironmentCompletedHand
     if(SUCCEEDED(errorCode))
         m_result = createdEnvironment;
     else
-        qWarning() << "CoreWebView2CreateCoreWebView2EnvironmentCompletedHandler error:" << QString::number(errorCode, 16);
+        LOG_WARNING() << LOGGING_CTX << "CoreWebView2CreateCoreWebView2EnvironmentCompletedHandler error:" << QString::number(errorCode, 16);
     if(m_result)
         m_result->AddRef();
     finish();
@@ -184,7 +184,7 @@ HRESULT STDMETHODCALLTYPE CoreWebView2CreateCoreWebView2ControllerCompletedHandl
     if(SUCCEEDED(errorCode))
         m_result = createdController;
     else
-        qWarning() << "CoreWebView2CreateCoreWebView2ControllerCompletedHandler error:" << QString::number(errorCode, 16);
+        LOG_WARNING() << LOGGING_CTX << "CoreWebView2CreateCoreWebView2ControllerCompletedHandler error:" << QString::number(errorCode, 16);
     if(m_result)
         m_result->AddRef();
     finish();
@@ -198,7 +198,7 @@ HRESULT STDMETHODCALLTYPE CoreWebView2CallDevToolsProtocolMethodCompletedHandler
     if(SUCCEEDED(errorCode))
         m_result = QJsonDocument::fromJson(QString::fromStdWString(returnObjectAsJson).toUtf8());
     else
-        qWarning() << "CoreWebView2CallDevToolsProtocolMethodCompletedHandler error:" << QString::number(errorCode, 16);
+        LOG_WARNING() << LOGGING_CTX << "CoreWebView2CallDevToolsProtocolMethodCompletedHandler error:" << QString::number(errorCode, 16);
     finish();
     return S_OK;
 }
@@ -210,7 +210,7 @@ HRESULT STDMETHODCALLTYPE CoreWebView2ExecuteScriptCompletedHandler::Invoke(HRES
     if(SUCCEEDED(errorCode))
         m_result = QJsonDocument::fromJson(QString::fromStdWString(returnObjectAsJson).toUtf8());
     else
-        qWarning() << "CoreWebView2ExecuteScriptCompletedHandler error:" << QString::number(errorCode, 16);
+        LOG_WARNING() << LOGGING_CTX << "CoreWebView2ExecuteScriptCompletedHandler error:" << QString::number(errorCode, 16);
     finish();
     return S_OK;
 }
@@ -342,7 +342,7 @@ struct MSEdgeWebView2SVGGraphicsItem::Impl
             reader.readNext();
             if(reader.hasError())
             {
-                qWarning() << __FUNCTION__ << reader.errorString();
+                LOG_WARNING() << LOGGING_CTX << reader.errorString();
                 return svgData;
             }
             writer.writeCurrentToken(reader);
@@ -420,7 +420,7 @@ struct MSEdgeWebView2SVGGraphicsItem::Impl
         if(SUCCEEDED(webviewWindow->ExecuteScript(reinterpret_cast<LPCWSTR>(scriptSource.constData()), scriptHandler)))
             scriptHandler->waitForFinish();
         /// @todo WTF?
-        //qWarning() << scriptHandler->result().toJson();
+        //LOG_WARNING() << LOGGING_CTX << scriptHandler->result().toJson();
         scriptHandler->Release();
         return QVariant();
     }
@@ -480,13 +480,13 @@ bool MSEdgeWebView2SVGGraphicsItem::load(const QByteArray &svgData, const QUrl &
 
     if(!navigationSuccess)
     {
-        qWarning() << "[MSEdgeWebView2SVGGraphicsItem] Error: navigation failed";
+        LOG_WARNING() << LOGGING_CTX << "Error: navigation failed";
         return false;
     }
 
     if(!rootElementIsSvg())
     {
-        qWarning() << "[MSEdgeWebView2SVGGraphicsItem] Error: not an SVG";
+        LOG_WARNING() << LOGGING_CTX << "Error: not an SVG";
         return false;
     }
 

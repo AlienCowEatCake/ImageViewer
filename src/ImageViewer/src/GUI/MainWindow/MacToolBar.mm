@@ -26,11 +26,11 @@
 #import <Cocoa/Cocoa.h>
 
 #include <QApplication>
-#include <QDebug>
 #include <QWidget>
 
 #include "Utils/InfoUtils.h"
 #include "Utils/LocalizationManager.h"
+#include "Utils/Logging.h"
 #include "Utils/ObjectiveCUtils.h"
 #include "Utils/ThemeUtils.h"
 #include "Utils/ThemeUtils_mac.h"
@@ -731,7 +731,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     INVOKE_IF_MATCH(m_toolBarData->preferences              , "preferencesRequested"            )
     INVOKE_IF_MATCH(m_toolBarData->exit                     , "exitRequested"                   )
 #undef INVOKE_IF_MATCH
-    qWarning() << "No match for" << sender;
+    LOG_WARNING() << LOGGING_CTX << "No match for" << sender;
 }
 
 - (void)makeSegmentedPairItem:(SegmentedToolBarItem &)groupItem

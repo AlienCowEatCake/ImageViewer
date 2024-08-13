@@ -27,9 +27,9 @@ extern "C" {
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 #include "Utils/ScopedPointer.h"
 
 #include "../IDecoder.h"
@@ -74,7 +74,7 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
     bpg_decoder_keep_extension_data(decoderContext, 1);
     if(bpg_decoder_decode(decoderContext, inBuffer.dataAs<const uint8_t*>(), inBuffer.sizeAs<int>()) < 0)
     {
-        qWarning() << "Can't bpg_decoder_decode for" << filePath;
+        LOG_WARNING() << LOGGING_CTX << "Can't bpg_decoder_decode for" << filePath;
         bpg_decoder_close(decoderContext);
         return false;
     }
@@ -88,15 +88,15 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
         switch(extension->tag)
         {
         case BPG_EXTENSION_TAG_ICCP:
-            qDebug() << "Found ICCP metadata";
+            LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
             profile.reset(new ICCProfile(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf), static_cast<int>(extension->buf_len))));
             break;
         case BPG_EXTENSION_TAG_EXIF:
-            qDebug() << "Found EXIF metadata";
+            LOG_INFO() << LOGGING_CTX << "Found EXIF metadata";
             metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf + 1), static_cast<int>(extension->buf_len - 1))));
             break;
         case BPG_EXTENSION_TAG_XMP:
-            qDebug() << "Found XMP metadata";
+            LOG_INFO() << LOGGING_CTX << "Found XMP metadata";
             metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf), static_cast<int>(extension->buf_len))));
             break;
         default:
@@ -128,7 +128,7 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
 #endif
         if(frame.isNull())
         {
-            qWarning() << "Invalid image size";
+            LOG_WARNING() << LOGGING_CTX << "Invalid image size";
             bpg_decoder_close(decoderContext);
             return PayloadWithMetaData<bool>(false, metaData);
         }

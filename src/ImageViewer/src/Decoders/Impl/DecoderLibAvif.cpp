@@ -23,9 +23,9 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -79,7 +79,7 @@ public:
         avifResult decodeResult = avifDecoderSetIOMemory(decoder, inBuffer.dataAs<const uint8_t*>(), inBuffer.sizeAs<size_t>());
         if(decodeResult != AVIF_RESULT_OK)
         {
-            qWarning() << "ERROR: Cannot set IO on avifDecoder:" << avifResultToString(decodeResult);
+            LOG_WARNING() << LOGGING_CTX << "ERROR: Cannot set IO on avifDecoder:" << avifResultToString(decodeResult);
             avifDecoderDestroy(decoder);
             return false;
         }
@@ -87,7 +87,7 @@ public:
 #endif
         if(decodeResult != AVIF_RESULT_OK)
         {
-            qWarning() << "ERROR: Failed to decode:" << avifResultToString(decodeResult);
+            LOG_WARNING() << LOGGING_CTX << "ERROR: Failed to decode:" << avifResultToString(decodeResult);
             avifDecoderDestroy(decoder);
             return false;
         }
@@ -102,14 +102,14 @@ public:
 
             if(nextImageResult != AVIF_RESULT_OK)
             {
-                qWarning() << "ERROR: Failed to decode all frames:" << avifResultToString(nextImageResult);
+                LOG_WARNING() << LOGGING_CTX << "ERROR: Failed to decode all frames:" << avifResultToString(nextImageResult);
                 break;
             }
 
             QImage frame(static_cast<int>(decoder->image->width), static_cast<int>(decoder->image->height), QImage::Format_ARGB32);
             if(frame.isNull())
             {
-                qWarning() << "Invalid image size";
+                LOG_WARNING() << LOGGING_CTX << "Invalid image size";
                 avifDecoderDestroy(decoder);
                 return PayloadWithMetaData<bool>(false, metaData);
             }
@@ -128,17 +128,17 @@ public:
 
             if(decoder->image->transformFlags & AVIF_TRANSFORM_PASP)
             {
-                qDebug() << "Found PixelAspectRatioBox transform for frame" << m_numFrames;
+                LOG_INFO() << LOGGING_CTX << "Found PixelAspectRatioBox transform for frame" << m_numFrames;
                 if(decoder->image->pasp.hSpacing != 1 && decoder->image->pasp.vSpacing != 1)
                 {
-                    qDebug() << "pasp.hSpacing =" << decoder->image->pasp.hSpacing;
-                    qDebug() << "pasp.vSpacing =" << decoder->image->pasp.vSpacing;
+                    LOG_INFO() << LOGGING_CTX << "pasp.hSpacing =" << decoder->image->pasp.hSpacing;
+                    LOG_INFO() << LOGGING_CTX << "pasp.vSpacing =" << decoder->image->pasp.vSpacing;
                     /// @todo ?
                 }
             }
             if(decoder->image->transformFlags & AVIF_TRANSFORM_CLAP)
             {
-                qDebug() << "Found CleanApertureBox transform for frame" << m_numFrames;
+                LOG_INFO() << LOGGING_CTX << "Found CleanApertureBox transform for frame" << m_numFrames;
                 const avifCleanApertureBox &clap = decoder->image->clap;
                 const int width = static_cast<int>(clap.widthN / clap.widthD);
                 const int height = static_cast<int>(clap.heightN / clap.heightD);
@@ -150,14 +150,14 @@ public:
             }
             if(decoder->image->transformFlags & AVIF_TRANSFORM_IROT)
             {
-                qDebug() << "Found ImageRotation transform for frame" << m_numFrames;
+                LOG_INFO() << LOGGING_CTX << "Found ImageRotation transform for frame" << m_numFrames;
                 QTransform transform;
                 transform.rotate(-static_cast<qreal>(decoder->image->irot.angle) * 90);
                 frame = frame.transformed(transform);
             }
             if(decoder->image->transformFlags & AVIF_TRANSFORM_IMIR)
             {
-                qDebug() << "Found ImageMirror transform for frame" << m_numFrames;
+                LOG_INFO() << LOGGING_CTX << "Found ImageMirror transform for frame" << m_numFrames;
 #if QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) < QT_VERSION_CHECK(0, 9, 2) || QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) > QT_VERSION_CHECK(1, 0, 0)
                 // See discussion:
                 // https://github.com/AOMediaCodec/libavif/pull/665
@@ -174,18 +174,18 @@ public:
             if(decoder->image->icc.data && decoder->image->icc.size)
 #endif
             {
-                qDebug() << "Found ICC profile for frame" << m_numFrames;
+                LOG_INFO() << LOGGING_CTX << "Found ICC profile for frame" << m_numFrames;
                 ICCProfile(QByteArray::fromRawData(reinterpret_cast<const char*>(decoder->image->icc.data), static_cast<int>(decoder->image->icc.size))).applyToImage(&frame);
             }
 
             if(decoder->image->exif.size)
             {
-                qDebug() << "Found EXIF metadata for frame" << m_numFrames;
+                LOG_INFO() << LOGGING_CTX << "Found EXIF metadata for frame" << m_numFrames;
                 metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(decoder->image->exif.data), static_cast<int>(decoder->image->exif.size))));
             }
             if(decoder->image->xmp.size)
             {
-                qDebug() << "Found XMP metadata for frame" << m_numFrames;
+                LOG_INFO() << LOGGING_CTX << "Found XMP metadata for frame" << m_numFrames;
                 metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(decoder->image->xmp.data), static_cast<int>(decoder->image->xmp.size))));
             }
 

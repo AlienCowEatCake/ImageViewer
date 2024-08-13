@@ -32,7 +32,6 @@
 #endif
 #include <QImage>
 #include <QFileInfo>
-#include <QDebug>
 
 #include "Utils/Global.h"
 #include "Utils/InfoUtils.h"

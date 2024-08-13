@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -24,7 +24,6 @@
 #include <QImage>
 #include <QFileInfo>
 #include <QFile>
-#include <QDebug>
 
 #include "Workarounds/BeginIgnoreUnusedParameter.h"
 #include <OpenEXR/ImfArray.h>
@@ -69,6 +68,7 @@
 #include <OpenEXR/ImfVecAttribute.h>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -453,7 +453,7 @@ PayloadWithMetaData<QImage> readExrFile(const QString &filePath)
     QFileIStream is(filePath);
     if(!is.isValid())
     {
-        qWarning() << "Can't open" << filePath;
+        LOG_WARNING() << LOGGING_CTX << "Can't open" << filePath;
         return QImage();
     }
 
@@ -500,11 +500,11 @@ PayloadWithMetaData<QImage> readExrFile(const QString &filePath)
     }
     catch(BaseExc &e)
     {
-        qWarning() << "ERROR:" << e.what();
+        LOG_WARNING() << LOGGING_CTX << "ERROR:" << e.what();
     }
     catch(...)
     {
-        qWarning() << "ERROR: Unknown exception";
+        LOG_WARNING() << LOGGING_CTX << "ERROR: Unknown exception";
     }
     return QImage();
 }

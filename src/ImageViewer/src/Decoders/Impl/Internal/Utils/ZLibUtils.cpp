@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -23,9 +23,10 @@
 
 #include <QDataStream>
 #include <QFile>
-#include <QDebug>
 
 #include <zlib.h>
+
+#include "Utils/Logging.h"
 
 #define CHUNK 16384
 
@@ -71,7 +72,7 @@ QByteArray InflateDataStream(QDataStream& source)
     ret = inflateInit2(&strm, 16 + MAX_WBITS);
     if(ret != Z_OK)
     {
-        qWarning() << "[ZLibUtils::InflateFile]:" << zerr(ret);
+        LOG_WARNING() << LOGGING_CTX << zerr(ret);
         return QByteArray();
     }
 
@@ -84,7 +85,7 @@ QByteArray InflateDataStream(QDataStream& source)
         if(count < 0)
         {
             inflateEnd(&strm);
-            qWarning() << "[ZLibUtils::InflateFile]:" << zerr(Z_ERRNO);
+            LOG_WARNING() << LOGGING_CTX << zerr(Z_ERRNO);
             return QByteArray();
         }
         if(count == 0)
@@ -103,12 +104,12 @@ QByteArray InflateDataStream(QDataStream& source)
             {
             case Z_NEED_DICT:
                 inflateEnd(&strm);
-                qWarning() << "[ZLibUtils::InflateFile]:" << zerr(Z_DATA_ERROR);
+                LOG_WARNING() << LOGGING_CTX << zerr(Z_DATA_ERROR);
                 return QByteArray();
             case Z_DATA_ERROR:
             case Z_MEM_ERROR:
                 inflateEnd(&strm);
-                qWarning() << "[ZLibUtils::InflateFile]:" << zerr(ret);
+                LOG_WARNING() << LOGGING_CTX << zerr(ret);
                 return QByteArray();
             }
             int have = static_cast<int>(CHUNK - strm.avail_out);
@@ -128,7 +129,7 @@ QByteArray InflateDataStream(QDataStream& source)
     inflateEnd(&strm);
     if(ret != Z_STREAM_END)
     {
-        qWarning() << "[ZLibUtils::InflateFile]:" << zerr(Z_DATA_ERROR);
+        LOG_WARNING() << LOGGING_CTX << zerr(Z_DATA_ERROR);
         return QByteArray();
     }
     return dest;
@@ -151,7 +152,7 @@ QByteArray InflateFile(const QString &filePath)
     QFile file(filePath);
     if(!file.open(QIODevice::ReadOnly))
     {
-        qWarning() << "[ZLibUtils::InflateFile]: Can't open" << filePath;
+        LOG_WARNING() << LOGGING_CTX << "Can't open" << filePath;
         return QByteArray();
     }
     return InflateDevice(&file);

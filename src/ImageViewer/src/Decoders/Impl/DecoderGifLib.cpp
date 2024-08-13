@@ -39,9 +39,9 @@ const int GIFLIB_DISPOSE_PREVIOUS   = 3;
 #include <QFile>
 #include <QByteArray>
 #include <QVector>
-#include <QDebug>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 #include "Utils/ScopedPointer.h"
 
 #include "../IDecoder.h"
@@ -72,7 +72,7 @@ GifFileType *dGifOpenWrapper(void *userData, InputFunc readFunc)
     int errorCode = E_GIF_SUCCEEDED;
     GifFileType* gifFile = DGifOpen(userData, readFunc, &errorCode);
     if(errorCode != E_GIF_SUCCEEDED)
-        qWarning() << "GIFLIB Error:" << GifErrorString(errorCode);
+        LOG_WARNING() << LOGGING_CTX << "GIFLIB Error:" << GifErrorString(errorCode);
     return gifFile;
 #else
     return DGifOpen(userData, readFunc);
@@ -85,7 +85,7 @@ int dGifCloseFileWrapper(GifFileType *gifFile)
     int errorCode = E_GIF_SUCCEEDED;
     int result = DGifCloseFile(gifFile, &errorCode);
     if(errorCode != E_GIF_SUCCEEDED)
-        qWarning() << "GIFLIB Error:" << GifErrorString(errorCode);
+        LOG_WARNING() << LOGGING_CTX << "GIFLIB Error:" << GifErrorString(errorCode);
     return result;
 #else
     return DGifCloseFile(gifFile);
@@ -204,20 +204,20 @@ private:
         QFile inFile(filePath);
         if(!inFile.open(QIODevice::ReadOnly))
         {
-            qWarning() << "Can't open" << filePath;
+            LOG_WARNING() << LOGGING_CTX << "Can't open" << filePath;
             return false;
         }
 
         GifFileType *gifFile = dGifOpenWrapper(&inFile, &readProc);
         if(!gifFile)
         {
-            qWarning() << "Can't open" << filePath;
+            LOG_WARNING() << LOGGING_CTX << "Can't open" << filePath;
             return false;
         }
 
         if(DGifSlurp(gifFile) == GIF_ERROR)
         {
-            qWarning() << "Can't DGifSlurp" << filePath;
+            LOG_WARNING() << LOGGING_CTX << "Can't DGifSlurp" << filePath;
             dGifCloseFileWrapper(gifFile);
             return false;
         }
@@ -225,7 +225,7 @@ private:
         const QSize screenSize(gifFile->SWidth, gifFile->SHeight);
         if(screenSize.isEmpty())
         {
-            qWarning() << "Invalid image screen size";
+            LOG_WARNING() << LOGGING_CTX << "Invalid image screen size";
             dGifCloseFileWrapper(gifFile);
             return false;
         }
@@ -258,7 +258,7 @@ private:
                     if(!m_metaData)
                         m_metaData = new ImageMetaData;
                     m_metaData->addCustomEntry(QString::fromLatin1("Comment"), QString::fromLatin1("Comment Extension block #%1").arg(i), QString::fromLatin1(commentData));
-                    qDebug() << "Found comment";
+                    LOG_INFO() << LOGGING_CTX << "Found comment";
                     continue;
                 }
 
@@ -307,7 +307,7 @@ private:
                         xmpData.resize(xmpData.size() - xmpPadingSize);
 
                     m_metaData = ImageMetaData::joinMetaData(takeMetaData(), ImageMetaData::createXmpMetaData(xmpData));
-                    qDebug() << "Found XMP metadata";
+                    LOG_INFO() << LOGGING_CTX << "Found XMP metadata";
                     continue;
                 }
                 if(!memcmp(extensionHeader->Bytes, "ICCRGBG1012", 11))
@@ -321,7 +321,7 @@ private:
                         i++;
                     }
                     iccProfile.reset(new ICCProfile(iccData));
-                    qDebug() << "Found ICCP metadata";
+                    LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
                     continue;
                 }
             }
@@ -340,7 +340,7 @@ private:
             QImage frame(frameRect.width(), frameRect.height(), QImage::Format_Indexed8);
             if(frame.isNull())
             {
-                qWarning() << "Invalid image size";
+                LOG_WARNING() << LOGGING_CTX << "Invalid image size";
                 dGifCloseFileWrapper(gifFile);
                 return false;
             }

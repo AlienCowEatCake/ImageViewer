@@ -31,7 +31,6 @@
 #include <QUrl>
 #include <QByteArray>
 #include <QVariant>
-#include <QDebug>
 #include <QSysInfo>
 #include <QSettings>
 #include <QXmlStreamWriter>
@@ -39,6 +38,7 @@
 #include <QXmlStreamNamespaceDeclarations>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -72,7 +72,7 @@ public:
         static OLE32 _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load ole32.dll";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
             return Q_NULLPTR;
         }
         return &_;
@@ -162,7 +162,7 @@ HRESULT CoInitializeEx_WRAP(LPVOID pvReserved, DWORD dwCoInit)
 {
     if(OLE32 *ole32 = OLE32::instance())
         return ole32->CoInitializeEx(pvReserved, dwCoInit);
-    qWarning() << "Failed to load ole32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
     return E_FAIL;
 }
 #define CoInitializeEx CoInitializeEx_WRAP
@@ -171,7 +171,7 @@ HRESULT CoUninitialize_WRAP()
 {
     if(OLE32 *ole32 = OLE32::instance())
         return ole32->CoUninitialize();
-    qWarning() << "Failed to load ole32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
     return E_FAIL;
 }
 #define CoUninitialize CoUninitialize_WRAP
@@ -180,7 +180,7 @@ HRESULT CoCreateInstance_WRAP(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsC
 {
     if(OLE32 *ole32 = OLE32::instance())
         return ole32->CoCreateInstance(rclsid, pUnkOuter, dwClsContext, riid, ppv);
-    qWarning() << "Failed to load ole32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
     return E_FAIL;
 }
 #define CoCreateInstance CoCreateInstance_WRAP
@@ -189,7 +189,7 @@ HRESULT CLSIDFromProgID_WRAP(LPCOLESTR lpszProgID, LPCLSID lpclsid)
 {
     if(OLE32 *ole32 = OLE32::instance())
         return ole32->CLSIDFromProgID(lpszProgID, lpclsid);
-    qWarning() << "Failed to load ole32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
     return E_FAIL;
 }
 #define CLSIDFromProgID CLSIDFromProgID_WRAP
@@ -198,7 +198,7 @@ HRESULT IIDFromString_WRAP(LPCOLESTR lpsz, LPIID lpiid)
 {
     if(OLE32 *ole32 = OLE32::instance())
         return ole32->IIDFromString(lpsz, lpiid);
-    qWarning() << "Failed to load ole32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
     return E_FAIL;
 }
 #define IIDFromString IIDFromString_WRAP
@@ -207,7 +207,7 @@ HRESULT CLSIDFromString_WRAP(LPCOLESTR lpsz, LPCLSID pclsid)
 {
     if(OLE32 *ole32 = OLE32::instance())
         return ole32->CLSIDFromString(lpsz, pclsid);
-    qWarning() << "Failed to load ole32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
     return E_FAIL;
 }
 #define CLSIDFromString CLSIDFromString_WRAP
@@ -222,7 +222,7 @@ public:
         static OLEAut32 _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load oleaut32.dll";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load oleaut32.dll";
             return Q_NULLPTR;
         }
         return &_;
@@ -302,7 +302,7 @@ BSTR SysAllocString_WRAP(const OLECHAR *psz)
 {
     if(OLEAut32 *oleaut32 = OLEAut32::instance())
         return oleaut32->SysAllocString(psz);
-    qWarning() << "Failed to load oleaut32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load oleaut32.dll";
     return Q_NULLPTR;
 }
 #define SysAllocString SysAllocString_WRAP
@@ -311,7 +311,7 @@ void SysFreeString_WRAP(BSTR bstrString)
 {
     if(OLEAut32 *oleaut32 = OLEAut32::instance())
         return oleaut32->SysFreeString(bstrString);
-    qWarning() << "Failed to load oleaut32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load oleaut32.dll";
 }
 #define SysFreeString SysFreeString_WRAP
 
@@ -319,7 +319,7 @@ SAFEARRAY *SafeArrayCreateVector_WRAP(VARTYPE vt, LONG lLbound, ULONG cElements)
 {
     if(OLEAut32 *oleaut32 = OLEAut32::instance())
         return oleaut32->SafeArrayCreateVector(vt, lLbound, cElements);
-    qWarning() << "Failed to load oleaut32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load oleaut32.dll";
     return Q_NULLPTR;
 }
 #define SafeArrayCreateVector SafeArrayCreateVector_WRAP
@@ -328,7 +328,7 @@ HRESULT SafeArrayAccessData_WRAP(SAFEARRAY *psa, void **ppvData)
 {
     if(OLEAut32 *oleaut32 = OLEAut32::instance())
         return oleaut32->SafeArrayAccessData(psa, ppvData);
-    qWarning() << "Failed to load oleaut32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load oleaut32.dll";
     return E_FAIL;
 }
 #define SafeArrayAccessData SafeArrayAccessData_WRAP
@@ -337,7 +337,7 @@ HRESULT SafeArrayDestroy_WRAP(SAFEARRAY *psa)
 {
     if(OLEAut32 *oleaut32 = OLEAut32::instance())
         return oleaut32->SafeArrayDestroy(psa);
-    qWarning() << "Failed to load oleaut32.dll";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load oleaut32.dll";
     return E_FAIL;
 }
 #define SafeArrayDestroy SafeArrayDestroy_WRAP
@@ -350,7 +350,7 @@ IID GetIID(LPCOLESTR lpsz)
     memset(&result, 0, sizeof(IID));
     HRESULT hr = IIDFromString(lpsz, &result);
     if(!SUCCEEDED(hr))
-        qWarning() << "Can't get IID for" << QString::fromStdWString(lpsz);
+        LOG_WARNING() << LOGGING_CTX << "Can't get IID for" << QString::fromStdWString(lpsz);
     return result;
 }
 
@@ -365,7 +365,7 @@ CLSID GetCLSID(LPCOLESTR lpsz)
     memset(&result, 0, sizeof(CLSID));
     HRESULT hr = CLSIDFromString(lpsz, &result);
     if(!SUCCEEDED(hr))
-        qWarning() << "Can't get CLSID for" << QString::fromStdWString(lpsz);
+        LOG_WARNING() << LOGGING_CTX << "Can't get CLSID for" << QString::fromStdWString(lpsz);
     return result;
 }
 
@@ -379,7 +379,7 @@ QImage QImageFromHBITMAP(HBITMAP bitmap)
     memset(&bitmap_info, 0, sizeof(BITMAP));
     if(!GetObject(bitmap, sizeof(BITMAP), &bitmap_info))
     {
-        qWarning() << __FUNCTION__ << "Failed to get bitmap info";
+        LOG_WARNING() << LOGGING_CTX << "Failed to get bitmap info";
         return QImage();
     }
 
@@ -399,7 +399,7 @@ QImage QImageFromHBITMAP(HBITMAP bitmap)
     HDC hdc = GetDC(0);
     if(!GetDIBits(hdc, bitmap, 0, h, result.bits(), &bmi, DIB_RGB_COLORS))
     {
-        qWarning() << __FUNCTION__ << "Failed to get bitmap bits";
+        LOG_WARNING() << LOGGING_CTX << "Failed to get bitmap bits";
         result = QImage();
     }
     ReleaseDC(0, hdc);
@@ -438,19 +438,19 @@ public:
         m_svgData = MappedBuffer(filePath, MappedBuffer::AutoInflate).byteArray();
         if(m_svgData.isEmpty())
         {
-            qWarning() << "Can't read" << filePath;
+            LOG_WARNING() << LOGGING_CTX << "Can't read" << filePath;
             return;
         }
 
         if(!rootElementIsSvg())
         {
-            qWarning() << "Root element is not svg";
+            LOG_WARNING() << LOGGING_CTX << "Root element is not svg";
             return;
         }
 
         if(!prepareSVGData())
         {
-            qWarning() << "Can't prepare svg data";
+            LOG_WARNING() << LOGGING_CTX << "Can't prepare svg data";
             return;
         }
 
@@ -460,7 +460,7 @@ public:
 //        hr = CLSIDFromProgID(L"htmlfile", &CLSID_HTMLDocument);
 //        if(!SUCCEEDED(hr))
 //        {
-//            qWarning() << "Can't get CLSID for mshtml" << QString::number(hr, 16);
+//            LOG_WARNING() << LOGGING_CTX << "Can't get CLSID for mshtml" << QString::number(hr, 16);
 //            return;
 //        }
         Q_UNUSED(&CLSIDFromProgID);
@@ -468,7 +468,7 @@ public:
         hr = CoCreateInstance(CLSID_HTMLDocument, Q_NULLPTR, CLSCTX_INPROC_SERVER, IID_IHTMLDocument2, (void**)&m_htmlDocument2);
         if(!SUCCEEDED(hr))
         {
-            qWarning() << "CoCreateInstance(CLSID_HTMLDocument) failed" << QString::number(hr, 16);
+            LOG_WARNING() << LOGGING_CTX << "CoCreateInstance(CLSID_HTMLDocument) failed" << QString::number(hr, 16);
             return;
         }
 
@@ -488,7 +488,7 @@ public:
 
         if(!loadSVGData())
         {
-            qWarning() << "Failed to load svg data";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load svg data";
             return;
         }
 
@@ -565,7 +565,7 @@ protected:
 //        hr = m_htmlDocument2->get_parentWindow(&htmlWindow2);
 //        if(!SUCCEEDED(hr))
 //        {
-//            qWarning() << "IHtmlDocument2::get_parentWindow() failed with error =" << QString::number(hr, 16);
+//            LOG_WARNING() << LOGGING_CTX << "IHtmlDocument2::get_parentWindow() failed with error =" << QString::number(hr, 16);
 //            return QVariant();
 //        }
 
@@ -580,11 +580,11 @@ protected:
 //        htmlWindow2->Release();
 //        if(!SUCCEEDED(hr))
 //        {
-//            qWarning() << "htmlWindow2::execScript() failed with error =" << QString::number(hr, 16);
+//            LOG_WARNING() << LOGGING_CTX << "htmlWindow2::execScript() failed with error =" << QString::number(hr, 16);
 //            return QVariant();
 //        }
 
-//        qDebug() << result.vt;
+//        LOG_INFO() << LOGGING_CTX << result.vt;
 //        return QVariant();
 //    }
 
@@ -608,7 +608,7 @@ private:
 
             if(reader.hasError())
             {
-                qWarning() << __FUNCTION__ << reader.errorString();
+                LOG_WARNING() << LOGGING_CTX << reader.errorString();
                 return false;
             }
 
@@ -618,7 +618,7 @@ private:
                 if(fakeViewBoxRequired && !compare(reader.name(), QString::fromLatin1("svg"), Qt::CaseInsensitive))
                 {
                     writer.writeAttribute(QString::fromLatin1("viewBox"), QString::fromLatin1("%1 %2 %3 %4").arg(0).arg(0).arg(size.width()).arg(size.height()));
-                    qDebug() << __FUNCTION__ << "Fake viewBox injected";
+                    LOG_INFO() << LOGGING_CTX << "Fake viewBox injected";
                 }
             }
         }
@@ -774,7 +774,7 @@ public:
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         if(QSysInfo::windowsVersion() < QSysInfo::WV_VISTA)
         {
-            qDebug() << "DecoderMSHTML unavailable, reason: windowsVersion() < QSysInfo::WV_VISTA";
+            LOG_INFO() << LOGGING_CTX << "DecoderMSHTML unavailable, reason: windowsVersion() < QSysInfo::WV_VISTA";
             state = Qt::PartiallyChecked;
             return false;
         }
@@ -784,15 +784,15 @@ public:
         const QString ieVersion = settings.value(QString::fromLatin1("Version")).toString();
         if(ieVersion.isEmpty())
         {
-            qDebug() << "DecoderMSHTML unavailable, reason: Can't detect IE version";
+            LOG_INFO() << LOGGING_CTX << "DecoderMSHTML unavailable, reason: Can't detect IE version";
             state = Qt::PartiallyChecked;
             return false;
         }
 
-        qDebug() << "IE version:" << ieVersion;
+        LOG_INFO() << LOGGING_CTX << "IE version:" << ieVersion;
         if(ieVersion.split(QChar::fromLatin1('.'), Qt_SkipEmptyParts).first().toInt() < 9)
         {
-            qDebug() << "DecoderMSHTML unavailable, reason: Required IE >= 9";
+            LOG_INFO() << LOGGING_CTX << "DecoderMSHTML unavailable, reason: Required IE >= 9";
             state = Qt::PartiallyChecked;
             return false;
         }

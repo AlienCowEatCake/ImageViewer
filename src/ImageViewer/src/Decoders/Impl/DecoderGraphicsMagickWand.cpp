@@ -32,7 +32,6 @@
 #include <QFileInfo>
 #include <QImage>
 #include <QByteArray>
-#include <QDebug>
 #include <QLibrary>
 #include <QSysInfo>
 
@@ -41,6 +40,8 @@
 #else
 typedef void* QFunctionPointer;
 #endif
+
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -109,7 +110,7 @@ public:
         static GraphicsMagickLib _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load GraphicsMagick";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load GraphicsMagick";
             return Q_NULLPTR;
         }
         return &_;
@@ -209,7 +210,7 @@ public:
         static GraphicsMagickWandLib _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load MagickWand";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load MagickWand";
             return Q_NULLPTR;
         }
         return &_;
@@ -524,7 +525,7 @@ private:
         QScopedPointer<MagickWand, MagickWandDeleter> mw(NewMagickWand());
         if(!MagickReadImageBlob(mw.data(), inBuffer.dataAs<const unsigned char *>(), inBuffer.sizeAs<size_t>()))
         {
-            qWarning() << "[DecoderGraphicsMagickWand] MagickReadImageBlob error";
+            LOG_WARNING() << LOGGING_CTX << "MagickReadImageBlob error";
             return false;
         }
 
@@ -541,7 +542,7 @@ private:
             QImage qImage = convertImage(mw.data());
             if(qImage.isNull())
             {
-                qWarning() << "[DecoderGraphicsMagickWand] MagickGetImagePixels error";
+                LOG_WARNING() << LOGGING_CTX << "MagickGetImagePixels error";
                 return false;
             }
             MagickGetImagePage(mw.data(), &width, &height, &x, &y);
@@ -569,14 +570,14 @@ private:
 
         if(OrientationType orientation = MagickGetImageOrientation(mw))
         {
-            qDebug() << "[DecoderGraphicsMagickWand] Orientation found:" << orientation;
+            LOG_INFO() << LOGGING_CTX << "Orientation found:" << orientation;
             ImageMetaData::applyExifOrientation(&qImage, static_cast<quint16>(orientation));
         }
 
         unsigned long length = 0;
         if(const unsigned char *datum = MagickGetImageProfile(mw, "ICC", &length))
         {
-            qDebug() << "[DecoderGraphicsMagickWand] ICC profile found";
+            LOG_INFO() << LOGGING_CTX << "ICC profile found";
             ICCProfile profile(QByteArray::fromRawData(reinterpret_cast<const char*>(datum), static_cast<int>(length)));
             profile.applyToImage(&qImage);
         }

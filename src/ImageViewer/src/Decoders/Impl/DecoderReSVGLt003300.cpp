@@ -36,7 +36,6 @@ extern "C" {
 #include <QDir>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 #include <QLibrary>
 #include <QPainter>
 
@@ -47,6 +46,7 @@ typedef void* QFunctionPointer;
 #endif
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -136,7 +136,7 @@ struct ReSVG
         static ReSVG _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load resvg";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load resvg";
             return Q_NULLPTR;
         }
         return &_;
@@ -342,7 +342,7 @@ public:
         const int err = resvg_parse_tree_from_data(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<size_t>(), m_opt, &m_tree);
         if(err)
         {
-            qWarning() << "Can't parse file, error =" << err;
+            LOG_WARNING() << LOGGING_CTX << "Can't parse file, error =" << err;
             return;
         }
 
@@ -351,7 +351,7 @@ public:
         m_height = static_cast<int>(size.height);
         if(m_width < 1 || m_height < 1)
         {
-            qWarning() << "Couldn't determine image size";
+            LOG_WARNING() << LOGGING_CTX << "Couldn't determine image size";
             return;
         }
 
@@ -400,7 +400,7 @@ public:
 
         if(img.isNull())
         {
-            qWarning() << "Invalid image size";
+            LOG_WARNING() << LOGGING_CTX << "Invalid image size";
             return img;
         }
 

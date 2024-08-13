@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -125,13 +125,13 @@ private:
         if(setMargins(Margins()))
             return;
 
-        qWarning() << "Can't set zero page margins, trying to fix this";
+        LOG_WARNING() << LOGGING_CTX << "Can't set zero page margins, trying to fix this";
         const QList<qreal> fixValues = QList<qreal>() << 0.01 << 0.1 << 1;
         for(QList<qreal>::ConstIterator it = fixValues.begin(); it != fixValues.end(); ++it)
             if(setMargins(Margins(*it)))
                 return;
 
-        qWarning() << "Can't set any minimal page margins, disabling full page mode";
+        LOG_WARNING() << LOGGING_CTX << "Can't set any minimal page margins, disabling full page mode";
         scopeLeave();
         m_printer = Q_NULLPTR;
     }
@@ -320,7 +320,7 @@ private:
         const bool isPaperPortrait = paperRectPoint.height() >= paperRectPoint.width();
         if((isPortrait && isPaperPortrait) || (!isPortrait && !isPaperPortrait) || qFuzzyCompare(paperRectPoint.height(), paperRectPoint.width()))
             return rect;
-        qWarning() << "Invalid paper orientation, x =" << paperRectPoint.x() << "y =" << paperRectPoint.y() << "width =" << paperRectPoint.width() << "height =" << paperRectPoint.height()
+        LOG_WARNING() << LOGGING_CTX << "Invalid paper orientation, x =" << paperRectPoint.x() << "y =" << paperRectPoint.y() << "width =" << paperRectPoint.width() << "height =" << paperRectPoint.height()
                    << "expected =" << (isPortrait ? "portrait," : "landscape,") << "trying to fix this";
         const QRectF paperRect = printer->paperRect(unit);
         const qreal ml = rect.left() - paperRect.left();
@@ -594,7 +594,7 @@ void PrintDialog::onPrintDialogButtonClicked()
             }
             else
             {
-                qWarning() << "Can't find info for printer" << printerName;
+                LOG_WARNING() << LOGGING_CTX << "Can't find info for printer" << printerName;
                 info = QPrinterInfo();
                 m_ui->printerSelectComboBox->setCurrentIndex(-1);
             }
@@ -605,7 +605,7 @@ void PrintDialog::onPrintDialogButtonClicked()
         updatePageInfo();
         if(!m_impl->hasValidPage())
         {
-            qWarning() << "Invalid page detected";
+            LOG_WARNING() << LOGGING_CTX << "Invalid page detected";
             const QString title = qApp->translate("PrintDialog", "Error");
             const QString text = qApp->translate("PrintDialog", "Invalid Paper Size");
             QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, title, text, QMessageBox::Ok, this);
@@ -670,7 +670,7 @@ void PrintDialog::onPrintClicked()
             image = QImage(size, QImage::Format_ARGB32_Premultiplied);
             while(image.isNull() && !size.isEmpty())
             {
-                qWarning() << "Image rendering failed, target size =" << size.width() << "x" << size.height();
+                LOG_WARNING() << LOGGING_CTX << "Image rendering failed, target size =" << size.width() << "x" << size.height();
                 size = QSize(size.width() / 2, size.height() / 2);
                 image = QImage(size, QImage::Format_ARGB32_Premultiplied);
             }
@@ -703,7 +703,7 @@ void PrintDialog::onPrintClicked()
             if(!scaledImage.isNull())
                 image = scaledImage;
             else
-                qWarning() << "Image scaling failed, target size =" << unrotatedDeviceSize.width() << "x" << unrotatedDeviceSize.height();
+                LOG_WARNING() << LOGGING_CTX << "Image scaling failed, target size =" << unrotatedDeviceSize.width() << "x" << unrotatedDeviceSize.height();
         }
         painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
     }
@@ -736,7 +736,7 @@ void PrintDialog::onPrintClicked()
                 if(!scaledImage.isNull())
                     image = scaledImage;
                 else
-                    qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
+                    LOG_WARNING() << LOGGING_CTX << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
             }
             painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
         }
@@ -756,7 +756,7 @@ void PrintDialog::onPrintClicked()
                 if(!scaledImage.isNull())
                     image = scaledImage;
                 else
-                    qWarning() << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
+                    LOG_WARNING() << LOGGING_CTX << "Image scaling failed, target size =" << deviceRect.width() << "x" << deviceRect.height();
             }
             painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
         }
@@ -783,7 +783,7 @@ void PrintDialog::onPageSetupClicked()
         updatePageInfo();
         if(!m_impl->hasValidPage())
         {
-            qWarning() << "Invalid page detected";
+            LOG_WARNING() << LOGGING_CTX << "Invalid page detected";
             const QString title = qApp->translate("PrintDialog", "Error");
             const QString text = qApp->translate("PrintDialog", "Invalid Paper Size");
             QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, title, text, QMessageBox::Ok, this);

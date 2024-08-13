@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -21,11 +21,11 @@
 
 #include <QImage>
 #include <QFileInfo>
-#include <QDebug>
 
 #include <stb_image.h>
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -85,14 +85,14 @@ public:
         unsigned char *data = ::stbi_load(filePath.toLocal8Bit().data(), &x, &y, &n, 0);
         if(!data)
         {
-            qDebug() << ::stbi_failure_reason();
+            LOG_WARNING() << LOGGING_CTX << ::stbi_failure_reason();
             return QSharedPointer<IImageData>();
         }
 
         QImage image(x, y, QImage::Format_ARGB32);
         if(image.isNull())
         {
-            qWarning() << "Invalid image size";
+            LOG_WARNING() << LOGGING_CTX << "Invalid image size";
             ::stbi_image_free(data);
             return QSharedPointer<IImageData>();
         }

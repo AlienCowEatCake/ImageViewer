@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -33,7 +33,6 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
-#include <QDebug>
 #include <QLibrary>
 #include <QPainter>
 #include <QGraphicsItem>
@@ -46,6 +45,7 @@ typedef void* QFunctionPointer;
 #endif
 
 #include "Utils/Global.h"
+#include "Utils/Logging.h"
 
 #include "../IDecoder.h"
 #include "../GraphicsItemFeatures/IGrabImage.h"
@@ -138,7 +138,7 @@ public:
         static GLib _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load libglib";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load libglib";
             return Q_NULLPTR;
         }
         return &_;
@@ -177,7 +177,7 @@ void g_error_free(GError *error)
 {
     if(GLib *glib = GLib::instance())
         return glib->g_error_free(error);
-    qWarning() << "Failed to load libglib";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load libglib";
 }
 
 class GObject
@@ -188,7 +188,7 @@ public:
         static GObject _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load libgobject";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load libgobject";
             return Q_NULLPTR;
         }
         return &_;
@@ -227,7 +227,7 @@ void g_object_unref(gpointer object)
 {
     if(GObject *gobject = GObject::instance())
         return gobject->g_object_unref(object);
-    qWarning() << "Failed to load libgobject";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load libgobject";
 }
 
 class Cairo
@@ -238,7 +238,7 @@ public:
         static Cairo _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load libcairo";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load libcairo";
             return Q_NULLPTR;
         }
         return &_;
@@ -328,7 +328,7 @@ cairo_surface_t *cairo_image_surface_create_for_data(unsigned char *data, cairo_
 {
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_image_surface_create_for_data(data, format, width, height, stride);
-    qWarning() << "Failed to load libcairo";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load libcairo";
     return Q_NULLPTR;
 }
 
@@ -336,7 +336,7 @@ cairo_t *cairo_create(cairo_surface_t *target)
 {
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_create(target);
-    qWarning() << "Failed to load libcairo";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load libcairo";
     return Q_NULLPTR;
 }
 
@@ -344,28 +344,28 @@ void cairo_scale(cairo_t *cr, double sx, double sy)
 {
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_scale(cr, sx, sy);
-    qWarning() << "Failed to load libcairo";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load libcairo";
 }
 
 void cairo_translate(cairo_t *cr, double tx, double ty)
 {
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_translate(cr, tx, ty);
-    qWarning() << "Failed to load libcairo";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load libcairo";
 }
 
 void cairo_destroy(cairo_t *cr)
 {
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_destroy(cr);
-    qWarning() << "Failed to load libcairo";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load libcairo";
 }
 
 void cairo_surface_destroy(cairo_surface_t *surface)
 {
     if(Cairo *cairo = Cairo::instance())
         return cairo->cairo_surface_destroy(surface);
-    qWarning() << "Failed to load libcairo";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load libcairo";
 }
 
 class RSVG
@@ -376,7 +376,7 @@ public:
         static RSVG _;
         if(!_.isValid())
         {
-            qWarning() << "Failed to load librsvg";
+            LOG_WARNING() << LOGGING_CTX << "Failed to load librsvg";
             return Q_NULLPTR;
         }
         return &_;
@@ -487,7 +487,7 @@ RsvgHandle *rsvg_handle_new_from_data(const quint8 *data, size_t data_len, GErro
 {
     if(RSVG *rsvg = RSVG::instance())
         return rsvg->rsvg_handle_new_from_data(data, data_len, error);
-    qWarning() << "Failed to load librsvg";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load librsvg";
     return Q_NULLPTR;
 }
 
@@ -495,7 +495,7 @@ void rsvg_handle_set_base_uri(RsvgHandle *handle, const char *base_uri)
 {
     if(RSVG *rsvg = RSVG::instance())
         return rsvg->rsvg_handle_set_base_uri(handle, base_uri);
-    qWarning() << "Failed to load librsvg";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load librsvg";
 }
 
 bool has_rsvg_handle_get_dimensions()
@@ -509,7 +509,7 @@ void rsvg_handle_get_dimensions(RsvgHandle *handle, RsvgDimensionData *dimension
 {
     if(RSVG *rsvg = RSVG::instance())
         return rsvg->rsvg_handle_get_dimensions(handle, dimension_data);
-    qWarning() << "Failed to load librsvg";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load librsvg";
 }
 
 bool has_rsvg_handle_get_intrinsic_size_in_pixels()
@@ -523,7 +523,7 @@ gboolean rsvg_handle_get_intrinsic_size_in_pixels(RsvgHandle *handle, gdouble *o
 {
     if(RSVG *rsvg = RSVG::instance())
         return rsvg->rsvg_handle_get_intrinsic_size_in_pixels(handle, out_width, out_height);
-    qWarning() << "Failed to load librsvg";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load librsvg";
     return 0;
 }
 
@@ -538,7 +538,7 @@ gboolean rsvg_handle_render_cairo(RsvgHandle *handle, cairo_t *cr)
 {
     if(RSVG *rsvg = RSVG::instance())
         return rsvg->rsvg_handle_render_cairo(handle, cr);
-    qWarning() << "Failed to load librsvg";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load librsvg";
     return 0;
 }
 
@@ -553,7 +553,7 @@ gboolean rsvg_handle_render_document(RsvgHandle *handle, cairo_t *cr, const Rsvg
 {
     if(RSVG *rsvg = RSVG::instance())
         return rsvg->rsvg_handle_render_document(handle, cr, viewport, error);
-    qWarning() << "Failed to load librsvg";
+    LOG_WARNING() << LOGGING_CTX << "Failed to load librsvg";
     return 0;
 }
 
@@ -670,7 +670,7 @@ public:
         m_rsvg = rsvg_handle_new_from_data(inBuffer.dataAs<unsigned char*>(), inBuffer.sizeAs<size_t>(), &error);
         if(!m_rsvg)
         {
-            qWarning() << "Error reading SVG:" << ((error && error->message) ? error->message : "Unknown error.");
+            LOG_WARNING() << LOGGING_CTX << "Error reading SVG:" << ((error && error->message) ? error->message : "Unknown error.");
             if(error)
                 g_error_free(error);
             return false;
@@ -708,7 +708,7 @@ public:
 
         if(m_width < 1 || m_height < 1)
         {
-            qWarning() << "Couldn't determine image size";
+            LOG_WARNING() << LOGGING_CTX << "Couldn't determine image size";
             return false;
         }
 
@@ -740,7 +740,7 @@ public:
         QImage image(width, height, QImage::Format_ARGB32_Premultiplied);
         if(image.isNull())
         {
-            qWarning() << "Invalid image size";
+            LOG_WARNING() << LOGGING_CTX << "Invalid image size";
             return image;
         }
         image.fill(Qt::transparent);
@@ -770,7 +770,7 @@ public:
     #endif
                 if(!rsvg_handle_render_document(m_rsvg, cr, &viewport, &error))
                 {
-                    qWarning() << "Error rendering SVG document:" << ((error && error->message) ? error->message : "Unknown error.");
+                    LOG_WARNING() << LOGGING_CTX << "Error rendering SVG document:" << ((error && error->message) ? error->message : "Unknown error.");
                     if(error)
                         g_error_free(error);
                 }

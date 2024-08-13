@@ -21,7 +21,6 @@
 
 #include <QAction>
 #include <QApplication>
-#include <QDebug>
 #include <QEvent>
 #include <QString>
 #include <QStyle>
