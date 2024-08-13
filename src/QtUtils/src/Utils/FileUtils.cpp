@@ -41,6 +41,8 @@
 #include <QStringList>
 #include <QDebug>
 
+#include "Global.h"
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 
 namespace MoveToTrashInternal {
@@ -485,7 +487,7 @@ static bool trashMove(const QString &src, const QString &dst, const QString &top
 
     int counter = 0;
     QString destName = fileName;
-    while(QFileInfo(QDir(filesPath).absoluteFilePath(destName)).exists() || QFileInfo(QDir(filesPath).absoluteFilePath(destName + getInfoSuffix())).exists())
+    while(QFileInfo_exists(QDir(filesPath).absoluteFilePath(destName)) || QFileInfo_exists(QDir(filesPath).absoluteFilePath(destName + getInfoSuffix())))
     {
         counter++;
         destName = QString::fromLatin1("%1 %2%3").arg(baseName).arg(counter).arg(ext);

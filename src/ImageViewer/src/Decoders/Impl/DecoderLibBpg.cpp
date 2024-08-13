@@ -136,7 +136,7 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
         for(int y = 0; y < frame.height(); y++)
             bpg_decoder_get_line(decoderContext, reinterpret_cast<uint8_t*>(frame.bits()) + y * frame.bytesPerLine());
 #if (!USE_RGBA_8888)
-        frame = frame.rgbSwapped();
+        QImage_rgbSwap(frame);
 #endif
 
 #undef USE_RGBA_8888

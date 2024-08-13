@@ -29,6 +29,7 @@
 #include <QFileSystemWatcher>
 
 #include "Utils/FileUtils.h"
+#include "Utils/Global.h"
 #include "Utils/SignalBlocker.h"
 #include "Utils/StringUtils.h"
 
@@ -224,7 +225,7 @@ public:
         bool wasChanged = false;
         for(QVector<QString>::Iterator it = m_pathsList.begin(); it != m_pathsList.end();)
         {
-            if(!QFileInfo(*it).exists())
+            if(!QFileInfo_exists(*it))
             {
                 it = m_pathsList.erase(it);
                 wasChanged = true;

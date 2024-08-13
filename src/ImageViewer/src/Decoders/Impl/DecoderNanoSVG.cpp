@@ -117,7 +117,7 @@ public:
         nsvgRasterize(m_rasterizer, m_image, 0, 0, static_cast<float>(scaleFactor), img.bits(), w, h, img.bytesPerLine());
 #if (!USE_RGBA_8888)
 #if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
-        img = img.rgbSwapped();
+        QImage_rgbSwap(img);
 #else
         for(int y = 0; y < img.height(); ++y)
         {

@@ -359,7 +359,7 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
     }
 
 #if (!USE_RGBA_8888)
-    result = result.rgbSwapped();
+    QImage_rgbSwap(result);
 #endif
 
 #undef USE_RGBA_8888

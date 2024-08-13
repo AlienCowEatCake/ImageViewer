@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -36,6 +36,7 @@
 #include <QColor>
 #include <QTextDocument>
 
+#include "Global.h"
 #include "SettingsWrapper.h"
 #include "SignalBlocker.h"
 #include "ThemeUtils.h"
@@ -223,12 +224,7 @@ struct ThemeManager::Impl
     {
         StylableTheme theme;
         const QStringList availableStyles = QStyleFactory::keys();
-        const QStringList preferredStyles = theme.preferredStyles().split(QChar::fromLatin1(','),
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-                                                                          Qt::SkipEmptyParts);
-#else
-                                                                          QString::SkipEmptyParts);
-#endif
+        const QStringList preferredStyles = theme.preferredStyles().split(QChar::fromLatin1(','), Qt_SkipEmptyParts);
         QString matchedStyle;
         for(QStringList::ConstIterator it = preferredStyles.constBegin(), itEnd = preferredStyles.constEnd(); it != itEnd; ++it)
         {

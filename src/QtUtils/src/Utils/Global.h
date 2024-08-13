@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -111,6 +111,31 @@ static inline bool qFuzzyIsNull(float f)
 #   else
 #       define Q_NULLPTR NULL
 #   endif
+#endif
+
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#define Qt_SkipEmptyParts (Qt::SkipEmptyParts)
+#else
+#define Qt_SkipEmptyParts (QString::SkipEmptyParts)
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#define QImage_rgbSwap(image) ((image).rgbSwap())
+#else
+#define QImage_rgbSwap(image) ((image) = (image).rgbSwapped())
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+#define QImage_convertTo(image, format) ((image).convertTo((format)))
+#else
+#define QImage_convertTo(image, format) ((image) = (image).convertToFormat((format)))
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+#define QFileInfo_exists(file) (QFileInfo::exists((file)))
+#else
+#define QFileInfo_exists(file) (QFileInfo((file)).exists())
 #endif
 
 #endif // QTUTILS_GLOBAL_H_INCLUDED

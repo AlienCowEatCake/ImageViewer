@@ -338,7 +338,7 @@ void ICCProfile::applyToImage(QImage *image)
         break;
 #endif
     default:
-        *image = image->convertToFormat(QImage::Format_ARGB32);
+        QImage_convertTo(*image, QImage::Format_ARGB32);
         inFormat = outFormat = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8;
         break;
     }
@@ -414,7 +414,7 @@ void ICCProfile::applyToImage(QImage *image)
     {
         if(image->hasAlphaChannel())
             alphaChannel = image->convertToFormat(QImage::Format_Alpha8);
-        *image = image->convertToFormat(QImage::Format_CMYK8888);
+        QImage_convertTo(*image, QImage::Format_CMYK8888);
     }
 #endif
 
@@ -425,8 +425,8 @@ void ICCProfile::applyToImage(QImage *image)
     if(!alphaChannel.isNull())
     {
         if(image->hasAlphaChannel())
-            image->convertTo(QImage::Format_RGB32);
-        image->convertTo(QImage::Format_ARGB32);
+            QImage_convertTo(*image, QImage::Format_RGB32);
+        QImage_convertTo(*image, QImage::Format_ARGB32);
         image->setAlphaChannel(alphaChannel);
     }
 #endif
@@ -442,12 +442,12 @@ static QString defaultGsCmykProfilePath()
 
     // Firstly try Debian package layout
     const QString debianGsProfilePath = QString::fromLatin1("/usr/share/color/icc/ghostscript/") + gsProfileName;
-    if(QFileInfo(debianGsProfilePath).exists())
+    if(QFileInfo_exists(debianGsProfilePath))
         return debianGsProfilePath;
 
     // Secondly try Arch package layout
     const QString archGsProfilePath = QString::fromLatin1("/usr/share/ghostscript/iccprofiles/") + gsProfileName;
-    if(QFileInfo(archGsProfilePath).exists())
+    if(QFileInfo_exists(archGsProfilePath))
         return archGsProfilePath;
 
     // Thirdly try default versioned installation paths of Ghostscript
@@ -465,7 +465,7 @@ static QString defaultGsCmykProfilePath()
         for(QStringList::ConstIterator jt = entryList.constBegin(); jt != entryList.constEnd(); ++jt)
         {
             const QString fullGsProfilePath = QString::fromLatin1("%1/%2/iccprofiles/%3").arg(*it).arg(*jt).arg(gsProfileName);
-            if(QFileInfo(fullGsProfilePath).exists())
+            if(QFileInfo_exists(fullGsProfilePath))
                 return fullGsProfilePath;
         }
     }
@@ -479,7 +479,7 @@ static QString defaultCmykProfilePath()
     if(const char *defaultPathEnv = getenv("DEFAULT_CMYK_ICC"))
     {
         const QString filePath = QString::fromLocal8Bit(defaultPathEnv);
-        if(QFileInfo(filePath).exists())
+        if(QFileInfo_exists(filePath))
         {
             qDebug() << "[CmsUtils] Default CMYK profile:" << filePath;
             return filePath;
@@ -558,7 +558,7 @@ static QString defaultCmykProfilePath()
             ;
     if(const char *xdgDataDirs = getenv("XDG_DATA_DIRS"))
     {
-        const QStringList xdgDataDirsList = QString::fromLocal8Bit(xdgDataDirs).split(QChar::fromLatin1(':'));
+        const QStringList xdgDataDirsList = QString::fromLocal8Bit(xdgDataDirs).split(QChar::fromLatin1(':'), Qt_SkipEmptyParts);
         for(QStringList::ConstIterator it = xdgDataDirsList.constBegin(); it != xdgDataDirsList.constEnd(); ++it)
         {
             if(it->isEmpty())

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -790,13 +790,7 @@ public:
         }
 
         qDebug() << "IE version:" << ieVersion;
-        if(ieVersion.split(QChar::fromLatin1('.'),
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-                           Qt::SkipEmptyParts
-#else
-                           QString::SkipEmptyParts
-#endif
-                           ).first().toInt() < 9)
+        if(ieVersion.split(QChar::fromLatin1('.'), Qt_SkipEmptyParts).first().toInt() < 9)
         {
             qDebug() << "DecoderMSHTML unavailable, reason: Required IE >= 9";
             state = Qt::PartiallyChecked;

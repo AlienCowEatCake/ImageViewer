@@ -95,7 +95,7 @@ PayloadWithMetaData<QImage> readJ40File(const QString &filePath)
         memcpy(result.scanLine(y), j40_row_u8x4(pixels, y), result.width() * 4);
 #if (!USE_RGBA_8888)
 #if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
-    result = result.rgbSwapped();
+    QImage_rgbSwap(result);
 #else
     for(int y = 0; y < result.height(); ++y)
     {

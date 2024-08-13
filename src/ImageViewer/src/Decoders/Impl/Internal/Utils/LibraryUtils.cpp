@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -290,7 +290,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
         static const QStringList standardLibDirs = StandardLibraryPathProvider().getPaths();
         for(QStringList::ConstIterator dIt = standardLibDirs.constBegin(), dItEnd = standardLibDirs.constEnd(); dIt != dItEnd; ++dIt)
         {
-            if(!QFileInfo(*dIt).exists())
+            if(!QFileInfo_exists(*dIt))
                 continue;
             if(QFileInfo(*it).isAbsolute())
                 continue;
@@ -300,7 +300,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
             for(QStringList::ConstIterator lIt = libraries.constBegin(), lItEnd = libraries.constEnd(); lIt != lItEnd; ++lIt)
             {
                 const QString libraryPath = QDir(*dIt).filePath(*lIt);
-                if(!QFileInfo(libraryPath).exists())
+                if(!QFileInfo_exists(libraryPath))
                     continue;
                 if(!QLibrary::isLibrary(libraryPath))
                     continue;
@@ -320,7 +320,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
         static const QStringList standardLibDirs = StandardLibraryPathProvider().getPaths();
         for(QStringList::ConstIterator dIt = standardLibDirs.constBegin(), dItEnd = standardLibDirs.constEnd(); dIt != dItEnd; ++dIt)
         {
-            if(!QFileInfo(*dIt).exists())
+            if(!QFileInfo_exists(*dIt))
                 continue;
             if(QFileInfo(*it).isAbsolute())
                 continue;
@@ -330,7 +330,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
             for(QStringList::ConstIterator lIt = libraries.constBegin(), lItEnd = libraries.constEnd(); lIt != lItEnd; ++lIt)
             {
                 const QString libraryPath = QDir(*dIt).filePath(*lIt);
-                if(!QFileInfo(libraryPath).exists())
+                if(!QFileInfo_exists(libraryPath))
                     continue;
                 if(!QLibrary::isLibrary(libraryPath))
                     continue;
@@ -350,7 +350,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
         static const QStringList standardLibDirs = StandardLibraryPathProvider().getPaths();
         for(QStringList::ConstIterator dIt = standardLibDirs.constBegin(), dItEnd = standardLibDirs.constEnd(); dIt != dItEnd; ++dIt)
         {
-            if(!QFileInfo(*dIt).exists())
+            if(!QFileInfo_exists(*dIt))
                 continue;
             if(QFileInfo(*it).isAbsolute())
                 continue;
@@ -360,7 +360,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
             for(QStringList::ConstIterator lIt = libraries.constBegin(), lItEnd = libraries.constEnd(); lIt != lItEnd; ++lIt)
             {
                 const QString libraryPath = QDir(*dIt).filePath(*lIt);
-                if(!QFileInfo(libraryPath).exists())
+                if(!QFileInfo_exists(libraryPath))
                     continue;
                 if(!QLibrary::isLibrary(libraryPath))
                     continue;

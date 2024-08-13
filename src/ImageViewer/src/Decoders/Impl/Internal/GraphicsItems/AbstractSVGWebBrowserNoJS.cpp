@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -32,6 +32,8 @@
 #include <QStringList>
 #include <QVariant>
 #include <QXmlStreamAttributes>
+
+#include "Utils/Global.h"
 
 #include "../Utils/XmlStreamReader.h"
 
@@ -74,12 +76,7 @@ QRectF AbstractSVGWebBrowserNoJS::svgViewBoxAttribute()
     typedef QRegExp QRE;
 #endif
     const QStringList viewBoxData = reader.attributes().value(QString::fromLatin1("viewBox")).toString()
-            .split(QRE(QString::fromLatin1("\\s")),
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-                   Qt::SkipEmptyParts);
-#else
-                   QString::SkipEmptyParts);
-#endif
+            .split(QRE(QString::fromLatin1("\\s")), Qt_SkipEmptyParts);
     return (viewBoxData.size() == 4)
             ? QRectF(parseLength(viewBoxData.at(0)),
                      parseLength(viewBoxData.at(1)),

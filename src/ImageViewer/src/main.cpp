@@ -23,6 +23,7 @@
 #include <QStyleFactory>
 #include "GUI/MainController.h"
 #include "Utils/Application.h"
+#include "Utils/Global.h"
 #include "Utils/IconThemeManager.h"
 #include "Utils/LocalizationManager.h"
 #include "Utils/ThemeManager.h"
@@ -112,7 +113,7 @@ int main(int argc, char *argv[])
     for(int i = 1; i < argc; i++)
     {
         const QString filePath = QString::fromLocal8Bit(argv[i]);
-        if(QFileInfo(filePath).exists())
+        if(QFileInfo_exists(filePath))
             filePaths.append(filePath);
     }
     if(filePaths.empty() && app.hasLastOpenFilePath())

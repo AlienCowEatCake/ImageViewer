@@ -208,12 +208,7 @@ struct DecodersManager::Impl
 
     QStringList getBlacklistFromSettings() const
     {
-        return decodersSettins.value(DECODERS_SETTINGS_BLACKLIST_KEY, QString()).toString().split(QChar::fromLatin1(','),
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-                                                                                                  Qt::SkipEmptyParts);
-#else
-                                                                                                  QString::SkipEmptyParts);
-#endif
+        return decodersSettins.value(DECODERS_SETTINGS_BLACKLIST_KEY, QString()).toString().split(QChar::fromLatin1(','), Qt_SkipEmptyParts);
     }
 
     QStringList getUnregisteredFromBlacklist() const

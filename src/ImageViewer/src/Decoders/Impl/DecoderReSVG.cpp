@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -515,7 +515,7 @@ public:
                      reinterpret_cast<char*>(img.bits()));
 
 #if (!USE_RGBA_8888)
-        img = img.rgbSwapped();
+        QImage_rgbSwap(img);
 #endif
         return img;
 #undef USE_RGBA_8888

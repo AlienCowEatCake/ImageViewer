@@ -187,7 +187,7 @@ public:
                     line[x] = qRgba(qAlpha(line[x]), qRed(line[x]), qGreen(line[x]), qBlue(line[x]));
             }
 #else
-            frame = frame.rgbSwapped();
+            QImage_rgbSwap(frame);
 #endif
 #endif
 

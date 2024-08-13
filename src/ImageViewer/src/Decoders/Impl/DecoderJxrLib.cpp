@@ -667,24 +667,6 @@ QPair<QRgb, quint8> convertFromCMYKAtoCMYK8888PlusAlpha(const T *data, size_t al
     return qMakePair<QRgb, quint8>(static_cast<QRgb>(result), static_cast<quint8>(qBound<int>(0, static_cast<int>(255.0 * a), 255)));
 }
 
-void rgbSwap(QImage &image)
-{
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-    image.rgbSwap();
-#else
-    image = image.rgbSwapped();
-#endif
-}
-
-void convertTo(QImage &image, QImage::Format format)
-{
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
-    image.convertTo(format);
-#else
-    image = image.convertToFormat(format);
-#endif
-}
-
 void directCopy(PKImageDecode *decoder, const PKRect &rect, QImage &image, QImage::Format format)
 {
     image = QImage(rect.Width, rect.Height, format);
@@ -763,7 +745,7 @@ void copyViaBufferCMYKA(PKImageDecode *decoder, const PKRect &rect, QImage &imag
     if(!iccProfileData.isEmpty())
         ICCProfile(iccProfileData).applyToImage(&image);
     iccProfileData = QByteArray();
-    convertTo(image, QImage::Format_ARGB32);
+    QImage_convertTo(image, QImage::Format_ARGB32);
     image.setAlphaChannel(alphaChannel);
 Cleanup:
     if(Failed(err))
@@ -964,7 +946,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         directCopy(decoder.data(), rect, result, QImage::Format_BGR888);
 #else
         directCopy(decoder.data(), rect, result, QImage::Format_RGB888);
-        rgbSwap(result);
+        QImage_rgbSwap(result);
 #endif
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat24bppRGB) || IsEqualGUID(pixelFormat, GUID_PKPixelFormat24bpp3Channels))
@@ -975,7 +957,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
     {
 #if (USE_RGBX_8888)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBX8888);
-        rgbSwap(result);
+        QImage_rgbSwap(result);
 #else
         directCopy(decoder.data(), rect, result, QImage::Format_RGB32);
         postprocessARGB32(result, convertFromBGR<quint8>);
@@ -986,7 +968,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         decoder->WMP.wmiSCP.uAlphaMode = 2;
 #if (USE_RGBX_8888)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA8888);
-        rgbSwap(result);
+        QImage_rgbSwap(result);
 #else
         directCopy(decoder.data(), rect, result, QImage::Format_ARGB32);
         postprocessARGB32(result, convertFromBGRA<quint8>);
@@ -997,8 +979,8 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         decoder->WMP.wmiSCP.uAlphaMode = 2;
 #if (USE_RGBX_8888)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA8888_Premultiplied);
-        convertTo(result, QImage::Format_RGBA8888);
-        rgbSwap(result);
+        QImage_convertTo(result, QImage::Format_RGBA8888);
+        QImage_rgbSwap(result);
 #else
         directCopy(decoder.data(), rect, result, QImage::Format_ARGB32);
         postprocessARGB32(result, convertFromPBGRA<quint8>);
@@ -1032,7 +1014,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         decoder->WMP.wmiSCP.uAlphaMode = 2;
 #if (USE_RGBX_8888)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA8888_Premultiplied);
-        convertTo(result, QImage::Format_RGBA8888);
+        QImage_convertTo(result, QImage::Format_RGBA8888);
 #else
         directCopy(decoder.data(), rect, result, QImage::Format_ARGB32);
         postprocessARGB32(result, convertFromPRGBA<quint8>);
@@ -1072,7 +1054,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         decoder->WMP.wmiSCP.uAlphaMode = 2;
 #if (USE_RGBA_64)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA64_Premultiplied);
-        convertTo(result, QImage::Format_RGBA64);
+        QImage_convertTo(result, QImage::Format_RGBA64);
 #else
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 64 / 8, convertFromPRGBA<quint16>);
 #endif
@@ -1100,7 +1082,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         decoder->WMP.wmiSCP.uAlphaMode = 2;
 #if (USE_RGBX_32FPx4)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA32FPx4_Premultiplied);
-        convertTo(result, QImage::Format_RGBA32FPx4);
+        QImage_convertTo(result, QImage::Format_RGBA32FPx4);
         postprocessscRgbFloat(result);
 #else
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 128 / 8, convertFromPRGBAFloat<float>);
@@ -1148,7 +1130,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         decoder->WMP.wmiSCP.uAlphaMode = 2;
 #if (USE_RGBX_32FPx4)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA16FPx4);
-        convertTo(result, QImage::Format_RGBA32FPx4);
+        QImage_convertTo(result, QImage::Format_RGBA32FPx4);
         postprocessscRgbFloat(result);
 #else
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 64 / 8, convertFromRGBAHalf<U16>);
@@ -1158,7 +1140,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
     {
 #if (USE_RGBX_32FPx4)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA16FPx4); /// @todo Format_RGBX16FPx4 completely black with Qt 6.8.0-beta2
-        convertTo(result, QImage::Format_RGBX32FPx4);
+        QImage_convertTo(result, QImage::Format_RGBX32FPx4);
         postprocessscRgbFloat(result);
 #else
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 64 / 8, convertFromRGBHalf<U16>);

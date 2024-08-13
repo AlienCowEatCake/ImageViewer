@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -368,7 +368,7 @@ private:
                     memcpy(frame.scanLine(row), gifFrame->RasterBits + row * frameRect.width(), static_cast<size_t>(frameRect.width()));
             }
 
-            frame = frame.convertToFormat(QImage::Format_ARGB32);
+            QImage_convertTo(frame, QImage::Format_ARGB32);
             if(iccProfile)
                 iccProfile->applyToImage(&frame);
             frame = compositor.compositeFrame(frame, frameRect, frameControl.disposeType, FramesCompositor::BLEND_OVER);
