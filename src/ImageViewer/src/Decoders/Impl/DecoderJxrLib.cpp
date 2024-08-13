@@ -287,7 +287,7 @@ ERR getIccProfileData(PKImageDecode *decoder, QByteArray *profileData)
     if(size > 0)
     {
         LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
-        profileData->resize(size, 0);
+        profileData->resize(size);
         Call(decoder->GetColorContext(decoder, reinterpret_cast<U8*>(profileData->data()), &size));
     }
 Cleanup:
@@ -332,7 +332,7 @@ float scRgbFloatTosRgbFloat(float f)
     else if(f <= 0.0031308f)
         return qBound(0.0f, f * 12.92f, 1.0f);
     else if(f < 1.0f)
-        return qBound(0.0f, ((1.055f * static_cast<float>(std::pow(f, 1.0 / 2.4))) - 0.055f), 1.0f);
+        return qBound(0.0f, ((1.055f * static_cast<float>(std::pow(static_cast<double>(f), 1.0 / 2.4))) - 0.055f), 1.0f);
     else
         return 1.0f;
 }
@@ -779,7 +779,7 @@ void postprocessscRgbFloat(QImage &image)
 
 PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 {
-    QScopedPointer<PKCodecFactory, JxrReleaseDeleter<PKCodecFactory>> codecFactory;
+    QScopedPointer<PKCodecFactory, JxrReleaseDeleter<PKCodecFactory> > codecFactory;
     {
         PKCodecFactory *codecFactoryData = Q_NULLPTR;
         const ERR err = PKCreateCodecFactory(&codecFactoryData, WMP_SDK_VERSION);
@@ -791,7 +791,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         codecFactory.reset(codecFactoryData);
     }
 
-    QScopedPointer<PKImageDecode, JxrReleaseDeleter<PKImageDecode>> decoder;
+    QScopedPointer<PKImageDecode, JxrReleaseDeleter<PKImageDecode> > decoder;
     {
         const QByteArray filename = filePath.toLocal8Bit();
         PKImageDecode *decoderData = Q_NULLPTR;
@@ -1360,6 +1360,10 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 
     if(!iccProfileData.isEmpty())
         ICCProfile(iccProfileData).applyToImage(&result);
+
+    // Some image formats can't be rendered successfully
+    if(result.format() != QImage::Format_ARGB32)
+        QImage_convertTo(result, QImage::Format_ARGB32);
 
     return PayloadWithMetaData<QImage>(result, metaData);
 }

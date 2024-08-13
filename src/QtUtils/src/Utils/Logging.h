@@ -41,17 +41,10 @@
 #define LOGGING_LINE QString()
 #endif
 
-#if defined (__func__)
-#define LOGGING_FUNC QString::fromLatin1(__func__)
-#elif defined (__FUNCTION__)
+//#define LOGGING_FUNC QString::fromLatin1(__func__)
 #define LOGGING_FUNC QString::fromLatin1(__FUNCTION__)
-#elif defined (__PRETTY_FUNCTION__)
-#define LOGGING_FUNC QString::fromLatin1(__PRETTY_FUNCTION__)
-#elif defined (__FUNCSIG__)
-#define LOGGING_FUNC QString::fromLatin1(__FUNCSIG__)
-#else
-#define LOGGING_FUNC QString()
-#endif
+//#define LOGGING_FUNC QString::fromLatin1(__PRETTY_FUNCTION__)
+//#define LOGGING_FUNC QString::fromLatin1(__FUNCSIG__)
 
 #define LOGGING_CTXQS(QS)   QString::fromLatin1("[%1:%2:%3]:").arg((LOGGING_FILE), (LOGGING_LINE), (QS)).toLatin1().data()
 #define LOGGING_CTXS(S)     LOGGING_CTXQS(QString::fromLatin1(S))
