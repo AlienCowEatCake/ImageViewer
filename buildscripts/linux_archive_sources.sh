@@ -17,6 +17,8 @@ tar -xvpf "${PROJECT}-${VERSION}.tar.xz"
 find "${PROJECT}-${VERSION}/src/ThirdParty" -mindepth 2 -maxdepth 2 -type d -exec rm -rf \{\} \;
 find "${PROJECT}-${VERSION}/src/ThirdParty" -mindepth 2 -maxdepth 2 -type f -name '*.pro' -delete
 rm -rf "${PROJECT}-${VERSION}/src/ThirdParty/ThirdParty.pro"
+# Remove fallback ICC profiles
+rm -rf "${PROJECT}-${VERSION}/src/ImageViewer/resources/iccprofiles"
 # Remove buildscripts
 rm -rf "${PROJECT}-${VERSION}/buildscripts"
 # Remove manual testing data
