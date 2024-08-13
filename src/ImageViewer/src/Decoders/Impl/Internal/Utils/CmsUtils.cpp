@@ -38,6 +38,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QImage>
 #include <QByteArray>
 #include <QSysInfo>
@@ -433,8 +434,58 @@ void ICCProfile::applyToImage(QImage *image)
 #endif
 }
 
+#if !defined (HAS_FALLBACK_ICCPROFILES)
+static QString defaultGsCmykProfilePath()
+{
+#if !defined (Q_OS_WIN)
+    const QString gsProfileName = QString::fromLatin1("default_cmyk.icc");
+
+    // Firstly try Debian package layout
+    const QString debianGsProfilePath = QString::fromLatin1("/usr/share/color/icc/ghostscript/") + gsProfileName;
+    if(QFileInfo(debianGsProfilePath).exists())
+        return debianGsProfilePath;
+
+    // Secondly try Arch package layout
+    const QString archGsProfilePath = QString::fromLatin1("/usr/share/ghostscript/iccprofiles/") + gsProfileName;
+    if(QFileInfo(archGsProfilePath).exists())
+        return archGsProfilePath;
+
+    // Thirdly try default versioned installation paths of Ghostscript
+    const QStringList gsSharePrefixes = QStringList()
+            << QString::fromLatin1("/usr/local/share/ghostscript")
+            << QString::fromLatin1("/usr/share/ghostscript")
+            ;
+    for(QStringList::ConstIterator it = gsSharePrefixes.constBegin(); it != gsSharePrefixes.constEnd(); ++it)
+    {
+        const QDir gsSharePrefix(*it);
+        if(!gsSharePrefix.exists())
+            continue;
+
+        const QStringList entryList = gsSharePrefix.entryList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Readable);
+        for(QStringList::ConstIterator jt = entryList.constBegin(); jt != entryList.constEnd(); ++jt)
+        {
+            const QString fullGsProfilePath = QString::fromLatin1("%1/%2/iccprofiles/%3").arg(*it).arg(*jt).arg(gsProfileName);
+            if(QFileInfo(fullGsProfilePath).exists())
+                return fullGsProfilePath;
+        }
+    }
+#endif
+    return QString();
+}
+#endif
+
 static QString defaultCmykProfilePath()
 {
+    if(const char *defaultPathEnv = getenv("DEFAULT_CMYK_ICC"))
+    {
+        const QString filePath = QString::fromLocal8Bit(defaultPathEnv);
+        if(QFileInfo(filePath).exists())
+        {
+            qDebug() << "[CmsUtils] Default CMYK profile:" << filePath;
+            return filePath;
+        }
+    }
+
     QString filePath;
 #if defined (HAS_FALLBACK_ICCPROFILES)
     filePath = QString::fromLatin1(":/iccprofiles/ISOcoated_v2_bas.ICC");
@@ -452,6 +503,8 @@ static QString defaultCmykProfilePath()
             << QString::fromLatin1("ISOcoated_v2_300_eci.icc")
             // Adobe Photoshop alternate
             << QString::fromLatin1("CoatedFOGRA39.icc")
+            // FOGRA39 version from TeX colorprofiles package
+            << QString::fromLatin1("FOGRA39L_coated.icc")
             ;
 #if defined (Q_OS_WIN)
     cmykProfiles.append(QString::fromLatin1("RSWOP.icm"));
@@ -497,17 +550,46 @@ static QString defaultCmykProfilePath()
         localShare = QString::fromLocal8Bit(xdgDataHome);
     else
         localShare = QDir::homePath() + QString::fromLatin1("/.local/share");
-    const QStringList profilePlaces = QStringList()
-            << localShare + QString::fromLatin1("/color/icc")
-            << QDir::homePath() + QString::fromLatin1("/.color/icc")
-            << QString::fromLatin1("/usr/local/share/color/icc")
-            << QString::fromLatin1("/usr/share/color/icc")
+
+    QStringList dataDirs = QStringList()
+            << localShare
+            << QString::fromLatin1("/usr/local/share")
+            << QString::fromLatin1("/usr/share")
             ;
+    if(const char *xdgDataDirs = getenv("XDG_DATA_DIRS"))
+    {
+        const QStringList xdgDataDirsList = QString::fromLocal8Bit(xdgDataDirs).split(QChar::fromLatin1(':'));
+        for(QStringList::ConstIterator it = xdgDataDirsList.constBegin(); it != xdgDataDirsList.constEnd(); ++it)
+        {
+            if(it->isEmpty())
+                continue;
+            const QDir xdgDataDir(*it);
+            if(!xdgDataDir.exists())
+                continue;
+            const QString xdgDataDirPath = xdgDataDir.absolutePath();
+            if(dataDirs.contains(xdgDataDirPath))
+                continue;
+            dataDirs.append(xdgDataDirPath);
+        }
+    }
+
+    const QStringList dataSubDirs = QStringList()
+            << QString::fromLatin1("/color/icc")
+            << QString::fromLatin1("/color/icc/colord")
+            << QString::fromLatin1("/texlive/texmf-dist/tex/generic/colorprofiles")
+            ;
+
+    QStringList profilePlaces = QStringList()
+            << QDir::homePath() + QString::fromLatin1("/.color/icc")
+            ;
+    for(QStringList::ConstIterator it = dataDirs.constBegin(); it != dataDirs.constEnd(); ++it)
+        for(QStringList::ConstIterator jt = dataSubDirs.constBegin(); jt != dataSubDirs.constEnd(); ++jt)
+            profilePlaces.append(*it + *jt);
 #endif
     QList<std::pair<QString, QStringList> > entries;
     for(QStringList::ConstIterator it = profilePlaces.constBegin(); it != profilePlaces.constEnd() && filePath.isEmpty(); ++it)
     {
-        const QDir &profilePlace(*it);
+        const QDir profilePlace(*it);
         if(profilePlace.exists())
         {
             QStringList entryList = profilePlace.entryList(QDir::Files | QDir::Readable);
@@ -529,6 +611,14 @@ static QString defaultCmykProfilePath()
                 }
             }
         }
+    }
+
+    // Also try to find Ghostscript profile
+    if(filePath.isEmpty())
+    {
+        filePath = defaultGsCmykProfilePath();
+        if(!filePath.isEmpty())
+            qDebug() << "[CmsUtils] Default CMYK profile:" << filePath;
     }
 #endif
     return filePath;
