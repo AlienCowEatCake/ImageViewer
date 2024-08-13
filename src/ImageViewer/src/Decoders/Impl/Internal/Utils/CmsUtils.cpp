@@ -408,11 +408,27 @@ void ICCProfile::applyToImage(QImage *image)
 
 #elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+    QImage alphaChannel;
     if(m_impl->inColorSpace.colorModel() == QColorSpace::ColorModel::Cmyk && image->format() != QImage::Format_CMYK8888)
+    {
+        if(image->hasAlphaChannel())
+            alphaChannel = image->convertToFormat(QImage::Format_Alpha8);
         *image = image->convertToFormat(QImage::Format_CMYK8888);
+    }
 #endif
+
     image->setColorSpace(m_impl->inColorSpace);
     image->convertToColorSpace(m_impl->outColorSpace);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+    if(!alphaChannel.isNull())
+    {
+        if(image->hasAlphaChannel())
+            image->convertTo(QImage::Format_RGB32);
+        image->convertTo(QImage::Format_ARGB32);
+        image->setAlphaChannel(alphaChannel);
+    }
+#endif
 
 #endif
 }

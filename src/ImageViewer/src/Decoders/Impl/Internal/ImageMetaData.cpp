@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -52,6 +52,11 @@
 #include "Utils/MappedBuffer.h"
 
 namespace {
+
+const QString TYPE_CUSTOM = QString::fromLatin1("Custom");
+const QString TAG_CUSTOM_ORIENTATION = QString::fromLatin1("Orientation");
+const QString TAG_CUSTOM_X_RESOLUTION = QString::fromLatin1("XResolution");
+const QString TAG_CUSTOM_Y_RESOLUTION = QString::fromLatin1("YResolution");
 
 #if defined (HAS_EXIV2)
 
@@ -732,6 +737,17 @@ void ImageMetaData::addCustomEntry(const QString &type, const IImageMetaData::Me
         list.append(entry);
 }
 
+void ImageMetaData::addCustomOrientation(quint16 orientation)
+{
+    addCustomEntry(TYPE_CUSTOM, TAG_CUSTOM_ORIENTATION, QString::number(orientation));
+}
+
+void ImageMetaData::addCustomDpi(qreal dpiX, qreal dpiY)
+{
+    addCustomEntry(TYPE_CUSTOM, TAG_CUSTOM_X_RESOLUTION, QString::number(dpiX));
+    addCustomEntry(TYPE_CUSTOM, TAG_CUSTOM_Y_RESOLUTION, QString::number(dpiY));
+}
+
 QList<IImageMetaData::MetaDataType> ImageMetaData::types()
 {
     m_impl->ensureMetaDataFilled();
@@ -746,6 +762,24 @@ IImageMetaData::MetaDataEntryList ImageMetaData::metaData(const IImageMetaData::
 
 quint16 ImageMetaData::orientation() const
 {
+    const IImageMetaData::MetaDataEntryListMap::ConstIterator customEntryList = m_impl->entryListMap.find(TYPE_CUSTOM);
+    if(customEntryList != m_impl->entryListMap.constEnd())
+    {
+        for(IImageMetaData::MetaDataEntryList::ConstIterator it = customEntryList->constBegin(); it != customEntryList->constEnd(); ++it)
+        {
+            if(it->tagName == TAG_CUSTOM_ORIENTATION)
+            {
+                bool ok = false;
+                uint result = it->value.toUInt(&ok);
+                if(ok && result >= 1 && result <= 8)
+                {
+                    qDebug() << "[CUSTOM] orientation =" << result;
+                    return static_cast<quint16>(result);
+                }
+            }
+        }
+    }
+
 #if defined (HAS_EXIV2)
     exiv2Initialize();
     QList<const Exiv2::ExifData*> exiv2ExifDataList;
@@ -794,6 +828,36 @@ quint16 ImageMetaData::orientation() const
 
 QPair<qreal, qreal> ImageMetaData::dpi() const
 {
+    const IImageMetaData::MetaDataEntryListMap::ConstIterator customEntryList = m_impl->entryListMap.find(TYPE_CUSTOM);
+    if(customEntryList != m_impl->entryListMap.constEnd())
+    {
+        double resX = -1;
+        double resY = -1;
+        for(IImageMetaData::MetaDataEntryList::ConstIterator it = customEntryList->constBegin(); it != customEntryList->constEnd(); ++it)
+        {
+            if(it->tagName == TAG_CUSTOM_X_RESOLUTION)
+            {
+                bool ok = false;
+                resX = it->value.toDouble(&ok);
+                if(!ok)
+                    resX = -1;
+            }
+            else if(it->tagName == TAG_CUSTOM_Y_RESOLUTION)
+            {
+                bool ok = false;
+                resY = it->value.toDouble(&ok);
+                if(!ok)
+                    resY = -1;
+            }
+        }
+        if(resX > 0 && resY > 0)
+        {
+            const QPair<qreal, qreal> dpi = qMakePair<qreal, qreal>(static_cast<qreal>(resX), static_cast<qreal>(resY));
+            qDebug() << "[CUSTOM] dpi =" << dpi.first << dpi.second;
+            return dpi;
+        }
+    }
+
 #if defined (HAS_EXIV2)
     exiv2Initialize();
     QList<const Exiv2::ExifData*> exiv2ExifDataList;

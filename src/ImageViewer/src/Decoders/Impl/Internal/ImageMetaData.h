@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -50,6 +50,9 @@ public:
     void addExifEntry(const QString &type, int tag, const QString &tagString, const QString &value);
     void addCustomEntry(const QString &type, const QString &tag, const QString &value);
     void addCustomEntry(const QString &type, const MetaDataEntry &entry);
+
+    void addCustomOrientation(quint16 orientation);
+    void addCustomDpi(qreal dpiX, qreal dpiY);
 
 public: // IImageMetaData
     QList<MetaDataType> types() Q_DECL_OVERRIDE;

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,6 +17,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <cmath>
 #include <cstring>
 #include <limits>
 
@@ -38,6 +39,7 @@
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
 #include "Internal/PayloadWithMetaData.h"
+#include "Internal/Utils/CmsUtils.h"
 
 #if !defined (__ANSI__)
 #define __ANSI__
@@ -50,8 +52,27 @@
 #undef max
 #endif
 
+#define USE_RGBX_8888       (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+#define USE_RGB_30          (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
+#define USE_GRAYSCALE_8     (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+#define USE_RGBA_64         (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#define USE_GRAYSCALE_16    (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+#define USE_BGR_888         (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+#define USE_RGBX_32FPx4     (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+#define USE_CMYK_8888       (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+
 namespace
 {
+
+template<typename T>
+struct JxrReleaseDeleter
+{
+    static inline void cleanup(T *data)
+    {
+        if(data)
+            data->Release(&data);
+    }
+};
 
 const char *errorToString(ERR nErrorCode)
 {
@@ -263,6 +284,24 @@ Cleanup:
     return err;
 }
 
+ERR getIccProfileData(PKImageDecode *decoder, QByteArray *profileData)
+{
+    *profileData = QByteArray();
+    ERR err = WMP_errSuccess;
+    U32 size = 0;
+    Call(decoder->GetColorContext(decoder, Q_NULLPTR, &size));
+    if(size > 0)
+    {
+        qDebug() << "Found ICCP metadata";
+        profileData->resize(size, 0);
+        Call(decoder->GetColorContext(decoder, reinterpret_cast<U8*>(profileData->data()), &size));
+    }
+Cleanup:
+    if(Failed(err))
+        *profileData = QByteArray();
+    return err;
+}
+
 QString toString(const DPKPROPVARIANT& prop)
 {
     switch(prop.vt)
@@ -291,11 +330,111 @@ QString toString(const DPKPROPVARIANT& prop)
     return QString();
 }
 
+float scRgbFloatTosRgbFloat(float f)
+{
+    // convert from linear scRGB to non-linear sRGB
+    if(f <= 0)
+        return 0.0f;
+    else if(f <= 0.0031308f)
+        return qBound(0.0f, f * 12.92f, 1.0f);
+    else if(f < 1.0f)
+        return qBound(0.0f, ((1.055f * static_cast<float>(std::pow(f, 1.0 / 2.4))) - 0.055f), 1.0f);
+    else
+        return 1.0f;
+}
+
+float scRgbAlphaFloatTosRgbAlphaFloat(float f)
+{
+    // alpha is converted differently than RGB in scRGB
+    return qBound(0.0f, f, 1.0f);
+}
+
+U8 floatToU8(float f)
+{
+    return static_cast<U8>(scRgbFloatTosRgbFloat(f) * 255.0f);
+}
+
+U8 alphaFloatToU8(float f)
+{
+    return static_cast<U8>(scRgbAlphaFloatTosRgbAlphaFloat(f) * 255.0f);
+}
+
+U32 halfToFloat(U16 u16)
+{
+    // 1s5e10m -> 1s8e23m
+    const U32 s = (u16 >> 15) & 0x0001;
+    const U32 e = (u16 >> 10) & 0x001f;
+    const U32 m = (u16 >>  0) & 0x03ff;
+
+    if(0 == e) // 0, denorm
+        return s << 31;
+    else if(~(/*~0*/0xffffffff << 5) == e) // inf, snan, qnan
+        return (s << 31) | ~(/*~0*/0xffffffff << 8) << 23 | (m << 13);
+    return (s << 31) | ((e - 15 + 127) << 23) | (m << 13); // norm
+}
+
+U8 halfToU8(U16 u16)
+{
+    const U32 f = halfToFloat(u16);
+    return floatToU8(*reinterpret_cast<const float*>(&f));
+}
+
+U8 alphaHalfToU8(U16 u16)
+{
+    const U32 f = halfToFloat(u16);
+    return alphaFloatToU8(*reinterpret_cast<const float*>(&f));
+}
+
+float fixedToFloat(I16 i16)
+{
+    const float fltCvtFactor = 1.0f / (1 << 13);
+    return i16 * fltCvtFactor;
+}
+
+float fixedToFloat(I32 i32)
+{
+    const float fltCvtFactor = 1.0f / (1 << 24);
+    return i32 * fltCvtFactor;
+}
+
+template<typename T>
+U8 fixedToU8(T data)
+{
+    return floatToU8(fixedToFloat(data));
+}
+
+template<typename T>
+U8 alphaFixedToU8(T data)
+{
+    return alphaFloatToU8(fixedToFloat(data));
+}
+
 template<typename T>
 QRgb convertFromGray(const T *data)
 {
     const double scale = static_cast<double>(std::numeric_limits<T>::max());
     const int c = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale), 255);
+    return qRgb(c, c, c);
+}
+
+template<typename T>
+QRgb convertFromGrayFloat(const T *data)
+{
+    const int c = floatToU8(*reinterpret_cast<const float*>(data));
+    return qRgb(c, c, c);
+}
+
+template<typename T>
+QRgb convertFromGrayHalf(const T *data)
+{
+    const int c = halfToU8(*reinterpret_cast<const U16*>(data));
+    return qRgb(c, c, c);
+}
+
+template<typename T>
+QRgb convertFromGrayFixed(const T *data)
+{
+    const int c = qBound<int>(0, static_cast<int>(fixedToU8(data[0])), 255);
     return qRgb(c, c, c);
 }
 
@@ -310,13 +449,157 @@ QRgb convertFromRGB(const T *data)
 }
 
 template<typename T>
+QRgb convertFromRGBFloat(const T *data)
+{
+    const float *pixelData = reinterpret_cast<const float*>(data);
+    return qRgb(floatToU8(pixelData[0]), floatToU8(pixelData[1]), floatToU8(pixelData[2]));
+}
+
+template<typename T>
+QRgb convertFromRGBHalf(const T *data)
+{
+    const U16 *pixelData = reinterpret_cast<const U16*>(data);
+    return qRgb(halfToU8(pixelData[0]), halfToU8(pixelData[1]), halfToU8(pixelData[2]));
+}
+
+template<typename T>
+QRgb convertFromRGBFixed(const T *data)
+{
+    const int r = qBound<int>(0, static_cast<int>(fixedToU8(data[0])), 255);
+    const int g = qBound<int>(0, static_cast<int>(fixedToU8(data[1])), 255);
+    const int b = qBound<int>(0, static_cast<int>(fixedToU8(data[2])), 255);
+    return qRgb(r, g, b);
+}
+
+template<typename T>
+QRgb convertFromRGB101010(const T *data)
+{
+    const int maxValue = (1 << 10) - 1;
+    const double scale = static_cast<double>(maxValue);
+    const U32 *pixelData = reinterpret_cast<const U32*>(data);
+    const int r = qBound<int>(0, static_cast<int>(255.0 * ((pixelData[0] >> 20) & maxValue) / scale), 255);
+    const int g = qBound<int>(0, static_cast<int>(255.0 * ((pixelData[0] >> 10) & maxValue) / scale), 255);
+    const int b = qBound<int>(0, static_cast<int>(255.0 * ((pixelData[0] >>  0) & maxValue) / scale), 255);
+    return qRgb(r, g, b);
+}
+
+template<typename T>
+QRgb convertFromRGBE(const T *data)
+{
+    const U8 *pixelData = reinterpret_cast<const U8*>(data);
+
+    // First read the exponent
+    const U8 rawExp = pixelData[3];
+    if(rawExp == 0)
+        return qRgb(0, 0, 0);
+
+    const I32 adjExp = static_cast<I32>(rawExp) - 128 - 8; // Can be negative
+    float fltExp;
+    if(adjExp > -32 && adjExp < 32)
+    {
+        fltExp = static_cast<float>(static_cast<U32>(1) << std::abs(adjExp));
+        if(adjExp < 0)
+            fltExp = 1.0f / fltExp;
+    }
+    else
+    {
+        fltExp = static_cast<float>(std::ldexp(1.0f, adjExp));
+    }
+
+    const int r = floatToU8(pixelData[0] * fltExp);
+    const int g = floatToU8(pixelData[1] * fltExp);
+    const int b = floatToU8(pixelData[2] * fltExp);
+    return qRgb(r, g, b);
+}
+
+template<typename T>
 QRgb convertFromRGBA(const T *data)
 {
     const double scale = static_cast<double>(std::numeric_limits<T>::max());
-    const int a = qBound<int>(0, static_cast<int>(255.0 * data[3] / scale), 255);
     const int r = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale), 255);
     const int g = qBound<int>(0, static_cast<int>(255.0 * data[1] / scale), 255);
     const int b = qBound<int>(0, static_cast<int>(255.0 * data[2] / scale), 255);
+    const int a = qBound<int>(0, static_cast<int>(255.0 * data[3] / scale), 255);
+    return qRgba(r, g, b, a);
+}
+
+template<typename T>
+QRgb convertFromRGBAFloat(const T *data)
+{
+    const float *pixelData = reinterpret_cast<const float*>(data);
+    return qRgba(floatToU8(pixelData[0]), floatToU8(pixelData[1]), floatToU8(pixelData[2]), alphaFloatToU8(pixelData[3]));
+}
+
+template<typename T>
+QRgb convertFromRGBAHalf(const T *data)
+{
+    const U16 *pixelData = reinterpret_cast<const U16*>(data);
+    return qRgba(halfToU8(pixelData[0]), halfToU8(pixelData[1]), halfToU8(pixelData[2]), alphaHalfToU8(pixelData[3]));
+}
+
+template<typename T>
+QRgb convertFromRGBAFixed(const T *data)
+{
+    const int r = qBound<int>(0, static_cast<int>(fixedToU8(data[0])), 255);
+    const int g = qBound<int>(0, static_cast<int>(fixedToU8(data[1])), 255);
+    const int b = qBound<int>(0, static_cast<int>(fixedToU8(data[2])), 255);
+    const int a = qBound<int>(0, static_cast<int>(alphaFixedToU8(data[3])), 255);
+    return qRgba(r, g, b, a);
+}
+
+template<typename T>
+QRgb convertFromPRGBA(const T *data)
+{
+    const double scale = static_cast<double>(std::numeric_limits<T>::max());
+    const double alphaScale = data[3] > 0.0 ? (scale / static_cast<double>(data[3])) : 1.0;
+    const int r = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale * alphaScale), 255);
+    const int g = qBound<int>(0, static_cast<int>(255.0 * data[1] / scale * alphaScale), 255);
+    const int b = qBound<int>(0, static_cast<int>(255.0 * data[2] / scale * alphaScale), 255);
+    const int a = qBound<int>(0, static_cast<int>(255.0 * data[3] / scale), 255);
+    return qRgba(r, g, b, a);
+}
+
+template<typename T>
+QRgb convertFromPRGBAFloat(const T *data)
+{
+    const float *pixelData = reinterpret_cast<const float*>(data);
+    const float a = pixelData[3];
+    const float r = a > 0.0f ? (pixelData[0] / a) : pixelData[0];
+    const float g = a > 0.0f ? (pixelData[1] / a) : pixelData[1];
+    const float b = a > 0.0f ? (pixelData[2] / a) : pixelData[2];
+    return qRgba(floatToU8(r), floatToU8(g), floatToU8(b), alphaFloatToU8(a));
+}
+
+template<typename T>
+QRgb convertFromBGR(const T *data)
+{
+    const double scale = static_cast<double>(std::numeric_limits<T>::max());
+    const int b = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale), 255);
+    const int g = qBound<int>(0, static_cast<int>(255.0 * data[1] / scale), 255);
+    const int r = qBound<int>(0, static_cast<int>(255.0 * data[2] / scale), 255);
+    return qRgb(r, g, b);
+}
+
+template<typename T>
+QRgb convertFromBGRA(const T *data)
+{
+    const double scale = static_cast<double>(std::numeric_limits<T>::max());
+    const int b = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale), 255);
+    const int g = qBound<int>(0, static_cast<int>(255.0 * data[1] / scale), 255);
+    const int r = qBound<int>(0, static_cast<int>(255.0 * data[2] / scale), 255);
+    const int a = qBound<int>(0, static_cast<int>(255.0 * data[3] / scale), 255);
+    return qRgba(r, g, b, a);
+}
+
+template<typename T>
+QRgb convertFromPBGRA(const T *data)
+{
+    const double scale = static_cast<double>(std::numeric_limits<T>::max());
+    const double alphaScale = data[3] > 0.0 ? (scale / static_cast<double>(data[3])) : 1.0;
+    const int b = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale * alphaScale), 255);
+    const int g = qBound<int>(0, static_cast<int>(255.0 * data[1] / scale * alphaScale), 255);
+    const int r = qBound<int>(0, static_cast<int>(255.0 * data[2] / scale * alphaScale), 255);
+    const int a = qBound<int>(0, static_cast<int>(255.0 * data[3] / scale), 255);
     return qRgba(r, g, b, a);
 }
 
@@ -335,6 +618,23 @@ QRgb convertFromCMYK(const T *data)
 }
 
 template<typename T>
+QRgb convertFromCMYKtoCMYK8888(const T *data)
+{
+    const double scale = static_cast<double>(std::numeric_limits<T>::max());
+    const double c = data[0] / scale;
+    const double m = data[1] / scale;
+    const double y = data[2] / scale;
+    const double k = data[3] / scale;
+    QRgb result = 0;
+    quint8 *resultData = reinterpret_cast<quint8*>(&result);
+    resultData[0] = qBound<int>(0, static_cast<int>(255.0 * c), 255);
+    resultData[1] = qBound<int>(0, static_cast<int>(255.0 * m), 255);
+    resultData[2] = qBound<int>(0, static_cast<int>(255.0 * y), 255);
+    resultData[3] = qBound<int>(0, static_cast<int>(255.0 * k), 255);
+    return result;
+}
+
+template<typename T, size_t alphaIndex>
 QRgb convertFromCMYKA(const T *data)
 {
     const double scale = static_cast<double>(std::numeric_limits<T>::max());
@@ -342,114 +642,215 @@ QRgb convertFromCMYKA(const T *data)
     const double m = data[1] / scale;
     const double y = data[2] / scale;
     const double k = data[3] / scale;
-    const int a = qBound<int>(0, static_cast<int>(255.0 * data[4] / scale), 255);
+    const int a = qBound<int>(0, static_cast<int>(255.0 * data[alphaIndex] / scale), 255);
     const int r = qBound<int>(0, static_cast<int>(255.0 * (1.0 - c) * (1.0 - k)), 255);
     const int g = qBound<int>(0, static_cast<int>(255.0 * (1.0 - m) * (1.0 - k)), 255);
     const int b = qBound<int>(0, static_cast<int>(255.0 * (1.0 - y) * (1.0 - k)), 255);
     return qRgba(r, g, b, a);
 }
 
-QRgb convertFrom8bppGray(const uchar *data)
+template<typename T>
+QPair<QRgb, quint8> convertFromCMYKAtoCMYK8888PlusAlpha(const T *data, size_t alphaIndex)
 {
-    return convertFromGray(data);
+    const double scale = static_cast<double>(std::numeric_limits<T>::max());
+    const double c = data[0] / scale;
+    const double m = data[1] / scale;
+    const double y = data[2] / scale;
+    const double k = data[3] / scale;
+    const double a = data[alphaIndex] / scale;
+    QRgb result = 0;
+    quint8 *resultData = reinterpret_cast<quint8*>(&result);
+    resultData[0] = qBound<int>(0, static_cast<int>(255.0 * c), 255);
+    resultData[1] = qBound<int>(0, static_cast<int>(255.0 * m), 255);
+    resultData[2] = qBound<int>(0, static_cast<int>(255.0 * y), 255);
+    resultData[3] = qBound<int>(0, static_cast<int>(255.0 * k), 255);
+    return qMakePair<QRgb, quint8>(static_cast<QRgb>(result), static_cast<quint8>(qBound<int>(0, static_cast<int>(255.0 * a), 255)));
 }
 
-QRgb convertFrom24bppRGB(const uchar *data)
+void rgbSwap(QImage &image)
 {
-    return convertFromRGB(data);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    image.rgbSwap();
+#else
+    image = image.rgbSwapped();
+#endif
 }
 
-QRgb convertFrom32bppRGBA(const uchar *data)
+void convertTo(QImage &image, QImage::Format format)
 {
-    return convertFromRGBA(data);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+    image.convertTo(format);
+#else
+    image = image.convertToFormat(format);
+#endif
 }
 
-QRgb convertFrom32bppCMYK(const uchar *data)
+void directCopy(PKImageDecode *decoder, const PKRect &rect, QImage &image, QImage::Format format)
 {
-    return convertFromCMYK(data);
+    image = QImage(rect.Width, rect.Height, format);
+    if(image.isNull())
+    {
+        qWarning() << "Invalid image size";
+        return;
+    }
+    ERR err = WMP_errSuccess;
+    Call(decoder->Copy(decoder, &rect, image.bits(), image.bytesPerLine()));
+Cleanup:
+    if(Failed(err))
+        image = QImage();
 }
 
-QRgb convertFrom64bppCMYK(const uchar *data)
+template<typename T>
+void copyViaBuffer(PKImageDecode *decoder, const PKRect &rect, QImage &image, QImage::Format format, size_t bytesPerPixel, QRgb(*func)(const T*))
 {
-    return convertFromCMYK(reinterpret_cast<const quint16*>(data));
+    image = QImage(rect.Width, rect.Height, format);
+    if(image.isNull())
+    {
+        qWarning() << "Invalid image size";
+        return;
+    }
+    const size_t bytesPerLine = image.width() * bytesPerPixel;
+    QByteArray buffer;
+    buffer.resize(image.height() * bytesPerLine);
+    ERR err = WMP_errSuccess;
+    Call(decoder->Copy(decoder, &rect, reinterpret_cast<U8*>(buffer.data()), static_cast<U32>(bytesPerLine)));
+    for(int y = 0; y < image.height(); ++y)
+    {
+        QRgb *outScanLine = reinterpret_cast<QRgb*>(image.scanLine(y));
+        const quint8 *inScanLine = reinterpret_cast<const quint8*>(buffer.data() + bytesPerLine * y);
+        for(int x = 0; x < image.width(); ++x)
+            outScanLine[x] = func(reinterpret_cast<const T*>(inScanLine + x * bytesPerPixel));
+    }
+Cleanup:
+    if(Failed(err))
+        image = QImage();
 }
 
-QRgb convertFrom40bppCMYKAlpha(const uchar *data)
+#if (USE_CMYK_8888)
+template<typename T>
+void copyViaBufferCMYKA(PKImageDecode *decoder, const PKRect &rect, QImage &image, size_t bytesPerPixel, QByteArray &iccProfileData)
 {
-    return convertFromCMYKA(data);
+    image = QImage(rect.Width, rect.Height, QImage::Format_CMYK8888);
+    if(image.isNull())
+    {
+        qWarning() << "Invalid image size";
+        return;
+    }
+    const size_t bytesPerLine = image.width() * bytesPerPixel;
+    QByteArray buffer;
+    buffer.resize(image.height() * bytesPerLine);
+    QImage alphaChannel(image.width(), image.height(), QImage::Format_Alpha8);
+    if(alphaChannel.isNull())
+    {
+        qWarning() << "Invalid image size";
+        image = QImage();
+        return;
+    }
+    ERR err = WMP_errSuccess;
+    Call(decoder->Copy(decoder, &rect, reinterpret_cast<U8*>(buffer.data()), static_cast<U32>(bytesPerLine)));
+    for(int y = 0; y < image.height(); ++y)
+    {
+        QRgb *outScanLine = reinterpret_cast<QRgb*>(image.scanLine(y));
+        const quint8 *inScanLine = reinterpret_cast<const quint8*>(buffer.data() + bytesPerLine * y);
+        quint8 *alphaScanLine = reinterpret_cast<quint8*>(alphaChannel.scanLine(y));
+        for(int x = 0; x < image.width(); ++x)
+        {
+            QPair<QRgb, quint8> outValues = convertFromCMYKAtoCMYK8888PlusAlpha(reinterpret_cast<const T*>(inScanLine + x * bytesPerPixel), bytesPerPixel / sizeof(T) - 1);
+            outScanLine[x] = outValues.first;
+            alphaScanLine[x] = outValues.second;
+        }
+    }
+    if(!iccProfileData.isEmpty())
+        ICCProfile(iccProfileData).applyToImage(&image);
+    iccProfileData = QByteArray();
+    convertTo(image, QImage::Format_ARGB32);
+    image.setAlphaChannel(alphaChannel);
+Cleanup:
+    if(Failed(err))
+        image = QImage();
 }
+#endif
 
-QRgb convertFrom80bppCMYKAlpha(const uchar *data)
+#if !(USE_RGBX_8888)
+void postprocessARGB32(QImage &image, QRgb(*func)(const quint8*))
 {
-    return convertFromCMYKA(reinterpret_cast<const quint16*>(data));
+    for(int y = 0; y < image.height(); ++y)
+    {
+        QRgb *scanLine = reinterpret_cast<QRgb*>(image.scanLine(y));
+        for(int x = 0; x < image.width(); ++x)
+            scanLine[x] = func(reinterpret_cast<const quint8*>(scanLine + x));
+    }
 }
+#endif
+
+#if (USE_RGBX_32FPx4)
+void postprocessscRgbFloat(QImage &image)
+{
+    for(int y = 0; y < image.height(); ++y)
+    {
+        float *scanLine = reinterpret_cast<float*>(image.scanLine(y));
+        for(int x = 0; x < image.width(); ++x)
+        {
+            float *pixel = scanLine + 4 * x;
+            pixel[0] = scRgbFloatTosRgbFloat(pixel[0]);
+            pixel[1] = scRgbFloatTosRgbFloat(pixel[1]);
+            pixel[2] = scRgbFloatTosRgbFloat(pixel[2]);
+            pixel[3] = scRgbAlphaFloatTosRgbAlphaFloat(pixel[3]);
+        }
+    }
+}
+#endif
 
 PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 {
-    ERR err = WMP_errSuccess;
-    PKCodecFactory *codec_factory = Q_NULLPTR;
-    PKImageDecode *decoder = Q_NULLPTR;
-    PKFormatConverter *converter = Q_NULLPTR;
-    PKRect rect;
-    PKPixelInfo PI;
-    static const QList<QPair<const PKPixelFormatGUID*, QRgb(*)(const uchar*)> > convertableFormats =
-            QList<QPair<const PKPixelFormatGUID*, QRgb(*)(const uchar*)> >()
-            << qMakePair<const PKPixelFormatGUID*, QRgb(*)(const uchar*)>(&GUID_PKPixelFormat32bppRGBA, &convertFrom32bppRGBA)
-            << qMakePair<const PKPixelFormatGUID*, QRgb(*)(const uchar*)>(&GUID_PKPixelFormat24bppRGB, &convertFrom24bppRGB)
-            << qMakePair<const PKPixelFormatGUID*, QRgb(*)(const uchar*)>(&GUID_PKPixelFormat8bppGray, &convertFrom8bppGray)
-            << qMakePair<const PKPixelFormatGUID*, QRgb(*)(const uchar*)>(&GUID_PKPixelFormat32bppCMYK, &convertFrom32bppCMYK)
-            << qMakePair<const PKPixelFormatGUID*, QRgb(*)(const uchar*)>(&GUID_PKPixelFormat64bppCMYK, &convertFrom64bppCMYK)
-            << qMakePair<const PKPixelFormatGUID*, QRgb(*)(const uchar*)>(&GUID_PKPixelFormat40bppCMYKAlpha, &convertFrom40bppCMYKAlpha)
-            << qMakePair<const PKPixelFormatGUID*, QRgb(*)(const uchar*)>(&GUID_PKPixelFormat80bppCMYKAlpha, &convertFrom80bppCMYKAlpha)
-            ;
-    static const QList<QPair<const PKPixelFormatGUID*, const PKPixelFormatGUID*> > premultipliedFormats =
-            QList<QPair<const PKPixelFormatGUID*, const PKPixelFormatGUID*> >()
-            << qMakePair<const PKPixelFormatGUID*, const PKPixelFormatGUID*>(&GUID_PKPixelFormat32bppPBGRA, &GUID_PKPixelFormat32bppBGRA)
-            << qMakePair<const PKPixelFormatGUID*, const PKPixelFormatGUID*>(&GUID_PKPixelFormat32bppPRGBA, &GUID_PKPixelFormat32bppRGBA)
-            << qMakePair<const PKPixelFormatGUID*, const PKPixelFormatGUID*>(&GUID_PKPixelFormat64bppPRGBA, &GUID_PKPixelFormat64bppRGBA)
-            << qMakePair<const PKPixelFormatGUID*, const PKPixelFormatGUID*>(&GUID_PKPixelFormat128bppPRGBAFloat, &GUID_PKPixelFormat128bppRGBAFloat)
-            ;
+    QScopedPointer<PKCodecFactory, JxrReleaseDeleter<PKCodecFactory>> codecFactory;
+    {
+        PKCodecFactory *codecFactoryData = Q_NULLPTR;
+        const ERR err = PKCreateCodecFactory(&codecFactoryData, WMP_SDK_VERSION);
+        if(Failed(err) || !codecFactoryData)
+        {
+            qWarning() << "PKCreateCodecFactory failed:" << errorToString(err);
+            return QImage();
+        }
+        codecFactory.reset(codecFactoryData);
+    }
 
-    QImage result;
-    ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
-    if(!metaData)
-        metaData = new ImageMetaData;
+    QScopedPointer<PKImageDecode, JxrReleaseDeleter<PKImageDecode>> decoder;
+    {
+        const QByteArray filename = filePath.toLocal8Bit();
+        PKImageDecode *decoderData = Q_NULLPTR;
+        const ERR err = codecFactory->CreateDecoderFromFile(filename.data(), &decoderData);
+        if(Failed(err) || !decoderData)
+        {
+            qWarning() << "CreateDecoderFromFile failed:" << errorToString(err);
+            return QImage();
+        }
+        decoder.reset(decoderData);
+    }
 
-    bool hasAlpha = false, hasPremultipliedAlpha = false;
-    int bpp, bpl, bpi;
-    void *dataBuffer = Q_NULLPTR;
+    PKPixelFormatGUID pixelFormat = GUID_PKPixelFormatUndefined;
+    decoder->GetPixelFormat(decoder.data(), &pixelFormat);
 
-    const QByteArray filename = filePath.toLocal8Bit();
-    Call(PKCreateCodecFactory(&codec_factory, WMP_SDK_VERSION));
-    Call(codec_factory->CreateDecoderFromFile(filename.data(), &decoder));
-    Call(codec_factory->CreateFormatConverter(&converter));
-
-    memset(&PI, 0, sizeof(PI));
-    PI.pGUIDPixFmt = &decoder->guidPixFormat;
-    Call(PixelFormatLookup(&PI, LOOKUP_FORWARD));
-    Call(PixelFormatLookup(&PI, LOOKUP_BACKWARD_TIF));
-    hasAlpha = !!(PI.grBit & PK_pixfmtHasAlpha);
-    if(const char *pixelFormatStr = pixelFormatToString(*PI.pGUIDPixFmt))
+    if(const char *pixelFormatStr = pixelFormatToString(pixelFormat))
     {
         qDebug("Color format: %s", pixelFormatStr);
     }
     else
     {
         qDebug("Color format: %08X-%04X-%04X-%02X%02X%02X%02X%02X%02X%02X%02X",
-               PI.pGUIDPixFmt->Data1, PI.pGUIDPixFmt->Data2, PI.pGUIDPixFmt->Data3,
-               PI.pGUIDPixFmt->Data4[0], PI.pGUIDPixFmt->Data4[1], PI.pGUIDPixFmt->Data4[2],
-               PI.pGUIDPixFmt->Data4[3], PI.pGUIDPixFmt->Data4[4], PI.pGUIDPixFmt->Data4[5],
-               PI.pGUIDPixFmt->Data4[6], PI.pGUIDPixFmt->Data4[7]);
+               pixelFormat.Data1, pixelFormat.Data2, pixelFormat.Data3,
+               pixelFormat.Data4[0], pixelFormat.Data4[1], pixelFormat.Data4[2],
+               pixelFormat.Data4[3], pixelFormat.Data4[4], pixelFormat.Data4[5],
+               pixelFormat.Data4[6], pixelFormat.Data4[7]);
     }
 
-    for(QList<QPair<const PKPixelFormatGUID*, const PKPixelFormatGUID*> >::ConstIterator it = premultipliedFormats.constBegin(); it != premultipliedFormats.constEnd(); ++it)
-    {
-        if(!IsEqualGUID(*it->first, *PI.pGUIDPixFmt))
-            continue;
-        PI.pGUIDPixFmt = it->second;
-        hasPremultipliedAlpha = true;
-        break;
-    }
+    PKRect rect;
+    memset(&rect, 0, sizeof(rect));
+    decoder->GetSize(decoder.data(), &rect.Width, &rect.Height);
+
+    ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+    if(!metaData)
+        metaData = new ImageMetaData;
 
 #define ADD_ENTRY(VAR, STR) \
     do \
@@ -475,98 +876,513 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
     ADD_ENTRY(pvarHostComputer,     "HostComputer");
 #undef ADD_ENTRY
 
-    CallIgnoreError(err, getXmpMetadata(decoder, &metaData));
-    CallIgnoreError(err, getExifMetadata(decoder, &metaData));
-    err = WMP_errSuccess;
+    QByteArray iccProfileData;
+#define ADD_METADATA(FUNC, ARG) \
+    do \
+    { \
+        const ERR err = FUNC(decoder.data(), &ARG); \
+        if(Failed(err)) \
+            qWarning() << #FUNC " failed:" << errorToString(err); \
+    } \
+    while(false)
+    ADD_METADATA(getXmpMetadata, metaData);
+    ADD_METADATA(getExifMetadata, metaData);
+    ADD_METADATA(getIccProfileData, iccProfileData);
+#undef ADD_METADATA
 
-    decoder->guidPixFormat = *PI.pGUIDPixFmt;
-    decoder->WMP.wmiI.bRGB = !(PI.grBit & PK_pixfmtBGR);
-    decoder->WMP.wmiSCP.bfBitstreamFormat = SPATIAL;
-    decoder->WMP.wmiSCP.uAlphaMode = hasAlpha ? 2 : 0;
-    decoder->WMP.wmiSCP.sbSubband = SB_ALL;
-    decoder->WMP.bIgnoreOverlap = FALSE;
-    decoder->WMP.wmiI.cfColorFormat = PI.cfColorFormat;
-    decoder->WMP.wmiI.bdBitDepth = PI.bdBitDepth;
-    decoder->WMP.wmiI.cBitsPerUnit = PI.cbitUnit;
-    decoder->WMP.wmiI.cThumbnailWidth = decoder->WMP.wmiI.cWidth;
-    decoder->WMP.wmiI.cThumbnailHeight = decoder->WMP.wmiI.cHeight;
-    decoder->WMP.wmiI.bSkipFlexbits = FALSE;
-    decoder->WMP.wmiI.cROILeftX = 0;
-    decoder->WMP.wmiI.cROITopY = 0;
-    decoder->WMP.wmiI.cROIWidth = decoder->WMP.wmiI.cThumbnailWidth;
-    decoder->WMP.wmiI.cROIHeight = decoder->WMP.wmiI.cThumbnailHeight;
-    decoder->WMP.wmiI.oOrientation = O_NONE;
-    decoder->WMP.wmiI.cPostProcStrength = 4;
-    decoder->WMP.wmiSCP.bVerbose = FALSE;
-
-    rect.X = static_cast<I32>(decoder->WMP.wmiI.cROILeftX);
-    rect.Y = static_cast<I32>(decoder->WMP.wmiI.cROITopY);
-    rect.Width = static_cast<I32>(decoder->WMP.wmiI.cROIWidth);
-    rect.Height = static_cast<I32>(decoder->WMP.wmiI.cROIHeight);
-
-    result = QImage(rect.Width, rect.Height, hasAlpha ? (hasPremultipliedAlpha ? QImage::Format_ARGB32_Premultiplied : QImage::Format_ARGB32) : QImage::Format_RGB32);
-
-    bpp = 144 / 8;
-    bpl = bpp * static_cast<int>(rect.Width);
-    bpi = bpl * static_cast<int>(rect.Height);
-    Call(PKAllocAligned(&dataBuffer, bpi, 128));
-
-    for(QList<QPair<const PKPixelFormatGUID*, QRgb(*)(const uchar*)> >::ConstIterator it = convertableFormats.constBegin(); it != convertableFormats.constEnd(); ++it)
     {
-        PKPixelInfo targetPI;
-        memset(&targetPI, 0, sizeof(targetPI));
-        targetPI.pGUIDPixFmt = it->first;
+        Float resolutionX = 0.0f, resolutionY = 0.0f;
+        const ERR err = decoder->GetResolution(decoder.data(), &resolutionX, &resolutionY);
+        if(Failed(err))
+            qWarning() << "GetResolution failed:" << errorToString(err);
+        else
+            metaData->addCustomDpi(resolutionX, resolutionY);
 
-        if(Failed(PixelFormatLookup(&targetPI, LOOKUP_FORWARD)))
-            continue;
-        if(Failed(converter->Initialize(converter, decoder, Q_NULLPTR, *it->first)))
-            continue;
-        if(Failed(converter->Copy(converter, &rect, reinterpret_cast<U8*>(dataBuffer), static_cast<U32>(bpl))))
-            continue;
-
-        for(int i = 0; i < result.height(); ++i)
+        switch(decoder->WMP.oOrientationFromContainer)
         {
-            QRgb *out = reinterpret_cast<QRgb*>(result.scanLine(i));
-            uchar *in = reinterpret_cast<uchar*>(dataBuffer) + i * bpl;
-            for(int j = 0; j < result.width(); ++j)
-                out[j] = it->second(in + j * targetPI.uSamplePerPixel * targetPI.uBitsPerSample / 8);
+        case O_NONE:
+            metaData->addCustomOrientation(1);
+            break;
+        case O_FLIPV:
+            metaData->addCustomOrientation(4);
+            break;
+        case O_FLIPH:
+            metaData->addCustomOrientation(2);
+            break;
+        case O_FLIPVH:
+            metaData->addCustomOrientation(3);
+            break;
+        case O_RCW:
+            metaData->addCustomOrientation(6);
+            break;
+        case O_RCW_FLIPV:
+            metaData->addCustomOrientation(5);
+            break;
+        case O_RCW_FLIPH:
+            metaData->addCustomOrientation(7);
+            break;
+        case O_RCW_FLIPVH:
+            metaData->addCustomOrientation(8);
+            break;
+        default:
+            break;
         }
-
-        qDebug("Decoded with convertioin to format: %s", pixelFormatToString(*it->first));
-        goto Cleanup;
     }
 
-    memset(&PI, 0, sizeof(PI));
-    PI.pGUIDPixFmt = &GUID_PKPixelFormat32bppRGBA;
-    Call(PixelFormatLookup(&PI, LOOKUP_FORWARD));
-    decoder->guidPixFormat = *PI.pGUIDPixFmt;
-    decoder->WMP.wmiI.bRGB = 0;
-    decoder->WMP.wmiI.cfColorFormat = PI.cfColorFormat;
-    decoder->WMP.wmiI.bdBitDepth = PI.bdBitDepth;
-    decoder->WMP.wmiI.cBitsPerUnit = PI.cbitUnit;
-    Call(converter->Initialize(converter, decoder, Q_NULLPTR, *PI.pGUIDPixFmt));
-    Call(converter->Copy(converter, &rect, reinterpret_cast<U8*>(dataBuffer), static_cast<U32>(bpl)));
-
-    for(int i = 0; i < result.height(); ++i)
+    QImage result;
+    if(IsEqualGUID(pixelFormat, GUID_PKPixelFormatBlackWhite))
     {
-        uchar *out = result.scanLine(i);
-        uchar *in = reinterpret_cast<uchar*>(dataBuffer) + i * bpl;
-        memcpy(out, in, result.bytesPerLine());
+        directCopy(decoder.data(), rect, result, QImage::Format_Mono);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat8bppGray))
+    {
+#if (USE_GRAYSCALE_8)
+        directCopy(decoder.data(), rect, result, QImage::Format_Grayscale8);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 8 / 8, convertFromGray<quint8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat16bppRGB555))
+    {
+        directCopy(decoder.data(), rect, result, QImage::Format_RGB555);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat16bppRGB565))
+    {
+        directCopy(decoder.data(), rect, result, QImage::Format_RGB16);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat16bppGray))
+    {
+#if (USE_GRAYSCALE_16)
+        directCopy(decoder.data(), rect, result, QImage::Format_Grayscale16);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 16 / 8, convertFromGray<quint16>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat24bppBGR))
+    {
+#if (USE_BGR_888)
+        directCopy(decoder.data(), rect, result, QImage::Format_BGR888);
+#else
+        directCopy(decoder.data(), rect, result, QImage::Format_RGB888);
+        rgbSwap(result);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat24bppRGB) || IsEqualGUID(pixelFormat, GUID_PKPixelFormat24bpp3Channels))
+    {
+        directCopy(decoder.data(), rect, result, QImage::Format_RGB888);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppBGR))
+    {
+#if (USE_RGBX_8888)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBX8888);
+        rgbSwap(result);
+#else
+        directCopy(decoder.data(), rect, result, QImage::Format_RGB32);
+        postprocessARGB32(result, convertFromBGR<quint8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppBGRA))
+    {
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_RGBX_8888)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBA8888);
+        rgbSwap(result);
+#else
+        directCopy(decoder.data(), rect, result, QImage::Format_ARGB32);
+        postprocessARGB32(result, convertFromBGRA<quint8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppPBGRA))
+    {
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_RGBX_8888)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBA8888_Premultiplied);
+        convertTo(result, QImage::Format_RGBA8888);
+        rgbSwap(result);
+#else
+        directCopy(decoder.data(), rect, result, QImage::Format_ARGB32);
+        postprocessARGB32(result, convertFromPBGRA<quint8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppGrayFloat))
+    {
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 32 / 8, convertFromGrayFloat<float>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppRGB))
+    {
+#if (USE_RGBX_8888)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBX8888);
+#else
+        directCopy(decoder.data(), rect, result, QImage::Format_RGB32);
+        postprocessARGB32(result, convertFromRGB<quint8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppRGBA) || IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bpp3ChannelsAlpha))
+    {
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_RGBX_8888)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBA8888);
+#else
+        directCopy(decoder.data(), rect, result, QImage::Format_ARGB32);
+        postprocessARGB32(result, convertFromRGBA<quint8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppPRGBA))
+    {
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_RGBX_8888)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBA8888_Premultiplied);
+        convertTo(result, QImage::Format_RGBA8888);
+#else
+        directCopy(decoder.data(), rect, result, QImage::Format_ARGB32);
+        postprocessARGB32(result, convertFromPRGBA<quint8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat48bppRGBFixedPoint))
+    {
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 48 / 8, convertFromRGBFixed<I16>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat16bppGrayFixedPoint))
+    {
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 16 / 8, convertFromGrayFixed<I16>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppRGB101010))
+    {
+#if (USE_RGB_30)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGB30);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 32 / 8, convertFromRGB101010<U32>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat48bppRGB) || IsEqualGUID(pixelFormat, GUID_PKPixelFormat48bpp3Channels))
+    {
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 48 / 8, convertFromRGB<quint16>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat64bppRGBA) || IsEqualGUID(pixelFormat, GUID_PKPixelFormat64bpp3ChannelsAlpha))
+    {
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_RGBA_64)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBA64);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 64 / 8, convertFromRGBA<quint16>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat64bppPRGBA))
+    {
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_RGBA_64)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBA64_Premultiplied);
+        convertTo(result, QImage::Format_RGBA64);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 64 / 8, convertFromPRGBA<quint16>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat96bppRGBFixedPoint))
+    {
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 96 / 8, convertFromRGBFixed<I32>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat96bppRGBFloat))
+    {
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 96 / 8, convertFromRGBFloat<float>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat128bppRGBAFloat))
+    {
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_RGBX_32FPx4)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBA32FPx4);
+        postprocessscRgbFloat(result);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 128 / 8, convertFromRGBAFloat<float>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat128bppPRGBAFloat))
+    {
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_RGBX_32FPx4)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBA32FPx4_Premultiplied);
+        convertTo(result, QImage::Format_RGBA32FPx4);
+        postprocessscRgbFloat(result);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 128 / 8, convertFromPRGBAFloat<float>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat128bppRGBFloat))
+    {
+#if (USE_RGBX_32FPx4)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBX32FPx4);
+        postprocessscRgbFloat(result);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 128 / 8, convertFromRGBFloat<float>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppCMYK) || IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bpp4Channels))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+#if (USE_CMYK_8888)
+        directCopy(decoder.data(), rect, result, QImage::Format_CMYK8888);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 32 / 8, convertFromCMYK<quint8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat64bppRGBAFixedPoint))
+    {
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 64 / 8, convertFromRGBAFixed<I16>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat64bppRGBFixedPoint))
+    {
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 64 / 8, convertFromRGBFixed<I16>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat128bppRGBAFixedPoint))
+    {
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 128 / 8, convertFromRGBAFixed<I32>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat128bppRGBFixedPoint))
+    {
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 128 / 8, convertFromRGBFixed<I32>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat64bppRGBAHalf))
+    {
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_RGBX_32FPx4)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBA16FPx4);
+        convertTo(result, QImage::Format_RGBA32FPx4);
+        postprocessscRgbFloat(result);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 64 / 8, convertFromRGBAHalf<U16>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat64bppRGBHalf))
+    {
+#if (USE_RGBX_32FPx4)
+        directCopy(decoder.data(), rect, result, QImage::Format_RGBA16FPx4); /// @todo Format_RGBX16FPx4 completely black with Qt 6.8.0-beta2
+        convertTo(result, QImage::Format_RGBX32FPx4);
+        postprocessscRgbFloat(result);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 64 / 8, convertFromRGBHalf<U16>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat48bppRGBHalf))
+    {
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 48 / 8, convertFromRGBHalf<U16>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppRGBE))
+    {
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 32 / 8, convertFromRGBE<U8>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat16bppGrayHalf))
+    {
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 16 / 8, convertFromGrayHalf<U16>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppGrayFixedPoint))
+    {
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 32 / 8, convertFromGrayFixed<I32>);
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat64bppCMYK) || IsEqualGUID(pixelFormat, GUID_PKPixelFormat64bpp4Channels))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+#if (USE_CMYK_8888)
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_CMYK8888, 64 / 8, convertFromCMYKtoCMYK8888<quint16>);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 64 / 8, convertFromCMYK<quint16>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat40bppCMYKAlpha) || IsEqualGUID(pixelFormat, GUID_PKPixelFormat40bpp4ChannelsAlpha))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_CMYK_8888)
+        copyViaBufferCMYKA<quint8>(decoder.data(), rect, result, 40 / 8, iccProfileData);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 40 / 8, convertFromCMYKA<quint8, 4>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat80bppCMYKAlpha) || IsEqualGUID(pixelFormat, GUID_PKPixelFormat80bpp4ChannelsAlpha))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_CMYK_8888)
+        copyViaBufferCMYKA<quint16>(decoder.data(), rect, result, 80 / 8, iccProfileData);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 80 / 8, convertFromCMYKA<quint16, 4>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat40bpp5Channels))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+#if (USE_CMYK_8888)
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_CMYK8888, 40 / 8, convertFromCMYKtoCMYK8888<quint8>);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 40 / 8, convertFromCMYK<quint8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat48bpp6Channels))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+#if (USE_CMYK_8888)
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_CMYK8888, 48 / 8, convertFromCMYKtoCMYK8888<quint8>);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 48 / 8, convertFromCMYK<quint8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat56bpp7Channels))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+#if (USE_CMYK_8888)
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_CMYK8888, 56 / 8, convertFromCMYKtoCMYK8888<quint8>);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 56 / 8, convertFromCMYK<quint8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat64bpp8Channels))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+#if (USE_CMYK_8888)
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_CMYK8888, 64 / 8, convertFromCMYKtoCMYK8888<quint8>);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 64 / 8, convertFromCMYK<quint8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat80bpp5Channels))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+#if (USE_CMYK_8888)
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_CMYK8888, 80 / 8, convertFromCMYKtoCMYK8888<quint16>);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 80 / 8, convertFromCMYK<quint16>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat96bpp6Channels))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+#if (USE_CMYK_8888)
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_CMYK8888, 96 / 8, convertFromCMYKtoCMYK8888<quint16>);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 96 / 8, convertFromCMYK<quint16>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat112bpp7Channels))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+#if (USE_CMYK_8888)
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_CMYK8888, 112 / 8, convertFromCMYKtoCMYK8888<quint16>);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 112 / 8, convertFromCMYK<quint16>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat128bpp8Channels))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+#if (USE_CMYK_8888)
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_CMYK8888, 128 / 8, convertFromCMYKtoCMYK8888<quint16>);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 128 / 8, convertFromCMYK<quint16>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat48bpp5ChannelsAlpha))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_CMYK_8888)
+        copyViaBufferCMYKA<quint8>(decoder.data(), rect, result, 48 / 8, iccProfileData);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 48 / 8, convertFromCMYKA<quint8, 5>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat56bpp6ChannelsAlpha))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_CMYK_8888)
+        copyViaBufferCMYKA<quint8>(decoder.data(), rect, result, 56 / 8, iccProfileData);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 56 / 8, convertFromCMYKA<quint8, 6>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat64bpp7ChannelsAlpha))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_CMYK_8888)
+        copyViaBufferCMYKA<quint8>(decoder.data(), rect, result, 64 / 8, iccProfileData);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 64 / 8, convertFromCMYKA<quint8, 7>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat72bpp8ChannelsAlpha))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_CMYK_8888)
+        copyViaBufferCMYKA<quint8>(decoder.data(), rect, result, 72 / 8, iccProfileData);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 72 / 8, convertFromCMYKA<quint8, 8>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat96bpp5ChannelsAlpha))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_CMYK_8888)
+        copyViaBufferCMYKA<quint16>(decoder.data(), rect, result, 96 / 8, iccProfileData);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 96 / 8, convertFromCMYKA<quint16, 5>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat112bpp6ChannelsAlpha))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_CMYK_8888)
+        copyViaBufferCMYKA<quint16>(decoder.data(), rect, result, 112 / 8, iccProfileData);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 112 / 8, convertFromCMYKA<quint16, 6>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat128bpp7ChannelsAlpha))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_CMYK_8888)
+        copyViaBufferCMYKA<quint16>(decoder.data(), rect, result, 128 / 8, iccProfileData);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 128 / 8, convertFromCMYKA<quint16, 7>);
+#endif
+    }
+    else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat144bpp8ChannelsAlpha))
+    {
+        if(iccProfileData.isEmpty())
+            iccProfileData = ICCProfile::defaultCmykProfileData();
+        decoder->WMP.wmiSCP.uAlphaMode = 2;
+#if (USE_CMYK_8888)
+        copyViaBufferCMYKA<quint16>(decoder.data(), rect, result, 144 / 8, iccProfileData);
+#else
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 144 / 8, convertFromCMYKA<quint16, 8>);
+#endif
     }
 
-    qDebug("Decoded with fallback convertioin to format: %s", pixelFormatToString(*PI.pGUIDPixFmt));
-
-Cleanup:
-    if(Failed(err))
-        result = QImage();
-    if(dataBuffer)
-        PKFreeAligned(&dataBuffer);
-    if(converter)
-        converter->Release(&converter);
-    if(decoder)
-        decoder->Release(&decoder);
-    if(codec_factory)
-        codec_factory->Release(&codec_factory);
+    if(!iccProfileData.isEmpty())
+        ICCProfile(iccProfileData).applyToImage(&result);
 
     return PayloadWithMetaData<QImage>(result, metaData);
 }
