@@ -338,6 +338,8 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
             IDecoder *decoder = decoderData->decoder;
             if(m_impl->blacklistedDecoders.find(decoder) != m_impl->blacklistedDecoders.end())
                 continue;
+            if(!decoder->isAvailable())
+                continue;
             QElapsedTimer timer;
             timer.start();
             QSharedPointer<IImageData> data = decoder->loadImage(filePath);
@@ -359,6 +361,8 @@ QSharedPointer<IImageData> DecodersManager::loadImage(const QString &filePath)
     {
         IDecoder *decoder = decoderData->decoder;
         if(m_impl->blacklistedDecoders.find(decoder) != m_impl->blacklistedDecoders.end())
+            continue;
+        if(!decoder->isAvailable())
             continue;
         if(failedDecodres.find(decoder) != failedDecodres.end())
             continue;

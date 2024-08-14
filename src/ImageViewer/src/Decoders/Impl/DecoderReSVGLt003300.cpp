@@ -470,7 +470,8 @@ public:
 
     bool isAvailable() const Q_DECL_OVERRIDE
     {
-        return isReady();
+        static const bool ready = isReady();
+        return ready;
     }
 
     QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
