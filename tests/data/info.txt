@@ -498,6 +498,8 @@ Image from https://en.wikipedia.org/wiki/Portable_Network_Graphics
 Test images which was created during the development of this project
  * cmyk.psd
  * cmyk16.psd
+ * cmyka.psd
+ * cmyka16.psd
  * lab.psd
  * lab16.psd
 
@@ -569,6 +571,10 @@ Test image which was created during the development of this project
  * cmyk_noicc.tif
  * cmyk16.tif
  * cmyk16_noicc.tif
+ * cmyka.tif
+ * cmyka_perchannel.tif
+ * cmyka16.tif
+ * cmyka16_perchannel.tif
  * lab.tif
  * lab16.tif
 
