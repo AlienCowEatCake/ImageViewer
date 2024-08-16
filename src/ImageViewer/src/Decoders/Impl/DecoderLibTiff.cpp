@@ -31,6 +31,7 @@
 
 #include "Utils/Global.h"
 #include "Utils/Logging.h"
+#include "Utils/ScopedPointer.h"
 
 #include "../IDecoder.h"
 #include "Internal/DecoderAutoRegistrator.h"
@@ -278,7 +279,7 @@ void readTiffTagToMetaData(TIFF *tiff, ImageMetaData *&metaData, quint32 tag, co
     }
 }
 
-IImageMetaData *readExifMetaData(TIFF *tiff)
+ImageMetaData *readExifMetaData(TIFF *tiff)
 {
     ImageMetaData *metaData = Q_NULLPTR;
     readTiffTagToMetaData(tiff, metaData, TIFFTAG_EXIFIFD, QString::fromLatin1("TIFFTAG_EXIFIFD"));
@@ -296,7 +297,7 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
         return QImage();
     }
 
-    TIFF *tiff = TIFFClientOpen("foo", "r", &inFile, readProc, writeProc, seekProc, closeProc, sizeProc, mapProc, unmapProc);
+    TIFF *tiff = TIFFClientOpen("DecoderLibTiff", "r", &inFile, readProc, writeProc, seekProc, closeProc, sizeProc, mapProc, unmapProc);
     if(!tiff)
     {
         LOG_WARNING() << LOGGING_CTX << "Can't TIFFClientOpen for" << filename;
@@ -310,7 +311,28 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
         return QImage();
     }
 
-    ICCProfile *iccProfile = readICCProfile(tiff);
+    quint16 photometric = 0;
+    if(!TIFFGetField(tiff, TIFFTAG_PHOTOMETRIC, &photometric))
+    {
+        LOG_WARNING() << LOGGING_CTX << "Can't get TIFFTAG_PHOTOMETRIC for" << filename;
+        TIFFClose(tiff);
+        return QImage();
+    }
+
+    quint16 inkSet = 0;
+    if(photometric == PHOTOMETRIC_SEPARATED)
+    {
+        if(!TIFFGetField(tiff, TIFFTAG_INKSET, &inkSet))
+            inkSet = INKSET_CMYK;
+    }
+
+    quint16 orientation = 0;
+    if(!TIFFGetField(tiff, TIFFTAG_ORIENTATION, &orientation))
+        orientation = ORIENTATION_TOPLEFT;
+
+    QScopedPointer<ICCProfile> iccProfile(readICCProfile(tiff));
+    if((!iccProfile || !iccProfile->isValid()) && photometric == PHOTOMETRIC_SEPARATED && inkSet == INKSET_CMYK)
+        iccProfile.reset(new ICCProfile(ICCProfile::defaultCmykProfileData()));
 
     TIFFRGBAImage img;
     char emsg[1024];
@@ -319,8 +341,6 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
         LOG_WARNING() << LOGGING_CTX << "Can't TIFFRGBAImageBegin for" << filename;
         LOG_WARNING() << LOGGING_CTX << "Reason:" << emsg;
         TIFFClose(tiff);
-        if(iccProfile)
-            delete iccProfile;
         return QImage();
     }
 
@@ -336,12 +356,10 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
     {
         LOG_WARNING() << LOGGING_CTX << "Invalid image size";
         TIFFClose(tiff);
-        if(iccProfile)
-            delete iccProfile;
         return QImage();
     }
 
-    img.req_orientation = ORIENTATION_TOPLEFT;
+    img.req_orientation = img.orientation;
 
 #if defined (TIFFLIB_VERSION) && (TIFFLIB_VERSION >= 20210416)
     typedef uint32_t TiffImageBitsType;
@@ -353,8 +371,6 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
     {
         LOG_WARNING() << LOGGING_CTX << "Can't TIFFRGBAImageGet for" << filename;
         TIFFClose(tiff);
-        if(iccProfile)
-            delete iccProfile;
         return QImage();
     }
 
@@ -364,18 +380,36 @@ PayloadWithMetaData<QImage> readTiffFile(const QString &filename)
 
 #undef USE_RGBA_8888
 
-    if(iccProfile)
-    {
-        iccProfile->applyToImage(&result);
-        delete iccProfile;
-        iccProfile = Q_NULLPTR;
-    }
+    TIFFRGBAImageEnd(&img);
 
-    IImageMetaData *metaData = ImageMetaData::createMetaData(filename);
+    if(iccProfile)
+        iccProfile->applyToImage(&result);
+
+    // Some image formats can't be rendered successfully
+    if(result.format() != QImage::Format_ARGB32)
+        QImage_convertTo(result, QImage::Format_ARGB32);
+
+    ImageMetaData *metaData = ImageMetaData::createMetaData(filename);
     if(!metaData)
         metaData = readExifMetaData(tiff);
+    if(!metaData)
+        metaData = new ImageMetaData;
 
-    TIFFRGBAImageEnd(&img);
+    metaData->addCustomOrientation(orientation);
+    metaData->applyExifOrientation(&result);
+
+    quint16 resUnit = 0;
+    if(!TIFFGetField(tiff, TIFFTAG_RESOLUTIONUNIT, &resUnit))
+        resUnit = RESUNIT_INCH;
+    float resX = 0.0f, resY = 0.0f;
+    if(TIFFGetField(tiff, TIFFTAG_XRESOLUTION, &resX) && TIFFGetField(tiff, TIFFTAG_YRESOLUTION, &resY))
+    {
+        if(resUnit == RESUNIT_CENTIMETER)
+            metaData->addCustomDpi(resX * 2.54, resY * 2.54);
+        else if(resUnit == RESUNIT_INCH)
+            metaData->addCustomDpi(resX, resY);
+    }
+
     TIFFClose(tiff);
 
     return PayloadWithMetaData<QImage>(result, metaData);
