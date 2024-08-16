@@ -567,6 +567,94 @@ Unknown source (TODO)
 ::: TIFF test images :::
 
 Test image which was created during the development of this project
+ * Qt/Format_Mono_NoCompression.tiff
+ * Qt/Format_Mono_LzwCompression.tiff
+ * Qt/Format_MonoLSB_NoCompression.tiff
+ * Qt/Format_MonoLSB_LzwCompression.tiff
+ * Qt/Format_Indexed8_NoCompression.tiff
+ * Qt/Format_Indexed8_LzwCompression.tiff
+ * Qt/Format_RGB32_NoCompression.tiff
+ * Qt/Format_RGB32_LzwCompression.tiff
+ * Qt/Format_ARGB32_NoCompression.tiff
+ * Qt/Format_ARGB32_LzwCompression.tiff
+ * Qt/Format_ARGB32_Premultiplied_NoCompression.tiff
+ * Qt/Format_ARGB32_Premultiplied_LzwCompression.tiff
+ * Qt/Format_RGB16_NoCompression.tiff
+ * Qt/Format_RGB16_LzwCompression.tiff
+ * Qt/Format_ARGB8565_Premultiplied_NoCompression.tiff
+ * Qt/Format_ARGB8565_Premultiplied_LzwCompression.tiff
+ * Qt/Format_RGB666_NoCompression.tiff
+ * Qt/Format_RGB666_LzwCompression.tiff
+ * Qt/Format_ARGB6666_Premultiplied_NoCompression.tiff
+ * Qt/Format_ARGB6666_Premultiplied_LzwCompression.tiff
+ * Qt/Format_RGB555_NoCompression.tiff
+ * Qt/Format_RGB555_LzwCompression.tiff
+ * Qt/Format_ARGB8555_Premultiplied_NoCompression.tiff
+ * Qt/Format_ARGB8555_Premultiplied_LzwCompression.tiff
+ * Qt/Format_RGB888_NoCompression.tiff
+ * Qt/Format_RGB888_LzwCompression.tiff
+ * Qt/Format_RGB444_NoCompression.tiff
+ * Qt/Format_RGB444_LzwCompression.tiff
+ * Qt/Format_ARGB4444_Premultiplied_NoCompression.tiff
+ * Qt/Format_ARGB4444_Premultiplied_LzwCompression.tiff
+ * Qt/Format_RGBX8888_NoCompression.tiff
+ * Qt/Format_RGBX8888_LzwCompression.tiff
+ * Qt/Format_RGBA8888_NoCompression.tiff
+ * Qt/Format_RGBA8888_LzwCompression.tiff
+ * Qt/Format_RGBA8888_Premultiplied_NoCompression.tiff
+ * Qt/Format_RGBA8888_Premultiplied_LzwCompression.tiff
+ * Qt/Format_BGR30_NoCompression.tiff
+ * Qt/Format_BGR30_LzwCompression.tiff
+ * Qt/Format_A2BGR30_Premultiplied_NoCompression.tiff
+ * Qt/Format_A2BGR30_Premultiplied_LzwCompression.tiff
+ * Qt/Format_RGB30_NoCompression.tiff
+ * Qt/Format_RGB30_LzwCompression.tiff
+ * Qt/Format_A2RGB30_Premultiplied_NoCompression.tiff
+ * Qt/Format_A2RGB30_Premultiplied_LzwCompression.tiff
+ * Qt/Format_Alpha8_NoCompression.tiff
+ * Qt/Format_Alpha8_LzwCompression.tiff
+ * Qt/Format_Grayscale8_NoCompression.tiff
+ * Qt/Format_Grayscale8_LzwCompression.tiff
+ * Qt/Format_RGBX64_NoCompression.tiff
+ * Qt/Format_RGBX64_LzwCompression.tiff
+ * Qt/Format_RGBA64_NoCompression.tiff
+ * Qt/Format_RGBA64_LzwCompression.tiff
+ * Qt/Format_RGBA64_Premultiplied_NoCompression.tiff
+ * Qt/Format_RGBA64_Premultiplied_LzwCompression.tiff
+ * Qt/Format_Grayscale16_NoCompression.tiff
+ * Qt/Format_Grayscale16_LzwCompression.tiff
+ * Qt/Format_BGR888_NoCompression.tiff
+ * Qt/Format_BGR888_LzwCompression.tiff
+ * Qt/Format_RGBX16FPx4_NoCompression.tiff
+ * Qt/Format_RGBX16FPx4_LzwCompression.tiff
+ * Qt/Format_RGBA16FPx4_NoCompression.tiff
+ * Qt/Format_RGBA16FPx4_LzwCompression.tiff
+ * Qt/Format_RGBA16FPx4_Premultiplied_NoCompression.tiff
+ * Qt/Format_RGBA16FPx4_Premultiplied_LzwCompression.tiff
+ * Qt/Format_RGBX32FPx4_NoCompression.tiff
+ * Qt/Format_RGBX32FPx4_LzwCompression.tiff
+ * Qt/Format_RGBA32FPx4_NoCompression.tiff
+ * Qt/Format_RGBA32FPx4_LzwCompression.tiff
+ * Qt/Format_RGBA32FPx4_Premultiplied_NoCompression.tiff
+ * Qt/Format_RGBA32FPx4_Premultiplied_LzwCompression.tiff
+ * Qt/Format_CMYK8888_NoCompression.tiff
+ * Qt/Format_CMYK8888_LzwCompression.tiff
+ * gray.tif
+ * gray16.tif
+ * gray32_f16.tif
+ * gray32_f24.tif
+ * gray32_f32.tif
+ * gray_layered.tif
+ * gray16_layered.tif
+ * gray32_f16_layered.tif
+ * gray32_f24_layered.tif
+ * gray32_f32_layered.tif
+ * graya.tif
+ * graya16.tif
+ * graya32.tif
+ * graya32_f16.tif
+ * graya32_f24.tif
+ * graya32_f32.tif
  * cmyk.tif
  * cmyk_noicc.tif
  * cmyk16.tif
@@ -577,6 +665,8 @@ Test image which was created during the development of this project
  * cmyka16_perchannel.tif
  * lab.tif
  * lab16.tif
+ * laba.tif
+ * laba16.tif
 
 Test Lena images with various compression types
  * lena_jpeg.tif
