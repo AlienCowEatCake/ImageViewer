@@ -46,7 +46,7 @@
 
 #define LOGGING_CTXQS(QS)   QString::fromLatin1("[%1:%2:%3]:").arg((LOGGING_FILE), (LOGGING_LINE), (QS)).toLatin1().data()
 #define LOGGING_CTXS(S)     LOGGING_CTXQS(QString::fromLatin1(S))
-#define LOGGING_CTX         LOGGING_CTXQS((LOGGING_FUNC).section(QChar::fromLatin1(':'), -1))
+#define LOGGING_CTX         LOGGING_CTXQS((LOGGING_FUNC).section(QString::fromLatin1("::"), -1))
 
 #endif // QTUTILS_LOGGING_H_INCLUDED
 
