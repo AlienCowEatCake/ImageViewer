@@ -623,22 +623,24 @@ static QString defaultCmykProfilePath()
     cmykProfiles.append(QString::fromLatin1("RSWOP.icm"));
     QStringList profilePlaces;
 
-    HMODULE hMscms = LoadLibraryA("mscms.dll");
-    typedef BOOL(WINAPI *GetColorDirectoryA_t)(PCSTR, PSTR, PDWORD);
-    GetColorDirectoryA_t GetColorDirectoryA_f = reinterpret_cast<GetColorDirectoryA_t>(GetProcAddress(hMscms, "GetColorDirectoryA"));
-    if(GetColorDirectoryA_f)
+    if(HMODULE hMscms = LoadLibraryA("mscms.dll"))
     {
-        DWORD size = 0;
-        GetColorDirectoryA_f(Q_NULLPTR, Q_NULLPTR, &size);
-        if(size > 0)
+        typedef BOOL(WINAPI *GetColorDirectoryA_t)(PCSTR, PSTR, PDWORD);
+        GetColorDirectoryA_t GetColorDirectoryA_f = reinterpret_cast<GetColorDirectoryA_t>(GetProcAddress(hMscms, "GetColorDirectoryA"));
+        if(GetColorDirectoryA_f)
         {
-            QByteArray buffer;
-            buffer.resize(size + 1);
-            if(GetColorDirectoryA_f(Q_NULLPTR, reinterpret_cast<PSTR>(buffer.data()), &size))
-                profilePlaces.append(QDir::fromNativeSeparators(QString::fromLocal8Bit(buffer, size)));
+            DWORD size = 0;
+            GetColorDirectoryA_f(Q_NULLPTR, Q_NULLPTR, &size);
+            if(size > 0)
+            {
+                QByteArray buffer;
+                buffer.resize(size + 1);
+                if(GetColorDirectoryA_f(Q_NULLPTR, reinterpret_cast<PSTR>(buffer.data()), &size))
+                    profilePlaces.append(QDir::fromNativeSeparators(QString::fromLocal8Bit(buffer, size)));
+            }
         }
+        FreeLibrary(hMscms);
     }
-    FreeLibrary(hMscms);
 
     const char *windir = getenv("windir");
     if(!windir)
