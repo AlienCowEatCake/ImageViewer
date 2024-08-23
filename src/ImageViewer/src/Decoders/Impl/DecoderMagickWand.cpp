@@ -599,14 +599,14 @@ private:
 
         if(OrientationType orientation = MagickGetImageOrientation(mw))
         {
-            LOG_INFO() << LOGGING_CTX << "Orientation found:" << orientation;
+            LOG_DEBUG() << LOGGING_CTX << "Orientation found:" << orientation;
             ImageMetaData::applyExifOrientation(&qImage, static_cast<quint16>(orientation));
         }
 
         size_t length = 0;
         if(const unsigned char *datum = MagickGetImageProfile(mw, "ICC", &length))
         {
-            LOG_INFO() << LOGGING_CTX << "ICC profile found";
+            LOG_DEBUG() << LOGGING_CTX << "ICC profile found";
             ICCProfile profile(QByteArray::fromRawData(reinterpret_cast<const char*>(datum), static_cast<int>(length)));
             profile.applyToImage(&qImage);
         }

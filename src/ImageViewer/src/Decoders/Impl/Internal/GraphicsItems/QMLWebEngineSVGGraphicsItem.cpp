@@ -91,7 +91,7 @@ int getMaxTextureSize()
         functions->glEnable(GL_TEXTURE_2D);
         functions->glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 
-        LOG_INFO() << LOGGING_CTX << "GL_MAX_TEXTURE_SIZE =" << maxTextureSize;
+        LOG_DEBUG() << LOGGING_CTX << "GL_MAX_TEXTURE_SIZE =" << maxTextureSize;
     }
     return maxTextureSize;
 }
@@ -149,12 +149,12 @@ QByteArray getWebEngineComponentQml()
         component.setData(qml, QUrl());
         if(component.status() == QQmlComponent::Ready)
         {
-            LOG_INFO() << LOGGING_CTX << it->second.data() << "detected";
+            LOG_DEBUG() << LOGGING_CTX << it->second.data() << "detected";
             return qml;
         }
         else
         {
-            LOG_INFO() << LOGGING_CTX << it->second.data() << "not detected:" << component.errorString();
+            LOG_DEBUG() << LOGGING_CTX << it->second.data() << "not detected:" << component.errorString();
         }
     }
     return qml;
@@ -211,7 +211,7 @@ struct QMLWebEngineSVGGraphicsItem::Impl
         component->setData(getWebEngineComponentQml(), QUrl());
         if(component->status() != QQmlComponent::Ready)
         {
-            LOG_INFO() << LOGGING_CTX << "Error:" << component->errorString();
+            LOG_WARNING() << LOGGING_CTX << "Error:" << component->errorString();
             return Q_NULLPTR;
         }
 

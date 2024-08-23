@@ -78,11 +78,11 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
         return false;
     }
 
-//    LOG_INFO() << LOGGING_CTX << "features.width:" << features.width;
-//    LOG_INFO() << LOGGING_CTX << "features.height:" << features.height;
-//    LOG_INFO() << LOGGING_CTX << "features.has_alpha:" << features.has_alpha;
-//    LOG_INFO() << LOGGING_CTX << "features.has_animation:" << features.has_animation;
-//    LOG_INFO() << LOGGING_CTX << "features.format:" << features.format;
+//    LOG_DEBUG() << LOGGING_CTX << "features.width:" << features.width;
+//    LOG_DEBUG() << LOGGING_CTX << "features.height:" << features.height;
+//    LOG_DEBUG() << LOGGING_CTX << "features.has_alpha:" << features.has_alpha;
+//    LOG_DEBUG() << LOGGING_CTX << "features.has_animation:" << features.has_animation;
+//    LOG_DEBUG() << LOGGING_CTX << "features.format:" << features.format;
 
     if(!features.has_animation)
     {

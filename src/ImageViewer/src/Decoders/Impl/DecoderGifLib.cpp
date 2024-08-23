@@ -258,7 +258,7 @@ private:
                     if(!m_metaData)
                         m_metaData = new ImageMetaData;
                     m_metaData->addCustomEntry(QString::fromLatin1("Comment"), QString::fromLatin1("Comment Extension block #%1").arg(i), QString::fromLatin1(commentData));
-                    LOG_INFO() << LOGGING_CTX << "Found comment";
+                    LOG_DEBUG() << LOGGING_CTX << "Found comment";
                     continue;
                 }
 
@@ -307,7 +307,7 @@ private:
                         xmpData.resize(xmpData.size() - xmpPadingSize);
 
                     m_metaData = ImageMetaData::joinMetaData(takeMetaData(), ImageMetaData::createXmpMetaData(xmpData));
-                    LOG_INFO() << LOGGING_CTX << "Found XMP metadata";
+                    LOG_DEBUG() << LOGGING_CTX << "Found XMP metadata";
                     continue;
                 }
                 if(!memcmp(extensionHeader->Bytes, "ICCRGBG1012", 11))
@@ -321,7 +321,7 @@ private:
                         i++;
                     }
                     iccProfile.reset(new ICCProfile(iccData));
-                    LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
+                    LOG_DEBUG() << LOGGING_CTX << "Found ICCP metadata";
                     continue;
                 }
             }

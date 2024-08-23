@@ -100,7 +100,7 @@ public:
             size_t length = 0;
             if(flif_image_get_metadata(image, "iCCP", &data, &length))
             {
-                LOG_INFO() << LOGGING_CTX << "Found ICC profile for frame" << i;
+                LOG_DEBUG() << LOGGING_CTX << "Found ICC profile for frame" << i;
                 ICCProfile(QByteArray::fromRawData(reinterpret_cast<const char*>(data), static_cast<int>(length))).applyToImage(&frame);
                 flif_image_free_metadata(image, data);
                 data = Q_NULLPTR;
@@ -108,7 +108,7 @@ public:
             }
             if(flif_image_get_metadata(image, "eXmp", &data, &length))
             {
-                LOG_INFO() << LOGGING_CTX << "Found XMP metadata for frame" << i;
+                LOG_DEBUG() << LOGGING_CTX << "Found XMP metadata for frame" << i;
                 metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(data), static_cast<int>(length))));
                 flif_image_free_metadata(image, data);
                 data = Q_NULLPTR;
@@ -116,7 +116,7 @@ public:
             }
             if(flif_image_get_metadata(image, "eXif", &data, &length))
             {
-                LOG_INFO() << LOGGING_CTX << "Found EXIF metadata for frame" << i;
+                LOG_DEBUG() << LOGGING_CTX << "Found EXIF metadata for frame" << i;
                 metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(data), static_cast<int>(length))));
                 flif_image_free_metadata(image, data);
                 data = Q_NULLPTR;

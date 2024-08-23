@@ -441,7 +441,7 @@ private:
                     codecInfo->GetFileExtensions(strLen, fileExtensionsData.data(), &strLen);
                     fileExtensions = QString::fromStdWString(std::wstring(fileExtensionsData.data(), strLen - 1));
                 }
-                LOG_INFO() << LOGGING_CTX << friendlyName << "-" << fileExtensions;
+                LOG_DEBUG() << LOGGING_CTX << friendlyName << "-" << fileExtensions;
 
                 const QStringList extensionsList = fileExtensions
                         .toLower()

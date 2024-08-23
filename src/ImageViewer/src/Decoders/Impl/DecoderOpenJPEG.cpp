@@ -89,16 +89,16 @@ bool is444(opj_image_t *img)
 #define CONSTRAINT_COMPONENTS_NUMBER_EQUAL(IMG, NUM) \
     if((IMG)->numcomps != NUM) \
     { \
-        LOG_INFO() << LOGGING_CTX << "Failed" << __FUNCTION__; \
-        LOG_INFO() << LOGGING_CTX << " > Reason: numcomps" << (IMG)->numcomps << "!=" << NUM; \
+        LOG_DEBUG() << LOGGING_CTX << "Failed" << __FUNCTION__; \
+        LOG_DEBUG() << LOGGING_CTX << " > Reason: numcomps" << (IMG)->numcomps << "!=" << NUM; \
         return QImage(); \
     }
 
 #define CONSTRAINT_COMPONENTS_NUMBER_GREAT_OR_EQUAL(IMG, NUM) \
     if((IMG)->numcomps < NUM) \
     { \
-        LOG_INFO() << LOGGING_CTX << "Failed" << __FUNCTION__; \
-        LOG_INFO() << LOGGING_CTX << " > Reason: numcomps" << (IMG)->numcomps << "<" << NUM; \
+        LOG_DEBUG() << LOGGING_CTX << "Failed" << __FUNCTION__; \
+        LOG_DEBUG() << LOGGING_CTX << " > Reason: numcomps" << (IMG)->numcomps << "<" << NUM; \
         return QImage(); \
     }
 
@@ -107,8 +107,8 @@ bool is444(opj_image_t *img)
     { \
         if((IMG)->comps[i].alpha) \
         { \
-            LOG_INFO() << LOGGING_CTX << "Failed" << __FUNCTION__; \
-            LOG_INFO() << LOGGING_CTX << " > Reason: image contains alpha component" << i; \
+            LOG_DEBUG() << LOGGING_CTX << "Failed" << __FUNCTION__; \
+            LOG_DEBUG() << LOGGING_CTX << " > Reason: image contains alpha component" << i; \
             return QImage(); \
         } \
     }
@@ -116,16 +116,16 @@ bool is444(opj_image_t *img)
 #define CONSTRAINT_WITH_ALPHA_CHANNEL(IMG) \
     if(!hasAlphaChannel(IMG)) \
     { \
-        LOG_INFO() << LOGGING_CTX << "Failed" << __FUNCTION__; \
-        LOG_INFO() << LOGGING_CTX << " > Reason: image not contains alpha component"; \
+        LOG_DEBUG() << LOGGING_CTX << "Failed" << __FUNCTION__; \
+        LOG_DEBUG() << LOGGING_CTX << " > Reason: image not contains alpha component"; \
         return QImage(); \
     }
 
 #define CONSTRAINT_HAS_USUAL_YCC_COMPONENTS(IMG) \
     if(!(is420(IMG) || is422(IMG) || is444(IMG))) \
     { \
-        LOG_INFO() << LOGGING_CTX << "Failed" << __FUNCTION__; \
-        LOG_INFO() << LOGGING_CTX << " > Reason: image is not match usual YCC component configuration (444, 422 or 420)"; \
+        LOG_DEBUG() << LOGGING_CTX << "Failed" << __FUNCTION__; \
+        LOG_DEBUG() << LOGGING_CTX << " > Reason: image is not match usual YCC component configuration (444, 422 or 420)"; \
         return QImage(); \
     }
 
@@ -133,7 +133,7 @@ bool is444(opj_image_t *img)
     { \
         QImage result = (QIMG); \
         if(!result.isNull()) \
-            LOG_INFO() << LOGGING_CTX << "Completed" << __FUNCTION__; \
+            LOG_DEBUG() << LOGGING_CTX << "Completed" << __FUNCTION__; \
         return result; \
     }
 
@@ -608,29 +608,29 @@ QImage readFile(const QString &filePath)
     switch(image->color_space)
     {
     case OPJ_CLRSPC_UNKNOWN:        // not supported by the library
-        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_UNKNOWN";
+        LOG_DEBUG() << LOGGING_CTX << "color_space = OPJ_CLRSPC_UNKNOWN";
         break;
     case OPJ_CLRSPC_UNSPECIFIED:    // not specified in the codestream
-        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_UNSPECIFIED";
+        LOG_DEBUG() << LOGGING_CTX << "color_space = OPJ_CLRSPC_UNSPECIFIED";
         break;
     case OPJ_CLRSPC_SRGB:           // sRGB
-        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_SRGB";
+        LOG_DEBUG() << LOGGING_CTX << "color_space = OPJ_CLRSPC_SRGB";
         result = (hasAlpha ? rgbaToQImage(image) : rgbToQImage(image));
         break;
     case OPJ_CLRSPC_GRAY:           // grayscale
-        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_GRAY";
+        LOG_DEBUG() << LOGGING_CTX << "color_space = OPJ_CLRSPC_GRAY";
         result = (hasAlpha ? grayAlphaToQImage(image) : grayToQImage(image));
         break;
     case OPJ_CLRSPC_SYCC:           // YUV
-        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_SYCC";
+        LOG_DEBUG() << LOGGING_CTX << "color_space = OPJ_CLRSPC_SYCC";
         result = syccToQImage(image);
         break;
     case OPJ_CLRSPC_EYCC:           // e-YCC
-        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_EYCC";
+        LOG_DEBUG() << LOGGING_CTX << "color_space = OPJ_CLRSPC_EYCC";
         result = esyccToQImage(image);
         break;
     case OPJ_CLRSPC_CMYK:           // CMYK
-        LOG_INFO() << LOGGING_CTX << "color_space = OPJ_CLRSPC_CMYK";
+        LOG_DEBUG() << LOGGING_CTX << "color_space = OPJ_CLRSPC_CMYK";
         result = cmykToQImage(image);
         break;
     default:
@@ -664,7 +664,7 @@ QImage readFile(const QString &filePath)
 
     if(image->icc_profile_buf && image->icc_profile_len)
     {
-        LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
+        LOG_DEBUG() << LOGGING_CTX << "Found ICCP metadata";
         ICCProfile profile(QByteArray::fromRawData(reinterpret_cast<const char*>(image->icc_profile_buf), static_cast<int>(image->icc_profile_len)));
         profile.applyToImage(&result);
     }

@@ -23,9 +23,7 @@
 #include <QDebug>
 
 #define LOG_DEBUG   qDebug
-#define LOG_INFO    qDebug
 #define LOG_WARNING qWarning
-#define LOG_ERROR   qWarning
 
 #if defined (__FILE_NAME__)
 #define LOGGING_FILE QString::fromLatin1(__FILE_NAME__)
@@ -48,7 +46,7 @@
 
 #define LOGGING_CTXQS(QS)   QString::fromLatin1("[%1:%2:%3]:").arg((LOGGING_FILE), (LOGGING_LINE), (QS)).toLatin1().data()
 #define LOGGING_CTXS(S)     LOGGING_CTXQS(QString::fromLatin1(S))
-#define LOGGING_CTX         LOGGING_CTXQS(LOGGING_FUNC)
+#define LOGGING_CTX         LOGGING_CTXQS((LOGGING_FUNC).section(QChar::fromLatin1(':'), -1))
 
 #endif // QTUTILS_LOGGING_H_INCLUDED
 

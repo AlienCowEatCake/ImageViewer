@@ -115,7 +115,7 @@ void PngAnimationProvider::applyICCProfile(png_const_structrp pngPtr, png_inforp
     png_uint_32 proflen;
     if(png_get_iCCP(pngPtr, infoPtr, &name, &compressionType, &profile, &proflen) == PNG_INFO_iCCP)
     {
-        LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
+        LOG_DEBUG() << LOGGING_CTX << "Found ICCP metadata";
         ICCProfile icc(QByteArray::fromRawData(reinterpret_cast<char*>(profile), static_cast<int>(proflen)));
         icc.applyToImage(image);
     }

@@ -660,10 +660,10 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
     switch(status)
     {
     case -2:
-        LOG_INFO() << LOGGING_CTX << "gvfs-trash process cannot be started";
+        LOG_WARNING() << LOGGING_CTX << "gvfs-trash process cannot be started";
         break;
     case -1:
-        LOG_INFO() << LOGGING_CTX << "gvfs-trash process crashed";
+        LOG_WARNING() << LOGGING_CTX << "gvfs-trash process crashed";
         break;
     case 0:
         return true;

@@ -381,19 +381,19 @@ public:
         {
         case RESVG_OPTIONS_SIZE_V020:
             m_opt->opt_v020.path = m_filePath8bit.constData();
-            LOG_INFO() << LOGGING_CTX << "Detected v0.2.0 ABI for resvg_options";
+            LOG_DEBUG() << LOGGING_CTX << "Detected v0.2.0 ABI for resvg_options";
             break;
         case RESVG_OPTIONS_SIZE_V040:
             m_opt->opt_v040.path = m_filePath8bit.constData();
             m_opt->opt_v040.font_family = "Times New Roman";
             m_opt->opt_v040.languages = "";
-            LOG_INFO() << LOGGING_CTX << "Detected v0.4.0 ABI for resvg_options";
+            LOG_DEBUG() << LOGGING_CTX << "Detected v0.4.0 ABI for resvg_options";
             break;
         case RESVG_OPTIONS_SIZE_V070:
             m_opt->opt_v070.path = m_filePath8bit.constData();
             m_opt->opt_v070.font_family = "Times New Roman";
             m_opt->opt_v070.languages = "";
-            LOG_INFO() << LOGGING_CTX << "Detected v0.7.0 ABI for resvg_options";
+            LOG_DEBUG() << LOGGING_CTX << "Detected v0.7.0 ABI for resvg_options";
             break;
         default:
             LOG_WARNING() << LOGGING_CTX << "Can't detect ABI for resvg_options";

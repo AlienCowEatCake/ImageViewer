@@ -246,10 +246,10 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
         switch(marker->marker)
         {
         case EXIF_MARKER:
-            LOG_INFO() << LOGGING_CTX << "Found EXIF metadata";
+            LOG_DEBUG() << LOGGING_CTX << "Found EXIF metadata";
             break;
         case ICCP_MARKER:
-            LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
+            LOG_DEBUG() << LOGGING_CTX << "Found ICCP metadata";
             break;
         default:
             break;

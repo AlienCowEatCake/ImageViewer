@@ -99,7 +99,7 @@ struct RestorableGeometryHelper::Impl : public QObject
             autoSavedGeometry.clear();
             normalGeometry = window->normalGeometry();
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-            LOG_INFO() << LOGGING_CTX << "normalGeometry = " << normalGeometry;
+            LOG_DEBUG() << LOGGING_CTX << "normalGeometry = " << normalGeometry;
 #endif
         }
     }
@@ -112,14 +112,14 @@ struct RestorableGeometryHelper::Impl : public QObject
             {
                 forceSetGeometry(autoSavedGeometry.last().second);
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-                LOG_INFO() << LOGGING_CTX << "window->setGeometry (auto)" << autoSavedGeometry.last().second;
+                LOG_DEBUG() << LOGGING_CTX << "window->setGeometry (auto)" << autoSavedGeometry.last().second;
 #endif
             }
             else
             {
                 forceSetGeometry(normalGeometry);
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-                LOG_INFO() << LOGGING_CTX << "window->setGeometry (normal)" << normalGeometry;
+                LOG_DEBUG() << LOGGING_CTX << "window->setGeometry (normal)" << normalGeometry;
 #endif
             }
         }
@@ -131,7 +131,7 @@ struct RestorableGeometryHelper::Impl : public QObject
         {
             autoSavedGeometry.append(std::make_pair(QDateTime::currentDateTime(), window->normalGeometry()));
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-            LOG_INFO() << LOGGING_CTX << "autoSavedGeometry.append" << autoSavedGeometry.last().second;
+            LOG_DEBUG() << LOGGING_CTX << "autoSavedGeometry.append" << autoSavedGeometry.last().second;
 #endif
         }
 
@@ -178,7 +178,7 @@ struct RestorableGeometryHelper::Impl : public QObject
         normalGeometry = newGeometry;
         autoSavedGeometry.clear();
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-        LOG_INFO() << LOGGING_CTX << "overrideSavedGeometry" << newGeometry;
+        LOG_DEBUG() << LOGGING_CTX << "overrideSavedGeometry" << newGeometry;
 #endif
         restoreGeometry();
     }
@@ -226,7 +226,7 @@ QByteArray RestorableGeometryHelper::serialize() const
     if(normalGeometry.isEmpty())
         return QByteArray();
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-    LOG_INFO() << LOGGING_CTX << "serialize" << m_impl->normalGeometry;
+    LOG_DEBUG() << LOGGING_CTX << "serialize" << m_impl->normalGeometry;
 #endif
     return QString::fromLatin1("FormatVersion:%1;NormalGeometry:(%2,%3 %4x%5)")
             .arg(SERIALIZER_FORMAT_VERSION)
@@ -258,7 +258,7 @@ void RestorableGeometryHelper::deserialize(const QByteArray &data)
     if(newGeometry.isEmpty() || availableRegion.intersected(newGeometry) != newGeometry || newGeometry.topLeft().isNull())
         newGeometry = m_impl->getFallbackGeometry();
 #if defined (RESTORABLE_GEOMETRY_HELPER_DEBUG)
-    LOG_INFO() << LOGGING_CTX << "deserialize" << newGeometry;
+    LOG_DEBUG() << LOGGING_CTX << "deserialize" << newGeometry;
 #endif
     m_impl->overrideSavedGeometry(newGeometry);
 }

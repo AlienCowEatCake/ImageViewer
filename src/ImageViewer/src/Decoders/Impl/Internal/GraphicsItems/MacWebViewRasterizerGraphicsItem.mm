@@ -53,7 +53,7 @@ typedef QTime QElapsedTimer;
 //#define MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG
 
 #if defined (MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-#define DLOG LOG_INFO() << LOGGING_CTX
+#define DLOG LOG_DEBUG() << LOGGING_CTX
 #endif
 
 #include "Workarounds/BeginIgnoreDeprecated.h"
@@ -358,16 +358,16 @@ bool MacWebViewRasterizerGraphicsItem::load(const QByteArray &svgData, const QUr
     m_impl->rect = detectSvgRect();
 
 #if defined (MAC_WEBVIEW_RASTERIZER_GRAPHICS_ITEM_DEBUG)
-    LOG_INFO() << LOGGING_CTX << "***** ----------------------------------------";
-    LOG_INFO() << LOGGING_CTX << "***** Detected SVG document";
-    LOG_INFO() << LOGGING_CTX << "***** ----------------------------------------";
-    LOG_INFO() << LOGGING_CTX << "***** viewBox attribute:" << svgViewBoxAttribute();
-    LOG_INFO() << LOGGING_CTX << "***** size attribute:" << svgSizeAttribute();
-    LOG_INFO() << LOGGING_CTX << "***** getBBox() value:" << svgBoundingBoxRect();
-    LOG_INFO() << LOGGING_CTX << "***** getBoundingClientRect() value:" << svgBoundingClientRect();
-    LOG_INFO() << LOGGING_CTX << "***** ----------------------------------------";
-    LOG_INFO() << LOGGING_CTX << "***** actual rect:" << m_impl->rect;
-    LOG_INFO() << LOGGING_CTX << "***** ----------------------------------------";
+    LOG_DEBUG() << LOGGING_CTX << "***** ----------------------------------------";
+    LOG_DEBUG() << LOGGING_CTX << "***** Detected SVG document";
+    LOG_DEBUG() << LOGGING_CTX << "***** ----------------------------------------";
+    LOG_DEBUG() << LOGGING_CTX << "***** viewBox attribute:" << svgViewBoxAttribute();
+    LOG_DEBUG() << LOGGING_CTX << "***** size attribute:" << svgSizeAttribute();
+    LOG_DEBUG() << LOGGING_CTX << "***** getBBox() value:" << svgBoundingBoxRect();
+    LOG_DEBUG() << LOGGING_CTX << "***** getBoundingClientRect() value:" << svgBoundingClientRect();
+    LOG_DEBUG() << LOGGING_CTX << "***** ----------------------------------------";
+    LOG_DEBUG() << LOGGING_CTX << "***** actual rect:" << m_impl->rect;
+    LOG_DEBUG() << LOGGING_CTX << "***** ----------------------------------------";
 #endif
 
     if(size.isEmpty() && (viewBox.isValid() || !emptySVGViewBoxSupported))

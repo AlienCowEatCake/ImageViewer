@@ -256,7 +256,7 @@ ERR getXmpMetadata(PKImageDecode *decoder, ImageMetaData **metaData)
     const U32 byteCount = decoder->WMP.wmiDEMisc.uXMPMetadataByteCount;
     if(offset && byteCount)
     {
-        LOG_INFO() << LOGGING_CTX << "Found XMP metadata";
+        LOG_DEBUG() << LOGGING_CTX << "Found XMP metadata";
         Call(getMetadata(decoder, rawMetaData, offset, byteCount));
         *metaData = ImageMetaData::joinMetaData(*metaData, ImageMetaData::createXmpMetaData(rawMetaData));
     }
@@ -272,7 +272,7 @@ ERR getExifMetadata(PKImageDecode *decoder, ImageMetaData **metaData)
     const U32 byteCount = decoder->WMP.wmiDEMisc.uEXIFMetadataByteCount;
     if(offset && byteCount)
     {
-        LOG_INFO() << LOGGING_CTX << "Found EXIF metadata";
+        LOG_DEBUG() << LOGGING_CTX << "Found EXIF metadata";
         Call(getMetadata(decoder, rawMetaData, offset, byteCount));
         *metaData = ImageMetaData::joinMetaData(*metaData, ImageMetaData::createExifMetaData(rawMetaData));
     }
@@ -288,7 +288,7 @@ ERR getIccProfileData(PKImageDecode *decoder, QByteArray *profileData)
     Call(decoder->GetColorContext(decoder, Q_NULLPTR, &size));
     if(size > 0)
     {
-        LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
+        LOG_DEBUG() << LOGGING_CTX << "Found ICCP metadata";
         profileData->resize(size);
         Call(decoder->GetColorContext(decoder, reinterpret_cast<U8*>(profileData->data()), &size));
     }
@@ -795,11 +795,11 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 
     if(const char *pixelFormatStr = pixelFormatToString(pixelFormat))
     {
-        LOG_INFO("%s Color format: %s", LOGGING_CTX, pixelFormatStr);
+        LOG_DEBUG("%s Color format: %s", LOGGING_CTX, pixelFormatStr);
     }
     else
     {
-        LOG_INFO("%s Color format: %08X-%04X-%04X-%02X%02X%02X%02X%02X%02X%02X%02X",
+        LOG_DEBUG("%s Color format: %08X-%04X-%04X-%02X%02X%02X%02X%02X%02X%02X%02X",
                 LOGGING_CTX,
                 pixelFormat.Data1, pixelFormat.Data2, pixelFormat.Data3,
                 pixelFormat.Data4[0], pixelFormat.Data4[1], pixelFormat.Data4[2],

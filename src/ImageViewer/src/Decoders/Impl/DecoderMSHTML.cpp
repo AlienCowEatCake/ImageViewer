@@ -584,7 +584,7 @@ protected:
 //            return QVariant();
 //        }
 
-//        LOG_INFO() << LOGGING_CTX << result.vt;
+//        LOG_DEBUG() << LOGGING_CTX << result.vt;
 //        return QVariant();
 //    }
 
@@ -618,7 +618,7 @@ private:
                 if(fakeViewBoxRequired && !compare(reader.name(), QString::fromLatin1("svg"), Qt::CaseInsensitive))
                 {
                     writer.writeAttribute(QString::fromLatin1("viewBox"), QString::fromLatin1("%1 %2 %3 %4").arg(0).arg(0).arg(size.width()).arg(size.height()));
-                    LOG_INFO() << LOGGING_CTX << "Fake viewBox injected";
+                    LOG_DEBUG() << LOGGING_CTX << "Fake viewBox injected";
                 }
             }
         }
@@ -774,7 +774,7 @@ public:
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         if(QSysInfo::windowsVersion() < QSysInfo::WV_VISTA)
         {
-            LOG_INFO() << LOGGING_CTX << "DecoderMSHTML unavailable, reason: windowsVersion() < QSysInfo::WV_VISTA";
+            LOG_DEBUG() << LOGGING_CTX << "DecoderMSHTML unavailable, reason: windowsVersion() < QSysInfo::WV_VISTA";
             state = Qt::PartiallyChecked;
             return false;
         }
@@ -784,15 +784,15 @@ public:
         const QString ieVersion = settings.value(QString::fromLatin1("Version")).toString();
         if(ieVersion.isEmpty())
         {
-            LOG_INFO() << LOGGING_CTX << "DecoderMSHTML unavailable, reason: Can't detect IE version";
+            LOG_DEBUG() << LOGGING_CTX << "DecoderMSHTML unavailable, reason: Can't detect IE version";
             state = Qt::PartiallyChecked;
             return false;
         }
 
-        LOG_INFO() << LOGGING_CTX << "IE version:" << ieVersion;
+        LOG_DEBUG() << LOGGING_CTX << "IE version:" << ieVersion;
         if(ieVersion.split(QChar::fromLatin1('.'), Qt_SkipEmptyParts).first().toInt() < 9)
         {
-            LOG_INFO() << LOGGING_CTX << "DecoderMSHTML unavailable, reason: Required IE >= 9";
+            LOG_DEBUG() << LOGGING_CTX << "DecoderMSHTML unavailable, reason: Required IE >= 9";
             state = Qt::PartiallyChecked;
             return false;
         }

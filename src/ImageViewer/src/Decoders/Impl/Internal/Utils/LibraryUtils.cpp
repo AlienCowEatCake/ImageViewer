@@ -51,7 +51,7 @@ public:
         for(QStringList::ConstIterator it = trustedDirectories.constBegin(), itEnd = trustedDirectories.constEnd(); it != itEnd; ++it)
             if(!m_standardPaths.contains(*it))
                 m_standardPaths.append(*it);
-        LOG_INFO() << LOGGING_CTX << "Paths order:" << m_standardPaths;
+        LOG_DEBUG() << LOGGING_CTX << "Paths order:" << m_standardPaths;
     }
 
     QStringList getPaths() const
@@ -172,7 +172,7 @@ public:
         appendPath(CFTypePtrFromCreate(CFBundleCopySharedFrameworksURL(currentBundle)));
         appendPath(QString::fromLatin1("/usr/local/lib"));
         appendPath(QString::fromLatin1("/usr/lib"));
-        LOG_INFO() << LOGGING_CTX << "Paths order:" << m_standardPaths;
+        LOG_DEBUG() << LOGGING_CTX << "Paths order:" << m_standardPaths;
     }
 
     QStringList getPaths() const
@@ -233,7 +233,7 @@ public:
     StandardLibraryPathProvider()
     {
         appendPath(qApp->applicationDirPath());
-        LOG_INFO() << LOGGING_CTX << "Paths order:" << m_standardPaths;
+        LOG_DEBUG() << LOGGING_CTX << "Paths order:" << m_standardPaths;
     }
 
     QStringList getPaths() const
@@ -275,18 +275,18 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
 {
     for(QStringList::ConstIterator it = names.constBegin(), itEnd = names.constEnd(); it != itEnd; ++it)
     {
-        LOG_INFO() << LOGGING_CTX << "Loading" << *it << "from application directory ...";
+        LOG_DEBUG() << LOGGING_CTX << "Loading" << *it << "from application directory ...";
         library.setFileName(QDir(qApp->applicationDirPath()).filePath(*it));
         if(library.load())
             break;
-        LOG_INFO() << LOGGING_CTX << "Error:" << library.errorString();
-        LOG_INFO() << LOGGING_CTX << "Loading" << *it << "from default directories ...";
+        LOG_DEBUG() << LOGGING_CTX << "Error:" << library.errorString();
+        LOG_DEBUG() << LOGGING_CTX << "Loading" << *it << "from default directories ...";
         library.setFileName(*it);
         if(library.load())
             break;
-        LOG_INFO() << LOGGING_CTX << "Error:" << library.errorString();
+        LOG_DEBUG() << LOGGING_CTX << "Error:" << library.errorString();
 #if defined (Q_OS_LINUX)
-        LOG_INFO() << LOGGING_CTX << "Loading" << *it << "from standard directories ...";
+        LOG_DEBUG() << LOGGING_CTX << "Loading" << *it << "from standard directories ...";
         static const QStringList standardLibDirs = StandardLibraryPathProvider().getPaths();
         for(QStringList::ConstIterator dIt = standardLibDirs.constBegin(), dItEnd = standardLibDirs.constEnd(); dIt != dItEnd; ++dIt)
         {
@@ -307,7 +307,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
                 library.setFileName(libraryPath);
                 if(library.load())
                     break;
-                LOG_INFO() << LOGGING_CTX << "Error:" << library.errorString();
+                LOG_DEBUG() << LOGGING_CTX << "Error:" << library.errorString();
             }
             if(library.isLoaded())
                 break;
@@ -316,7 +316,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
             break;
 #endif
 #if defined (Q_OS_MAC)
-        LOG_INFO() << LOGGING_CTX << "Loading" << *it << "from standard directories ...";
+        LOG_DEBUG() << LOGGING_CTX << "Loading" << *it << "from standard directories ...";
         static const QStringList standardLibDirs = StandardLibraryPathProvider().getPaths();
         for(QStringList::ConstIterator dIt = standardLibDirs.constBegin(), dItEnd = standardLibDirs.constEnd(); dIt != dItEnd; ++dIt)
         {
@@ -337,7 +337,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
                 library.setFileName(libraryPath);
                 if(library.load())
                     break;
-                LOG_INFO() << LOGGING_CTX << "Error:" << library.errorString();
+                LOG_DEBUG() << LOGGING_CTX << "Error:" << library.errorString();
             }
             if(library.isLoaded())
                 break;
@@ -346,7 +346,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
             break;
 #endif
 #if defined (Q_OS_WIN)
-        LOG_INFO() << LOGGING_CTX << "Loading" << *it << "from standard directories ...";
+        LOG_DEBUG() << LOGGING_CTX << "Loading" << *it << "from standard directories ...";
         static const QStringList standardLibDirs = StandardLibraryPathProvider().getPaths();
         for(QStringList::ConstIterator dIt = standardLibDirs.constBegin(), dItEnd = standardLibDirs.constEnd(); dIt != dItEnd; ++dIt)
         {
@@ -367,7 +367,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
                 library.setFileName(libraryPath);
                 if(library.load())
                     break;
-                LOG_INFO() << LOGGING_CTX << "Error:" << library.errorString();
+                LOG_DEBUG() << LOGGING_CTX << "Error:" << library.errorString();
             }
             if(library.isLoaded())
                 break;
@@ -377,7 +377,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
 #endif
     }
     const bool status = library.isLoaded();
-    LOG_INFO() << LOGGING_CTX << (status ? "Loading success!" : "Loading failed!");
+    LOG_DEBUG() << LOGGING_CTX << (status ? "Loading success!" : "Loading failed!");
     return library.isLoaded();
 }
 

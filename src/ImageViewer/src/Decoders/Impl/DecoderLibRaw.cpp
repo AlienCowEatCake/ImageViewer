@@ -152,11 +152,11 @@ public:
 private:
     static int progressCallback(void *data, enum LibRaw_progress p, int iteration, int expected)
     {
-        LOG_INFO() << LOGGING_CTX << libraw_strprogress(p) << "pass" << iteration << "of" << expected;
+        LOG_DEBUG() << LOGGING_CTX << libraw_strprogress(p) << "pass" << iteration << "of" << expected;
         RawImageProcessor *processor = reinterpret_cast<RawImageProcessor*>(data);
         if(!processor->isCancelled())
             return 0;
-        LOG_INFO() << LOGGING_CTX << "Progress is cancelled!";
+        LOG_DEBUG() << LOGGING_CTX << "Progress is cancelled!";
         return 1;
     }
 

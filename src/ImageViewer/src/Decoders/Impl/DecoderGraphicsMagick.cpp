@@ -175,7 +175,7 @@ private:
 
         if(image->orientation)
         {
-            LOG_INFO() << LOGGING_CTX << "Orientation found:" << image->orientation;
+            LOG_DEBUG() << LOGGING_CTX << "Orientation found:" << image->orientation;
             ImageMetaData::applyExifOrientation(&qImage, static_cast<quint16>(image->orientation));
         }
 
@@ -183,7 +183,7 @@ private:
         const unsigned char *profileData = GetImageProfile(image, "ICC", &profileLength);
         if(profileData)
         {
-            LOG_INFO() << LOGGING_CTX << "ICC profile found";
+            LOG_DEBUG() << LOGGING_CTX << "ICC profile found";
             ICCProfile profile(QByteArray::fromRawData(reinterpret_cast<const char*>(profileData), static_cast<int>(profileLength)));
             profile.applyToImage(&qImage);
         }

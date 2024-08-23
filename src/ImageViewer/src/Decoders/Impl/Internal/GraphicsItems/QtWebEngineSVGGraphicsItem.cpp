@@ -82,7 +82,7 @@ int getMaxTextureSize()
         functions->glEnable(GL_TEXTURE_2D);
         functions->glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 
-        LOG_INFO() << LOGGING_CTX << "GL_MAX_TEXTURE_SIZE =" << maxTextureSize;
+        LOG_DEBUG() << LOGGING_CTX << "GL_MAX_TEXTURE_SIZE =" << maxTextureSize;
     }
     return maxTextureSize;
 }

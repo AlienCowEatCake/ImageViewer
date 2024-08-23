@@ -88,15 +88,15 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
         switch(extension->tag)
         {
         case BPG_EXTENSION_TAG_ICCP:
-            LOG_INFO() << LOGGING_CTX << "Found ICCP metadata";
+            LOG_DEBUG() << LOGGING_CTX << "Found ICCP metadata";
             profile.reset(new ICCProfile(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf), static_cast<int>(extension->buf_len))));
             break;
         case BPG_EXTENSION_TAG_EXIF:
-            LOG_INFO() << LOGGING_CTX << "Found EXIF metadata";
+            LOG_DEBUG() << LOGGING_CTX << "Found EXIF metadata";
             metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf + 1), static_cast<int>(extension->buf_len - 1))));
             break;
         case BPG_EXTENSION_TAG_XMP:
-            LOG_INFO() << LOGGING_CTX << "Found XMP metadata";
+            LOG_DEBUG() << LOGGING_CTX << "Found XMP metadata";
             metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf), static_cast<int>(extension->buf_len))));
             break;
         default:

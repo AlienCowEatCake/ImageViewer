@@ -215,18 +215,18 @@ PayloadWithMetaData<QImage> readLercFile(const QString &filePath)
         return QImage();
     }
 
-    LOG_INFO() << LOGGING_CTX << "  version =" << infoArr[LercNS_InfoArrOrder_version];
-    LOG_INFO() << LOGGING_CTX << "  dataType =" << infoArr[LercNS_InfoArrOrder_dataType];
-    LOG_INFO() << LOGGING_CTX << "  nDim =" << infoArr[LercNS_InfoArrOrder_nDim];
-    LOG_INFO() << LOGGING_CTX << "  nCols =" << infoArr[LercNS_InfoArrOrder_nCols];
-    LOG_INFO() << LOGGING_CTX << "  nRows =" << infoArr[LercNS_InfoArrOrder_nRows];
-    LOG_INFO() << LOGGING_CTX << "  nBands =" << infoArr[LercNS_InfoArrOrder_nBands];
-    LOG_INFO() << LOGGING_CTX << "  nValidPixels =" << infoArr[LercNS_InfoArrOrder_nValidPixels];
-    LOG_INFO() << LOGGING_CTX << "  blobSize =" << infoArr[LercNS_InfoArrOrder_blobSize];
-    LOG_INFO() << LOGGING_CTX << "  nMasks =" << infoArr[LercNS_InfoArrOrder_nMasks];
-    LOG_INFO() << LOGGING_CTX << "  zMin =" << dataRangeArr[LercNS_DataRangeArrOrder_zMin];
-    LOG_INFO() << LOGGING_CTX << "  zMax =" << dataRangeArr[LercNS_DataRangeArrOrder_zMax];
-    LOG_INFO() << LOGGING_CTX << "  maxZErrUsed =" << dataRangeArr[LercNS_DataRangeArrOrder_maxZErrUsed];
+    LOG_DEBUG() << LOGGING_CTX << "  version =" << infoArr[LercNS_InfoArrOrder_version];
+    LOG_DEBUG() << LOGGING_CTX << "  dataType =" << infoArr[LercNS_InfoArrOrder_dataType];
+    LOG_DEBUG() << LOGGING_CTX << "  nDim =" << infoArr[LercNS_InfoArrOrder_nDim];
+    LOG_DEBUG() << LOGGING_CTX << "  nCols =" << infoArr[LercNS_InfoArrOrder_nCols];
+    LOG_DEBUG() << LOGGING_CTX << "  nRows =" << infoArr[LercNS_InfoArrOrder_nRows];
+    LOG_DEBUG() << LOGGING_CTX << "  nBands =" << infoArr[LercNS_InfoArrOrder_nBands];
+    LOG_DEBUG() << LOGGING_CTX << "  nValidPixels =" << infoArr[LercNS_InfoArrOrder_nValidPixels];
+    LOG_DEBUG() << LOGGING_CTX << "  blobSize =" << infoArr[LercNS_InfoArrOrder_blobSize];
+    LOG_DEBUG() << LOGGING_CTX << "  nMasks =" << infoArr[LercNS_InfoArrOrder_nMasks];
+    LOG_DEBUG() << LOGGING_CTX << "  zMin =" << dataRangeArr[LercNS_DataRangeArrOrder_zMin];
+    LOG_DEBUG() << LOGGING_CTX << "  zMax =" << dataRangeArr[LercNS_DataRangeArrOrder_zMax];
+    LOG_DEBUG() << LOGGING_CTX << "  maxZErrUsed =" << dataRangeArr[LercNS_DataRangeArrOrder_maxZErrUsed];
 
     QImage result;
     switch(infoArr[LercNS_InfoArrOrder_dataType])

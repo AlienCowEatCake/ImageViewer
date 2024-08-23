@@ -91,7 +91,7 @@ mng_bool MNG_DECL proc_mng_error(mng_handle  hMNG,
     MngAnimationProvider *provider = reinterpret_cast<MngAnimationProvider*>(mng_get_userdata(hMNG));
     if(iSeverity > 2)
         provider->error = true;
-    LOG_INFO("%s MNG error %d: %s; chunk %c%c%c%c; subcode %d:%d",
+    LOG_WARNING("%s MNG error %d: %s; chunk %c%c%c%c; subcode %d:%d",
             LOGGING_CTX,
             iErrorcode, zErrortext,
             (iChunkname >> 24) & 0xff,
@@ -190,7 +190,7 @@ mng_bool MNG_DECL proc_mng_trace(mng_handle /*hMNG*/,
                         mng_int32  iFuncseq,
                         mng_pchar  zFuncname)
 {
-    LOG_INFO("%s mng trace: iFuncnr: %d iFuncseq: %d zFuncname: %s", LOGGING_CTX, iFuncnr, iFuncseq, zFuncname);
+    LOG_DEBUG("%s mng trace: iFuncnr: %d iFuncseq: %d zFuncname: %s", LOGGING_CTX, iFuncnr, iFuncseq, zFuncname);
     return MNG_TRUE;
 }
 

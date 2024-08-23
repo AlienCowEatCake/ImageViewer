@@ -205,7 +205,7 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
         {
             if(strcmp(heif_image_handle_get_metadata_type(handle, ids[i]), "Exif") == 0)
             {
-                LOG_INFO() << LOGGING_CTX << "Found EXIF metadata";
+                LOG_DEBUG() << LOGGING_CTX << "Found EXIF metadata";
                 const size_t metadataSize = heif_image_handle_get_metadata_size(handle, ids[i]);
                 QByteArray rawMetadata(static_cast<int>(metadataSize), 0);
                 error = heif_image_handle_get_metadata(handle, ids[i], rawMetadata.data());
@@ -221,7 +221,7 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
             }
             else if(strcmp(heif_image_handle_get_metadata_type(handle, ids[i]), "XMP") == 0)
             {
-                LOG_INFO() << LOGGING_CTX << "Found XMP metadata";
+                LOG_DEBUG() << LOGGING_CTX << "Found XMP metadata";
                 const size_t metadataSize = heif_image_handle_get_metadata_size(handle, ids[i]);
                 QByteArray rawMetadata(static_cast<int>(metadataSize), 0);
                 error = heif_image_handle_get_metadata(handle, ids[i], rawMetadata.data());

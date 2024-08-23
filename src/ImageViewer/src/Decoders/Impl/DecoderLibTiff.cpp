@@ -403,7 +403,7 @@ ICCProfile *readICCProfile(TIFF *tiff)
     void *iccProfileData = Q_NULLPTR;
     if(TIFFGetField(tiff, TIFFTAG_ICCPROFILE, &iccProfileSize, &iccProfileData))
     {
-        LOG_INFO() << LOGGING_CTX << "Found ICCP metadata (TIFFTAG_ICCPROFILE)";
+        LOG_DEBUG() << LOGGING_CTX << "Found ICCP metadata (TIFFTAG_ICCPROFILE)";
         return new ICCProfile(QByteArray(reinterpret_cast<const char*>(iccProfileData), static_cast<int>(iccProfileSize)));
     }
 
@@ -436,7 +436,7 @@ ICCProfile *readICCProfile(TIFF *tiff)
 
     if(whitePoint || primaryChromaticities || transferFunctionRed || transferFunctionGreen || transferFunctionBlue)
     {
-        LOG_INFO() << LOGGING_CTX << "Found ICCP metadata (TIFFTAG_WHITEPOINT + TIFFTAG_PRIMARYCHROMATICITIES + TIFFTAG_TRANSFERFUNCTION)";
+        LOG_DEBUG() << LOGGING_CTX << "Found ICCP metadata (TIFFTAG_WHITEPOINT + TIFFTAG_PRIMARYCHROMATICITIES + TIFFTAG_TRANSFERFUNCTION)";
 
         /// @note TIFF defaults (CIE D50) does not match sRGB defaults (CIE D65)
         if(!whitePoint && !TIFFGetFieldDefaulted(tiff, TIFFTAG_WHITEPOINT, &whitePoint))
@@ -526,7 +526,7 @@ void readTiffTagToMetaData(TIFF *tiff, ImageMetaData *&metaData, quint32 tag, co
         return;
     if(!TIFFReadEXIFDirectory(tiff, exifOffset))
         return;
-    LOG_INFO() << LOGGING_CTX << "Found EXIF metadata (" << tagDescription << ")";
+    LOG_DEBUG() << LOGGING_CTX << "Found EXIF metadata (" << tagDescription << ")";
     if(!metaData)
         metaData = new ImageMetaData;
     for(int i = 0, tagListCount = TIFFGetTagListCount(tiff); i < tagListCount; i++)
@@ -720,7 +720,7 @@ float getValueFP(const quint8 *buffer, quint64 bitsOffset, quint64 bitsPerSample
     case 64:
         return static_cast<float>(*reinterpret_cast<const double*>(buffer + bitsOffset / 8));
     }
-    LOG_ERROR() << LOGGING_CTX << "Unsupported floating bits per sample =" << bitsPerSample;
+    LOG_WARNING() << LOGGING_CTX << "Unsupported floating bits per sample =" << bitsPerSample;
     assert(false);
     return static_cast<float>(nan(""));
 }
@@ -755,7 +755,7 @@ float convertValueToFP(const quint8 *buffer, quint64 bitsOffset, quint16 sampleF
     }
     case SAMPLEFORMAT_COMPLEXINT:
     case SAMPLEFORMAT_COMPLEXIEEEFP:
-        LOG_ERROR() << LOGGING_CTX << "SAMPLEFORMAT_COMPLEXINT and SAMPLEFORMAT_COMPLEXIEEEFP are not supported";
+        LOG_WARNING() << LOGGING_CTX << "SAMPLEFORMAT_COMPLEXINT and SAMPLEFORMAT_COMPLEXIEEEFP are not supported";
         assert(false);
         break;
     default:
@@ -814,7 +814,7 @@ quint8 convertValueToU8(const quint8 *buffer, quint64 bitsOffset, quint16 sample
     }
     case SAMPLEFORMAT_COMPLEXINT:
     case SAMPLEFORMAT_COMPLEXIEEEFP:
-        LOG_ERROR() << LOGGING_CTX << "SAMPLEFORMAT_COMPLEXINT and SAMPLEFORMAT_COMPLEXIEEEFP are not supported";
+        LOG_WARNING() << LOGGING_CTX << "SAMPLEFORMAT_COMPLEXINT and SAMPLEFORMAT_COMPLEXIEEEFP are not supported";
         assert(false);
         break;
     default:
