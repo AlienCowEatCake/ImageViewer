@@ -334,7 +334,7 @@ float scRgbFloatTosRgbFloat(float f)
     else if(f <= 0.0031308f)
         return qBound(0.0f, f * 12.92f, 1.0f);
     else if(f < 1.0f)
-        return qBound(0.0f, ((1.055f * static_cast<float>(std::pow(static_cast<double>(f), 1.0 / 2.4))) - 0.055f), 1.0f);
+        return qBound(0.0f, ((1.055f * std::pow(f, 1.0f / 2.4f)) - 0.055f), 1.0f);
     else
         return 1.0f;
 }
@@ -390,81 +390,79 @@ U8 alphaFixedToU8(T data)
 }
 
 template<typename T>
-QRgb convertFromGray(const T *data)
+QRgb convertFromGray(const void *data)
 {
-    const double scale = static_cast<double>(std::numeric_limits<T>::max());
-    const int c = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale), 255);
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const float scale = static_cast<float>(std::numeric_limits<T>::max());
+    const int c = qBound<int>(0, static_cast<int>(255.0f * static_cast<float>(pixelData[0]) / scale), 255);
     return qRgb(c, c, c);
 }
 
-template<typename T>
-QRgb convertFromGrayFloat(const T *data)
+QRgb convertFromGrayFloat(const void *data)
 {
     const int c = floatToU8(*reinterpret_cast<const float*>(data));
     return qRgb(c, c, c);
 }
 
-template<typename T>
-QRgb convertFromGrayHalf(const T *data)
+QRgb convertFromGrayHalf(const void *data)
 {
     const int c = halfToU8(*reinterpret_cast<const U16*>(data));
     return qRgb(c, c, c);
 }
 
 template<typename T>
-QRgb convertFromGrayFixed(const T *data)
+QRgb convertFromGrayFixed(const void *data)
 {
-    const int c = qBound<int>(0, static_cast<int>(fixedToU8(data[0])), 255);
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const int c = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[0])), 255);
     return qRgb(c, c, c);
 }
 
 template<typename T>
-QRgb convertFromRGB(const T *data)
+QRgb convertFromRGB(const void *data)
 {
-    const double scale = static_cast<double>(std::numeric_limits<T>::max());
-    const int r = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0 * data[1] / scale), 255);
-    const int b = qBound<int>(0, static_cast<int>(255.0 * data[2] / scale), 255);
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const float scale = static_cast<float>(std::numeric_limits<T>::max());
+    const int r = qBound<int>(0, static_cast<int>(255.0f * pixelData[0] / scale), 255);
+    const int g = qBound<int>(0, static_cast<int>(255.0f * pixelData[1] / scale), 255);
+    const int b = qBound<int>(0, static_cast<int>(255.0f * pixelData[2] / scale), 255);
     return qRgb(r, g, b);
 }
 
-template<typename T>
-QRgb convertFromRGBFloat(const T *data)
+QRgb convertFromRGBFloat(const void *data)
 {
     const float *pixelData = reinterpret_cast<const float*>(data);
     return qRgb(floatToU8(pixelData[0]), floatToU8(pixelData[1]), floatToU8(pixelData[2]));
 }
 
-template<typename T>
-QRgb convertFromRGBHalf(const T *data)
+QRgb convertFromRGBHalf(const void *data)
 {
     const U16 *pixelData = reinterpret_cast<const U16*>(data);
     return qRgb(halfToU8(pixelData[0]), halfToU8(pixelData[1]), halfToU8(pixelData[2]));
 }
 
 template<typename T>
-QRgb convertFromRGBFixed(const T *data)
+QRgb convertFromRGBFixed(const void *data)
 {
-    const int r = qBound<int>(0, static_cast<int>(fixedToU8(data[0])), 255);
-    const int g = qBound<int>(0, static_cast<int>(fixedToU8(data[1])), 255);
-    const int b = qBound<int>(0, static_cast<int>(fixedToU8(data[2])), 255);
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const int r = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[0])), 255);
+    const int g = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[1])), 255);
+    const int b = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[2])), 255);
     return qRgb(r, g, b);
 }
 
-template<typename T>
-QRgb convertFromRGB101010(const T *data)
+QRgb convertFromRGB101010(const void *data)
 {
     const int maxValue = (1 << 10) - 1;
-    const double scale = static_cast<double>(maxValue);
+    const float scale = static_cast<float>(maxValue);
     const U32 *pixelData = reinterpret_cast<const U32*>(data);
-    const int r = qBound<int>(0, static_cast<int>(255.0 * ((pixelData[0] >> 20) & maxValue) / scale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0 * ((pixelData[0] >> 10) & maxValue) / scale), 255);
-    const int b = qBound<int>(0, static_cast<int>(255.0 * ((pixelData[0] >>  0) & maxValue) / scale), 255);
+    const int r = qBound<int>(0, static_cast<int>(255.0f * ((pixelData[0] >> 20) & maxValue) / scale), 255);
+    const int g = qBound<int>(0, static_cast<int>(255.0f * ((pixelData[0] >> 10) & maxValue) / scale), 255);
+    const int b = qBound<int>(0, static_cast<int>(255.0f * ((pixelData[0] >>  0) & maxValue) / scale), 255);
     return qRgb(r, g, b);
 }
 
-template<typename T>
-QRgb convertFromRGBE(const T *data)
+QRgb convertFromRGBE(const void *data)
 {
     const U8 *pixelData = reinterpret_cast<const U8*>(data);
 
@@ -493,54 +491,54 @@ QRgb convertFromRGBE(const T *data)
 }
 
 template<typename T>
-QRgb convertFromRGBA(const T *data)
+QRgb convertFromRGBA(const void *data)
 {
-    const double scale = static_cast<double>(std::numeric_limits<T>::max());
-    const int r = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0 * data[1] / scale), 255);
-    const int b = qBound<int>(0, static_cast<int>(255.0 * data[2] / scale), 255);
-    const int a = qBound<int>(0, static_cast<int>(255.0 * data[3] / scale), 255);
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const float scale = static_cast<float>(std::numeric_limits<T>::max());
+    const int r = qBound<int>(0, static_cast<int>(255.0f * pixelData[0] / scale), 255);
+    const int g = qBound<int>(0, static_cast<int>(255.0f * pixelData[1] / scale), 255);
+    const int b = qBound<int>(0, static_cast<int>(255.0f * pixelData[2] / scale), 255);
+    const int a = qBound<int>(0, static_cast<int>(255.0f * pixelData[3] / scale), 255);
     return qRgba(r, g, b, a);
 }
 
-template<typename T>
-QRgb convertFromRGBAFloat(const T *data)
+QRgb convertFromRGBAFloat(const void *data)
 {
     const float *pixelData = reinterpret_cast<const float*>(data);
     return qRgba(floatToU8(pixelData[0]), floatToU8(pixelData[1]), floatToU8(pixelData[2]), alphaFloatToU8(pixelData[3]));
 }
 
-template<typename T>
-QRgb convertFromRGBAHalf(const T *data)
+QRgb convertFromRGBAHalf(const void *data)
 {
     const U16 *pixelData = reinterpret_cast<const U16*>(data);
     return qRgba(halfToU8(pixelData[0]), halfToU8(pixelData[1]), halfToU8(pixelData[2]), alphaHalfToU8(pixelData[3]));
 }
 
 template<typename T>
-QRgb convertFromRGBAFixed(const T *data)
+QRgb convertFromRGBAFixed(const void *data)
 {
-    const int r = qBound<int>(0, static_cast<int>(fixedToU8(data[0])), 255);
-    const int g = qBound<int>(0, static_cast<int>(fixedToU8(data[1])), 255);
-    const int b = qBound<int>(0, static_cast<int>(fixedToU8(data[2])), 255);
-    const int a = qBound<int>(0, static_cast<int>(alphaFixedToU8(data[3])), 255);
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const int r = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[0])), 255);
+    const int g = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[1])), 255);
+    const int b = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[2])), 255);
+    const int a = qBound<int>(0, static_cast<int>(alphaFixedToU8(pixelData[3])), 255);
     return qRgba(r, g, b, a);
 }
 
 template<typename T>
-QRgb convertFromPRGBA(const T *data)
+QRgb convertFromPRGBA(const void *data)
 {
-    const double scale = static_cast<double>(std::numeric_limits<T>::max());
-    const double alphaScale = data[3] > 0.0 ? (scale / static_cast<double>(data[3])) : 1.0;
-    const int r = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale * alphaScale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0 * data[1] / scale * alphaScale), 255);
-    const int b = qBound<int>(0, static_cast<int>(255.0 * data[2] / scale * alphaScale), 255);
-    const int a = qBound<int>(0, static_cast<int>(255.0 * data[3] / scale), 255);
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const float scale = static_cast<float>(std::numeric_limits<T>::max());
+    const float alphaScale = pixelData[3] > 0.0f ? (scale / static_cast<float>(pixelData[3])) : 1.0f;
+    const int r = qBound<int>(0, static_cast<int>(255.0f * pixelData[0] / scale * alphaScale), 255);
+    const int g = qBound<int>(0, static_cast<int>(255.0f * pixelData[1] / scale * alphaScale), 255);
+    const int b = qBound<int>(0, static_cast<int>(255.0f * pixelData[2] / scale * alphaScale), 255);
+    const int a = qBound<int>(0, static_cast<int>(255.0f * pixelData[3] / scale), 255);
     return qRgba(r, g, b, a);
 }
 
-template<typename T>
-QRgb convertFromPRGBAFloat(const T *data)
+QRgb convertFromPRGBAFloat(const void *data)
 {
     const float *pixelData = reinterpret_cast<const float*>(data);
     const float a = pixelData[3];
@@ -551,100 +549,91 @@ QRgb convertFromPRGBAFloat(const T *data)
 }
 
 template<typename T>
-QRgb convertFromBGR(const T *data)
+QRgb convertFromBGR(const void *data)
 {
-    const double scale = static_cast<double>(std::numeric_limits<T>::max());
-    const int b = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0 * data[1] / scale), 255);
-    const int r = qBound<int>(0, static_cast<int>(255.0 * data[2] / scale), 255);
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const float scale = static_cast<float>(std::numeric_limits<T>::max());
+    const int b = qBound<int>(0, static_cast<int>(255.0f * pixelData[0] / scale), 255);
+    const int g = qBound<int>(0, static_cast<int>(255.0f * pixelData[1] / scale), 255);
+    const int r = qBound<int>(0, static_cast<int>(255.0f * pixelData[2] / scale), 255);
     return qRgb(r, g, b);
 }
 
 template<typename T>
-QRgb convertFromBGRA(const T *data)
+QRgb convertFromBGRA(const void *data)
 {
-    const double scale = static_cast<double>(std::numeric_limits<T>::max());
-    const int b = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0 * data[1] / scale), 255);
-    const int r = qBound<int>(0, static_cast<int>(255.0 * data[2] / scale), 255);
-    const int a = qBound<int>(0, static_cast<int>(255.0 * data[3] / scale), 255);
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const float scale = static_cast<float>(std::numeric_limits<T>::max());
+    const int b = qBound<int>(0, static_cast<int>(255.0f * pixelData[0] / scale), 255);
+    const int g = qBound<int>(0, static_cast<int>(255.0f * pixelData[1] / scale), 255);
+    const int r = qBound<int>(0, static_cast<int>(255.0f * pixelData[2] / scale), 255);
+    const int a = qBound<int>(0, static_cast<int>(255.0f * pixelData[3] / scale), 255);
     return qRgba(r, g, b, a);
 }
 
 template<typename T>
-QRgb convertFromPBGRA(const T *data)
+QRgb convertFromPBGRA(const void *data)
 {
-    const double scale = static_cast<double>(std::numeric_limits<T>::max());
-    const double alphaScale = data[3] > 0.0 ? (scale / static_cast<double>(data[3])) : 1.0;
-    const int b = qBound<int>(0, static_cast<int>(255.0 * data[0] / scale * alphaScale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0 * data[1] / scale * alphaScale), 255);
-    const int r = qBound<int>(0, static_cast<int>(255.0 * data[2] / scale * alphaScale), 255);
-    const int a = qBound<int>(0, static_cast<int>(255.0 * data[3] / scale), 255);
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const float scale = static_cast<float>(std::numeric_limits<T>::max());
+    const float alphaScale = pixelData[3] > 0.0f ? (scale / static_cast<float>(pixelData[3])) : 1.0f;
+    const int b = qBound<int>(0, static_cast<int>(255.0f * pixelData[0] / scale * alphaScale), 255);
+    const int g = qBound<int>(0, static_cast<int>(255.0f * pixelData[1] / scale * alphaScale), 255);
+    const int r = qBound<int>(0, static_cast<int>(255.0f * pixelData[2] / scale * alphaScale), 255);
+    const int a = qBound<int>(0, static_cast<int>(255.0f * pixelData[3] / scale), 255);
     return qRgba(r, g, b, a);
 }
 
 template<typename T>
-QRgb convertFromCMYK(const T *data)
+QRgb convertFromCMYK(const void *data)
 {
-    const double scale = static_cast<double>(std::numeric_limits<T>::max());
-    const double c = data[0] / scale;
-    const double m = data[1] / scale;
-    const double y = data[2] / scale;
-    const double k = data[3] / scale;
-    const int r = qBound<int>(0, static_cast<int>(255.0 * (1.0 - c) * (1.0 - k)), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0 * (1.0 - m) * (1.0 - k)), 255);
-    const int b = qBound<int>(0, static_cast<int>(255.0 * (1.0 - y) * (1.0 - k)), 255);
-    return qRgb(r, g, b);
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const float scale = static_cast<float>(std::numeric_limits<T>::max());
+    const float c = pixelData[0] / scale;
+    const float m = pixelData[1] / scale;
+    const float y = pixelData[2] / scale;
+    const float k = pixelData[3] / scale;
+    return DataProcessing::CMYKToRgb(c, m, y, k);
 }
 
 template<typename T>
-QRgb convertFromCMYKtoCMYK8888(const T *data)
+QRgb convertFromCMYKtoCMYK8888(const void *data)
 {
-    const double scale = static_cast<double>(std::numeric_limits<T>::max());
-    const double c = data[0] / scale;
-    const double m = data[1] / scale;
-    const double y = data[2] / scale;
-    const double k = data[3] / scale;
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const float scale = static_cast<float>(std::numeric_limits<T>::max());
+    const float c = pixelData[0] / scale;
+    const float m = pixelData[1] / scale;
+    const float y = pixelData[2] / scale;
+    const float k = pixelData[3] / scale;
     QRgb result = 0;
     quint8 *resultData = reinterpret_cast<quint8*>(&result);
-    resultData[0] = qBound<int>(0, static_cast<int>(255.0 * c), 255);
-    resultData[1] = qBound<int>(0, static_cast<int>(255.0 * m), 255);
-    resultData[2] = qBound<int>(0, static_cast<int>(255.0 * y), 255);
-    resultData[3] = qBound<int>(0, static_cast<int>(255.0 * k), 255);
+    resultData[0] = qBound<int>(0, static_cast<int>(255.0f * c), 255);
+    resultData[1] = qBound<int>(0, static_cast<int>(255.0f * m), 255);
+    resultData[2] = qBound<int>(0, static_cast<int>(255.0f * y), 255);
+    resultData[3] = qBound<int>(0, static_cast<int>(255.0f * k), 255);
     return result;
 }
 
 template<typename T, size_t alphaIndex>
-QRgb convertFromCMYKA(const T *data)
+QRgb convertFromCMYKA(const void *data)
 {
-    const double scale = static_cast<double>(std::numeric_limits<T>::max());
-    const double c = data[0] / scale;
-    const double m = data[1] / scale;
-    const double y = data[2] / scale;
-    const double k = data[3] / scale;
-    const int a = qBound<int>(0, static_cast<int>(255.0 * data[alphaIndex] / scale), 255);
-    const int r = qBound<int>(0, static_cast<int>(255.0 * (1.0 - c) * (1.0 - k)), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0 * (1.0 - m) * (1.0 - k)), 255);
-    const int b = qBound<int>(0, static_cast<int>(255.0 * (1.0 - y) * (1.0 - k)), 255);
-    return qRgba(r, g, b, a);
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const float scale = static_cast<float>(std::numeric_limits<T>::max());
+    const float c = pixelData[0] / scale;
+    const float m = pixelData[1] / scale;
+    const float y = pixelData[2] / scale;
+    const float k = pixelData[3] / scale;
+    const float a = pixelData[alphaIndex] / scale;
+    return DataProcessing::CMYKToRgba(c, m, y, k, a);
 }
 
 template<typename T>
-QPair<QRgb, quint8> convertFromCMYKAtoCMYK8888PlusAlpha(const T *data, size_t alphaIndex)
+QPair<QRgb, quint8> convertFromCMYKAtoCMYK8888PlusAlpha(const void *data, size_t alphaIndex)
 {
-    const double scale = static_cast<double>(std::numeric_limits<T>::max());
-    const double c = data[0] / scale;
-    const double m = data[1] / scale;
-    const double y = data[2] / scale;
-    const double k = data[3] / scale;
-    const double a = data[alphaIndex] / scale;
-    QRgb result = 0;
-    quint8 *resultData = reinterpret_cast<quint8*>(&result);
-    resultData[0] = qBound<int>(0, static_cast<int>(255.0 * c), 255);
-    resultData[1] = qBound<int>(0, static_cast<int>(255.0 * m), 255);
-    resultData[2] = qBound<int>(0, static_cast<int>(255.0 * y), 255);
-    resultData[3] = qBound<int>(0, static_cast<int>(255.0 * k), 255);
-    return qMakePair<QRgb, quint8>(static_cast<QRgb>(result), static_cast<quint8>(qBound<int>(0, static_cast<int>(255.0 * a), 255)));
+    const T *pixelData = reinterpret_cast<const T*>(data);
+    const float scale = static_cast<float>(std::numeric_limits<T>::max());
+    const float a = pixelData[alphaIndex] / scale;
+    return qMakePair<QRgb, quint8>(convertFromCMYKtoCMYK8888<T>(data), static_cast<quint8>(qBound<int>(0, static_cast<int>(255.0f * a), 255)));
 }
 
 void directCopy(PKImageDecode *decoder, const PKRect &rect, QImage &image, QImage::Format format)
@@ -662,8 +651,7 @@ Cleanup:
         image = QImage();
 }
 
-template<typename T>
-void copyViaBuffer(PKImageDecode *decoder, const PKRect &rect, QImage &image, QImage::Format format, size_t bytesPerPixel, QRgb(*func)(const T*))
+void copyViaBuffer(PKImageDecode *decoder, const PKRect &rect, QImage &image, QImage::Format format, size_t bytesPerPixel, QRgb(*toRgbFunc)(const void*))
 {
     image = QImage(rect.Width, rect.Height, format);
     if(image.isNull())
@@ -681,7 +669,7 @@ void copyViaBuffer(PKImageDecode *decoder, const PKRect &rect, QImage &image, QI
         QRgb *outScanLine = reinterpret_cast<QRgb*>(image.scanLine(y));
         const quint8 *inScanLine = reinterpret_cast<const quint8*>(buffer.data() + bytesPerLine * y);
         for(int x = 0; x < image.width(); ++x)
-            outScanLine[x] = func(reinterpret_cast<const T*>(inScanLine + x * bytesPerPixel));
+            outScanLine[x] = toRgbFunc(inScanLine + x * bytesPerPixel);
     }
 Cleanup:
     if(Failed(err))
@@ -717,7 +705,7 @@ void copyViaBufferCMYKA(PKImageDecode *decoder, const PKRect &rect, QImage &imag
         quint8 *alphaScanLine = reinterpret_cast<quint8*>(alphaChannel.scanLine(y));
         for(int x = 0; x < image.width(); ++x)
         {
-            QPair<QRgb, quint8> outValues = convertFromCMYKAtoCMYK8888PlusAlpha(reinterpret_cast<const T*>(inScanLine + x * bytesPerPixel), bytesPerPixel / sizeof(T) - 1);
+            QPair<QRgb, quint8> outValues = convertFromCMYKAtoCMYK8888PlusAlpha<T>(inScanLine + x * bytesPerPixel, bytesPerPixel / sizeof(T) - 1);
             outScanLine[x] = outValues.first;
             alphaScanLine[x] = outValues.second;
         }
@@ -733,19 +721,16 @@ Cleanup:
 }
 #endif
 
-#if !(USE_RGBX_8888)
-void postprocessARGB32(QImage &image, QRgb(*func)(const quint8*))
+void postprocessARGB32(QImage &image, QRgb(*func)(const void*))
 {
     for(int y = 0; y < image.height(); ++y)
     {
         QRgb *scanLine = reinterpret_cast<QRgb*>(image.scanLine(y));
         for(int x = 0; x < image.width(); ++x)
-            scanLine[x] = func(reinterpret_cast<const quint8*>(scanLine + x));
+            scanLine[x] = func(scanLine + x);
     }
 }
-#endif
 
-#if (USE_RGBX_32FPx4)
 void postprocessscRgbFloat(QImage &image)
 {
     for(int y = 0; y < image.height(); ++y)
@@ -761,7 +746,6 @@ void postprocessscRgbFloat(QImage &image)
         }
     }
 }
-#endif
 
 PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 {
@@ -901,6 +885,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
     {
 #if (USE_GRAYSCALE_8)
         directCopy(decoder.data(), rect, result, QImage::Format_Grayscale8);
+        Q_UNUSED((&convertFromGray<quint8>));
 #else
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 8 / 8, convertFromGray<quint8>);
 #endif
@@ -917,6 +902,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
     {
 #if (USE_GRAYSCALE_16)
         directCopy(decoder.data(), rect, result, QImage::Format_Grayscale16);
+        Q_UNUSED((&convertFromGray<quint16>));
 #else
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 16 / 8, convertFromGray<quint16>);
 #endif
@@ -939,6 +925,8 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 #if (USE_RGBX_8888)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBX8888);
         QImage_rgbSwap(result);
+        Q_UNUSED((&convertFromBGR<quint8>));
+        Q_UNUSED(&postprocessARGB32);
 #else
         directCopy(decoder.data(), rect, result, QImage::Format_RGB32);
         postprocessARGB32(result, convertFromBGR<quint8>);
@@ -950,6 +938,8 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 #if (USE_RGBX_8888)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA8888);
         QImage_rgbSwap(result);
+        Q_UNUSED((&convertFromBGRA<quint8>));
+        Q_UNUSED(&postprocessARGB32);
 #else
         directCopy(decoder.data(), rect, result, QImage::Format_ARGB32);
         postprocessARGB32(result, convertFromBGRA<quint8>);
@@ -962,6 +952,8 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA8888_Premultiplied);
         QImage_convertTo(result, QImage::Format_RGBA8888);
         QImage_rgbSwap(result);
+        Q_UNUSED((&convertFromPBGRA<quint8>));
+        Q_UNUSED(&postprocessARGB32);
 #else
         directCopy(decoder.data(), rect, result, QImage::Format_ARGB32);
         postprocessARGB32(result, convertFromPBGRA<quint8>);
@@ -969,12 +961,14 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppGrayFloat))
     {
-        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 32 / 8, convertFromGrayFloat<float>);
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 32 / 8, convertFromGrayFloat);
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppRGB))
     {
 #if (USE_RGBX_8888)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBX8888);
+        Q_UNUSED((&convertFromRGB<quint8>));
+        Q_UNUSED(&postprocessARGB32);
 #else
         directCopy(decoder.data(), rect, result, QImage::Format_RGB32);
         postprocessARGB32(result, convertFromRGB<quint8>);
@@ -985,6 +979,8 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         decoder->WMP.wmiSCP.uAlphaMode = 2;
 #if (USE_RGBX_8888)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA8888);
+        Q_UNUSED((&convertFromRGBA<quint8>));
+        Q_UNUSED(&postprocessARGB32);
 #else
         directCopy(decoder.data(), rect, result, QImage::Format_ARGB32);
         postprocessARGB32(result, convertFromRGBA<quint8>);
@@ -996,6 +992,8 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 #if (USE_RGBX_8888)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA8888_Premultiplied);
         QImage_convertTo(result, QImage::Format_RGBA8888);
+        Q_UNUSED((&convertFromPRGBA<quint8>));
+        Q_UNUSED(&postprocessARGB32);
 #else
         directCopy(decoder.data(), rect, result, QImage::Format_ARGB32);
         postprocessARGB32(result, convertFromPRGBA<quint8>);
@@ -1013,8 +1011,9 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
     {
 #if (USE_RGB_30)
         directCopy(decoder.data(), rect, result, QImage::Format_RGB30);
+        Q_UNUSED(&convertFromRGB101010);
 #else
-        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 32 / 8, convertFromRGB101010<U32>);
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 32 / 8, convertFromRGB101010);
 #endif
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat48bppRGB) || IsEqualGUID(pixelFormat, GUID_PKPixelFormat48bpp3Channels))
@@ -1026,6 +1025,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         decoder->WMP.wmiSCP.uAlphaMode = 2;
 #if (USE_RGBA_64)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA64);
+        Q_UNUSED((&convertFromRGBA<quint16>));
 #else
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 64 / 8, convertFromRGBA<quint16>);
 #endif
@@ -1036,6 +1036,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 #if (USE_RGBA_64)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA64_Premultiplied);
         QImage_convertTo(result, QImage::Format_RGBA64);
+        Q_UNUSED((&convertFromPRGBA<quint16>));
 #else
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 64 / 8, convertFromPRGBA<quint16>);
 #endif
@@ -1046,7 +1047,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat96bppRGBFloat))
     {
-        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 96 / 8, convertFromRGBFloat<float>);
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 96 / 8, convertFromRGBFloat);
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat128bppRGBAFloat))
     {
@@ -1054,8 +1055,10 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 #if (USE_RGBX_32FPx4)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA32FPx4);
         postprocessscRgbFloat(result);
+        Q_UNUSED(&convertFromRGBAFloat);
 #else
-        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 128 / 8, convertFromRGBAFloat<float>);
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 128 / 8, convertFromRGBAFloat);
+        Q_UNUSED(&postprocessscRgbFloat);
 #endif
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat128bppPRGBAFloat))
@@ -1065,8 +1068,10 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA32FPx4_Premultiplied);
         QImage_convertTo(result, QImage::Format_RGBA32FPx4);
         postprocessscRgbFloat(result);
+        Q_UNUSED(&convertFromPRGBAFloat);
 #else
-        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 128 / 8, convertFromPRGBAFloat<float>);
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 128 / 8, convertFromPRGBAFloat);
+        Q_UNUSED(&postprocessscRgbFloat);
 #endif
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat128bppRGBFloat))
@@ -1074,8 +1079,10 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 #if (USE_RGBX_32FPx4)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBX32FPx4);
         postprocessscRgbFloat(result);
+        Q_UNUSED(&convertFromRGBFloat);
 #else
-        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 128 / 8, convertFromRGBFloat<float>);
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 128 / 8, convertFromRGBFloat);
+        Q_UNUSED(&postprocessscRgbFloat);
 #endif
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppCMYK) || IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bpp4Channels))
@@ -1084,6 +1091,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
             iccProfileData = ICCProfile::defaultCmykProfileData();
 #if (USE_CMYK_8888)
         directCopy(decoder.data(), rect, result, QImage::Format_CMYK8888);
+        Q_UNUSED((&convertFromCMYK<quint8>));
 #else
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 32 / 8, convertFromCMYK<quint8>);
 #endif
@@ -1113,8 +1121,10 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA16FPx4);
         QImage_convertTo(result, QImage::Format_RGBA32FPx4);
         postprocessscRgbFloat(result);
+        Q_UNUSED(&convertFromRGBAHalf);
 #else
-        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 64 / 8, convertFromRGBAHalf<U16>);
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 64 / 8, convertFromRGBAHalf);
+        Q_UNUSED(&postprocessscRgbFloat);
 #endif
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat64bppRGBHalf))
@@ -1123,21 +1133,23 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         directCopy(decoder.data(), rect, result, QImage::Format_RGBA16FPx4); /// @todo Format_RGBX16FPx4 completely black with Qt 6.8.0-beta2
         QImage_convertTo(result, QImage::Format_RGBX32FPx4);
         postprocessscRgbFloat(result);
+        Q_UNUSED(&convertFromRGBHalf);
 #else
-        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 64 / 8, convertFromRGBHalf<U16>);
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 64 / 8, convertFromRGBHalf);
+        Q_UNUSED(&postprocessscRgbFloat);
 #endif
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat48bppRGBHalf))
     {
-        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 48 / 8, convertFromRGBHalf<U16>);
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 48 / 8, convertFromRGBHalf);
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppRGBE))
     {
-        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 32 / 8, convertFromRGBE<U8>);
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 32 / 8, convertFromRGBE);
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat16bppGrayHalf))
     {
-        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 16 / 8, convertFromGrayHalf<U16>);
+        copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 16 / 8, convertFromGrayHalf);
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat32bppGrayFixedPoint))
     {
@@ -1149,8 +1161,10 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
             iccProfileData = ICCProfile::defaultCmykProfileData();
 #if (USE_CMYK_8888)
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_CMYK8888, 64 / 8, convertFromCMYKtoCMYK8888<quint16>);
+        Q_UNUSED((&convertFromCMYK<quint16>));
 #else
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_RGB32, 64 / 8, convertFromCMYK<quint16>);
+        Q_UNUSED((&convertFromCMYKtoCMYK8888<quint16>));
 #endif
     }
     else if(IsEqualGUID(pixelFormat, GUID_PKPixelFormat40bppCMYKAlpha) || IsEqualGUID(pixelFormat, GUID_PKPixelFormat40bpp4ChannelsAlpha))
@@ -1160,6 +1174,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         decoder->WMP.wmiSCP.uAlphaMode = 2;
 #if (USE_CMYK_8888)
         copyViaBufferCMYKA<quint8>(decoder.data(), rect, result, 40 / 8, iccProfileData);
+        Q_UNUSED((&convertFromCMYKA<quint8, 4>));
 #else
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 40 / 8, convertFromCMYKA<quint8, 4>);
 #endif
@@ -1171,6 +1186,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         decoder->WMP.wmiSCP.uAlphaMode = 2;
 #if (USE_CMYK_8888)
         copyViaBufferCMYKA<quint16>(decoder.data(), rect, result, 80 / 8, iccProfileData);
+        Q_UNUSED((&convertFromCMYKA<quint16, 4>));
 #else
         copyViaBuffer(decoder.data(), rect, result, QImage::Format_ARGB32, 80 / 8, convertFromCMYKA<quint16, 4>);
 #endif
