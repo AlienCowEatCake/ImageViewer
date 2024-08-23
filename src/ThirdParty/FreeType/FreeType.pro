@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_FREETYPE_PATH = $${PWD}/freetype-2.13.2
+THIRDPARTY_FREETYPE_PATH = $${PWD}/freetype-2.13.3
 THIRDPARTY_FREETYPE_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -28,7 +28,7 @@ DEFINES += FT_CONFIG_OPTION_USE_PNG
 DEFINES += TT_CONFIG_OPTION_SUBPIXEL_HINTING
 DEFINES += FT_CONFIG_OPTION_NO_ASSEMBLER
 
-# https://github.com/qt/qtbase/blob/6.6.3/src/3rdparty/freetype/CMakeLists.txt
+# https://github.com/qt/qtbase/blob/v6.8.0-beta3/src/3rdparty/freetype/CMakeLists.txt
 SOURCES += \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/autofit.c \
     $${THIRDPARTY_FREETYPE_PATH}/src/base/ftbase.c \
@@ -314,6 +314,7 @@ HEADERS += \
     $${THIRDPARTY_FREETYPE_PATH}/src/sfnt/ttcmapc.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/sfnt/ttcolr.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/sfnt/ttcpal.h \
+    $${THIRDPARTY_FREETYPE_PATH}/src/sfnt/ttgpos.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/sfnt/ttkern.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/sfnt/ttload.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/sfnt/ttmtx.h \

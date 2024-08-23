@@ -227,6 +227,7 @@ nm -C libtp_freetype.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#
 #define FT_Set_Var_Design_Coordinates tp_FT_Set_Var_Design_Coordinates
 #define FT_Sfnt_Table_Info tp_FT_Sfnt_Table_Info
 #define FT_Sin tp_FT_Sin
+#define FT_SqrtFixed tp_FT_SqrtFixed
 #define FT_Stream_Close tp_FT_Stream_Close
 #define FT_Stream_EnterFrame tp_FT_Stream_EnterFrame
 #define FT_Stream_ExitFrame tp_FT_Stream_ExitFrame
