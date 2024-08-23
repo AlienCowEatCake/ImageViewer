@@ -24,6 +24,7 @@
 #include "QtImageFormatsImageReader.h"
 
 #include "Utils/Global.h"
+#include "Utils/IsOneOf.h"
 #include "Utils/Logging.h"
 
 #include "../IDecoder.h"
@@ -92,6 +93,10 @@ public:
         if(image.format() == QImage::Format_CMYK8888)
             ICCProfile(ICCProfile::defaultCmykProfileData()).applyToImage(&image);
 #endif
+
+        // Some image formats can't be rendered successfully
+        if(!IsOneOf(image.format(), QImage::Format_RGB32, QImage::Format_ARGB32))
+            QImage_convertTo(image, image.hasAlphaChannel() ? QImage::Format_ARGB32 : QImage::Format_RGB32);
 
         ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
 #if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))

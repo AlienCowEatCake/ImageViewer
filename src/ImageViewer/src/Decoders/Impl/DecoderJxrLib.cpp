@@ -30,6 +30,7 @@
 #include <QPair>
 
 #include "Utils/Global.h"
+#include "Utils/IsOneOf.h"
 #include "Utils/Logging.h"
 #include "Utils/ScopedPointer.h"
 
@@ -40,6 +41,7 @@
 #include "Internal/ImageMetaData.h"
 #include "Internal/PayloadWithMetaData.h"
 #include "Internal/Utils/CmsUtils.h"
+#include "Internal/Utils/DataProcessing.h"
 
 #if !defined (__ANSI__)
 #define __ANSI__
@@ -353,30 +355,14 @@ U8 alphaFloatToU8(float f)
     return static_cast<U8>(scRgbAlphaFloatTosRgbAlphaFloat(f) * 255.0f);
 }
 
-U32 halfToFloat(U16 u16)
-{
-    // 1s5e10m -> 1s8e23m
-    const U32 s = (u16 >> 15) & 0x0001;
-    const U32 e = (u16 >> 10) & 0x001f;
-    const U32 m = (u16 >>  0) & 0x03ff;
-
-    if(0 == e) // 0, denorm
-        return s << 31;
-    else if(~(/*~0*/0xffffffff << 5) == e) // inf, snan, qnan
-        return (s << 31) | ~(/*~0*/0xffffffff << 8) << 23 | (m << 13);
-    return (s << 31) | ((e - 15 + 127) << 23) | (m << 13); // norm
-}
-
 U8 halfToU8(U16 u16)
 {
-    const U32 f = halfToFloat(u16);
-    return floatToU8(*reinterpret_cast<const float*>(&f));
+    return floatToU8(DataProcessing::float16ToFloat(&u16));
 }
 
 U8 alphaHalfToU8(U16 u16)
 {
-    const U32 f = halfToFloat(u16);
-    return alphaFloatToU8(*reinterpret_cast<const float*>(&f));
+    return alphaFloatToU8(DataProcessing::float16ToFloat(&u16));
 }
 
 float fixedToFloat(I16 i16)
@@ -685,11 +671,11 @@ void copyViaBuffer(PKImageDecode *decoder, const PKRect &rect, QImage &image, QI
         LOG_WARNING() << LOGGING_CTX << "Invalid image size";
         return;
     }
-    const size_t bytesPerLine = image.width() * bytesPerPixel;
+    const U32 bytesPerLine = static_cast<U32>(image.width() * bytesPerPixel);
     QByteArray buffer;
     buffer.resize(image.height() * bytesPerLine);
     ERR err = WMP_errSuccess;
-    Call(decoder->Copy(decoder, &rect, reinterpret_cast<U8*>(buffer.data()), static_cast<U32>(bytesPerLine)));
+    Call(decoder->Copy(decoder, &rect, reinterpret_cast<U8*>(buffer.data()), bytesPerLine));
     for(int y = 0; y < image.height(); ++y)
     {
         QRgb *outScanLine = reinterpret_cast<QRgb*>(image.scanLine(y));
@@ -873,7 +859,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         if(Failed(err))
             LOG_WARNING() << LOGGING_CTX << "GetResolution failed:" << errorToString(err);
         else
-            metaData->addCustomDpi(resolutionX, resolutionY);
+            metaData->addCustomDpi(static_cast<qreal>(resolutionX), static_cast<qreal>(resolutionY));
 
         switch(decoder->WMP.oOrientationFromContainer)
         {
@@ -1362,8 +1348,8 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
         ICCProfile(iccProfileData).applyToImage(&result);
 
     // Some image formats can't be rendered successfully
-    if(result.format() != QImage::Format_ARGB32)
-        QImage_convertTo(result, QImage::Format_ARGB32);
+    if(!IsOneOf(result.format(), QImage::Format_RGB32, QImage::Format_ARGB32))
+        QImage_convertTo(result, result.hasAlphaChannel() ? QImage::Format_ARGB32 : QImage::Format_RGB32);
 
     return PayloadWithMetaData<QImage>(result, metaData);
 }

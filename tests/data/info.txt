@@ -667,8 +667,11 @@ Test image which was created during the development of this project
  * lab16.tif
  * laba.tif
  * laba16.tif
+ * rgb_fp16.tif
 
-Test Lena images with various compression types
+Test Lena images with various compression types and colorspaces
+ * lena_cielab.tiff
+ * lena_icclab.tiff
  * lena_jpeg.tif
  * lena_lzw.tif
  * lena_zip.tif
@@ -914,6 +917,18 @@ EXR:  https://github.com/openexr/openexr-images
 AVIF: https://github.com/AOMediaCodec/av1-avif
 JXR:  https://www.itu.int/net/itu-t/sigdb/speimage/ImageForm-s.aspx?val=10100834
 JXL:  https://github.com/libjxl/conformance
+TIFF: https://www.itu.int/itudoc/itu-t/com16/tiff-fx/t-cases/index.html
+      https://github.com/GeoTIFF/test-data/tree/main/files
+      https://web.archive.org/web/20220611230627/http://www.awaresystems.be/imaging/tiff/bigtiff/BigTIFFSamples.zip
+      http://www.anyhere.com/gward/pixformat/tiffluvimg.html
+      http://www.anyhere.com/gward/pixformat/tiffluvpan.html
+      http://www.anyhere.com/gward/pixformat/tiffluvrend.html
+      https://github.com/HagaiHargil/image-tiff/tree/master/tests/images
+      https://github.com/haraldk/TwelveMonkeys/tree/twelvemonkeys-3.11.0/imageio/imageio-tiff/src/test/resources/tiff
+      https://github.com/haraldk/TwelveMonkeys/tree/twelvemonkeys-3.11.0/imageio/imageio-tiff/src/test/resources/bigtiff
+      https://gitlab.gnome.org/GNOME/gimp/-/issues/5275
+Many: https://github.com/python-pillow/Pillow/tree/10.4.0/Tests/images
+      https://github.com/openpreserve/format-corpus
 
 --------------------------------------------------------------------------------
 

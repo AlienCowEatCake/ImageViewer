@@ -36,6 +36,7 @@
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
 #include "Internal/Utils/CmsUtils.h"
+#include "Internal/Utils/DataProcessing.h"
 
 namespace
 {
@@ -180,10 +181,10 @@ QRgb cmykToCmyk(opj_image_t *img, int componentsData[])
     const float sK = 1.0f / static_cast<float>((1 << img->comps[3].prec) - 1);
 
     // CMYK values from 0 to 1
-    float C = static_cast<float>(componentsData[0]) * sC;
-    float M = static_cast<float>(componentsData[1]) * sM;
-    float Y = static_cast<float>(componentsData[2]) * sY;
-    float K = static_cast<float>(componentsData[3]) * sK;
+    const float C = static_cast<float>(componentsData[0]) * sC;
+    const float M = static_cast<float>(componentsData[1]) * sM;
+    const float Y = static_cast<float>(componentsData[2]) * sY;
+    const float K = static_cast<float>(componentsData[3]) * sK;
 
     // CMYK -> CMYK : CMYK results from 0 to 255
     QRgb result;
@@ -203,21 +204,11 @@ QRgb cmykToQRgb(opj_image_t *img, int componentsData[])
     const float sK = 1.0f / static_cast<float>((1 << img->comps[3].prec) - 1);
 
     // CMYK values from 0 to 1
-    float C = static_cast<float>(componentsData[0]) * sC;
-    float M = static_cast<float>(componentsData[1]) * sM;
-    float Y = static_cast<float>(componentsData[2]) * sY;
-    float K = static_cast<float>(componentsData[3]) * sK;
-
-    // Invert all CMYK values
-    C = 1.0f - C;
-    M = 1.0f - M;
-    Y = 1.0f - Y;
-    K = 1.0f - K;
-
-    // CMYK -> RGB : RGB results from 0 to 255
-    return qRgb(qBound(0, static_cast<int>(255.0f * C * K), 255),     // R
-                qBound(0, static_cast<int>(255.0f * M * K), 255),     // G
-                qBound(0, static_cast<int>(255.0f * Y * K), 255));    // B
+    const float C = static_cast<float>(componentsData[0]) * sC;
+    const float M = static_cast<float>(componentsData[1]) * sM;
+    const float Y = static_cast<float>(componentsData[2]) * sY;
+    const float K = static_cast<float>(componentsData[3]) * sK;
+    return DataProcessing::CMYKToRgb(C, M, Y, K);
 }
 #endif
 

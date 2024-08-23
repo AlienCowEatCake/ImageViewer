@@ -55,6 +55,7 @@
 #include "Internal/ImageMetaData.h"
 #include "Internal/PayloadWithMetaData.h"
 #include "Internal/Utils/CmsUtils.h"
+#include "Internal/Utils/DataProcessing.h"
 #include "Internal/Utils/MappedBuffer.h"
 
 namespace
@@ -168,13 +169,7 @@ QImage renderCmykImage(jas_image_t *jasImage)
             outPixel[2] = v[2];
             outPixel[3] = v[3];
 #else
-            const int c = 255 - v[0];
-            const int m = 255 - v[1];
-            const int y = 255 - v[2];
-            const int k = 255 - v[3];
-            scanline[j] = qRgb(qBound(0, static_cast<int>(c * k / 255), 255),
-                               qBound(0, static_cast<int>(m * k / 255), 255),
-                               qBound(0, static_cast<int>(y * k / 255), 255));
+            scanline[j] = DataProcessing::CMYK8ToRgb(v[0], v[1], v[2], v[3]);
 #endif
         }
     }
@@ -261,44 +256,10 @@ void TransformXyzToRgb(QImage &image)
         for(int j = 0; j < image.width(); ++j)
         {
             /// @todo Find XYZ sample and check X, Y and Z bounds
-            const double X = qRed(scanline[j]) / 255.0 * 100.0;
-            const double Y = qGreen(scanline[j]) / 255.0 * 100.0;
-            const double Z = qBlue(scanline[j]) / 255.0 * 100.0;
-
-            // http://www.easyrgb.com/en/math.php
-            // XYZ → Standard-RGB
-
-            // X, Y and Z input refer to a D65/2° standard illuminant.
-            // sR, sG and sB (standard RGB) output range = 0 ÷ 255
-
-            const double var_X = X / 100.0;
-            const double var_Y = Y / 100.0;
-            const double var_Z = Z / 100.0;
-
-            double var_R = var_X *  3.2406 + var_Y * -1.5372 + var_Z * -0.4986;
-            double var_G = var_X * -0.9689 + var_Y *  1.8758 + var_Z *  0.0415;
-            double var_B = var_X *  0.0557 + var_Y * -0.2040 + var_Z *  1.0570;
-
-            if(var_R > 0.0031308)
-                var_R = 1.055 * std::pow(var_R, 1.0 / 2.4) - 0.055;
-            else
-                var_R = 12.92 * var_R;
-            if(var_G > 0.0031308)
-                var_G = 1.055 * std::pow(var_G, 1.0 / 2.4) - 0.055;
-            else
-                var_G = 12.92 * var_G;
-            if(var_B > 0.0031308)
-                var_B = 1.055 * std::pow(var_B, 1.0 / 2.4) - 0.055;
-            else
-                var_B = 12.92 * var_B;
-
-            const double sR = var_R * 255;
-            const double sG = var_G * 255;
-            const double sB = var_B * 255;
-
-            scanline[j] = qRgb(qBound(0, static_cast<int>(sR), 255),
-                               qBound(0, static_cast<int>(sG), 255),
-                               qBound(0, static_cast<int>(sB), 255));
+            const float X = qRed(scanline[j]) / 255.0f * 95.047f;
+            const float Y = qGreen(scanline[j]) / 255.0f * 100.000f;
+            const float Z = qBlue(scanline[j]) / 255.0f * 108.883f;
+            scanline[j] = DataProcessing::XYZToRgb(X, Y, Z);
         }
     }
 }
@@ -321,70 +282,10 @@ void TransformLabToRgb(QImage &image)
         {
             // L is [0..100]
             // a, b is [-128..128]
-            const double L = qRed(scanline[j]) / 255.0 * 100.0;
-            const double a = qGreen(scanline[j]) - 128.0;
-            const double b = qBlue(scanline[j]) - 128.0;
-
-            // http://www.easyrgb.com/en/math.php
-            // CIE-L*ab → XYZ
-            // XYZ → Standard-RGB
-
-            // X, Y and Z input refer to a D65/2° standard illuminant.
-            // sR, sG and sB (standard RGB) output range = 0 ÷ 255
-
-            double var_Y = (L + 16.0) / 116.0;
-            double var_X = a / 500.0 + var_Y;
-            double var_Z = var_Y - b / 200.0;
-
-            const double var_Y3 = var_Y * var_Y * var_Y;
-            const double var_X3 = var_X * var_X * var_X;
-            const double var_Z3 = var_Z * var_Z * var_Z;
-
-            if(var_Y3 > 0.008856)
-                var_Y = var_Y3;
-            else
-                var_Y = (var_Y - 16.0 / 116.0) / 7.787;
-            if(var_X3 > 0.008856)
-                var_X = var_X3;
-            else
-                var_X = (var_X - 16.0 / 116.0) / 7.787;
-            if(var_Z3 > 0.008856)
-                var_Z = var_Z3;
-            else
-                var_Z = (var_Z - 16.0 / 116.0) / 7.787;
-
-            const double X = var_X * 95.047;
-            const double Y = var_Y * 100.000;
-            const double Z = var_Z * 108.883;
-
-            var_X = X / 100.0;
-            var_Y = Y / 100.0;
-            var_Z = Z / 100.0;
-
-            double var_R = var_X *  3.2406 + var_Y * -1.5372 + var_Z * -0.4986;
-            double var_G = var_X * -0.9689 + var_Y *  1.8758 + var_Z *  0.0415;
-            double var_B = var_X *  0.0557 + var_Y * -0.2040 + var_Z *  1.0570;
-
-            if(var_R > 0.0031308)
-                var_R = 1.055 * std::pow(var_R, 1.0 / 2.4) - 0.055;
-            else
-                var_R = 12.92 * var_R;
-            if(var_G > 0.0031308)
-                var_G = 1.055 * std::pow(var_G, 1.0 / 2.4) - 0.055;
-            else
-                var_G = 12.92 * var_G;
-            if(var_B > 0.0031308)
-                var_B = 1.055 * std::pow(var_B, 1.0 / 2.4) - 0.055;
-            else
-                var_B = 12.92 * var_B;
-
-            const double sR = var_R * 255;
-            const double sG = var_G * 255;
-            const double sB = var_B * 255;
-
-            scanline[j] = qRgb(qBound(0, static_cast<int>(sR), 255),
-                               qBound(0, static_cast<int>(sG), 255),
-                               qBound(0, static_cast<int>(sB), 255));
+            const float L = qRed(scanline[j]) / 255.0f * 100.0f;
+            const float a = qGreen(scanline[j]) - 128.0f;
+            const float b = qBlue(scanline[j]) - 128.0f;
+            scanline[j] = DataProcessing::LabToRgb(L, a, b);
         }
     }
 }

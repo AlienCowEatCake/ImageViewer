@@ -19,6 +19,7 @@
 
 #include "CmsUtils.h"
 
+#include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <map>
@@ -47,6 +48,7 @@
 #endif
 
 #include "Utils/Global.h"
+#include "Utils/IsOneOf.h"
 #include "Utils/Logging.h"
 
 struct ICCProfile::Impl
@@ -309,6 +311,7 @@ void ICCProfile::applyToImage(QImage *image)
 
 #if defined (HAS_LCMS2)
     bool forceCmyk = false;
+    bool forceGray = false;
     cmsUInt32Number inFormat = 0;
     cmsUInt32Number outFormat = 0;
     QImage::Format outImageFormat = image->format();
@@ -330,6 +333,13 @@ void ICCProfile::applyToImage(QImage *image)
         inFormat = outFormat = TYPE_RGBA_8;
         break;
 #endif
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+    case QImage::Format_Grayscale8:
+        inFormat = TYPE_GRAY_8;
+        outFormat = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8;
+        outImageFormat = QImage::Format_RGB32;
+        break;
+#endif
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
     case QImage::Format_CMYK8888:
         inFormat = TYPE_CMYK_8;
@@ -338,16 +348,38 @@ void ICCProfile::applyToImage(QImage *image)
         break;
 #endif
     default:
-        QImage_convertTo(*image, QImage::Format_ARGB32);
+        outImageFormat = QImage::Format_ARGB32;
         inFormat = outFormat = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8;
         break;
     }
     cmsHTRANSFORM transform = m_impl->getOrCreateTransform(inFormat, outFormat);
+    if(!transform && !IsOneOf(inFormat, TYPE_BGRA_8, TYPE_ARGB_8, TYPE_RGBA_8, TYPE_RGBA_8_PREMUL, TYPE_BGRA_8_PREMUL, TYPE_ARGB_8_PREMUL))
+    {
+        LOG_DEBUG() << LOGGING_CTX << "Trying RBG conversion transform";
+        forceCmyk = false;
+        forceGray = false;
+        inFormat = outFormat = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8;
+        outImageFormat = QImage::Format_ARGB32;
+        transform = m_impl->getOrCreateTransform(inFormat, outFormat);
+    }
     if(!transform && inFormat != TYPE_CMYK_8)
     {
-        LOG_WARNING() << LOGGING_CTX << "Trying CMYK conversion transform";
+        LOG_DEBUG() << LOGGING_CTX << "Trying CMYK conversion transform";
         forceCmyk = true;
+        forceGray = false;
         inFormat = TYPE_CMYK_8;
+        outFormat = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8;
+        outImageFormat = QImage::Format_ARGB32;
+        transform = m_impl->getOrCreateTransform(inFormat, outFormat);
+    }
+    if(!transform && inFormat != TYPE_GRAY_8)
+    {
+        LOG_DEBUG() << LOGGING_CTX << "Trying grayscale conversion transform";
+        forceCmyk = false;
+        forceGray = true;
+        inFormat = TYPE_GRAY_8;
+        outFormat = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8;
+        outImageFormat = QImage::Format_ARGB32;
         transform = m_impl->getOrCreateTransform(inFormat, outFormat);
     }
     if(!transform)
@@ -355,19 +387,56 @@ void ICCProfile::applyToImage(QImage *image)
 
     if(inFormat == outFormat)
     {
-        unsigned char *buffer = reinterpret_cast<unsigned char*>(image->bits());
-        cmsDoTransform(transform, buffer, buffer, static_cast<cmsUInt32Number>(image->width() * image->height()));
+        if(image->format() != outImageFormat)
+            QImage_convertTo(*image, outImageFormat);
+        for(int j = 0; j < image->height(); ++j)
+        {
+            unsigned char *buffer = reinterpret_cast<unsigned char*>(image->scanLine(j));
+            cmsDoTransform(transform, buffer, buffer, static_cast<cmsUInt32Number>(image->width()));
+        }
     }
-    else if(forceCmyk)
+    else if(forceGray)
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
-        QImage cmykBuffer = image->convertToFormat(QImage::Format_CMYK8888);
+        if(image->format() != outImageFormat)
+            QImage_convertTo(*image, outImageFormat);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+        QImage grayBuffer = image->convertToFormat(QImage::Format_Grayscale8);
+        for(int j = 0; j < image->height(); ++j)
+        {
+            const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(grayBuffer.scanLine(j));
 #else
-        QImage cmykBuffer = image->convertToFormat(QImage::Format_ARGB32);
+        assert(IsOneOf(image->format(), QImage::Format_ARGB32, QImage::Format_RGB32));
+        QByteArray grayBuffer;
+        grayBuffer.resize(image->width());
         for(int j = 0; j < image->height(); ++j)
         {
             const QRgb *rgbScanLine = reinterpret_cast<const QRgb*>(image->scanLine(j));
-            QRgb *cmykScanLine = reinterpret_cast<QRgb*>(cmykBuffer.scanLine(j));
+            quint8 *grayScanLine = reinterpret_cast<quint8*>(grayBuffer.data());
+            for(int i = 0; i < image->width(); ++i)
+                grayScanLine[i] = static_cast<quint8>(qGray(rgbScanLine[i]));
+            const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(grayBuffer.data());
+#endif
+            unsigned char *outBuffer = reinterpret_cast<unsigned char*>(image->scanLine(j));
+            cmsDoTransform(transform, inBuffer, outBuffer, static_cast<cmsUInt32Number>(image->width()));
+        }
+    }
+    else if(forceCmyk)
+    {
+        if(image->format() != outImageFormat)
+            QImage_convertTo(*image, outImageFormat);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+        QImage cmykBuffer = image->convertToFormat(QImage::Format_CMYK8888);
+        for(int j = 0; j < image->height(); ++j)
+        {
+            const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(cmykBuffer.scanLine(j));
+#else
+        assert(IsOneOf(image->format(), QImage::Format_ARGB32, QImage::Format_RGB32));
+        QByteArray cmykBuffer;
+        cmykBuffer.resize(image->width() * 4);
+        for(int j = 0; j < image->height(); ++j)
+        {
+            const QRgb *rgbScanLine = reinterpret_cast<const QRgb*>(image->scanLine(j));
+            QRgb *cmykScanLine = reinterpret_cast<QRgb*>(cmykBuffer.data());
             for(int i = 0; i < image->width(); ++i)
             {
                 const QRgb rgb = rgbScanLine[i];
@@ -386,35 +455,79 @@ void ICCProfile::applyToImage(QImage *image)
                     c = m = y = 0;
                 }
                 quint8 *cmykPixel = reinterpret_cast<quint8*>(cmykScanLine + i);
-                cmykPixel[0] = qBound(0, c, 255);
-                cmykPixel[1] = qBound(0, m, 255);
-                cmykPixel[2] = qBound(0, y, 255);
-                cmykPixel[3] = qBound(0, k, 255);
+                cmykPixel[0] = static_cast<quint8>(qBound(0, c, 255));
+                cmykPixel[1] = static_cast<quint8>(qBound(0, m, 255));
+                cmykPixel[2] = static_cast<quint8>(qBound(0, y, 255));
+                cmykPixel[3] = static_cast<quint8>(qBound(0, k, 255));
             }
-        }
+            const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(cmykBuffer.data());
 #endif
-        const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(cmykBuffer.bits());
-        unsigned char *outBuffer = reinterpret_cast<unsigned char*>(image->bits());
-        cmsDoTransform(transform, inBuffer, outBuffer, static_cast<cmsUInt32Number>(image->width() * image->height()));
+            unsigned char *outBuffer = reinterpret_cast<unsigned char*>(image->scanLine(j));
+            cmsDoTransform(transform, inBuffer, outBuffer, static_cast<cmsUInt32Number>(image->width()));
+        }
     }
     else
     {
         QImage outImage(image->width(), image->height(), outImageFormat);
         outImage.fill(Qt::black);
-        unsigned char *outBuffer = reinterpret_cast<unsigned char*>(outImage.bits());
-        const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(image->bits());
-        cmsDoTransform(transform, inBuffer, outBuffer, static_cast<cmsUInt32Number>(image->width() * image->height()));
+        for(int j = 0; j < image->height(); ++j)
+        {
+            const unsigned char *inBuffer = reinterpret_cast<const unsigned char*>(image->scanLine(j));
+            unsigned char *outBuffer = reinterpret_cast<unsigned char*>(outImage.scanLine(j));
+            cmsDoTransform(transform, inBuffer, outBuffer, static_cast<cmsUInt32Number>(image->width()));
+        }
         *image = outImage;
     }
 
 #elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+    static const QList<QImage::Format> rgbFormats = QList<QImage::Format>()
+            << QImage::Format_RGB32
+            << QImage::Format_ARGB32
+            << QImage::Format_ARGB32_Premultiplied
+            << QImage::Format_RGB16
+            << QImage::Format_ARGB8565_Premultiplied
+            << QImage::Format_RGB666
+            << QImage::Format_ARGB6666_Premultiplied
+            << QImage::Format_RGB555
+            << QImage::Format_ARGB8555_Premultiplied
+            << QImage::Format_RGB888
+            << QImage::Format_RGB444
+            << QImage::Format_ARGB4444_Premultiplied
+            << QImage::Format_RGBX8888
+            << QImage::Format_RGBA8888
+            << QImage::Format_RGBA8888_Premultiplied
+            << QImage::Format_BGR30
+            << QImage::Format_A2BGR30_Premultiplied
+            << QImage::Format_RGB30
+            << QImage::Format_A2RGB30_Premultiplied
+            << QImage::Format_RGBX64
+            << QImage::Format_RGBA64
+            << QImage::Format_RGBA64_Premultiplied
+            << QImage::Format_BGR888
+            << QImage::Format_RGBX16FPx4
+            << QImage::Format_RGBA16FPx4
+            << QImage::Format_RGBA16FPx4_Premultiplied
+            << QImage::Format_RGBX32FPx4
+            << QImage::Format_RGBA32FPx4
+            << QImage::Format_RGBA32FPx4_Premultiplied
+            ;
     QImage alphaChannel;
     if(m_impl->inColorSpace.colorModel() == QColorSpace::ColorModel::Cmyk && image->format() != QImage::Format_CMYK8888)
     {
         if(image->hasAlphaChannel())
             alphaChannel = image->convertToFormat(QImage::Format_Alpha8);
         QImage_convertTo(*image, QImage::Format_CMYK8888);
+    }
+    else if(m_impl->inColorSpace.colorModel() == QColorSpace::ColorModel::Gray && !IsOneOf(image->format(), QImage::Format_Grayscale8, QImage::Format_Grayscale16))
+    {
+        if(image->hasAlphaChannel())
+            alphaChannel = image->convertToFormat(QImage::Format_Alpha8);
+        QImage_convertTo(*image, QImage::Format_Grayscale8);
+    }
+    else if(m_impl->inColorSpace.colorModel() == QColorSpace::ColorModel::Rgb && !rgbFormats.contains(image->format()))
+    {
+        QImage_convertTo(*image, QImage::Format_ARGB32);
     }
 #endif
 
@@ -481,7 +594,7 @@ static QString defaultCmykProfilePath()
         const QString filePath = QString::fromLocal8Bit(defaultPathEnv);
         if(QFileInfo_exists(filePath))
         {
-            LOG_INFO() << LOGGING_CTX << "Default CMYK profile:" << filePath;
+            LOG_DEBUG() << LOGGING_CTX << "Default CMYK profile:" << filePath;
             return filePath;
         }
     }
@@ -587,7 +700,7 @@ static QString defaultCmykProfilePath()
             profilePlaces.append(*it + *jt);
 #endif
     QList<std::pair<QString, QStringList> > entries;
-    for(QStringList::ConstIterator it = profilePlaces.constBegin(); it != profilePlaces.constEnd() && filePath.isEmpty(); ++it)
+    for(QStringList::ConstIterator it = profilePlaces.constBegin(); it != profilePlaces.constEnd(); ++it)
     {
         const QDir profilePlace(*it);
         if(profilePlace.exists())
@@ -607,7 +720,7 @@ static QString defaultCmykProfilePath()
                 if(it->compare(*kt, Qt::CaseInsensitive) == 0)
                 {
                     filePath = jt->first + QString::fromLatin1("/") + *kt;
-                    LOG_INFO() << LOGGING_CTX << "Default CMYK profile:" << filePath;
+                    LOG_DEBUG() << LOGGING_CTX << "Default CMYK profile:" << filePath;
                 }
             }
         }
@@ -618,7 +731,7 @@ static QString defaultCmykProfilePath()
     {
         filePath = defaultGsCmykProfilePath();
         if(!filePath.isEmpty())
-            LOG_INFO() << LOGGING_CTX << "Default CMYK profile:" << filePath;
+            LOG_DEBUG() << LOGGING_CTX << "Default CMYK profile:" << filePath;
     }
 #endif
     return filePath;
@@ -629,7 +742,7 @@ QByteArray ICCProfile::defaultCmykProfileData()
     static const QString filePath = defaultCmykProfilePath();
     if(filePath.isEmpty())
     {
-        LOG_INFO() << LOGGING_CTX << "Can't find default CMYK profile";
+        LOG_WARNING() << LOGGING_CTX << "Can't find default CMYK profile";
         return QByteArray();
     }
 
