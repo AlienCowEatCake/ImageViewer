@@ -1,4 +1,4 @@
-From 5e42c79dc79b3d6635d9a839d7076962f420b3ce Mon Sep 17 00:00:00 2001
+From b55abb6e9ad6ffe4720ace3b6dde5aea0a14808a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:32:20 +0700
 Subject: [PATCH 3/4] Disable dumpLibraryInfo
@@ -27,7 +27,7 @@ index 703c4abb3..233f7ed48 100644
  
  #endif  // VERSION_HPP_
 diff --git a/src/version.cpp b/src/version.cpp
-index 7e8c0b98a..cbab51ea2 100644
+index 8f273846b..707e3d95a 100644
 --- a/src/version.cpp
 +++ b/src/version.cpp
 @@ -31,6 +31,7 @@
@@ -38,7 +38,7 @@ index 7e8c0b98a..cbab51ea2 100644
  // platform specific support for getLoadedLibraries
  #if defined(_WIN32) || defined(__CYGWIN__)
  // clang-format off
-@@ -58,6 +59,7 @@
+@@ -61,6 +62,7 @@
  #include <dlfcn.h>
  #include <link.h>
  #endif
@@ -46,7 +46,7 @@ index 7e8c0b98a..cbab51ea2 100644
  
  namespace Exiv2 {
  uint32_t versionNumber() {
-@@ -85,6 +87,7 @@ bool testVersion(uint32_t major, uint32_t minor, uint32_t patch) {
+@@ -88,6 +90,7 @@ bool testVersion(uint32_t major, uint32_t minor, uint32_t patch) {
  }
  }  // namespace Exiv2
  
@@ -54,7 +54,7 @@ index 7e8c0b98a..cbab51ea2 100644
  static bool shouldOutput(const std::vector<std::regex>& greps, const char* key, const std::string& value) {
    bool bPrint = greps.empty();
    for (auto const& g : greps) {
-@@ -500,3 +503,4 @@ void Exiv2::dumpLibraryInfo(std::ostream& os, const std::vector<std::regex>& key
+@@ -505,3 +508,4 @@ void Exiv2::dumpLibraryInfo(std::ostream& os, const std::vector<std::regex>& key
    }
  #endif
  }

@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.28.2
+THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.28.3
 THIRDPARTY_EXIV2_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)

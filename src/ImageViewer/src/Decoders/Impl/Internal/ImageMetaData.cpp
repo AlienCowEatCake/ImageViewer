@@ -61,7 +61,7 @@ const QString TAG_CUSTOM_Y_RESOLUTION = QString::fromLatin1("YResolution");
 
 #if defined (HAS_EXIV2)
 
-#if (EXIV2_MAJOR_VERSION == 0 && EXIV2_MINOR_VERSION < 27) || (EXIV2_MAJOR_VERSION == 0 && EXIV2_MINOR_VERSION == 27 && EXIV2_PATCH_VERSION < 99)
+#if (QT_VERSION_CHECK(EXIV2_MAJOR_VERSION, EXIV2_MINOR_VERSION, EXIV2_PATCH_VERSION) < QT_VERSION_CHECK(0, 28, 0))
 typedef Exiv2::Image::AutoPtr Exiv2ImagePtr;
 long Exiv2ValueToLong(const Exiv2::Value &value, long n = 0) { return value.toLong(n); }
 #else
@@ -76,7 +76,7 @@ public:
         : QObject(parent)
     {
         Exiv2::XmpParser::initialize();
-#if defined (EXV_ENABLE_BMFF)
+#if defined (EXV_ENABLE_BMFF) && (QT_VERSION_CHECK(EXIV2_MAJOR_VERSION, EXIV2_MINOR_VERSION, EXIV2_PATCH_VERSION) < QT_VERSION_CHECK(0, 28, 3))
         Exiv2::enableBMFF(true);
 #endif
     }

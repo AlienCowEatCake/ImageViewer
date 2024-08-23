@@ -1,7 +1,7 @@
-From 8862f593a8140b3a4fea21f617ad271641c90909 Mon Sep 17 00:00:00 2001
+From af3bb61464d8e65560da55721fc562ea59f5d208 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 12 Jun 2024 06:06:50 +0700
-Subject: [PATCH 2/2] Use ghc::filesystem if available
+Subject: [PATCH 2/4] Use ghc::filesystem if available
 
 ---
  src/basicio.cpp       | 5 ++++-
@@ -10,10 +10,10 @@ Subject: [PATCH 2/2] Use ghc::filesystem if available
  3 files changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/src/basicio.cpp b/src/basicio.cpp
-index 1986622b3..4a1c25d07 100644
+index 66e78831d..7221fd47b 100644
 --- a/src/basicio.cpp
 +++ b/src/basicio.cpp
-@@ -42,7 +42,10 @@ using mode_t = unsigned short;
+@@ -43,7 +43,10 @@ using mode_t = unsigned short;
  #include <windows.h>
  #endif
  
@@ -26,13 +26,13 @@ index 1986622b3..4a1c25d07 100644
  namespace fs = std::filesystem;
  #else
 diff --git a/src/futils.cpp b/src/futils.cpp
-index c746838d5..d65cc9fbe 100644
+index e2adc9735..1a1c5d087 100644
 --- a/src/futils.cpp
 +++ b/src/futils.cpp
-@@ -15,7 +15,10 @@
- #include <sstream>
+@@ -17,7 +17,10 @@
  #include <stdexcept>
  
+ #ifdef EXV_ENABLE_FILESYSTEM
 -#if __has_include(<filesystem>)
 +#if __has_include(<ghc/filesystem.hpp>)
 +#include <ghc/filesystem.hpp>
@@ -42,13 +42,13 @@ index c746838d5..d65cc9fbe 100644
  namespace fs = std::filesystem;
  #else
 diff --git a/src/makernote_int.cpp b/src/makernote_int.cpp
-index 0d2e0443f..731c703d9 100644
+index 0579d2596..df3851293 100644
 --- a/src/makernote_int.cpp
 +++ b/src/makernote_int.cpp
-@@ -18,7 +18,10 @@
- #include <array>
+@@ -19,7 +19,10 @@
  #include <iostream>
  
+ #ifdef EXV_ENABLE_FILESYSTEM
 -#if __has_include(<filesystem>)
 +#if __has_include(<ghc/filesystem.hpp>)
 +#include <ghc/filesystem.hpp>
