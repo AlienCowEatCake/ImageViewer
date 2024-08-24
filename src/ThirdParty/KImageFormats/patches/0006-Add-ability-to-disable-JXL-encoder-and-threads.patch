@@ -1,4 +1,4 @@
-From 6a575c1349c7667fc6dabccfc83f51f6eea18a42 Mon Sep 17 00:00:00 2001
+From 17a6a13ff581c9e9b04a18a63d397f50e939f217 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:44:31 +0700
 Subject: [PATCH 6/7] Add ability to disable JXL encoder and threads
@@ -8,7 +8,7 @@ Subject: [PATCH 6/7] Add ability to disable JXL encoder and threads
  1 file changed, 33 insertions(+)
 
 diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
-index 25220d1..e4cb08c 100644
+index ec021e6..56af02f 100644
 --- a/src/imageformats/jxl.cpp
 +++ b/src/imageformats/jxl.cpp
 @@ -12,8 +12,41 @@
@@ -52,7 +52,7 @@ index 25220d1..e4cb08c 100644
 +#endif
  #include <string.h>
  
- QJpegXLHandler::QJpegXLHandler()
+ // Avoid rotation on buggy Qts (see also https://bugreports.qt.io/browse/QTBUG-126575)
 -- 
 2.39.2
 

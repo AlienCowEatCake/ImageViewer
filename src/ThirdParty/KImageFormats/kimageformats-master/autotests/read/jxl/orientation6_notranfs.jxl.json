@@ -1,0 +1,19 @@
+[
+    {
+        "minQtVersion" : "6.5.7",
+        "maxQtVersion" : "6.5.99",
+        "disableAutoTransform": true,
+        "fileName" : "orientation6_notranfs.png",
+        "comment" : "Test with automatic transformation disabled."
+    },
+    {
+        "minQtVersion" : "6.7.3",
+        "disableAutoTransform": true,
+        "fileName" : "orientation6_notranfs.png",
+        "comment" : "Test with automatic transformation disabled."
+    },
+    {
+        "unsupportedFormat" : true,
+        "comment" : "It is not possible to disable the transformation with the current version of the plugin."
+    }
+]

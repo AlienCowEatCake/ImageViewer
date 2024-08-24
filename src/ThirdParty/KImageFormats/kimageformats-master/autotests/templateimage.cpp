@@ -28,10 +28,10 @@ bool TemplateImage::isTemplate() const
     return false;
 }
 
-QFileInfo TemplateImage::compareImage(bool &skipTest) const
+QFileInfo TemplateImage::compareImage(TestFlags &flags, QString& comment) const
 {
-    auto fi = jsonImage(skipTest);
-    if (skipTest) {
+    auto fi = jsonImage(flags, comment);
+    if ((flags & TestFlag::SkipTest) == TestFlag::SkipTest) {
         return {};
     }
     if (fi.exists()) {
@@ -58,8 +58,9 @@ QFileInfo TemplateImage::legacyImage() const
     return {};
 }
 
-QFileInfo TemplateImage::jsonImage(bool &skipTest) const
+QFileInfo TemplateImage::jsonImage(TestFlags &flags, QString& comment) const
 {
+    flags = TestFlag::None;
     auto fi = QFileInfo(QStringLiteral("%1.json").arg(m_fi.filePath()));
     if (!fi.exists()) {
         return {};
@@ -86,6 +87,10 @@ QFileInfo TemplateImage::jsonImage(bool &skipTest) const
         auto maxQt = QVersionNumber::fromString(obj.value("maxQtVersion").toString());
         auto name = obj.value("fileName").toString();
         auto unsupportedFormat = obj.value("unsupportedFormat").toBool();
+        comment = obj.value("comment").toString();
+
+        if(obj.value("disableAutoTransform").toBool())
+            flags |= TestFlag::DisableAutotransform;
 
         // filter
         if (name.isEmpty() && !unsupportedFormat)
@@ -95,7 +100,7 @@ QFileInfo TemplateImage::jsonImage(bool &skipTest) const
         if (!maxQt.isNull() && currentQt > maxQt)
             continue;
         if (unsupportedFormat) {
-            skipTest = true;
+            flags |= TestFlag::SkipTest;
             break;
         }
         return QFileInfo(QStringLiteral("%1/%2").arg(fi.path(), name));

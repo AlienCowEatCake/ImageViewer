@@ -1,4 +1,4 @@
-From 753ecb5e9d0bd4caf87476248719ccf68bdd539a Mon Sep 17 00:00:00 2001
+From 435bdc13a2cf6a06042951552b1be38296da36df Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 3 Jan 2024 08:33:45 +0700
 Subject: [PATCH 7/7] Dont use modern options with old Qt verson
@@ -78,7 +78,7 @@ index bfce9ef..7b8435b 100644
      QString m_name;
      QString m_artist;
 diff --git a/src/imageformats/exr.cpp b/src/imageformats/exr.cpp
-index e91e864..0eabd2f 100644
+index 9919040..66887c8 100644
 --- a/src/imageformats/exr.cpp
 +++ b/src/imageformats/exr.cpp
 @@ -81,7 +81,10 @@
@@ -116,7 +116,7 @@ index e91e864..0eabd2f 100644
              image.setText(QStringLiteral(META_KEY_CREATIONDATE), dateTime.toString(Qt::ISODate));
          }
      }
-@@ -400,6 +411,7 @@ bool EXRHandler::read(QImage *outImage)
+@@ -404,6 +415,7 @@ bool EXRHandler::read(QImage *outImage)
              file.readPixels(my, std::min(my + EXR_LINES_PER_BLOCK - 1, dw.max.y));
  
              for (n = 0; n < std::min(EXR_LINES_PER_BLOCK, height - y); ++n) {
@@ -124,7 +124,7 @@ index e91e864..0eabd2f 100644
                  auto scanLine = reinterpret_cast<qfloat16 *>(image.scanLine(y + n));
                  for (int x = 0; x < width; ++x) {
                      auto xcs = x * 4;
-@@ -408,6 +420,15 @@ bool EXRHandler::read(QImage *outImage)
+@@ -412,6 +424,15 @@ bool EXRHandler::read(QImage *outImage)
                      *(scanLine + xcs + 2) = qfloat16(float(pixels[n][x].b));
                      *(scanLine + xcs + 3) = qfloat16(isRgba ? std::clamp(float(pixels[n][x].a), 0.f, 1.f) : 1.f);
                  }
@@ -140,7 +140,7 @@ index e91e864..0eabd2f 100644
              }
          }
  
-@@ -576,12 +597,17 @@ bool EXRHandler::write(const QImage &image)
+@@ -598,12 +619,17 @@ bool EXRHandler::write(const QImage &image)
          pixels.resizeErase(EXR_LINES_PER_BLOCK, width);
  
          // convert the image and write into the stream
@@ -158,7 +158,7 @@ index e91e864..0eabd2f 100644
                  auto scanLine = reinterpret_cast<const qfloat16 *>(slc.convertedScanLine(image, y + n));
                  if (scanLine == nullptr) {
                      return false;
-@@ -593,6 +619,18 @@ bool EXRHandler::write(const QImage &image)
+@@ -615,6 +641,18 @@ bool EXRHandler::write(const QImage &image)
                      pixels[n][x].b = float(*(scanLine + xcs + 2));
                      pixels[n][x].a = float(*(scanLine + xcs + 3));
                  }
@@ -268,7 +268,7 @@ index bee4fdc..0b1bf7d 100644
          }
      }
 diff --git a/src/imageformats/jxl_p.h b/src/imageformats/jxl_p.h
-index 9f6b581..bc8c46b 100644
+index e52b74b..a66d9d2 100644
 --- a/src/imageformats/jxl_p.h
 +++ b/src/imageformats/jxl_p.h
 @@ -17,6 +17,10 @@
@@ -282,7 +282,7 @@ index 9f6b581..bc8c46b 100644
  #include <jxl/decode.h>
  
  class QJpegXLHandler : public QImageIOHandler
-@@ -71,7 +75,11 @@ private:
+@@ -72,7 +76,11 @@ private:
      void *m_runner;
      JxlBasicInfo m_basicinfo;
  
@@ -688,7 +688,7 @@ index f10251e..42d94a7 100644
          v.replace(it.value(), &it.key());
      }
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
-index e4fc67b..8f504e7 100644
+index 2291c88..7a2207b 100644
 --- a/src/imageformats/util_p.h
 +++ b/src/imageformats/util_p.h
 @@ -11,7 +11,10 @@
@@ -702,7 +702,7 @@ index e4fc67b..8f504e7 100644
  
  // Image metadata keys to use in plugins (so they are consistent)
  #define META_KEY_ALTITUDE "Altitude"
-@@ -41,9 +44,13 @@ static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
+@@ -48,9 +51,13 @@ static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
  inline QImage imageAlloc(const QSize &size, const QImage::Format &format)
  {
      QImage img;
@@ -717,7 +717,7 @@ index e4fc67b..8f504e7 100644
  }
  
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index d214c9e..08d6294 100644
+index d0699f4..d109a9d 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -9,21 +9,32 @@
@@ -829,7 +829,7 @@ index d214c9e..08d6294 100644
  #endif
  
      layer.image_tiles.resize(layer.nrows);
-@@ -2019,7 +2052,11 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
+@@ -2023,7 +2056,11 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
  
      const uint blockSize = TILE_WIDTH * TILE_HEIGHT * bpp * 1.5;
  

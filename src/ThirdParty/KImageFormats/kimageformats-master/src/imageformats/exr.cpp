@@ -308,23 +308,27 @@ static void readMetadata(const Imf::Header &header, QImage &image)
         image.setText(QStringLiteral(META_KEY_XMP_ADOBE), QString::fromStdString(xmp->value()));
     }
 
-    /* TODO: OpenEXR 3.2 metadata
-     *
-     * New Optional Standard Attributes:
-     * - Support automated editorial workflow:
-     *   reelName, imageCounter, ascFramingDecisionList
-     *
-     * - Support forensics (“which other shots used that camera and lens before the camera firmware was updated?”):
-     *   cameraMake, cameraModel, cameraSerialNumber, cameraFirmware, cameraUuid, cameraLabel, lensMake, lensModel,
-     *   lensSerialNumber, lensFirmware, cameraColorBalance
-     *
-     * -Support pickup shots (reproduce critical camera settings):
-     *   shutterAngle, cameraCCTSetting, cameraTintSetting
-     *
-     * - Support metadata-driven match move:
-     *   sensorCenterOffset, sensorOverallDimensions, sensorPhotositePitch, sensorAcquisitionRectanglenominalFocalLength,
-     *   effectiveFocalLength, pinholeFocalLength, entrancePupilOffset, tStop(complementing existing 'aperture')
-     */
+    // camera metadata
+    if (auto manufacturer = header.findTypedAttribute<Imf::StringAttribute>("cameraMake")) {
+        image.setText(QStringLiteral(META_KEY_MANUFACTURER), QString::fromStdString(manufacturer->value()));
+    }
+    if (auto model = header.findTypedAttribute<Imf::StringAttribute>("cameraModel")) {
+        image.setText(QStringLiteral(META_KEY_MODEL), QString::fromStdString(model->value()));
+    }
+    if (auto serial = header.findTypedAttribute<Imf::StringAttribute>("cameraSerialNumber")) {
+        image.setText(QStringLiteral(META_KEY_SERIALNUMBER), QString::fromStdString(serial->value()));
+    }
+
+    // lens metadata
+    if (auto manufacturer = header.findTypedAttribute<Imf::StringAttribute>("lensMake")) {
+        image.setText(QStringLiteral(META_KEY_LENS_MANUFACTURER), QString::fromStdString(manufacturer->value()));
+    }
+    if (auto model = header.findTypedAttribute<Imf::StringAttribute>("lensModel")) {
+        image.setText(QStringLiteral(META_KEY_LENS_MODEL), QString::fromStdString(model->value()));
+    }
+    if (auto serial = header.findTypedAttribute<Imf::StringAttribute>("lensSerialNumber")) {
+        image.setText(QStringLiteral(META_KEY_LENS_SERIALNUMBER), QString::fromStdString(serial->value()));
+    }
 }
 
 /*!
@@ -524,6 +528,26 @@ static void setMetadata(const QImage &image, Imf::Header &header)
             header.insert("xmp", Imf::StringAttribute(text.toStdString()));
         }
 #endif
+
+        if (!key.compare(QStringLiteral(META_KEY_MANUFACTURER), Qt::CaseInsensitive)) {
+            header.insert("cameraMake", Imf::StringAttribute(text.toStdString()));
+        }
+        if (!key.compare(QStringLiteral(META_KEY_MODEL), Qt::CaseInsensitive)) {
+            header.insert("cameraModel", Imf::StringAttribute(text.toStdString()));
+        }
+        if (!key.compare(QStringLiteral(META_KEY_SERIALNUMBER), Qt::CaseInsensitive)) {
+            header.insert("cameraSerialNumber", Imf::StringAttribute(text.toStdString()));
+        }
+
+        if (!key.compare(QStringLiteral(META_KEY_LENS_MANUFACTURER), Qt::CaseInsensitive)) {
+            header.insert("lensMake", Imf::StringAttribute(text.toStdString()));
+        }
+        if (!key.compare(QStringLiteral(META_KEY_LENS_MODEL), Qt::CaseInsensitive)) {
+            header.insert("lensModel", Imf::StringAttribute(text.toStdString()));
+        }
+        if (!key.compare(QStringLiteral(META_KEY_LENS_SERIALNUMBER), Qt::CaseInsensitive)) {
+            header.insert("lensSerialNumber", Imf::StringAttribute(text.toStdString()));
+        }
     }
     if (dateTime.isValid()) {
         header.insert("capDate", Imf::StringAttribute(dateTime.toString(QStringLiteral("yyyy:MM:dd HH:mm:ss")).toStdString()));
@@ -540,8 +564,6 @@ static void setMetadata(const QImage &image, Imf::Header &header)
     // If a file doesn’t have a chromaticities attribute, display software should assume that the
     // file’s primaries and the white point match Rec. ITU-R BT.709-3.
     // header.insert("chromaticities", Imf::ChromaticitiesAttribute(Imf::Chromaticities()));
-
-    // TODO: EXR 3.2 attributes (see readMetadata())
 }
 
 bool EXRHandler::write(const QImage &image)

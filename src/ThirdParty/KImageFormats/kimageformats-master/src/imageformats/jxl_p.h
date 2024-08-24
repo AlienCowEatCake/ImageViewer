@@ -68,6 +68,7 @@ private:
     int m_quality;
     int m_currentimage_index;
     int m_previousimage_index;
+    QImageIOHandler::Transformations m_transformations;
 
     QByteArray m_rawData;
 

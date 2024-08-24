@@ -267,10 +267,13 @@ int main(int argc, char **argv)
                 continue;
             }
 
-            bool skipTest = false;
-            QFileInfo expFileInfo = timg.compareImage(skipTest);
-            if (skipTest) {
-                QTextStream(stdout) << "SKIP : " << fi.fileName() << ": image format not supported by current Qt version!\n";
+            TemplateImage::TestFlags flags = TemplateImage::None;
+            QString comment;
+            QFileInfo expFileInfo = timg.compareImage(flags, comment);
+            if ((flags & TemplateImage::SkipTest) == TemplateImage::SkipTest) {
+                if(comment.isEmpty())
+                    comment = QStringLiteral("image format not supported by current Qt version!");
+                QTextStream(stdout) << "SKIP : " << fi.fileName() << QStringLiteral(": %1\n").arg(comment);
                 ++skipped;
                 continue;
             }
@@ -291,7 +294,7 @@ int main(int argc, char **argv)
             QImage expImage;
 
             // inputImage is auto-rotated to final orientation
-            inputReader.setAutoTransform(true);
+            inputReader.setAutoTransform((flags & TemplateImage::DisableAutotransform) != TemplateImage::DisableAutotransform);
 
             if (!expReader.read(&expImage)) {
                 QTextStream(stdout) << "ERROR: " << fi.fileName() << ": could not load " << expfilename << ": " << expReader.errorString() << "\n";

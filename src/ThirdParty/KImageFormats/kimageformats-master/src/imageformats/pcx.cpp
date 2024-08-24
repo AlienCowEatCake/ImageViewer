@@ -67,6 +67,40 @@ public:
     {
         return (Encoding == 1);
     }
+    /*!
+     * \brief isValid
+     * Checks if the header data are valid for the PCX.
+     * \note Put here the header sanity checks.
+     * \return True if the header is a valid PCX header, otherwise false.
+     */
+    inline bool isValid() const
+    {
+        return Manufacturer == 10 && BytesPerLine != 0;
+    }
+    /*!
+     * \brief isSupported
+     * \return True if the header is valid and the PCX format is supported by the plugin. Otherwise false.
+     */
+    inline bool isSupported() const
+    {
+        return isValid() && format() != QImage::Format_Invalid;
+    }
+    inline QImage::Format format() const
+    {
+        auto fmt = QImage::Format_Invalid;
+        if (Bpp == 1 && NPlanes == 1) {
+            fmt = QImage::Format_Mono;
+        } else if (Bpp == 1 && NPlanes == 4) {
+            fmt = QImage::Format_Indexed8;
+        } else if (Bpp == 4 && NPlanes == 1) {
+            fmt = QImage::Format_Indexed8;
+        } else if (Bpp == 8 && NPlanes == 1) {
+            fmt = QImage::Format_Indexed8;
+        } else if (Bpp == 8 && NPlanes == 3) {
+            fmt = QImage::Format_RGB32;
+        }
+        return fmt;
+    }
 
     quint8 Manufacturer; // Constant Flag, 10 = ZSoft .pcx
     quint8 Version; // Version information·
@@ -100,6 +134,8 @@ public:
     // found only in PB IV/IV Plus
     quint16 VScreenSize; // Vertical screen size in pixels. New field
     // found only in PB IV/IV Plus
+
+    quint8 unused[54];
 };
 
 #pragma pack(pop)
@@ -173,9 +209,8 @@ static QDataStream &operator>>(QDataStream &s, PCXHEADER &ph)
     ph.VScreenSize = vscreensize;
 
     // Skip the rest of the header
-    quint8 byte;
-    for (auto i = 0; i < 54; ++i) {
-        s >> byte;
+    for (size_t i = 0, n = sizeof(ph.unused); i < n; ++i) {
+        s >> ph.unused[i];
     }
 
     return s;
@@ -213,9 +248,8 @@ static QDataStream &operator<<(QDataStream &s, const PCXHEADER &ph)
     s << ph.HScreenSize;
     s << ph.VScreenSize;
 
-    quint8 byte = 0;
-    for (int i = 0; i < 54; ++i) {
-        s << byte;
+    for (size_t i = 0, n = sizeof(ph.unused); i < n; ++i) {
+        s << ph.unused[i];
     }
 
     return s;
@@ -228,6 +262,34 @@ PCXHEADER::PCXHEADER()
     dummy.fill(0);
     QDataStream s(&dummy, QIODevice::ReadOnly);
     s >> *this;
+}
+
+bool peekHeader(QIODevice *d, PCXHEADER& h)
+{
+    qint64 pos = 0;
+    if (!d->isSequential()) {
+        pos = d->pos();
+    }
+
+    auto ok = false;
+    { // datastream is destroyed before working on device
+        QDataStream ds(d);
+        ds.setByteOrder(QDataStream::LittleEndian);
+        ds >> h;
+        ok = ds.status() == QDataStream::Ok && h.isValid();
+    }
+
+    if (!d->isSequential()) {
+        return d->seek(pos) && ok;
+    }
+
+    // sequential device undo
+    auto head = reinterpret_cast<char*>(&h);
+    auto readBytes = sizeof(h);
+    while (readBytes > 0) {
+        d->ungetChar(head[readBytes-- - 1]);
+    }
+    return ok;
 }
 
 static bool readLine(QDataStream &s, QByteArray &buf, const PCXHEADER &header)
@@ -265,7 +327,7 @@ static bool readImage1(QImage &img, QDataStream &s, const PCXHEADER &header)
 {
     QByteArray buf(header.BytesPerLine, 0);
 
-    img = imageAlloc(header.width(), header.height(), QImage::Format_Mono);
+    img = imageAlloc(header.width(), header.height(), header.format());
     img.setColorCount(2);
 
     if (img.isNull()) {
@@ -301,10 +363,15 @@ static bool readImage4(QImage &img, QDataStream &s, const PCXHEADER &header)
     QByteArray buf(header.BytesPerLine * 4, 0);
     QByteArray pixbuf(header.width(), 0);
 
-    img = imageAlloc(header.width(), header.height(), QImage::Format_Indexed8);
+    img = imageAlloc(header.width(), header.height(), header.format());
     img.setColorCount(16);
     if (img.isNull()) {
         qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
+        return false;
+    }
+
+    if (header.BytesPerLine < (header.width() + 7) / 8) {
+        qWarning() << "PCX image has invalid BytesPerLine value";
         return false;
     }
 
@@ -344,11 +411,52 @@ static bool readImage4(QImage &img, QDataStream &s, const PCXHEADER &header)
     return true;
 }
 
+static bool readImage4v2(QImage &img, QDataStream &s, const PCXHEADER &header)
+{
+    QByteArray buf(header.BytesPerLine, 0);
+
+    img = imageAlloc(header.width(), header.height(), header.format());
+    img.setColorCount(16);
+
+    if (img.isNull()) {
+        qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
+        return false;
+    }
+
+    for (int y = 0; y < header.height(); ++y) {
+        if (s.atEnd()) {
+            return false;
+        }
+
+        if (!readLine(s, buf, header)) {
+            return false;
+        }
+
+        uchar *p = img.scanLine(y);
+        if (!p) {
+            return false;
+        }
+
+        const unsigned int bpl = std::min(header.BytesPerLine, static_cast<quint16>(header.width() / 2));
+        for (unsigned int x = 0; x < bpl; ++x) {
+            p[x * 2] = (buf[x] & 240) >> 4;
+            p[x * 2 + 1] = buf[x] & 15;
+        }
+    }
+
+    // Read the palette
+    for (int i = 0; i < 16; ++i) {
+        img.setColor(i, header.ColorMap.color(i));
+    }
+
+    return (s.status() == QDataStream::Ok);
+}
+
 static bool readImage8(QImage &img, QDataStream &s, const PCXHEADER &header)
 {
     QByteArray buf(header.BytesPerLine, 0);
 
-    img = imageAlloc(header.width(), header.height(), QImage::Format_Indexed8);
+    img = imageAlloc(header.width(), header.height(), header.format());
     img.setColorCount(256);
 
     if (img.isNull()) {
@@ -411,12 +519,14 @@ static bool readImage24(QImage &img, QDataStream &s, const PCXHEADER &header)
     QByteArray g_buf(header.BytesPerLine, 0);
     QByteArray b_buf(header.BytesPerLine, 0);
 
-    img = imageAlloc(header.width(), header.height(), QImage::Format_RGB32);
+    img = imageAlloc(header.width(), header.height(), header.format());
 
     if (img.isNull()) {
         qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
         return false;
     }
+
+    const unsigned int bpl = std::min(header.BytesPerLine, static_cast<quint16>(header.width()));
 
     for (int y = 0; y < header.height(); ++y) {
         if (s.atEnd()) {
@@ -434,7 +544,8 @@ static bool readImage24(QImage &img, QDataStream &s, const PCXHEADER &header)
         }
 
         uint *p = (uint *)img.scanLine(y);
-        for (int x = 0; x < header.width(); ++x) {
+
+        for (unsigned int x = 0; x < bpl; ++x) {
             p[x] = qRgb(r_buf[x], g_buf[x], b_buf[x]);
         }
     }
@@ -636,7 +747,18 @@ static bool writeImage24(QImage &img, QDataStream &s, PCXHEADER &header)
     return true;
 }
 
+class PCXHandlerPrivate
+{
+public:
+    PCXHandlerPrivate() {}
+    ~PCXHandlerPrivate() {}
+
+    PCXHEADER m_header;
+};
+
 PCXHandler::PCXHandler()
+    : QImageIOHandler()
+    , d(new PCXHandlerPrivate)
 {
 }
 
@@ -658,11 +780,14 @@ bool PCXHandler::read(QImage *outImage)
         return false;
     }
 
-    PCXHEADER header;
-
+    auto&& header = d->m_header;
     s >> header;
 
-    if (header.Manufacturer != 10 || header.BytesPerLine == 0 || s.atEnd()) {
+    if (s.status() != QDataStream::Ok || s.atEnd()) {
+        return false;
+    }
+
+    if (!header.isSupported()) {
         return false;
     }
 
@@ -672,6 +797,8 @@ bool PCXHandler::read(QImage *outImage)
         ok = readImage1(img, s, header);
     } else if (header.Bpp == 1 && header.NPlanes == 4) {
         ok = readImage4(img, s, header);
+    } else if (header.Bpp == 4 && header.NPlanes == 1) {
+        ok = readImage4v2(img, s, header);
     } else if (header.Bpp == 8 && header.NPlanes == 1) {
         ok = readImage8(img, s, header);
     } else if (header.Bpp == 8 && header.NPlanes == 3) {
@@ -730,6 +857,46 @@ bool PCXHandler::write(const QImage &image)
     return ok;
 }
 
+bool PCXHandler::supportsOption(ImageOption option) const
+{
+    if (option == QImageIOHandler::Size) {
+        return true;
+    }
+    if (option == QImageIOHandler::ImageFormat) {
+        return true;
+    }
+    return false;
+}
+
+QVariant PCXHandler::option(ImageOption option) const
+{
+    QVariant v;
+
+    if (option == QImageIOHandler::Size) {
+        auto&& header = d->m_header;
+        if (header.isSupported()) {
+            v = QVariant::fromValue(QSize(header.width(), header.height()));
+        } else if (auto dev = device()) {
+            if (peekHeader(dev, header) && header.isSupported()) {
+                v = QVariant::fromValue(QSize(header.width(), header.height()));
+            }
+        }
+    }
+
+    if (option == QImageIOHandler::ImageFormat) {
+        auto&& header = d->m_header;
+        if (header.isSupported()) {
+            v = QVariant::fromValue(header.format());
+        } else if (auto dev = device()) {
+            if (peekHeader(dev, header) && header.isSupported()) {
+                v = QVariant::fromValue(header.format());
+            }
+        }
+    }
+
+    return v;
+}
+
 bool PCXHandler::canRead(QIODevice *device)
 {
     if (!device) {
@@ -737,30 +904,11 @@ bool PCXHandler::canRead(QIODevice *device)
         return false;
     }
 
-    qint64 oldPos = device->pos();
-
-    char head[1];
-    qint64 readBytes = device->read(head, sizeof(head));
-    if (readBytes != sizeof(head)) {
-        if (device->isSequential()) {
-            while (readBytes > 0) {
-                device->ungetChar(head[readBytes-- - 1]);
-            }
-        } else {
-            device->seek(oldPos);
-        }
+    PCXHEADER header;
+    if (!peekHeader(device, header)) {
         return false;
     }
-
-    if (device->isSequential()) {
-        while (readBytes > 0) {
-            device->ungetChar(head[readBytes-- - 1]);
-        }
-    } else {
-        device->seek(oldPos);
-    }
-
-    return qstrncmp(head, "\012", 1) == 0;
+    return header.isSupported();
 }
 
 QImageIOPlugin::Capabilities PCXPlugin::capabilities(QIODevice *device, const QByteArray &format) const

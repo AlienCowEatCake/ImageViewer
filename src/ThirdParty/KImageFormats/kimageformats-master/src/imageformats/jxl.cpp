@@ -49,11 +49,19 @@ typedef enum {JXL_ENC_SUCCESS, JXL_ENC_ERROR, JXL_ENC_NEED_MORE_OUTPUT, JXL_ENC_
 #endif
 #include <string.h>
 
+// Avoid rotation on buggy Qts (see also https://bugreports.qt.io/browse/QTBUG-126575)
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 7) && QT_VERSION < QT_VERSION_CHECK(6, 6, 0)) || (QT_VERSION >= QT_VERSION_CHECK(6, 7, 3))
+#ifndef JXL_QT_AUTOTRANSFORM
+#define JXL_QT_AUTOTRANSFORM
+#endif
+#endif
+
 QJpegXLHandler::QJpegXLHandler()
     : m_parseState(ParseJpegXLNotParsed)
     , m_quality(90)
     , m_currentimage_index(0)
     , m_previousimage_index(-1)
+    , m_transformations(QImageIOHandler::TransformationNone)
     , m_decoder(nullptr)
     , m_runner(nullptr)
     , m_next_image_delay(0)
@@ -161,6 +169,11 @@ bool QJpegXLHandler::ensureDecoder()
         m_parseState = ParseJpegXLError;
         return false;
     }
+
+#ifdef JXL_QT_AUTOTRANSFORM
+    // Let Qt handle the orientation.
+    JxlDecoderSetKeepOrientation(m_decoder, true);
+#endif
 
     int num_worker_threads = QThread::idealThreadCount();
     if (!m_runner && num_worker_threads >= 4) {
@@ -601,10 +614,25 @@ bool QJpegXLHandler::write(const QImage &image)
     pixel_format.endianness = JXL_NATIVE_ENDIAN;
     pixel_format.align = 0;
 
-    output_info.orientation = JXL_ORIENT_IDENTITY;
     output_info.num_color_channels = 3;
     output_info.animation.tps_numerator = 10;
     output_info.animation.tps_denominator = 1;
+    output_info.orientation = JXL_ORIENT_IDENTITY;
+    if (m_transformations == QImageIOHandler::TransformationMirror) {
+        output_info.orientation = JXL_ORIENT_FLIP_HORIZONTAL;
+    } else if (m_transformations == QImageIOHandler::TransformationRotate180) {
+        output_info.orientation = JXL_ORIENT_ROTATE_180;
+    } else if (m_transformations == QImageIOHandler::TransformationFlip) {
+        output_info.orientation = JXL_ORIENT_FLIP_VERTICAL;
+    } else if (m_transformations == QImageIOHandler::TransformationFlipAndRotate90) {
+        output_info.orientation = JXL_ORIENT_TRANSPOSE;
+    } else if (m_transformations == QImageIOHandler::TransformationRotate90) {
+        output_info.orientation = JXL_ORIENT_ROTATE_90_CW;
+    } else if (m_transformations == QImageIOHandler::TransformationMirrorAndRotate90) {
+        output_info.orientation = JXL_ORIENT_ANTI_TRANSPOSE;
+    } else if (m_transformations == QImageIOHandler::TransformationRotate270) {
+        output_info.orientation = JXL_ORIENT_ROTATE_90_CCW;
+    }
 
     if (save_depth > 8) { // 16bit depth
         pixel_format.data_type = JXL_TYPE_UINT16;
@@ -810,13 +838,23 @@ bool QJpegXLHandler::write(const QImage &image)
 
 QVariant QJpegXLHandler::option(ImageOption option) const
 {
+    if (!supportsOption(option)) {
+        return QVariant();
+    }
+
     if (option == Quality) {
         return m_quality;
     }
 
-    if (!supportsOption(option) || !ensureParsed()) {
+    if (!ensureParsed()) {
+#ifdef JXL_QT_AUTOTRANSFORM
+        if (option == ImageTransformation) {
+            return int(m_transformations);
+        }
+#endif
         return QVariant();
     }
+
 
     switch (option) {
     case Size:
@@ -827,9 +865,31 @@ QVariant QJpegXLHandler::option(ImageOption option) const
         } else {
             return false;
         }
+#ifdef JXL_QT_AUTOTRANSFORM
+    case ImageTransformation:
+        if (m_basicinfo.orientation == JXL_ORIENT_IDENTITY) {
+            return int(QImageIOHandler::TransformationNone);
+        } else if (m_basicinfo.orientation == JXL_ORIENT_FLIP_HORIZONTAL) {
+            return int(QImageIOHandler::TransformationMirror);
+        } else if (m_basicinfo.orientation == JXL_ORIENT_ROTATE_180) {
+            return int(QImageIOHandler::TransformationRotate180);
+        } else if (m_basicinfo.orientation == JXL_ORIENT_FLIP_VERTICAL) {
+            return int(QImageIOHandler::TransformationFlip);
+        } else if (m_basicinfo.orientation == JXL_ORIENT_TRANSPOSE) {
+            return int(QImageIOHandler::TransformationFlipAndRotate90);
+        } else if (m_basicinfo.orientation == JXL_ORIENT_ROTATE_90_CW) {
+            return int(QImageIOHandler::TransformationRotate90);
+        } else if (m_basicinfo.orientation == JXL_ORIENT_ANTI_TRANSPOSE) {
+            return int(QImageIOHandler::TransformationMirrorAndRotate90);
+        } else if (m_basicinfo.orientation == JXL_ORIENT_ROTATE_90_CCW) {
+            return int(QImageIOHandler::TransformationRotate270);
+        }
+#endif
     default:
         return QVariant();
     }
+
+    return QVariant();
 }
 
 void QJpegXLHandler::setOption(ImageOption option, const QVariant &value)
@@ -843,6 +903,14 @@ void QJpegXLHandler::setOption(ImageOption option, const QVariant &value)
             m_quality = 90;
         }
         return;
+#ifdef JXL_QT_AUTOTRANSFORM
+    case ImageTransformation:
+        if (auto t = value.toInt()) {
+            if (t > 0 && t < 8)
+                m_transformations = QImageIOHandler::Transformations(t);
+        }
+        break;
+#endif
     default:
         break;
     }
@@ -851,7 +919,11 @@ void QJpegXLHandler::setOption(ImageOption option, const QVariant &value)
 
 bool QJpegXLHandler::supportsOption(ImageOption option) const
 {
-    return option == Quality || option == Size || option == Animation;
+    auto supported = option == Quality || option == Size || option == Animation;
+#ifdef JXL_QT_AUTOTRANSFORM
+    supported = supported || option == ImageTransformation;
+#endif
+    return supported;
 }
 
 int QJpegXLHandler::imageCount() const

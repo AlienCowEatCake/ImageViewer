@@ -16,6 +16,13 @@
 class TemplateImage
 {
 public:
+    enum TestFlag {
+        None = 0x0,
+        SkipTest = 0x1,
+        DisableAutotransform = 0x2
+    };
+    Q_DECLARE_FLAGS(TestFlags, TestFlag)
+
     /*!
      * \brief TemplateImage
      * \param fi The image to test.
@@ -42,10 +49,10 @@ public:
 
     /*!
      * \brief compareImage
-     * \param skipTest True if the test should be skipped (e.g. image format not supported by current Qt version).
+     * \param flags Flags for modifying test behavior (e.g. image format not supported by current Qt version).
      * \return The template image to use for the comparison.
      */
-    QFileInfo compareImage(bool &skipTest) const;
+    QFileInfo compareImage(TestFlags &flags, QString& comment) const;
 
     /*!
      * \brief suffixes
@@ -62,13 +69,15 @@ private:
 
     /*!
      * \brief jsonImage
-     * \param skipTest True if the test should be skipped (not supported).
+     * \param flags Flags for modifying test behavior.
      * \return The template image read from the corresponding JSON.
      */
-    QFileInfo jsonImage(bool &skipTest) const;
+    QFileInfo jsonImage(TestFlags &flags, QString& comment) const;
 
 private:
     QFileInfo m_fi;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(TemplateImage::TestFlags)
 
 #endif // TEMPLATEIMAGE_H

@@ -9,7 +9,9 @@
 #define KIMG_PCX_P_H
 
 #include <QImageIOPlugin>
+#include <QScopedPointer>
 
+class PCXHandlerPrivate;
 class PCXHandler : public QImageIOHandler
 {
 public:
@@ -19,7 +21,13 @@ public:
     bool read(QImage *image) override;
     bool write(const QImage &image) override;
 
+    bool supportsOption(QImageIOHandler::ImageOption option) const override;
+    QVariant option(QImageIOHandler::ImageOption option) const override;
+
     static bool canRead(QIODevice *device);
+
+private:
+    const QScopedPointer<PCXHandlerPrivate> d;
 };
 
 class PCXPlugin : public QImageIOPlugin

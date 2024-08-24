@@ -1,4 +1,4 @@
-From c41ea504e708626ed7f92f1e2882ad4d2786a399 Mon Sep 17 00:00:00 2001
+From b1a53214207c637887a788951a4b1fdf84698aed Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
 Subject: [PATCH 2/7] Remove C++17 features
@@ -80,11 +80,11 @@ index 3f816be..ce15ef8 100644
      for (int i = 0; i < 12; i++) {
          s << targaMagic[i];
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
-index ab69702..e4fc67b 100644
+index 27c1082..2291c88 100644
 --- a/src/imageformats/util_p.h
 +++ b/src/imageformats/util_p.h
-@@ -34,7 +34,7 @@
- #define META_KEY_XMP_ADOBE "XML:com.adobe.xmp"
+@@ -41,7 +41,7 @@
+ #define META_KEY_LENS_SERIALNUMBER "LensSerialNumber"
  
  // QList uses some extra space for stuff, hence the 32 here suggested by Thiago Macieira
 -static constexpr int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
@@ -93,7 +93,7 @@ index ab69702..e4fc67b 100644
  // On Qt 6 to make the plugins fail to allocate if the image size is greater than QImageReader::allocationLimit()
  // it is necessary to allocate the image with QImageIOHandler::allocateImage().
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index b2fb773..d214c9e 100644
+index 97b3ab1..d0699f4 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -57,7 +57,7 @@ namespace

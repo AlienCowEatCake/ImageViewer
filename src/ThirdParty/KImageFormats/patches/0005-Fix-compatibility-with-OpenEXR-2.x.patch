@@ -1,4 +1,4 @@
-From 92d0734f5572e8ab3afdea1d189d4a3d416162b2 Mon Sep 17 00:00:00 2001
+From e276fb2c0d2bfebb46632c49f81e0bc9471e7bb4 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 11 Nov 2023 22:42:48 +0700
 Subject: [PATCH 5/7] Fix compatibility with OpenEXR 2.x
@@ -8,7 +8,7 @@ Subject: [PATCH 5/7] Fix compatibility with OpenEXR 2.x
  1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/src/imageformats/exr.cpp b/src/imageformats/exr.cpp
-index 6afe0ee..e91e864 100644
+index 0e2d19e..9919040 100644
 --- a/src/imageformats/exr.cpp
 +++ b/src/imageformats/exr.cpp
 @@ -178,7 +178,7 @@ void K_OStream::write(const char c[], int n)
@@ -29,7 +29,7 @@ index 6afe0ee..e91e864 100644
  #endif
  {
      m_dev->seek(pos);
-@@ -542,12 +542,14 @@ bool EXRHandler::write(const QImage &image)
+@@ -564,12 +564,14 @@ bool EXRHandler::write(const QImage &image)
          if (m_compressionRatio >= qint32(Imf::Compression::NO_COMPRESSION) && m_compressionRatio < qint32(Imf::Compression::NUM_COMPRESSION_METHODS)) {
              header.compression() = Imf::Compression(m_compressionRatio);
          }
