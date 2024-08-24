@@ -233,15 +233,17 @@ bool QWebpHandler::write(const QImage &image)
         return false;
     }
 
-    QImage srcImage = image;
-    bool alpha = srcImage.hasAlphaChannel();
+    const bool alpha = image.hasAlphaChannel();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     QImage::Format newFormat = alpha ? QImage::Format_RGBA8888 : QImage::Format_RGB888;
 #else
     QImage::Format newFormat = alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
 #endif
-    if (srcImage.format() != newFormat)
-        srcImage = srcImage.convertToFormat(newFormat);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QImage srcImage = (image.format() == newFormat) ? image : image.convertedTo(newFormat);
+#else
+    const QImage srcImage = (image.format() == newFormat) ? image : image.convertToFormat(newFormat);
+#endif
 
     WebPPicture picture;
     WebPConfig config;
@@ -257,9 +259,9 @@ bool QWebpHandler::write(const QImage &image)
     bool failed = false;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     if (alpha)
-        failed = !WebPPictureImportRGBA(&picture, srcImage.bits(), srcImage.bytesPerLine());
+        failed = !WebPPictureImportRGBA(&picture, srcImage.constBits(), srcImage.bytesPerLine());
     else
-        failed = !WebPPictureImportRGB(&picture, srcImage.bits(), srcImage.bytesPerLine());
+        failed = !WebPPictureImportRGB(&picture, srcImage.constBits(), srcImage.bytesPerLine());
 #else
 # if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
     if (alpha)

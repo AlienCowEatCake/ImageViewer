@@ -8,6 +8,7 @@
 #include "qcolor.h"
 
 #define MNG_USE_SO
+#define MNG_NO_INCLUDE_JNG
 #include <libmng.h>
 
 QT_BEGIN_NAMESPACE

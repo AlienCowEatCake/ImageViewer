@@ -71,6 +71,8 @@ qt_internal_extend_target(QTiffPlugin CONDITION NOT QT_FEATURE_system_tiff
         ../../../3rdparty/libtiff/libtiff/tif_zip.c
     INCLUDE_DIRECTORIES
         ../../../3rdparty/libtiff/libtiff
+    ATTRIBUTION_FILE_DIR_PATHS
+        ../../../3rdparty/libtiff
 )
 
 qt_internal_extend_target(QTiffPlugin CONDITION WIN32 AND NOT QT_FEATURE_system_tiff

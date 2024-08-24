@@ -1,4 +1,4 @@
-From 62151ce2a321fec77fda99bc4fa075b708f71cac Mon Sep 17 00:00:00 2001
+From d870d98808cec0c56ccd9a2914c6abc3a64c1f62 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 7 Jan 2019 21:11:00 +0700
 Subject: [PATCH 4/7] Dont use modern options with old Qt verson
@@ -12,9 +12,9 @@ Subject: [PATCH 4/7] Dont use modern options with old Qt verson
  .../imageformats/tiff/qtiffhandler.cpp        | 129 ++++++++++++++++++
  .../imageformats/tiff/qtiffhandler_p.h        |   6 +
  .../imageformats/wbmp/qwbmphandler.cpp        |   4 +
- .../imageformats/webp/qwebphandler.cpp        |  38 ++++++
+ .../imageformats/webp/qwebphandler.cpp        |  42 ++++++
  .../imageformats/webp/qwebphandler_p.h        |   4 +
- 10 files changed, 229 insertions(+), 1 deletion(-)
+ 10 files changed, 233 insertions(+), 1 deletion(-)
 
 diff --git a/src/plugins/imageformats/dds/qddshandler.cpp b/src/plugins/imageformats/dds/qddshandler.cpp
 index 673718f..0196096 100644
@@ -129,10 +129,10 @@ index 09a1c11..6e0eba6 100644
      // Copy data
      if (oddComponentSubsampling) {
 diff --git a/src/plugins/imageformats/mng/qmnghandler.cpp b/src/plugins/imageformats/mng/qmnghandler.cpp
-index 47c4edd..8cdb755 100644
+index e3d62d7..dba8f58 100644
 --- a/src/plugins/imageformats/mng/qmnghandler.cpp
 +++ b/src/plugins/imageformats/mng/qmnghandler.cpp
-@@ -211,8 +211,12 @@ mng_bool QMngHandlerPrivate::processHeader(mng_uint32 iWidth, mng_uint32 iHeight
+@@ -212,8 +212,12 @@ mng_bool QMngHandlerPrivate::processHeader(mng_uint32 iWidth, mng_uint32 iHeight
  {
      if (mng_set_canvasstyle(hMNG, iStyle) != MNG_NOERROR)
          return MNG_FALSE;
@@ -609,7 +609,7 @@ index 581984d..d41ff93 100644
          return QImage();
  
 diff --git a/src/plugins/imageformats/webp/qwebphandler.cpp b/src/plugins/imageformats/webp/qwebphandler.cpp
-index 922868c..c5bb13f 100644
+index 7141f10..e86d043 100644
 --- a/src/plugins/imageformats/webp/qwebphandler.cpp
 +++ b/src/plugins/imageformats/webp/qwebphandler.cpp
 @@ -76,7 +76,11 @@ bool QWebpHandler::ensureScanned() const
@@ -685,27 +685,32 @@ index 922868c..c5bb13f 100644
  
      return true;
  }
-@@ -215,7 +235,11 @@ bool QWebpHandler::write(const QImage &image)
+@@ -214,8 +234,16 @@ bool QWebpHandler::write(const QImage &image)
+     }
  
-     QImage srcImage = image;
-     bool alpha = srcImage.hasAlphaChannel();
+     const bool alpha = image.hasAlphaChannel();
 +#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
      QImage::Format newFormat = alpha ? QImage::Format_RGBA8888 : QImage::Format_RGB888;
 +#else
 +    QImage::Format newFormat = alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
 +#endif
-     if (srcImage.format() != newFormat)
-         srcImage = srcImage.convertToFormat(newFormat);
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+     const QImage srcImage = (image.format() == newFormat) ? image : image.convertedTo(newFormat);
++#else
++    const QImage srcImage = (image.format() == newFormat) ? image : image.convertToFormat(newFormat);
++#endif
  
-@@ -231,10 +255,22 @@ bool QWebpHandler::write(const QImage &image)
+     WebPPicture picture;
+     WebPConfig config;
+@@ -229,10 +257,22 @@ bool QWebpHandler::write(const QImage &image)
      picture.height = srcImage.height();
      picture.use_argb = 1;
      bool failed = false;
 +#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
      if (alpha)
-         failed = !WebPPictureImportRGBA(&picture, srcImage.bits(), srcImage.bytesPerLine());
+         failed = !WebPPictureImportRGBA(&picture, srcImage.constBits(), srcImage.bytesPerLine());
      else
-         failed = !WebPPictureImportRGB(&picture, srcImage.bits(), srcImage.bytesPerLine());
+         failed = !WebPPictureImportRGB(&picture, srcImage.constBits(), srcImage.bytesPerLine());
 +#else
 +# if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
 +    if (alpha)
@@ -720,7 +725,7 @@ index 922868c..c5bb13f 100644
  
      if (failed) {
          qWarning() << "failed to import image data to webp picture.";
-@@ -264,6 +300,7 @@ bool QWebpHandler::write(const QImage &image)
+@@ -262,6 +302,7 @@ bool QWebpHandler::write(const QImage &image)
      }
  
      bool res = false;
@@ -728,7 +733,7 @@ index 922868c..c5bb13f 100644
      if (image.colorSpace().isValid()) {
          int copy_data = 0;
          WebPMux *mux = WebPMuxNew();
-@@ -303,6 +340,7 @@ bool QWebpHandler::write(const QImage &image)
+@@ -301,6 +342,7 @@ bool QWebpHandler::write(const QImage &image)
          }
          WebPMuxDelete(mux);
      }
