@@ -433,7 +433,7 @@ inline void rgbToRgbX(uchar *target, const uchar *source, qint32 targetSize, qin
 #define T_FLAGS(a) (((a) >> 31) & 0x1)
 // clang-format on
 
-#define DEFAULT_QUALITY (C_IQ(3) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0) | C_FLAGS(1))
+#define DEFAULT_IMAGE_QUALITY (C_IQ(3) | C_OC(1) | C_CW(1) | C_AW(1) | C_BT(1) | C_HS(0) | C_FLAGS(1))
 
 void setParams(QImageIOHandler *handler, LibRaw *rawProcessor)
 {
@@ -497,7 +497,7 @@ void setParams(QImageIOHandler *handler, LibRaw *rawProcessor)
         quality |= C_FLAGS(1);
     }
     if (quality == -1) {
-        quality = DEFAULT_QUALITY;
+        quality = DEFAULT_IMAGE_QUALITY;
     }
     Q_ASSERT(T_FLAGS(quality));
 

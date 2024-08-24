@@ -1,4 +1,4 @@
-From 886dc0a8f236ef3b2ef465367c3e0db5617bdfb4 Mon Sep 17 00:00:00 2001
+From 6af611ba971aca5615ef279619e107f1c4498872 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 3 Jan 2024 08:33:45 +0700
 Subject: [PATCH 2/9] Revert "Cleanup pre-Qt 6.5 code"
@@ -10,7 +10,7 @@ This reverts commit 91a342e90d9def496d683244f467755846875f67.
  2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 837aef3..3fb8293 100644
+index c2c9817..945868a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -88,7 +88,7 @@ endif()
