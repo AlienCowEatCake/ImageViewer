@@ -11,8 +11,8 @@ include($${PWD}/../../Features.pri)
 
         THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.4.0
 
-        INCLUDEPATH += $${THIRDPARTY_LIBWEBP_PATH}/src
-        DEPENDPATH += $${THIRDPARTY_LIBWEBP_PATH}/src
+        INCLUDEPATH += $${THIRDPARTY_LIBWEBP_PATH} $${THIRDPARTY_LIBWEBP_PATH}/src
+        DEPENDPATH += $${THIRDPARTY_LIBWEBP_PATH} $${THIRDPARTY_LIBWEBP_PATH}/src
 
         OUT_LIB_TARGET = tp_LibWebP
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/LibWebP
@@ -42,10 +42,10 @@ include($${PWD}/../../Features.pri)
     } else {
 
         disable_pkgconfig {
-            *msvc*: LIBS += libwebp.lib libwebpdemux.lib libwebpmux.lib
-            else: LIBS += -lwebp -lwebpdemux -lwebpmux
+            *msvc*: LIBS += libwebp.lib libwebpdemux.lib libwebpmux.lib libsharpyuv.lib
+            else: LIBS += -lwebp -lwebpdemux -lwebpmux -lsharpyuv
         } else {
-            PKGCONFIG += libwebp libwebpdemux libwebpmux
+            PKGCONFIG += libwebp libwebpdemux libwebpmux libsharpyuv
         }
 
     }

@@ -16,6 +16,7 @@ include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../aom/aom.pri)
 include(../libyuv/libyuv.pri)
+include(../LibWebP/LibWebP.pri)
 
 *g++*|*clang*|*llvm*|*xcode* {
     QMAKE_CFLAGS += -std=gnu99
@@ -24,6 +25,7 @@ include(../libyuv/libyuv.pri)
 INCLUDEPATH = $${THIRDPARTY_LIBAVIF_PATH}/include $${THIRDPARTY_LIBAVIF_PATH} $${INCLUDEPATH}
 
 DEFINES += AVIF_CODEC_AOM=1 AVIF_CODEC_AOM_ENCODE=1 AVIF_CODEC_AOM_DECODE=1 AVIF_LIBYUV_ENABLED=1
+!disable_libwebp: DEFINES += AVIF_LIBSHARPYUV_ENABLED=1
 *msvc*: DEFINES += inline=__inline
 
 # find ./src -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBAVIF_PATH}| ; s|$| \\|'

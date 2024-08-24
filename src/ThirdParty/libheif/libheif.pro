@@ -21,6 +21,7 @@ include(../OpenJPEG/OpenJPEG.pri)
 include(../libde265/libde265.pri)
 include(../zlib/zlib.pri)
 include(../brotli/brotli.pri)
+include(../LibWebP/LibWebP.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LIBHEIF_PATH} $${THIRDPARTY_LIBHEIF_PATH}/libheif $${THIRDPARTY_LIBHEIF_PATH}/libheif/api $${THIRDPARTY_LIBHEIF_INCLUDE_PATH} $${INCLUDEPATH}
 
@@ -29,6 +30,7 @@ DEFINES += HAVE_INTTYPES_H HAVE_LIBDE265=1 WITH_UNCOMPRESSED_CODEC=1 HAVE_STDDEF
 !*msvc*: DEFINES += HAVE_UNISTD_H
 !disable_zlib: DEFINES += HAVE_ZLIB=1
 !disable_brotli: DEFINES += HAVE_BROTLI=1
+!disable_libwebp: DEFINES += HAVE_LIBSHARPYUV=1
 
 # find ./libheif -name '*.cc' | egrep -v '(_fuzzer|_aom|_dav1d|_rav1e|_svt|_x265|_ffmpeg|_jpeg|_openjpeg|_kvazaar|_unix|_windows|_vvdec|_vvenc|_uvg266|_openjph)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
 SOURCES += \

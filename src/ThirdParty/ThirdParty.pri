@@ -27,6 +27,7 @@ include(OpenEXR/OpenEXR.pri)
 # Dependencies:
 #  * aom
 #  * libyuv
+#  * LibWebP
 include(libavif/libavif.pri)
 
 # Dependencies:
@@ -98,6 +99,7 @@ include(libexpat/libexpat.pri)
 #  * libde265
 #  * zlib
 #  * brotli
+#  * LibWebP
 include(libheif/libheif.pri)
 
 # Dependencies:
