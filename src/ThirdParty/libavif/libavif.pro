@@ -25,6 +25,7 @@ include(../LibWebP/LibWebP.pri)
 INCLUDEPATH = $${THIRDPARTY_LIBAVIF_PATH}/include $${THIRDPARTY_LIBAVIF_PATH} $${INCLUDEPATH}
 
 DEFINES += AVIF_CODEC_AOM=1 AVIF_CODEC_AOM_ENCODE=1 AVIF_CODEC_AOM_DECODE=1 AVIF_LIBYUV_ENABLED=1
+DEFINES += AVIF_ENABLE_EXPERIMENTAL_YCGCO_R AVIF_ENABLE_EXPERIMENTAL_GAIN_MAP AVIF_ENABLE_EXPERIMENTAL_SAMPLE_TRANSFORM
 !disable_libwebp: DEFINES += AVIF_LIBSHARPYUV_ENABLED=1
 *msvc*: DEFINES += inline=__inline
 
@@ -42,7 +43,7 @@ SOURCES += \
     $${THIRDPARTY_LIBAVIF_PATH}/src/colrconvert.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/diag.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/exif.c \
-\#    $${THIRDPARTY_LIBAVIF_PATH}/src/gainmap.c \
+    $${THIRDPARTY_LIBAVIF_PATH}/src/gainmap.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/io.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/mem.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/obu.c \
@@ -51,7 +52,7 @@ SOURCES += \
     $${THIRDPARTY_LIBAVIF_PATH}/src/reformat.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/reformat_libsharpyuv.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/reformat_libyuv.c \
-\#    $${THIRDPARTY_LIBAVIF_PATH}/src/sampletransform.c \
+    $${THIRDPARTY_LIBAVIF_PATH}/src/sampletransform.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/scale.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/stream.c \
     $${THIRDPARTY_LIBAVIF_PATH}/src/utils.c \
