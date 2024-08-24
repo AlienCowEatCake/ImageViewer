@@ -15,6 +15,7 @@ THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
 include(../CommonSettings.pri)
+include(../libyuv/libyuv.pri)
 
 *g++*|*clang*|*llvm*|*xcode* {
     greaterThan(QT_MAJOR_VERSION, 6) {

@@ -330,6 +330,7 @@ disable_thirdparty {
     CONFIG *= disable_libtiff
     CONFIG *= disable_libwebp
     CONFIG *= disable_libwmf
+    CONFIG *= disable_libyuv
     CONFIG *= disable_macwebview
     CONFIG *= disable_macwkwebview
     CONFIG *= disable_magickcore
@@ -366,6 +367,7 @@ system_thirdparty {
     CONFIG *= disable_highway
     CONFIG *= disable_libde265
     CONFIG *= disable_libexpat
+    CONFIG *= disable_libyuv
     CONFIG *= disable_xzutils
     CONFIG *= disable_zstd
     # No rules for build as system packages
@@ -473,6 +475,11 @@ haiku : !system_highway { # FIXME: Re-check on beta4 or nightly
 *msvc* : !system_libexpat : lessThan(MSVC_VERSION, 2013) {
     CONFIG *= disable_libexpat
 }
+
+# libyuv options:
+#    disable_libyuv
+#    system_libyuv
+
 
 # LCMS options:
 #    disable_liblcms2
@@ -670,6 +677,9 @@ disable_cxx14 : !system_openexr {
 #    disable_libavif
 #    system_libavif
 disable_aom : !system_libavif {
+    CONFIG *= disable_libavif
+}
+disable_libyuv : !system_libyuv {
     CONFIG *= disable_libavif
 }
 *msvc* : !system_libavif : lessThan(MSVC_VERSION, 2015) {
@@ -966,4 +976,10 @@ disable_libjxl | system_libjxl {
 
 disable_libjxl | system_libjxl {
     CONFIG *= disable_highway
+}
+
+disable_libavif | system_libavif {
+    disable_aom | system_aom {
+        CONFIG *= disable_libyuv
+    }
 }

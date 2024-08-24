@@ -101,6 +101,8 @@ See the [buildscripts/](buildscripts/) directory.
   This is a transitive dependency. It isn't required if system libraries are used.
 * libexpat options: `disable_libexpat`, `system_libexpat` *(bundled package by default)*  
   This is a transitive dependency. It isn't required if system libraries are used.
+* libyuv options: `disable_libyuv`, `system_libyuv` *(bundled package by default)*  
+  This is a transitive dependency. It isn't required if system libraries are used.
 * LCMS options: `disable_liblcms2`, `system_liblcms2` *(bundled package by default)*  
   LCMS is used for support an embedded ICC Profiles.
 * libexif options: `disable_libexif`, `system_libexif` *(bundled package by default)*  

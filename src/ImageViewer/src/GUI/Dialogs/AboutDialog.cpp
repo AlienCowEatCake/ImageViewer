@@ -171,6 +171,9 @@ extern "C" {
 #if defined (HAS_GHC_FILESYSTEM)
 #include <ghc/filesystem.hpp>
 #endif
+#if defined (HAS_LIBYUV)
+#include <libyuv.h>
+#endif
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
@@ -784,6 +787,21 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://www.libde265.org/"),
                       QString::fromLatin1("GNU LGPL v3"),
                       QString::fromLatin1("https://github.com/strukturag/libde265/blob/master/COPYING")
+                      ));
+#endif
+
+#if defined (HAS_LIBYUV)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the libyuv library"),
+                      QString::fromLatin1("libyuv"),
+#if defined (LIBYUV_VERSION)
+                      QString::fromLatin1("%1").arg(LIBYUV_VERSION),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("https://chromium.googlesource.com/libyuv/libyuv/"),
+                      QString::fromLatin1("3-Clause BSD License"),
+                      QString::fromLatin1("https://chromium.googlesource.com/libyuv/libyuv/+/HEAD/LICENSE")
                       ));
 #endif
 

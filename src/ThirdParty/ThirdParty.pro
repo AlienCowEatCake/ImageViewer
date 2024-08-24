@@ -28,6 +28,10 @@ SUBDIRS =
     SUBDIRS += libexpat/libexpat.pro
 }
 
+!disable_libyuv : !system_libyuv {
+    SUBDIRS += libyuv/libyuv.pro
+}
+
 !disable_libjpeg : !system_libjpeg {
     SUBDIRS += libjpeg/libjpeg.pro
 }

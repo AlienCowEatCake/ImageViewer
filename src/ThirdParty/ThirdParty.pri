@@ -26,6 +26,7 @@ include(OpenEXR/OpenEXR.pri)
 
 # Dependencies:
 #  * aom
+#  * libyuv
 include(libavif/libavif.pri)
 
 # Dependencies:
@@ -99,6 +100,14 @@ include(libexpat/libexpat.pri)
 #  * brotli
 include(libheif/libheif.pri)
 
+# Dependencies:
+#  * libyuv
+include(aom/aom.pri)
+
+# Dependencies:
+#  * libjpeg
+include(libyuv/libyuv.pri)
+
 # Modules without dependencies
 include(QtExtended/QtExtended.pri)
 include(STB/STB.pri)
@@ -128,5 +137,4 @@ include(Zstandard/Zstandard.pri)
 include(brotli/brotli.pri)
 include(highway/highway.pri)
 include(libde265/libde265.pri)
-include(aom/aom.pri)
 include(ghc_filesystem/ghc_filesystem.pri)
