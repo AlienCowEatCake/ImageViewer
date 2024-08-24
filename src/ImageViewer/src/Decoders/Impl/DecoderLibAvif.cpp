@@ -124,7 +124,13 @@ public:
             rgb.depth = 8;
             rgb.pixels = reinterpret_cast<uint8_t*>(frame.bits());
             rgb.rowBytes = static_cast<uint32_t>(frame.width() * 4);
-            avifImageYUVToRGB(decoder->image, &rgb);
+            avifResult imageYUVToRGBResult = avifImageYUVToRGB(decoder->image, &rgb);
+            if(imageYUVToRGBResult != AVIF_RESULT_OK)
+            {
+                LOG_WARNING() << LOGGING_CTX << "ERROR: Failed to YUVToRGB:" << avifResultToString(imageYUVToRGBResult);
+                avifDecoderDestroy(decoder);
+                return false;
+            }
 
             if(decoder->image->transformFlags & AVIF_TRANSFORM_PASP)
             {

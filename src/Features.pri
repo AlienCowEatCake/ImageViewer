@@ -672,7 +672,7 @@ disable_cxx14 : !system_openexr {
 disable_aom : !system_libavif {
     CONFIG *= disable_libavif
 }
-*msvc* : !system_libavif : lessThan(MSVC_VERSION, 2013) {
+*msvc* : !system_libavif : lessThan(MSVC_VERSION, 2015) {
     CONFIG *= disable_libavif
 }
 
