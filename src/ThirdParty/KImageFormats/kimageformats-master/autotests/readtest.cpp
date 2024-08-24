@@ -177,7 +177,8 @@ public:
     {
         bool ok = true;
         if (!m_size.isEmpty()) {
-            ok = ok && (m_size == image.size());
+            // Size option return the size without transformation (tested with Qt TIFF plugin).
+            ok = ok && (m_size == image.size() || m_size == image.size().transposed());
         }
         if (m_format != QImage::Format_Invalid) {
             ok = ok && (m_format == image.format());

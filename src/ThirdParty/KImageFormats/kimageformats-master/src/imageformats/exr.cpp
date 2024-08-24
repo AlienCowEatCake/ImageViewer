@@ -7,20 +7,11 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-/* *** EXR_USE_LEGACY_CONVERSIONS ***
- * If defined, the result image is an 8-bit RGB(A) converted
- * without icc profiles. Otherwise, a 16-bit images is generated.
- * NOTE: The use of legacy conversions are discouraged due to
- *       imprecise image result.
- */
-//#define EXR_USE_LEGACY_CONVERSIONS // default commented -> you should define it in your cmake file
-
 /* *** EXR_CONVERT_TO_SRGB ***
  * If defined, the linear data is converted to sRGB on read to accommodate
  * programs that do not support color profiles.
  * Otherwise the data are kept as is and it is the display program that
  * must convert to the monitor profile.
- * NOTE: If EXR_USE_LEGACY_CONVERSIONS is active, this is ignored.
  */
 //#define EXR_CONVERT_TO_SRGB // default: commented -> you should define it in your cmake file
 
@@ -93,18 +84,6 @@
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
 #include <QTimeZone>
-#endif
-
-// Allow the code to works on all QT versions supported by KDE
-// project (Qt 5.15 and Qt 6.x) to easy backports fixes.
-#if (QT_VERSION_MAJOR >= 6) && !defined(EXR_USE_LEGACY_CONVERSIONS)
-// If uncommented, the image is rendered in a float16 format, the result is very precise
-#define EXR_USE_QT6_FLOAT_IMAGE // default uncommented
-#endif
-
-// Qt 6.8 allow to create and use Gray profile, so we can load a Gray image as Grayscale format instead RGB one.
-#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
-#define EXR_GRAY_SUPPORT_ENABLED
 #endif
 
 class K_IStream : public Imf::IStream
@@ -217,22 +196,6 @@ void K_OStream::seekp(Imf::Int64 pos)
     m_dev->seek(pos);
 }
 
-#ifdef EXR_USE_LEGACY_CONVERSIONS
-// source: https://openexr.com/en/latest/ReadingAndWritingImageFiles.html
-inline unsigned char gamma(float x)
-{
-    x = std::pow(5.5555f * std::max(0.f, x), 0.4545f) * 84.66f;
-    return (unsigned char)qBound(0.f, x, 255.f);
-}
-inline QRgb RgbaToQrgba(struct Imf::Rgba &imagePixel)
-{
-    return qRgba(gamma(float(imagePixel.r)),
-                 gamma(float(imagePixel.g)),
-                 gamma(float(imagePixel.b)),
-                 (unsigned char)(qBound(0.f, imagePixel.a * 255.f, 255.f) + 0.5f));
-}
-#endif
-
 EXRHandler::EXRHandler()
     : m_compressionRatio(-1)
     , m_quality(-1)
@@ -256,15 +219,8 @@ bool EXRHandler::canRead() const
 static QImage::Format imageFormat(const Imf::RgbaInputFile &file)
 {
     auto isRgba = file.channels() & Imf::RgbaChannels::WRITE_A;
-#ifdef EXR_GRAY_SUPPORT_ENABLED
-    auto isGray = file.channels() & Imf::RgbaChannels::WRITE_Y;
-#else
-    auto isGray = false;
-#endif
-#if defined(EXR_USE_LEGACY_CONVERSIONS)
-    return (isRgba ? QImage::Format_ARGB32 : QImage::Format_RGB32);
-#elif defined(EXR_USE_QT6_FLOAT_IMAGE)
-    return (isRgba ? QImage::Format_RGBA16FPx4 : isGray ? QImage::Format_Grayscale16 : QImage::Format_RGBX16FPx4);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+    return (isRgba ? QImage::Format_RGBA16FPx4 : QImage::Format_RGBX16FPx4);
 #else
     return (isRgba ? QImage::Format_RGBA64 : QImage::Format_RGBX64);
 #endif
@@ -378,8 +334,6 @@ static void readMetadata(const Imf::Header &header, QImage &image)
 static void readColorSpace(const Imf::Header &header, QImage &image)
 {
     // final color operations
-#ifndef EXR_USE_LEGACY_CONVERSIONS
-
     QColorSpace cs;
     if (auto chroma = header.findTypedAttribute<Imf::ChromaticitiesAttribute>("chromaticities")) {
         auto &&v = chroma->value();
@@ -390,24 +344,13 @@ static void readColorSpace(const Imf::Header &header, QImage &image)
                          QColorSpace::TransferFunction::Linear);
     }
     if (!cs.isValid()) {
-#ifdef EXR_GRAY_SUPPORT_ENABLED
-        if (image.format() == QImage::Format_Grayscale16 || image.format() == QImage::Format_Grayscale8) {
-            cs = QColorSpace(QPointF(0.31271, 0.32902), QColorSpace::TransferFunction::Linear);
-            cs.setDescription(QStringLiteral("Gray Linear build-in"));
-        } else {
-            cs = QColorSpace(QColorSpace::SRgbLinear);
-        }
-#else
         cs = QColorSpace(QColorSpace::SRgbLinear);
-#endif
     }
     image.setColorSpace(cs);
 
 #ifdef EXR_CONVERT_TO_SRGB
     image.convertToColorSpace(QColorSpace(QColorSpace::SRgb));
 #endif
-
-#endif // !EXR_USE_LEGACY_CONVERSIONS
 }
 
 bool EXRHandler::read(QImage *outImage)
@@ -458,7 +401,6 @@ bool EXRHandler::read(QImage *outImage)
         pixels.resizeErase(EXR_LINES_PER_BLOCK, width);
         bool isRgba = image.hasAlphaChannel();
 
-        // somehow copy pixels into image
         for (int y = 0, n = 0; y < height; y += n) {
             auto my = dw.min.y + y;
             if (my > dw.max.y) { // paranoia check
@@ -469,27 +411,14 @@ bool EXRHandler::read(QImage *outImage)
             file.readPixels(my, std::min(my + EXR_LINES_PER_BLOCK - 1, dw.max.y));
 
             for (n = 0; n < std::min(EXR_LINES_PER_BLOCK, height - y); ++n) {
-                if (image.format() == QImage::Format_Grayscale16) { // grayscale image
-                    auto scanLine = reinterpret_cast<quint16 *>(image.scanLine(y + n));
-                    for (int x = 0; x < width; ++x) {
-                        *(scanLine + x) = quint16(qBound(0.f, float(pixels[n][x].r) * 65535.f + 0.5f, 65535.f));
-                    }
-                    continue;
-                }
-#if defined(EXR_USE_LEGACY_CONVERSIONS)
-                Q_UNUSED(isRgba)
-                auto scanLine = reinterpret_cast<QRgb *>(image.scanLine(y + n));
-                for (int x = 0; x < width; ++x) {
-                    *(scanLine + x) = RgbaToQrgba(pixels[n][x]);
-                }
-#elif defined(EXR_USE_QT6_FLOAT_IMAGE)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
                 auto scanLine = reinterpret_cast<qfloat16 *>(image.scanLine(y + n));
                 for (int x = 0; x < width; ++x) {
                     auto xcs = x * 4;
-                    *(scanLine + xcs) = qfloat16(qBound(0.f, float(pixels[n][x].r), 1.f));
-                    *(scanLine + xcs + 1) = qfloat16(qBound(0.f, float(pixels[n][x].g), 1.f));
-                    *(scanLine + xcs + 2) = qfloat16(qBound(0.f, float(pixels[n][x].b), 1.f));
-                    *(scanLine + xcs + 3) = qfloat16(isRgba ? qBound(0.f, float(pixels[n][x].a), 1.f) : 1.f);
+                    *(scanLine + xcs) = qfloat16(float(pixels[n][x].r));
+                    *(scanLine + xcs + 1) = qfloat16(float(pixels[n][x].g));
+                    *(scanLine + xcs + 2) = qfloat16(float(pixels[n][x].b));
+                    *(scanLine + xcs + 3) = qfloat16(isRgba ? std::clamp(float(pixels[n][x].a), 0.f, 1.f) : 1.f);
                 }
 #else
                 auto scanLine = reinterpret_cast<QRgba64 *>(image.scanLine(y + n));
@@ -668,26 +597,17 @@ bool EXRHandler::write(const QImage &image)
         pixels.resizeErase(EXR_LINES_PER_BLOCK, width);
 
         // convert the image and write into the stream
-#if defined(EXR_USE_QT6_FLOAT_IMAGE)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
         auto convFormat = image.hasAlphaChannel() ? QImage::Format_RGBA16FPx4 : QImage::Format_RGBX16FPx4;
 #else
         auto convFormat = image.hasAlphaChannel() ? QImage::Format_RGBA64 : QImage::Format_RGBX64;
 #endif
         ScanLineConverter slc(convFormat);
-#ifdef EXR_GRAY_SUPPORT_ENABLED
-        if (channelsType == Imf::RgbaChannels::WRITE_Y) {
-            slc.setDefaultSourceColorSpace(QColorSpace(QColorSpace(QColorSpace::SRgb).whitePoint(), QColorSpace::TransferFunction::SRgb)); // Creates a custom grayscale color space
-        } else {
-            slc.setDefaultSourceColorSpace(QColorSpace(QColorSpace::SRgb));
-        }
-#else
         slc.setDefaultSourceColorSpace(QColorSpace(QColorSpace::SRgb));
-#endif
-
         slc.setTargetColorSpace(QColorSpace(QColorSpace::SRgbLinear));
         for (int y = 0, n = 0; y < height; y += n) {
             for (n = 0; n < std::min(EXR_LINES_PER_BLOCK, height - y); ++n) {
-#if defined(EXR_USE_QT6_FLOAT_IMAGE)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
                 auto scanLine = reinterpret_cast<const qfloat16 *>(slc.convertedScanLine(image, y + n));
                 if (scanLine == nullptr) {
                     return false;

@@ -1,7 +1,7 @@
-From 613b90636122cf374c336f789eca31ba65412fe2 Mon Sep 17 00:00:00 2001
+From c41ea504e708626ed7f92f1e2882ad4d2786a399 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
-Subject: [PATCH 5/9] Remove C++17 features
+Subject: [PATCH 2/7] Remove C++17 features
 
 ---
  src/imageformats/kra.cpp  |  4 ++--

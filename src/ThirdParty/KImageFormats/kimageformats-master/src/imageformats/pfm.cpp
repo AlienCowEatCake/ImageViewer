@@ -112,10 +112,7 @@ public:
     QImage::Format format() const
     {
         if (isValid()) {
-            if (isBlackAndWhite()) {
-                return QImage::Format_Grayscale16;
-            }
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
             return QImage::Format_RGBX32FPx4;
 #else
             return QImage::Format_RGB32;
@@ -165,7 +162,7 @@ public:
         d->rollbackTransaction();
         return ok;
     }
-} ;
+};
 
 class PFMHandlerPrivate
 {
@@ -225,59 +222,44 @@ bool PFMHandler::read(QImage *image)
     }
 
     for (auto y = 0, h = img.height(); y < h; ++y) {
-        float f;
-        if (header.isBlackAndWhite()) {
-            auto line = reinterpret_cast<quint16*>(img.scanLine(header.isPhotoshop() ? y : h - y - 1));
-            for (auto x = 0, w = img.width(); x < w; ++x) {
-                s >> f;
-                // QColorSpace does not handle gray linear profile, so I have to convert to non-linear
-                f = f < 0.0031308f ? (f * 12.92f) : (1.055 * std::pow(f, 1.0 / 2.4) - 0.055);
-                line[x] = quint16(std::clamp(f, float(0), float(1)) * std::numeric_limits<quint16>::max() + float(0.5));
-
-                if (s.status() != QDataStream::Ok) {
-                    qCWarning(LOG_PFMPLUGIN) << "PFMHandler::read() detected corrupted data";
-                    return false;
-                }
+        auto bw = header.isBlackAndWhite();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+        auto line = reinterpret_cast<float *>(img.scanLine(header.isPhotoshop() ? y : h - y - 1));
+        for (auto x = 0, n = img.width() * 4; x < n; x += 4) {
+            line[x + 3] = float(1);
+            s >> line[x];
+            if (bw) {
+                line[x + 1] = line[x];
+                line[x + 2] = line[x];
+            } else {
+                s >> line[x + 1];
+                s >> line[x + 2];
             }
-        } else {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
-            auto line = reinterpret_cast<float*>(img.scanLine(header.isPhotoshop() ? y : h - y - 1));
 #else
-            auto line = reinterpret_cast<quint8*>(img.scanLine(header.isPhotoshop() ? y : h - y - 1));
-#endif
-            for (auto x = 0, n = img.width() * 4; x < n; x += 4) {
+        auto line = reinterpret_cast<QRgb *>(img.scanLine(header.isPhotoshop() ? y : h - y - 1));
+        for (auto x = 0, n = img.width(); x < n; ++x) {
+            int r, g, b;
+            float f;
+            s >> f;
+            r = std::clamp(int(f * 255.0f), int(0), int(255));
+            if (bw) {
+                g = b = r;
+            } else {
                 s >> f;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
-                line[x] = std::clamp(f, float(0), float(1));
-#else
-                const int r = std::clamp(int(f * 255.0f), int(0), int(255));
-#endif
+                g = std::clamp(int(f * 255.0f), int(0), int(255));
                 s >> f;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
-                line[x + 1] = std::clamp(f, float(0), float(1));
-#else
-                const int g = std::clamp(int(f * 255.0f), int(0), int(255));
+                b = std::clamp(int(f * 255.0f), int(0), int(255));
+            }
+            line[x] = qRgb(r, g, b);
 #endif
-                s >> f;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
-                line[x + 2] = std::clamp(f, float(0), float(1));
-                line[x + 3] = float(1);
-#else
-                const int b = std::clamp(int(f * 255.0f), int(0), int(255));
-                *reinterpret_cast<QRgb*>(&line[x]) = qRgb(r, g, b);
-#endif
-
-                if (s.status() != QDataStream::Ok) {
-                    qCWarning(LOG_PFMPLUGIN) << "PFMHandler::read() detected corrupted data";
-                    return false;
-                }
+            if (s.status() != QDataStream::Ok) {
+                qCWarning(LOG_PFMPLUGIN) << "PFMHandler::read() detected corrupted data";
+                return false;
             }
         }
     }
 
-    if (!header.isBlackAndWhite()) {
-        img.setColorSpace(QColorSpace(QColorSpace::SRgbLinear));
-    }
+    img.setColorSpace(QColorSpace(QColorSpace::SRgbLinear));
 
     *image = img;
     return true;

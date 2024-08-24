@@ -1,14 +1,14 @@
-From c1daffa6659b42adda23ac679c825818a8846155 Mon Sep 17 00:00:00 2001
+From 7c71c8c5c7680adf55b08041626d9f53333fbba1 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 10 Jun 2024 03:39:12 +0700
-Subject: [PATCH 8/9] Add __ANSI__ defie to jxr.cpp
+Subject: [PATCH 4/7] Add __ANSI__ defie to jxr.cpp
 
 ---
  src/imageformats/jxr.cpp | 3 +++
  1 file changed, 3 insertions(+)
 
 diff --git a/src/imageformats/jxr.cpp b/src/imageformats/jxr.cpp
-index 528d7d1..a171e58 100644
+index bb6c626..eb964b8 100644
 --- a/src/imageformats/jxr.cpp
 +++ b/src/imageformats/jxr.cpp
 @@ -30,6 +30,9 @@

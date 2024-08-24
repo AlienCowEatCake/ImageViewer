@@ -1,0 +1,26 @@
+From 57db769254aacf02d03ea0d43bd58becef7c5118 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 23 Jun 2024 19:58:27 +0700
+Subject: [PATCH 3/7] Add missing includes
+
+---
+ src/imageformats/pfm.cpp | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/imageformats/pfm.cpp b/src/imageformats/pfm.cpp
+index 0a5111d..09aa806 100644
+--- a/src/imageformats/pfm.cpp
++++ b/src/imageformats/pfm.cpp
+@@ -12,6 +12,9 @@
+ #include "pfm_p.h"
+ #include "util_p.h"
+ 
++#include <algorithm>
++#include <cmath>
++
+ #include <QColorSpace>
+ #include <QDataStream>
+ #include <QIODevice>
+-- 
+2.39.2
+

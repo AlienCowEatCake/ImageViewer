@@ -1,7 +1,7 @@
-From d5b4d89193c35ed017c826504c2682a0447947eb Mon Sep 17 00:00:00 2001
+From 16fbf36786a7e152701d617bb4d02a0ff14e1c70 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 04:03:37 +0700
-Subject: [PATCH 3/9] Remove plugin metadata declarations
+Subject: [PATCH 1/7] Remove plugin metadata declarations
 
 ---
  src/imageformats/ani_p.h  | 2 +-
@@ -80,10 +80,10 @@ index 031cb02..83a38e7 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/hdr_p.h b/src/imageformats/hdr_p.h
-index f0ac600..582a6e7 100644
+index 6f93d64..c075088 100644
 --- a/src/imageformats/hdr_p.h
 +++ b/src/imageformats/hdr_p.h
-@@ -34,7 +34,7 @@ private:
+@@ -32,7 +32,7 @@ private:
  class HDRPlugin : public QImageIOPlugin
  {
      Q_OBJECT

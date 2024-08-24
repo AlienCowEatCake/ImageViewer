@@ -1,22 +1,23 @@
-From 939f348c3bb105ef00749046c2b5ca04b12ec6f5 Mon Sep 17 00:00:00 2001
+From 753ecb5e9d0bd4caf87476248719ccf68bdd539a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
-Date: Sun, 9 Jul 2023 21:28:58 +0700
-Subject: [PATCH 6/9] Dont use modern options with old Qt verson
+Date: Wed, 3 Jan 2024 08:33:45 +0700
+Subject: [PATCH 7/7] Dont use modern options with old Qt verson
 
 ---
  src/imageformats/ani.cpp  |  4 ++++
  src/imageformats/ani_p.h  | 16 +++++++++++++++
- src/imageformats/hdr.cpp  | 23 ++++++++++++++++++++++
+ src/imageformats/exr.cpp  | 38 ++++++++++++++++++++++++++++++++++++
+ src/imageformats/hdr.cpp  | 27 +++++++++++++++++++++++++-
  src/imageformats/jxl_p.h  |  8 ++++++++
- src/imageformats/jxr.cpp  |  5 ++++-
- src/imageformats/pfm.cpp  | 30 +++++++++++++++++++++++++++-
+ src/imageformats/jxr.cpp  | 17 ++++++++++++++--
+ src/imageformats/pfm.cpp  | 26 +++++++++++++++++++++++++
  src/imageformats/psd.cpp  | 40 ++++++++++++++++++++++++++++++++++++++
  src/imageformats/pxr.cpp  |  2 +-
  src/imageformats/ras.cpp  | 17 +++++++++++++++-
  src/imageformats/rgb.cpp  | 24 +++++++++++++++++++++++
  src/imageformats/util_p.h |  7 +++++++
  src/imageformats/xcf.cpp  | 41 +++++++++++++++++++++++++++++++++++++--
- 12 files changed, 211 insertions(+), 6 deletions(-)
+ 13 files changed, 260 insertions(+), 7 deletions(-)
 
 diff --git a/src/imageformats/ani.cpp b/src/imageformats/ani.cpp
 index 5fa0d46..4c13315 100644
@@ -76,13 +77,123 @@ index bfce9ef..7b8435b 100644
  
      QString m_name;
      QString m_artist;
+diff --git a/src/imageformats/exr.cpp b/src/imageformats/exr.cpp
+index e91e864..0eabd2f 100644
+--- a/src/imageformats/exr.cpp
++++ b/src/imageformats/exr.cpp
+@@ -81,7 +81,10 @@
+ #include <QImageIOPlugin>
+ #include <QLocale>
+ #include <QThread>
++
++#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+ #include <QTimeZone>
++#endif
+ 
+ class K_IStream : public Imf::IStream
+ {
+@@ -216,7 +219,11 @@ bool EXRHandler::canRead() const
+ static QImage::Format imageFormat(const Imf::RgbaInputFile &file)
+ {
+     auto isRgba = file.channels() & Imf::RgbaChannels::WRITE_A;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+     return (isRgba ? QImage::Format_RGBA16FPx4 : QImage::Format_RGBX16FPx4);
++#else
++    return (isRgba ? QImage::Format_RGBA64 : QImage::Format_RGBX64);
++#endif
+ }
+ 
+ /*!
+@@ -278,7 +285,11 @@ static void readMetadata(const Imf::Header &header, QImage &image)
+         }
+         auto dateTime = QDateTime::fromString(QString::fromStdString(capDate->value()), QStringLiteral("yyyy:MM:dd HH:mm:ss"));
+         if (dateTime.isValid()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+             dateTime.setTimeZone(QTimeZone::fromSecondsAheadOfUtc(off));
++#else
++            dateTime.setOffsetFromUtc(off);
++#endif
+             image.setText(QStringLiteral(META_KEY_CREATIONDATE), dateTime.toString(Qt::ISODate));
+         }
+     }
+@@ -400,6 +411,7 @@ bool EXRHandler::read(QImage *outImage)
+             file.readPixels(my, std::min(my + EXR_LINES_PER_BLOCK - 1, dw.max.y));
+ 
+             for (n = 0; n < std::min(EXR_LINES_PER_BLOCK, height - y); ++n) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+                 auto scanLine = reinterpret_cast<qfloat16 *>(image.scanLine(y + n));
+                 for (int x = 0; x < width; ++x) {
+                     auto xcs = x * 4;
+@@ -408,6 +420,15 @@ bool EXRHandler::read(QImage *outImage)
+                     *(scanLine + xcs + 2) = qfloat16(float(pixels[n][x].b));
+                     *(scanLine + xcs + 3) = qfloat16(isRgba ? std::clamp(float(pixels[n][x].a), 0.f, 1.f) : 1.f);
+                 }
++#else
++                auto scanLine = reinterpret_cast<QRgba64 *>(image.scanLine(y + n));
++                for (int x = 0; x < width; ++x) {
++                    *(scanLine + x) = QRgba64::fromRgba64(quint16(qBound(0.f, float(pixels[n][x].r) * 65535.f + 0.5f, 65535.f)),
++                                                          quint16(qBound(0.f, float(pixels[n][x].g) * 65535.f + 0.5f, 65535.f)),
++                                                          quint16(qBound(0.f, float(pixels[n][x].b) * 65535.f + 0.5f, 65535.f)),
++                                                          isRgba ? quint16(qBound(0.f, float(pixels[n][x].a) * 65535.f + 0.5f, 65535.f)) : quint16(65535));
++                }
++#endif
+             }
+         }
+ 
+@@ -576,12 +597,17 @@ bool EXRHandler::write(const QImage &image)
+         pixels.resizeErase(EXR_LINES_PER_BLOCK, width);
+ 
+         // convert the image and write into the stream
++#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+         auto convFormat = image.hasAlphaChannel() ? QImage::Format_RGBA16FPx4 : QImage::Format_RGBX16FPx4;
++#else
++        auto convFormat = image.hasAlphaChannel() ? QImage::Format_RGBA64 : QImage::Format_RGBX64;
++#endif
+         ScanLineConverter slc(convFormat);
+         slc.setDefaultSourceColorSpace(QColorSpace(QColorSpace::SRgb));
+         slc.setTargetColorSpace(QColorSpace(QColorSpace::SRgbLinear));
+         for (int y = 0, n = 0; y < height; y += n) {
+             for (n = 0; n < std::min(EXR_LINES_PER_BLOCK, height - y); ++n) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+                 auto scanLine = reinterpret_cast<const qfloat16 *>(slc.convertedScanLine(image, y + n));
+                 if (scanLine == nullptr) {
+                     return false;
+@@ -593,6 +619,18 @@ bool EXRHandler::write(const QImage &image)
+                     pixels[n][x].b = float(*(scanLine + xcs + 2));
+                     pixels[n][x].a = float(*(scanLine + xcs + 3));
+                 }
++#else
++                auto scanLine = reinterpret_cast<const QRgba64 *>(slc.convertedScanLine(image, y + n));
++                if (scanLine == nullptr) {
++                    return false;
++                }
++                for (int x = 0; x < width; ++x) {
++                    pixels[n][x].r = float((scanLine + x)->red() / 65535.f);
++                    pixels[n][x].g = float((scanLine + x)->green() / 65535.f);
++                    pixels[n][x].b = float((scanLine + x)->blue() / 65535.f);
++                    pixels[n][x].a = float((scanLine + x)->alpha() / 65535.f);
++                }
++#endif
+             }
+             file.setFrameBuffer(&pixels[0][0] - qint64(y) * width, 1, width);
+             file.writePixels(n);
 diff --git a/src/imageformats/hdr.cpp b/src/imageformats/hdr.cpp
-index 0db702a..a498eee 100644
+index bee4fdc..0b1bf7d 100644
 --- a/src/imageformats/hdr.cpp
 +++ b/src/imageformats/hdr.cpp
-@@ -33,6 +33,17 @@ namespace // Private.
- #define MINELEN 8 // minimum scanline length for encoding
- #define MAXELEN 0x7fff // maximum scanline length for encoding
+@@ -148,7 +148,9 @@ public:
+                                           QPointF(primaries.at(2), primaries.at(3)),
+                                           QPointF(primaries.at(4), primaries.at(5)),
+                                           QColorSpace::TransferFunction::Linear);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+                     cs.setDescription(QStringLiteral("Embedded RGB"));
++#endif
+                     if (cs.isValid())
+                         h.m_colorSpace = cs;
+                 }
+@@ -215,6 +217,17 @@ private:
+     Header m_header;
+ };
  
 +#if QT_VERSION < QT_VERSION_CHECK(6, 2, 0)
 +static inline uchar ClipToByte(float value)
@@ -98,16 +209,17 @@ index 0db702a..a498eee 100644
  // read an old style line from the hdr image file
  // if 'first' is true the first byte is already read
  static bool Read_Old_Line(uchar *image, int width, QDataStream &s)
-@@ -88,23 +99,31 @@ void RGBE_To_QRgbLine(uchar *image, float_T *scanline, int width)
+@@ -271,6 +284,7 @@ void RGBE_To_QRgbLine(uchar *image, float_T *scanline, const Header& h)
              v = 1.0f / float(1 << -e);
          }
  
 +#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
          auto j4 = j * 4;
          auto vn = v / 255.0f;
-         scanline[j4] = float_T(std::min(float(image[0]) * vn, 1.0f));
-         scanline[j4 + 1] = float_T(std::min(float(image[1]) * vn, 1.0f));
-         scanline[j4 + 2] = float_T(std::min(float(image[2]) * vn, 1.0f));
+         if (exposure > 0) {
+@@ -281,17 +295,24 @@ void RGBE_To_QRgbLine(uchar *image, float_T *scanline, const Header& h)
+         scanline[j4 + 1] = float_T(float(image[1]) * vn);
+         scanline[j4 + 2] = float_T(float(image[2]) * vn);
          scanline[j4 + 3] = float_T(1.0f);
 +#else
 +        scanline[j] = qRgb(ClipToByte(float(image[0]) * v), ClipToByte(float(image[1]) * v), ClipToByte(float(image[2]) * v));
@@ -130,7 +242,7 @@ index 0db702a..a498eee 100644
  }
  
  // Load the HDR image.
-@@ -125,11 +144,15 @@ static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &i
+@@ -315,11 +336,15 @@ static bool LoadHDR(QDataStream &s, const Header& h, QImage &img)
      uchar *image = reinterpret_cast<uchar *>(lineArray.data());
  
      for (int cline = 0; cline < height; cline++) {
@@ -146,6 +258,15 @@ index 0db702a..a498eee 100644
  
          // determine scanline type
          if ((width < MINELEN) || (MAXELEN < width)) {
+@@ -462,7 +487,7 @@ QVariant HDRHandler::option(ImageOption option) const
+         if (auto dev = device()) {
+             auto&& h = d->header(dev);
+             if (h.isValid()) {
+-                v = QVariant::fromValue(h.transformation());
++                v = QVariant::fromValue(int(h.transformation()));
+             }
+         }
+     }
 diff --git a/src/imageformats/jxl_p.h b/src/imageformats/jxl_p.h
 index 9f6b581..bc8c46b 100644
 --- a/src/imageformats/jxl_p.h
@@ -174,20 +295,44 @@ index 9f6b581..bc8c46b 100644
  
      QImage m_current_image;
 diff --git a/src/imageformats/jxr.cpp b/src/imageformats/jxr.cpp
-index 906d8a7..528d7d1 100644
+index eb964b8..0d26902 100644
 --- a/src/imageformats/jxr.cpp
 +++ b/src/imageformats/jxr.cpp
-@@ -42,6 +42,9 @@ Q_LOGGING_CATEGORY(LOG_JXRPLUGIN, "kf.imageformats.plugins.jxr", QtWarningMsg)
+@@ -45,6 +45,9 @@ Q_LOGGING_CATEGORY(LOG_JXRPLUGIN, "kf.imageformats.plugins.jxr", QtWarningMsg)
   * NOTE: Float images have values greater than 1 so they need an additional in place conversion.
   */
  // #define JXR_DENY_FLOAT_IMAGE
-+#if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
++#if QT_VERSION < QT_VERSION_CHECK(6, 2, 0)
 +#define JXR_DENY_FLOAT_IMAGE
 +#endif
  
  /*!
   * Remove the neeeds of additional memory by disabling the conversion between
-@@ -855,7 +858,7 @@ bool JXRHandler::read(QImage *outImage)
+@@ -496,8 +499,8 @@ public:
+             if (cs.isValid() && cs.transferFunction() != QColorSpace::TransferFunction::Linear) {
+                 qi = qi.convertedToColorSpace(QColorSpace(QColorSpace::SRgbLinear));
+             }
+-        }
+ #endif // JXR_DENY_FLOAT_IMAGE
++        }
+ 
+         return qi;
+     }
+@@ -833,11 +836,13 @@ bool JXRHandler::read(QImage *outImage)
+         } else { // additional buffer needed
+             qint64 convStrideSize = (img.width() * d->pDecoder->WMP.wmiI.cBitsPerUnit + 7) / 8;
+             qint64 buffSize = convStrideSize * img.height();
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+             qint64 limit = QImageReader::allocationLimit();
+             if (limit && (buffSize + img.sizeInBytes()) > limit * 1024 * 1024) {
+                 qCWarning(LOG_JXRPLUGIN) << "JXRHandler::read() unable to covert due to allocation limit set:" << limit << "MiB";
+                 return false;
+             }
++#endif
+             QVector<quint8> ba(buffSize);
+             if (auto err = pConverter->Copy(pConverter, &rect, ba.data(), convStrideSize)) {
+                 PKFormatConverter_Release(&pConverter);
+@@ -845,7 +850,7 @@ bool JXRHandler::read(QImage *outImage)
                  return false;
              }
              for (qint32 y = 0, h = img.height(); y < h; ++y) {
@@ -196,60 +341,75 @@ index 906d8a7..528d7d1 100644
              }
          }
          PKFormatConverter_Release(&pConverter);
+@@ -902,11 +907,19 @@ bool JXRHandler::write(const QImage &image)
+ #ifndef JXR_DISABLE_BGRA_HACK
+     if (IsEqualGUID(jxlfmt, GUID_PKPixelFormat32bppRGBA)) {
+         jxlfmt = GUID_PKPixelFormat32bppBGRA;
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++        qi = qi.rgbSwapped();
++#else
+         qi.rgbSwap();
++#endif
+     }
+     if (IsEqualGUID(jxlfmt, GUID_PKPixelFormat32bppPRGBA)) {
+         jxlfmt = GUID_PKPixelFormat32bppPBGRA;
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++        qi = qi.rgbSwapped();
++#else
+         qi.rgbSwap();
++#endif
+     }
+ #endif
+ 
 diff --git a/src/imageformats/pfm.cpp b/src/imageformats/pfm.cpp
-index 5c462f0..370c560 100644
+index 09aa806..c6968d2 100644
 --- a/src/imageformats/pfm.cpp
 +++ b/src/imageformats/pfm.cpp
-@@ -109,7 +109,14 @@ public:
+@@ -112,7 +112,11 @@ public:
      QImage::Format format() const
      {
          if (isValid()) {
--            return isBlackAndWhite() ? QImage::Format_Grayscale16 : QImage::Format_RGBX32FPx4;
-+            if (isBlackAndWhite()) {
-+                return QImage::Format_Grayscale16;
-+            }
-+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
-+            return QImage::Format_RGBX32FPx4;
++#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+             return QImage::Format_RGBX32FPx4;
 +#else
 +            return QImage::Format_RGB32;
 +#endif
          }
          return QImage::Format_Invalid;
      }
-@@ -230,15 +237,32 @@ bool PFMHandler::read(QImage *image)
-                 }
-             }
-         } else {
-+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
-             auto line = reinterpret_cast<float*>(img.scanLine(header.isPhotoshop() ? y : h - y - 1));
-+#else
-+            auto line = reinterpret_cast<quint8*>(img.scanLine(header.isPhotoshop() ? y : h - y - 1));
-+#endif
-             for (auto x = 0, n = img.width() * 4; x < n; x += 4) {
-                 s >> f;
-+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
-                 line[x] = std::clamp(f, float(0), float(1));
-+#else
-+                const int r = std::clamp(int(f * 255.0f), int(0), int(255));
-+#endif
-                 s >> f;
-+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
-                 line[x + 1] = std::clamp(f, float(0), float(1));
-+#else
-+                const int g = std::clamp(int(f * 255.0f), int(0), int(255));
-+#endif
-                 s >> f;
-+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
-                 line[x + 2] = std::clamp(f, float(0), float(1));
-                 line[x + 3] = float(1);
-+#else
-+                const int b = std::clamp(int(f * 255.0f), int(0), int(255));
-+                *reinterpret_cast<QRgb*>(&line[x]) = qRgb(r, g, b);
-+#endif
+@@ -219,6 +223,7 @@ bool PFMHandler::read(QImage *image)
  
-                 if (s.status() != QDataStream::Ok) {
-                     qCWarning(LOG_PFMPLUGIN) << "PFMHandler::read() detected corrupted data";
-@@ -264,9 +288,11 @@ bool PFMHandler::supportsOption(ImageOption option) const
+     for (auto y = 0, h = img.height(); y < h; ++y) {
+         auto bw = header.isBlackAndWhite();
++#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+         auto line = reinterpret_cast<float *>(img.scanLine(header.isPhotoshop() ? y : h - y - 1));
+         for (auto x = 0, n = img.width() * 4; x < n; x += 4) {
+             line[x + 3] = float(1);
+@@ -230,6 +235,23 @@ bool PFMHandler::read(QImage *image)
+                 s >> line[x + 1];
+                 s >> line[x + 2];
+             }
++#else
++        auto line = reinterpret_cast<QRgb *>(img.scanLine(header.isPhotoshop() ? y : h - y - 1));
++        for (auto x = 0, n = img.width(); x < n; ++x) {
++            int r, g, b;
++            float f;
++            s >> f;
++            r = std::clamp(int(f * 255.0f), int(0), int(255));
++            if (bw) {
++                g = b = r;
++            } else {
++                s >> f;
++                g = std::clamp(int(f * 255.0f), int(0), int(255));
++                s >> f;
++                b = std::clamp(int(f * 255.0f), int(0), int(255));
++            }
++            line[x] = qRgb(r, g, b);
++#endif
+             if (s.status() != QDataStream::Ok) {
+                 qCWarning(LOG_PFMPLUGIN) << "PFMHandler::read() detected corrupted data";
+                 return false;
+@@ -251,9 +273,11 @@ bool PFMHandler::supportsOption(ImageOption option) const
      if (option == QImageIOHandler::ImageFormat) {
          return true;
      }
@@ -261,7 +421,7 @@ index 5c462f0..370c560 100644
      return false;
  }
  
-@@ -296,6 +322,7 @@ QVariant PFMHandler::option(ImageOption option) const
+@@ -283,6 +307,7 @@ QVariant PFMHandler::option(ImageOption option) const
          }
      }
  
@@ -269,7 +429,7 @@ index 5c462f0..370c560 100644
      if (option == QImageIOHandler::Endianness) {
          auto&& h = d->m_header;
          if (h.isValid()) {
-@@ -306,6 +333,7 @@ QVariant PFMHandler::option(ImageOption option) const
+@@ -293,6 +318,7 @@ QVariant PFMHandler::option(ImageOption option) const
              }
          }
      }

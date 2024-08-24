@@ -101,7 +101,7 @@ DEFINES += ANIPlugin=tp_ANIPlugin
     DEFINES += EXRPlugin=tp_EXRPlugin
     DEFINES += K_IStream=tp_K_IStream
     DEFINES += K_OStream=tp_K_OStream
-    DEFINES += gamma=tp_gamma
+    DEFINES += printAttributes=tp_printAttributes
     DEFINES += RgbaToQrgba=tp_RgbaToQrgba
     DEFINES += makePreview=tp_makePreview
 }

@@ -1,7 +1,7 @@
-From 46f4b00fc6540d9af44daaa1eab5a8269399afe2 Mon Sep 17 00:00:00 2001
+From 6a575c1349c7667fc6dabccfc83f51f6eea18a42 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:44:31 +0700
-Subject: [PATCH 4/9] Add ability to disable JXL encoder and threads
+Subject: [PATCH 6/7] Add ability to disable JXL encoder and threads
 
 ---
  src/imageformats/jxl.cpp | 33 +++++++++++++++++++++++++++++++++

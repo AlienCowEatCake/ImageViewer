@@ -45,7 +45,7 @@ Q_LOGGING_CATEGORY(LOG_JXRPLUGIN, "kf.imageformats.plugins.jxr", QtWarningMsg)
  * NOTE: Float images have values greater than 1 so they need an additional in place conversion.
  */
 // #define JXR_DENY_FLOAT_IMAGE
-#if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
+#if QT_VERSION < QT_VERSION_CHECK(6, 2, 0)
 #define JXR_DENY_FLOAT_IMAGE
 #endif
 
@@ -442,6 +442,13 @@ public:
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
             << QImage::Format_CMYK8888
 #endif
+#ifndef JXR_DENY_FLOAT_IMAGE
+            << QImage::Format_RGBA16FPx4
+            << QImage::Format_RGBX16FPx4
+            << QImage::Format_RGBA32FPx4
+            << QImage::Format_RGBA32FPx4_Premultiplied
+            << QImage::Format_RGBX32FPx4
+#endif // JXR_DENY_FLOAT_IMAGE
             << QImage::Format_RGBA64
             << QImage::Format_RGBA64_Premultiplied
             << QImage::Format_RGBA8888
@@ -482,6 +489,17 @@ public:
             } else {
                 qi = qi.convertToFormat(alpha ? QImage::Format_RGBA8888 : QImage::Format_RGB888);
             }
+#ifndef JXR_DENY_FLOAT_IMAGE
+        } else if(qi.format() == QImage::Format_RGBA16FPx4 ||
+                  qi.format() == QImage::Format_RGBX16FPx4 ||
+                  qi.format() == QImage::Format_RGBA32FPx4 ||
+                  qi.format() == QImage::Format_RGBA32FPx4_Premultiplied ||
+                  qi.format() == QImage::Format_RGBX32FPx4) {
+            auto cs = qi.colorSpace();
+            if (cs.isValid() && cs.transferFunction() != QColorSpace::TransferFunction::Linear) {
+                qi = qi.convertedToColorSpace(QColorSpace(QColorSpace::SRgbLinear));
+            }
+#endif // JXR_DENY_FLOAT_IMAGE
         }
 
         return qi;
@@ -765,35 +783,6 @@ private:
     }
 };
 
-template<class T>
-inline T scRGBTosRGB(T f)
-{
-    // convert from linear scRGB to non-linear sRGB
-    if (f <= T(0)) {
-        return T(0);
-    }
-    if (f <= T(0.0031308f)) {
-        return qBound(T(0), f * T(12.92f), T(1));
-    }
-    if (f < T(1)) {
-        return qBound(T(0), T(1.055f) * T(pow(f, T(1.0) / T(2.4))) - T(0.055), T(1));
-    }
-    return T(1);
-}
-
-template<class T>
-inline T alpha_scRGBTosRGB(T f)
-{
-    // alpha is converted differently than RGB in scRGB
-    if (f <= T(0)) {
-        return T(0);
-    }
-    if (f < T(1.0)) {
-        return T(f);
-    }
-    return T(1);
-}
-
 bool JXRHandler::read(QImage *outImage)
 {
     if (!d->initForReading(device())) {
@@ -872,34 +861,24 @@ bool JXRHandler::read(QImage *outImage)
     d->setTextMetadata(img);
 
 #ifndef JXR_DENY_FLOAT_IMAGE
-    // JXR float are stored in scRGB -> range -0,5 to 7,5 (source Wikipedia)
-    if (img.format() == QImage::Format_RGBX16FPx4 || img.format() == QImage::Format_RGBA16FPx4 || img.format() == QImage::Format_RGBA16FPx4_Premultiplied) {
+    // JXR float are stored in scRGB.
+    if (img.format() == QImage::Format_RGBX16FPx4 || img.format() == QImage::Format_RGBA16FPx4 || img.format() == QImage::Format_RGBA16FPx4_Premultiplied ||
+        img.format() == QImage::Format_RGBX32FPx4 || img.format() == QImage::Format_RGBA32FPx4 || img.format() == QImage::Format_RGBA32FPx4_Premultiplied) {
         auto hasAlpha = img.hasAlphaChannel();
         for (qint32 y = 0, h = img.height(); y < h; ++y) {
-            qfloat16 *line = reinterpret_cast<qfloat16 *>(img.scanLine(y));
-            for (int x = 0, w = img.width(); x < w; ++x) {
-                const auto x4 = x * 4;
-                line[x4 + 0] = scRGBTosRGB(line[x4 + 0]);
-                line[x4 + 1] = scRGBTosRGB(line[x4 + 1]);
-                line[x4 + 2] = scRGBTosRGB(line[x4 + 2]);
-                line[x4 + 3] = hasAlpha ? alpha_scRGBTosRGB(line[x4 + 3]) : qfloat16(1);
+            if (img.depth() == 64) {
+                auto line = reinterpret_cast<qfloat16 *>(img.scanLine(y));
+                for (int x = 0, w = img.width() * 4; x < w; x += 4)
+                    line[x + 3] = hasAlpha ? std::clamp(line[x + 3], qfloat16(0), qfloat16(1)) : qfloat16(1);
+            } else {
+                auto line = reinterpret_cast<float *>(img.scanLine(y));
+                for (int x = 0, w = img.width() * 4; x < w; x += 4)
+                    line[x + 3] = hasAlpha ? std::clamp(line[x + 3], float(0), float(1)) : float(1);
             }
         }
-        img.setColorSpace(QColorSpace(QColorSpace::SRgb));
-    } else if (img.format() == QImage::Format_RGBX32FPx4 || img.format() == QImage::Format_RGBA32FPx4
-               || img.format() == QImage::Format_RGBA32FPx4_Premultiplied) {
-        auto hasAlpha = img.hasAlphaChannel();
-        for (qint32 y = 0, h = img.height(); y < h; ++y) {
-            float *line = reinterpret_cast<float *>(img.scanLine(y));
-            for (int x = 0, w = img.width(); x < w; ++x) {
-                const auto x4 = x * 4;
-                line[x4 + 0] = scRGBTosRGB(line[x4 + 0]);
-                line[x4 + 1] = scRGBTosRGB(line[x4 + 1]);
-                line[x4 + 2] = scRGBTosRGB(line[x4 + 2]);
-                line[x4 + 3] = hasAlpha ? alpha_scRGBTosRGB(line[x4 + 3]) : float(1);
-            }
+        if(!img.colorSpace().isValid()) {
+            img.setColorSpace(QColorSpace(QColorSpace::SRgbLinear));
         }
-        img.setColorSpace(QColorSpace(QColorSpace::SRgb));
     }
 #endif
 
@@ -974,7 +953,7 @@ bool JXRHandler::write(const QImage &image)
     }
 
     // setting metadata (a failure of setting metadata doesn't stop the encoding)
-    auto cs = image.colorSpace().iccProfile();
+    auto cs = qi.colorSpace().iccProfile();
     if (!cs.isEmpty()) {
         if (auto err = d->pEncoder->SetColorContext(d->pEncoder, reinterpret_cast<quint8 *>(cs.data()), cs.size())) {
             qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() error while setting ICC profile:" << err;
@@ -1049,28 +1028,28 @@ QVariant JXRHandler::option(ImageOption option) const
         if (d->initForReading(device())) {
             switch (d->pDecoder->WMP.oOrientationFromContainer) {
             case O_FLIPV:
-                v = QImageIOHandler::TransformationFlip;
+                v = int(QImageIOHandler::TransformationFlip);
                 break;
             case O_FLIPH:
-                v = QImageIOHandler::TransformationMirror;
+                v = int(QImageIOHandler::TransformationMirror);
                 break;
             case O_FLIPVH:
-                v = QImageIOHandler::TransformationRotate180;
+                v = int(QImageIOHandler::TransformationRotate180);
                 break;
             case O_RCW:
-                v = QImageIOHandler::TransformationRotate90;
+                v = int(QImageIOHandler::TransformationRotate90);
                 break;
             case O_RCW_FLIPV:
-                v = QImageIOHandler::TransformationFlipAndRotate90;
+                v = int(QImageIOHandler::TransformationFlipAndRotate90);
                 break;
             case O_RCW_FLIPH:
-                v = QImageIOHandler::TransformationMirrorAndRotate90;
+                v = int(QImageIOHandler::TransformationMirrorAndRotate90);
                 break;
             case O_RCW_FLIPVH:
-                v = QImageIOHandler::TransformationRotate270;
+                v = int(QImageIOHandler::TransformationRotate270);
                 break;
             default:
-                v = QImageIOHandler::TransformationNone;
+                v = int(QImageIOHandler::TransformationNone);
                 break;
             }
         }

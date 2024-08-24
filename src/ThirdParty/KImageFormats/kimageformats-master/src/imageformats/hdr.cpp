@@ -27,11 +27,195 @@ typedef unsigned char uchar;
 
 Q_LOGGING_CATEGORY(HDRPLUGIN, "kf.imageformats.plugins.hdr", QtWarningMsg)
 
-namespace // Private.
-{
 #define MAXLINE 1024
 #define MINELEN 8 // minimum scanline length for encoding
 #define MAXELEN 0x7fff // maximum scanline length for encoding
+
+class Header
+{
+public:
+    Header()
+    {
+        m_colorSpace = QColorSpace(QColorSpace::SRgbLinear);
+        m_transformation = QImageIOHandler::TransformationNone;
+    }
+    Header(const Header&) = default;
+    Header& operator=(const Header&) = default;
+
+    bool isValid() const { return width() > 0 && height() > 0; }
+    qint32 width() const { return(m_size.width()); }
+    qint32 height() const { return(m_size.height()); }
+    QString software() const { return(m_software); }
+    QImageIOHandler::Transformations transformation() const { return(m_transformation); }
+
+    /*!
+     * \brief colorSpace
+     *
+     * The color space for the image.
+     *
+     * The CIE (x,y) chromaticity coordinates of the three (RGB)
+     * primaries and the white point used to standardize the picture's
+     * color system. This is used mainly by the ra_xyze program to
+     * convert between color systems. If no PRIMARIES line
+     * appears, we assume the standard primaries defined in
+     * src/common/color.h, namely "0.640 0.330 0.290
+     * 0.600 0.150 0.060 0.333 0.333" for red, green, blue
+     * and white, respectively.
+     */
+    QColorSpace colorSpace() const { return(m_colorSpace); }
+
+    /*!
+     * \brief exposure
+     *
+     * A single floating point number indicating a multiplier that has
+     * been applied to all the pixels in the file. EXPOSURE values are
+     * cumulative, so the original pixel values (i.e., radiances in
+     * watts/steradian/m^2) must be derived by taking the values in the
+     * file and dividing by all the EXPOSURE settings multiplied
+     * together. No EXPOSURE setting implies that no exposure
+     * changes have taken place.
+     */
+    float exposure() const {
+        float mul = 1;
+        for (auto&& v : m_exposure)
+            mul *= v;
+        return mul;
+    }
+
+    QImageIOHandler::Transformations m_transformation;
+    QColorSpace m_colorSpace;
+    QString m_software;
+    QSize m_size;
+    QList<float> m_exposure;
+};
+
+class HDRHandlerPrivate
+{
+public:
+    HDRHandlerPrivate()
+    {
+    }
+    ~HDRHandlerPrivate()
+    {
+    }
+
+    const Header& header(QIODevice *device)
+    {
+        auto&& h = m_header;
+        if (h.isValid()) {
+            return h;
+        }
+        h = readHeader(device);
+        return h;
+    }
+
+    static Header readHeader(QIODevice *device)
+    {
+        Header h;
+
+        int len;
+        QByteArray line(MAXLINE + 1, Qt::Uninitialized);
+        QByteArray format;
+
+        // Parse header
+        do {
+            len = device->readLine(line.data(), MAXLINE);
+
+            if (line.startsWith("FORMAT=")) {
+                format = line.mid(7, len - 7).trimmed();
+            }
+            if (line.startsWith("SOFTWARE=")) {
+                h.m_software = QString::fromUtf8(line.mid(9, len - 9)).trimmed();
+            }
+            if (line.startsWith("EXPOSURE=")) {
+                auto ok = false;
+                auto ex = QLocale::c().toFloat(QString::fromLatin1(line.mid(9, len - 9)).trimmed(), &ok);
+                if (ok)
+                    h.m_exposure << ex;
+            }
+            if (line.startsWith("PRIMARIES=")) {
+                auto list = line.mid(10, len - 10).trimmed().split(' ');
+                QList<double> primaries;
+                for (auto&& v : list) {
+                    auto ok = false;
+                    auto d = QLocale::c().toDouble(QString::fromLatin1(v), &ok);
+                    if (ok)
+                        primaries << d;
+                }
+                if (primaries.size() == 8) {
+                    auto cs = QColorSpace(QPointF(primaries.at(6), primaries.at(7)),
+                                          QPointF(primaries.at(0), primaries.at(1)),
+                                          QPointF(primaries.at(2), primaries.at(3)),
+                                          QPointF(primaries.at(4), primaries.at(5)),
+                                          QColorSpace::TransferFunction::Linear);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+                    cs.setDescription(QStringLiteral("Embedded RGB"));
+#endif
+                    if (cs.isValid())
+                        h.m_colorSpace = cs;
+                }
+            }
+
+        } while ((len > 0) && (line[0] != '\n'));
+
+        if (format != "32-bit_rle_rgbe") {
+            qCDebug(HDRPLUGIN) << "Unknown HDR format:" << format;
+            return h;
+        }
+
+        len = device->readLine(line.data(), MAXLINE);
+        line.resize(len);
+
+        /*
+         * Handle flipping and rotation, as per the spec below.
+         * The single resolution line consists of 4 values, a X and Y label each followed by a numerical
+         * integer value. The X and Y are immediately preceded by a sign which can be used to indicate
+         * flipping, the order of the X and Y indicate rotation. The standard coordinate system for
+         * Radiance images would have the following resolution string -Y N +X N. This indicates that the
+         * vertical axis runs down the file and the X axis is to the right (imagining the image as a
+         * rectangular block of data). A -X would indicate a horizontal flip of the image. A +Y would
+         * indicate a vertical flip. If the X value appears before the Y value then that indicates that
+         * the image is stored in column order rather than row order, that is, it is rotated by 90 degrees.
+         * The reader can convince themselves that the 8 combinations cover all the possible image orientations
+         * and rotations.
+         */
+        QRegularExpression resolutionRegExp(QStringLiteral("([+\\-][XY])\\s+([0-9]+)\\s+([+\\-][XY])\\s+([0-9]+)\n"));
+        QRegularExpressionMatch match = resolutionRegExp.match(QString::fromLatin1(line));
+        if (!match.hasMatch()) {
+            qCDebug(HDRPLUGIN) << "Invalid HDR file, the first line after the header didn't have the expected format:" << line;
+            return h;
+        }
+
+        auto c0 = match.captured(1);
+        auto c1 = match.captured(3);
+        if (c0.at(1) == u'Y') {
+            if (c0.at(0) == u'-' && c1.at(0) == u'+')
+                h.m_transformation = QImageIOHandler::TransformationNone;
+            if (c0.at(0) == u'-' && c1.at(0) == u'-')
+                h.m_transformation = QImageIOHandler::TransformationMirror;
+            if (c0.at(0) == u'+' && c1.at(0) == u'+')
+                h.m_transformation = QImageIOHandler::TransformationFlip;
+            if (c0.at(0) == u'+' && c1.at(0) == u'-')
+                h.m_transformation = QImageIOHandler::TransformationRotate180;
+        }
+        else {
+            if (c0.at(0) == u'-' && c1.at(0) == u'+')
+                h.m_transformation = QImageIOHandler::TransformationRotate90;
+            if (c0.at(0) == u'-' && c1.at(0) == u'-')
+                h.m_transformation = QImageIOHandler::TransformationMirrorAndRotate90;
+            if (c0.at(0) == u'+' && c1.at(0) == u'+')
+                h.m_transformation = QImageIOHandler::TransformationFlipAndRotate90;
+            if (c0.at(0) == u'+' && c1.at(0) == u'-')
+                h.m_transformation = QImageIOHandler::TransformationRotate270;
+        }
+
+        h.m_size = QSize(match.captured(4).toInt(), match.captured(2).toInt());
+        return h;
+    }
+
+private:
+    Header m_header;
+};
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 2, 0)
 static inline uchar ClipToByte(float value)
@@ -87,9 +271,10 @@ static bool Read_Old_Line(uchar *image, int width, QDataStream &s)
 }
 
 template<class float_T>
-void RGBE_To_QRgbLine(uchar *image, float_T *scanline, int width)
+void RGBE_To_QRgbLine(uchar *image, float_T *scanline, const Header& h)
 {
-    for (int j = 0; j < width; j++) {
+    auto exposure = h.exposure();
+    for (int j = 0, width = h.width(); j < width; j++) {
         // v = ldexp(1.0, int(image[3]) - 128);
         float v;
         int e = qBound(-31, int(image[3]) - 128, 31);
@@ -102,9 +287,13 @@ void RGBE_To_QRgbLine(uchar *image, float_T *scanline, int width)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
         auto j4 = j * 4;
         auto vn = v / 255.0f;
-        scanline[j4] = float_T(std::min(float(image[0]) * vn, 1.0f));
-        scanline[j4 + 1] = float_T(std::min(float(image[1]) * vn, 1.0f));
-        scanline[j4 + 2] = float_T(std::min(float(image[2]) * vn, 1.0f));
+        if (exposure > 0) {
+            vn /= exposure;
+        }
+
+        scanline[j4] = float_T(float(image[0]) * vn);
+        scanline[j4 + 1] = float_T(float(image[1]) * vn);
+        scanline[j4 + 2] = float_T(float(image[2]) * vn);
         scanline[j4 + 3] = float_T(1.0f);
 #else
         scanline[j] = qRgb(ClipToByte(float(image[0]) * v), ClipToByte(float(image[1]) * v), ClipToByte(float(image[2]) * v));
@@ -127,10 +316,13 @@ QImage::Format imageFormat()
 }
 
 // Load the HDR image.
-static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &img)
+static bool LoadHDR(QDataStream &s, const Header& h, QImage &img)
 {
     uchar val;
     uchar code;
+
+    const int width = h.width();
+    const int height = h.height();
 
     // Create dst image.
     img = imageAlloc(width, height, imageFormat());
@@ -157,7 +349,7 @@ static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &i
         // determine scanline type
         if ((width < MINELEN) || (MAXELEN < width)) {
             Read_Old_Line(image, width, s);
-            RGBE_To_QRgbLine(image, scanline, width);
+            RGBE_To_QRgbLine(image, scanline, h);
             continue;
         }
 
@@ -170,7 +362,7 @@ static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &i
         if (val != 2) {
             s.device()->ungetChar(val);
             Read_Old_Line(image, width, s);
-            RGBE_To_QRgbLine(image, scanline, width);
+            RGBE_To_QRgbLine(image, scanline, h);
             continue;
         }
 
@@ -185,7 +377,7 @@ static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &i
         if ((image[1] != 2) || (image[2] & 128)) {
             image[0] = 2;
             Read_Old_Line(image + 4, width - 1, s);
-            RGBE_To_QRgbLine(image, scanline, width);
+            RGBE_To_QRgbLine(image, scanline, h);
             continue;
         }
 
@@ -227,84 +419,34 @@ static bool LoadHDR(QDataStream &s, const int width, const int height, QImage &i
                 }
             }
         }
-
-        RGBE_To_QRgbLine(image, scanline, width);
+        RGBE_To_QRgbLine(image, scanline, h);
     }
 
     return true;
 }
 
-static QSize readHeaderSize(QIODevice *device)
-{
-    int len;
-    QByteArray line(MAXLINE + 1, Qt::Uninitialized);
-    QByteArray format;
-
-    // Parse header
-    do {
-        len = device->readLine(line.data(), MAXLINE);
-
-        if (line.startsWith("FORMAT=")) {
-            format = line.mid(7, len - 7 - 1 /*\n*/);
-        }
-
-    } while ((len > 0) && (line[0] != '\n'));
-
-    if (format != "32-bit_rle_rgbe") {
-        qCDebug(HDRPLUGIN) << "Unknown HDR format:" << format;
-        return QSize();
-    }
-
-    len = device->readLine(line.data(), MAXLINE);
-    line.resize(len);
-
-    /*
-       TODO: handle flipping and rotation, as per the spec below
-       The single resolution line consists of 4 values, a X and Y label each followed by a numerical
-       integer value. The X and Y are immediately preceded by a sign which can be used to indicate
-       flipping, the order of the X and Y indicate rotation. The standard coordinate system for
-       Radiance images would have the following resolution string -Y N +X N. This indicates that the
-       vertical axis runs down the file and the X axis is to the right (imagining the image as a
-       rectangular block of data). A -X would indicate a horizontal flip of the image. A +Y would
-       indicate a vertical flip. If the X value appears before the Y value then that indicates that
-       the image is stored in column order rather than row order, that is, it is rotated by 90 degrees.
-       The reader can convince themselves that the 8 combinations cover all the possible image orientations
-       and rotations.
-    */
-    QRegularExpression resolutionRegExp(QStringLiteral("([+\\-][XY]) ([0-9]+) ([+\\-][XY]) ([0-9]+)\n"));
-    QRegularExpressionMatch match = resolutionRegExp.match(QString::fromLatin1(line));
-    if (!match.hasMatch()) {
-        qCDebug(HDRPLUGIN) << "Invalid HDR file, the first line after the header didn't have the expected format:" << line;
-        return QSize();
-    }
-
-    if ((match.captured(1).at(1) != u'Y') || (match.captured(3).at(1) != u'X')) {
-        qCDebug(HDRPLUGIN) << "Unsupported image orientation in HDR file.";
-        return QSize();
-    }
-
-    return QSize(match.captured(4).toInt(), match.captured(2).toInt());
-}
-
-} // namespace
-
 bool HDRHandler::read(QImage *outImage)
 {
     QDataStream s(device());
 
-    m_imageSize = readHeaderSize(s.device());
-    if (!m_imageSize.isValid()) {
+    const Header& h = d->header(s.device());
+    if (!h.isValid()) {
         return false;
     }
 
     QImage img;
-    if (!LoadHDR(s, m_imageSize.width(), m_imageSize.height(), img)) {
+    if (!LoadHDR(s, h, img)) {
         // qDebug() << "Error loading HDR file.";
         return false;
     }
-    // The images read by Gimp and Photoshop (including those of the tests) are interpreted with linear color space.
+
     // By setting the linear color space, programs that support profiles display HDR files as in GIMP and Photoshop.
-    img.setColorSpace(QColorSpace(QColorSpace::SRgbLinear));
+    img.setColorSpace(h.colorSpace());
+
+    // Metadata
+    if (!h.software().isEmpty()) {
+        img.setText(QStringLiteral(META_KEY_SOFTWARE), h.software());
+    }
 
     *outImage = img;
     return true;
@@ -318,6 +460,9 @@ bool HDRHandler::supportsOption(ImageOption option) const
     if (option == QImageIOHandler::ImageFormat) {
         return true;
     }
+    if (option == QImageIOHandler::ImageTransformation) {
+        return true;
+    }
     return false;
 }
 
@@ -326,15 +471,10 @@ QVariant HDRHandler::option(ImageOption option) const
     QVariant v;
 
     if (option == QImageIOHandler::Size) {
-        if (!m_imageSize.isEmpty()) {
-            v = QVariant::fromValue(m_imageSize);
-        } else if (auto d = device()) {
-            // transactions works on both random and sequential devices
-            d->startTransaction();
-            auto size = readHeaderSize(d);
-            d->rollbackTransaction();
-            if (size.isValid()) {
-                v = QVariant::fromValue(size);
+        if (auto dev = device()) {
+            auto&& h = d->header(dev);
+            if (h.isValid()) {
+                v = QVariant::fromValue(h.m_size);
             }
         }
     }
@@ -343,10 +483,21 @@ QVariant HDRHandler::option(ImageOption option) const
         v = QVariant::fromValue(imageFormat());
     }
 
+    if (option == QImageIOHandler::ImageTransformation) {
+        if (auto dev = device()) {
+            auto&& h = d->header(dev);
+            if (h.isValid()) {
+                v = QVariant::fromValue(int(h.transformation()));
+            }
+        }
+    }
+
     return v;
 }
 
 HDRHandler::HDRHandler()
+    : QImageIOHandler()
+    , d(new HDRHandlerPrivate)
 {
 }
 
@@ -373,9 +524,9 @@ bool HDRHandler::canRead(QIODevice *device)
 
     // allow to load offical test cases: https://radsite.lbl.gov/radiance/framed.html
     device->startTransaction();
-    QSize size = readHeaderSize(device);
+    auto h = HDRHandlerPrivate::readHeader(device);
     device->rollbackTransaction();
-    if (size.isValid()) {
+    if (h.isValid()) {
         return true;
     }
 

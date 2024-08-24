@@ -1,17 +1,17 @@
-From 4cddf4159e854614993d57be16c596c4f974d088 Mon Sep 17 00:00:00 2001
+From 92d0734f5572e8ab3afdea1d189d4a3d416162b2 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 11 Nov 2023 22:42:48 +0700
-Subject: [PATCH 7/9] Fix compatibility with OpenEXR 2.x
+Subject: [PATCH 5/7] Fix compatibility with OpenEXR 2.x
 
 ---
  src/imageformats/exr.cpp | 6 ++++--
  1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/src/imageformats/exr.cpp b/src/imageformats/exr.cpp
-index f7d12a2..410b193 100644
+index 6afe0ee..e91e864 100644
 --- a/src/imageformats/exr.cpp
 +++ b/src/imageformats/exr.cpp
-@@ -202,7 +202,7 @@ void K_OStream::write(const char c[], int n)
+@@ -178,7 +178,7 @@ void K_OStream::write(const char c[], int n)
  #if OPENEXR_VERSION_MAJOR > 2
  uint64_t K_OStream::tellp()
  #else
@@ -20,7 +20,7 @@ index f7d12a2..410b193 100644
  #endif
  {
      return m_dev->pos();
-@@ -211,7 +211,7 @@ Imf::Int64 K_OStream::tellg()
+@@ -187,7 +187,7 @@ Imf::Int64 K_OStream::tellg()
  #if OPENEXR_VERSION_MAJOR > 2
  void K_OStream::seekp(uint64_t pos)
  #else
@@ -29,7 +29,7 @@ index f7d12a2..410b193 100644
  #endif
  {
      m_dev->seek(pos);
-@@ -634,12 +634,14 @@ bool EXRHandler::write(const QImage &image)
+@@ -542,12 +542,14 @@ bool EXRHandler::write(const QImage &image)
          if (m_compressionRatio >= qint32(Imf::Compression::NO_COMPRESSION) && m_compressionRatio < qint32(Imf::Compression::NUM_COMPRESSION_METHODS)) {
              header.compression() = Imf::Compression(m_compressionRatio);
          }
