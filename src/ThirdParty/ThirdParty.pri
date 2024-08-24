@@ -96,6 +96,7 @@ include(libexpat/libexpat.pri)
 #  * OpenJPEG
 #  * libde265
 #  * zlib
+#  * brotli
 include(libheif/libheif.pri)
 
 # Modules without dependencies
