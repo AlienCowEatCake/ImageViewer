@@ -621,6 +621,9 @@ public:
 
     QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
+        if(!isAvailable())
+            return QStringList();
+
         const GraphicsMagickGuard graphicsMagickGuard(Q_NULLPTR);
         ScopedExceptionInfo exception;
 

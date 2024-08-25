@@ -650,6 +650,9 @@ public:
 
     QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
+        if(!isAvailable())
+            return QStringList();
+
         const MagickWandGuard magickWandGuard;
         QScopedPointer<ExceptionInfo, ExceptionInfoDeleter> exception(AcquireExceptionInfo());
 

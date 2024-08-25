@@ -149,7 +149,8 @@ float float24ToFloat(const void *buffer)
 {
     assert(buffer);
     const quint8 *fp24 = reinterpret_cast<const quint8*>(buffer);
-    quint8 fp32[4];
+    float fp32f = 0.0f;
+    quint8 *fp32 = reinterpret_cast<quint8*>(&fp32f);
 
     // https://github.com/ImageMagick/ImageMagick/issues/1842
 #if (Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
@@ -161,7 +162,7 @@ float float24ToFloat(const void *buffer)
     if((fp24[0] | fp24[1] | fp24[2]) == 0u)
     {
         fp32[0] = fp32[1] = fp32[2] = fp32[3] = 0;
-        return *reinterpret_cast<const float*>(fp32);
+        return fp32f;
     }
     if(lsb)
     {
@@ -196,7 +197,7 @@ float float24ToFloat(const void *buffer)
         fp32[2] = m32[1];
         fp32[3] = m32[0];
     }
-    return *reinterpret_cast<const float*>(fp32);
+    return fp32f;
 }
 
 QRgb premultiply(QRgb rgb)

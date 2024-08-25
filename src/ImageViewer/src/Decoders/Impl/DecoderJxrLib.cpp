@@ -124,7 +124,7 @@ const char *errorToString(ERR nErrorCode)
     return "Unknown";
 }
 
-const char *pixelFormatToString(const PKPixelFormatGUID &pixelFormat)
+const char *pixelFormatToString(PKPixelFormatGUID pixelFormat)
 {
 #define ADD_CASE(X) \
     if(IsEqualGUID(pixelFormat, X)) \
@@ -300,7 +300,7 @@ Cleanup:
     return err;
 }
 
-QString toString(const DPKPROPVARIANT& prop)
+QString toString(DPKPROPVARIANT prop)
 {
     switch(prop.vt)
     {
@@ -638,7 +638,7 @@ QPair<QRgb, quint8> convertFromCMYKAtoCMYK8888PlusAlpha(const void *data, size_t
     return qMakePair<QRgb, quint8>(convertFromCMYKtoCMYK8888<T>(data), static_cast<quint8>(qBound<int>(0, static_cast<int>(255.0f * a), 255)));
 }
 
-void directCopy(PKImageDecode *decoder, const PKRect &rect, QImage &image, QImage::Format format)
+void directCopy(PKImageDecode *decoder, PKRect rect, QImage &image, QImage::Format format)
 {
     image = QImage(rect.Width, rect.Height, format);
     if(image.isNull())
@@ -653,7 +653,7 @@ Cleanup:
         image = QImage();
 }
 
-void copyViaBuffer(PKImageDecode *decoder, const PKRect &rect, QImage &image, QImage::Format format, size_t bytesPerPixel, VoidPtrToQRgbFunction toRgbFunc)
+void copyViaBuffer(PKImageDecode *decoder, PKRect rect, QImage &image, QImage::Format format, size_t bytesPerPixel, VoidPtrToQRgbFunction toRgbFunc)
 {
     image = QImage(rect.Width, rect.Height, format);
     if(image.isNull())
@@ -680,7 +680,7 @@ Cleanup:
 
 #if (USE_CMYK_8888)
 template<typename T>
-void copyViaBufferCMYKA(PKImageDecode *decoder, const PKRect &rect, QImage &image, size_t bytesPerPixel, QByteArray &iccProfileData)
+void copyViaBufferCMYKA(PKImageDecode *decoder, PKRect rect, QImage &image, size_t bytesPerPixel, QByteArray &iccProfileData)
 {
     image = QImage(rect.Width, rect.Height, QImage::Format_CMYK8888);
     if(image.isNull())

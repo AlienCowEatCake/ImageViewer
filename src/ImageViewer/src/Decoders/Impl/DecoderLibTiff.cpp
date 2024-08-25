@@ -178,7 +178,7 @@ QString extrasamplesToString(quint16 extrasamplesCount, const quint16 *extrasamp
     {
         switch(extrasamples[i])
         {
-#define APPEND_RESULT(S) result = result + (result.isEmpty() ? QString() : QString::fromLatin1(", ")) + S
+#define APPEND_RESULT(S) result = result + (result.isEmpty() ? QString() : QString::fromLatin1(", ")) + (S)
 #define ADD_CASE(X) case X: APPEND_RESULT(QString::fromLatin1(#X)); break
         ADD_CASE(EXTRASAMPLE_UNSPECIFIED);
         ADD_CASE(EXTRASAMPLE_ASSOCALPHA);
