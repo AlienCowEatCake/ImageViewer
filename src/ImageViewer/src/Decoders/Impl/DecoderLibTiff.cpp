@@ -384,13 +384,13 @@ void unmapProc(thandle_t /*fd*/, tdata_t /*base*/, toff_t /*size*/)
 }
 
 #if defined (TIFFLIB_VERSION) && (TIFFLIB_VERSION >= 20221213) && (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
-int errorHandlerProc(TIFF */*tiff*/, void */*user_data*/, const char *module, const char *fmt, va_list ap)
+int errorHandlerProc(TIFF* /*tiff*/, void* /*user_data*/, const char *module, const char *fmt, va_list ap)
 {
     LOG_WARNING() << LOGGING_CTXS(module) <<  QString::vasprintf(fmt, ap).toLocal8Bit().data();
     return 1;
 }
 
-int warningHandlerProc(TIFF */*tiff*/, void */*user_data*/, const char *module, const char *fmt, va_list ap)
+int warningHandlerProc(TIFF* /*tiff*/, void* /*user_data*/, const char *module, const char *fmt, va_list ap)
 {
     LOG_WARNING() << LOGGING_CTXS(module) <<  QString::vasprintf(fmt, ap).toLocal8Bit().data();
     return 1;

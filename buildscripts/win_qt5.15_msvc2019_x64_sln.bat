@@ -14,6 +14,6 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="enable_update_checking" CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_qtwebkit enable_qtwebengine enable_qmlwebengine enable_msedgewebview2 enable_mshtml enable_nanosvg" -tp vc ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="enable_update_checking" CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_qtwebkit enable_qtwebengine enable_qmlwebengine enable_msedgewebview2 enable_mshtml enable_nanosvg enable_j40 disable_fallback_iccprofiles" -tp vc ..\%PROJECT%.pro
 
 pause

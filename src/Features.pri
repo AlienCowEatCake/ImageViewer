@@ -970,7 +970,9 @@ disable_libavif | system_libavif {
 
 disable_libjxl | system_libjxl {
     disable_exiv2 | system_exiv2 {
-        CONFIG *= disable_brotli
+        disable_libheif | system_libheif {
+            CONFIG *= disable_brotli
+        }
     }
 }
 

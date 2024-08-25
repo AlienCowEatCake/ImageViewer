@@ -429,7 +429,7 @@ void skip_input_data(j_decompress_ptr cinfo, long num_bytes) {  // NOLINT
   jpeg_source_mgr* src = cinfo->src;
   size_t bytes = (size_t)num_bytes;
   if (bytes > src->bytes_in_buffer) {
-    src->next_input_byte = nullptr;
+    src->next_input_byte = NULL;
     src->bytes_in_buffer = 0;
   } else {
     src->next_input_byte += bytes;

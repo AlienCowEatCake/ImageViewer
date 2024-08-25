@@ -958,12 +958,21 @@ typedef int8_t __attribute__((vector_size(16))) vec8;
 typedef uint16_t __attribute__((vector_size(16))) uvec16;
 typedef uint32_t __attribute__((vector_size(16))) uvec32;
 typedef uint8_t __attribute__((vector_size(16))) uvec8;
+#if (defined(__GNUC__) && !defined(__clang__) && (__GNUC__ < 4))
+typedef int16_t __attribute__((aligned(32))) lvec16[16];
+typedef int32_t __attribute__((aligned(32))) lvec32[8];
+typedef int8_t __attribute__((aligned(32))) lvec8[32];
+typedef uint16_t __attribute__((aligned(32))) ulvec16[16];
+typedef uint32_t __attribute__((aligned(32))) ulvec32[8];
+typedef uint8_t __attribute__((aligned(32))) ulvec8[32];
+#else
 typedef int16_t __attribute__((vector_size(32))) lvec16;
 typedef int32_t __attribute__((vector_size(32))) lvec32;
 typedef int8_t __attribute__((vector_size(32))) lvec8;
 typedef uint16_t __attribute__((vector_size(32))) ulvec16;
 typedef uint32_t __attribute__((vector_size(32))) ulvec32;
 typedef uint8_t __attribute__((vector_size(32))) ulvec8;
+#endif
 #else
 #define SIMD_ALIGNED(var) var
 #define LIBYUV_NOINLINE
