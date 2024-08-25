@@ -1007,62 +1007,115 @@ QImage readFromRawBuffer(const quint8 *buffer, qint64 width, qint64 height, qint
         }
         if(ctx->subsamplinghor > 1 || ctx->subsamplingver > 1)
         {
-            /// @todo It is very dirty upstampling. It works slowly and its code looks unreadable
-            const qint64 halfSubsamplinghor = ctx->subsamplinghor / 2;
-            const qint64 halfSubsamplingver = ctx->subsamplingver / 2;
-            QImage upsampledCbCr(static_cast<qint64>(std::ceil(static_cast<qreal>(width) / static_cast<qreal>(ctx->subsamplinghor))) + ctx->subsamplinghor,
-                                 static_cast<qint64>(std::ceil(static_cast<qreal>(height) / static_cast<qreal>(ctx->subsamplingver))) + ctx->subsamplingver,
-                                 QImage::Format_RGB32);
+            QImage upsampledCbCr(result.width(), result.height(), QImage::Format_ARGB32);
             if(upsampledCbCr.isNull())
             {
                 LOG_WARNING() << LOGGING_CTX << "Invalid upsampled image size";
                 goto NoUpsampling;
             }
-            for(qint64 y = 0; y < upsampledCbCr.height() - ctx->subsamplingver; ++y)
+            for(qint64 y = 0; y < height; ++y)
             {
-                QRgb *outPtr = reinterpret_cast<QRgb*>(upsampledCbCr.scanLine(y + halfSubsamplingver));
-                const quint8 *inPtr = reinterpret_cast<const quint8*>(buffer + bufferLineSize * y * ctx->subsamplingver);
-                for(qint64 x = 0; x < upsampledCbCr.width() - ctx->subsamplinghor; ++x)
+                quint8 *outPtr = reinterpret_cast<quint8*>(upsampledCbCr.scanLine(y));
+                const quint8 *inPtr = reinterpret_cast<const quint8*>(buffer + bufferLineSize * y);
+                for(qint64 x = 0; x < width; ++x)
                 {
-                    const qint64 bitOffset = x * ctx->subsamplinghor * ctx->samplesPerPixel * ctx->bitsPerSample;
+                    const qint64 bitOffset = x * ctx->samplesPerPixel * ctx->bitsPerSample;
                     const quint8 Cb = convertValueToU8(inPtr, static_cast<quint64>(bitOffset + ctx->bitsPerSample * 1), ctx->sampleFormat, static_cast<quint64>(ctx->bitsPerSample));
                     const quint8 Cr = convertValueToU8(inPtr, static_cast<quint64>(bitOffset + ctx->bitsPerSample * 2), ctx->sampleFormat, static_cast<quint64>(ctx->bitsPerSample));
-                    outPtr[x + halfSubsamplinghor] = qRgb(Cb, Cr, 0);
+                    outPtr[x * 4 + 0] = outPtr[x * 4 + 2] = Cb;
+                    outPtr[x * 4 + 1] = outPtr[x * 4 + 3] = Cr;
                 }
-                for(qint64 x = 0; x < halfSubsamplinghor; ++x)
-                    memcpy(outPtr + x, outPtr + halfSubsamplinghor, 4);
-                for(qint64 x = upsampledCbCr.width() - halfSubsamplinghor; x < upsampledCbCr.width(); ++x)
-                    memcpy(outPtr + x, outPtr + (upsampledCbCr.width() - halfSubsamplinghor - 1), 4);
             }
-            for(qint64 y = 0; y < halfSubsamplingver; ++y)
-                memcpy(upsampledCbCr.scanLine(y), upsampledCbCr.scanLine(halfSubsamplingver), static_cast<size_t>(upsampledCbCr.width() * 4));
-            for(qint64 y = upsampledCbCr.height() - halfSubsamplingver; y < upsampledCbCr.height(); ++y)
-                memcpy(upsampledCbCr.scanLine(y), upsampledCbCr.scanLine(upsampledCbCr.height() - halfSubsamplingver - 1), static_cast<size_t>(upsampledCbCr.width() * 4));
-            upsampledCbCr = upsampledCbCr.scaled(upsampledCbCr.width() * ctx->subsamplinghor, upsampledCbCr.height() * ctx->subsamplingver,
-                                                 Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-            if(upsampledCbCr.isNull())
+            if(ctx->subsamplinghor > 1)
             {
-                LOG_WARNING() << LOGGING_CTX << "Invalid upsampled image size";
-                goto NoUpsampling;
+                for(qint64 y = 0; y < height; y += ctx->subsamplingver)
+                {
+                    quint8 *outPtr = reinterpret_cast<quint8*>(upsampledCbCr.scanLine(y));
+                    const quint8 *inPtr = reinterpret_cast<const quint8*>(upsampledCbCr.scanLine(y));
+                    for(qint64 x = 0; x < width; ++x)
+                    {
+                        qint64 leftIndex;
+                        float rightWeight;
+                        if(ctx->ycbcrpositioning == YCBCRPOSITION_COSITED)
+                        {
+                            leftIndex = std::max<qint64>(0, x - (x % ctx->subsamplinghor));
+                            rightWeight = static_cast<float>(x - leftIndex) / static_cast<float>(ctx->subsamplinghor);
+                        }
+                        else
+                        {
+                            const float leftPos = static_cast<float>(x - (x % ctx->subsamplinghor) - (((x % ctx->subsamplinghor) >= ctx->subsamplinghor / 2) ? 0 : ctx->subsamplinghor))
+                                    + static_cast<float>(ctx->subsamplinghor - 1) / 2.0f;
+                            leftIndex = std::max<qint64>(0, static_cast<int>(leftPos));
+                            rightWeight = (static_cast<float>(x) - leftPos) / static_cast<float>(ctx->subsamplinghor);
+                        }
+                        const qint64 rightIndex = std::min<qint64>(width - 1, leftIndex + ctx->subsamplinghor);
+                        const float leftWeight = 1.0f - rightWeight;
+                        for(qint64 c = 0; c < 2; ++c)
+                        {
+                            const quint8 leftValue = inPtr[leftIndex * 4 + c];
+                            const quint8 rightValue = inPtr[rightIndex * 4 + c];
+                            const float newValue = static_cast<float>(leftValue) * leftWeight + static_cast<float>(rightValue) * rightWeight;
+                            outPtr[x * 4 + c + 2] = qBound<int>(0, static_cast<int>(newValue), 255);
+                        }
+                    }
+                    for(qint64 x = 0; x < width; ++x)
+                        *reinterpret_cast<quint16*>(outPtr + x * 4) = *reinterpret_cast<quint16*>(outPtr + x * 4 + 2);
+                    for(qint64 i = 0; i < ctx->subsamplingver && y + i < height; ++i)
+                        memcpy(upsampledCbCr.scanLine(y + i), outPtr, width * 4);
+                }
             }
-            const qint64 upsampledCbCrOffsetX = ctx->ycbcrpositioning == YCBCRPOSITION_COSITED
-                    ? halfSubsamplinghor * ctx->subsamplinghor
-                    : halfSubsamplinghor * ctx->subsamplinghor - halfSubsamplinghor;
-            const qint64 upsampledCbCrOffsetY = ctx->ycbcrpositioning == YCBCRPOSITION_COSITED
-                    ? halfSubsamplingver * ctx->subsamplingver
-                    : halfSubsamplingver * ctx->subsamplingver - halfSubsamplingver;
-
+            if(ctx->subsamplingver > 1)
+            {
+                for(qint64 y = 0; y < height; ++y)
+                {
+                    qint64 upIndex;
+                    float downWeight;
+                    if(ctx->ycbcrpositioning == YCBCRPOSITION_COSITED)
+                    {
+                        upIndex = std::max<qint64>(0, y - (y % ctx->subsamplingver));
+                        downWeight = static_cast<float>(y - upIndex) / static_cast<float>(ctx->subsamplingver);
+                    }
+                    else
+                    {
+                        const float upPos = static_cast<float>(y - (y % ctx->subsamplingver) - (((y % ctx->subsamplingver) >= ctx->subsamplingver / 2) ? 0 : ctx->subsamplingver))
+                                + static_cast<float>(ctx->subsamplingver - 1) / 2.0f;
+                        upIndex = std::max<qint64>(0, static_cast<int>(upPos));
+                        downWeight = (static_cast<float>(y) - upPos) / static_cast<float>(ctx->subsamplingver);
+                    }
+                    const qint64 downIndex = std::min<qint64>(height - 1, upIndex + ctx->subsamplingver);
+                    const float upWeight = 1.0f - downWeight;
+                    const quint8 *upPtr = reinterpret_cast<const quint8*>(upsampledCbCr.scanLine(upIndex));
+                    const quint8 *downPtr = reinterpret_cast<const quint8*>(upsampledCbCr.scanLine(downIndex));
+                    quint8 *outPtr = reinterpret_cast<quint8*>(upsampledCbCr.scanLine(y));
+                    for(qint64 x = 0; x < width; ++x)
+                    {
+                        for(qint64 c = 0; c < 2; ++c)
+                        {
+                            const quint8 upValue = upPtr[x * 4 + c];
+                            const quint8 downValue = downPtr[x * 4 + c];
+                            const float newValue = static_cast<float>(upValue) * upWeight + static_cast<float>(downValue) * downWeight;
+                            outPtr[x * 4 + c + 2] = qBound<int>(0, static_cast<int>(newValue), 255);
+                        }
+                    }
+                }
+                for(qint64 y = 0; y < height; ++y)
+                {
+                    quint8 *outPtr = reinterpret_cast<quint8*>(upsampledCbCr.scanLine(y));
+                    for(qint64 x = 0; x < width; ++x)
+                        *reinterpret_cast<quint16*>(outPtr + x * 4) = *reinterpret_cast<quint16*>(outPtr + x * 4 + 2);
+                }
+            }
             for(qint64 y = 0; y < height; ++y)
             {
                 QRgb *outPtr = reinterpret_cast<QRgb*>(result.scanLine(y));
                 const quint8 *inPtr = reinterpret_cast<const quint8*>(buffer + bufferLineSize * y);
-                const QRgb *inCbCrPtr = reinterpret_cast<const QRgb*>(upsampledCbCr.scanLine(y + upsampledCbCrOffsetY));
+                const quint8 *inCbCrPtr = reinterpret_cast<const quint8*>(upsampledCbCr.scanLine(y));
                 for(qint64 x = 0; x < width; ++x)
                 {
                     const qint64 bitOffset = x * ctx->samplesPerPixel * ctx->bitsPerSample;
                     float Y  = convertValueToFP(inPtr, static_cast<quint64>(bitOffset + ctx->bitsPerSample * 0), ctx->sampleFormat, static_cast<quint64>(ctx->bitsPerSample));
-                    float Cb = qRed(inCbCrPtr[x + upsampledCbCrOffsetX]) / 255.0f;
-                    float Cr = qGreen(inCbCrPtr[x + upsampledCbCrOffsetX]) / 255.0f;
+                    float Cb = inCbCrPtr[x * 4 + 0] / 255.0f;
+                    float Cr = inCbCrPtr[x * 4 + 1] / 255.0f;
                     const float alpha = ctx->alphaIndex >= 0
                             ? convertValueToFP(inPtr, static_cast<quint64>(bitOffset + ctx->bitsPerSample * (ctx->primarysamplesCount + ctx->alphaIndex)), ctx->sampleFormat, static_cast<quint64>(ctx->bitsPerSample))
                             : 1.0f;
