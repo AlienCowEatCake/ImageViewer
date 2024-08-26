@@ -56,47 +56,47 @@ inline bool IsOneOf(const T0 &arg0, const T1 &arg1)
     return arg0 == arg1;
 }
 
-#define ADD_SIGNED_UNSIGNED_COMPARE(UTYPE, STYPE) \
+#define ADD_SIGNED_UNSIGNED_COMPARE(UTYPE, STYPE, CTYPE) \
 template<> \
 inline bool IsOneOf(const UTYPE &arg0, const STYPE &arg1) \
 { \
-    return arg1 >= 0 && IsOneOf<UTYPE, UTYPE>(arg0, static_cast<UTYPE>(arg1)); \
+    return arg1 >= 0 && IsOneOf<CTYPE, CTYPE>(static_cast<CTYPE>(arg0), static_cast<CTYPE>(arg1)); \
 } \
 template<> \
 inline bool IsOneOf(const STYPE &arg0, const UTYPE &arg1) \
 { \
-    return arg0 >= 0 && IsOneOf<UTYPE, UTYPE>(static_cast<UTYPE>(arg0), arg1); \
+    return arg0 >= 0 && IsOneOf<CTYPE, CTYPE>(static_cast<CTYPE>(arg0), static_cast<CTYPE>(arg1)); \
 }
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned char, char)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned char, signed char)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned char, signed short)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned char, signed int)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned char, signed long)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned char, signed long long)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned short, char)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned short, signed char)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned short, signed short)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned short, signed int)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned short, signed long)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned short, signed long long)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned int, char)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned int, signed char)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned int, signed short)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned int, signed int)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned int, signed long)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned int, signed long long)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned long, char)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned long, signed char)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned long, signed short)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned long, signed int)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned long, signed long)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned long, signed long long)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned long long, char)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned long long, signed char)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned long long, signed short)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned long long, signed int)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned long long, signed long)
-ADD_SIGNED_UNSIGNED_COMPARE(unsigned long long, signed long long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned char, char, unsigned char)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned char, signed char, unsigned char)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned char, signed short, signed short)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned char, signed int, signed int)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned char, signed long, signed long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned char, signed long long, signed long long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned short, char, unsigned short)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned short, signed char, unsigned short)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned short, signed short, unsigned short)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned short, signed int, signed int)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned short, signed long, signed long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned short, signed long long, signed long long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned int, char, unsigned int)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned int, signed char, unsigned int)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned int, signed short, unsigned int)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned int, signed int, unsigned int)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned int, signed long, signed long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned int, signed long long, signed long long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned long, char, unsigned long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned long, signed char, unsigned long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned long, signed short, unsigned long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned long, signed int, unsigned long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned long, signed long, unsigned long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned long, signed long long, signed long long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned long long, char, unsigned long long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned long long, signed char, unsigned long long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned long long, signed short, unsigned long long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned long long, signed int, unsigned long long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned long long, signed long, unsigned long long)
+ADD_SIGNED_UNSIGNED_COMPARE(unsigned long long, signed long long, unsigned long long)
 #undef ADD_SIGNED_UNSIGNED_COMPARE
 
 template <typename T0, typename T1, typename T2>
