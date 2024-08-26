@@ -626,13 +626,13 @@ quint64 getValueUInt(const quint8 *buffer, quint64 bitsOffset, quint64 bitsPerSa
         return static_cast<quint64>(*reinterpret_cast<const quint8*>(buffer + bitsOffset / 8));
     case 16:
         assert(bitsOffset % 8 == 0);
-        return static_cast<quint64>(*reinterpret_cast<const quint16*>(buffer + bitsOffset / 8));
+        return static_cast<quint64>(DataProcessing::extractFromUnalignedPtr<quint16>(buffer + bitsOffset / 8));
     case 32:
         assert(bitsOffset % 8 == 0);
-        return static_cast<quint64>(*reinterpret_cast<const quint32*>(buffer + bitsOffset / 8));
+        return static_cast<quint64>(DataProcessing::extractFromUnalignedPtr<quint32>(buffer + bitsOffset / 8));
     case 64:
         assert(bitsOffset % 8 == 0);
-        return static_cast<quint64>(*reinterpret_cast<const quint64*>(buffer + bitsOffset / 8));
+        return static_cast<quint64>(DataProcessing::extractFromUnalignedPtr<quint64>(buffer + bitsOffset / 8));
     default:
         break;
     }
@@ -688,13 +688,13 @@ qint64 getValueSInt(const quint8 *buffer, quint64 bitsOffset, quint64 bitsPerSam
         return static_cast<qint64>(*reinterpret_cast<const qint8*>(buffer + bitsOffset / 8));
     case 16:
         assert(bitsOffset % 8 == 0);
-        return static_cast<qint64>(*reinterpret_cast<const qint16*>(buffer + bitsOffset / 8));
+        return static_cast<qint64>(DataProcessing::extractFromUnalignedPtr<qint16>(buffer + bitsOffset / 8));
     case 32:
         assert(bitsOffset % 8 == 0);
-        return static_cast<qint64>(*reinterpret_cast<const qint32*>(buffer + bitsOffset / 8));
+        return static_cast<qint64>(DataProcessing::extractFromUnalignedPtr<qint32>(buffer + bitsOffset / 8));
     case 64:
         assert(bitsOffset % 8 == 0);
-        return static_cast<qint64>(*reinterpret_cast<const qint64*>(buffer + bitsOffset / 8));
+        return static_cast<qint64>(DataProcessing::extractFromUnalignedPtr<qint64>(buffer + bitsOffset / 8));
     default:
         break;
     }
@@ -716,9 +716,9 @@ float getValueFP(const quint8 *buffer, quint64 bitsOffset, quint64 bitsPerSample
     case 24:
         return DataProcessing::float24ToFloat(buffer + bitsOffset / 8);
     case 32:
-        return *reinterpret_cast<const float*>(buffer + bitsOffset / 8);
+        return DataProcessing::extractFromUnalignedPtr<float>(buffer + bitsOffset / 8);
     case 64:
-        return static_cast<float>(*reinterpret_cast<const double*>(buffer + bitsOffset / 8));
+        return static_cast<float>(DataProcessing::extractFromUnalignedPtr<double>(buffer + bitsOffset / 8));
     }
     LOG_WARNING() << LOGGING_CTX << "Unsupported floating bits per sample =" << bitsPerSample;
     assert(false);
@@ -777,16 +777,16 @@ quint8 convertValueToU8(const quint8 *buffer, quint64 bitsOffset, quint16 sample
         if(bitsPerSample == 8)
         {
             const quint64 value = getValueUInt(buffer, bitsOffset, bitsPerSample);
-            return static_cast<quint8>(qBound<quint64>(0, value, 255));
+            return DataProcessing::clampByte(value);
         }
         if(bitsPerSample < 8 || bitsPerSample > 62)
         {
             const float value = convertValueToFP(buffer, bitsOffset, sampleFormat, bitsPerSample);
-            return static_cast<quint8>(qBound<int>(0, static_cast<int>(value * 255.0f), 255));
+            return DataProcessing::clampByte(value * 255.0f);
         }
         const quint64 shift = bitsPerSample - 8;
         const quint64 value = getValueUInt(buffer, bitsOffset, bitsPerSample);
-        return static_cast<quint8>(qBound<int>(0, static_cast<int>(value >> shift), 255));
+        return DataProcessing::clampByte(value >> shift);
     }
     case SAMPLEFORMAT_INT:
     {
@@ -795,22 +795,22 @@ quint8 convertValueToU8(const quint8 *buffer, quint64 bitsOffset, quint16 sample
         {
             const qint64 minValue = getMinValueSInt(bitsPerSample);
             const qint64 value = getValueSInt(buffer, bitsOffset, bitsPerSample);
-            return static_cast<quint8>(qBound<quint64>(0, static_cast<quint64>(value - minValue), 255));
+            return DataProcessing::clampByte(value - minValue);
         }
         if(bitsPerSample < 8 || bitsPerSample > 62)
         {
             const float value = convertValueToFP(buffer, bitsOffset, sampleFormat, bitsPerSample);
-            return static_cast<quint8>(qBound<int>(0, static_cast<int>(value * 255.0f), 255));
+            return DataProcessing::clampByte(value * 255.0f);
         }
         const quint64 shift = bitsPerSample - 8;
         const qint64 minValue = getMinValueSInt(bitsPerSample);
         const qint64 value = getValueSInt(buffer, bitsOffset, bitsPerSample);
-        return static_cast<quint8>(qBound<int>(0, static_cast<int>((value - minValue) >> shift), 255));
+        return DataProcessing::clampByte((value - minValue) >> shift);
     }
     case SAMPLEFORMAT_IEEEFP:
     {
         const float value = getValueFP(buffer, bitsOffset, bitsPerSample);
-        return static_cast<quint8>(qBound<int>(0, static_cast<int>(value * 255.0f), 255));
+        return DataProcessing::clampByte(value * 255.0f);
     }
     case SAMPLEFORMAT_COMPLEXINT:
     case SAMPLEFORMAT_COMPLEXIEEEFP:
@@ -1055,11 +1055,14 @@ QImage readFromRawBuffer(const quint8 *buffer, qint64 width, qint64 height, qint
                             const quint8 leftValue = inPtr[leftIndex * 4 + c];
                             const quint8 rightValue = inPtr[rightIndex * 4 + c];
                             const float newValue = static_cast<float>(leftValue) * leftWeight + static_cast<float>(rightValue) * rightWeight;
-                            outPtr[x * 4 + c + 2] = qBound<int>(0, static_cast<int>(newValue), 255);
+                            outPtr[x * 4 + c + 2] = DataProcessing::clampByte(newValue);
                         }
                     }
                     for(qint64 x = 0; x < width; ++x)
-                        *reinterpret_cast<quint16*>(outPtr + x * 4) = *reinterpret_cast<quint16*>(outPtr + x * 4 + 2);
+                    {
+                        for(qint64 c = 0; c < 2; ++c)
+                            outPtr[x * 4 + c] = outPtr[x * 4 + c + 2];
+                    }
                     for(qint64 i = 0; i < ctx->subsamplingver && y + i < height; ++i)
                         memcpy(upsampledCbCr.scanLine(y + i), outPtr, width * 4);
                 }
@@ -1094,7 +1097,7 @@ QImage readFromRawBuffer(const quint8 *buffer, qint64 width, qint64 height, qint
                             const quint8 upValue = upPtr[x * 4 + c];
                             const quint8 downValue = downPtr[x * 4 + c];
                             const float newValue = static_cast<float>(upValue) * upWeight + static_cast<float>(downValue) * downWeight;
-                            outPtr[x * 4 + c + 2] = qBound<int>(0, static_cast<int>(newValue), 255);
+                            outPtr[x * 4 + c + 2] = DataProcessing::clampByte(newValue);
                         }
                     }
                 }
@@ -1102,7 +1105,10 @@ QImage readFromRawBuffer(const quint8 *buffer, qint64 width, qint64 height, qint
                 {
                     quint8 *outPtr = reinterpret_cast<quint8*>(upsampledCbCr.scanLine(y));
                     for(qint64 x = 0; x < width; ++x)
-                        *reinterpret_cast<quint16*>(outPtr + x * 4) = *reinterpret_cast<quint16*>(outPtr + x * 4 + 2);
+                    {
+                        for(qint64 c = 0; c < 2; ++c)
+                            outPtr[x * 4 + c] = outPtr[x * 4 + c + 2];
+                    }
                 }
             }
             for(qint64 y = 0; y < height; ++y)

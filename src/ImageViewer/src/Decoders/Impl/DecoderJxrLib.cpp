@@ -347,22 +347,22 @@ float scRgbAlphaFloatTosRgbAlphaFloat(float f)
     return qBound(0.0f, f, 1.0f);
 }
 
-U8 floatToU8(float f)
+quint8 floatToU8(float f)
 {
-    return static_cast<U8>(scRgbFloatTosRgbFloat(f) * 255.0f);
+    return DataProcessing::clampByte(scRgbFloatTosRgbFloat(f) * 255.0f);
 }
 
-U8 alphaFloatToU8(float f)
+quint8 alphaFloatToU8(float f)
 {
-    return static_cast<U8>(scRgbAlphaFloatTosRgbAlphaFloat(f) * 255.0f);
+    return DataProcessing::clampByte(scRgbAlphaFloatTosRgbAlphaFloat(f) * 255.0f);
 }
 
-U8 halfToU8(U16 u16)
+quint8 halfToU8(U16 u16)
 {
     return floatToU8(DataProcessing::float16ToFloat(&u16));
 }
 
-U8 alphaHalfToU8(U16 u16)
+quint8 alphaHalfToU8(U16 u16)
 {
     return alphaFloatToU8(DataProcessing::float16ToFloat(&u16));
 }
@@ -380,13 +380,13 @@ float fixedToFloat(I32 i32)
 }
 
 template<typename T>
-U8 fixedToU8(T data)
+quint8 fixedToU8(T data)
 {
     return floatToU8(fixedToFloat(data));
 }
 
 template<typename T>
-U8 alphaFixedToU8(T data)
+quint8 alphaFixedToU8(T data)
 {
     return alphaFloatToU8(fixedToFloat(data));
 }
@@ -394,29 +394,27 @@ U8 alphaFixedToU8(T data)
 template<typename T>
 QRgb convertFromGray(const void *data)
 {
-    const T *pixelData = reinterpret_cast<const T*>(data);
     const float scale = static_cast<float>(std::numeric_limits<T>::max());
-    const int c = qBound<int>(0, static_cast<int>(255.0f * static_cast<float>(pixelData[0]) / scale), 255);
+    const quint8 c = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(data)) / scale);
     return qRgb(c, c, c);
 }
 
 QRgb convertFromGrayFloat(const void *data)
 {
-    const int c = floatToU8(*reinterpret_cast<const float*>(data));
+    const quint8 c = floatToU8(DataProcessing::extractFromUnalignedPtr<float>(data));
     return qRgb(c, c, c);
 }
 
 QRgb convertFromGrayHalf(const void *data)
 {
-    const int c = halfToU8(*reinterpret_cast<const U16*>(data));
+    const quint8 c = halfToU8(DataProcessing::extractFromUnalignedPtr<U16>(data));
     return qRgb(c, c, c);
 }
 
 template<typename T>
 QRgb convertFromGrayFixed(const void *data)
 {
-    const T *pixelData = reinterpret_cast<const T*>(data);
-    const int c = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[0])), 255);
+    const quint8 c = fixedToU8(DataProcessing::extractFromUnalignedPtr<T>(data));
     return qRgb(c, c, c);
 }
 
@@ -425,31 +423,37 @@ QRgb convertFromRGB(const void *data)
 {
     const T *pixelData = reinterpret_cast<const T*>(data);
     const float scale = static_cast<float>(std::numeric_limits<T>::max());
-    const int r = qBound<int>(0, static_cast<int>(255.0f * pixelData[0] / scale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0f * pixelData[1] / scale), 255);
-    const int b = qBound<int>(0, static_cast<int>(255.0f * pixelData[2] / scale), 255);
+    const quint8 r = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 0)) / scale);
+    const quint8 g = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 1)) / scale);
+    const quint8 b = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 2)) / scale);
     return qRgb(r, g, b);
 }
 
 QRgb convertFromRGBFloat(const void *data)
 {
     const float *pixelData = reinterpret_cast<const float*>(data);
-    return qRgb(floatToU8(pixelData[0]), floatToU8(pixelData[1]), floatToU8(pixelData[2]));
+    const quint8 r = floatToU8(DataProcessing::extractFromUnalignedPtr<float>(pixelData + 0));
+    const quint8 g = floatToU8(DataProcessing::extractFromUnalignedPtr<float>(pixelData + 1));
+    const quint8 b = floatToU8(DataProcessing::extractFromUnalignedPtr<float>(pixelData + 2));
+    return qRgb(r, g, b);
 }
 
 QRgb convertFromRGBHalf(const void *data)
 {
     const U16 *pixelData = reinterpret_cast<const U16*>(data);
-    return qRgb(halfToU8(pixelData[0]), halfToU8(pixelData[1]), halfToU8(pixelData[2]));
+    const quint8 r = halfToU8(DataProcessing::extractFromUnalignedPtr<U16>(pixelData + 0));
+    const quint8 g = halfToU8(DataProcessing::extractFromUnalignedPtr<U16>(pixelData + 1));
+    const quint8 b = halfToU8(DataProcessing::extractFromUnalignedPtr<U16>(pixelData + 2));
+    return qRgb(r, g, b);
 }
 
 template<typename T>
 QRgb convertFromRGBFixed(const void *data)
 {
     const T *pixelData = reinterpret_cast<const T*>(data);
-    const int r = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[0])), 255);
-    const int g = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[1])), 255);
-    const int b = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[2])), 255);
+    const quint8 r = fixedToU8(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 0));
+    const quint8 g = fixedToU8(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 1));
+    const quint8 b = fixedToU8(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 2));
     return qRgb(r, g, b);
 }
 
@@ -457,10 +461,10 @@ QRgb convertFromRGB101010(const void *data)
 {
     const int maxValue = (1 << 10) - 1;
     const float scale = static_cast<float>(maxValue);
-    const U32 *pixelData = reinterpret_cast<const U32*>(data);
-    const int r = qBound<int>(0, static_cast<int>(255.0f * ((pixelData[0] >> 20) & maxValue) / scale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0f * ((pixelData[0] >> 10) & maxValue) / scale), 255);
-    const int b = qBound<int>(0, static_cast<int>(255.0f * ((pixelData[0] >>  0) & maxValue) / scale), 255);
+    const U32 pixelData = DataProcessing::extractFromUnalignedPtr<U32>(data);
+    const quint8 r = DataProcessing::clampByte(255.0f * ((pixelData >> 20) & maxValue) / scale);
+    const quint8 g = DataProcessing::clampByte(255.0f * ((pixelData >> 10) & maxValue) / scale);
+    const quint8 b = DataProcessing::clampByte(255.0f * ((pixelData >>  0) & maxValue) / scale);
     return qRgb(r, g, b);
 }
 
@@ -486,9 +490,9 @@ QRgb convertFromRGBE(const void *data)
         fltExp = static_cast<float>(std::ldexp(1.0f, adjExp));
     }
 
-    const int r = floatToU8(pixelData[0] * fltExp);
-    const int g = floatToU8(pixelData[1] * fltExp);
-    const int b = floatToU8(pixelData[2] * fltExp);
+    const quint8 r = floatToU8(pixelData[0] * fltExp);
+    const quint8 g = floatToU8(pixelData[1] * fltExp);
+    const quint8 b = floatToU8(pixelData[2] * fltExp);
     return qRgb(r, g, b);
 }
 
@@ -497,33 +501,41 @@ QRgb convertFromRGBA(const void *data)
 {
     const T *pixelData = reinterpret_cast<const T*>(data);
     const float scale = static_cast<float>(std::numeric_limits<T>::max());
-    const int r = qBound<int>(0, static_cast<int>(255.0f * pixelData[0] / scale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0f * pixelData[1] / scale), 255);
-    const int b = qBound<int>(0, static_cast<int>(255.0f * pixelData[2] / scale), 255);
-    const int a = qBound<int>(0, static_cast<int>(255.0f * pixelData[3] / scale), 255);
+    const quint8 r = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 0)) / scale);
+    const quint8 g = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 1)) / scale);
+    const quint8 b = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 2)) / scale);
+    const quint8 a = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 3)) / scale);
     return qRgba(r, g, b, a);
 }
 
 QRgb convertFromRGBAFloat(const void *data)
 {
     const float *pixelData = reinterpret_cast<const float*>(data);
-    return qRgba(floatToU8(pixelData[0]), floatToU8(pixelData[1]), floatToU8(pixelData[2]), alphaFloatToU8(pixelData[3]));
+    const quint8 r = floatToU8(DataProcessing::extractFromUnalignedPtr<float>(pixelData + 0));
+    const quint8 g = floatToU8(DataProcessing::extractFromUnalignedPtr<float>(pixelData + 1));
+    const quint8 b = floatToU8(DataProcessing::extractFromUnalignedPtr<float>(pixelData + 2));
+    const quint8 a = alphaFloatToU8(DataProcessing::extractFromUnalignedPtr<float>(pixelData + 3));
+    return qRgba(r, g, b, a);
 }
 
 QRgb convertFromRGBAHalf(const void *data)
 {
     const U16 *pixelData = reinterpret_cast<const U16*>(data);
-    return qRgba(halfToU8(pixelData[0]), halfToU8(pixelData[1]), halfToU8(pixelData[2]), alphaHalfToU8(pixelData[3]));
+    const quint8 r = halfToU8(DataProcessing::extractFromUnalignedPtr<U16>(pixelData + 0));
+    const quint8 g = halfToU8(DataProcessing::extractFromUnalignedPtr<U16>(pixelData + 1));
+    const quint8 b = halfToU8(DataProcessing::extractFromUnalignedPtr<U16>(pixelData + 2));
+    const quint8 a = alphaHalfToU8(DataProcessing::extractFromUnalignedPtr<U16>(pixelData + 3));
+    return qRgba(r, g, b, a);
 }
 
 template<typename T>
 QRgb convertFromRGBAFixed(const void *data)
 {
     const T *pixelData = reinterpret_cast<const T*>(data);
-    const int r = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[0])), 255);
-    const int g = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[1])), 255);
-    const int b = qBound<int>(0, static_cast<int>(fixedToU8(pixelData[2])), 255);
-    const int a = qBound<int>(0, static_cast<int>(alphaFixedToU8(pixelData[3])), 255);
+    const quint8 r = fixedToU8(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 0));
+    const quint8 g = fixedToU8(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 1));
+    const quint8 b = fixedToU8(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 2));
+    const quint8 a = alphaFixedToU8(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 3));
     return qRgba(r, g, b, a);
 }
 
@@ -532,22 +544,25 @@ QRgb convertFromPRGBA(const void *data)
 {
     const T *pixelData = reinterpret_cast<const T*>(data);
     const float scale = static_cast<float>(std::numeric_limits<T>::max());
-    const float alphaScale = pixelData[3] > 0.0f ? (scale / static_cast<float>(pixelData[3])) : 1.0f;
-    const int r = qBound<int>(0, static_cast<int>(255.0f * pixelData[0] / scale * alphaScale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0f * pixelData[1] / scale * alphaScale), 255);
-    const int b = qBound<int>(0, static_cast<int>(255.0f * pixelData[2] / scale * alphaScale), 255);
-    const int a = qBound<int>(0, static_cast<int>(255.0f * pixelData[3] / scale), 255);
+    const T alphaRaw = DataProcessing::extractFromUnalignedPtr<T>(pixelData + 3);
+    const float alphaScale = alphaRaw > static_cast<T>(0) ? (scale / static_cast<float>(alphaRaw)) : 1.0f;
+    const quint8 r = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 0)) / scale * alphaScale);
+    const quint8 g = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 1)) / scale * alphaScale);
+    const quint8 b = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 2)) / scale * alphaScale);
+    const quint8 a = DataProcessing::clampByte(255.0f * static_cast<float>(alphaRaw) / scale);
     return qRgba(r, g, b, a);
 }
 
 QRgb convertFromPRGBAFloat(const void *data)
 {
     const float *pixelData = reinterpret_cast<const float*>(data);
-    const float a = pixelData[3];
-    const float r = a > 0.0f ? (pixelData[0] / a) : pixelData[0];
-    const float g = a > 0.0f ? (pixelData[1] / a) : pixelData[1];
-    const float b = a > 0.0f ? (pixelData[2] / a) : pixelData[2];
-    return qRgba(floatToU8(r), floatToU8(g), floatToU8(b), alphaFloatToU8(a));
+    const float alphaRaw = DataProcessing::extractFromUnalignedPtr<float>(pixelData + 3);
+    const float alphaScale = alphaRaw > 0.0f ? (1.0f / alphaRaw) : 1.0f;
+    const quint8 r = floatToU8(DataProcessing::extractFromUnalignedPtr<float>(pixelData + 0) * alphaScale);
+    const quint8 g = floatToU8(DataProcessing::extractFromUnalignedPtr<float>(pixelData + 1) * alphaScale);
+    const quint8 b = floatToU8(DataProcessing::extractFromUnalignedPtr<float>(pixelData + 2) * alphaScale);
+    const quint8 a = alphaFloatToU8(alphaRaw);
+    return qRgba(r, g, b, a);
 }
 
 template<typename T>
@@ -555,9 +570,9 @@ QRgb convertFromBGR(const void *data)
 {
     const T *pixelData = reinterpret_cast<const T*>(data);
     const float scale = static_cast<float>(std::numeric_limits<T>::max());
-    const int b = qBound<int>(0, static_cast<int>(255.0f * pixelData[0] / scale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0f * pixelData[1] / scale), 255);
-    const int r = qBound<int>(0, static_cast<int>(255.0f * pixelData[2] / scale), 255);
+    const quint8 b = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 0)) / scale);
+    const quint8 g = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 1)) / scale);
+    const quint8 r = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 2)) / scale);
     return qRgb(r, g, b);
 }
 
@@ -566,10 +581,10 @@ QRgb convertFromBGRA(const void *data)
 {
     const T *pixelData = reinterpret_cast<const T*>(data);
     const float scale = static_cast<float>(std::numeric_limits<T>::max());
-    const int b = qBound<int>(0, static_cast<int>(255.0f * pixelData[0] / scale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0f * pixelData[1] / scale), 255);
-    const int r = qBound<int>(0, static_cast<int>(255.0f * pixelData[2] / scale), 255);
-    const int a = qBound<int>(0, static_cast<int>(255.0f * pixelData[3] / scale), 255);
+    const quint8 b = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 0)) / scale);
+    const quint8 g = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 1)) / scale);
+    const quint8 r = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 2)) / scale);
+    const quint8 a = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 3)) / scale);
     return qRgba(r, g, b, a);
 }
 
@@ -578,11 +593,12 @@ QRgb convertFromPBGRA(const void *data)
 {
     const T *pixelData = reinterpret_cast<const T*>(data);
     const float scale = static_cast<float>(std::numeric_limits<T>::max());
-    const float alphaScale = pixelData[3] > 0.0f ? (scale / static_cast<float>(pixelData[3])) : 1.0f;
-    const int b = qBound<int>(0, static_cast<int>(255.0f * pixelData[0] / scale * alphaScale), 255);
-    const int g = qBound<int>(0, static_cast<int>(255.0f * pixelData[1] / scale * alphaScale), 255);
-    const int r = qBound<int>(0, static_cast<int>(255.0f * pixelData[2] / scale * alphaScale), 255);
-    const int a = qBound<int>(0, static_cast<int>(255.0f * pixelData[3] / scale), 255);
+    const T alphaRaw = DataProcessing::extractFromUnalignedPtr<T>(pixelData + 3);
+    const float alphaScale = alphaRaw > static_cast<T>(0) ? (scale / static_cast<float>(alphaRaw)) : 1.0f;
+    const quint8 b = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 0)) / scale * alphaScale);
+    const quint8 g = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 1)) / scale * alphaScale);
+    const quint8 r = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 2)) / scale * alphaScale);
+    const quint8 a = DataProcessing::clampByte(255.0f * static_cast<float>(alphaRaw) / scale);
     return qRgba(r, g, b, a);
 }
 
@@ -591,10 +607,10 @@ QRgb convertFromCMYK(const void *data)
 {
     const T *pixelData = reinterpret_cast<const T*>(data);
     const float scale = static_cast<float>(std::numeric_limits<T>::max());
-    const float c = pixelData[0] / scale;
-    const float m = pixelData[1] / scale;
-    const float y = pixelData[2] / scale;
-    const float k = pixelData[3] / scale;
+    const float c = static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 0)) / scale;
+    const float m = static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 1)) / scale;
+    const float y = static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 2)) / scale;
+    const float k = static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 3)) / scale;
     return DataProcessing::CMYKToRgb(c, m, y, k);
 }
 
@@ -603,16 +619,16 @@ QRgb convertFromCMYKtoCMYK8888(const void *data)
 {
     const T *pixelData = reinterpret_cast<const T*>(data);
     const float scale = static_cast<float>(std::numeric_limits<T>::max());
-    const float c = pixelData[0] / scale;
-    const float m = pixelData[1] / scale;
-    const float y = pixelData[2] / scale;
-    const float k = pixelData[3] / scale;
+    const quint8 c = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 0)) / scale);
+    const quint8 m = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 1)) / scale);
+    const quint8 y = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 2)) / scale);
+    const quint8 k = DataProcessing::clampByte(255.0f * static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 3)) / scale);
     QRgb result = 0;
     quint8 *resultData = reinterpret_cast<quint8*>(&result);
-    resultData[0] = qBound<int>(0, static_cast<int>(255.0f * c), 255);
-    resultData[1] = qBound<int>(0, static_cast<int>(255.0f * m), 255);
-    resultData[2] = qBound<int>(0, static_cast<int>(255.0f * y), 255);
-    resultData[3] = qBound<int>(0, static_cast<int>(255.0f * k), 255);
+    resultData[0] = c;
+    resultData[1] = m;
+    resultData[2] = y;
+    resultData[3] = k;
     return result;
 }
 
@@ -621,11 +637,11 @@ QRgb convertFromCMYKA(const void *data)
 {
     const T *pixelData = reinterpret_cast<const T*>(data);
     const float scale = static_cast<float>(std::numeric_limits<T>::max());
-    const float c = pixelData[0] / scale;
-    const float m = pixelData[1] / scale;
-    const float y = pixelData[2] / scale;
-    const float k = pixelData[3] / scale;
-    const float a = pixelData[alphaIndex] / scale;
+    const float c = static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 0)) / scale;
+    const float m = static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 1)) / scale;
+    const float y = static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 2)) / scale;
+    const float k = static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + 3)) / scale;
+    const float a = static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + alphaIndex)) / scale;
     return DataProcessing::CMYKToRgba(c, m, y, k, a);
 }
 
@@ -634,8 +650,8 @@ QPair<QRgb, quint8> convertFromCMYKAtoCMYK8888PlusAlpha(const void *data, size_t
 {
     const T *pixelData = reinterpret_cast<const T*>(data);
     const float scale = static_cast<float>(std::numeric_limits<T>::max());
-    const float a = pixelData[alphaIndex] / scale;
-    return qMakePair<QRgb, quint8>(convertFromCMYKtoCMYK8888<T>(data), static_cast<quint8>(qBound<int>(0, static_cast<int>(255.0f * a), 255)));
+    const float a = static_cast<float>(DataProcessing::extractFromUnalignedPtr<T>(pixelData + alphaIndex)) / scale;
+    return qMakePair<QRgb, quint8>(convertFromCMYKtoCMYK8888<T>(data), DataProcessing::clampByte(255.0f * a));
 }
 
 void directCopy(PKImageDecode *decoder, PKRect rect, QImage &image, QImage::Format format)

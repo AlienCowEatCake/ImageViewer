@@ -20,6 +20,8 @@
 #if !defined(DATA_PROCESSING_H_INCLUDED)
 #define DATA_PROCESSING_H_INCLUDED
 
+#include <cstring>
+
 #include <QRgb>
 
 #include "Utils/Global.h"
@@ -34,6 +36,20 @@ bool getBit(const void *buffer, quint64 bitOffset);
 void setBit(void *buffer, quint64 bitOffset, bool value);
 quint64 getBits(const void *buffer, quint64 bitsOffset, quint64 bitsCount);
 void memcpyBits(void *dst, quint64 dstBitsOffset, const void *src, quint64 srcBitsOffset, quint64 bitsCount);
+
+template<typename T>
+inline T extractFromUnalignedPtr(const void *ptr)
+{
+    T value;
+    memcpy(&value, ptr, sizeof(T));
+    return value;
+}
+
+template<typename T>
+inline quint8 clampByte(T value)
+{
+    return static_cast<quint8>(qBound<int>(0, static_cast<int>(value), 255));
+}
 
 float float16ToFloat(const void *buffer);
 float float24ToFloat(const void *buffer);
