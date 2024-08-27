@@ -612,6 +612,7 @@ quint64 getMaxValueUInt(quint64 bitsPerSample)
 quint64 getMinValueUInt(quint64 bitsPerSample)
 {
     assert(bitsPerSample <= 64);
+    Q_UNUSED(bitsPerSample);
     return 0;
 }
 
