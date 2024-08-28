@@ -32,9 +32,96 @@
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
+#include "Internal/PayloadWithMetaData.h"
+#include "Internal/Animation/AbstractAnimationProvider.h"
+#include "Internal/Animation/DelayCalculator.h"
 #include "Internal/Utils/MappedBuffer.h"
 
 namespace {
+
+class STBAnimationProvider : public AbstractAnimationProvider
+{
+    Q_DISABLE_COPY(STBAnimationProvider)
+
+public:
+    STBAnimationProvider()
+    {}
+
+    PayloadWithMetaData<bool> readFile(const QString &filePath)
+    {
+        const MappedBuffer inBuffer(filePath);
+        if(!inBuffer.isValid())
+            return false;
+
+        int *delays = Q_NULLPTR;
+        int x = 0, y = 0, z = 0, n = 0;
+        stbi_uc *data = Q_NULLPTR;
+        if(filePath.endsWith(QString::fromLatin1(".gif"), Qt::CaseInsensitive))
+        {
+            data = ::stbi_load_gif_from_memory(inBuffer.dataAs<stbi_uc*>(), inBuffer.sizeAs<int>(), &delays, &x, &y, &z, &n, 0);
+        }
+        else
+        {
+            z = 1;
+            data = ::stbi_load_from_memory(inBuffer.dataAs<stbi_uc*>(), inBuffer.sizeAs<int>(), &x, &y, &n, 0);
+        }
+        if(!data)
+        {
+            LOG_WARNING() << LOGGING_CTX << ::stbi_failure_reason();
+            return false;
+        }
+
+        ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+        for(int index = 0; index < z; ++index)
+        {
+            QImage image(x, y, QImage::Format_ARGB32);
+            for(int i = 0; i < image.height(); i++)
+            {
+                QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(i));
+                for(int j = 0; j < image.width(); j++)
+                {
+                    stbi_uc *source = data + ((i + y * index) * x + j) * n;
+                    switch(n)
+                    {
+                    case 1: // grey
+                        line[j] = qRgb(source[0], source[0], source[0]);
+                        break;
+                    case 2: // grey, alpha
+                        line[j] = qRgba(source[0], source[0], source[0], source[1]);
+                        break;
+                    case 3: // red, green, blue
+                        line[j] = qRgb(source[0], source[1], source[2]);
+                        break;
+                    case 4: // red, green, blue, alpha
+                        line[j] = qRgba(source[0], source[1], source[2], source[3]);
+                        break;
+                    default:
+                        assert(false);
+                        image = QImage();
+                        break;
+                    }
+                }
+            }
+            if(image.isNull())
+            {
+                LOG_WARNING() << LOGGING_CTX << "Invalid image size";
+                m_frames.clear();
+                break;
+            }
+            if(metaData)
+                metaData->applyExifOrientation(&image);
+            m_frames.push_back(Frame(image, DelayCalculator::calculate(delays ? delays[index] : 0, DelayCalculator::MODE_CHROME)));
+        }
+
+        if(delays)
+            ::stbi_image_free(delays);
+        ::stbi_image_free(data);
+
+        m_numFrames = m_frames.size();
+        m_error = m_numFrames <= 0;
+        return PayloadWithMetaData<bool>(isValid(), metaData);
+    }
+};
 
 class DecoderSTB : public IDecoder
 {
@@ -81,65 +168,10 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
-
-        const MappedBuffer inBuffer(filePath);
-        if(!inBuffer.isValid())
-            return QSharedPointer<IImageData>();
-
-        int x, y, n;
-        unsigned char *data = ::stbi_load_from_memory(inBuffer.dataAs<stbi_uc*>(), inBuffer.sizeAs<int>(), &x, &y, &n, 0);
-        if(!data)
-        {
-            LOG_WARNING() << LOGGING_CTX << ::stbi_failure_reason();
-            return QSharedPointer<IImageData>();
-        }
-
-        QImage image(x, y, QImage::Format_ARGB32);
-        if(image.isNull())
-        {
-            LOG_WARNING() << LOGGING_CTX << "Invalid image size";
-            ::stbi_image_free(data);
-            return QSharedPointer<IImageData>();
-        }
-
-        for(int i = 0; i < y; i++)
-        {
-            QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(i));
-            for(int j = 0; j < x; j++)
-            {
-                unsigned char *source = data + (i * x + j) * n;
-                switch(n)
-                {
-                case 1: // grey
-                    line[j] = qRgb(source[0], source[0], source[0]);
-                    break;
-                case 2: // grey, alpha
-                    line[j] = qRgba(source[0], source[0], source[0], source[1]);
-                    break;
-                case 3: // red, green, blue
-                    line[j] = qRgb(source[0], source[1], source[2]);
-                    break;
-                case 4: // red, green, blue, alpha
-                    line[j] = qRgba(source[0], source[1], source[2], source[3]);
-                    break;
-                default:
-                    assert(false);
-                    image = QImage();
-                    break;
-                }
-            }
-        }
-        ::stbi_image_free(data);
-
-        if(image.isNull())
-            return QSharedPointer<IImageData>();
-
-        ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
-        if(metaData)
-            metaData->applyExifOrientation(&image);
-
-        QGraphicsItem *item = GraphicsItemsFactory::instance().createImageItem(image);
-        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), metaData));
+        STBAnimationProvider *provider = new STBAnimationProvider();
+        const PayloadWithMetaData<bool> readResult = provider->readFile(filePath);
+        QGraphicsItem *item = GraphicsItemsFactory::instance().createAnimatedItem(provider);
+        return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), readResult.metaData()));
     }
 };
 
