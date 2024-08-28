@@ -207,10 +207,10 @@ QRgb premultiply(QRgb rgb)
     const int r = (qRed(rgb)   * a) / 255;
     const int g = (qGreen(rgb) * a) / 255;
     const int b = (qBlue(rgb)  * a) / 255;
-    return qRgba(qBound<int>(0, r, 255),
-                 qBound<int>(0, g, 255),
-                 qBound<int>(0, b, 255),
-                 qBound<int>(0, a, 255));
+    return qRgba(clampByte(r),
+                 clampByte(g),
+                 clampByte(b),
+                 clampByte(a));
 #endif
 }
 
@@ -227,10 +227,10 @@ QRgb unpremultiply(QRgb rgb)
     const int r = (qRed(rgb)   * 255) / a;
     const int g = (qGreen(rgb) * 255) / a;
     const int b = (qBlue(rgb)  * 255) / a;
-    return qRgba(qBound<int>(0, r, 255),
-                 qBound<int>(0, g, 255),
-                 qBound<int>(0, b, 255),
-                 qBound<int>(0, a, 255));
+    return qRgba(clampByte(r),
+                 clampByte(g),
+                 clampByte(b),
+                 clampByte(a));
 #endif
 }
 
@@ -250,10 +250,10 @@ QRgb YCbCrToRgba(float Y, float Cb, float Cr, float alpha, const float *ycbcrcoe
     float R = Cr * (2.0f - 2.0f * ycbcrcoeffs[0]) + Y;
     float B = Cb * (2.0f - 2.0f * ycbcrcoeffs[2]) + Y;
     float G = (Y - ycbcrcoeffs[2] * B - ycbcrcoeffs[0] * R) / ycbcrcoeffs[1];
-    return qRgba(qBound<int>(0, static_cast<int>(R * 255.0f), 255),
-                 qBound<int>(0, static_cast<int>(G * 255.0f), 255),
-                 qBound<int>(0, static_cast<int>(B * 255.0f), 255),
-                 qBound<int>(0, static_cast<int>(alpha * 255.0f), 255));
+    return qRgba(clampByte(R * 255.0f),
+                 clampByte(G * 255.0f),
+                 clampByte(B * 255.0f),
+                 clampByte(alpha * 255.0f));
 }
 
 QRgb XYZToRgb(float X, float Y, float Z)
@@ -294,10 +294,10 @@ QRgb XYZToRgba(float X, float Y, float Z, float alpha)
     const float sG = var_G * 255.0f;
     const float sB = var_B * 255.0f;
 
-    return qRgba(qBound<int>(0, static_cast<int>(sR), 255),
-                 qBound<int>(0, static_cast<int>(sG), 255),
-                 qBound<int>(0, static_cast<int>(sB), 255),
-                 qBound<int>(0, static_cast<int>(alpha * 255.0f), 255));
+    return qRgba(clampByte(sR),
+                 clampByte(sG),
+                 clampByte(sB),
+                 clampByte(alpha * 255.0f));
 }
 
 QRgb LabToRgb(float L, float a, float b)
@@ -388,10 +388,10 @@ QRgb CMYKToRgba(float C, float M, float Y, float K, float alpha)
     const float invM = 1.0f - M;
     const float invY = 1.0f - Y;
     const float invK = 1.0f - K;
-    return qRgba(qBound<int>(0, static_cast<int>(invC * invK * 255.0f), 255),
-                 qBound<int>(0, static_cast<int>(invM * invK * 255.0f), 255),
-                 qBound<int>(0, static_cast<int>(invY * invK * 255.0f), 255),
-                 qBound<int>(0, static_cast<int>(alpha * 255.0f), 255));
+    return qRgba(clampByte(invC * invK * 255.0f),
+                 clampByte(invM * invK * 255.0f),
+                 clampByte(invY * invK * 255.0f),
+                 clampByte(alpha * 255.0f));
 }
 
 QRgb CMYK8ToRgb(int C, int M, int Y, int K)
@@ -405,9 +405,9 @@ QRgb CMYK8ToRgba(int C, int M, int Y, int K, int alpha)
     M = 255 - M;
     Y = 255 - Y;
     K = 255 - K;
-    return qRgba(qBound<int>(0, static_cast<int>(C * K / 255), 255),
-                 qBound<int>(0, static_cast<int>(M * K / 255), 255),
-                 qBound<int>(0, static_cast<int>(Y * K / 255), 255),
+    return qRgba(clampByte(C * K / 255),
+                 clampByte(M * K / 255),
+                 clampByte(Y * K / 255),
                  alpha);
 }
 

@@ -165,9 +165,9 @@ QRgb syccToQRgb(opj_image_t *img, int componentsData[])
     const float cbf = static_cast<float>(cb) * scb;
     const float crf = static_cast<float>(cr) * scr;
 
-    return qRgb(qBound(0, static_cast<int>(yf + 1.402f * crf), 255),
-                qBound(0, static_cast<int>(yf - (0.344f * cbf + 0.714f * crf)), 255),
-                qBound(0, static_cast<int>(yf + 1.772f * cbf), 255));
+    return qRgb(DataProcessing::clampByte(yf + 1.402f * crf),
+                DataProcessing::clampByte(yf - (0.344f * cbf + 0.714f * crf)),
+                DataProcessing::clampByte(yf + 1.772f * cbf));
 }
 
 #define USE_CMYK_8888 (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
@@ -189,10 +189,10 @@ QRgb cmykToCmyk(opj_image_t *img, int componentsData[])
     // CMYK -> CMYK : CMYK results from 0 to 255
     QRgb result;
     quint8 *data = reinterpret_cast<quint8*>(&result);
-    data[0] = qBound(0, static_cast<int>(255.0f * C), 255);
-    data[1] = qBound(0, static_cast<int>(255.0f * M), 255);
-    data[2] = qBound(0, static_cast<int>(255.0f * Y), 255);
-    data[3] = qBound(0, static_cast<int>(255.0f * K), 255);
+    data[0] = DataProcessing::clampByte(255.0f * C);
+    data[1] = DataProcessing::clampByte(255.0f * M);
+    data[2] = DataProcessing::clampByte(255.0f * Y);
+    data[3] = DataProcessing::clampByte(255.0f * K);
     return result;
 }
 #else
@@ -238,9 +238,9 @@ QRgb esyccToQRgb(opj_image_t *img, int componentsData[])
     const float g = (1.0003f * yf - 0.344125f * cbf - 0.7141128f * crf + 0.5f);
     const float b = (0.999823f * yf + 1.77204f * cbf - 0.000008f * crf + 0.5f);
 
-    return qRgb(qBound(0, static_cast<int>(r * correction), 255),
-                qBound(0, static_cast<int>(g * correction), 255),
-                qBound(0, static_cast<int>(b * correction), 255));
+    return qRgb(DataProcessing::clampByte(r * correction),
+                DataProcessing::clampByte(g * correction),
+                DataProcessing::clampByte(b * correction));
 }
 
 QRgb rgbToQRgb(opj_image_t *img, int componentsData[])
@@ -250,9 +250,9 @@ QRgb rgbToQRgb(opj_image_t *img, int componentsData[])
         255.0f / ((1 << static_cast<int>(img->comps[1].prec)) - 1),
         255.0f / ((1 << static_cast<int>(img->comps[2].prec)) - 1)
     };
-    return qRgb(qBound(0, static_cast<int>(static_cast<float>(componentsData[0]) * corrections[0]), 255),
-                qBound(0, static_cast<int>(static_cast<float>(componentsData[1]) * corrections[1]), 255),
-                qBound(0, static_cast<int>(static_cast<float>(componentsData[2]) * corrections[2]), 255));
+    return qRgb(DataProcessing::clampByte(static_cast<float>(componentsData[0]) * corrections[0]),
+                DataProcessing::clampByte(static_cast<float>(componentsData[1]) * corrections[1]),
+                DataProcessing::clampByte(static_cast<float>(componentsData[2]) * corrections[2]));
 }
 
 QRgb rgbaToQRgb(opj_image_t *img, int componentsData[])
@@ -267,16 +267,16 @@ QRgb rgbaToQRgb(opj_image_t *img, int componentsData[])
     const size_t indexesARGB[4] = {1, 2, 3, 0};
     const size_t indexesRGBA[4] = {0, 1, 2, 3};
     const size_t *indexes = isARGB ? indexesARGB : indexesRGBA;
-    return qRgba(qBound(0, static_cast<int>(static_cast<float>(componentsData[indexes[0]]) * corrections[indexes[0]]), 255),
-                 qBound(0, static_cast<int>(static_cast<float>(componentsData[indexes[1]]) * corrections[indexes[1]]), 255),
-                 qBound(0, static_cast<int>(static_cast<float>(componentsData[indexes[2]]) * corrections[indexes[2]]), 255),
-                 qBound(0, static_cast<int>(static_cast<float>(componentsData[indexes[3]]) * corrections[indexes[3]]), 255));
+    return qRgba(DataProcessing::clampByte(static_cast<float>(componentsData[indexes[0]]) * corrections[indexes[0]]),
+                 DataProcessing::clampByte(static_cast<float>(componentsData[indexes[1]]) * corrections[indexes[1]]),
+                 DataProcessing::clampByte(static_cast<float>(componentsData[indexes[2]]) * corrections[indexes[2]]),
+                 DataProcessing::clampByte(static_cast<float>(componentsData[indexes[3]]) * corrections[indexes[3]]));
 }
 
 QRgb grayToQRgb(opj_image_t *img, int componentsData[])
 {
     const float correction = 255.0f / ((1 << static_cast<int>(img->comps[0].prec)) - 1);
-    const int value = qBound(0, static_cast<int>(static_cast<float>(componentsData[0]) * correction), 255);
+    const int value = DataProcessing::clampByte(static_cast<float>(componentsData[0]) * correction);
     return qRgb(value, value, value);
 }
 
@@ -290,8 +290,8 @@ QRgb grayAlphaToQRgb(opj_image_t *img, int componentsData[])
     const size_t indexesAlphaFirst[4] = {1, 0};
     const size_t indexesAlphaLast[4] = {0, 1};
     const size_t *indexes = isAlphaFirst ? indexesAlphaFirst : indexesAlphaLast;
-    const int value = qBound(0, static_cast<int>(static_cast<float>(componentsData[indexes[0]]) * corrections[indexes[0]]), 255);
-    const int alphaValue = qBound(0, static_cast<int>(static_cast<float>(componentsData[indexes[1]]) * corrections[indexes[1]]), 255);
+    const int value = DataProcessing::clampByte(static_cast<float>(componentsData[indexes[0]]) * corrections[indexes[0]]);
+    const int alphaValue = DataProcessing::clampByte(static_cast<float>(componentsData[indexes[1]]) * corrections[indexes[1]]);
     return qRgba(value, value, value, alphaValue);
 }
 

@@ -20,6 +20,7 @@
 #if !defined(DATA_PROCESSING_H_INCLUDED)
 #define DATA_PROCESSING_H_INCLUDED
 
+#include <cassert>
 #include <cstring>
 
 #include <QRgb>
@@ -38,17 +39,42 @@ quint64 getBits(const void *buffer, quint64 bitsOffset, quint64 bitsCount);
 void memcpyBits(void *dst, quint64 dstBitsOffset, const void *src, quint64 srcBitsOffset, quint64 bitsCount);
 
 template<typename T>
+inline T extractFromAlignedPtr(const void *ptr)
+{
+    assert(ptr);
+    return *reinterpret_cast<const T*>(ptr);
+}
+
+template<typename T>
 inline T extractFromUnalignedPtr(const void *ptr)
 {
+    assert(ptr);
     T value;
     memcpy(&value, ptr, sizeof(T));
     return value;
 }
 
+#define ADD_ALIGN_INDIFFERENT_TYPE(TYPE) \
+template<> \
+inline TYPE extractFromUnalignedPtr<TYPE>(const void *ptr) \
+{ \
+    return extractFromAlignedPtr<TYPE>(ptr); \
+}
+ADD_ALIGN_INDIFFERENT_TYPE(char)
+ADD_ALIGN_INDIFFERENT_TYPE(unsigned char)
+ADD_ALIGN_INDIFFERENT_TYPE(signed char)
+#undef ADD_ALIGN_INDIFFERENT_TYPE
+
 template<typename T>
 inline quint8 clampByte(T value)
 {
     return static_cast<quint8>(qBound<int>(0, static_cast<int>(value), 255));
+}
+
+template<>
+inline quint8 clampByte(quint8 value)
+{
+    return value;
 }
 
 float float16ToFloat(const void *buffer);

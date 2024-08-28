@@ -36,6 +36,7 @@
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
 #include "Internal/PayloadWithMetaData.h"
+#include "Internal/Utils/DataProcessing.h"
 #include "Internal/Utils/MappedBuffer.h"
 
 namespace
@@ -150,10 +151,10 @@ QImage decodeLercBlob(const QVector<unsigned int> &infoArr, const QVector<double
             for(unsigned int i = 0; i < width; ++i)
             {
                 const unsigned int pos = line + i;
-                const int r = qBound<int>(0, static_cast<int>((zImg3[pos] - min) / scale), 255);
-                const int g = qBound<int>(0, static_cast<int>((zImg3[pos + offset] - min) / scale), 255);
-                const int b = qBound<int>(0, static_cast<int>((zImg3[pos + offset * 2] - min) / scale), 255);
-                const int a = (masks == 1) ? maskByteImg3[pos] : 0;
+                const quint8 r = DataProcessing::clampByte((zImg3[pos] - min) / scale);
+                const quint8 g = DataProcessing::clampByte((zImg3[pos + offset] - min) / scale);
+                const quint8 b = DataProcessing::clampByte((zImg3[pos + offset * 2] - min) / scale);
+                const quint8 a = (masks == 1) ? DataProcessing::extractFromAlignedPtr<quint8>(maskByteImg3 + pos) : 0;
                 rgb[i] = qRgba(r, g, b, 255 - a);
             }
         }
@@ -167,10 +168,10 @@ QImage decodeLercBlob(const QVector<unsigned int> &infoArr, const QVector<double
             for(unsigned int i = 0; i < width; ++i)
             {
                 const unsigned int pos = line + i;
-                const int r = qBound<int>(0, static_cast<int>((zImg3[pos * dims] - min) / scale), 255);
-                const int g = qBound<int>(0, static_cast<int>((zImg3[pos * dims + 1] - min) / scale), 255);
-                const int b = qBound<int>(0, static_cast<int>((zImg3[pos * dims + 2] - min) / scale), 255);
-                const int a = (masks == 1) ? maskByteImg3[pos] : 0;
+                const quint8 r = DataProcessing::clampByte((zImg3[pos * dims] - min) / scale);
+                const quint8 g = DataProcessing::clampByte((zImg3[pos * dims + 1] - min) / scale);
+                const quint8 b = DataProcessing::clampByte((zImg3[pos * dims + 2] - min) / scale);
+                const quint8 a = (masks == 1) ? DataProcessing::extractFromAlignedPtr<quint8>(maskByteImg3 + pos) : 0;
                 rgb[i] = qRgba(r, g, b, 255 - a);
             }
         }
@@ -184,8 +185,8 @@ QImage decodeLercBlob(const QVector<unsigned int> &infoArr, const QVector<double
             for(unsigned int i = 0; i < width; ++i)
             {
                 const unsigned int pos = line + i;
-                const int c = qBound<int>(0, static_cast<int>((zImg3[pos * dims] - min) / scale), 255);
-                const int a = masks ? maskByteImg3[pos] : 0;
+                const quint8 c = DataProcessing::clampByte((zImg3[pos * dims] - min) / scale);
+                const quint8 a = masks ? DataProcessing::extractFromAlignedPtr<quint8>(maskByteImg3 + pos) : 0;
                 rgb[i] = qRgba(c, c, c, 255 - a);
             }
         }
