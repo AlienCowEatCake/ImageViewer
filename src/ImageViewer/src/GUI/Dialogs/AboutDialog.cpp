@@ -168,9 +168,6 @@ extern "C" {
 #if defined (HAS_GRAPHICSMAGICKWAND)
 #include <wand/wand_api.h>
 #endif
-#if defined (HAS_GHC_FILESYSTEM)
-#include <ghc/filesystem.hpp>
-#endif
 #if defined (HAS_LIBYUV)
 #include <libyuv.h>
 #endif
@@ -868,21 +865,6 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://github.com/lifthrasiir/j40"),
                       QString::fromLatin1("MIT No Attribution License"),
                       QString::fromLatin1("https://github.com/lifthrasiir/j40/blob/main/LICENSE.txt")
-                      ));
-#endif
-
-#if defined (HAS_GHC_FILESYSTEM)
-    result.append(formatItem(
-                      QString::fromLatin1("This software uses ghc::filesystem library"),
-                      QString::fromLatin1("ghc::filesystem"),
-#if defined (GHC_FILESYSTEM_VERSION)
-                      QString::fromLatin1("%1.%2.%3").arg(GHC_FILESYSTEM_VERSION % 1000000 / 10000).arg(GHC_FILESYSTEM_VERSION % 10000 / 100).arg(GHC_FILESYSTEM_VERSION % 100),
-#else
-                      QString(),
-#endif
-                      QString::fromLatin1("https://github.com/gulrak/filesystem"),
-                      QString::fromLatin1("MIT License"),
-                      QString::fromLatin1("https://github.com/gulrak/filesystem/blob/master/LICENSE")
                       ));
 #endif
 

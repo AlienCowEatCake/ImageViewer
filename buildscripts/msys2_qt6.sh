@@ -116,7 +116,6 @@ mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 ${CMD_QMAKE} -r CONFIG+="release" \
     CONFIG+="hide_symbols" \
-    CONFIG+="disable_ghc_filesystem" \
     CONFIG+="enable_pkgconfig enable_update_checking" \
     CONFIG+="system_zlib system_jbigkit system_lerc system_libtiff" \
     CONFIG+="system_libwebp system_freetype system_librsvg" \

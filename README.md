@@ -192,8 +192,6 @@ See the [buildscripts/](buildscripts/) directory.
   Please note that bundled KImageFormats is incompatible with Qt 5.14.x and earlier.
 * MSEdgeWebView2 options: `disable_msedgewebview2`, `enable_msedgewebview2` *(disabled by default)*  
   MSEdgeWebView2 is used for reading SVG files via Microsoft Edge WebView2 (Windows only).
-* ghc::filesystem options: `disable_ghc_filesystem`, `enable_ghc_filesystem` *(auto by default)*  
-  This is a transitive dependency. It isn't required if system libraries are used.
 
 **Optional Built-in Components Configuration:**
 * DecoderQtSVG options: `disable_qtsvg` *(enabled by default)*  

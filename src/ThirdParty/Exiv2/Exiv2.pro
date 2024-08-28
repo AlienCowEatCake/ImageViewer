@@ -18,7 +18,6 @@ include(../CommonSettings.pri)
 include(../zlib/zlib.pri)
 include(../libexpat/libexpat.pri)
 include(../brotli/brotli.pri)
-include(../ghc_filesystem/ghc_filesystem.pri)
 
 INCLUDEPATH = $${THIRDPARTY_EXIV2_CONFIG_PATH} $${THIRDPARTY_EXIV2_PATH}/include $${THIRDPARTY_EXIV2_PATH}/include/exiv2 $${THIRDPARTY_EXIV2_PATH}/xmpsdk/include $${INCLUDEPATH}
 

@@ -17,10 +17,7 @@
 #include <stdexcept>
 
 #ifdef EXV_ENABLE_FILESYSTEM
-#if __has_include(<ghc/filesystem.hpp>)
-#include <ghc/filesystem.hpp>
-namespace fs = ghc::filesystem;
-#elif __has_include(<filesystem>)
+#if __has_include(<filesystem>)
 #include <filesystem>
 namespace fs = std::filesystem;
 #else

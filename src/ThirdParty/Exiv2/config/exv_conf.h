@@ -7,7 +7,7 @@
 /* #undef EXV_USE_CURL */
 
 // Define to 1 if you want to enable filesystem access
-#define EXV_ENABLE_FILESYSTEM
+/* #undef EXV_ENABLE_FILESYSTEM */
 
 // Define if you require webready support.
 /* #undef EXV_ENABLE_WEBREADY */

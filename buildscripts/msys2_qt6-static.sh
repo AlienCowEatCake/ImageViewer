@@ -45,7 +45,6 @@ ${CMD_QMAKE} -r CONFIG+="release" \
     CONFIG+="hide_symbols" \
     QTPLUGIN.imageformats="qgif qicns qico qsvg qtga qtiff qwbmp" \
     QTPLUGIN.platforms="qwindows" \
-    CONFIG+="disable_ghc_filesystem" \
     CONFIG+="enable_update_checking" \
     CONFIG+="enable_mshtml enable_nanosvg" \
     LIBS+="${EXTRA_LIBS}" \

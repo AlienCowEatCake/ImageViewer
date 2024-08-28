@@ -303,7 +303,6 @@ disable_thirdparty {
     CONFIG *= disable_fallback_iccprofiles
     CONFIG *= disable_flif
     CONFIG *= disable_freetype
-    CONFIG *= disable_ghc_filesystem
     CONFIG *= disable_giflib
     CONFIG *= disable_graphicsmagick
     CONFIG *= disable_graphicsmagickwand
@@ -363,7 +362,6 @@ system_thirdparty {
     CONFIG *= disable_aom
     CONFIG *= disable_brotli
     CONFIG *= disable_freetype
-    CONFIG *= disable_ghc_filesystem
     CONFIG *= disable_highway
     CONFIG *= disable_libde265
     CONFIG *= disable_libexpat
@@ -808,24 +806,6 @@ lessThan(QT_VERSION_NUMERIC, 51500) {
     CONFIG *= disable_msedgewebview2
 }
 
-# ghc::filesystem options:
-#    disable_ghc_filesystem
-#    enable_ghc_filesystem
-disable_cxx11 {
-    CONFIG *= disable_ghc_filesystem
-}
-!enable_ghc_filesystem : !disable_cxx17 {
-    *msvc* : !lessThan(MSVC_VERSION, 2019) {
-        CONFIG *= disable_ghc_filesystem
-    }
-    macx : !lessThan(QT_VERSION_NUMERIC, 60500) {
-        CONFIG *= disable_ghc_filesystem
-    }
-    *g++* : !*clang* : !lessThan(GCC_VERSION_NUMERIC, 90000) {
-        CONFIG *= disable_ghc_filesystem
-    }
-}
-
 # ::::: Optional Built-in Components Configuration :::::
 
 # DecoderQtSVG options:
@@ -956,10 +936,6 @@ disable_exiv2 | system_exiv2 {
     disable_libwmf | system_libwmf {
         CONFIG *= disable_libexpat
     }
-}
-
-disable_exiv2 | system_exiv2 {
-    CONFIG *= disable_ghc_filesystem
 }
 
 disable_libavif | system_libavif {
