@@ -32,7 +32,7 @@ Minimal configuration:
 * GCC 3.4 or later
 
 Full configuration:
-* Qt 6.2 or later
+* Qt 6.8 or later
 * Modern GCC, Clang or MSVC compiler with C++17 support
 
 ### Building with bundled libraries example (Ubuntu 24.04)
