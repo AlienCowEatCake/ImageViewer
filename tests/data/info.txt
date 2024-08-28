@@ -491,6 +491,12 @@ Image from http://regex.info/blog/photo-tech/color-spaces-page1 (converted to pn
 Image from https://en.wikipedia.org/wiki/Portable_Network_Graphics
  * PNG_transparency_demonstration_1.png
 
+Image from http://regex.info/blog/photo-tech/color-spaces-page1 (converted to CgBI png)
+ * sample-wonky.profile.png
+
+Image from https://en.wikipedia.org/wiki/Portable_Network_Graphics (converted to CgBI png)
+ * PNG_transparency_demonstration_1.png
+
 --------------------------------------------------------------------------------
 
 ::: PSD test images :::

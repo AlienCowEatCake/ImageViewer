@@ -53,6 +53,9 @@ public:
         if(!inBuffer.isValid())
             return false;
 
+        ::stbi_convert_iphone_png_to_rgb(1);
+        ::stbi_set_unpremultiply_on_load(1);
+
         int *delays = Q_NULLPTR;
         int x = 0, y = 0, z = 0, n = 0;
         stbi_uc *data = Q_NULLPTR;
