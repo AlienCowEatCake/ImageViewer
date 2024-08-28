@@ -18,6 +18,7 @@
 */
 
 #include <cassert>
+#include <cstdio>
 
 #include "Workarounds/BeginIgnoreDeprecated.h"
 #include <libraw/libraw.h> ///< Order matters
@@ -33,8 +34,10 @@
 #include <QMutexLocker>
 #include <QThread>
 #include <QPointer>
+#include <QLocale>
 
 #include "Utils/Global.h"
+#include "Utils/IsOneOf.h"
 #include "Utils/Logging.h"
 
 #include "../IDecoder.h"
@@ -47,6 +50,198 @@
 
 namespace
 {
+
+// ====================================================================================================
+
+#if defined (LIBRAW_COMPILE_CHECK_VERSION_NOTLESS) && (LIBRAW_COMPILE_CHECK_VERSION_NOTLESS(0, 20))
+
+class LibRaw_Qt_datastream : public LibRaw_abstract_datastream
+{
+public:
+    LibRaw_Qt_datastream(const QString &filePath)
+        : m_file(filePath)
+    {
+        m_file.open(QIODevice::ReadOnly);
+    }
+
+    int valid() Q_DECL_OVERRIDE
+    {
+        return m_file.isOpen();
+    }
+
+    int read(void *data, size_t size, size_t nmemb) Q_DECL_OVERRIDE
+    {
+        if(size < 1 || nmemb < 1)
+            return 0;
+        if(!valid())
+            throw LIBRAW_EXCEPTION_IO_EOF;
+        qint64 count = size * nmemb;
+        qint64 read = 0;
+        for(qint64 chunk = 0; read < count; read += chunk)
+        {
+            if(eof())
+                break;
+            chunk = m_file.read(reinterpret_cast<char*>(data) + read, count - read);
+            if(chunk < 1)
+                break;
+        }
+        return static_cast<int>(read / size);
+    }
+
+    int seek(INT64 o, int whence) Q_DECL_OVERRIDE
+    {
+        if(!valid())
+            throw LIBRAW_EXCEPTION_IO_EOF;
+        switch(whence)
+        {
+        case SEEK_SET:
+            m_file.seek(o);
+            break;
+        case SEEK_CUR:
+            m_file.seek(tell() + o);
+            break;
+        case SEEK_END:
+            m_file.seek(size() + o);
+            break;
+        }
+        return 0;
+    }
+
+    INT64 tell() Q_DECL_OVERRIDE
+    {
+        if(!valid())
+            throw LIBRAW_EXCEPTION_IO_EOF;
+        return m_file.pos();
+    }
+
+    INT64 size() Q_DECL_OVERRIDE
+    {
+        if(!valid())
+            throw LIBRAW_EXCEPTION_IO_EOF;
+        return m_file.size();
+    }
+
+    int get_char() Q_DECL_OVERRIDE
+    {
+        if(!valid())
+            throw LIBRAW_EXCEPTION_IO_EOF;
+        if(eof())
+            return -1;
+        unsigned char c = 0;
+        if(m_file.getChar(reinterpret_cast<char*>(&c)))
+            return static_cast<int>(c);
+        return -1;
+    }
+
+    char *gets(char *s, int sz) Q_DECL_OVERRIDE
+    {
+        if(sz < 1)
+            return Q_NULLPTR;
+        if(sz < 2)
+        {
+            s[0] = 0;
+            return s;
+        }
+        if(!valid())
+            throw LIBRAW_EXCEPTION_IO_EOF;
+        const qint64 lineLength = m_file.readLine(s, sz);
+        if(lineLength > 0)
+            return s;
+        return Q_NULLPTR;
+    }
+
+    int scanf_one(const char *fmt, void *val) Q_DECL_OVERRIDE
+    {
+        if(!valid())
+            throw LIBRAW_EXCEPTION_IO_EOF;
+        if(eof() || !fmt || !val)
+            return 0;
+        const INT64 oldPos = tell();
+        QByteArray buffer;
+        for(int xcnt = 0; !eof() && xcnt <= 24; ++xcnt)
+        {
+            char c = 0;
+            if(!m_file.getChar(&c))
+                break;
+            if(IsOneOf(c, '\0', ' ', '\t', '\n'))
+                break;
+            buffer.append(c);
+        }
+        // Only "%d" and "%f" in LibRaw-0.21.2
+        if(strcmp(fmt, "%d") == 0)
+        {
+            bool ok = false;
+            const int intVal = QLocale::c().toInt(QString::fromLatin1(buffer), &ok);
+            if(ok)
+            {
+                *reinterpret_cast<int*>(val) = intVal;
+                return 1;
+            }
+            LOG_WARNING() << LOGGING_CTX << "Can't parse" << fmt << "from" << buffer;
+        }
+        else if(strcmp(fmt, "%f") == 0)
+        {
+            bool ok = false;
+            const float floatVal = QLocale::c().toFloat(QString::fromLatin1(buffer), &ok);
+            if(ok)
+            {
+                *reinterpret_cast<float*>(val) = floatVal;
+                return 1;
+            }
+            LOG_WARNING() << LOGGING_CTX << "Can't parse" << fmt << "from" << buffer;
+        }
+        else
+        {
+            LOG_WARNING() << LOGGING_CTX << "Invalid format" << fmt;
+            assert(false);
+        }
+        seek(oldPos, SEEK_SET);
+        return -1;
+    }
+
+    int eof() Q_DECL_OVERRIDE
+    {
+        if(!valid())
+            throw LIBRAW_EXCEPTION_IO_EOF;
+        return m_file.atEnd() ? 1 : 0;
+    }
+
+#if !(LIBRAW_COMPILE_CHECK_VERSION_NOTLESS(0, 21)) || defined (LIBRAW_OLD_VIDEO_SUPPORT)
+    void *make_jas_stream() Q_DECL_OVERRIDE
+    {
+        return Q_NULLPTR;
+    }
+#endif
+
+    int lock() Q_DECL_OVERRIDE
+    {
+        m_mutex.lock();
+        return 1;
+    }
+
+    void unlock() Q_DECL_OVERRIDE
+    {
+        m_mutex.unlock();
+    }
+
+    const char *fname() Q_DECL_OVERRIDE
+    {
+        return Q_NULLPTR;
+    }
+
+#ifdef LIBRAW_WIN32_UNICODEPATHS
+    const wchar_t *wfname() Q_DECL_OVERRIDE
+    {
+        return Q_NULLPTR;
+    }
+#endif
+
+private:
+    QMutex m_mutex;
+    QFile m_file;
+};
+
+#endif
 
 // ====================================================================================================
 
@@ -164,6 +359,9 @@ private:
     {
         try
         {
+#if defined (LIBRAW_COMPILE_CHECK_VERSION_NOTLESS) && (LIBRAW_COMPILE_CHECK_VERSION_NOTLESS(0, 20))
+            m_dataStream.reset(new LibRaw_Qt_datastream(filePath));
+#else
             const QByteArray filePathLocal8Bit = filePath.toLocal8Bit();
             if(QString::fromLocal8Bit(filePathLocal8Bit) != filePath || filePath.startsWith(QChar::fromLatin1(':')))
             {
@@ -180,6 +378,7 @@ private:
                 m_dataStream.reset(new LibRaw_file_datastream(filePathLocal8Bit.constData()));
 #endif
             }
+#endif
 
             m_rawProcessor.set_progress_handler(progressCallback, this);
             if(m_rawProcessor.open_datastream(m_dataStream.data()) != LIBRAW_SUCCESS)

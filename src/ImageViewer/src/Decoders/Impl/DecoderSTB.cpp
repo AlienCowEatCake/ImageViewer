@@ -32,6 +32,7 @@
 #include "Internal/GraphicsItemsFactory.h"
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
+#include "Internal/Utils/MappedBuffer.h"
 
 namespace {
 
@@ -81,8 +82,12 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
 
+        const MappedBuffer inBuffer(filePath);
+        if(!inBuffer.isValid())
+            return QSharedPointer<IImageData>();
+
         int x, y, n;
-        unsigned char *data = ::stbi_load(filePath.toLocal8Bit().data(), &x, &y, &n, 0);
+        unsigned char *data = ::stbi_load_from_memory(inBuffer.dataAs<stbi_uc*>(), inBuffer.sizeAs<int>(), &x, &y, &n, 0);
         if(!data)
         {
             LOG_WARNING() << LOGGING_CTX << ::stbi_failure_reason();

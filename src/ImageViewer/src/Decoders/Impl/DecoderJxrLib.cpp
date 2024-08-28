@@ -42,6 +42,7 @@
 #include "Internal/PayloadWithMetaData.h"
 #include "Internal/Utils/CmsUtils.h"
 #include "Internal/Utils/DataProcessing.h"
+#include "Internal/Utils/MappedBuffer.h"
 
 #if !defined (__ANSI__)
 #define __ANSI__
@@ -767,6 +768,10 @@ void postprocessscRgbFloat(QImage &image)
 
 PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 {
+    const MappedBuffer inBuffer(filePath);
+    if(!inBuffer.isValid())
+        return QImage();
+
     QScopedPointer<PKCodecFactory, JxrReleaseDeleter<PKCodecFactory> > codecFactory;
     {
         PKCodecFactory *codecFactoryData = Q_NULLPTR;
@@ -781,15 +786,45 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
 
     QScopedPointer<PKImageDecode, JxrReleaseDeleter<PKImageDecode> > decoder;
     {
-        const QByteArray filename = filePath.toLocal8Bit();
-        PKImageDecode *decoderData = Q_NULLPTR;
-        const ERR err = codecFactory->CreateDecoderFromFile(filename.data(), &decoderData);
-        if(Failed(err) || !decoderData)
+        // get file extension
+        const QByteArray fileExt = filePath.mid(filePath.lastIndexOf(QChar::fromLatin1('.'))).toLatin1();
+
+        // get decode PKIID
+        const PKIID* pkIID = Q_NULLPTR;
+        const ERR errGetImageDecodeIID = GetImageDecodeIID(fileExt.data(), &pkIID);
+        if(Failed(errGetImageDecodeIID) || !pkIID)
         {
-            LOG_WARNING() << LOGGING_CTX << "CreateDecoderFromFile failed:" << errorToString(err);
+            LOG_WARNING() << LOGGING_CTX << "GetImageDecodeIID failed:" << errorToString(errGetImageDecodeIID);
+            return QImage();
+        }
+
+        // Create decoder
+        PKImageDecode *decoderData = Q_NULLPTR;
+        const ERR errCreateCodec = PKCodecFactory_CreateCodec(pkIID, reinterpret_cast<void**>(&decoderData));
+        if(Failed(errCreateCodec) || !decoderData)
+        {
+            LOG_WARNING() << LOGGING_CTX << "PKCodecFactory_CreateCodec failed:" << errorToString(errCreateCodec);
             return QImage();
         }
         decoder.reset(decoderData);
+
+        // create stream
+        struct WMPStream* stream = Q_NULLPTR;
+        const ERR errCreateWS = CreateWS_Memory(&stream, inBuffer.dataAs<void*>(), inBuffer.sizeAs<size_t>());
+        if(Failed(errCreateWS) || !stream)
+        {
+            LOG_WARNING() << LOGGING_CTX << "CreateWS_Memory failed:" << errorToString(errCreateWS);
+            return QImage();
+        }
+
+        // attach stream to decoder
+        const ERR errInitialize = decoderData->Initialize(decoderData, stream);
+        decoderData->fStreamOwner = !0;
+        if(Failed(errInitialize))
+        {
+            LOG_WARNING() << LOGGING_CTX << "PKImageDecode::Initialize failed:" << errorToString(errInitialize);
+            return QImage();
+        }
     }
 
     PKPixelFormatGUID pixelFormat = GUID_PKPixelFormatUndefined;
