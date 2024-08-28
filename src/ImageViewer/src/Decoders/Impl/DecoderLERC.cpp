@@ -154,7 +154,7 @@ QImage decodeLercBlob(const QVector<unsigned int> &infoArr, const QVector<double
                 const quint8 r = DataProcessing::clampByte((zImg3[pos] - min) / scale);
                 const quint8 g = DataProcessing::clampByte((zImg3[pos + offset] - min) / scale);
                 const quint8 b = DataProcessing::clampByte((zImg3[pos + offset * 2] - min) / scale);
-                const quint8 a = (masks == 1) ? DataProcessing::extractFromAlignedPtr<quint8>(maskByteImg3 + pos) : 0;
+                const quint8 a = (masks == 1) ? DataProcessing::extractFromAlignedPtr<quint8>(maskByteImg3.data() + pos) : 0;
                 rgb[i] = qRgba(r, g, b, 255 - a);
             }
         }
@@ -171,7 +171,7 @@ QImage decodeLercBlob(const QVector<unsigned int> &infoArr, const QVector<double
                 const quint8 r = DataProcessing::clampByte((zImg3[pos * dims] - min) / scale);
                 const quint8 g = DataProcessing::clampByte((zImg3[pos * dims + 1] - min) / scale);
                 const quint8 b = DataProcessing::clampByte((zImg3[pos * dims + 2] - min) / scale);
-                const quint8 a = (masks == 1) ? DataProcessing::extractFromAlignedPtr<quint8>(maskByteImg3 + pos) : 0;
+                const quint8 a = (masks == 1) ? DataProcessing::extractFromAlignedPtr<quint8>(maskByteImg3.data() + pos) : 0;
                 rgb[i] = qRgba(r, g, b, 255 - a);
             }
         }
@@ -186,7 +186,7 @@ QImage decodeLercBlob(const QVector<unsigned int> &infoArr, const QVector<double
             {
                 const unsigned int pos = line + i;
                 const quint8 c = DataProcessing::clampByte((zImg3[pos * dims] - min) / scale);
-                const quint8 a = masks ? DataProcessing::extractFromAlignedPtr<quint8>(maskByteImg3 + pos) : 0;
+                const quint8 a = masks ? DataProcessing::extractFromAlignedPtr<quint8>(maskByteImg3.data() + pos) : 0;
                 rgb[i] = qRgba(c, c, c, 255 - a);
             }
         }
