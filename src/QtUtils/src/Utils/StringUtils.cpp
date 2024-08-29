@@ -19,9 +19,122 @@
 
 #include "StringUtils.h"
 
+#include <cassert>
+
+#include <QLocale>
 #include <QString>
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+#include <QCollator>
+#endif
+
+#include "Global.h"
+
+#if defined (Q_OS_WIN)
+#include <Windows.h>
+#endif
+
 namespace StringUtils {
+
+#if defined (Q_OS_WIN)
+namespace {
+
+class ShlwapiHelper
+{
+    Q_DISABLE_COPY(ShlwapiHelper)
+
+private:
+    typedef int(WINAPI *StrCmpLogicalW_t)(PCWSTR, PCWSTR);
+
+public:
+    ShlwapiHelper()
+        : m_hShlwapi(LoadLibraryA("shlwapi.dll"))
+        , m_StrCmpLogicalW_f(m_hShlwapi ? reinterpret_cast<StrCmpLogicalW_t>(GetProcAddress(m_hShlwapi, "StrCmpLogicalW")) : Q_NULLPTR)
+    {}
+
+    ~ShlwapiHelper()
+    {
+        if(m_hShlwapi)
+            FreeLibrary(m_hShlwapi);
+    }
+
+    bool hasStrCmpLogicalW() const
+    {
+        return m_hShlwapi && m_StrCmpLogicalW_f;
+    }
+
+    int callStrCmpLogicalW(const QString &s1, const QString &s2) const
+    {
+        PCWSTR psz1 = reinterpret_cast<PCWSTR>(s1.constData());
+        PCWSTR psz2 = reinterpret_cast<PCWSTR>(s2.constData());
+        return callStrCmpLogicalW(psz1, psz2);
+    }
+
+    int callStrCmpLogicalW(PCWSTR psz1, PCWSTR psz2) const
+    {
+        assert(hasStrCmpLogicalW());
+        return m_StrCmpLogicalW_f(psz1, psz2);
+    }
+
+private:
+    HMODULE m_hShlwapi;
+    StrCmpLogicalW_t m_StrCmpLogicalW_f;
+};
+
+} // namespace
+#endif
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+namespace {
+
+class QCollatorHelper
+{
+    Q_DISABLE_COPY(QCollatorHelper)
+
+public:
+    QCollatorHelper()
+        : m_canCompareNumeric(compareNumericImpl(QString::number(9), QString::number(10)) < 0)
+    {}
+
+    bool canCompareNumeric() const
+    {
+        return m_canCompareNumeric;
+    }
+
+    int callCompareNumeric(const QString &s1, const QString &s2) const
+    {
+        assert(canCompareNumeric());
+        return compareNumericImpl(s1, s2);
+    }
+
+private:
+    int compareNumericImpl(const QString &s1, const QString &s2) const
+    {
+        QCollator collator(QLocale::system());
+        collator.setNumericMode(true);
+        return collator.compare(s1, s2);
+    }
+
+private:
+    const bool m_canCompareNumeric;
+};
+
+} // namespace
+#endif
+
+bool PlatformNumericLessThan(const QString &s1, const QString &s2)
+{
+#if defined (Q_OS_WIN)
+    static const ShlwapiHelper shlwapiHelper;
+    if(shlwapiHelper.hasStrCmpLogicalW())
+        return shlwapiHelper.callStrCmpLogicalW(s1, s2) < 0;
+#endif
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+    static const QCollatorHelper qcollatorHelper;
+    if(qcollatorHelper.canCompareNumeric())
+        return qcollatorHelper.callCompareNumeric(s1, s2) < 0;
+#endif
+    return NumericLessThan(s1, s2);
+}
 
 bool NumericLessThan(const QString &s1, const QString &s2)
 {

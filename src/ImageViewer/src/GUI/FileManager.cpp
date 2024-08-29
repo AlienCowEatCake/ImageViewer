@@ -44,7 +44,7 @@ QStringList supportedFilesInDirectory(const QStringList &supportedFormatsWithWil
     if(supportedFormatsWithWildcards.empty())
         return QStringList();
     QStringList list = dir.entryList(supportedFormatsWithWildcards, QDir::Files | QDir::Readable, QDir::NoSort);
-    std::sort(list.begin(), list.end(), &StringUtils::NumericLessThan);
+    std::sort(list.begin(), list.end(), &StringUtils::PlatformNumericLessThan);
     return list;
 }
 

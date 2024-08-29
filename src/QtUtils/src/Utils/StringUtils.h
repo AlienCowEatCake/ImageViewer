@@ -24,6 +24,8 @@ class QString;
 
 namespace StringUtils {
 
+bool PlatformNumericLessThan(const QString &s1, const QString &s2);
+
 bool NumericLessThan(const QString &s1, const QString &s2);
 
 } // namespace StringUtils
