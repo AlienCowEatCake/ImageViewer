@@ -355,7 +355,7 @@ disable_thirdparty {
     CONFIG *= disable_zlib
     CONFIG *= disable_zstd
 }
-system_thirdparty {
+system_thirdparty : !disable_thirdparty {
     # Use pkg-config if not disabled explicitly
     !disable_pkgconfig : CONFIG *= enable_pkgconfig
     # Unused in "system" configuration
