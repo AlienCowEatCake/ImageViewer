@@ -58,21 +58,22 @@ public:
             FreeLibrary(m_hShlwapi);
     }
 
-    bool hasStrCmpLogicalW() const
+    bool canCompareNumeric() const
     {
         return m_hShlwapi && m_StrCmpLogicalW_f;
     }
 
-    int callStrCmpLogicalW(const QString &s1, const QString &s2) const
+    int doCompareNumeric(const QString &s1, const QString &s2) const
     {
         PCWSTR psz1 = reinterpret_cast<PCWSTR>(s1.constData());
         PCWSTR psz2 = reinterpret_cast<PCWSTR>(s2.constData());
         return callStrCmpLogicalW(psz1, psz2);
     }
 
+private:
     int callStrCmpLogicalW(PCWSTR psz1, PCWSTR psz2) const
     {
-        assert(hasStrCmpLogicalW());
+        assert(canCompareNumeric());
         return m_StrCmpLogicalW_f(psz1, psz2);
     }
 
@@ -83,7 +84,8 @@ private:
 
 } // namespace
 #endif
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+
+#if !defined (Q_OS_MAC) && (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
 namespace {
 
 class QCollatorHelper
@@ -100,7 +102,7 @@ public:
         return m_canCompareNumeric;
     }
 
-    int callCompareNumeric(const QString &s1, const QString &s2) const
+    int doCompareNumeric(const QString &s1, const QString &s2) const
     {
         assert(canCompareNumeric());
         return compareNumericImpl(s1, s2);
@@ -121,20 +123,22 @@ private:
 } // namespace
 #endif
 
+#if !defined (Q_OS_MAC)
 bool PlatformNumericLessThan(const QString &s1, const QString &s2)
 {
 #if defined (Q_OS_WIN)
     static const ShlwapiHelper shlwapiHelper;
-    if(shlwapiHelper.hasStrCmpLogicalW())
-        return shlwapiHelper.callStrCmpLogicalW(s1, s2) < 0;
+    if(shlwapiHelper.canCompareNumeric())
+        return shlwapiHelper.doCompareNumeric(s1, s2) < 0;
 #endif
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     static const QCollatorHelper qcollatorHelper;
     if(qcollatorHelper.canCompareNumeric())
-        return qcollatorHelper.callCompareNumeric(s1, s2) < 0;
+        return qcollatorHelper.doCompareNumeric(s1, s2) < 0;
 #endif
     return NumericLessThan(s1, s2);
 }
+#endif
 
 bool NumericLessThan(const QString &s1, const QString &s2)
 {
