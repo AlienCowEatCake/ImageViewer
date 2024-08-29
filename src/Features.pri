@@ -345,7 +345,6 @@ disable_thirdparty {
     CONFIG *= disable_qtcore5compat
     CONFIG *= disable_qtextended
     CONFIG *= disable_qtimageformats
-    CONFIG *= disable_qtsvg
     CONFIG *= disable_qtwebengine
     CONFIG *= disable_qtwebkit
     CONFIG *= disable_resvg
