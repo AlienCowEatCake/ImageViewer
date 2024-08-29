@@ -59,7 +59,7 @@ public:
         int *delays = Q_NULLPTR;
         int x = 0, y = 0, z = 0, n = 0;
         stbi_uc *data = Q_NULLPTR;
-        if(filePath.endsWith(QString::fromLatin1(".gif"), Qt::CaseInsensitive))
+        if(isGif(inBuffer.dataAsByteArray()))
         {
             data = ::stbi_load_gif_from_memory(inBuffer.dataAs<stbi_uc*>(), inBuffer.sizeAs<int>(), &delays, &x, &y, &z, &n, 0);
         }
@@ -123,6 +123,11 @@ public:
         m_numFrames = m_frames.size();
         m_error = m_numFrames <= 0;
         return PayloadWithMetaData<bool>(isValid(), metaData);
+    }
+
+    static bool isGif(const QByteArray &header)
+    {
+        return header.startsWith(QByteArray("GIF87a")) || header.startsWith(QByteArray("GIF89a"));
     }
 };
 
