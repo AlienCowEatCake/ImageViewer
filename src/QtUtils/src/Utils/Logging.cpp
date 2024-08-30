@@ -22,9 +22,6 @@
 #include <cassert>
 
 LoggingContextHelper::LoggingContextHelper(const char * const file, const char * const line, const char * const func)
-    : file(file)
-    , line(line)
-    , func(func)
 {
     // Memory allocation is prohibited here
     const size_t bufferSize = sizeof(buffer);

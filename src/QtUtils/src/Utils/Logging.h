@@ -35,9 +35,6 @@ public:
     static const char *cutFuncName(const char *const func);
 
 private:
-    const char *const file;
-    const char *const line;
-    const char *const func;
     char buffer[256];
 };
 
