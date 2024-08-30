@@ -110,11 +110,18 @@ int main(int argc, char *argv[])
 
     MainController controller;
     QStringList filePaths;
-    for(int i = 1; i < argc; i++)
     {
-        const QString filePath = QString::fromLocal8Bit(argv[i]);
-        if(QFileInfo_exists(filePath))
-            filePaths.append(filePath);
+        const QStringList arguments = app.arguments();
+        QStringList::ConstIterator it = arguments.constBegin();
+        if(it != arguments.constEnd())
+        {
+            for(++it; it != arguments.constEnd(); ++it)
+            {
+                const QString &filePath = *it;
+                if(QFileInfo_exists(filePath))
+                    filePaths.append(filePath);
+            }
+        }
     }
     if(filePaths.empty() && app.hasLastOpenFilePath())
         filePaths.append(app.getLastOpenFilePath());
