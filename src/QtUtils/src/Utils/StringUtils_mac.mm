@@ -27,6 +27,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <QString>
+
 #include "Global.h"
 #include "InfoUtils.h"
 #include "ObjectiveCUtils.h"
