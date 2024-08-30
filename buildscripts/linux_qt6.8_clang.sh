@@ -1,8 +1,9 @@
 #!/bin/bash -e
 PROJECT="ImageViewer"
 IDENTIFIER="com.github.aliencoweatcake.imageviewer"
-BUILDDIR="build_linux_qt6.8_clang"
-SUFFIX="_qt6.8_$(gcc -dumpmachine)"
+SUFFIX="qt6.8"
+SUFFIX_FULL="${SUFFIX}_$(gcc -dumpmachine)"
+BUILDDIR="build_linux_${SUFFIX_FULL}_clang"
 APP_PATH="src/${PROJECT}"
 DESKTOP_PATH="src/${PROJECT}/resources/platform/linux/${IDENTIFIER}.desktop"
 ICON_PATH="src/${PROJECT}/resources/icon/icon.svg"
@@ -46,7 +47,7 @@ find "AppDir" -type d -exec chmod 755 \{\} \;
 find "AppDir" -type f -exec chmod 644 \{\} \;
 find "AppDir" -type f \( -name "${PROJECT}" -o -name "AppRun" -o -name "*.so*" -o -name "*.sh" -o -name "*.desktop" \) -exec chmod 755 \{\} \;
 if type "${CMD_APPIMAGETOOL}" &> /dev/null ; then
-    "${CMD_APPIMAGETOOL}" --no-appstream "AppDir" ../"${PROJECT}${SUFFIX}.AppImage"
+    "${CMD_APPIMAGETOOL}" --no-appstream "AppDir" ../"${PROJECT}_${SUFFIX_FULL}.AppImage"
 fi
 
 cd "AppDir"
@@ -56,5 +57,7 @@ find "debian" -type f -exec chmod 644 \{\} \;
 chmod 755 "debian/rules"
 dpkg-buildpackage -rfakeroot -b -uc
 cd ..
-cp -a *.deb ../
+for i in *.deb ; do
+    cp -a "${i}" "../$(echo "${i}" | sed "s|\([^_]*_[^_]*\)\(_[^_]*\.deb\)|\1-${SUFFIX}\2|")"
+done
 cd ..

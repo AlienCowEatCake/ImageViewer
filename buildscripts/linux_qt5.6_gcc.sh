@@ -1,7 +1,8 @@
 #!/bin/bash -e
 PROJECT="ImageViewer"
-BUILDDIR="build_linux_qt5.6_gcc"
-SUFFIX="_qt5.6_$(gcc -dumpmachine)"
+SUFFIX="qt5.6"
+SUFFIX_FULL="${SUFFIX}_$(gcc -dumpmachine)"
+BUILDDIR="build_linux_${SUFFIX_FULL}_gcc"
 APP_PATH="src/${PROJECT}"
 
 QTDIR="/opt/qt-5.6.3-static"
@@ -14,7 +15,7 @@ cd "${BUILDDIR}"
 ${CMD_QMAKE} -r CONFIG+="release" QTPLUGIN.imageformats="qico qsvg qtiff" CONFIG+="enable_librsvg enable_nanosvg enable_j40" CONFIG+="enable_update_checking" "../${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 strip --strip-all "${APP_PATH}/${PROJECT}"
-cp -a "${APP_PATH}/${PROJECT}" ../"${PROJECT}${SUFFIX}.elf"
+cp -a "${APP_PATH}/${PROJECT}" ../"${PROJECT}_${SUFFIX_FULL}.elf"
 cd ..
-gzip -9v "${PROJECT}${SUFFIX}.elf"
+gzip -9v "${PROJECT}_${SUFFIX_FULL}.elf"
 

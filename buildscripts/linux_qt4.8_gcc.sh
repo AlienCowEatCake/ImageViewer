@@ -1,7 +1,8 @@
 #!/bin/bash -e
 PROJECT="ImageViewer"
-BUILDDIR="build_linux_qt4.8_gcc"
-SUFFIX="_qt4.8_$(gcc -dumpmachine)"
+SUFFIX="qt4.8"
+SUFFIX_FULL="${SUFFIX}_$(gcc -dumpmachine)"
+BUILDDIR="build_linux_${SUFFIX_FULL}_gcc"
 APP_PATH="src/${PROJECT}"
 
 QTDIR="/opt/qt-4.8.7-static"
@@ -14,7 +15,7 @@ cd "${BUILDDIR}"
 ${CMD_QMAKE} -r CONFIG+="release" CONFIG+="use_static_qico" CONFIG+="enable_librsvg enable_nanosvg enable_j40" CONFIG+="enable_update_checking" "../${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 strip --strip-all "${APP_PATH}/${PROJECT}"
-cp -a "${APP_PATH}/${PROJECT}" ../"${PROJECT}${SUFFIX}.elf"
+cp -a "${APP_PATH}/${PROJECT}" ../"${PROJECT}_${SUFFIX_FULL}.elf"
 cd ..
-gzip -9v "${PROJECT}${SUFFIX}.elf"
+gzip -9v "${PROJECT}_${SUFFIX_FULL}.elf"
 
