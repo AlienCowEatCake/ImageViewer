@@ -50,7 +50,11 @@
 #define USE_RGBA_8888   (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0) && Q_BYTE_ORDER == Q_LITTLE_ENDIAN)
 #define USE_GRAYSCALE_8 (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
 #define USE_CMYK_8888   (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+#define ALLOW_BUFFER_UNDERFLOW
+
 // #define DEBUG_FORCE_BIT_ACCESS
+// #define DEBUG_FORCE_UNDERFLOW_EMPTY_BUFFER
+// #define DEBUG_FORCE_UNDERFLOW_FILLED_BUFFER
 
 #if defined (NDEBUG)
 #define BUFFER_FILL_PATTERN 0
@@ -174,20 +178,55 @@ QString sampleFormatToString(quint16 sampleFormat)
 QString extrasamplesToString(quint16 extrasamplesCount, const quint16 *extrasamples)
 {
     QString result;
-    for(quint16 i = 0; i < extrasamplesCount; ++i)
+    // Avoid too long string, it is not human-readable
+    if(extrasamplesCount > 16)
     {
-        switch(extrasamples[i])
+        quint16 unspecified = 0;
+        quint16 assocalpha = 0;
+        quint16 unassocalpha = 0;
+        quint16 other = 0;
+        for(quint16 i = 0; i < extrasamplesCount; ++i)
         {
+            switch(extrasamples[i])
+            {
+            case EXTRASAMPLE_UNSPECIFIED:
+                ++unspecified;
+                break;
+            case EXTRASAMPLE_ASSOCALPHA:
+                ++assocalpha;
+                break;
+            case EXTRASAMPLE_UNASSALPHA:
+                ++unassocalpha;
+                break;
+            default:
+                ++other;
+                break;
+            }
+        }
+#define APPEND_RESULT(S, C) if((C) > 0) result = result + (result.isEmpty() ? QString() : QString::fromLatin1(", ")) + QString::fromLatin1("%1x%2").arg(C).arg(QString::fromLatin1(#S))
+        APPEND_RESULT(EXTRASAMPLE_UNSPECIFIED, unspecified);
+        APPEND_RESULT(EXTRASAMPLE_ASSOCALPHA, assocalpha);
+        APPEND_RESULT(EXTRASAMPLE_UNASSALPHA, unassocalpha);
+        APPEND_RESULT(Unknown, other);
+#undef APPEND_RESULT
+    }
+    else
+    {
+        for(quint16 i = 0; i < extrasamplesCount; ++i)
+        {
+            switch(extrasamples[i])
+            {
 #define APPEND_RESULT(S) result = result + (result.isEmpty() ? QString() : QString::fromLatin1(", ")) + (S)
 #define ADD_CASE(X) case X: APPEND_RESULT(QString::fromLatin1(#X)); break
-        ADD_CASE(EXTRASAMPLE_UNSPECIFIED);
-        ADD_CASE(EXTRASAMPLE_ASSOCALPHA);
-        ADD_CASE(EXTRASAMPLE_UNASSALPHA);
+            ADD_CASE(EXTRASAMPLE_UNSPECIFIED);
+            ADD_CASE(EXTRASAMPLE_ASSOCALPHA);
+            ADD_CASE(EXTRASAMPLE_UNASSALPHA);
 #undef ADD_CASE
-        default:
-            APPEND_RESULT(QString::fromLatin1("%1").arg(extrasamples[i]));
-            break;
+            default:
+                APPEND_RESULT(QString::fromLatin1("%1").arg(extrasamples[i]));
+                break;
 #undef APPEND_RESULT
+            }
         }
     }
     return QString::fromLatin1("(%1)").arg(result);
@@ -1322,32 +1361,67 @@ QImage readTiffFileTiledContig(const Context *ctx, qint64 nTiles, qint64 tileWid
     const qint64 nTilesY = (ctx->height / tileHeight) + (leftY == 0 ? 0 : 1);
     const qint64 tileLineSize = tileWidth * ctx->samplesPerPixel * ctx->bitsPerSample / 8;
 
+    bool somethingReaded = false;
     for(qint64 tile = 0; tile < nTiles; ++tile)
     {
         memset(buffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(buffer.size()));
-        const qint64 bufferSize = TIFFReadEncodedTile(ctx->tiff, static_cast<quint32>(tile), buffer.data(), buffer.size());
-        if(bufferSize < 0)
-        {
-            LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile failed for tile" << tile;
-            if(tile == 0)
-                return QImage();
-            // Try to handle if we can read some tiles
-            break;
-        }
-        const qint64 expectedTileBufferSize = tileLineSize * tileHeight;
-        if(bufferSize < expectedTileBufferSize)
-        {
-            LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile returns not enough data to decode tile" << tile << "got:" << bufferSize << "expected:" << expectedTileBufferSize;
-            if(tile == 0)
-                return QImage();
-            // Try to handle if we can read some tiles
-            break;
-        }
-
         const qint64 currTileX = tile % nTilesX;
         const qint64 currTileY = tile / nTilesX;
         const qint64 currTileWidth  = ((currTileX == nTilesX - 1) && leftX) ? leftX : tileWidth;
         const qint64 currTileHeight = ((currTileY == nTilesY - 1) && leftY) ? leftY : tileHeight;
+        const qint64 expectedTileBufferSize = tileLineSize * tileHeight;
+        assert(bufferAllocSize >= expectedTileBufferSize);
+#if !defined (DEBUG_FORCE_UNDERFLOW_EMPTY_BUFFER)
+        qint64 bufferSize = TIFFReadEncodedTile(ctx->tiff, static_cast<quint32>(tile), buffer.data(), buffer.size());
+#else
+        qint64 bufferSize = -1;
+#endif
+#if defined (DEBUG_FORCE_UNDERFLOW_FILLED_BUFFER)
+        bufferSize = -1;
+#endif
+        if(bufferSize <= 0)
+        {
+            LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile failed for tile" << tile;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+            /// @todo LibTIFF-4.6.0: Repeated read is not supported for some compression formats (e.g. OJPEG)
+            /// So let's check current buffer, it may be already filled with all available data
+            bool bufferIsEmpty = true;
+            for(qint64 i = 0; i < buffer.size() && bufferIsEmpty; ++i)
+            {
+                if(*reinterpret_cast<quint8*>(buffer.data() + i) != BUFFER_FILL_PATTERN)
+                    bufferIsEmpty = false;
+            }
+            if(bufferIsEmpty)
+            {
+                for(qint64 row = currTileHeight; row >= 1; --row)
+                {
+                    const qint64 newSize = TIFFReadEncodedTile(ctx->tiff, static_cast<quint32>(tile), buffer.data(), row * tileLineSize);
+                    if(newSize > 0)
+                    {
+                        LOG_DEBUG() << LOGGING_CTX << "Recovered rows:" << row << "of" << currTileHeight;
+                        bufferSize = std::max(expectedTileBufferSize, newSize);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                LOG_DEBUG() << LOGGING_CTX << "Buffer has some data, assume recovered";
+                bufferSize = expectedTileBufferSize;
+            }
+#endif
+            if(bufferSize <= 0)
+                continue;
+        }
+        if(bufferSize < expectedTileBufferSize)
+        {
+            LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile returns not enough data to decode tile" << tile << "got:" << bufferSize << "expected:" << expectedTileBufferSize;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+            bufferSize = expectedTileBufferSize;
+#else
+            continue;
+#endif
+        }
 
         assert(tileLineSize * tileHeight <= bufferSize);
         const QImage tileRgb = readFromRawBuffer(reinterpret_cast<const quint8*>(buffer.data()), tileWidth, tileHeight, tileLineSize, ctx);
@@ -1361,8 +1435,11 @@ QImage readTiffFileTiledContig(const Context *ctx, qint64 nTiles, qint64 tileWid
             QRgb *outScanLine = reinterpret_cast<QRgb*>(result.scanLine(currTileY * tileHeight + y)) + currTileX * tileWidth;
             memcpy(outScanLine, inScanLine, static_cast<size_t>(currTileWidth * 4));
         }
+        somethingReaded = true;
     }
 
+    if(!somethingReaded)
+        return QImage();
     return result;
 }
 
@@ -1383,7 +1460,7 @@ QImage readTiffFileTiledContigSubsampled(const Context *ctx, qint64 nTiles, qint
     }
     result.fill(ctx->alphaIndex >= 0 ? Qt::transparent : Qt::white);
 
-    const qint64 bufferAllocSize = tileWidth * tileHeight * ctx->samplesPerPixel * ctx->bitsPerSample / 8;
+    const qint64 bufferAllocSize = (tileWidth + 4) * (tileHeight + 4) * ctx->samplesPerPixel * ctx->bitsPerSample / 8;
     if(bufferAllocSize > BUFFER_MAX_SIZE)
     {
         LOG_WARNING() << LOGGING_CTX << "Can't allocate buffer with size =" << bufferAllocSize << "due to allocation limit =" << BUFFER_MAX_SIZE;
@@ -1402,36 +1479,76 @@ QImage readTiffFileTiledContigSubsampled(const Context *ctx, qint64 nTiles, qint
     const qint64 nTilesY = (ctx->height / tileHeight) + (leftY == 0 ? 0 : 1);
     const qint64 tileLineBitSize = tileWidth * ctx->samplesPerPixel * ctx->bitsPerSample;
     const qint64 tileLineSize = tileLineBitSize / 8;
+    const qint64 tileWidthAligned = tileWidth + (tileWidth % ctx->subsamplinghor > 0 ? (ctx->subsamplinghor - tileWidth % ctx->subsamplinghor) : 0);
+    const qint64 tileHeightAligned = tileHeight + (tileHeight % ctx->subsamplingver > 0 ? (ctx->subsamplingver - tileHeight % ctx->subsamplingver) : 0);
 
+    bool somethingReaded = false;
     for(qint64 tile = 0; tile < nTiles; ++tile)
     {
         memset(buffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(buffer.size()));
         memset(tileBuffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(tileBuffer.size()));
-        const qint64 tileBufferSize = TIFFReadEncodedTile(ctx->tiff, static_cast<quint32>(tile), tileBuffer.data(), tileBuffer.size());
-        if(tileBufferSize < 0)
-        {
-            LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile failed for tile" << tile;
-            if(tile == 0)
-                return QImage();
-            // Try to handle if we can read some tiles
-            break;
-        }
-        const qint64 expectedTileBufferSize = tileHeight * tileWidth * (ctx->samplesPerPixel - 2) * ctx->bitsPerSample / 8 + tileHeight / ctx->subsamplingver * tileWidth / ctx->subsamplinghor * 2 * ctx->bitsPerSample / 8;
-        if(tileBufferSize < expectedTileBufferSize)
-        {
-            LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile returns not enough data to decode tile" << tile << "got:" << tileBufferSize << "expected:" << expectedTileBufferSize;
-            if(tile == 0)
-                return QImage();
-            // Try to handle if we can read some tiles
-            break;
-        }
-
         const qint64 currTileX = tile % nTilesX;
         const qint64 currTileY = tile / nTilesX;
         const qint64 currTileWidth  = ((currTileX == nTilesX - 1) && leftX) ? leftX : tileWidth;
         const qint64 currTileHeight = ((currTileY == nTilesY - 1) && leftY) ? leftY : tileHeight;
-        const qint64 tileScanlineSize = tileBufferSize / ctx->subsamplinghor / tileHeight * ctx->subsamplingver;
+        const qint64 expectedTileBufferSize = tileHeight * tileWidth * (ctx->samplesPerPixel - 2) * ctx->bitsPerSample / 8 + tileHeight / ctx->subsamplingver * tileWidth / ctx->subsamplinghor * 2 * ctx->bitsPerSample / 8;
+        const qint64 expectedTileBufferSizeAligned = expectedTileBufferSize * tileWidthAligned * tileHeightAligned / tileHeight / tileWidth;
+        assert(tileBuffer.size() >= expectedTileBufferSizeAligned);
+#if !defined (DEBUG_FORCE_UNDERFLOW_EMPTY_BUFFER)
+        qint64 tileBufferSize = TIFFReadEncodedTile(ctx->tiff, static_cast<quint32>(tile), tileBuffer.data(), tileBuffer.size());
+#else
+        qint64 tileBufferSize = -1;
+#endif
+#if defined (DEBUG_FORCE_UNDERFLOW_FILLED_BUFFER)
+        tileBufferSize = -1;
+#endif
+        if(tileBufferSize <= 0)
+        {
+            LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile failed for tile" << tile;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+            /// @todo LibTIFF-4.6.0: Repeated read is not supported for some compression formats (e.g. OJPEG)
+            /// So let's check current buffer, it may be already filled with all available data
+            bool bufferIsEmpty = true;
+            for(qint64 i = 0; i < tileBuffer.size() && bufferIsEmpty; ++i)
+            {
+                if(*reinterpret_cast<quint8*>(tileBuffer.data() + i) != BUFFER_FILL_PATTERN)
+                    bufferIsEmpty = false;
+            }
+            if(bufferIsEmpty)
+            {
+                const qint64 currTileHeightAligned = currTileHeight + (currTileHeight % ctx->subsamplingver > 0 ? (ctx->subsamplingver - currTileHeight % ctx->subsamplingver) : 0);
+                for(qint64 row = currTileHeightAligned; row >= ctx->subsamplingver; row -= ctx->subsamplingver)
+                {
+                    const qint64 newSize = TIFFReadEncodedTile(ctx->tiff, static_cast<quint32>(tile), tileBuffer.data(), row * expectedTileBufferSize / tileHeight);
+                    if(newSize > 0)
+                    {
+                        LOG_DEBUG() << LOGGING_CTX << "Recovered rows:" << row << "of" << currTileHeightAligned;
+                        tileBufferSize = std::max(expectedTileBufferSizeAligned, newSize);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                LOG_DEBUG() << LOGGING_CTX << "Buffer has some data, assume recovered";
+                tileBufferSize = expectedTileBufferSize;
+            }
+#endif
+            if(tileBufferSize <= 0)
+                continue;
+        }
+        if(tileBufferSize < expectedTileBufferSize)
+        {
+            LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile returns not enough data to decode tile" << tile << "got:" << tileBufferSize << "expected:" << expectedTileBufferSize;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+            tileBufferSize = expectedTileBufferSizeAligned;
+#else
+            Q_UNUSED(expectedTileBufferSizeAligned);
+            continue;
+#endif
+        }
 
+        const qint64 tileScanlineSize = tileBufferSize / ctx->subsamplinghor / tileHeight * ctx->subsamplingver;
 #if !defined (DEBUG_FORCE_BIT_ACCESS)
         if(ctx->bitsPerSample % 8 == 0)
 #else
@@ -1561,8 +1678,11 @@ QImage readTiffFileTiledContigSubsampled(const Context *ctx, qint64 nTiles, qint
             QRgb *outScanLine = reinterpret_cast<QRgb*>(result.scanLine(currTileY * tileHeight + y)) + currTileX * tileWidth;
             memcpy(outScanLine, inScanLine, static_cast<size_t>(currTileWidth * 4));
         }
+        somethingReaded = true;
     }
 
+    if(!somethingReaded)
+        return QImage();
     return result;
 }
 
@@ -1573,7 +1693,7 @@ QImage readTiffFileTiledSeparate(const Context *ctx, qint64 nTiles, qint64 tileW
     assert(nTiles > 0);
     assert(tileWidth > 0);
     assert(tileHeight > 0);
-    LOG_DEBUG() << LOGGING_CTX << "Tiled data with separate planes of subsampled data detected";
+    LOG_DEBUG() << LOGGING_CTX << "Tiled data with separate planes of data detected";
 
     if(nTiles % ctx->samplesPerPixel != 0)
     {
@@ -1610,6 +1730,7 @@ QImage readTiffFileTiledSeparate(const Context *ctx, qint64 nTiles, qint64 tileW
     const qint64 tileLineSize = tileLineBitSize / 8;
     const qint64 tilesPerSample = nTiles / ctx->samplesPerPixel;
 
+    bool somethingReaded = false;
     for(qint64 tile = 0; tile < tilesPerSample; ++tile)
     {
         memset(buffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(buffer.size()));
@@ -1621,23 +1742,58 @@ QImage readTiffFileTiledSeparate(const Context *ctx, qint64 nTiles, qint64 tileW
         for(qint64 sample = 0; sample < ctx->samplesPerPixel; ++sample)
         {
             memset(tileBuffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(tileBuffer.size()));
-            const qint64 tileBufferSize = TIFFReadEncodedTile(ctx->tiff, static_cast<quint32>(sample * tilesPerSample + tile), tileBuffer.data(), tileBuffer.size());
-            if(tileBufferSize < 0)
+            const qint64 expectedTileBufferSize = tileHeight * tileWidth * ctx->bitsPerSample / 8;
+            assert(tileBuffer.size() >= expectedTileBufferSize);
+#if !defined (DEBUG_FORCE_UNDERFLOW_EMPTY_BUFFER)
+            qint64 tileBufferSize = TIFFReadEncodedTile(ctx->tiff, static_cast<quint32>(sample * tilesPerSample + tile), tileBuffer.data(), tileBuffer.size());
+#else
+            qint64 tileBufferSize = -1;
+#endif
+#if defined (DEBUG_FORCE_UNDERFLOW_FILLED_BUFFER)
+            tileBufferSize = -1;
+#endif
+            if(tileBufferSize <= 0)
             {
                 LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile failed for tile" << tile;
-                if(tile == 0)
-                    return QImage();
-                // Try to handle if we can read some tiles
-                break;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+                /// @todo LibTIFF-4.6.0: Repeated read is not supported for some compression formats (e.g. OJPEG)
+                /// So let's check current buffer, it may be already filled with all available data
+                bool bufferIsEmpty = true;
+                for(qint64 i = 0; i < tileBuffer.size() && bufferIsEmpty; ++i)
+                {
+                    if(*reinterpret_cast<quint8*>(tileBuffer.data() + i) != BUFFER_FILL_PATTERN)
+                        bufferIsEmpty = false;
+                }
+                if(bufferIsEmpty)
+                {
+                    for(qint64 row = currTileHeight; row >= 1; --row)
+                    {
+                        const qint64 newSize = TIFFReadEncodedTile(ctx->tiff, static_cast<quint32>(sample * tilesPerSample + tile), tileBuffer.data(), row * expectedTileBufferSize / tileHeight);
+                        if(newSize > 0)
+                        {
+                            LOG_DEBUG() << LOGGING_CTX << "Recovered rows:" << row << "of" << currTileHeight;
+                            tileBufferSize = std::max(expectedTileBufferSize, newSize);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    LOG_DEBUG() << LOGGING_CTX << "Buffer has some data, assume recovered";
+                    tileBufferSize = expectedTileBufferSize;
+                }
+#endif
+                if(tileBufferSize <= 0)
+                    continue;
             }
-            const qint64 expectedTileBufferSize = tileHeight * tileWidth * ctx->bitsPerSample / 8;
             if(tileBufferSize < expectedTileBufferSize)
             {
                 LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile returns not enough data to decode tile" << tile << "got:" << tileBufferSize << "expected:" << expectedTileBufferSize;
-                if(tile == 0)
-                    return QImage();
-                // Try to handle if we can read some tiles
-                break;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+                tileBufferSize = expectedTileBufferSize;
+#else
+                continue;
+#endif
             }
 
 #if !defined (DEBUG_FORCE_BIT_ACCESS)
@@ -1688,8 +1844,11 @@ QImage readTiffFileTiledSeparate(const Context *ctx, qint64 nTiles, qint64 tileW
             QRgb *outScanLine = reinterpret_cast<QRgb*>(result.scanLine(currTileY * tileHeight + y)) + currTileX * tileWidth;
             memcpy(outScanLine, inScanLine, static_cast<size_t>(currTileWidth * 4));
         }
+        somethingReaded = true;
     }
 
+    if(!somethingReaded)
+        return QImage();
     return result;
 }
 
@@ -1717,7 +1876,7 @@ QImage readTiffFileTiledSeparateSubsampled(const Context *ctx, qint64 nTiles, qi
     }
     result.fill(ctx->alphaIndex >= 0 ? Qt::transparent : Qt::white);
 
-    const qint64 bufferAllocSize = tileWidth * tileHeight * ctx->samplesPerPixel * ctx->bitsPerSample / 8;
+    const qint64 bufferAllocSize = (tileWidth + 4) * (tileHeight + 4) * ctx->samplesPerPixel * ctx->bitsPerSample / 8;
     if(bufferAllocSize > BUFFER_MAX_SIZE)
     {
         LOG_WARNING() << LOGGING_CTX << "Can't allocate buffer with size =" << bufferAllocSize << "due to allocation limit =" << BUFFER_MAX_SIZE;
@@ -1738,6 +1897,7 @@ QImage readTiffFileTiledSeparateSubsampled(const Context *ctx, qint64 nTiles, qi
     const qint64 tileLineSize = tileLineBitSize / 8;
     const qint64 tilesPerSample = nTiles / ctx->samplesPerPixel;
 
+    bool somethingReaded = false;
     for(qint64 tile = 0; tile < tilesPerSample; ++tile)
     {
         memset(buffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(buffer.size()));
@@ -1749,25 +1909,60 @@ QImage readTiffFileTiledSeparateSubsampled(const Context *ctx, qint64 nTiles, qi
         for(qint64 sample = 0; sample < ctx->samplesPerPixel; ++sample)
         {
             memset(tileBuffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(tileBuffer.size()));
-            const qint64 tileBufferSize = TIFFReadEncodedTile(ctx->tiff, static_cast<quint32>(sample * tilesPerSample + tile), tileBuffer.data(), tileBuffer.size());
-            if(tileBufferSize < 0)
-            {
-                LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile failed for tile" << tile;
-                if(tile == 0)
-                    return QImage();
-                // Try to handle if we can read some tiles
-                break;
-            }
-
             const bool isSubsampledChroma = IsOneOf(sample, 1, 2);
             const qint64 expectedTileBufferSize = tileHeight * tileWidth * ctx->bitsPerSample / 8 / (isSubsampledChroma ? (ctx->subsamplingver * ctx->subsamplinghor) : 1);
+#if !defined (DEBUG_FORCE_UNDERFLOW_EMPTY_BUFFER)
+            qint64 tileBufferSize = TIFFReadEncodedTile(ctx->tiff, static_cast<quint32>(sample * tilesPerSample + tile), tileBuffer.data(), tileBuffer.size());
+#else
+            qint64 tileBufferSize = -1;
+#endif
+#if defined (DEBUG_FORCE_UNDERFLOW_FILLED_BUFFER)
+            tileBufferSize = -1;
+#endif
+            if(tileBufferSize <= 0)
+            {
+                LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile failed for tile" << tile;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+                /// @todo LibTIFF-4.6.0: Repeated read is not supported for some compression formats (e.g. OJPEG)
+                /// So let's check current buffer, it may be already filled with all available data
+                bool bufferIsEmpty = true;
+                for(qint64 i = 0; i < tileBuffer.size() && bufferIsEmpty; ++i)
+                {
+                    if(*reinterpret_cast<quint8*>(tileBuffer.data() + i) != BUFFER_FILL_PATTERN)
+                        bufferIsEmpty = false;
+                }
+                if(bufferIsEmpty)
+                {
+                    const qint64 currTileHeightSubsampled = currTileHeight / (isSubsampledChroma ? ctx->subsamplingver : 1);
+                    for(qint64 row = currTileHeightSubsampled; row >= 1; --row)
+                    {
+                        const qint64 newSize =  TIFFReadEncodedTile(ctx->tiff, static_cast<quint32>(sample * tilesPerSample + tile), tileBuffer.data(), expectedTileBufferSize * row / currTileHeightSubsampled);
+                        if(newSize > 0)
+                        {
+                            LOG_DEBUG() << LOGGING_CTX << "Recovered rows:" << row << "of" << currTileHeightSubsampled;
+                            tileBufferSize = std::max(expectedTileBufferSize, newSize);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    LOG_DEBUG() << LOGGING_CTX << "Buffer has some data, assume recovered";
+                    tileBufferSize = expectedTileBufferSize;
+                }
+#endif
+                if(tileBufferSize <= 0)
+                    continue;
+            }
+
             if(tileBufferSize < expectedTileBufferSize)
             {
                 LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedTile returns not enough data to decode tile" << tile << "got:" << tileBufferSize << "expected:" << expectedTileBufferSize;
-                if(tile == 0)
-                    return QImage();
-                // Try to handle if we can read some tiles
-                break;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+                tileBufferSize = expectedTileBufferSize;
+#else
+                continue;
+#endif
             }
 
             if(isSubsampledChroma)
@@ -1870,8 +2065,11 @@ QImage readTiffFileTiledSeparateSubsampled(const Context *ctx, qint64 nTiles, qi
             QRgb *outScanLine = reinterpret_cast<QRgb*>(result.scanLine(currTileY * tileHeight + y)) + currTileX * tileWidth;
             memcpy(outScanLine, inScanLine, static_cast<size_t>(currTileWidth * 4));
         }
+        somethingReaded = true;
     }
 
+    if(!somethingReaded)
+        return QImage();
     return result;
 }
 
@@ -1974,27 +2172,63 @@ QImage readTiffFileStripedContig(const Context *ctx, qint64 numberOfStrips, qint
 
     const qint64 leftRows = ctx->height % rowsperstrip;
 
+    bool somethingReaded = false;
     for(qint64 strip = 0; strip < numberOfStrips; ++strip)
     {
         memset(buffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(buffer.size()));
-        const qint64 stripBufferSize = TIFFReadEncodedStrip(ctx->tiff, static_cast<quint32>(strip), buffer.data(), buffer.size());
-        if(stripBufferSize < 0)
-        {
-            LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedStrip failed for strip" << strip;
-            if(strip == 0)
-                return QImage();
-            // Try to handle if we can read some strips
-            break;
-        }
         const qint64 currStripHeight = ((strip == numberOfStrips - 1) && leftRows) ? leftRows : rowsperstrip;
         const qint64 expectedStripBufferSize = currStripHeight * rasterScanlineSize;
+        assert(bufferAllocSize >= expectedStripBufferSize);
+#if !defined (DEBUG_FORCE_UNDERFLOW_EMPTY_BUFFER)
+        qint64 stripBufferSize = TIFFReadEncodedStrip(ctx->tiff, static_cast<quint32>(strip), buffer.data(), buffer.size());
+#else
+        qint64 stripBufferSize = -1;
+#endif
+#if defined (DEBUG_FORCE_UNDERFLOW_FILLED_BUFFER)
+        stripBufferSize = -1;
+#endif
+        if(stripBufferSize <= 0)
+        {
+            LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedStrip failed for strip" << strip;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+            /// @todo LibTIFF-4.6.0: Repeated read is not supported for some compression formats (e.g. OJPEG)
+            /// So let's check current buffer, it may be already filled with all available data
+            bool bufferIsEmpty = true;
+            for(qint64 i = 0; i < buffer.size() && bufferIsEmpty; ++i)
+            {
+                if(*reinterpret_cast<quint8*>(buffer.data() + i) != BUFFER_FILL_PATTERN)
+                    bufferIsEmpty = false;
+            }
+            if(bufferIsEmpty)
+            {
+                for(qint64 row = currStripHeight; row >= 1; --row)
+                {
+                    const qint64 newSize = TIFFReadEncodedStrip(ctx->tiff, static_cast<quint32>(strip), buffer.data(), row * scanlineSize);
+                    if(newSize > 0)
+                    {
+                        LOG_DEBUG() << LOGGING_CTX << "Recovered rows:" << row << "of" << currStripHeight;
+                        stripBufferSize = std::max(expectedStripBufferSize, newSize);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                LOG_DEBUG() << LOGGING_CTX << "Buffer has some data, assume recovered";
+                stripBufferSize = expectedStripBufferSize;
+            }
+#endif
+            if(stripBufferSize <= 0)
+                continue;
+        }
         if(stripBufferSize < expectedStripBufferSize)
         {
             LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedStrip returns not enough data to decode strip" << strip << "got:" << stripBufferSize << "expected:" << expectedStripBufferSize;
-            if(strip == 0)
-                return QImage();
-            // Try to handle if we can read some strips
-            break;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+            stripBufferSize = expectedStripBufferSize;
+#else
+            continue;
+#endif
         }
 
         assert(currStripHeight * rasterScanlineSize <= stripBufferSize);
@@ -2009,8 +2243,12 @@ QImage readTiffFileStripedContig(const Context *ctx, qint64 numberOfStrips, qint
             QRgb *outScanLine = reinterpret_cast<QRgb*>(result.scanLine(strip * rowsperstrip + y));
             memcpy(outScanLine, inScanLine, static_cast<size_t>(ctx->width * 4));
         }
+
+        somethingReaded = true;
     }
 
+    if(!somethingReaded)
+        return QImage();
     return result;
 }
 
@@ -2048,29 +2286,67 @@ QImage readTiffFileStripedContigSubsampled(const Context *ctx, qint64 numberOfSt
     const qint64 minLineBitSize = ctx->width * ctx->samplesPerPixel * ctx->bitsPerSample;
     const qint64 minLineSize = minLineBitSize / 8;
 
+    bool somethingReaded = false;
     for(qint64 strip = 0; strip < numberOfStrips; ++strip)
     {
         memset(buffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(buffer.size()));
         memset(stripBuffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(stripBuffer.size()));
-
-        const qint64 stripBufferSize = TIFFReadEncodedStrip(ctx->tiff, static_cast<quint32>(strip), stripBuffer.data(), stripBuffer.size());
-        if(stripBufferSize < 0)
+        const qint64 currStripHeight = ((strip == numberOfStrips - 1) && leftRows) ? leftRows : rowsperstrip;
+        const qint64 currStripHeightAligned = currStripHeight + (currStripHeight % ctx->subsamplingver > 0 ? (ctx->subsamplingver - currStripHeight % ctx->subsamplingver) : 0);
+        const qint64 expectedStripBufferSize = currStripHeight * ctx->width * (ctx->samplesPerPixel - 2) * ctx->bitsPerSample / 8 + currStripHeight / ctx->subsamplingver * ctx->width / ctx->subsamplinghor * 2 * ctx->bitsPerSample / 8;
+        const qint64 expectedStripBufferSizeAligned = expectedStripBufferSize * currStripHeightAligned / currStripHeight;
+        assert(stripSize >= expectedStripBufferSizeAligned);
+#if !defined (DEBUG_FORCE_UNDERFLOW_EMPTY_BUFFER)
+        qint64 stripBufferSize = TIFFReadEncodedStrip(ctx->tiff, static_cast<quint32>(strip), stripBuffer.data(), stripBuffer.size());
+#else
+        qint64 stripBufferSize = -1;
+#endif
+#if defined (DEBUG_FORCE_UNDERFLOW_FILLED_BUFFER)
+        stripBufferSize = -1;
+#endif
+        if(stripBufferSize <= 0)
         {
             LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedStrip failed for strip" << strip;
-            if(strip == 0)
-                return QImage();
-            // Try to handle if we can read some strips
-            break;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+            /// @todo LibTIFF-4.6.0: Repeated read is not supported for some compression formats (e.g. OJPEG)
+            /// So let's check current buffer, it may be already filled with all available data
+            bool bufferIsEmpty = true;
+            for(qint64 i = 0; i < stripBuffer.size() && bufferIsEmpty; ++i)
+            {
+                if(*reinterpret_cast<quint8*>(stripBuffer.data() + i) != BUFFER_FILL_PATTERN)
+                    bufferIsEmpty = false;
+            }
+            if(bufferIsEmpty)
+            {
+                for(qint64 row = currStripHeightAligned; row >= ctx->subsamplingver; row -= ctx->subsamplingver)
+                {
+                    const qint64 newSize = TIFFReadEncodedStrip(ctx->tiff, static_cast<quint32>(strip), stripBuffer.data(), row * scanlineSize);
+                    if(newSize > 0)
+                    {
+                        LOG_DEBUG() << LOGGING_CTX << "Recovered rows:" << row << "of" << currStripHeightAligned;
+                        stripBufferSize = std::max(expectedStripBufferSizeAligned, newSize);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                LOG_DEBUG() << LOGGING_CTX << "Buffer has some data, assume recovered";
+                stripBufferSize = expectedStripBufferSize;
+            }
+#endif
+            if(stripBufferSize <= 0)
+                continue;
         }
-        const qint64 currStripHeight = ((strip == numberOfStrips - 1) && leftRows) ? leftRows : rowsperstrip;
-        const qint64 expectedStripBufferSize = currStripHeight * ctx->width * (ctx->samplesPerPixel - 2) * ctx->bitsPerSample / 8 + currStripHeight / ctx->subsamplingver * ctx->width / ctx->subsamplinghor * 2 * ctx->bitsPerSample / 8;
         if(stripBufferSize < expectedStripBufferSize)
         {
             LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedStrip returns not enough data to decode strip" << strip << "got:" << stripBufferSize << "expected:" << expectedStripBufferSize;
-            if(strip == 0)
-                return QImage();
-            // Try to handle if we can read some strips
-            break;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+            stripBufferSize = expectedStripBufferSizeAligned;
+#else
+            Q_UNUSED(expectedStripBufferSizeAligned);
+            continue;
+#endif
         }
 
 #if !defined (DEBUG_FORCE_BIT_ACCESS)
@@ -2202,8 +2478,12 @@ QImage readTiffFileStripedContigSubsampled(const Context *ctx, qint64 numberOfSt
             QRgb *outScanLine = reinterpret_cast<QRgb*>(result.scanLine(strip * rowsperstrip + y));
             memcpy(outScanLine, inScanLine, static_cast<size_t>(ctx->width * 4));
         }
+
+        somethingReaded = true;
     }
 
+    if(!somethingReaded)
+        return QImage();
     return result;
 }
 
@@ -2252,6 +2532,7 @@ QImage readTiffFileStripedSeparate(const Context *ctx, qint64 numberOfStrips, qi
     const qint64 leftRows = ctx->height % rowsperstrip;
     const qint64 stripsPerSample = numberOfStrips / ctx->samplesPerPixel;
 
+    bool somethingReaded = false;
     for(qint64 strip = 0; strip < stripsPerSample; ++strip)
     {
         memset(buffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(buffer.size()));
@@ -2260,23 +2541,59 @@ QImage readTiffFileStripedSeparate(const Context *ctx, qint64 numberOfStrips, qi
         for(qint64 sample = 0; sample < ctx->samplesPerPixel; ++sample)
         {
             memset(stripBuffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(stripBuffer.size()));
-            const qint64 stripBufferSize = TIFFReadEncodedStrip(ctx->tiff, static_cast<quint32>(sample * stripsPerSample + strip), stripBuffer.data(), stripBuffer.size());
-            if(stripBufferSize < 0)
+            const qint64 expectedStripBufferSize = currStripHeight * ctx->width * ctx->bitsPerSample / 8;
+            assert(stripSize >= expectedStripBufferSize);
+#if !defined (DEBUG_FORCE_UNDERFLOW_EMPTY_BUFFER)
+            qint64 stripBufferSize = TIFFReadEncodedStrip(ctx->tiff, static_cast<quint32>(sample * stripsPerSample + strip), stripBuffer.data(), stripBuffer.size());
+#else
+            qint64 stripBufferSize = -1;
+#endif
+#if defined (DEBUG_FORCE_UNDERFLOW_FILLED_BUFFER)
+            stripBufferSize = -1;
+#endif
+            if(stripBufferSize <= 0)
             {
                 LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedStrip failed for strip" << strip;
-                if(strip == 0)
-                    return QImage();
-                // Try to handle if we can read some strips
-                break;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+                /// @todo LibTIFF-4.6.0: Repeated read is not supported for some compression formats (e.g. OJPEG)
+                /// So let's check current buffer, it may be already filled with all available data
+                bool bufferIsEmpty = true;
+                for(qint64 i = 0; i < stripBuffer.size() && bufferIsEmpty; ++i)
+                {
+                    if(*reinterpret_cast<quint8*>(stripBuffer.data() + i) != BUFFER_FILL_PATTERN)
+                        bufferIsEmpty = false;
+                }
+                if(bufferIsEmpty)
+                {
+                    for(qint64 row = currStripHeight; row >= 1; --row)
+                    {
+                        const qint64 newSize = TIFFReadEncodedStrip(ctx->tiff, static_cast<quint32>(sample * stripsPerSample + strip), stripBuffer.data(), row * scanlineSize);
+                        if(newSize > 0)
+                        {
+                            LOG_DEBUG() << LOGGING_CTX << "Recovered rows:" << row << "of" << currStripHeight;
+                            stripBufferSize = std::max(expectedStripBufferSize, newSize);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    LOG_DEBUG() << LOGGING_CTX << "Buffer has some data, assume recovered";
+                    stripBufferSize = expectedStripBufferSize;
+                }
+#endif
+                if(stripBufferSize <= 0)
+                    continue;
             }
-            const qint64 expectedStripBufferSize = currStripHeight * ctx->width * ctx->bitsPerSample / 8;
             if(stripBufferSize < expectedStripBufferSize)
             {
                 LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedStrip returns not enough data to decode strip" << strip << "got:" << stripBufferSize << "expected:" << expectedStripBufferSize;
-                if(strip == 0)
-                    return QImage();
-                // Try to handle if we can read some strips
-                break;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+                stripBufferSize = expectedStripBufferSize;
+#else
+                Q_UNUSED(expectedStripBufferSize);
+                continue;
+#endif
             }
 
 #if !defined (DEBUG_FORCE_BIT_ACCESS)
@@ -2327,8 +2644,12 @@ QImage readTiffFileStripedSeparate(const Context *ctx, qint64 numberOfStrips, qi
             QRgb *outScanLine = reinterpret_cast<QRgb*>(result.scanLine(strip * rowsperstrip + y));
             memcpy(outScanLine, inScanLine, static_cast<size_t>(ctx->width * 4));
         }
+
+        somethingReaded = true;
     }
 
+    if(!somethingReaded)
+        return QImage();
     return result;
 }
 
@@ -2371,6 +2692,7 @@ QImage readTiffFileStripedSeparateSubsampled(const Context *ctx, qint64 numberOf
     const qint64 leftRows = ctx->height % rowsperstrip;
     const qint64 stripsPerSample = numberOfStrips / ctx->samplesPerPixel;
 
+    bool somethingReaded = false;
     for(qint64 strip = 0; strip < stripsPerSample; ++strip)
     {
         memset(buffer.data(), BUFFER_FILL_PATTERN, static_cast<size_t>(buffer.size()));
@@ -2385,23 +2707,59 @@ QImage readTiffFileStripedSeparateSubsampled(const Context *ctx, qint64 numberOf
             /// to read strip with reduced buffer size
             const bool isSubsampledChroma = IsOneOf(sample, 1, 2);
             const qint64 expectedStripBufferSize = currStripHeight * ctx->width * ctx->bitsPerSample / 8 / (isSubsampledChroma ? (ctx->subsamplingver * ctx->subsamplinghor) : 1);
-            const qint64 stripBufferSize = TIFFReadEncodedStrip(ctx->tiff, static_cast<quint32>(sample * stripsPerSample + strip), stripBuffer.data(), expectedStripBufferSize);
-            if(stripBufferSize < 0)
+            assert(stripSize >= expectedStripBufferSize);
+#if !defined (DEBUG_FORCE_UNDERFLOW_EMPTY_BUFFER)
+            qint64 stripBufferSize = TIFFReadEncodedStrip(ctx->tiff, static_cast<quint32>(sample * stripsPerSample + strip), stripBuffer.data(), expectedStripBufferSize);
+#else
+            qint64 stripBufferSize = -1;
+#endif
+#if defined (DEBUG_FORCE_UNDERFLOW_FILLED_BUFFER)
+            stripBufferSize = -1;
+#endif
+            if(stripBufferSize <= 0)
             {
                 LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedStrip failed for strip" << strip;
-                if(strip == 0)
-                    return QImage();
-                // Try to handle if we can read some strips
-                break;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+                /// @todo LibTIFF-4.6.0: Repeated read is not supported for some compression formats (e.g. OJPEG)
+                /// So let's check current buffer, it may be already filled with all available data
+                bool bufferIsEmpty = true;
+                for(qint64 i = 0; i < stripBuffer.size() && bufferIsEmpty; ++i)
+                {
+                    if(*reinterpret_cast<quint8*>(stripBuffer.data() + i) != BUFFER_FILL_PATTERN)
+                        bufferIsEmpty = false;
+                }
+                if(bufferIsEmpty)
+                {
+                    const qint64 currStripHeightSubsampled = currStripHeight / (isSubsampledChroma ? ctx->subsamplingver : 1);
+                    for(qint64 row = currStripHeightSubsampled; row >= 1; --row)
+                    {
+                        const qint64 newSize = TIFFReadEncodedStrip(ctx->tiff, static_cast<quint32>(sample * stripsPerSample + strip), stripBuffer.data(), expectedStripBufferSize * row / currStripHeightSubsampled);
+                        if(newSize > 0)
+                        {
+                            LOG_DEBUG() << LOGGING_CTX << "Recovered rows:" << row << "of" << currStripHeightSubsampled;
+                            stripBufferSize = std::max(expectedStripBufferSize, newSize);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    LOG_DEBUG() << LOGGING_CTX << "Buffer has some data, assume recovered";
+                    stripBufferSize = expectedStripBufferSize;
+                }
+#endif
+                if(stripBufferSize <= 0)
+                    continue;
             }
 
             if(stripBufferSize < expectedStripBufferSize)
             {
-                LOG_WARNING() << LOGGING_CTX << "TIFFReadEncodedStrip returns not enough data to decode strip" << strip << "got:" << stripBufferSize << "expected:" << expectedStripBufferSize;
-                if(strip == 0)
-                    return QImage();
-                // Try to handle if we can read some strips
-                break;
+#if defined (ALLOW_BUFFER_UNDERFLOW)
+                stripBufferSize = expectedStripBufferSize;
+#else
+                Q_UNUSED(expectedStripBufferSize);
+                continue;
+#endif
             }
 
             if(isSubsampledChroma)
@@ -2512,8 +2870,12 @@ QImage readTiffFileStripedSeparateSubsampled(const Context *ctx, qint64 numberOf
             QRgb *outScanLine = reinterpret_cast<QRgb*>(result.scanLine(strip * rowsperstrip + y));
             memcpy(outScanLine, inScanLine, static_cast<size_t>(ctx->width * 4));
         }
+
+        somethingReaded = true;
     }
 
+    if(!somethingReaded)
+        return QImage();
     return result;
 }
 
