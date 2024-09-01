@@ -5,33 +5,49 @@
 StylableTheme
 {
     qproperty-preferredStyles: "fusion";
-    qproperty-paletteWindow: #2E2F30;
-    qproperty-paletteWindowText: #d0d0d0;
-    qproperty-paletteBase: #2E2F30;
-    qproperty-paletteAlternateBase: #353637;
-    qproperty-paletteButton: #404244;
-    qproperty-paletteBrightText: #ff3333;
-    qproperty-paletteText: #d0d0d0;
-    qproperty-paletteButtonText: #d0d0d0;
-    qproperty-paletteButtonTextDisabled: /*#60a4a6a8*/ rgba(164, 166, 168, 38%);
-    qproperty-paletteToolTipBase: /*#66000000*/ rgba(0, 0, 0, 40%);
-    qproperty-paletteHighlight: /*#66000000*/ rgba(0, 0, 0, 40%);
-    qproperty-paletteDark: #404244;
+    qproperty-paletteWindow: #1e1e1e;
+    qproperty-paletteWindowDisabled: #1e1e1e;
+    qproperty-paletteWindowText: #ffffff;
+    qproperty-paletteWindowTextDisabled: #9d9d9d;
+    qproperty-paletteBase: #2d2d2d;
+    qproperty-paletteBaseDisabled: #1e1e1e;
+    qproperty-paletteAlternateBase: #001a68;
+    qproperty-paletteAlternateBaseDisabled: #343434;
+    qproperty-paletteToolTipBase: #3c3c3c;
+    qproperty-paletteToolTipBaseDisabled: #ffffdc;
+    qproperty-paletteToolTipText: #d4d4d4;
+    qproperty-paletteToolTipTextDisabled: #000000;
+    qproperty-paletteText: #ffffff;
+    qproperty-paletteTextDisabled: #9d9d9d;
+    qproperty-paletteButton: #3c3c3c;
+    qproperty-paletteButtonDisabled: #3c3c3c;
+    qproperty-paletteButtonText: #ffffff;
+    qproperty-paletteButtonTextDisabled: #9d9d9d;
+    qproperty-paletteBrightText: #99ebff;
+    qproperty-paletteBrightTextDisabled: #99ebff;
+    qproperty-paletteHighlight: #0078d4;
+    qproperty-paletteHighlightDisabled: #0078d4;
     qproperty-paletteHighlightedText: #ffffff;
-    qproperty-paletteToolTipText: #d0d0d0;
-    qproperty-paletteLink: #007af4;
-    qproperty-paletteLinkVisited: #a57aff;
-    qproperty-paletteWindowDisabled: #444444;
-    qproperty-paletteWindowTextDisabled: /*#60a4a6a8*/ rgba(164, 166, 168, 38%);
-    qproperty-paletteBaseDisabled: #444444;
-    qproperty-paletteTextDisabled: /*#60a4a6a8*/ rgba(164, 166, 168, 38%);
-    qproperty-paletteButtonDisabled: #292929;
+    qproperty-paletteHighlightedTextDisabled: #ffffff;
+    qproperty-paletteLink: #0078d4;
+    qproperty-paletteLinkDisabled: #0000ff;
+    qproperty-paletteLinkVisited: #001a68;
+    qproperty-paletteLinkVisitedDisabled: #ff00ff;
+    qproperty-paletteLight: #787878;
+    qproperty-paletteLightDisabled: #787878;
+    qproperty-paletteMidlight: #5a5a5a;
+    qproperty-paletteMidlightDisabled: #5a5a5a;
+    qproperty-paletteDark: #1e1e1e;
+    qproperty-paletteDarkDisabled: #1e1e1e;
+    qproperty-paletteMid: #282828;
+    qproperty-paletteMidDisabled: #282828;
+    qproperty-paletteShadow: #000000;
+    qproperty-paletteShadowDisabled: #000000;
 }
 
 QMenu::item:disabled
 {
     background-color: transparent;
-    color: #757575;
 }
 
 ImageViewerWidget
@@ -39,18 +55,8 @@ ImageViewerWidget
     qproperty-backgroundTexture: url(:/style/background_pattern_dark.png);
 }
 
-MainWindow #toolbar #separator
-{
-    qproperty-frameShadow: Plain;
-    background-color: /*#22ffffff*/ rgba(255, 255, 255, 13%);
-    border: none;
-    max-width: 1px;
-    margin-left: 1px;
-    margin-right: 1px;
-}
-
 PrintDialog #keepAspectLabelTop,
 PrintDialog #keepAspectLabelBottom
 {
-    color: rgba(255, 255, 255, 13%);
+    color: #787878;
 }
