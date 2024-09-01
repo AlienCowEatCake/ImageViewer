@@ -76,6 +76,10 @@ int main(int argc, char *argv[])
     themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "System")),
                                 QStringList() << QString::fromLatin1(":/style/style.qss"),
                                 QString::fromLatin1("Themes"), true);
+    themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Light")),
+                                QStringList() << QString::fromLatin1(":/style/style.qss")
+                                    << QString::fromLatin1(":/style/theme-light.qss"),
+                                QString::fromLatin1("Themes"));
     themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Dark")),
                                 QStringList() << QString::fromLatin1(":/style/style.qss")
                                     << QString::fromLatin1(":/style/theme-dark.qss"),

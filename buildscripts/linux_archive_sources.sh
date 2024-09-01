@@ -28,6 +28,7 @@ find "${PROJECT}-${VERSION}/src/ImageViewer/resources/icon" -type f -name '*.sh'
 find "${PROJECT}-${VERSION}/src/ImageViewer/resources/icon" -type f -name 'drawing*.svg' -delete
 rm -rf "${PROJECT}-${VERSION}/src/ImageViewer/resources/icon/oldiconutil"
 rm -rf "${PROJECT}-${VERSION}/src/ImageViewer/resources/style/dark/original"
+rm -rf "${PROJECT}-${VERSION}/src/ImageViewer/resources/style/light/original"
 rm -rf "${PROJECT}-${VERSION}/src/QtUtils/resources/icons/original"
 # Remove build scripts for duti
 find "${PROJECT}-${VERSION}/src/ImageViewer/resources/platform/macosx" -type f -name 'make_duti*.sh' -delete
