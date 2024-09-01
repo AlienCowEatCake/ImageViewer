@@ -1,11 +1,11 @@
 # URL: https://www.nuget.org/packages/Microsoft.Web.WebView2
-# License: 3-Clause BSD License - https://www.nuget.org/packages/Microsoft.Web.WebView2/1.0.2651.64/License
+# License: 3-Clause BSD License - https://www.nuget.org/packages/Microsoft.Web.WebView2/1.0.2739.15/License
 
 include($${PWD}/../../Features.pri)
 
 !disable_msedgewebview2 {
 
-    THIRDPARTY_MSEDGEWEBVIEW2_PATH = $${PWD}/microsoft.web.webview2.1.0.2651.64
+    THIRDPARTY_MSEDGEWEBVIEW2_PATH = $${PWD}/microsoft.web.webview2.1.0.2739.15
 
     INCLUDEPATH += $${THIRDPARTY_MSEDGEWEBVIEW2_PATH}/build/native/include
     DEPENDPATH += $${THIRDPARTY_MSEDGEWEBVIEW2_PATH}/build/native/include
