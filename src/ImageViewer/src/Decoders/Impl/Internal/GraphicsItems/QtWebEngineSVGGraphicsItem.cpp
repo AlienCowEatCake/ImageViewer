@@ -229,7 +229,7 @@ QtWebEngineSVGGraphicsItem::QtWebEngineSVGGraphicsItem(QGraphicsItem *parentItem
     m_impl->view->setContextMenuPolicy(Qt::PreventContextMenu);
     m_impl->view->setAcceptDrops(false);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
-    m_impl->view->setStyleSheet(QString::fromLatin1("background: transparent; border: none;"));
+    m_impl->view->setStyleSheet(QString::fromLatin1("background: transparent; border: none; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;"));
     m_impl->view->page()->setBackgroundColor(Qt::transparent);
     const QList<QWidget*> childWidgets = m_impl->view->findChildren<QWidget*>();
     for(QList<QWidget*>::ConstIterator it = childWidgets.constBegin(), itEnd = childWidgets.constEnd(); it != itEnd; ++it)

@@ -17,7 +17,7 @@ do
     for size in ${sizes}
     do
         output_path="${destination_path}/${input_name}@2x.png"
-        "${inkscape_cmd}" -z -C -e "${output_path}" -w ${size} -h ${size} "${input_path}"
+        "${inkscape_cmd}" -z -C -e "${output_path}" -w ${size} -h ${size} "${input_path}" || "${inkscape_cmd}" -C -o "${output_path}" -w ${size} -h ${size} "${input_path}"
         "${optipng_cmd}" -o7 -zm1-9 -strip all "${output_path}"
     done
 done
@@ -31,7 +31,7 @@ do
     do
         output_path_up="${destination_path}/${input_name}@2x.png"
         output_path_down="${destination_path}/${input_name/_up_/_down_}@2x.png"
-        "${inkscape_cmd}" -z -C -e "${output_path_up}" -w ${size} -h ${size} "${input_path}"
+        "${inkscape_cmd}" -z -C -e "${output_path_up}" -w ${size} -h ${size} "${input_path}" || "${inkscape_cmd}" -C -o "${output_path_up}" -w ${size} -h ${size} "${input_path}"
         "${convert_cmd}" "${output_path_up}" -rotate 180 +repage "${output_path_down}"
         "${optipng_cmd}" -o7 -zm1-9 -strip all "${output_path_up}"
         "${optipng_cmd}" -o7 -zm1-9 -strip all "${output_path_down}"
@@ -49,7 +49,7 @@ do
         output_path_down="${destination_path}/${input_name/_up_/_down_}@2x.png"
         output_path_left="${destination_path}/${input_name/_up_/_left_}@2x.png"
         output_path_right="${destination_path}/${input_name/_up_/_right_}@2x.png"
-        "${inkscape_cmd}" -z -C -e "${output_path_up}" -w ${size} -h ${size} "${input_path}"
+        "${inkscape_cmd}" -z -C -e "${output_path_up}" -w ${size} -h ${size} "${input_path}" || "${inkscape_cmd}" -C -o "${output_path_up}" -w ${size} -h ${size} "${input_path}"
         "${convert_cmd}" "${output_path_up}" -rotate 90 +repage "${output_path_right}"
         "${convert_cmd}" "${output_path_up}" -rotate 180 +repage "${output_path_down}"
         "${convert_cmd}" "${output_path_up}" -rotate 270 +repage "${output_path_left}"

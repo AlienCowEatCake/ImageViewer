@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -83,7 +83,7 @@ QGraphicsItem *GraphicsItemsFactory::createAnimatedItem(IAnimationProvider *anim
     }
 
     AnimationWidget *widget = new AnimationWidget();
-    widget->setStyleSheet(QString::fromLatin1("background: transparent; border: none;"));
+    widget->setStyleSheet(QString::fromLatin1("background: transparent; border: none; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;"));
     widget->setAnimationProvider(animationProvider);
     QGraphicsProxyWidget *proxy = new QGraphicsProxyWidget();
     proxy->setWidget(widget);
