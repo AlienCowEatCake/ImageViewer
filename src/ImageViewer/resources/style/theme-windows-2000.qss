@@ -1,0 +1,51 @@
+/******************************
+ * *** Windows 2000 Theme *** *
+ ******************************/
+
+StylableTheme
+{
+    qproperty-preferredStyles: "windows";
+    qproperty-paletteWindow: #d4d0c8;
+    qproperty-paletteWindowDisabled: #d4d0c8;
+    qproperty-paletteWindowText: #000000;
+    qproperty-paletteWindowTextDisabled: #6a6864;
+    qproperty-paletteBase: #ffffff;
+    qproperty-paletteBaseDisabled: #d4d0c8;
+    qproperty-paletteAlternateBase: #e9e7e3;
+    qproperty-paletteAlternateBaseDisabled: #e9e7e3;
+    qproperty-paletteToolTipBase: #ffffdc;
+    qproperty-paletteToolTipBaseDisabled: #ffffdc;
+    qproperty-paletteToolTipText: #000000;
+    qproperty-paletteToolTipTextDisabled: #000000;
+    qproperty-paletteText: #000000;
+    qproperty-paletteTextDisabled: #6a6864;
+    qproperty-paletteButton: #d4d0c8;
+    qproperty-paletteButtonDisabled: #d4d0c8;
+    qproperty-paletteButtonText: #000000;
+    qproperty-paletteButtonTextDisabled: #6a6864;
+    qproperty-paletteBrightText: #ffffff;
+    qproperty-paletteBrightTextDisabled: #ffffff;
+    qproperty-paletteHighlight: #0a246a;
+    qproperty-paletteHighlightDisabled: #0a246a;
+    qproperty-paletteHighlightedText: #ffffff;
+    qproperty-paletteHighlightedTextDisabled: #ffffff;
+    qproperty-paletteLink: #0000ff;
+    qproperty-paletteLinkDisabled: #0000ff;
+    qproperty-paletteLinkVisited: #ff00ff;
+    qproperty-paletteLinkVisitedDisabled: #ff00ff;
+    qproperty-paletteLight: #ffffff;
+    qproperty-paletteLightDisabled: #ffffff;
+    qproperty-paletteMidlight: #eae5dc;
+    qproperty-paletteMidlightDisabled: #e9e7e3;
+    qproperty-paletteDark: #808080;
+    qproperty-paletteDarkDisabled: #808080;
+    qproperty-paletteMid: #8d8b85;
+    qproperty-paletteMidDisabled: #8d8b85;
+    qproperty-paletteShadow: #404040;
+    qproperty-paletteShadowDisabled: #000000;
+}
+
+ImageViewerWidget[DarkMode=true]
+{
+    qproperty-backgroundTexture: url(:/style/background_pattern_light.png);
+}

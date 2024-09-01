@@ -94,6 +94,14 @@ int main(int argc, char *argv[])
                                     << QString::fromLatin1(":/style/theme-fusion-dark.qss"),
                                 QString::fromLatin1("Themes"));
 #endif
+    themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Windows 95")),
+                                QStringList() << QString::fromLatin1(":/style/style.qss")
+                                              << QString::fromLatin1(":/style/theme-windows-95.qss"),
+                                QString::fromLatin1("Themes"));
+    themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Windows 2000")),
+                                QStringList() << QString::fromLatin1(":/style/style.qss")
+                                              << QString::fromLatin1(":/style/theme-windows-2000.qss"),
+                                QString::fromLatin1("Themes"));
     themeManager->applyCurrentTheme();
 
     IconThemeManager *iconThemeManager = IconThemeManager::instance();
