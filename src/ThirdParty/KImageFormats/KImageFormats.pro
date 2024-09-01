@@ -329,7 +329,7 @@ DEFINES += RGBHandler=tp_RGBHandler
 DEFINES += RGBPlugin=tp_RGBPlugin
 DEFINES += RLEData=tp_RLEData
 DEFINES += RLEMap=tp_RLEMap
-DEFINES += SGIImage=tp_SGIImage
+DEFINES += SGIImagePrivate=tp_SGIImagePrivate
 
 # --------------------------------------------------------------------------------
 

@@ -22,6 +22,8 @@
 #include "rgb_p.h"
 #include "util_p.h"
 
+#include <cstring>
+
 #include <QList>
 #include <QMap>
 
@@ -84,14 +86,24 @@ private:
     uint _offset;
 };
 
-class SGIImage
+class SGIImagePrivate
 {
 public:
-    SGIImage(QIODevice *device);
-    ~SGIImage();
+    SGIImagePrivate();
+    ~SGIImagePrivate();
 
     bool readImage(QImage &);
     bool writeImage(const QImage &);
+
+    bool isValid() const;
+    bool isSupported() const;
+
+    bool peekHeader(QIODevice *device);
+
+    QSize size() const;
+    QImage::Format format() const;
+
+    void setDevice(QIODevice *device);
 
 private:
     enum {
@@ -103,16 +115,19 @@ private:
     QIODevice *_dev;
     QDataStream _stream;
 
-    quint8 _rle;
-    quint8 _bpc;
-    quint16 _dim;
-    quint16 _xsize;
-    quint16 _ysize;
-    quint16 _zsize;
-    quint32 _pixmin;
-    quint32 _pixmax;
+    quint16 _magic = 0;
+    quint8 _rle = 0;
+    quint8 _bpc = 0;
+    quint16 _dim = 0;
+    quint16 _xsize = 0;
+    quint16 _ysize = 0;
+    quint16 _zsize = 0;
+    quint32 _pixmin = 0;
+    quint32 _pixmax = 0;
     char _imagename[80];
-    quint32 _colormap;
+    quint32 _colormap = 0;
+    quint8 _unused[404];
+    quint32 _unused32 = 0;
 
     quint32 *_starttab;
     quint32 *_lengthtab;
@@ -128,24 +143,28 @@ private:
 
     bool readData(QImage &);
     bool getRow(uchar *dest);
+    bool readHeader();
 
-    void writeHeader();
-    void writeRle();
-    void writeVerbatim(const QImage &);
+    static bool readHeader(QDataStream &ds, SGIImagePrivate *sgi);
+
+    bool writeHeader();
+    bool writeRle();
+    bool writeVerbatim(const QImage &);
     bool scanData(const QImage &);
     uint compact(uchar *, uchar *);
     uchar intensity(uchar);
 };
 
-SGIImage::SGIImage(QIODevice *io)
-    : _starttab(nullptr)
+SGIImagePrivate::SGIImagePrivate()
+    : _dev(nullptr)
+    , _starttab(nullptr)
     , _lengthtab(nullptr)
 {
-    _dev = io;
-    _stream.setDevice(_dev);
+    std::memset(_imagename, 0, sizeof(_imagename));
+    std::memset(_unused, 0, sizeof(_unused));
 }
 
-SGIImage::~SGIImage()
+SGIImagePrivate::~SGIImagePrivate()
 {
     delete[] _starttab;
     delete[] _lengthtab;
@@ -153,7 +172,13 @@ SGIImage::~SGIImage()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool SGIImage::getRow(uchar *dest)
+void SGIImagePrivate::setDevice(QIODevice *device)
+{
+    _dev = device;
+    _stream.setDevice(_dev);
+}
+
+bool SGIImagePrivate::getRow(uchar *dest)
 {
     int n;
     int i;
@@ -196,7 +221,7 @@ bool SGIImage::getRow(uchar *dest)
     return i == _xsize;
 }
 
-bool SGIImage::readData(QImage &img)
+bool SGIImagePrivate::readData(QImage &img)
 {
     QRgb *c;
     quint32 *start = _starttab;
@@ -274,66 +299,9 @@ bool SGIImage::readData(QImage &img)
     return true;
 }
 
-bool SGIImage::readImage(QImage &img)
+bool SGIImagePrivate::readImage(QImage &img)
 {
-    qint8 u8;
-    qint16 u16;
-    qint32 u32;
-
-    //     qDebug() << "reading rgb ";
-
-    // magic
-    _stream >> u16;
-    if (u16 != 0x01da) {
-        return false;
-    }
-
-    // verbatim/rle
-    _stream >> _rle;
-    //     qDebug() << (_rle ? "RLE" : "verbatim");
-    if (_rle > 1) {
-        return false;
-    }
-
-    // bytes per channel
-    _stream >> _bpc;
-    //     qDebug() << "bytes per channel: " << int(_bpc);
-    if (_bpc == 1) {
-        ;
-    } else if (_bpc == 2) {
-        //         qDebug() << "dropping least significant byte";
-    } else {
-        return false;
-    }
-
-    // number of dimensions
-    _stream >> _dim;
-    //     qDebug() << "dimensions: " << _dim;
-    if (_dim < 1 || _dim > 3) {
-        return false;
-    }
-
-    _stream >> _xsize >> _ysize >> _zsize >> _pixmin >> _pixmax >> u32;
-    //     qDebug() << "x: " << _xsize;
-    //     qDebug() << "y: " << _ysize;
-    //     qDebug() << "z: " << _zsize;
-
-    // name
-    _stream.readRawData(_imagename, 80);
-    _imagename[79] = '\0';
-
-    _stream >> _colormap;
-    //     qDebug() << "colormap: " << _colormap;
-    if (_colormap != NORMAL) {
-        return false; // only NORMAL supported
-    }
-
-    for (int i = 0; i < 404; i++) {
-        _stream >> u8;
-    }
-
-    if (_dim == 1) {
-        //         qDebug() << "1-dimensional images aren't supported yet";
+    if (!readHeader() || !isSupported()) {
         return false;
     }
 
@@ -341,19 +309,13 @@ bool SGIImage::readImage(QImage &img)
         return false;
     }
 
-    img = imageAlloc(_xsize, _ysize, QImage::Format_RGB32);
+    img = imageAlloc(size(), format());
     if (img.isNull()) {
         qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(_xsize, _ysize);
         return false;
     }
 
-    if (_zsize == 0) {
-        return false;
-    }
-
-    if (_zsize == 2 || _zsize == 4) {
-        img = img.convertToFormat(QImage::Format_ARGB32);
-    } else if (_zsize > 4) {
+    if (_zsize > 4) {
         //         qDebug() << "using first 4 of " << _zsize << " channels";
         // Only let this continue if it won't cause a int overflow later
         // this is most likely a broken file anyway
@@ -459,7 +421,7 @@ QVector<const RLEData *> RLEMap::vector()
     return v;
 }
 
-uchar SGIImage::intensity(uchar c)
+uchar SGIImagePrivate::intensity(uchar c)
 {
     if (c < _pixmin) {
         _pixmin = c;
@@ -470,7 +432,7 @@ uchar SGIImage::intensity(uchar c)
     return c;
 }
 
-uint SGIImage::compact(uchar *d, uchar *s)
+uint SGIImagePrivate::compact(uchar *d, uchar *s)
 {
     uchar *dest = d;
     uchar *src = s;
@@ -513,7 +475,7 @@ uint SGIImage::compact(uchar *d, uchar *s)
     return dest - d;
 }
 
-bool SGIImage::scanData(const QImage &img)
+bool SGIImagePrivate::scanData(const QImage &img)
 {
     quint32 *start = _starttab;
     QByteArray lineguard(_xsize * 2, 0);
@@ -599,13 +561,127 @@ bool SGIImage::scanData(const QImage &img)
     return true;
 }
 
-void SGIImage::writeHeader()
+bool SGIImagePrivate::isValid() const
 {
-    _stream << quint16(0x01da);
+    // File signature/magic number
+    if (_magic != 0x01da) {
+        return false;
+    }
+    // Compression, 0 = Uncompressed, 1 = RLE compressed
+    if (_rle > 1) {
+        return false;
+    }
+    // Bytes per pixel, 1 = 8 bit, 2 = 16 bit
+    if (_bpc != 1 && _bpc != 2) {
+        return false;
+    }
+    // Image dimension, 3 for RGBA image
+    if (_dim < 1 || _dim > 3) {
+        return false;
+    }
+    // Number channels in the image file, 4 for RGBA image
+    if (_zsize < 1) {
+        return false;
+    }
+    return true;
+}
+
+bool SGIImagePrivate::isSupported() const
+{
+    if (!isValid()) {
+        return false;
+    }
+    if (_colormap != NORMAL) {
+        return false; // only NORMAL supported
+    }
+    if (_dim == 1) {
+        return false;
+    }
+    return true;
+}
+
+bool SGIImagePrivate::peekHeader(QIODevice *device)
+{
+    qint64 pos = 0;
+    if (!device->isSequential()) {
+        pos = device->pos();
+    }
+
+    auto ok = false;
+    QByteArray header;
+    { // datastream is destroyed before working on device
+        header = device->read(512);
+        QDataStream ds(header);
+        ok = SGIImagePrivate::readHeader(ds, this) && isValid();
+    }
+
+    if (!device->isSequential()) {
+        return device->seek(pos) && ok;
+    }
+
+    // sequential device undo
+    auto head = header.data();
+    auto readBytes = header.size();
+    while (readBytes > 0) {
+        device->ungetChar(head[readBytes-- - 1]);
+    }
+    return ok;
+}
+
+QSize SGIImagePrivate::size() const
+{
+    return QSize(_xsize, _ysize);
+}
+
+QImage::Format SGIImagePrivate::format() const
+{
+    if (_zsize == 2 || _zsize == 4) {
+        return QImage::Format_ARGB32;
+    }
+    return QImage::Format_RGB32;
+}
+
+bool SGIImagePrivate::readHeader()
+{
+    return readHeader(_stream, this);
+}
+
+bool SGIImagePrivate::readHeader(QDataStream &ds, SGIImagePrivate *sgi)
+{
+    // magic
+    ds >> sgi->_magic;
+
+    // verbatim/rle
+    ds >> sgi->_rle;
+
+    // bytes per channel
+    ds >> sgi->_bpc;
+
+    // number of dimensions
+    ds >> sgi->_dim;
+
+    ds >> sgi->_xsize >> sgi->_ysize >> sgi->_zsize >> sgi->_pixmin >> sgi->_pixmax >> sgi->_unused32;
+
+    // name
+    ds.readRawData(sgi->_imagename, 80);
+    sgi->_imagename[79] = '\0';
+
+    ds >> sgi->_colormap;
+
+    for (size_t i = 0; i < sizeof(_unused); i++) {
+        ds >> sgi->_unused[i];
+    }
+
+    return ds.status() == QDataStream::Ok;
+}
+
+bool SGIImagePrivate::writeHeader()
+{
+    _stream << _magic;
     _stream << _rle << _bpc << _dim;
     _stream << _xsize << _ysize << _zsize;
     _stream << _pixmin << _pixmax;
-    _stream << quint32(0);
+    _stream << _unused32;
 
     for (int i = 0; i < 80; i++) {
         _imagename[i] = '\0';
@@ -613,16 +689,20 @@ void SGIImage::writeHeader()
     _stream.writeRawData(_imagename, 80);
 
     _stream << _colormap;
-    for (int i = 0; i < 404; i++) {
-        _stream << quint8(0);
+    for (size_t i = 0; i < sizeof(_unused); i++) {
+        _stream << _unused[i];
     }
+    return _stream.status() == QDataStream::Ok;
 }
 
-void SGIImage::writeRle()
+bool SGIImagePrivate::writeRle()
 {
     _rle = 1;
     //     qDebug() << "writing RLE data";
-    writeHeader();
+    if (!writeHeader()) {
+        return false;
+    }
+
     uint i;
 
     // write start table
@@ -639,13 +719,16 @@ void SGIImage::writeRle()
     for (i = 0; (int)i < _rlevector.size(); i++) {
         const_cast<RLEData *>(_rlevector[i])->write(_stream);
     }
+
+    return _stream.status() == QDataStream::Ok;
 }
 
-void SGIImage::writeVerbatim(const QImage &img)
+bool SGIImagePrivate::writeVerbatim(const QImage &img)
 {
     _rle = 0;
-    //     qDebug() << "writing verbatim data";
-    writeHeader();
+    if (!writeHeader()) {
+        return false;
+    }
 
     const QRgb *c;
     unsigned x;
@@ -659,7 +742,7 @@ void SGIImage::writeVerbatim(const QImage &img)
     }
 
     if (_zsize == 1) {
-        return;
+        return _stream.status() == QDataStream::Ok;
     }
 
     if (_zsize != 2) {
@@ -678,7 +761,7 @@ void SGIImage::writeVerbatim(const QImage &img)
         }
 
         if (_zsize == 3) {
-            return;
+            return _stream.status() == QDataStream::Ok;
         }
     }
 
@@ -688,9 +771,11 @@ void SGIImage::writeVerbatim(const QImage &img)
             _stream << quint8(qAlpha(*c++));
         }
     }
+
+    return _stream.status() == QDataStream::Ok;
 }
 
-bool SGIImage::writeImage(const QImage &image)
+bool SGIImagePrivate::writeImage(const QImage &image)
 {
     //     qDebug() << "writing "; // TODO add filename
     QImage img = image;
@@ -722,6 +807,7 @@ bool SGIImage::writeImage(const QImage &image)
         return false;
     }
 
+    _magic = 0x01da;
     _bpc = 1;
     _xsize = w;
     _ysize = h;
@@ -746,16 +832,16 @@ bool SGIImage::writeImage(const QImage &image)
     }
 
     if (verbatim_size <= rle_size) {
-        writeVerbatim(img);
-    } else {
-        writeRle();
+        return writeVerbatim(img);
     }
-    return true;
+    return writeRle();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 RGBHandler::RGBHandler()
+    : QImageIOHandler()
+    , d(new SGIImagePrivate)
 {
 }
 
@@ -770,14 +856,54 @@ bool RGBHandler::canRead() const
 
 bool RGBHandler::read(QImage *outImage)
 {
-    SGIImage sgi(device());
-    return sgi.readImage(*outImage);
+    d->setDevice(device());
+    return d->readImage(*outImage);
 }
 
 bool RGBHandler::write(const QImage &image)
 {
-    SGIImage sgi(device());
-    return sgi.writeImage(image);
+    d->setDevice(device());
+    return d->writeImage(image);
+}
+
+bool RGBHandler::supportsOption(ImageOption option) const
+{
+    if (option == QImageIOHandler::Size) {
+        return true;
+    }
+    if (option == QImageIOHandler::ImageFormat) {
+        return true;
+    }
+    return false;
+}
+
+QVariant RGBHandler::option(ImageOption option) const
+{
+    QVariant v;
+
+    if (option == QImageIOHandler::Size) {
+        auto &&sgi = d;
+        if (sgi->isSupported()) {
+            v = QVariant::fromValue(sgi->size());
+        } else if (auto dev = device()) {
+            if (d->peekHeader(dev) && sgi->isSupported()) {
+                v = QVariant::fromValue(sgi->size());
+            }
+        }
+    }
+
+    if (option == QImageIOHandler::ImageFormat) {
+        auto &&sgi = d;
+        if (sgi->isSupported()) {
+            v = QVariant::fromValue(sgi->format());
+        } else if (auto dev = device()) {
+            if (d->peekHeader(dev) && sgi->isSupported()) {
+                v = QVariant::fromValue(sgi->format());
+            }
+        }
+    }
+
+    return v;
 }
 
 bool RGBHandler::canRead(QIODevice *device)
@@ -787,20 +913,8 @@ bool RGBHandler::canRead(QIODevice *device)
         return false;
     }
 
-    const qint64 oldPos = device->pos();
-    const QByteArray head = device->readLine(64);
-    int readBytes = head.size();
-
-    if (device->isSequential()) {
-        while (readBytes > 0) {
-            device->ungetChar(head[readBytes-- - 1]);
-        }
-
-    } else {
-        device->seek(oldPos);
-    }
-
-    return head.size() >= 4 && head.startsWith("\x01\xda") && (head[2] == 0 || head[2] == 1) && (head[3] == 1 || head[3] == 2);
+    SGIImagePrivate sgi;
+    return sgi.peekHeader(device) && sgi.isSupported();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-From 435bdc13a2cf6a06042951552b1be38296da36df Mon Sep 17 00:00:00 2001
+From c976ab0380324f7463d69335f2ee414349b18607 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 3 Jan 2024 08:33:45 +0700
 Subject: [PATCH 7/7] Dont use modern options with old Qt verson
@@ -626,10 +626,10 @@ index 801dfa0..0f93cfe 100644
          auto rasLine = dec.readLine(rasLineSize);
          if (rasLine.size() != rasLineSize) {
 diff --git a/src/imageformats/rgb.cpp b/src/imageformats/rgb.cpp
-index f10251e..42d94a7 100644
+index 224f63d..efff1d2 100644
 --- a/src/imageformats/rgb.cpp
 +++ b/src/imageformats/rgb.cpp
-@@ -28,7 +28,15 @@
+@@ -30,7 +30,15 @@
  #include <QDebug>
  #include <QImage>
  
@@ -645,7 +645,7 @@ index f10251e..42d94a7 100644
  {
  public:
      RLEData()
-@@ -61,7 +69,11 @@ public:
+@@ -63,7 +71,11 @@ public:
      {
      }
      uint insert(const uchar *d, uint l);
@@ -657,7 +657,7 @@ index f10251e..42d94a7 100644
      void setBaseOffset(uint o)
      {
          _offset = o;
-@@ -107,7 +119,11 @@ private:
+@@ -122,7 +134,11 @@ private:
      QByteArray _data;
      QByteArray::Iterator _pos;
      RLEMap _rlemap;
@@ -669,7 +669,7 @@ index f10251e..42d94a7 100644
      uint _numrows;
  
      bool readData(QImage &);
-@@ -425,9 +441,17 @@ uint RLEMap::insert(const uchar *d, uint l)
+@@ -387,9 +403,17 @@ uint RLEMap::insert(const uchar *d, uint l)
      return QMap<RLEData, uint>::insert(data, _counter++).value();
  }
  
@@ -717,7 +717,7 @@ index 2291c88..7a2207b 100644
  }
  
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index d0699f4..d109a9d 100644
+index 51328c1..724d080 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -9,21 +9,32 @@
@@ -829,7 +829,7 @@ index d0699f4..d109a9d 100644
  #endif
  
      layer.image_tiles.resize(layer.nrows);
-@@ -2023,7 +2056,11 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
+@@ -2029,7 +2062,11 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
  
      const uint blockSize = TILE_WIDTH * TILE_HEIGHT * bpp * 1.5;
  
@@ -842,5 +842,5 @@ index d0699f4..d109a9d 100644
          buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
      }
 -- 
-2.39.2
+2.46.0
 

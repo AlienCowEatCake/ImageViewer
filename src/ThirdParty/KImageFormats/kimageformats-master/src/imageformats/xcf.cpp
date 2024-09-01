@@ -2007,6 +2007,12 @@ static bool convertFloatTo16Bit(uchar *output, quint64 outputSize, uchar *input)
  */
 bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, const GimpPrecision precision)
 {
+    auto bpc = bytesPerChannel(precision);
+    if ((bpc == 0) || (bpp % bpc)) {
+        qCDebug(XCFPLUGIN) << "XCF: the stream seems corrupted";
+        return false;
+    }
+
     qint32 width;
     qint32 height;
 
