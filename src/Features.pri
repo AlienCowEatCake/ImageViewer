@@ -490,7 +490,7 @@ disable_cxx11 : !system_highway {
 # exiv2 options:
 #    disable_exiv2
 #    system_exiv2
-disable_cxx17 : !system_exiv2 {
+*msvc* : !system_exiv2 : lessThan(MSVC_VERSION, 2010) {
     CONFIG *= disable_exiv2
 }
 
@@ -941,10 +941,8 @@ disable_libavif | system_libavif {
 }
 
 disable_libjxl | system_libjxl {
-    disable_exiv2 | system_exiv2 {
-        disable_libheif | system_libheif {
-            CONFIG *= disable_brotli
-        }
+    disable_libheif | system_libheif {
+        CONFIG *= disable_brotli
     }
 }
 
