@@ -1,1 +1,1 @@
-#include "../../openexr-3.3.2/src/lib/OpenEXR/ImfCompressionAttribute.h"
+#include "../../openexr-2.5.10/OpenEXR/IlmImf/ImfCompressionAttribute.h"

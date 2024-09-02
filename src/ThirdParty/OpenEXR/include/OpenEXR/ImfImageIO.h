@@ -1,1 +1,1 @@
-#include "../../openexr-3.3.2/src/lib/OpenEXRUtil/ImfImageIO.h"
+#include "../../openexr-2.5.10/OpenEXR/IlmImfUtil/ImfImageIO.h"

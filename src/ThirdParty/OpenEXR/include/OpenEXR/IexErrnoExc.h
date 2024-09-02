@@ -1,1 +1,1 @@
-#include "../../openexr-3.3.2/src/lib/Iex/IexErrnoExc.h"
+#include "../../openexr-2.5.10/IlmBase/Iex/IexErrnoExc.h"
