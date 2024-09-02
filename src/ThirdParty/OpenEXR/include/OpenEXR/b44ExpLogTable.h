@@ -1,1 +1,1 @@
-#include "../../openexr-3.2.4/src/lib/OpenEXR/b44ExpLogTable.h"
+#include "../../openexr-2.5.10/OpenEXR/IlmImf/b44ExpLogTable.h"

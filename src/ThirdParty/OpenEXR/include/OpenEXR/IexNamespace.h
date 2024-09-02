@@ -1,1 +1,1 @@
-#include "../../openexr-3.2.4/src/lib/Iex/IexNamespace.h"
+#include "../../openexr-2.5.10/IlmBase/Iex/IexNamespace.h"

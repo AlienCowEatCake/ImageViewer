@@ -1,1 +1,1 @@
-#include "../../openexr-3.2.4/src/lib/IlmThread/IlmThreadPool.h"
+#include "../../IlmThreadQt/IlmThread/IlmThreadPool.h"
