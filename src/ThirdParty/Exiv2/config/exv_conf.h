@@ -3,26 +3,26 @@
 #ifndef _EXV_CONF_H_
 #define _EXV_CONF_H_
 
+// Defined if you want to use libssh for SshIO.
+/* #undef EXV_USE_SSH */
+
 // Define to 1 if you want to use libcurl in httpIO.
 /* #undef EXV_USE_CURL */
-
-// Define to 1 if you want to enable filesystem access
-/* #undef EXV_ENABLE_FILESYSTEM */
 
 // Define if you require webready support.
 /* #undef EXV_ENABLE_WEBREADY */
 
+// Define if you have the <libintl.h> header file.
+/* #undef EXV_HAVE_LIBINTL_H */
+
 // Define if you want translation of program messages to the user's native language
 /* #undef EXV_ENABLE_NLS */
-
-// Define if you want to enable the decoding of video metadata
-/* #undef EXV_ENABLE_VIDEO */
 
 // Define if you want BMFF support.
 #define EXV_ENABLE_BMFF
 
-// Define if you want to use the inih library.
-/* #undef EXV_ENABLE_INIH */
+// Define if you want video support.
+/* #undef EXV_ENABLE_VIDEO */
 
 // Define if you have the strerror_r function.
 /* #undef EXV_HAVE_STRERROR_R */
@@ -30,33 +30,62 @@
 // Define if the strerror_r function returns char*.
 /* #undef EXV_STRERROR_R_CHAR_P */
 
+// Define to enable the Windows unicode path support.
+/* #undef EXV_UNICODE_PATH */
+
 /* Define to `const' or to empty, depending on the second argument of `iconv'. */
 /* #undef ICONV_ACCEPTS_CONST_INPUT */
-
-#if defined(__NetBSD__)
-#include <sys/param.h>
-#if __NetBSD_Prereq__(9,99,17)
-#define NETBSD_POSIX_ICONV 1
-#else
-#define NETBSD_POSIX_ICONV 0
-#endif
-#endif
-
-#if defined(ICONV_ACCEPTS_CONST_INPUT) || (defined(__NetBSD__) && !NETBSD_POSIX_ICONV)
+#if defined(ICONV_ACCEPTS_CONST_INPUT) || defined(__NetBSD__)
 #define EXV_ICONV_CONST const
 #else
 #define EXV_ICONV_CONST
 #endif
 
-// Define if you have the zlib library.
+// Define if you have the <regex.h> header file.
+/* #undef EXV_HAVE_REGEX_H */
+
+// Define if have the <memory.h> header file.
+/* #undef EXV_HAVE_MEMORY_H */
+
+// Define if stdbool.h conforms to C99.
+/* #undef EXV_HAVE_STDBOOL_H */
+
+// Define if you have the <strings.h> header file.
+/* #undef EXV_HAVE_STRINGS_H */
+
+// Define if you have the mmap function.
+#if !defined (_WIN32) || defined (__CYGWIN__)
+#define EXV_HAVE_MMAP
+#endif
+
+// Define if you have the munmap function.
+#if !defined (_WIN32) || defined (__CYGWIN__)
+#define EXV_HAVE_MUNMAP
+#endif
+
+// Define if you have <sys/stat.h> header file.
+/* #undef #define EXV_HAVE_SYS_STAT_H */
+
+// Define if you have  the <sys/types.h> header file.
+/* #undef EXV_HAVE_SYS_TYPES_H */
+
+/* Define if you have the <unistd.h> header file. */
+#if !defined (_WIN32) || defined (__CYGWIN__)
+#define EXV_HAVE_UNISTD_H
+#endif
+
+// Define if you have the <sys/mman.h> header file.
+#if !defined (_WIN32) || defined (__CYGWIN__)
+#define EXV_HAVE_SYS_MMAN_H
+#endif
+
+// Define if you have are using the zlib library.
 #if defined (HAS_ZLIB)
 #define EXV_HAVE_LIBZ
 #endif
 
-// Define if you have the brotli library.
-#if defined (HAS_BROTLI)
-#define EXV_HAVE_BROTLI
-#endif
+// Define if you have the <process.h> header file.
+/* #undef EXV_HAVE_PROCESS_H */
 
 /* Define if you have (Exiv2/xmpsdk) Adobe XMP Toolkit. */
 #if defined (HAS_LIBEXPAT)
@@ -67,20 +96,23 @@
 #define EXV_PACKAGE_NAME "exiv2"
 
 /* Define to the full name and version of this package. */
-#define EXV_PACKAGE_STRING "exiv2 0.28.3"
+#define EXV_PACKAGE_STRING "exiv2 0.27.7"
 
 /* Define to the version of this package. */
-#define EXV_PACKAGE_VERSION "0.28.3"
+#define EXV_PACKAGE_VERSION "0.27.7"
 
-#define EXIV2_MAJOR_VERSION (0U)
-#define EXIV2_MINOR_VERSION (28U)
-#define EXIV2_PATCH_VERSION (3U)
-#define EXIV2_TWEAK_VERSION (U)
+#define EXIV2_MAJOR_VERSION (0)
+#define EXIV2_MINOR_VERSION (27)
+#define EXIV2_PATCH_VERSION (7)
+#define EXIV2_TWEAK_VERSION ()
 
 // Definition to enable translation of Nikon lens names.
 #define EXV_HAVE_LENSDATA
 
 // Define if you have the iconv function.
 /* #undef EXV_HAVE_ICONV */
+
+// Definition to enable conversion of UCS2 encoded Windows tags to UTF-8.
+#define EXV_HAVE_PRINTUCS2
 
 #endif /* !_EXV_CONF_H_ */
