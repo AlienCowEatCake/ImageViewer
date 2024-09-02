@@ -1,1 +1,1 @@
-#include "../../openexr-3.3.1/src/lib/OpenEXR/ImfScanLineInputFile.h"
+#include "../../openexr-2.5.10/OpenEXR/IlmImf/ImfScanLineInputFile.h"
