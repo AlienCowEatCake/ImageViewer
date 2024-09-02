@@ -1,1 +1,1 @@
-#include "../../openexr-3.3.2/src/lib/OpenEXR/ImfTimeCodeAttribute.h"
+#include "../../openexr-2.5.10/OpenEXR/IlmImf/ImfTimeCodeAttribute.h"
