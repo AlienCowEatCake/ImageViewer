@@ -9,6 +9,8 @@ include($${PWD}/../../Features.pri)
 
     INCLUDEPATH += $${THIRDPARTY_STB_PATH}
     DEPENDPATH += $${THIRDPARTY_STB_PATH}
+    TR_EXCLUDE += $${THIRDPARTY_STB_PATH}/*
+
     DEFINES += HAS_STB
 
     OUT_LIB_TARGET = tp_STB

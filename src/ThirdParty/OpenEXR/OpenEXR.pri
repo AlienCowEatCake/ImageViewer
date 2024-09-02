@@ -18,6 +18,7 @@ include($${PWD}/../../Features.pri)
             $${INCLUDEPATH}
         DEPENDPATH += \
             $${THIRDPARTY_OPENEXR_INCLUDE_PATH}
+        TR_EXCLUDE += $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/*
 
         OUT_LIB_TARGET = tp_openexr
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/OpenEXR

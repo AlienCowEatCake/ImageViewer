@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_AOM_PATH}
         DEPENDPATH += $${THIRDPARTY_AOM_PATH}
+        TR_EXCLUDE += $${THIRDPARTY_AOM_PATH}/*
 
         OUT_LIB_TARGET = tp_aom
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/aom

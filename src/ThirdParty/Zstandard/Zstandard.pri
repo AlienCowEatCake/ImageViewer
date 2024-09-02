@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_ZSTD_PATH}/lib
         DEPENDPATH += $${THIRDPARTY_ZSTD_PATH}/lib
+        TR_EXCLUDE += $${THIRDPARTY_ZSTD_PATH}/*
 
         OUT_LIB_TARGET = tp_zstd
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/Zstandard

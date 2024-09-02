@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_LERC_PATH}/src/LercLib/include
         DEPENDPATH += $${THIRDPARTY_LERC_PATH}/src/LercLib/include
+        TR_EXCLUDE += $${THIRDPARTY_LERC_PATH}/*
 
         DEFINES += LERC_STATIC
 

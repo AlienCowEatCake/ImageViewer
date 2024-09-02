@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_HIGHWAY_PATH}
         DEPENDPATH += $${THIRDPARTY_HIGHWAY_PATH}
+        TR_EXCLUDE += $${THIRDPARTY_HIGHWAY_PATH}/*
 
         OUT_LIB_TARGET = tp_highway
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/highway

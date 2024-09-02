@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_LIBEXPAT_PATH}/lib
         DEPENDPATH += $${THIRDPARTY_LIBEXPAT_PATH}/lib
+        TR_EXCLUDE += $${THIRDPARTY_LIBEXPAT_PATH}/*
 
         DEFINES += XML_STATIC
 

@@ -14,6 +14,8 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_JASPER_CONFIG_PATH} $${THIRDPARTY_JASPER_PATH}/src/libjasper/include
         DEPENDPATH += $${THIRDPARTY_JASPER_CONFIG_PATH} $${THIRDPARTY_JASPER_PATH}/src/libjasper/include
+        TR_EXCLUDE += $${THIRDPARTY_JASPER_PATH}/* $${THIRDPARTY_JASPER_CONFIG_PATH}/*
+
         DEFINES += __STDC_CONSTANT_MACROS __STDC_LIMIT_MACROS
 
         OUT_LIB_TARGET = tp_jasper

@@ -9,6 +9,8 @@ include($${PWD}/../../Features.pri)
 
     INCLUDEPATH += $${THIRDPARTY_MSEDGEWEBVIEW2_PATH}/build/native/include
     DEPENDPATH += $${THIRDPARTY_MSEDGEWEBVIEW2_PATH}/build/native/include
+    TR_EXCLUDE += $${THIRDPARTY_MSEDGEWEBVIEW2_PATH}/*
+
     DEFINES += HAS_MSEDGEWEBVIEW2
 
     OUT_LIB_DIR = $${THIRDPARTY_MSEDGEWEBVIEW2_PATH}/build/native/x86

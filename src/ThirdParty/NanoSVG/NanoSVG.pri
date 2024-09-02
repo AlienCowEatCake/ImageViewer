@@ -9,6 +9,8 @@ include($${PWD}/../../Features.pri)
 
     INCLUDEPATH += $${THIRDPARTY_NANOSVG_PATH}/src
     DEPENDPATH += $${THIRDPARTY_NANOSVG_PATH}/src
+    TR_EXCLUDE += $${THIRDPARTY_NANOSVG_PATH}/*
+
     DEFINES += HAS_NANOSVG
 
     OUT_LIB_TARGET = tp_NanoSVG

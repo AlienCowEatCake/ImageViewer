@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_LIBYUV_PATH}/include
         DEPENDPATH += $${THIRDPARTY_LIBYUV_PATH}/include
+        TR_EXCLUDE += $${THIRDPARTY_LIBYUV_PATH}/*
 
         OUT_LIB_TARGET = tp_libyuv
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/libyuv

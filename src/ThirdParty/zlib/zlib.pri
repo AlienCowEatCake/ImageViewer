@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_ZLIB_PATH}
         DEPENDPATH += $${THIRDPARTY_ZLIB_PATH}
+        TR_EXCLUDE += $${THIRDPARTY_ZLIB_PATH}/*
 
         DEFINES += Z_PREFIX
 

@@ -9,6 +9,8 @@ include($${PWD}/../../Features.pri)
 
     INCLUDEPATH += $${THIRDPARTY_J40_PATH}
     DEPENDPATH += $${THIRDPARTY_J40_PATH}
+    TR_EXCLUDE += $${THIRDPARTY_J40_PATH}/*
+
     DEFINES += HAS_J40
 
     OUT_LIB_TARGET = tp_J40

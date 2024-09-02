@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api
         DEPENDPATH += $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api
+        TR_EXCLUDE += $${THIRDPARTY_XZUTILS_PATH}/*
 
         DEFINES += LZMA_API_STATIC
         DEFINES += TUKLIB_SYMBOL_PREFIX=tp_lzma_

@@ -465,6 +465,11 @@ HEADERS += \
     QT += core5compat
 }
 
+lupdate_only {
+    SOURCES += $${OBJECTIVE_SOURCES}
+    OBJECTIVE_SOURCES =
+}
+
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
     resources/translations/imageviewer_ru.ts \
