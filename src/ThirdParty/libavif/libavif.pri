@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_LIBAVIF_PATH}/include
         DEPENDPATH += $${THIRDPARTY_LIBAVIF_PATH}/include
+        TR_EXCLUDE += $${THIRDPARTY_LIBAVIF_PATH}/*
 
         OUT_LIB_TARGET = tp_libavif
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/libavif

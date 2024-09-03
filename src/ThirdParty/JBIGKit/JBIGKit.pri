@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_JBIGKIT_PATH}/libjbig
         DEPENDPATH += $${THIRDPARTY_JBIGKIT_PATH}/libjbig
+        TR_EXCLUDE += $${THIRDPARTY_JBIGKIT_PATH}/*
 
         OUT_LIB_TARGET = tp_JBIGKit
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/JBIGKit

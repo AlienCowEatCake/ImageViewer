@@ -14,6 +14,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_LIBBPG_INCLUDE_PATH}
         DEPENDPATH += $${THIRDPARTY_LIBBPG_INCLUDE_PATH}
+        TR_EXCLUDE += $${THIRDPARTY_LIBBPG_INCLUDE_PATH}/*
 
         OUT_LIB_TARGET = tp_libbpg
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/libbpg

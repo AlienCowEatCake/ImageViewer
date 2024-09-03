@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_LIBLCMS2_PATH}/include
         DEPENDPATH += $${THIRDPARTY_LIBLCMS2_PATH}/include
+        TR_EXCLUDE += $${THIRDPARTY_LIBLCMS2_PATH}/*
 
         OUT_LIB_TARGET = tp_liblcms2
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/LittleCMS2

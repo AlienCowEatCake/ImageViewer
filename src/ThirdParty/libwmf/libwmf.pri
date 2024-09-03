@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_LIBWMF_PATH}/include $${THIRDPARTY_LIBWMF_PATH}
         DEPENDPATH += $${THIRDPARTY_LIBWMF_PATH}/include $${THIRDPARTY_LIBWMF_PATH}
+        TR_EXCLUDE += $${THIRDPARTY_LIBWMF_PATH}/*
 
         OUT_LIB_TARGET = tp_libwmf
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/libwmf

@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_BROTLI_PATH}/c/include
         DEPENDPATH += $${THIRDPARTY_BROTLI_PATH}/c/include
+        TR_EXCLUDE += $${THIRDPARTY_BROTLI_PATH}/*
 
         OUT_LIB_TARGET = tp_brotli
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/brotli

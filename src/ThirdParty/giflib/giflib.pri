@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_GIFLIB_PATH}
         DEPENDPATH += $${THIRDPARTY_GIFLIB_PATH}
+        TR_EXCLUDE += $${THIRDPARTY_GIFLIB_PATH}/*
 
         OUT_LIB_TARGET = tp_giflib
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/giflib

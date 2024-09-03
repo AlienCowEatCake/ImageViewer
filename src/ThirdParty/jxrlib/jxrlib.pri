@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_JXRLIB_PATH}/jxrgluelib
         DEPENDPATH += $${THIRDPARTY_JXRLIB_PATH}/jxrgluelib
+        TR_EXCLUDE += $${THIRDPARTY_JXRLIB_PATH}/*
 
         OUT_LIB_TARGET = tp_jxrlib
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/jxrlib

@@ -17,6 +17,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_LIBRAW_PATH}
         DEPENDPATH += $${THIRDPARTY_LIBRAW_PATH}
+        TR_EXCLUDE += $${THIRDPARTY_LIBRAW_PATH}/*
 
         win32 {
             DEFINES += LIBRAW_NODLL

@@ -94,6 +94,11 @@ enable_update_checking {
         $$files(src/Updater/*.cpp)
 }
 
+lupdate_only {
+    SOURCES += $${OBJECTIVE_SOURCES}
+    OBJECTIVE_SOURCES =
+}
+
 RESOURCES += \
     resources/icons/qtutils_icons.qrc \
     resources/style/qtutils_style.qrc \

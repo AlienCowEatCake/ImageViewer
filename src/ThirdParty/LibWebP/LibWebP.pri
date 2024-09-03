@@ -13,6 +13,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_LIBWEBP_PATH} $${THIRDPARTY_LIBWEBP_PATH}/src
         DEPENDPATH += $${THIRDPARTY_LIBWEBP_PATH} $${THIRDPARTY_LIBWEBP_PATH}/src
+        TR_EXCLUDE += $${THIRDPARTY_LIBWEBP_PATH}/*
 
         OUT_LIB_TARGET = tp_LibWebP
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/LibWebP

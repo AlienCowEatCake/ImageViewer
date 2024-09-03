@@ -14,6 +14,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_LIBJXL_PATH}/lib/include $${THIRDPARTY_LIBJXL_CONFIG_PATH}
         DEPENDPATH += $${THIRDPARTY_LIBJXL_PATH}/lib/include $${THIRDPARTY_LIBJXL_CONFIG_PATH}
+        TR_EXCLUDE += $${THIRDPARTY_LIBJXL_PATH}/* $${THIRDPARTY_LIBJXL_CONFIG_PATH}/*
 
         OUT_LIB_TARGET = tp_libjxl
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/libjxl

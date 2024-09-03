@@ -21,6 +21,7 @@ include($${PWD}/../../Features.pri)
 
         INCLUDEPATH += $${THIRDPARTY_EXIV2_PATH}/include $${THIRDPARTY_EXIV2_CONFIG_PATH}
         DEPENDPATH += $${THIRDPARTY_EXIV2_PATH}/include $${THIRDPARTY_EXIV2_CONFIG_PATH}
+        TR_EXCLUDE += $${THIRDPARTY_EXIV2_PATH}/* $${THIRDPARTY_EXIV2_CONFIG_PATH}/*
 
         OUT_LIB_TARGET = tp_exiv2
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/Exiv2
