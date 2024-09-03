@@ -120,34 +120,44 @@
 <context>
     <name>LocalizationManager</name>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="107"/>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="110"/>
         <source>&amp;English</source>
         <translation>&amp;English</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="111"/>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="114"/>
         <source>&amp;Russian</source>
         <translation>&amp;Русский</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="115"/>
-        <source>&amp;Chinese</source>
-        <translation>&amp;Chinese</translation>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="118"/>
+        <source>&amp;Chinese (Simplified)</source>
+        <translation>&amp;Chinese (Simplified)</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="121"/>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="122"/>
+        <source>Chinese (&amp;Traditional)</source>
+        <translation>Chinese (&amp;Traditional)</translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="131"/>
+        <source>Chinese (Traditional)</source>
+        <translation type="unfinished">繁体中文</translation>
+    </message>
+    <message>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="128"/>
         <source>English</source>
         <translation>英文</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="122"/>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="129"/>
         <source>Russian</source>
         <translation>俄语</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="123"/>
-        <source>Chinese</source>
-        <translation>中文</translation>
+        <location filename="../../src/Utils/LocalizationManager.cpp" line="130"/>
+        <source>Chinese (Simplified)</source>
+        <translation type="unfinished">简体中文</translation>
     </message>
 </context>
 <context>

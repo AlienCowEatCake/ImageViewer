@@ -473,7 +473,8 @@ lupdate_only {
 TRANSLATIONS += \
     resources/translations/imageviewer_en.ts \
     resources/translations/imageviewer_ru.ts \
-    resources/translations/imageviewer_zh_CN.ts
+    resources/translations/imageviewer_zh_CN.ts \
+    resources/translations/imageviewer_zh_TW.ts
 
 win32 {
     RC_FILE += resources/platform/windows/Resources.rc

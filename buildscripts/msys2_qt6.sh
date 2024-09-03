@@ -131,7 +131,7 @@ ${CMD_DEPLOY} \
     --no-compiler-runtime \
     --no-system-d3d-compiler \
     --no-opengl-sw \
-    --translations en,ru,zh_CN \
+    --translations en,ru,zh_CN,zh_TW \
     "${DIST_PREFIX}/"
 [ -f "${DIST_PREFIX}/qt.conf" ] || echo '[Paths]' > "${DIST_PREFIX}/qt.conf"
 echo 'Translations = translations' >> "${DIST_PREFIX}/qt.conf"

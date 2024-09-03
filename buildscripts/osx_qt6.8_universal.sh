@@ -54,7 +54,7 @@ plutil -replace LSMinimumSystemVersion -string "${MAC_TARGET}" "${APPNAME}.app/C
 plutil -replace LSArchitecturePriority -json '["arm64","x86_64"]' "${APPNAME}.app/Contents/Info.plist"
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -rf "${RES_PATH}/empty.lproj"
-mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj" "${RES_PATH}/zh_CN.lproj"
+mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj" "${RES_PATH}/zh_CN.lproj" "${RES_PATH}/zh_TW.lproj"
 cp -a "${SOURCE_PATH}/${SCRIPT_PATH}" "${RES_PATH}/"
 PLUGINS_PATH="${APPNAME}.app/Contents/PlugIns"
 mkdir -p "${PLUGINS_PATH}/iconengines"

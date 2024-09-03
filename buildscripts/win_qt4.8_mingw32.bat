@@ -32,7 +32,7 @@ for %%x in (accessible, bearer, codecs, graphicssystems, iconengines, imageforma
     del /S /Q %PROJECT%%SUFFIX%\plugins\%%x\*d4.dll
 )
 mkdir %PROJECT%%SUFFIX%\translations
-for %%x in (en ru zh_CN) do (
+for %%x in (en ru zh_CN zh_TW) do (
     copy %QT_PATH%\translations\qt_%%x.qm %PROJECT%%SUFFIX%\translations\
 )
 (

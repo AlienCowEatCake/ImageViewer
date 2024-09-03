@@ -3,6 +3,7 @@
         <file>qtutils_en.qm</file>
         <file>qtutils_ru.qm</file>
         <file>qtutils_zh_CN.qm</file>
+        <file>qtutils_zh_TW.qm</file>
     </qresource>
 </RCC>
 

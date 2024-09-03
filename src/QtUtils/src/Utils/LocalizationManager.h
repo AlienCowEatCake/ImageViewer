@@ -32,6 +32,7 @@ namespace Locale {
 extern const QString EN;
 extern const QString RU;
 extern const QString ZH_CN;
+extern const QString ZH_TW;
 
 } // namespace Locale
 
@@ -82,7 +83,8 @@ private:
 private Q_SLOTS:
     void onActionEnglishTriggered();
     void onActionRussianTriggered();
-    void onActionChineseTriggered();
+    void onActionChineseSimplifiedTriggered();
+    void onActionChineseTraditionalTriggered();
     void onComboBoxActivated(int index);
     void onActionDestroyed(QObject *object);
     void onComboBoxDestroyed(QObject *object);

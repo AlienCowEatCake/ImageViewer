@@ -3,5 +3,6 @@
         <file>imageviewer_en.qm</file>
         <file>imageviewer_ru.qm</file>
         <file>imageviewer_zh_CN.qm</file>
+        <file>imageviewer_zh_TW.qm</file>
     </qresource>
 </RCC>

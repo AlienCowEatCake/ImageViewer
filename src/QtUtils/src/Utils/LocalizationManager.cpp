@@ -40,6 +40,7 @@ namespace Locale {
 const QString EN = QString::fromLatin1("en");
 const QString RU = QString::fromLatin1("ru");
 const QString ZH_CN = QString::fromLatin1("zh_CN");
+const QString ZH_TW = QString::fromLatin1("zh_TW");
 
 } // namespace Locale
 
@@ -59,6 +60,8 @@ QString findBestLocaleForSystem(const QStringList& localesList)
             return *it;
     if(systemLocale.startsWith(QString::fromLatin1("zh_Hans"), Qt::CaseInsensitive))
         return Locale::ZH_CN;
+    if(systemLocale.startsWith(QString::fromLatin1("zh_Hant"), Qt::CaseInsensitive))
+        return Locale::ZH_TW;
     return Locale::EN;
 }
 
@@ -78,7 +81,7 @@ struct LocalizationManager::Impl
     QStringList resourceTemplates;
 
     Impl()
-        : supportedLocales(QStringList() << Locale::EN << Locale::RU << Locale::ZH_CN)
+        : supportedLocales(QStringList() << Locale::EN << Locale::RU << Locale::ZH_CN << Locale::ZH_TW)
         , systemLocale(findBestLocaleForSystem(supportedLocales))
     {
         assert(supportedLocales.contains(systemLocale));
@@ -110,9 +113,13 @@ struct LocalizationManager::Impl
         for(ActionList::Iterator it = actionsRussian.begin(), itEnd = actionsRussian.end(); it != itEnd; ++it)
             (*it)->setText(QApplication::translate("LocalizationManager", "&Russian"));
 
-        ActionList &actionsChinese = actionsMap[Locale::ZH_CN];
-        for(ActionList::Iterator it = actionsChinese.begin(), itEnd = actionsChinese.end(); it != itEnd; ++it)
-            (*it)->setText(QApplication::translate("LocalizationManager", "&Chinese"));
+        ActionList &actionsChineseSimplified = actionsMap[Locale::ZH_CN];
+        for(ActionList::Iterator it = actionsChineseSimplified.begin(), itEnd = actionsChineseSimplified.end(); it != itEnd; ++it)
+            (*it)->setText(QApplication::translate("LocalizationManager", "&Chinese (Simplified)"));
+
+        ActionList &actionsChineseTraditional = actionsMap[Locale::ZH_TW];
+        for(ActionList::Iterator it = actionsChineseTraditional.begin(), itEnd = actionsChineseTraditional.end(); it != itEnd; ++it)
+            (*it)->setText(QApplication::translate("LocalizationManager", "Chinese (&Traditional)"));
     }
 
     void updateComboBoxes(const QString &locale)
@@ -120,7 +127,8 @@ struct LocalizationManager::Impl
         QMap<QString, QString> itemTexts;
         itemTexts[Locale::EN] = QApplication::translate("LocalizationManager", "English");
         itemTexts[Locale::RU] = QApplication::translate("LocalizationManager", "Russian");
-        itemTexts[Locale::ZH_CN] = QApplication::translate("LocalizationManager", "Chinese");
+        itemTexts[Locale::ZH_CN] = QApplication::translate("LocalizationManager", "Chinese (Simplified)");
+        itemTexts[Locale::ZH_TW] = QApplication::translate("LocalizationManager", "Chinese (Traditional)");
         for(QList<QComboBox*>::Iterator it = comboBoxList.begin(), itEnd = comboBoxList.end(); it != itEnd; ++it)
         {
             QComboBox *comboBox = *it;
@@ -205,16 +213,18 @@ void LocalizationManager::fillMenu(QMenu *menu)
 
     QAction *actionEnglish = new QAction(menu);
     QAction *actionRussian = new QAction(menu);
-    QAction *actionChinese = new QAction(menu);
+    QAction *actionChineseSimplified = new QAction(menu);
+    QAction *actionChineseTraditional = new QAction(menu);
 
     connect(actionEnglish, SIGNAL(triggered()), this, SLOT(onActionEnglishTriggered()));
     connect(actionRussian, SIGNAL(triggered()), this, SLOT(onActionRussianTriggered()));
-    connect(actionChinese, SIGNAL(triggered()), this, SLOT(onActionChineseTriggered()));
+    connect(actionChineseSimplified, SIGNAL(triggered()), this, SLOT(onActionChineseSimplifiedTriggered()));
+    connect(actionChineseTraditional, SIGNAL(triggered()), this, SLOT(onActionChineseTraditionalTriggered()));
 
     QActionGroup *actionGroup = new QActionGroup(menu);
     actionGroup->setExclusive(true);
 
-    QList<QAction*> actions(QList<QAction*>() << actionEnglish << actionRussian << actionChinese);
+    QList<QAction*> actions(QList<QAction*>() << actionEnglish << actionRussian << actionChineseSimplified << actionChineseTraditional);
     for(QList<QAction*>::Iterator it = actions.begin(), itEnd = actions.end(); it != itEnd; ++it)
     {
         QAction *action = *it;
@@ -227,7 +237,8 @@ void LocalizationManager::fillMenu(QMenu *menu)
 
     m_impl->actionsMap[Locale::EN].append(actionEnglish);
     m_impl->actionsMap[Locale::RU].append(actionRussian);
-    m_impl->actionsMap[Locale::ZH_CN].append(actionChinese);
+    m_impl->actionsMap[Locale::ZH_CN].append(actionChineseSimplified);
+    m_impl->actionsMap[Locale::ZH_TW].append(actionChineseTraditional);
 
     m_impl->updateActions(m_impl->currentLocale());
 }
@@ -268,9 +279,14 @@ void LocalizationManager::onActionRussianTriggered()
     setLocale(Locale::RU);
 }
 
-void LocalizationManager::onActionChineseTriggered()
+void LocalizationManager::onActionChineseSimplifiedTriggered()
 {
     setLocale(Locale::ZH_CN);
+}
+
+void LocalizationManager::onActionChineseTraditionalTriggered()
+{
+    setLocale(Locale::ZH_TW);
 }
 
 void LocalizationManager::onComboBoxActivated(int index)
