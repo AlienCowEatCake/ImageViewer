@@ -478,7 +478,6 @@ TRANSLATIONS += \
 
 win32 {
     RC_FILE += resources/platform/windows/Resources.rc
-    DEFINES += NOMINMAX
 }
 
 macx {
