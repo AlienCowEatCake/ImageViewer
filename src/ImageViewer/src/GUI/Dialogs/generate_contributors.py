@@ -6,10 +6,13 @@ import sys
 
 def main():
     dir_path = os.path.abspath(os.path.dirname(__file__))
-    shortlog = subprocess.check_output(['git', 'shortlog', '-s', '-e'], cwd=dir_path).decode('utf-8')
+    shortlog = subprocess.check_output(['git', 'shortlog', '--summary', '--email', '--remove-empty', '--no-merges'], cwd=dir_path).decode('utf-8')
     contributors = []
     for line in shortlog.splitlines():
-        contributors.append(line.split('\t')[1].strip())
+        contributor = line.split('\t')[1].strip()
+        if contributor.endswith('@users.noreply.github.com>'):
+            contributor = contributor[:contributor.rfind('<')].strip()
+        contributors.append(contributor)
 
     file_path = os.path.join(dir_path, 'Contributors.h')
     with open(file_path, 'w') as file:
