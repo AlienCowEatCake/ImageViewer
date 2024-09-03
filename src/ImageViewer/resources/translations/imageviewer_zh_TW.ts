@@ -6,7 +6,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="183"/>
         <source>Peter S. Zhigalov</source>
-        <translation>jackusay</translation>
+        <translation>Peter S. Zhigalov</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="894"/>
@@ -203,7 +203,7 @@
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="904"/>
         <source>Fit Image To Window Size</source>
         <comment>Long</comment>
-        <translation>自適應窗體大小</translation>
+        <translation>自適應視窗大小</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="905"/>
@@ -661,7 +661,7 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
         <source>Fit Image To &amp;Window Size</source>
-        <translation>自適應窗體大小(&amp;W)</translation>
+        <translation>自適應視窗大小(&amp;W)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
@@ -1189,7 +1189,7 @@
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="104"/>
         <source>Fit Image To Window Size</source>
         <comment>Long</comment>
-        <translation>自適應窗體大小</translation>
+        <translation>自適應視窗大小</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="105"/>
@@ -1372,7 +1372,7 @@
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="87"/>
         <source>Movable</source>
         <comment>ToolBarPosition</comment>
-        <translation type="unfinished"></translation>
+        <translation>可移動</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="162"/>
@@ -1422,7 +1422,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
         <source>Remember flip and rotate during session</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">離開程式前，記住翻轉跟旋轉</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
@@ -1560,7 +1560,7 @@
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="125"/>
         <source>Fit Image To Window Size</source>
-        <translation>自適應窗體大小</translation>
+        <translation>自適應視窗大小</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="126"/>
