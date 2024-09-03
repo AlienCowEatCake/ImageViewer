@@ -477,7 +477,7 @@ TRANSLATIONS += \
     resources/translations/imageviewer_zh_TW.ts
 
 win32 {
-    RC_FILE += resources/platform/windows/Resources.rc
+    RC_FILE += resources/platform/windows/resources.rc
 }
 
 macx {
