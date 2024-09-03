@@ -1422,7 +1422,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
         <source>Remember flip and rotate during session</source>
-        <translation>離開程式前，記住翻轉跟旋轉</translation>
+        <translation>程式開啟期間，記住翻轉跟旋轉</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
