@@ -5,7 +5,7 @@ iconset="icon.iconset"
 
 if [ ! -z "$(uname -s | grep -E -i 'darwin')" ] ; then
     export PATH="${PATH}:/Applications/Inkscape.app/Contents/MacOS"
-    export PATH="${PATH}:/Applications/GIMP-2.10.app/Contents/MacOS"
+    export PATH="${PATH}:/Applications/GIMP.app/Contents/MacOS:/Applications/GIMP-2.10.app/Contents/MacOS"
 fi
 
 sizes="16 32 64 128 256 512 1024"
