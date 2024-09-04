@@ -1370,9 +1370,9 @@
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="87"/>
-        <source>Movable</source>
+        <source>Floated or docked</source>
         <comment>ToolBarPosition</comment>
-        <translation>Перемещаемое</translation>
+        <translation>Плавающее или присоединённое</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="162"/>
@@ -1421,8 +1421,8 @@
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
-        <source>Remember flip and rotate during session</source>
-        <translation>Запоминать переворот и вращение на время сессии</translation>
+        <source>Remember rotation and flip until app exit</source>
+        <translation>Запоминать вращение и переворот до выхода из приложения</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>

@@ -129,7 +129,7 @@ struct SettingsDialog::UI
         upscaleOnFitToWindowCheckbox->setText(qApp->translate("SettingsDialog", "Allow fit to window for small images"));
         upscaleOnFitToWindowCheckbox->setChecked(settings->upscaleOnFitToWindow());
 
-        rememberEffectsDuringSessionCheckbox->setText(qApp->translate("SettingsDialog", "Remember flip and rotate during session"));
+        rememberEffectsDuringSessionCheckbox->setText(qApp->translate("SettingsDialog", "Remember rotation and flip until app exit"));
         rememberEffectsDuringSessionCheckbox->setChecked(settings->rememberEffectsDuringSession());
 
         slideShowIntervalLabel->setText(qApp->translate("SettingsDialog", "Slideshow interval"));

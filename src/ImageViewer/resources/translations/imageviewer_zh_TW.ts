@@ -1370,7 +1370,7 @@
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="87"/>
-        <source>Movable</source>
+        <source>Floated or docked</source>
         <comment>ToolBarPosition</comment>
         <translation>可移動</translation>
     </message>
@@ -1421,7 +1421,7 @@
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
-        <source>Remember flip and rotate during session</source>
+        <source>Remember rotation and flip until app exit</source>
         <translation>程式開啟期間，記住翻轉跟旋轉</translation>
     </message>
     <message>

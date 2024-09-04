@@ -1370,9 +1370,9 @@
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="87"/>
-        <source>Movable</source>
+        <source>Floated or docked</source>
         <comment>ToolBarPosition</comment>
-        <translation>Movable</translation>
+        <translation>Floated or docked</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="162"/>
@@ -1421,8 +1421,8 @@
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
-        <source>Remember flip and rotate during session</source>
-        <translation>Remember flip and rotate during session</translation>
+        <source>Remember rotation and flip until app exit</source>
+        <translation>Remember rotation and flip until app exit</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
