@@ -4,6 +4,10 @@ RESVG_VERSION="0.43.0"
 RESVG_HOST="x86_64-apple-darwin"
 export MACOSX_DEPLOYMENT_TARGET=10.7
 
+# Mac OS X 10.7 support is dropped since 1.74.0. See changelog here:
+# https://releases.rs/docs/1.74.0/
+RUST_VERSION="1.73.0"
+
 cd "$(dirname $0)"
 
 export RUSTUP_HOME="${PWD}/RUSTUP_HOME"
@@ -12,7 +16,7 @@ export PATH="${CARGO_HOME}/bin:${PATH}"
 
 curl -Lo rustup-init.sh "https://sh.rustup.rs"
 chmod +x rustup-init.sh
-./rustup-init.sh --default-host "${RESVG_HOST}" --target "x86_64-apple-darwin" --target "aarch64-apple-darwin" --default-toolchain stable --profile default --no-modify-path -y
+./rustup-init.sh --default-host "${RESVG_HOST}" --target "x86_64-apple-darwin" --target "aarch64-apple-darwin" --default-toolchain "${RUST_VERSION}" --profile default --no-modify-path -y
 
 curl -LO "https://github.com/RazrFalcon/resvg/releases/download/v${RESVG_VERSION}/resvg-${RESVG_VERSION}.tar.xz"
 tar -xvpf "resvg-${RESVG_VERSION}.tar.xz"
