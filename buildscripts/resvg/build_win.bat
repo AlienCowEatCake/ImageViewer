@@ -2,6 +2,11 @@
 
 set "RESVG_VERSION=0.43.0"
 
+rem Windows 7 support is dropped since 1.76.0 It has been moved to
+rem {x86_64,i686}-win7-windows-msvc targes. See changelog here:
+rem https://releases.rs/docs/1.76.0/
+set "RUST_VERSION=1.73.0"
+
 if "%1" == "x86_64-pc-windows-msvc"     goto :x86_64
 if "%1" == "i686-pc-windows-msvc"       goto :i686
 if "%1" == "aarch64-pc-windows-msvc"    goto :aarch64
@@ -33,7 +38,7 @@ call "%VCVARS%" %VCVARS_ARCH%
 cd "%~dp0"
 
 curl -LO "https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe"
-rustup-init.exe --default-host x86_64-pc-windows-msvc --target "%RESVG_TARGET%" --default-toolchain stable --profile default --no-modify-path -y
+rustup-init.exe --default-host x86_64-pc-windows-msvc --target "%RESVG_TARGET%" --default-toolchain "%RUST_VERSION%" --profile default --no-modify-path -y
 
 curl -LO "https://www.7-zip.org/a/7zr.exe"
 curl -LO "https://github.com/RazrFalcon/resvg/releases/download/v%RESVG_VERSION%/resvg-%RESVG_VERSION%.tar.xz"
