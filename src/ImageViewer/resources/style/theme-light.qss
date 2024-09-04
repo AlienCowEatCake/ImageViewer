@@ -203,12 +203,12 @@ QScrollBar:horizontal
 
 QScrollBar::handle:horizontal
 {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #faf7f2, stop:1 #e2d9d1);
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #efece8, stop:1 #e2d9d1);
     border: 1px solid #aa9c8f;
 }
 QScrollBar::handle:vertical
 {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #faf7f2, stop:1 #e2d9d1);
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #efece8, stop:1 #e2d9d1);
     border: 1px solid #aa9c8f;
 }
 QScrollBar::handle:vertical:disabled,
@@ -248,14 +248,14 @@ QScrollBar::add-line:horizontal,
 QScrollBar::sub-line:horizontal
 {
     border: 1px solid #aa9c8f;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #faf7f2, stop:1 #e2d9d1);
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #efece8, stop:1 #e2d9d1);
     subcontrol-origin: margin;
 }
 QScrollBar::add-line:vertical,
 QScrollBar::sub-line:vertical
 {
     border: 1px solid #aa9c8f;
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #faf7f2, stop:1 #e2d9d1);
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #efece8, stop:1 #e2d9d1);
     subcontrol-origin: margin;
 }
 QScrollBar::add-line:horizontal:hover,
@@ -390,7 +390,7 @@ QAbstractScrollArea::corner
 QToolButton,
 QPushButton
 {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f9f8f6, stop:1 #e2d9d1);
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #efece8, stop:1 #e2d9d1);
     color: #000000;
     border: 1px solid #787063;
     border-radius: 3px;
@@ -899,6 +899,12 @@ QTextEdit
     border-radius: 3px;
     selection-background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #668bb0, stop:1 #52718e);
     selection-color: #ffffff;
+}
+QTextBrowser,
+QPlainTextEdit:!editable,
+QTextEdit:!editable
+{
+    background-color: #efebe7;
 }
 QPlainTextEdit:editable:focus,
 QTextEdit:editable:focus
