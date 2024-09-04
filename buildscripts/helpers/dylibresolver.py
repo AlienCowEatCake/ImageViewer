@@ -91,7 +91,6 @@ def _get_framework_binary(framework_path):
 
 
 def _get_version(filepath):
-    result = []
     otool_process = subprocess.Popen(['otool', '-L', '-arch', 'all', os.path.abspath(filepath)],
                                      stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     otool_output = otool_process.communicate()[0]
@@ -123,6 +122,24 @@ def _run_otool(filepath):
                 string = string.strip()
                 result.append(string)
     return result
+
+
+def _has_rpath(filepath):
+    try:
+        otool_process = subprocess.Popen(['otool', '-l', '-arch', 'all', os.path.abspath(filepath)],
+                                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        otool_output = otool_process.communicate()[0]
+        if sys.version_info[0] > 2:
+            otool_output = otool_output.decode('utf-8')
+        otool_process.wait()
+        if otool_process.returncode == 0:
+            for string in otool_output.splitlines():
+                if re.match('\\s*cmd\\s+LC_RPATH\\s*', string):
+                    return True
+        return False
+    except Exception:
+        pass
+    return False
 
 
 def _int_add_rpath(filepath, new_rpath):
@@ -175,7 +192,11 @@ def _collect_binaries(dir):
 
 
 def _can_use_rpath(dir):
-    # @todo LC_RPATH is incompatible with < 10.5
+    # LC_RPATH is incompatible with < 10.5
+    binaries = _collect_binaries(dir)
+    for it in binaries:
+        if _has_rpath(it):
+            return True
     return False
 
 
