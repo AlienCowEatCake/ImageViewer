@@ -3,6 +3,8 @@
 RESVG_VERSION="0.43.0"
 RESVG_TARGET="$(gcc -dumpmachine | sed 's|-.*||')-unknown-linux-gnu"
 
+RUST_VERSION="1.73.0"
+
 cd "$(dirname $0)"
 
 export RUSTUP_HOME="${PWD}/RUSTUP_HOME"
@@ -11,7 +13,7 @@ export PATH="${CARGO_HOME}/bin:${PATH}"
 
 wget --no-check-certificate "https://sh.rustup.rs" -O rustup-init.sh
 chmod +x rustup-init.sh
-./rustup-init.sh --default-host "${RESVG_TARGET}" --default-toolchain stable --profile default --no-modify-path -y
+./rustup-init.sh --default-host "${RESVG_TARGET}" --default-toolchain "${RUST_VERSION}" --profile default --no-modify-path -y
 
 wget "https://github.com/RazrFalcon/resvg/releases/download/v${RESVG_VERSION}/resvg-${RESVG_VERSION}.tar.xz"
 tar -xvpf "resvg-${RESVG_VERSION}.tar.xz"
