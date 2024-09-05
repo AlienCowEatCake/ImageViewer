@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2020 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -25,6 +25,7 @@
 #include "ScopedPointer.h"
 
 class QMenu;
+class QAction;
 class QComboBox;
 
 namespace Locale {
@@ -81,10 +82,7 @@ private:
     ~LocalizationManager();
 
 private Q_SLOTS:
-    void onActionEnglishTriggered();
-    void onActionRussianTriggered();
-    void onActionChineseSimplifiedTriggered();
-    void onActionChineseTraditionalTriggered();
+    void onActionTriggered(QAction *action);
     void onComboBoxActivated(int index);
     void onActionDestroyed(QObject *object);
     void onComboBoxDestroyed(QObject *object);

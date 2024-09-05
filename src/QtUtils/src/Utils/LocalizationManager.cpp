@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -211,35 +211,19 @@ void LocalizationManager::fillMenu(QMenu *menu)
     if(!menu)
         return;
 
-    QAction *actionEnglish = new QAction(menu);
-    QAction *actionRussian = new QAction(menu);
-    QAction *actionChineseSimplified = new QAction(menu);
-    QAction *actionChineseTraditional = new QAction(menu);
-
-    connect(actionEnglish, SIGNAL(triggered()), this, SLOT(onActionEnglishTriggered()));
-    connect(actionRussian, SIGNAL(triggered()), this, SLOT(onActionRussianTriggered()));
-    connect(actionChineseSimplified, SIGNAL(triggered()), this, SLOT(onActionChineseSimplifiedTriggered()));
-    connect(actionChineseTraditional, SIGNAL(triggered()), this, SLOT(onActionChineseTraditionalTriggered()));
-
     QActionGroup *actionGroup = new QActionGroup(menu);
     actionGroup->setExclusive(true);
-
-    QList<QAction*> actions(QList<QAction*>() << actionEnglish << actionRussian << actionChineseSimplified << actionChineseTraditional);
-    for(QList<QAction*>::Iterator it = actions.begin(), itEnd = actions.end(); it != itEnd; ++it)
+    connect(actionGroup, SIGNAL(triggered(QAction*)), this, SLOT(onActionTriggered(QAction*)));
+    for(QStringList::ConstIterator it = m_impl->supportedLocales.constBegin(), itEnd = m_impl->supportedLocales.constEnd(); it != itEnd; ++it)
     {
-        QAction *action = *it;
+        QAction *action = new QAction(menu);
         menu->addAction(action);
         action->setMenuRole(QAction::NoRole);
         action->setCheckable(true);
         actionGroup->addAction(action);
         connect(action, SIGNAL(destroyed(QObject*)), this, SLOT(onActionDestroyed(QObject*)));
+        m_impl->actionsMap[*it].append(action);
     }
-
-    m_impl->actionsMap[Locale::EN].append(actionEnglish);
-    m_impl->actionsMap[Locale::RU].append(actionRussian);
-    m_impl->actionsMap[Locale::ZH_CN].append(actionChineseSimplified);
-    m_impl->actionsMap[Locale::ZH_TW].append(actionChineseTraditional);
-
     m_impl->updateActions(m_impl->currentLocale());
 }
 
@@ -269,24 +253,15 @@ LocalizationManager::LocalizationManager()
 LocalizationManager::~LocalizationManager()
 {}
 
-void LocalizationManager::onActionEnglishTriggered()
+void LocalizationManager::onActionTriggered(QAction *action)
 {
-    setLocale(Locale::EN);
-}
-
-void LocalizationManager::onActionRussianTriggered()
-{
-    setLocale(Locale::RU);
-}
-
-void LocalizationManager::onActionChineseSimplifiedTriggered()
-{
-    setLocale(Locale::ZH_CN);
-}
-
-void LocalizationManager::onActionChineseTraditionalTriggered()
-{
-    setLocale(Locale::ZH_TW);
+    for(QStringList::ConstIterator it = m_impl->supportedLocales.constBegin(), itEnd = m_impl->supportedLocales.constEnd(); it != itEnd; ++it)
+    {
+        if(!m_impl->actionsMap[*it].contains(action))
+            continue;
+        setLocale(*it);
+        return;
+    }
 }
 
 void LocalizationManager::onComboBoxActivated(int index)
