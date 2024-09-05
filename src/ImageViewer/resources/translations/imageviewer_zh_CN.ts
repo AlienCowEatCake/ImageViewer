@@ -1521,12 +1521,12 @@
     </message>
     <message>
         <location filename="../../src/main.cpp" line="97"/>
-        <source>Windows 95</source>
+        <source>Windows_95</source>
         <translation type="unfinished">Windows 95</translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="101"/>
-        <source>Windows 2000</source>
+        <source>Windows_2000</source>
         <translation type="unfinished">Windows 2000</translation>
     </message>
     <message>
