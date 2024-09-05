@@ -134,7 +134,7 @@ def _has_rpath(filepath):
         otool_process.wait()
         if otool_process.returncode == 0:
             for string in otool_output.splitlines():
-                if re.match('\\s*cmd\\s+LC_RPATH\\s*', string):
+                if re.match('\\s*cmd\\s+LC_RPATH\\s*$', string):
                     return True
         return False
     except Exception:
