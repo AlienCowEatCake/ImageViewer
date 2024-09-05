@@ -45,6 +45,7 @@ StylableTheme
     qproperty-paletteShadowDisabled: #000000;
 }
 
+ImageViewerWidget,
 ImageViewerWidget[DarkMode=true]
 {
     qproperty-backgroundTexture: url(:/style/background_pattern_light.png);

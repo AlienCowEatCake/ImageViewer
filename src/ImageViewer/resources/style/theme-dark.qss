@@ -1237,7 +1237,8 @@ QToolBar::handle:vertical
  * Custom *
  **********/
 
-ImageViewerWidget
+ImageViewerWidget,
+ImageViewerWidget[DarkMode=true]
 {
     qproperty-backgroundTexture: url(:/style/background_pattern_dark.png);
     border: 1px solid #454545;
