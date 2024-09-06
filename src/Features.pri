@@ -460,9 +460,6 @@ disable_cxx11 : !system_highway {
 *g++* : !*clang* : !system_highway : lessThan(GCC_VERSION_NUMERIC, 80400) {
     CONFIG *= disable_highway
 }
-haiku : !system_highway { # FIXME: Re-check on beta4 or nightly
-    CONFIG *= disable_highway
-}
 #DEFINES *= HWY_COMPILE_ONLY_SCALAR
 #DEFINES *= HWY_BROKEN_EMU128
 
