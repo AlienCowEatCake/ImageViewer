@@ -51,7 +51,6 @@ ${CMD_QMAKE} -r CONFIG+="release" \
     QTPLUGIN.imageformats="qgif qicns qico qsvg qtga qtiff qwbmp" \
     QTPLUGIN.platforms="qwindows" \
     CONFIG+="enable_update_checking" \
-    CONFIG+="enable_mshtml enable_nanosvg" \
     LIBS+="-L\"${MSYSTEM_PREFIX}/qt5-static/lib\"" \
     LIBS+="-L\"${MSYSTEM_PREFIX}/lib\"" \
     LIBS+="-L\"${PWD}/lib\"" \

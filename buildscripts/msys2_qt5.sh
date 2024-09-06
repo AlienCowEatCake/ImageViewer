@@ -94,13 +94,6 @@ function copyDlls() {
     "${SOURCE_PATH}/buildscripts/helpers/dllresolver.exe" "${DIST_PREFIX}" "${@}"
 }
 
-function copyWebView2Loader() {
-    local dll="$(find "${SOURCE_PATH}/src/ThirdParty/MSEdgeWebView2" -name 'WebView2Loader.dll' | grep "/native/${VCVARS_ARCH##*_}/" || true)"
-    if [ ! -z "${dll}" ] ; then
-        cp -a "${dll}" "${DIST_PREFIX}/"
-    fi
-}
-
 function getVCVARSPath() {
     local VCVARS_HELPER="$(cygpath -w "${SOURCE_PATH}/buildscripts/helpers/find_vcvarsall.bat")"
     cat << EOF | cmd | tail -3 | head -1
@@ -139,7 +132,6 @@ cd "${BUILDDIR}"
 ${CMD_QMAKE} -r CONFIG+="release" \
     CONFIG+="hide_symbols" \
     CONFIG+="enable_pkgconfig enable_update_checking" \
-    CONFIG+="enable_msedgewebview2 enable_mshtml enable_nanosvg" \
     CONFIG+="system_zlib system_jbigkit system_lerc system_libtiff" \
     CONFIG+="system_libwebp system_freetype system_librsvg" \
     CONFIG+="system_brotli system_libexpat system_libjpeg" \
@@ -165,7 +157,6 @@ find "${DIST_PREFIX}/imageformats" -type f \( -name 'kimg_*.dll' -o -name 'qjp2.
 find "${DIST_PREFIX}/platforms" -type f \( -name 'qdirect2d.dll' -o -name 'qminimal.dll' -o -name 'qoffscreen.dll' \) -delete
 copyDlls "$(cygpath -w "${MSYSTEM_PREFIX}/bin")"
 stripAll
-copyWebView2Loader
 copyDlls "$(cygpath -w "$(getCRTPath)")" "$(cygpath -w "$(getUCRTPath)")"
 zip -9r "../${DIST_PREFIX}.zip" "${DIST_PREFIX}"
 rm -rf "build_msi"

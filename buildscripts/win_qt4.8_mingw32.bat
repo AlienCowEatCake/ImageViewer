@@ -14,7 +14,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="enable_qtwebkit" CONFIG+="enable_mshtml enable_nanosvg enable_j40" ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="enable_j40" ..\%PROJECT%.pro
 mingw32-make
 if not exist %APP_PATH%\release\%PROJECT%.exe (
     if NOT "%CI%" == "true" pause
@@ -23,13 +23,14 @@ if not exist %APP_PATH%\release\%PROJECT%.exe (
 strip --strip-all %APP_PATH%\release\%PROJECT%.exe
 mkdir %PROJECT%%SUFFIX%
 copy %APP_PATH%\release\%PROJECT%.exe %PROJECT%%SUFFIX%\%PROJECT%.exe
-for %%x in (Core, Gui, Network, Svg, WebKit) do (
+for %%x in (Core, Gui, Svg) do (
     copy %QT_PATH%\bin\Qt%%x4.dll %PROJECT%%SUFFIX%\
 )
-for %%x in (accessible, bearer, codecs, graphicssystems, iconengines, imageformats) do (
+for %%x in (accessible, iconengines, imageformats) do (
     mkdir %PROJECT%%SUFFIX%\plugins\%%x
     copy %QT_PATH%\plugins\%%x\*.dll %PROJECT%%SUFFIX%\plugins\%%x\
     del /S /Q %PROJECT%%SUFFIX%\plugins\%%x\*d4.dll
+    del /S /Q %PROJECT%%SUFFIX%\plugins\%%x\*compatwidgets4.dll
 )
 mkdir %PROJECT%%SUFFIX%\translations
 for %%x in (en ru zh_CN zh_TW) do (

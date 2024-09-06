@@ -12,7 +12,6 @@ set APP_PATH=src\%PROJECT%
 set NMAKE_CMD="%~dp0\..\buildscripts\helpers\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
 set DLLRESOLVER_CMD="%~dp0\..\buildscripts\helpers\dllresolver.exe"
-set WEBVIEW2LOADER_DLL="%~dp0\..\src\ThirdParty\MSEdgeWebView2\microsoft.web.webview2.1.0.2739.15\build\native\%ARCH%\WebView2Loader.dll"
 set RESVG_PATH="%~dp0\resvg\i686-pc-windows-msvc"
 
 call %VCVARS% %VCVARS_ARCH%
@@ -25,7 +24,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="enable_qtwebkit enable_update_checking" CONFIG+="enable_msedgewebview2 enable_mshtml enable_nanosvg" CONFIG+="system_resvg" INCLUDEPATH+=%RESVG_PATH% LIBS+=/LIBPATH:%RESVG_PATH% ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="hide_symbols" CONFIG+="enable_update_checking" CONFIG+="system_resvg" INCLUDEPATH+=%RESVG_PATH% LIBS+=/LIBPATH:%RESVG_PATH% ..\%PROJECT%.pro
 %NMAKE_CMD%
 if not exist %APP_PATH%\release\%PROJECT%.exe (
     if NOT "%CI%" == "true" pause
@@ -35,7 +34,6 @@ rmdir /S /Q %PROJECT%%SUFFIX% 2>nul >nul
 mkdir %PROJECT%%SUFFIX%
 copy %APP_PATH%\release\%PROJECT%.exe %PROJECT%%SUFFIX%\%PROJECT%.exe
 windeployqt --release --no-compiler-runtime --no-system-d3d-compiler --no-virtualkeyboard --no-angle --no-opengl-sw --translations en,ru,zh_CN,zh_TW %PROJECT%%SUFFIX%
-copy %WEBVIEW2LOADER_DLL% %PROJECT%%SUFFIX%\
 copy %OPENSSL_PATH%\*.dll %PROJECT%%SUFFIX%\
 rmdir /S /Q %PROJECT%%SUFFIX%\position 2>nul >nul
 rmdir /S /Q %PROJECT%%SUFFIX%\sensorgestures 2>nul >nul

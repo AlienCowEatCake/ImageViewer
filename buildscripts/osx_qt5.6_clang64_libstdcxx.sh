@@ -25,14 +25,6 @@ QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
 
-QMAKE_EXTRA_ARGS=
-APPLE_CLANG_MAJOR="$(clang --version | head -1 | grep 'Apple clang version' | sed 's|.* version \([0-9]*\)\..*|\1|')"
-if [ ! -z "${APPLE_CLANG_MAJOR}" ] ; then
-    if [ "${APPLE_CLANG_MAJOR}" -ge "15" ] ; then
-        QMAKE_EXTRA_ARGS="LIBS+=-Wl,-ld_classic"
-    fi
-fi
-
 echo "Using MAC_SDK=${MAC_SDK}"
 
 cd "$(dirname $0)"/..
@@ -41,7 +33,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} CONFIG+="disable_cxx11" CONFIG+="enable_macwebview enable_macwkwebview enable_nanosvg enable_j40" ${QMAKE_EXTRA_ARGS} "../${PROJECT}.pro"
+arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} CONFIG+="disable_cxx11" CONFIG+="enable_macwebview enable_macwkwebview enable_j40" "../${PROJECT}.pro"
 arch -x86_64 make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "${MAC_TARGET}" "${APPNAME}.app/Contents/Info.plist"

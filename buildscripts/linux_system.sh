@@ -66,7 +66,7 @@ if pkg-config libtiff-4 ; then
 else
     CONFIG_STR="${CONFIG_STR} disable_libtiff"
 fi
-if pkg-config libwebp libwebpdemux libwebpmux ; then
+if pkg-config libwebp libwebpdemux libwebpmux libsharpyuv ; then
     CONFIG_STR="${CONFIG_STR} system_libwebp"
 else
     CONFIG_STR="${CONFIG_STR} disable_libwebp"

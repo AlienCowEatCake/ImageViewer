@@ -31,7 +31,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-${CMD_QMAKE} -recursive -spec unsupported/macx-clang CONFIG+="release" LIBS+="-dead_strip" CONFIG+="x86_64" QMAKE_MAC_SDK="${MAC_SDK}" QMAKE_MACOSX_DEPLOYMENT_TARGET="${MAC_TARGET}" CONFIG+="disable_cxx11" CONFIG+="enable_macwebview enable_macwkwebview enable_nanosvg enable_j40" "../${PROJECT}.pro"
+${CMD_QMAKE} -recursive -spec unsupported/macx-clang CONFIG+="release" LIBS+="-dead_strip" CONFIG+="x86_64" QMAKE_MAC_SDK="${MAC_SDK}" QMAKE_MACOSX_DEPLOYMENT_TARGET="${MAC_TARGET}" CONFIG+="disable_cxx11" CONFIG+="enable_macwebview enable_j40" "../${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 cp -a "${SOURCE_PATH}/${INFO_PLIST_PATH}" "${APPNAME}.app/Contents/Info.plist"

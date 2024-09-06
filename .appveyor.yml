@@ -272,7 +272,7 @@ for:
     - call "%VCVARS%" %ARCH%
   build_script:
     - mkdir "%APPVEYOR_BUILD_FOLDER%\build"
-    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_msedgewebview2 enable_mshtml enable_nanosvg enable_j40 disable_fallback_iccprofiles enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
+    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_msedgewebview2 enable_mshtml enable_msedgewebview2 enable_nanosvg enable_j40 disable_fallback_iccprofiles enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
     - cd "%APPVEYOR_BUILD_FOLDER%\build"
     - call "%JOMDIR%\jom.exe" -j3
 
