@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.9.1
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.10.0
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -83,8 +83,6 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/variance.c \
     $${THIRDPARTY_AOM_PATH}/aom_mem/aom_mem.c \
     $${THIRDPARTY_AOM_PATH}/aom_scale/aom_scale_rtcd.c \
-    $${THIRDPARTY_AOM_PATH}/aom_scale/generic/aom_scale.c \
-    $${THIRDPARTY_AOM_PATH}/aom_scale/generic/gen_scalers.c \
     $${THIRDPARTY_AOM_PATH}/aom_scale/generic/yv12config.c \
     $${THIRDPARTY_AOM_PATH}/aom_scale/generic/yv12extend.c \
     $${THIRDPARTY_AOM_PATH}/aom_util/aom_thread.c \
@@ -244,10 +242,13 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_filter.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_simd.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/aom_simd_inline.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/aom_convolve8_neon.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/aom_filter.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/aom_neon_sve2_bridge.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/aom_neon_sve_bridge.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/blend_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/dist_wtd_avg_neon.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/highbd_convolve8_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/mem_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/reinterpret_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/sum_neon.h \
@@ -264,6 +265,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entdec.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entenc.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/fft_common.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/arm/disflow_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/corner_detect.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/corner_match.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/flow_estimation/disflow.h \
@@ -323,6 +325,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/transpose_sse2.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/txfm_common_avx2.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/txfm_common_sse2.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/x86/variance_impl_ssse3.h \
     $${THIRDPARTY_AOM_PATH}/aom_mem/aom_mem.h \
     $${THIRDPARTY_AOM_PATH}/aom_mem/include/aom_mem_intrnl.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/aom_once.h \
@@ -334,11 +337,9 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_ports/mem.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/mem_ops.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/mem_ops_aligned.h \
-    $${THIRDPARTY_AOM_PATH}/aom_ports/msvc.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/ppc.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/sanitizer.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/x86.h \
-    $${THIRDPARTY_AOM_PATH}/aom_scale/aom_scale.h \
     $${THIRDPARTY_AOM_PATH}/aom_scale/yv12config.h \
     $${THIRDPARTY_AOM_PATH}/aom_util/aom_pthread.h \
     $${THIRDPARTY_AOM_PATH}/aom_util/aom_thread.h \
@@ -352,8 +353,11 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/av1_inv_txfm_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/compound_convolve_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/convolve_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/convolve_neon_i8mm.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/convolve_scale_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_compound_convolve_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_convolve_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_convolve_sve2.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_warp_plane_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/warp_plane_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_common_int.h \
@@ -369,6 +373,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/common/common.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/common_data.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/convolve.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/debugmodes.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/entropy.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/entropymode.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/entropymv.h \
@@ -415,9 +420,10 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_complexity.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_cyclicrefresh.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_variance.h \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/neon/pickrst_neon.h \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/neon/shift_neon.h \
-    $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/neon/txfm_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/pickrst_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/pickrst_sve.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/shift_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/txfm_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d_cfg.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_ml_partition_models.h \
@@ -426,6 +432,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_temporal_denoiser.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/bitstream.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/block.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/blockiness.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/cnn.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/compound_type.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/context_tree.h \
@@ -532,7 +539,6 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/test/acm_random.h \
     $${THIRDPARTY_AOM_PATH}/test/av1_txfm_test.h \
     $${THIRDPARTY_AOM_PATH}/test/codec_factory.h \
-    $${THIRDPARTY_AOM_PATH}/test/comp_avg_pred_test.h \
     $${THIRDPARTY_AOM_PATH}/test/datarate_test.h \
     $${THIRDPARTY_AOM_PATH}/test/decode_test_driver.h \
     $${THIRDPARTY_AOM_PATH}/test/encode_test_driver.h \
@@ -542,7 +548,6 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/test/ivf_video_source.h \
     $${THIRDPARTY_AOM_PATH}/test/md5_helper.h \
     $${THIRDPARTY_AOM_PATH}/test/register_state_check.h \
-    $${THIRDPARTY_AOM_PATH}/test/simd_cmp_impl.h \
     $${THIRDPARTY_AOM_PATH}/test/simd_impl.h \
     $${THIRDPARTY_AOM_PATH}/test/test_vectors.h \
     $${THIRDPARTY_AOM_PATH}/test/transform_test_base.h \
@@ -558,21 +563,6 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/third_party/SVT-AV1/convolve_avx2.h \
     $${THIRDPARTY_AOM_PATH}/third_party/SVT-AV1/synonyms.h \
     $${THIRDPARTY_AOM_PATH}/third_party/fastfeat/fast.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-actions.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-cardinalities.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-function-mocker.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-matchers.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-more-actions.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-more-matchers.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-nice-strict.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock-spec-builders.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/gmock.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/custom/gmock-generated-actions.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/custom/gmock-matchers.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/custom/gmock-port.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/gmock-internal-utils.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/gmock-port.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googlemock/include/gmock/internal/gmock-pp.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-assertion-result.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-death-test.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-matchers.h \

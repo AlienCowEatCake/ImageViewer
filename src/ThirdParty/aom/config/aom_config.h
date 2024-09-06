@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Alliance for Open Media. All rights reserved
+ * Copyright (c) 2024, Alliance for Open Media. All rights reserved.
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -73,8 +73,8 @@
 #define CONFIG_SALIENCY_MAP 0
 #define CONFIG_SHARED 0
 #define CONFIG_SIZE_LIMIT 0
-#define CONFIG_SPATIAL_RESAMPLING 1
 #define CONFIG_SPEED_STATS 0
+#define CONFIG_SVT_AV1 0
 #define CONFIG_TFLITE 0
 #define CONFIG_THREE_PASS 0
 #define CONFIG_TUNE_BUTTERAUGLI 0
@@ -103,10 +103,5 @@
 #define HAVE_UNISTD_H 0
 #define HAVE_VSX 0
 #define HAVE_WXWIDGETS 0
-#if defined (_MSC_VER)
-#define INLINE __inline
-#else
-#define INLINE inline
-#endif
 #define STATIC_LINK_JXL 0
 #endif  // AOM_CONFIG_H_
