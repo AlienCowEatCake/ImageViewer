@@ -838,10 +838,17 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
     {
         LOG_DEBUG("%s Color format: %08X-%04X-%04X-%02X%02X%02X%02X%02X%02X%02X%02X",
                 LOGGING_CTX,
-                pixelFormat.Data1, pixelFormat.Data2, pixelFormat.Data3,
-                pixelFormat.Data4[0], pixelFormat.Data4[1], pixelFormat.Data4[2],
-                pixelFormat.Data4[3], pixelFormat.Data4[4], pixelFormat.Data4[5],
-                pixelFormat.Data4[6], pixelFormat.Data4[7]);
+                static_cast<unsigned int>(pixelFormat.Data1),
+                static_cast<unsigned int>(pixelFormat.Data2),
+                static_cast<unsigned int>(pixelFormat.Data3),
+                static_cast<unsigned int>(pixelFormat.Data4[0]),
+                static_cast<unsigned int>(pixelFormat.Data4[1]),
+                static_cast<unsigned int>(pixelFormat.Data4[2]),
+                static_cast<unsigned int>(pixelFormat.Data4[3]),
+                static_cast<unsigned int>(pixelFormat.Data4[4]),
+                static_cast<unsigned int>(pixelFormat.Data4[5]),
+                static_cast<unsigned int>(pixelFormat.Data4[6]),
+                static_cast<unsigned int>(pixelFormat.Data4[7]));
     }
 
     PKRect rect;
