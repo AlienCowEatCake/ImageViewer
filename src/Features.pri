@@ -624,7 +624,7 @@ disable_libjpeg : !system_libwmf {
 # aom options:
 #    disable_aom
 #    system_aom
-*msvc* : !system_aom : lessThan(MSVC_VERSION, 2013) {
+*msvc* : !system_aom : lessThan(MSVC_VERSION, 2015) {
     CONFIG *= disable_aom
 }
 
