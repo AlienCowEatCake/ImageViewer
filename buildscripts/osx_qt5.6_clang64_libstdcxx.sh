@@ -47,6 +47,7 @@ for iconengines_plugin in libqsvgicon.dylib ; do
     cp -a "${QTPLUGINS_PATH}/iconengines/${iconengines_plugin}" "${PLUGINS_PATH}/iconengines/"
 done
 arch -x86_64 ${CMD_DEPLOY} "${APPNAME}.app" -verbose=2
+/usr/bin/python3 "${SOURCE_PATH}/buildscripts/helpers/dylibresolver.py" "${APPNAME}.app" "${QT_PATH}/lib"
 TRANSLATIONS_PATH="${RES_PATH}/translations"
 mkdir -p "${TRANSLATIONS_PATH}"
 for lang in $(find "${RES_PATH}" -name '*.lproj' | sed 's|.*/|| ; s|\..*||') ; do

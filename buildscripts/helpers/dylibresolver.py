@@ -124,7 +124,8 @@ def _run_otool(filepath):
     return result
 
 
-def _has_rpath(filepath):
+def _get_rpaths(filepath):
+    result = []
     try:
         otool_process = subprocess.Popen(['otool', '-l', '-arch', 'all', os.path.abspath(filepath)],
                                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -133,17 +134,49 @@ def _has_rpath(filepath):
             otool_output = otool_output.decode('utf-8')
         otool_process.wait()
         if otool_process.returncode == 0:
+            is_rpath_command = False
+            rpath_path = ''
             for string in otool_output.splitlines():
-                if re.match('\\s*cmd\\s+LC_RPATH\\s*$', string):
-                    return True
-        return False
+                if re.match('\\s*Load\\s+command\\s+[0-9]+\\s*$', string) and is_rpath_command:
+                    if rpath_path not in result:
+                        result.append(rpath_path)
+                    is_rpath_command = False
+                    rpath_path = ''
+                elif re.match('\\s*cmd\\s+LC_RPATH\\s*$', string):
+                    is_rpath_command = True
+                elif is_rpath_command:
+                    rpath_path_match = re.match('\\s*path\\s+(.*)\\s+\\(offset\\s+[0-9]+\\)\\s*$', string)
+                    if rpath_path_match:
+                        rpath_path = rpath_path_match.group(1).strip()
+            if is_rpath_command and rpath_path not in result:
+                result.append(rpath_path)
     except Exception:
         pass
+    return result
+
+
+def _has_rpath(filepath):
+    if _get_rpaths(filepath):
+        return True
     return False
 
 
 def _int_add_rpath(filepath, new_rpath):
     int_process = subprocess.Popen(['install_name_tool', '-add_rpath', new_rpath, os.path.abspath(filepath)],
+                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    int_process.wait()
+    return int_process.returncode == 0
+
+
+def _int_delete_rpath(filepath, old_rpath):
+    int_process = subprocess.Popen(['install_name_tool', '-delete_rpath', old_rpath, os.path.abspath(filepath)],
+                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    int_process.wait()
+    return int_process.returncode == 0
+
+
+def _int_rpath(filepath, old_rpath, new_rpath):
+    int_process = subprocess.Popen(['install_name_tool', '-rpath', old_rpath, new_rpath, os.path.abspath(filepath)],
                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     int_process.wait()
     return int_process.returncode == 0
@@ -403,8 +436,16 @@ def fixup_binaries(dir):
                 if _int_change(binary, otool_old, otool_new):
                     print('  -change', otool_old, otool_new)
         if use_rpath:
-            if _int_add_rpath(binary, rpath):
-                print('  -add_rpath', rpath)
+            old_rpaths = _get_rpaths(binary)
+            if len(old_rpaths) == 1:
+                if old_rpaths[0] != rpath and _int_rpath(binary, old_rpaths[0], rpath):
+                    print('  -rpath', old_rpaths[0], rpath)
+            else:
+                for old_rpath in old_rpaths:
+                    if old_rpath != rpath and _int_delete_rpath(binary, old_rpath):
+                        print('  -delete_rpath', old_rpath)
+                if rpath not in old_rpaths and _int_add_rpath(binary, rpath):
+                    print('  -add_rpath', rpath)
     print("======= Done =======")
 
 
