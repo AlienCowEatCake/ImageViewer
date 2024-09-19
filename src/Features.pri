@@ -460,8 +460,10 @@ disable_cxx11 : !system_highway {
 *g++* : !*clang* : !system_highway : lessThan(GCC_VERSION_NUMERIC, 80400) {
     CONFIG *= disable_highway
 }
-#DEFINES *= HWY_COMPILE_ONLY_SCALAR
-#DEFINES *= HWY_BROKEN_EMU128
+!disable_highway : !system_highway {
+    DEFINES *= HWY_COMPILE_ONLY_SCALAR
+    DEFINES *= HWY_BROKEN_EMU128
+}
 
 # libexpat options:
 #    disable_libexpat
