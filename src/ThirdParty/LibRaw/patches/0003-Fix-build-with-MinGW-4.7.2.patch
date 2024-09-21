@@ -8,7 +8,7 @@ Subject: [PATCH 3/3] Fix build with MinGW 4.7.2
  1 file changed, 7 insertions(+)
 
 diff --git a/src/decoders/decoders_dcraw.cpp b/src/decoders/decoders_dcraw.cpp
-index 4cd9af12..f8223749 100644
+index 6e844160..cd6325ec 100644
 --- a/src/decoders/decoders_dcraw.cpp
 +++ b/src/decoders/decoders_dcraw.cpp
 @@ -19,6 +19,13 @@
@@ -26,5 +26,5 @@ index 4cd9af12..f8223749 100644
  {
  #ifdef LIBRAW_NOTHREADS
 -- 
-2.39.2
+2.46.1
 

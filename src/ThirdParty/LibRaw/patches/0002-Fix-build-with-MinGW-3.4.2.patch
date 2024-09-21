@@ -9,6 +9,7 @@ Subject: [PATCH 2/3] Fix build with MinGW 3.4.2
  src/decoders/decoders_dcraw.cpp                    |  4 ++--
  src/decoders/decoders_libraw.cpp                   |  8 ++++----
  src/decoders/decoders_libraw_dcrdefs.cpp           |  8 ++++----
+ src/decoders/dng.cpp                               |  2 +-
  src/decoders/fp_dng.cpp                            |  8 ++++----
  src/decoders/generic.cpp                           |  2 +-
  src/decoders/kodak_decoders.cpp                    |  8 ++++----
@@ -19,10 +20,10 @@ Subject: [PATCH 2/3] Fix build with MinGW 3.4.2
  src/preprocessing/ext_preprocess.cpp               |  2 +-
  src/utils/utils_libraw.cpp                         |  9 +++++++++
  src/write/file_write.cpp                           |  4 ++--
- 15 files changed, 48 insertions(+), 37 deletions(-)
+ 16 files changed, 49 insertions(+), 38 deletions(-)
 
 diff --git a/libraw/libraw_datastream.h b/libraw/libraw_datastream.h
-index 0596e83..daabad9 100644
+index 0596e83a..daabad9b 100644
 --- a/libraw/libraw_datastream.h
 +++ b/libraw/libraw_datastream.h
 @@ -180,7 +180,7 @@ public:
@@ -35,7 +36,7 @@ index 0596e83..daabad9 100644
      }
      bool contains(INT64 _fpos, INT64& contains)
 diff --git a/src/decoders/crx.cpp b/src/decoders/crx.cpp
-index 30a7020..b9cf40d 100644
+index 0289c075..2d28dc99 100644
 --- a/src/decoders/crx.cpp
 +++ b/src/decoders/crx.cpp
 @@ -39,7 +39,9 @@ it under the terms of the one of two licenses as you choose:
@@ -97,7 +98,7 @@ index 30a7020..b9cf40d 100644
  
    crxLoadDecodeLoop(&img, hdr.nPlanes);
 diff --git a/src/decoders/decoders_dcraw.cpp b/src/decoders/decoders_dcraw.cpp
-index 090a6b7..4cd9af1 100644
+index 183136b6..6e844160 100644
 --- a/src/decoders/decoders_dcraw.cpp
 +++ b/src/decoders/decoders_dcraw.cpp
 @@ -1026,10 +1026,10 @@ void LibRaw::nokia_load_raw()
@@ -114,10 +115,10 @@ index 090a6b7..4cd9af1 100644
    }
    maximum = 0x3ff;
 diff --git a/src/decoders/decoders_libraw.cpp b/src/decoders/decoders_libraw.cpp
-index bc62a6c..e91d3d7 100644
+index 952e41a6..8a0a39f1 100644
 --- a/src/decoders/decoders_libraw.cpp
 +++ b/src/decoders/decoders_libraw.cpp
-@@ -413,9 +413,9 @@ void LibRaw::panasonicC6_load_raw()
+@@ -422,9 +422,9 @@ void LibRaw::panasonicC6_load_raw()
    {
      int rowstoread = MIN(rowstep, imgdata.sizes.raw_height - row);
      if (libraw_internal_data.internal_data.input->read(
@@ -129,7 +130,7 @@ index bc62a6c..e91d3d7 100644
      for (int crow = 0, col = 0; crow < rowstoread; crow++, col = 0)
      {
        unsigned short *rowptr =
-@@ -856,9 +856,9 @@ void LibRaw::phase_one_load_raw_s()
+@@ -865,9 +865,9 @@ void LibRaw::phase_one_load_raw_s()
  		if (readsz > maxsz)
  			throw LIBRAW_EXCEPTION_IO_CORRUPT;
  
@@ -142,7 +143,7 @@ index bc62a6c..e91d3d7 100644
  	}
  }
 diff --git a/src/decoders/decoders_libraw_dcrdefs.cpp b/src/decoders/decoders_libraw_dcrdefs.cpp
-index 89d8259..926266a 100644
+index e3bdd8c6..72b3ce8b 100644
 --- a/src/decoders/decoders_libraw_dcrdefs.cpp
 +++ b/src/decoders/decoders_libraw_dcrdefs.cpp
 @@ -47,14 +47,14 @@ void LibRaw::packed_tiled_dng_load_raw()
@@ -175,8 +176,21 @@ index 89d8259..926266a 100644
        FORC4 RAW(row, col + c) = (dp[c] << 2) | (dp[4] >> (c << 1) & 3);
    }
  }
+diff --git a/src/decoders/dng.cpp b/src/decoders/dng.cpp
+index 6a5c9d0d..f63be213 100644
+--- a/src/decoders/dng.cpp
++++ b/src/decoders/dng.cpp
+@@ -257,7 +257,7 @@ void LibRaw::lossy_dng_load_raw()
+     try
+     {
+       JSAMPLE *buffer_array[1];
+-      buffer_array[0] = buf.data();
++      buffer_array[0] = &buf[0];
+       while (cinfo.output_scanline < cinfo.output_height &&
+              (row = trow + cinfo.output_scanline) < height)
+       {
 diff --git a/src/decoders/fp_dng.cpp b/src/decoders/fp_dng.cpp
-index 72631db..e2a1c3e 100644
+index df7fe6c2..0dd444a8 100644
 --- a/src/decoders/fp_dng.cpp
 +++ b/src/decoders/fp_dng.cpp
 @@ -385,10 +385,10 @@ void LibRaw::deflate_dng_load_raw()
@@ -211,7 +225,7 @@ index 72631db..e2a1c3e 100644
                      [((y + row) * imgdata.sizes.raw_width + x) * ifd->samples];
                  libraw_internal_data.internal_data.input->read(dst, 1, fullrowbytes);
 diff --git a/src/decoders/generic.cpp b/src/decoders/generic.cpp
-index 6c521d8..306b664 100644
+index 6c521d84..306b664c 100644
 --- a/src/decoders/generic.cpp
 +++ b/src/decoders/generic.cpp
 @@ -92,7 +92,7 @@ void LibRaw::eight_bit_load_raw()
@@ -224,7 +238,7 @@ index 6c521d8..306b664 100644
        for (col = 0; col < raw_width; col++)
            RAW(row, col) = curve[pixel[col]];
 diff --git a/src/decoders/kodak_decoders.cpp b/src/decoders/kodak_decoders.cpp
-index e4b1b39..e8f90f6 100644
+index b5572f6b..cb5d2948 100644
 --- a/src/decoders/kodak_decoders.cpp
 +++ b/src/decoders/kodak_decoders.cpp
 @@ -202,7 +202,7 @@ void LibRaw::kodak_jpeg_load_raw()
@@ -264,7 +278,7 @@ index e4b1b39..e8f90f6 100644
    FORC(ns) strip[c] = get4();
    try
 diff --git a/src/decoders/load_mfbacks.cpp b/src/decoders/load_mfbacks.cpp
-index cddc33e..aec05a0 100644
+index cddc33eb..aec05a05 100644
 --- a/src/decoders/load_mfbacks.cpp
 +++ b/src/decoders/load_mfbacks.cpp
 @@ -472,7 +472,7 @@ int LibRaw::phase_one_correct()
@@ -277,7 +291,7 @@ index cddc33e..aec05a0 100644
        for (i = 0; i < (int)badCols.size(); ++i)
        {
 diff --git a/src/libraw_datastream.cpp b/src/libraw_datastream.cpp
-index 358ba5b..91594d2 100644
+index 358ba5bf..91594d22 100644
 --- a/src/libraw_datastream.cpp
 +++ b/src/libraw_datastream.cpp
 @@ -896,7 +896,7 @@ int LibRaw_bigfile_buffered_datastream::read(void *data, size_t size, size_t nme
@@ -317,7 +331,7 @@ index 358ba5b..91594d2 100644
          int streamsize = contains;
          int
 diff --git a/src/metadata/sony.cpp b/src/metadata/sony.cpp
-index ea568b5..e9794dd 100644
+index 6954124b..198a5732 100644
 --- a/src/metadata/sony.cpp
 +++ b/src/metadata/sony.cpp
 @@ -1973,7 +1973,7 @@ class checked_buffer_t
@@ -330,7 +344,7 @@ index ea568b5..e9794dd 100644
      }
      checked_buffer_t(short ord, unsigned char *dd, int ss): _order(ord), _data(dd),_len(ss){}
 diff --git a/src/postprocessing/postprocessing_utils_dcrdefs.cpp b/src/postprocessing/postprocessing_utils_dcrdefs.cpp
-index 98ea061..f6fd19d 100644
+index 98ea0618..f6fd19d6 100644
 --- a/src/postprocessing/postprocessing_utils_dcrdefs.cpp
 +++ b/src/postprocessing/postprocessing_utils_dcrdefs.cpp
 @@ -62,7 +62,7 @@ void LibRaw::convert_to_rgb()
@@ -352,7 +366,7 @@ index 98ea061..f6fd19d 100644
        for (j = 0; j < colors; j++)
          for (out_cam[i][j] = k = 0; k < 3; k++)
 diff --git a/src/preprocessing/ext_preprocess.cpp b/src/preprocessing/ext_preprocess.cpp
-index 8f2ec49..c5b4a5d 100644
+index 8f2ec495..c5b4a5d0 100644
 --- a/src/preprocessing/ext_preprocess.cpp
 +++ b/src/preprocessing/ext_preprocess.cpp
 @@ -116,7 +116,7 @@ void LibRaw::subtract(const char *fname)
@@ -365,7 +379,7 @@ index 8f2ec49..c5b4a5d 100644
        BAYER(row, col) = MAX(BAYER(row, col) - ntohs(pixel[col]), 0);
    }
 diff --git a/src/utils/utils_libraw.cpp b/src/utils/utils_libraw.cpp
-index 15a7b65..0ad74d3 100644
+index 36302162..f95e18a2 100644
 --- a/src/utils/utils_libraw.cpp
 +++ b/src/utils/utils_libraw.cpp
 @@ -290,6 +290,8 @@ void LibRaw::clearCancelFlag()
@@ -399,7 +413,7 @@ index 15a7b65..0ad74d3 100644
    if (__sync_fetch_and_and(&_exitflag, 0))
      throw LIBRAW_EXCEPTION_CANCELLED_BY_CALLBACK;
 diff --git a/src/write/file_write.cpp b/src/write/file_write.cpp
-index bf17ea2..c2a48b1 100644
+index bf17ea2b..c2a48b19 100644
 --- a/src/write/file_write.cpp
 +++ b/src/write/file_write.cpp
 @@ -183,7 +183,7 @@ void LibRaw::write_ppm_tiff()
@@ -421,5 +435,5 @@ index bf17ea2..c2a48b1 100644
      }
      catch (...)
 -- 
-2.45.2
+2.46.1
 
