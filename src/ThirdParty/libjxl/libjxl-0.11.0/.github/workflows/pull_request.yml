@@ -1,0 +1,67 @@
+# Copyright (c) the JPEG XL Project Authors. All rights reserved.
+#
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+# Workflow to run pull-requests specific checks.
+
+name: PR
+on:
+  merge_group:
+  pull_request:
+    types: [opened, reopened, labeled, unlabeled, synchronize]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Checks that the AUTHORS files is updated with new contributors.
+  authors:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'CI:none') }}
+    runs-on: [ubuntu-latest]
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@5c7944e73c4c2a096b17a9cb74d65b6c2bbafbde # v2.9.1
+      with:
+        egress-policy: audit
+
+    - name: Checkout the source
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+    - name: Check AUTHORS file
+      # This is an optional check
+      continue-on-error: True
+      run:
+        ./ci.sh authors
+
+  format:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'CI:none') }}
+    runs-on: [ubuntu-latest]
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@5c7944e73c4c2a096b17a9cb74d65b6c2bbafbde # v2.9.1
+      with:
+        egress-policy: audit
+
+    - name: Install build deps
+      run: |
+        sudo rm -f /var/lib/man-db/auto-update
+        sudo apt update
+        sudo apt install -y \
+          clang-format \
+          clang-format-14 \
+          clang-format-15 \
+        #
+    - name: Checkout the source
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+    - name: Install tools
+      run: |
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        brew install buildifier typos-cli
+    - name: lint
+      run: |
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        ./ci.sh lint >&2
