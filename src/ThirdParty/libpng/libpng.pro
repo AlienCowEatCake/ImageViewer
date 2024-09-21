@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBPNG_PATH = $${PWD}/libpng-1.6.43
+THIRDPARTY_LIBPNG_PATH = $${PWD}/libpng-1.6.44
 THIRDPARTY_LIBPNG_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
