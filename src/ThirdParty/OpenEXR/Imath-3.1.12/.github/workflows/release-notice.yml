@@ -9,6 +9,9 @@ on:
       - published
       # published should cover both 'released' and 'prereleased'
 
+permissions:
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -30,7 +33,6 @@ jobs:
         project_name: "Imath"
         slack_bot_token: ${{ secrets.SLACK_BOT_TOKEN }}
         slack_channel: "#openexr"
-        project_logo: "https://artwork.aswf.io/other/aswf/text/aqua/aswf-text-aqua.png"
         project_logo: "https://artwork.aswf.io/projects/openexr/icon/color/openexr-icon-color.png"
       uses: jmertic/slack-release-notifier@main
       

@@ -12,7 +12,7 @@ CONFIG += warn_off
 
 THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-3.2.4
 THIRDPARTY_OPENEXR_CONFIG_PATH = $${PWD}/config
-THIRDPARTY_IMATH_PATH = $${PWD}/Imath-3.1.11
+THIRDPARTY_IMATH_PATH = $${PWD}/Imath-3.1.12
 THIRDPARTY_OPENEXR_INCLUDE_PATH = $${PWD}/include
 
 include(../../Features.pri)
