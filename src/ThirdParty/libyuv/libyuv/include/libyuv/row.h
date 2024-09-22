@@ -577,6 +577,8 @@ extern "C" {
 #define HAS_BGRATOYROW_NEON_DOTPROD
 #define HAS_RGBATOYJROW_NEON_DOTPROD
 #define HAS_RGBATOYROW_NEON_DOTPROD
+#define HAS_ARGBGRAYROW_NEON_DOTPROD
+#define HAS_ARGBSEPIAROW_NEON_DOTPROD
 
 #define HAS_ARGBCOLORMATRIXROW_NEON_I8MM
 #define HAS_ARGBTOUV444ROW_NEON_I8MM
@@ -6160,6 +6162,9 @@ void ARGBUnattenuateRow_Any_AVX2(const uint8_t* src_ptr,
 void ARGBGrayRow_C(const uint8_t* src_argb, uint8_t* dst_argb, int width);
 void ARGBGrayRow_SSSE3(const uint8_t* src_argb, uint8_t* dst_argb, int width);
 void ARGBGrayRow_NEON(const uint8_t* src_argb, uint8_t* dst_argb, int width);
+void ARGBGrayRow_NEON_DotProd(const uint8_t* src_argb,
+                              uint8_t* dst_argb,
+                              int width);
 void ARGBGrayRow_MSA(const uint8_t* src_argb, uint8_t* dst_argb, int width);
 void ARGBGrayRow_LSX(const uint8_t* src_argb, uint8_t* dst_argb, int width);
 void ARGBGrayRow_LASX(const uint8_t* src_argb, uint8_t* dst_argb, int width);
@@ -6167,6 +6172,7 @@ void ARGBGrayRow_LASX(const uint8_t* src_argb, uint8_t* dst_argb, int width);
 void ARGBSepiaRow_C(uint8_t* dst_argb, int width);
 void ARGBSepiaRow_SSSE3(uint8_t* dst_argb, int width);
 void ARGBSepiaRow_NEON(uint8_t* dst_argb, int width);
+void ARGBSepiaRow_NEON_DotProd(uint8_t* dst_argb, int width);
 void ARGBSepiaRow_MSA(uint8_t* dst_argb, int width);
 void ARGBSepiaRow_LSX(uint8_t* dst_argb, int width);
 void ARGBSepiaRow_LASX(uint8_t* dst_argb, int width);
