@@ -806,12 +806,10 @@ QVariant RAWHandler::option(ImageOption option) const
         rawProcessor->imgdata.rawparams.shot_select = currentImageNumber();
 #endif
         if (rawProcessor->open_datastream(&stream) == LIBRAW_SUCCESS) {
-            if (rawProcessor->unpack() == LIBRAW_SUCCESS) {
-                auto w = libraw_get_iwidth(&rawProcessor->imgdata);
-                auto h = libraw_get_iheight(&rawProcessor->imgdata);
-                // flip & 4: taken from LibRaw code
-                v = (rawProcessor->imgdata.sizes.flip & 4) ? QSize(h, w) : QSize(w, h);
-            }
+            auto w = libraw_get_iwidth(&rawProcessor->imgdata);
+            auto h = libraw_get_iheight(&rawProcessor->imgdata);
+            // flip & 4: taken from LibRaw code
+            v = (rawProcessor->imgdata.sizes.flip & 4) ? QSize(h, w) : QSize(w, h);
         }
         d->rollbackTransaction();
     }

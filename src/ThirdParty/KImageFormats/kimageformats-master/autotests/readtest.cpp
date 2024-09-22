@@ -136,7 +136,7 @@ public:
         }
         if (reader->supportsOption(QImageIOHandler::ImageTransformation)) {
             m_transformations = reader->transformation();
-            if (m_transformations < 0 || m_transformations > 7)
+            if (int(m_transformations) < 0 || int(m_transformations) > 7)
                 ok = false;
         }
         return ok;

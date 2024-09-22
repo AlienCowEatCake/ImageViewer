@@ -1,4 +1,4 @@
-From c976ab0380324f7463d69335f2ee414349b18607 Mon Sep 17 00:00:00 2001
+From ac81367d1517c1a66446c2de1db22bbea10ae90a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 3 Jan 2024 08:33:45 +0700
 Subject: [PATCH 7/7] Dont use modern options with old Qt verson
@@ -295,7 +295,7 @@ index e52b74b..a66d9d2 100644
  
      QImage m_current_image;
 diff --git a/src/imageformats/jxr.cpp b/src/imageformats/jxr.cpp
-index eb964b8..0d26902 100644
+index e53278c..4ca2e7a 100644
 --- a/src/imageformats/jxr.cpp
 +++ b/src/imageformats/jxr.cpp
 @@ -45,6 +45,9 @@ Q_LOGGING_CATEGORY(LOG_JXRPLUGIN, "kf.imageformats.plugins.jxr", QtWarningMsg)
@@ -842,5 +842,5 @@ index 51328c1..724d080 100644
          buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
      }
 -- 
-2.46.0
+2.46.1
 

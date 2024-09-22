@@ -181,8 +181,8 @@ public:
 
         // 32-bit
         if (IsEqualGUID(jxrfmt, GUID_PKPixelFormat32bppBGR)) {
-            *conversionFormat = GUID_PKPixelFormat32bppRGB;
-            return QImage::Format_RGBX8888; // Format_RGB32 (?)
+            *conversionFormat = GUID_PKPixelFormat24bppRGB;
+            return QImage::Format_RGB888;
         };
         if (IsEqualGUID(jxrfmt, GUID_PKPixelFormat32bppBGRA)) {
             *conversionFormat = GUID_PKPixelFormat32bppRGBA;
@@ -649,7 +649,7 @@ private:
             << std::pair<QImage::Format, PKPixelFormatGUID>(QImage::Format_Mono, GUID_PKPixelFormatBlackWhite)
             << std::pair<QImage::Format, PKPixelFormatGUID>(QImage::Format_Grayscale8, GUID_PKPixelFormat8bppGray)
             << std::pair<QImage::Format, PKPixelFormatGUID>(QImage::Format_Grayscale16, GUID_PKPixelFormat16bppGray)
-            << std::pair<QImage::Format, PKPixelFormatGUID>(QImage::Format_RGB555, GUID_PKPixelFormat16bppRGB565)
+            << std::pair<QImage::Format, PKPixelFormatGUID>(QImage::Format_RGB555, GUID_PKPixelFormat16bppRGB555)
             << std::pair<QImage::Format, PKPixelFormatGUID>(QImage::Format_RGB16, GUID_PKPixelFormat16bppRGB565)
             << std::pair<QImage::Format, PKPixelFormatGUID>(QImage::Format_BGR888, GUID_PKPixelFormat24bppBGR)
             << std::pair<QImage::Format, PKPixelFormatGUID>(QImage::Format_RGB888, GUID_PKPixelFormat24bppRGB)
