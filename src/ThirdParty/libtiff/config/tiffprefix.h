@@ -142,6 +142,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define TIFFOpenOptionsAlloc tp_TIFFOpenOptionsAlloc
 #define TIFFOpenOptionsFree tp_TIFFOpenOptionsFree
 #define TIFFOpenOptionsSetErrorHandlerExtR tp_TIFFOpenOptionsSetErrorHandlerExtR
+#define TIFFOpenOptionsSetMaxCumulatedMemAlloc tp_TIFFOpenOptionsSetMaxCumulatedMemAlloc
 #define TIFFOpenOptionsSetMaxSingleMemAlloc tp_TIFFOpenOptionsSetMaxSingleMemAlloc
 #define TIFFOpenOptionsSetWarningHandlerExtR tp_TIFFOpenOptionsSetWarningHandlerExtR
 #define TIFFPredictorCleanup tp_TIFFPredictorCleanup
@@ -285,8 +286,6 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define _TIFFSwab24BitData tp__TIFFSwab24BitData
 #define _TIFFSwab32BitData tp__TIFFSwab32BitData
 #define _TIFFSwab64BitData tp__TIFFSwab64BitData
-#define _TIFFUInt64ToDouble tp__TIFFUInt64ToDouble
-#define _TIFFUInt64ToFloat tp__TIFFUInt64ToFloat
 #define _TIFFcalloc tp__TIFFcalloc
 #define _TIFFcallocExt tp__TIFFcallocExt
 #define _TIFFerrorHandler tp__TIFFerrorHandler
