@@ -56,11 +56,9 @@
 // #define DEBUG_FORCE_UNDERFLOW_EMPTY_BUFFER
 // #define DEBUG_FORCE_UNDERFLOW_FILLED_BUFFER
 
-#if defined (NDEBUG)
+/// @note Buffer is zero-filled since LibTIFF-4.7.0:
+/// https://gitlab.com/libtiff/libtiff/-/merge_requests/628/
 #define BUFFER_FILL_PATTERN 0
-#else
-#define BUFFER_FILL_PATTERN 0x7f
-#endif
 #define BUFFER_MAX_SIZE (static_cast<qint64>(std::numeric_limits<int>::max()))
 
 namespace
