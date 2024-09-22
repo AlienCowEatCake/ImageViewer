@@ -23,6 +23,7 @@ bool QMacHeifHandler::canRead(QIODevice *iod)
         bCanRead = (!qstrncmp(buf + 4, "ftyp", 4) &&
                     (!qstrncmp(buf + 8, "heic", 4) ||
                      !qstrncmp(buf + 8, "heix", 4) ||
+                     !qstrncmp(buf + 8, "msf1", 4) ||
                      !qstrncmp(buf + 8, "mif1", 4)));
     }
     return bCanRead;

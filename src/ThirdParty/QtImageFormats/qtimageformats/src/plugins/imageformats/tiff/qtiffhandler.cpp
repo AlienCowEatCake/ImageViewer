@@ -16,11 +16,13 @@
 #include <qvarlengtharray.h>
 #include <qbuffer.h>
 #include <qfiledevice.h>
+#include <qimagereader.h>
 
 extern "C" {
 #include "tiffio.h"
 }
 
+#include <limits>
 #include <memory>
 
 QT_BEGIN_NAMESPACE
@@ -207,6 +209,17 @@ TIFF *QTiffHandlerPrivate::openInternal(const char *mode, QIODevice *device)
     TIFFOpenOptions *opts = TIFFOpenOptionsAlloc();
     TIFFOpenOptionsSetErrorHandlerExtR(opts, &tiffErrorHandler, this);
     TIFFOpenOptionsSetWarningHandlerExtR(opts, &tiffWarningHandler, this);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#if TIFFLIB_AT_LEAST(4, 7, 0)
+    quint64 maxAlloc = quint64(QImageReader::allocationLimit()) << 20;
+    if (maxAlloc) {
+        maxAlloc = qMin(maxAlloc, quint64(std::numeric_limits<tmsize_t>::max()));
+        TIFFOpenOptionsSetMaxCumulatedMemAlloc(opts, tmsize_t(maxAlloc));
+    }
+#endif
+#endif
+
     auto handle = TIFFClientOpenExt("foo",
                                     mode,
                                     device,
