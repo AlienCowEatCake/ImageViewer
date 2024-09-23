@@ -495,6 +495,9 @@ disable_cxx11 : !system_highway {
 disable_cxx17 : !system_exiv2 {
     CONFIG *= disable_exiv2
 }
+*msvc* : !system_exiv2 : lessThan(MSVC_VERSION, 2019) {
+    CONFIG *= disable_exiv2
+}
 
 # LibJPEG options:
 #    disable_libjpeg
@@ -706,6 +709,9 @@ disable_cxx11 : !system_flif {
     disable_cxx11 | disable_brotli | disable_highway | disable_liblcms2 {
         CONFIG *= disable_libjxl
     }
+}
+disable_cxx17 : !system_libjxl {
+    CONFIG *= disable_libjxl
 }
 
 # MagickCore options:

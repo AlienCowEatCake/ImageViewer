@@ -27,10 +27,6 @@ INCLUDEPATH = \
 
 DEFINES += JPEGXL_MAJOR_VERSION=0 JPEGXL_MINOR_VERSION=11 JPEGXL_PATCH_VERSION=0
 DEFINES += JXL_ENABLE_ASSERT=0 JXL_ENABLE_CHECK=0
-*msvc* {
-    # Avoid unresolved ...::DebugString() functions on linking stage
-    QMAKE_CXXFLAGS_DEBUG += -DJXL_DEBUG_V_LEVEL=1
-}
 
 # find ./lib/jxl -name '*.cc' | egrep -v '(_test|_gbench|test_)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBJXL_PATH}| ; s|$| \\|'
 SOURCES += \
