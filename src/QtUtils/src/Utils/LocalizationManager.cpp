@@ -30,6 +30,8 @@
 #include <QActionGroup>
 #include <QComboBox>
 #include <QList>
+#include <QMap>
+#include <QPair>
 
 #include "SettingsWrapper.h"
 #include "SignalBlocker.h"
@@ -63,6 +65,67 @@ QString findBestLocaleForSystem(const QStringList& localesList)
     if(systemLocale.startsWith(QString::fromLatin1("zh_Hant"), Qt::CaseInsensitive))
         return Locale::ZH_TW;
     return Locale::EN;
+}
+
+QString getLocaleFallbackDescription(const QString &localeName)
+{
+    const QLocale locale(localeName);
+    if(locale.language() == QLocale::C)
+        return localeName;
+
+    const QString language = QLocale::languageToString(locale.language());
+    if(language.isEmpty())
+        return localeName;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+    const QString territory = QLocale::territoryToString(locale.territory());
+#else
+    const QString territory = QLocale::countryToString(locale.country());
+#endif
+    if(territory.isEmpty())
+        return language;
+
+    return QString::fromLatin1("%1 (%2)").arg(language, territory);
+}
+
+QString getLocaleNativeDescription(const QString &localeName)
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 8, 0))
+    const QLocale locale(localeName);
+    if(locale.language() == QLocale::C)
+        return getLocaleFallbackDescription(localeName);
+
+    const QString language = locale.nativeLanguageName();
+    if(language.isEmpty())
+        return getLocaleFallbackDescription(localeName);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+    const QString territory = locale.nativeTerritoryName();
+#else
+    const QString territory = locale.nativeCountryName();
+#endif
+    if(territory.isEmpty())
+        return language;
+
+    return QString::fromLatin1("%1 (%2)").arg(language, territory);
+#else
+    return getLocaleFallbackDescription(localeName);
+#endif
+}
+
+QString getLocaleFullDescription(const QString &localeName)
+{
+    const QString fallbackDescription = getLocaleFallbackDescription(localeName);
+    const QString nativeDescription = getLocaleNativeDescription(localeName);
+    if(fallbackDescription.isEmpty() && nativeDescription.isEmpty())
+        return localeName;
+    if(fallbackDescription.isEmpty())
+        return nativeDescription;
+    if(nativeDescription.isEmpty())
+        return fallbackDescription;
+    if(fallbackDescription == nativeDescription)
+        return nativeDescription;
+    return QString::fromLatin1("%1 - %2").arg(nativeDescription, fallbackDescription);
 }
 
 } // namespace
@@ -105,38 +168,32 @@ struct LocalizationManager::Impl
         for(ActionList::Iterator it = actions.begin(), itEnd = actions.end(); it != itEnd; ++it)
             (*it)->setChecked(true);
 
-        ActionList &actionsEnglish = actionsMap[Locale::EN];
-        for(ActionList::Iterator it = actionsEnglish.begin(), itEnd = actionsEnglish.end(); it != itEnd; ++it)
-            (*it)->setText(QApplication::translate("LocalizationManager", "&English"));
-
-        ActionList &actionsRussian = actionsMap[Locale::RU];
-        for(ActionList::Iterator it = actionsRussian.begin(), itEnd = actionsRussian.end(); it != itEnd; ++it)
-            (*it)->setText(QApplication::translate("LocalizationManager", "&Russian"));
-
-        ActionList &actionsChineseSimplified = actionsMap[Locale::ZH_CN];
-        for(ActionList::Iterator it = actionsChineseSimplified.begin(), itEnd = actionsChineseSimplified.end(); it != itEnd; ++it)
-            (*it)->setText(QApplication::translate("LocalizationManager", "&Chinese (Simplified)"));
-
-        ActionList &actionsChineseTraditional = actionsMap[Locale::ZH_TW];
-        for(ActionList::Iterator it = actionsChineseTraditional.begin(), itEnd = actionsChineseTraditional.end(); it != itEnd; ++it)
-            (*it)->setText(QApplication::translate("LocalizationManager", "Chinese (&Traditional)"));
+        for(QStringList::ConstIterator it = supportedLocales.constBegin(), itEnd = supportedLocales.constEnd(); it != itEnd; ++it)
+        {
+            const QString description = getLocaleFullDescription(*it);
+            ActionList &actions = actionsMap[*it];
+            for(ActionList::Iterator jt = actions.begin(), jtEnd = actions.end(); jt != jtEnd; ++jt)
+                (*jt)->setText(description);
+        }
     }
 
     void updateComboBoxes(const QString &locale)
     {
-        QMap<QString, QString> itemTexts;
-        itemTexts[Locale::EN] = QApplication::translate("LocalizationManager", "English");
-        itemTexts[Locale::RU] = QApplication::translate("LocalizationManager", "Russian");
-        itemTexts[Locale::ZH_CN] = QApplication::translate("LocalizationManager", "Chinese (Simplified)");
-        itemTexts[Locale::ZH_TW] = QApplication::translate("LocalizationManager", "Chinese (Traditional)");
+        QMap<QString, QPair<QString, QString> > itemTexts;
+        for(QStringList::ConstIterator it = supportedLocales.constBegin(), itEnd = supportedLocales.constEnd(); it != itEnd; ++it)
+            itemTexts[*it] = qMakePair<QString, QString>(getLocaleNativeDescription(*it), getLocaleFullDescription(*it));
+
         for(QList<QComboBox*>::Iterator it = comboBoxList.begin(), itEnd = comboBoxList.end(); it != itEnd; ++it)
         {
             QComboBox *comboBox = *it;
             QSignalBlocker blocker(comboBox);
             comboBox->clear();
             comboBox->setEditable(false);
-            for(QMap<QString, QString>::ConstIterator jt = itemTexts.constBegin(), jtEnd = itemTexts.constEnd(); jt != jtEnd; ++jt)
-                comboBox->addItem(jt.value(), jt.key());
+            for(QMap<QString, QPair<QString, QString> >::ConstIterator jt = itemTexts.constBegin(), jtEnd = itemTexts.constEnd(); jt != jtEnd; ++jt)
+            {
+                comboBox->addItem(jt.value().first, jt.key());
+                comboBox->setItemData(comboBox->count() - 1, jt.value().second, Qt::ToolTipRole);
+            }
             comboBox->setCurrentIndex(comboBox->findData(locale));
         }
     }

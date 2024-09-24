@@ -118,49 +118,6 @@
     </message>
 </context>
 <context>
-    <name>LocalizationManager</name>
-    <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="110"/>
-        <source>&amp;English</source>
-        <translation>&amp;English</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="114"/>
-        <source>&amp;Russian</source>
-        <translation>&amp;Русский</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="118"/>
-        <source>&amp;Chinese (Simplified)</source>
-        <translation>&amp;Chinese (Simplified)</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="122"/>
-        <source>Chinese (&amp;Traditional)</source>
-        <translation>Chinese (&amp;Traditional)</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="131"/>
-        <source>Chinese (Traditional)</source>
-        <translation>Chinese (Traditional)</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="128"/>
-        <source>English</source>
-        <translation>English</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="129"/>
-        <source>Russian</source>
-        <translation>Русский</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/LocalizationManager.cpp" line="130"/>
-        <source>Chinese (Simplified)</source>
-        <translation>Chinese (Simplified)</translation>
-    </message>
-</context>
-<context>
     <name>QJsonParseError</name>
     <message>
         <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="67"/>
