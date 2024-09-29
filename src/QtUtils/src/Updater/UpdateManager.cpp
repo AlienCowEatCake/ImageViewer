@@ -28,6 +28,9 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QTimer>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
+#include <QNetworkInformation>
+#endif
 
 #include "Utils/SettingsWrapper.h"
 
@@ -54,6 +57,50 @@ struct UpdateManager::Impl
         updaterSettings.setValue(KEY_AUTO_CHECK_FOR_UPDATES, updaterSettings.value(KEY_AUTO_CHECK_FOR_UPDATES, autoCheck));
         updaterSettings.setValue(KEY_SKIPPED_VERSION, updaterSettings.value(KEY_SKIPPED_VERSION, QString()));
         updaterSettings.setValue(KEY_LAST_CHECK_TIMESTAMP, updaterSettings.value(KEY_LAST_CHECK_TIMESTAMP, QString::fromLatin1("1970-01-01T00:00:00Z")));
+    }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+    static bool QNetworkInformation_loadDefaultBackend()
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
+        return QNetworkInformation::loadDefaultBackend();
+#elif defined (Q_OS_WIN)
+        return QNetworkInformation::load(QString::fromLatin1("networklistmanager"));
+#elif defined (Q_OS_DARWIN)
+        return QNetworkInformation::load(QString::fromLatin1("scnetworkreachability"));
+#elif defined (Q_OS_ANDROID)
+        return QNetworkInformation::load(QString::fromLatin1("android"));
+#elif defined (Q_OS_LINUX)
+        return QNetworkInformation::load(QString::fromLatin1("networkmanager"));
+#else
+        return false;
+#endif
+    }
+#endif
+
+    bool canSilentCheckForUpdates() const
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+        QNetworkInformation *ni = QNetworkInformation::instance();
+        if(!ni)
+        {
+            static const bool backendAvailable = QNetworkInformation_loadDefaultBackend();
+            if(backendAvailable)
+                ni = QNetworkInformation::instance();
+        }
+        if(ni)
+        {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 3, 0))
+            if(ni->isMetered())
+                return false;
+#endif
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+            if(ni->isBehindCaptivePortal())
+                return false;
+#endif
+        }
+#endif
+        return true;
     }
 };
 
@@ -102,6 +149,9 @@ void UpdateManager::checkForUpdates(bool silent)
         box.exec();
         return;
     }
+
+    if(silent && !m_impl->canSilentCheckForUpdates())
+        return;
 
     m_impl->inProgress = true;
     m_impl->silent = silent;
