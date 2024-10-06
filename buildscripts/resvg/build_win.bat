@@ -1,6 +1,6 @@
 @echo off
 
-set "RESVG_VERSION=0.43.0"
+set "RESVG_VERSION=0.44.0"
 
 rem Windows 7 support is dropped since 1.76.0 It has been moved to
 rem {x86_64,i686}-win7-windows-msvc targes. See changelog here:
