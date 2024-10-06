@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-RESVG_VERSION="0.43.0"
+RESVG_VERSION="0.44.0"
 RESVG_TARGET="$(gcc -dumpmachine | sed 's|-.*||')-unknown-linux-gnu"
 
 RUST_VERSION="1.73.0"
