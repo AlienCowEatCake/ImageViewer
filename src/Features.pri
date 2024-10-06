@@ -463,6 +463,7 @@ disable_cxx11 : !system_highway {
 !disable_highway : !system_highway {
     DEFINES *= HWY_COMPILE_ONLY_SCALAR
     DEFINES *= HWY_BROKEN_EMU128
+    DEFINES *= HWY_HAVE_SCALAR_F16_TYPE=0
 }
 
 # libexpat options:
