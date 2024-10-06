@@ -2,7 +2,7 @@
 
 SOURCE_DIR="$(cd "$(dirname "${0}")/.." && pwd)"
 DOCKER_ARCH="$(echo "${0##*/docker_}" | sed 's|_.*||')"
-DOCKER_IMAGE="aliencoweatcake/${DOCKER_ARCH}-trusty-qt5projects:qt5.15.12"
+DOCKER_IMAGE="aliencoweatcake/${DOCKER_ARCH}-trusty-qt5projects:qt5.15.15"
 DOCKER_USER="user"
 DOCKER_WORKSACE="/home/${DOCKER_USER}/workspace"
 FORWARD_SCRIPT="${0##*/docker_${DOCKER_ARCH}_}"
