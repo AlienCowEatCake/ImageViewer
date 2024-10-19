@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-3.2.4
+THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-3.3.1
 THIRDPARTY_OPENEXR_CONFIG_PATH = $${PWD}/config
 THIRDPARTY_IMATH_PATH = $${PWD}/Imath-3.1.12
 THIRDPARTY_OPENEXR_INCLUDE_PATH = $${PWD}/include
@@ -101,8 +101,11 @@ SOURCES += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChromaticities.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChromaticitiesAttribute.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompositeDeepScanLine.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompression.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompressionAttribute.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompressor.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfContext.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfContextInit.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfConvert.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepCompositing.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepFrameBuffer.cpp \
@@ -263,6 +266,8 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompression.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompressionAttribute.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompressor.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfContext.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfContextInit.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfConvert.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepCompositing.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepFrameBuffer.h \
@@ -278,7 +283,6 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepTiledOutputPart.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDoubleAttribute.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDwaCompressor.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDwaCompressorSimd.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfEnvmap.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfEnvmapAttribute.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfExport.h \
@@ -359,9 +363,8 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfXdr.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZip.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZipCompressor.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/b44ExpLogTable.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/dwaLookups.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/backward_compatibility.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/dwaLookups.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_attr.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_channel_list.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_coding.h \
@@ -475,10 +478,12 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IexThrowErrnoExc.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThread.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadConfig.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadExport.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadForward.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadMutex.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadNamespace.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadPool.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadProcessGroup.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadSemaphore.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfAcesFile.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfArray.h \
@@ -497,6 +502,8 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompression.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompressionAttribute.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompressor.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfContext.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfContextInit.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfConvert.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepCompositing.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepFrameBuffer.h \
@@ -516,7 +523,6 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepTiledOutputPart.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDoubleAttribute.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDwaCompressor.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDwaCompressorSimd.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfEnvmap.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfEnvmapAttribute.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfExport.h \
@@ -610,7 +616,6 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfZip.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfZipCompressor.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/OpenEXRConfig.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/b44ExpLogTable.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/backward_compatibility.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/dwaLookups.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_attr.h \

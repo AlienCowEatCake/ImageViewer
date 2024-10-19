@@ -22,7 +22,7 @@
 // Current internal library namespace name
 //
 #define ILMTHREAD_INTERNAL_NAMESPACE_CUSTOM 0
-#define ILMTHREAD_INTERNAL_NAMESPACE IlmThread_3_2
+#define ILMTHREAD_INTERNAL_NAMESPACE IlmThread_3_3
 
 //
 // Current public user namespace name

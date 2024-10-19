@@ -1,32 +1,34 @@
-From b2ed88c66127dec4b4151135c1646dc45d38f491 Mon Sep 17 00:00:00 2001
+From 68bac906dbba02f02dfce69e57275c91c5d5280e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Thu, 13 Jun 2024 00:04:24 +0700
-Subject: [PATCH] Switch back from libdeflate to zlib
+Subject: [PATCH 1/2] Switch back from libdeflate to zlib
 
 ---
- src/lib/OpenEXRCore/compression.c | 94 +++++++------------------------
- 1 file changed, 20 insertions(+), 74 deletions(-)
+ src/lib/OpenEXRCore/compression.c | 112 ++++++------------------------
+ 1 file changed, 20 insertions(+), 92 deletions(-)
 
 diff --git a/src/lib/OpenEXRCore/compression.c b/src/lib/OpenEXRCore/compression.c
-index 1d2eaea5..3a4c5bf4 100644
+index 8348bfc4..2aab919d 100644
 --- a/src/lib/OpenEXRCore/compression.c
 +++ b/src/lib/OpenEXRCore/compression.c
-@@ -8,13 +8,7 @@
- #include "internal_memory.h"
- #include "internal_structs.h"
+@@ -14,15 +14,9 @@
+ #include "internal_file.h"
+ #include "internal_huf.h"
  
 -#include <libdeflate.h>
--
++#include <zlib.h>
+ #include <string.h>
+ 
 -#if (                                                                          \
 -    LIBDEFLATE_VERSION_MAJOR > 1 ||                                            \
 -    (LIBDEFLATE_VERSION_MAJOR == 1 && LIBDEFLATE_VERSION_MINOR > 18))
 -#    define EXR_USE_CONFIG_DEFLATE_STRUCT 1
 -#endif
-+#include <zlib.h>
- 
+-
  /* value Aras found to be better trade off of speed vs size */
  #define EXR_DEFAULT_ZLIB_COMPRESS_LEVEL 4
-@@ -26,7 +20,7 @@ exr_compress_max_buffer_size (size_t in_bytes)
+ 
+@@ -33,7 +27,7 @@ exr_compress_max_buffer_size (size_t in_bytes)
  {
      size_t r, extra;
  
@@ -35,29 +37,29 @@ index 1d2eaea5..3a4c5bf4 100644
      /*
       * lib deflate has a message about needing a 9 byte boundary
       * but is unclear if it actually adds that or not
-@@ -60,19 +54,8 @@ exr_compress_buffer (
+@@ -79,19 +73,8 @@ exr_compress_buffer (
      size_t              out_bytes_avail,
      size_t*             actual_out)
  {
--    struct libdeflate_compressor*       comp;
--    const struct _internal_exr_context* pctxt = EXR_CCTXT (ctxt);
+-    struct libdeflate_compressor* comp;
+-
 -#ifdef EXR_USE_CONFIG_DEFLATE_STRUCT
 -    struct libdeflate_options opt = {
 -        .sizeof_options = sizeof (struct libdeflate_options),
--        .malloc_func    = pctxt ? pctxt->alloc_fn : internal_exr_alloc,
--        .free_func      = pctxt ? pctxt->free_fn : internal_exr_free};
+-        .malloc_func    = ctxt ? ctxt->alloc_fn : internal_exr_alloc,
+-        .free_func      = ctxt ? ctxt->free_fn : internal_exr_free};
 -
 -#else
 -    libdeflate_set_memory_allocator (
--        pctxt ? pctxt->alloc_fn : internal_exr_alloc,
--        pctxt ? pctxt->free_fn : internal_exr_free);
+-        ctxt ? ctxt->alloc_fn : internal_exr_alloc,
+-        ctxt ? ctxt->free_fn : internal_exr_free);
 -#endif
 +    int    res   = Z_OK;
 +    uLongf outsz = out_bytes_avail;
  
      if (level < 0)
      {
-@@ -81,25 +64,11 @@ exr_compress_buffer (
+@@ -100,25 +83,11 @@ exr_compress_buffer (
          if (level < 0) level = EXR_DEFAULT_ZLIB_COMPRESS_LEVEL;
      }
  
@@ -87,28 +89,37 @@ index 1d2eaea5..3a4c5bf4 100644
      }
      return EXR_ERR_OUT_OF_MEMORY;
  }
-@@ -115,42 +84,19 @@ exr_uncompress_buffer (
+@@ -134,60 +103,19 @@ exr_uncompress_buffer (
      size_t              out_bytes_avail,
      size_t*             actual_out)
  {
--    struct libdeflate_decompressor*     decomp;
--    enum libdeflate_result              res;
--    size_t                              actual_in_bytes;
--    const struct _internal_exr_context* pctxt = EXR_CCTXT (ctxt);
+-    struct libdeflate_decompressor* decomp;
+-    enum libdeflate_result          res;
+-    size_t                          actual_in_bytes;
 -#ifdef EXR_USE_CONFIG_DEFLATE_STRUCT
 -    struct libdeflate_options opt = {
 -        .sizeof_options = sizeof (struct libdeflate_options),
--        .malloc_func    = pctxt ? pctxt->alloc_fn : internal_exr_alloc,
--        .free_func      = pctxt ? pctxt->free_fn : internal_exr_free};
+-        .malloc_func    = ctxt ? ctxt->alloc_fn : internal_exr_alloc,
+-        .free_func      = ctxt ? ctxt->free_fn : internal_exr_free};
+-#endif
 -
+-//    if (in_bytes == out_bytes_avail)
+-//    {
+-//        if (actual_out) *actual_out = in_bytes;
+-//        if (in != out)
+-//            memcpy(out, in, in_bytes);
+-//
+-//        return EXR_ERR_SUCCESS;
+-//    }
+-
+-#ifdef EXR_USE_CONFIG_DEFLATE_STRUCT
 -    decomp = libdeflate_alloc_decompressor_ex (&opt);
 -#else
 -    libdeflate_set_memory_allocator (
--        pctxt ? pctxt->alloc_fn : internal_exr_alloc,
--        pctxt ? pctxt->free_fn : internal_exr_free);
+-        ctxt ? ctxt->alloc_fn : internal_exr_alloc,
+-        ctxt ? ctxt->free_fn : internal_exr_free);
 -    decomp = libdeflate_alloc_decompressor ();
 -#endif
--
 -    if (decomp)
 +    int    res             = Z_OK;
 +    uLongf outsz           = out_bytes_avail;
@@ -139,9 +150,18 @@ index 1d2eaea5..3a4c5bf4 100644
 -            if (in_bytes == actual_in_bytes) return EXR_ERR_SUCCESS;
 -            /* it's an error to not consume the full buffer, right? */
 -        }
+-        else if (res == LIBDEFLATE_INSUFFICIENT_SPACE)
+-        {
+-            return EXR_ERR_OUT_OF_MEMORY;
+-        }
+-        else if (res == LIBDEFLATE_SHORT_OUTPUT)
+-        {
+-            /* TODO: is this an error? */
+-            return EXR_ERR_SUCCESS;
+-        }
          return EXR_ERR_CORRUPT_CHUNK;
      }
      return EXR_ERR_OUT_OF_MEMORY;
 -- 
-2.39.2
+2.47.0
 
