@@ -62,10 +62,10 @@
 /* Define to 1 if sha256 integrity check is enabled. */
 #define HAVE_CHECK_SHA256 1
 
-/* Define to 1 if you have the `clock_gettime' function. */
+/* Define to 1 if you have the 'clock_gettime' function. */
 /* #undef HAVE_CLOCK_GETTIME */
 
-/* Define to 1 if `CLOCK_MONOTONIC' is declared in <time.h>. */
+/* Define to 1 if 'CLOCK_MONOTONIC' is declared in <time.h>. */
 /* #undef HAVE_CLOCK_MONOTONIC */
 
 /* Define to 1 if you have the <CommonCrypto/CommonDigest.h> header file. */
@@ -388,7 +388,7 @@
 #define PACKAGE_NAME "XZ Utils"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "XZ Utils 5.6.2"
+#define PACKAGE_STRING "XZ Utils 5.6.3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "xz"
@@ -397,7 +397,7 @@
 #define PACKAGE_URL "https://tukaani.org/xz/"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "5.6.2"
+#define PACKAGE_VERSION "5.6.3"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -561,7 +561,7 @@
 
 
 /* Version number of package */
-#define VERSION "5.6.2"
+#define VERSION "5.6.3"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

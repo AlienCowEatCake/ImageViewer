@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_xzutils {
 
-        THIRDPARTY_XZUTILS_PATH = $${PWD}/xz-5.6.2
+        THIRDPARTY_XZUTILS_PATH = $${PWD}/xz-5.6.3
 
         INCLUDEPATH += $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api
         DEPENDPATH += $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api
