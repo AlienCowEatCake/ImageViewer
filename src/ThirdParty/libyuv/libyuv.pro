@@ -89,6 +89,7 @@ HEADERS += \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/convert_from.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/convert_from_argb.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/cpu_id.h \
+    $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/cpu_support.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/loongson_intrinsics.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/macros_msa.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/mjpeg_decoder.h \
