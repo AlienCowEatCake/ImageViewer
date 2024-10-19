@@ -1,4 +1,4 @@
-From ac81367d1517c1a66446c2de1db22bbea10ae90a Mon Sep 17 00:00:00 2001
+From 58a1ecf5bbc6e14fcc422c3064da613f1a1a9314 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 3 Jan 2024 08:33:45 +0700
 Subject: [PATCH 7/7] Dont use modern options with old Qt verson
@@ -8,6 +8,7 @@ Subject: [PATCH 7/7] Dont use modern options with old Qt verson
  src/imageformats/ani_p.h  | 16 +++++++++++++++
  src/imageformats/exr.cpp  | 38 ++++++++++++++++++++++++++++++++++++
  src/imageformats/hdr.cpp  | 27 +++++++++++++++++++++++++-
+ src/imageformats/jxl.cpp  | 32 ++++++++++++++++++++++++++++++
  src/imageformats/jxl_p.h  |  8 ++++++++
  src/imageformats/jxr.cpp  | 17 ++++++++++++++--
  src/imageformats/pfm.cpp  | 26 +++++++++++++++++++++++++
@@ -17,7 +18,7 @@ Subject: [PATCH 7/7] Dont use modern options with old Qt verson
  src/imageformats/rgb.cpp  | 24 +++++++++++++++++++++++
  src/imageformats/util_p.h |  7 +++++++
  src/imageformats/xcf.cpp  | 41 +++++++++++++++++++++++++++++++++++++--
- 13 files changed, 260 insertions(+), 7 deletions(-)
+ 14 files changed, 292 insertions(+), 7 deletions(-)
 
 diff --git a/src/imageformats/ani.cpp b/src/imageformats/ani.cpp
 index 5fa0d46..4c13315 100644
@@ -78,7 +79,7 @@ index bfce9ef..7b8435b 100644
      QString m_name;
      QString m_artist;
 diff --git a/src/imageformats/exr.cpp b/src/imageformats/exr.cpp
-index 9919040..66887c8 100644
+index 0885c92..6338a4d 100644
 --- a/src/imageformats/exr.cpp
 +++ b/src/imageformats/exr.cpp
 @@ -81,7 +81,10 @@
@@ -267,8 +268,123 @@ index bee4fdc..0b1bf7d 100644
              }
          }
      }
+diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
+index df2a3e8..9474daf 100644
+--- a/src/imageformats/jxl.cpp
++++ b/src/imageformats/jxl.cpp
+@@ -59,6 +59,15 @@ typedef enum {JXL_ENC_SUCCESS, JXL_ENC_ERROR, JXL_ENC_NEED_MORE_OUTPUT, JXL_ENC_
+ #endif
+ #endif
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
++#ifndef JXL_FP_DISABLED
++#define JXL_FP_DISABLED
++#endif
++#endif
++#if defined (JXL_FP_DISABLED) && !defined (JXL_HDR_PRESERVATION_DISABLED)
++#define JXL_HDR_PRESERVATION_DISABLED
++#endif
++
+ #if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
+ #ifndef JXL_HDR_PRESERVATION_DISABLED
+ // Define JXL_HDR_PRESERVATION_DISABLED to disable HDR preservation
+@@ -310,6 +319,7 @@ bool QJpegXLHandler::countALLFrames()
+             m_input_pixel_format.data_type = JXL_TYPE_UINT16;
+             m_input_image_format = m_target_image_format = QImage::Format_Grayscale16;
+             m_buffer_size = (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize * m_input_pixel_format.num_channels * 2;
++#ifndef JXL_FP_DISABLED
+         } else if (m_basicinfo.bits_per_sample > 16 && is_fp) {
+             m_input_pixel_format.data_type = JXL_TYPE_FLOAT;
+             m_input_image_format = QImage::Format_RGBA32FPx4;
+@@ -318,13 +328,19 @@ bool QJpegXLHandler::countALLFrames()
+                 m_target_image_format = QImage::Format_RGBA32FPx4;
+             else
+                 m_target_image_format = QImage::Format_RGBX32FPx4;
++#endif
+         } else {
+             m_buffer_size = (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize * m_input_pixel_format.num_channels * 2;
++#ifndef JXL_FP_DISABLED
+             m_input_image_format = is_fp ? QImage::Format_RGBA16FPx4 : QImage::Format_RGBA64;
+             if (loadalpha)
+                 m_target_image_format = is_fp ? QImage::Format_RGBA16FPx4 : QImage::Format_RGBA64;
+             else
+                 m_target_image_format = is_fp ? QImage::Format_RGBX16FPx4 : QImage::Format_RGBX64;
++#else
++            m_input_image_format = QImage::Format_RGBA64;
++            m_target_image_format = loadalpha ? QImage::Format_RGBA64 : QImage::Format_RGBX64;
++#endif
+         }
+     } else { // 8bit depth
+         m_input_pixel_format.data_type = JXL_TYPE_UINT8;
+@@ -586,6 +602,7 @@ bool QJpegXLHandler::write(const QImage &image)
+     bool is_gray = false;
+     // depth detection
+     switch (image.format()) {
++#ifndef JXL_FP_DISABLED
+     case QImage::Format_RGBX32FPx4:
+     case QImage::Format_RGBA32FPx4:
+     case QImage::Format_RGBA32FPx4_Premultiplied:
+@@ -601,6 +618,7 @@ bool QJpegXLHandler::write(const QImage &image)
+         save_depth = 16;
+         save_fp = true;
+         break;
++#endif
+ #endif
+     case QImage::Format_BGR30:
+     case QImage::Format_A2BGR30_Premultiplied:
+@@ -736,6 +754,7 @@ bool QJpegXLHandler::write(const QImage &image)
+         output_info.bits_per_sample = 8;
+         tmpformat = QImage::Format_Grayscale8;
+         pixel_format.num_channels = 1;
++#ifndef JXL_FP_DISABLED
+     } else if (save_depth > 16) { // 32bit depth rgb
+         pixel_format.data_type = JXL_TYPE_FLOAT;
+         output_info.exponent_bits_per_sample = 8;
+@@ -754,6 +773,7 @@ bool QJpegXLHandler::write(const QImage &image)
+             output_info.alpha_bits = 0;
+             output_info.num_extra_channels = 0;
+         }
++#endif
+     } else if (save_depth > 8) { // 16bit depth rgb
+         pixel_format.data_type = save_fp ? JXL_TYPE_FLOAT16 : JXL_TYPE_UINT16;
+         output_info.exponent_bits_per_sample = save_fp ? 5 : 0;
+@@ -761,13 +781,23 @@ bool QJpegXLHandler::write(const QImage &image)
+         output_info.bits_per_sample = 16;
+ 
+         if (image.hasAlphaChannel()) {
++#ifndef JXL_FP_DISABLED
+             tmpformat = save_fp ? QImage::Format_RGBA16FPx4 : QImage::Format_RGBA64;
++#else
++            Q_ASSERT(!save_fp);
++            tmpformat = QImage::Format_RGBA64;
++#endif
+             pixel_format.num_channels = 4;
+             output_info.alpha_bits = 16;
+             output_info.alpha_exponent_bits = save_fp ? 5 : 0;
+             output_info.num_extra_channels = 1;
+         } else {
++#ifndef JXL_FP_DISABLED
+             tmpformat = save_fp ? QImage::Format_RGBX16FPx4 : QImage::Format_RGBX64;
++#else
++            Q_ASSERT(!save_fp);
++            tmpformat = QImage::Format_RGBX64;
++#endif
+             pixel_format.num_channels = 3;
+             output_info.alpha_bits = 0;
+             output_info.num_extra_channels = 0;
+@@ -881,8 +911,10 @@ bool QJpegXLHandler::write(const QImage &image)
+         // pack pixel data
+         if (save_depth > 16 && save_fp)
+             packRGBPixels<float>(tmpimage);
++#ifndef JXL_FP_DISABLED
+         else if (save_fp)
+             packRGBPixels<qfloat16>(tmpimage);
++#endif
+         else
+             packRGBPixels<quint16>(tmpimage);
+     }
 diff --git a/src/imageformats/jxl_p.h b/src/imageformats/jxl_p.h
-index e52b74b..a66d9d2 100644
+index 923a611..cad7036 100644
 --- a/src/imageformats/jxl_p.h
 +++ b/src/imageformats/jxl_p.h
 @@ -17,6 +17,10 @@
@@ -282,7 +398,7 @@ index e52b74b..a66d9d2 100644
  #include <jxl/decode.h>
  
  class QJpegXLHandler : public QImageIOHandler
-@@ -72,7 +76,11 @@ private:
+@@ -73,7 +77,11 @@ private:
      void *m_runner;
      JxlBasicInfo m_basicinfo;
  
@@ -295,7 +411,7 @@ index e52b74b..a66d9d2 100644
  
      QImage m_current_image;
 diff --git a/src/imageformats/jxr.cpp b/src/imageformats/jxr.cpp
-index e53278c..4ca2e7a 100644
+index 9180391..1eca33e 100644
 --- a/src/imageformats/jxr.cpp
 +++ b/src/imageformats/jxr.cpp
 @@ -45,6 +45,9 @@ Q_LOGGING_CATEGORY(LOG_JXRPLUGIN, "kf.imageformats.plugins.jxr", QtWarningMsg)
@@ -308,7 +424,7 @@ index e53278c..4ca2e7a 100644
  
  /*!
   * Remove the neeeds of additional memory by disabling the conversion between
-@@ -496,8 +499,8 @@ public:
+@@ -498,8 +501,8 @@ public:
              if (cs.isValid() && cs.transferFunction() != QColorSpace::TransferFunction::Linear) {
                  qi = qi.convertedToColorSpace(QColorSpace(QColorSpace::SRgbLinear));
              }
@@ -318,7 +434,7 @@ index e53278c..4ca2e7a 100644
  
          return qi;
      }
-@@ -833,11 +836,13 @@ bool JXRHandler::read(QImage *outImage)
+@@ -838,11 +841,13 @@ bool JXRHandler::read(QImage *outImage)
          } else { // additional buffer needed
              qint64 convStrideSize = (img.width() * d->pDecoder->WMP.wmiI.cBitsPerUnit + 7) / 8;
              qint64 buffSize = convStrideSize * img.height();
@@ -332,7 +448,7 @@ index e53278c..4ca2e7a 100644
              QVector<quint8> ba(buffSize);
              if (auto err = pConverter->Copy(pConverter, &rect, ba.data(), convStrideSize)) {
                  PKFormatConverter_Release(&pConverter);
-@@ -845,7 +850,7 @@ bool JXRHandler::read(QImage *outImage)
+@@ -850,7 +855,7 @@ bool JXRHandler::read(QImage *outImage)
                  return false;
              }
              for (qint32 y = 0, h = img.height(); y < h; ++y) {
@@ -341,7 +457,7 @@ index e53278c..4ca2e7a 100644
              }
          }
          PKFormatConverter_Release(&pConverter);
-@@ -902,11 +907,19 @@ bool JXRHandler::write(const QImage &image)
+@@ -914,11 +919,19 @@ bool JXRHandler::write(const QImage &image)
  #ifndef JXR_DISABLE_BGRA_HACK
      if (IsEqualGUID(jxlfmt, GUID_PKPixelFormat32bppRGBA)) {
          jxlfmt = GUID_PKPixelFormat32bppBGRA;
@@ -563,10 +679,10 @@ index 21bd30d..97cea83 100644
                  else if (header.depth == 32 && header.color_mode == CM_GRAYSCALE) { // 32-bits float images: Grayscale (coverted to equivalent integer 16-bits)
                      planarToChunchyFloatToUInt16<float>(scanLine, rawStride.data(), header.width, c, imgChannels);
 diff --git a/src/imageformats/pxr.cpp b/src/imageformats/pxr.cpp
-index 181bddb..ab1ebad 100644
+index 668c7d2..6a80d8f 100644
 --- a/src/imageformats/pxr.cpp
 +++ b/src/imageformats/pxr.cpp
-@@ -199,7 +199,7 @@ bool PXRHandler::read(QImage *image)
+@@ -197,7 +197,7 @@ bool PXRHandler::read(QImage *image)
          return false;
      }
  
@@ -576,7 +692,7 @@ index 181bddb..ab1ebad 100644
          auto line = reinterpret_cast<char*>(img.scanLine(y));
          if (d->read(line, size) != size) {
 diff --git a/src/imageformats/ras.cpp b/src/imageformats/ras.cpp
-index 801dfa0..0f93cfe 100644
+index 33acf4a..49bdae0 100644
 --- a/src/imageformats/ras.cpp
 +++ b/src/imageformats/ras.cpp
 @@ -15,6 +15,13 @@
@@ -593,7 +709,7 @@ index 801dfa0..0f93cfe 100644
  namespace // Private.
  {
  // format info from http://www.fileformat.info/format/sunraster/egff.htm
-@@ -225,14 +232,22 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
+@@ -223,14 +230,22 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
          if (ras.ColorMapLength > 768) {
              return false;
          }
@@ -616,7 +732,7 @@ index 801dfa0..0f93cfe 100644
          for (quint32 i = 0, n = ras.ColorMapLength / 3; i < n; ++i) {
              colorTable << qRgb(palette.at(i), palette.at(i + n), palette.at(i + 2 * n));
          }
-@@ -243,7 +258,7 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
+@@ -241,7 +256,7 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
      }
  
      LineDecoder dec(s.device(), ras);
@@ -626,7 +742,7 @@ index 801dfa0..0f93cfe 100644
          auto rasLine = dec.readLine(rasLineSize);
          if (rasLine.size() != rasLineSize) {
 diff --git a/src/imageformats/rgb.cpp b/src/imageformats/rgb.cpp
-index 224f63d..efff1d2 100644
+index 33367f2..8d96414 100644
 --- a/src/imageformats/rgb.cpp
 +++ b/src/imageformats/rgb.cpp
 @@ -30,7 +30,15 @@
@@ -717,7 +833,7 @@ index 2291c88..7a2207b 100644
  }
  
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index 51328c1..724d080 100644
+index 00a1636..4b969df 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -9,21 +9,32 @@
@@ -842,5 +958,5 @@ index 51328c1..724d080 100644
          buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
      }
 -- 
-2.46.1
+2.47.0
 

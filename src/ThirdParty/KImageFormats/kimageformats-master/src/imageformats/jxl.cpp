@@ -37,6 +37,9 @@ typedef enum {JXL_ENC_SUCCESS, JXL_ENC_ERROR, JXL_ENC_NEED_MORE_OUTPUT, JXL_ENC_
 #define JxlEncoderFrameSettingsCreate(_1, _2) nullptr
 #define JxlEncoderSetFrameDistance(_1, _2) JXL_ENC_ERROR
 #define JxlEncoderSetFrameLossless(_1, _2) JXL_ENC_ERROR
+#define JxlEncoderUseBoxes(_1) JXL_ENC_ERROR
+#define JxlEncoderAddBox(_1, _2, _3, _4, _5) JXL_ENC_ERROR
+#define JxlEncoderCloseBoxes(_1)
 #endif
 #if !defined (DISABLE_JXL_THREADS)
 #include <jxl/thread_parallel_runner.h>
@@ -54,6 +57,43 @@ typedef enum {JXL_ENC_SUCCESS, JXL_ENC_ERROR, JXL_ENC_NEED_MORE_OUTPUT, JXL_ENC_
 #ifndef JXL_QT_AUTOTRANSFORM
 #define JXL_QT_AUTOTRANSFORM
 #endif
+#endif
+
+#if (QT_VERSION < QT_VERSION_CHECK(6, 2, 0))
+#ifndef JXL_FP_DISABLED
+#define JXL_FP_DISABLED
+#endif
+#endif
+#if defined (JXL_FP_DISABLED) && !defined (JXL_HDR_PRESERVATION_DISABLED)
+#define JXL_HDR_PRESERVATION_DISABLED
+#endif
+
+#if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
+#ifndef JXL_HDR_PRESERVATION_DISABLED
+// Define JXL_HDR_PRESERVATION_DISABLED to disable HDR preservation
+// (HDR images are saved as UINT16).
+#define JXL_HDR_PRESERVATION_DISABLED
+#endif
+#endif
+
+#ifndef JXL_DECODE_BOXES_DISABLED
+// Decode Boxes in order to read optional metadata (XMP, Exif, etc...).
+// Define JXL_DECODE_BOXES_DISABLED to disable Boxes decoding.
+// #define JXL_DECODE_BOXES_DISABLED
+#endif
+
+#define FEATURE_LEVEL_5_WIDTH 262144
+#define FEATURE_LEVEL_5_HEIGHT 262144
+#define FEATURE_LEVEL_5_PIXELS 268435456
+
+#if QT_POINTER_SIZE < 8
+#define MAX_IMAGE_WIDTH 32767
+#define MAX_IMAGE_HEIGHT 32767
+#define MAX_IMAGE_PIXELS FEATURE_LEVEL_5_PIXELS
+#else // JXL code stream level 5
+#define MAX_IMAGE_WIDTH FEATURE_LEVEL_5_WIDTH
+#define MAX_IMAGE_HEIGHT FEATURE_LEVEL_5_HEIGHT
+#define MAX_IMAGE_PIXELS FEATURE_LEVEL_5_PIXELS
 #endif
 
 QJpegXLHandler::QJpegXLHandler()
@@ -197,23 +237,18 @@ bool QJpegXLHandler::ensureDecoder()
     }
 
     JxlDecoderCloseInput(m_decoder);
-
+#ifndef JXL_DECODE_BOXES_DISABLED
+    JxlDecoderStatus status = JxlDecoderSubscribeEvents(m_decoder, JXL_DEC_BASIC_INFO | JXL_DEC_COLOR_ENCODING | JXL_DEC_FRAME | JXL_DEC_BOX);
+#else
     JxlDecoderStatus status = JxlDecoderSubscribeEvents(m_decoder, JXL_DEC_BASIC_INFO | JXL_DEC_COLOR_ENCODING | JXL_DEC_FRAME);
+#endif
     if (status == JXL_DEC_ERROR) {
         qWarning("ERROR: JxlDecoderSubscribeEvents failed");
         m_parseState = ParseJpegXLError;
         return false;
     }
 
-    status = JxlDecoderProcessInput(m_decoder);
-    if (status == JXL_DEC_ERROR) {
-        qWarning("ERROR: JXL decoding failed");
-        m_parseState = ParseJpegXLError;
-        return false;
-    }
-    if (status == JXL_DEC_NEED_MORE_INPUT) {
-        qWarning("ERROR: JXL data incomplete");
-        m_parseState = ParseJpegXLError;
+    if (!decodeBoxes()) {
         return false;
     }
 
@@ -230,30 +265,10 @@ bool QJpegXLHandler::ensureDecoder()
         return false;
     }
 
-    if (m_basicinfo.xsize > 65535 || m_basicinfo.ysize > 65535) {
+    if (m_basicinfo.xsize > MAX_IMAGE_WIDTH || m_basicinfo.ysize > MAX_IMAGE_HEIGHT) {
         qWarning("JXL image (%dx%d) is too large", m_basicinfo.xsize, m_basicinfo.ysize);
         m_parseState = ParseJpegXLError;
         return false;
-    }
-
-    if (sizeof(void *) <= 4) {
-        /* On 32bit systems, there is limited address space.
-         * We skip imagess bigger than 8192 x 8192 pixels.
-         * If we don't do it, abort() in libjxl may close whole application */
-        if (m_basicinfo.xsize > ((8192 * 8192) / m_basicinfo.ysize)) {
-            qWarning("JXL image (%dx%d) is too large for 32bit build of the plug-in", m_basicinfo.xsize, m_basicinfo.ysize);
-            m_parseState = ParseJpegXLError;
-            return false;
-        }
-    } else {
-        /* On 64bit systems
-         * We skip images bigger than 16384 x 16384 pixels.
-         * It is an artificial limit not to use extreme amount of memory */
-        if (m_basicinfo.xsize > ((16384 * 16384) / m_basicinfo.ysize)) {
-            qWarning("JXL image (%dx%d) is bigger than security limit 256 megapixels", m_basicinfo.xsize, m_basicinfo.ysize);
-            m_parseState = ParseJpegXLError;
-            return false;
-        }
     }
 
     m_parseState = ParseJpegXLBasicInfoParsed;
@@ -289,27 +304,57 @@ bool QJpegXLHandler::countALLFrames()
 
     m_input_pixel_format.endianness = JXL_NATIVE_ENDIAN;
     m_input_pixel_format.align = 0;
-    m_input_pixel_format.num_channels = 4;
+    m_input_pixel_format.num_channels = m_basicinfo.num_color_channels == 1 ? 1 : 4;
 
     if (m_basicinfo.bits_per_sample > 8) { // high bit depth
-        m_input_pixel_format.data_type = JXL_TYPE_UINT16;
-        m_buffer_size = 8 * (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize;
-        m_input_image_format = QImage::Format_RGBA64;
+#ifdef JXL_HDR_PRESERVATION_DISABLED
+        bool is_fp = false;
+#else
+        bool is_fp = m_basicinfo.exponent_bits_per_sample > 0 && m_basicinfo.num_color_channels == 3;
+#endif
+        m_input_pixel_format.data_type = is_fp ? JXL_TYPE_FLOAT16 : JXL_TYPE_UINT16;
+        m_buffer_size = (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize * m_input_pixel_format.num_channels * 2;
 
-        if (loadalpha) {
-            m_target_image_format = QImage::Format_RGBA64;
+        if (m_basicinfo.num_color_channels == 1) {
+            m_input_pixel_format.data_type = JXL_TYPE_UINT16;
+            m_input_image_format = m_target_image_format = QImage::Format_Grayscale16;
+            m_buffer_size = (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize * m_input_pixel_format.num_channels * 2;
+#ifndef JXL_FP_DISABLED
+        } else if (m_basicinfo.bits_per_sample > 16 && is_fp) {
+            m_input_pixel_format.data_type = JXL_TYPE_FLOAT;
+            m_input_image_format = QImage::Format_RGBA32FPx4;
+            m_buffer_size = (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize * m_input_pixel_format.num_channels * 4;
+            if (loadalpha)
+                m_target_image_format = QImage::Format_RGBA32FPx4;
+            else
+                m_target_image_format = QImage::Format_RGBX32FPx4;
+#endif
         } else {
-            m_target_image_format = QImage::Format_RGBX64;
+            m_buffer_size = (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize * m_input_pixel_format.num_channels * 2;
+#ifndef JXL_FP_DISABLED
+            m_input_image_format = is_fp ? QImage::Format_RGBA16FPx4 : QImage::Format_RGBA64;
+            if (loadalpha)
+                m_target_image_format = is_fp ? QImage::Format_RGBA16FPx4 : QImage::Format_RGBA64;
+            else
+                m_target_image_format = is_fp ? QImage::Format_RGBX16FPx4 : QImage::Format_RGBX64;
+#else
+            m_input_image_format = QImage::Format_RGBA64;
+            m_target_image_format = loadalpha ? QImage::Format_RGBA64 : QImage::Format_RGBX64;
+#endif
         }
     } else { // 8bit depth
         m_input_pixel_format.data_type = JXL_TYPE_UINT8;
-        m_buffer_size = 4 * (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize;
-        m_input_image_format = QImage::Format_RGBA8888;
+        m_buffer_size = (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize * m_input_pixel_format.num_channels;
 
-        if (loadalpha) {
-            m_target_image_format = QImage::Format_ARGB32;
+        if (m_basicinfo.num_color_channels == 1) {
+            m_input_image_format = m_target_image_format = QImage::Format_Grayscale8;
         } else {
-            m_target_image_format = QImage::Format_RGB32;
+            m_input_image_format = QImage::Format_RGBA8888;
+            if (loadalpha) {
+                m_target_image_format = QImage::Format_ARGB32;
+            } else {
+                m_target_image_format = QImage::Format_RGB32;
+            }
         }
     }
 
@@ -409,6 +454,12 @@ bool QJpegXLHandler::countALLFrames()
         m_framedelays[0] = 0;
     }
 
+#ifndef JXL_DECODE_BOXES_DISABLED
+    if (!decodeBoxes()) {
+        return false;
+    }
+#endif
+
     if (!rewind()) {
         return false;
     }
@@ -435,6 +486,9 @@ bool QJpegXLHandler::decode_one_frame()
     }
 
     m_current_image.setColorSpace(m_colorspace);
+    if (!m_xmp.isEmpty()) {
+        m_current_image.setText(QStringLiteral(META_KEY_XMP_ADOBE), QString::fromUtf8(m_xmp));
+    }
 
     if (JxlDecoderSetImageOutBuffer(m_decoder, &m_input_pixel_format, m_current_image.bits(), m_buffer_size) != JXL_DEC_SUCCESS) {
         qWarning("ERROR: JxlDecoderSetImageOutBuffer failed");
@@ -496,6 +550,30 @@ bool QJpegXLHandler::read(QImage *image)
     }
 }
 
+template<class T>
+void packRGBPixels(QImage &img)
+{
+    // pack pixel data
+    auto dest_pixels = reinterpret_cast<T *>(img.bits());
+    for (qint32 y = 0; y < img.height(); y++) {
+        auto src_pixels = reinterpret_cast<const T *>(img.constScanLine(y));
+        for (qint32 x = 0; x < img.width(); x++) {
+            // R
+            *dest_pixels = *src_pixels;
+            dest_pixels++;
+            src_pixels++;
+            // G
+            *dest_pixels = *src_pixels;
+            dest_pixels++;
+            src_pixels++;
+            // B
+            *dest_pixels = *src_pixels;
+            dest_pixels++;
+            src_pixels += 2; // skipalpha
+        }
+    }
+}
+
 bool QJpegXLHandler::write(const QImage &image)
 {
     if (image.format() == QImage::Format_Invalid) {
@@ -503,36 +581,49 @@ bool QJpegXLHandler::write(const QImage &image)
         return false;
     }
 
-    if ((image.width() > 0) && (image.height() > 0)) {
-        if ((image.width() > 65535) || (image.height() > 65535)) {
-            qWarning("Image (%dx%d) is too large to save!", image.width(), image.height());
-            return false;
-        }
-
-        if (sizeof(void *) <= 4) {
-            if (image.width() > ((8192 * 8192) / image.height())) {
-                qWarning("Image (%dx%d) is too large save via 32bit build of JXL plug-in", image.width(), image.height());
-                return false;
-            }
-        } else {
-            if (image.width() > ((16384 * 16384) / image.height())) {
-                qWarning("Image (%dx%d) will not be saved because it has more than 256 megapixels", image.width(), image.height());
-                return false;
-            }
-        }
-    } else {
+    if ((image.width() == 0) || (image.height() == 0)) {
         qWarning("Image has zero dimension!");
         return false;
     }
 
-    int save_depth = 8; // 8 or 16
+    if ((image.width() > MAX_IMAGE_WIDTH) || (image.height() > MAX_IMAGE_HEIGHT)) {
+        qWarning("Image (%dx%d) is too large to save!", image.width(), image.height());
+        return false;
+    }
+
+    size_t pixel_count = size_t(image.width()) * image.height();
+    if (MAX_IMAGE_PIXELS && pixel_count > MAX_IMAGE_PIXELS) {
+        qWarning("Image (%dx%d) will not be saved because it has more than %d megapixels!", image.width(), image.height(), MAX_IMAGE_PIXELS / 1024 / 1024);
+        return false;
+    }
+
+    int save_depth = 8; // 8 / 16 / 32
+    bool save_fp = false;
+    bool is_gray = false;
     // depth detection
     switch (image.format()) {
+#ifndef JXL_FP_DISABLED
+    case QImage::Format_RGBX32FPx4:
+    case QImage::Format_RGBA32FPx4:
+    case QImage::Format_RGBA32FPx4_Premultiplied:
+#ifndef JXL_HDR_PRESERVATION_DISABLED
+        save_depth = 32;
+        save_fp = true;
+        break;
+#endif
+    case QImage::Format_RGBX16FPx4:
+    case QImage::Format_RGBA16FPx4:
+    case QImage::Format_RGBA16FPx4_Premultiplied:
+#ifndef JXL_HDR_PRESERVATION_DISABLED
+        save_depth = 16;
+        save_fp = true;
+        break;
+#endif
+#endif
     case QImage::Format_BGR30:
     case QImage::Format_A2BGR30_Premultiplied:
     case QImage::Format_RGB30:
     case QImage::Format_A2RGB30_Premultiplied:
-    case QImage::Format_Grayscale16:
     case QImage::Format_RGBX64:
     case QImage::Format_RGBA64:
     case QImage::Format_RGBA64_Premultiplied:
@@ -546,6 +637,21 @@ bool QJpegXLHandler::write(const QImage &image)
     case QImage::Format_RGBA8888:
     case QImage::Format_RGBA8888_Premultiplied:
         save_depth = 8;
+        break;
+    case QImage::Format_Grayscale16:
+        save_depth = 16;
+        is_gray = true;
+        break;
+    case QImage::Format_Grayscale8:
+    case QImage::Format_Alpha8:
+    case QImage::Format_Mono:
+    case QImage::Format_MonoLSB:
+        save_depth = 8;
+        is_gray = true;
+        break;
+    case QImage::Format_Indexed8:
+        save_depth = 8;
+        is_gray = image.isGrayscale();
         break;
     default:
         if (image.depth() > 32) {
@@ -561,6 +667,7 @@ bool QJpegXLHandler::write(const QImage &image)
         qWarning("Failed to create Jxl encoder");
         return false;
     }
+    JxlEncoderUseBoxes(encoder);
 
     if (m_quality > 100) {
         m_quality = 100;
@@ -571,28 +678,28 @@ bool QJpegXLHandler::write(const QImage &image)
     JxlBasicInfo output_info;
     JxlEncoderInitBasicInfo(&output_info);
 
-    bool convert_color_profile;
     QByteArray iccprofile;
-
-    if (image.colorSpace().isValid() && (m_quality < 100)) {
-        if (image.colorSpace().primaries() != QColorSpace::Primaries::SRgb || image.colorSpace().transferFunction() != QColorSpace::TransferFunction::SRgb) {
-            convert_color_profile = true;
-        } else {
-            convert_color_profile = false;
-        }
-    } else { // lossless or no profile or Qt-unsupported ICC profile
-        convert_color_profile = false;
-        iccprofile = image.colorSpace().iccProfile();
+    QColorSpace tmpcs = image.colorSpace();
+    if (!tmpcs.isValid() || tmpcs.primaries() != QColorSpace::Primaries::SRgb || tmpcs.transferFunction() != QColorSpace::TransferFunction::SRgb || m_quality == 100) {
+        // no profile or Qt-unsupported ICC profile
+        iccprofile = tmpcs.iccProfile();
+        // note: lossless encoding requires uses_original_profile = JXL_TRUE
         if (iccprofile.size() > 0 || m_quality == 100) {
             output_info.uses_original_profile = JXL_TRUE;
         }
     }
 
-    if (save_depth == 16 && (image.hasAlphaChannel() || output_info.uses_original_profile)) {
+    // clang-format off
+    if (   (save_depth > 8 && (image.hasAlphaChannel() || output_info.uses_original_profile))
+        || (save_depth > 16)
+        || (pixel_count > FEATURE_LEVEL_5_PIXELS)
+        || (image.width() > FEATURE_LEVEL_5_WIDTH)
+        || (image.height() > FEATURE_LEVEL_5_HEIGHT)) {
         output_info.have_container = JXL_TRUE;
         JxlEncoderUseContainer(encoder, JXL_TRUE);
         JxlEncoderSetCodestreamLevel(encoder, 10);
     }
+    // clang-format on
 
     void *runner = nullptr;
     int num_worker_threads = qBound(1, QThread::idealThreadCount(), 64);
@@ -614,7 +721,6 @@ bool QJpegXLHandler::write(const QImage &image)
     pixel_format.endianness = JXL_NATIVE_ENDIAN;
     pixel_format.align = 0;
 
-    output_info.num_color_channels = 3;
     output_info.animation.tps_numerator = 10;
     output_info.animation.tps_denominator = 1;
     output_info.orientation = JXL_ORIENT_IDENTITY;
@@ -634,24 +740,72 @@ bool QJpegXLHandler::write(const QImage &image)
         output_info.orientation = JXL_ORIENT_ROTATE_90_CCW;
     }
 
-    if (save_depth > 8) { // 16bit depth
+    if (save_depth > 8 && is_gray) { // 16bit depth gray
         pixel_format.data_type = JXL_TYPE_UINT16;
+        pixel_format.align = 4;
+        output_info.num_color_channels = 1;
+        output_info.bits_per_sample = 16;
+        tmpformat = QImage::Format_Grayscale16;
+        pixel_format.num_channels = 1;
+    } else if (is_gray) { // 8bit depth gray
+        pixel_format.data_type = JXL_TYPE_UINT8;
+        pixel_format.align = 4;
+        output_info.num_color_channels = 1;
+        output_info.bits_per_sample = 8;
+        tmpformat = QImage::Format_Grayscale8;
+        pixel_format.num_channels = 1;
+#ifndef JXL_FP_DISABLED
+    } else if (save_depth > 16) { // 32bit depth rgb
+        pixel_format.data_type = JXL_TYPE_FLOAT;
+        output_info.exponent_bits_per_sample = 8;
+        output_info.num_color_channels = 3;
+        output_info.bits_per_sample = 32;
 
+        if (image.hasAlphaChannel()) {
+            tmpformat = QImage::Format_RGBA32FPx4;
+            pixel_format.num_channels = 4;
+            output_info.alpha_bits = 32;
+            output_info.alpha_exponent_bits = 8;
+            output_info.num_extra_channels = 1;
+        } else {
+            tmpformat = QImage::Format_RGBX32FPx4;
+            pixel_format.num_channels = 3;
+            output_info.alpha_bits = 0;
+            output_info.num_extra_channels = 0;
+        }
+#endif
+    } else if (save_depth > 8) { // 16bit depth rgb
+        pixel_format.data_type = save_fp ? JXL_TYPE_FLOAT16 : JXL_TYPE_UINT16;
+        output_info.exponent_bits_per_sample = save_fp ? 5 : 0;
+        output_info.num_color_channels = 3;
         output_info.bits_per_sample = 16;
 
         if (image.hasAlphaChannel()) {
+#ifndef JXL_FP_DISABLED
+            tmpformat = save_fp ? QImage::Format_RGBA16FPx4 : QImage::Format_RGBA64;
+#else
+            Q_ASSERT(!save_fp);
             tmpformat = QImage::Format_RGBA64;
+#endif
             pixel_format.num_channels = 4;
             output_info.alpha_bits = 16;
+            output_info.alpha_exponent_bits = save_fp ? 5 : 0;
             output_info.num_extra_channels = 1;
         } else {
+#ifndef JXL_FP_DISABLED
+            tmpformat = save_fp ? QImage::Format_RGBX16FPx4 : QImage::Format_RGBX64;
+#else
+            Q_ASSERT(!save_fp);
             tmpformat = QImage::Format_RGBX64;
+#endif
             pixel_format.num_channels = 3;
             output_info.alpha_bits = 0;
+            output_info.num_extra_channels = 0;
         }
-    } else { // 8bit depth
+    } else { // 8bit depth rgb
         pixel_format.data_type = JXL_TYPE_UINT8;
-
+        pixel_format.align = 4;
+        output_info.num_color_channels = 3;
         output_info.bits_per_sample = 8;
 
         if (image.hasAlphaChannel()) {
@@ -663,15 +817,13 @@ bool QJpegXLHandler::write(const QImage &image)
             tmpformat = QImage::Format_RGB888;
             pixel_format.num_channels = 3;
             output_info.alpha_bits = 0;
+            output_info.num_extra_channels = 0;
         }
     }
 
-    const QImage tmpimage =
-        convert_color_profile ? image.convertToFormat(tmpformat).convertedToColorSpace(QColorSpace(QColorSpace::SRgb)) : image.convertToFormat(tmpformat);
-
+    QImage tmpimage = image.convertToFormat(tmpformat);
     const size_t xsize = tmpimage.width();
     const size_t ysize = tmpimage.height();
-    const size_t buffer_size = (save_depth > 8) ? (2 * pixel_format.num_channels * xsize * ysize) : (pixel_format.num_channels * xsize * ysize);
 
     if (xsize == 0 || ysize == 0 || tmpimage.isNull()) {
         qWarning("Unable to allocate memory for output image");
@@ -695,7 +847,22 @@ bool QJpegXLHandler::write(const QImage &image)
         return false;
     }
 
-    if (!convert_color_profile && iccprofile.size() > 0) {
+    auto xmp_data = image.text(QStringLiteral(META_KEY_XMP_ADOBE)).toUtf8();
+    if (!xmp_data.isEmpty()) {
+        const char *box_type = "xml ";
+        status = JxlEncoderAddBox(encoder, box_type, reinterpret_cast<const uint8_t *>(xmp_data.constData()), xmp_data.size(), JXL_FALSE);
+        if (status != JXL_ENC_SUCCESS) {
+            qWarning("JxlEncoderAddBox failed!");
+            if (runner) {
+                JxlThreadParallelRunnerDestroy(runner);
+            }
+            JxlEncoderDestroy(encoder);
+            return false;
+        }
+    }
+    JxlEncoderCloseBoxes(encoder); // no more metadata
+
+    if (iccprofile.size() > 0) {
         status = JxlEncoderSetICCProfile(encoder, reinterpret_cast<const uint8_t *>(iccprofile.constData()), iccprofile.size());
         if (status != JXL_ENC_SUCCESS) {
             qWarning("JxlEncoderSetICCProfile failed!");
@@ -726,61 +893,32 @@ bool QJpegXLHandler::write(const QImage &image)
 
     JxlEncoderSetFrameLossless(encoder_options, (m_quality == 100) ? JXL_TRUE : JXL_FALSE);
 
-    if (image.hasAlphaChannel() || ((save_depth == 8) && (xsize % 4 == 0))) {
-        status = JxlEncoderAddImageFrame(encoder_options, &pixel_format, static_cast<const void *>(tmpimage.constBits()), buffer_size);
-    } else {
-        if (save_depth > 8) { // 16bit depth without alpha channel
-            uint16_t *tmp_buffer = new (std::nothrow) uint16_t[3 * xsize * ysize];
-            if (!tmp_buffer) {
-                qWarning("Memory allocation error");
-                if (runner) {
-                    JxlThreadParallelRunnerDestroy(runner);
-                }
-                JxlEncoderDestroy(encoder);
-                return false;
-            }
+    size_t buffer_size = size_t(tmpimage.bytesPerLine()) * tmpimage.height();
+    if (!image.hasAlphaChannel() && save_depth > 8 && !is_gray) { // pack pixel on tmpimage
+        buffer_size = (size_t(save_depth / 8) * pixel_format.num_channels * xsize * ysize);
 
-            uint16_t *dest_pixels = tmp_buffer;
-            for (int y = 0; y < tmpimage.height(); y++) {
-                const uint16_t *src_pixels = reinterpret_cast<const uint16_t *>(tmpimage.constScanLine(y));
-                for (int x = 0; x < tmpimage.width(); x++) {
-                    // R
-                    *dest_pixels = *src_pixels;
-                    dest_pixels++;
-                    src_pixels++;
-                    // G
-                    *dest_pixels = *src_pixels;
-                    dest_pixels++;
-                    src_pixels++;
-                    // B
-                    *dest_pixels = *src_pixels;
-                    dest_pixels++;
-                    src_pixels += 2; // skipalpha
-                }
+        // detaching image
+        tmpimage.detach();
+        if (tmpimage.isNull()) {
+            qWarning("Memory allocation error");
+            if (runner) {
+                JxlThreadParallelRunnerDestroy(runner);
             }
-            status = JxlEncoderAddImageFrame(encoder_options, &pixel_format, static_cast<const void *>(tmp_buffer), buffer_size);
-            delete[] tmp_buffer;
-        } else { // 8bit depth without alpha channel
-            uchar *tmp_buffer8 = new (std::nothrow) uchar[3 * xsize * ysize];
-            if (!tmp_buffer8) {
-                qWarning("Memory allocation error");
-                if (runner) {
-                    JxlThreadParallelRunnerDestroy(runner);
-                }
-                JxlEncoderDestroy(encoder);
-                return false;
-            }
-
-            uchar *dest_pixels8 = tmp_buffer8;
-            const size_t rowbytes = 3 * xsize;
-            for (int y = 0; y < tmpimage.height(); y++) {
-                memcpy(dest_pixels8, tmpimage.constScanLine(y), rowbytes);
-                dest_pixels8 += rowbytes;
-            }
-            status = JxlEncoderAddImageFrame(encoder_options, &pixel_format, static_cast<const void *>(tmp_buffer8), buffer_size);
-            delete[] tmp_buffer8;
+            JxlEncoderDestroy(encoder);
+            return false;
         }
+
+        // pack pixel data
+        if (save_depth > 16 && save_fp)
+            packRGBPixels<float>(tmpimage);
+#ifndef JXL_FP_DISABLED
+        else if (save_fp)
+            packRGBPixels<qfloat16>(tmpimage);
+#endif
+        else
+            packRGBPixels<quint16>(tmpimage);
     }
+    status = JxlEncoderAddImageFrame(encoder_options, &pixel_format, static_cast<const void *>(tmpimage.constBits()), buffer_size);
 
     if (status == JXL_ENC_ERROR) {
         qWarning("JxlEncoderAddImageFrame failed!");
@@ -1090,6 +1228,37 @@ bool QJpegXLHandler::rewind()
         JxlDecoderSetPreferredColorProfile(m_decoder, &color_encoding);
     }
 
+    return true;
+}
+
+bool QJpegXLHandler::decodeBoxes()
+{
+    JxlDecoderStatus status;
+    do { // decode metadata
+        status = JxlDecoderProcessInput(m_decoder);
+        if (status == JXL_DEC_BOX) {
+            JxlBoxType type;
+            JxlDecoderGetBoxType(m_decoder, type, JXL_FALSE);
+            if (memcmp(type, "xml ", 4) == 0) {
+                uint64_t size;
+                if (JxlDecoderGetBoxSizeRaw(m_decoder, &size) == JXL_DEC_SUCCESS) {
+                    m_xmp = QByteArray(size, '\0');
+                    JxlDecoderSetBoxBuffer(m_decoder, reinterpret_cast<uint8_t *>(m_xmp.data()), m_xmp.size());
+                }
+            }
+        }
+    } while (status == JXL_DEC_BOX);
+
+    if (status == JXL_DEC_ERROR) {
+        qWarning("ERROR: JXL decoding failed");
+        m_parseState = ParseJpegXLError;
+        return false;
+    }
+    if (status == JXL_DEC_NEED_MORE_INPUT) {
+        qWarning("ERROR: JXL data incomplete");
+        m_parseState = ParseJpegXLError;
+        return false;
+    }
     return true;
 }
 

@@ -1,0 +1,21 @@
+[
+    {
+        "minQtVersion" : "6.2.11",
+        "maxQtVersion" : "6.2.99",
+        "fileName" : "testcard_rgba_fp32.png"
+    },
+    {
+        "minQtVersion" : "6.5.5",
+        "maxQtVersion" : "6.5.99",
+        "fileName" : "testcard_rgba_fp32.png"
+    },
+    {
+        "minQtVersion" : "6.6.2",
+        "fileName" : "testcard_rgba_fp32.png"
+    },
+    {
+        "unsupportedFormat" : true,
+        "comment" : "Skipped due to QTBUG-120614.",
+        "seeAlso" : "https://bugreports.qt.io/browse/QTBUG-120614"
+    }
+]

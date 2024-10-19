@@ -209,8 +209,6 @@ private:
 
 static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
 {
-    s.device()->seek(RasHeader::SIZE);
-
     // The width of a scan line is always a multiple of 16 bits, padded when necessary.
     auto rasLineSize = (qint64(ras.Width) * ras.Depth + 7) / 8;
     if (rasLineSize & 1)
@@ -383,18 +381,8 @@ bool RASHandler::canRead(QIODevice *device)
         return false;
     }
 
-    if (device->isSequential()) {
-        // qWarning("Reading ras files from sequential devices not supported");
-        return false;
-    }
-
-    qint64 oldPos = device->pos();
-    QByteArray head = device->read(RasHeader::SIZE); // header is exactly 32 bytes, always FIXME
-    int readBytes = head.size(); // this should always be 32 bytes
-
-    device->seek(oldPos);
-
-    if (readBytes < RasHeader::SIZE) {
+    auto head = device->peek(RasHeader::SIZE); // header is exactly 32 bytes, always FIXME
+    if (head.size() < RasHeader::SIZE) {
         return false;
     }
 
@@ -426,9 +414,7 @@ bool RASHandler::read(QImage *outImage)
     }
 
     QImage img;
-    bool result = LoadRAS(s, ras, img);
-
-    if (result == false) {
+    if (!LoadRAS(s, ras, img)) {
         //         qDebug() << "Error loading RAS file.";
         return false;
     }
@@ -458,12 +444,7 @@ QVariant RASHandler::option(ImageOption option) const
             v = QVariant::fromValue(QSize(header.Width, header.Height));
         }
         else if (auto dev = device()) {
-            // transactions works on both random and sequential devices
-            dev->startTransaction();
-            auto ba = dev->read(RasHeader::SIZE);
-            dev->rollbackTransaction();
-
-            QDataStream s(ba);
+            QDataStream s(dev->peek(RasHeader::SIZE));
             s.setByteOrder(QDataStream::BigEndian);
             s >> header;
             if (s.status() == QDataStream::Ok && IsSupported(header)) {
@@ -478,12 +459,7 @@ QVariant RASHandler::option(ImageOption option) const
             v = QVariant::fromValue(imageFormat(header));
         }
         else if (auto dev = device()) {
-            // transactions works on both random and sequential devices
-            dev->startTransaction();
-            auto ba = dev->read(RasHeader::SIZE);
-            dev->rollbackTransaction();
-
-            QDataStream s(ba);
+            QDataStream s(dev->peek(RasHeader::SIZE));
             s.setByteOrder(QDataStream::BigEndian);
             s >> header;
             if (s.status() == QDataStream::Ok && IsSupported(header)) {

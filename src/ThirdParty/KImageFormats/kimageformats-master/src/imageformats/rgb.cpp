@@ -602,30 +602,8 @@ bool SGIImagePrivate::isSupported() const
 
 bool SGIImagePrivate::peekHeader(QIODevice *device)
 {
-    qint64 pos = 0;
-    if (!device->isSequential()) {
-        pos = device->pos();
-    }
-
-    auto ok = false;
-    QByteArray header;
-    { // datastream is destroyed before working on device
-        header = device->read(512);
-        QDataStream ds(header);
-        ok = SGIImagePrivate::readHeader(ds, this) && isValid();
-    }
-
-    if (!device->isSequential()) {
-        return device->seek(pos) && ok;
-    }
-
-    // sequential device undo
-    auto head = header.data();
-    auto readBytes = header.size();
-    while (readBytes > 0) {
-        device->ungetChar(head[readBytes-- - 1]);
-    }
-    return ok;
+    QDataStream ds(device->peek(512));
+    return SGIImagePrivate::readHeader(ds, this) && isValid();
 }
 
 QSize SGIImagePrivate::size() const

@@ -266,30 +266,16 @@ PCXHEADER::PCXHEADER()
 
 bool peekHeader(QIODevice *d, PCXHEADER& h)
 {
-    qint64 pos = 0;
-    if (!d->isSequential()) {
-        pos = d->pos();
+    auto head = d->peek(sizeof(PCXHEADER));
+    if (size_t(head.size()) < sizeof(PCXHEADER)) {
+        return false;
     }
 
-    auto ok = false;
-    { // datastream is destroyed before working on device
-        QDataStream ds(d);
-        ds.setByteOrder(QDataStream::LittleEndian);
-        ds >> h;
-        ok = ds.status() == QDataStream::Ok && h.isValid();
-    }
+    QDataStream ds(head);
+    ds.setByteOrder(QDataStream::LittleEndian);
+    ds >> h;
 
-    if (!d->isSequential()) {
-        return d->seek(pos) && ok;
-    }
-
-    // sequential device undo
-    auto head = reinterpret_cast<char*>(&h);
-    auto readBytes = sizeof(h);
-    while (readBytes > 0) {
-        d->ungetChar(head[readBytes-- - 1]);
-    }
-    return ok;
+    return ds.status() == QDataStream::Ok && h.isValid();
 }
 
 static bool readLine(QDataStream &s, QByteArray &buf, const PCXHEADER &header)

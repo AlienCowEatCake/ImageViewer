@@ -341,12 +341,8 @@ bool QOIHandler::canRead(QIODevice *device)
         return false;
     }
 
-    device->startTransaction();
-    QByteArray head = device->read(QOI_HEADER_SIZE);
-    qsizetype readBytes = head.size();
-    device->rollbackTransaction();
-
-    if (readBytes < QOI_HEADER_SIZE) {
+    auto head = device->peek(QOI_HEADER_SIZE);
+    if (head.size() < QOI_HEADER_SIZE) {
         return false;
     }
 
@@ -430,12 +426,7 @@ QVariant QOIHandler::option(ImageOption option) const
         if (IsSupported(header)) {
             v = QVariant::fromValue(QSize(header.Width, header.Height));
         } else if (auto d = device()) {
-            // transactions works on both random and sequential devices
-            d->startTransaction();
-            auto ba = d->read(sizeof(QoiHeader));
-            d->rollbackTransaction();
-
-            QDataStream s(ba);
+            QDataStream s(d->peek(sizeof(QoiHeader)));
             s.setByteOrder(QDataStream::BigEndian);
             s >> header;
             if (s.status() == QDataStream::Ok && IsSupported(header)) {
@@ -449,12 +440,7 @@ QVariant QOIHandler::option(ImageOption option) const
         if (IsSupported(header)) {
             v = QVariant::fromValue(imageFormat(header));
         } else if (auto d = device()) {
-            // transactions works on both random and sequential devices
-            d->startTransaction();
-            auto ba = d->read(sizeof(QoiHeader));
-            d->rollbackTransaction();
-
-            QDataStream s(ba);
+            QDataStream s(d->peek(sizeof(QoiHeader)));
             s.setByteOrder(QDataStream::BigEndian);
             s >> header;
             if (s.status() == QDataStream::Ok && IsSupported(header)) {

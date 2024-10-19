@@ -55,6 +55,7 @@ private:
     bool countALLFrames();
     bool decode_one_frame();
     bool rewind();
+    bool decodeBoxes();
 
     enum ParseJpegXLState {
         ParseJpegXLError = -1,
@@ -85,6 +86,7 @@ private:
 
     QImage m_current_image;
     QColorSpace m_colorspace;
+    QByteArray m_xmp;
 
     QImage::Format m_input_image_format;
     QImage::Format m_target_image_format;

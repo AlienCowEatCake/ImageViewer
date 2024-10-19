@@ -78,8 +78,8 @@ For example, native support for CMYK images is only available since Qt 6.8.
 
 ### HDR images
 
-HDR images are supported via floating point image formats from EXR, HDR, JXR,
-PFM and PSD plugins.
+HDR images are supported via floating point image formats from EXR, HDR, JXL,
+JXR, PFM and PSD plugins.
 It is important to note that in the past these plugins stripped away HDR 
 information, returning SDR images.
 
@@ -116,8 +116,8 @@ plugin ('n/a' means no limit, i.e. the limit depends on the format encoding).
 - EXR: 300,000 x 300,000 pixels
 - HDR: n/a (large image)
 - HEIF: n/a
-- JXL: 65,535 x 65,535 pixels, in any case no larger than 256 megapixels
-- JXR: n/a
+- JXL: 262,144 x 262,144 pixels, in any case no larger than 256 megapixels
+- JXR: n/a, in any case no larger than 4 GB
 - PCX: 65,535 x 65,535 pixels
 - PFM: n/a (large image)
 - PIC: 65,535 x 65,535 pixels
@@ -180,6 +180,10 @@ The following defines can be defined in cmake to modify the behavior of the plug
 
 **The current version of the plugin limits the image size to 256 megapixels
 according to feature level 5 of the JXL stream encoding.**
+
+The following defines can be defined in cmake to modify the behavior of the plugin:
+- `JXL_HDR_PRESERVATION_DISABLED`: disable floating point images (both read and write) by converting them to UINT16 images. Any HDR data is lost. Note that FP images are always disabled when compiling with libJXL less than v0.9.
+- `JXL_DECODE_BOXES_DISABLED`: disable reading of metadata (e.g. XMP).
 
 ### The JXR plugin
 

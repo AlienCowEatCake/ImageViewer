@@ -1,4 +1,4 @@
-From 5aa63db09d8a6ae7c81d574bd792751fb4954bf4 Mon Sep 17 00:00:00 2001
+From 048fe7053f16251daeb0258cb1e2ee1001f26ecf Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 04:03:37 +0700
 Subject: [PATCH 1/7] Remove plugin metadata declarations
@@ -106,10 +106,10 @@ index 8bfafff..feeabfd 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/jxl_p.h b/src/imageformats/jxl_p.h
-index 1563012..e52b74b 100644
+index 7cffafb..923a611 100644
 --- a/src/imageformats/jxl_p.h
 +++ b/src/imageformats/jxl_p.h
-@@ -88,7 +88,7 @@ private:
+@@ -90,7 +90,7 @@ private:
  class QJpegXLPlugin : public QImageIOPlugin
  {
      Q_OBJECT
@@ -301,5 +301,5 @@ index 0324797..d21e6e1 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 -- 
-2.46.0
+2.47.0
 

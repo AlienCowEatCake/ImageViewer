@@ -490,11 +490,13 @@ public:
                 qi = qi.convertToFormat(alpha ? QImage::Format_RGBA8888 : QImage::Format_RGB888);
             }
 #ifndef JXR_DENY_FLOAT_IMAGE
-        } else if(qi.format() == QImage::Format_RGBA16FPx4 ||
-                  qi.format() == QImage::Format_RGBX16FPx4 ||
-                  qi.format() == QImage::Format_RGBA32FPx4 ||
-                  qi.format() == QImage::Format_RGBA32FPx4_Premultiplied ||
-                  qi.format() == QImage::Format_RGBX32FPx4) {
+            // clang-format off
+        } else if (qi.format() == QImage::Format_RGBA16FPx4 ||
+                   qi.format() == QImage::Format_RGBX16FPx4 ||
+                   qi.format() == QImage::Format_RGBA32FPx4 ||
+                   qi.format() == QImage::Format_RGBA32FPx4_Premultiplied ||
+                   qi.format() == QImage::Format_RGBX32FPx4) {
+            // clang-format on
             auto cs = qi.colorSpace();
             if (cs.isValid() && cs.transferFunction() != QColorSpace::TransferFunction::Linear) {
                 qi = qi.convertedToColorSpace(QColorSpace(QColorSpace::SRgbLinear));
@@ -676,9 +678,12 @@ private:
             return false;
         }
         QByteArray buff(32768 * 4, char());
-        for (; !source->atEnd();) {
+        for (;;) {
             auto read = source->read(buff.data(), buff.size());
-            if (read < 1) {
+            if (read == 0) {
+                break;
+            }
+            if (read < 0) {
                 return false;
             }
             if (target->write(buff.data(), read) != read) {
@@ -876,7 +881,7 @@ bool JXRHandler::read(QImage *outImage)
                     line[x + 3] = hasAlpha ? std::clamp(line[x + 3], float(0), float(1)) : float(1);
             }
         }
-        if(!img.colorSpace().isValid()) {
+        if (!img.colorSpace().isValid()) {
             img.setColorSpace(QColorSpace(QColorSpace::SRgbLinear));
         }
     }
@@ -888,6 +893,13 @@ bool JXRHandler::read(QImage *outImage)
 
 bool JXRHandler::write(const QImage &image)
 {
+    // JXR is stored in a TIFF V6 container that is limited to 4GiB. The size
+    // is limited to 4GB to leave room for IFDs, Metadata, etc...
+    if (qint64(image.sizeInBytes()) > 4000000000ll) {
+        qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() image too large: the image cannot exceed 4GB.";
+        return false;
+    }
+
     if (!d->initForWriting()) {
         return false;
     }
@@ -1077,11 +1089,6 @@ bool JXRHandler::canRead(QIODevice *device)
 {
     if (!device) {
         qCWarning(LOG_JXRPLUGIN) << "JXRHandler::canRead() called with no device";
-        return false;
-    }
-
-    // Some tests on sequential devices fail: I reject them for now
-    if (device->isSequential()) {
         return false;
     }
 

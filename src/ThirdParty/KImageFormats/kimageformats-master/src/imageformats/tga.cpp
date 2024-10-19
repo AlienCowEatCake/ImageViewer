@@ -195,26 +195,13 @@ static QImage::Format imageFormat(const TgaHeader &head)
  */
 static bool peekHeader(QIODevice *device, TgaHeader &header)
 {
-    qint64 oldPos = device->pos();
-    QByteArray head = device->read(TgaHeader::SIZE);
-    int readBytes = head.size();
-
-    if (device->isSequential()) {
-        for (int pos = readBytes - 1; pos >= 0; --pos) {
-            device->ungetChar(head[pos]);
-        }
-    } else {
-        device->seek(oldPos);
-    }
-
-    if (readBytes < TgaHeader::SIZE) {
+    auto head = device->peek(TgaHeader::SIZE);
+    if (head.size() < TgaHeader::SIZE) {
         return false;
     }
-
     QDataStream stream(head);
     stream.setByteOrder(QDataStream::LittleEndian);
     stream >> header;
-
     return true;
 }
 
@@ -558,22 +545,6 @@ bool TGAHandler::canRead(QIODevice *device)
 {
     if (!device) {
         qWarning("TGAHandler::canRead() called with no device");
-        return false;
-    }
-
-    qint64 oldPos = device->pos();
-    QByteArray head = device->read(TgaHeader::SIZE);
-    int readBytes = head.size();
-
-    if (device->isSequential()) {
-        for (int pos = readBytes - 1; pos >= 0; --pos) {
-            device->ungetChar(head[pos]);
-        }
-    } else {
-        device->seek(oldPos);
-    }
-
-    if (readBytes < TgaHeader::SIZE) {
         return false;
     }
 

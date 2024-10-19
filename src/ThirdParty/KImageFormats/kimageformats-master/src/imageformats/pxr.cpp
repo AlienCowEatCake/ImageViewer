@@ -121,10 +121,8 @@ public:
 
     bool peek(QIODevice *d)
     {
-        d->startTransaction();
-        auto ok = read(d);
-        d->rollbackTransaction();
-        return ok;
+        m_rawHeader = d->peek(512);
+        return isValid();
     }
 
     bool jumpToImageData(QIODevice *d) const

@@ -4266,66 +4266,43 @@ bool XCFHandler::canRead(QIODevice *device)
     }
 
     const qint64 oldPos = device->pos();
-    if (!device->isSequential()) {
-        QDataStream ds(device);
-        XCFImageFormat::XCFImage::Header header;
-        bool failed = !XCFImageFormat::readXCFHeader(ds, &header);
-        ds.setDevice(nullptr);
-        device->seek(oldPos);
-        if (failed) {
-            return false;
-        }
 
-        switch (header.precision) {
-        case XCFImageFormat::GIMP_PRECISION_HALF_LINEAR:
-        case XCFImageFormat::GIMP_PRECISION_HALF_NON_LINEAR:
-        case XCFImageFormat::GIMP_PRECISION_HALF_PERCEPTUAL:
-        case XCFImageFormat::GIMP_PRECISION_FLOAT_LINEAR:
-        case XCFImageFormat::GIMP_PRECISION_FLOAT_NON_LINEAR:
-        case XCFImageFormat::GIMP_PRECISION_FLOAT_PERCEPTUAL:
-        case XCFImageFormat::GIMP_PRECISION_U8_LINEAR:
-        case XCFImageFormat::GIMP_PRECISION_U8_NON_LINEAR:
-        case XCFImageFormat::GIMP_PRECISION_U8_PERCEPTUAL:
-        case XCFImageFormat::GIMP_PRECISION_U16_LINEAR:
-        case XCFImageFormat::GIMP_PRECISION_U16_NON_LINEAR:
-        case XCFImageFormat::GIMP_PRECISION_U16_PERCEPTUAL:
-        case XCFImageFormat::GIMP_PRECISION_U32_LINEAR:
-        case XCFImageFormat::GIMP_PRECISION_U32_NON_LINEAR:
-        case XCFImageFormat::GIMP_PRECISION_U32_PERCEPTUAL:
-            break;
-        case XCFImageFormat::GIMP_PRECISION_DOUBLE_LINEAR:
-        case XCFImageFormat::GIMP_PRECISION_DOUBLE_NON_LINEAR:
-        case XCFImageFormat::GIMP_PRECISION_DOUBLE_PERCEPTUAL:
-        default:
-            qCDebug(XCFPLUGIN) << "unsupported precision" << header.precision;
-            return false;
-        }
+    QDataStream ds(device);
+    XCFImageFormat::XCFImage::Header header;
+    bool failed = !XCFImageFormat::readXCFHeader(ds, &header);
+    ds.setDevice(nullptr);
 
-        return true;
-    }
-
-    char head[8];
-    qint64 readBytes = device->read(head, sizeof(head));
-    if (readBytes != sizeof(head)) {
-        if (device->isSequential()) {
-            while (readBytes > 0) {
-                device->ungetChar(head[readBytes-- - 1]);
-            }
-        } else {
-            device->seek(oldPos);
-        }
+    device->seek(oldPos);
+    if (failed) {
         return false;
     }
 
-    if (device->isSequential()) {
-        while (readBytes > 0) {
-            device->ungetChar(head[readBytes-- - 1]);
-        }
-    } else {
-        device->seek(oldPos);
+    switch (header.precision) {
+    case XCFImageFormat::GIMP_PRECISION_HALF_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_HALF_NON_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_HALF_PERCEPTUAL:
+    case XCFImageFormat::GIMP_PRECISION_FLOAT_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_FLOAT_NON_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_FLOAT_PERCEPTUAL:
+    case XCFImageFormat::GIMP_PRECISION_U8_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_U8_NON_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_U8_PERCEPTUAL:
+    case XCFImageFormat::GIMP_PRECISION_U16_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_U16_NON_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_U16_PERCEPTUAL:
+    case XCFImageFormat::GIMP_PRECISION_U32_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_U32_NON_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_U32_PERCEPTUAL:
+        break;
+    case XCFImageFormat::GIMP_PRECISION_DOUBLE_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_DOUBLE_NON_LINEAR:
+    case XCFImageFormat::GIMP_PRECISION_DOUBLE_PERCEPTUAL:
+    default:
+        qCDebug(XCFPLUGIN) << "unsupported precision" << header.precision;
+        return false;
     }
 
-    return qstrncmp(head, "gimp xcf", 8) == 0;
+    return true;
 }
 
 QImageIOPlugin::Capabilities XCFPlugin::capabilities(QIODevice *device, const QByteArray &format) const

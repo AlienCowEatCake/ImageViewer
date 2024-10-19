@@ -1,4 +1,4 @@
-From 47af6ee8eacca6439624a0324fd225af9e9edb78 Mon Sep 17 00:00:00 2001
+From 233d1e75f6c935957d03fdc932a88dff2e127ae1 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
 Subject: [PATCH 2/7] Remove C++17 features
@@ -65,10 +65,10 @@ index 1196bc0..f23e3b3 100644
                      return QImage::Format_ARGB32;
                  }
 diff --git a/src/imageformats/tga.cpp b/src/imageformats/tga.cpp
-index 3f816be..ce15ef8 100644
+index ccb08c2..fb76822 100644
 --- a/src/imageformats/tga.cpp
 +++ b/src/imageformats/tga.cpp
-@@ -485,8 +485,8 @@ bool TGAHandler::write(const QImage &image)
+@@ -472,8 +472,8 @@ bool TGAHandler::write(const QImage &image)
          qDebug() << "TGAHandler::write: image conversion to 32 bits failed!";
          return false;
      }
@@ -93,7 +93,7 @@ index 27c1082..2291c88 100644
  // On Qt 6 to make the plugins fail to allocate if the image size is greater than QImageReader::allocationLimit()
  // it is necessary to allocate the image with QImageIOHandler::allocateImage().
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index 3d67eca..51328c1 100644
+index 41efaaf..00a1636 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -57,7 +57,7 @@ namespace
@@ -142,5 +142,5 @@ index 3d67eca..51328c1 100644
          if (value.isEmpty())
              continue;
 -- 
-2.46.0
+2.47.0
 

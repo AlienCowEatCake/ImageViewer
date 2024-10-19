@@ -1,17 +1,17 @@
-From 17a6a13ff581c9e9b04a18a63d397f50e939f217 Mon Sep 17 00:00:00 2001
+From ac6d862804dfaa10c50e6c32ed6f10dc79397630 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:44:31 +0700
 Subject: [PATCH 6/7] Add ability to disable JXL encoder and threads
 
 ---
- src/imageformats/jxl.cpp | 33 +++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ src/imageformats/jxl.cpp | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
 diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
-index ec021e6..56af02f 100644
+index ee32c67..df2a3e8 100644
 --- a/src/imageformats/jxl.cpp
 +++ b/src/imageformats/jxl.cpp
-@@ -12,8 +12,41 @@
+@@ -12,8 +12,44 @@
  #include "jxl_p.h"
  #include "util_p.h"
  
@@ -40,6 +40,9 @@ index ec021e6..56af02f 100644
 +#define JxlEncoderFrameSettingsCreate(_1, _2) nullptr
 +#define JxlEncoderSetFrameDistance(_1, _2) JXL_ENC_ERROR
 +#define JxlEncoderSetFrameLossless(_1, _2) JXL_ENC_ERROR
++#define JxlEncoderUseBoxes(_1) JXL_ENC_ERROR
++#define JxlEncoderAddBox(_1, _2, _3, _4, _5) JXL_ENC_ERROR
++#define JxlEncoderCloseBoxes(_1)
 +#endif
 +#if !defined (DISABLE_JXL_THREADS)
  #include <jxl/thread_parallel_runner.h>
@@ -54,5 +57,5 @@ index ec021e6..56af02f 100644
  
  // Avoid rotation on buggy Qts (see also https://bugreports.qt.io/browse/QTBUG-126575)
 -- 
-2.39.2
+2.47.0
 
