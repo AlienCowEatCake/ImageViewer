@@ -8,6 +8,7 @@
 
 #include <QThread>
 #include <QtGlobal>
+#include <QFloat16>
 
 #include "jxl_p.h"
 #include "util_p.h"
