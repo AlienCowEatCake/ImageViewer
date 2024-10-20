@@ -669,7 +669,7 @@ disable_zlib : !system_openexr {
 win32 : *g++* : !*clang* : !system_openexr : lessThan(GCC_VERSION_NUMERIC, 80100) { # FIXME: Find exact version
     CONFIG *= disable_openexr
 }
-disable_cxx14 : !system_openexr {
+disable_cxx17 : !system_openexr {
     CONFIG *= disable_openexr
 }
 
