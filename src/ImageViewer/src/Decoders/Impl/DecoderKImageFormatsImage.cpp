@@ -20,6 +20,9 @@
 #include <QFileInfo>
 #include <QColor>
 #include <QImage>
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+#include <QColorSpace>
+#endif
 
 #include "KImageFormatsImageReader.h"
 
@@ -90,8 +93,13 @@ public:
 #endif
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+        if(image.colorSpace().isValid())
+            image.convertToColorSpace(QColorSpace::SRgb, image.hasAlphaChannel() ? QImage::Format_ARGB32 : QImage::Format_RGB32);
         if(image.format() == QImage::Format_CMYK8888)
             ICCProfile(ICCProfile::defaultCmykProfileData()).applyToImage(&image);
+#elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        if(image.colorSpace().isValid())
+            image.convertToColorSpace(QColorSpace::SRgb);
 #endif
 
         // Some image formats can't be rendered successfully

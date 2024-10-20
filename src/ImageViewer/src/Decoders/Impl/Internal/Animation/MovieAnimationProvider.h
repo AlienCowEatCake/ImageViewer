@@ -22,6 +22,9 @@
 
 #include <QImage>
 #include <QPixmap>
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+#include <QColorSpace>
+#endif
 
 #include "Utils/Global.h"
 
@@ -69,7 +72,7 @@ public:
 
     QPixmap currentPixmap() const Q_DECL_OVERRIDE
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
         return QPixmap::fromImage(currentImage());
 #else
         QPixmap result = m_movie->currentPixmap();
@@ -89,8 +92,13 @@ public:
         result.setDevicePixelRatio(1);
 #endif
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+        if(result.colorSpace().isValid())
+            result.convertToColorSpace(QColorSpace::SRgb, result.hasAlphaChannel() ? QImage::Format_ARGB32 : QImage::Format_RGB32);
         if(result.format() == QImage::Format_CMYK8888)
             ICCProfile(ICCProfile::defaultCmykProfileData()).applyToImage(&result);
+#elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        if(result.colorSpace().isValid())
+            result.convertToColorSpace(QColorSpace::SRgb);
 #endif
         return result;
     }

@@ -478,6 +478,9 @@ void ICCProfile::applyToImage(QImage *image)
         }
         *image = outImage;
     }
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    image->setColorSpace(QColorSpace::SRgb);
+#endif
 
 #elif (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
