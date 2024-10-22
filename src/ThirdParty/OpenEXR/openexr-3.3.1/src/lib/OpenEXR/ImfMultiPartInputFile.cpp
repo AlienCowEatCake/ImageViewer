@@ -169,7 +169,14 @@ MultiPartInputFile::getInputPart (int partNumber)
         _data->parts[partNumber].file = f;
     }
     else
-        f = std::any_cast<file_storage> (_data->parts[partNumber].file);
+    {
+        file_storage* fp = std::any_cast<file_storage> (&(_data->parts[partNumber].file));
+        if (!fp)
+            THROW (
+                IEX_NAMESPACE::LogicExc,
+                "Bad any_cast");
+        f = *fp;
+    }
 
     // TODO: change to by reference / value semantics
     return f.get();
