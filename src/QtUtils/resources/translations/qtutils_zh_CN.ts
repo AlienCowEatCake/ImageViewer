@@ -201,65 +201,65 @@
 <context>
     <name>UpdateManager</name>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="98"/>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="195"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="145"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="245"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="99"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="146"/>
         <source>An update is already in progress. Check back later.</source>
         <translation>正在检查更新，请稍后再试。</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="128"/>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="151"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="178"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="201"/>
         <source>Information</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="131"/>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="154"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="181"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="204"/>
         <source>Your version:</source>
         <translation>当前版本:</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="129"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="179"/>
         <source>You have the latest version.</source>
         <translation>已是最新版本。</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="152"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="202"/>
         <source>New updates are available.</source>
         <translation>有新版本可供升级。</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="156"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="206"/>
         <source>Latest version:</source>
         <translation>最新版本:</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="159"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="209"/>
         <source>&amp;Download</source>
         <translation>下载(&amp;D)</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="160"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="210"/>
         <source>&amp;Cancel</source>
         <translation>取消(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="161"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="211"/>
         <source>&amp;Skip This Version</source>
         <translation>忽略这个版本(&amp;S)</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="174"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="224"/>
         <source>Automatically check for updates</source>
         <translation>自动检查更新</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="196"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="246"/>
         <source>Can&apos;t check for updates. Try again later.</source>
         <translation>检查更新失败，请稍后再试。</translation>
     </message>

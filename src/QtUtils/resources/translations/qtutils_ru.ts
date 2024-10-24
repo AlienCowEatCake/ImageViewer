@@ -201,65 +201,65 @@
 <context>
     <name>UpdateManager</name>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="98"/>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="195"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="145"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="245"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="99"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="146"/>
         <source>An update is already in progress. Check back later.</source>
         <translation>Обновление уже запущено. Попробуйте проверить обновления позже.</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="128"/>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="151"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="178"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="201"/>
         <source>Information</source>
         <translation>Информация</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="131"/>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="154"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="181"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="204"/>
         <source>Your version:</source>
         <translation>Ваша версия:</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="129"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="179"/>
         <source>You have the latest version.</source>
         <translation>У вас установлена последняя версия программы.</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="152"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="202"/>
         <source>New updates are available.</source>
         <translation>Доступна новая версия программы.</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="156"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="206"/>
         <source>Latest version:</source>
         <translation>Последняя версия:</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="159"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="209"/>
         <source>&amp;Download</source>
         <translation>&amp;Загрузить</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="160"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="210"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Отмена</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="161"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="211"/>
         <source>&amp;Skip This Version</source>
         <translation>&amp;Пропустить версию</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="174"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="224"/>
         <source>Automatically check for updates</source>
         <translation>Автоматически проверять обновления</translation>
     </message>
     <message>
-        <location filename="../../src/Updater/UpdateManager.cpp" line="196"/>
+        <location filename="../../src/Updater/UpdateManager.cpp" line="246"/>
         <source>Can&apos;t check for updates. Try again later.</source>
         <translation>Не удалось проверить наличие обновлений. Попробуйте попозже.</translation>
     </message>
