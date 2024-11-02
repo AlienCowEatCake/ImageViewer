@@ -81,7 +81,7 @@
     <message>
         <location filename="../../src/Utils/IconThemeManager.cpp" line="68"/>
         <source>QtUtils</source>
-        <translation type="unfinished">單色</translation>
+        <translation>单色</translation>
     </message>
     <message>
         <location filename="../../src/Utils/IconThemeManager.cpp" line="70"/>
