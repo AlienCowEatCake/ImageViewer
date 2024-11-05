@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -17,7 +17,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined (WA_SHIFT_NEGATIVE_IGNORED_GCC) && defined (__GNUC__) && (__GNUC__ >= 6)
+#if !defined (WA_SHIFT_NEGATIVE_IGNORED_GCC) && defined (__GNUC__) && !defined (__clang__) && (__GNUC__ >= 6)
 #define WA_SHIFT_NEGATIVE_IGNORED_GCC
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshift-negative-value"
