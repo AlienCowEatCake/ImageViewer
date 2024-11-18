@@ -38,6 +38,7 @@ public:
     static ImageMetaData *createMetaData(const QByteArray &fileData);
     static ImageMetaData *createExifMetaData(const QByteArray &rawExifData);
     static ImageMetaData *createXmpMetaData(const QByteArray &rawXmpData);
+    static ImageMetaData *createQImageMetaData(const QImage &image);
     static ImageMetaData *joinMetaData(ImageMetaData *first, ImageMetaData *second);
     static void applyExifOrientation(QImage *image, quint16 orientation);
 

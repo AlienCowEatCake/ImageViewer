@@ -630,6 +630,30 @@ ImageMetaData *ImageMetaData::createXmpMetaData(const QByteArray &rawXmpData)
     return Q_NULLPTR;
 }
 
+ImageMetaData *ImageMetaData::createQImageMetaData(const QImage &image)
+{
+    ImageMetaData *metaData = Q_NULLPTR;
+    const QStringList keys = image.textKeys();
+    for(QStringList::ConstIterator it = keys.constBegin(); it != keys.constEnd(); ++it)
+    {
+        if(it->isEmpty())
+            continue;
+
+        static const QString xmpKey = QString::fromLatin1("XML:com.adobe.xmp");
+        if(*it == xmpKey)
+        {
+            metaData = joinMetaData(metaData, createXmpMetaData(image.text(xmpKey).toUtf8()));
+            continue;
+        }
+
+        if(!metaData)
+            metaData = new ImageMetaData();
+        static const QString type = QString::fromLatin1("QImage Text");
+        metaData->addCustomEntry(type, *it, image.text(*it));
+    }
+    return metaData;
+}
+
 ImageMetaData *ImageMetaData::joinMetaData(ImageMetaData *first, ImageMetaData *second)
 {
     if(!first)

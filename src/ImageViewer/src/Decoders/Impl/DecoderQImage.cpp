@@ -107,6 +107,9 @@ public:
             return QSharedPointer<IImageData>();
         }
 
+        ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+        metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createQImageMetaData(image));
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
         /// @note Supress '@2x' logic: https://github.com/qt/qtbase/blob/v5.9.8/src/gui/image/qimagereader.cpp#L1364
         image.setDevicePixelRatio(1);
@@ -126,7 +129,6 @@ public:
         if(!IsOneOf(image.format(), QImage::Format_RGB32, QImage::Format_ARGB32))
             QImage_convertTo(image, image.hasAlphaChannel() ? QImage::Format_ARGB32 : QImage::Format_RGB32);
 
-        ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
 #if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
         if(metaData)
             metaData->applyExifOrientation(&image);
