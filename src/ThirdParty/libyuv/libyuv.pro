@@ -62,6 +62,7 @@ SOURCES += \
     $${THIRDPARTY_LIBYUV_PATH}/source/row_neon.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/row_neon64.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/row_rvv.cc \
+    $${THIRDPARTY_LIBYUV_PATH}/source/row_sme.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/row_sve.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/row_win.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/scale.cc \
@@ -75,6 +76,7 @@ SOURCES += \
     $${THIRDPARTY_LIBYUV_PATH}/source/scale_neon64.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/scale_rgb.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/scale_rvv.cc \
+    $${THIRDPARTY_LIBYUV_PATH}/source/scale_sme.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/scale_uv.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/scale_win.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/video_common.cc \
