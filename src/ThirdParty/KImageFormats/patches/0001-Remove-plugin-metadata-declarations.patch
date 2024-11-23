@@ -1,4 +1,4 @@
-From 048fe7053f16251daeb0258cb1e2ee1001f26ecf Mon Sep 17 00:00:00 2001
+From f98d924d78f0ebc09dd49d36d4f826056d4e3eaf Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 04:03:37 +0700
 Subject: [PATCH 1/7] Remove plugin metadata declarations
@@ -23,9 +23,10 @@ Subject: [PATCH 1/7] Remove plugin metadata declarations
  src/imageformats/ras_p.h  | 2 +-
  src/imageformats/raw_p.h  | 2 +-
  src/imageformats/rgb_p.h  | 2 +-
+ src/imageformats/sct_p.h  | 2 +-
  src/imageformats/tga_p.h  | 2 +-
  src/imageformats/xcf_p.h  | 2 +-
- 21 files changed, 21 insertions(+), 21 deletions(-)
+ 22 files changed, 22 insertions(+), 22 deletions(-)
 
 diff --git a/src/imageformats/ani_p.h b/src/imageformats/ani_p.h
 index f5cbca6..bfce9ef 100644
@@ -106,7 +107,7 @@ index 8bfafff..feeabfd 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/jxl_p.h b/src/imageformats/jxl_p.h
-index 7cffafb..923a611 100644
+index 7648e0c..98ff2a3 100644
 --- a/src/imageformats/jxl_p.h
 +++ b/src/imageformats/jxl_p.h
 @@ -90,7 +90,7 @@ private:
@@ -271,6 +272,19 @@ index f47c627..76b1aaf 100644
      Q_OBJECT
 -    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "rgb.json")
 +//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "rgb.json")
+ 
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/sct_p.h b/src/imageformats/sct_p.h
+index b5e9b81..48a16da 100644
+--- a/src/imageformats/sct_p.h
++++ b/src/imageformats/sct_p.h
+@@ -32,7 +32,7 @@ private:
+ class ScitexPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "sct.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "sct.json")
  
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;

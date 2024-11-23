@@ -476,8 +476,17 @@ bool HEIFHandler::ensureDecoder()
         return false;
     }
 
-    const bool hasAlphaChannel = heif_image_handle_has_alpha_channel(handle);
     const int bit_depth = heif_image_handle_get_luma_bits_per_pixel(handle);
+
+    if (bit_depth < 8) {
+        m_parseState = ParseHeicError;
+        heif_image_handle_release(handle);
+        heif_context_free(ctx);
+        qWarning() << "HEIF image with undefined or unsupported bit depth.";
+        return false;
+    }
+
+    const bool hasAlphaChannel = heif_image_handle_has_alpha_channel(handle);
     heif_chroma chroma;
 
     QImage::Format target_image_format;
@@ -502,11 +511,7 @@ bool HEIFHandler::ensureDecoder()
         m_parseState = ParseHeicError;
         heif_image_handle_release(handle);
         heif_context_free(ctx);
-        if (bit_depth > 0) {
-            qWarning() << "Unsupported bit depth:" << bit_depth;
-        } else {
-            qWarning() << "Undefined bit depth.";
-        }
+        qWarning() << "Unsupported bit depth:" << bit_depth;
         return false;
     }
 
@@ -518,6 +523,16 @@ bool HEIFHandler::ensureDecoder()
 
     struct heif_image *img = nullptr;
     err = heif_decode_image(handle, &img, heif_colorspace_RGB, chroma, decoder_option);
+
+#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+    if (err.code == heif_error_Invalid_input && err.subcode == heif_suberror_Unknown_NCLX_matrix_coefficients && img == nullptr && buffer.contains("Xiaomi")) {
+        qWarning() << "Non-standard HEIF image with invalid matrix_coefficients, probably made by a Xiaomi device!";
+
+        // second try to decode with strict decoding disabled
+        decoder_option->strict_decoding = 0;
+        err = heif_decode_image(handle, &img, heif_colorspace_RGB, chroma, decoder_option);
+    }
+#endif
 
     if (decoder_option) {
         heif_decoding_options_free(decoder_option);

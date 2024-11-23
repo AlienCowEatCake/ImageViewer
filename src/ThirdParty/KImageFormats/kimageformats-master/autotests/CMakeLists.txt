@@ -72,6 +72,7 @@ kimageformats_read_tests(
     qoi
     ras
     rgb
+    sct
     tga
 )
 

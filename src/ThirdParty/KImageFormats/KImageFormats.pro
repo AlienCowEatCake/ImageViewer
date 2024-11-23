@@ -334,6 +334,22 @@ DEFINES += SGIImagePrivate=tp_SGIImagePrivate
 # --------------------------------------------------------------------------------
 
 SOURCES += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/sct.cpp
+
+HEADERS += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/sct_p.h
+
+DEFINES += WRAPPER_USE_SCT_HANDLER
+
+DEFINES += ScitexHandler=tp_ScitexHandler
+DEFINES += ScitexPlugin=tp_ScitexPlugin
+DEFINES += ScitexCtrlBlock=tp_ScitexCtrlBlock
+DEFINES += ScitexParamsBlock=tp_ScitexParamsBlock
+DEFINES += ScitexHandlerPrivate=tp_ScitexHandlerPrivate
+
+# --------------------------------------------------------------------------------
+
+SOURCES += \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/tga.cpp
 
 HEADERS += \

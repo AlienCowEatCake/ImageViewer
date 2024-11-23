@@ -107,6 +107,10 @@ kimageformats_add_plugin(kimg_rgb SOURCES rgb.cpp)
 
 ##################################
 
+kimageformats_add_plugin(kimg_sct SOURCES sct.cpp)
+
+##################################
+
 kimageformats_add_plugin(kimg_tga SOURCES tga.cpp)
 
 ##################################
@@ -127,7 +131,7 @@ if (LibJXR_FOUND)
     kimageformats_add_plugin(kimg_jxr SOURCES jxr.cpp)
     kde_enable_exceptions()
     target_include_directories(kimg_jxr PRIVATE ${LIBJXR_INCLUDE_DIRS})
-    target_link_libraries(kimg_jxr PRIVATE jpegxr jxrglue)
+    target_link_libraries(kimg_jxr PRIVATE ${LIBJXR_LIBRARIES})
     target_compile_definitions(kimg_jxr PRIVATE INITGUID)
     if (NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=undef")

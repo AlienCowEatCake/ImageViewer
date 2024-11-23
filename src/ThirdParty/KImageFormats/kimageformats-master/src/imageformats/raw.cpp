@@ -125,7 +125,7 @@ public:
                 break;
             }
         }
-        return read / sz;
+        return int(read / sz);
     }
     virtual int eof() override
     {

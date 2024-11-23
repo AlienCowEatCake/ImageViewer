@@ -19,9 +19,10 @@ The following image formats have read-only support:
 - Krita (kra)
 - OpenRaster (ora)
 - Pixar raster (pxr)
-- Portable FloatMap (pfm)
+- Portable FloatMap/HalfMap (pfm, phm)
 - Photoshop documents (psd, psb, pdd, psdt)
 - Radiance HDR (hdr)
+- Scitex CT (sct)
 - Sun Raster (im1, im8, im24, im32, ras, sun)
 
 The following image formats have read and write support:
@@ -127,6 +128,7 @@ plugin ('n/a' means no limit, i.e. the limit depends on the format encoding).
 - RAS: n/a (large image)
 - RAW: n/a (depends on the RAW format loaded)
 - RGB: 65,535 x 65,535 pixels
+- SCT: 300,000 x 300,000 pixels
 - TGA: 65,535 x 65,535 pixels
 - XCF: 300,000 x 300,000 pixels
 
@@ -157,7 +159,7 @@ been used or the maximum size of the image that can be saved has been limited.
 PSD plugin loads CMYK, Lab and Multichannel images and converts them to RGB 
 without using the ICC profile.
 
-JXR and PSD plugins natively support 4-channel CMYK images when compiled 
+JXR, PSD and SCT plugins natively support 4-channel CMYK images when compiled 
 with Qt 6.8+.
 
 ### The HEIF plugin

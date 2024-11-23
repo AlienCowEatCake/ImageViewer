@@ -1,4 +1,4 @@
 {
-    "Keys": [ "pfm" ],
-    "MimeTypes": [ "image/x-pfm" ]
+    "Keys": [ "pfm", "phm" ],
+    "MimeTypes": [ "image/x-pfm", "image/x-phm" ]
 }

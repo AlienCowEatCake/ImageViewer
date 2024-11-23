@@ -11,3 +11,5 @@ autotests/read/hdr/fake_earth.hdr binary
 autotests/read/hdr/rgb.hdr binary
 autotests/read/hdr/rgb-landscape.hdr binary
 autotests/read/hdr/rgb-portrait.hdr binary
+autotests/read/pfm/testcard_gray_half.phm binary
+autotests/read/pfm/testcard_rgb_half.phm binary

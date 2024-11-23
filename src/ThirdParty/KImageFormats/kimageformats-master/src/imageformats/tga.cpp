@@ -174,15 +174,21 @@ static QImage::Format imageFormat(const TgaHeader &head)
 {
     auto format = QImage::Format_Invalid;
     if (IsSupported(head)) {
+        TgaHeaderInfo info(head);
+
         // Bits 0-3 are the numbers of alpha bits (can be zero!)
         const int numAlphaBits = head.flags & 0xf;
-        // However alpha exists only in the 32 bit format.
-        if ((head.pixel_size == 32) && (head.flags & 0xf)) {
+        // However alpha should exists only in the 32 bit format.
+        if ((head.pixel_size == 32) && (numAlphaBits)) {
             if (numAlphaBits <= 8) {
                 format = QImage::Format_ARGB32;
             }
-        }
-        else {
+        // Anyway, GIMP also saves gray images with alpha in TGA format
+        } else if((info.grey) && (head.pixel_size == 16) && (numAlphaBits)) {
+            if (numAlphaBits == 8) {
+                format = QImage::Format_ARGB32;
+            }
+        } else {
             format = QImage::Format_RGB32;
         }
     }
@@ -348,8 +354,7 @@ static bool LoadTGA(QDataStream &s, const TgaHeader &tga, QImage &img)
     uchar *src = image;
 
     for (int y = y_start; y != y_end; y += y_step) {
-        QRgb *scanline = (QRgb *)img.scanLine(y);
-
+        auto scanline = reinterpret_cast<QRgb *>(img.scanLine(y));
         if (info.pal) {
             // Paletted.
             for (int x = 0; x < tga.width; x++) {
@@ -359,8 +364,14 @@ static bool LoadTGA(QDataStream &s, const TgaHeader &tga, QImage &img)
         } else if (info.grey) {
             // Greyscale.
             for (int x = 0; x < tga.width; x++) {
-                scanline[x] = qRgb(*src, *src, *src);
-                src++;
+                if (tga.pixel_size == 16) {
+                    scanline[x] = qRgba(*src, *src, *src, *(src + 1));
+                    src += 2;
+                }
+                else {
+                    scanline[x] = qRgb(*src, *src, *src);
+                    src++;
+                }
             }
         } else {
             // True Color.

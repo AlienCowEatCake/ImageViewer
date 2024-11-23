@@ -1715,7 +1715,7 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
 #ifdef USE_FLOAT_IMAGES
                 if (precision < GimpPrecision::GIMP_PRECISION_HALF_LINEAR) {
                     for (int x = 0; x < width; x++) {
-                        auto src = (const quint16 *)tile;
+                        auto src = reinterpret_cast<const quint16 *>(tile);
                         *dataPtr++ = qFromBigEndian<quint16>(src[0]) / 257;
                         if (alphaPtr) {
                             *alphaPtr++ = qFromBigEndian<quint16>(src[1]) / 257;
@@ -1726,7 +1726,7 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
                     }
                 } else {
                     for (int x = 0; x < width; x++) {
-                        auto src = (const float *)tile;
+                        auto src = reinterpret_cast<const float *>(tile);
                         *dataPtr++ = qFromBigEndian<float>(src[0]) * 255;
                         if (alphaPtr) {
                             *alphaPtr++ = qFromBigEndian<float>(src[1]) * 255;
@@ -1752,7 +1752,7 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
 #ifdef USE_FLOAT_IMAGES
                 if (precision < GimpPrecision::GIMP_PRECISION_HALF_LINEAR) {
                     for (int x = 0; x < width; x++) {
-                        auto src = (const quint16 *)tile;
+                        auto src = reinterpret_cast<const quint16 *>(tile);
                         *dataPtr++ = qFromBigEndian<quint16>(src[0]) / 257;
                         if (alphaPtr)
                             *alphaPtr++ = qFromBigEndian<quint16>(src[1]) / 257;
@@ -1760,7 +1760,7 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
                     }
                 } else {
                     for (int x = 0; x < width; x++) {
-                        auto src = (const qfloat16 *)tile;
+                        auto src = reinterpret_cast<const qfloat16 *>(tile);
                         *dataPtr++ = qFromBigEndian<qfloat16>(src[0]) * 255;
                         if (alphaPtr)
                             *alphaPtr++ = qFromBigEndian<qfloat16>(src[1]) * 255;
@@ -1769,7 +1769,7 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
                 }
 #else
                 for (int x = 0; x < width; x++) {
-                    auto src = (const quint16 *)tile;
+                    auto src = reinterpret_cast<const quint16 *>(tile);
                     *dataPtr++ = qFromBigEndian<quint16>(src[0]) / 257;
                     if (alphaPtr)
                         *alphaPtr++ = qFromBigEndian<quint16>(src[1]) / 257;
@@ -1809,9 +1809,9 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
         break;
     case QImage::Format_RGBX64:
         for (int y = 0; y < height; y++) {
-            quint16 *dataPtr = (quint16 *)image.scanLine(y);
+            quint16 *dataPtr = reinterpret_cast<quint16 *>(image.scanLine(y));
             const size_t bpl = width * sizeof(QRgba64);
-            const quint16 *src = (const quint16 *)(tile + y * bpl);
+            const quint16 *src = reinterpret_cast<const quint16 *>(tile + y * bpl);
             for (int x = 0; x < width * 4; x += 4) {
                 dataPtr[x + 0] = qFromBigEndian(src[x + 0]);
                 dataPtr[x + 1] = qFromBigEndian(src[x + 1]);
@@ -1823,8 +1823,8 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
 #ifdef USE_FLOAT_IMAGES
     case QImage::Format_RGBX16FPx4:
         for (int y = 0; y < height; y++) {
-            qfloat16 *dataPtr = (qfloat16 *)image.scanLine(y);
-            const qfloat16 *src = (const qfloat16 *)(tile + y * width * sizeof(QRgbaFloat16));
+            qfloat16 *dataPtr = reinterpret_cast<qfloat16 *>(image.scanLine(y));
+            const qfloat16 *src = reinterpret_cast<const qfloat16 *>(tile + y * width * sizeof(QRgbaFloat16));
             for (int x = 0; x < width * 4; x += 4) {
                 dataPtr[x + 0] = qFromBigEndian(src[x + 0]);
                 dataPtr[x + 1] = qFromBigEndian(src[x + 1]);
@@ -1851,8 +1851,8 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
         break;
     case QImage::Format_RGBX32FPx4:
         for (int y = 0; y < height; y++) {
-            float *dataPtr = (float *)image.scanLine(y);
-            const float *src = (const float *)(tile + y * width * sizeof(QRgbaFloat32));
+            float *dataPtr = reinterpret_cast<float *>(image.scanLine(y));
+            const float *src = reinterpret_cast<const float *>(tile + y * width * sizeof(QRgbaFloat32));
             for (int x = 0; x < width * 4; x += 4) {
                 dataPtr[x + 0] = qFromBigEndian(src[x + 0]);
                 dataPtr[x + 1] = qFromBigEndian(src[x + 1]);
@@ -1992,7 +1992,7 @@ static bool convertFloatTo16Bit(uchar *output, quint64 outputSize, uchar *input)
 {
     SourceFormat *source = (SourceFormat *)(input);
     for (quint64 offset = 0; offset < outputSize; offset++) {
-        ((uint16_t *)output)[offset] = qToBigEndian(quint16(qBound(0., qFromBigEndian<SourceFormat>(source[offset]) * 65535. + 0.5, 65535.)));
+        (reinterpret_cast<uint16_t *>(output))[offset] = qToBigEndian(quint16(qBound(0., qFromBigEndian<SourceFormat>(source[offset]) * 65535. + 0.5, 65535.)));
     }
     return true;
 }
@@ -2151,9 +2151,9 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
                 case GIMP_PRECISION_U32_LINEAR:
                 case GIMP_PRECISION_U32_NON_LINEAR:
                 case GIMP_PRECISION_U32_PERCEPTUAL: {
-                    quint32 *source = (quint32 *)(buffer.data());
+                    quint32 *source = reinterpret_cast<quint32 *>(buffer.data());
                     for (quint64 offset = 0, len = buffer.size() / sizeof(quint32); offset < len; ++offset) {
-                        ((quint16 *)layer.tile)[offset] = qToBigEndian<quint16>(qFromBigEndian(source[offset]) / 65537);
+                        (reinterpret_cast<quint16 *>(layer.tile))[offset] = qToBigEndian<quint16>(qFromBigEndian(source[offset]) / 65537);
                     }
                     break;
                 }
@@ -2177,9 +2177,9 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
                 case GIMP_PRECISION_DOUBLE_LINEAR:
                 case GIMP_PRECISION_DOUBLE_NON_LINEAR:
                 case GIMP_PRECISION_DOUBLE_PERCEPTUAL: {
-                    double *source = (double *)(buffer.data());
+                    double *source = reinterpret_cast<double *>(buffer.data());
                     for (quint64 offset = 0, len = buffer.size() / sizeof(double); offset < len; ++offset) {
-                        ((float *)layer.tile)[offset] = qToBigEndian<float>(float(qFromBigEndian(source[offset])));
+                        (reinterpret_cast<float *>(layer.tile))[offset] = qToBigEndian<float>(float(qFromBigEndian(source[offset])));
                     }
                     break;
                 }
@@ -2524,12 +2524,12 @@ bool XCFImageFormat::assignMaskBytes(Layer &layer, uint i, uint j, const GimpPre
         if (bpc == 4) {
             if (precision < GimpPrecision::GIMP_PRECISION_HALF_LINEAR) {
                 for (int x = 0; x < width; x++) {
-                    *dataPtr++ = qFromBigEndian<quint16>(*(const quint16 *)tile) / 257;
+                    *dataPtr++ = qFromBigEndian<quint16>(*reinterpret_cast<const quint16 *>(tile)) / 257;
                     tile += sizeof(quint16); // was converted to 16 bits in loadLevel()
                 }
             } else {
                 for (int x = 0; x < width; x++) {
-                    *dataPtr++ = qFromBigEndian<float>(*(const float *)tile) * 255;
+                    *dataPtr++ = qFromBigEndian<float>(*reinterpret_cast<const float *>(tile)) * 255;
                     tile += sizeof(QRgb); // yeah! see loadTileRLE()
                 }
             }
@@ -2537,12 +2537,12 @@ bool XCFImageFormat::assignMaskBytes(Layer &layer, uint i, uint j, const GimpPre
             // when not converted, the step of a
             if (precision < GimpPrecision::GIMP_PRECISION_HALF_LINEAR) {
                 for (int x = 0; x < width; x++) {
-                    *dataPtr++ = qFromBigEndian<quint16>(*(const quint16 *)tile) / 257;
+                    *dataPtr++ = qFromBigEndian<quint16>(*reinterpret_cast<const quint16 *>(tile)) / 257;
                     tile += sizeof(QRgb); // yeah! see loadTileRLE()
                 }
             } else {
                 for (int x = 0; x < width; x++) {
-                    *dataPtr++ = qFromBigEndian<qfloat16>(*(const qfloat16 *)tile) * 255;
+                    *dataPtr++ = qFromBigEndian<qfloat16>(*reinterpret_cast<const qfloat16 *>(tile)) * 255;
                     tile += sizeof(QRgb); // yeah! see loadTileRLE()
                 }
             }
@@ -2550,12 +2550,12 @@ bool XCFImageFormat::assignMaskBytes(Layer &layer, uint i, uint j, const GimpPre
 #else
         if (bpc == 2) {
             for (int x = 0; x < width; x++) {
-                *dataPtr++ = qFromBigEndian<quint16>(*(const quint16 *)tile) / 257;
+                *dataPtr++ = qFromBigEndian<quint16>(*reinterpret_cast<const quint16 *>(tile)) / 257;
                 tile += sizeof(QRgb); // yeah! see loadTileRLE() / loadLevel()
             }
         } else if (bpc == 4) {
             for (int x = 0; x < width; x++) {
-                *dataPtr++ = qFromBigEndian<quint16>(*(const quint16 *)tile) / 257;
+                *dataPtr++ = qFromBigEndian<quint16>(*reinterpret_cast<const quint16 *>(tile)) / 257;
                 tile += sizeof(quint16); // was converted to 16 bits in loadLevel()
             }
         }

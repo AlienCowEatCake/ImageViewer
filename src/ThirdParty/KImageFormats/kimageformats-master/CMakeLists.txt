@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(KF_VERSION "6.8.0") # handled by release scripts
-set(KF_DEP_VERSION "6.7.0") # handled by release scripts
+set(KF_VERSION "6.9.0") # handled by release scripts
+set(KF_DEP_VERSION "6.8.0") # handled by release scripts
 project(KImageFormats VERSION ${KF_VERSION})
 
 include(FeatureSummary)
-find_package(ECM 6.7.0  NO_MODULE)
+find_package(ECM 6.8.0  NO_MODULE)
 set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
 feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
@@ -21,7 +21,7 @@ include(ECMDeprecationSettings)
 include(CheckIncludeFiles)
 include(FindPkgConfig)
 
-set(REQUIRED_QT_VERSION 6.5.0)
+set(REQUIRED_QT_VERSION 6.6.0)
 find_package(Qt6Gui ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
 find_package(KF6Archive ${KF_DEP_VERSION})
@@ -88,8 +88,8 @@ endif()
 add_feature_info(LibJXR LibJXR_FOUND "required for the QImage plugin for JPEG XR images")
 
 ecm_set_disabled_deprecation_versions(
-    QT 6.5
-    KF 5.102
+    QT 6.8.0
+    KF 6.8.0
 )
 
 add_subdirectory(src)

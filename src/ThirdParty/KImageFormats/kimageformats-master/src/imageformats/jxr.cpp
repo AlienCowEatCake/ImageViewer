@@ -1102,8 +1102,11 @@ bool JXRHandler::canRead(QIODevice *device)
 
 QImageIOPlugin::Capabilities JXRPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "jxr" || format == "wdp" || format == "hdp") {
+    if (format == "jxr") {
         return Capabilities(CanRead | CanWrite);
+    }
+    if (format == "wdp" || format == "hdp") {
+        return Capabilities(CanRead);
     }
     if (!format.isEmpty()) {
         return {};

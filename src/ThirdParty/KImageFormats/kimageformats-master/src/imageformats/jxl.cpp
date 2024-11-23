@@ -249,7 +249,7 @@ bool QJpegXLHandler::ensureDecoder()
         return false;
     }
 
-    if (!decodeBoxes()) {
+    if (!decodeBoxes(status)) {
         return false;
     }
 
@@ -282,30 +282,32 @@ bool QJpegXLHandler::countALLFrames()
         return false;
     }
 
-    JxlDecoderStatus status = JxlDecoderProcessInput(m_decoder);
+    JxlDecoderStatus status;
+    if (!decodeBoxes(status)) {
+        return false;
+    }
+
     if (status != JXL_DEC_COLOR_ENCODING) {
         qWarning("Unexpected event %d instead of JXL_DEC_COLOR_ENCODING", status);
         m_parseState = ParseJpegXLError;
         return false;
     }
 
+    bool is_gray = m_basicinfo.num_color_channels == 1 && m_basicinfo.num_extra_channels == 0;
     JxlColorEncoding color_encoding;
     if (m_basicinfo.uses_original_profile == JXL_FALSE) {
-        JxlColorEncodingSetToSRGB(&color_encoding, JXL_FALSE);
+        JxlColorEncodingSetToSRGB(&color_encoding, is_gray ? JXL_TRUE : JXL_FALSE);
         JxlDecoderSetPreferredColorProfile(m_decoder, &color_encoding);
     }
 
-    bool loadalpha;
-
+    bool loadalpha = false;
     if (m_basicinfo.alpha_bits > 0) {
         loadalpha = true;
-    } else {
-        loadalpha = false;
     }
 
     m_input_pixel_format.endianness = JXL_NATIVE_ENDIAN;
     m_input_pixel_format.align = 0;
-    m_input_pixel_format.num_channels = m_basicinfo.num_color_channels == 1 ? 1 : 4;
+    m_input_pixel_format.num_channels = is_gray ? 1 : 4;
 
     if (m_basicinfo.bits_per_sample > 8) { // high bit depth
 #ifdef JXL_HDR_PRESERVATION_DISABLED
@@ -316,7 +318,7 @@ bool QJpegXLHandler::countALLFrames()
         m_input_pixel_format.data_type = is_fp ? JXL_TYPE_FLOAT16 : JXL_TYPE_UINT16;
         m_buffer_size = (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize * m_input_pixel_format.num_channels * 2;
 
-        if (m_basicinfo.num_color_channels == 1) {
+        if (is_gray) {
             m_input_pixel_format.data_type = JXL_TYPE_UINT16;
             m_input_image_format = m_target_image_format = QImage::Format_Grayscale16;
             m_buffer_size = (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize * m_input_pixel_format.num_channels * 2;
@@ -347,7 +349,7 @@ bool QJpegXLHandler::countALLFrames()
         m_input_pixel_format.data_type = JXL_TYPE_UINT8;
         m_buffer_size = (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize * m_input_pixel_format.num_channels;
 
-        if (m_basicinfo.num_color_channels == 1) {
+        if (is_gray) {
             m_input_image_format = m_target_image_format = QImage::Format_Grayscale8;
         } else {
             m_input_image_format = QImage::Format_RGBA8888;
@@ -456,7 +458,7 @@ bool QJpegXLHandler::countALLFrames()
     }
 
 #ifndef JXL_DECODE_BOXES_DISABLED
-    if (!decodeBoxes()) {
+    if (!decodeBoxes(status)) {
         return false;
     }
 #endif
@@ -685,7 +687,7 @@ bool QJpegXLHandler::write(const QImage &image)
         // no profile or Qt-unsupported ICC profile
         iccprofile = tmpcs.iccProfile();
         // note: lossless encoding requires uses_original_profile = JXL_TRUE
-        if (iccprofile.size() > 0 || m_quality == 100) {
+        if (iccprofile.size() > 0 || m_quality == 100 || is_gray) {
             output_info.uses_original_profile = JXL_TRUE;
         }
     }
@@ -875,7 +877,7 @@ bool QJpegXLHandler::write(const QImage &image)
         }
     } else {
         JxlColorEncoding color_profile;
-        JxlColorEncodingSetToSRGB(&color_profile, JXL_FALSE);
+        JxlColorEncodingSetToSRGB(&color_profile, is_gray ? JXL_TRUE : JXL_FALSE);
 
         status = JxlEncoderSetColorEncoding(encoder, &color_profile);
         if (status != JXL_ENC_SUCCESS) {
@@ -1023,6 +1025,7 @@ QVariant QJpegXLHandler::option(ImageOption option) const
         } else if (m_basicinfo.orientation == JXL_ORIENT_ROTATE_90_CCW) {
             return int(QImageIOHandler::TransformationRotate270);
         }
+        break;
 #endif
     default:
         return QVariant();
@@ -1232,9 +1235,8 @@ bool QJpegXLHandler::rewind()
     return true;
 }
 
-bool QJpegXLHandler::decodeBoxes()
+bool QJpegXLHandler::decodeBoxes(JxlDecoderStatus &status)
 {
-    JxlDecoderStatus status;
     do { // decode metadata
         status = JxlDecoderProcessInput(m_decoder);
         if (status == JXL_DEC_BOX) {
@@ -1242,7 +1244,7 @@ bool QJpegXLHandler::decodeBoxes()
             JxlDecoderGetBoxType(m_decoder, type, JXL_FALSE);
             if (memcmp(type, "xml ", 4) == 0) {
                 uint64_t size;
-                if (JxlDecoderGetBoxSizeRaw(m_decoder, &size) == JXL_DEC_SUCCESS) {
+                if (JxlDecoderGetBoxSizeRaw(m_decoder, &size) == JXL_DEC_SUCCESS && size < uint64_t(kMaxQVectorSize)) {
                     m_xmp = QByteArray(size, '\0');
                     JxlDecoderSetBoxBuffer(m_decoder, reinterpret_cast<uint8_t *>(m_xmp.data()), m_xmp.size());
                 }

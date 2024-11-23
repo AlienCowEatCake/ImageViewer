@@ -92,12 +92,18 @@ public:
             fmt = QImage::Format_Mono;
         } else if (Bpp == 1 && NPlanes == 4) {
             fmt = QImage::Format_Indexed8;
+        } else if (Bpp == 1 && NPlanes == 3) {
+            fmt = QImage::Format_Indexed8;
         } else if (Bpp == 4 && NPlanes == 1) {
+            fmt = QImage::Format_Indexed8;
+        } else if (Bpp == 2 && NPlanes == 1) {
             fmt = QImage::Format_Indexed8;
         } else if (Bpp == 8 && NPlanes == 1) {
             fmt = QImage::Format_Indexed8;
         } else if (Bpp == 8 && NPlanes == 3) {
             fmt = QImage::Format_RGB32;
+        } else if (Bpp == 8 && NPlanes == 4) {
+            fmt = QImage::Format_ARGB32;
         }
         return fmt;
     }
@@ -346,7 +352,7 @@ static bool readImage1(QImage &img, QDataStream &s, const PCXHEADER &header)
 
 static bool readImage4(QImage &img, QDataStream &s, const PCXHEADER &header)
 {
-    QByteArray buf(header.BytesPerLine * 4, 0);
+    QByteArray buf(header.BytesPerLine * header.NPlanes, 0);
     QByteArray pixbuf(header.width(), 0);
 
     img = imageAlloc(header.width(), header.height(), header.format());
@@ -371,7 +377,7 @@ static bool readImage4(QImage &img, QDataStream &s, const PCXHEADER &header)
             return false;
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < header.NPlanes; i++) {
             quint32 offset = i * header.BytesPerLine;
             for (int x = 0; x < header.width(); ++x) {
                 if (buf[offset + (x / 8)] & (128 >> (x % 8))) {
@@ -395,6 +401,49 @@ static bool readImage4(QImage &img, QDataStream &s, const PCXHEADER &header)
     }
 
     return true;
+}
+
+static bool readImage2(QImage &img, QDataStream &s, const PCXHEADER &header)
+{
+    QByteArray buf(header.BytesPerLine, 0);
+
+    img = imageAlloc(header.width(), header.height(), header.format());
+    img.setColorCount(4);
+
+    if (img.isNull()) {
+        qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
+        return false;
+    }
+
+    for (int y = 0; y < header.height(); ++y) {
+        if (s.atEnd()) {
+            return false;
+        }
+
+        if (!readLine(s, buf, header)) {
+            return false;
+        }
+
+        uchar *p = img.scanLine(y);
+        if (!p) {
+            return false;
+        }
+
+        const unsigned int bpl = std::min(header.BytesPerLine, static_cast<quint16>(header.width() / 4));
+        for (unsigned int x = 0; x < bpl; ++x) {
+            p[x * 4] = (buf[x] >> 6) & 3;
+            p[x * 4 + 1] = (buf[x] >> 4) & 3;
+            p[x * 4 + 2] = (buf[x] >> 2) & 3;
+            p[x * 4 + 3] = buf[x] & 3;
+        }
+    }
+
+    // Read the palette
+    for (int i = 0; i < 4; ++i) {
+        img.setColor(i, header.ColorMap.color(i));
+    }
+
+    return (s.status() == QDataStream::Ok);
 }
 
 static bool readImage4v2(QImage &img, QDataStream &s, const PCXHEADER &header)
@@ -504,6 +553,7 @@ static bool readImage24(QImage &img, QDataStream &s, const PCXHEADER &header)
     QByteArray r_buf(header.BytesPerLine, 0);
     QByteArray g_buf(header.BytesPerLine, 0);
     QByteArray b_buf(header.BytesPerLine, 0);
+    QByteArray a_buf(header.BytesPerLine, char(0xFF));
 
     img = imageAlloc(header.width(), header.height(), header.format());
 
@@ -528,11 +578,13 @@ static bool readImage24(QImage &img, QDataStream &s, const PCXHEADER &header)
         if (!readLine(s, b_buf, header)) {
             return false;
         }
+        if (header.NPlanes == 4 && !readLine(s, a_buf, header)) {
+            return false;
+        }
 
-        uint *p = (uint *)img.scanLine(y);
-
+        auto p = reinterpret_cast<QRgb *>(img.scanLine(y));
         for (unsigned int x = 0; x < bpl; ++x) {
-            p[x] = qRgb(r_buf[x], g_buf[x], b_buf[x]);
+            p[x] = qRgba(r_buf[x], g_buf[x], b_buf[x], a_buf[x]);
         }
     }
 
@@ -571,7 +623,7 @@ static bool writeLine(QDataStream &s, QByteArray &buf)
 static bool writeImage1(QImage &img, QDataStream &s, PCXHEADER &header)
 {
     if (img.format() != QImage::Format_Mono) {
-        img = img.convertToFormat(QImage::Format_Mono);
+        img.convertTo(QImage::Format_Mono);
     }
     if (img.isNull() || img.colorCount() < 1) {
         return false;
@@ -591,7 +643,7 @@ static bool writeImage1(QImage &img, QDataStream &s, PCXHEADER &header)
     QByteArray buf(header.BytesPerLine, 0);
 
     for (int y = 0; y < header.height(); ++y) {
-        quint8 *p = img.scanLine(y);
+        auto p = img.constScanLine(y);
 
         // Invert as QImage uses reverse palette for monochrome images?
         for (int i = 0; i < header.BytesPerLine; ++i) {
@@ -627,7 +679,7 @@ static bool writeImage4(QImage &img, QDataStream &s, PCXHEADER &header)
     }
 
     for (int y = 0; y < header.height(); ++y) {
-        quint8 *p = img.scanLine(y);
+        auto p = img.constScanLine(y);
 
         for (int i = 0; i < 4; ++i) {
             buf[i].fill(0);
@@ -652,6 +704,13 @@ static bool writeImage4(QImage &img, QDataStream &s, PCXHEADER &header)
 
 static bool writeImage8(QImage &img, QDataStream &s, PCXHEADER &header)
 {
+    if (img.format() == QImage::Format_Grayscale16) {
+        img.convertTo(QImage::Format_Grayscale8);
+    }
+    if (img.isNull()) {
+        return false;
+    }
+
     header.Bpp = 8;
     header.NPlanes = 1;
     header.BytesPerLine = img.bytesPerLine();
@@ -664,7 +723,7 @@ static bool writeImage8(QImage &img, QDataStream &s, PCXHEADER &header)
     QByteArray buf(header.BytesPerLine, 0);
 
     for (int y = 0; y < header.height(); ++y) {
-        quint8 *p = img.scanLine(y);
+        auto p = img.constScanLine(y);
 
         for (int i = 0; i < header.BytesPerLine; ++i) {
             buf[i] = p[i];
@@ -681,7 +740,10 @@ static bool writeImage8(QImage &img, QDataStream &s, PCXHEADER &header)
 
     // Write palette
     for (int i = 0; i < 256; ++i) {
-        s << RGB::from(img.color(i));
+        if (img.format() != QImage::Format_Indexed8)
+            s << RGB::from(qRgb(i, i, i));
+        else
+            s << RGB::from(img.color(i));
     }
 
     return (s.status() == QDataStream::Ok);
@@ -689,15 +751,16 @@ static bool writeImage8(QImage &img, QDataStream &s, PCXHEADER &header)
 
 static bool writeImage24(QImage &img, QDataStream &s, PCXHEADER &header)
 {
+    auto hasAlpha = img.hasAlphaChannel();
     header.Bpp = 8;
-    header.NPlanes = 3;
+    header.NPlanes = hasAlpha ? 4 : 3;
     header.BytesPerLine = header.width();
     if (header.BytesPerLine == 0) {
         return false;
     }
 
     if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB32) {
-        img = img.convertToFormat(QImage::Format_RGB32);
+        img.convertTo(hasAlpha ? QImage::Format_ARGB32 : QImage::Format_RGB32);
     }
     if (img.isNull()) {
         return false;
@@ -708,15 +771,17 @@ static bool writeImage24(QImage &img, QDataStream &s, PCXHEADER &header)
     QByteArray r_buf(header.width(), 0);
     QByteArray g_buf(header.width(), 0);
     QByteArray b_buf(header.width(), 0);
+    QByteArray a_buf(header.width(), char(0xFF));
 
     for (int y = 0; y < header.height(); ++y) {
-        auto p = (QRgb*)img.scanLine(y);
+        auto p = reinterpret_cast<const QRgb *>(img.constScanLine(y));
 
         for (int x = 0; x < header.width(); ++x) {
-            QRgb rgb = *p++;
+            auto &&rgb = p[x];
             r_buf[x] = qRed(rgb);
             g_buf[x] = qGreen(rgb);
             b_buf[x] = qBlue(rgb);
+            a_buf[x] = qAlpha(rgb);
         }
 
         if (!writeLine(s, r_buf)) {
@@ -726,6 +791,9 @@ static bool writeImage24(QImage &img, QDataStream &s, PCXHEADER &header)
             return false;
         }
         if (!writeLine(s, b_buf)) {
+            return false;
+        }
+        if (hasAlpha && !writeLine(s, a_buf)) {
             return false;
         }
     }
@@ -781,13 +849,15 @@ bool PCXHandler::read(QImage *outImage)
     QImage img;
     if (header.Bpp == 1 && header.NPlanes == 1) {
         ok = readImage1(img, s, header);
-    } else if (header.Bpp == 1 && header.NPlanes == 4) {
+    } else if (header.Bpp == 1 && (header.NPlanes == 4 || header.NPlanes == 3)) {
         ok = readImage4(img, s, header);
+    } else if (header.Bpp == 2 && header.NPlanes == 1) {
+        ok = readImage2(img, s, header);
     } else if (header.Bpp == 4 && header.NPlanes == 1) {
         ok = readImage4v2(img, s, header);
     } else if (header.Bpp == 8 && header.NPlanes == 1) {
         ok = readImage8(img, s, header);
-    } else if (header.Bpp == 8 && header.NPlanes == 3) {
+    } else if (header.Bpp == 8 && (header.NPlanes == 3 || header.NPlanes == 4)) {
         ok = readImage24(img, s, header);
     }
 
@@ -832,11 +902,11 @@ bool PCXHandler::write(const QImage &image)
     auto ok = false;
     if (img.depth() == 1) {
         ok = writeImage1(img, s, header);
-    } else if (img.depth() == 8 && img.colorCount() <= 16) {
+    } else if (img.format() == QImage::Format_Indexed8 && img.colorCount() <= 16) {
         ok = writeImage4(img, s, header);
-    } else if (img.depth() == 8) {
+    } else if (img.depth() == 8 || img.format() == QImage::Format_Grayscale16) {
         ok = writeImage8(img, s, header);
-    } else if (img.depth() >= 24) {
+    } else if (img.depth() >= 16) {
         ok = writeImage24(img, s, header);
     }
 

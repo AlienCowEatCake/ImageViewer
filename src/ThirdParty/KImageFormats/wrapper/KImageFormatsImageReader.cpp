@@ -77,6 +77,9 @@
 #if defined (WRAPPER_USE_RGB_HANDLER)
 #include "../kimageformats-master/src/imageformats/rgb_p.h"
 #endif
+#if defined (WRAPPER_USE_SCT_HANDLER)
+#include "../kimageformats-master/src/imageformats/sct_p.h"
+#endif
 #if defined (WRAPPER_USE_TGA_HANDLER)
 #include "../kimageformats-master/src/imageformats/tga_p.h"
 #endif
@@ -145,6 +148,9 @@ enum BuiltInFormatType
 #if defined (WRAPPER_USE_RGB_HANDLER)
     RgbFormat,
 #endif
+#if defined (WRAPPER_USE_SCT_HANDLER)
+    SctFormat,
+#endif
 #if defined (WRAPPER_USE_TGA_HANDLER)
     TgaFormat,
 #endif
@@ -197,7 +203,7 @@ static const BuiltInFormatStruct BuiltInFormats[] =
     { PcxFormat , QList<QByteArray>() << "pcx" },
 #endif
 #if defined (WRAPPER_USE_PFM_HANDLER)
-    { PfmFormat , QList<QByteArray>() << "pfm" },
+    { PfmFormat , QList<QByteArray>() << "pfm" << "phm" },
 #endif
 #if defined (WRAPPER_USE_PIC_HANDLER)
     { PicFormat , QList<QByteArray>() << "pic" },
@@ -238,6 +244,9 @@ static const BuiltInFormatStruct BuiltInFormats[] =
 #endif
 #if defined (WRAPPER_USE_RGB_HANDLER)
     { RgbFormat , QList<QByteArray>() << "rgb" << "rgba" << "bw" << "sgi" },
+#endif
+#if defined (WRAPPER_USE_SCT_HANDLER)
+    { SctFormat , QList<QByteArray>() << "sct" },
 #endif
 #if defined (WRAPPER_USE_TGA_HANDLER)
     { TgaFormat , QList<QByteArray>() << "tga" },
@@ -387,6 +396,11 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
 #if defined (WRAPPER_USE_RGB_HANDLER)
         case RgbFormat:
             handler = new RGBHandler;
+            break;
+#endif
+#if defined (WRAPPER_USE_SCT_HANDLER)
+        case SctFormat:
+            handler = new ScitexHandler;
             break;
 #endif
 #if defined (WRAPPER_USE_TGA_HANDLER)
@@ -551,6 +565,12 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
             case RgbFormat:
                 if(RGBHandler::canRead(device))
                     handler = new RGBHandler;
+                break;
+#endif
+#if defined (WRAPPER_USE_SCT_HANDLER)
+            case SctFormat:
+                if(ScitexHandler::canRead(device))
+                    handler = new ScitexHandler;
                 break;
 #endif
 #if defined (WRAPPER_USE_TGA_HANDLER)
@@ -1275,6 +1295,7 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
 #endif
 #if defined (WRAPPER_USE_PFM_HANDLER)
     result.append(QByteArrayLiteral("image/x-pfm"));
+    result.append(QByteArrayLiteral("image/x-phm"));
 #endif
 #if defined (WRAPPER_USE_PIC_HANDLER)
     result.append(QByteArrayLiteral("image/x-pic"));
@@ -1363,6 +1384,9 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
 #endif
 #if defined (WRAPPER_USE_RGB_HANDLER)
     result.append(QByteArrayLiteral("image/x-rgb"));
+#endif
+#if defined (WRAPPER_USE_SCT_HANDLER)
+    result.append(QByteArrayLiteral("image/x-sct"));
 #endif
 #if defined (WRAPPER_USE_TGA_HANDLER)
     result.append(QByteArrayLiteral("image/x-tga"));
