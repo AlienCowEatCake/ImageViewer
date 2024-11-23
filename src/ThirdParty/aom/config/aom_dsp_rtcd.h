@@ -4368,9 +4368,6 @@ void aom_smooth_v_predictor_8x8_c(uint8_t *dst, ptrdiff_t y_stride, const uint8_
 int64_t aom_sse_c(const uint8_t *a, int a_stride, const uint8_t *b,int b_stride, int width, int height);
 #define aom_sse aom_sse_c
 
-void aom_ssim_parms_16x16_c(const uint8_t *s, int sp, const uint8_t *r, int rp, uint32_t *sum_s, uint32_t *sum_r, uint32_t *sum_sq_s, uint32_t *sum_sq_r, uint32_t *sum_sxr);
-#define aom_ssim_parms_16x16 aom_ssim_parms_16x16_c
-
 void aom_ssim_parms_8x8_c(const uint8_t *s, int sp, const uint8_t *r, int rp, uint32_t *sum_s, uint32_t *sum_r, uint32_t *sum_sq_s, uint32_t *sum_sq_r, uint32_t *sum_sxr);
 #define aom_ssim_parms_8x8 aom_ssim_parms_8x8_c
 
@@ -4664,4 +4661,4 @@ static void setup_rtcd_internal(void)
 }  // extern "C"
 #endif
 
-#endif
+#endif  // AOM_DSP_RTCD_H_

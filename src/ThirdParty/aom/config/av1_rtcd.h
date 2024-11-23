@@ -496,8 +496,8 @@ void av1_round_shift_array_c(int32_t *arr, int size, int bit);
 #define av1_round_shift_array av1_round_shift_array_c
 
 int av1_selfguided_restoration_c(const uint8_t *dgd8, int width, int height,
-                                int dgd_stride, int32_t *flt0, int32_t *flt1, int flt_stride,
-                                int sgr_params_idx, int bit_depth, int highbd);
+                                  int dgd_stride, int32_t *flt0, int32_t *flt1, int flt_stride,
+                                  int sgr_params_idx, int bit_depth, int highbd);
 #define av1_selfguided_restoration av1_selfguided_restoration_c
 
 void av1_txb_init_levels_c(const tran_low_t *const coeff, const int width, const int height, uint8_t *const levels);
@@ -598,4 +598,4 @@ static void setup_rtcd_internal(void)
 }  // extern "C"
 #endif
 
-#endif
+#endif  // AV1_RTCD_H_

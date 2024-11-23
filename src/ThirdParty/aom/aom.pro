@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.10.0
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.11.0
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -359,6 +359,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_convolve_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_convolve_sve2.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_warp_plane_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/resize_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/warp_plane_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_common_int.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d.h \
