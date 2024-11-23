@@ -1,0 +1,132 @@
+From 46eaa8c4e0697a5a5780979275c97d663f1cc1e2 Mon Sep 17 00:00:00 2001
+From: Alyssa Ross <hi@alyssa.is>
+Date: Thu, 10 Oct 2024 11:56:32 +0200
+Subject: [PATCH 3/3] Fix building for FreeBSD
+
+On FreeBSD, _assert() is a macro in <assert.h>.  The macro expansion
+causes build errors like this:
+
+	/build/source/src/LercLib/fpl_Lerc2Ext.cpp:34:6: error: expected unqualified-id
+	   34 | void _assert(bool v)
+	      |      ^
+	/nix/store/zgvh12biq5svwz3m0s6dbcvkyrm2fbz4-libc-x86_64-unknown-freebsd-14.1.0/include/assert.h:51:22: note: expanded from macro '_assert'
+	   51 | #define _assert(e)      ((void)0)
+	      |                           ^
+	/build/source/src/LercLib/fpl_Lerc2Ext.cpp:34:6: error: expected ')'
+	/nix/store/zgvh12biq5svwz3m0s6dbcvkyrm2fbz4-libc-x86_64-unknown-freebsd-14.1.0/include/assert.h:51:22: note: expanded from macro '_assert'
+	   51 | #define _assert(e)      ((void)0)
+	      |                           ^
+	/build/source/src/LercLib/fpl_Lerc2Ext.cpp:34:6: note: to match this '('
+	/nix/store/zgvh12biq5svwz3m0s6dbcvkyrm2fbz4-libc-x86_64-unknown-freebsd-14.1.0/include/assert.h:51:21: note: expanded from macro '_assert'
+	   51 | #define _assert(e)      ((void)0)
+	      |                          ^
+	/build/source/src/LercLib/fpl_Lerc2Ext.cpp:34:6: error: expected ')'
+	   34 | void _assert(bool v)
+	      |      ^
+	/nix/store/zgvh12biq5svwz3m0s6dbcvkyrm2fbz4-libc-x86_64-unknown-freebsd-14.1.0/include/assert.h:51:27: note: expanded from macro '_assert'
+	   51 | #define _assert(e)      ((void)0)
+	      |                                ^
+	/build/source/src/LercLib/fpl_Lerc2Ext.cpp:34:6: note: to match this '('
+	/nix/store/zgvh12biq5svwz3m0s6dbcvkyrm2fbz4-libc-x86_64-unknown-freebsd-14.1.0/include/assert.h:51:20: note: expanded from macro '_assert'
+	   51 | #define _assert(e)      ((void)0)
+	      |                         ^
+
+(cherry picked from commit 215c195fcfc6f41b87a4c62069911e9ea12cf741)
+---
+ src/LercLib/fpl_EsriHuffman.cpp |  6 +++---
+ src/LercLib/fpl_Lerc2Ext.cpp    | 14 +++++++-------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/src/LercLib/fpl_EsriHuffman.cpp b/src/LercLib/fpl_EsriHuffman.cpp
+index 0869500..c9c1e4a 100644
+--- a/src/LercLib/fpl_EsriHuffman.cpp
++++ b/src/LercLib/fpl_EsriHuffman.cpp
+@@ -32,7 +32,7 @@ Original coding 2021 Yuriy Yakimenko
+ 
+ USING_NAMESPACE_LERC
+ 
+-void _assert(bool v);
++void lerc_assert(bool v);
+ 
+ bool decodePackBits (const unsigned char *ptr, const size_t size, size_t expected, unsigned char **output)
+ {
+@@ -332,7 +332,7 @@ int fpl_EsriHuffman::EncodeHuffman (const char *input, size_t input_len, unsigne
+         ptr[0] = HUFFMAN_RLE; // RLE flag
+         ptr[1] = input[0];
+ 
+-        _assert(input_len <= 0xffffffff);
++        lerc_assert(input_len <= 0xffffffff);
+ 
+         uint32_t len = (uint32_t)input_len;
+ 
+@@ -498,7 +498,7 @@ bool fpl_EsriHuffman::DecodeHuffman(const unsigned char* inBytes, const size_t i
+     {
+         unsigned char *unpacked = NULL;
+ 
+-        _assert (true == decodePackBits (ppByte + 1, inCount - 1, nBytesRemainingInOut, &unpacked));
++        lerc_assert (true == decodePackBits (ppByte + 1, inCount - 1, nBytesRemainingInOut, &unpacked));
+ 
+         *output = unpacked;
+ 
+diff --git a/src/LercLib/fpl_Lerc2Ext.cpp b/src/LercLib/fpl_Lerc2Ext.cpp
+index 5411618..38b3d6e 100644
+--- a/src/LercLib/fpl_Lerc2Ext.cpp
++++ b/src/LercLib/fpl_Lerc2Ext.cpp
+@@ -32,7 +32,7 @@ Original coding 2021 Yuriy Yakimenko
+ 
+ USING_NAMESPACE_LERC
+ 
+-void _assert(bool v)
++void lerc_assert(bool v)
+ {
+   if (v == false)
+     throw "Assertion failed";
+@@ -65,7 +65,7 @@ static void generateListOfTestBlocks(const int width, const int height, std::vec
+ {
+   size_t size = (size_t)width * height;
+ 
+-  _assert(size > 0);
++  lerc_assert(size > 0);
+ 
+   const int block_target_size = 8 * 1024;
+ 
+@@ -618,11 +618,11 @@ bool restoreCrossBytes(std::vector<std::pair<int, char*> >& output_buffers, cons
+   //FILE* output,
+   const UnitType unit_type, uint8_t** output_block)
+ {
+-  _assert(predictor == PREDICTOR_NONE || predictor == PREDICTOR_ROWS_COLS);
++  lerc_assert(predictor == PREDICTOR_NONE || predictor == PREDICTOR_ROWS_COLS);
+ 
+   size_t unit_size = output_buffers.size();
+ 
+-  _assert(unit_size == UnitTypes::size(unit_type));
++  lerc_assert(unit_size == UnitTypes::size(unit_type));
+ 
+   const int delta = Predictor::getIntDelta(predictor);
+ 
+@@ -674,11 +674,11 @@ bool restoreByteOrder(std::vector<std::pair<int, char*> >& output_buffers,
+   const size_t cols, const size_t rows, const PredictorType predictor, //FILE* output,
+   const UnitType unit_type, uint8_t** output_block)
+ {
+-  _assert(predictor == PREDICTOR_NONE || predictor == PREDICTOR_DELTA1);
++  lerc_assert(predictor == PREDICTOR_NONE || predictor == PREDICTOR_DELTA1);
+ 
+   size_t unit_size = output_buffers.size();
+ 
+-  _assert(unit_size == UnitTypes::size(unit_type));
++  lerc_assert(unit_size == UnitTypes::size(unit_type));
+ 
+   const int delta = Predictor::getIntDelta(predictor);
+ 
+@@ -811,7 +811,7 @@ bool LosslessFPCompression::DecodeHuffmanFltSlice (const unsigned char** ppByte,
+ 
+     size_t extracted_size = fpl_Compression::extract_buffer((const char *)compressed, compressed_size, expected_size, &uncompressed);
+ 
+-    _assert(expected_size == extracted_size);
++    lerc_assert(expected_size == extracted_size);
+ 
+     free(compressed);
+     compressed = NULL;
+-- 
+2.47.0
+

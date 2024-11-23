@@ -1,0 +1,33 @@
+package:
+  name: pylerc
+  version: 4.0
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - numpy
+  run:
+    - python
+    - numpy
+
+source:
+  path: ../../../OtherLanguages/Python
+
+test:
+  imports:
+  - lerc
+
+about:
+  description: |
+    pylerc is the LERC Python package. LERC is an open-source raster format which supports rapid encoding and decoding
+    for any pixel type, with user-set maximum compression error per pixel.
+  home: https://esri.github.io/lerc/
+  dev_url:  https://github.com/Esri/lerc
+  license: Apache 2.0
+  summary: Limited Error Raster Compression

@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LERC_PATH = $${PWD}/lerc-4.0.0
+THIRDPARTY_LERC_PATH = $${PWD}/lerc-js_v4.0.4
 
 include(../../Features.pri)
 include(../CommonSettings.pri)
