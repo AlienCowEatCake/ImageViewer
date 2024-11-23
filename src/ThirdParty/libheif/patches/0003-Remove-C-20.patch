@@ -1,0 +1,45 @@
+From bb23c769b7e0ab64cc7e30ea01f462ea05ec5bd6 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sat, 23 Nov 2024 20:17:00 +0700
+Subject: [PATCH 3/3] Remove C++20
+
+---
+ libheif/codecs/uncompressed/decoder_abstract.cc | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/libheif/codecs/uncompressed/decoder_abstract.cc b/libheif/codecs/uncompressed/decoder_abstract.cc
+index bbe46920..15bc4e31 100644
+--- a/libheif/codecs/uncompressed/decoder_abstract.cc
++++ b/libheif/codecs/uncompressed/decoder_abstract.cc
+@@ -25,6 +25,8 @@
+ #include <utility>
+ #include <bit>
+ 
++#include <QtGlobal>
++
+ #include "common_utils.h"
+ #include "context.h"
+ #include "compression.h"
+@@ -65,15 +67,16 @@ void AbstractDecoder::memcpy_to_native_endian(uint8_t* dst, uint32_t value, uint
+     *dst = static_cast<uint8_t>(value);
+     return;
+   }
+-  else if (std::endian::native == std::endian::big) {
++  else {
++#if defined(Q_BYTE_ORDER) && (Q_BYTE_ORDER == Q_BIG_ENDIAN)
+     for (uint32_t i = 0; i < bytes_per_sample; i++) {
+       dst[bytes_per_sample - 1 - i] = static_cast<uint8_t>((value >> (i * 8)) & 0xFF);
+     }
+-  }
+-  else {
++#else
+     for (uint32_t i = 0; i < bytes_per_sample; i++) {
+       dst[i] = static_cast<uint8_t>((value >> (i * 8)) & 0xFF);
+     }
++#endif
+   }
+ }
+ 
+-- 
+2.47.0
+
