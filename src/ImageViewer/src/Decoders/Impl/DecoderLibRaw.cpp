@@ -53,7 +53,7 @@ namespace
 
 // ====================================================================================================
 
-#if defined (LIBRAW_COMPILE_CHECK_VERSION_NOTLESS) && (LIBRAW_COMPILE_CHECK_VERSION_NOTLESS(0, 20))
+#if (QT_VERSION_CHECK(LIBRAW_MAJOR_VERSION, LIBRAW_MINOR_VERSION, LIBRAW_PATCH_VERSION) >= QT_VERSION_CHECK(0, 20, 0))
 
 class LibRaw_Qt_datastream : public LibRaw_abstract_datastream
 {
@@ -206,7 +206,7 @@ public:
         return m_file.atEnd() ? 1 : 0;
     }
 
-#if !(LIBRAW_COMPILE_CHECK_VERSION_NOTLESS(0, 21)) || defined (LIBRAW_OLD_VIDEO_SUPPORT)
+#if (QT_VERSION_CHECK(LIBRAW_MAJOR_VERSION, LIBRAW_MINOR_VERSION, LIBRAW_PATCH_VERSION) < QT_VERSION_CHECK(0, 21, 0)) || defined (LIBRAW_OLD_VIDEO_SUPPORT)
     void *make_jas_stream() Q_DECL_OVERRIDE
     {
         return Q_NULLPTR;
@@ -299,7 +299,11 @@ public:
             }
             CHECK_CANCEL;
             QImage image = convertImage(output);
+#if (QT_VERSION_CHECK(LIBRAW_MAJOR_VERSION, LIBRAW_MINOR_VERSION, LIBRAW_PATCH_VERSION) >= QT_VERSION_CHECK(0, 11, 0))
             m_rawProcessor.dcraw_clear_mem(output);
+#else
+            ::free(output);
+#endif
             return image;
         }
         catch(...)
@@ -333,7 +337,11 @@ public:
             }
             CHECK_CANCEL;
             QImage image = convertImage(output);
+#if (QT_VERSION_CHECK(LIBRAW_MAJOR_VERSION, LIBRAW_MINOR_VERSION, LIBRAW_PATCH_VERSION) >= QT_VERSION_CHECK(0, 11, 0))
             m_rawProcessor.dcraw_clear_mem(output);
+#else
+            ::free(output);
+#endif
             return image;
         }
         catch(...)
@@ -359,7 +367,7 @@ private:
     {
         try
         {
-#if defined (LIBRAW_COMPILE_CHECK_VERSION_NOTLESS) && (LIBRAW_COMPILE_CHECK_VERSION_NOTLESS(0, 20))
+#if (QT_VERSION_CHECK(LIBRAW_MAJOR_VERSION, LIBRAW_MINOR_VERSION, LIBRAW_PATCH_VERSION) >= QT_VERSION_CHECK(0, 20, 0))
             m_dataStream.reset(new LibRaw_Qt_datastream(filePath));
 #else
             const QByteArray filePathLocal8Bit = filePath.toLocal8Bit();
@@ -372,7 +380,7 @@ private:
             }
             else
             {
-#if defined (LIBRAW_COMPILE_CHECK_VERSION_NOTLESS) && (LIBRAW_COMPILE_CHECK_VERSION_NOTLESS(0, 21))
+#if (QT_VERSION_CHECK(LIBRAW_MAJOR_VERSION, LIBRAW_MINOR_VERSION, LIBRAW_PATCH_VERSION) >= QT_VERSION_CHECK(0, 21, 0))
                 m_dataStream.reset(new LibRaw_bigfile_datastream(filePathLocal8Bit.constData()));
 #else
                 m_dataStream.reset(new LibRaw_file_datastream(filePathLocal8Bit.constData()));

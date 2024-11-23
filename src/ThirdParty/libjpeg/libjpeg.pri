@@ -49,7 +49,11 @@ include($${PWD}/../../Features.pri)
             *msvc*: LIBS += libjpeg.lib
             else: LIBS += -ljpeg
         } else {
-            PKGCONFIG += libjpeg
+            packagesExist(libjpeg) {
+                PKGCONFIG += libjpeg
+            } else {
+                LIBS += -ljpeg
+            }
         }
 
     }

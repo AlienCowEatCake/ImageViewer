@@ -317,17 +317,21 @@ void ICCProfile::applyToImage(QImage *image)
     QImage::Format outImageFormat = image->format();
     switch(image->format())
     {
+#if defined (TYPE_BGRA_8_PREMUL) && defined (TYPE_ARGB_8_PREMUL)
     case QImage::Format_ARGB32_Premultiplied:
         inFormat = outFormat = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8_PREMUL : TYPE_ARGB_8_PREMUL;
         break;
+#endif
     case QImage::Format_ARGB32:
     case QImage::Format_RGB32:
         inFormat = outFormat = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? TYPE_BGRA_8 : TYPE_ARGB_8;
         break;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+#if defined (TYPE_RGBA_8_PREMUL)
     case QImage::Format_RGBA8888_Premultiplied:
         inFormat = outFormat = TYPE_RGBA_8_PREMUL;
         break;
+#endif
     case QImage::Format_RGBA8888:
     case QImage::Format_RGBX8888:
         inFormat = outFormat = TYPE_RGBA_8;
@@ -353,7 +357,17 @@ void ICCProfile::applyToImage(QImage *image)
         break;
     }
     cmsHTRANSFORM transform = m_impl->getOrCreateTransform(inFormat, outFormat);
-    if(!transform && !IsOneOf(inFormat, TYPE_BGRA_8, TYPE_ARGB_8, TYPE_RGBA_8, TYPE_RGBA_8_PREMUL, TYPE_BGRA_8_PREMUL, TYPE_ARGB_8_PREMUL))
+    if(!transform && !IsOneOf(inFormat, TYPE_BGRA_8, TYPE_ARGB_8, TYPE_RGBA_8
+#if defined (TYPE_RGBA_8_PREMUL)
+                              , TYPE_RGBA_8_PREMUL
+#endif
+#if defined (TYPE_BGRA_8_PREMUL)
+                              , TYPE_BGRA_8_PREMUL
+#endif
+#if defined (TYPE_ARGB_8_PREMUL)
+                              , TYPE_ARGB_8_PREMUL
+#endif
+                              ))
     {
         LOG_DEBUG() << LOGGING_CTX << "Trying RBG conversion transform";
         forceCmyk = false;

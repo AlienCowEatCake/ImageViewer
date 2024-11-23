@@ -19,6 +19,7 @@
 
 #include "Utils/Global.h"
 
+#include <cstdio>
 #include <cstdlib>
 
 #if QT_HAS_INCLUDE(<MagickCore/MagickCore.h>)

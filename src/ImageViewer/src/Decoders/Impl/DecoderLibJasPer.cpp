@@ -39,6 +39,24 @@
 #include "Workarounds/EndIgnoreParentheses.h"
 #include "Workarounds/EndIgnoreSignCompare.h"
 #include "Workarounds/EndIgnoreShiftNegative.h"
+#if defined (uchar)
+#undef uchar
+#endif
+#if defined (ushort)
+#undef ushort
+#endif
+#if defined (uint)
+#undef uint
+#endif
+#if defined (ulong)
+#undef ulong
+#endif
+#if defined (longlong)
+#undef longlong
+#endif
+#if defined (ulonglong)
+#undef ulonglong
+#endif
 
 #include <QFileInfo>
 #include <QImage>

@@ -44,6 +44,16 @@
 #include "Internal/Animation/FramesCompositor.h"
 #include "Internal/Utils/CmsUtils.h"
 
+#if (QT_VERSION_CHECK(PNG_LIBPNG_VER_MAJOR, PNG_LIBPNG_VER_MINOR, PNG_LIBPNG_VER_RELEASE) < QT_VERSION_CHECK(1, 6, 0))
+#define png_const_structrp png_const_structp
+#define png_inforp png_infop
+#endif
+#if (QT_VERSION_CHECK(PNG_LIBPNG_VER_MAJOR, PNG_LIBPNG_VER_MINOR, PNG_LIBPNG_VER_RELEASE) < QT_VERSION_CHECK(1, 5, 0))
+#define png_const_bytep png_bytep
+#endif
+#if (QT_VERSION_CHECK(PNG_LIBPNG_VER_MAJOR, PNG_LIBPNG_VER_MINOR, PNG_LIBPNG_VER_RELEASE) < QT_VERSION_CHECK(1, 4, 0))
+#define png_const_structp png_structp
+#endif
 #ifndef png_jmpbuf
 #define png_jmpbuf(png_ptr) ((png_ptr)->png_jmpbuf)
 #endif
@@ -111,7 +121,11 @@ void PngAnimationProvider::applyICCProfile(png_const_structrp pngPtr, png_inforp
 {
     png_charp name;
     int compressionType;
+#if (QT_VERSION_CHECK(PNG_LIBPNG_VER_MAJOR, PNG_LIBPNG_VER_MINOR, PNG_LIBPNG_VER_RELEASE) >= QT_VERSION_CHECK(1, 5, 0))
     png_bytep profile;
+#else
+    png_charp profile;
+#endif
     png_uint_32 proflen;
     if(png_get_iCCP(pngPtr, infoPtr, &name, &compressionType, &profile, &proflen) == PNG_INFO_iCCP)
     {

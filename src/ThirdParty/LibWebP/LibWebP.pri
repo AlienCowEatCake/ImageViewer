@@ -46,7 +46,14 @@ include($${PWD}/../../Features.pri)
             *msvc*: LIBS += libwebp.lib libwebpdemux.lib libwebpmux.lib libsharpyuv.lib
             else: LIBS += -lwebp -lwebpdemux -lwebpmux -lsharpyuv
         } else {
-            PKGCONFIG += libwebp libwebpdemux libwebpmux libsharpyuv
+            packagesExist(libwebp) {
+                PKGCONFIG += libwebp
+                packagesExist(libwebpdemux): PKGCONFIG += libwebpdemux
+                packagesExist(libwebpmux): PKGCONFIG += libwebpmux
+                packagesExist(libsharpyuv): PKGCONFIG += libsharpyuv
+            } else {
+                LIBS += -lwebp
+            }
         }
 
     }

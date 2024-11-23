@@ -59,7 +59,11 @@ include($${PWD}/../../Features.pri)
             *msvc*: LIBS += libraw.lib
             else: LIBS += -lraw
         } else {
-            PKGCONFIG += libraw
+            packagesExist(libraw) {
+                PKGCONFIG += libraw
+            } else {
+                LIBS += -lraw
+            }
         }
 
     }

@@ -22,6 +22,7 @@
 #include <cstdio>
 #include <setjmp.h>
 #include <jpeglib.h>
+#include <jerror.h>
 
 #include <QFileInfo>
 #include <QImage>
@@ -42,6 +43,60 @@
 
 namespace
 {
+
+// ====================================================================================================
+
+#if !defined (JPEG_LIB_VERSION) || (JPEG_LIB_VERSION < 80)
+
+static void jpegMemInitSource(j_decompress_ptr /*cinfo*/)
+{}
+
+static boolean jpegMemFillInputBuffer(j_decompress_ptr cinfo)
+{
+    ERREXIT(cinfo, JERR_INPUT_EMPTY);
+    return TRUE;
+}
+
+static void jpegMemSkipInputData(j_decompress_ptr cinfo, long num_bytes)
+{
+    jpeg_source_mgr *src = reinterpret_cast<jpeg_source_mgr*>(cinfo->src);
+    if(num_bytes > 0)
+    {
+        src->next_input_byte += static_cast<size_t>(num_bytes);
+        src->bytes_in_buffer -= static_cast<size_t>(num_bytes);
+    }
+}
+
+static void jpegMemTermSource(j_decompress_ptr /*cinfo*/)
+{}
+
+static void jpegMemSource(j_decompress_ptr cinfo, void *buffer, long nbytes)
+{
+    if(!cinfo->src)
+    {
+        cinfo->src = reinterpret_cast<jpeg_source_mgr*>(
+                    (*cinfo->mem->alloc_small)(
+                        reinterpret_cast<j_common_ptr>(cinfo),
+                        JPOOL_PERMANENT,
+                        sizeof(jpeg_source_mgr))
+                    );
+    }
+    jpeg_source_mgr *src = reinterpret_cast<jpeg_source_mgr*>(cinfo->src);
+    src->init_source = &jpegMemInitSource;
+    src->fill_input_buffer = &jpegMemFillInputBuffer;
+    src->skip_input_data = &jpegMemSkipInputData;
+    src->resync_to_restart = &jpeg_resync_to_restart; // use default method
+    src->term_source = &jpegMemTermSource;
+    src->bytes_in_buffer = nbytes;
+    src->next_input_byte = reinterpret_cast<JOCTET*>(buffer);
+}
+
+#if defined (jpeg_mem_src)
+#undef jpeg_mem_src
+#endif
+#define jpeg_mem_src jpegMemSource
+
+#endif
 
 // ====================================================================================================
 
@@ -222,7 +277,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 
     // Step 2: specify data source (eg, a file)
 
-    jpeg_mem_src(&cinfo, inBuffer.dataAs<const unsigned char*>(), inBuffer.sizeAs<unsigned long>());
+    jpeg_mem_src(&cinfo, inBuffer.dataAs</*const*/ unsigned char*>(), inBuffer.sizeAs<unsigned long>());
 
     // Step 3: read file parameters with jpeg_read_header()
 

@@ -54,6 +54,10 @@ const int GIFLIB_DISPOSE_PREVIOUS   = 3;
 #include "Internal/Animation/FramesCompositor.h"
 #include "Internal/Utils/CmsUtils.h"
 
+#if !defined (CONTINUE_EXT_FUNC_CODE)
+#define CONTINUE_EXT_FUNC_CODE 0x00
+#endif
+
 namespace {
 
 // ====================================================================================================

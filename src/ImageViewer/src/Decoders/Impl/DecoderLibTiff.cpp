@@ -486,6 +486,8 @@ ICCProfile *readICCProfile(TIFF *tiff)
     return Q_NULLPTR;
 }
 
+#if defined (TIFFLIB_VERSION) && (TIFFLIB_VERSION >= 20120922)
+
 /// @note See https://learn.foundry.com/nuke/developers/63/ndkreference/examples/tiffReader.cpp
 template<class T>
 void addMetaData(TIFF *tiff, const TIFFField *field, ImageMetaData *metaData, const QString &group, const QString &tag)
@@ -624,6 +626,16 @@ ImageMetaData *readExifMetaData(TIFF *tiff)
     readTiffTagToMetaData(tiff, metaData, TIFFTAG_INTEROPERABILITYIFD, QString::fromLatin1("TIFFTAG_INTEROPERABILITYIFD"));
     return metaData;
 }
+
+#else
+
+ImageMetaData *readExifMetaData(TIFF */*tiff*/)
+{
+    /// @todo LibTIFF-3.x: Add implementation?
+    return Q_NULLPTR;
+}
+
+#endif
 
 // ====================================================================================================
 

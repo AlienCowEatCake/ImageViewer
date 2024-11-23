@@ -33,7 +33,8 @@
 QString XmlStreamReader::getEncoding(const QByteArray &data)
 {
     QXmlStreamReader reader(data);
-    while(reader.readNext() != QXmlStreamReader::StartDocument && !reader.atEnd());
+    while(reader.readNext() != QXmlStreamReader::StartDocument && !reader.atEnd())
+    {}
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     if(reader.documentEncoding().empty() && reader.hasError() && reader.error() == QXmlStreamReader::NotWellFormedError)
     {
@@ -42,7 +43,8 @@ QString XmlStreamReader::getEncoding(const QByteArray &data)
         const QString xmlStr = QString::fromLatin1(data.data(), xmlStrLen);
         reader.clear();
         reader.addData(xmlStr);
-        while(reader.readNext() != QXmlStreamReader::StartDocument && !reader.atEnd());
+        while(reader.readNext() != QXmlStreamReader::StartDocument && !reader.atEnd())
+        {}
     }
 #endif
     return reader.documentEncoding().toString().simplified();

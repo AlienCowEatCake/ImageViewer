@@ -19,6 +19,7 @@
 
 #include "Utils/Global.h"
 
+#include <cstdio>
 #include <cstdlib>
 
 #include <magick/api.h>
@@ -40,6 +41,27 @@
 #include "Internal/Animation/FramesCompositor.h"
 #include "Internal/Utils/CmsUtils.h"
 #include "Internal/Utils/MappedBuffer.h"
+
+#if defined (MagickLibVersion) && ((MagickLibVersion) == 0x0100010)
+#undef MagickLibVersion
+#define MagickLibVersion 0x010010
+#endif
+#if defined (MagickLibVersion) && ((MagickLibVersion) == 0x0100011)
+#undef MagickLibVersion
+#define MagickLibVersion 0x010011
+#endif
+#if defined (MagickLibVersion) && ((MagickLibVersion) == 0x0100012)
+#undef MagickLibVersion
+#define MagickLibVersion 0x010012
+#endif
+#if defined (MagickLibVersion) && ((MagickLibVersion) == 0x0100013)
+#undef MagickLibVersion
+#define MagickLibVersion 0x010013
+#endif
+#if defined (MagickLibVersion) && ((MagickLibVersion) == 0x0100014)
+#undef MagickLibVersion
+#define MagickLibVersion 0x010014
+#endif
 
 namespace
 {
@@ -173,11 +195,13 @@ private:
         if(exception->severity != UndefinedException)
             return QImage();
 
+#if defined (MagickLibVersion) && ((MagickLibVersion) >= 0x020000)
         if(image->orientation)
         {
             LOG_DEBUG() << LOGGING_CTX << "Orientation found:" << image->orientation;
             ImageMetaData::applyExifOrientation(&qImage, static_cast<quint16>(image->orientation));
         }
+#endif
 
         size_t profileLength = 0;
         const unsigned char *profileData = GetImageProfile(image, "ICC", &profileLength);
@@ -236,7 +260,11 @@ public:
         {
             for(size_t i = 0; info[i]; ++i)
                 formatNames.append(QString::fromLatin1(info[i]->name).toLower());
+#if defined (MagickLibVersion) && ((MagickLibVersion) >= 0x020000)
             MagickFree(info);
+#else
+            free(info);
+#endif
         }
         return formatNames;
     }

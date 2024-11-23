@@ -25,8 +25,13 @@
 #include <cstring>
 #include <algorithm>
 
+#include "Utils/Global.h"
+
 #if defined (LINKED_LIBRSVG)
 #include <librsvg/rsvg.h>
+#if QT_VERSION_CHECK(LIBRSVG_MAJOR_VERSION, LIBRSVG_MINOR_VERSION, LIBRSVG_MICRO_VERSION) < QT_VERSION_CHECK(2, 36, 2)
+#include <librsvg/rsvg-cairo.h>
+#endif
 #endif
 
 #include <QFileInfo>
@@ -44,7 +49,6 @@
 typedef void* QFunctionPointer;
 #endif
 
-#include "Utils/Global.h"
 #include "Utils/Logging.h"
 
 #include "../IDecoder.h"

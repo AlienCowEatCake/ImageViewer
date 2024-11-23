@@ -48,7 +48,11 @@ include($${PWD}/../../Features.pri)
             *msvc*: LIBS += zdll.lib
             else: LIBS += -lz
         } else {
-            PKGCONFIG += zlib
+            packagesExist(zlib) {
+                PKGCONFIG += zlib
+            } else {
+                LIBS += -lz
+            }
         }
 
     }

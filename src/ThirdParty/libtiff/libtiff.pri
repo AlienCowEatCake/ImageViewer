@@ -49,7 +49,11 @@ include($${PWD}/../../Features.pri)
             *msvc*: LIBS += libtiff.lib
             else: LIBS += -ltiff
         } else {
-            PKGCONFIG += libtiff-4
+            packagesExist(libtiff-4) {
+                PKGCONFIG += libtiff-4
+            } else {
+                LIBS += -ltiff
+            }
         }
 
     }

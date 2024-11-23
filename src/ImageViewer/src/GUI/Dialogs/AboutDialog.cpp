@@ -65,6 +65,24 @@
 #include "Workarounds/EndIgnoreParentheses.h"
 #include "Workarounds/EndIgnoreSignCompare.h"
 #include "Workarounds/EndIgnoreShiftNegative.h"
+#if defined (uchar)
+#undef uchar
+#endif
+#if defined (ushort)
+#undef ushort
+#endif
+#if defined (uint)
+#undef uint
+#endif
+#if defined (ulong)
+#undef ulong
+#endif
+#if defined (longlong)
+#undef longlong
+#endif
+#if defined (ulonglong)
+#undef ulonglong
+#endif
 #endif
 #if defined (HAS_LIBRSVG)
 #include <librsvg/rsvg.h>
@@ -114,7 +132,10 @@ extern "C" {
 #endif
 #if defined (HAS_EXIV2)
 #include "Workarounds/BeginIgnoreDeprecated.h"
+#include <exiv2/types.hpp>
+#if (QT_VERSION_CHECK(EXIV2_MAJOR_VERSION, EXIV2_MINOR_VERSION, EXIV2_PATCH_VERSION) >= QT_VERSION_CHECK(0, 21, 0))
 #include <exiv2/exiv2.hpp>
+#endif
 #include "Workarounds/EndIgnoreDeprecated.h"
 #endif
 #if defined (HAS_LCMS2)
@@ -149,24 +170,32 @@ extern "C" {
 #include <libde265/de265.h>
 #endif
 #if defined (HAS_MAGICKCORE)
+#define DrawRectangle WA_DrawRectangle
 #if QT_HAS_INCLUDE(<MagickCore/MagickCore.h>)
 #include <MagickCore/MagickCore.h>
 #else
 #include <magick/MagickCore.h>
 #endif
+#undef DrawRectangle
 #endif
 #if defined (HAS_MAGICKWAND)
+#define DrawRectangle WA_DrawRectangle
 #if QT_HAS_INCLUDE(<MagickWand/MagickWand.h>)
 #include <MagickWand/MagickWand.h>
 #else
 #include <wand/MagickWand.h>
 #endif
+#undef DrawRectangle
 #endif
 #if defined (HAS_GRAPHICSMAGICK)
+#define DrawRectangle WA_DrawRectangle
 #include <magick/api.h>
+#undef DrawRectangle
 #endif
 #if defined (HAS_GRAPHICSMAGICKWAND)
+#define DrawRectangle WA_DrawRectangle
 #include <wand/wand_api.h>
+#undef DrawRectangle
 #endif
 #if defined (HAS_LIBYUV)
 #include <libyuv.h>
@@ -327,7 +356,13 @@ QString getTextBrowserContent()
     result.append(formatItem(
                       QString::fromLatin1("This software is based in part on the work of the Independent JPEG Group"),
                       QString::fromLatin1("libjpeg"),
+#if defined (JPEG_LIB_VERSION_MAJOR) && defined (JPEG_LIB_VERSION_MINOR)
                       QString::number(JPEG_LIB_VERSION_MAJOR) + letterByNumFrom1(JPEG_LIB_VERSION_MINOR),
+#elif defined (JPEG_LIB_VERSION)
+                      QString::number(JPEG_LIB_VERSION / 10) + letterByNumFrom1(JPEG_LIB_VERSION % 10),
+#else
+                      QString(),
+#endif
                       QString::fromLatin1("https://www.ijg.org/"),
                       QString::fromLatin1("Libjpeg License"),
                       QString::fromLatin1("https://jpegclub.org/reference/libjpeg-license/")
@@ -660,7 +695,15 @@ QString getTextBrowserContent()
     result.append(formatItem(
                       QString::fromLatin1("This software uses the Exiv2 C++ metadata library"),
                       QString::fromLatin1("exiv2"),
+#if defined (EXIV2_MAJOR_VERSION) && defined (EXIV2_MINOR_VERSION) && defined (EXIV2_PATCH_VERSION)
+#if (QT_VERSION_CHECK(EXIV2_MAJOR_VERSION, EXIV2_MINOR_VERSION, EXIV2_PATCH_VERSION) >= QT_VERSION_CHECK(0, 25, 0))
                       QString::fromLatin1(Exiv2::versionString().c_str()),
+#else
+                      QString::fromLatin1("%1.%2.%3").arg(EXIV2_MAJOR_VERSION).arg(EXIV2_MINOR_VERSION).arg(EXIV2_PATCH_VERSION),
+#endif
+#else
+                      QString(),
+#endif
                       QString::fromLatin1("https://exiv2.org/"),
                       QString::fromLatin1("GNU GPL v2 or later"),
                       QString::fromLatin1("https://github.com/Exiv2/exiv2/blob/main/LICENSE.txt")

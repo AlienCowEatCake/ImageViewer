@@ -20,7 +20,12 @@
 #include <algorithm>
 
 #include <webp/decode.h>
+#if defined (WEBP_DECODER_ABI_VERSION) && (WEBP_DECODER_ABI_VERSION > 0x0201)
+#define WEBP_HAS_DEMUXER
+#endif
+#if defined (WEBP_HAS_DEMUXER)
 #include <webp/demux.h>
+#endif
 
 #include <QFileInfo>
 #include <QImage>
@@ -84,7 +89,9 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
 //    LOG_DEBUG() << LOGGING_CTX << "features.has_animation:" << features.has_animation;
 //    LOG_DEBUG() << LOGGING_CTX << "features.format:" << features.format;
 
+#if defined (WEBP_HAS_DEMUXER)
     if(!features.has_animation)
+#endif
     {
         m_frames.push_back(Frame(features.width, features.height));
         QImage &frame = m_frames[0].image;
@@ -111,6 +118,7 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
             return false;
         }
     }
+#if defined (WEBP_HAS_DEMUXER)
     else
     {
         WebPData webpData;
@@ -208,6 +216,7 @@ bool WebPAnimationProvider::readWebP(const QString &filePath)
 
         WebPDemuxDelete(demuxer);
     }
+#endif
 
     return true;
 }

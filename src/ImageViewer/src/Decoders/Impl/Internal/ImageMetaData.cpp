@@ -36,7 +36,15 @@
 
 #if defined (HAS_EXIV2)
 #include "Workarounds/BeginIgnoreDeprecated.h"
+#include <exiv2/types.hpp>
+#if (QT_VERSION_CHECK(EXIV2_MAJOR_VERSION, EXIV2_MINOR_VERSION, EXIV2_PATCH_VERSION) >= QT_VERSION_CHECK(0, 21, 0))
 #include <exiv2/exiv2.hpp>
+#else
+#if (QT_VERSION_CHECK(EXIV2_MAJOR_VERSION, EXIV2_MINOR_VERSION, EXIV2_PATCH_VERSION) >= QT_VERSION_CHECK(0, 18, 1))
+#include <exiv2/easyaccess.hpp>
+#endif
+#include <exiv2/image.hpp>
+#endif
 #include "Workarounds/EndIgnoreDeprecated.h"
 #endif
 #if defined (HAS_LIBEXIF)
@@ -354,7 +362,12 @@ struct ImageMetaData::Impl
                 {
                     try
                     {
-                        const IImageMetaData::MetaDataType type = QString::fromUtf8(it->familyName()) + QString::fromLatin1(" ") + QString::fromUtf8(it->ifdName());
+#if (QT_VERSION_CHECK(EXIV2_MAJOR_VERSION, EXIV2_MINOR_VERSION, EXIV2_PATCH_VERSION) > QT_VERSION_CHECK(0, 18, 0))
+                        const QString familyName = QString::fromUtf8(it->familyName());
+#else
+                        const QString familyName = QString::fromLatin1("EXIF");
+#endif
+                        const IImageMetaData::MetaDataType type = familyName + QString::fromLatin1(" ") + QString::fromUtf8(it->ifdName());
                         IImageMetaData::MetaDataEntryList list = entryListMap[type];
                         QString tagName;
                         QString tagTitle;
@@ -403,7 +416,11 @@ struct ImageMetaData::Impl
                 {
                     try
                     {
+#if (QT_VERSION_CHECK(EXIV2_MAJOR_VERSION, EXIV2_MINOR_VERSION, EXIV2_PATCH_VERSION) > QT_VERSION_CHECK(0, 18, 0))
                         const IImageMetaData::MetaDataType type = QString::fromUtf8(it->familyName());
+#else
+                        const IImageMetaData::MetaDataType type = QString::fromLatin1("IPTC");
+#endif
                         IImageMetaData::MetaDataEntryList list = entryListMap[type];
                         list.append(IImageMetaData::MetaDataEntry(
                                         QString::fromUtf8(it->tagName().c_str()),
@@ -442,7 +459,11 @@ struct ImageMetaData::Impl
                 {
                     try
                     {
+#if (QT_VERSION_CHECK(EXIV2_MAJOR_VERSION, EXIV2_MINOR_VERSION, EXIV2_PATCH_VERSION) > QT_VERSION_CHECK(0, 18, 0))
                         const IImageMetaData::MetaDataType type = QString::fromUtf8(it->familyName());
+#else
+                        const IImageMetaData::MetaDataType type = QString::fromLatin1("XMP");
+#endif
                         IImageMetaData::MetaDataEntryList list = entryListMap[type];
                         list.append(IImageMetaData::MetaDataEntry(
                                         QString::fromUtf8(it->tagName().c_str()),
@@ -806,6 +827,7 @@ quint16 ImageMetaData::orientation() const
     }
 
 #if defined (HAS_EXIV2)
+#if (QT_VERSION_CHECK(EXIV2_MAJOR_VERSION, EXIV2_MINOR_VERSION, EXIV2_PATCH_VERSION) >= QT_VERSION_CHECK(0, 18, 1))
     exiv2Initialize();
     QList<const Exiv2::ExifData*> exiv2ExifDataList;
     if(m_impl->exiv2Image.get())
@@ -827,6 +849,9 @@ quint16 ImageMetaData::orientation() const
         catch(...)
         {}
     }
+#else
+    /// @todo Exiv2 less 0.18.1: Add implementation?
+#endif
 #endif
 #if defined (HAS_LIBEXIF)
     if(m_impl->libexifExifData)
@@ -986,13 +1011,21 @@ bool ImageMetaData::readFile(const QByteArray &fileData)
         if(m_impl->exiv2Image->exifData().empty() && m_impl->exiv2Image->iptcData().empty() && m_impl->exiv2Image->xmpData().empty() && m_impl->exiv2Image->comment().empty())
             throw std::exception();
         if(!m_impl->exiv2Image->exifData().empty())
+        {
             LOG_DEBUG() << LOGGING_CTX << "EXIV2: EXIF data detected";
+        }
         if(!m_impl->exiv2Image->iptcData().empty())
+        {
             LOG_DEBUG() << LOGGING_CTX << "EXIV2: IPTC data detected";
+        }
         if(!m_impl->exiv2Image->xmpData().empty())
+        {
             LOG_DEBUG() << LOGGING_CTX << "EXIV2: XMP data detected";
+        }
         if(!m_impl->exiv2Image->comment().empty())
+        {
             LOG_DEBUG() << LOGGING_CTX << "EXIV2: Comment detected";
+        }
         status |= true;
     }
     catch(...)
@@ -1046,6 +1079,7 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
         m_impl->exiv2Image.reset();
         m_impl->exiv2ExifData.clear();
         m_impl->exiv2XmpData.clear();
+#if (QT_VERSION_CHECK(EXIV2_MAJOR_VERSION, EXIV2_MINOR_VERSION, EXIV2_PATCH_VERSION) >= QT_VERSION_CHECK(0, 18, 0))
         const Exiv2::byte *data = reinterpret_cast<const Exiv2::byte*>(rawExifData.constData());
         const uint32_t dataSize = static_cast<uint32_t>(rawExifData.size());
         Exiv2::ExifParser::decode(m_impl->exiv2ExifData, data, dataSize);
@@ -1053,6 +1087,9 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
             throw std::exception();
         LOG_DEBUG() << LOGGING_CTX << "EXIV2: EXIF data detected";
         status |= true;
+#else
+        /// @todo Exiv2 less 0.18.0: Add implementation?
+#endif
     }
     catch(...)
     {

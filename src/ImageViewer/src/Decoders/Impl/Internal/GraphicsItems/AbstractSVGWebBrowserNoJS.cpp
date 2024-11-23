@@ -54,7 +54,8 @@ QSizeF AbstractSVGWebBrowserNoJS::svgSizeAttribute()
 {
     const QByteArray svgData = getSvgData();
     XmlStreamReader reader(svgData);
-    while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
+    while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd())
+    {}
     if(reader.atEnd())
         return QSizeF();
     const QXmlStreamAttributes attributes = reader.attributes();
@@ -67,7 +68,8 @@ QRectF AbstractSVGWebBrowserNoJS::svgViewBoxAttribute()
 {
     const QByteArray svgData = getSvgData();
     XmlStreamReader reader(svgData);
-    while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
+    while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd())
+    {}
     if(reader.atEnd())
         return QRectF();
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
@@ -99,6 +101,7 @@ bool AbstractSVGWebBrowserNoJS::rootElementIsSvg()
 {
     const QByteArray svgData = getSvgData();
     XmlStreamReader reader(svgData);
-    while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd());
+    while(reader.readNext() != QXmlStreamReader::StartElement && !reader.atEnd())
+    {}
     return !reader.name().toString().compare(QString::fromLatin1("svg"), Qt::CaseInsensitive);
 }

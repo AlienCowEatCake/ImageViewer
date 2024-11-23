@@ -23,6 +23,7 @@
 
 #include "Utils/Global.h"
 
+#include <cstdio>
 #include <cstdlib>
 
 #if defined (LINKED_GRAPHICSMAGICKWAND)
