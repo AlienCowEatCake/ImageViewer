@@ -88,7 +88,8 @@ public:
         }
 
         ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
-        metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createQImageMetaData(image));
+        if(!metaData)
+            metaData = ImageMetaData::createQImageMetaData(image);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
         /// @note Supress '@2x' logic: https://github.com/qt/qtbase/blob/v5.9.8/src/gui/image/qimagereader.cpp#L1364
