@@ -49,3 +49,6 @@ qhp.QtImageFormats.subprojects.list.indexTitle = Qt Image Formats
 qhp.QtImageFormats.subprojects.list.type = manual
 
 navigation.landingpage = "Qt Image Formats"
+
+# Allow zero warnings when testing documentation in CI
+warninglimit = 0
