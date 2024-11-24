@@ -335,7 +335,7 @@ struct heif_error heif_item_add_raw_property(const struct heif_context* context,
 
 
 template<typename T>
-struct heif_error find_property(const struct heif_context* context,
+/*struct*/ heif_error find_property(const struct heif_context* context,
                                 heif_item_id itemId,
                                 heif_property_id propertyId,
                                 std::shared_ptr<T>* box_casted)

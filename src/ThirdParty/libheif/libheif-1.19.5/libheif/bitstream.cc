@@ -23,7 +23,6 @@
 #include <utility>
 #include <cstring>
 #include <cassert>
-#include <bit>
 
 #define MAX_UVLC_LEADING_ZEROS 20
 
@@ -348,12 +347,6 @@ int64_t BitstreamRange::read64s()
 
 float BitstreamRange::read_float32()
 {
-#if __cpp_lib_bit_cast >= 201806L
-  uint32_t i = read32();
-  return std::bit_cast<float>(i); // this works directly on the value layout, thus we do not have to worry about memory layout
-#else
-  // compiler too old to support bit_cast
-
   // TODO: I am not sure this works everywhere as there seem to be systems where
   //       the float byte order is different from the integer endianness
   //       https://en.wikipedia.org/wiki/Endianness#Floating_point
@@ -361,24 +354,17 @@ float BitstreamRange::read_float32()
   float f;
   memcpy(&f, &i, sizeof(float));
   return f;
-#endif
 }
 
 
 void StreamWriter::write_float32(float v)
 {
-#if __cpp_lib_bit_cast >= 201806L
-  write32(std::bit_cast<uint32_t>(v)); // this works directly on the value layout, thus we do not have to worry about memory layout
-#else
-  // compiler too old to support bit_cast
-
   // TODO: I am not sure this works everywhere as there seem to be systems where
   //       the float byte order is different from the integer endianness
   //       https://en.wikipedia.org/wiki/Endianness#Floating_point
   uint32_t i;
   memcpy(&i, &v, sizeof(float));
   write32(i);
-#endif
 }
 
 

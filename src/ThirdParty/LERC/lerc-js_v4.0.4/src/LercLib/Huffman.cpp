@@ -551,7 +551,7 @@ bool Huffman::ConvertCodesToCanonical()
   //   codeLength * tableSize - index
 
   unsigned int tableSize = (unsigned int)m_codeTable.size();
-  vector<pair<int, unsigned int>> sortVec(tableSize, pair<int, unsigned int>(0, 0));
+  vector<pair<int, unsigned int> > sortVec(tableSize, pair<int, unsigned int>(0, 0));
 
   for (unsigned int i = 0; i < tableSize; i++)
     if (m_codeTable[i].first > 0)

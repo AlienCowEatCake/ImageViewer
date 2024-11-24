@@ -1,4 +1,4 @@
-From c718ff53227c193b6f8002f16a330291abcd1cc0 Mon Sep 17 00:00:00 2001
+From 04f720a350566411979f8a2790a702cee55b599d Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 23 Nov 2024 18:48:48 +0700
 Subject: [PATCH 1/3] Remove C++11
@@ -6,18 +6,19 @@ Subject: [PATCH 1/3] Remove C++11
 ---
  src/LercLib/BitMask.cpp          |   6 +-
  src/LercLib/BitMask.h            |   5 +-
- src/LercLib/Huffman.cpp          |  14 +-
+ src/LercLib/BitStuffer2.cpp      |   2 +-
+ src/LercLib/Huffman.cpp          |  16 +-
  src/LercLib/Huffman.h            |   9 +-
  src/LercLib/Lerc.cpp             | 251 +++++++++++++++++--------------
  src/LercLib/Lerc.h               |   5 +-
- src/LercLib/Lerc2.cpp            |  41 ++++-
+ src/LercLib/Lerc2.cpp            |  43 ++++--
  src/LercLib/Lerc2.h              |   7 +-
  src/LercLib/Lerc_c_api_impl.cpp  |  64 ++++----
  src/LercLib/RLE.cpp              |   9 +-
  src/LercLib/fpl_Lerc2Ext.cpp     |  12 +-
  src/LercLib/fpl_Lerc2Ext.h       |  20 +--
  src/LercLib/include/Lerc_types.h |  68 ++++-----
- 13 files changed, 289 insertions(+), 222 deletions(-)
+ 14 files changed, 292 insertions(+), 225 deletions(-)
 
 diff --git a/src/LercLib/BitMask.cpp b/src/LercLib/BitMask.cpp
 index 6e91d9b..b54e606 100644
@@ -73,8 +74,21 @@ index 83c2e00..ae3ed3b 100644
    BitMask(const BitMask& src);
    virtual ~BitMask()                        { Clear(); }
  
+diff --git a/src/LercLib/BitStuffer2.cpp b/src/LercLib/BitStuffer2.cpp
+index c8b7ace..5a332fb 100644
+--- a/src/LercLib/BitStuffer2.cpp
++++ b/src/LercLib/BitStuffer2.cpp
+@@ -76,7 +76,7 @@ bool BitStuffer2::EncodeSimple(Byte** ppByte, const vector<unsigned int>& dataVe
+ 
+ // -------------------------------------------------------------------------- ;
+ 
+-bool BitStuffer2::EncodeLut(Byte** ppByte, const vector<pair<unsigned int, unsigned int>>& sortedDataVec, int lerc2Version) const
++bool BitStuffer2::EncodeLut(Byte** ppByte, const vector<pair<unsigned int, unsigned int> >& sortedDataVec, int lerc2Version) const
+ {
+   if (!ppByte || sortedDataVec.empty())
+     return false;
 diff --git a/src/LercLib/Huffman.cpp b/src/LercLib/Huffman.cpp
-index e64b170..60208e8 100644
+index e64b170..7b8fa61 100644
 --- a/src/LercLib/Huffman.cpp
 +++ b/src/LercLib/Huffman.cpp
 @@ -347,7 +347,7 @@ void Huffman::ClearTree()
@@ -86,7 +100,7 @@ index e64b170..60208e8 100644
    }
  }
  
-@@ -538,6 +538,13 @@ bool Huffman::BitUnStuffCodes(const Byte** ppByte, size_t& nBytesRemainingInOut,
+@@ -538,21 +538,27 @@ bool Huffman::BitUnStuffCodes(const Byte** ppByte, size_t& nBytesRemainingInOut,
  
  // -------------------------------------------------------------------------- ;
  
@@ -100,7 +114,13 @@ index e64b170..60208e8 100644
  bool Huffman::ConvertCodesToCanonical()
  {
    // from the non canonical code book, create an array to be sorted in descending order:
-@@ -550,9 +557,8 @@ bool Huffman::ConvertCodesToCanonical()
+   //   codeLength * tableSize - index
+ 
+   unsigned int tableSize = (unsigned int)m_codeTable.size();
+-  vector<pair<int, unsigned int>> sortVec(tableSize, pair<int, unsigned int>(0, 0));
++  vector<pair<int, unsigned int> > sortVec(tableSize, pair<int, unsigned int>(0, 0));
+ 
+   for (unsigned int i = 0; i < tableSize; i++)
      if (m_codeTable[i].first > 0)
        sortVec[i] = pair<int, unsigned int>(m_codeTable[i].first * tableSize - i, i);
  
@@ -986,7 +1006,7 @@ index 715c30a..9baf3e4 100644
  
      // setup outgoing arrays accordingly, then call Decode()
 diff --git a/src/LercLib/Lerc2.cpp b/src/LercLib/Lerc2.cpp
-index 8b85340..25df6c2 100644
+index 8b85340..a8a0e8c 100644
 --- a/src/LercLib/Lerc2.cpp
 +++ b/src/LercLib/Lerc2.cpp
 @@ -22,6 +22,7 @@ Contributors:   Thomas Maurer
@@ -1044,6 +1064,15 @@ index 8b85340..25df6c2 100644
  
    for (size_t i = 0; i < zErrCand.size(); i++)
      if (zErrCand[i] / 2 > maxZError)
+@@ -1879,7 +1898,7 @@ bool Lerc2::ComputeDiffSliceFlt(const T* data, const T* prevData, int numValidPi
+ template<class T>
+ bool Lerc2::WriteTile(const T* dataBuf, int num, Byte** ppByte, int& numBytesWritten, int j0, T zMin, T zMax,
+   DataType dtZ, bool bDiffEnc, const std::vector<unsigned int>& quantVec, BlockEncodeMode blockEncodeMode,
+-  const std::vector<std::pair<unsigned int, unsigned int>>& sortedQuantVec) const
++  const std::vector<std::pair<unsigned int, unsigned int> >& sortedQuantVec) const
+ {
+   Byte* ptr = *ppByte;
+   Byte comprFlag = ((j0 >> 3) & 15) << 2;    // use bits 2345 for integrity check
 @@ -2073,7 +2092,7 @@ bool Lerc2::ReadTile(const Byte** ppByte, size_t& nBytesRemainingInOut, T* data,
          return false;
  

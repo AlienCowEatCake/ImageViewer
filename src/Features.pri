@@ -650,10 +650,10 @@ disable_cxx11 : !system_libde265 {
 disable_libde265 : !system_libheif {
     CONFIG *= disable_libheif
 }
-*msvc* : !system_libheif : lessThan(MSVC_VERSION, 2015) {
+*msvc* : !system_libheif : lessThan(MSVC_VERSION, 2017) {
     CONFIG *= disable_libheif
 }
-disable_cxx11 : !system_libheif {
+disable_cxx17 : !system_libheif {
     CONFIG *= disable_libheif
 }
 

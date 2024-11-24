@@ -23,7 +23,6 @@
 #include <iostream>
 #include <cassert>
 #include <utility>
-#include <bit>
 
 #include <QtGlobal>
 

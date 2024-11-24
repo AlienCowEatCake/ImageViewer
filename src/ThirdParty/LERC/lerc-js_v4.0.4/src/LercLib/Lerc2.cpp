@@ -1898,7 +1898,7 @@ bool Lerc2::ComputeDiffSliceFlt(const T* data, const T* prevData, int numValidPi
 template<class T>
 bool Lerc2::WriteTile(const T* dataBuf, int num, Byte** ppByte, int& numBytesWritten, int j0, T zMin, T zMax,
   DataType dtZ, bool bDiffEnc, const std::vector<unsigned int>& quantVec, BlockEncodeMode blockEncodeMode,
-  const std::vector<std::pair<unsigned int, unsigned int>>& sortedQuantVec) const
+  const std::vector<std::pair<unsigned int, unsigned int> >& sortedQuantVec) const
 {
   Byte* ptr = *ppByte;
   Byte comprFlag = ((j0 >> 3) & 15) << 2;    // use bits 2345 for integrity check

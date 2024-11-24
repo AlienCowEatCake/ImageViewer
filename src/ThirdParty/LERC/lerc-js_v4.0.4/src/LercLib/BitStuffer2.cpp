@@ -76,7 +76,7 @@ bool BitStuffer2::EncodeSimple(Byte** ppByte, const vector<unsigned int>& dataVe
 
 // -------------------------------------------------------------------------- ;
 
-bool BitStuffer2::EncodeLut(Byte** ppByte, const vector<pair<unsigned int, unsigned int>>& sortedDataVec, int lerc2Version) const
+bool BitStuffer2::EncodeLut(Byte** ppByte, const vector<pair<unsigned int, unsigned int> >& sortedDataVec, int lerc2Version) const
 {
   if (!ppByte || sortedDataVec.empty())
     return false;
