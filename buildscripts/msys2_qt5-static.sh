@@ -9,12 +9,8 @@ CMD_QMAKE="${MSYSTEM_PREFIX}/qt5-static/bin/qmake.exe"
 MSYSTEM_PKG_PREFIX="mingw-w64"
 if [ "${MSYSTEM}" == "UCRT64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-ucrt-x86_64"
-elif [ "${MSYSTEM}" == "MINGW32" ] ; then
-    MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-i686"
 elif [ "${MSYSTEM}" == "MINGW64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-x86_64"
-elif [ "${MSYSTEM}" == "CLANG32" ] ; then
-    MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-i686"
 elif [ "${MSYSTEM}" == "CLANG64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-x86_64"
 elif [ "${MSYSTEM}" == "CLANGARM64" ] ; then

@@ -38,13 +38,6 @@ elif [ "${MSYSTEM}" == "MINGW64" ] ; then
     UCRT_ARCH="x64"
     WIX_ARCH="x64"
     RESVG_TARGET="x86_64-pc-windows-msvc"
-elif [ "${MSYSTEM}" == "CLANG32" ] ; then
-    MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-i686"
-    VCVARS_ARCH="x64_x86"
-    CRT_ARCH="x86"
-    UCRT_ARCH="x86"
-    WIX_ARCH="x86"
-    RESVG_TARGET="i686-pc-windows-msvc"
 elif [ "${MSYSTEM}" == "CLANG64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-x86_64"
     VCVARS_ARCH="x64"
