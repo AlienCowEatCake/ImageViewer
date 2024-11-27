@@ -32,6 +32,11 @@
 #include <Windows.h>
 #endif
 
+#if defined (Q_OS_HAIKU)
+#include <FindDirectory.h>
+#include <Path.h>
+#endif
+
 #if defined (HAS_LCMS2)
 #include <lcms2.h>
 #endif
@@ -677,6 +682,30 @@ static QString defaultCmykProfilePath()
             << QString::fromLatin1("/System/Library/ColorSync/Profiles")
             ;
 #else
+#if defined (Q_OS_HAIKU)
+    QStringList dataDirs;
+    const QList<directory_which> dataWhichs = QList<directory_which>()
+            << B_USER_NONPACKAGED_DATA_DIRECTORY
+            << B_USER_DATA_DIRECTORY
+            << B_SYSTEM_NONPACKAGED_DATA_DIRECTORY
+            << B_SYSTEM_DATA_DIRECTORY
+            ;
+    for(QList<directory_which>::ConstIterator it = dataWhichs.constBegin(); it != dataWhichs.constEnd(); ++it)
+    {
+        BPath bpath;
+        if(find_directory(*it, &bpath) == B_OK)
+        {
+            const QString path = QString::fromUtf8(bpath.Path());
+            if(path.isEmpty())
+                continue;
+            if(dataDirs.contains(path))
+                continue;
+            if(!QFileInfo_exists(path))
+                continue;
+            dataDirs.append(path);
+        }
+    }
+#else
     QString localShare;
     if(const char *xdgDataHome = getenv("XDG_DATA_HOME"))
         localShare = QString::fromLocal8Bit(xdgDataHome);
@@ -704,6 +733,7 @@ static QString defaultCmykProfilePath()
             dataDirs.append(xdgDataDirPath);
         }
     }
+#endif
 
     const QStringList dataSubDirs = QStringList()
             << QString::fromLatin1("/color/icc")

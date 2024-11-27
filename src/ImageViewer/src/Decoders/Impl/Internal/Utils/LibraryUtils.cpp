@@ -259,6 +259,55 @@ private:
 
 #endif
 
+#if defined (Q_OS_HAIKU)
+
+#include <FindDirectory.h>
+#include <Path.h>
+
+namespace {
+
+class StandardLibraryPathProvider
+{
+public:
+    StandardLibraryPathProvider()
+    {
+        appendPath(B_USER_NONPACKAGED_LIB_DIRECTORY);
+        appendPath(B_USER_LIB_DIRECTORY);
+        appendPath(B_SYSTEM_NONPACKAGED_LIB_DIRECTORY);
+        appendPath(B_SYSTEM_LIB_DIRECTORY);
+        LOG_DEBUG() << LOGGING_CTX << "Paths order:" << m_standardPaths;
+    }
+
+    QStringList getPaths() const
+    {
+        return m_standardPaths;
+    }
+
+private:
+    void appendPath(const QString &path)
+    {
+        if(path.isEmpty())
+            return;
+        if(m_standardPaths.contains(path))
+            return;
+        m_standardPaths.append(path);
+    }
+
+    void appendPath(directory_which which)
+    {
+        BPath path;
+        if(find_directory(which, &path) == B_OK)
+            appendPath(QString::fromUtf8(path.Path()));
+    }
+
+private:
+    QStringList m_standardPaths;
+};
+
+} // namespace
+
+#endif
+
 namespace LibraryUtils {
 
 bool LoadQLibrary(QLibrary &library, const char *name)
@@ -273,6 +322,13 @@ bool LoadQLibrary(QLibrary &library, const QString &name)
 
 bool LoadQLibrary(QLibrary &library, const QStringList &names)
 {
+#if defined (Q_OS_LINUX) || defined (Q_OS_HAIKU)
+    static const QString libExtensionFilter = QString::fromLatin1("*.so*");
+#elif defined (Q_OS_MAC)
+    static const QString libExtensionFilter = QString::fromLatin1("*.dylib*");
+#elif defined (Q_OS_WIN)
+    static const QString libExtensionFilter = QString::fromLatin1("*.dll");
+#endif
     for(QStringList::ConstIterator it = names.constBegin(), itEnd = names.constEnd(); it != itEnd; ++it)
     {
         LOG_DEBUG() << LOGGING_CTX << "Loading" << *it << "from application directory ...";
@@ -285,7 +341,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
         if(library.load())
             break;
         LOG_DEBUG() << LOGGING_CTX << "Error:" << library.errorString();
-#if defined (Q_OS_LINUX)
+#if defined (Q_OS_LINUX) || defined (Q_OS_MAC) || defined (Q_OS_WIN) || defined (Q_OS_HAIKU)
         LOG_DEBUG() << LOGGING_CTX << "Loading" << *it << "from standard directories ...";
         static const QStringList standardLibDirs = StandardLibraryPathProvider().getPaths();
         for(QStringList::ConstIterator dIt = standardLibDirs.constBegin(), dItEnd = standardLibDirs.constEnd(); dIt != dItEnd; ++dIt)
@@ -294,67 +350,7 @@ bool LoadQLibrary(QLibrary &library, const QStringList &names)
                 continue;
             if(QFileInfo(*it).isAbsolute())
                 continue;
-            const QStringList nameFilter(*it + QString::fromLatin1("*.so*"));
-            const QDir directory(*dIt);
-            const QStringList libraries = directory.entryList(nameFilter, QDir::Files | QDir::NoDotAndDotDot | QDir::Readable, QDir::Name);
-            for(QStringList::ConstIterator lIt = libraries.constBegin(), lItEnd = libraries.constEnd(); lIt != lItEnd; ++lIt)
-            {
-                const QString libraryPath = QDir(*dIt).filePath(*lIt);
-                if(!QFileInfo_exists(libraryPath))
-                    continue;
-                if(!QLibrary::isLibrary(libraryPath))
-                    continue;
-                library.setFileName(libraryPath);
-                if(library.load())
-                    break;
-                LOG_DEBUG() << LOGGING_CTX << "Error:" << library.errorString();
-            }
-            if(library.isLoaded())
-                break;
-        }
-        if(library.isLoaded())
-            break;
-#endif
-#if defined (Q_OS_MAC)
-        LOG_DEBUG() << LOGGING_CTX << "Loading" << *it << "from standard directories ...";
-        static const QStringList standardLibDirs = StandardLibraryPathProvider().getPaths();
-        for(QStringList::ConstIterator dIt = standardLibDirs.constBegin(), dItEnd = standardLibDirs.constEnd(); dIt != dItEnd; ++dIt)
-        {
-            if(!QFileInfo_exists(*dIt))
-                continue;
-            if(QFileInfo(*it).isAbsolute())
-                continue;
-            const QStringList nameFilter(*it + QString::fromLatin1("*.dylib*"));
-            const QDir directory(*dIt);
-            const QStringList libraries = directory.entryList(nameFilter, QDir::Files | QDir::NoDotAndDotDot | QDir::Readable, QDir::Name);
-            for(QStringList::ConstIterator lIt = libraries.constBegin(), lItEnd = libraries.constEnd(); lIt != lItEnd; ++lIt)
-            {
-                const QString libraryPath = QDir(*dIt).filePath(*lIt);
-                if(!QFileInfo_exists(libraryPath))
-                    continue;
-                if(!QLibrary::isLibrary(libraryPath))
-                    continue;
-                library.setFileName(libraryPath);
-                if(library.load())
-                    break;
-                LOG_DEBUG() << LOGGING_CTX << "Error:" << library.errorString();
-            }
-            if(library.isLoaded())
-                break;
-        }
-        if(library.isLoaded())
-            break;
-#endif
-#if defined (Q_OS_WIN)
-        LOG_DEBUG() << LOGGING_CTX << "Loading" << *it << "from standard directories ...";
-        static const QStringList standardLibDirs = StandardLibraryPathProvider().getPaths();
-        for(QStringList::ConstIterator dIt = standardLibDirs.constBegin(), dItEnd = standardLibDirs.constEnd(); dIt != dItEnd; ++dIt)
-        {
-            if(!QFileInfo_exists(*dIt))
-                continue;
-            if(QFileInfo(*it).isAbsolute())
-                continue;
-            const QStringList nameFilter(*it + QString::fromLatin1("*.dll"));
+            const QStringList nameFilter(*it + libExtensionFilter);
             const QDir directory(*dIt);
             const QStringList libraries = directory.entryList(nameFilter, QDir::Files | QDir::NoDotAndDotDot | QDir::Readable, QDir::Name);
             for(QStringList::ConstIterator lIt = libraries.constBegin(), lItEnd = libraries.constEnd(); lIt != lItEnd; ++lIt)
