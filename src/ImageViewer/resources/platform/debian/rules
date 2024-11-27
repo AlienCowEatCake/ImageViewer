@@ -34,7 +34,9 @@ binary-arch: build
 	dh_installdeb
 	dh_shlibdeps \
 		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6Qml.so.6 \
+		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6QmlMeta.so.6 \
 		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6QmlModels.so.6 \
+		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6QmlWorkerScript.so.6 \
 		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6Quick.so.6 \
 		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6QuickControls2.so.6 \
 		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6QuickTemplates2.so.6 \
