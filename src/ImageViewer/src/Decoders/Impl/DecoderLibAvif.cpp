@@ -129,7 +129,7 @@ public:
             {
                 LOG_WARNING() << LOGGING_CTX << "ERROR: Failed to YUVToRGB:" << avifResultToString(imageYUVToRGBResult);
                 avifDecoderDestroy(decoder);
-                return false;
+                return PayloadWithMetaData<bool>(false, metaData);
             }
 
             if(decoder->image->transformFlags & AVIF_TRANSFORM_PASP)
