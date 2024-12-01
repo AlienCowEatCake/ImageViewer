@@ -196,42 +196,45 @@ PayloadWithMetaData<QImage> readHeifFile(const QString &filePath)
 #else
     ImageMetaData *metaData = ImageMetaData::createMetaData(QByteArray::fromRawData(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<int>()));
 #endif
-    const int numberOfMetadataBlocks = heif_image_handle_get_number_of_metadata_blocks(handle, Q_NULLPTR);
-    if(numberOfMetadataBlocks > 0)
+    if(!metaData)
     {
-        heif_item_id *ids = new heif_item_id[numberOfMetadataBlocks];
-        heif_image_handle_get_list_of_metadata_block_IDs(handle, Q_NULLPTR, ids, numberOfMetadataBlocks);
-        for(int i = 0; i < numberOfMetadataBlocks; ++i)
+        const int numberOfMetadataBlocks = heif_image_handle_get_number_of_metadata_blocks(handle, Q_NULLPTR);
+        if(numberOfMetadataBlocks > 0)
         {
-            if(strcmp(heif_image_handle_get_metadata_type(handle, ids[i]), "Exif") == 0)
+            heif_item_id *ids = new heif_item_id[numberOfMetadataBlocks];
+            heif_image_handle_get_list_of_metadata_block_IDs(handle, Q_NULLPTR, ids, numberOfMetadataBlocks);
+            for(int i = 0; i < numberOfMetadataBlocks; ++i)
             {
-                LOG_DEBUG() << LOGGING_CTX << "Found EXIF metadata";
-                const size_t metadataSize = heif_image_handle_get_metadata_size(handle, ids[i]);
-                QByteArray rawMetadata(static_cast<int>(metadataSize), 0);
-                error = heif_image_handle_get_metadata(handle, ids[i], rawMetadata.data());
-                if(error.code != heif_error_Ok)
+                if(strcmp(heif_image_handle_get_metadata_type(handle, ids[i]), "Exif") == 0)
                 {
-                    LOG_WARNING() << LOGGING_CTX << "Can't get EXIF metadata:" << error.message;
+                    LOG_DEBUG() << LOGGING_CTX << "Found EXIF metadata";
+                    const size_t metadataSize = heif_image_handle_get_metadata_size(handle, ids[i]);
+                    QByteArray rawMetadata(static_cast<int>(metadataSize), 0);
+                    error = heif_image_handle_get_metadata(handle, ids[i], rawMetadata.data());
+                    if(error.code != heif_error_Ok)
+                    {
+                        LOG_WARNING() << LOGGING_CTX << "Can't get EXIF metadata:" << error.message;
+                    }
+                    else
+                    {
+                        const int offset = 10;
+                        metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(rawMetadata.constData() + offset, rawMetadata.size() - offset)));
+                    }
                 }
-                else
+                else if(strcmp(heif_image_handle_get_metadata_type(handle, ids[i]), "XMP") == 0)
                 {
-                    const int offset = 10;
-                    metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(rawMetadata.constData() + offset, rawMetadata.size() - offset)));
+                    LOG_DEBUG() << LOGGING_CTX << "Found XMP metadata";
+                    const size_t metadataSize = heif_image_handle_get_metadata_size(handle, ids[i]);
+                    QByteArray rawMetadata(static_cast<int>(metadataSize), 0);
+                    error = heif_image_handle_get_metadata(handle, ids[i], rawMetadata.data());
+                    if(error.code != heif_error_Ok)
+                        LOG_WARNING() << LOGGING_CTX << "Can't get XMP metadata:" << error.message;
+                    else
+                        metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(rawMetadata.constData(), rawMetadata.size())));
                 }
             }
-            else if(strcmp(heif_image_handle_get_metadata_type(handle, ids[i]), "XMP") == 0)
-            {
-                LOG_DEBUG() << LOGGING_CTX << "Found XMP metadata";
-                const size_t metadataSize = heif_image_handle_get_metadata_size(handle, ids[i]);
-                QByteArray rawMetadata(static_cast<int>(metadataSize), 0);
-                error = heif_image_handle_get_metadata(handle, ids[i], rawMetadata.data());
-                if(error.code != heif_error_Ok)
-                    LOG_WARNING() << LOGGING_CTX << "Can't get XMP metadata:" << error.message;
-                else
-                    metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(rawMetadata.constData(), rawMetadata.size())));
-            }
+            delete [] ids;
         }
-        delete [] ids;
     }
 
     heif_image_release(img);

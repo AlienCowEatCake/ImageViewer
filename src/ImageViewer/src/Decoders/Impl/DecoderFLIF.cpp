@@ -64,6 +64,7 @@ public:
         }
 
         ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer.dataAsByteArray());
+        const bool hasBasicMetaData = !!metaData;
 
         m_numFrames = static_cast<int>(flif_decoder_num_images(d));
         m_numLoops = static_cast<int>(flif_decoder_num_loops(d));
@@ -106,7 +107,7 @@ public:
                 data = Q_NULLPTR;
                 length = 0;
             }
-            if(flif_image_get_metadata(image, "eXmp", &data, &length))
+            if(!hasBasicMetaData && flif_image_get_metadata(image, "eXmp", &data, &length))
             {
                 LOG_DEBUG() << LOGGING_CTX << "Found XMP metadata for frame" << i;
                 metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(data), static_cast<int>(length))));
@@ -114,7 +115,7 @@ public:
                 data = Q_NULLPTR;
                 length = 0;
             }
-            if(flif_image_get_metadata(image, "eXif", &data, &length))
+            if(!hasBasicMetaData && flif_image_get_metadata(image, "eXif", &data, &length))
             {
                 LOG_DEBUG() << LOGGING_CTX << "Found EXIF metadata for frame" << i;
                 metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(data), static_cast<int>(length))));

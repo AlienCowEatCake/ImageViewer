@@ -93,6 +93,7 @@ public:
         }
 
         ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer.dataAsByteArray());
+        const bool hasBasicMetaData = !!metaData;
 
         for(m_numFrames = 0; ; m_numFrames++)
         {
@@ -184,12 +185,12 @@ public:
                 ICCProfile(QByteArray::fromRawData(reinterpret_cast<const char*>(decoder->image->icc.data), static_cast<int>(decoder->image->icc.size))).applyToImage(&frame);
             }
 
-            if(decoder->image->exif.size)
+            if(!hasBasicMetaData && decoder->image->exif.size)
             {
                 LOG_DEBUG() << LOGGING_CTX << "Found EXIF metadata for frame" << m_numFrames;
                 metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(decoder->image->exif.data), static_cast<int>(decoder->image->exif.size))));
             }
-            if(decoder->image->xmp.size)
+            if(!hasBasicMetaData && decoder->image->xmp.size)
             {
                 LOG_DEBUG() << LOGGING_CTX << "Found XMP metadata for frame" << m_numFrames;
                 metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(decoder->image->xmp.data), static_cast<int>(decoder->image->xmp.size))));

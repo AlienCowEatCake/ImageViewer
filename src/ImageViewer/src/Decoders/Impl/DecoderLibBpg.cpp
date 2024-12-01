@@ -82,6 +82,7 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
 
     QScopedPointer<ICCProfile> profile;
     ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer.dataAsByteArray());
+    const bool hasBasicMetaData = !!metaData;
 
     for(BPGExtensionData *extension = bpg_decoder_get_extension_data(decoderContext); extension != Q_NULLPTR; extension = extension->next)
     {
@@ -92,12 +93,18 @@ PayloadWithMetaData<bool> BpgAnimationProvider::readBpgFile(const QString &fileP
             profile.reset(new ICCProfile(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf), static_cast<int>(extension->buf_len))));
             break;
         case BPG_EXTENSION_TAG_EXIF:
-            LOG_DEBUG() << LOGGING_CTX << "Found EXIF metadata";
-            metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf + 1), static_cast<int>(extension->buf_len - 1))));
+            if(!hasBasicMetaData)
+            {
+                LOG_DEBUG() << LOGGING_CTX << "Found EXIF metadata";
+                metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createExifMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf + 1), static_cast<int>(extension->buf_len - 1))));
+            }
             break;
         case BPG_EXTENSION_TAG_XMP:
-            LOG_DEBUG() << LOGGING_CTX << "Found XMP metadata";
-            metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf), static_cast<int>(extension->buf_len))));
+            if(!hasBasicMetaData)
+            {
+                LOG_DEBUG() << LOGGING_CTX << "Found XMP metadata";
+                metaData = ImageMetaData::joinMetaData(metaData, ImageMetaData::createXmpMetaData(QByteArray::fromRawData(reinterpret_cast<const char*>(extension->buf), static_cast<int>(extension->buf_len))));
+            }
             break;
         default:
             break;

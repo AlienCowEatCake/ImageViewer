@@ -856,6 +856,7 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
     decoder->GetSize(decoder.data(), &rect.Width, &rect.Height);
 
     ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
+    const bool hasBasicMetaData = !!metaData;
     if(!metaData)
         metaData = new ImageMetaData;
 
@@ -892,8 +893,11 @@ PayloadWithMetaData<QImage> readJxrFile(const QString &filePath)
             LOG_WARNING() << LOGGING_CTX << #FUNC " failed:" << errorToString(err); \
     } \
     while(false)
-    ADD_METADATA(getXmpMetadata, metaData);
-    ADD_METADATA(getExifMetadata, metaData);
+    if(!hasBasicMetaData)
+    {
+        ADD_METADATA(getXmpMetadata, metaData);
+        ADD_METADATA(getExifMetadata, metaData);
+    }
     ADD_METADATA(getIccProfileData, iccProfileData);
 #undef ADD_METADATA
 
