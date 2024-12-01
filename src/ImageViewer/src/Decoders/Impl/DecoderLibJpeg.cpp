@@ -113,6 +113,7 @@ static void jpegMemSource(j_decompress_ptr cinfo, void *buffer, long nbytes)
 
 #define EXIF_MARKER  (JPEG_APP0 + 1)    // JPEG marker code for EXIF
 #define ICCP_MARKER  (JPEG_APP0 + 2)    // JPEG marker code for ICC
+#define EXIF_OVERHEAD_LEN  6            // size of "Exif\0\0" prefix in APP1
 #define ICCP_OVERHEAD_LEN  14           // size of non-profile data in APP2
 #define MAX_BYTES_IN_MARKER  65533      // maximum data len of a JPEG marker
 #define MAX_DATA_BYTES_IN_MARKER  (MAX_BYTES_IN_MARKER - ICCP_OVERHEAD_LEN)
@@ -215,6 +216,50 @@ QByteArray readICCProfile(j_decompress_ptr cinfo)
     return result;
 }
 
+// Handy subroutine to test whether a saved marker is an Exif metadata marker.
+bool markerIsExif(const jpeg_saved_marker_ptr marker)
+{
+    return
+        marker->marker == EXIF_MARKER &&
+        marker->data_length >= EXIF_OVERHEAD_LEN &&
+        // verify the identifying string
+        GETJOCTET(marker->data[0]) == 0x45 &&
+        GETJOCTET(marker->data[1]) == 0x78 &&
+        GETJOCTET(marker->data[2]) == 0x69 &&
+        GETJOCTET(marker->data[3]) == 0x66 &&
+        GETJOCTET(marker->data[4]) == 0x0 &&
+        GETJOCTET(marker->data[5]) == 0x0;
+}
+
+// See if there was an Exif metadata in the JPEG file being read;
+// if so, assemble and return the metadata.
+// Multi-segment Exif is non-conformat, but exist
+ImageMetaData *readExifMetaData(j_decompress_ptr cinfo)
+{
+    int totalLength = 0;
+    for(jpeg_saved_marker_ptr marker = cinfo->marker_list; marker != Q_NULLPTR; marker = marker->next)
+    {
+        if(markerIsExif(marker))
+            totalLength += static_cast<int>(marker->data_length) - EXIF_OVERHEAD_LEN;
+    }
+    if(totalLength <= EXIF_OVERHEAD_LEN)
+        return Q_NULLPTR;
+
+    QByteArray exifBuffer(static_cast<int>(totalLength * sizeof(JOCTET)), 0);
+    JOCTET *outPtr = reinterpret_cast<JOCTET*>(exifBuffer.data());
+    for(jpeg_saved_marker_ptr marker = cinfo->marker_list; marker != Q_NULLPTR; marker = marker->next)
+    {
+        if(markerIsExif(marker))
+        {
+            JOCTET *srcPtr = marker->data + EXIF_OVERHEAD_LEN;
+            unsigned int length = marker->data_length - EXIF_OVERHEAD_LEN;
+            while(length--)
+                *outPtr++ = *srcPtr++;
+        }
+    }
+    return ImageMetaData::createExifMetaData(exifBuffer);
+}
+
 // Here's the extended error handler struct:
 struct JpegError
 {
@@ -253,6 +298,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
         return QImage();
 
     // Construct any C++ objects before setjmp!
+    ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer.dataAsByteArray());
     ICCProfile *iccProfile = Q_NULLPTR;
     QImage outImage;
 
@@ -270,7 +316,7 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
         jpeg_destroy_decompress(&cinfo);
         if(iccProfile)
             delete iccProfile;
-        return QImage();
+        return PayloadWithMetaData<QImage>(QImage(), metaData);
     }
     // Now we can initialize the JPEG decompression object.
     jpeg_create_decompress(&cinfo);
@@ -294,6 +340,8 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
     //   (b) we passed TRUE to reject a tables-only JPEG file as an error.
     // See libjpeg.txt for more info.
 
+    if(!metaData)
+        metaData = readExifMetaData(&cinfo);
     iccProfile = new ICCProfile(readICCProfile(&cinfo));
 #if defined (QT_DEBUG)
     for(jpeg_saved_marker_ptr marker = cinfo.marker_list; marker != Q_NULLPTR; marker = marker->next)
@@ -437,7 +485,6 @@ PayloadWithMetaData<QImage> readJpegFile(const QString &filename)
 
     delete iccProfile;
 
-    ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer.dataAsByteArray());
     if(metaData)
         metaData->applyExifOrientation(&outImage);
 
