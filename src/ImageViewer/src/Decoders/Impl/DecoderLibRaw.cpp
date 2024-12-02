@@ -617,7 +617,7 @@ public:
 
     QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
-        /// @note https://github.com/KDE/digikam/blob/v6.0.0/core/libs/rawengine/drawfiles.h
+        /// @note https://invent.kde.org/graphics/digikam/-/blob/v8.5.0/core/libs/rawengine/drawfiles.cpp
         return QStringList()
                 << QString::fromLatin1("bay")  // Casio Digital Camera Raw File Format.
                 << QString::fromLatin1("bmq")  // NuCore Raw Image File.
@@ -661,12 +661,21 @@ public:
 
                 << QString::fromLatin1("srw")  // Samnsung Raw Image Format.
 
+                << QString::fromLatin1("cr3")  // Canon Digital Camera RAW Image Format version 3.0.
+
+                << QString::fromLatin1("ori")  // Olympus Digital Camera Raw Image Format.
+
+                << QString::fromLatin1("iiq")  // Phase One Digital Camera Raw Image Format.
+
+                << QString::fromLatin1("ari")  // Arriflex Camera Raw Image Format.
+                << QString::fromLatin1("cap")  // Phase One Digital Camera Raw Image Format.
+                << QString::fromLatin1("fff")  // Hasselblad Digital Camera Raw Image Format.
+                << QString::fromLatin1("cin")  // Phantom Software Raw Image File.
+
 //                /// @todo check if these format are supported
 //                << QString::fromLatin1("drf")  // Kodak Digital Camera Raw Image Format.
 //                << QString::fromLatin1("dsc")  // Kodak Digital Camera Raw Image Format.
 //                << QString::fromLatin1("ptx")  // Pentax Digital Camera Raw Image Format.
-//                << QString::fromLatin1("cap")  // Phase One Digital Camera Raw Image Format.
-//                << QString::fromLatin1("iiq")  // Phase One Digital Camera Raw Image Format.
 //                << QString::fromLatin1("rwz")  // Rawzor Digital Camera Raw Image Format.
                    ;
     }

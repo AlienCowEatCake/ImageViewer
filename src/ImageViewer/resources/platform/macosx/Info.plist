@@ -379,6 +379,13 @@
 				<string>sti</string>
 				<string>rwl</string>
 				<string>srw</string>
+				<string>cr3</string>
+				<string>ori</string>
+				<string>iiq</string>
+				<string>ari</string>
+				<string>cap</string>
+				<string>fff</string>
+				<string>cin</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Camera Raw Image</string>

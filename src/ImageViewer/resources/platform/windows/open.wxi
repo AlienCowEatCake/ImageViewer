@@ -501,6 +501,48 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
+      Key=".cr3"
+      Value="$(var.ProductNameSafe).cr3"
+      Id="reg_assoc_cr3" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".ori"
+      Value="$(var.ProductNameSafe).ori"
+      Id="reg_assoc_ori" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".iiq"
+      Value="$(var.ProductNameSafe).iiq"
+      Id="reg_assoc_iiq" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".ari"
+      Value="$(var.ProductNameSafe).ari"
+      Id="reg_assoc_ari" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".cap"
+      Value="$(var.ProductNameSafe).cap"
+      Id="reg_assoc_cap" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".fff"
+      Value="$(var.ProductNameSafe).fff"
+      Id="reg_assoc_fff" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".cin"
+      Value="$(var.ProductNameSafe).cin"
+      Id="reg_assoc_cin" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
       Key=".sun"
       Value="$(var.ProductNameSafe).sun"
       Id="reg_assoc_sun" />
