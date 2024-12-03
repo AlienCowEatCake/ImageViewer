@@ -686,6 +686,8 @@ QString GetSystemDescription()
     QString winVersion = QString::fromLatin1("Windows");
     if     (osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 22000 && osProductType == VER_NT_WORKSTATION)
         winVersion.append(QString::fromLatin1(" 11"));
+    else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 26100 && osProductType != VER_NT_WORKSTATION)
+        winVersion.append(QString::fromLatin1(" Server 2025"));
     else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 20344 && osProductType != VER_NT_WORKSTATION)
         winVersion.append(QString::fromLatin1(" Server 2022"));
     else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 17763 && osProductType != VER_NT_WORKSTATION)
