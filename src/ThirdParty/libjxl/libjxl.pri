@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libjxl {
 
-        THIRDPARTY_LIBJXL_PATH = $${PWD}/libjxl-0.11.0
+        THIRDPARTY_LIBJXL_PATH = $${PWD}/libjxl-0.11.1
         THIRDPARTY_LIBJXL_CONFIG_PATH = $${PWD}/config
 
         INCLUDEPATH += $${THIRDPARTY_LIBJXL_PATH}/lib/include $${THIRDPARTY_LIBJXL_CONFIG_PATH}
