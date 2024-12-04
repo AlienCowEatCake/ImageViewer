@@ -686,7 +686,18 @@ bool QAVIFHandler::write(const QImage &image)
             }
         }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+        QImage tmpcolorimage;
+        auto cs = image.colorSpace();
+        if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && image.format() == QImage::Format_CMYK8888) {
+            tmpcolorimage = image.convertedToColorSpace(QColorSpace(QColorSpace::SRgb), tmpformat);
+        }
+        else {
+            tmpcolorimage = image.convertToFormat(tmpformat);
+        }
+#else
         QImage tmpcolorimage = image.convertToFormat(tmpformat);
+#endif
 
         avifPixelFormat pixel_format = AVIF_PIXEL_FORMAT_YUV420;
         if (m_quality >= KIMG_AVIF_QUALITY_HIGH) {

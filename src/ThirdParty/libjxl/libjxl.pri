@@ -48,6 +48,7 @@ include($${PWD}/../../Features.pri)
             else: LIBS += -ljxl
         } else {
             PKGCONFIG += libjxl
+            packagesExist(libjxl_cms): PKGCONFIG += libjxl_cms
         }
 
     }

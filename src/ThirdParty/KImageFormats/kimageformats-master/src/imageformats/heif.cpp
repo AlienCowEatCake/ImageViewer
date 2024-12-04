@@ -159,7 +159,18 @@ bool HEIFHandler::write_helper(const QImage &image)
         }
     }
 
-    const QImage tmpimage = image.convertToFormat(tmpformat);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    QImage tmpimage;
+    auto cs = image.colorSpace();
+    if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && image.format() == QImage::Format_CMYK8888) {
+        tmpimage = image.convertedToColorSpace(QColorSpace(QColorSpace::SRgb), tmpformat);
+    }
+    else {
+        tmpimage = image.convertToFormat(tmpformat);
+    }
+#else
+    QImage tmpimage = image.convertToFormat(tmpformat);
+#endif
 
     struct heif_context *context = heif_context_alloc();
     struct heif_error err;

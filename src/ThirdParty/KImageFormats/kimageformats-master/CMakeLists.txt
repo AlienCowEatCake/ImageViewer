@@ -72,6 +72,7 @@ option(KIMAGEFORMATS_JXL "Enable plugin for JPEG XL format" ON)
 if(KIMAGEFORMATS_JXL)
     pkg_check_modules(LibJXL IMPORTED_TARGET libjxl>=0.7.0)
     pkg_check_modules(LibJXLThreads IMPORTED_TARGET libjxl_threads>=0.7.0)
+    pkg_check_modules(LibJXLCMS IMPORTED_TARGET libjxl_cms>=0.9.0)
 endif()
 add_feature_info(LibJXL LibJXL_FOUND "required for the QImage plugin for JPEG XL images")
 

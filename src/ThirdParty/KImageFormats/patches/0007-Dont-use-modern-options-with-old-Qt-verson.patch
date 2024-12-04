@@ -1,4 +1,4 @@
-From 41d687a0fb9a4f6902277a17194182e8cf7481fa Mon Sep 17 00:00:00 2001
+From e84d98ae994acb196f5388c3c373ee0d00b8b7ca Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 3 Jan 2024 08:33:45 +0700
 Subject: [PATCH 7/7] Dont use modern options with old Qt verson
@@ -269,7 +269,7 @@ index bee4fdc..0b1bf7d 100644
          }
      }
 diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
-index d93a43e..392b669 100644
+index 065a9d5..7611cde 100644
 --- a/src/imageformats/jxl.cpp
 +++ b/src/imageformats/jxl.cpp
 @@ -8,6 +8,7 @@
@@ -280,7 +280,7 @@ index d93a43e..392b669 100644
  
  #include "jxl_p.h"
  #include "util_p.h"
-@@ -59,6 +60,15 @@ typedef enum {JXL_ENC_SUCCESS, JXL_ENC_ERROR, JXL_ENC_NEED_MORE_OUTPUT, JXL_ENC_
+@@ -64,6 +65,15 @@ typedef enum {JXL_ENC_SUCCESS, JXL_ENC_ERROR, JXL_ENC_NEED_MORE_OUTPUT, JXL_ENC_
  #endif
  #endif
  
@@ -296,20 +296,21 @@ index d93a43e..392b669 100644
  #if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
  #ifndef JXL_HDR_PRESERVATION_DISABLED
  // Define JXL_HDR_PRESERVATION_DISABLED to disable HDR preservation
-@@ -312,6 +322,7 @@ bool QJpegXLHandler::countALLFrames()
+@@ -326,6 +336,7 @@ bool QJpegXLHandler::countALLFrames()
              m_input_pixel_format.data_type = JXL_TYPE_UINT16;
              m_input_image_format = m_target_image_format = QImage::Format_Grayscale16;
-             m_buffer_size = (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize * m_input_pixel_format.num_channels * 2;
+             m_buffer_size = ((size_t)m_basicinfo.ysize - 1) * (((((size_t)m_basicinfo.xsize) * 2 + 3) >> 2) << 2) + (size_t)m_basicinfo.xsize * 2;
 +#ifndef JXL_FP_DISABLED
          } else if (m_basicinfo.bits_per_sample > 16 && is_fp) {
              m_input_pixel_format.data_type = JXL_TYPE_FLOAT;
              m_input_image_format = QImage::Format_RGBA32FPx4;
-@@ -320,13 +331,19 @@ bool QJpegXLHandler::countALLFrames()
+@@ -334,14 +345,20 @@ bool QJpegXLHandler::countALLFrames()
                  m_target_image_format = QImage::Format_RGBA32FPx4;
              else
                  m_target_image_format = QImage::Format_RGBX32FPx4;
 +#endif
          } else {
+             m_input_pixel_format.data_type = is_fp ? JXL_TYPE_FLOAT16 : JXL_TYPE_UINT16;
              m_buffer_size = (size_t)m_basicinfo.xsize * (size_t)m_basicinfo.ysize * m_input_pixel_format.num_channels * 2;
 +#ifndef JXL_FP_DISABLED
              m_input_image_format = is_fp ? QImage::Format_RGBA16FPx4 : QImage::Format_RGBA64;
@@ -324,7 +325,7 @@ index d93a43e..392b669 100644
          }
      } else { // 8bit depth
          m_input_pixel_format.data_type = JXL_TYPE_UINT8;
-@@ -588,6 +605,7 @@ bool QJpegXLHandler::write(const QImage &image)
+@@ -604,6 +621,7 @@ bool QJpegXLHandler::write(const QImage &image)
      bool is_gray = false;
      // depth detection
      switch (image.format()) {
@@ -332,7 +333,7 @@ index d93a43e..392b669 100644
      case QImage::Format_RGBX32FPx4:
      case QImage::Format_RGBA32FPx4:
      case QImage::Format_RGBA32FPx4_Premultiplied:
-@@ -603,6 +621,7 @@ bool QJpegXLHandler::write(const QImage &image)
+@@ -619,6 +637,7 @@ bool QJpegXLHandler::write(const QImage &image)
          save_depth = 16;
          save_fp = true;
          break;
@@ -340,7 +341,7 @@ index d93a43e..392b669 100644
  #endif
      case QImage::Format_BGR30:
      case QImage::Format_A2BGR30_Premultiplied:
-@@ -738,6 +757,7 @@ bool QJpegXLHandler::write(const QImage &image)
+@@ -758,6 +777,7 @@ bool QJpegXLHandler::write(const QImage &image)
          output_info.bits_per_sample = 8;
          tmpformat = QImage::Format_Grayscale8;
          pixel_format.num_channels = 1;
@@ -348,7 +349,7 @@ index d93a43e..392b669 100644
      } else if (save_depth > 16) { // 32bit depth rgb
          pixel_format.data_type = JXL_TYPE_FLOAT;
          output_info.exponent_bits_per_sample = 8;
-@@ -756,6 +776,7 @@ bool QJpegXLHandler::write(const QImage &image)
+@@ -776,6 +796,7 @@ bool QJpegXLHandler::write(const QImage &image)
              output_info.alpha_bits = 0;
              output_info.num_extra_channels = 0;
          }
@@ -356,7 +357,7 @@ index d93a43e..392b669 100644
      } else if (save_depth > 8) { // 16bit depth rgb
          pixel_format.data_type = save_fp ? JXL_TYPE_FLOAT16 : JXL_TYPE_UINT16;
          output_info.exponent_bits_per_sample = save_fp ? 5 : 0;
-@@ -763,13 +784,23 @@ bool QJpegXLHandler::write(const QImage &image)
+@@ -783,13 +804,23 @@ bool QJpegXLHandler::write(const QImage &image)
          output_info.bits_per_sample = 16;
  
          if (image.hasAlphaChannel()) {
@@ -380,7 +381,7 @@ index d93a43e..392b669 100644
              pixel_format.num_channels = 3;
              output_info.alpha_bits = 0;
              output_info.num_extra_channels = 0;
-@@ -883,8 +914,10 @@ bool QJpegXLHandler::write(const QImage &image)
+@@ -915,8 +946,10 @@ bool QJpegXLHandler::write(const QImage &image)
          // pack pixel data
          if (save_depth > 16 && save_fp)
              packRGBPixels<float>(tmpimage);
@@ -750,12 +751,12 @@ index 33acf4a..49bdae0 100644
          auto rasLine = dec.readLine(rasLineSize);
          if (rasLine.size() != rasLineSize) {
 diff --git a/src/imageformats/rgb.cpp b/src/imageformats/rgb.cpp
-index bc7ce5e..c3a9d12 100644
+index 9bb6c3c..4959235 100644
 --- a/src/imageformats/rgb.cpp
 +++ b/src/imageformats/rgb.cpp
 @@ -30,7 +30,15 @@
- #include <QDebug>
- #include <QImage>
+ #include <QList>
+ #include <QMap>
  
 +#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 +#include <QVector>
@@ -966,5 +967,5 @@ index e8d2c0b..121529d 100644
          buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
      }
 -- 
-2.47.0
+2.47.1
 

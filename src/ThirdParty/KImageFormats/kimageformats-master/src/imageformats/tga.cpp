@@ -21,6 +21,7 @@
 
 #include <assert.h>
 
+#include <QColorSpace>
 #include <QDataStream>
 #include <QDebug>
 #include <QImage>
@@ -474,7 +475,14 @@ bool TGAHandler::write(const QImage &image)
 
     QImage img(image);
     const bool hasAlpha = img.hasAlphaChannel();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    auto cs = image.colorSpace();
+    if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && image.format() == QImage::Format_CMYK8888) {
+        img = image.convertedToColorSpace(QColorSpace(QColorSpace::SRgb), QImage::Format_RGB32);
+    } else if (hasAlpha && img.format() != QImage::Format_ARGB32) {
+#else
     if (hasAlpha && img.format() != QImage::Format_ARGB32) {
+#endif
         img = img.convertToFormat(QImage::Format_ARGB32);
     } else if (!hasAlpha && img.format() != QImage::Format_RGB32) {
         img = img.convertToFormat(QImage::Format_RGB32);
@@ -497,7 +505,7 @@ bool TGAHandler::write(const QImage &image)
     s << quint8(hasAlpha ? originTopLeft + alphaChannel8Bits : originTopLeft);   // top left image (0x20) + 8 bit alpha (0x8)
 
     for (int y = 0; y < img.height(); y++) {
-        auto ptr = reinterpret_cast<QRgb *>(img.scanLine(y));
+        auto ptr = reinterpret_cast<const QRgb *>(img.constScanLine(y));
         for (int x = 0; x < img.width(); x++) {
             auto color = *(ptr + x);
             s << quint8(qBlue(color));

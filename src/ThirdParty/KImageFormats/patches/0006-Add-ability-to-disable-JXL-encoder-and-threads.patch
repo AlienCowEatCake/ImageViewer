@@ -1,4 +1,4 @@
-From 3da67d49b9015271f048fb59a0a4541bf24d6cc1 Mon Sep 17 00:00:00 2001
+From 9140ffeb05f7baa6244664db9c380623ae1325ed Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:44:31 +0700
 Subject: [PATCH 6/7] Add ability to disable JXL encoder and threads
@@ -8,7 +8,7 @@ Subject: [PATCH 6/7] Add ability to disable JXL encoder and threads
  1 file changed, 36 insertions(+)
 
 diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
-index 0274ce0..d93a43e 100644
+index 78243ab..065a9d5 100644
 --- a/src/imageformats/jxl.cpp
 +++ b/src/imageformats/jxl.cpp
 @@ -12,8 +12,44 @@
@@ -53,9 +53,9 @@ index 0274ce0..d93a43e 100644
 +#define JxlDecoderSetParallelRunner(_1, _2, _3) JXL_DEC_SUCCESS
 +#define JxlEncoderSetParallelRunner(_1, _2, _3) JXL_ENC_SUCCESS
 +#endif
- #include <string.h>
  
- // Avoid rotation on buggy Qts (see also https://bugreports.qt.io/browse/QTBUG-126575)
+ #if JPEGXL_NUMERIC_VERSION >= JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
+ #include <jxl/cms.h>
 -- 
-2.47.0
+2.47.1
 

@@ -9,6 +9,7 @@
 #include "util_p.h"
 
 #include <QColor>
+#include <QColorSpace>
 #include <QDataStream>
 #include <QDebug>
 #include <QImage>
@@ -877,6 +878,12 @@ bool PCXHandler::write(const QImage &image)
     s.setByteOrder(QDataStream::LittleEndian);
 
     QImage img = image;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    auto cs = image.colorSpace();
+    if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && image.format() == QImage::Format_CMYK8888) {
+        img = image.convertedToColorSpace(QColorSpace(QColorSpace::SRgb));
+    }
+#endif
 
     const int w = img.width();
     const int h = img.height();

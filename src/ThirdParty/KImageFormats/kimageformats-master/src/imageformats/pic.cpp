@@ -17,10 +17,12 @@
 #include "rle_p.h"
 #include "util_p.h"
 
+#include <QColorSpace>
 #include <QDataStream>
 #include <QDebug>
 #include <QImage>
 #include <QVariant>
+
 #include <algorithm>
 #include <functional>
 #include <qendian.h>
@@ -264,7 +266,16 @@ bool SoftimagePICHandler::read(QImage *image)
 bool SoftimagePICHandler::write(const QImage &_image)
 {
     bool alpha = _image.hasAlphaChannel();
-    const QImage image = _image.convertToFormat(alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+    QImage image;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    auto cs = _image.colorSpace();
+    if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && _image.format() == QImage::Format_CMYK8888) {
+        image = _image.convertedToColorSpace(QColorSpace(QColorSpace::SRgb), QImage::Format_RGB32);
+    }
+#endif
+    if (image.isNull()) {
+        image = _image.convertToFormat(alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+    }
 
     if (image.width() < 0 || image.height() < 0) {
         qDebug() << "Image size invalid:" << image.width() << image.height();
@@ -289,7 +300,7 @@ bool SoftimagePICHandler::write(const QImage &_image)
     stream << channels;
 
     for (int r = 0; r < image.height(); r++) {
-        const QRgb *row = reinterpret_cast<const QRgb *>(image.scanLine(r));
+        const QRgb *row = reinterpret_cast<const QRgb *>(image.constScanLine(r));
 
         /* Write the RGB part of the scanline */
         auto rgbEqual = [](QRgb p1, QRgb p2) -> bool {

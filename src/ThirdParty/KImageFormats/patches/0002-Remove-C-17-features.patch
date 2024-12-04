@@ -1,4 +1,4 @@
-From 644d612ffb91f43f573ab6f829802f47991e1e07 Mon Sep 17 00:00:00 2001
+From 281be085676509fb6242950a6cddfec0f6b1ada9 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
 Subject: [PATCH 2/7] Remove C++17 features
@@ -43,10 +43,10 @@ index 0b785b4..1af4518 100644
  OraHandler::OraHandler()
  {
 diff --git a/src/imageformats/pic.cpp b/src/imageformats/pic.cpp
-index 1196bc0..f23e3b3 100644
+index ecd1ef0..bca9035 100644
 --- a/src/imageformats/pic.cpp
 +++ b/src/imageformats/pic.cpp
-@@ -226,7 +226,7 @@ bool SoftimagePICHandler::read(QImage *image)
+@@ -228,7 +228,7 @@ bool SoftimagePICHandler::read(QImage *image)
      }
  
      QImage::Format fmt = QImage::Format_RGB32;
@@ -55,7 +55,7 @@ index 1196bc0..f23e3b3 100644
          if (channel.size != 8) {
              // we cannot read images that do not come in bytes
              qDebug() << "Channel size was" << channel.size;
-@@ -405,7 +405,7 @@ QVariant SoftimagePICHandler::option(ImageOption option) const
+@@ -416,7 +416,7 @@ QVariant SoftimagePICHandler::option(ImageOption option) const
          return QString();
      case ImageFormat:
          if (const_cast<SoftimagePICHandler *>(this)->readChannels()) {
@@ -65,10 +65,10 @@ index 1196bc0..f23e3b3 100644
                      return QImage::Format_ARGB32;
                  }
 diff --git a/src/imageformats/tga.cpp b/src/imageformats/tga.cpp
-index b1193e6..e76f8cc 100644
+index 612d5de..ed1b9b8 100644
 --- a/src/imageformats/tga.cpp
 +++ b/src/imageformats/tga.cpp
-@@ -483,8 +483,8 @@ bool TGAHandler::write(const QImage &image)
+@@ -491,8 +491,8 @@ bool TGAHandler::write(const QImage &image)
          qDebug() << "TGAHandler::write: image conversion to 32 bits failed!";
          return false;
      }
@@ -142,5 +142,5 @@ index 06a2fef..e8d2c0b 100644
          if (value.isEmpty())
              continue;
 -- 
-2.47.0
+2.47.1
 

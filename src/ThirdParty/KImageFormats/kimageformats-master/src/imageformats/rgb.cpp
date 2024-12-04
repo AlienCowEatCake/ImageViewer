@@ -24,11 +24,11 @@
 
 #include <cstring>
 
-#include <QList>
-#include <QMap>
-
+#include <QColorSpace>
 #include <QDebug>
 #include <QImage>
+#include <QList>
+#include <QMap>
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QVector>
@@ -774,7 +774,14 @@ bool SGIImagePrivate::writeImage(const QImage &image)
         _dim = 3, _zsize++;
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    auto cs = image.colorSpace();
+    if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && image.format() == QImage::Format_CMYK8888) {
+        img = image.convertedToColorSpace(QColorSpace(QColorSpace::SRgb), QImage::Format_RGB32);
+    } else if (hasAlpha && img.format() != QImage::Format_ARGB32) {
+#else
     if (hasAlpha && img.format() != QImage::Format_ARGB32) {
+#endif
         img = img.convertToFormat(QImage::Format_ARGB32);
     } else if (!hasAlpha && img.format() != QImage::Format_RGB32) {
         img = img.convertToFormat(QImage::Format_RGB32);
