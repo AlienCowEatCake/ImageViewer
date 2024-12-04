@@ -669,7 +669,7 @@ public:
 
                 << QString::fromLatin1("ari")  // Arriflex Camera Raw Image Format.
                 << QString::fromLatin1("cap")  // Phase One Digital Camera Raw Image Format.
-                << QString::fromLatin1("fff")  // Hasselblad Digital Camera Raw Image Format.
+//                << QString::fromLatin1("fff")  // Hasselblad Digital Camera Raw Image Format.
                 << QString::fromLatin1("cin")  // Phantom Software Raw Image File.
 
 //                /// @todo check if these format are supported

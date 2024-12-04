@@ -2824,37 +2824,6 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
-      Key="$(var.ProductNameSafe).fff"
-      Value="Camera Raw Image"
-      Id="reg_type_fff" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key="$(var.ProductNameSafe).fff\DefaultIcon"
-      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
-      Id="reg_icon_fff" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key="$(var.ProductNameSafe).fff\shell\open"
-      Value="Open with $(var.ProductName)"
-      Id="reg_shell_open_fff" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key="$(var.ProductNameSafe).fff\shell\open\command"
-      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
-      Id="reg_shell_open_command_fff" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key=".fff\OpenWithProgids"
-      Value=""
-      Name="$(var.ProductNameSafe).fff"
-      Id="reg_fff" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
       Key="$(var.ProductNameSafe).cin"
       Value="Camera Raw Image"
       Id="reg_type_cin" />

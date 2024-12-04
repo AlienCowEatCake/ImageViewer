@@ -16,9 +16,13 @@ def main():
     for f in [f_open, f_open_with]:
         f.write('<?xml version="1.0" encoding="utf-8" ?>\n')
         f.write('<Include>\n')
+    used_ext = []
     for dt in plist_data['CFBundleDocumentTypes']:
         type_name = dt['CFBundleTypeName']
         for ext in dt['CFBundleTypeExtensions']:
+            if ext in used_ext:
+                raise ValueError('Duplicated extension "{}"'.format(ext))
+            used_ext.append(ext)
             f_open_with.write('    <RegistryValue\n')
             f_open_with.write('      Root="HKCR"\n')
             f_open_with.write('      Type="string"\n')

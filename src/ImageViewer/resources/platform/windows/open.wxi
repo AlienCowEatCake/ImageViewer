@@ -531,12 +531,6 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
-      Key=".fff"
-      Value="$(var.ProductNameSafe).fff"
-      Id="reg_assoc_fff" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
       Key=".cin"
       Value="$(var.ProductNameSafe).cin"
       Id="reg_assoc_cin" />
