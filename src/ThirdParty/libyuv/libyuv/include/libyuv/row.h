@@ -572,7 +572,9 @@ extern "C" {
 #define HAS_I444ALPHATOARGBROW_SVE2
 #define HAS_I444TOARGBROW_SVE2
 #define HAS_NV12TOARGBROW_SVE2
+#define HAS_NV12TORGB24ROW_SVE2
 #define HAS_NV21TOARGBROW_SVE2
+#define HAS_NV21TORGB24ROW_SVE2
 #define HAS_P210TOAR30ROW_SVE2
 #define HAS_P210TOARGBROW_SVE2
 #define HAS_P410TOAR30ROW_SVE2
@@ -589,8 +591,10 @@ extern "C" {
 // The following are available on AArch64 SME platforms:
 #if !defined(LIBYUV_DISABLE_SME) && defined(CLANG_HAS_SME) && \
     defined(__aarch64__)
+#define HAS_ARGBMULTIPLYROW_SME
 #define HAS_I422TOARGBROW_SME
 #define HAS_I444TOARGBROW_SME
+#define HAS_MULTIPLYROW_16_SME
 #endif
 
 // The following are available on AArch64 platforms:
@@ -1339,7 +1343,17 @@ void NV12ToRGB24Row_NEON(const uint8_t* src_y,
                          uint8_t* dst_rgb24,
                          const struct YuvConstants* yuvconstants,
                          int width);
+void NV12ToRGB24Row_SVE2(const uint8_t* src_y,
+                         const uint8_t* src_uv,
+                         uint8_t* dst_rgb24,
+                         const struct YuvConstants* yuvconstants,
+                         int width);
 void NV21ToRGB24Row_NEON(const uint8_t* src_y,
+                         const uint8_t* src_vu,
+                         uint8_t* dst_rgb24,
+                         const struct YuvConstants* yuvconstants,
+                         int width);
+void NV21ToRGB24Row_SVE2(const uint8_t* src_y,
                          const uint8_t* src_vu,
                          uint8_t* dst_rgb24,
                          const struct YuvConstants* yuvconstants,
@@ -3381,6 +3395,10 @@ void MultiplyRow_16_Any_NEON(const uint16_t* src_ptr,
                              uint16_t* dst_ptr,
                              int scale,
                              int width);
+void MultiplyRow_16_SME(const uint16_t* src_y,
+                        uint16_t* dst_y,
+                        int scale,
+                        int width);
 
 void DivideRow_16_C(const uint16_t* src_y,
                     uint16_t* dst_y,
@@ -5048,6 +5066,10 @@ void ARGBMultiplyRow_Any_NEON(const uint8_t* y_buf,
                               const uint8_t* uv_buf,
                               uint8_t* dst_ptr,
                               int width);
+void ARGBMultiplyRow_SME(const uint8_t* src_argb,
+                         const uint8_t* src_argb1,
+                         uint8_t* dst_argb,
+                         int width);
 void ARGBMultiplyRow_MSA(const uint8_t* src_argb0,
                          const uint8_t* src_argb1,
                          uint8_t* dst_argb,
