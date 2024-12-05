@@ -1,4 +1,4 @@
-version: '1.7.1-{branch}-{build}'
+version: '1.7.2-{branch}-{build}'
 clone_depth: 5
 shallow_clone: true
 max_jobs: 1
