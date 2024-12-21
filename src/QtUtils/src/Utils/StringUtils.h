@@ -26,7 +26,7 @@ namespace StringUtils {
 
 bool PlatformNumericLessThan(const QString &s1, const QString &s2);
 
-bool NumericLessThan(const QString &s1, const QString &s2);
+bool NumericLessThan(const QString &s1, const QString &s2, bool localeDependent = false);
 
 } // namespace StringUtils
 

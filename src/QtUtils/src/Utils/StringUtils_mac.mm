@@ -65,13 +65,13 @@ bool PlatformNumericLessThan(const QString &s1, const QString &s2)
         return false;
     SInt32 compareResult = 0;
     const OSStatus compareStatus = UCCompareTextDefault(
-                kUCCollateComposeInsensitiveMask | kUCCollateWidthInsensitiveMask | /*kUCCollateCaseInsensitiveMask |*/
+                kUCCollateComposeInsensitiveMask | kUCCollateWidthInsensitiveMask | kUCCollateCaseInsensitiveMask |
                 kUCCollateDigitsOverrideMask | kUCCollateDigitsAsNumberMask | kUCCollatePunctuationSignificantMask,
                 s1Buf, s1Len, s2Buf, s2Len, Q_NULLPTR, &compareResult);
     if(compareStatus == noErr)
         return compareResult < 0;
 
-    return NumericLessThan(s1, s2);
+    return NumericLessThan(s1, s2, true);
 }
 
 } // namespace StringUtils

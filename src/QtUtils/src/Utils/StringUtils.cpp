@@ -111,7 +111,11 @@ public:
 private:
     int compareNumericImpl(const QString &s1, const QString &s2) const
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+        QCollator collator(QLocale::system().collation());
+#else
         QCollator collator(QLocale::system());
+#endif
         collator.setNumericMode(true);
         return collator.compare(s1, s2);
     }
@@ -136,13 +140,27 @@ bool PlatformNumericLessThan(const QString &s1, const QString &s2)
     if(qcollatorHelper.canCompareNumeric())
         return qcollatorHelper.doCompareNumeric(s1, s2) < 0;
 #endif
-    return NumericLessThan(s1, s2);
+    return NumericLessThan(s1, s2, true);
 }
 #endif
 
-bool NumericLessThan(const QString &s1, const QString &s2)
+bool NumericLessThan(const QString &s1, const QString &s2, bool localeDependent)
 {
-    const QString sl1 = s1.toLower(), sl2 = s2.toLower();
+    QString sl1 = s1.normalized(QString::NormalizationForm_C);
+    QString sl2 = s2.normalized(QString::NormalizationForm_C);
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 8, 0))
+    if(localeDependent)
+    {
+        QLocale locale = QLocale::system();
+        sl1 = locale.toLower(sl1);
+        sl2 = locale.toLower(sl2);
+    }
+    else
+#endif
+    {
+        sl1 = sl1.toLower();
+        sl2 = sl2.toLower();
+    }
     QString::ConstIterator it1 = sl1.constBegin(), it2 = sl2.constBegin();
     for(; it1 != sl1.constEnd() && it2 != sl2.constEnd(); ++it1, ++it2)
     {
@@ -184,6 +202,8 @@ bool NumericLessThan(const QString &s1, const QString &s2)
         return true;
     if(it1 != sl1.constEnd() && it2 == sl2.constEnd())
         return false;
+    if(localeDependent)
+        return QString::localeAwareCompare(s1, s2) < 0;
     return s1 < s2;
 }
 
