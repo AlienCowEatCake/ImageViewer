@@ -31,6 +31,12 @@ endif()
 
 ##################################
 
+if(KIMAGEFORMATS_DDS)
+    kimageformats_add_plugin(kimg_dds SOURCES dds.cpp scanlineconverter.cpp)
+endif()
+
+##################################
+
 if (BUILD_EPS_PLUGIN)
     if (TARGET Qt6::PrintSupport)
         kimageformats_add_plugin(kimg_eps SOURCES eps.cpp)

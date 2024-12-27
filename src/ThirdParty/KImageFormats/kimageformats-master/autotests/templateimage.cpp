@@ -28,6 +28,11 @@ bool TemplateImage::isTemplate() const
     return false;
 }
 
+bool TemplateImage::isLicense() const
+{
+    return !m_fi.suffix().compare(QStringLiteral("license"), Qt::CaseInsensitive);
+}
+
 QFileInfo TemplateImage::compareImage(TestFlags &flags, QString& comment) const
 {
     auto fi = jsonImage(flags, comment);

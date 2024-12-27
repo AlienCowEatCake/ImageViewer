@@ -263,7 +263,7 @@ int main(int argc, char **argv)
         }
         for (const QFileInfo &fi : lstImgDir) {
             TemplateImage timg(fi);
-            if (timg.isTemplate()) {
+            if (timg.isTemplate() || timg.isLicense()) {
                 continue;
             }
 
@@ -373,6 +373,66 @@ int main(int argc, char **argv)
                 }
             }
         }
+    }
+
+    // NULL device test
+    for (const QFileInfo &fi : lstImgDir) {
+        TemplateImage timg(fi);
+        if (timg.isTemplate() || timg.isLicense()) {
+            continue;
+        }
+
+        QTextStream(stdout) << "* Run on NULL device\n";
+        QImageReader reader;
+        reader.setFormat(fi.suffix().toLatin1());
+        if (reader.canRead() == true) {
+            QTextStream(stdout) << "FAIL : " << fi.suffix() << ": canRead() returns true\n";
+            ++failed;
+            break;
+        }
+
+        if (!reader.read().isNull()) {
+            QTextStream(stdout) << "FAIL : " << fi.suffix() << ": read() returns a non-NULL image\n";
+            ++failed;
+            break;
+        }
+
+        if (reader.size() != QSize()) {
+            QTextStream(stdout) << "FAIL : " << fi.suffix() << ": size() returns a valid size\n";
+            ++failed;
+            break;
+        }
+
+        if (reader.imageFormat() != QImage::Format_Invalid) {
+            QTextStream(stdout) << "FAIL : " << fi.suffix() << ": size() returns a valid format\n";
+            ++failed;
+            break;
+        }
+
+        // test for crash only
+        reader.textKeys();
+        reader.quality();
+        reader.clipRect();
+        reader.scaledSize();
+        reader.scaledClipRect();
+        reader.backgroundColor();
+        reader.supportsAnimation();
+        reader.transformation();
+        reader.autoTransform();
+        reader.subType();
+        reader.supportedSubTypes();
+        reader.jumpToNextImage();
+        reader.loopCount();
+        reader.imageCount();
+        reader.currentImageNumber();
+        reader.currentImageRect();
+
+        // success
+        QTextStream(stdout) << "PASS : " << fi.suffix() << "\n";
+        ++passed;
+
+        // runs once for each format
+        break;
     }
 
     QTextStream(stdout) << "Totals: " << passed << " passed, " << skipped << " skipped, " << failed << " failed\n";

@@ -74,6 +74,28 @@ DEFINES += ANIPlugin=tp_ANIPlugin
 
 # --------------------------------------------------------------------------------
 
+SOURCES += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/dds.cpp
+
+HEADERS += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/dds_p.h
+
+DEFINES += WRAPPER_USE_DDS_HANDLER
+
+DEFINES += QDDSHandler=tp_QDDSHandler
+DEFINES += QDDSPlugin=tp_QDDSPlugin
+DEFINES += writeA16B16G16R16F=tp_writeA16B16G16R16F
+DEFINES += writeA32B32G32R32F=tp_writeA32B32G32R32F
+DEFINES += writeA8R8G8B8=tp_writeA8R8G8B8
+DEFINES += writeL8=tp_writeL8
+DEFINES += writeP8=tp_writeP8
+DEFINES += writeR8G8B8=tp_writeR8G8B8
+DEFINES += DDSPixelFormat=tp_DDSPixelFormat
+DEFINES += DDSHeaderDX10=tp_DDSHeaderDX10
+DEFINES += DDSHeader=tp_DDSHeader
+
+# --------------------------------------------------------------------------------
+
 #SOURCES += \
 #    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/eps.cpp
 #
@@ -210,6 +232,7 @@ DEFINES += PCXPlugin=tp_PCXPlugin
 DEFINES += RGB=tp_RGB
 DEFINES += Palette=tp_Palette
 DEFINES += PCXHEADER=tp_PCXHEADER
+DEFINES += peekHeader=tp_peekHeader
 
 # --------------------------------------------------------------------------------
 
@@ -346,6 +369,7 @@ DEFINES += ScitexPlugin=tp_ScitexPlugin
 DEFINES += ScitexCtrlBlock=tp_ScitexCtrlBlock
 DEFINES += ScitexParamsBlock=tp_ScitexParamsBlock
 DEFINES += ScitexHandlerPrivate=tp_ScitexHandlerPrivate
+DEFINES += LOG_IFFPLUGIN=tp_LOG_IFFPLUGIN
 
 # --------------------------------------------------------------------------------
 

@@ -26,6 +26,9 @@
 #if defined (WRAPPER_USE_AVIF_HANDLER)
 #include "../kimageformats-master/src/imageformats/avif_p.h"
 #endif
+#if defined (WRAPPER_USE_DDS_HANDLER)
+#include "../kimageformats-master/src/imageformats/dds_p.h"
+#endif
 #if defined (WRAPPER_USE_EPS_HANDLER)
 #include "../kimageformats-master/src/imageformats/eps_p.h"
 #endif
@@ -96,6 +99,9 @@ enum BuiltInFormatType
 #endif
 #if defined (WRAPPER_USE_AVIF_HANDLER)
     AvifFormat,
+#endif
+#if defined (WRAPPER_USE_DDS_HANDLER)
+    DdsFormat,
 #endif
 #if defined (WRAPPER_USE_EPS_HANDLER)
     EpsFormat,
@@ -174,6 +180,9 @@ static const BuiltInFormatStruct BuiltInFormats[] =
 #endif
 #if defined (WRAPPER_USE_AVIF_HANDLER)
     { AvifFormat , QList<QByteArray>() << "avif" << "avifs" },
+#endif
+#if defined (WRAPPER_USE_DDS_HANDLER)
+    { DdsFormat , QList<QByteArray>() << "dds" },
 #endif
 #if defined (WRAPPER_USE_EPS_HANDLER)
     { EpsFormat , QList<QByteArray>() << "eps" << "epsi" << "epsf" },
@@ -311,6 +320,11 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
 #if defined (WRAPPER_USE_AVIF_HANDLER)
         case AvifFormat:
             handler = new QAVIFHandler;
+            break;
+#endif
+#if defined (WRAPPER_USE_DDS_HANDLER)
+        case DdsFormat:
+            handler = new QDDSHandler;
             break;
 #endif
 #if defined (WRAPPER_USE_EPS_HANDLER)
@@ -458,6 +472,12 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
             case AvifFormat:
                 if(QAVIFHandler::canRead(device))
                     handler = new QAVIFHandler;
+                break;
+#endif
+#if defined (WRAPPER_USE_DDS_HANDLER)
+            case DdsFormat:
+                if(QDDSHandler::canRead(device))
+                    handler = new QDDSHandler;
                 break;
 #endif
 #if defined (WRAPPER_USE_EPS_HANDLER)
@@ -1261,6 +1281,9 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
 #endif
 #if defined (WRAPPER_USE_AVIF_HANDLER)
     result.append(QByteArrayLiteral("image/avif"));
+#endif
+#if defined (WRAPPER_USE_DDS_HANDLER)
+    result.append(QByteArrayLiteral("image/x-dds"));
 #endif
 #if defined (WRAPPER_USE_EPS_HANDLER)
     result.append(QByteArrayLiteral("image/x-eps"));

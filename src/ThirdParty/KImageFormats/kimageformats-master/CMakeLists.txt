@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(KF_VERSION "6.9.0") # handled by release scripts
-set(KF_DEP_VERSION "6.8.0") # handled by release scripts
+set(KF_VERSION "6.10.0") # handled by release scripts
+set(KF_DEP_VERSION "6.9.0") # handled by release scripts
 project(KImageFormats VERSION ${KF_VERSION})
 
 include(FeatureSummary)
-find_package(ECM 6.8.0  NO_MODULE)
+find_package(ECM 6.9.0  NO_MODULE)
 set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
 feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
@@ -62,6 +62,8 @@ set_package_properties(libavif PROPERTIES
     PURPOSE "Required for the QImage plugin for AVIF images"
 )
 
+option(KIMAGEFORMATS_DDS "Enable plugin for DDS format" ON)
+
 option(KIMAGEFORMATS_HEIF "Enable plugin for HEIF format" OFF)
 if(KIMAGEFORMATS_HEIF)
     pkg_check_modules(LibHeif IMPORTED_TARGET libheif>=1.10.0)
@@ -82,6 +84,7 @@ set_package_properties(LibRaw PROPERTIES
     PURPOSE "Required for the QImage plugin for RAW images"
 )
 
+# JXR plugin disabled by default due to security issues
 option(KIMAGEFORMATS_JXR "Enable plugin for JPEG XR format" OFF)
 if(KIMAGEFORMATS_JXR)
     find_package(LibJXR)

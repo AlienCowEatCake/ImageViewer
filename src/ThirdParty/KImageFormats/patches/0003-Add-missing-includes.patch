@@ -1,4 +1,4 @@
-From 388f9b67dd4242d8706be30b067c05b266e06452 Mon Sep 17 00:00:00 2001
+From c6f59c3ba615039858e78491bd7670bef74c7e4a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 23 Jun 2024 19:58:27 +0700
 Subject: [PATCH 3/7] Add missing includes
@@ -8,7 +8,7 @@ Subject: [PATCH 3/7] Add missing includes
  1 file changed, 3 insertions(+)
 
 diff --git a/src/imageformats/pfm.cpp b/src/imageformats/pfm.cpp
-index a04f9ed..7878699 100644
+index e431b2c..2872e42 100644
 --- a/src/imageformats/pfm.cpp
 +++ b/src/imageformats/pfm.cpp
 @@ -12,6 +12,9 @@
@@ -22,5 +22,5 @@ index a04f9ed..7878699 100644
  #include <QDataStream>
  #include <QFloat16>
 -- 
-2.47.0
+2.39.5
 

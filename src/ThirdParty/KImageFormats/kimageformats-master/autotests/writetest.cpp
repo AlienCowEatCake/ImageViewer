@@ -329,6 +329,52 @@ int formatTest(const QString &suffix, bool createTemplates)
     return failed == 0 ? 0 : 1;
 }
 
+/*!
+ * \brief nullDeviceTest
+ * Checks the plugin behaviour when using a NULL device.
+ */
+int nullDeviceTest(const QString &suffix)
+{
+    QTextStream(stdout) << "********* "
+                        << "Starting NULL device write tests for " << suffix << " images *********\n";
+
+    int passed = 0;
+    int failed = 0;
+    int skipped = 0;
+
+    QImageWriter writer;
+    writer.setFormat(suffix.toLatin1());
+
+    if (writer.canWrite()) {
+        QTextStream(stdout) << "FAIL : canWrite() returns TRUE\n";
+        ++failed;
+    }
+
+    if (writer.write(QImage(16, 16, QImage::Format_ARGB32))) {
+        QTextStream(stdout) << "FAIL : write() returns TRUE\n";
+        ++failed;
+    }
+
+    // test for crash only
+    writer.compression();
+    writer.quality();
+    writer.transformation();
+    writer.subType();
+    writer.supportedSubTypes();
+    writer.optimizedWrite();
+    writer.progressiveScanWrite();
+
+    if (failed == 0) {// success
+        ++passed;
+    }
+
+    QTextStream(stdout) << "Totals: " << passed << " passed, " << failed << " failed, " << skipped << " skipped\n";
+    QTextStream(stdout) << "********* "
+                        << "Finished format write tests for " << suffix << " images *********\n";
+
+    return failed == 0 ? 0 : 1;
+}
+
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
@@ -381,6 +427,9 @@ int main(int argc, char **argv)
     auto ret = basicTest(suffix, parser.isSet(lossless), parser.isSet(ignoreDataCheck), fuzzarg);
     if (ret == 0) {
         ret = formatTest(suffix, parser.isSet(createFormatTempates));
+    }
+    if (ret == 0) {
+        ret = nullDeviceTest(suffix);
     }
 
     return ret;

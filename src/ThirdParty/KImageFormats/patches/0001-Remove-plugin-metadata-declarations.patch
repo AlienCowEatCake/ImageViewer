@@ -1,4 +1,4 @@
-From f98d924d78f0ebc09dd49d36d4f826056d4e3eaf Mon Sep 17 00:00:00 2001
+From b60a12f831c085de5880ee86cc1a644cf08aec28 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 04:03:37 +0700
 Subject: [PATCH 1/7] Remove plugin metadata declarations
@@ -6,6 +6,7 @@ Subject: [PATCH 1/7] Remove plugin metadata declarations
 ---
  src/imageformats/ani_p.h  | 2 +-
  src/imageformats/avif_p.h | 2 +-
+ src/imageformats/dds_p.h  | 2 +-
  src/imageformats/eps_p.h  | 2 +-
  src/imageformats/exr_p.h  | 2 +-
  src/imageformats/hdr_p.h  | 2 +-
@@ -26,7 +27,7 @@ Subject: [PATCH 1/7] Remove plugin metadata declarations
  src/imageformats/sct_p.h  | 2 +-
  src/imageformats/tga_p.h  | 2 +-
  src/imageformats/xcf_p.h  | 2 +-
- 22 files changed, 22 insertions(+), 22 deletions(-)
+ 23 files changed, 23 insertions(+), 23 deletions(-)
 
 diff --git a/src/imageformats/ani_p.h b/src/imageformats/ani_p.h
 index f5cbca6..bfce9ef 100644
@@ -54,6 +55,19 @@ index 46156bd..5e6dd2e 100644
  
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+diff --git a/src/imageformats/dds_p.h b/src/imageformats/dds_p.h
+index 4afcdf2..93aae4a 100644
+--- a/src/imageformats/dds_p.h
++++ b/src/imageformats/dds_p.h
+@@ -135,7 +135,7 @@ private:
+ class QDDSPlugin : public QImageIOPlugin
+ {
+     Q_OBJECT
+-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "dds.json")
++//    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "dds.json")
+ public:
+     Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
+     QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const override;
 diff --git a/src/imageformats/eps_p.h b/src/imageformats/eps_p.h
 index 307ad6f..c4c3c93 100644
 --- a/src/imageformats/eps_p.h
@@ -315,5 +329,5 @@ index 0324797..d21e6e1 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 -- 
-2.47.0
+2.39.5
 

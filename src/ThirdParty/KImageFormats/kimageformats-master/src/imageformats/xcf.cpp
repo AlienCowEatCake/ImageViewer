@@ -1336,21 +1336,22 @@ bool XCFImageFormat::loadLayerProperties(QDataStream &xcf_io, Layer &layer)
         case PROP_COMPOSITE_SPACE:
             property >> layer.compositeSpace;
             if (layer.compositeSpace < 0) {
-                layer.compositeSpace = GimpColorSpace(-layer.compositeSpace);
+                layer.compositeSpace = GimpColorSpace(layer.compositeSpace == std::numeric_limits<qint32>::lowest() ? 0 : -layer.compositeSpace);
             }
             break;
 
         case PROP_COMPOSITE_MODE:
             property >> layer.compositeMode;
             if (layer.compositeMode < 0) {
-                layer.compositeMode = XCFImageFormat::GimpCompositeMode(-layer.compositeMode);
+                layer.compositeMode =
+                    XCFImageFormat::GimpCompositeMode(layer.compositeMode == std::numeric_limits<qint32>::lowest() ? 0 : -layer.compositeMode);
             }
             break;
 
         case PROP_BLEND_SPACE:
             property >> layer.blendSpace;
-            if (layer.blendSpace) {
-                layer.blendSpace = GimpColorSpace(-layer.blendSpace);
+            if (layer.blendSpace < 0) {
+                layer.blendSpace = GimpColorSpace(layer.blendSpace == std::numeric_limits<qint32>::lowest() ? 0 : -layer.blendSpace);
             }
             break;
 

@@ -28,6 +28,7 @@ The following image formats have read-only support:
 The following image formats have read and write support:
 
 - AV1 Image File Format (avif)
+- DirectDraw Surface (dds)
 - Encapsulated PostScript (eps)
 - High Efficiency Image File Format (heif)
 - JPEG XL (jxl)
@@ -49,7 +50,13 @@ of Qt is the license.  As such, if you write an imageformat plugin and
 you are willing to sign the Qt Project contributor agreement, it may be
 better to submit the plugin directly to the Qt Project.
 
+To be accepted, contributions must:
+- Contain the test images needed to verify that the changes work correctly
+- Pass the tests successfully
+
 ## Duplicated Plugins
+
+### The TGA plugin
 
 The TGA plugin supports more formats than Qt's own TGA plugin;
 specifically, the one provided here supports indexed, greyscale and RLE
@@ -61,6 +68,10 @@ licensing.  If anyone were willing to write fresh code to improve Qt's
 TGA plugin, it would allow the TGA plugin in this framework to be
 removed.
 
+### The DDS plugin
+
+The DDS plugin is a fork from Qt 5.6 with bug fixes and improvements.
+
 ## License
 
 This framework is licensed under the
@@ -71,22 +82,23 @@ The CMake code in this framework is licensed under the
 
 ## Plugin status
 
-The current implementation of a plugin may not be complete or may have limitations
-of various kinds. Typically the limitations are on maximum size and color depth.
+The current implementation of a plugin may not be complete or may have
+limitations of various kinds. Typically the limitations are on maximum size
+and color depth.
 
-The various plugins are also limited by the formats natively supported by Qt. 
+The various plugins are also limited by the formats natively supported by Qt.
 For example, native support for CMYK images is only available since Qt 6.8.
 
 ### HDR images
 
-HDR images are supported via floating point image formats from EXR, HDR, JXL,
-JXR, PFM and PSD plugins.
-It is important to note that in the past these plugins stripped away HDR 
+HDR images are supported via floating point image formats from DDS, EXR, HDR,
+JXL, JXR, PFM and PSD plugins.
+It is important to note that in the past these plugins stripped away HDR
 information, returning SDR images.
 
 HDR images return R, G and B values ​​outside the range 0.0 - 1.0.
-While Qt painters handles HDR data correctly, some older programs may display 
-strange artifacts if they do not use a tone mapping operator (or at least a 
+While Qt painters handles HDR data correctly, some older programs may display
+strange artifacts if they do not use a tone mapping operator (or at least a
 clamp). This is not a plugin issue.
 
 ### Metadata
@@ -114,6 +126,7 @@ plugin ('n/a' means no limit, i.e. the limit depends on the format encoding).
 
 - ANI: n/a
 - AVIF: 32,768 x 32,768 pixels, in any case no larger than 256 megapixels
+- DDS: n/a
 - EXR: 300,000 x 300,000 pixels
 - HDR: n/a (large image)
 - HEIF: n/a
@@ -162,10 +175,21 @@ without using the ICC profile.
 JXR, PSD and SCT plugins natively support 4-channel CMYK images when compiled 
 with Qt 6.8+.
 
+### The DDS plugin
+
+**This plugin can be disabled by setting `KIMAGEFORMATS_DDS` to `OFF` 
+in your cmake options.**
+
+The following defines can be defined in cmake to modify the behavior of the plugin:
+- `DDS_DISABLE_STRIDE_ALIGNMENT`: disable the stride aligment based on DDS pitch: it is known that some writers do not set it correctly.
+
 ### The HEIF plugin
 
-**This plugin is disabled by default. It can be enabled with the 
-`KIMAGEFORMATS_HEIF` build option in the cmake file.**
+**This plugin is disabled by default. It can be enabled by settings
+`KIMAGEFORMATS_HEIF` to `ON` in your cmake options.**
+
+The plugin is disabled due to issues with the heif library on certain 
+distributions. If enabled, tests may fail.
 
 ### The EXR plugin
 
@@ -189,8 +213,8 @@ The following defines can be defined in cmake to modify the behavior of the plug
 
 ### The JXR plugin
 
-**This plugin is disabled by default. It can be enabled with the 
-`KIMAGEFORMATS_JXR` build option in the cmake file.**
+**This plugin is disabled by default. It can be enabled by settings
+`KIMAGEFORMATS_JXR` to `ON` in your cmake options.**
 
 The following defines can be defined in cmake to modify the behavior of the plugin:
 - `JXR_DENY_FLOAT_IMAGE`: disables the use of float images and consequently any HDR data will be lost.
@@ -202,7 +226,8 @@ The following defines can be defined in cmake to modify the behavior of the plug
 
 PSD support has the following limitations:
 - Only images saved by Photoshop using compatibility mode enabled (Photoshop default) can be decoded.
-- Multichannel images are treated as CMY/CMYK and are only loaded if they have 3 or more channels.
+- Multichannel images are treated as CMYK if they have 2 or more channels.
+- Multichannel images are treated as Grayscale if they have 1 channel.
 - Duotone images are treated as grayscale images.
 - Extra channels other than alpha are discarded.
 

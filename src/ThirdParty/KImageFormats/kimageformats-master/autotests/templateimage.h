@@ -48,6 +48,12 @@ public:
     bool isTemplate() const;
 
     /*!
+     * \brief isLicense
+     * \return True if the file suffix is .license
+     */
+    bool isLicense() const;
+
+    /*!
      * \brief compareImage
      * \param flags Flags for modifying test behavior (e.g. image format not supported by current Qt version).
      * \return The template image to use for the comparison.

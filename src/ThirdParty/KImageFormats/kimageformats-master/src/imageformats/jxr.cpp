@@ -463,7 +463,7 @@ public:
             << QImage::Format_Mono;
         // clang-format on
 
-        // To avoid complex code, I will save only inetger formats.
+        // To avoid complex code, I will save only integer formats.
         auto qi = source;
         if (qi.format() == QImage::Format_MonoLSB) {
             qi = qi.convertToFormat(QImage::Format_Mono);
@@ -474,6 +474,11 @@ public:
             else
                 qi = qi.convertToFormat(QImage::Format_RGBA8888);
         }
+#ifndef JXR_DENY_FLOAT_IMAGE
+        if (qi.format() == QImage::Format_RGBA16FPx4_Premultiplied) {
+            qi = qi.convertToFormat(QImage::Format_RGBA16FPx4);
+        }
+#endif // JXR_DENY_FLOAT_IMAGE
 
         // generic
         if (!valid.contains(qi.format())) {

@@ -7,4 +7,4 @@ Dependencies:
 Options:
   test-before-installing: True
   require-passing-tests-on: [ 'Linux', 'FreeBSD', 'Windows' ]
-  cmake-options: "-DKIMAGEFORMATS_JXR=ON"
+  cmake-options: "-DKIMAGEFORMATS_DDS=ON -DKIMAGEFORMATS_JXR=ON"

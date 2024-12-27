@@ -151,7 +151,10 @@ public:
         } else {
             return false;
         }
-        auto wh = QString::fromLatin1(d->readLine(128));
+        QString wh;
+        do { // read line and skip comments
+            wh = QString::fromLatin1(d->readLine(128));
+        } while (wh.startsWith(QStringLiteral("#")));
         auto list = wh.split(QStringLiteral(" "));
         if (list.size() == 1) {
             m_ps = true; // try for Photoshop version

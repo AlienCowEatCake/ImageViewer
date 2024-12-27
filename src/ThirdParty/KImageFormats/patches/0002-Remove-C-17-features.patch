@@ -1,4 +1,4 @@
-From 281be085676509fb6242950a6cddfec0f6b1ada9 Mon Sep 17 00:00:00 2001
+From 9837cb981eadf0aa871679f0239cccfc0a567510 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
 Subject: [PATCH 2/7] Remove C++17 features
@@ -93,7 +93,7 @@ index 27c1082..2291c88 100644
  // On Qt 6 to make the plugins fail to allocate if the image size is greater than QImageReader::allocationLimit()
  // it is necessary to allocate the image with QImageIOHandler::allocateImage().
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index 06a2fef..e8d2c0b 100644
+index b05ad4e..567f8a6 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -57,7 +57,7 @@ namespace
@@ -132,7 +132,7 @@ index 06a2fef..e8d2c0b 100644
  
  QList<QRgb> XCFImageFormat::grayTable;
  
-@@ -1571,7 +1571,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
+@@ -1572,7 +1572,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
  {
      auto&& p = xcf_image.parasites;
      auto keys = p.keys();
@@ -142,5 +142,5 @@ index 06a2fef..e8d2c0b 100644
          if (value.isEmpty())
              continue;
 -- 
-2.47.1
+2.39.5
 
