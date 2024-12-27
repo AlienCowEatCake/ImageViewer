@@ -46,7 +46,8 @@ jobs:
             packages: clang build-essential autoconf automake autopoint libtool gettext
             cc: clang
             # TODO: fix the code to eliminate the -Wno-... disables
-            cflags: -fsanitize=address -fsanitize=undefined -fsanitize-address-use-after-scope -g -Wall -Wextra -Wno-assign-enum -Wno-switch -Wno-implicit-fallthrough -Wno-shorten-64-to-32 -Wno-conversion -Wno-sign-conversion -Wlong-long -Wmultichar -Wformat-nonliteral -Wimplicit-function-declaration -Wpointer-arith -Wwrite-strings -Wshadow -Winline -Wnested-externs -Wmissing-declarations -Wmissing-prototypes -Wfloat-equal -Wsign-compare -Wundef -Wendif-labels -Wstrict-prototypes -Wdeclaration-after-statement -Wcast-align -Wunused -Waddress -Wattributes -Wbad-function-cast -Wdiv-by-zero -Wformat-security -Wempty-body -Wmissing-field-initializers -Wmissing-noreturn -Wold-style-definition -Wredundant-decls -Wtype-limits -Wunreachable-code -Wunused-parameter -Wignored-qualifiers -Wvla -Wshift-sign-overflow -Wlanguage-extension-token -Wenum-conversion -Wsometimes-uninitialized -Wmissing-variable-declarations -Wheader-guard -Wunused-const-variable -Wpragmas -Wunreachable-code-break -Wdouble-promotion -Wcomma -Wextra-semi-stmt
+            cflags: -fsanitize=address -fsanitize=undefined -fsanitize-address-use-after-scope -fsanitize-undefined-trap-on-error -g -Wall -Wextra -Wno-assign-enum -Wno-switch -Wno-implicit-fallthrough -Wno-shorten-64-to-32 -Wno-conversion -Wno-sign-conversion -Wlong-long -Wmultichar -Wformat-nonliteral -Wimplicit-function-declaration -Wpointer-arith -Wwrite-strings -Wshadow -Winline -Wnested-externs -Wmissing-declarations -Wmissing-prototypes -Wfloat-equal -Wsign-compare -Wundef -Wendif-labels -Wstrict-prototypes -Wdeclaration-after-statement -Wcast-align -Wunused -Waddress -Wattributes -Wbad-function-cast -Wdiv-by-zero -Wformat-security -Wempty-body -Wmissing-field-initializers -Wmissing-noreturn -Wold-style-definition -Wredundant-decls -Wtype-limits -Wunreachable-code -Wunused-parameter -Wignored-qualifiers -Wvla -Wshift-sign-overflow -Wlanguage-extension-token -Wenum-conversion -Wsometimes-uninitialized -Wmissing-variable-declarations -Wheader-guard -Wunused-const-variable -Wpragmas -Wunreachable-code-break -Wdouble-promotion -Wcomma -Wextra-semi-stmt
+            ldflags: -fsanitize=address -fsanitize=undefined -fsanitize-address-use-after-scope -fsanitize-undefined-trap-on-error -g
             mflags: AM_CFLAGS=-Werror
           - name: powerpc cross-compile
             os: ubuntu-24.04
@@ -71,7 +72,8 @@ jobs:
             os: ubuntu-20.04
             packages: build-essential autoconf automake autopoint libtool gettext
             cc: gcc
-            cflags: -Wall -Wextra -O2
+            cflags: -Wall -Wextra -O2 -fsanitize=address -fsanitize=undefined -fsanitize-address-use-after-scope -fsanitize-undefined-trap-on-error
+            ldflags: -Wall -Wextra -O2 -fsanitize=address -fsanitize=undefined -fsanitize-address-use-after-scope -fsanitize-undefined-trap-on-error
             configure: --with-failmalloc="$HOME/failmalloc/lib"
             failmalloc: true
 
@@ -113,7 +115,7 @@ jobs:
         if: matrix.skiptests != true
         env:
           ASAN_OPTIONS: strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:detect_leaks=1
-        run: make V=1 check
+        run: make V=1 check || { tail -n 500 test*/test-suite.log; false; }
 
       - name: 'install'
         run: make V=1 install
@@ -136,5 +138,51 @@ jobs:
           autoreconf -sif &&
           ./configure --prefix="$PWD/install" --disable-dependency-tracking &&
           make -j 5 V=1 &&
-          make -j 5 V=1 check
+          make -j 5 V=1 check || { tail -n 500 test*/test-suite.log; false; }
           '
+
+  coverage:
+    name: Linux code coverage
+    runs-on: ${{ matrix.os }}
+    env:
+      MAKEFLAGS: -j 5
+      DEBIAN_FRONTEND: noninteractive
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            packages: build-essential autoconf automake autopoint libtool gettext subversion libpopt-dev lcov
+            cflags: -g -O0 --coverage
+            ldflags: -g -O0 --coverage
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: 'install prereqs'
+        run: sudo apt-get install -y --no-install-suggests --no-install-recommends ${{ matrix.packages }}
+      - name: 'install libexif-testsuite'
+        run: |
+          git clone --depth=1 https://github.com/libexif/libexif-testsuite.git
+          cd libexif-testsuite
+          mkdir src
+          # point to the libexif code checked out in actions/checkout above
+          ln -s "${GITHUB_WORKSPACE}" src/libexif
+          ./build-config.sh
+          autoreconf -sivf
+      - name: 'configure'
+        run: cd libexif-testsuite && ./configure --prefix="$PWD"/install --disable-dependency-tracking CFLAGS="${{ matrix.cflags }}" LDFLAGS="${{ matrix.ldflags }}" || { tail -n 500 config.log; false; }
+      - name: 'build'
+        run: |
+          # Build libexif via its checkout path, not through the symlink at
+          # libexif-testsuite/src/libexif, so that Coveralls can find the
+          # source code
+          make V=1
+          make -C libexif-testsuite V=1
+      - name: 'coverage tests'
+        run: make -C libexif-testsuite V=1 check || { tail -n 500 test*/test-suite.log src/libexif/test*/test-suite.log; false; }
+      - name: 'coverage analysis'
+        run: cd libexif-testsuite && lcov -c -d src/libexif/libexif/ -o lcov.info
+      - name: push to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.github_token }}
+          file: libexif-testsuite/lcov.info

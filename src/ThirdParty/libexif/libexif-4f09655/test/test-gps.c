@@ -34,7 +34,7 @@
 /*
  * List of tags to test, 
  */
-const uint16_t test_tags [] = {
+static const uint16_t test_tags [] = {
  EXIF_TAG_GPS_VERSION_ID,
  EXIF_TAG_GPS_LATITUDE_REF,
  EXIF_TAG_GPS_LATITUDE,
@@ -113,7 +113,7 @@ static int check_entry_format(ExifEntry *e)
 }
 
 int
-main ()
+main (void)
 {
 	size_t i;
 	ExifData *data = NULL;
