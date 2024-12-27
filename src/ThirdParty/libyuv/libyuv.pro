@@ -101,6 +101,7 @@ HEADERS += \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/rotate_argb.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/rotate_row.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/row.h \
+    $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/row_sve.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/scale.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/scale_argb.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/scale_rgb.h \
