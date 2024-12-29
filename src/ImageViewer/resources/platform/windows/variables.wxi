@@ -4,7 +4,7 @@
     <?define ManufacturerName="Peter S. Zhigalov" ?>
     <?define MajorVersion="1" ?>
     <?define MinorVersion="7" ?>
-    <?define BuildVersion="2" ?>
+    <?define BuildVersion="3" ?>
     <?define Revision="0" ?>
     <?define VersionNumber="$(var.MajorVersion).$(var.MinorVersion).$(var.BuildVersion).$(var.Revision)" ?>
     <?define UpgradeCode="C2D228E5-76F1-4811-B4BE-57A42A2C1E4D" ?>
