@@ -10,7 +10,7 @@ TARGET = tp_libexpat
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.6.4
+THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.7.0
 THIRDPARTY_LIBEXPAT_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
