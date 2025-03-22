@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.28.3
+THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.28.5
 THIRDPARTY_EXIV2_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -193,7 +193,6 @@ HEADERS += \
     $${THIRDPARTY_EXIV2_PATH}/src/panasonicmn_int.hpp \
     $${THIRDPARTY_EXIV2_PATH}/src/pentaxmn_int.hpp \
     $${THIRDPARTY_EXIV2_PATH}/src/pngchunk_int.hpp \
-    $${THIRDPARTY_EXIV2_PATH}/src/private.h \
     $${THIRDPARTY_EXIV2_PATH}/src/rw2image_int.hpp \
     $${THIRDPARTY_EXIV2_PATH}/src/safe_op.hpp \
     $${THIRDPARTY_EXIV2_PATH}/src/samsungmn_int.hpp \

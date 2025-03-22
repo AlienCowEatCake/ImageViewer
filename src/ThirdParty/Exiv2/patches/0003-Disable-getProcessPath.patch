@@ -1,7 +1,7 @@
-From 92dafeb60c82a4423569be1a64a7e1065ce8b1f3 Mon Sep 17 00:00:00 2001
+From de57b76caf0f6297111bae39b3bd4197c8a0a4c3 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 22 Jul 2019 04:34:14 +0700
-Subject: [PATCH 4/4] Disable getProcessPath
+Subject: [PATCH 3/3] Disable getProcessPath
 
 ---
  include/exiv2/futils.hpp | 2 ++
@@ -24,10 +24,10 @@ index 46a29289c..f0c5f150e 100644
  /*!
    @brief A container for URL components. It also provides the method to parse a
 diff --git a/src/futils.cpp b/src/futils.cpp
-index 1a1c5d087..0a3e82958 100644
+index 1797c1ba4..6f5edac88 100644
 --- a/src/futils.cpp
 +++ b/src/futils.cpp
-@@ -349,6 +349,7 @@ Uri Uri::Parse(const std::string& uri) {
+@@ -351,6 +351,7 @@ Uri Uri::Parse(const std::string& uri) {
    return result;
  }
  
@@ -35,12 +35,12 @@ index 1a1c5d087..0a3e82958 100644
  std::string getProcessPath() {
  #ifdef EXV_ENABLE_FILESYSTEM
  #if defined(__FreeBSD__)
-@@ -396,4 +397,5 @@ std::string getProcessPath() {
+@@ -398,4 +399,5 @@ std::string getProcessPath() {
    return "unknown";
  #endif
  }
 +#endif
  }  // namespace Exiv2
 -- 
-2.39.2
+2.39.5
 
