@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_ZSTD_PATH = $${PWD}/zstd-1.5.6
+THIRDPARTY_ZSTD_PATH = $${PWD}/zstd-1.5.7
 
 include(../../Features.pri)
 include(../CommonSettings.pri)
@@ -45,6 +45,7 @@ SOURCES += \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_lazy.c \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_ldm.c \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_opt.c \
+    $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_preSplit.c \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstdmt_compress.c \
     $${THIRDPARTY_ZSTD_PATH}/lib/decompress/huf_decompress.c \
     $${THIRDPARTY_ZSTD_PATH}/lib/decompress/zstd_ddict.c \
@@ -97,6 +98,7 @@ HEADERS += \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_ldm.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_ldm_geartab.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_opt.h \
+    $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstd_preSplit.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/compress/zstdmt_compress.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/decompress/zstd_ddict.h \
     $${THIRDPARTY_ZSTD_PATH}/lib/decompress/zstd_decompress_block.h \
