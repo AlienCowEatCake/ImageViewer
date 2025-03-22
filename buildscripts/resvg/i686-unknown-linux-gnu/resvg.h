@@ -1,8 +1,5 @@
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
+// Copyright 2021 the Resvg Authors
+// SPDX-License-Identifier: Apache-2.0 OR MIT
 
 /**
  * @file resvg.h
@@ -17,9 +14,9 @@
 #include <stdint.h>
 
 #define RESVG_MAJOR_VERSION 0
-#define RESVG_MINOR_VERSION 44
+#define RESVG_MINOR_VERSION 45
 #define RESVG_PATCH_VERSION 0
-#define RESVG_VERSION "0.44.0"
+#define RESVG_VERSION "0.45.0"
 
 /**
  * @brief List of possible errors.
@@ -175,6 +172,15 @@ void resvg_options_set_resources_dir(resvg_options *opt, const char *path);
  * Default: 96
  */
 void resvg_options_set_dpi(resvg_options *opt, float dpi);
+
+/**
+ * @brief Provides the content of a stylesheet that will be used when resolving CSS attributes.
+ *
+ * Must be UTF-8. Can be set to NULL.
+ *
+ * Default: NULL
+ */
+void resvg_options_set_stylesheet(resvg_options *opt, const char *content);
 
 /**
  * @brief Sets the default font family.
