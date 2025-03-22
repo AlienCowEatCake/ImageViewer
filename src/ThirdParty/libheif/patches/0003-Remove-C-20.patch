@@ -1,14 +1,14 @@
-From 0e0b55787a45f898ad8d53e3bc64b0f429f3a252 Mon Sep 17 00:00:00 2001
+From a4e6ed641d6422021f801a1c5df4d4055f5b3ed9 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 23 Nov 2024 20:17:00 +0700
 Subject: [PATCH 3/3] Remove C++20
 
 ---
  libheif/api/libheif/heif_properties.cc        |  2 +-
- libheif/bitstream.cc                          | 14 -------
- .../codecs/uncompressed/decoder_abstract.cc   | 10 +++--
+ libheif/bitstream.cc                          | 19 ---------
+ .../codecs/uncompressed/decoder_abstract.cc   | 13 +++---
  libheif/security_limits.cc                    | 40 +++++++++++++------
- 4 files changed, 35 insertions(+), 31 deletions(-)
+ 4 files changed, 34 insertions(+), 40 deletions(-)
 
 diff --git a/libheif/api/libheif/heif_properties.cc b/libheif/api/libheif/heif_properties.cc
 index 93d71c93..fc3ce2eb 100644
@@ -24,18 +24,23 @@ index 93d71c93..fc3ce2eb 100644
                                  heif_property_id propertyId,
                                  std::shared_ptr<T>* box_casted)
 diff --git a/libheif/bitstream.cc b/libheif/bitstream.cc
-index 90637181..1b5af867 100644
+index 1a2d87db..6aa103bc 100644
 --- a/libheif/bitstream.cc
 +++ b/libheif/bitstream.cc
-@@ -23,7 +23,6 @@
- #include <utility>
+@@ -24,12 +24,6 @@
  #include <cstring>
  #include <cassert>
--#include <bit>
  
+-#if ((defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__PGI)) && __GNUC__ < 9) || (defined(__clang__) && __clang_major__ < 10)
+-#include <type_traits>
+-#else
+-#include <bit>
+-#endif
+-
  #define MAX_UVLC_LEADING_ZEROS 20
  
-@@ -348,12 +347,6 @@ int64_t BitstreamRange::read64s()
+ 
+@@ -351,12 +345,6 @@ int64_t BitstreamRange::read64s()
  
  float BitstreamRange::read_float32()
  {
@@ -48,7 +53,7 @@ index 90637181..1b5af867 100644
    // TODO: I am not sure this works everywhere as there seem to be systems where
    //       the float byte order is different from the integer endianness
    //       https://en.wikipedia.org/wiki/Endianness#Floating_point
-@@ -361,24 +354,17 @@ float BitstreamRange::read_float32()
+@@ -364,24 +352,17 @@ float BitstreamRange::read_float32()
    float f;
    memcpy(&f, &i, sizeof(float));
    return f;
@@ -74,20 +79,23 @@ index 90637181..1b5af867 100644
  
  
 diff --git a/libheif/codecs/uncompressed/decoder_abstract.cc b/libheif/codecs/uncompressed/decoder_abstract.cc
-index bbe46920..7ff7954e 100644
+index 206a5aa7..7ff7954e 100644
 --- a/libheif/codecs/uncompressed/decoder_abstract.cc
 +++ b/libheif/codecs/uncompressed/decoder_abstract.cc
-@@ -23,7 +23,8 @@
- #include <iostream>
+@@ -24,11 +24,7 @@
  #include <cassert>
  #include <utility>
+ 
+-#if ((defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__PGI)) && __GNUC__ < 9) || (defined(__clang__) && __clang_major__ < 10)
+-#include <type_traits>
+-#else
 -#include <bit>
-+
+-#endif
 +#include <QtGlobal>
  
  #include "common_utils.h"
  #include "context.h"
-@@ -65,15 +66,16 @@ void AbstractDecoder::memcpy_to_native_endian(uint8_t* dst, uint32_t value, uint
+@@ -70,15 +66,16 @@ void AbstractDecoder::memcpy_to_native_endian(uint8_t* dst, uint32_t value, uint
      *dst = static_cast<uint8_t>(value);
      return;
    }
@@ -171,5 +179,5 @@ index bba4bb85..11616184 100644
  
  
 -- 
-2.47.0
+2.39.5
 

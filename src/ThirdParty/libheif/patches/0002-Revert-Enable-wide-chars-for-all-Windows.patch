@@ -1,4 +1,4 @@
-From 3c419bc89c93dc3c15d9ce688ba14def390bd338 Mon Sep 17 00:00:00 2001
+From 2b155ec88a9204eeac9df54d6c27fbdf12929090 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 21 Dec 2022 23:23:25 +0700
 Subject: [PATCH 2/3] Revert "Enable wide chars for all Windows"
@@ -11,10 +11,10 @@ This reverts commit 0d7c5a181905eeb6b5bc2c8f91012a2abb0c5bfc.
  3 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/libheif/api/libheif/heif.cc b/libheif/api/libheif/heif.cc
-index 3b7ce853..d3fa62ca 100644
+index 0ff1afa3..d3e2f30e 100644
 --- a/libheif/api/libheif/heif.cc
 +++ b/libheif/api/libheif/heif.cc
-@@ -2626,7 +2626,7 @@ static struct heif_error heif_file_writer_write(struct heif_context* ctx,
+@@ -2623,7 +2623,7 @@ static struct heif_error heif_file_writer_write(struct heif_context* ctx,
  {
    const char* filename = static_cast<const char*>(userdata);
  
@@ -24,7 +24,7 @@ index 3b7ce853..d3fa62ca 100644
  #else
    std::ofstream ostr(filename, std::ios_base::binary);
 diff --git a/libheif/file.cc b/libheif/file.cc
-index d16df78b..b7fd9254 100644
+index 8a678bf9..4e2ab69c 100644
 --- a/libheif/file.cc
 +++ b/libheif/file.cc
 @@ -39,13 +39,13 @@
@@ -52,7 +52,7 @@ index d16df78b..b7fd9254 100644
    auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(convert_utf8_path_to_utf16(input_filename).c_str(), std::ios_base::binary));
  #else
    auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(input_filename, std::ios_base::binary));
-@@ -1169,7 +1169,7 @@ void HeifFile::set_auxC_property(heif_item_id id, const std::string& type)
+@@ -1172,7 +1172,7 @@ void HeifFile::set_auxC_property(heif_item_id id, const std::string& type)
    m_ipma_box->add_property_for_item_ID(id, Box_ipma::PropertyAssociation{true, uint16_t(index + 1)});
  }
  
@@ -75,5 +75,5 @@ index 1a1585a4..7ce30ce3 100644
  #endif
  
 -- 
-2.47.0
+2.39.5
 
