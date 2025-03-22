@@ -979,6 +979,7 @@ QList<QByteArray> QtImageFormatsImageReader::supportedMimeTypes()
     result.append(QByteArrayLiteral("video/mj2"));
 #endif
 #if defined (WRAPPER_USE_MNG_HANDLER)
+    result.append(QByteArrayLiteral("video/x-mng"));
     result.append(QByteArrayLiteral("image/x-mng"));
 #endif
 #if defined (WRAPPER_USE_TGA_HANDLER)

@@ -1,4 +1,4 @@
-From 11edccebc71c429672190e28d92e48f93934ba9f Mon Sep 17 00:00:00 2001
+From 81d4c90b4cb41b1133de076c464da9103eabbacc Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 15 May 2017 00:06:30 +0700
 Subject: [PATCH 3/7] Fix handling icns files with JPEG 2000 frames
@@ -8,10 +8,10 @@ Subject: [PATCH 3/7] Fix handling icns files with JPEG 2000 frames
  1 file changed, 14 insertions(+), 1 deletion(-)
 
 diff --git a/src/plugins/imageformats/icns/qicnshandler.cpp b/src/plugins/imageformats/icns/qicnshandler.cpp
-index a78ae1a..572193d 100644
+index 6cf74b2..dcb1a36 100644
 --- a/src/plugins/imageformats/icns/qicnshandler.cpp
 +++ b/src/plugins/imageformats/icns/qicnshandler.cpp
-@@ -10,6 +10,10 @@
+@@ -11,6 +11,10 @@
  #include <QtCore/qbuffer.h>
  #include <QtGui/qimage.h>
  
@@ -22,7 +22,7 @@ index a78ae1a..572193d 100644
  #ifndef QT_NO_DATASTREAM
  
  QT_BEGIN_NAMESPACE
-@@ -708,7 +712,16 @@ bool QICNSHandler::read(QImage *outImage)
+@@ -709,7 +713,16 @@ bool QICNSHandler::read(QImage *outImage)
          else if (icon.dataFormat == ICNSEntry::JP2)
              format = "jp2";
          // Even if JP2 or PNG magic is not detected, try anyway for unknown formats
@@ -41,5 +41,5 @@ index a78ae1a..572193d 100644
              if (format == 0)
                  format = "unknown";
 -- 
-2.39.2
+2.39.5
 
