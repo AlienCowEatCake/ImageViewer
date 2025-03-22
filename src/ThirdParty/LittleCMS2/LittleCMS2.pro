@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBLCMS2_PATH = $${PWD}/lcms2-2.16
+THIRDPARTY_LIBLCMS2_PATH = $${PWD}/lcms2-2.17
 
 include(../../Features.pri)
 include(../CommonSettings.pri)
