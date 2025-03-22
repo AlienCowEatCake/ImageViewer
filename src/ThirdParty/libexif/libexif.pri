@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libexif {
 
-        THIRDPARTY_LIBEXIF_PATH = $${PWD}/libexif-4f09655
+        THIRDPARTY_LIBEXIF_PATH = $${PWD}/libexif-3a401b9
         THIRDPARTY_LIBEXIF_INCLUDE_PATH = $${PWD}/include
 
         INCLUDEPATH += $${THIRDPARTY_LIBEXIF_INCLUDE_PATH} $${THIRDPARTY_LIBEXIF_PATH}
