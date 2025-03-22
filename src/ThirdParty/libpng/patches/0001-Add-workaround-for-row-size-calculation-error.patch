@@ -1,0 +1,31 @@
+From 54293e8d9c503283f20bc2799076ecd7c5c26733 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sat, 22 Mar 2025 22:46:45 +0700
+Subject: [PATCH] Add workaround for row size calculation error
+
+---
+ pngrutil.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/pngrutil.c b/pngrutil.c
+index 9eebf9e..342da2f 100644
+--- a/pngrutil.c
++++ b/pngrutil.c
+@@ -3448,9 +3448,14 @@ png_combine_row(png_const_structrp png_ptr, png_bytep dp, int display)
+     * any call to png_read_update_info at this point.  Do not continue if we got
+     * this wrong.
+     */
++   /* TODO: PNG_ROWBYTES returns wrong values for some animated images with
++    * first frame width != next frame width.
++    */
++#ifndef PNG_READ_APNG_SUPPORTED
+    if (png_ptr->info_rowbytes != 0 && png_ptr->info_rowbytes !=
+           PNG_ROWBYTES(pixel_depth, row_width))
+       png_error(png_ptr, "internal row size calculation error");
++#endif
+ 
+    /* Don't expect this to ever happen: */
+    if (row_width == 0)
+-- 
+2.39.5
+

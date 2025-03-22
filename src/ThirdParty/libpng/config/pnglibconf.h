@@ -1,8 +1,8 @@
 /* pnglibconf.h - library build configuration */
 
-/* libpng version 1.6.44 */
+/* libpng version 1.6.47 */
 
-/* Copyright (c) 2018-2024 Cosmin Truta */
+/* Copyright (c) 2018-2025 Cosmin Truta */
 /* Copyright (c) 1998-2002,2004,2006-2018 Glenn Randers-Pehrson */
 
 /* This code is released under the libpng license. */
@@ -88,11 +88,14 @@
 #define PNG_READ_USER_TRANSFORM_SUPPORTED
 #define PNG_READ_bKGD_SUPPORTED
 #define PNG_READ_cHRM_SUPPORTED
+#define PNG_READ_cICP_SUPPORTED
+#define PNG_READ_cLLI_SUPPORTED
 #define PNG_READ_eXIf_SUPPORTED
 #define PNG_READ_gAMA_SUPPORTED
 #define PNG_READ_hIST_SUPPORTED
 #define PNG_READ_iCCP_SUPPORTED
 #define PNG_READ_iTXt_SUPPORTED
+#define PNG_READ_mDCV_SUPPORTED
 #define PNG_READ_oFFs_SUPPORTED
 #define PNG_READ_pCAL_SUPPORTED
 #define PNG_READ_pHYs_SUPPORTED
@@ -158,11 +161,14 @@
 #define PNG_WRITE_WEIGHTED_FILTER_SUPPORTED
 #define PNG_WRITE_bKGD_SUPPORTED
 #define PNG_WRITE_cHRM_SUPPORTED
+#define PNG_WRITE_cICP_SUPPORTED
+#define PNG_WRITE_cLLI_SUPPORTED
 #define PNG_WRITE_eXIf_SUPPORTED
 #define PNG_WRITE_gAMA_SUPPORTED
 #define PNG_WRITE_hIST_SUPPORTED
 #define PNG_WRITE_iCCP_SUPPORTED
 #define PNG_WRITE_iTXt_SUPPORTED
+#define PNG_WRITE_mDCV_SUPPORTED
 #define PNG_WRITE_oFFs_SUPPORTED
 #define PNG_WRITE_pCAL_SUPPORTED
 #define PNG_WRITE_pHYs_SUPPORTED
@@ -176,11 +182,14 @@
 #define PNG_WRITE_zTXt_SUPPORTED
 #define PNG_bKGD_SUPPORTED
 #define PNG_cHRM_SUPPORTED
+#define PNG_cICP_SUPPORTED
+#define PNG_cLLI_SUPPORTED
 #define PNG_eXIf_SUPPORTED
 #define PNG_gAMA_SUPPORTED
 #define PNG_hIST_SUPPORTED
 #define PNG_iCCP_SUPPORTED
 #define PNG_iTXt_SUPPORTED
+#define PNG_mDCV_SUPPORTED
 #define PNG_oFFs_SUPPORTED
 #define PNG_pCAL_SUPPORTED
 #define PNG_pHYs_SUPPORTED
@@ -255,6 +264,9 @@
 #define png_get_cHRM_XYZ tp_png_get_cHRM_XYZ
 #define png_get_cHRM_XYZ_fixed tp_png_get_cHRM_XYZ_fixed
 #define png_get_cHRM_fixed tp_png_get_cHRM_fixed
+#define png_get_cICP tp_png_get_cICP
+#define png_get_cLLI tp_png_get_cLLI
+#define png_get_cLLI_fixed tp_png_get_cLLI_fixed
 #define png_get_channels tp_png_get_channels
 #define png_get_chunk_cache_max tp_png_get_chunk_cache_max
 #define png_get_chunk_malloc_max tp_png_get_chunk_malloc_max
@@ -283,6 +295,8 @@
 #define png_get_io_ptr tp_png_get_io_ptr
 #define png_get_io_state tp_png_get_io_state
 #define png_get_libpng_ver tp_png_get_libpng_ver
+#define png_get_mDCV tp_png_get_mDCV
+#define png_get_mDCV_fixed tp_png_get_mDCV_fixed
 #define png_get_mem_ptr tp_png_get_mem_ptr
 #define png_get_next_frame_blend_op tp_png_get_next_frame_blend_op
 #define png_get_next_frame_delay_den tp_png_get_next_frame_delay_den
@@ -386,6 +400,9 @@
 #define png_set_cHRM_XYZ tp_png_set_cHRM_XYZ
 #define png_set_cHRM_XYZ_fixed tp_png_set_cHRM_XYZ_fixed
 #define png_set_cHRM_fixed tp_png_set_cHRM_fixed
+#define png_set_cICP tp_png_set_cICP
+#define png_set_cLLI tp_png_set_cLLI
+#define png_set_cLLI_fixed tp_png_set_cLLI_fixed
 #define png_set_check_for_invalid_index tp_png_set_check_for_invalid_index
 #define png_set_chunk_cache_max tp_png_set_chunk_cache_max
 #define png_set_chunk_malloc_max tp_png_set_chunk_malloc_max
@@ -421,6 +438,8 @@
 #define png_set_invert_mono tp_png_set_invert_mono
 #define png_set_keep_unknown_chunks tp_png_set_keep_unknown_chunks
 #define png_set_longjmp_fn tp_png_set_longjmp_fn
+#define png_set_mDCV tp_png_set_mDCV
+#define png_set_mDCV_fixed tp_png_set_mDCV_fixed
 #define png_set_mem_fn tp_png_set_mem_fn
 #define png_set_next_frame_fcTL tp_png_set_next_frame_fcTL
 #define png_set_oFFs tp_png_set_oFFs

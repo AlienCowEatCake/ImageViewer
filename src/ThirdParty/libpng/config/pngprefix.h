@@ -4,6 +4,7 @@
 #define png_zstream_error tp_png_zstream_error
 #define png_free_buffer_list tp_png_free_buffer_list
 #define png_fixed tp_png_fixed
+#define png_fixed_ITU tp_png_fixed_ITU
 #define png_user_version_check tp_png_user_version_check
 #define png_malloc_base tp_png_malloc_base
 #define png_malloc_array tp_png_malloc_array
@@ -34,6 +35,9 @@
 #define png_write_gAMA_fixed tp_png_write_gAMA_fixed
 #define png_write_sBIT tp_png_write_sBIT
 #define png_write_cHRM_fixed tp_png_write_cHRM_fixed
+#define png_write_cICP tp_png_write_cICP
+#define png_write_cLLI_fixed tp_png_write_cLLI_fixed
+#define png_write_mDCV_fixed tp_png_write_mDCV_fixed
 #define png_write_sRGB tp_png_write_sRGB
 #define png_write_eXIf tp_png_write_eXIf
 #define png_write_iCCP tp_png_write_iCCP
@@ -99,6 +103,7 @@
 #define png_check_chunk_name tp_png_check_chunk_name
 #define png_check_chunk_length tp_png_check_chunk_length
 #define png_handle_unknown tp_png_handle_unknown
+#define png_handle_chunk tp_png_handle_chunk
 #define png_chunk_unknown_handling tp_png_chunk_unknown_handling
 #define png_do_read_transformations tp_png_do_read_transformations
 #define png_do_write_transformations tp_png_do_write_transformations
@@ -150,6 +155,7 @@
 #define png_icc_check_tag_table tp_png_icc_check_tag_table
 #define png_icc_set_sRGB tp_png_icc_set_sRGB
 #define png_colorspace_set_rgb_coefficients tp_png_colorspace_set_rgb_coefficients
+#define png_set_rgb_coefficients tp_png_set_rgb_coefficients
 #define png_check_IHDR tp_png_check_IHDR
 #define png_do_check_palette_indexes tp_png_do_check_palette_indexes
 #define png_fixed_error tp_png_fixed_error
@@ -171,11 +177,15 @@
 #define png_reciprocal tp_png_reciprocal
 #define png_reciprocal2 tp_png_reciprocal2
 #define png_gamma_significant tp_png_gamma_significant
+#define png_resolve_file_gamma tp_png_resolve_file_gamma
 #define png_gamma_correct tp_png_gamma_correct
 #define png_gamma_16bit_correct tp_png_gamma_16bit_correct
 #define png_gamma_8bit_correct tp_png_gamma_8bit_correct
 #define png_destroy_gamma_table tp_png_destroy_gamma_table
 #define png_build_gamma_table tp_png_build_gamma_table
+#define png_set_rgb_coefficients tp_png_set_rgb_coefficients
+#define png_XYZ_from_xy tp_png_XYZ_from_xy
+#define png_xy_from_XYZ tp_png_xy_from_XYZ
 #define png_safe_error tp_png_safe_error
 #define png_safe_warning tp_png_safe_warning
 #define png_safe_execute tp_png_safe_execute
