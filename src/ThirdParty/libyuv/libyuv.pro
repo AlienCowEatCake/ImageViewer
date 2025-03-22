@@ -18,6 +18,9 @@ include(../libjpeg/libjpeg.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LIBYUV_PATH}/include $${INCLUDEPATH}
 
+# git archive --prefix='libyuv/' -o ../libyuv.tar HEAD
+
+# grep -Rn LIBYUV_DISABLE_ source/ | sed 's|.*\(LIBYUV_DISABLE_\)|\1| ; s|).*||' | sort | uniq | xargs
 DEFINES += LIBYUV_DISABLE_LASX LIBYUV_DISABLE_LSX LIBYUV_DISABLE_MSA LIBYUV_DISABLE_NEON LIBYUV_DISABLE_RVV LIBYUV_DISABLE_SME LIBYUV_DISABLE_SVE LIBYUV_DISABLE_X86
 DEFINES += __STDC_LIMIT_MACROS __STDC_CONSTANT_MACROS
 !disable_libjpeg : DEFINES += HAVE_JPEG

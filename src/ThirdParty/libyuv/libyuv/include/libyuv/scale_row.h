@@ -21,8 +21,10 @@ extern "C" {
 #endif
 
 // The following are available on all x86 platforms:
-#if !defined(LIBYUV_DISABLE_X86) && \
-    (defined(_M_IX86) || defined(__x86_64__) || defined(__i386__))
+#if !defined(LIBYUV_DISABLE_X86) &&                             \
+    (defined(_M_IX86) ||                                        \
+     (defined(__x86_64__) && !defined(LIBYUV_ENABLE_ROWWIN)) || \
+     defined(__i386__))
 #define HAS_FIXEDDIV1_X86
 #define HAS_FIXEDDIV_X86
 #define HAS_SCALEADDROW_SSE2
@@ -41,7 +43,9 @@ extern "C" {
 
 // The following are available for gcc/clang x86 platforms:
 // TODO(fbarchard): Port to Visual C
-#if !defined(LIBYUV_DISABLE_X86) && (defined(__x86_64__) || defined(__i386__))
+#if !defined(LIBYUV_DISABLE_X86) &&               \
+    (defined(__x86_64__) || defined(__i386__)) && \
+    !defined(LIBYUV_ENABLE_ROWWIN)
 #define HAS_SCALEUVROWDOWN2BOX_SSSE3
 #define HAS_SCALEROWUP2_LINEAR_SSE2
 #define HAS_SCALEROWUP2_LINEAR_SSSE3
@@ -166,6 +170,9 @@ extern "C" {
 #define HAS_SCALEUVROWDOWN4_RVV
 #endif
 #define HAS_SCALEUVROWDOWNEVEN_RVV
+#if __riscv_v_intrinsic == 11000
+#define HAS_SCALEARGBFILTERCOLS_RVV
+#endif
 #define HAS_SCALEARGBROWDOWN2_RVV
 #define HAS_SCALEARGBROWDOWN2BOX_RVV
 #define HAS_SCALEARGBROWDOWN2LINEAR_RVV
@@ -938,6 +945,11 @@ void ScaleARGBCols_Any_MSA(uint8_t* dst_ptr,
                            int dst_width,
                            int x,
                            int dx);
+void ScaleARGBFilterCols_RVV(uint8_t* dst_argb,
+                             const uint8_t* src_argb,
+                             int dst_width,
+                             int x,
+                             int dx);
 
 // ARGB Row functions
 void ScaleARGBRowDown2_SSE2(const uint8_t* src_argb,
