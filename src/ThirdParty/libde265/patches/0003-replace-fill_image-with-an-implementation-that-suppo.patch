@@ -1,0 +1,127 @@
+From 498c57dea810ba89914a2df15e5e22dbac563dce Mon Sep 17 00:00:00 2001
+From: Dirk Farin <dirk.farin@gmail.com>
+Date: Tue, 17 Sep 2024 20:31:30 +0200
+Subject: [PATCH 3/4] replace fill_image() with an implementation that supports
+ HDR images and use this also for image initialization
+
+(cherry picked from commit c7855dd9a0407f4b2c33661b99bf5a802fb7522d)
+---
+ libde265/image.cc | 69 ++++++++++++++++++++++++++++++++++++++++++-----
+ libde265/image.h  |  1 +
+ 2 files changed, 63 insertions(+), 7 deletions(-)
+
+diff --git a/libde265/image.cc b/libde265/image.cc
+index 08dd83d5..fdc80fc2 100644
+--- a/libde265/image.cc
++++ b/libde265/image.cc
+@@ -55,7 +55,6 @@ static inline void *ALLOC_ALIGNED(size_t alignment, size_t size) {
+     if (posix_memalign(&mem, alignment, size) != 0) {
+         return NULL;
+     }
+-    memset(mem, 0, size);
+     return mem;
+ };
+ #define FREE_ALIGNED(mem)                      free((mem))
+@@ -155,6 +154,8 @@ static int  de265_image_get_buffer(de265_decoder_context* ctx,
+   img->set_image_plane(1, p[1], chroma_stride, NULL);
+   img->set_image_plane(2, p[2], chroma_stride, NULL);
+ 
++  img->fill_image(0,0,0);
++
+   return 1;
+ }
+ 
+@@ -527,18 +528,72 @@ void de265_image::release()
+ }
+ 
+ 
++void de265_image::fill_plane(int channel, int value)
++{
++  int bytes_per_pixel = get_bytes_per_pixel(channel);
++  assert(value >= 0); // needed for the shift operation in the check below
++
++  if (bytes_per_pixel == 1) {
++    if (channel==0) {
++      memset(pixels[channel], value, stride * height);
++    }
++    else {
++      memset(pixels[channel], value, chroma_stride * chroma_height);
++    }
++  }
++  else if ((value >> 8) == (value & 0xFF)) {
++    assert(bytes_per_pixel == 2);
++
++    // if we fill the same byte value to all bytes, we can still use memset()
++    if (channel==0) {
++      memset(pixels[channel], 0, stride * height * bytes_per_pixel);
++    }
++    else {
++      memset(pixels[channel], 0, chroma_stride * chroma_height * bytes_per_pixel);
++    }
++  }
++  else {
++    assert(bytes_per_pixel == 2);
++    uint16_t v = value;
++
++    if (channel==0) {
++      // copy value into first row
++      for (int x = 0; x < width; x++) {
++        *(uint16_t*) (&pixels[channel][2 * x]) = v;
++      }
++
++      // copy first row into remaining rows
++      for (int y = 1; y < height; y++) {
++        memcpy(pixels[channel] + y * stride * 2, pixels[channel], chroma_width * 2);
++      }
++    }
++    else {
++      // copy value into first row
++      for (int x = 0; x < chroma_width; x++) {
++        *(uint16_t*) (&pixels[channel][2 * x]) = v;
++      }
++
++      // copy first row into remaining rows
++      for (int y = 1; y < chroma_height; y++) {
++        memcpy(pixels[channel] + y * chroma_stride * 2, pixels[channel], chroma_width * 2);
++      }
++    }
++  }
++}
++
++
+ void de265_image::fill_image(int y,int cb,int cr)
+ {
+-  if (y>=0) {
+-    memset(pixels[0], y, stride * height);
++  if (pixels[0]) {
++    fill_plane(0, y);
+   }
+ 
+-  if (cb>=0) {
+-    memset(pixels[1], cb, chroma_stride * chroma_height);
++  if (pixels[1]) {
++    fill_plane(1, cb);
+   }
+ 
+-  if (cr>=0) {
+-    memset(pixels[2], cr, chroma_stride * chroma_height);
++  if (pixels[2]) {
++    fill_plane(2, cr);
+   }
+ }
+ 
+diff --git a/libde265/image.h b/libde265/image.h
+index 0a0c0e32..7bff7f6e 100644
+--- a/libde265/image.h
++++ b/libde265/image.h
+@@ -244,6 +244,7 @@ struct de265_image {
+   }
+ 
+   void fill_image(int y,int u,int v);
++  void fill_plane(int channel, int value);
+   de265_error copy_image(const de265_image* src);
+   void copy_lines_from(const de265_image* src, int first, int end);
+   void exchange_pixel_data_with(de265_image&);
+-- 
+2.39.5
+

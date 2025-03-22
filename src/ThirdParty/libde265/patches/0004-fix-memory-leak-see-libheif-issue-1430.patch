@@ -1,0 +1,27 @@
+From f6ad650bbc3ae418dbd3f3d8208caaa7dccaf9a9 Mon Sep 17 00:00:00 2001
+From: Dirk Farin <dirk.farin@gmail.com>
+Date: Wed, 18 Dec 2024 16:53:06 +0100
+Subject: [PATCH 4/4] fix memory leak (see libheif issue 1430)
+
+(cherry picked from commit f699d4dc9121f3e5d2099c291b29d4efc90ca5fb)
+---
+ libde265/decctx.cc | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/libde265/decctx.cc b/libde265/decctx.cc
+index 2e5fca5b..88c940f9 100644
+--- a/libde265/decctx.cc
++++ b/libde265/decctx.cc
+@@ -694,6 +694,9 @@ de265_error decoder_context::read_slice_NAL(bitreader& reader, NAL_unit* nal, na
+ 
+     image_units.back()->slice_units.push_back(sliceunit);
+   }
++  else {
++    nal_parser.free_NAL_unit(nal);
++  }
+ 
+   bool did_work;
+   err = decode_some(&did_work);
+-- 
+2.39.5
+
