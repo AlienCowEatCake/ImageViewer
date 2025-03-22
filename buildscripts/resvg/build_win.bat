@@ -41,7 +41,7 @@ curl -LO "https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup
 rustup-init.exe --default-host x86_64-pc-windows-msvc --target "%RESVG_TARGET%" --default-toolchain "%RUST_VERSION%" --profile default --no-modify-path -y
 
 curl -LO "https://www.7-zip.org/a/7zr.exe"
-curl -LO "https://github.com/RazrFalcon/resvg/releases/download/v%RESVG_VERSION%/resvg-%RESVG_VERSION%.tar.xz"
+curl -LO "https://github.com/linebender/resvg/releases/download/v%RESVG_VERSION%/resvg-%RESVG_VERSION%.tar.xz"
 7zr x "resvg-%RESVG_VERSION%.tar.xz"
 tar -xvpf "resvg-%RESVG_VERSION%.tar"
 set "OLD_DIR=%CD%"

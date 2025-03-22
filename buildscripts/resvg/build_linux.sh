@@ -15,7 +15,7 @@ wget --no-check-certificate "https://sh.rustup.rs" -O rustup-init.sh
 chmod +x rustup-init.sh
 ./rustup-init.sh --default-host "${RESVG_TARGET}" --default-toolchain "${RUST_VERSION}" --profile default --no-modify-path -y
 
-wget "https://github.com/RazrFalcon/resvg/releases/download/v${RESVG_VERSION}/resvg-${RESVG_VERSION}.tar.xz"
+wget "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-${RESVG_VERSION}.tar.xz"
 tar -xvpf "resvg-${RESVG_VERSION}.tar.xz"
 pushd "resvg-${RESVG_VERSION}" > /dev/null
 cd "crates/c-api"

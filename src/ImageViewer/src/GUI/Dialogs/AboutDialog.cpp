@@ -419,9 +419,15 @@ QString getTextBrowserContent()
 #else
                       QString(),
 #endif
-                      QString::fromLatin1("https://github.com/RazrFalcon/resvg"),
+                      QString::fromLatin1("https://github.com/linebender/resvg"),
+#if defined (RESVG_MAJOR_VERSION) && defined (RESVG_MINOR_VERSION) && defined (RESVG_PATCH_VERSION) && \
+        (QT_VERSION_CHECK((RESVG_MAJOR_VERSION), (RESVG_MINOR_VERSION), (RESVG_PATCH_VERSION)) >= QT_VERSION_CHECK(0, 45, 0))
+                      QString::fromLatin1("Apache License 2.0 or MIT License"),
+                      QString::fromLatin1("https://github.com/linebender/resvg/blob/main/README.md#license")
+#else
                       QString::fromLatin1("Mozilla Public License 2.0"),
-                      QString::fromLatin1("https://github.com/RazrFalcon/resvg/blob/master/LICENSE.txt")
+                      QString::fromLatin1("https://github.com/linebender/resvg/blob/v0.44.0/LICENSE.txt")
+#endif
                       ));
 #endif
 

@@ -1,5 +1,5 @@
-# URL: https://github.com/RazrFalcon/resvg
-# License: Mozilla Public License 2.0 - https://github.com/RazrFalcon/resvg/blob/master/LICENSE.txt
+# URL: https://github.com/linebender/resvg
+# License: Apache License 2.0 or MIT License - https://github.com/linebender/resvg/blob/main/README.md#license
 
 include($${PWD}/../../Features.pri)
 
