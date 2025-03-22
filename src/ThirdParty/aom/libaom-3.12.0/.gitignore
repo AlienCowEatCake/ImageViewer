@@ -1,0 +1,9 @@
+tags
+cmbuild
+.DS_Store
+.cproject
+.idea
+.project
+.vscode
+.gitignore
+TAGS

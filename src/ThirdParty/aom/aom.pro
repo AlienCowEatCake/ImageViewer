@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.11.0
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.12.0
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -33,7 +33,7 @@ include(../libyuv/libyuv.pri)
 
 INCLUDEPATH = $${THIRDPARTY_AOM_PATH} $${THIRDPARTY_AOM_CONFIG_PATH} $${PWD} $${INCLUDEPATH}
 
-# find . -name '*.c' | egrep -v '(arm|x86|ppc|mips|/examples/|/apps/|/tools/|vmaf|inspection|butteraugli|temporal_denoiser|_cpudetect|_sse2|_ssse3|_sse4|_avx|_neon)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_AOM_PATH}| ; s|$| \\|'
+# find . -name '*.c' | egrep -v '(arm|x86|ppc|mips|riscv|/examples/|/apps/|/tools/|vmaf|inspection|butteraugli|temporal_denoiser|_cpudetect|_sse2|_ssse3|_sse4|_avx|_neon|_rvv)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_AOM_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_AOM_PATH}/aom/src/aom_codec.c \
     $${THIRDPARTY_AOM_PATH}/aom/src/aom_decoder.c \
@@ -338,6 +338,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_ports/mem_ops.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/mem_ops_aligned.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/ppc.h \
+    $${THIRDPARTY_AOM_PATH}/aom_ports/riscv.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/sanitizer.h \
     $${THIRDPARTY_AOM_PATH}/aom_ports/x86.h \
     $${THIRDPARTY_AOM_PATH}/aom_scale/yv12config.h \
@@ -535,6 +536,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/common/y4menc.h \
     $${THIRDPARTY_AOM_PATH}/common/y4minput.h \
     $${THIRDPARTY_AOM_PATH}/examples/encoder_util.h \
+    $${THIRDPARTY_AOM_PATH}/examples/multilayer_metadata.h \
     $${THIRDPARTY_AOM_PATH}/stats/aomstats.h \
     $${THIRDPARTY_AOM_PATH}/stats/rate_hist.h \
     $${THIRDPARTY_AOM_PATH}/test/acm_random.h \

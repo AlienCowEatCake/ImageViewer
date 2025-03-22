@@ -1,4 +1,4 @@
-From 05fd0eb85bd2c2489ed1babb83ad244f4dc7cc58 Mon Sep 17 00:00:00 2001
+From 18122569eb7005605641e92629f9b7fe5b8e5dda Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 Nov 2021 17:11:43 +0700
 Subject: [PATCH] Fix build with MinGW 3.4.2
@@ -10,7 +10,7 @@ Subject: [PATCH] Fix build with MinGW 3.4.2
  3 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/aom/aom_codec.h b/aom/aom_codec.h
-index 1e589ca574..4f83f2e819 100644
+index 84454a281b..9b69a674d9 100644
 --- a/aom/aom_codec.h
 +++ b/aom/aom_codec.h
 @@ -132,7 +132,7 @@ extern "C" {
@@ -36,10 +36,10 @@ index cac529eb27..7f65bea788 100644
    assert(n != 0);
    return 31 ^ __builtin_clz(n);
 diff --git a/av1/encoder/ratectrl.h b/av1/encoder/ratectrl.h
-index 21c7568d9e..561fd397b4 100644
+index 0e7ede9b84..8492634c87 100644
 --- a/av1/encoder/ratectrl.h
 +++ b/av1/encoder/ratectrl.h
-@@ -361,7 +361,7 @@ typedef struct {
+@@ -362,7 +362,7 @@ typedef struct {
    int arf_q;
  
    /*!\cond */
@@ -49,5 +49,5 @@ index 21c7568d9e..561fd397b4 100644
    int base_layer_qp;
  
 -- 
-2.46.0
+2.39.5
 
