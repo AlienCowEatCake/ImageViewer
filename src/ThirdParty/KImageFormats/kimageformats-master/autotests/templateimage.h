@@ -8,6 +8,7 @@
 #define TEMPLATEIMAGE_H
 
 #include <QFileInfo>
+#include <QImage>
 
 /*!
  * \brief The TemplateImage class
@@ -59,6 +60,37 @@ public:
      * \return The template image to use for the comparison.
      */
     QFileInfo compareImage(TestFlags &flags, QString& comment) const;
+
+    /*!
+     * \brief checkOptionaInfo
+     * Verify the optional information (resolution, metadata, etc.) of the
+     * image with that in the template if present.
+     * \param image The image to check optional information on.
+     * \param error The error message when returns false.
+     * \return True on success, otherwise false.
+     */
+    bool checkOptionaInfo(const QImage& image, QString& error) const;
+
+    /*!
+     * \brief fuzziness
+     * The fuzziness value that ensures the test works correctly. Normally
+     * set for lossy codecs and images that require floating point
+     * conversions.
+     * Floating point conversions may give slightly different results from
+     * one architecture to another (Intel, PowerPC, Arm, etc...).
+     * \return The default fuzziness value for the image. Zero means no fuzziness.
+     */
+    quint8 fuzziness() const;
+
+    /*!
+     * \brief perceptiveFuzziness
+     * The perceptual mode of fuzziness control scales the value according to
+     * the alpha value: the lower the alpha value (transparent), the more the
+     * fuzziness value increases according to the following formula:
+     * - fuzz = fuzz * 255 / alpha
+     * \return True if the perceptive mode is active, otherwise false.
+     */
+    bool perceptiveFuzziness() const;
 
     /*!
      * \brief suffixes

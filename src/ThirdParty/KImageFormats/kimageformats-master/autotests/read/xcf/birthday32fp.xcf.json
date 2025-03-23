@@ -1,0 +1,12 @@
+[
+    {
+        "fileName" : "birthday32fp.png",
+        "seeAlso" : "https://bugreports.qt.io/browse/QTBUG-120614",
+        "fuzziness" : 2,
+        "perceptiveFuzziness" : true,
+        "resolution" : {
+            "dotsPerMeterX" : 4724,
+            "dotsPerMeterY" : 4724
+        }
+    }
+]

@@ -1,0 +1,106 @@
+From bd877ab2170c4d7b150d589ab5af0adcab6d613f Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 23 Mar 2025 06:30:54 +0700
+Subject: [PATCH 7/8] Fix build with libjxl < 0.9.0
+
+---
+ src/imageformats/jxl.cpp | 32 +++++++++++++++++++++++++++++---
+ 1 file changed, 29 insertions(+), 3 deletions(-)
+
+diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
+index 54df907..84cccd1 100644
+--- a/src/imageformats/jxl.cpp
++++ b/src/imageformats/jxl.cpp
+@@ -13,7 +13,9 @@
+ #include "microexif_p.h"
+ #include "util_p.h"
+ 
++#if JPEGXL_NUMERIC_VERSION >= JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
+ #include <jxl/cms.h>
++#endif
+ 
+ #if !defined (DISABLE_JXL_ENCODER)
+ #include <jxl/encode.h>
+@@ -71,6 +73,9 @@ typedef enum {JXL_ENC_SUCCESS, JXL_ENC_ERROR, JXL_ENC_NEED_MORE_OUTPUT, JXL_ENC_
+ // Define JXL_HDR_PRESERVATION_DISABLED to disable HDR preservation
+ // (HDR images are saved as UINT16).
+ // #define JXL_HDR_PRESERVATION_DISABLED
++#if JPEGXL_NUMERIC_VERSION >= JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
++#define JXL_HDR_PRESERVATION_DISABLED
++#endif
+ #endif
+ 
+ #ifndef JXL_DECODE_BOXES_DISABLED
+@@ -295,6 +300,7 @@ bool QJpegXLHandler::countALLFrames()
+     bool is_gray = m_basicinfo.num_color_channels == 1 && m_basicinfo.alpha_bits == 0;
+     JxlColorEncoding color_encoding;
+     if (m_basicinfo.uses_original_profile == JXL_FALSE && m_basicinfo.have_animation == JXL_FALSE) {
++#if JPEGXL_NUMERIC_VERSION >= JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
+         const JxlCmsInterface *jxlcms = JxlGetDefaultCms();
+         if (jxlcms) {
+             status = JxlDecoderSetCms(m_decoder, *jxlcms);
+@@ -304,6 +310,7 @@ bool QJpegXLHandler::countALLFrames()
+         } else {
+             qWarning("No JPEG XL CMS Interface");
+         }
++#endif
+ 
+         JxlColorEncodingSetToSRGB(&color_encoding, is_gray ? JXL_TRUE : JXL_FALSE);
+         JxlDecoderSetPreferredColorProfile(m_decoder, &color_encoding);
+@@ -364,17 +371,34 @@ bool QJpegXLHandler::countALLFrames()
+         }
+     }
+ 
+-    status = JxlDecoderGetColorAsEncodedProfile(m_decoder, JXL_COLOR_PROFILE_TARGET_DATA, &color_encoding);
++    status = JxlDecoderGetColorAsEncodedProfile(m_decoder,
++#if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
++                                                &m_input_pixel_format,
++#endif
++                                                JXL_COLOR_PROFILE_TARGET_DATA,
++                                                &color_encoding);
+ 
+     if (status == JXL_DEC_SUCCESS && color_encoding.color_space == JXL_COLOR_SPACE_RGB && color_encoding.white_point == JXL_WHITE_POINT_D65
+         && color_encoding.primaries == JXL_PRIMARIES_SRGB && color_encoding.transfer_function == JXL_TRANSFER_FUNCTION_SRGB) {
+         m_colorspace = QColorSpace(QColorSpace::SRgb);
+     } else {
+         size_t icc_size = 0;
+-        if (JxlDecoderGetICCProfileSize(m_decoder, JXL_COLOR_PROFILE_TARGET_DATA, &icc_size) == JXL_DEC_SUCCESS) {
++        if (JxlDecoderGetICCProfileSize(m_decoder,
++#if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
++                                        &m_input_pixel_format,
++#endif
++                                        JXL_COLOR_PROFILE_TARGET_DATA,
++                                        &icc_size)
++            == JXL_DEC_SUCCESS) {
+             if (icc_size > 0) {
+                 QByteArray icc_data(icc_size, 0);
+-                if (JxlDecoderGetColorAsICCProfile(m_decoder, JXL_COLOR_PROFILE_TARGET_DATA, reinterpret_cast<uint8_t *>(icc_data.data()), icc_data.size())
++                if (JxlDecoderGetColorAsICCProfile(m_decoder,
++#if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
++                                                                   &m_input_pixel_format,
++#endif
++                                                                   JXL_COLOR_PROFILE_TARGET_DATA,
++                                                                   reinterpret_cast<uint8_t *>(icc_data.data()),
++                                                                   icc_data.size())
+                     == JXL_DEC_SUCCESS) {
+                     m_colorspace = QColorSpace::fromIccProfile(icc_data);
+ 
+@@ -1907,6 +1931,7 @@ bool QJpegXLHandler::rewind()
+             return false;
+         }
+ 
++#if JPEGXL_NUMERIC_VERSION >= JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
+         const JxlCmsInterface *jxlcms = JxlGetDefaultCms();
+         if (jxlcms) {
+             status = JxlDecoderSetCms(m_decoder, *jxlcms);
+@@ -1916,6 +1941,7 @@ bool QJpegXLHandler::rewind()
+         } else {
+             qWarning("No JPEG XL CMS Interface");
+         }
++#endif
+ 
+         bool is_gray = m_basicinfo.num_color_channels == 1 && m_basicinfo.alpha_bits == 0;
+         JxlColorEncoding color_encoding;
+-- 
+2.39.5
+

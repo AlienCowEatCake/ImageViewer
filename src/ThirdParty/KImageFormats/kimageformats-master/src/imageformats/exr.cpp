@@ -556,7 +556,7 @@ static void setMetadata(const QImage &image, Imf::Header &header)
 
     if (image.dotsPerMeterX() && image.dotsPerMeterY()) {
         header.insert("xDensity", Imf::FloatAttribute(image.dotsPerMeterX() * 2.54f / 100.f));
-        header.insert("pixelAspectRatio", Imf::FloatAttribute(float(image.dotsPerMeterX()) / float(image.dotsPerMeterY())));
+        header.insert("pixelAspectRatio", Imf::FloatAttribute(float(image.dotsPerMeterY()) / float(image.dotsPerMeterX())));
     }
 
     // set default chroma (default constructor ITU-R BT.709-3 -> sRGB)

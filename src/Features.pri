@@ -792,6 +792,9 @@ greaterThan(QT_MAJOR_VERSION, 5) {
 lessThan(QT_VERSION_NUMERIC, 51500) {
     CONFIG *= disable_kimageformats
 }
+disable_cxx11 {
+    CONFIG *= disable_kimageformats
+}
 
 # MSEdgeWebView2 options:
 #    disable_msedgewebview2

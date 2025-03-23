@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(KF_VERSION "6.10.0") # handled by release scripts
-set(KF_DEP_VERSION "6.9.0") # handled by release scripts
+set(KF_VERSION "6.13.0") # handled by release scripts
+set(KF_DEP_VERSION "6.13.0") # handled by release scripts
 project(KImageFormats VERSION ${KF_VERSION})
 
 include(FeatureSummary)
-find_package(ECM 6.9.0  NO_MODULE)
+find_package(ECM 6.13.0  NO_MODULE)
 set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
 feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
@@ -72,11 +72,18 @@ add_feature_info(LibHeif LibHeif_FOUND "required for the QImage plugin for HEIF/
 
 option(KIMAGEFORMATS_JXL "Enable plugin for JPEG XL format" ON)
 if(KIMAGEFORMATS_JXL)
-    pkg_check_modules(LibJXL IMPORTED_TARGET libjxl>=0.7.0)
-    pkg_check_modules(LibJXLThreads IMPORTED_TARGET libjxl_threads>=0.7.0)
-    pkg_check_modules(LibJXLCMS IMPORTED_TARGET libjxl_cms>=0.9.0)
+    pkg_check_modules(LibJXL IMPORTED_TARGET libjxl>=0.9.4)
+    pkg_check_modules(LibJXLThreads IMPORTED_TARGET libjxl_threads>=0.9.4)
+    pkg_check_modules(LibJXLCMS IMPORTED_TARGET libjxl_cms>=0.9.4)
 endif()
 add_feature_info(LibJXL LibJXL_FOUND "required for the QImage plugin for JPEG XL images")
+
+option(KIMAGEFORMATS_JP2 "Enable plugin for JPEG 2000 format" ON)
+if(KIMAGEFORMATS_JP2)
+    find_package(OpenJPEG CONFIG)
+endif()
+add_feature_info(OpenJPEG OpenJPEG_FOUND "required for the QImage plugin for JPEG 2000 images")
+
 
 find_package(LibRaw 0.20.2)
 set_package_properties(LibRaw PROPERTIES
@@ -93,7 +100,7 @@ add_feature_info(LibJXR LibJXR_FOUND "required for the QImage plugin for JPEG XR
 
 ecm_set_disabled_deprecation_versions(
     QT 6.8.0
-    KF 6.8.0
+    KF 6.12.0
 )
 
 add_subdirectory(src)

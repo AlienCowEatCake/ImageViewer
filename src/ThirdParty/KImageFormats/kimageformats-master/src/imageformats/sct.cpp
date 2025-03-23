@@ -207,10 +207,10 @@ public:
         auto v = QString::fromLatin1(pchar_t(res.data()), res.size()).toDouble(&ok);
         if (ok && v > 0) {
             if (m_pb._unitsOfMeasurement) { // Inches
-                return qRound(width() / v / 25.4 * 1000);
+                return qRoundOrZero(width() / v / 25.4 * 1000);
             }
             // Millimeters
-            return qRound(width() / v * 1000);
+            return qRoundOrZero(width() / v * 1000);
         }
         return 0;
     }
@@ -221,10 +221,10 @@ public:
         auto v = QString::fromLatin1(pchar_t(res.data()), res.size()).toDouble(&ok);
         if (ok && v > 0) {
             if (m_pb._unitsOfMeasurement) { // Inches
-                return qRound(width() / v / 25.4 * 1000);
+                return qRoundOrZero(height() / v / 25.4 * 1000);
             }
             // Millimeters
-            return qRound(width() / v * 1000);
+            return qRoundOrZero(height() / v * 1000);
         }
         return 0;
     }

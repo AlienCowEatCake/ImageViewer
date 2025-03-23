@@ -16,16 +16,106 @@
 #include <QImage>
 #include <QImageReader>
 #include <QImageWriter>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
 #include <QMetaEnum>
 #include <QTextStream>
 
 #include "fuzzyeq.cpp"
 
+QJsonObject readOptionalInfo(const QString &suffix)
+{
+    auto fi = QFileInfo(QStringLiteral("%1/basic/%2.json").arg(IMAGEDIR, suffix));
+    if (!fi.exists()) {
+        return {};
+    }
+
+    QFile f(fi.filePath());
+    if (!f.open(QFile::ReadOnly)) {
+        return {};
+    }
+
+    QJsonParseError err;
+    auto doc = QJsonDocument::fromJson(f.readAll(), &err);
+    if (err.error != QJsonParseError::NoError || !doc.isObject()) {
+        return {};
+    }
+
+    return doc.object();
+}
+
+void setOptionalInfo(QImage &image, const QString &suffix)
+{
+    auto obj = readOptionalInfo(suffix);
+    if (obj.isEmpty()) {
+        return;
+    }
+
+    // Set resolution
+    auto res = obj.value("resolution").toObject();
+    if (!res.isEmpty()) {
+        image.setDotsPerMeterX(res.value("dotsPerMeterX").toInt());
+        image.setDotsPerMeterY(res.value("dotsPerMeterY").toInt());
+    }
+
+    // Set metadata
+    auto meta = obj.value("metadata").toArray();
+    for (auto jv : meta) {
+        auto obj = jv.toObject();
+        auto key = obj.value("key").toString();
+        auto val = obj.value("value").toString();
+        image.setText(key, val);
+    }
+}
+
+bool checkOptionalInfo(QImage &image, const QString &suffix)
+{
+    auto obj = readOptionalInfo(suffix);
+    if (obj.isEmpty()) {
+        return true;
+    }
+
+    // Check if the format match
+    if (suffix.compare(obj.value("format").toString(), Qt::CaseInsensitive)) {
+        return false;
+    }
+
+    // Test resolution
+    auto res = obj.value("resolution").toObject();
+    if (!res.isEmpty()) {
+        auto resx = res.value("dotsPerMeterX").toInt();
+        auto resy = res.value("dotsPerMeterY").toInt();
+        if (resx != image.dotsPerMeterX()) {
+            return false;
+        }
+        if (resy != image.dotsPerMeterY()) {
+            return false;
+        }
+    }
+
+    // Test metadata
+    auto meta = obj.value("metadata").toArray();
+    for (auto jv : meta) {
+        auto obj = jv.toObject();
+        auto key = obj.value("key").toString();
+        auto val = obj.value("value").toString();
+        auto cur = image.text(key);
+        if (cur != val) {
+            qDebug() << key;
+            return false;
+        }
+    }
+
+    return true;
+}
+
 /*!
  * \brief basicTest
  * Run a basic test on some common images.
  */
-int basicTest(const QString &suffix, bool lossless, bool ignoreDataCheck, uint fuzzarg)
+int basicTest(const QString &suffix, bool lossless, bool ignoreDataCheck, bool skipOptional, uint fuzzarg)
 {
     uchar fuzziness = uchar(fuzzarg);
 
@@ -43,7 +133,7 @@ int basicTest(const QString &suffix, bool lossless, bool ignoreDataCheck, uint f
     int failed = 0;
 
     QTextStream(stdout) << "********* "
-                        << "Starting basic write tests for " << suffix << " images *********\n";
+                        << "Starting BASIC write tests for " << suffix << " images *********\n";
     const QFileInfoList lstImgDir = imgdir.entryInfoList();
     for (const QFileInfo &fi : lstImgDir) {
         QString pngfile;
@@ -69,6 +159,9 @@ int basicTest(const QString &suffix, bool lossless, bool ignoreDataCheck, uint f
             QImageWriter imgWriter(&buffer, format.constData());
             if (lossless) {
                 imgWriter.setQuality(100);
+            }
+            if (!skipOptional) {
+                setOptionalInfo(pngImage, suffix);
             }
             if (!imgWriter.write(pngImage)) {
                 QTextStream(stdout) << "FAIL : " << fi.fileName() << ": failed to write image data\n";
@@ -96,7 +189,6 @@ int basicTest(const QString &suffix, bool lossless, bool ignoreDataCheck, uint f
                     continue;
                 }
             }
-
             if (expData != writtenData) {
                 QTextStream(stdout) << "FAIL : " << fi.fileName() << ": written data differs from " << fi.fileName() << "\n";
                 ++failed;
@@ -112,6 +204,13 @@ int basicTest(const QString &suffix, bool lossless, bool ignoreDataCheck, uint f
                 QTextStream(stdout) << "FAIL : " << fi.fileName() << ": could not read back the written data\n";
                 ++failed;
                 continue;
+            }
+            if (!skipOptional) {
+                if (!checkOptionalInfo(reReadImage, suffix)) {
+                    QTextStream(stdout) << "FAIL : " << fi.fileName() << ": optional information does not match\n";
+                    ++failed;
+                    continue;
+                }
             }
             if (reReadImage.colorSpace().isValid()) {
                 QColorSpace toColorSpace;
@@ -148,7 +247,7 @@ int basicTest(const QString &suffix, bool lossless, bool ignoreDataCheck, uint f
 
     QTextStream(stdout) << "Totals: " << passed << " passed, " << failed << " failed\n";
     QTextStream(stdout) << "********* "
-                        << "Finished basic write tests for " << suffix << " images *********\n";
+                        << "Finished BASIC write tests for " << suffix << " images *********\n";
 
     return failed == 0 ? 0 : 1;
 }
@@ -159,7 +258,6 @@ QImage formatSourceImage(const QImage::Format &format)
     auto folder = QStringLiteral("%1/format/_images").arg(IMAGEDIR);
 
     switch (format) {
-
     case QImage::Format_MonoLSB:
     case QImage::Format_Mono:
         image = QImage(QStringLiteral("%1/mono.png").arg(folder));
@@ -238,7 +336,7 @@ int formatTest(const QString &suffix, bool createTemplates)
     int skipped = 0;
 
     QTextStream(stdout) << "********* "
-                        << "Starting format write tests for " << suffix << " images *********\n";
+                        << "Starting FORMAT write tests for " << suffix << " images *********\n";
 
     for (int i = QImage::Format_Invalid + 1; i < QImage::NImageFormats; ++i) {
         auto format = QImage::Format(i);
@@ -272,7 +370,12 @@ int formatTest(const QString &suffix, bool createTemplates)
         QBuffer buffer(&ba);
         auto writtenImage = QImageReader(&buffer, suffix.toLatin1()).read();
         if (writtenImage.isNull()) {
-            ++failed;
+            if (suffix.toLatin1() == "heif") {
+                // libheif + ffmpeg decoder is unable to load all HEIF files.
+                ++skipped;
+            } else {
+                ++failed;
+            }
             QTextStream(stdout) << "FAIL : error while reading the image " << formatName << "\n";
             continue;
         }
@@ -304,7 +407,16 @@ int formatTest(const QString &suffix, bool createTemplates)
         // checking the format: must be the same
         if (writtenImage.format() != tmplImage.format()) {
             ++failed;
-            QTextStream(stdout) << "FAIL : format mismatch " << formatName << "\n";
+            auto writtenformatName = QString(QMetaEnum::fromType<QImage::Format>().valueToKey(writtenImage.format()));
+            auto tmplformatName = QString(QMetaEnum::fromType<QImage::Format>().valueToKey(tmplImage.format()));
+            QTextStream(stdout) << "FAIL : format mismatch " << formatName << " (";
+            if (format == writtenImage.format()) {
+                QTextStream(stdout) << "template image: " << tmplformatName << ")\n";
+            } else if (format == tmplImage.format()) {
+                QTextStream(stdout) << "written image: " << writtenformatName << ")\n";
+            } else {
+                QTextStream(stdout) << writtenformatName << " != " << tmplformatName << ")\n";
+            }
             continue;
         }
 
@@ -324,7 +436,97 @@ int formatTest(const QString &suffix, bool createTemplates)
 
     QTextStream(stdout) << "Totals: " << passed << " passed, " << failed << " failed, " << skipped << " skipped\n";
     QTextStream(stdout) << "********* "
-                        << "Finished format write tests for " << suffix << " images *********\n";
+                        << "Finished FORMAT write tests for " << suffix << " images *********\n";
+
+    return failed == 0 ? 0 : 1;
+}
+
+int sizeTest(const QString &suffix)
+{
+    auto formatFolder = QStringLiteral("%1/format/%2").arg(IMAGEDIR, suffix);
+
+    int passed = 0;
+    int failed = 0;
+    int skipped = 0;
+
+    QTextStream(stdout) << "********* "
+                        << "Starting SIZE write tests for " << suffix << " images *********\n";
+
+    for (int i = QImage::Format_Invalid + 1; i < QImage::NImageFormats; ++i) {
+        auto format = QImage::Format(i);
+        auto formatName = QString(QMetaEnum::fromType<QImage::Format>().valueToKey(format));
+
+        // read template image
+        auto templateImage = QImageReader(QStringLiteral("%1/%2.%3").arg(formatFolder, formatName, suffix)).read();
+        if (templateImage.isNull()) {
+            ++skipped;
+            QTextStream(stdout) << "SKIP : no source image found for " << formatName << "\n";
+            continue;
+        }
+
+        // clang-format off
+        auto sizeList = QList<QSize>()
+            // check for byte alignment
+            << (templateImage.size() + QSize(1, 1))
+            << (templateImage.size() + QSize(2, 2))
+            << (templateImage.size() + QSize(3, 3))
+            << (templateImage.size() + QSize(4, 4))
+            << (templateImage.size() + QSize(5, 5))
+            << (templateImage.size() + QSize(6, 6))
+            << (templateImage.size() + QSize(7, 7))
+            // Check for dividers (using prime numbers)
+            << QSize(113, 157)
+            << QSize(163, 109);
+        // clang-format on
+
+        for (auto &&sz : sizeList) {
+            auto debugInfo = QStringLiteral("%1 @%2x%3").arg(formatName).arg(sz.width()).arg(sz.height());
+
+            // resize the template image
+            auto resizeImage = templateImage.scaled(sz);
+            // make sure the format is not changed by resize (paranoia)
+            resizeImage.convertTo(templateImage.format());
+
+            // save test
+            QByteArray ba;
+            { // writing the image
+                QBuffer buffer(&ba);
+                QImageWriter writer(&buffer, suffix.toLatin1());
+                writer.setQuality(100); // always lossless
+                if (!writer.write(resizeImage)) {
+                    ++failed;
+                    QTextStream(stdout) << "FAIL : failed to write image " << debugInfo << "\n";
+                    continue;
+                }
+            }
+
+            // read test
+            QBuffer buffer(&ba);
+            auto writtenImage = QImageReader(&buffer, suffix.toLatin1()).read();
+            if (writtenImage.isNull()) {
+                ++failed;
+                QTextStream(stdout) << "FAIL : error while reading the image " << debugInfo << "\n";
+                continue;
+            }
+
+            // This comparison is only to understand if the plugin has written a completely wrong image. I therefore have no
+            // qualms about converting them to a more convenient format or to tolerate slightly different pixels.
+            auto compareFormat = writtenImage.hasAlphaChannel() ? QImage::Format_ARGB32 : QImage::Format_RGB32;
+            if (!fuzzyeq(writtenImage.convertToFormat(compareFormat), resizeImage.convertToFormat(compareFormat), 5)) {
+                ++failed;
+                QTextStream(stdout) << "FAIL : re-reading the data resulted in a different image " << debugInfo << "\n";
+                continue;
+            }
+
+            // test passed!
+            QTextStream(stdout) << "PASS : " << debugInfo << "\n";
+            ++passed;
+        }
+    }
+
+    QTextStream(stdout) << "Totals: " << passed << " passed, " << failed << " failed, " << skipped << " skipped\n";
+    QTextStream(stdout) << "********* "
+                        << "Finished SIZE write tests for " << suffix << " images *********\n";
 
     return failed == 0 ? 0 : 1;
 }
@@ -364,7 +566,7 @@ int nullDeviceTest(const QString &suffix)
     writer.optimizedWrite();
     writer.progressiveScanWrite();
 
-    if (failed == 0) {// success
+    if (failed == 0) { // success
         ++passed;
     }
 
@@ -396,10 +598,13 @@ int main(int argc, char **argv)
                             QStringLiteral("max"));
     QCommandLineOption createFormatTempates({QStringLiteral("create-format-templates")},
                                             QStringLiteral("Create template images for all formats supported by QImage."));
+    QCommandLineOption skipOptTest({QStringLiteral("skip-optional-tests")}, QStringLiteral("Skip optional data tests (metadata, resolution, etc.)."));
+
     parser.addOption(lossless);
     parser.addOption(ignoreDataCheck);
     parser.addOption(fuzz);
     parser.addOption(createFormatTempates);
+    parser.addOption(skipOptTest);
 
     parser.process(app);
 
@@ -422,11 +627,34 @@ int main(int argc, char **argv)
         }
     }
 
-    // run test
     auto suffix = args.at(0);
-    auto ret = basicTest(suffix, parser.isSet(lossless), parser.isSet(ignoreDataCheck), fuzzarg);
+
+    // skip test if libheif configuration is obviously incomplete
+    QByteArray format = suffix.toLatin1();
+    const QList<QByteArray> read_formats = QImageReader::supportedImageFormats();
+    const QList<QByteArray> write_formats = QImageWriter::supportedImageFormats();
+
+    if (!read_formats.contains(format)) {
+        if (format == "heif" || format == "hej2") {
+            QTextStream(stdout) << "WARNING : libheif configuration is missing necessary decoder(s)!\n";
+            return 0;
+        }
+    }
+
+    if (!write_formats.contains(format)) {
+        if (format == "heif" || format == "hej2") {
+            QTextStream(stdout) << "WARNING : libheif configuration is missing necessary encoder(s)!\n";
+            return 0;
+        }
+    }
+
+    // run test
+    auto ret = basicTest(suffix, parser.isSet(lossless), parser.isSet(ignoreDataCheck), parser.isSet(skipOptTest), fuzzarg);
     if (ret == 0) {
         ret = formatTest(suffix, parser.isSet(createFormatTempates));
+    }
+    if (ret == 0) {
+        ret = sizeTest(suffix);
     }
     if (ret == 0) {
         ret = nullDeviceTest(suffix);

@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     QCoreApplication app(argc, argv);
     QCoreApplication::addLibraryPath(QStringLiteral(PLUGIN_DIR));
     QCoreApplication::setApplicationName(QStringLiteral("imageconverter"));
-    QCoreApplication::setApplicationVersion(QStringLiteral("1.01.01.0"));
+    QCoreApplication::setApplicationVersion(QStringLiteral("1.02.00.0"));
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("Converts images from one format to another"));
@@ -35,6 +35,10 @@ int main(int argc, char **argv)
                                  QStringLiteral("Image format for output file"),
                                  QStringLiteral("format"));
     parser.addOption(outformat);
+    QCommandLineOption qualityoption(QStringList() << QStringLiteral("q") << QStringLiteral("quality"),
+                                     QStringLiteral("Image quality for output file (0-100)"),
+                                     QStringLiteral("quality"));
+    parser.addOption(qualityoption);
     QCommandLineOption listformats(QStringList() << QStringLiteral("l") << QStringLiteral("list"), QStringLiteral("List supported image formats"));
     parser.addOption(listformats);
 
@@ -87,6 +91,16 @@ int main(int argc, char **argv)
     }
 
     QImageWriter writer(files.at(1), parser.value(outformat).toLatin1());
+    if (writer.supportsOption(QImageIOHandler::Quality) && parser.isSet(qualityoption)) {
+        bool qualityparsed = false;
+        int quality = parser.value(qualityoption).toInt(&qualityparsed, 10);
+        if (quality > 100) {
+            quality = 100;
+        }
+        if (qualityparsed && quality >= 0) {
+            writer.setQuality(quality);
+        }
+    }
     if (!writer.write(img)) {
         QTextStream(stdout) << "Could not write image: " << writer.errorString() << '\n';
         return 3;

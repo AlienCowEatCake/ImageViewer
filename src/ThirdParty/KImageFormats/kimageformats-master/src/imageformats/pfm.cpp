@@ -12,9 +12,6 @@
 #include "pfm_p.h"
 #include "util_p.h"
 
-#include <algorithm>
-#include <cmath>
-
 #include <QColorSpace>
 #include <QDataStream>
 #include <QFloat16>
@@ -248,14 +245,14 @@ bool readScanLine(qint32 y, QDataStream &s, QImage &img, const PFMHeader &header
         int r, g, b;
         T f;
         s >> f;
-        r = std::clamp(int(f * 255.0f), int(0), int(255));
+        r = qBound(int(0), int(f * 255.0f), int(255));
         if (bw) {
             g = b = r;
         } else {
             s >> f;
-            g = std::clamp(int(f * 255.0f), int(0), int(255));
+            g = qBound(int(0), int(f * 255.0f), int(255));
             s >> f;
-            b = std::clamp(int(f * 255.0f), int(0), int(255));
+            b = qBound(int(0), int(f * 255.0f), int(255));
         }
         line[x] = qRgb(r, g, b);
 #endif

@@ -1,20 +1,21 @@
-From 9140ffeb05f7baa6244664db9c380623ae1325ed Mon Sep 17 00:00:00 2001
+From 6b8cbc3f349c51b54708acd0de78cd2d6943237d Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:44:31 +0700
-Subject: [PATCH 6/7] Add ability to disable JXL encoder and threads
+Subject: [PATCH 6/8] Add ability to disable JXL encoder and threads
 
 ---
- src/imageformats/jxl.cpp | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ src/imageformats/jxl.cpp | 41 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
 
 diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
-index 78243ab..065a9d5 100644
+index 4bda057..54df907 100644
 --- a/src/imageformats/jxl.cpp
 +++ b/src/imageformats/jxl.cpp
-@@ -12,8 +12,44 @@
- #include "jxl_p.h"
+@@ -14,8 +14,49 @@
  #include "util_p.h"
  
+ #include <jxl/cms.h>
++
 +#if !defined (DISABLE_JXL_ENCODER)
  #include <jxl/encode.h>
 +#else
@@ -43,6 +44,10 @@ index 78243ab..065a9d5 100644
 +#define JxlEncoderUseBoxes(_1) JXL_ENC_ERROR
 +#define JxlEncoderAddBox(_1, _2, _3, _4, _5) JXL_ENC_ERROR
 +#define JxlEncoderCloseBoxes(_1)
++#define JxlEncoderCloseFrames(_1)
++#define JxlEncoderInitExtraChannelInfo(_1, _2)
++#define JxlEncoderSetExtraChannelInfo(_1, _2, _3) JXL_ENC_ERROR
++#define JxlEncoderSetExtraChannelBuffer(_1, _2, _3, _4, _5) JXL_ENC_ERROR
 +#endif
 +#if !defined (DISABLE_JXL_THREADS)
  #include <jxl/thread_parallel_runner.h>
@@ -54,8 +59,8 @@ index 78243ab..065a9d5 100644
 +#define JxlEncoderSetParallelRunner(_1, _2, _3) JXL_ENC_SUCCESS
 +#endif
  
- #if JPEGXL_NUMERIC_VERSION >= JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
- #include <jxl/cms.h>
+ #include <string.h>
+ 
 -- 
-2.47.1
+2.39.5
 

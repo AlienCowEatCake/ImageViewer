@@ -8,6 +8,8 @@
 #ifndef UTIL_P_H
 #define UTIL_P_H
 
+#include <algorithm>
+#include <cmath>
 #include <limits>
 
 #include <QImage>
@@ -23,10 +25,12 @@
 #define META_KEY_COPYRIGHT "Copyright"
 #define META_KEY_CREATIONDATE "CreationDate"
 #define META_KEY_DESCRIPTION "Description"
+#define META_KEY_DIRECTION "Direction"
 #define META_KEY_DOCUMENTNAME "DocumentName"
 #define META_KEY_HOSTCOMPUTER "HostComputer"
 #define META_KEY_LATITUDE "Latitude"
 #define META_KEY_LONGITUDE "Longitude"
+#define META_KEY_MODIFICATIONDATE "ModificationDate"
 #define META_KEY_OWNER "Owner"
 #define META_KEY_SOFTWARE "Software"
 #define META_KEY_TITLE "Title"
@@ -64,6 +68,15 @@ inline QImage imageAlloc(const QSize &size, const QImage::Format &format)
 inline QImage imageAlloc(qint32 width, qint32 height, const QImage::Format &format)
 {
     return imageAlloc(QSize(width, height), format);
+}
+
+inline double qRoundOrZero(double d)
+{
+    // If the value d is outside the range of int, the behavior is undefined.
+    if (d > std::numeric_limits<int>::max()) {
+        return 0;
+    }
+    return qRound(d);
 }
 
 #endif // UTIL_P_H

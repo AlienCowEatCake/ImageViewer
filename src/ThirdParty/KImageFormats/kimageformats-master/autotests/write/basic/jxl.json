@@ -1,0 +1,65 @@
+{
+    "format" : "jxl",
+    "metadata" : [
+        {
+            "key" : "CreationDate",
+            "value" : "2025-01-14T13:53:32+01:00"
+        },
+        {
+            "key" : "Direction",
+            "value" : "123.7"
+        },
+        {
+            "key" : "ModificationDate",
+            "value" : "2025-02-14T15:58:44+01:00"
+        },
+        {
+            "key" : "Software" ,
+            "value" : "Adobe Photoshop 26.2 (Windows)"
+        },
+        {
+            "key" : "Altitude",
+            "value" : "34"
+        },
+        {
+            "key" : "Author",
+            "value" : "KDE Project"
+        },
+        {
+            "key" : "Copyright",
+            "value" : "@2025 KDE Project"
+        },
+        {
+            "key" : "Description",
+            "value" : "TV broadcast test image."
+        },
+        {
+            "key" : "Latitude",
+            "value" : "44.6478"
+        },
+        {
+            "key" : "LensManufacturer",
+            "value" : "KDE Glasses"
+        },
+        {
+            "key" : "LensModel",
+            "value" : "A1234"
+        },
+        {
+            "key" : "Longitude",
+            "value" : "10.9254"
+        },
+        {
+            "key" : "Manufacturer",
+            "value" : "KFramework"
+        },
+        {
+            "key" : "Model",
+            "value" : "KImageFormats"
+        }
+    ],
+    "resolution" : {
+        "dotsPerMeterX" : 11811,
+        "dotsPerMeterY" : 11812
+    }
+}

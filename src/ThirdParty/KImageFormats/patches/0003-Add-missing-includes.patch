@@ -1,26 +1,25 @@
-From c6f59c3ba615039858e78491bd7670bef74c7e4a Mon Sep 17 00:00:00 2001
+From 688c60d644acec246fc0bb592633605b377e61d1 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 23 Jun 2024 19:58:27 +0700
-Subject: [PATCH 3/7] Add missing includes
+Subject: [PATCH 3/8] Add missing includes
 
 ---
- src/imageformats/pfm.cpp | 3 +++
- 1 file changed, 3 insertions(+)
+ src/imageformats/util_p.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/src/imageformats/pfm.cpp b/src/imageformats/pfm.cpp
-index e431b2c..2872e42 100644
---- a/src/imageformats/pfm.cpp
-+++ b/src/imageformats/pfm.cpp
-@@ -12,6 +12,9 @@
- #include "pfm_p.h"
- #include "util_p.h"
+diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
+index 38e21d6..d7562fb 100644
+--- a/src/imageformats/util_p.h
++++ b/src/imageformats/util_p.h
+@@ -8,6 +8,8 @@
+ #ifndef UTIL_P_H
+ #define UTIL_P_H
  
 +#include <algorithm>
 +#include <cmath>
-+
- #include <QColorSpace>
- #include <QDataStream>
- #include <QFloat16>
+ #include <limits>
+ 
+ #include <QImage>
 -- 
 2.39.5
 

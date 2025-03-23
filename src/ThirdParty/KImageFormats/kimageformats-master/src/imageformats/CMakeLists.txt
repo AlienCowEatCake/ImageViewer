@@ -25,7 +25,7 @@ kimageformats_add_plugin(kimg_ani SOURCES ani.cpp)
 ##################################
 
 if (TARGET avif)
-    kimageformats_add_plugin(kimg_avif SOURCES "avif.cpp")
+    kimageformats_add_plugin(kimg_avif SOURCES avif.cpp microexif.cpp)
     target_link_libraries(kimg_avif PRIVATE "avif")
 endif()
 
@@ -68,22 +68,21 @@ kimageformats_add_plugin(kimg_hdr SOURCES hdr.cpp)
 ##################################
 
 if (LibHeif_FOUND)
-    kimageformats_add_plugin(kimg_heif SOURCES heif.cpp)
+    kimageformats_add_plugin(kimg_heif SOURCES heif.cpp microexif.cpp)
     target_link_libraries(kimg_heif PRIVATE PkgConfig::LibHeif)
 endif()
 
 ##################################
 
-if (LibJXL_FOUND AND LibJXLThreads_FOUND)
-    kimageformats_add_plugin(kimg_jxl SOURCES jxl.cpp)
-    target_link_libraries(kimg_jxl PRIVATE PkgConfig::LibJXL PkgConfig::LibJXLThreads)
-    if(LibJXL_VERSION VERSION_GREATER_EQUAL "0.9.0")
-        if(LibJXLCMS_FOUND)
-            target_link_libraries(kimg_jxl PRIVATE PkgConfig::LibJXLCMS)
-        else()
-            message(SEND_ERROR "libjxl_cms was not found!")
-        endif()
-    endif()
+if (LibJXL_FOUND AND LibJXLThreads_FOUND AND LibJXLCMS_FOUND)
+    kimageformats_add_plugin(kimg_jxl SOURCES jxl.cpp microexif.cpp)
+    target_link_libraries(kimg_jxl PRIVATE PkgConfig::LibJXL PkgConfig::LibJXLThreads PkgConfig::LibJXLCMS)
+endif()
+
+if (OpenJPEG_FOUND)
+    kimageformats_add_plugin(kimg_jp2 SOURCES jp2.cpp scanlineconverter.cpp)
+    target_include_directories(kimg_jp2 PRIVATE ${OPENJPEG_INCLUDE_DIRS})
+    target_link_libraries(kimg_jp2 PRIVATE ${OPENJPEG_LIBRARIES})
 endif()
 
 ##################################
@@ -100,7 +99,7 @@ kimageformats_add_plugin(kimg_pfm SOURCES pfm.cpp)
 
 ##################################
 
-kimageformats_add_plugin(kimg_psd SOURCES psd.cpp scanlineconverter.cpp)
+kimageformats_add_plugin(kimg_psd SOURCES psd.cpp microexif.cpp scanlineconverter.cpp)
 
 ##################################
 
@@ -141,7 +140,7 @@ endif()
 ##################################
 
 if (LibJXR_FOUND)
-    kimageformats_add_plugin(kimg_jxr SOURCES jxr.cpp)
+    kimageformats_add_plugin(kimg_jxr SOURCES jxr.cpp microexif.cpp)
     kde_enable_exceptions()
     target_include_directories(kimg_jxr PRIVATE ${LIBJXR_INCLUDE_DIRS})
     target_link_libraries(kimg_jxr PRIVATE ${LIBJXR_LIBRARIES})

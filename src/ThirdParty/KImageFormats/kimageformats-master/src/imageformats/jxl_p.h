@@ -55,7 +55,8 @@ private:
     bool countALLFrames();
     bool decode_one_frame();
     bool rewind();
-    bool decodeBoxes(JxlDecoderStatus &status);
+    bool decodeContainer();
+    bool extractBox(QByteArray &output, size_t container_size);
 
     enum ParseJpegXLState {
         ParseJpegXLError = -1,
@@ -86,13 +87,16 @@ private:
 
     QImage m_current_image;
     QColorSpace m_colorspace;
+    bool m_isCMYK;
+    uint32_t m_cmyk_channel_id;
+    uint32_t m_alpha_channel_id;
     QByteArray m_xmp;
+    QByteArray m_exif;
 
     QImage::Format m_input_image_format;
     QImage::Format m_target_image_format;
 
     JxlPixelFormat m_input_pixel_format;
-    size_t m_buffer_size;
 };
 
 class QJpegXLPlugin : public QImageIOPlugin

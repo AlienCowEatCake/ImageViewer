@@ -1,0 +1,19 @@
+[
+    {
+        "fileName" : "gimp_exif.png",
+        "metadata" : [
+            {
+                "key" : "ModificationDate",
+                "value" : "2025-01-05T10:18:16"
+            },
+            {
+                "key" : "Software" ,
+                "value" : "GIMP 3.0.0-RC2"
+            }
+        ],
+        "resolution" : {
+            "dotsPerMeterX" : 5905,
+            "dotsPerMeterY" : 6692
+        }
+    }
+]

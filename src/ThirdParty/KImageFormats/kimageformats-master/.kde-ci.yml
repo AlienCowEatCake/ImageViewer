@@ -1,10 +1,11 @@
 Dependencies:
-- 'on': ['Linux', 'FreeBSD', 'macOS', 'Windows', 'Android']
-  'require':
+ - 'on': ['Linux', 'FreeBSD', 'macOS', 'Windows', 'Android']
+   'require':
     'frameworks/extra-cmake-modules': '@same'
-    'frameworks/karchive' : '@same'
+    'frameworks/karchive': '@same'
 
 Options:
-  test-before-installing: True
-  require-passing-tests-on: [ 'Linux', 'FreeBSD', 'Windows' ]
-  cmake-options: "-DKIMAGEFORMATS_DDS=ON -DKIMAGEFORMATS_JXR=ON"
+ test-before-installing: True
+ require-passing-tests-on: ['Linux', 'FreeBSD', 'Windows']
+ cmake-options: "-DKIMAGEFORMATS_DDS=ON -DKIMAGEFORMATS_JXR=ON -DKIMAGEFORMATS_HEIF=ON"
+ per-test-timeout: 90

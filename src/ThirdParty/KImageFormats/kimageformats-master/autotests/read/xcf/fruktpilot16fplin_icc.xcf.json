@@ -1,0 +1,11 @@
+[
+    {
+        "fileName" : "fruktpilot16fplin_icc.png",
+        "seeAlso" : "https://bugreports.qt.io/browse/QTBUG-120614",
+        "fuzziness" : 1,
+        "resolution" : {
+            "dotsPerMeterX" : 2834,
+            "dotsPerMeterY" : 2834
+        }
+    }
+]

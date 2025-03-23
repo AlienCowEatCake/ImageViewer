@@ -1,0 +1,59 @@
+[
+    {
+        "fileName" : "metadata.png",
+        "metadata" : [
+            {
+                "key" : "ModificationDate",
+                "value" : "2025-02-19T08:27:22+01:00"
+            },
+            {
+                "key" : "Software" ,
+                "value" : "GIMP 3.0.0-RC3"
+            },
+            {
+                "key" : "Altitude",
+                "value" : "34"
+            },
+            {
+                "key" : "Author",
+                "value" : "KDE Project"
+            },
+            {
+                "key" : "Copyright",
+                "value" : "@2025 KDE Project"
+            },
+            {
+                "key" : "Description",
+                "value" : "TV broadcast test image."
+            },
+            {
+                "key" : "Latitude",
+                "value" : "44.6478"
+            },
+            {
+                "key" : "LensManufacturer",
+                "value" : "KDE Glasses"
+            },
+            {
+                "key" : "LensModel",
+                "value" : "A1234"
+            },
+            {
+                "key" : "Longitude",
+                "value" : "10.9254"
+            },
+            {
+                "key" : "Manufacturer",
+                "value" : "KFramework"
+            },
+            {
+                "key" : "Model",
+                "value" : "KImageFormats"
+            }
+        ],
+        "resolution" : {
+            "dotsPerMeterX" : 11811,
+            "dotsPerMeterY" : 5905
+        }
+    }
+]

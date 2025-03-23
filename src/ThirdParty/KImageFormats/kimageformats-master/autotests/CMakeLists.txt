@@ -19,9 +19,15 @@ macro(kimageformats_read_tests)
     endif()
 
     foreach(_testname ${KIF_RT_UNPARSED_ARGUMENTS})
+        string(REGEX MATCH "-skipoptional" _is_skip_optional "${_testname}")
+        unset(skip_optional_arg)
+        if (_is_skip_optional)
+            set(skip_optional_arg "--skip-optional-tests")
+            string(REGEX REPLACE "-skipoptional$" "" _testname "${_testname}")
+        endif()
         add_test(
             NAME kimageformats-read-${_testname}
-            COMMAND readtest ${_fuzzarg} ${_testname}
+            COMMAND readtest ${skip_optional_arg} ${_fuzzarg} ${_testname}
         )
     endforeach(_testname)
 endmacro()
@@ -43,6 +49,8 @@ macro(kimageformats_write_tests)
     foreach(_testname ${KIF_RT_UNPARSED_ARGUMENTS})
         string(REGEX MATCH "-lossless$" _is_lossless "${_testname}")
         string(REGEX MATCH "-nodatacheck" _is_no_data_check "${_testname}")
+        string(REGEX MATCH "-skipoptional" _is_skip_optional "${_testname}")
+        unset(skip_optional_arg)
         unset(lossless_arg)
         unset(no_data_check_arg)
         if (_is_lossless)
@@ -53,9 +61,13 @@ macro(kimageformats_write_tests)
             set(no_data_check_arg "--no-data-check")
             string(REGEX REPLACE "-nodatacheck$" "" _testname "${_testname}")
         endif()
+        if (_is_skip_optional)
+            set(skip_optional_arg "--skip-optional-tests")
+            string(REGEX REPLACE "-skipoptional$" "" _testname "${_testname}")
+        endif()
         add_test(
             NAME kimageformats-write-${_testname}
-            COMMAND writetest ${lossless_arg} ${no_data_check_arg} ${_fuzzarg} ${_testname}
+            COMMAND writetest ${lossless_arg} ${no_data_check_arg} ${skip_optional_arg} ${_fuzzarg} ${_testname}
         )
     endforeach(_testname)
 endmacro()
@@ -110,16 +122,46 @@ if (LibHeif_FOUND)
         kimageformats_read_tests(FUZZ 1
             hej2
         )
+        kimageformats_write_tests(FUZZ 1
+            hej2-nodatacheck-lossless
+        )
+    endif()
+
+    if (LibHeif_VERSION VERSION_GREATER_EQUAL "1.19.6")
+        kimageformats_read_tests(FUZZ 4
+            avci
+        )
+    endif()
+endif()
+
+if (OpenJPEG_FOUND)
+    kimageformats_read_tests(
+        jp2
+    )
+    # CMYK writing is incorrect in versions before 2.5.3
+    if ("${OPENJPEG_MAJOR_VERSION}.${OPENJPEG_MINOR_VERSION}.${OPENJPEG_BUILD_VERSION}" VERSION_GREATER_EQUAL "2.5.3")
+        kimageformats_write_tests(
+            jp2-nodatacheck-lossless
+        )
     endif()
 endif()
 
 if (LibJXL_FOUND AND LibJXLThreads_FOUND)
-    kimageformats_read_tests(
-        jxl
-    )
-    kimageformats_write_tests(
-        jxl-nodatacheck-lossless
-    )
+    if(LibJXL_VERSION VERSION_GREATER_EQUAL "0.11.0")
+        kimageformats_read_tests(
+            jxl
+        )
+        kimageformats_write_tests(
+            jxl-nodatacheck-lossless
+        )
+    else()
+        kimageformats_read_tests(
+            jxl-skipoptional
+        )
+        kimageformats_write_tests(
+            jxl-skipoptional-nodatacheck-lossless
+        )
+    endif()
 endif()
 
 if (LibJXR_FOUND)
@@ -131,9 +173,7 @@ if (LibJXR_FOUND)
     )
 endif()
 
-# Allow some fuzziness when reading this formats, to allow for
-# rounding errors (eg: in alpha blending).
-kimageformats_read_tests(FUZZ 1
+kimageformats_read_tests(
     xcf
 )
 
@@ -144,7 +184,7 @@ kimageformats_read_tests(FUZZ 1
 # You can append -lossless to the format to indicate that
 # reading back the image data will result in an identical image.
 kimageformats_write_tests(
-    pcx-lossless
+    pcx-nodatacheck
     pic-lossless
     qoi-lossless
     rgb-lossless
@@ -163,7 +203,7 @@ if (OpenEXR_FOUND)
     )
     # Color space conversions from sRGB to linear on saving and
     # from linear to sRGB on loading result in some rounding errors.
-    kimageformats_write_tests(FUZZ 5
+    kimageformats_write_tests(FUZZ 6
         exr-nodatacheck-lossless
     )
 endif()

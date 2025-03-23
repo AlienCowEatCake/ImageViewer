@@ -40,20 +40,18 @@ using pi_unique_ptr = std::unique_ptr<libraw_processed_image_t, std::function<vo
 // Known formats supported by LibRaw (in alphabetical order and lower case)
 const auto supported_formats = QSet<QByteArray>{
     "3fr",
-    "arw", "arq",
-    "bay", "bmq",
-    "cr2", "cr3", "cap", "cine", "cs1", "crw",
-    "dcs", "dc2", "dcr", "dng", "drf", "dxo",
-    "eip", "erf",
+    "arw",
+    "crw", "cr2", "cr3",
+    "dcr", "dng",
+    "erf",
     "fff",
     "iiq",
-    "k25", "kc2", "kdc",
-    "mdc", "mef", "mfw", "mos", "mrw",
+    "k25", "kdc",
+    "mdc", "mef", "mos", "mrw",
     "nef", "nrw",
-    "obm", "orf", "ori",
-    "pef", "ptx", "pxn",
-    "qtk",
-    "r3d", "raf", "raw", "rdc", "rw2", "rwl", "rwz",
+    "orf",
+    "pef",
+    "raf", "raw", "rwl", "rw2",
     "sr2", "srf", "srw", "sti",
     "x3f"
 };
@@ -581,6 +579,66 @@ void setParams(QImageIOHandler *handler, LibRaw *rawProcessor)
     params.use_fuji_rotate = T_SR(quality) ? 0 : 1;
 }
 
+bool LoadTHUMB(QImageIOHandler *handler, QImage &img)
+{
+    std::unique_ptr<LibRaw> rawProcessor(new LibRaw);
+
+    // *** Open the stream
+    auto device = handler->device();
+#ifndef EXCLUDE_LibRaw_QIODevice
+    LibRaw_QIODevice stream(device);
+    if (rawProcessor->open_datastream(&stream) != LIBRAW_SUCCESS) {
+        return false;
+    }
+#else
+    auto ba = device->readAll();
+    if (rawProcessor->open_buffer(ba.data(), ba.size()) != LIBRAW_SUCCESS) {
+        return false;
+    }
+#endif
+
+#if (LIBRAW_VERSION < LIBRAW_MAKE_VERSION(0, 21, 0))
+    // *** Unpacking selected thumbnail
+    if (rawProcessor->unpack_thumb() != LIBRAW_SUCCESS) {
+        return false;
+    }
+#else
+    // *** Search for the bigger thumbnail
+    auto &&tlist = rawProcessor->imgdata.thumbs_list;
+    auto idx = 0;
+    for (auto n = 1; n < std::min(tlist.thumbcount, LIBRAW_THUMBNAIL_MAXCOUNT); ++n) {
+        if (tlist.thumblist[n].twidth > tlist.thumblist[idx].twidth)
+            idx = n;
+    }
+
+    // *** Unpacking selected thumbnail
+    if (rawProcessor->unpack_thumb_ex(idx) != LIBRAW_SUCCESS) {
+        return false;
+    }
+#endif
+
+    // *** Convert to QImage
+    pi_unique_ptr processedImage(rawProcessor->dcraw_make_mem_thumb(), LibRaw::dcraw_clear_mem);
+    if (processedImage == nullptr) {
+        return false;
+    }
+    auto ba = QByteArray(reinterpret_cast<const char *>(processedImage->data), qsizetype(processedImage->data_size));
+    if (ba.isEmpty()) {
+        return false;
+    }
+    if (processedImage->type == LIBRAW_IMAGE_BITMAP) {
+        // clang-format off
+        auto header = QString::fromUtf8("P%1\n%2 %3\n%4\n") // taken from KDcraw
+                          .arg(processedImage->colors == 3 ? QLatin1String("6") : QLatin1String("5"))
+                          .arg(processedImage->width)
+                          .arg(processedImage->height)
+                          .arg((1 << processedImage->bits)-1);
+        // clang-format on
+        ba.prepend(header.toLatin1());
+    }
+    return img.loadFromData(ba);
+}
+
 bool LoadRAW(QImageIOHandler *handler, QImage &img)
 {
     std::unique_ptr<LibRaw> rawProcessor(new LibRaw);
@@ -679,6 +737,11 @@ bool LoadRAW(QImageIOHandler *handler, QImage &img)
         if (params.output_color == 7) {
             img.setColorSpace(QColorSpace(QColorSpace::DisplayP3));
         }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+        if (params.output_color == 8) {
+            img.setColorSpace(QColorSpace(QColorSpace::Bt2020));
+        }
+#endif
     }
 
     // *** Set the metadata
@@ -756,7 +819,16 @@ bool RAWHandler::read(QImage *image)
     }
 
     QImage img;
-    if (!LoadRAW(this, img)) {
+    auto ok = false;
+    if (m_quality == 0) {
+        ok = LoadTHUMB(this, img);
+        if (!ok && !dev->isSequential())
+            dev->seek(m_startPos);
+    }
+    if (!ok) {
+        ok = LoadRAW(this, img);
+    }
+    if (!ok) {
         return false;
     }
 

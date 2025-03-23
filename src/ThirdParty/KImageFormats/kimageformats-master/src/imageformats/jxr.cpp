@@ -15,6 +15,7 @@
  */
 
 #include "jxr_p.h"
+#include "microexif_p.h"
 #include "util_p.h"
 
 #include <QColorSpace>
@@ -79,12 +80,22 @@ Q_LOGGING_CATEGORY(LOG_JXRPLUGIN, "kf.imageformats.plugins.jxr", QtWarningMsg)
 
 // #define JXR_ENABLE_ADVANCED_METADATA
 
+#ifndef JXR_MAX_METADATA_SIZE
+/*!
+ * XMP and EXIF maximum size.
+ */
+#define JXR_MAX_METADATA_SIZE (4 * 1024 * 1024)
+#endif
+
 class JXRHandlerPrivate : public QSharedData
 {
 private:
-    QSharedPointer<QTemporaryDir> tempDir;
-    mutable QSharedPointer<QFile> jxrFile;
-    mutable QHash<QString, QString> txtMeta;
+    QSharedPointer<QTemporaryDir> m_tempDir;
+    QSharedPointer<QFile> m_jxrFile;
+    MicroExif m_exif;
+    qint32 m_quality;
+    QImageIOHandler::Transformations m_transformations;
+    mutable QHash<QString, QString> m_txtMeta;
 
 public:
     PKFactory *pFactory = nullptr;
@@ -93,8 +104,10 @@ public:
     PKImageEncode *pEncoder = nullptr;
 
     JXRHandlerPrivate()
+        : m_quality(-1)
+        , m_transformations(QImageIOHandler::TransformationNone)
     {
-        tempDir = QSharedPointer<QTemporaryDir>(new QTemporaryDir);
+        m_tempDir = QSharedPointer<QTemporaryDir>(new QTemporaryDir);
         if (PKCreateFactory(&pFactory, PK_SDK_VERSION) == WMP_errSuccess) {
             PKCreateCodecFactory(&pCodecFactory, WMP_SDK_VERSION);
         }
@@ -122,8 +135,100 @@ public:
 
     QString fileName() const
     {
-        return jxrFile->fileName();
+        return m_jxrFile->fileName();
     }
+
+    /*!
+     * \brief setQuality
+     * Set the image quality (write only)
+     * \param q
+     */
+    void setQuality(qint32 q)
+    {
+        m_quality = q;
+    }
+    qint32 quality() const
+    {
+        return m_quality;
+    }
+
+    /*!
+     * \brief setTransformation
+     * Set the image transformation (read/write)
+     * \param t
+     */
+    void setTransformation(const QImageIOHandler::Transformations& t)
+    {
+        m_transformations = t;
+    }
+    QImageIOHandler::Transformations transformation() const
+    {
+        return m_transformations;
+    }
+
+    static QImageIOHandler::Transformations orientationToTransformation(const ORIENTATION& o)
+    {
+        auto v = QImageIOHandler::TransformationNone;
+        switch (o) {
+        case O_FLIPV:
+            v = QImageIOHandler::TransformationFlip;
+            break;
+        case O_FLIPH:
+            v = QImageIOHandler::TransformationMirror;
+            break;
+        case O_FLIPVH:
+            v = QImageIOHandler::TransformationRotate180;
+            break;
+        case O_RCW:
+            v = QImageIOHandler::TransformationRotate90;
+            break;
+        case O_RCW_FLIPH:
+            v = QImageIOHandler::TransformationFlipAndRotate90;
+            break;
+        case O_RCW_FLIPV:
+            v = QImageIOHandler::TransformationMirrorAndRotate90;
+            break;
+        case O_RCW_FLIPVH:
+            v = QImageIOHandler::TransformationRotate270;
+            break;
+        default:
+            v = QImageIOHandler::TransformationNone;
+            break;
+        }
+        return v;
+    }
+    static ORIENTATION transformationToOrientation(const QImageIOHandler::Transformations& t)
+    {
+        auto v = O_NONE;
+        switch (t) {
+        case QImageIOHandler::TransformationFlip:
+            v = O_FLIPV;
+            break;
+        case QImageIOHandler::TransformationMirror:
+            v = O_FLIPH;
+            break;
+        case QImageIOHandler::TransformationRotate180:
+            v = O_FLIPVH;
+            break;
+        case QImageIOHandler::TransformationRotate90:
+            v = O_RCW;
+            break;
+        case QImageIOHandler::TransformationFlipAndRotate90:
+            v = O_RCW_FLIPH;
+            break;
+        case QImageIOHandler::TransformationMirrorAndRotate90:
+            v = O_RCW_FLIPV;
+            break;
+        case QImageIOHandler::TransformationRotate270:
+            v = O_RCW_FLIPVH;
+            break;
+        default:
+            v = O_NONE;
+            break;
+        }
+        return v;
+    }
+
 
     /* *** READ *** */
 
@@ -306,7 +411,7 @@ public:
         }
 #ifdef JXR_ENABLE_ADVANCED_METADATA
         quint32 size;
-        if (!PKImageDecode_GetXMPMetadata_WMP(pDecoder, nullptr, &size) && size) {
+        if (!PKImageDecode_GetXMPMetadata_WMP(pDecoder, nullptr, &size) && size > 0 && size < JXR_MAX_METADATA_SIZE) {
             QByteArray ba(size, 0);
             if (!PKImageDecode_GetXMPMetadata_WMP(pDecoder, reinterpret_cast<quint8 *>(ba.data()), &size)) {
                 xmp = QString::fromUtf8(ba);
@@ -317,11 +422,20 @@ public:
     }
 
     /*!
-     * \brief setTextMetadata
-     * Set the text metadata into \a image
+     * \brief exifData
+     * \return The EXIF data.
+     */
+    MicroExif exifData() const
+    {
+        return m_exif;
+    }
+
+    /*!
+     * \brief setMetadata
+     * Set the metadata into \a image
      * \param image Image on which to write metadata
      */
-    void setTextMetadata(QImage& image)
+    void setMetadata(QImage& image)
     {
         auto xmp = xmpData();
         if (!xmp.isEmpty()) {
@@ -343,10 +457,6 @@ public:
         if (!model.isEmpty()) {
             image.setText(QStringLiteral(META_KEY_MODEL), model);
         }
-        auto cDate = dateTime();
-        if (!cDate.isEmpty()) {
-            image.setText(QStringLiteral(META_KEY_CREATIONDATE), cDate);
-        }
         auto author = artist();
         if (!author.isEmpty()) {
             image.setText(QStringLiteral(META_KEY_AUTHOR), author);
@@ -367,20 +477,23 @@ public:
         if (!docn.isEmpty()) {
             image.setText(QStringLiteral(META_KEY_DOCUMENTNAME), docn);
         }
+        auto exif = exifData();
+        if (!exif.isEmpty()) {
+            exif.updateImageMetadata(image);
+        }
     }
 
 #define META_TEXT(name, key)                                                                                                                                   \
     QString name() const                                                                                                                                       \
     {                                                                                                                                                          \
         readTextMeta();                                                                                                                                        \
-        return txtMeta.value(QStringLiteral(key));                                                                                                             \
+        return m_txtMeta.value(QStringLiteral(key));                                                                                                           \
     }
 
     META_TEXT(description, META_KEY_DESCRIPTION)
     META_TEXT(cameraMake, META_KEY_MANUFACTURER)
     META_TEXT(cameraModel, META_KEY_MODEL)
     META_TEXT(software, META_KEY_SOFTWARE)
-    META_TEXT(dateTime, META_KEY_CREATIONDATE)
     META_TEXT(artist, META_KEY_AUTHOR)
     META_TEXT(copyright, META_KEY_COPYRIGHT)
     META_TEXT(caption, META_KEY_TITLE)
@@ -399,9 +512,9 @@ public:
     bool initForWriting()
     {
         // I have to use QFile because, on Windows, the QTemporary file is locked (even if I close it)
-        auto fileName = QStringLiteral("%1.jxr").arg(tempDir->filePath(QUuid::createUuid().toString(QUuid::WithoutBraces).left(8)));
+        auto fileName = QStringLiteral("%1.jxr").arg(m_tempDir->filePath(QUuid::createUuid().toString(QUuid::WithoutBraces).left(8)));
         QSharedPointer<QFile> file(new QFile(fileName));
-        jxrFile = file;
+        m_jxrFile = file;
         return initEncoder();
     }
 
@@ -421,7 +534,7 @@ public:
             return false;
         }
 
-        if (!deviceCopy(device, jxrFile.data())) {
+        if (!deviceCopy(device, m_jxrFile.data())) {
             qCWarning(LOG_JXRPLUGIN) << "JXRHandlerPrivate::finalizeWriting() error while writing in the target device";
             return false;
         }
@@ -544,6 +657,9 @@ public:
         wmiSCP->cNumOfSliceMinus1H = wmiSCP->cNumOfSliceMinus1V = 0;
         wmiSCP->sbSubband = SB_ALL;
         wmiSCP->uAlphaMode = image.hasAlphaChannel() ? 2 : 0;
+        if (quality() > -1) {
+            wmiSCP->uiDefaultQPIndex = qBound(0, 100 - quality(), 100);
+        }
         return true;
     }
 
@@ -579,7 +695,6 @@ public:
         META_CTEXT(META_KEY_MODEL, pvarCameraModel)
         META_CTEXT(META_KEY_AUTHOR, pvarArtist)
         META_CTEXT(META_KEY_COPYRIGHT, pvarCopyright)
-        META_CTEXT(META_KEY_CREATIONDATE, pvarDateTime)
         META_CTEXT(META_KEY_DOCUMENTNAME, pvarDocumentName)
         META_CTEXT(META_KEY_HOSTCOMPUTER, pvarHostComputer)
         META_WTEXT(META_KEY_TITLE, pvarCaption)
@@ -594,12 +709,33 @@ public:
             meta.pvarSoftware.VT.pszVal = software.data();
         }
 
+        // Date and Time (TIFF format)
+        auto cDate = QDateTime::fromString(image.text(QStringLiteral(META_KEY_MODIFICATIONDATE)), Qt::ISODate);
+        auto sDate = cDate.isValid() ? cDate.toString(QStringLiteral("yyyy:MM:dd HH:mm:ss")).toLatin1() : QByteArray();
+        if (!sDate.isEmpty()) {
+            meta.pvarDateTime.vt = DPKVT_LPSTR;
+            meta.pvarDateTime.VT.pszVal = sDate.data();
+        }
+
         auto xmp = image.text(QStringLiteral(META_KEY_XMP_ADOBE)).toUtf8();
         if (!xmp.isNull()) {
-            if (auto err = PKImageEncode_SetXMPMetadata_WMP(pEncoder, reinterpret_cast<quint8 *>(xmp.data()), xmp.size())) {
+            if (auto err = PKImageEncode_SetXMPMetadata_WMP(pEncoder, reinterpret_cast<const quint8 *>(xmp.constData()), xmp.size())) {
                 qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() error while setting XMP data:" << err;
             }
         }
+
+        auto exif = MicroExif::fromImage(image);
+        if (!exif.isEmpty()) {
+            auto exifIfd = exif.exifIfdByteArray(QDataStream::LittleEndian);
+            if (auto err = PKImageEncode_SetEXIFMetadata_WMP(pEncoder, reinterpret_cast<const quint8 *>(exifIfd.constData()), exifIfd.size())) {
+                qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() error while setting EXIF data:" << err;
+            }
+            auto gpsIfd = exif.gpsIfdByteArray(QDataStream::LittleEndian);
+            if (auto err = PKImageEncode_SetGPSInfoMetadata_WMP(pEncoder, reinterpret_cast<const quint8 *>(gpsIfd.constData()), gpsIfd.size())) {
+                qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() error while setting GPS data:" << err;
+            }
+        }
+
         if (auto err = pEncoder->SetDescriptiveMetadata(pEncoder, &meta)) {
             qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() error while setting descriptive data:" << err;
         }
@@ -709,11 +845,11 @@ private:
         if (device == nullptr) {
             return false;
         }
-        if (!jxrFile.isNull()) {
+        if (!m_jxrFile.isNull()) {
             return true;
         }
         // I have to use QFile because, on Windows, the QTemporary file is locked (even if I close it)
-        auto fileName = QStringLiteral("%1.jxr").arg(tempDir->filePath(QUuid::createUuid().toString(QUuid::WithoutBraces).left(8)));
+        auto fileName = QStringLiteral("%1.jxr").arg(m_tempDir->filePath(QUuid::createUuid().toString(QUuid::WithoutBraces).left(8)));
         QSharedPointer<QFile> file(new QFile(fileName));
         if (!file->open(QFile::WriteOnly)) {
             return false;
@@ -723,7 +859,8 @@ private:
             return false;
         }
         file->close();
-        jxrFile = file;
+        m_exif = MicroExif::fromDevice(file.data());
+        m_jxrFile = file;
         return true;
     }
 
@@ -739,6 +876,8 @@ private:
             qCWarning(LOG_JXRPLUGIN) << "JXRHandlerPrivate::initDecoder() unable to create decoder:" << err;
             return false;
         }
+        setTransformation(JXRHandlerPrivate::orientationToTransformation(pDecoder->WMP.wmiI.oOrientation));
+        pDecoder->WMP.wmiI.oOrientation = O_NONE; // disable the library rotation application
         return true;
     }
 
@@ -754,6 +893,7 @@ private:
             qCWarning(LOG_JXRPLUGIN) << "JXRHandlerPrivate::initEncoder() unable to create encoder:" << err;
             return false;
         }
+        pEncoder->WMP.oOrientation = JXRHandlerPrivate::transformationToOrientation(transformation());
         return true;
     }
 
@@ -761,7 +901,7 @@ private:
         if (pDecoder == nullptr) {
             return false;
         }
-        if (!txtMeta.isEmpty()) {
+        if (!m_txtMeta.isEmpty()) {
             return true;
         }
 
@@ -772,15 +912,14 @@ private:
 
 #define META_TEXT(name, field)                                                                                                                                 \
     if (meta.field.vt == DPKVT_LPSTR)                                                                                                                          \
-        txtMeta.insert(QStringLiteral(name), QString::fromUtf8(meta.field.VT.pszVal));                                                                         \
+        m_txtMeta.insert(QStringLiteral(name), QString::fromUtf8(meta.field.VT.pszVal));                                                                       \
     else if (meta.field.vt == DPKVT_LPWSTR)                                                                                                                    \
-        txtMeta.insert(QStringLiteral(name), QString::fromUtf16(reinterpret_cast<char16_t *>(meta.field.VT.pwszVal)));
+        m_txtMeta.insert(QStringLiteral(name), QString::fromUtf16(reinterpret_cast<char16_t *>(meta.field.VT.pwszVal)));
 
         META_TEXT(META_KEY_DESCRIPTION, pvarImageDescription)
         META_TEXT(META_KEY_MANUFACTURER, pvarCameraMake)
         META_TEXT(META_KEY_MODEL, pvarCameraModel)
         META_TEXT(META_KEY_SOFTWARE, pvarSoftware)
-        META_TEXT(META_KEY_CREATIONDATE, pvarDateTime)
         META_TEXT(META_KEY_AUTHOR, pvarArtist)
         META_TEXT(META_KEY_COPYRIGHT, pvarCopyright)
         META_TEXT(META_KEY_TITLE, pvarCaption)
@@ -868,7 +1007,7 @@ bool JXRHandler::read(QImage *outImage)
 
     // Metadata (e.g.: icc profile, description, etc...)
     img.setColorSpace(d->colorSpace());
-    d->setTextMetadata(img);
+    d->setMetadata(img);
 
 #ifndef JXR_DENY_FLOAT_IMAGE
     // JXR float are stored in scRGB.
@@ -879,11 +1018,11 @@ bool JXRHandler::read(QImage *outImage)
             if (img.depth() == 64) {
                 auto line = reinterpret_cast<qfloat16 *>(img.scanLine(y));
                 for (int x = 0, w = img.width() * 4; x < w; x += 4)
-                    line[x + 3] = hasAlpha ? std::clamp(line[x + 3], qfloat16(0), qfloat16(1)) : qfloat16(1);
+                    line[x + 3] = hasAlpha ? qBound(qfloat16(0), line[x + 3], qfloat16(1)) : qfloat16(1);
             } else {
                 auto line = reinterpret_cast<float *>(img.scanLine(y));
                 for (int x = 0, w = img.width() * 4; x < w; x += 4)
-                    line[x + 3] = hasAlpha ? std::clamp(line[x + 3], float(0), float(1)) : float(1);
+                    line[x + 3] = hasAlpha ? qBound(float(0), line[x + 3], float(1)) : float(1);
             }
         }
         if (!img.colorSpace().isValid()) {
@@ -922,6 +1061,14 @@ bool JXRHandler::write(const QImage &image)
         return false;
     }
 #ifndef JXR_DISABLE_BGRA_HACK
+    if (IsEqualGUID(jxlfmt, GUID_PKPixelFormat32bppRGB)) {
+        jxlfmt = GUID_PKPixelFormat32bppBGR;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        qi = qi.rgbSwapped();
+#else
+        qi.rgbSwap();
+#endif
+    }
     if (IsEqualGUID(jxlfmt, GUID_PKPixelFormat32bppRGBA)) {
         jxlfmt = GUID_PKPixelFormat32bppBGRA;
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -946,10 +1093,6 @@ bool JXRHandler::write(const QImage &image)
         qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() something wrong when calculating encoder parameters for" << qi.format();
         return false;
     }
-    if (m_quality > -1) {
-        wmiSCP.uiDefaultQPIndex = qBound(0, 100 - m_quality, 100);
-    }
-
     if (auto err = d->pEncoder->Initialize(d->pEncoder, pEncodeStream, &wmiSCP, sizeof(wmiSCP))) {
         qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() error while initializing the encoder:" << err;
         return false;
@@ -992,10 +1135,18 @@ bool JXRHandler::write(const QImage &image)
 void JXRHandler::setOption(ImageOption option, const QVariant &value)
 {
     if (option == QImageIOHandler::Quality) {
-        bool ok = false;
+        auto ok = false;
         auto q = value.toInt(&ok);
         if (ok) {
-            m_quality = q;
+            d->setQuality(q);
+        }
+    }
+
+    if (option == QImageIOHandler::ImageTransformation) {
+        auto ok = false;
+        auto t = value.toInt(&ok);
+        if (ok) {
+            d->setTransformation(QImageIOHandler::Transformation(t));
         }
     }
 }
@@ -1012,7 +1163,7 @@ bool JXRHandler::supportsOption(ImageOption option) const
         return true;
     }
     if (option == QImageIOHandler::ImageTransformation) {
-        return false; // disabled because test cases are missing
+        return true;
     }
     return false;
 }
@@ -1037,39 +1188,13 @@ QVariant JXRHandler::option(ImageOption option) const
     }
 
     if (option == QImageIOHandler::Quality) {
-        v = m_quality;
+        v = d->quality();
     }
 
     if (option == QImageIOHandler::ImageTransformation) {
-        // TODO: rotation info (test case needed)
-        if (d->initForReading(device())) {
-            switch (d->pDecoder->WMP.oOrientationFromContainer) {
-            case O_FLIPV:
-                v = int(QImageIOHandler::TransformationFlip);
-                break;
-            case O_FLIPH:
-                v = int(QImageIOHandler::TransformationMirror);
-                break;
-            case O_FLIPVH:
-                v = int(QImageIOHandler::TransformationRotate180);
-                break;
-            case O_RCW:
-                v = int(QImageIOHandler::TransformationRotate90);
-                break;
-            case O_RCW_FLIPV:
-                v = int(QImageIOHandler::TransformationFlipAndRotate90);
-                break;
-            case O_RCW_FLIPH:
-                v = int(QImageIOHandler::TransformationMirrorAndRotate90);
-                break;
-            case O_RCW_FLIPVH:
-                v = int(QImageIOHandler::TransformationRotate270);
-                break;
-            default:
-                v = int(QImageIOHandler::TransformationNone);
-                break;
-            }
-        }
+        // ignore result: I might want to read the value set in writing
+        d->initForReading(device());
+        v = int(d->transformation());
     }
 
     return v;
@@ -1077,7 +1202,6 @@ QVariant JXRHandler::option(ImageOption option) const
 
 JXRHandler::JXRHandler()
     : d(new JXRHandlerPrivate)
-    , m_quality(-1)
 {
 }
 

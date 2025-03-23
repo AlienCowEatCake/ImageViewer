@@ -1,7 +1,21 @@
 [
     {
         "minQtVersion" : "6.8.0",
-        "fileName" : "mch-16bits_qt_6_8.tif"
+        "fileName" : "mch-16bits_qt_6_8.tif",
+        "resolution" : {
+            "dotsPerMeterX" : 4685,
+            "dotsPerMeterY" : 4685
+        },
+        "metadata" : [
+            {
+                "key" : "ModificationDate",
+                "value" : "2022-11-11T14:27:52"
+            },
+            {
+                "key" : "Software",
+                "value" : "Adobe Photoshop 24.0 (Windows)"
+            }
+        ]
     },
     {
         "minQtVersion" : "6.0.0",

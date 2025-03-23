@@ -1,14 +1,14 @@
-From 3778aa5edd8e74a9299d647531b8ed83507273bd Mon Sep 17 00:00:00 2001
+From 7ba59523fd4bafdc3f6dc330274b0482b2889de0 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 11 Nov 2023 22:42:48 +0700
-Subject: [PATCH 5/7] Fix compatibility with OpenEXR 2.x
+Subject: [PATCH 5/8] Fix compatibility with OpenEXR 2.x
 
 ---
  src/imageformats/exr.cpp | 6 ++++--
  1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/src/imageformats/exr.cpp b/src/imageformats/exr.cpp
-index 6f806d8..0885c92 100644
+index 45a755a..34cf6e7 100644
 --- a/src/imageformats/exr.cpp
 +++ b/src/imageformats/exr.cpp
 @@ -178,7 +178,7 @@ void K_OStream::write(const char c[], int n)
@@ -45,5 +45,5 @@ index 6f806d8..0885c92 100644
          // set preview (don't set it for small images)
          if (width > 1024 || height > 1024) {
 -- 
-2.47.0
+2.39.5
 

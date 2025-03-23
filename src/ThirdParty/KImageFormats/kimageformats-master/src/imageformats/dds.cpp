@@ -1036,11 +1036,7 @@ static QImage readUnsignedImage(QDataStream &s, const DDSHeader &dds, quint32 wi
 static qfloat16 readFloat16(QDataStream &s)
 {
     qfloat16 f16;
-
-    quint16 rawData;
-    s >> rawData;
-    memcpy(&f16, &rawData, sizeof(rawData));
-
+    s >> f16;
     return f16;
 }
 

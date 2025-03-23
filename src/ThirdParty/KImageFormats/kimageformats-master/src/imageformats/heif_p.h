@@ -31,9 +31,12 @@ public:
     static bool isHeifDecoderAvailable();
     static bool isHeifEncoderAvailable();
     static bool isHej2DecoderAvailable();
+    static bool isHej2EncoderAvailable();
+    static bool isAVCIDecoderAvailable();
 
     static bool isSupportedBMFFType(const QByteArray &header);
     static bool isSupportedHEJ2(const QByteArray &header);
+    static bool isSupportedAVCI(const QByteArray &header);
 
 private:
     bool ensureParsed() const;
@@ -53,12 +56,15 @@ private:
 
     static void startHeifLib();
     static void finishHeifLib();
+    static void queryHeifLib();
     static size_t m_initialized_count;
 
     static bool m_plugins_queried;
     static bool m_heif_decoder_available;
     static bool m_heif_encoder_available;
     static bool m_hej2_decoder_available;
+    static bool m_hej2_encoder_available;
+    static bool m_avci_decoder_available;
 
     static QMutex &getHEIFHandlerMutex();
 };

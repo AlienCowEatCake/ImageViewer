@@ -1,17 +1,17 @@
-From 401a70d3713a203cb1649d7304e89ad0312559a7 Mon Sep 17 00:00:00 2001
+From 25b4d5deb24b71edb717f85767004095ae78d484 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 10 Jun 2024 03:39:12 +0700
-Subject: [PATCH 4/7] Add __ANSI__ defie to jxr.cpp
+Subject: [PATCH 4/8] Add __ANSI__ defie to jxr.cpp
 
 ---
  src/imageformats/jxr.cpp | 3 +++
  1 file changed, 3 insertions(+)
 
 diff --git a/src/imageformats/jxr.cpp b/src/imageformats/jxr.cpp
-index 13264e4..a778ae0 100644
+index 6a1e82f..e25dc6c 100644
 --- a/src/imageformats/jxr.cpp
 +++ b/src/imageformats/jxr.cpp
-@@ -30,6 +30,9 @@
+@@ -31,6 +31,9 @@
  #include <QSharedData>
  #include <QTemporaryDir>
  

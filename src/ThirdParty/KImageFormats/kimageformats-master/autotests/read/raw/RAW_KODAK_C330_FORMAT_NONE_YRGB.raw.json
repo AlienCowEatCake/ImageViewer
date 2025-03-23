@@ -1,0 +1,19 @@
+[
+    {
+        "fileName" : "RAW_KODAK_C330_FORMAT_NONE_YRGB.png",
+        "metadata" : [
+            {
+                "key" : "Manufacturer",
+                "value" : "Kodak"
+            },
+            {
+                "key" : "Model" ,
+                "value" : "C330"
+            }
+        ],
+        "resolution" : {
+            "dotsPerMeterX" : 3937,
+            "dotsPerMeterY" : 3937
+        }
+    }
+]

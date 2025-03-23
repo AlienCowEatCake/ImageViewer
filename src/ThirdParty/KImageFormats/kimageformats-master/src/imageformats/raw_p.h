@@ -60,7 +60,8 @@ private:
      * @note It is safe to set both W and A: W is used if camera white balance is found, otherwise A is used.
      *
      * When quality is a positive value, a value between 0 and 100 is expected. The values are interpreted as follows:
-     * - 00-09: I =  0, C = 1, B = 0, W = 1, A = 1, H = 1 (Linear, sRGB, 8-bits, Camera White, Auto White, Half-size)
+     * - 00   : Embedded preview, if fails same as Half-Size (01-09)
+     * - 01-09: I =  0, C = 1, B = 0, W = 1, A = 1, H = 1 (Linear, sRGB, 8-bits, Camera White, Auto White, Half-size)
      * - 10-19: I =  0, C = 1, B = 0, W = 1, A = 1, H = 0 (Linear, sRGB, 8-bits, Camera White, Auto White)
      * - 20-29: I =  3, C = 1, B = 0, W = 1, A = 1, H = 0 (AHD, sRGB, 8-bits, Camera White, Auto White)
      * - 30-39: I =  3, C = 1, B = 1, W = 1, A = 1, H = 0 (AHD, sRGB, 16-bits, Camera White, Auto White) [Default]
@@ -72,11 +73,12 @@ private:
      * - >= 90: I = 11, C = 4, B = 1, W = 1, A = 1, H = 0 (DHT, ProPhoto, 16-bits, Camera White, Auto White)
      *
      * When the quality is -1, default quality is used.
+     * @sa m_subType
      */
     qint32 m_quality;
 
-    /*!
-     * \brief m_startPos
+    /**
+     * @brief m_startPos
      * The initial device position to allow multi image load (cache value).
      */
     qint64 m_startPos;

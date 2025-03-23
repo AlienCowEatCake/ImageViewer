@@ -2,7 +2,13 @@
     {
         "minQtVersion" : "6.7.0",
         "fileName" : "birthday16.png",
-        "seeAlso" : "https://bugreports.qt.io/browse/QTBUG-120614"
+        "seeAlso" : "https://bugreports.qt.io/browse/QTBUG-120614",
+        "fuzziness" : 2,
+        "perceptiveFuzziness" : true,
+        "resolution" : {
+            "dotsPerMeterX" : 4724,
+            "dotsPerMeterY" : 4724
+        }
     },
     {
         "minQtVersion" : "6.0.0",

@@ -1,0 +1,7 @@
+[
+    {
+        "fileName" : "rgba_f16.png",
+        "fuzziness" : 1,
+        "description" : "Minimum fuzziness value to pass the test on all architectures."
+    }
+]

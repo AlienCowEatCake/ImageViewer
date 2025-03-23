@@ -1,5 +1,11 @@
 [
     {
-        "fileName" : "orientation_all.png"
+        "fileName" : "orientation_all.png",
+        "metadata" : [
+            {
+                "key" : "Software" ,
+                "value" : "GEGL"
+            }
+        ]
     }
 ]

@@ -1,4 +1,4 @@
 {
-    "Keys": [ "hdr" ],
+    "Keys": [ "hdr", "hdr" ],
     "MimeTypes": [ "image/x-hdr", "image/vnd.radiance" ]
 }

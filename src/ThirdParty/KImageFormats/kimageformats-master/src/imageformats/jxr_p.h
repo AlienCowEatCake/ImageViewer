@@ -30,8 +30,6 @@ public:
 
 private:
     mutable QSharedDataPointer<JXRHandlerPrivate> d;
-
-    qint32 m_quality;
 };
 
 class JXRPlugin : public QImageIOPlugin

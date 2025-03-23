@@ -18,6 +18,7 @@ include(QtImageFormats/QtImageFormats.pri)
 #  * libjxl
 #  * LibRaw
 #  * jxrlib
+#  * OpenJPEG
 include(KImageFormats/KImageFormats.pri)
 
 # Dependencies:

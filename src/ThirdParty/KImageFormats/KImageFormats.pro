@@ -25,6 +25,7 @@ include(../libheif/libheif.pri)
 include(../libjxl/libjxl.pri)
 include(../LibRaw/LibRaw.pri)
 include(../jxrlib/jxrlib.pri)
+include(../OpenJPEG/OpenJPEG.pri)
 
 INCLUDEPATH += $${THIRDPARTY_KIMAGEFORMATS_WRAPPER_PATH}
 
@@ -33,16 +34,19 @@ INCLUDEPATH += $${THIRDPARTY_KIMAGEFORMATS_WRAPPER_PATH}
 # --------------------------------------------------------------------------------
 
 SOURCES += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/microexif.cpp \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/scanlineconverter.cpp \
 
 HEADERS += \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/fastmath_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/gimp_p.h \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/microexif_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/rle_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/scanlineconverter_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/util_p.h \
 
 DEFINES += ScanLineConverter=tp_ScanLineConverter
+DEFINES += MicroExif=tp_MicroExif
 
 # --------------------------------------------------------------------------------
 
@@ -156,6 +160,22 @@ DEFINES += imageFormat=tp_imageFormat
 
     DEFINES += HEIFHandler=tp_HEIFHandler
     DEFINES += HEIFPlugin=tp_HEIFPlugin
+}
+
+# --------------------------------------------------------------------------------
+
+!disable_openjpeg {
+    SOURCES += \
+        $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/jp2.cpp
+
+    HEADERS += \
+        $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/jp2_p.h
+
+    DEFINES += WRAPPER_USE_JP2_HANDLER
+
+    DEFINES += JP2Handler=tp_JP2Handler
+    DEFINES += JP2Plugin=tp_JP2Plugin
+    DEFINES += JP2HandlerPrivate=tp_JP2HandlerPrivate
 }
 
 # --------------------------------------------------------------------------------

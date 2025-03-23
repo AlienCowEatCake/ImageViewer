@@ -927,7 +927,9 @@ bool XCFImageFormat::readXCF(QIODevice *device, QImage *outImage)
     while (!layer_offsets.isEmpty()) {
         qint64 layer_offset = layer_offsets.pop();
 
-        xcf_io.device()->seek(layer_offset);
+        if (!xcf_io.device()->seek(layer_offset)) {
+            return false;
+        }
 
         if (!loadLayer(xcf_io, xcf_image)) {
             return false;

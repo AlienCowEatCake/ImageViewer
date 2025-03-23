@@ -198,7 +198,7 @@ int main(int argc, char **argv)
     QCoreApplication::removeLibraryPath(QStringLiteral(PLUGIN_DIR));
     QCoreApplication::addLibraryPath(QStringLiteral(PLUGIN_DIR));
     QCoreApplication::setApplicationName(QStringLiteral("readtest"));
-    QCoreApplication::setApplicationVersion(QStringLiteral("1.2.0"));
+    QCoreApplication::setApplicationVersion(QStringLiteral("1.3.0"));
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QStringLiteral("Performs basic image conversion checking."));
@@ -208,8 +208,13 @@ int main(int argc, char **argv)
     QCommandLineOption fuzz(QStringList() << QStringLiteral("f") << QStringLiteral("fuzz"),
                             QStringLiteral("Allow for some deviation in ARGB data."),
                             QStringLiteral("max"));
-    parser.addOption(fuzz);
+    QCommandLineOption skipOptTest({QStringLiteral("skip-optional-tests")},
+                                   QStringLiteral("Skip optional data tests (metadata, resolution, etc.)."));
+    QCommandLineOption perceptiveFuzz({QStringLiteral("perceptive-fuzz")}, QStringLiteral("The fuzziness value is scaled based on the alpha channel value."));
 
+    parser.addOption(fuzz);
+    parser.addOption(skipOptTest);
+    parser.addOption(perceptiveFuzz);
     parser.process(app);
 
     const QStringList args = parser.positionalArguments();
@@ -252,6 +257,15 @@ int main(int argc, char **argv)
         return QString(format);
     });
     QTextStream(stdout) << "QImageReader::supportedImageFormats: " << formatStrings.join(", ") << "\n";
+
+    if (!formats.contains(format)) {
+        if (format == "avci" || format == "heif" || format == "hej2") {
+            QTextStream(stdout) << "WARNING : " << suffix << " is not supported with current libheif configuration!\n"
+                                << "********* "
+                                << "Finished basic read tests for " << suffix << " images *********\n";
+            return 0;
+        }
+    }
 
     const QFileInfoList lstImgDir = imgdir.entryInfoList();
     // Launch 2 runs for each test: first run on a random access device, second run on a sequential access device
@@ -314,10 +328,16 @@ int main(int argc, char **argv)
                 continue;
             }
 
+            // option test
             OptionTest optionTest;
             if (!optionTest.store(&inputReader)) {
                 QTextStream(stdout) << "FAIL : " << fi.fileName() << ": error while reading options\n";
-                ++failed;
+                if (format == "heif") {
+                    // libheif + ffmpeg decoder is unable to load all HEIF files.
+                    ++skipped;
+                } else {
+                    ++failed;
+                }
                 continue;
             }
 
@@ -339,6 +359,17 @@ int main(int argc, char **argv)
                 continue;
             }
 
+            // metadata checks
+            if (!parser.isSet(skipOptTest)) {
+                QString optError;
+                if (!timg.checkOptionaInfo(inputImage, optError)) {
+                    QTextStream(stdout) << "FAIL : " << fi.fileName() << " : " << optError << "\n";
+                    ++failed;
+                    continue;
+                }
+            }
+
+            // image compare
             if (expImage.width() != inputImage.width()) {
                 QTextStream(stdout) << "FAIL : " << fi.fileName() << ": width was " << inputImage.width() << " but " << expfilename << " width was "
                                     << expImage.width() << "\n";
@@ -362,7 +393,17 @@ int main(int argc, char **argv)
                                         << " to " << formatToString(cmpFormat) << '\n';
                     expImage = expImage.convertToFormat(cmpFormat);
                 }
-                if (fuzzyeq(inputImage, expImage, fuzziness)) {
+                auto tmpFuzziness = fuzziness;
+                auto isFuzzPerceptive = parser.isSet(perceptiveFuzz);
+                if (tmpFuzziness == 0) {
+                    // If the fuzziness value is not explicitly set I use the one set for the current image.
+                    tmpFuzziness = timg.fuzziness();
+                }
+                if (!isFuzzPerceptive) {
+                    // If the perceptiveFuzziness value is not explicitly set I use the one set for the current image.
+                    isFuzzPerceptive = timg.perceptiveFuzziness();
+                }
+                if (fuzzyeq(inputImage, expImage, tmpFuzziness, isFuzzPerceptive)) {
                     QTextStream(stdout) << "PASS : " << fi.fileName() << "\n";
                     ++passed;
                 } else {

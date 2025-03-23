@@ -1,0 +1,41 @@
+{
+    "format" : "exr",
+    "metadata" : [
+        {
+            "key" : "CreationDate",
+            "value" : "2025-01-14T13:53:32+01:00"
+        },
+        {
+            "key" : "Altitude",
+            "value" : "34"
+        },
+        {
+            "key" : "Latitude",
+            "value" : "44.6478"
+        },
+        {
+            "key" : "LensManufacturer",
+            "value" : "KDE Glasses"
+        },
+        {
+            "key" : "LensModel",
+            "value" : "A1234"
+        },
+        {
+            "key" : "Longitude",
+            "value" : "10.9254"
+        },
+        {
+            "key" : "Manufacturer",
+            "value" : "KFramework"
+        },
+        {
+            "key" : "Model",
+            "value" : "KImageFormats"
+        }
+    ],
+    "resolution" : {
+        "dotsPerMeterX" : 10000,
+        "dotsPerMeterY" : 12000
+    }
+}

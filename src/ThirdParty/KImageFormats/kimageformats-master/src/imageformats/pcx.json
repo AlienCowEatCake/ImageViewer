@@ -1,4 +1,4 @@
 {
     "Keys": [ "pcx" ],
-    "MimeTypes": [ "image/x-pcx" ]
+    "MimeTypes": [ "image/vnd.zbrush.pcx" ]
 }

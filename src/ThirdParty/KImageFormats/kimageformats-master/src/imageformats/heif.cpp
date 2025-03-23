@@ -8,6 +8,7 @@
 */
 
 #include "heif_p.h"
+#include "microexif_p.h"
 #include "util_p.h"
 #include <libheif/heif.h>
 
@@ -15,14 +16,23 @@
 #include <QDebug>
 #include <QPointF>
 #include <QSysInfo>
+#include <cstring>
 #include <limits>
-#include <string.h>
+
+#ifndef HEIF_MAX_METADATA_SIZE
+/*!
+ * XMP and EXIF maximum size.
+ */
+#define HEIF_MAX_METADATA_SIZE (4 * 1024 * 1024)
+#endif
 
 size_t HEIFHandler::m_initialized_count = 0;
 bool HEIFHandler::m_plugins_queried = false;
 bool HEIFHandler::m_heif_decoder_available = false;
 bool HEIFHandler::m_heif_encoder_available = false;
 bool HEIFHandler::m_hej2_decoder_available = false;
+bool HEIFHandler::m_hej2_encoder_available = false;
+bool HEIFHandler::m_avci_decoder_available = false;
 
 extern "C" {
 static struct heif_error heifhandler_write_callback(struct heif_context * /* ctx */, const void *data, size_t size, void *userdata)
@@ -72,6 +82,11 @@ bool HEIFHandler::canRead() const
 
             if (HEIFHandler::isSupportedHEJ2(header)) {
                 setFormat("hej2");
+                return true;
+            }
+
+            if (HEIFHandler::isSupportedAVCI(header)) {
+                setFormat("avci");
                 return true;
             }
         }
@@ -140,6 +155,14 @@ bool HEIFHandler::write_helper(const QImage &image)
         break;
     }
 
+    heif_compression_format encoder_codec = heif_compression_HEVC;
+#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+    if (format() == "hej2") {
+        encoder_codec = heif_compression_JPEG2000;
+        save_depth = 8; // for compatibility reasons
+    }
+#endif
+
     heif_chroma chroma;
     if (save_depth > 8) {
         if (save_alpha) {
@@ -164,8 +187,15 @@ bool HEIFHandler::write_helper(const QImage &image)
     auto cs = image.colorSpace();
     if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && image.format() == QImage::Format_CMYK8888) {
         tmpimage = image.convertedToColorSpace(QColorSpace(QColorSpace::SRgb), tmpformat);
-    }
-    else {
+    } else if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Gray
+               && (image.format() == QImage::Format_Grayscale8 || image.format() == QImage::Format_Grayscale16)) {
+        QColorSpace::TransferFunction trc_new = cs.transferFunction();
+        float gamma_new = cs.gamma();
+        if (trc_new == QColorSpace::TransferFunction::Custom) {
+            trc_new = QColorSpace::TransferFunction::SRgb;
+        }
+        tmpimage = image.convertedToColorSpace(QColorSpace(QColorSpace::Primaries::SRgb, trc_new, gamma_new), tmpformat);
+    } else {
         tmpimage = image.convertToFormat(tmpformat);
     }
 #else
@@ -265,7 +295,7 @@ bool HEIFHandler::write_helper(const QImage &image)
     }
 
     struct heif_encoder *encoder = nullptr;
-    err = heif_context_get_encoder_for_format(context, heif_compression_HEVC, &encoder);
+    err = heif_context_get_encoder_for_format(context, encoder_codec, &encoder);
     if (err.code) {
         qWarning() << "Unable to get an encoder instance:" << err.message;
         heif_image_release(h_image);
@@ -292,7 +322,25 @@ bool HEIFHandler::write_helper(const QImage &image)
         }
     }
 
-    err = heif_context_encode_image(context, h_image, encoder, encoder_options, nullptr);
+    struct heif_image_handle *handle;
+    err = heif_context_encode_image(context, h_image, encoder, encoder_options, &handle);
+
+    // exif metadata
+    if (err.code == heif_error_Ok) {
+        auto exif = MicroExif::fromImage(tmpimage);
+        if (!exif.isEmpty()) {
+            auto ba = exif.toByteArray();
+            err = heif_context_add_exif_metadata(context, handle, ba.constData(), ba.size());
+        }
+    }
+    // xmp metadata
+    if (err.code == heif_error_Ok) {
+        auto xmp = image.text(QStringLiteral(META_KEY_XMP_ADOBE));
+        if (!xmp.isEmpty()) {
+            auto ba = xmp.toUtf8();
+            err = heif_context_add_XMP_metadata(context, handle, ba.constData(), ba.size());
+        }
+    }
 
     if (encoder_options) {
         heif_encoding_options_free(encoder_options);
@@ -332,31 +380,31 @@ bool HEIFHandler::isSupportedBMFFType(const QByteArray &header)
     }
 
     const char *buffer = header.constData();
-    if (qstrncmp(buffer + 4, "ftyp", 4) == 0) {
-        if (qstrncmp(buffer + 8, "heic", 4) == 0) {
+    if (memcmp(buffer + 4, "ftyp", 4) == 0) {
+        if (memcmp(buffer + 8, "heic", 4) == 0) {
             return true;
         }
-        if (qstrncmp(buffer + 8, "heis", 4) == 0) {
+        if (memcmp(buffer + 8, "heis", 4) == 0) {
             return true;
         }
-        if (qstrncmp(buffer + 8, "heix", 4) == 0) {
+        if (memcmp(buffer + 8, "heix", 4) == 0) {
             return true;
         }
 
         /* we want to avoid loading AVIF files via this plugin */
-        if (qstrncmp(buffer + 8, "mif1", 4) == 0) {
+        if (memcmp(buffer + 8, "mif1", 4) == 0) {
             for (int offset = 16; offset <= 24; offset += 4) {
-                if (qstrncmp(buffer + offset, "avif", 4) == 0) {
+                if (memcmp(buffer + offset, "avif", 4) == 0) {
                     return false;
                 }
             }
             return true;
         }
 
-        if (qstrncmp(buffer + 8, "mif2", 4) == 0) {
+        if (memcmp(buffer + 8, "mif2", 4) == 0) {
             return true;
         }
-        if (qstrncmp(buffer + 8, "msf1", 4) == 0) {
+        if (memcmp(buffer + 8, "msf1", 4) == 0) {
             return true;
         }
     }
@@ -371,10 +419,22 @@ bool HEIFHandler::isSupportedHEJ2(const QByteArray &header)
     }
 
     const char *buffer = header.constData();
-    if (qstrncmp(buffer + 4, "ftyp", 4) == 0) {
-        if (qstrncmp(buffer + 8, "j2ki", 4) == 0) {
-            return true;
-        }
+    if (memcmp(buffer + 4, "ftypj2ki", 8) == 0) {
+        return true;
+    }
+
+    return false;
+}
+
+bool HEIFHandler::isSupportedAVCI(const QByteArray &header)
+{
+    if (header.size() < 28) {
+        return false;
+    }
+
+    const char *buffer = header.constData();
+    if (memcmp(buffer + 4, "ftypavci", 8) == 0) {
+        return true;
     }
 
     return false;
@@ -455,7 +515,7 @@ bool HEIFHandler::ensureDecoder()
     }
 
     const QByteArray buffer = device()->readAll();
-    if (!HEIFHandler::isSupportedBMFFType(buffer) && !HEIFHandler::isSupportedHEJ2(buffer)) {
+    if (!HEIFHandler::isSupportedBMFFType(buffer) && !HEIFHandler::isSupportedHEJ2(buffer) && !HEIFHandler::isSupportedAVCI(buffer)) {
         m_parseState = ParseHeicError;
         return false;
     }
@@ -502,7 +562,7 @@ bool HEIFHandler::ensureDecoder()
 
     QImage::Format target_image_format;
 
-    if (bit_depth == 10 || bit_depth == 12) {
+    if (bit_depth == 10 || bit_depth == 12 || bit_depth == 16) {
         if (hasAlphaChannel) {
             chroma = (QSysInfo::ByteOrder == QSysInfo::LittleEndian) ? heif_chroma_interleaved_RRGGBBAA_LE : heif_chroma_interleaved_RRGGBBAA_BE;
             target_image_format = QImage::Format_RGBA64;
@@ -594,6 +654,35 @@ bool HEIFHandler::ensureDecoder()
     }
 
     switch (bit_depth) {
+    case 16:
+        if (hasAlphaChannel) {
+            for (int y = 0; y < imageHeight; y++) {
+                memcpy(m_current_image.scanLine(y), src + (y * stride), 8 * size_t(imageWidth));
+            }
+        } else { // no alpha channel
+            for (int y = 0; y < imageHeight; y++) {
+                const uint16_t *src_word = reinterpret_cast<const uint16_t *>(src + (y * stride));
+                uint16_t *dest_data = reinterpret_cast<uint16_t *>(m_current_image.scanLine(y));
+                for (int x = 0; x < imageWidth; x++) {
+                    // R
+                    *dest_data = *src_word;
+                    src_word++;
+                    dest_data++;
+                    // G
+                    *dest_data = *src_word;
+                    src_word++;
+                    dest_data++;
+                    // B
+                    *dest_data = *src_word;
+                    src_word++;
+                    dest_data++;
+                    // X = 0xffff
+                    *dest_data = 0xffff;
+                    dest_data++;
+                }
+            }
+        }
+        break;
     case 12:
         if (hasAlphaChannel) {
             for (int y = 0; y < imageHeight; y++) {
@@ -769,10 +858,40 @@ bool HEIFHandler::ensureDecoder()
             if (err.code) {
                 qWarning() << "icc profile loading failed";
             } else {
-                m_current_image.setColorSpace(QColorSpace::fromIccProfile(ba));
-                if (!m_current_image.colorSpace().isValid()) {
+                QColorSpace colorspace = QColorSpace::fromIccProfile(ba);
+                if (!colorspace.isValid()) {
                     qWarning() << "HEIC image has Qt-unsupported or invalid ICC profile!";
                 }
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+                else if (colorspace.colorModel() == QColorSpace::ColorModel::Cmyk) {
+                    qWarning("CMYK ICC profile is not expected for HEIF, discarding the ICCprofile!");
+                    colorspace = QColorSpace();
+                } else if (colorspace.colorModel() == QColorSpace::ColorModel::Gray) {
+                    if (hasAlphaChannel) {
+                        QPointF gray_whitePoint = colorspace.whitePoint();
+                        if (gray_whitePoint.isNull()) {
+                            gray_whitePoint = QPointF(0.3127f, 0.329f);
+                        }
+
+                        const QPointF redP(0.64f, 0.33f);
+                        const QPointF greenP(0.3f, 0.6f);
+                        const QPointF blueP(0.15f, 0.06f);
+
+                        QColorSpace::TransferFunction trc_new = colorspace.transferFunction();
+                        float gamma_new = colorspace.gamma();
+                        if (trc_new == QColorSpace::TransferFunction::Custom) {
+                            trc_new = QColorSpace::TransferFunction::SRgb;
+                        }
+                        colorspace = QColorSpace(gray_whitePoint, redP, greenP, blueP, trc_new, gamma_new);
+                        if (!colorspace.isValid()) {
+                            qWarning("HEIF plugin created invalid QColorSpace!");
+                        }
+                    } else { // no alpha channel
+                        m_current_image.convertTo(bit_depth > 8 ? QImage::Format_Grayscale16 : QImage::Format_Grayscale8);
+                    }
+                }
+#endif
+                m_current_image.setColorSpace(colorspace);
             }
         } else {
             qWarning() << "icc profile is empty or above limits";
@@ -808,6 +927,14 @@ bool HEIFHandler::ensureDecoder()
             case 13:
                 q_trc = QColorSpace::TransferFunction::SRgb;
                 break;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+            case 16:
+                q_trc = QColorSpace::TransferFunction::St2084;
+                break;
+            case 18:
+                q_trc = QColorSpace::TransferFunction::Hlg;
+                break;
+#endif
             default:
                 qWarning("CICP color_primaries: %d, transfer_characteristics: %d\nThe colorspace is unsupported by this plug-in yet.",
                          nclx->color_primaries,
@@ -841,6 +968,38 @@ bool HEIFHandler::ensureDecoder()
         m_current_image.setColorSpace(QColorSpace(QColorSpace::SRgb));
     }
 
+    // read metadata
+    if (auto numMetadata = heif_image_handle_get_number_of_metadata_blocks(handle, nullptr)) {
+        QVector<heif_item_id> ids(numMetadata);
+        heif_image_handle_get_list_of_metadata_block_IDs(handle, nullptr, ids.data(), numMetadata);
+        for (int n = 0; n < numMetadata; ++n) {
+            auto itemtype = heif_image_handle_get_metadata_type(handle, ids[n]);
+            auto contenttype = heif_image_handle_get_metadata_content_type(handle, ids[n]);
+            auto isExif = !std::strcmp(itemtype, "Exif");
+            auto isXmp = !std::strcmp(contenttype, "application/rdf+xml");
+            if (isExif || isXmp) {
+                auto sz = heif_image_handle_get_metadata_size(handle, ids[n]);
+                if (sz == 0 || sz >= HEIF_MAX_METADATA_SIZE)
+                    continue;
+                QByteArray ba(sz, char());
+                auto err = heif_image_handle_get_metadata(handle, ids[n], ba.data());
+                if (err.code != heif_error_Ok) {
+                    qWarning() << "Error while reading metadata" << err.message;
+                    continue;
+                }
+                if (isXmp) {
+                    m_current_image.setText(QStringLiteral(META_KEY_XMP_ADOBE), QString::fromUtf8(ba));
+                } else if (isExif) {
+                    auto exif = MicroExif::fromByteArray(ba, true);
+                    if (!exif.isEmpty()) {
+                        exif.updateImageResolution(m_current_image);
+                        exif.updateImageMetadata(m_current_image);
+                    }
+                }
+            }
+        }
+    }
+
     heif_image_release(img);
     heif_image_handle_release(handle);
     heif_context_free(ctx);
@@ -850,61 +1009,40 @@ bool HEIFHandler::ensureDecoder()
 
 bool HEIFHandler::isHeifDecoderAvailable()
 {
-    QMutexLocker locker(&getHEIFHandlerMutex());
-
-    if (!m_plugins_queried) {
-#if LIBHEIF_HAVE_VERSION(1, 13, 0)
-        if (m_initialized_count == 0) {
-            heif_init(nullptr);
-        }
-#endif
-
-#if LIBHEIF_HAVE_VERSION(1, 13, 0)
-        m_hej2_decoder_available = heif_have_decoder_for_format(heif_compression_JPEG2000);
-#endif
-        m_heif_encoder_available = heif_have_encoder_for_format(heif_compression_HEVC);
-        m_heif_decoder_available = heif_have_decoder_for_format(heif_compression_HEVC);
-        m_plugins_queried = true;
-
-#if LIBHEIF_HAVE_VERSION(1, 13, 0)
-        if (m_initialized_count == 0) {
-            heif_deinit();
-        }
-#endif
-    }
+    HEIFHandler::queryHeifLib();
 
     return m_heif_decoder_available;
 }
 
 bool HEIFHandler::isHeifEncoderAvailable()
 {
-    QMutexLocker locker(&getHEIFHandlerMutex());
-
-    if (!m_plugins_queried) {
-#if LIBHEIF_HAVE_VERSION(1, 13, 0)
-        if (m_initialized_count == 0) {
-            heif_init(nullptr);
-        }
-#endif
-
-#if LIBHEIF_HAVE_VERSION(1, 13, 0)
-        m_hej2_decoder_available = heif_have_decoder_for_format(heif_compression_JPEG2000);
-#endif
-        m_heif_decoder_available = heif_have_decoder_for_format(heif_compression_HEVC);
-        m_heif_encoder_available = heif_have_encoder_for_format(heif_compression_HEVC);
-        m_plugins_queried = true;
-
-#if LIBHEIF_HAVE_VERSION(1, 13, 0)
-        if (m_initialized_count == 0) {
-            heif_deinit();
-        }
-#endif
-    }
+    HEIFHandler::queryHeifLib();
 
     return m_heif_encoder_available;
 }
 
 bool HEIFHandler::isHej2DecoderAvailable()
+{
+    HEIFHandler::queryHeifLib();
+
+    return m_hej2_decoder_available;
+}
+
+bool HEIFHandler::isHej2EncoderAvailable()
+{
+    HEIFHandler::queryHeifLib();
+
+    return m_hej2_encoder_available;
+}
+
+bool HEIFHandler::isAVCIDecoderAvailable()
+{
+    HEIFHandler::queryHeifLib();
+
+    return m_avci_decoder_available;
+}
+
+void HEIFHandler::queryHeifLib()
 {
     QMutexLocker locker(&getHEIFHandlerMutex());
 
@@ -919,6 +1057,10 @@ bool HEIFHandler::isHej2DecoderAvailable()
         m_heif_decoder_available = heif_have_decoder_for_format(heif_compression_HEVC);
 #if LIBHEIF_HAVE_VERSION(1, 13, 0)
         m_hej2_decoder_available = heif_have_decoder_for_format(heif_compression_JPEG2000);
+        m_hej2_encoder_available = heif_have_encoder_for_format(heif_compression_JPEG2000);
+#endif
+#if LIBHEIF_HAVE_VERSION(1, 19, 6)
+        m_avci_decoder_available = heif_have_decoder_for_format(heif_compression_AVC);
 #endif
         m_plugins_queried = true;
 
@@ -928,8 +1070,6 @@ bool HEIFHandler::isHej2DecoderAvailable()
         }
 #endif
     }
-
-    return m_hej2_decoder_available;
 }
 
 void HEIFHandler::startHeifLib()
@@ -986,6 +1126,17 @@ QImageIOPlugin::Capabilities HEIFPlugin::capabilities(QIODevice *device, const Q
         if (HEIFHandler::isHej2DecoderAvailable()) {
             format_cap |= CanRead;
         }
+        if (HEIFHandler::isHej2EncoderAvailable()) {
+            format_cap |= CanWrite;
+        }
+        return format_cap;
+    }
+
+    if (format == "avci") {
+        Capabilities format_cap;
+        if (HEIFHandler::isAVCIDecoderAvailable()) {
+            format_cap |= CanRead;
+        }
         return format_cap;
     }
 
@@ -1000,16 +1151,14 @@ QImageIOPlugin::Capabilities HEIFPlugin::capabilities(QIODevice *device, const Q
     if (device->isReadable()) {
         const QByteArray header = device->peek(28);
 
-        if (HEIFHandler::isSupportedBMFFType(header) && HEIFHandler::isHeifDecoderAvailable()) {
-            cap |= CanRead;
-        }
-
-        if (HEIFHandler::isSupportedHEJ2(header) && HEIFHandler::isHej2DecoderAvailable()) {
+        if ((HEIFHandler::isSupportedBMFFType(header) && HEIFHandler::isHeifDecoderAvailable())
+            || (HEIFHandler::isSupportedHEJ2(header) && HEIFHandler::isHej2DecoderAvailable())
+            || (HEIFHandler::isSupportedAVCI(header) && HEIFHandler::isAVCIDecoderAvailable())) {
             cap |= CanRead;
         }
     }
 
-    if (device->isWritable() && HEIFHandler::isHeifEncoderAvailable()) {
+    if (device->isWritable() && (HEIFHandler::isHeifEncoderAvailable() || HEIFHandler::isHej2EncoderAvailable())) {
         cap |= CanWrite;
     }
     return cap;

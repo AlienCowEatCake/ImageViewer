@@ -41,6 +41,9 @@
 #if defined (WRAPPER_USE_HEIF_HANDLER)
 #include "../kimageformats-master/src/imageformats/heif_p.h"
 #endif
+#if defined (WRAPPER_USE_JP2_HANDLER)
+#include "../kimageformats-master/src/imageformats/jp2_p.h"
+#endif
 #if defined (WRAPPER_USE_JXL_HANDLER)
 #include "../kimageformats-master/src/imageformats/jxl_p.h"
 #endif
@@ -114,6 +117,9 @@ enum BuiltInFormatType
 #endif
 #if defined (WRAPPER_USE_HEIF_HANDLER)
     HeifFormat,
+#endif
+#if defined (WRAPPER_USE_JP2_HANDLER)
+    Jp2Format,
 #endif
 #if defined (WRAPPER_USE_JXL_HANDLER)
     JxlFormat,
@@ -194,7 +200,10 @@ static const BuiltInFormatStruct BuiltInFormats[] =
     { HdrFormat , QList<QByteArray>() << "hdr" },
 #endif
 #if defined (WRAPPER_USE_HEIF_HANDLER)
-    { HeifFormat , QList<QByteArray>() << "heif" << "heic" << "hej2" },
+    { HeifFormat , QList<QByteArray>() << "heif" << "heic" << "hej2" << "avci" },
+#endif
+#if defined (WRAPPER_USE_JP2_HANDLER)
+    { Jp2Format , QList<QByteArray>() << "jp2" << "j2k" << "jpf" },
 #endif
 #if defined (WRAPPER_USE_JXL_HANDLER)
     { JxlFormat , QList<QByteArray>() << "jxl" },
@@ -232,21 +241,18 @@ static const BuiltInFormatStruct BuiltInFormats[] =
 #if defined (WRAPPER_USE_RAW_HANDLER)
     { RawFormat , QList<QByteArray>()
       << "3fr"
-      << "arw" << "arq"
-      << "bay" << "bmq"
-      << "crw" << "cr2" << "cr3" << "cap" << "cine" << "cs1"
-      << "dcs" << "dc2" << "dcr" << "dng" << "drf" << "dxo"
-      << "eip" << "erf"
+      << "arw"
+      << "crw" << "cr2" << "cr3"
+      << "dcr" << "dng"
+      << "erf"
       << "fff"
-      << "hdr"
       << "iiq"
-      << "k25" << "kdc" << "kc2"
-      << "mdc" << "mef" << "mfw" << "mos" << "mrw"
+      << "k25" << "kdc"
+      << "mdc" << "mef" << "mos" << "mrw"
       << "nef" << "nrw"
-      << "obm" << "orf" << "ori"
-      << "pef" << "ptx" << "pxn"
-      << "qtk"
-      << "r3d" << "raf" << "raw" << "rdc" << "rwl" << "rw2" << "rwz"
+      << "orf"
+      << "pef"
+      << "raf" << "raw" << "rwl" << "rw2"
       << "sr2" << "srf" << "srw" << "sti"
       << "x3f"
     },
@@ -345,6 +351,11 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
 #if defined (WRAPPER_USE_HEIF_HANDLER)
         case HeifFormat:
             handler = new HEIFHandler;
+            break;
+#endif
+#if defined (WRAPPER_USE_JP2_HANDLER)
+        case Jp2Format:
+            handler = new JP2Handler;
             break;
 #endif
 #if defined (WRAPPER_USE_JXL_HANDLER)
@@ -507,6 +518,12 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
                     delete handler;
                     handler = 0;
                 }
+                break;
+#endif
+#if defined (WRAPPER_USE_JP2_HANDLER)
+            case Jp2Format:
+                if(JP2Handler::canRead(device))
+                    handler = new JP2Handler;
                 break;
 #endif
 #if defined (WRAPPER_USE_JXL_HANDLER)
@@ -1298,13 +1315,18 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
 #if defined (WRAPPER_USE_HEIF_HANDLER)
     result.append(QByteArrayLiteral("image/heif"));
     result.append(QByteArrayLiteral("image/hej2k"));
+    result.append(QByteArrayLiteral("image/avci"));
+#endif
+#if defined (WRAPPER_USE_JP2_HANDLER)
+    result.append(QByteArrayLiteral("image/jp2"));
+    result.append(QByteArrayLiteral("image/x-jp2-codestream"));
+    result.append(QByteArrayLiteral("image/jpx"));
 #endif
 #if defined (WRAPPER_USE_JXL_HANDLER)
     result.append(QByteArrayLiteral("image/jxl"));
 #endif
 #if defined (WRAPPER_USE_JXR_HANDLER)
     result.append(QByteArrayLiteral("image/jxr"));
-    result.append(QByteArrayLiteral("image/vnd.ms-photo"));
     result.append(QByteArrayLiteral("image/vnd.ms-photo"));
 #endif
 #if defined (WRAPPER_USE_KRA_HANDLER)
@@ -1314,7 +1336,7 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
     result.append(QByteArrayLiteral("image/openraster"));
 #endif
 #if defined (WRAPPER_USE_PCX_HANDLER)
-    result.append(QByteArrayLiteral("image/x-pcx"));
+    result.append(QByteArrayLiteral("image/vnd.zbrush.pcx"));
 #endif
 #if defined (WRAPPER_USE_PFM_HANDLER)
     result.append(QByteArrayLiteral("image/x-pfm"));
@@ -1337,72 +1359,32 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
 #endif
 #if defined (WRAPPER_USE_RAW_HANDLER)
     result.append(QByteArrayLiteral("image/x-hasselblad-3fr"));
-
     result.append(QByteArrayLiteral("image/x-sony-arw"));
-    result.append(QByteArrayLiteral("image/x-arq"));
-
-    result.append(QByteArrayLiteral("image/x-bay"));
-    result.append(QByteArrayLiteral("image/x-bmq"));
-
     result.append(QByteArrayLiteral("image/x-canon-crw"));
     result.append(QByteArrayLiteral("image/x-canon-cr2"));
     result.append(QByteArrayLiteral("image/x-canon-cr3"));
-    result.append(QByteArrayLiteral("image/x-cap"));
-    result.append(QByteArrayLiteral("image/x-cine"));
-    result.append(QByteArrayLiteral("image/x-cs1"));
-
-    result.append(QByteArrayLiteral("image/x-kodak-dcs"));
-    result.append(QByteArrayLiteral("image/x-dc2"));
     result.append(QByteArrayLiteral("image/x-kodak-dcr"));
     result.append(QByteArrayLiteral("image/x-adobe-dng"));
-    result.append(QByteArrayLiteral("image/x-drf"));
-    result.append(QByteArrayLiteral("image/x-dxo"));
-
-    result.append(QByteArrayLiteral("image/x-epson-eip"));
     result.append(QByteArrayLiteral("image/x-epson-erf"));
-
-    result.append(QByteArrayLiteral("image/x-fff"));
-
-    result.append(QByteArrayLiteral("image/x-hdr"));
-
-    result.append(QByteArrayLiteral("image/x-iiq"));
-
+    result.append(QByteArrayLiteral("image/x-hasselblad-fff"));
+    result.append(QByteArrayLiteral("image/x-phaseone-iiq"));
     result.append(QByteArrayLiteral("image/x-kodak-k25"));
     result.append(QByteArrayLiteral("image/x-kodak-kdc"));
-    result.append(QByteArrayLiteral("image/x-kodak-kc2"));
-
     result.append(QByteArrayLiteral("image/x-minolta-mdc"));
     result.append(QByteArrayLiteral("image/x-mamiya-mef"));
-    result.append(QByteArrayLiteral("image/x-mfw"));
-    result.append(QByteArrayLiteral("image/x-aptus-mos"));
+    result.append(QByteArrayLiteral("image/x-leaf-mos"));
     result.append(QByteArrayLiteral("image/x-minolta-mrw"));
-
     result.append(QByteArrayLiteral("image/x-nikon-nef"));
     result.append(QByteArrayLiteral("image/x-nikon-nrw"));
-
-    result.append(QByteArrayLiteral("image/x-obm"));
     result.append(QByteArrayLiteral("image/x-olympus-orf"));
-    result.append(QByteArrayLiteral("image/x-ori"));
-
     result.append(QByteArrayLiteral("image/x-pentax-pef"));
-    result.append(QByteArrayLiteral("image/x-ptx"));
-    result.append(QByteArrayLiteral("image/x-pxn"));
-
-    result.append(QByteArrayLiteral("image/x-qtk"));
-
-    result.append(QByteArrayLiteral("image/x-r3d"));
     result.append(QByteArrayLiteral("image/x-fuji-raf"));
-    result.append(QByteArrayLiteral("image/x-raw"));
-    result.append(QByteArrayLiteral("image/x-rdc"));
-    result.append(QByteArrayLiteral("image/x-rwl"));
+    result.append(QByteArrayLiteral("image/x-panasonic-raw"));
     result.append(QByteArrayLiteral("image/x-panasonic-rw2"));
-    result.append(QByteArrayLiteral("image/x-rwz"));
-
     result.append(QByteArrayLiteral("image/x-sony-sr2"));
     result.append(QByteArrayLiteral("image/x-sony-srf"));
     result.append(QByteArrayLiteral("image/x-samsung-srw"));
-    result.append(QByteArrayLiteral("image/x-sti"));
-
+    result.append(QByteArrayLiteral("image/x-sinar-sti"));
     result.append(QByteArrayLiteral("image/x-sigma-x3f"));
 #endif
 #if defined (WRAPPER_USE_RGB_HANDLER)

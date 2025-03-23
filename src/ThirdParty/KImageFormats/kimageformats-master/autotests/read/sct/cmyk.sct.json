@@ -1,7 +1,11 @@
 [
     {
         "minQtVersion" : "6.8.0",
-        "fileName" : "cmyk.tif"
+        "fileName" : "cmyk.tif",
+        "resolution" : {
+            "dotsPerMeterX" : 3780,
+            "dotsPerMeterY" : 3780
+        }
     },
     {
         "maxQtVersion" : "6.7.99",
