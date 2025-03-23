@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-RESVG_VERSION="0.44.0"
+RESVG_VERSION="0.45.0"
 RESVG_HOST="x86_64-apple-darwin"
 export MACOSX_DEPLOYMENT_TARGET=10.7
 
@@ -18,7 +18,7 @@ curl -Lo rustup-init.sh "https://sh.rustup.rs"
 chmod +x rustup-init.sh
 ./rustup-init.sh --default-host "${RESVG_HOST}" --target "x86_64-apple-darwin" --target "aarch64-apple-darwin" --default-toolchain "${RUST_VERSION}" --profile default --no-modify-path -y
 
-curl -LO "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-${RESVG_VERSION}.tar.xz"
+curl -LO "https://github.com/linebender/resvg/releases/download/${RESVG_VERSION}/resvg-${RESVG_VERSION}.tar.xz"
 tar -xvpf "resvg-${RESVG_VERSION}.tar.xz"
 for RESVG_TARGET in "x86_64-apple-darwin" "aarch64-apple-darwin" ; do
     pushd "resvg-${RESVG_VERSION}" > /dev/null
