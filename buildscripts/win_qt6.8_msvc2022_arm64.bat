@@ -4,7 +4,7 @@ set ARCH=arm64
 set VCVARS_ARCH=arm64
 call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2022
 set VCVARS="%VS2022_VCVARSALL%"
-if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\6.8.1\msvc2022_arm64
+if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\6.8.3\msvc2022_arm64
 set BUILDDIR=build_win_qt6.8_msvc2022_%ARCH%
 set SUFFIX=_qt6.8_msvc2022_%ARCH%
 set APP_PATH=src\%PROJECT%
