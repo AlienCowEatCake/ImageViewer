@@ -1,4 +1,4 @@
-From 12fcb4d11d3d9f68e07c56948c9b349a7cfefbd1 Mon Sep 17 00:00:00 2001
+From 14944f04251f5ea542b141a78ed246aecbde3cbf Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 3 Jan 2024 08:33:45 +0700
 Subject: [PATCH 8/8] Dont use modern options with old Qt verson
@@ -990,7 +990,7 @@ index e431b2c..69d38df 100644
      return v;
  }
 diff --git a/src/imageformats/psd.cpp b/src/imageformats/psd.cpp
-index 40ae9c3..317d452 100644
+index ab8a6ea..e83f752 100644
 --- a/src/imageformats/psd.cpp
 +++ b/src/imageformats/psd.cpp
 @@ -37,6 +37,10 @@
@@ -1394,5 +1394,5 @@ index 40d3898..8ac072e 100644
          buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
      }
 -- 
-2.39.5
+2.49.0
 

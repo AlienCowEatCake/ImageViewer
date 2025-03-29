@@ -1544,7 +1544,18 @@ bool PSDHandler::read(QImage *image)
         img.setColorSpace(QColorSpace(QColorSpace::SRgb));
 #endif
     } else if (!setColorSpace(img, irs)) {
-        // qDebug() << "No colorspace info set!";
+        // Float images are used by Photoshop as linear: if no color space
+        // is present, a linear one should be chosen.
+        if (header.color_mode == CM_RGB && header.depth == 32) {
+            img.setColorSpace(QColorSpace(QColorSpace::SRgbLinear));
+        }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+        if (header.color_mode == CM_GRAYSCALE && header.depth == 32) {
+            auto qs = QColorSpace(QPointF(0.3127, 0.3291), QColorSpace::TransferFunction::Linear);
+            qs.setDescription(QStringLiteral("Linear grayscale"));
+            img.setColorSpace(qs);
+        }
+#endif
     }
 
     // XMP data
