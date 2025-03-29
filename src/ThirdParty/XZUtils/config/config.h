@@ -74,6 +74,9 @@
 /* Define to 1 if you have the <cpuid.h> header file. */
 /* #undef HAVE_CPUID_H */
 
+/* Define to 1 if the 32-bit x86 CRC assembly files are used. */
+/* #undef HAVE_CRC_X86_ASM */
+
 /* Define if the GNU dcgettext() function is already present or preinstalled.
    */
 /* #undef HAVE_DCGETTEXT */
@@ -193,6 +196,9 @@
 /* Define to 1 if Linux Landlock is supported. See configure.ac for details.
    */
 /* #undef HAVE_LINUX_LANDLOCK */
+
+/* Define to 1 if 64-bit LoongArch CRC32 instructions are supported. */
+/* #undef HAVE_LOONGARCH_CRC32 */
 
 /* Define to 1 if .lz (lzip) decompression support is enabled. */
 #define HAVE_LZIP_DECODER 1
@@ -334,6 +340,9 @@
 /* Define to 1 if you have the 'utimes' function. */
 /* #undef HAVE_UTIMES */
 
+/* Define to 1 if you have the 'vasprintf' function. */
+/* #undef HAVE_VASPRINTF */
+
 /* Define to 1 or 0, depending whether the compiler supports simple visibility
    declarations. */
 #define HAVE_VISIBILITY 1
@@ -388,7 +397,7 @@
 #define PACKAGE_NAME "XZ Utils"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "XZ Utils 5.6.4"
+#define PACKAGE_STRING "XZ Utils 5.8.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "xz"
@@ -397,7 +406,7 @@
 #define PACKAGE_URL "https://tukaani.org/xz/"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "5.6.4"
+#define PACKAGE_VERSION "5.8.0"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -561,7 +570,7 @@
 
 
 /* Version number of package */
-#define VERSION "5.6.4"
+#define VERSION "5.8.0"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

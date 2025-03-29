@@ -437,7 +437,7 @@ system_thirdparty : !disable_thirdparty {
 # XZUtils options:
 #    disable_xzutils
 #    system_xzutils
-*msvc* : !system_xzutils : lessThan(MSVC_VERSION, 2013) {
+*msvc* : !system_xzutils : lessThan(MSVC_VERSION, 2015) {
     CONFIG *= disable_xzutils
 }
 

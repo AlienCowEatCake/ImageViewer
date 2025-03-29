@@ -10,7 +10,7 @@ TARGET = tp_XZUtils
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_XZUTILS_PATH = $${PWD}/xz-5.6.4
+THIRDPARTY_XZUTILS_PATH = $${PWD}/xz-5.8.0
 THIRDPARTY_XZUTILS_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -48,7 +48,7 @@ DEFINES += HAVE_CONFIG_H
 DEFINES += LZMA_API_STATIC
 DEFINES += TUKLIB_SYMBOL_PREFIX=tp_lzma_
 
-# find ./src/liblzma -name '*.c' | egrep -v '(_mt|_tablegen)' | egrep -v '(crc32|crc64|fastpos)(_fast|_table)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_XZUTILS_PATH}| ; s|$| \\|'
+# find ./src/liblzma -name '*.c' | egrep -v '(_mt|_tablegen|_gen)' | egrep -v '(crc32|crc64|fastpos)(_fast|_table)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_XZUTILS_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/check.c \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc32_small.c \
@@ -144,6 +144,7 @@ HEADERS += \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/api/lzma/vli.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/check.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc32_arm64.h \
+    $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc32_loongarch.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc32_table_be.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc32_table_le.h \
     $${THIRDPARTY_XZUTILS_PATH}/src/liblzma/check/crc64_table_be.h \
