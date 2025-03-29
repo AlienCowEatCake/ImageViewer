@@ -1,4 +1,4 @@
-From 7df75f894e62c612ac1461cab5eb3e882d4df94e Mon Sep 17 00:00:00 2001
+From 49b347afae6fb69c76053a332730425a5c3a54ad Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 22 Mar 2025 19:29:35 +0700
 Subject: [PATCH] Disable rand_s on WIN32
@@ -8,7 +8,7 @@ Subject: [PATCH] Disable rand_s on WIN32
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/expat/lib/xmlparse.c b/expat/lib/xmlparse.c
-index 376470dd..f01eb01f 100644
+index 38a2d965..91ebf80f 100644
 --- a/expat/lib/xmlparse.c
 +++ b/expat/lib/xmlparse.c
 @@ -894,7 +894,7 @@ writeRandomBytes_arc4random(void *target, size_t count) {
@@ -30,5 +30,5 @@ index 376470dd..f01eb01f 100644
      return ENTROPY_DEBUG("rand_s", entropy);
    }
 -- 
-2.39.5
+2.49.0
 
