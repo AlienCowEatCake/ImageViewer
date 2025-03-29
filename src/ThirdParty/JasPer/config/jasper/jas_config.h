@@ -14,7 +14,7 @@
 @brief
 A null-terminated string containing the JasPer library version
 */
-#define	JAS_VERSION "4.2.4"
+#define	JAS_VERSION "4.2.5"
 
 /*!
 @brief
@@ -32,7 +32,7 @@ The JasPer library minor version number.
 @brief
 The JasPer library patch version number.
 */
-#define JAS_VERSION_PATCH 4
+#define JAS_VERSION_PATCH 5
 
 /*
 The version of the C standard against which JasPer was built.
@@ -140,7 +140,8 @@ The version of the C standard against which JasPer was built.
 #define JAS_DEFAULT_MAX_MEM_USAGE (1024ULL * 1024ULL * 1024ULL)
 #endif
 
-#if (__STDC_VERSION__ - 0 < JAS_STDC_VERSION)
+#if (!defined(__cplusplus) && (__STDC_VERSION__ - 0 < JAS_STDC_VERSION)) || \
+  (defined(__cplusplus) && (__cplusplus - 0 < JAS_STDC_VERSION))
 #warning "Your code is being built against an older version of the C standard than JasPer was.  Although this is supported, this may require some extra preprocessor defines when building."
 #endif
 

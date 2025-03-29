@@ -1,4 +1,4 @@
-From 319ca94376d4a6dc44ffbf92c1317d313ff5d01c Mon Sep 17 00:00:00 2001
+From 67c3d086ca90fde679a8669d7d22e722d2180c0e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 24 Apr 2022 19:09:08 +0700
 Subject: [PATCH 2/2] Fix build with MinGW 3.4.2
@@ -8,7 +8,7 @@ Subject: [PATCH 2/2] Fix build with MinGW 3.4.2
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/src/libjasper/base/jas_malloc.c b/src/libjasper/base/jas_malloc.c
-index 7233f64..bb16078 100644
+index e889930..eaae843 100644
 --- a/src/libjasper/base/jas_malloc.c
 +++ b/src/libjasper/base/jas_malloc.c
 @@ -94,7 +94,6 @@
@@ -36,5 +36,5 @@ index 7233f64..bb16078 100644
  	}
  	return (mem_size_in_kb < SIZE_MAX / JAS_CAST(size_t, 1024)) ?
 -- 
-2.39.2
+2.49.0
 
