@@ -33,19 +33,19 @@
 // formatter.
 //
 
-/* OPENEXR_IMF_HAVE_COMPLETE_IOMANIP */
+/* #undef OPENEXR_IMF_HAVE_COMPLETE_IOMANIP */
 
 //
 // Define if we can use sysconf(_SC_NPROCESSORS_ONLN) to get CPU count
 //
 
-/* OPENEXR_IMF_HAVE_SYSCONF_NPROCESSORS_ONLN */
+/* #undef OPENEXR_IMF_HAVE_SYSCONF_NPROCESSORS_ONLN */
 
 //
 // Define if we can support GCC style inline asm with AVX instructions
 //
 
-/* OPENEXR_IMF_HAVE_GCC_INLINE_ASM_AVX */
+/* #undef OPENEXR_IMF_HAVE_GCC_INLINE_ASM_AVX */
 
 //
 // Define if we need to shim in our own implementation of vld1q_f32_x2 for

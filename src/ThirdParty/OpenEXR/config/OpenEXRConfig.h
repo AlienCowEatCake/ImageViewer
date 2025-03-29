@@ -19,7 +19,7 @@
 #ifndef INCLUDED_OPENEXR_VERSION_H
 #define OPENEXR_VERSION_MAJOR 3
 #define OPENEXR_VERSION_MINOR 3
-#define OPENEXR_VERSION_PATCH 2
+#define OPENEXR_VERSION_PATCH 3
 #endif
 
 //
@@ -56,14 +56,14 @@
 // Version string for runtime access
 //
 
-#define OPENEXR_VERSION_STRING "3.3.2"
-#define OPENEXR_PACKAGE_STRING "OpenEXR 3.3.2-dev"
+#define OPENEXR_VERSION_STRING "3.3.3"
+#define OPENEXR_PACKAGE_STRING "OpenEXR 3.3.3-dev"
 
 #define OPENEXR_VERSION_RELEASE_TYPE "-dev"
 // Deprecated, for back compatibility:
 #define OPENEXR_VERSION_EXTRA "-dev"
 
-#define OPENEXR_LIB_VERSION_STRING "32.3.3.2"
+#define OPENEXR_LIB_VERSION_STRING "32.3.3.3"
 
 // clang-format on
 
