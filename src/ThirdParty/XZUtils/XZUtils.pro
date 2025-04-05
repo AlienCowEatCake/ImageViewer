@@ -10,7 +10,7 @@ TARGET = tp_XZUtils
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_XZUTILS_PATH = $${PWD}/xz-5.8.0
+THIRDPARTY_XZUTILS_PATH = $${PWD}/xz-5.8.1
 THIRDPARTY_XZUTILS_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
