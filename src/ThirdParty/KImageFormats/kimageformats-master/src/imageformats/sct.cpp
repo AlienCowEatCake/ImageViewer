@@ -457,3 +457,4 @@ QImageIOHandler *ScitexPlugin::create(QIODevice *device, const QByteArray &forma
     return handler;
 }
 
+#include "moc_sct_p.cpp"

@@ -1,4 +1,4 @@
-From 14944f04251f5ea542b141a78ed246aecbde3cbf Mon Sep 17 00:00:00 2001
+From fe718ce7f06d92e297b5041e608f7a05843222e8 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 3 Jan 2024 08:33:45 +0700
 Subject: [PATCH 8/8] Dont use modern options with old Qt verson
@@ -82,7 +82,7 @@ index bfce9ef..7b8435b 100644
      QString m_name;
      QString m_artist;
 diff --git a/src/imageformats/dds.cpp b/src/imageformats/dds.cpp
-index 9755709..e9f6242 100644
+index acedbd0..f7454b3 100644
 --- a/src/imageformats/dds.cpp
 +++ b/src/imageformats/dds.cpp
 @@ -16,6 +16,11 @@
