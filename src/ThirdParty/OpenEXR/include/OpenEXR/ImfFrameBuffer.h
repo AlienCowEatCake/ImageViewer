@@ -1,1 +1,1 @@
-#include "../../openexr-3.3.3/src/lib/OpenEXR/ImfFrameBuffer.h"
+#include "../../openexr-2.5.10/OpenEXR/IlmImf/ImfFrameBuffer.h"
