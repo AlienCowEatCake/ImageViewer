@@ -132,10 +132,6 @@ SUBDIRS =
     SUBDIRS += libjxl/libjxl.pro
 }
 
-!disable_qtextended {
-    SUBDIRS += QtExtended/QtExtended.pro
-}
-
 !disable_stb {
     SUBDIRS += STB/STB.pro
 }

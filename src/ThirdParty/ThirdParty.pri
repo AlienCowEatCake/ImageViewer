@@ -111,7 +111,6 @@ include(aom/aom.pri)
 include(libyuv/libyuv.pri)
 
 # Modules without dependencies
-include(QtExtended/QtExtended.pri)
 include(STB/STB.pri)
 include(NanoSVG/NanoSVG.pri)
 include(J40/J40.pri)

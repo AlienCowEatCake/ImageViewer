@@ -851,17 +851,6 @@ QString getTextBrowserContent()
                       ));
 #endif
 
-#if defined (HAS_QTEXTENDED)
-    result.append(formatItem(
-                      QString::fromLatin1("This software uses part of the Qt Extended library"),
-                      QString::fromLatin1("qt-extended"),
-                      QString::fromLatin1("4.4.3"),
-                      QString::fromLatin1("https://sourceforge.net/projects/qpe/files/QPE/qtopia/"),
-                      QString::fromLatin1("GNU GPL v2"),
-                      QString::fromLatin1("https://www.gnu.org/licenses/old-licenses/gpl-2.0.html")
-                      ));
-#endif
-
 #if defined (HAS_QTIMAGEFORMATS)
     result.append(formatItem(
                       QString::fromLatin1("This software uses the additional Image Format plugins for Qt"),

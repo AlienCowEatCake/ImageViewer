@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -32,7 +32,6 @@
 
 //#undef HAS_EXIV2
 //#undef HAS_LIBEXIF
-//#undef HAS_QTEXTENDED
 
 #if defined (HAS_EXIV2)
 #include "Workarounds/BeginIgnoreDeprecated.h"
@@ -50,9 +49,6 @@
 #if defined (HAS_LIBEXIF)
 #include <libexif/exif-data.h>
 #include <libexif/exif-loader.h>
-#endif
-#if defined (HAS_QTEXTENDED)
-#include "qexifimageheader.h"
 #endif
 
 #include "Utils/Global.h"
@@ -106,207 +102,6 @@ void exiv2Initialize()
 }
 
 #endif
-#if defined (HAS_QTEXTENDED)
-
-template<typename T>
-QString qtExtendedToStringValue(const T &value)
-{
-    return QString::fromLatin1("%1").arg(value);
-}
-
-template<>
-QString qtExtendedToStringValue(const QString &value)
-{
-    return value;
-}
-
-template<>
-QString qtExtendedToStringValue(const QByteArray &value)
-{
-    return QString::fromLatin1(value.toHex());
-}
-
-template<>
-QString qtExtendedToStringValue(const QExifURational &value)
-{
-    return QString::fromLatin1("%1/%2").arg(value.first).arg(value.second);
-}
-
-template<>
-QString qtExtendedToStringValue(const QExifSRational &value)
-{
-    return QString::fromLatin1("%1/%2").arg(value.first).arg(value.second);
-}
-
-template<typename T>
-QString qtExtendedToStringValue(const QVector<T> &value)
-{
-    QStringList result;
-    for(typename QVector<T>::ConstIterator it = value.begin(), itEnd = value.end(); it != itEnd; ++it)
-        result.append(qtExtendedToStringValue(*it));
-    return QString::fromLatin1("{%1}").arg(result.join(QString::fromLatin1(", ")));
-}
-
-template<>
-QString qtExtendedToStringValue(const QExifValue &value)
-{
-    const bool isVector = value.count() > 1;
-    switch(value.type())
-    {
-    case QExifValue::Byte:
-        return isVector ? qtExtendedToStringValue(value.toByteVector()) : qtExtendedToStringValue(value.toByte());
-    case QExifValue::Ascii:
-        return qtExtendedToStringValue(value.toString());
-    case QExifValue::Short:
-        return isVector ? qtExtendedToStringValue(value.toShortVector()) : qtExtendedToStringValue(value.toShort());
-    case QExifValue::Long:
-        return isVector ? qtExtendedToStringValue(value.toLongVector()) : qtExtendedToStringValue(value.toLong());
-    case QExifValue::Rational:
-        return isVector ? qtExtendedToStringValue(value.toRationalVector()) : qtExtendedToStringValue(value.toRational());
-    case QExifValue::Undefined:
-        return qtExtendedToStringValue(value.toByteArray());
-    case QExifValue::SignedLong:
-        return isVector ? qtExtendedToStringValue(value.toSignedLongVector()) : qtExtendedToStringValue(value.toSignedLong());
-    case QExifValue::SignedRational:
-        return isVector ? qtExtendedToStringValue(value.toSignedRationalVector()) : qtExtendedToStringValue(value.toSignedRational());
-    default:
-        break;
-    }
-    return QString::fromLatin1("-");
-}
-
-/// @see http://www.cipa.jp/std/documents/e/DC-008-Translation-2016-E.pdf
-IImageMetaData::MetaDataEntry qtExtendedMakeEntry(int tagID, const QExifValue &value)
-{
-    const QString stringValue = qtExtendedToStringValue(value);
-    switch(tagID)
-    {
-#define ADD_CASE(X) case QExifImageHeader::X: return IImageMetaData::MetaDataEntry(QString::fromLatin1(#X), stringValue);
-    // ImageTag
-    ADD_CASE(ImageWidth);                   // 0x0100
-    ADD_CASE(ImageLength);                  // 0x0101
-    ADD_CASE(BitsPerSample);                // 0x0102
-    ADD_CASE(Compression);                  // 0x0103
-    ADD_CASE(PhotometricInterpretation);    // 0x0106
-    ADD_CASE(Orientation);                  // 0x0112
-    ADD_CASE(SamplesPerPixel);              // 0x0115
-    ADD_CASE(PlanarConfiguration);          // 0x011C
-    ADD_CASE(YCbCrSubSampling);             // 0x0212
-    ADD_CASE(XResolution);                  // 0x011A
-    ADD_CASE(YResolution);                  // 0x011B
-    ADD_CASE(ResolutionUnit);               // 0x0128
-    ADD_CASE(StripOffsets);                 // 0x0111
-    ADD_CASE(RowsPerStrip);                 // 0x0116
-    ADD_CASE(StripByteCounts);              // 0x0117
-    ADD_CASE(TransferFunction);             // 0x012D
-    ADD_CASE(WhitePoint);                   // 0x013E
-    ADD_CASE(PrimaryChromaciticies);        // 0x013F
-    ADD_CASE(YCbCrCoefficients);            // 0x0211
-    ADD_CASE(ReferenceBlackWhite);          // 0x0214
-    ADD_CASE(DateTime);                     // 0x0132
-    ADD_CASE(ImageDescription);             // 0x010E
-    ADD_CASE(Make);                         // 0x010F
-    ADD_CASE(Model);                        // 0x0110
-    ADD_CASE(Software);                     // 0x0131
-    ADD_CASE(Artist);                       // 0x013B
-    ADD_CASE(Copyright);                    // 0x8298
-    // ExifExtendedTag
-    ADD_CASE(ExifVersion);                  // 0x9000
-    ADD_CASE(FlashPixVersion);              // 0xA000
-    ADD_CASE(ColorSpace);                   // 0xA001
-    ADD_CASE(ComponentsConfiguration);      // 0x9101
-    ADD_CASE(CompressedBitsPerPixel);       // 0x9102
-    ADD_CASE(PixelXDimension);              // 0xA002
-    ADD_CASE(PixelYDimension);              // 0xA003
-    ADD_CASE(MakerNote);                    // 0x927C
-    ADD_CASE(UserComment);                  // 0x9286
-    ADD_CASE(RelatedSoundFile);             // 0xA004
-    ADD_CASE(DateTimeOriginal);             // 0x9003
-    ADD_CASE(DateTimeDigitized);            // 0x9004
-    ADD_CASE(SubSecTime);                   // 0x9290
-    ADD_CASE(SubSecTimeOriginal);           // 0x9291
-    ADD_CASE(SubSecTimeDigitized);          // 0x9292
-    ADD_CASE(ImageUniqueId);                // 0xA420
-    ADD_CASE(ExposureTime);                 // 0x829A
-    ADD_CASE(FNumber);                      // 0x829D
-    ADD_CASE(ExposureProgram);              // 0x8822
-    ADD_CASE(SpectralSensitivity);          // 0x8824
-    ADD_CASE(ISOSpeedRatings);              // 0x8827
-    ADD_CASE(Oecf);                         // 0x8828
-    ADD_CASE(ShutterSpeedValue);            // 0x9201
-    ADD_CASE(ApertureValue);                // 0x9202
-    ADD_CASE(BrightnessValue);              // 0x9203
-    ADD_CASE(ExposureBiasValue);            // 0x9204
-    ADD_CASE(MaxApertureValue);             // 0x9205
-    ADD_CASE(SubjectDistance);              // 0x9206
-    ADD_CASE(MeteringMode);                 // 0x9207
-    ADD_CASE(LightSource);                  // 0x9208
-    ADD_CASE(Flash);                        // 0x9209
-    ADD_CASE(FocalLength);                  // 0x920A
-    ADD_CASE(SubjectArea);                  // 0x9214
-    ADD_CASE(FlashEnergy);                  // 0xA20B
-    ADD_CASE(SpatialFrequencyResponse);     // 0xA20C
-    ADD_CASE(FocalPlaneXResolution);        // 0xA20E
-    ADD_CASE(FocalPlaneYResolution);        // 0xA20F
-    ADD_CASE(FocalPlaneResolutionUnit);     // 0xA210
-    ADD_CASE(SubjectLocation);              // 0xA214
-    ADD_CASE(ExposureIndex);                // 0xA215
-    ADD_CASE(SensingMethod);                // 0xA217
-    ADD_CASE(FileSource);                   // 0xA300
-    ADD_CASE(SceneType);                    // 0xA301
-    ADD_CASE(CfaPattern);                   // 0xA302
-    ADD_CASE(CustomRendered);               // 0xA401
-    ADD_CASE(ExposureMode);                 // 0xA402
-    ADD_CASE(WhiteBalance);                 // 0xA403
-    ADD_CASE(DigitalZoomRatio);             // 0xA404
-    ADD_CASE(FocalLengthIn35mmFilm);        // 0xA405
-    ADD_CASE(SceneCaptureType);             // 0xA406
-    ADD_CASE(GainControl);                  // 0xA407
-    ADD_CASE(Contrast);                     // 0xA408
-    ADD_CASE(Saturation);                   // 0xA409
-    ADD_CASE(Sharpness);                    // 0xA40A
-    ADD_CASE(DeviceSettingDescription);     // 0xA40B
-    ADD_CASE(SubjectDistanceRange);         // 0x40C
-    // GpsTag
-    ADD_CASE(GpsVersionId);                 // 0x0000
-    ADD_CASE(GpsLatitudeRef);               // 0x0001
-    ADD_CASE(GpsLatitude);                  // 0x0002
-    ADD_CASE(GpsLongitudeRef);              // 0x0003
-    ADD_CASE(GpsLongitude);                 // 0x0004
-    ADD_CASE(GpsAltitudeRef);               // 0x0005
-    ADD_CASE(GpsAltitude);                  // 0x0006
-    ADD_CASE(GpsTimeStamp);                 // 0x0007
-    ADD_CASE(GpsSatellites);                // 0x0008
-    ADD_CASE(GpsStatus);                    // 0x0009
-    ADD_CASE(GpsMeasureMode);               // 0x000A
-    ADD_CASE(GpsDop);                       // 0x000B
-    ADD_CASE(GpsSpeedRef);                  // 0x000C
-    ADD_CASE(GpsSpeed);                     // 0x000D
-    ADD_CASE(GpsTrackRef);                  // 0x000E
-    ADD_CASE(GpsTrack);                     // 0x000F
-    ADD_CASE(GpsImageDirectionRef);         // 0x0010
-    ADD_CASE(GpsImageDirection);            // 0x0011
-    ADD_CASE(GpsMapDatum);                  // 0x0012
-    ADD_CASE(GpsDestLatitudeRef);           // 0x0013
-    ADD_CASE(GpsDestLatitude);              // 0x0014
-    ADD_CASE(GpsDestLongitudeRef);          // 0x0015
-    ADD_CASE(GpsDestLongitude);             // 0x0016
-    ADD_CASE(GpsDestBearingRef);            // 0x0017
-    ADD_CASE(GpsDestBearing);               // 0x0018
-    ADD_CASE(GpsDestDistanceRef);           // 0x0019
-    ADD_CASE(GpsDestDistance);              // 0x001A
-    ADD_CASE(GpsProcessingMethod);          // 0x001B
-    ADD_CASE(GpsAreaInformation);           // 0x001C
-    ADD_CASE(GpsDateStamp);                 // 0x001D
-    ADD_CASE(GpsDifferential);              // 0x001E
-#undef ADD_CASE
-    default:
-        break;
-    }
-    return IImageMetaData::MetaDataEntry(QString::fromLatin1("Unknown (Dec: %1, Hex: 0x%2)").arg(tagID).arg(QString::number(tagID, 16)), stringValue);
-}
-
-#endif
 
 } // namespace
 
@@ -321,9 +116,6 @@ struct ImageMetaData::Impl
 #endif
 #if defined (HAS_LIBEXIF)
     ExifData *libexifExifData;
-#endif
-#if defined (HAS_QTEXTENDED)
-    QExifImageHeader qtExtendedExifHeader;
 #endif
 
     Impl()
@@ -531,49 +323,6 @@ struct ImageMetaData::Impl
     }
 
 #endif
-#if defined (HAS_QTEXTENDED)
-
-    bool qtExtendedFillExifMetaData()
-    {
-        bool result = false;
-
-        const QList<QExifImageHeader::ImageTag> imageTags = qtExtendedExifHeader.imageTags();
-        if(!imageTags.empty())
-        {
-            const IImageMetaData::MetaDataType imageTagsType = QString::fromLatin1("EXIF IFD 0");
-            IImageMetaData::MetaDataEntryList imageTagsData = entryListMap[imageTagsType];
-            for(QList<QExifImageHeader::ImageTag>::ConstIterator it = imageTags.constBegin(); it != imageTags.constEnd(); ++it)
-                imageTagsData.append(qtExtendedMakeEntry(*it, qtExtendedExifHeader.value(*it)));
-            entryListMap[imageTagsType] = imageTagsData;
-            result |= true;
-        }
-
-        const QList<QExifImageHeader::ExifExtendedTag> extendedTags = qtExtendedExifHeader.extendedTags();
-        if(!extendedTags.empty())
-        {
-            const IImageMetaData::MetaDataType extendedTagsType = QString::fromLatin1("EXIF IFD EXIF");
-            IImageMetaData::MetaDataEntryList extendedTagsData = entryListMap[extendedTagsType];
-            for(QList<QExifImageHeader::ExifExtendedTag>::ConstIterator it = extendedTags.constBegin(); it != extendedTags.constEnd(); ++it)
-                extendedTagsData.append(qtExtendedMakeEntry(*it, qtExtendedExifHeader.value(*it)));
-            entryListMap[extendedTagsType] = extendedTagsData;
-            result |= true;
-        }
-
-        const QList<QExifImageHeader::GpsTag> gpsTags = qtExtendedExifHeader.gpsTags();
-        if(!gpsTags.empty())
-        {
-            const IImageMetaData::MetaDataType gpsTagsType = QString::fromLatin1("EXIF IFD GPS");
-            IImageMetaData::MetaDataEntryList gpsTagsData = entryListMap[gpsTagsType];
-            for(QList<QExifImageHeader::GpsTag>::ConstIterator it = gpsTags.constBegin(); it != gpsTags.constEnd(); ++it)
-                gpsTagsData.append(qtExtendedMakeEntry(*it, qtExtendedExifHeader.value(*it)));
-            entryListMap[gpsTagsType] = gpsTagsData;
-            result |= true;
-        }
-
-        return result;
-    }
-
-#endif
 
     void ensureMetaDataFilled()
     {
@@ -585,9 +334,6 @@ struct ImageMetaData::Impl
 #endif
 #if defined (HAS_EXIV2)
                 || exiv2FillExifMetaData()
-#endif
-#if defined (HAS_QTEXTENDED)
-                || qtExtendedFillExifMetaData()
 #endif
                 ;
         const bool iptcLoaded = false
@@ -865,14 +611,6 @@ quint16 ImageMetaData::orientation() const
         }
     }
 #endif
-#if defined (HAS_QTEXTENDED)
-    if(m_impl->qtExtendedExifHeader.contains(QExifImageHeader::Orientation))
-    {
-        const quint16 orientation = m_impl->qtExtendedExifHeader.value(QExifImageHeader::Orientation).toShort();
-        LOG_DEBUG() << LOGGING_CTX << "QTEXTENDED: EXIF orientation =" << orientation;
-        return orientation;
-    }
-#endif
     return 1;
 }
 
@@ -963,22 +701,6 @@ QPair<qreal, qreal> ImageMetaData::dpi() const
         }
     }
 #endif
-#if defined (HAS_QTEXTENDED)
-    if(m_impl->qtExtendedExifHeader.contains(QExifImageHeader::XResolution) && m_impl->qtExtendedExifHeader.contains(QExifImageHeader::YResolution))
-    {
-        const QExifURational vX = m_impl->qtExtendedExifHeader.value(QExifImageHeader::XResolution).toRational();
-        const QExifURational vY = m_impl->qtExtendedExifHeader.value(QExifImageHeader::YResolution).toRational();
-        const qreal multiplier = (m_impl->qtExtendedExifHeader.contains(QExifImageHeader::ResolutionUnit) && m_impl->qtExtendedExifHeader.value(QExifImageHeader::ResolutionUnit).toShort() == 3)
-                ? static_cast<qreal>(2.54) // centimeter to inch conversion
-                : static_cast<qreal>(1.0); // no conversion
-        if(vX.first > 0 && vX.second > 0 && vY.first > 0 && vY.second > 0)
-        {
-            const QPair<qreal, qreal> dpi = qMakePair<qreal, qreal>(multiplier * vX.first / vX.second, multiplier * vY.first / vY.second);
-            LOG_DEBUG() << LOGGING_CTX << "QTEXTENDED: EXIF dpi =" << dpi.first << dpi.second;
-            return dpi;
-        }
-    }
-#endif
 
     return qMakePair<qreal, qreal>(72, 72);
 }
@@ -1055,15 +777,6 @@ bool ImageMetaData::readFile(const QByteArray &fileData)
         status |= true;
     }
 #endif
-#if defined (HAS_QTEXTENDED)
-    m_impl->qtExtendedExifHeader.clear();
-    QBuffer buffer(const_cast<QByteArray*>(&fileData));
-    if(buffer.open(QIODevice::ReadOnly) && m_impl->qtExtendedExifHeader.loadFromJpeg(&buffer))
-    {
-        LOG_DEBUG() << LOGGING_CTX << "QTEXTENDED: EXIF data detected";
-        status |= true;
-    }
-#endif
     Q_UNUSED(fileData);
     return status;
 }
@@ -1113,15 +826,6 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
 //        fflush(stderr);
 //#endif
         LOG_DEBUG() << LOGGING_CTX << "LIBEXIF: EXIF data detected";
-        status |= true;
-    }
-#endif
-#if defined (HAS_QTEXTENDED)
-    m_impl->qtExtendedExifHeader.clear();
-    QBuffer buffer(const_cast<QByteArray*>(&rawExifData));
-    if(buffer.open(QIODevice::ReadOnly) && m_impl->qtExtendedExifHeader.read(&buffer))
-    {
-        LOG_DEBUG() << LOGGING_CTX << "QTEXTENDED: EXIF data detected";
         status |= true;
     }
 #endif

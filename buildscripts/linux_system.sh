@@ -10,7 +10,7 @@ DEBIAN_DIR_PATH="src/${PROJECT}/resources/platform/debian"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/linux/set_associations.sh"
 
 CMD_QMAKE="qmake"
-CONFIG_STR="release enable_pkgconfig disable_zstd disable_xzutils disable_brotli disable_highway disable_libexpat disable_libbpg disable_freetype disable_aom disable_libde265 disable_flif disable_qtextended disable_stb disable_qtimageformats disable_kimageformats"
+CONFIG_STR="release enable_pkgconfig disable_zstd disable_xzutils disable_brotli disable_highway disable_libexpat disable_libbpg disable_freetype disable_aom disable_libde265 disable_flif disable_stb disable_qtimageformats disable_kimageformats"
 if pkg-config zlib ; then
     CONFIG_STR="${CONFIG_STR} system_zlib"
 else

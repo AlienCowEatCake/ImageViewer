@@ -338,7 +338,6 @@ disable_thirdparty {
     CONFIG *= disable_openjpeg
     CONFIG *= disable_pkgconfig
     CONFIG *= disable_qtcore5compat
-    CONFIG *= disable_qtextended
     CONFIG *= disable_qtimageformats
     CONFIG *= disable_resvg
     CONFIG *= disable_stb
@@ -363,7 +362,6 @@ system_thirdparty : !disable_thirdparty {
     # No rules for build as system packages
     CONFIG *= disable_j40
     CONFIG *= disable_nanosvg
-    CONFIG *= disable_qtextended
     CONFIG *= disable_stb
     # Should be installed as Qt plugins in "system" configuration
     CONFIG *= disable_kimageformats
@@ -738,16 +736,6 @@ disable_cxx17 : !system_libjxl {
 }
 
 # ::::: Optional Third Party Components Configuration :::::
-
-# QtExtended options:
-#    disable_qtextended
-#    enable_qtextended
-!enable_qtextended {
-    CONFIG *= disable_qtextended
-}
-greaterThan(QT_MAJOR_VERSION, 5) {
-    CONFIG *= disable_qtextended
-}
 
 # STB options:
 #    disable_stb

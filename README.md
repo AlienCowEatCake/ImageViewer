@@ -173,9 +173,6 @@ See the [buildscripts/](buildscripts/) directory.
   This component is experimental and not recommended for routine use.
 
 **Optional Third Party Components Configuration:**
-* QtExtended options: `disable_qtextended`, `enable_qtextended` *(disabled by default)*  
-  QtExtended is used for support EXIF metadata. There is no reason to enable it together with libexif or exiv2.  
-  Please note that QtExtended is incompatible with Qt 6.x and later.
 * STB options: `disable_stb` *(enabled by default)*  
   STB is used for reading many different file formats.
 * NanoSVG options: `disable_nanosvg`, `enable_nanosvg` *(disabled by default)*  
