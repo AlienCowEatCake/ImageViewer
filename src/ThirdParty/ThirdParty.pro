@@ -136,10 +136,6 @@ SUBDIRS =
     SUBDIRS += STB/STB.pro
 }
 
-!disable_nanosvg {
-    SUBDIRS += NanoSVG/NanoSVG.pro
-}
-
 !disable_j40 {
     SUBDIRS += J40/J40.pro
 }

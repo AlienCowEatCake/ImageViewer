@@ -175,8 +175,6 @@ See the [buildscripts/](buildscripts/) directory.
 **Optional Third Party Components Configuration:**
 * STB options: `disable_stb` *(enabled by default)*  
   STB is used for reading many different file formats.
-* NanoSVG options: `disable_nanosvg`, `enable_nanosvg` *(disabled by default)*  
-  NanoSVG is used for reading SVG files. There is no reason to enable it together with any other SVG reader.
 * J40 options: `disable_j40`, `enable_j40` *(disabled by default)*  
   J40 is used for reading JPEG XL files. There is no reason to enable it together with libjxl.
 * QtImageFormats options: `disable_qtimageformats` *(enabled by default)*  

@@ -332,7 +332,6 @@ disable_thirdparty {
     CONFIG *= disable_libyuv
     CONFIG *= disable_magickcore
     CONFIG *= disable_magickwand
-    CONFIG *= disable_nanosvg
     CONFIG *= disable_nsimage
     CONFIG *= disable_openexr
     CONFIG *= disable_openjpeg
@@ -361,7 +360,6 @@ system_thirdparty : !disable_thirdparty {
     CONFIG *= disable_zstd
     # No rules for build as system packages
     CONFIG *= disable_j40
-    CONFIG *= disable_nanosvg
     CONFIG *= disable_stb
     # Should be installed as Qt plugins in "system" configuration
     CONFIG *= disable_kimageformats
@@ -740,16 +738,6 @@ disable_cxx17 : !system_libjxl {
 # STB options:
 #    disable_stb
 
-
-# NanoSVG options:
-#    disable_nanosvg
-#    enable_nanosvg
-!enable_nanosvg {
-    CONFIG *= disable_nanosvg
-}
-*msvc* : lessThan(MSVC_VERSION, 2013) {
-    CONFIG *= disable_nanosvg
-}
 
 # J40 options:
 #    disable_j40

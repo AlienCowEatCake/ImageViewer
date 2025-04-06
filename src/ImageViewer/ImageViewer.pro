@@ -163,11 +163,6 @@ HEADERS += \
         src/Decoders/Impl/DecoderSTB.cpp
 }
 
-!disable_nanosvg {
-    SOURCES += \
-        src/Decoders/Impl/DecoderNanoSVG.cpp
-}
-
 !disable_j40 {
     SOURCES += \
         src/Decoders/Impl/DecoderJ40.cpp
