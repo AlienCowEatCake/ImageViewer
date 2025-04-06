@@ -126,11 +126,6 @@ if pkg-config libjxl ; then
 else
     CONFIG_STR="${CONFIG_STR} disable_libjxl"
 fi
-if [ -f "$(${CMD_QMAKE} -query QT_INSTALL_HEADERS)/QtWebKitWidgets/QtWebKitWidgets" ] ; then
-    CONFIG_STR="${CONFIG_STR} enable_qtwebkit"
-else
-    CONFIG_STR="${CONFIG_STR} disable_qtwebkit"
-fi
 echo "Config: ${CONFIG_STR}"
 echo
 

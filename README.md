@@ -190,35 +190,14 @@ See the [buildscripts/](buildscripts/) directory.
   KImageFormats is used for reading many different file formats.  
   Disable it if you want to use system libraries, because KImageFormats should be installed as Qt plugins.  
   Please note that bundled KImageFormats is incompatible with Qt 5.14.x and earlier.
-* MSEdgeWebView2 options: `disable_msedgewebview2`, `enable_msedgewebview2` *(disabled by default)*  
-  MSEdgeWebView2 is used for reading SVG files via Microsoft Edge WebView2 (Windows only).
 
 **Optional Built-in Components Configuration:**
 * DecoderQtSVG options: `disable_qtsvg` *(enabled by default)*  
   DecoderQtSVG is used for reading SVG files via QtSVG.
-* DecoderQtWebKit options: `disable_qtwebkit`, `enable_qtwebkit` *(disabled by default)*  
-  DecoderQtWebKit is used for reading SVG files via QtWebKit.  
-  Please note that QtWebKit was removed from official Qt since 5.6 and build from source is incompatible with Qt 6.x and later.
-* DecoderQtWebEngine options: `disable_qtwebengine`, `enable_qtwebengine` *(disabled by default)*  
-  DecoderQtWebEngine is used for reading SVG files via QtWebEngine.  
-  This component is experimental and not recommended for routine use.  
-  Please note that DecoderQtWebEngine is incompatible with Qt 5.3.x and earlier.
-* DecoderQMLWebEngine options: `disable_qmlwebengine`, `enable_qmlwebengine` *(disabled by default)*  
-  DecoderQMLWebEngine is used for reading SVG files via QMLWebEngine.  
-  This component is experimental and not recommended for routine use.  
-  Please note that DecoderQMLWebEngine is incompatible with Qt 5.3.x and earlier.
-* DecoderMSHTML options: `disable_mshtml`, `enable_mshtml` *(disabled by default)*  
-  DecoderMSHTML is used for reading SVG files via MSHTML 9.0 and later (Windows only).
 * DecoderWIC options: `disable_wic` *(enabled by default for Windows)*  
   DecoderWIC is used for reading many different file formats via Windows Imaging Component (Windows only).
 * DecoderNSImage options: `disable_nsimage` *(enabled by default for macOS)*  
   DecoderNSImage is used for reading many different file formats via NSImage from AppKit Framework (macOS only).
-* DecoderMacWebView options: `disable_macwebview`, `enable_macwebview` *(disabled by default)*  
-  DecoderMacWebView is used for reading SVG files via WebView from WebKit Framework (macOS only).  
-  This component uses deprecated API and not recommended for routine use.
-* DecoderMacWKWebView options: `disable_macwkwebview`, `enable_macwkwebview` *(disabled by default)*  
-  DecoderMacWKWebView is used for reading SVG files via WKWebView from WebKit Framework (macOS only).  
-  This component uses private undocumented API and not recommended for routine use.
 * MacToolBar options: `disable_mactoolbar` *(enabled by default for macOS)*  
   MacToolBar is used for support a native toolbar on Mac (macOS only).  
   Please note that MacToolBar requires Cocoa version of Qt and incompatible with Carbon version of Qt.

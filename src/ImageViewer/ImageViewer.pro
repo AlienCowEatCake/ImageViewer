@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -81,8 +81,6 @@ SOURCES += \
     src/Decoders/Impl/Internal/Animation/FramesCompositor.cpp \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.cpp \
-    src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowser.cpp \
-    src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowserNoJS.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/ProgressiveResampledImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.cpp \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.cpp \
@@ -133,8 +131,6 @@ HEADERS += \
     src/Decoders/Impl/Internal/Animation/AbstractAnimationProvider.h \
     src/Decoders/Impl/Internal/Animation/MovieAnimationProvider.h \
     src/Decoders/Impl/Internal/GraphicsItems/GraphicsItemUtils.h \
-    src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowser.h \
-    src/Decoders/Impl/Internal/GraphicsItems/AbstractSVGWebBrowserNoJS.h \
     src/Decoders/Impl/Internal/GraphicsItems/ProgressiveResampledImageGraphicsItem.h \
     src/Decoders/Impl/Internal/GraphicsItems/RasterizedImageGraphicsItem.h \
     src/Decoders/Impl/Internal/GraphicsItems/ResampledImageGraphicsItem.h \
@@ -154,7 +150,6 @@ HEADERS += \
     src/Decoders/Impl/Internal/ImageData.h \
     src/Decoders/Impl/Internal/ImageMetaData.h \
     src/Decoders/Impl/Internal/PayloadWithMetaData.h \
-    src/Decoders/Impl/Internal/SVGWebBrowserDecoderTemplate.h
 
 !disable_zlib {
     SOURCES += \
@@ -188,20 +183,6 @@ HEADERS += \
     SOURCES += \
         src/Decoders/Impl/DecoderKImageFormatsImage.cpp \
         src/Decoders/Impl/DecoderKImageFormatsMovie.cpp
-}
-
-!disable_msedgewebview2 {
-    SOURCES += \
-        src/Decoders/Impl/Internal/GraphicsItems/MSEdgeWebView2SVGGraphicsItem.cpp \
-        src/Decoders/Impl/DecoderMSEdgeWebView2.cpp
-    HEADERS += \
-        src/Decoders/Impl/Internal/GraphicsItems/MSEdgeWebView2SVGGraphicsItem.h
-    *msvc* {
-        QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-        QMAKE_CFLAGS_RELEASE -= -Zc:strictStrings
-        QMAKE_CFLAGS -= -Zc:strictStrings
-        QMAKE_CXXFLAGS -= -Zc:strictStrings
-    }
 }
 
 !disable_libjpeg {
@@ -339,55 +320,6 @@ HEADERS += \
         src/Decoders/Impl/DecoderQtSVG.cpp
 }
 
-!disable_qtwebkit {
-    QT += webkit network
-    greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
-    SOURCES += \
-        src/Decoders/Impl/Internal/GraphicsItems/QtWebKitSVGGraphicsItem.cpp \
-        src/Decoders/Impl/DecoderQtWebKit.cpp
-    HEADERS += \
-        src/Decoders/Impl/Internal/GraphicsItems/QtWebKitSVGGraphicsItem.h
-}
-
-!disable_qtwebengine {
-    QT += webenginecore webenginewidgets
-    SOURCES += \
-        src/Decoders/Impl/Internal/GraphicsItems/QtWebEngineSVGGraphicsItem.cpp \
-        src/Decoders/Impl/DecoderQtWebEngine.cpp
-    HEADERS += \
-        src/Decoders/Impl/Internal/GraphicsItems/QtWebEngineSVGGraphicsItem.h
-}
-
-!disable_qmlwebengine {
-    QT += webenginecore quick
-    greaterThan(QT_MAJOR_VERSION, 5) {
-        QT += webenginequick
-    } else {
-        QT += webengine
-    }
-    SOURCES += \
-        src/Decoders/Impl/Internal/GraphicsItems/QMLWebEngineSVGGraphicsItem.cpp \
-        src/Decoders/Impl/DecoderQMLWebEngine.cpp
-    HEADERS += \
-        src/Decoders/Impl/Internal/GraphicsItems/QMLWebEngineSVGGraphicsItem.h
-}
-
-!disable_mshtml {
-    SOURCES += \
-        src/Decoders/Impl/DecoderMSHTML.cpp
-    *g++*|*clang* {
-        LIBS += -lgdi32
-    } else {
-        LIBS += gdi32.lib
-    }
-    *msvc* {
-        QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-        QMAKE_CFLAGS_RELEASE -= -Zc:strictStrings
-        QMAKE_CFLAGS -= -Zc:strictStrings
-        QMAKE_CXXFLAGS -= -Zc:strictStrings
-    }
-}
-
 !disable_wic {
     SOURCES += \
         src/Decoders/Impl/DecoderWIC.cpp
@@ -402,24 +334,6 @@ HEADERS += \
 !disable_nsimage {
     OBJECTIVE_SOURCES += \
         src/Decoders/Impl/DecoderNSImage.mm
-}
-
-!disable_macwebview {
-    OBJECTIVE_SOURCES += \
-        src/Decoders/Impl/Internal/GraphicsItems/MacWebViewRasterizerGraphicsItem.mm \
-        src/Decoders/Impl/DecoderMacWebView.mm
-    HEADERS += \
-        src/Decoders/Impl/Internal/GraphicsItems/MacWebViewRasterizerGraphicsItem.h
-    LIBS += -framework WebKit
-}
-
-!disable_macwkwebview {
-    OBJECTIVE_SOURCES += \
-        src/Decoders/Impl/Internal/GraphicsItems/MacWKWebViewRasterizerGraphicsItem.mm \
-        src/Decoders/Impl/DecoderMacWKWebView.mm
-    HEADERS += \
-        src/Decoders/Impl/Internal/GraphicsItems/MacWKWebViewRasterizerGraphicsItem.h
-    LIBS += -framework WebKit
 }
 
 !disable_mactoolbar {

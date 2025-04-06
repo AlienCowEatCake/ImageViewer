@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -330,23 +330,16 @@ disable_thirdparty {
     CONFIG *= disable_libwebp
     CONFIG *= disable_libwmf
     CONFIG *= disable_libyuv
-    CONFIG *= disable_macwebview
-    CONFIG *= disable_macwkwebview
     CONFIG *= disable_magickcore
     CONFIG *= disable_magickwand
-    CONFIG *= disable_msedgewebview2
-    CONFIG *= disable_mshtml
     CONFIG *= disable_nanosvg
     CONFIG *= disable_nsimage
     CONFIG *= disable_openexr
     CONFIG *= disable_openjpeg
     CONFIG *= disable_pkgconfig
-    CONFIG *= disable_qmlwebengine
     CONFIG *= disable_qtcore5compat
     CONFIG *= disable_qtextended
     CONFIG *= disable_qtimageformats
-    CONFIG *= disable_qtwebengine
-    CONFIG *= disable_qtwebkit
     CONFIG *= disable_resvg
     CONFIG *= disable_stb
     CONFIG *= disable_wic
@@ -369,7 +362,6 @@ system_thirdparty : !disable_thirdparty {
     CONFIG *= disable_zstd
     # No rules for build as system packages
     CONFIG *= disable_j40
-    CONFIG *= disable_msedgewebview2
     CONFIG *= disable_nanosvg
     CONFIG *= disable_qtextended
     CONFIG *= disable_stb
@@ -796,66 +788,11 @@ disable_cxx11 {
     CONFIG *= disable_kimageformats
 }
 
-# MSEdgeWebView2 options:
-#    disable_msedgewebview2
-#    enable_msedgewebview2
-!enable_msedgewebview2 {
-    CONFIG *= disable_msedgewebview2
-}
-!win32 {
-    CONFIG *= disable_msedgewebview2
-}
-!*msvc* {
-    !enable_msedgewebview2 {
-        CONFIG *= disable_msedgewebview2
-    }
-}
-*msvc* : lessThan(MSVC_VERSION, 2012) {
-    CONFIG *= disable_msedgewebview2
-}
-
 # ::::: Optional Built-in Components Configuration :::::
 
 # DecoderQtSVG options:
 #    disable_qtsvg
 
-
-# DecoderQtWebKit options:
-#    disable_qtwebkit
-#    enable_qtwebkit
-!enable_qtwebkit {
-    CONFIG *= disable_qtwebkit
-}
-
-# DecoderQtWebEngine options:
-#    disable_qtwebengine
-#    enable_qtwebengine
-!enable_qtwebengine {
-    CONFIG *= disable_qtwebengine
-}
-lessThan(QT_VERSION_NUMERIC, 50400) {
-    CONFIG *= disable_qtwebengine
-}
-
-# DecoderQMLWebEngine options:
-#    disable_qmlwebengine
-#    enable_qmlwebengine
-!enable_qmlwebengine {
-    CONFIG *= disable_qmlwebengine
-}
-lessThan(QT_VERSION_NUMERIC, 50400) {
-    CONFIG *= disable_qmlwebengine
-}
-
-# DecoderMSHTML options:
-#    disable_mshtml
-#    enable_mshtml
-!enable_mshtml {
-    CONFIG *= disable_mshtml
-}
-!win32 {
-    CONFIG *= disable_mshtml
-}
 
 # DecoderWIC options
 #    disable_wic
@@ -873,26 +810,6 @@ win32 : *g++* : !*clang* : lessThan(GCC_VERSION_NUMERIC, 80100) { # FIXME: Find 
 #    disable_nsimage
 !macx {
     CONFIG *= disable_nsimage
-}
-
-# DecoderMacWebView options:
-#    disable_macwebview
-#    enable_macwebview
-!enable_macwebview {
-    CONFIG *= disable_macwebview
-}
-!macx {
-    CONFIG *= disable_macwebview
-}
-
-# DecoderMacWKWebView options:
-#    disable_macwkwebview
-#    enable_macwkwebview
-!enable_macwkwebview {
-    CONFIG *= disable_macwkwebview
-}
-!macx {
-    CONFIG *= disable_macwkwebview
 }
 
 # MacToolBar options:

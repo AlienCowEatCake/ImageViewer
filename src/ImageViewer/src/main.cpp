@@ -50,10 +50,6 @@ Q_IMPORT_PLUGIN(qsvg)
 
 int main(int argc, char *argv[])
 {
-    qputenv("QT_QUICK_BACKEND", "software");
-    qputenv("QMLSCENE_DEVICE", "softwarecontext");
-    qputenv("QSG_RHI_BACKEND", "software");
-    qputenv("QSG_RHI_PREFER_SOFTWARE_RENDERER", "1");
     Workarounds::HighDPIFix();
     Workarounds::StyleFix();
     Application app(argc, argv);

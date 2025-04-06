@@ -238,7 +238,7 @@ for:
   build_script:
     - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
     - cd "${APPVEYOR_BUILD_FOLDER}/build"
-    - qmake -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_macwebview enable_macwkwebview enable_nanosvg enable_j40 disable_fallback_iccprofiles enable_update_checking" ..
+    - qmake -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_nanosvg enable_j40 disable_fallback_iccprofiles enable_update_checking" ..
     - make -j3
 
 -
@@ -272,7 +272,7 @@ for:
     - call "%VCVARS%" %ARCH%
   build_script:
     - mkdir "%APPVEYOR_BUILD_FOLDER%\build"
-    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_msedgewebview2 enable_mshtml enable_msedgewebview2 enable_nanosvg enable_j40 disable_fallback_iccprofiles enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
+    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_nanosvg enable_j40 disable_fallback_iccprofiles enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
     - cd "%APPVEYOR_BUILD_FOLDER%\build"
     - call "%JOMDIR%\jom.exe" -j3
 
@@ -285,7 +285,7 @@ for:
     - set "PATH=%MINGW_DIR%\bin;%PATH%"
   build_script:
     - mkdir "%APPVEYOR_BUILD_FOLDER%\build"
-    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_mshtml enable_nanosvg enable_j40 disable_fallback_iccprofiles enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
+    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_nanosvg enable_j40 disable_fallback_iccprofiles enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
     - cd "%APPVEYOR_BUILD_FOLDER%\build"
     - mingw32-make -j3
 
@@ -348,29 +348,8 @@ for:
     - sudo apt-get update --allow-releaseinfo-change || sudo apt-get update || true
     - sudo apt-get -y install qtbase5-dev libqt5svg5-dev
     - sudo apt-get -y install qt5-default || true
-    - sudo apt-get -y install qtwebengine5-dev || export NO_QTWEBENGINE=true
-    - sudo apt-get -y install qml-module-qtwebengine || export NO_QMLWEBENGINE=true
-    - sudo apt-get -y install libqt5webkit5-dev || export NO_QTWEBKIT=true
   build_script:
-    - echo "NO_QTWEBENGINE = ${NO_QTWEBENGINE}"
-    - echo "NO_QMLWEBENGINE = ${NO_QMLWEBENGINE}"
-    - echo "NO_QTWEBKIT = ${NO_QTWEBKIT}"
     - EXTRA_CONFIGS="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_nanosvg enable_j40 disable_fallback_iccprofiles enable_update_checking"
-    - if [ -z ${NO_QTWEBENGINE} ]; then
-        EXTRA_CONFIGS="${EXTRA_CONFIGS} enable_qtwebengine";
-      else
-        EXTRA_CONFIGS="${EXTRA_CONFIGS} disable_qtwebengine";
-      fi
-    - if [ -z ${NO_QMLWEBENGINE} ]; then
-        EXTRA_CONFIGS="${EXTRA_CONFIGS} enable_qmlwebengine";
-      else
-        EXTRA_CONFIGS="${EXTRA_CONFIGS} disable_qmlwebengine";
-      fi
-    - if [ -z ${NO_QTWEBKIT} ]; then
-        EXTRA_CONFIGS="${EXTRA_CONFIGS} enable_qtwebkit";
-      else
-        EXTRA_CONFIGS="${EXTRA_CONFIGS} disable_qtwebkit";
-      fi
     - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
     - qmake -o "${APPVEYOR_BUILD_FOLDER}/build" -r CONFIG+=release CONFIG+="${EXTRA_CONFIGS}" "${APPVEYOR_BUILD_FOLDER}"
     - cd "${APPVEYOR_BUILD_FOLDER}/build"
@@ -384,15 +363,8 @@ for:
     - export DEBIAN_FRONTEND=noninteractive
     - sudo apt-get update --allow-releaseinfo-change || sudo apt-get update || true
     - sudo apt-get -y install libqt4-dev qt4-default
-    - sudo apt-get -y install libqtwebkit-dev || export NO_QTWEBKIT=true
   build_script:
-    - echo "NO_QTWEBKIT = ${NO_QTWEBKIT}"
     - EXTRA_CONFIGS="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_qtextended enable_nanosvg enable_j40 disable_fallback_iccprofiles enable_update_checking"
-    - if [ -z ${NO_QTWEBKIT} ]; then
-        EXTRA_CONFIGS="${EXTRA_CONFIGS} enable_qtwebkit";
-      else
-        EXTRA_CONFIGS="${EXTRA_CONFIGS} disable_qtwebkit";
-      fi
     - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
     - cd "${APPVEYOR_BUILD_FOLDER}/build"
     - qmake -r CONFIG+=release CONFIG+="${EXTRA_CONFIGS}" ..
