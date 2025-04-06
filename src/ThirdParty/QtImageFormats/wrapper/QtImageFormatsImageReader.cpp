@@ -38,9 +38,6 @@
 #if defined (WRAPPER_USE_TIFF_HANDLER)
 #include "../qtimageformats/src/plugins/imageformats/tiff/qtiffhandler_p.h"
 #endif
-#if defined (WRAPPER_USE_LEGACY_TIFF_HANDLER)
-#include "../qtimageformats_legacy/src/plugins/imageformats/tiff/qtiffhandler_p.h"
-#endif
 #if defined (WRAPPER_USE_WBMP_HANDLER)
 #include "../qtimageformats/src/plugins/imageformats/wbmp/qwbmphandler_p.h"
 #endif
@@ -68,7 +65,7 @@ enum BuiltInFormatType
 #if defined (WRAPPER_USE_TGA_HANDLER)
     TgaFormat,
 #endif
-#if defined (WRAPPER_USE_TIFF_HANDLER) || defined (WRAPPER_USE_LEGACY_TIFF_HANDLER)
+#if defined (WRAPPER_USE_TIFF_HANDLER)
     TiffFormat,
 #endif
 #if defined (WRAPPER_USE_WBMP_HANDLER)
@@ -105,7 +102,7 @@ static const BuiltInFormatStruct BuiltInFormats[] =
 #if defined (WRAPPER_USE_TGA_HANDLER)
     { TgaFormat , QList<QByteArray>() << "tga" },
 #endif
-#if defined (WRAPPER_USE_TIFF_HANDLER) || defined (WRAPPER_USE_LEGACY_TIFF_HANDLER)
+#if defined (WRAPPER_USE_TIFF_HANDLER)
     { TiffFormat, QList<QByteArray>() << "tif" << "tiff" },
 #endif
 #if defined (WRAPPER_USE_WBMP_HANDLER)
@@ -193,7 +190,7 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
             handler = new QTgaHandler;
             break;
 #endif
-#if defined (WRAPPER_USE_TIFF_HANDLER) || defined (WRAPPER_USE_LEGACY_TIFF_HANDLER)
+#if defined (WRAPPER_USE_TIFF_HANDLER)
         case TiffFormat:
             handler = new QTiffHandler;
             break;
@@ -277,7 +274,7 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
                     handler = new QTgaHandler;
                 break;
 #endif
-#if defined (WRAPPER_USE_TIFF_HANDLER) || defined (WRAPPER_USE_LEGACY_TIFF_HANDLER)
+#if defined (WRAPPER_USE_TIFF_HANDLER)
             case TiffFormat:
                 if(QTiffHandler::canRead(device))
                     handler = new QTiffHandler;
@@ -985,7 +982,7 @@ QList<QByteArray> QtImageFormatsImageReader::supportedMimeTypes()
 #if defined (WRAPPER_USE_TGA_HANDLER)
     result.append(QByteArrayLiteral("image/x-tga"));
 #endif
-#if defined (WRAPPER_USE_TIFF_HANDLER) || defined (WRAPPER_USE_LEGACY_TIFF_HANDLER)
+#if defined (WRAPPER_USE_TIFF_HANDLER)
     result.append(QByteArrayLiteral("image/tiff"));
 #endif
 #if defined (WRAPPER_USE_WBMP_HANDLER)

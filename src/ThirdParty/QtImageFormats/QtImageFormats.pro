@@ -13,7 +13,6 @@ CONFIG -= warn_on
 CONFIG += exceptions_off warn_off
 
 THIRDPARTY_QTIMAGEFORMATS_PATH = $${PWD}/qtimageformats
-THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH = $${PWD}/qtimageformats_legacy
 THIRDPARTY_QTIMAGEFORMATS_WRAPPER_PATH = $${PWD}/wrapper
 
 include(../../Features.pri)
@@ -128,27 +127,17 @@ DEFINES += Tga32Reader=tp_Tga32Reader
 
         DEFINES += WRAPPER_USE_TIFF_HANDLER
 
-    } else {
-
-        SOURCES += \
-            $${THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH}/src/plugins/imageformats/tiff/qtiffhandler.cpp
-
-        HEADERS += \
-            $${THIRDPARTY_QTIMAGEFORMATS_LEGACY_PATH}/src/plugins/imageformats/tiff/qtiffhandler_p.h
-
-        DEFINES += WRAPPER_USE_LEGACY_TIFF_HANDLER
+        DEFINES += QTiffHandlerPrivate=tp_QTiffHandlerPrivate
+        DEFINES += QTiffHandler=tp_QTiffHandler
+        DEFINES += qtiffReadProc=tp_qtiffReadProc
+        DEFINES += qtiffWriteProc=tp_qtiffWriteProc
+        DEFINES += qtiffSeekProc=tp_qtiffSeekProc
+        DEFINES += qtiffCloseProc=tp_qtiffCloseProc
+        DEFINES += qtiffSizeProc=tp_qtiffSizeProc
+        DEFINES += qtiffMapProc=tp_qtiffMapProc
+        DEFINES += qtiffUnmapProc=tp_qtiffUnmapProc
 
     }
-
-    DEFINES += QTiffHandlerPrivate=tp_QTiffHandlerPrivate
-    DEFINES += QTiffHandler=tp_QTiffHandler
-    DEFINES += qtiffReadProc=tp_qtiffReadProc
-    DEFINES += qtiffWriteProc=tp_qtiffWriteProc
-    DEFINES += qtiffSeekProc=tp_qtiffSeekProc
-    DEFINES += qtiffCloseProc=tp_qtiffCloseProc
-    DEFINES += qtiffSizeProc=tp_qtiffSizeProc
-    DEFINES += qtiffMapProc=tp_qtiffMapProc
-    DEFINES += qtiffUnmapProc=tp_qtiffUnmapProc
 
 }
 
