@@ -307,7 +307,6 @@ disable_thirdparty {
     CONFIG *= disable_graphicsmagick
     CONFIG *= disable_graphicsmagickwand
     CONFIG *= disable_highway
-    CONFIG *= disable_j40
     CONFIG *= disable_jbigkit
     CONFIG *= disable_jxrlib
     CONFIG *= disable_kimageformats
@@ -359,7 +358,6 @@ system_thirdparty : !disable_thirdparty {
     CONFIG *= disable_xzutils
     CONFIG *= disable_zstd
     # No rules for build as system packages
-    CONFIG *= disable_j40
     CONFIG *= disable_stb
     # Should be installed as Qt plugins in "system" configuration
     CONFIG *= disable_kimageformats
@@ -738,16 +736,6 @@ disable_cxx17 : !system_libjxl {
 # STB options:
 #    disable_stb
 
-
-# J40 options:
-#    disable_j40
-#    enable_j40
-!enable_j40 {
-    CONFIG *= disable_j40
-}
-*msvc* : lessThan(MSVC_VERSION, 2010) {
-    CONFIG *= disable_j40
-}
 
 # QtImageFormats options:
 #    disable_qtimageformats

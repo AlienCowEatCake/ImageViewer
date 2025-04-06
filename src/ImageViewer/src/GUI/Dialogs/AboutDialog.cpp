@@ -884,17 +884,6 @@ QString getTextBrowserContent()
                       ));
 #endif
 
-#if defined (HAS_J40)
-    result.append(formatItem(
-                      QString::fromLatin1("This software uses the J40 library"),
-                      QString::fromLatin1("j40"),
-                      QString(),
-                      QString::fromLatin1("https://github.com/lifthrasiir/j40"),
-                      QString::fromLatin1("MIT No Attribution License"),
-                      QString::fromLatin1("https://github.com/lifthrasiir/j40/blob/main/LICENSE.txt")
-                      ));
-#endif
-
 #if defined (HAS_FALLBACK_ICCPROFILES)
     result.append(formatItem(
                       QString::fromLatin1("This software uses basICColor ICC profiles"),

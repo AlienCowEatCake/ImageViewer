@@ -26,7 +26,7 @@ cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
 # @note Out-of-tree builds is not supported by Qt 4.4 with macx-xcode spec
 cd "${SOURCE_PATH}"
-${CMD_QMAKE} -macx -recursive -spec macx-xcode CONFIG+="release" LIBS+="-dead_strip" CONFIG+="x86 ppc" QMAKE_MAC_SDK="${MAC_SDK}" QMAKE_MACOSX_DEPLOYMENT_TARGET="${MAC_TARGET}" CONFIG+="disable_cxx11 disable_mactoolbar disable_mactouchbar" CONFIG+="enable_j40"
+${CMD_QMAKE} -macx -recursive -spec macx-xcode CONFIG+="release" LIBS+="-dead_strip" CONFIG+="x86 ppc" QMAKE_MAC_SDK="${MAC_SDK}" QMAKE_MACOSX_DEPLOYMENT_TARGET="${MAC_TARGET}" CONFIG+="disable_cxx11 disable_mactoolbar disable_mactouchbar"
 find "src/ThirdParty" -mindepth 2 -maxdepth 2 -name '*.xcodeproj' -print0 | while IFS= read -r -d '' SUBPROJECT_PATH ; do
     cd "${SUBPROJECT_PATH}"
     find . -maxdepth 1 -name 'project.pbxproj.*' -exec ln -s "{}" "project.pbxproj" \; || true

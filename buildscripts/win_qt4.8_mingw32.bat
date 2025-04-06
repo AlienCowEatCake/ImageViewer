@@ -14,7 +14,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="enable_j40" ..\%PROJECT%.pro
+qmake -r CONFIG+="release" ..\%PROJECT%.pro
 mingw32-make
 if not exist %APP_PATH%\release\%PROJECT%.exe (
     if NOT "%CI%" == "true" pause

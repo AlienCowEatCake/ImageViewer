@@ -175,8 +175,6 @@ See the [buildscripts/](buildscripts/) directory.
 **Optional Third Party Components Configuration:**
 * STB options: `disable_stb` *(enabled by default)*  
   STB is used for reading many different file formats.
-* J40 options: `disable_j40`, `enable_j40` *(disabled by default)*  
-  J40 is used for reading JPEG XL files. There is no reason to enable it together with libjxl.
 * QtImageFormats options: `disable_qtimageformats` *(enabled by default)*  
   QtImageFormats is used for reading many different file formats.   
   Disable it if you want to use system libraries, because QtImageFormats should be installed as Qt plugins.  

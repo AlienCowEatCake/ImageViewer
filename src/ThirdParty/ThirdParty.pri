@@ -112,7 +112,6 @@ include(libyuv/libyuv.pri)
 
 # Modules without dependencies
 include(STB/STB.pri)
-include(J40/J40.pri)
 include(MagickWand/MagickWand.pri)
 include(MagickCore/MagickCore.pri)
 include(GraphicsMagickWand/GraphicsMagickWand.pri)

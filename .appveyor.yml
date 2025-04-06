@@ -238,7 +238,7 @@ for:
   build_script:
     - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
     - cd "${APPVEYOR_BUILD_FOLDER}/build"
-    - qmake -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_j40 disable_fallback_iccprofiles enable_update_checking" ..
+    - qmake -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand disable_fallback_iccprofiles enable_update_checking" ..
     - make -j3
 
 -
@@ -272,7 +272,7 @@ for:
     - call "%VCVARS%" %ARCH%
   build_script:
     - mkdir "%APPVEYOR_BUILD_FOLDER%\build"
-    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_j40 disable_fallback_iccprofiles enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
+    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand disable_fallback_iccprofiles enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
     - cd "%APPVEYOR_BUILD_FOLDER%\build"
     - call "%JOMDIR%\jom.exe" -j3
 
@@ -285,7 +285,7 @@ for:
     - set "PATH=%MINGW_DIR%\bin;%PATH%"
   build_script:
     - mkdir "%APPVEYOR_BUILD_FOLDER%\build"
-    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_j40 disable_fallback_iccprofiles enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
+    - call "%QTDIR%\bin\qmake" -o "%APPVEYOR_BUILD_FOLDER%\build" -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand disable_fallback_iccprofiles enable_update_checking" "%APPVEYOR_BUILD_FOLDER%"
     - cd "%APPVEYOR_BUILD_FOLDER%\build"
     - mingw32-make -j3
 
@@ -349,7 +349,7 @@ for:
     - sudo apt-get -y install qtbase5-dev libqt5svg5-dev
     - sudo apt-get -y install qt5-default || true
   build_script:
-    - EXTRA_CONFIGS="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_j40 disable_fallback_iccprofiles enable_update_checking"
+    - EXTRA_CONFIGS="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand disable_fallback_iccprofiles enable_update_checking"
     - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
     - qmake -o "${APPVEYOR_BUILD_FOLDER}/build" -r CONFIG+=release CONFIG+="${EXTRA_CONFIGS}" "${APPVEYOR_BUILD_FOLDER}"
     - cd "${APPVEYOR_BUILD_FOLDER}/build"
@@ -364,7 +364,7 @@ for:
     - sudo apt-get update --allow-releaseinfo-change || sudo apt-get update || true
     - sudo apt-get -y install libqt4-dev qt4-default
   build_script:
-    - EXTRA_CONFIGS="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_j40 disable_fallback_iccprofiles enable_update_checking"
+    - EXTRA_CONFIGS="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand disable_fallback_iccprofiles enable_update_checking"
     - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
     - cd "${APPVEYOR_BUILD_FOLDER}/build"
     - qmake -r CONFIG+=release CONFIG+="${EXTRA_CONFIGS}" ..
@@ -382,7 +382,7 @@ for:
   build_script:
     - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
     - cd "${APPVEYOR_BUILD_FOLDER}/build"
-    - qmake -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand enable_j40 disable_fallback_iccprofiles enable_update_checking" ..
+    - qmake -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg enable_magickwand enable_graphicsmagickwand disable_fallback_iccprofiles enable_update_checking" ..
     - make -j3
 
 notifications:
