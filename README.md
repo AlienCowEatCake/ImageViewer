@@ -159,18 +159,6 @@ See the [buildscripts/](buildscripts/) directory.
   Jxrlib is used for reading JPEG XR files.
 * libjxl options: `disable_libjxl`, `system_libjxl` *(bundled package by default)*  
   Libjxl is used for reading JPEG XL files.
-* MagickCore options: `disable_magickcore`, `enable_magickcore` *(disabled by default)*  
-  MagickCore is used for reading many different file formats.  
-  This component is experimental and not recommended for routine use.
-* MagickWand options: `disable_magickwand`, `enable_magickwand`, `system_magickwand` *(disabled by default)*  
-  MagickWand is used for reading many different file formats.  
-  This component is experimental and not recommended for routine use.
-* GraphicsMagick options: `disable_graphicsmagick`, `enable_graphicsmagick` *(disabled by default)*  
-  GraphicsMagick is used for reading many different file formats.  
-  This component is experimental and not recommended for routine use.
-* GraphicsMagickWand options: `disable_graphicsmagickwand`, `enable_graphicsmagickwand`, `system_graphicsmagickwand` *(disabled by default)*  
-  GraphicsMagickWand is used for reading many different file formats.  
-  This component is experimental and not recommended for routine use.
 
 **Optional Third Party Components Configuration:**
 * STB options: `disable_stb` *(enabled by default)*  

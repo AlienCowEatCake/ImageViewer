@@ -304,8 +304,6 @@ disable_thirdparty {
     CONFIG *= disable_flif
     CONFIG *= disable_freetype
     CONFIG *= disable_giflib
-    CONFIG *= disable_graphicsmagick
-    CONFIG *= disable_graphicsmagickwand
     CONFIG *= disable_highway
     CONFIG *= disable_jbigkit
     CONFIG *= disable_jxrlib
@@ -329,8 +327,6 @@ disable_thirdparty {
     CONFIG *= disable_libwebp
     CONFIG *= disable_libwmf
     CONFIG *= disable_libyuv
-    CONFIG *= disable_magickcore
-    CONFIG *= disable_magickwand
     CONFIG *= disable_nsimage
     CONFIG *= disable_openexr
     CONFIG *= disable_openjpeg
@@ -390,8 +386,6 @@ system_thirdparty : !disable_thirdparty {
     CONFIG *= system_openjpeg
     CONFIG *= system_zlib
     # Runtime loaders are inappropriate for "system" configuration
-    enable_graphicsmagickwand : CONFIG *= system_graphicsmagickwand
-    enable_magickwand         : CONFIG *= system_magickwand
     enable_resvg              : CONFIG *= system_resvg
 }
 
@@ -699,36 +693,6 @@ disable_cxx11 : !system_flif {
 }
 disable_cxx17 : !system_libjxl {
     CONFIG *= disable_libjxl
-}
-
-# MagickCore options:
-#    disable_magickcore
-#    enable_magickcore
-!enable_magickcore {
-    CONFIG *= disable_magickcore
-}
-
-# MagickWand options:
-#    disable_magickwand
-#    enable_magickwand
-#    system_magickwand
-!enable_magickwand : !system_magickwand {
-    CONFIG *= disable_magickwand
-}
-
-# GraphicsMagick options:
-#    disable_graphicsmagick
-#    enable_graphicsmagick
-!enable_graphicsmagick {
-    CONFIG *= disable_graphicsmagick
-}
-
-# GraphicsMagickWand options:
-#    disable_graphicsmagickwand
-#    enable_graphicsmagickwand
-#    system_graphicsmagickwand
-!enable_graphicsmagickwand : !system_graphicsmagickwand {
-    CONFIG *= disable_graphicsmagickwand
 }
 
 # ::::: Optional Third Party Components Configuration :::::

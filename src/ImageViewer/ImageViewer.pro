@@ -283,26 +283,6 @@ HEADERS += \
         src/Decoders/Impl/DecoderLibJxl.cpp
 }
 
-!disable_magickcore {
-    SOURCES += \
-        src/Decoders/Impl/DecoderMagickCore.cpp
-}
-
-!disable_magickwand {
-    SOURCES += \
-        src/Decoders/Impl/DecoderMagickWand.cpp
-}
-
-!disable_graphicsmagick {
-    SOURCES += \
-        src/Decoders/Impl/DecoderGraphicsMagick.cpp
-}
-
-!disable_graphicsmagickwand {
-    SOURCES += \
-        src/Decoders/Impl/DecoderGraphicsMagickWand.cpp
-}
-
 !disable_qtsvg {
     QT += svg
     greaterThan(QT_MAJOR_VERSION, 5): QT += svgwidgets

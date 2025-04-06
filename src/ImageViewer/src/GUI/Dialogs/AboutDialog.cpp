@@ -169,34 +169,6 @@ extern "C" {
 #if defined (HAS_LIBDE256)
 #include <libde265/de265.h>
 #endif
-#if defined (HAS_MAGICKCORE)
-#define DrawRectangle WA_DrawRectangle
-#if QT_HAS_INCLUDE(<MagickCore/MagickCore.h>)
-#include <MagickCore/MagickCore.h>
-#else
-#include <magick/MagickCore.h>
-#endif
-#undef DrawRectangle
-#endif
-#if defined (HAS_MAGICKWAND)
-#define DrawRectangle WA_DrawRectangle
-#if QT_HAS_INCLUDE(<MagickWand/MagickWand.h>)
-#include <MagickWand/MagickWand.h>
-#else
-#include <wand/MagickWand.h>
-#endif
-#undef DrawRectangle
-#endif
-#if defined (HAS_GRAPHICSMAGICK)
-#define DrawRectangle WA_DrawRectangle
-#include <magick/api.h>
-#undef DrawRectangle
-#endif
-#if defined (HAS_GRAPHICSMAGICKWAND)
-#define DrawRectangle WA_DrawRectangle
-#include <wand/wand_api.h>
-#undef DrawRectangle
-#endif
 #if defined (HAS_LIBYUV)
 #include <libyuv.h>
 #endif
@@ -623,66 +595,6 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://github.com/Esri/lerc"),
                       QString::fromLatin1("Apache License 2.0"),
                       QString::fromLatin1("https://github.com/Esri/lerc/blob/master/LICENSE")
-                      ));
-#endif
-
-#if defined (HAS_MAGICKCORE)
-    result.append(formatItem(
-                      QString::fromLatin1("This software uses the MagickCore library"),
-                      QString::fromLatin1("MagickCore"),
-#if defined (MAGICKCORE_VERSION)
-                      QString::fromLatin1(MAGICKCORE_VERSION),
-#else
-                      QString(),
-#endif
-                      QString::fromLatin1("https://imagemagick.org/"),
-                      QString::fromLatin1("ImageMagick License"),
-                      QString::fromLatin1("https://imagemagick.org/script/license.php")
-                      ));
-#endif
-
-#if defined (HAS_MAGICKWAND)
-    result.append(formatItem(
-                      QString::fromLatin1("This software uses the MagickWand library"),
-                      QString::fromLatin1("MagickWand"),
-#if defined (MAGICKCORE_VERSION)
-                      QString::fromLatin1(MAGICKCORE_VERSION),
-#else
-                      QString(),
-#endif
-                      QString::fromLatin1("https://imagemagick.org/"),
-                      QString::fromLatin1("ImageMagick License"),
-                      QString::fromLatin1("https://imagemagick.org/script/license.php")
-                      ));
-#endif
-
-#if defined (HAS_GRAPHICSMAGICK)
-    result.append(formatItem(
-                      QString::fromLatin1("This software uses the GraphicsMagick library"),
-                      QString::fromLatin1("GraphicsMagick"),
-#if defined (MagickLibVersionText)
-                      QString::fromLatin1(MagickLibVersionText),
-#else
-                      QString(),
-#endif
-                      QString::fromLatin1("http://www.graphicsmagick.org/"),
-                      QString::fromLatin1("GraphicsMagick License"),
-                      QString::fromLatin1("https://sourceforge.net/p/graphicsmagick/code/ci/default/tree/Copyright.txt")
-                      ));
-#endif
-
-#if defined (HAS_GRAPHICSMAGICKWAND)
-    result.append(formatItem(
-                      QString::fromLatin1("This software uses the GraphicsMagickWand library"),
-                      QString::fromLatin1("GraphicsMagickWand"),
-#if defined (MagickLibVersionText)
-                      QString::fromLatin1(MagickLibVersionText),
-#else
-                      QString(),
-#endif
-                      QString::fromLatin1("http://www.graphicsmagick.org/"),
-                      QString::fromLatin1("GraphicsMagick License"),
-                      QString::fromLatin1("https://sourceforge.net/p/graphicsmagick/code/ci/default/tree/Copyright.txt")
                       ));
 #endif
 
