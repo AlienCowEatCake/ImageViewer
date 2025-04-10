@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2020-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2020-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -165,14 +165,18 @@ public:
             if(decoder->image->transformFlags & AVIF_TRANSFORM_IMIR)
             {
                 LOG_DEBUG() << LOGGING_CTX << "Found ImageMirror transform for frame" << m_numFrames;
+                Qt::Orientations flipOrientations;
 #if QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) < QT_VERSION_CHECK(0, 9, 2) || QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) > QT_VERSION_CHECK(1, 0, 0)
                 // See discussion:
                 // https://github.com/AOMediaCodec/libavif/pull/665
                 // https://github.com/AOMediaCodec/libavif/issues/667
-                frame = frame.mirrored(decoder->image->imir.axis == 1, decoder->image->imir.axis == 0);
+                flipOrientations.setFlag(Qt::Horizontal, decoder->image->imir.axis == 1);
+                flipOrientations.setFlag(Qt::Vertical,   decoder->image->imir.axis == 0);
 #else
-                frame = frame.mirrored(decoder->image->imir.mode == 1, decoder->image->imir.mode == 0);
+                flipOrientations.setFlag(Qt::Horizontal, decoder->image->imir.mode == 1);
+                flipOrientations.setFlag(Qt::Vertical,   decoder->image->imir.mode == 0);
 #endif
+                QImage_flip(frame, flipOrientations);
             }
 
 #if QT_VERSION_CHECK(AVIF_VERSION_MAJOR, AVIF_VERSION_MINOR, AVIF_VERSION_PATCH) < QT_VERSION_CHECK(0, 8, 0)

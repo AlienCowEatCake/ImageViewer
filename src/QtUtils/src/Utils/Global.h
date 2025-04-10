@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -130,6 +130,20 @@ static inline bool qFuzzyIsNull(float f)
 #define QImage_convertTo(image, format) ((image).convertTo((format)))
 #else
 #define QImage_convertTo(image, format) ((image) = (image).convertToFormat((format)))
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 9, 0))
+#define QImage_flipped(image, orient) ((image).flipped((orient)))
+#else
+#define QImage_flipped(image, orient) ((image).mirrored((orient) & Qt::Horizontal, (orient) & Qt::Vertical))
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 9, 0))
+#define QImage_flip(image, orient) ((image).flip((orient)))
+#elif (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#define QImage_flip(image, orient) ((image).mirror((orient) & Qt::Horizontal, (orient) & Qt::Vertical))
+#else
+#define QImage_flip(image, orient) ((image) = QImage_flipped((image), (orient)))
 #endif
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -689,7 +689,7 @@ void PrintDialog::onPrintClicked()
         }
         image = m_impl->printEffect.apply(image);
         if(m_impl->flipOrientations)
-            image = image.mirrored(m_impl->flipOrientations & Qt::Horizontal, m_impl->flipOrientations & Qt::Vertical);
+            QImage_flip(image, m_impl->flipOrientations);
         QSize unrotatedDeviceSize = deviceRect.size();
         if(m_impl->rotateAngle)
         {

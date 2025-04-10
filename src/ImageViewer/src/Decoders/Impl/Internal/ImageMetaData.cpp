@@ -457,17 +457,17 @@ void ImageMetaData::applyExifOrientation(QImage *image, quint16 orientation)
         case 1: // normal
             break;
         case 2: // mirror horizontal
-            *image = image->mirrored(true, false);
+            QImage_flip(*image, Qt::Horizontal);
             break;
         case 3: // rotate 180
             transform.rotate(180);
             *image = image->transformed(transform);
             break;
         case 4: // mirror vertical
-            *image = image->mirrored(false, true);
+            QImage_flip(*image, Qt::Vertical);
             break;
         case 5: // mirror horizontal and rotate 270 CCW
-            *image = image->mirrored(true, false);
+            QImage_flip(*image, Qt::Horizontal);
             transform.rotate(270);
             *image = image->transformed(transform);
             break;
@@ -476,7 +476,7 @@ void ImageMetaData::applyExifOrientation(QImage *image, quint16 orientation)
             *image = image->transformed(transform);
             break;
         case 7: // mirror horizontal and rotate 90 CW
-            *image = image->mirrored(true, false);
+            QImage_flip(*image, Qt::Horizontal);
             transform.rotate(90);
             *image = image->transformed(transform);
             break;

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -274,7 +274,12 @@ QImage ImageViewerWidget::grabImage() const
         image = image.transformed(transform);
     }
     if(m_impl->flipHorizontal || m_impl->flipVertical)
-        image = image.mirrored(m_impl->flipHorizontal, m_impl->flipVertical);
+    {
+        Qt::Orientations orientations;
+        orientations.setFlag(Qt::Horizontal, m_impl->flipHorizontal);
+        orientations.setFlag(Qt::Vertical, m_impl->flipVertical);
+        QImage_flip(image, orientations);
+    }
     return image;
 }
 
