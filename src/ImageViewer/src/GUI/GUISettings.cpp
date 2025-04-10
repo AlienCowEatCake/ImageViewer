@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -113,6 +113,7 @@ const QString UPSCALE_ON_FIT_TO_WINDOW_KEY      = QString::fromLatin1("UpscaleOn
 const QString REMEMBER_EFFECTS_DURING_SESSION   = QString::fromLatin1("RememberEffectsDuringSession");
 const QString MAIN_WINDOW_GEOMETRY_KEY          = QString::fromLatin1("MainWindowGeometry");
 const QString MAIN_WINDOW_STATE_KEY             = QString::fromLatin1("MainWindowState");
+const QString MAIN_WINDOW_MAXIMIZED_KEY         = QString::fromLatin1("MainWindowMaximized");
 const QString SLIDESHOW_INTERVAL_KEY            = QString::fromLatin1("SlideShowInterval");
 const QString MENUBAR_VISIBLE_KEY               = QString::fromLatin1("MenuBarVisible");
 const QString TOOLBAR_VISIBLE_KEY               = QString::fromLatin1("ToolBarVisible");
@@ -393,6 +394,26 @@ void GUISettings::setMainWindowState(const QByteArray &state)
     m_impl->settings.setValue(MAIN_WINDOW_STATE_KEY, state);
     if(state != oldValue)
         Q_EMIT mainWindowGeometryChanged(state);
+}
+
+bool GUISettings::mainWindowMaximized() const
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::Bool);
+#else
+    const QVariant::Type type = QVariant::Bool;
+#endif
+    const bool defaultValue = false;
+    QVariant value = m_impl->settings.value(MAIN_WINDOW_MAXIMIZED_KEY, defaultValue);
+    return value.isValid() && value.canConvert(type) ? value.toBool() : defaultValue;
+}
+
+void GUISettings::setMainWindowMaximized(bool maximized)
+{
+    const bool oldValue = mainWindowMaximized();
+    m_impl->settings.setValue(MAIN_WINDOW_MAXIMIZED_KEY, maximized);
+    if(maximized != oldValue)
+        Q_EMIT mainWindowMaximizedChanged(maximized);
 }
 
 int GUISettings::slideShowInterval() const

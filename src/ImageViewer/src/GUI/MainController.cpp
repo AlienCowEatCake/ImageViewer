@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -253,7 +253,10 @@ bool MainController::selectLastFile()
 
 void MainController::showMainWindow()
 {
-    m_impl->mainWindow.showNormal();
+    if(m_impl->settings.mainWindowMaximized())
+        m_impl->mainWindow.showMaximized();
+    else
+        m_impl->mainWindow.showNormal();
 }
 
 void MainController::showAbout()

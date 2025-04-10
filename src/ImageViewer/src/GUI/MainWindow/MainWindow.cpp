@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -558,6 +558,7 @@ void MainWindow::saveGeometrySettings()
 #if !defined (HAS_MAC_TOOLBAR)
     m_impl->settings->setMainWindowState(saveState(WINDOW_STATE_VERSION));
 #endif
+    m_impl->settings->setMainWindowMaximized(isMaximized());
 }
 
 void MainWindow::updateSlideShowInterval()

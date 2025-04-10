@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -60,6 +60,7 @@ Q_SIGNALS:
     void rememberEffectsDuringSessionChanged(bool enabled);
     void mainWindowGeometryChanged(const QByteArray &geometry);
     void mainWindowStateChanged(const QByteArray &state);
+    void mainWindowMaximizedChanged(bool maximized);
     void slideShowIntervalChanged(int seconds);
     void menuBarVisibleChanged(bool visible);
     void toolBarVisibleChanged(bool visible);
@@ -109,6 +110,9 @@ public:
 
     QByteArray mainWindowState() const;
     void setMainWindowState(const QByteArray &state);
+
+    bool mainWindowMaximized() const;
+    void setMainWindowMaximized(bool maximized);
 
     int slideShowInterval() const;
     void setSlideShowInterval(int seconds);
