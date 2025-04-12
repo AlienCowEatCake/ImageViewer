@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2024-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -198,11 +198,10 @@ float float24ToFloat(const void *buffer)
     return extractFromUnalignedPtr<float>(fp32);
 }
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 3, 0))
+
 QRgb premultiply(QRgb rgb)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
-    return qPremultiply(rgb);
-#else
     const int a = qAlpha(rgb);
     const int r = (qRed(rgb)   * a) / 255;
     const int g = (qGreen(rgb) * a) / 255;
@@ -211,14 +210,10 @@ QRgb premultiply(QRgb rgb)
                  clampByte(g),
                  clampByte(b),
                  clampByte(a));
-#endif
 }
 
 QRgb unpremultiply(QRgb rgb)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
-    return qUnpremultiply(rgb);
-#else
     const int a = qAlpha(rgb);
     if(a == 255)
         return rgb;
@@ -231,8 +226,9 @@ QRgb unpremultiply(QRgb rgb)
                  clampByte(g),
                  clampByte(b),
                  clampByte(a));
-#endif
 }
+
+#endif
 
 QRgb YCbCrToRgb(float Y, float Cb, float Cr, const float *ycbcrcoeffs)
 {

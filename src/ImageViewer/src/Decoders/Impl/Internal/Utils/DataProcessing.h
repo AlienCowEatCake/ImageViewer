@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2024-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -80,8 +80,13 @@ inline quint8 clampByte(quint8 value)
 float float16ToFloat(const void *buffer);
 float float24ToFloat(const void *buffer);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
+static inline QRgb premultiply(QRgb rgb) { return qPremultiply(rgb); }
+static inline QRgb unpremultiply(QRgb rgb) { return qUnpremultiply(rgb); }
+#else
 QRgb premultiply(QRgb rgb);
 QRgb unpremultiply(QRgb rgb);
+#endif
 
 // Y is [0..1]
 // Cb, Cr is [-0.5..0.5]
