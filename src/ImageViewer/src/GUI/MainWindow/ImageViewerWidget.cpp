@@ -276,8 +276,10 @@ QImage ImageViewerWidget::grabImage() const
     if(m_impl->flipHorizontal || m_impl->flipVertical)
     {
         Qt::Orientations orientations;
-        orientations.setFlag(Qt::Horizontal, m_impl->flipHorizontal);
-        orientations.setFlag(Qt::Vertical, m_impl->flipVertical);
+        if(m_impl->flipHorizontal)
+            orientations |= Qt::Horizontal;
+        if(m_impl->flipVertical)
+            orientations |= Qt::Vertical;
         QImage_flip(image, orientations);
     }
     return image;

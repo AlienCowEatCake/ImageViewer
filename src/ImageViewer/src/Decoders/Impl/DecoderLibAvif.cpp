@@ -170,11 +170,15 @@ public:
                 // See discussion:
                 // https://github.com/AOMediaCodec/libavif/pull/665
                 // https://github.com/AOMediaCodec/libavif/issues/667
-                flipOrientations.setFlag(Qt::Horizontal, decoder->image->imir.axis == 1);
-                flipOrientations.setFlag(Qt::Vertical,   decoder->image->imir.axis == 0);
+                if(decoder->image->imir.axis == 1)
+                    flipOrientations |= Qt::Horizontal;
+                if(decoder->image->imir.axis == 0)
+                    flipOrientations |= Qt::Vertical;
 #else
-                flipOrientations.setFlag(Qt::Horizontal, decoder->image->imir.mode == 1);
-                flipOrientations.setFlag(Qt::Vertical,   decoder->image->imir.mode == 0);
+                if(decoder->image->imir.mode == 1)
+                    flipOrientations |= Qt::Horizontal;
+                if(decoder->image->imir.mode == 0)
+                    flipOrientations |= Qt::Vertical;
 #endif
                 QImage_flip(frame, flipOrientations);
             }
