@@ -280,6 +280,8 @@ QString targetDescriptionInt()
     return QString::fromLatin1("Motorola 68000");
 #elif defined (Q_PROCESSOR_MIPS_64)
     return QString::fromLatin1("MIPS64");
+#elif defined (Q_PROCESSOR_MIPS_32)
+    return QString::fromLatin1("MIPS32");
 #elif defined (Q_PROCESSOR_MIPS_V)
     return QString::fromLatin1("MIPS V");
 #elif defined (Q_PROCESSOR_MIPS_IV)
