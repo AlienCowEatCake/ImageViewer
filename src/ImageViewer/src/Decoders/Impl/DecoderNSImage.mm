@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -35,6 +35,8 @@
 
 #include "Utils/Global.h"
 #include "Utils/InfoUtils.h"
+#include "Utils/Logging.h"
+#include "Utils/MacUtils.h"
 #include "Utils/ObjectiveCUtils.h"
 
 #include "../IDecoder.h"
@@ -55,47 +57,8 @@ public:
 
     QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
-        AUTORELEASE_POOL;
         std::set<QString> fileTypes;
-        if([NSImage respondsToSelector:@selector(imageFileTypes)])
-        {
-            NSArray *imageFileTypes = [NSImage performSelector:@selector(imageFileTypes)];
-            NSEnumerator *enumerator = [imageFileTypes objectEnumerator];
-            NSString *fileType = nil;
-            while((fileType = [enumerator nextObject]) != nil)
-            {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-                typedef QRegularExpression QRE;
-#else
-                typedef QRegExp QRE;
-#endif
-                QString simplifiedFileType = ObjCUtils::QStringFromNSString(fileType).toLower();
-                simplifiedFileType.replace(QRE(QString::fromLatin1("[^\\w]")), QString::fromLatin1(""));
-                fileTypes.insert(simplifiedFileType.simplified());
-            }
-        }
-#if defined (AVAILABLE_MAC_OS_X_VERSION_10_10_AND_LATER)
-        if(InfoUtils::MacVersionGreatOrEqual(10, 10))
-        {
-            NSArray *imageTypes = [NSImage imageTypes];
-            NSEnumerator *enumerator = [imageTypes objectEnumerator];
-            NSString *uti = nil;
-            while((uti = [enumerator nextObject]) != nil)
-            {
-                if(!uti)
-                    continue;
-                CFArrayRef tags = UTTypeCopyAllTagsWithClass((__bridge CFStringRef)uti, kUTTagClassFilenameExtension);
-                if(!tags)
-                    continue;
-                for(CFIndex i = 0, count = CFArrayGetCount(tags); i < count; ++i)
-                {
-                    CFStringRef tag = (CFStringRef)CFArrayGetValueAtIndex(tags, i);
-                    fileTypes.insert(ObjCUtils::QStringFromNSString((__bridge NSString*)tag).toLower());
-                }
-                CFRelease(tags);
-            }
-        }
-#endif
+        fillTypesFor1100(fileTypes) || fillTypesFor1010(fileTypes) || fillTypesFor1000(fileTypes);
         QStringList result;
         for(std::set<QString>::const_iterator it = fileTypes.begin(); it != fileTypes.end(); ++it)
             result.append(*it);
@@ -119,12 +82,162 @@ public:
             return QSharedPointer<IImageData>();
 
         AUTORELEASE_POOL;
-        NSImage *picture = [[[NSImage alloc] initWithContentsOfFile: ObjCUtils::QStringToNSString(filePath)] autorelease];
-        if(picture == nil)
-            return QSharedPointer<IImageData>();
-        QGraphicsItem *result = GraphicsItemsFactory::instance().createImageItem(ObjCUtils::QImageFromNSImage(picture));
-        IImageMetaData *metaData = result ? ImageMetaData::createMetaData(filePath) : Q_NULLPTR;
-        return QSharedPointer<IImageData>(new ImageData(result, filePath, name(), metaData));
+        @try
+        {
+            NSImage *picture = [[[NSImage alloc] initWithContentsOfFile: ObjCUtils::QStringToNSString(filePath)] autorelease];
+            if(picture == nil)
+                return QSharedPointer<IImageData>();
+            QGraphicsItem *result = GraphicsItemsFactory::instance().createImageItem(ObjCUtils::QImageFromNSImage(picture));
+            IImageMetaData *metaData = result ? ImageMetaData::createMetaData(filePath) : Q_NULLPTR;
+            return QSharedPointer<IImageData>(new ImageData(result, filePath, name(), metaData));
+        }
+        @catch(NSException *exception)
+        {
+            LOG_WARNING() << LOGGING_CTX << ObjCUtils::QStringFromNSString([exception reason]);
+        }
+        return QSharedPointer<IImageData>();
+    }
+
+private:
+
+    /// @note macOS 11.0+
+    static bool fillTypesFor1100(std::set<QString>& fileTypes)
+    {
+        if(InfoUtils::MacVersionGreatOrEqual(11, 0))
+        {
+            CFBundleRef utiBundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.UniformTypeIdentifiers"));
+            if(!utiBundle)
+                return false;
+            void *UTType_d = CFBundleGetDataPointerForName(utiBundle, CFSTR("OBJC_CLASS_$_UTType"));
+            if(!UTType_d)
+                return false;
+            void *UTTagClassFilenameExtension_d = CFBundleGetDataPointerForName(utiBundle, CFSTR("UTTagClassFilenameExtension"));
+            if(!UTTagClassFilenameExtension_d)
+                return false;
+            Class UTType = reinterpret_cast<Class>(UTType_d);
+            const NSString *UTTagClassFilenameExtension = *reinterpret_cast<const NSString**>(UTTagClassFilenameExtension_d);
+
+            AUTORELEASE_POOL;
+            @try
+            {
+                if(![NSImage respondsToSelector:@selector(imageTypes)])
+                    return false;
+                NSArray *imageTypes = (NSArray*)[NSImage performSelector:@selector(imageTypes)];
+                NSEnumerator *enumerator = [imageTypes objectEnumerator];
+                NSString *uti = nil;
+                while((uti = [enumerator nextObject]) != nil)
+                {
+                    if(!uti)
+                        continue;
+                    if(![UTType respondsToSelector:@selector(typeWithIdentifier:)])
+                        return false;
+                    NSObject *type = (NSObject*)[UTType performSelector:@selector(typeWithIdentifier:) withObject:uti];
+                    if(!type)
+                        continue;
+                    if(![type respondsToSelector:@selector(tags)])
+                        return false;
+                    NSDictionary *tags = (NSDictionary*)[type performSelector:@selector(tags)];
+                    if(!tags)
+                        continue;
+                    NSArray *exts = [tags objectForKey:UTTagClassFilenameExtension];
+                    if(!exts)
+                        continue;
+                    NSEnumerator *extsEnumerator = [exts objectEnumerator];
+                    NSString *ext = nil;
+                    while((ext = [extsEnumerator nextObject]) != nil)
+                        fileTypes.insert(ObjCUtils::QStringFromNSString(ext).toLower());
+                }
+                return true;
+            }
+            @catch(NSException *exception)
+            {
+                LOG_WARNING() << LOGGING_CTX << ObjCUtils::QStringFromNSString([exception reason]);
+            }
+        }
+        return false;
+    }
+
+    /// @note macOS 10.10-12.0
+    static bool fillTypesFor1010(std::set<QString>& fileTypes)
+    {
+        if(InfoUtils::MacVersionGreatOrEqual(10, 10))
+        {
+            CFBundleRef appKitBundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.AppKit"));
+            if(!appKitBundle)
+                return false;
+            void *UTTypeCopyAllTagsWithClass_f = CFBundleGetFunctionPointerForName(appKitBundle, CFSTR("UTTypeCopyAllTagsWithClass"));
+            if(!UTTypeCopyAllTagsWithClass_f)
+                return false;
+            void *kUTTagClassFilenameExtension_d = CFBundleGetDataPointerForName(appKitBundle, CFSTR("kUTTagClassFilenameExtension"));
+            if(!kUTTagClassFilenameExtension_d)
+                return false;
+            typedef CFArrayRef (*UTTypeCopyAllTagsWithClass_t)(CFStringRef inUTI, CFStringRef inTagClass);
+            UTTypeCopyAllTagsWithClass_t UTTypeCopyAllTagsWithClass = reinterpret_cast<UTTypeCopyAllTagsWithClass_t>(UTTypeCopyAllTagsWithClass_f);
+            const CFStringRef kUTTagClassFilenameExtension = *reinterpret_cast<const CFStringRef*>(kUTTagClassFilenameExtension_d);
+
+            AUTORELEASE_POOL;
+            @try
+            {
+                if(![NSImage respondsToSelector:@selector(imageTypes)])
+                    return false;
+                NSArray *imageTypes = (NSArray*)[NSImage performSelector:@selector(imageTypes)];
+                NSEnumerator *enumerator = [imageTypes objectEnumerator];
+                NSString *uti = nil;
+                while((uti = [enumerator nextObject]) != nil)
+                {
+                    if(!uti)
+                        continue;
+                    CFArrayRef tags = UTTypeCopyAllTagsWithClass((CFStringRef)uti, kUTTagClassFilenameExtension);
+                    if(!tags)
+                        continue;
+                    for(CFIndex i = 0, count = CFArrayGetCount(tags); i < count; ++i)
+                    {
+                        CFStringRef tag = (CFStringRef)CFArrayGetValueAtIndex(tags, i);
+                        fileTypes.insert(MacUtils::QStringFromCFString(CFTypePtrFromGet(tag)).toLower());
+                    }
+                    CFRelease(tags);
+                }
+                return true;
+            }
+            @catch(NSException *exception)
+            {
+                LOG_WARNING() << LOGGING_CTX << ObjCUtils::QStringFromNSString([exception reason]);
+            }
+        }
+        return false;
+    }
+
+    /// @note macOS 10.0-10.10
+    static bool fillTypesFor1000(std::set<QString>& fileTypes)
+    {
+        AUTORELEASE_POOL;
+        if([NSImage respondsToSelector:@selector(imageFileTypes)])
+        {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+            typedef QRegularExpression QRE;
+#else
+            typedef QRegExp QRE;
+#endif
+            const QRE nonWordRE = QRE(QString::fromLatin1("[^\\w]"));
+            @try
+            {
+                NSArray *imageFileTypes = [NSImage performSelector:@selector(imageFileTypes)];
+                NSEnumerator *enumerator = [imageFileTypes objectEnumerator];
+                NSString *fileType = nil;
+                while((fileType = [enumerator nextObject]) != nil)
+                {
+                    QString simplifiedFileType = ObjCUtils::QStringFromNSString(fileType).toLower();
+                    simplifiedFileType.replace(nonWordRE, QString::fromLatin1(""));
+                    fileTypes.insert(simplifiedFileType.simplified());
+                }
+                return true;
+            }
+            @catch(NSException *exception)
+            {
+                LOG_WARNING() << LOGGING_CTX << ObjCUtils::QStringFromNSString([exception reason]);
+            }
+        }
+        return false;
     }
 };
 
