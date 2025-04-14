@@ -30,8 +30,6 @@
 #include <QVariant>
 #include <QSize>
 
-#include "CFTypePtr.h"
-
 #define AUTORELEASE_POOL const ::ObjCUtils::AutoReleasePool pool; (void)(pool)
 
 namespace ObjCUtils {
@@ -48,12 +46,6 @@ private:
     NSAutoreleasePool *m_pool;
 };
 
-
-QPixmap QPixmapFromCGImageRef(const CFTypePtr<CGImageRef> &image, const QSize &sizeInPixels = QSize());
-CFTypePtr<CGImageRef> QPixmapToCGImageRef(const QPixmap &pixmap);
-
-QImage QImageFromCGImageRef(const CFTypePtr<CGImageRef> &image, const QSize &sizeInPixels = QSize());
-CFTypePtr<CGImageRef> QImageToCGImageRef(const QImage &image);
 
 QVariant QVariantFromObject(const id obj);
 id QVariantToObject(const QVariant &variant);

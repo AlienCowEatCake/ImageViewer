@@ -40,6 +40,7 @@
 #include "Global.h"
 #include "InfoUtils.h"
 #include "MacNSInteger.h"
+#include "MacUtils.h"
 
 namespace ObjCUtils {
 
@@ -51,96 +52,6 @@ AutoReleasePool::AutoReleasePool()
 AutoReleasePool::~AutoReleasePool()
 {
     [m_pool release];
-}
-
-static void imageDeleter(void *image, const void *, std::size_t)
-{
-    delete static_cast<QImage*>(image);
-}
-
-QPixmap QPixmapFromCGImageRef(const CFTypePtr<CGImageRef> &image, const QSize &sizeInPixels)
-{
-    if(!image)
-        return QPixmap();
-
-    return QPixmap::fromImage(QImageFromCGImageRef(image, sizeInPixels));
-}
-
-CFTypePtr<CGImageRef> QPixmapToCGImageRef(const QPixmap &pixmap)
-{
-    if(pixmap.isNull())
-        return Q_NULLPTR;
-
-    return QImageToCGImageRef(pixmap.toImage());
-}
-
-static CFTypePtr<CGColorSpaceRef> CreateRgbColorSpace()
-{
-#if defined (AVAILABLE_MAC_OS_X_VERSION_10_5_AND_LATER) && defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1050)
-#if defined (MAC_OS_X_VERSION_MIN_REQUIRED) && (MAC_OS_X_VERSION_MIN_REQUIRED >= 1050)
-    return CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-#else
-    if(InfoUtils::MacVersionGreatOrEqual(10, 5))
-        return CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    else
-        return CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB));
-#endif
-#else
-    return CFTypePtrFromCreate(CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB));
-#endif
-}
-
-QImage QImageFromCGImageRef(const CFTypePtr<CGImageRef> &image, const QSize &sizeInPixels)
-{
-    if(!image)
-        return QImage();
-
-    const std::size_t width = sizeInPixels.isEmpty() ? CGImageGetWidth(image) : static_cast<std::size_t>(sizeInPixels.width());
-    const std::size_t height = sizeInPixels.isEmpty() ? CGImageGetHeight(image) : static_cast<std::size_t>(sizeInPixels.height());
-    QImage result(static_cast<int>(width), static_cast<int>(height), QImage::Format_ARGB32_Premultiplied);
-    if(result.isNull())
-        return QImage();
-
-    result.fill(Qt::transparent);
-
-    const CFTypePtr<CGColorSpaceRef> colorSpace = CreateRgbColorSpace();
-    if(!colorSpace)
-        return QImage();
-
-    const CFTypePtr<CGContextRef> context = CFTypePtrFromCreate(CGBitmapContextCreate(static_cast<void*>(result.bits()),
-            width, height, 8, width * 4, colorSpace, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host));
-    if(!context)
-        return QImage();
-
-    CGRect rect = CGRectMake(0, 0, width, height);
-    CGContextDrawImage(context, rect, image);
-    return result;
-}
-
-CFTypePtr<CGImageRef> QImageToCGImageRef(const QImage &image)
-{
-    if(image.isNull())
-        return Q_NULLPTR;
-
-    const CFTypePtr<CGColorSpaceRef> colorSpace = CreateRgbColorSpace();
-    if(!colorSpace)
-        return Q_NULLPTR;
-
-    QImage *imageDP = new QImage(image.convertToFormat(QImage::Format_ARGB32_Premultiplied));
-    const std::size_t width = static_cast<std::size_t>(imageDP->width());
-    const std::size_t height = static_cast<std::size_t>(imageDP->height());
-
-    const CFTypePtr<CGDataProviderRef> provider = CFTypePtrFromCreate(CGDataProviderCreateWithData(
-            static_cast<void*>(imageDP), static_cast<const void*>(imageDP->bits()), 4 * width * height, imageDeleter));
-    if(!provider)
-    {
-        delete imageDP;
-        return Q_NULLPTR;
-    }
-
-    return CFTypePtrFromCreate(CGImageCreate(width, height, 8, 32, 4 * width, colorSpace,
-            kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host, provider, Q_NULLPTR, false,
-            kCGRenderingIntentDefault));
 }
 
 QVariant QVariantFromObject(const id obj)
@@ -495,7 +406,7 @@ QImage QImageFromNSImage(const NSImage *image, const QSize &sizeInPixels, Qt::As
     {
         // https://stackoverflow.com/questions/2548059/turning-an-nsimage-into-a-cgimageref
         NSRect imageRect = NSMakeRect(0, 0, image.size.width, image.size.height);
-        result = QImageFromCGImageRef(CFTypePtrFromGet([image CGImageForProposedRect:&imageRect context:nil hints:nil]), targetSize);
+        result = MacUtils::QImageFromCGImage(CFTypePtrFromGet([image CGImageForProposedRect:&imageRect context:nil hints:nil]), targetSize);
     }
     else
 #endif
@@ -532,12 +443,12 @@ QImage QImageFromNSImage(const NSImage *image, const QSize &sizeInPixels, Qt::As
 #endif
                 fraction:1];
         [NSGraphicsContext restoreGraphicsState];
-        /// @todo QImageFromCGImageRef produces artifacts for some images with alpha channel
+        /// @todo QImageFromCGImage produces artifacts for some images with alpha channel
 /*
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_5_AND_LATER) && defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1050)
         if(InfoUtils::MacVersionGreatOrEqual(10, 5))
         {
-            result = QImageFromCGImageRef(CFTypePtrFromGet([bmp CGImage]), targetSize);
+            result = MacUtils::QImageFromCGImage(CFTypePtrFromGet([bmp CGImage]), targetSize);
         }
         else
 #endif
@@ -572,7 +483,7 @@ NSImage *QImageToNSImage(const QImage &image, const QSize &sizeInPoints)
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER) && defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1060)
     if(InfoUtils::MacVersionGreatOrEqual(10, 6))
     {
-        const CFTypePtr<CGImageRef> imageRef = QImageToCGImageRef(image);
+        const CFTypePtr<CGImageRef> imageRef = MacUtils::QImageToCGImage(image);
         if(!imageRef)
             return nil;
         return [[[NSImage alloc] initWithCGImage:imageRef size:QSizeFToNSSize(sizeInPoints.isValid() ? sizeInPoints : image.size())] autorelease];
@@ -583,7 +494,7 @@ NSImage *QImageToNSImage(const QImage &image, const QSize &sizeInPoints)
         Q_UNUSED(sizeInPoints);
         // https://stackoverflow.com/questions/10627557/mac-os-x-drawing-into-an-offscreen-nsgraphicscontext-using-cgcontextref-c-funct
         // http://www.cocoabuilder.com/archive/cocoa/133768-converting-cgimagerefs-to-nsimages-how.html
-        const CFTypePtr<CGImageRef> imageRef = QImageToCGImageRef(image);
+        const CFTypePtr<CGImageRef> imageRef = MacUtils::QImageToCGImage(image);
         if(!imageRef)
             return nil;
         const NSRect rect = QRectFToNSRect(image.rect());

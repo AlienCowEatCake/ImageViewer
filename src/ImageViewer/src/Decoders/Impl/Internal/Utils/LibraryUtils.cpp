@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -157,6 +157,7 @@ private:
 
 #include <CoreFoundation/CoreFoundation.h>
 #include "Utils/CFTypePtr.h"
+#include "Utils/MacUtils.h"
 
 namespace {
 
@@ -201,18 +202,8 @@ private:
         if(url)
             if(CFTypePtr<CFURLRef> absoluteUrl = CFTypePtrFromCreate(CFURLCopyAbsoluteURL(url)))
                 if(CFTypePtr<CFStringRef> path = CFTypePtrFromCreate(CFURLCopyFileSystemPath(absoluteUrl, kCFURLPOSIXPathStyle)))
-                    return QStringFromCFString(path);
+                    return MacUtils::QStringFromCFString(path);
         return QString();
-    }
-
-    QString QStringFromCFString(const CFTypePtr<CFStringRef> &str) const
-    {
-        const CFIndex strLength = CFStringGetLength(str);
-        CFIndex byteLength = strLength * 6;
-        CFStringGetBytes(str, CFRangeMake(0, strLength), kCFStringEncodingUTF8, 0, false, Q_NULLPTR, byteLength, &byteLength);
-        QByteArray buffer(static_cast<int>(byteLength) + 1, '\0');
-        CFStringGetBytes(str, CFRangeMake(0, strLength), kCFStringEncodingUTF8, 0, false, reinterpret_cast<UInt8*>(buffer.data()), buffer.size(), Q_NULLPTR);
-        return QString::fromUtf8(buffer);
     }
 
 private:
