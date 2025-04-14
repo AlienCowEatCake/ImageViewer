@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -16,11 +16,6 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-/// @note qDebug macro conflicts
-#if defined (__APPLE__)
-#include <CoreServices/CoreServices.h>
-#endif
 
 #include "FileUtils.h"
 
@@ -56,7 +51,9 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString * /*errorDescri
 
 #elif defined (Q_OS_MAC)
 
+#include "Workarounds/BeginExcludeOpenTransport.h"
 #include <CoreServices/CoreServices.h>
+#include "Workarounds/EndExcludeOpenTransport.h"
 
 namespace MoveToTrashInternal {
 

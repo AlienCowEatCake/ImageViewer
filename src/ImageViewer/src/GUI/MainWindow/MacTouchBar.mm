@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2020-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2020-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -17,13 +17,12 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/// @note qDebug macro conflicts
-#import <CoreServices/CoreServices.h>
-
 #include "MacTouchBar.h"
 
+#include "Workarounds/BeginExcludeOpenTransport.h"
 #import <AppKit/AppKit.h>
 #import <Cocoa/Cocoa.h>
+#include "Workarounds/EndExcludeOpenTransport.h"
 
 #include <QApplication>
 #include <QWidget>

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -16,9 +16,6 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-/// @note qDebug macro conflicts
-#import <CoreServices/CoreServices.h>
 
 #include "ObjectiveCUtils_mac.h"
 

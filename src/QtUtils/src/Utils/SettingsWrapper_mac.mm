@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -17,10 +17,9 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/// @note qDebug macro conflicts
-#import <CoreServices/CoreServices.h>
-
+#include "Workarounds/BeginExcludeOpenTransport.h"
 #import <Foundation/Foundation.h>
+#include "Workarounds/EndExcludeOpenTransport.h"
 
 #include <QString>
 #include <QVariant>

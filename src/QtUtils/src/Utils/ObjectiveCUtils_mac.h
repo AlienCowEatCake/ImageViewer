@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -20,9 +20,11 @@
 #if !defined (QTUTILS_OBJECTIVECUTILS_MAC_H_INCLUDED)
 #define QTUTILS_OBJECTIVECUTILS_MAC_H_INCLUDED
 
+#include "Workarounds/BeginExcludeOpenTransport.h"
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
+#include "Workarounds/EndExcludeOpenTransport.h"
 
 #include <QtGlobal>
 #include <QVariant>
