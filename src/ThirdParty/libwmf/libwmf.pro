@@ -51,8 +51,6 @@ HEADERS += \
 RESOURCES += \
     $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/libwmf_fontsprovider.qrc
 
-QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9
-
 # find ./src -name '*.c' | egrep -v "(/src/convert/|/src/extra/trio/|/src/io-|$(egrep -R '^main ' src/extra/gd | sed 's|:.*||' | xargs | sed 's/ /|/g'))" | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBWMF_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBWMF_PATH}/src/api.c \

@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2011-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2011-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `QtUtils' library.
 #
@@ -104,11 +104,4 @@ RESOURCES += \
     resources/icons/qtutils_icons.qrc \
     resources/style/qtutils_style.qrc \
     resources/translations/qtutils_translations.qrc
-
-QMAKE_RESOURCE_FLAGS += -threshold 0 -compress 9
-!lessThan(QT_MAJOR_VERSION, 5) {
-    greaterThan(QT_MAJOR_VERSION, 5) | greaterThan(QT_MINOR_VERSION, 12) {
-        QMAKE_RESOURCE_FLAGS += -compress-algo zlib
-    }
-}
 
