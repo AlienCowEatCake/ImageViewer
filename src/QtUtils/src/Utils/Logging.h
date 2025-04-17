@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2024-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -61,7 +61,7 @@ private:
 //#define LOGGING_FUNC (__FUNCSIG__)
 
 #define LOGGING_CTXS(S)     (LoggingContextHelper(LOGGING_FILE, LOGGING_LINE, (S)).toString())
-#define LOGGING_CTXQS(QS)   (LOGGING_CTXQS((QS).toLocal8Bit().data()))
+#define LOGGING_CTXQS(QS)   (LOGGING_CTXS((QS).toLocal8Bit().data()))
 #define LOGGING_CTX         (LOGGING_CTXS(LOGGING_FUNC))
 
 #endif // QTUTILS_LOGGING_H_INCLUDED
