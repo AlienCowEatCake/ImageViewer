@@ -26,7 +26,6 @@ rm -rf "${PROJECT}-${VERSION}/tests"
 # Remove icon sources and convertation scripts
 find "${PROJECT}-${VERSION}/src/ImageViewer/resources/icon" -type f -name '*.sh' -delete
 find "${PROJECT}-${VERSION}/src/ImageViewer/resources/icon" -type f -name 'drawing*.svg' -delete
-rm -rf "${PROJECT}-${VERSION}/src/ImageViewer/resources/icon/oldiconutil"
 rm -rf "${PROJECT}-${VERSION}/src/ImageViewer/resources/style/dark/original"
 rm -rf "${PROJECT}-${VERSION}/src/ImageViewer/resources/style/light/original"
 rm -rf "${PROJECT}-${VERSION}/src/ImageViewer/resources/style/palette_dumper"
