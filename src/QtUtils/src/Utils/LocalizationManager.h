@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -37,44 +37,44 @@ extern const QString ZH_TW;
 
 } // namespace Locale
 
-/// @brief Менеджер по управлению локализациями.
+/// @brief Manager for localization.
 class LocalizationManager : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(LocalizationManager)
 
 Q_SIGNALS:
-    /// @brief Сигнал об изменении локализации.
-    /// @param locale - Новая локаль.
+    /// @brief Signal about locale changing.
+    /// @param locale - New locale identifier.
     void localeChanged(const QString &locale);
 
 public:
-    /// @brief Получить указатель на экземпляр текущего менеджера локализаций.
-    /// @return Указатель на экземпляр текущего менеджера локализаций.
+    /// @brief Get pointer to current localization manager.
+    /// @return Pointer to current localization manager.
     static LocalizationManager *instance();
 
-    /// @brief Инициализировать трансляторы для указанных ресурсов.
-    /// @param templatesList - пути к локализационным ресурсным файлам,
-    ///  например ":/translations/qtutils_%1" (%1 - шаблон для локали).
+    /// @brief Initialize translators for specified ".qm" translation files.
+    /// @param templatesList - paths for ".qm" translation files, e.g.
+    /// ":/translations/qtutils_%1" where %1 is place-marker for locale.
     void initializeResources(const QStringList &templatesList);
 
-    /// @brief Получить текущую локаль.
-    /// @return Текущая локаль.
+    /// @brief Get current locale identifier.
+    /// @return Current locale identifier.
     QString locale() const;
 
-    /// @brief Установить новую локаль.
-    /// @param locale - Новая локаль.
+    /// @brief Set current locale with specified identifier.
+    /// @param locale - Locale identifier.
     void setLocale(const QString &locale = QString());
 
-    /// @brief Заполнить меню элементами для выбора локали. Все необходимые
-    ///  соединения будут установлены автоматически.
-    /// @param menu - меню, которое должно быть заполнено.
+    /// @brief Fill menu with items for locale choose. All required
+    /// connections will be setup automatically.
+    /// @param menu - Menu which should be filled.
     void fillMenu(QMenu *menu);
 
-    /// @brief Заполнить комбобокс элементами для выбора локали. Все необходимые
-    ///  соединения будут установлены автоматически.
-    /// @param comboBox - комбобокс, который должен быть заполнен.
-    /// @param autoApply - автоматически применять изменения при выборе локали
+    /// @brief Fill combo box with items for locale choose. All required
+    /// connections will be setup automatically.
+    /// @param comboBox - Combo box which should be filled.
+    /// @param autoApply - Apply changes automatically after combo box changes.
     void fillComboBox(QComboBox *comboBox, const bool autoApply = true);
 
 private:

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -28,10 +28,10 @@ OBJC_CLASS(NSWindow);
 
 namespace WindowUtils {
 
-/// @brief Получить NSWindow для виджета
+/// @brief Get NSWindow for widget
 NSWindow *GetNativeWindow(QWidget* widget);
 
-/// @brief По возможности нативно переключить режим FullScreen
+/// @brief Switch to native FullScreen mode
 void ToggleFullScreenMode(QWidget* window);
 
 } // namespace WindowUtils

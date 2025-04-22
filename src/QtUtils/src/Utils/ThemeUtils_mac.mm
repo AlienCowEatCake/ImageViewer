@@ -31,7 +31,7 @@
 
 namespace ThemeUtils {
 
-/// @brief Функция для определения темная используемая тема системы или нет
+/// @brief Check if system theme is dark or not
 bool SystemHasDarkTheme()
 {
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_14_AND_LATER)

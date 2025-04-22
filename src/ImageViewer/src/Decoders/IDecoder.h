@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -30,15 +30,15 @@ class IDecoder
 {
 public:
     virtual ~IDecoder() {}
-    /// @brief Название декодера, должно быть уникальным
+    /// @brief Decoder name, should be unique
     virtual QString name() const = 0;
-    /// @brief Основные (приоритетные) форматы, поддерживаемые декодером
+    /// @brief Main (high priority) formats which can be opened by decoder
     virtual QStringList supportedFormats() const = 0;
-    /// @brief Дополнительные (не приоритетные) форматы, которые можно попытаться открыть
+    /// @brief Advanced (low priority) formats which can be tried to open with this decoder
     virtual QStringList advancedFormats() const = 0;
-    /// @brief Доступен ли декодер на текущий момент (актуально для декодеров, подгружаемых из runtime)
+    /// @brief Check decoder availability for os specific or runtime loaded decoders
     virtual bool isAvailable() const = 0;
-    /// @brief Загрузка изображения по заданному пути в IImageData
+    /// @brief Load image to IImageData from specified file path
     virtual QSharedPointer<IImageData> loadImage(const QString &filePath) = 0;
 };
 

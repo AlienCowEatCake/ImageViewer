@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -22,7 +22,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-/// @brief Умный указатель для типов Core Foundation и им подобных
+/// @brief Smart pointer for Core Foundation objects and similar
 template <typename T>
 class CFTypePtr
 {
@@ -116,16 +116,16 @@ private:
     T m_dataRef;
 };
 
-/// @brief Создает указатель для объекта, полученного через функции вида "Get"
-/// @note При создании указателя счетчик ссылок увеличивается
+/// @brief Create smart pointer for object taken from "Get" functions
+/// @note Object will be retained
 template<typename T>
 CFTypePtr<T> CFTypePtrFromGet(T p)
 {
     return CFTypePtr<T>(p, true);
 }
 
-/// @brief Создает указатель для объекта, полученного через функции вида "Create" или "Copy"
-/// @note При создании указателя счетчик ссылок НЕ увеличивается
+/// @brief Create smart pointer for object taken from "Create" or "Copy" functions
+/// @note Object will NOT be retained
 template<typename T>
 CFTypePtr<T> CFTypePtrFromCreate(T p)
 {

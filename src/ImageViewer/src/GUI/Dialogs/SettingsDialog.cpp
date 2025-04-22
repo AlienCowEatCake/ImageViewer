@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -152,7 +152,7 @@ struct SettingsDialog::Impl
 
     void onColorDialogRequested(const QColor &oldColor, void (SettingsDialog::*callback)(const QColor&), const char *slot)
     {
-        /// @todo Нужен нормальный кроссплатформенный ColorDialog!
+        /// @todo Let's write unified cross-platform ColorDialog someday!
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
     #if !defined (Q_OS_MAC)
         Q_UNUSED(slot);

@@ -682,15 +682,14 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
 
 namespace FileUtils {
 
-/// @brief Удаление указанного файла или директории в корзину
-/// @attention Используется удаление без запроса. В случае отсутствия на целевой системе
-///         корзины, либо если корзина программно отключена поведение этой функции строго
-///         не специфицируется. Предполагаемое поведение - либо будет произведен выход с
-///         false, либо произойдет удаление файла мимо корзины (может зависеть от текущей
-///         платформы). Текстовое описание ошибки при этом устанавливаться не обязано.
-/// @param[in] path - путь к файлу или директории
-/// @param[out] errorDescription - текстовое описание ошибки в случае ее возникновения
-/// @return - true в случае успешного удаления, false в случае ошибки
+/// @brief Move specified file or directory to trash
+/// @attention Operation is performed without confirmation request. Behavior of this
+///            function is not specified if system has no trash or trash support is
+///            disabled. This can be platform specific, e.g. return with false or delete
+///            file permanently. Error description may not be set in this case
+/// @param[in] path - path to file or directory
+/// @param[out] errorDescription - information that describes error if that has occurred
+/// @return - true - file or directory was moved to trash or deleted, false - otherwise
 bool MoveToTrash(const QString &path, QString *errorDescription)
 {
     const QFileInfo info(path);

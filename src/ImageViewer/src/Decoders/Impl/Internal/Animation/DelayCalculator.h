@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -24,8 +24,8 @@ namespace DelayCalculator {
 
 enum Mode
 {
-    MODE_NORMAL,    ///< Задержка "как есть"
-    MODE_CHROME     ///< Задержка как в Chrome/Firefox
+    MODE_NORMAL,    ///< Delay "as is"
+    MODE_CHROME     ///< Delay as in Chrome/Firefox
 };
 
 int calculate(int originalDelayMs, Mode mode);

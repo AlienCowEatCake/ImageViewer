@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -37,8 +37,8 @@
 
 #include "ThemeUtils.h"
 
-/// @brief Инициализация ресурсов статической библиотеки QtUtils
-/// @attention Функция должна быть в глобальном namespace
+/// @brief Initialize resources of static QtUtils library
+/// @attention This function should be in global namespace
 static void InitQtUtilsResources_internal()
 {
     static bool isInitialized = false;
@@ -53,15 +53,15 @@ static void InitQtUtilsResources_internal()
 
 namespace Workarounds {
 
-/// @brief Инициализация ресурсов статической библиотеки QtUtils
+/// @brief Initialize resources of static QtUtils library
 void InitQtUtilsResources()
 {
     InitQtUtilsResources_internal();
 }
 
-/// @brief Исправить отображение локализованных шрифтов под Windows
-/// @param[in] language - язык, для которого будет проводиться исправление
-/// @note Функцию следует вызывать при смене языка
+/// @brief Apply locale specific font hacks for Windows and Wine
+/// @param[in] language - current language
+/// @note Function should be called on GUI language changes
 void FontsFix(const QString &language)
 {
 #if defined (Q_OS_WIN)
@@ -70,13 +70,13 @@ void FontsFix(const QString &language)
     /// I don't know if this code is needed now. I don't know if Tahoma is
     /// suitable as fallback font for other WritingSystems.
 
-    // Отображение название языка -> соответствующая ему WritingSystem
+    // Known languages and corresponding WritingSystems
     static const QList<QPair<QString, QFontDatabase::WritingSystem> > writingSystemMap =
             QList<QPair<QString, QFontDatabase::WritingSystem> >()
             << qMakePair(QString::fromLatin1("en"), QFontDatabase::Latin)
             << qMakePair(QString::fromLatin1("ru"), QFontDatabase::Cyrillic);
 
-    // Найдем WritingSystem для текущего языка
+    // Find WritingSystem for current language
     QFontDatabase::WritingSystem currentWritingSystem = QFontDatabase::Any;
     for(QList<QPair<QString, QFontDatabase::WritingSystem> >::ConstIterator it = writingSystemMap.begin(); it != writingSystemMap.end(); ++it)
     {
@@ -87,7 +87,7 @@ void FontsFix(const QString &language)
         }
     }
 
-    // Шрифт стандартный, по умолчанию
+    // Default font is saved for future use
     static const QFont defaultFont = qApp->font();
 
     // We need to restore default font for any unspecified languages
@@ -97,11 +97,11 @@ void FontsFix(const QString &language)
         return;
     }
 
-    // Шрифт Tahoma, если стандартный не поддерживает выбранный язык
+    // Fallback Tahoma font is used when default font is not support current language
     QFont fallbackFont = defaultFont;
     fallbackFont.setFamily(QString::fromLatin1("Tahoma"));
 
-    // Проверим, умеет ли стандартный шрифт писать на новом языке
+    // Check default font for support of WritingSystem for current language
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     const QStringList currentWritingSystemFamilies = QFontDatabase::families(currentWritingSystem);
 #else
@@ -109,12 +109,12 @@ void FontsFix(const QString &language)
     const QStringList currentWritingSystemFamilies = fontDatabase.families(currentWritingSystem);
 #endif
     if(!currentWritingSystemFamilies.contains(defaultFont.family(), Qt::CaseInsensitive))
-        qApp->setFont(fallbackFont);   // Если не умеет - заменим на Tahoma
+        qApp->setFont(fallbackFont);   // Replace font to Tahoma if check is FAIL
     else
-        qApp->setFont(defaultFont);    // Если умеет, то вернем его обратно
+        qApp->setFont(defaultFont);    // Restore default font if check is OK
 
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    // Для Win98 форсированно заменяем шрифты на Tahoma для всех не-английских локалей
+    // Replace font to Tahoma for all languages except English on Windows 9x
     if(QSysInfo::windowsVersion() <= QSysInfo::WV_Me)
     {
         if(language != QString::fromLatin1("en"))
@@ -131,9 +131,10 @@ void FontsFix(const QString &language)
 #endif
 }
 
-/// @brief Автоматически увеличить масштаб отображения для высоких DPI
-/// @note Функцию следует вызывать перед созданием QApplication
-/// @attention Актуально только для Qt 5.4+
+/// @brief Automatically scale GUI on high DPI screens
+/// @note Function should be called before creating QApplication instance
+/// @attention Does nothing before Qt 5.4 because scaling is not supported
+/// @attention Does nothing since Qt 6.0 because scaling is already active
 void HighDPIFix()
 {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
@@ -154,8 +155,8 @@ void HighDPIFix()
 #endif
     }
 
-    // Qt::AA_UseHighDpiPixmaps доступен и в более ранних версиях,
-    // однако без поддержки HighDPI его применение нецелесообразно
+    // Qt::AA_UseHighDpiPixmaps is available in earlier versions too,
+    // but it is not useful without support of HighDPI scaling
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
@@ -163,8 +164,8 @@ void HighDPIFix()
 #endif
 }
 
-/// @brief Определить, запущено ли приложение удаленно
-/// @return true - удаленный запуск, false - иначе
+/// @brief Check if app is running with X11 forwarding over SSH
+/// @return true - X11 forwarding over SSH is active, false - otherwise
 bool IsRemoteSession()
 {
 #if defined (Q_OS_UNIX) && !defined (Q_OS_MAC)
@@ -174,13 +175,17 @@ bool IsRemoteSession()
     return false;
 }
 
-/// @brief Переопределить неподдерживаемые QT_QPA_PLATFORMTHEME и QT_STYLE_OVERRIDE
+/// @brief Override unsupported QT_QPA_PLATFORMTHEME and QT_STYLE_OVERRIDE
 void StyleFix()
 {
 #if (defined (Q_OS_UNIX) && !defined (Q_OS_MAC) && QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && QT_VERSION < QT_VERSION_CHECK(5, 7, 0))
-    // До 5.6 включительно использовался стиль gtk, с 5.7 он называется gtk2
-    // Если это статическая сборка, например, с 5.6 и в системе определены
-    // QT_QPA_PLATFORMTHEME и/или QT_STYLE_OVERRIDE, то стили не подхватятся.
+    // Well, "gtk" style was renamed to "gtk2" in Qt 5.7. This will result in
+    // broken styles under following conditions:
+    //  1. Application was built with Qt 5.6 or earlier
+    //  2. System has Qt 5.7 or later
+    //  3. System has QT_QPA_PLATFORMTHEME and/or QT_STYLE_OVERRIDE env vars
+    //     with new "gtk2" values
+    // So we should replace new "gtk2" value to old "gtk" value for Qt < 5.7
     static char newPlatformThemeEnv[] = "QT_QPA_PLATFORMTHEME=gtk";
     const char *platformThemeEnv = getenv("QT_QPA_PLATFORMTHEME");
     if(platformThemeEnv && !QString::fromLatin1(platformThemeEnv).compare(QString::fromLatin1("gtk2"), Qt::CaseInsensitive))

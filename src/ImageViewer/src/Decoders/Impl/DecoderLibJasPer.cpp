@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -466,7 +466,7 @@ public:
     QStringList supportedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
-                /// @note Нативные форматы JPEG 2000
+                /// @note Native JPEG 2000 formats
 #if (USE_EXCLUDE && !defined(EXCLUDE_JP2_SUPPORT)) || (!USE_EXCLUDE && defined(JAS_INCLUDE_JP2_CODEC))
                 << QString::fromLatin1("jp2")
                 << QString::fromLatin1("jpf")
@@ -485,7 +485,7 @@ public:
     QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
         return QStringList()
-                   /// @note Дополнительные форматы, открываемые libjasper
+                   /// @note Advanced formats handled by libjasper
 #if (USE_EXCLUDE && !defined(EXCLUDE_JPG_SUPPORT)) || (!USE_EXCLUDE && defined(JAS_INCLUDE_JPG_CODEC))
                 << QString::fromLatin1("jpg")
 #endif

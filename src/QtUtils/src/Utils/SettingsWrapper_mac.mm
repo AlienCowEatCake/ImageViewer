@@ -28,15 +28,15 @@
 
 namespace SettingsEncoder {
 
-/// @brief Кодировщик данных QVariant -> QString, по возможности использует человеко-читаемое представление
-/// @param[in] data - Исходные данные
-/// @return Кодированные данные
+/// @brief Encoder from QVariant to QString, uses human-readable representation if possible
+/// @param[in] data - data to encode
+/// @return Encoded data
 QString Encode(const QVariant &data);
 
-/// @brief Декодировщик данных QString -> QVariant
-/// @param[in] data - Кодированные в Encode() данные
-/// @return Исходные данные
-/// @attention Предназначен для работы совместно с Encode()
+/// @brief Decoder from QString to QVariant
+/// @param[in] data - encoded data from Encode()
+/// @return Decoded data
+/// @attention Suitable only for encoded data from Encode()
 QVariant Decode(const QString &data);
 
 } // namespace SettingsEncoder
@@ -45,10 +45,10 @@ namespace NativeSettingsStorage {
 
 namespace {
 
-/// @brief Получить из пары (group, key) ключ, пригодный для использования с NSUserDefaults
-/// @param[in] group - группа (секция) настроек
-/// @param[in] key - исходный ключ в группе
-/// @return ключ, пригодный для использования с NSUserDefaults
+/// @brief Get NSUserDefaults compatible key for specified key and group
+/// @param[in] group - group (section or prefix) of settings
+/// @param[in] key - original key in group
+/// @return NSUserDefaults compatible key for specified key and group
 QString getNativeKeyString(const QString &group, const QString &key)
 {
     return (group.isEmpty() ? QString() : (group + QString::fromLatin1("/"))) + key;
@@ -56,10 +56,10 @@ QString getNativeKeyString(const QString &group, const QString &key)
 
 } // namespace
 
-/// @brief Установить значение для заданного ключа в NSUserDefaults
-/// @param[in] group - группа (секция) настроек
-/// @param[in] key - ключ, для которого устанавливается значение
-/// @param[in] value - значение, которое устанавливается для ключа
+/// @brief Set value to NSUserDefaults for specified key and group
+/// @param[in] group - group (section or prefix) of settings
+/// @param[in] key - key for set
+/// @param[in] value - value for for set
 void setValue(const QString &group, const QString &key, const QVariant &value)
 {
     AUTORELEASE_POOL;
@@ -70,11 +70,11 @@ void setValue(const QString &group, const QString &key, const QVariant &value)
     [defaults synchronize];
 }
 
-/// @brief Получить значение для заданного ключа из NSUserDefaults
-/// @param[in] group - группа (секция) настроек
-/// @param[in] key - ключ, для которого получается значение
-/// @param[in] defaultValue - умолчательное значение, возвращается при отсутствии значения
-/// @return - значение для ключа или defaultValue при отсутствии значения
+/// @brief Get value from NSUserDefaults for specified key and group
+/// @param[in] group - group (section or prefix) of settings
+/// @param[in] key - key for get
+/// @param[in] defaultValue - default value if value is absent
+/// @return - value for specified key or defaultValue if value is absent
 QVariant value(const QString &group, const QString &key, const QVariant &defaultValue)
 {
     AUTORELEASE_POOL;

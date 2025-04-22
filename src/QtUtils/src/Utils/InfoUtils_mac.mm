@@ -126,7 +126,7 @@ Version GetCurrentMacVersion()
 
 } // namespace
 
-/// @brief Проверить текущую версию macOS
+/// @brief Check current macOS version
 bool MacVersionGreatOrEqual(const int major, const int minor, const int patch)
 {
     const Version version = GetCurrentMacVersion();
@@ -145,7 +145,7 @@ bool MacVersionGreatOrEqual(const int major, const int minor, const int patch)
     return true;
 }
 
-/// @brief Получить человеко-читаемую информацию о системе
+/// @brief Get human-readable info about system
 QString GetSystemDescription()
 {
     const Version version = GetCurrentMacVersion();

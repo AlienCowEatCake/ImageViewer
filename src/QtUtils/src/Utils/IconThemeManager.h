@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2024-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -91,7 +91,7 @@ public:
 
     /// @brief Fill combo box with items for icon theme choose. All required
     /// connections will be setup automatically.
-    /// @param menu - Combo box which should be filled.
+    /// @param comboBox - Combo box which should be filled.
     /// @param autoApply - Apply changes automatically after combo box changes.
     void fillComboBox(QComboBox *comboBox, const bool autoApply = true);
 

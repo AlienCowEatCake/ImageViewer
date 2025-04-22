@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -24,16 +24,16 @@ class QString;
 
 namespace InfoUtils {
 
-/// @brief Проверить текущую версию macOS
+/// @brief Check current macOS version
 bool MacVersionGreatOrEqual(const int major, const int minor, const int patch = -1);
 
-/// @brief Проверить текущую версию Windows
+/// @brief Check current Windows version
 bool WinVersionGreatOrEqual(const int major, const int minor, const int build = -1);
 
-/// @brief Получить человеко-читаемую информацию о системе
+/// @brief Get human-readable info about system
 QString GetSystemDescription();
 
-/// @brief Получить человеко-читаемую информацию о компиляторе
+/// @brief Get human-readable info about compiler
 QString GetCompilerDescription();
 
 } // namespace InfoUtils

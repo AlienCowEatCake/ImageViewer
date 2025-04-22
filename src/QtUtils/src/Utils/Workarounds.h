@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -24,24 +24,25 @@
 
 namespace Workarounds {
 
-/// @brief Инициализация ресурсов статической библиотеки QtUtils
+/// @brief Initialize resources of static QtUtils library
 void InitQtUtilsResources();
 
-/// @brief Исправить отображение локализованных шрифтов под Windows
-/// @param[in] language - язык, для которого будет проводиться исправление
-/// @note Функцию следует вызывать при смене языка
+/// @brief Apply locale specific font hacks for Windows and Wine
+/// @param[in] language - current language
+/// @note Function should be called on GUI language changes
 void FontsFix(const QString &language);
 
-/// @brief Автоматически увеличить масштаб отображения для высоких DPI
-/// @note Функцию следует вызывать перед созданием QApplication
-/// @attention Актуально только для Qt 5.4+
+/// @brief Automatically scale GUI on high DPI screens
+/// @note Function should be called before creating QApplication instance
+/// @attention Does nothing before Qt 5.4 because scaling is not supported
+/// @attention Does nothing since Qt 6.0 because scaling is already active
 void HighDPIFix();
 
-/// @brief Определить, запущено ли приложение удаленно
-/// @return true - удаленный запуск, false - иначе
+/// @brief Check if app is running with X11 forwarding over SSH
+/// @return true - X11 forwarding over SSH is active, false - otherwise
 bool IsRemoteSession();
 
-/// @brief Переопределить неподдерживаемые QT_QPA_PLATFORMTHEME и QT_STYLE_OVERRIDE
+/// @brief Override unsupported QT_QPA_PLATFORMTHEME and QT_STYLE_OVERRIDE
 void StyleFix();
 
 } // Workarounds

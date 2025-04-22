@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -28,33 +28,33 @@
 
 namespace ThemeUtils {
 
-/// @brief Считать стилизацию из файла и применить ее к QApplication
-/// @param[in] filePath - Путь до QSS файла со стилями
-/// @return true если стилизация успешно применена, false - иначе
+/// @brief Read style sheet from QSS file and apply to QApplication
+/// @param[in] filePath - Path to QSS file
+/// @return true if style sheet was read and applied, false - otherwise
 bool LoadStyleSheet(const QString &filePath);
 
-/// @brief Считать стилизацию из файлов и применить ее к QApplication
-/// @param[in] filePaths - Список путей до QSS файлов со стилями
-/// @return true если стилизация успешно применена, false - иначе
+/// @brief Read style sheets from QSS files and apply to QApplication
+/// @param[in] filePaths - List of paths to QSS files
+/// @return true if style sheets was read and applied, false - otherwise
 bool LoadStyleSheet(const QStringList &filePaths);
 
-/// @brief Функция для определения темная используемая тема виджета или нет
-/// @param[in] widget - Виджет, для которого выполняется эта проверка
+/// @brief Check if widget theme is dark or not
+/// @param[in] widget - Widget which should be checked
 bool WidgetHasDarkTheme(const QWidget *widget);
 
-/// @brief Функция для определения темная используемая тема системы или нет
+/// @brief Check if system theme is dark or not
 bool SystemHasDarkTheme();
 
-/// @brief Создать масштабируемую иконку из нескольких разного размера
-/// @param[in] defaultImagePath - Путь к иконке по умолчанию (может быть SVG)
-/// @param[in] scaledImagePaths - Список путей иконкам разного размера (растр)
-/// @return Масштабируемая иконка
+/// @brief Create scalable icon from several images with different sizes
+/// @param[in] defaultImagePath - Path to default icon (raster or SVG)
+/// @param[in] scaledImagePaths - List of paths to images with different sizes (raster only)
+/// @return Scalable icon
 QIcon CreateScalableIcon(const QString &defaultImagePath, const QStringList &scaledImagePaths = QStringList());
 
-/// @brief Создать масштабируемую иконку из нескольких растровых разного размера
-/// @param[in] scaledImagePaths - Список путей иконкам разного размера (только растр)
-/// @param[in] invertPixels - Требуется ли инвертированное изображение вместо обычного
-/// @return Масштабируемая иконка
+/// @brief Create scalable icon from several images with different sizes
+/// @param[in] scaledImagePaths - List of paths to images with different sizes (raster only)
+/// @param[in] invertPixels - true if images should be inverted
+/// @return Scalable icon
 QIcon CreateScalableIcon(const QStringList &scaledImagePaths, bool invertPixels = false);
 
 /// @brief Create scalable icon from several images with different sizes
@@ -63,7 +63,7 @@ QIcon CreateScalableIcon(const QStringList &scaledImagePaths, bool invertPixels 
 /// @return Scalable icon
 QIcon CreateScalableIcon(const QList<QImage> &scaledImages, bool invertPixels = false);
 
-/// @brief Типы иконок
+/// @brief Icon types
 enum IconTypes
 {
     ICON_APPLICATION_EXIT,
@@ -105,9 +105,9 @@ enum IconTypes
     ICON_ZOOM_OUT
 };
 
-/// @brief Функция для получения иконки
-/// @param[in] type - Тип иконки (см. enum IconTypes)
-/// @param[in] darkBackground - true, если иконка располагается на темном фоне
+/// @brief Get icon from default QtUtils icon theme
+/// @param[in] type - Type of icon (see enum IconTypes)
+/// @param[in] darkBackground - true if image should be placed on dark background
 QIcon GetIcon(IconTypes type, bool darkBackground = false);
 
 /// @brief Get icon from current icon theme

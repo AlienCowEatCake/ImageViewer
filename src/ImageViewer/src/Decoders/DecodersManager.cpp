@@ -75,43 +75,43 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
     if(decoderPriotities.isEmpty())
     {
 #define P(NAME, MAIN_PRIORITY, ADVANCED_PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = ComplexPriotiry(MAIN_PRIORITY, ADVANCED_PRIORITY)
-        /// @note Декодеры статических изображений
-        P("DecoderWIC"                  ,   60, -1); ///< Умеет много разных форматов, но плохо. Годится только в качестве резервного.
-        P("DecoderSTB"                  ,  100, 10); ///< Резервный декодер, так как мало что умеет.
-        P("DecoderQImage"               ,  200, 20); ///< Умеет все, что умеет Qt. Не поддерживает EXIF и ICCP.
-        P("DecoderQtImageFormatsImage"  ,  300, -1); ///< Экзотические и deprecated декодеры Qt. Должен быть выше QImage.
-        P("DecoderKImageFormatsImage"   ,  380, -1); ///< Декодеры KDE. Должен быть выше QtImageFormatsImage и Magick*.
-        P("DecoderNSImage"              ,  400, -1); ///< Умеет очень много разных форматов. Должен быть выше декодеров общего назначения, но ниже специализированных декодеров.
-        P("DecoderLibJpeg"              ,  500, 70); ///< Умеет jpeg форматы. Поддерживает EXIF и ICCP. Должен быть выше QImage.
-        P("DecoderLibJasPer"            ,  510, 80); ///< Умеет формат JPEG 2000 и несколько побочных. Поддержка хуже, чем в QtImageFormatsImage, но имеет ряд дополнительных проверок от крашей.
-        P("DecoderOpenJPEG"             ,  520, -1); ///< Умеет формат JPEG 2000. Поддерживает ICCP. Поддержка в чем-то лучше LibJasPer, в чем-то хуже.
-        P("DecoderLibTiff"              ,  530, -1); ///< Умеет формат tiff. Поддерживает EXIF(?) и ICCP. Должен быть выше QImage и QtImageFormatsImage.
-        P("DecoderJbigKit"              ,  540, -1); ///< Умеет формат JBIG1.
-        P("DecoderLibRaw"               ,  550, -1); ///< Умеет форматы RAW.
-        P("DecoderLibHEIF"              ,  560, -1); ///< Умеет формат HEIF с кодеками HEVC и AV1, а также некоторые AVIF.
-        P("DecoderOpenEXR"              ,  570, -1); ///< Умеет формат EXR.
-        P("DecoderLibAvif"              ,  580, 90); ///< Умеет формат AVIF, некоторые HEIF с кодеком AV1.
-        P("DecoderLERC"                 ,  590, -1); ///< Умеет формат LERC.
-        P("DecoderJxrLib"               ,  600, -1); ///< Умеет формат JPEG XR.
-        /// @note Декодеры анимированных изображений
-        P("DecoderQMovie"               , 1090, -1); ///< Умеет анимированные gif.
-        P("DecoderGifLib"               , 1100, -1); ///< Умеет анимированные gif, но медленнее, чем QMovie, зато поддерживает ICCP и более всеяден.
-        P("DecoderLibMng"               , 1110, -1); ///< Умеет анимированные mng и jng. Поддержка mng хуже, чем в QtImageFormatsMovie.
-        P("DecoderQtImageFormatsMovie"  , 1200, -1); ///< Умеет анимированные mng.
-        P("DecoderKImageFormatsMovie"   , 1210, -1); ///< Умеет анимированные форматы из KDE. Должен быть выше DecoderQtImageFormatsMovie.
-        P("DecoderLibPng"               , 1300, -1); ///< Умеет анимированные png. Поддерживает EXIF и ICCP.
-        P("DecoderLibWebP"              , 1310, -1); ///< Умеет анимированные webp. Поддержка лучше, чем в QtImageFormatsMovie.
-        P("DecoderLibBpg"               , 1320, -1); ///< Умеет анимированные bpg. Поддерживает EXIF и ICCP.
-        P("DecoderFLIF"                 , 1330, -1); ///< Умеет анимированные flif.
-        P("DecoderLibJxl"               , 1340, -1); ///< Умеет анимированные jxl.
-        /// @note Декодеры векторных изображений
-        P("DecoderQtSVG"                , 2100, -1); ///< Умеет svg, но очень плохо.
-        P("DecoderReSVGLt001100"        , 2200, -1); ///< Умеет неинтерактивные svg, подгружает внешние библиотеки. Нестабилен, слишком строг к стандартам. Нестабильное API/ABI. Весьма медленная отрисовка.
-        P("DecoderReSVGLt001300"        , 2201, -1); ///< Умеет неинтерактивные svg, подгружает внешние библиотеки. Нестабильное API/ABI. Весьма медленная отрисовка.
-        P("DecoderReSVGLt003300"        , 2202, -1); ///< Умеет неинтерактивные svg, подгружает внешние библиотеки. Нестабильное API/ABI. Весьма медленная отрисовка.
-        P("DecoderLibRSVG"              , 2300, -1); ///< Умеет неинтерактивные svg, подгружает внешние библиотеки. Весьма медленная отрисовка.
-        P("DecoderReSVG"                , 2350, -1); ///< Умеет неинтерактивные svg, подгружает внешние библиотеки. Нестабильное API/ABI. Достаточно быстрая отрисовка.
-        P("DecoderLibWmf"               , 2700, -1); ///< Умеет wmf.
+        /// @note Decoders for static raster images
+        P("DecoderWIC"                  ,   60, -1); ///< Generic Windows decoder.
+        P("DecoderSTB"                  ,  100, 10); ///< Generic STB decoder.
+        P("DecoderQImage"               ,  200, 20); ///< Generic Qt decoder for default formats.
+        P("DecoderQtImageFormatsImage"  ,  300, -1); ///< Generic QtImageFormats (Qt) decoder for advanced and deprecated formats.
+        P("DecoderKImageFormatsImage"   ,  380, -1); ///< Generic KImageFormats (KDE) decoder for various formats.
+        P("DecoderNSImage"              ,  400, -1); ///< Generic macOS decoder.
+        P("DecoderLibJpeg"              ,  500, 70); ///< For JPEG images.
+        P("DecoderLibJasPer"            ,  510, 80); ///< For JPEG 2000 images and some other.
+        P("DecoderOpenJPEG"             ,  520, -1); ///< For JPEG 2000 images.
+        P("DecoderLibTiff"              ,  530, -1); ///< For TIFF images.
+        P("DecoderJbigKit"              ,  540, -1); ///< For JBIG1 images.
+        P("DecoderLibRaw"               ,  550, -1); ///< For RAW images.
+        P("DecoderLibHEIF"              ,  560, -1); ///< For HEIF images with HEVC and AV1 codecs and some AVIF images.
+        P("DecoderOpenEXR"              ,  570, -1); ///< For EXR images.
+        P("DecoderLibAvif"              ,  580, 90); ///< For AVIF images and HEIF images with AV1 codec.
+        P("DecoderLERC"                 ,  590, -1); ///< For LERC images.
+        P("DecoderJxrLib"               ,  600, -1); ///< For JPEG XR images.
+        /// @note Decoders for animated raster images
+        P("DecoderQMovie"               , 1090, -1); ///< Generic Qt decoder for GIF images.
+        P("DecoderGifLib"               , 1100, -1); ///< For GIF images.
+        P("DecoderLibMng"               , 1110, -1); ///< For MNG and JNG images. MNG support is worse than in QtImageFormatsMovie.
+        P("DecoderQtImageFormatsMovie"  , 1200, -1); ///< Generic QtImageFormats (Qt) decoder for MNG images.
+        P("DecoderKImageFormatsMovie"   , 1210, -1); ///< Generic KImageFormats (KDE) decoder for various animated formats.
+        P("DecoderLibPng"               , 1300, -1); ///< For PNG and APNG images.
+        P("DecoderLibWebP"              , 1310, -1); ///< For WEBP images.
+        P("DecoderLibBpg"               , 1320, -1); ///< For BPG images.
+        P("DecoderFLIF"                 , 1330, -1); ///< For FLIF images.
+        P("DecoderLibJxl"               , 1340, -1); ///< For JXL images.
+        /// @note Decoders for vector images
+        P("DecoderQtSVG"                , 2100, -1); ///< Generic Qt decoder for SVG images.
+        P("DecoderReSVGLt001100"        , 2200, -1); ///< For static SVG images via external library with unstable API/ABI. Rendering is slow.
+        P("DecoderReSVGLt001300"        , 2201, -1); ///< For static SVG images via external library with unstable API/ABI. Rendering is slow.
+        P("DecoderReSVGLt003300"        , 2202, -1); ///< For static SVG images via external library with unstable API/ABI. Rendering is slow.
+        P("DecoderLibRSVG"              , 2300, -1); ///< For static SVG images via external library. Rendering is slow.
+        P("DecoderReSVG"                , 2350, -1); ///< For static SVG images via external library with unstable API/ABI.
+        P("DecoderLibWmf"               , 2700, -1); ///< For WMF images.
 #undef P
     }
 

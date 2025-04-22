@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -24,7 +24,7 @@
 #include <QVariant>
 #include <QPointer>
 
-/// @brief Класс-обертка над настройками, содержит в себе кэш, сохраняемый при выходе из программы
+/// @brief Wrapper around settings which provides in-memory cache which will be flushed on app exit
 /// @note Thread-safe
 class SettingsWrapper
 {
@@ -32,30 +32,30 @@ class SettingsWrapper
 
 public:
     /// @brief SettingsWrapper
-    /// @param[in] settingsGroup - группа (секция) настроек
+    /// @param[in] settingsGroup - group (section or prefix) of settings
     explicit SettingsWrapper(const QString &settingsGroup = QString());
 
     ~SettingsWrapper();
 
-    /// @brief Установить значение для заданного ключа
-    /// @param[in] key - ключ, для которого устанавливается значение
-    /// @param[in] value - значение, которое устанавливается для ключа
+    /// @brief Set value for specified key
+    /// @param[in] key - key for set
+    /// @param[in] value - value for for set
     void setValue(const QString &key, const QVariant &value);
 
-    /// @brief Получить значение для заданного ключа
-    /// @param[in] key - ключ, для которого получается значение
-    /// @param[in] defaultValue - умолчательное значение, возвращается при отсутствии значения
-    /// @return - значение для ключа или defaultValue при отсутствии значения
+    /// @brief Get value for specified key
+    /// @param[in] key - key for get
+    /// @param[in] defaultValue - default value if value is absent
+    /// @return - value for specified key or defaultValue if value is absent
     QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
 
-    /// @brief Принудительно сохранить все настройки, не дожидаясь выхода из программы
+    /// @brief Immediately flush all settings from cache to disk or registry
     void flush();
 
 private:
-    /// @brief Группа (секция) настроек
+    /// @brief Group (section or prefix) of settings
     const QString m_settingsGroup;
 
-    /// @brief Глобальный кэш настроек
+    /// @brief Global settings cache
     class SettingsCache;
     static QPointer<SettingsCache> g_settingsCache;
 };

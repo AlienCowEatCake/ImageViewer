@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -199,32 +199,32 @@ struct LocalizationManager::Impl
     }
 };
 
-/// @brief Получить указатель на экземпляр текущего менеджера локализаций.
-/// @return Указатель на экземпляр текущего менеджера локализаций.
+/// @brief Get pointer to current localization manager.
+/// @return Pointer to current localization manager.
 LocalizationManager *LocalizationManager::instance()
 {
     static LocalizationManager manager;
     return &manager;
 }
 
-/// @brief Инициализировать трансляторы для указанных ресурсов.
-/// @param templatesList - пути к локализационным ресурсным файлам,
-///  например ":/translations/qtutils_%1" (%1 - шаблон для локали).
+/// @brief Initialize translators for specified ".qm" translation files.
+/// @param templatesList - paths for ".qm" translation files, e.g.
+/// ":/translations/qtutils_%1" where %1 is place-marker for locale.
 void LocalizationManager::initializeResources(const QStringList &templatesList)
 {
     m_impl->resourceTemplates = templatesList;
     setLocale();
 }
 
-/// @brief Получить текущую локаль.
-/// @return Текущая локаль.
+/// @brief Get current locale identifier.
+/// @return Current locale identifier.
 QString LocalizationManager::locale() const
 {
     return m_impl->currentLocale();
 }
 
-/// @brief Установить новую локаль.
-/// @param locale - Новая локаль.
+/// @brief Set current locale with specified identifier.
+/// @param locale - Locale identifier.
 void LocalizationManager::setLocale(const QString &locale)
 {
     if(!locale.isEmpty())
@@ -260,9 +260,9 @@ void LocalizationManager::setLocale(const QString &locale)
     Q_EMIT localeChanged(newLocale);
 }
 
-/// @brief Заполнить меню элементами для выбора локали. Все необходимые
-///  соединения будут установлены автоматически.
-/// @param menu - меню, которое должно быть заполнено.
+/// @brief Fill menu with items for locale choose. All required
+/// connections will be setup automatically.
+/// @param menu - Menu which should be filled.
 void LocalizationManager::fillMenu(QMenu *menu)
 {
     if(!menu)
@@ -284,10 +284,10 @@ void LocalizationManager::fillMenu(QMenu *menu)
     m_impl->updateActions(m_impl->currentLocale());
 }
 
-/// @brief Заполнить комбобокс элементами для выбора локали. Все необходимые
-///  соединения будут установлены автоматически.
-/// @param comboBox - комбобокс, который должен быть заполнен.
-/// @param autoApply - автоматически применять изменения при выборе локали
+/// @brief Fill combo box with items for locale choose. All required
+/// connections will be setup automatically.
+/// @param comboBox - Combo box which should be filled.
+/// @param autoApply - Apply changes automatically after combo box changes.
 void LocalizationManager::fillComboBox(QComboBox *comboBox, const bool autoApply)
 {
     if(!comboBox)

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -24,8 +24,8 @@
 
 #include "Utils/Global.h"
 
-/// @brief Небольшая надстройка над QFrame, которая позволяет получить доступ из
-/// стилей к параметрам Layout'а, ассоциированного с этим фреймом.
+/// @brief Wrapper around QFrame which give access to associated layout
+/// parameters from QSS styles.
 class AdjustableFrame : public QFrame
 {
     Q_OBJECT

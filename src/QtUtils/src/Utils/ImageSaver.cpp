@@ -1,6 +1,6 @@
 /*
    Copyright (C) 2011-2017, Andrei V. Kurochkin <kurochkin.andrei.v@yandex.ru>
-                 2011-2017, Peter S. Zhigalov <peter.zhigalov@gmail.com>
+                 2011-2025, Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -79,7 +79,7 @@ bool ImageSaver::save(const QImage &image, const QString &preferredName)
     else
         preferredExtension = defaultExtension;
 
-    // Белый список форматов, чтобы в предлагаемых форматах не было всяких ico, webp и прочих
+    // White list of most popular formats which can be written good enough with Qt
     static const QStringList whiteList = QStringList()
             << QString::fromLatin1("bmp")
             << QString::fromLatin1("jpg")

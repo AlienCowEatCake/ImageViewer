@@ -34,7 +34,7 @@
 
 namespace WindowUtils {
 
-/// @brief Получить NSWindow для виджета
+/// @brief Get NSWindow for widget
 NSWindow *GetNativeWindow(QWidget *widget)
 {
     if(!widget)
@@ -56,7 +56,7 @@ NSWindow *GetNativeWindow(QWidget *widget)
     return nil;
 }
 
-/// @brief По возможности нативно переключить режим FullScreen
+/// @brief Switch to native FullScreen mode
 void ToggleFullScreenMode(QWidget* window)
 {
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_7_AND_LATER)

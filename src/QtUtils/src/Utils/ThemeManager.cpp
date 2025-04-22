@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -339,28 +339,28 @@ struct ThemeManager::Impl
     }
 };
 
-/// @brief Получить указатель на экземпляр текущего менеджера тем.
-/// @return Указатель на экземпляр текущего менеджера тем.
+/// @brief Get pointer to current theme manager.
+/// @return Pointer to current theme manager.
 ThemeManager *ThemeManager::instance()
 {
     static ThemeManager manager;
     return &manager;
 }
 
-/// @brief Зарегистрировать тему.
-/// @param themeId - Уникальный идентификатор темы.
-/// @param styleSheets - Список путей до QSS файлов со стилями.
-/// @param translateContext - Контекст локализации. В этом контексте должна
-///  быть строка с ключем themeId, содержащая локализованное название темы.
-/// @param isDefault - Тема по умолчанию. Тема по умолчанию должна быть одна.
+/// @brief Register theme.
+/// @param themeId - Unique identifier for theme.
+/// @param styleSheets - List of paths to QSS files with style sheets.
+/// @param translateContext - Translation context. String with themeId
+/// key should be present in this context for localized theme name.
+/// @param isDefault - Theme is default. Only one theme may be default.
 void ThemeManager::registerTheme(const QString &themeId, const QStringList &styleSheets,
                                  const QString &translateContext, const bool isDefault)
 {
     m_impl->themes.append(ThemeData(themeId, styleSheets, translateContext, isDefault));
 }
 
-/// @brief Применить текущую тему. Допускается использование только один раз
-/// при старте приложения, в противном случае результат не гарантируется.
+/// @brief Apply current theme. Only one time usage on application start
+/// is allowed, otherwise effect can not be guaranteed.
 void ThemeManager::applyCurrentTheme()
 {
     ThemeData *data = m_impl->currentTheme();
@@ -375,8 +375,8 @@ void ThemeManager::applyCurrentTheme()
     qApp->style()->polish(qApp);
 }
 
-/// @brief Получить идентификатор текущей темы.
-/// @return Идентификатор текущей темы.
+/// @brief Get current theme identifier.
+/// @return Current theme identifier.
 QString ThemeManager::currentTheme() const
 {
     if(m_impl->currentTheme())
@@ -384,12 +384,12 @@ QString ThemeManager::currentTheme() const
     return QString();
 }
 
-/// @brief Установить текущей тему с указанным идентификатором. Сама тема не
-/// применится, пока не будет вызван метод applyCurrentTheme().
-/// @param themeId - Идентификатор темы.
-/// @param showMessage - Показать ли сообщение что тема будет применена после
-///  перезапуска программы.
-/// @param parent - Родитель для сообщения, показываемого при showMessage=true.
+/// @brief Set current theme with specified identifier. Theme will not be
+/// applied until you call applyCurrentTheme().
+/// @param themeId - Theme identifier.
+/// @param showMessage - Show message that theme will be applied only after
+/// application restart.
+/// @param parent - Parent for message shown if showMessage=true.
 void ThemeManager::setTheme(const QString &themeId, const bool showMessage, QWidget *parent)
 {
     QList<ThemeData>::Iterator theme = m_impl->themes.end();
@@ -409,9 +409,9 @@ void ThemeManager::setTheme(const QString &themeId, const bool showMessage, QWid
     Q_EMIT themeChanged(theme->themeId);
 }
 
-/// @brief Заполнить меню элементами для выбора темы. Все необходимые
-///  соединения будут установлены автоматически.
-/// @param menu - меню, которое должно быть заполнено.
+/// @brief Fill menu with items for theme choose. All required connections
+/// will be setup automatically.
+/// @param menu - Menu which should be filled.
 void ThemeManager::fillMenu(QMenu *menu)
 {
     if(!menu)
@@ -435,10 +435,10 @@ void ThemeManager::fillMenu(QMenu *menu)
     m_impl->updateActions();
 }
 
-/// @brief Заполнить комбобокс элементами для выбора темы. Все необходимые
-///  соединения будут установлены автоматически.
-/// @param comboBox - комбобокс, который должен быть заполнен.
-/// @param autoApply - автоматически применять изменения при выборе темы.
+/// @brief Fill combo box with items for theme choose. All required
+/// connections will be setup automatically.
+/// @param comboBox - Combo box which should be filled.
+/// @param autoApply - Apply changes automatically after combo box changes.
 void ThemeManager::fillComboBox(QComboBox *comboBox, const bool autoApply)
 {
     if(!comboBox)

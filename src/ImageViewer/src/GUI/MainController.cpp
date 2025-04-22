@@ -286,7 +286,7 @@ void MainController::showPreferences()
             return;
     }
 
-    /// @note Перезагружаем все, чтобы применились настройки декодеров
+    /// @note Reload all to take into account decoders settings
     {
         QSignalBlocker blocker(m_impl->fileManager);
         const QString oldPath = m_impl->fileManager.currentFilePath();
@@ -335,7 +335,7 @@ void MainController::onReopenWithRequested(const QString &decoderName)
     }
     else
     {
-        /// @note Не все декодеры поддерживают одновременное открытие нескольких файлов
+        /// @note Some decoders can't open several files simultaneously
         if(m_impl->imageData)
         {
             m_impl->imageData = DecodersManager::getInstance().generateStub(m_impl->imageData);
@@ -374,7 +374,7 @@ void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &c
         }
         else
         {
-            /// @note Не все декодеры поддерживают одновременное открытие нескольких файлов
+            /// @note Some decoders can't open several files simultaneously
             if(m_impl->imageData)
             {
                 m_impl->imageData = DecodersManager::getInstance().generateStub(m_impl->imageData);

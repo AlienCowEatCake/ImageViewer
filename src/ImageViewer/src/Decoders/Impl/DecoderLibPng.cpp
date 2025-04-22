@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -59,7 +59,7 @@
 #endif
 #define PNG_BYTES_TO_CHECK 4
 
-/// @todo Посмотреть на реализацию APNG на чистом libpng, без патчей:
+/// @todo Look at APNG implementation with pure libpng without APNG patches:
 /// https://sourceforge.net/projects/apng/files/libpng/examples/code_examples.zip/download
 
 namespace
@@ -205,7 +205,7 @@ bool PngAnimationProvider::readPng()
     // PNG file before the first IDAT (image data chunk).  REQUIRED
     png_read_info(pngPtr, infoPtr);
 
-    // Тут заполним базовую информацию о фреймах и выделим память под изображения
+    // Fill common frames info and resize frames storage
 #if defined (PNG_APNG_SUPPORTED)
     int firstFrameNumber = png_get_first_frame_is_hidden(pngPtr, infoPtr) ? 1 : 0;
     if(png_get_valid(pngPtr, infoPtr, PNG_INFO_acTL))
@@ -268,7 +268,7 @@ bool PngAnimationProvider::readPng()
 
         // Extract multiple pixels with bit depths of 1, 2, and 4 from a single
         // byte into separate bytes (useful for paletted and grayscale images).
-        png_set_packing(pngPtr); /// @todo Нужно ли это?
+        png_set_packing(pngPtr); /// @todo Is it still required?
 
         // Expand paletted colors into true RGB triplets
 //        if(colorType == PNG_COLOR_TYPE_PALETTE)
@@ -278,7 +278,7 @@ bool PngAnimationProvider::readPng()
 //        if(colorType == PNG_COLOR_TYPE_GRAY && bitDepth < 8)
             png_set_expand_gray_1_2_4_to_8(pngPtr);
 
-        // Конвертим черно-белое в RGB
+        // Convert grayscale to RGB
 //        if(colorType == PNG_COLOR_TYPE_GRAY)
             png_set_gray_to_rgb(pngPtr);
 

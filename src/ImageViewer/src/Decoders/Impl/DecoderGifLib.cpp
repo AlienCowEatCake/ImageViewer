@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -270,7 +270,7 @@ private:
                     continue;
                 if(!extensionHeader->Bytes || extensionHeader->ByteCount != 11)
                     continue;
-                if(i + 1 == gifFrame->ExtensionBlockCount) // Нужно для CONTINUE_EXT_FUNC_CODE
+                if(i + 1 == gifFrame->ExtensionBlockCount) // Required for CONTINUE_EXT_FUNC_CODE
                     continue;
                 if(!memcmp(extensionHeader->Bytes, "NETSCAPE2.0", 11) || !memcmp(extensionHeader->Bytes, "ANIMEXTS1.0", 11))
                 {

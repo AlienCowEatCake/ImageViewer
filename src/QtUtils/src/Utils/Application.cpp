@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2011-2017 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2011-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -22,17 +22,17 @@
 #include <QFileOpenEvent>
 
 /**
- * @brief Конструктор
- * @param[inout] argc Количество аргументов
- * @param[inout] argv Массив C-строк - значений аргументов
+ * @brief Constructor
+ * @param[inout] argc Arguments count
+ * @param[inout] argv Array of C-strings - arguments values
  */
 Application::Application(int &argc, char **argv)
     : QApplication(argc, argv)
 {}
 
 /**
- * @brief Получить имя последнего файла, который пришел в QFileOpenEvent
- * @return Имя последнего файла, который пришел в QFileOpenEvent
+ * @brief Get path of last file from QFileOpenEvent
+ * @return Path of last file from QFileOpenEvent
  */
 const QString &Application::getLastOpenFilePath() const
 {
@@ -40,8 +40,8 @@ const QString &Application::getLastOpenFilePath() const
 }
 
 /**
- * @brief Узнать, сохранено ли имя последнего файла, который пришел в QFileOpenEvent
- * @return true - имя сохранено, false - имя не сохранено
+ * @brief Check existence of remembered path of last file from QFileOpenEvent
+ * @return true - path was saved, false - path was not saved
  */
 bool Application::hasLastOpenFilePath() const
 {
@@ -49,9 +49,9 @@ bool Application::hasLastOpenFilePath() const
 }
 
 /**
- * @brief Обработчик событий
- * @param[in] event Событие
- * @return true - событие распознано и обработано, false - иначе
+ * @brief Event handler
+ * @param[in] event Event
+ * @return true - event was handled, false - otherwise
  */
 bool Application::event(QEvent *event)
 {

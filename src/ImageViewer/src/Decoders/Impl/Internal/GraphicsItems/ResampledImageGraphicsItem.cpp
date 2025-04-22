@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -214,8 +214,8 @@ void ResampledImageGraphicsItem::paint(QPainter *painter, const QStyleOptionGrap
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    /// @note QPainter не умеет масштабирование изображений в меньшую сторону. Какой renderHint ему не ставь, хоть
-    /// SmoothPixmapTransform, хоть FastTransformation, качество результата будет как при FastTransformation.
+    /// @note QPainter with SmoothPixmapTransform render hint downscales images
+    /// with same quality as QPainter with FastTransformation render hint.
     /// https://bugreports.qt.io/browse/QTBUG-30682
     /// https://bugs.webkit.org/show_bug.cgi?id=119263
 

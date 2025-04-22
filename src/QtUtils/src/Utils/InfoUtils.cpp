@@ -492,7 +492,7 @@ namespace InfoUtils {
 
 #if !defined (Q_OS_MAC)
 
-/// @brief Проверить текущую версию macOS
+/// @brief Check current macOS version
 bool MacVersionGreatOrEqual(const int major, const int minor, const int patch)
 {
     Q_UNUSED(major);
@@ -505,7 +505,7 @@ bool MacVersionGreatOrEqual(const int major, const int minor, const int patch)
 
 #if !defined (Q_OS_WIN)
 
-/// @brief Проверить текущую версию Windows
+/// @brief Check current Windows version
 bool WinVersionGreatOrEqual(const int major, const int minor, const int build)
 {
     Q_UNUSED(major);
@@ -518,7 +518,7 @@ bool WinVersionGreatOrEqual(const int major, const int minor, const int build)
 
 #if defined (Q_OS_WIN)
 
-/// @brief Проверить текущую версию Windows
+/// @brief Check current Windows version
 bool WinVersionGreatOrEqual(const int major, const int minor, const int build)
 {
     const Version version = GetCurrentWinVersion();
@@ -537,7 +537,7 @@ bool WinVersionGreatOrEqual(const int major, const int minor, const int build)
     return true;
 }
 
-/// @brief Получить человеко-читаемую информацию о системе
+/// @brief Get human-readable info about system
 QString GetSystemDescription()
 {
     // https://stackoverflow.com/questions/2877295/get-os-in-c-win32-for-all-versions-of-win
@@ -840,7 +840,7 @@ QString GetSystemDescription()
 
 #elif defined (Q_OS_HAIKU)
 
-/// @brief Получить человеко-читаемую информацию о системе
+/// @brief Get human-readable info about system
 QString GetSystemDescription()
 {
     QString result = QString::fromLatin1("Haiku");
@@ -866,7 +866,7 @@ QString GetSystemDescription()
 
 #elif !defined (Q_OS_MAC)
 
-/// @brief Получить человеко-читаемую информацию о системе
+/// @brief Get human-readable info about system
 QString GetSystemDescription()
 {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
@@ -928,7 +928,7 @@ int processIsTranslated()
 
 #endif
 
-/// @brief Получить человеко-читаемую информацию о компиляторе
+/// @brief Get human-readable info about compiler
 QString GetCompilerDescription()
 {
     QString description = compilerDescriptionInt();
