@@ -19,6 +19,7 @@ include(QtImageFormats/QtImageFormats.pri)
 #  * LibRaw
 #  * jxrlib
 #  * OpenJPEG
+#  * zlib
 include(KImageFormats/KImageFormats.pri)
 
 # Dependencies:

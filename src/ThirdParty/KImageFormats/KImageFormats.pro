@@ -26,10 +26,9 @@ include(../libjxl/libjxl.pri)
 include(../LibRaw/LibRaw.pri)
 include(../jxrlib/jxrlib.pri)
 include(../OpenJPEG/OpenJPEG.pri)
+include(../zlib/zlib.pri)
 
 INCLUDEPATH += $${THIRDPARTY_KIMAGEFORMATS_WRAPPER_PATH}
-
-#INCLUDEPATH += /usr/include/KF5/KArchive
 
 # --------------------------------------------------------------------------------
 
@@ -213,29 +212,33 @@ DEFINES += imageFormat=tp_imageFormat
 
 # --------------------------------------------------------------------------------
 
-#SOURCES += \
-#    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/kra.cpp
-#
-#HEADERS += \
-#    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/kra.h
-#
-#DEFINES += WRAPPER_USE_KRA_HANDLER
-#
-#DEFINES += KraHandler=tp_KraHandler
-#DEFINES += KraPlugin=tp_KraPlugin
+!disable_zlib {
+    SOURCES += \
+       $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/kra.cpp
+
+    HEADERS += \
+       $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/kra.h
+
+    DEFINES += WRAPPER_USE_KRA_HANDLER
+
+    DEFINES += KraHandler=tp_KraHandler
+    DEFINES += KraPlugin=tp_KraPlugin
+}
 
 # --------------------------------------------------------------------------------
 
-#SOURCES += \
-#    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/ora.cpp
-#
-#HEADERS += \
-#    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/ora.h
-#
-#DEFINES += WRAPPER_USE_ORA_HANDLER
-#
-#DEFINES += OraHandler=tp_OraHandler
-#DEFINES += OraPlugin=tp_OraPlugin
+!disable_zlib {
+    SOURCES += \
+       $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/ora.cpp
+
+    HEADERS += \
+       $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/ora.h
+
+    DEFINES += WRAPPER_USE_ORA_HANDLER
+
+    DEFINES += OraHandler=tp_OraHandler
+    DEFINES += OraPlugin=tp_OraPlugin
+}
 
 # --------------------------------------------------------------------------------
 
@@ -429,6 +432,16 @@ SOURCES += \
 HEADERS += \
     $${THIRDPARTY_KIMAGEFORMATS_WRAPPER_PATH}/KImageFormatsImageReader.h \
     $${THIRDPARTY_KIMAGEFORMATS_WRAPPER_PATH}/KImageFormatsMovie.h
+
+!disable_zlib {
+    SOURCES += $${THIRDPARTY_KIMAGEFORMATS_WRAPPER_PATH}/kzip.cpp
+    HEADERS += $${THIRDPARTY_KIMAGEFORMATS_WRAPPER_PATH}/kzip.h
+
+    DEFINES += KArchiveEntry=tp_KArchiveEntry
+    DEFINES += KArchiveDirectory=tp_KArchiveDirectory
+    DEFINES += KZipFileEntry=tp_KZipFileEntry
+    DEFINES += KZip=tp_KZip
+}
 
 # --------------------------------------------------------------------------------
 
