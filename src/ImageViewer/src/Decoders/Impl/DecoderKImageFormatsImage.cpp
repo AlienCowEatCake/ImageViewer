@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -74,6 +74,8 @@ public:
         KImageFormatsImageReader imageReader(filePath);
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
         imageReader.setDecideFormatFromContent(true);
+        if(!imageReader.canRead())
+            imageReader.setDecideFormatFromContent(false);
 #endif
         imageReader.setBackgroundColor(Qt::transparent);
         imageReader.setQuality(100);
