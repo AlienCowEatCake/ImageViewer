@@ -113,7 +113,6 @@ int main(int argc, char *argv[])
 
     LocalizationManager::instance()->initializeResources(QStringList()
             << QString::fromLatin1(":/translations/imageviewer_%1")
-            << QString::fromLatin1(":/translations/qtutils_%1")
     );
 
     MainController controller;

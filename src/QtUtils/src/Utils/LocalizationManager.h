@@ -28,15 +28,6 @@ class QMenu;
 class QAction;
 class QComboBox;
 
-namespace Locale {
-
-extern const QString EN;
-extern const QString RU;
-extern const QString ZH_CN;
-extern const QString ZH_TW;
-
-} // namespace Locale
-
 /// @brief Manager for localization.
 class LocalizationManager : public QObject
 {
