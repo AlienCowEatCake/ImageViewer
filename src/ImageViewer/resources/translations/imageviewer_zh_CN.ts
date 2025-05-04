@@ -4,17 +4,17 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="212"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="184"/>
         <source>Peter S. Zhigalov</source>
         <translation>Peter S. Zhigalov</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="943"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="822"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="954"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="833"/>
         <source>License</source>
         <translation>许可</translation>
     </message>
@@ -134,247 +134,247 @@
 <context>
     <name>MacToolBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="884"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="883"/>
         <source>Previous</source>
         <comment>Long</comment>
+        <translation>上一张</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="884"/>
+        <source>Previous</source>
+        <comment>Short</comment>
         <translation>上一张</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="885"/>
-        <source>Previous</source>
-        <comment>Short</comment>
-        <translation>上一张</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="886"/>
         <source>Next</source>
         <comment>Long</comment>
         <translation>下一张</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="887"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="886"/>
         <source>Next</source>
         <comment>Short</comment>
         <translation>下一张</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="888"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="887"/>
         <source>Navigate</source>
         <comment>Short</comment>
         <translation>浏览</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="892"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="891"/>
         <source>Slideshow</source>
         <comment>Short</comment>
         <translation>幻灯片</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="896"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="895"/>
         <source>Zoom Out</source>
         <comment>Long</comment>
+        <translation>缩小</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="896"/>
+        <source>Zoom Out</source>
+        <comment>Short</comment>
         <translation>缩小</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="897"/>
-        <source>Zoom Out</source>
-        <comment>Short</comment>
-        <translation>缩小</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="898"/>
         <source>Zoom In</source>
         <comment>Long</comment>
         <translation>放大</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="899"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="898"/>
         <source>Zoom In</source>
         <comment>Short</comment>
         <translation>放大</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="900"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="899"/>
         <source>Zoom</source>
         <comment>Short</comment>
         <translation>缩放</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="904"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="903"/>
         <source>Fit Image To Window Size</source>
         <comment>Long</comment>
         <translation>自适应窗体大小</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="905"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="904"/>
         <source>Fit Image To Window Size</source>
         <comment>Short</comment>
         <translation>自适应</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="910"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="909"/>
         <source>Original Size</source>
         <comment>Long</comment>
         <translation>原始尺寸</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="911"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="910"/>
         <source>Original Size</source>
         <comment>Short</comment>
         <translation>1:1</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="916"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="915"/>
         <source>Full Screen</source>
         <comment>Long</comment>
         <translation>全屏</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="917"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="916"/>
         <source>Full Screen</source>
         <comment>Short</comment>
         <translation>全屏</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="921"/>
+        <source>Rotate Counterclockwise</source>
+        <comment>Long</comment>
+        <translation>逆时针旋转</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="922"/>
         <source>Rotate Counterclockwise</source>
-        <comment>Long</comment>
+        <comment>Short</comment>
         <translation>逆时针旋转</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="923"/>
-        <source>Rotate Counterclockwise</source>
-        <comment>Short</comment>
-        <translation>逆时针旋转</translation>
+        <source>Rotate Clockwise</source>
+        <comment>Long</comment>
+        <translation>顺时针旋转</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="924"/>
         <source>Rotate Clockwise</source>
-        <comment>Long</comment>
+        <comment>Short</comment>
         <translation>顺时针旋转</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="925"/>
-        <source>Rotate Clockwise</source>
-        <comment>Short</comment>
-        <translation>顺时针旋转</translation>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="929"/>
+        <source>Flip Horizontal</source>
+        <comment>Long</comment>
+        <translation>水平翻转</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="930"/>
         <source>Flip Horizontal</source>
-        <comment>Long</comment>
-        <translation>水平翻转</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="931"/>
-        <source>Flip Horizontal</source>
         <comment>Short</comment>
         <translation>水平翻转</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="932"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="931"/>
         <source>Flip Vertical</source>
         <comment>Long</comment>
         <translation>垂直翻转</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="926"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="925"/>
         <source>Rotate</source>
         <comment>Short</comment>
         <translation>旋转</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="933"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="932"/>
         <source>Flip Vertical</source>
         <comment>Short</comment>
         <translation>垂直翻转</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="934"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="933"/>
         <source>Flip</source>
         <comment>Short</comment>
         <translation>翻转</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="938"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="937"/>
         <source>Open File</source>
         <comment>Long</comment>
         <translation>打开文件</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="939"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="938"/>
         <source>Open File</source>
         <comment>Short</comment>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="943"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="942"/>
         <source>Save File As</source>
         <comment>Long</comment>
         <translation>另存为</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="944"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="943"/>
         <source>Save File As</source>
         <comment>Short</comment>
         <translation>另存为</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="948"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="947"/>
         <source>Delete File</source>
         <comment>Long</comment>
         <translation>删除文件</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="949"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="948"/>
         <source>Delete File</source>
         <comment>Short</comment>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="953"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="952"/>
         <source>Print</source>
         <comment>Long</comment>
         <translation>打印</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="954"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="953"/>
         <source>Print</source>
         <comment>Short</comment>
         <translation>打印</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="957"/>
+        <source>Preferences</source>
+        <comment>Long</comment>
+        <translation>首选项</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="958"/>
         <source>Preferences</source>
-        <comment>Long</comment>
+        <comment>Short</comment>
         <translation>首选项</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="959"/>
-        <source>Preferences</source>
-        <comment>Short</comment>
-        <translation>首选项</translation>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="962"/>
+        <source>Exit</source>
+        <comment>Long</comment>
+        <translation>退出</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="963"/>
         <source>Exit</source>
-        <comment>Long</comment>
-        <translation>退出</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="964"/>
-        <source>Exit</source>
         <comment>Short</comment>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="982"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="981"/>
         <source>Start Slideshow</source>
         <comment>Long</comment>
         <translation>开始播放幻灯片</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="987"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="986"/>
         <source>Stop Slideshow</source>
         <comment>Long</comment>
         <translation>停止播放幻灯片</translation>
@@ -383,72 +383,72 @@
 <context>
     <name>MacTouchBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="507"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="506"/>
         <source>Navigate</source>
         <translation>浏览</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="508"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="507"/>
         <source>Slideshow</source>
         <translation>放映</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="509"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="508"/>
         <source>Zoom</source>
         <translation>缩放</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="510"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="509"/>
         <source>Fit Image To Window Size</source>
         <translation>自适应</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="511"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="510"/>
         <source>Original Size</source>
         <translation>原尺寸</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="512"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="511"/>
         <source>Full Screen</source>
         <translation>全屏</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="513"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="512"/>
         <source>Rotate</source>
         <translation>旋转</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="514"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="513"/>
         <source>Flip</source>
         <translation>翻转</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="515"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="514"/>
         <source>Open File</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="516"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="515"/>
         <source>Save File As</source>
         <translation>另存为</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="517"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="516"/>
         <source>Delete File</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="518"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="517"/>
         <source>Print</source>
         <translation>打印</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="519"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="518"/>
         <source>Preferences</source>
         <translation>首选项</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="520"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="519"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
@@ -472,8 +472,8 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="174"/>
-        <location filename="../../src/GUI/MainController.cpp" line="347"/>
-        <location filename="../../src/GUI/MainController.cpp" line="405"/>
+        <location filename="../../src/GUI/MainController.cpp" line="350"/>
+        <location filename="../../src/GUI/MainController.cpp" line="408"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>打开 &quot;%1&quot; 失败</translation>
     </message>
@@ -507,8 +507,8 @@
         <location filename="../../src/GUI/MainController.cpp" line="189"/>
         <location filename="../../src/GUI/MainController.cpp" line="210"/>
         <location filename="../../src/GUI/MainController.cpp" line="218"/>
-        <location filename="../../src/GUI/MainController.cpp" line="347"/>
-        <location filename="../../src/GUI/MainController.cpp" line="405"/>
+        <location filename="../../src/GUI/MainController.cpp" line="350"/>
+        <location filename="../../src/GUI/MainController.cpp" line="408"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
@@ -586,7 +586,7 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
         <source>Pre&amp;vious</source>
-        <translation>上一张(E&amp;)</translation>
+        <translation>上一张(&amp;E)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
@@ -1500,37 +1500,37 @@
 <context>
     <name>Themes</name>
     <message>
-        <location filename="../../src/main.cpp" line="76"/>
+        <location filename="../../src/main.cpp" line="72"/>
         <source>System</source>
         <translation>跟随系统</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="79"/>
+        <location filename="../../src/main.cpp" line="75"/>
         <source>Light</source>
         <translation type="unfinished">浅色</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="88"/>
+        <location filename="../../src/main.cpp" line="84"/>
         <source>Fusion_Light</source>
         <translation>Fusion 浅色</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="92"/>
+        <location filename="../../src/main.cpp" line="88"/>
         <source>Fusion_Dark</source>
         <translation>Fusion 深色</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="97"/>
+        <location filename="../../src/main.cpp" line="93"/>
         <source>Windows_95</source>
         <translation type="unfinished">Windows 95</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="101"/>
+        <location filename="../../src/main.cpp" line="97"/>
         <source>Windows_2000</source>
         <translation type="unfinished">Windows 2000</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="83"/>
+        <location filename="../../src/main.cpp" line="79"/>
         <source>Dark</source>
         <translation>深色</translation>
     </message>

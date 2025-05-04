@@ -1,7 +1,63 @@
 <RCC>
     <qresource prefix="/translations">
+        <file>imageviewer_af.qm</file>
+        <file>imageviewer_ar.qm</file>
+        <file>imageviewer_ast.qm</file>
+        <file>imageviewer_be.qm</file>
+        <file>imageviewer_bg.qm</file>
+        <file>imageviewer_bn.qm</file>
+        <file>imageviewer_bn_IN.qm</file>
+        <file>imageviewer_bs.qm</file>
+        <file>imageviewer_ca.qm</file>
+        <file>imageviewer_cs.qm</file>
+        <file>imageviewer_da.qm</file>
+        <file>imageviewer_de.qm</file>
+        <file>imageviewer_el.qm</file>
         <file>imageviewer_en.qm</file>
+        <file>imageviewer_en_GB.qm</file>
+        <file>imageviewer_eo.qm</file>
+        <file>imageviewer_es.qm</file>
+        <file>imageviewer_et.qm</file>
+        <file>imageviewer_eu.qm</file>
+        <file>imageviewer_fa.qm</file>
+        <file>imageviewer_fi.qm</file>
+        <file>imageviewer_fo.qm</file>
+        <file>imageviewer_fr.qm</file>
+        <file>imageviewer_gl.qm</file>
+        <file>imageviewer_he.qm</file>
+        <file>imageviewer_hr.qm</file>
+        <file>imageviewer_hu.qm</file>
+        <file>imageviewer_id.qm</file>
+        <file>imageviewer_is.qm</file>
+        <file>imageviewer_it.qm</file>
+        <file>imageviewer_ja.qm</file>
+        <file>imageviewer_kk.qm</file>
+        <file>imageviewer_kn.qm</file>
+        <file>imageviewer_ko.qm</file>
+        <file>imageviewer_lg.qm</file>
+        <file>imageviewer_lt.qm</file>
+        <file>imageviewer_ms.qm</file>
+        <file>imageviewer_nb.qm</file>
+        <file>imageviewer_nl.qm</file>
+        <file>imageviewer_nn.qm</file>
+        <file>imageviewer_pl.qm</file>
+        <file>imageviewer_pt_BR.qm</file>
+        <file>imageviewer_pt_PT.qm</file>
+        <file>imageviewer_ro.qm</file>
         <file>imageviewer_ru.qm</file>
+        <file>imageviewer_sk.qm</file>
+        <file>imageviewer_sl.qm</file>
+        <file>imageviewer_sr.qm</file>
+        <file>imageviewer_sr_Latn.qm</file>
+        <file>imageviewer_sv.qm</file>
+        <file>imageviewer_te.qm</file>
+        <file>imageviewer_th.qm</file>
+        <file>imageviewer_tr.qm</file>
+        <file>imageviewer_tt_RU.qm</file>
+        <file>imageviewer_ug.qm</file>
+        <file>imageviewer_uk.qm</file>
+        <file>imageviewer_ur.qm</file>
+        <file>imageviewer_vi.qm</file>
         <file>imageviewer_zh_CN.qm</file>
         <file>imageviewer_zh_TW.qm</file>
     </qresource>

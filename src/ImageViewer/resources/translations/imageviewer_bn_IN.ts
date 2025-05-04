@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ru_RU">
+<TS version="2.1" language="bn_IN">
 <context>
     <name>AboutDialog</name>
     <message>
         <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="184"/>
         <source>Peter S. Zhigalov</source>
-        <translation>Жигалов Петр</translation>
+        <translation>Peter S. Zhigalov</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="822"/>
         <source>About</source>
-        <translation>О программе</translation>
+        <translation type="unfinished">পরিচিতি</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="833"/>
         <source>License</source>
-        <translation>Лицензия</translation>
+        <translation type="unfinished">লাইসেন্স</translation>
     </message>
 </context>
 <context>
@@ -24,32 +24,32 @@
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="39"/>
         <source>%1 B</source>
-        <translation>%1 Б</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="40"/>
         <source>%1 KiB</source>
-        <translation>%1 КиБ</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="41"/>
         <source>%1 MiB</source>
-        <translation>%1 МиБ</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="42"/>
         <source>%1 GiB</source>
-        <translation>%1 ГиБ</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="43"/>
         <source>%1 TiB</source>
-        <translation>%1 ТиБ</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="81"/>
         <source>Image Information</source>
-        <translation>Информация об изображении</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="93"/>
@@ -63,72 +63,72 @@
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="144"/>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="152"/>
         <source>General Info</source>
-        <translation>Общая информация</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="94"/>
         <source>File Name</source>
-        <translation>Имя файла</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="102"/>
         <source>Resolution</source>
-        <translation>Разрешение</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="108"/>
         <source>Decoder</source>
-        <translation>Декодер</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="114"/>
         <source>File Size</source>
-        <translation>Размер файла</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="120"/>
         <source>Created</source>
-        <translation>Дата создания</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="126"/>
         <source>Last Modified</source>
-        <translation>Дата изменения</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="133"/>
         <source>Owner</source>
-        <translation>Владелец</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="139"/>
         <source>Group</source>
-        <translation>Группа</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="145"/>
         <source>Permissions</source>
-        <translation>Права доступа</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="153"/>
         <source>Absolute Path</source>
-        <translation>Абсолютный путь</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog_p.h" line="52"/>
         <source>Type</source>
-        <translation>Тип</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog_p.h" line="53"/>
         <source>Tag</source>
-        <translation>Тег</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog_p.h" line="54"/>
         <source>Value</source>
-        <translation>Значение</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -137,85 +137,85 @@
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="883"/>
         <source>Previous</source>
         <comment>Long</comment>
-        <translation>Предыдущий</translation>
+        <translation type="unfinished">পূর্ববর্তী</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="884"/>
         <source>Previous</source>
         <comment>Short</comment>
-        <translation>Предыдущий</translation>
+        <translation type="unfinished">পূর্ববর্তী</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="885"/>
         <source>Next</source>
         <comment>Long</comment>
-        <translation>Следующий</translation>
+        <translation type="unfinished">পরবর্তী</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="886"/>
         <source>Next</source>
         <comment>Short</comment>
-        <translation>Следующий</translation>
+        <translation type="unfinished">পরবর্তী</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="887"/>
         <source>Navigate</source>
         <comment>Short</comment>
-        <translation>Навигация</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="891"/>
         <source>Slideshow</source>
         <comment>Short</comment>
-        <translation>Слайдшоу</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="895"/>
         <source>Zoom Out</source>
         <comment>Long</comment>
-        <translation>Уменьшить</translation>
+        <translation type="unfinished">জুম আউট করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="896"/>
         <source>Zoom Out</source>
         <comment>Short</comment>
-        <translation>Уменьшить</translation>
+        <translation type="unfinished">জুম আউট করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="897"/>
         <source>Zoom In</source>
         <comment>Long</comment>
-        <translation>Увеличить</translation>
+        <translation type="unfinished">জুম ইন করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="898"/>
         <source>Zoom In</source>
         <comment>Short</comment>
-        <translation>Увеличить</translation>
+        <translation type="unfinished">জুম ইন করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="899"/>
         <source>Zoom</source>
         <comment>Short</comment>
-        <translation>Масштаб</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="903"/>
         <source>Fit Image To Window Size</source>
         <comment>Long</comment>
-        <translation>Масштабировать к размеру окна</translation>
+        <translation type="unfinished">উইন্ডোর মাপ অনুযায়ী রাখুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="904"/>
         <source>Fit Image To Window Size</source>
         <comment>Short</comment>
-        <translation>Вписать</translation>
+        <translation type="unfinished">উইন্ডোর মাপ অনুযায়ী রাখুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="909"/>
         <source>Original Size</source>
         <comment>Long</comment>
-        <translation>Масштаб 1:1</translation>
+        <translation type="unfinished">আসল মাপ</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="910"/>
@@ -227,157 +227,157 @@
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="915"/>
         <source>Full Screen</source>
         <comment>Long</comment>
-        <translation>На полный экран</translation>
+        <translation type="unfinished">পুরো পর্দা জুড়ে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="916"/>
         <source>Full Screen</source>
         <comment>Short</comment>
-        <translation>Полный экран</translation>
+        <translation type="unfinished">পুরো পর্দা জুড়ে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="921"/>
         <source>Rotate Counterclockwise</source>
         <comment>Long</comment>
-        <translation>Повернуть против часовой стрелки</translation>
+        <translation type="unfinished">ঘড়ির উল্টোদিকে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="922"/>
         <source>Rotate Counterclockwise</source>
         <comment>Short</comment>
-        <translation>Повернуть против часовой стрелки</translation>
+        <translation type="unfinished">ঘড়ির উল্টোদিকে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="923"/>
         <source>Rotate Clockwise</source>
         <comment>Long</comment>
-        <translation>Повернуть по часовой стрелке</translation>
+        <translation type="unfinished">ঘড়ির কাঁটা অনুযায়ী ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="924"/>
         <source>Rotate Clockwise</source>
         <comment>Short</comment>
-        <translation>Повернуть по часовой стрелке</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="929"/>
-        <source>Flip Horizontal</source>
-        <comment>Long</comment>
-        <translation>Перевернуть по горизонтали</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="930"/>
-        <source>Flip Horizontal</source>
-        <comment>Short</comment>
-        <translation>Перевернуть по горизонтали</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="931"/>
-        <source>Flip Vertical</source>
-        <comment>Long</comment>
-        <translation>Перевернуть по вертикали</translation>
+        <translation type="unfinished">ঘড়ির কাঁটা অনুযায়ী ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="925"/>
         <source>Rotate</source>
         <comment>Short</comment>
-        <translation>Повернуть</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="929"/>
+        <source>Flip Horizontal</source>
+        <comment>Long</comment>
+        <translation type="unfinished">অনুভূমিক ভাবে ঘুড়িয়ে নিন</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="930"/>
+        <source>Flip Horizontal</source>
+        <comment>Short</comment>
+        <translation type="unfinished">অনুভূমিক ভাবে ঘুড়িয়ে নিন</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="931"/>
+        <source>Flip Vertical</source>
+        <comment>Long</comment>
+        <translation type="unfinished">উলম্বভাবে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="932"/>
         <source>Flip Vertical</source>
         <comment>Short</comment>
-        <translation>Перевернуть по вертикали</translation>
+        <translation type="unfinished">উলম্বভাবে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="933"/>
         <source>Flip</source>
         <comment>Short</comment>
-        <translation>Перевернуь</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="937"/>
         <source>Open File</source>
         <comment>Long</comment>
-        <translation>Открыть файл</translation>
+        <translation type="unfinished">ফাইল খোলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="938"/>
         <source>Open File</source>
         <comment>Short</comment>
-        <translation>Открыть</translation>
+        <translation type="unfinished">ফাইল খোলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="942"/>
         <source>Save File As</source>
         <comment>Long</comment>
-        <translation>Сохранить файл как</translation>
+        <translation type="unfinished">এই নামে ফাইল সংরক্ষণ করা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="943"/>
         <source>Save File As</source>
         <comment>Short</comment>
-        <translation>Сохранить</translation>
+        <translation type="unfinished">এই রূপে সংরক্ষণ করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="947"/>
         <source>Delete File</source>
         <comment>Long</comment>
-        <translation>Удалить файл</translation>
+        <translation type="unfinished">ফাইল মুছে ফেলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="948"/>
         <source>Delete File</source>
         <comment>Short</comment>
-        <translation>Удалить</translation>
+        <translation type="unfinished">ফাইল মুছে ফেলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="952"/>
         <source>Print</source>
         <comment>Long</comment>
-        <translation>Печать</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="953"/>
         <source>Print</source>
         <comment>Short</comment>
-        <translation>Печать</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="957"/>
         <source>Preferences</source>
         <comment>Long</comment>
-        <translation>Настройки</translation>
+        <translation type="unfinished">পছন্দ</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="958"/>
         <source>Preferences</source>
         <comment>Short</comment>
-        <translation>Настройки</translation>
+        <translation type="unfinished">পছন্দ</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="962"/>
         <source>Exit</source>
         <comment>Long</comment>
-        <translation>Выход</translation>
+        <translation type="unfinished">প্রস্থান করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="963"/>
         <source>Exit</source>
         <comment>Short</comment>
-        <translation>Выход</translation>
+        <translation type="unfinished">প্রস্থান করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="981"/>
         <source>Start Slideshow</source>
         <comment>Long</comment>
-        <translation>Запуск слайдшоу</translation>
+        <translation type="unfinished">স্লাইডশো শুরু করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="986"/>
         <source>Stop Slideshow</source>
         <comment>Long</comment>
-        <translation>Останов слайдшоу</translation>
+        <translation type="unfinished">স্লাইডশো বন্ধ করুন</translation>
     </message>
 </context>
 <context>
@@ -385,72 +385,72 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="506"/>
         <source>Navigate</source>
-        <translation>Навигация</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="507"/>
         <source>Slideshow</source>
-        <translation>Слайдшоу</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="508"/>
         <source>Zoom</source>
-        <translation>Масштаб</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="509"/>
         <source>Fit Image To Window Size</source>
-        <translation>Масштабировать к размеру окна</translation>
+        <translation type="unfinished">উইন্ডোর মাপ অনুযায়ী রাখুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="510"/>
         <source>Original Size</source>
-        <translation>Масштаб 1:1</translation>
+        <translation type="unfinished">আসল মাপ</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="511"/>
         <source>Full Screen</source>
-        <translation>Полный экран</translation>
+        <translation type="unfinished">পুরো পর্দা জুড়ে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="512"/>
         <source>Rotate</source>
-        <translation>Повернуть</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="513"/>
         <source>Flip</source>
-        <translation>Перевернуь</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="514"/>
         <source>Open File</source>
-        <translation>Открыть файл</translation>
+        <translation type="unfinished">ফাইল খোলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="515"/>
         <source>Save File As</source>
-        <translation>Сохранить файл как</translation>
+        <translation type="unfinished">এই নামে ফাইল সংরক্ষণ করা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="516"/>
         <source>Delete File</source>
-        <translation>Удалить файл</translation>
+        <translation type="unfinished">ফাইল মুছে ফেলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="517"/>
         <source>Print</source>
-        <translation>Печать</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="518"/>
         <source>Preferences</source>
-        <translation>Настройки</translation>
+        <translation type="unfinished">পছন্দ</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="519"/>
         <source>Exit</source>
-        <translation>Выход</translation>
+        <translation type="unfinished">প্রস্থান করুন</translation>
     </message>
 </context>
 <context>
@@ -458,49 +458,29 @@
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="161"/>
         <source>All Supported Images</source>
-        <translation>Все поддерживаемые изображения</translation>
+        <translation type="unfinished">সকল সমর্থিত ছবি</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="161"/>
         <source>All Files</source>
-        <translation>Все файлы</translation>
+        <translation type="unfinished">সকল ফাইল</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="162"/>
         <source>Open File</source>
-        <translation>Открыть файл</translation>
+        <translation type="unfinished">ফাইল খোলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="174"/>
         <location filename="../../src/GUI/MainController.cpp" line="350"/>
         <location filename="../../src/GUI/MainController.cpp" line="408"/>
         <source>Failed to open file &quot;%1&quot;</source>
-        <translation>Не удалось открыть файл &quot;%1&quot;</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="175"/>
         <source>Failed to open files &quot;%1&quot;</source>
-        <translation>Не удалось открыть файлы &quot;%1&quot;</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainController.cpp" line="184"/>
-        <source>Open Directory</source>
-        <translation>Открыть папку</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainController.cpp" line="189"/>
-        <source>Failed to open folder &quot;%1&quot;</source>
-        <translation>Не удалось открыть папку &quot;%1&quot;</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainController.cpp" line="200"/>
-        <source>Delete File</source>
-        <translation>Удалить файл</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainController.cpp" line="200"/>
-        <source>Are you sure you want to delete current file?</source>
-        <translation>Вы уверены что хотите удалить этот файл?</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="176"/>
@@ -510,12 +490,32 @@
         <location filename="../../src/GUI/MainController.cpp" line="350"/>
         <location filename="../../src/GUI/MainController.cpp" line="408"/>
         <source>Error</source>
-        <translation>Ошибка</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainController.cpp" line="184"/>
+        <source>Open Directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainController.cpp" line="189"/>
+        <source>Failed to open folder &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainController.cpp" line="200"/>
+        <source>Delete File</source>
+        <translation type="unfinished">ফাইল মুছে ফেলা হবে</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainController.cpp" line="200"/>
+        <source>Are you sure you want to delete current file?</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="218"/>
         <source>Failed to delete file &quot;%1&quot;</source>
-        <translation>Не удалось удалить файл &quot;%1&quot;</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -523,17 +523,17 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="348"/>
         <source>Error</source>
-        <translation>Ошибка</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="481"/>
         <source>Zoom</source>
-        <translation>Масштабирование</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="482"/>
         <source>Zoom Factor (%):</source>
-        <translation>Масштаб (%):</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -541,172 +541,172 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="296"/>
         <source>&amp;File</source>
-        <translation>&amp;Файл</translation>
+        <translation type="unfinished">ফাইল (&amp;F)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="297"/>
         <source>&amp;Edit</source>
-        <translation>&amp;Правка</translation>
+        <translation type="unfinished">সম্পাদনা (&amp;E)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
         <source>&amp;View</source>
-        <translation>&amp;Вид</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
         <source>&amp;Help</source>
-        <translation>&amp;Справка</translation>
+        <translation type="unfinished">সাহায্য (&amp;H)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
         <source>&amp;Reopen With</source>
-        <translation>П&amp;ереоткрыть с помощью</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="302"/>
         <source>&amp;Open File</source>
-        <translation>&amp;Открыть файл</translation>
+        <translation type="unfinished">ফাইল খোলা হবে (&amp;O)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="303"/>
         <source>Open &amp;Folder</source>
-        <translation>От&amp;крыть папку</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
         <source>&amp;Save As</source>
-        <translation>&amp;Сохранить как</translation>
+        <translation type="unfinished">এই রূপে সংরক্ষণ করুন (&amp;S)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
         <source>New &amp;Window</source>
-        <translation>&amp;Новое окно</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
         <source>Pre&amp;vious</source>
-        <translation>П&amp;редыдущий</translation>
+        <translation type="unfinished">পূর্ববর্তী (&amp;V)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
         <source>&amp;Next</source>
-        <translation>С&amp;ледующий</translation>
+        <translation type="unfinished">পরবর্তী (&amp;N)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
         <source>Image &amp;Information</source>
-        <translation>&amp;Информация об изображении</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
         <source>&amp;Print</source>
-        <translation>&amp;Печать</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
         <source>Pr&amp;eferences</source>
-        <translation>Нас&amp;тройки</translation>
+        <translation type="unfinished">পছন্দ (&amp;E)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
         <source>&amp;Quit</source>
-        <translation>&amp;Выход</translation>
+        <translation type="unfinished">প্রস্থান করুন (&amp;Q)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
         <source>Rotate &amp;Counterclockwise</source>
-        <translation>&amp;Повернуть против часовой стрелки</translation>
+        <translation type="unfinished">ঘড়ির উল্টোদিকে ঘুড়িয়ে নিন (&amp;C)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
         <source>&amp;Rotate Clockwise</source>
-        <translation>Повернуть по &amp;часовой стрелке</translation>
+        <translation type="unfinished">ঘড়ির কাঁটা অনুযায়ী ঘুড়িয়ে নিন (&amp;R)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
         <source>Flip &amp;Horizontal</source>
-        <translation>Перевернуть по &amp;горизонтали</translation>
+        <translation type="unfinished">অনুভূমিক ভাবে ঘুড়িয়ে নিন (&amp;H)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
         <source>Flip &amp;Vertical</source>
-        <translation>Перевернуть по &amp;вертикали</translation>
+        <translation type="unfinished">উলম্বভাবে ঘুড়িয়ে নিন (&amp;V)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
         <source>&amp;Delete File</source>
-        <translation>&amp;Удалить файл</translation>
+        <translation type="unfinished">ফাইল মুছে ফেলা হবে (&amp;D)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
         <source>Zoom &amp;Out</source>
-        <translation>&amp;Уменьшить</translation>
+        <translation type="unfinished">জুম আউট করুন (&amp;O)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="318"/>
         <source>Zoom &amp;In</source>
-        <translation>У&amp;величить</translation>
+        <translation type="unfinished">জুম ইন করুন (&amp;I)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
         <source>&amp;Reset Zoom</source>
-        <translation>С&amp;бросить масштаб</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
         <source>&amp;Zoom...</source>
-        <translation>&amp;Масштаб…</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
         <source>Fit Image To &amp;Window Size</source>
-        <translation>Масштабировать к размеру &amp;окна</translation>
+        <translation type="unfinished">উইন্ডোর মাপ অনুযায়ী রাখুন (&amp;W)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
         <source>Original &amp;Size</source>
-        <translation>Масштаб &amp;1:1</translation>
+        <translation type="unfinished">আসল মাপ (&amp;S)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
         <source>&amp;Full Screen</source>
-        <translation>На полный &amp;экран</translation>
+        <translation type="unfinished">পুরো পর্দা জুড়ে (&amp;F)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
         <source>Show &amp;Menu Bar</source>
-        <translation>Показать &amp;строку меню</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
         <source>Show &amp;Toolbar</source>
-        <translation>Показать &amp;панель инструментов</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
         <source>&amp;About</source>
-        <translation>&amp;О программе</translation>
+        <translation type="unfinished">পরিচিতি (&amp;A)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
         <source>About &amp;Qt</source>
-        <translation>О &amp;Qt</translation>
+        <translation type="unfinished">&amp;Qt পরিচিতি</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="328"/>
         <source>Check for &amp;Updates</source>
-        <translation>&amp;Проверить обновления</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="372"/>
         <source>Start S&amp;lideshow</source>
-        <translation>Запуск слайд&amp;шоу</translation>
+        <translation type="unfinished">স্লাইডশো শুরু করুন (&amp;L)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="377"/>
         <source>Stop S&amp;lideshow</source>
-        <translation>Останов слайд&amp;шоу</translation>
+        <translation type="unfinished">স্লাইডশো বন্ধ করুন (&amp;L)</translation>
     </message>
 </context>
 <context>
@@ -715,418 +715,418 @@
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="371"/>
         <source>Print</source>
         <comment>Title</comment>
-        <translation>Печать</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="377"/>
         <source>Millimeter</source>
         <comment>Size unit</comment>
-        <translation>Миллиметры</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="378"/>
         <source>Point</source>
         <comment>Size unit</comment>
-        <translation>Пункты</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="379"/>
         <source>Inch</source>
         <comment>Size unit</comment>
-        <translation>Дюймы</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="380"/>
         <source>Pica</source>
         <comment>Size unit</comment>
-        <translation>Пайки</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="381"/>
         <source>Didot</source>
         <comment>Size unit</comment>
-        <translation>Пункты Дидо</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="382"/>
         <source>Cicero</source>
         <comment>Size unit</comment>
-        <translation>Цицеро</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="401"/>
         <source>Pixels/Millimeter</source>
         <comment>Resolution unit</comment>
-        <translation>Пиксели на миллиметр</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="402"/>
         <source>Pixels/Point</source>
         <comment>Resolution unit</comment>
-        <translation>Пиксели на пункт</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="403"/>
         <source>Pixels/Inch</source>
         <comment>Resolution unit</comment>
-        <translation>Пиксели на дюйм</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="404"/>
         <source>Pixels/Pica</source>
         <comment>Resolution unit</comment>
-        <translation>Пиксели на пайку</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="405"/>
         <source>Pixels/Didot</source>
         <comment>Resolution unit</comment>
-        <translation>Пиксели на пункт Дидо</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="406"/>
         <source>Pixels/Cicero</source>
         <comment>Resolution unit</comment>
-        <translation>Пиксели на цицеро</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="411"/>
         <source>None</source>
         <comment>Centering option</comment>
-        <translation>Нет</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="412"/>
         <source>Horizontally</source>
         <comment>Centering option</comment>
-        <translation>По горизонтали</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="413"/>
         <source>Vertically</source>
         <comment>Centering option</comment>
-        <translation>По вертикали</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="414"/>
         <source>Both</source>
         <comment>Centering option</comment>
-        <translation>Оба</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="609"/>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="787"/>
         <source>Error</source>
-        <translation>Ошибка</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="610"/>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="788"/>
         <source>Invalid Paper Size</source>
-        <translation>Недопустимый размер бумаги</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1213"/>
-        <source>Color</source>
-        <comment>Color mode</comment>
-        <translation>Цветной</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1215"/>
-        <source>Grayscale</source>
-        <comment>Color mode</comment>
-        <translation>Чёрно-белый</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1126"/>
         <source>Yes</source>
         <comment>Default</comment>
-        <translation>Да</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1128"/>
         <source>No</source>
         <comment>Default</comment>
-        <translation>Нет</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1132"/>
         <source>Yes</source>
         <comment>Remote</comment>
-        <translation>Да</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1134"/>
         <source>No</source>
         <comment>Remote</comment>
-        <translation>Нет</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1158"/>
         <source>Idle</source>
         <comment>State</comment>
-        <translation>Простаивает</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1161"/>
         <source>Active</source>
         <comment>State</comment>
-        <translation>Идёт печать</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1164"/>
         <source>Aborted</source>
         <comment>State</comment>
-        <translation>Печать прервана</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1167"/>
         <source>Error</source>
         <comment>State</comment>
-        <translation>Ошибка</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1170"/>
         <source>Unknown (%1)</source>
         <comment>State</comment>
-        <translation>Неизвестно (%1)</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1213"/>
+        <source>Color</source>
+        <comment>Color mode</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1215"/>
+        <source>Grayscale</source>
+        <comment>Color mode</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1002"/>
         <source>Printer</source>
-        <translation>Принтер</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1003"/>
         <source>...</source>
-        <translation>…</translation>
+        <translation type="unfinished">…</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1004"/>
         <source>Name:</source>
-        <translation>Имя:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1005"/>
         <source>Description:</source>
-        <translation>Описание:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1006"/>
         <source>Default:</source>
-        <translation>По умолчанию:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1007"/>
         <source>Remote:</source>
-        <translation>Удалённый:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1008"/>
         <source>Location:</source>
-        <translation>Расположение:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1009"/>
         <source>Make and model:</source>
-        <translation>Изготовитель и модель:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1010"/>
         <source>State:</source>
-        <translation>Состояние:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1012"/>
         <source>Page</source>
-        <translation>Страница</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1013"/>
         <source>Portrait</source>
-        <translation>Книжная</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1014"/>
         <source>Landscape</source>
-        <translation>Альбомная</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1015"/>
         <source>Auto-rotate</source>
-        <translation>Автоматическое переворачивание</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1016"/>
         <source>Page setup</source>
-        <translation>Параметры страницы</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1018"/>
         <source>Misc</source>
-        <translation>Разное</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1019"/>
         <source>Copies:</source>
-        <translation>Число копий:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1020"/>
         <source>Color Mode:</source>
-        <translation>Цветовой режим:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1022"/>
         <source>Size</source>
-        <translation>Размер</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1023"/>
         <source>Width:</source>
-        <translation>Ширина:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1024"/>
         <source>Height:</source>
-        <translation>Высота:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1025"/>
         <source>X Resolution:</source>
-        <translation>Разрешение по X:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1026"/>
         <source>Y Resolution:</source>
-        <translation>Разрешение по Y:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1027"/>
         <source>Load Defaults</source>
-        <translation>Загрузить исходные параметры</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1028"/>
         <source>&lt;b&gt;&amp;#9582;&lt;/b&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1029"/>
         <source>&lt;b&gt;&amp;#9583;&lt;/b&gt;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1031"/>
         <source>Position</source>
-        <translation>Позиция</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1032"/>
         <source>Left:</source>
-        <translation>Слева:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1033"/>
         <source>Right:</source>
-        <translation>Справа:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1034"/>
         <source>Top:</source>
-        <translation>Сверху:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1035"/>
         <source>Bottom:</source>
-        <translation>Снизу:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1036"/>
         <source>Center:</source>
-        <translation>Центр:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1038"/>
         <source>Ignore Page Margins</source>
-        <translation>Игнорировать поля страницы</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1039"/>
         <source>Ignore Paper Bounds</source>
-        <translation>Игнорировать границы бумаги</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1041"/>
         <source>Preview</source>
-        <translation>Просмотр</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1043"/>
         <source>Effects</source>
         <comment>Effects</comment>
-        <translation>Эффекты</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1044"/>
         <source>Brightness:</source>
         <comment>Effects</comment>
-        <translation>Яркость:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1045"/>
         <source>Contrast:</source>
         <comment>Effects</comment>
-        <translation>Контрастность:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1046"/>
         <source>Exposure:</source>
         <comment>Effects</comment>
-        <translation>Экспозиция:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1047"/>
         <source>Desaturate</source>
         <comment>Effects</comment>
-        <translation>Обесцветить</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1048"/>
         <source>Use Legacy Rendering Algorithm</source>
         <comment>Effects</comment>
-        <translation>Использовать устаревший алгоритм отрисовки</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1050"/>
         <source>Preview</source>
         <comment>Effects</comment>
-        <translation>Просмотр</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1052"/>
         <source>General</source>
-        <translation>Общие</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1053"/>
         <source>Image Settings</source>
-        <translation>Параметры изображения</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1054"/>
         <source>Effects</source>
-        <translation>Эффекты</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1056"/>
         <source>Print</source>
-        <translation>Печать</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1057"/>
         <source>Cancel</source>
-        <translation>Отмена</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1135,73 +1135,73 @@
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="95"/>
         <source>Previous</source>
         <comment>Long</comment>
-        <translation>Предыдущий</translation>
+        <translation type="unfinished">পূর্ববর্তী</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="96"/>
         <source>Previous</source>
         <comment>Short</comment>
-        <translation>Предыдущий</translation>
+        <translation type="unfinished">পূর্ববর্তী</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="97"/>
         <source>Next</source>
         <comment>Long</comment>
-        <translation>Следующий</translation>
+        <translation type="unfinished">পরবর্তী</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="98"/>
         <source>Next</source>
         <comment>Short</comment>
-        <translation>Следующий</translation>
+        <translation type="unfinished">পরবর্তী</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="99"/>
         <source>Slideshow</source>
         <comment>Short</comment>
-        <translation>Слайдшоу</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="100"/>
         <source>Zoom Out</source>
         <comment>Long</comment>
-        <translation>Уменьшить</translation>
+        <translation type="unfinished">জুম আউট করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="101"/>
         <source>Zoom Out</source>
         <comment>Short</comment>
-        <translation>Уменьшить</translation>
+        <translation type="unfinished">জুম আউট করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="102"/>
         <source>Zoom In</source>
         <comment>Long</comment>
-        <translation>Увеличить</translation>
+        <translation type="unfinished">জুম ইন করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="103"/>
         <source>Zoom In</source>
         <comment>Short</comment>
-        <translation>Увеличить</translation>
+        <translation type="unfinished">জুম ইন করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="104"/>
         <source>Fit Image To Window Size</source>
         <comment>Long</comment>
-        <translation>Масштабировать к размеру окна</translation>
+        <translation type="unfinished">উইন্ডোর মাপ অনুযায়ী রাখুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="105"/>
         <source>Fit Image To Window Size</source>
         <comment>Short</comment>
-        <translation>Вписать</translation>
+        <translation type="unfinished">উইন্ডোর মাপ অনুযায়ী রাখুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="106"/>
         <source>Original Size</source>
         <comment>Long</comment>
-        <translation>Масштаб 1:1</translation>
+        <translation type="unfinished">আসল মাপ</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="107"/>
@@ -1213,133 +1213,133 @@
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="108"/>
         <source>Full Screen</source>
         <comment>Long</comment>
-        <translation>На полный экран</translation>
+        <translation type="unfinished">পুরো পর্দা জুড়ে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="109"/>
         <source>Full Screen</source>
         <comment>Short</comment>
-        <translation>Полный экран</translation>
+        <translation type="unfinished">পুরো পর্দা জুড়ে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="110"/>
         <source>Rotate Counterclockwise</source>
         <comment>Long</comment>
-        <translation>Повернуть против часовой стрелки</translation>
+        <translation type="unfinished">ঘড়ির উল্টোদিকে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="111"/>
         <source>Rotate Counterclockwise</source>
         <comment>Short</comment>
-        <translation>Повернуть против часовой стрелки</translation>
+        <translation type="unfinished">ঘড়ির উল্টোদিকে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="112"/>
         <source>Rotate Clockwise</source>
         <comment>Long</comment>
-        <translation>Повернуть по часовой стрелке</translation>
+        <translation type="unfinished">ঘড়ির কাঁটা অনুযায়ী ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="113"/>
         <source>Rotate Clockwise</source>
         <comment>Short</comment>
-        <translation>Повернуть по часовой стрелке</translation>
+        <translation type="unfinished">ঘড়ির কাঁটা অনুযায়ী ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="114"/>
         <source>Flip Horizontal</source>
         <comment>Long</comment>
-        <translation>Перевернуть по горизонтали</translation>
+        <translation type="unfinished">অনুভূমিক ভাবে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="115"/>
         <source>Flip Horizontal</source>
         <comment>Short</comment>
-        <translation>Перевернуть по горизонтали</translation>
+        <translation type="unfinished">অনুভূমিক ভাবে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="116"/>
         <source>Flip Vertical</source>
         <comment>Long</comment>
-        <translation>Перевернуть по вертикали</translation>
+        <translation type="unfinished">উলম্বভাবে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="117"/>
         <source>Flip Vertical</source>
         <comment>Short</comment>
-        <translation>Перевернуть по вертикали</translation>
+        <translation type="unfinished">উলম্বভাবে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="118"/>
         <source>Open File</source>
         <comment>Long</comment>
-        <translation>Открыть файл</translation>
+        <translation type="unfinished">ফাইল খোলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="119"/>
         <source>Open File</source>
         <comment>Short</comment>
-        <translation>Открыть</translation>
+        <translation type="unfinished">ফাইল খোলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="120"/>
         <source>Save File As</source>
         <comment>Long</comment>
-        <translation>Сохранить файл как</translation>
+        <translation type="unfinished">এই নামে ফাইল সংরক্ষণ করা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="121"/>
         <source>Save File As</source>
         <comment>Short</comment>
-        <translation>Сохранить</translation>
+        <translation type="unfinished">এই রূপে সংরক্ষণ করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="122"/>
         <source>Delete File</source>
         <comment>Long</comment>
-        <translation>Удалить файл</translation>
+        <translation type="unfinished">ফাইল মুছে ফেলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="123"/>
         <source>Delete File</source>
         <comment>Short</comment>
-        <translation>Удалить</translation>
+        <translation type="unfinished">ফাইল মুছে ফেলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="124"/>
         <source>Preferences</source>
         <comment>Long</comment>
-        <translation>Настройки</translation>
+        <translation type="unfinished">পছন্দ</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="125"/>
         <source>Preferences</source>
         <comment>Short</comment>
-        <translation>Настройки</translation>
+        <translation type="unfinished">পছন্দ</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="126"/>
         <source>Exit</source>
         <comment>Long</comment>
-        <translation>Выход</translation>
+        <translation type="unfinished">প্রস্থান করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="127"/>
         <source>Exit</source>
         <comment>Short</comment>
-        <translation>Выход</translation>
+        <translation type="unfinished">প্রস্থান করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="159"/>
         <source>Start Slideshow</source>
         <comment>Long</comment>
-        <translation>Запуск слайдшоу</translation>
+        <translation type="unfinished">স্লাইডশো শুরু করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="164"/>
         <source>Stop Slideshow</source>
         <comment>Long</comment>
-        <translation>Останов слайдшоу</translation>
+        <translation type="unfinished">স্লাইডশো বন্ধ করুন</translation>
     </message>
 </context>
 <context>
@@ -1348,153 +1348,153 @@
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="83"/>
         <source>Bottom</source>
         <comment>ToolBarPosition</comment>
-        <translation>Внизу</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="84"/>
         <source>Top</source>
         <comment>ToolBarPosition</comment>
-        <translation>Вверху</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="85"/>
         <source>Left</source>
         <comment>ToolBarPosition</comment>
-        <translation>Слева</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="86"/>
         <source>Right</source>
         <comment>ToolBarPosition</comment>
-        <translation>Справа</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="87"/>
         <source>Floated or docked</source>
         <comment>ToolBarPosition</comment>
-        <translation>Плавающее или присоединённое</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="162"/>
         <source>Select Background Color</source>
-        <translation>Выберите цвет фона</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="200"/>
+        <source>Preferences</source>
+        <translation type="unfinished">পছন্দ</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="111"/>
         <source>General</source>
-        <translation>Основные</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="112"/>
         <source>Interface</source>
-        <translation>Интерфейс</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="113"/>
         <source>Decoders</source>
-        <translation>Декодеры</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="116"/>
         <source>Automatically check for updates</source>
-        <translation>Автоматически проверять обновления</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="120"/>
         <source>Ask before deleting images</source>
-        <translation>Спросить перед удалением изображений</translation>
+        <translation type="unfinished">ছবি মুছে ফেলার আগে জানিয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="123"/>
         <source>Move deleted images to trash</source>
-        <translation>Удалять изображения в корзину</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="126"/>
         <source>Use smooth image rendering</source>
-        <translation>Использовать сглаженный режим отрисовки</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="129"/>
         <source>Allow fit to window for small images</source>
-        <translation>Масштабировать к размеру окна маленькие изображения</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
         <source>Remember rotation and flip until app exit</source>
-        <translation>Запоминать вращение и переворот до выхода из приложения</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
         <source>Slideshow interval</source>
-        <translation>Интервал слайдшоу</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="136"/>
         <source>sec</source>
-        <translation>сек</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="180"/>
-        <source>&lt;b&gt;Language&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Язык&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="181"/>
-        <source>&lt;b&gt;Theme&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Тема&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="183"/>
-        <source>&lt;b&gt;Icon Theme&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Тема значков&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="186"/>
-        <source>&lt;b&gt;Toolbar Position&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Положение панели инструментов&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="189"/>
-        <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Цвета фона&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="190"/>
-        <source>Normal:</source>
-        <translation>Обычный:</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="191"/>
-        <source>Fullscreen:</source>
-        <translation>На полный экран:</translation>
+        <translation type="unfinished">sec</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="140"/>
         <source>&lt;b&gt;Mouse wheel action&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Действие при вращении колёсика мыши&lt;/b&gt;</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="141"/>
         <source>Scroll</source>
         <comment>WheelMode</comment>
-        <translation>Прокрутка</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="142"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
-        <translation>Масштабирование</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="180"/>
+        <source>&lt;b&gt;Language&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="181"/>
+        <source>&lt;b&gt;Theme&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="183"/>
+        <source>&lt;b&gt;Icon Theme&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="186"/>
+        <source>&lt;b&gt;Toolbar Position&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="189"/>
+        <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="190"/>
+        <source>Normal:</source>
+        <translation type="unfinished">স্বাভাবিক:</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="191"/>
+        <source>Fullscreen:</source>
+        <translation type="unfinished">পুরো পর্দা জুড়ে:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="226"/>
         <source>&lt;b&gt;Enabled decoders:&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Разрешённые декодеры:&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="200"/>
-        <source>Preferences</source>
-        <translation>Настройки</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1502,22 +1502,27 @@
     <message>
         <location filename="../../src/main.cpp" line="72"/>
         <source>System</source>
-        <translation>Системная</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="75"/>
         <source>Light</source>
-        <translation>Светлая</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/main.cpp" line="79"/>
+        <source>Dark</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="84"/>
         <source>Fusion_Light</source>
-        <translation>Fusion светлая</translation>
+        <translation type="unfinished">Fusion Light</translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="88"/>
         <source>Fusion_Dark</source>
-        <translation>Fusion тёмная</translation>
+        <translation type="unfinished">Fusion Dark</translation>
     </message>
     <message>
         <location filename="../../src/main.cpp" line="93"/>
@@ -1529,103 +1534,98 @@
         <source>Windows_2000</source>
         <translation>Windows 2000</translation>
     </message>
-    <message>
-        <location filename="../../src/main.cpp" line="79"/>
-        <source>Dark</source>
-        <translation>Тёмная</translation>
-    </message>
 </context>
 <context>
     <name>ToolBar</name>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="121"/>
         <source>Previous</source>
-        <translation>Предыдущий</translation>
+        <translation type="unfinished">পূর্ববর্তী</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="122"/>
         <source>Next</source>
-        <translation>Следующий</translation>
+        <translation type="unfinished">পরবর্তী</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="123"/>
         <source>Zoom Out</source>
-        <translation>Уменьшить</translation>
+        <translation type="unfinished">জুম আউট করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="124"/>
         <source>Zoom In</source>
-        <translation>Увеличить</translation>
+        <translation type="unfinished">জুম ইন করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="125"/>
         <source>Fit Image To Window Size</source>
-        <translation>Масштабировать к размеру окна</translation>
+        <translation type="unfinished">উইন্ডোর মাপ অনুযায়ী রাখুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="126"/>
         <source>Original Size</source>
-        <translation>Масштаб 1:1</translation>
+        <translation type="unfinished">আসল মাপ</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="127"/>
         <source>Full Screen</source>
-        <translation>На полный экран</translation>
+        <translation type="unfinished">পুরো পর্দা জুড়ে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="128"/>
         <source>Rotate Counterclockwise</source>
-        <translation>Повернуть против часовой стрелки</translation>
+        <translation type="unfinished">ঘড়ির উল্টোদিকে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="129"/>
         <source>Rotate Clockwise</source>
-        <translation>Повернуть по часовой стрелке</translation>
+        <translation type="unfinished">ঘড়ির কাঁটা অনুযায়ী ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="130"/>
         <source>Flip Horizontal</source>
-        <translation>Перевернуть по горизонтали</translation>
+        <translation type="unfinished">অনুভূমিক ভাবে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="131"/>
         <source>Flip Vertical</source>
-        <translation>Перевернуть по вертикали</translation>
+        <translation type="unfinished">উলম্বভাবে ঘুড়িয়ে নিন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="132"/>
         <source>Open File</source>
-        <translation>Открыть файл</translation>
+        <translation type="unfinished">ফাইল খোলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="133"/>
         <source>Save File As</source>
-        <translation>Сохранить файл как</translation>
+        <translation type="unfinished">এই নামে ফাইল সংরক্ষণ করা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="134"/>
         <source>Delete File</source>
-        <translation>Удалить файл</translation>
+        <translation type="unfinished">ফাইল মুছে ফেলা হবে</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="135"/>
         <source>Preferences</source>
-        <translation>Настройки</translation>
+        <translation type="unfinished">পছন্দ</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="136"/>
         <source>Exit</source>
-        <translation>Выход</translation>
+        <translation type="unfinished">প্রস্থান করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="168"/>
         <source>Start Slideshow</source>
-        <translation>Запуск слайдшоу</translation>
+        <translation type="unfinished">স্লাইডশো শুরু করুন</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="173"/>
         <source>Stop Slideshow</source>
-        <translation>Останов слайдшоу</translation>
+        <translation type="unfinished">স্লাইডশো বন্ধ করুন</translation>
     </message>
 </context>
 </TS>

@@ -355,8 +355,64 @@ lupdate_only {
 }
 
 TRANSLATIONS += \
+    resources/translations/imageviewer_af.ts \
+    resources/translations/imageviewer_ar.ts \
+    resources/translations/imageviewer_ast.ts \
+    resources/translations/imageviewer_be.ts \
+    resources/translations/imageviewer_bg.ts \
+    resources/translations/imageviewer_bn.ts \
+    resources/translations/imageviewer_bn_IN.ts \
+    resources/translations/imageviewer_bs.ts \
+    resources/translations/imageviewer_ca.ts \
+    resources/translations/imageviewer_cs.ts \
+    resources/translations/imageviewer_da.ts \
+    resources/translations/imageviewer_de.ts \
+    resources/translations/imageviewer_el.ts \
     resources/translations/imageviewer_en.ts \
+    resources/translations/imageviewer_en_GB.ts \
+    resources/translations/imageviewer_eo.ts \
+    resources/translations/imageviewer_es.ts \
+    resources/translations/imageviewer_et.ts \
+    resources/translations/imageviewer_eu.ts \
+    resources/translations/imageviewer_fa.ts \
+    resources/translations/imageviewer_fi.ts \
+    resources/translations/imageviewer_fo.ts \
+    resources/translations/imageviewer_fr.ts \
+    resources/translations/imageviewer_gl.ts \
+    resources/translations/imageviewer_he.ts \
+    resources/translations/imageviewer_hr.ts \
+    resources/translations/imageviewer_hu.ts \
+    resources/translations/imageviewer_id.ts \
+    resources/translations/imageviewer_is.ts \
+    resources/translations/imageviewer_it.ts \
+    resources/translations/imageviewer_ja.ts \
+    resources/translations/imageviewer_kk.ts \
+    resources/translations/imageviewer_kn.ts \
+    resources/translations/imageviewer_ko.ts \
+    resources/translations/imageviewer_lg.ts \
+    resources/translations/imageviewer_lt.ts \
+    resources/translations/imageviewer_ms.ts \
+    resources/translations/imageviewer_nb.ts \
+    resources/translations/imageviewer_nl.ts \
+    resources/translations/imageviewer_nn.ts \
+    resources/translations/imageviewer_pl.ts \
+    resources/translations/imageviewer_pt_BR.ts \
+    resources/translations/imageviewer_pt_PT.ts \
+    resources/translations/imageviewer_ro.ts \
     resources/translations/imageviewer_ru.ts \
+    resources/translations/imageviewer_sk.ts \
+    resources/translations/imageviewer_sl.ts \
+    resources/translations/imageviewer_sr.ts \
+    resources/translations/imageviewer_sr_Latn.ts \
+    resources/translations/imageviewer_sv.ts \
+    resources/translations/imageviewer_te.ts \
+    resources/translations/imageviewer_th.ts \
+    resources/translations/imageviewer_tr.ts \
+    resources/translations/imageviewer_tt_RU.ts \
+    resources/translations/imageviewer_ug.ts \
+    resources/translations/imageviewer_uk.ts \
+    resources/translations/imageviewer_ur.ts \
+    resources/translations/imageviewer_vi.ts \
     resources/translations/imageviewer_zh_CN.ts \
     resources/translations/imageviewer_zh_TW.ts
 
