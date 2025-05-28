@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -261,7 +261,9 @@ CodeEditor::CodeEditor(QWidget *parent)
     connect(this, SIGNAL(updateRequest(const QRect&, int)), this,SLOT(updateLineNumbersArea(const QRect&, int)));
     updateLineNumbersAreaWidth();
     new CssHighlighter(document());
-    viewport()->setStyleSheet(QString::fromLatin1("background: white; color: black;"));
+    const QString styleSheet = QString::fromLatin1("background: white; color: black;");
+    setStyleSheet(styleSheet);
+    viewport()->setStyleSheet(styleSheet);
 }
 
 int CodeEditor::lineNumbersAreaWidth()
@@ -559,7 +561,7 @@ void LineNumberArea::paintEvent(QPaintEvent *event)
 // ====================================================================================================
 
 SearchDialog::SearchDialog(CodeEditor *editor)
-    : QDialog(editor)
+    : QDialog(editor->window())
     , m_codeEditor(editor)
     , m_searchLineEdit(new QLineEdit(this))
     , m_searchPushButton(new QPushButton(QString::fromLatin1("Find"), this))
