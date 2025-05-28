@@ -134,7 +134,6 @@ ${CMD_DEPLOY} \
     --no-virtualkeyboard \
     --no-angle \
     --no-opengl-sw \
-    --translations en,ru,zh_CN,zh_TW \
     "${DIST_PREFIX}/"
 [ -f "${DIST_PREFIX}/qt.conf" ] || echo '[Paths]' > "${DIST_PREFIX}/qt.conf"
 echo 'Translations = translations' >> "${DIST_PREFIX}/qt.conf"

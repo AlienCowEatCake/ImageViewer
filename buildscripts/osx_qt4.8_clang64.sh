@@ -8,6 +8,7 @@ ICON_PATH="src/${PROJECT}/resources/icon/icon_composer.icns"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/macosx/set_associations.sh"
 LICENSE_PATH="LICENSE.GPLv3"
 OUT_PATH="src/${PROJECT}"
+QM_FILES_PATH="src/${PROJECT}/resources/translations"
 APP_CERT="Developer ID Application: Petr Zhigalov (48535TNTA7)"
 MAC_TARGET="10.5"
 ALL_SDK_VERSIONS="$(xcodebuild -showsdks | grep '\-sdk macosx' | sed 's|.*-sdk macosx||')"
@@ -38,7 +39,9 @@ cp -a "${SOURCE_PATH}/${INFO_PLIST_PATH}" "${APPNAME}.app/Contents/Info.plist"
 plutil -replace LSMinimumSystemVersion -string "${MAC_TARGET}" "${APPNAME}.app/Contents/Info.plist"
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -rf "${RES_PATH}/empty.lproj"
-mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj" "${RES_PATH}/zh_CN.lproj" "${RES_PATH}/zh_TW.lproj"
+for locale in $(find "${SOURCE_PATH}/${QM_FILES_PATH}/" -maxdepth 1 -mindepth 1 -type f -name '*.qm' | sed 's|.*/|| ; s|[^_]*_|| ; s|\..*||' | xargs) ; do
+    mkdir -p "${RES_PATH}/${locale}.lproj"
+done
 cp -a "${SOURCE_PATH}/${ICON_PATH}" "${RES_PATH}/icon.icns"
 cp -a "${SOURCE_PATH}/${SCRIPT_PATH}" "${RES_PATH}/"
 ${CMD_DEPLOY} "${APPNAME}.app" -verbose=2

@@ -4,6 +4,7 @@ BUILDDIR=build_osx_qt5.6_clang64_libstdcxx
 APPNAME="Image Viewer"
 DMGNAME="${PROJECT}_qt5.6_clang64_libstdcxx"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/macosx/set_associations.sh"
+QM_FILES_PATH="src/${PROJECT}/resources/translations"
 LICENSE_PATH="LICENSE.GPLv3"
 OUT_PATH="src/${PROJECT}"
 ENTITLEMENTS_PATH="src/${PROJECT}/resources/platform/macosx/${PROJECT}.entitlements"
@@ -39,7 +40,9 @@ cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "${MAC_TARGET}" "${APPNAME}.app/Contents/Info.plist"
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -rf "${RES_PATH}/empty.lproj"
-mkdir -p "${RES_PATH}/en.lproj" "${RES_PATH}/ru.lproj" "${RES_PATH}/zh_CN.lproj" "${RES_PATH}/zh_TW.lproj"
+for locale in $(find "${SOURCE_PATH}/${QM_FILES_PATH}/" -maxdepth 1 -mindepth 1 -type f -name '*.qm' | sed 's|.*/|| ; s|[^_]*_|| ; s|\..*||' | xargs) ; do
+    mkdir -p "${RES_PATH}/${locale}.lproj"
+done
 cp -a "${SOURCE_PATH}/${SCRIPT_PATH}" "${RES_PATH}/"
 PLUGINS_PATH="${APPNAME}.app/Contents/PlugIns"
 mkdir -p "${PLUGINS_PATH}/iconengines"

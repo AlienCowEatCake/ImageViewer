@@ -33,9 +33,8 @@ for %%x in (accessible, iconengines, imageformats) do (
     del /S /Q %PROJECT%%SUFFIX%\plugins\%%x\*compatwidgets4.dll
 )
 mkdir %PROJECT%%SUFFIX%\translations
-for %%x in (en ru zh_CN zh_TW) do (
-    copy %QT_PATH%\translations\qt_%%x.qm %PROJECT%%SUFFIX%\translations\
-)
+copy %QT_PATH%\translations\qt_??.qm %PROJECT%%SUFFIX%\translations\
+copy %QT_PATH%\translations\qt_??_??.qm %PROJECT%%SUFFIX%\translations\
 (
     echo [Paths]
     echo Translations = translations
