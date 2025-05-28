@@ -58,7 +58,7 @@ for unused_plugins_subdir in platforminputcontexts imageformats/libqpdf.dylib tl
     rm -rf "${PLUGINS_PATH}/${unused_plugins_subdir}"
 done
 FRAMEWORKS_PATH="${APPNAME}.app/Contents/Frameworks"
-for unused_framework in QtPdf.framework QtQml.framework QtQmlModels.framework QtQuick.framework QtVirtualKeyboard.framework ; do
+for unused_framework in QtPdf.framework QtQml.framework QtQmlModels.framework QtQuick.framework QtVirtualKeyboard.framework QtQmlMeta.framework QtQmlWorkerScript.framework QtOpenGL.framework ; do
     rm -rf "${FRAMEWORKS_PATH}/${unused_framework}"
 done
 /usr/bin/python3 "${SOURCE_PATH}/buildscripts/helpers/dylibresolver.py" "${APPNAME}.app" "${RESVG_PATH}" "${QT_PATH}/lib"
