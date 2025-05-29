@@ -123,7 +123,7 @@ int getMatchedLocaleComponents(const QStringList &systemLocaleSplitted, const QS
     return matchedComponents;
 }
 
-QString findBestLocaleForPreferred(const QStringList &localesList, const QList<QPair<QString, QString>> &customMappings, const QString &preferredLocale)
+QString findBestLocaleForPreferred(const QStringList &localesList, const QList<QPair<QString, QString> > &customMappings, const QString &preferredLocale)
 {
     const QStringList preferredLocaleSplitted = preferredLocale.split(QChar::fromLatin1('_'));
     int bestMatchedComponents = 0;
@@ -141,7 +141,7 @@ QString findBestLocaleForPreferred(const QStringList &localesList, const QList<Q
         return bestLocale;
 
 
-    for(QList<QPair<QString, QString>>::ConstIterator it = customMappings.constBegin(), itEnd = customMappings.constEnd(); it != itEnd; ++it)
+    for(QList<QPair<QString, QString> >::ConstIterator it = customMappings.constBegin(), itEnd = customMappings.constEnd(); it != itEnd; ++it)
     {
         if(getMatchedLocaleComponents(preferredLocaleSplitted, it->first))
             return it->second;
@@ -152,7 +152,7 @@ QString findBestLocaleForPreferred(const QStringList &localesList, const QList<Q
 
 QString findBestLocaleForSystem(const QStringList &localesList)
 {
-    QList<QPair<QString, QString>> customMappings;
+    QList<QPair<QString, QString> > customMappings;
     if(localesList.contains(Locale::PT_PT))
         customMappings.append(qMakePair<QString, QString>(QString::fromLatin1("pt"), QString(Locale::PT_PT)));
     if(localesList.contains(Locale::ZH_CN))

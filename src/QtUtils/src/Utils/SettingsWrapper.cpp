@@ -512,7 +512,7 @@ private:
     QMutex m_settingsMutex;
     /// @brief Platform dependent settings storage
     SettingsStorage m_settingsStorage;
-    /// @brief Settings cache, QMap<Group, QMap<Key, Value>>
+    /// @brief Settings cache, QMap<Group, QMap<Key, Value> >
     QMap<QString, QVariantMap> m_settingsCache;
 };
 
