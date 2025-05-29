@@ -64,8 +64,8 @@ typedef QMap<QString, ActionList> ActionListMap;
 
 } // namespace
 
-/// @brief Icon theme identifier for default QtUtils icons
-const QString IconThemeManager::QTUTILS_THEME_ID = QString::fromLatin1(QT_TRANSLATE_NOOP("IconThemes", "QtUtils"));
+/// @brief Icon theme identifier for built-in icons
+const QString IconThemeManager::BUILTIN_THEME_ID = QString::fromLatin1(QT_TRANSLATE_NOOP("IconThemes", "Monochrome"));
 /// @brief Icon theme identifier for system theme icons
 const QString IconThemeManager::SYSTEM_THEME_ID = QString::fromLatin1(QT_TRANSLATE_NOOP("IconThemes", "System"));
 
@@ -159,7 +159,7 @@ void IconThemeManager::registerTheme(const QString &themeId, const QStringList &
 {
     QStringList updatedIconThemeSearchPaths = iconThemeSearchPaths;
     QString updatedTranslateContext = translateContext;
-    if(themeId == QTUTILS_THEME_ID || themeId == SYSTEM_THEME_ID)
+    if(themeId == BUILTIN_THEME_ID || themeId == SYSTEM_THEME_ID)
     {
         if(updatedTranslateContext.isEmpty())
             updatedTranslateContext = QString::fromLatin1("IconThemes");
@@ -272,11 +272,11 @@ QIcon IconThemeManager::GetIcon(ThemeUtils::IconTypes type, bool fallbackRequire
                 return result;
         }
         // Symbolic monochrome icons are used as system icon theme for Windows and macOS.
-        // So we can safely use QtUtils monochrome theme as fallback
+        // So we can safely use built-in monochrome icons as fallback
         return ThemeUtils::GetIcon(type, darkBackground);
     }
 #endif
-    if(currentTheme && currentTheme->themeId != QTUTILS_THEME_ID)
+    if(currentTheme && currentTheme->themeId != BUILTIN_THEME_ID)
     {
         const QIcon result = ThemeUtils::GetThemeIcon(type);
         if(!result.isNull() || !fallbackRequired)

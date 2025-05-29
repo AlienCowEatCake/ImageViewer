@@ -4,74 +4,74 @@
 <context>
     <name>FileUtils</name>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="601"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="598"/>
         <source>The specified path was not found</source>
         <translation>The specified path was not found</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="615"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="612"/>
         <source>Permission denied</source>
         <translation>Permission denied</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="641"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="638"/>
         <source>Could not find mount point for specified path</source>
         <translation>Could not find mount point for specified path</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="86"/>
-        <location filename="../../src/Utils/FileUtils.cpp" line="650"/>
-        <location filename="../../src/Utils/FileUtils.cpp" line="672"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="83"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="647"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="669"/>
         <source>The specified path could not be moved to Trash</source>
         <translation>The specified path could not be moved to Trash</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="703"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="699"/>
         <source>The specified path does not exist</source>
         <translation>The specified path does not exist</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="284"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="281"/>
         <source>Failed to init BEntry for specified path: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="102"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="99"/>
         <source>The bundle with identifier `com.apple.CoreServices` was not found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="113"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="110"/>
         <source>The function with name `FSPathMakeRefWithOptions` was not found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="120"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="117"/>
         <source>The function with name `FSMoveObjectToTrashSync` was not found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="127"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="124"/>
         <source>The function with name `GetMacOSStatusCommentString` was not found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="294"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="291"/>
         <source>Failed to get entry_ref for specified path: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="304"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="301"/>
         <source>Failed to find Trash: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="314"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="311"/>
         <source>Failed to init BDirectory for %1: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="339"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="336"/>
         <source>Failed to move entry into trash %1: %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -80,7 +80,7 @@
     <name>IconThemes</name>
     <message>
         <location filename="../../src/Utils/IconThemeManager.cpp" line="68"/>
-        <source>QtUtils</source>
+        <source>Monochrome</source>
         <translation>Monochrome</translation>
     </message>
     <message>

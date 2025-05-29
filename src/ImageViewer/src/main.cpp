@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
     themeManager->applyCurrentTheme();
 
     IconThemeManager *iconThemeManager = IconThemeManager::instance();
-    iconThemeManager->registerTheme(IconThemeManager::QTUTILS_THEME_ID,
+    iconThemeManager->registerTheme(IconThemeManager::BUILTIN_THEME_ID,
                                     QStringList(),
                                     QString(),
                                     true);

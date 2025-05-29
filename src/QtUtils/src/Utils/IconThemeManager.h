@@ -56,8 +56,8 @@ Q_SIGNALS:
     void themeChanged(const QString &themeId);
 
 public:
-    /// @brief Icon theme identifier for default QtUtils icons
-    static const QString QTUTILS_THEME_ID;
+    /// @brief Icon theme identifier for built-in icons
+    static const QString BUILTIN_THEME_ID;
     /// @brief Icon theme identifier for system theme icons
     static const QString SYSTEM_THEME_ID;
 
