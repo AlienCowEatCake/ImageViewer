@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -44,7 +44,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         {}
 
     protected:
-        bool eventFilter(QObject *o, QEvent *e)
+        bool eventFilter(QObject *o, QEvent *e) Q_DECL_OVERRIDE
         {
             if(e->type() != QEvent::Shortcut)
                 return QObject::eventFilter(o, e);
@@ -389,23 +389,16 @@ struct MenuBar::Impl : public ControlsContainerEmitter
 
     QList<QKeySequence> createAnyModifierShortcuts(Qt::Key key, int defaultModifier = 0, const QList<QKeySequence> &blacklist = QList<QKeySequence>()) const
     {
+        // Qt::ALT modifier is reserved for accelerators
         static const QList<int> modifiers = QList<int>()
                 << 0
                 << Qt::SHIFT
                 << Qt::META
                 << Qt::CTRL
-                << Qt::ALT
                 << (Qt::SHIFT | Qt::META)
                 << (Qt::SHIFT | Qt::CTRL)
-                << (Qt::SHIFT | Qt::ALT)
                 << (Qt::META | Qt::CTRL)
-                << (Qt::META | Qt::ALT)
-                << (Qt::CTRL | Qt::ALT)
-                << (Qt::SHIFT | Qt::META | Qt::CTRL)
-                << (Qt::SHIFT | Qt::META | Qt::ALT)
-                << (Qt::SHIFT | Qt::CTRL | Qt::ALT)
-                << (Qt::META | Qt::CTRL | Qt::ALT)
-                << (Qt::SHIFT | Qt::META | Qt::CTRL | Qt::ALT);
+                << (Qt::SHIFT | Qt::META | Qt::CTRL);
         QList<QKeySequence> result;
         result.append(key + defaultModifier);
         for(QList<int>::ConstIterator it = modifiers.constBegin(); it != modifiers.constEnd(); ++it)
@@ -419,15 +412,12 @@ struct MenuBar::Impl : public ControlsContainerEmitter
 
     QList<QKeySequence> createAnyModifierConjugatedShortcuts(Qt::Key master, Qt::Key slave, int defaultModifier = 0, const QList<QKeySequence> &blacklist = QList<QKeySequence>()) const
     {
+        // Qt::ALT modifier is reserved for accelerators
         static const QList<int> modifiers = QList<int>()
                 << 0
                 << Qt::META
                 << Qt::CTRL
-                << Qt::ALT
-                << (Qt::META | Qt::CTRL)
-                << (Qt::META | Qt::ALT)
-                << (Qt::CTRL | Qt::ALT)
-                << (Qt::META | Qt::CTRL | Qt::ALT);
+                << (Qt::META | Qt::CTRL);
         QList<QKeySequence> result;
         result.append(master + defaultModifier);
         for(QList<int>::ConstIterator it = modifiers.constBegin(); it != modifiers.constEnd(); ++it)
