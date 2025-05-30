@@ -135,13 +135,13 @@ static inline bool qFuzzyIsNull(float f)
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 9, 0))
 #define QImage_flipped(image, orient) ((image).flipped((orient)))
 #else
-#define QImage_flipped(image, orient) ((image).mirrored((orient) & Qt::Horizontal, (orient) & Qt::Vertical))
+#define QImage_flipped(image, orient) ((image).mirrored(((orient) & Qt::Horizontal) != 0, ((orient) & Qt::Vertical) != 0))
 #endif
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 9, 0))
 #define QImage_flip(image, orient) ((image).flip((orient)))
 #elif (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-#define QImage_flip(image, orient) ((image).mirror((orient) & Qt::Horizontal, (orient) & Qt::Vertical))
+#define QImage_flip(image, orient) ((image).mirror(((orient) & Qt::Horizontal) != 0, ((orient) & Qt::Vertical) != 0))
 #else
 #define QImage_flip(image, orient) ((image) = QImage_flipped((image), (orient)))
 #endif

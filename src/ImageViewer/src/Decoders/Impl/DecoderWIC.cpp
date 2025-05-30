@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,6 +22,7 @@
 
 #include <QImage>
 #include <QFileInfo>
+#include <QSet>
 #include <QSettings>
 #include <QVariant>
 

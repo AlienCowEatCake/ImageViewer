@@ -32,6 +32,7 @@
 #include <QList>
 #include <QMap>
 #include <QPair>
+#include <QSet>
 #include <QDir>
 #include <QFileInfo>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
@@ -99,7 +100,7 @@ QStringList getLocalesFromTemplatesList(const QStringList &templatesList)
         }
     }
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
-    result.sort(Qt::CaseInsensitive);
+    result.sort();
     result.removeDuplicates();
 #else
     result = QStringList::fromSet(result.toSet());
