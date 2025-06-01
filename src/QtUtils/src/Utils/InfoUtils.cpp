@@ -67,7 +67,9 @@ namespace {
 
 QString compilerDescriptionInt()
 {
-#if defined(__clang__)
+#if defined (__LCC__) && defined (__LCC_MINOR__) && (defined (__MCST__) || defined (__EDG__))
+    return QString::fromLatin1("MCST LCC %1.%2.%3").arg((__LCC__) / 100).arg((__LCC__) % 100).arg(__LCC_MINOR__);
+#elif defined(__clang__)
     QString prefix;
 #if defined (__apple_build_version__)
     prefix = QString::fromLatin1("Apple ");
@@ -174,6 +176,8 @@ QString compilerDescriptionInt()
     return QString::fromLatin1("MSVC++ (_MSC_VER=%1)").arg(_MSC_VER);
 #endif
     //
+#elif defined (Q_CC_LCC)
+    return QString::fromLatin1("Elbrus C Compiler");
 #elif defined (Q_CC_SYM)
     return QString::fromLatin1("Digital Mars C/C++");
 #elif defined (Q_CC_INTEL)
@@ -248,6 +252,16 @@ QString targetDescriptionInt()
     defined(__powerpc) || defined(__POWERPC__) || defined(_M_PPC) || \
     defined(__PPC) || defined(_ARCH_PPC) || defined(__THW_PPC__))
     return QString::fromLatin1("Power");
+#elif (defined(__e2k__) || \
+    defined(__e2k64__) || defined(__elbrus64__) || defined(_ARCH_E2K64) || \
+    defined(__elbrus__) || defined(__ELBRUS__) || defined(_ARCH_E2K))
+#if defined(__iset__) && ((__iset__+0) > 0)
+    return QString::fromLatin1("E2K v%1").arg(__iset__);
+#else
+    return QString::fromLatin1("E2K");
+#endif
+#elif defined (Q_PROCESSOR_E2K)
+    return QString::fromLatin1("E2K");
 #elif defined (Q_PROCESSOR_ALPHA)
     return QString::fromLatin1("Alpha");
 #elif defined (Q_PROCESSOR_ARM_64)

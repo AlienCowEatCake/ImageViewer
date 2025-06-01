@@ -43,11 +43,16 @@ isEmpty(QT_VERSION_NUMERIC) {
     GCC_VERSION_STR = $$member(GCC_VERSION_LIST, 0)
     GCC_VERSION_LIST = $$split(GCC_VERSION_STR, .)
     GCC_MAJOR_VERSION = $$member(GCC_VERSION_LIST, 0)
-    !lessThan(GCC_MAJOR_VERSION, 7) {
-        GCC_VERSION_STR = $$system("$${QMAKE_CXX} -dumpfullversion")
-        GCC_VERSION_LIST = $$split(GCC_PATCH_VERSION, -)
-        GCC_VERSION_STR = $$member(GCC_VERSION_LIST, 0)
-        GCC_VERSION_LIST = $$split(GCC_VERSION_STR, .)
+    # There are no reasons to get minor and patch versions for GCC >= 9 currently
+    !lessThan(GCC_MAJOR_VERSION, 7) : lessThan(GCC_MAJOR_VERSION, 9) {
+        GCC_VERSION_STR_FV = $$system("$${QMAKE_CXX} -dumpfullversion")
+        GCC_VERSION_LIST_FV = $$split(GCC_VERSION_STR_FV, -)
+        GCC_VERSION_STR_FV = $$member(GCC_VERSION_LIST_FV, 0)
+        GCC_VERSION_LIST_FV = $$split(GCC_VERSION_STR_FV, .)
+        GCC_MAJOR_VERSION_FV = $$member(GCC_VERSION_LIST_FV, 0)
+        equals(GCC_MAJOR_VERSION, "$${GCC_MAJOR_VERSION_FV}") {
+            GCC_VERSION_LIST = $${GCC_VERSION_LIST_FV}
+        }
     }
     GCC_MINOR_VERSION = $$member(GCC_VERSION_LIST, 1)
     GCC_PATCH_VERSION = $$member(GCC_VERSION_LIST, 2)
