@@ -334,13 +334,14 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     {
         IconThemeManager *iconThemeManager = IconThemeManager::instance();
         menuActionsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(menuFile);
+        const bool menuBarIsRtl = menuFile->layoutDirection() == Qt::RightToLeft;
         menuReopenWith->setIcon                 (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_OPEN_WITH      , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionOpenFile->setIcon                 (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_OPEN           , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionOpenFolder->setIcon               (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_OPEN           , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionSaveAs->setIcon                   (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_SAVE_AS        , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionNewWindow->setIcon                (iconThemeManager->GetIcon(ThemeUtils::ICON_WINDOW_NEW              , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionNavigatePrevious->setIcon         (iconThemeManager->GetIcon(ThemeUtils::ICON_GO_PREVIOUS             , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionNavigateNext->setIcon             (iconThemeManager->GetIcon(ThemeUtils::ICON_GO_NEXT                 , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
+        actionNavigatePrevious->setIcon         (iconThemeManager->GetIcon(menuBarIsRtl ? ThemeUtils::ICON_GO_NEXT      : ThemeUtils::ICON_GO_PREVIOUS  , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
+        actionNavigateNext->setIcon             (iconThemeManager->GetIcon(menuBarIsRtl ? ThemeUtils::ICON_GO_PREVIOUS  : ThemeUtils::ICON_GO_NEXT      , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionImageInformation->setIcon         (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_PROPERTIES     , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionPrint->setIcon                    (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_PRINT          , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
         actionPreferences->setIcon              (iconThemeManager->GetIcon(ThemeUtils::ICON_EDIT_PREFERENCES        , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
@@ -517,6 +518,7 @@ bool MenuBar::event(QEvent *event)
 
 void MenuBar::changeEvent(QEvent *event)
 {
+    QMenuBar::changeEvent(event);
     switch(event->type())
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -524,6 +526,7 @@ void MenuBar::changeEvent(QEvent *event)
 #endif
     case QEvent::StyleChange:
     case QEvent::PaletteChange:
+    case QEvent::LayoutDirectionChange:
         m_impl->updateIcons();
         break;
     case QEvent::LanguageChange:
@@ -532,7 +535,6 @@ void MenuBar::changeEvent(QEvent *event)
     default:
         break;
     }
-    QMenuBar::changeEvent(event);
 }
 
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setOpenFileEnabled, m_impl->actionOpenFile)

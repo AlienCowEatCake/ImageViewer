@@ -38,6 +38,14 @@ bool LoadStyleSheet(const QString &filePath);
 /// @return true if style sheets was read and applied, false - otherwise
 bool LoadStyleSheet(const QStringList &filePaths);
 
+/// @brief Reinitializes appearance of given widget
+/// @param[in] widget - widget which appearance should be reinitialized
+void RepolishWidget(QWidget *widget);
+
+/// @brief Reinitializes appearance of given widget with all its children (recursive search)
+/// @param[in] widget - widget which appearance should be reinitialized
+void RepolishWidgetRecursively(QWidget *widget);
+
 /// @brief Check if widget theme is dark or not
 /// @param[in] widget - Widget which should be checked
 bool WidgetHasDarkTheme(const QWidget *widget);

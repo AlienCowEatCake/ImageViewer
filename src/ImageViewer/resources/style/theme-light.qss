@@ -211,6 +211,10 @@ QScrollBar::handle:vertical
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #efece8, stop:1 #e2d9d1);
     border: 1px solid #aa9c8f;
 }
+QScrollBar[layoutDirection=RightToLeft]::handle:vertical
+{
+    background: qlineargradient(x1:1, y1:0, x2:0, y2:0, stop:0 #efece8, stop:1 #e2d9d1);
+}
 QScrollBar::handle:vertical:disabled,
 QScrollBar::handle:horizontal:disabled
 {
@@ -228,6 +232,11 @@ QScrollBar::handle:vertical:pressed
 {
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #fefefe, stop:1 #ede8dd);
     border-color: #aa9c8f;
+}
+QScrollBar[layoutDirection=RightToLeft]::handle:vertical:hover,
+QScrollBar[layoutDirection=RightToLeft]::handle:vertical:pressed
+{
+    background: qlineargradient(x1:1, y1:0, x2:0, y2:0, stop:0 #fefefe, stop:1 #ede8dd);
 }
 QScrollBar::handle:vertical,
 QScrollBar::handle:vertical:disabled
@@ -258,6 +267,11 @@ QScrollBar::sub-line:vertical
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #efece8, stop:1 #e2d9d1);
     subcontrol-origin: margin;
 }
+QScrollBar[layoutDirection=RightToLeft]::add-line:vertical,
+QScrollBar[layoutDirection=RightToLeft]::sub-line:vertical
+{
+    background: qlineargradient(x1:1, y1:0, x2:0, y2:0, stop:0 #efece8, stop:1 #e2d9d1);
+}
 QScrollBar::add-line:horizontal:hover,
 QScrollBar::sub-line:horizontal:hover
 {
@@ -273,10 +287,20 @@ QScrollBar::sub-line:vertical:hover
 {
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #fcfbfa, stop:1 #efebe9);
 }
+QScrollBar[layoutDirection=RightToLeft]::add-line:vertical:hover,
+QScrollBar[layoutDirection=RightToLeft]::sub-line:vertical:hover
+{
+    background: qlineargradient(x1:1, y1:0, x2:0, y2:0, stop:0 #fcfbfa, stop:1 #efebe9);
+}
 QScrollBar::add-line:vertical:pressed,
 QScrollBar::sub-line:vertical:pressed
 {
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #fefefe, stop:1 #ede8dd);
+}
+QScrollBar[layoutDirection=RightToLeft]::add-line:vertical:pressed,
+QScrollBar[layoutDirection=RightToLeft]::sub-line:vertical:pressed
+{
+    background: qlineargradient(x1:1, y1:0, x2:0, y2:0, stop:0 #fefefe, stop:1 #ede8dd);
 }
 QScrollBar::add-line:vertical:disabled,
 QScrollBar::sub-line:vertical:disabled,
@@ -324,11 +348,13 @@ QScrollBar::down-arrow
 {
     border-image:url(":/style/light/arrow_down_6_normal@2x.png");
 }
-QScrollBar::left-arrow
+QScrollBar::left-arrow,
+QScrollBar[layoutDirection=RightToLeft]::right-arrow
 {
     border-image:url(":/style/light/arrow_left_6_normal@2x.png");
 }
-QScrollBar::right-arrow
+QScrollBar::right-arrow,
+QScrollBar[layoutDirection=RightToLeft]::left-arrow
 {
     border-image:url(":/style/light/arrow_right_6_normal@2x.png");
 }
@@ -340,11 +366,13 @@ QScrollBar::down-arrow:hover
 {
     border-image:url(":/style/light/arrow_down_6_normal@2x.png");
 }
-QScrollBar::left-arrow:hover
+QScrollBar::left-arrow:hover,
+QScrollBar[layoutDirection=RightToLeft]::right-arrow:hover
 {
     border-image:url(":/style/light/arrow_left_6_normal@2x.png");
 }
-QScrollBar::right-arrow:hover
+QScrollBar::right-arrow:hover,
+QScrollBar[layoutDirection=RightToLeft]::left-arrow:hover
 {
     border-image:url(":/style/light/arrow_right_6_normal@2x.png");
 }
@@ -356,11 +384,13 @@ QScrollBar::down-arrow:disabled
 {
     border-image:url(":/style/light/arrow_down_6_disabled@2x.png");
 }
-QScrollBar::left-arrow:disabled
+QScrollBar::left-arrow:disabled,
+QScrollBar[layoutDirection=RightToLeft]::right-arrow:disabled
 {
     border-image:url(":/style/light/arrow_left_6_disabled@2x.png");
 }
-QScrollBar::right-arrow:disabled
+QScrollBar::right-arrow:disabled,
+QScrollBar[layoutDirection=RightToLeft]::left-arrow:disabled
 {
     border-image:url(":/style/light/arrow_right_6_disabled@2x.png");
 }
@@ -625,13 +655,21 @@ QTabBar::tab:selected:disabled
 {
     color: #6a6864;
 }
-QTabBar::tab:first
+QTabBar[layoutDirection=LeftToRight]::tab:first
 {
     margin-left: 0px;
 }
-QTabBar::tab:last
+QTabBar[layoutDirection=RightToLeft]::tab:first
 {
     margin-right: 0px;
+}
+QTabBar[layoutDirection=LeftToRight]::tab:last
+{
+    margin-right: 0px;
+}
+QTabBar[layoutDirection=RightToLeft]::tab:last
+{
+    margin-left: 0px;
 }
 
 /*************
@@ -726,14 +764,28 @@ QAbstractSpinBox::down-button
 QAbstractSpinBox::up-button
 {
     subcontrol-position: top right;
-    border-top-right-radius: 3px;
     margin-bottom: -1px;
+}
+QAbstractSpinBox[layoutDirection=LeftToRight]::up-button
+{
+    border-top-right-radius: 3px;
+}
+QAbstractSpinBox[layoutDirection=RightToLeft]::up-button
+{
+    border-top-left-radius: 3px;
 }
 QAbstractSpinBox::down-button
 {
     subcontrol-position: bottom right;
-    border-bottom-right-radius: 3px;
     margin-top: -1px;
+}
+QAbstractSpinBox[layoutDirection=LeftToRight]::down-button
+{
+    border-bottom-right-radius: 3px;
+}
+QAbstractSpinBox[layoutDirection=RightToLeft]::down-button
+{
+    border-bottom-left-radius: 3px;
 }
 QAbstractSpinBox::up-button:hover,
 QAbstractSpinBox::down-button:hover
@@ -819,8 +871,16 @@ QComboBox::drop-down
     subcontrol-origin: border;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #efece8, stop:1 #e2d9d1);
     border: 1px solid #aa9c8f;
+}
+QComboBox[layoutDirection=LeftToRight]::drop-down
+{
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
+}
+QComboBox[layoutDirection=RightToLeft]::drop-down
+{
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
 }
 QComboBox::drop-down:hover
 {
@@ -918,8 +978,23 @@ QAbstractItemView QScrollBar:vertical,
 QPlainTextEdit QScrollBar:vertical,
 QTextEdit QScrollBar:vertical
 {
-    border-right: none;
     margin: 14px 0px;
+}
+QScrollArea QScrollBar[layoutDirection=LeftToRight]:vertical,
+QTextBrowser QScrollBar[layoutDirection=LeftToRight]:vertical,
+QAbstractItemView QScrollBar[layoutDirection=LeftToRight]:vertical,
+QPlainTextEdit QScrollBar[layoutDirection=LeftToRight]:vertical,
+QTextEdit QScrollBar[layoutDirection=LeftToRight]:vertical
+{
+    border-right: none;
+}
+QScrollArea QScrollBar[layoutDirection=RightToLeft]:vertical,
+QTextBrowser QScrollBar[layoutDirection=RightToLeft]:vertical,
+QAbstractItemView QScrollBar[layoutDirection=RightToLeft]:vertical,
+QPlainTextEdit QScrollBar[layoutDirection=RightToLeft]:vertical,
+QTextEdit QScrollBar[layoutDirection=RightToLeft]:vertical
+{
+    border-left: none;
 }
 
 QScrollArea QScrollBar::add-line:vertical,
@@ -928,8 +1003,23 @@ QAbstractItemView QScrollBar::add-line:vertical,
 QPlainTextEdit QScrollBar::add-line:vertical,
 QTextEdit QScrollBar::add-line:vertical
 {
-    border-right: none;
     border-bottom: none;
+}
+QScrollArea QScrollBar[layoutDirection=LeftToRight]::add-line:vertical,
+QTextBrowser QScrollBar[layoutDirection=LeftToRight]::add-line:vertical,
+QAbstractItemView QScrollBar[layoutDirection=LeftToRight]::add-line:vertical,
+QPlainTextEdit QScrollBar[layoutDirection=LeftToRight]::add-line:vertical,
+QTextEdit QScrollBar[layoutDirection=LeftToRight]::add-line:vertical
+{
+    border-right: none;
+}
+QScrollArea QScrollBar[layoutDirection=RightToLeft]::add-line:vertical,
+QTextBrowser QScrollBar[layoutDirection=RightToLeft]::add-line:vertical,
+QAbstractItemView QScrollBar[layoutDirection=RightToLeft]::add-line:vertical,
+QPlainTextEdit QScrollBar[layoutDirection=RightToLeft]::add-line:vertical,
+QTextEdit QScrollBar[layoutDirection=RightToLeft]::add-line:vertical
+{
+    border-left: none;
 }
 
 QScrollArea QScrollBar::sub-line:vertical,
@@ -938,8 +1028,23 @@ QAbstractItemView QScrollBar::sub-line:vertical,
 QPlainTextEdit QScrollBar::sub-line:vertical,
 QTextEdit QScrollBar::sub-line:vertical
 {
-    border-right: none;
     border-top: none;
+}
+QScrollArea QScrollBar[layoutDirection=LeftToRight]::sub-line:vertical,
+QTextBrowser QScrollBar[layoutDirection=LeftToRight]::sub-line:vertical,
+QAbstractItemView QScrollBar[layoutDirection=LeftToRight]::sub-line:vertical,
+QPlainTextEdit QScrollBar[layoutDirection=LeftToRight]::sub-line:vertical,
+QTextEdit QScrollBar[layoutDirection=LeftToRight]::sub-line:vertical
+{
+    border-right: none;
+}
+QScrollArea QScrollBar[layoutDirection=RightToLeft]::sub-line:vertical,
+QTextBrowser QScrollBar[layoutDirection=RightToLeft]::sub-line:vertical,
+QAbstractItemView QScrollBar[layoutDirection=RightToLeft]::sub-line:vertical,
+QPlainTextEdit QScrollBar[layoutDirection=RightToLeft]::sub-line:vertical,
+QTextEdit QScrollBar[layoutDirection=RightToLeft]::sub-line:vertical
+{
+    border-left: none;
 }
 
 QScrollArea QScrollBar:horizontal,
@@ -979,7 +1084,22 @@ QPlainTextEdit::corner,
 QTextEdit::corner
 {
     border-top: 1px solid #aa9c8f;
+}
+QScrollArea[layoutDirection=LeftToRight]::corner,
+QTextBrowser[layoutDirection=LeftToRight]::corner,
+QAbstractItemView[layoutDirection=LeftToRight]::corner,
+QPlainTextEdit[layoutDirection=LeftToRight]::corner,
+QTextEdit[layoutDirection=LeftToRight]::corner
+{
     border-left: 1px solid #aa9c8f;
+}
+QScrollArea[layoutDirection=RightToLeft]::corner,
+QTextBrowser[layoutDirection=RightToLeft]::corner,
+QAbstractItemView[layoutDirection=RightToLeft]::corner,
+QPlainTextEdit[layoutDirection=RightToLeft]::corner,
+QTextEdit[layoutDirection=RightToLeft]::corner
+{
+    border-right: 1px solid #aa9c8f;
 }
 
 QScrollArea[ScrollBorderRequired=true] QScrollBar::add-line:vertical,
@@ -991,13 +1111,21 @@ QTextEdit[ScrollBorderRequired=true] QScrollBar::add-line:vertical
     border-bottom: 1px solid #aa9c8f;
 }
 
-QScrollArea[ScrollBorderRequired=true] QScrollBar::add-line:horizontal,
-QTextBrowser[ScrollBorderRequired=true] QScrollBar::add-line:horizontal,
-QAbstractItemView[ScrollBorderRequired=true] QScrollBar::add-line:horizontal,
-QPlainTextEdit[ScrollBorderRequired=true] QScrollBar::add-line:horizontal,
-QTextEdit[ScrollBorderRequired=true] QScrollBar::add-line:horizontal
+QScrollArea[ScrollBorderRequired=true] QScrollBar[layoutDirection=LeftToRight]::add-line:horizontal,
+QTextBrowser[ScrollBorderRequired=true] QScrollBar[layoutDirection=LeftToRight]::add-line:horizontal,
+QAbstractItemView[ScrollBorderRequired=true] QScrollBar[layoutDirection=LeftToRight]::add-line:horizontal,
+QPlainTextEdit[ScrollBorderRequired=true] QScrollBar[layoutDirection=LeftToRight]::add-line:horizontal,
+QTextEdit[ScrollBorderRequired=true] QScrollBar[layoutDirection=LeftToRight]::add-line:horizontal
 {
     border-right: 1px solid #aa9c8f;
+}
+QScrollArea[ScrollBorderRequired=true] QScrollBar[layoutDirection=RightToLeft]::add-line:horizontal,
+QTextBrowser[ScrollBorderRequired=true] QScrollBar[layoutDirection=RightToLeft]::add-line:horizontal,
+QAbstractItemView[ScrollBorderRequired=true] QScrollBar[layoutDirection=RightToLeft]::add-line:horizontal,
+QPlainTextEdit[ScrollBorderRequired=true] QScrollBar[layoutDirection=RightToLeft]::add-line:horizontal,
+QTextEdit[ScrollBorderRequired=true] QScrollBar[layoutDirection=RightToLeft]::add-line:horizontal
+{
+    border-left: 1px solid #aa9c8f;
 }
 
 /***************
@@ -1105,6 +1233,10 @@ QSlider::groove:vertical
     border: 1px solid #aa9c8f;
     border-radius: 3px;
 }
+QSlider[layoutDirection=RightToLeft]::groove:vertical
+{
+    background: qlineargradient(x1:1, y1:0, x2:0, y2:0, stop:0 #c1b6ab, stop:1 #cfccc7);
+}
 QSlider::groove:vertical:disabled
 {
     background: #efebe7;
@@ -1129,6 +1261,10 @@ QSlider::sub-page:vertical
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #668bb0, stop:1 #52718e);
     border: 1px solid #52718e;
     border-radius: 3px;
+}
+QSlider[layoutDirection=RightToLeft]::sub-page:vertical
+{
+    background: qlineargradient(x1:1, y1:0, x2:0, y2:0, stop:0 #668bb0, stop:1 #52718e);
 }
 QSlider::sub-page:vertical:disabled
 {
@@ -1310,4 +1446,11 @@ PrintDialog #keepAspectLabelTop,
 PrintDialog #keepAspectLabelBottom
 {
     color: #aa9c8f;
+}
+
+QFileDialog #splitter #sidebar[layoutDirection=RightToLeft],
+QFileDialog #splitter #stackedWidget #listView[layoutDirection=RightToLeft],
+QFileDialog #splitter #stackedWidget #treeView[layoutDirection=RightToLeft]
+{
+    border-right-width: 2px;
 }

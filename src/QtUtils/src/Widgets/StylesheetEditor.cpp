@@ -24,6 +24,7 @@
 
 #include <QApplication>
 #include <QEvent>
+#include <QTimer>
 #include <QStyle>
 #include <QPainter>
 #include <QFile>
@@ -83,6 +84,22 @@ static int getWidth(const QFont &font, const QChar &symbol = QChar::fromLatin1('
 #else
     return fontMetrics.width(symbol);
 #endif
+}
+
+static void overrideLeftToRight(QWidget *widget, bool enabled)
+{
+    QList<QWidget*> widgets = widget->findChildren<QWidget*>();
+    widgets.prepend(widget);
+    if(enabled)
+    {
+        for(QList<QWidget*>::ConstIterator it = widgets.constBegin(); it != widgets.constEnd(); ++it)
+            (*it)->setLayoutDirection(Qt::LeftToRight);
+    }
+    else
+    {
+        for(QList<QWidget*>::ConstIterator it = widgets.constBegin(); it != widgets.constEnd(); ++it)
+            (*it)->unsetLayoutDirection();
+    }
 }
 
 } // namespace
@@ -276,7 +293,10 @@ int CodeEditor::lineNumbersAreaWidth()
 
 void CodeEditor::updateLineNumbersAreaWidth()
 {
-    setViewportMargins(lineNumbersAreaWidth(), 0, 0, 0);
+    if(layoutDirection() == Qt::RightToLeft)
+        setViewportMargins(0, 0, lineNumbersAreaWidth(), 0);
+    else
+        setViewportMargins(lineNumbersAreaWidth(), 0, 0, 0);
 }
 
 void CodeEditor::updateLineNumbersArea(const QRect &rect, int dy)
@@ -287,6 +307,15 @@ void CodeEditor::updateLineNumbersArea(const QRect &rect, int dy)
         m_lineNumberArea->update(0, rect.y(), m_lineNumberArea->width(), rect.height());
     if(rect.contains(viewport()->rect()))
         updateLineNumbersAreaWidth();
+}
+
+void CodeEditor::updateLineNumbersAreaGeometry()
+{
+    const QRect cr = contentsRect();
+    if(layoutDirection() == Qt::RightToLeft)
+        m_lineNumberArea->setGeometry(QRect(cr.left() + cr.width() - lineNumbersAreaWidth(), cr.top(), lineNumbersAreaWidth(), cr.height()));
+    else
+        m_lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumbersAreaWidth(), cr.height()));
 }
 
 void CodeEditor::showSearchDialog()
@@ -469,8 +498,7 @@ bool CodeEditor::removeIndentSequence(RemoveDirection direction)
 void CodeEditor::resizeEvent(QResizeEvent *event)
 {
     QPlainTextEdit::resizeEvent(event);
-    const QRect cr = contentsRect();
-    m_lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumbersAreaWidth(), cr.height()));
+    updateLineNumbersAreaGeometry();
 }
 
 void CodeEditor::changeEvent(QEvent *event)
@@ -484,6 +512,11 @@ void CodeEditor::changeEvent(QEvent *event)
 #else
         setTabStopWidth(tabStopWidth);
 #endif
+    }
+    else if(event->type() == QEvent::LayoutDirectionChange)
+    {
+        updateLineNumbersAreaWidth();
+        updateLineNumbersAreaGeometry();
     }
 }
 
@@ -518,9 +551,20 @@ void CodeEditor::hideEvent(QHideEvent *event)
 
 void CodeEditor::repaintLineNumbersArea(const QRect &rect)
 {
+    QTextCursor cursor = textCursor();
+    int startSelectedPos = cursor.anchor();
+    int endSelectedPos = cursor.position();
+    if(startSelectedPos > endSelectedPos)
+        std::swap(startSelectedPos, endSelectedPos);
+    cursor.setPosition(startSelectedPos, QTextCursor::MoveAnchor);
+    const int startSelectedBlock = cursor.block().blockNumber();
+    cursor.setPosition(endSelectedPos, QTextCursor::MoveAnchor);
+    const int endSelectedBlock = cursor.block().blockNumber();
+
     QPainter painter(m_lineNumberArea);
     painter.fillRect(rect, Qt::lightGray);
     painter.setPen(Qt::black);
+    painter.setLayoutDirection(Qt::LeftToRight);
 
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
@@ -532,6 +576,8 @@ void CodeEditor::repaintLineNumbersArea(const QRect &rect)
         blockNumber++;
         if(block.isVisible() && bottom >= rect.top())
         {
+            if(blockNumber > startSelectedBlock && blockNumber <= endSelectedBlock + 1)
+                painter.fillRect(QRect(QPoint(0, top), QPoint(m_lineNumberArea->width(), bottom)), Qt::gray);
             const QRect textRect = QRect(0, top, m_lineNumberArea->width() - LINE_NUMBER_AREA_MARGIN, fontMetrics().height());
             painter.drawText(textRect, Qt::AlignRight, QString::number(blockNumber));
         }
@@ -620,14 +666,59 @@ void SearchDialog::showEvent(QShowEvent *event)
 
 // ====================================================================================================
 
+LayoutDirectionComboBox::LayoutDirectionComboBox(QWidget *parent)
+    : QComboBox(parent)
+    , m_updatePending(false)
+{
+    addItem(QString::fromLatin1("LeftToRight"), Qt::LeftToRight);
+    addItem(QString::fromLatin1("RightToLeft"), Qt::RightToLeft);
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
+    addItem(QString::fromLatin1("LayoutDirectionAuto"), Qt::LayoutDirectionAuto);
+#endif
+    connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentIndexChanged(int)));
+    updateState();
+    qApp->installEventFilter(this);
+}
+
+bool LayoutDirectionComboBox::eventFilter(QObject *watched, QEvent *event)
+{
+    if(event && event->type() == QEvent::ApplicationLayoutDirectionChange)
+        updateStateLater();
+    return QComboBox::eventFilter(watched, event);
+}
+
+void LayoutDirectionComboBox::updateState()
+{
+    setCurrentIndex(findData(qApp->layoutDirection()));
+    m_updatePending = false;
+}
+
+void LayoutDirectionComboBox::updateStateLater()
+{
+    if(m_updatePending)
+        return;
+    m_updatePending = true;
+    QTimer::singleShot(0, this, SLOT(updateState()));
+}
+
+void LayoutDirectionComboBox::onCurrentIndexChanged(int index)
+{
+    qApp->setLayoutDirection(static_cast<Qt::LayoutDirection>(itemData(index).toInt()));
+    updateStateLater();
+}
+
+// ====================================================================================================
+
 } // namespace StylesheetEditorImpl
 
 typedef StylesheetEditorImpl::CodeEditor CodeEditor;
+typedef StylesheetEditorImpl::LayoutDirectionComboBox LayoutDirectionComboBox;
 
 struct StylesheetEditor::Impl
 {
     const QString originalStyleSheet;
 
+    LayoutDirectionComboBox * const layoutDirectionComboBox;
     QCheckBox * const autoApplyCheckBox;
     QCheckBox * const protectCheckBox;
     QPushButton * const searchButton;
@@ -638,8 +729,9 @@ struct StylesheetEditor::Impl
 
     explicit Impl(StylesheetEditor *stylesheetEditor)
         : originalStyleSheet(qApp->styleSheet())
-        , autoApplyCheckBox(new QCheckBox(QString::fromLatin1("Auto apply style")))
-        , protectCheckBox(new QCheckBox(QString::fromLatin1("Protect stylesheet editor")))
+        , layoutDirectionComboBox(new LayoutDirectionComboBox(stylesheetEditor))
+        , autoApplyCheckBox(new QCheckBox(QString::fromLatin1("Auto apply style"), stylesheetEditor))
+        , protectCheckBox(new QCheckBox(QString::fromLatin1("Protect stylesheet editor"), stylesheetEditor))
         , searchButton(new QPushButton(QString::fromLatin1("Search"), stylesheetEditor))
         , codeEditor(new CodeEditor(stylesheetEditor))
         , resetButton(new QPushButton(QString::fromLatin1("Reset style"), stylesheetEditor))
@@ -648,16 +740,17 @@ struct StylesheetEditor::Impl
     {
         QGridLayout *layout = new QGridLayout(stylesheetEditor);
 
-        layout->addWidget(autoApplyCheckBox, 0, 0);
-        layout->addWidget(protectCheckBox, 0, 1);
-        layout->addItem(new QSpacerItem(0, 0), 0, 2);
-        layout->addWidget(searchButton, 0, 3);
+        layout->addWidget(layoutDirectionComboBox, 0, 0);
+        layout->addWidget(autoApplyCheckBox, 0, 1);
+        layout->addWidget(protectCheckBox, 0, 2);
+        layout->addItem(new QSpacerItem(0, 0), 0, 3);
+        layout->addWidget(searchButton, 0, 4);
 
-        layout->addWidget(codeEditor, 1, 0, 1, 4);
+        layout->addWidget(codeEditor, 1, 0, 1, 5);
 
         layout->addWidget(resetButton, 2, 0);
-        layout->addWidget(applyButton, 2, 1, 1, 2);
-        layout->addWidget(readButton, 2, 3);
+        layout->addWidget(applyButton, 2, 1, 1, 3);
+        layout->addWidget(readButton, 2, 4);
     }
 };
 
@@ -669,7 +762,7 @@ StylesheetEditor::StylesheetEditor(QWidget *parent)
     setWindowFlags(Qt::Window);
 
     m_impl->codeEditor->setPlainText(m_impl->originalStyleSheet);
-    m_impl->protectCheckBox->setChecked(true);
+    setProtected(true);
     updateProtection();
 
     connect(m_impl->searchButton, SIGNAL(clicked(bool)), m_impl->codeEditor, SLOT(showSearchDialog()));
@@ -694,6 +787,21 @@ bool StylesheetEditor::isProtected() const
 void StylesheetEditor::setProtected(bool isProtected)
 {
     m_impl->protectCheckBox->setChecked(isProtected);
+}
+
+void StylesheetEditor::repolishSelf()
+{
+    QList<QWidget*> widgets = findChildren<QWidget*>();
+    widgets.prepend(this);
+    for(QList<QWidget*>::ConstIterator it = widgets.constBegin(); it != widgets.constEnd(); ++it)
+    {
+        QWidget *widget = *it;
+        QStyle *style = widget->style();
+        if(!style)
+            style = qApp->style();
+        style->unpolish(widget);
+        style->polish(widget);
+    }
 }
 
 void StylesheetEditor::applyStylesheet()
@@ -723,8 +831,9 @@ void StylesheetEditor::readStyleSheet()
 
 void StylesheetEditor::updateProtection()
 {
+    overrideLeftToRight(this, isProtected());
     QString styleSheet;
-    if(m_impl->protectCheckBox->isChecked())
+    if(isProtected())
     {
         QFile style(QString::fromLatin1(":/style/StylesheetEditor.qss"));
         style.open(QIODevice::ReadOnly);
@@ -740,5 +849,12 @@ void StylesheetEditor::updateAutoApply()
         connect(m_impl->codeEditor, SIGNAL(textChanged()), this, SLOT(applyStylesheet()));
     else
         disconnect(m_impl->codeEditor, SIGNAL(textChanged()), this, SLOT(applyStylesheet()));
+}
+
+void StylesheetEditor::changeEvent(QEvent *event)
+{
+    QDialog::changeEvent(event);
+    if(event->type() == QEvent::LayoutDirectionChange)
+        QTimer::singleShot(0, this, SLOT(repolishSelf()));
 }
 

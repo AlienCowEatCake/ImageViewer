@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -23,6 +23,7 @@
 #include "StylesheetEditor.h"
 
 #include <QCheckBox>
+#include <QComboBox>
 #include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QPushButton>
@@ -72,6 +73,7 @@ private:
 private Q_SLOTS:
     void updateLineNumbersAreaWidth();
     void updateLineNumbersArea(const QRect &rect, int dy);
+    void updateLineNumbersAreaGeometry();
     void showSearchDialog();
     bool toggleCommentSelection();
     bool indentSelectedLines(IndentOperation operation);
@@ -126,6 +128,28 @@ private:
     QCheckBox *m_findBackwardCheckBox;
     QCheckBox *m_findCaseSensitivelyCheckBox;
     QCheckBox *m_findWholeWordsCheckBox;
+};
+
+// ====================================================================================================
+
+class LayoutDirectionComboBox : public QComboBox
+{
+    Q_OBJECT
+    Q_DISABLE_COPY(LayoutDirectionComboBox)
+
+public:
+    explicit LayoutDirectionComboBox(QWidget *parent = Q_NULLPTR);
+
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
+
+private Q_SLOTS:
+    void updateState();
+    void updateStateLater();
+    void onCurrentIndexChanged(int index);
+
+private:
+    bool m_updatePending;
 };
 
 // ====================================================================================================

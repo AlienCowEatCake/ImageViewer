@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -122,8 +122,7 @@ struct MainWindow::UI
     void onThemeChanged()
     {
         imageViewerWidget->setProperty("DarkMode", ThemeUtils::SystemHasDarkTheme());
-        imageViewerWidget->style()->unpolish(imageViewerWidget);
-        imageViewerWidget->style()->polish(imageViewerWidget);
+        ThemeUtils::RepolishWidget(imageViewerWidget);
     }
 };
 

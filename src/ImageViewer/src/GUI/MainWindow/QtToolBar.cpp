@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2024-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -132,8 +132,9 @@ struct QtToolBar::Impl : public ControlsContainerEmitter
     {
         IconThemeManager *iconThemeManager = IconThemeManager::instance();
         toolBarButtonsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(toolbar);
-        navigatePrevious->setIcon       (iconThemeManager->GetIcon(ThemeUtils::ICON_GO_PREVIOUS             , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        navigateNext->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_GO_NEXT                 , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        const bool toolBarIsRtl = toolbar->layoutDirection() == Qt::RightToLeft;
+        navigatePrevious->setIcon       (iconThemeManager->GetIcon(toolBarIsRtl ? ThemeUtils::ICON_GO_NEXT      : ThemeUtils::ICON_GO_PREVIOUS  , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        navigateNext->setIcon           (iconThemeManager->GetIcon(toolBarIsRtl ? ThemeUtils::ICON_GO_PREVIOUS  : ThemeUtils::ICON_GO_NEXT      , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         zoomOut->setIcon                (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_OUT                , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         zoomIn->setIcon                 (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_IN                 , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         zoomFitToWindow->setIcon        (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_FIT_BEST           , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
@@ -237,6 +238,7 @@ bool QtToolBar::event(QEvent *event)
 
 void QtToolBar::changeEvent(QEvent *event)
 {
+    QToolBar::changeEvent(event);
     switch(event->type())
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -244,6 +246,7 @@ void QtToolBar::changeEvent(QEvent *event)
 #endif
     case QEvent::StyleChange:
     case QEvent::PaletteChange:
+    case QEvent::LayoutDirectionChange:
         m_impl->updateIcons();
         break;
     case QEvent::LanguageChange:
@@ -252,7 +255,6 @@ void QtToolBar::changeEvent(QEvent *event)
     default:
         break;
     }
-    QToolBar::changeEvent(event);
 }
 
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(QtToolBar, setOpenFileEnabled, m_impl->openFile)

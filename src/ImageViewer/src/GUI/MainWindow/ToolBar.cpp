@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -37,6 +37,7 @@ struct ToolBar::Impl : public ControlsContainerEmitter
     bool toolBarButtonsHasDarkTheme;
     bool toolBarButtonsFallbackIconRequired;
 
+    ToolBar * const toolbar;
     QToolButton * const navigatePrevious;
     QToolButton * const navigateNext;
     QToolButton * const startSlideShow;
@@ -59,6 +60,7 @@ struct ToolBar::Impl : public ControlsContainerEmitter
         : isSlideShowMode(false)
         , toolBarButtonsHasDarkTheme(false)
         , toolBarButtonsFallbackIconRequired(true)
+        , toolbar(toolbar)
         , CONSTRUCT_OBJECT(navigatePrevious, QToolButton, (toolbar))
         , CONSTRUCT_OBJECT(navigateNext, QToolButton, (toolbar))
         , CONSTRUCT_OBJECT(startSlideShow, QToolButton, (toolbar))
@@ -141,8 +143,9 @@ struct ToolBar::Impl : public ControlsContainerEmitter
     {
         IconThemeManager *iconThemeManager = IconThemeManager::instance();
         toolBarButtonsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(openFile);
-        navigatePrevious->setIcon       (iconThemeManager->GetIcon(ThemeUtils::ICON_GO_PREVIOUS             , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        navigateNext->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_GO_NEXT                 , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        const bool toolBarIsRtl = toolbar->layoutDirection() == Qt::RightToLeft;
+        navigatePrevious->setIcon       (iconThemeManager->GetIcon(toolBarIsRtl ? ThemeUtils::ICON_GO_NEXT      : ThemeUtils::ICON_GO_PREVIOUS  , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        navigateNext->setIcon           (iconThemeManager->GetIcon(toolBarIsRtl ? ThemeUtils::ICON_GO_PREVIOUS  : ThemeUtils::ICON_GO_NEXT      , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         zoomOut->setIcon                (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_OUT                , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         zoomIn->setIcon                 (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_IN                 , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         zoomFitToWindow->setIcon        (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_FIT_BEST           , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
@@ -246,6 +249,7 @@ bool ToolBar::event(QEvent *event)
 
 void ToolBar::changeEvent(QEvent *event)
 {
+    AdjustableFrame::changeEvent(event);
     switch(event->type())
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -253,6 +257,7 @@ void ToolBar::changeEvent(QEvent *event)
 #endif
     case QEvent::StyleChange:
     case QEvent::PaletteChange:
+    case QEvent::LayoutDirectionChange:
         m_impl->updateIcons();
         break;
     case QEvent::LanguageChange:
@@ -261,7 +266,6 @@ void ToolBar::changeEvent(QEvent *event)
     default:
         break;
     }
-    AdjustableFrame::changeEvent(event);
 }
 
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setOpenFileEnabled, m_impl->openFile)

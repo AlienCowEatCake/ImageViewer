@@ -162,6 +162,38 @@ bool LoadStyleSheet(const QStringList &filePaths)
     return status;
 }
 
+/// @brief Reinitializes appearance of given widget
+/// @param[in] widget - widget which appearance should be reinitialized
+void RepolishWidget(QWidget *widget)
+{
+    if(!widget)
+        return;
+
+    QStyle *style = widget->style();
+    if(!style)
+    {
+        style = qApp->style();
+        if(!style)
+            return;
+    }
+
+    style->unpolish(widget);
+    style->polish(widget);
+}
+
+/// @brief Reinitializes appearance of given widget with all its children (recursive search)
+/// @param[in] widget - widget which appearance should be reinitialized
+void RepolishWidgetRecursively(QWidget *widget)
+{
+    if(!widget)
+        return;
+
+    RepolishWidget(widget);
+    QList<QWidget*> widgets = widget->findChildren<QWidget*>();
+    for(QList<QWidget*>::ConstIterator it = widgets.constBegin(); it != widgets.constEnd(); ++it)
+        RepolishWidget(*it);
+}
+
 /// @brief Check if widget theme is dark or not
 /// @param[in] widget - Widget which should be checked
 bool WidgetHasDarkTheme(const QWidget *widget)
@@ -659,6 +691,7 @@ QImage GetWinSystemImage(IconTypes type, const QSize &size)
     QPainter painter(&result);
     painter.setFont(font);
     painter.setPen(QPen(Qt::black));
+    painter.setLayoutDirection(Qt::LeftToRight);
     painter.drawText(QRect(QPoint(0, 0), size), Qt::AlignCenter, symbol);
     return result;
 }

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -38,11 +38,15 @@ public:
     void setProtected(bool isProtected);
 
 private Q_SLOTS:
+    void repolishSelf();
     void applyStylesheet();
     void resetStyleSheet();
     void readStyleSheet();
     void updateProtection();
     void updateAutoApply();
+
+protected:
+    void changeEvent(QEvent *event) Q_DECL_OVERRIDE;
 
 private:
     struct Impl;

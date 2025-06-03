@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -83,6 +83,7 @@ public Q_SLOTS:
     void saveGeometrySettings();
 
 private Q_SLOTS:
+    void repolishAllWidgets();
     void updateSlideShowInterval();
     void updateBackgroundColor();
     void updateToolBarPosition();

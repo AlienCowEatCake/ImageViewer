@@ -120,6 +120,7 @@ struct MainWindow::Impl
         case GUISettings::TOOLBAR_POSITION_MOVABLE:
             ui.toolbar->setVisible(false);
             ui.qtToolbar->setVisible(visible);
+            break;
         }
 #endif
     }
@@ -561,6 +562,11 @@ void MainWindow::saveGeometrySettings()
     m_impl->settings->setMainWindowMaximized(isMaximized());
 }
 
+void MainWindow::repolishAllWidgets()
+{
+    ThemeUtils::RepolishWidgetRecursively(this);
+}
+
 void MainWindow::updateSlideShowInterval()
 {
     m_impl->slideShowTimer.setInterval(m_impl->settings->slideShowInterval() * 1000);
@@ -613,15 +619,7 @@ void MainWindow::updateToolBarPosition()
     m_impl->geometryHelper.unblock();
     m_impl->geometryHelper.restoreGeometry();
 
-    QList<QWidget*> widgets = m_impl->ui.toolbar->findChildren<QWidget*>();
-    widgets.prepend(m_impl->ui.toolbar);
-    for(QList<QWidget*>::Iterator it = widgets.begin(); it != widgets.end(); ++it)
-    {
-        QWidget* widget = *it;
-        QStyle* style = widget->style();
-        style->unpolish(widget);
-        style->polish(widget);
-    }
+    ThemeUtils::RepolishWidgetRecursively(m_impl->ui.toolbar);
 #endif
 }
 
@@ -653,6 +651,9 @@ void MainWindow::changeEvent(QEvent *event)
     case QEvent::WindowStateChange:
         if(isVisible())
             m_impl->syncFullScreen();
+        break;
+    case QEvent::LayoutDirectionChange:
+        QTimer::singleShot(0, this, SLOT(repolishAllWidgets()));
         break;
     default:
         break;

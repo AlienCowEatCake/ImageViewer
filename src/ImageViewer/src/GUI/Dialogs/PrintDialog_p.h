@@ -1025,8 +1025,16 @@ struct PrintDialog::UI
         xResolutionLabel->setText(qApp->translate("PrintDialog", "X Resolution:"));
         yResolutionLabel->setText(qApp->translate("PrintDialog", "Y Resolution:"));
         loadDefaultsButton->setText(qApp->translate("PrintDialog", "Load Defaults"));
-        keepAspectLabelTop->setText(qApp->translate("PrintDialog", "<b>&#9582;</b>"));
-        keepAspectLabelBottom->setText(qApp->translate("PrintDialog", "<b>&#9583;</b>"));
+        if(sizeGroup->layoutDirection() == Qt::RightToLeft)
+        {
+            keepAspectLabelTop->setText(QString::fromLatin1("<b>&#9581;</b>"));
+            keepAspectLabelBottom->setText(QString::fromLatin1("<b>&#9584;</b>"));
+        }
+        else
+        {
+            keepAspectLabelTop->setText(QString::fromLatin1("<b>&#9582;</b>"));
+            keepAspectLabelBottom->setText(QString::fromLatin1("<b>&#9583;</b>"));
+        }
 
         positionGroup->setTitle(qApp->translate("PrintDialog", "Position"));
         leftLabel->setText(qApp->translate("PrintDialog", "Left:"));

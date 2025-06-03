@@ -413,6 +413,33 @@ void LocalizationManager::setLocale(const QString &locale)
         }
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
+    if(!newLocale.isEmpty())
+        qApp->setLayoutDirection(QLocale(newLocale).textDirection());
+    else
+        qApp->setLayoutDirection(Qt::LayoutDirectionAuto);
+#else
+    switch(QLocale(newLocale).language())
+    {
+    case QLocale::Arabic:
+    case QLocale::Divehi:
+    case QLocale::Hebrew:
+    case QLocale::Kashmiri:
+    case QLocale::Pashto:
+    case QLocale::Persian:
+    case QLocale::Sindhi:
+    case QLocale::Syriac:
+    case QLocale::Urdu:
+    case QLocale::Uigur:
+    case QLocale::Yiddish:
+        qApp->setLayoutDirection(Qt::RightToLeft);
+        break;
+    default:
+        qApp->setLayoutDirection(Qt::LeftToRight);
+        break;
+    }
+#endif
+
     Workarounds::FontsFix(newLocale);
     m_impl->updateActions(newLocale);
     m_impl->updateComboBoxes(newLocale);
