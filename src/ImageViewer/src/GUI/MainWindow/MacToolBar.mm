@@ -565,17 +565,21 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     const NSInteger aboveHigh = high + 1;
     const NSInteger belowHigh = high - 1;
 
-#define MAKE_SEGMENTED_PAIR_ITEM(GROUP, PRIORITY, ITEM1, ICON1, ITEM2, ICON2) \
+    const bool isRTL = ThemeUtils::IsRightToLeft();
+
+#define MAKE_SEGMENTED_PAIR_ITEM_RTL_AWARE(GROUP, PRIORITY, ITEM1, ICON1_LTR, ICON1_RTL, ITEM2, ICON2_LTR, ICON2_RTL) \
     [self makeSegmentedPairItem:m_toolBarData->GROUP \
             withGroupIdentifier:@#GROUP \
          withVisibilityPriority:PRIORITY \
                   withFirstItem:m_toolBarData->ITEM1 \
             withFirstIdentifier:@#ITEM1 \
-                 withFirstImage:NSImageForIconType(ThemeUtils::ICON1) \
+                 withFirstImage:NSImageForIconType(isRTL ? ThemeUtils::ICON1_RTL : ThemeUtils::ICON1_LTR) \
                  withSecondItem:m_toolBarData->ITEM2 \
            withSecondIdentifier:@#ITEM2 \
-                withSecondImage:NSImageForIconType(ThemeUtils::ICON2) \
+                withSecondImage:NSImageForIconType(isRTL ? ThemeUtils::ICON2_RTL : ThemeUtils::ICON2_LTR) \
     ]
+#define MAKE_SEGMENTED_PAIR_ITEM(GROUP, PRIORITY, ITEM1, ICON1, ITEM2, ICON2) \
+    MAKE_SEGMENTED_PAIR_ITEM_RTL_AWARE(GROUP, PRIORITY, ITEM1, ICON1, ICON1, ITEM2, ICON2, ICON2)
 #define MAKE_BUTTONED_ITEM(ITEM, PRIORITY, ICON) \
     [self makeButtonedItem:m_toolBarData->ITEM \
             withIdentifier:@#ITEM \
@@ -584,7 +588,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
         withAlternateImage:NSImageForIconType(ThemeUtils::ICON, true) \
     ]
 
-    MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, aboveHigh, navigatePrevious, ICON_GO_PREVIOUS, navigateNext, ICON_GO_NEXT);
+    MAKE_SEGMENTED_PAIR_ITEM_RTL_AWARE(navigateGroup, aboveHigh, navigatePrevious, ICON_GO_PREVIOUS, ICON_GO_NEXT, navigateNext, ICON_GO_NEXT, ICON_GO_PREVIOUS);
     MAKE_BUTTONED_ITEM(startSlideShow, std, ICON_MEDIA_PLAYBACK_START);
     MAKE_SEGMENTED_PAIR_ITEM(zoomGroup, high, zoomOut, ICON_ZOOM_OUT, zoomIn, ICON_ZOOM_IN);
     MAKE_BUTTONED_ITEM(zoomFitToWindow, belowHigh, ICON_ZOOM_FIT_BEST);
@@ -600,6 +604,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
     MAKE_BUTTONED_ITEM(exit, belowLow, ICON_APPLICATION_EXIT);
 
 #undef MAKE_SEGMENTED_PAIR_ITEM
+#undef MAKE_SEGMENTED_PAIR_ITEM_RTL_AWARE
 #undef MAKE_BUTTONED_ITEM
 
     [m_toolBarData->zoomFitToWindow.button setCheckable:YES];

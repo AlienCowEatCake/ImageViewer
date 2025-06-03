@@ -152,5 +152,32 @@ QImage GetMacSystemImage(IconTypes type, const QSize &size)
     return ObjCUtils::QImageFromNSImage(GetMacSystemImage(type), size, Qt::KeepAspectRatio);
 }
 
+bool IsRightToLeft()
+{
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_6_AND_LATER) && defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1060)
+    if(InfoUtils::MacVersionGreatOrEqual(10, 6))
+    {
+        AUTORELEASE_POOL;
+        return [NSApp userInterfaceLayoutDirection] == NSUserInterfaceLayoutDirectionRightToLeft;
+    }
+#endif
+    return false;
+}
+
+bool IsRightToLeft(NSView *view)
+{
+    if(view)
+    {
+#if defined (AVAILABLE_MAC_OS_X_VERSION_10_8_AND_LATER) && defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1080)
+        if(InfoUtils::MacVersionGreatOrEqual(10, 8))
+        {
+            AUTORELEASE_POOL;
+            return [view userInterfaceLayoutDirection] == NSUserInterfaceLayoutDirectionRightToLeft;
+        }
+#endif
+    }
+    return IsRightToLeft();
+}
+
 } // namespace ThemeUtils
 

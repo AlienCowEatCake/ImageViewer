@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2024-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -24,6 +24,7 @@
 #include "ThemeUtils.h"
 
 OBJC_CLASS(NSImage);
+OBJC_CLASS(NSView);
 
 class QImage;
 class QSize;
@@ -33,6 +34,9 @@ namespace ThemeUtils {
 NSImage *GetMacSystemImage(IconTypes type);
 
 QImage GetMacSystemImage(IconTypes type, const QSize &size);
+
+bool IsRightToLeft();
+bool IsRightToLeft(NSView *view);
 
 } // namespace ThemeUtils
 

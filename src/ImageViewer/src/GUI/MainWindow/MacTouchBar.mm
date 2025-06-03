@@ -298,15 +298,19 @@ API_AVAILABLE(macos(10.12.2))
     m_touchBarData->space.item = [[NSTouchBarItem alloc] initWithIdentifier:NSTouchBarItemIdentifierFixedSpaceSmall];
     m_touchBarData->flexibleSpace.item = [[NSTouchBarItem alloc] initWithIdentifier:NSTouchBarItemIdentifierFlexibleSpace];
 
+    const bool isRTL = ThemeUtils::IsRightToLeft();
+
 #define MAKE_BUTTONED_ITEM(ITEM, ICON, TEMPLATE) \
     m_touchBarData->ITEM.button = [NSButton buttonWithImage:NSImageForNameOrIconType(TEMPLATE, ThemeUtils::ICON) target:self action:@selector(itemClicked:)]; \
     NSCustomTouchBarItem *ITEM = [[NSCustomTouchBarItem alloc] initWithIdentifier:@"touchbar_"#ITEM]; \
     [ITEM setView:m_touchBarData->ITEM.button]; \
     m_touchBarData->ITEM.item = ITEM
-#define MAKE_SEGMENTED_PAIR_ITEM(GROUP, ITEM1, ICON1, TEMPLATE1, ITEM2, ICON2, TEMPLATE2) \
+#define MAKE_SEGMENTED_PAIR_ITEM_RTL_AWARE(GROUP, ITEM1, ICON1_LTR, ICON1_RTL, TEMPLATE1_LTR, TEMPLATE1_RTL, ITEM2, ICON2_LTR, ICON2_RTL, TEMPLATE2_LTR, TEMPLATE2_RTL) \
     m_touchBarData->GROUP.item = [[NSCustomTouchBarItem alloc] initWithIdentifier:@"touchbar_"#GROUP]; \
     m_touchBarData->GROUP.segmentedControl = [NSSegmentedControl \
-        segmentedControlWithImages:@[NSImageForNameOrIconType(TEMPLATE1, ThemeUtils::ICON1), NSImageForNameOrIconType(TEMPLATE2, ThemeUtils::ICON2)] \
+        segmentedControlWithImages:@[ \
+            (isRTL ? NSImageForNameOrIconType(TEMPLATE1_RTL, ThemeUtils::ICON1_RTL) : NSImageForNameOrIconType(TEMPLATE1_LTR, ThemeUtils::ICON1_LTR)), \
+            (isRTL ? NSImageForNameOrIconType(TEMPLATE2_RTL, ThemeUtils::ICON2_RTL) : NSImageForNameOrIconType(TEMPLATE2_LTR, ThemeUtils::ICON2_LTR))] \
                       trackingMode:NSSegmentSwitchTrackingMomentary \
                             target:self \
                             action:@selector(itemClicked:)]; \
@@ -315,8 +319,10 @@ API_AVAILABLE(macos(10.12.2))
     m_touchBarData->ITEM1.segmentNum = 0; \
     m_touchBarData->ITEM2.parentItem = &m_touchBarData->GROUP; \
     m_touchBarData->ITEM2.segmentNum = 1
+#define MAKE_SEGMENTED_PAIR_ITEM(GROUP, ITEM1, ICON1, TEMPLATE1, ITEM2, ICON2, TEMPLATE2) \
+    MAKE_SEGMENTED_PAIR_ITEM_RTL_AWARE(GROUP, ITEM1, ICON1, ICON1, TEMPLATE1, TEMPLATE1, ITEM2, ICON2, ICON2, TEMPLATE2, TEMPLATE2)
 
-    MAKE_SEGMENTED_PAIR_ITEM(navigateGroup, navigatePrevious, ICON_GO_PREVIOUS, NSImageNameTouchBarGoBackTemplate, navigateNext, ICON_GO_NEXT, NSImageNameTouchBarGoForwardTemplate);
+    MAKE_SEGMENTED_PAIR_ITEM_RTL_AWARE(navigateGroup, navigatePrevious, ICON_GO_PREVIOUS, ICON_GO_NEXT, NSImageNameTouchBarGoBackTemplate, NSImageNameTouchBarGoBackTemplate, navigateNext, ICON_GO_NEXT, ICON_GO_PREVIOUS, NSImageNameTouchBarGoForwardTemplate, NSImageNameTouchBarGoForwardTemplate);
     MAKE_BUTTONED_ITEM(startSlideShow, ICON_MEDIA_PLAYBACK_START, NSImageNameTouchBarSlideshowTemplate);
     MAKE_SEGMENTED_PAIR_ITEM(zoomGroup, zoomOut, ICON_ZOOM_OUT, nil, zoomIn, ICON_ZOOM_IN, nil);
     MAKE_BUTTONED_ITEM(zoomFitToWindow, ICON_ZOOM_FIT_BEST, nil);
@@ -332,6 +338,7 @@ API_AVAILABLE(macos(10.12.2))
     MAKE_BUTTONED_ITEM(exit, ICON_APPLICATION_EXIT, nil);
 
 #undef MAKE_SEGMENTED_PAIR_ITEM
+#undef MAKE_SEGMENTED_PAIR_ITEM_RTL_AWARE
 #undef MAKE_BUTTONED_ITEM
 
     m_touchBarData->zoomFitToWindow.setCheckable(true);
