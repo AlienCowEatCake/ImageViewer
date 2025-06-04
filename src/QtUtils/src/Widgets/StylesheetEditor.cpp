@@ -275,7 +275,7 @@ CodeEditor::CodeEditor(QWidget *parent)
     , m_lineNumberArea(new LineNumberArea(this))
 {
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumbersAreaWidth()));
-    connect(this, SIGNAL(updateRequest(const QRect&, int)), this,SLOT(updateLineNumbersArea(const QRect&, int)));
+    connect(this, SIGNAL(updateRequest(QRect,int)), this,SLOT(updateLineNumbersArea(QRect,int)));
     updateLineNumbersAreaWidth();
     new CssHighlighter(document());
     const QString styleSheet = QString::fromLatin1("background: white; color: black;");

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -108,9 +108,9 @@ UpdateManager::UpdateManager(RemoteType remoteType, const QString &owner, const 
     : QObject(parent)
     , m_impl(new Impl(this, remoteType, owner, repo, currentVersion, autoCheck))
 {
-    connect(m_impl->checker, SIGNAL(updateNotFound(const ReleaseInfo&)), this, SLOT(onUpdateNotFound(const ReleaseInfo&)));
-    connect(m_impl->checker, SIGNAL(updateFound(const ReleaseInfo&, const QList<ReleaseInfo>&)), this, SLOT(onUpdateFound(const ReleaseInfo&, const QList<ReleaseInfo>&)));
-    connect(m_impl->checker, SIGNAL(updateError(const QString&)), this, SLOT(onUpdateError(const QString&)));
+    connect(m_impl->checker, SIGNAL(updateNotFound(ReleaseInfo)), this, SLOT(onUpdateNotFound(ReleaseInfo)));
+    connect(m_impl->checker, SIGNAL(updateFound(ReleaseInfo,QList<ReleaseInfo>)), this, SLOT(onUpdateFound(ReleaseInfo,QList<ReleaseInfo>)));
+    connect(m_impl->checker, SIGNAL(updateError(QString)), this, SLOT(onUpdateError(QString)));
     connect(&m_impl->updateTimer, SIGNAL(timeout()), this, SLOT(silentCheckForUpdates()));
     m_impl->updateTimer.setInterval(1000);
     m_impl->updateTimer.setSingleShot(true);

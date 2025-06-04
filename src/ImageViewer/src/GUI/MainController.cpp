@@ -116,19 +116,19 @@ MainController::MainController(QObject *parent)
 {
     MainWindow * const mainWindow = &m_impl->mainWindow;
 
-    connect(&m_impl->fileManager, SIGNAL(stateChanged(const FileManager::ChangeFlags&)), this, SLOT(onFileManagerStateChanged(const FileManager::ChangeFlags&)));
-    connect(this, SIGNAL(uiStateChanged(const UIState&, const UIChangeFlags&)), mainWindow, SLOT(updateUIState(const UIState&, const UIChangeFlags&)));
+    connect(&m_impl->fileManager, SIGNAL(stateChanged(FileManager::ChangeFlags)), this, SLOT(onFileManagerStateChanged(FileManager::ChangeFlags)));
+    connect(this, SIGNAL(uiStateChanged(UIState,UIChangeFlags)), mainWindow, SLOT(updateUIState(UIState,UIChangeFlags)));
 
     connect(mainWindow, SIGNAL(selectFirstRequested())                  , this, SLOT(selectFirstFile())                     );
     connect(mainWindow, SIGNAL(selectLastRequested())                   , this, SLOT(selectLastFile())                      );
     connect(mainWindow, SIGNAL(selectPreviousRequested())               , this, SLOT(selectPreviousFile())                  );
     connect(mainWindow, SIGNAL(selectNextRequested())                   , this, SLOT(selectNextFile())                      );
-    connect(mainWindow, SIGNAL(openPathRequested(const QString&))       , this, SLOT(openPath(const QString&))              );
-    connect(mainWindow, SIGNAL(openPathsRequested(const QStringList&))  , this, SLOT(openPaths(const QStringList&))         );
+    connect(mainWindow, SIGNAL(openPathRequested(QString))              , this, SLOT(openPath(QString))                     );
+    connect(mainWindow, SIGNAL(openPathsRequested(QStringList))         , this, SLOT(openPaths(QStringList))                );
     connect(mainWindow, SIGNAL(openFileWithDialogRequested())           , this, SLOT(openFileWithDialog())                  );
     connect(mainWindow, SIGNAL(openFolderWithDialogRequested())         , this, SLOT(openFolderWithDialog())                );
     connect(mainWindow, SIGNAL(deleteFileRequested())                   , this, SLOT(deleteCurrentFile())                   );
-    connect(mainWindow, SIGNAL(reopenWithRequested(const QString&))     , this, SLOT(onReopenWithRequested(const QString&)) );
+    connect(mainWindow, SIGNAL(reopenWithRequested(QString))            , this, SLOT(onReopenWithRequested(QString))        );
     connect(mainWindow, SIGNAL(newWindowRequested())                    , this, SLOT(openNewWindow())                       );
     connect(mainWindow, SIGNAL(imageInformationRequested())             , this, SLOT(showImageInformation())                );
     connect(mainWindow, SIGNAL(preferencesRequested())                  , this, SLOT(showPreferences())                     );

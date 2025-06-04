@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -274,8 +274,8 @@ struct FileManager::Impl
         filesModel.reset(newFilesModel);
         if(!newFilesModel)
             return;
-        QObject::connect(filesModel->watcher(), SIGNAL(directoryChanged(const QString&)), fileManager, SLOT(update()));
-        QObject::connect(filesModel->watcher(), SIGNAL(fileChanged(const QString&)), fileManager, SLOT(update()));
+        QObject::connect(filesModel->watcher(), SIGNAL(directoryChanged(QString)), fileManager, SLOT(update()));
+        QObject::connect(filesModel->watcher(), SIGNAL(fileChanged(QString)), fileManager, SLOT(update()));
     }
 
     bool selectAnotherFileAfterDeletion()

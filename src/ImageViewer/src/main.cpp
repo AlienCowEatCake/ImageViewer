@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
         controller.openPath(filePaths.first());
     else if(!filePaths.empty())
         controller.openPaths(filePaths);
-    QObject::connect(&app, SIGNAL(openFileEvent(const QString&)), &controller, SLOT(openPath(const QString&)));
+    QObject::connect(&app, SIGNAL(openFileEvent(QString)), &controller, SLOT(openPath(QString)));
     controller.showMainWindow();
     return app.exec();
 }

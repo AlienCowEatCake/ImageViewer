@@ -218,7 +218,7 @@ ToolBar::ToolBar(QWidget *parent)
     connect(m_impl->exit                    , SIGNAL(clicked()), emitter(), SIGNAL(exitRequested())                     );
 
     connect(this, SIGNAL(polished()), this, SLOT(onPolished()), Qt::QueuedConnection);
-    connect(IconThemeManager::instance(), SIGNAL(themeChanged(const QString&)), this, SLOT(onIconThemeChanged()));
+    connect(IconThemeManager::instance(), SIGNAL(themeChanged(QString)), this, SLOT(onIconThemeChanged()));
 }
 
 ToolBar::~ToolBar()

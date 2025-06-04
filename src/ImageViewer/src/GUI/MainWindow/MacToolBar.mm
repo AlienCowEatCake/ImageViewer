@@ -999,7 +999,7 @@ MacToolBar::MacToolBar(QObject *parent)
     : ControlsContainerEmitter(parent)
     , m_impl(new Impl(this))
 {
-    connect(LocalizationManager::instance(), SIGNAL(localeChanged(const QString&)), this, SLOT(retranslate()));
+    connect(LocalizationManager::instance(), SIGNAL(localeChanged(QString)), this, SLOT(retranslate()));
 }
 
 MacToolBar::~MacToolBar()

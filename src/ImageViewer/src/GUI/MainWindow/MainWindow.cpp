@@ -279,8 +279,8 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
         connect(object, SIGNAL(editStylesheetRequested())           , this                      , SIGNAL(editStylesheetRequested())         );
     }
 
-    connect(settings, SIGNAL(normalBackgroundColorChanged(const QColor&))           , this              , SLOT(updateBackgroundColor())                     );
-    connect(settings, SIGNAL(fullScreenBackgroundColorChanged(const QColor&))       , this              , SLOT(updateBackgroundColor())                     );
+    connect(settings, SIGNAL(normalBackgroundColorChanged(QColor))                  , this              , SLOT(updateBackgroundColor())                     );
+    connect(settings, SIGNAL(fullScreenBackgroundColorChanged(QColor))              , this              , SLOT(updateBackgroundColor())                     );
     connect(settings, SIGNAL(smoothTransformationChanged(bool))                     , imageViewerWidget , SLOT(setSmoothTransformation(bool))               );
     connect(settings, SIGNAL(upscaleOnFitToWindowChanged(bool))                     , imageViewerWidget , SLOT(setUpscaleOnFitToWindow(bool))               );
     connect(settings, SIGNAL(slideShowIntervalChanged(int))                         , this              , SLOT(updateSlideShowInterval())                   );

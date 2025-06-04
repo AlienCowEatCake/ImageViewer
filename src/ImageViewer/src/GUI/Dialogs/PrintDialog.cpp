@@ -472,7 +472,7 @@ PrintDialog::PrintDialog(const QSharedPointer<IImageData> &imageData,
     connect(m_ui->landscapeRadioButton, SIGNAL(toggled(bool)), this, SLOT(onLandscapeToggled(bool)));
     connect(m_ui->copiesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onNumCopiesChanged(int)));
     connect(m_ui->colorModeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onColorModeChanged(int)));
-    connect(m_ui->previewWidget, SIGNAL(geometryChangeRequested(const QRectF&)), this, SLOT(onGeometryChangeRequested(const QRectF&)));
+    connect(m_ui->previewWidget, SIGNAL(geometryChangeRequested(QRectF)), this, SLOT(onGeometryChangeRequested(QRectF)));
     connect(m_ui->widthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(onWidthChanged(double)));
     connect(m_ui->heightSpinBox, SIGNAL(valueChanged(double)), this, SLOT(onHeightChanged(double)));
     connect(m_ui->sizeUnitsComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSizeUnitsChanged(int)));

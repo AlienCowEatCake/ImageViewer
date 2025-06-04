@@ -477,7 +477,7 @@ MenuBar::MenuBar(QWidget *parent)
     connect(m_impl->actionEditStylesheet        , SIGNAL(triggered()), emitter, SIGNAL(editStylesheetRequested())           );
 
     connect(this, SIGNAL(polished()), this, SLOT(onPolished()), Qt::QueuedConnection);
-    connect(IconThemeManager::instance(), SIGNAL(themeChanged(const QString&)), this, SLOT(onIconThemeChanged()));
+    connect(IconThemeManager::instance(), SIGNAL(themeChanged(QString)), this, SLOT(onIconThemeChanged()));
 }
 
 MenuBar::~MenuBar()
