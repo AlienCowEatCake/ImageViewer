@@ -2,7 +2,7 @@
 
 ## Description
 
-Simple, cross-platform image viewer inspired by [GPicView](http://lxde.sourceforge.net/gpicview/).
+Simple, cross-platform image viewer inspired by [GPicView](https://lxde.sourceforge.net/gpicview/).
 
 Features:
 * Just a viewer, not an editor or organizer;
@@ -13,7 +13,7 @@ Features:
 * Very suitable for default image viewer of desktop system;
 * Simple and intuitive interface;
 * Cross platform: GNU/Linux, macOS, Windows, Haiku and other systems;
-* Minimal external lib dependency: only pure Qt and system libraries are used;
+* Minimal external lib dependency: only pure Qt and system libraries are mandatory;
 * Flexible and configurable;
 * Desktop independent: doesn't require any specific desktop environment;
 * Open source, licensed under GNU GPL v3 or later;
