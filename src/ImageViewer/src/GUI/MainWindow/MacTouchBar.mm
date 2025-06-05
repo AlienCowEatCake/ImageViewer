@@ -523,7 +523,7 @@ struct MacTouchBar::Impl
         touchBarData.deleteFile.setCustomizationLabel(qApp->translate("MacTouchBar", "Delete File"));
         touchBarData.print.setCustomizationLabel(qApp->translate("MacTouchBar", "Print"));
         touchBarData.preferences.setCustomizationLabel(qApp->translate("MacTouchBar", "Preferences"));
-        touchBarData.exit.setCustomizationLabel(qApp->translate("MacTouchBar", "Exit"));
+        touchBarData.exit.setCustomizationLabel(qApp->translate("MacTouchBar", "Quit"));
     }
 
     void setSlideShowMode(bool isSlideShow)

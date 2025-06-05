@@ -317,7 +317,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionZoomOut->setText(qApp->translate("MenuBar", "Zoom &Out"));
         actionZoomIn->setText(qApp->translate("MenuBar", "Zoom &In"));
         actionZoomReset->setText(qApp->translate("MenuBar", "&Reset Zoom"));
-        actionZoomCustom->setText(qApp->translate("MenuBar", "&Zoom..."));
+        actionZoomCustom->setText(qApp->translate("MenuBar", "&Zoom\xe2\x80\xa6"));
         actionZoomFitToWindow->setText(qApp->translate("MenuBar", "Fit Image To &Window Size"));
         actionZoomOriginalSize->setText(qApp->translate("MenuBar", "Original &Size"));
         actionZoomFullScreen->setText(qApp->translate("MenuBar", "&Full Screen"));

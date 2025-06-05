@@ -4,17 +4,12 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="184"/>
-        <source>Peter S. Zhigalov</source>
-        <translation>Peter S. Zhigalov</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="822"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="842"/>
         <source>About</source>
-        <translation type="unfinished">About</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="833"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="853"/>
         <source>License</source>
         <translation type="unfinished">Licence</translation>
     </message>
@@ -134,323 +129,304 @@
 <context>
     <name>MacToolBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="883"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="888"/>
         <source>Previous</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Previous</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="884"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="889"/>
         <source>Previous</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Previous</translation>
+        <comment>Short form of &apos;Previous&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="885"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="890"/>
         <source>Next</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Next</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="886"/>
-        <source>Next</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Next</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="887"/>
-        <source>Navigate</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Navigation</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="891"/>
-        <source>Slideshow</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Slide-show</translation>
+        <source>Next</source>
+        <comment>Short form of &apos;Next&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="895"/>
-        <source>Zoom Out</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Zoom out</translation>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="892"/>
+        <source>Navigate</source>
+        <comment>Short form of &apos;Navigate&apos;</comment>
+        <translation type="unfinished">Navigation</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="896"/>
+        <source>Slideshow</source>
+        <comment>Short form of &apos;Slideshow&apos;</comment>
+        <translation type="unfinished">Slide-show</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="900"/>
         <source>Zoom Out</source>
-        <comment>Short</comment>
         <translation type="unfinished">Zoom out</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="897"/>
-        <source>Zoom In</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Zoom in</translation>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="901"/>
+        <source>Zoom Out</source>
+        <comment>Short form of &apos;Zoom Out&apos;</comment>
+        <translation type="unfinished">Zoom out</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="898"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="902"/>
         <source>Zoom In</source>
-        <comment>Short</comment>
         <translation type="unfinished">Zoom in</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="899"/>
-        <source>Zoom</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Zoom</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="903"/>
-        <source>Fit Image To Window Size</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Fit Image to window size</translation>
+        <source>Zoom In</source>
+        <comment>Short form of &apos;Zoom In&apos;</comment>
+        <translation type="unfinished">Zoom in</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="904"/>
+        <source>Zoom</source>
+        <comment>Short form of &apos;Zoom&apos;</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="908"/>
         <source>Fit Image To Window Size</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Fit</translation>
+        <translation type="unfinished">Fit Image to window size</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="909"/>
-        <source>Original Size</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Original Size</translation>
+        <source>Fit</source>
+        <comment>Short form of &apos;Fit Image To Window Size&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="910"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="914"/>
         <source>Original Size</source>
-        <comment>Short</comment>
-        <translation>1:1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="915"/>
-        <source>Full Screen</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Full Screen</translation>
+        <source>1:1</source>
+        <comment>Short form of &apos;Original Size&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="916"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="920"/>
         <source>Full Screen</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Full Screen</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="921"/>
+        <source>Full Screen</source>
+        <comment>Short form of &apos;Full Screen&apos;</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="926"/>
         <source>Rotate Counterclockwise</source>
-        <comment>Long</comment>
         <translation type="unfinished">Rotate Anticlockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="922"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="927"/>
         <source>Rotate Counterclockwise</source>
-        <comment>Short</comment>
+        <comment>Short form of &apos;Rotate Counterclockwise&apos;</comment>
         <translation type="unfinished">Rotate Anticlockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="923"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="928"/>
         <source>Rotate Clockwise</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Rotate Clockwise</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="924"/>
-        <source>Rotate Clockwise</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Rotate Clockwise</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="925"/>
-        <source>Rotate</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Rotate</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="929"/>
-        <source>Flip Horizontal</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Flip Horizontal</translation>
+        <source>Rotate Clockwise</source>
+        <comment>Short form of &apos;Rotate Clockwise&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="930"/>
+        <source>Rotate</source>
+        <comment>Short form of &apos;Rotate&apos;</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="934"/>
         <source>Flip Horizontal</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Flip Horizontal</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="931"/>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="935"/>
+        <source>Flip Horizontal</source>
+        <comment>Short form of &apos;Flip Horizontal&apos;</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="936"/>
         <source>Flip Vertical</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Flip Vertical</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="932"/>
-        <source>Flip Vertical</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Flip Vertical</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="933"/>
-        <source>Flip</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Flip</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="937"/>
-        <source>Open File</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Open File</translation>
+        <source>Flip Vertical</source>
+        <comment>Short form of &apos;Flip Vertical&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="938"/>
-        <source>Open File</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Open</translation>
+        <source>Flip</source>
+        <comment>Short form of &apos;Flip&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="942"/>
-        <source>Save File As</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Save File as</translation>
+        <source>Open File</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="943"/>
-        <source>Save File As</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Save as</translation>
+        <source>Open</source>
+        <comment>Short form of &apos;Open File&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="947"/>
-        <source>Delete File</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Delete File</translation>
+        <source>Save File As</source>
+        <translation type="unfinished">Save File as</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="948"/>
-        <source>Delete File</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Delete</translation>
+        <source>Save</source>
+        <comment>Short form of &apos;Save File As&apos;</comment>
+        <translation type="unfinished">Save as</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="952"/>
-        <source>Print</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Print</translation>
+        <source>Delete File</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="953"/>
-        <source>Print</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Print</translation>
+        <source>Delete</source>
+        <comment>Short form of &apos;Delete File&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="957"/>
-        <source>Preferences</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Preferences</translation>
+        <source>Print</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="958"/>
-        <source>Preferences</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Preferences</translation>
+        <source>Print</source>
+        <comment>Short form of &apos;Print&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="962"/>
-        <source>Exit</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Quit</translation>
+        <source>Preferences</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="963"/>
-        <source>Exit</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Quit</translation>
+        <source>Preferences</source>
+        <comment>Short form of &apos;Preferences&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="981"/>
-        <source>Start Slideshow</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Start Slide-show</translation>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="967"/>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="968"/>
+        <source>Quit</source>
+        <comment>Short form of &apos;Quit&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="986"/>
+        <source>Start Slideshow</source>
+        <translation type="unfinished">Start Slide-show</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="991"/>
         <source>Stop Slideshow</source>
-        <comment>Long</comment>
         <translation type="unfinished">Stop Slide-show</translation>
     </message>
 </context>
 <context>
     <name>MacTouchBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="506"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="513"/>
         <source>Navigate</source>
         <translation type="unfinished">Navigation</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="507"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="514"/>
         <source>Slideshow</source>
         <translation type="unfinished">Slide-show</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="508"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="515"/>
         <source>Zoom</source>
-        <translation type="unfinished">Zoom</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="509"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="516"/>
         <source>Fit Image To Window Size</source>
         <translation type="unfinished">Fit Image to window size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="510"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="517"/>
         <source>Original Size</source>
-        <translation type="unfinished">Original Size</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="511"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="518"/>
         <source>Full Screen</source>
-        <translation type="unfinished">Full Screen</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="512"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="519"/>
         <source>Rotate</source>
-        <translation type="unfinished">Rotate</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="513"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="520"/>
         <source>Flip</source>
-        <translation type="unfinished">Flip</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="514"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="521"/>
         <source>Open File</source>
-        <translation type="unfinished">Open File</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="515"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="522"/>
         <source>Save File As</source>
         <translation type="unfinished">Save File as</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="516"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="523"/>
         <source>Delete File</source>
-        <translation type="unfinished">Delete File</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="517"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="524"/>
         <source>Print</source>
-        <translation type="unfinished">Print</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="518"/>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="525"/>
         <source>Preferences</source>
-        <translation type="unfinished">Preferences</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="519"/>
-        <source>Exit</source>
-        <translation type="unfinished">Quit</translation>
+        <location filename="../../src/GUI/MainWindow/MacTouchBar.mm" line="526"/>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -458,17 +434,17 @@
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="161"/>
         <source>All Supported Images</source>
-        <translation type="unfinished">All Supported Images</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="161"/>
         <source>All Files</source>
-        <translation type="unfinished">All Files</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="162"/>
         <source>Open File</source>
-        <translation type="unfinished">Open File</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="174"/>
@@ -494,8 +470,8 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="184"/>
-        <source>Open Directory</source>
-        <translation type="unfinished">Open Folder</translation>
+        <source>Open Folder</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="189"/>
@@ -505,7 +481,7 @@
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="200"/>
         <source>Delete File</source>
-        <translation type="unfinished">Delete File</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="200"/>
@@ -521,17 +497,17 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="348"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="349"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="481"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="482"/>
         <source>Zoom</source>
-        <translation type="unfinished">Zoom</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="482"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="483"/>
         <source>Zoom Factor (%):</source>
         <translation type="unfinished">Zoom scale (%):</translation>
     </message>
@@ -541,22 +517,22 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="296"/>
         <source>&amp;File</source>
-        <translation type="unfinished">&amp;File</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="297"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished">&amp;Edit</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
         <source>&amp;View</source>
-        <translation type="unfinished">&amp;View</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
         <source>&amp;Help</source>
-        <translation type="unfinished">&amp;Help</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
@@ -566,12 +542,12 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="302"/>
         <source>&amp;Open File</source>
-        <translation type="unfinished">&amp;Open File</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="303"/>
         <source>Open &amp;Folder</source>
-        <translation type="unfinished">Open &amp;Folder</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
@@ -581,37 +557,37 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
         <source>New &amp;Window</source>
-        <translation type="unfinished">New &amp;Window</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
         <source>Pre&amp;vious</source>
-        <translation type="unfinished">Pre&amp;vious</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
         <source>&amp;Next</source>
-        <translation type="unfinished">&amp;Next</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
         <source>Image &amp;Information</source>
-        <translation type="unfinished">Image &amp;Information</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
         <source>&amp;Print</source>
-        <translation type="unfinished">&amp;Print</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
         <source>Pr&amp;eferences</source>
-        <translation type="unfinished">Pr&amp;eferences</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
         <source>&amp;Quit</source>
-        <translation type="unfinished">&amp;Quit</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
@@ -621,22 +597,22 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
         <source>&amp;Rotate Clockwise</source>
-        <translation type="unfinished">&amp;Rotate Clockwise</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
         <source>Flip &amp;Horizontal</source>
-        <translation type="unfinished">Flip &amp;Horizontal</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
         <source>Flip &amp;Vertical</source>
-        <translation type="unfinished">Flip &amp;Vertical</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
         <source>&amp;Delete File</source>
-        <translation type="unfinished">&amp;Delete File</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
@@ -655,8 +631,8 @@
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
-        <source>&amp;Zoom...</source>
-        <translation type="unfinished">&amp;Zoom...</translation>
+        <source>&amp;Zoom…</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
@@ -666,12 +642,12 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
         <source>Original &amp;Size</source>
-        <translation type="unfinished">Original &amp;Size</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
         <source>&amp;Full Screen</source>
-        <translation type="unfinished">&amp;Full Screen</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
@@ -686,12 +662,12 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
         <source>&amp;About</source>
-        <translation type="unfinished">&amp;About</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
         <source>About &amp;Qt</source>
-        <translation type="unfinished">About &amp;Qt</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="328"/>
@@ -699,12 +675,12 @@
         <translation type="unfinished">Check for &amp;updates</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="372"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="373"/>
         <source>Start S&amp;lideshow</source>
         <translation type="unfinished">Start S&amp;lide-show</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="377"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="378"/>
         <source>Stop S&amp;lideshow</source>
         <translation type="unfinished">Stop S&amp;lide-show</translation>
     </message>
@@ -715,103 +691,103 @@
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="371"/>
         <source>Print</source>
         <comment>Title</comment>
-        <translation type="unfinished">Print</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="377"/>
-        <source>Millimeter</source>
+        <source>Millimeters (mm)</source>
         <comment>Size unit</comment>
-        <translation type="unfinished">Millimeters</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="378"/>
-        <source>Point</source>
+        <source>Points (pt)</source>
         <comment>Size unit</comment>
-        <translation type="unfinished">Points</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="379"/>
-        <source>Inch</source>
+        <source>Inches (in)</source>
         <comment>Size unit</comment>
-        <translation type="unfinished">Inches</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="380"/>
-        <source>Pica</source>
+        <source>Pica (P̸)</source>
         <comment>Size unit</comment>
-        <translation type="unfinished">Picas</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="381"/>
-        <source>Didot</source>
+        <source>Didot (DD)</source>
         <comment>Size unit</comment>
-        <translation type="unfinished">Didot points</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="382"/>
-        <source>Cicero</source>
+        <source>Cicero (CC)</source>
         <comment>Size unit</comment>
-        <translation type="unfinished">Cicero</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="401"/>
         <source>Pixels/Millimeter</source>
         <comment>Resolution unit</comment>
-        <translation type="unfinished">Pixels per millimeter</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="402"/>
         <source>Pixels/Point</source>
         <comment>Resolution unit</comment>
-        <translation type="unfinished">Pixels per point</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="403"/>
         <source>Pixels/Inch</source>
         <comment>Resolution unit</comment>
-        <translation type="unfinished">Pixels per inch</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="404"/>
         <source>Pixels/Pica</source>
         <comment>Resolution unit</comment>
-        <translation type="unfinished">Pixels per pica</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="405"/>
         <source>Pixels/Didot</source>
         <comment>Resolution unit</comment>
-        <translation type="unfinished">Pixels per Didot point</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="406"/>
         <source>Pixels/Cicero</source>
         <comment>Resolution unit</comment>
-        <translation type="unfinished">Pixels per cicero</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="411"/>
         <source>None</source>
         <comment>Centering option</comment>
-        <translation type="unfinished">None</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="412"/>
         <source>Horizontally</source>
         <comment>Centering option</comment>
-        <translation type="unfinished">Horizontally</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="413"/>
         <source>Vertically</source>
         <comment>Centering option</comment>
-        <translation type="unfinished">Vertically</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="414"/>
         <source>Both</source>
         <comment>Centering option</comment>
-        <translation type="unfinished">Both</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="609"/>
@@ -894,12 +870,12 @@
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1002"/>
         <source>Printer</source>
-        <translation type="unfinished">Printer</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1003"/>
-        <source>...</source>
-        <translation type="unfinished">…</translation>
+        <source>…</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1004"/>
@@ -944,32 +920,32 @@
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1013"/>
         <source>Portrait</source>
-        <translation type="unfinished">Portrait</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1014"/>
         <source>Landscape</source>
-        <translation type="unfinished">Landscape</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1015"/>
-        <source>Auto-rotate</source>
+        <source>Auto-Rotate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1016"/>
-        <source>Page setup</source>
-        <translation type="unfinished">Page Setup</translation>
+        <source>Page Setup</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1018"/>
         <source>Misc</source>
-        <translation type="unfinished">Misc</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1019"/>
         <source>Copies:</source>
-        <translation type="unfinished">Copies:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1020"/>
@@ -979,17 +955,17 @@
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1022"/>
         <source>Size</source>
-        <translation type="unfinished">Size</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1023"/>
         <source>Width:</source>
-        <translation type="unfinished">Width:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1024"/>
         <source>Height:</source>
-        <translation type="unfinished">Height:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1025"/>
@@ -1004,129 +980,119 @@
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1027"/>
         <source>Load Defaults</source>
-        <translation type="unfinished">Load Defaults</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1028"/>
-        <source>&lt;b&gt;&amp;#9582;&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1029"/>
-        <source>&lt;b&gt;&amp;#9583;&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1031"/>
-        <source>Position</source>
-        <translation type="unfinished">Position</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1032"/>
-        <source>Left:</source>
-        <translation type="unfinished">Left:</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1033"/>
-        <source>Right:</source>
-        <translation type="unfinished">Right:</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1034"/>
-        <source>Top:</source>
-        <translation type="unfinished">Top:</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1035"/>
-        <source>Bottom:</source>
-        <translation type="unfinished">Bottom:</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1036"/>
-        <source>Center:</source>
-        <translation type="unfinished">Centre:</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1038"/>
-        <source>Ignore Page Margins</source>
-        <translation type="unfinished">Ignore Page Margins</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1039"/>
-        <source>Ignore Paper Bounds</source>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1040"/>
+        <source>Left:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1041"/>
-        <source>Preview</source>
-        <translation type="unfinished">Preview</translation>
+        <source>Right:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1042"/>
+        <source>Top:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1043"/>
+        <source>Bottom:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1044"/>
+        <source>Center:</source>
+        <translation type="unfinished">Centre:</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1046"/>
+        <source>Ignore Page Margins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1047"/>
+        <source>Ignore Paper Bounds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1049"/>
+        <source>Preview</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1051"/>
         <source>Effects</source>
         <comment>Effects</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1044"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1052"/>
         <source>Brightness:</source>
         <comment>Effects</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1045"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1053"/>
         <source>Contrast:</source>
         <comment>Effects</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1046"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1054"/>
         <source>Exposure:</source>
         <comment>Effects</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1047"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1055"/>
         <source>Desaturate</source>
         <comment>Effects</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1048"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1056"/>
         <source>Use Legacy Rendering Algorithm</source>
         <comment>Effects</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1050"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1058"/>
         <source>Preview</source>
         <comment>Effects</comment>
-        <translation type="unfinished">Preview</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1052"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1060"/>
         <source>General</source>
-        <translation type="unfinished">General</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1053"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1061"/>
         <source>Image Settings</source>
-        <translation type="unfinished">Image Settings</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1054"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1062"/>
         <source>Effects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1056"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1064"/>
         <source>Print</source>
-        <translation type="unfinished">Print</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1057"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1065"/>
         <source>Cancel</source>
-        <translation type="unfinished">Cancel</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1134,211 +1100,193 @@
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="95"/>
         <source>Previous</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Previous</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="96"/>
         <source>Previous</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Previous</translation>
+        <comment>Short form of &apos;Previous&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="97"/>
         <source>Next</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Next</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="98"/>
         <source>Next</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Next</translation>
+        <comment>Short form of &apos;Next&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="99"/>
         <source>Slideshow</source>
-        <comment>Short</comment>
+        <comment>Short form of &apos;Slideshow&apos;</comment>
         <translation type="unfinished">Slide-show</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="100"/>
         <source>Zoom Out</source>
-        <comment>Long</comment>
         <translation type="unfinished">Zoom out</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="101"/>
         <source>Zoom Out</source>
-        <comment>Short</comment>
+        <comment>Short form of &apos;Zoom Out&apos;</comment>
         <translation type="unfinished">Zoom out</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="102"/>
         <source>Zoom In</source>
-        <comment>Long</comment>
         <translation type="unfinished">Zoom in</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="103"/>
         <source>Zoom In</source>
-        <comment>Short</comment>
+        <comment>Short form of &apos;Zoom In&apos;</comment>
         <translation type="unfinished">Zoom in</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="104"/>
         <source>Fit Image To Window Size</source>
-        <comment>Long</comment>
         <translation type="unfinished">Fit Image to window size</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="105"/>
-        <source>Fit Image To Window Size</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Fit</translation>
+        <source>Fit</source>
+        <comment>Short form of &apos;Fit Image To Window Size&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="106"/>
         <source>Original Size</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Original Size</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="107"/>
-        <source>Original Size</source>
-        <comment>Short</comment>
-        <translation>1:1</translation>
+        <source>1:1</source>
+        <comment>Short form of &apos;Original Size&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="108"/>
         <source>Full Screen</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Full Screen</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="109"/>
         <source>Full Screen</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Full Screen</translation>
+        <comment>Short form of &apos;Full Screen&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="110"/>
         <source>Rotate Counterclockwise</source>
-        <comment>Long</comment>
         <translation type="unfinished">Rotate Anticlockwise</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="111"/>
         <source>Rotate Counterclockwise</source>
-        <comment>Short</comment>
+        <comment>Short form of &apos;Rotate Counterclockwise&apos;</comment>
         <translation type="unfinished">Rotate Anticlockwise</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="112"/>
         <source>Rotate Clockwise</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Rotate Clockwise</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="113"/>
         <source>Rotate Clockwise</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Rotate Clockwise</translation>
+        <comment>Short form of &apos;Rotate Clockwise&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="114"/>
         <source>Flip Horizontal</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Flip Horizontal</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="115"/>
         <source>Flip Horizontal</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Flip Horizontal</translation>
+        <comment>Short form of &apos;Flip Horizontal&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="116"/>
         <source>Flip Vertical</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Flip Vertical</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="117"/>
         <source>Flip Vertical</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Flip Vertical</translation>
+        <comment>Short form of &apos;Flip Vertical&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="118"/>
         <source>Open File</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Open File</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="119"/>
-        <source>Open File</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Open</translation>
+        <source>Open</source>
+        <comment>Short form of &apos;Open File&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="120"/>
         <source>Save File As</source>
-        <comment>Long</comment>
         <translation type="unfinished">Save File as</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="121"/>
-        <source>Save File As</source>
-        <comment>Short</comment>
+        <source>Save</source>
+        <comment>Short form of &apos;Save File As&apos;</comment>
         <translation type="unfinished">Save as</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="122"/>
         <source>Delete File</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Delete File</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="123"/>
-        <source>Delete File</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Delete</translation>
+        <source>Delete</source>
+        <comment>Short form of &apos;Delete File&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="124"/>
         <source>Preferences</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Preferences</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="125"/>
         <source>Preferences</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Preferences</translation>
+        <comment>Short form of &apos;Preferences&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="126"/>
-        <source>Exit</source>
-        <comment>Long</comment>
-        <translation type="unfinished">Quit</translation>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="127"/>
-        <source>Exit</source>
-        <comment>Short</comment>
-        <translation type="unfinished">Quit</translation>
+        <source>Quit</source>
+        <comment>Short form of &apos;Quit&apos;</comment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="159"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="160"/>
         <source>Start Slideshow</source>
-        <comment>Long</comment>
         <translation type="unfinished">Start Slide-show</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="164"/>
+        <location filename="../../src/GUI/MainWindow/QtToolBar.cpp" line="165"/>
         <source>Stop Slideshow</source>
-        <comment>Long</comment>
         <translation type="unfinished">Stop Slide-show</translation>
     </message>
 </context>
@@ -1382,12 +1330,12 @@
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="200"/>
         <source>Preferences</source>
-        <translation type="unfinished">Preferences</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="111"/>
         <source>General</source>
-        <translation type="unfinished">General</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="112"/>
@@ -1407,7 +1355,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="120"/>
         <source>Ask before deleting images</source>
-        <translation type="unfinished">Ask before deleting images</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="123"/>
@@ -1437,7 +1385,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="136"/>
         <source>sec</source>
-        <translation type="unfinished">sec</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="140"/>
@@ -1454,7 +1402,7 @@
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="142"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
-        <translation type="unfinished">Zoom</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="180"/>
@@ -1479,12 +1427,12 @@
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="189"/>
         <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
-        <translation type="unfinished">&lt;b&gt;Background colors&lt;/b&gt;</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="190"/>
         <source>Normal:</source>
-        <translation type="unfinished">Normal:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="191"/>
@@ -1500,130 +1448,130 @@
 <context>
     <name>Themes</name>
     <message>
-        <location filename="../../src/main.cpp" line="72"/>
+        <location filename="../../src/main.cpp" line="80"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="75"/>
+        <location filename="../../src/main.cpp" line="83"/>
         <source>Light</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="79"/>
+        <location filename="../../src/main.cpp" line="87"/>
         <source>Dark</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="84"/>
-        <source>Fusion_Light</source>
-        <translation type="unfinished">Fusion Light</translation>
+        <location filename="../../src/main.cpp" line="92"/>
+        <source>Fusion Light</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="88"/>
-        <source>Fusion_Dark</source>
-        <translation type="unfinished">Fusion Dark</translation>
+        <location filename="../../src/main.cpp" line="96"/>
+        <source>Fusion Dark</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="93"/>
-        <source>Windows_95</source>
-        <translation>Windows 95</translation>
+        <location filename="../../src/main.cpp" line="101"/>
+        <source>Windows 95</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="97"/>
-        <source>Windows_2000</source>
-        <translation>Windows 2000</translation>
+        <location filename="../../src/main.cpp" line="105"/>
+        <source>Windows 2000</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ToolBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="121"/>
-        <source>Previous</source>
-        <translation type="unfinished">Previous</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="122"/>
-        <source>Next</source>
-        <translation type="unfinished">Next</translation>
-    </message>
-    <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="123"/>
+        <source>Previous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="124"/>
+        <source>Next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="125"/>
         <source>Zoom Out</source>
         <translation type="unfinished">Zoom out</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="124"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="126"/>
         <source>Zoom In</source>
         <translation type="unfinished">Zoom in</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="125"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="127"/>
         <source>Fit Image To Window Size</source>
         <translation type="unfinished">Fit Image to window size</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="126"/>
-        <source>Original Size</source>
-        <translation type="unfinished">Original Size</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="127"/>
-        <source>Full Screen</source>
-        <translation type="unfinished">Full Screen</translation>
-    </message>
-    <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="128"/>
+        <source>Original Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="129"/>
+        <source>Full Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="130"/>
         <source>Rotate Counterclockwise</source>
         <translation type="unfinished">Rotate Anticlockwise</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="129"/>
-        <source>Rotate Clockwise</source>
-        <translation type="unfinished">Rotate Clockwise</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="130"/>
-        <source>Flip Horizontal</source>
-        <translation type="unfinished">Flip Horizontal</translation>
-    </message>
-    <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="131"/>
-        <source>Flip Vertical</source>
-        <translation type="unfinished">Flip Vertical</translation>
+        <source>Rotate Clockwise</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="132"/>
-        <source>Open File</source>
-        <translation type="unfinished">Open File</translation>
+        <source>Flip Horizontal</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="133"/>
+        <source>Flip Vertical</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="134"/>
+        <source>Open File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="135"/>
         <source>Save File As</source>
         <translation type="unfinished">Save File as</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="134"/>
-        <source>Delete File</source>
-        <translation type="unfinished">Delete File</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="135"/>
-        <source>Preferences</source>
-        <translation type="unfinished">Preferences</translation>
-    </message>
-    <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="136"/>
-        <source>Exit</source>
-        <translation type="unfinished">Quit</translation>
+        <source>Delete File</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="168"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="137"/>
+        <source>Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="138"/>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="171"/>
         <source>Start Slideshow</source>
         <translation type="unfinished">Start Slide-show</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="173"/>
+        <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="176"/>
         <source>Stop Slideshow</source>
         <translation type="unfinished">Stop Slide-show</translation>
     </message>

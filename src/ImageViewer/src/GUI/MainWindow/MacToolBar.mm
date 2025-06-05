@@ -885,87 +885,87 @@ struct MacToolBar::Impl
 
     void retranslate()
     {
-        toolBarData.navigatePrevious.setToolTip(qApp->translate("MacToolBar", "Previous", "Long"));
-        toolBarData.navigatePrevious.setMenuTitle(qApp->translate("MacToolBar", "Previous", "Short"));
-        toolBarData.navigateNext.setToolTip(qApp->translate("MacToolBar", "Next", "Long"));
-        toolBarData.navigateNext.setMenuTitle(qApp->translate("MacToolBar", "Next", "Short"));
-        const QString navigateGroupText = qApp->translate("MacToolBar", "Navigate", "Short");
+        toolBarData.navigatePrevious.setToolTip(qApp->translate("MacToolBar", "Previous"));
+        toolBarData.navigatePrevious.setMenuTitle(qApp->translate("MacToolBar", "Previous", "Short form of 'Previous'"));
+        toolBarData.navigateNext.setToolTip(qApp->translate("MacToolBar", "Next"));
+        toolBarData.navigateNext.setMenuTitle(qApp->translate("MacToolBar", "Next", "Short form of 'Next'"));
+        const QString navigateGroupText = qApp->translate("MacToolBar", "Navigate", "Short form of 'Navigate'");
         toolBarData.navigateGroup.setPaletteLabel(navigateGroupText);
         toolBarData.navigateGroup.setLabel(navigateGroupText);
 
-        const QString slideShowShortText = qApp->translate("MacToolBar", "Slideshow", "Short");
+        const QString slideShowShortText = qApp->translate("MacToolBar", "Slideshow", "Short form of 'Slideshow'");
         toolBarData.startSlideShow.setPaletteLabel(slideShowShortText);
         toolBarData.startSlideShow.setLabel(slideShowShortText);
 
-        toolBarData.zoomOut.setToolTip(qApp->translate("MacToolBar", "Zoom Out", "Long"));
-        toolBarData.zoomOut.setMenuTitle(qApp->translate("MacToolBar", "Zoom Out", "Short"));
-        toolBarData.zoomIn.setToolTip(qApp->translate("MacToolBar", "Zoom In", "Long"));
-        toolBarData.zoomIn.setMenuTitle(qApp->translate("MacToolBar", "Zoom In", "Short"));
-        const QString zoomGroupText = qApp->translate("MacToolBar", "Zoom", "Short");
+        toolBarData.zoomOut.setToolTip(qApp->translate("MacToolBar", "Zoom Out"));
+        toolBarData.zoomOut.setMenuTitle(qApp->translate("MacToolBar", "Zoom Out", "Short form of 'Zoom Out'"));
+        toolBarData.zoomIn.setToolTip(qApp->translate("MacToolBar", "Zoom In"));
+        toolBarData.zoomIn.setMenuTitle(qApp->translate("MacToolBar", "Zoom In", "Short form of 'Zoom In'"));
+        const QString zoomGroupText = qApp->translate("MacToolBar", "Zoom", "Short form of 'Zoom'");
         toolBarData.zoomGroup.setPaletteLabel(zoomGroupText);
         toolBarData.zoomGroup.setLabel(zoomGroupText);
 
-        const QString zoomFitToWindowFullText = qApp->translate("MacToolBar", "Fit Image To Window Size", "Long");
-        const QString zoomFitToWindowShortText = qApp->translate("MacToolBar", "Fit Image To Window Size", "Short");
+        const QString zoomFitToWindowFullText = qApp->translate("MacToolBar", "Fit Image To Window Size");
+        const QString zoomFitToWindowShortText = qApp->translate("MacToolBar", "Fit", "Short form of 'Fit Image To Window Size'");
         toolBarData.zoomFitToWindow.setPaletteLabel(zoomFitToWindowShortText);
         toolBarData.zoomFitToWindow.setToolTip(zoomFitToWindowFullText);
         toolBarData.zoomFitToWindow.setLabel(zoomFitToWindowShortText);
 
-        const QString zoomOriginalSizeFullText = qApp->translate("MacToolBar", "Original Size", "Long");
-        const QString zoomOriginalSizeShortText = qApp->translate("MacToolBar", "Original Size", "Short");
+        const QString zoomOriginalSizeFullText = qApp->translate("MacToolBar", "Original Size");
+        const QString zoomOriginalSizeShortText = qApp->translate("MacToolBar", "1:1", "Short form of 'Original Size'");
         toolBarData.zoomOriginalSize.setPaletteLabel(zoomOriginalSizeShortText);
         toolBarData.zoomOriginalSize.setToolTip(zoomOriginalSizeFullText);
         toolBarData.zoomOriginalSize.setLabel(zoomOriginalSizeShortText);
 
-        const QString zoomFullScreenFullText = qApp->translate("MacToolBar", "Full Screen", "Long");
-        const QString zoomFullScreenShortText = qApp->translate("MacToolBar", "Full Screen", "Short");
+        const QString zoomFullScreenFullText = qApp->translate("MacToolBar", "Full Screen");
+        const QString zoomFullScreenShortText = qApp->translate("MacToolBar", "Full Screen", "Short form of 'Full Screen'");
         toolBarData.zoomFullScreen.setPaletteLabel(zoomFullScreenShortText);
         toolBarData.zoomFullScreen.setToolTip(zoomFullScreenFullText);
         toolBarData.zoomFullScreen.setLabel(zoomFullScreenShortText);
 
-        toolBarData.rotateCounterclockwise.setToolTip(qApp->translate("MacToolBar", "Rotate Counterclockwise", "Long"));
-        toolBarData.rotateCounterclockwise.setMenuTitle(qApp->translate("MacToolBar", "Rotate Counterclockwise", "Short"));
-        toolBarData.rotateClockwise.setToolTip(qApp->translate("MacToolBar", "Rotate Clockwise", "Long"));
-        toolBarData.rotateClockwise.setMenuTitle(qApp->translate("MacToolBar", "Rotate Clockwise", "Short"));
-        const QString rotateGroupText = qApp->translate("MacToolBar", "Rotate", "Short");
+        toolBarData.rotateCounterclockwise.setToolTip(qApp->translate("MacToolBar", "Rotate Counterclockwise"));
+        toolBarData.rotateCounterclockwise.setMenuTitle(qApp->translate("MacToolBar", "Rotate Counterclockwise", "Short form of 'Rotate Counterclockwise'"));
+        toolBarData.rotateClockwise.setToolTip(qApp->translate("MacToolBar", "Rotate Clockwise"));
+        toolBarData.rotateClockwise.setMenuTitle(qApp->translate("MacToolBar", "Rotate Clockwise", "Short form of 'Rotate Clockwise'"));
+        const QString rotateGroupText = qApp->translate("MacToolBar", "Rotate", "Short form of 'Rotate'");
         toolBarData.rotateGroup.setPaletteLabel(rotateGroupText);
         toolBarData.rotateGroup.setLabel(rotateGroupText);
 
-        toolBarData.flipHorizontal.setToolTip(qApp->translate("MacToolBar", "Flip Horizontal", "Long"));
-        toolBarData.flipHorizontal.setMenuTitle(qApp->translate("MacToolBar", "Flip Horizontal", "Short"));
-        toolBarData.flipVertical.setToolTip(qApp->translate("MacToolBar", "Flip Vertical", "Long"));
-        toolBarData.flipVertical.setMenuTitle(qApp->translate("MacToolBar", "Flip Vertical", "Short"));
-        const QString flipGroupText = qApp->translate("MacToolBar", "Flip", "Short");
+        toolBarData.flipHorizontal.setToolTip(qApp->translate("MacToolBar", "Flip Horizontal"));
+        toolBarData.flipHorizontal.setMenuTitle(qApp->translate("MacToolBar", "Flip Horizontal", "Short form of 'Flip Horizontal'"));
+        toolBarData.flipVertical.setToolTip(qApp->translate("MacToolBar", "Flip Vertical"));
+        toolBarData.flipVertical.setMenuTitle(qApp->translate("MacToolBar", "Flip Vertical", "Short form of 'Flip Vertical'"));
+        const QString flipGroupText = qApp->translate("MacToolBar", "Flip", "Short form of 'Flip'");
         toolBarData.flipGroup.setPaletteLabel(flipGroupText);
         toolBarData.flipGroup.setLabel(flipGroupText);
 
-        const QString openFileFullText = qApp->translate("MacToolBar", "Open File", "Long");
-        const QString openFileShortText = qApp->translate("MacToolBar", "Open File", "Short");
+        const QString openFileFullText = qApp->translate("MacToolBar", "Open File");
+        const QString openFileShortText = qApp->translate("MacToolBar", "Open", "Short form of 'Open File'");
         toolBarData.openFile.setPaletteLabel(openFileShortText);
         toolBarData.openFile.setToolTip(openFileFullText);
         toolBarData.openFile.setLabel(openFileShortText);
-        const QString saveFileAsFullText = qApp->translate("MacToolBar", "Save File As", "Long");
-        const QString saveFileAsShortText = qApp->translate("MacToolBar", "Save File As", "Short");
+        const QString saveFileAsFullText = qApp->translate("MacToolBar", "Save File As");
+        const QString saveFileAsShortText = qApp->translate("MacToolBar", "Save", "Short form of 'Save File As'");
         toolBarData.saveFileAs.setPaletteLabel(saveFileAsShortText);
         toolBarData.saveFileAs.setToolTip(saveFileAsFullText);
         toolBarData.saveFileAs.setLabel(saveFileAsShortText);
-        const QString deleteFileFullText = qApp->translate("MacToolBar", "Delete File", "Long");
-        const QString deleteFileShortText = qApp->translate("MacToolBar", "Delete File", "Short");
+        const QString deleteFileFullText = qApp->translate("MacToolBar", "Delete File");
+        const QString deleteFileShortText = qApp->translate("MacToolBar", "Delete", "Short form of 'Delete File'");
         toolBarData.deleteFile.setPaletteLabel(deleteFileShortText);
         toolBarData.deleteFile.setToolTip(deleteFileFullText);
         toolBarData.deleteFile.setLabel(deleteFileShortText);
-        const QString printFullText = qApp->translate("MacToolBar", "Print", "Long");
-        const QString printShortText = qApp->translate("MacToolBar", "Print", "Short");
+        const QString printFullText = qApp->translate("MacToolBar", "Print");
+        const QString printShortText = qApp->translate("MacToolBar", "Print", "Short form of 'Print'");
         toolBarData.print.setPaletteLabel(printShortText);
         toolBarData.print.setToolTip(printFullText);
         toolBarData.print.setLabel(printShortText);
-        const QString preferencesFullText = qApp->translate("MacToolBar", "Preferences", "Long");
-        const QString preferencesShortText = qApp->translate("MacToolBar", "Preferences", "Short");
+        const QString preferencesFullText = qApp->translate("MacToolBar", "Preferences");
+        const QString preferencesShortText = qApp->translate("MacToolBar", "Preferences", "Short form of 'Preferences'");
         toolBarData.preferences.setPaletteLabel(preferencesShortText);
         toolBarData.preferences.setToolTip(preferencesFullText);
         toolBarData.preferences.setLabel(preferencesShortText);
-        const QString exitFullText = qApp->translate("MacToolBar", "Exit", "Long");
-        const QString exitShortText = qApp->translate("MacToolBar", "Exit", "Short");
+        const QString exitFullText = qApp->translate("MacToolBar", "Quit");
+        const QString exitShortText = qApp->translate("MacToolBar", "Quit", "Short form of 'Quit'");
         toolBarData.exit.setPaletteLabel(exitShortText);
         toolBarData.exit.setToolTip(exitFullText);
         toolBarData.exit.setLabel(exitShortText);
@@ -983,12 +983,12 @@ struct MacToolBar::Impl
         if(!isSlideShowMode)
         {
             [button setImage:NSImageForIconType(ThemeUtils::ICON_MEDIA_SLIDESHOW)];
-            toolBarData.startSlideShow.setToolTip(qApp->translate("MacToolBar", "Start Slideshow", "Long"));
+            toolBarData.startSlideShow.setToolTip(qApp->translate("MacToolBar", "Start Slideshow"));
         }
         else
         {
             [button setImage:NSImageForIconType(ThemeUtils::ICON_MEDIA_PLAYBACK_STOP)];
-            toolBarData.startSlideShow.setToolTip(qApp->translate("MacToolBar", "Stop Slideshow", "Long"));
+            toolBarData.startSlideShow.setToolTip(qApp->translate("MacToolBar", "Stop Slideshow"));
         }
     }
 };

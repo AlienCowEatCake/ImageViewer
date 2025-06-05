@@ -181,7 +181,7 @@ bool MainController::openFileWithDialog()
 bool MainController::openFolderWithDialog()
 {
     const QString lastDirPath = QFileInfo(m_impl->settings.lastOpenedPath()).absolutePath();
-    const QString dirPath = QFileDialog::getExistingDirectory(&m_impl->mainWindow, tr("Open Directory"), lastDirPath);
+    const QString dirPath = QFileDialog::getExistingDirectory(&m_impl->mainWindow, tr("Open Folder"), lastDirPath);
     if(dirPath.isEmpty())
         return false;
     const bool status = openPath(dirPath);

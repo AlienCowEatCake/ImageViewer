@@ -92,39 +92,39 @@ struct QtToolBar::Impl : public ControlsContainerEmitter
 
     void retranslate()
     {
-        navigatePrevious->setToolTip(qApp->translate("QtToolBar", "Previous", "Long"));
-        navigatePrevious->setText(qApp->translate("QtToolBar", "Previous", "Short"));
-        navigateNext->setToolTip(qApp->translate("QtToolBar", "Next", "Long"));
-        navigateNext->setText(qApp->translate("QtToolBar", "Next", "Short"));
-        startSlideShow->setText(qApp->translate("QtToolBar", "Slideshow", "Short"));
-        zoomOut->setToolTip(qApp->translate("QtToolBar", "Zoom Out", "Long"));
-        zoomOut->setText(qApp->translate("QtToolBar", "Zoom Out", "Short"));
-        zoomIn->setToolTip(qApp->translate("QtToolBar", "Zoom In", "Long"));
-        zoomIn->setText(qApp->translate("QtToolBar", "Zoom In", "Short"));
-        zoomFitToWindow->setToolTip(qApp->translate("QtToolBar", "Fit Image To Window Size", "Long"));
-        zoomFitToWindow->setText(qApp->translate("QtToolBar", "Fit Image To Window Size", "Short"));
-        zoomOriginalSize->setToolTip(qApp->translate("QtToolBar", "Original Size", "Long"));
-        zoomOriginalSize->setText(qApp->translate("QtToolBar", "Original Size", "Short"));
-        zoomFullScreen->setToolTip(qApp->translate("QtToolBar", "Full Screen", "Long"));
-        zoomFullScreen->setText(qApp->translate("QtToolBar", "Full Screen", "Short"));
-        rotateCounterclockwise->setToolTip(qApp->translate("QtToolBar", "Rotate Counterclockwise", "Long"));
-        rotateCounterclockwise->setText(qApp->translate("QtToolBar", "Rotate Counterclockwise", "Short"));
-        rotateClockwise->setToolTip(qApp->translate("QtToolBar", "Rotate Clockwise", "Long"));
-        rotateClockwise->setText(qApp->translate("QtToolBar", "Rotate Clockwise", "Short"));
-        flipHorizontal->setToolTip(qApp->translate("QtToolBar", "Flip Horizontal", "Long"));
-        flipHorizontal->setText(qApp->translate("QtToolBar", "Flip Horizontal", "Short"));
-        flipVertical->setToolTip(qApp->translate("QtToolBar", "Flip Vertical", "Long"));
-        flipVertical->setText(qApp->translate("QtToolBar", "Flip Vertical", "Short"));
-        openFile->setToolTip(qApp->translate("QtToolBar", "Open File", "Long"));
-        openFile->setText(qApp->translate("QtToolBar", "Open File", "Short"));
-        saveFileAs->setToolTip(qApp->translate("QtToolBar", "Save File As", "Long"));
-        saveFileAs->setText(qApp->translate("QtToolBar", "Save File As", "Short"));
-        deleteFile->setToolTip(qApp->translate("QtToolBar", "Delete File", "Long"));
-        deleteFile->setText(qApp->translate("QtToolBar", "Delete File", "Short"));
-        preferences->setToolTip(qApp->translate("QtToolBar", "Preferences", "Long"));
-        preferences->setText(qApp->translate("QtToolBar", "Preferences", "Short"));
-        exit->setToolTip(qApp->translate("QtToolBar", "Exit", "Long"));
-        exit->setText(qApp->translate("QtToolBar", "Exit", "Short"));
+        navigatePrevious->setToolTip(qApp->translate("QtToolBar", "Previous"));
+        navigatePrevious->setText(qApp->translate("QtToolBar", "Previous", "Short form of 'Previous'"));
+        navigateNext->setToolTip(qApp->translate("QtToolBar", "Next"));
+        navigateNext->setText(qApp->translate("QtToolBar", "Next", "Short form of 'Next'"));
+        startSlideShow->setText(qApp->translate("QtToolBar", "Slideshow", "Short form of 'Slideshow'"));
+        zoomOut->setToolTip(qApp->translate("QtToolBar", "Zoom Out"));
+        zoomOut->setText(qApp->translate("QtToolBar", "Zoom Out", "Short form of 'Zoom Out'"));
+        zoomIn->setToolTip(qApp->translate("QtToolBar", "Zoom In"));
+        zoomIn->setText(qApp->translate("QtToolBar", "Zoom In", "Short form of 'Zoom In'"));
+        zoomFitToWindow->setToolTip(qApp->translate("QtToolBar", "Fit Image To Window Size"));
+        zoomFitToWindow->setText(qApp->translate("QtToolBar", "Fit", "Short form of 'Fit Image To Window Size'"));
+        zoomOriginalSize->setToolTip(qApp->translate("QtToolBar", "Original Size"));
+        zoomOriginalSize->setText(qApp->translate("QtToolBar", "1:1", "Short form of 'Original Size'"));
+        zoomFullScreen->setToolTip(qApp->translate("QtToolBar", "Full Screen"));
+        zoomFullScreen->setText(qApp->translate("QtToolBar", "Full Screen", "Short form of 'Full Screen'"));
+        rotateCounterclockwise->setToolTip(qApp->translate("QtToolBar", "Rotate Counterclockwise"));
+        rotateCounterclockwise->setText(qApp->translate("QtToolBar", "Rotate Counterclockwise", "Short form of 'Rotate Counterclockwise'"));
+        rotateClockwise->setToolTip(qApp->translate("QtToolBar", "Rotate Clockwise"));
+        rotateClockwise->setText(qApp->translate("QtToolBar", "Rotate Clockwise", "Short form of 'Rotate Clockwise'"));
+        flipHorizontal->setToolTip(qApp->translate("QtToolBar", "Flip Horizontal"));
+        flipHorizontal->setText(qApp->translate("QtToolBar", "Flip Horizontal", "Short form of 'Flip Horizontal'"));
+        flipVertical->setToolTip(qApp->translate("QtToolBar", "Flip Vertical"));
+        flipVertical->setText(qApp->translate("QtToolBar", "Flip Vertical", "Short form of 'Flip Vertical'"));
+        openFile->setToolTip(qApp->translate("QtToolBar", "Open File"));
+        openFile->setText(qApp->translate("QtToolBar", "Open", "Short form of 'Open File'"));
+        saveFileAs->setToolTip(qApp->translate("QtToolBar", "Save File As"));
+        saveFileAs->setText(qApp->translate("QtToolBar", "Save", "Short form of 'Save File As'"));
+        deleteFile->setToolTip(qApp->translate("QtToolBar", "Delete File"));
+        deleteFile->setText(qApp->translate("QtToolBar", "Delete", "Short form of 'Delete File'"));
+        preferences->setToolTip(qApp->translate("QtToolBar", "Preferences"));
+        preferences->setText(qApp->translate("QtToolBar", "Preferences", "Short form of 'Preferences'"));
+        exit->setToolTip(qApp->translate("QtToolBar", "Quit"));
+        exit->setText(qApp->translate("QtToolBar", "Quit", "Short form of 'Quit'"));
         setSlideShowMode(isSlideShowMode);
     }
 
@@ -157,12 +157,12 @@ struct QtToolBar::Impl : public ControlsContainerEmitter
         isSlideShowMode = isSlideShow;
         if(!isSlideShowMode)
         {
-            startSlideShow->setToolTip(qApp->translate("QtToolBar", "Start Slideshow", "Long"));
+            startSlideShow->setToolTip(qApp->translate("QtToolBar", "Start Slideshow"));
             startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_SLIDESHOW, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         }
         else
         {
-            startSlideShow->setToolTip(qApp->translate("QtToolBar", "Stop Slideshow", "Long"));
+            startSlideShow->setToolTip(qApp->translate("QtToolBar", "Stop Slideshow"));
             startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_STOP, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         }
     }

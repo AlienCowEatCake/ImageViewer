@@ -6,29 +6,29 @@
     <message>
         <location filename="../../src/Utils/FileUtils.cpp" line="598"/>
         <source>The specified path was not found</source>
-        <translation>The specified path was not found</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Utils/FileUtils.cpp" line="612"/>
         <source>Permission denied</source>
-        <translation>Permission denied</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Utils/FileUtils.cpp" line="638"/>
         <source>Could not find mount point for specified path</source>
-        <translation>Could not find mount point for specified path</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Utils/FileUtils.cpp" line="83"/>
         <location filename="../../src/Utils/FileUtils.cpp" line="647"/>
         <location filename="../../src/Utils/FileUtils.cpp" line="669"/>
         <source>The specified path could not be moved to Trash</source>
-        <translation>The specified path could not be moved to Trash</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Utils/FileUtils.cpp" line="699"/>
         <source>The specified path does not exist</source>
-        <translation>The specified path does not exist</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Utils/FileUtils.cpp" line="281"/>
@@ -81,12 +81,12 @@
     <message>
         <location filename="../../src/Utils/IconThemeManager.cpp" line="68"/>
         <source>Monochrome</source>
-        <translation>Monochrome</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Utils/IconThemeManager.cpp" line="70"/>
         <source>System</source>
-        <translation>System</translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -94,27 +94,27 @@
     <message>
         <location filename="../../src/Utils/ImageSaver.cpp" line="98"/>
         <source>Images</source>
-        <translation>Images</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Utils/ImageSaver.cpp" line="105"/>
         <source>All Images</source>
-        <translation>All Images</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Utils/ImageSaver.cpp" line="118"/>
         <source>Save Image File</source>
-        <translation>Save Image File</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Utils/ImageSaver.cpp" line="133"/>
         <source>Error</source>
-        <translation>Error</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Utils/ImageSaver.cpp" line="133"/>
         <source>Error: Can&apos;t save file</source>
-        <translation>Error: Can&apos;t save file</translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -190,12 +190,12 @@
     <message>
         <location filename="../../src/Utils/ThemeManager.cpp" line="403"/>
         <source>Restart Required</source>
-        <translation>Restart Required</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Utils/ThemeManager.cpp" line="404"/>
         <source>The theme change will take effect after a restart of application.</source>
-        <translation>The theme change will take effect after a restart of application.</translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -204,64 +204,64 @@
         <location filename="../../src/Updater/UpdateManager.cpp" line="145"/>
         <location filename="../../src/Updater/UpdateManager.cpp" line="245"/>
         <source>Error</source>
-        <translation>Error</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="146"/>
         <source>An update is already in progress. Check back later.</source>
-        <translation>An update is already in progress. Check back later.</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="178"/>
         <location filename="../../src/Updater/UpdateManager.cpp" line="201"/>
         <source>Information</source>
-        <translation>Information</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="181"/>
         <location filename="../../src/Updater/UpdateManager.cpp" line="204"/>
         <source>Your version:</source>
-        <translation>Your version:</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="179"/>
         <source>You have the latest version.</source>
-        <translation>You have the latest version.</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="202"/>
         <source>New updates are available.</source>
-        <translation>New updates are available.</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="206"/>
         <source>Latest version:</source>
-        <translation>Latest version:</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="209"/>
         <source>&amp;Download</source>
-        <translation>&amp;Download</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="210"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;Cancel</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="211"/>
         <source>&amp;Skip This Version</source>
-        <translation>&amp;Skip This Version</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="224"/>
         <source>Automatically check for updates</source>
-        <translation>Automatically check for updates</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/Updater/UpdateManager.cpp" line="246"/>
         <source>Can&apos;t check for updates. Try again later.</source>
-        <translation>Can&apos;t check for updates. Try again later.</translation>
+        <translation></translation>
     </message>
 </context>
 </TS>

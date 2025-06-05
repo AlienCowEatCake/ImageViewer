@@ -135,7 +135,7 @@ struct ToolBar::Impl : public ControlsContainerEmitter
         saveFileAs->setToolTip(qApp->translate("ToolBar", "Save File As"));
         deleteFile->setToolTip(qApp->translate("ToolBar", "Delete File"));
         preferences->setToolTip(qApp->translate("ToolBar", "Preferences"));
-        exit->setToolTip(qApp->translate("ToolBar", "Exit"));
+        exit->setToolTip(qApp->translate("ToolBar", "Quit"));
         setSlideShowMode(isSlideShowMode);
     }
 

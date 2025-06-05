@@ -1000,7 +1000,7 @@ struct PrintDialog::UI
     void retranslate()
     {
         printerSelectGroup->setTitle(qApp->translate("PrintDialog", "Printer"));
-        printDialogButton->setText(qApp->translate("PrintDialog", "..."));
+        printDialogButton->setText(qApp->translate("PrintDialog", "\xe2\x80\xa6"));
         printerNameHeaderLabel->setText(qApp->translate("PrintDialog", "Name:"));
         printerDescriptionHeaderLabel->setText(qApp->translate("PrintDialog", "Description:"));
         printerDefaultHeaderLabel->setText(qApp->translate("PrintDialog", "Default:"));
@@ -1012,8 +1012,8 @@ struct PrintDialog::UI
         pageGroup->setTitle(qApp->translate("PrintDialog", "Page"));
         portraitRadioButton->setText(qApp->translate("PrintDialog", "Portrait"));
         landscapeRadioButton->setText(qApp->translate("PrintDialog", "Landscape"));
-        autoRotateCheckBox->setText(qApp->translate("PrintDialog", "Auto-rotate"));
-        pageSetupButton->setText(qApp->translate("PrintDialog", "Page setup"));
+        autoRotateCheckBox->setText(qApp->translate("PrintDialog", "Auto-Rotate"));
+        pageSetupButton->setText(qApp->translate("PrintDialog", "Page Setup"));
 
         miscGroup->setTitle(qApp->translate("PrintDialog", "Misc"));
         copiesLabel->setText(qApp->translate("PrintDialog", "Copies:"));

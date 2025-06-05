@@ -181,7 +181,7 @@ const char *ABOUT_PIXMAP_PATH     = ":/icon/icon_64.png";
 const char *ABOUT_URL_STRING      = "https://github.com/AlienCowEatCake/ImageViewer";
 const char *ABOUT_LICENSE_STRIG   = "<a href=\"https://www.gnu.org/licenses/gpl-3.0.html\">GNU GPL v3</a>";
 const char *ABOUT_YEAR_STRING     = "2017-2025";
-const char *ABOUT_AUTHOR_STRING   = QT_TRANSLATE_NOOP("AboutDialog", "Peter S. Zhigalov");
+const char *ABOUT_AUTHOR_STRING   = "Peter S. Zhigalov";
 const char *ABOUT_EMAIL_STRING    = "peter.zhigalov@gmail.com";
 
 QString letterByNumFrom0(int num)
@@ -806,6 +806,26 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://web.archive.org/web/20141228151708/http://lists.freedesktop.org/archives/openicc/2010q3/002218.html")
                       ));
 #endif
+
+    result.append(QString::fromLatin1("<b>%1</b><br>")
+            .arg(QString::fromLatin1("Some translations are derived from the following projects:")));
+    const QString translationsDerivedTemplate = QString::fromLatin1("- %1: <a href=\"%2\">%2</a>, <a href=\"%4\">%3</a><br>");
+    result.append(translationsDerivedTemplate
+            .arg(QString::fromLatin1("GPicView"),
+                 QString::fromLatin1("https://lxde.sourceforge.net/gpicview/"),
+                 QString::fromLatin1("GNU GPL v2").replace(QString::fromLatin1(" "), QString::fromLatin1("&nbsp;")),
+                 QString::fromLatin1("https://github.com/lxde/gpicview/blob/8615004320a18802e7d7deaab7a899dc9d2e3883/COPYING")));
+    result.append(translationsDerivedTemplate
+            .arg(QString::fromLatin1("GIMP"),
+                 QString::fromLatin1("https://www.gimp.org/"),
+                 QString::fromLatin1("GNU GPL v3").replace(QString::fromLatin1(" "), QString::fromLatin1("&nbsp;")),
+                 QString::fromLatin1("https://gitlab.gnome.org/GNOME/gimp/-/blob/abfd6cd6dcbf40e6cba8bb9351d55e57c22518b7/COPYING")));
+    result.append(translationsDerivedTemplate
+            .arg(QString::fromLatin1("GTK"),
+                 QString::fromLatin1("https://www.gtk.org/"),
+                 QString::fromLatin1("GNU LGPL v2").replace(QString::fromLatin1(" "), QString::fromLatin1("&nbsp;")),
+                 QString::fromLatin1("https://gitlab.gnome.org/GNOME/gtk/-/blob/61e6ceedcbfd994c71bab5147d725726b96e965f/COPYING")));
+    result.append(QString::fromLatin1("<br>"));
 
     return result;
 }

@@ -374,12 +374,12 @@ PrintDialog::PrintDialog(const QSharedPointer<IImageData> &imageData,
     m_ui->copiesSpinBox->setMinimum(1);
     m_ui->copiesSpinBox->setMaximum(999);
 
-    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Millimeter", "Size unit"), static_cast<int>(QPrinter::Millimeter));
-    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Point"     , "Size unit"), static_cast<int>(QPrinter::Point));
-    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Inch"      , "Size unit"), static_cast<int>(QPrinter::Inch));
-    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pica"      , "Size unit"), static_cast<int>(QPrinter::Pica));
-    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Didot"     , "Size unit"), static_cast<int>(QPrinter::Didot));
-    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Cicero"    , "Size unit"), static_cast<int>(QPrinter::Cicero));
+    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Millimeters (mm)"  , "Size unit"), static_cast<int>(QPrinter::Millimeter));
+    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Points (pt)"       , "Size unit"), static_cast<int>(QPrinter::Point));
+    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Inches (in)"       , "Size unit"), static_cast<int>(QPrinter::Inch));
+    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pica (P\xcc\xb8)"  , "Size unit"), static_cast<int>(QPrinter::Pica));
+    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Didot (DD)"        , "Size unit"), static_cast<int>(QPrinter::Didot));
+    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Cicero (CC)"       , "Size unit"), static_cast<int>(QPrinter::Cicero));
     QPrinter::Unit sizeUnit = QPrinter::Millimeter;
     switch(QLocale::system().measurementSystem())
     {
