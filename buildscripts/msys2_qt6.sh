@@ -116,7 +116,7 @@ mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 ${CMD_QMAKE} -r CONFIG+="release" \
     CONFIG+="hide_symbols" \
-    CONFIG+="enable_pkgconfig enable_update_checking" \
+    CONFIG+="enable_pkgconfig enable_update_checking disable_embed_translations" \
     CONFIG+="system_zlib system_jbigkit system_lerc system_libtiff" \
     CONFIG+="system_libwebp system_freetype system_librsvg" \
     CONFIG+="system_brotli system_libexpat system_libjpeg" \
@@ -132,6 +132,8 @@ ${CMD_DEPLOY} \
     --no-system-d3d-compiler \
     --no-opengl-sw \
     "${DIST_PREFIX}/"
+find "${SOURCE_PATH}/src/${PROJECT}/resources/translations" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "${DIST_PREFIX}/translations/" \;
+find "${SOURCE_PATH}/src/QtUtils/resources/translations" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "${DIST_PREFIX}/translations/" \;
 [ -f "${DIST_PREFIX}/qt.conf" ] || echo '[Paths]' > "${DIST_PREFIX}/qt.conf"
 echo 'Translations = translations' >> "${DIST_PREFIX}/qt.conf"
 find "${MSYSTEM_PREFIX}/bin" -type f \( -name 'libssl*.dll' -o -name 'libcrypto*.dll' \) -exec cp -a \{\} "${DIST_PREFIX}/" \;

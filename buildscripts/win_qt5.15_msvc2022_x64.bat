@@ -24,7 +24,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="hide_symbols" CONFIG+="enable_update_checking" CONFIG+="system_resvg" INCLUDEPATH+=%RESVG_PATH% LIBS+=/LIBPATH:%RESVG_PATH% DEFINES+="WINVER=0x0601 _WIN32_WINNT=0x0601" ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="hide_symbols" CONFIG+="enable_update_checking" CONFIG+="disable_embed_translations" CONFIG+="system_resvg" INCLUDEPATH+=%RESVG_PATH% LIBS+=/LIBPATH:%RESVG_PATH% DEFINES+="WINVER=0x0601 _WIN32_WINNT=0x0601" ..\%PROJECT%.pro
 %NMAKE_CMD%
 if not exist %APP_PATH%\release\%PROJECT%.exe (
     if NOT "%CI%" == "true" pause
@@ -39,6 +39,8 @@ rmdir /S /Q %PROJECT%%SUFFIX%\position 2>nul >nul
 rmdir /S /Q %PROJECT%%SUFFIX%\sensorgestures 2>nul >nul
 rmdir /S /Q %PROJECT%%SUFFIX%\sensors 2>nul >nul
 %DLLRESOLVER_CMD% %PROJECT%%SUFFIX% %RESVG_PATH% %UCRT_DIR% %CRT_DIR% %QT_PATH%\bin
+copy ..\src\%PROJECT%\resources\translations\*.qm %PROJECT%%SUFFIX%\translations\
+copy ..\src\QtUtils\resources\translations\*.qm %PROJECT%%SUFFIX%\translations\
 %ZIP_CMD% -9r ..\%PROJECT%%SUFFIX%.zip %PROJECT%%SUFFIX%
 rmdir /S /Q build_msi 2>nul >nul
 move %PROJECT%%SUFFIX% build_msi

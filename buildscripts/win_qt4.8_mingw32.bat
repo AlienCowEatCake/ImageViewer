@@ -14,7 +14,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="disable_embed_translations" ..\%PROJECT%.pro
 mingw32-make
 if not exist %APP_PATH%\release\%PROJECT%.exe (
     if NOT "%CI%" == "true" pause
@@ -35,6 +35,8 @@ for %%x in (accessible, iconengines, imageformats) do (
 mkdir %PROJECT%%SUFFIX%\translations
 copy %QT_PATH%\translations\qt_??.qm %PROJECT%%SUFFIX%\translations\
 copy %QT_PATH%\translations\qt_??_??.qm %PROJECT%%SUFFIX%\translations\
+copy ..\src\%PROJECT%\resources\translations\*.qm %PROJECT%%SUFFIX%\translations\
+copy ..\src\QtUtils\resources\translations\*.qm %PROJECT%%SUFFIX%\translations\
 (
     echo [Paths]
     echo Translations = translations
