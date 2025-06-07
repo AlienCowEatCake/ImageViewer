@@ -7,6 +7,7 @@ INFO_PLIST_PATH="src/${PROJECT}/resources/platform/macosx/Info.plist"
 ICON_PATH="src/${PROJECT}/resources/icon/icon_composer.icns"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/macosx/set_associations.sh"
 QM_FILES_PATH="src/${PROJECT}/resources/translations"
+QTUTILS_QM_FILES_PATH="src/QtUtils/resources/translations"
 LICENSE_PATH="LICENSE.GPLv3"
 OUT_PATH="src/${PROJECT}"
 APP_CERT="Developer ID Application: Petr Zhigalov (48535TNTA7)"
@@ -27,7 +28,7 @@ cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
 # @note Out-of-tree builds is not supported by Qt 4.4 with macx-xcode spec
 cd "${SOURCE_PATH}"
-${CMD_QMAKE} -macx -recursive -spec macx-xcode CONFIG+="release" LIBS+="-dead_strip" CONFIG+="x86 ppc" QMAKE_MAC_SDK="${MAC_SDK}" QMAKE_MACOSX_DEPLOYMENT_TARGET="${MAC_TARGET}" CONFIG+="disable_cxx11 disable_mactoolbar disable_mactouchbar"
+${CMD_QMAKE} -macx -recursive -spec macx-xcode CONFIG+="release" LIBS+="-dead_strip" CONFIG+="x86 ppc" QMAKE_MAC_SDK="${MAC_SDK}" QMAKE_MACOSX_DEPLOYMENT_TARGET="${MAC_TARGET}" CONFIG+="disable_cxx11 disable_mactoolbar disable_mactouchbar" CONFIG+="disable_embed_translations"
 find "src/ThirdParty" -mindepth 2 -maxdepth 2 -name '*.xcodeproj' -print0 | while IFS= read -r -d '' SUBPROJECT_PATH ; do
     cd "${SUBPROJECT_PATH}"
     find . -maxdepth 1 -name 'project.pbxproj.*' -exec ln -s "{}" "project.pbxproj" \; || true
@@ -94,6 +95,8 @@ for lang in $(find "${RES_PATH}" -name '*.lproj' | sed 's|.*/|| ; s|\..*||') ; d
         cp -a "${QT_TRANSLATIONS_PATH}/qt_${lang}.qm" "${TRANSLATIONS_PATH}/qt_${lang}.qm"
     fi
 done
+find "${SOURCE_PATH}/${QM_FILES_PATH}" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "${TRANSLATIONS_PATH}/" \;
+find "${SOURCE_PATH}/${QTUTILS_QM_FILES_PATH}" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "${TRANSLATIONS_PATH}/" \;
 echo -e '[Paths]\nPrefix = Frameworks\nPlugins = PlugIns\nTranslations = Resources/translations' > "${RES_PATH}/qt.conf"
 cd "${BUILD_PATH}"
 

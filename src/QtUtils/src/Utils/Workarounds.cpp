@@ -47,8 +47,10 @@ static void InitQtUtilsResources_internal()
 
     isInitialized = true;
     Q_INIT_RESOURCE(qtutils_icons);
-    Q_INIT_RESOURCE(qtutils_translations);
     Q_INIT_RESOURCE(qtutils_style);
+#if !defined (QTUTILS_DISABLE_EMBED_TRANSLATIONS)
+    Q_INIT_RESOURCE(qtutils_translations);
+#endif
 }
 
 namespace Workarounds {

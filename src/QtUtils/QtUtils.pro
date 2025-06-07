@@ -102,6 +102,13 @@ lupdate_only {
 
 RESOURCES += \
     resources/icons/qtutils_icons.qrc \
-    resources/style/qtutils_style.qrc \
-    resources/translations/qtutils_translations.qrc
+    resources/style/qtutils_style.qrc
+
+disable_embed_translations {
+    DEFINES += \
+        QTUTILS_DISABLE_EMBED_TRANSLATIONS
+} else {
+    RESOURCES += \
+        resources/translations/qtutils_translations.qrc
+}
 

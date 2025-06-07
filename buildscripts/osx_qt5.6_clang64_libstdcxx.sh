@@ -5,6 +5,7 @@ APPNAME="Image Viewer"
 DMGNAME="${PROJECT}_qt5.6_clang64_libstdcxx"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/macosx/set_associations.sh"
 QM_FILES_PATH="src/${PROJECT}/resources/translations"
+QTUTILS_QM_FILES_PATH="src/QtUtils/resources/translations"
 LICENSE_PATH="LICENSE.GPLv3"
 OUT_PATH="src/${PROJECT}"
 ENTITLEMENTS_PATH="src/${PROJECT}/resources/platform/macosx/${PROJECT}.entitlements"
@@ -34,7 +35,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} CONFIG+="disable_cxx11" "../${PROJECT}.pro"
+arch -x86_64 ${CMD_QMAKE} -r CONFIG+="release" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} CONFIG+="disable_cxx11" CONFIG+="disable_embed_translations" "../${PROJECT}.pro"
 arch -x86_64 make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "${MAC_TARGET}" "${APPNAME}.app/Contents/Info.plist"
@@ -60,6 +61,8 @@ for lang in $(find "${RES_PATH}" -name '*.lproj' | sed 's|.*/|| ; s|\..*||') ; d
         cp -a "${QT_PATH}/translations/qt_${lang}.qm" "${TRANSLATIONS_PATH}/qt_${lang}.qm"
     fi
 done
+find "${SOURCE_PATH}/${QM_FILES_PATH}" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "${TRANSLATIONS_PATH}/" \;
+find "${SOURCE_PATH}/${QTUTILS_QM_FILES_PATH}" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "${TRANSLATIONS_PATH}/" \;
 echo 'Translations = Resources/translations' >> "${RES_PATH}/qt.conf"
 cd "${BUILD_PATH}"
 

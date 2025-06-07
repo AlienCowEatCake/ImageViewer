@@ -5,6 +5,7 @@ APPNAME="Image Viewer"
 DMGNAME="${PROJECT}_qt5.15_universal_target10.10"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/macosx/set_associations.sh"
 QM_FILES_PATH="src/${PROJECT}/resources/translations"
+QTUTILS_QM_FILES_PATH="src/QtUtils/resources/translations"
 LICENSE_PATH="LICENSE.GPLv3"
 OUT_PATH="src/${PROJECT}"
 ENTITLEMENTS_PATH="src/${PROJECT}/resources/platform/macosx/${PROJECT}.entitlements"
@@ -40,7 +41,7 @@ cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
 RESVG_PATH="${BUILD_PATH}/resvg/universal-apple-darwin"
 make_universal_resvg "${RESVG_PATH}"
-${CMD_QMAKE} -r CONFIG+="release" CONFIG+="hide_symbols" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MAC_SDK_VERSION=${MAC_SDK:6} QMAKE_MACOSX_DEPLOYMENT_TARGET=${MAC_TARGET} QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64" CONFIG+="enable_update_checking" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="release" CONFIG+="hide_symbols" LIBS+=-dead_strip QMAKE_MAC_SDK=${MAC_SDK} QMAKE_MAC_SDK_VERSION=${MAC_SDK:6} QMAKE_MACOSX_DEPLOYMENT_TARGET=${MAC_TARGET} QMAKE_APPLE_DEVICE_ARCHS="x86_64 arm64" CONFIG+="enable_update_checking" CONFIG+="disable_embed_translations" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" "../${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "${MAC_TARGET}" "${APPNAME}.app/Contents/Info.plist"
@@ -74,6 +75,8 @@ for lang in $(find "${RES_PATH}" -name '*.lproj' | sed 's|.*/|| ; s|\..*||') ; d
         cp -a "${QT_PATH}/translations/qt_${lang}.qm" "${TRANSLATIONS_PATH}/qt_${lang}.qm"
     fi
 done
+find "${SOURCE_PATH}/${QM_FILES_PATH}" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "${TRANSLATIONS_PATH}/" \;
+find "${SOURCE_PATH}/${QTUTILS_QM_FILES_PATH}" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "${TRANSLATIONS_PATH}/" \;
 echo 'Translations = Resources/translations' >> "${RES_PATH}/qt.conf"
 cd "${BUILD_PATH}"
 

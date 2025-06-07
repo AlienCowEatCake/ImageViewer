@@ -433,9 +433,16 @@ macx {
 }
 
 RESOURCES += \
-    resources/translations/imageviewer_translations.qrc \
     resources/icon/icon.qrc \
     resources/style/style.qrc
+
+disable_embed_translations {
+    DEFINES += \
+        DISABLE_EMBED_TRANSLATIONS
+} else {
+    RESOURCES += \
+        resources/translations/imageviewer_translations.qrc
+}
 
 # qmake CONFIG+=use_static_qjpeg
 use_static_qjpeg {

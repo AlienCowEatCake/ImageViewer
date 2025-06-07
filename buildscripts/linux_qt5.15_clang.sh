@@ -10,6 +10,8 @@ ICON_PATH="src/${PROJECT}/resources/icon/icon.svg"
 ICONS_DIR_PATH="src/${PROJECT}/resources/icon"
 DEBIAN_DIR_PATH="src/${PROJECT}/resources/platform/debian"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/linux/set_associations.sh"
+QM_FILES_PATH="src/${PROJECT}/resources/translations"
+QTUTILS_QM_FILES_PATH="src/QtUtils/resources/translations"
 RESVG_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/$(gcc -dumpmachine | sed 's|-.*||')-unknown-linux-gnu"
 
 QTDIR="/opt/qt5"
@@ -25,7 +27,7 @@ cd "$(dirname $0)"/..
 rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
-${CMD_QMAKE} -r CONFIG+="release" CONFIG+="hide_symbols" CONFIG+="enable_librsvg" CONFIG+="enable_update_checking" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="release" CONFIG+="hide_symbols" CONFIG+="enable_librsvg" CONFIG+="enable_update_checking" CONFIG+="disable_embed_translations" CONFIG+="system_resvg" INCLUDEPATH+="\"${RESVG_PATH}\"" LIBS+="-L\"${RESVG_PATH}\"" "../${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 strip --strip-all "${APP_PATH}/${PROJECT}"
 
@@ -43,6 +45,8 @@ find "../${ICONS_DIR_PATH}" -name '*.png' -print0 | while IFS= read -r -d '' RAS
     fi
 done
 "${CMD_DEPLOY}" "AppDir/usr/share/applications/${IDENTIFIER}.desktop" -always-overwrite -qmake="${CMD_QMAKE}" -extra-plugins=styles,platformthemes
+find "../${QM_FILES_PATH}" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "AppDir/usr/translations/" \;
+find "../${QTUTILS_QM_FILES_PATH}" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "AppDir/usr/translations/" \;
 find "AppDir" -type d -exec chmod 755 \{\} \;
 find "AppDir" -type f -exec chmod 644 \{\} \;
 find "AppDir" -type f \( -name "${PROJECT}" -o -name "AppRun" -o -name "*.so*" -o -name "*.sh" -o -name "*.desktop" \) -exec chmod 755 \{\} \;

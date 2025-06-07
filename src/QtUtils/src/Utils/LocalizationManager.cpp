@@ -357,7 +357,14 @@ void LocalizationManager::initializeResources(const QStringList &templatesList)
     m_impl->supportedLocales = getLocalesFromTemplatesList(templatesList);
     m_impl->systemLocale = findBestLocaleForSystem(m_impl->supportedLocales);
     m_impl->resourceTemplates = templatesList;
-    const QString qtUtilsTemplate = QString::fromLatin1(":/translations/qtutils_%1");
+#if !defined (QTUTILS_DISABLE_EMBED_TRANSLATIONS)
+    const QString translationsPath = QString::fromLatin1(":/translations");
+#elif (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QString translationsPath = QLibraryInfo::path(QLibraryInfo::TranslationsPath);
+#else
+    const QString translationsPath = QLibraryInfo::location(QLibraryInfo::TranslationsPath);
+#endif
+    const QString qtUtilsTemplate = QDir(translationsPath).filePath(QString::fromLatin1("qtutils_%1"));
     if(!m_impl->resourceTemplates.contains(qtUtilsTemplate))
         m_impl->resourceTemplates.append(qtUtilsTemplate);
     setLocale();

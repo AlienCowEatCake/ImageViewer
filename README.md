@@ -194,4 +194,6 @@ See the [buildscripts/](buildscripts/) directory.
   Enable it if you use Qt 6.x without ICU and you want to open non-UTF-8 SVG files.
 * Updater options: `enable_update_checking` *(disabled by default)*  
   Enable it if you want to use built-in update checker.
+* Translations embedding options: `disable_embed_translations` *(enabled by default)*  
+  Disable it if you want to use separate translation files instead of embedding them into application executable.
 

@@ -9,6 +9,7 @@ SCRIPT_PATH="src/${PROJECT}/resources/platform/macosx/set_associations.sh"
 LICENSE_PATH="LICENSE.GPLv3"
 OUT_PATH="src/${PROJECT}"
 QM_FILES_PATH="src/${PROJECT}/resources/translations"
+QTUTILS_QM_FILES_PATH="src/QtUtils/resources/translations"
 APP_CERT="Developer ID Application: Petr Zhigalov (48535TNTA7)"
 MAC_TARGET="10.5"
 ALL_SDK_VERSIONS="$(xcodebuild -showsdks | grep '\-sdk macosx' | sed 's|.*-sdk macosx||')"
@@ -32,7 +33,7 @@ rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
 BUILD_PATH="${PWD}"
-${CMD_QMAKE} -recursive -spec unsupported/macx-clang CONFIG+="release" LIBS+="-dead_strip" CONFIG+="x86_64" QMAKE_MAC_SDK="${MAC_SDK}" QMAKE_MACOSX_DEPLOYMENT_TARGET="${MAC_TARGET}" CONFIG+="disable_cxx11" "../${PROJECT}.pro"
+${CMD_QMAKE} -recursive -spec unsupported/macx-clang CONFIG+="release" LIBS+="-dead_strip" CONFIG+="x86_64" QMAKE_MAC_SDK="${MAC_SDK}" QMAKE_MACOSX_DEPLOYMENT_TARGET="${MAC_TARGET}" CONFIG+="disable_cxx11" CONFIG+="disable_embed_translations" "../${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 cp -a "${SOURCE_PATH}/${INFO_PLIST_PATH}" "${APPNAME}.app/Contents/Info.plist"
@@ -54,6 +55,8 @@ for lang in $(find "${RES_PATH}" -name '*.lproj' | sed 's|.*/|| ; s|\..*||') ; d
         cp -a "${QT_TRANSLATIONS_PATH}/qt_${lang}.qm" "${TRANSLATIONS_PATH}/qt_${lang}.qm"
     fi
 done
+find "${SOURCE_PATH}/${QM_FILES_PATH}" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "${TRANSLATIONS_PATH}/" \;
+find "${SOURCE_PATH}/${QTUTILS_QM_FILES_PATH}" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "${TRANSLATIONS_PATH}/" \;
 echo 'Translations = Resources/translations' >> "${RES_PATH}/qt.conf"
 cd "${BUILD_PATH}"
 

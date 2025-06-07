@@ -19,7 +19,9 @@
 
 #include <QtPlugin>
 #include <QIcon>
+#include <QDir>
 #include <QFileInfo>
+#include <QLibraryInfo>
 #include <QStyleFactory>
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 #include <QTextCodec>
@@ -119,8 +121,15 @@ int main(int argc, char *argv[])
                                     QString());
 #endif
 
+#if !defined (DISABLE_EMBED_TRANSLATIONS)
+    const QString translationsPath = QString::fromLatin1(":/translations");
+#elif (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QString translationsPath = QLibraryInfo::path(QLibraryInfo::TranslationsPath);
+#else
+    const QString translationsPath = QLibraryInfo::location(QLibraryInfo::TranslationsPath);
+#endif
     LocalizationManager::instance()->initializeResources(QStringList()
-            << QString::fromLatin1(":/translations/imageviewer_%1")
+            << QDir(translationsPath).filePath(QString::fromLatin1("imageviewer_%1"))
     );
 
     MainController controller;
