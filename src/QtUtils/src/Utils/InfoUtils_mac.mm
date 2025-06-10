@@ -217,6 +217,10 @@ QString GetSystemDescription()
     case 1500:
         osName = QString::fromLatin1("Sequoia");
         break;
+    case 1600:
+    case 2600:
+        osName = QString::fromLatin1("Tahoe");
+        break;
     default:
         break;
     }
