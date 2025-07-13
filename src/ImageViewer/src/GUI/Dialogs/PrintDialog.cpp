@@ -653,15 +653,18 @@ void PrintDialog::onPrintClicked()
             transformationMode = pixmapItem->transformationMode();
         if(ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(m_impl->graphicsItem))
             transformationMode = itemWithTransformationMode->transformationMode();
+        const qreal scaleFactor = qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height());
+        bool applyEffectsBeforeTransform = true;
         QImage image;
         if(IGrabScaledImage *itemWithGrabScaledImage = dynamic_cast<IGrabScaledImage*>(m_impl->graphicsItem))
         {
-            const qreal scaleFactor = qMax(qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height()), static_cast<qreal>(1.0));
-            image = itemWithGrabScaledImage->grabImage(scaleFactor);
+            image = itemWithGrabScaledImage->grabImage(qMax(scaleFactor, static_cast<qreal>(1.0)));
+            applyEffectsBeforeTransform = scaleFactor >= 1.0;
         }
         else if(IGrabImage *itemWithGrabImage = dynamic_cast<IGrabImage*>(m_impl->graphicsItem))
         {
             image = itemWithGrabImage->grabImage();
+            applyEffectsBeforeTransform = scaleFactor >= 1.0;
         }
         else
         {
@@ -687,7 +690,8 @@ void PrintDialog::onPrintClicked()
             m_impl->graphicsItem->paint(&painterLocal, &options);
             painterLocal.end();
         }
-        image = m_impl->printEffect.apply(image);
+        if(applyEffectsBeforeTransform)
+            m_impl->printEffect.apply(image);
         if(m_impl->flipOrientations)
             QImage_flip(image, m_impl->flipOrientations);
         QSize unrotatedDeviceSize = deviceRect.size();
@@ -697,7 +701,7 @@ void PrintDialog::onPrintClicked()
             transform.rotate(-m_impl->rotateAngle);
             unrotatedDeviceSize = transform.mapRect(deviceRect).size();
         }
-        if(transformationMode == Qt::SmoothTransformation/* && unrotatedDeviceSize.width() < image.width() && unrotatedDeviceSize.height() < image.height()*/)
+        if(transformationMode == Qt::SmoothTransformation && unrotatedDeviceSize.width() != image.width() && unrotatedDeviceSize.height() != image.height())
         {
             const QImage scaledImage = image.scaled(unrotatedDeviceSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
             if(!scaledImage.isNull())
@@ -705,6 +709,8 @@ void PrintDialog::onPrintClicked()
             else
                 LOG_WARNING() << LOGGING_CTX << "Image scaling failed, target size =" << unrotatedDeviceSize.width() << "x" << unrotatedDeviceSize.height();
         }
+        if(!applyEffectsBeforeTransform)
+            m_impl->printEffect.apply(image);
         painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
     }
     else

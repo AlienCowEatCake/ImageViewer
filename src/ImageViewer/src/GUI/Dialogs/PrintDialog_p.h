@@ -47,6 +47,7 @@
 #include <QTransform>
 #include <QVBoxLayout>
 
+#include "Utils/IsOneOf.h"
 #include "Utils/Logging.h"
 #include "Utils/ObjectsUtils.h"
 
@@ -100,100 +101,84 @@ public:
         m_exposure = level;
     }
 
-    QImage apply(const QImage &src) const
+    void apply(QImage &image) const
     {
         if(m_legacyRenderer)
-            return src;
+            return;
 
         if(!m_desaturate && !m_brightness && !m_contrast && !m_exposure)
-            return src;
+            return;
 
         const bool useRgbTransform = m_brightness || m_contrast;
-        QVector<int> rgbTransform[3];
+        int rgbTransform[256];
         if(useRgbTransform)
         {
-            for(int i = 0; i < 3; ++i)
-                rgbTransform[i].resize(256);
-
             for(int i = 0; i < 256; ++i)
             {
-                int r = i, g = i, b = i;
+                int c = i;
                 if(m_brightness)
                 {
-                    r = qBound(0, r + m_brightness, 255);
-                    g = qBound(0, g + m_brightness, 255);
-                    b = qBound(0, b + m_brightness, 255);
+                    c = qBound(0, c + m_brightness, 255);
                 }
                 if(m_contrast)
                 {
                     // https://ie.nitk.ac.in/blog/2020/01/19/algorithms-for-adjusting-brightness-and-contrast-of-an-image/
                     const qreal f = (259.0 * (m_contrast + 255.0)) / (255.0 * (259.0 - m_contrast));
-                    r = qBound(0, static_cast<int>(f * (r - 128) + 128), 255);
-                    g = qBound(0, static_cast<int>(f * (g - 128) + 128), 255);
-                    b = qBound(0, static_cast<int>(f * (b - 128) + 128), 255);
+                    c = qBound(0, static_cast<int>(f * (c - 128) + 128), 255);
                 }
-                rgbTransform[0][i] = r;
-                rgbTransform[1][i] = g;
-                rgbTransform[2][i] = b;
+                rgbTransform[i] = c;
             }
         }
 
-        const bool useHsvTransform = m_exposure || m_desaturate;
-        QVector<int> hsvTransform[3];
-        if(useHsvTransform)
+        const bool useSvTransform = m_exposure || m_desaturate;
+        int svTransform[2][256];
+        if(useSvTransform)
         {
-            hsvTransform[0].resize(360);
-            for(int i = 1; i < 3; ++i)
-                hsvTransform[i].resize(256);
-
-            for(int i = 0; i < 360; ++i)
+            for(int i = 0; i < 256; ++i)
             {
-                int h = i, s = i, v = i;
-                if(m_exposure && i < 256)
+                int s = i, v = i;
+                if(m_exposure)
                 {
                     // https://habr.com/ru/post/268115/
                     v = qBound(0, v + static_cast<int>(std::sin(v * 0.01255) * m_exposure), 255);
                 }
-                if(m_desaturate && i < 256)
+                if(m_desaturate)
                 {
                     s = 0;
                 }
-                hsvTransform[0][i] = h;
-                if(i < 256)
-                {
-                    hsvTransform[1][i] = s;
-                    hsvTransform[2][i] = v;
-                }
+                svTransform[0][i] = s;
+                svTransform[1][i] = v;
             }
         }
 
-        QImage result = src.convertToFormat(QImage::Format_ARGB32);
-        for(int j = 0, height = result.height(); j < height; ++j)
+        if(!IsOneOf(image.format(), QImage::Format_RGB32, QImage::Format_ARGB32))
+            QImage_convertTo(image, image.hasAlphaChannel() ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+
+        for(int j = 0, height = image.height(); j < height; ++j)
         {
-            QRgb *line = reinterpret_cast<QRgb*>(result.scanLine(j));
-            for(int i = 0, width = result.width(); i < width; ++i)
+            QRgb *line = reinterpret_cast<QRgb*>(image.scanLine(j));
+            for(int i = 0, width = image.width(); i < width; ++i)
             {
                 QRgb &pixel = line[i];
                 const int a = qAlpha(pixel);
                 if(useRgbTransform)
                 {
-                    pixel = qRgba(rgbTransform[0][qRed(pixel)], rgbTransform[1][qGreen(pixel)], rgbTransform[2][qBlue(pixel)], a);
+                    pixel = qRgba(rgbTransform[qRed(pixel)], rgbTransform[qGreen(pixel)], rgbTransform[qBlue(pixel)], a);
                 }
-                if(useHsvTransform)
+                if(useSvTransform)
                 {
                     QColor color(pixel);
-                    color.toHsv();
+                    color = color.toHsv();
                     int h = 0, s = 0, v = 0;
                     color.getHsv(&h, &s, &v);
-                    color.setHsv((h >= 0 ? hsvTransform[0][h] : h), hsvTransform[1][s], hsvTransform[2][v]);
-                    color.toRgb();
+                    color.setHsv(h, svTransform[0][s], svTransform[1][v]);
+                    color = color.toRgb();
                     int r = 0, g = 0, b = 0;
                     color.getRgb(&r, &g, &b);
                     pixel = qRgba(r, g, b, a);
                 }
             }
         }
-        return result;
     }
 
 private:
@@ -345,19 +330,21 @@ protected:
                     transformationMode = pixmapItem->transformationMode();
                 if(ITransformationMode *itemWithTransformationMode = dynamic_cast<ITransformationMode*>(m_graphicsItem))
                     transformationMode = itemWithTransformationMode->transformationMode();
+                const qreal scaleFactor = qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height());
+                bool applyEffectsBeforeTransform = true;
                 QImage image;
                 if(IGrabScaledImage *itemWithGrabScaledImage = dynamic_cast<IGrabScaledImage*>(m_graphicsItem))
                 {
-                    const qreal scaleFactor = qMax(qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height()), static_cast<qreal>(1.0));
-                    image = itemWithGrabScaledImage->grabImage(scaleFactor);
+                    image = itemWithGrabScaledImage->grabImage(qMax(scaleFactor, static_cast<qreal>(1.0)));
+                    applyEffectsBeforeTransform = scaleFactor >= 1.0;
                 }
                 else if(IGrabImage *itemWithGrabImage = dynamic_cast<IGrabImage*>(m_graphicsItem))
                 {
                     image = itemWithGrabImage->grabImage();
+                    applyEffectsBeforeTransform = scaleFactor >= 1.0;
                 }
                 else
                 {
-                    const qreal scaleFactor = qMax(deviceRect.width() / rotatedBoundingRect.width(), deviceRect.height() / rotatedBoundingRect.height());
                     QSize size = (boundingRect.size() * scaleFactor).toSize();
                     image = QImage(size, QImage::Format_ARGB32_Premultiplied);
                     while(image.isNull() && !size.isEmpty())
@@ -379,7 +366,8 @@ protected:
                     m_graphicsItem->paint(&painterLocal, &options);
                     painterLocal.end();
                 }
-                image = m_printEffect.apply(image);
+                if(applyEffectsBeforeTransform)
+                    m_printEffect.apply(image);
                 if(m_flipOrientations)
                     QImage_flip(image, m_flipOrientations);
                 QSize unrotatedDeviceSize = deviceRect.size();
@@ -389,7 +377,7 @@ protected:
                     transform.rotate(-m_rotateAngle);
                     unrotatedDeviceSize = transform.mapRect(deviceRect).size();
                 }
-                if(transformationMode == Qt::SmoothTransformation/* && unrotatedDeviceSize.width() < image.width() && unrotatedDeviceSize.height() < image.height()*/)
+                if(transformationMode == Qt::SmoothTransformation && unrotatedDeviceSize.width() != image.width() && unrotatedDeviceSize.height() != image.height())
                 {
                     const QImage scaledImage = image.scaled(unrotatedDeviceSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
                     if(!scaledImage.isNull())
@@ -397,6 +385,8 @@ protected:
                     else
                         LOG_WARNING() << LOGGING_CTX << "Image scaling failed, target size =" << unrotatedDeviceSize.width() << "x" << unrotatedDeviceSize.height();
                 }
+                if(!applyEffectsBeforeTransform)
+                    m_printEffect.apply(image);
                 painter.drawImage(worldTransform.inverted().mapRect(deviceRect), image);
             }
             else
