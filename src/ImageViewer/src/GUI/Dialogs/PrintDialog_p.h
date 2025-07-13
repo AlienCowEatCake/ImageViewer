@@ -62,7 +62,7 @@ class PrintEffect
 public:
     PrintEffect()
         : m_legacyRenderer(false)
-        , m_desaturate(false)
+        , m_grayscale(false)
         , m_brightness(0)
         , m_contrast(0)
         , m_exposure(0)
@@ -81,9 +81,9 @@ public:
         m_legacyRenderer = legacyRenderer;
     }
 
-    void setDesaturate(bool desaturate)
+    void setGrayscale(bool grayscale)
     {
-        m_desaturate = desaturate;
+        m_grayscale = grayscale;
     }
 
     void setBrightness(int level)
@@ -106,7 +106,7 @@ public:
         if(m_legacyRenderer)
             return;
 
-        if(!m_desaturate && !m_brightness && !m_contrast && !m_exposure)
+        if(!m_grayscale && !m_brightness && !m_contrast && !m_exposure)
             return;
 
         const bool useRgbTransform = m_brightness || m_contrast;
@@ -130,24 +130,19 @@ public:
             }
         }
 
-        const bool useSvTransform = m_exposure || m_desaturate;
-        int svTransform[2][256];
-        if(useSvTransform)
+        const bool useVTransform = m_exposure;
+        int vTransform[256];
+        if(useVTransform)
         {
             for(int i = 0; i < 256; ++i)
             {
-                int s = i, v = i;
+                int v = i;
                 if(m_exposure)
                 {
                     // https://habr.com/ru/post/268115/
                     v = qBound(0, v + static_cast<int>(std::sin(v * 0.01255) * m_exposure), 255);
                 }
-                if(m_desaturate)
-                {
-                    s = 0;
-                }
-                svTransform[0][i] = s;
-                svTransform[1][i] = v;
+                vTransform[i] = v;
             }
         }
 
@@ -165,17 +160,22 @@ public:
                 {
                     pixel = qRgba(rgbTransform[qRed(pixel)], rgbTransform[qGreen(pixel)], rgbTransform[qBlue(pixel)], a);
                 }
-                if(useSvTransform)
+                if(useVTransform)
                 {
                     QColor color(pixel);
                     color = color.toHsv();
                     int h = 0, s = 0, v = 0;
                     color.getHsv(&h, &s, &v);
-                    color.setHsv(h, svTransform[0][s], svTransform[1][v]);
+                    color.setHsv(h, s, vTransform[v]);
                     color = color.toRgb();
                     int r = 0, g = 0, b = 0;
                     color.getRgb(&r, &g, &b);
                     pixel = qRgba(r, g, b, a);
+                }
+                if(m_grayscale)
+                {
+                    const int c = qGray(pixel);
+                    pixel = qRgba(c, c, c, a);
                 }
             }
         }
@@ -183,7 +183,7 @@ public:
 
 private:
     bool m_legacyRenderer;
-    bool m_desaturate;
+    bool m_grayscale;
     int m_brightness;
     int m_contrast;
     int m_exposure;
@@ -263,9 +263,9 @@ public:
         update();
     }
 
-    void setDesaturate(bool desaturate)
+    void setGrayscale(bool grayscale)
     {
-        m_printEffect.setDesaturate(desaturate);
+        m_printEffect.setGrayscale(grayscale);
         update();
     }
 
@@ -766,7 +766,7 @@ struct PrintDialog::UI
     QLabel * const exposureLabel;
     QSlider * const exposureSlider;
     QSpinBox * const exposureSpinBox;
-    QCheckBox * const desaturateCheckBox;
+    QCheckBox * const grayscaleCheckBox;
     QCheckBox * const legacyRendererCheckBox;
 
     QGroupBox * const effectsPreviewGroup;
@@ -847,7 +847,7 @@ struct PrintDialog::UI
         , CONSTRUCT_OBJECT(exposureLabel, QLabel, (effectsControlGroup))
         , CONSTRUCT_OBJECT(exposureSlider, QSlider, (effectsControlGroup))
         , CONSTRUCT_OBJECT(exposureSpinBox, QSpinBox, (effectsControlGroup))
-        , CONSTRUCT_OBJECT(desaturateCheckBox, QCheckBox, (effectsControlGroup))
+        , CONSTRUCT_OBJECT(grayscaleCheckBox, QCheckBox, (effectsControlGroup))
         , CONSTRUCT_OBJECT(legacyRendererCheckBox, QCheckBox, (effectsControlGroup))
         , CONSTRUCT_OBJECT(effectsPreviewGroup, QGroupBox, (effectsTabFrame))
         , CONSTRUCT_OBJECT(effectsPreviewWidget, PrintPreviewWidget, (effectsPreviewGroup))
@@ -957,7 +957,7 @@ struct PrintDialog::UI
         effectsControlLayout->addWidget(exposureSlider, 7, 0, 1, 1);
         effectsControlLayout->addWidget(exposureSpinBox, 7, 1, 1, 1);
         effectsControlLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::MinimumExpanding), 8, 0, 1, 2);
-        effectsControlLayout->addWidget(desaturateCheckBox, 9, 0, 1, 2);
+        effectsControlLayout->addWidget(grayscaleCheckBox, 9, 0, 1, 2);
         effectsControlLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::MinimumExpanding), 10, 0, 1, 2);
         effectsControlLayout->addWidget(legacyRendererCheckBox, 11, 0, 1, 2);
         effectsControlLayout->addItem(new QSpacerItem(64, 1, QSizePolicy::Fixed, QSizePolicy::Fixed), 0, 1, 8, 1);
@@ -1042,7 +1042,7 @@ struct PrintDialog::UI
         brightnessLabel->setText(qApp->translate("PrintDialog", "Brightness:", "Effects"));
         contrastLabel->setText(qApp->translate("PrintDialog", "Contrast:", "Effects"));
         exposureLabel->setText(qApp->translate("PrintDialog", "Exposure:", "Effects"));
-        desaturateCheckBox->setText(qApp->translate("PrintDialog", "Desaturate", "Effects"));
+        grayscaleCheckBox->setText(qApp->translate("PrintDialog", "Grayscale", "Effects"));
         legacyRendererCheckBox->setText(qApp->translate("PrintDialog", "Use Legacy Rendering Algorithm", "Effects"));
 
         effectsPreviewGroup->setTitle(qApp->translate("PrintDialog", "Preview", "Effects"));

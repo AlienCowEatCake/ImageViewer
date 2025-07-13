@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -72,7 +72,7 @@ private Q_SLOTS:
     void onBrightnessChanged(int value);
     void onContrastChanged(int value);
     void onExposureChanged(int value);
-    void onDesaturateToggled(bool checked);
+    void onGrayscaleToggled(bool checked);
     void onLegacyRendererToggled(bool checked);
 
 private:

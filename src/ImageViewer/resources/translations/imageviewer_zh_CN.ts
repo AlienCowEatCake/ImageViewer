@@ -791,306 +791,306 @@
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="609"/>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="787"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="793"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="610"/>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="788"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="794"/>
         <source>Invalid Paper Size</source>
         <translation>无效的纸张大小</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1213"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1219"/>
         <source>Color</source>
         <comment>Color mode</comment>
         <translation type="unfinished">彩色</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1215"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1221"/>
         <source>Grayscale</source>
         <comment>Color mode</comment>
         <translation type="unfinished">灰阶</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1126"/>
-        <source>Yes</source>
-        <comment>Default</comment>
-        <translation>是</translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1128"/>
-        <source>No</source>
-        <comment>Default</comment>
-        <translation>否</translation>
-    </message>
-    <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1132"/>
         <source>Yes</source>
-        <comment>Remote</comment>
+        <comment>Default</comment>
         <translation>是</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1134"/>
         <source>No</source>
+        <comment>Default</comment>
+        <translation>否</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1138"/>
+        <source>Yes</source>
+        <comment>Remote</comment>
+        <translation>是</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1140"/>
+        <source>No</source>
         <comment>Remote</comment>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1158"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1164"/>
         <source>Idle</source>
         <comment>State</comment>
         <translation>空闲</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1161"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1167"/>
         <source>Active</source>
         <comment>State</comment>
         <translation>忙</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1164"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1170"/>
         <source>Aborted</source>
         <comment>State</comment>
         <translation>中断</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1167"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1173"/>
         <source>Error</source>
         <comment>State</comment>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1170"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1176"/>
         <source>Unknown (%1)</source>
         <comment>State</comment>
         <translation>未知 (%1)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1002"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="992"/>
         <source>Printer</source>
         <translation>打印机</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1003"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="993"/>
         <source>…</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1004"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="994"/>
         <source>Name:</source>
         <translation>名称:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1005"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="995"/>
         <source>Description:</source>
         <translation>描述:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1006"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="996"/>
         <source>Default:</source>
         <translation>默认:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1007"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="997"/>
         <source>Remote:</source>
         <translation>远程:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1008"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="998"/>
         <source>Location:</source>
         <translation>位置:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1009"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="999"/>
         <source>Make and model:</source>
         <translation>品牌型号:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1010"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1000"/>
         <source>State:</source>
         <translation>状态:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1012"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1002"/>
         <source>Page</source>
         <translation>页面</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1013"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1003"/>
         <source>Portrait</source>
         <translation type="unfinished">纵向</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1014"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1004"/>
         <source>Landscape</source>
         <translation>横向</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1015"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1005"/>
         <source>Auto-Rotate</source>
         <translation>双面打印</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1016"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1006"/>
         <source>Page Setup</source>
         <translation>页面设置</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1018"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1008"/>
         <source>Misc</source>
         <translation>其它</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1019"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1009"/>
         <source>Copies:</source>
         <translation>份数:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1020"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1010"/>
         <source>Color Mode:</source>
         <translation>颜色模式:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1022"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1012"/>
         <source>Size</source>
         <translation>大小</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1023"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1013"/>
         <source>Width:</source>
         <translation>宽:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1024"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1014"/>
         <source>Height:</source>
         <translation>高:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1025"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1015"/>
         <source>X Resolution:</source>
         <translation>横向分辨率:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1026"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1016"/>
         <source>Y Resolution:</source>
         <translation>纵向分辨率:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1027"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1017"/>
         <source>Load Defaults</source>
         <translation>恢复默认设置</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1039"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1029"/>
         <source>Position</source>
         <translation>位置</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1040"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1030"/>
         <source>Left:</source>
         <translation>左:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1041"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1031"/>
         <source>Right:</source>
         <translation>右:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1042"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1032"/>
         <source>Top:</source>
         <translation>顶:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1043"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1033"/>
         <source>Bottom:</source>
         <translation>底:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1044"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1034"/>
         <source>Center:</source>
         <translation>居中:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1046"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1036"/>
         <source>Ignore Page Margins</source>
         <translation>忽略纸张边距</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1047"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1037"/>
         <source>Ignore Paper Bounds</source>
         <translation>忽略纸张边界</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1049"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1039"/>
         <source>Preview</source>
         <translation>预览</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1051"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1041"/>
         <source>Effects</source>
         <comment>Effects</comment>
         <translation>效果</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1052"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1042"/>
         <source>Brightness:</source>
         <comment>Effects</comment>
         <translation>亮度:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1053"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1043"/>
         <source>Contrast:</source>
         <comment>Effects</comment>
         <translation>对比度:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1054"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1044"/>
         <source>Exposure:</source>
         <comment>Effects</comment>
         <translation>曝光:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1055"/>
-        <source>Desaturate</source>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1045"/>
+        <source>Grayscale</source>
         <comment>Effects</comment>
-        <translation>饱和度</translation>
+        <translation type="unfinished">灰阶</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1056"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1046"/>
         <source>Use Legacy Rendering Algorithm</source>
         <comment>Effects</comment>
         <translation>使用传统渲染算法</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1058"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1048"/>
         <source>Preview</source>
         <comment>Effects</comment>
         <translation>预览</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1060"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1050"/>
         <source>General</source>
         <translation>常规</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1061"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1051"/>
         <source>Image Settings</source>
         <translation>图像设定</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1062"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1052"/>
         <source>Effects</source>
         <translation>效果</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1064"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1054"/>
         <source>Print</source>
         <translation>打印</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1065"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1055"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -1448,37 +1448,37 @@
 <context>
     <name>Themes</name>
     <message>
-        <location filename="../../src/main.cpp" line="80"/>
+        <location filename="../../src/main.cpp" line="82"/>
         <source>System</source>
         <translation>跟随系统</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="83"/>
+        <location filename="../../src/main.cpp" line="85"/>
         <source>Light</source>
         <translation type="unfinished">浅色</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="92"/>
+        <location filename="../../src/main.cpp" line="94"/>
         <source>Fusion Light</source>
         <translation>Fusion 浅色</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="96"/>
+        <location filename="../../src/main.cpp" line="98"/>
         <source>Fusion Dark</source>
         <translation>Fusion 深色</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="101"/>
+        <location filename="../../src/main.cpp" line="103"/>
         <source>Windows 95</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="105"/>
+        <location filename="../../src/main.cpp" line="107"/>
         <source>Windows 2000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="87"/>
+        <location filename="../../src/main.cpp" line="89"/>
         <source>Dark</source>
         <translation>深色</translation>
     </message>

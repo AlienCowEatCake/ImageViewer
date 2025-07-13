@@ -440,7 +440,7 @@ PrintDialog::PrintDialog(const QSharedPointer<IImageData> &imageData,
     m_ui->exposureSpinBox->setMinimum(m_ui->exposureSlider->minimum());
     m_ui->exposureSpinBox->setValue(m_ui->exposureSlider->value());
 
-    m_ui->desaturateCheckBox->setChecked(false);
+    m_ui->grayscaleCheckBox->setChecked(false);
     m_ui->legacyRendererCheckBox->setChecked(false);
     m_ui->effectsPreviewWidget->setGraphicsItem(m_impl->graphicsItem, rotateAngle, flipOrientations);
 
@@ -494,7 +494,7 @@ PrintDialog::PrintDialog(const QSharedPointer<IImageData> &imageData,
     connect(m_ui->contrastSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onContrastChanged(int)));
     connect(m_ui->exposureSlider, SIGNAL(valueChanged(int)), this, SLOT(onExposureChanged(int)));
     connect(m_ui->exposureSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onExposureChanged(int)));
-    connect(m_ui->desaturateCheckBox, SIGNAL(toggled(bool)), this, SLOT(onDesaturateToggled(bool)));
+    connect(m_ui->grayscaleCheckBox, SIGNAL(toggled(bool)), this, SLOT(onGrayscaleToggled(bool)));
     connect(m_ui->legacyRendererCheckBox, SIGNAL(toggled(bool)), this, SLOT(onLegacyRendererToggled(bool)));
     connect(m_ui->dialogButtonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(onPrintClicked()));
     connect(m_ui->dialogButtonBox->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), this, SLOT(close()));
@@ -1107,7 +1107,7 @@ void PrintDialog::onExposureChanged(int value)
     updateEffects();
 }
 
-void PrintDialog::onDesaturateToggled(bool /*checked*/)
+void PrintDialog::onGrayscaleToggled(bool /*checked*/)
 {
     updateEffects();
 }
@@ -1478,10 +1478,10 @@ void PrintDialog::updateEffects()
     m_ui->effectsPreviewWidget->setExposure(exposure);
     m_impl->printEffect.setExposure(exposure);
 
-    const bool desaturate = m_ui->desaturateCheckBox->isChecked();
-    m_ui->previewWidget->setDesaturate(desaturate);
-    m_ui->effectsPreviewWidget->setDesaturate(desaturate);
-    m_impl->printEffect.setDesaturate(desaturate);
+    const bool grayscale = m_ui->grayscaleCheckBox->isChecked();
+    m_ui->previewWidget->setGrayscale(grayscale);
+    m_ui->effectsPreviewWidget->setGrayscale(grayscale);
+    m_impl->printEffect.setGrayscale(grayscale);
 
     const bool legacyRenderer = m_ui->legacyRendererCheckBox->isChecked();
     m_ui->previewWidget->setLegacyRenderer(legacyRenderer);
@@ -1498,5 +1498,5 @@ void PrintDialog::updateEffects()
     m_ui->exposureLabel->setEnabled(effectsEnabled);
     m_ui->exposureSlider->setEnabled(effectsEnabled);
     m_ui->exposureSpinBox->setEnabled(effectsEnabled);
-    m_ui->desaturateCheckBox->setEnabled(effectsEnabled);
+    m_ui->grayscaleCheckBox->setEnabled(effectsEnabled);
 }
