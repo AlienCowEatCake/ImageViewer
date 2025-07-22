@@ -11,9 +11,10 @@ def main():
     plist = os.path.join(os.path.dirname(cur_dir), 'macosx', 'Info.plist')
     with open(plist, 'rb') as f:
         plist_data = plistlib.load(f)
+    f_capabilities = io.open('capabilities.wxi', 'w', newline='\n')
     f_open = io.open('open.wxi', 'w', newline='\n')
     f_open_with = io.open('open_with.wxi', 'w', newline='\n')
-    for f in [f_open, f_open_with]:
+    for f in [f_capabilities, f_open, f_open_with]:
         f.write('<?xml version="1.0" encoding="utf-8" ?>\n')
         f.write('<Include>\n')
     used_ext = []
@@ -23,6 +24,13 @@ def main():
             if ext in used_ext:
                 raise ValueError('Duplicated extension "{}"'.format(ext))
             used_ext.append(ext)
+            f_capabilities.write('    <RegistryValue\n')
+            f_capabilities.write('      Root="HKLM"\n')
+            f_capabilities.write('      Type="string"\n')
+            f_capabilities.write('      Key="$(var.HKLMRegPath)\\Capabilities\\FileAssociations"\n')
+            f_capabilities.write('      Name=".{}"\n'.format(ext))
+            f_capabilities.write('      Value="$(var.ProductNameSafe).{}"\n'.format(ext))
+            f_capabilities.write('      Id="reg_cap_assoc_{}" />\n'.format(ext))
             f_open_with.write('    <RegistryValue\n')
             f_open_with.write('      Root="HKCR"\n')
             f_open_with.write('      Type="string"\n')
@@ -66,7 +74,7 @@ def main():
                 f_open.write('      Key=".{}"\n'.format(ext))
                 f_open.write('      Value="$(var.ProductNameSafe).{}"\n'.format(ext))
                 f_open.write('      Id="reg_assoc_{}" />\n'.format(ext))
-    for f in [f_open, f_open_with]:
+    for f in [f_capabilities, f_open, f_open_with]:
         f.write('</Include>\n')
         f.close()
     return 0

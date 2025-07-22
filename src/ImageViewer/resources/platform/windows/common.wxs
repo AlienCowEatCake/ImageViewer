@@ -25,6 +25,28 @@
                   Root="HKCU"
                   Id="regD481365872C1468A8631EA9FA6A6B582"
                   KeyPath="yes" />
+                <RegistryValue
+                  Root="HKLM"
+                  Type="string"
+                  Key="SOFTWARE\RegisteredApplications"
+                  Name="$(var.ProductNameSafe)"
+                  Value="$(var.HKLMRegPath)\Capabilities"
+                  Id="reg_registered_app_caps" />
+                <RegistryValue
+                  Root="HKLM"
+                  Type="string"
+                  Key="$(var.HKLMRegPath)\Capabilities"
+                  Name="ApplicationName"
+                  Value="$(var.ProductName)"
+                  Id="reg_cap_app_name" />
+                <RegistryValue
+                  Root="HKLM"
+                  Type="string"
+                  Key="$(var.HKLMRegPath)\Capabilities"
+                  Name="ApplicationDescription"
+                  Value="$(var.Description)"
+                  Id="reg_cap_app_description" />
+                <?include $(sys.CURRENTDIR)..\src\ImageViewer\resources\platform\windows\capabilities.wxi ?>
                 <?include $(sys.CURRENTDIR)..\src\ImageViewer\resources\platform\windows\open_with.wxi ?>
             </Component>
             <Component Id="cmpD6C04E5D22B345629C284A879F977B59">
