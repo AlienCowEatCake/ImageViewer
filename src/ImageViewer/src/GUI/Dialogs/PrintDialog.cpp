@@ -20,6 +20,7 @@
 #include "PrintDialog.h"
 #include "PrintDialog_p.h"
 
+#include <QDataStream>
 #include <QFileInfo>
 #include <QLocale>
 #include <QMessageBox>
@@ -506,6 +507,106 @@ PrintDialog::PrintDialog(const QSharedPointer<IImageData> &imageData,
 
 PrintDialog::~PrintDialog()
 {}
+
+QByteArray PrintDialog::optionsData() const
+{
+    QByteArray data;
+    QDataStream ds(&data, QIODevice::WriteOnly);
+    ds << (m_impl->printer ? m_impl->printer->printerName() : QString());
+
+    ds << m_ui->portraitRadioButton->isChecked();
+    ds << m_ui->landscapeRadioButton->isChecked();
+    ds << m_ui->autoRotateCheckBox->isChecked();
+
+    ds << m_ui->copiesSpinBox->value();
+    ds << m_ui->colorModeComboBox->currentIndex();
+
+    ds << m_ui->ignorePageMarginsCheckBox->isChecked();
+    ds << m_ui->ignorePaperBoundsCheckBox->isChecked();
+
+    ds << m_ui->keepAspectCheckBox->isChecked();
+    ds << m_ui->centerComboBox->currentIndex();
+    ds << m_impl->itemPrintRect;
+
+    ds << m_ui->brightnessSlider->value();
+    ds << m_ui->contrastSlider->value();
+    ds << m_ui->exposureSlider->value();
+    ds << m_ui->grayscaleCheckBox->isChecked();
+    ds << m_ui->legacyRendererCheckBox->isChecked();
+
+    return data;
+}
+
+void PrintDialog::setOptionsData(const QByteArray &data)
+{
+    if(data.isEmpty())
+        return;
+
+    QDataStream ds(data);
+
+    QString printerName = (m_impl->printer ? m_impl->printer->printerName() : QString());
+    ds >> printerName;
+    if(!printerName.isEmpty() && (!m_impl->printer || printerName != m_impl->printer->printerName()))
+    {
+        for(int i = 0; i < m_impl->availablePrinters.size(); ++i)
+        {
+            if(m_impl->availablePrinters[i].printerName() == printerName)
+            {
+                m_ui->printerSelectComboBox->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
+
+    bool portrait = m_ui->portraitRadioButton->isChecked();
+    ds >> portrait;
+    m_ui->portraitRadioButton->setChecked(portrait);
+    bool landscape = m_ui->landscapeRadioButton->isChecked();
+    ds >> landscape;
+    m_ui->landscapeRadioButton->setChecked(landscape);
+    bool autoRotate = m_ui->autoRotateCheckBox->isChecked();
+    ds >> autoRotate;
+    m_ui->autoRotateCheckBox->setChecked(autoRotate);
+
+    int copies = m_ui->copiesSpinBox->value();
+    ds >> copies;
+    m_ui->copiesSpinBox->setValue(copies);
+    int colorMode = m_ui->colorModeComboBox->currentIndex();
+    ds >> colorMode;
+    m_ui->colorModeComboBox->setCurrentIndex(colorMode);
+
+    bool ignorePageMargins = m_ui->ignorePageMarginsCheckBox->isChecked();
+    ds >> ignorePageMargins;
+    m_ui->ignorePageMarginsCheckBox->setChecked(ignorePageMargins);
+    bool ignorePaperBounds = m_ui->ignorePaperBoundsCheckBox->isChecked();
+    ds >> ignorePaperBounds;
+    m_ui->ignorePaperBoundsCheckBox->setChecked(ignorePaperBounds);
+
+    bool keepAspect = m_ui->keepAspectCheckBox->isChecked();
+    ds >> keepAspect;
+    m_ui->keepAspectCheckBox->setChecked(keepAspect);
+    int center = m_ui->centerComboBox->currentIndex();
+    ds >> center;
+    m_ui->centerComboBox->setCurrentIndex(center);
+    ds >> m_impl->itemPrintRect;
+    updateImageGeometry();
+
+    int brightness = m_ui->brightnessSlider->value();
+    ds >> brightness;
+    m_ui->brightnessSlider->setValue(brightness);
+    int contrast = m_ui->contrastSlider->value();
+    ds >> contrast;
+    m_ui->contrastSlider->setValue(contrast);
+    int exposure = m_ui->exposureSlider->value();
+    ds >> exposure;
+    m_ui->exposureSlider->setValue(exposure);
+    bool grayscale = m_ui->grayscaleCheckBox->isChecked();
+    ds >> grayscale;
+    m_ui->grayscaleCheckBox->setChecked(grayscale);
+    bool legacyRenderer = m_ui->legacyRendererCheckBox->isChecked();
+    ds >> legacyRenderer;
+    m_ui->legacyRendererCheckBox->setChecked(legacyRenderer);
+}
 
 void PrintDialog::onCurrentPrinterChanged(int index)
 {

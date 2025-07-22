@@ -60,6 +60,9 @@ struct MainWindow::Impl
     ImageSaver imageSaver;
     RestorableGeometryHelper geometryHelper;
     EffectsStorage effectsStorage;
+#if defined (ENABLE_PRINT_SUPPORT)
+    QByteArray printOptions;
+#endif
     QTimer slideShowTimer;
     bool isSlideShowMode;
     bool isFullScreenMode;
@@ -210,6 +213,10 @@ struct MainWindow::Impl
 
     void loadImageData()
     {
+#if defined (ENABLE_PRINT_SUPPORT)
+        printOptions.clear();
+#endif
+
         if(!settings->rememberEffectsDuringSession())
             effectsStorage.clearSavedEffects();
 
@@ -468,7 +475,9 @@ void MainWindow::onPrintRequested()
     if(effectsData.flipVertical)
         flipOrientations |= Qt::Vertical;
     PrintDialog *dialog = new PrintDialog(imageData, effectsData.rotationAngle, flipOrientations, m_impl->uiState.currentFilePath, this);
-    dialog->exec();
+    dialog->setOptionsData(m_impl->printOptions);
+    if(dialog->exec())
+        m_impl->printOptions = dialog->optionsData();
     dialog->deleteLater();
 #endif
 }

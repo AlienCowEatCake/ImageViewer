@@ -43,6 +43,9 @@ public:
                 QWidget *parent = Q_NULLPTR);
     ~PrintDialog();
 
+    QByteArray optionsData() const;
+    void setOptionsData(const QByteArray &data);
+
 private Q_SLOTS:
     void onCurrentPrinterChanged(int index);
     void onPrintDialogButtonClicked();
