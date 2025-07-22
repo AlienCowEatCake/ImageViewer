@@ -25,7 +25,7 @@ def main():
                 raise ValueError('Duplicated extension "{}"'.format(ext))
             used_ext.append(ext)
             f_capabilities.write('    <RegistryValue\n')
-            f_capabilities.write('      Root="HKLM"\n')
+            f_capabilities.write('      Root="HKMU"\n')
             f_capabilities.write('      Type="string"\n')
             f_capabilities.write('      Key="$(var.HKLMRegPath)\\Capabilities\\FileAssociations"\n')
             f_capabilities.write('      Name=".{}"\n'.format(ext))

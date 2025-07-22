@@ -149,6 +149,6 @@ heat dir build_msi -cg ApplicationFiles -dr INSTALLLOCATION -gg -scom -sfrag -sr
 candle -out appfiles.wixobj appfiles.wxs -arch "${WIX_ARCH}"
 candle -out common.wixobj "../src/ImageViewer/resources/platform/windows/common.wxs" -arch "${WIX_ARCH}"
 candle -out main.wixobj "../src/ImageViewer/resources/platform/windows/w${WIX_OS_VER}_${WIX_ARCH}.wxs" -ext WixUIExtension -ext WixUtilExtension -arch "${WIX_ARCH}"
-light -out "${PROJECT}.msi" -b build_msi main.wixobj appfiles.wixobj common.wixobj -ext WixUIExtension -ext WixUtilExtension -dcl:high
+light -out "${PROJECT}.msi" -b build_msi main.wixobj appfiles.wixobj common.wixobj -ext WixUIExtension -ext WixUtilExtension -dcl:high -sice:ICE57
 mv "${PROJECT}.msi" "../${DIST_PREFIX}.msi"
 cd ..

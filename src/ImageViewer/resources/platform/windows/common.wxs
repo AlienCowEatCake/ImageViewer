@@ -21,26 +21,26 @@
                   Name="$(var.ProductNameSafe).Common"
                   Type="integer"
                   Value="1"
-                  Key="$(var.HKCURegPath)"
-                  Root="HKCU"
+                  Key="$(var.HKLMRegPath)"
+                  Root="HKMU"
                   Id="regD481365872C1468A8631EA9FA6A6B582"
                   KeyPath="yes" />
                 <RegistryValue
-                  Root="HKLM"
+                  Root="HKMU"
                   Type="string"
                   Key="SOFTWARE\RegisteredApplications"
                   Name="$(var.ProductNameSafe)"
                   Value="$(var.HKLMRegPath)\Capabilities"
                   Id="reg_registered_app_caps" />
                 <RegistryValue
-                  Root="HKLM"
+                  Root="HKMU"
                   Type="string"
                   Key="$(var.HKLMRegPath)\Capabilities"
                   Name="ApplicationName"
                   Value="$(var.ProductName)"
                   Id="reg_cap_app_name" />
                 <RegistryValue
-                  Root="HKLM"
+                  Root="HKMU"
                   Type="string"
                   Key="$(var.HKLMRegPath)\Capabilities"
                   Name="ApplicationDescription"
@@ -54,8 +54,8 @@
                   Name="$(var.ProductNameSafe).Associations"
                   Type="integer"
                   Value="1"
-                  Key="$(var.HKCURegPath)"
-                  Root="HKCU"
+                  Key="$(var.HKLMRegPath)"
+                  Root="HKMU"
                   Id="reg6378610E115F414BBACF4340988A363A"
                   KeyPath="yes" />
                 <?include $(sys.CURRENTDIR)..\src\ImageViewer\resources\platform\windows\open.wxi ?>

@@ -12,6 +12,5 @@
     <?define ExeProcessName="ImageViewer.exe" ?>
     <?define ProductNameSafe="ImageViewer" ?>
     <?define HKLMRegPath="Software\AlienCowEatCake\$(var.ProductName)" ?>
-    <?define HKCURegPath="$(var.HKLMRegPath)" ?>
     <?define Description="Simple, cross-platform image viewer" ?>
 </Include>

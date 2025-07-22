@@ -1,742 +1,742 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Include>
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".avif"
       Value="$(var.ProductNameSafe).avif"
       Id="reg_cap_assoc_avif" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".avifs"
       Value="$(var.ProductNameSafe).avifs"
       Id="reg_cap_assoc_avifs" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".bmp"
       Value="$(var.ProductNameSafe).bmp"
       Id="reg_cap_assoc_bmp" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".dib"
       Value="$(var.ProductNameSafe).dib"
       Id="reg_cap_assoc_dib" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".bpg"
       Value="$(var.ProductNameSafe).bpg"
       Id="reg_cap_assoc_bpg" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".cur"
       Value="$(var.ProductNameSafe).cur"
       Id="reg_cap_assoc_cur" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".dds"
       Value="$(var.ProductNameSafe).dds"
       Id="reg_cap_assoc_dds" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".exr"
       Value="$(var.ProductNameSafe).exr"
       Id="reg_cap_assoc_exr" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".flif"
       Value="$(var.ProductNameSafe).flif"
       Id="reg_cap_assoc_flif" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".gif"
       Value="$(var.ProductNameSafe).gif"
       Id="reg_cap_assoc_gif" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".icns"
       Value="$(var.ProductNameSafe).icns"
       Id="reg_cap_assoc_icns" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".ico"
       Value="$(var.ProductNameSafe).ico"
       Id="reg_cap_assoc_ico" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".jbg"
       Value="$(var.ProductNameSafe).jbg"
       Id="reg_cap_assoc_jbg" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".jbig"
       Value="$(var.ProductNameSafe).jbig"
       Id="reg_cap_assoc_jbig" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".jng"
       Value="$(var.ProductNameSafe).jng"
       Id="reg_cap_assoc_jng" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".jpg"
       Value="$(var.ProductNameSafe).jpg"
       Id="reg_cap_assoc_jpg" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".jpeg"
       Value="$(var.ProductNameSafe).jpeg"
       Id="reg_cap_assoc_jpeg" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".jpe"
       Value="$(var.ProductNameSafe).jpe"
       Id="reg_cap_assoc_jpe" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".jp2"
       Value="$(var.ProductNameSafe).jp2"
       Id="reg_cap_assoc_jp2" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".j2k"
       Value="$(var.ProductNameSafe).j2k"
       Id="reg_cap_assoc_j2k" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".jpc"
       Value="$(var.ProductNameSafe).jpc"
       Id="reg_cap_assoc_jpc" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".j2c"
       Value="$(var.ProductNameSafe).j2c"
       Id="reg_cap_assoc_j2c" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".pgx"
       Value="$(var.ProductNameSafe).pgx"
       Id="reg_cap_assoc_pgx" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".jpt"
       Value="$(var.ProductNameSafe).jpt"
       Id="reg_cap_assoc_jpt" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".jpf"
       Value="$(var.ProductNameSafe).jpf"
       Id="reg_cap_assoc_jpf" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".jxl"
       Value="$(var.ProductNameSafe).jxl"
       Id="reg_cap_assoc_jxl" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".jxr"
       Value="$(var.ProductNameSafe).jxr"
       Id="reg_cap_assoc_jxr" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".hdp"
       Value="$(var.ProductNameSafe).hdp"
       Id="reg_cap_assoc_hdp" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".wdp"
       Value="$(var.ProductNameSafe).wdp"
       Id="reg_cap_assoc_wdp" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".heif"
       Value="$(var.ProductNameSafe).heif"
       Id="reg_cap_assoc_heif" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".heic"
       Value="$(var.ProductNameSafe).heic"
       Id="reg_cap_assoc_heic" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".heix"
       Value="$(var.ProductNameSafe).heix"
       Id="reg_cap_assoc_heix" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".heifs"
       Value="$(var.ProductNameSafe).heifs"
       Id="reg_cap_assoc_heifs" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".heics"
       Value="$(var.ProductNameSafe).heics"
       Id="reg_cap_assoc_heics" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".hif"
       Value="$(var.ProductNameSafe).hif"
       Id="reg_cap_assoc_hif" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".hej2"
       Value="$(var.ProductNameSafe).hej2"
       Id="reg_cap_assoc_hej2" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".lerc1"
       Value="$(var.ProductNameSafe).lerc1"
       Id="reg_cap_assoc_lerc1" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".lerc2"
       Value="$(var.ProductNameSafe).lerc2"
       Id="reg_cap_assoc_lerc2" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".mif"
       Value="$(var.ProductNameSafe).mif"
       Id="reg_cap_assoc_mif" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".mng"
       Value="$(var.ProductNameSafe).mng"
       Id="reg_cap_assoc_mng" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".apng"
       Value="$(var.ProductNameSafe).apng"
       Id="reg_cap_assoc_apng" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".png"
       Value="$(var.ProductNameSafe).png"
       Id="reg_cap_assoc_png" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".pbm"
       Value="$(var.ProductNameSafe).pbm"
       Id="reg_cap_assoc_pbm" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".pgm"
       Value="$(var.ProductNameSafe).pgm"
       Id="reg_cap_assoc_pgm" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".pic"
       Value="$(var.ProductNameSafe).pic"
       Id="reg_cap_assoc_pic" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".pnm"
       Value="$(var.ProductNameSafe).pnm"
       Id="reg_cap_assoc_pnm" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".ppm"
       Value="$(var.ProductNameSafe).ppm"
       Id="reg_cap_assoc_ppm" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".psd"
       Value="$(var.ProductNameSafe).psd"
       Id="reg_cap_assoc_psd" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".bay"
       Value="$(var.ProductNameSafe).bay"
       Id="reg_cap_assoc_bay" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".bmq"
       Value="$(var.ProductNameSafe).bmq"
       Id="reg_cap_assoc_bmq" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".cr2"
       Value="$(var.ProductNameSafe).cr2"
       Id="reg_cap_assoc_cr2" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".crw"
       Value="$(var.ProductNameSafe).crw"
       Id="reg_cap_assoc_crw" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".cs1"
       Value="$(var.ProductNameSafe).cs1"
       Id="reg_cap_assoc_cs1" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".dc2"
       Value="$(var.ProductNameSafe).dc2"
       Id="reg_cap_assoc_dc2" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".dcr"
       Value="$(var.ProductNameSafe).dcr"
       Id="reg_cap_assoc_dcr" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".dng"
       Value="$(var.ProductNameSafe).dng"
       Id="reg_cap_assoc_dng" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".erf"
       Value="$(var.ProductNameSafe).erf"
       Id="reg_cap_assoc_erf" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".fff"
       Value="$(var.ProductNameSafe).fff"
       Id="reg_cap_assoc_fff" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".hdr"
       Value="$(var.ProductNameSafe).hdr"
       Id="reg_cap_assoc_hdr" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".k25"
       Value="$(var.ProductNameSafe).k25"
       Id="reg_cap_assoc_k25" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".kdc"
       Value="$(var.ProductNameSafe).kdc"
       Id="reg_cap_assoc_kdc" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".mdc"
       Value="$(var.ProductNameSafe).mdc"
       Id="reg_cap_assoc_mdc" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".mos"
       Value="$(var.ProductNameSafe).mos"
       Id="reg_cap_assoc_mos" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".mrw"
       Value="$(var.ProductNameSafe).mrw"
       Id="reg_cap_assoc_mrw" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".nef"
       Value="$(var.ProductNameSafe).nef"
       Id="reg_cap_assoc_nef" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".orf"
       Value="$(var.ProductNameSafe).orf"
       Id="reg_cap_assoc_orf" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".pef"
       Value="$(var.ProductNameSafe).pef"
       Id="reg_cap_assoc_pef" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".pxn"
       Value="$(var.ProductNameSafe).pxn"
       Id="reg_cap_assoc_pxn" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".raf"
       Value="$(var.ProductNameSafe).raf"
       Id="reg_cap_assoc_raf" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".raw"
       Value="$(var.ProductNameSafe).raw"
       Id="reg_cap_assoc_raw" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".rdc"
       Value="$(var.ProductNameSafe).rdc"
       Id="reg_cap_assoc_rdc" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".sr2"
       Value="$(var.ProductNameSafe).sr2"
       Id="reg_cap_assoc_sr2" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".srf"
       Value="$(var.ProductNameSafe).srf"
       Id="reg_cap_assoc_srf" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".x3f"
       Value="$(var.ProductNameSafe).x3f"
       Id="reg_cap_assoc_x3f" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".arw"
       Value="$(var.ProductNameSafe).arw"
       Id="reg_cap_assoc_arw" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".3fr"
       Value="$(var.ProductNameSafe).3fr"
       Id="reg_cap_assoc_3fr" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".cine"
       Value="$(var.ProductNameSafe).cine"
       Id="reg_cap_assoc_cine" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".ia"
       Value="$(var.ProductNameSafe).ia"
       Id="reg_cap_assoc_ia" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".kc2"
       Value="$(var.ProductNameSafe).kc2"
       Id="reg_cap_assoc_kc2" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".mef"
       Value="$(var.ProductNameSafe).mef"
       Id="reg_cap_assoc_mef" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".nrw"
       Value="$(var.ProductNameSafe).nrw"
       Id="reg_cap_assoc_nrw" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".qtk"
       Value="$(var.ProductNameSafe).qtk"
       Id="reg_cap_assoc_qtk" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".rw2"
       Value="$(var.ProductNameSafe).rw2"
       Id="reg_cap_assoc_rw2" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".sti"
       Value="$(var.ProductNameSafe).sti"
       Id="reg_cap_assoc_sti" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".rwl"
       Value="$(var.ProductNameSafe).rwl"
       Id="reg_cap_assoc_rwl" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".srw"
       Value="$(var.ProductNameSafe).srw"
       Id="reg_cap_assoc_srw" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".cr3"
       Value="$(var.ProductNameSafe).cr3"
       Id="reg_cap_assoc_cr3" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".ori"
       Value="$(var.ProductNameSafe).ori"
       Id="reg_cap_assoc_ori" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".iiq"
       Value="$(var.ProductNameSafe).iiq"
       Id="reg_cap_assoc_iiq" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".ari"
       Value="$(var.ProductNameSafe).ari"
       Id="reg_cap_assoc_ari" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".cap"
       Value="$(var.ProductNameSafe).cap"
       Id="reg_cap_assoc_cap" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".cin"
       Value="$(var.ProductNameSafe).cin"
       Id="reg_cap_assoc_cin" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".sun"
       Value="$(var.ProductNameSafe).sun"
       Id="reg_cap_assoc_sun" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".ras"
       Value="$(var.ProductNameSafe).ras"
       Id="reg_cap_assoc_ras" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".svg"
       Value="$(var.ProductNameSafe).svg"
       Id="reg_cap_assoc_svg" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".svgz"
       Value="$(var.ProductNameSafe).svgz"
       Id="reg_cap_assoc_svgz" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".tga"
       Value="$(var.ProductNameSafe).tga"
       Id="reg_cap_assoc_tga" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".targa"
       Value="$(var.ProductNameSafe).targa"
       Id="reg_cap_assoc_targa" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".tif"
       Value="$(var.ProductNameSafe).tif"
       Id="reg_cap_assoc_tif" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".tiff"
       Value="$(var.ProductNameSafe).tiff"
       Id="reg_cap_assoc_tiff" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".wbmp"
       Value="$(var.ProductNameSafe).wbmp"
       Id="reg_cap_assoc_wbmp" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".webp"
       Value="$(var.ProductNameSafe).webp"
       Id="reg_cap_assoc_webp" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".wmf"
       Value="$(var.ProductNameSafe).wmf"
       Id="reg_cap_assoc_wmf" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".wmz"
       Value="$(var.ProductNameSafe).wmz"
       Id="reg_cap_assoc_wmz" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".xbm"
       Value="$(var.ProductNameSafe).xbm"
       Id="reg_cap_assoc_xbm" />
     <RegistryValue
-      Root="HKLM"
+      Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".xpm"
