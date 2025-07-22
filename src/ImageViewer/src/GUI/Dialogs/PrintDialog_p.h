@@ -377,7 +377,7 @@ protected:
                     transform.rotate(-m_rotateAngle);
                     unrotatedDeviceSize = transform.mapRect(deviceRect).size();
                 }
-                if(transformationMode == Qt::SmoothTransformation && unrotatedDeviceSize.width() != image.width() && unrotatedDeviceSize.height() != image.height())
+                if(transformationMode == Qt::SmoothTransformation && (unrotatedDeviceSize.width() != image.width() || unrotatedDeviceSize.height() != image.height()))
                 {
                     const QImage scaledImage = image.scaled(unrotatedDeviceSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
                     if(!scaledImage.isNull())
