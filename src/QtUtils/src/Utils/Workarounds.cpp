@@ -46,8 +46,12 @@ static void InitQtUtilsResources_internal()
         return;
 
     isInitialized = true;
-    Q_INIT_RESOURCE(qtutils_icons);
     Q_INIT_RESOURCE(qtutils_style);
+#if !defined (QTUTILS_DISABLE_SVG_ICONS)
+    Q_INIT_RESOURCE(qtutils_icons_svg);
+#else
+    Q_INIT_RESOURCE(qtutils_icons);
+#endif
 #if !defined (QTUTILS_DISABLE_EMBED_TRANSLATIONS)
     Q_INIT_RESOURCE(qtutils_translations);
 #endif

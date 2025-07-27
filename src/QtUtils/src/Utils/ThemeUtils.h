@@ -22,6 +22,7 @@
 
 #include <QIcon>
 #include <QImage>
+#include <QList>
 #include <QMenu>
 #include <QString>
 #include <QStringList>
@@ -52,6 +53,10 @@ bool WidgetHasDarkTheme(const QWidget *widget);
 
 /// @brief Check if system theme is dark or not
 bool SystemHasDarkTheme();
+
+/// @brief Get list of default image sizes for rasterized icons
+/// @return List of default image sizes for rasterized icons
+QList<int> GetDefaultIconSizes();
 
 /// @brief Create scalable icon from several images with different sizes
 /// @param[in] defaultImagePath - Path to default icon (raster or SVG)

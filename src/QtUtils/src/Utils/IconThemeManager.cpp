@@ -77,6 +77,8 @@ struct IconThemeManager::Impl
     ActionListMap actionsMap;
     QList<QComboBox*> comboBoxList;
 
+    QMap<int, QIcon> iconsCache;
+
     ThemeData *currentTheme()
     {
         const QString themeString = settings.value(SETTINGS_KEY).toString();
@@ -192,6 +194,7 @@ void IconThemeManager::setTheme(const QString &themeId)
     if(theme == m_impl->themes.end())
         return;
 
+    m_impl->iconsCache.clear();
     m_impl->settings.setValue(SETTINGS_KEY, theme->themeId);
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
     QIcon::setThemeSearchPaths(theme->iconThemeSearchPaths);
@@ -249,12 +252,25 @@ void IconThemeManager::fillComboBox(QComboBox *comboBox, const bool autoApply)
 /// @return Icon for current icon theme.
 QIcon IconThemeManager::GetIcon(ThemeUtils::IconTypes type, bool fallbackRequired, bool darkBackground) const
 {
+    const int keyNoFb = (((type << 1) + (darkBackground ? 1 : 0)) << 1);
+    const int keyFb = keyNoFb + 1;
+    QMap<int, QIcon>::ConstIterator it = m_impl->iconsCache.constFind(keyNoFb);
+    if(it != m_impl->iconsCache.constEnd())
+    {
+        if(!fallbackRequired || !it->isNull())
+            return *it;
+        else if((it = m_impl->iconsCache.constFind(keyFb)) != m_impl->iconsCache.constEnd())
+            return *it;
+        else
+            return *m_impl->iconsCache.insert(keyFb, ThemeUtils::GetIcon(type, darkBackground));
+    }
+
     const ThemeData *currentTheme = m_impl->currentTheme();
 #if defined (Q_OS_MAC) || defined (Q_OS_WIN)
     if(currentTheme && currentTheme->themeId == SYSTEM_THEME_ID)
     {
         QList<QImage> iconImages;
-        static const QList<int> iconSizes = QList<int>() << 16 << 32;
+        const QList<int> iconSizes = ThemeUtils::GetDefaultIconSizes();
         for(QList<int>::ConstIterator it = iconSizes.begin(); it != iconSizes.end(); ++it)
         {
 #if defined (Q_OS_MAC)
@@ -267,22 +283,23 @@ QIcon IconThemeManager::GetIcon(ThemeUtils::IconTypes type, bool fallbackRequire
         }
         if(!iconImages.isEmpty())
         {
-            const QIcon result = ThemeUtils::CreateScalableIcon(iconImages, darkBackground);
+            QIcon& result = *m_impl->iconsCache.insert(keyNoFb, ThemeUtils::CreateScalableIcon(iconImages, darkBackground));
             if(!result.isNull())
                 return result;
         }
         // Symbolic monochrome icons are used as system icon theme for Windows and macOS.
         // So we can safely use built-in monochrome icons as fallback
-        return ThemeUtils::GetIcon(type, darkBackground);
+        return *m_impl->iconsCache.insert(keyNoFb, ThemeUtils::GetIcon(type, darkBackground));
     }
 #endif
     if(currentTheme && currentTheme->themeId != BUILTIN_THEME_ID)
     {
-        const QIcon result = ThemeUtils::GetThemeIcon(type);
+        QIcon& result = *m_impl->iconsCache.insert(keyNoFb, ThemeUtils::GetThemeIcon(type));
         if(!result.isNull() || !fallbackRequired)
             return result;
+        return *m_impl->iconsCache.insert(keyFb, ThemeUtils::GetIcon(type, darkBackground));
     }
-    return ThemeUtils::GetIcon(type, darkBackground);
+    return *m_impl->iconsCache.insert(keyNoFb, ThemeUtils::GetIcon(type, darkBackground));
 }
 
 IconThemeManager::IconThemeManager()

@@ -101,8 +101,18 @@ lupdate_only {
 }
 
 RESOURCES += \
-    resources/icons/qtutils_icons.qrc \
     resources/style/qtutils_style.qrc
+
+disable_svg_icons {
+    DEFINES += \
+        QTUTILS_DISABLE_SVG_ICONS
+    RESOURCES += \
+        resources/icons/qtutils_icons.qrc
+} else {
+    QT += svg
+    RESOURCES += \
+        resources/icons/qtutils_icons_svg.qrc
+}
 
 disable_embed_translations {
     DEFINES += \

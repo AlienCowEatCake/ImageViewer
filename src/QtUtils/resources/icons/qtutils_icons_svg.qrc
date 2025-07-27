@@ -1,0 +1,37 @@
+<RCC>
+    <qresource prefix="/icons/modern">
+        <file>icon_application_exit.svg</file>
+        <file>icon_document_new.svg</file>
+        <file>icon_document_open.svg</file>
+        <file>icon_document_print.svg</file>
+        <file>icon_document_save.svg</file>
+        <file>icon_document_save_as.svg</file>
+        <file>icon_edit_copy.svg</file>
+        <file>icon_edit_cut.svg</file>
+        <file>icon_edit_delete.svg</file>
+        <file>icon_edit_paste.svg</file>
+        <file>icon_edit_preferences.svg</file>
+        <file>icon_go_next.svg</file>
+        <file>icon_go_previous.svg</file>
+        <file>icon_help_about.svg</file>
+        <file>icon_help_about_qt.svg</file>
+        <file>icon_help_authors.svg</file>
+        <file>icon_help_contents.svg</file>
+        <file>icon_help_license.svg</file>
+        <file>icon_media_playback_start.svg</file>
+        <file>icon_media_playback_stop.svg</file>
+        <file>icon_object_flip_horizontal.svg</file>
+        <file>icon_object_flip_vertical.svg</file>
+        <file>icon_object_rotate_left.svg</file>
+        <file>icon_object_rotate_right.svg</file>
+        <file>icon_view_fullscreen.svg</file>
+        <file>icon_view_refresh.svg</file>
+        <file>icon_window_close.svg</file>
+        <file>icon_window_new.svg</file>
+        <file>icon_zoom_custom.svg</file>
+        <file>icon_zoom_fit_best.svg</file>
+        <file>icon_zoom_in.svg</file>
+        <file>icon_zoom_original.svg</file>
+        <file>icon_zoom_out.svg</file>
+    </qresource>
+</RCC>

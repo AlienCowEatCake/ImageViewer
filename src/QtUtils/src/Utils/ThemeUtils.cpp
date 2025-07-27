@@ -35,10 +35,15 @@
 #include <QFontMetrics>
 #include <QPainter>
 
+#if !defined (QTUTILS_DISABLE_SVG_ICONS)
+#include <QSvgRenderer>
+#endif
+
 #if defined (Q_OS_WIN)
 #include <windows.h>
 #endif
 
+#include "Global.h"
 #include "InfoUtils.h"
 #include "Logging.h"
 
@@ -73,7 +78,9 @@ void AddImageToIcon(QIcon &icon, const QImage &image, bool invertPixels)
         return;
     }
 
-    QImage invertedImage = image.convertToFormat(QImage::Format_ARGB32);
+    QImage invertedImage = image;
+    if(invertedImage.format() != QImage::Format_ARGB32)
+        QImage_convertTo(invertedImage, QImage::Format_ARGB32);
     invertedImage.invertPixels(QImage::InvertRgb);
     AddPixmapToIcon(icon, QPixmap::fromImage(invertedImage));
 }
@@ -261,6 +268,18 @@ bool SystemHasDarkTheme()
 }
 #endif
 
+/// @brief Get list of default image sizes for rasterized icons
+/// @return List of default image sizes for rasterized icons
+QList<int> GetDefaultIconSizes()
+{
+#if !defined (QTUTILS_DISABLE_SVG_ICONS)
+    static const QList<int> iconSizes = QList<int>() << 16 << 20 << 24 << 28 << 32 << 40 << 48 << 56 << 64;
+#else
+    static const QList<int> iconSizes = QList<int>() << 16 << 32;
+#endif
+    return iconSizes;
+}
+
 /// @brief Create scalable icon from several images with different sizes
 /// @param[in] defaultImagePath - Path to default icon (raster or SVG)
 /// @param[in] scaledImagePaths - List of paths to images with different sizes (raster only)
@@ -314,9 +333,34 @@ QIcon CreateScalableIcon(const QList<QImage> &scaledImages, bool invertPixels)
 /// @param[in] darkBackground - true if image should be placed on dark background
 QIcon GetIcon(IconTypes type, bool darkBackground)
 {
+#if !defined (QTUTILS_DISABLE_SVG_ICONS)
+    const QString iconNameTemplate = QString::fromLatin1(":/icons/modern/%1.svg");
+    const QList<int> iconSizes = ThemeUtils::GetDefaultIconSizes();
+#else
     const QString iconNameTemplate = QString::fromLatin1(":/icons/modern/%1_%2.png");
+#endif
     switch(type)
     {
+#if !defined (QTUTILS_DISABLE_SVG_ICONS)
+#define ADD_NAMED_ICON_CASE(ICON_TYPE, ICON_NAME) \
+    case ICON_TYPE: \
+    { \
+        const QString iconName = QString::fromLatin1(ICON_NAME).toLower(); \
+        const QString iconTemplate = iconNameTemplate.arg(iconName); \
+        QSvgRenderer renderer(iconTemplate); \
+        QList<QImage> rasterPixmaps; \
+        for(QList<int>::ConstIterator it = iconSizes.constBegin(), itEnd = iconSizes.constEnd(); it != itEnd; ++it) \
+        { \
+            QImage image(*it, *it, QImage::Format_ARGB32); \
+            image.fill(Qt::transparent); \
+            QPainter painter(&image); \
+            renderer.render(&painter, image.rect()); \
+            painter.end(); \
+            rasterPixmaps.append(image); \
+        } \
+        return CreateScalableIcon(rasterPixmaps, darkBackground); \
+    }
+#else
 #define ADD_NAMED_ICON_CASE(ICON_TYPE, ICON_NAME) \
     case ICON_TYPE: \
     { \
@@ -325,6 +369,7 @@ QIcon GetIcon(IconTypes type, bool darkBackground)
         const QStringList rasterPixmaps = QStringList() << iconTemplate.arg(16) << iconTemplate.arg(32); \
         return CreateScalableIcon(rasterPixmaps, darkBackground); \
     }
+#endif
 #define ADD_ICON_CASE(ICON_TYPE) ADD_NAMED_ICON_CASE(ICON_TYPE, #ICON_TYPE)
     ADD_ICON_CASE(ICON_APPLICATION_EXIT)
     ADD_ICON_CASE(ICON_DOCUMENT_NEW)
