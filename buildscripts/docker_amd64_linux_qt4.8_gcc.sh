@@ -8,7 +8,7 @@ DOCKER_WORKSACE="/home/${DOCKER_USER}/workspace"
 FORWARD_SCRIPT="${0##*/docker_${DOCKER_ARCH}_}"
 
 ADDITIONAL_DOCKER_ARGS=
-if [ -t 1 ]; then
+if [ -t 1 -a "${CI}" != "true" ]; then
     if [ -z "$(uname -s | grep -E -i 'cygwin|mingw|msys')" ]; then
         ADDITIONAL_DOCKER_ARGS="${ADDITIONAL_DOCKER_ARGS} --tty"
     fi

@@ -91,6 +91,10 @@ function fix_sdk() {
 }
 function sign() {
     if [ -z "${NO_SIGN+x}" ] ; then
+        local APP_CERT="${APP_CERT}"
+        if [ ! -z "${ADHOC_SIGN+x}" ] ; then
+            APP_CERT='-'
+        fi
         local max_retry=10
         local last_retry=$((${max_retry}-1))
         for ((i=0; i<${max_retry}; i++)) ; do
@@ -120,7 +124,7 @@ function sign() {
     fi
 }
 function notarize() {
-    if [ -z "${NO_SIGN+x}" ] ; then
+    if [ -z "${NO_SIGN+x}" -a -z "${ADHOC_SIGN+x}" ] ; then
         /usr/bin/python3 "${SOURCE_PATH}/buildscripts/helpers/MacNotarizer.py" \
             --application "${1}" \
             --primary-bundle-id "${2}" \
