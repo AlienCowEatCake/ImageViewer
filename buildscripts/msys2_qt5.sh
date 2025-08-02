@@ -75,9 +75,14 @@ cd "$(dirname $0)"/..
 SOURCE_PATH="${PWD}"
 RESVG_PATH="${SOURCE_PATH}/buildscripts/resvg/${RESVG_TARGET}"
 DIST_PREFIX="${PROJECT}${SUFFIX}"
+HOST_ARCH="$(MSYS_NO_PATHCONV=1 reg query "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment" /v "PROCESSOR_ARCHITECTURE" | grep PROCESSOR_ARCHITECTURE | sed 's|.*PROCESSOR_ARCHITECTURE[ \t]*REG_SZ[ \t]*|| ; s|[ \t]*||g')"
 
 function copyDlls() {
-    "${SOURCE_PATH}/buildscripts/helpers/dllresolver.exe" "${DIST_PREFIX}" "${@}"
+    if [ "${HOST_ARCH}" == "ARM64" ] ; then
+        "${SOURCE_PATH}/buildscripts/helpers/arm64/dllresolver.exe" "${DIST_PREFIX}" "${@}"
+    else
+        "${SOURCE_PATH}/buildscripts/helpers/dllresolver.exe" "${DIST_PREFIX}" "${@}"
+    fi
 }
 
 function getVCVARSPath() {

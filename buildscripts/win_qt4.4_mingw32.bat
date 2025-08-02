@@ -6,6 +6,11 @@ set BUILDDIR=build_win_qt4.4_mingw342
 set SUFFIX=_qt4.4_mingw32
 set APP_PATH=src\%PROJECT%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
+for /F "tokens=1,2*" %%i in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v "PROCESSOR_ARCHITECTURE"') DO (
+    if "%%i" == "PROCESSOR_ARCHITECTURE" if "%%~k" == "ARM64" (
+        set ZIP_CMD="%~dp0\..\buildscripts\helpers\arm64\zip.exe"
+    )
+)
 
 set PATH=%QT_PATH%\bin;%MINGW_PATH%\bin;%MINGW_PATH%\mingw32\bin;%MINGW_PATH%\libexec\gcc\mingw32\3.4.2;%WINDIR%;%WINDIR%\System32
 set CPLUS_INCLUDE_PATH=%MINGW_PATH%\include\c++

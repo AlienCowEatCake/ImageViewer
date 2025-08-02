@@ -10,6 +10,12 @@ set SUFFIX=_qt5.6_msvc2017_%ARCH%
 set APP_PATH=src\%PROJECT%
 set NMAKE_CMD="%~dp0\..\buildscripts\helpers\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
+for /F "tokens=1,2*" %%i in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v "PROCESSOR_ARCHITECTURE"') DO (
+    if "%%i" == "PROCESSOR_ARCHITECTURE" if "%%~k" == "ARM64" (
+        set NMAKE_CMD="%~dp0\..\buildscripts\helpers\arm64\jom.exe" /J %NUMBER_OF_PROCESSORS%
+        set ZIP_CMD="%~dp0\..\buildscripts\helpers\arm64\zip.exe"
+    )
+)
 
 call %VCVARS% %VCVARS_ARCH%
 set PATH=%QT_PATH%\bin;%PATH%

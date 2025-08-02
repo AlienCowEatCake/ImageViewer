@@ -1,0 +1,47 @@
+diff --git a/win32/makenoas.w32 b/win32/makenoas.w32
+index 403b087..3462fa3 100644
+--- a/win32/makenoas.w32
++++ b/win32/makenoas.w32
+@@ -19,8 +19,8 @@ NODEBUG=1
+ # Uncomment the following macro to use the optimized assembler
+ # routines in Zip:
+ #ASMOBJS = match32.obj
+-CRCA_O = crci386c.obj
+-CFLG_ASM = -DASM_CRC
++#CRCA_O = crci386c.obj
++#CFLG_ASM = -DASM_CRC
+ 
+ !IFDEF USEBZ2
+ LOC=$(LOC) -DBZIP2_SUPPORT
+@@ -54,13 +54,8 @@ USE_MSVCRT=0
+ !IF $(USE_MSVCRT) == 1
+ CRTLIB=-MD
+ !ELSE
+-!IF "$(VS80COMNTOOLS)" == ""
+-CRTLIB=-ML
+-!ELSE
+-# no single-threaded CRT static lib, only multi-threaded in VC8
+ CRTLIB=-MT
+ !ENDIF
+-!ENDIF
+ 
+ !IFDEF NODEBUG
+ cdebug = -O2
+@@ -72,7 +67,7 @@ cdbgsz = $(cdebug)
+ 
+ # ------------- 32-bit Microsoft Visual C++ -------------
+ CC=cl -nologo
+-CFLAGS=-W3 $(cdebug) -DWIN32 $(CFLG_ASM) $(CRTLIB) $(LOC) -DNO_ASM
++CFLAGS=-W3 $(cdebug) -DWIN32 $(CFLG_ASM) $(CRTLIB) $(LOC) -DNO_ASM /FI"windows.h" /D_CRT_SECURE_NO_WARNINGS /GS-
+ UTILFLAGS=$(CFLAGS) -DUTIL -Fo$@
+ 
+ # Remove "-coff" from ASFLAGS if you do not have MASM 6.11.
+@@ -87,7 +82,7 @@ RC=rc
+ # by passing the -stub switch to the 32-bit linker to specify the 16-bit part.
+ 
+ LD=link -nologo
+-LDFLAGS=user32.lib advapi32.lib /OPT:NOWIN98 /INCREMENTAL:NO /PDB:$*.pdb $(EXTLIB)
++LDFLAGS=user32.lib advapi32.lib /INCREMENTAL:NO /PDB:$*.pdb $(EXTLIB)
+ SYMS=/DEBUG:full /DEBUGTYPE:CV
+ !IFDEF debug
+ LDFLAGS=$(LDFLAGS) $(SYMS)
