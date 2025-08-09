@@ -1,4 +1,4 @@
-From 5d52552e35562e8bfca23e0afb9bef42bf609e64 Mon Sep 17 00:00:00 2001
+From 8354cccd940908e4db6def576514ae8a66bb71d9 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 1 Jun 2025 13:28:25 +0700
 Subject: [PATCH 4/4] Backport __F16C__ intrinsics fixes (3f1d975)
@@ -8,7 +8,7 @@ Subject: [PATCH 4/4] Backport __F16C__ intrinsics fixes (3f1d975)
  1 file changed, 37 insertions(+), 29 deletions(-)
 
 diff --git a/src/lib/OpenEXRCore/unpack.c b/src/lib/OpenEXRCore/unpack.c
-index 51103e41..fe02c867 100644
+index 31635132..24f7b0ca 100644
 --- a/src/lib/OpenEXRCore/unpack.c
 +++ b/src/lib/OpenEXRCore/unpack.c
 @@ -13,31 +13,20 @@
