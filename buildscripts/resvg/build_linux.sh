@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-RESVG_VERSION="0.45.0"
+RESVG_VERSION="0.45.1"
 RESVG_TARGET="$(gcc -dumpmachine | sed 's|-.*||')-unknown-linux-gnu"
 
 RUST_VERSION="1.73.0"
@@ -15,7 +15,7 @@ wget --no-check-certificate "https://sh.rustup.rs" -O rustup-init.sh
 chmod +x rustup-init.sh
 ./rustup-init.sh --default-host "${RESVG_TARGET}" --default-toolchain "${RUST_VERSION}" --profile default --no-modify-path -y
 
-wget "https://github.com/linebender/resvg/releases/download/${RESVG_VERSION}/resvg-${RESVG_VERSION}.tar.xz"
+wget "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-${RESVG_VERSION}.tar.xz"
 tar -xvpf "resvg-${RESVG_VERSION}.tar.xz"
 pushd "resvg-${RESVG_VERSION}" > /dev/null
 cd "crates/c-api"
