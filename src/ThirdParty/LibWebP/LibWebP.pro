@@ -10,7 +10,7 @@ TARGET = tp_LibWebP
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.5.0
+THIRDPARTY_LIBWEBP_PATH = $${PWD}/libwebp-1.6.0
 
 include(../../Features.pri)
 include(../CommonSettings.pri)
@@ -77,7 +77,9 @@ SOURCES += \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/filters_msa.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/filters_sse2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_avx2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc.c \
+    $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_avx2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_mips32.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_mips_dsp_r2.c \
     $${THIRDPARTY_LIBWEBP_PATH}/src/dsp/lossless_enc_msa.c \
