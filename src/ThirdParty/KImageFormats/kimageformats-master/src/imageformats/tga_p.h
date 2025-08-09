@@ -27,6 +27,10 @@ public:
     static bool canRead(QIODevice *device);
 
 private:
+    bool writeIndexed(const QImage &image);
+
+    bool writeRGBA(const QImage &image);
+
     const QScopedPointer<TGAHandlerPrivate> d;
 };
 

@@ -17,8 +17,7 @@
 #include <QImage>
 #include <QLoggingCategory>
 
-Q_DECLARE_LOGGING_CATEGORY(LOG_IFFPLUGIN)
-Q_LOGGING_CATEGORY(LOG_IFFPLUGIN, "kf.imageformats.plugins.scitex", QtWarningMsg)
+Q_LOGGING_CATEGORY(LOG_SCTPLUGIN, "kf.imageformats.plugins.scitex", QtWarningMsg)
 
 #define CTRLBLOCK_SIZE 256
 #define PRMSBLOCK_SIZE_CT 256

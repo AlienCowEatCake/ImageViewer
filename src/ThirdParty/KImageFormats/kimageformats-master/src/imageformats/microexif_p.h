@@ -38,6 +38,15 @@ public:
     using Tags = QMap<quint16, QVariant>;
 
     /*!
+     * \brief The Version enum
+     * Exif specs version used when writing.
+     */
+    enum Version {
+        V2, // V2.xx
+        V3 // V3.xx, use of UTF-8 data type (default)
+    };
+
+    /*!
      * \brief MicroExif
      * Constructs an empty class.
      * \sa isEmpty
@@ -265,18 +274,20 @@ public:
      * - EXIF IFD
      * - GPS IFD
      * \param byteOrder Sets the serialization byte order for EXIF data.
+     * \param version The EXIF specs version to use.
      * \return A byte array containing the serialized data.
      * \sa write
      */
-    QByteArray toByteArray(const QDataStream::ByteOrder &byteOrder = EXIF_DEFAULT_BYTEORDER) const;
+    QByteArray toByteArray(const QDataStream::ByteOrder &byteOrder = EXIF_DEFAULT_BYTEORDER, const Version &version = Version::V3) const;
 
     /*!
      * \brief exifIfdByteArray
      * Convert the EXIF IFD only to RAW data. Useful when you want to add EXIF data to an existing TIFF container.
      * \param byteOrder Sets the serialization byte order for the data.
+     * \param version The EXIF specs version to use.
      * \return A byte array containing the serialized data.
      */
-    QByteArray exifIfdByteArray(const QDataStream::ByteOrder &byteOrder = EXIF_DEFAULT_BYTEORDER) const;
+    QByteArray exifIfdByteArray(const QDataStream::ByteOrder &byteOrder = EXIF_DEFAULT_BYTEORDER, const Version &version = Version::V3) const;
     /*!
      * \brief setExifIfdByteArray
      * \param ba The RAW data of EXIF IFD.
@@ -289,9 +300,10 @@ public:
      * \brief gpsIfdByteArray
      * Convert the GPS IFD only to RAW data. Useful when you want to add GPS data to an existing TIFF container.
      * \param byteOrder Sets the serialization byte order for the data.
+     * \param version The EXIF specs version to use.
      * \return A byte array containing the serialized data.
      */
-    QByteArray gpsIfdByteArray(const QDataStream::ByteOrder &byteOrder = EXIF_DEFAULT_BYTEORDER) const;
+    QByteArray gpsIfdByteArray(const QDataStream::ByteOrder &byteOrder = EXIF_DEFAULT_BYTEORDER, const Version &version = Version::V3) const;
     /*!
      * \brief setGpsIfdByteArray
      * \param ba The RAW data of GPS IFD.
@@ -309,10 +321,11 @@ public:
      * - GPS IFD
      * \param device A random access device.
      * \param byteOrder Sets the serialization byte order for EXIF data.
+     * \param version The EXIF specs version to use.
      * \return True on success, otherwise false.
      * \sa toByteArray
      */
-    bool write(QIODevice *device, const QDataStream::ByteOrder &byteOrder = EXIF_DEFAULT_BYTEORDER) const;
+    bool write(QIODevice *device, const QDataStream::ByteOrder &byteOrder = EXIF_DEFAULT_BYTEORDER, const Version &version = Version::V3) const;
 
     /*!
      * \brief updateImageMetadata
@@ -373,8 +386,8 @@ private:
     void setGpsString(quint16 tagId, const QString& s);
     QString gpsString(quint16 tagId) const;
     bool writeHeader(QDataStream &ds) const;
-    bool writeIfds(QDataStream &ds) const;
-    void updateTags(Tags &tiffTags, Tags &exifTags, Tags &gpsTags) const;
+    bool writeIfds(QDataStream &ds, const Version &version) const;
+    void updateTags(Tags &tiffTags, Tags &exifTags, Tags &gpsTags, const Version &version) const;
 
     static void setString(Tags &tags, quint16 tagId, const QString &s);
     static QString string(const Tags &tags, quint16 tagId);

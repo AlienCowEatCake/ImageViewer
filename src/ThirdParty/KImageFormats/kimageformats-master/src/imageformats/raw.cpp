@@ -11,7 +11,6 @@
 
 #include <QColorSpace>
 #include <QDateTime>
-#include <QDebug>
 #include <QImage>
 #include <QSet>
 #include <QTimeZone>
@@ -22,12 +21,24 @@
 
 #include <libraw/libraw.h>
 
+#ifndef RAW_DISABLE_BROKEN_STREAM_PROTECTION
+/* The LibRaw_QIODevice stream interrupt the reading  of the RAW file if a
+ * burst of read errors are detected.
+ * By defining RAW_IGNORE_BROKEN_STREAMS removes this protection, leaving
+ * LibRaw in complete control of error handling (which is mostly absent).
+ */
+// #define RAW_DISABLE_BROKEN_STREAM_PROTECTION
+#endif
+
 #ifdef QT_DEBUG
-// This should be used to exclude the local QIODevice wrapper of the LibRaw_abstract_datastream interface.
-// If the result changes then the problem is in the local wrapper and must be corrected.
-// WARNING: using the LibRaw's streams instead of the local wrapper from a Qt program falls in the LOCALE
-//          bug when the RAW file needs the scanf_one() function (e.g. *.MOS files). See also raw_scanf_one().
-//#define EXCLUDE_LibRaw_QIODevice // Uncomment this code if you think that the problem is LibRaw_QIODevice (default commented)
+/* This should be used to exclude the local QIODevice wrapper of the
+ * LibRaw_abstract_datastream interface. If the result changes then the problem
+ * is in the local wrapper and must be corrected.
+ * WARNING: using the LibRaw's streams instead of the local wrapper from a Qt
+ *          program falls in the LOCALE bug when the RAW file needs the
+ *          scanf_one() function (e.g. *.MOS files). See also raw_scanf_one().
+ */
+// #define EXCLUDE_LibRaw_QIODevice // Uncomment this code if you think that the problem is LibRaw_QIODevice (default commented)
 #endif
 
 namespace // Private.
@@ -95,10 +106,46 @@ inline int raw_scanf_one(const QByteArray &ba, const char *fmt, void *val)
  */
 class LibRaw_QIODevice : public LibRaw_abstract_datastream
 {
+    inline void incError()
+    {
+        // Normally, when read errors occur, a plugin exits with an error.
+        // Here, given how LibRaw works, we need to be a little more flexible:
+        // for example, a seek might fail when the library tries to figure out
+        // what it's reading. We therefore use a dynamic error counting system
+        // where the error counts heavily, but subsequent successful
+        // operations can mitigate it.
+        // If the stream is obviously corrupt, the plugin exits.
+        m_errorCount += 3;
+    }
+    inline void decError()
+    {
+        m_errorCount = std::max(m_errorCount - 1, 0);
+    }
+    void checkErrors() {
+        // Internally, LibRaw often doesn't check the return values of various
+        // functions. It's not uncommon to find things like:
+        //
+        //  fseek(ifp, oAtom, SEEK_SET);
+        //  szAtom = get4();
+        //
+        // which can cause the read to go into an infinite loop on corrupted
+        // files. I've set the error count to high to avoid these issues.
+        if (m_errorCount > 10) {
+#ifndef RAW_DISABLE_BROKEN_STREAM_PROTECTION
+            // LibRaw stream classes can throw exceptions that are handled by
+            // libraw itself (e.g. see implementation of
+            // LibRaw_bigfile_datastream).
+            // Every LibRaw function that works on the stream used in this
+            // plugin is protected by a Try...Catch.
+            IOERROR(); // defined in libraw_datastream.h
+#endif
+        }
+    }
 public:
     explicit LibRaw_QIODevice(QIODevice *device)
+        : m_device(device)
+        , m_errorCount(0)
     {
-        m_device = device;
     }
     virtual ~LibRaw_QIODevice() override
     {
@@ -109,19 +156,22 @@ public:
     }
     virtual int read(void *ptr, size_t sz, size_t nmemb) override
     {
+        checkErrors();
+
         qint64 read = 0;
         if (sz == 0) {
             return 0;
         }
         auto data = reinterpret_cast<char*>(ptr);
         for (qint64 r = 0, size = sz * nmemb; read < size; read += r) {
-            if (m_device->atEnd()) {
-                break;
-            }
             r = m_device->read(data + read, size - read);
             if (r < 1) {
+                if (read == 0 || r < 0) {
+                    incError();
+                }
                 break;
             }
+            decError();
         }
         return int(read / sz);
     }
@@ -131,17 +181,21 @@ public:
     }
     virtual int seek(INT64 o, int whence) override
     {
+        checkErrors();
+
         auto pos = o;
-        auto size = m_device->size();
+        auto siz = size();
         if (whence == SEEK_CUR) {
-            pos = m_device->pos() + o;
+            pos = tell() + o;
         }
         if (whence == SEEK_END) {
-            pos = size + o;
+            pos = siz + o;
         }
-        if (pos < 0 || m_device->isSequential()) {
+        if (pos < 0 || pos > siz || m_device->isSequential()) {
+            incError();
             return -1;
         }
+        decError();
         return m_device->seek(pos) ? 0 : -1;
     }
     virtual INT64 tell() override
@@ -154,17 +208,24 @@ public:
     }
     virtual char *gets(char *s, int sz) override
     {
+        checkErrors();
+
         if (m_device->readLine(s, sz) > 0) {
+            decError();
             return s;
         }
+        incError();
         return nullptr;
     }
     virtual int scanf_one(const char *fmt, void *val) override
     {
+        checkErrors();
+
         QByteArray ba;
         for (int xcnt = 0; xcnt < 24 && !m_device->atEnd(); ++xcnt) {
             char c;
             if (!m_device->getChar(&c)) {
+                incError();
                 return EOF;
             }
             if (ba.isEmpty() && (c == ' ' || c == '\t')) {
@@ -175,14 +236,19 @@ public:
             }
             ba.append(c);
         }
+        decError();
         return raw_scanf_one(ba, fmt, val);
     }
     virtual int get_char() override
     {
+        checkErrors();
+
         unsigned char c;
         if (!m_device->getChar(reinterpret_cast<char *>(&c))) {
+            incError();
             return EOF;
         }
+        decError();
         return int(c);
     }
 #if (LIBRAW_VERSION < LIBRAW_MAKE_VERSION(0, 21, 0)) || defined(LIBRAW_OLD_VIDEO_SUPPORT)
@@ -194,6 +260,8 @@ public:
 
 private:
     QIODevice *m_device;
+
+    qint32 m_errorCount;
 };
 
 bool addTag(const QString &tag, QStringList &lines)
@@ -591,8 +659,8 @@ bool LoadTHUMB(QImageIOHandler *handler, QImage &img)
         return false;
     }
 #else
-    auto ba = device->readAll();
-    if (rawProcessor->open_buffer(ba.data(), ba.size()) != LIBRAW_SUCCESS) {
+    auto all = device->readAll();
+    if (rawProcessor->open_buffer(all.data(), all.size()) != LIBRAW_SUCCESS) {
         return false;
     }
 #endif

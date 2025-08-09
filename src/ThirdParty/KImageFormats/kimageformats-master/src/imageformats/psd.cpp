@@ -28,6 +28,7 @@
 
 #include "fastmath_p.h"
 #include "microexif_p.h"
+#include "packbits_p.h"
 #include "psd_p.h"
 #include "scanlineconverter_p.h"
 #include "util_p.h"
@@ -725,48 +726,6 @@ static bool IsSupported(const PSDHeader &header)
 }
 
 /*!
- * \brief decompress
- * Fast PackBits decompression.
- * \param input The compressed input buffer.
- * \param ilen The input buffer size.
- * \param output The uncompressed target buffer.
- * \param olen The target buffer size.
- * \return The number of valid bytes in the target buffer.
- */
-qint64 decompress(const char *input, qint64 ilen, char *output, qint64 olen)
-{
-    qint64  j = 0;
-    for (qint64 ip = 0, rr = 0, available = olen; j < olen && ip < ilen; available = olen - j) {
-        signed char n = static_cast<signed char>(input[ip++]);
-        if (n == -128)
-            continue;
-
-        if (n >= 0) {
-            rr = qint64(n) + 1;
-            if (available < rr) {
-                --ip;
-                break;
-            }
-
-            if (ip + rr > ilen)
-                return -1;
-            memcpy(output + j, input + ip, size_t(rr));
-            ip += rr;
-        } else if (ip < ilen) {
-            rr = qint64(1-n);
-            if (available < rr) {
-                --ip;
-                break;
-            }
-            memset(output + j, input[ip++], size_t(rr));
-        }
-
-        j += rr;
-    }
-    return j;
-}
-
-/*!
  * \brief imageFormat
  * \param header The PSD header.
  * \return The Qt image format.
@@ -1118,7 +1077,7 @@ bool readChannel(QByteArray &target, QDataStream &stream, quint32 compressedSize
         if (stream.readRawData(tmp.data(), tmp.size()) != tmp.size()) {
             return false;
         }
-        if (decompress(tmp.data(), tmp.size(), target.data(), target.size()) < 0) {
+        if (packbitsDecompress(tmp.data(), tmp.size(), target.data(), target.size()) < 0) {
             return false;
         }
     } else if (stream.readRawData(target.data(), target.size()) != target.size()) {

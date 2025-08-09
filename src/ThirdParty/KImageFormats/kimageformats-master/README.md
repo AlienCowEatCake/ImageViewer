@@ -17,6 +17,7 @@ The following image formats have read-only support:
 - Animated Windows cursors (ani)
 - Camera RAW images (arw, cr2, cr3, dcs, dng, ...)
 - Gimp (xcf)
+- Interchange Format Files (iff, ilbm, lbm)
 - Krita (kra)
 - OpenRaster (ora)
 - Pixar raster (pxr)
@@ -53,8 +54,10 @@ willing to sign the Qt Project contributor agreement, it may be better to
 submit the plugin directly to the Qt Project.
 
 To be accepted, contributions must:
-- Contain the test images needed to verify that the changes work correctly
-- Pass the tests successfully
+- Contain the test images needed to verify that the changes work correctly.
+- Pass the tests successfully.
+
+For more info about tests, see also [Autotests README](autotests/README.md).
 
 ## Duplicated Plugins
 
@@ -220,6 +223,7 @@ plugin ('n/a' means no limit, i.e. the limit depends on the format encoding).
 - EPS: n/a
 - HDR: n/a (large image)
 - HEIF: n/a
+- IFF: 65,535 x 65,535 pixels
 - JP2: 300,000 x 300,000 pixels, in any case no larger than 2 gigapixels
 - JXL: 262,144 x 262,144 pixels, in any case no larger than 256 megapixels
 - JXR: n/a, in any case no larger than 4 GB
@@ -312,6 +316,33 @@ The following defines can be defined in cmake to modify the behavior of the
 plugin:
 - `HDR_HALF_QUALITY`: on read, a 16-bit float image is returned instead of a 
   32-bit float one.
+
+
+### The IFF plugin
+
+Interchange File Format is a chunk-based format. Since the original 1985
+version, various extensions have been created over time.
+
+The plugin supports the following image data:
+- FORM ILBM (Interleaved Bitmap): Electronic Arts’ IFF standard for
+  Interchange File Format (EA IFF 1985). ILBM is a format to handle raster
+  images, specifically an InterLeaved bitplane BitMap image with color map.
+  It supports from 1 to 8-bit indexed images with HAM, Halfbride, and normal
+  encoding. It also supports interleaved 24-bit RGB and 32-bit RGBA 
+  extension without color map.
+- FORM ILBM 64: ILBM extension to support 48-bit RGB and 64-bit RGBA encoding.
+- FORM ACBM (Amiga Contiguous BitMap): It supports uncompressed ACBMs by 
+  converting them to ILBMs at runtime.
+- FORM RGBN / RGB8: It supports 13-bit and 25-bit RGB images with compression 
+  type 4.
+- FORM PBM: PBM is a chunky version of IFF pictures. It supports 8-bit images 
+  with color map only.
+- FOR4 CIMG (Maya Image File Format): It supports 24/48-bit RGB and 32/64-bit 
+  RGBA images.
+
+The plugin does not load images with non-standard SHAM/CTBL chunks due to the
+lack of clear specifications.
+
 
 ### The JP2 plugin
 

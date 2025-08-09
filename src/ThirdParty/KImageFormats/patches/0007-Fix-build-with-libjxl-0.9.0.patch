@@ -1,4 +1,4 @@
-From bd877ab2170c4d7b150d589ab5af0adcab6d613f Mon Sep 17 00:00:00 2001
+From b22bbaaecdef02a2eabd95c463819c3111daffdb Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 23 Mar 2025 06:30:54 +0700
 Subject: [PATCH 7/8] Fix build with libjxl < 0.9.0
@@ -8,7 +8,7 @@ Subject: [PATCH 7/8] Fix build with libjxl < 0.9.0
  1 file changed, 29 insertions(+), 3 deletions(-)
 
 diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
-index 54df907..84cccd1 100644
+index 1f955a7..02a87f6 100644
 --- a/src/imageformats/jxl.cpp
 +++ b/src/imageformats/jxl.cpp
 @@ -13,7 +13,9 @@

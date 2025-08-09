@@ -1,12 +1,26 @@
-From 688c60d644acec246fc0bb592633605b377e61d1 Mon Sep 17 00:00:00 2001
+From 005058dca409a4e353d9bd01370eb9bbdbe3fd04 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 23 Jun 2024 19:58:27 +0700
 Subject: [PATCH 3/8] Add missing includes
 
 ---
- src/imageformats/util_p.h | 2 ++
- 1 file changed, 2 insertions(+)
+ src/imageformats/packbits_p.h | 2 ++
+ src/imageformats/util_p.h     | 2 ++
+ 2 files changed, 4 insertions(+)
 
+diff --git a/src/imageformats/packbits_p.h b/src/imageformats/packbits_p.h
+index 63a1b55..7284868 100644
+--- a/src/imageformats/packbits_p.h
++++ b/src/imageformats/packbits_p.h
+@@ -8,6 +8,8 @@
+ #ifndef PACKBITS_P_H
+ #define PACKBITS_P_H
+ 
++#include <cstring>
++
+ #include <QIODevice>
+ 
+ /*!
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
 index 38e21d6..d7562fb 100644
 --- a/src/imageformats/util_p.h

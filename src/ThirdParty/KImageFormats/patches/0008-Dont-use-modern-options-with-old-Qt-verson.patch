@@ -1,27 +1,31 @@
-From fe718ce7f06d92e297b5041e608f7a05843222e8 Mon Sep 17 00:00:00 2001
+From 01a229cd59dc5604d63a9f9b28a0b134fe7e6f74 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
-Date: Wed, 3 Jan 2024 08:33:45 +0700
+Date: Sat, 9 Aug 2025 21:12:08 +0700
 Subject: [PATCH 8/8] Dont use modern options with old Qt verson
 
 ---
  src/imageformats/ani.cpp       |   4 +
  src/imageformats/ani_p.h       |  16 ++++
+ src/imageformats/chunks.cpp    |  72 ++++++++++++------
+ src/imageformats/chunks_p.h    |  15 ++++
  src/imageformats/dds.cpp       | 133 +++++++++++++++++++++++++++++++++
  src/imageformats/exr.cpp       |  38 ++++++++++
  src/imageformats/hdr.cpp       |  27 ++++++-
+ src/imageformats/iff.cpp       |   8 +-
  src/imageformats/jp2.cpp       |  12 +++
- src/imageformats/jxl.cpp       |  41 +++++++++-
+ src/imageformats/jxl.cpp       |  43 ++++++++++-
  src/imageformats/jxl_p.h       |   8 ++
- src/imageformats/jxr.cpp       |  21 +++++-
- src/imageformats/microexif.cpp |  25 +++++++
+ src/imageformats/jxr.cpp       |  19 ++++-
+ src/imageformats/microexif.cpp |  32 ++++++++
  src/imageformats/pfm.cpp       |  26 +++++++
  src/imageformats/psd.cpp       |  40 ++++++++++
  src/imageformats/pxr.cpp       |   2 +-
  src/imageformats/ras.cpp       |  17 ++++-
  src/imageformats/rgb.cpp       |  24 ++++++
+ src/imageformats/tga.cpp       |   7 ++
  src/imageformats/util_p.h      |   7 ++
- src/imageformats/xcf.cpp       |  41 +++++++++-
- 17 files changed, 474 insertions(+), 8 deletions(-)
+ src/imageformats/xcf.cpp       |  45 ++++++++++-
+ 21 files changed, 562 insertions(+), 33 deletions(-)
 
 diff --git a/src/imageformats/ani.cpp b/src/imageformats/ani.cpp
 index 9c5a935..2adb9f6 100644
@@ -81,6 +85,207 @@ index bfce9ef..7b8435b 100644
  
      QString m_name;
      QString m_artist;
+diff --git a/src/imageformats/chunks.cpp b/src/imageformats/chunks.cpp
+index a7b0be3..f0c7be9 100644
+--- a/src/imageformats/chunks.cpp
++++ b/src/imageformats/chunks.cpp
+@@ -30,7 +30,11 @@ static QString dataToString(const IFFChunk *chunk)
+         return {};
+     }
+     auto dt = chunk->data();
++#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+     for (; dt.endsWith(char()); dt = dt.removeLast());
++#else
++    for (; dt.endsWith(char()) && !dt.isEmpty(); dt.remove(dt.size() - 1, 1));
++#endif
+     return QString::fromUtf8(dt).trimmed();
+ }
+ 
+@@ -510,7 +514,11 @@ qint32 CMAPChunk::count() const
+     return bytes() / 3;
+ }
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+ QList<QRgb> CMAPChunk::palette(bool halfbride) const
++#else
++QVector<QRgb> CMAPChunk::palette(bool halfbride) const
++#endif
+ {
+     auto p = innerPalette();
+     if (!halfbride) {
+@@ -528,9 +536,17 @@ bool CMAPChunk::innerReadStructure(QIODevice *d)
+     return cacheData(d);
+ }
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+ QList<QRgb> CMAPChunk::innerPalette() const
++#else
++QVector<QRgb> CMAPChunk::innerPalette() const
++#endif
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<QRgb> l;
++#else
++    QVector<QRgb> l;
++#endif
+     auto &&d = data();
+     for (qint32 i = 0, n = count(); i < n; ++i) {
+         auto i3 = i * 3;
+@@ -567,9 +583,17 @@ qint32 CMYKChunk::count() const
+     return bytes() / 4;
+ }
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+ QList<QRgb> CMYKChunk::innerPalette() const
++#else
++QVector<QRgb> CMYKChunk::innerPalette() const
++#endif
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<QRgb> l;
++#else
++    QVector<QRgb> l;
++#endif
+     auto &&d = data();
+     for (qint32 i = 0, n = count(); i < n; ++i) {
+         auto i4 = i * 4;
+@@ -1037,21 +1061,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, const BMHDChunk *he
+                 for (qint32 k = 0, i8 = i * 8; k < bitplanes; ++k) {
+                     auto v = planes.at(k * rowLen + i);
+                     if (v & (1 << 7))
+-                        ba[i8] |= 1 << k;
++                        ba[i8 + 0] = ba[i8 + 0] | (1 << k);
+                     if (v & (1 << 6))
+-                        ba[i8 + 1] |= 1 << k;
++                        ba[i8 + 1] = ba[i8 + 1] | (1 << k);
+                     if (v & (1 << 5))
+-                        ba[i8 + 2] |= 1 << k;
++                        ba[i8 + 2] = ba[i8 + 2] | (1 << k);
+                     if (v & (1 << 4))
+-                        ba[i8 + 3] |= 1 << k;
++                        ba[i8 + 3] = ba[i8 + 3] | (1 << k);
+                     if (v & (1 << 3))
+-                        ba[i8 + 4] |= 1 << k;
++                        ba[i8 + 4] = ba[i8 + 4] | (1 << k);
+                     if (v & (1 << 2))
+-                        ba[i8 + 5] |= 1 << k;
++                        ba[i8 + 5] = ba[i8 + 5] | (1 << k);
+                     if (v & (1 << 1))
+-                        ba[i8 + 6] |= 1 << k;
++                        ba[i8 + 6] = ba[i8 + 6] | (1 << k);
+                     if (v & 1)
+-                        ba[i8 + 7] |= 1 << k;
++                        ba[i8 + 7] = ba[i8 + 7] | (1 << k);
+                 }
+             }
+         }
+@@ -1073,21 +1097,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, const BMHDChunk *he
+                     auto k8 = k * 8;
+                     auto msk = (1 << (7 - j));
+                     if (planes.at(k8 * rowLen + i) & msk)
+-                        ba[cnt] |= 0x01;
++                        ba[cnt] = ba[cnt] | 0x01;
+                     if (planes.at((1 + k8) * rowLen + i) & msk)
+-                        ba[cnt] |= 0x02;
++                        ba[cnt] = ba[cnt] | 0x02;
+                     if (planes.at((2 + k8) * rowLen + i) & msk)
+-                        ba[cnt] |= 0x04;
++                        ba[cnt] = ba[cnt] | 0x04;
+                     if (planes.at((3 + k8) * rowLen + i) & msk)
+-                        ba[cnt] |= 0x08;
++                        ba[cnt] = ba[cnt] | 0x08;
+                     if (planes.at((4 + k8) * rowLen + i) & msk)
+-                        ba[cnt] |= 0x10;
++                        ba[cnt] = ba[cnt] | 0x10;
+                     if (planes.at((5 + k8) * rowLen + i) & msk)
+-                        ba[cnt] |= 0x20;
++                        ba[cnt] = ba[cnt] | 0x20;
+                     if (planes.at((6 + k8) * rowLen + i) & msk)
+-                        ba[cnt] |= 0x40;
++                        ba[cnt] = ba[cnt] | 0x40;
+                     if (planes.at((7 + k8) * rowLen + i) & msk)
+-                        ba[cnt] |= 0x80;
++                        ba[cnt] = ba[cnt] | 0x80;
+                 }
+         }
+         break;
+@@ -1128,21 +1152,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, const BMHDChunk *he
+                     auto msk = (1 << (7 - j));
+                     auto idx = cnt + order[k];
+                     if (planes.at(k8 * rowLen + i) & msk)
+-                        ba[idx] |= 0x01;
++                        ba[idx] = ba[idx] | 0x01;
+                     if (planes.at((1 + k8) * rowLen + i) & msk)
+-                        ba[idx] |= 0x02;
++                        ba[idx] = ba[idx] | 0x02;
+                     if (planes.at((2 + k8) * rowLen + i) & msk)
+-                        ba[idx] |= 0x04;
++                        ba[idx] = ba[idx] | 0x04;
+                     if (planes.at((3 + k8) * rowLen + i) & msk)
+-                        ba[idx] |= 0x08;
++                        ba[idx] = ba[idx] | 0x08;
+                     if (planes.at((4 + k8) * rowLen + i) & msk)
+-                        ba[idx] |= 0x10;
++                        ba[idx] = ba[idx] | 0x10;
+                     if (planes.at((5 + k8) * rowLen + i) & msk)
+-                        ba[idx] |= 0x20;
++                        ba[idx] = ba[idx] | 0x20;
+                     if (planes.at((6 + k8) * rowLen + i) & msk)
+-                        ba[idx] |= 0x40;
++                        ba[idx] = ba[idx] | 0x40;
+                     if (planes.at((7 + k8) * rowLen + i) & msk)
+-                        ba[idx] |= 0x80;
++                        ba[idx] = ba[idx] | 0x80;
+                 }
+                 if (p == 6) { // RGBX wants unused X data set to 0xFF
+                     ba[cnt + 6] = char(0xFF);
+diff --git a/src/imageformats/chunks_p.h b/src/imageformats/chunks_p.h
+index aea8196..e659342 100644
+--- a/src/imageformats/chunks_p.h
++++ b/src/imageformats/chunks_p.h
+@@ -23,6 +23,9 @@
+ #include <QPoint>
+ #include <QSize>
+ #include <QSharedPointer>
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++#include <QVector>
++#endif
+ 
+ #include "microexif_p.h"
+ 
+@@ -490,12 +493,20 @@ public:
+      * \return The color palette.
+      * \note If \a halfbride is true, the returned palette size is count() * 2.
+      */
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<QRgb> palette(bool halfbride = false) const;
++#else
++    QVector<QRgb> palette(bool halfbride = false) const;
++#endif
+ 
+     CHUNKID_DEFINE(CMAP_CHUNK)
+ 
+ protected:
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     virtual QList<QRgb> innerPalette() const;
++#else
++    virtual QVector<QRgb> innerPalette() const;
++#endif
+ 
+     virtual bool innerReadStructure(QIODevice *d) override;
+ };
+@@ -533,7 +544,11 @@ protected:
+      * \brief palette
+      * \return The CMYK color palette converted to RGB one.
+      */
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     virtual QList<QRgb> innerPalette() const override;
++#else
++    virtual QVector<QRgb> innerPalette() const override;
++#endif
+ };
+ 
+ /*!
 diff --git a/src/imageformats/dds.cpp b/src/imageformats/dds.cpp
 index acedbd0..f7454b3 100644
 --- a/src/imageformats/dds.cpp
@@ -549,6 +754,46 @@ index bee4fdc..0b1bf7d 100644
              }
          }
      }
+diff --git a/src/imageformats/iff.cpp b/src/imageformats/iff.cpp
+index 881f619..9908b5f 100644
+--- a/src/imageformats/iff.cpp
++++ b/src/imageformats/iff.cpp
+@@ -202,12 +202,14 @@ void addMetadata(QImage& img, const IFFChunk *form)
+     if (!iccps.isEmpty()) {
+         auto cs = iccps.first()->value();
+         if (cs.isValid()) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
+             auto iccns = IFFChunk::searchT<ICCNChunk>(form);
+             if (!iccns.isEmpty()) {
+                 auto desc = iccns.first()->value();
+                 if (!desc.isEmpty())
+                     cs.setDescription(desc);
+             }
++#endif
+             img.setColorSpace(cs);
+         }
+     }
+@@ -355,7 +357,11 @@ bool IFFHandler::readMayaImage(QImage *image)
+         painter.drawImage(tp, ti);
+     }
+ #if QT_VERSION < QT_VERSION_CHECK(6, 9, 0)
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+     img.mirror(false, true);
++#else
++    img = img.mirrored(false, true);
++#endif
+ #else
+     img.flip(Qt::Orientation::Vertical);
+ #endif
+@@ -427,7 +433,7 @@ QVariant IFFHandler::option(ImageOption option) const
+     }
+ 
+     if (option == QImageIOHandler::ImageTransformation) {
+-        return QVariant::fromValue(form->transformation());
++        return QVariant::fromValue(int(form->transformation()));
+     }
+ 
+     return {};
 diff --git a/src/imageformats/jp2.cpp b/src/imageformats/jp2.cpp
 index d1e8b5b..b6a8534 100644
 --- a/src/imageformats/jp2.cpp
@@ -629,7 +874,7 @@ index d1e8b5b..b6a8534 100644
          case QImage::Format_RGBA64:
          case QImage::Format_RGBA64_Premultiplied:
 diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
-index 84cccd1..e28558f 100644
+index 02a87f6..e28558f 100644
 --- a/src/imageformats/jxl.cpp
 +++ b/src/imageformats/jxl.cpp
 @@ -8,6 +8,7 @@
@@ -640,6 +885,15 @@ index 84cccd1..e28558f 100644
  
  #include "jxl_p.h"
  #include "microexif_p.h"
+@@ -63,7 +64,7 @@ typedef enum {JXL_ENC_SUCCESS, JXL_ENC_ERROR, JXL_ENC_NEED_MORE_OUTPUT, JXL_ENC_
+ #include <string.h>
+ 
+ // Avoid rotation on buggy Qts (see also https://bugreports.qt.io/browse/QTBUG-126575)
+-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 3)
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 7) && QT_VERSION < QT_VERSION_CHECK(6, 6, 0)) || (QT_VERSION >= QT_VERSION_CHECK(6, 7, 3))
+ #ifndef JXL_QT_AUTOTRANSFORM
+ #define JXL_QT_AUTOTRANSFORM
+ #endif
 @@ -73,7 +74,7 @@ typedef enum {JXL_ENC_SUCCESS, JXL_ENC_ERROR, JXL_ENC_NEED_MORE_OUTPUT, JXL_ENC_
  // Define JXL_HDR_PRESERVATION_DISABLED to disable HDR preservation
  // (HDR images are saved as UINT16).
@@ -771,7 +1025,7 @@ index c062584..ef1fac6 100644
  
      QImage m_current_image;
 diff --git a/src/imageformats/jxr.cpp b/src/imageformats/jxr.cpp
-index e25dc6c..345703f 100644
+index ba6111a..8029ab6 100644
 --- a/src/imageformats/jxr.cpp
 +++ b/src/imageformats/jxr.cpp
 @@ -46,6 +46,9 @@ Q_LOGGING_CATEGORY(LOG_JXRPLUGIN, "kf.imageformats.plugins.jxr", QtWarningMsg)
@@ -784,7 +1038,7 @@ index e25dc6c..345703f 100644
  
  /*!
   * Remove the neeeds of additional memory by disabling the conversion between
-@@ -616,8 +619,8 @@ public:
+@@ -634,8 +637,8 @@ public:
              if (cs.isValid() && cs.transferFunction() != QColorSpace::TransferFunction::Linear) {
                  qi = qi.convertedToColorSpace(QColorSpace(QColorSpace::SRgbLinear));
              }
@@ -794,7 +1048,7 @@ index e25dc6c..345703f 100644
  
          return qi;
      }
-@@ -982,11 +985,13 @@ bool JXRHandler::read(QImage *outImage)
+@@ -1000,11 +1003,13 @@ bool JXRHandler::read(QImage *outImage)
          } else { // additional buffer needed
              qint64 convStrideSize = (img.width() * d->pDecoder->WMP.wmiI.cBitsPerUnit + 7) / 8;
              qint64 buffSize = convStrideSize * img.height();
@@ -808,16 +1062,7 @@ index e25dc6c..345703f 100644
              QVector<quint8> ba(buffSize);
              if (auto err = pConverter->Copy(pConverter, &rect, ba.data(), convStrideSize)) {
                  PKFormatConverter_Release(&pConverter);
-@@ -994,7 +999,7 @@ bool JXRHandler::read(QImage *outImage)
-                 return false;
-             }
-             for (qint32 y = 0, h = img.height(); y < h; ++y) {
--                std::memcpy(img.scanLine(y), ba.data() + convStrideSize * y, (std::min)(convStrideSize, img.bytesPerLine()));
-+                std::memcpy(img.scanLine(y), ba.data() + convStrideSize * y, (std::min<size_t>)(convStrideSize, img.bytesPerLine()));
-             }
-         }
-         PKFormatConverter_Release(&pConverter);
-@@ -1058,15 +1063,27 @@ bool JXRHandler::write(const QImage &image)
+@@ -1076,15 +1081,27 @@ bool JXRHandler::write(const QImage &image)
  #ifndef JXR_DISABLE_BGRA_HACK
      if (IsEqualGUID(jxlfmt, GUID_PKPixelFormat32bppRGB)) {
          jxlfmt = GUID_PKPixelFormat32bppBGR;
@@ -846,10 +1091,20 @@ index e25dc6c..345703f 100644
  #endif
  
 diff --git a/src/imageformats/microexif.cpp b/src/imageformats/microexif.cpp
-index 4a113bf..5e7baaf 100644
+index 4b1a401..ee1255c 100644
 --- a/src/imageformats/microexif.cpp
 +++ b/src/imageformats/microexif.cpp
-@@ -464,14 +464,27 @@ static QByteArray readBytes(QDataStream &ds, quint32 count, bool asciiz)
+@@ -12,7 +12,9 @@
+ #include <QCoreApplication>
+ #include <QDataStream>
+ #include <QHash>
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+ #include <QStringDecoder>
++#endif
+ #include <QTimeZone>
+ 
+ // TIFF 6 specs
+@@ -491,14 +493,27 @@ static QByteArray readBytes(QDataStream &ds, quint32 count, bool asciiz)
      }
      char c;
      for (quint32 i = 0; i < count; ++i) {
@@ -877,7 +1132,26 @@ index 4a113bf..5e7baaf 100644
      }
      return l;
  }
-@@ -848,7 +861,11 @@ QDateTime MicroExif::dateTime() const
+@@ -562,6 +577,7 @@ static bool readIfd(QDataStream &ds, MicroExif::Tags &tags, quint32 pos = 0, con
+         if (dataType == EXIF_TAG_DATATYPE(ExifTagType::Ascii) || dataType == EXIF_TAG_DATATYPE(ExifTagType::Utf8)) {
+             auto l = readBytes(ds, count, true);
+             if (!l.isEmpty()) {
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+                 // It seems that converting to Latin 1 never detects errors so, using UTF-8.
+                 // Note that if the dataType is ASCII, by EXIF specification, it must use only the
+                 // first 128 values ​​so the UTF-8 conversion is correct.
+@@ -570,6 +586,10 @@ static bool readIfd(QDataStream &ds, MicroExif::Tags &tags, quint32 pos = 0, con
+                 auto ut8 = QString(dec(l));
+                 // If there are errors in the conversion to UTF-8, then I try with latin1 (extended ASCII)
+                 tags.insert(tagId, dec.hasError() ? QString::fromLatin1(l) : ut8);
++#else
++                auto ut8 = QString::fromUtf8(l);
++                tags.insert(tagId, ut8.isEmpty() ? QString::fromLatin1(l) : ut8);
++#endif
+             }
+         } else if (dataType == EXIF_TAG_DATATYPE(ExifTagType::Undefined)) {
+             auto l = readBytes(ds, count, false);
+@@ -883,7 +903,11 @@ QDateTime MicroExif::dateTime() const
      auto dt = QDateTime::fromString(tiffString(TIFF_DATETIME), QStringLiteral("yyyy:MM:dd HH:mm:ss"));
      auto ofTag = exifString(EXIF_OFFSETTIME);
      if (dt.isValid() && !ofTag.isEmpty())
@@ -889,7 +1163,7 @@ index 4a113bf..5e7baaf 100644
      return(dt);
  }
  
-@@ -868,7 +885,11 @@ QDateTime MicroExif::dateTimeOriginal() const
+@@ -903,7 +927,11 @@ QDateTime MicroExif::dateTimeOriginal() const
      auto dt = QDateTime::fromString(exifString(EXIF_DATETIMEORIGINAL), QStringLiteral("yyyy:MM:dd HH:mm:ss"));
      auto ofTag = exifString(EXIF_OFFSETTIMEORIGINAL);
      if (dt.isValid() && !ofTag.isEmpty())
@@ -901,7 +1175,7 @@ index 4a113bf..5e7baaf 100644
      return(dt);
  }
  
-@@ -888,7 +909,11 @@ QDateTime MicroExif::dateTimeDigitized() const
+@@ -923,7 +951,11 @@ QDateTime MicroExif::dateTimeDigitized() const
      auto dt = QDateTime::fromString(exifString(EXIF_DATETIMEDIGITIZED), QStringLiteral("yyyy:MM:dd HH:mm:ss"));
      auto ofTag = exifString(EXIF_OFFSETTIMEDIGITIZED);
      if (dt.isValid() && !ofTag.isEmpty())
@@ -990,10 +1264,10 @@ index e431b2c..69d38df 100644
      return v;
  }
 diff --git a/src/imageformats/psd.cpp b/src/imageformats/psd.cpp
-index ab8a6ea..e83f752 100644
+index 8960bbb..2f70c9d 100644
 --- a/src/imageformats/psd.cpp
 +++ b/src/imageformats/psd.cpp
-@@ -37,6 +37,10 @@
+@@ -38,6 +38,10 @@
  #include <QImage>
  #include <QColorSpace>
  
@@ -1004,7 +1278,7 @@ index ab8a6ea..e83f752 100644
  #include <cmath>
  #include <cstring>
  
-@@ -152,7 +156,11 @@ struct PSDDuotoneOptions {
+@@ -153,7 +157,11 @@ struct PSDDuotoneOptions {
   */
  struct PSDColorModeDataSection {
      PSDDuotoneOptions duotone;
@@ -1016,7 +1290,7 @@ index ab8a6ea..e83f752 100644
  };
  
  using PSDImageResourceSection = QHash<quint16, PSDImageResourceBlock>;
-@@ -483,7 +491,11 @@ PSDColorModeDataSection readColorModeDataSection(QDataStream &s, bool *ok = null
+@@ -484,7 +492,11 @@ PSDColorModeDataSection readColorModeDataSection(QDataStream &s, bool *ok = null
              *ok = false;
      } else { // read the palette (768 bytes)
          auto &&palette = cms.palette;
@@ -1028,7 +1302,7 @@ index ab8a6ea..e83f752 100644
          for (auto &&v : vect)
              s >> v;
          for (qsizetype i = 0, n = vect.size()/3; i < n; ++i)
-@@ -768,9 +780,13 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
+@@ -727,9 +739,13 @@ static QImage::Format imageFormat(const PSDHeader &header, bool alpha)
      auto format = QImage::Format_Invalid;
      switch(header.color_mode) {
      case CM_RGB:
@@ -1042,7 +1316,7 @@ index ab8a6ea..e83f752 100644
              format = header.channel_count < 4 || !alpha ? QImage::Format_RGBX64 : QImage::Format_RGBA64_Premultiplied;
          } else {
              format = header.channel_count < 4 || !alpha ? QImage::Format_RGB888 : QImage::Format_RGBA8888_Premultiplied;
-@@ -1318,7 +1334,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1277,7 +1293,11 @@ bool PSDHandler::read(QImage *image)
          return false;
      }
  
@@ -1054,7 +1328,7 @@ index ab8a6ea..e83f752 100644
      // Read the compressed stride sizes
      if (compression) {
          for (auto &&v : strides) {
-@@ -1333,7 +1353,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1292,7 +1312,11 @@ bool PSDHandler::read(QImage *image)
      }
      // calculate the absolute file positions of each stride (required when a colorspace conversion should be done)
      auto device = stream.device();
@@ -1066,7 +1340,7 @@ index ab8a6ea..e83f752 100644
      if (!stridePositions.isEmpty()) {
          stridePositions[0] = device->pos();
      }
-@@ -1388,7 +1412,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1347,7 +1371,11 @@ bool PSDHandler::read(QImage *image)
                  } else if (header.depth == 16) {
                      planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, header.channel_count);
                  } else if (header.depth == 32) {
@@ -1078,7 +1352,7 @@ index ab8a6ea..e83f752 100644
                  }
              }
  
-@@ -1413,7 +1441,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1372,7 +1400,11 @@ bool PSDHandler::read(QImage *image)
                      else if (header.depth == 16)
                          premulConversion<quint16>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
                      else if (header.depth == 32)
@@ -1090,7 +1364,7 @@ index ab8a6ea..e83f752 100644
                  }
              }
  
-@@ -1450,7 +1482,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1409,7 +1441,11 @@ bool PSDHandler::read(QImage *image)
                  else if (header.depth == 16)
                      rawChannelsCopy<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
                  else if (header.depth == 32)
@@ -1102,7 +1376,7 @@ index ab8a6ea..e83f752 100644
              }
          }
      } else {
-@@ -1481,7 +1517,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1440,7 +1476,11 @@ bool PSDHandler::read(QImage *image)
                          planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, imgChannels);
                  } else if (header.depth == 32 && header.color_mode == CM_RGB) {
                      // 32-bits float images: RGB/RGBA
@@ -1239,6 +1513,32 @@ index 9bb6c3c..4959235 100644
      for (Iterator it = begin(); it != end(); ++it) {
          v.replace(it.value(), &it.key());
      }
+diff --git a/src/imageformats/tga.cpp b/src/imageformats/tga.cpp
+index d6054b9..08eadbb 100644
+--- a/src/imageformats/tga.cpp
++++ b/src/imageformats/tga.cpp
+@@ -25,6 +25,9 @@
+ #include <QDataStream>
+ #include <QDebug>
+ #include <QImage>
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
++#include <QVector>
++#endif
+ 
+ typedef quint32 uint;
+ typedef quint16 ushort;
+@@ -241,7 +244,11 @@ static bool LoadTGA(QDataStream &s, const TgaHeader &tga, QImage &img)
+ 
+     // Read palette.
+     if (info.pal) {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+         QList<QRgb> colorTable;
++#else
++        QVector<QRgb> colorTable;
++#endif
+ #if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
+         colorTable.resize(tga.colormap_length);
+ #else
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
 index d7562fb..61ab441 100644
 --- a/src/imageformats/util_p.h
@@ -1269,7 +1569,7 @@ index d7562fb..61ab441 100644
  }
  
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index 40d3898..8ac072e 100644
+index b33555e..8ac072e 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -9,21 +9,32 @@
@@ -1355,7 +1655,19 @@ index 40d3898..8ac072e 100644
  
  bool XCFImageFormat::modeAffectsSourceAlpha(const quint32 type)
  {
-@@ -999,7 +1026,11 @@ bool XCFImageFormat::loadImageProperties(QDataStream &xcf_io, XCFImage &xcf_imag
+@@ -962,7 +989,11 @@ bool XCFImageFormat::loadImageProperties(QDataStream &xcf_io, XCFImage &xcf_imag
+         case PROP_PARASITES:
+             while (!property.atEnd()) {
+                 char *tag;
++#if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
++                quint32 size;
++#else
+                 qint64 size;
++#endif
+ 
+                 property.readBytes(tag, size);
+ 
+@@ -995,7 +1026,11 @@ bool XCFImageFormat::loadImageProperties(QDataStream &xcf_io, XCFImage &xcf_imag
                  return false;
              }
  
@@ -1367,7 +1679,7 @@ index 40d3898..8ac072e 100644
              xcf_image.palette.reserve(xcf_image.num_colors);
  
              for (int i = 0; i < xcf_image.num_colors; i++) {
-@@ -1388,11 +1419,13 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
+@@ -1384,11 +1419,13 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
      // tiles of 64x64 pixels. The required memory to build the image is at least doubled because tiles are loaded
      // and then the final image is created by copying the tiles inside it.
      // NOTE: on Windows to open a 10GiB image the plugin uses 28GiB of RAM
@@ -1381,7 +1693,7 @@ index 40d3898..8ac072e 100644
  #endif
  
      layer.image_tiles.resize(layer.nrows);
-@@ -2032,7 +2065,11 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
+@@ -2028,7 +2065,11 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
  
      const uint blockSize = TILE_WIDTH * TILE_HEIGHT * bpp * 1.5;
  
@@ -1394,5 +1706,5 @@ index 40d3898..8ac072e 100644
          buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
      }
 -- 
-2.49.0
+2.39.5
 

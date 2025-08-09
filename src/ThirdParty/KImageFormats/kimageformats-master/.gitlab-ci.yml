@@ -15,7 +15,7 @@ include:
 
 image_json_validate:
   stage: validate
-  image: invent-registry.kde.org/sysadmin/ci-images/suse-qt68:latest
+  image: invent-registry.kde.org/sysadmin/ci-images/suse-qt69:latest
   tags:
     - Linux
   script:

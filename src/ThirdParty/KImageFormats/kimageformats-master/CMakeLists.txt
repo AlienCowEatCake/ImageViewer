@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(KF_VERSION "6.13.0") # handled by release scripts
-set(KF_DEP_VERSION "6.13.0") # handled by release scripts
+set(KF_VERSION "6.18.0") # handled by release scripts
+set(KF_DEP_VERSION "6.17.0") # handled by release scripts
 project(KImageFormats VERSION ${KF_VERSION})
 
 include(FeatureSummary)
-find_package(ECM 6.13.0  NO_MODULE)
+find_package(ECM 6.17.0  NO_MODULE)
 set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
 feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
@@ -21,7 +21,7 @@ include(ECMDeprecationSettings)
 include(CheckIncludeFiles)
 include(FindPkgConfig)
 
-set(REQUIRED_QT_VERSION 6.6.0)
+set(REQUIRED_QT_VERSION 6.7.0)
 find_package(Qt6Gui ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
 find_package(KF6Archive ${KF_DEP_VERSION})
@@ -99,8 +99,8 @@ endif()
 add_feature_info(LibJXR LibJXR_FOUND "required for the QImage plugin for JPEG XR images")
 
 ecm_set_disabled_deprecation_versions(
-    QT 6.9.0
-    KF 6.12.0
+    QT 6.10.0
+    KF 6.16.0
 )
 
 add_subdirectory(src)
@@ -108,6 +108,28 @@ if (BUILD_TESTING)
     add_subdirectory(autotests)
     add_subdirectory(tests)
 endif()
+
+set(CMAKECONFIG_INSTALL_DIR "${KDE_INSTALL_CMAKEPACKAGEDIR}/KF6ImageFormats")
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/KF6ImageFormatsConfigVersion.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/KF6ImageFormatsConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/KF6ImageFormatsConfig.cmake"
+    INSTALL_DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+)
+
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/KF6ImageFormatsConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF6ImageFormatsConfigVersion.cmake"
+  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+  COMPONENT Devel
+)
 
 include(ECMFeatureSummary)
 ecm_feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

@@ -1,0 +1,5 @@
+# SPDX-FileCopyrightText: 2025 Xaver Hugl <xaver.hugl@gmail.com>
+# SPDX-License-Identifier: BSD-2-Clause
+
+@PACKAGE_INIT@
+# empty, because this is plugins for Qt instead of a library to link against

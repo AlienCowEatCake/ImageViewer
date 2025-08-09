@@ -41,6 +41,9 @@
 #if defined (WRAPPER_USE_HEIF_HANDLER)
 #include "../kimageformats-master/src/imageformats/heif_p.h"
 #endif
+#if defined (WRAPPER_USE_IFF_HANDLER)
+#include "../kimageformats-master/src/imageformats/iff_p.h"
+#endif
 #if defined (WRAPPER_USE_JP2_HANDLER)
 #include "../kimageformats-master/src/imageformats/jp2_p.h"
 #endif
@@ -117,6 +120,9 @@ enum BuiltInFormatType
 #endif
 #if defined (WRAPPER_USE_HEIF_HANDLER)
     HeifFormat,
+#endif
+#if defined (WRAPPER_USE_IFF_HANDLER)
+    IffFormat,
 #endif
 #if defined (WRAPPER_USE_JP2_HANDLER)
     Jp2Format,
@@ -201,6 +207,9 @@ static const BuiltInFormatStruct BuiltInFormats[] =
 #endif
 #if defined (WRAPPER_USE_HEIF_HANDLER)
     { HeifFormat , QList<QByteArray>() << "heif" << "heic" << "hej2" << "avci" },
+#endif
+#if defined (WRAPPER_USE_IFF_HANDLER)
+    { IffFormat , QList<QByteArray>() << "iff" << "lbm" << "ilbm" },
 #endif
 #if defined (WRAPPER_USE_JP2_HANDLER)
     { Jp2Format , QList<QByteArray>() << "jp2" << "j2k" << "jpf" },
@@ -351,6 +360,11 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
 #if defined (WRAPPER_USE_HEIF_HANDLER)
         case HeifFormat:
             handler = new HEIFHandler;
+            break;
+#endif
+#if defined (WRAPPER_USE_IFF_HANDLER)
+        case IffFormat:
+            handler = new IFFHandler;
             break;
 #endif
 #if defined (WRAPPER_USE_JP2_HANDLER)
@@ -518,6 +532,12 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
                     delete handler;
                     handler = 0;
                 }
+                break;
+#endif
+#if defined (WRAPPER_USE_IFF_HANDLER)
+            case IffFormat:
+                if(IFFHandler::canRead(device))
+                    handler = new IFFHandler;
                 break;
 #endif
 #if defined (WRAPPER_USE_JP2_HANDLER)
@@ -1316,6 +1336,10 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
     result.append(QByteArrayLiteral("image/heif"));
     result.append(QByteArrayLiteral("image/hej2k"));
     result.append(QByteArrayLiteral("image/avci"));
+#endif
+#if defined (WRAPPER_USE_IFF_HANDLER)
+    result.append(QByteArrayLiteral("iapplication/x-iff"));
+    result.append(QByteArrayLiteral("image/x-ilbm"));
 #endif
 #if defined (WRAPPER_USE_JP2_HANDLER)
     result.append(QByteArrayLiteral("image/jp2"));

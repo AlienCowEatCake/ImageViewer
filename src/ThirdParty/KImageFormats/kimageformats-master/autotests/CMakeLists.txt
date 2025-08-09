@@ -77,6 +77,7 @@ endmacro()
 # result against the data read from the corresponding png file
 kimageformats_read_tests(
     hdr
+    iff
     pcx
     pfm
     psd

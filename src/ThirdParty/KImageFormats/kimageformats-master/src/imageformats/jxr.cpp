@@ -250,6 +250,24 @@ public:
     }
 
     /*!
+     * \brief initForReadingAndRollBack
+     * Initialize the device for reading and rollback the device to start position.
+     * \param device The source device.
+     * \return True on success, otherwise false.
+     */
+    bool initForReadingAndRollBack(QIODevice *device)
+    {
+        if (device) {
+            device->startTransaction();
+        }
+        auto ok = initForReading(device);
+        if (device) {
+            device->rollbackTransaction();
+        }
+        return ok;
+    }
+
+    /*!
      * \brief jxrFormat
      * \return The JXR format.
      */
@@ -726,11 +744,11 @@ public:
 
         auto exif = MicroExif::fromImage(image);
         if (!exif.isEmpty()) {
-            auto exifIfd = exif.exifIfdByteArray(QDataStream::LittleEndian);
+            auto exifIfd = exif.exifIfdByteArray(QDataStream::LittleEndian, MicroExif::V2);
             if (auto err = PKImageEncode_SetEXIFMetadata_WMP(pEncoder, reinterpret_cast<const quint8 *>(exifIfd.constData()), exifIfd.size())) {
                 qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() error while setting EXIF data:" << err;
             }
-            auto gpsIfd = exif.gpsIfdByteArray(QDataStream::LittleEndian);
+            auto gpsIfd = exif.gpsIfdByteArray(QDataStream::LittleEndian, MicroExif::V2);
             if (auto err = PKImageEncode_SetGPSInfoMetadata_WMP(pEncoder, reinterpret_cast<const quint8 *>(gpsIfd.constData()), gpsIfd.size())) {
                 qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() error while setting GPS data:" << err;
             }
@@ -999,7 +1017,7 @@ bool JXRHandler::read(QImage *outImage)
                 return false;
             }
             for (qint32 y = 0, h = img.height(); y < h; ++y) {
-                std::memcpy(img.scanLine(y), ba.data() + convStrideSize * y, (std::min<size_t>)(convStrideSize, img.bytesPerLine()));
+                std::memcpy(img.scanLine(y), ba.data() + convStrideSize * y, (std::min)(convStrideSize, qint64(img.bytesPerLine())));
             }
         }
         PKFormatConverter_Release(&pConverter);
@@ -1173,7 +1191,7 @@ QVariant JXRHandler::option(ImageOption option) const
     QVariant v;
 
     if (option == QImageIOHandler::Size) {
-        if (d->initForReading(device())) {
+        if (d->initForReadingAndRollBack(device())) {
             auto size = d->imageSize();
             if (size.isValid()) {
                 v = QVariant::fromValue(size);
@@ -1182,7 +1200,7 @@ QVariant JXRHandler::option(ImageOption option) const
     }
 
     if (option == QImageIOHandler::ImageFormat) {
-        if (d->initForReading(device())) {
+        if (d->initForReadingAndRollBack(device())) {
             v = QVariant::fromValue(d->imageFormat());
         }
     }
@@ -1193,7 +1211,7 @@ QVariant JXRHandler::option(ImageOption option) const
 
     if (option == QImageIOHandler::ImageTransformation) {
         // ignore result: I might want to read the value set in writing
-        d->initForReading(device());
+        d->initForReadingAndRollBack(device());
         v = int(d->transformation());
     }
 

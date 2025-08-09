@@ -1,4 +1,4 @@
-From bce24c9173669d4a452a05cdff39e96b804a9489 Mon Sep 17 00:00:00 2001
+From 08a2b9c20c4a53c77b54025d39bbc03be51f8b71 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
 Subject: [PATCH 2/8] Remove C++17 features
@@ -37,10 +37,10 @@ index 7ea1350..d1e8b5b 100644
  
      /*!
 diff --git a/src/imageformats/jxr.cpp b/src/imageformats/jxr.cpp
-index 8b2e352..6a1e82f 100644
+index 725196e..fd8fa94 100644
 --- a/src/imageformats/jxr.cpp
 +++ b/src/imageformats/jxr.cpp
-@@ -1010,11 +1010,11 @@ bool JXRHandler::read(QImage *outImage)
+@@ -1028,11 +1028,11 @@ bool JXRHandler::read(QImage *outImage)
              if (img.depth() == 64) {
                  auto line = reinterpret_cast<qfloat16 *>(img.scanLine(y));
                  for (int x = 0, w = img.width() * 4; x < w; x += 4)
@@ -107,10 +107,10 @@ index ecd1ef0..bca9035 100644
                      return QImage::Format_ARGB32;
                  }
 diff --git a/src/imageformats/tga.cpp b/src/imageformats/tga.cpp
-index 612d5de..ed1b9b8 100644
+index 823d2a9..d6054b9 100644
 --- a/src/imageformats/tga.cpp
 +++ b/src/imageformats/tga.cpp
-@@ -491,8 +491,8 @@ bool TGAHandler::write(const QImage &image)
+@@ -577,8 +577,8 @@ bool TGAHandler::writeRGBA(const QImage &image)
          qDebug() << "TGAHandler::write: image conversion to 32 bits failed!";
          return false;
      }
@@ -135,7 +135,7 @@ index 2129364..38e21d6 100644
  // On Qt 6 to make the plugins fail to allocate if the image size is greater than QImageReader::allocationLimit()
  // it is necessary to allocate the image with QImageIOHandler::allocateImage().
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index b9ebe99..40d3898 100644
+index 26d74a7..b33555e 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
 @@ -57,7 +57,7 @@ namespace
@@ -174,7 +174,7 @@ index b9ebe99..40d3898 100644
  
  QList<QRgb> XCFImageFormat::grayTable;
  
-@@ -1574,7 +1574,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
+@@ -1570,7 +1570,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
  {
      auto&& p = xcf_image.parasites;
      auto keys = p.keys();

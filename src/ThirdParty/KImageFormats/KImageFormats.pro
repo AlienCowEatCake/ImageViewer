@@ -33,19 +33,49 @@ INCLUDEPATH += $${THIRDPARTY_KIMAGEFORMATS_WRAPPER_PATH}
 # --------------------------------------------------------------------------------
 
 SOURCES += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/chunks.cpp \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/microexif.cpp \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/scanlineconverter.cpp \
 
 HEADERS += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/chunks_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/fastmath_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/gimp_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/microexif_p.h \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/packbits_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/rle_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/scanlineconverter_p.h \
     $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/util_p.h \
 
 DEFINES += ScanLineConverter=tp_ScanLineConverter
 DEFINES += MicroExif=tp_MicroExif
+DEFINES += LOG_IFFPLUGIN=tp_LOG_IFFPLUGIN
+DEFINES += IFFChunk=tp_IFFChunk
+DEFINES += BMHDChunk=tp_BMHDChunk
+DEFINES += CMAPChunk=tp_CMAPChunk
+DEFINES += CMYKChunk=tp_CMYKChunk
+DEFINES += CAMGChunk=tp_CAMGChunk
+DEFINES += DPIChunk=tp_DPIChunk
+DEFINES += BODYChunk=tp_BODYChunk
+DEFINES += ABITChunk=tp_ABITChunk
+DEFINES += IFOR_Chunk=tp_IFOR_Chunk
+DEFINES += FORMChunk=tp_FORMChunk
+DEFINES += FOR4Chunk=tp_FOR4Chunk
+DEFINES += CATChunk=tp_CATChunk
+DEFINES += TBHDChunk=tp_TBHDChunk
+DEFINES += RGBAChunk=tp_RGBAChunk
+DEFINES += ANNOChunk=tp_ANNOChunk
+DEFINES += AUTHChunk=tp_AUTHChunk
+DEFINES += COPYChunk=tp_COPYChunk
+DEFINES += DATEChunk=tp_DATEChunk
+DEFINES += EXIFChunk=tp_EXIFChunk
+DEFINES += ICCNChunk=tp_ICCNChunk
+DEFINES += ICCPChunk=tp_ICCPChunk
+DEFINES += FVERChunk=tp_FVERChunk
+DEFINES += HISTChunk=tp_HISTChunk
+DEFINES += NAMEChunk=tp_NAMEChunk
+DEFINES += VERSChunk=tp_VERSChunk
+DEFINES += XMP0Chunk=tp_XMP0Chunk
 
 # --------------------------------------------------------------------------------
 
@@ -160,6 +190,21 @@ DEFINES += imageFormat=tp_imageFormat
     DEFINES += HEIFHandler=tp_HEIFHandler
     DEFINES += HEIFPlugin=tp_HEIFPlugin
 }
+
+# --------------------------------------------------------------------------------
+
+SOURCES += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/iff.cpp
+
+HEADERS += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/iff_p.h
+
+DEFINES += WRAPPER_USE_IFF_HANDLER
+
+DEFINES += IFFHandler=tp_IFFHandler
+DEFINES += IFFPlugin=tp_IFFPlugin
+DEFINES += IFFHandlerPrivate=tp_IFFHandlerPrivate
+DEFINES += addMetadata=tp_addMetadata
 
 # --------------------------------------------------------------------------------
 
@@ -392,7 +437,7 @@ DEFINES += ScitexPlugin=tp_ScitexPlugin
 DEFINES += ScitexCtrlBlock=tp_ScitexCtrlBlock
 DEFINES += ScitexParamsBlock=tp_ScitexParamsBlock
 DEFINES += ScitexHandlerPrivate=tp_ScitexHandlerPrivate
-DEFINES += LOG_IFFPLUGIN=tp_LOG_IFFPLUGIN
+DEFINES += LOG_SCTPLUGIN=tp_LOG_SCTPLUGIN
 
 # --------------------------------------------------------------------------------
 

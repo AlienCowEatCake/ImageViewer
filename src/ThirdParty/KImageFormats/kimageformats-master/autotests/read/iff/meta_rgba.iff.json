@@ -1,0 +1,31 @@
+[
+    {
+        "fileName" : "metadata.png",
+        "metadata" : [
+            {
+                "key" : "Author",
+                "value" : "KDE Project"
+            },
+            {
+                "key" : "Copyright",
+                "value" : "@2025 KDE Project"
+            },
+            {
+                "key" : "CreationDate",
+                "value" : "2025-01-14T10:34:51"
+            },
+            {
+                "key" : "Description",
+                "value" : "TV broadcast test image."
+            },
+            {
+                "key" : "Title",
+                "value" : "Test Card"
+            }
+        ],
+        "resolution" : {
+            "dotsPerMeterX" : 2835,
+            "dotsPerMeterY" : 2835
+        }
+    }
+]
