@@ -10,7 +10,7 @@ TARGET = tp_LibRaw
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBRAW_PATH = $${PWD}/LibRaw-0.21.3
+THIRDPARTY_LIBRAW_PATH = $${PWD}/LibRaw-0.21.4
 
 include(../../Features.pri)
 include(../CommonSettings.pri)

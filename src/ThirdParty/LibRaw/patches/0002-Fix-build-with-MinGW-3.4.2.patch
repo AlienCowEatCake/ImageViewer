@@ -1,4 +1,4 @@
-From 63ffec411367883700464f0632a4c61fa51d9b55 Mon Sep 17 00:00:00 2001
+From 8e7f845092beb184d9d76a6ad108f47afcb28eae Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 20:18:16 +0700
 Subject: [PATCH 2/3] Fix build with MinGW 3.4.2
@@ -278,10 +278,10 @@ index b5572f6b..cb5d2948 100644
    FORC(ns) strip[c] = get4();
    try
 diff --git a/src/decoders/load_mfbacks.cpp b/src/decoders/load_mfbacks.cpp
-index cddc33eb..aec05a05 100644
+index 95015d27..20e8618b 100644
 --- a/src/decoders/load_mfbacks.cpp
 +++ b/src/decoders/load_mfbacks.cpp
-@@ -472,7 +472,7 @@ int LibRaw::phase_one_correct()
+@@ -474,7 +474,7 @@ int LibRaw::phase_one_correct()
      }
      if (!badCols.empty())
      {
@@ -435,5 +435,5 @@ index bf17ea2b..c2a48b19 100644
      }
      catch (...)
 -- 
-2.46.1
+2.39.5
 
