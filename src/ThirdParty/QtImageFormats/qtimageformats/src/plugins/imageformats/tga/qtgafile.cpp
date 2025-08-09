@@ -9,6 +9,8 @@
 #include <QtCore/QDateTime>
 #include <QtGui/QImageIOHandler>
 
+namespace {
+
 struct TgaReader
 {
     Q_DISABLE_COPY(TgaReader)
@@ -59,6 +61,8 @@ struct Tga32Reader : public TgaReader
             return 0;
     }
 };
+
+} // namespace
 
 /*!
     \class QTgaFile

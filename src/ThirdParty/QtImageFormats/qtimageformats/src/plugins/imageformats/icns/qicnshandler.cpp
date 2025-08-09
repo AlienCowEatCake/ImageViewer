@@ -328,8 +328,11 @@ static inline bool isPowOf2OrDividesBy16(quint32 u, qreal r)
 
 static inline bool isBlockHeaderValid(const ICNSBlockHeader &header, quint64 bound = 0)
 {
-    return header.ostype != 0 && (bound == 0
-                || qBound(quint64(ICNSBlockHeaderSize), quint64(header.length), bound) == header.length);
+    return header.ostype != 0 &&
+        (bound == 0 ||
+            // qBound can be used but requires checking the limits first
+            // this requires less operations
+            (ICNSBlockHeaderSize <= header.length && header.length <= bound));
 }
 
 static inline bool isIconCompressed(const ICNSEntry &icon)
@@ -895,7 +898,7 @@ bool QICNSHandler::scanDevice()
             return false;
 
         const qint64 blockDataOffset = device()->pos();
-        if (!isBlockHeaderValid(blockHeader, ICNSBlockHeaderSize + filelength - blockDataOffset)) {
+        if (!isBlockHeaderValid(blockHeader, ICNSBlockHeaderSize - blockDataOffset + filelength)) {
             qWarning("QICNSHandler::scanDevice(): Failed, bad header at pos %s. OSType \"%s\", length %u",
                      QByteArray::number(blockDataOffset).constData(),
                      nameFromOSType(blockHeader.ostype).constData(), blockHeader.length);

@@ -67,7 +67,7 @@ See \l{Qt Licensing} for further details.
 Furthermore Qt Image Formats potentially contains third party
 modules under following permissive licenses:
 
-\generatelist{groupsbymodule attributions-qtimageformats}
+\annotatedlist attributions-qtimageformats
 
 \section1 Security Considerations
 

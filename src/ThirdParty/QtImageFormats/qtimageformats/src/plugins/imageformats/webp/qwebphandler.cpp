@@ -14,6 +14,8 @@
 
 static const int riffHeaderSize = 12; // RIFF_HEADER_SIZE from webp/format_constants.h
 
+QT_BEGIN_NAMESPACE
+
 QWebpHandler::QWebpHandler() :
     m_quality(75),
     m_scanState(ScanNotScanned),
@@ -437,3 +439,5 @@ int QWebpHandler::nextImageDelay() const
 
     return m_iter.duration;
 }
+
+QT_END_NAMESPACE

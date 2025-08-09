@@ -1,4 +1,4 @@
-From c999d97b2ff7e7a5c3c5efcfd12853a439dd8cdc Mon Sep 17 00:00:00 2001
+From d1a1ed151a6424013b33f282bff09c71b1f72817 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 10 Mar 2018 15:40:08 +0700
 Subject: [PATCH 1/7] Dont use C++11 features
@@ -134,10 +134,10 @@ index 59d1615..73dd095 100644
      private:
      Q_DECLARE_PRIVATE(QMngHandler)
 diff --git a/src/plugins/imageformats/tga/qtgafile.cpp b/src/plugins/imageformats/tga/qtgafile.cpp
-index 7230119..2959015 100644
+index 54bfe95..a1e3ec2 100644
 --- a/src/plugins/imageformats/tga/qtgafile.cpp
 +++ b/src/plugins/imageformats/tga/qtgafile.cpp
-@@ -13,7 +13,7 @@ struct TgaReader
+@@ -15,7 +15,7 @@ struct TgaReader
  {
      Q_DISABLE_COPY(TgaReader)
  
@@ -146,7 +146,7 @@ index 7230119..2959015 100644
  
      virtual ~TgaReader() {}
      virtual QRgb operator()(QIODevice *s) const = 0;
-@@ -22,7 +22,7 @@ struct TgaReader
+@@ -24,7 +24,7 @@ struct TgaReader
  struct Tga16Reader : public TgaReader
  {
      ~Tga16Reader() {}
@@ -155,7 +155,7 @@ index 7230119..2959015 100644
      {
          char ch1, ch2;
          if (s->getChar(&ch1) && s->getChar(&ch2)) {
-@@ -38,7 +38,7 @@ struct Tga16Reader : public TgaReader
+@@ -40,7 +40,7 @@ struct Tga16Reader : public TgaReader
  
  struct Tga24Reader : public TgaReader
  {
@@ -164,7 +164,7 @@ index 7230119..2959015 100644
      {
          char r, g, b;
          if (s->getChar(&b) && s->getChar(&g) && s->getChar(&r))
-@@ -50,7 +50,7 @@ struct Tga24Reader : public TgaReader
+@@ -52,7 +52,7 @@ struct Tga24Reader : public TgaReader
  
  struct Tga32Reader : public TgaReader
  {
@@ -173,7 +173,7 @@ index 7230119..2959015 100644
      {
          char r, g, b, a;
          if (s->getChar(&b) && s->getChar(&g) && s->getChar(&r) && s->getChar(&a))
-@@ -194,7 +194,7 @@ QImage QTgaFile::readImage()
+@@ -198,7 +198,7 @@ QImage QTgaFile::readImage()
              cmapDepth = 16;
          if (cmapDepth != 16 && cmapDepth != 24 && cmapDepth != 32) {
              mErrorMessage = tr("Invalid color map depth (%1)").arg(cmapDepth);
@@ -286,10 +286,10 @@ index a804e22..e909d3a 100644
      static bool canRead(QIODevice *device);
  
 diff --git a/src/plugins/imageformats/webp/qwebphandler_p.h b/src/plugins/imageformats/webp/qwebphandler_p.h
-index 69e8404..45c56ac 100644
+index 56e3d73..ee10bf3 100644
 --- a/src/plugins/imageformats/webp/qwebphandler_p.h
 +++ b/src/plugins/imageformats/webp/qwebphandler_p.h
-@@ -21,21 +21,21 @@ public:
+@@ -23,21 +23,21 @@ public:
      ~QWebpHandler();
  
  public:

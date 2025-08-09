@@ -1,4 +1,4 @@
-From b11912a3e3bd9f27614dd37ddb8216aca9935bf0 Mon Sep 17 00:00:00 2001
+From a29d4e9e251fdc689c95ec1288153c0de32c8326 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 7 Jan 2019 21:11:00 +0700
 Subject: [PATCH 4/7] Dont use modern options with old Qt verson
@@ -44,10 +44,10 @@ index fd05089..de79f60 100644
  
  int QDDSHandler::imageCount() const
 diff --git a/src/plugins/imageformats/icns/qicnshandler.cpp b/src/plugins/imageformats/icns/qicnshandler.cpp
-index dcb1a36..280b26e 100644
+index e5474f7..6a955b5 100644
 --- a/src/plugins/imageformats/icns/qicnshandler.cpp
 +++ b/src/plugins/imageformats/icns/qicnshandler.cpp
-@@ -510,9 +510,13 @@ static QImage readMask(const ICNSEntry &mask, QDataStream &stream)
+@@ -513,9 +513,13 @@ static QImage readMask(const ICNSEntry &mask, QDataStream &stream)
      const qint64 oldPos = stream.device()->pos();
      if (!stream.device()->seek(pos))
          return QImage();
@@ -61,7 +61,7 @@ index dcb1a36..280b26e 100644
      quint8 byte = 0;
      quint32 pixel = 0;
      for (quint32 y = 0; y < mask.height; y++) {
-@@ -542,9 +546,13 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
+@@ -545,9 +549,13 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
      const QList<QRgb> colortable = getColorTable(depth);
      if (colortable.isEmpty())
          return QImage();
@@ -75,7 +75,7 @@ index dcb1a36..280b26e 100644
      img.setColorTable(colortable);
      quint32 pixel = 0;
      quint8 byte = 0;
-@@ -575,9 +583,13 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
+@@ -578,9 +586,13 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
  
  static QImage read32bitIcon(const ICNSEntry &icon, QDataStream &stream)
  {
@@ -146,10 +146,10 @@ index d9c3ea9..b89ee9e 100644
      return MNG_TRUE;
  }
 diff --git a/src/plugins/imageformats/tga/qtgafile.cpp b/src/plugins/imageformats/tga/qtgafile.cpp
-index 2959015..19af03f 100644
+index a1e3ec2..ccce549 100644
 --- a/src/plugins/imageformats/tga/qtgafile.cpp
 +++ b/src/plugins/imageformats/tga/qtgafile.cpp
-@@ -213,8 +213,13 @@ QImage QTgaFile::readImage()
+@@ -217,8 +217,13 @@ QImage QTgaFile::readImage()
      //unsigned char xCorner = desc & 0x10; // 0 = left, 1 = right
      unsigned char yCorner = desc & 0x20; // 0 = lower, 1 = upper
  
@@ -633,10 +633,10 @@ index df319af..1366163 100644
          return QImage();
  
 diff --git a/src/plugins/imageformats/webp/qwebphandler.cpp b/src/plugins/imageformats/webp/qwebphandler.cpp
-index 53c481a..3118abc 100644
+index db5b79f..0ecb383 100644
 --- a/src/plugins/imageformats/webp/qwebphandler.cpp
 +++ b/src/plugins/imageformats/webp/qwebphandler.cpp
-@@ -77,7 +77,11 @@ bool QWebpHandler::ensureScanned() const
+@@ -79,7 +79,11 @@ bool QWebpHandler::ensureScanned() const
      // We do no random access during decoding, just a readAll() of the whole image file. So if
      // if it is all available already, we can accept a sequential device. The riff header contains
      // the file size minus 8 bytes header
@@ -648,7 +648,7 @@ index 53c481a..3118abc 100644
      if (device()->isSequential() && device()->bytesAvailable() < byteSize + 8) {
          qWarning() << "QWebpHandler: Insufficient data available in sequential device";
          return false;
-@@ -90,10 +94,14 @@ bool QWebpHandler::ensureScanned() const
+@@ -92,10 +96,14 @@ bool QWebpHandler::ensureScanned() const
                  that->m_frameCount = WebPDemuxGetI(m_demuxer, WEBP_FF_FRAME_COUNT);
                  that->m_bgColor = QColor::fromRgba(QRgb(WebPDemuxGetI(m_demuxer, WEBP_FF_BACKGROUND_COLOR)));
  
@@ -663,7 +663,7 @@ index 53c481a..3118abc 100644
                  if (that->m_features.has_alpha)
                      that->m_composited->fill(Qt::transparent);
  
-@@ -131,6 +139,7 @@ bool QWebpHandler::read(QImage *image)
+@@ -133,6 +141,7 @@ bool QWebpHandler::read(QImage *image)
  
      QRect prevFrameRect;
      if (m_iter.frame_num == 0) {
@@ -671,7 +671,7 @@ index 53c481a..3118abc 100644
          // Read global meta-data chunks first
          WebPChunkIterator metaDataIter;
          if ((m_formatFlags & ICCP_FLAG) && WebPDemuxGetChunk(m_demuxer, "ICCP", 1, &metaDataIter)) {
-@@ -143,6 +152,7 @@ bool QWebpHandler::read(QImage *image)
+@@ -145,6 +154,7 @@ bool QWebpHandler::read(QImage *image)
              // ### consider parsing EXIF and/or XMP metadata too.
              WebPDemuxReleaseChunkIterator(&metaDataIter);
          }
@@ -679,7 +679,7 @@ index 53c481a..3118abc 100644
  
          // Go to first frame
          if (!WebPDemuxGetFrame(m_demuxer, 1, &m_iter))
-@@ -162,11 +172,19 @@ bool QWebpHandler::read(QImage *image)
+@@ -164,11 +174,19 @@ bool QWebpHandler::read(QImage *image)
          return false;
  
      QImage::Format format = m_features.has_alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
@@ -699,7 +699,7 @@ index 53c481a..3118abc 100644
  #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
      if (!WebPDecodeBGRAInto(
          reinterpret_cast<const uint8_t*>(m_iter.fragment.bytes), m_iter.fragment.size,
-@@ -198,7 +216,9 @@ bool QWebpHandler::read(QImage *image)
+@@ -200,7 +218,9 @@ bool QWebpHandler::read(QImage *image)
  
          *image = *m_composited;
      }
@@ -709,7 +709,7 @@ index 53c481a..3118abc 100644
  
      return true;
  }
-@@ -215,8 +235,16 @@ bool QWebpHandler::write(const QImage &image)
+@@ -217,8 +237,16 @@ bool QWebpHandler::write(const QImage &image)
      }
  
      const bool alpha = image.hasAlphaChannel();
@@ -726,7 +726,7 @@ index 53c481a..3118abc 100644
  
      WebPPicture picture;
      WebPConfig config;
-@@ -230,10 +258,22 @@ bool QWebpHandler::write(const QImage &image)
+@@ -232,10 +260,22 @@ bool QWebpHandler::write(const QImage &image)
      picture.height = srcImage.height();
      picture.use_argb = 1;
      bool failed = false;
@@ -749,7 +749,7 @@ index 53c481a..3118abc 100644
  
      if (failed) {
          qWarning() << "failed to import image data to webp picture.";
-@@ -263,6 +303,7 @@ bool QWebpHandler::write(const QImage &image)
+@@ -265,6 +305,7 @@ bool QWebpHandler::write(const QImage &image)
      }
  
      bool res = false;
@@ -757,7 +757,7 @@ index 53c481a..3118abc 100644
      if (image.colorSpace().isValid()) {
          int copy_data = 0;
          WebPMux *mux = WebPMuxNew();
-@@ -302,6 +343,7 @@ bool QWebpHandler::write(const QImage &image)
+@@ -304,6 +345,7 @@ bool QWebpHandler::write(const QImage &image)
          }
          WebPMuxDelete(mux);
      }
@@ -766,7 +766,7 @@ index 53c481a..3118abc 100644
          res = (writer.size ==
                     static_cast<size_t>(device()->write(reinterpret_cast<const char *>(writer.mem), writer.size)));
 diff --git a/src/plugins/imageformats/webp/qwebphandler_p.h b/src/plugins/imageformats/webp/qwebphandler_p.h
-index 45c56ac..57eae37 100644
+index ee10bf3..1ea34a4 100644
 --- a/src/plugins/imageformats/webp/qwebphandler_p.h
 +++ b/src/plugins/imageformats/webp/qwebphandler_p.h
 @@ -5,7 +5,9 @@
@@ -779,7 +779,7 @@ index 45c56ac..57eae37 100644
  #include <QtGui/qimage.h>
  #include <QtGui/qimageiohandler.h>
  #include <QtCore/qbytearray.h>
-@@ -59,7 +61,9 @@ private:
+@@ -61,7 +63,9 @@ private:
      WebPData m_webpData;
      WebPDemuxer *m_demuxer;
      WebPIterator m_iter;

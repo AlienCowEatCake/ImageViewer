@@ -1,4 +1,4 @@
-From 891b9540faebd76dc0e957e5815766d8dbb9132a Mon Sep 17 00:00:00 2001
+From bfe80e0f9724cdd0034a7f782b87c56ca974f50d Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 24 Jun 2020 19:53:15 +0700
 Subject: [PATCH 5/7] Revert "Use QList instead of QVector"
@@ -13,10 +13,10 @@ This reverts commit c64f19516dd2467bf5746eb24afe883bdbc15b25.
  5 files changed, 17 insertions(+), 17 deletions(-)
 
 diff --git a/src/plugins/imageformats/icns/qicnshandler.cpp b/src/plugins/imageformats/icns/qicnshandler.cpp
-index 280b26e..0d93698 100644
+index 6a955b5..d81762e 100644
 --- a/src/plugins/imageformats/icns/qicnshandler.cpp
 +++ b/src/plugins/imageformats/icns/qicnshandler.cpp
-@@ -365,9 +365,9 @@ static inline QByteArray nameForCompressedIcon(quint8 iconNumber)
+@@ -368,9 +368,9 @@ static inline QByteArray nameForCompressedIcon(quint8 iconNumber)
      return base + QByteArray::number(iconNumber);
  }
  
@@ -28,7 +28,7 @@ index 280b26e..0d93698 100644
      uint n = 1 << depth;
      const QRgb *data;
      switch (depth) {
-@@ -543,7 +543,7 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
+@@ -546,7 +546,7 @@ static QImage readLowDepthIcon(const ICNSEntry &icon, QDataStream &stream)
  
      const bool isMono = depth == ICNSEntry::DepthMono;
      const QImage::Format format = isMono ? QImage::Format_Mono : QImage::Format_Indexed8;
