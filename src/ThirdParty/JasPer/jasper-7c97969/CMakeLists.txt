@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.20)
 # The major, minor, and micro version numbers of the project.
 set(JAS_VERSION_MAJOR 4)
 set(JAS_VERSION_MINOR 2)
-set(JAS_VERSION_PATCH 5)
+set(JAS_VERSION_PATCH 8)
 
 # The shared library versioning information.
 # Guidelines on how to change this information can be found below.
@@ -107,6 +107,8 @@ else()
 endif()
 
 option(JAS_PACKAGING "Enable packaging mode (e.g., disable RPATH)" OFF)
+
+option(JAS_ENABLE_CMAKE_PACKAGE_CONFIG "Enable CMake package config file generation" OFF)
 
 option(JAS_ENABLE_PIC "Enable position-independent code" ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ${JAS_ENABLE_PIC})
@@ -314,6 +316,7 @@ message("CMAKE_LINKER: ${CMAKE_LINKER}")
 
 # Customize the compiler flags for warning messages.
 if(CMAKE_C_COMPILER_ID STREQUAL "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
+
 	check_c_compiler_flag("-Wno-stringop-truncation"
 	  JAS_GCC_WARN_NO_STRINGOP_TRUNCATION)
 	check_c_compiler_flag("-Wno-stringop-overflow"
@@ -331,7 +334,16 @@ if(CMAKE_C_COMPILER_ID STREQUAL "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
 	add_c_compile_options(-Wno-sign-compare)
 	add_c_compile_options(-Wformat)
 	add_c_compile_options(-Wmissing-prototypes)
-	add_c_compile_options(-Wstrict-prototypes)
+
+	# NOTE: The semantics of -Wstrict-prototypes differs in GCC and Clang.
+	# GCC does not warn about empty parameter lists in function definitions,
+	# while Clang does warn about this.
+	if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+		add_c_compile_options(-Wstrict-prototypes)
+	elseif(CMAKE_C_COMPILER_ID STREQUAL "Clang")
+		add_c_compile_options(-Wno-strict-prototypes)
+	endif()
+
 	add_c_compile_options(-Wno-type-limits)
 	if (JAS_CLANG_WARN_NO_OUT_OF_RANGE_COMPARE)
 		add_c_compile_options(-Wno-tautological-constant-out-of-range-compare)
@@ -357,7 +369,9 @@ if(CMAKE_C_COMPILER_ID STREQUAL "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
 		#add_c_compile_options(-Werror)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
 	endif()
+
 elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+
 	# possibly lossy conversion
 	add_c_compile_options(/wd4244)
 	# different const qualifiers
@@ -372,6 +386,7 @@ elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
 		# Treat all compiler warnings as errors.
 		add_c_compile_options(/WX)
 	endif()
+
 endif()
 
 if(JAS_ENABLE_HIDDEN)
@@ -743,11 +758,13 @@ if(JAS_ENABLE_LIBJPEG)
 		# (e.g., stdio.h and stdint.h).  So, we cannot reliably use
 		# check_include_file here.
 		jas_get_includes_from_targets(CMAKE_REQUIRED_INCLUDES JPEG::JPEG)
+		message("JPEG include directories: ${CMAKE_REQUIRED_INCLUDES}")
 		check_c_source_compiles("
 			#include <stdio.h>
 			#include <stdint.h>
+			#include <stddef.h>
 			#include <jpeglib.h>
-			int main() {}
+			int main(void) {}
 		" JAS_HAVE_JPEGLIB_H)
 		if(JAS_HAVE_JPEGLIB_H)
 			set(JAS_HAVE_LIBJPEG 1)
@@ -862,3 +879,43 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/build/pkgconfig/jasper.pc"
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
 install(FILES "README.md" DESTINATION "${CMAKE_INSTALL_DOCDIR}")
+
+################################################################################
+# CMake package config files for find_package(JasPer CONFIG ...)
+################################################################################
+
+if(JAS_ENABLE_CMAKE_PACKAGE_CONFIG)
+
+	include(CMakePackageConfigHelpers)
+
+	# Create a version file for the package.
+	write_basic_package_version_file(
+	  "${CMAKE_CURRENT_BINARY_DIR}/JasPerConfigVersion.cmake"
+	  VERSION ${JAS_VERSION}
+	  COMPATIBILITY AnyNewerVersion
+	)
+
+	# Configure the config file that downstream projects will include.
+	configure_package_config_file(
+	  "${CMAKE_CURRENT_SOURCE_DIR}/build/cmake/modules/JasPerConfig.cmake.in"
+	  "${CMAKE_CURRENT_BINARY_DIR}/JasPerConfig.cmake"
+	  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/JasPer"
+	)
+
+	# Export the targets.
+	install(EXPORT JasPerTargets
+	  FILE JasPerTargets.cmake
+	  NAMESPACE JasPer::
+	  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/JasPer"
+	)
+
+	# Install the config and version files.
+	install(FILES
+	  "${CMAKE_CURRENT_BINARY_DIR}/JasPerConfig.cmake"
+	  "${CMAKE_CURRENT_BINARY_DIR}/JasPerConfigVersion.cmake"
+	  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/JasPer"
+	)
+
+endif()
+
+################################################################################
