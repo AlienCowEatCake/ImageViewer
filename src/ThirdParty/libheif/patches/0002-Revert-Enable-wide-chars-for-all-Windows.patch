@@ -1,20 +1,20 @@
-From 2b155ec88a9204eeac9df54d6c27fbdf12929090 Mon Sep 17 00:00:00 2001
+From 9e54dc15b8e0dada1aee375c75c8eff815aa1433 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 21 Dec 2022 23:23:25 +0700
 Subject: [PATCH 2/3] Revert "Enable wide chars for all Windows"
 
 This reverts commit 0d7c5a181905eeb6b5bc2c8f91012a2abb0c5bfc.
 ---
- libheif/api/libheif/heif.cc | 2 +-
- libheif/file.cc             | 8 ++++----
- libheif/file.h              | 2 +-
+ libheif/api/libheif/heif_context.cc | 2 +-
+ libheif/file.cc                     | 8 ++++----
+ libheif/file.h                      | 2 +-
  3 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/libheif/api/libheif/heif.cc b/libheif/api/libheif/heif.cc
-index 0ff1afa3..d3e2f30e 100644
---- a/libheif/api/libheif/heif.cc
-+++ b/libheif/api/libheif/heif.cc
-@@ -2623,7 +2623,7 @@ static struct heif_error heif_file_writer_write(struct heif_context* ctx,
+diff --git a/libheif/api/libheif/heif_context.cc b/libheif/api/libheif/heif_context.cc
+index bc0d2ffe..039bbc93 100644
+--- a/libheif/api/libheif/heif_context.cc
++++ b/libheif/api/libheif/heif_context.cc
+@@ -234,7 +234,7 @@ static struct heif_error heif_file_writer_write(struct heif_context* ctx,
  {
    const char* filename = static_cast<const char*>(userdata);
  
@@ -24,12 +24,12 @@ index 0ff1afa3..d3e2f30e 100644
  #else
    std::ofstream ostr(filename, std::ios_base::binary);
 diff --git a/libheif/file.cc b/libheif/file.cc
-index 8a678bf9..4e2ab69c 100644
+index df10cfb9..37eb5fd7 100644
 --- a/libheif/file.cc
 +++ b/libheif/file.cc
-@@ -39,13 +39,13 @@
- #include <cassert>
- #include <algorithm>
+@@ -41,13 +41,13 @@
+ 
+ #include "libheif/heif_cxx.h"
  
 -#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
 +#ifdef _MSC_VER
@@ -43,7 +43,7 @@ index 8a678bf9..4e2ab69c 100644
  #endif
  
  
-@@ -100,7 +100,7 @@ std::shared_ptr<Box_infe> HeifFile::get_infe_box(heif_item_id ID)
+@@ -102,7 +102,7 @@ std::shared_ptr<Box_infe> HeifFile::get_infe_box(heif_item_id ID)
  
  Error HeifFile::read_from_file(const char* input_filename)
  {
@@ -52,7 +52,7 @@ index 8a678bf9..4e2ab69c 100644
    auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(convert_utf8_path_to_utf16(input_filename).c_str(), std::ios_base::binary));
  #else
    auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(input_filename, std::ios_base::binary));
-@@ -1172,7 +1172,7 @@ void HeifFile::set_auxC_property(heif_item_id id, const std::string& type)
+@@ -1228,7 +1228,7 @@ void HeifFile::set_auxC_property(heif_item_id id, const std::string& type)
    m_ipma_box->add_property_for_item_ID(id, Box_ipma::PropertyAssociation{true, uint16_t(index + 1)});
  }
  
@@ -62,10 +62,10 @@ index 8a678bf9..4e2ab69c 100644
  {
    std::wstring ret;
 diff --git a/libheif/file.h b/libheif/file.h
-index 1a1585a4..7ce30ce3 100644
+index b16bb449..01dd96cf 100644
 --- a/libheif/file.h
 +++ b/libheif/file.h
-@@ -210,7 +210,7 @@ public:
+@@ -230,7 +230,7 @@ public:
  
    void set_auxC_property(heif_item_id id, const std::string& type);
  

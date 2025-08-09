@@ -10,7 +10,7 @@ TARGET = tp_libheif
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.19.7
+THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.20.2
 THIRDPARTY_LIBHEIF_INCLUDE_PATH = $${PWD}/include
 
 include(../../Features.pri)
@@ -35,24 +35,46 @@ DEFINES += HAVE_INTTYPES_H HAVE_LIBDE265=1 WITH_UNCOMPRESSED_CODEC=1 HAVE_STDDEF
 # find ./libheif -name '*.cc' | egrep -v '(_fuzzer|_aom|_dav1d|_rav1e|_svt|_x265|_ffmpeg|_jpeg|_openjpeg|_kvazaar|_unix|_windows|_vvdec|_vvenc|_uvg266|_openjph|_openh264)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_aux_images.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_brands.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_color.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_context.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_decoding.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_encoding.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_entity_groups.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_experimental.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_image.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_image_handle.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_items.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_library.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_metadata.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_plugin.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_properties.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_regions.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_security.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_sequences.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_tai_timestamps.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_tiling.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_uncompressed.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/bitstream.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/box.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/brands.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avc_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avc_dec.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avif_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avif_dec.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avif_enc.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/decoder.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/encoder.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/hevc_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/hevc_dec.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/hevc_enc.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg2000_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg2000_dec.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg2000_enc.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg_dec.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg_enc.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_abstract.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_component_interleave.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_mixed_interleave.cc \
@@ -62,8 +84,10 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_codec.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_dec.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_enc.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/vvc_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/vvc_dec.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/vvc_enc.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/alpha.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/chroma_sampling.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/colorconversion.cc \
@@ -106,6 +130,11 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/nalu_utils.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/region.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/security_limits.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/chunk.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/seq_boxes.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/track.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/track_metadata.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/track_visual.cc \
 
 # find ./libheif -name '*.cc' | egrep '(_windows)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
 # find ./libheif -name '*.cc' | egrep '(_unix)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
@@ -146,28 +175,51 @@ SOURCES += \
 
 # find ./libheif -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
 HEADERS += \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/api_structs.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_aux_images.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_brands.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_color.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_context.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_cxx.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_decoding.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_emscripten.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_encoding.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_entity_groups.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_error.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_experimental.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_image.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_image_handle.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_items.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_library.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_metadata.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_plugin.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_properties.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_regions.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_security.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_sequences.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_tai_timestamps.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_tiling.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_uncompressed.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api_structs.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/bitstream.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/box.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/brands.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avc_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avc_dec.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avif_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avif_dec.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avif_enc.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/decoder.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/encoder.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/hevc_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/hevc_dec.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/hevc_enc.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg2000_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg2000_dec.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg2000_enc.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg_dec.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg_enc.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_abstract.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_component_interleave.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_mixed_interleave.h \
@@ -177,9 +229,11 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_codec.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_dec.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_enc.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_types.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/vvc_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/vvc_dec.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/vvc_enc.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/alpha.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/chroma_sampling.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/colorconversion.h \
@@ -210,6 +264,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/vvc.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/init.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/logging.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/mdat_data.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/mini.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/nclx.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/pixelimage.h \
@@ -240,6 +295,11 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins_windows.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/region.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/security_limits.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/chunk.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/seq_boxes.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/track.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/track_metadata.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/track_visual.h \
     $${THIRDPARTY_LIBHEIF_INCLUDE_PATH}/libheif/heif_version.h
 
 TR_EXCLUDE += $${THIRDPARTY_LIBHEIF_PATH}/*
