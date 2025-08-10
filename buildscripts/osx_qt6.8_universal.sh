@@ -13,7 +13,7 @@ APP_CERT="Developer ID Application: Petr Zhigalov (48535TNTA7)"
 NOTARIZE_USERNAME="peter.zhigalov@gmail.com"
 NOTARIZE_PASSWORD="@keychain:Notarize: ${NOTARIZE_USERNAME}"
 NOTARIZE_ASC_PROVIDER="${APP_CERT: -11:10}"
-MAC_TARGET="11.0"
+MAC_TARGET="12.0"
 MAC_SDK="$(xcodebuild -showsdks | grep '\-sdk macosx' | tail -1 | sed 's|.*-sdk ||')"
 
 QT_PATH="${QT_PATH:=/opt/Qt/6.8.3/macos_target10.15}"
