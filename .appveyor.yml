@@ -19,8 +19,8 @@ environment:
     # - job_name: macOS, Qt 5.15, Universal
     #   job_group: macos_buildscript
     #   APPVEYOR_BUILD_WORKER_IMAGE: macos-sonoma
-    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.16_osx-10.10/Qt_5.15.16_clang_universal_target10.10.tar.bz2
-    #   QT_HOME: Qt/5.15.16/clang_universal_target10.10
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.17_osx-10.10/Qt_5.15.17_clang_universal_target10.10.tar.bz2
+    #   QT_HOME: Qt/5.15.17/clang_universal_target10.10
     #   BUILD_ID: osx_qt5.15_universal_target10.10
     # - job_name: macOS, Qt 6.8, Universal
     #   job_group: macos_buildscript
@@ -121,7 +121,6 @@ for:
     - sudo xattr -r -d com.apple.quarantine "qt_dist"
     - sudo tar -xpf "qt_dist"
     - sudo rm "qt_dist"
-    - find "${QT_HOME}/mkspecs" -name qdevice.pri -exec sudo sed -i '' 's|^\(QMAKE_MAC_SDK = macosx\)[0-9\.]*$|\1|' \{\} \;
   build_script:
     - export ADHOC_SIGN=1
     - export QT_PATH="/opt/${QT_HOME}"
