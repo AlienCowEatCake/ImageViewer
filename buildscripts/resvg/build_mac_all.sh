@@ -1,7 +1,11 @@
 #!/bin/bash -e
 
-RESVG_VERSION="0.45.0"
-RESVG_HOST="x86_64-apple-darwin"
+RESVG_VERSION="0.45.1"
+if [[ $(sysctl -n machdep.cpu.brand_string) =~ "Apple" ]] ; then
+    RESVG_HOST="aarch64-apple-darwin"
+else
+    RESVG_HOST="x86_64-apple-darwin"
+fi
 export MACOSX_DEPLOYMENT_TARGET=10.7
 
 # Mac OS X 10.7 support is dropped since 1.74.0. See changelog here:
@@ -18,7 +22,7 @@ curl -Lo rustup-init.sh "https://sh.rustup.rs"
 chmod +x rustup-init.sh
 ./rustup-init.sh --default-host "${RESVG_HOST}" --target "x86_64-apple-darwin" --target "aarch64-apple-darwin" --default-toolchain "${RUST_VERSION}" --profile default --no-modify-path -y
 
-curl -LO "https://github.com/linebender/resvg/releases/download/${RESVG_VERSION}/resvg-${RESVG_VERSION}.tar.xz"
+curl -LO "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-${RESVG_VERSION}.tar.xz"
 tar -xvpf "resvg-${RESVG_VERSION}.tar.xz"
 for RESVG_TARGET in "x86_64-apple-darwin" "aarch64-apple-darwin" ; do
     pushd "resvg-${RESVG_VERSION}" > /dev/null
