@@ -34,7 +34,6 @@ rm -rf "${PROJECT}-${VERSION}/src/QtUtils/resources/icons/original"
 find "${PROJECT}-${VERSION}/src/ImageViewer/resources/platform/macosx" -type f -name 'make_duti*.sh' -delete
 # Remove autogeneration scripts
 rm -rf "${PROJECT}-${VERSION}/src/ImageViewer/src/GUI/Dialogs/generate_contributors.py"
-rm -rf "${PROJECT}-${VERSION}/src/ImageViewer/update_translations.sh"
 # Remove MSI installer files
 find "${PROJECT}-${VERSION}/src/ImageViewer/resources/platform/windows" -type f -name '*.wxs' -delete
 find "${PROJECT}-${VERSION}/src/ImageViewer/resources/platform/windows" -type f -name '*.wxi' -delete
