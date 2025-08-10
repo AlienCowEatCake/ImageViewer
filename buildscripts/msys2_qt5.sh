@@ -78,7 +78,8 @@ DIST_PREFIX="${PROJECT}${SUFFIX}"
 HOST_ARCH="$(MSYS_NO_PATHCONV=1 reg query "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment" /v "PROCESSOR_ARCHITECTURE" | grep PROCESSOR_ARCHITECTURE | sed 's|.*PROCESSOR_ARCHITECTURE[ \t]*REG_SZ[ \t]*|| ; s|[ \t]*||g')"
 
 function copyDlls() {
-    if [ "${HOST_ARCH}" == "ARM64" ] ; then
+    # @todo x64 objdump fails for arm64 binaries
+    if [ "${HOST_ARCH}" == "ARM64" -a "${MSYSTEM}" == "CLANGARM64" ] ; then
         "${SOURCE_PATH}/buildscripts/helpers/arm64/dllresolver.exe" "${DIST_PREFIX}" "${@}"
     else
         "${SOURCE_PATH}/buildscripts/helpers/dllresolver.exe" "${DIST_PREFIX}" "${@}"
