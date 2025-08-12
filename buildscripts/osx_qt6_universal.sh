@@ -1,8 +1,8 @@
 #!/bin/bash -e
 PROJECT=ImageViewer
-BUILDDIR=build_osx_qt6.8_universal
+BUILDDIR=build_osx_qt6_universal
 APPNAME="Image Viewer"
-DMGNAME="${PROJECT}_qt6.8_universal"
+DMGNAME="${PROJECT}_qt6_universal"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/macosx/set_associations.sh"
 QM_FILES_PATH="src/${PROJECT}/resources/translations"
 QTUTILS_QM_FILES_PATH="src/QtUtils/resources/translations"

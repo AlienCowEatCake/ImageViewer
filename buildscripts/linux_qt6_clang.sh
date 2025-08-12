@@ -1,7 +1,7 @@
 #!/bin/bash -e
 PROJECT="ImageViewer"
 IDENTIFIER="com.github.aliencoweatcake.imageviewer"
-SUFFIX="qt6.8"
+SUFFIX="qt6"
 SUFFIX_FULL="${SUFFIX}_$(gcc -dumpmachine)"
 BUILDDIR="build_linux_${SUFFIX_FULL}_clang"
 APP_PATH="src/${PROJECT}"
