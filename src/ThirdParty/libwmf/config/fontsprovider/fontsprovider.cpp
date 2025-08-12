@@ -261,7 +261,7 @@ private:
                 << "s050000l.pfb"
                 << "fontmap";
         for(QList<QByteArray>::ConstIterator it = previousAppDataFiles.constBegin(); it != previousAppDataFiles.constEnd(); ++it)
-            QFile::remove(QString::fromLatin1("%1/%2").arg(appDataLocation).arg(QString::fromLatin1(*it)));
+            QFile::remove(QString::fromLatin1("%1/%2").arg(appDataLocation, QString::fromLatin1(*it)));
     }
 
     Q_DISABLE_COPY(FontsProvider)

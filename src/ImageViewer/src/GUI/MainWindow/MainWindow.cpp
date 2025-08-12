@@ -352,9 +352,7 @@ void MainWindow::updateWindowTitle()
     else if(m_impl->uiState.hasCurrentFile)
     {
         label = QFileInfo(m_impl->uiState.currentFilePath).fileName();
-        label.append(QString::fromLatin1(" (%1) - %2")
-                     .arg(tr("Error"))
-                     .arg(qApp->applicationName()));
+        label.append(QString::fromLatin1(" (%1) - %2").arg(tr("Error"), qApp->applicationName()));
     }
     else
     {

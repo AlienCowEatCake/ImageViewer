@@ -156,9 +156,10 @@ bool MainController::openPaths(const QStringList &paths)
 
 bool MainController::openFileWithDialog()
 {
-    const QString formatString = QString::fromLatin1("%2 (%1);;%3 (*.*)")
-            .arg(DecodersManager::getInstance().supportedFormatsWithWildcards().join(QString::fromLatin1(" ")))
-            .arg(tr("All Supported Images")).arg(tr("All Files"));
+    const QString formatString = QString::fromLatin1("%2 (%1);;%3 (*.*)").arg(
+            DecodersManager::getInstance().supportedFormatsWithWildcards().join(QString::fromLatin1(" ")),
+            tr("All Supported Images"),
+            tr("All Files"));
     const QStringList filePaths = QFileDialog::getOpenFileNames(&m_impl->mainWindow, tr("Open File"), m_impl->settings.lastOpenedPath(), formatString
 #if defined (Q_OS_WIN) && (QT_VERSION <= QT_VERSION_CHECK(5, 0, 0))
                                                                 , Q_NULLPTR, (QSysInfo::windowsVersion() < QSysInfo::WV_XP)

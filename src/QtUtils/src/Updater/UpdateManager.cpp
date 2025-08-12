@@ -177,9 +177,9 @@ void UpdateManager::onUpdateNotFound(const ReleaseInfo &currentRelease)
         box.setIcon(QMessageBox::Information);
         box.setWindowTitle(qApp->translate("UpdateManager", "Information"));
         box.setText(qApp->translate("UpdateManager", "You have the latest version."));
-        box.setInformativeText(QString::fromLatin1("%1 <b>%2</b>")
-                .arg(qApp->translate("UpdateManager", "Your version:"))
-                .arg(currentRelease.version.toString()));
+        box.setInformativeText(QString::fromLatin1("%1 <b>%2</b>").arg(
+                qApp->translate("UpdateManager", "Your version:"),
+                currentRelease.version.toString()));
         box.setStandardButtons(QMessageBox::Ok);
         box.setDefaultButton(QMessageBox::Ok);
         box.exec();
@@ -200,11 +200,11 @@ void UpdateManager::onUpdateFound(const ReleaseInfo &currentRelease, const QList
     box.setIcon(QMessageBox::Information);
     box.setWindowTitle(qApp->translate("UpdateManager", "Information"));
     box.setText(qApp->translate("UpdateManager", "New updates are available."));
-    const QString informativeText = QString::fromLatin1("%1 <b>%2</b><br>%3 <b>%4</b>")
-            .arg(qApp->translate("UpdateManager", "Your version:"))
-            .arg(currentRelease.version.toString())
-            .arg(qApp->translate("UpdateManager", "Latest version:"))
-            .arg(newReleases.first().version.toString());
+    const QString informativeText = QString::fromLatin1("%1 <b>%2</b><br>%3 <b>%4</b>").arg(
+            qApp->translate("UpdateManager", "Your version:"),
+            currentRelease.version.toString(),
+            qApp->translate("UpdateManager", "Latest version:"),
+            newReleases.first().version.toString());
     box.setInformativeText(informativeText);
     QPushButton *downloadButton = box.addButton(qApp->translate("UpdateManager", "&Download")           , QMessageBox::AcceptRole);
     QPushButton *cancelButton   = box.addButton(qApp->translate("UpdateManager", "&Cancel")             , QMessageBox::RejectRole);
@@ -212,7 +212,7 @@ void UpdateManager::onUpdateFound(const ReleaseInfo &currentRelease, const QList
     box.setDefaultButton(downloadButton);
     QString changelog;
     for(QList<ReleaseInfo>::ConstIterator it = newReleases.constBegin(), itEnd = newReleases.constEnd(); it != itEnd; ++it)
-        changelog += (changelog.isEmpty() ? QString() : QString::fromLatin1("\r\n\r\n")) + QString::fromLatin1("# %1\r\n\r\n%2\r\n").arg(it->name).arg(it->body);
+        changelog += (changelog.isEmpty() ? QString() : QString::fromLatin1("\r\n\r\n")) + QString::fromLatin1("# %1\r\n\r\n%2\r\n").arg(it->name, it->body);
     box.setDetailedText(changelog);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     if(QTextEdit *textEdit = box.findChild<QTextEdit*>())

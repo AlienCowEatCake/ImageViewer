@@ -892,10 +892,10 @@ QString GetSystemDescription()
     memset(&buf, 0, sizeof(buf));
     if(uname(&buf))
         return QString();
-    return QString::fromLatin1("%1 %2, %3")
-            .arg(QString::fromLocal8Bit(buf.sysname))
-            .arg(QString::fromLocal8Bit(buf.release))
-            .arg(QString::fromLocal8Bit(buf.machine));
+    return QString::fromLatin1("%1 %2, %3").arg(
+            QString::fromLocal8Bit(buf.sysname),
+            QString::fromLocal8Bit(buf.release),
+            QString::fromLocal8Bit(buf.machine));
 #endif
 }
 
@@ -959,7 +959,7 @@ QString GetCompilerDescription()
         else if(translated == 0)
             extraInfo = QString::fromLatin1("Native, ") + extraInfo;
 #endif
-        description.append(QString::fromLatin1(", %1 (%2)").arg(target).arg(extraInfo));
+        description.append(QString::fromLatin1(", %1 (%2)").arg(target, extraInfo));
     }
     return description;
 }

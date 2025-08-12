@@ -95,14 +95,14 @@ bool ImageSaver::save(const QImage &image, const QString &preferredName)
         const QString &format = *it;
         if(!whiteList.contains(format, Qt::CaseInsensitive))
             continue;
-        const QString currentFormatString = QString::fromLatin1("%1 %2 (*.%3)").arg(format.toUpper()).arg(tr("Images")).arg(format);
+        const QString currentFormatString = QString::fromLatin1("%1 %2 (*.%3)").arg(format.toUpper(), tr("Images"), format);
         formatString.append(QString::fromLatin1(";;%1").arg(currentFormatString));
         if(format == preferredExtension)
             preferredFormatString = currentFormatString;
         if(format == defaultExtension)
             defaultFormatString = currentFormatString;
     }
-    const QString formatsAll = QString::fromLatin1("%1 (*.%2)").arg(tr("All Images")).arg(supportedFormats.join(QString::fromLatin1(" *.")));
+    const QString formatsAll = QString::fromLatin1("%1 (*.%2)").arg(tr("All Images"), supportedFormats.join(QString::fromLatin1(" *.")));
     formatString.prepend(formatsAll);
     if(preferredFormatString.isEmpty())
         preferredFormatString = (defaultFormatString.isEmpty() ? formatsAll : defaultFormatString);

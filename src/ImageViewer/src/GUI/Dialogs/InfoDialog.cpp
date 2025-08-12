@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -179,7 +179,7 @@ InfoDialog::InfoDialog(const QSharedPointer<IImageData> &imageData, QWidget *par
 
             QString toolTip;
             if(!jt->tagName.isEmpty() && !jt->tagDescription.isEmpty())
-                toolTip = QString::fromLatin1("<b>%1:</b> %2").arg(jt->tagName).arg(jt->tagDescription);
+                toolTip = QString::fromLatin1("<b>%1:</b> %2").arg(jt->tagName, jt->tagDescription);
             else if(!jt->tagDescription.isEmpty())
                 toolTip = FORCE_RICH_TEXT_TEMPLATE.arg(jt->tagDescription);
             else if(!jt->tagName.isEmpty() && !jt->tagTitle.isEmpty())

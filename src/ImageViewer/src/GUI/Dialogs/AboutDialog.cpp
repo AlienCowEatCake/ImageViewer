@@ -217,7 +217,7 @@ QString formatItem(const QString &title, const QString &name, const QString &ver
     else if(!url.isEmpty())
         result.append(QString::fromLatin1("<br><a href=\"%1\">%1</a>").arg(url));
     if(!license.isEmpty() && !licenseUrl.isEmpty())
-        result.append(QString::fromLatin1("<br>License: <a href=\"%2\" title=\"%2\">%1</a>").arg(license).arg(licenseUrl));
+        result.append(QString::fromLatin1("<br>License: <a href=\"%2\" title=\"%2\">%1</a>").arg(license, licenseUrl));
     else if(!license.isEmpty())
         result.append(QString::fromLatin1("<br>License: %1").arg(license));
     else if(!licenseUrl.isEmpty())
@@ -231,14 +231,10 @@ QString getTextBrowserContent()
     QString result;
 
     result.append(QString::fromLatin1("<b>%1</b> %2<br>")
-                  .arg(QString::fromLatin1("System:"))
-                  .arg(InfoUtils::GetSystemDescription())
-                  );
+            .arg(QString::fromLatin1("System:"), InfoUtils::GetSystemDescription()));
 
     result.append(QString::fromLatin1("<b>%1</b> %2<br>")
-                  .arg(QString::fromLatin1("Compiler:"))
-                  .arg(InfoUtils::GetCompilerDescription())
-                  );
+            .arg(QString::fromLatin1("Compiler:"), InfoUtils::GetCompilerDescription()));
 
     QStringList availableDecoders = DecodersManager::getInstance().registeredDecoders();
     for(QStringList::Iterator it = availableDecoders.begin(); it != availableDecoders.end(); ++it)
@@ -252,8 +248,7 @@ QString getTextBrowserContent()
     availableDecoders.sort();
 
     result.append(QString::fromLatin1("<b>%1</b> %2<br><br>")
-            .arg(QString::fromLatin1("Available image decoders:"))
-            .arg(availableDecoders.join(QString::fromLatin1(", "))));
+            .arg(QString::fromLatin1("Available image decoders:"), availableDecoders.join(QString::fromLatin1(", "))));
 
     result.append(QString::fromLatin1("<b>%1</b><br>")
             .arg(QString::fromLatin1("Contributors:")));
@@ -846,16 +841,16 @@ AboutDialog::AboutDialog(QWidget *parent)
                                  "%4: %5<br><br>"
                                  "Copyright &copy; %6<br>"
                                  "%7 &lt;<a href=\"mailto:%8\">%8</a>&gt;"
-                                 )
-                             .arg(qApp->applicationName())
-                             .arg(qApp->applicationVersion())
-                             .arg(qApp->translate("AboutDialog", ABOUT_URL_STRING))
-                             .arg(qApp->translate("AboutDialog", "License"))
-                             .arg(qApp->translate("AboutDialog", ABOUT_LICENSE_STRIG))
-                             .arg(qApp->translate("AboutDialog", ABOUT_YEAR_STRING))
-                             .arg(qApp->translate("AboutDialog", ABOUT_AUTHOR_STRING))
-                             .arg(qApp->translate("AboutDialog", ABOUT_EMAIL_STRING))
-                             );
+                                 ).arg(
+                                     qApp->applicationName(),
+                                     qApp->applicationVersion(),
+                                     qApp->translate("AboutDialog", ABOUT_URL_STRING),
+                                     qApp->translate("AboutDialog", "License"),
+                                     qApp->translate("AboutDialog", ABOUT_LICENSE_STRIG),
+                                     qApp->translate("AboutDialog", ABOUT_YEAR_STRING),
+                                     qApp->translate("AboutDialog", ABOUT_AUTHOR_STRING),
+                                     qApp->translate("AboutDialog", ABOUT_EMAIL_STRING)
+                                     ));
     m_ui->textBrowser->setHtml(getTextBrowserContent());
 
     ensurePolished();

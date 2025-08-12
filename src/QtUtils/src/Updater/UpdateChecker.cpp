@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -99,8 +99,8 @@ void UpdateChecker::checkForUpdates()
         connect(m_impl->networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
     }
     QNetworkRequest request;
-    request.setUrl(QUrl(QString::fromLatin1("https://api.github.com/repos/%1/%2/releases?per_page=%3").arg(m_impl->owner).arg(m_impl->repo).arg(RELEASES_LIMIT)));
-    request.setRawHeader("User-Agent", QString::fromLatin1("%1/%2").arg(qApp->applicationName()).arg(qApp->applicationVersion()).toLatin1());
+    request.setUrl(QUrl(QString::fromLatin1("https://api.github.com/repos/%1/%2/releases?per_page=%3").arg(m_impl->owner, m_impl->repo).arg(RELEASES_LIMIT)));
+    request.setRawHeader("User-Agent", QString::fromLatin1("%1/%2").arg(qApp->applicationName(), qApp->applicationVersion()).toLatin1());
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
 #elif (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
