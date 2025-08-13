@@ -12,10 +12,10 @@ environment:
       job_group: macos_test
       APPVEYOR_BUILD_WORKER_IMAGE: macos-monterey
       QTDIR: Qt/5.15/clang_64
-    - job_name: macOS, Qt 6.6, x64, Testing
+    - job_name: macOS, Qt 6.5, x64, Testing
       job_group: macos_test
       APPVEYOR_BUILD_WORKER_IMAGE: macos-sonoma
-      QTDIR: Qt/6.6/macos
+      QTDIR: Qt/6.5/macos
     # - job_name: macOS, Qt 5.15, Universal
     #   job_group: macos_buildscript
     #   APPVEYOR_BUILD_WORKER_IMAGE: macos-sonoma
@@ -85,10 +85,10 @@ environment:
       job_group: linux_test
       APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2204
       QTDIR: Qt/5.15/gcc_64
-    - job_name: GNU/Linux, Ubuntu 22.04, Qt 6.7, x64, Testing
+    - job_name: GNU/Linux, Ubuntu 22.04, Qt 6.5, x64, Testing
       job_group: linux_test
       APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2204
-      QTDIR: Qt/6.7/gcc_64
+      QTDIR: Qt/6.5/gcc_64
     # - job_name: GNU/Linux, Qt 5.15, x64
     #   job_group: linux_buildscript
     #   APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2204
