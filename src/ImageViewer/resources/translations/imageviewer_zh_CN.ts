@@ -4,12 +4,12 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="842"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="837"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="853"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="848"/>
         <source>License</source>
         <translation>许可</translation>
     </message>
@@ -437,59 +437,59 @@
         <translation>图像文件</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="161"/>
+        <location filename="../../src/GUI/MainController.cpp" line="162"/>
         <source>All Files</source>
         <translation>所有文件</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="162"/>
+        <location filename="../../src/GUI/MainController.cpp" line="163"/>
         <source>Open File</source>
         <translation>打开文件</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="174"/>
-        <location filename="../../src/GUI/MainController.cpp" line="350"/>
-        <location filename="../../src/GUI/MainController.cpp" line="408"/>
+        <location filename="../../src/GUI/MainController.cpp" line="175"/>
+        <location filename="../../src/GUI/MainController.cpp" line="351"/>
+        <location filename="../../src/GUI/MainController.cpp" line="409"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>打开 &quot;%1&quot; 失败</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="175"/>
+        <location filename="../../src/GUI/MainController.cpp" line="176"/>
         <source>Failed to open files &quot;%1&quot;</source>
         <translation>打开 &quot;%1&quot; 失败</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="184"/>
+        <location filename="../../src/GUI/MainController.cpp" line="185"/>
         <source>Open Folder</source>
         <translation>打开文件夹</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="189"/>
+        <location filename="../../src/GUI/MainController.cpp" line="190"/>
         <source>Failed to open folder &quot;%1&quot;</source>
         <translation>打开 &quot;%1&quot; 失败</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="200"/>
+        <location filename="../../src/GUI/MainController.cpp" line="201"/>
         <source>Delete File</source>
         <translation>删除文件</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="200"/>
+        <location filename="../../src/GUI/MainController.cpp" line="201"/>
         <source>Are you sure you want to delete current file?</source>
         <translation>确认要删除当前文件吗?</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="176"/>
-        <location filename="../../src/GUI/MainController.cpp" line="189"/>
-        <location filename="../../src/GUI/MainController.cpp" line="210"/>
-        <location filename="../../src/GUI/MainController.cpp" line="218"/>
-        <location filename="../../src/GUI/MainController.cpp" line="350"/>
-        <location filename="../../src/GUI/MainController.cpp" line="408"/>
+        <location filename="../../src/GUI/MainController.cpp" line="177"/>
+        <location filename="../../src/GUI/MainController.cpp" line="190"/>
+        <location filename="../../src/GUI/MainController.cpp" line="211"/>
+        <location filename="../../src/GUI/MainController.cpp" line="219"/>
+        <location filename="../../src/GUI/MainController.cpp" line="351"/>
+        <location filename="../../src/GUI/MainController.cpp" line="409"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="218"/>
+        <location filename="../../src/GUI/MainController.cpp" line="219"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation>删除 &quot;%1&quot; 失败</translation>
     </message>
@@ -497,17 +497,17 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="349"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="355"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="482"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="489"/>
         <source>Zoom</source>
         <translation>缩放</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="483"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="490"/>
         <source>Zoom Factor (%):</source>
         <translation>缩放因数 (%):</translation>
     </message>
@@ -688,181 +688,181 @@
 <context>
     <name>PrintDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="371"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="372"/>
         <source>Print</source>
         <comment>Title</comment>
         <translation>打印</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="377"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="378"/>
         <source>Millimeters (mm)</source>
         <comment>Size unit</comment>
         <translation type="unfinished">毫米 (mm)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="378"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="379"/>
         <source>Points (pt)</source>
         <comment>Size unit</comment>
         <translation type="unfinished">点 (pt)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="379"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="380"/>
         <source>Inches (in)</source>
         <comment>Size unit</comment>
         <translation type="unfinished">英寸 (in)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="380"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="381"/>
         <source>Pica (P̸)</source>
         <comment>Size unit</comment>
         <translation type="unfinished">派卡 (P̸)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="381"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="382"/>
         <source>Didot (DD)</source>
         <comment>Size unit</comment>
         <translation type="unfinished">迪多 (DD)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="382"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="383"/>
         <source>Cicero (CC)</source>
         <comment>Size unit</comment>
         <translation type="unfinished">西塞罗 (CC)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="401"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="402"/>
         <source>Pixels/Millimeter</source>
         <comment>Resolution unit</comment>
         <translation type="unfinished">像素/毫米</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="402"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="403"/>
         <source>Pixels/Point</source>
         <comment>Resolution unit</comment>
         <translation type="unfinished">像素/点</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="403"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="404"/>
         <source>Pixels/Inch</source>
         <comment>Resolution unit</comment>
         <translation type="unfinished">像素/英寸</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="404"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="405"/>
         <source>Pixels/Pica</source>
         <comment>Resolution unit</comment>
         <translation type="unfinished">像素/派卡</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="405"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="406"/>
         <source>Pixels/Didot</source>
         <comment>Resolution unit</comment>
         <translation type="unfinished">像素/迪多</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="406"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="407"/>
         <source>Pixels/Cicero</source>
         <comment>Resolution unit</comment>
         <translation type="unfinished">像素/西塞罗</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="411"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="412"/>
         <source>None</source>
         <comment>Centering option</comment>
         <translation>无</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="412"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="413"/>
         <source>Horizontally</source>
         <comment>Centering option</comment>
         <translation>横向</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="413"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="414"/>
         <source>Vertically</source>
         <comment>Centering option</comment>
         <translation>纵向</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="414"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="415"/>
         <source>Both</source>
         <comment>Centering option</comment>
         <translation>全部</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="609"/>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="793"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="710"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="894"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="610"/>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="794"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="711"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="895"/>
         <source>Invalid Paper Size</source>
         <translation>无效的纸张大小</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1219"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1320"/>
         <source>Color</source>
         <comment>Color mode</comment>
         <translation type="unfinished">彩色</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1221"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1322"/>
         <source>Grayscale</source>
         <comment>Color mode</comment>
         <translation type="unfinished">灰阶</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1132"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1233"/>
         <source>Yes</source>
         <comment>Default</comment>
         <translation>是</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1134"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1235"/>
         <source>No</source>
         <comment>Default</comment>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1138"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1239"/>
         <source>Yes</source>
         <comment>Remote</comment>
         <translation>是</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1140"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1241"/>
         <source>No</source>
         <comment>Remote</comment>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1164"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1265"/>
         <source>Idle</source>
         <comment>State</comment>
         <translation>空闲</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1167"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1268"/>
         <source>Active</source>
         <comment>State</comment>
         <translation>忙</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1170"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1271"/>
         <source>Aborted</source>
         <comment>State</comment>
         <translation>中断</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1173"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1274"/>
         <source>Error</source>
         <comment>State</comment>
         <translation>错误</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1176"/>
+        <location filename="../../src/GUI/Dialogs/PrintDialog.cpp" line="1277"/>
         <source>Unknown (%1)</source>
         <comment>State</comment>
         <translation>未知 (%1)</translation>
