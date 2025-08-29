@@ -1,43 +1,17 @@
-From 07d5bd2e170a65cd0df3e4d97f4fa153ba624f91 Mon Sep 17 00:00:00 2001
+From 4bfe489baac903216a244d28671237236d78beed Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 23:41:00 +0700
-Subject: [PATCH 1/2] Fix build with old Clang
+Subject: [PATCH] Fix build with old Clang
 
 ---
- hwy/targets.cc | 13 +++++++++++++
- hwy/timer.cc   | 13 +++++++++++++
- 2 files changed, 26 insertions(+)
+ hwy/x86_cpuid.h | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/hwy/targets.cc b/hwy/targets.cc
-index b246f1fd..1e109e7d 100644
---- a/hwy/targets.cc
-+++ b/hwy/targets.cc
-@@ -142,7 +142,20 @@ HWY_INLINE void Cpuid(const uint32_t level, const uint32_t count,
-   uint32_t b;
-   uint32_t c;
-   uint32_t d;
-+#if HWY_COMPILER_CLANG && !defined __cpuid_count
-+#if __i386__
-+  __asm("cpuid" : "=a"(a), "=b" (b), "=c"(c), "=d"(d) \
-+      : "0"(level), "2"(count))
-+#else
-+  __asm("  xchgq  %%rbx,%q1\n" \
-+        "  cpuid\n" \
-+        "  xchgq  %%rbx,%q1" \
-+      : "=a"(a), "=r" (b), "=c"(c), "=d"(d) \
-+      : "0"(level), "2"(count));
-+#endif
-+#else
-   __cpuid_count(level, count, a, b, c, d);
-+#endif
-   abcd[0] = a;
-   abcd[1] = b;
-   abcd[2] = c;
-diff --git a/hwy/timer.cc b/hwy/timer.cc
-index 4b7f2415..0919e5c2 100644
---- a/hwy/timer.cc
-+++ b/hwy/timer.cc
-@@ -81,7 +81,20 @@ void Cpuid(const uint32_t level, const uint32_t count,
+diff --git a/hwy/x86_cpuid.h b/hwy/x86_cpuid.h
+index 60bd51a0..94a4cda4 100644
+--- a/hwy/x86_cpuid.h
++++ b/hwy/x86_cpuid.h
+@@ -48,7 +48,20 @@ static inline void Cpuid(const uint32_t level, const uint32_t count,
    uint32_t b;
    uint32_t c;
    uint32_t d;
@@ -59,5 +33,5 @@ index 4b7f2415..0919e5c2 100644
    abcd[1] = b;
    abcd[2] = c;
 -- 
-2.45.2
+2.51.0
 

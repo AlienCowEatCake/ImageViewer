@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_HIGHWAY_PATH = $${PWD}/highway-1.2.0
+THIRDPARTY_HIGHWAY_PATH = $${PWD}/highway-1.3.0
 
 include(../../Features.pri)
 include(../CommonSettings.pri)
@@ -25,7 +25,9 @@ SOURCES += \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/aligned_allocator.cc \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/nanobenchmark.cc \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/per_target.cc \
+    $${THIRDPARTY_HIGHWAY_PATH}/hwy/perf_counters.cc \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/print.cc \
+    $${THIRDPARTY_HIGHWAY_PATH}/hwy/profiler.cc \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/stats.cc \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/targets.cc \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/timer.cc \
@@ -34,6 +36,7 @@ SOURCES += \
 HEADERS += \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/abort.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/aligned_allocator.h \
+    $${THIRDPARTY_HIGHWAY_PATH}/hwy/auto_tune.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/base.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/bit_set.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/cache_control.h \
@@ -56,6 +59,7 @@ HEADERS += \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/sort/vqsort-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/sort/vqsort.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/thread_pool/futex.h \
+    $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/thread_pool/spin.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/thread_pool/thread_pool.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/thread_pool/topology.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/contrib/unroller/unroller-inl.h \
@@ -72,6 +76,8 @@ HEADERS += \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/emu128-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/generic_ops-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/inside-inl.h \
+    $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/loongarch_lasx-inl.h \
+    $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/loongarch_lsx-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/ppc_vsx-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/rvv-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/scalar-inl.h \
@@ -82,7 +88,9 @@ HEADERS += \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/x86_128-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/x86_256-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/x86_512-inl.h \
+    $${THIRDPARTY_HIGHWAY_PATH}/hwy/ops/x86_avx3-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/per_target.h \
+    $${THIRDPARTY_HIGHWAY_PATH}/hwy/perf_counters.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/print-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/print.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/profiler.h \
@@ -94,6 +102,7 @@ HEADERS += \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/tests/test_util.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/timer-inl.h \
     $${THIRDPARTY_HIGHWAY_PATH}/hwy/timer.h \
+    $${THIRDPARTY_HIGHWAY_PATH}/hwy/x86_cpuid.h \
 
 TR_EXCLUDE += $${THIRDPARTY_HIGHWAY_PATH}/*
 
