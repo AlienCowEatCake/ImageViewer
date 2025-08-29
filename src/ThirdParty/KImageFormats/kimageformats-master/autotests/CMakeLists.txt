@@ -189,7 +189,7 @@ kimageformats_write_tests(
     pic-lossless
     qoi-lossless
     rgb-lossless
-    tga # fixme: the alpha images appear not to be written properly
+    tga-nodatacheck
 )
 
 # EPS read tests depend on the vagaries of GhostScript

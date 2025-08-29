@@ -70,6 +70,15 @@ void setOptionalInfo(QImage &image, const QString &suffix)
     }
 }
 
+QByteArray readSubType(const QString &suffix)
+{
+    auto obj = readOptionalInfo(suffix);
+    if (obj.isEmpty()) {
+        return {};
+    }
+    return obj.value("subType").toString().toLatin1();
+}
+
 bool checkOptionalInfo(QImage &image, const QString &suffix)
 {
     auto obj = readOptionalInfo(suffix);
@@ -157,6 +166,9 @@ int basicTest(const QString &suffix, bool lossless, bool ignoreDataCheck, bool s
         {
             QBuffer buffer(&writtenData);
             QImageWriter imgWriter(&buffer, format.constData());
+            auto subType = readSubType(suffix);
+            if (!subType.isEmpty())
+                imgWriter.setSubType(subType);
             if (lossless) {
                 imgWriter.setQuality(100);
             }

@@ -76,6 +76,15 @@ bool TemplateImage::isLicense() const
     return !m_fi.suffix().compare(QStringLiteral("license"), Qt::CaseInsensitive);
 }
 
+bool TemplateImage::skipSequentialDeviceTest() const
+{
+    auto obj = searchObject(m_fi);
+    if (obj.isEmpty()) {
+        return false;
+    }
+    return obj.value("skipSequential").toBool();
+}
+
 QFileInfo TemplateImage::compareImage(TestFlags &flags, QString& comment) const
 {
     auto fi = jsonImage(flags, comment);

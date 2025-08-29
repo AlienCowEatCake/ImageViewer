@@ -1225,12 +1225,13 @@ void MicroExif::updateImageMetadata(QImage &targetImage, bool replaceExisting) c
     }
 }
 
-void MicroExif::updateImageResolution(QImage &targetImage)
+bool MicroExif::updateImageResolution(QImage &targetImage)
 {
     if (horizontalResolution() > 0)
         targetImage.setDotsPerMeterX(qRound(horizontalResolution() / 25.4 * 1000));
     if (verticalResolution() > 0)
         targetImage.setDotsPerMeterY(qRound(verticalResolution() / 25.4 * 1000));
+    return (horizontalResolution() > 0) || (verticalResolution() > 0);
 }
 
 MicroExif MicroExif::fromByteArray(const QByteArray &ba, bool searchHeader)

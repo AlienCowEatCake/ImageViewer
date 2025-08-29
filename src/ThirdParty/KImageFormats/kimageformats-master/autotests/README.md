@@ -88,30 +88,33 @@ are iterated sequentially and the first object that matches the requirements
 is used for testing (successes are ignored).
 
 Supported values ​​for JSON objects:
-- `comment`: Type string. A string shown by the test when a condition occurs.
-- `description`: Type string. A description of the object. Not used by the 
+- `comment`: Type `string`. A string shown by the test when a condition occurs.
+- `description`: Type `string`. A description of the object. Not used by the 
 test.
-- `disableAutoTransform`: Type boolean. By default, tests are run with 
+- `disableAutoTransform`: Type `boolean`. By default, tests are run with 
 autotransform enabled (i.e. rotation is applied if the plugin supports it).
 Set to `true` to disable autotransform.
-- `filename`: Type string. Name of the template file to use. E.g. 
+- `filename`: Type `string`. Name of the template file to use. E.g. 
 "testRGB_Qt_6_2.png".
-- `fuzziness`: Type integer. Set the fuzziness only if not already set on the 
+- `fuzziness`: Type `integer`. Set the fuzziness only if not already set on the 
 command line. The value set on the command line wins over the one in the JSON 
 file.
-- `maxQtVersion`: Type string. Maximum Qt version this object is compatible 
+- `maxQtVersion`: Type `string`. Maximum Qt version this object is compatible 
 with (if not set means all). E.g. "6.2.99".
-- `metadata`: Type Array. An array of key/value objects (string type) 
+- `metadata`: Type `array`. An array of key/value objects (string type) 
 containing the image metadata as returned by `QImage::text`.
-- `minQtVersion`: Type string. Minimum Qt version this object is compatible 
+- `minQtVersion`: Type `string`. Minimum Qt version this object is compatible 
 with (if not set means all). E.g. "6.2.0".
-- `perceptiveFuzziness` Type boolean. Set the perceptive fuzziness only if not
+- `perceptiveFuzziness` Type `boolean`. Set the perceptive fuzziness only if not
 already set on the command line. The value set on the command line wins over 
 the one in the JSON file.
-- `resolution`: Type object. An object with the `dotsPerMeterX` and
+- `resolution`: Type `object`. An object with the `dotsPerMeterX` and
 `dotsPerMeterY` (integer) values ​​of the image.
-- `seeAlso`: Type string. More info about the object. Normally used to point
+- `seeAlso`: Type `string`. More info about the object. Normally used to point
 to bug reports. Not used by the test.
+- `skipSequential`: Type `boolean`. Skip the test on sequential access device.
+Some plugins may have limited functionality on sequential devices (e.g., 
+not reading metadata).
 - `unsupportedFormat`: Type `boolean`. When true, the test is skipped.
 
 Some examples:
@@ -169,11 +172,12 @@ See also [Add a test to CMakeLists.txt](#add-a-test-to-cmakeliststxt).
 The properties file must be located in `write/basic` and must have the name 
 of the file format (e.g. jxl.json). It is a JSON object composed of the 
 following values:
-- `format`: Type string. The format tested.
-- `metadata`: Type Array. An array of key/value objects (string type) 
+- `format`: Type `string`. The format tested.
+- `metadata`: Type `array`. An array of key/value objects (string type) 
 containing the image metadata as returned by `QImage::text`.
-- `resolution`: Type object. An object with the `dotsPerMeterX` and `
+- `resolution`: Type `object`. An object with the `dotsPerMeterX` and `
 dotsPerMeterY` (integer) values ​​of the image.
+- `subType`: type `string`. The image writer subtype to set when testing.
 
 [This is an example](write/basic/jxl.json) of property file.
 
@@ -230,9 +234,7 @@ kimageformats_write_tests(FUZZ 1
 
 Plugins are also tested with [OSS-Fuzz](https://google.github.io/oss-fuzz/)
 project to identify possible security issues. When adding a new plugin it is 
-also necessary to add it to the test in the [kimageformats 
-project](https://github.com/google/oss-fuzz/tree/master/projects/kimageformats) 
-on OSS-Fuzz.
+also necessary to add it to the test in the [ossfuzz](ossfuzz) directory.
 
 ## TODO
 

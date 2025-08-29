@@ -281,6 +281,12 @@ int main(int argc, char **argv)
                 continue;
             }
 
+            if (seq && timg.skipSequentialDeviceTest()) {
+                QTextStream(stdout) << "SKIP : " << fi.fileName() << ": marked to be skipped on a sequential device (don't worry, it's ok)\n";
+                ++skipped;
+                continue;
+            }
+
             TemplateImage::TestFlags flags = TemplateImage::None;
             QString comment;
             QFileInfo expFileInfo = timg.compareImage(flags, comment);

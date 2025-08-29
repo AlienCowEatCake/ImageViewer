@@ -1,4 +1,4 @@
-From 08a2b9c20c4a53c77b54025d39bbc03be51f8b71 Mon Sep 17 00:00:00 2001
+From cd6b1ae243fe7f16c2714710a83d086c895ca36c Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
 Subject: [PATCH 2/8] Remove C++17 features
@@ -9,10 +9,9 @@ Subject: [PATCH 2/8] Remove C++17 features
  src/imageformats/kra.cpp  |  4 ++--
  src/imageformats/ora.cpp  |  4 ++--
  src/imageformats/pic.cpp  |  4 ++--
- src/imageformats/tga.cpp  |  4 ++--
  src/imageformats/util_p.h |  2 +-
  src/imageformats/xcf.cpp  | 10 +++++-----
- 8 files changed, 18 insertions(+), 18 deletions(-)
+ 7 files changed, 16 insertions(+), 16 deletions(-)
 
 diff --git a/src/imageformats/jp2.cpp b/src/imageformats/jp2.cpp
 index 7ea1350..d1e8b5b 100644
@@ -106,21 +105,6 @@ index ecd1ef0..bca9035 100644
                  if (channel.code & ALPHA) {
                      return QImage::Format_ARGB32;
                  }
-diff --git a/src/imageformats/tga.cpp b/src/imageformats/tga.cpp
-index 823d2a9..d6054b9 100644
---- a/src/imageformats/tga.cpp
-+++ b/src/imageformats/tga.cpp
-@@ -577,8 +577,8 @@ bool TGAHandler::writeRGBA(const QImage &image)
-         qDebug() << "TGAHandler::write: image conversion to 32 bits failed!";
-         return false;
-     }
--    static constexpr quint8 originTopLeft = TGA_ORIGIN_UPPER + TGA_ORIGIN_LEFT; // 0x20
--    static constexpr quint8 alphaChannel8Bits = 0x08;
-+    static const quint8 originTopLeft = TGA_ORIGIN_UPPER + TGA_ORIGIN_LEFT; // 0x20
-+    static const quint8 alphaChannel8Bits = 0x08;
- 
-     for (int i = 0; i < 12; i++) {
-         s << targaMagic[i];
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
 index 2129364..38e21d6 100644
 --- a/src/imageformats/util_p.h
@@ -184,5 +168,5 @@ index 26d74a7..b33555e 100644
          if (value.isEmpty())
              continue;
 -- 
-2.39.5
+2.51.0
 

@@ -1,4 +1,4 @@
-From 01a229cd59dc5604d63a9f9b28a0b134fe7e6f74 Mon Sep 17 00:00:00 2001
+From 99a82305943cfa698a4d61ecdf21d6fbef489134 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 9 Aug 2025 21:12:08 +0700
 Subject: [PATCH 8/8] Dont use modern options with old Qt verson
@@ -6,12 +6,12 @@ Subject: [PATCH 8/8] Dont use modern options with old Qt verson
 ---
  src/imageformats/ani.cpp       |   4 +
  src/imageformats/ani_p.h       |  16 ++++
- src/imageformats/chunks.cpp    |  72 ++++++++++++------
- src/imageformats/chunks_p.h    |  15 ++++
+ src/imageformats/chunks.cpp    |  96 ++++++++++++++++++------
+ src/imageformats/chunks_p.h    |  31 ++++++++
  src/imageformats/dds.cpp       | 133 +++++++++++++++++++++++++++++++++
  src/imageformats/exr.cpp       |  38 ++++++++++
  src/imageformats/hdr.cpp       |  27 ++++++-
- src/imageformats/iff.cpp       |   8 +-
+ src/imageformats/iff.cpp       |  12 ++-
  src/imageformats/jp2.cpp       |  12 +++
  src/imageformats/jxl.cpp       |  43 ++++++++++-
  src/imageformats/jxl_p.h       |   8 ++
@@ -22,10 +22,10 @@ Subject: [PATCH 8/8] Dont use modern options with old Qt verson
  src/imageformats/pxr.cpp       |   2 +-
  src/imageformats/ras.cpp       |  17 ++++-
  src/imageformats/rgb.cpp       |  24 ++++++
- src/imageformats/tga.cpp       |   7 ++
+ src/imageformats/tga.cpp       |   9 +++
  src/imageformats/util_p.h      |   7 ++
  src/imageformats/xcf.cpp       |  45 ++++++++++-
- 21 files changed, 562 insertions(+), 33 deletions(-)
+ 21 files changed, 606 insertions(+), 35 deletions(-)
 
 diff --git a/src/imageformats/ani.cpp b/src/imageformats/ani.cpp
 index 9c5a935..2adb9f6 100644
@@ -86,7 +86,7 @@ index bfce9ef..7b8435b 100644
      QString m_name;
      QString m_artist;
 diff --git a/src/imageformats/chunks.cpp b/src/imageformats/chunks.cpp
-index a7b0be3..f0c7be9 100644
+index d36e263..9832074 100644
 --- a/src/imageformats/chunks.cpp
 +++ b/src/imageformats/chunks.cpp
 @@ -30,7 +30,11 @@ static QString dataToString(const IFFChunk *chunk)
@@ -101,7 +101,7 @@ index a7b0be3..f0c7be9 100644
      return QString::fromUtf8(dt).trimmed();
  }
  
-@@ -510,7 +514,11 @@ qint32 CMAPChunk::count() const
+@@ -518,7 +522,11 @@ qint32 CMAPChunk::count() const
      return bytes() / 3;
  }
  
@@ -113,7 +113,7 @@ index a7b0be3..f0c7be9 100644
  {
      auto p = innerPalette();
      if (!halfbride) {
-@@ -528,9 +536,17 @@ bool CMAPChunk::innerReadStructure(QIODevice *d)
+@@ -536,9 +544,17 @@ bool CMAPChunk::innerReadStructure(QIODevice *d)
      return cacheData(d);
  }
  
@@ -131,7 +131,7 @@ index a7b0be3..f0c7be9 100644
      auto &&d = data();
      for (qint32 i = 0, n = count(); i < n; ++i) {
          auto i3 = i * 3;
-@@ -567,9 +583,17 @@ qint32 CMYKChunk::count() const
+@@ -575,9 +591,17 @@ qint32 CMYKChunk::count() const
      return bytes() / 4;
  }
  
@@ -149,7 +149,7 @@ index a7b0be3..f0c7be9 100644
      auto &&d = data();
      for (qint32 i = 0, n = count(); i < n; ++i) {
          auto i4 = i * 4;
-@@ -1037,21 +1061,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, const BMHDChunk *he
+@@ -1050,21 +1074,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
                  for (qint32 k = 0, i8 = i * 8; k < bitplanes; ++k) {
                      auto v = planes.at(k * rowLen + i);
                      if (v & (1 << 7))
@@ -179,7 +179,7 @@ index a7b0be3..f0c7be9 100644
                  }
              }
          }
-@@ -1073,21 +1097,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, const BMHDChunk *he
+@@ -1086,21 +1110,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
                      auto k8 = k * 8;
                      auto msk = (1 << (7 - j));
                      if (planes.at(k8 * rowLen + i) & msk)
@@ -209,7 +209,7 @@ index a7b0be3..f0c7be9 100644
                  }
          }
          break;
-@@ -1128,21 +1152,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, const BMHDChunk *he
+@@ -1141,21 +1165,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
                      auto msk = (1 << (7 - j));
                      auto idx = cnt + order[k];
                      if (planes.at(k8 * rowLen + i) & msk)
@@ -239,8 +239,80 @@ index a7b0be3..f0c7be9 100644
                  }
                  if (p == 6) { // RGBX wants unused X data set to 0xFF
                      ba[cnt + 6] = char(0xFF);
+@@ -2320,7 +2344,11 @@ bool BEAMChunk::isValid() const
+     return chunkId() == BEAMChunk::defaultChunkId();
+ }
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+ QList<QRgb> BEAMChunk::palette(qint32 y, qint32 height) const
++#else
++QVector<QRgb> BEAMChunk::palette(qint32 y, qint32 height) const
++#endif
+ {
+     if (height < 1) {
+         return {};
+@@ -2331,7 +2359,11 @@ QList<QRgb> BEAMChunk::palette(qint32 y, qint32 height) const
+     }
+     auto col = qint32(bpp / 2);
+     auto &&dt = data();
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<QRgb> pal;
++#else
++    QVector<QRgb> pal;
++#endif
+     for (auto c = 0; c < col; ++c) {
+         // 2 bytes per color (0x0R 0xGB)
+         auto idx = bpp * y + c * 2;
+@@ -2398,7 +2430,11 @@ bool SHAMChunk::isValid() const
+     return chunkId() == SHAMChunk::defaultChunkId();
+ }
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+ QList<QRgb> SHAMChunk::palette(qint32 y, qint32 height) const
++#else
++QVector<QRgb> SHAMChunk::palette(qint32 y, qint32 height) const
++#endif
+ {
+     if (height < 1) {
+         return {};
+@@ -2414,7 +2450,11 @@ QList<QRgb> SHAMChunk::palette(qint32 y, qint32 height) const
+         return {};
+     }
+     auto &&dt = data();
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<QRgb> pal;
++#else
++    QVector<QRgb> pal;
++#endif
+     for (auto c = 0, col = bpp / 2, idx0 = y / div * bpp + 2; c < col; ++c) {
+         // 2 bytes per color (0x0R 0xGB)
+         auto idx = idx0 + c * 2;
+@@ -2450,7 +2490,11 @@ bool RASTChunk::isValid() const
+     return chunkId() == RASTChunk::defaultChunkId();
+ }
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+ QList<QRgb> RASTChunk::palette(qint32 y, qint32 height) const
++#else
++QVector<QRgb> RASTChunk::palette(qint32 y, qint32 height) const
++#endif
+ {
+     if (height < 1) {
+         return {};
+@@ -2461,7 +2505,11 @@ QList<QRgb> RASTChunk::palette(qint32 y, qint32 height) const
+     }
+     auto col = qint32(bpp / 2 - 1);
+     auto &&dt = data();
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     QList<QRgb> pal;
++#else
++    QVector<QRgb> pal;
++#endif
+     for (auto c = 0; c < col; ++c) {
+         auto idx = bpp * y + 2 + c * 2;
+         // The Atari ST uses 3 bits per color (512 colors) while the Atari STE
 diff --git a/src/imageformats/chunks_p.h b/src/imageformats/chunks_p.h
-index aea8196..e659342 100644
+index 6560ee0..9ccb551 100644
 --- a/src/imageformats/chunks_p.h
 +++ b/src/imageformats/chunks_p.h
 @@ -23,6 +23,9 @@
@@ -253,7 +325,19 @@ index aea8196..e659342 100644
  
  #include "microexif_p.h"
  
-@@ -490,12 +493,20 @@ public:
+@@ -358,7 +361,11 @@ class IPALChunk : public IFFChunk
+ public:
+     virtual ~IPALChunk() override {}
+     IPALChunk() : IFFChunk() {}
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     virtual QList<QRgb> palette(qint32 y, qint32 height) const = 0;
++#else
++    virtual QVector<QRgb> palette(qint32 y, qint32 height) const = 0;
++#endif
+ };
+ 
+ 
+@@ -511,12 +518,20 @@ public:
       * \return The color palette.
       * \note If \a halfbride is true, the returned palette size is count() * 2.
       */
@@ -274,7 +358,7 @@ index aea8196..e659342 100644
  
      virtual bool innerReadStructure(QIODevice *d) override;
  };
-@@ -533,7 +544,11 @@ protected:
+@@ -554,7 +569,11 @@ protected:
       * \brief palette
       * \return The CMYK color palette converted to RGB one.
       */
@@ -286,6 +370,42 @@ index aea8196..e659342 100644
  };
  
  /*!
+@@ -1312,7 +1331,11 @@ public:
+ 
+     virtual bool isValid() const override;
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     virtual QList<QRgb> palette(qint32 y, qint32 height) const override;
++#else
++    virtual QVector<QRgb> palette(qint32 y, qint32 height) const override;
++#endif
+ 
+     CHUNKID_DEFINE(BEAM_CHUNK)
+ 
+@@ -1349,7 +1372,11 @@ public:
+ 
+     virtual bool isValid() const override;
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     virtual QList<QRgb> palette(qint32 y, qint32 height) const override;
++#else
++    virtual QVector<QRgb> palette(qint32 y, qint32 height) const override;
++#endif
+ 
+     CHUNKID_DEFINE(SHAM_CHUNK)
+ 
+@@ -1373,7 +1400,11 @@ public:
+ 
+     virtual bool isValid() const override;
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+     virtual QList<QRgb> palette(qint32 y, qint32 height) const override;
++#else
++    virtual QVector<QRgb> palette(qint32 y, qint32 height) const override;
++#endif
+ 
+     CHUNKID_DEFINE(RAST_CHUNK)
+ 
 diff --git a/src/imageformats/dds.cpp b/src/imageformats/dds.cpp
 index acedbd0..f7454b3 100644
 --- a/src/imageformats/dds.cpp
@@ -755,10 +875,10 @@ index bee4fdc..0b1bf7d 100644
          }
      }
 diff --git a/src/imageformats/iff.cpp b/src/imageformats/iff.cpp
-index 881f619..9908b5f 100644
+index 2c39d4f..a0d39ca 100644
 --- a/src/imageformats/iff.cpp
 +++ b/src/imageformats/iff.cpp
-@@ -202,12 +202,14 @@ void addMetadata(QImage& img, const IFFChunk *form)
+@@ -203,12 +203,14 @@ static void addMetadata(QImage &img, const IFOR_Chunk *form)
      if (!iccps.isEmpty()) {
          auto cs = iccps.first()->value();
          if (cs.isValid()) {
@@ -773,7 +893,23 @@ index 881f619..9908b5f 100644
              img.setColorSpace(cs);
          }
      }
-@@ -355,7 +357,11 @@ bool IFFHandler::readMayaImage(QImage *image)
+@@ -248,13 +250,13 @@ static void addMetadata(QImage &img, const IFOR_Chunk *form)
+ static QImage convertIPAL(const QImage& img, const IPALChunk *ipal)
+ {
+     if (img.format() != QImage::Format_Indexed8) {
+-        qDebug(LOG_IFFPLUGIN) << "convertIPAL(): the image is not indexed!";
++        qCDebug(LOG_IFFPLUGIN) << "convertIPAL(): the image is not indexed!";
+         return img;
+     }
+ 
+     auto tmp = img.convertToFormat(FORMAT_RGB_8BIT);
+     if (tmp.isNull()) {
+-        qCritical(LOG_IFFPLUGIN) << "convertIPAL(): error while converting the image!";
++        qCCritical(LOG_IFFPLUGIN) << "convertIPAL(): error while converting the image!";
+         return img;
+     }
+ 
+@@ -413,7 +415,11 @@ bool IFFHandler::readMayaImage(QImage *image)
          painter.drawImage(tp, ti);
      }
  #if QT_VERSION < QT_VERSION_CHECK(6, 9, 0)
@@ -785,7 +921,7 @@ index 881f619..9908b5f 100644
  #else
      img.flip(Qt::Orientation::Vertical);
  #endif
-@@ -427,7 +433,7 @@ QVariant IFFHandler::option(ImageOption option) const
+@@ -485,7 +491,7 @@ QVariant IFFHandler::option(ImageOption option) const
      }
  
      if (option == QImageIOHandler::ImageTransformation) {
@@ -1091,7 +1227,7 @@ index ba6111a..8029ab6 100644
  #endif
  
 diff --git a/src/imageformats/microexif.cpp b/src/imageformats/microexif.cpp
-index 4b1a401..ee1255c 100644
+index 876ea47..eebb93b 100644
 --- a/src/imageformats/microexif.cpp
 +++ b/src/imageformats/microexif.cpp
 @@ -12,7 +12,9 @@
@@ -1514,20 +1650,20 @@ index 9bb6c3c..4959235 100644
          v.replace(it.value(), &it.key());
      }
 diff --git a/src/imageformats/tga.cpp b/src/imageformats/tga.cpp
-index d6054b9..08eadbb 100644
+index e386ab3..b76f31e 100644
 --- a/src/imageformats/tga.cpp
 +++ b/src/imageformats/tga.cpp
-@@ -25,6 +25,9 @@
- #include <QDataStream>
- #include <QDebug>
+@@ -31,6 +31,9 @@
+ #include <QDateTime>
  #include <QImage>
+ #include <QLoggingCategory>
 +#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 +#include <QVector>
 +#endif
  
  typedef quint32 uint;
  typedef quint16 ushort;
-@@ -241,7 +244,11 @@ static bool LoadTGA(QDataStream &s, const TgaHeader &tga, QImage &img)
+@@ -609,7 +612,11 @@ static bool LoadTGA(QIODevice *dev, const TgaHeader &tga, QImage &img)
  
      // Read palette.
      if (info.pal) {
@@ -1539,6 +1675,18 @@ index d6054b9..08eadbb 100644
  #if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
          colorTable.resize(tga.colormap_length);
  #else
+@@ -1029,9 +1036,11 @@ bool TGAHandler::writeRGBA(const QImage &image)
+     }
+ 
+     ScanLineConverter scl(format);
++#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+     if (tcs.isValid()) {
+         scl.setTargetColorSpace(tcs);
+     }
++#endif
+     auto mul = hasAlpha ? 4 : 3;
+     QByteArray ba(image.width() * mul, char());
+     for (int y = 0, h = image.height(); y < h; y++) {
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
 index d7562fb..61ab441 100644
 --- a/src/imageformats/util_p.h
@@ -1706,5 +1854,5 @@ index b33555e..8ac072e 100644
          buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
      }
 -- 
-2.39.5
+2.51.0
 

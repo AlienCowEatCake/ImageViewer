@@ -1,0 +1,32 @@
+[
+    {
+        "fileName" : "extarea.png",
+        "skipSequential" : true,
+        "metadata" : [
+            {
+                "key" : "Title",
+                "value" : "Test Card"
+            },
+            {
+                "key" : "Author",
+                "value" : "KDE Project"
+            },
+            {
+                "key" : "ModificationDate",
+                "value" : "2025-08-21T07:32:45"
+            },
+            {
+                "key" : "Comment",
+                "value" : "TV broadcast test image."
+            },
+            {
+                "key" : "Software",
+                "value" : "LIFE Pro 2.18.31 (Linux)"
+            }
+        ],
+        "resolution" : {
+            "dotsPerMeterX" : 3937,
+            "dotsPerMeterY" : 3937
+        }
+    }
+]

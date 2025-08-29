@@ -51,6 +51,7 @@ DEFINES += ScanLineConverter=tp_ScanLineConverter
 DEFINES += MicroExif=tp_MicroExif
 DEFINES += LOG_IFFPLUGIN=tp_LOG_IFFPLUGIN
 DEFINES += IFFChunk=tp_IFFChunk
+DEFINES += IPALChunk=tp_IPALChunk
 DEFINES += BMHDChunk=tp_BMHDChunk
 DEFINES += CMAPChunk=tp_CMAPChunk
 DEFINES += CMYKChunk=tp_CMYKChunk
@@ -76,6 +77,10 @@ DEFINES += HISTChunk=tp_HISTChunk
 DEFINES += NAMEChunk=tp_NAMEChunk
 DEFINES += VERSChunk=tp_VERSChunk
 DEFINES += XMP0Chunk=tp_XMP0Chunk
+DEFINES += BEAMChunk=tp_BEAMChunk
+DEFINES += CTBLChunk=tp_CTBLChunk
+DEFINES += SHAMChunk=tp_SHAMChunk
+DEFINES += RASTChunk=tp_RASTChunk
 
 # --------------------------------------------------------------------------------
 
@@ -204,7 +209,6 @@ DEFINES += WRAPPER_USE_IFF_HANDLER
 DEFINES += IFFHandler=tp_IFFHandler
 DEFINES += IFFPlugin=tp_IFFPlugin
 DEFINES += IFFHandlerPrivate=tp_IFFHandlerPrivate
-DEFINES += addMetadata=tp_addMetadata
 
 # --------------------------------------------------------------------------------
 
@@ -452,6 +456,10 @@ DEFINES += WRAPPER_USE_TGA_HANDLER
 DEFINES += TGAHandler=tp_TGAHandler
 DEFINES += TGAPlugin=tp_TGAPlugin
 DEFINES += TGAHandlerPrivate=tp_TGAHandlerPrivate
+DEFINES += TgaFooter=tp_TgaFooter
+DEFINES += TgaExtension=tp_TgaExtension
+DEFINES += TgaDeveloperDirectory=tp_TgaDeveloperDirectory
+DEFINES += LOG_TGAPLUGIN=tp_LOG_TGAPLUGIN
 
 # --------------------------------------------------------------------------------
 

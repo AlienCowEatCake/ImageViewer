@@ -55,6 +55,12 @@ public:
     bool isLicense() const;
 
     /*!
+     * \brief skipSequentialDeviceTest
+     * \return tre it the sequential test should be skipped.
+     */
+    bool skipSequentialDeviceTest() const;
+
+    /*!
      * \brief compareImage
      * \param flags Flags for modifying test behavior (e.g. image format not supported by current Qt version).
      * \return The template image to use for the comparison.

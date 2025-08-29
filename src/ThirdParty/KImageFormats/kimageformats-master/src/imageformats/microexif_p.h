@@ -339,8 +339,9 @@ public:
      * \brief updateImageResolution
      * Helper to set the EXIF resolution to the image. Resolution is set only if valid.
      * \param targetImage The image to set resolution on.
+     * \return True if either the x-resolution or the y-resolution has been changed, otherwise false.
      */
-    void updateImageResolution(QImage &targetImage);
+    bool updateImageResolution(QImage &targetImage);
 
     /*!
      * \brief fromByteArray

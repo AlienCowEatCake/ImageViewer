@@ -58,10 +58,12 @@ Q_DECLARE_LOGGING_CATEGORY(LOG_IFFPLUGIN)
 #define CMYK_CHUNK QByteArray("CMYK") // https://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap#ILBM.CMYK
 #define DPI__CHUNK QByteArray("DPI ")
 
-#define BEAM_CHUNK QByteArray("BEAM") // undocumented (should be the same as CTBL)
-#define CTBL_CHUNK QByteArray("CTBL") // undocumented
-#define RAST_CHUNK QByteArray("RAST") // undocumented (Atari STE)
-#define SHAM_CHUNK QByteArray("SHAM") // undocumented
+// Different palette for scanline
+#define BEAM_CHUNK QByteArray("BEAM")
+#define CTBL_CHUNK QByteArray("CTBL") // same as BEAM
+#define PCHG_CHUNK QByteArray("PCHG") // encoded in a unknown way (to be investigated)
+#define RAST_CHUNK QByteArray("RAST") // Atari ST(E)
+#define SHAM_CHUNK QByteArray("SHAM")
 
 // FOR4 CIMG IFF (Maya)
 #define RGBA_CHUNK QByteArray("RGBA")
@@ -91,6 +93,12 @@ Q_DECLARE_LOGGING_CATEGORY(LOG_IFFPLUGIN)
 #define TBMP_FOR4_TYPE QByteArray("TBMP")
 
 #define CHUNKID_DEFINE(a) static QByteArray defaultChunkId() { return a; }
+
+// The 8-bit RGB format must be one. If you change it here, you have also to use the same
+// when converting an image with BEAM/CTBL/SHAM chunks otherwise the option(QImageIOHandler::ImageFormat)
+// could returns a wrong value.
+// Warning: Changing it requires changing the algorithms. Se, don't touch! :)
+#define FORMAT_RGB_8BIT QImage::Format_RGB888
 
 /*!
  * \brief The IFFChunk class
@@ -343,6 +351,23 @@ private:
 
     qint32 _recursionCnt;
 };
+
+/*!
+ * \brief The IPALChunk class
+ * Interface for additional per-line palette.
+ */
+class IPALChunk : public IFFChunk
+{
+public:
+    virtual ~IPALChunk() override {}
+    IPALChunk() : IFFChunk() {}
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    virtual QList<QRgb> palette(qint32 y, qint32 height) const = 0;
+#else
+    virtual QVector<QRgb> palette(qint32 y, qint32 height) const = 0;
+#endif
+};
+
 
 /*!
  * \brief The BMHDChunk class
@@ -645,13 +670,20 @@ public:
      * \brief readStride
      * \param d The device.
      * \param header The bitmap header.
+     * \param y The current scanline.
      * \param camg The CAMG chunk (optional)
      * \param cmap The CMAP chunk (optional)
      * \param formType The type of the current form chunk.
      * \return The scanline as requested for QImage.
      * \warning Call resetStrideRead() once before this one.
      */
-    virtual QByteArray strideRead(QIODevice *d, const BMHDChunk *header, const CAMGChunk *camg = nullptr, const CMAPChunk *cmap = nullptr, const QByteArray& formType = ILBM_FORM_TYPE) const;
+    virtual QByteArray strideRead(QIODevice *d,
+                                  qint32 y,
+                                  const BMHDChunk *header,
+                                  const CAMGChunk *camg = nullptr,
+                                  const CMAPChunk *cmap = nullptr,
+                                  const IPALChunk *ipal = nullptr,
+                                  const QByteArray& formType = ILBM_FORM_TYPE) const;
 
     /*!
      * \brief resetStrideRead
@@ -681,13 +713,13 @@ protected:
      */
     quint32 strideSize(const BMHDChunk *header, const QByteArray& formType) const;
 
-    QByteArray deinterleave(const QByteArray &planes, const BMHDChunk *header, const CAMGChunk *camg = nullptr, const CMAPChunk *cmap = nullptr) const;
+    QByteArray deinterleave(const QByteArray &planes, qint32 y, const BMHDChunk *header, const CAMGChunk *camg = nullptr, const CMAPChunk *cmap = nullptr, const IPALChunk *ipal = nullptr) const;
 
-    QByteArray pbm(const QByteArray &planes, const BMHDChunk *header, const CAMGChunk *camg = nullptr, const CMAPChunk *cmap = nullptr) const;
+    QByteArray pbm(const QByteArray &planes, qint32 y, const BMHDChunk *header, const CAMGChunk *camg = nullptr, const CMAPChunk *cmap = nullptr, const IPALChunk *ipal = nullptr) const;
 
-    QByteArray rgb8(const QByteArray &planes, const BMHDChunk *header, const CAMGChunk *camg = nullptr, const CMAPChunk *cmap = nullptr) const;
+    QByteArray rgb8(const QByteArray &planes, qint32 y, const BMHDChunk *header, const CAMGChunk *camg = nullptr, const CMAPChunk *cmap = nullptr, const IPALChunk *ipal = nullptr) const;
 
-    QByteArray rgbN(const QByteArray &planes, const BMHDChunk *header, const CAMGChunk *camg = nullptr, const CMAPChunk *cmap = nullptr) const;
+    QByteArray rgbN(const QByteArray &planes, qint32 y, const BMHDChunk *header, const CAMGChunk *camg = nullptr, const CMAPChunk *cmap = nullptr, const IPALChunk *ipal = nullptr) const;
 
 private:
     mutable QByteArray _readBuffer;
@@ -709,12 +741,15 @@ public:
 
     CHUNKID_DEFINE(ABIT_CHUNK)
 
-    virtual QByteArray strideRead(QIODevice *d, const BMHDChunk *header, const CAMGChunk *camg = nullptr, const CMAPChunk *cmap = nullptr, const QByteArray& formType = ACBM_FORM_TYPE) const override;
+    virtual QByteArray strideRead(QIODevice *d,
+                                  qint32 y,
+                                  const BMHDChunk *header,
+                                  const CAMGChunk *camg = nullptr,
+                                  const CMAPChunk *cmap = nullptr,
+                                  const IPALChunk *ipal = nullptr,
+                                  const QByteArray& formType = ACBM_FORM_TYPE) const override;
 
     virtual bool resetStrideRead(QIODevice *d) const override;
-
-private:
-    mutable qint32 _y;
 };
 
 /*!
@@ -757,6 +792,19 @@ public:
      * \return The image size in pixels.
      */
     virtual QSize size() const = 0;
+
+    /*!
+     * \brief optionformat
+     * \return The format retuned by the plugin after all conversions.
+     */
+    QImage::Format optionformat() const;
+
+    /*!
+     * \brief searchIPal
+     * Search the palett per line chunk.
+     * \return The per line palette (BEAM, CTBL, SHAM, etc....).
+     */
+    const IPALChunk *searchIPal() const;
 };
 
 /*!
@@ -1264,5 +1312,105 @@ public:
 protected:
     virtual bool innerReadStructure(QIODevice *d) override;
 };
+
+
+/*!
+ * *** UNDOCUMENTED CHUNKS ***
+ */
+
+/*!
+ * \brief The BEAMChunk class
+ */
+class BEAMChunk : public IPALChunk
+{
+public:
+    virtual ~BEAMChunk() override;
+    BEAMChunk();
+    BEAMChunk(const BEAMChunk& other) = default;
+    BEAMChunk& operator =(const BEAMChunk& other) = default;
+
+    virtual bool isValid() const override;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    virtual QList<QRgb> palette(qint32 y, qint32 height) const override;
+#else
+    virtual QVector<QRgb> palette(qint32 y, qint32 height) const override;
+#endif
+
+    CHUNKID_DEFINE(BEAM_CHUNK)
+
+protected:
+    virtual bool innerReadStructure(QIODevice *d) override;
+};
+
+/*!
+ * \brief The CTBLChunk class
+ */
+class CTBLChunk : public BEAMChunk
+{
+public:
+    virtual ~CTBLChunk() override;
+    CTBLChunk();
+    CTBLChunk(const CTBLChunk& other) = default;
+    CTBLChunk& operator =(const CTBLChunk& other) = default;
+
+    virtual bool isValid() const override;
+
+    CHUNKID_DEFINE(CTBL_CHUNK)
+};
+
+/*!
+ * \brief The SHAMChunk class
+ */
+class SHAMChunk : public IPALChunk
+{
+public:
+    virtual ~SHAMChunk() override;
+    SHAMChunk();
+    SHAMChunk(const SHAMChunk& other) = default;
+    SHAMChunk& operator =(const SHAMChunk& other) = default;
+
+    virtual bool isValid() const override;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    virtual QList<QRgb> palette(qint32 y, qint32 height) const override;
+#else
+    virtual QVector<QRgb> palette(qint32 y, qint32 height) const override;
+#endif
+
+    CHUNKID_DEFINE(SHAM_CHUNK)
+
+protected:
+    virtual bool innerReadStructure(QIODevice *d) override;
+};
+
+/*!
+ * \brief The RASTChunk class
+ * \note I found an Atari STE image with the RAST chunk outside
+ *       the form chunk (Fish.neo.iff). To support it the IFF parser
+ *       should be changed so, this kind of IFFs are shown wrong.
+ */
+class RASTChunk : public IPALChunk
+{
+public:
+    virtual ~RASTChunk() override;
+    RASTChunk();
+    RASTChunk(const RASTChunk& other) = default;
+    RASTChunk& operator =(const RASTChunk& other) = default;
+
+    virtual bool isValid() const override;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    virtual QList<QRgb> palette(qint32 y, qint32 height) const override;
+#else
+    virtual QVector<QRgb> palette(qint32 y, qint32 height) const override;
+#endif
+
+    CHUNKID_DEFINE(RAST_CHUNK)
+
+protected:
+    virtual bool innerReadStructure(QIODevice *d) override;
+};
+
 
 #endif // KIMG_CHUNKS_P_H

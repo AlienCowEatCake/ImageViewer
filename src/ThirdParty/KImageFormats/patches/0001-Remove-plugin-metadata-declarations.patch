@@ -1,4 +1,4 @@
-From 295c8ecc4e8fb7622ce3b831ed658c883ec07883 Mon Sep 17 00:00:00 2001
+From 1b4be02c317b0dc3d53ee153db18f88404477f24 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 04:03:37 +0700
 Subject: [PATCH 1/8] Remove plugin metadata declarations
@@ -331,10 +331,10 @@ index b5e9b81..48a16da 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/tga_p.h b/src/imageformats/tga_p.h
-index 27e5bc7..6d35b9d 100644
+index ca083fb..5217d56 100644
 --- a/src/imageformats/tga_p.h
 +++ b/src/imageformats/tga_p.h
-@@ -37,7 +37,7 @@ private:
+@@ -42,7 +42,7 @@ private:
  class TGAPlugin : public QImageIOPlugin
  {
      Q_OBJECT
@@ -357,5 +357,5 @@ index 0324797..d21e6e1 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 -- 
-2.39.5
+2.51.0
 

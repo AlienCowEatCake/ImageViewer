@@ -272,6 +272,8 @@ IFFChunk::ChunkList IFFChunk::innerFromDevice(QIODevice *d, bool *ok, IFFChunk *
             chunk = QSharedPointer<IFFChunk>(new ANNOChunk());
         } else if (cid == AUTH_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new AUTHChunk());
+        } else if (cid == BEAM_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new BEAMChunk());
         } else if (cid == BMHD_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new BMHDChunk());
         } else if (cid == BODY_CHUNK) {
@@ -286,6 +288,8 @@ IFFChunk::ChunkList IFFChunk::innerFromDevice(QIODevice *d, bool *ok, IFFChunk *
             chunk = QSharedPointer<IFFChunk>(new CMYKChunk());
         } else if (cid == COPY_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new COPYChunk());
+        } else if (cid == CTBL_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new CTBLChunk());
         } else if (cid == DATE_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new DATEChunk());
         } else if (cid == DPI__CHUNK) {
@@ -306,8 +310,12 @@ IFFChunk::ChunkList IFFChunk::innerFromDevice(QIODevice *d, bool *ok, IFFChunk *
             chunk = QSharedPointer<IFFChunk>(new ICCPChunk());
         } else if (cid == NAME_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new NAMEChunk());
+        } else if (cid == RAST_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new RASTChunk());
         } else if (cid == RGBA_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new RGBAChunk());
+        } else if (cid == SHAM_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new SHAMChunk());
         } else if (cid == TBHD_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new TBHDChunk());
         } else if (cid == VERS_CHUNK) {
@@ -316,7 +324,7 @@ IFFChunk::ChunkList IFFChunk::innerFromDevice(QIODevice *d, bool *ok, IFFChunk *
             chunk = QSharedPointer<IFFChunk>(new XMP0Chunk());
         } else { // unknown chunk
             chunk = QSharedPointer<IFFChunk>(new IFFChunk());
-            qCDebug(LOG_IFFPLUGIN) << "IFFChunk::innerFromDevice: unknown chunk" << cid;
+            qCDebug(LOG_IFFPLUGIN) << "IFFChunk::innerFromDevice(): unknown chunk" << cid;
         }
 
         // change the alignment to the one of main chunk (required for unknown Maya IFF chunks)
@@ -803,7 +811,7 @@ inline qint64 rgbNDecompress(QIODevice *input, char *output, qint64 olen)
     return j;
 }
 
-QByteArray BODYChunk::strideRead(QIODevice *d, const BMHDChunk *header, const CAMGChunk *camg, const CMAPChunk *cmap, const QByteArray& formType) const
+QByteArray BODYChunk::strideRead(QIODevice *d, qint32 y, const BMHDChunk *header, const CAMGChunk *camg, const CMAPChunk *cmap, const IPALChunk *ipal, const QByteArray& formType) const
 {
     if (!isValid() || header == nullptr || d == nullptr) {
         return {};
@@ -836,7 +844,7 @@ QByteArray BODYChunk::strideRead(QIODevice *d, const BMHDChunk *header, const CA
         } else if (header->compression() == BMHDChunk::Compression::Uncompressed) {
             rr = d->read(buf.data(), buf.size()); // never seen
         } else {
-            qCDebug(LOG_IFFPLUGIN) << "BODYChunk::strideRead: unknown compression" << header->compression();
+            qCDebug(LOG_IFFPLUGIN) << "BODYChunk::strideRead(): unknown compression" << header->compression();
         }
         if ((rr != readSize && lineCompressed) || (rr < 1))
             return {};
@@ -846,15 +854,15 @@ QByteArray BODYChunk::strideRead(QIODevice *d, const BMHDChunk *header, const CA
     auto planes = _readBuffer.left(readSize);
     _readBuffer.remove(0, readSize);
     if (isPbm) {
-        return pbm(planes, header, camg, cmap);
+        return pbm(planes, y, header, camg, cmap, ipal);
     }
     if (isRgb8) {
-        return rgb8(planes, header, camg, cmap);
+        return rgb8(planes, y, header, camg, cmap, ipal);
     }
     if (isRgbN) {
-        return rgbN(planes, header, camg, cmap);
+        return rgbN(planes, y, header, camg, cmap, ipal);
     }
-    return deinterleave(planes, header, camg, cmap);
+    return deinterleave(planes, y, header, camg, cmap, ipal);
 }
 
 bool BODYChunk::resetStrideRead(QIODevice *d) const
@@ -903,7 +911,7 @@ quint32 BODYChunk::strideSize(const BMHDChunk *header, const QByteArray& formTyp
     return header->rowLen() * header->bitplanes();
 }
 
-QByteArray BODYChunk::pbm(const QByteArray &planes, const BMHDChunk *header, const CAMGChunk *, const CMAPChunk *) const
+QByteArray BODYChunk::pbm(const QByteArray &planes, qint32, const BMHDChunk *header, const CAMGChunk *, const CMAPChunk *, const IPALChunk *) const
 {
     if (planes.size() != strideSize(header, PBM__FORM_TYPE)) {
         return {};
@@ -915,7 +923,7 @@ QByteArray BODYChunk::pbm(const QByteArray &planes, const BMHDChunk *header, con
     return {};
 }
 
-QByteArray BODYChunk::rgb8(const QByteArray &planes, const BMHDChunk *header, const CAMGChunk *, const CMAPChunk *) const
+QByteArray BODYChunk::rgb8(const QByteArray &planes, qint32, const BMHDChunk *header, const CAMGChunk *, const CMAPChunk *, const IPALChunk *) const
 {
     if (planes.size() != strideSize(header, RGB8_FORM_TYPE)) {
         return {};
@@ -923,7 +931,7 @@ QByteArray BODYChunk::rgb8(const QByteArray &planes, const BMHDChunk *header, co
     return planes;
 }
 
-QByteArray BODYChunk::rgbN(const QByteArray &planes, const BMHDChunk *header, const CAMGChunk *, const CMAPChunk *) const
+QByteArray BODYChunk::rgbN(const QByteArray &planes, qint32, const BMHDChunk *header, const CAMGChunk *, const CMAPChunk *, const IPALChunk *) const
 {
     if (planes.size() != strideSize(header, RGBN_FORM_TYPE)) {
         return {};
@@ -931,7 +939,7 @@ QByteArray BODYChunk::rgbN(const QByteArray &planes, const BMHDChunk *header, co
     return planes;
 }
 
-QByteArray BODYChunk::deinterleave(const QByteArray &planes, const BMHDChunk *header, const CAMGChunk *camg, const CMAPChunk *cmap) const
+QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMHDChunk *header, const CAMGChunk *camg, const CMAPChunk *cmap, const IPALChunk *ipal) const
 {
     if (planes.size() != strideSize(header, ILBM_FORM_TYPE)) {
         return {};
@@ -974,6 +982,11 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, const BMHDChunk *he
             //    11 - hold previous. replacing Green component with bits from planes 0-3
             ba = QByteArray(rowLen * 8 * 3, char());
             auto pal = cmap->palette();
+            if (ipal) {
+                auto tmp = ipal->palette(y, header->height());
+                if (tmp.size() == pal.size())
+                    pal = tmp;
+            }
             auto max = (1 << (bitplanes - 2)) - 1;
             quint8 prev[3] = {};
             for (qint32 i = 0, cnt = 0; i < rowLen; ++i) {
@@ -1003,7 +1016,7 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, const BMHDChunk *he
                             prev[1] = qGreen(pal.at(idx));
                             prev[2] = qBlue(pal.at(idx));
                         } else {
-                            qCWarning(LOG_IFFPLUGIN) << "BODYChunk::deinterleave: palette index" << idx << "is out of range";
+                            qCWarning(LOG_IFFPLUGIN) << "BODYChunk::deinterleave(): palette index" << idx << "is out of range";
                         }
                         break;
                     }
@@ -1039,7 +1052,7 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, const BMHDChunk *he
                     if (idx < palSize) {
                         ba[cnt] = ctl ? idx + palSize : idx;
                     } else {
-                        qCWarning(LOG_IFFPLUGIN) << "BODYChunk::deinterleave: palette index" << idx << "is out of range";
+                        qCWarning(LOG_IFFPLUGIN) << "BODYChunk::deinterleave(): palette index" << idx << "is out of range";
                     }
                 }
             }
@@ -1198,7 +1211,7 @@ bool ABITChunk::isValid() const
     return chunkId() == ABITChunk::defaultChunkId();
 }
 
-QByteArray ABITChunk::strideRead(QIODevice *d, const BMHDChunk *header, const CAMGChunk *camg, const CMAPChunk *cmap, const QByteArray& formType) const
+QByteArray ABITChunk::strideRead(QIODevice *d, qint32 y, const BMHDChunk *header, const CAMGChunk *camg, const CMAPChunk *cmap, const IPALChunk *ipal, const QByteArray& formType) const
 {
     if (!isValid() || header == nullptr || d == nullptr) {
         return {};
@@ -1211,11 +1224,11 @@ QByteArray ABITChunk::strideRead(QIODevice *d, const BMHDChunk *header, const CA
     auto ilbmLine = QByteArray(strideSize(header, formType), char());
     auto rowSize = header->rowLen();
     auto height = header->height();
-    if (_y >= height) {
+    if (y >= height) {
         return {};
     }
     for (qint32 plane = 0, planes = qint32(header->bitplanes()); plane < planes; ++plane) {
-        if (!seek(d, qint64(plane) * rowSize * height + _y * rowSize))
+        if (!seek(d, qint64(plane) * rowSize * height + y * rowSize))
             return {};
         auto offset = qint64(plane) * rowSize;
         if (offset + rowSize > ilbmLine.size())
@@ -1223,8 +1236,6 @@ QByteArray ABITChunk::strideRead(QIODevice *d, const BMHDChunk *header, const CA
         if (d->read(ilbmLine.data() + offset, rowSize) != rowSize)
             return {};
     }
-    // next line on the next run
-    ++_y;
 
     // decode the ILBM line
     QBuffer buf;
@@ -1232,12 +1243,11 @@ QByteArray ABITChunk::strideRead(QIODevice *d, const BMHDChunk *header, const CA
     if (!buf.open(QBuffer::ReadOnly)) {
         return {};
     }
-    return BODYChunk::strideRead(&buf, header, camg, cmap, ILBM_FORM_TYPE);
+    return BODYChunk::strideRead(&buf, y, header, camg, cmap, ipal, ILBM_FORM_TYPE);
 }
 
 bool ABITChunk::resetStrideRead(QIODevice *d) const
 {
-    _y = 0;
     return BODYChunk::resetStrideRead(d);
 }
 
@@ -1265,6 +1275,41 @@ QImageIOHandler::Transformation IFOR_Chunk::transformation() const
             return exif.transformation();
     }
     return QImageIOHandler::Transformation::TransformationNone;
+}
+
+QImage::Format IFOR_Chunk::optionformat() const
+{
+    auto fmt = this->format();
+    if (fmt == QImage::Format_Indexed8) {
+        if (searchIPal())
+            fmt = FORMAT_RGB_8BIT;
+    }
+    return fmt;
+}
+
+const IPALChunk *IFOR_Chunk::searchIPal() const
+{
+    const IPALChunk *ipal = nullptr;
+    auto beam = IFFChunk::searchT<BEAMChunk>(this);
+    if (!beam.isEmpty()) {
+        ipal = beam.first();
+    }
+    auto ctbl = IFFChunk::searchT<CTBLChunk>(this);
+    if (!ctbl.isEmpty()) {
+        ipal = ctbl.first();
+    }
+    auto sham = IFFChunk::searchT<SHAMChunk>(this);
+    if (!sham.isEmpty()) {
+        ipal = sham.first();
+    }
+    auto rast = IFFChunk::searchT<RASTChunk>(this);
+    if (!rast.isEmpty()) {
+        ipal = rast.first();
+    }
+    if (ipal && ipal->isValid()) {
+        return ipal;
+    }
+    return nullptr;
 }
 
 
@@ -1336,10 +1381,10 @@ QImage::Format FORMChunk::format() const
         auto camgs = IFFChunk::searchT<CAMGChunk>(chunks());
         auto modeId = BODYChunk::safeModeId(h, camgs.isEmpty() ? nullptr : camgs.first(), cmaps.isEmpty() ? nullptr : cmaps.first());
         if (h->bitplanes() == 13) {
-            return QImage::Format_RGB888; // NOTE: with a little work you could use Format_RGB444
+            return FORMAT_RGB_8BIT; // NOTE: with a little work you could use Format_RGB444
         }
         if (h->bitplanes() == 24 || h->bitplanes() == 25) {
-            return QImage::Format_RGB888;
+            return FORMAT_RGB_8BIT;
         }
         if (h->bitplanes() == 48) {
             return QImage::Format_RGBX64;
@@ -1351,19 +1396,14 @@ QImage::Format FORMChunk::format() const
             return QImage::Format_RGBA64;
         }
         if (h->bitplanes() >= 1 && h->bitplanes() <= 8) {
-            if (!IFFChunk::search(SHAM_CHUNK, chunks()).isEmpty()
-                || !IFFChunk::search(RAST_CHUNK, chunks()).isEmpty()
-                || !IFFChunk::search(CTBL_CHUNK, chunks()).isEmpty()
-                || !IFFChunk::search(BEAM_CHUNK, chunks()).isEmpty()) {
-                // Images with the SHAM, RAST or BEAM/CTBL chunk do not load correctly:
-                // it seems they contains a color table but I didn't find any specs.
-                qCDebug(LOG_IFFPLUGIN) << "FORMChunk::format(): BEAM/CTBL/RAST/SHAM chunk is not supported";
+            if (!IFFChunk::search(PCHG_CHUNK, chunks()).isEmpty()) {
+                qCDebug(LOG_IFFPLUGIN) << "FORMChunk::format(): PCHG chunk is not supported";
                 return QImage::Format_Invalid;
             }
 
             if (h->bitplanes() >= BITPLANES_HAM_MIN && h->bitplanes() <= BITPLANES_HAM_MAX) {
                 if (modeId & CAMGChunk::ModeId::Ham)
-                    return QImage::Format_RGB888;
+                    return FORMAT_RGB_8BIT;
             }
 
             if (!cmaps.isEmpty()) {
@@ -1372,7 +1412,7 @@ QImage::Format FORMChunk::format() const
 
             return QImage::Format_Grayscale8;
         }
-        qCDebug(LOG_IFFPLUGIN) << "FORMChunk::format: Unsupported" << h->bitplanes() << "bitplanes";
+        qCDebug(LOG_IFFPLUGIN) << "FORMChunk::format(): Unsupported" << h->bitplanes() << "bitplanes";
     }
 
     return QImage::Format_Invalid;
@@ -1612,7 +1652,7 @@ QImage::Format TBHDChunk::format() const
         if (bpc() == 2)
             return QImage::Format_RGBX64;
         else if (bpc() == 1)
-            return QImage::Format_RGB888;
+            return FORMAT_RGB_8BIT;
     }
 
     return QImage::Format_Invalid;
@@ -2280,6 +2320,213 @@ QString XMP0Chunk::value() const
 }
 
 bool XMP0Chunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
+ * *** BEAM Chunk ***
+ * ****************** */
+
+BEAMChunk::~BEAMChunk()
+{
+
+}
+
+BEAMChunk::BEAMChunk() : IPALChunk()
+{
+
+}
+
+bool BEAMChunk::isValid() const
+{
+    return chunkId() == BEAMChunk::defaultChunkId();
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+QList<QRgb> BEAMChunk::palette(qint32 y, qint32 height) const
+#else
+QVector<QRgb> BEAMChunk::palette(qint32 y, qint32 height) const
+#endif
+{
+    if (height < 1) {
+        return {};
+    }
+    auto bpp = bytes() / height;
+    if (bytes() != height * bpp) {
+        return {};
+    }
+    auto col = qint32(bpp / 2);
+    auto &&dt = data();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<QRgb> pal;
+#else
+    QVector<QRgb> pal;
+#endif
+    for (auto c = 0; c < col; ++c) {
+        // 2 bytes per color (0x0R 0xGB)
+        auto idx = bpp * y + c * 2;
+        auto r = quint8(dt[idx] & 0x0F);
+        auto g = quint8(dt[idx + 1] & 0xF0);
+        auto b = quint8(dt[idx + 1] & 0x0F);
+        pal << qRgb(r | (r << 4), (g >> 4) | g, b | (b << 4));
+    }
+    return pal;
+}
+
+bool BEAMChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
+ * *** CTBL Chunk ***
+ * ****************** */
+
+CTBLChunk::~CTBLChunk()
+{
+
+}
+
+CTBLChunk::CTBLChunk() : BEAMChunk()
+{
+
+}
+
+bool CTBLChunk::isValid() const
+{
+    return chunkId() == CTBLChunk::defaultChunkId();
+}
+
+
+/* ******************
+ * *** SHAM Chunk ***
+ * ****************** */
+
+SHAMChunk::~SHAMChunk()
+{
+
+}
+
+SHAMChunk::SHAMChunk() : IPALChunk()
+{
+
+}
+
+bool SHAMChunk::isValid() const
+{
+    if (bytes() < 2) {
+        return false;
+    }
+    auto &&dt = data();
+    if (dt[0] != 0 && dt[1] != 0) {
+        // In all the sham test cases I have them at zero...
+        // if they are different from zero I suppose they should
+        // be interpreted differently from what was done.
+        return false;
+    }
+    return chunkId() == SHAMChunk::defaultChunkId();
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+QList<QRgb> SHAMChunk::palette(qint32 y, qint32 height) const
+#else
+QVector<QRgb> SHAMChunk::palette(qint32 y, qint32 height) const
+#endif
+{
+    if (height < 1) {
+        return {};
+    }
+    auto bpp = 32; // always 32 bytes per palette (16 colors)
+    auto div = 0;
+    if (bytes() == quint32(height * bpp + 2)) {
+        div = 1;
+    } else if (bytes() == quint32(height / 2 * bpp + 2)) {
+        div = 2;
+    }
+    if (div == 0) {
+        return {};
+    }
+    auto &&dt = data();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<QRgb> pal;
+#else
+    QVector<QRgb> pal;
+#endif
+    for (auto c = 0, col = bpp / 2, idx0 = y / div * bpp + 2; c < col; ++c) {
+        // 2 bytes per color (0x0R 0xGB)
+        auto idx = idx0 + c * 2;
+        auto r = quint8(dt[idx] & 0x0F);
+        auto g = quint8(dt[idx + 1] & 0xF0);
+        auto b = quint8(dt[idx + 1] & 0x0F);
+        pal << qRgb(r | (r << 4), (g >> 4) | g, b | (b << 4));
+    }
+    return pal;
+}
+
+bool SHAMChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+/* ******************
+ * *** RAST Chunk ***
+ * ****************** */
+
+RASTChunk::~RASTChunk()
+{
+
+}
+
+RASTChunk::RASTChunk() : IPALChunk()
+{
+
+}
+
+bool RASTChunk::isValid() const
+{
+    return chunkId() == RASTChunk::defaultChunkId();
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+QList<QRgb> RASTChunk::palette(qint32 y, qint32 height) const
+#else
+QVector<QRgb> RASTChunk::palette(qint32 y, qint32 height) const
+#endif
+{
+    if (height < 1) {
+        return {};
+    }
+    auto bpp = bytes() / height;
+    if (bytes() != height * bpp) {
+        return {};
+    }
+    auto col = qint32(bpp / 2 - 1);
+    auto &&dt = data();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<QRgb> pal;
+#else
+    QVector<QRgb> pal;
+#endif
+    for (auto c = 0; c < col; ++c) {
+        auto idx = bpp * y + 2 + c * 2;
+        // The Atari ST uses 3 bits per color (512 colors) while the Atari STE
+        // uses 4 bits per color (4096 colors). This strange encoding with the
+        // least significant bit set as MSB is, I believe, to ensure hardware
+        // compatibility between the two machines.
+        #define H1L(a) ((quint8(a) & 0x7) << 1) | ((quint8(a) >> 3) & 1)
+        auto r = H1L(dt[idx]);
+        auto g = H1L(dt[idx + 1] >> 4);
+        auto b = H1L(dt[idx + 1]);
+        #undef H1L
+        pal << qRgb(r | (r << 4), (g << 4) | g, b | (b << 4));
+    }
+    return pal;
+}
+
+bool RASTChunk::innerReadStructure(QIODevice *d)
 {
     return cacheData(d);
 }

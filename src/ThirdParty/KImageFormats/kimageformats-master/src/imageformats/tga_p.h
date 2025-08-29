@@ -22,14 +22,19 @@ public:
     bool write(const QImage &image) override;
 
     bool supportsOption(QImageIOHandler::ImageOption option) const override;
+    void setOption(ImageOption option, const QVariant &value) override;
     QVariant option(QImageIOHandler::ImageOption option) const override;
 
     static bool canRead(QIODevice *device);
 
 private:
     bool writeIndexed(const QImage &image);
-
+    bool writeGrayscale(const QImage &image);
+    bool writeRGB555(const QImage &image);
     bool writeRGBA(const QImage &image);
+
+    bool writeMetadata(const QImage &image);
+    bool readMetadata(QImage &image);
 
     const QScopedPointer<TGAHandlerPrivate> d;
 };

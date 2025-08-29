@@ -134,7 +134,7 @@ bool IFFHandler::canRead(QIODevice *device)
     return ok;
 }
 
-void addMetadata(QImage& img, const IFFChunk *form)
+static void addMetadata(QImage &img, const IFOR_Chunk *form)
 {
     // standard IFF metadata
     auto annos = IFFChunk::searchT<ANNOChunk>(form);
@@ -183,11 +183,12 @@ void addMetadata(QImage& img, const IFFChunk *form)
     }
 
     // SView5 metadata
+    auto resChanged = false;
     auto exifs = IFFChunk::searchT<EXIFChunk>(form);
     if (!exifs.isEmpty()) {
         auto exif = exifs.first()->value();
         exif.updateImageMetadata(img, false);
-        exif.updateImageResolution(img);
+        resChanged = exif.updateImageResolution(img);
     }
 
     auto xmp0s = IFFChunk::searchT<XMP0Chunk>(form);
@@ -221,8 +222,59 @@ void addMetadata(QImage& img, const IFFChunk *form)
         if (dpi->isValid()) {
             img.setDotsPerMeterX(dpi->dotsPerMeterX());
             img.setDotsPerMeterY(dpi->dotsPerMeterY());
+            resChanged = true;
         }
     }
+
+    // if no explicit resolution was found, apply the aspect ratio to the default one
+    if (!resChanged) {
+        auto headers = IFFChunk::searchT<BMHDChunk>(form);
+        if (!headers.isEmpty()) {
+            auto xr = headers.first()->xAspectRatio();
+            auto yr = headers.first()->yAspectRatio();
+            if (xr > 0 && yr > 0 && xr > yr) {
+                img.setDotsPerMeterX(img.dotsPerMeterX() * yr / xr);
+            } else if (xr > 0 && yr > 0 && xr < yr) {
+                img.setDotsPerMeterY(img.dotsPerMeterY() * xr / yr);
+            }
+        }
+    }
+}
+
+/*!
+ * \brief convertIPAL
+ * \param img The source image.
+ * \param ipal The per line palette.
+ * \return The new image converted or \a img if no conversion is needed or possible.
+ */
+static QImage convertIPAL(const QImage& img, const IPALChunk *ipal)
+{
+    if (img.format() != QImage::Format_Indexed8) {
+        qCDebug(LOG_IFFPLUGIN) << "convertIPAL(): the image is not indexed!";
+        return img;
+    }
+
+    auto tmp = img.convertToFormat(FORMAT_RGB_8BIT);
+    if (tmp.isNull()) {
+        qCCritical(LOG_IFFPLUGIN) << "convertIPAL(): error while converting the image!";
+        return img;
+    }
+
+    for (auto y = 0, h = img.height(); y < h; ++y) {
+        auto src = reinterpret_cast<const quint8 *>(img.constScanLine(y));
+        auto dst = tmp.scanLine(y);
+        auto lpal = ipal->palette(y, h);
+        for (auto x = 0, w = img.width(); x < w; ++x) {
+            if (src[x] < lpal.size()) {
+                auto x3 = x * 3;
+                dst[x3] = qRed(lpal.at(src[x]));
+                dst[x3 + 1] = qGreen(lpal.at(src[x]));
+                dst[x3 + 2] = qBlue(lpal.at(src[x]));
+            }
+        }
+    }
+
+    return tmp;
 }
 
 bool IFFHandler::readStandardImage(QImage *image)
@@ -274,6 +326,7 @@ bool IFFHandler::readStandardImage(QImage *image)
     }
 
     // reading image data
+    auto ipal = form->searchIPal();
     auto bodies = IFFChunk::searchT<BODYChunk>(form);
     if (bodies.isEmpty()) {
         auto abits = IFFChunk::searchT<ABITChunk>(form);
@@ -290,13 +343,18 @@ bool IFFHandler::readStandardImage(QImage *image)
         }
         for (auto y = 0, h = img.height(); y < h; ++y) {
             auto line = reinterpret_cast<char*>(img.scanLine(y));
-            auto ba = body->strideRead(device(), header, camg, cmap, form->formType());
+            auto ba = body->strideRead(device(), y, header, camg, cmap, ipal, form->formType());
             if (ba.isEmpty()) {
                 qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readStandardImage() error while reading image scanline";
                 return false;
             }
             memcpy(line, ba.constData(), std::min(img.bytesPerLine(), ba.size()));
         }
+    }
+
+    // BEAM / CTBL conversion (if not already done)
+    if (ipal && img.format() == QImage::Format_Indexed8) {
+        img = convertIPAL(img, ipal);
     }
 
     // set metadata (including image resolution)
@@ -429,7 +487,7 @@ QVariant IFFHandler::option(ImageOption option) const
     }
 
     if (option == QImageIOHandler::ImageFormat) {
-        return QVariant::fromValue(form->format());
+        return QVariant::fromValue(form->optionformat());
     }
 
     if (option == QImageIOHandler::ImageTransformation) {

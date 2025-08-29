@@ -56,10 +56,16 @@ submit the plugin directly to the Qt Project.
 To be accepted, contributions must:
 - Contain the test images needed to verify that the changes work correctly.
 - Pass the tests successfully.
+- Use Qt logging categories for Debug messages.
 
 For more info about tests, see also [Autotests README](autotests/README.md).
 
 ## Duplicated Plugins
+
+> [!important]
+> To ensure you are using the correct plugin, the unwanted one should be 
+renamed or deleted. If several plugins support the same capability, Qt will 
+select one arbitrarily.
 
 ### The TGA plugin
 
@@ -340,10 +346,6 @@ The plugin supports the following image data:
 - FOR4 CIMG (Maya Image File Format): It supports 24/48-bit RGB and 32/64-bit 
   RGBA images.
 
-The plugin does not load images with non-standard SHAM/CTBL chunks due to the
-lack of clear specifications.
-
-
 ### The JP2 plugin
 
 **This plugin can be disabled by setting `KIMAGEFORMATS_JP2` to `OFF` 
@@ -425,6 +427,25 @@ to act on the converter. The quality parameter can be used with values ​​fro
 selectively change the conversion (see also [raw_p.h](./src/imageformats/raw_p.h)).
 
 The default setting tries to balance quality and conversion speed.
+
+### The TGA plugin
+
+TGA plugin supports both version 1 and version 2 of TGA files. When writing,
+it is possible to force which version to use by setting the following subtypes:
+- `TGAv1`: force TGA v1.0. No metadata.
+- `TGAv2` (default): force TGA v2.0 (strict). Adds the TGA Extension Area.
+- `TGAv2E`: force TGA v2.0 (enhanced). Same as TGA v2.0 (strict) but with the 
+  addition of the TGA v2.0 Developer Area with info like, for e.g., Exif data, 
+  XMP packet and the ICC profile.
+
+They are all TGA specs compliant. While for versions 1 and 2 (strict) it is 
+possible to decode all the information with the TGA specification alone, for 
+version 2 (enhanced) it is necessary to know how the additional data is
+encoded.
+
+The following defines can be defined in cmake to modify the behavior of the 
+plugin:
+- `TGA_V2E_AS_DEFAULT`: change the default version of the plugin to `TGAv2E`.
 
 ### The XCF plugin
 
