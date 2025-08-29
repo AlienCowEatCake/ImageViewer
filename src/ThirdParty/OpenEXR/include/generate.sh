@@ -8,6 +8,9 @@ IMATH_ROOT=`find "${SCRIPT_ROOT}/.." -mindepth 1 -maxdepth 1 -name 'Imath-*' | h
 ILMTHREADQT_ROOT="${SCRIPT_ROOT}/../IlmThreadQt"
 CONFIG_ROOT="${SCRIPT_ROOT}/../config"
 
+rm -rf "${SCRIPT_ROOT}/Imath" "${SCRIPT_ROOT}/OpenEXR"
+mkdir -p "${SCRIPT_ROOT}/Imath" "${SCRIPT_ROOT}/OpenEXR"
+
 function generate
 {
     for i in `find "${1}/${2}" -name '*.h' | cut -c $((${#1} + 2))-`

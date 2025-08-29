@@ -46,13 +46,13 @@
 //
 // Version information
 //
-#define IMATH_VERSION_STRING "3.2.0"
-#define IMATH_PACKAGE_STRING "Imath 3.2.0-dev"
+#define IMATH_VERSION_STRING "3.2.1"
+#define IMATH_PACKAGE_STRING "Imath 3.2.1"
 
 #define IMATH_VERSION_MAJOR 3
 #define IMATH_VERSION_MINOR 2
-#define IMATH_VERSION_PATCH 0
-#define IMATH_VERSION_RELEASE_TYPE "-dev"
+#define IMATH_VERSION_PATCH 1
+#define IMATH_VERSION_RELEASE_TYPE ""
 
 #define IMATH_VERSION_HEX                                                      \
     ((uint32_t (IMATH_VERSION_MAJOR) << 24) |                                  \
@@ -60,7 +60,7 @@
      (uint32_t (IMATH_VERSION_PATCH) << 8))
 
 // IMATH_LIB_VERSION is the library API version: SOCURRENT.SOAGE.SOREVISION
-#define IMATH_LIB_VERSION_STRING "30.3.2.0"
+#define IMATH_LIB_VERSION_STRING "30.3.2.1"
 
 // clang-format on
 
