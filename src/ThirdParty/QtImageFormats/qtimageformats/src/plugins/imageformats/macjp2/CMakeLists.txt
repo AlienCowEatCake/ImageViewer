@@ -9,7 +9,7 @@ qt_internal_add_plugin(QMacJp2Plugin
     OUTPUT_NAME qmacjp2
     PLUGIN_TYPE imageformats
     SOURCES
-        ../shared/qiiofhelpers.cpp ../shared/qiiofhelpers_p.h
+        ../shared/qiiofhelpers.mm ../shared/qiiofhelpers_p.h
         main.cpp
         qmacjp2handler.cpp qmacjp2handler.h
     INCLUDE_DIRECTORIES

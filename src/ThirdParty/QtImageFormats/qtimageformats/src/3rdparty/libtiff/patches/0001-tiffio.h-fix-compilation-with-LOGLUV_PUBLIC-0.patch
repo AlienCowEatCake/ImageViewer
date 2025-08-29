@@ -1,0 +1,32 @@
+From c7ea716f16a0eb018c791d05623ce7ae050c8064 Mon Sep 17 00:00:00 2001
+From: Tim Blechmann <tim@klingt.org>
+Date: Tue, 12 Aug 2025 16:59:50 +0800
+Subject: [PATCH] tiffio.h: fix compilation with LOGLUV_PUBLIC=0
+
+LOGLUV_PUBLIC can be used to compile some functions with hidden
+visibility.
+However this functionality was broken (in clang), as LOGLUV_PUBLIC was
+defined to 1 if it wasn't defined, as the extern declarations were still
+visible by the compiler leading to "static declaration follows
+non-static declaration" errors.
+Changing the header from #ifdef to #if fixes the issue.
+---
+ libtiff/tiffio.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libtiff/tiffio.h b/libtiff/tiffio.h
+index 6a7ab2f5..f9c206e3 100644
+--- a/libtiff/tiffio.h
++++ b/libtiff/tiffio.h
+@@ -608,7 +608,7 @@ extern int TIFFReadRGBAImageOriented(TIFF *, uint32_t, uint32_t, uint32_t *,
+     extern uint64_t TIFFGetStrileByteCountWithErr(TIFF *tif, uint32_t strile,
+                                                   int *pbErr);
+ 
+-#ifdef LOGLUV_PUBLIC
++#if LOGLUV_PUBLIC
+ #define U_NEU 0.210526316
+ #define V_NEU 0.473684211
+ #define UVSCALE 410.
+-- 
+2.50.1
+

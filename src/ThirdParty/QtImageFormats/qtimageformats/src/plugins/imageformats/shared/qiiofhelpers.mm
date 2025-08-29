@@ -7,14 +7,16 @@
 #include <QImageIOHandler>
 #include <QImage>
 
+#include <QtCore/qloggingcategory.h>
+
+#include <QtGui/private/qcoregraphics_p.h>
+
 #include "qiiofhelpers_p.h"
 
 
 QT_BEGIN_NAMESPACE
 
-// QImage <-> CGImage conversion functions from QtGui on darwin
-CGImageRef qt_mac_toCGImage(const QImage &qImage);
-QImage qt_mac_toQImage(CGImageRef image);
+Q_STATIC_LOGGING_CATEGORY(lcImageIO, "qt.imageformats.imageio", QtCriticalMsg)
 
 namespace NS_IIOF_HELPERS {
 
@@ -23,6 +25,8 @@ namespace NS_IIOF_HELPERS {
 static size_t cbGetBytes(void *info, void *buffer, size_t count)
 {
     QIODevice *dev = static_cast<QIODevice *>(info);
+    qCDebug(lcImageIO) << "Reading" << count << "bytes from" << dev << "into" << buffer;
+
     if (!dev || !buffer)
         return 0;
     qint64 res = dev->read(static_cast<char *>(buffer), qint64(count));
@@ -32,6 +36,8 @@ static size_t cbGetBytes(void *info, void *buffer, size_t count)
 static off_t cbSkipForward(void *info, off_t count)
 {
     QIODevice *dev = static_cast<QIODevice *>(info);
+    qCDebug(lcImageIO) << "Skipping" << dev << "forward" << count << "bytes" ;
+
     if (!dev || count <= 0)
         return 0;
     qint64 res = 0;
@@ -47,20 +53,28 @@ static off_t cbSkipForward(void *info, off_t count)
     return qMax(qint64(0), res);
 }
 
-static void cbRewind(void *)
+static void cbRewind(void *info)
 {
+    QIODevice *dev = static_cast<QIODevice *>(info);
+    qCDebug(lcImageIO) << "Rewinding" << dev;
     // Ignore this; we do not want the Qt device to be rewound after reading the image
 }
 
 static size_t cbPutBytes(void *info, const void *buffer, size_t count)
 {
     QIODevice *dev = static_cast<QIODevice *>(info);
+    qCDebug(lcImageIO) << "Writing" << count << "bytes from" << buffer << "into" << dev;
+
     if (!dev || !buffer)
         return 0;
     qint64 res = dev->write(static_cast<const char *>(buffer), qint64(count));
     return size_t(qMax(qint64(0), res));
 }
 
+static void cbRelease(void *info)
+{
+    qCDebug(lcImageIO) << "Releasing" << info;
+}
 
 QImageIOPlugin::Capabilities QIIOFHelpers::systemCapabilities(const QString &uti)
 {
@@ -99,8 +113,6 @@ QIIOFHelper::QIIOFHelper(QImageIOHandler *q)
 
 bool QIIOFHelper::initRead()
 {
-    static const CGDataProviderSequentialCallbacks cgCallbacks = { 0, &cbGetBytes, &cbSkipForward, &cbRewind, nullptr };
-
     if (cgImageSource)
         return true;
     if (!q_ptr || !q_ptr->device())
@@ -111,13 +123,23 @@ bool QIIOFHelper::initRead()
         const void *rawData = b->data().constData() + b->pos();
         cgDataProvider = CGDataProviderCreateWithData(nullptr, rawData, size_t(b->data().size() - b->pos()), nullptr);
     } else {
+        static const CGDataProviderSequentialCallbacks cgCallbacks = {
+            0, // Version, always 0
+            &cbGetBytes, &cbSkipForward, &cbRewind, &cbRelease
+        };
         cgDataProvider = CGDataProviderCreateSequential(q_ptr->device(), &cgCallbacks);
     }
 
     cgImageSource = CGImageSourceCreateWithDataProvider(cgDataProvider, nullptr);
 
-    if (cgImageSource)
-        cfImageDict = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nullptr);
+    if (cgImageSource) {
+        auto primaryIndex = CGImageSourceGetPrimaryImageIndex(cgImageSource);
+        cfImageDict = CGImageSourceCopyPropertiesAtIndex(cgImageSource, primaryIndex, nullptr);
+    }
+
+    qCInfo(lcImageIO) << "Initialized source" << cgImageSource
+        << "with" << CGImageSourceGetCount(cgImageSource) << "images"
+        << "and primary index" << CGImageSourceGetPrimaryImageIndex(cgImageSource);
 
     return (cgImageSource);
 }
@@ -127,7 +149,12 @@ bool QIIOFHelper::readImage(QImage *out)
     if (!out || !initRead())
         return false;
 
-    QCFType<CGImageRef> cgImage = CGImageSourceCreateImageAtIndex(cgImageSource, 0, nullptr);
+    auto primaryIndex = CGImageSourceGetPrimaryImageIndex(cgImageSource);
+    QCFType<CGImageRef> cgImage = CGImageSourceCreateImageAtIndex(cgImageSource, primaryIndex, nullptr);
+
+    qCInfo(lcImageIO) << "Read image at index" << primaryIndex
+        << "with properties" << cfImageDict << "and got" << cgImage;
+
     if (!cgImage)
         return false;
 
@@ -284,6 +311,8 @@ bool QIIOFHelper::writeImage(const QImage &in, const QString &uti)
     if (dictSize)
         cfProps = CFDictionaryCreate(nullptr, dictKeys, dictVals, dictSize,
                                      &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+
+    qCInfo(lcImageIO) << "Writing" << cgImage << "\nwith properties" << cfProps;
 
     CGImageDestinationAddImage(cgImageDest, cgImage, cfProps);
     return CGImageDestinationFinalize(cgImageDest);

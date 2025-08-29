@@ -15,6 +15,9 @@ private slots:
     void readProperties_data();
     void readProperties();
     void writeImage();
+
+    void primaryIndex_data();
+    void primaryIndex();
 };
 
 void tst_qheif::initTestCase()
@@ -121,6 +124,23 @@ void tst_qheif::writeImage()
         buf2.close();
         QVERIFY(rimg2.size() == img.size().transposed());
     }
+}
+
+void tst_qheif::primaryIndex_data()
+{
+    QTest::addColumn<int>("primaryIndex");
+
+    QTest::newRow("0 (first/default)") << 0;
+    QTest::newRow("1 (second)") << 1;
+}
+
+void tst_qheif::primaryIndex()
+{
+    QFETCH(int, primaryIndex);
+
+    QImage image(QString(":/heif/primary-index-%1.heic").arg(primaryIndex));
+    QVERIFY(!image.isNull());
+    QCOMPARE(image.pixelColor(50, 50), QColor(Qt::green));
 }
 
 QTEST_MAIN(tst_qheif)

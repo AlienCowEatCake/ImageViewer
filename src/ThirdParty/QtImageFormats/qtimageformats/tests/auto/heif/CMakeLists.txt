@@ -16,6 +16,8 @@ qt_internal_add_test(tst_qheif
 set(heif_resource_files
     "../../shared/images/heif/col320x480.heic"
     "../../shared/images/heif/newlogoCCW.heic"
+    "../../shared/images/heif/primary-index-0.heic"
+    "../../shared/images/heif/primary-index-1.heic"
 )
 
 qt_internal_add_resource(tst_qheif "heif"
