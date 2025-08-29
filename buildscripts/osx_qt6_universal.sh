@@ -16,7 +16,7 @@ NOTARIZE_ASC_PROVIDER="${APP_CERT: -11:10}"
 MAC_TARGET="12.0"
 MAC_SDK="$(xcodebuild -showsdks | grep '\-sdk macosx' | tail -1 | sed 's|.*-sdk ||')"
 
-QT_PATH="${QT_PATH:=/opt/Qt/6.8.3/macos_target10.15}"
+QT_PATH="${QT_PATH:=/opt/Qt/6.9.2/macos_target12.0}"
 QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
@@ -62,7 +62,7 @@ for unused_plugins_subdir in platforminputcontexts imageformats/libqpdf.dylib tl
     rm -rf "${PLUGINS_PATH}/${unused_plugins_subdir}"
 done
 FRAMEWORKS_PATH="${APPNAME}.app/Contents/Frameworks"
-for unused_framework in QtPdf.framework QtQml.framework QtQmlModels.framework QtQuick.framework QtVirtualKeyboard.framework QtQmlMeta.framework QtQmlWorkerScript.framework QtOpenGL.framework ; do
+for unused_framework in QtPdf.framework QtQml.framework QtQmlModels.framework QtQuick.framework QtVirtualKeyboard.framework QtVirtualKeyboardQml.framework QtQmlMeta.framework QtQmlWorkerScript.framework QtOpenGL.framework ; do
     rm -rf "${FRAMEWORKS_PATH}/${unused_framework}"
 done
 /usr/bin/python3 "${SOURCE_PATH}/buildscripts/helpers/dylibresolver.py" "${APPNAME}.app" "${RESVG_PATH}" "${QT_PATH}/lib"

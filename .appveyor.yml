@@ -25,8 +25,8 @@ environment:
     # - job_name: macOS, Qt 6.8, Universal
     #   job_group: macos_buildscript
     #   APPVEYOR_BUILD_WORKER_IMAGE: macos-sonoma
-    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v6.8.3_macos-10.15/Qt_6.8.3_macos_target10.15.tar.bz2
-    #   QT_HOME: Qt/6.8.3/macos_target10.15
+    #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v6.9.2/Qt_6.9.2_macos_target12.0.tar.bz2
+    #   QT_HOME: Qt/6.9.2/macos_target12.0
     #   BUILD_ID: osx_qt6_universal
     - job_name: Windows, Qt 5.15, MSVC 2022 x86, Testing
       job_group: windows_test_msvc
