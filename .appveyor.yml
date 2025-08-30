@@ -22,7 +22,7 @@ environment:
     #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v5.15.17_osx-10.10/Qt_5.15.17_clang_universal_target10.10.tar.bz2
     #   QT_HOME: Qt/5.15.17/clang_universal_target10.10
     #   BUILD_ID: osx_qt5.15_universal_target10.10
-    # - job_name: macOS, Qt 6.8, Universal
+    # - job_name: macOS, Qt 6.9, Universal
     #   job_group: macos_buildscript
     #   APPVEYOR_BUILD_WORKER_IMAGE: macos-sonoma
     #   QT_DIST: https://github.com/AlienCowEatCake/qtbase/releases/download/v6.9.2/Qt_6.9.2_macos_target12.0.tar.bz2
