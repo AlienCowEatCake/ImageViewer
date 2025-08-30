@@ -41,6 +41,7 @@ binary-arch: build
 		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6QuickControls2.so.6 \
 		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6QuickTemplates2.so.6 \
 		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6VirtualKeyboard.so.6 \
+		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6VirtualKeyboardQml.so.6 \
 		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6WaylandClient.so.6 \
 		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6WaylandEglClientHwIntegration.so.6 \
 		--exclude=debian/imageviewer/opt/ImageViewer/lib/libQt6WlShellIntegration.so.6 \

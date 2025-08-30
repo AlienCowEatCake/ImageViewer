@@ -93,7 +93,7 @@ environment:
     #   job_group: linux_buildscript
     #   APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2204
     #   BUILD_ID: docker_amd64_linux_qt5.15_clang
-    # - job_name: GNU/Linux, Qt 6.8, x64
+    # - job_name: GNU/Linux, Qt 6.9, x64
     #   job_group: linux_buildscript
     #   APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2204
     #   BUILD_ID: docker_amd64_linux_qt6_clang
