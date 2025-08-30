@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -105,12 +105,12 @@ public:
         : IStream(filePath.toLocal8Bit())
         , m_file(filePath)
     {
-        m_file.open(QIODevice::ReadOnly);
+        m_isValid = m_file.open(QIODevice::ReadOnly);
     }
 
     bool isValid() const
     {
-        return m_file.isOpen();
+        return m_isValid;
     }
 
     /// @brief Read from the stream:
@@ -145,6 +145,7 @@ public:
 
 private:
     QFile m_file;
+    bool m_isValid;
 };
 
 // ====================================================================================================

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -61,12 +61,12 @@ public:
     LibRaw_Qt_datastream(const QString &filePath)
         : m_file(filePath)
     {
-        m_file.open(QIODevice::ReadOnly);
+        m_isValid = m_file.open(QIODevice::ReadOnly);
     }
 
     int valid() Q_DECL_OVERRIDE
     {
-        return m_file.isOpen();
+        return m_isValid;
     }
 
     int read(void *data, size_t size, size_t nmemb) Q_DECL_OVERRIDE
@@ -239,6 +239,7 @@ public:
 private:
     QMutex m_mutex;
     QFile m_file;
+    bool m_isValid;
 };
 
 #endif

@@ -836,8 +836,8 @@ void StylesheetEditor::updateProtection()
     if(isProtected())
     {
         QFile style(QString::fromLatin1(":/style/StylesheetEditor.qss"));
-        style.open(QIODevice::ReadOnly);
-        styleSheet = QString::fromUtf8(style.readAll());
+        if(style.open(QIODevice::ReadOnly))
+            styleSheet = QString::fromUtf8(style.readAll());
     }
     setStyleSheet(styleSheet);
     m_impl->codeEditor->setFont(getMonospaceFont());
