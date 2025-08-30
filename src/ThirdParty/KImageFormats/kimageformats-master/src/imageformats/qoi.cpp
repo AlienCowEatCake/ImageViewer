@@ -15,6 +15,16 @@
 #include <QIODevice>
 #include <QImage>
 
+/* *** QOI_MAX_IMAGE_WIDTH and QOI_MAX_IMAGE_HEIGHT ***
+ * The maximum size in pixel allowed by the plugin.
+ */
+#ifndef QOI_MAX_IMAGE_WIDTH
+#define QOI_MAX_IMAGE_WIDTH KIF_LARGE_IMAGE_PIXEL_LIMIT
+#endif
+#ifndef QOI_MAX_IMAGE_HEIGHT
+#define QOI_MAX_IMAGE_HEIGHT QOI_MAX_IMAGE_WIDTH
+#endif
+
 namespace // Private
 {
 
@@ -92,7 +102,7 @@ static bool IsSupported(const QoiHeader &head)
         return false;
     }
     // Set a reasonable upper limit
-    if (head.Width > 300000 || head.Height > 300000) {
+    if (head.Width > QOI_MAX_IMAGE_WIDTH || head.Height > QOI_MAX_IMAGE_HEIGHT) {
         return false;
     }
     return true;

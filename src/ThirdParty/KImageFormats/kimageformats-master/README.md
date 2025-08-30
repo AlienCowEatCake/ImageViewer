@@ -218,30 +218,35 @@ RGB.
 
 Where possible, plugins support large images. By convention, many of the
 large image plugins are limited to a maximum of 300,000 x 300,000 pixels.
-Anyway, all plugins are also limited by the 
-`QImageIOReader::allocationLimit()`. Below are the maximum sizes for each
-plugin ('n/a' means no limit, i.e. the limit depends on the format encoding).
+Anyway, all plugins are also limited by the
+`QImageIOReader::allocationLimit()`.
 
+> [!note]
+> You can change the maximum limit of 300000 pixels by setting the constant
+> `KIF_LARGE_IMAGE_PIXEL_LIMIT` to the desired value in the cmake file.
+
+Below are the maximum sizes for each plugin ('n/a' means no limit, i.e. the 
+limit depends on the format encoding).
 - ANI: n/a
 - AVIF: 32,768 x 32,768 pixels, in any case no larger than 256 megapixels
 - DDS: n/a
 - EXR: 300,000 x 300,000 pixels
-- EPS: n/a
-- HDR: n/a (large image)
+- EPS: same size as Qt's JPG plugin
+- HDR: 300,000 x 300,000 pixels
 - HEIF: n/a
 - IFF: 65,535 x 65,535 pixels
 - JP2: 300,000 x 300,000 pixels, in any case no larger than 2 gigapixels
 - JXL: 262,144 x 262,144 pixels, in any case no larger than 256 megapixels
-- JXR: n/a, in any case no larger than 4 GB
+- JXR: 300,000 x 300,000 pixels, in any case no larger than 4 GB
 - KRA: same size as Qt's PNG plugin
 - ORA: same size as Qt's PNG plugin
 - PCX: 65,535 x 65,535 pixels
-- PFM: n/a (large image)
+- PFM: 300,000 x 300,000 pixels
 - PIC: 65,535 x 65,535 pixels
 - PSD: 300,000 x 300,000 pixels
 - PXR: 65,535 x 65,535 pixels
 - QOI: 300,000 x 300,000 pixels
-- RAS: n/a (large image)
+- RAS: 300,000 x 300,000 pixels
 - RAW: n/a (depends on the RAW format loaded)
 - RGB: 65,535 x 65,535 pixels
 - SCT: 300,000 x 300,000 pixels

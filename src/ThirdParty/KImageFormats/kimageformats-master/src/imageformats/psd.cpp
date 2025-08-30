@@ -76,6 +76,16 @@ typedef quint8 uchar;
  */
 // #define PSD_FORCE_RGBA
 
+/* *** PSD_MAX_IMAGE_WIDTH and PSD_MAX_IMAGE_HEIGHT ***
+ * The maximum size in pixel allowed by the plugin.
+ */
+#ifndef PSD_MAX_IMAGE_WIDTH
+#define PSD_MAX_IMAGE_WIDTH KIF_LARGE_IMAGE_PIXEL_LIMIT
+#endif
+#ifndef PSD_MAX_IMAGE_HEIGHT
+#define PSD_MAX_IMAGE_HEIGHT PSD_MAX_IMAGE_WIDTH
+#endif
+
 namespace // Private.
 {
 
@@ -690,7 +700,7 @@ static bool IsValid(const PSDHeader &header)
         qDebug() << "PSD header: invalid number of channels" << header.channel_count;
         return false;
     }
-    if (header.width > 300000 || header.height > 300000) {
+    if (header.width > std::min(300000, PSD_MAX_IMAGE_WIDTH) || header.height > std::min(300000, PSD_MAX_IMAGE_HEIGHT)) {
         qDebug() << "PSD header: invalid image size" << header.width << "x" << header.height;
         return false;
     }

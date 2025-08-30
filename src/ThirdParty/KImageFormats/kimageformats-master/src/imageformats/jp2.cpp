@@ -21,7 +21,7 @@
  * The maximum size in pixel allowed by the plugin.
  */
 #ifndef JP2_MAX_IMAGE_WIDTH
-#define JP2_MAX_IMAGE_WIDTH 300000
+#define JP2_MAX_IMAGE_WIDTH KIF_LARGE_IMAGE_PIXEL_LIMIT
 #endif
 #ifndef JP2_MAX_IMAGE_HEIGHT
 #define JP2_MAX_IMAGE_HEIGHT JP2_MAX_IMAGE_WIDTH

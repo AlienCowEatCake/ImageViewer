@@ -9,6 +9,7 @@
 #include "util_p.h"
 #include "xcf_p.h"
 
+#include <QColorSpace>
 #include <QDebug>
 #include <QIODevice>
 #include <QImage>
@@ -17,7 +18,6 @@
 #include <QPainter>
 #include <QStack>
 #include <QtEndian>
-#include <QColorSpace>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QImageReader>
 #endif
@@ -37,12 +37,16 @@
 #endif
 
 // Let's set a "reasonable" maximum size
-#define MAX_IMAGE_WIDTH 300000
-#define MAX_IMAGE_HEIGHT 300000
+#ifndef XCF_MAX_IMAGE_WIDTH
+#define XCF_MAX_IMAGE_WIDTH KIF_LARGE_IMAGE_PIXEL_LIMIT
+#endif
+#ifndef XCF_MAX_IMAGE_HEIGHT
+#define XCF_MAX_IMAGE_HEIGHT XCF_MAX_IMAGE_WIDTH
+#endif
 #else
 // While it is possible to have images larger than 32767 pixels, QPainter seems unable to go beyond this threshold using Qt 5.
-#define MAX_IMAGE_WIDTH 32767
-#define MAX_IMAGE_HEIGHT 32767
+#define XCF_MAX_IMAGE_WIDTH 32767
+#define XCF_MAX_IMAGE_HEIGHT 32767
 #endif
 
 #ifdef USE_FLOAT_IMAGES
@@ -871,8 +875,8 @@ bool XCFImageFormat::readXCFHeader(QDataStream &xcf_io, XCFImage::Header *header
         return false;
     }
 
-    if (header->width > MAX_IMAGE_WIDTH || header->height > MAX_IMAGE_HEIGHT) {
-        qCWarning(XCFPLUGIN) << "The maximum image size is limited to" << MAX_IMAGE_WIDTH << "x" << MAX_IMAGE_HEIGHT << "px";
+    if (header->width > XCF_MAX_IMAGE_WIDTH || header->height > XCF_MAX_IMAGE_HEIGHT) {
+        qCWarning(XCFPLUGIN) << "The maximum image size is limited to" << XCF_MAX_IMAGE_WIDTH << "x" << XCF_MAX_IMAGE_HEIGHT << "px";
         return false;
     }
 
@@ -1399,8 +1403,8 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
         qCWarning(XCFPLUGIN) << "On 32-bits programs the maximum layer size is limited to" << 16384 << "x" << 16384 << "px";
         return false;
     }
-    if (layer.width > MAX_IMAGE_WIDTH || layer.height > MAX_IMAGE_HEIGHT) {
-        qCWarning(XCFPLUGIN) << "The maximum layer size is limited to" << MAX_IMAGE_WIDTH << "x" << MAX_IMAGE_HEIGHT << "px";
+    if (layer.width > XCF_MAX_IMAGE_WIDTH || layer.height > XCF_MAX_IMAGE_HEIGHT) {
+        qCWarning(XCFPLUGIN) << "The maximum layer size is limited to" << XCF_MAX_IMAGE_WIDTH << "x" << XCF_MAX_IMAGE_HEIGHT << "px";
         return false;
     }
 
@@ -2834,8 +2838,7 @@ void XCFImageFormat::copyLayerToImage(XCFImage &xcf_image)
                 QPainter painter(&image);
                 painter.setOpacity(layer.opacity / 255.0);
                 painter.setCompositionMode(QPainter::CompositionMode_Source);
-                if (x + layer.x_offset < MAX_IMAGE_WIDTH &&
-                    y + layer.y_offset < MAX_IMAGE_HEIGHT) {
+                if (x + layer.x_offset < XCF_MAX_IMAGE_WIDTH && y + layer.y_offset < XCF_MAX_IMAGE_HEIGHT) {
                     painter.drawImage(x + layer.x_offset, y + layer.y_offset, layer.image_tiles[j][i]);
                 }
                 continue;
@@ -3237,8 +3240,7 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage &xcf_image)
                     qint32 x = qint32(i * TILE_WIDTH);
 
                     QImage &tile = layer.image_tiles[j][i];
-                    if (x + layer.x_offset < MAX_IMAGE_WIDTH &&
-                        y + layer.y_offset < MAX_IMAGE_HEIGHT) {
+                    if (x + layer.x_offset < XCF_MAX_IMAGE_WIDTH && y + layer.y_offset < XCF_MAX_IMAGE_HEIGHT) {
                         painter.drawImage(x + layer.x_offset, y + layer.y_offset, tile);
                     }
                 }
@@ -3289,8 +3291,7 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage &xcf_image)
                 QPainter painter(&image);
                 painter.setOpacity(layer.opacity / 255.0);
                 painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-                if (x + layer.x_offset < MAX_IMAGE_WIDTH &&
-                    y + layer.y_offset < MAX_IMAGE_HEIGHT) {
+                if (x + layer.x_offset < XCF_MAX_IMAGE_WIDTH && y + layer.y_offset < XCF_MAX_IMAGE_HEIGHT) {
                     painter.drawImage(x + layer.x_offset, y + layer.y_offset, layer.image_tiles[j][i]);
                 }
                 continue;

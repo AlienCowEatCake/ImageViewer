@@ -15,6 +15,7 @@
 
 #include "pic_p.h"
 #include "rle_p.h"
+#include "scanlineconverter_p.h"
 #include "util_p.h"
 
 #include <QColorSpace>
@@ -263,18 +264,20 @@ bool SoftimagePICHandler::read(QImage *image)
     return true;
 }
 
-bool SoftimagePICHandler::write(const QImage &_image)
+bool SoftimagePICHandler::write(const QImage &image)
 {
-    bool alpha = _image.hasAlphaChannel();
-    QImage image;
+    bool alpha = image.hasAlphaChannel();
+    auto cs = image.colorSpace();
+    auto tfmt = image.format();
+    auto tcs = QColorSpace();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
-    auto cs = _image.colorSpace();
-    if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && _image.format() == QImage::Format_CMYK8888) {
-        image = _image.convertedToColorSpace(QColorSpace(QColorSpace::SRgb), QImage::Format_RGB32);
+    if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && tfmt == QImage::Format_CMYK8888) {
+        tcs = QColorSpace(QColorSpace::SRgb);
+        tfmt = QImage::Format_RGB32;
     }
 #endif
-    if (image.isNull()) {
-        image = _image.convertToFormat(alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+    if (tfmt != QImage::Format_ARGB32 && tfmt != QImage::Format_RGB32) {
+        tfmt = alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
     }
 
     if (image.width() < 0 || image.height() < 0) {
@@ -299,8 +302,10 @@ bool SoftimagePICHandler::write(const QImage &_image)
     }
     stream << channels;
 
+    ScanLineConverter scl(tfmt);
+    scl.setTargetColorSpace(tcs);
     for (int r = 0; r < image.height(); r++) {
-        const QRgb *row = reinterpret_cast<const QRgb *>(image.constScanLine(r));
+        const QRgb *row = reinterpret_cast<const QRgb *>(scl.convertedScanLine(image, r));
 
         /* Write the RGB part of the scanline */
         auto rgbEqual = [](QRgb p1, QRgb p2) -> bool {

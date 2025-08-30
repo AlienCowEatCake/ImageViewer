@@ -23,6 +23,16 @@
  */
 //#define HDR_HALF_QUALITY // default commented -> you should define it in your cmake file
 
+/* *** HDR_MAX_IMAGE_WIDTH and HDR_MAX_IMAGE_HEIGHT ***
+ * The maximum size in pixel allowed by the plugin.
+ */
+#ifndef HDR_MAX_IMAGE_WIDTH
+#define HDR_MAX_IMAGE_WIDTH KIF_LARGE_IMAGE_PIXEL_LIMIT
+#endif
+#ifndef HDR_MAX_IMAGE_HEIGHT
+#define HDR_MAX_IMAGE_HEIGHT HDR_MAX_IMAGE_WIDTH
+#endif
+
 typedef unsigned char uchar;
 
 Q_LOGGING_CATEGORY(HDRPLUGIN, "kf.imageformats.plugins.hdr", QtWarningMsg)
@@ -42,7 +52,10 @@ public:
     Header(const Header&) = default;
     Header& operator=(const Header&) = default;
 
-    bool isValid() const { return width() > 0 && height() > 0; }
+    bool isValid() const
+    {
+        return width() > 0 && height() > 0 && width() <= HDR_MAX_IMAGE_WIDTH && height() <= HDR_MAX_IMAGE_HEIGHT;
+    }
     qint32 width() const { return(m_size.width()); }
     qint32 height() const { return(m_size.height()); }
     QString software() const { return(m_software); }

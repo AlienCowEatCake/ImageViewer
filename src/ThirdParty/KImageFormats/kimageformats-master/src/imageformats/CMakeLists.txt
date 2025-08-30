@@ -101,11 +101,11 @@ endif()
 
 ##################################
 
-kimageformats_add_plugin(kimg_pcx SOURCES pcx.cpp)
+kimageformats_add_plugin(kimg_pcx SOURCES pcx.cpp scanlineconverter.cpp)
 
 ##################################
 
-kimageformats_add_plugin(kimg_pic SOURCES pic.cpp)
+kimageformats_add_plugin(kimg_pic SOURCES pic.cpp scanlineconverter.cpp)
 
 ##################################
 
@@ -129,7 +129,7 @@ kimageformats_add_plugin(kimg_ras SOURCES ras.cpp)
 
 ##################################
 
-kimageformats_add_plugin(kimg_rgb SOURCES rgb.cpp)
+kimageformats_add_plugin(kimg_rgb SOURCES rgb.cpp scanlineconverter.cpp)
 
 ##################################
 

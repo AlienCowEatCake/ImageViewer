@@ -80,6 +80,16 @@ Q_LOGGING_CATEGORY(LOG_JXRPLUGIN, "kf.imageformats.plugins.jxr", QtWarningMsg)
 
 // #define JXR_ENABLE_ADVANCED_METADATA
 
+/* *** JXR_MAX_IMAGE_WIDTH and JXR_MAX_IMAGE_HEIGHT ***
+ * The maximum size in pixel allowed by the plugin.
+ */
+#ifndef JXR_MAX_IMAGE_WIDTH
+#define JXR_MAX_IMAGE_WIDTH KIF_LARGE_IMAGE_PIXEL_LIMIT
+#endif
+#ifndef JXR_MAX_IMAGE_HEIGHT
+#define JXR_MAX_IMAGE_HEIGHT JXR_MAX_IMAGE_WIDTH
+#endif
+
 #ifndef JXR_MAX_METADATA_SIZE
 /*!
  * XMP and EXIF maximum size.
@@ -392,6 +402,11 @@ public:
         if (pDecoder) {
             qint32 w, h;
             pDecoder->GetSize(pDecoder, &w, &h);
+            if (w > JXR_MAX_IMAGE_WIDTH || h > JXR_MAX_IMAGE_HEIGHT || w < 1 || h < 1) {
+                qCCritical(LOG_JXRPLUGIN) << "JXRHandlerPrivate::imageSize() Maximum image size is limited to" << JXR_MAX_IMAGE_WIDTH << "x"
+                                          << JXR_MAX_IMAGE_HEIGHT << "pixels";
+                return {};
+            }
             return QSize(w, h);
         }
         return {};
@@ -1060,6 +1075,10 @@ bool JXRHandler::write(const QImage &image)
     if (qint64(image.sizeInBytes()) > 4000000000ll) {
         qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() image too large: the image cannot exceed 4GB.";
         return false;
+    }
+    if (image.width() > JXR_MAX_IMAGE_WIDTH || image.height() > JXR_MAX_IMAGE_HEIGHT) {
+        qCCritical(LOG_JXRPLUGIN) << "JXRHandler::write() Maximum image size is limited to" << JXR_MAX_IMAGE_WIDTH << "x" << JXR_MAX_IMAGE_HEIGHT << "pixels";
+        return {};
     }
 
     if (!d->initForWriting()) {

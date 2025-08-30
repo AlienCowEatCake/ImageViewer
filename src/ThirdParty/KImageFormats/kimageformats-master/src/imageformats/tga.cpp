@@ -995,9 +995,9 @@ bool TGAHandler::writeRGBA(const QImage &image)
 {
     auto format = image.format();
     const bool hasAlpha = image.hasAlphaChannel();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
     auto cs = image.colorSpace();
     auto tcs = QColorSpace();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
     if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && image.format() == QImage::Format_CMYK8888) {
         format = QImage::Format_RGB32;
         tcs = QColorSpace(QColorSpace::SRgb);
@@ -1036,11 +1036,9 @@ bool TGAHandler::writeRGBA(const QImage &image)
     }
 
     ScanLineConverter scl(format);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
     if (tcs.isValid()) {
         scl.setTargetColorSpace(tcs);
     }
-#endif
     auto mul = hasAlpha ? 4 : 3;
     QByteArray ba(image.width() * mul, char());
     for (int y = 0, h = image.height(); y < h; y++) {

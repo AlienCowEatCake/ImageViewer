@@ -19,6 +19,16 @@
 
 Q_LOGGING_CATEGORY(LOG_SCTPLUGIN, "kf.imageformats.plugins.scitex", QtWarningMsg)
 
+/* *** SCT_MAX_IMAGE_WIDTH and SCT_MAX_IMAGE_HEIGHT ***
+ * The maximum size in pixel allowed by the plugin.
+ */
+#ifndef SCT_MAX_IMAGE_WIDTH
+#define SCT_MAX_IMAGE_WIDTH KIF_LARGE_IMAGE_PIXEL_LIMIT
+#endif
+#ifndef SCT_MAX_IMAGE_HEIGHT
+#define SCT_MAX_IMAGE_HEIGHT SCT_MAX_IMAGE_WIDTH
+#endif
+
 #define CTRLBLOCK_SIZE 256
 #define PRMSBLOCK_SIZE_CT 256
 
@@ -139,7 +149,7 @@ public:
             return false;
         }
         // Set a reasonable upper limit
-        if (width() > 300000 || height() > 300000) {
+        if (width() > SCT_MAX_IMAGE_WIDTH || height() > SCT_MAX_IMAGE_HEIGHT) {
             return false;
         }
         return m_cb.fileType() == QStringLiteral(FILETYPE_CT) && format() != QImage::Format_Invalid;

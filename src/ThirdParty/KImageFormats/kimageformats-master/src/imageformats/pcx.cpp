@@ -6,6 +6,7 @@
 */
 
 #include "pcx_p.h"
+#include "scanlineconverter_p.h"
 #include "util_p.h"
 
 #include <QColor>
@@ -621,30 +622,38 @@ static bool writeLine(QDataStream &s, QByteArray &buf)
     return (s.status() == QDataStream::Ok);
 }
 
-static bool writeImage1(QImage &img, QDataStream &s, PCXHEADER &header)
+static bool writeImage1(const QImage &image, QDataStream &s, PCXHEADER &header)
 {
-    if (img.format() != QImage::Format_Mono) {
-        img.convertTo(QImage::Format_Mono);
-    }
-    if (img.isNull() || img.colorCount() < 1) {
+    auto tfmt = image.format();
+    if (tfmt != QImage::Format_Mono)
+        tfmt = QImage::Format_Mono;
+
+    if (image.isNull() || image.colorCount() < 1) {
         return false;
     }
-    auto rgb = img.color(0);
-    auto minIsBlack = (qRed(rgb) + qGreen(rgb) + qBlue(rgb)) / 3 < 127;
+
+    ScanLineConverter scl(tfmt);
+    if (image.height() > 0) {
+        scl.convertedScanLine(image, 0); // required to calculate bytesPerLine
+    }
 
     header.Bpp = 1;
     header.NPlanes = 1;
-    header.BytesPerLine = img.bytesPerLine();
+    header.BytesPerLine = scl.bytesPerLine();
+    if (header.BytesPerLine == 0) {
+        header.BytesPerLine = image.bytesPerLine();
+    }
     if (header.BytesPerLine == 0) {
         return false;
     }
 
     s << header;
 
+    auto rgb = image.color(0);
+    auto minIsBlack = (qRed(rgb) + qGreen(rgb) + qBlue(rgb)) / 3 < 127;
     QByteArray buf(header.BytesPerLine, 0);
-
     for (int y = 0; y < header.height(); ++y) {
-        auto p = img.constScanLine(y);
+        auto p = scl.convertedScanLine(image, y);
 
         // Invert as QImage uses reverse palette for monochrome images?
         for (int i = 0; i < header.BytesPerLine; ++i) {
@@ -658,7 +667,7 @@ static bool writeImage1(QImage &img, QDataStream &s, PCXHEADER &header)
     return true;
 }
 
-static bool writeImage4(QImage &img, QDataStream &s, PCXHEADER &header)
+static bool writeImage4(const QImage &image, QDataStream &s, PCXHEADER &header)
 {
     header.Bpp = 1;
     header.NPlanes = 4;
@@ -668,7 +677,7 @@ static bool writeImage4(QImage &img, QDataStream &s, PCXHEADER &header)
     }
 
     for (int i = 0; i < 16; ++i) {
-        header.ColorMap.setColor(i, img.color(i));
+        header.ColorMap.setColor(i, image.color(i));
     }
 
     s << header;
@@ -680,7 +689,7 @@ static bool writeImage4(QImage &img, QDataStream &s, PCXHEADER &header)
     }
 
     for (int y = 0; y < header.height(); ++y) {
-        auto p = img.constScanLine(y);
+        auto p = image.constScanLine(y);
 
         for (int i = 0; i < 4; ++i) {
             buf[i].fill(0);
@@ -703,18 +712,23 @@ static bool writeImage4(QImage &img, QDataStream &s, PCXHEADER &header)
     return true;
 }
 
-static bool writeImage8(QImage &img, QDataStream &s, PCXHEADER &header)
+static bool writeImage8(const QImage &image, QDataStream &s, PCXHEADER &header)
 {
-    if (img.format() == QImage::Format_Grayscale16) {
-        img.convertTo(QImage::Format_Grayscale8);
-    }
-    if (img.isNull()) {
-        return false;
+    auto tfmt = image.format();
+    if (tfmt == QImage::Format_Grayscale16)
+        tfmt = QImage::Format_Grayscale8;
+
+    ScanLineConverter scl(tfmt);
+    if (image.height() > 0) {
+        scl.convertedScanLine(image, 0); // required to calculate bytesPerLine
     }
 
     header.Bpp = 8;
     header.NPlanes = 1;
-    header.BytesPerLine = img.bytesPerLine();
+    header.BytesPerLine = scl.bytesPerLine();
+    if (header.BytesPerLine == 0) {
+        header.BytesPerLine = image.bytesPerLine();
+    }
     if (header.BytesPerLine == 0) {
         return false;
     }
@@ -724,7 +738,7 @@ static bool writeImage8(QImage &img, QDataStream &s, PCXHEADER &header)
     QByteArray buf(header.BytesPerLine, 0);
 
     for (int y = 0; y < header.height(); ++y) {
-        auto p = img.constScanLine(y);
+        auto p = scl.convertedScanLine(image, y);
 
         for (int i = 0; i < header.BytesPerLine; ++i) {
             buf[i] = p[i];
@@ -741,18 +755,18 @@ static bool writeImage8(QImage &img, QDataStream &s, PCXHEADER &header)
 
     // Write palette
     for (int i = 0; i < 256; ++i) {
-        if (img.format() != QImage::Format_Indexed8)
+        if (tfmt != QImage::Format_Indexed8)
             s << RGB::from(qRgb(i, i, i));
         else
-            s << RGB::from(img.color(i));
+            s << RGB::from(image.color(i));
     }
 
     return (s.status() == QDataStream::Ok);
 }
 
-static bool writeImage24(QImage &img, QDataStream &s, PCXHEADER &header)
+static bool writeImage24(const QImage &image, QDataStream &s, PCXHEADER &header)
 {
-    auto hasAlpha = img.hasAlphaChannel();
+    auto hasAlpha = image.hasAlphaChannel();
     header.Bpp = 8;
     header.NPlanes = hasAlpha ? 4 : 3;
     header.BytesPerLine = header.width();
@@ -760,11 +774,17 @@ static bool writeImage24(QImage &img, QDataStream &s, PCXHEADER &header)
         return false;
     }
 
-    if (img.format() != QImage::Format_ARGB32 && img.format() != QImage::Format_RGB32) {
-        img.convertTo(hasAlpha ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+    auto cs = image.colorSpace();
+    auto tcs = QColorSpace();
+    auto tfmt = image.format();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && tfmt == QImage::Format_CMYK8888) {
+        tcs = QColorSpace(QColorSpace::SRgb);
+        tfmt = QImage::Format_RGB32;
     }
-    if (img.isNull()) {
-        return false;
+#endif
+    if (tfmt != QImage::Format_ARGB32 && tfmt != QImage::Format_RGB32) {
+        tfmt = hasAlpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
     }
 
     s << header;
@@ -774,8 +794,10 @@ static bool writeImage24(QImage &img, QDataStream &s, PCXHEADER &header)
     QByteArray b_buf(header.width(), 0);
     QByteArray a_buf(header.width(), char(0xFF));
 
+    ScanLineConverter scl(tfmt);
+    scl.setTargetColorSpace(tcs);
     for (int y = 0; y < header.height(); ++y) {
-        auto p = reinterpret_cast<const QRgb *>(img.constScanLine(y));
+        auto p = reinterpret_cast<const QRgb *>(scl.convertedScanLine(image, y));
 
         for (int x = 0; x < header.width(); ++x) {
             auto &&rgb = p[x];
@@ -877,16 +899,8 @@ bool PCXHandler::write(const QImage &image)
     QDataStream s(device());
     s.setByteOrder(QDataStream::LittleEndian);
 
-    QImage img = image;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
-    auto cs = image.colorSpace();
-    if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && image.format() == QImage::Format_CMYK8888) {
-        img = image.convertedToColorSpace(QColorSpace(QColorSpace::SRgb));
-    }
-#endif
-
-    const int w = img.width();
-    const int h = img.height();
+    const int w = image.width();
+    const int h = image.height();
 
     if (w > 65536 || h > 65536) {
         return false;
@@ -907,14 +921,14 @@ bool PCXHandler::write(const QImage &image)
     header.PaletteInfo = 1;
 
     auto ok = false;
-    if (img.depth() == 1) {
-        ok = writeImage1(img, s, header);
-    } else if (img.format() == QImage::Format_Indexed8 && img.colorCount() <= 16) {
-        ok = writeImage4(img, s, header);
-    } else if (img.depth() == 8 || img.format() == QImage::Format_Grayscale16) {
-        ok = writeImage8(img, s, header);
-    } else if (img.depth() >= 16) {
-        ok = writeImage24(img, s, header);
+    if (image.depth() == 1) {
+        ok = writeImage1(image, s, header);
+    } else if (image.format() == QImage::Format_Indexed8 && image.colorCount() <= 16) {
+        ok = writeImage4(image, s, header);
+    } else if (image.depth() == 8 || image.format() == QImage::Format_Grayscale16) {
+        ok = writeImage8(image, s, header);
+    } else if (image.depth() >= 16) {
+        ok = writeImage24(image, s, header);
     }
 
     return ok;

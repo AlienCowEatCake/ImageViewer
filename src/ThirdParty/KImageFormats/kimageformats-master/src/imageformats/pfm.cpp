@@ -22,6 +22,16 @@
 Q_DECLARE_LOGGING_CATEGORY(LOG_PFMPLUGIN)
 Q_LOGGING_CATEGORY(LOG_PFMPLUGIN, "kf.imageformats.plugins.pfm", QtWarningMsg)
 
+/* *** PFM_MAX_IMAGE_WIDTH and PFM_MAX_IMAGE_HEIGHT ***
+ * The maximum size in pixel allowed by the plugin.
+ */
+#ifndef PFM_MAX_IMAGE_WIDTH
+#define PFM_MAX_IMAGE_WIDTH KIF_LARGE_IMAGE_PIXEL_LIMIT
+#endif
+#ifndef PFM_MAX_IMAGE_HEIGHT
+#define PFM_MAX_IMAGE_HEIGHT PFM_MAX_IMAGE_WIDTH
+#endif
+
 class PFMHeader
 {
 private:
@@ -80,7 +90,7 @@ public:
 
     bool isValid() const
     {
-        return (m_width > 0 && m_height > 0);
+        return (m_width > 0 && m_height > 0 && m_width <= PFM_MAX_IMAGE_WIDTH && m_height <= PFM_MAX_IMAGE_HEIGHT);
     }
 
     bool isBlackAndWhite() const

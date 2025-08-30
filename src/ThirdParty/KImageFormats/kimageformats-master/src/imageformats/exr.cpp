@@ -7,6 +7,10 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
+#include "exr_p.h"
+#include "scanlineconverter_p.h"
+#include "util_p.h"
+
 /* *** EXR_CONVERT_TO_SRGB ***
  * If defined, the linear data is converted to sRGB on read to accommodate
  * programs that do not support color profiles.
@@ -28,7 +32,7 @@
  * The maximum size in pixel allowed by the plugin.
  */
 #ifndef EXR_MAX_IMAGE_WIDTH
-#define EXR_MAX_IMAGE_WIDTH 300000
+#define EXR_MAX_IMAGE_WIDTH KIF_LARGE_IMAGE_PIXEL_LIMIT
 #endif
 #ifndef EXR_MAX_IMAGE_HEIGHT
 #define EXR_MAX_IMAGE_HEIGHT EXR_MAX_IMAGE_WIDTH
@@ -49,10 +53,6 @@
 #ifndef EXR_LINES_PER_BLOCK
 #define EXR_LINES_PER_BLOCK 128
 #endif
-
-#include "exr_p.h"
-#include "scanlineconverter_p.h"
-#include "util_p.h"
 
 #include <IexThrowErrnoExc.h>
 #include <ImathBox.h>

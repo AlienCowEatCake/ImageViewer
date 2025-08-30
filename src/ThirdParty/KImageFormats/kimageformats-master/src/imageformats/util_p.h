@@ -10,12 +10,18 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <limits>
 
 #include <QImage>
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QImageIOHandler>
+#endif
+
+// Default maximum width and height for the large image plugins.
+#ifndef KIF_LARGE_IMAGE_PIXEL_LIMIT
+#define KIF_LARGE_IMAGE_PIXEL_LIMIT 300000
 #endif
 
 // Image metadata keys to use in plugins (so they are consistent)
