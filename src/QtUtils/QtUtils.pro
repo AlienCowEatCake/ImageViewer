@@ -103,6 +103,12 @@ lupdate_only {
 RESOURCES += \
     resources/style/qtutils_style.qrc
 
+!greaterThan(QT_MAJOR_VERSION, 4) {
+    CONFIG += disable_svg_icons
+}
+equals(QT_MAJOR_VERSION, 5) : lessThan(QT_MINOR_VERSION, 4) {
+    CONFIG += disable_svg_icons
+}
 disable_svg_icons {
     DEFINES += \
         QTUTILS_DISABLE_SVG_ICONS

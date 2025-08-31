@@ -196,6 +196,6 @@ See the [buildscripts/](buildscripts/) directory.
   Enable it if you want to use built-in update checker.
 * SVG icons options: `disable_svg_icons` *(enabled by default)*  
   Disable it if you want to use pre-rendered PNG icons instead of SVG icons.
-* Translations embedding options: `disable_embed_translations` *(enabled by default)*  
+* Translations embedding options: `disable_embed_translations` *(enabled by default for Qt 5.4.x or later)*  
   Disable it if you want to use separate translation files instead of embedding them into application executable.
 
