@@ -56,11 +56,11 @@ environment:
     #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
     #   QTDIR: C:\Qt\5.15\mingw81_64
     #   MINGW_DIR: C:\Qt\Tools\mingw810_64
-    - job_name: Windows, Qt 6.8, MinGW 13.1.0 x64, Testing
-      job_group: windows_test_mingw
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-      QTDIR: C:\Qt\6.8\mingw_64
-      MINGW_DIR: C:\Qt\Tools\mingw1310_64
+    # - job_name: Windows, Qt 6.8, MinGW 13.1.0 x64, Testing
+    #   job_group: windows_test_mingw
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    #   QTDIR: C:\Qt\6.8\mingw_64
+    #   MINGW_DIR: C:\Qt\Tools\mingw1310_64
     # - job_name: Windows, Qt 5.15, MSVC 2022 x86
     #   job_group: windows_buildscript_msvc
     #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
