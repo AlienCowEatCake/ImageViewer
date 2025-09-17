@@ -92,6 +92,14 @@ find "${APPNAME}.app/Contents/PlugIns" -name "*_debug.dylib" -delete
 find "${APPNAME}.app/Contents" -type f -name '*.prl' -delete
 cd "${BUILD_PATH}"
 
+function fix_sdk() {
+    if [ $(echo ${MAC_SDK} | sed 's|^[^0-9]*\([0-9]*\)\.*.*$|\1|') -gt 15 ] ; then
+        local binary="${1}"
+        local sdk="15.5"
+        echo "Override LC_VERSION_MIN_MACOSX sdk to ${sdk} in ${binary}"
+        vtool -set-version-min "macos" "${MAC_TARGET}" "${sdk}" -replace -output "${binary}" "${binary}"
+    fi
+}
 function sign() {
     if [ -z "${NO_SIGN+x}" ] ; then
         local APP_CERT="${APP_CERT}"
@@ -136,6 +144,7 @@ function notarize() {
             --asc-provider "${NOTARIZE_ASC_PROVIDER}"
     fi
 }
+find "${INSTALL_PATH}/${APPNAME}.app/Contents/MacOS" -type f -print0 | while IFS= read -r -d '' item ; do fix_sdk "${item}" ; done
 find "${INSTALL_PATH}/${APPNAME}.app/Contents/Frameworks" \( -name '*.framework' -or -name '*.dylib' \) -print0 | while IFS= read -r -d '' item ; do sign "${item}" ; done
 find "${INSTALL_PATH}/${APPNAME}.app/Contents/PlugIns"       -name '*.dylib'                            -print0 | while IFS= read -r -d '' item ; do sign "${item}" ; done
 sign "${INSTALL_PATH}/${APPNAME}.app"
