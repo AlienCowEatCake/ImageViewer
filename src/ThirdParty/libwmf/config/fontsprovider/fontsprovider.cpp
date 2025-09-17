@@ -133,7 +133,7 @@ public:
             {
                 for(QStringList::ConstIterator file = knownShareFileTemplates.constBegin(); file != knownShareFileTemplates.constEnd(); ++file)
                 {
-                    const QString path = (*file).arg(ghostscriptShare.absolutePath()).arg(*dir);
+                    const QString path = (*file).arg(ghostscriptShare.absolutePath(), *dir);
                     if(QFile(path).exists())
                         return (m_wmfGsFontmap = path.toLocal8Bit()).constData();
                 }
