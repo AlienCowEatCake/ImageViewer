@@ -17,10 +17,6 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if !defined (_GNU_SOURCE)
-#define _GNU_SOURCE
-#endif
-
 #include "Workarounds.h"
 
 #include <cstdlib>
@@ -38,9 +34,11 @@
 
 #if defined (Q_OS_WIN)
 #include <windows.h>
+#elif defined (Q_OS_MAC)
+#include <crt_externs.h>
+#define environ (*_NSGetEnviron())
 #else
-#include <unistd.h>
-//extern "C" char **environ;
+extern "C" char **environ;
 #endif
 
 #include "ThemeUtils.h"
