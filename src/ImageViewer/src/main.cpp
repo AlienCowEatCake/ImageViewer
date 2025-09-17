@@ -57,6 +57,7 @@ Q_IMPORT_PLUGIN(qsvg)
 
 int main(int argc, char *argv[])
 {
+    Workarounds::ApplyEnvVarOverrides("ACECIV_");
     Workarounds::HighDPIFix();
     Workarounds::StyleFix();
     Application app(argc, argv);

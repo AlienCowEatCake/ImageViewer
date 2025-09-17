@@ -45,6 +45,18 @@ bool IsRemoteSession();
 /// @brief Override unsupported QT_QPA_PLATFORMTHEME and QT_STYLE_OVERRIDE
 void StyleFix();
 
+/// @brief Override all environment variables by applying values from their
+/// prefixed versions
+/// @param[in] prefix - app specific prefix
+/// @details Some users systems may have some global environment variables like
+/// QT_SCALE_FACTOR_ROUNDING_POLICY=Floor for another buggy apps. Thus, launch
+/// of application with scalable interface will become impossible without local
+/// environment variables, what can cause difficulties on some systems like
+/// Windows. With this function, such users can set another app specific global
+/// environment variable APPPREFIX_QT_SCALE_FACTOR_ROUNDING_POLICY=PassThrough
+/// and get scalable interface or achieve another necessary results
+void ApplyEnvVarOverrides(const char *prefix);
+
 } // Workarounds
 
 #endif // QTUTILS_WORKAROUNDS_H_INCLUDED

@@ -17,10 +17,15 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#if !defined (_GNU_SOURCE)
+#define _GNU_SOURCE
+#endif
+
 #include "Workarounds.h"
 
 #include <cstdlib>
 #include <cstring>
+#include <string>
 
 #include <QtGlobal>
 #include <QSysInfo>
@@ -33,6 +38,9 @@
 
 #if defined (Q_OS_WIN)
 #include <windows.h>
+#else
+#include <unistd.h>
+//extern "C" char **environ;
 #endif
 
 #include "ThemeUtils.h"
@@ -157,7 +165,8 @@ void HighDPIFix()
             putenv(newEnv);
 #endif
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-        QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+        if(!getenv("QT_SCALE_FACTOR_ROUNDING_POLICY"))
+            QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 #endif
     }
 
@@ -237,6 +246,42 @@ void StyleFix()
 #endif
     }
 #endif
+}
+
+/// @brief Override all environment variables by applying values from their
+/// prefixed versions
+/// @param[in] prefix - app specific prefix
+/// @details Some users systems may have some global environment variables like
+/// QT_SCALE_FACTOR_ROUNDING_POLICY=Floor for another buggy apps. Thus, launch
+/// of application with scalable interface will become impossible without local
+/// environment variables, what can cause difficulties on some systems like
+/// Windows. With this function, such users can set another app specific global
+/// environment variable APPPREFIX_QT_SCALE_FACTOR_ROUNDING_POLICY=PassThrough
+/// and get scalable interface or achieve another necessary results
+void ApplyEnvVarOverrides(const char *prefix)
+{
+    if(!prefix)
+        return;
+
+    const size_t prefixLen = strlen(prefix);
+    if(prefixLen <= 0)
+        return;
+
+    for(size_t i = 0; environ && environ[i]; ++i)
+    {
+        const char * const env = environ[i];
+        if(strncmp(env, prefix, prefixLen) != 0)
+            continue;
+
+        QByteArray envCopy(env + prefixLen);
+        char *envName = envCopy.data();
+        char *envValue = strchr(envName, '=');
+        if(!envValue || envValue == envName)
+            continue;
+
+        *(envValue++) = '\0';
+        qputenv(envName, envValue);
+    }
 }
 
 } // Workarounds
