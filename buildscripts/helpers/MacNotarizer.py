@@ -31,27 +31,63 @@ def main():
         uploadable_app = args.application + '.zip'
         subprocess.call(['/usr/bin/ditto', '-c', '-k', '--keepParent', args.application, uploadable_app])
 
-    notarize_request_output = json.loads(subprocess.check_output([
-        'xcrun', 'notarytool',
-        'submit', uploadable_app,
-        '--output-format', 'json']
-    + (['--apple-id', args.apple_id]                    if args.apple_id            else [])
-    + (['--password', extract_password(args.password)]  if args.password            else [])
-    + (['--team-id', args.team_id]                      if args.team_id             else [])
-    + (['--keychain-profile', args.keychain_profile]    if args.keychain_profile    else [])
-    ))
+    max_retry = 5
+
+    retry = 0
+    notarize_request_output = None
     request_id = None
-    try:
-        request_id = notarize_request_output['id']
-        print("REQUEST_ID = {}".format(request_id))
-    except Exception:
-        print("REQUEST_ID is empty!")
-        print(json.dumps(notarize_request_output, sort_keys=True, indent=4))
-        return 1
+    while True:
+        notarize_request_process = subprocess.run([
+            'xcrun', 'notarytool',
+            'submit', uploadable_app,
+            '--output-format', 'json']
+        + (['--apple-id', args.apple_id]                    if args.apple_id            else [])
+        + (['--password', extract_password(args.password)]  if args.password            else [])
+        + (['--team-id', args.team_id]                      if args.team_id             else [])
+        + (['--keychain-profile', args.keychain_profile]    if args.keychain_profile    else [])
+        , check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        notarize_request_output = None
+        retry_requested = False
+        if notarize_request_process.returncode == 0:
+            try:
+                notarize_request_output = json.loads(notarize_request_process.stdout)
+            except Exception:
+                print("notarytool log output is not JSON!")
+                print(notarize_request_process.stdout)
+                print(notarize_request_process.stderr)
+                if retry >= max_retry:
+                    return 1
+                else:
+                    retry_requested = True
+                notarize_request_output = None
+            if notarize_request_output:
+                try:
+                    request_id = notarize_request_output['id']
+                    print("REQUEST_ID = {}".format(request_id))
+                except Exception:
+                    print("REQUEST_ID is empty!")
+                    print(json.dumps(notarize_request_output, sort_keys=True, indent=4))
+                    if retry >= max_retry:
+                        return 1
+                    else:
+                        retry_requested = True
+        else:
+            print(notarize_request_process.stdout)
+            print(notarize_request_process.stderr)
+            if retry >= max_retry:
+                return 1
+            else:
+                retry_requested = True
+        if retry_requested:
+            retry += 1
+            print("Retry {}".format(retry))
+        else:
+            break
 
     if uploadable_app != args.application:
         os.remove(uploadable_app)
 
+    retry = 0
     notarize_check_output = None
     notarization_status = None
     while True:
@@ -66,23 +102,36 @@ def main():
         + (['--keychain-profile', args.keychain_profile]    if args.keychain_profile    else [])
         , check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         notarize_check_output = None
+        retry_requested = False
         try:
             notarize_check_output = json.loads(notarize_check_process.stdout)
             print(json.dumps(notarize_check_output, sort_keys=True, indent=4))
         except Exception:
             print("notarytool log output is not JSON!")
             print(notarize_check_process.stdout)
-            return 1
-        if notarize_check_process.returncode == 0:
+            if retry >= max_retry:
+                return 1
+            else:
+                retry_requested = True
+            notarize_check_output = None
+        if notarize_check_output and notarize_check_process.returncode == 0:
             try:
                 notarization_status = notarize_check_output['status']
                 print('NOTARIZATION_STATUS = {}'.format(notarization_status))
             except Exception:
                 print("NOTARIZATION_STATUS is empty!")
                 print(json.dumps(notarize_check_output, sort_keys=True, indent=4))
-                return 1
-            break
-        time.sleep(60)
+                if retry >= max_retry:
+                    return 1
+                else:
+                    retry_requested = True
+            if not retry_requested:
+                break
+        if retry_requested:
+            retry += 1
+            print("Retry {}".format(retry))
+        else:
+            time.sleep(30)
 
     if notarization_status != 'Accepted':
         print('NOTARIZATION_STATUS is not success!')
