@@ -46,6 +46,7 @@ make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "${MAC_TARGET}" "${APPNAME}.app/Contents/Info.plist"
 plutil -replace LSArchitecturePriority -json '["arm64","x86_64"]' "${APPNAME}.app/Contents/Info.plist"
+plutil -replace UIDesignRequiresCompatibility -bool 'YES' "${APPNAME}.app/Contents/Info.plist"
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -rf "${RES_PATH}/empty.lproj"
 for locale in $(find "${SOURCE_PATH}/${QM_FILES_PATH}/" -maxdepth 1 -mindepth 1 -type f -name '*.qm' | sed 's|.*/|| ; s|[^_]*_|| ; s|\..*||' | xargs) ; do
@@ -92,14 +93,6 @@ find "${APPNAME}.app/Contents/PlugIns" -name "*_debug.dylib" -delete
 find "${APPNAME}.app/Contents" -type f -name '*.prl' -delete
 cd "${BUILD_PATH}"
 
-function fix_sdk() {
-    if [ $(echo ${MAC_SDK} | sed 's|^[^0-9]*\([0-9]*\)\.*.*$|\1|') -gt 15 ] ; then
-        local binary="${1}"
-        local sdk="15.5"
-        echo "Override LC_VERSION_MIN_MACOSX sdk to ${sdk} in ${binary}"
-        vtool -set-version-min "macos" "${MAC_TARGET}" "${sdk}" -replace -output "${binary}" "${binary}"
-    fi
-}
 function sign() {
     if [ -z "${NO_SIGN+x}" ] ; then
         local APP_CERT="${APP_CERT}"
@@ -144,7 +137,6 @@ function notarize() {
             --asc-provider "${NOTARIZE_ASC_PROVIDER}"
     fi
 }
-find "${INSTALL_PATH}/${APPNAME}.app/Contents/MacOS" -type f -print0 | while IFS= read -r -d '' item ; do fix_sdk "${item}" ; done
 find "${INSTALL_PATH}/${APPNAME}.app/Contents/Frameworks" \( -name '*.framework' -or -name '*.dylib' \) -print0 | while IFS= read -r -d '' item ; do sign "${item}" ; done
 find "${INSTALL_PATH}/${APPNAME}.app/Contents/PlugIns"       -name '*.dylib'                            -print0 | while IFS= read -r -d '' item ; do sign "${item}" ; done
 sign "${INSTALL_PATH}/${APPNAME}.app"
