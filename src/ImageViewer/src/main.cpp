@@ -92,6 +92,10 @@ int main(int argc, char *argv[])
                                               << QString::fromLatin1(":/style/theme-dark.qss"),
                                 QString::fromLatin1("Themes"));
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Fusion")),
+                                QStringList() << QString::fromLatin1(":/style/style.qss")
+                                              << QString::fromLatin1(":/style/theme-fusion.qss"),
+                                QString::fromLatin1("Themes"));
     themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Fusion Light")),
                                 QStringList() << QString::fromLatin1(":/style/style.qss")
                                               << QString::fromLatin1(":/style/theme-fusion-light.qss"),
@@ -101,6 +105,10 @@ int main(int argc, char *argv[])
                                               << QString::fromLatin1(":/style/theme-fusion-dark.qss"),
                                 QString::fromLatin1("Themes"));
 #endif
+    themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Windows")),
+                                QStringList() << QString::fromLatin1(":/style/style.qss")
+                                              << QString::fromLatin1(":/style/theme-windows.qss"),
+                                QString::fromLatin1("Themes"));
     themeManager->registerTheme(QString::fromLatin1(QT_TRANSLATE_NOOP("Themes", "Windows 95")),
                                 QStringList() << QString::fromLatin1(":/style/style.qss")
                                               << QString::fromLatin1(":/style/theme-windows-95.qss"),

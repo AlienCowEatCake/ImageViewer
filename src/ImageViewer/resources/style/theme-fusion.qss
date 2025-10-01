@@ -1,0 +1,8 @@
+/************************
+ * *** Fusion Theme *** *
+ ************************/
+
+StylableTheme
+{
+    qproperty-preferredStyles: "fusion";
+}

@@ -5,8 +5,10 @@
         <file>style.qss</file>
         <file>theme-dark.qss</file>
         <file>theme-light.qss</file>
+        <file>theme-fusion.qss</file>
         <file>theme-fusion-dark.qss</file>
         <file>theme-fusion-light.qss</file>
+        <file>theme-windows.qss</file>
         <file>theme-windows-95.qss</file>
         <file>theme-windows-2000.qss</file>
         <file>dark/arrow_up_5_disabled@2x.png</file>

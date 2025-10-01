@@ -1,0 +1,8 @@
+/*************************
+ * *** Windows Theme *** *
+ *************************/
+
+StylableTheme
+{
+    qproperty-preferredStyles: "windows";
+}

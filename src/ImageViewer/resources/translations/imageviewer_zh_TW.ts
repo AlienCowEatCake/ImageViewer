@@ -1448,37 +1448,47 @@
 <context>
     <name>Themes</name>
     <message>
-        <location filename="../../src/main.cpp" line="82"/>
+        <location filename="../../src/main.cpp" line="83"/>
         <source>System</source>
         <translation>跟隨系統</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="85"/>
+        <location filename="../../src/main.cpp" line="86"/>
         <source>Light</source>
         <translation type="unfinished">淺色</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="94"/>
+        <location filename="../../src/main.cpp" line="95"/>
+        <source>Fusion</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/main.cpp" line="99"/>
         <source>Fusion Light</source>
         <translation>Fusion 淺色</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="98"/>
+        <location filename="../../src/main.cpp" line="103"/>
         <source>Fusion Dark</source>
         <translation>Fusion 深色</translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="103"/>
+        <location filename="../../src/main.cpp" line="108"/>
+        <source>Windows</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/main.cpp" line="112"/>
         <source>Windows 95</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="107"/>
+        <location filename="../../src/main.cpp" line="116"/>
         <source>Windows 2000</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="89"/>
+        <location filename="../../src/main.cpp" line="90"/>
         <source>Dark</source>
         <translation>深色</translation>
     </message>
