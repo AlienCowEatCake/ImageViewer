@@ -16,7 +16,7 @@ NOTARIZE_ASC_PROVIDER="${APP_CERT: -11:10}"
 MAC_TARGET="12.0"
 MAC_SDK="$(xcodebuild -showsdks | grep '\-sdk macosx' | tail -1 | sed 's|.*-sdk ||')"
 
-QT_PATH="${QT_PATH:=/opt/Qt/6.9.2/macos_target12.0}"
+QT_PATH="${QT_PATH:=/opt/Qt/6.9.3/macos_target12.0}"
 QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
@@ -46,7 +46,6 @@ make -j$(getconf _NPROCESSORS_ONLN)
 cd "${OUT_PATH}"
 plutil -replace LSMinimumSystemVersion -string "${MAC_TARGET}" "${APPNAME}.app/Contents/Info.plist"
 plutil -replace LSArchitecturePriority -json '["arm64","x86_64"]' "${APPNAME}.app/Contents/Info.plist"
-plutil -replace UIDesignRequiresCompatibility -bool 'YES' "${APPNAME}.app/Contents/Info.plist"
 RES_PATH="${APPNAME}.app/Contents/Resources"
 rm -rf "${RES_PATH}/empty.lproj"
 for locale in $(find "${SOURCE_PATH}/${QM_FILES_PATH}/" -maxdepth 1 -mindepth 1 -type f -name '*.qm' | sed 's|.*/|| ; s|[^_]*_|| ; s|\..*||' | xargs) ; do
