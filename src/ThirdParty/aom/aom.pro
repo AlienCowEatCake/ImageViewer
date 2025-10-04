@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.12.1
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.13.1
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -283,6 +283,9 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/pyramid.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/quantize.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/recenter.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/reduce_sum_hwy.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/riscv/mem_rvv.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/sad_hwy.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics_c.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/simd/v128_intrinsics_x86.h \
@@ -393,9 +396,11 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/common/reconintra.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/resize.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/restoration.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/riscv/convolve_rvv.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/scale.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/scan.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/seg_common.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/selfguided_hwy.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/thread_common.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/tile_common.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/timing.h \
@@ -428,6 +433,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/txfm_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d_cfg.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm2d_hwy.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_ml_partition_models.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_noise_estimate.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_quantize.h \
@@ -590,6 +596,71 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/internal/gtest-string.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/internal/gtest-type-util.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/src/gtest-internal-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/abort.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/aligned_allocator.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/auto_tune.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/base.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/bit_set.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/cache_control.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/algo/copy-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/algo/find-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/algo/transform-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/bit_pack/bit_pack-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/dot/dot-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/image/image.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/math/math-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/matvec/matvec-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/random/random-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/sort/algo-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/sort/order.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/sort/result-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/sort/shared-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/sort/sorting_networks-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/sort/traits-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/sort/traits128-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/sort/vqsort-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/sort/vqsort.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/thread_pool/futex.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/thread_pool/spin.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/thread_pool/thread_pool.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/thread_pool/topology.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/unroller/unroller-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/detect_compiler_arch.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/detect_targets.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/examples/skeleton-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/examples/skeleton.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/foreach_target.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/highway.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/highway_export.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/nanobenchmark.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/arm_neon-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/arm_sve-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/emu128-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/generic_ops-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/inside-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/loongarch_lsx-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/ppc_vsx-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/rvv-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/scalar-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/set_macros-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/shared-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/wasm_128-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/wasm_256-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/x86_128-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/x86_256-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/x86_512-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/x86_avx3-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/per_target.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/perf_counters.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/print-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/print.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/profiler.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/robust_statistics.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/stats.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/targets.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/timer-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/timer.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/x86_cpuid.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libwebm/common/file_util.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libwebm/common/hdr_util.h \
     $${THIRDPARTY_AOM_PATH}/third_party/libwebm/common/webmids.h \

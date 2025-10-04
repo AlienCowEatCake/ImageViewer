@@ -1,4 +1,4 @@
-From 18122569eb7005605641e92629f9b7fe5b8e5dda Mon Sep 17 00:00:00 2001
+From 98c2b1763aad4cff2f0deda203435751301836e5 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 Nov 2021 17:11:43 +0700
 Subject: [PATCH] Fix build with MinGW 3.4.2
@@ -23,7 +23,7 @@ index 84454a281b..9b69a674d9 100644
  #elif defined(_MSC_VER)
  #define ATTRIBUTE_PACKED
 diff --git a/aom_ports/bitops.h b/aom_ports/bitops.h
-index cac529eb27..7f65bea788 100644
+index cbcfe5f3dc..55c51f9073 100644
 --- a/aom_ports/bitops.h
 +++ b/aom_ports/bitops.h
 @@ -38,7 +38,7 @@ extern "C" {
@@ -36,10 +36,10 @@ index cac529eb27..7f65bea788 100644
    assert(n != 0);
    return 31 ^ __builtin_clz(n);
 diff --git a/av1/encoder/ratectrl.h b/av1/encoder/ratectrl.h
-index 0e7ede9b84..8492634c87 100644
+index 88c048fb7e..1fdf4b9ae5 100644
 --- a/av1/encoder/ratectrl.h
 +++ b/av1/encoder/ratectrl.h
-@@ -362,7 +362,7 @@ typedef struct {
+@@ -364,7 +364,7 @@ typedef struct {
    int arf_q;
  
    /*!\cond */
