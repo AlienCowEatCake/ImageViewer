@@ -1,4 +1,4 @@
-From 6511f02b222241b4c4b099837651b6178010614f Mon Sep 17 00:00:00 2001
+From f231ef12f23568272bfb120b7ecd920eb86ba047 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Tue, 29 Dec 2020 17:43:53 +0700
 Subject: [PATCH 1/2] Fix build with MinGW 3.4.2
@@ -9,10 +9,10 @@ Subject: [PATCH 1/2] Fix build with MinGW 3.4.2
  2 files changed, 24 insertions(+), 7 deletions(-)
 
 diff --git a/libtiff/tif_lzw.c b/libtiff/tif_lzw.c
-index 4baf78e5..e212e83d 100644
+index 4bf845b..688eb89 100644
 --- a/libtiff/tif_lzw.c
 +++ b/libtiff/tif_lzw.c
-@@ -329,9 +329,9 @@ static int LZWPreDecode(TIFF *tif, uint16_t s)
+@@ -328,9 +328,9 @@ static int LZWPreDecode(TIFF *tif, uint16_t s)
  #ifdef WORDS_BIGENDIAN
  #define GetNextData(nextdata, bp) memcpy(&nextdata, bp, sizeof(nextdata))
  #elif SIZEOF_WORDTYPE == 8
@@ -24,7 +24,7 @@ index 4baf78e5..e212e83d 100644
  #define GetNextData(nextdata, bp)                                              \
      memcpy(&nextdata, bp, sizeof(nextdata));                                   \
      nextdata = __builtin_bswap64(nextdata)
-@@ -343,10 +343,10 @@ static int LZWPreDecode(TIFF *tif, uint16_t s)
+@@ -342,10 +342,10 @@ static int LZWPreDecode(TIFF *tif, uint16_t s)
                 (((uint64_t)bp[6]) << 8) | (((uint64_t)bp[7]))
  #endif
  #elif SIZEOF_WORDTYPE == 4
@@ -38,7 +38,7 @@ index 4baf78e5..e212e83d 100644
      memcpy(&nextdata, bp, sizeof(nextdata));                                   \
      nextdata = __builtin_bswap32(nextdata)
 diff --git a/libtiff/tif_win32.c b/libtiff/tif_win32.c
-index d64ba49f..9b2fe612 100644
+index 525cebe..95baebd 100644
 --- a/libtiff/tif_win32.c
 +++ b/libtiff/tif_win32.c
 @@ -152,10 +152,27 @@ static int _tiffCloseProc(thandle_t fd) { return (CloseHandle(fd) ? 0 : -1); }
@@ -71,7 +71,7 @@ index d64ba49f..9b2fe612 100644
 +    return (result);
  }
  
- static int _tiffDummyMapProc(thandle_t fd, void **pbase, toff_t *psize)
+ /*
 -- 
-2.46.1
+2.47.3
 

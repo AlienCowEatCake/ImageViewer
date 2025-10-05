@@ -109,7 +109,7 @@
 /* Support NeXT 2-bit RLE algorithm */
 #define NEXT_SUPPORT 1
 
-/* Support Old JPEG compresson (read contrib/ojpeg/README first! Compilation
+/* Support Old JPEG compression (read contrib/ojpeg/README first! Compilation
    fails with unpatched IJG JPEG library) */
 #if defined(HAS_LIBJPEG)
 #define OJPEG_SUPPORT 1
