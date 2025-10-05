@@ -10,7 +10,7 @@ TARGET = tp_openjp2
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_OPENJPEG_PATH = $${PWD}/openjpeg-2.5.3
+THIRDPARTY_OPENJPEG_PATH = $${PWD}/openjpeg-2.5.4
 THIRDPARTY_OPENJPEG_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -33,11 +33,9 @@ DEFINES += OPJ_STATIC
     DEFINES += _SCL_SECURE_NO_DEPRECATE
 }
 
-# find ./src/lib/openjp2 -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_OPENJPEG_PATH}| ; s|$| \\|'
+# find ./src/lib/openjp2 -name '*.c' | egrep -v '(_manager|_generate_|/bench_|/test_)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_OPENJPEG_PATH}| ; s|$| \\|'
 SOURCES += \
-\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/bench_dwt.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/bio.c \
-\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/cidx_manager.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/cio.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/dwt.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/event.c \
@@ -52,31 +50,22 @@ SOURCES += \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/openjpeg.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/opj_clock.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/opj_malloc.c \
-\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/phix_manager.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/pi.c \
-\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/ppix_manager.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/sparse_array.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1.c \
-\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1_generate_luts.c \
-\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t1_ht_generate_luts.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/t2.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/tcd.c \
-\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/test_sparse_array.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/tgt.c \
-\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/thix_manager.c \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/thread.c \
-\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/tpix_manager.c \
 
-# find ./src/lib/openjp2 -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_OPENJPEG_PATH}| ; s|$| \\|'
+# find ./src/lib/openjp2 -name '*.h' | egrep -v '(_manager)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_OPENJPEG_PATH}| ; s|$| \\|'
 HEADERS += \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/bio.h \
-\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/cidx_manager.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/cio.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/dwt.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/event.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/function_list.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/image.h \
-\#    $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/indexbox_manager.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/invert.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/j2k.h \
     $${THIRDPARTY_OPENJPEG_PATH}/src/lib/openjp2/jp2.h \

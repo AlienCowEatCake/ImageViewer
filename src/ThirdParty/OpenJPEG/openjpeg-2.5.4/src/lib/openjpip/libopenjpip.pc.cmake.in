@@ -5,11 +5,12 @@ docdir=@docdir@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: openjp2
-Description: JPEG2000 library (Part 1 and 2)
+Name: openjpip
+Description: JPEG2000 Interactivity tools, APIs and protocols (Part 9)
 URL: http://www.openjpeg.org/
 Version: @OPENJPEG_VERSION@
-Libs: -L${libdir} -lopenjp2
-Libs.private: -lm
+Requires: libopenjp2
+Libs: -L${libdir} -lopenjpip
+Libs.private: @deps@
 Cflags: -I${includedir}
 Cflags.private: -DOPJ_STATIC
