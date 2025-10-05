@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -454,7 +454,7 @@ OPJ_SIZE_T streamReadCallback(void *buffer, OPJ_SIZE_T nbBytes, void *userData)
 OPJ_OFF_T streamSkipCallback(OPJ_OFF_T nbBytes, void *userData)
 {
     QFile * const file = reinterpret_cast<QFile*>(userData);
-    if(!file->seek(static_cast<qint64>(nbBytes)))
+    if(!file->seek(file->pos() + static_cast<qint64>(nbBytes)))
         return -1;
     return nbBytes;
 }
