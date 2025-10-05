@@ -1,4 +1,4 @@
-From 67b4d10de09b9189fdfb388bf26738ed0789303f Mon Sep 17 00:00:00 2001
+From ad5e82d989f3e43c181d02a1c9326d49c054151e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 24 Aug 2024 05:38:07 +0700
 Subject: [PATCH] Add FT_PREFIX configuration
@@ -10,10 +10,10 @@ Subject: [PATCH] Add FT_PREFIX configuration
  3 files changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/include/freetype/internal/ftcalc.h b/include/freetype/internal/ftcalc.h
-index 71128a2df..53a2ff6ae 100644
+index 16a7322..7a71f08 100644
 --- a/include/freetype/internal/ftcalc.h
 +++ b/include/freetype/internal/ftcalc.h
-@@ -478,7 +478,7 @@ FT_BEGIN_HEADER
+@@ -419,7 +419,7 @@ FT_BEGIN_HEADER
  #endif /* !FT_CONFIG_OPTION_NO_ASSEMBLER */
  
  
@@ -23,7 +23,7 @@ index 71128a2df..53a2ff6ae 100644
    FT_BASE( FT_Int )
    FT_MSB( FT_UInt32  z );
 diff --git a/include/ft2build.h b/include/ft2build.h
-index d3d768503..fdd59ec60 100644
+index 3008aea..75b8da0 100644
 --- a/include/ft2build.h
 +++ b/include/ft2build.h
 @@ -34,6 +34,10 @@
@@ -38,10 +38,10 @@ index d3d768503..fdd59ec60 100644
  
  #endif /* FT2BUILD_H_ */
 diff --git a/src/base/ftcalc.c b/src/base/ftcalc.c
-index 92de09ed8..760974f78 100644
+index 7d6e12e..0c61e6d 100644
 --- a/src/base/ftcalc.c
 +++ b/src/base/ftcalc.c
-@@ -109,7 +109,7 @@
+@@ -96,7 +96,7 @@
      return a & ~0xFFFFL;
    }
  
@@ -51,5 +51,5 @@ index 92de09ed8..760974f78 100644
    FT_BASE_DEF( FT_Int )
    FT_MSB( FT_UInt32 z )
 -- 
-2.39.2
+2.47.3
 

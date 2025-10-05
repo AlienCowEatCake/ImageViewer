@@ -582,6 +582,7 @@ nm -C libtp_freetype.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#
 #define cff_cmap_unicode_class_rec tp_cff_cmap_unicode_class_rec
 #define cff_decoder_funcs tp_cff_decoder_funcs
 #define cff_driver_class tp_cff_driver_class
+#define find_unicode_charmap tp_find_unicode_charmap
 #define ft_adobe_glyph_list tp_ft_adobe_glyph_list
 #define ft_bitmap_glyph_class tp_ft_bitmap_glyph_class
 #define ft_bitmap_sdf_raster tp_ft_bitmap_sdf_raster
@@ -596,10 +597,14 @@ nm -C libtp_freetype.a | grep -E '^[a-z0-9]{16} [TDBR]' | sed 's|^.* . \(.*\)$|#
 #define ft_grays_raster tp_ft_grays_raster
 #define ft_hash_num_init tp_ft_hash_num_init
 #define ft_hash_num_insert tp_ft_hash_num_insert
+#define ft_hash_num_insert_no_overwrite tp_ft_hash_num_insert_no_overwrite
+#define ft_hash_num_iterator tp_ft_hash_num_iterator
 #define ft_hash_num_lookup tp_ft_hash_num_lookup
 #define ft_hash_str_free tp_ft_hash_str_free
 #define ft_hash_str_init tp_ft_hash_str_init
 #define ft_hash_str_insert tp_ft_hash_str_insert
+#define ft_hash_str_insert_no_overwrite tp_ft_hash_str_insert_no_overwrite
+#define ft_hash_str_iterator tp_ft_hash_str_iterator
 #define ft_hash_str_lookup tp_ft_hash_str_lookup
 #define ft_lcd_padding tp_ft_lcd_padding
 #define ft_lzwstate_done tp_ft_lzwstate_done

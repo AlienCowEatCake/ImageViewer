@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_FREETYPE_PATH = $${PWD}/freetype-2.13.3
+THIRDPARTY_FREETYPE_PATH = $${PWD}/freetype-2.14.1
 THIRDPARTY_FREETYPE_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -28,8 +28,10 @@ DEFINES += FT_CONFIG_OPTION_USE_PNG
 DEFINES += TT_CONFIG_OPTION_SUBPIXEL_HINTING
 DEFINES += FT_CONFIG_OPTION_NO_ASSEMBLER
 
-# https://github.com/qt/qtbase/blob/v6.8.0-beta3/src/3rdparty/freetype/CMakeLists.txt
+# https://github.com/qt/qtbase/blob/v6.10.0-rc1/src/3rdparty/freetype/CMakeLists.txt
 SOURCES += \
+    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afadjust.c \
+    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afgsub.c \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/autofit.c \
     $${THIRDPARTY_FREETYPE_PATH}/src/base/ftbase.c \
     $${THIRDPARTY_FREETYPE_PATH}/src/base/ftbbox.c \
@@ -185,12 +187,14 @@ HEADERS += \
     $${THIRDPARTY_FREETYPE_PATH}/include/freetype/tttables.h \
     $${THIRDPARTY_FREETYPE_PATH}/include/freetype/tttags.h \
     $${THIRDPARTY_FREETYPE_PATH}/include/ft2build.h \
+    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afadjust.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afblue.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afcjk.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afcover.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afdummy.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/aferrors.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afglobal.h \
+    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afgsub.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afhints.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afindic.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/aflatin.h \
@@ -203,7 +207,11 @@ HEADERS += \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/aftypes.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afws-decl.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/afws-iter.h \
+    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/ft-hb-decls.h \
+    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/ft-hb-ft.h \
+    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/ft-hb-types.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/autofit/ft-hb.h \
+    $${THIRDPARTY_FREETYPE_PATH}/src/autofit/hb-script-list.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/base/ftbase.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/base/md5.h \
     $${THIRDPARTY_FREETYPE_PATH}/src/bdf/bdf.h \
