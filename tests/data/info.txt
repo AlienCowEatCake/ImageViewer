@@ -81,6 +81,15 @@ Image from http://regex.info/blog/photo-tech/color-spaces-page1 (converted to bp
 
 --------------------------------------------------------------------------------
 
+::: EXR test images :::
+
+Test image which was created during the development of this project
+ * htj2k256_compression.exr
+ * htj2k32_compression.exr
+ * zip_compression.exr
+
+--------------------------------------------------------------------------------
+
 ::: FLIF test images :::
 
 Images from https://sveinbjorn.org/images/flif/
@@ -935,6 +944,7 @@ TIFF: https://www.itu.int/itudoc/itu-t/com16/tiff-fx/t-cases/index.html
       https://gitlab.gnome.org/GNOME/gimp/-/issues/5275
 Many: https://github.com/python-pillow/Pillow/tree/10.4.0/Tests/images
       https://github.com/openpreserve/format-corpus
+HEIF: https://github.com/nokiatech/heif/tree/gh-pages/content
 
 --------------------------------------------------------------------------------
 
