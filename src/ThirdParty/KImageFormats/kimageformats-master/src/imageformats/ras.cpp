@@ -12,8 +12,14 @@
 #include "util_p.h"
 
 #include <QDataStream>
-#include <QDebug>
 #include <QImage>
+#include <QLoggingCategory>
+
+#ifdef QT_DEBUG
+Q_LOGGING_CATEGORY(LOG_RASPLUGIN, "kf.imageformats.plugins.ras", QtDebugMsg)
+#else
+Q_LOGGING_CATEGORY(LOG_RASPLUGIN, "kf.imageformats.plugins.ras", QtWarningMsg)
+#endif
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QVector>
@@ -77,14 +83,14 @@ static QDataStream &operator>>(QDataStream &s, RasHeader &head)
     s >> head.Type;
     s >> head.ColorMapType;
     s >> head.ColorMapLength;
-    /*qDebug() << "MagicNumber: " << head.MagicNumber
-             << "Width: " << head.Width
-             << "Height: " << head.Height
-             << "Depth: " << head.Depth
-             << "Length: " << head.Length
-             << "Type: " << head.Type
-             << "ColorMapType: " << head.ColorMapType
-             << "ColorMapLength: " << head.ColorMapLength;*/
+    // qCDebug(LOG_RASPLUGIN) << "MagicNumber: " << head.MagicNumber
+    //                        << "Width: " << head.Width
+    //                        << "Height: " << head.Height
+    //                        << "Depth: " << head.Depth
+    //                        << "Length: " << head.Length
+    //                        << "Type: " << head.Type
+    //                        << "ColorMapType: " << head.ColorMapType
+    //                        << "ColorMapLength: " << head.ColorMapLength;
     return s;
 }
 
@@ -222,7 +228,7 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
     if (rasLineSize & 1)
         ++rasLineSize;
     if (rasLineSize > kMaxQVectorSize) {
-        qWarning() << "LoadRAS() unsupported line size" << rasLineSize;
+        qCWarning(LOG_RASPLUGIN) << "LoadRAS() unsupported line size" << rasLineSize;
         return false;
     }
 
@@ -268,7 +274,7 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
     for (quint32 y = 0; y < ras.Height; ++y) {
         auto rasLine = dec.readLine(rasLineSize);
         if (rasLine.size() != rasLineSize) {
-            qWarning() << "LoadRAS() unable to read line" << y << ": the seems corrupted!";
+            qCWarning(LOG_RASPLUGIN) << "LoadRAS() unable to read line" << y << ": the seems corrupted!";
             return false;
         }
 
@@ -348,8 +354,8 @@ static bool LoadRAS(QDataStream &s, const RasHeader &ras, QImage &img)
             continue;
         }
 
-        qWarning() << "LoadRAS() unsupported format!"
-                   << "ColorMapType:" << ras.ColorMapType << "Type:" << ras.Type << "Depth:" << ras.Depth;
+        qCWarning(LOG_RASPLUGIN) << "LoadRAS() unsupported format!"
+                                 << "ColorMapType:" << ras.ColorMapType << "Type:" << ras.Type << "Depth:" << ras.Depth;
         return false;
     }
 
@@ -385,7 +391,7 @@ bool RASHandler::canRead() const
 bool RASHandler::canRead(QIODevice *device)
 {
     if (!device) {
-        qWarning("RASHandler::canRead() called with no device");
+        qCWarning(LOG_RASPLUGIN) << "RASHandler::canRead() called with no device";
         return false;
     }
 
@@ -411,19 +417,19 @@ bool RASHandler::read(QImage *outImage)
     s >> ras;
 
     if (ras.ColorMapLength > kMaxQVectorSize) {
-        qWarning() << "read() unsupported image color map length in file header" << ras.ColorMapLength;
+        qCWarning(LOG_RASPLUGIN) << "LoadRAS() unsupported image color map length in file header" << ras.ColorMapLength;
         return false;
     }
 
     // Check supported file types.
     if (!IsSupported(ras)) {
-        //         qDebug() << "This RAS file is not supported.";
+        // qCDebug(LOG_RASPLUGIN) << "This RAS file is not supported.";
         return false;
     }
 
     QImage img;
     if (!LoadRAS(s, ras, img)) {
-        //         qDebug() << "Error loading RAS file.";
+        // qCDebug(LOG_RASPLUGIN) << "Error loading RAS file.";
         return false;
     }
 

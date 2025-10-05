@@ -1,0 +1,11 @@
+[
+    {
+        "fileName" : "testcard_rgba.qoi",
+        "colorSpace" : {
+            "description" : "sRGB",
+            "primaries" : "SRgb",
+            "transferFunction" : "SRgb",
+            "gamma" : 2.31
+        }
+    }
+]

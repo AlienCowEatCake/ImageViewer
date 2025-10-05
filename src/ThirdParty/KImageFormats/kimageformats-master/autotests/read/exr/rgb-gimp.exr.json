@@ -1,6 +1,12 @@
 [
     {
         "fileName" : "rgb-gimp.png",
+        "colorSpace" : {
+            "description" : "",
+            "primaries" : "Custom",
+            "transferFunction" : "Linear",
+            "gamma" : 1
+        },
         "resolution" : {
             "dotsPerMeterX" : 3937,
             "dotsPerMeterY" : 3937

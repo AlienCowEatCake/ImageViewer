@@ -1,4 +1,4 @@
-From bb1ccf8f9c3421bab2a4f4dd97adb675d602e2cf Mon Sep 17 00:00:00 2001
+From 2d073fb0174f726cf84407f9730679ee2dfb7e20 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
 Subject: [PATCH 2/8] Remove C++17 features
@@ -14,10 +14,10 @@ Subject: [PATCH 2/8] Remove C++17 features
  7 files changed, 16 insertions(+), 16 deletions(-)
 
 diff --git a/src/imageformats/jp2.cpp b/src/imageformats/jp2.cpp
-index 180e0ed..d796845 100644
+index ae7698c..aa0b1f4 100644
 --- a/src/imageformats/jp2.cpp
 +++ b/src/imageformats/jp2.cpp
-@@ -267,7 +267,7 @@ public:
+@@ -274,7 +274,7 @@ public:
                          qint32 v = jc.data[y * w + x] / divisor;
                          if (jc.sgnd) // never seen
                              v -= std::numeric_limits<typename std::make_signed<T>::type>::min();
@@ -26,7 +26,7 @@ index 180e0ed..d796845 100644
                      }
                  }
              } else { // float
-@@ -473,7 +473,7 @@ public:
+@@ -480,7 +480,7 @@ public:
      }
      void setQuality(qint32 quality)
      {
@@ -36,10 +36,10 @@ index 180e0ed..d796845 100644
  
      /*!
 diff --git a/src/imageformats/jxr.cpp b/src/imageformats/jxr.cpp
-index 90f7524..a01aadf 100644
+index a1020d3..0b68edc 100644
 --- a/src/imageformats/jxr.cpp
 +++ b/src/imageformats/jxr.cpp
-@@ -1043,11 +1043,11 @@ bool JXRHandler::read(QImage *outImage)
+@@ -1049,11 +1049,11 @@ bool JXRHandler::read(QImage *outImage)
              if (img.depth() == 64) {
                  auto line = reinterpret_cast<qfloat16 *>(img.scanLine(y));
                  for (int x = 0, w = img.width() * 4; x < w; x += 4)
@@ -84,10 +84,10 @@ index 0b785b4..1af4518 100644
  OraHandler::OraHandler()
  {
 diff --git a/src/imageformats/pic.cpp b/src/imageformats/pic.cpp
-index 03d5915..3ae1d7d 100644
+index cc60c86..399ca7e 100644
 --- a/src/imageformats/pic.cpp
 +++ b/src/imageformats/pic.cpp
-@@ -229,7 +229,7 @@ bool SoftimagePICHandler::read(QImage *image)
+@@ -235,7 +235,7 @@ bool SoftimagePICHandler::read(QImage *image)
      }
  
      QImage::Format fmt = QImage::Format_RGB32;
@@ -95,8 +95,8 @@ index 03d5915..3ae1d7d 100644
 +    for (const PicChannel &channel : qAsConst(m_channels)) {
          if (channel.size != 8) {
              // we cannot read images that do not come in bytes
-             qDebug() << "Channel size was" << channel.size;
-@@ -421,7 +421,7 @@ QVariant SoftimagePICHandler::option(ImageOption option) const
+             qCDebug(LOG_PICPLUGIN) << "Channel size was" << channel.size;
+@@ -427,7 +427,7 @@ QVariant SoftimagePICHandler::option(ImageOption option) const
          return QString();
      case ImageFormat:
          if (const_cast<SoftimagePICHandler *>(this)->readChannels()) {
@@ -106,7 +106,7 @@ index 03d5915..3ae1d7d 100644
                      return QImage::Format_ARGB32;
                  }
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
-index 1fbc775..075f148 100644
+index 2a6d6b3..710b6e2 100644
 --- a/src/imageformats/util_p.h
 +++ b/src/imageformats/util_p.h
 @@ -48,7 +48,7 @@
@@ -119,10 +119,10 @@ index 1fbc775..075f148 100644
  // On Qt 6 to make the plugins fail to allocate if the image size is greater than QImageReader::allocationLimit()
  // it is necessary to allocate the image with QImageIOHandler::allocateImage().
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
-index bfc9b76..1c1df25 100644
+index 562388a..1d1ecc2 100644
 --- a/src/imageformats/xcf.cpp
 +++ b/src/imageformats/xcf.cpp
-@@ -61,7 +61,7 @@ namespace
+@@ -58,7 +58,7 @@ namespace
  {
  struct RandomTable {
      // From glibc
@@ -131,7 +131,7 @@ index bfc9b76..1c1df25 100644
      {
          unsigned int next = *seed;
          int result = 0;
-@@ -85,7 +85,7 @@ struct RandomTable {
+@@ -82,7 +82,7 @@ struct RandomTable {
          return result;
      }
  
@@ -140,7 +140,7 @@ index bfc9b76..1c1df25 100644
          : values{}
      {
          unsigned int next = RANDOM_SEED;
-@@ -544,7 +544,7 @@ private:
+@@ -541,7 +541,7 @@ private:
      static int random_table[RANDOM_TABLE_SIZE];
      static bool random_table_initialized;
  
@@ -149,7 +149,7 @@ index bfc9b76..1c1df25 100644
  
      //! This table is used as a shared grayscale ramp to be set on grayscale
      //! images. This is because Qt does not differentiate between indexed and
-@@ -648,7 +648,7 @@ public:
+@@ -645,7 +645,7 @@ public:
  int XCFImageFormat::random_table[RANDOM_TABLE_SIZE];
  bool XCFImageFormat::random_table_initialized;
  
@@ -158,7 +158,7 @@ index bfc9b76..1c1df25 100644
  
  QList<QRgb> XCFImageFormat::grayTable;
  
-@@ -1574,7 +1574,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
+@@ -1575,7 +1575,7 @@ void XCFImageFormat::setImageParasites(const XCFImage &xcf_image, QImage &image)
  {
      auto&& p = xcf_image.parasites;
      auto keys = p.keys();
@@ -168,5 +168,5 @@ index bfc9b76..1c1df25 100644
          if (value.isEmpty())
              continue;
 -- 
-2.51.0
+2.47.3
 

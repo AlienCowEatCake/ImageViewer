@@ -1,0 +1,26 @@
+[
+    {
+        "fileName" : "32bit_grayscale.png",
+        "colorSpace" : {
+            "description" : "Linear Grayscale Profile",
+            "colorModel" : "Gray",
+            "primaries" : "Custom",
+            "transferFunction" : "Linear",
+            "gamma" : 1
+        },
+        "metadata" : [
+            {
+                "key" : "ModificationDate",
+                "value" : "2022-03-28T12:46:04"
+            },
+            {
+                "key" : "Software" ,
+                "value" : "Adobe Photoshop 23.2 (Windows)"
+            }
+        ],
+        "resolution" : {
+            "dotsPerMeterX" : 2232,
+            "dotsPerMeterY" : 2232
+        }
+    }
+]

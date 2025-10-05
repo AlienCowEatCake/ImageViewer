@@ -12,8 +12,14 @@
 #include <QColor>
 #include <QColorSpace>
 #include <QDataStream>
-#include <QDebug>
 #include <QImage>
+#include <QLoggingCategory>
+
+#ifdef QT_DEBUG
+Q_LOGGING_CATEGORY(LOG_PCXPLUGIN, "kf.imageformats.plugins.pcx", QtDebugMsg)
+#else
+Q_LOGGING_CATEGORY(LOG_PCXPLUGIN, "kf.imageformats.plugins.pcx", QtWarningMsg)
+#endif
 
 #pragma pack(push, 1)
 class RGB
@@ -325,7 +331,7 @@ static bool readImage1(QImage &img, QDataStream &s, const PCXHEADER &header)
     img.setColorCount(2);
 
     if (img.isNull()) {
-        qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
+        qCWarning(LOG_PCXPLUGIN) << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
         return false;
     }
 
@@ -360,12 +366,12 @@ static bool readImage4(QImage &img, QDataStream &s, const PCXHEADER &header)
     img = imageAlloc(header.width(), header.height(), header.format());
     img.setColorCount(16);
     if (img.isNull()) {
-        qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
+        qCWarning(LOG_PCXPLUGIN) << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
         return false;
     }
 
     if (header.BytesPerLine < (header.width() + 7) / 8) {
-        qWarning() << "PCX image has invalid BytesPerLine value";
+        qCWarning(LOG_PCXPLUGIN) << "PCX image has invalid BytesPerLine value";
         return false;
     }
 
@@ -390,7 +396,7 @@ static bool readImage4(QImage &img, QDataStream &s, const PCXHEADER &header)
 
         uchar *p = img.scanLine(y);
         if (!p) {
-            qWarning() << "Failed to get scanline for" << y << "might be out of bounds";
+            qCWarning(LOG_PCXPLUGIN) << "Failed to get scanline for" << y << "might be out of bounds";
         }
         for (int x = 0; x < header.width(); ++x) {
             p[x] = pixbuf[x];
@@ -413,7 +419,7 @@ static bool readImage2(QImage &img, QDataStream &s, const PCXHEADER &header)
     img.setColorCount(4);
 
     if (img.isNull()) {
-        qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
+        qCWarning(LOG_PCXPLUGIN) << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
         return false;
     }
 
@@ -456,7 +462,7 @@ static bool readImage4v2(QImage &img, QDataStream &s, const PCXHEADER &header)
     img.setColorCount(16);
 
     if (img.isNull()) {
-        qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
+        qCWarning(LOG_PCXPLUGIN) << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
         return false;
     }
 
@@ -497,7 +503,7 @@ static bool readImage8(QImage &img, QDataStream &s, const PCXHEADER &header)
     img.setColorCount(256);
 
     if (img.isNull()) {
-        qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
+        qCWarning(LOG_PCXPLUGIN) << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
         return false;
     }
 
@@ -535,7 +541,6 @@ static bool readImage8(QImage &img, QDataStream &s, const PCXHEADER &header)
         }
     }
 
-    //   qDebug() << "Palette Flag: " << flag;
     if (flag == 12 && (header.Version == 5 || header.Version == 2)) {
         // Read the palette
         quint8 r;
@@ -560,7 +565,7 @@ static bool readImage24(QImage &img, QDataStream &s, const PCXHEADER &header)
     img = imageAlloc(header.width(), header.height(), header.format());
 
     if (img.isNull()) {
-        qWarning() << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
+        qCWarning(LOG_PCXPLUGIN) << "Failed to allocate image, invalid dimensions?" << QSize(header.width(), header.height());
         return false;
     }
 
@@ -774,10 +779,10 @@ static bool writeImage24(const QImage &image, QDataStream &s, PCXHEADER &header)
         return false;
     }
 
-    auto cs = image.colorSpace();
     auto tcs = QColorSpace();
     auto tfmt = image.format();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    auto cs = image.colorSpace();
     if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && tfmt == QImage::Format_CMYK8888) {
         tcs = QColorSpace(QColorSpace::SRgb);
         tfmt = QImage::Format_RGB32;
@@ -888,8 +893,14 @@ bool PCXHandler::read(QImage *outImage)
         return false;
     }
 
-    img.setDotsPerMeterX(qRound(header.HDpi / 25.4 * 1000));
-    img.setDotsPerMeterY(qRound(header.YDpi / 25.4 * 1000));
+    auto hres = dpi2ppm(header.HDpi);
+    if (hres > 0) {
+        img.setDotsPerMeterX(hres);
+    }
+    auto vres = dpi2ppm(header.YDpi);
+    if (vres > 0) {
+        img.setDotsPerMeterY(vres);
+    }
     *outImage = img;
     return true;
 }
@@ -915,8 +926,8 @@ bool PCXHandler::write(const QImage &image)
     header.YMin = 0;
     header.XMax = w - 1;
     header.YMax = h - 1;
-    header.HDpi = qRound(image.dotsPerMeterX() * 25.4 / 1000);
-    header.YDpi = qRound(image.dotsPerMeterY() * 25.4 / 1000);
+    header.HDpi = qRoundOrZero_T<quint16>(dppm2dpi(image.dotsPerMeterX()));
+    header.YDpi = qRoundOrZero_T<quint16>(dppm2dpi(image.dotsPerMeterY()));
     header.Reserved = 0;
     header.PaletteInfo = 1;
 
@@ -977,7 +988,7 @@ QVariant PCXHandler::option(ImageOption option) const
 bool PCXHandler::canRead(QIODevice *device)
 {
     if (!device) {
-        qWarning("PCXHandler::canRead() called with no device");
+        qCWarning(LOG_PCXPLUGIN) << "PCXHandler::canRead() called with no device";
         return false;
     }
 

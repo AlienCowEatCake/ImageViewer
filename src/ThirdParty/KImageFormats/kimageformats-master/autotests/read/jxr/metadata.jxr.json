@@ -1,6 +1,12 @@
 [
     {
         "fileName" : "metadata.png",
+        "colorSpace" : {
+            "description" : "sRGB build-in",
+            "primaries" : "SRgb",
+            "transferFunction" : "SRgb",
+            "gamma" : 0
+        },
         "metadata" : [
             {
                 "key" : "CreationDate",

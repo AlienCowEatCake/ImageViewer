@@ -1,5 +1,11 @@
 [
     {
-        "fileName" : "testcard_gray_half.png"
+        "fileName" : "testcard_gray_half.png",
+        "colorSpace" : {
+            "description" : "Linear sRGB",
+            "primaries" : "SRgb",
+            "transferFunction" : "Linear",
+            "gamma" : 1
+        }
     }
 ]

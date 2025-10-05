@@ -13,11 +13,18 @@
 #include <libheif/heif.h>
 
 #include <QColorSpace>
-#include <QDebug>
+#include <QLoggingCategory>
 #include <QPointF>
 #include <QSysInfo>
+
 #include <cstring>
 #include <limits>
+
+#ifdef QT_DEBUG
+Q_LOGGING_CATEGORY(LOG_HEIFPLUGIN, "kf.imageformats.plugins.heif", QtDebugMsg)
+#else
+Q_LOGGING_CATEGORY(LOG_HEIFPLUGIN, "kf.imageformats.plugins.heif", QtWarningMsg)
+#endif
 
 #ifndef HEIF_MAX_METADATA_SIZE
 /*!
@@ -112,7 +119,7 @@ bool HEIFHandler::read(QImage *outImage)
 bool HEIFHandler::write(const QImage &image)
 {
     if (image.format() == QImage::Format_Invalid || image.isNull()) {
-        qWarning("No image data to save");
+        qCWarning(LOG_HEIFPLUGIN) << "No image data to save";
         return false;
     }
 
@@ -208,7 +215,7 @@ bool HEIFHandler::write_helper(const QImage &image)
 
     err = heif_image_create(tmpimage.width(), tmpimage.height(), heif_colorspace_RGB, chroma, &h_image);
     if (err.code) {
-        qWarning() << "heif_image_create error:" << err.message;
+        qCWarning(LOG_HEIFPLUGIN) << "heif_image_create error:" << err.message;
         heif_context_free(context);
         return false;
     }
@@ -287,7 +294,7 @@ bool HEIFHandler::write_helper(const QImage &image)
         }
         break;
     default:
-        qWarning() << "Unsupported depth:" << save_depth;
+        qCWarning(LOG_HEIFPLUGIN) << "Unsupported depth:" << save_depth;
         heif_image_release(h_image);
         heif_context_free(context);
         return false;
@@ -297,7 +304,7 @@ bool HEIFHandler::write_helper(const QImage &image)
     struct heif_encoder *encoder = nullptr;
     err = heif_context_get_encoder_for_format(context, encoder_codec, &encoder);
     if (err.code) {
-        qWarning() << "Unable to get an encoder instance:" << err.message;
+        qCWarning(LOG_HEIFPLUGIN) << "Unable to get an encoder instance:" << err.message;
         heif_image_release(h_image);
         heif_context_free(context);
         return false;
@@ -315,7 +322,7 @@ bool HEIFHandler::write_helper(const QImage &image)
     encoder_options->save_alpha_channel = save_alpha;
 
     if ((tmpimage.width() % 2 == 1) || (tmpimage.height() % 2 == 1)) {
-        qWarning() << "Image has odd dimension!\nUse even-numbered dimension(s) for better compatibility with other HEIF implementations.";
+        qCWarning(LOG_HEIFPLUGIN) << "Image has odd dimension!\nUse even-numbered dimension(s) for better compatibility with other HEIF implementations.";
         if (save_alpha) {
             // This helps to save alpha channel when image has odd dimension
             encoder_options->macOS_compatibility_workaround = 0;
@@ -347,7 +354,7 @@ bool HEIFHandler::write_helper(const QImage &image)
     }
 
     if (err.code) {
-        qWarning() << "heif_context_encode_image failed:" << err.message;
+        qCWarning(LOG_HEIFPLUGIN) << "heif_context_encode_image failed:" << err.message;
         heif_encoder_release(encoder);
         heif_image_release(h_image);
         heif_context_free(context);
@@ -364,7 +371,7 @@ bool HEIFHandler::write_helper(const QImage &image)
     heif_image_release(h_image);
 
     if (err.code) {
-        qWarning() << "Writing HEIF image failed:" << err.message;
+        qCWarning(LOG_HEIFPLUGIN) << "Writing HEIF image failed:" << err.message;
         heif_context_free(context);
         return false;
     }
@@ -524,7 +531,7 @@ bool HEIFHandler::ensureDecoder()
     struct heif_error err = heif_context_read_from_memory(ctx, static_cast<const void *>(buffer.constData()), buffer.size(), nullptr);
 
     if (err.code) {
-        qWarning() << "heif_context_read_from_memory error:" << err.message;
+        qCWarning(LOG_HEIFPLUGIN) << "heif_context_read_from_memory error:" << err.message;
         heif_context_free(ctx);
         m_parseState = ParseHeicError;
         return false;
@@ -533,7 +540,7 @@ bool HEIFHandler::ensureDecoder()
     struct heif_image_handle *handle = nullptr;
     err = heif_context_get_primary_image_handle(ctx, &handle);
     if (err.code) {
-        qWarning() << "heif_context_get_primary_image_handle error:" << err.message;
+        qCWarning(LOG_HEIFPLUGIN) << "heif_context_get_primary_image_handle error:" << err.message;
         heif_context_free(ctx);
         m_parseState = ParseHeicError;
         return false;
@@ -543,7 +550,7 @@ bool HEIFHandler::ensureDecoder()
         m_parseState = ParseHeicError;
         heif_image_handle_release(handle);
         heif_context_free(ctx);
-        qWarning() << "HEIC image has zero dimension";
+        qCWarning(LOG_HEIFPLUGIN) << "HEIC image has zero dimension";
         return false;
     }
 
@@ -553,7 +560,7 @@ bool HEIFHandler::ensureDecoder()
         m_parseState = ParseHeicError;
         heif_image_handle_release(handle);
         heif_context_free(ctx);
-        qWarning() << "HEIF image with undefined or unsupported bit depth.";
+        qCWarning(LOG_HEIFPLUGIN) << "HEIF image with undefined or unsupported bit depth.";
         return false;
     }
 
@@ -582,7 +589,7 @@ bool HEIFHandler::ensureDecoder()
         m_parseState = ParseHeicError;
         heif_image_handle_release(handle);
         heif_context_free(ctx);
-        qWarning() << "Unsupported bit depth:" << bit_depth;
+        qCWarning(LOG_HEIFPLUGIN) << "Unsupported bit depth:" << bit_depth;
         return false;
     }
 
@@ -597,7 +604,7 @@ bool HEIFHandler::ensureDecoder()
 
 #if LIBHEIF_HAVE_VERSION(1, 13, 0)
     if (err.code == heif_error_Invalid_input && err.subcode == heif_suberror_Unknown_NCLX_matrix_coefficients && img == nullptr && buffer.contains("Xiaomi")) {
-        qWarning() << "Non-standard HEIF image with invalid matrix_coefficients, probably made by a Xiaomi device!";
+        qCWarning(LOG_HEIFPLUGIN) << "Non-standard HEIF image with invalid matrix_coefficients, probably made by a Xiaomi device!";
 
         // second try to decode with strict decoding disabled
         decoder_option->strict_decoding = 0;
@@ -610,7 +617,7 @@ bool HEIFHandler::ensureDecoder()
     }
 
     if (err.code) {
-        qWarning() << "heif_decode_image error:" << err.message;
+        qCWarning(LOG_HEIFPLUGIN) << "heif_decode_image error:" << err.message;
         heif_image_handle_release(handle);
         heif_context_free(ctx);
         m_parseState = ParseHeicError;
@@ -627,7 +634,7 @@ bool HEIFHandler::ensureDecoder()
         heif_image_handle_release(handle);
         heif_context_free(ctx);
         m_parseState = ParseHeicError;
-        qWarning() << "HEIC image size invalid:" << imageSize;
+        qCWarning(LOG_HEIFPLUGIN) << "HEIC image size invalid:" << imageSize;
         return false;
     }
 
@@ -639,7 +646,7 @@ bool HEIFHandler::ensureDecoder()
         heif_image_handle_release(handle);
         heif_context_free(ctx);
         m_parseState = ParseHeicError;
-        qWarning() << "HEIC data pixels information not valid!";
+        qCWarning(LOG_HEIFPLUGIN) << "HEIC data pixels information not valid!";
         return false;
     }
 
@@ -649,7 +656,7 @@ bool HEIFHandler::ensureDecoder()
         heif_image_handle_release(handle);
         heif_context_free(ctx);
         m_parseState = ParseHeicError;
-        qWarning() << "Unable to allocate memory!";
+        qCWarning(LOG_HEIFPLUGIN) << "Unable to allocate memory!";
         return false;
     }
 
@@ -844,7 +851,7 @@ bool HEIFHandler::ensureDecoder()
         heif_image_handle_release(handle);
         heif_context_free(ctx);
         m_parseState = ParseHeicError;
-        qWarning() << "Unsupported bit depth:" << bit_depth;
+        qCWarning(LOG_HEIFPLUGIN) << "Unsupported bit depth:" << bit_depth;
         return false;
         break;
     }
@@ -856,15 +863,15 @@ bool HEIFHandler::ensureDecoder()
             QByteArray ba(rawProfileSize, 0);
             err = heif_image_handle_get_raw_color_profile(handle, ba.data());
             if (err.code) {
-                qWarning() << "icc profile loading failed";
+                qCWarning(LOG_HEIFPLUGIN) << "icc profile loading failed";
             } else {
                 QColorSpace colorspace = QColorSpace::fromIccProfile(ba);
                 if (!colorspace.isValid()) {
-                    qWarning() << "HEIC image has Qt-unsupported or invalid ICC profile!";
+                    qCWarning(LOG_HEIFPLUGIN) << "HEIC image has Qt-unsupported or invalid ICC profile!";
                 }
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
                 else if (colorspace.colorModel() == QColorSpace::ColorModel::Cmyk) {
-                    qWarning("CMYK ICC profile is not expected for HEIF, discarding the ICCprofile!");
+                    qCWarning(LOG_HEIFPLUGIN) << "CMYK ICC profile is not expected for HEIF, discarding the ICCprofile!";
                     colorspace = QColorSpace();
                 } else if (colorspace.colorModel() == QColorSpace::ColorModel::Gray) {
                     if (hasAlphaChannel) {
@@ -884,7 +891,7 @@ bool HEIFHandler::ensureDecoder()
                         }
                         colorspace = QColorSpace(gray_whitePoint, redP, greenP, blueP, trc_new, gamma_new);
                         if (!colorspace.isValid()) {
-                            qWarning("HEIF plugin created invalid QColorSpace!");
+                            qCWarning(LOG_HEIFPLUGIN) << "HEIF plugin created invalid QColorSpace!";
                         }
                     } else { // no alpha channel
                         m_current_image.convertTo(bit_depth > 8 ? QImage::Format_Grayscale16 : QImage::Format_Grayscale8);
@@ -894,14 +901,14 @@ bool HEIFHandler::ensureDecoder()
                 m_current_image.setColorSpace(colorspace);
             }
         } else {
-            qWarning() << "icc profile is empty or above limits";
+            qCWarning(LOG_HEIFPLUGIN) << "icc profile is empty or above limits";
         }
 
     } else if (profileType == heif_color_profile_type_nclx) {
         struct heif_color_profile_nclx *nclx = nullptr;
         err = heif_image_handle_get_nclx_color_profile(handle, &nclx);
         if (err.code || !nclx) {
-            qWarning() << "nclx profile loading failed";
+            qCWarning(LOG_HEIFPLUGIN) << "nclx profile loading failed";
         } else {
             const QPointF redPoint(nclx->color_primary_red_x, nclx->color_primary_red_y);
             const QPointF greenPoint(nclx->color_primary_green_x, nclx->color_primary_green_y);
@@ -936,9 +943,9 @@ bool HEIFHandler::ensureDecoder()
                 break;
 #endif
             default:
-                qWarning("CICP color_primaries: %d, transfer_characteristics: %d\nThe colorspace is unsupported by this plug-in yet.",
-                         nclx->color_primaries,
-                         nclx->transfer_characteristics);
+                qCWarning(LOG_HEIFPLUGIN) << "CICP color_primaries: %d, transfer_characteristics: %d\nThe colorspace is unsupported by this plug-in yet."
+                                          << nclx->color_primaries
+                                          << nclx->transfer_characteristics;
                 q_trc = QColorSpace::TransferFunction::SRgb;
                 break;
             }
@@ -960,7 +967,7 @@ bool HEIFHandler::ensureDecoder()
             heif_nclx_color_profile_free(nclx);
 
             if (!m_current_image.colorSpace().isValid()) {
-                qWarning() << "HEIC plugin created invalid QColorSpace from NCLX!";
+                qCWarning(LOG_HEIFPLUGIN) << "HEIC plugin created invalid QColorSpace from NCLX!";
             }
         }
 
@@ -984,7 +991,7 @@ bool HEIFHandler::ensureDecoder()
                 QByteArray ba(sz, char());
                 auto err = heif_image_handle_get_metadata(handle, ids[n], ba.data());
                 if (err.code != heif_error_Ok) {
-                    qWarning() << "Error while reading metadata" << err.message;
+                    qCWarning(LOG_HEIFPLUGIN) << "Error while reading metadata" << err.message;
                     continue;
                 }
                 if (isXmp) {

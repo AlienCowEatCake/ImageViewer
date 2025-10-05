@@ -6,10 +6,12 @@
 
 #include "templateimage.h"
 
+#include <QColorSpace>
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMetaEnum>
 #include <QVersionNumber>
 
 static QJsonObject searchObject(const QFileInfo& file)
@@ -102,6 +104,47 @@ bool TemplateImage::checkOptionaInfo(const QImage& image, QString& error) const
     auto obj = searchObject(m_fi);
     if (obj.isEmpty()) {
         return true;
+    }
+
+    // test color space (icc profile)
+    auto color = obj.value("colorSpace").toObject();
+    if (!color.isEmpty()) {
+        auto dsc = color.value("description").toString();
+        auto clm = color.value("colorModel").toString(QStringLiteral("Rgb"));
+        auto prm = color.value("primaries").toString();
+        auto trf = color.value("transferFunction").toString();
+        auto gmm = color.value("gamma").toDouble();
+        auto cs = image.colorSpace();
+
+        if (cs.description() != dsc) {
+            error = QStringLiteral("ColorSpace Description mismatch (current: %1, expected: %2)!").arg(cs.description(), dsc);
+            return false;
+        }
+
+        auto prmName = QString(QMetaEnum::fromType<QColorSpace::Primaries>().valueToKey(quint64(cs.primaries())));
+        if (prmName != prm) {
+            error = QStringLiteral("ColorSpace Primaries mismatch (current: %1, expected: %2)!").arg(prmName, prm);
+            return false;
+        }
+
+        auto trfName = QString(QMetaEnum::fromType<QColorSpace::TransferFunction>().valueToKey(quint64(cs.transferFunction())));
+        if (trfName != trf) {
+            error = QStringLiteral("ColorSpace TransferFunction mismatch (current: %1, expected: %2)!").arg(trfName, trf);
+            return false;
+        }
+
+        if (qAbs(cs.gamma() - gmm) > 0.01) {
+            error = QStringLiteral("ColorSpace Gamma mismatch (current: %1, expected: %2)!").arg(cs.gamma()).arg(gmm);
+            return false;
+        }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+        auto clmName = QString(QMetaEnum::fromType<QColorSpace::ColorModel>().valueToKey(quint64(cs.colorModel())));
+        if (clmName != clm) {
+            error = QStringLiteral("ColorSpace ColorModel mismatch (current: %1, expected: %2)!").arg(clmName, clm);
+            return false;
+        }
+#endif
     }
 
     // Test resolution

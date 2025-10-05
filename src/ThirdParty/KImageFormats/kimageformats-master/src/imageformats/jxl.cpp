@@ -6,6 +6,7 @@
     SPDX-License-Identifier: BSD-2-Clause
 */
 
+#include <QLoggingCategory>
 #include <QThread>
 #include <QtGlobal>
 #include <QFloat16>
@@ -62,6 +63,13 @@ typedef enum {JXL_ENC_SUCCESS, JXL_ENC_ERROR, JXL_ENC_NEED_MORE_OUTPUT, JXL_ENC_
 #endif
 
 #include <string.h>
+
+#ifdef QT_DEBUG
+Q_LOGGING_CATEGORY(LOG_JXLPLUGIN, "kf.imageformats.plugins.jxl", QtDebugMsg)
+#else
+Q_LOGGING_CATEGORY(LOG_JXLPLUGIN, "kf.imageformats.plugins.jxl", QtWarningMsg)
+#endif
+
 
 // Avoid rotation on buggy Qts (see also https://bugreports.qt.io/browse/QTBUG-126575)
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 7) && QT_VERSION < QT_VERSION_CHECK(6, 6, 0)) || (QT_VERSION >= QT_VERSION_CHECK(6, 7, 3))
@@ -210,7 +218,7 @@ bool QJpegXLHandler::ensureDecoder()
 
     m_decoder = JxlDecoderCreate(nullptr);
     if (!m_decoder) {
-        qWarning("ERROR: JxlDecoderCreate failed");
+        qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderCreate failed");
         m_parseState = ParseJpegXLError;
         return false;
     }
@@ -229,14 +237,14 @@ bool QJpegXLHandler::ensureDecoder()
         m_runner = JxlThreadParallelRunnerCreate(nullptr, num_worker_threads);
 
         if (JxlDecoderSetParallelRunner(m_decoder, JxlThreadParallelRunner, m_runner) != JXL_DEC_SUCCESS) {
-            qWarning("ERROR: JxlDecoderSetParallelRunner failed");
+            qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetParallelRunner failed");
             m_parseState = ParseJpegXLError;
             return false;
         }
     }
 
     if (JxlDecoderSetInput(m_decoder, reinterpret_cast<const uint8_t *>(m_rawData.constData()), m_rawData.size()) != JXL_DEC_SUCCESS) {
-        qWarning("ERROR: JxlDecoderSetInput failed");
+        qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetInput failed");
         m_parseState = ParseJpegXLError;
         return false;
     }
@@ -245,38 +253,38 @@ bool QJpegXLHandler::ensureDecoder()
 
     JxlDecoderStatus status = JxlDecoderSubscribeEvents(m_decoder, JXL_DEC_BASIC_INFO | JXL_DEC_COLOR_ENCODING | JXL_DEC_FRAME);
     if (status == JXL_DEC_ERROR) {
-        qWarning("ERROR: JxlDecoderSubscribeEvents failed");
+        qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSubscribeEvents failed");
         m_parseState = ParseJpegXLError;
         return false;
     }
 
     status = JxlDecoderProcessInput(m_decoder);
     if (status == JXL_DEC_ERROR) {
-        qWarning("ERROR: JXL decoding failed");
+        qCWarning(LOG_JXLPLUGIN, "ERROR: JXL decoding failed");
         m_parseState = ParseJpegXLError;
         return false;
     }
     if (status == JXL_DEC_NEED_MORE_INPUT) {
-        qWarning("ERROR: JXL data incomplete");
+        qCWarning(LOG_JXLPLUGIN, "ERROR: JXL data incomplete");
         m_parseState = ParseJpegXLError;
         return false;
     }
 
     status = JxlDecoderGetBasicInfo(m_decoder, &m_basicinfo);
     if (status != JXL_DEC_SUCCESS) {
-        qWarning("ERROR: JXL basic info not available");
+        qCWarning(LOG_JXLPLUGIN, "ERROR: JXL basic info not available");
         m_parseState = ParseJpegXLError;
         return false;
     }
 
     if (m_basicinfo.xsize == 0 || m_basicinfo.ysize == 0) {
-        qWarning("ERROR: JXL image has zero dimensions");
+        qCWarning(LOG_JXLPLUGIN, "ERROR: JXL image has zero dimensions");
         m_parseState = ParseJpegXLError;
         return false;
     }
 
     if (m_basicinfo.xsize > MAX_IMAGE_WIDTH || m_basicinfo.ysize > MAX_IMAGE_HEIGHT) {
-        qWarning("JXL image (%dx%d) is too large", m_basicinfo.xsize, m_basicinfo.ysize);
+        qCWarning(LOG_JXLPLUGIN, "JXL image (%dx%d) is too large", m_basicinfo.xsize, m_basicinfo.ysize);
         m_parseState = ParseJpegXLError;
         return false;
     }
@@ -293,7 +301,7 @@ bool QJpegXLHandler::countALLFrames()
 
     JxlDecoderStatus status = JxlDecoderProcessInput(m_decoder);
     if (status != JXL_DEC_COLOR_ENCODING) {
-        qWarning("Unexpected event %d instead of JXL_DEC_COLOR_ENCODING", status);
+        qCWarning(LOG_JXLPLUGIN, "Unexpected event %d instead of JXL_DEC_COLOR_ENCODING", status);
         m_parseState = ParseJpegXLError;
         return false;
     }
@@ -306,10 +314,10 @@ bool QJpegXLHandler::countALLFrames()
         if (jxlcms) {
             status = JxlDecoderSetCms(m_decoder, *jxlcms);
             if (status != JXL_DEC_SUCCESS) {
-                qWarning("JxlDecoderSetCms ERROR");
+                qCWarning(LOG_JXLPLUGIN, "JxlDecoderSetCms ERROR");
             }
         } else {
-            qWarning("No JPEG XL CMS Interface");
+            qCWarning(LOG_JXLPLUGIN, "No JPEG XL CMS Interface");
         }
 #endif
 
@@ -414,16 +422,16 @@ bool QJpegXLHandler::countALLFrames()
                     m_colorspace = QColorSpace::fromIccProfile(icc_data);
 
                     if (!m_colorspace.isValid()) {
-                        qWarning("JXL image has Qt-unsupported or invalid ICC profile!");
+                        qCWarning(LOG_JXLPLUGIN, "JXL image has Qt-unsupported or invalid ICC profile!");
                     }
                 } else {
-                    qWarning("Failed to obtain data from JPEG XL decoder");
+                    qCWarning(LOG_JXLPLUGIN, "Failed to obtain data from JPEG XL decoder");
                 }
             } else {
-                qWarning("Empty ICC data");
+                qCWarning(LOG_JXLPLUGIN, "Empty ICC data");
             }
         } else {
-            qWarning("no ICC, other color profile");
+            qCWarning(LOG_JXLPLUGIN, "no ICC, other color profile");
         }
     }
 
@@ -435,13 +443,13 @@ bool QJpegXLHandler::countALLFrames()
             if (status != JXL_DEC_FRAME) {
                 switch (status) {
                 case JXL_DEC_ERROR:
-                    qWarning("ERROR: JXL decoding failed");
+                    qCWarning(LOG_JXLPLUGIN, "ERROR: JXL decoding failed");
                     break;
                 case JXL_DEC_NEED_MORE_INPUT:
-                    qWarning("ERROR: JXL data incomplete");
+                    qCWarning(LOG_JXLPLUGIN, "ERROR: JXL data incomplete");
                     break;
                 default:
-                    qWarning("Unexpected event %d instead of JXL_DEC_FRAME", status);
+                    qCWarning(LOG_JXLPLUGIN, "Unexpected event %d instead of JXL_DEC_FRAME", status);
                     break;
                 }
                 m_parseState = ParseJpegXLError;
@@ -449,7 +457,7 @@ bool QJpegXLHandler::countALLFrames()
             }
 
             if (JxlDecoderGetFrameHeader(m_decoder, &frame_header) != JXL_DEC_SUCCESS) {
-                qWarning("ERROR: JxlDecoderGetFrameHeader failed");
+                qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderGetFrameHeader failed");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -468,13 +476,13 @@ bool QJpegXLHandler::countALLFrames()
         }
 
         if (m_framedelays.isEmpty()) {
-            qWarning("no frames loaded by the JXL plug-in");
+            qCWarning(LOG_JXLPLUGIN, "no frames loaded by the JXL plug-in");
             m_parseState = ParseJpegXLError;
             return false;
         }
 
         if (m_framedelays.count() == 1) {
-            qWarning("JXL file was marked as animation but it has only one frame.");
+            qCWarning(LOG_JXLPLUGIN, "JXL file was marked as animation but it has only one frame.");
             m_basicinfo.have_animation = JXL_FALSE;
         }
     } else { // static picture
@@ -490,7 +498,7 @@ bool QJpegXLHandler::countALLFrames()
         for (uint32_t index = 0; index < m_basicinfo.num_extra_channels; index++) {
             status = JxlDecoderGetExtraChannelInfo(m_decoder, index, &channel_info);
             if (status != JXL_DEC_SUCCESS) {
-                qWarning("JxlDecoderGetExtraChannelInfo for channel %d returned %d", index, status);
+                qCWarning(LOG_JXLPLUGIN, "JxlDecoderGetExtraChannelInfo for channel %d returned %d", index, status);
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -506,7 +514,7 @@ bool QJpegXLHandler::countALLFrames()
                             for (uint32_t alpha_index = index + 1; alpha_index < m_basicinfo.num_extra_channels; alpha_index++) {
                                 status = JxlDecoderGetExtraChannelInfo(m_decoder, alpha_index, &channel_info);
                                 if (status != JXL_DEC_SUCCESS) {
-                                    qWarning("JxlDecoderGetExtraChannelInfo for channel %d returned %d", alpha_index, status);
+                                    qCWarning(LOG_JXLPLUGIN, "JxlDecoderGetExtraChannelInfo for channel %d returned %d", alpha_index, status);
                                     m_parseState = ParseJpegXLError;
                                     return false;
                                 }
@@ -519,14 +527,14 @@ bool QJpegXLHandler::countALLFrames()
                             }
 
                             if (!alpha_found) {
-                                qWarning("JXL BasicInfo indicate Alpha channel but it was not found");
+                                qCWarning(LOG_JXLPLUGIN, "JXL BasicInfo indicate Alpha channel but it was not found");
                                 m_parseState = ParseJpegXLError;
                                 return false;
                             }
                         }
                     }
                 } else {
-                    qWarning("JXL has BLACK channel but colorspace is not CMYK!");
+                    qCWarning(LOG_JXLPLUGIN, "JXL has BLACK channel but colorspace is not CMYK!");
                 }
                 break;
             } else if ((channel_info.type == JXL_CHANNEL_ALPHA) && !alpha_found) {
@@ -536,7 +544,7 @@ bool QJpegXLHandler::countALLFrames()
         }
 
         if (!m_isCMYK && (m_colorspace.colorModel() == QColorSpace::ColorModel::Cmyk)) {
-            qWarning("JXL has CMYK colorspace but BLACK channel was not found!");
+            qCWarning(LOG_JXLPLUGIN, "JXL has CMYK colorspace but BLACK channel was not found!");
         }
     }
 #endif
@@ -560,7 +568,7 @@ bool QJpegXLHandler::decode_one_frame()
 {
     JxlDecoderStatus status = JxlDecoderProcessInput(m_decoder);
     if (status != JXL_DEC_NEED_IMAGE_OUT_BUFFER) {
-        qWarning("Unexpected event %d instead of JXL_DEC_NEED_IMAGE_OUT_BUFFER", status);
+        qCWarning(LOG_JXLPLUGIN, "Unexpected event %d instead of JXL_DEC_NEED_IMAGE_OUT_BUFFER", status);
         m_parseState = ParseJpegXLError;
         return false;
     }
@@ -588,7 +596,7 @@ bool QJpegXLHandler::decode_one_frame()
         if (m_basicinfo.alpha_bits > 0) { // CMYK + alpha
             QImage tmp_cmyk_image = imageAlloc(m_basicinfo.xsize, m_basicinfo.ysize, QImage::Format_CMYK8888);
             if (tmp_cmyk_image.isNull()) {
-                qWarning("Memory cannot be allocated");
+                qCWarning(LOG_JXLPLUGIN, "Memory cannot be allocated");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -597,7 +605,7 @@ bool QJpegXLHandler::decode_one_frame()
 
             uchar *pixels_alpha = reinterpret_cast<uchar *>(malloc(extra_buffer_size));
             if (!pixels_alpha) {
-                qWarning("Memory cannot be allocated for ALPHA channel");
+                qCWarning(LOG_JXLPLUGIN, "Memory cannot be allocated for ALPHA channel");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -606,7 +614,7 @@ bool QJpegXLHandler::decode_one_frame()
             if (!pixels_cmy) {
                 free(pixels_alpha);
                 pixels_alpha = nullptr;
-                qWarning("Memory cannot be allocated for CMY buffer");
+                qCWarning(LOG_JXLPLUGIN, "Memory cannot be allocated for CMY buffer");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -617,7 +625,7 @@ bool QJpegXLHandler::decode_one_frame()
                 pixels_cmy = nullptr;
                 free(pixels_alpha);
                 pixels_alpha = nullptr;
-                qWarning("Memory cannot be allocated for BLACK buffer");
+                qCWarning(LOG_JXLPLUGIN, "Memory cannot be allocated for BLACK buffer");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -629,7 +637,7 @@ bool QJpegXLHandler::decode_one_frame()
                 pixels_cmy = nullptr;
                 free(pixels_alpha);
                 pixels_alpha = nullptr;
-                qWarning("ERROR: JxlDecoderSetImageOutBuffer failed");
+                qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetImageOutBuffer failed");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -641,7 +649,7 @@ bool QJpegXLHandler::decode_one_frame()
                 pixels_cmy = nullptr;
                 free(pixels_alpha);
                 pixels_alpha = nullptr;
-                qWarning("ERROR: JxlDecoderSetExtraChannelBuffer failed");
+                qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetExtraChannelBuffer failed");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -653,7 +661,7 @@ bool QJpegXLHandler::decode_one_frame()
                 pixels_cmy = nullptr;
                 free(pixels_alpha);
                 pixels_alpha = nullptr;
-                qWarning("ERROR: JxlDecoderSetExtraChannelBuffer failed");
+                qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetExtraChannelBuffer failed");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -666,7 +674,7 @@ bool QJpegXLHandler::decode_one_frame()
                 pixels_cmy = nullptr;
                 free(pixels_alpha);
                 pixels_alpha = nullptr;
-                qWarning("Unexpected event %d instead of JXL_DEC_FULL_IMAGE", status);
+                qCWarning(LOG_JXLPLUGIN, "Unexpected event %d instead of JXL_DEC_FULL_IMAGE", status);
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -700,7 +708,7 @@ bool QJpegXLHandler::decode_one_frame()
             if (m_current_image.isNull()) {
                 free(pixels_alpha);
                 pixels_alpha = nullptr;
-                qWarning("ERROR: convertedToColorSpace returned empty image");
+                qCWarning(LOG_JXLPLUGIN, "ERROR: convertedToColorSpace returned empty image");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -728,7 +736,7 @@ bool QJpegXLHandler::decode_one_frame()
         } else { // CMYK (no alpha)
             m_current_image = imageAlloc(m_basicinfo.xsize, m_basicinfo.ysize, QImage::Format_CMYK8888);
             if (m_current_image.isNull()) {
-                qWarning("Memory cannot be allocated");
+                qCWarning(LOG_JXLPLUGIN, "Memory cannot be allocated");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -737,7 +745,7 @@ bool QJpegXLHandler::decode_one_frame()
 
             pixels_cmy = reinterpret_cast<uchar *>(malloc(cmy_buffer_size));
             if (!pixels_cmy) {
-                qWarning("Memory cannot be allocated for CMY buffer");
+                qCWarning(LOG_JXLPLUGIN, "Memory cannot be allocated for CMY buffer");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -746,7 +754,7 @@ bool QJpegXLHandler::decode_one_frame()
             if (!pixels_black) {
                 free(pixels_cmy);
                 pixels_cmy = nullptr;
-                qWarning("Memory cannot be allocated for BLACK buffer");
+                qCWarning(LOG_JXLPLUGIN, "Memory cannot be allocated for BLACK buffer");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -756,7 +764,7 @@ bool QJpegXLHandler::decode_one_frame()
                 pixels_black = nullptr;
                 free(pixels_cmy);
                 pixels_cmy = nullptr;
-                qWarning("ERROR: JxlDecoderSetImageOutBuffer failed");
+                qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetImageOutBuffer failed");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -766,7 +774,7 @@ bool QJpegXLHandler::decode_one_frame()
                 pixels_black = nullptr;
                 free(pixels_cmy);
                 pixels_cmy = nullptr;
-                qWarning("ERROR: JxlDecoderSetExtraChannelBuffer failed");
+                qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetExtraChannelBuffer failed");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -777,7 +785,7 @@ bool QJpegXLHandler::decode_one_frame()
                 pixels_black = nullptr;
                 free(pixels_cmy);
                 pixels_cmy = nullptr;
-                qWarning("Unexpected event %d instead of JXL_DEC_FULL_IMAGE", status);
+                qCWarning(LOG_JXLPLUGIN, "Unexpected event %d instead of JXL_DEC_FULL_IMAGE", status);
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -815,7 +823,7 @@ bool QJpegXLHandler::decode_one_frame()
     } else { // RGB or GRAY
         m_current_image = imageAlloc(m_basicinfo.xsize, m_basicinfo.ysize, m_input_image_format);
         if (m_current_image.isNull()) {
-            qWarning("Memory cannot be allocated");
+            qCWarning(LOG_JXLPLUGIN, "Memory cannot be allocated");
             m_parseState = ParseJpegXLError;
             return false;
         }
@@ -837,21 +845,21 @@ bool QJpegXLHandler::decode_one_frame()
             rgb_buffer_size += 2 * size_t(m_input_pixel_format.num_channels) * size_t(m_current_image.width());
             break;
         default:
-            qWarning("ERROR: unsupported data type");
+            qCWarning(LOG_JXLPLUGIN, "ERROR: unsupported data type");
             m_parseState = ParseJpegXLError;
             return false;
             break;
         }
 
         if (JxlDecoderSetImageOutBuffer(m_decoder, &m_input_pixel_format, m_current_image.bits(), rgb_buffer_size) != JXL_DEC_SUCCESS) {
-            qWarning("ERROR: JxlDecoderSetImageOutBuffer failed");
+            qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetImageOutBuffer failed");
             m_parseState = ParseJpegXLError;
             return false;
         }
 
         status = JxlDecoderProcessInput(m_decoder);
         if (status != JXL_DEC_FULL_IMAGE) {
-            qWarning("Unexpected event %d instead of JXL_DEC_FULL_IMAGE", status);
+            qCWarning(LOG_JXLPLUGIN, "Unexpected event %d instead of JXL_DEC_FULL_IMAGE", status);
             m_parseState = ParseJpegXLError;
             return false;
         }
@@ -917,29 +925,29 @@ bool QJpegXLHandler::read(QImage *image)
 bool QJpegXLHandler::write(const QImage &image)
 {
     if (image.format() == QImage::Format_Invalid) {
-        qWarning("No image data to save");
+        qCWarning(LOG_JXLPLUGIN, "No image data to save");
         return false;
     }
 
     if ((image.width() == 0) || (image.height() == 0)) {
-        qWarning("Image has zero dimension!");
+        qCWarning(LOG_JXLPLUGIN, "Image has zero dimension!");
         return false;
     }
 
     if ((image.width() > MAX_IMAGE_WIDTH) || (image.height() > MAX_IMAGE_HEIGHT)) {
-        qWarning("Image (%dx%d) is too large to save!", image.width(), image.height());
+        qCWarning(LOG_JXLPLUGIN, "Image (%dx%d) is too large to save!", image.width(), image.height());
         return false;
     }
 
     size_t pixel_count = size_t(image.width()) * image.height();
     if (MAX_IMAGE_PIXELS && pixel_count > MAX_IMAGE_PIXELS) {
-        qWarning("Image (%dx%d) will not be saved because it has more than %d megapixels!", image.width(), image.height(), MAX_IMAGE_PIXELS / 1024 / 1024);
+        qCWarning(LOG_JXLPLUGIN, "Image (%dx%d) will not be saved because it has more than %d megapixels!", image.width(), image.height(), MAX_IMAGE_PIXELS / 1024 / 1024);
         return false;
     }
 
     JxlEncoder *encoder = JxlEncoderCreate(nullptr);
     if (!encoder) {
-        qWarning("Failed to create Jxl encoder");
+        qCWarning(LOG_JXLPLUGIN, "Failed to create Jxl encoder");
         return false;
     }
 
@@ -949,7 +957,7 @@ bool QJpegXLHandler::write(const QImage &image)
     if (num_worker_threads > 1) {
         runner = JxlThreadParallelRunnerCreate(nullptr, num_worker_threads);
         if (JxlEncoderSetParallelRunner(encoder, JxlThreadParallelRunner, runner) != JXL_ENC_SUCCESS) {
-            qWarning("JxlEncoderSetParallelRunner failed");
+            qCWarning(LOG_JXLPLUGIN, "JxlEncoderSetParallelRunner failed");
             JxlThreadParallelRunnerDestroy(runner);
             JxlEncoderDestroy(encoder);
             return false;
@@ -1029,7 +1037,7 @@ bool QJpegXLHandler::write(const QImage &image)
 
         const QByteArray cmyk_profile = image.colorSpace().iccProfile();
         if (cmyk_profile.isEmpty()) {
-            qWarning("ERROR saving CMYK JXL: empty ICC profile");
+            qCWarning(LOG_JXLPLUGIN, "ERROR saving CMYK JXL: empty ICC profile");
             if (runner) {
                 JxlThreadParallelRunnerDestroy(runner);
             }
@@ -1039,7 +1047,7 @@ bool QJpegXLHandler::write(const QImage &image)
 
         status = JxlEncoderSetBasicInfo(encoder, &output_info);
         if (status != JXL_ENC_SUCCESS) {
-            qWarning("JxlEncoderSetBasicInfo for CMYK image failed!");
+            qCWarning(LOG_JXLPLUGIN, "JxlEncoderSetBasicInfo for CMYK image failed!");
             if (runner) {
                 JxlThreadParallelRunnerDestroy(runner);
             }
@@ -1049,7 +1057,7 @@ bool QJpegXLHandler::write(const QImage &image)
 
         status = JxlEncoderSetExtraChannelInfo(encoder, 0, &extra_black_channel);
         if (status != JXL_ENC_SUCCESS) {
-            qWarning("JxlEncoderSetExtraChannelInfo for CMYK image failed!");
+            qCWarning(LOG_JXLPLUGIN, "JxlEncoderSetExtraChannelInfo for CMYK image failed!");
             if (runner) {
                 JxlThreadParallelRunnerDestroy(runner);
             }
@@ -1059,7 +1067,7 @@ bool QJpegXLHandler::write(const QImage &image)
 
         status = JxlEncoderSetICCProfile(encoder, reinterpret_cast<const uint8_t *>(cmyk_profile.constData()), cmyk_profile.size());
         if (status != JXL_ENC_SUCCESS) {
-            qWarning("JxlEncoderSetICCProfile for CMYK image failed!");
+            qCWarning(LOG_JXLPLUGIN, "JxlEncoderSetICCProfile for CMYK image failed!");
             if (runner) {
                 JxlThreadParallelRunnerDestroy(runner);
             }
@@ -1072,7 +1080,7 @@ bool QJpegXLHandler::write(const QImage &image)
             const char *box_type = "Exif";
             status = JxlEncoderAddBox(encoder, box_type, reinterpret_cast<const uint8_t *>(exif_data.constData()), exif_data.size(), JXL_FALSE);
             if (status != JXL_ENC_SUCCESS) {
-                qWarning("JxlEncoderAddBox failed!");
+                qCWarning(LOG_JXLPLUGIN, "JxlEncoderAddBox failed!");
                 if (runner) {
                     JxlThreadParallelRunnerDestroy(runner);
                 }
@@ -1085,7 +1093,7 @@ bool QJpegXLHandler::write(const QImage &image)
             const char *box_type = "xml ";
             status = JxlEncoderAddBox(encoder, box_type, reinterpret_cast<const uint8_t *>(xmp_data.constData()), xmp_data.size(), JXL_FALSE);
             if (status != JXL_ENC_SUCCESS) {
-                qWarning("JxlEncoderAddBox failed!");
+                qCWarning(LOG_JXLPLUGIN, "JxlEncoderAddBox failed!");
                 if (runner) {
                     JxlThreadParallelRunnerDestroy(runner);
                 }
@@ -1103,7 +1111,7 @@ bool QJpegXLHandler::write(const QImage &image)
 
         pixels_cmy = reinterpret_cast<uchar *>(malloc(cmy_buffer_size));
         if (!pixels_cmy) {
-            qWarning("Memory cannot be allocated for CMY buffer");
+            qCWarning(LOG_JXLPLUGIN, "Memory cannot be allocated for CMY buffer");
             if (runner) {
                 JxlThreadParallelRunnerDestroy(runner);
             }
@@ -1113,7 +1121,7 @@ bool QJpegXLHandler::write(const QImage &image)
 
         pixels_black = reinterpret_cast<uchar *>(malloc(extra_buffer_size));
         if (!pixels_black) {
-            qWarning("Memory cannot be allocated for BLACK buffer");
+            qCWarning(LOG_JXLPLUGIN, "Memory cannot be allocated for BLACK buffer");
             free(pixels_cmy);
             pixels_cmy = nullptr;
 
@@ -1150,7 +1158,7 @@ bool QJpegXLHandler::write(const QImage &image)
 
         status = JxlEncoderAddImageFrame(frame_settings_lossless, &pixel_format, pixels_cmy, cmy_buffer_size);
         if (status == JXL_ENC_ERROR) {
-            qWarning("JxlEncoderAddImageFrame failed!");
+            qCWarning(LOG_JXLPLUGIN, "JxlEncoderAddImageFrame failed!");
             free(pixels_black);
             pixels_black = nullptr;
             free(pixels_cmy);
@@ -1170,7 +1178,7 @@ bool QJpegXLHandler::write(const QImage &image)
         pixels_cmy = nullptr;
 
         if (status == JXL_ENC_ERROR) {
-            qWarning("JxlEncoderSetExtraChannelBuffer failed!");
+            qCWarning(LOG_JXLPLUGIN, "JxlEncoderSetExtraChannelBuffer failed!");
             if (runner) {
                 JxlThreadParallelRunnerDestroy(runner);
             }
@@ -1363,7 +1371,7 @@ bool QJpegXLHandler::write(const QImage &image)
                 if (gray_profile.isValid()) {
                     tmpimage = image.convertedToColorSpace(gray_profile, tmpformat);
                 } else {
-                    qWarning("JXL plugin created invalid grayscale QColorSpace!");
+                    qCWarning(LOG_JXLPLUGIN, "JXL plugin created invalid grayscale QColorSpace!");
                     tmpimage = image.convertToFormat(tmpformat);
                 }
             } else if (!is_gray && image.colorSpace().colorModel() != QColorSpace::ColorModel::Rgb) {
@@ -1387,7 +1395,7 @@ bool QJpegXLHandler::write(const QImage &image)
                 if (rgb_profile.isValid()) {
                     tmpimage = image.convertedToColorSpace(rgb_profile, tmpformat);
                 } else {
-                    qWarning("JXL plugin created invalid RGB QColorSpace!");
+                    qCWarning(LOG_JXLPLUGIN, "JXL plugin created invalid RGB QColorSpace!");
                     tmpimage = image.convertToFormat(tmpformat);
                 }
             } else { // ColorSpace matches the format
@@ -1404,7 +1412,7 @@ bool QJpegXLHandler::write(const QImage &image)
         output_info.ysize = tmpimage.height();
 
         if (output_info.xsize == 0 || output_info.ysize == 0 || tmpimage.isNull()) {
-            qWarning("Unable to allocate memory for output image");
+            qCWarning(LOG_JXLPLUGIN, "Unable to allocate memory for output image");
             if (runner) {
                 JxlThreadParallelRunnerDestroy(runner);
             }
@@ -1520,7 +1528,7 @@ bool QJpegXLHandler::write(const QImage &image)
 
         status = JxlEncoderSetBasicInfo(encoder, &output_info);
         if (status != JXL_ENC_SUCCESS) {
-            qWarning("JxlEncoderSetBasicInfo failed!");
+            qCWarning(LOG_JXLPLUGIN, "JxlEncoderSetBasicInfo failed!");
             if (runner) {
                 JxlThreadParallelRunnerDestroy(runner);
             }
@@ -1531,7 +1539,7 @@ bool QJpegXLHandler::write(const QImage &image)
         if (iccprofile.size() > 0) {
             status = JxlEncoderSetICCProfile(encoder, reinterpret_cast<const uint8_t *>(iccprofile.constData()), iccprofile.size());
             if (status != JXL_ENC_SUCCESS) {
-                qWarning("JxlEncoderSetICCProfile failed!");
+                qCWarning(LOG_JXLPLUGIN, "JxlEncoderSetICCProfile failed!");
                 if (runner) {
                     JxlThreadParallelRunnerDestroy(runner);
                 }
@@ -1541,7 +1549,7 @@ bool QJpegXLHandler::write(const QImage &image)
         } else {
             status = JxlEncoderSetColorEncoding(encoder, &color_profile);
             if (status != JXL_ENC_SUCCESS) {
-                qWarning("JxlEncoderSetColorEncoding failed!");
+                qCWarning(LOG_JXLPLUGIN, "JxlEncoderSetColorEncoding failed!");
                 if (runner) {
                     JxlThreadParallelRunnerDestroy(runner);
                 }
@@ -1555,7 +1563,7 @@ bool QJpegXLHandler::write(const QImage &image)
             const char *box_type = "Exif";
             status = JxlEncoderAddBox(encoder, box_type, reinterpret_cast<const uint8_t *>(exif_data.constData()), exif_data.size(), JXL_FALSE);
             if (status != JXL_ENC_SUCCESS) {
-                qWarning("JxlEncoderAddBox failed!");
+                qCWarning(LOG_JXLPLUGIN, "JxlEncoderAddBox failed!");
                 if (runner) {
                     JxlThreadParallelRunnerDestroy(runner);
                 }
@@ -1568,7 +1576,7 @@ bool QJpegXLHandler::write(const QImage &image)
             const char *box_type = "xml ";
             status = JxlEncoderAddBox(encoder, box_type, reinterpret_cast<const uint8_t *>(xmp_data.constData()), xmp_data.size(), JXL_FALSE);
             if (status != JXL_ENC_SUCCESS) {
-                qWarning("JxlEncoderAddBox failed!");
+                qCWarning(LOG_JXLPLUGIN, "JxlEncoderAddBox failed!");
                 if (runner) {
                     JxlThreadParallelRunnerDestroy(runner);
                 }
@@ -1595,7 +1603,7 @@ bool QJpegXLHandler::write(const QImage &image)
 
             float *packed_pixels32 = reinterpret_cast<float *>(malloc(buffer_size));
             if (!packed_pixels32) {
-                qWarning("ERROR: JXL plug-in failed to allocate memory");
+                qCWarning(LOG_JXLPLUGIN, "ERROR: JXL plug-in failed to allocate memory");
                 return false;
             }
 
@@ -1626,7 +1634,7 @@ bool QJpegXLHandler::write(const QImage &image)
 
             quint16 *packed_pixels16 = reinterpret_cast<quint16 *>(malloc(buffer_size));
             if (!packed_pixels16) {
-                qWarning("ERROR: JXL plug-in failed to allocate memory");
+                qCWarning(LOG_JXLPLUGIN, "ERROR: JXL plug-in failed to allocate memory");
                 return false;
             }
 
@@ -1664,7 +1672,7 @@ bool QJpegXLHandler::write(const QImage &image)
                 buffer_size += 2 * size_t(pixel_format.num_channels) * size_t(tmpimage.width());
                 break;
             default:
-                qWarning("ERROR: unsupported data type");
+                qCWarning(LOG_JXLPLUGIN, "ERROR: unsupported data type");
                 return false;
                 break;
             }
@@ -1673,7 +1681,7 @@ bool QJpegXLHandler::write(const QImage &image)
         }
 
         if (status == JXL_ENC_ERROR) {
-            qWarning("JxlEncoderAddImageFrame failed!");
+            qCWarning(LOG_JXLPLUGIN, "JxlEncoderAddImageFrame failed!");
             if (runner) {
                 JxlThreadParallelRunnerDestroy(runner);
             }
@@ -1698,7 +1706,7 @@ bool QJpegXLHandler::write(const QImage &image)
             offset = next_out - compressed.data();
             compressed.resize(compressed.size() * 2);
         } else if (status == JXL_ENC_ERROR) {
-            qWarning("JxlEncoderProcessOutput failed!");
+            qCWarning(LOG_JXLPLUGIN, "JxlEncoderProcessOutput failed!");
             if (runner) {
                 JxlThreadParallelRunnerDestroy(runner);
             }
@@ -1720,7 +1728,7 @@ bool QJpegXLHandler::write(const QImage &image)
         if (write_status > 0) {
             return true;
         } else if (write_status == -1) {
-            qWarning("Write error: %s\n", qUtf8Printable(device()->errorString()));
+            qCWarning(LOG_JXLPLUGIN, "Write error: %s\n", qUtf8Printable(device()->errorString()));
         }
     }
 
@@ -1942,14 +1950,14 @@ bool QJpegXLHandler::rewind()
     JxlDecoderRewind(m_decoder);
     if (m_runner) {
         if (JxlDecoderSetParallelRunner(m_decoder, JxlThreadParallelRunner, m_runner) != JXL_DEC_SUCCESS) {
-            qWarning("ERROR: JxlDecoderSetParallelRunner failed");
+            qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetParallelRunner failed");
             m_parseState = ParseJpegXLError;
             return false;
         }
     }
 
     if (JxlDecoderSetInput(m_decoder, reinterpret_cast<const uint8_t *>(m_rawData.constData()), m_rawData.size()) != JXL_DEC_SUCCESS) {
-        qWarning("ERROR: JxlDecoderSetInput failed");
+        qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetInput failed");
         m_parseState = ParseJpegXLError;
         return false;
     }
@@ -1958,14 +1966,14 @@ bool QJpegXLHandler::rewind()
 
     if (m_basicinfo.uses_original_profile == JXL_FALSE && m_basicinfo.have_animation == JXL_FALSE) {
         if (JxlDecoderSubscribeEvents(m_decoder, JXL_DEC_COLOR_ENCODING | JXL_DEC_FULL_IMAGE) != JXL_DEC_SUCCESS) {
-            qWarning("ERROR: JxlDecoderSubscribeEvents failed");
+            qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSubscribeEvents failed");
             m_parseState = ParseJpegXLError;
             return false;
         }
 
         JxlDecoderStatus status = JxlDecoderProcessInput(m_decoder);
         if (status != JXL_DEC_COLOR_ENCODING) {
-            qWarning("Unexpected event %d instead of JXL_DEC_COLOR_ENCODING", status);
+            qCWarning(LOG_JXLPLUGIN, "Unexpected event %d instead of JXL_DEC_COLOR_ENCODING", status);
             m_parseState = ParseJpegXLError;
             return false;
         }
@@ -1975,10 +1983,10 @@ bool QJpegXLHandler::rewind()
         if (jxlcms) {
             status = JxlDecoderSetCms(m_decoder, *jxlcms);
             if (status != JXL_DEC_SUCCESS) {
-                qWarning("JxlDecoderSetCms ERROR");
+                qCWarning(LOG_JXLPLUGIN, "JxlDecoderSetCms ERROR");
             }
         } else {
-            qWarning("No JPEG XL CMS Interface");
+            qCWarning(LOG_JXLPLUGIN, "No JPEG XL CMS Interface");
         }
 #endif
 
@@ -1988,7 +1996,7 @@ bool QJpegXLHandler::rewind()
         JxlDecoderSetPreferredColorProfile(m_decoder, &color_encoding);
     } else {
         if (JxlDecoderSubscribeEvents(m_decoder, JXL_DEC_FULL_IMAGE) != JXL_DEC_SUCCESS) {
-            qWarning("ERROR: JxlDecoderSubscribeEvents failed");
+            qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSubscribeEvents failed");
             m_parseState = ParseJpegXLError;
             return false;
         }
@@ -2019,7 +2027,7 @@ bool QJpegXLHandler::decodeContainer()
     JxlDecoderRewind(m_decoder);
 
     if (JxlDecoderSetInput(m_decoder, buf, len) != JXL_DEC_SUCCESS) {
-        qWarning("ERROR: JxlDecoderSetInput failed");
+        qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetInput failed");
         m_parseState = ParseJpegXLError;
         return false;
     }
@@ -2027,11 +2035,11 @@ bool QJpegXLHandler::decodeContainer()
     JxlDecoderCloseInput(m_decoder);
 
     if (JxlDecoderSetDecompressBoxes(m_decoder, JXL_TRUE) != JXL_DEC_SUCCESS) {
-        qWarning("WARNING: JxlDecoderSetDecompressBoxes failed");
+        qCWarning(LOG_JXLPLUGIN, "WARNING: JxlDecoderSetDecompressBoxes failed");
     }
 
     if (JxlDecoderSubscribeEvents(m_decoder, JXL_DEC_BOX | JXL_DEC_BOX_COMPLETE) != JXL_DEC_SUCCESS) {
-        qWarning("ERROR: JxlDecoderSubscribeEvents failed");
+        qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSubscribeEvents failed");
         m_parseState = ParseJpegXLError;
         return false;
     }
@@ -2053,7 +2061,7 @@ bool QJpegXLHandler::decodeContainer()
         case JXL_DEC_BOX:
             status = JxlDecoderGetBoxType(m_decoder, box_type, JXL_TRUE);
             if (status != JXL_DEC_SUCCESS) {
-                qWarning("Error in JxlDecoderGetBoxType");
+                qCWarning(LOG_JXLPLUGIN, "Error in JxlDecoderGetBoxType");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -2071,17 +2079,17 @@ bool QJpegXLHandler::decodeContainer()
             }
             break;
         case JXL_DEC_ERROR:
-            qWarning("JXL Metadata decoding error");
+            qCWarning(LOG_JXLPLUGIN, "JXL Metadata decoding error");
             m_parseState = ParseJpegXLError;
             return false;
             break;
         case JXL_DEC_NEED_MORE_INPUT:
-            qWarning("JXL metadata are probably incomplete");
+            qCWarning(LOG_JXLPLUGIN, "JXL metadata are probably incomplete");
             m_parseState = ParseJpegXLError;
             return false;
             break;
         default:
-            qWarning("Unexpected event %d instead of JXL_DEC_BOX", status);
+            qCWarning(LOG_JXLPLUGIN, "Unexpected event %d instead of JXL_DEC_BOX", status);
             m_parseState = ParseJpegXLError;
             return false;
             break;
@@ -2109,7 +2117,7 @@ bool QJpegXLHandler::decodeContainer()
         } else if (headerindexBE != -1) {
             m_exif = exifBox.mid(headerindexBE);
         } else {
-            qWarning("Exif box in JXL file doesn't have TIFF header");
+            qCWarning(LOG_JXLPLUGIN, "Exif box in JXL file doesn't have TIFF header");
         }
     }
 #endif
@@ -2122,13 +2130,13 @@ bool QJpegXLHandler::extractBox(QByteArray &output, size_t container_size)
     uint64_t rawboxsize = 0;
     JxlDecoderStatus status = JxlDecoderGetBoxSizeRaw(m_decoder, &rawboxsize);
     if (status != JXL_DEC_SUCCESS) {
-        qWarning("ERROR: JxlDecoderGetBoxSizeRaw failed");
+        qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderGetBoxSizeRaw failed");
         m_parseState = ParseJpegXLError;
         return false;
     }
 
     if (rawboxsize > container_size) {
-        qWarning("JXL metadata box is incomplete");
+        qCWarning(LOG_JXLPLUGIN, "JXL metadata box is incomplete");
         m_parseState = ParseJpegXLError;
         return false;
     }
@@ -2136,7 +2144,7 @@ bool QJpegXLHandler::extractBox(QByteArray &output, size_t container_size)
     output.resize(rawboxsize);
     status = JxlDecoderSetBoxBuffer(m_decoder, reinterpret_cast<uint8_t *>(output.data()), output.size());
     if (status != JXL_DEC_SUCCESS) {
-        qWarning("ERROR: JxlDecoderSetBoxBuffer failed");
+        qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetBoxBuffer failed");
         m_parseState = ParseJpegXLError;
         return false;
     }
@@ -2147,7 +2155,7 @@ bool QJpegXLHandler::extractBox(QByteArray &output, size_t container_size)
             size_t bytes_remains = JxlDecoderReleaseBoxBuffer(m_decoder);
 
             if (output.size() > 4194304) { // approx. 4MB limit for decompressed metadata box
-                qWarning("JXL metadata box is too large");
+                qCWarning(LOG_JXLPLUGIN, "JXL metadata box is too large");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -2157,7 +2165,7 @@ bool QJpegXLHandler::extractBox(QByteArray &output, size_t container_size)
             uint8_t *extension_buffer = reinterpret_cast<uint8_t *>(output.data()) + (output.size() - extension_size);
 
             if (JxlDecoderSetBoxBuffer(m_decoder, extension_buffer, extension_size) != JXL_DEC_SUCCESS) {
-                qWarning("ERROR: JxlDecoderSetBoxBuffer failed after JXL_DEC_BOX_NEED_MORE_OUTPUT");
+                qCWarning(LOG_JXLPLUGIN, "ERROR: JxlDecoderSetBoxBuffer failed after JXL_DEC_BOX_NEED_MORE_OUTPUT");
                 m_parseState = ParseJpegXLError;
                 return false;
             }
@@ -2165,7 +2173,7 @@ bool QJpegXLHandler::extractBox(QByteArray &output, size_t container_size)
     } while (status == JXL_DEC_BOX_NEED_MORE_OUTPUT);
 
     if (status != JXL_DEC_BOX_COMPLETE) {
-        qWarning("Unexpected event %d instead of JXL_DEC_BOX_COMPLETE", status);
+        qCWarning(LOG_JXLPLUGIN, "Unexpected event %d instead of JXL_DEC_BOX_COMPLETE", status);
         m_parseState = ParseJpegXLError;
         return false;
     }

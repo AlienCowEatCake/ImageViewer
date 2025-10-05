@@ -1227,11 +1227,15 @@ void MicroExif::updateImageMetadata(QImage &targetImage, bool replaceExisting) c
 
 bool MicroExif::updateImageResolution(QImage &targetImage)
 {
-    if (horizontalResolution() > 0)
-        targetImage.setDotsPerMeterX(qRound(horizontalResolution() / 25.4 * 1000));
-    if (verticalResolution() > 0)
-        targetImage.setDotsPerMeterY(qRound(verticalResolution() / 25.4 * 1000));
-    return (horizontalResolution() > 0) || (verticalResolution() > 0);
+    const auto hdpm = dpi2ppm(horizontalResolution());
+    if (hdpm > 0) {
+        targetImage.setDotsPerMeterX(hdpm);
+    }
+    const auto vdpm = dpi2ppm(verticalResolution());
+    if (vdpm > 0) {
+        targetImage.setDotsPerMeterY(vdpm);
+    }
+    return (hdpm > 0) || (vdpm > 0);
 }
 
 MicroExif MicroExif::fromByteArray(const QByteArray &ba, bool searchHeader)
@@ -1301,8 +1305,8 @@ MicroExif MicroExif::fromImage(const QImage &image)
     // Image properties
     exif.setWidth(image.width());
     exif.setHeight(image.height());
-    exif.setHorizontalResolution(image.dotsPerMeterX() * 25.4 / 1000);
-    exif.setVerticalResolution(image.dotsPerMeterY() * 25.4 / 1000);
+    exif.setHorizontalResolution(dppm2dpi(image.dotsPerMeterX()));
+    exif.setVerticalResolution(dppm2dpi(image.dotsPerMeterY()));
     exif.setColorSpace(image.colorSpace());
 
     // TIFF strings

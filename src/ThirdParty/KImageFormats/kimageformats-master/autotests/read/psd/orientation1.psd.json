@@ -1,6 +1,12 @@
 [
     {
         "fileName" : "orientation_all.png",
+        "colorSpace" : {
+            "description" : "GIMP built-in sRGB",
+            "primaries" : "SRgb",
+            "transferFunction" : "SRgb",
+            "gamma" : 0
+        },
         "metadata" : [
             {
                 "key" : "Software" ,

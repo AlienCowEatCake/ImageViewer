@@ -15,6 +15,7 @@
 
 #include <QColorSpace>
 #include <QDataStream>
+#include <QLoggingCategory>
 #include <QDebug>
 #include <QFloat16>
 
@@ -27,6 +28,22 @@
 #ifndef DDS_DISABLE_STRIDE_ALIGNMENT
 // Disable the stride aligment based on DDS pitch: it is known that some writers do not set it correctly
 // #define DDS_DISABLE_STRIDE_ALIGNMENT
+#endif
+
+/* *** DDS_MAX_IMAGE_WIDTH and DDS_MAX_IMAGE_HEIGHT ***
+ * The maximum size in pixel allowed by the plugin.
+ */
+#ifndef DDS_MAX_IMAGE_WIDTH
+#define DDS_MAX_IMAGE_WIDTH KIF_LARGE_IMAGE_PIXEL_LIMIT
+#endif
+#ifndef DDS_MAX_IMAGE_HEIGHT
+#define DDS_MAX_IMAGE_HEIGHT DDS_MAX_IMAGE_WIDTH
+#endif
+
+#ifdef QT_DEBUG
+Q_LOGGING_CATEGORY(LOG_DDSPLUGIN, "kf.imageformats.plugins.dds", QtDebugMsg)
+#else
+Q_LOGGING_CATEGORY(LOG_DDSPLUGIN, "kf.imageformats.plugins.dds", QtWarningMsg)
 #endif
 
 enum Format {
@@ -1035,20 +1052,32 @@ static QImage readUnsignedImage(QDataStream &s, const DDSHeader &dds, quint32 wi
 
 static qfloat16 readFloat16(QDataStream &s)
 {
-    qfloat16 f16;
+    qfloat16 f16 = 0;
+    if (s.status() != QDataStream::Ok) {
+        return f16;
+    }
     s >> f16;
+    if (qIsNaN(f16)) {
+        s.setStatus(QDataStream::ReadCorruptData);
+    }
     return f16;
 }
 
 static inline float readFloat32(QDataStream &s)
 {
     Q_ASSERT(sizeof(float) == 4);
-    float value;
+    float value = 0;
+    if (s.status() != QDataStream::Ok) {
+        return value;
+    }
     // TODO: find better way to avoid setting precision each time
     QDataStream::FloatingPointPrecision precision = s.floatingPointPrecision();
     s.setFloatingPointPrecision(QDataStream::SinglePrecision);
     s >> value;
     s.setFloatingPointPrecision(precision);
+    if (qIsNaN(value)) {
+        s.setStatus(QDataStream::ReadCorruptData);
+    }
     return value;
 }
 
@@ -2510,7 +2539,7 @@ bool QDDSHandler::write(const QImage &outImage)
     }
 #endif
 
-    qWarning() << "Format" << formatName(format) << "is not supported";
+    qCWarning(LOG_DDSPLUGIN) << "Format" << formatName(format) << "is not supported";
     return false;
 }
 
@@ -2583,7 +2612,7 @@ bool QDDSHandler::jumpToImage(int imageNumber)
 bool QDDSHandler::canRead(QIODevice *device)
 {
     if (!device) {
-        qWarning() << "DDSHandler::canRead() called with no device";
+        qCWarning(LOG_DDSPLUGIN) << "DDSHandler::canRead() called with no device";
         return false;
     }
 
@@ -2608,7 +2637,7 @@ bool QDDSHandler::ensureScanned() const
     that->m_format = FormatUnknown;
 
     if (device()->isSequential()) {
-        qWarning() << "Sequential devices are not supported";
+        qCWarning(LOG_DDSPLUGIN) << "Sequential devices are not supported";
         return false;
     }
 
@@ -2641,25 +2670,25 @@ bool QDDSHandler::verifyHeader(const DDSHeader &dds) const
     quint32 requiredFlags = DDSHeader::FlagCaps | DDSHeader::FlagHeight
             | DDSHeader::FlagWidth | DDSHeader::FlagPixelFormat;
     if ((flags & requiredFlags) != requiredFlags) {
-        qWarning() << "Wrong dds.flags - not all required flags present. "
+        qCWarning(LOG_DDSPLUGIN) << "Wrong dds.flags - not all required flags present. "
                       "Actual flags :" << flags;
         return false;
     }
 
     if (dds.size != ddsSize) {
-        qWarning() << "Wrong dds.size: actual =" << dds.size
+        qCWarning(LOG_DDSPLUGIN) << "Wrong dds.size: actual =" << dds.size
                    << "expected =" << ddsSize;
         return false;
     }
 
     if (dds.pixelFormat.size != pixelFormatSize) {
-        qWarning() << "Wrong dds.pixelFormat.size: actual =" << dds.pixelFormat.size
+        qCWarning(LOG_DDSPLUGIN) << "Wrong dds.pixelFormat.size: actual =" << dds.pixelFormat.size
                    << "expected =" << pixelFormatSize;
         return false;
     }
 
-    if (dds.width > INT_MAX || dds.height > INT_MAX) {
-        qWarning() << "Can't read image with w/h bigger than INT_MAX";
+    if (dds.width > DDS_MAX_IMAGE_WIDTH || dds.height > DDS_MAX_IMAGE_HEIGHT) {
+        qCWarning(LOG_DDSPLUGIN) << "Can't read image with size bigger than" << DDS_MAX_IMAGE_WIDTH << "x" << DDS_MAX_IMAGE_HEIGHT << "pixels";
         return false;
     }
 

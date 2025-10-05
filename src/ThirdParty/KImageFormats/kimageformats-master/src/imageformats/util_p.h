@@ -76,13 +76,70 @@ inline QImage imageAlloc(qint32 width, qint32 height, const QImage::Format &form
     return imageAlloc(QSize(width, height), format);
 }
 
-inline double qRoundOrZero(double d)
+template<class TI, class SF> // SF = source FP, TI = target INT
+TI qRoundOrZero_T(SF d, bool *ok = nullptr)
 {
-    // If the value d is outside the range of int, the behavior is undefined.
-    if (d > std::numeric_limits<int>::max()) {
+    // checks for undefined behavior
+    if (qIsNaN(d) || qIsInf(d) || d < SF() || d > SF(std::numeric_limits<TI>::max())) {
+        if (ok) {
+            *ok = false;
+        }
         return 0;
     }
+    if (ok) {
+        *ok = true;
+    }
     return qRound(d);
+}
+
+inline qint32 qRoundOrZero(double d, bool *ok = nullptr)
+{
+    return qRoundOrZero_T<qint32>(d, ok);
+}
+inline qint32 qRoundOrZero(float d, bool *ok = nullptr)
+{
+    return qRoundOrZero_T<qint32>(d, ok);
+}
+
+/*!
+ * \brief dpi2ppm
+ * Converts a value from DPI to PPM.
+ * \return \a dpi converted to pixel per meter.
+ */
+inline qint32 dpi2ppm(double dpi, bool *ok = nullptr)
+{
+    return qRoundOrZero(dpi / double(25.4) * double(1000), ok);
+}
+inline qint32 dpi2ppm(float dpi, bool *ok = nullptr)
+{
+    return qRoundOrZero(dpi / float(25.4) * float(1000), ok);
+}
+inline qint32 dpi2ppm(quint16 dpi, bool *ok = nullptr)
+{
+    return qRoundOrZero(dpi / double(25.4) * double(1000), ok);
+}
+
+/*!
+ * \brief ppm2dpi
+ * Converts a value from PPM to DPI.
+ * \return \a ppm converted to dot per inch.
+ */
+template<class TF, class SI> // SI = source INT, TF = target FP
+TF ppm2dpi_T(SI ppm, bool *ok = nullptr)
+{
+    if (ok) {
+        *ok = ppm > 0;
+    }
+    return ppm > 0 ? ppm * TF(25.4) / TF(1000) : TF();
+}
+
+inline double dppm2dpi(qint32 ppm, bool *ok = nullptr)
+{
+    return ppm2dpi_T<double>(ppm, ok);
+}
+inline float fppm2dpi(qint32 ppm, bool *ok = nullptr)
+{
+    return ppm2dpi_T<float>(ppm, ok);
 }
 
 #endif // UTIL_P_H

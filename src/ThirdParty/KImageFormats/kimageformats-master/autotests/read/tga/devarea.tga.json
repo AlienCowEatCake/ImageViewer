@@ -2,6 +2,12 @@
     {
         "fileName" : "extarea.png",
         "skipSequential" : true,
+        "colorSpace" : {
+            "description" : "sRGB build-in",
+            "primaries" : "SRgb",
+            "transferFunction" : "SRgb",
+            "gamma" : 0
+        },
         "metadata" : [
             {
                 "key" : "Author",

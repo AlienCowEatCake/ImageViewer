@@ -27,6 +27,37 @@ public:
 
     }
 
+    /*!
+     * \brief atariSTERast
+     * On Atari STE images, the RAST chunk can be found outside
+     * the FORM one so, I check if this is the case.
+     * \param chunks The chunk list.
+     */
+    void atariSTERast(QIODevice *d, IFFChunk::ChunkList &chunks)
+    {
+        if (chunks.size() != 1 || d->isSequential()) {
+            return;
+        }
+        auto &&c = chunks.first();
+        if (c->chunkId() != FORMChunk::defaultChunkId()) {
+            return;
+        }
+
+        // The RAST chunk is not aligned so I have to temporary change the
+        // position and the alignment to read it successfully.
+        auto pos = d->pos();
+        auto align = c->alignBytes();
+        c->setAlignBytes(1);
+        d->seek(c->nextChunkPos());
+        c->setAlignBytes(align);
+        if (d->peek(4) == RAST_CHUNK) {
+            auto rast = QSharedPointer<IFFChunk>(new RASTChunk());
+            if (rast->readStructure(d) && rast->isValid())
+                chunks.first()->_chunks.append(rast);
+        }
+        d->seek(pos);
+    }
+
     bool readStructure(QIODevice *d)
     {
         if (d == nullptr) {
@@ -40,6 +71,7 @@ public:
         auto ok = false;
         auto chunks = IFFChunk::fromDevice(d, &ok);
         if (ok) {
+            atariSTERast(d, chunks);
             m_chunks = chunks;
         }
         return ok;
@@ -101,7 +133,7 @@ bool IFFHandler::canRead() const
 bool IFFHandler::canRead(QIODevice *device)
 {
     if (!device) {
-        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::canRead() called with no device";
+        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::canRead(): called with no device";
         return false;
     }
 
@@ -124,7 +156,7 @@ bool IFFHandler::canRead(QIODevice *device)
     auto pos = device->pos();
     auto chunks = IFFChunk::fromDevice(device, &ok);
     if (!device->seek(pos)) {
-        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::canRead() unable to reset device position";
+        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::canRead(): unable to reset device position";
     }
     if (ok) {
         auto forms = IFFHandlerPrivate::searchForms<FORMChunk>(chunks, true);
@@ -216,14 +248,18 @@ static void addMetadata(QImage &img, const IFOR_Chunk *form)
     }
 
     // resolution -> leave after set of EXIF chunk
+    const DPIChunk *dpi = nullptr;
     auto dpis = IFFChunk::searchT<DPIChunk>(form);
+    auto xbmis = IFFChunk::searchT<XBMIChunk>(form);
     if (!dpis.isEmpty()) {
-        auto &&dpi = dpis.first();
-        if (dpi->isValid()) {
-            img.setDotsPerMeterX(dpi->dotsPerMeterX());
-            img.setDotsPerMeterY(dpi->dotsPerMeterY());
-            resChanged = true;
-        }
+        dpi = dpis.first();
+    } else if (!xbmis.isEmpty()) {
+        dpi = xbmis.first(); // never seen
+    }
+    if (dpi && dpi->isValid()) {
+        img.setDotsPerMeterX(dpi->dotsPerMeterX());
+        img.setDotsPerMeterY(dpi->dotsPerMeterY());
+        resChanged = true;
     }
 
     // if no explicit resolution was found, apply the aspect ratio to the default one
@@ -254,22 +290,26 @@ static QImage convertIPAL(const QImage& img, const IPALChunk *ipal)
         return img;
     }
 
-    auto tmp = img.convertToFormat(FORMAT_RGB_8BIT);
+    auto tmp = img.convertToFormat(ipal->hasAlpha() ? FORMAT_RGBA_8BIT : FORMAT_RGB_8BIT);
     if (tmp.isNull()) {
         qCCritical(LOG_IFFPLUGIN) << "convertIPAL(): error while converting the image!";
         return img;
     }
 
+    auto mul = tmp.hasAlphaChannel() ? 4 : 3;
     for (auto y = 0, h = img.height(); y < h; ++y) {
         auto src = reinterpret_cast<const quint8 *>(img.constScanLine(y));
         auto dst = tmp.scanLine(y);
-        auto lpal = ipal->palette(y, h);
+        auto lpal = ipal->palette(y);
         for (auto x = 0, w = img.width(); x < w; ++x) {
             if (src[x] < lpal.size()) {
-                auto x3 = x * 3;
-                dst[x3] = qRed(lpal.at(src[x]));
-                dst[x3 + 1] = qGreen(lpal.at(src[x]));
-                dst[x3 + 2] = qBlue(lpal.at(src[x]));
+                auto xmul = x * mul;
+                dst[xmul] = qRed(lpal.at(src[x]));
+                dst[xmul + 1] = qGreen(lpal.at(src[x]));
+                dst[xmul + 2] = qBlue(lpal.at(src[x]));
+                if (mul == 4) {
+                    dst[xmul + 3] = qAlpha(lpal.at(src[x]));
+                }
             }
         }
     }
@@ -289,7 +329,7 @@ bool IFFHandler::readStandardImage(QImage *image)
     // show the first one (I don't have a sample with many images)
     auto headers = IFFChunk::searchT<BMHDChunk>(form);
     if (headers.isEmpty()) {
-        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readStandardImage() no supported image found";
+        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readStandardImage(): no supported image found";
         return false;
     }
 
@@ -297,7 +337,7 @@ bool IFFHandler::readStandardImage(QImage *image)
     auto &&header = headers.first();
     auto img = imageAlloc(header->size(), form->format());
     if (img.isNull()) {
-        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readStandardImage() error while allocating the image";
+        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readStandardImage(): error while allocating the image";
         return false;
     }
 
@@ -326,7 +366,19 @@ bool IFFHandler::readStandardImage(QImage *image)
     }
 
     // reading image data
-    auto ipal = form->searchIPal();
+    std::unique_ptr<IPALChunk> ipal;
+    if (auto ptr = form->searchIPal()) {
+        ipal = std::unique_ptr<IPALChunk>(ptr->clone());
+    }
+    if (ipal) {
+        auto pal = img.colorTable();
+        if (pal.isEmpty() && cmap)
+            pal = cmap->palette();
+        if (!ipal->initialize(pal, img.height())) {
+            qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readStandardImage(): unable to initialize palette changer";
+            return false;
+        }
+    }
     auto bodies = IFFChunk::searchT<BODYChunk>(form);
     if (bodies.isEmpty()) {
         auto abits = IFFChunk::searchT<ABITChunk>(form);
@@ -338,23 +390,23 @@ bool IFFHandler::readStandardImage(QImage *image)
     } else {
         auto &&body = bodies.first();
         if (!body->resetStrideRead(device())) {
-            qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readStandardImage() error while reading image data";
+            qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readStandardImage(): error while reading image data";
             return false;
         }
         for (auto y = 0, h = img.height(); y < h; ++y) {
             auto line = reinterpret_cast<char*>(img.scanLine(y));
-            auto ba = body->strideRead(device(), y, header, camg, cmap, ipal, form->formType());
+            auto ba = body->strideRead(device(), y, header, camg, cmap, ipal.get(), form->formType());
             if (ba.isEmpty()) {
-                qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readStandardImage() error while reading image scanline";
+                qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readStandardImage(): error while reading image scanline";
                 return false;
             }
             memcpy(line, ba.constData(), std::min(img.bytesPerLine(), ba.size()));
         }
     }
 
-    // BEAM / CTBL conversion (if not already done)
+    // BEAM / CTBL, SHAM, RAST, PCHG conversion (if not already done)
     if (ipal && img.format() == QImage::Format_Indexed8) {
-        img = convertIPAL(img, ipal);
+        img = convertIPAL(img, ipal.get());
     }
 
     // set metadata (including image resolution)
@@ -376,7 +428,7 @@ bool IFFHandler::readMayaImage(QImage *image)
     // show the first one (I don't have a sample with many images)
     auto headers = IFFChunk::searchT<TBHDChunk>(form);
     if (headers.isEmpty()) {
-        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readMayaImage() no supported image found";
+        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readMayaImage(): no supported image found";
         return false;
     }
 
@@ -384,30 +436,30 @@ bool IFFHandler::readMayaImage(QImage *image)
     auto &&header = headers.first();
     auto img = imageAlloc(header->size(), form->format());
     if (img.isNull()) {
-        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readMayaImage() error while allocating the image";
+        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readMayaImage(): error while allocating the image";
         return false;
     }
 
     auto &&tiles = IFFChunk::searchT<RGBAChunk>(form);
     if ((tiles.size() & 0xFFFF) != header->tiles()) { // Photoshop, on large images saves more than 65535 tiles
-        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readMayaImage() tile number mismatch: found" << tiles.size() << "while expected" << header->tiles();
+        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readMayaImage(): tile number mismatch: found" << tiles.size() << "while expected" << header->tiles();
         return false;
     }
     for (auto &&tile : tiles) {
         auto tp = tile->pos();
         auto ts = tile->size();
         if (tp.x() < 0 || tp.x() + ts.width() > img.width()) {
-            qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readMayaImage() wrong tile position or size";
+            qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readMayaImage(): wrong tile position or size";
             return false;
         }
         if (tp.y() < 0 || tp.y() + ts.height() > img.height()) {
-            qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readMayaImage() wrong tile position or size";
+            qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readMayaImage(): wrong tile position or size";
             return false;
         }
         // For future releases: it might be a good idea not to use a QPainter
         auto ti = tile->tile(device(), header);
         if (ti.isNull()) {
-            qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readMayaImage() error while decoding the tile";
+            qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readMayaImage(): error while decoding the tile";
             return false;
         }
         QPainter painter(&img);
@@ -432,7 +484,7 @@ bool IFFHandler::readMayaImage(QImage *image)
 bool IFFHandler::read(QImage *image)
 {
     if (!d->readStructure(device())) {
-        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::read() invalid IFF structure";
+        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::read(): invalid IFF structure";
         return false;
     }
 
@@ -444,7 +496,7 @@ bool IFFHandler::read(QImage *image)
         return true;
     }
 
-    qCWarning(LOG_IFFPLUGIN) << "IFFHandler::read() no supported image found";
+    qCWarning(LOG_IFFPLUGIN) << "IFFHandler::read(): no supported image found";
     return false;
 }
 
@@ -521,7 +573,7 @@ int IFFHandler::imageCount() const
 
     count = QImageIOHandler::imageCount();
     if (!d->readStructure(device())) {
-        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::imageCount() invalid IFF structure";
+        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::imageCount(): invalid IFF structure";
         return count;
     }
 

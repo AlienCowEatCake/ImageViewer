@@ -88,13 +88,17 @@ are iterated sequentially and the first object that matches the requirements
 is used for testing (successes are ignored).
 
 Supported values ​​for JSON objects:
+- `colorSpace` : Type `object`. An object with the `description` (type 
+`string`), `primaries` (type `string`), `transferFunction` (type `string`), 
+`colorModel` (type `string`) and `gamma` (type `double`) values ​​of the
+image color space.
 - `comment`: Type `string`. A string shown by the test when a condition occurs.
 - `description`: Type `string`. A description of the object. Not used by the 
 test.
 - `disableAutoTransform`: Type `boolean`. By default, tests are run with 
 autotransform enabled (i.e. rotation is applied if the plugin supports it).
 Set to `true` to disable autotransform.
-- `filename`: Type `string`. Name of the template file to use. E.g. 
+- `fileName`: Type `string`. Name of the template file to use. E.g. 
 "testRGB_Qt_6_2.png".
 - `fuzziness`: Type `integer`. Set the fuzziness only if not already set on the 
 command line. The value set on the command line wins over the one in the JSON 
@@ -108,8 +112,8 @@ with (if not set means all). E.g. "6.2.0".
 - `perceptiveFuzziness` Type `boolean`. Set the perceptive fuzziness only if not
 already set on the command line. The value set on the command line wins over 
 the one in the JSON file.
-- `resolution`: Type `object`. An object with the `dotsPerMeterX` and
-`dotsPerMeterY` (integer) values ​​of the image.
+- `resolution`: Type `object`. An object with the `dotsPerMeterX` (type `integer`)
+and `dotsPerMeterY` (type `integer`) values ​​of the image.
 - `seeAlso`: Type `string`. More info about the object. Normally used to point
 to bug reports. Not used by the test.
 - `skipSequential`: Type `boolean`. Skip the test on sequential access device.
@@ -123,6 +127,7 @@ Some examples:
 - Example 3: [Metadata](read/psd/metadata.psd.json)
 - Example 4: [Check Qt version, resolution and metadata](read/psd/mch-16bits.psd.json)
 - Example 5: [Fuzziness setting](read/xcf/birthday16.xcf.json)
+- Example 6: [Color space](read/dds/rgba_f16.dds.json)
  
 These are just a few examples. More examples can be found in the test folders.
 

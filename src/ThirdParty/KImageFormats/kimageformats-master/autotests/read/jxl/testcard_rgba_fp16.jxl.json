@@ -11,6 +11,12 @@
     },
     {
         "minQtVersion" : "6.6.2",
+        "colorSpace" : {
+            "description" : "sRGB built-in",
+            "primaries" : "SRgb",
+            "transferFunction" : "SRgb",
+            "gamma" : 0
+        },
         "fileName" : "testcard_rgba_fp16.png"
     },
     {

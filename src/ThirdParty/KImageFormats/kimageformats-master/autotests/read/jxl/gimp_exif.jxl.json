@@ -1,6 +1,12 @@
 [
     {
         "fileName" : "gimp_exif.png",
+        "colorSpace" : {
+            "description" : "sRGB build-in",
+            "primaries" : "SRgb",
+            "transferFunction" : "SRgb",
+            "gamma" : 0
+        },
         "metadata" : [
             {
                 "key" : "ModificationDate",

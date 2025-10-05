@@ -12,6 +12,7 @@ include:
       - /gitlab-templates/windows-qt6.yml
       - /gitlab-templates/xml-lint.yml
       - /gitlab-templates/yaml-lint.yml
+      - /gitlab-templates/oss-fuzz.yml
 
 image_json_validate:
   stage: validate

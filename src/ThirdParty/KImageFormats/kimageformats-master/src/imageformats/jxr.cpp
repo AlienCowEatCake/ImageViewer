@@ -983,8 +983,14 @@ bool JXRHandler::read(QImage *outImage)
     if (auto err = d->pDecoder->GetResolution(d->pDecoder, &hres, &vres)) {
         qCWarning(LOG_JXRPLUGIN) << "JXRHandler::read() error while reading resolution:" << err;
     } else {
-        img.setDotsPerMeterX(qRound(hres * 1000 / 25.4));
-        img.setDotsPerMeterY(qRound(vres * 1000 / 25.4));
+        const qint32 hdpm = dpi2ppm(hres);
+        if (hdpm > 0) {
+            img.setDotsPerMeterX(hdpm);
+        }
+        const qint32 vdpm = dpi2ppm(vres);
+        if (vdpm > 0) {
+            img.setDotsPerMeterY(vdpm);
+        }
     }
 
     // alpha copy mode
@@ -1144,7 +1150,7 @@ bool JXRHandler::write(const QImage &image)
         qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() error while setting the image size:" << err;
         return false;
     }
-    if (auto err = d->pEncoder->SetResolution(d->pEncoder, qi.dotsPerMeterX() * 25.4 / 1000, qi.dotsPerMeterY() * 25.4 / 1000)) {
+    if (auto err = d->pEncoder->SetResolution(d->pEncoder, dppm2dpi(qi.dotsPerMeterX()), dppm2dpi(qi.dotsPerMeterY()))) {
         qCWarning(LOG_JXRPLUGIN) << "JXRHandler::write() error while setting the image resolution:" << err;
         return false;
     }

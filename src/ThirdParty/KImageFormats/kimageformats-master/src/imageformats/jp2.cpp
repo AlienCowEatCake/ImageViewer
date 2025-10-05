@@ -13,9 +13,16 @@
 #include <QIODevice>
 #include <QImage>
 #include <QImageReader>
+#include <QLoggingCategory>
 #include <QThread>
 
 #include <openjpeg.h>
+
+#ifdef QT_DEBUG
+Q_LOGGING_CATEGORY(LOG_JP2PLUGIN, "kf.imageformats.plugins.jp2", QtDebugMsg)
+#else
+Q_LOGGING_CATEGORY(LOG_JP2PLUGIN, "kf.imageformats.plugins.jp2", QtWarningMsg)
+#endif
 
 /* *** JP2_MAX_IMAGE_WIDTH and JP2_MAX_IMAGE_HEIGHT ***
  * The maximum size in pixel allowed by the plugin.
@@ -48,19 +55,19 @@
 static void error_callback(const char *msg, void *client_data)
 {
     Q_UNUSED(client_data)
-    qCritical() << msg;
+    qCCritical(LOG_JP2PLUGIN) << msg;
 }
 
 static void warning_callback(const char *msg, void *client_data)
 {
     Q_UNUSED(client_data)
-    qWarning() << msg;
+    qCWarning(LOG_JP2PLUGIN) << msg;
 }
 
 static void info_callback(const char *msg, void *client_data)
 {
     Q_UNUSED(client_data)
-    qInfo() << msg;
+    qCInfo(LOG_JP2PLUGIN) << msg;
 }
 
 static OPJ_SIZE_T jp2_read(void *p_buffer, OPJ_SIZE_T p_nb_bytes, void *p_user_data)
@@ -186,9 +193,9 @@ public:
     void enableThreads(opj_codec_t *codec) const
     {
         if (!opj_has_thread_support()) {
-            qInfo() << "OpenJPEG doesn't support multi-threading!";
+            qCInfo(LOG_JP2PLUGIN) << "OpenJPEG doesn't support multi-threading!";
         } else if (!opj_codec_set_threads(codec, std::max(1, QThread::idealThreadCount() / 2))) {
-            qWarning() << "Unable to enable multi-threading!";
+            qCWarning(LOG_JP2PLUGIN) << "Unable to enable multi-threading!";
         }
     }
 
@@ -230,12 +237,12 @@ public:
 
         opj_set_default_decoder_parameters(&m_dparameters);
         if (!opj_setup_decoder(m_jp2_codec, &m_dparameters)) {
-            qCritical() << "Failed to setup JP2 decoder!";
+            qCCritical(LOG_JP2PLUGIN) << "Failed to setup JP2 decoder!";
             return false;
         }
 
         if (!opj_read_header(m_jp2_stream, m_jp2_codec, &m_jp2_image)) {
-            qCritical() << "Failed to read JP2 header!";
+            qCCritical(LOG_JP2PLUGIN) << "Failed to read JP2 header!";
             return false;
         }
 
@@ -308,7 +315,7 @@ public:
         }
 
         if (!opj_decode(m_jp2_codec, m_jp2_stream, m_jp2_image)) {
-            qCritical() << "Failed to decoding JP2 image!";
+            qCCritical(LOG_JP2PLUGIN) << "Failed to decoding JP2 image!";
             return {};
         }
 
@@ -339,12 +346,12 @@ public:
     bool checkSizeLimits(qint32 width, qint32 height, qint32 nchannels) const
     {
         if (width > JP2_MAX_IMAGE_WIDTH || height > JP2_MAX_IMAGE_HEIGHT || width < 1 || height < 1) {
-            qCritical() << "Maximum image size is limited to" << JP2_MAX_IMAGE_WIDTH << "x" << JP2_MAX_IMAGE_HEIGHT << "pixels";
+            qCCritical(LOG_JP2PLUGIN) << "Maximum image size is limited to" << JP2_MAX_IMAGE_WIDTH << "x" << JP2_MAX_IMAGE_HEIGHT << "pixels";
             return false;
         }
 
         if (qint64(width) * qint64(height) > JP2_MAX_IMAGE_PIXELS) {
-            qCritical() << "Maximum image size is limited to" << JP2_MAX_IMAGE_PIXELS << "pixels";
+            qCCritical(LOG_JP2PLUGIN) << "Maximum image size is limited to" << JP2_MAX_IMAGE_PIXELS << "pixels";
             return false;
         }
 
@@ -353,7 +360,7 @@ public:
         auto maxBytes = qint64(QImageReader::allocationLimit()) * 1024 * 1024;
         auto neededBytes = qint64(width) * height * nchannels * 4;
         if (maxBytes > 0 && neededBytes > maxBytes) {
-            qCritical() << "Allocation limit set to" << (maxBytes / 1024 / 1024) << "MiB but" << (neededBytes / 1024 / 1024) << "MiB are needed!";
+            qCCritical(LOG_JP2PLUGIN) << "Allocation limit set to" << (maxBytes / 1024 / 1024) << "MiB but" << (neededBytes / 1024 / 1024) << "MiB are needed!";
             return false;
         }
 #endif
@@ -596,7 +603,7 @@ public:
 #endif
         default:
             if (image.depth() > 32) {
-                qWarning() << "The image is saved losing precision!";
+                qCWarning(LOG_JP2PLUGIN) << "The image is saved losing precision!";
             }
             convFormat = ncomp == 4 ? QImage::Format_RGBA8888 : QImage::Format_RGBX8888;
             break;
@@ -689,13 +696,13 @@ public:
     bool writeImage(QIODevice *device, const QImage &image)
     {
         if (!imageToJp2(image)) {
-            qCritical() << "Error while creating JP2 image!";
+            qCCritical(LOG_JP2PLUGIN) << "Error while creating JP2 image!";
             return false;
         }
 
         std::unique_ptr<opj_codec_t, std::function<void(opj_codec_t *)>> codec(opj_create_compress(encoderFormat()), opj_destroy_codec);
         if (codec == nullptr) {
-            qCritical() << "Error while creating encoder!";
+            qCCritical(LOG_JP2PLUGIN) << "Error while creating encoder!";
             return false;
         }
         enableThreads(codec.get());
@@ -766,7 +773,7 @@ bool JP2Handler::canRead() const
 bool JP2Handler::canRead(QIODevice *device)
 {
     if (!device) {
-        qWarning("JP2Handler::canRead() called with no device");
+        qCWarning(LOG_JP2PLUGIN) << "JP2Handler::canRead() called with no device";
         return false;
     }
 

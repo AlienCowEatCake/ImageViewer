@@ -7,9 +7,11 @@
 
 #include "chunks_p.h"
 #include "packbits_p.h"
+#include "util_p.h"
 
 #include <QBuffer>
 #include <QColor>
+#include <QDataStream>
 
 #ifdef QT_DEBUG
 Q_LOGGING_CATEGORY(LOG_IFFPLUGIN, "kf.imageformats.plugins.iff", QtDebugMsg)
@@ -310,6 +312,8 @@ IFFChunk::ChunkList IFFChunk::innerFromDevice(QIODevice *d, bool *ok, IFFChunk *
             chunk = QSharedPointer<IFFChunk>(new ICCPChunk());
         } else if (cid == NAME_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new NAMEChunk());
+        } else if (cid == PCHG_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new PCHGChunk());
         } else if (cid == RAST_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new RASTChunk());
         } else if (cid == RGBA_CHUNK) {
@@ -320,6 +324,8 @@ IFFChunk::ChunkList IFFChunk::innerFromDevice(QIODevice *d, bool *ok, IFFChunk *
             chunk = QSharedPointer<IFFChunk>(new TBHDChunk());
         } else if (cid == VERS_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new VERSChunk());
+        } else if (cid == XBMI_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new XBMIChunk());
         } else if (cid == XMP0_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new XMP0Chunk());
         } else { // unknown chunk
@@ -675,7 +681,7 @@ quint16 DPIChunk::dpiX() const
     if (bytes() < 4) {
         return 0;
     }
-    return i16(data().at(1), data().at(0));
+    return ui16(data().at(1), data().at(0));
 }
 
 quint16 DPIChunk::dpiY() const
@@ -683,22 +689,67 @@ quint16 DPIChunk::dpiY() const
     if (bytes() < 4) {
         return 0;
     }
-    return i16(data().at(3), data().at(2));
+    return ui16(data().at(3), data().at(2));
 }
 
 qint32 DPIChunk::dotsPerMeterX() const
 {
-    return qRound(dpiX() / 25.4 * 1000);
+    return dpi2ppm(dpiX());
 }
 
 qint32 DPIChunk::dotsPerMeterY() const
 {
-    return qRound(dpiY() / 25.4 * 1000);
+    return dpi2ppm(dpiY());
 }
 
 bool DPIChunk::innerReadStructure(QIODevice *d)
 {
     return cacheData(d);
+}
+
+/* ******************
+ * *** XBMI Chunk ***
+ * ****************** */
+
+XBMIChunk::~XBMIChunk()
+{
+
+}
+
+XBMIChunk::XBMIChunk() : DPIChunk()
+{
+}
+
+bool XBMIChunk::isValid() const
+{
+    if (dpiX() == 0 || dpiY() == 0) {
+        return false;
+    }
+    return chunkId() == XBMIChunk::defaultChunkId();
+}
+
+quint16 XBMIChunk::dpiX() const
+{
+    if (bytes() < 6) {
+        return 0;
+    }
+    return ui16(data().at(3), data().at(2));
+}
+
+quint16 XBMIChunk::dpiY() const
+{
+    if (bytes() < 6) {
+        return 0;
+    }
+    return ui16(data().at(5), data().at(4));
+}
+
+XBMIChunk::PictureType XBMIChunk::pictureType() const
+{
+    if (bytes() < 6) {
+        return PictureType(-1);
+    }
+    return PictureType(i16(data().at(1), data().at(0)));
 }
 
 /* ******************
@@ -908,7 +959,10 @@ quint32 BODYChunk::strideSize(const BMHDChunk *header, const QByteArray& formTyp
     }
 
     // ILBM
-    return header->rowLen() * header->bitplanes();
+    auto sz = header->rowLen() * header->bitplanes();
+    if (header->masking() == BMHDChunk::Masking::HasMask)
+        sz += header->rowLen();
+    return sz;
 }
 
 QByteArray BODYChunk::pbm(const QByteArray &planes, qint32, const BMHDChunk *header, const CAMGChunk *, const CMAPChunk *, const IPALChunk *) const
@@ -983,11 +1037,18 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
             ba = QByteArray(rowLen * 8 * 3, char());
             auto pal = cmap->palette();
             if (ipal) {
-                auto tmp = ipal->palette(y, header->height());
+                auto tmp = ipal->palette(y);
                 if (tmp.size() == pal.size())
                     pal = tmp;
             }
-            auto max = (1 << (bitplanes - 2)) - 1;
+            // HAM 6: 2 control bits+4 bits of data, 16-color palette
+            //
+            // HAM 8: 2 control bits+6 bits of data, 64-color palette
+            //
+            // HAM 5: 1 control bit (and 1 hardwired to zero)+4 bits of data
+            //        (red and green modify operations are unavailable)
+            auto ctlbits = bitplanes > 5 ? 2 : 1;
+            auto max = (1 << (bitplanes - ctlbits)) - 1;
             quint8 prev[3] = {};
             for (qint32 i = 0, cnt = 0; i < rowLen; ++i) {
                 for (qint32 j = 0; j < 8; ++j, ++cnt) {
@@ -995,10 +1056,13 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
                     for (qint32 k = 0, msk = (1 << (7 - j)); k < bitplanes; ++k) {
                         if ((planes.at(k * rowLen + i) & msk) == 0)
                             continue;
-                        if (k < bitplanes - 2)
+                        if (k < bitplanes - ctlbits)
                             idx |= 1 << k;
                         else
                             ctl |= 1 << (bitplanes - k - 1);
+                    }
+                    if (ctl && ctlbits == 1) {
+                        ctl <<= 1; // HAM 5 has only 1 control bit and the LSB is always 0
                     }
                     switch (ctl) {
                     case 1: // red
@@ -1073,22 +1137,23 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
             for (qint32 i = 0; i < rowLen; ++i) {
                 for (qint32 k = 0, i8 = i * 8; k < bitplanes; ++k) {
                     auto v = planes.at(k * rowLen + i);
+                    auto msk = 1 << k;
                     if (v & (1 << 7))
-                        ba[i8 + 0] = ba[i8 + 0] | (1 << k);
+                        ba[i8 + 0] = ba[i8 + 0] | msk;
                     if (v & (1 << 6))
-                        ba[i8 + 1] = ba[i8 + 1] | (1 << k);
+                        ba[i8 + 1] = ba[i8 + 1] | msk;
                     if (v & (1 << 5))
-                        ba[i8 + 2] = ba[i8 + 2] | (1 << k);
+                        ba[i8 + 2] = ba[i8 + 2] | msk;
                     if (v & (1 << 4))
-                        ba[i8 + 3] = ba[i8 + 3] | (1 << k);
+                        ba[i8 + 3] = ba[i8 + 3] | msk;
                     if (v & (1 << 3))
-                        ba[i8 + 4] = ba[i8 + 4] | (1 << k);
+                        ba[i8 + 4] = ba[i8 + 4] | msk;
                     if (v & (1 << 2))
-                        ba[i8 + 5] = ba[i8 + 5] | (1 << k);
+                        ba[i8 + 5] = ba[i8 + 5] | msk;
                     if (v & (1 << 1))
-                        ba[i8 + 6] = ba[i8 + 6] | (1 << k);
+                        ba[i8 + 6] = ba[i8 + 6] | msk;
                     if (v & 1)
-                        ba[i8 + 7] = ba[i8 + 7] | (1 << k);
+                        ba[i8 + 7] = ba[i8 + 7] | msk;
                 }
             }
         }
@@ -1281,8 +1346,9 @@ QImage::Format IFOR_Chunk::optionformat() const
 {
     auto fmt = this->format();
     if (fmt == QImage::Format_Indexed8) {
-        if (searchIPal())
-            fmt = FORMAT_RGB_8BIT;
+        if (auto ipal = searchIPal()) {
+            fmt = ipal->hasAlpha() ? FORMAT_RGBA_8BIT : FORMAT_RGB_8BIT;
+        }
     }
     return fmt;
 }
@@ -1305,6 +1371,10 @@ const IPALChunk *IFOR_Chunk::searchIPal() const
     auto rast = IFFChunk::searchT<RASTChunk>(this);
     if (!rast.isEmpty()) {
         ipal = rast.first();
+    }
+    auto pchg = IFFChunk::searchT<PCHGChunk>(this);
+    if (!pchg.isEmpty()) {
+        ipal = pchg.first();
     }
     if (ipal && ipal->isValid()) {
         return ipal;
@@ -1396,11 +1466,6 @@ QImage::Format FORMChunk::format() const
             return QImage::Format_RGBA64;
         }
         if (h->bitplanes() >= 1 && h->bitplanes() <= 8) {
-            if (!IFFChunk::search(PCHG_CHUNK, chunks()).isEmpty()) {
-                qCDebug(LOG_IFFPLUGIN) << "FORMChunk::format(): PCHG chunk is not supported";
-                return QImage::Format_Invalid;
-            }
-
             if (h->bitplanes() >= BITPLANES_HAM_MIN && h->bitplanes() <= BITPLANES_HAM_MAX) {
                 if (modeId & CAMGChunk::ModeId::Ham)
                     return FORMAT_RGB_8BIT;
@@ -2334,7 +2399,9 @@ BEAMChunk::~BEAMChunk()
 
 }
 
-BEAMChunk::BEAMChunk() : IPALChunk()
+BEAMChunk::BEAMChunk()
+    : IPALChunk()
+    , _height()
 {
 
 }
@@ -2344,12 +2411,28 @@ bool BEAMChunk::isValid() const
     return chunkId() == BEAMChunk::defaultChunkId();
 }
 
+IPALChunk *BEAMChunk::clone() const
+{
+    return new BEAMChunk(*this);
+}
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-QList<QRgb> BEAMChunk::palette(qint32 y, qint32 height) const
+bool BEAMChunk::initialize(const QList<QRgb> &, qint32 height)
 #else
-QVector<QRgb> BEAMChunk::palette(qint32 y, qint32 height) const
+bool BEAMChunk::initialize(const QVector<QRgb> &, qint32 height)
 #endif
 {
+    _height = height;
+    return true;
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+QList<QRgb> BEAMChunk::palette(qint32 y) const
+#else
+QVector<QRgb> BEAMChunk::palette(qint32 y) const
+#endif
+{
+    auto &&height = _height;
     if (height < 1) {
         return {};
     }
@@ -2410,7 +2493,9 @@ SHAMChunk::~SHAMChunk()
 
 }
 
-SHAMChunk::SHAMChunk() : IPALChunk()
+SHAMChunk::SHAMChunk()
+    : IPALChunk()
+    , _height()
 {
 
 }
@@ -2430,12 +2515,18 @@ bool SHAMChunk::isValid() const
     return chunkId() == SHAMChunk::defaultChunkId();
 }
 
+IPALChunk *SHAMChunk::clone() const
+{
+    return new SHAMChunk(*this);
+}
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-QList<QRgb> SHAMChunk::palette(qint32 y, qint32 height) const
+QList<QRgb> SHAMChunk::palette(qint32 y) const
 #else
-QVector<QRgb> SHAMChunk::palette(qint32 y, qint32 height) const
+QVector<QRgb> SHAMChunk::palette(qint32 y) const
 #endif
 {
+    auto && height = _height;
     if (height < 1) {
         return {};
     }
@@ -2466,6 +2557,16 @@ QVector<QRgb> SHAMChunk::palette(qint32 y, qint32 height) const
     return pal;
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+bool SHAMChunk::initialize(const QList<QRgb> &, qint32 height)
+#else
+bool SHAMChunk::initialize(const QVector<QRgb> &, qint32 height)
+#endif
+{
+    _height = height;
+    return true;
+}
+
 bool SHAMChunk::innerReadStructure(QIODevice *d)
 {
     return cacheData(d);
@@ -2480,7 +2581,9 @@ RASTChunk::~RASTChunk()
 
 }
 
-RASTChunk::RASTChunk() : IPALChunk()
+RASTChunk::RASTChunk()
+    : IPALChunk()
+    , _height()
 {
 
 }
@@ -2490,12 +2593,18 @@ bool RASTChunk::isValid() const
     return chunkId() == RASTChunk::defaultChunkId();
 }
 
+IPALChunk *RASTChunk::clone() const
+{
+    return new RASTChunk(*this);
+}
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-QList<QRgb> RASTChunk::palette(qint32 y, qint32 height) const
+QList<QRgb> RASTChunk::palette(qint32 y) const
 #else
-QVector<QRgb> RASTChunk::palette(qint32 y, qint32 height) const
+QVector<QRgb> RASTChunk::palette(qint32 y) const
 #endif
 {
+    auto &&height = _height;
     if (height < 1) {
         return {};
     }
@@ -2526,7 +2635,426 @@ QVector<QRgb> RASTChunk::palette(qint32 y, qint32 height) const
     return pal;
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+bool RASTChunk::initialize(const QList<QRgb> &, qint32 height)
+#else
+bool RASTChunk::initialize(const QVector<QRgb> &, qint32 height)
+#endif
+{
+    _height = height;
+    return true;
+}
+
 bool RASTChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+/* ******************
+ * *** PCHG Chunk ***
+ * ****************** */
+
+PCHGChunk::~PCHGChunk()
+{
+}
+
+PCHGChunk::PCHGChunk() : IPALChunk()
+{
+
+}
+
+PCHGChunk::Compression PCHGChunk::compression() const
+{
+    if (!isValid()) {
+        return Compression::Uncompressed;
+    }
+    return Compression(ui16(data(), 0));
+}
+
+PCHGChunk::Flags PCHGChunk::flags() const
+{
+    if (!isValid()) {
+        return Flags(Flag::None);
+    }
+    return Flags(ui16(data(), 2));
+}
+
+qint16 PCHGChunk::startLine() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return i16(data(), 4);
+}
+
+quint16 PCHGChunk::lineCount() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui16(data(), 6);
+}
+
+quint16 PCHGChunk::changedLines() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui16(data(), 8);
+}
+
+quint16 PCHGChunk::minReg() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui16(data(), 10);
+}
+
+quint16 PCHGChunk::maxReg() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui16(data(), 12);
+}
+
+quint16 PCHGChunk::maxChanges() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui16(data(), 14);
+}
+
+quint32 PCHGChunk::totalChanges() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui32(data(), 16);
+}
+
+bool PCHGChunk::hasAlpha() const
+{
+    return (flags() & PCHGChunk::Flag::UseAlpha) ? true : false;
+}
+
+bool PCHGChunk::isValid() const
+{
+    if (bytes() < 20) {
+        return false;
+    }
+    return chunkId() == PCHGChunk::defaultChunkId();
+}
+
+IPALChunk *PCHGChunk::clone() const
+{
+    return new PCHGChunk(*this);
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+QList<QRgb> PCHGChunk::palette(qint32 y) const
+#else
+QVector<QRgb> PCHGChunk::palette(qint32 y) const
+#endif
+{
+    return _palettes.value(y);
+}
+
+// ----------------------------------------------------------------------------
+// PCHG_FastDecomp reimplementation (Amiga 68k -> portable C++/Qt)
+// ----------------------------------------------------------------------------
+// This mirrors the original 68k routine semantics:
+//   - The Huffman tree is stored as a sequence of signed 16-bit words (big-endian)
+//     and TreeCode points to the *last word* of that sequence.
+//   - Bits are consumed MSB-first from 32-bit big-endian longwords of the source.
+//   - Navigation rules (matching the assembly):
+//       bit=1:  read w = *(a3). If w < 0 then a3 += w (byte-wise) and continue;
+//               else emit (w & 0xFF) and reset a3 to TreeCode (last word).
+//       bit=0:  predecrement a3 by 2; read w = *a3. If w < 0: continue;
+//               else if (w & 0x0100) emit (w & 0xFF) and reset a3; else continue.
+//   - Stop after writing exactly OriginalSize bytes.
+//
+// This function expects a single QByteArray laid out as:
+//   [ tree (treeSize bytes, even) | compressed bitstream (... bytes) ]
+//
+// On any error, logs with qCCritical(LOG_IFFPLUGIN) and returns {}.
+// Comments are in English as requested.
+// ----------------------------------------------------------------------------
+//
+// NOTE: Sebastiano Vigna, the author of the PCHG specification and the ASM
+//       decompression code for the Motorola 68K, gave us permission to use his
+//       code and recommended that we convert it with AI.
+
+// Read a big-endian 16-bit signed word from a byte buffer
+static inline qint16 read_be16(const char* base, int byteIndex, int size)
+{
+    if (byteIndex + 1 >= size)
+        return 0; // caller must bounds-check; we keep silent here
+    const quint8 b0 = static_cast<quint8>(base[byteIndex]);
+    const quint8 b1 = static_cast<quint8>(base[byteIndex + 1]);
+    return static_cast<qint16>((b0 << 8) | b1);
+}
+
+// Read a big-endian 32-bit unsigned long from a byte buffer
+static inline quint32 read_be32(const char* base, int byteIndex, int size)
+{
+    if (byteIndex + 3 >= size)
+        return 0; // caller must bounds-check
+    const quint8 b0 = static_cast<quint8>(base[byteIndex]);
+    const quint8 b1 = static_cast<quint8>(base[byteIndex + 1]);
+    const quint8 b2 = static_cast<quint8>(base[byteIndex + 2]);
+    const quint8 b3 = static_cast<quint8>(base[byteIndex + 3]);
+    return (static_cast<quint32>(b0) << 24) |
+           (static_cast<quint32>(b1) << 16) |
+           (static_cast<quint32>(b2) << 8)  |
+           static_cast<quint32>(b3);
+}
+
+// Core decompressor (tree + compressed stream in one QByteArray)
+static QByteArray pchgFastDecomp(const QByteArray& input, int treeSize, int originalSize)
+{
+    // Basic validation
+    if (treeSize <= 0 || (treeSize & 1)) {
+        qCCritical(LOG_IFFPLUGIN) << "Invalid treeSize (must be positive and even)" << treeSize;
+        return {};
+    }
+    if (input.size() < treeSize) {
+        qCCritical(LOG_IFFPLUGIN) << "Input too small for treeSize" << input.size() << treeSize;
+        return {};
+    }
+    if (originalSize < 0) {
+        qCCritical(LOG_IFFPLUGIN) << "Invalid originalSize" << originalSize;
+        return {};
+    }
+
+    const char* data = input.constData();
+    const int totalSize = input.size();
+
+    // Tree view (big-endian words)
+    const int treeBytes = treeSize;
+    const int treeWords = treeBytes / 2;
+    if (treeWords <= 0) {
+        qCCritical(LOG_IFFPLUGIN) << "Tree has zero words";
+        return {};
+    }
+
+    // Compressed stream
+    const int srcBase = treeBytes; // offset where bitstream starts
+    const int srcSize = totalSize - srcBase;
+    if (srcSize <= 0 && originalSize > 0) {
+        qCCritical(LOG_IFFPLUGIN) << "No compressed payload present";
+        return {};
+    }
+
+    QByteArray out;
+    out.resize(originalSize);
+    char* outPtr = out.data();
+
+    // Emulate a3 pointer to words:
+    // a2 points to the *last word* => word index (0..treeWords-1)
+    auto resetA3 = [&]() {
+        return treeWords - 1; // last word index
+    };
+    int a3_word = resetA3();
+
+    // Bit reader: loads 32b big-endian and shifts MSB-first
+    quint32 bitbuf = 0;
+    int     bits   = 0;     // remaining bits in bitbuf
+    int     srcPos = 0;     // byte offset relative to srcBase
+
+    auto refill = [&]() -> bool {
+        if (srcPos + 4 > srcSize) {
+            qCCritical(LOG_IFFPLUGIN) << "Compressed stream underflow while refilling bit buffer"
+                                      << "srcPos=" << srcPos << "srcSize=" << srcSize;
+            return false;
+        }
+        bitbuf = read_be32(data + srcBase, srcPos, srcSize);
+        bits   = 32;
+        srcPos += 4;
+        return true;
+    };
+
+    int produced = 0;
+
+    // Main decode loop: produce exactly originalSize bytes
+    while (produced < originalSize) {
+        if (bits == 0) {
+            if (!refill()) {
+                // Not enough bits to complete output
+                return {};
+            }
+        }
+
+        const bool bit1 = (bitbuf & 0x80000000u) != 0u; // MSB before shift
+        bitbuf <<= 1;
+        --bits;
+
+        if (bit1) {
+            // Case bit == 1  --> w = *(a3)
+            if (a3_word < 0 || a3_word >= treeWords) {
+                qCCritical(LOG_IFFPLUGIN) << "a3 out of bounds (bit=1)" << a3_word;
+                return {};
+            }
+            const int byteIndex = a3_word * 2;
+            const qint16 w = read_be16(data, byteIndex, treeBytes);
+
+            if (w < 0) {
+                // a3 += w  (w is a signed byte offset, must be even)
+                if (w & 1) {
+                    qCCritical(LOG_IFFPLUGIN) << "Misaligned tree offset (odd)" << w;
+                    return {};
+                }
+                const int deltaWords = w / 2; // arithmetic division, w is even in valid streams
+                const int next = a3_word + deltaWords;
+                if (next < 0 || next >= treeWords) {
+                    qCCritical(LOG_IFFPLUGIN) << "a3 out of bounds after offset" << next;
+                    return {};
+                }
+                a3_word = next;
+            } else {
+                // Leaf: emit low 8 bits, reset a3
+                outPtr[produced++] = static_cast<char>(w & 0xFF);
+                a3_word = resetA3();
+            }
+        } else {
+            // Case bit == 0  --> w = *--a3 (predecrement)
+            --a3_word;
+            if (a3_word < 0) {
+                qCCritical(LOG_IFFPLUGIN) << "a3 underflow on predecrement";
+                return {};
+            }
+            const int byteIndex = a3_word * 2;
+            const qint16 w = read_be16(data, byteIndex, treeBytes);
+
+            if (w < 0) {
+                // Internal node: continue with current a3
+                continue;
+            }
+
+            // Non-negative: check bit #8; if set -> leaf
+            if ((w & 0x0100) != 0) {
+                outPtr[produced++] = static_cast<char>(w & 0xFF);
+                a3_word = resetA3();
+            } else {
+                // Not a leaf: continue scanning
+                continue;
+            }
+        }
+    }
+
+    return out;
+}
+
+// !Huffman decompression
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+bool PCHGChunk::initialize(const QList<QRgb> &cmapPalette, qint32 height)
+#else
+bool PCHGChunk::initialize(const QVector<QRgb> &cmapPalette, qint32 height)
+#endif
+{
+    Q_UNUSED(height)
+    auto dt = data().mid(20);
+    if (compression() == PCHGChunk::Compression::Huffman) {
+        QDataStream ds(dt);
+        ds.setByteOrder(QDataStream::BigEndian);
+
+        quint32 infoSize;
+        ds >> infoSize;
+        quint32 origSize;
+        ds >> origSize;
+
+        dt = pchgFastDecomp(dt.mid(8), infoSize, origSize);
+    }
+    if (dt.isEmpty()) {
+        return false;
+    }
+
+    QDataStream ds(dt);
+    ds.setByteOrder(QDataStream::BigEndian);
+
+    // read the masks
+    auto lcnt = lineCount();
+    auto nlw = (lcnt + 31) / 32; // number of LWORD containing the bit mask
+    QList<quint32> masks;
+    for (auto i = 0; i < nlw; ++i) {
+        quint32 mask;
+        ds >> mask;
+        masks << mask;
+    }
+    if (ds.status() != QDataStream::Ok) {
+        return false;
+    }
+
+    // read the palettes
+    auto changesLoaded = qint64();
+    auto startY = startLine();
+    auto last = cmapPalette;
+    auto flgs = flags();
+    for (auto i = 0; i < lcnt; ++i) {
+        auto mask = masks.at(i / 32);
+        if (((mask >> (31 - i % 32)) & 1) == 0) {
+            _palettes.insert(i + startY, last);
+            continue; // no palette change for this line
+        }
+
+        QHash<quint16, QRgb> hash;
+        if (flgs & PCHGChunk::Flag::F12Bit) {
+            quint8 c16;
+            ds >> c16;
+            quint8 c32;
+            ds >> c32;
+            for (auto j = 0; j < int(c16); ++j) {
+                quint16 tmp;
+                ds >> tmp;
+                hash.insert(((tmp >> 12) & 0xF), qRgb(((tmp >> 8) & 0xF) * 17, ((tmp >> 4) & 0xF) * 17, ((tmp & 0xF) * 17)));
+            }
+            for (auto j = 0; j < int(c32); ++j) {
+                quint16 tmp;
+                ds >> tmp;
+                hash.insert((((tmp >> 12) & 0xF) + 16), qRgb(((tmp >> 8) & 0xF) * 17, ((tmp >> 4) & 0xF) * 17, ((tmp & 0xF) * 17)));
+            }
+        } else if (flgs & PCHGChunk::Flag::F32Bit) { // NOTE: missing test case (not tested)
+            quint16 cnt;
+            ds >> cnt;
+            for (auto j = 0; j < int(cnt); ++j) {
+                quint16 reg;
+                ds >> reg;
+                quint8 alpha;
+                ds >> alpha;
+                quint8 red;
+                ds >> red;
+                quint8 blue;
+                ds >> blue;
+                quint8 green;
+                ds >> green;
+                hash.insert(reg, qRgba(red, green, blue, flgs & PCHGChunk::Flag::UseAlpha ? alpha : 0xFF));
+            }
+        }
+
+        if (ds.status() != QDataStream::Ok) {
+            return false;
+        }
+
+        for (qsizetype i = 0, n = last.size(); i < n; ++i) {
+            if (hash.contains(i))
+                last[i] = hash.value(i);
+        }
+
+        _palettes.insert(i + startY, last);
+        changesLoaded += hash.size();
+    }
+
+    if (changesLoaded != qint64(totalChanges())) {
+        qCDebug(LOG_IFFPLUGIN) << "PCHGChunk::innerReadStructure(): palette changes count mismatch!";
+    }
+
+    return true;
+}
+
+bool PCHGChunk::innerReadStructure(QIODevice *d)
 {
     return cacheData(d);
 }

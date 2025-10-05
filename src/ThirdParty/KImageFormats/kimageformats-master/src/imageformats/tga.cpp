@@ -995,9 +995,9 @@ bool TGAHandler::writeRGBA(const QImage &image)
 {
     auto format = image.format();
     const bool hasAlpha = image.hasAlphaChannel();
-    auto cs = image.colorSpace();
     auto tcs = QColorSpace();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    auto cs = image.colorSpace();
     if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && image.format() == QImage::Format_CMYK8888) {
         format = QImage::Format_RGB32;
         tcs = QColorSpace(QColorSpace::SRgb);

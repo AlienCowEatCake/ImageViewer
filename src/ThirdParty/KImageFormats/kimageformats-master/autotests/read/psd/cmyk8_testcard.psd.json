@@ -1,7 +1,14 @@
 [
     {
         "minQtVersion" : "6.8.0",
-        "fileName" : "cmyk8_testcard_qt6_8.tif"
+        "fileName" : "cmyk8_testcard_qt6_8.tif",
+        "colorSpace" : {
+            "description" : "Coated FOGRA27 (ISO 12647-2:2004)",
+            "colorModel" : "Cmyk",
+            "primaries" : "Custom",
+            "transferFunction" : "Custom",
+            "gamma" : 0
+        }
     },
     {
         "minQtVersion" : "6.0.0",

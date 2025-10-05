@@ -17,6 +17,7 @@
 
 #include <QByteArray>
 #include <QDateTime>
+#include <QHash>
 #include <QImage>
 #include <QIODevice>
 #include <QLoggingCategory>
@@ -57,6 +58,7 @@ Q_DECLARE_LOGGING_CATEGORY(LOG_IFFPLUGIN)
 #define CMAP_CHUNK QByteArray("CMAP")
 #define CMYK_CHUNK QByteArray("CMYK") // https://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap#ILBM.CMYK
 #define DPI__CHUNK QByteArray("DPI ")
+#define XBMI_CHUNK QByteArray("XBMI")
 
 // Different palette for scanline
 #define BEAM_CHUNK QByteArray("BEAM")
@@ -94,17 +96,20 @@ Q_DECLARE_LOGGING_CATEGORY(LOG_IFFPLUGIN)
 
 #define CHUNKID_DEFINE(a) static QByteArray defaultChunkId() { return a; }
 
-// The 8-bit RGB format must be one. If you change it here, you have also to use the same
+// The 8-bit RGB format must be consistent. If you change it here, you have also to use the same
 // when converting an image with BEAM/CTBL/SHAM chunks otherwise the option(QImageIOHandler::ImageFormat)
 // could returns a wrong value.
 // Warning: Changing it requires changing the algorithms. Se, don't touch! :)
-#define FORMAT_RGB_8BIT QImage::Format_RGB888
+#define FORMAT_RGB_8BIT QImage::Format_RGB888 // default one
+
+#define FORMAT_RGBA_8BIT QImage::Format_RGBA8888 // used by PCHG chunk
 
 /*!
  * \brief The IFFChunk class
  */
 class IFFChunk
 {
+    friend class IFFHandlerPrivate;
 public:
     using ChunkList = QList<QSharedPointer<IFFChunk>>;
 
@@ -321,17 +326,29 @@ protected:
     inline quint16 ui16(quint8 c1, quint8 c2) const {
         return (quint16(c2) << 8) | quint16(c1);
     }
+    inline quint16 ui16(const QByteArray &data, qint32 pos) const {
+        return ui16(data.at(pos + 1), data.at(pos));
+    }
 
     inline qint16 i16(quint8 c1, quint8 c2) const {
         return qint32(ui16(c1, c2));
+    }
+    inline qint16 i16(const QByteArray &data, qint32 pos) const {
+        return i16(data.at(pos + 1), data.at(pos));
     }
 
     inline quint32 ui32(quint8 c1, quint8 c2, quint8 c3, quint8 c4) const {
         return (quint32(c4) << 24) | (quint32(c3) << 16) | (quint32(c2) << 8) | quint32(c1);
     }
+    inline quint32 ui32(const QByteArray &data, qint32 pos) const {
+        return ui32(data.at(pos + 3), data.at(pos + 2), data.at(pos + 1), data.at(pos));
+    }
 
     inline qint32 i32(quint8 c1, quint8 c2, quint8 c3, quint8 c4) const {
         return qint32(ui32(c1, c2, c3, c4));
+    }
+    inline qint32 i32(const QByteArray &data, qint32 pos) const {
+        return i32(data.at(pos + 3), data.at(pos + 2), data.at(pos + 1), data.at(pos));
     }
 
     static ChunkList innerFromDevice(QIODevice *d, bool *ok, IFFChunk *parent = nullptr);
@@ -361,10 +378,43 @@ class IPALChunk : public IFFChunk
 public:
     virtual ~IPALChunk() override {}
     IPALChunk() : IFFChunk() {}
+    IPALChunk(const IPALChunk& other) = default;
+    IPALChunk& operator =(const IPALChunk& other) = default;
+
+    /*!
+     * \brief hasAlpha
+     * \return True it the palette supports the alpha channel.
+     */
+    virtual bool hasAlpha() const { return false; }
+
+    /*!
+     * \brief clone
+     * \return A new instance of the class with all data.
+     */
+    virtual IPALChunk *clone() const = 0;
+
+    /*!
+     * \brief palette
+     * \param y The scanline.
+     * \return The modified palette.
+     */
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    virtual QList<QRgb> palette(qint32 y, qint32 height) const = 0;
+    virtual QList<QRgb> palette(qint32 y) const = 0;
 #else
-    virtual QVector<QRgb> palette(qint32 y, qint32 height) const = 0;
+    virtual QVector<QRgb> palette(qint32 y) const = 0;
+#endif
+
+    /*!
+     * \brief initialize
+     * Initialize the palette changer.
+     * \param cmapPalette The palette as stored in the CMAP chunk.
+     * \param height The image height.
+     * \return True on success, otherwise false.
+     */
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    virtual bool initialize(const QList<QRgb>& cmapPalette, qint32 height) = 0;
+#else
+    virtual bool initialize(const QVector<QRgb>& cmapPalette, qint32 height) = 0;
 #endif
 };
 
@@ -383,7 +433,17 @@ public:
     };
     enum Masking {
         None = 0, /**< Designates an opaque rectangular image. */
-        HasMask = 1, /**< A mask plane is interleaved with the bitplanes in the BODY chunk. */
+        HasMask = 1, /**< A "mask" is an optional "plane" of data the same size (w, h) as a bitplane.
+                          It tells how to "cut out" part of the image when painting it onto another
+                          image.  "One" bits in the mask mean "copy the corresponding pixel to the
+                          destination".  "Zero" mask bits mean "leave this destination pixel alone".  In
+                          other words, "zero" bits designate transparent pixels.
+                          The rows of the different bitplanes and mask are interleaved in the file.
+                          This localizes all the information pertinent to each scan line.  It
+                          makes it much easier to transform the data while reading it to adjust the
+                          image size or depth.  It also makes it possible to scroll a big image by
+                          swapping rows directly from the file without the need for random-access to
+                          all the bitplanes. */
         HasTransparentColor = 2, /**< Pixels in the source planes matching transparentColor
                                       are to be considered “transparent”. (Actually, transparentColor
                                       isn’t a “color number” since it’s matched with numbers formed
@@ -392,7 +452,7 @@ public:
                                       one of the color registers. */
         Lasso = 3 /**< The reader may construct a mask by lassoing the image as in MacPaint.
                        To do this, put a 1 pixel border of transparentColor around the image rectangle.
-                        Then do a seed fill from this border. Filled pixels are to be transparent. */
+                       Then do a seed fill from this border. Filled pixels are to be transparent. */
     };
 
     virtual ~BMHDChunk() override;
@@ -624,13 +684,13 @@ public:
      * \brief dpiX
      * \return The horizontal resolution in DPI.
      */
-    quint16 dpiX() const;
+    virtual quint16 dpiX() const;
 
     /*!
      * \brief dpiY
      * \return The vertical resolution in DPI.
      */
-    quint16 dpiY() const;
+    virtual quint16 dpiY() const;
 
     /*!
      * \brief dotsPerMeterX
@@ -648,6 +708,50 @@ public:
 
 protected:
     virtual bool innerReadStructure(QIODevice *d) override;
+};
+
+/*!
+ * \brief The XBMIChunk class
+ */
+class XBMIChunk : public DPIChunk
+{
+public:
+    enum PictureType : quint16 {
+        Indexed = 0,
+        Grayscale = 1,
+        Rgb = 2,
+        RgbA = 3,
+        Cmyk = 4,
+        CmykA = 5,
+        Bitmap = 6
+    };
+
+    virtual ~XBMIChunk() override;
+    XBMIChunk();
+    XBMIChunk(const XBMIChunk& other) = default;
+    XBMIChunk& operator =(const XBMIChunk& other) = default;
+
+    virtual bool isValid() const override;
+
+    /*!
+     * \brief dpiX
+     * \return The horizontal resolution in DPI.
+     */
+    virtual quint16 dpiX() const override;
+
+    /*!
+     * \brief dpiY
+     * \return The vertical resolution in DPI.
+     */
+    virtual quint16 dpiY() const override;
+
+    /*!
+     * \brief pictureType
+     * \return The picture type
+     */
+    PictureType pictureType() const;
+
+    CHUNKID_DEFINE(XBMI_CHUNK)
 };
 
 
@@ -1331,16 +1435,25 @@ public:
 
     virtual bool isValid() const override;
 
+    virtual IPALChunk *clone() const override;
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    virtual QList<QRgb> palette(qint32 y, qint32 height) const override;
+    virtual QList<QRgb> palette(qint32 y) const override;
+
+    virtual bool initialize(const QList<QRgb>& cmapPalette, qint32 height) override;
 #else
-    virtual QVector<QRgb> palette(qint32 y, qint32 height) const override;
+    virtual QVector<QRgb> palette(qint32 y) const override;
+
+    virtual bool initialize(const QVector<QRgb>& cmapPalette, qint32 height) override;
 #endif
 
     CHUNKID_DEFINE(BEAM_CHUNK)
 
 protected:
     virtual bool innerReadStructure(QIODevice *d) override;
+
+private:
+    qint32 _height;
 };
 
 /*!
@@ -1372,16 +1485,25 @@ public:
 
     virtual bool isValid() const override;
 
+    virtual IPALChunk *clone() const override;
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    virtual QList<QRgb> palette(qint32 y, qint32 height) const override;
+    virtual QList<QRgb> palette(qint32 y) const override;
+
+    virtual bool initialize(const QList<QRgb>& cmapPalette, qint32 height) override;
 #else
-    virtual QVector<QRgb> palette(qint32 y, qint32 height) const override;
+    virtual QVector<QRgb> palette(qint32 y) const override;
+
+    virtual bool initialize(const QVector<QRgb>& cmapPalette, qint32 height) override;
 #endif
 
     CHUNKID_DEFINE(SHAM_CHUNK)
 
 protected:
     virtual bool innerReadStructure(QIODevice *d) override;
+
+private:
+    qint32 _height;
 };
 
 /*!
@@ -1400,17 +1522,98 @@ public:
 
     virtual bool isValid() const override;
 
+    virtual IPALChunk *clone() const override;
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    virtual QList<QRgb> palette(qint32 y, qint32 height) const override;
+    virtual QList<QRgb> palette(qint32 y) const override;
+
+    virtual bool initialize(const QList<QRgb>& cmapPalette, qint32 height) override;
 #else
-    virtual QVector<QRgb> palette(qint32 y, qint32 height) const override;
+    virtual QVector<QRgb> palette(qint32 y) const override;
+
+    virtual bool initialize(const QVector<QRgb>& cmapPalette, qint32 height) override;
 #endif
 
     CHUNKID_DEFINE(RAST_CHUNK)
 
 protected:
     virtual bool innerReadStructure(QIODevice *d) override;
+
+private:
+    qint32 _height;
 };
 
+/*!
+ * \brief The PCHGChunk class
+ */
+class PCHGChunk : public IPALChunk
+{
+public:
+    enum Compression {
+        Uncompressed,
+        Huffman
+    };
+
+    enum Flag {
+        None = 0x00,
+        F12Bit = 0x01,
+        F32Bit = 0x02,
+        UseAlpha = 0x04
+    };
+    Q_DECLARE_FLAGS(Flags, Flag)
+
+    virtual ~PCHGChunk() override;
+    PCHGChunk();
+    PCHGChunk(const PCHGChunk& other) = default;
+    PCHGChunk& operator =(const PCHGChunk& other) = default;
+
+    Compression compression() const;
+
+    Flags flags() const;
+
+    qint16 startLine() const;
+
+    quint16 lineCount() const;
+
+    quint16 changedLines() const;
+
+    quint16 minReg() const;
+
+    quint16 maxReg() const;
+
+    quint16 maxChanges() const;
+
+    quint32 totalChanges() const;
+
+    virtual bool hasAlpha() const override;
+
+    virtual bool isValid() const override;
+
+    virtual IPALChunk *clone() const override;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    virtual QList<QRgb> palette(qint32 y) const override;
+
+    virtual bool initialize(const QList<QRgb>& cmapPalette, qint32 height) override;
+#else
+    virtual QVector<QRgb> palette(qint32 y) const override;
+
+    virtual bool initialize(const QVector<QRgb>& cmapPalette, qint32 height) override;
+#endif
+
+    CHUNKID_DEFINE(PCHG_CHUNK)
+
+protected:
+    virtual bool innerReadStructure(QIODevice *d) override;
+
+private:
+    QHash<qint32, QHash<quint16, QRgb>> _paletteChanges;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QHash<qint32, QList<QRgb>> _palettes;
+#else
+    QHash<qint32, QVector<QRgb>> _palettes;
+#endif
+};
 
 #endif // KIMG_CHUNKS_P_H

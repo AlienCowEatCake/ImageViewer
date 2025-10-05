@@ -4,8 +4,8 @@
         "seeAlso" : "https://bugreports.qt.io/browse/QTBUG-120614",
         "fuzziness" : 1,
         "resolution" : {
-            "dotsPerMeterX" : 2834,
-            "dotsPerMeterY" : 2834
+            "dotsPerMeterX" : 2835,
+            "dotsPerMeterY" : 2835
         }
     }
 ]

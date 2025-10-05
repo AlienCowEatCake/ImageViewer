@@ -2,6 +2,13 @@
     {
         "minQtVersion" : "6.8.0",
         "fileName" : "testcard_cmyk8.tif",
+        "colorSpace" : {
+            "description" : "U.S. Web Coated (SWOP) v2",
+            "colorModel" : "Cmyk",
+            "primaries" : "Custom",
+            "transferFunction" : "Custom",
+            "gamma" : 0
+        },
         "resolution" : {
             "dotsPerMeterX" : 3780,
             "dotsPerMeterY" : 3780

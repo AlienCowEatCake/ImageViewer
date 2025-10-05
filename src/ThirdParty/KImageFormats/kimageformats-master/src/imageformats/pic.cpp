@@ -20,14 +20,20 @@
 
 #include <QColorSpace>
 #include <QDataStream>
-#include <QDebug>
 #include <QImage>
+#include <QLoggingCategory>
 #include <QVariant>
 
 #include <algorithm>
 #include <functional>
 #include <qendian.h>
 #include <utility>
+
+#ifdef QT_DEBUG
+Q_LOGGING_CATEGORY(LOG_PICPLUGIN, "kf.imageformats.plugins.pic", QtDebugMsg)
+#else
+Q_LOGGING_CATEGORY(LOG_PICPLUGIN, "kf.imageformats.plugins.pic", QtWarningMsg)
+#endif
 
 /**
  * Reads a PIC file header from a data stream.
@@ -193,7 +199,7 @@ static bool readRow(QDataStream &stream, QRgb *row, quint16 width, const QList<P
         if (channel.encoding == MixedRLE) {
             bool success = decodeRLEData(RLEVariant::PIC, stream, row, width, readPixel, updatePixel);
             if (!success) {
-                qDebug() << "decodeRLEData failed";
+                qCDebug(LOG_PICPLUGIN) << "decodeRLEData failed";
                 return false;
             }
         } else if (channel.encoding == Uncompressed) {
@@ -203,12 +209,12 @@ static bool readRow(QDataStream &stream, QRgb *row, quint16 width, const QList<P
             }
         } else {
             // unknown encoding
-            qDebug() << "Unknown encoding";
+            qCDebug(LOG_PICPLUGIN) << "Unknown encoding";
             return false;
         }
     }
     if (stream.status() != QDataStream::Ok) {
-        qDebug() << "DataStream status was" << stream.status();
+        qCDebug(LOG_PICPLUGIN) << "DataStream status was" << stream.status();
     }
     return stream.status() == QDataStream::Ok;
 }
@@ -232,7 +238,7 @@ bool SoftimagePICHandler::read(QImage *image)
     for (const PicChannel &channel : qAsConst(m_channels)) {
         if (channel.size != 8) {
             // we cannot read images that do not come in bytes
-            qDebug() << "Channel size was" << channel.size;
+            qCDebug(LOG_PICPLUGIN) << "Channel size was" << channel.size;
             m_state = Error;
             return false;
         }
@@ -243,7 +249,7 @@ bool SoftimagePICHandler::read(QImage *image)
 
     QImage img = imageAlloc(m_header.width, m_header.height, fmt);
     if (img.isNull()) {
-        qDebug() << "Failed to allocate image, invalid dimensions?" << QSize(m_header.width, m_header.height) << fmt;
+        qCDebug(LOG_PICPLUGIN) << "Failed to allocate image, invalid dimensions?" << QSize(m_header.width, m_header.height) << fmt;
         return false;
     }
 
@@ -252,7 +258,7 @@ bool SoftimagePICHandler::read(QImage *image)
     for (int y = 0; y < m_header.height; y++) {
         QRgb *row = reinterpret_cast<QRgb *>(img.scanLine(y));
         if (!readRow(m_dataStream, row, m_header.width, m_channels)) {
-            qDebug() << "readRow failed";
+            qCDebug(LOG_PICPLUGIN) << "readRow failed";
             m_state = Error;
             return false;
         }
@@ -267,10 +273,10 @@ bool SoftimagePICHandler::read(QImage *image)
 bool SoftimagePICHandler::write(const QImage &image)
 {
     bool alpha = image.hasAlphaChannel();
-    auto cs = image.colorSpace();
-    auto tfmt = image.format();
     auto tcs = QColorSpace();
+    auto tfmt = image.format();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    auto cs = image.colorSpace();
     if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && tfmt == QImage::Format_CMYK8888) {
         tcs = QColorSpace(QColorSpace::SRgb);
         tfmt = QImage::Format_RGB32;
@@ -281,11 +287,11 @@ bool SoftimagePICHandler::write(const QImage &image)
     }
 
     if (image.width() < 0 || image.height() < 0) {
-        qDebug() << "Image size invalid:" << image.width() << image.height();
+        qCDebug(LOG_PICPLUGIN) << "Image size invalid:" << image.width() << image.height();
         return false;
     }
     if (image.width() > 65535 || image.height() > 65535) {
-        qDebug() << "Image too big:" << image.width() << image.height();
+        qCDebug(LOG_PICPLUGIN) << "Image too big:" << image.width() << image.height();
         // there are only two bytes for each dimension
         return false;
     }

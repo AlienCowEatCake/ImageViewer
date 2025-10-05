@@ -14,6 +14,13 @@
 #include <QFile>
 #include <QIODevice>
 #include <QImage>
+#include <QLoggingCategory>
+
+#ifdef QT_DEBUG
+Q_LOGGING_CATEGORY(LOG_QOIPLUGIN, "kf.imageformats.plugins.qoi", QtDebugMsg)
+#else
+Q_LOGGING_CATEGORY(LOG_QOIPLUGIN, "kf.imageformats.plugins.qoi", QtWarningMsg)
+#endif
 
 /* *** QOI_MAX_IMAGE_WIDTH and QOI_MAX_IMAGE_HEIGHT ***
  * The maximum size in pixel allowed by the plugin.
@@ -347,7 +354,7 @@ bool QOIHandler::canRead() const
 bool QOIHandler::canRead(QIODevice *device)
 {
     if (!device) {
-        qWarning("QOIHandler::canRead() called with no device");
+        qCWarning(LOG_QOIPLUGIN) << "QOIHandler::canRead() called with no device";
         return false;
     }
 

@@ -1,4 +1,4 @@
-From b15d94f0f50c70cc159fb0b7e00e4dda6496186b Mon Sep 17 00:00:00 2001
+From 59256e43df004c217d6f8b02eb06ced64c678a93 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 23 Jun 2024 19:58:27 +0700
 Subject: [PATCH 3/8] Add missing includes
@@ -22,7 +22,7 @@ index 63a1b55..7284868 100644
  
  /*!
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
-index 075f148..239a020 100644
+index 710b6e2..0a81b41 100644
 --- a/src/imageformats/util_p.h
 +++ b/src/imageformats/util_p.h
 @@ -8,6 +8,9 @@
@@ -36,5 +36,5 @@ index 075f148..239a020 100644
  
  #include <QImage>
 -- 
-2.51.0
+2.47.3
 

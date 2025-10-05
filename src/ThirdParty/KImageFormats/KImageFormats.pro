@@ -81,6 +81,8 @@ DEFINES += BEAMChunk=tp_BEAMChunk
 DEFINES += CTBLChunk=tp_CTBLChunk
 DEFINES += SHAMChunk=tp_SHAMChunk
 DEFINES += RASTChunk=tp_RASTChunk
+DEFINES += PCHGChunk=tp_PCHGChunk
+DEFINES += XBMIChunk=tp_XBMIChunk
 
 # --------------------------------------------------------------------------------
 
@@ -94,6 +96,7 @@ DEFINES += WRAPPER_USE_ANI_HANDLER
 
 DEFINES += ANIHandler=tp_ANIHandler
 DEFINES += ANIPlugin=tp_ANIPlugin
+DEFINES += LOG_ANIPLUGIN=tp_LOG_ANIPLUGIN
 
 # --------------------------------------------------------------------------------
 
@@ -108,6 +111,7 @@ DEFINES += ANIPlugin=tp_ANIPlugin
 #
 #    DEFINES += QAVIFHandler=tp_QAVIFHandler
 #    DEFINES += QAVIFPlugin=tp_QAVIFPlugin
+#    DEFINES += LOG_AVIFPLUGIN=tp_LOG_AVIFPLUGIN
 #}
 
 # --------------------------------------------------------------------------------
@@ -131,6 +135,7 @@ DEFINES += writeR8G8B8=tp_writeR8G8B8
 DEFINES += DDSPixelFormat=tp_DDSPixelFormat
 DEFINES += DDSHeaderDX10=tp_DDSHeaderDX10
 DEFINES += DDSHeader=tp_DDSHeader
+DEFINES += LOG_DDSPLUGIN=tp_LOG_DDSPLUGIN
 
 # --------------------------------------------------------------------------------
 
@@ -161,9 +166,9 @@ DEFINES += DDSHeader=tp_DDSHeader
     DEFINES += EXRPlugin=tp_EXRPlugin
     DEFINES += K_IStream=tp_K_IStream
     DEFINES += K_OStream=tp_K_OStream
-    DEFINES += printAttributes=tp_printAttributes
     DEFINES += RgbaToQrgba=tp_RgbaToQrgba
     DEFINES += makePreview=tp_makePreview
+    DEFINES += LOG_EXRPLUGIN=tp_LOG_EXRPLUGIN
 }
 
 # --------------------------------------------------------------------------------
@@ -194,6 +199,7 @@ DEFINES += imageFormat=tp_imageFormat
 
     DEFINES += HEIFHandler=tp_HEIFHandler
     DEFINES += HEIFPlugin=tp_HEIFPlugin
+    DEFINES += LOG_HEIFPLUGIN=tp_LOG_HEIFPLUGIN
 }
 
 # --------------------------------------------------------------------------------
@@ -224,6 +230,7 @@ DEFINES += IFFHandlerPrivate=tp_IFFHandlerPrivate
     DEFINES += JP2Handler=tp_JP2Handler
     DEFINES += JP2Plugin=tp_JP2Plugin
     DEFINES += JP2HandlerPrivate=tp_JP2HandlerPrivate
+    DEFINES += LOG_JP2PLUGIN=tp_LOG_JP2PLUGIN
 }
 
 # --------------------------------------------------------------------------------
@@ -239,6 +246,7 @@ DEFINES += IFFHandlerPrivate=tp_IFFHandlerPrivate
 
     DEFINES += QJpegXLHandler=tp_QJpegXLHandler
     DEFINES += QJpegXLPlugin=tp_QJpegXLPlugin
+    DEFINES += LOG_JXLPLUGIN=tp_LOG_JXLPLUGIN
     DEFINES += DISABLE_JXL_ENCODER DISABLE_JXL_THREADS
 }
 
@@ -305,6 +313,7 @@ DEFINES += RGB=tp_RGB
 DEFINES += Palette=tp_Palette
 DEFINES += PCXHEADER=tp_PCXHEADER
 DEFINES += peekHeader=tp_peekHeader
+DEFINES += LOG_PCXPLUGIN=tp_LOG_PCXPLUGIN
 
 # --------------------------------------------------------------------------------
 
@@ -336,6 +345,7 @@ DEFINES += SoftimagePICHandler=tp_SoftimagePICHandler
 DEFINES += SoftimagePICPlugin=tp_SoftimagePICPlugin
 DEFINES += PicHeader=tp_PicHeader
 DEFINES += PicChannel=tp_PicChannel
+DEFINES += LOG_PICPLUGIN=tp_LOG_PICPLUGIN
 
 # --------------------------------------------------------------------------------
 
@@ -350,6 +360,7 @@ DEFINES += WRAPPER_USE_PSD_HANDLER
 DEFINES += PSDHandler=tp_PSDHandler
 DEFINES += PSDPlugin=tp_PSDPlugin
 DEFINES += PSDHandlerPrivate=tp_PSDHandlerPrivate
+DEFINES += LOG_PSDPLUGIN=tp_LOG_PSDPLUGIN
 
 # --------------------------------------------------------------------------------
 
@@ -380,6 +391,7 @@ DEFINES += WRAPPER_USE_QOI_HANDLER
 DEFINES += QOIHandler=tp_QOIHandler
 DEFINES += QOIPlugin=tp_QOIPlugin
 DEFINES += QOIHandlerPrivate=tp_QOIHandlerPrivate
+DEFINES += LOG_QOIPLUGIN=tp_LOG_QOIPLUGIN
 
 # --------------------------------------------------------------------------------
 
@@ -394,6 +406,7 @@ DEFINES += WRAPPER_USE_RAS_HANDLER
 DEFINES += RASHandler=tp_RASHandler
 DEFINES += RASPlugin=tp_RASPlugin
 DEFINES += RASHandlerPrivate=tp_RASHandlerPrivate
+DEFINES += LOG_RASPLUGIN=tp_LOG_RASPLUGIN
 
 # --------------------------------------------------------------------------------
 
@@ -408,6 +421,7 @@ DEFINES += RASHandlerPrivate=tp_RASHandlerPrivate
 
     DEFINES += RAWHandler=tp_RAWHandler
     DEFINES += RAWPlugin=tp_RAWPlugin
+    DEFINES += LOG_RAWPLUGIN=tp_LOG_RAWPLUGIN
 }
 
 # --------------------------------------------------------------------------------
@@ -425,6 +439,7 @@ DEFINES += RGBPlugin=tp_RGBPlugin
 DEFINES += RLEData=tp_RLEData
 DEFINES += RLEMap=tp_RLEMap
 DEFINES += SGIImagePrivate=tp_SGIImagePrivate
+DEFINES += LOG_RGBPLUGIN=tp_LOG_RGBPLUGIN
 
 # --------------------------------------------------------------------------------
 

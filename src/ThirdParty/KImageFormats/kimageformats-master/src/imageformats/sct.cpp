@@ -216,7 +216,7 @@ public:
         auto v = QString::fromLatin1(pchar_t(res.data()), res.size()).toDouble(&ok);
         if (ok && v > 0) {
             if (m_pb._unitsOfMeasurement) { // Inches
-                return qRoundOrZero(width() / v / 25.4 * 1000);
+                return dpi2ppm(width() / v);
             }
             // Millimeters
             return qRoundOrZero(width() / v * 1000);
@@ -230,7 +230,7 @@ public:
         auto v = QString::fromLatin1(pchar_t(res.data()), res.size()).toDouble(&ok);
         if (ok && v > 0) {
             if (m_pb._unitsOfMeasurement) { // Inches
-                return qRoundOrZero(height() / v / 25.4 * 1000);
+                return dpi2ppm(height() / v);
             }
             // Millimeters
             return qRoundOrZero(height() / v * 1000);
@@ -330,7 +330,7 @@ bool ScitexHandler::canRead() const
 bool ScitexHandler::canRead(QIODevice *device)
 {
     if (!device) {
-        qWarning("ScitexHandler::canRead() called with no device");
+        qCWarning(LOG_SCTPLUGIN) << "ScitexHandler::canRead() called with no device";
         return false;
     }
     ScitexHandlerPrivate hp;
@@ -344,7 +344,7 @@ bool ScitexHandler::read(QImage *image)
 {
     auto dev = device();
     if (dev == nullptr) {
-        qWarning("ScitexHandler::read() called with no device");
+        qCWarning(LOG_SCTPLUGIN) << "ScitexHandler::read() called with no device";
         return false;
     }
     if (!d->loadHeader(dev)) {

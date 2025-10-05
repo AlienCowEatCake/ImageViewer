@@ -1,4 +1,4 @@
-From b22bbaaecdef02a2eabd95c463819c3111daffdb Mon Sep 17 00:00:00 2001
+From a0c685281115d7a3bc6bac3faea36fbe134ee591 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 23 Mar 2025 06:30:54 +0700
 Subject: [PATCH 7/8] Fix build with libjxl < 0.9.0
@@ -8,10 +8,10 @@ Subject: [PATCH 7/8] Fix build with libjxl < 0.9.0
  1 file changed, 29 insertions(+), 3 deletions(-)
 
 diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
-index 1f955a7..02a87f6 100644
+index 91a3bfa..fb21403 100644
 --- a/src/imageformats/jxl.cpp
 +++ b/src/imageformats/jxl.cpp
-@@ -13,7 +13,9 @@
+@@ -14,7 +14,9 @@
  #include "microexif_p.h"
  #include "util_p.h"
  
@@ -21,7 +21,7 @@ index 1f955a7..02a87f6 100644
  
  #if !defined (DISABLE_JXL_ENCODER)
  #include <jxl/encode.h>
-@@ -71,6 +73,9 @@ typedef enum {JXL_ENC_SUCCESS, JXL_ENC_ERROR, JXL_ENC_NEED_MORE_OUTPUT, JXL_ENC_
+@@ -79,6 +81,9 @@ Q_LOGGING_CATEGORY(LOG_JXLPLUGIN, "kf.imageformats.plugins.jxl", QtWarningMsg)
  // Define JXL_HDR_PRESERVATION_DISABLED to disable HDR preservation
  // (HDR images are saved as UINT16).
  // #define JXL_HDR_PRESERVATION_DISABLED
@@ -31,7 +31,7 @@ index 1f955a7..02a87f6 100644
  #endif
  
  #ifndef JXL_DECODE_BOXES_DISABLED
-@@ -295,6 +300,7 @@ bool QJpegXLHandler::countALLFrames()
+@@ -303,6 +308,7 @@ bool QJpegXLHandler::countALLFrames()
      bool is_gray = m_basicinfo.num_color_channels == 1 && m_basicinfo.alpha_bits == 0;
      JxlColorEncoding color_encoding;
      if (m_basicinfo.uses_original_profile == JXL_FALSE && m_basicinfo.have_animation == JXL_FALSE) {
@@ -39,15 +39,15 @@ index 1f955a7..02a87f6 100644
          const JxlCmsInterface *jxlcms = JxlGetDefaultCms();
          if (jxlcms) {
              status = JxlDecoderSetCms(m_decoder, *jxlcms);
-@@ -304,6 +310,7 @@ bool QJpegXLHandler::countALLFrames()
+@@ -312,6 +318,7 @@ bool QJpegXLHandler::countALLFrames()
          } else {
-             qWarning("No JPEG XL CMS Interface");
+             qCWarning(LOG_JXLPLUGIN, "No JPEG XL CMS Interface");
          }
 +#endif
  
          JxlColorEncodingSetToSRGB(&color_encoding, is_gray ? JXL_TRUE : JXL_FALSE);
          JxlDecoderSetPreferredColorProfile(m_decoder, &color_encoding);
-@@ -364,17 +371,34 @@ bool QJpegXLHandler::countALLFrames()
+@@ -372,17 +379,34 @@ bool QJpegXLHandler::countALLFrames()
          }
      }
  
@@ -85,7 +85,7 @@ index 1f955a7..02a87f6 100644
                      == JXL_DEC_SUCCESS) {
                      m_colorspace = QColorSpace::fromIccProfile(icc_data);
  
-@@ -1907,6 +1931,7 @@ bool QJpegXLHandler::rewind()
+@@ -1915,6 +1939,7 @@ bool QJpegXLHandler::rewind()
              return false;
          }
  
@@ -93,14 +93,14 @@ index 1f955a7..02a87f6 100644
          const JxlCmsInterface *jxlcms = JxlGetDefaultCms();
          if (jxlcms) {
              status = JxlDecoderSetCms(m_decoder, *jxlcms);
-@@ -1916,6 +1941,7 @@ bool QJpegXLHandler::rewind()
+@@ -1924,6 +1949,7 @@ bool QJpegXLHandler::rewind()
          } else {
-             qWarning("No JPEG XL CMS Interface");
+             qCWarning(LOG_JXLPLUGIN, "No JPEG XL CMS Interface");
          }
 +#endif
  
          bool is_gray = m_basicinfo.num_color_channels == 1 && m_basicinfo.alpha_bits == 0;
          JxlColorEncoding color_encoding;
 -- 
-2.39.5
+2.47.3
 

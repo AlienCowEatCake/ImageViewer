@@ -12,6 +12,7 @@
 #include <QColorSpace>
 #include <QDateTime>
 #include <QImage>
+#include <QLoggingCategory>
 #include <QSet>
 #include <QTimeZone>
 
@@ -27,7 +28,17 @@
  * By defining RAW_IGNORE_BROKEN_STREAMS removes this protection, leaving
  * LibRaw in complete control of error handling (which is mostly absent).
  */
-// #define RAW_DISABLE_BROKEN_STREAM_PROTECTION
+#define RAW_DISABLE_BROKEN_STREAM_PROTECTION
+#endif
+
+/* *** RAW_MAX_IMAGE_WIDTH and RAW_MAX_IMAGE_HEIGHT ***
+ * The maximum size in pixel allowed by the plugin.
+ */
+#ifndef RAW_MAX_IMAGE_WIDTH
+#define RAW_MAX_IMAGE_WIDTH std::min(65535, KIF_LARGE_IMAGE_PIXEL_LIMIT)
+#endif
+#ifndef RAW_MAX_IMAGE_HEIGHT
+#define RAW_MAX_IMAGE_HEIGHT RAW_MAX_IMAGE_WIDTH
 #endif
 
 #ifdef QT_DEBUG
@@ -39,6 +50,12 @@
  *          scanf_one() function (e.g. *.MOS files). See also raw_scanf_one().
  */
 // #define EXCLUDE_LibRaw_QIODevice // Uncomment this code if you think that the problem is LibRaw_QIODevice (default commented)
+#endif
+
+#ifdef QT_DEBUG
+Q_LOGGING_CATEGORY(LOG_RAWPLUGIN, "kf.imageformats.plugins.raw", QtDebugMsg)
+#else
+Q_LOGGING_CATEGORY(LOG_RAWPLUGIN, "kf.imageformats.plugins.raw", QtWarningMsg)
 #endif
 
 namespace // Private.
@@ -67,6 +84,18 @@ const auto supported_formats = QSet<QByteArray>{
     "x3f"
 };
 // clang-format on
+
+/*!
+ * \brief rawImageSize
+ * \return The size in pixels of the RAW image.
+ */
+static QSize rawImageSize(LibRaw *rawProcessor)
+{
+    auto w = libraw_get_iwidth(&rawProcessor->imgdata);
+    auto h = libraw_get_iheight(&rawProcessor->imgdata);
+    // flip & 4: taken from LibRaw code
+    return (rawProcessor->imgdata.sizes.flip & 4) ? QSize(h, w) : QSize(w, h);
+}
 
 inline int raw_scanf_one(const QByteArray &ba, const char *fmt, void *val)
 {
@@ -728,6 +757,13 @@ bool LoadRAW(QImageIOHandler *handler, QImage &img)
     }
 #endif
 
+    // *** Limiting the maximum image size on a reasonable size
+    auto size = rawImageSize(rawProcessor.get());
+    if (size.width() > RAW_MAX_IMAGE_WIDTH || size.height() > RAW_MAX_IMAGE_HEIGHT) {
+        qCWarning(LOG_RAWPLUGIN) << "The maximum image size is limited to" << RAW_MAX_IMAGE_WIDTH << "x" << RAW_MAX_IMAGE_HEIGHT << "px";
+        return false;
+    }
+
     // *** Unpacking selected image
     if (rawProcessor->unpack() != LIBRAW_SUCCESS) {
         return false;
@@ -946,10 +982,7 @@ QVariant RAWHandler::option(ImageOption option) const
         rawProcessor->imgdata.rawparams.shot_select = currentImageNumber();
 #endif
         if (rawProcessor->open_datastream(&stream) == LIBRAW_SUCCESS) {
-            auto w = libraw_get_iwidth(&rawProcessor->imgdata);
-            auto h = libraw_get_iheight(&rawProcessor->imgdata);
-            // flip & 4: taken from LibRaw code
-            v = (rawProcessor->imgdata.sizes.flip & 4) ? QSize(h, w) : QSize(w, h);
+            v = rawImageSize(rawProcessor.get());
         }
         d->rollbackTransaction();
     }
@@ -1010,7 +1043,7 @@ int RAWHandler::currentImageNumber() const
 bool RAWHandler::canRead(QIODevice *device)
 {
     if (!device) {
-        qWarning("RAWHandler::canRead() called with no device");
+        qCWarning(LOG_RAWPLUGIN) << "RAWHandler::canRead() called with no device";
         return false;
     }
     if (device->isSequential()) {

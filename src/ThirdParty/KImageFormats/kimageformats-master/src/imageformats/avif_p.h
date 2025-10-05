@@ -11,12 +11,12 @@
 
 #include <QByteArray>
 #include <QImage>
+#include <QImageIOHandler>
 #include <QImageIOPlugin>
 #include <QPointF>
 #include <QSize>
 #include <QVariant>
 #include <avif/avif.h>
-#include <qimageiohandler.h>
 
 class QAVIFHandler : public QImageIOHandler
 {

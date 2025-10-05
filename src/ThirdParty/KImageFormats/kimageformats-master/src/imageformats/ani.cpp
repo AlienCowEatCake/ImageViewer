@@ -6,13 +6,19 @@
 
 #include "ani_p.h"
 
-#include <QDebug>
 #include <QImage>
+#include <QLoggingCategory>
 #include <QScopeGuard>
 #include <QVariant>
 #include <QtEndian>
 
 #include <cstring>
+
+#ifdef QT_DEBUG
+Q_LOGGING_CATEGORY(LOG_ANIPLUGIN, "kf.imageformats.plugins.ani", QtDebugMsg)
+#else
+Q_LOGGING_CATEGORY(LOG_ANIPLUGIN, "kf.imageformats.plugins.ani", QtWarningMsg)
+#endif
 
 namespace
 {
@@ -358,7 +364,7 @@ bool ANIHandler::ensureScanned() const
 
         if (chunkId == "anih") {
             if (chunkSize != sizeof(AniHeader)) {
-                qWarning() << "anih chunk size does not match ANIHEADER size";
+                qCWarning(LOG_ANIPLUGIN) << "anih chunk size does not match ANIHEADER size";
                 return false;
             }
 
@@ -498,22 +504,22 @@ bool ANIHandler::ensureScanned() const
     }
 
     if (m_imageCount != m_frameCount && m_imageSequence.isEmpty()) {
-        qWarning("ANIHandler: 'nSteps' is not equal to 'nFrames' but no 'seq' entries were provided");
+        qCWarning(LOG_ANIPLUGIN) << "ANIHandler: 'nSteps' is not equal to 'nFrames' but no 'seq' entries were provided";
         return false;
     }
 
     if (!m_imageSequence.isEmpty() && m_imageSequence.count() != m_imageCount) {
-        qWarning("ANIHandler: count of entries in 'seq' does not match 'nSteps' in anih");
+        qCWarning(LOG_ANIPLUGIN) << "ANIHandler: count of entries in 'seq' does not match 'nSteps' in anih";
         return false;
     }
 
     if (!m_displayRates.isEmpty() && m_displayRates.count() != m_imageCount) {
-        qWarning("ANIHandler: count of entries in 'rate' does not match 'nSteps' in anih");
+        qCWarning(LOG_ANIPLUGIN) << "ANIHandler: count of entries in 'rate' does not match 'nSteps' in anih";
         return false;
     }
 
     if (!m_frameOffsets.isEmpty() && m_frameOffsets.count() - 1 != m_frameCount) {
-        qWarning("ANIHandler: number of actual frames does not match 'nFrames' in anih");
+        qCWarning(LOG_ANIPLUGIN) << "ANIHandler: number of actual frames does not match 'nFrames' in anih";
         return false;
     }
 
@@ -524,7 +530,7 @@ bool ANIHandler::ensureScanned() const
 bool ANIHandler::canRead(QIODevice *device)
 {
     if (!device) {
-        qWarning("ANIHandler::canRead() called with no device");
+        qCWarning(LOG_ANIPLUGIN) << "ANIHandler::canRead() called with no device";
         return false;
     }
     if (device->isSequential()) {

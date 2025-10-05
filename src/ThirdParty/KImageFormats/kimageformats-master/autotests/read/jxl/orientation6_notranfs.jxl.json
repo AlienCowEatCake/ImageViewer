@@ -10,6 +10,12 @@
         "minQtVersion" : "6.7.3",
         "disableAutoTransform": true,
         "fileName" : "orientation6_notranfs.png",
+        "colorSpace" : {
+            "description" : "GIMP built-in sRGB",
+            "primaries" : "SRgb",
+            "transferFunction" : "SRgb",
+            "gamma" : 0
+        },
         "comment" : "Test with automatic transformation disabled."
     },
     {

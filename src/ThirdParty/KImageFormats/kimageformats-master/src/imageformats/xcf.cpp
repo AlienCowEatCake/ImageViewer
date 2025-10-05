@@ -10,7 +10,6 @@
 #include "xcf_p.h"
 
 #include <QColorSpace>
-#include <QDebug>
 #include <QIODevice>
 #include <QImage>
 #include <QList>
@@ -65,8 +64,6 @@ Q_LOGGING_CATEGORY(XCFPLUGIN, "kf.imageformats.plugins.xcf", QtWarningMsg)
 #define DISABLE_IMAGE_PROFILE // default uncommented (comment to use the conversion as intended by Martin)
 #define DISABLE_TILE_PROFILE_CONV // default uncommented (comment to use the conversion as intended by Martin)
 #define DISABLE_IMAGE_PROFILE_CONV // default uncommented (comment to use the conversion as intended by Martin)
-
-const float INCHESPERMETER = (100.0f / 2.54f);
 
 namespace
 {
@@ -1205,7 +1202,9 @@ bool XCFImageFormat::loadLayer(QDataStream &xcf_io, XCFImage &xcf_image)
     if (!composeTiles(xcf_image)) {
         return false;
     }
-    xcf_io.device()->seek(layer.hierarchy_offset);
+    if (!xcf_io.device()->seek(layer.hierarchy_offset)) {
+        return false;
+    }
 
     // As tiles are loaded, they are copied into the layers tiles by
     // this routine. (loadMask(), below, uses a slightly different
@@ -1223,7 +1222,9 @@ bool XCFImageFormat::loadLayer(QDataStream &xcf_io, XCFImage &xcf_image)
             layer.apply_mask = 1;
         }
 
-        xcf_io.device()->seek(layer.mask_offset);
+        if (!xcf_io.device()->seek(layer.mask_offset)) {
+            return false;
+        }
 
         if (!loadMask(xcf_io, layer, xcf_image.header.precision)) {
             return false;
@@ -1837,6 +1838,9 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
                 dataPtr[x + 1] = qFromBigEndian(src[x + 1]);
                 dataPtr[x + 2] = qFromBigEndian(src[x + 2]);
                 dataPtr[x + 3] = qfloat16(1);
+                if (dataPtr[x + 0].isNaN() || dataPtr[x + 1].isNaN() || dataPtr[x + 2].isNaN()) {
+                    return false;
+                }
             }
         }
         break;
@@ -1865,6 +1869,9 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
                 dataPtr[x + 1] = qFromBigEndian(src[x + 1]);
                 dataPtr[x + 2] = qFromBigEndian(src[x + 2]);
                 dataPtr[x + 3] = 1.f;
+                if (std::isnan(dataPtr[x + 0]) || std::isnan(dataPtr[x + 1]) || std::isnan(dataPtr[x + 2])) {
+                    return false;
+                }
             }
         }
         break;
@@ -1985,12 +1992,15 @@ bool XCFImageFormat::loadHierarchy(QDataStream &xcf_io, Layer &layer, const Gimp
 
     qint64 saved_pos = xcf_io.device()->pos();
 
-    xcf_io.device()->seek(offset);
+    if (!xcf_io.device()->seek(offset)) {
+        return false;
+    }
     if (!loadLevel(xcf_io, layer, bpp, precision)) {
         return false;
     }
-
-    xcf_io.device()->seek(saved_pos);
+    if (!xcf_io.device()->seek(saved_pos)) {
+        return false;
+    }
     return true;
 }
 
@@ -2097,7 +2107,9 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
                 offset2 = offset + blockSize;
             }
 
-            xcf_io.device()->seek(offset);
+            if (!xcf_io.device()->seek(offset)) {
+                return false;
+            }
             qint64 bytesParsed = 0;
 
             switch (layer.compression) {
@@ -2204,7 +2216,9 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
                 return false;
             }
 
-            xcf_io.device()->seek(saved_pos);
+            if (!xcf_io.device()->seek(saved_pos)) {
+                return false;
+            }
             offset = readOffsetPtr(xcf_io);
 
             if (offset < 0) {
@@ -2244,7 +2258,9 @@ bool XCFImageFormat::loadMask(QDataStream &xcf_io, Layer &layer, const GimpPreci
         return false;
     }
 
-    xcf_io.device()->seek(hierarchy_offset);
+    if (!xcf_io.device()->seek(hierarchy_offset)) {
+        return false;
+    }
     layer.assignBytes = assignMaskBytes;
 
     if (!loadHierarchy(xcf_io, layer, precision)) {
@@ -2750,17 +2766,13 @@ bool XCFImageFormat::initializeImage(XCFImage &xcf_image)
     }
 #endif
 
-    if (xcf_image.x_resolution > 0 && xcf_image.y_resolution > 0) {
-        const float dpmx = xcf_image.x_resolution * INCHESPERMETER;
-        if (dpmx > float(std::numeric_limits<int>::max())) {
-            return false;
-        }
-        const float dpmy = xcf_image.y_resolution * INCHESPERMETER;
-        if (dpmy > float(std::numeric_limits<int>::max())) {
-            return false;
-        }
-        image.setDotsPerMeterX((int)dpmx);
-        image.setDotsPerMeterY((int)dpmy);
+    const qint32 dpmx = dpi2ppm(xcf_image.x_resolution);
+    if (dpmx > 0) {
+        image.setDotsPerMeterX(dpmx);
+    }
+    const qint32 dpmy = dpi2ppm(xcf_image.y_resolution);
+    if (dpmy > 0) {
+        image.setDotsPerMeterY(dpmy);
     }
     return true;
 }
@@ -3239,7 +3251,7 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage &xcf_image)
                 for (uint i = 0; i < layer.ncols; i++) {
                     qint32 x = qint32(i * TILE_WIDTH);
 
-                    QImage &tile = layer.image_tiles[j][i];
+                    const QImage &tile = layer.image_tiles[j][i];
                     if (x + layer.x_offset < XCF_MAX_IMAGE_WIDTH && y + layer.y_offset < XCF_MAX_IMAGE_HEIGHT) {
                         painter.drawImage(x + layer.x_offset, y + layer.y_offset, tile);
                     }
@@ -4276,7 +4288,9 @@ bool XCFHandler::canRead(QIODevice *device)
     bool failed = !XCFImageFormat::readXCFHeader(ds, &header);
     ds.setDevice(nullptr);
 
-    device->seek(oldPos);
+    if (!device->seek(oldPos)) {
+        return false;
+    }
     if (failed) {
         return false;
     }
