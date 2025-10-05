@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-3.3.5
+THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-3.4.0
 THIRDPARTY_OPENEXR_CONFIG_PATH = $${PWD}/config
 THIRDPARTY_IMATH_PATH = $${PWD}/Imath-3.2.1
 THIRDPARTY_OPENEXR_INCLUDE_PATH = $${PWD}/include
@@ -29,7 +29,7 @@ INCLUDEPATH = \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil \
     $${INCLUDEPATH}
 
-# cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON=OFF -DBUILD_WEBSITE=OFF -DBUILD_TESTING=OFF -DOPENEXR_INSTALL=ON -DOPENEXR_INSTALL_TOOLS=OFF -DOPENEXR_BUILD_LIBS=ON -DOPENEXR_BUILD_TOOLS=OFF -DOPENEXR_BUILD_EXAMPLES=OFF -DOPENEXR_INSTALL_DOCS=OFF -DOPENEXR_BUILD_PYTHON=OFF -DOPENEXR_TEST_LIBRARIES=OFF -DOPENEXR_TEST_TOOLS=OFF -DOPENEXR_TEST_PYTHON=OFF -DBUILD_SHARED_LIBS=OFF -DOPENEXR_USE_CLANG_TIDY=OFF -DOPENEXR_FORCE_INTERNAL_DEFLATE=ON -DOPENEXR_FORCE_INTERNAL_IMATH=ON ..
+# cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON=OFF -DBUILD_WEBSITE=OFF -DBUILD_TESTING=OFF -DOPENEXR_INSTALL=ON -DOPENEXR_INSTALL_TOOLS=OFF -DOPENEXR_BUILD_LIBS=ON -DOPENEXR_BUILD_TOOLS=OFF -DOPENEXR_BUILD_EXAMPLES=OFF -DOPENEXR_INSTALL_DOCS=OFF -DOPENEXR_BUILD_PYTHON=OFF -DOPENEXR_TEST_LIBRARIES=OFF -DOPENEXR_TEST_TOOLS=OFF -DOPENEXR_TEST_PYTHON=OFF -DBUILD_SHARED_LIBS=OFF -DOPENEXR_USE_CLANG_TIDY=OFF -DOPENEXR_FORCE_INTERNAL_DEFLATE=ON -DOPENEXR_FORCE_INTERNAL_IMATH=ON -DOPENEXR_FORCE_INTERNAL_OPENJPH=ON -DOPENEXR_USE_TBB=OFF ..
 
 # find ./src/Imath -name '*.cpp' -or -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_IMATH_PATH}| ; s|$| \\|'
 SOURCES += \
@@ -95,6 +95,7 @@ SOURCES += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfAttribute.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfB44Compressor.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfBoxAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfBytesAttribute.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCRgbaFile.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChannelList.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChannelListAttribute.cpp \
@@ -129,6 +130,7 @@ SOURCES += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfFramesPerSecond.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfGenericInputFile.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfGenericOutputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfHTCompressor.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfHeader.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfHuf.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfIDManifest.cpp \
@@ -189,6 +191,7 @@ SOURCES += \
 \#    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/dwaLookups.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/attributes.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/base.c \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/bytes.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/channel_list.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/chunk.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/coding.c \
@@ -201,6 +204,8 @@ SOURCES += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_b44.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_b44_table.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa.c \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_ht.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_ht_common.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_huf.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_piz.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_pxr24.c \
@@ -256,6 +261,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfAutoArray.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfB44Compressor.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfBoxAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfBytesAttribute.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCRgbaFile.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChannelList.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChannelListAttribute.h \
@@ -294,6 +300,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfFramesPerSecond.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfGenericInputFile.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfGenericOutputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfHTCompressor.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfHeader.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfHuf.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfIDManifest.h \
@@ -366,6 +373,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/backward_compatibility.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/dwaLookups.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_attr.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_bytes.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_channel_list.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_coding.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_compress.h \
@@ -381,6 +389,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa_simd.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_file.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_float_vector.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_ht_common.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_huf.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_memory.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_opaque.h \
@@ -491,6 +500,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfAutoArray.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfB44Compressor.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfBoxAttribute.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfBytesAttribute.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCRgbaFile.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfChannelList.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfChannelListAttribute.h \
@@ -538,6 +548,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfFramesPerSecond.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfGenericInputFile.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfGenericOutputFile.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfHTCompressor.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfHeader.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfHuf.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfIDManifest.h \
@@ -619,6 +630,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/backward_compatibility.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/dwaLookups.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_attr.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_bytes.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_channel_list.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_coding.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_compress.h \
@@ -634,6 +646,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_dwa_simd.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_file.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_float_vector.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_ht_common.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_huf.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_memory.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_opaque.h \

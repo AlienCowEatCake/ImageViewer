@@ -1,0 +1,82 @@
+From d1ceda641a42a0ca86bc7b3116d60a1f0634cf86 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Mon, 6 Oct 2025 01:39:17 +0700
+Subject: [PATCH 4/4] Disable OpenJPH
+
+---
+ src/lib/OpenEXRCore/internal_ht.cpp | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/src/lib/OpenEXRCore/internal_ht.cpp b/src/lib/OpenEXRCore/internal_ht.cpp
+index 14d1940f..05b8ff3e 100644
+--- a/src/lib/OpenEXRCore/internal_ht.cpp
++++ b/src/lib/OpenEXRCore/internal_ht.cpp
+@@ -7,17 +7,21 @@
+ #include <string>
+ #include <fstream>
+ 
++#define OPENEXR_DISABLE_OJPH
++#ifndef OPENEXR_DISABLE_OJPH
+ #include <ojph_arch.h>
+ #include <ojph_file.h>
+ #include <ojph_params.h>
+ #include <ojph_mem.h>
+ #include <ojph_codestream.h>
+ #include <ojph_message.h>
++#endif
+ 
+ #include "openexr_decode.h"
+ #include "openexr_encode.h"
+ #include "internal_ht_common.h"
+ 
++#ifndef OPENEXR_DISABLE_OJPH
+ /**
+  * OpenJPH output file that is backed by a fixed-size memory buffer
+  */
+@@ -156,6 +160,7 @@ class staticmem_outfile : public ojph::outfile_base
+     ojph::ui8 *buf;
+     ojph::ui8 *cur_ptr;
+   };
++#endif
+ 
+ static exr_result_t
+ ht_undo_impl (
+@@ -165,6 +170,7 @@ ht_undo_impl (
+     void*                  uncompressed_data,
+     uint64_t               uncompressed_size)
+ {
++#ifndef OPENEXR_DISABLE_OJPH
+     exr_result_t rv = EXR_ERR_SUCCESS;
+ 
+     std::vector<CodestreamChannelInfo> cs_to_file_ch (decode->channel_count);
+@@ -322,6 +328,9 @@ ht_undo_impl (
+     infile.close ();
+ 
+     return rv;
++#else
++    return EXR_ERR_FEATURE_NOT_IMPLEMENTED;
++#endif
+ }
+ 
+ extern "C" exr_result_t
+@@ -351,6 +360,7 @@ internal_exr_undo_ht (
+ static exr_result_t
+ ht_apply_impl (exr_encode_pipeline_t* encode)
+ {
++#ifndef OPENEXR_DISABLE_OJPH
+     exr_result_t rv = EXR_ERR_SUCCESS;
+ 
+     std::vector<CodestreamChannelInfo> cs_to_file_ch (encode->channel_count);
+@@ -523,6 +533,9 @@ ht_apply_impl (exr_encode_pipeline_t* encode)
+     }
+ 
+     return rv;
++#else
++    return EXR_ERR_FEATURE_NOT_IMPLEMENTED;
++#endif
+ }
+ 
+ extern "C" exr_result_t
+-- 
+2.47.3
+

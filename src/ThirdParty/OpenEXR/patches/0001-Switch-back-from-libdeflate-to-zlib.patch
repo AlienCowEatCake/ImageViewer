@@ -1,21 +1,35 @@
-From 68bac906dbba02f02dfce69e57275c91c5d5280e Mon Sep 17 00:00:00 2001
+From a51e9db9181acf712f47db0c3af34def27123c85 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Thu, 13 Jun 2024 00:04:24 +0700
-Subject: [PATCH 1/2] Switch back from libdeflate to zlib
+Subject: [PATCH 1/4] Switch back from libdeflate to zlib
 
 ---
- src/lib/OpenEXRCore/compression.c | 112 ++++++------------------------
- 1 file changed, 20 insertions(+), 92 deletions(-)
+ src/lib/OpenEXRCore/compression.c | 126 +++++-------------------------
+ 1 file changed, 20 insertions(+), 106 deletions(-)
 
 diff --git a/src/lib/OpenEXRCore/compression.c b/src/lib/OpenEXRCore/compression.c
-index 8348bfc4..2aab919d 100644
+index dc0c973b..eab434af 100644
 --- a/src/lib/OpenEXRCore/compression.c
 +++ b/src/lib/OpenEXRCore/compression.c
-@@ -14,15 +14,9 @@
- #include "internal_file.h"
- #include "internal_huf.h"
+@@ -16,29 +16,9 @@
  
--#include <libdeflate.h>
+ #include "OpenEXRConfigInternal.h"
+ 
+-#if OPENEXR_USE_INTERNAL_DEFLATE
+-#    include "../../../external/deflate/lib/lib_common.h"
+-#    include "../../../external/deflate/lib/arm/cpu_features.c"
+-#    include "../../../external/deflate/lib/x86/cpu_features.c"
+-#    include "../../../external/deflate/lib/utils.c"
+-#    include "../../../external/deflate/lib/deflate_compress.c"
+-#    undef BITBUF_NBITS
+-#    include "../../../external/deflate/lib/deflate_decompress.c"
+-#    undef BITBUF_NBITS
+-#    include "../../../external/deflate/lib/adler32.c"
+-#    include "../../../external/deflate/lib/zlib_compress.c"
+-#    include "../../../external/deflate/lib/zlib_decompress.c"
+-#else
+-#    include <libdeflate.h>
+-#endif
 +#include <zlib.h>
  #include <string.h>
  
@@ -28,7 +42,7 @@ index 8348bfc4..2aab919d 100644
  /* value Aras found to be better trade off of speed vs size */
  #define EXR_DEFAULT_ZLIB_COMPRESS_LEVEL 4
  
-@@ -33,7 +27,7 @@ exr_compress_max_buffer_size (size_t in_bytes)
+@@ -49,7 +29,7 @@ exr_compress_max_buffer_size (size_t in_bytes)
  {
      size_t r, extra;
  
@@ -37,7 +51,7 @@ index 8348bfc4..2aab919d 100644
      /*
       * lib deflate has a message about needing a 9 byte boundary
       * but is unclear if it actually adds that or not
-@@ -79,19 +73,8 @@ exr_compress_buffer (
+@@ -95,19 +75,8 @@ exr_compress_buffer (
      size_t              out_bytes_avail,
      size_t*             actual_out)
  {
@@ -59,7 +73,7 @@ index 8348bfc4..2aab919d 100644
  
      if (level < 0)
      {
-@@ -100,25 +83,11 @@ exr_compress_buffer (
+@@ -116,25 +85,11 @@ exr_compress_buffer (
          if (level < 0) level = EXR_DEFAULT_ZLIB_COMPRESS_LEVEL;
      }
  
@@ -89,7 +103,7 @@ index 8348bfc4..2aab919d 100644
      }
      return EXR_ERR_OUT_OF_MEMORY;
  }
-@@ -134,60 +103,19 @@ exr_uncompress_buffer (
+@@ -150,60 +105,19 @@ exr_uncompress_buffer (
      size_t              out_bytes_avail,
      size_t*             actual_out)
  {
@@ -163,5 +177,5 @@ index 8348bfc4..2aab919d 100644
      }
      return EXR_ERR_OUT_OF_MEMORY;
 -- 
-2.47.0
+2.47.3
 
