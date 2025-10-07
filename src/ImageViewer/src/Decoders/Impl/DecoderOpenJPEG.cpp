@@ -541,9 +541,9 @@ QImage readFile(const QString &filePath)
     opj_codec_t* codec = opj_create_decompress(codecFormat);
 
     // catch events using our callbacks and give a local context
-    opj_set_info_handler(codec, infoCallback, 00);
-    opj_set_warning_handler(codec, warningCallback, 00);
-    opj_set_error_handler(codec, errorCallback, 00);
+    opj_set_info_handler(codec, infoCallback, Q_NULLPTR);
+    opj_set_warning_handler(codec, warningCallback, Q_NULLPTR);
+    opj_set_error_handler(codec, errorCallback, Q_NULLPTR);
 
     opj_dparameters_t parameters;
     memset(&parameters, 0, sizeof(opj_dparameters_t));
@@ -660,7 +660,11 @@ QImage readFile(const QString &filePath)
         result = anyToQImage(image);
 
     if(result.isNull())
+    {
+        opj_destroy_codec(codec);
+        opj_image_destroy(image);
         return result;
+    }
 
     if(image->icc_profile_buf && image->icc_profile_len)
     {
@@ -672,6 +676,9 @@ QImage readFile(const QString &filePath)
     {
         ICCProfile(ICCProfile::defaultCmykProfileData()).applyToImage(&result);
     }
+
+    opj_destroy_codec(codec);
+    opj_image_destroy(image);
 
     return result;
 }
