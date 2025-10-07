@@ -7,7 +7,6 @@
 #include <string>
 #include <fstream>
 
-#define OPENEXR_DISABLE_OJPH
 #ifndef OPENEXR_DISABLE_OJPH
 #include <ojph_arch.h>
 #include <ojph_file.h>
@@ -15,6 +14,11 @@
 #include <ojph_mem.h>
 #include <ojph_codestream.h>
 #include <ojph_message.h>
+#elif defined HAS_OPENJPEG
+#include <cassert>
+#include <cstring>
+#include <openjpeg.h>
+#include "internal_structs.h"
 #endif
 
 #include "openexr_decode.h"
@@ -160,6 +164,65 @@ class staticmem_outfile : public ojph::outfile_base
     ojph::ui8 *buf;
     ojph::ui8 *cur_ptr;
   };
+#elif defined HAS_OPENJPEG
+struct staticmem_outfile
+{
+    const char* buffer;
+    OPJ_SIZE_T size;
+    OPJ_OFF_T curr;
+};
+
+static OPJ_SIZE_T stream_read_callback(void* buffer, OPJ_SIZE_T nb_bytes, void* user_data)
+{
+    staticmem_outfile* ctx = reinterpret_cast<staticmem_outfile*>(user_data);
+    if (!ctx || ctx->curr < 0 || static_cast<OPJ_SIZE_T>(ctx->curr) > ctx->size || !buffer)
+        return -1;
+    OPJ_SIZE_T end = nb_bytes + static_cast<OPJ_SIZE_T>(ctx->curr);
+    OPJ_SIZE_T read = ((end > ctx->size) ? ctx->size : end) - static_cast<OPJ_SIZE_T>(ctx->curr);
+    memcpy(buffer, ctx->buffer + ctx->curr, read);
+    ctx->curr += static_cast<OPJ_OFF_T>(read);
+    return read;
+}
+
+static OPJ_BOOL stream_seek_callback(OPJ_OFF_T nb_bytes, void* user_data)
+{
+    staticmem_outfile* ctx = reinterpret_cast<staticmem_outfile*>(user_data);
+    if (!ctx || nb_bytes < 0 || static_cast<OPJ_SIZE_T>(nb_bytes) > ctx->size)
+        return OPJ_FALSE;
+    ctx->curr = nb_bytes;
+    return OPJ_TRUE;
+}
+
+static OPJ_OFF_T stream_skip_callback(OPJ_OFF_T nb_bytes, void* user_data)
+{
+    staticmem_outfile* ctx = reinterpret_cast<staticmem_outfile*>(user_data);
+    if (ctx && stream_seek_callback(ctx->curr + nb_bytes, user_data))
+        return nb_bytes;
+    return -1;
+}
+
+static void stream_free_callback(void* user_data)
+{
+    (void)user_data;
+}
+
+static void error_callback(const char* msg, void* client_data)
+{
+    exr_const_context_t context = reinterpret_cast<exr_const_context_t>(client_data);
+    context->print_error(context, EXR_ERR_CORRUPT_CHUNK, "OpenEXR/OpenJPEG: %s", msg);
+}
+
+static void warning_callback(const char* msg, void* client_data)
+{
+    (void)client_data;
+    (void)msg;
+}
+
+static void info_callback(const char* msg, void* client_data)
+{
+    (void)client_data;
+    (void)msg;
+}
 #endif
 
 static exr_result_t
@@ -170,7 +233,6 @@ ht_undo_impl (
     void*                  uncompressed_data,
     uint64_t               uncompressed_size)
 {
-#ifndef OPENEXR_DISABLE_OJPH
     exr_result_t rv = EXR_ERR_SUCCESS;
 
     std::vector<CodestreamChannelInfo> cs_to_file_ch (decode->channel_count);
@@ -196,6 +258,7 @@ ht_undo_impl (
         cs_to_file_ch[cs_i].raster_line_offset = computedoffset;
     }
 
+#ifndef OPENEXR_DISABLE_OJPH
     ojph::mem_infile infile;
     infile.open (
         reinterpret_cast<const ojph::ui8*> (compressed_data) + header_sz,
@@ -326,11 +389,167 @@ ht_undo_impl (
     }
 
     infile.close ();
+#elif defined HAS_OPENJPEG
+    opj_stream_t* stream = NULL;
+    opj_codec_t* codec = NULL;
+    opj_image_t* image = NULL;
+    try
+    {
+#define ASSERT_THROW_ERROR(CONDITION) \
+        do { \
+            assert(CONDITION); \
+            if (!(CONDITION)) \
+                throw std::runtime_error("ASSERT: " #CONDITION); \
+        } while (false)
+
+        stream = opj_stream_default_create(OPJ_TRUE);
+        if (!stream)
+            throw std::runtime_error("opj_stream_default_create failed");
+
+        staticmem_outfile ctx;
+        ctx.buffer = reinterpret_cast<const char*>(compressed_data) + header_sz;
+        ctx.size = comp_buf_size - header_sz;
+        ctx.curr = 0;
+
+        opj_stream_set_user_data(stream, reinterpret_cast<void*>(&ctx), &stream_free_callback);
+        opj_stream_set_user_data_length(stream, static_cast<OPJ_UINT64>(ctx.size));
+        opj_stream_set_read_function(stream, &stream_read_callback);
+        opj_stream_set_skip_function(stream, &stream_skip_callback);
+        opj_stream_set_seek_function(stream, &stream_seek_callback);
+
+        codec = opj_create_decompress(OPJ_CODEC_J2K);
+        if (!codec)
+            throw std::runtime_error("opj_create_decompress failed");
+
+        opj_set_info_handler(codec, info_callback, (void*)decode->context);
+        opj_set_warning_handler(codec, warning_callback, (void*)decode->context);
+        opj_set_error_handler(codec, error_callback, (void*)decode->context);
+
+        opj_dparameters_t parameters;
+        memset(&parameters, 0, sizeof(opj_dparameters_t));
+        opj_set_default_decoder_parameters(&parameters);
+        if (!opj_setup_decoder(codec, &parameters))
+            throw std::runtime_error("opj_setup_decoder failed");
+
+        if (!opj_read_header(stream, codec, &image))
+            throw std::runtime_error("opj_read_header failed");
+
+        if (!(opj_decode(codec, stream, image) && opj_end_decompress(codec, stream)))
+            throw std::runtime_error("opj_decode failed");
+
+        if (!image->comps[0].data)
+            throw std::runtime_error("opj_decode no image data");
+
+        OPJ_UINT32 image_height = image->y1 - image->y0;
+        int bpl = 0;
+        bool is_planar = false;
+        for (int16_t c = 0; c < decode->channel_count; c++)
+        {
+            bpl += decode->channels[c].bytes_per_element * decode->channels[c].width;
+            if (decode->channels[c].x_samples > 1 || decode->channels[c].y_samples > 1)
+                is_planar = true;
+        }
+
+        ASSERT_THROW_ERROR(decode->chunk.width == static_cast<int32_t>(image->x1 - image->x0));
+        ASSERT_THROW_ERROR(decode->chunk.height == static_cast<int32_t>(image_height));
+        ASSERT_THROW_ERROR(decode->channel_count == static_cast<int16_t>(image->numcomps));
+
+        static_assert(sizeof(uint16_t) == 2);
+        static_assert(sizeof(uint32_t) == 4);
+
+        OPJ_INT32* cur_line = NULL;
+        if (is_planar)
+        {
+            for (int16_t c = 0; c < decode->channel_count; c++)
+            {
+                int file_c = cs_to_file_ch[c].file_index;
+                ASSERT_THROW_ERROR(static_cast<int32_t>(image->comps[c].h) == decode->channels[file_c].height);
+                ASSERT_THROW_ERROR(static_cast<int32_t>(image->comps[c].w) == decode->channels[file_c].width);
+
+                if (decode->channels[file_c].height == 0)
+                    continue;
+
+                uint8_t* line_pixels = static_cast<uint8_t*>(uncompressed_data);
+
+                for (int64_t y = decode->chunk.start_y; y < image_height + decode->chunk.start_y; ++y)
+                {
+                    for (int16_t line_c = 0; line_c < decode->channel_count; ++line_c)
+                    {
+                        if (y % decode->channels[line_c].y_samples != 0)
+                            continue;
+
+                        if (static_cast<uint32_t>(line_c) == static_cast<uint32_t>(file_c))
+                        {
+                            cur_line = image->comps[c].data + y / image->comps[c].dy * image->comps[c].w;
+
+                            if (decode->channels[file_c].data_type == EXR_PIXEL_HALF)
+                            {
+                                int16_t* channel_pixels = (int16_t*)line_pixels;
+                                for (int16_t p = 0; p < decode->channels[file_c].width; ++p)
+                                    *channel_pixels++ = cur_line[p];
+                            }
+                            else
+                            {
+                                int32_t* channel_pixels = (int32_t*)line_pixels;
+                                for (int16_t p = 0; p < decode->channels[file_c].width; ++p)
+                                    *channel_pixels++ = cur_line[p];
+                            }
+                        }
+
+                        line_pixels += decode->channels[line_c].bytes_per_element * decode->channels[line_c].width;
+                    }
+                }
+            }
+        }
+        else
+        {
+            uint8_t* line_pixels = static_cast<uint8_t*>(uncompressed_data);
+
+            ASSERT_THROW_ERROR(bpl * image_height == uncompressed_size);
+
+            for (uint32_t y = 0; y < image_height; ++y)
+            {
+                for (int16_t c = 0; c < decode->channel_count; ++c)
+                {
+                    int file_c = cs_to_file_ch[c].file_index;
+                    cur_line = image->comps[c].data + y / image->comps[c].dy * image->comps[c].w;
+                    if (decode->channels[file_c].data_type == EXR_PIXEL_HALF)
+                    {
+                        int16_t* channel_pixels = (int16_t*)(line_pixels + cs_to_file_ch[c].raster_line_offset);
+                        for (int16_t p = 0; p < decode->channels[file_c].width; ++p)
+                            *channel_pixels++ = cur_line[p];
+                    }
+                    else
+                    {
+                        int32_t* channel_pixels = (int32_t*)(line_pixels + cs_to_file_ch[c].raster_line_offset);
+                        for (int16_t p = 0; p < decode->channels[file_c].width; ++p)
+                            *channel_pixels++ = cur_line[p];
+                    }
+                }
+                line_pixels += bpl;
+            }
+        }
+#undef ASSERT_THROW_ERROR
+    }
+    catch (std::runtime_error& e)
+    {
+        rv = EXR_ERR_CORRUPT_CHUNK;
+        error_callback(e.what(), (void*)decode->context);
+    }
+    catch (...)
+    {
+        rv = EXR_ERR_CORRUPT_CHUNK;
+        error_callback("Unknown exception", (void*)decode->context);
+    }
+    opj_image_destroy(image);
+    opj_destroy_codec(codec);
+    opj_stream_destroy(stream);
+#else
+    (void)header_sz;
+    rv = EXR_ERR_FEATURE_NOT_IMPLEMENTED;
+#endif
 
     return rv;
-#else
-    return EXR_ERR_FEATURE_NOT_IMPLEMENTED;
-#endif
 }
 
 extern "C" exr_result_t
@@ -534,6 +753,7 @@ ht_apply_impl (exr_encode_pipeline_t* encode)
 
     return rv;
 #else
+    (void)encode;
     return EXR_ERR_FEATURE_NOT_IMPLEMENTED;
 #endif
 }

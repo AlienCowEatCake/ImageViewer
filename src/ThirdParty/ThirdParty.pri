@@ -24,6 +24,7 @@ include(KImageFormats/KImageFormats.pri)
 
 # Dependencies:
 #  * zlib
+#  * OpenJPEG
 include(OpenEXR/OpenEXR.pri)
 
 # Dependencies:
