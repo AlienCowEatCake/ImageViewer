@@ -24,6 +24,7 @@
 #include <QMenu>
 //#include <QActionGroup>
 #include <QEvent>
+#include <QStyle>
 
 #include "Utils/MenuUtils.h"
 #include "Utils/IconThemeManager.h"
@@ -332,37 +333,36 @@ struct MenuBar::Impl : public ControlsContainerEmitter
 
     void updateIcons()
     {
-        IconThemeManager *iconThemeManager = IconThemeManager::instance();
         menuActionsHasDarkTheme = ThemeUtils::WidgetHasDarkTheme(menuFile);
         const bool menuBarIsRtl = menuFile->layoutDirection() == Qt::RightToLeft;
-        menuReopenWith->setIcon                 (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_OPEN_WITH      , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionOpenFile->setIcon                 (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_OPEN           , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionOpenFolder->setIcon               (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_OPEN           , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionSaveAs->setIcon                   (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_SAVE_AS        , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionNewWindow->setIcon                (iconThemeManager->GetIcon(ThemeUtils::ICON_WINDOW_NEW              , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionNavigatePrevious->setIcon         (iconThemeManager->GetIcon(menuBarIsRtl ? ThemeUtils::ICON_GO_NEXT      : ThemeUtils::ICON_GO_PREVIOUS  , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionNavigateNext->setIcon             (iconThemeManager->GetIcon(menuBarIsRtl ? ThemeUtils::ICON_GO_PREVIOUS  : ThemeUtils::ICON_GO_NEXT      , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionImageInformation->setIcon         (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_PROPERTIES     , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionPrint->setIcon                    (iconThemeManager->GetIcon(ThemeUtils::ICON_DOCUMENT_PRINT          , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionPreferences->setIcon              (iconThemeManager->GetIcon(ThemeUtils::ICON_EDIT_PREFERENCES        , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionExit->setIcon                     (iconThemeManager->GetIcon(ThemeUtils::ICON_APPLICATION_EXIT        , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionRotateCounterclockwise->setIcon   (iconThemeManager->GetIcon(ThemeUtils::ICON_OBJECT_ROTATE_LEFT      , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionRotateClockwise->setIcon          (iconThemeManager->GetIcon(ThemeUtils::ICON_OBJECT_ROTATE_RIGHT     , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionFlipHorizontal->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_OBJECT_FLIP_HORIZONTAL  , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionFlipVertical->setIcon             (iconThemeManager->GetIcon(ThemeUtils::ICON_OBJECT_FLIP_VERTICAL    , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionDeleteFile->setIcon               (iconThemeManager->GetIcon(ThemeUtils::ICON_EDIT_DELETE             , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionZoomOut->setIcon                  (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_OUT                , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionZoomIn->setIcon                   (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_IN                 , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionZoomReset->setIcon                (iconThemeManager->GetIcon(ThemeUtils::ICON_VIEW_REFRESH            , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionZoomCustom->setIcon               (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_CUSTOM             , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionZoomFitToWindow->setIcon          (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_FIT_BEST           , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionZoomOriginalSize->setIcon         (iconThemeManager->GetIcon(ThemeUtils::ICON_ZOOM_ORIGINAL           , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionZoomFullScreen->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_VIEW_FULLSCREEN         , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionAbout->setIcon                    (iconThemeManager->GetIcon(ThemeUtils::ICON_HELP_ABOUT              , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionAboutQt->setIcon                  (iconThemeManager->GetIcon(ThemeUtils::ICON_HELP_ABOUT_QT           , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionCheckForUpdates->setIcon          (iconThemeManager->GetIcon(ThemeUtils::ICON_SYNC_SYNCHRONIZING      , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionEditStylesheet->setIcon           (iconThemeManager->GetIcon(ThemeUtils::ICON_EDIT_PREFERENCES        , menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
-        actionStartSlideShow->setIcon(iconThemeManager->GetIcon(isSlideShowMode ? ThemeUtils::ICON_MEDIA_PLAYBACK_STOP : ThemeUtils::ICON_MEDIA_SLIDESHOW, menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
+        menuReopenWith->setIcon                 (getMenuIcon(ThemeUtils::ICON_DOCUMENT_OPEN_WITH    ));
+        actionOpenFile->setIcon                 (getMenuIcon(ThemeUtils::ICON_DOCUMENT_OPEN         ));
+        actionOpenFolder->setIcon               (getMenuIcon(ThemeUtils::ICON_DOCUMENT_OPEN         ));
+        actionSaveAs->setIcon                   (getMenuIcon(ThemeUtils::ICON_DOCUMENT_SAVE_AS      ));
+        actionNewWindow->setIcon                (getMenuIcon(ThemeUtils::ICON_WINDOW_NEW            ));
+        actionNavigatePrevious->setIcon         (getMenuIcon(menuBarIsRtl ? ThemeUtils::ICON_GO_NEXT     : ThemeUtils::ICON_GO_PREVIOUS));
+        actionNavigateNext->setIcon             (getMenuIcon(menuBarIsRtl ? ThemeUtils::ICON_GO_PREVIOUS : ThemeUtils::ICON_GO_NEXT    ));
+        actionImageInformation->setIcon         (getMenuIcon(ThemeUtils::ICON_DOCUMENT_PROPERTIES   ));
+        actionPrint->setIcon                    (getMenuIcon(ThemeUtils::ICON_DOCUMENT_PRINT        ));
+        actionPreferences->setIcon              (getMenuIcon(ThemeUtils::ICON_EDIT_PREFERENCES      ));
+        actionExit->setIcon                     (getMenuIcon(ThemeUtils::ICON_APPLICATION_EXIT      ));
+        actionRotateCounterclockwise->setIcon   (getMenuIcon(ThemeUtils::ICON_OBJECT_ROTATE_LEFT    ));
+        actionRotateClockwise->setIcon          (getMenuIcon(ThemeUtils::ICON_OBJECT_ROTATE_RIGHT   ));
+        actionFlipHorizontal->setIcon           (getMenuIcon(ThemeUtils::ICON_OBJECT_FLIP_HORIZONTAL));
+        actionFlipVertical->setIcon             (getMenuIcon(ThemeUtils::ICON_OBJECT_FLIP_VERTICAL  ));
+        actionDeleteFile->setIcon               (getMenuIcon(ThemeUtils::ICON_EDIT_DELETE           ));
+        actionZoomOut->setIcon                  (getMenuIcon(ThemeUtils::ICON_ZOOM_OUT              ));
+        actionZoomIn->setIcon                   (getMenuIcon(ThemeUtils::ICON_ZOOM_IN               ));
+        actionZoomReset->setIcon                (getMenuIcon(ThemeUtils::ICON_VIEW_REFRESH          ));
+        actionZoomCustom->setIcon               (getMenuIcon(ThemeUtils::ICON_ZOOM_CUSTOM           ));
+        actionZoomFitToWindow->setIcon          (getMenuIcon(ThemeUtils::ICON_ZOOM_FIT_BEST         ));
+        actionZoomOriginalSize->setIcon         (getMenuIcon(ThemeUtils::ICON_ZOOM_ORIGINAL         ));
+        actionZoomFullScreen->setIcon           (getMenuIcon(ThemeUtils::ICON_VIEW_FULLSCREEN       ));
+        actionAbout->setIcon                    (getMenuIcon(ThemeUtils::ICON_HELP_ABOUT            ));
+        actionAboutQt->setIcon                  (getMenuIcon(ThemeUtils::ICON_HELP_ABOUT_QT         ));
+        actionCheckForUpdates->setIcon          (getMenuIcon(ThemeUtils::ICON_SYNC_SYNCHRONIZING    ));
+        actionEditStylesheet->setIcon           (getMenuIcon(ThemeUtils::ICON_EDIT_PREFERENCES      ));
+        actionStartSlideShow->setIcon(getMenuIcon(isSlideShowMode ? ThemeUtils::ICON_MEDIA_PLAYBACK_STOP : ThemeUtils::ICON_MEDIA_SLIDESHOW));
     }
 
     void setSlideShowMode(bool isSlideShow)
@@ -371,13 +371,47 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         if(!isSlideShowMode)
         {
             actionStartSlideShow->setText(qApp->translate("MenuBar", "Start S&lideshow"));
-            actionStartSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_SLIDESHOW, menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
+            actionStartSlideShow->setIcon(getMenuIcon(ThemeUtils::ICON_MEDIA_SLIDESHOW));
         }
         else
         {
             actionStartSlideShow->setText(qApp->translate("MenuBar", "Stop S&lideshow"));
-            actionStartSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_STOP, menuActionsFallbackIconRequired, menuActionsHasDarkTheme));
+            actionStartSlideShow->setIcon(getMenuIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_STOP));
         }
+    }
+
+    QIcon getMenuIcon(ThemeUtils::IconTypes type) const
+    {
+        QIcon icon = IconThemeManager::instance()->GetIcon(type, menuActionsFallbackIconRequired, menuActionsHasDarkTheme);
+
+        // https://bugreports.qt.io/browse/QTBUG-140898
+#if defined (Q_OS_WIN) && (QT_VERSION >= QT_VERSION_CHECK(6, 9, 2))
+        static const QList<QIcon::Mode> modes = QList<QIcon::Mode>() << QIcon::Normal << QIcon::Disabled << QIcon::Active << QIcon::Selected;
+        static const QList<QIcon::State> states = QList<QIcon::State>() << QIcon::On << QIcon::Off;
+        const qreal menuIconSize = qApp->style()->pixelMetric(QStyle::PM_SmallIconSize);
+
+        QIcon fixedIcon;
+        for(QList<QIcon::Mode>::ConstIterator modeIt = modes.constBegin(), modeItEnd = modes.constEnd(); modeIt != modeItEnd; ++modeIt)
+        {
+            const QIcon::Mode mode = *modeIt;
+            for(QList<QIcon::State>::ConstIterator stateIt = states.constBegin(), stateItEnd = states.constEnd(); stateIt != stateItEnd; ++stateIt)
+            {
+                const QIcon::State state = *stateIt;
+                const QList<QSize> sizes = icon.availableSizes(mode, state);
+                for(QList<QSize>::ConstIterator sizeIt = sizes.constBegin(), sizeItEnd = sizes.constEnd(); sizeIt != sizeItEnd; ++sizeIt)
+                {
+                    const QSize &size = *sizeIt;
+                    QPixmap pixmap = icon.pixmap(size, mode, state);
+                    pixmap.setDevicePixelRatio(qMax(size.width(), size.height()) / menuIconSize);
+                    fixedIcon.addPixmap(pixmap, mode, state);
+                }
+            }
+        }
+        if(!fixedIcon.isNull())
+            icon = fixedIcon;
+#endif
+
+        return icon;
     }
 
     QAction *createWidgetAction(QWidget *widget)
