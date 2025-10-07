@@ -1,14 +1,37 @@
-From ad5e82d989f3e43c181d02a1c9326d49c054151e Mon Sep 17 00:00:00 2001
+From ceaa20de373d71c9d8fae930232bc011dbe4e4f7 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 24 Aug 2024 05:38:07 +0700
 Subject: [PATCH] Add FT_PREFIX configuration
 
 ---
+ include/freetype/config/ftoption.h | 4 ++--
  include/freetype/internal/ftcalc.h | 2 +-
  include/ft2build.h                 | 4 ++++
- src/base/ftcalc.c                  | 2 +-
- 3 files changed, 6 insertions(+), 2 deletions(-)
+ src/base/ftcalc.c                  | 4 +++-
+ 4 files changed, 10 insertions(+), 4 deletions(-)
 
+diff --git a/include/freetype/config/ftoption.h b/include/freetype/config/ftoption.h
+index 4934186..3439b3b 100644
+--- a/include/freetype/config/ftoption.h
++++ b/include/freetype/config/ftoption.h
+@@ -153,7 +153,7 @@ FT_BEGIN_HEADER
+    * that to verify that the assembler function works properly, or to execute
+    * benchmark tests of the various implementations.
+    */
+-/* #define FT_CONFIG_OPTION_NO_ASSEMBLER */
++#define FT_CONFIG_OPTION_NO_ASSEMBLER
+ 
+ 
+   /**************************************************************************
+@@ -165,7 +165,7 @@ FT_BEGIN_HEADER
+    * If your compiler is not C99-compliant or CPU assembly is not supported,
+    * you can disable this option.
+    */
+-#define FT_CONFIG_OPTION_INLINE_MULFIX
++/* #define FT_CONFIG_OPTION_INLINE_MULFIX */
+ 
+ 
+   /**************************************************************************
 diff --git a/include/freetype/internal/ftcalc.h b/include/freetype/internal/ftcalc.h
 index 16a7322..7a71f08 100644
 --- a/include/freetype/internal/ftcalc.h
@@ -38,10 +61,21 @@ index 3008aea..75b8da0 100644
  
  #endif /* FT2BUILD_H_ */
 diff --git a/src/base/ftcalc.c b/src/base/ftcalc.c
-index 7d6e12e..0c61e6d 100644
+index 7d6e12e..e34b3bd 100644
 --- a/src/base/ftcalc.c
 +++ b/src/base/ftcalc.c
-@@ -96,7 +96,7 @@
+@@ -39,8 +39,10 @@
+ #include <freetype/internal/ftobjs.h>
+ 
+   /* cancel inlining macro from internal/ftcalc.h */
++#ifdef FT_CONFIG_OPTION_INLINE_MULFIX
+ #ifdef FT_MulFix
+ #  undef FT_MulFix
++#endif
+ #endif
+ 
+ 
+@@ -96,7 +98,7 @@
      return a & ~0xFFFFL;
    }
  
@@ -51,5 +85,5 @@ index 7d6e12e..0c61e6d 100644
    FT_BASE_DEF( FT_Int )
    FT_MSB( FT_UInt32 z )
 -- 
-2.47.3
+2.51.0
 

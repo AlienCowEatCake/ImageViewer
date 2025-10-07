@@ -153,7 +153,7 @@ FT_BEGIN_HEADER
    * that to verify that the assembler function works properly, or to execute
    * benchmark tests of the various implementations.
    */
-/* #define FT_CONFIG_OPTION_NO_ASSEMBLER */
+#define FT_CONFIG_OPTION_NO_ASSEMBLER
 
 
   /**************************************************************************
@@ -165,7 +165,7 @@ FT_BEGIN_HEADER
    * If your compiler is not C99-compliant or CPU assembly is not supported,
    * you can disable this option.
    */
-#define FT_CONFIG_OPTION_INLINE_MULFIX
+/* #define FT_CONFIG_OPTION_INLINE_MULFIX */
 
 
   /**************************************************************************

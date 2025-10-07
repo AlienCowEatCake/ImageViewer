@@ -39,8 +39,10 @@
 #include <freetype/internal/ftobjs.h>
 
   /* cancel inlining macro from internal/ftcalc.h */
+#ifdef FT_CONFIG_OPTION_INLINE_MULFIX
 #ifdef FT_MulFix
 #  undef FT_MulFix
+#endif
 #endif
 
 
