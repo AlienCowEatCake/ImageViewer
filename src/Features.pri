@@ -586,7 +586,9 @@ disable_libjpeg : !system_libwmf {
 # OpenJPH options:
 #    disable_openjph
 #    system_openjph
-
+disable_cxx14 : !system_openjph {
+    CONFIG *= disable_openjph
+}
 
 # GIFLIB options:
 #    disable_giflib
