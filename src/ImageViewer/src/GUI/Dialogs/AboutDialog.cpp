@@ -84,6 +84,9 @@
 #undef ulonglong
 #endif
 #endif
+#if defined (HAS_OPENJPH)
+#include <openjph/ojph_version.h>
+#endif
 #if defined (HAS_LIBRSVG)
 #include <librsvg/rsvg.h>
 #endif
@@ -357,6 +360,21 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://www.ece.uvic.ca/~mdadams/jasper"),
                       QString::fromLatin1("JasPer License v2.0"),
                       QString::fromLatin1("https://github.com/jasper-software/jasper/blob/master/LICENSE.txt")
+                      ));
+#endif
+
+#if defined (HAS_OPENJPH)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the OpenJPH library"),
+                      QString::fromLatin1("openjph"),
+#if defined (OPENJPH_VERSION_MAJOR) && defined (OPENJPH_VERSION_MINOR) && defined (OPENJPH_VERSION_PATCH)
+                      QString::fromLatin1("%1.%2.%3").arg(OPENJPH_VERSION_MAJOR).arg(OPENJPH_VERSION_MINOR).arg(OPENJPH_VERSION_PATCH),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("https://github.com/aous72/OpenJPH"),
+                      QString::fromLatin1("2-Clause BSD License"),
+                      QString::fromLatin1("https://github.com/aous72/OpenJPH/blob/master/LICENSE")
                       ));
 #endif
 

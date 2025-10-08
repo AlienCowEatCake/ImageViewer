@@ -25,6 +25,7 @@ include(KImageFormats/KImageFormats.pri)
 # Dependencies:
 #  * zlib
 #  * OpenJPEG
+#  * OpenJPH
 include(OpenEXR/OpenEXR.pri)
 
 # Dependencies:
@@ -98,6 +99,7 @@ include(libexpat/libexpat.pri)
 #  * aom
 #  * libjpeg
 #  * OpenJPEG
+#  * OpenJPH
 #  * libde265
 #  * zlib
 #  * brotli
@@ -122,6 +124,7 @@ include(libjpeg/libjpeg.pri)
 include(LibWebP/LibWebP.pri)
 include(libbpg/libbpg.pri)
 include(OpenJPEG/OpenJPEG.pri)
+include(OpenJPH/OpenJPH.pri)
 include(giflib/giflib.pri)
 include(LittleCMS2/LittleCMS2.pri)
 include(libexif/libexif.pri)

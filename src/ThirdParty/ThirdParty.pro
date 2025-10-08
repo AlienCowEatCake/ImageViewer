@@ -92,6 +92,10 @@ SUBDIRS =
     SUBDIRS += OpenJPEG/OpenJPEG.pro
 }
 
+!disable_openjph : !system_openjph {
+    SUBDIRS += OpenJPH/OpenJPH.pro
+}
+
 !disable_giflib : !system_giflib {
     SUBDIRS += giflib/giflib.pro
 }

@@ -335,6 +335,7 @@ disable_thirdparty {
     CONFIG *= disable_nsimage
     CONFIG *= disable_openexr
     CONFIG *= disable_openjpeg
+    CONFIG *= disable_openjph
     CONFIG *= disable_pkgconfig
     CONFIG *= disable_qtcore5compat
     CONFIG *= disable_qtimageformats
@@ -356,6 +357,7 @@ system_thirdparty : !disable_thirdparty {
     CONFIG *= disable_libde265
     CONFIG *= disable_libexpat
     CONFIG *= disable_libyuv
+    CONFIG *= disable_openjph
     CONFIG *= disable_xzutils
     CONFIG *= disable_zstd
     # No rules for build as system packages
@@ -580,6 +582,11 @@ disable_libjpeg : !system_libwmf {
 *msvc* : !system_openjpeg : lessThan(MSVC_VERSION, 2015) {
     CONFIG *= disable_openjpeg
 }
+
+# OpenJPH options:
+#    disable_openjph
+#    system_openjph
+
 
 # GIFLIB options:
 #    disable_giflib
@@ -817,5 +824,11 @@ disable_libjxl | system_libjxl {
 disable_libavif | system_libavif {
     disable_aom | system_aom {
         CONFIG *= disable_libyuv
+    }
+}
+
+disable_openexr | system_openexr {
+    disable_libheif | system_libheif {
+        CONFIG *= disable_openjph
     }
 }

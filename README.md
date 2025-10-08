@@ -134,6 +134,8 @@ See the [buildscripts/](buildscripts/) directory.
   Libwmf is used for reading WMF files.
 * OpenJPEG options: `disable_openjpeg`, `system_openjpeg` *(bundled package by default)*  
   OpenJPEG is used for reading JPEG 2000 files.
+* OpenJPH options: `disable_openjph`, `system_openjph` *(bundled package by default)*  
+  This is a transitive dependency. It isn't required if system libraries are used.
 * GIFLIB options: `disable_giflib`, `system_giflib` *(bundled package by default)*  
   GIFLIB is used for reading GIF files.
 * LibRaw options: `disable_libraw`, `system_libraw` *(bundled package by default)*  

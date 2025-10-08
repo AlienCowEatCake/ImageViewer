@@ -22,6 +22,7 @@ include(../libde265/libde265.pri)
 include(../zlib/zlib.pri)
 include(../brotli/brotli.pri)
 include(../LibWebP/LibWebP.pri)
+include(../OpenJPH/OpenJPH.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LIBHEIF_PATH} $${THIRDPARTY_LIBHEIF_PATH}/libheif $${THIRDPARTY_LIBHEIF_PATH}/libheif/api $${THIRDPARTY_LIBHEIF_INCLUDE_PATH} $${INCLUDEPATH}
 
@@ -171,6 +172,14 @@ SOURCES += \
         $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_openjpeg.cc \
 
     DEFINES += HAVE_OPENJPEG_DECODER=1 HAVE_OPENJPEG_ENCODER=1
+}
+
+# find ./libheif -name '*.cc' | egrep '(_openjph)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
+!disable_openjph {
+    SOURCES += \
+        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_openjph.cc \
+
+    DEFINES += HAVE_OPENJPH_ENCODER=1
 }
 
 # find ./libheif -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
