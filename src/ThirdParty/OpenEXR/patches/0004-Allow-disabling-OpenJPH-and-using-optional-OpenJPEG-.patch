@@ -1,4 +1,4 @@
-From de17495fdd88be7c3f2e049113a9fc4b6a26a21f Mon Sep 17 00:00:00 2001
+From 4d2b50796c8c55be42cae31462b901892416970d Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 6 Oct 2025 01:39:17 +0700
 Subject: [PATCH 4/4] Allow disabling OpenJPH and using optional OpenJPEG
@@ -9,7 +9,7 @@ Subject: [PATCH 4/4] Allow disabling OpenJPH and using optional OpenJPEG
  1 file changed, 233 insertions(+)
 
 diff --git a/src/lib/OpenEXRCore/internal_ht.cpp b/src/lib/OpenEXRCore/internal_ht.cpp
-index 14d1940f..727a4f98 100644
+index 521dd28d..6bfc2878 100644
 --- a/src/lib/OpenEXRCore/internal_ht.cpp
 +++ b/src/lib/OpenEXRCore/internal_ht.cpp
 @@ -7,17 +7,25 @@
@@ -17,12 +17,12 @@ index 14d1940f..727a4f98 100644
  #include <fstream>
  
 +#ifndef OPENEXR_DISABLE_OJPH
- #include <ojph_arch.h>
- #include <ojph_file.h>
- #include <ojph_params.h>
- #include <ojph_mem.h>
- #include <ojph_codestream.h>
- #include <ojph_message.h>
+ #include <openjph/ojph_arch.h>
+ #include <openjph/ojph_file.h>
+ #include <openjph/ojph_params.h>
+ #include <openjph/ojph_mem.h>
+ #include <openjph/ojph_codestream.h>
+ #include <openjph/ojph_message.h>
 +#elif defined HAS_OPENJPEG
 +#include <cassert>
 +#include <cstring>
