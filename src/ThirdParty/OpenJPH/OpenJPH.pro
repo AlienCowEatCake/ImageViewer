@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_OPENJPH_PATH = $${PWD}/OpenJPH-0.24.1
+THIRDPARTY_OPENJPH_PATH = $${PWD}/OpenJPH-0.24.2
 THIRDPARTY_OPENJPH_INCLUDE_PATH = $${PWD}/include
 
 include(../../Features.pri)
