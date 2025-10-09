@@ -1,4 +1,4 @@
-From 2ab00d61e56f2f705ba0ea8f8e6f5213f681b57b Mon Sep 17 00:00:00 2001
+From d8e002d205a82f7124bc6627cca8cc1a3d4e7c8a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 9 Aug 2025 21:12:08 +0700
 Subject: [PATCH 8/8] Dont use modern options with old Qt verson
@@ -86,7 +86,7 @@ index bfce9ef..7b8435b 100644
      QString m_name;
      QString m_artist;
 diff --git a/src/imageformats/chunks.cpp b/src/imageformats/chunks.cpp
-index 13a3cc1..c831aa4 100644
+index f2517b3..5f72152 100644
 --- a/src/imageformats/chunks.cpp
 +++ b/src/imageformats/chunks.cpp
 @@ -32,7 +32,11 @@ static QString dataToString(const IFFChunk *chunk)
@@ -101,8 +101,8 @@ index 13a3cc1..c831aa4 100644
      return QString::fromUtf8(dt).trimmed();
  }
  
-@@ -524,7 +528,11 @@ qint32 CMAPChunk::count() const
-     return bytes() / 3;
+@@ -529,7 +533,11 @@ qint32 CMAPChunk::count() const
+     return dataBytes() / 3;
  }
  
 +#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -113,7 +113,7 @@ index 13a3cc1..c831aa4 100644
  {
      auto p = innerPalette();
      if (!halfbride) {
-@@ -542,9 +550,17 @@ bool CMAPChunk::innerReadStructure(QIODevice *d)
+@@ -547,9 +555,17 @@ bool CMAPChunk::innerReadStructure(QIODevice *d)
      return cacheData(d);
  }
  
@@ -131,8 +131,8 @@ index 13a3cc1..c831aa4 100644
      auto &&d = data();
      for (qint32 i = 0, n = count(); i < n; ++i) {
          auto i3 = i * 3;
-@@ -581,9 +597,17 @@ qint32 CMYKChunk::count() const
-     return bytes() / 4;
+@@ -586,9 +602,17 @@ qint32 CMYKChunk::count() const
+     return dataBytes() / 4;
  }
  
 +#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -149,7 +149,7 @@ index 13a3cc1..c831aa4 100644
      auto &&d = data();
      for (qint32 i = 0, n = count(); i < n; ++i) {
          auto i4 = i * 4;
-@@ -1115,21 +1139,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
+@@ -1120,21 +1144,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
                      auto v = planes.at(k * rowLen + i);
                      auto msk = 1 << k;
                      if (v & (1 << 7))
@@ -179,7 +179,7 @@ index 13a3cc1..c831aa4 100644
                  }
              }
          }
-@@ -1151,21 +1175,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
+@@ -1156,21 +1180,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
                      auto k8 = k * 8;
                      auto msk = (1 << (7 - j));
                      if (planes.at(k8 * rowLen + i) & msk)
@@ -209,7 +209,7 @@ index 13a3cc1..c831aa4 100644
                  }
          }
          break;
-@@ -1206,21 +1230,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
+@@ -1211,21 +1235,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
                      auto msk = (1 << (7 - j));
                      auto idx = cnt + order[k];
                      if (planes.at(k8 * rowLen + i) & msk)
@@ -239,7 +239,7 @@ index 13a3cc1..c831aa4 100644
                  }
                  if (p == 6) { // RGBX wants unused X data set to 0xFF
                      ba[cnt + 6] = char(0xFF);
-@@ -2392,13 +2416,21 @@ IPALChunk *BEAMChunk::clone() const
+@@ -2397,13 +2421,21 @@ IPALChunk *BEAMChunk::clone() const
      return new BEAMChunk(*this);
  }
  
@@ -261,7 +261,7 @@ index 13a3cc1..c831aa4 100644
  {
      auto &&height = _height;
      if (height < 1) {
-@@ -2410,7 +2442,11 @@ QList<QRgb> BEAMChunk::palette(qint32 y) const
+@@ -2415,7 +2447,11 @@ QList<QRgb> BEAMChunk::palette(qint32 y) const
      }
      auto col = qint32(bpp / 2);
      auto &&dt = data();
@@ -273,7 +273,7 @@ index 13a3cc1..c831aa4 100644
      for (auto c = 0; c < col; ++c) {
          // 2 bytes per color (0x0R 0xGB)
          auto idx = bpp * y + c * 2;
-@@ -2484,7 +2520,11 @@ IPALChunk *SHAMChunk::clone() const
+@@ -2489,7 +2525,11 @@ IPALChunk *SHAMChunk::clone() const
      return new SHAMChunk(*this);
  }
  
@@ -285,7 +285,7 @@ index 13a3cc1..c831aa4 100644
  {
      auto && height = _height;
      if (height < 1) {
-@@ -2501,7 +2541,11 @@ QList<QRgb> SHAMChunk::palette(qint32 y) const
+@@ -2506,7 +2546,11 @@ QList<QRgb> SHAMChunk::palette(qint32 y) const
          return {};
      }
      auto &&dt = data();
@@ -297,7 +297,7 @@ index 13a3cc1..c831aa4 100644
      for (auto c = 0, col = bpp / 2, idx0 = y / div * bpp + 2; c < col; ++c) {
          // 2 bytes per color (0x0R 0xGB)
          auto idx = idx0 + c * 2;
-@@ -2513,7 +2557,11 @@ QList<QRgb> SHAMChunk::palette(qint32 y) const
+@@ -2518,7 +2562,11 @@ QList<QRgb> SHAMChunk::palette(qint32 y) const
      return pal;
  }
  
@@ -309,7 +309,7 @@ index 13a3cc1..c831aa4 100644
  {
      _height = height;
      return true;
-@@ -2550,7 +2598,11 @@ IPALChunk *RASTChunk::clone() const
+@@ -2555,7 +2603,11 @@ IPALChunk *RASTChunk::clone() const
      return new RASTChunk(*this);
  }
  
@@ -321,7 +321,7 @@ index 13a3cc1..c831aa4 100644
  {
      auto &&height = _height;
      if (height < 1) {
-@@ -2562,7 +2614,11 @@ QList<QRgb> RASTChunk::palette(qint32 y) const
+@@ -2567,7 +2619,11 @@ QList<QRgb> RASTChunk::palette(qint32 y) const
      }
      auto col = qint32(bpp / 2 - 1);
      auto &&dt = data();
@@ -333,7 +333,7 @@ index 13a3cc1..c831aa4 100644
      for (auto c = 0; c < col; ++c) {
          auto idx = bpp * y + 2 + c * 2;
          // The Atari ST uses 3 bits per color (512 colors) while the Atari STE
-@@ -2579,7 +2635,11 @@ QList<QRgb> RASTChunk::palette(qint32 y) const
+@@ -2584,7 +2640,11 @@ QList<QRgb> RASTChunk::palette(qint32 y) const
      return pal;
  }
  
@@ -345,7 +345,7 @@ index 13a3cc1..c831aa4 100644
  {
      _height = height;
      return true;
-@@ -2693,7 +2753,11 @@ IPALChunk *PCHGChunk::clone() const
+@@ -2698,7 +2758,11 @@ IPALChunk *PCHGChunk::clone() const
      return new PCHGChunk(*this);
  }
  
@@ -357,7 +357,7 @@ index 13a3cc1..c831aa4 100644
  {
      return _palettes.value(y);
  }
-@@ -2885,7 +2949,11 @@ static QByteArray pchgFastDecomp(const QByteArray& input, int treeSize, int orig
+@@ -2890,7 +2954,11 @@ static QByteArray pchgFastDecomp(const QByteArray& input, int treeSize, int orig
  
  // !Huffman decompression
  
@@ -369,7 +369,7 @@ index 13a3cc1..c831aa4 100644
  {
      Q_UNUSED(height)
      auto dt = data().mid(20);
-@@ -2970,7 +3038,7 @@ bool PCHGChunk::initialize(const QList<QRgb> &cmapPalette, qint32 height)
+@@ -2975,7 +3043,7 @@ bool PCHGChunk::initialize(const QList<QRgb> &cmapPalette, qint32 height)
              return false;
          }
  
@@ -379,7 +379,7 @@ index 13a3cc1..c831aa4 100644
                  last[i] = hash.value(i);
          }
 diff --git a/src/imageformats/chunks_p.h b/src/imageformats/chunks_p.h
-index eb80312..670f250 100644
+index 94266be..3df2972 100644
 --- a/src/imageformats/chunks_p.h
 +++ b/src/imageformats/chunks_p.h
 @@ -24,6 +24,9 @@
@@ -392,7 +392,7 @@ index eb80312..670f250 100644
  
  #include "microexif_p.h"
  
-@@ -395,7 +398,11 @@ public:
+@@ -401,7 +404,11 @@ public:
       * \param y The scanline.
       * \return The modified palette.
       */
@@ -404,7 +404,7 @@ index eb80312..670f250 100644
  
      /*!
       * \brief initialize
-@@ -404,7 +411,11 @@ public:
+@@ -410,7 +417,11 @@ public:
       * \param height The image height.
       * \return True on success, otherwise false.
       */
@@ -416,7 +416,7 @@ index eb80312..670f250 100644
  };
  
  
-@@ -567,12 +578,20 @@ public:
+@@ -573,12 +584,20 @@ public:
       * \return The color palette.
       * \note If \a halfbride is true, the returned palette size is count() * 2.
       */
@@ -437,7 +437,7 @@ index eb80312..670f250 100644
  
      virtual bool innerReadStructure(QIODevice *d) override;
  };
-@@ -610,7 +629,11 @@ protected:
+@@ -616,7 +635,11 @@ protected:
       * \brief palette
       * \return The CMYK color palette converted to RGB one.
       */
@@ -449,7 +449,7 @@ index eb80312..670f250 100644
  };
  
  /*!
-@@ -1414,9 +1437,15 @@ public:
+@@ -1420,9 +1443,15 @@ public:
  
      virtual IPALChunk *clone() const override;
  
@@ -465,7 +465,7 @@ index eb80312..670f250 100644
  
      CHUNKID_DEFINE(BEAM_CHUNK)
  
-@@ -1458,9 +1487,15 @@ public:
+@@ -1464,9 +1493,15 @@ public:
  
      virtual IPALChunk *clone() const override;
  
@@ -481,7 +481,7 @@ index eb80312..670f250 100644
  
      CHUNKID_DEFINE(SHAM_CHUNK)
  
-@@ -1489,9 +1524,15 @@ public:
+@@ -1495,9 +1530,15 @@ public:
  
      virtual IPALChunk *clone() const override;
  
@@ -497,7 +497,7 @@ index eb80312..670f250 100644
  
      CHUNKID_DEFINE(RAST_CHUNK)
  
-@@ -1550,9 +1591,15 @@ public:
+@@ -1556,9 +1597,15 @@ public:
  
      virtual IPALChunk *clone() const override;
  
@@ -513,7 +513,7 @@ index eb80312..670f250 100644
  
      CHUNKID_DEFINE(PCHG_CHUNK)
  
-@@ -1562,7 +1609,11 @@ protected:
+@@ -1568,7 +1615,11 @@ protected:
  private:
      QHash<qint32, QHash<quint16, QRgb>> _paletteChanges;
  
@@ -1953,5 +1953,5 @@ index 1d1ecc2..a96efd5 100644
          buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
      }
 -- 
-2.47.3
+2.51.0
 

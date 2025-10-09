@@ -353,6 +353,12 @@ protected:
 
     static ChunkList innerFromDevice(QIODevice *d, bool *ok, IFFChunk *parent = nullptr);
 
+    /*!
+     * \brief dataBytes
+     * \return Maximum usable cache data size.
+     */
+    quint32 dataBytes() const;
+
 private:
     char _chunkId[4];
 
