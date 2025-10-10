@@ -1,4 +1,4 @@
-From d8e002d205a82f7124bc6627cca8cc1a3d4e7c8a Mon Sep 17 00:00:00 2001
+From bdbf00677912600541305ee59dd66e2e71b15dc3 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 9 Aug 2025 21:12:08 +0700
 Subject: [PATCH 8/8] Dont use modern options with old Qt verson
@@ -86,7 +86,7 @@ index bfce9ef..7b8435b 100644
      QString m_name;
      QString m_artist;
 diff --git a/src/imageformats/chunks.cpp b/src/imageformats/chunks.cpp
-index f2517b3..5f72152 100644
+index a68eef3..5c02401 100644
 --- a/src/imageformats/chunks.cpp
 +++ b/src/imageformats/chunks.cpp
 @@ -32,7 +32,11 @@ static QString dataToString(const IFFChunk *chunk)
