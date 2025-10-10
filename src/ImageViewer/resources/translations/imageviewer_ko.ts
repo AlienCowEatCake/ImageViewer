@@ -4,12 +4,12 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="837"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="855"/>
         <source>About</source>
         <translation type="unfinished">정보</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="848"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="866"/>
         <source>License</source>
         <translation type="unfinished">라이선스</translation>
     </message>
@@ -515,162 +515,162 @@
 <context>
     <name>MenuBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="296"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="297"/>
         <source>&amp;File</source>
         <translation type="unfinished">파일 (&amp;F)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="297"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
         <source>&amp;Edit</source>
         <translation type="unfinished">편집 (&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
         <source>&amp;View</source>
         <translation type="unfinished">보기 (&amp;V)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
         <source>&amp;Help</source>
         <translation type="unfinished">도움말 (&amp;H)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="301"/>
         <source>&amp;Reopen With</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="302"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="303"/>
         <source>&amp;Open File</source>
         <translation type="unfinished">파일 열기 (&amp;O)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="303"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
         <source>Open &amp;Folder</source>
         <translation type="unfinished">폴더 선택 (&amp;F)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
         <source>&amp;Save As</source>
         <translation type="unfinished">다른 이름으로 저장 (&amp;S)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
         <source>New &amp;Window</source>
         <translation type="unfinished">새 창에서 열기 (&amp;W)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
         <source>Pre&amp;vious</source>
         <translation type="unfinished">이전 (&amp;V)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
         <source>&amp;Next</source>
         <translation type="unfinished">다음 (&amp;N)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
         <source>Image &amp;Information</source>
         <translation type="unfinished">추가 정보 (&amp;I)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
         <source>&amp;Print</source>
         <translation type="unfinished">인쇄 (&amp;P)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
         <source>Pr&amp;eferences</source>
         <translation type="unfinished">기본 설정 (&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
         <source>&amp;Quit</source>
         <translation type="unfinished">나가기 (&amp;Q)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
         <source>Rotate &amp;Counterclockwise</source>
         <translation type="unfinished">반시계 방향 회전 (&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
         <source>&amp;Rotate Clockwise</source>
         <translation type="unfinished">시계 방향 회전 (&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
         <source>Flip &amp;Horizontal</source>
         <translation type="unfinished">수평 뒤집기 (&amp;H)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
         <source>Flip &amp;Vertical</source>
         <translation type="unfinished">수직 뒤집기 (&amp;V)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
         <source>&amp;Delete File</source>
         <translation type="unfinished">파일 가제하기 (&amp;D)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="318"/>
         <source>Zoom &amp;Out</source>
         <translation type="unfinished">축소 (&amp;O)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="318"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
         <source>Zoom &amp;In</source>
         <translation type="unfinished">확대 (&amp;I)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
         <source>&amp;Reset Zoom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
         <source>&amp;Zoom…</source>
         <translation type="unfinished">확대 (&amp;Z)…</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
         <source>Fit Image To &amp;Window Size</source>
         <translation type="unfinished">그림을 창 크기에 맞추기 (&amp;W)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
         <source>Original &amp;Size</source>
         <translation type="unfinished">원래 크기 (&amp;S)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
         <source>&amp;Full Screen</source>
         <translation type="unfinished">전체 화면 (&amp;F)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
         <source>Show &amp;Menu Bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
         <source>Show &amp;Toolbar</source>
         <translation type="unfinished">도구 모음 보이기/숨기기 (&amp;T)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
         <source>&amp;About</source>
         <translation type="unfinished">정보(&amp;A)</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="328"/>
         <source>About &amp;Qt</source>
         <translation type="unfinished">&amp;Qt 정보</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="328"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="329"/>
         <source>Check for &amp;Updates</source>
         <translation type="unfinished"></translation>
     </message>

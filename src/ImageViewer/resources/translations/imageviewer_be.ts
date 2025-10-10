@@ -4,12 +4,12 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="837"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="855"/>
         <source>About</source>
         <translation type="unfinished">Пра праграму</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="848"/>
+        <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="866"/>
         <source>License</source>
         <translation type="unfinished">Ліцэнзія</translation>
     </message>
@@ -515,162 +515,162 @@
 <context>
     <name>MenuBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="296"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="297"/>
         <source>&amp;File</source>
         <translation type="unfinished">&amp;Файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="297"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
         <source>&amp;Edit</source>
         <translation type="unfinished">&amp;Рэдагаванне</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
         <source>&amp;View</source>
         <translation type="unfinished">&amp;Выгляд</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
         <source>&amp;Help</source>
         <translation type="unfinished">&amp;Даведка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="301"/>
         <source>&amp;Reopen With</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="302"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="303"/>
         <source>&amp;Open File</source>
         <translation type="unfinished">Адкрыць &amp;файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="303"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
         <source>Open &amp;Folder</source>
         <translation type="unfinished">Адкрыць &amp;каталог</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
         <source>&amp;Save As</source>
         <translation type="unfinished">&amp;Запісаць як</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
         <source>New &amp;Window</source>
         <translation type="unfinished">Адкрыць у новым &amp;акне</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
         <source>Pre&amp;vious</source>
         <translation type="unfinished">&amp;Папярэдні</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
         <source>&amp;Next</source>
         <translation type="unfinished">&amp;Наступны</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
         <source>Image &amp;Information</source>
         <translation type="unfinished">Дадатковыя зв&amp;есткі</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
         <source>&amp;Print</source>
         <translation type="unfinished">&amp;Друк</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
         <source>Pr&amp;eferences</source>
         <translation type="unfinished">Нас&amp;таўленні</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
         <source>&amp;Quit</source>
         <translation type="unfinished">&amp;Выйсці</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
         <source>Rotate &amp;Counterclockwise</source>
         <translation type="unfinished">Павярнуць с&amp;упраць гадзіннікавай стрэлкі</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
         <source>&amp;Rotate Clockwise</source>
         <translation type="unfinished">&amp;Павярнуць па гадзіннікавай стрэлцы</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
         <source>Flip &amp;Horizontal</source>
         <translation type="unfinished">Перавярнуць &amp;гарызантальна</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
         <source>Flip &amp;Vertical</source>
         <translation type="unfinished">Перавярнуць &amp;вертыкальна</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
         <source>&amp;Delete File</source>
         <translation type="unfinished">&amp;Сцерці файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="318"/>
         <source>Zoom &amp;Out</source>
         <translation type="unfinished">Па&amp;меншыць</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="318"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
         <source>Zoom &amp;In</source>
         <translation type="unfinished">Па&amp;вялічыць</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
         <source>&amp;Reset Zoom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
         <source>&amp;Zoom…</source>
         <translation type="unfinished">Ма&amp;штаб…</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
         <source>Fit Image To &amp;Window Size</source>
         <translation type="unfinished">Маштабаваць да &amp;памеру вакна</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
         <source>Original &amp;Size</source>
         <translation type="unfinished">&amp;Арыгінальны памер</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
         <source>&amp;Full Screen</source>
         <translation type="unfinished">&amp;На поўны экран</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
         <source>Show &amp;Menu Bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
         <source>Show &amp;Toolbar</source>
         <translation type="unfinished">Паказаць/схаваць &amp;стужку прылад</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
         <source>&amp;About</source>
         <translation type="unfinished">&amp;Аб праграме</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="328"/>
         <source>About &amp;Qt</source>
         <translation type="unfinished">Аб &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="328"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="329"/>
         <source>Check for &amp;Updates</source>
         <translation type="unfinished">&amp;Праверыць абнаўленні</translation>
     </message>
