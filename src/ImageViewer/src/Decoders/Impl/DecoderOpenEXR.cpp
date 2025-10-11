@@ -211,9 +211,13 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
             ADD_CASE(DWAA_COMPRESSION);
             ADD_CASE(DWAB_COMPRESSION);
 #endif
+#if OPENEXR_VERSION_GREATER_OR_EQUAL(3, 4, 0)
+            ADD_CASE(HTJ2K256_COMPRESSION);
+            ADD_CASE(HTJ2K32_COMPRESSION);
+#endif
 #undef ADD_CASE
             default:
-                value = QString::fromLatin1("Unknown");
+                value = QString::fromLatin1("Unknown (%1)").arg(QString::number(static_cast<int>(compression)));
                 break;
             }
         }
@@ -230,7 +234,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
             ADD_CASE(DIS_TIDY);
 #undef ADD_CASE
             default:
-                value = QString::fromLatin1("Unknown");
+                value = QString::fromLatin1("Unknown (%1)").arg(QString::number(static_cast<int>(deepImageState)));
                 break;
             }
         }
@@ -249,7 +253,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
             ADD_CASE(ENVMAP_CUBE);
 #undef ADD_CASE
             default:
-                value = QString::fromLatin1("Unknown");
+                value = QString::fromLatin1("Unknown (%1)").arg(QString::number(static_cast<int>(envmap)));
                 break;
             }
         }
@@ -294,7 +298,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
             ADD_CASE(RANDOM_Y);
 #undef ADD_CASE
             default:
-                value = QString::fromLatin1("Unknown");
+                value = QString::fromLatin1("Unknown (%1)").arg(QString::number(static_cast<int>(lineOrder)));
                 break;
             }
         }
@@ -377,7 +381,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
             ADD_CASE(RIPMAP_LEVELS);
 #undef ADD_CASE
             default:
-                mode = QString::fromLatin1("Unknown");
+                mode = QString::fromLatin1("Unknown (%1)").arg(QString::number(static_cast<int>(tileDescription.mode)));
                 break;
             }
             QString roundingMode;
@@ -388,7 +392,7 @@ IImageMetaData *readExrMetaData(const QString &filePath, const Header &header)
             ADD_CASE(ROUND_UP);
 #undef ADD_CASE
             default:
-                roundingMode = QString::fromLatin1("Unknown");
+                roundingMode = QString::fromLatin1("Unknown (%1)").arg(QString::number(static_cast<int>(tileDescription.roundingMode)));
                 break;
             }
             value = QString::fromLatin1("xSize: %1, ySize: %2, mode: %3, roundingMode: %4")
