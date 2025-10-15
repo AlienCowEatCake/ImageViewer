@@ -68,6 +68,7 @@ SOURCES += \
 
 TRANSLATIONS += \
     resources/translations/qtutils_en.ts \
+    resources/translations/qtutils_ko.ts \
     resources/translations/qtutils_ru.ts \
     resources/translations/qtutils_zh_CN.ts \
     resources/translations/qtutils_zh_TW.ts
@@ -81,6 +82,7 @@ macx {
 !greaterThan(QT_MAJOR_VERSION, 4) {
     BACKPORT50_JSON_PATH = $${PWD}/src/Utils/_backport/Qt5.0/json
     INCLUDEPATH += $${BACKPORT50_JSON_PATH}
+    TR_EXCLUDE += $${BACKPORT50_JSON_PATH}
     HEADERS += $$files($${BACKPORT50_JSON_PATH}/*.h)
     SOURCES += $$files($${BACKPORT50_JSON_PATH}/*.cpp)
 }
