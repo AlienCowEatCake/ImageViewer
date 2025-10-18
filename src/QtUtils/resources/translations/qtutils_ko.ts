@@ -6,7 +6,7 @@
     <message>
         <location filename="../../src/Utils/FileUtils.cpp" line="598"/>
         <source>The specified path was not found</source>
-        <translation>지정된 경로를 휴지통으로 이동할 수 없습니다</translation>
+        <translation>지정된 경로가 존재하지 않습니다</translation>
     </message>
     <message>
         <location filename="../../src/Utils/FileUtils.cpp" line="612"/>
@@ -115,74 +115,6 @@
         <location filename="../../src/Utils/ImageSaver.cpp" line="133"/>
         <source>Error: Can&apos;t save file</source>
         <translation>오류: 파일을 저장할 수 없습니다</translation>
-    </message>
-</context>
-<context>
-    <name>QJsonParseError</name>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="67"/>
-        <source>no error occurred</source>
-        <translation>오류가 발생하지 않았습니다</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="68"/>
-        <source>unterminated object</source>
-        <translation>종료되지 않은 객체</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="69"/>
-        <source>missing name separator</source>
-        <translation>누락된 이름 구분자</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="70"/>
-        <source>unterminated array</source>
-        <translation>종료되지 않은 배열</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="71"/>
-        <source>missing value separator</source>
-        <translation>누락된 값 구분자</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="72"/>
-        <source>illegal value</source>
-        <translation>불법 가치</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="73"/>
-        <source>invalid termination by number</source>
-        <translation>번호에 따른 유효하지 않은 종료</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="74"/>
-        <source>illegal number</source>
-        <translation>불법 번호</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="75"/>
-        <source>invalid escape sequence</source>
-        <translation>잘못된 탈출 순서</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="76"/>
-        <source>invalid UTF8 string</source>
-        <translation>잘못된 UTF8 문자열</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="77"/>
-        <source>unterminated string</source>
-        <translation>종료되지 않은 문자열</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="78"/>
-        <source>object is missing after a comma</source>
-        <translation>쉼표 뒤에 객체가 누락되었습니다</translation>
-    </message>
-    <message>
-        <location filename="../../src/Utils/_backport/Qt5.0/json/qjsonparser.cpp" line="79"/>
-        <source>too deeply nested document</source>
-        <translation>너무 깊게 중첩된 문서</translation>
     </message>
 </context>
 <context>
