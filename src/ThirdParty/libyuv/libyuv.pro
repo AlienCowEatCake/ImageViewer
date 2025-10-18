@@ -21,7 +21,7 @@ INCLUDEPATH = $${THIRDPARTY_LIBYUV_PATH}/include $${INCLUDEPATH}
 # git archive --prefix='libyuv/' -o ../libyuv.tar HEAD
 
 # grep -Rn LIBYUV_DISABLE_ source/ | sed 's|.*\(LIBYUV_DISABLE_\)|\1| ; s|).*||' | sort | uniq | xargs
-DEFINES += LIBYUV_DISABLE_LASX LIBYUV_DISABLE_LSX LIBYUV_DISABLE_MSA LIBYUV_DISABLE_NEON LIBYUV_DISABLE_RVV LIBYUV_DISABLE_SME LIBYUV_DISABLE_SVE LIBYUV_DISABLE_X86
+DEFINES += LIBYUV_DISABLE_LASX LIBYUV_DISABLE_LSX LIBYUV_DISABLE_NEON LIBYUV_DISABLE_RVV LIBYUV_DISABLE_SME LIBYUV_DISABLE_SVE LIBYUV_DISABLE_X86
 DEFINES += __STDC_LIMIT_MACROS __STDC_CONSTANT_MACROS
 !disable_libjpeg : DEFINES += HAVE_JPEG
 
@@ -30,7 +30,6 @@ SOURCES += \
     $${THIRDPARTY_LIBYUV_PATH}/source/compare.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/compare_common.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/compare_gcc.cc \
-    $${THIRDPARTY_LIBYUV_PATH}/source/compare_msa.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/compare_neon.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/compare_neon64.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/compare_win.cc \
@@ -51,7 +50,6 @@ SOURCES += \
     $${THIRDPARTY_LIBYUV_PATH}/source/rotate_common.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/rotate_gcc.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/rotate_lsx.cc \
-    $${THIRDPARTY_LIBYUV_PATH}/source/rotate_msa.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/rotate_neon.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/rotate_neon64.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/rotate_sme.cc \
@@ -61,7 +59,6 @@ SOURCES += \
     $${THIRDPARTY_LIBYUV_PATH}/source/row_gcc.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/row_lasx.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/row_lsx.cc \
-    $${THIRDPARTY_LIBYUV_PATH}/source/row_msa.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/row_neon.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/row_neon64.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/row_rvv.cc \
@@ -74,7 +71,6 @@ SOURCES += \
     $${THIRDPARTY_LIBYUV_PATH}/source/scale_common.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/scale_gcc.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/scale_lsx.cc \
-    $${THIRDPARTY_LIBYUV_PATH}/source/scale_msa.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/scale_neon.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/scale_neon64.cc \
     $${THIRDPARTY_LIBYUV_PATH}/source/scale_rgb.cc \
@@ -97,7 +93,6 @@ HEADERS += \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/cpu_id.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/cpu_support.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/loongson_intrinsics.h \
-    $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/macros_msa.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/mjpeg_decoder.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/planar_functions.h \
     $${THIRDPARTY_LIBYUV_PATH}/include/libyuv/rotate.h \

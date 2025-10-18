@@ -1,4 +1,4 @@
-From 787176044e1cf6b9ac693a7292fbbac34fdf12c6 Mon Sep 17 00:00:00 2001
+From 8970e563982fb3c410f33f70f721afa3818b6ea5 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 25 Aug 2024 23:21:25 +0700
 Subject: [PATCH] Fix build with MinGW 3.4.2
@@ -9,10 +9,10 @@ Subject: [PATCH] Fix build with MinGW 3.4.2
  2 files changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/include/libyuv/row.h b/include/libyuv/row.h
-index bf9121a1..f9007897 100644
+index 68c66f75..da3e4193 100644
 --- a/include/libyuv/row.h
 +++ b/include/libyuv/row.h
-@@ -1029,12 +1029,21 @@ typedef int8_t __attribute__((vector_size(16))) vec8;
+@@ -947,12 +947,21 @@ typedef int8_t __attribute__((vector_size(16))) vec8;
  typedef uint16_t __attribute__((vector_size(16))) uvec16;
  typedef uint32_t __attribute__((vector_size(16))) uvec32;
  typedef uint8_t __attribute__((vector_size(16))) uvec8;
@@ -48,5 +48,5 @@ index b93a8499..3fad3ff1 100644
    } else {
      src->next_input_byte += bytes;
 -- 
-2.47.3
+2.51.1
 
