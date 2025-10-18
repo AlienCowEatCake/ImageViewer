@@ -20,12 +20,18 @@
 #include "ThemeUtils.h"
 #include "ThemeUtils_mac.h"
 
+#include <cstring>
+
 #include "Workarounds/BeginExcludeOpenTransport.h"
 #import <AppKit/AppKit.h>
 #include "Workarounds/EndExcludeOpenTransport.h"
 
 #include <AvailabilityMacros.h>
 
+#include <QImage>
+#include <QSize>
+
+#include "Global.h"
 #include "InfoUtils.h"
 #include "ObjectiveCUtils.h"
 
@@ -99,18 +105,19 @@ NSImage *GetMacSystemImage(IconTypes type)
             ADD_ICON_IF(SYMBOL_NAME3) \
             break;
         ADD_ICON_CASE1(ICON_APPLICATION_EXIT, @"xmark.circle")
-        ADD_ICON_CASE1(ICON_DOCUMENT_NEW, @"doc.badge.plus")
-        ADD_ICON_CASE1(ICON_DOCUMENT_OPEN, @"folder")
-        ADD_ICON_CASE1(ICON_DOCUMENT_OPEN_WITH, @"arrow.clockwise")
+        ADD_ICON_CASE2(ICON_DOCUMENT_NEW, @"doc.badge.plus", @"plus")
+        ADD_ICON_CASE2(ICON_DOCUMENT_OPEN, @"arrow.up.forward", @"folder")
+        ADD_ICON_CASE2(ICON_DOCUMENT_OPEN_WITH, @"arrow.up.forward.app", @"arrow.clockwise")
         ADD_ICON_CASE1(ICON_DOCUMENT_PRINT, @"printer")
-        ADD_ICON_CASE1(ICON_DOCUMENT_PROPERTIES, @"doc.badge.ellipsis")
+        ADD_ICON_CASE3(ICON_DOCUMENT_PROPERTIES, @"info.circle", @"info.circle.text.page", @"doc.badge.ellipsis")
         ADD_ICON_CASE1(ICON_DOCUMENT_SAVE, @"square.and.arrow.down")
-        ADD_ICON_CASE1(ICON_DOCUMENT_SAVE_AS, @"square.and.arrow.down")
+        ADD_ICON_CASE2(ICON_DOCUMENT_SAVE_AS, @"square.and.arrow.down.on.square", @"square.and.arrow.down")
         ADD_ICON_CASE1(ICON_EDIT_COPY, @"doc.on.doc")
         ADD_ICON_CASE1(ICON_EDIT_CUT, @"scissors")
         ADD_ICON_CASE2(ICON_EDIT_DELETE, @"trash", @"delete.left")
-        ADD_ICON_CASE1(ICON_EDIT_PASTE, @"clipboard")
+        ADD_ICON_CASE2(ICON_EDIT_PASTE, @"document.on.clipboard", @"clipboard")
         ADD_ICON_CASE2(ICON_EDIT_PREFERENCES, @"gearshape", @"gear")
+        ADD_ICON_CASE1(ICON_FOLDER_OPEN, @"folder")
         ADD_ICON_CASE3(ICON_GO_NEXT, @"chevron.right", @"arrowshape.right", @"arrow.right")
         ADD_ICON_CASE3(ICON_GO_PREVIOUS, @"chevron.left", @"arrowshape.left", @"arrow.left")
         ADD_ICON_CASE1(ICON_HELP_ABOUT, @"info.circle")
@@ -149,7 +156,23 @@ NSImage *GetMacSystemImage(IconTypes type)
 QImage GetMacSystemImage(IconTypes type, const QSize &size)
 {
     AUTORELEASE_POOL;
-    return ObjCUtils::QImageFromNSImage(GetMacSystemImage(type), size, Qt::KeepAspectRatio);
+    QImage result = ObjCUtils::QImageFromNSImage(GetMacSystemImage(type), size, Qt::KeepAspectRatio);
+    if(!result.isNull() && result.size() != size)
+    {
+        if(result.format() != QImage::Format_ARGB32)
+            QImage_convertTo(result, QImage::Format_ARGB32);
+        const QSize offset = (size - result.size()) / 2;
+        QImage tmp(size, result.format());
+        tmp.fill(Qt::transparent);
+        for(int i = 0, height = result.height(); i < height; ++i)
+        {
+            const QRgb *src = reinterpret_cast<const QRgb*>(result.scanLine(i));
+            QRgb *dst = reinterpret_cast<QRgb*>(tmp.scanLine(i + offset.height())) + offset.width();
+            memcpy(dst, src, sizeof(QRgb) * result.width());
+        }
+        result = tmp;
+    }
+    return result;
 }
 
 bool IsRightToLeft()

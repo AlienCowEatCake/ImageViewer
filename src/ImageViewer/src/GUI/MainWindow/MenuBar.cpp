@@ -337,7 +337,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         const bool menuBarIsRtl = menuFile->layoutDirection() == Qt::RightToLeft;
         menuReopenWith->setIcon                 (getMenuIcon(ThemeUtils::ICON_DOCUMENT_OPEN_WITH    ));
         actionOpenFile->setIcon                 (getMenuIcon(ThemeUtils::ICON_DOCUMENT_OPEN         ));
-        actionOpenFolder->setIcon               (getMenuIcon(ThemeUtils::ICON_DOCUMENT_OPEN         ));
+        actionOpenFolder->setIcon               (getMenuIcon(ThemeUtils::ICON_FOLDER_OPEN           ));
         actionSaveAs->setIcon                   (getMenuIcon(ThemeUtils::ICON_DOCUMENT_SAVE_AS      ));
         actionNewWindow->setIcon                (getMenuIcon(ThemeUtils::ICON_WINDOW_NEW            ));
         actionNavigatePrevious->setIcon         (getMenuIcon(menuBarIsRtl ? ThemeUtils::ICON_GO_NEXT     : ThemeUtils::ICON_GO_PREVIOUS));

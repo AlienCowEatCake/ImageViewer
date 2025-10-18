@@ -30,6 +30,7 @@
 #include "Utils/Application.h"
 #include "Utils/Global.h"
 #include "Utils/IconThemeManager.h"
+#include "Utils/InfoUtils.h"
 #include "Utils/LocalizationManager.h"
 #include "Utils/ThemeManager.h"
 #include "Utils/Workarounds.h"
@@ -72,7 +73,7 @@ int main(int argc, char *argv[])
     app.setWindowIcon(QIcon(QString::fromLatin1(":/icon/icon.ico")));
     app.setAttribute(Qt::AA_DontShowIconsInMenus, false);
 #else
-    app.setAttribute(Qt::AA_DontShowIconsInMenus);
+    app.setAttribute(Qt::AA_DontShowIconsInMenus, !InfoUtils::MacVersionGreatOrEqual(16, 0));
 #endif
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
@@ -119,15 +120,21 @@ int main(int argc, char *argv[])
                                 QString::fromLatin1("Themes"));
     themeManager->applyCurrentTheme();
 
+#if defined (QTUTILS_ICONTHEMEMANAGER_SUPPORTS_SYSTEM_THEME) && defined (Q_OS_MAC) && defined (HAS_MAC_TOOLBAR)
+    const bool systemIconsAreDefault = true;
+#else
+    const bool systemIconsAreDefault = false;
+#endif
     IconThemeManager *iconThemeManager = IconThemeManager::instance();
     iconThemeManager->registerTheme(IconThemeManager::BUILTIN_THEME_ID,
                                     QStringList(),
                                     QString(),
-                                    true);
+                                    !systemIconsAreDefault);
 #if defined (QTUTILS_ICONTHEMEMANAGER_SUPPORTS_SYSTEM_THEME)
     iconThemeManager->registerTheme(IconThemeManager::SYSTEM_THEME_ID,
                                     QStringList(),
-                                    QString());
+                                    QString(),
+                                    systemIconsAreDefault);
 #endif
 
 #if !defined (DISABLE_EMBED_TRANSLATIONS)

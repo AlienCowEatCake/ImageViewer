@@ -384,6 +384,7 @@ QIcon GetIcon(IconTypes type, bool darkBackground)
     ADD_ICON_CASE(ICON_EDIT_DELETE)
     ADD_ICON_CASE(ICON_EDIT_PASTE)
     ADD_ICON_CASE(ICON_EDIT_PREFERENCES)
+    ADD_NAMED_ICON_CASE(ICON_FOLDER_OPEN, "icon_document_open")
     ADD_ICON_CASE(ICON_GO_NEXT)
     ADD_ICON_CASE(ICON_GO_PREVIOUS)
     ADD_ICON_CASE(ICON_HELP_ABOUT)
@@ -447,6 +448,7 @@ QIcon GetThemeIcon(IconTypes type)
     ADD_ICON_CASE(ICON_EDIT_DELETE, EditDelete)
     ADD_ICON_CASE(ICON_EDIT_PASTE, EditPaste)
     SKIP_ICON_CASE(ICON_EDIT_PREFERENCES)
+    SKIP_ICON_CASE(ICON_FOLDER_OPEN)
     ADD_ICON_CASE(ICON_GO_NEXT, GoNext)
     ADD_ICON_CASE(ICON_GO_PREVIOUS, GoPrevious)
     ADD_ICON_CASE(ICON_HELP_ABOUT, HelpAbout)
@@ -540,6 +542,11 @@ QIcon GetThemeIcon(IconTypes type)
             << QString::fromLatin1("edit-preferences")
             << QString::fromLatin1("gtk-preferences")
             << QString::fromLatin1("preferences-system")
+            )
+    ADD_THEMED_ICON_CASE(ICON_FOLDER_OPEN, QStringList()
+            << QString::fromLatin1("folder-open")
+            << QString::fromLatin1("document-open")
+            << QString::fromLatin1("gtk-open")
             )
     ADD_THEMED_ICON_CASE(ICON_GO_NEXT, QStringList()
             << QString::fromLatin1("go-next")
@@ -655,16 +662,28 @@ QImage GetWinSystemImage(IconTypes type, const QSize &size)
     // https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font
     // https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-fluent-icons-font
     QChar symbol;
+    Qt::Orientations flipOrientations;
     switch(type)
     {
-#define SKIP_ICON_CASE(ICON_TYPE) case ICON_TYPE: break;
-#define ADD_ICON_CASE(ICON_TYPE, SYMBOL) case ICON_TYPE: symbol = QChar(static_cast<uint>(SYMBOL)); break;
+#define SKIP_ICON_CASE(ICON_TYPE) \
+    case ICON_TYPE: \
+        break;
+#define ADD_ICON_CASE_FALLTHROUGH(ICON_TYPE, SYMBOL) \
+    case ICON_TYPE: \
+        symbol = QChar(static_cast<uint>(SYMBOL));
+#define ADD_ICON_CASE(ICON_TYPE, SYMBOL) \
+    ADD_ICON_CASE_FALLTHROUGH(ICON_TYPE, SYMBOL) \
+        break;
+#define ADD_ICON_CASE_HF(ICON_TYPE, SYMBOL) \
+    ADD_ICON_CASE_FALLTHROUGH(ICON_TYPE, SYMBOL) \
+        flipOrientations |= Qt::Horizontal; \
+        break;
     ADD_ICON_CASE(ICON_APPLICATION_EXIT,        0xE8BB) // ChromeClose
     ADD_ICON_CASE(ICON_DOCUMENT_NEW,            0xE8A5) // Document
-    ADD_ICON_CASE(ICON_DOCUMENT_OPEN,           0xED25) // OpenFolderHorizontal
+    ADD_ICON_CASE(ICON_DOCUMENT_OPEN,           0xE8E5) // OpenFile
     ADD_ICON_CASE(ICON_DOCUMENT_OPEN_WITH,      0xE7AC) // OpenWith
     ADD_ICON_CASE(ICON_DOCUMENT_PRINT,          0xE749) // Print
-    ADD_ICON_CASE(ICON_DOCUMENT_PROPERTIES,     0xE90F) // Repair
+    ADD_ICON_CASE(ICON_DOCUMENT_PROPERTIES,     0xE946) // Info
     ADD_ICON_CASE(ICON_DOCUMENT_SAVE,           0xE74E) // Save
     ADD_ICON_CASE(ICON_DOCUMENT_SAVE_AS,        0xE792) // SaveAs
     ADD_ICON_CASE(ICON_EDIT_COPY,               0xE8C8) // Copy
@@ -672,6 +691,7 @@ QImage GetWinSystemImage(IconTypes type, const QSize &size)
     ADD_ICON_CASE(ICON_EDIT_DELETE,             0xE74D) // Delete
     ADD_ICON_CASE(ICON_EDIT_PASTE,              0xE77F) // Paste
     ADD_ICON_CASE(ICON_EDIT_PREFERENCES,        0xE713) // Setting
+    ADD_ICON_CASE(ICON_FOLDER_OPEN,             0xED25) // OpenFolderHorizontal
     ADD_ICON_CASE(ICON_GO_NEXT,                 0xE72A) // Forward
     ADD_ICON_CASE(ICON_GO_PREVIOUS,             0xE72B) // Back
     ADD_ICON_CASE(ICON_HELP_ABOUT,              0xE946) // Info
@@ -684,8 +704,8 @@ QImage GetWinSystemImage(IconTypes type, const QSize &size)
     ADD_ICON_CASE(ICON_MEDIA_SLIDESHOW,         0xE786) // Slideshow
     SKIP_ICON_CASE(ICON_OBJECT_FLIP_HORIZONTAL)
     SKIP_ICON_CASE(ICON_OBJECT_FLIP_VERTICAL)
-    ADD_ICON_CASE(ICON_OBJECT_ROTATE_LEFT,      0xE80C) // RotateMapRight
-    ADD_ICON_CASE(ICON_OBJECT_ROTATE_RIGHT,     0xE80D) // RotateMapLeft
+    ADD_ICON_CASE_HF(ICON_OBJECT_ROTATE_LEFT,   0xE7AD) // Rotate
+    ADD_ICON_CASE(ICON_OBJECT_ROTATE_RIGHT,     0xE7AD) // Rotate
     ADD_ICON_CASE(ICON_SYNC_SYNCHRONIZING,      0xE895) // Sync
     ADD_ICON_CASE(ICON_VIEW_FULLSCREEN,         0xE740) // FullScreen
     ADD_ICON_CASE(ICON_VIEW_REFRESH,            0xE72C) // Refresh
@@ -696,7 +716,9 @@ QImage GetWinSystemImage(IconTypes type, const QSize &size)
     ADD_ICON_CASE(ICON_ZOOM_IN,                 0xE8A3) // ZoomIn
     SKIP_ICON_CASE(ICON_ZOOM_ORIGINAL)
     ADD_ICON_CASE(ICON_ZOOM_OUT,                0xE71F) // ZoomOut
+#undef ADD_ICON_CASE_HF
 #undef ADD_ICON_CASE
+#undef ADD_ICON_CASE_FALLTHROUGH
 #undef SKIP_ICON_CASE
     }
     if(symbol.isNull())
@@ -731,13 +753,33 @@ QImage GetWinSystemImage(IconTypes type, const QSize &size)
     if(!fontMetrics.inFont(symbol))
         return QImage();
 
-    QImage result(size, QImage::Format_ARGB32);
-    result.fill(Qt::transparent);
-    QPainter painter(&result);
+    QPixmap pixmap(size);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
     painter.setFont(font);
     painter.setPen(QPen(Qt::black));
     painter.setLayoutDirection(Qt::LeftToRight);
     painter.drawText(QRect(QPoint(0, 0), size), Qt::AlignCenter, symbol);
+    painter.end();
+
+    QImage result = pixmap.toImage();
+    if(result.isNull())
+        return result;
+    if(result.format() != QImage::Format_ARGB32)
+        QImage_convertTo(result, QImage::Format_ARGB32);
+
+    bool allTransparent = true;
+    for(int i = 0, height = result.height(); i < height && allTransparent; ++i)
+    {
+        const QRgb *scanLine = reinterpret_cast<const QRgb*>(result.scanLine(i));
+        for(int j = 0, width = result.width(); j < width && allTransparent; ++j)
+            allTransparent = qAlpha(scanLine[j]) == 0;
+    }
+    if(allTransparent)
+        return QImage();
+
+    if(flipOrientations)
+        QImage_flip(result, flipOrientations);
     return result;
 }
 #endif

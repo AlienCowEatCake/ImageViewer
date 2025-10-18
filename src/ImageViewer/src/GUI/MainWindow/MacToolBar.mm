@@ -868,6 +868,8 @@ struct MacToolBar::Impl
         nativeToolbar = [[CustomNSToolbar alloc] initWithIdentifier:@"MacToolBar" andEmitterObject:macToolBar];
         delegate = [[MacToolbarDelegate alloc] initWithToolBarData:&toolBarData andEmitterObject:macToolBar];
         [nativeToolbar setDelegate:delegate];
+        /// @todo Should we use NSToolbarDisplayModeIconOnly as default displayMode?
+        //[nativeToolbar setDisplayMode:NSToolbarDisplayModeIconOnly];
         [nativeToolbar setAllowsUserCustomization:YES];
         [nativeToolbar setAutosavesConfiguration:YES];
 
