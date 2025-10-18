@@ -1,1 +1,1 @@
-#include "../../openexr-3.4.1/src/lib/OpenEXRCore/openexr_base.h"
+#include "../../openexr-3.4.2/src/lib/OpenEXRCore/openexr_base.h"

@@ -1,1 +1,1 @@
-#include "../../openexr-3.4.1/src/lib/OpenEXRCore/internal_coding.h"
+#include "../../openexr-3.4.2/src/lib/OpenEXRCore/internal_coding.h"

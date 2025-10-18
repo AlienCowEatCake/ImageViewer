@@ -324,8 +324,17 @@ if(NOT EXR_OPENJPH_LIB)
   file(CREATE_LINK
     "${openjph_SOURCE_DIR}/src/core/common"
     "${openjph_SOURCE_DIR}/src/core/openjph"
+    RESULT openjph_create_link_result
     SYMBOLIC
   )
+  # Creating a symlink may fail, for example on Windows without developer
+  # mode enabled, so fallback to copying in that case.
+  if (NOT openjph_create_link_result EQUAL 0)
+    file(COPY
+      "${openjph_SOURCE_DIR}/src/core/common/"
+      DESTINATION "${openjph_SOURCE_DIR}/src/core/openjph"
+    )
+  endif()
   include_directories("${openjph_SOURCE_DIR}/src/core")
 
   # extract the openjph version variables from ojph_version.h
@@ -372,7 +381,7 @@ set(EXR_OPENJPH_PKGCONFIG_REQUIRES "openjph >= 0.21.0")
 option(OPENEXR_FORCE_INTERNAL_IMATH "Force using an internal imath" OFF)
 # Check to see if Imath is installed outside of the current build directory.
 set(OPENEXR_IMATH_REPO "https://github.com/AcademySoftwareFoundation/Imath.git" CACHE STRING "Repo for auto-build of Imath")
-set(OPENEXR_IMATH_TAG "v3.2.1" CACHE STRING "Tag for auto-build of Imath (branch, tag, or SHA)")
+set(OPENEXR_IMATH_TAG "v3.2.2" CACHE STRING "Tag for auto-build of Imath (branch, tag, or SHA)")
 if(NOT OPENEXR_FORCE_INTERNAL_IMATH)
   #TODO: ^^ Release should not clone from main, this is a place holder
   set(CMAKE_IGNORE_PATH "${CMAKE_CURRENT_BINARY_DIR}/_deps/imath-src/config;${CMAKE_CURRENT_BINARY_DIR}/_deps/imath-build/config")
