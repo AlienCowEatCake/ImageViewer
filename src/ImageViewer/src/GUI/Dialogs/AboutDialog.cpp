@@ -186,6 +186,7 @@ const char *ABOUT_LICENSE_STRIG   = "<a href=\"https://www.gnu.org/licenses/gpl-
 const char *ABOUT_YEAR_STRING     = "2017-2025";
 const char *ABOUT_AUTHOR_STRING   = "Peter S. Zhigalov";
 const char *ABOUT_EMAIL_STRING    = "peter.zhigalov@gmail.com";
+const char *ABOUT_TRANSLATOR_NOTES_STRING   = QT_TRANSLATE_NOOP("AboutDialog", "Translators can write copyrights or notes for about window here");
 
 QString letterByNumFrom0(int num)
 {
@@ -853,6 +854,12 @@ AboutDialog::AboutDialog(QWidget *parent)
 
     m_ui->iconLabel->setPixmap(qApp->translate("AboutDialog", ABOUT_PIXMAP_PATH));
     setWindowTitle(qApp->translate("AboutDialog", "About"));
+
+    QString translatorNotes = qApp->translate("AboutDialog", ABOUT_TRANSLATOR_NOTES_STRING);
+    if(translatorNotes.isEmpty() || translatorNotes == QString::fromLatin1(ABOUT_TRANSLATOR_NOTES_STRING))
+        translatorNotes = QString();
+    else
+        translatorNotes = QString::fromLatin1("<br><br>%1").arg(translatorNotes);
     m_ui->textLabel->setText(QString::fromLatin1(
                                  "<h3>%1 v%2</h3>"
                                  "<a href=\"%3\">%3</a><br>"
@@ -868,7 +875,7 @@ AboutDialog::AboutDialog(QWidget *parent)
                                      qApp->translate("AboutDialog", ABOUT_YEAR_STRING),
                                      qApp->translate("AboutDialog", ABOUT_AUTHOR_STRING),
                                      qApp->translate("AboutDialog", ABOUT_EMAIL_STRING)
-                                     ));
+                                     ) + translatorNotes);
     m_ui->textBrowser->setHtml(getTextBrowserContent());
 
     ensurePolished();
