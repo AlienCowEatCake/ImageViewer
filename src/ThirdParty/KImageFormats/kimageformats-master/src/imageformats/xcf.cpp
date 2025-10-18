@@ -1845,7 +1845,18 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
         }
         break;
     case QImage::Format_RGBA16FPx4:
-        static_assert(sizeof(QRgbaFloat16) == sizeof(QRgba64), "Different sizes for float and int 16 bit pixels");
+        for (int y = 0; y < height; y++) {
+            const size_t bpl = width * sizeof(QRgbaFloat16);
+            qFromBigEndian<qint16>(tile + y * bpl, width * 4, image.scanLine(y));
+
+            const qfloat16 *dataPtr = reinterpret_cast<qfloat16 *>(image.scanLine(y));
+            for (int x = 0; x < width * 4; ++x) {
+                if (dataPtr[x].isNaN()) {
+                    return false;
+                }
+            }
+        }
+        break;
 #endif
     case QImage::Format_RGBA64:
         for (int y = 0; y < height; y++) {
@@ -1858,6 +1869,13 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
         for (int y = 0; y < height; y++) {
             const size_t bpl = width * sizeof(QRgbaFloat32);
             qFromBigEndian<qint32>(tile + y * bpl, width * 4, image.scanLine(y));
+
+            const float *dataPtr = reinterpret_cast<float *>(image.scanLine(y));
+            for (int x = 0; x < width * 4; ++x) {
+                if (std::isnan(dataPtr[x])) {
+                    return false;
+                }
+            }
         }
         break;
     case QImage::Format_RGBX32FPx4:

@@ -1351,7 +1351,7 @@ bool TGAHandler::canRead(QIODevice *device)
 
     TgaHeader tga;
     if (!peekHeader(device, tga)) {
-        qCWarning(LOG_TGAPLUGIN) << "TGAHandler::canRead() error while reading the header";
+        qCDebug(LOG_TGAPLUGIN) << "TGAHandler::canRead() error while reading the header";
         return false;
     }
 

@@ -138,13 +138,11 @@ bool TemplateImage::checkOptionaInfo(const QImage& image, QString& error) const
             return false;
         }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
         auto clmName = QString(QMetaEnum::fromType<QColorSpace::ColorModel>().valueToKey(quint64(cs.colorModel())));
         if (clmName != clm) {
             error = QStringLiteral("ColorSpace ColorModel mismatch (current: %1, expected: %2)!").arg(clmName, clm);
             return false;
         }
-#endif
     }
 
     // Test resolution

@@ -319,11 +319,9 @@ QImage formatSourceImage(const QImage::Format &format)
         image = QImage(QStringLiteral("%1/rgba16.png").arg(folder));
         break;
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
     case QImage::Format_CMYK8888:
         image = QImage(QStringLiteral("%1/cmyk8.tif").arg(folder));
         break;
-#endif
 
     default:
         break;
