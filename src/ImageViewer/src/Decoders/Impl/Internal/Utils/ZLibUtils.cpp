@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -20,6 +20,7 @@
 #include "ZLibUtils.h"
 
 #include <cassert>
+#include <limits>
 
 #include <QDataStream>
 #include <QFile>
@@ -77,6 +78,15 @@ QByteArray InflateDataStream(QDataStream& source)
     }
 
     QByteArray dest;
+    const quint64 destMaxSize = qMin(static_cast<quint64>(
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+            QByteArray::maxSize()
+#elif (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+            std::numeric_limits<qsizetype>::max()
+#else
+            std::numeric_limits<int>::max()
+#endif
+            ), static_cast<quint64>(std::numeric_limits<qint64>::max()));
 
     // decompress until deflate stream ends or end of file
     do
@@ -113,6 +123,13 @@ QByteArray InflateDataStream(QDataStream& source)
                 return QByteArray();
             }
             int have = static_cast<int>(CHUNK - strm.avail_out);
+            const quint64 destSize = static_cast<quint64>(dest.size()) + static_cast<quint64>(have);
+            if(destSize >= destMaxSize - 1)
+            {
+                inflateEnd(&strm);
+                LOG_WARNING() << LOGGING_CTX << "Wrong size =" << destSize << "maxSize =" << destMaxSize;
+                return QByteArray();
+            }
 #if (QT_VERSION >= QT_VERSION_CHECK(4, 5, 0))
             dest.append(reinterpret_cast<const char*>(out), have);
 #else

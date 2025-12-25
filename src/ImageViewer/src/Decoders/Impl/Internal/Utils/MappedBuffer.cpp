@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -18,6 +18,8 @@
 */
 
 #include "MappedBuffer.h"
+
+#include <limits>
 
 #include <QFile>
 #include <QByteArray>
@@ -52,6 +54,21 @@ struct MappedBuffer::Impl
             return;
         }
         size = file.size();
+        const quint64 maxSize = qMin(static_cast<quint64>(
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+                QByteArray::maxSize()
+#elif (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+                std::numeric_limits<qsizetype>::max()
+#else
+                std::numeric_limits<int>::max()
+#endif
+                ), static_cast<quint64>(std::numeric_limits<qint64>::max()));
+        if(static_cast<quint64>(size) >= maxSize - 1)
+        {
+            LOG_WARNING() << LOGGING_CTX << "Wrong size =" << size << "maxSize =" << maxSize;
+            size = 0;
+            return;
+        }
         mapped = file.map(0, size);
         if(!mapped)
         {
@@ -103,12 +120,20 @@ QByteArray MappedBuffer::byteArray() const
         return QByteArray();
     if(!m_impl->data.isEmpty())
         return m_impl->data;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    return QByteArray(dataAs<const char*>(), sizeAs<qsizetype>());
+#else
     return QByteArray(dataAs<const char*>(), sizeAs<int>());
+#endif
 }
 
 QByteArray MappedBuffer::dataAsByteArray() const
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    return QByteArray::fromRawData(dataAs<const char*>(), sizeAs<qsizetype>());
+#else
     return QByteArray::fromRawData(dataAs<const char*>(), sizeAs<int>());
+#endif
 }
 
 qint64 MappedBuffer::size() const
