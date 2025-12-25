@@ -180,7 +180,7 @@ struct ImageMetaData::Impl
                                         QString::fromUtf8(it->print().c_str())
                                         ));
                         entryListMap[type] = list;
-                        result |= true;
+                        result = true;
                     }
                     catch(...)
                     {}
@@ -221,7 +221,7 @@ struct ImageMetaData::Impl
                                         QString::fromUtf8(it->print().c_str())
                                         ));
                         entryListMap[type] = list;
-                        result |= true;
+                        result = true;
                     }
                     catch(...)
                     {}
@@ -264,7 +264,7 @@ struct ImageMetaData::Impl
                                         QString::fromUtf8(it->print().c_str())
                                         ));
                         entryListMap[type] = list;
-                        result |= true;
+                        result = true;
                     }
                     catch(...)
                     {}
@@ -317,7 +317,7 @@ struct ImageMetaData::Impl
                                 ));
             }
             entryListMap[type] = list;
-            result |= true;
+            result = true;
         }
         return result;
     }
@@ -748,7 +748,7 @@ bool ImageMetaData::readFile(const QByteArray &fileData)
         {
             LOG_DEBUG() << LOGGING_CTX << "EXIV2: Comment detected";
         }
-        status |= true;
+        status = true;
     }
     catch(...)
     {
@@ -774,7 +774,7 @@ bool ImageMetaData::readFile(const QByteArray &fileData)
 //        fflush(stderr);
 //#endif
         LOG_DEBUG() << LOGGING_CTX << "LIBEXIF: EXIF data detected";
-        status |= true;
+        status = true;
     }
 #endif
     Q_UNUSED(fileData);
@@ -799,7 +799,7 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
         if(m_impl->exiv2ExifData.empty())
             throw std::exception();
         LOG_DEBUG() << LOGGING_CTX << "EXIV2: EXIF data detected";
-        status |= true;
+        status = true;
 #else
         /// @todo Exiv2 less 0.18.0: Add implementation?
 #endif
@@ -826,7 +826,7 @@ bool ImageMetaData::readExifData(const QByteArray &rawExifData)
 //        fflush(stderr);
 //#endif
         LOG_DEBUG() << LOGGING_CTX << "LIBEXIF: EXIF data detected";
-        status |= true;
+        status = true;
     }
 #endif
     Q_UNUSED(rawExifData);
@@ -849,7 +849,7 @@ bool ImageMetaData::readXmpData(const QByteArray &rawXmpData)
         if(m_impl->exiv2XmpData.empty())
             throw std::exception();
         LOG_DEBUG() << LOGGING_CTX << "EXIV2: XMP data detected";
-        status |= true;
+        status = true;
     }
     catch(...)
     {
