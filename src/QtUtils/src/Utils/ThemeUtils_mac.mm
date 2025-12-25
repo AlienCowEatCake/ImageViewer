@@ -104,7 +104,7 @@ NSImage *GetMacSystemImage(IconTypes type)
             ADD_ICON_IF(SYMBOL_NAME2) \
             ADD_ICON_IF(SYMBOL_NAME3) \
             break;
-        ADD_ICON_CASE1(ICON_APPLICATION_EXIT, @"xmark.circle")
+        ADD_ICON_CASE2(ICON_APPLICATION_EXIT, @"xmark.rectangle", @"xmark.circle")
         ADD_ICON_CASE2(ICON_DOCUMENT_NEW, @"doc.badge.plus", @"plus")
         ADD_ICON_CASE2(ICON_DOCUMENT_OPEN, @"arrow.up.forward", @"folder")
         ADD_ICON_CASE2(ICON_DOCUMENT_OPEN_WITH, @"arrow.up.forward.app", @"arrow.clockwise")
