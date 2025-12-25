@@ -27,6 +27,13 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QFileSystemWatcher>
+#include <QTimer>
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
+#include <QElapsedTimer>
+#else
+#include <QTime>
+typedef QTime QElapsedTimer;
+#endif
 
 #include "Utils/FileUtils.h"
 #include "Utils/Global.h"
@@ -262,20 +269,37 @@ struct FileManager::Impl
     QStringList supportedFormats;
     QScopedPointer<IFilesModel> filesModel;
     QStringList currentOpenArguments;
+    QTimer *updateTimer;
+    bool filesModelIsDirty;
+    QElapsedTimer timeFromLastUpdate;
 
     explicit Impl(FileManager *fileManager)
         : fileManager(fileManager)
         , supportedFormats(QString::fromLatin1("*.*"))
-    {}
+        , updateTimer(new QTimer(fileManager))
+        , filesModelIsDirty(false)
+    {
+        timeFromLastUpdate.start();
+        QObject::connect(updateTimer, SIGNAL(timeout()), fileManager, SLOT(ensureUpdated()));
+        updateTimer->setInterval(1000);
+        updateTimer->setSingleShot(false);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        updateTimer->setTimerType(Qt::VeryCoarseTimer);
+#endif
+    }
 
     void resetFilesModel(IFilesModel *newFilesModel = Q_NULLPTR)
     {
+        updateTimer->stop();
         currentOpenArguments.clear();
         filesModel.reset(newFilesModel);
+        filesModelIsDirty = false;
+        timeFromLastUpdate.restart();
         if(!newFilesModel)
             return;
-        QObject::connect(filesModel->watcher(), SIGNAL(directoryChanged(QString)), fileManager, SLOT(update()));
-        QObject::connect(filesModel->watcher(), SIGNAL(fileChanged(QString)), fileManager, SLOT(update()));
+        QObject::connect(filesModel->watcher(), SIGNAL(directoryChanged(QString)), fileManager, SLOT(tryUpdate()));
+        QObject::connect(filesModel->watcher(), SIGNAL(fileChanged(QString)), fileManager, SLOT(tryUpdate()));
+        updateTimer->start();
     }
 
     bool selectAnotherFileAfterDeletion()
@@ -383,6 +407,25 @@ void FileManager::update()
     const Impl::ChangedGuard changedGuard(this);
     if(m_impl->filesModel)
         m_impl->filesModel->update();
+    m_impl->filesModelIsDirty = false;
+    m_impl->timeFromLastUpdate.restart();
+}
+
+void FileManager::tryUpdate()
+{
+    if(!m_impl->filesModel)
+        return;
+
+    if(static_cast<qint64>(m_impl->timeFromLastUpdate.elapsed()) >= static_cast<qint64>(m_impl->updateTimer->interval()))
+        update();
+    else
+        m_impl->filesModelIsDirty = true;
+}
+
+void FileManager::ensureUpdated()
+{
+    if(m_impl->filesModelIsDirty)
+        update();
 }
 
 bool FileManager::openPath(const QString &filePath)

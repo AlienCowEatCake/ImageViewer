@@ -193,6 +193,7 @@ bool MainController::openFolderWithDialog()
 
 bool MainController::deleteCurrentFile()
 {
+    m_impl->fileManager.ensureUpdated();
     if(!m_impl->hasCurrentFile())
         return false;
 
@@ -226,6 +227,7 @@ bool MainController::deleteCurrentFile()
 
 bool MainController::selectNextFile()
 {
+    m_impl->fileManager.ensureUpdated();
     if(m_impl->hasNextFile())
         return m_impl->fileManager.selectByIndex(m_impl->fileManager.currentFileIndex() + 1);
     return selectFirstFile();
@@ -233,6 +235,7 @@ bool MainController::selectNextFile()
 
 bool MainController::selectPreviousFile()
 {
+    m_impl->fileManager.ensureUpdated();
     if(m_impl->hasPreviousFile())
         return m_impl->fileManager.selectByIndex(m_impl->fileManager.currentFileIndex() - 1);
     return selectLastFile();
@@ -240,6 +243,7 @@ bool MainController::selectPreviousFile()
 
 bool MainController::selectFirstFile()
 {
+    m_impl->fileManager.ensureUpdated();
     if(m_impl->fileManager.filesCount() <= 0)
         return false;
     return m_impl->fileManager.selectByIndex(0);
@@ -247,6 +251,7 @@ bool MainController::selectFirstFile()
 
 bool MainController::selectLastFile()
 {
+    m_impl->fileManager.ensureUpdated();
     if(m_impl->fileManager.filesCount() <= 0)
         return false;
     return m_impl->fileManager.selectByIndex(m_impl->fileManager.filesCount() - 1);
@@ -329,6 +334,7 @@ void MainController::checkForUpdates()
 
 void MainController::onReopenWithRequested(const QString &decoderName)
 {
+    m_impl->fileManager.ensureUpdated();
     const QString currentFilePath = m_impl->fileManager.currentFilePath();
     if(currentFilePath.isEmpty())
     {
