@@ -98,7 +98,9 @@ isEmpty(QT_VERSION_NUMERIC) {
 }
 *msvc* : isEmpty(MSVC_VERSION) {
     isEmpty(QMAKE_MSC_VER) {
-        win32-msvc2022 {
+        win32-msvc2026 {
+            QMAKE_MSC_VER = 1950
+        } else : win32-msvc2022 {
             QMAKE_MSC_VER = 1930
         } else : win32-msvc2019 {
             QMAKE_MSC_VER = 1920
@@ -148,8 +150,10 @@ isEmpty(QT_VERSION_NUMERIC) {
         MSVC_VERSION = 2017
     } else : lessThan(QMAKE_MSC_VER, 1930) {
         MSVC_VERSION = 2019
-    } else {
+    } else : lessThan(QMAKE_MSC_VER, 1950) {
         MSVC_VERSION = 2022
+    } else {
+        MSVC_VERSION = 2026
     }
 }
 

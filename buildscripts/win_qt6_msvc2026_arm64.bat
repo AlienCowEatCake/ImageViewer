@@ -2,11 +2,11 @@
 set PROJECT=ImageViewer
 set ARCH=arm64
 set VCVARS_ARCH=arm64
-call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2022
-set VCVARS="%VS2022_VCVARSALL%"
+call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2026
+set VCVARS="%VS2026_VCVARSALL%"
 if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\6.9.3\msvc2022_arm64
-set BUILDDIR=build_win_qt6_msvc2022_%ARCH%
-set SUFFIX=_qt6_msvc2022_%ARCH%
+set BUILDDIR=build_win_qt6_msvc2026_%ARCH%
+set SUFFIX=_qt6_msvc2026_%ARCH%
 set APP_PATH=src\%PROJECT%
 set NMAKE_CMD="%~dp0\..\buildscripts\helpers\arm64\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\arm64\zip.exe"
@@ -15,7 +15,7 @@ set RESVG_PATH="%~dp0\resvg\aarch64-pc-windows-msvc"
 
 call %VCVARS% %VCVARS_ARCH%
 set PATH=%QT_PATH%\bin;%WIX%\bin;%WIX%;%PATH%
-set CRT_DIR="%VCToolsRedistDir%\arm64\Microsoft.VC143.CRT"
+set CRT_DIR="%VCToolsRedistDir%\arm64\Microsoft.VC145.CRT"
 set UCRT_DIR="%UniversalCRTSdkDir%\Redist\%UCRTVersion%\ucrt\DLLs\arm64"
 
 cd "%~dp0"
