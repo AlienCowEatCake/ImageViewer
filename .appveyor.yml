@@ -44,9 +44,9 @@ environment:
     #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
     #   QT_PATH: C:\Qt\6.8\msvc2022_64
     #   BUILD_ID: win_qt6_msvc2022_x64
-    - job_name: GNU/Linux, Ubuntu 18.04, Qt 4.8, x64, Testing
-      job_group: linux_test_qt4
-      APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
+    # - job_name: GNU/Linux, Ubuntu 18.04, Qt 4.8, x64, Testing
+    #   job_group: linux_test_qt4
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
     - job_name: GNU/Linux, Ubuntu 22.04, Qt 5.15, x64, Testing
       job_group: linux_test
       APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2204
