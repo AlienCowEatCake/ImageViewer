@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
                                 QString::fromLatin1("Themes"));
     themeManager->applyCurrentTheme();
 
-#if defined (QTUTILS_ICONTHEMEMANAGER_SUPPORTS_SYSTEM_THEME) && defined (Q_OS_MAC) && defined (HAS_MAC_TOOLBAR)
+#if defined (QTUTILS_ICONTHEMEMANAGER_SUPPORTS_SYSTEM_THEME)
     const bool systemIconsAreDefault = true;
 #else
     const bool systemIconsAreDefault = false;
