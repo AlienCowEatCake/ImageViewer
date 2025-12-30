@@ -4,74 +4,76 @@
 <context>
     <name>FileUtils</name>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="598"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="661"/>
         <source>The specified path was not found</source>
         <translation>지정된 경로가 존재하지 않습니다</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="612"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="675"/>
         <source>Permission denied</source>
         <translation>권한 거부</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="638"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="701"/>
         <source>Could not find mount point for specified path</source>
         <translation>지정된 경로에 대한 마운트 지점을 찾을 수 없습니다</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="83"/>
-        <location filename="../../src/Utils/FileUtils.cpp" line="647"/>
-        <location filename="../../src/Utils/FileUtils.cpp" line="669"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="131"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="710"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="732"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="809"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="815"/>
         <source>The specified path could not be moved to Trash</source>
         <translation>지정된 경로를 휴지통으로 이동할 수 없습니다</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="699"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="803"/>
         <source>The specified path does not exist</source>
         <translation>지정된 경로가 존재하지 않습니다</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="281"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="339"/>
         <source>Failed to init BEntry for specified path: %1</source>
         <translation>지정된 경로에 대해 BEentry를 시작하지 못했습니다: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="99"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="147"/>
         <source>The bundle with identifier `com.apple.CoreServices` was not found.</source>
         <translation>식별자 &apos;com.apple.CoreServices&apos;가 있는 번들을 찾을 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="110"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="158"/>
         <source>The function with name `FSPathMakeRefWithOptions` was not found.</source>
         <translation>&apos;FSPathMakeRefWithOptions&apos;라는 이름의 함수를 찾을 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="117"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="165"/>
         <source>The function with name `FSMoveObjectToTrashSync` was not found.</source>
         <translation>&apos;FSMoveObjectToTrashSync&apos;라는 이름의 함수를 찾을 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="124"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="172"/>
         <source>The function with name `GetMacOSStatusCommentString` was not found.</source>
         <translation>&apos;GetMacOSStatusCommentString&apos;이라는 이름의 함수를 찾을 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="291"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="349"/>
         <source>Failed to get entry_ref for specified path: %1</source>
         <translation>지정된 경로에 대한 entry_ref를 가져오지 못했습니다: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="301"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="359"/>
         <source>Failed to find Trash: %1</source>
         <translation>휴지통을 찾지 못했습니다: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="311"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="369"/>
         <source>Failed to init BDirectory for %1: %2</source>
         <translation>%1에 대한 BDirectory를 시작하지 못했습니다: %2</translation>
     </message>
     <message>
-        <location filename="../../src/Utils/FileUtils.cpp" line="336"/>
+        <location filename="../../src/Utils/FileUtils.cpp" line="394"/>
         <source>Failed to move entry into trash %1: %2</source>
         <translation>항목을 휴지통으로 옮기지 못했습니다 %1: %2</translation>
     </message>

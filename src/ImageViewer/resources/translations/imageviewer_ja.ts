@@ -437,64 +437,64 @@
 <context>
     <name>MainController</name>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="161"/>
+        <location filename="../../src/GUI/MainController.cpp" line="162"/>
         <source>All Supported Images</source>
         <translation type="unfinished">対応するすべての画像ファイル</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="162"/>
+        <location filename="../../src/GUI/MainController.cpp" line="163"/>
         <source>All Files</source>
         <translation type="unfinished">すべてのファイル</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="163"/>
+        <location filename="../../src/GUI/MainController.cpp" line="164"/>
         <source>Open File</source>
         <translation type="unfinished">ファイルを開く</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="175"/>
-        <location filename="../../src/GUI/MainController.cpp" line="351"/>
-        <location filename="../../src/GUI/MainController.cpp" line="409"/>
+        <location filename="../../src/GUI/MainController.cpp" line="176"/>
+        <location filename="../../src/GUI/MainController.cpp" line="358"/>
+        <location filename="../../src/GUI/MainController.cpp" line="416"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="176"/>
+        <location filename="../../src/GUI/MainController.cpp" line="177"/>
         <source>Failed to open files &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="177"/>
-        <location filename="../../src/GUI/MainController.cpp" line="190"/>
-        <location filename="../../src/GUI/MainController.cpp" line="211"/>
-        <location filename="../../src/GUI/MainController.cpp" line="219"/>
-        <location filename="../../src/GUI/MainController.cpp" line="351"/>
-        <location filename="../../src/GUI/MainController.cpp" line="409"/>
+        <location filename="../../src/GUI/MainController.cpp" line="178"/>
+        <location filename="../../src/GUI/MainController.cpp" line="191"/>
+        <location filename="../../src/GUI/MainController.cpp" line="213"/>
+        <location filename="../../src/GUI/MainController.cpp" line="221"/>
+        <location filename="../../src/GUI/MainController.cpp" line="358"/>
+        <location filename="../../src/GUI/MainController.cpp" line="416"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="185"/>
+        <location filename="../../src/GUI/MainController.cpp" line="186"/>
         <source>Open Folder</source>
         <translation type="unfinished">フォルダー選択</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="190"/>
+        <location filename="../../src/GUI/MainController.cpp" line="191"/>
         <source>Failed to open folder &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="201"/>
+        <location filename="../../src/GUI/MainController.cpp" line="203"/>
         <source>Delete File</source>
         <translation type="unfinished">ファイルを削除する</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="201"/>
+        <location filename="../../src/GUI/MainController.cpp" line="203"/>
         <source>Are you sure you want to delete current file?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="219"/>
+        <location filename="../../src/GUI/MainController.cpp" line="221"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -502,17 +502,17 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="355"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="357"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="489"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="491"/>
         <source>Zoom</source>
         <translation type="unfinished">サイズ変更</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="490"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="492"/>
         <source>Zoom Factor (%):</source>
         <translation type="unfinished">拡大スケール(％):</translation>
     </message>
@@ -1328,124 +1328,130 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="162"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="164"/>
         <source>Select Background Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="200"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="202"/>
         <source>Preferences</source>
         <translation type="unfinished">設定</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="111"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="113"/>
         <source>General</source>
         <translation type="unfinished">一般</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="112"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="114"/>
         <source>Interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="113"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="115"/>
         <source>Decoders</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="116"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="118"/>
         <source>Automatically check for updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="120"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="122"/>
         <source>Ask before deleting images</source>
         <translation type="unfinished">画像を削除する際に確認する</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="123"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="125"/>
         <source>Move deleted images to trash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="126"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="129"/>
         <source>Use smooth image rendering</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="129"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
         <source>Allow fit to window for small images</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
         <source>Remember rotation and flip until app exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="138"/>
         <source>Slideshow interval</source>
         <translation type="unfinished">スライドショーの間隔</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="136"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="139"/>
         <source>sec</source>
         <translation type="unfinished">秒</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="140"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="143"/>
         <source>&lt;b&gt;Mouse wheel action&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="141"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="144"/>
         <source>Scroll</source>
         <comment>WheelMode</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="142"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="145"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
         <translation type="unfinished">サイズ変更</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="180"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="146"/>
+        <source>Navigate</source>
+        <comment>WheelMode</comment>
+        <translation type="unfinished">ナビゲーション</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="187"/>
         <source>&lt;b&gt;Language&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="181"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="188"/>
         <source>&lt;b&gt;Theme&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="183"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="190"/>
         <source>&lt;b&gt;Icon Theme&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="186"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="193"/>
         <source>&lt;b&gt;Toolbar Position&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="189"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="196"/>
         <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
         <translation type="unfinished">&lt;b&gt;背景色&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="190"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="197"/>
         <source>Normal:</source>
         <translation type="unfinished">通常:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="191"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="198"/>
         <source>Fullscreen:</source>
         <translation type="unfinished">フルスクリーン:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="226"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="233"/>
         <source>&lt;b&gt;Enabled decoders:&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>

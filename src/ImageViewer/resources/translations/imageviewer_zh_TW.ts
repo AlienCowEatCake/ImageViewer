@@ -437,64 +437,64 @@
 <context>
     <name>MainController</name>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="161"/>
+        <location filename="../../src/GUI/MainController.cpp" line="162"/>
         <source>All Supported Images</source>
         <translation>圖像檔案</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="162"/>
+        <location filename="../../src/GUI/MainController.cpp" line="163"/>
         <source>All Files</source>
         <translation>所有檔案</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="163"/>
+        <location filename="../../src/GUI/MainController.cpp" line="164"/>
         <source>Open File</source>
         <translation>打開檔案</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="175"/>
-        <location filename="../../src/GUI/MainController.cpp" line="351"/>
-        <location filename="../../src/GUI/MainController.cpp" line="409"/>
+        <location filename="../../src/GUI/MainController.cpp" line="176"/>
+        <location filename="../../src/GUI/MainController.cpp" line="358"/>
+        <location filename="../../src/GUI/MainController.cpp" line="416"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>打開 &quot;%1&quot; 失敗</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="176"/>
+        <location filename="../../src/GUI/MainController.cpp" line="177"/>
         <source>Failed to open files &quot;%1&quot;</source>
         <translation>打開 &quot;%1&quot; 失敗</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="185"/>
+        <location filename="../../src/GUI/MainController.cpp" line="186"/>
         <source>Open Folder</source>
         <translation>打開資料夾</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="190"/>
+        <location filename="../../src/GUI/MainController.cpp" line="191"/>
         <source>Failed to open folder &quot;%1&quot;</source>
         <translation>打開 &quot;%1&quot; 失敗</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="201"/>
+        <location filename="../../src/GUI/MainController.cpp" line="203"/>
         <source>Delete File</source>
         <translation>刪除檔案</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="201"/>
+        <location filename="../../src/GUI/MainController.cpp" line="203"/>
         <source>Are you sure you want to delete current file?</source>
         <translation>確認要刪除當前檔案嗎?</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="177"/>
-        <location filename="../../src/GUI/MainController.cpp" line="190"/>
-        <location filename="../../src/GUI/MainController.cpp" line="211"/>
-        <location filename="../../src/GUI/MainController.cpp" line="219"/>
-        <location filename="../../src/GUI/MainController.cpp" line="351"/>
-        <location filename="../../src/GUI/MainController.cpp" line="409"/>
+        <location filename="../../src/GUI/MainController.cpp" line="178"/>
+        <location filename="../../src/GUI/MainController.cpp" line="191"/>
+        <location filename="../../src/GUI/MainController.cpp" line="213"/>
+        <location filename="../../src/GUI/MainController.cpp" line="221"/>
+        <location filename="../../src/GUI/MainController.cpp" line="358"/>
+        <location filename="../../src/GUI/MainController.cpp" line="416"/>
         <source>Error</source>
         <translation>錯誤</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="219"/>
+        <location filename="../../src/GUI/MainController.cpp" line="221"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation>刪除 &quot;%1&quot; 失敗</translation>
     </message>
@@ -502,17 +502,17 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="355"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="357"/>
         <source>Error</source>
         <translation>錯誤</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="489"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="491"/>
         <source>Zoom</source>
         <translation>縮放</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="490"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="492"/>
         <source>Zoom Factor (%):</source>
         <translation>縮放因數 (%):</translation>
     </message>
@@ -1328,124 +1328,130 @@
         <translation>可移動</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="162"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="164"/>
         <source>Select Background Color</source>
         <translation>背景色</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="111"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="113"/>
         <source>General</source>
         <translation>常規</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="112"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="114"/>
         <source>Interface</source>
         <translation>界面</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="113"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="115"/>
         <source>Decoders</source>
         <translation>編碼</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="116"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="118"/>
         <source>Automatically check for updates</source>
         <translation>自動升級</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="120"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="122"/>
         <source>Ask before deleting images</source>
         <translation>刪除檔案前需要確認</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="123"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="125"/>
         <source>Move deleted images to trash</source>
         <translation>刪除檔案到回收桶</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="126"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="129"/>
         <source>Use smooth image rendering</source>
         <translation>平滑圖像渲染</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="129"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
         <source>Allow fit to window for small images</source>
         <translation>小圖像貼合窗口</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
         <source>Remember rotation and flip until app exit</source>
         <translation>程式開啟期間，記住翻轉跟旋轉</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="138"/>
         <source>Slideshow interval</source>
         <translation>幻燈片播放間隔</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="136"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="139"/>
         <source>sec</source>
         <translation>秒</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="180"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="146"/>
+        <source>Navigate</source>
+        <comment>WheelMode</comment>
+        <translation type="unfinished">瀏覽</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="187"/>
         <source>&lt;b&gt;Language&lt;/b&gt;</source>
         <translation>&lt;b&gt;語言&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="181"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="188"/>
         <source>&lt;b&gt;Theme&lt;/b&gt;</source>
         <translation>&lt;b&gt;主題&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="183"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="190"/>
         <source>&lt;b&gt;Icon Theme&lt;/b&gt;</source>
         <translation type="unfinished">&lt;b&gt;圖標主題&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="186"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="193"/>
         <source>&lt;b&gt;Toolbar Position&lt;/b&gt;</source>
         <translation>&lt;b&gt;工具欄位置&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="189"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="196"/>
         <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
         <translation>&lt;b&gt;背景顏色&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="190"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="197"/>
         <source>Normal:</source>
         <translation>正常:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="191"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="198"/>
         <source>Fullscreen:</source>
         <translation>全螢幕:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="140"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="143"/>
         <source>&lt;b&gt;Mouse wheel action&lt;/b&gt;</source>
         <translation>&lt;b&gt;鼠標滾輪操作&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="141"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="144"/>
         <source>Scroll</source>
         <comment>WheelMode</comment>
         <translation>滾軸</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="142"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="145"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
         <translation>縮放</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="226"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="233"/>
         <source>&lt;b&gt;Enabled decoders:&lt;/b&gt;</source>
         <translation>&lt;b&gt;已啟用的解碼器:&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="200"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="202"/>
         <source>Preferences</source>
         <translation>偏好</translation>
     </message>

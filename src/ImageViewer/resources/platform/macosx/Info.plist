@@ -36,13 +36,6 @@
 	<string>10.3</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>(c) Peter S. Zhigalov, 2017-2025</string>
-	<key>CFBundleLocalizations</key>
-	<array>
-		<string>en</string>
-		<string>ru</string>
-		<string>zh_CN</string>
-		<string>zh_TW</string>
-	</array>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
