@@ -99,7 +99,9 @@ struct SettingsDialog::Impl
         settings->setNormalBackgroundColor(normalBackground);
         settings->setFullScreenBackgroundColor(fullScreenBackground);
         settings->setSlideShowInterval(ui->slideShowSpinBox->value());
-        settings->setWheelMode(ui->wheelZoomRadioButton->isChecked() ? ImageViewerWidget::WHEEL_ZOOM : ImageViewerWidget::WHEEL_SCROLL);
+        settings->setWheelMode(ui->wheelZoomRadioButton->isChecked() ? ImageViewerWidget::WHEEL_ZOOM :
+                               ui->wheelNavigateRadioButton->isChecked() ? ImageViewerWidget::WHEEL_NAVIGATE :
+                               ImageViewerWidget::WHEEL_SCROLL);
 #if !defined(HAS_MAC_TOOLBAR)
         settings->setToolBarPosition(static_cast<GUISettings::ToolBarPosition>(ui->toolBarPositionComboBox->itemData(ui->toolBarPositionComboBox->currentIndex()).toInt()));
 #endif

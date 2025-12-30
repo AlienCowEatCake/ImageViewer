@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -45,11 +45,14 @@ public:
     enum WheelMode
     {
         WHEEL_SCROLL        = 1,
-        WHEEL_ZOOM          = 2
+        WHEEL_ZOOM          = 2,
+        WHEEL_NAVIGATE      = 3
     };
 
 Q_SIGNALS:
     void zoomLevelChanged(qreal zoomLevel);
+    void selectPreviousRequested();
+    void selectNextRequested();
 
 public:
 

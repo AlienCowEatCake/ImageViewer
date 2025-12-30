@@ -60,6 +60,8 @@ ImageViewerWidget::WheelMode wheelModeFromVariant(const QVariant &variant, Image
         return ImageViewerWidget::WHEEL_SCROLL;
     case ImageViewerWidget::WHEEL_ZOOM:
         return ImageViewerWidget::WHEEL_ZOOM;
+    case ImageViewerWidget::WHEEL_NAVIGATE:
+        return ImageViewerWidget::WHEEL_NAVIGATE;
     default:
         break;
     }

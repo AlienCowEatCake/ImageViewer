@@ -59,6 +59,7 @@ const qreal ZOOM_STEP = 1.1;
 const qreal ZOOM_CHANGE_EPSILON = 1e-5;
 const int ZOOM_FIT_SIZE_CORRECTION = 1;
 const qreal ROTATION_TRESHOLD = 30;
+const qreal WHEEL_NAVIGATE_EPSILON = 1e-3;
 
 } // namespace
 
@@ -77,6 +78,7 @@ struct ImageViewerWidget::Impl
         , flipVertical(false)
         , transformationMode(Qt::SmoothTransformation)
         , wheelMode(WHEEL_SCROLL)
+        , wheelAccumulatedValue(0)
         , upscaleOnFitToWindow(false)
     {
         widget->setScene(scene);
@@ -199,6 +201,7 @@ struct ImageViewerWidget::Impl
     bool flipVertical;
     Qt::TransformationMode transformationMode;
     WheelMode wheelMode;
+    qreal wheelAccumulatedValue;
     bool upscaleOnFitToWindow;
 };
 
@@ -318,6 +321,7 @@ void ImageViewerWidget::clear()
     m_impl->currentRotationAngle = 0;
     m_impl->flipHorizontal = false;
     m_impl->flipVertical = false;
+    m_impl->wheelAccumulatedValue = 0;
 }
 
 void ImageViewerWidget::setZoomMode(ImageViewerWidget::ZoomMode mode)
@@ -338,6 +342,7 @@ void ImageViewerWidget::setZoomLevel(qreal zoomLevel)
 
 void ImageViewerWidget::setWheelMode(ImageViewerWidget::WheelMode mode)
 {
+    m_impl->wheelAccumulatedValue = 0;
     m_impl->wheelMode = mode;
 }
 
@@ -506,6 +511,29 @@ void ImageViewerWidget::wheelEvent(QWheelEvent *event)
 #endif
         const qreal scaleFactor = (stepsDistance > 0 ? (1.0 + stepsDistance / 10.0) : 1.0 / (1.0 - stepsDistance / 10.0));
         setZoomLevel(m_impl->currentZoomLevel * scaleFactor);
+        event->accept();
+        return;
+    }
+    if(wheelMode() == WHEEL_NAVIGATE)
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        const QPointF numDegrees = QPointF(event->angleDelta()) / 8.0;
+        const qreal stepsDistance = (numDegrees.x() + numDegrees.y()) / 15.0;
+#else
+        const qreal stepsDistance = event->delta() / 8.0 / 15.0;
+#endif
+        if((stepsDistance < -WHEEL_NAVIGATE_EPSILON && m_impl->wheelAccumulatedValue > WHEEL_NAVIGATE_EPSILON) ||
+           (stepsDistance > WHEEL_NAVIGATE_EPSILON && m_impl->wheelAccumulatedValue < -WHEEL_NAVIGATE_EPSILON))
+            m_impl->wheelAccumulatedValue = 0;
+        m_impl->wheelAccumulatedValue += stepsDistance;
+        if(qAbs(m_impl->wheelAccumulatedValue) >= 1.0 - WHEEL_NAVIGATE_EPSILON)
+        {
+            if(m_impl->wheelAccumulatedValue > 0)
+                Q_EMIT selectPreviousRequested();
+            else
+                Q_EMIT selectNextRequested();
+            m_impl->wheelAccumulatedValue = 0;
+        }
         event->accept();
         return;
     }

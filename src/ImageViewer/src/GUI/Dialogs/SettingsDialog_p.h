@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -83,6 +83,7 @@ struct SettingsDialog::UI
         , CONSTRUCT_OBJECT(wheelModeLabel, QLabel, (wheelModeFrame))
         , CONSTRUCT_OBJECT(wheelScrollRadioButton, QRadioButton, (wheelModeFrame))
         , CONSTRUCT_OBJECT(wheelZoomRadioButton, QRadioButton, (wheelModeFrame))
+        , CONSTRUCT_OBJECT(wheelNavigateRadioButton, QRadioButton, (wheelModeFrame))
         , CONSTRUCT_OBJECT(interfaceTabFrame, QFrame, (tabWidget))
         , CONSTRUCT_OBJECT(languageLabel, QLabel, (interfaceTabFrame))
         , CONSTRUCT_OBJECT(languageComboBox, QComboBox, (interfaceTabFrame))
@@ -140,14 +141,17 @@ struct SettingsDialog::UI
         wheelModeLabel->setText(qApp->translate("SettingsDialog", "<b>Mouse wheel action</b>"));
         wheelScrollRadioButton->setText(qApp->translate("SettingsDialog", "Scroll", "WheelMode"));
         wheelZoomRadioButton->setText(qApp->translate("SettingsDialog", "Zoom", "WheelMode"));
+        wheelNavigateRadioButton->setText(qApp->translate("SettingsDialog", "Navigate", "WheelMode"));
 
         const ImageViewerWidget::WheelMode wheelMode = settings->wheelMode();
         wheelScrollRadioButton->setChecked(wheelMode == ImageViewerWidget::WHEEL_SCROLL);
         wheelZoomRadioButton->setChecked(wheelMode == ImageViewerWidget::WHEEL_ZOOM);
+        wheelNavigateRadioButton->setChecked(wheelMode == ImageViewerWidget::WHEEL_NAVIGATE);
 
         CREATE_OBJECT(wheelModeGroup, QButtonGroup, (wheelModeFrame));
         wheelModeGroup->addButton(wheelScrollRadioButton);
         wheelModeGroup->addButton(wheelZoomRadioButton);
+        wheelModeGroup->addButton(wheelNavigateRadioButton);
         wheelModeGroup->setExclusive(true);
 
         QHBoxLayout *slideShowIntervalLayout = new QHBoxLayout(slideShowIntervalFrame);
@@ -159,10 +163,11 @@ struct SettingsDialog::UI
 
         QGridLayout *wheelModeLayout = new QGridLayout(wheelModeFrame);
         wheelModeLayout->setContentsMargins(0, 0, 0, 0);
-        wheelModeLayout->addWidget(wheelModeLabel, 0, 0, 1, 3, Qt::AlignLeft | Qt::AlignBottom);
+        wheelModeLayout->addWidget(wheelModeLabel, 0, 0, 1, 4, Qt::AlignLeft | Qt::AlignBottom);
         wheelModeLayout->addWidget(wheelScrollRadioButton, 1, 0, Qt::AlignLeft | Qt::AlignVCenter);
         wheelModeLayout->addWidget(wheelZoomRadioButton, 1, 1, Qt::AlignLeft | Qt::AlignVCenter);
-        wheelModeLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 2);
+        wheelModeLayout->addWidget(wheelNavigateRadioButton, 1, 2, Qt::AlignLeft | Qt::AlignVCenter);
+        wheelModeLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 3);
 
         QVBoxLayout *generalTabLayout = new QVBoxLayout(generalTabFrame);
 #if defined(ENABLE_UPDATE_CHECKING)
@@ -270,6 +275,7 @@ struct SettingsDialog::UI
     QLabel *wheelModeLabel;
     QRadioButton *wheelScrollRadioButton;
     QRadioButton *wheelZoomRadioButton;
+    QRadioButton *wheelNavigateRadioButton;
     QFrame *interfaceTabFrame;
     QLabel *languageLabel;
     QComboBox *languageComboBox;

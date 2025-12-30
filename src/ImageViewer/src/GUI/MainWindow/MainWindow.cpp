@@ -247,6 +247,8 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     m_impl->fillMenuReopenWith();
 
     connect(imageViewerWidget, SIGNAL(zoomLevelChanged(qreal)), this, SLOT(updateWindowTitle()));
+    connect(imageViewerWidget, SIGNAL(selectPreviousRequested()), this, SIGNAL(selectPreviousRequested()));
+    connect(imageViewerWidget, SIGNAL(selectNextRequested()), this, SIGNAL(selectNextRequested()));
 
     for(QList<IControlsContainer*>::Iterator it = ui.controlsContainers.begin(), itEnd = ui.controlsContainers.end(); it != itEnd; ++it)
     {
