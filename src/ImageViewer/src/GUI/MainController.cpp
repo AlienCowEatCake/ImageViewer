@@ -28,6 +28,7 @@
 #include <QMessageBox>
 #include <QSysInfo>
 
+#include "Utils/FileUtils.h"
 #include "Utils/ScopedPointer.h"
 #include "Utils/SignalBlocker.h"
 #include "Widgets/StylesheetEditor.h"
@@ -204,7 +205,7 @@ bool MainController::deleteCurrentFile()
             return false;
     }
 
-    if(m_impl->settings.moveToTrash())
+    if(m_impl->settings.moveToTrash() && FileUtils::SupportsMoveToTrash())
     {
         QString errorDescription;
         if(!m_impl->fileManager.moveToTrashCurrentFile(&errorDescription))

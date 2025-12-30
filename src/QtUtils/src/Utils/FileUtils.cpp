@@ -42,9 +42,57 @@
 
 namespace MoveToTrashInternal {
 
-static bool MoveToTrashImpl(const QString &absolutePath, QString * /*errorDescription*/)
+static QString FormatFileError(QFile::FileError error, const QString &errorString)
 {
-    return QFile::moveToTrash(absolutePath);
+    QString result;
+    switch(error)
+    {
+#define ADD_CASE(X) case X: result = QString::fromLatin1(#X); break
+    ADD_CASE(QFile::NoError);
+    ADD_CASE(QFile::ReadError);
+    ADD_CASE(QFile::WriteError);
+    ADD_CASE(QFile::FatalError);
+    ADD_CASE(QFile::ResourceError);
+    ADD_CASE(QFile::OpenError);
+    ADD_CASE(QFile::AbortError);
+    ADD_CASE(QFile::TimeOutError);
+    ADD_CASE(QFile::UnspecifiedError);
+    ADD_CASE(QFile::RemoveError);
+    ADD_CASE(QFile::RenameError);
+    ADD_CASE(QFile::PositionError);
+    ADD_CASE(QFile::ResizeError);
+    ADD_CASE(QFile::PermissionsError);
+    ADD_CASE(QFile::CopyError);
+#undef ADD_CASE
+    default:
+        result = QString::fromLatin1("QFile::FileError(%1)").arg(error);
+        break;
+    }
+    result = QString::fromLatin1("%1: %2").arg(result, errorString);
+    return result;
+}
+
+static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescription)
+{
+    QFile file(absolutePath);
+    if(!file.moveToTrash())
+    {
+        const QString errorString = FormatFileError(file.error(), file.errorString());
+        LOG_WARNING() << LOGGING_CTX << "Error" << errorString << "for" << absolutePath;
+        if(errorDescription)
+            *errorDescription = errorString;
+        return false;
+    }
+    return true;
+}
+
+static bool SupportsMoveToTrash()
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 9, 0))
+    return QFile::supportsMoveToTrash();
+#else
+    return true;
+#endif
 }
 
 } // namespace MoveToTrashInternal
@@ -162,6 +210,11 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
     return false;
 }
 
+static bool SupportsMoveToTrash()
+{
+    return true;
+}
+
 } // namespace MoveToTrashInternal
 
 #elif defined (Q_OS_WIN)
@@ -253,6 +306,11 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
     }
 }
 
+static bool SupportsMoveToTrash()
+{
+    return true;
+}
+
 } // namespace MoveToTrashInternal
 
 #elif defined (Q_OS_HAIKU)
@@ -342,6 +400,11 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
     BString originalPathString(originalPath.Path());
     node.WriteAttrString("_trk/original_path", &originalPathString);
 
+    return true;
+}
+
+static bool SupportsMoveToTrash()
+{
     return true;
 }
 
@@ -676,11 +739,52 @@ static bool MoveToTrashImpl(const QString &absolutePath, QString *errorDescripti
     return sendToTrash(absolutePath, errorDescription);
 }
 
+static bool SupportsMoveToTrash()
+{
+    return true;
+}
+
 } // namespace MoveToTrashInternal
 
 #endif
 
 namespace FileUtils {
+
+/// @brief Delete specified file or directory (recursively)
+/// @param[in] path - path to file or directory
+/// @return - true - file or directory was deleted, false - otherwise
+bool DeleteRecursively(const QString &path)
+{
+    const QFileInfo info(path);
+    if(!info.exists())
+        return true;
+    if(info.isDir() && !info.isSymLink())
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        return QDir(info.absoluteFilePath()).removeRecursively();
+#else
+        bool success = true;
+        QDir dir(info.absoluteFilePath());
+        const QStringList entries = dir.entryList(QDir::Files | QDir::AllDirs | QDir::Hidden | QDir::System | QDir::NoDotAndDotDot);
+        for(QStringList::ConstIterator it = entries.constBegin(), itEnd = entries.constEnd(); it != itEnd; ++it)
+        {
+            if(!DeleteRecursively(dir.absoluteFilePath(*it)))
+                success = false;
+        }
+        if(success)
+            success = dir.rmdir(info.absoluteFilePath());
+        return success;
+#endif
+    }
+    return QFile(info.absoluteFilePath()).remove();
+}
+
+/// @brief Check current operating system supports moving files to trash
+/// @return - true - file or directory can be moved to trash, false - otherwise
+bool SupportsMoveToTrash()
+{
+    return MoveToTrashInternal::SupportsMoveToTrash();
+}
 
 /// @brief Move specified file or directory to trash
 /// @attention Operation is performed without confirmation request. Behavior of this
@@ -699,8 +803,41 @@ bool MoveToTrash(const QString &path, QString *errorDescription)
             *errorDescription = qApp->translate("FileUtils", "The specified path does not exist");
         return false;
     }
-    const QString absolutePath = info.absoluteFilePath();
-    return MoveToTrashInternal::MoveToTrashImpl(absolutePath, errorDescription);
+    if(!SupportsMoveToTrash())
+    {
+        if(errorDescription)
+            *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash");
+        return false;
+    }
+    if(!MoveToTrashInternal::MoveToTrashImpl(info.absoluteFilePath(), errorDescription))
+    {
+        if(errorDescription && errorDescription->isEmpty())
+            *errorDescription = qApp->translate("FileUtils", "The specified path could not be moved to Trash");
+        return false;
+    }
+    return true;
+}
+
+/// @brief Move specified file or directory to trash or delete
+/// @attention Operation is performed without confirmation request. File or directory
+///            will be deleted permanently if system has no trash or trash support is
+///            disabled
+/// @param[in] path - path to file or directory
+/// @param[out] errorDescription - information that describes error if that has occurred
+/// @return - true - file or directory was moved to trash or deleted, false - otherwise
+bool MoveToTrashOrDelete(const QString &path, QString* errorDescription)
+{
+    if(!MoveToTrash(path, errorDescription))
+    {
+        if(DeleteRecursively(path))
+        {
+            if(errorDescription)
+                errorDescription->clear();
+            return true;
+        }
+        return false;
+    }
+    return true;
 }
 
 } // namespace FileUtils

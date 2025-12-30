@@ -514,7 +514,7 @@ bool FileManager::moveToTrashCurrentFile(QString *errorDescription)
     const Impl::ChangedGuard changedGuard(this);
     if(!m_impl->filesModel || !m_impl->filesModel->canDeleteCurrentFile())
         return false;
-    if(!FileUtils::MoveToTrash(currentFilePath(), errorDescription))
+    if(!FileUtils::MoveToTrashOrDelete(currentFilePath(), errorDescription))
         return false;
     return m_impl->selectAnotherFileAfterDeletion();
 }

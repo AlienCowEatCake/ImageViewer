@@ -40,6 +40,7 @@
 #include <QSpacerItem>
 #include <QPixmap>
 
+#include "Utils/FileUtils.h"
 #include "Utils/IconThemeManager.h"
 #include "Utils/ObjectsUtils.h"
 #include "Utils/SettingsWrapper.h"
@@ -123,6 +124,7 @@ struct SettingsDialog::UI
 
         moveToTrashCheckbox->setText(qApp->translate("SettingsDialog", "Move deleted images to trash"));
         moveToTrashCheckbox->setChecked(settings->moveToTrash());
+        moveToTrashCheckbox->setVisible(FileUtils::SupportsMoveToTrash());
 
         smoothTransformationCheckbox->setText(qApp->translate("SettingsDialog", "Use smooth image rendering"));
         smoothTransformationCheckbox->setChecked(settings->smoothTransformation());
