@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -346,12 +346,12 @@ protected:
                 else
                 {
                     QSize size = (boundingRect.size() * scaleFactor).toSize();
-                    image = QImage(size, QImage::Format_ARGB32_Premultiplied);
+                    image = QImage(size, QImage::Format_ARGB32);
                     while(image.isNull() && !size.isEmpty())
                     {
                         LOG_WARNING() << LOGGING_CTX << "Image rendering failed, target size =" << size.width() << "x" << size.height();
                         size = QSize(size.width() / 2, size.height() / 2);
-                        image = QImage(size, QImage::Format_ARGB32_Premultiplied);
+                        image = QImage(size, QImage::Format_ARGB32);
                     }
                     image.fill(Qt::transparent);
                     QPainter painterLocal;
