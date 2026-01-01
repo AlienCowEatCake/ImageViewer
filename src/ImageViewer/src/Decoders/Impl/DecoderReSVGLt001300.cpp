@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -352,11 +352,11 @@ public:
         resvg_options_load_system_fonts(m_opt);
         resvg_options_set_file_path(m_opt, m_filePathUtf8.constData());
 
-        MappedBuffer inBuffer(filePath, MappedBuffer::AutoInflate | MappedBuffer::AutoConvertXmlToUtf8);
-        if(!inBuffer.isValid())
+        m_inBuffer.reset(new MappedBuffer(filePath, MappedBuffer::AutoInflate | MappedBuffer::AutoConvertXmlToUtf8));
+        if(!m_inBuffer->isValid())
             return;
 
-        const int err = resvg_parse_tree_from_data(inBuffer.dataAs<const char*>(), inBuffer.sizeAs<size_t>(), m_opt, &m_tree);
+        const int err = resvg_parse_tree_from_data(m_inBuffer->dataAs<const char*>(), m_inBuffer->sizeAs<size_t>(), m_opt, &m_tree);
         if(err)
         {
             LOG_WARNING() << LOGGING_CTX << "Can't parse file, error =" << err;
@@ -432,6 +432,7 @@ public:
 
 private:
     bool m_isValid;
+    QScopedPointer<MappedBuffer> m_inBuffer;
     QByteArray m_filePathUtf8;
     resvg_render_tree *m_tree;
     resvg_options *m_opt;

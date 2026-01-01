@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -36,6 +36,37 @@
 #include "Internal/Utils/XmlStreamReader.h"
 
 namespace {
+
+#if defined (QT_SVG_LIB)
+class SVGGraphicsItem : public QGraphicsSvgItem
+{
+public:
+    SVGGraphicsItem(const QString &filePath, QGraphicsItem *parentItem = Q_NULLPTR)
+        : QGraphicsSvgItem(parentItem)
+    {
+        m_inBuffer.reset(new MappedBuffer(filePath, MappedBuffer::AutoInflate));
+        if(!m_inBuffer->isValid())
+            return;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        m_xmlStreamReader.reset(new XmlStreamReader(m_inBuffer->dataAsByteArray()));
+        QSvgRenderer *svgRenderer = new QSvgRenderer(this);
+        QObject::connect(svgRenderer, &QSvgRenderer::repaintNeeded, this, [this]{ update(); });
+        svgRenderer->load(m_xmlStreamReader.data());
+        setSharedRenderer(svgRenderer);
+#else
+        renderer()->load(m_inBuffer->dataAsByteArray());
+        // For d->updateDefaultSize();
+        setElementId(elementId());
+#endif
+    }
+
+private:
+    QScopedPointer<MappedBuffer> m_inBuffer;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QScopedPointer<XmlStreamReader> m_xmlStreamReader;
+#endif
+};
+#endif
 
 class DecoderQtSVG : public IDecoder
 {
@@ -75,19 +106,7 @@ public:
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
 #if defined (QT_SVG_LIB)
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-        MappedBuffer inBuffer(filePath, MappedBuffer::AutoInflate);
-        if(!inBuffer.isValid())
-            return QSharedPointer<IImageData>();
-        QGraphicsSvgItem *graphicsSvgItem = new QGraphicsSvgItem();
-        QSvgRenderer* renderer = new QSvgRenderer(graphicsSvgItem);
-        QObject::connect(renderer, &QSvgRenderer::repaintNeeded, graphicsSvgItem, [graphicsSvgItem]{ graphicsSvgItem->update(); });
-        XmlStreamReader reader(inBuffer.dataAsByteArray());
-        renderer->load(&reader);
-        graphicsSvgItem->setSharedRenderer(renderer);
-#else
-        QGraphicsSvgItem *graphicsSvgItem = new QGraphicsSvgItem(filePath);
-#endif
+        SVGGraphicsItem *graphicsSvgItem = new SVGGraphicsItem(filePath);
         if(graphicsSvgItem->renderer()->isValid())
         {
             IImageMetaData *metaData = ImageMetaData::createMetaData(filePath);

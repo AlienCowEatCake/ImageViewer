@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -666,12 +666,12 @@ public:
         m_minScaleFactor = m_maxScaleFactor = 1;
         m_rasterizerCache.scaleFactor = 0;
 
-        MappedBuffer inBuffer(filePath, MappedBuffer::AutoInflate);
-        if(!inBuffer.isValid())
+        m_inBuffer.reset(new MappedBuffer(filePath, MappedBuffer::AutoInflate));
+        if(!m_inBuffer->isValid())
             return false;
 
         GError *error = Q_NULLPTR;
-        m_rsvg = rsvg_handle_new_from_data(inBuffer.dataAs<unsigned char*>(), inBuffer.sizeAs<size_t>(), &error);
+        m_rsvg = rsvg_handle_new_from_data(m_inBuffer->dataAs<unsigned char*>(), m_inBuffer->sizeAs<size_t>(), &error);
         if(!m_rsvg)
         {
             LOG_WARNING() << LOGGING_CTX << "Error reading SVG:" << ((error && error->message) ? error->message : "Unknown error.");
@@ -852,6 +852,7 @@ private:
 
     bool m_isValid;
     bool m_exposedRectSupported;
+    QScopedPointer<MappedBuffer> m_inBuffer;
     RsvgHandle *m_rsvg;
     qreal m_width;
     qreal m_height;
