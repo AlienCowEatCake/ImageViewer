@@ -6,7 +6,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="189"/>
         <source>Translators can write copyrights or notes for about window here</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/AboutDialog.cpp" line="856"/>
@@ -49,7 +49,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="81"/>
         <source>Image Information</source>
-        <translation>Informações da imagem</translation>
+        <translation>Metadado</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="93"/>
@@ -88,7 +88,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="120"/>
         <source>Created</source>
-        <translation type="unfinished">Criado em</translation>
+        <translation>Criado em</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="126"/>
@@ -215,12 +215,12 @@
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="917"/>
         <source>1:1</source>
         <comment>Short form of &apos;Original Size&apos;</comment>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="922"/>
         <source>Full Screen</source>
-        <translation>Tela cheia</translation>
+        <translation type="unfinished">Tela cheia</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="923"/>
@@ -304,7 +304,7 @@
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="950"/>
         <source>Save</source>
         <comment>Short form of &apos;Save File As&apos;</comment>
-        <translation>Salvar</translation>
+        <translation type="unfinished">Salvar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MacToolBar.mm" line="954"/>
@@ -439,7 +439,7 @@
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="162"/>
         <source>All Supported Images</source>
-        <translation>Todos os formatos de imagem suportados</translation>
+        <translation type="unfinished">Todos os formatos de imagem suportados</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="163"/>
@@ -449,19 +449,19 @@
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="164"/>
         <source>Open File</source>
-        <translation>Abrir arquivo</translation>
+        <translation type="unfinished">Abrir arquivo</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="176"/>
         <location filename="../../src/GUI/MainController.cpp" line="358"/>
         <location filename="../../src/GUI/MainController.cpp" line="416"/>
         <source>Failed to open file &quot;%1&quot;</source>
-        <translation>Falha ao abrir arquivo &quot;%1&quot;</translation>
+        <translation type="unfinished">Falha ao abrir arquivo &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="177"/>
         <source>Failed to open files &quot;%1&quot;</source>
-        <translation>Falha ao abrir arquivos &quot;%1&quot;</translation>
+        <translation type="unfinished">Falha ao abrir arquivos &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="178"/>
@@ -471,32 +471,32 @@
         <location filename="../../src/GUI/MainController.cpp" line="358"/>
         <location filename="../../src/GUI/MainController.cpp" line="416"/>
         <source>Error</source>
-        <translation>Erro</translation>
+        <translation type="unfinished">Erro</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="186"/>
         <source>Open Folder</source>
-        <translation>Abrir pasta</translation>
+        <translation type="unfinished">Abrir pasta</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="191"/>
         <source>Failed to open folder &quot;%1&quot;</source>
-        <translation>Falha ao abrir pasta &quot;%1&quot;</translation>
+        <translation type="unfinished">Falha ao abrir pasta &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="203"/>
         <source>Delete File</source>
-        <translation>Excluir arquivo</translation>
+        <translation type="unfinished">Excluir arquivo</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="203"/>
         <source>Are you sure you want to delete current file?</source>
-        <translation>Tem certeza que quer excluir o arquivo atual?</translation>
+        <translation type="unfinished">Tem certeza que quer excluir o arquivo atual?</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainController.cpp" line="221"/>
         <source>Failed to delete file &quot;%1&quot;</source>
-        <translation>Falha ao excluir arquivo &quot;%1&quot;</translation>
+        <translation type="unfinished">Falha ao excluir arquivo &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
@@ -910,7 +910,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="999"/>
         <source>Make and model:</source>
-        <translation type="unfinished">Criação e modelo:</translation>
+        <translation>Criação e modelo:</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/PrintDialog_p.h" line="1000"/>
@@ -1350,7 +1350,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="115"/>
         <source>Decoders</source>
-        <translation>Decodificadores</translation>
+        <translation>Decodificação</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="118"/>
@@ -1380,7 +1380,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
         <source>Remember rotation and flip until app exit</source>
-        <translation>Manter rotação e espelhamento até o encerramento da aplicação</translation>
+        <translation>Manter rotação e espelhamento até que a aplicação feche</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="138"/>
@@ -1407,13 +1407,13 @@
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="145"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
-        <translation></translation>
+        <translation>Ampliar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="146"/>
         <source>Navigate</source>
         <comment>WheelMode</comment>
-        <translation>Navegação</translation>
+        <translation>Navegar</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="187"/>
@@ -1529,7 +1529,7 @@
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="127"/>
         <source>Fit Image To Window Size</source>
-        <translation type="unfinished">Ajustar imagem à janela</translation>
+        <translation>Ajustar imagem à janela</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ToolBar.cpp" line="128"/>
