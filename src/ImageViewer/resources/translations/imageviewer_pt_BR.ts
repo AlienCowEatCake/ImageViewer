@@ -68,7 +68,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="94"/>
         <source>File Name</source>
-        <translation>Nome do Arquivo</translation>
+        <translation>Arquivo</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="102"/>
@@ -1433,7 +1433,7 @@
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="193"/>
         <source>&lt;b&gt;Toolbar Position&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Posição das ferramentas&lt;/b&gt;</translation>
+        <translation>&lt;b&gt;Posição da barra de ferramentas&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="196"/>
