@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2011-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2011-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `QtUtils' library.
 #
@@ -69,6 +69,7 @@ SOURCES += \
 TRANSLATIONS += \
     resources/translations/qtutils_en.ts \
     resources/translations/qtutils_ko.ts \
+    resources/translations/qtutils_pt_BR.ts \
     resources/translations/qtutils_ru.ts \
     resources/translations/qtutils_zh_CN.ts \
     resources/translations/qtutils_zh_TW.ts
