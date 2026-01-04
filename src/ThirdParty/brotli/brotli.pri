@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_brotli {
 
-        THIRDPARTY_BROTLI_PATH = $${PWD}/brotli-1.1.0
+        THIRDPARTY_BROTLI_PATH = $${PWD}/brotli-1.2.0
 
         INCLUDEPATH += $${THIRDPARTY_BROTLI_PATH}/c/include
         DEPENDPATH += $${THIRDPARTY_BROTLI_PATH}/c/include
