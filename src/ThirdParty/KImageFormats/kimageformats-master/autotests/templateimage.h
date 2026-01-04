@@ -56,7 +56,7 @@ public:
 
     /*!
      * \brief skipSequentialDeviceTest
-     * \return tre it the sequential test should be skipped.
+     * \return True if the sequential test should be skipped.
      */
     bool skipSequentialDeviceTest() const;
 

@@ -415,6 +415,7 @@ bool EXRHandler::read(QImage *outImage)
 
         Imf::Array2D<Imf::Rgba> pixels;
         pixels.resizeErase(EXR_LINES_PER_BLOCK, width);
+        std::memset(pixels[0], 0, sizeof(Imf::Rgba) * EXR_LINES_PER_BLOCK * width);
         bool isRgba = image.hasAlphaChannel();
 
         for (int y = 0, n = 0; y < height; y += n) {

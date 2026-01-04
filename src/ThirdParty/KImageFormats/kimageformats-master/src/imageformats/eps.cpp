@@ -179,7 +179,7 @@ bool EPSHandler::read(QImage *image)
 
     const QString gsExec = QStandardPaths::findExecutable(QStringLiteral("gs"));
     if (gsExec.isEmpty()) {
-        qCWarning(EPSPLUGIN) << "Couldn't find gs exectuable (from GhostScript) in PATH.";
+        qCWarning(EPSPLUGIN) << "Couldn't find gs executable (from GhostScript) in PATH.";
         return false;
     }
 

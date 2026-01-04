@@ -354,6 +354,9 @@ bool SGIImagePrivate::readImage(QImage &img)
                 return false;
             }
         }
+        for (; l < _numrows; l++) {
+            _lengthtab[l] = 0;
+        }
     }
 
     if (_stream.status() != QDataStream::Ok) {

@@ -160,7 +160,7 @@ static bool LoadQOI(QIODevice *device, const QoiHeader &qoi, QImage &img)
     // Handle the byte stream
     QByteArray ba;
     for (quint32 y = 0, run = 0; y < qoi.Height; ++y) {
-        if (quint64(ba.size()) < px_len) {
+        if (quint64(ba.size()) < px_len && !device->atEnd()) {
             ba.append(device->read(px_len));
         }
 

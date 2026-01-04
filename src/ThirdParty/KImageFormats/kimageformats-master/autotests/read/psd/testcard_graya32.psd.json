@@ -1,8 +1,8 @@
 [
     {
-        "fileName" : "32bit_grayscale.png",
+        "fileName" : "testcard_graya32.png",
         "colorSpace" : {
-            "description" : "RGB emulation of \"Linear Grayscale Profile\"",
+            "description" : "RGB emulation of \"Profilo scala di grigio lineare\"",
             "colorModel" : "Rgb",
             "primaries" : "Custom",
             "transferFunction" : "Linear",
@@ -11,16 +11,16 @@
         "metadata" : [
             {
                 "key" : "ModificationDate",
-                "value" : "2022-03-28T12:46:04"
+                "value" : "2025-11-17T07:29:19"
             },
             {
                 "key" : "Software" ,
-                "value" : "Adobe Photoshop 23.2 (Windows)"
+                "value" : "Adobe Photoshop 26.11 (Windows)"
             }
         ],
         "resolution" : {
-            "dotsPerMeterX" : 2232,
-            "dotsPerMeterY" : 2232
+            "dotsPerMeterX" : 11811,
+            "dotsPerMeterY" : 11811
         }
     }
 ]

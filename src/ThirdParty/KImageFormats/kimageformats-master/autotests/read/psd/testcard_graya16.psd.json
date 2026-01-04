@@ -1,0 +1,26 @@
+[
+    {
+        "fileName" : "testcard_graya16.png",
+        "colorSpace" : {
+            "description" : "RGB emulation of \"Gray Gamma 2.2\"",
+            "colorModel" : "Rgb",
+            "primaries" : "SRgb",
+            "transferFunction" : "Gamma",
+            "gamma" : 2.19922
+        },
+        "metadata" : [
+            {
+                "key" : "ModificationDate",
+                "value" : "2025-11-17T07:27:47"
+            },
+            {
+                "key" : "Software" ,
+                "value" : "Adobe Photoshop 26.11 (Windows)"
+            }
+        ],
+        "resolution" : {
+            "dotsPerMeterX" : 11811,
+            "dotsPerMeterY" : 11811
+        }
+    }
+]

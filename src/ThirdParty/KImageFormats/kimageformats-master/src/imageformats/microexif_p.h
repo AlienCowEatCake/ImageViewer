@@ -125,7 +125,7 @@ public:
 
     /*!
      * \brief transformation
-     * \return The orientation converted in the equvalent Qt transformation.
+     * \return The orientation converted in the equivalent Qt transformation.
      * \sa orientation
      */
     QImageIOHandler::Transformation transformation() const;

@@ -231,7 +231,7 @@ bool QJpegXLHandler::ensureDecoder()
     int num_worker_threads = QThread::idealThreadCount();
     if (!m_runner && num_worker_threads >= 4) {
         /* use half of the threads because plug-in is usually used in environment
-         * where application performs another tasks in backround (pre-load other images) */
+         * where application performs other tasks in the background (pre-load other images) */
         num_worker_threads = num_worker_threads / 2;
         num_worker_threads = qBound(2, num_worker_threads, 64);
         m_runner = JxlThreadParallelRunnerCreate(nullptr, num_worker_threads);

@@ -258,7 +258,7 @@ static bool checkHeader(QDataStream &ds)
 
 /*!
  * \brief updatePos
- * Write the current stram position in \a pos position as uint32.
+ * Write the current stream position in \a pos position as uint32.
  * \return True on success, otherwise false;
  */
 static bool updatePos(QDataStream &ds, quint32 pos)
@@ -525,7 +525,7 @@ static QByteArray readBytes(QDataStream &ds, quint32 count, bool asciiz)
  * \param pos The position of the IFD.
  * \param knownTags List of known and supported tags.
  * \param nextIfd The position of next IFD (0 if none).
- * \return True on succes, otherwise false.
+ * \return True on success, otherwise false.
  */
 static bool readIfd(QDataStream &ds, MicroExif::Tags &tags, quint32 pos = 0, const KnownTags &knownTags = staticTagTypes, quint32 *nextIfd = nullptr)
 {

@@ -265,9 +265,15 @@ bool QAVIFHandler::decode_one_frame()
         }
     }
 
+    uint32_t resultdepth = m_decoder->image->depth;
+    if (m_decoder->image->matrixCoefficients == 16 && m_decoder->image->yuvFormat == AVIF_PIXEL_FORMAT_YUV444 && resultdepth == 10) {
+        // 10-bit YCgCo-Re AVIF must be decoded to 8bit
+        resultdepth = 8;
+    }
+
     QImage::Format resultformat;
 
-    if (m_decoder->image->depth > 8) {
+    if (resultdepth > 8) {
         if (loadalpha) {
             resultformat = QImage::Format_RGBA64;
         } else {
@@ -414,7 +420,7 @@ bool QAVIFHandler::decode_one_frame()
     rgb.maxThreads = m_decoder->maxThreads;
 #endif
 
-    if (m_decoder->image->depth > 8) {
+    if (resultdepth > 8) {
         rgb.depth = 16;
         rgb.format = AVIF_RGB_FORMAT_RGBA;
 

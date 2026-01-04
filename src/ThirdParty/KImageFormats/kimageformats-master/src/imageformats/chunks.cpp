@@ -641,7 +641,7 @@ CAMGChunk::CAMGChunk() : IFFChunk()
 
 bool CAMGChunk::isValid() const
 {
-    if (bytes() != 4) {
+    if (dataBytes() != 4) {
         return false;
     }
     return chunkId() == CAMGChunk::defaultChunkId();
@@ -1043,7 +1043,7 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
             auto pal = cmap->palette();
             if (ipal) {
                 auto tmp = ipal->palette(y);
-                if (tmp.size() == pal.size())
+                if (!tmp.isEmpty())
                     pal = tmp;
             }
             // HAM 6: 2 control bits+4 bits of data, 16-color palette
@@ -1627,7 +1627,7 @@ TBHDChunk::TBHDChunk()
 
 bool TBHDChunk::isValid() const
 {
-    if (bytes() != 24 && bytes() != 32) {
+    if (dataBytes() != 24 && dataBytes() != 32) {
         return false;
     }
     return chunkId() == TBHDChunk::defaultChunkId();
@@ -1661,7 +1661,7 @@ QSize TBHDChunk::size() const
 
 qint32 TBHDChunk::left() const
 {
-    if (bytes() != 32) {
+    if (dataBytes() != 32) {
         return 0;
     }
     return i32(data().at(27), data().at(26), data().at(25), data().at(24));
@@ -1669,7 +1669,7 @@ qint32 TBHDChunk::left() const
 
 qint32 TBHDChunk::top() const
 {
-    if (bytes() != 32) {
+    if (dataBytes() != 32) {
         return 0;
     }
     return i32(data().at(31), data().at(30), data().at(29), data().at(28));
@@ -2455,10 +2455,12 @@ QVector<QRgb> BEAMChunk::palette(qint32 y) const
     for (auto c = 0; c < col; ++c) {
         // 2 bytes per color (0x0R 0xGB)
         auto idx = bpp * y + c * 2;
-        auto r = quint8(dt[idx] & 0x0F);
-        auto g = quint8(dt[idx + 1] & 0xF0);
-        auto b = quint8(dt[idx + 1] & 0x0F);
-        pal << qRgb(r | (r << 4), (g >> 4) | g, b | (b << 4));
+        if (idx + 1 < dt.size()) {
+            auto r = quint8(dt[idx] & 0x0F);
+            auto g = quint8(dt[idx + 1] & 0xF0);
+            auto b = quint8(dt[idx + 1] & 0x0F);
+            pal << qRgb(r | (r << 4), (g >> 4) | g, b | (b << 4));
+        }
     }
     return pal;
 }
@@ -2554,10 +2556,12 @@ QVector<QRgb> SHAMChunk::palette(qint32 y) const
     for (auto c = 0, col = bpp / 2, idx0 = y / div * bpp + 2; c < col; ++c) {
         // 2 bytes per color (0x0R 0xGB)
         auto idx = idx0 + c * 2;
-        auto r = quint8(dt[idx] & 0x0F);
-        auto g = quint8(dt[idx + 1] & 0xF0);
-        auto b = quint8(dt[idx + 1] & 0x0F);
-        pal << qRgb(r | (r << 4), (g >> 4) | g, b | (b << 4));
+        if (idx + 1 < dt.size()) {
+            auto r = quint8(dt[idx] & 0x0F);
+            auto g = quint8(dt[idx + 1] & 0xF0);
+            auto b = quint8(dt[idx + 1] & 0x0F);
+            pal << qRgb(r | (r << 4), (g >> 4) | g, b | (b << 4));
+        }
     }
     return pal;
 }
@@ -2626,16 +2630,18 @@ QVector<QRgb> RASTChunk::palette(qint32 y) const
 #endif
     for (auto c = 0; c < col; ++c) {
         auto idx = bpp * y + 2 + c * 2;
-        // The Atari ST uses 3 bits per color (512 colors) while the Atari STE
-        // uses 4 bits per color (4096 colors). This strange encoding with the
-        // least significant bit set as MSB is, I believe, to ensure hardware
-        // compatibility between the two machines.
-        #define H1L(a) ((quint8(a) & 0x7) << 1) | ((quint8(a) >> 3) & 1)
-        auto r = H1L(dt[idx]);
-        auto g = H1L(dt[idx + 1] >> 4);
-        auto b = H1L(dt[idx + 1]);
-        #undef H1L
-        pal << qRgb(r | (r << 4), (g << 4) | g, b | (b << 4));
+        if (idx + 1 < dt.size()) {
+            // The Atari ST uses 3 bits per color (512 colors) while the Atari STE
+            // uses 4 bits per color (4096 colors). This strange encoding with the
+            // least significant bit set as MSB is, I believe, to ensure hardware
+            // compatibility between the two machines.
+            #define H1L(a) ((quint8(a) & 0x7) << 1) | ((quint8(a) >> 3) & 1)
+            auto r = H1L(dt[idx]);
+            auto g = H1L(dt[idx + 1] >> 4);
+            auto b = H1L(dt[idx + 1]);
+            #undef H1L
+            pal << qRgb(r | (r << 4), (g << 4) | g, b | (b << 4));
+        }
     }
     return pal;
 }
@@ -2853,10 +2859,6 @@ static QByteArray pchgFastDecomp(const QByteArray& input, int treeSize, int orig
         return {};
     }
 
-    QByteArray out;
-    out.resize(originalSize);
-    char* outPtr = out.data();
-
     // Emulate a3 pointer to words:
     // a2 points to the *last word* => word index (0..treeWords-1)
     auto resetA3 = [&]() {
@@ -2881,10 +2883,9 @@ static QByteArray pchgFastDecomp(const QByteArray& input, int treeSize, int orig
         return true;
     };
 
-    int produced = 0;
-
     // Main decode loop: produce exactly originalSize bytes
-    while (produced < originalSize) {
+    QByteArray out;
+    while (out.size() < qsizetype(originalSize)) {
         if (bits == 0) {
             if (!refill()) {
                 // Not enough bits to complete output
@@ -2920,7 +2921,7 @@ static QByteArray pchgFastDecomp(const QByteArray& input, int treeSize, int orig
                 a3_word = next;
             } else {
                 // Leaf: emit low 8 bits, reset a3
-                outPtr[produced++] = static_cast<char>(w & 0xFF);
+                out.append(static_cast<char>(w & 0xFF));
                 a3_word = resetA3();
             }
         } else {
@@ -2940,7 +2941,7 @@ static QByteArray pchgFastDecomp(const QByteArray& input, int treeSize, int orig
 
             // Non-negative: check bit #8; if set -> leaf
             if ((w & 0x0100) != 0) {
-                outPtr[produced++] = static_cast<char>(w & 0xFF);
+                out.append(static_cast<char>(w & 0xFF));
                 a3_word = resetA3();
             } else {
                 // Not a leaf: continue scanning

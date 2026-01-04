@@ -125,14 +125,16 @@ public:
         Header h;
 
         int cnt = 0;
-        int len;
-        QByteArray line(MAXLINE + 1, Qt::Uninitialized);
+        int len = 0;
+        QByteArray line(MAXLINE, char());
         QByteArray format;
 
         // Parse header
         do {
-            len = device->readLine(line.data(), MAXLINE);
-
+            len = device->readLine(line.data(), line.size());
+            if (len < 0) {
+                break;
+            }
             if (line.startsWith("FORMAT=")) {
                 format = line.mid(7, len - 7).trimmed();
             }
@@ -175,7 +177,11 @@ public:
             return h;
         }
 
-        len = device->readLine(line.data(), MAXLINE);
+        len = device->readLine(line.data(), line.size());
+        if (len < 0) {
+            qCDebug(HDRPLUGIN) << "Invalid HDR file, error while reading the first line after the header";
+            return h;
+        }
         line.resize(len);
 
         /*
@@ -343,8 +349,7 @@ static bool LoadHDR(QDataStream &s, const Header& h, QImage &img)
         return false;
     }
 
-    QByteArray lineArray;
-    lineArray.resize(4 * width);
+    QByteArray lineArray(4 * width, char());
     uchar *image = reinterpret_cast<uchar *>(lineArray.data());
 
     for (int cline = 0; cline < height; cline++) {
@@ -534,7 +539,7 @@ bool HDRHandler::canRead(QIODevice *device)
         return true;
     }
 
-    // allow to load offical test cases: https://radsite.lbl.gov/radiance/framed.html
+    // allow to load official test cases: https://radsite.lbl.gov/radiance/framed.html
     device->startTransaction();
     auto h = HDRHandlerPrivate::readHeader(device);
     device->rollbackTransaction();

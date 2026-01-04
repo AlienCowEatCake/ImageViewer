@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(KF_VERSION "6.20.0") # handled by release scripts
-set(KF_DEP_VERSION "6.19.0") # handled by release scripts
+set(KF_VERSION "6.23.0") # handled by release scripts
+set(KF_DEP_VERSION "6.22.0") # handled by release scripts
 project(KImageFormats VERSION ${KF_VERSION})
 
 include(FeatureSummary)
-find_package(ECM 6.19.0  NO_MODULE)
+find_package(ECM 6.22.0  NO_MODULE)
 set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
 feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
@@ -65,6 +65,12 @@ set_package_properties(libavif PROPERTIES
 option(KIMAGEFORMATS_DDS "Enable plugin for DDS format" ON)
 
 option(KIMAGEFORMATS_HEIF "Enable plugin for HEIF format" OFF)
+set(KIMAGEFORMATS_HEIF_TEST "ALL" CACHE STRING "Enable HEIF tests: OFF, READ_ONLY, ALL")
+set_property(CACHE KIMAGEFORMATS_HEIF_TEST PROPERTY STRINGS "OFF" "READ_ONLY" "ALL")
+set(KIMAGEFORMATS_HEJ2_TEST "ALL" CACHE STRING "Enable HEJ2 tests: OFF, READ_ONLY, ALL")
+set_property(CACHE KIMAGEFORMATS_HEJ2_TEST PROPERTY STRINGS "OFF" "READ_ONLY" "ALL")
+set(KIMAGEFORMATS_AVCI_TEST "ALL" CACHE STRING "Enable AVCI tests: OFF, ALL")
+set_property(CACHE KIMAGEFORMATS_AVCI_TEST PROPERTY STRINGS "OFF" "ALL")
 if(KIMAGEFORMATS_HEIF)
     pkg_check_modules(LibHeif IMPORTED_TARGET libheif>=1.10.0)
 endif()
@@ -99,8 +105,8 @@ endif()
 add_feature_info(LibJXR LibJXR_FOUND "required for the QImage plugin for JPEG XR images")
 
 ecm_set_disabled_deprecation_versions(
-    QT 6.10.0
-    KF 6.18.0
+    QT 6.11.0
+    KF 6.21.0
 )
 
 add_subdirectory(src)

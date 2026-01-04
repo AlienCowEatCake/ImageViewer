@@ -49,7 +49,7 @@ private:
      * _: reserved (should be zero)
      * I: interpolation quality (0 - linear, 1 - VNG, 2 - PPG, 3 - AHD, 4 - DCB, 11 - DHT, 12 - AAHD)
      * C: output colorspace (0 - raw, 1 - sRGB, 2 - Adobe, 3 - Wide, 4 - ProPhoto, 5 - XYZ, 6 - ACES, 7 - DCI-P3, 8 - Rec2020)
-     * W: use camera white balace (0 - off, 1 - on)
+     * W: use camera white balance (0 - off, 1 - on)
      * A: use auto white balance (0 - off, 1 - on)
      * B: output bit per sample (0 - 8-bits, 1 - 16-bits)
      * H: half size image (0 - off, 1 - on)

@@ -1,4 +1,4 @@
-From 830616bbd565c6958c7dc6458e16c3b3c90d00c6 Mon Sep 17 00:00:00 2001
+From 220f6d3e91692593b40d4adfc991e26916e344ab Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 04:03:37 +0700
 Subject: [PATCH 1/8] Remove plugin metadata declarations
@@ -292,7 +292,7 @@ index 702f8f1..5f68d8d 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/raw_p.h b/src/imageformats/raw_p.h
-index b14f344..ebc1914 100644
+index 0b7daaf..c4bcf3e 100644
 --- a/src/imageformats/raw_p.h
 +++ b/src/imageformats/raw_p.h
 @@ -87,7 +87,7 @@ private:
@@ -357,5 +357,5 @@ index 0324797..d21e6e1 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 -- 
-2.47.3
+2.52.0
 

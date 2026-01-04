@@ -102,36 +102,52 @@ if (KF6Archive_FOUND)
 endif()
 
 if (TARGET avif)
-    kimageformats_read_tests(
-        avif
-    )
+    if(${libavif_VERSION} VERSION_GREATER_EQUAL "1.2.0")
+        kimageformats_read_tests(
+            avif
+        )
+    else()
+        message(WARNING "libavif ${libavif_VERSION} doesn't support decoding new AVIF files!\n"
+                        "AVIF read tests are disabled, consider updating libavif.")
+    endif()
+
     kimageformats_write_tests(
         avif-nodatacheck-lossless
     )
 endif()
 
 if (LibHeif_FOUND)
-    kimageformats_read_tests(
-        heif
-    )
-    # because the plug-ins use RGB->YUV conversion which sometimes results in 1 value difference.
-    kimageformats_write_tests(FUZZ 1
-        heif-nodatacheck-lossless
-    )
-
-    if (LibHeif_VERSION VERSION_GREATER_EQUAL "1.17.0")
-        kimageformats_read_tests(FUZZ 1
-            hej2
+    if (KIMAGEFORMATS_HEIF_TEST STREQUAL "ALL" OR KIMAGEFORMATS_HEIF_TEST STREQUAL "READ_ONLY")
+        kimageformats_read_tests(
+            heif
         )
+    endif()
+    if (KIMAGEFORMATS_HEIF_TEST STREQUAL "ALL")
+        # because the plug-ins use RGB->YUV conversion which sometimes results in 1 value difference.
         kimageformats_write_tests(FUZZ 1
-            hej2-nodatacheck-lossless
+            heif-nodatacheck-lossless
         )
     endif()
 
+    if (LibHeif_VERSION VERSION_GREATER_EQUAL "1.17.0")
+        if (KIMAGEFORMATS_HEJ2_TEST STREQUAL "ALL" OR KIMAGEFORMATS_HEJ2_TEST STREQUAL "READ_ONLY")
+            kimageformats_read_tests(FUZZ 1
+                hej2
+            )
+        endif()
+        if (KIMAGEFORMATS_HEJ2_TEST STREQUAL "ALL")
+            kimageformats_write_tests(FUZZ 1
+                hej2-nodatacheck-lossless
+            )
+        endif()
+    endif()
+
     if (LibHeif_VERSION VERSION_GREATER_EQUAL "1.19.6")
-        kimageformats_read_tests(FUZZ 4
-            avci
-        )
+        if (KIMAGEFORMATS_AVCI_TEST STREQUAL "ALL")
+            kimageformats_read_tests(FUZZ 4
+                avci
+            )
+        endif()
     endif()
 endif()
 

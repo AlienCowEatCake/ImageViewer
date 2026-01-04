@@ -1414,21 +1414,24 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
     // SANITY CHECK: Avoid to load XCF with a layer grater than 10 times the final image
     if (qint64(layer.width) * layer.height / 10 > qint64(xcf_image.header.width) * xcf_image.header.height) {
         if (qint64(layer.width) * layer.height > 16384 * 16384) { // large layers only
-            qCWarning(XCFPLUGIN) << "Euristic sanity check: the image may be corrupted!";
+            qCWarning(XCFPLUGIN) << "Heuristic sanity check: the image may be corrupted!";
             return false;
         }
     }
 
 #ifndef XCF_QT5_SUPPORT
-    // Qt 6 image allocation limit calculation: we have to check the limit here because the image is splitted in
+    // Qt 6 image allocation limit calculation: we have to check the limit here because the image is split in
     // tiles of 64x64 pixels. The required memory to build the image is at least doubled because tiles are loaded
     // and then the final image is created by copying the tiles inside it.
     // NOTE: on Windows to open a 10GiB image the plugin uses 28GiB of RAM
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    qint64 channels = 1 + (layer.type == RGB_GIMAGE ? 2 : 0) + (layer.type == RGBA_GIMAGE ? 3 : 0);
-    if (qint64(layer.width) * qint64(layer.height) * channels * 2ll / 1024ll / 1024ll > QImageReader::allocationLimit()) {
-        qCDebug(XCFPLUGIN) << "Rejecting image as it exceeds the current allocation limit of" << QImageReader::allocationLimit() << "megabytes";
-        return false;
+    const qint64 channels = 1 + (layer.type == RGB_GIMAGE ? 2 : 0) + (layer.type == RGBA_GIMAGE ? 3 : 0);
+    const int allocationLimit = QImageReader::allocationLimit();
+    if (allocationLimit > 0) {
+        if (qint64(layer.width) * qint64(layer.height) * channels * 2ll / 1024ll / 1024ll > allocationLimit) {
+            qCDebug(XCFPLUGIN) << "Rejecting image as it exceeds the current allocation limit of" << allocationLimit << "megabytes";
+            return false;
+        }
     }
 #endif
 #endif
@@ -1474,6 +1477,7 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
                     return false;
                 }
                 layer.image_tiles[j][i].setColorCount(0);
+                layer.image_tiles[j][i].fill(0);
                 break;
 
             case GRAY_GIMAGE:
@@ -1482,15 +1486,17 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
                     return false;
                 }
                 layer.image_tiles[j][i].setColorCount(256);
+                layer.image_tiles[j][i].fill(0);
                 setGrayPalette(layer.image_tiles[j][i]);
                 break;
 
             case GRAYA_GIMAGE:
                 layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                layer.image_tiles[j][i].setColorCount(256);
                 if (layer.image_tiles[j][i].isNull()) {
                     return false;
                 }
+                layer.image_tiles[j][i].setColorCount(256);
+                layer.image_tiles[j][i].fill(0);
                 setGrayPalette(layer.image_tiles[j][i]);
 
                 layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
@@ -1498,15 +1504,17 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
                     return false;
                 }
                 layer.alpha_tiles[j][i].setColorCount(256);
+                layer.alpha_tiles[j][i].fill(0);
                 setGrayPalette(layer.alpha_tiles[j][i]);
                 break;
 
             case INDEXED_GIMAGE:
                 layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                layer.image_tiles[j][i].setColorCount(xcf_image.num_colors);
                 if (layer.image_tiles[j][i].isNull()) {
                     return false;
                 }
+                layer.image_tiles[j][i].setColorCount(xcf_image.num_colors);
+                layer.image_tiles[j][i].fill(0);
                 setPalette(xcf_image, layer.image_tiles[j][i]);
                 break;
 
@@ -1516,6 +1524,7 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
                     return false;
                 }
                 layer.image_tiles[j][i].setColorCount(xcf_image.num_colors);
+                layer.image_tiles[j][i].fill(0);
                 setPalette(xcf_image, layer.image_tiles[j][i]);
 
                 layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
@@ -1523,6 +1532,7 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
                     return false;
                 }
                 layer.alpha_tiles[j][i].setColorCount(256);
+                layer.alpha_tiles[j][i].fill(0);
                 setGrayPalette(layer.alpha_tiles[j][i]);
             }
             if (layer.type != GRAYA_GIMAGE && layer.image_tiles[j][i].format() != format) {
@@ -1560,10 +1570,11 @@ bool XCFImageFormat::composeTiles(XCFImage &xcf_image)
 #endif
             if (layer.mask_offset != 0) {
                 layer.mask_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                layer.mask_tiles[j][i].setColorCount(256);
                 if (layer.mask_tiles[j][i].isNull()) {
                     return false;
                 }
+                layer.mask_tiles[j][i].setColorCount(256);
+                layer.mask_tiles[j][i].fill(0);
                 setGrayPalette(layer.mask_tiles[j][i]);
             }
         }
@@ -1838,7 +1849,7 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
                 dataPtr[x + 1] = qFromBigEndian(src[x + 1]);
                 dataPtr[x + 2] = qFromBigEndian(src[x + 2]);
                 dataPtr[x + 3] = qfloat16(1);
-                if (dataPtr[x + 0].isNaN() || dataPtr[x + 1].isNaN() || dataPtr[x + 2].isNaN()) {
+                if (!dataPtr[x + 0].isFinite() || !dataPtr[x + 1].isFinite() || !dataPtr[x + 2].isFinite()) {
                     return false;
                 }
             }
@@ -1851,7 +1862,7 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
 
             const qfloat16 *dataPtr = reinterpret_cast<qfloat16 *>(image.scanLine(y));
             for (int x = 0; x < width * 4; ++x) {
-                if (dataPtr[x].isNaN()) {
+                if (!dataPtr[x].isFinite()) {
                     return false;
                 }
             }
@@ -1872,7 +1883,7 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
 
             const float *dataPtr = reinterpret_cast<float *>(image.scanLine(y));
             for (int x = 0; x < width * 4; ++x) {
-                if (std::isnan(dataPtr[x])) {
+                if (!std::isfinite(dataPtr[x])) {
                     return false;
                 }
             }
@@ -1887,7 +1898,7 @@ bool XCFImageFormat::assignImageBytes(Layer &layer, uint i, uint j, const GimpPr
                 dataPtr[x + 1] = qFromBigEndian(src[x + 1]);
                 dataPtr[x + 2] = qFromBigEndian(src[x + 2]);
                 dataPtr[x + 3] = 1.f;
-                if (std::isnan(dataPtr[x + 0]) || std::isnan(dataPtr[x + 1]) || std::isnan(dataPtr[x + 2])) {
+                if (!std::isfinite(dataPtr[x + 0]) || !std::isfinite(dataPtr[x + 1]) || !std::isfinite(dataPtr[x + 2])) {
                     return false;
                 }
             }
@@ -2104,6 +2115,7 @@ bool XCFImageFormat::loadLevel(QDataStream &xcf_io, Layer &layer, qint32 bpp, co
 #endif
     if (needConvert) {
         buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
+        buffer.fill(uchar());
     }
     for (uint j = 0; j < layer.nrows; j++) {
         for (uint i = 0; i < layer.ncols; i++) {

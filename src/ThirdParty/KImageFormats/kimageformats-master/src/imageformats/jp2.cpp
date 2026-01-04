@@ -73,7 +73,7 @@ static void info_callback(const char *msg, void *client_data)
 static OPJ_SIZE_T jp2_read(void *p_buffer, OPJ_SIZE_T p_nb_bytes, void *p_user_data)
 {
     auto dev = (QIODevice*)p_user_data;
-    if (dev == nullptr) {
+    if (dev == nullptr || dev->atEnd()) {
         return OPJ_SIZE_T(-1);
     }
     return OPJ_SIZE_T(dev->read((char*)p_buffer, (qint64)p_nb_bytes));
@@ -357,11 +357,15 @@ public:
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
         // OpenJPEG uses a shadow copy @32-bit/channel so we need to do a check
-        auto maxBytes = qint64(QImageReader::allocationLimit()) * 1024 * 1024;
-        auto neededBytes = qint64(width) * height * nchannels * 4;
-        if (maxBytes > 0 && neededBytes > maxBytes) {
-            qCCritical(LOG_JP2PLUGIN) << "Allocation limit set to" << (maxBytes / 1024 / 1024) << "MiB but" << (neededBytes / 1024 / 1024) << "MiB are needed!";
-            return false;
+        const int allocationLimit = QImageReader::allocationLimit();
+        if (allocationLimit > 0) {
+            auto maxBytes = qint64(allocationLimit) * 1024 * 1024;
+            auto neededBytes = qint64(width) * height * nchannels * 4;
+            if (maxBytes > 0 && neededBytes > maxBytes) {
+                qCCritical(LOG_JP2PLUGIN) << "Allocation limit set to" << (maxBytes / 1024 / 1024) << "MiB but" << (neededBytes / 1024 / 1024)
+                                          << "MiB are needed!";
+                return false;
+            }
         }
 #endif
 

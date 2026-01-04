@@ -380,12 +380,7 @@ int formatTest(const QString &suffix, bool createTemplates)
         QBuffer buffer(&ba);
         auto writtenImage = QImageReader(&buffer, suffix.toLatin1()).read();
         if (writtenImage.isNull()) {
-            if (suffix.toLatin1() == "heif") {
-                // libheif + ffmpeg decoder is unable to load all HEIF files.
-                ++skipped;
-            } else {
-                ++failed;
-            }
+            ++failed;
             QTextStream(stdout) << "FAIL : error while reading the image " << formatName << "\n";
             continue;
         }
@@ -639,23 +634,17 @@ int main(int argc, char **argv)
 
     auto suffix = args.at(0);
 
-    // skip test if libheif configuration is obviously incomplete
+    // skip test if configuration is obviously incomplete
     QByteArray format = suffix.toLatin1();
     const QList<QByteArray> read_formats = QImageReader::supportedImageFormats();
-    const QList<QByteArray> write_formats = QImageWriter::supportedImageFormats();
-
-    if (!read_formats.contains(format)) {
-        if (format == "heif" || format == "hej2") {
-            QTextStream(stdout) << "WARNING : libheif configuration is missing necessary decoder(s)!\n";
-            return 0;
-        }
+    if (!read_formats.contains(format)) { // checks if the format has read capability
+        QTextStream(stdout) << "FAIL : current configuration is missing necessary decoder(s) for " << format << "!\n";
+        return 1;
     }
-
-    if (!write_formats.contains(format)) {
-        if (format == "heif" || format == "hej2") {
-            QTextStream(stdout) << "WARNING : libheif configuration is missing necessary encoder(s)!\n";
-            return 0;
-        }
+    const QList<QByteArray> write_formats = QImageWriter::supportedImageFormats();
+    if (!write_formats.contains(format)) { // checks if the format has write capability
+        QTextStream(stdout) << "FAIL : libraries configuration is missing necessary encoder(s) for " << format << "!\n";
+        return 1;
     }
 
     // run test

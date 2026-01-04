@@ -610,7 +610,7 @@ void setParams(QImageIOHandler *handler, LibRaw *rawProcessor)
      * \brief use_auto_wb
      * Average the whole image for white balance (0 - off, 1 - on)
      *
-     * This is usefull if no camera white balance is available.
+     * This is useful if no camera white balance is available.
      */
     params.use_auto_wb = T_AW(quality);
 

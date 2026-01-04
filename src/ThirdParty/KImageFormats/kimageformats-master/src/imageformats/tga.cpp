@@ -85,6 +85,13 @@ enum TGAType {
 #define TGA_XMPP_TAGID 0x7002 // Xmp packet preceded by "xMPP" string
 #define TGA_ICCP_TAGID 0x7003 // Icc profile preceded by "iCCP" string
 
+/*
+ * Maximum size of a tag in the developer area.
+ *
+ * TGA is a 32-bit format so, a metadata should not be greater than some MB.
+ */
+#define DEV_TAG_MAX_SIZE (32 * 1024 * 1024)
+
 /** Tga Header. */
 struct TgaHeader {
     uchar id_length = 0;
@@ -1246,6 +1253,10 @@ bool TGAHandler::readMetadata(QImage &image)
         for (auto &&f : dir.fields) {
             if (!dev->seek(f.offset)) {
                 return false;
+            }
+            if (f.size > DEV_TAG_MAX_SIZE) {
+                qCWarning(LOG_TGAPLUGIN) << "readMetadata: the size of TAG" << f.tagId << "is larger than" << (DEV_TAG_MAX_SIZE/1024/1024) << "MiB, so it will be ignored";
+                continue;
             }
             if (f.tagId == TGA_EXIF_TAGID) {
                 auto ba = dev->read(f.size);

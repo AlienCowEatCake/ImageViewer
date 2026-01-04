@@ -290,7 +290,7 @@ in your cmake options.**
 
 The following defines can be defined in cmake to modify the behavior of the 
 plugin:
-- `DDS_DISABLE_STRIDE_ALIGNMENT`: disable the stride aligment based on DDS 
+- `DDS_DISABLE_STRIDE_ALIGNMENT`: disable the stride alignment based on DDS 
   pitch: it is known that some writers do not set it correctly.
 
 ### The HEIF plugin
@@ -302,6 +302,15 @@ The plugin is disabled due to issues with the heif library on certain
 distributions. In particular, it is necessary that the HEIF library has
 support for HEVC codec. If HEVC codec is not available the plugin
 will compile but will fail the tests.
+
+**If you are interested in compiling the plugin without running the tests, 
+also use the following string options:**
+- `KIMAGEFORMATS_HEIF_TEST` to change the behaviour of HEIF tests. Set to 
+`"OFF"` (no test at all) or `"READ_ONLY"` (run read tests only).
+- `KIMAGEFORMATS_HEJ2_TEST` to change the behaviour of HEJ2 tests. Set to 
+`"OFF"` (no test at all) or `"READ_ONLY"` (run read tests only)..
+- `KIMAGEFORMATS_AVCI_TEST` to change the behaviour of AVCI tests. Set to 
+`"OFF"` (no test at all).
 
 ### The EXR plugin
 
@@ -382,7 +391,7 @@ The following defines can be defined in cmake to modify the behavior of the
 plugin:
 - `JXR_DENY_FLOAT_IMAGE`: disables the use of float images and consequently 
   any HDR data will be lost.
-- `JXR_DISABLE_DEPTH_CONVERSION`: remove the neeeds of additional memory by 
+- `JXR_DISABLE_DEPTH_CONVERSION`: remove the needs of additional memory by 
   disabling the conversion between different color depths (e.g. RGBA64bpp to 
   RGBA32bpp) at the cost of reduced compatibility.
 - `JXR_DISABLE_BGRA_HACK`: Windows displays and opens JXR files correctly out 
@@ -414,6 +423,8 @@ PSD support has the following limitations:
 - Multichannel images are treated as CMYK if they have 2 or more channels.
 - Multichannel images are treated as Grayscale if they have 1 channel.
 - Duotone images are treated as grayscale images.
+- Grayscale images with alpha channel or at 32 bit depth are converted to 
+  RGBA due to the lack of the appropriate Qt grayscale container.
 - Extra channels other than alpha are discarded.
 
 The following defines can be defined in cmake to modify the behavior of the 

@@ -51,7 +51,7 @@ Q_LOGGING_CATEGORY(LOG_JXRPLUGIN, "kf.imageformats.plugins.jxr", QtWarningMsg)
 #endif
 
 /*!
- * Remove the neeeds of additional memory by disabling the conversion between
+ * Remove the needs of additional memory by disabling the conversion between
  * different color depths (e.g. RGBA64bpp to RGBA32bpp).
  *
  * NOTE: Leaving deptch conversion enabled (default) ensures maximum read compatibility.

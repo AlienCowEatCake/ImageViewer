@@ -26,7 +26,7 @@
 #include <cmath>
 
 #ifndef DDS_DISABLE_STRIDE_ALIGNMENT
-// Disable the stride aligment based on DDS pitch: it is known that some writers do not set it correctly
+// Disable the stride alignment based on DDS pitch: it is known that some writers do not set it correctly
 // #define DDS_DISABLE_STRIDE_ALIGNMENT
 #endif
 

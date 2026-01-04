@@ -1,4 +1,4 @@
-From f44f4a624396f5c31135f21460db5e3b38a69dbc Mon Sep 17 00:00:00 2001
+From a0c6dd1377efc039b1eb4adb66132c07beed855e Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 23 Mar 2025 06:30:54 +0700
 Subject: [PATCH 7/8] Fix build with libjxl < 0.9.0
@@ -8,7 +8,7 @@ Subject: [PATCH 7/8] Fix build with libjxl < 0.9.0
  1 file changed, 29 insertions(+), 3 deletions(-)
 
 diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
-index bd7e126..8c1c86f 100644
+index 0ca9991..1ea1a2b 100644
 --- a/src/imageformats/jxl.cpp
 +++ b/src/imageformats/jxl.cpp
 @@ -14,7 +14,9 @@
@@ -102,5 +102,5 @@ index bd7e126..8c1c86f 100644
          bool is_gray = m_basicinfo.num_color_channels == 1 && m_basicinfo.alpha_bits == 0;
          JxlColorEncoding color_encoding;
 -- 
-2.51.1
+2.52.0
 
