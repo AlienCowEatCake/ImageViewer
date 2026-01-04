@@ -1,15 +1,15 @@
-From 4d2b50796c8c55be42cae31462b901892416970d Mon Sep 17 00:00:00 2001
+From 3d795751d2db61b75e52c8e5a4918a19121102ee Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 6 Oct 2025 01:39:17 +0700
 Subject: [PATCH 4/4] Allow disabling OpenJPH and using optional OpenJPEG
  instead
 
 ---
- src/lib/OpenEXRCore/internal_ht.cpp | 233 ++++++++++++++++++++++++++++
- 1 file changed, 233 insertions(+)
+ src/lib/OpenEXRCore/internal_ht.cpp | 232 ++++++++++++++++++++++++++++
+ 1 file changed, 232 insertions(+)
 
 diff --git a/src/lib/OpenEXRCore/internal_ht.cpp b/src/lib/OpenEXRCore/internal_ht.cpp
-index 521dd28d..6bfc2878 100644
+index 6d26e8c9..5c069050 100644
 --- a/src/lib/OpenEXRCore/internal_ht.cpp
 +++ b/src/lib/OpenEXRCore/internal_ht.cpp
 @@ -7,17 +7,25 @@
@@ -113,7 +113,7 @@ index 521dd28d..6bfc2878 100644
      ojph::mem_infile infile;
      infile.open (
          reinterpret_cast<const ojph::ui8*> (compressed_data) + header_sz,
-@@ -320,6 +389,165 @@ ht_undo_impl (
+@@ -321,6 +390,164 @@ ht_undo_impl (
      }
  
      infile.close ();
@@ -125,7 +125,6 @@ index 521dd28d..6bfc2878 100644
 +    {
 +#define ASSERT_THROW_ERROR(CONDITION) \
 +        do { \
-+            assert(CONDITION); \
 +            if (!(CONDITION)) \
 +                throw std::runtime_error("ASSERT: " #CONDITION); \
 +        } while (false)
@@ -279,7 +278,7 @@ index 521dd28d..6bfc2878 100644
  
      return rv;
  }
-@@ -351,6 +579,7 @@ internal_exr_undo_ht (
+@@ -352,6 +579,7 @@ internal_exr_undo_ht (
  static exr_result_t
  ht_apply_impl (exr_encode_pipeline_t* encode)
  {
@@ -287,7 +286,7 @@ index 521dd28d..6bfc2878 100644
      exr_result_t rv = EXR_ERR_SUCCESS;
  
      std::vector<CodestreamChannelInfo> cs_to_file_ch (encode->channel_count);
-@@ -523,6 +752,10 @@ ht_apply_impl (exr_encode_pipeline_t* encode)
+@@ -524,6 +752,10 @@ ht_apply_impl (exr_encode_pipeline_t* encode)
      }
  
      return rv;
@@ -299,5 +298,5 @@ index 521dd28d..6bfc2878 100644
  
  extern "C" exr_result_t
 -- 
-2.51.0
+2.52.0
 

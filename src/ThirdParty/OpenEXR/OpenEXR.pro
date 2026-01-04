@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-3.4.2
+THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-3.4.4
 THIRDPARTY_OPENEXR_CONFIG_PATH = $${PWD}/config
 THIRDPARTY_IMATH_PATH = $${PWD}/Imath-3.2.2
 THIRDPARTY_OPENEXR_INCLUDE_PATH = $${PWD}/include
@@ -191,7 +191,6 @@ SOURCES += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfWav.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZip.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZipCompressor.cpp \
-\#    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/b44ExpLogTable.cpp \
 \#    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/dwaLookups.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/attributes.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/base.c \
@@ -207,7 +206,10 @@ SOURCES += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/float_vector.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_b44.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_b44_table.c \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_b44_table_init.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa.c \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa_table.c \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa_table_init.c \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_ht.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_ht_common.cpp \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_huf.c \
@@ -375,7 +377,6 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZip.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZipCompressor.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/backward_compatibility.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/dwaLookups.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_attr.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_bytes.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_channel_list.h \
@@ -402,6 +403,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_string.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_string_vector.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_structs.h \
+    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_thread.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_util.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_win32_file_impl.h \
     $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_xdr.h \
@@ -632,7 +634,6 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfZipCompressor.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/OpenEXRConfig.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/backward_compatibility.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/dwaLookups.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_attr.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_bytes.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_channel_list.h \
@@ -659,6 +660,7 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_string.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_string_vector.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_structs.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_thread.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_util.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_win32_file_impl.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_xdr.h \
