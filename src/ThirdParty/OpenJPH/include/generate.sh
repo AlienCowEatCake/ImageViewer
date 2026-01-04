@@ -8,7 +8,7 @@ OJPH_ROOT=`find "${SCRIPT_ROOT}/.." -mindepth 1 -maxdepth 1 -name 'OpenJPH-*' | 
 rm -rf "${SCRIPT_ROOT}/openjph"
 mkdir -p "${SCRIPT_ROOT}/openjph"
 
-for i in $(find "${OJPH_ROOT}/src/core/common/" -name '*.h' | cut -c $((${#SCRIPT_ROOT} + 2))-)
+for i in $(find "${OJPH_ROOT}/src/core/openjph/" -name '*.h' | cut -c $((${#SCRIPT_ROOT} + 2))-)
 do
 	echo "#include \"${i}\"" > "${SCRIPT_ROOT}/openjph/$(basename "${i}")"
 done

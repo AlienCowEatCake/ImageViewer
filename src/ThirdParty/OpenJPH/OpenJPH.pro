@@ -10,15 +10,19 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_OPENJPH_PATH = $${PWD}/OpenJPH-0.24.2
+THIRDPARTY_OPENJPH_PATH = $${PWD}/OpenJPH-0.26.0
 THIRDPARTY_OPENJPH_INCLUDE_PATH = $${PWD}/include
+THIRDPARTY_OPENJPH_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
 include(../CommonSettings.pri)
 
-INCLUDEPATH = $${THIRDPARTY_OPENJPH_PATH}/src/core/common $${INCLUDEPATH}
+INCLUDEPATH = $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph $${INCLUDEPATH}
 
 DEFINES += OJPH_DISABLE_SIMD
+
+SOURCES += \
+    $${THIRDPARTY_OPENJPH_CONFIG_PATH}/ojph_mem_c.c
 
 # find ./src/core -name '*.cpp' | LANG=C sort | egrep -v '(_sse|_avx|_ssse3|_wasm)' | sed 's|^\.|    $${THIRDPARTY_OPENJPH_PATH}| ; s|$| \\|'
 SOURCES += \
@@ -62,16 +66,16 @@ HEADERS += \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/coding/ojph_block_encoder.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/coding/table0.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/coding/table1.h \
-    $${THIRDPARTY_OPENJPH_PATH}/src/core/common/ojph_arch.h \
-    $${THIRDPARTY_OPENJPH_PATH}/src/core/common/ojph_arg.h \
-    $${THIRDPARTY_OPENJPH_PATH}/src/core/common/ojph_base.h \
-    $${THIRDPARTY_OPENJPH_PATH}/src/core/common/ojph_codestream.h \
-    $${THIRDPARTY_OPENJPH_PATH}/src/core/common/ojph_defs.h \
-    $${THIRDPARTY_OPENJPH_PATH}/src/core/common/ojph_file.h \
-    $${THIRDPARTY_OPENJPH_PATH}/src/core/common/ojph_mem.h \
-    $${THIRDPARTY_OPENJPH_PATH}/src/core/common/ojph_message.h \
-    $${THIRDPARTY_OPENJPH_PATH}/src/core/common/ojph_params.h \
-    $${THIRDPARTY_OPENJPH_PATH}/src/core/common/ojph_version.h \
+    $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_arch.h \
+    $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_arg.h \
+    $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_base.h \
+    $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_codestream.h \
+    $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_defs.h \
+    $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_file.h \
+    $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_mem.h \
+    $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_message.h \
+    $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_params.h \
+    $${THIRDPARTY_OPENJPH_PATH}/src/core/openjph/ojph_version.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/transform/ojph_colour.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/transform/ojph_colour_local.h \
     $${THIRDPARTY_OPENJPH_PATH}/src/core/transform/ojph_transform.h \
