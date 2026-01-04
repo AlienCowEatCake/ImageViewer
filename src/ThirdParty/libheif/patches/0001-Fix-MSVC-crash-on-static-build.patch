@@ -1,4 +1,4 @@
-From ce2856c03d393d12bad32992bbeff8aa7084ff9a Mon Sep 17 00:00:00 2001
+From 7bbe44d92e0a57bd07c4fee2cd35189b352c5d8d Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 19 Dec 2020 20:24:59 +0700
 Subject: [PATCH 1/3] Fix MSVC crash on static build
@@ -8,10 +8,10 @@ Subject: [PATCH 1/3] Fix MSVC crash on static build
  1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/libheif/plugin_registry.cc b/libheif/plugin_registry.cc
-index 3c3b59e9..c878c085 100644
+index bf121203..eeb20caf 100644
 --- a/libheif/plugin_registry.cc
 +++ b/libheif/plugin_registry.cc
-@@ -128,14 +128,20 @@ extern std::multiset<std::unique_ptr<struct heif_encoder_descriptor>,
+@@ -135,14 +135,20 @@ extern std::multiset<std::unique_ptr<heif_encoder_descriptor>,
  
  // Note: we cannot move this to 'heif_init' because we have to make sure that this is initialized
  // AFTER the two global std::set above.
@@ -34,7 +34,7 @@ index 3c3b59e9..c878c085 100644
  
  
  void register_default_plugins()
-@@ -238,6 +244,7 @@ const struct heif_decoder_plugin* get_decoder(enum heif_compression_format type,
+@@ -268,6 +274,7 @@ const heif_decoder_plugin* get_decoder(heif_compression_format type, const char*
    int highest_priority = 0;
    const struct heif_decoder_plugin* best_plugin = nullptr;
  
@@ -42,14 +42,14 @@ index 3c3b59e9..c878c085 100644
    for (const auto* plugin : s_decoder_plugins) {
  
      int priority = plugin->does_support_format(type);
-@@ -291,6 +298,7 @@ get_filtered_encoder_descriptors(enum heif_compression_format format,
- {
-   std::vector<const struct heif_encoder_descriptor*> filtered_descriptors;
+@@ -321,6 +328,7 @@ get_filtered_encoder_descriptors(heif_compression_format format,
+ 
+   std::vector<const heif_encoder_descriptor*> filtered_descriptors;
  
 +  Register_Default_Plugins::ensure_registered();
    for (const auto& descr : s_encoder_descriptors) {
-     const struct heif_encoder_plugin* plugin = descr->plugin;
+     const heif_encoder_plugin* plugin = descr->plugin;
  
 -- 
-2.47.0
+2.52.0
 

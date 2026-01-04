@@ -1,37 +1,30 @@
-From 592577366e7b0b37dfebf075e02b97de4c396866 Mon Sep 17 00:00:00 2001
+From 9e56895a931196bdb72a7c68f55cba682ebad802 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 23 Nov 2024 20:17:00 +0700
 Subject: [PATCH 3/3] Remove C++20
 
 ---
- libheif/api/libheif/heif_properties.cc        |  2 +-
- libheif/bitstream.cc                          | 19 -------
- .../codecs/uncompressed/decoder_abstract.cc   | 13 ++---
- libheif/security_limits.cc                    | 52 +++++++++++++------
- 4 files changed, 43 insertions(+), 43 deletions(-)
+ libheif/bitstream.cc                          | 19 ------
+ libheif/codecs/avc_boxes.cc                   |  3 +-
+ .../codecs/uncompressed/decoder_abstract.cc   | 13 ++--
+ libheif/context.cc                            |  6 +-
+ libheif/image-items/grid.cc                   |  2 +-
+ libheif/image-items/iden.cc                   |  2 +-
+ libheif/image-items/image_item.cc             |  2 +-
+ libheif/image-items/overlay.cc                |  2 +-
+ libheif/nclx.h                                |  4 +-
+ libheif/security_limits.cc                    | 61 +++++++++++++------
+ 10 files changed, 60 insertions(+), 54 deletions(-)
 
-diff --git a/libheif/api/libheif/heif_properties.cc b/libheif/api/libheif/heif_properties.cc
-index 94851392..82a27eb2 100644
---- a/libheif/api/libheif/heif_properties.cc
-+++ b/libheif/api/libheif/heif_properties.cc
-@@ -335,7 +335,7 @@ struct heif_error heif_item_add_raw_property(const struct heif_context* context,
- 
- 
- template<typename T>
--struct heif_error find_property(const struct heif_context* context,
-+/*struct*/ heif_error find_property(const struct heif_context* context,
-                                 heif_item_id itemId,
-                                 heif_property_id propertyId,
-                                 std::shared_ptr<T>* box_casted)
 diff --git a/libheif/bitstream.cc b/libheif/bitstream.cc
-index 651e839c..1adb46ac 100644
+index 4ac2805d..29d655e7 100644
 --- a/libheif/bitstream.cc
 +++ b/libheif/bitstream.cc
-@@ -24,12 +24,6 @@
- #include <cstring>
- #include <cassert>
+@@ -26,12 +26,6 @@
  
--#if ((defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__PGI)) && __GNUC__ < 9) || (defined(__clang__) && __clang_major__ < 10)
+ #include "common_utils.h"
+ 
+-#if !defined(HAVE_BIT)
 -#include <type_traits>
 -#else
 -#include <bit>
@@ -40,7 +33,7 @@ index 651e839c..1adb46ac 100644
  #define MAX_UVLC_LEADING_ZEROS 20
  
  
-@@ -351,12 +345,6 @@ int64_t BitstreamRange::read64s()
+@@ -350,12 +344,6 @@ int64_t BitstreamRange::read64s()
  
  float BitstreamRange::read_float32()
  {
@@ -53,7 +46,7 @@ index 651e839c..1adb46ac 100644
    // TODO: I am not sure this works everywhere as there seem to be systems where
    //       the float byte order is different from the integer endianness
    //       https://en.wikipedia.org/wiki/Endianness#Floating_point
-@@ -364,24 +352,17 @@ float BitstreamRange::read_float32()
+@@ -363,24 +351,17 @@ float BitstreamRange::read_float32()
    float f;
    memcpy(&f, &i, sizeof(float));
    return f;
@@ -78,8 +71,22 @@ index 651e839c..1adb46ac 100644
  }
  
  
+diff --git a/libheif/codecs/avc_boxes.cc b/libheif/codecs/avc_boxes.cc
+index ddd945f2..bf64094a 100644
+--- a/libheif/codecs/avc_boxes.cc
++++ b/libheif/codecs/avc_boxes.cc
+@@ -370,7 +370,8 @@ Error parse_sps_for_avcC_configuration(const uint8_t* sps, size_t size,
+     "Invalid variable length code in AVC SPS header"
+   };
+ 
+-  if (std::set<int>{100, 110, 122, 244, 44, 83, 86}.contains(config->AVCProfileIndication)) {
++  static const std::set<int> s{100, 110, 122, 244, 44, 83, 86};
++  if (s.find(config->AVCProfileIndication) != s.cend()) {
+     if (!reader.get_uvlc(&value)) {
+       return invalidUVLC;
+     }
 diff --git a/libheif/codecs/uncompressed/decoder_abstract.cc b/libheif/codecs/uncompressed/decoder_abstract.cc
-index 83c6ce37..c8c6fff4 100644
+index 2927dc54..5e478cb0 100644
 --- a/libheif/codecs/uncompressed/decoder_abstract.cc
 +++ b/libheif/codecs/uncompressed/decoder_abstract.cc
 @@ -24,11 +24,7 @@
@@ -115,16 +122,115 @@ index 83c6ce37..c8c6fff4 100644
    }
  }
  
+diff --git a/libheif/context.cc b/libheif/context.cc
+index a1bcc268..39c0fcff 100644
+--- a/libheif/context.cc
++++ b/libheif/context.cc
+@@ -263,7 +263,7 @@ std::shared_ptr<const ImageItem> HeifContext::get_primary_image(bool return_erro
+ 
+ bool HeifContext::is_image(heif_item_id ID) const
+ {
+-  return m_all_images.contains(ID);
++  return m_all_images.find(ID) != m_all_images.cend();
+ }
+ 
+ 
+@@ -1261,7 +1261,7 @@ Error HeifContext::get_id_of_non_virtual_child_image(heif_item_id id, heif_item_
+     }
+   }
+   else {
+-    if (!m_all_images.contains(id)) {
++    if (m_all_images.find(id) == m_all_images.cend()) {
+       std::stringstream sstr;
+       sstr << "Image item " << id << " referenced, but it does not exist\n";
+ 
+@@ -1287,7 +1287,7 @@ Result<std::shared_ptr<HeifPixelImage>> HeifContext::decode_image(heif_item_id I
+                                                                   std::set<heif_item_id> processed_ids) const
+ {
+   std::shared_ptr<ImageItem> imgitem;
+-  if (m_all_images.contains(ID)) {
++  if (m_all_images.find(ID) != m_all_images.cend()) {
+     imgitem = m_all_images.find(ID)->second;
+   }
+ 
+diff --git a/libheif/image-items/grid.cc b/libheif/image-items/grid.cc
+index 45a61d60..d0a5b35a 100644
+--- a/libheif/image-items/grid.cc
++++ b/libheif/image-items/grid.cc
+@@ -210,7 +210,7 @@ Result<std::shared_ptr<HeifPixelImage>> ImageItem_Grid::decode_compressed_image(
+                                                                                 bool decode_tile_only, uint32_t tile_x0, uint32_t tile_y0,
+                                                                                 std::set<heif_item_id> processed_ids) const
+ {
+-  if (processed_ids.contains(get_id())) {
++  if (processed_ids.find(get_id()) != processed_ids.cend()) {
+     return Error{heif_error_Invalid_input,
+                  heif_suberror_Unspecified,
+                  "'iref' has cyclic references"};
+diff --git a/libheif/image-items/iden.cc b/libheif/image-items/iden.cc
+index 8e771cfa..62144b32 100644
+--- a/libheif/image-items/iden.cc
++++ b/libheif/image-items/iden.cc
+@@ -39,7 +39,7 @@ Result<std::shared_ptr<HeifPixelImage>> ImageItem_iden::decode_compressed_image(
+                                                                                 bool decode_tile_only, uint32_t tile_x0, uint32_t tile_y0,
+                                                                                 std::set<heif_item_id> processed_ids) const
+ {
+-  if (processed_ids.contains(get_id())) {
++  if (processed_ids.find(get_id()) != processed_ids.cend()) {
+     return Error{heif_error_Invalid_input,
+                  heif_suberror_Unspecified,
+                  "'iref' has cyclic references"};
+diff --git a/libheif/image-items/image_item.cc b/libheif/image-items/image_item.cc
+index dc16a374..6cdd02e4 100644
+--- a/libheif/image-items/image_item.cc
++++ b/libheif/image-items/image_item.cc
+@@ -931,7 +931,7 @@ Result<std::shared_ptr<HeifPixelImage>> ImageItem::decode_compressed_image(const
+                                                                            bool decode_tile_only, uint32_t tile_x0, uint32_t tile_y0,
+                                                                            std::set<heif_item_id> processed_ids) const
+ {
+-  if (processed_ids.contains(m_id)) {
++  if (processed_ids.find(m_id) != processed_ids.cend()) {
+     return Error{heif_error_Invalid_input,
+                  heif_suberror_Unspecified,
+                  "'iref' has cyclic references"};
+diff --git a/libheif/image-items/overlay.cc b/libheif/image-items/overlay.cc
+index 168eb0a8..3a620741 100644
+--- a/libheif/image-items/overlay.cc
++++ b/libheif/image-items/overlay.cc
+@@ -283,7 +283,7 @@ Result<std::shared_ptr<HeifPixelImage>> ImageItem_Overlay::decode_compressed_ima
+ Result<std::shared_ptr<HeifPixelImage>> ImageItem_Overlay::decode_overlay_image(const heif_decoding_options& options,
+                                                                                 std::set<heif_item_id> processed_ids) const
+ {
+-  if (processed_ids.contains(get_id())) {
++  if (processed_ids.find(get_id()) != processed_ids.cend()) {
+     return Error{heif_error_Invalid_input,
+                  heif_suberror_Unspecified,
+                  "'iref' has cyclic references"};
+diff --git a/libheif/nclx.h b/libheif/nclx.h
+index 715fa5f8..eea88bb7 100644
+--- a/libheif/nclx.h
++++ b/libheif/nclx.h
+@@ -125,9 +125,9 @@ struct nclx_profile
+   uint16_t m_matrix_coefficients = heif_matrix_coefficients_unspecified;
+   bool m_full_range_flag = true;
+ 
+-  bool operator==(const nclx_profile& b) const = default;
++  bool operator==(const nclx_profile& b) const { return m_colour_primaries == b.m_colour_primaries && m_transfer_characteristics == b.m_transfer_characteristics && m_matrix_coefficients == b.m_matrix_coefficients && m_full_range_flag == b.m_full_range_flag; }
+ 
+-  bool operator!=(const nclx_profile& b) const = default;
++  bool operator!=(const nclx_profile& b) const { return !(*this == b); }
+ 
+   static nclx_profile undefined() { return {}; }
+ 
 diff --git a/libheif/security_limits.cc b/libheif/security_limits.cc
-index 9a6b3844..f515f76b 100644
+index 11910c46..c16f8a12 100644
 --- a/libheif/security_limits.cc
 +++ b/libheif/security_limits.cc
-@@ -25,36 +25,58 @@
+@@ -25,41 +25,68 @@
  
  
- struct heif_security_limits global_security_limits{
--    .version = 2,
-+    /*.version =*/ 2,
+ heif_security_limits global_security_limits{
+-    .version = 3,
++    /*.version =*/ 3,
  
      // --- version 1
  
@@ -158,16 +264,23 @@ index 9a6b3844..f515f76b 100644
  
 -    .max_total_memory = UINT64_C(4) * 1024 * 1024 * 1024,  // 4 GB
 -    .max_sample_description_box_entries = 1024,
--    .max_sample_group_description_box_entries = 1024
+-    .max_sample_group_description_box_entries = 1024,
 +    /*.max_total_memory =*/ UINT64_C(4) * 1024 * 1024 * 1024,  // 4 GB
 +    /*.max_sample_description_box_entries =*/ 1024,
-+    /*.max_sample_group_description_box_entries =*/ 1024
++    /*.max_sample_group_description_box_entries =*/ 1024,
+ 
+     // --- version 3
+ 
+-    .max_sequence_frames = 18'000'000,  // 100 hours at 50 fps
+-    .max_number_of_file_brands = 1000
++    /*.max_sequence_frames =*/ 100 * 60 * 60 * 50,  // 100 hours at 50 fps
++    /*.max_number_of_file_brands =*/ 1000
  };
  
  
- struct heif_security_limits disabled_security_limits{
--    .version = 2
-+    /*.version =*/ 2,
+ heif_security_limits disabled_security_limits{
+-    .version = 3
++    /*.version =*/ 3,
 +
 +    // --- version 1
 +
@@ -189,10 +302,15 @@ index 9a6b3844..f515f76b 100644
 +
 +    /*.max_total_memory =*/ 0,
 +    /*.max_sample_description_box_entries =*/ 0,
-+    /*.max_sample_group_description_box_entries =*/ 0
++    /*.max_sample_group_description_box_entries =*/ 0,
++
++    // --- version 3
++
++    /*.max_sequence_frames =*/ 0,  // 100 hours at 50 fps
++    /*.max_number_of_file_brands =*/ 0
  };
  
  
 -- 
-2.39.5
+2.52.0
 

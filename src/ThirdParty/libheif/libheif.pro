@@ -10,7 +10,7 @@ TARGET = tp_libheif
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.20.2
+THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.21.1
 THIRDPARTY_LIBHEIF_INCLUDE_PATH = $${PWD}/include
 
 include(../../Features.pri)
@@ -33,7 +33,7 @@ DEFINES += HAVE_INTTYPES_H HAVE_LIBDE265=1 WITH_UNCOMPRESSED_CODEC=1 HAVE_STDDEF
 !disable_brotli: DEFINES += HAVE_BROTLI=1
 !disable_libwebp: DEFINES += HAVE_LIBSHARPYUV=1
 
-# find ./libheif -name '*.cc' | egrep -v '(_fuzzer|_aom|_dav1d|_rav1e|_svt|_x265|_ffmpeg|_jpeg|_openjpeg|_kvazaar|_unix|_windows|_vvdec|_vvenc|_uvg266|_openjph|_openh264)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
+# find ./libheif -name '*.cc' | egrep -v '(_fuzzer|_aom|_dav1d|_rav1e|_svt|_x265|_ffmpeg|_jpeg|_openjpeg|_kvazaar|_unix|_windows|_vvdec|_vvenc|_uvg266|_openjph|_openh264|_webcodecs|_x264)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_aux_images.cc \
@@ -55,6 +55,7 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_security.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_sequences.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_tai_timestamps.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_text.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_tiling.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_uncompressed.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/bitstream.cc \
@@ -62,6 +63,7 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/brands.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avc_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avc_dec.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avc_enc.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avif_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avif_dec.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avif_enc.cc \
@@ -136,6 +138,7 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/track.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/track_metadata.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/track_visual.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/text.cc \
 
 # find ./libheif -name '*.cc' | egrep '(_windows)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
 # find ./libheif -name '*.cc' | egrep '(_unix)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
@@ -207,6 +210,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_security.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_sequences.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_tai_timestamps.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_text.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_tiling.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_uncompressed.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api_structs.h \
@@ -215,6 +219,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/brands.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avc_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avc_dec.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avc_enc.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avif_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avif_dec.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/avif_enc.h \
@@ -287,6 +292,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_openjpeg.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_uncompressed.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_vvdec.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_webcodecs.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_aom.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_jpeg.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_kvazaar.h \
@@ -298,6 +304,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_uncompressed.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_uvg266.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_vvenc.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_x264.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_x265.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/nalu_utils.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins_unix.h \
@@ -309,6 +316,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/track.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/track_metadata.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/sequences/track_visual.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/text.h \
     $${THIRDPARTY_LIBHEIF_INCLUDE_PATH}/libheif/heif_version.h
 
 TR_EXCLUDE += $${THIRDPARTY_LIBHEIF_PATH}/*
