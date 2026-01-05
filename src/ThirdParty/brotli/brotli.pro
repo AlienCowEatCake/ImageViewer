@@ -30,7 +30,7 @@ INCLUDEPATH = \
     $${INCLUDEPATH}
 
 SOURCES += \
-    $${THIRDPARTY_BROTLI_CONFIG_PATH}/static_init.c
+    $${THIRDPARTY_BROTLI_CONFIG_PATH}/static_init_enc_dec.c
 
 # find ./c -name '*.c' | grep -v './c/tools/' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_BROTLI_PATH}| ; s|$| \\|'
 SOURCES += \
