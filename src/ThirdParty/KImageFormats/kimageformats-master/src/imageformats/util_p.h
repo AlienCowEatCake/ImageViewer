@@ -174,7 +174,7 @@ static QByteArray deviceRead(QIODevice *d, qint64 maxSize)
     QByteArray ba;
     while (ba.size() < maxSize) {
         auto toRead = std::min(blockSize, maxSize - ba.size());
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
         if (toRead + ba.size() > QByteArray::maxSize()) {
             break;
         }

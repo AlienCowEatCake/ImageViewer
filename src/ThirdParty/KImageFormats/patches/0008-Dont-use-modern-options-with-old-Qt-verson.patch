@@ -1,4 +1,4 @@
-From 4f899958dcc697308c772298dcbd5afd3722bad7 Mon Sep 17 00:00:00 2001
+From 3a43dafd5f39e972e3ca132adb73b5b5cada9360 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 9 Aug 2025 21:12:08 +0700
 Subject: [PATCH 8/8] Dont use modern options with old Qt verson
@@ -2417,7 +2417,7 @@ index c6746b1..8a253dc 100644
      } else if (!hasAlpha && image.format() != QImage::Format_RGB32) {
          format = QImage::Format_RGB32;
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
-index 31498dc..a4bd543 100644
+index 31498dc..94dadf1 100644
 --- a/src/imageformats/util_p.h
 +++ b/src/imageformats/util_p.h
 @@ -14,9 +14,12 @@
@@ -2452,7 +2452,7 @@ index 31498dc..a4bd543 100644
      QByteArray ba;
      while (ba.size() < maxSize) {
          auto toRead = std::min(blockSize, maxSize - ba.size());
-+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
          if (toRead + ba.size() > QByteArray::maxSize()) {
              break;
          }
