@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -21,6 +21,7 @@
 
 #include <cstring>
 
+#include <QSettings>
 #include <QString>
 #include <QSysInfo>
 
@@ -705,148 +706,164 @@ QString GetSystemDescription()
     if(hNtdll)
         FreeLibrary(hNtdll);
 
-    QString winVersion = QString::fromLatin1("Windows");
-    if     (osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 22000 && osProductType == VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" 11"));
-    else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 26100 && osProductType != VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" Server 2025"));
-    else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 20344 && osProductType != VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" Server 2022"));
-    else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 17763 && osProductType != VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" Server 2019"));
-    else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osProductType != VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" Server 2016"));
-    else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osProductType == VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" 10"));
-    else if(osMajorVersion == 6 && osMinorVersion == 3 && osProductType != VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" Server 2012 R2"));
-    else if(osMajorVersion == 6 && osMinorVersion == 3 && osProductType == VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" 8.1"));
-    else if(osMajorVersion == 6 && osMinorVersion == 2 && osProductType != VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" Server 2012"));
-    else if(osMajorVersion == 6 && osMinorVersion == 2 && osProductType == VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" 8"));
-    else if(osMajorVersion == 6 && osMinorVersion == 1 && osProductType != VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" Server 2008 R2"));
-    else if(osMajorVersion == 6 && osMinorVersion == 1 && osProductType == VER_NT_WORKSTATION && GetSystemMetrics(SM_STARTER))
-        winVersion.append(QString::fromLatin1(" 7 Starter Edition"));
-    else if(osMajorVersion == 6 && osMinorVersion == 1 && osProductType == VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" 7"));
-    else if(osMajorVersion == 6 && osMinorVersion == 0 && osProductType != VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" Server 2008"));
-    else if(osMajorVersion == 6 && osMinorVersion == 0 && osProductType == VER_NT_WORKSTATION && GetSystemMetrics(SM_STARTER))
-        winVersion.append(QString::fromLatin1(" Vista Starter"));
-    else if(osMajorVersion == 6 && osMinorVersion == 0 && osProductType == VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" Vista"));
-    else if(osMajorVersion == 5 && osMinorVersion == 2 && osSuiteMask & VER_SUITE_WH_SERVER)
-        winVersion.append(QString::fromLatin1(" Home Server"));
-    else if(osMajorVersion == 5 && osMinorVersion == 2 && osProductType == VER_NT_WORKSTATION)
-        winVersion.append(QString::fromLatin1(" XP Professional x64 Edition"));
-    else if(osMajorVersion == 5 && osMinorVersion == 2 && GetSystemMetrics(SM_SERVERR2))
-        winVersion.append(QString::fromLatin1(" Server 2003 R2"));
-    else if(osMajorVersion == 5 && osMinorVersion == 2)
-        winVersion.append(QString::fromLatin1(" Server 2003"));
-    else if(osMajorVersion == 5 && osMinorVersion == 1 && GetSystemMetrics(SM_MEDIACENTER))
-        winVersion.append(QString::fromLatin1(" XP Media Center Edition"));
-    else if(osMajorVersion == 5 && osMinorVersion == 1 && GetSystemMetrics(SM_STARTER))
-        winVersion.append(QString::fromLatin1(" XP Starter Edition"));
-    else if(osMajorVersion == 5 && osMinorVersion == 1 && GetSystemMetrics(SM_TABLETPC))
-        winVersion.append(QString::fromLatin1(" XP Tablet PC Edition"));
-    else if(osMajorVersion == 5 && osMinorVersion == 1)
-        winVersion.append(QString::fromLatin1(" XP"));
-    else if(osMajorVersion == 5 && osMinorVersion == 0)
-        winVersion.append(QString::fromLatin1(" 2000"));
-    else if(osMajorVersion == 4 && osMinorVersion == 90)
-        winVersion.append(QString::fromLatin1(" ME"));
-    else if(osMajorVersion == 4 && osMinorVersion == 10)
-        winVersion.append(QString::fromLatin1(" 98") + (osCSDVersion.isEmpty() ? QString() : QString::fromLatin1(" SE")));
-    else if(osMajorVersion == 4 && osMinorVersion == 0 && osPlatform == VER_PLATFORM_WIN32_NT)
-        winVersion.append(QString::fromLatin1(" NT 4.0") + (osCSDVersion.isEmpty() ? QString() : QString::fromLatin1(" %1").arg(osCSDVersion)));
-    else if(osMajorVersion == 4 && osMinorVersion == 0)
-        winVersion.append(QString::fromLatin1(" 95"));
-
-    if(osMajorVersion > 5 || (osMajorVersion == 5 && osMinorVersion == 2  && osProductType != VER_NT_WORKSTATION))
+    QString winVersion;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 7, 0))
+    if(osMajorVersion >= 6)
     {
-        switch(sysInfo.wProcessorArchitecture)
+        QSettings reg(QString::fromLatin1("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"), QSettings::Registry64Format);
+        const QString productName = reg.value(QString::fromLatin1("ProductName")).toString();
+        if(!productName.isEmpty())
         {
+            winVersion = productName;
+            const QString displayVersion = reg.value(QString::fromLatin1("DisplayVersion")).toString();
+            if(!displayVersion.isEmpty())
+                winVersion.append(QString::fromLatin1(" %1").arg(displayVersion));
+        }
+    }
+#endif
+
+    if(winVersion.isEmpty())
+    {
+        winVersion = QString::fromLatin1("Windows");
+        if     (osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 22000 && osProductType == VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" 11"));
+        else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 26100 && osProductType != VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" Server 2025"));
+        else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 20344 && osProductType != VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" Server 2022"));
+        else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osBuildNumber >= 17763 && osProductType != VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" Server 2019"));
+        else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osProductType != VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" Server 2016"));
+        else if(osMajorVersion == 10 /*&& osMinorVersion >= 0*/ && osProductType == VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" 10"));
+        else if(osMajorVersion == 6 && osMinorVersion == 3 && osProductType != VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" Server 2012 R2"));
+        else if(osMajorVersion == 6 && osMinorVersion == 3 && osProductType == VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" 8.1"));
+        else if(osMajorVersion == 6 && osMinorVersion == 2 && osProductType != VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" Server 2012"));
+        else if(osMajorVersion == 6 && osMinorVersion == 2 && osProductType == VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" 8"));
+        else if(osMajorVersion == 6 && osMinorVersion == 1 && osProductType != VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" Server 2008 R2"));
+        else if(osMajorVersion == 6 && osMinorVersion == 1 && osProductType == VER_NT_WORKSTATION && GetSystemMetrics(SM_STARTER))
+            winVersion.append(QString::fromLatin1(" 7 Starter Edition"));
+        else if(osMajorVersion == 6 && osMinorVersion == 1 && osProductType == VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" 7"));
+        else if(osMajorVersion == 6 && osMinorVersion == 0 && osProductType != VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" Server 2008"));
+        else if(osMajorVersion == 6 && osMinorVersion == 0 && osProductType == VER_NT_WORKSTATION && GetSystemMetrics(SM_STARTER))
+            winVersion.append(QString::fromLatin1(" Vista Starter"));
+        else if(osMajorVersion == 6 && osMinorVersion == 0 && osProductType == VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" Vista"));
+        else if(osMajorVersion == 5 && osMinorVersion == 2 && osSuiteMask & VER_SUITE_WH_SERVER)
+            winVersion.append(QString::fromLatin1(" Home Server"));
+        else if(osMajorVersion == 5 && osMinorVersion == 2 && osProductType == VER_NT_WORKSTATION)
+            winVersion.append(QString::fromLatin1(" XP Professional x64 Edition"));
+        else if(osMajorVersion == 5 && osMinorVersion == 2 && GetSystemMetrics(SM_SERVERR2))
+            winVersion.append(QString::fromLatin1(" Server 2003 R2"));
+        else if(osMajorVersion == 5 && osMinorVersion == 2)
+            winVersion.append(QString::fromLatin1(" Server 2003"));
+        else if(osMajorVersion == 5 && osMinorVersion == 1 && GetSystemMetrics(SM_MEDIACENTER))
+            winVersion.append(QString::fromLatin1(" XP Media Center Edition"));
+        else if(osMajorVersion == 5 && osMinorVersion == 1 && GetSystemMetrics(SM_STARTER))
+            winVersion.append(QString::fromLatin1(" XP Starter Edition"));
+        else if(osMajorVersion == 5 && osMinorVersion == 1 && GetSystemMetrics(SM_TABLETPC))
+            winVersion.append(QString::fromLatin1(" XP Tablet PC Edition"));
+        else if(osMajorVersion == 5 && osMinorVersion == 1)
+            winVersion.append(QString::fromLatin1(" XP"));
+        else if(osMajorVersion == 5 && osMinorVersion == 0)
+            winVersion.append(QString::fromLatin1(" 2000"));
+        else if(osMajorVersion == 4 && osMinorVersion == 90)
+            winVersion.append(QString::fromLatin1(" ME"));
+        else if(osMajorVersion == 4 && osMinorVersion == 10)
+            winVersion.append(QString::fromLatin1(" 98") + (osCSDVersion.isEmpty() ? QString() : QString::fromLatin1(" SE")));
+        else if(osMajorVersion == 4 && osMinorVersion == 0 && osPlatform == VER_PLATFORM_WIN32_NT)
+            winVersion.append(QString::fromLatin1(" NT 4.0") + (osCSDVersion.isEmpty() ? QString() : QString::fromLatin1(" %1").arg(osCSDVersion)));
+        else if(osMajorVersion == 4 && osMinorVersion == 0)
+            winVersion.append(QString::fromLatin1(" 95"));
+    }
+
+    switch(sysInfo.wProcessorArchitecture)
+    {
 #if defined (PROCESSOR_ARCHITECTURE_INTEL)
-        case PROCESSOR_ARCHITECTURE_INTEL:
-            winVersion.append(QString::fromLatin1(" x86"));
-            break;
+    case PROCESSOR_ARCHITECTURE_INTEL:
+        winVersion.append(QString::fromLatin1(" x86"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_MIPS)
-        case PROCESSOR_ARCHITECTURE_MIPS:
-            winVersion.append(QString::fromLatin1(" MIPS"));
-            break;
+    case PROCESSOR_ARCHITECTURE_MIPS:
+        winVersion.append(QString::fromLatin1(" MIPS"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_ALPHA)
-        case PROCESSOR_ARCHITECTURE_ALPHA:
-            winVersion.append(QString::fromLatin1(" ALPHA"));
-            break;
+    case PROCESSOR_ARCHITECTURE_ALPHA:
+        winVersion.append(QString::fromLatin1(" ALPHA"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_PPC)
-        case PROCESSOR_ARCHITECTURE_PPC:
-            winVersion.append(QString::fromLatin1(" PPC"));
-            break;
+    case PROCESSOR_ARCHITECTURE_PPC:
+        winVersion.append(QString::fromLatin1(" PPC"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_SHX)
-        case PROCESSOR_ARCHITECTURE_SHX:
-            winVersion.append(QString::fromLatin1(" SHX"));
-            break;
+    case PROCESSOR_ARCHITECTURE_SHX:
+        winVersion.append(QString::fromLatin1(" SHX"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_ARM)
-        case PROCESSOR_ARCHITECTURE_ARM:
-            winVersion.append(QString::fromLatin1(" ARM"));
-            break;
+    case PROCESSOR_ARCHITECTURE_ARM:
+        winVersion.append(QString::fromLatin1(" ARM"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_IA64)
-        case PROCESSOR_ARCHITECTURE_IA64:
-            winVersion.append(QString::fromLatin1(" IA64"));
-            break;
+    case PROCESSOR_ARCHITECTURE_IA64:
+        winVersion.append(QString::fromLatin1(" IA64"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_ALPHA64)
-        case PROCESSOR_ARCHITECTURE_ALPHA64:
-            winVersion.append(QString::fromLatin1(" ALPHA64"));
-            break;
+    case PROCESSOR_ARCHITECTURE_ALPHA64:
+        winVersion.append(QString::fromLatin1(" ALPHA64"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_MSIL)
-        case PROCESSOR_ARCHITECTURE_MSIL:
-            winVersion.append(QString::fromLatin1(" MSIL"));
-            break;
+    case PROCESSOR_ARCHITECTURE_MSIL:
+        winVersion.append(QString::fromLatin1(" MSIL"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_AMD64)
-        case PROCESSOR_ARCHITECTURE_AMD64:
-            winVersion.append(QString::fromLatin1(" x64"));
-            break;
+    case PROCESSOR_ARCHITECTURE_AMD64:
+        winVersion.append(QString::fromLatin1(" x64"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_IA32_ON_WIN64)
-        case PROCESSOR_ARCHITECTURE_IA32_ON_WIN64:
-            winVersion.append(QString::fromLatin1(" IA32_ON_WIN64"));
-            break;
+    case PROCESSOR_ARCHITECTURE_IA32_ON_WIN64:
+        winVersion.append(QString::fromLatin1(" IA32_ON_WIN64"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_NEUTRAL)
-        case PROCESSOR_ARCHITECTURE_NEUTRAL:
-            winVersion.append(QString::fromLatin1(" NEUTRAL"));
-            break;
+    case PROCESSOR_ARCHITECTURE_NEUTRAL:
+        winVersion.append(QString::fromLatin1(" NEUTRAL"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_ARM64)
-        case PROCESSOR_ARCHITECTURE_ARM64:
-            winVersion.append(QString::fromLatin1(" ARM64"));
-            break;
+    case PROCESSOR_ARCHITECTURE_ARM64:
+        winVersion.append(QString::fromLatin1(" ARM64"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_ARM32_ON_WIN64)
-        case PROCESSOR_ARCHITECTURE_ARM32_ON_WIN64:
-            winVersion.append(QString::fromLatin1(" ARM32_ON_WIN64"));
-            break;
+    case PROCESSOR_ARCHITECTURE_ARM32_ON_WIN64:
+        winVersion.append(QString::fromLatin1(" ARM32_ON_WIN64"));
+        break;
 #endif
 #if defined (PROCESSOR_ARCHITECTURE_IA32_ON_ARM64)
-        case PROCESSOR_ARCHITECTURE_IA32_ON_ARM64:
-            winVersion.append(QString::fromLatin1(" IA32_ON_ARM64"));
-            break;
+    case PROCESSOR_ARCHITECTURE_IA32_ON_ARM64:
+        winVersion.append(QString::fromLatin1(" IA32_ON_ARM64"));
+        break;
 #endif
-        default:
-            break;
-        }
+    default:
+        break;
     }
 
     if(osServicePack)
