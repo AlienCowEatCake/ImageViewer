@@ -260,7 +260,7 @@ QImage ImageViewerWidget::grabImage() const
     }
     else
     {
-        image = QImage(imageSize(), QImage::Format_ARGB32_Premultiplied);
+        image = QImage(imageSize(), QImage::Format_ARGB32);
         image.fill(Qt::transparent);
         const QRectF boundingRect = m_impl->currentGraphicsItem->boundingRect();
         QPainter painter;
