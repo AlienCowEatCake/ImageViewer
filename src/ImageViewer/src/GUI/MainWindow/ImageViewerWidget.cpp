@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -58,7 +58,7 @@ const int SCROLL_STEP = 10;
 const qreal ZOOM_STEP = 1.1;
 const qreal ZOOM_CHANGE_EPSILON = 1e-5;
 const int ZOOM_FIT_SIZE_CORRECTION = 1;
-const qreal ROTATION_TRESHOLD = 30;
+const qreal ROTATION_TRESHOLD = 45;
 const qreal WHEEL_NAVIGATE_EPSILON = 1e-3;
 
 } // namespace
@@ -173,16 +173,20 @@ struct ImageViewerWidget::Impl
         }
         if(changeFlags.testFlag(QPinchGesture::RotationAngleChanged))
         {
-            const qreal rotationAngle = gesture->rotationAngle();
-            if(rotationAngle > ROTATION_TRESHOLD)
+            qreal rotationAngle = gesture->totalRotationAngle();
+            while(rotationAngle > 180.0)
+                rotationAngle -= 360.0;
+            while(rotationAngle < -180.0)
+                rotationAngle += 360.0;
+            if(rotationAngle >= ROTATION_TRESHOLD)
             {
                 imageViewerWidget->rotateClockwise();
-                gesture->setRotationAngle(0);
+                gesture->setTotalRotationAngle(0);
             }
-            if(rotationAngle < -ROTATION_TRESHOLD)
+            if(rotationAngle <= -ROTATION_TRESHOLD)
             {
                 imageViewerWidget->rotateCounterclockwise();
-                gesture->setRotationAngle(0);
+                gesture->setTotalRotationAngle(0);
             }
         }
     }
