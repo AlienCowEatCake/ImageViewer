@@ -19,6 +19,7 @@
 
 #include "ImageViewerWidget.h"
 
+#include <QApplication>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QScrollBar>
