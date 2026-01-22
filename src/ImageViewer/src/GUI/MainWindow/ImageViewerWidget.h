@@ -102,10 +102,14 @@ public Q_SLOTS:
 
     void setUpscaleOnFitToWindow(bool enabled);
 
+    void setNavigatePreviousEnabled(bool enabled);
+    void setNavigateNextEnabled(bool enabled);
+
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect) Q_DECL_OVERRIDE;
 
     bool event(QEvent* event) Q_DECL_OVERRIDE;
+    void changeEvent(QEvent *event) Q_DECL_OVERRIDE;
     void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
     void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
     void mouseDoubleClickEvent(QMouseEvent *event) Q_DECL_OVERRIDE;

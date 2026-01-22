@@ -62,6 +62,14 @@ const qreal ROTATION_TRESHOLD = 45;
 const qreal WHEEL_NAVIGATE_EPSILON = 1e-3;
 const qreal MOUSE_NAVIGATION_ZONE_WIDTH = 32;
 
+enum MouseNavigationZone
+{
+    MOUSE_NAVIGATION_ZONE_NONE,
+    MOUSE_NAVIGATION_ZONE_PREVIOUS,
+    MOUSE_NAVIGATION_ZONE_NEXT,
+    MOUSE_NAVIGATION_ZONE_INVALID
+};
+
 } // namespace
 
 struct ImageViewerWidget::Impl
@@ -81,6 +89,9 @@ struct ImageViewerWidget::Impl
         , wheelMode(WHEEL_SCROLL)
         , wheelAccumulatedValue(0)
         , upscaleOnFitToWindow(false)
+        , navigatePreviousEnabled(false)
+        , navigateNextEnabled(false)
+        , navigationZone(MOUSE_NAVIGATION_ZONE_NONE)
     {
         widget->setScene(scene);
     }
@@ -175,11 +186,6 @@ struct ImageViewerWidget::Impl
         return x >= 0 && x < navigationZoneWidth;
     }
 
-    inline bool isLeftNavigationZone(const QMouseEvent *event) const
-    {
-        return isLeftNavigationZone(getMouseEventPos(event));
-    }
-
     inline bool isRightNavigationZone(const QPointF &p) const
     {
         const qreal x = static_cast<qreal>(p.x());
@@ -188,14 +194,21 @@ struct ImageViewerWidget::Impl
         return x <= width && x > width - navigationZoneWidth;
     }
 
-    inline bool isRightNavigationZone(const QMouseEvent *event) const
+    inline bool isNavigationNextZone(const QPointF &p) const
     {
-        return isRightNavigationZone(getMouseEventPos(event));
+        return navigateNextEnabled &&
+               (imageViewerWidget->layoutDirection() == Qt::RightToLeft ? isLeftNavigationZone(p) : isRightNavigationZone(p));
+    }
+
+    inline bool isNavigationPreviousZone(const QPointF &p) const
+    {
+        return navigatePreviousEnabled &&
+               (imageViewerWidget->layoutDirection() == Qt::RightToLeft ? isRightNavigationZone(p) : isLeftNavigationZone(p));
     }
 
     inline bool isNavigationZone(const QPointF &p) const
     {
-        return isLeftNavigationZone(p) || isRightNavigationZone(p);
+        return isNavigationNextZone(p) || isNavigationPreviousZone(p);
     }
 
     inline bool isNavigationZone(const QMouseEvent *event) const
@@ -203,12 +216,36 @@ struct ImageViewerWidget::Impl
         return isNavigationZone(getMouseEventPos(event));
     }
 
-    void updateCursor(const QMouseEvent *event)
+    void updateCursorAndToolTip(const QMouseEvent *event)
     {
-        if(isNavigationZone(event))
-            imageViewerWidget->setCursor(Qt::PointingHandCursor);
+        const QPointF p = getMouseEventPos(event);
+        if(isNavigationNextZone(p))
+        {
+            if(navigationZone != MOUSE_NAVIGATION_ZONE_NEXT)
+            {
+                imageViewerWidget->setCursor(Qt::PointingHandCursor);
+                imageViewerWidget->setToolTip(qApp->translate("ImageViewerWidget", "Next"));
+                navigationZone = MOUSE_NAVIGATION_ZONE_NEXT;
+            }
+        }
+        else if(isNavigationPreviousZone(p))
+        {
+            if(navigationZone != MOUSE_NAVIGATION_ZONE_PREVIOUS)
+            {
+                imageViewerWidget->setCursor(Qt::PointingHandCursor);
+                imageViewerWidget->setToolTip(qApp->translate("ImageViewerWidget", "Previous"));
+                navigationZone = MOUSE_NAVIGATION_ZONE_PREVIOUS;
+            }
+        }
         else
-            imageViewerWidget->unsetCursor();
+        {
+            if(navigationZone != MOUSE_NAVIGATION_ZONE_NONE)
+            {
+                imageViewerWidget->unsetCursor();
+                imageViewerWidget->setToolTip(QString());
+                navigationZone = MOUSE_NAVIGATION_ZONE_NONE;
+            }
+        }
     }
 
 #if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
@@ -266,6 +303,9 @@ struct ImageViewerWidget::Impl
     WheelMode wheelMode;
     qreal wheelAccumulatedValue;
     bool upscaleOnFitToWindow;
+    bool navigatePreviousEnabled;
+    bool navigateNextEnabled;
+    MouseNavigationZone navigationZone;
 };
 
 ImageViewerWidget::ImageViewerWidget(QWidget *parent)
@@ -504,6 +544,18 @@ void ImageViewerWidget::setUpscaleOnFitToWindow(bool enabled)
     m_impl->updateTransformations();
 }
 
+void ImageViewerWidget::setNavigatePreviousEnabled(bool enabled)
+{
+    m_impl->navigatePreviousEnabled = enabled;
+    m_impl->navigationZone = MOUSE_NAVIGATION_ZONE_INVALID;
+}
+
+void ImageViewerWidget::setNavigateNextEnabled(bool enabled)
+{
+    m_impl->navigateNextEnabled = enabled;
+    m_impl->navigationZone = MOUSE_NAVIGATION_ZONE_INVALID;
+}
+
 void ImageViewerWidget::drawBackground(QPainter *painter, const QRectF &rect)
 {
     if(!m_impl->backgroundTexture.isNull() && m_impl->currentGraphicsItem)
@@ -528,6 +580,20 @@ bool ImageViewerWidget::event(QEvent *event)
         return m_impl->gestureEvent(static_cast<QGestureEvent*>(event));
 #endif
     return QGraphicsView::event(event);
+}
+
+void ImageViewerWidget::changeEvent(QEvent *event)
+{
+    QGraphicsView::changeEvent(event);
+    switch(event->type())
+    {
+    case QEvent::LayoutDirectionChange:
+    case QEvent::LanguageChange:
+        m_impl->navigationZone = MOUSE_NAVIGATION_ZONE_INVALID;
+        break;
+    default:
+        break;
+    }
 }
 
 void ImageViewerWidget::showEvent(QShowEvent *event)
@@ -558,7 +624,7 @@ void ImageViewerWidget::mouseDoubleClickEvent(QMouseEvent *event)
         }
         m_impl->updateTransformations();
     }
-    m_impl->updateCursor(event);
+    m_impl->updateCursorAndToolTip(event);
     QGraphicsView::mouseDoubleClickEvent(event);
 }
 
@@ -566,7 +632,7 @@ void ImageViewerWidget::mousePressEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton && !m_impl->isNavigationZone(event))
         setDragMode(QGraphicsView::ScrollHandDrag);
-    m_impl->updateCursor(event);
+    m_impl->updateCursorAndToolTip(event);
     QGraphicsView::mousePressEvent(event);
 }
 
@@ -576,26 +642,16 @@ void ImageViewerWidget::mouseReleaseEvent(QMouseEvent *event)
     if(dragMode() == QGraphicsView::NoDrag)
     {
         const QPointF p = m_impl->getMouseEventPos(event);
-        if(m_impl->isLeftNavigationZone(p))
-        {
-            if(layoutDirection() == Qt::RightToLeft)
-                Q_EMIT selectNextRequested();
-            else
-                Q_EMIT selectPreviousRequested();
-        }
-        else if(m_impl->isRightNavigationZone(p))
-        {
-            if(layoutDirection() == Qt::RightToLeft)
-                Q_EMIT selectPreviousRequested();
-            else
-                Q_EMIT selectNextRequested();
-        }
+        if(m_impl->isNavigationNextZone(p))
+            Q_EMIT selectNextRequested();
+        else if(m_impl->isNavigationPreviousZone(p))
+            Q_EMIT selectPreviousRequested();
     }
     else
     {
         setDragMode(QGraphicsView::NoDrag);
     }
-    m_impl->updateCursor(event);
+    m_impl->updateCursorAndToolTip(event);
 }
 
 void ImageViewerWidget::mouseMoveEvent(QMouseEvent *event)
@@ -605,7 +661,7 @@ void ImageViewerWidget::mouseMoveEvent(QMouseEvent *event)
     {
         if(dragMode() == QGraphicsView::ScrollHandDrag)
             setDragMode(QGraphicsView::NoDrag);
-        m_impl->updateCursor(event);
+        m_impl->updateCursorAndToolTip(event);
     }
 }
 

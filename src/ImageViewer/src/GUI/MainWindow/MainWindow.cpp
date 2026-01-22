@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -549,6 +549,8 @@ void MainWindow::updateUIState(const UIState &state, const UIChangeFlags &change
             container->setNavigateNextEnabled(state.hasCurrentFileIndex);
             container->setStartSlideShowEnabled(state.hasCurrentFileIndex);
         }
+        m_impl->ui.imageViewerWidget->setNavigatePreviousEnabled(state.hasCurrentFileIndex);
+        m_impl->ui.imageViewerWidget->setNavigateNextEnabled(state.hasCurrentFileIndex);
     }
 
     if(changeFlags.testFlag(UICF_HasCurrentFile) ||
