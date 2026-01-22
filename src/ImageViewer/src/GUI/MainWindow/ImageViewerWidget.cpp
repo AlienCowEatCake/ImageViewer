@@ -60,6 +60,7 @@ const qreal ZOOM_CHANGE_EPSILON = 1e-5;
 const int ZOOM_FIT_SIZE_CORRECTION = 1;
 const qreal ROTATION_TRESHOLD = 45;
 const qreal WHEEL_NAVIGATE_EPSILON = 1e-3;
+const qreal MOUSE_NAVIGATION_ZONE_WIDTH = 32;
 
 } // namespace
 
@@ -150,6 +151,64 @@ struct ImageViewerWidget::Impl
             itemWithTransformationMode->setTransformationMode(transformationMode);
             return;
         }
+    }
+
+    inline QPointF getMouseEventPos(const QMouseEvent *event) const
+    {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        return event->position();
+#else
+        return QPointF(event->pos());
+#endif
+    }
+
+    inline qreal getMouseNavigationZoneWidth() const
+    {
+        const qreal width = static_cast<qreal>(imageViewerWidget->width());
+        return qMin(static_cast<qreal>(width / 3.0), MOUSE_NAVIGATION_ZONE_WIDTH);
+    }
+
+    inline bool isLeftNavigationZone(const QPointF &p) const
+    {
+        const qreal x = static_cast<qreal>(p.x());
+        const qreal navigationZoneWidth = getMouseNavigationZoneWidth();
+        return x >= 0 && x < navigationZoneWidth;
+    }
+
+    inline bool isLeftNavigationZone(const QMouseEvent *event) const
+    {
+        return isLeftNavigationZone(getMouseEventPos(event));
+    }
+
+    inline bool isRightNavigationZone(const QPointF &p) const
+    {
+        const qreal x = static_cast<qreal>(p.x());
+        const qreal width = static_cast<qreal>(imageViewerWidget->width());
+        const qreal navigationZoneWidth = getMouseNavigationZoneWidth();
+        return x <= width && x > width - navigationZoneWidth;
+    }
+
+    inline bool isRightNavigationZone(const QMouseEvent *event) const
+    {
+        return isRightNavigationZone(getMouseEventPos(event));
+    }
+
+    inline bool isNavigationZone(const QPointF &p) const
+    {
+        return isLeftNavigationZone(p) || isRightNavigationZone(p);
+    }
+
+    inline bool isNavigationZone(const QMouseEvent *event) const
+    {
+        return isNavigationZone(getMouseEventPos(event));
+    }
+
+    void updateCursor(const QMouseEvent *event)
+    {
+        if(isNavigationZone(event))
+            imageViewerWidget->setCursor(Qt::PointingHandCursor);
+        else
+            imageViewerWidget->unsetCursor();
     }
 
 #if !defined (IMAGEVIEWERWIDGET_NO_GESTURES)
@@ -485,22 +544,49 @@ void ImageViewerWidget::resizeEvent(QResizeEvent *event)
 
 void ImageViewerWidget::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button() == Qt::LeftButton)
+    if(event->button() == Qt::LeftButton && !m_impl->isNavigationZone(event))
         setDragMode(QGraphicsView::ScrollHandDrag);
+    m_impl->updateCursor(event);
     QGraphicsView::mousePressEvent(event);
 }
 
 void ImageViewerWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseReleaseEvent(event);
-    setDragMode(QGraphicsView::NoDrag);
+    if(dragMode() == QGraphicsView::NoDrag)
+    {
+        const QPointF p = m_impl->getMouseEventPos(event);
+        if(m_impl->isLeftNavigationZone(p))
+        {
+            if(layoutDirection() == Qt::RightToLeft)
+                Q_EMIT selectNextRequested();
+            else
+                Q_EMIT selectPreviousRequested();
+        }
+        else if(m_impl->isRightNavigationZone(p))
+        {
+            if(layoutDirection() == Qt::RightToLeft)
+                Q_EMIT selectPreviousRequested();
+            else
+                Q_EMIT selectNextRequested();
+        }
+    }
+    else
+    {
+        setDragMode(QGraphicsView::NoDrag);
+    }
+    m_impl->updateCursor(event);
 }
 
 void ImageViewerWidget::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
-    if(dragMode() == QGraphicsView::ScrollHandDrag && event->buttons() == Qt::MouseButtons())
-        setDragMode(QGraphicsView::NoDrag);
+    if(event->buttons() == Qt::MouseButtons())
+    {
+        if(dragMode() == QGraphicsView::ScrollHandDrag)
+            setDragMode(QGraphicsView::NoDrag);
+        m_impl->updateCursor(event);
+    }
 }
 
 void ImageViewerWidget::wheelEvent(QWheelEvent *event)
