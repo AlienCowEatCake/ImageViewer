@@ -542,6 +542,26 @@ void ImageViewerWidget::resizeEvent(QResizeEvent *event)
     QGraphicsView::resizeEvent(event);
 }
 
+void ImageViewerWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton && !m_impl->isNavigationZone(event))
+    {
+        switch(m_impl->currentZoomMode)
+        {
+        case ZOOM_IDENTITY:
+        case ZOOM_CUSTOM:
+            m_impl->currentZoomMode = ZOOM_FIT_TO_WINDOW;
+            break;
+        case ZOOM_FIT_TO_WINDOW:
+            m_impl->currentZoomMode = ZOOM_IDENTITY;
+            break;
+        }
+        m_impl->updateTransformations();
+    }
+    m_impl->updateCursor(event);
+    QGraphicsView::mouseDoubleClickEvent(event);
+}
+
 void ImageViewerWidget::mousePressEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton && !m_impl->isNavigationZone(event))
