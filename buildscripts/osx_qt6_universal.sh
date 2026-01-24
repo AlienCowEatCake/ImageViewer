@@ -21,8 +21,8 @@ QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
 
-RESVG_X86_64_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/resvg-0.45.1/x86_64-apple-darwin"
-RESVG_ARM64_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/resvg-0.45.1/aarch64-apple-darwin"
+RESVG_X86_64_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/resvg-latest/x86_64-apple-darwin"
+RESVG_ARM64_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/resvg-latest/aarch64-apple-darwin"
 function make_universal_resvg() {
     local RESVG_PATH="${1}"
     rm -rf "${RESVG_PATH}"
