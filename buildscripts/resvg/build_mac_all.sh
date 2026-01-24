@@ -18,12 +18,12 @@ export RUSTUP_HOME="${PWD}/RUSTUP_HOME"
 export CARGO_HOME="${PWD}/CARGO_HOME"
 export PATH="${CARGO_HOME}/bin:${PATH}"
 
-curl -Lo rustup-init.sh "https://sh.rustup.rs"
+curl -Lo rustup-init.sh "https://raw.githubusercontent.com/rust-lang/rustup/refs/heads/main/rustup-init.sh"
 chmod +x rustup-init.sh
 ./rustup-init.sh --default-host "${RESVG_HOST}" --target "x86_64-apple-darwin" --target "aarch64-apple-darwin" --default-toolchain "${RUST_VERSION}" --profile default --no-modify-path -y
 
-curl -LO "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-${RESVG_VERSION}.tar.xz"
-tar -xvpf "resvg-${RESVG_VERSION}.tar.xz"
+curl -Lo "resvg-${RESVG_VERSION}.tar.gz" "https://github.com/linebender/resvg/archive/refs/tags/v${RESVG_VERSION}.tar.gz"
+tar -xvpf "resvg-${RESVG_VERSION}.tar.gz"
 for RESVG_TARGET in "x86_64-apple-darwin" "aarch64-apple-darwin" ; do
     pushd "resvg-${RESVG_VERSION}" > /dev/null
     cd "crates/c-api"
@@ -36,4 +36,4 @@ for RESVG_TARGET in "x86_64-apple-darwin" "aarch64-apple-darwin" ; do
     strip -x "${RESVG_TARGET}/libresvg.dylib"
 done
 
-rm -rf "${RUSTUP_HOME}" "${CARGO_HOME}" rustup-init.sh "resvg-${RESVG_VERSION}.tar.xz" "resvg-${RESVG_VERSION}"
+rm -rf "${RUSTUP_HOME}" "${CARGO_HOME}" rustup-init.sh "resvg-${RESVG_VERSION}.tar.gz" "resvg-${RESVG_VERSION}"

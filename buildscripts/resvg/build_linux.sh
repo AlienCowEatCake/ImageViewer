@@ -11,12 +11,12 @@ export RUSTUP_HOME="${PWD}/RUSTUP_HOME"
 export CARGO_HOME="${PWD}/CARGO_HOME"
 export PATH="${CARGO_HOME}/bin:${PATH}"
 
-wget --no-check-certificate "https://sh.rustup.rs" -O rustup-init.sh
+wget --no-check-certificate "https://raw.githubusercontent.com/rust-lang/rustup/refs/heads/main/rustup-init.sh" -O rustup-init.sh
 chmod +x rustup-init.sh
 ./rustup-init.sh --default-host "${RESVG_TARGET}" --default-toolchain "${RUST_VERSION}" --profile default --no-modify-path -y
 
-wget "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-${RESVG_VERSION}.tar.xz"
-tar -xvpf "resvg-${RESVG_VERSION}.tar.xz"
+wget --no-check-certificate "https://github.com/linebender/resvg/archive/refs/tags/v${RESVG_VERSION}.tar.gz" -O "resvg-${RESVG_VERSION}.tar.gz"
+tar -xvpf "resvg-${RESVG_VERSION}.tar.gz"
 pushd "resvg-${RESVG_VERSION}" > /dev/null
 cd "crates/c-api"
 cargo build --release
@@ -27,4 +27,4 @@ cp -a "resvg-${RESVG_VERSION}/crates/c-api/resvg.h" "${RESVG_TARGET}/"
 cp -a "resvg-${RESVG_VERSION}/target/release/libresvg.so" "${RESVG_TARGET}/"
 strip --strip-all "${RESVG_TARGET}/libresvg.so"
 
-rm -rf "${RUSTUP_HOME}" "${CARGO_HOME}" rustup-init.sh "resvg-${RESVG_VERSION}.tar.xz" "resvg-${RESVG_VERSION}"
+rm -rf "${RUSTUP_HOME}" "${CARGO_HOME}" rustup-init.sh "resvg-${RESVG_VERSION}.tar.gz" "resvg-${RESVG_VERSION}"
