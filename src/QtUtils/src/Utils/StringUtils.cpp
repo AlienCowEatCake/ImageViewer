@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -60,7 +60,7 @@ public:
 
     bool canCompareNumeric() const
     {
-        return m_hShlwapi && m_StrCmpLogicalW_f;
+        return m_StrCmpLogicalW_f;
     }
 
     int doCompareNumeric(const QString &s1, const QString &s2) const
@@ -94,8 +94,15 @@ class QCollatorHelper
 
 public:
     QCollatorHelper()
-        : m_canCompareNumeric(compareNumericImpl(QString::number(9), QString::number(10)) < 0)
-    {}
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+        : m_collator(QLocale::system().collation())
+#else
+        : m_collator(QLocale::system())
+#endif
+    {
+        m_collator.setNumericMode(true);
+        m_canCompareNumeric = compareNumericImpl(QString::number(9), QString::number(10)) < 0;
+    }
 
     bool canCompareNumeric() const
     {
@@ -111,17 +118,12 @@ public:
 private:
     int compareNumericImpl(const QString &s1, const QString &s2) const
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
-        QCollator collator(QLocale::system().collation());
-#else
-        QCollator collator(QLocale::system());
-#endif
-        collator.setNumericMode(true);
-        return collator.compare(s1, s2);
+        return m_collator.compare(s1, s2);
     }
 
 private:
-    const bool m_canCompareNumeric;
+    QCollator m_collator;
+    bool m_canCompareNumeric;
 };
 
 } // namespace
