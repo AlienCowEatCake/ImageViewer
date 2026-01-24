@@ -1,6 +1,6 @@
 #!/bin/bash -e
 PROJECT="ImageViewer"
-VCVARS_VER="2022"
+VCVARS_VER="2026"
 BUILDDIR="build_msys2_qt6_${MSYSTEM,,?}"
 SUFFIX="_qt6_${MSYSTEM,,?}"
 APP_PATH="src/${PROJECT}"
@@ -72,7 +72,7 @@ pacman -S --needed --noconfirm \
 
 cd "$(dirname $0)"/..
 SOURCE_PATH="${PWD}"
-RESVG_PATH="${SOURCE_PATH}/buildscripts/resvg/resvg-0.45.1/${RESVG_TARGET}"
+RESVG_PATH="${SOURCE_PATH}/buildscripts/resvg/resvg-latest/${RESVG_TARGET}"
 DIST_PREFIX="${PROJECT}${SUFFIX}"
 HOST_ARCH="$(MSYS_NO_PATHCONV=1 reg query "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment" /v "PROCESSOR_ARCHITECTURE" | grep PROCESSOR_ARCHITECTURE | sed 's|.*PROCESSOR_ARCHITECTURE[ \t]*REG_SZ[ \t]*|| ; s|[ \t]*||g')"
 
@@ -98,7 +98,7 @@ function getCRTPath() {
     cat << EOF | cmd | tail -3 | head -1
 set VCVARS="${VCVARS}"
 call %VCVARS% ${VCVARS_ARCH}
-echo %VCToolsRedistDir%${CRT_ARCH}\Microsoft.VC143.CRT
+echo %VCToolsRedistDir%${CRT_ARCH}\Microsoft.VC145.CRT
 EOF
 }
 
