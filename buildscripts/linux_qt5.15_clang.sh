@@ -12,7 +12,7 @@ DEBIAN_DIR_PATH="src/${PROJECT}/resources/platform/debian"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/linux/set_associations.sh"
 QM_FILES_PATH="src/${PROJECT}/resources/translations"
 QTUTILS_QM_FILES_PATH="src/QtUtils/resources/translations"
-RESVG_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/$(gcc -dumpmachine | sed 's|-.*||')-unknown-linux-gnu"
+RESVG_PATH="$(cd "$(dirname "${0}")" && pwd)/resvg/resvg-latest/$(gcc -dumpmachine | sed 's|-.*||')-unknown-linux-gnu"
 
 QTDIR="/opt/qt5"
 CLANGDIR="/opt/clang"

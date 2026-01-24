@@ -12,7 +12,7 @@ set APP_PATH=src\%PROJECT%
 set NMAKE_CMD="%~dp0\..\buildscripts\helpers\arm64\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\arm64\zip.exe"
 set DLLRESOLVER_CMD="%~dp0\..\buildscripts\helpers\arm64\dllresolver.exe"
-set RESVG_PATH="%~dp0\resvg\aarch64-pc-windows-msvc"
+set RESVG_PATH="%~dp0\resvg\resvg-0.45.1\aarch64-pc-windows-msvc"
 
 call %VCVARS% %VCVARS_ARCH%
 set PATH=%QT_PATH%\bin;%WIX%\bin;%WIX%;%PATH%

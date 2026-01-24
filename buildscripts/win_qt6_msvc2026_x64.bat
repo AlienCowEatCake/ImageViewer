@@ -11,7 +11,7 @@ set APP_PATH=src\%PROJECT%
 set NMAKE_CMD="%~dp0\..\buildscripts\helpers\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
 set DLLRESOLVER_CMD="%~dp0\..\buildscripts\helpers\dllresolver.exe"
-set RESVG_PATH="%~dp0\resvg\x86_64-pc-windows-msvc"
+set RESVG_PATH="%~dp0\resvg\resvg-0.45.1\x86_64-pc-windows-msvc"
 for /F "tokens=1,2*" %%i in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v "PROCESSOR_ARCHITECTURE"') DO (
     if "%%i" == "PROCESSOR_ARCHITECTURE" if "%%~k" == "ARM64" (
         set VCVARS_ARCH=arm64_x64

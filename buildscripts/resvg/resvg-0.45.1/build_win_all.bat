@@ -26,7 +26,7 @@ set "RUSTUP_HOME=%CD%\RUSTUP_HOME"
 set "CARGO_HOME=%CD%\CARGO_HOME"
 set "PATH=%CARGO_HOME%\bin;%PATH%"
 
-call "%~dp0\..\helpers\find_vcvarsall.bat" 2022
+call "%~dp0\..\..\helpers\find_vcvarsall.bat" 2022
 set "VCVARS=%VS2022_VCVARSALL%"
 
 curl -LO "https://static.rust-lang.org/rustup/dist/%RESVG_HOST%/rustup-init.exe"

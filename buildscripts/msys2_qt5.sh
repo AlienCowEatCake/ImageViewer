@@ -73,7 +73,7 @@ pacman -S --needed --noconfirm \
 
 cd "$(dirname $0)"/..
 SOURCE_PATH="${PWD}"
-RESVG_PATH="${SOURCE_PATH}/buildscripts/resvg/${RESVG_TARGET}"
+RESVG_PATH="${SOURCE_PATH}/buildscripts/resvg/resvg-0.45.1/${RESVG_TARGET}"
 DIST_PREFIX="${PROJECT}${SUFFIX}"
 HOST_ARCH="$(MSYS_NO_PATHCONV=1 reg query "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment" /v "PROCESSOR_ARCHITECTURE" | grep PROCESSOR_ARCHITECTURE | sed 's|.*PROCESSOR_ARCHITECTURE[ \t]*REG_SZ[ \t]*|| ; s|[ \t]*||g')"
 
