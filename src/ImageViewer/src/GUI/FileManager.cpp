@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -100,13 +100,20 @@ class DirContentModel : public IFilesModel
 public:
     DirContentModel(const QStringList &supportedFormatsWithWildcards, const QString &filePath)
         : m_supportedFormats(supportedFormatsWithWildcards)
-        , m_currentFilePath(filePath)
         , m_currentIndex(INVALID_INDEX)
-        , m_directoryPath(QFileInfo(filePath).absolutePath())
         , m_canDeleteCurrentFile(false)
     {
         assert(!filePath.isEmpty());
-        assert(QFileInfo(filePath).isFile());
+        const QFileInfo fileInfo = QFileInfo(filePath);
+        if(fileInfo.isFile())
+        {
+            m_currentFilePath = filePath;
+            m_directoryPath = fileInfo.absolutePath();
+        }
+        else
+        {
+            m_directoryPath = fileInfo.absoluteFilePath();
+        }
         DirContentModel::update();
         m_watcher.addPath(m_directoryPath);
     }
@@ -142,11 +149,25 @@ public:
     void update() Q_DECL_OVERRIDE
     {
         const QSignalBlocker watcherBlocker(m_watcher);
-        const QFileInfo fileInfo = QFileInfo(m_currentFilePath);
-        const QString fileName = fileInfo.fileName();
         m_filesList.clear();
         m_currentIndex = INVALID_INDEX;
-        const QStringList list = supportedFilesInDirectory(m_supportedFormats, fileInfo.dir());
+        m_canDeleteCurrentFile = false;
+        if(m_directoryPath.isEmpty())
+            return;
+
+        const QDir dir = QDir(m_directoryPath);
+        const QStringList list = supportedFilesInDirectory(m_supportedFormats, dir);
+        if(list.isEmpty())
+            return;
+
+        if(m_currentFilePath.isEmpty())
+        {
+            m_currentIndex = 0;
+            m_currentFilePath = dir.absoluteFilePath(list.first());
+        }
+
+        const QFileInfo fileInfo = QFileInfo(m_currentFilePath);
+        const QString fileName = fileInfo.fileName();
         for(QStringList::ConstIterator it = list.constBegin(); it != list.constEnd(); ++it)
         {
             const QString &name = *it;
@@ -162,7 +183,7 @@ public:
                 if(m_filesList[i].normalized(QString::NormalizationForm_C) != fileNameC)
                     continue;
                 m_currentIndex = i;
-                m_currentFilePath = QDir(m_directoryPath).absoluteFilePath(m_filesList[i]);
+                m_currentFilePath = dir.absoluteFilePath(m_filesList[i]);
                 break;
             }
         }
@@ -179,7 +200,7 @@ private:
     QVector<QString> m_filesList;
     QString m_currentFilePath;
     int m_currentIndex;
-    const QString m_directoryPath;
+    QString m_directoryPath;
     bool m_canDeleteCurrentFile;
 };
 
@@ -434,14 +455,11 @@ bool FileManager::openPath(const QString &filePath)
     if(!fileInfo.exists())
         return false;
 
-    const bool pathIsDir = fileInfo.isDir();
     const Impl::ChangedGuard changedGuard(this);
-    const QStringList files = supportedPathsInDirectory(m_impl->supportedFormats, pathIsDir ? QDir(fileInfo.absoluteFilePath()) : fileInfo.absoluteDir());
-    if(!files.isEmpty())
-        m_impl->resetFilesModel(new DirContentModel(m_impl->supportedFormats, pathIsDir ? files.first() : fileInfo.absoluteFilePath()));
-    else if(!pathIsDir)
+    m_impl->resetFilesModel(new DirContentModel(m_impl->supportedFormats, fileInfo.absoluteFilePath()));
+    if(m_impl->filesModel->filesCount() <= 0 && !fileInfo.isDir())
         m_impl->resetFilesModel(new FilxedListModel(QStringList() << fileInfo.absoluteFilePath()));
-    else
+    if(m_impl->filesModel->filesCount() <= 0)
         return false;
     m_impl->currentOpenArguments = QStringList(filePath);
     return true;
