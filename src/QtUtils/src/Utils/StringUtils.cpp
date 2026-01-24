@@ -101,6 +101,7 @@ public:
 #endif
     {
         m_collator.setNumericMode(true);
+        m_collator.setCaseSensitivity(Qt::CaseInsensitive);
         m_canCompareNumeric = compareNumericImpl(QString::number(9), QString::number(10)) < 0;
     }
 
