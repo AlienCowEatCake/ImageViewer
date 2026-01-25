@@ -20,6 +20,19 @@
     </message>
 </context>
 <context>
+    <name>ImageViewerWidget</name>
+    <message>
+        <location filename="../../src/GUI/MainWindow/ImageViewerWidget.cpp" line="228"/>
+        <source>Next</source>
+        <translation type="unfinished">Suivant</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/ImageViewerWidget.cpp" line="237"/>
+        <source>Previous</source>
+        <translation type="unfinished">Précédent</translation>
+    </message>
+</context>
+<context>
     <name>InfoDialog</name>
     <message>
         <location filename="../../src/GUI/Dialogs/InfoDialog.cpp" line="39"/>
