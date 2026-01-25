@@ -7,8 +7,8 @@ APP_PATH="src/${PROJECT}"
 
 WIX_PATH="$(cygpath -u "${WIX}")"
 export PATH="${WIX_PATH}/bin:${WIX_PATH}:${PATH}"
-CMD_QMAKE="qmake-qt6"
-CMD_DEPLOY="windeployqt-qt6"
+CMD_QMAKE="qmake6"
+CMD_DEPLOY="windeployqt6"
 
 MSYSTEM_PKG_PREFIX="mingw-w64"
 VCVARS_ARCH=""
@@ -147,7 +147,11 @@ find "${DIST_PREFIX}/imageformats" -type f \( -name 'kimg_*.dll' -o -name 'qjp2.
 find "${DIST_PREFIX}/platforms" -type f \( -name 'qdirect2d.dll' -o -name 'qminimal.dll' -o -name 'qoffscreen.dll' \) -delete
 copyDlls "$(cygpath -w "${MSYSTEM_PREFIX}/bin")"
 stripAll
-copyDlls "$(cygpath -w "$(getCRTPath)")" "$(cygpath -w "$(getUCRTPath)")"
+CRT_ROOT="$(cygpath -w "$(getCRTPath)")"
+UCRT_ROOT="$(cygpath -w "$(getUCRTPath)")"
+# @todo HACK: avoid Bad address error after native cmd calling
+echo
+copyDlls "${CRT_ROOT}" "${UCRT_ROOT}"
 zip -9r "../${DIST_PREFIX}.zip" "${DIST_PREFIX}"
 rm -rf "build_msi"
 mv "${DIST_PREFIX}" "build_msi"
