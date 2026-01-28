@@ -114,8 +114,8 @@ public:
         {
             m_directoryPath = fileInfo.absoluteFilePath();
         }
-        DirContentModel::update();
         m_watcher.addPath(m_directoryPath);
+        DirContentModel::update();
     }
 
     QString currentFilePath() const Q_DECL_OVERRIDE     { return m_currentFilePath; }
