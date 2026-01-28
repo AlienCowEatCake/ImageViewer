@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -200,6 +200,13 @@ bool MappedBuffer::convertXmlToUtf8()
         LOG_WARNING() << LOGGING_CTX << "Can't detect encoding";
         return false;
     }
+    return convertXmlToUtf8(encoding);
+}
+
+bool MappedBuffer::convertXmlToUtf8(const QString &encoding)
+{
+    assert(isValid());
+    assert(!encoding.isEmpty());
     if(encoding != QString::fromLatin1("utf-8"))
     {
         m_impl->data = XmlStreamReader::getDecodedString(dataAsByteArray()).toUtf8();
@@ -217,6 +224,10 @@ void MappedBuffer::autoInflate()
 
 void MappedBuffer::autoConvertXmlToUtf8()
 {
-    if(m_impl->isValid && !getXmlEncoding().isEmpty())
-        m_impl->isValid = convertXmlToUtf8();
+    if(!m_impl->isValid)
+        return;
+
+    const QString encoding = getXmlEncoding();
+    if(!encoding.isEmpty())
+        m_impl->isValid = convertXmlToUtf8(encoding);
 }

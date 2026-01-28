@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2023 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -64,6 +64,8 @@ public:
     bool convertXmlToUtf8();
 
 private:
+    bool convertXmlToUtf8(const QString &encoding);
+
     void autoInflate();
     void autoConvertXmlToUtf8();
 
