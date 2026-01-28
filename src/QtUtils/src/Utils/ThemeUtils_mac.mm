@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -55,29 +55,6 @@ bool SystemHasDarkTheme()
 
 NSImage *GetMacSystemImage(IconTypes type)
 {
-#if defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1050)
-    if(InfoUtils::MacVersionGreatOrEqual(10, 5))
-    {
-        switch(type)
-        {
-#define ADD_ICON_CASE(ICON_TYPE, IMAGE_NAME) \
-        case ICON_TYPE: \
-            if(NSImage *image = [NSImage imageNamed:IMAGE_NAME]) \
-                return image; \
-            break;
-        ADD_ICON_CASE(ICON_DOCUMENT_OPEN_WITH, NSImageNameRefreshTemplate)
-        ADD_ICON_CASE(ICON_GO_NEXT, NSImageNameGoRightTemplate)
-        ADD_ICON_CASE(ICON_GO_PREVIOUS, NSImageNameGoLeftTemplate)
-        ADD_ICON_CASE(ICON_MEDIA_SLIDESHOW, NSImageNameSlideshowTemplate)
-        ADD_ICON_CASE(ICON_VIEW_FULLSCREEN, NSImageNameEnterFullScreenTemplate)
-        ADD_ICON_CASE(ICON_VIEW_REFRESH, NSImageNameRefreshTemplate)
-#undef ADD_ICON_CASE
-        default:
-            break;
-        }
-    }
-#endif
-
 #if defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 110000)
     if(@available(*, macOS 11.0))
     {
@@ -150,6 +127,30 @@ NSImage *GetMacSystemImage(IconTypes type)
         }
     }
 #endif
+
+#if defined (MAC_OS_X_VERSION_MAX_ALLOWED) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1050)
+    if(InfoUtils::MacVersionGreatOrEqual(10, 5))
+    {
+        switch(type)
+        {
+#define ADD_ICON_CASE(ICON_TYPE, IMAGE_NAME) \
+        case ICON_TYPE: \
+            if(NSImage *image = [NSImage imageNamed:IMAGE_NAME]) \
+                return image; \
+            break;
+        ADD_ICON_CASE(ICON_DOCUMENT_OPEN_WITH, NSImageNameRefreshTemplate)
+        ADD_ICON_CASE(ICON_GO_NEXT, NSImageNameGoRightTemplate)
+        ADD_ICON_CASE(ICON_GO_PREVIOUS, NSImageNameGoLeftTemplate)
+        ADD_ICON_CASE(ICON_MEDIA_SLIDESHOW, NSImageNameSlideshowTemplate)
+        ADD_ICON_CASE(ICON_VIEW_FULLSCREEN, NSImageNameEnterFullScreenTemplate)
+        ADD_ICON_CASE(ICON_VIEW_REFRESH, NSImageNameRefreshTemplate)
+#undef ADD_ICON_CASE
+        default:
+            break;
+        }
+    }
+#endif
+
     return nil;
 }
 
