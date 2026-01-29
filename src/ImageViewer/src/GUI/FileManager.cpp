@@ -156,35 +156,38 @@ public:
             return;
 
         const QDir dir = QDir(m_directoryPath);
-        const QStringList list = supportedFilesInDirectory(m_supportedFormats, dir);
-        if(list.isEmpty())
+        m_filesList = supportedFilesInDirectory(m_supportedFormats, dir);
+        if(m_filesList.isEmpty())
             return;
 
         if(m_currentFilePath.isEmpty())
         {
             m_currentIndex = 0;
-            m_currentFilePath = dir.absoluteFilePath(list.first());
+            m_currentFilePath = dir.absoluteFilePath(m_filesList.first());
         }
 
-        const QFileInfo fileInfo = QFileInfo(m_currentFilePath);
-        const QString fileName = fileInfo.fileName();
-        for(QStringList::ConstIterator it = list.constBegin(); it != list.constEnd(); ++it)
-        {
-            const QString &name = *it;
-            m_filesList.append(name);
-            if(m_currentIndex == INVALID_INDEX && name == fileName)
-                m_currentIndex = m_filesList.size() - 1;
-        }
         if(m_currentIndex == INVALID_INDEX)
         {
-            const QString fileNameC = fileName.normalized(QString::NormalizationForm_C);
+            const QFileInfo fileInfo = QFileInfo(m_currentFilePath);
+            const QString fileName = fileInfo.fileName();
             for(int i = 0; i < m_filesList.size(); ++i)
             {
-                if(m_filesList[i].normalized(QString::NormalizationForm_C) != fileNameC)
+                if(m_filesList[i] != fileName)
                     continue;
                 m_currentIndex = i;
-                m_currentFilePath = dir.absoluteFilePath(m_filesList[i]);
                 break;
+            }
+            if(m_currentIndex == INVALID_INDEX)
+            {
+                const QString fileNameC = fileName.normalized(QString::NormalizationForm_C);
+                for(int i = 0; i < m_filesList.size(); ++i)
+                {
+                    if(m_filesList[i].normalized(QString::NormalizationForm_C) != fileNameC)
+                        continue;
+                    m_currentIndex = i;
+                    m_currentFilePath = dir.absoluteFilePath(m_filesList[i]);
+                    break;
+                }
             }
         }
         if(m_currentIndex < 0)
@@ -197,7 +200,7 @@ public:
 private:
     const QStringList m_supportedFormats;
     QFileSystemWatcher m_watcher;
-    QVector<QString> m_filesList;
+    QStringList m_filesList;
     QString m_currentFilePath;
     int m_currentIndex;
     QString m_directoryPath;
@@ -209,7 +212,7 @@ class FilxedListModel : public IFilesModel
 {
 public:
     explicit FilxedListModel(const QStringList &filePaths)
-        : m_pathsList(filePaths.toVector())
+        : m_pathsList(filePaths)
         , m_currentIndex(0)
         , m_canDeleteCurrentFile(false)
     {
@@ -251,7 +254,7 @@ public:
     {
         const QSignalBlocker watcherBlocker(m_watcher);
         bool wasChanged = false;
-        for(QVector<QString>::Iterator it = m_pathsList.begin(); it != m_pathsList.end();)
+        for(QStringList::Iterator it = m_pathsList.begin(); it != m_pathsList.end();)
         {
             if(!QFileInfo_exists(*it))
             {
@@ -263,16 +266,18 @@ public:
                 ++it;
             }
         }
+        bool wasReselected = false;
         if(wasChanged)
-            m_currentIndex = m_pathsList.indexOf(m_currentFilePath);
-        m_canDeleteCurrentFile = canDeleteFile(m_currentFilePath);
+            wasReselected = selectByPath(m_currentFilePath);
+        if(!wasReselected)
+            m_canDeleteCurrentFile = canDeleteFile(m_currentFilePath);
     }
 
     QFileSystemWatcher * watcher() Q_DECL_OVERRIDE { return &m_watcher; }
 
 private:
     QFileSystemWatcher m_watcher;
-    QVector<QString> m_pathsList;
+    QStringList m_pathsList;
     QString m_currentFilePath;
     int m_currentIndex;
     bool m_canDeleteCurrentFile;
