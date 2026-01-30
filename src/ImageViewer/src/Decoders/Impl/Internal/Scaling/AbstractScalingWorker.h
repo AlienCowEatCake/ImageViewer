@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QImage>
+#include <QAtomicInt>
 #include <QMutex>
 
 #include "Utils/ScopedPointer.h"
@@ -69,7 +70,7 @@ protected:
     QScopedPointer<ScaledImageData> m_scaledData;
 
 private:
-    bool m_workerAborted;
+    QAtomicInt m_workerAborted;
     QMutex m_scaledDataLock;
 };
 

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -38,7 +38,7 @@ AbstractScalingWorker::ScaledImageData::ScaledImageData(const QImage &image, con
 
 AbstractScalingWorker::AbstractScalingWorker()
     : m_scaleFactor(INVALID_SCALE_FACTOR)
-    , m_workerAborted(false)
+    , m_workerAborted(0)
 {}
 
 AbstractScalingWorker::~AbstractScalingWorker()
@@ -92,7 +92,7 @@ qint64 AbstractScalingWorker::getScaledDataId() const
 
 void AbstractScalingWorker::process()
 {
-    m_workerAborted = false;
+    m_workerAborted = 0;
     Q_EMIT started();
     if(isAborted())
     {
@@ -114,10 +114,10 @@ void AbstractScalingWorker::process()
 
 void AbstractScalingWorker::abort()
 {
-    m_workerAborted = true;
+    m_workerAborted = 1;
 }
 
 bool AbstractScalingWorker::isAborted() const
 {
-    return m_workerAborted;
+    return m_workerAborted != 0;
 }

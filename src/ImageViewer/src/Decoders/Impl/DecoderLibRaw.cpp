@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -30,6 +30,7 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
+#include <QAtomicInt>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QThread>
@@ -251,7 +252,7 @@ class RawImageProcessor
 public:
     explicit RawImageProcessor(const QString &filePath)
         : m_isValid(false)
-        , m_isCancelled(false)
+        , m_isCancelled(0)
     {
         m_isValid = openRawFile(filePath);
     }
@@ -263,12 +264,12 @@ public:
 
     void cancel()
     {
-        m_isCancelled = true;
+        m_isCancelled = 1;
     }
 
     bool isCancelled() const
     {
-        return m_isCancelled;
+        return m_isCancelled != 0;
     }
 
     QSize size() const
@@ -500,7 +501,7 @@ private:
     QScopedPointer<LibRaw_abstract_datastream> m_dataStream;
     LibRaw m_rawProcessor;
     bool m_isValid;
-    bool m_isCancelled;
+    QAtomicInt m_isCancelled;
 };
 
 // ====================================================================================================
