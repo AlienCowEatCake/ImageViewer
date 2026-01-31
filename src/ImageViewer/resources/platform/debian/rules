@@ -55,6 +55,7 @@ binary-arch: build
 		--exclude=debian/imageviewer/opt/ImageViewer/plugins/mediaservice \
 		--exclude=debian/imageviewer/opt/ImageViewer/plugins/networkinformation \
 		--exclude=debian/imageviewer/opt/ImageViewer/plugins/platforminputcontexts/libqtvirtualkeyboardplugin.so \
+		--exclude=debian/imageviewer/opt/ImageViewer/plugins/platforms/libqwayland.so \
 		--exclude=debian/imageviewer/opt/ImageViewer/plugins/platforms/libqwayland-egl.so \
 		--exclude=debian/imageviewer/opt/ImageViewer/plugins/platforms/libqwayland-generic.so \
 		--exclude=debian/imageviewer/opt/ImageViewer/plugins/platformthemes \

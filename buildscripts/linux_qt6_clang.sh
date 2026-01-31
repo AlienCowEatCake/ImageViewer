@@ -44,7 +44,7 @@ find "../${ICONS_DIR_PATH}" -name '*.png' -print0 | while IFS= read -r -d '' RAS
         cp -a "${RASTER_ICON_PATH}" "AppDir/usr/share/icons/hicolor/${RASTER_ICON_SIZE}/apps/${IDENTIFIER}.${RASTER_ICON_PATH##*.}"
     fi
 done
-"${CMD_DEPLOY}" "AppDir/usr/share/applications/${IDENTIFIER}.desktop" -always-overwrite -qmake="${CMD_QMAKE}" -extra-plugins=platforms/libqwayland-generic.so,platforms/libqwayland-egl.so,platformthemes,styles,wayland-decoration-client,wayland-graphics-integration-client,wayland-shell-integration
+"${CMD_DEPLOY}" "AppDir/usr/share/applications/${IDENTIFIER}.desktop" -always-overwrite -qmake="${CMD_QMAKE}" -extra-plugins=platforms/libqwayland.so,platformthemes,styles,wayland-decoration-client,wayland-graphics-integration-client,wayland-shell-integration
 find "../${QM_FILES_PATH}" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "AppDir/usr/translations/" \;
 find "../${QTUTILS_QM_FILES_PATH}" -mindepth 1 -maxdepth 1 -type f -name '*.qm' -exec cp -a \{\} "AppDir/usr/translations/" \;
 find "AppDir" -type d -exec chmod 755 \{\} \;
