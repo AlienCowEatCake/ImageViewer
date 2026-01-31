@@ -67,7 +67,6 @@ public:
 public Q_SLOTS:
     void reset();
     void update();
-    void tryUpdate();
     void ensureUpdated();
     bool openPath(const QString &filePath);
     bool openPaths(const QStringList &filePaths);

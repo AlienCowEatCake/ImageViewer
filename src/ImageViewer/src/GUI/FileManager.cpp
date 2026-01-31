@@ -18,50 +18,31 @@
 */
 
 #include "FileManager.h"
+#include "FileManager_p.h"
 
-#include <cassert>
 #include <algorithm>
+#include <cassert>
+#include <limits>
 
-#include <QString>
-#include <QVector>
 #include <QDir>
+#include <QDirIterator>
 #include <QFileInfo>
-#include <QFileSystemWatcher>
-#include <QTimer>
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 7, 0))
-#include <QElapsedTimer>
-#else
-#include <QTime>
-typedef QTime QElapsedTimer;
-#endif
+#include <QMutexLocker>
+#include <QPointer>
+#include <QVector>
 
 #include "Utils/FileUtils.h"
-#include "Utils/Global.h"
+#include "Utils/Logging.h"
 #include "Utils/SignalBlocker.h"
 #include "Utils/StringUtils.h"
+
+// #define QT_NO_DEBUG_OUTPUT
 
 // ====================================================================================================
 
 namespace {
 
 const int INVALID_INDEX = -1;
-
-QStringList supportedFilesInDirectory(const QStringList &supportedFormatsWithWildcards, const QDir &dir)
-{
-    if(supportedFormatsWithWildcards.empty())
-        return QStringList();
-    QStringList list = dir.entryList(supportedFormatsWithWildcards, QDir::Files | QDir::Readable, QDir::NoSort);
-    std::sort(list.begin(), list.end(), &StringUtils::PlatformNumericLessThan);
-    return list;
-}
-
-QStringList supportedPathsInDirectory(const QStringList &supportedFormatsWithWildcards, const QDir &dir)
-{
-    QStringList list = supportedFilesInDirectory(supportedFormatsWithWildcards, dir);
-    for(QStringList::Iterator it = list.begin(), itEnd = list.end(); it != itEnd; ++it)
-        *it = dir.absoluteFilePath(*it);
-    return list;
-}
 
 bool canDeleteFile(const QString &filePath)
 {
@@ -72,6 +53,257 @@ bool canDeleteFile(const QString &filePath)
 }
 
 } // namespace
+
+// ====================================================================================================
+
+FilesScanner::FilesScanner(QObject *parent)
+    : QThread(parent)
+    , m_watcher(new QFileSystemWatcher(Q_NULLPTR))
+    , m_watcherConfigured(0)
+    , m_stopPending(0)
+    , m_updateTimer(new QTimer(this))
+    , m_scannerIsDirty(0)
+{
+    m_watcher->moveToThread(this);
+    connect(m_watcher, SIGNAL(directoryChanged(QString)), this, SLOT(tryUpdate()));
+    connect(m_watcher, SIGNAL(fileChanged(QString)), this, SLOT(tryUpdate()));
+
+    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(ensureUpdated()));
+    m_updateTimer->setInterval(1000);
+    m_updateTimer->setSingleShot(false);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    m_updateTimer->setTimerType(Qt::VeryCoarseTimer);
+#endif
+}
+
+FilesScanner::~FilesScanner()
+{
+    reset();
+    m_watcher->disconnect();
+    m_watcher->deleteLater();
+}
+
+QStringList FilesScanner::getScanResult()
+{
+    const QMutexLocker guard(&m_scanResultMutex);
+    return m_scanResult;
+}
+
+bool FilesScanner::configureForDirContent(const QStringList &supportedFormats, const QString &directoryPath)
+{
+    reset();
+    m_supportedFormats = supportedFormats;
+    m_directoryPath = directoryPath;
+    m_fixedPathsList.clear();
+    if(supportedFormats.isEmpty() || m_directoryPath.isEmpty())
+        return false;
+    update();
+    return true;
+}
+
+bool FilesScanner::configureForFilxedList(const QStringList &supportedFormats, const QStringList &fixedPathsList)
+{
+    reset();
+    m_supportedFormats = supportedFormats;
+    m_directoryPath.clear();
+    m_fixedPathsList = fixedPathsList;
+    if(supportedFormats.isEmpty() || m_fixedPathsList.isEmpty())
+        return false;
+    update();
+    return true;
+}
+
+void FilesScanner::reset()
+{
+    m_stopPending = 1;
+
+    m_watcherMutex.lock();
+    if(m_watcherConfigured != 0)
+    {
+        const QSignalBlocker watcherBlocker(m_watcher);
+        const QStringList directories = m_watcher->directories();
+        if(!directories.isEmpty())
+            m_watcher->removePaths(directories);
+        const QStringList files = m_watcher->files();
+        if(!files.isEmpty())
+            m_watcher->removePaths(files);
+        m_watcherConfigured = 0;
+    }
+    m_watcherMutex.unlock();
+
+    m_updateTimer->stop();
+    wait();
+
+    m_scanResultMutex.lock();
+    m_scanResult.clear();
+    m_scanResultMutex.unlock();
+
+    m_supportedFormats.clear();
+    m_directoryPath.clear();
+    m_fixedPathsList.clear();
+
+    m_stopPending = 0;
+}
+
+void FilesScanner::run()
+{
+#if !defined (QT_NO_DEBUG_OUTPUT)
+#define CHECK_INTERRUPTION do { if(m_stopPending != 0) { LOG_DEBUG() << LOGGING_CTX << "Interrupted"; return; } } while(false)
+#else
+#define CHECK_INTERRUPTION if(m_stopPending != 0) return
+#endif
+    CHECK_INTERRUPTION;
+    if(!m_directoryPath.isEmpty())
+    {
+        QMutexLocker watcherMutexGuard(&m_watcherMutex);
+        CHECK_INTERRUPTION;
+        if(!m_watcherConfigured)
+        {
+#if !defined (QT_NO_DEBUG_OUTPUT)
+            QElapsedTimer timer;
+            timer.start();
+#endif
+            m_watcher->addPath(m_directoryPath);
+            m_watcherConfigured = 1;
+#if !defined (QT_NO_DEBUG_OUTPUT)
+            LOG_DEBUG() << LOGGING_CTX << "Watcher configured, elapsed time =" << static_cast<qint64>(timer.elapsed()) << "ms";
+#endif
+        }
+        watcherMutexGuard.unlock();
+        CHECK_INTERRUPTION;
+
+#if !defined (QT_NO_DEBUG_OUTPUT)
+        QElapsedTimer timer;
+        timer.start();
+#endif
+        QStringList list = collectDirContent(m_directoryPath);
+#if !defined (QT_NO_DEBUG_OUTPUT)
+        LOG_DEBUG() << LOGGING_CTX << "DirContent scanned, elapsed time =" << static_cast<qint64>(timer.elapsed()) << "ms, size =" << list.size();
+#endif
+
+        CHECK_INTERRUPTION;
+        m_scanResultMutex.lock();
+        m_scanResult.swap(list);
+        m_scanResultMutex.unlock();
+        Q_EMIT updated();
+    }
+    else if(!m_fixedPathsList.isEmpty())
+    {
+        QMutexLocker watcherMutexGuard(&m_watcherMutex);
+        if(!m_watcherConfigured)
+        {
+#if !defined (QT_NO_DEBUG_OUTPUT)
+            QElapsedTimer timer;
+            timer.start();
+#endif
+            for(QStringList::ConstIterator it = m_fixedPathsList.begin(), itEnd = m_fixedPathsList.end(); it != itEnd; ++it)
+            {
+                CHECK_INTERRUPTION;
+                m_watcher->addPath(*it);
+            }
+            m_watcherConfigured = 1;
+#if !defined (QT_NO_DEBUG_OUTPUT)
+            LOG_DEBUG() << LOGGING_CTX << "Watcher configured, elapsed time =" << static_cast<qint64>(timer.elapsed()) << "ms";
+#endif
+        }
+        watcherMutexGuard.unlock();
+        CHECK_INTERRUPTION;
+
+#if !defined (QT_NO_DEBUG_OUTPUT)
+        QElapsedTimer timer;
+        timer.start();
+#endif
+        QStringList list;
+        for(QStringList::ConstIterator it = m_fixedPathsList.begin(), itEnd = m_fixedPathsList.end(); it != itEnd; ++it)
+        {
+            CHECK_INTERRUPTION;
+            const QFileInfo fileInfo(*it);
+            if(!fileInfo.exists())
+                continue;
+
+            if(fileInfo.isDir())
+            {
+                const QString directoryPath = fileInfo.absoluteFilePath();
+                const QStringList directoryContent = collectDirContent(directoryPath);
+                QDir directory(directoryPath);
+                for(QStringList::ConstIterator jt = directoryContent.begin(), jtEnd = directoryContent.end(); jt != jtEnd; ++jt)
+                {
+                    CHECK_INTERRUPTION;
+                    list.append(directory.absoluteFilePath(*jt));
+                }
+            }
+            else
+            {
+                list.append(fileInfo.absoluteFilePath());
+            }
+        }
+#if !defined (QT_NO_DEBUG_OUTPUT)
+        LOG_DEBUG() << LOGGING_CTX << "FilxedList scanned, elapsed time =" << static_cast<qint64>(timer.elapsed()) << "ms, size =" << list.size();
+#endif
+
+        CHECK_INTERRUPTION;
+        m_scanResultMutex.lock();
+        m_scanResult.swap(list);
+        m_scanResultMutex.unlock();
+        Q_EMIT updated();
+    }
+#undef CHECK_INTERRUPTION
+}
+
+QStringList FilesScanner::collectDirContent(const QString &directoryPath) const
+{
+#if !defined (QT_NO_DEBUG_OUTPUT)
+#define CHECK_INTERRUPTION do { if(m_stopPending != 0) { LOG_DEBUG() << LOGGING_CTX << "Interrupted"; return QStringList(); } } while(false)
+#else
+#define CHECK_INTERRUPTION if(m_stopPending != 0) return QStringList()
+#endif
+#if !defined (QT_NO_DEBUG_OUTPUT)
+    QElapsedTimer timer;
+    timer.start();
+#endif
+    QStringList list;
+    QDirIterator it(directoryPath, m_supportedFormats, QDir::Files | QDir::NoDotAndDotDot | QDir::Readable);
+    while(it.hasNext())
+    {
+        CHECK_INTERRUPTION;
+        it.next();
+        list.append(it.fileName());
+    }
+    CHECK_INTERRUPTION;
+#if !defined (QT_NO_DEBUG_OUTPUT)
+    LOG_DEBUG() << LOGGING_CTX << "Directory content collected, elapsed time =" << static_cast<qint64>(timer.elapsed()) << "ms, size =" << list.size();
+    timer.restart();
+#endif
+    std::sort(list.begin(), list.end(), &StringUtils::PlatformNumericLessThan);
+#if !defined (QT_NO_DEBUG_OUTPUT)
+    LOG_DEBUG() << LOGGING_CTX << "Directory content sorted, elapsed time =" << static_cast<qint64>(timer.elapsed()) << "ms, size =" << list.size();
+#endif
+    return list;
+#undef CHECK_INTERRUPTION
+}
+
+void FilesScanner::update()
+{
+    if(isRunning())
+        return;
+    start();
+    m_scannerIsDirty = 0;
+    m_timeFromLastUpdate.restart();
+}
+
+void FilesScanner::tryUpdate()
+{
+    if(static_cast<qint64>(m_timeFromLastUpdate.elapsed()) >= static_cast<qint64>(m_updateTimer->interval()))
+        update();
+    else
+        m_scannerIsDirty = 1;
+}
+
+void FilesScanner::ensureUpdated()
+{
+    if(m_scannerIsDirty != 0)
+        update();
+}
 
 // ====================================================================================================
 
@@ -90,16 +322,14 @@ public:
     virtual bool selectByPath(const QString &path) = 0;
     virtual bool selectByIndex(int index) = 0;
     virtual void update() = 0;
-
-    virtual QFileSystemWatcher * watcher() = 0;
 };
 
 
 class DirContentModel : public IFilesModel
 {
 public:
-    DirContentModel(const QStringList &supportedFormatsWithWildcards, const QString &filePath)
-        : m_supportedFormats(supportedFormatsWithWildcards)
+    DirContentModel(FilesScanner *filesScanner, const QStringList &supportedFormatsWithWildcards, const QString &filePath)
+        : m_filesScanner(filesScanner)
         , m_currentIndex(INVALID_INDEX)
         , m_canDeleteCurrentFile(false)
     {
@@ -109,13 +339,17 @@ public:
         {
             m_currentFilePath = filePath;
             m_directoryPath = fileInfo.absolutePath();
+            filesScanner->configureForDirContent(supportedFormatsWithWildcards, m_directoryPath);
         }
         else
         {
             m_directoryPath = fileInfo.absoluteFilePath();
+            if(filesScanner->configureForDirContent(supportedFormatsWithWildcards, m_directoryPath))
+            {
+                filesScanner->wait();
+                DirContentModel::update();
+            }
         }
-        m_watcher.addPath(m_directoryPath);
-        DirContentModel::update();
     }
 
     QString currentFilePath() const Q_DECL_OVERRIDE     { return m_currentFilePath; }
@@ -148,18 +382,31 @@ public:
 
     void update() Q_DECL_OVERRIDE
     {
-        const QSignalBlocker watcherBlocker(m_watcher);
         m_filesList.clear();
         m_currentIndex = INVALID_INDEX;
         m_canDeleteCurrentFile = false;
         if(m_directoryPath.isEmpty())
             return;
+        if(!m_filesScanner)
+            return;
 
-        const QDir dir = QDir(m_directoryPath);
-        m_filesList = supportedFilesInDirectory(m_supportedFormats, dir);
+        m_filesList = m_filesScanner->getScanResult();
         if(m_filesList.isEmpty())
             return;
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        if(m_filesList.size() >= std::numeric_limits<int>::max())
+        {
+            LOG_WARNING() << LOGGING_CTX << QString::fromLatin1("Files list overflow: current=%1, max=%2")
+                    .arg(m_filesList.size())
+                    .arg(std::numeric_limits<int>::max())
+                    .toLocal8Bit().data();
+            m_filesList.clear();
+            return;
+        }
+#endif
+
+        const QDir dir = QDir(m_directoryPath);
         if(m_currentFilePath.isEmpty())
         {
             m_currentIndex = 0;
@@ -190,16 +437,11 @@ public:
                 }
             }
         }
-        if(m_currentIndex < 0)
-            m_filesList.clear();
         m_canDeleteCurrentFile = canDeleteFile(m_currentFilePath);
     }
 
-    QFileSystemWatcher * watcher() Q_DECL_OVERRIDE { return &m_watcher; }
-
 private:
-    const QStringList m_supportedFormats;
-    QFileSystemWatcher m_watcher;
+    QPointer<FilesScanner> m_filesScanner;
     QStringList m_filesList;
     QString m_currentFilePath;
     int m_currentIndex;
@@ -211,15 +453,25 @@ private:
 class FilxedListModel : public IFilesModel
 {
 public:
-    explicit FilxedListModel(const QStringList &filePaths)
-        : m_pathsList(filePaths)
-        , m_currentIndex(0)
+    explicit FilxedListModel(FilesScanner *filesScanner, const QStringList &supportedFormatsWithWildcards, const QStringList &filePaths)
+        : m_filesScanner(filesScanner)
+        , m_currentIndex(INVALID_INDEX)
         , m_canDeleteCurrentFile(false)
     {
         assert(!filePaths.isEmpty());
-        m_watcher.addPaths(filePaths);
-        m_currentFilePath = filePaths.first();
-        m_canDeleteCurrentFile = canDeleteFile(m_currentFilePath);
+        if(QFileInfo(filePaths.first()).isFile())
+        {
+            m_currentFilePath = filePaths.first();
+            filesScanner->configureForFilxedList(supportedFormatsWithWildcards, filePaths);
+        }
+        else
+        {
+            if(filesScanner->configureForFilxedList(supportedFormatsWithWildcards, filePaths))
+            {
+                filesScanner->wait();
+                FilxedListModel::update();
+            }
+        }
     }
 
     QString currentFilePath() const Q_DECL_OVERRIDE     { return m_currentFilePath; }
@@ -252,31 +504,61 @@ public:
 
     void update() Q_DECL_OVERRIDE
     {
-        const QSignalBlocker watcherBlocker(m_watcher);
-        bool wasChanged = false;
-        for(QStringList::Iterator it = m_pathsList.begin(); it != m_pathsList.end();)
+        m_pathsList.clear();
+        m_currentIndex = INVALID_INDEX;
+        m_canDeleteCurrentFile = false;
+        if(!m_filesScanner)
+            return;
+
+        m_pathsList = m_filesScanner->getScanResult();
+        if(m_pathsList.isEmpty())
+            return;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        if(m_pathsList.size() >= std::numeric_limits<int>::max())
         {
-            if(!QFileInfo_exists(*it))
+            LOG_WARNING() << LOGGING_CTX << QString::fromLatin1("Files list overflow: current=%1, max=%2")
+                    .arg(m_pathsList.size())
+                    .arg(std::numeric_limits<int>::max())
+                    .toLocal8Bit().data();
+            m_pathsList.clear();
+            return;
+        }
+#endif
+
+        if(m_currentFilePath.isEmpty())
+        {
+            m_currentIndex = 0;
+            m_currentFilePath = m_pathsList.first();
+        }
+
+        if(m_currentIndex == INVALID_INDEX)
+        {
+            for(int i = 0; i < m_pathsList.size(); ++i)
             {
-                it = m_pathsList.erase(it);
-                wasChanged = true;
+                if(m_pathsList[i] != m_currentFilePath)
+                    continue;
+                m_currentIndex = i;
+                break;
             }
-            else
+            if(m_currentIndex == INVALID_INDEX)
             {
-                ++it;
+                const QString filePathC = m_currentFilePath.normalized(QString::NormalizationForm_C);
+                for(int i = 0; i < m_pathsList.size(); ++i)
+                {
+                    if(m_pathsList[i].normalized(QString::NormalizationForm_C) != filePathC)
+                        continue;
+                    m_currentIndex = i;
+                    m_currentFilePath = m_pathsList[i];
+                    break;
+                }
             }
         }
-        bool wasReselected = false;
-        if(wasChanged)
-            wasReselected = selectByPath(m_currentFilePath);
-        if(!wasReselected)
-            m_canDeleteCurrentFile = canDeleteFile(m_currentFilePath);
+        m_canDeleteCurrentFile = canDeleteFile(m_currentFilePath);
     }
 
-    QFileSystemWatcher * watcher() Q_DECL_OVERRIDE { return &m_watcher; }
-
 private:
-    QFileSystemWatcher m_watcher;
+    QPointer<FilesScanner> m_filesScanner;
     QStringList m_pathsList;
     QString m_currentFilePath;
     int m_currentIndex;
@@ -293,39 +575,23 @@ struct FileManager::Impl
 
     FileManager *fileManager;
     QStringList supportedFormats;
+    FilesScanner filesScanner;
     QScopedPointer<IFilesModel> filesModel;
     QStringList currentOpenArguments;
-    QTimer *updateTimer;
-    bool filesModelIsDirty;
-    QElapsedTimer timeFromLastUpdate;
 
     explicit Impl(FileManager *fileManager)
         : fileManager(fileManager)
         , supportedFormats(QString::fromLatin1("*.*"))
-        , updateTimer(new QTimer(fileManager))
-        , filesModelIsDirty(false)
     {
-        timeFromLastUpdate.start();
-        QObject::connect(updateTimer, SIGNAL(timeout()), fileManager, SLOT(ensureUpdated()));
-        updateTimer->setInterval(1000);
-        updateTimer->setSingleShot(false);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-        updateTimer->setTimerType(Qt::VeryCoarseTimer);
-#endif
+        QObject::connect(&filesScanner, SIGNAL(updated()), fileManager, SLOT(update()), Qt::QueuedConnection);
     }
 
     void resetFilesModel(IFilesModel *newFilesModel = Q_NULLPTR)
     {
-        updateTimer->stop();
+        if(!newFilesModel)
+            filesScanner.reset();
         currentOpenArguments.clear();
         filesModel.reset(newFilesModel);
-        filesModelIsDirty = false;
-        timeFromLastUpdate.restart();
-        if(!newFilesModel)
-            return;
-        QObject::connect(filesModel->watcher(), SIGNAL(directoryChanged(QString)), fileManager, SLOT(tryUpdate()));
-        QObject::connect(filesModel->watcher(), SIGNAL(fileChanged(QString)), fileManager, SLOT(tryUpdate()));
-        updateTimer->start();
     }
 
     bool selectAnotherFileAfterDeletion()
@@ -433,25 +699,11 @@ void FileManager::update()
     const Impl::ChangedGuard changedGuard(this);
     if(m_impl->filesModel)
         m_impl->filesModel->update();
-    m_impl->filesModelIsDirty = false;
-    m_impl->timeFromLastUpdate.restart();
-}
-
-void FileManager::tryUpdate()
-{
-    if(!m_impl->filesModel)
-        return;
-
-    if(static_cast<qint64>(m_impl->timeFromLastUpdate.elapsed()) >= static_cast<qint64>(m_impl->updateTimer->interval()))
-        update();
-    else
-        m_impl->filesModelIsDirty = true;
 }
 
 void FileManager::ensureUpdated()
 {
-    if(m_impl->filesModelIsDirty)
-        update();
+    /// @todo What should we do here?
 }
 
 bool FileManager::openPath(const QString &filePath)
@@ -461,47 +713,43 @@ bool FileManager::openPath(const QString &filePath)
         return false;
 
     const Impl::ChangedGuard changedGuard(this);
-    m_impl->resetFilesModel(new DirContentModel(m_impl->supportedFormats, fileInfo.absoluteFilePath()));
-    if(m_impl->filesModel->filesCount() <= 0 && !fileInfo.isDir())
-        m_impl->resetFilesModel(new FilxedListModel(QStringList() << fileInfo.absoluteFilePath()));
-    if(m_impl->filesModel->filesCount() <= 0)
+    const QSignalBlocker recursiveChangedBlocker(this);
+    m_impl->resetFilesModel(new DirContentModel(&m_impl->filesScanner, m_impl->supportedFormats, fileInfo.absoluteFilePath()));
+    if(m_impl->filesModel->currentFilePath().isEmpty())
+    {
+        m_impl->resetFilesModel();
         return false;
+    }
+
     m_impl->currentOpenArguments = QStringList(filePath);
     return true;
 }
 
 bool FileManager::openPaths(const QStringList &filePaths)
 {
-    if(filePaths.size() == 0)
-        return false;
-
-    if(filePaths.size() == 1)
-        return openPath(filePaths.first());
-
     QStringList pathsList;
     for(QStringList::ConstIterator it = filePaths.constBegin(), itEnd = filePaths.constEnd(); it != itEnd; ++it)
     {
         const QFileInfo fileInfo(*it);
-        if(!fileInfo.exists())
-            continue;
-
-        if(fileInfo.isDir())
-        {
-            const QStringList pathsInDir = supportedPathsInDirectory(m_impl->supportedFormats, QDir(fileInfo.absoluteFilePath()));
-            for(QStringList::ConstIterator jt = pathsInDir.constBegin(), jtEnd = pathsInDir.constEnd(); jt != jtEnd; ++jt)
-                pathsList.append(*jt);
-        }
-        else
-        {
-            pathsList.append(*it);
-        }
+        if(fileInfo.exists())
+            pathsList.append(fileInfo.absoluteFilePath());
     }
 
     if(pathsList.isEmpty())
         return false;
 
+    if(filePaths.size() == 1)
+        return openPath(filePaths.first());
+
     const Impl::ChangedGuard changedGuard(this);
-    m_impl->resetFilesModel(new FilxedListModel(pathsList));
+    const QSignalBlocker recursiveChangedBlocker(this);
+    m_impl->resetFilesModel(new FilxedListModel(&m_impl->filesScanner, m_impl->supportedFormats, pathsList));
+    if(m_impl->filesModel->currentFilePath().isEmpty())
+    {
+        m_impl->resetFilesModel();
+        return false;
+    }
+
     m_impl->currentOpenArguments = filePaths;
     return true;
 }
