@@ -16,7 +16,7 @@ NOTARIZE_ASC_PROVIDER="${APP_CERT: -11:10}"
 MAC_TARGET="12.0"
 MAC_SDK="$(xcodebuild -showsdks | grep '\-sdk macosx' | tail -1 | sed 's|.*-sdk ||')"
 
-QT_PATH="${QT_PATH:=/opt/Qt/6.9.3/macos_target12.0}"
+QT_PATH="${QT_PATH:=/opt/Qt/6.10.2/macos_target12.0}"
 QTPLUGINS_PATH="${QT_PATH}/plugins"
 CMD_QMAKE="${QT_PATH}/bin/qmake"
 CMD_DEPLOY="${QT_PATH}/bin/macdeployqt"
