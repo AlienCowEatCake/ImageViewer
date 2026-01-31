@@ -283,7 +283,7 @@ public:
 
     QImage getThumbnail()
     {
-#define CHECK_CANCEL if(isCancelled()) return QImage()
+#define CHECK_CANCEL if(Q_UNLIKELY(isCancelled())) return QImage()
         if(!isValid())
             return QImage();
         try
@@ -318,7 +318,7 @@ public:
 
     QImage getImage()
     {
-#define CHECK_CANCEL if(isCancelled()) return QImage()
+#define CHECK_CANCEL if(Q_UNLIKELY(isCancelled())) return QImage()
         if(!isValid())
             return QImage();
         try

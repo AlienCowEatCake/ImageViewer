@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -47,7 +47,7 @@ public:
 private:
     bool scaleImpl() Q_DECL_OVERRIDE
     {
-#define CHECK_ABORT_STATE if(isAborted()) return false
+#define CHECK_ABORT_STATE if(Q_UNLIKELY(isAborted())) return false
         CHECK_ABORT_STATE;
         const qreal newScaleFactor = m_scaleFactor;
         const QSize scaledImageSize = m_image.size() * newScaleFactor;

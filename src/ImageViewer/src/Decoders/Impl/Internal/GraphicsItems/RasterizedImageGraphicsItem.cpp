@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2022 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -48,7 +48,7 @@ public:
 
     bool generateScaledImage(const bool checkAbortedState)
     {
-#define CHECK_ABORT_STATE if(checkAbortedState && isAborted()) return false
+#define CHECK_ABORT_STATE if(Q_UNLIKELY(checkAbortedState && isAborted())) return false
         CHECK_ABORT_STATE;
         if(!m_provider)
             return false;

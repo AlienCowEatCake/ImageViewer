@@ -148,16 +148,16 @@ void FilesScanner::reset()
 void FilesScanner::run()
 {
 #if !defined (QT_NO_DEBUG_OUTPUT)
-#define CHECK_INTERRUPTION do { if(m_stopPending != 0) { LOG_DEBUG() << LOGGING_CTX << "Interrupted"; return; } } while(false)
+#define CHECK_INTERRUPTION do { if(Q_UNLIKELY(m_stopPending != 0)) { LOG_DEBUG() << LOGGING_CTX << "Interrupted"; return; } } while(false)
 #else
-#define CHECK_INTERRUPTION if(m_stopPending != 0) return
+#define CHECK_INTERRUPTION if(Q_UNLIKELY(m_stopPending != 0)) return
 #endif
     CHECK_INTERRUPTION;
     if(!m_directoryPath.isEmpty())
     {
         QMutexLocker watcherMutexGuard(&m_watcherMutex);
         CHECK_INTERRUPTION;
-        if(!m_watcherConfigured)
+        if(Q_UNLIKELY(!m_watcherConfigured))
         {
 #if !defined (QT_NO_DEBUG_OUTPUT)
             QElapsedTimer timer;
@@ -190,7 +190,7 @@ void FilesScanner::run()
     else if(!m_fixedPathsList.isEmpty())
     {
         QMutexLocker watcherMutexGuard(&m_watcherMutex);
-        if(!m_watcherConfigured)
+        if(Q_UNLIKELY(!m_watcherConfigured))
         {
 #if !defined (QT_NO_DEBUG_OUTPUT)
             QElapsedTimer timer;
@@ -253,9 +253,9 @@ void FilesScanner::run()
 QStringList FilesScanner::collectDirContent(const QString &directoryPath) const
 {
 #if !defined (QT_NO_DEBUG_OUTPUT)
-#define CHECK_INTERRUPTION do { if(m_stopPending != 0) { LOG_DEBUG() << LOGGING_CTX << "Interrupted"; return QStringList(); } } while(false)
+#define CHECK_INTERRUPTION do { if(Q_UNLIKELY(m_stopPending != 0)) { LOG_DEBUG() << LOGGING_CTX << "Interrupted"; return QStringList(); } } while(false)
 #else
-#define CHECK_INTERRUPTION if(m_stopPending != 0) return QStringList()
+#define CHECK_INTERRUPTION if(Q_UNLIKELY(m_stopPending != 0)) return QStringList()
 #endif
 #if !defined (QT_NO_DEBUG_OUTPUT)
     QElapsedTimer timer;

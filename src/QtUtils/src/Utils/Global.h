@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -110,6 +110,22 @@ static inline bool qFuzzyIsNull(float f)
 #       define Q_NULLPTR nullptr
 #   else
 #       define Q_NULLPTR NULL
+#   endif
+#endif
+
+#if !defined (Q_LIKELY)
+#   if defined (__GNUC__)
+#       define Q_LIKELY(x) __builtin_expect(!!(x), true)
+#   else
+#       define Q_LIKELY(x) (x)
+#   endif
+#endif
+
+#if !defined (Q_UNLIKELY)
+#   if defined (__GNUC__)
+#       define Q_UNLIKELY(x) __builtin_expect(!!(x), false)
+#   else
+#       define Q_UNLIKELY(x) (x)
 #   endif
 #endif
 
