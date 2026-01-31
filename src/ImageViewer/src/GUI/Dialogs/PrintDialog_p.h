@@ -989,32 +989,32 @@ struct PrintDialog::UI
 
     void retranslate()
     {
-        printerSelectGroup->setTitle(qApp->translate("PrintDialog", "Printer"));
-        printDialogButton->setText(qApp->translate("PrintDialog", "\xe2\x80\xa6"));
-        printerNameHeaderLabel->setText(qApp->translate("PrintDialog", "Name:"));
-        printerDescriptionHeaderLabel->setText(qApp->translate("PrintDialog", "Description:"));
-        printerDefaultHeaderLabel->setText(qApp->translate("PrintDialog", "Default:"));
-        printerRemoteHeaderLabel->setText(qApp->translate("PrintDialog", "Remote:"));
-        printerLocationHeaderLabel->setText(qApp->translate("PrintDialog", "Location:"));
-        printerMakeAndModelHeaderLabel->setText(qApp->translate("PrintDialog", "Make and model:"));
-        printerStateHeaderLabel->setText(qApp->translate("PrintDialog", "State:"));
+        printerSelectGroup->setTitle(QCoreApplication::translate("PrintDialog", "Printer"));
+        printDialogButton->setText(QCoreApplication::translate("PrintDialog", "\xe2\x80\xa6"));
+        printerNameHeaderLabel->setText(QCoreApplication::translate("PrintDialog", "Name:"));
+        printerDescriptionHeaderLabel->setText(QCoreApplication::translate("PrintDialog", "Description:"));
+        printerDefaultHeaderLabel->setText(QCoreApplication::translate("PrintDialog", "Default:"));
+        printerRemoteHeaderLabel->setText(QCoreApplication::translate("PrintDialog", "Remote:"));
+        printerLocationHeaderLabel->setText(QCoreApplication::translate("PrintDialog", "Location:"));
+        printerMakeAndModelHeaderLabel->setText(QCoreApplication::translate("PrintDialog", "Make and model:"));
+        printerStateHeaderLabel->setText(QCoreApplication::translate("PrintDialog", "State:"));
 
-        pageGroup->setTitle(qApp->translate("PrintDialog", "Page"));
-        portraitRadioButton->setText(qApp->translate("PrintDialog", "Portrait"));
-        landscapeRadioButton->setText(qApp->translate("PrintDialog", "Landscape"));
-        autoRotateCheckBox->setText(qApp->translate("PrintDialog", "Auto-Rotate"));
-        pageSetupButton->setText(qApp->translate("PrintDialog", "Page Setup"));
+        pageGroup->setTitle(QCoreApplication::translate("PrintDialog", "Page"));
+        portraitRadioButton->setText(QCoreApplication::translate("PrintDialog", "Portrait"));
+        landscapeRadioButton->setText(QCoreApplication::translate("PrintDialog", "Landscape"));
+        autoRotateCheckBox->setText(QCoreApplication::translate("PrintDialog", "Auto-Rotate"));
+        pageSetupButton->setText(QCoreApplication::translate("PrintDialog", "Page Setup"));
 
-        miscGroup->setTitle(qApp->translate("PrintDialog", "Misc"));
-        copiesLabel->setText(qApp->translate("PrintDialog", "Copies:"));
-        colorModeLabel->setText(qApp->translate("PrintDialog", "Color Mode:"));
+        miscGroup->setTitle(QCoreApplication::translate("PrintDialog", "Misc"));
+        copiesLabel->setText(QCoreApplication::translate("PrintDialog", "Copies:"));
+        colorModeLabel->setText(QCoreApplication::translate("PrintDialog", "Color Mode:"));
 
-        sizeGroup->setTitle(qApp->translate("PrintDialog", "Size"));
-        widthLabel->setText(qApp->translate("PrintDialog", "Width:"));
-        heightLabel->setText(qApp->translate("PrintDialog", "Height:"));
-        xResolutionLabel->setText(qApp->translate("PrintDialog", "X Resolution:"));
-        yResolutionLabel->setText(qApp->translate("PrintDialog", "Y Resolution:"));
-        loadDefaultsButton->setText(qApp->translate("PrintDialog", "Load Defaults"));
+        sizeGroup->setTitle(QCoreApplication::translate("PrintDialog", "Size"));
+        widthLabel->setText(QCoreApplication::translate("PrintDialog", "Width:"));
+        heightLabel->setText(QCoreApplication::translate("PrintDialog", "Height:"));
+        xResolutionLabel->setText(QCoreApplication::translate("PrintDialog", "X Resolution:"));
+        yResolutionLabel->setText(QCoreApplication::translate("PrintDialog", "Y Resolution:"));
+        loadDefaultsButton->setText(QCoreApplication::translate("PrintDialog", "Load Defaults"));
         if(sizeGroup->layoutDirection() == Qt::RightToLeft)
         {
             keepAspectLabelTop->setText(QString::fromLatin1("<b>&#9581;</b>"));
@@ -1026,33 +1026,33 @@ struct PrintDialog::UI
             keepAspectLabelBottom->setText(QString::fromLatin1("<b>&#9583;</b>"));
         }
 
-        positionGroup->setTitle(qApp->translate("PrintDialog", "Position"));
-        leftLabel->setText(qApp->translate("PrintDialog", "Left:"));
-        rightLabel->setText(qApp->translate("PrintDialog", "Right:"));
-        topLabel->setText(qApp->translate("PrintDialog", "Top:"));
-        bottomLabel->setText(qApp->translate("PrintDialog", "Bottom:"));
-        centerLabel->setText(qApp->translate("PrintDialog", "Center:"));
+        positionGroup->setTitle(QCoreApplication::translate("PrintDialog", "Position"));
+        leftLabel->setText(QCoreApplication::translate("PrintDialog", "Left:"));
+        rightLabel->setText(QCoreApplication::translate("PrintDialog", "Right:"));
+        topLabel->setText(QCoreApplication::translate("PrintDialog", "Top:"));
+        bottomLabel->setText(QCoreApplication::translate("PrintDialog", "Bottom:"));
+        centerLabel->setText(QCoreApplication::translate("PrintDialog", "Center:"));
 
-        ignorePageMarginsCheckBox->setText(qApp->translate("PrintDialog", "Ignore Page Margins"));
-        ignorePaperBoundsCheckBox->setText(qApp->translate("PrintDialog", "Ignore Paper Bounds"));
+        ignorePageMarginsCheckBox->setText(QCoreApplication::translate("PrintDialog", "Ignore Page Margins"));
+        ignorePaperBoundsCheckBox->setText(QCoreApplication::translate("PrintDialog", "Ignore Paper Bounds"));
 
-        previewGroup->setTitle(qApp->translate("PrintDialog", "Preview"));
+        previewGroup->setTitle(QCoreApplication::translate("PrintDialog", "Preview"));
 
-        effectsControlGroup->setTitle(qApp->translate("PrintDialog", "Effects", "Effects"));
-        brightnessLabel->setText(qApp->translate("PrintDialog", "Brightness:", "Effects"));
-        contrastLabel->setText(qApp->translate("PrintDialog", "Contrast:", "Effects"));
-        exposureLabel->setText(qApp->translate("PrintDialog", "Exposure:", "Effects"));
-        grayscaleCheckBox->setText(qApp->translate("PrintDialog", "Grayscale", "Effects"));
-        legacyRendererCheckBox->setText(qApp->translate("PrintDialog", "Use Legacy Rendering Algorithm", "Effects"));
+        effectsControlGroup->setTitle(QCoreApplication::translate("PrintDialog", "Effects", "Effects"));
+        brightnessLabel->setText(QCoreApplication::translate("PrintDialog", "Brightness:", "Effects"));
+        contrastLabel->setText(QCoreApplication::translate("PrintDialog", "Contrast:", "Effects"));
+        exposureLabel->setText(QCoreApplication::translate("PrintDialog", "Exposure:", "Effects"));
+        grayscaleCheckBox->setText(QCoreApplication::translate("PrintDialog", "Grayscale", "Effects"));
+        legacyRendererCheckBox->setText(QCoreApplication::translate("PrintDialog", "Use Legacy Rendering Algorithm", "Effects"));
 
-        effectsPreviewGroup->setTitle(qApp->translate("PrintDialog", "Preview", "Effects"));
+        effectsPreviewGroup->setTitle(QCoreApplication::translate("PrintDialog", "Preview", "Effects"));
 
-        tabWidget->setTabText(tabWidget->indexOf(generalTabFrame), qApp->translate("PrintDialog", "General"));
-        tabWidget->setTabText(tabWidget->indexOf(imageSettingsTabFrame), qApp->translate("PrintDialog", "Image Settings"));
-        tabWidget->setTabText(tabWidget->indexOf(effectsTabFrame), qApp->translate("PrintDialog", "Effects"));
+        tabWidget->setTabText(tabWidget->indexOf(generalTabFrame), QCoreApplication::translate("PrintDialog", "General"));
+        tabWidget->setTabText(tabWidget->indexOf(imageSettingsTabFrame), QCoreApplication::translate("PrintDialog", "Image Settings"));
+        tabWidget->setTabText(tabWidget->indexOf(effectsTabFrame), QCoreApplication::translate("PrintDialog", "Effects"));
 
-        dialogButtonBox->button(QDialogButtonBox::Ok)->setText(qApp->translate("PrintDialog", "Print"));
-        dialogButtonBox->button(QDialogButtonBox::Cancel)->setText(qApp->translate("PrintDialog", "Cancel"));
+        dialogButtonBox->button(QDialogButtonBox::Ok)->setText(QCoreApplication::translate("PrintDialog", "Print"));
+        dialogButtonBox->button(QDialogButtonBox::Cancel)->setText(QCoreApplication::translate("PrintDialog", "Cancel"));
     }
 };
 

@@ -369,18 +369,18 @@ PrintDialog::PrintDialog(const QSharedPointer<IImageData> &imageData,
                    Qt::WindowCloseButtonHint |
 #endif
                    Qt::WindowSystemMenuHint | Qt::MSWindowsFixedSizeDialogHint);
-    setWindowTitle(qApp->translate("PrintDialog", "Print", "Title"));
+    setWindowTitle(QCoreApplication::translate("PrintDialog", "Print", "Title"));
     setWindowModality(Qt::ApplicationModal);
 
     m_ui->copiesSpinBox->setMinimum(1);
     m_ui->copiesSpinBox->setMaximum(999);
 
-    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Millimeters (mm)"  , "Size unit"), static_cast<int>(QPrinter::Millimeter));
-    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Points (pt)"       , "Size unit"), static_cast<int>(QPrinter::Point));
-    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Inches (in)"       , "Size unit"), static_cast<int>(QPrinter::Inch));
-    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pica (P\xcc\xb8)"  , "Size unit"), static_cast<int>(QPrinter::Pica));
-    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Didot (DD)"        , "Size unit"), static_cast<int>(QPrinter::Didot));
-    m_ui->sizeUnitsComboBox->addItem(qApp->translate("PrintDialog", "Cicero (CC)"       , "Size unit"), static_cast<int>(QPrinter::Cicero));
+    m_ui->sizeUnitsComboBox->addItem(QCoreApplication::translate("PrintDialog", "Millimeters (mm)"  , "Size unit"), static_cast<int>(QPrinter::Millimeter));
+    m_ui->sizeUnitsComboBox->addItem(QCoreApplication::translate("PrintDialog", "Points (pt)"       , "Size unit"), static_cast<int>(QPrinter::Point));
+    m_ui->sizeUnitsComboBox->addItem(QCoreApplication::translate("PrintDialog", "Inches (in)"       , "Size unit"), static_cast<int>(QPrinter::Inch));
+    m_ui->sizeUnitsComboBox->addItem(QCoreApplication::translate("PrintDialog", "Pica (P\xcc\xb8)"  , "Size unit"), static_cast<int>(QPrinter::Pica));
+    m_ui->sizeUnitsComboBox->addItem(QCoreApplication::translate("PrintDialog", "Didot (DD)"        , "Size unit"), static_cast<int>(QPrinter::Didot));
+    m_ui->sizeUnitsComboBox->addItem(QCoreApplication::translate("PrintDialog", "Cicero (CC)"       , "Size unit"), static_cast<int>(QPrinter::Cicero));
     QPrinter::Unit sizeUnit = QPrinter::Millimeter;
     switch(QLocale::system().measurementSystem())
     {
@@ -399,20 +399,20 @@ PrintDialog::PrintDialog(const QSharedPointer<IImageData> &imageData,
     sizeUnit = unitFromVariant(m_impl->settings.value(SIZE_UNIT_KEY, unitToVariant(sizeUnit)), sizeUnit);
     m_ui->sizeUnitsComboBox->setCurrentIndex(m_ui->sizeUnitsComboBox->findData(static_cast<int>(sizeUnit)));
 
-    m_ui->resolutionUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pixels/Millimeter", "Resolution unit"), static_cast<int>(QPrinter::Millimeter));
-    m_ui->resolutionUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pixels/Point"     , "Resolution unit"), static_cast<int>(QPrinter::Point));
-    m_ui->resolutionUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pixels/Inch"      , "Resolution unit"), static_cast<int>(QPrinter::Inch));
-    m_ui->resolutionUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pixels/Pica"      , "Resolution unit"), static_cast<int>(QPrinter::Pica));
-    m_ui->resolutionUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pixels/Didot"     , "Resolution unit"), static_cast<int>(QPrinter::Didot));
-    m_ui->resolutionUnitsComboBox->addItem(qApp->translate("PrintDialog", "Pixels/Cicero"    , "Resolution unit"), static_cast<int>(QPrinter::Cicero));
+    m_ui->resolutionUnitsComboBox->addItem(QCoreApplication::translate("PrintDialog", "Pixels/Millimeter", "Resolution unit"), static_cast<int>(QPrinter::Millimeter));
+    m_ui->resolutionUnitsComboBox->addItem(QCoreApplication::translate("PrintDialog", "Pixels/Point"     , "Resolution unit"), static_cast<int>(QPrinter::Point));
+    m_ui->resolutionUnitsComboBox->addItem(QCoreApplication::translate("PrintDialog", "Pixels/Inch"      , "Resolution unit"), static_cast<int>(QPrinter::Inch));
+    m_ui->resolutionUnitsComboBox->addItem(QCoreApplication::translate("PrintDialog", "Pixels/Pica"      , "Resolution unit"), static_cast<int>(QPrinter::Pica));
+    m_ui->resolutionUnitsComboBox->addItem(QCoreApplication::translate("PrintDialog", "Pixels/Didot"     , "Resolution unit"), static_cast<int>(QPrinter::Didot));
+    m_ui->resolutionUnitsComboBox->addItem(QCoreApplication::translate("PrintDialog", "Pixels/Cicero"    , "Resolution unit"), static_cast<int>(QPrinter::Cicero));
     QPrinter::Unit resolutionUnit = QPrinter::Inch;
     resolutionUnit = unitFromVariant(m_impl->settings.value(RESOLUTION_UNIT_KEY, unitToVariant(resolutionUnit)), resolutionUnit);
     m_ui->resolutionUnitsComboBox->setCurrentIndex(m_ui->resolutionUnitsComboBox->findData(static_cast<int>(resolutionUnit)));
 
-    m_ui->centerComboBox->addItem(qApp->translate("PrintDialog", "None"        , "Centering option"), static_cast<int>(0));
-    m_ui->centerComboBox->addItem(qApp->translate("PrintDialog", "Horizontally", "Centering option"), static_cast<int>(Qt::Horizontal));
-    m_ui->centerComboBox->addItem(qApp->translate("PrintDialog", "Vertically"  , "Centering option"), static_cast<int>(Qt::Vertical));
-    m_ui->centerComboBox->addItem(qApp->translate("PrintDialog", "Both"        , "Centering option"), static_cast<int>(Qt::Horizontal | Qt::Vertical));
+    m_ui->centerComboBox->addItem(QCoreApplication::translate("PrintDialog", "None"        , "Centering option"), static_cast<int>(0));
+    m_ui->centerComboBox->addItem(QCoreApplication::translate("PrintDialog", "Horizontally", "Centering option"), static_cast<int>(Qt::Horizontal));
+    m_ui->centerComboBox->addItem(QCoreApplication::translate("PrintDialog", "Vertically"  , "Centering option"), static_cast<int>(Qt::Vertical));
+    m_ui->centerComboBox->addItem(QCoreApplication::translate("PrintDialog", "Both"        , "Centering option"), static_cast<int>(Qt::Horizontal | Qt::Vertical));
     m_ui->centerComboBox->setCurrentIndex(m_ui->centerComboBox->findData(static_cast<int>(Qt::Horizontal | Qt::Vertical)));
 
     m_ui->previewWidget->setGraphicsItem(m_impl->graphicsItem, rotateAngle, flipOrientations);
@@ -707,8 +707,8 @@ void PrintDialog::onPrintDialogButtonClicked()
         if(!m_impl->hasValidPage())
         {
             LOG_WARNING() << LOGGING_CTX << "Invalid page detected";
-            const QString title = qApp->translate("PrintDialog", "Error");
-            const QString text = qApp->translate("PrintDialog", "Invalid Paper Size");
+            const QString title = QCoreApplication::translate("PrintDialog", "Error");
+            const QString text = QCoreApplication::translate("PrintDialog", "Invalid Paper Size");
             QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, title, text, QMessageBox::Ok, this);
             msgBox->exec();
             msgBox->deleteLater();
@@ -891,8 +891,8 @@ void PrintDialog::onPageSetupClicked()
         if(!m_impl->hasValidPage())
         {
             LOG_WARNING() << LOGGING_CTX << "Invalid page detected";
-            const QString title = qApp->translate("PrintDialog", "Error");
-            const QString text = qApp->translate("PrintDialog", "Invalid Paper Size");
+            const QString title = QCoreApplication::translate("PrintDialog", "Error");
+            const QString text = QCoreApplication::translate("PrintDialog", "Invalid Paper Size");
             QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, title, text, QMessageBox::Ok, this);
             msgBox->exec();
             msgBox->deleteLater();
@@ -1230,15 +1230,15 @@ void PrintDialog::updatePrinterInfo(const QPrinterInfo& info)
 #endif
 
     if(info.isDefault())
-        m_ui->printerDefaultLabel->setText(qApp->translate("PrintDialog", "Yes", "Default"));
+        m_ui->printerDefaultLabel->setText(QCoreApplication::translate("PrintDialog", "Yes", "Default"));
     else
-        m_ui->printerDefaultLabel->setText(qApp->translate("PrintDialog", "No", "Default"));
+        m_ui->printerDefaultLabel->setText(QCoreApplication::translate("PrintDialog", "No", "Default"));
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 3, 0))
     if(info.isRemote())
-        m_ui->printerRemoteLabel->setText(qApp->translate("PrintDialog", "Yes", "Remote"));
+        m_ui->printerRemoteLabel->setText(QCoreApplication::translate("PrintDialog", "Yes", "Remote"));
     else
-        m_ui->printerRemoteLabel->setText(qApp->translate("PrintDialog", "No", "Remote"));
+        m_ui->printerRemoteLabel->setText(QCoreApplication::translate("PrintDialog", "No", "Remote"));
 #else
     m_ui->printerRemoteHeaderLabel->setEnabled(false);
     m_ui->printerRemoteLabel->setEnabled(false);
@@ -1262,19 +1262,19 @@ void PrintDialog::updatePrinterInfo(const QPrinterInfo& info)
     switch(info.state())
     {
     case QPrinter::Idle:
-        m_ui->printerStateLabel->setText(qApp->translate("PrintDialog", "Idle", "State"));
+        m_ui->printerStateLabel->setText(QCoreApplication::translate("PrintDialog", "Idle", "State"));
         break;
     case QPrinter::Active:
-        m_ui->printerStateLabel->setText(qApp->translate("PrintDialog", "Active", "State"));
+        m_ui->printerStateLabel->setText(QCoreApplication::translate("PrintDialog", "Active", "State"));
         break;
     case QPrinter::Aborted:
-        m_ui->printerStateLabel->setText(qApp->translate("PrintDialog", "Aborted", "State"));
+        m_ui->printerStateLabel->setText(QCoreApplication::translate("PrintDialog", "Aborted", "State"));
         break;
     case QPrinter::Error:
-        m_ui->printerStateLabel->setText(qApp->translate("PrintDialog", "Error", "State"));
+        m_ui->printerStateLabel->setText(QCoreApplication::translate("PrintDialog", "Error", "State"));
         break;
     default:
-        m_ui->printerStateLabel->setText(qApp->translate("PrintDialog", "Unknown (%1)", "State").arg(static_cast<int>(info.state())));
+        m_ui->printerStateLabel->setText(QCoreApplication::translate("PrintDialog", "Unknown (%1)", "State").arg(static_cast<int>(info.state())));
         break;
     }
 #else
@@ -1317,9 +1317,9 @@ void PrintDialog::updateColorMode(const QPrinterInfo &info)
         supportedColorModes = QList<QPrinter::ColorMode>() << QPrinter::Color << QPrinter::GrayScale;
     m_ui->colorModeComboBox->clear();
     if(supportedColorModes.contains(QPrinter::Color))
-        m_ui->colorModeComboBox->addItem(qApp->translate("PrintDialog", "Color", "Color mode"), static_cast<int>(QPrinter::Color));
+        m_ui->colorModeComboBox->addItem(QCoreApplication::translate("PrintDialog", "Color", "Color mode"), static_cast<int>(QPrinter::Color));
     if(supportedColorModes.contains(QPrinter::GrayScale))
-        m_ui->colorModeComboBox->addItem(qApp->translate("PrintDialog", "Grayscale", "Color mode"), static_cast<int>(QPrinter::GrayScale));
+        m_ui->colorModeComboBox->addItem(QCoreApplication::translate("PrintDialog", "Grayscale", "Color mode"), static_cast<int>(QPrinter::GrayScale));
     m_ui->colorModeComboBox->setCurrentIndex(m_ui->colorModeComboBox->findData(static_cast<int>(m_impl->printer->colorMode())));
 }
 

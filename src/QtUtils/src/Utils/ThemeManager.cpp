@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2018-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2018-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -311,7 +311,7 @@ struct ThemeManager::Impl
             {
                 const QByteArray context = it->translateContext.toLatin1();
                 const QByteArray key = it->themeId.toLatin1();
-                (*jt)->setText(QApplication::translate(context.data(), key.data()));
+                (*jt)->setText(QCoreApplication::translate(context.data(), key.data()));
             }
         }
     }
@@ -323,7 +323,7 @@ struct ThemeManager::Impl
         {
             const QByteArray context = it->translateContext.toLatin1();
             const QByteArray key = it->themeId.toLatin1();
-            itemTexts[it->themeId] = QApplication::translate(context.data(), key.data());
+            itemTexts[it->themeId] = QCoreApplication::translate(context.data(), key.data());
         }
         for(QList<QComboBox*>::Iterator it = comboBoxList.begin(), itEnd = comboBoxList.end(); it != itEnd; ++it)
         {
@@ -400,8 +400,8 @@ void ThemeManager::setTheme(const QString &themeId, const bool showMessage, QWid
         return;
 
     if(showMessage)
-        QMessageBox::information(parent, qApp->translate("ThemeManager", "Restart Required"),
-                                 qApp->translate("ThemeManager", "The theme change will take effect after a restart of application."),
+        QMessageBox::information(parent, QCoreApplication::translate("ThemeManager", "Restart Required"),
+                                 QCoreApplication::translate("ThemeManager", "The theme change will take effect after a restart of application."),
                                  QMessageBox::Ok, QMessageBox::Ok);
     m_impl->settings.setValue(SETTINGS_KEY, theme->themeId);
     m_impl->updateActions();

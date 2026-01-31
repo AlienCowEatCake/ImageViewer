@@ -488,8 +488,8 @@ void MainWindow::onZoomCustomRequested()
     const double maxValue = 1e+12;
     const double defValue = qBound(minValue, static_cast<double>(m_impl->ui.imageViewerWidget->zoomLevel()) * 100., maxValue);
     const int decimals = 7;
-    const QString titleText = qApp->translate("MainWindow", "Zoom");
-    const QString labelText = qApp->translate("MainWindow", "Zoom Factor (%):");
+    const QString titleText = QCoreApplication::translate("MainWindow", "Zoom");
+    const QString labelText = QCoreApplication::translate("MainWindow", "Zoom Factor (%):");
     bool ok = false;
     const double zoomLevel = QInputDialog::getDouble(this, titleText, labelText, defValue, minValue, maxValue, decimals, &ok);
     if(ok)

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -294,39 +294,39 @@ struct MenuBar::Impl : public ControlsContainerEmitter
 
     void retranslate()
     {
-        menuFile->setTitle(qApp->translate("MenuBar", "&File"));
-        menuEdit->setTitle(qApp->translate("MenuBar", "&Edit"));
-        menuView->setTitle(qApp->translate("MenuBar", "&View"));
-        menuHelp->setTitle(qApp->translate("MenuBar", "&Help"));
-        menuReopenWith->setTitle(qApp->translate("MenuBar", "&Reopen With"));
+        menuFile->setTitle(QCoreApplication::translate("MenuBar", "&File"));
+        menuEdit->setTitle(QCoreApplication::translate("MenuBar", "&Edit"));
+        menuView->setTitle(QCoreApplication::translate("MenuBar", "&View"));
+        menuHelp->setTitle(QCoreApplication::translate("MenuBar", "&Help"));
+        menuReopenWith->setTitle(QCoreApplication::translate("MenuBar", "&Reopen With"));
 
-        actionOpenFile->setText(qApp->translate("MenuBar", "&Open File"));
-        actionOpenFolder->setText(qApp->translate("MenuBar", "Open &Folder"));
-        actionSaveAs->setText(qApp->translate("MenuBar", "&Save As"));
-        actionNewWindow->setText(qApp->translate("MenuBar", "New &Window"));
-        actionNavigatePrevious->setText(qApp->translate("MenuBar", "Pre&vious"));
-        actionNavigateNext->setText(qApp->translate("MenuBar", "&Next"));
-        actionImageInformation->setText(qApp->translate("MenuBar", "Image &Information"));
-        actionPrint->setText(qApp->translate("MenuBar", "&Print"));
-        actionPreferences->setText(qApp->translate("MenuBar", "Pr&eferences"));
-        actionExit->setText(qApp->translate("MenuBar", "&Quit"));
-        actionRotateCounterclockwise->setText(qApp->translate("MenuBar", "Rotate &Counterclockwise"));
-        actionRotateClockwise->setText(qApp->translate("MenuBar", "&Rotate Clockwise"));
-        actionFlipHorizontal->setText(qApp->translate("MenuBar", "Flip &Horizontal"));
-        actionFlipVertical->setText(qApp->translate("MenuBar", "Flip &Vertical"));
-        actionDeleteFile->setText(qApp->translate("MenuBar", "&Delete File"));
-        actionZoomOut->setText(qApp->translate("MenuBar", "Zoom &Out"));
-        actionZoomIn->setText(qApp->translate("MenuBar", "Zoom &In"));
-        actionZoomReset->setText(qApp->translate("MenuBar", "&Reset Zoom"));
-        actionZoomCustom->setText(qApp->translate("MenuBar", "&Zoom\xe2\x80\xa6"));
-        actionZoomFitToWindow->setText(qApp->translate("MenuBar", "Fit Image To &Window Size"));
-        actionZoomOriginalSize->setText(qApp->translate("MenuBar", "Original &Size"));
-        actionZoomFullScreen->setText(qApp->translate("MenuBar", "&Full Screen"));
-        actionShowMenuBar->setText(qApp->translate("MenuBar", "Show &Menu Bar"));
-        actionShowToolBar->setText(qApp->translate("MenuBar", "Show &Toolbar"));
-        actionAbout->setText(qApp->translate("MenuBar", "&About"));
-        actionAboutQt->setText(qApp->translate("MenuBar", "About &Qt"));
-        actionCheckForUpdates->setText(qApp->translate("MenuBar", "Check for &Updates"));
+        actionOpenFile->setText(QCoreApplication::translate("MenuBar", "&Open File"));
+        actionOpenFolder->setText(QCoreApplication::translate("MenuBar", "Open &Folder"));
+        actionSaveAs->setText(QCoreApplication::translate("MenuBar", "&Save As"));
+        actionNewWindow->setText(QCoreApplication::translate("MenuBar", "New &Window"));
+        actionNavigatePrevious->setText(QCoreApplication::translate("MenuBar", "Pre&vious"));
+        actionNavigateNext->setText(QCoreApplication::translate("MenuBar", "&Next"));
+        actionImageInformation->setText(QCoreApplication::translate("MenuBar", "Image &Information"));
+        actionPrint->setText(QCoreApplication::translate("MenuBar", "&Print"));
+        actionPreferences->setText(QCoreApplication::translate("MenuBar", "Pr&eferences"));
+        actionExit->setText(QCoreApplication::translate("MenuBar", "&Quit"));
+        actionRotateCounterclockwise->setText(QCoreApplication::translate("MenuBar", "Rotate &Counterclockwise"));
+        actionRotateClockwise->setText(QCoreApplication::translate("MenuBar", "&Rotate Clockwise"));
+        actionFlipHorizontal->setText(QCoreApplication::translate("MenuBar", "Flip &Horizontal"));
+        actionFlipVertical->setText(QCoreApplication::translate("MenuBar", "Flip &Vertical"));
+        actionDeleteFile->setText(QCoreApplication::translate("MenuBar", "&Delete File"));
+        actionZoomOut->setText(QCoreApplication::translate("MenuBar", "Zoom &Out"));
+        actionZoomIn->setText(QCoreApplication::translate("MenuBar", "Zoom &In"));
+        actionZoomReset->setText(QCoreApplication::translate("MenuBar", "&Reset Zoom"));
+        actionZoomCustom->setText(QCoreApplication::translate("MenuBar", "&Zoom\xe2\x80\xa6"));
+        actionZoomFitToWindow->setText(QCoreApplication::translate("MenuBar", "Fit Image To &Window Size"));
+        actionZoomOriginalSize->setText(QCoreApplication::translate("MenuBar", "Original &Size"));
+        actionZoomFullScreen->setText(QCoreApplication::translate("MenuBar", "&Full Screen"));
+        actionShowMenuBar->setText(QCoreApplication::translate("MenuBar", "Show &Menu Bar"));
+        actionShowToolBar->setText(QCoreApplication::translate("MenuBar", "Show &Toolbar"));
+        actionAbout->setText(QCoreApplication::translate("MenuBar", "&About"));
+        actionAboutQt->setText(QCoreApplication::translate("MenuBar", "About &Qt"));
+        actionCheckForUpdates->setText(QCoreApplication::translate("MenuBar", "Check for &Updates"));
 
         setSlideShowMode(isSlideShowMode);
     }
@@ -370,12 +370,12 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         isSlideShowMode = isSlideShow;
         if(!isSlideShowMode)
         {
-            actionStartSlideShow->setText(qApp->translate("MenuBar", "Start S&lideshow"));
+            actionStartSlideShow->setText(QCoreApplication::translate("MenuBar", "Start S&lideshow"));
             actionStartSlideShow->setIcon(getMenuIcon(ThemeUtils::ICON_MEDIA_SLIDESHOW));
         }
         else
         {
-            actionStartSlideShow->setText(qApp->translate("MenuBar", "Stop S&lideshow"));
+            actionStartSlideShow->setText(QCoreApplication::translate("MenuBar", "Stop S&lideshow"));
             actionStartSlideShow->setIcon(getMenuIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_STOP));
         }
     }

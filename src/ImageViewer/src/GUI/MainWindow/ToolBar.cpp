@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -120,22 +120,22 @@ struct ToolBar::Impl : public ControlsContainerEmitter
 
     void retranslate()
     {
-        navigatePrevious->setToolTip(qApp->translate("ToolBar", "Previous"));
-        navigateNext->setToolTip(qApp->translate("ToolBar", "Next"));
-        zoomOut->setToolTip(qApp->translate("ToolBar", "Zoom Out"));
-        zoomIn->setToolTip(qApp->translate("ToolBar", "Zoom In"));
-        zoomFitToWindow->setToolTip(qApp->translate("ToolBar", "Fit Image To Window Size"));
-        zoomOriginalSize->setToolTip(qApp->translate("ToolBar", "Original Size"));
-        zoomFullScreen->setToolTip(qApp->translate("ToolBar", "Full Screen"));
-        rotateCounterclockwise->setToolTip(qApp->translate("ToolBar", "Rotate Counterclockwise"));
-        rotateClockwise->setToolTip(qApp->translate("ToolBar", "Rotate Clockwise"));
-        flipHorizontal->setToolTip(qApp->translate("ToolBar", "Flip Horizontal"));
-        flipVertical->setToolTip(qApp->translate("ToolBar", "Flip Vertical"));
-        openFile->setToolTip(qApp->translate("ToolBar", "Open File"));
-        saveFileAs->setToolTip(qApp->translate("ToolBar", "Save File As"));
-        deleteFile->setToolTip(qApp->translate("ToolBar", "Delete File"));
-        preferences->setToolTip(qApp->translate("ToolBar", "Preferences"));
-        exit->setToolTip(qApp->translate("ToolBar", "Quit"));
+        navigatePrevious->setToolTip(QCoreApplication::translate("ToolBar", "Previous"));
+        navigateNext->setToolTip(QCoreApplication::translate("ToolBar", "Next"));
+        zoomOut->setToolTip(QCoreApplication::translate("ToolBar", "Zoom Out"));
+        zoomIn->setToolTip(QCoreApplication::translate("ToolBar", "Zoom In"));
+        zoomFitToWindow->setToolTip(QCoreApplication::translate("ToolBar", "Fit Image To Window Size"));
+        zoomOriginalSize->setToolTip(QCoreApplication::translate("ToolBar", "Original Size"));
+        zoomFullScreen->setToolTip(QCoreApplication::translate("ToolBar", "Full Screen"));
+        rotateCounterclockwise->setToolTip(QCoreApplication::translate("ToolBar", "Rotate Counterclockwise"));
+        rotateClockwise->setToolTip(QCoreApplication::translate("ToolBar", "Rotate Clockwise"));
+        flipHorizontal->setToolTip(QCoreApplication::translate("ToolBar", "Flip Horizontal"));
+        flipVertical->setToolTip(QCoreApplication::translate("ToolBar", "Flip Vertical"));
+        openFile->setToolTip(QCoreApplication::translate("ToolBar", "Open File"));
+        saveFileAs->setToolTip(QCoreApplication::translate("ToolBar", "Save File As"));
+        deleteFile->setToolTip(QCoreApplication::translate("ToolBar", "Delete File"));
+        preferences->setToolTip(QCoreApplication::translate("ToolBar", "Preferences"));
+        exit->setToolTip(QCoreApplication::translate("ToolBar", "Quit"));
         setSlideShowMode(isSlideShowMode);
     }
 
@@ -168,12 +168,12 @@ struct ToolBar::Impl : public ControlsContainerEmitter
         isSlideShowMode = isSlideShow;
         if(!isSlideShowMode)
         {
-            startSlideShow->setToolTip(qApp->translate("ToolBar", "Start Slideshow"));
+            startSlideShow->setToolTip(QCoreApplication::translate("ToolBar", "Start Slideshow"));
             startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_SLIDESHOW, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         }
         else
         {
-            startSlideShow->setToolTip(qApp->translate("ToolBar", "Stop Slideshow"));
+            startSlideShow->setToolTip(QCoreApplication::translate("ToolBar", "Stop Slideshow"));
             startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_STOP, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         }
     }

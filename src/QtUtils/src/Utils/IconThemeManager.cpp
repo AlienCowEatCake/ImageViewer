@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2024-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2024-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -111,7 +111,7 @@ struct IconThemeManager::Impl
             {
                 const QByteArray context = it->translateContext.toLatin1();
                 const QByteArray key = it->themeId.toLatin1();
-                (*jt)->setText(QApplication::translate(context.data(), key.data()));
+                (*jt)->setText(QCoreApplication::translate(context.data(), key.data()));
             }
         }
     }
@@ -123,7 +123,7 @@ struct IconThemeManager::Impl
         {
             const QByteArray context = it->translateContext.toLatin1();
             const QByteArray key = it->themeId.toLatin1();
-            itemTexts[it->themeId] = QApplication::translate(context.data(), key.data());
+            itemTexts[it->themeId] = QCoreApplication::translate(context.data(), key.data());
         }
         const ThemeData *theme = currentTheme();
         for(QList<QComboBox*>::Iterator it = comboBoxList.begin(), itEnd = comboBoxList.end(); it != itEnd; ++it)

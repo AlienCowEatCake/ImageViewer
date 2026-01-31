@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -49,9 +49,9 @@ struct InfoDialog::UI
         tableWidget->setShowGrid(true);
 
         const QStringList headers = QStringList()
-                << qApp->translate("InfoDialog", "Type")
-                << qApp->translate("InfoDialog", "Tag")
-                << qApp->translate("InfoDialog", "Value");
+                << QCoreApplication::translate("InfoDialog", "Type")
+                << QCoreApplication::translate("InfoDialog", "Tag")
+                << QCoreApplication::translate("InfoDialog", "Value");
         tableWidget->setHorizontalHeaderLabels(headers);
         tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
         tableWidget->horizontalHeader()->setStretchLastSection(true);

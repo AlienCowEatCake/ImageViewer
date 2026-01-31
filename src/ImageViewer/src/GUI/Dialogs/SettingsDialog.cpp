@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -80,11 +80,11 @@ struct SettingsDialog::Impl
         QComboBox *comboBox = ui->toolBarPositionComboBox;
         comboBox->clear();
         comboBox->setEditable(false);
-        comboBox->addItem(qApp->translate("SettingsDialog", "Bottom",            "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_BOTTOM);
-        comboBox->addItem(qApp->translate("SettingsDialog", "Top",               "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_TOP);
-        comboBox->addItem(qApp->translate("SettingsDialog", "Left",              "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_LEFT);
-        comboBox->addItem(qApp->translate("SettingsDialog", "Right",             "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_RIGHT);
-        comboBox->addItem(qApp->translate("SettingsDialog", "Floated or docked", "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_MOVABLE);
+        comboBox->addItem(QCoreApplication::translate("SettingsDialog", "Bottom",            "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_BOTTOM);
+        comboBox->addItem(QCoreApplication::translate("SettingsDialog", "Top",               "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_TOP);
+        comboBox->addItem(QCoreApplication::translate("SettingsDialog", "Left",              "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_LEFT);
+        comboBox->addItem(QCoreApplication::translate("SettingsDialog", "Right",             "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_RIGHT);
+        comboBox->addItem(QCoreApplication::translate("SettingsDialog", "Floated or docked", "ToolBarPosition"), GUISettings::TOOLBAR_POSITION_MOVABLE);
         comboBox->setCurrentIndex(comboBox->findData(settings->toolBarPosition()));
 #endif
     }
@@ -161,7 +161,7 @@ struct SettingsDialog::Impl
         QColorDialog dialog(settingsDialog);
         dialog.setOption(QColorDialog::ShowAlphaChannel, true);
         dialog.setCurrentColor(oldColor);
-        dialog.setWindowTitle(qApp->translate("SettingsDialog", "Select Background Color"));
+        dialog.setWindowTitle(QCoreApplication::translate("SettingsDialog", "Select Background Color"));
         dialog.exec();
         const QColor newColor = dialog.currentColor();
         if(newColor.isValid() && newColor != oldColor)
@@ -199,7 +199,7 @@ SettingsDialog::SettingsDialog(GUISettings *settings, QWidget *parent)
     , m_ui(new UI(this, settings))
     , m_impl(new Impl(this, settings))
 {
-    setWindowTitle(qApp->translate("SettingsDialog", "Preferences"));
+    setWindowTitle(QCoreApplication::translate("SettingsDialog", "Preferences"));
 
     ensurePolished();
     adjustSize();

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2024-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2024-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -92,39 +92,39 @@ struct QtToolBar::Impl : public ControlsContainerEmitter
 
     void retranslate()
     {
-        navigatePrevious->setToolTip(qApp->translate("QtToolBar", "Previous"));
-        navigatePrevious->setText(qApp->translate("QtToolBar", "Previous", "Short form of 'Previous'"));
-        navigateNext->setToolTip(qApp->translate("QtToolBar", "Next"));
-        navigateNext->setText(qApp->translate("QtToolBar", "Next", "Short form of 'Next'"));
-        startSlideShow->setText(qApp->translate("QtToolBar", "Slideshow", "Short form of 'Slideshow'"));
-        zoomOut->setToolTip(qApp->translate("QtToolBar", "Zoom Out"));
-        zoomOut->setText(qApp->translate("QtToolBar", "Zoom Out", "Short form of 'Zoom Out'"));
-        zoomIn->setToolTip(qApp->translate("QtToolBar", "Zoom In"));
-        zoomIn->setText(qApp->translate("QtToolBar", "Zoom In", "Short form of 'Zoom In'"));
-        zoomFitToWindow->setToolTip(qApp->translate("QtToolBar", "Fit Image To Window Size"));
-        zoomFitToWindow->setText(qApp->translate("QtToolBar", "Fit", "Short form of 'Fit Image To Window Size'"));
-        zoomOriginalSize->setToolTip(qApp->translate("QtToolBar", "Original Size"));
-        zoomOriginalSize->setText(qApp->translate("QtToolBar", "1:1", "Short form of 'Original Size'"));
-        zoomFullScreen->setToolTip(qApp->translate("QtToolBar", "Full Screen"));
-        zoomFullScreen->setText(qApp->translate("QtToolBar", "Full Screen", "Short form of 'Full Screen'"));
-        rotateCounterclockwise->setToolTip(qApp->translate("QtToolBar", "Rotate Counterclockwise"));
-        rotateCounterclockwise->setText(qApp->translate("QtToolBar", "Rotate Counterclockwise", "Short form of 'Rotate Counterclockwise'"));
-        rotateClockwise->setToolTip(qApp->translate("QtToolBar", "Rotate Clockwise"));
-        rotateClockwise->setText(qApp->translate("QtToolBar", "Rotate Clockwise", "Short form of 'Rotate Clockwise'"));
-        flipHorizontal->setToolTip(qApp->translate("QtToolBar", "Flip Horizontal"));
-        flipHorizontal->setText(qApp->translate("QtToolBar", "Flip Horizontal", "Short form of 'Flip Horizontal'"));
-        flipVertical->setToolTip(qApp->translate("QtToolBar", "Flip Vertical"));
-        flipVertical->setText(qApp->translate("QtToolBar", "Flip Vertical", "Short form of 'Flip Vertical'"));
-        openFile->setToolTip(qApp->translate("QtToolBar", "Open File"));
-        openFile->setText(qApp->translate("QtToolBar", "Open", "Short form of 'Open File'"));
-        saveFileAs->setToolTip(qApp->translate("QtToolBar", "Save File As"));
-        saveFileAs->setText(qApp->translate("QtToolBar", "Save", "Short form of 'Save File As'"));
-        deleteFile->setToolTip(qApp->translate("QtToolBar", "Delete File"));
-        deleteFile->setText(qApp->translate("QtToolBar", "Delete", "Short form of 'Delete File'"));
-        preferences->setToolTip(qApp->translate("QtToolBar", "Preferences"));
-        preferences->setText(qApp->translate("QtToolBar", "Preferences", "Short form of 'Preferences'"));
-        exit->setToolTip(qApp->translate("QtToolBar", "Quit"));
-        exit->setText(qApp->translate("QtToolBar", "Quit", "Short form of 'Quit'"));
+        navigatePrevious->setToolTip(QCoreApplication::translate("QtToolBar", "Previous"));
+        navigatePrevious->setText(QCoreApplication::translate("QtToolBar", "Previous", "Short form of 'Previous'"));
+        navigateNext->setToolTip(QCoreApplication::translate("QtToolBar", "Next"));
+        navigateNext->setText(QCoreApplication::translate("QtToolBar", "Next", "Short form of 'Next'"));
+        startSlideShow->setText(QCoreApplication::translate("QtToolBar", "Slideshow", "Short form of 'Slideshow'"));
+        zoomOut->setToolTip(QCoreApplication::translate("QtToolBar", "Zoom Out"));
+        zoomOut->setText(QCoreApplication::translate("QtToolBar", "Zoom Out", "Short form of 'Zoom Out'"));
+        zoomIn->setToolTip(QCoreApplication::translate("QtToolBar", "Zoom In"));
+        zoomIn->setText(QCoreApplication::translate("QtToolBar", "Zoom In", "Short form of 'Zoom In'"));
+        zoomFitToWindow->setToolTip(QCoreApplication::translate("QtToolBar", "Fit Image To Window Size"));
+        zoomFitToWindow->setText(QCoreApplication::translate("QtToolBar", "Fit", "Short form of 'Fit Image To Window Size'"));
+        zoomOriginalSize->setToolTip(QCoreApplication::translate("QtToolBar", "Original Size"));
+        zoomOriginalSize->setText(QCoreApplication::translate("QtToolBar", "1:1", "Short form of 'Original Size'"));
+        zoomFullScreen->setToolTip(QCoreApplication::translate("QtToolBar", "Full Screen"));
+        zoomFullScreen->setText(QCoreApplication::translate("QtToolBar", "Full Screen", "Short form of 'Full Screen'"));
+        rotateCounterclockwise->setToolTip(QCoreApplication::translate("QtToolBar", "Rotate Counterclockwise"));
+        rotateCounterclockwise->setText(QCoreApplication::translate("QtToolBar", "Rotate Counterclockwise", "Short form of 'Rotate Counterclockwise'"));
+        rotateClockwise->setToolTip(QCoreApplication::translate("QtToolBar", "Rotate Clockwise"));
+        rotateClockwise->setText(QCoreApplication::translate("QtToolBar", "Rotate Clockwise", "Short form of 'Rotate Clockwise'"));
+        flipHorizontal->setToolTip(QCoreApplication::translate("QtToolBar", "Flip Horizontal"));
+        flipHorizontal->setText(QCoreApplication::translate("QtToolBar", "Flip Horizontal", "Short form of 'Flip Horizontal'"));
+        flipVertical->setToolTip(QCoreApplication::translate("QtToolBar", "Flip Vertical"));
+        flipVertical->setText(QCoreApplication::translate("QtToolBar", "Flip Vertical", "Short form of 'Flip Vertical'"));
+        openFile->setToolTip(QCoreApplication::translate("QtToolBar", "Open File"));
+        openFile->setText(QCoreApplication::translate("QtToolBar", "Open", "Short form of 'Open File'"));
+        saveFileAs->setToolTip(QCoreApplication::translate("QtToolBar", "Save File As"));
+        saveFileAs->setText(QCoreApplication::translate("QtToolBar", "Save", "Short form of 'Save File As'"));
+        deleteFile->setToolTip(QCoreApplication::translate("QtToolBar", "Delete File"));
+        deleteFile->setText(QCoreApplication::translate("QtToolBar", "Delete", "Short form of 'Delete File'"));
+        preferences->setToolTip(QCoreApplication::translate("QtToolBar", "Preferences"));
+        preferences->setText(QCoreApplication::translate("QtToolBar", "Preferences", "Short form of 'Preferences'"));
+        exit->setToolTip(QCoreApplication::translate("QtToolBar", "Quit"));
+        exit->setText(QCoreApplication::translate("QtToolBar", "Quit", "Short form of 'Quit'"));
         setSlideShowMode(isSlideShowMode);
     }
 
@@ -157,12 +157,12 @@ struct QtToolBar::Impl : public ControlsContainerEmitter
         isSlideShowMode = isSlideShow;
         if(!isSlideShowMode)
         {
-            startSlideShow->setToolTip(qApp->translate("QtToolBar", "Start Slideshow"));
+            startSlideShow->setToolTip(QCoreApplication::translate("QtToolBar", "Start Slideshow"));
             startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_SLIDESHOW, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         }
         else
         {
-            startSlideShow->setToolTip(qApp->translate("QtToolBar", "Stop Slideshow"));
+            startSlideShow->setToolTip(QCoreApplication::translate("QtToolBar", "Stop Slideshow"));
             startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_STOP, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         }
     }

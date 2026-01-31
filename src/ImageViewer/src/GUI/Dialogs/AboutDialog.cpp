@@ -852,10 +852,10 @@ AboutDialog::AboutDialog(QWidget *parent)
 {
     connect(m_ui->buttonBox, SIGNAL(accepted()), this, SLOT(close()));
 
-    m_ui->iconLabel->setPixmap(qApp->translate("AboutDialog", ABOUT_PIXMAP_PATH));
-    setWindowTitle(qApp->translate("AboutDialog", "About"));
+    m_ui->iconLabel->setPixmap(QCoreApplication::translate("AboutDialog", ABOUT_PIXMAP_PATH));
+    setWindowTitle(QCoreApplication::translate("AboutDialog", "About"));
 
-    QString translatorNotes = qApp->translate("AboutDialog", ABOUT_TRANSLATOR_NOTES_STRING);
+    QString translatorNotes = QCoreApplication::translate("AboutDialog", ABOUT_TRANSLATOR_NOTES_STRING);
     if(translatorNotes.isEmpty() || translatorNotes == QString::fromLatin1(ABOUT_TRANSLATOR_NOTES_STRING))
         translatorNotes = QString();
     else
@@ -869,12 +869,12 @@ AboutDialog::AboutDialog(QWidget *parent)
                                  ).arg(
                                      qApp->applicationName(),
                                      qApp->applicationVersion(),
-                                     qApp->translate("AboutDialog", ABOUT_URL_STRING),
-                                     qApp->translate("AboutDialog", "License"),
-                                     qApp->translate("AboutDialog", ABOUT_LICENSE_STRIG),
-                                     qApp->translate("AboutDialog", ABOUT_YEAR_STRING),
-                                     qApp->translate("AboutDialog", ABOUT_AUTHOR_STRING),
-                                     qApp->translate("AboutDialog", ABOUT_EMAIL_STRING)
+                                     QCoreApplication::translate("AboutDialog", ABOUT_URL_STRING),
+                                     QCoreApplication::translate("AboutDialog", "License"),
+                                     QCoreApplication::translate("AboutDialog", ABOUT_LICENSE_STRIG),
+                                     QCoreApplication::translate("AboutDialog", ABOUT_YEAR_STRING),
+                                     QCoreApplication::translate("AboutDialog", ABOUT_AUTHOR_STRING),
+                                     QCoreApplication::translate("AboutDialog", ABOUT_EMAIL_STRING)
                                      ) + translatorNotes);
     m_ui->textBrowser->setHtml(getTextBrowserContent());
 

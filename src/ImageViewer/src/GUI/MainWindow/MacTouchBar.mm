@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2020-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2020-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -510,20 +510,20 @@ struct MacTouchBar::Impl
 
     void retranslate()
     {
-        touchBarData.navigateGroup.setCustomizationLabel(qApp->translate("MacTouchBar", "Navigate"));
-        touchBarData.startSlideShow.setCustomizationLabel(qApp->translate("MacTouchBar", "Slideshow"));
-        touchBarData.zoomGroup.setCustomizationLabel(qApp->translate("MacTouchBar", "Zoom"));
-        touchBarData.zoomFitToWindow.setCustomizationLabel(qApp->translate("MacTouchBar", "Fit Image To Window Size"));
-        touchBarData.zoomOriginalSize.setCustomizationLabel(qApp->translate("MacTouchBar", "Original Size"));
-        touchBarData.zoomFullScreen.setCustomizationLabel(qApp->translate("MacTouchBar", "Full Screen"));
-        touchBarData.rotateGroup.setCustomizationLabel(qApp->translate("MacTouchBar", "Rotate"));
-        touchBarData.flipGroup.setCustomizationLabel(qApp->translate("MacTouchBar", "Flip"));
-        touchBarData.openFile.setCustomizationLabel(qApp->translate("MacTouchBar", "Open File"));
-        touchBarData.saveFileAs.setCustomizationLabel(qApp->translate("MacTouchBar", "Save File As"));
-        touchBarData.deleteFile.setCustomizationLabel(qApp->translate("MacTouchBar", "Delete File"));
-        touchBarData.print.setCustomizationLabel(qApp->translate("MacTouchBar", "Print"));
-        touchBarData.preferences.setCustomizationLabel(qApp->translate("MacTouchBar", "Preferences"));
-        touchBarData.exit.setCustomizationLabel(qApp->translate("MacTouchBar", "Quit"));
+        touchBarData.navigateGroup.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Navigate"));
+        touchBarData.startSlideShow.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Slideshow"));
+        touchBarData.zoomGroup.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Zoom"));
+        touchBarData.zoomFitToWindow.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Fit Image To Window Size"));
+        touchBarData.zoomOriginalSize.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Original Size"));
+        touchBarData.zoomFullScreen.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Full Screen"));
+        touchBarData.rotateGroup.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Rotate"));
+        touchBarData.flipGroup.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Flip"));
+        touchBarData.openFile.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Open File"));
+        touchBarData.saveFileAs.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Save File As"));
+        touchBarData.deleteFile.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Delete File"));
+        touchBarData.print.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Print"));
+        touchBarData.preferences.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Preferences"));
+        touchBarData.exit.setCustomizationLabel(QCoreApplication::translate("MacTouchBar", "Quit"));
     }
 
     void setSlideShowMode(bool isSlideShow)

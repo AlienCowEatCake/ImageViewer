@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -110,40 +110,40 @@ struct SettingsDialog::UI
         , CONSTRUCT_OBJECT(enabledDecodersFrame, QFrame, (enabledDecodersScrollArea))
         , CONSTRUCT_OBJECT(buttonBox, QDialogButtonBox, (settingsDialog))
     {
-        tabWidget->addTab(generalTabFrame, qApp->translate("SettingsDialog", "General"));
-        tabWidget->addTab(interfaceTabFrame, qApp->translate("SettingsDialog", "Interface"));
-        tabWidget->addTab(decodersTabFrame, qApp->translate("SettingsDialog", "Decoders"));
+        tabWidget->addTab(generalTabFrame, QCoreApplication::translate("SettingsDialog", "General"));
+        tabWidget->addTab(interfaceTabFrame, QCoreApplication::translate("SettingsDialog", "Interface"));
+        tabWidget->addTab(decodersTabFrame, QCoreApplication::translate("SettingsDialog", "Decoders"));
 
 #if defined(ENABLE_UPDATE_CHECKING)
-        autoCheckForUpdatesCheckbox->setText(qApp->translate("SettingsDialog", "Automatically check for updates"));
+        autoCheckForUpdatesCheckbox->setText(QCoreApplication::translate("SettingsDialog", "Automatically check for updates"));
         autoCheckForUpdatesCheckbox->setChecked(SettingsWrapper(GROUP_UPDATE_MANAGER).value(KEY_AUTO_CHECK_FOR_UPDATES).toBool());
 #endif
 
-        askBeforeDeleteCheckbox->setText(qApp->translate("SettingsDialog", "Ask before deleting images"));
+        askBeforeDeleteCheckbox->setText(QCoreApplication::translate("SettingsDialog", "Ask before deleting images"));
         askBeforeDeleteCheckbox->setChecked(settings->askBeforeDelete());
 
-        moveToTrashCheckbox->setText(qApp->translate("SettingsDialog", "Move deleted images to trash"));
+        moveToTrashCheckbox->setText(QCoreApplication::translate("SettingsDialog", "Move deleted images to trash"));
         moveToTrashCheckbox->setChecked(settings->moveToTrash());
         moveToTrashCheckbox->setVisible(FileUtils::SupportsMoveToTrash());
 
-        smoothTransformationCheckbox->setText(qApp->translate("SettingsDialog", "Use smooth image rendering"));
+        smoothTransformationCheckbox->setText(QCoreApplication::translate("SettingsDialog", "Use smooth image rendering"));
         smoothTransformationCheckbox->setChecked(settings->smoothTransformation());
 
-        upscaleOnFitToWindowCheckbox->setText(qApp->translate("SettingsDialog", "Allow fit to window for small images"));
+        upscaleOnFitToWindowCheckbox->setText(QCoreApplication::translate("SettingsDialog", "Allow fit to window for small images"));
         upscaleOnFitToWindowCheckbox->setChecked(settings->upscaleOnFitToWindow());
 
-        rememberEffectsDuringSessionCheckbox->setText(qApp->translate("SettingsDialog", "Remember rotation and flip until app exit"));
+        rememberEffectsDuringSessionCheckbox->setText(QCoreApplication::translate("SettingsDialog", "Remember rotation and flip until app exit"));
         rememberEffectsDuringSessionCheckbox->setChecked(settings->rememberEffectsDuringSession());
 
-        slideShowIntervalLabel->setText(qApp->translate("SettingsDialog", "Slideshow interval"));
-        slideShowSecLabel->setText(qApp->translate("SettingsDialog", "sec"));
+        slideShowIntervalLabel->setText(QCoreApplication::translate("SettingsDialog", "Slideshow interval"));
+        slideShowSecLabel->setText(QCoreApplication::translate("SettingsDialog", "sec"));
         slideShowSpinBox->setValue(settings->slideShowInterval());
         slideShowSpinBox->setRange(1, 1000);
 
-        wheelModeLabel->setText(qApp->translate("SettingsDialog", "<b>Mouse wheel action</b>"));
-        wheelScrollRadioButton->setText(qApp->translate("SettingsDialog", "Scroll", "WheelMode"));
-        wheelZoomRadioButton->setText(qApp->translate("SettingsDialog", "Zoom", "WheelMode"));
-        wheelNavigateRadioButton->setText(qApp->translate("SettingsDialog", "Navigate", "WheelMode"));
+        wheelModeLabel->setText(QCoreApplication::translate("SettingsDialog", "<b>Mouse wheel action</b>"));
+        wheelScrollRadioButton->setText(QCoreApplication::translate("SettingsDialog", "Scroll", "WheelMode"));
+        wheelZoomRadioButton->setText(QCoreApplication::translate("SettingsDialog", "Zoom", "WheelMode"));
+        wheelNavigateRadioButton->setText(QCoreApplication::translate("SettingsDialog", "Navigate", "WheelMode"));
 
         const ImageViewerWidget::WheelMode wheelMode = settings->wheelMode();
         wheelScrollRadioButton->setChecked(wheelMode == ImageViewerWidget::WHEEL_SCROLL);
@@ -184,18 +184,18 @@ struct SettingsDialog::UI
         generalTabLayout->addWidget(wheelModeFrame);
         generalTabLayout->addStretch();
 
-        languageLabel->setText(qApp->translate("SettingsDialog", "<b>Language</b>"));
-        themeLabel->setText(qApp->translate("SettingsDialog", "<b>Theme</b>"));
+        languageLabel->setText(QCoreApplication::translate("SettingsDialog", "<b>Language</b>"));
+        themeLabel->setText(QCoreApplication::translate("SettingsDialog", "<b>Theme</b>"));
 #if defined (ENABLE_ICON_THEME_CHANGING)
-        iconThemeLabel->setText(qApp->translate("SettingsDialog", "<b>Icon Theme</b>"));
+        iconThemeLabel->setText(QCoreApplication::translate("SettingsDialog", "<b>Icon Theme</b>"));
 #endif
 #if !defined(HAS_MAC_TOOLBAR)
-        toolBarPositionLabel->setText(qApp->translate("SettingsDialog", "<b>Toolbar Position</b>"));
+        toolBarPositionLabel->setText(QCoreApplication::translate("SettingsDialog", "<b>Toolbar Position</b>"));
 #endif
 
-        backgroundColorsLabel->setText(qApp->translate("SettingsDialog", "<b>Background colors</b>"));
-        normalBackgroundColorLabel->setText(qApp->translate("SettingsDialog", "Normal:"));
-        fullScreenBackgroundColorLabel->setText(qApp->translate("SettingsDialog", "Fullscreen:"));
+        backgroundColorsLabel->setText(QCoreApplication::translate("SettingsDialog", "<b>Background colors</b>"));
+        normalBackgroundColorLabel->setText(QCoreApplication::translate("SettingsDialog", "Normal:"));
+        fullScreenBackgroundColorLabel->setText(QCoreApplication::translate("SettingsDialog", "Fullscreen:"));
 
         normalBackgroundColorButton->setFixedSize(COLOR_BUTTON_SIZE);
         normalBackgroundColorButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
@@ -230,7 +230,7 @@ struct SettingsDialog::UI
         interfaceTabLayout->addWidget(backgroundColorsFrame);
         interfaceTabLayout->addStretch();
 
-        enabledDecodersLabel->setText(qApp->translate("SettingsDialog", "<b>Enabled decoders:</b>"));
+        enabledDecodersLabel->setText(QCoreApplication::translate("SettingsDialog", "<b>Enabled decoders:</b>"));
 
         QVBoxLayout *decodersTabLayout = new QVBoxLayout(decodersTabFrame);
         decodersTabLayout->addWidget(enabledDecodersLabel);

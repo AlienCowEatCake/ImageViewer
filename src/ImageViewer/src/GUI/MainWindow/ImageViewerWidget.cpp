@@ -225,7 +225,7 @@ struct ImageViewerWidget::Impl
             if(navigationZone != MOUSE_NAVIGATION_ZONE_NEXT)
             {
                 imageViewerWidget->setCursor(Qt::PointingHandCursor);
-                imageViewerWidget->setToolTip(qApp->translate("ImageViewerWidget", "Next"));
+                imageViewerWidget->setToolTip(QCoreApplication::translate("ImageViewerWidget", "Next"));
                 navigationZone = MOUSE_NAVIGATION_ZONE_NEXT;
             }
         }
@@ -234,7 +234,7 @@ struct ImageViewerWidget::Impl
             if(navigationZone != MOUSE_NAVIGATION_ZONE_PREVIOUS)
             {
                 imageViewerWidget->setCursor(Qt::PointingHandCursor);
-                imageViewerWidget->setToolTip(qApp->translate("ImageViewerWidget", "Previous"));
+                imageViewerWidget->setToolTip(QCoreApplication::translate("ImageViewerWidget", "Previous"));
                 navigationZone = MOUSE_NAVIGATION_ZONE_PREVIOUS;
             }
         }

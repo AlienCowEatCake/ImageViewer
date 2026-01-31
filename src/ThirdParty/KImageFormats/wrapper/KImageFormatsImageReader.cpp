@@ -761,7 +761,7 @@ bool KImageFormatsImageReader::Impl::initHandler()
     if(!device || (!deleteDevice && !device->isOpen() && !device->open(QIODevice::ReadOnly)))
     {
         imageReaderError = QImageReader::DeviceError;
-        errorString = qApp->translate("QImageReader", "Invalid device");
+        errorString = QCoreApplication::translate("QImageReader", "Invalid device");
         return false;
     }
 
@@ -804,7 +804,7 @@ bool KImageFormatsImageReader::Impl::initHandler()
         if(!device->isOpen())
         {
             imageReaderError = QImageReader::FileNotFoundError;
-            errorString = qApp->translate("QImageReader", "File not found");
+            errorString = QCoreApplication::translate("QImageReader", "File not found");
             file->setFileName(fileName); // restore the old file name
             return false;
         }
@@ -814,7 +814,7 @@ bool KImageFormatsImageReader::Impl::initHandler()
     if(!handler && (handler = createReadHandlerHelper(device, format, autoDetectImageFormat, ignoresFormatAndExtension)) == 0)
     {
         imageReaderError = QImageReader::UnsupportedFormatError;
-        errorString = qApp->translate("QImageReader", "Unsupported image format");
+        errorString = QCoreApplication::translate("QImageReader", "Unsupported image format");
         return false;
     }
     return true;
@@ -1127,7 +1127,7 @@ bool KImageFormatsImageReader::read(QImage *image)
     if(!m_impl->handler->read(image))
     {
         m_impl->imageReaderError = QImageReader::InvalidDataError;
-        m_impl->errorString = qApp->translate("QImageReader", "Unable to read image data");
+        m_impl->errorString = QCoreApplication::translate("QImageReader", "Unable to read image data");
         return false;
     }
 
@@ -1270,7 +1270,7 @@ QImageReader::ImageReaderError KImageFormatsImageReader::error() const
 QString KImageFormatsImageReader::errorString() const
 {
     if(m_impl->errorString.isEmpty())
-        return qApp->translate("QImageReader", "Unknown error");
+        return QCoreApplication::translate("QImageReader", "Unknown error");
     return m_impl->errorString;
 }
 

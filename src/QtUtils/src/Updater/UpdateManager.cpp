@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2019-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2019-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `QtUtils' library.
 
@@ -142,8 +142,8 @@ void UpdateManager::checkForUpdates(bool silent)
 
         QMessageBox box(m_impl->parentWidget);
         box.setIcon(QMessageBox::Critical);
-        box.setWindowTitle(qApp->translate("UpdateManager", "Error"));
-        box.setText(qApp->translate("UpdateManager", "An update is already in progress. Check back later."));
+        box.setWindowTitle(QCoreApplication::translate("UpdateManager", "Error"));
+        box.setText(QCoreApplication::translate("UpdateManager", "An update is already in progress. Check back later."));
         box.setStandardButtons(QMessageBox::Ok);
         box.setDefaultButton(QMessageBox::Ok);
         box.exec();
@@ -175,10 +175,10 @@ void UpdateManager::onUpdateNotFound(const ReleaseInfo &currentRelease)
     {
         QMessageBox box(m_impl->parentWidget);
         box.setIcon(QMessageBox::Information);
-        box.setWindowTitle(qApp->translate("UpdateManager", "Information"));
-        box.setText(qApp->translate("UpdateManager", "You have the latest version."));
+        box.setWindowTitle(QCoreApplication::translate("UpdateManager", "Information"));
+        box.setText(QCoreApplication::translate("UpdateManager", "You have the latest version."));
         box.setInformativeText(QString::fromLatin1("%1 <b>%2</b>").arg(
-                qApp->translate("UpdateManager", "Your version:"),
+                QCoreApplication::translate("UpdateManager", "Your version:"),
                 currentRelease.version.toString()));
         box.setStandardButtons(QMessageBox::Ok);
         box.setDefaultButton(QMessageBox::Ok);
@@ -198,17 +198,17 @@ void UpdateManager::onUpdateFound(const ReleaseInfo &currentRelease, const QList
 
     QMessageBox box(m_impl->parentWidget);
     box.setIcon(QMessageBox::Information);
-    box.setWindowTitle(qApp->translate("UpdateManager", "Information"));
-    box.setText(qApp->translate("UpdateManager", "New updates are available."));
+    box.setWindowTitle(QCoreApplication::translate("UpdateManager", "Information"));
+    box.setText(QCoreApplication::translate("UpdateManager", "New updates are available."));
     const QString informativeText = QString::fromLatin1("%1 <b>%2</b><br>%3 <b>%4</b>").arg(
-            qApp->translate("UpdateManager", "Your version:"),
+            QCoreApplication::translate("UpdateManager", "Your version:"),
             currentRelease.version.toString(),
-            qApp->translate("UpdateManager", "Latest version:"),
+            QCoreApplication::translate("UpdateManager", "Latest version:"),
             newReleases.first().version.toString());
     box.setInformativeText(informativeText);
-    QPushButton *downloadButton = box.addButton(qApp->translate("UpdateManager", "&Download")           , QMessageBox::AcceptRole);
-    QPushButton *cancelButton   = box.addButton(qApp->translate("UpdateManager", "&Cancel")             , QMessageBox::RejectRole);
-    QPushButton *skipButton     = box.addButton(qApp->translate("UpdateManager", "&Skip This Version")  , QMessageBox::DestructiveRole);
+    QPushButton *downloadButton = box.addButton(QCoreApplication::translate("UpdateManager", "&Download")           , QMessageBox::AcceptRole);
+    QPushButton *cancelButton   = box.addButton(QCoreApplication::translate("UpdateManager", "&Cancel")             , QMessageBox::RejectRole);
+    QPushButton *skipButton     = box.addButton(QCoreApplication::translate("UpdateManager", "&Skip This Version")  , QMessageBox::DestructiveRole);
     box.setDefaultButton(downloadButton);
     QString changelog;
     for(QList<ReleaseInfo>::ConstIterator it = newReleases.constBegin(), itEnd = newReleases.constEnd(); it != itEnd; ++it)
@@ -221,7 +221,7 @@ void UpdateManager::onUpdateFound(const ReleaseInfo &currentRelease, const QList
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     QCheckBox *checkBox = new QCheckBox();
     checkBox->setChecked(m_impl->updaterSettings.value(KEY_AUTO_CHECK_FOR_UPDATES).toBool());
-    checkBox->setText(qApp->translate("UpdateManager", "Automatically check for updates"));
+    checkBox->setText(QCoreApplication::translate("UpdateManager", "Automatically check for updates"));
     box.setCheckBox(checkBox);
 #endif
     box.exec();
@@ -242,8 +242,8 @@ void UpdateManager::onUpdateError(const QString &errorString)
     {
         QMessageBox box(m_impl->parentWidget);
         box.setIcon(QMessageBox::Critical);
-        box.setWindowTitle(qApp->translate("UpdateManager", "Error"));
-        box.setText(qApp->translate("UpdateManager", "Can't check for updates. Try again later."));
+        box.setWindowTitle(QCoreApplication::translate("UpdateManager", "Error"));
+        box.setText(QCoreApplication::translate("UpdateManager", "Can't check for updates. Try again later."));
         box.setInformativeText(errorString);
         box.setStandardButtons(QMessageBox::Ok);
         box.setDefaultButton(QMessageBox::Ok);
