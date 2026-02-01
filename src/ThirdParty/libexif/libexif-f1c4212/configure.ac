@@ -201,7 +201,7 @@ AM_CONDITIONAL([ENABLE_INTERNAL_DOCS],
 # ---------------------------------------------------------------------------
 # i18n support
 # ---------------------------------------------------------------------------
-ALL_LINGUAS="be bs cs da de en_AU en_CA en_GB es fr it ja ka ms nl pl pt pt_BR ro ru sk sq sr sv tr uk vi zh_CN"
+ALL_LINGUAS="ar be bs cs da de en_AU en_CA en_GB es fr it ja ka ms nl pl pt pt_BR ro ru sk sq sr sv tr uk vi zh_CN"
 AM_PO_SUBDIRS
 GP_GETTEXT_HACK([${PACKAGE}-${LIBEXIF_CURRENT_MIN}],
                 [Lutz Mueller and others])
@@ -248,6 +248,9 @@ dnl AC_SUBST([AM_CXXFLAGS])
 AC_SUBST([AM_CPPFLAGS])
 AC_SUBST([AM_LDFLAGS])
 
+dnl Not strictly necessary, but helps pulling translations.
+GP_CHECK_PROG([RSYNC], [rsync], [file copying command])
+AM_CONDITIONAL([HAVE_RSYNC], [test "x$RSYNC" != xno])
 
 dnl ---------------------------------------------------------------------------
 dnl Output files
