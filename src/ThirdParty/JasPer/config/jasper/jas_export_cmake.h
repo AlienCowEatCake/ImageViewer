@@ -33,6 +33,7 @@
 #  define LIBJASPER_DEPRECATED_NO_EXPORT JAS_LOCAL LIBJASPER_DEPRECATED
 #endif
 
+/* NOLINTNEXTLINE(readability-avoid-unconditional-preprocessor-if) */
 #if 0 /* DEFINE_NO_DEPRECATED */
 #  ifndef LIBJASPER_NO_DEPRECATED
 #    define LIBJASPER_NO_DEPRECATED
