@@ -1,0 +1,12 @@
+[
+    {
+        "fileName" : "profile_gray_prophoto.png",
+        "colorSpace" : {
+            "description" : "grayscale D50 with ProPhoto TRC",
+            "colorModel" : "Gray",
+            "primaries" : "Custom",
+            "transferFunction" : "Custom",
+            "gamma" : 0
+        }
+    }
+]

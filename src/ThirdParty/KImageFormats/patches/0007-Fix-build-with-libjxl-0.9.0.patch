@@ -1,4 +1,4 @@
-From a0c6dd1377efc039b1eb4adb66132c07beed855e Mon Sep 17 00:00:00 2001
+From 911f6991100707c2c65f6975eb3f5a56b6d6b66d Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 23 Mar 2025 06:30:54 +0700
 Subject: [PATCH 7/8] Fix build with libjxl < 0.9.0
@@ -8,7 +8,7 @@ Subject: [PATCH 7/8] Fix build with libjxl < 0.9.0
  1 file changed, 29 insertions(+), 3 deletions(-)
 
 diff --git a/src/imageformats/jxl.cpp b/src/imageformats/jxl.cpp
-index 0ca9991..1ea1a2b 100644
+index 9f545a4..f075ff4 100644
 --- a/src/imageformats/jxl.cpp
 +++ b/src/imageformats/jxl.cpp
 @@ -14,7 +14,9 @@
@@ -36,18 +36,18 @@ index 0ca9991..1ea1a2b 100644
      JxlColorEncoding color_encoding;
      if (m_basicinfo.uses_original_profile == JXL_FALSE && m_basicinfo.have_animation == JXL_FALSE) {
 +#if JPEGXL_NUMERIC_VERSION >= JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
-         const JxlCmsInterface *jxlcms = JxlGetDefaultCms();
-         if (jxlcms) {
-             status = JxlDecoderSetCms(m_decoder, *jxlcms);
-@@ -308,6 +314,7 @@ bool QJpegXLHandler::countALLFrames()
-         } else {
-             qCWarning(LOG_JXLPLUGIN, "No JPEG XL CMS Interface");
+         if (!is_gray) {
+             const JxlCmsInterface *jxlcms = JxlGetDefaultCms();
+             if (jxlcms) {
+@@ -310,6 +316,7 @@ bool QJpegXLHandler::countALLFrames()
+                 qCWarning(LOG_JXLPLUGIN, "No JPEG XL CMS Interface");
+             }
          }
 +#endif
  
          JxlColorEncodingSetToSRGB(&color_encoding, is_gray ? JXL_TRUE : JXL_FALSE);
          JxlDecoderSetPreferredColorProfile(m_decoder, &color_encoding);
-@@ -368,17 +375,34 @@ bool QJpegXLHandler::countALLFrames()
+@@ -370,17 +377,34 @@ bool QJpegXLHandler::countALLFrames()
          }
      }
  
@@ -85,22 +85,22 @@ index 0ca9991..1ea1a2b 100644
                      == JXL_DEC_SUCCESS) {
                      m_colorspace = QColorSpace::fromIccProfile(icc_data);
  
-@@ -1879,6 +1903,7 @@ bool QJpegXLHandler::rewind()
-             return false;
-         }
+@@ -1887,6 +1911,7 @@ bool QJpegXLHandler::rewind()
+ 
+         bool is_gray = m_basicinfo.num_color_channels == 1 && m_basicinfo.alpha_bits == 0;
  
 +#if JPEGXL_NUMERIC_VERSION >= JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
-         const JxlCmsInterface *jxlcms = JxlGetDefaultCms();
-         if (jxlcms) {
-             status = JxlDecoderSetCms(m_decoder, *jxlcms);
-@@ -1888,6 +1913,7 @@ bool QJpegXLHandler::rewind()
-         } else {
-             qCWarning(LOG_JXLPLUGIN, "No JPEG XL CMS Interface");
+         if (!is_gray) {
+             const JxlCmsInterface *jxlcms = JxlGetDefaultCms();
+             if (jxlcms) {
+@@ -1898,6 +1923,7 @@ bool QJpegXLHandler::rewind()
+                 qCWarning(LOG_JXLPLUGIN, "No JPEG XL CMS Interface");
+             }
          }
 +#endif
  
-         bool is_gray = m_basicinfo.num_color_channels == 1 && m_basicinfo.alpha_bits == 0;
          JxlColorEncoding color_encoding;
+         JxlColorEncodingSetToSRGB(&color_encoding, is_gray ? JXL_TRUE : JXL_FALSE);
 -- 
-2.52.0
+2.47.3
 

@@ -1,0 +1,11 @@
+[
+    {
+        "fileName" : "profile_gray_linear.png",
+        "colorSpace" : {
+            "colorModel" : "Gray",
+            "primaries" : "Custom",
+            "transferFunction" : "Linear",
+            "gamma" : 1
+        }
+    }
+]

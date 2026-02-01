@@ -1,4 +1,4 @@
-From 220f6d3e91692593b40d4adfc991e26916e344ab Mon Sep 17 00:00:00 2001
+From 407b59b1f255b7885f4289a7d3e775c247373790 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 04:03:37 +0700
 Subject: [PATCH 1/8] Remove plugin metadata declarations
@@ -123,10 +123,10 @@ index daf41e0..2facf71 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 diff --git a/src/imageformats/iff_p.h b/src/imageformats/iff_p.h
-index 114844b..124a287 100644
+index 145f632..2f41914 100644
 --- a/src/imageformats/iff_p.h
 +++ b/src/imageformats/iff_p.h
-@@ -42,7 +42,7 @@ private:
+@@ -46,7 +46,7 @@ private:
  class IFFPlugin : public QImageIOPlugin
  {
      Q_OBJECT
@@ -357,5 +357,5 @@ index 0324797..d21e6e1 100644
  public:
      Capabilities capabilities(QIODevice *device, const QByteArray &format) const override;
 -- 
-2.52.0
+2.47.3
 

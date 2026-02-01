@@ -1,0 +1,14 @@
+[
+    {
+        "fileName" : "gray_linear_lossy.png",
+        "fuzziness" : 1,
+        "description" : "Minimum fuzziness value to pass the test on all architectures.",
+        "colorSpace" : {
+            "description" : "Gra_D65_Rel_SRG",
+            "primaries" : "Custom",
+            "transferFunction" : "SRgb",
+            "gamma" : 0,
+            "colorModel" : "Gray"
+        }
+    }
+]

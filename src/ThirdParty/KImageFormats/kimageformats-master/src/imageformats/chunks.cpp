@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE project
-    SPDX-FileCopyrightText: 2025 Mirco Miranda <mircomir@outlook.com>
+    SPDX-FileCopyrightText: 2025-2026 Mirco Miranda <mircomir@outlook.com>
 
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
@@ -315,24 +315,46 @@ IFFChunk::ChunkList IFFChunk::innerFromDevice(QIODevice *d, bool *ok, IFFChunk *
             chunk = QSharedPointer<IFFChunk>(new ICCNChunk());
         } else if (cid == ICCP_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new ICCPChunk());
+        } else if (cid == IDAT_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new IDATChunk());
+        } else if (cid == IHDR_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new IHDRChunk());
+        } else if (cid == IPAR_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new IPARChunk());
         } else if (cid == NAME_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new NAMEChunk());
         } else if (cid == PCHG_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new PCHGChunk());
+        } else if (cid == PLTE_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new PLTEChunk());
         } else if (cid == RAST_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new RASTChunk());
+        } else if (cid == RBOD_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new RBODChunk());
+        } else if (cid == RCOL_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new RCOLChunk());
+        } else if (cid == RFLG_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new RFLGChunk());
         } else if (cid == RGBA_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new RGBAChunk());
+        } else if (cid == RGHD_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new RGHDChunk());
+        } else if (cid == RSCM_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new RSCMChunk());
         } else if (cid == SHAM_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new SHAMChunk());
         } else if (cid == TBHD_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new TBHDChunk());
+        } else if (cid == VDAT_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new VDATChunk());
         } else if (cid == VERS_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new VERSChunk());
         } else if (cid == XBMI_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new XBMIChunk());
         } else if (cid == XMP0_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new XMP0Chunk());
+        } else if (cid == YUVS_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new YUVSChunk());
         } else { // unknown chunk
             chunk = QSharedPointer<IFFChunk>(new IFFChunk());
             qCDebug(LOG_IFFPLUGIN) << "IFFChunk::innerFromDevice(): unknown chunk" << cid;
@@ -867,6 +889,23 @@ inline qint64 rgbNDecompress(QIODevice *input, char *output, qint64 olen)
     return j;
 }
 
+
+inline qint64 vdatDecompress(const IFFChunk *chunk, const BMHDChunk *header, qint32 y, char *output, qint64 olen)
+{
+    auto vdats = IFFChunk::searchT<VDATChunk>(chunk);
+    auto rowLen = header->rowLen();
+    if (olen < rowLen * vdats.size()) {
+        return -1;
+    }
+    for (qint32 i = 0, n = vdats.size(); i < n; ++i) {
+        auto&& uc = vdats.at(i)->uncompressedData(header);
+        if (y * rowLen > uc.size() - rowLen)
+            return -1;
+        std::memcpy(output + (i * rowLen), uc.data() + (y * rowLen), rowLen);
+    }
+    return vdats.size() * rowLen;
+}
+
 QByteArray BODYChunk::strideRead(QIODevice *d, qint32 y, const BMHDChunk *header, const CAMGChunk *camg, const CMAPChunk *cmap, const IPALChunk *ipal, const QByteArray& formType) const
 {
     if (!isValid() || header == nullptr || d == nullptr) {
@@ -892,6 +931,8 @@ QByteArray BODYChunk::strideRead(QIODevice *d, qint32 y, const BMHDChunk *header
             // WARNING: The online spec says it's the same as TIFF but that's
             // not accurate: the RLE -128 code is not a noop.
             rr = packbitsDecompress(d, buf.data(), buf.size(), true);
+        } else if (header->compression() == BMHDChunk::Compression::Vdat) {
+            rr = vdatDecompress(this, header, y, buf.data(), buf.size());
         } else if (header->compression() == BMHDChunk::Compression::RgbN8) {
             if (isRgb8)
                 rr = rgb8Decompress(d, buf.data(), buf.size());
@@ -938,11 +979,11 @@ CAMGChunk::ModeIds BODYChunk::safeModeId(const BMHDChunk *header, const CAMGChun
     auto cmapCount = cmap ? cmap->count() : 0;
     auto bitplanes = header->bitplanes();
     if (bitplanes >= BITPLANES_HALFBRIDE_MIN && bitplanes <= BITPLANES_HALFBRIDE_MAX) {
-        if (cmapCount == (1 << (header->bitplanes() - 1)))
+        if (cmapCount == (1 << (bitplanes - 1)))
             return CAMGChunk::ModeIds(CAMGChunk::ModeId::HalfBrite);
     }
     if (bitplanes >= BITPLANES_HAM_MIN && bitplanes <= BITPLANES_HAM_MAX) {
-        if (cmapCount == (1 << (header->bitplanes() - 2)))
+        if (cmapCount == (1 << (bitplanes - 2)))
             return CAMGChunk::ModeIds(CAMGChunk::ModeId::Ham);
     }
     return CAMGChunk::ModeIds();
@@ -996,6 +1037,15 @@ QByteArray BODYChunk::rgbN(const QByteArray &planes, qint32, const BMHDChunk *he
         return {};
     }
     return planes;
+}
+
+bool BODYChunk::innerReadStructure(QIODevice *d)
+{
+    auto ok = true;
+    if (d->peek(4) == VDAT_CHUNK) {
+        setChunks(IFFChunk::innerFromDevice(d, &ok, this));
+    }
+    return ok;
 }
 
 QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMHDChunk *header, const CAMGChunk *camg, const CMAPChunk *cmap, const IPALChunk *ipal) const
@@ -1430,16 +1480,15 @@ bool FORMChunk::innerReadStructure(QIODevice *d)
         setChunks(IFFChunk::innerFromDevice(d, &ok, this));
     } else if (_type == RGBN_FORM_TYPE) {
         setChunks(IFFChunk::innerFromDevice(d, &ok, this));
+    } else if (_type == IMAG_FORM_TYPE) {
+        setChunks(IFFChunk::innerFromDevice(d, &ok, this));
+    } else if (_type == RGFX_FORM_TYPE) {
+        setChunks(IFFChunk::innerFromDevice(d, &ok, this));
     }
     return ok;
 }
 
-QByteArray FORMChunk::formType() const
-{
-    return _type;
-}
-
-QImage::Format FORMChunk::format() const
+QImage::Format FORMChunk::iffFormat() const
 {
     auto headers = IFFChunk::searchT<BMHDChunk>(chunks());
     if (headers.isEmpty()) {
@@ -1488,13 +1537,106 @@ QImage::Format FORMChunk::format() const
     return QImage::Format_Invalid;
 }
 
+QImage::Format FORMChunk::cdiFormat() const
+{
+    auto headers = IFFChunk::searchT<IHDRChunk>(chunks());
+    if (headers.isEmpty()) {
+        return QImage::Format_Invalid;
+    }
+
+    if (auto &&h = headers.first()) {
+        if (h->model() == IHDRChunk::Rgb555 && h->depth() == 16) { // no test case
+            return QImage::Format_RGB555;
+        }
+
+        if (h->depth() == 4) {
+            if (h->model() == IHDRChunk::CLut4 || h->model() == IHDRChunk::CLut3) { // CLut3: no test case
+                return QImage::Format_Indexed8;
+            }
+        }
+
+        if (h->depth() == 8) {
+            if (h->model() == IHDRChunk::CLut8 || h->model() == IHDRChunk::CLut7 || h->model() == IHDRChunk::Rle7) {
+                return QImage::Format_Indexed8;
+            }
+            if (h->model() == IHDRChunk::Rgb888) { // no test case
+                return FORMAT_RGB_8BIT;
+            }
+            if (h->model() == IHDRChunk::DYuv) {
+                return FORMAT_RGB_8BIT;
+            }
+        }
+    }
+
+    return QImage::Format_Invalid;
+}
+
+QImage::Format FORMChunk::rgfxFormat() const
+{
+    auto headers = IFFChunk::searchT<RGHDChunk>(chunks());
+    if (headers.isEmpty()) {
+        return QImage::Format_Invalid;
+    }
+
+    if (auto &&h = headers.first()) {
+        auto rgfx_format = RGHDChunk::BitmapTypes(h->bitmapType() & 0x3FFFFFFF);
+        if (rgfx_format == RGHDChunk::BitmapType::Chunky8 || rgfx_format == RGHDChunk::BitmapType::Planar8)
+            return QImage::Format_Indexed8;
+        if (rgfx_format == RGHDChunk::BitmapType::Rgb15 || rgfx_format == RGHDChunk::BitmapType::Rgb16)
+            return QImage::Format_RGB555; // NOTE: RGB16 ignoring alpha due to missing compatible Qt format
+        if (rgfx_format == RGHDChunk::BitmapType::Rgb24)
+            return FORMAT_RGB_8BIT;
+        if (rgfx_format == RGHDChunk::BitmapType::Rgb32)
+            return FORMAT_RGBA_8BIT;
+        if (rgfx_format == RGHDChunk::BitmapType::Rgb48)
+            return QImage::Format_RGBX64;
+        if (rgfx_format == RGHDChunk::BitmapType::Rgb64)
+            return QImage::Format_RGBA64;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+        if (rgfx_format == RGHDChunk::BitmapType::Rgb96)
+            return QImage::Format_RGBX32FPx4;
+        if (rgfx_format == RGHDChunk::BitmapType::Rgb128)
+            return QImage::Format_RGBA32FPx4;
+#endif
+    }
+
+    return QImage::Format_Invalid;
+}
+
+QByteArray FORMChunk::formType() const
+{
+    return _type;
+}
+
+QImage::Format FORMChunk::format() const
+{
+    if (formType() == IMAG_FORM_TYPE) {
+        return cdiFormat();
+    } else if (formType() == RGFX_FORM_TYPE) {
+        return rgfxFormat();
+    }
+    return iffFormat();
+}
+
 QSize FORMChunk::size() const
 {
-    auto headers = IFFChunk::searchT<BMHDChunk>(chunks());
-    if (headers.isEmpty()) {
-        return {};
+    if (formType() == IMAG_FORM_TYPE) {
+        auto ihdrs = IFFChunk::searchT<IHDRChunk>(chunks());
+        if (!ihdrs.isEmpty()) {
+            return ihdrs.first()->size();
+        }
+    } else if (formType() == RGFX_FORM_TYPE) {
+        auto rghds = IFFChunk::searchT<RGHDChunk>(chunks());
+        if (!rghds.isEmpty()) {
+            return rghds.first()->size();
+        }
+    } else {
+        auto bmhds = IFFChunk::searchT<BMHDChunk>(chunks());
+        if (!bmhds.isEmpty()) {
+            return bmhds.first()->size();
+        }
     }
-    return headers.first()->size();
+    return {};
 }
 
 /* ******************
@@ -1606,6 +1748,10 @@ bool CATChunk::innerReadStructure(QIODevice *d)
     } else if (_type == RGB8_FORM_TYPE) {
         setChunks(IFFChunk::innerFromDevice(d, &ok, this));
     } else if (_type == RGBN_FORM_TYPE) {
+        setChunks(IFFChunk::innerFromDevice(d, &ok, this));
+    } else if (_type == IMAG_FORM_TYPE) {
+        setChunks(IFFChunk::innerFromDevice(d, &ok, this));
+    } else if (_type == RGFX_FORM_TYPE) {
         setChunks(IFFChunk::innerFromDevice(d, &ok, this));
     }
     return ok;
@@ -1901,7 +2047,7 @@ QImage RGBAChunk::compressedTile(QIODevice *d, const TBHDChunk *header) const
             }
         }
     } else if (bpc == 2) {
-        auto cs = header->channels();
+        auto cs = std::max(1, header->channels());
         if (cs < 4) { // alpha on 64-bit images must be 0xFF
             std::memset(img.bits(), 0xFF, img.sizeInBytes());
         }
@@ -2333,6 +2479,123 @@ bool NAMEChunk::innerReadStructure(QIODevice *d)
 
 
 /* ******************
+ * *** VDAT Chunk ***
+ * ****************** */
+
+VDATChunk::~VDATChunk()
+{
+
+}
+
+VDATChunk::VDATChunk()
+{
+
+}
+
+bool VDATChunk::isValid() const
+{
+    return chunkId() == VDATChunk::defaultChunkId();
+}
+
+static QByteArray decompressVdat(const QByteArray &comp)
+{
+    QByteArray out;
+    auto ok = true;
+    auto cpos = 0;
+
+    auto readU16BE = [&](const QByteArray &src, int &pos, bool *ok) -> quint16 {
+        if (pos + 2 > src.size()) {
+            *ok = false;
+            return 0;
+        }
+        auto v = quint16((quint8(src[pos]) << 8) | quint8(src[pos + 1]));
+        pos += 2;
+        return v;
+    };
+
+    auto readI8 = [&](const QByteArray &src, int &pos, bool *ok) -> qint8 {
+        if (pos >= src.size()) {
+            *ok = false;
+            return 0;
+        }
+        return qint8(src[pos++]);
+    };
+
+    auto emitWord = [&](quint16 w) {
+        out.append(char(w & 0xFF));
+        out.append(char(w >> 8));
+    };
+
+    auto cmdCnt = readU16BE(comp, cpos, &ok);
+    if (!ok) {
+        return{};
+    }
+
+    // decode command stream
+    auto dpos = cmdCnt + (cmdCnt & 1);
+    for (auto n = cmdCnt; cpos < n && dpos < comp.size() && ok;) {
+        auto cmd = readI8(comp, cpos, &ok);
+        if (cmd == 0) {
+            auto count = readU16BE(comp, dpos, &ok);
+            for (auto i = 0; i < count; ++i)
+                emitWord(readU16BE(comp, dpos, &ok));
+        } else if (cmd == 1) {
+            auto count = readU16BE(comp, dpos, &ok);
+            auto value = readU16BE(comp, dpos, &ok);
+            for (auto i = 0; i < count; ++i)
+                emitWord(value);
+        } else if (cmd < 0) {
+            auto count = -qint32(cmd);
+            for (auto i = 0; i < count; ++i)
+                emitWord(readU16BE(comp, dpos, &ok));
+        } else {
+            auto count = quint16(cmd);
+            auto value = readU16BE(comp, dpos, &ok);
+            for (auto i = 0; i < count; ++i)
+                emitWord(value);
+        }
+        if (!ok) {
+            return{};
+        }
+    }
+    return out;
+}
+
+static QByteArray vdatToIlbmPlane(const QByteArray &vdatData, const BMHDChunk *header)
+{
+    QByteArray ba(vdatData.size(), char());
+    auto rowLen = header->rowLen();
+    for (auto x = 0, n = 0; x < rowLen; x += 2) {
+        for (auto y = 0, off = x, h = header->height(); y < h; y++, off += rowLen) {
+            if ((off + 1 >= ba.size()) || n + 1 >= vdatData.size()) {
+                return{};
+            }
+            ba[off + 1] = vdatData.at(n++);
+            ba[off] = vdatData.at(n++);
+        }
+    }
+    return ba;
+}
+
+const QByteArray &VDATChunk::uncompressedData(const BMHDChunk *header) const
+{
+    if (uncompressed.isEmpty()) {
+        auto tmp = decompressVdat(data());
+        if (tmp.size() == header->rowLen() * header->height()) {
+            uncompressed = vdatToIlbmPlane(tmp, header);
+        }
+    }
+    return uncompressed;
+}
+
+
+bool VDATChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
  * *** VERS Chunk ***
  * ****************** */
 
@@ -2392,6 +2655,957 @@ QString XMP0Chunk::value() const
 bool XMP0Chunk::innerReadStructure(QIODevice *d)
 {
     return cacheData(d);
+}
+
+
+/* ******************
+ * *** IHDR Chunk ***
+ * ****************** */
+
+IHDRChunk::~IHDRChunk()
+{
+
+}
+
+IHDRChunk::IHDRChunk()
+{
+
+}
+
+bool IHDRChunk::isValid() const
+{
+    if (dataBytes() < 14) {
+        return false;
+    }
+    return chunkId() == IHDRChunk::defaultChunkId();
+}
+
+qint32 IHDRChunk::width() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data().at(1), data().at(0)));
+}
+
+qint32 IHDRChunk::height() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data().at(5), data().at(4)));
+}
+
+QSize IHDRChunk::size() const
+{
+    return QSize(width(), height());
+}
+
+qint32 IHDRChunk::lineSize() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data().at(3), data().at(2)));
+}
+
+quint16 IHDRChunk::depth() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data().at(9), data().at(8)));
+}
+
+IHDRChunk::Model IHDRChunk::model() const
+{
+    if (!isValid()) {
+        return IHDRChunk::Model::Invalid;
+    }
+    return IHDRChunk::Model(ui16(data().at(7), data().at(6)));
+}
+
+IHDRChunk::DYuvKind IHDRChunk::yuvKind() const
+{
+    if (!isValid()) {
+        return IHDRChunk::DYuvKind::One;
+    }
+    return IHDRChunk::DYuvKind(data().at(10));
+}
+
+IHDRChunk::Yuv IHDRChunk::yuvStart() const
+{
+    if (!isValid()) {
+        return{};
+    }
+    return Yuv(data().at(11), data().at(12), data().at(13));
+}
+
+bool IHDRChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
+ * *** IPAR Chunk ***
+ * ****************** */
+
+IPARChunk::~IPARChunk()
+{
+
+}
+
+IPARChunk::IPARChunk()
+{
+
+}
+
+bool IPARChunk::isValid() const
+{
+    if (dataBytes() < 22) {
+        return false;
+    }
+    return chunkId() == IPARChunk::defaultChunkId();
+}
+
+qint32 IPARChunk::xOffset() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data().at(1), data().at(0)));
+}
+
+qint32 IPARChunk::yOffset() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data().at(3), data().at(2)));
+}
+
+double IPARChunk::aspectRatio() const
+{
+    if (!isValid()) {
+        return 1;
+    }
+    if (auto xr = ui16(data().at(5), data().at(4))) {
+        auto yr = double(ui16(data().at(7), data().at(6)));
+        return yr / xr;
+    }
+    return 1;
+}
+
+qint32 IPARChunk::xPage() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data().at(9), data().at(8)));
+}
+
+qint32 IPARChunk::yPage() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data().at(11), data().at(10)));
+}
+
+qint32 IPARChunk::xGrub() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data().at(13), data().at(12)));
+}
+
+qint32 IPARChunk::yGrub() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data().at(15), data().at(14)));
+}
+
+IPARChunk::Rgb IPARChunk::mask() const
+{
+    if (!isValid()) {
+        return {};
+    }
+    return Rgb(data().at(16), data().at(17), data().at(18));
+}
+
+IPARChunk::Rgb IPARChunk::transparency() const
+{
+    if (!isValid()) {
+        return {};
+    }
+    return Rgb(data().at(19), data().at(20), data().at(21));
+}
+
+bool IPARChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
+ * *** PLTE Chunk ***
+ * ****************** */
+
+PLTEChunk::~PLTEChunk()
+{
+
+}
+
+PLTEChunk::PLTEChunk()
+{
+
+}
+
+bool PLTEChunk::isValid() const
+{
+    if (dataBytes() < 4) {
+        return false;
+    }
+    if (dataBytes() - 4 < total() * 3) {
+        return false;
+    }
+    return chunkId() == PLTEChunk::defaultChunkId();
+}
+
+qint32 PLTEChunk::count() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return total() - count();
+}
+
+qint32 PLTEChunk::offset() const
+{
+    return qint32(ui16(data().at(1), data().at(0)));
+}
+
+qint32 PLTEChunk::total() const
+{
+    return qint32(ui16(data().at(3), data().at(2)));
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+QList<QRgb> PLTEChunk::innerPalette() const
+#else
+QVector<QRgb> PLTEChunk::innerPalette() const
+#endif
+{
+    if (!isValid()) {
+        return{};
+    }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<QRgb> l;
+#else
+    QVector<QRgb> l;
+#endif
+    auto &&d = data();
+    for (qint32 i = offset(), n = total(); i < n; ++i) {
+        auto i3 = 4 + i * 3;
+        l << qRgb(d.at(i3), d.at(i3 + 1), d.at(i3 + 2));
+    }
+    return l;
+}
+
+
+/* ******************
+ * *** YUVS Chunk ***
+ * ****************** */
+
+YUVSChunk::~YUVSChunk()
+{
+
+}
+
+YUVSChunk::YUVSChunk()
+{
+
+}
+
+bool YUVSChunk::isValid() const
+{
+    return chunkId() == YUVSChunk::defaultChunkId();
+}
+
+qint32 YUVSChunk::count() const
+{
+    return dataBytes() / 3;
+}
+
+IHDRChunk::Yuv YUVSChunk::yuvStart(qint32 y) const
+{
+    if (!isValid() || y >= count()) {
+        return{};
+    }
+    return IHDRChunk::Yuv(data().at(y * 3), data().at(y * 3 + 1), data().at(y * 3 + 2));
+}
+
+bool YUVSChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
+ * *** IDAT Chunk ***
+ * ****************** */
+
+IDATChunk::~IDATChunk()
+{
+
+}
+
+IDATChunk::IDATChunk()
+{
+
+}
+
+bool IDATChunk::isValid() const
+{
+    return chunkId() == IDATChunk::defaultChunkId();
+}
+
+/*!
+ * Converts a YUV pixel to RGB.
+ */
+inline IPARChunk::Rgb yuvToRgb(IHDRChunk::Yuv yuv) {
+    IPARChunk::Rgb rgb;
+
+    // Green Book Cap. V Par. 4.4.2.2
+    const auto b = yuv.y + (yuv.u - 128.) * 1.733;
+    const auto r = yuv.y + (yuv.v - 128.) * 1.371;
+    const auto g = (yuv.y - 0.299 * r - 0.114 * b) / 0.587;
+
+    rgb.r = quint8(qBound(0., r + 0.5, 255.));
+    rgb.g = quint8(qBound(0., g + 0.5, 255.));
+    rgb.b = quint8(qBound(0., b + 0.5, 255.));
+
+    return rgb;
+}
+
+static QByteArray decompressRL7Row(QIODevice *device, int width) {
+    QByteArray row;
+    for (auto x = 0; x < width;) {
+        char b;
+        if (!device->getChar(&b)) {
+            return{};
+        }
+        if (b & 0x80) {
+            auto color = b & 0x7F;
+            if (!device->getChar(&b)) {
+                return{};
+            }
+            auto length = quint8(b);
+            if (length == 0) {
+                row.append(width - x, char(color));
+                x = width;
+            } else {
+                auto count = std::min(int(length), width - x);
+                row.append(count, char(color));
+                x += count;
+            }
+        } else {
+            row.append(b);
+            x++;
+        }
+    }
+    return row;
+}
+
+QByteArray IDATChunk::strideRead(QIODevice *d, qint32 y, const IHDRChunk *header, const IPARChunk *params, const YUVSChunk *yuvs) const
+{
+    Q_UNUSED(params)
+    if (!isValid() || header == nullptr || d == nullptr) {
+        return {};
+    }
+
+    auto read = strideSize(header);
+    for (auto nextPos = nextChunkPos(); !d->atEnd() && d->pos() < nextPos;) {
+        QByteArray rr;
+        if (header->model() == IHDRChunk::Rle7) {
+            rr = decompressRL7Row(d, header->width());
+        } else {
+            rr = d->read(read);
+        }
+
+        if (header->model() == IHDRChunk::CLut4) {
+            if (rr.size() < header->width() / 2) {
+                return {};
+            }
+            QByteArray tmp(header->width(), char());
+            for (auto x = 0, w = header->width(); x < w; ++x) {
+                auto i8 = quint8(rr.at(x / 2));
+                tmp[x] = x & 1 ? i8 & 0xF : (i8 >> 4) & 0xF;
+            }
+            rr = tmp;
+        }
+
+        if (header->model() == IHDRChunk::Rgb555) {
+            for (qint32 x = 0, w = rr.size() - 1; x < w; x += 2) {
+                const char tmp = rr[x];
+                rr[x] = rr[x + 1];
+                rr[x + 1] = tmp;
+            }
+        }
+
+        if (header->model() == IHDRChunk::DYuv) {
+            if (rr.size() < header->width()) {
+                return {};
+            }
+
+            // delta table: Green Book Cap. V Par. 3.4.1.3
+            // NOTE 1: using the wrong delta table creates visible artifacts on the image.
+            // NOTE 2: using { 0, 1, 4, 9, 16, 27, 44, 79, -128, -79, -44, -27, -16, -9, -4, -1 }
+            //         table gives the same result (when assigned to an uint8).
+            static const qint32 deltaTable[16] = {
+                0, 1, 4, 9, 16, 27, 44, 79, 128, 177, 212, 229, 240, 247, 252, 255
+            };
+
+            auto yuv = header->yuvStart();
+            if (header->yuvKind() == IHDRChunk::Each && yuvs) {
+                yuv = yuvs->yuvStart(y);
+            }
+
+            QByteArray tmp(header->width() * 3, char());
+            for (auto x = 0, w = header->width() - 1; x < w; x += 2) {
+                // nibble order from Green Book Cap. V Par. 6.5.1.1
+                // NOTE: using the wrong nibble order creates visible artifacts on the image.
+                const auto du = deltaTable[(rr.at(x) >> 4) & 0x0F];
+                const auto d1 = deltaTable[rr.at(x) & 0x0F];
+                const auto dv = deltaTable[(rr.at(x + 1) >> 4) & 0x0F];
+                const auto d2 = deltaTable[rr.at(x + 1) & 0x0F];
+
+                // pixel 1
+                yuv.y = d1 + yuv.y;
+                yuv.u = du + yuv.u;
+                yuv.v = dv + yuv.v;
+                auto rgb = yuvToRgb(yuv);
+                tmp[x * 3] = rgb.r;
+                tmp[x * 3 + 1] = rgb.g;
+                tmp[x * 3 + 2] = rgb.b;
+
+                // pixel 2
+                yuv.y = d2 + yuv.y;
+                rgb = yuvToRgb(yuv);
+                tmp[(x + 1) * 3] = rgb.r;
+                tmp[(x + 1) * 3 + 1] = rgb.g;
+                tmp[(x + 1) * 3 + 2] = rgb.b;
+            }
+            rr = tmp;
+        }
+
+        return rr;
+    }
+
+    return {};
+}
+
+bool IDATChunk::resetStrideRead(QIODevice *d) const
+{
+    return seek(d);
+}
+
+quint32 IDATChunk::strideSize(const IHDRChunk *header) const
+{
+    if (header == nullptr) {
+        return 0;
+    }
+
+    auto rs = (header->width() * header->depth() + 7) / 8;
+
+    // No padding bytes are inserted in the data.
+    if (header->model() == IHDRChunk::Rgb888) {
+        return rs;
+    }
+
+    // The first pixel of each scan line must begin in a longword boundary.
+    if (auto mod = rs % 4)
+        rs += (4 - mod);
+    return rs;
+}
+
+
+/* ******************
+ * *** RGHD Chunk ***
+ * ****************** */
+
+RGHDChunk::~RGHDChunk()
+{
+
+}
+
+RGHDChunk::RGHDChunk()
+{
+
+}
+
+bool RGHDChunk::isValid() const
+{
+    return dataBytes() >= 13 * sizeof(quint32) && chunkId() == RGHDChunk::defaultChunkId();
+}
+
+QSize RGHDChunk::size() const
+{
+    return QSize(width(), height());
+}
+
+qint32 RGHDChunk::leftEdge() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return i32(data(), 0);
+}
+
+qint32 RGHDChunk::topEdge() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return i32(data(), 4);
+}
+
+qint32 RGHDChunk::width() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return i32(data(), 8);
+}
+
+qint32 RGHDChunk::height() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return i32(data(), 12);
+}
+
+qint32 RGHDChunk::pageWidth() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return i32(data(), 16);
+}
+
+qint32 RGHDChunk::pageHeight() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return i32(data(), 20);
+}
+
+quint32 RGHDChunk::depth() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui32(data(), 24);
+}
+
+quint32 RGHDChunk::pixelBits() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui32(data(), 28);
+}
+
+quint32 RGHDChunk::bytesPerLine() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui32(data(), 32);
+}
+
+RGHDChunk::Compression RGHDChunk::compression() const
+{
+    if (!isValid()) {
+        return Compression::Uncompressed;
+    }
+    return Compression(ui32(data(), 36));
+}
+
+quint32 RGHDChunk::xAspect() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui32(data(), 40);
+}
+
+quint32 RGHDChunk::yAspect() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui32(data(), 44);
+}
+
+double RGHDChunk::aspectRatio() const
+{
+    if (auto xr = xAspect()) {
+        auto yr = yAspect();
+        return double(yr) / double(xr);
+    }
+    return 1;
+}
+
+RGHDChunk::BitmapTypes RGHDChunk::bitmapType() const
+{
+    if (!isValid()) {
+        return BitmapType::Planar8;
+    }
+    return BitmapTypes(ui32(data(), 48));
+}
+
+bool RGHDChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
+ * *** RCOL Chunk ***
+ * ****************** */
+
+RCOLChunk::~RCOLChunk()
+{
+
+}
+
+RCOLChunk::RCOLChunk()
+{
+
+}
+
+bool RCOLChunk::isValid() const
+{
+    return dataBytes() >= 776 && chunkId() == RCOLChunk::defaultChunkId();
+}
+
+qint32 RCOLChunk::count() const
+{
+    return isValid() ? 256 : 0;
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+QList<QRgb> RCOLChunk::innerPalette() const
+#else
+QVector<QRgb> RCOLChunk::innerPalette() const
+#endif
+{
+    if (!isValid()) {
+        return {};
+    }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QList<QRgb> l;
+#else
+    QVector<QRgb> l;
+#endif
+    auto &&d = data();
+    for (qint32 i = 0, n = count(); i < n; ++i) {
+        auto i3 = i * 3 + 8;
+        l << qRgb(d.at(i3), d.at(i3 + 1), d.at(i3 + 2));
+    }
+
+    if (ui32(data(), 0)) {
+        auto tr = ui32(data(), 4);
+        if (tr < l.size()) {
+            l[tr] &= 0x00FFFFFF;
+        }
+    }
+
+    return l;
+}
+
+
+/* ******************
+ * *** RFLG Chunk ***
+ * ****************** */
+
+RFLGChunk::~RFLGChunk()
+{
+
+}
+
+RFLGChunk::RFLGChunk()
+{
+
+}
+
+bool RFLGChunk::isValid() const
+{
+    return dataBytes() >= 4 && chunkId() == RFLGChunk::defaultChunkId();
+}
+
+RFLGChunk::Flags RFLGChunk::flags() const
+{
+    if (!isValid()) {
+        return {};
+    }
+    return Flags(ui32(data(), 0));
+}
+
+bool RFLGChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
+ * *** RSCM Chunk ***
+ * ****************** */
+
+RSCMChunk::~RSCMChunk()
+{
+
+}
+
+RSCMChunk::RSCMChunk()
+{
+
+}
+
+bool RSCMChunk::isValid() const
+{
+    return dataBytes() >= 12 && chunkId() == RSCMChunk::defaultChunkId();
+}
+
+quint32 RSCMChunk::viewMode() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui32(data(), 0);
+}
+
+quint32 RSCMChunk::localVM0() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui32(data(), 4);
+}
+
+quint32 RSCMChunk::localVM1() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return ui32(data(), 8);
+}
+
+bool RSCMChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
+ * *** RBOD Chunk ***
+ * ****************** */
+
+RBODChunk::~RBODChunk()
+{
+
+}
+
+RBODChunk::RBODChunk()
+{
+
+}
+
+bool RBODChunk::isValid() const
+{
+    return chunkId() == RBODChunk::defaultChunkId();
+}
+
+QByteArray RBODChunk::strideRead(QIODevice *d, qint32 y, const RGHDChunk *header, const RSCMChunk *rcsm, const RCOLChunk *rcol) const
+{
+    if (!isValid() || header == nullptr || d == nullptr) {
+        return {};
+    }
+
+    QByteArray planes;
+    auto readSize = strideSize(header);
+    for (auto nextPos = nextChunkPos(); !d->atEnd() && d->pos() < nextPos && planes.size() < readSize;) {
+        if (header->compression() == RGHDChunk::Compression::Uncompressed) {
+            planes = d->read(readSize);
+        } else {
+            qCDebug(LOG_IFFPLUGIN) << "RBODChunk::strideRead(): unknown compression" << header->compression();
+        }
+        if (planes.size() != readSize) {
+            return {};
+        }
+    }
+
+    return deinterleave(planes, y, header, rcsm, rcol);
+}
+
+bool RBODChunk::resetStrideRead(QIODevice *d) const
+{
+    return seek(d);
+}
+
+QByteArray RBODChunk::deinterleave(const QByteArray &planes, qint32 y, const RGHDChunk *header, const RSCMChunk *rcsm, const RCOLChunk *rcol) const
+{
+    Q_UNUSED(y)
+    Q_UNUSED(rcsm)
+    Q_UNUSED(rcol)
+    if (planes.size() != strideSize(header)) {
+        return {};
+    }
+
+    QByteArray ba;
+
+    auto width = header->width();
+    auto rgfx_format = RGHDChunk::BitmapTypes(header->bitmapType() & 0x3FFFFFFF);
+
+    if (rgfx_format == RGHDChunk::BitmapType::Chunky8) {
+        ba = planes;
+    } else if (rgfx_format == RGHDChunk::BitmapType::Planar8) {
+        // No test case: ignoring...
+    } else if (rgfx_format == RGHDChunk::BitmapType::Rgb15 || rgfx_format == RGHDChunk::BitmapType::Rgb16) {
+        ba = planes;
+        if (QSysInfo::ByteOrder == QSysInfo::LittleEndian) {
+            for (qint32 x = 0; x < width; ++x) {
+                auto x2 = x * 2;
+                ba[x2] = planes[x2 + 1];
+                ba[x2 + 1] = planes[x2];
+            }
+        }
+    } else if (rgfx_format == RGHDChunk::BitmapType::Rgb24) {
+        ba = planes;
+    } else if (rgfx_format == RGHDChunk::BitmapType::Rgb32) {
+        ba.resize(planes.size());
+        auto invAlpha = header->bitmapType() & RGHDChunk::BitmapType::HasInvAlpha;
+        for (qint32 x = 0; x < width; ++x) {
+            auto x4 = x * 4;
+            ba[x4] = planes[x4 + 1];
+            ba[x4 + 1] = planes[x4 + 2];
+            ba[x4 + 2] = planes[x4 + 3];
+            ba[x4 + 3] = invAlpha ? 255 - planes[x4] : planes[x4];
+        }
+    } else if (rgfx_format == RGHDChunk::BitmapType::Rgb48) {
+        QDataStream in(planes);
+        in.setByteOrder(QDataStream::BigEndian);
+        QDataStream ou(&ba, QIODevice::WriteOnly);
+        ou.setByteOrder(QDataStream::ByteOrder(QSysInfo::ByteOrder));
+
+        quint16 r, g, b;
+        for (qint32 x = 0; x < width; ++x) {
+            in >> r >> g >> b;
+            ou << r << g << b << quint16(0xFFFF);
+        }
+
+        if (in.status() != QDataStream::Ok || ou.status() != QDataStream::Ok) {
+            return {};
+        }
+    } else if (rgfx_format == RGHDChunk::BitmapType::Rgb64) {
+        QDataStream in(planes);
+        in.setByteOrder(QDataStream::BigEndian);
+        QDataStream ou(&ba, QIODevice::WriteOnly);
+        ou.setByteOrder(QDataStream::ByteOrder(QSysInfo::ByteOrder));
+
+        auto invAlpha = header->bitmapType() & RGHDChunk::BitmapType::HasInvAlpha;
+        quint16 r, g, b, a;
+        for (qint32 x = 0; x < width; ++x) {
+            in >> a >> r >> g >> b;
+            if (invAlpha)
+                a = 0xFFFF - a;
+            ou << r << g << b << a;
+        }
+
+        if (in.status() != QDataStream::Ok || ou.status() != QDataStream::Ok) {
+            return {};
+        }
+    } else if (rgfx_format == RGHDChunk::BitmapType::Rgb96) {
+        QDataStream in(planes);
+        in.setByteOrder(QDataStream::BigEndian);
+        in.setFloatingPointPrecision(QDataStream::SinglePrecision);
+        QDataStream ou(&ba, QIODevice::WriteOnly);
+        ou.setByteOrder(QDataStream::ByteOrder(QSysInfo::ByteOrder));
+        ou.setFloatingPointPrecision(QDataStream::SinglePrecision);
+
+        float r, g, b;
+        for (qint32 x = 0; x < width; ++x) {
+            in >> r >> g >> b;
+            ou << r << g << b << float(1);
+        }
+
+        if (in.status() != QDataStream::Ok || ou.status() != QDataStream::Ok) {
+            return {};
+        }
+    } else if (rgfx_format == RGHDChunk::BitmapType::Rgb128) {
+        QDataStream in(planes);
+        in.setByteOrder(QDataStream::BigEndian);
+        in.setFloatingPointPrecision(QDataStream::SinglePrecision);
+        QDataStream ou(&ba, QIODevice::WriteOnly);
+        ou.setByteOrder(QDataStream::ByteOrder(QSysInfo::ByteOrder));
+        ou.setFloatingPointPrecision(QDataStream::SinglePrecision);
+
+        auto invAlpha = header->bitmapType() & RGHDChunk::BitmapType::HasInvAlpha;
+        float r, g, b, a;
+        for (qint32 x = 0; x < width; ++x) {
+            in >> a >> r >> g >> b;
+            if (invAlpha)
+                a = 1 - a;
+            ou << r << g << b << a;
+        }
+
+        if (in.status() != QDataStream::Ok || ou.status() != QDataStream::Ok) {
+            return {};
+        }
+    }
+
+    return ba;
+}
+
+quint32 RBODChunk::strideSize(const RGHDChunk *header) const
+{
+    auto rgfx_format = RGHDChunk::BitmapTypes(header->bitmapType() & 0x3FFFFFFF);
+    if (rgfx_format == RGHDChunk::BitmapType::Planar8) {
+        return (header->width() + 7) / 8;
+    }
+    if (rgfx_format == RGHDChunk::BitmapType::Chunky8) {
+        return header->width();
+    }
+    if (rgfx_format == RGHDChunk::BitmapType::Rgb15 || rgfx_format == RGHDChunk::BitmapType::Rgb16) {
+        return header->width() * 2;
+    }
+    if (rgfx_format == RGHDChunk::BitmapType::Rgb24) {
+        return header->width() * 3;
+    }
+    if (rgfx_format == RGHDChunk::BitmapType::Rgb32) {
+        return header->width() * 4;
+    }
+    if (rgfx_format == RGHDChunk::BitmapType::Rgb48) {
+        return header->width() * 6;
+    }
+    if (rgfx_format == RGHDChunk::BitmapType::Rgb64) {
+        return header->width() * 8;
+    }
+    if (rgfx_format == RGHDChunk::BitmapType::Rgb96) {
+        return header->width() * 12;
+    }
+    if (rgfx_format == RGHDChunk::BitmapType::Rgb128) {
+        return header->width() * 16;
+    }
+    return 0;
 }
 
 
@@ -2791,41 +4005,38 @@ QVector<QRgb> PCHGChunk::palette(qint32 y) const
 //   [ tree (treeSize bytes, even) | compressed bitstream (... bytes) ]
 //
 // On any error, logs with qCCritical(LOG_IFFPLUGIN) and returns {}.
-// Comments are in English as requested.
 // ----------------------------------------------------------------------------
 //
 // NOTE: Sebastiano Vigna, the author of the PCHG specification and the ASM
 //       decompression code for the Motorola 68K, gave us permission to use his
 //       code and recommended that we convert it with AI.
 
-// Read a big-endian 16-bit signed word from a byte buffer
-static inline qint16 read_be16(const char* base, int byteIndex, int size)
-{
-    if (byteIndex + 1 >= size)
-        return 0; // caller must bounds-check; we keep silent here
-    const quint8 b0 = static_cast<quint8>(base[byteIndex]);
-    const quint8 b1 = static_cast<quint8>(base[byteIndex + 1]);
-    return static_cast<qint16>((b0 << 8) | b1);
-}
-
-// Read a big-endian 32-bit unsigned long from a byte buffer
-static inline quint32 read_be32(const char* base, int byteIndex, int size)
-{
-    if (byteIndex + 3 >= size)
-        return 0; // caller must bounds-check
-    const quint8 b0 = static_cast<quint8>(base[byteIndex]);
-    const quint8 b1 = static_cast<quint8>(base[byteIndex + 1]);
-    const quint8 b2 = static_cast<quint8>(base[byteIndex + 2]);
-    const quint8 b3 = static_cast<quint8>(base[byteIndex + 3]);
-    return (static_cast<quint32>(b0) << 24) |
-           (static_cast<quint32>(b1) << 16) |
-           (static_cast<quint32>(b2) << 8)  |
-           static_cast<quint32>(b3);
-}
-
 // Core decompressor (tree + compressed stream in one QByteArray)
 static QByteArray pchgFastDecomp(const QByteArray& input, int treeSize, int originalSize)
 {
+    // Read a big-endian 16-bit signed word from a byte buffer
+    auto read_be16 = [&](const char* base, int byteIndex, int size) -> qint16 {
+        if (byteIndex + 1 >= size)
+            return 0; // caller must bounds-check; we keep silent here
+        const quint8 b0 = static_cast<quint8>(base[byteIndex]);
+        const quint8 b1 = static_cast<quint8>(base[byteIndex + 1]);
+        return static_cast<qint16>((b0 << 8) | b1);
+    };
+
+    // Read a big-endian 32-bit unsigned long from a byte buffer
+    auto read_be32 = [&](const char* base, int byteIndex, int size) -> quint32 {
+        if (byteIndex + 3 >= size)
+            return 0; // caller must bounds-check
+        const quint8 b0 = static_cast<quint8>(base[byteIndex]);
+        const quint8 b1 = static_cast<quint8>(base[byteIndex + 1]);
+        const quint8 b2 = static_cast<quint8>(base[byteIndex + 2]);
+        const quint8 b3 = static_cast<quint8>(base[byteIndex + 3]);
+        return (static_cast<quint32>(b0) << 24) |
+               (static_cast<quint32>(b1) << 16) |
+               (static_cast<quint32>(b2) << 8)  |
+                static_cast<quint32>(b3);
+    };
+
     // Basic validation
     if (treeSize <= 0 || (treeSize & 1)) {
         qCCritical(LOG_IFFPLUGIN) << "Invalid treeSize (must be positive and even)" << treeSize;
@@ -2952,7 +4163,6 @@ static QByteArray pchgFastDecomp(const QByteArray& input, int treeSize, int orig
 
     return out;
 }
-
 // !Huffman decompression
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)

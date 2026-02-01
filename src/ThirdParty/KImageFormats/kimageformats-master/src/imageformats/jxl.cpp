@@ -310,14 +310,16 @@ bool QJpegXLHandler::countALLFrames()
     JxlColorEncoding color_encoding;
     if (m_basicinfo.uses_original_profile == JXL_FALSE && m_basicinfo.have_animation == JXL_FALSE) {
 #if JPEGXL_NUMERIC_VERSION >= JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
-        const JxlCmsInterface *jxlcms = JxlGetDefaultCms();
-        if (jxlcms) {
-            status = JxlDecoderSetCms(m_decoder, *jxlcms);
-            if (status != JXL_DEC_SUCCESS) {
-                qCWarning(LOG_JXLPLUGIN, "JxlDecoderSetCms ERROR");
+        if (!is_gray) {
+            const JxlCmsInterface *jxlcms = JxlGetDefaultCms();
+            if (jxlcms) {
+                status = JxlDecoderSetCms(m_decoder, *jxlcms);
+                if (status != JXL_DEC_SUCCESS) {
+                    qCWarning(LOG_JXLPLUGIN, "JxlDecoderSetCms ERROR");
+                }
+            } else {
+                qCWarning(LOG_JXLPLUGIN, "No JPEG XL CMS Interface");
             }
-        } else {
-            qCWarning(LOG_JXLPLUGIN, "No JPEG XL CMS Interface");
         }
 #endif
 
@@ -941,7 +943,11 @@ bool QJpegXLHandler::write(const QImage &image)
 
     size_t pixel_count = size_t(image.width()) * image.height();
     if (MAX_IMAGE_PIXELS && pixel_count > MAX_IMAGE_PIXELS) {
-        qCWarning(LOG_JXLPLUGIN, "Image (%dx%d) will not be saved because it has more than %d megapixels!", image.width(), image.height(), MAX_IMAGE_PIXELS / 1024 / 1024);
+        qCWarning(LOG_JXLPLUGIN,
+                  "Image (%dx%d) will not be saved because it has more than %d megapixels!",
+                  image.width(),
+                  image.height(),
+                  MAX_IMAGE_PIXELS / 1024 / 1024);
         return false;
     }
 
@@ -1978,19 +1984,22 @@ bool QJpegXLHandler::rewind()
             return false;
         }
 
+        bool is_gray = m_basicinfo.num_color_channels == 1 && m_basicinfo.alpha_bits == 0;
+
 #if JPEGXL_NUMERIC_VERSION >= JPEGXL_COMPUTE_NUMERIC_VERSION(0, 9, 0)
-        const JxlCmsInterface *jxlcms = JxlGetDefaultCms();
-        if (jxlcms) {
-            status = JxlDecoderSetCms(m_decoder, *jxlcms);
-            if (status != JXL_DEC_SUCCESS) {
-                qCWarning(LOG_JXLPLUGIN, "JxlDecoderSetCms ERROR");
+        if (!is_gray) {
+            const JxlCmsInterface *jxlcms = JxlGetDefaultCms();
+            if (jxlcms) {
+                status = JxlDecoderSetCms(m_decoder, *jxlcms);
+                if (status != JXL_DEC_SUCCESS) {
+                    qCWarning(LOG_JXLPLUGIN, "JxlDecoderSetCms ERROR");
+                }
+            } else {
+                qCWarning(LOG_JXLPLUGIN, "No JPEG XL CMS Interface");
             }
-        } else {
-            qCWarning(LOG_JXLPLUGIN, "No JPEG XL CMS Interface");
         }
 #endif
 
-        bool is_gray = m_basicinfo.num_color_channels == 1 && m_basicinfo.alpha_bits == 0;
         JxlColorEncoding color_encoding;
         JxlColorEncodingSetToSRGB(&color_encoding, is_gray ? JXL_TRUE : JXL_FALSE);
         JxlDecoderSetPreferredColorProfile(m_decoder, &color_encoding);

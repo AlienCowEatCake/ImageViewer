@@ -1,0 +1,11 @@
+[
+    {
+        "fileName" : "profile_gray_gamma28.png",
+        "colorSpace" : {
+            "colorModel" : "Gray",
+            "primaries" : "Custom",
+            "transferFunction" : "Gamma",
+            "gamma" : 2.8
+        }
+    }
+]

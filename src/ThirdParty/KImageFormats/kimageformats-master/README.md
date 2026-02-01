@@ -357,8 +357,15 @@ The plugin supports the following image data:
   type 4.
 - FORM PBM: PBM is a chunky version of IFF pictures. It supports 8-bit images 
   with color map only.
+- FORM IMAG (Compact Disc-Interactive): It supports CLut4, CLut7, CLut8, Rle7
+  and DYuv formats.
+- FORM RGFX: It supports uncompressed images only.
 - FOR4 CIMG (Maya Image File Format): It supports 24/48-bit RGB and 32/64-bit 
   RGBA images.
+
+> [!note]
+> The plugin only supports the IFF, ILBM, and LBM file extensions. You'll 
+> need to rename files with different extensions to open them.
 
 ### The JP2 plugin
 

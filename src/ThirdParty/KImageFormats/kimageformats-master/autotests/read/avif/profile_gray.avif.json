@@ -1,0 +1,11 @@
+[
+    {
+        "fileName" : "profile_gray.png",
+        "colorSpace" : {
+            "colorModel" : "Gray",
+            "primaries" : "Custom",
+            "transferFunction" : "SRgb",
+            "gamma" : 2.31
+        }
+    }
+]

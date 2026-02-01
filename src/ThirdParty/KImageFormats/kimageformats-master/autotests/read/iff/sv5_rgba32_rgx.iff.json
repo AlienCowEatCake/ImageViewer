@@ -1,0 +1,37 @@
+[
+    {
+        "fileName" : "sv5_rgba32_rgx.png",
+        "colorSpace" : {
+            "description" : "TIFF ICC Profile",
+            "primaries" : "SRgb",
+            "transferFunction" : "SRgb",
+            "gamma" : 0
+        },
+        "metadata" : [
+            {
+                "key" : "Author",
+                "value" : "KDE Project"
+            },
+            {
+                "key" : "Copyright",
+                "value" : "@2025 KDE Project"
+            },
+            {
+                "key" : "CreationDate",
+                "value" : "2025-01-14T10:34:51"
+            },
+            {
+                "key" : "Description",
+                "value" : "TV broadcast test image."
+            },
+            {
+                "key" : "Title",
+                "value" : "Test Card"
+            }
+        ],
+        "resolution" : {
+            "dotsPerMeterX" : 2835,
+            "dotsPerMeterY" : 2835
+        }
+    }
+]

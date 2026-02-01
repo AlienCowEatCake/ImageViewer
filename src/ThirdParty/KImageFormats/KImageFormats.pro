@@ -83,6 +83,17 @@ DEFINES += SHAMChunk=tp_SHAMChunk
 DEFINES += RASTChunk=tp_RASTChunk
 DEFINES += PCHGChunk=tp_PCHGChunk
 DEFINES += XBMIChunk=tp_XBMIChunk
+DEFINES += IDATChunk=tp_IDATChunk
+DEFINES += IHDRChunk=tp_IHDRChunk
+DEFINES += IPARChunk=tp_IPARChunk
+DEFINES += PLTEChunk=tp_PLTEChunk
+DEFINES += RBODChunk=tp_RBODChunk
+DEFINES += RCOLChunk=tp_RCOLChunk
+DEFINES += RFLGChunk=tp_RFLGChunk
+DEFINES += RGHDChunk=tp_RGHDChunk
+DEFINES += RSCMChunk=tp_RSCMChunk
+DEFINES += VDATChunk=tp_VDATChunk
+DEFINES += YUVSChunk=tp_YUVSChunk
 
 # --------------------------------------------------------------------------------
 

@@ -48,7 +48,7 @@ private Q_SLOTS:
         QCOMPARE(reader.text(QStringLiteral("Author")), QStringLiteral("KDE Community"));
     }
 
-    void textRead()
+    void testRead()
     {
         QImageReader reader(QFINDTESTDATA("ani/test.ani"));
         QVERIFY(reader.canRead());

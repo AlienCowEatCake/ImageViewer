@@ -1,18 +1,36 @@
-From 1edce3cc932dcac83b1b49d47f090449b05438f8 Mon Sep 17 00:00:00 2001
+From e11a31b55d748a82c5328729b76671678dcdf863 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
 Subject: [PATCH 2/8] Remove C++17 features
 
 ---
- src/imageformats/jp2.cpp  |  4 ++--
- src/imageformats/jxr.cpp  |  4 ++--
- src/imageformats/kra.cpp  |  4 ++--
- src/imageformats/ora.cpp  |  4 ++--
- src/imageformats/pic.cpp  |  4 ++--
- src/imageformats/util_p.h |  2 +-
- src/imageformats/xcf.cpp  | 10 +++++-----
- 7 files changed, 16 insertions(+), 16 deletions(-)
+ src/imageformats/chunks.cpp |  6 +++---
+ src/imageformats/jp2.cpp    |  4 ++--
+ src/imageformats/jxr.cpp    |  4 ++--
+ src/imageformats/kra.cpp    |  4 ++--
+ src/imageformats/ora.cpp    |  4 ++--
+ src/imageformats/pic.cpp    |  4 ++--
+ src/imageformats/util_p.h   |  2 +-
+ src/imageformats/xcf.cpp    | 10 +++++-----
+ 8 files changed, 19 insertions(+), 19 deletions(-)
 
+diff --git a/src/imageformats/chunks.cpp b/src/imageformats/chunks.cpp
+index 5d0e717..2335896 100644
+--- a/src/imageformats/chunks.cpp
++++ b/src/imageformats/chunks.cpp
+@@ -2951,9 +2951,9 @@ inline IPARChunk::Rgb yuvToRgb(IHDRChunk::Yuv yuv) {
+     const auto r = yuv.y + (yuv.v - 128.) * 1.371;
+     const auto g = (yuv.y - 0.299 * r - 0.114 * b) / 0.587;
+ 
+-    rgb.r = quint8(std::clamp(r + 0.5, 0., 255.));
+-    rgb.g = quint8(std::clamp(g + 0.5, 0., 255.));
+-    rgb.b = quint8(std::clamp(b + 0.5, 0., 255.));
++    rgb.r = quint8(qBound(0., r + 0.5, 255.));
++    rgb.g = quint8(qBound(0., g + 0.5, 255.));
++    rgb.b = quint8(qBound(0., b + 0.5, 255.));
+ 
+     return rgb;
+ }
 diff --git a/src/imageformats/jp2.cpp b/src/imageformats/jp2.cpp
 index 65627d2..3324462 100644
 --- a/src/imageformats/jp2.cpp
@@ -168,5 +186,5 @@ index 117c8da..5a94dcd 100644
          if (value.isEmpty())
              continue;
 -- 
-2.52.0
+2.47.3
 
