@@ -1,9 +1,10 @@
-From c3b7b3601a62dc972e82b19e0d37653b3974af43 Mon Sep 17 00:00:00 2001
+From 81437d7c75ef3fc5ddb45e55610f8edf2d1da743 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 28 Nov 2021 20:18:16 +0700
 Subject: [PATCH 2/3] Fix build with MinGW 3.4.2
 
 ---
+ internal/losslessjpeg.h                            |  2 +-
  libraw/libraw_datastream.h                         |  2 +-
  src/decoders/crx.cpp                               | 14 ++++++++------
  src/decoders/decoders_dcraw.cpp                    |  4 ++--
@@ -23,8 +24,21 @@ Subject: [PATCH 2/3] Fix build with MinGW 3.4.2
  src/preprocessing/ext_preprocess.cpp               |  2 +-
  src/utils/utils_libraw.cpp                         | 11 ++++++++++-
  src/write/file_write.cpp                           |  4 ++--
- 19 files changed, 62 insertions(+), 51 deletions(-)
+ 20 files changed, 63 insertions(+), 52 deletions(-)
 
+diff --git a/internal/losslessjpeg.h b/internal/losslessjpeg.h
+index 7964822d..05479ccf 100644
+--- a/internal/losslessjpeg.h
++++ b/internal/losslessjpeg.h
+@@ -138,7 +138,7 @@ struct BitPumpJpeg : public BitPump
+ 
+ 
+ const uint32_t LIBRAW_DECODE_CACHE_BITS = 13;
+-const uint64_t LIBRAW_CACHE_PRESENT_FLAG = 0x100000000L;
++const uint64_t LIBRAW_CACHE_PRESENT_FLAG = 0x100000000ULL;
+ 
+ struct HuffTable
+ {
 diff --git a/libraw/libraw_datastream.h b/libraw/libraw_datastream.h
 index 6bcc8a70..e6a92028 100644
 --- a/libraw/libraw_datastream.h

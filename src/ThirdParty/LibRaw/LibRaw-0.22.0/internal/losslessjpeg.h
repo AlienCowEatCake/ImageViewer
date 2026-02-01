@@ -138,7 +138,7 @@ struct BitPumpJpeg : public BitPump
 
 
 const uint32_t LIBRAW_DECODE_CACHE_BITS = 13;
-const uint64_t LIBRAW_CACHE_PRESENT_FLAG = 0x100000000L;
+const uint64_t LIBRAW_CACHE_PRESENT_FLAG = 0x100000000ULL;
 
 struct HuffTable
 {
