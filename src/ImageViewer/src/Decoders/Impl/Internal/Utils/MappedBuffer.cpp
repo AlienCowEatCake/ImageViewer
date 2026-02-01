@@ -19,6 +19,7 @@
 
 #include "MappedBuffer.h"
 
+#include <cassert>
 #include <limits>
 
 #include <QFile>
