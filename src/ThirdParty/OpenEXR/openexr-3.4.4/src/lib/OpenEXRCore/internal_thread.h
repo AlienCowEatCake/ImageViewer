@@ -13,19 +13,22 @@
 #if ILMTHREAD_THREADING_ENABLED
 #    ifdef _WIN32
 #        include <windows.h>
-#        define ONCE_FLAG_INIT INIT_ONCE_STATIC_INIT
-typedef INIT_ONCE once_flag;
-static BOOL CALLBACK
-once_init_fn (PINIT_ONCE once, PVOID param, PVOID* ctx)
-{
-    void (*fn) (void) = (void (*) (void)) param;
-    fn ();
-    return TRUE;
-}
+#        define ONCE_FLAG_INIT 0
+typedef LONG volatile once_flag;
 static inline void
 call_once (once_flag* flag, void (*func) (void))
 {
-    InitOnceExecuteOnce (flag, once_init_fn, (PVOID) func, NULL);
+    static const LONG ONCE_FLAG_CALLING = ONCE_FLAG_INIT + 1;
+    static const LONG ONCE_FLAG_FINISHED = ONCE_FLAG_CALLING + 1;
+    const LONG res = InterlockedCompareExchange (flag, ONCE_FLAG_CALLING, ONCE_FLAG_INIT);
+    if (res == ONCE_FLAG_INIT) {
+        func ();
+        InterlockedCompareExchange (flag, ONCE_FLAG_FINISHED, ONCE_FLAG_CALLING);
+    } else if (res != ONCE_FLAG_FINISHED) {
+        do {
+            Sleep (1);
+        } while (InterlockedCompareExchange (flag, ONCE_FLAG_FINISHED, ONCE_FLAG_FINISHED) != ONCE_FLAG_FINISHED);
+    }
 }
 #    else
 #        include <pthread.h>
