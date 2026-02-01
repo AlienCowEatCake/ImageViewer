@@ -642,11 +642,14 @@ void ImageViewerWidget::mouseReleaseEvent(QMouseEvent *event)
     QGraphicsView::mouseReleaseEvent(event);
     if(dragMode() == QGraphicsView::NoDrag)
     {
-        const QPointF p = m_impl->getMouseEventPos(event);
-        if(m_impl->isNavigationNextZone(p))
-            Q_EMIT selectNextRequested();
-        else if(m_impl->isNavigationPreviousZone(p))
-            Q_EMIT selectPreviousRequested();
+        if(event->button() == Qt::LeftButton)
+        {
+            const QPointF p = m_impl->getMouseEventPos(event);
+            if(m_impl->isNavigationNextZone(p))
+                Q_EMIT selectNextRequested();
+            else if(m_impl->isNavigationPreviousZone(p))
+                Q_EMIT selectPreviousRequested();
+        }
     }
     else
     {
