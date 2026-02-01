@@ -42,7 +42,6 @@ include(libjxl/libjxl.pri)
 
 # Dependencies:
 #  * libjpeg
-#  * JasPer
 #  * LittleCMS2
 #  * zlib
 include(LibRaw/LibRaw.pri)

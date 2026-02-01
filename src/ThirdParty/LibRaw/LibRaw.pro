@@ -10,12 +10,11 @@ TARGET = tp_LibRaw
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBRAW_PATH = $${PWD}/LibRaw-0.21.5
+THIRDPARTY_LIBRAW_PATH = $${PWD}/LibRaw-0.22.0
 
 include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../libjpeg/libjpeg.pri)
-include(../JasPer/JasPer.pri)
 include(../LittleCMS2/LittleCMS2.pri)
 include(../zlib/zlib.pri)
 
@@ -33,12 +32,6 @@ DEFINES += LIBRAW_NOTHREADS USE_X3FTOOLS USE_6BY9RPI
     DEFINES += USE_LCMS2
 } else {
     DEFINES += NO_LCMS
-}
-
-!disable_libjasper {
-    DEFINES += USE_JASPER
-} else {
-    DEFINES += NO_JASPER
 }
 
 !disable_zlib {
@@ -68,9 +61,13 @@ SOURCES += \
     $${THIRDPARTY_LIBRAW_PATH}/src/decoders/generic.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/decoders/kodak_decoders.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/decoders/load_mfbacks.cpp \
+    $${THIRDPARTY_LIBRAW_PATH}/src/decoders/olympus14.cpp \
+    $${THIRDPARTY_LIBRAW_PATH}/src/decoders/pana8.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/decoders/smal.cpp \
+    $${THIRDPARTY_LIBRAW_PATH}/src/decoders/sonycc.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/decoders/unpack.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/decoders/unpack_thumb.cpp \
+    $${THIRDPARTY_LIBRAW_PATH}/src/decompressors/losslessjpeg.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/demosaic/aahd_demosaic.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/demosaic/ahd_demosaic.cpp \
     $${THIRDPARTY_LIBRAW_PATH}/src/demosaic/dcb_demosaic.cpp \
@@ -141,8 +138,10 @@ HEADERS += \
     $${THIRDPARTY_LIBRAW_PATH}/internal/defines.h \
     $${THIRDPARTY_LIBRAW_PATH}/internal/dmp_include.h \
     $${THIRDPARTY_LIBRAW_PATH}/internal/libraw_cameraids.h \
+    $${THIRDPARTY_LIBRAW_PATH}/internal/libraw_checked_buffer.h \
     $${THIRDPARTY_LIBRAW_PATH}/internal/libraw_cxx_defs.h \
     $${THIRDPARTY_LIBRAW_PATH}/internal/libraw_internal_funcs.h \
+    $${THIRDPARTY_LIBRAW_PATH}/internal/losslessjpeg.h \
     $${THIRDPARTY_LIBRAW_PATH}/internal/var_defines.h \
     $${THIRDPARTY_LIBRAW_PATH}/internal/x3f_tools.h \
     $${THIRDPARTY_LIBRAW_PATH}/libraw/libraw.h \
