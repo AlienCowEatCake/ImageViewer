@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_liblcms2 {
 
-        THIRDPARTY_LIBLCMS2_PATH = $${PWD}/lcms2-2.17
+        THIRDPARTY_LIBLCMS2_PATH = $${PWD}/lcms2-2.18
 
         INCLUDEPATH += $${THIRDPARTY_LIBLCMS2_PATH}/include
         DEPENDPATH += $${THIRDPARTY_LIBLCMS2_PATH}/include
