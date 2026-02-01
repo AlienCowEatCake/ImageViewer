@@ -59,6 +59,10 @@ protected:
     void run() Q_DECL_OVERRIDE;
     QStringList collectDirContent(const QString &directoryPath) const;
 
+private:
+    bool isStopPending() const;
+    bool isWatcherConfigured() const;
+
 private Q_SLOTS:
     void update();
     void tryUpdate();

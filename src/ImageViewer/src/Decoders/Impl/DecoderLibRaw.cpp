@@ -264,12 +264,20 @@ public:
 
     void cancel()
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        m_isCancelled.storeRelease(1);
+#else
         m_isCancelled = 1;
+#endif
     }
 
     bool isCancelled() const
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        return m_isCancelled.loadAcquire() != 0;
+#else
         return m_isCancelled != 0;
+#endif
     }
 
     QSize size() const

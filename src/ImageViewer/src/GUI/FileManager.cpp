@@ -115,10 +115,14 @@ bool FilesScanner::configureForFilxedList(const QStringList &supportedFormats, c
 
 void FilesScanner::reset()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    m_stopPending.storeRelease(1);
+#else
     m_stopPending = 1;
+#endif
 
     m_watcherMutex.lock();
-    if(m_watcherConfigured != 0)
+    if(isWatcherConfigured())
     {
         const QSignalBlocker watcherBlocker(m_watcher);
         const QStringList directories = m_watcher->directories();
@@ -127,7 +131,11 @@ void FilesScanner::reset()
         const QStringList files = m_watcher->files();
         if(!files.isEmpty())
             m_watcher->removePaths(files);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        m_watcherConfigured.storeRelease(0);
+#else
         m_watcherConfigured = 0;
+#endif
     }
     m_watcherMutex.unlock();
 
@@ -142,29 +150,39 @@ void FilesScanner::reset()
     m_directoryPath.clear();
     m_fixedPathsList.clear();
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    m_scannerIsDirty.storeRelease(0);
+    m_stopPending.storeRelease(0);
+#else
+    m_scannerIsDirty = 0;
     m_stopPending = 0;
+#endif
 }
 
 void FilesScanner::run()
 {
 #if !defined (QT_NO_DEBUG_OUTPUT)
-#define CHECK_INTERRUPTION do { if(Q_UNLIKELY(m_stopPending != 0)) { LOG_DEBUG() << LOGGING_CTX << "Interrupted"; return; } } while(false)
+#define CHECK_INTERRUPTION do { if(Q_UNLIKELY(isStopPending())) { LOG_DEBUG() << LOGGING_CTX << "Interrupted"; return; } } while(false)
 #else
-#define CHECK_INTERRUPTION if(Q_UNLIKELY(m_stopPending != 0)) return
+#define CHECK_INTERRUPTION if(Q_UNLIKELY(isStopPending())) return
 #endif
     CHECK_INTERRUPTION;
     if(!m_directoryPath.isEmpty())
     {
         QMutexLocker watcherMutexGuard(&m_watcherMutex);
         CHECK_INTERRUPTION;
-        if(Q_UNLIKELY(!m_watcherConfigured))
+        if(Q_UNLIKELY(!isWatcherConfigured()))
         {
 #if !defined (QT_NO_DEBUG_OUTPUT)
             QElapsedTimer timer;
             timer.start();
 #endif
             m_watcher->addPath(m_directoryPath);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+            m_watcherConfigured.storeRelease(1);
+#else
             m_watcherConfigured = 1;
+#endif
 #if !defined (QT_NO_DEBUG_OUTPUT)
             LOG_DEBUG() << LOGGING_CTX << "Watcher configured, elapsed time =" << static_cast<qint64>(timer.elapsed()) << "ms";
 #endif
@@ -194,7 +212,7 @@ void FilesScanner::run()
     else if(!m_fixedPathsList.isEmpty())
     {
         QMutexLocker watcherMutexGuard(&m_watcherMutex);
-        if(Q_UNLIKELY(!m_watcherConfigured))
+        if(Q_UNLIKELY(!isWatcherConfigured()))
         {
 #if !defined (QT_NO_DEBUG_OUTPUT)
             QElapsedTimer timer;
@@ -205,7 +223,11 @@ void FilesScanner::run()
                 CHECK_INTERRUPTION;
                 m_watcher->addPath(*it);
             }
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+            m_watcherConfigured.storeRelease(1);
+#else
             m_watcherConfigured = 1;
+#endif
 #if !defined (QT_NO_DEBUG_OUTPUT)
             LOG_DEBUG() << LOGGING_CTX << "Watcher configured, elapsed time =" << static_cast<qint64>(timer.elapsed()) << "ms";
 #endif
@@ -261,9 +283,9 @@ void FilesScanner::run()
 QStringList FilesScanner::collectDirContent(const QString &directoryPath) const
 {
 #if !defined (QT_NO_DEBUG_OUTPUT)
-#define CHECK_INTERRUPTION do { if(Q_UNLIKELY(m_stopPending != 0)) { LOG_DEBUG() << LOGGING_CTX << "Interrupted"; return QStringList(); } } while(false)
+#define CHECK_INTERRUPTION do { if(Q_UNLIKELY(isStopPending())) { LOG_DEBUG() << LOGGING_CTX << "Interrupted"; return QStringList(); } } while(false)
 #else
-#define CHECK_INTERRUPTION if(Q_UNLIKELY(m_stopPending != 0)) return QStringList()
+#define CHECK_INTERRUPTION if(Q_UNLIKELY(isStopPending())) return QStringList()
 #endif
 #if !defined (QT_NO_DEBUG_OUTPUT)
     QElapsedTimer timer;
@@ -290,12 +312,34 @@ QStringList FilesScanner::collectDirContent(const QString &directoryPath) const
 #undef CHECK_INTERRUPTION
 }
 
+bool FilesScanner::isStopPending() const
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    return m_stopPending.loadAcquire() != 0;
+#else
+    return m_stopPending != 0;
+#endif
+}
+
+bool FilesScanner::isWatcherConfigured() const
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    return m_watcherConfigured.loadAcquire() != 0;
+#else
+    return m_watcherConfigured != 0;
+#endif
+}
+
 void FilesScanner::update()
 {
     if(isRunning())
         return;
     start();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    m_scannerIsDirty.storeRelease(0);
+#else
     m_scannerIsDirty = 0;
+#endif
     m_timeFromLastUpdate.restart();
 }
 
@@ -304,12 +348,20 @@ void FilesScanner::tryUpdate()
     if(static_cast<qint64>(m_timeFromLastUpdate.elapsed()) >= static_cast<qint64>(m_updateTimer->interval()))
         update();
     else
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        m_scannerIsDirty.storeRelease(1);
+#else
         m_scannerIsDirty = 1;
+#endif
 }
 
 void FilesScanner::ensureUpdated()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    if(m_scannerIsDirty.loadAcquire() != 0)
+#else
     if(m_scannerIsDirty != 0)
+#endif
         update();
 }
 
