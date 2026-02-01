@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libjpeg {
 
-        THIRDPARTY_LIBJPEG_PATH = $${PWD}/jpeg-9f
+        THIRDPARTY_LIBJPEG_PATH = $${PWD}/jpeg-10
         THIRDPARTY_LIBJPEG_CONFIG_PATH = $${PWD}/config
 
         INCLUDEPATH += $${THIRDPARTY_LIBJPEG_CONFIG_PATH} $${THIRDPARTY_LIBJPEG_PATH}
