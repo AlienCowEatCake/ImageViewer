@@ -183,7 +183,11 @@ void FilesScanner::run()
 
         CHECK_INTERRUPTION;
         m_scanResultMutex.lock();
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 8, 0))
         m_scanResult.swap(list);
+#else
+        m_scanResult = list;
+#endif
         m_scanResultMutex.unlock();
         Q_EMIT updated();
     }
@@ -243,7 +247,11 @@ void FilesScanner::run()
 
         CHECK_INTERRUPTION;
         m_scanResultMutex.lock();
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 8, 0))
         m_scanResult.swap(list);
+#else
+        m_scanResult = list;
+#endif
         m_scanResultMutex.unlock();
         Q_EMIT updated();
     }
