@@ -1,7 +1,7 @@
-From 9e56895a931196bdb72a7c68f55cba682ebad802 Mon Sep 17 00:00:00 2001
+From b4c874db1c3a35aadd5d850910cbd4d42ee604ff Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 23 Nov 2024 20:17:00 +0700
-Subject: [PATCH 3/3] Remove C++20
+Subject: [PATCH 3/4] Remove C++20
 
 ---
  libheif/bitstream.cc                          | 19 ------
@@ -154,7 +154,7 @@ index a1bcc268..39c0fcff 100644
    }
  
 diff --git a/libheif/image-items/grid.cc b/libheif/image-items/grid.cc
-index 45a61d60..d0a5b35a 100644
+index 3eb94cb4..06d64745 100644
 --- a/libheif/image-items/grid.cc
 +++ b/libheif/image-items/grid.cc
 @@ -210,7 +210,7 @@ Result<std::shared_ptr<HeifPixelImage>> ImageItem_Grid::decode_compressed_image(
@@ -180,7 +180,7 @@ index 8e771cfa..62144b32 100644
                   heif_suberror_Unspecified,
                   "'iref' has cyclic references"};
 diff --git a/libheif/image-items/image_item.cc b/libheif/image-items/image_item.cc
-index dc16a374..6cdd02e4 100644
+index e803107f..8e3aab6f 100644
 --- a/libheif/image-items/image_item.cc
 +++ b/libheif/image-items/image_item.cc
 @@ -931,7 +931,7 @@ Result<std::shared_ptr<HeifPixelImage>> ImageItem::decode_compressed_image(const
@@ -312,5 +312,5 @@ index 11910c46..c16f8a12 100644
  
  
 -- 
-2.52.0
+2.47.3
 

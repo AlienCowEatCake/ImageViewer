@@ -10,7 +10,7 @@ TARGET = tp_libheif
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.21.1
+THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.21.2
 THIRDPARTY_LIBHEIF_INCLUDE_PATH = $${PWD}/include
 
 include(../../Features.pri)

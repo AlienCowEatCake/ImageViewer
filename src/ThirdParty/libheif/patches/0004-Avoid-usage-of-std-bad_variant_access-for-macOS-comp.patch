@@ -1,0 +1,84 @@
+From 2c26911ea29e7fd296385dbbff1cbff9228c51c7 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 1 Feb 2026 17:02:34 +0700
+Subject: [PATCH 4/4] Avoid usage of std::bad_variant_access for macOS
+ compatibility
+
+---
+ libheif/error.h | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+
+diff --git a/libheif/error.h b/libheif/error.h
+index 0d6292d8..105ad2b5 100644
+--- a/libheif/error.h
++++ b/libheif/error.h
+@@ -137,14 +137,32 @@ public:
+   T* operator->()
+   {
+     assert(*this); // Uses the operator bool() above
++#if 0
+     return &std::get<T>(m_data);
++#else
++    T* val = std::get_if<T>(&m_data);
++    if (val) {
++        return val;
++    }
++
++    throw std::runtime_error("bad_variant_access");
++#endif
+   }
+ 
+   // Dereference access for `*r`
+   T& operator*()
+   {
+     assert(*this);
++#if 0
+     return std::get<T>(m_data);
++#else
++    T* val = std::get_if<T>(&m_data);
++    if (val) {
++      return *val;
++    }
++
++    throw std::runtime_error("bad_variant_access");
++#endif
+   }
+ 
+   [[nodiscard]] bool is_error() const {
+@@ -158,7 +176,16 @@ public:
+       return Error::Ok;
+     }
+ 
++#if 0
+     return std::get<Error>(m_data);
++#else
++    const Error* val = std::get_if<Error>(&m_data);
++    if (val) {
++        return *val;
++    }
++
++    throw std::runtime_error("bad_variant_access");
++#endif
+   }
+ 
+   // Directly get the C error struct.
+@@ -168,7 +195,16 @@ public:
+       return heif_error_success;
+     }
+ 
++#if 0
+     return std::get<Error>(m_data).error_struct(error_buffer);
++#else
++    const Error* val = std::get_if<Error>(&m_data);
++    if (val) {
++        return val->error_struct(error_buffer);
++    }
++
++    throw std::runtime_error("bad_variant_access");
++#endif
+   }
+ 
+   std::variant<T, Error> m_data;
+-- 
+2.47.3
+
