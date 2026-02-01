@@ -1,4 +1,4 @@
-From 50e3f9e51ede5c6053573e8803b90cbf03336879 Mon Sep 17 00:00:00 2001
+From e2358bfce3ca78393683ef23bf495348bb690bc9 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 22 Mar 2025 19:29:35 +0700
 Subject: [PATCH] Disable rand_s on WIN32
@@ -8,10 +8,10 @@ Subject: [PATCH] Disable rand_s on WIN32
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/expat/lib/xmlparse.c b/expat/lib/xmlparse.c
-index a187a3a1..547bf923 100644
+index 086fca59..e19587de 100644
 --- a/expat/lib/xmlparse.c
 +++ b/expat/lib/xmlparse.c
-@@ -1127,7 +1127,7 @@ writeRandomBytes_arc4random(void *target, size_t count) {
+@@ -1126,7 +1126,7 @@ writeRandomBytes_arc4random(void *target, size_t count) {
  
  #endif /* defined(HAVE_ARC4RANDOM) && ! defined(HAVE_ARC4RANDOM_BUF) */
  
@@ -20,7 +20,7 @@ index a187a3a1..547bf923 100644
  
  /* Provide declaration of rand_s() for MinGW-32 (not 64, which has it),
     as it didn't declare it in its header prior to version 5.3.0 of its
-@@ -1214,7 +1214,7 @@ generate_hash_secret_salt(XML_Parser parser) {
+@@ -1213,7 +1213,7 @@ generate_hash_secret_salt(XML_Parser parser) {
    return ENTROPY_DEBUG("arc4random", entropy);
  #else
    /* Try high quality providers first .. */
