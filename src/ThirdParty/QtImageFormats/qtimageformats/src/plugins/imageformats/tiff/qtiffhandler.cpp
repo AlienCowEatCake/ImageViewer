@@ -118,7 +118,7 @@ public:
 #endif
 
     TIFF *tiff;
-    int compression;
+    QTiffHandler::Compression compression;
     QImageIOHandler::Transformations transformation;
     QImage::Format format;
     QSize size;
@@ -180,7 +180,7 @@ static int qt2Exif(QImageIOHandler::Transformations transformation)
 
 QTiffHandlerPrivate::QTiffHandlerPrivate()
     : tiff(0)
-    , compression(QTiffHandler::NoCompression)
+    , compression(QTiffHandler::Compression_None)
     , transformation(QImageIOHandler::TransformationNone)
     , format(QImage::Format_Invalid)
     , photometric(false)
@@ -763,7 +763,7 @@ bool QTiffHandler::write(const QImage &image)
 
     const int width = image.width();
     const int height = image.height();
-    const int compression = d->compression;
+    const int compression = toLibTiffCompression(d->compression);
 
     if (!TIFFSetField(tiff, TIFFTAG_IMAGEWIDTH, width)
         || !TIFFSetField(tiff, TIFFTAG_IMAGELENGTH, height)
@@ -814,7 +814,7 @@ bool QTiffHandler::write(const QImage &image)
         if (image.colorTable().at(0) == 0xffffffff)
             photometric = PHOTOMETRIC_MINISWHITE;
         if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, photometric)
-            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
             || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 1)
             || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, defaultStripSize(tiff))) {
             TIFFClose(tiff);
@@ -857,7 +857,7 @@ bool QTiffHandler::write(const QImage &image)
             if (colorTable.at(0) == 0xffffffff)
                 photometric = PHOTOMETRIC_MINISWHITE;
             if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, photometric)
-                    || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+                    || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
                     || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, image.depth())
                     || !TIFFSetField(tiff, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_UINT)
                     || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, defaultStripSize(tiff))) {
@@ -866,7 +866,7 @@ bool QTiffHandler::write(const QImage &image)
             }
         } else {
             if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_PALETTE)
-                    || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+                    || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
                     || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)
                     || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, defaultStripSize(tiff))) {
                 TIFFClose(tiff);
@@ -911,7 +911,7 @@ bool QTiffHandler::write(const QImage &image)
     } else if (format == QImage::Format_RGBX64) {
 #endif
         if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB)
-            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 3)
             || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 16)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLEFORMAT,
@@ -942,7 +942,7 @@ bool QTiffHandler::write(const QImage &image)
         const bool premultiplied = image.format() != QImage::Format_RGBA64;
         const uint16_t extrasamples = premultiplied ? EXTRASAMPLE_ASSOCALPHA : EXTRASAMPLE_UNASSALPHA;
         if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB)
-            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 4)
             || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 16)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_UINT)
@@ -961,7 +961,7 @@ bool QTiffHandler::write(const QImage &image)
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
     } else if (format == QImage::Format_RGBX32FPx4) {
         if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB)
-            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 3)
             || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 32)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_IEEEFP)
@@ -990,7 +990,7 @@ bool QTiffHandler::write(const QImage &image)
         const bool premultiplied = image.format() != QImage::Format_RGBA16FPx4 && image.format() != QImage::Format_RGBA32FPx4;
         const uint16_t extrasamples = premultiplied ? EXTRASAMPLE_ASSOCALPHA : EXTRASAMPLE_UNASSALPHA;
         if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB)
-            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 4)
             || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, image.depth() == 64 ? 16 : 32)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_IEEEFP)
@@ -1010,7 +1010,7 @@ bool QTiffHandler::write(const QImage &image)
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
     } else if (format == QImage::Format_CMYK8888) {
         if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_SEPARATED)
-            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 4)
             || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)
             || !TIFFSetField(tiff, TIFFTAG_INKSET, INKSET_CMYK)
@@ -1030,7 +1030,7 @@ bool QTiffHandler::write(const QImage &image)
 #endif
     } else if (!image.hasAlphaChannel()) {
         if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB)
-            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 3)
             || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)
             || !TIFFSetField(tiff, TIFFTAG_ROWSPERSTRIP, defaultStripSize(tiff))) {
@@ -1066,7 +1066,7 @@ bool QTiffHandler::write(const QImage &image)
                                 && image.format() != QImage::Format_RGBA8888;
         const uint16_t extrasamples = premultiplied ? EXTRASAMPLE_ASSOCALPHA : EXTRASAMPLE_UNASSALPHA;
         if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB)
-            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+            || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
             || !TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 4)
             || !TIFFSetField(tiff, TIFFTAG_BITSPERSAMPLE, 8)
             || !TIFFSetField(tiff, TIFFTAG_EXTRASAMPLES, 1, &extrasamples)
@@ -1110,7 +1110,7 @@ QVariant QTiffHandler::option(ImageOption option) const
         if (d->readHeaders(device()))
             return d->size;
     } else if (option == CompressionRatio) {
-        return d->compression;
+        return int(d->compression);
     } else if (option == ImageFormat) {
         if (d->readHeaders(device()))
             return d->format;
@@ -1128,7 +1128,7 @@ void QTiffHandler::setOption(ImageOption option, const QVariant &value)
 #else
     if (option == CompressionRatio && value.type() == QVariant::Int)
 #endif
-        d->compression = qBound(0, value.toInt(), 1);
+        d->compression = static_cast<Compression>(qBound(0, value.toInt(), 5));
     if (option == ImageTransformation) {
         int transformation = value.toInt();
         if (transformation > 0 && transformation < 8)
@@ -1297,6 +1297,26 @@ bool QTiffHandler::ensureHaveDirectoryCount() const
     TIFFClose(tiff);
     device()->reset();
     return true;
+}
+
+int QTiffHandler::toLibTiffCompression(Compression compression) const
+{
+    switch (compression) {
+    case Compression_None:
+        return COMPRESSION_NONE;
+    case Compression_Lzw:
+        return COMPRESSION_LZW;
+    case Compression_HuffmanRLE:
+        return COMPRESSION_CCITTRLE;
+    case Compression_Group3:
+        return COMPRESSION_CCITTFAX3;
+    case Compression_Group4:
+        return COMPRESSION_CCITTFAX4;
+    case Compression_Jpeg:
+        return COMPRESSION_JPEG;
+    }
+    qCWarning(lcTiff, "Invalid compression value (%d)", int(compression));
+    return COMPRESSION_NONE;
 }
 
 QT_END_NAMESPACE

@@ -1,4 +1,4 @@
-From 0cf638011fb4d8fe841b892deb21707434cc3b11 Mon Sep 17 00:00:00 2001
+From 67edb5fdcdb865b915ae26875f07e55ca6a58f27 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 Aug 2022 03:45:30 +0700
 Subject: [PATCH 6/7] Revert "Replace discouraged Q_MOVABLE_TYPE by
@@ -10,7 +10,7 @@ This reverts commit 761b00d340924264f3c18c43c7f596e723b04d68.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/plugins/imageformats/icns/qicnshandler_p.h b/src/plugins/imageformats/icns/qicnshandler_p.h
-index 72793e4..d5e6adb 100644
+index 72793e4f..d5e6adb4 100644
 --- a/src/plugins/imageformats/icns/qicnshandler_p.h
 +++ b/src/plugins/imageformats/icns/qicnshandler_p.h
 @@ -86,7 +86,7 @@ struct ICNSEntry
@@ -23,5 +23,5 @@ index 72793e4..d5e6adb 100644
  class QICNSHandler : public QImageIOHandler
  {
 -- 
-2.39.5
+2.47.3
 

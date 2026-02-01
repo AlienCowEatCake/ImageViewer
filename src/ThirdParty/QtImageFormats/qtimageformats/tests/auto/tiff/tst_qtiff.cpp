@@ -42,6 +42,9 @@ private slots:
     void writeImage_data();
     void writeImage();
 
+    void writeImageWithCompression_data();
+    void writeImageWithCompression();
+
     void readWriteNonDestructive_data();
     void readWriteNonDestructive();
 
@@ -366,6 +369,71 @@ void tst_qtiff::writeImage()
     } else {
         QCOMPARE(image.format(), image2.format());
         QCOMPARE(image.depth(), image2.depth());
+    }
+}
+
+void tst_qtiff::writeImageWithCompression_data()
+{
+    QTest::addColumn<QString>("fileName");
+    QTest::addColumn<int>("compression");
+
+    QTest::newRow("mono none") << QString("mono_compression_none.tiff") << 0;
+    QTest::newRow("mono lzw") << QString("mono_compression_lzw.tiff") << 1;
+    QTest::newRow("mono rle") << QString("mono_compression_rle.tiff") << 2;
+    QTest::newRow("mono group3") << QString("mono_compression_group3.tiff") << 3;
+    QTest::newRow("mono group4") << QString("mono_compression_group4.tiff") << 4;
+
+    QTest::newRow("rgb none") << QString("rgb_compression_none.tiff") << 0;
+    QTest::newRow("rgb lzw") << QString("rgb_compression_lzw.tiff") << 1;
+#ifndef QT_NO_IMAGEFORMAT_JPEG
+    QTest::newRow("rgb jpeg") << QString("rgb_compression_jpeg.tiff") << 5;
+#endif
+
+    QTest::newRow("grayscale none") << QString("grayscale_compression_none.tiff") << 0;
+    QTest::newRow("grayscale lzw") << QString("grayscale_compression_lzw.tiff") << 1;
+#ifndef QT_NO_IMAGEFORMAT_JPEG
+    QTest::newRow("grayscale jpeg") << QString("grayscale_compression_jpeg.tiff") << 5;
+#endif
+
+    QTest::newRow("indexed none") << QString("indexed_compression_none.tiff") << 0;
+    QTest::newRow("indexed lzw") << QString("indexed_compression_lzw.tiff") << 1;
+}
+
+void tst_qtiff::writeImageWithCompression()
+{
+    QFETCH(QString, fileName);
+    QFETCH(int, compression);
+
+    QImage image;
+    {
+        QImageReader reader(prefix + fileName);
+        image = reader.read();
+        QVERIFY2(!image.isNull(), qPrintable(reader.errorString()));
+    }
+
+    QByteArray output;
+    {
+        QBuffer buf(&output);
+        QVERIFY(buf.open(QIODevice::WriteOnly));
+        QImageWriter writer(&buf, "tiff");
+        writer.setCompression(compression);
+        QVERIFY2(writer.write(image), qPrintable(writer.errorString()));
+    }
+
+    QImage image2;
+    {
+        QBuffer buf(&output);
+        QVERIFY(buf.open(QIODevice::ReadOnly));
+        QImageReader reader(&buf, "tiff");
+        image2 = reader.read();
+        QVERIFY2(!image2.isNull(), qPrintable(reader.errorString()));
+    }
+
+    if (compression == 5) {
+        QCOMPARE(image.format(), image2.format());
+        QCOMPARE(image.depth(), image2.depth());
+    } else {
+        QCOMPARE(image, image2);
     }
 }
 

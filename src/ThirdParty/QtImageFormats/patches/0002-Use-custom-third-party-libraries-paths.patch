@@ -1,4 +1,4 @@
-From 213bb2510bf03bf8d7471d9438ca76fc8b8ffc9d Mon Sep 17 00:00:00 2001
+From f0afa4026059f6b727a8ad5d769286b29e8de8f8 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 May 2017 23:13:29 +0700
 Subject: [PATCH 2/7] Use custom third-party libraries paths
@@ -8,7 +8,7 @@ Subject: [PATCH 2/7] Use custom third-party libraries paths
  1 file changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/src/3rdparty/zlib_dependency.pri b/src/3rdparty/zlib_dependency.pri
-index 2c714b3..34187a4 100644
+index 2c714b32..34187a48 100644
 --- a/src/3rdparty/zlib_dependency.pri
 +++ b/src/3rdparty/zlib_dependency.pri
 @@ -1,6 +1,7 @@
@@ -25,5 +25,5 @@ index 2c714b3..34187a4 100644
 +#}
 +include($${PWD}/../../../../zlib/zlib.pri)
 -- 
-2.39.2
+2.47.3
 

@@ -60,7 +60,7 @@
 #endif
 
 #if defined(_MSC_VER) && _MSC_VER >= 1700 && \
-    (defined(_M_X64) || defined(_M_IX86))
+    (defined(_M_X64) || defined(_M_IX86)) && !defined(__clang__)
 #define WEBP_MSC_AVX2  // Visual C++ AVX2 targets
 #endif
 #endif

@@ -1,4 +1,4 @@
-From 7cdb8e0b52048177fd07c5f77bf682a2af7f5c31 Mon Sep 17 00:00:00 2001
+From fe67113baa17229d421e56c5b8b1b428430b846b Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 15 May 2017 00:06:30 +0700
 Subject: [PATCH 3/7] Fix handling icns files with JPEG 2000 frames
@@ -8,7 +8,7 @@ Subject: [PATCH 3/7] Fix handling icns files with JPEG 2000 frames
  1 file changed, 14 insertions(+), 1 deletion(-)
 
 diff --git a/src/plugins/imageformats/icns/qicnshandler.cpp b/src/plugins/imageformats/icns/qicnshandler.cpp
-index 501394d..e5474f7 100644
+index 501394de..e5474f77 100644
 --- a/src/plugins/imageformats/icns/qicnshandler.cpp
 +++ b/src/plugins/imageformats/icns/qicnshandler.cpp
 @@ -11,6 +11,10 @@
@@ -41,5 +41,5 @@ index 501394d..e5474f7 100644
              if (format == 0)
                  format = "unknown";
 -- 
-2.39.5
+2.47.3
 

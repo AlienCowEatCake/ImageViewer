@@ -1,26 +1,26 @@
-From d1a1ed151a6424013b33f282bff09c71b1f72817 Mon Sep 17 00:00:00 2001
+From 71c9619589e68906f7b4aa91e66378d81d1b78dd Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 10 Mar 2018 15:40:08 +0700
 Subject: [PATCH 1/7] Dont use C++11 features
 
 ---
- src/plugins/imageformats/dds/qddshandler.h    | 16 ++++++-------
- .../imageformats/icns/qicnshandler_p.h        | 16 ++++++-------
- src/plugins/imageformats/jp2/qjp2handler_p.h  | 12 +++++-----
- src/plugins/imageformats/mng/qmnghandler_p.h  | 24 +++++++++----------
- src/plugins/imageformats/tga/qtgafile.cpp     | 10 ++++----
- src/plugins/imageformats/tga/qtgahandler.h    | 10 ++++----
- .../imageformats/tiff/qtiffhandler.cpp        |  4 ++--
- .../imageformats/tiff/qtiffhandler_p.h        | 20 ++++++++--------
- .../imageformats/wbmp/qwbmphandler_p.h        | 10 ++++----
- .../imageformats/webp/qwebphandler_p.h        | 22 ++++++++---------
- 10 files changed, 72 insertions(+), 72 deletions(-)
+ src/plugins/imageformats/dds/qddshandler.h    | 16 ++++----
+ .../imageformats/icns/qicnshandler_p.h        | 16 ++++----
+ src/plugins/imageformats/jp2/qjp2handler_p.h  | 12 +++---
+ src/plugins/imageformats/mng/qmnghandler_p.h  | 24 ++++++------
+ src/plugins/imageformats/tga/qtgafile.cpp     | 10 ++---
+ src/plugins/imageformats/tga/qtgahandler.h    | 10 ++---
+ .../imageformats/tiff/qtiffhandler.cpp        | 18 ++++-----
+ .../imageformats/tiff/qtiffhandler_p.h        | 38 +++++++++----------
+ .../imageformats/wbmp/qwbmphandler_p.h        | 10 ++---
+ .../imageformats/webp/qwebphandler_p.h        | 22 +++++------
+ 10 files changed, 88 insertions(+), 88 deletions(-)
 
 diff --git a/src/plugins/imageformats/dds/qddshandler.h b/src/plugins/imageformats/dds/qddshandler.h
-index 6c11adf..71f25f2 100644
+index e8a98ace..e93ec1d2 100644
 --- a/src/plugins/imageformats/dds/qddshandler.h
 +++ b/src/plugins/imageformats/dds/qddshandler.h
-@@ -17,16 +17,16 @@ class QDDSHandler : public QImageIOHandler
+@@ -19,16 +19,16 @@ class QDDSHandler : public QImageIOHandler
  public:
      QDDSHandler();
  
@@ -46,7 +46,7 @@ index 6c11adf..71f25f2 100644
      static bool canRead(QIODevice *device);
  
 diff --git a/src/plugins/imageformats/icns/qicnshandler_p.h b/src/plugins/imageformats/icns/qicnshandler_p.h
-index 43538a4..b5c83d4 100644
+index 43538a4c..b5c83d4b 100644
 --- a/src/plugins/imageformats/icns/qicnshandler_p.h
 +++ b/src/plugins/imageformats/icns/qicnshandler_p.h
 @@ -93,16 +93,16 @@ class QICNSHandler : public QImageIOHandler
@@ -75,10 +75,10 @@ index 43538a4..b5c83d4 100644
      static bool canRead(QIODevice *device);
  
 diff --git a/src/plugins/imageformats/jp2/qjp2handler_p.h b/src/plugins/imageformats/jp2/qjp2handler_p.h
-index 6a4ca3e..15efbe8 100644
+index 035eaab0..dd1511d2 100644
 --- a/src/plugins/imageformats/jp2/qjp2handler_p.h
 +++ b/src/plugins/imageformats/jp2/qjp2handler_p.h
-@@ -22,12 +22,12 @@ public:
+@@ -24,12 +24,12 @@ public:
      QJp2Handler();
      ~QJp2Handler();
      static bool canRead(QIODevice *iod, QByteArray *subType);
@@ -98,10 +98,10 @@ index 6a4ca3e..15efbe8 100644
  private:
      Q_DECLARE_PRIVATE(QJp2Handler)
 diff --git a/src/plugins/imageformats/mng/qmnghandler_p.h b/src/plugins/imageformats/mng/qmnghandler_p.h
-index 59d1615..73dd095 100644
+index ea208a59..7ab48717 100644
 --- a/src/plugins/imageformats/mng/qmnghandler_p.h
 +++ b/src/plugins/imageformats/mng/qmnghandler_p.h
-@@ -20,19 +20,19 @@ class QMngHandler : public QImageIOHandler
+@@ -22,19 +22,19 @@ class QMngHandler : public QImageIOHandler
      public:
      QMngHandler();
      ~QMngHandler();
@@ -134,7 +134,7 @@ index 59d1615..73dd095 100644
      private:
      Q_DECLARE_PRIVATE(QMngHandler)
 diff --git a/src/plugins/imageformats/tga/qtgafile.cpp b/src/plugins/imageformats/tga/qtgafile.cpp
-index 54bfe95..a1e3ec2 100644
+index 54bfe95b..a1e3ec24 100644
 --- a/src/plugins/imageformats/tga/qtgafile.cpp
 +++ b/src/plugins/imageformats/tga/qtgafile.cpp
 @@ -15,7 +15,7 @@ struct TgaReader
@@ -183,10 +183,10 @@ index 54bfe95..a1e3ec2 100644
          offset += littleEndianInt(&mHeader[CMapLength]) * cmapDepth / 8;
      }
 diff --git a/src/plugins/imageformats/tga/qtgahandler.h b/src/plugins/imageformats/tga/qtgahandler.h
-index 35b41c2..af8d9c1 100644
+index f002dc18..28b8cc2a 100644
 --- a/src/plugins/imageformats/tga/qtgahandler.h
 +++ b/src/plugins/imageformats/tga/qtgahandler.h
-@@ -16,14 +16,14 @@ public:
+@@ -18,14 +18,14 @@ public:
      QTgaHandler();
      ~QTgaHandler();
  
@@ -207,7 +207,7 @@ index 35b41c2..af8d9c1 100644
  private:
      mutable QTgaFile *tga;
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index 4d73c29..2906948 100644
+index 1f1191cd..c9304037 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
 @@ -71,7 +71,7 @@ int qtiffMapProc(thandle_t fd, void **base, toff_t *size)
@@ -219,6 +219,15 @@ index 4d73c29..2906948 100644
              *size = file->size();
              return 1;
          }
+@@ -175,7 +175,7 @@ static int qt2Exif(QImageIOHandler::Transformations transformation)
+ 
+ QTiffHandlerPrivate::QTiffHandlerPrivate()
+     : tiff(0)
+-    , compression(QTiffHandler::Compression::None)
++    , compression(QTiffHandler::Compression_None)
+     , transformation(QImageIOHandler::TransformationNone)
+     , format(QImage::Format_Invalid)
+     , photometric(false)
 @@ -292,7 +292,7 @@ bool QTiffHandlerPrivate::openForRead(QIODevice *device)
          return false;
  
@@ -228,11 +237,35 @@ index 4d73c29..2906948 100644
  }
  
  bool QTiffHandlerPrivate::readHeaders(QIODevice *device)
+@@ -1170,17 +1170,17 @@ bool QTiffHandler::ensureHaveDirectoryCount() const
+ int QTiffHandler::toLibTiffCompression(Compression compression) const
+ {
+     switch (compression) {
+-    case Compression::None:
++    case Compression_None:
+         return COMPRESSION_NONE;
+-    case Compression::Lzw:
++    case Compression_Lzw:
+         return COMPRESSION_LZW;
+-    case Compression::HuffmanRLE:
++    case Compression_HuffmanRLE:
+         return COMPRESSION_CCITTRLE;
+-    case Compression::Group3:
++    case Compression_Group3:
+         return COMPRESSION_CCITTFAX3;
+-    case Compression::Group4:
++    case Compression_Group4:
+         return COMPRESSION_CCITTFAX4;
+-    case Compression::Jpeg:
++    case Compression_Jpeg:
+         return COMPRESSION_JPEG;
+     }
+     qCWarning(lcTiff, "Invalid compression value (%d)", int(compression));
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler_p.h b/src/plugins/imageformats/tiff/qtiffhandler_p.h
-index 738b992..630fde0 100644
+index f62de077..0067102d 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler_p.h
 +++ b/src/plugins/imageformats/tiff/qtiffhandler_p.h
-@@ -15,20 +15,20 @@ class QTiffHandler : public QImageIOHandler
+@@ -17,28 +17,28 @@ class QTiffHandler : public QImageIOHandler
  public:
      QTiffHandler();
  
@@ -248,26 +281,43 @@ index 738b992..630fde0 100644
 -    QVariant option(ImageOption option) const override;
 -    void setOption(ImageOption option, const QVariant &value) override;
 -    bool supportsOption(ImageOption option) const override;
-+    QVariant option(ImageOption option) const Q_DECL_OVERRIDE;
-+    void setOption(ImageOption option, const QVariant &value) Q_DECL_OVERRIDE;
-+    bool supportsOption(ImageOption option) const Q_DECL_OVERRIDE;
- 
+-
 -    bool jumpToNextImage() override;
 -    bool jumpToImage(int imageNumber) override;
 -    int imageCount() const override;
 -    int currentImageNumber() const override;
+-
+-    enum class Compression {
+-        None = 0,
+-        Lzw = 1,
+-        HuffmanRLE = 2,
+-        Group3 = 3,
+-        Group4 = 4,
+-        Jpeg = 5
++    QVariant option(ImageOption option) const Q_DECL_OVERRIDE;
++    void setOption(ImageOption option, const QVariant &value) Q_DECL_OVERRIDE;
++    bool supportsOption(ImageOption option) const Q_DECL_OVERRIDE;
++
 +    bool jumpToNextImage() Q_DECL_OVERRIDE;
 +    bool jumpToImage(int imageNumber) Q_DECL_OVERRIDE;
 +    int imageCount() const Q_DECL_OVERRIDE;
 +    int currentImageNumber() const Q_DECL_OVERRIDE;
- 
-     enum Compression {
-         NoCompression = 0,
++
++    enum Compression {
++        Compression_None = 0,
++        Compression_Lzw = 1,
++        Compression_HuffmanRLE = 2,
++        Compression_Group3 = 3,
++        Compression_Group4 = 4,
++        Compression_Jpeg = 5
+     };
+ private:
+     void convert32BitOrder(void *buffer, int width);
 diff --git a/src/plugins/imageformats/wbmp/qwbmphandler_p.h b/src/plugins/imageformats/wbmp/qwbmphandler_p.h
-index a804e22..e909d3a 100644
+index ea5b628e..74a9ed76 100644
 --- a/src/plugins/imageformats/wbmp/qwbmphandler_p.h
 +++ b/src/plugins/imageformats/wbmp/qwbmphandler_p.h
-@@ -27,12 +27,12 @@ public:
+@@ -29,12 +29,12 @@ public:
      QWbmpHandler(QIODevice *device);
      ~QWbmpHandler();
  
@@ -286,10 +336,10 @@ index a804e22..e909d3a 100644
      static bool canRead(QIODevice *device);
  
 diff --git a/src/plugins/imageformats/webp/qwebphandler_p.h b/src/plugins/imageformats/webp/qwebphandler_p.h
-index 56e3d73..ee10bf3 100644
+index a52ebc57..b993f27c 100644
 --- a/src/plugins/imageformats/webp/qwebphandler_p.h
 +++ b/src/plugins/imageformats/webp/qwebphandler_p.h
-@@ -23,21 +23,21 @@ public:
+@@ -25,21 +25,21 @@ public:
      ~QWebpHandler();
  
  public:
@@ -323,5 +373,5 @@ index 56e3d73..ee10bf3 100644
  private:
      bool ensureScanned() const;
 -- 
-2.39.5
+2.47.3
 

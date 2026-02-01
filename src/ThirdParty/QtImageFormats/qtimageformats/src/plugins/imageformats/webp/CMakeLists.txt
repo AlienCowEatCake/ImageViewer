@@ -142,6 +142,60 @@ qt_internal_extend_target(QWebpPlugin CONDITION NOT QT_FEATURE_system_webp
         ../../../3rdparty/libwebp/src/utils/rescaler_utils.c
         ../../../3rdparty/libwebp/src/utils/thread_utils.c
         ../../../3rdparty/libwebp/src/utils/utils.c
+
+        ../../../3rdparty/libwebp/sharpyuv/sharpyuv.h
+        ../../../3rdparty/libwebp/sharpyuv/sharpyuv_cpu.h
+        ../../../3rdparty/libwebp/sharpyuv/sharpyuv_csp.h
+        ../../../3rdparty/libwebp/sharpyuv/sharpyuv_dsp.h
+        ../../../3rdparty/libwebp/sharpyuv/sharpyuv_gamma.h
+        ../../../3rdparty/libwebp/src/dec/alphai_dec.h
+        ../../../3rdparty/libwebp/src/dec/common_dec.h
+        ../../../3rdparty/libwebp/src/dec/vp8i_dec.h
+        ../../../3rdparty/libwebp/src/dec/vp8li_dec.h
+        ../../../3rdparty/libwebp/src/dec/vp8_dec.h
+        ../../../3rdparty/libwebp/src/dec/webpi_dec.h
+        ../../../3rdparty/libwebp/src/dsp/common_sse2.h
+        ../../../3rdparty/libwebp/src/dsp/common_sse41.h
+        ../../../3rdparty/libwebp/src/dsp/cpu.h
+        ../../../3rdparty/libwebp/src/dsp/dsp.h
+        ../../../3rdparty/libwebp/src/dsp/lossless.h
+        ../../../3rdparty/libwebp/src/dsp/lossless_common.h
+        ../../../3rdparty/libwebp/src/dsp/mips_macro.h
+        ../../../3rdparty/libwebp/src/dsp/msa_macro.h
+        ../../../3rdparty/libwebp/src/dsp/neon.h
+        ../../../3rdparty/libwebp/src/dsp/quant.h
+        ../../../3rdparty/libwebp/src/dsp/yuv.h
+        ../../../3rdparty/libwebp/src/enc/backward_references_enc.h
+        ../../../3rdparty/libwebp/src/enc/cost_enc.h
+        ../../../3rdparty/libwebp/src/enc/histogram_enc.h
+        ../../../3rdparty/libwebp/src/enc/vp8i_enc.h
+        ../../../3rdparty/libwebp/src/enc/vp8li_enc.h
+        ../../../3rdparty/libwebp/src/mux/animi.h
+        ../../../3rdparty/libwebp/src/mux/muxi.h
+        ../../../3rdparty/libwebp/src/utils/bit_reader_inl_utils.h
+        ../../../3rdparty/libwebp/src/utils/bit_reader_utils.h
+        ../../../3rdparty/libwebp/src/utils/bit_writer_utils.h
+        ../../../3rdparty/libwebp/src/utils/color_cache_utils.h
+        ../../../3rdparty/libwebp/src/utils/endian_inl_utils.h
+        ../../../3rdparty/libwebp/src/utils/filters_utils.h
+        ../../../3rdparty/libwebp/src/utils/huffman_encode_utils.h
+        ../../../3rdparty/libwebp/src/utils/huffman_utils.h
+        ../../../3rdparty/libwebp/src/utils/palette.h
+        ../../../3rdparty/libwebp/src/utils/quant_levels_dec_utils.h
+        ../../../3rdparty/libwebp/src/utils/quant_levels_utils.h
+        ../../../3rdparty/libwebp/src/utils/random_utils.h
+        ../../../3rdparty/libwebp/src/utils/rescaler_utils.h
+        ../../../3rdparty/libwebp/src/utils/thread_utils.h
+        ../../../3rdparty/libwebp/src/utils/utils.h
+        ../../../3rdparty/libwebp/src/webp/config.h
+        ../../../3rdparty/libwebp/src/webp/decode.h
+        ../../../3rdparty/libwebp/src/webp/demux.h
+        ../../../3rdparty/libwebp/src/webp/encode.h
+        ../../../3rdparty/libwebp/src/webp/format_constants.h
+        ../../../3rdparty/libwebp/src/webp/mux.h
+        ../../../3rdparty/libwebp/src/webp/mux_types.h
+        ../../../3rdparty/libwebp/src/webp/types.h
+
     INCLUDE_DIRECTORIES
         ../../../3rdparty/libwebp
         ../../../3rdparty/libwebp/sharpyuv

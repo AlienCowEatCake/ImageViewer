@@ -1,4 +1,4 @@
-From bfe80e0f9724cdd0034a7f782b87c56ca974f50d Mon Sep 17 00:00:00 2001
+From e9902746322c846d8d27788d86ed75bba0a3dd28 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 24 Jun 2020 19:53:15 +0700
 Subject: [PATCH 5/7] Revert "Use QList instead of QVector"
@@ -13,7 +13,7 @@ This reverts commit c64f19516dd2467bf5746eb24afe883bdbc15b25.
  5 files changed, 17 insertions(+), 17 deletions(-)
 
 diff --git a/src/plugins/imageformats/icns/qicnshandler.cpp b/src/plugins/imageformats/icns/qicnshandler.cpp
-index 6a955b5..d81762e 100644
+index 6a955b5f..d81762ed 100644
 --- a/src/plugins/imageformats/icns/qicnshandler.cpp
 +++ b/src/plugins/imageformats/icns/qicnshandler.cpp
 @@ -368,9 +368,9 @@ static inline QByteArray nameForCompressedIcon(quint8 iconNumber)
@@ -38,7 +38,7 @@ index 6a955b5..d81762e 100644
          return QImage();
  #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 diff --git a/src/plugins/imageformats/icns/qicnshandler_p.h b/src/plugins/imageformats/icns/qicnshandler_p.h
-index b5c83d4..72793e4 100644
+index b5c83d4b..72793e4f 100644
 --- a/src/plugins/imageformats/icns/qicnshandler_p.h
 +++ b/src/plugins/imageformats/icns/qicnshandler_p.h
 @@ -7,7 +7,7 @@
@@ -62,10 +62,10 @@ index b5c83d4..72793e4 100644
  };
  
 diff --git a/src/plugins/imageformats/shared/qiiofhelpers_p.h b/src/plugins/imageformats/shared/qiiofhelpers_p.h
-index b572f20..ff16afb 100644
+index 43049c2e..a317e21d 100644
 --- a/src/plugins/imageformats/shared/qiiofhelpers_p.h
 +++ b/src/plugins/imageformats/shared/qiiofhelpers_p.h
-@@ -18,7 +18,7 @@
+@@ -20,7 +20,7 @@
  #include <QImageIOPlugin>
  #include <private/qcore_mac_p.h>
  #include <ImageIO/ImageIO.h>
@@ -74,7 +74,7 @@ index b572f20..ff16afb 100644
  
  QT_BEGIN_NAMESPACE
  
-@@ -51,7 +51,7 @@ protected:
+@@ -53,7 +53,7 @@ protected:
      bool getIntProperty(CFStringRef property, int *value);
  
      QImageIOHandler *q_ptr = nullptr;
@@ -84,7 +84,7 @@ index b572f20..ff16afb 100644
      QCFType<CGImageSourceRef> cgImageSource = nullptr;
      QCFType<CFDictionaryRef> cfImageDict = nullptr;
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index 1787520..43e388e 100644
+index 3c14b19e..842e306f 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
 @@ -501,7 +501,7 @@ bool QTiffHandler::read(QImage *image)
@@ -136,10 +136,10 @@ index 1787520..43e388e 100644
          if (isGrayscale) {
              uint16_t photometric = PHOTOMETRIC_MINISBLACK;
 diff --git a/tests/auto/tiff/tst_qtiff.cpp b/tests/auto/tiff/tst_qtiff.cpp
-index c5083f3..1cf2418 100644
+index 8c0d4109..a6ee1633 100644
 --- a/tests/auto/tiff/tst_qtiff.cpp
 +++ b/tests/auto/tiff/tst_qtiff.cpp
-@@ -545,9 +545,9 @@ void tst_qtiff::multipage_data()
+@@ -613,9 +613,9 @@ void tst_qtiff::multipage_data()
  {
      QTest::addColumn<QString>("filename");
      QTest::addColumn<int>("expectedNumPages");
@@ -151,7 +151,7 @@ index c5083f3..1cf2418 100644
      QTest::newRow("3 page TIFF") << ("multipage.tiff") << 3 << sizes;
  }
  
-@@ -555,7 +555,7 @@ void tst_qtiff::multipage()
+@@ -623,7 +623,7 @@ void tst_qtiff::multipage()
  {
      QFETCH(QString, filename);
      QFETCH(int, expectedNumPages);
@@ -161,5 +161,5 @@ index c5083f3..1cf2418 100644
      QImageReader reader(prefix + filename);
      QCOMPARE(reader.imageCount(), expectedNumPages);
 -- 
-2.39.5
+2.47.3
 

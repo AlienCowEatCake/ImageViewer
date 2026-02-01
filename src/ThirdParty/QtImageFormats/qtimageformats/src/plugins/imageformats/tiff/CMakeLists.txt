@@ -90,6 +90,25 @@ qt_internal_extend_target(QTiffPlugin CONDITION NOT QT_FEATURE_system_tiff
         LOGLUV_PUBLIC=0
 )
 
+if(QT_FEATURE_jpeg AND NOT QT_FEATURE_system_tiff)
+    qt_find_package(WrapJpeg MODULE)
+    qt_internal_extend_target(QTiffPlugin
+        SOURCES
+            ../../../3rdparty/libtiff/libtiff/tif_jpeg.c
+        DEFINES
+            JPEG_SUPPORT=1
+        LIBRARIES
+            WrapJpeg::WrapJpeg
+    )
+    if(NOT QT_FEATURE_system_jpeg)
+        find_package(Qt6 COMPONENTS JpegPrivate)
+        qt_internal_extend_target(QTiffPlugin
+            LIBRARIES
+                Qt::JpegPrivate
+        )
+    endif()
+endif()
+
 qt_internal_extend_target(QTiffPlugin CONDITION WIN32 AND NOT QT_FEATURE_system_tiff
     SOURCES
         ../../../3rdparty/libtiff/libtiff/tif_win32.c

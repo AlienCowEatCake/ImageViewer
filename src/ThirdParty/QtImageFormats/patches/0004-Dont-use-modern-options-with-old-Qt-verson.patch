@@ -1,4 +1,4 @@
-From a29d4e9e251fdc689c95ec1288153c0de32c8326 Mon Sep 17 00:00:00 2001
+From cec0ada3f31e16370116d157d7cf622220e925a2 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 7 Jan 2019 21:11:00 +0700
 Subject: [PATCH 4/7] Dont use modern options with old Qt verson
@@ -17,7 +17,7 @@ Subject: [PATCH 4/7] Dont use modern options with old Qt verson
  10 files changed, 236 insertions(+), 1 deletion(-)
 
 diff --git a/src/plugins/imageformats/dds/qddshandler.cpp b/src/plugins/imageformats/dds/qddshandler.cpp
-index fd05089..de79f60 100644
+index fd050898..de79f605 100644
 --- a/src/plugins/imageformats/dds/qddshandler.cpp
 +++ b/src/plugins/imageformats/dds/qddshandler.cpp
 @@ -1449,8 +1449,10 @@ QVariant QDDSHandler::option(QImageIOHandler::ImageOption option) const
@@ -44,7 +44,7 @@ index fd05089..de79f60 100644
  
  int QDDSHandler::imageCount() const
 diff --git a/src/plugins/imageformats/icns/qicnshandler.cpp b/src/plugins/imageformats/icns/qicnshandler.cpp
-index e5474f7..6a955b5 100644
+index e5474f77..6a955b5f 100644
 --- a/src/plugins/imageformats/icns/qicnshandler.cpp
 +++ b/src/plugins/imageformats/icns/qicnshandler.cpp
 @@ -513,9 +513,13 @@ static QImage readMask(const ICNSEntry &mask, QDataStream &stream)
@@ -90,7 +90,7 @@ index e5474f7..6a955b5 100644
          for (quint32 y = 0; y < icon.height; y++) {
              QRgb *line = reinterpret_cast<QRgb *>(img.scanLine(y));
 diff --git a/src/plugins/imageformats/jp2/qjp2handler.cpp b/src/plugins/imageformats/jp2/qjp2handler.cpp
-index 4f5c72c..1060618 100644
+index 4f5c72cb..10606186 100644
 --- a/src/plugins/imageformats/jp2/qjp2handler.cpp
 +++ b/src/plugins/imageformats/jp2/qjp2handler.cpp
 @@ -570,6 +570,7 @@ bool Jpeg2000JasperReader::read(QImage *pImage)
@@ -129,7 +129,7 @@ index 4f5c72c..1060618 100644
      // Copy data
      if (oddComponentSubsampling) {
 diff --git a/src/plugins/imageformats/mng/qmnghandler.cpp b/src/plugins/imageformats/mng/qmnghandler.cpp
-index d9c3ea9..b89ee9e 100644
+index d9c3ea91..b89ee9e8 100644
 --- a/src/plugins/imageformats/mng/qmnghandler.cpp
 +++ b/src/plugins/imageformats/mng/qmnghandler.cpp
 @@ -213,8 +213,12 @@ mng_bool QMngHandlerPrivate::processHeader(mng_uint32 iWidth, mng_uint32 iHeight
@@ -146,7 +146,7 @@ index d9c3ea9..b89ee9e 100644
      return MNG_TRUE;
  }
 diff --git a/src/plugins/imageformats/tga/qtgafile.cpp b/src/plugins/imageformats/tga/qtgafile.cpp
-index a1e3ec2..ccce549 100644
+index a1e3ec24..ccce5499 100644
 --- a/src/plugins/imageformats/tga/qtgafile.cpp
 +++ b/src/plugins/imageformats/tga/qtgafile.cpp
 @@ -217,8 +217,13 @@ QImage QTgaFile::readImage()
@@ -164,7 +164,7 @@ index a1e3ec2..ccce549 100644
      TgaReader *reader = 0;
      if (bitsPerPixel == 16)
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler.cpp b/src/plugins/imageformats/tiff/qtiffhandler.cpp
-index 2906948..1787520 100644
+index c9304037..3c14b19e 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler.cpp
 +++ b/src/plugins/imageformats/tiff/qtiffhandler.cpp
 @@ -4,9 +4,13 @@
@@ -487,7 +487,7 @@ index 2906948..1787520 100644
 +    } else if (format == QImage::Format_RGBX64) {
 +#endif
          if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB)
-             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
              || !TIFFSetField(tiff, TIFFTAG_SAMPLESPERPIXEL, 3)
 @@ -849,6 +958,7 @@ bool QTiffHandler::write(const QImage &image)
              }
@@ -496,7 +496,7 @@ index 2906948..1787520 100644
 +#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
      } else if (format == QImage::Format_RGBX32FPx4) {
          if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB)
-             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
 @@ -896,6 +1006,8 @@ bool QTiffHandler::write(const QImage &image)
              }
          }
@@ -505,7 +505,7 @@ index 2906948..1787520 100644
 +#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
      } else if (format == QImage::Format_CMYK8888) {
          if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_SEPARATED)
-             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
 @@ -915,6 +1027,7 @@ bool QTiffHandler::write(const QImage &image)
          }
  
@@ -513,7 +513,7 @@ index 2906948..1787520 100644
 +#endif
      } else if (!image.hasAlphaChannel()) {
          if (!TIFFSetField(tiff, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB)
-             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression == NoCompression ? COMPRESSION_NONE : COMPRESSION_LZW)
+             || !TIFFSetField(tiff, TIFFTAG_COMPRESSION, compression)
 @@ -925,7 +1038,11 @@ bool QTiffHandler::write(const QImage &image)
              return false;
          }
@@ -555,7 +555,7 @@ index 2906948..1787520 100644
 +#else
 +    if (option == CompressionRatio && value.type() == QVariant::Int)
 +#endif
-         d->compression = qBound(0, value.toInt(), 1);
+         d->compression = static_cast<Compression>(qBound(0, value.toInt(), 5));
      if (option == ImageTransformation) {
          int transformation = value.toInt();
 @@ -1070,6 +1196,7 @@ void QTiffHandler::convert32BitOrder(void *buffer, int width)
@@ -595,10 +595,10 @@ index 2906948..1787520 100644
  bool QTiffHandler::ensureHaveDirectoryCount() const
  {
 diff --git a/src/plugins/imageformats/tiff/qtiffhandler_p.h b/src/plugins/imageformats/tiff/qtiffhandler_p.h
-index 630fde0..ceaaa87 100644
+index 0067102d..47451505 100644
 --- a/src/plugins/imageformats/tiff/qtiffhandler_p.h
 +++ b/src/plugins/imageformats/tiff/qtiffhandler_p.h
-@@ -36,9 +36,15 @@ public:
+@@ -42,9 +42,15 @@ public:
      };
  private:
      void convert32BitOrder(void *buffer, int width);
@@ -613,9 +613,9 @@ index 630fde0..ceaaa87 100644
 +#endif
      const QScopedPointer<QTiffHandlerPrivate> d;
      bool ensureHaveDirectoryCount() const;
- };
+     int toLibTiffCompression(Compression compression) const;
 diff --git a/src/plugins/imageformats/wbmp/qwbmphandler.cpp b/src/plugins/imageformats/wbmp/qwbmphandler.cpp
-index df319af..1366163 100644
+index df319af9..1366163d 100644
 --- a/src/plugins/imageformats/wbmp/qwbmphandler.cpp
 +++ b/src/plugins/imageformats/wbmp/qwbmphandler.cpp
 @@ -162,9 +162,13 @@ QImage WBMPReader::readImage()
@@ -633,7 +633,7 @@ index df319af..1366163 100644
          return QImage();
  
 diff --git a/src/plugins/imageformats/webp/qwebphandler.cpp b/src/plugins/imageformats/webp/qwebphandler.cpp
-index db5b79f..0ecb383 100644
+index db5b79fd..0ecb383c 100644
 --- a/src/plugins/imageformats/webp/qwebphandler.cpp
 +++ b/src/plugins/imageformats/webp/qwebphandler.cpp
 @@ -79,7 +79,11 @@ bool QWebpHandler::ensureScanned() const
@@ -766,10 +766,10 @@ index db5b79f..0ecb383 100644
          res = (writer.size ==
                     static_cast<size_t>(device()->write(reinterpret_cast<const char *>(writer.mem), writer.size)));
 diff --git a/src/plugins/imageformats/webp/qwebphandler_p.h b/src/plugins/imageformats/webp/qwebphandler_p.h
-index ee10bf3..1ea34a4 100644
+index b993f27c..6afdbec9 100644
 --- a/src/plugins/imageformats/webp/qwebphandler_p.h
 +++ b/src/plugins/imageformats/webp/qwebphandler_p.h
-@@ -5,7 +5,9 @@
+@@ -7,7 +7,9 @@
  #define QWEBPHANDLER_P_H
  
  #include <QtGui/qcolor.h>
@@ -779,7 +779,7 @@ index ee10bf3..1ea34a4 100644
  #include <QtGui/qimage.h>
  #include <QtGui/qimageiohandler.h>
  #include <QtCore/qbytearray.h>
-@@ -61,7 +63,9 @@ private:
+@@ -63,7 +65,9 @@ private:
      WebPData m_webpData;
      WebPDemuxer *m_demuxer;
      WebPIterator m_iter;
@@ -790,5 +790,5 @@ index ee10bf3..1ea34a4 100644
  };
  
 -- 
-2.39.5
+2.47.3
 
