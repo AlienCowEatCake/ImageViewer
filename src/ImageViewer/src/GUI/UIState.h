@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2019 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -38,13 +38,15 @@ enum UIChangeFlag
     UICF_CurrentFileIndex       = 1 << 3,
     UICF_FilesCount             = 1 << 4,
     UICF_CanDeleteCurrentFile   = 1 << 5,
-    UICF_ImageData              = 1 << 6,
+    UICF_IsFileListReady        = 1 << 6,
+    UICF_ImageData              = 1 << 7,
     UICF_All                    = UICF_HasCurrentFile
                                 | UICF_HasCurrentFileIndex
                                 | UICF_CurrentFilePath
                                 | UICF_CurrentFileIndex
                                 | UICF_FilesCount
                                 | UICF_CanDeleteCurrentFile
+                                | UICF_IsFileListReady
                                 | UICF_ImageData
 };
 Q_DECLARE_FLAGS(UIChangeFlags, UIChangeFlag)
@@ -58,6 +60,7 @@ struct UIState
         , currentFileIndex(-1)
         , filesCount(0)
         , canDeleteCurrentFile(false)
+        , isFileListReady(false)
     {}
 
     bool hasCurrentFile;
@@ -66,6 +69,7 @@ struct UIState
     int currentFileIndex;
     int  filesCount;
     bool canDeleteCurrentFile;
+    bool isFileListReady;
     QSharedPointer<IImageData> imageData;
 };
 

@@ -40,10 +40,12 @@ public:
         FlagCurrentFileIndex        = 1 << 1,
         FlagFilesCount              = 1 << 2,
         FlagCanDeleteCurrentFile    = 1 << 3,
+        FlagIsReady                 = 1 << 4,
         FlagChangeAll               = FlagCurrentFilePath
                                     | FlagCurrentFileIndex
                                     | FlagFilesCount
                                     | FlagCanDeleteCurrentFile
+                                    | FlagIsReady
     };
     Q_DECLARE_FLAGS(ChangeFlags, ChangeFlag)
 

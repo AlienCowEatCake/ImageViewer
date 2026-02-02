@@ -658,6 +658,7 @@ public:
         , m_currentFileIndex(manager->currentFileIndex())
         , m_filesCount(manager->filesCount())
         , m_canDeleteCurrentFile(manager->canDeleteCurrentFile())
+        , m_isReady(manager->isReady())
     {}
 
     ~ChangedGuard()
@@ -671,6 +672,8 @@ public:
             flags |= FileManager::FlagFilesCount;
         if(m_canDeleteCurrentFile != m_manager->canDeleteCurrentFile())
             flags |= FileManager::FlagCanDeleteCurrentFile;
+        if(m_isReady != m_manager->isReady())
+            flags |= FileManager::FlagIsReady;
         if(flags != FileManager::ChangeFlags())
             Q_EMIT m_manager->stateChanged(flags);
     }
@@ -681,6 +684,7 @@ private:
     int m_currentFileIndex;
     int m_filesCount;
     bool m_canDeleteCurrentFile;
+    bool m_isReady;
 };
 
 // ====================================================================================================

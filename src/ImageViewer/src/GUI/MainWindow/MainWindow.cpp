@@ -366,6 +366,11 @@ void MainWindow::updateWindowTitle()
                       .arg(currentFileIndex + 1)
                       .arg(m_impl->uiState.filesCount));
     }
+    else if(!m_impl->uiState.isFileListReady)
+    {
+        const QString placeholder = tr("\xe2\x80\xa6");
+        label.prepend(QString::fromLatin1("[%1/%2] ").arg(placeholder, placeholder));
+    }
     setWindowTitle(label);
 }
 
@@ -558,6 +563,7 @@ void MainWindow::updateUIState(const UIState &state, const UIChangeFlags &change
        changeFlags.testFlag(UICF_CurrentFilePath) ||
        changeFlags.testFlag(UICF_CurrentFileIndex) ||
        changeFlags.testFlag(UICF_FilesCount) ||
+       changeFlags.testFlag(UICF_IsFileListReady) ||
        changeFlags.testFlag(UICF_ImageData))
         updateWindowTitle();
 }

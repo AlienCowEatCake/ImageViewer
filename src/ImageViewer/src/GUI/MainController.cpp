@@ -106,6 +106,7 @@ struct MainController::Impl
         uiState.currentFileIndex        = fileManager.currentFileIndex();
         uiState.filesCount              = fileManager.filesCount();
         uiState.canDeleteCurrentFile    = fileManager.canDeleteCurrentFile();
+        uiState.isFileListReady         = fileManager.isReady();
         uiState.imageData               = imageData;
         return uiState;
     }
@@ -138,6 +139,8 @@ MainController::MainController(QObject *parent)
     connect(mainWindow, SIGNAL(checkForUpdatesRequested())              , this, SLOT(checkForUpdates())                     );
     connect(mainWindow, SIGNAL(editStylesheetRequested())               , this, SLOT(showStylesheetEditor())                );
     connect(mainWindow, SIGNAL(closed())                                , this, SLOT(onCloseRequested())                    );
+
+    Q_EMIT uiStateChanged(m_impl->createUIState(), UICF_All);
 }
 
 MainController::~MainController()
@@ -415,6 +418,8 @@ void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &c
         uiChangeFlags |= UICF_FilesCount;
     if(changeFlags.testFlag(FileManager::FlagCanDeleteCurrentFile))
         uiChangeFlags |= UICF_CanDeleteCurrentFile;
+    if(changeFlags.testFlag(FileManager::FlagIsReady))
+        uiChangeFlags |= UICF_IsFileListReady;
 
     m_impl->lastHasCurrentFile = uiState.hasCurrentFile;
     m_impl->lastHasCurrentFileIndex = uiState.hasCurrentFileIndex;
