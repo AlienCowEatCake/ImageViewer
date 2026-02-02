@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -374,6 +374,8 @@ void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &c
     const QString currentFilePath = m_impl->fileManager.currentFilePath();
     if(!currentFilePath.isEmpty())
         m_impl->settings.setLastOpenedPath(currentFilePath);
+
+    bool showError = false;
     if(changeFlags.testFlag(FileManager::FlagCurrentFilePath))
     {
         if(currentFilePath.isEmpty())
@@ -389,6 +391,7 @@ void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &c
                 Q_EMIT uiStateChanged(m_impl->createUIState(), UICF_ImageData);
             }
             m_impl->imageData = DecodersManager::getInstance().loadImage(currentFilePath);
+            showError = !m_impl->imageData;
         }
     }
 
@@ -412,6 +415,6 @@ void MainController::onFileManagerStateChanged(const FileManager::ChangeFlags &c
 
     Q_EMIT uiStateChanged(uiState, uiChangeFlags);
 
-    if(!currentFilePath.isEmpty() && !m_impl->imageData)
+    if(showError)
         QMessageBox::critical(&m_impl->mainWindow, tr("Error"), tr("Failed to open file \"%1\"").arg(uiState.currentFilePath));
 }
