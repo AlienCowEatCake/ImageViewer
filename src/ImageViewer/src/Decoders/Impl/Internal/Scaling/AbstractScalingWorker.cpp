@@ -92,11 +92,7 @@ qint64 AbstractScalingWorker::getScaledDataId() const
 
 void AbstractScalingWorker::process()
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    m_workerAborted.storeRelease(0);
-#else
-    m_workerAborted = 0;
-#endif
+    QAtomicInt_storeRelease(m_workerAborted, 0);
     Q_EMIT started();
     if(isAborted())
     {
@@ -118,18 +114,10 @@ void AbstractScalingWorker::process()
 
 void AbstractScalingWorker::abort()
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    m_workerAborted.storeRelease(1);
-#else
-    m_workerAborted = 1;
-#endif
+    QAtomicInt_storeRelease(m_workerAborted, 1);
 }
 
 bool AbstractScalingWorker::isAborted() const
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    return m_workerAborted.loadAcquire() != 0;
-#else
-    return m_workerAborted != 0;
-#endif
+    return QAtomicInt_loadAcquire(m_workerAborted) != 0;
 }

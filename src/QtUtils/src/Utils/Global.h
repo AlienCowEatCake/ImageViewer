@@ -168,5 +168,33 @@ static inline bool qFuzzyIsNull(float f)
 #define QFileInfo_exists(file) (QFileInfo((file)).exists())
 #endif
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#define QAtomicInt_loadAcquire(atomicInt) ((atomicInt).loadAcquire())
+#else
+#define QAtomicInt_loadAcquire(atomicInt) (atomicInt)
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+#define QAtomicInt_loadRelaxed(atomicInt) ((atomicInt).loadRelaxed())
+#elif (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#define QAtomicInt_loadRelaxed(atomicInt) ((atomicInt).load())
+#else
+#define QAtomicInt_loadRelaxed(atomicInt) (atomicInt)
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#define QAtomicInt_storeRelease(atomicInt, newValue) ((atomicInt).storeRelease((newValue)))
+#else
+#define QAtomicInt_storeRelease(atomicInt, newValue) ((atomicInt) = (newValue))
+#endif
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+#define QAtomicInt_storeRelaxed(atomicInt, newValue) ((atomicInt).storeRelaxed((newValue)))
+#elif (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#define QAtomicInt_storeRelaxed(atomicInt, newValue) ((atomicInt).store((newValue)))
+#else
+#define QAtomicInt_storeRelaxed(atomicInt, newValue) ((atomicInt) = (newValue))
+#endif
+
 #endif // QTUTILS_GLOBAL_H_INCLUDED
 

@@ -25,6 +25,7 @@
 #include <QAtomicInt>
 #include <QMutex>
 
+#include "Utils/Global.h"
 #include "Utils/ScopedPointer.h"
 
 class AbstractScalingWorker : public QObject

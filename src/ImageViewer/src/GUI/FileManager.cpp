@@ -115,11 +115,7 @@ bool FilesScanner::configureForFilxedList(const QStringList &supportedFormats, c
 
 void FilesScanner::reset()
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    m_stopPending.storeRelease(1);
-#else
-    m_stopPending = 1;
-#endif
+    QAtomicInt_storeRelease(m_stopPending, 1);
 
     m_watcherMutex.lock();
     if(isWatcherConfigured())
@@ -131,11 +127,7 @@ void FilesScanner::reset()
         const QStringList files = m_watcher->files();
         if(!files.isEmpty())
             m_watcher->removePaths(files);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-        m_watcherConfigured.storeRelease(0);
-#else
-        m_watcherConfigured = 0;
-#endif
+        QAtomicInt_storeRelease(m_watcherConfigured, 0);
     }
     m_watcherMutex.unlock();
 
@@ -150,13 +142,8 @@ void FilesScanner::reset()
     m_directoryPath.clear();
     m_fixedPathsList.clear();
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    m_scannerIsDirty.storeRelease(0);
-    m_stopPending.storeRelease(0);
-#else
-    m_scannerIsDirty = 0;
-    m_stopPending = 0;
-#endif
+    QAtomicInt_storeRelease(m_scannerIsDirty, 0);
+    QAtomicInt_storeRelease(m_stopPending, 0);
 }
 
 void FilesScanner::run()
@@ -178,11 +165,7 @@ void FilesScanner::run()
             timer.start();
 #endif
             m_watcher->addPath(m_directoryPath);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-            m_watcherConfigured.storeRelease(1);
-#else
-            m_watcherConfigured = 1;
-#endif
+            QAtomicInt_storeRelease(m_watcherConfigured, 1);
 #if !defined (QT_NO_DEBUG_OUTPUT)
             LOG_DEBUG() << LOGGING_CTX << "Watcher configured, elapsed time =" << static_cast<qint64>(timer.elapsed()) << "ms";
 #endif
@@ -223,11 +206,7 @@ void FilesScanner::run()
                 CHECK_INTERRUPTION;
                 m_watcher->addPath(*it);
             }
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-            m_watcherConfigured.storeRelease(1);
-#else
-            m_watcherConfigured = 1;
-#endif
+            QAtomicInt_storeRelease(m_watcherConfigured, 1);
 #if !defined (QT_NO_DEBUG_OUTPUT)
             LOG_DEBUG() << LOGGING_CTX << "Watcher configured, elapsed time =" << static_cast<qint64>(timer.elapsed()) << "ms";
 #endif
@@ -314,20 +293,12 @@ QStringList FilesScanner::collectDirContent(const QString &directoryPath) const
 
 bool FilesScanner::isStopPending() const
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    return m_stopPending.loadAcquire() != 0;
-#else
-    return m_stopPending != 0;
-#endif
+    return QAtomicInt_loadAcquire(m_stopPending) != 0;
 }
 
 bool FilesScanner::isWatcherConfigured() const
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    return m_watcherConfigured.loadAcquire() != 0;
-#else
-    return m_watcherConfigured != 0;
-#endif
+    return QAtomicInt_loadAcquire(m_watcherConfigured) != 0;
 }
 
 void FilesScanner::update()
@@ -335,11 +306,7 @@ void FilesScanner::update()
     if(isRunning())
         return;
     start();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    m_scannerIsDirty.storeRelease(0);
-#else
-    m_scannerIsDirty = 0;
-#endif
+    QAtomicInt_storeRelease(m_scannerIsDirty, 0);
     m_timeFromLastUpdate.restart();
 }
 
@@ -348,20 +315,12 @@ void FilesScanner::tryUpdate()
     if(static_cast<qint64>(m_timeFromLastUpdate.elapsed()) >= static_cast<qint64>(m_updateTimer->interval()))
         update();
     else
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-        m_scannerIsDirty.storeRelease(1);
-#else
-        m_scannerIsDirty = 1;
-#endif
+        QAtomicInt_storeRelease(m_scannerIsDirty, 1);
 }
 
 void FilesScanner::ensureUpdated()
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    if(m_scannerIsDirty.loadAcquire() != 0)
-#else
-    if(m_scannerIsDirty != 0)
-#endif
+    if(QAtomicInt_loadAcquire(m_scannerIsDirty) != 0)
         update();
 }
 
