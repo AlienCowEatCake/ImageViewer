@@ -450,64 +450,64 @@
 <context>
     <name>MainController</name>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="162"/>
+        <location filename="../../src/GUI/MainController.cpp" line="165"/>
         <source>All Supported Images</source>
         <translation type="unfinished">Todos os formatos de imagem suportados</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="163"/>
+        <location filename="../../src/GUI/MainController.cpp" line="166"/>
         <source>All Files</source>
         <translation type="unfinished">Todos os arquivos</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="164"/>
+        <location filename="../../src/GUI/MainController.cpp" line="167"/>
         <source>Open File</source>
         <translation type="unfinished">Abrir arquivo</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="176"/>
-        <location filename="../../src/GUI/MainController.cpp" line="358"/>
-        <location filename="../../src/GUI/MainController.cpp" line="416"/>
+        <location filename="../../src/GUI/MainController.cpp" line="179"/>
+        <location filename="../../src/GUI/MainController.cpp" line="367"/>
+        <location filename="../../src/GUI/MainController.cpp" line="430"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation type="unfinished">Falha ao abrir arquivo &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="177"/>
+        <location filename="../../src/GUI/MainController.cpp" line="180"/>
         <source>Failed to open files &quot;%1&quot;</source>
         <translation type="unfinished">Falha ao abrir arquivos &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="178"/>
-        <location filename="../../src/GUI/MainController.cpp" line="191"/>
-        <location filename="../../src/GUI/MainController.cpp" line="213"/>
-        <location filename="../../src/GUI/MainController.cpp" line="221"/>
-        <location filename="../../src/GUI/MainController.cpp" line="358"/>
-        <location filename="../../src/GUI/MainController.cpp" line="416"/>
+        <location filename="../../src/GUI/MainController.cpp" line="181"/>
+        <location filename="../../src/GUI/MainController.cpp" line="194"/>
+        <location filename="../../src/GUI/MainController.cpp" line="216"/>
+        <location filename="../../src/GUI/MainController.cpp" line="224"/>
+        <location filename="../../src/GUI/MainController.cpp" line="367"/>
+        <location filename="../../src/GUI/MainController.cpp" line="430"/>
         <source>Error</source>
         <translation type="unfinished">Erro</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="186"/>
+        <location filename="../../src/GUI/MainController.cpp" line="189"/>
         <source>Open Folder</source>
         <translation type="unfinished">Abrir pasta</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="191"/>
+        <location filename="../../src/GUI/MainController.cpp" line="194"/>
         <source>Failed to open folder &quot;%1&quot;</source>
         <translation type="unfinished">Falha ao abrir pasta &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="203"/>
+        <location filename="../../src/GUI/MainController.cpp" line="206"/>
         <source>Delete File</source>
         <translation type="unfinished">Excluir arquivo</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="203"/>
+        <location filename="../../src/GUI/MainController.cpp" line="206"/>
         <source>Are you sure you want to delete current file?</source>
         <translation type="unfinished">Tem certeza que quer excluir o arquivo atual?</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="221"/>
+        <location filename="../../src/GUI/MainController.cpp" line="224"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation type="unfinished">Falha ao excluir arquivo &quot;%1&quot;</translation>
     </message>
@@ -520,12 +520,17 @@
         <translation>Erro</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="491"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="371"/>
+        <source>…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="496"/>
         <source>Zoom</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="492"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="497"/>
         <source>Zoom Factor (%):</source>
         <translation>Escala de zoom (%):</translation>
     </message>

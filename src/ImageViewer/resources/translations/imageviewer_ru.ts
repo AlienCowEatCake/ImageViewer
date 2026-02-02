@@ -450,64 +450,64 @@
 <context>
     <name>MainController</name>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="162"/>
+        <location filename="../../src/GUI/MainController.cpp" line="165"/>
         <source>All Supported Images</source>
         <translation>Все поддерживаемые изображения</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="163"/>
+        <location filename="../../src/GUI/MainController.cpp" line="166"/>
         <source>All Files</source>
         <translation>Все файлы</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="164"/>
+        <location filename="../../src/GUI/MainController.cpp" line="167"/>
         <source>Open File</source>
         <translation>Открыть файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="176"/>
-        <location filename="../../src/GUI/MainController.cpp" line="358"/>
-        <location filename="../../src/GUI/MainController.cpp" line="416"/>
+        <location filename="../../src/GUI/MainController.cpp" line="179"/>
+        <location filename="../../src/GUI/MainController.cpp" line="367"/>
+        <location filename="../../src/GUI/MainController.cpp" line="430"/>
         <source>Failed to open file &quot;%1&quot;</source>
         <translation>Не удалось открыть файл &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="177"/>
+        <location filename="../../src/GUI/MainController.cpp" line="180"/>
         <source>Failed to open files &quot;%1&quot;</source>
         <translation>Не удалось открыть файлы &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="186"/>
+        <location filename="../../src/GUI/MainController.cpp" line="189"/>
         <source>Open Folder</source>
         <translation>Открыть папку</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="191"/>
+        <location filename="../../src/GUI/MainController.cpp" line="194"/>
         <source>Failed to open folder &quot;%1&quot;</source>
         <translation>Не удалось открыть папку &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="203"/>
+        <location filename="../../src/GUI/MainController.cpp" line="206"/>
         <source>Delete File</source>
         <translation>Удалить файл</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="203"/>
+        <location filename="../../src/GUI/MainController.cpp" line="206"/>
         <source>Are you sure you want to delete current file?</source>
         <translation>Вы уверены что хотите удалить этот файл?</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="178"/>
-        <location filename="../../src/GUI/MainController.cpp" line="191"/>
-        <location filename="../../src/GUI/MainController.cpp" line="213"/>
-        <location filename="../../src/GUI/MainController.cpp" line="221"/>
-        <location filename="../../src/GUI/MainController.cpp" line="358"/>
-        <location filename="../../src/GUI/MainController.cpp" line="416"/>
+        <location filename="../../src/GUI/MainController.cpp" line="181"/>
+        <location filename="../../src/GUI/MainController.cpp" line="194"/>
+        <location filename="../../src/GUI/MainController.cpp" line="216"/>
+        <location filename="../../src/GUI/MainController.cpp" line="224"/>
+        <location filename="../../src/GUI/MainController.cpp" line="367"/>
+        <location filename="../../src/GUI/MainController.cpp" line="430"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainController.cpp" line="221"/>
+        <location filename="../../src/GUI/MainController.cpp" line="224"/>
         <source>Failed to delete file &quot;%1&quot;</source>
         <translation>Не удалось удалить файл &quot;%1&quot;</translation>
     </message>
@@ -520,12 +520,17 @@
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="491"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="371"/>
+        <source>…</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="496"/>
         <source>Zoom</source>
         <translation>Масштабирование</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="492"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="497"/>
         <source>Zoom Factor (%):</source>
         <translation>Масштаб (%):</translation>
     </message>
