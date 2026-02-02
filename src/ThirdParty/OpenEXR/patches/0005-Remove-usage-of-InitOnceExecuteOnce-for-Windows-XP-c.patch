@@ -1,4 +1,4 @@
-From 4c6a8334bb0328bfd15673d230199d4f08690776 Mon Sep 17 00:00:00 2001
+From ee63eac9d00c616333c949e7f9856bc9b07e3aeb Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 2 Feb 2026 02:06:45 +0700
 Subject: [PATCH 5/5] Remove usage of InitOnceExecuteOnce for Windows XP
@@ -9,7 +9,7 @@ Subject: [PATCH 5/5] Remove usage of InitOnceExecuteOnce for Windows XP
  1 file changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/src/lib/OpenEXRCore/internal_thread.h b/src/lib/OpenEXRCore/internal_thread.h
-index 6c3c1032..7d9e4339 100644
+index 6c3c1032..0fe76e71 100644
 --- a/src/lib/OpenEXRCore/internal_thread.h
 +++ b/src/lib/OpenEXRCore/internal_thread.h
 @@ -13,19 +13,22 @@
@@ -32,7 +32,7 @@ index 6c3c1032..7d9e4339 100644
  {
 -    InitOnceExecuteOnce (flag, once_init_fn, (PVOID) func, NULL);
 +    static const LONG ONCE_FLAG_CALLING = ONCE_FLAG_INIT + 1;
-+    static const LONG ONCE_FLAG_FINISHED = ONCE_FLAG_CALLING + 1;
++    static const LONG ONCE_FLAG_FINISHED = ONCE_FLAG_INIT + 2;
 +    const LONG res = InterlockedCompareExchange (flag, ONCE_FLAG_CALLING, ONCE_FLAG_INIT);
 +    if (res == ONCE_FLAG_INIT) {
 +        func ();
@@ -46,5 +46,5 @@ index 6c3c1032..7d9e4339 100644
  #    else
  #        include <pthread.h>
 -- 
-2.47.3
+2.52.0
 

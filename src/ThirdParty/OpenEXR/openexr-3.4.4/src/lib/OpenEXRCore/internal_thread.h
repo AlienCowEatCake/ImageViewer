@@ -19,7 +19,7 @@ static inline void
 call_once (once_flag* flag, void (*func) (void))
 {
     static const LONG ONCE_FLAG_CALLING = ONCE_FLAG_INIT + 1;
-    static const LONG ONCE_FLAG_FINISHED = ONCE_FLAG_CALLING + 1;
+    static const LONG ONCE_FLAG_FINISHED = ONCE_FLAG_INIT + 2;
     const LONG res = InterlockedCompareExchange (flag, ONCE_FLAG_CALLING, ONCE_FLAG_INIT);
     if (res == ONCE_FLAG_INIT) {
         func ();
