@@ -64,6 +64,9 @@ public:
 
     QStringList currentOpenArguments() const;
 
+    bool isReady() const;
+    void waitForReady();
+
 public Q_SLOTS:
     void reset();
     void update();

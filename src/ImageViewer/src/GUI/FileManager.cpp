@@ -63,6 +63,7 @@ FilesScanner::FilesScanner(QObject *parent)
     , m_stopPending(0)
     , m_updateTimer(new QTimer(this))
     , m_scannerIsDirty(0)
+    , m_scannerHasResult(0)
 {
     m_watcher->moveToThread(this);
     connect(m_watcher, SIGNAL(directoryChanged(QString)), this, SLOT(tryUpdate()));
@@ -81,6 +82,11 @@ FilesScanner::~FilesScanner()
     reset();
     m_watcher->disconnect();
     m_watcher->deleteLater();
+}
+
+bool FilesScanner::hasScanResult() const
+{
+    return QAtomicInt_loadAcquire(m_scannerHasResult) != 0;
 }
 
 QStringList FilesScanner::getScanResult()
@@ -143,6 +149,7 @@ void FilesScanner::reset()
     m_fixedPathsList.clear();
 
     QAtomicInt_storeRelease(m_scannerIsDirty, 0);
+    QAtomicInt_storeRelease(m_scannerHasResult, 0);
     QAtomicInt_storeRelease(m_stopPending, 0);
 }
 
@@ -190,6 +197,8 @@ void FilesScanner::run()
         m_scanResult = list;
 #endif
         m_scanResultMutex.unlock();
+
+        QAtomicInt_storeRelease(m_scannerHasResult, 1);
         Q_EMIT updated();
     }
     else if(!m_fixedPathsList.isEmpty())
@@ -254,6 +263,8 @@ void FilesScanner::run()
         m_scanResult = list;
 #endif
         m_scanResultMutex.unlock();
+
+        QAtomicInt_storeRelease(m_scannerHasResult, 1);
         Q_EMIT updated();
     }
 #undef CHECK_INTERRUPTION
@@ -333,6 +344,8 @@ class IFilesModel
 public:
     virtual ~IFilesModel() {}
 
+    virtual bool isFullyInitialized() const = 0;
+
     virtual QString currentFilePath() const = 0;
     virtual int currentFileIndex() const = 0;
     virtual int filesCount() const = 0;
@@ -351,6 +364,7 @@ public:
         : m_filesScanner(filesScanner)
         , m_currentIndex(INVALID_INDEX)
         , m_canDeleteCurrentFile(false)
+        , m_isFullyInitialized(false)
     {
         assert(!filePath.isEmpty());
         const QFileInfo fileInfo = QFileInfo(filePath);
@@ -371,6 +385,7 @@ public:
         }
     }
 
+    bool isFullyInitialized() const Q_DECL_OVERRIDE     { return m_isFullyInitialized; }
     QString currentFilePath() const Q_DECL_OVERRIDE     { return m_currentFilePath; }
     int currentFileIndex() const Q_DECL_OVERRIDE        { return m_currentIndex; }
     int filesCount() const Q_DECL_OVERRIDE              { return m_filesList.size(); }
@@ -406,10 +421,11 @@ public:
         m_canDeleteCurrentFile = false;
         if(m_directoryPath.isEmpty())
             return;
-        if(!m_filesScanner)
+        if(!m_filesScanner || !m_filesScanner->hasScanResult())
             return;
 
         m_filesList = m_filesScanner->getScanResult();
+        m_isFullyInitialized = true;
         if(m_filesList.isEmpty())
             return;
 
@@ -466,6 +482,7 @@ private:
     int m_currentIndex;
     QString m_directoryPath;
     bool m_canDeleteCurrentFile;
+    bool m_isFullyInitialized;
 };
 
 
@@ -476,6 +493,7 @@ public:
         : m_filesScanner(filesScanner)
         , m_currentIndex(INVALID_INDEX)
         , m_canDeleteCurrentFile(false)
+        , m_isFullyInitialized(false)
     {
         assert(!filePaths.isEmpty());
         if(QFileInfo(filePaths.first()).isFile())
@@ -493,6 +511,7 @@ public:
         }
     }
 
+    bool isFullyInitialized() const Q_DECL_OVERRIDE     { return m_isFullyInitialized; }
     QString currentFilePath() const Q_DECL_OVERRIDE     { return m_currentFilePath; }
     int currentFileIndex() const Q_DECL_OVERRIDE        { return m_currentIndex; }
     int filesCount() const Q_DECL_OVERRIDE              { return m_pathsList.size(); }
@@ -526,10 +545,11 @@ public:
         m_pathsList.clear();
         m_currentIndex = INVALID_INDEX;
         m_canDeleteCurrentFile = false;
-        if(!m_filesScanner)
+        if(!m_filesScanner || !m_filesScanner->hasScanResult())
             return;
 
         m_pathsList = m_filesScanner->getScanResult();
+        m_isFullyInitialized = true;
         if(m_pathsList.isEmpty())
             return;
 
@@ -582,6 +602,7 @@ private:
     QString m_currentFilePath;
     int m_currentIndex;
     bool m_canDeleteCurrentFile;
+    bool m_isFullyInitialized;
 };
 
 } // namespace
@@ -705,6 +726,22 @@ bool FileManager::canDeleteCurrentFile() const
 QStringList FileManager::currentOpenArguments() const
 {
     return m_impl->currentOpenArguments;
+}
+
+bool FileManager::isReady() const
+{
+    if(m_impl->filesModel)
+        return m_impl->filesModel->isFullyInitialized();
+    return true;
+}
+
+void FileManager::waitForReady()
+{
+    if(!isReady())
+    {
+        m_impl->filesScanner.wait();
+        update();
+    }
 }
 
 void FileManager::reset()

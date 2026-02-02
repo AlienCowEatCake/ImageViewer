@@ -49,6 +49,7 @@ public:
     FilesScanner(QObject *parent = Q_NULLPTR);
     ~FilesScanner();
 
+    bool hasScanResult() const;
     QStringList getScanResult();
 
     bool configureForDirContent(const QStringList &supportedFormats, const QString &directoryPath);
@@ -75,6 +76,7 @@ private:
     QAtomicInt m_stopPending;
     QTimer *m_updateTimer;
     QAtomicInt m_scannerIsDirty;
+    QAtomicInt m_scannerHasResult;
     QElapsedTimer m_timeFromLastUpdate;
 
     QStringList m_supportedFormats;

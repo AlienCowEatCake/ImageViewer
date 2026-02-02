@@ -297,8 +297,14 @@ void MainController::showPreferences()
     {
         QSignalBlocker blocker(m_impl->fileManager);
         const QString oldPath = m_impl->fileManager.currentFilePath();
-        openPaths(m_impl->fileManager.currentOpenArguments());
-        m_impl->fileManager.selectByPath(oldPath);
+        if(openPaths(m_impl->fileManager.currentOpenArguments()))
+        {
+            if(m_impl->fileManager.currentFilePath() != oldPath)
+            {
+                m_impl->fileManager.waitForReady();
+                m_impl->fileManager.selectByPath(oldPath);
+            }
+        }
     }
     onFileManagerStateChanged(FileManager::FlagChangeAll);
 }
