@@ -1,5 +1,5 @@
 #
-#  Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+#  Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 #
 #  This file is part of the `ImageViewer' program.
 #
@@ -743,12 +743,6 @@ disable_cxx11 {
 # DecoderWIC options
 #    disable_wic
 !win32 {
-    CONFIG *= disable_wic
-}
-*msvc* : lessThan(MSVC_VERSION, 2008) {
-    CONFIG *= disable_wic
-}
-win32 : *g++* : !*clang* : lessThan(GCC_VERSION_NUMERIC, 80100) { # FIXME: Find exact version
     CONFIG *= disable_wic
 }
 

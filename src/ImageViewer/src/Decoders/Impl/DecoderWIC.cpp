@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2021-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2021-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -18,7 +18,7 @@
 */
 
 #include <windows.h>
-#include <wincodec.h>
+//#include <wincodec.h>
 
 #include <QImage>
 #include <QFileInfo>
@@ -37,6 +37,337 @@
 
 //#pragma comment(lib, "ole32.lib") // CoInitialize, CoUninitialize, CoCreateInstance
 //#pragma comment(lib, "windowscodecs.lib")
+
+// ====================================================================================================
+
+namespace {
+
+#if defined (WICDecodeOptions)
+#undef WICDecodeOptions
+#endif
+#define WICDecodeOptions WICDecodeOptions_WRAP
+typedef enum WICDecodeOptions
+{
+    WICDecodeMetadataCacheOnDemand      = 0,
+    WICDecodeMetadataCacheOnLoad        = 0x1,
+    WICMETADATACACHEOPTION_FORCE_DWORD  = 0x7fffffff
+} WICDecodeOptions;
+
+#if defined (WICBitmapDitherType)
+#undef WICBitmapDitherType
+#endif
+#define WICBitmapDitherType WICBitmapDitherType_WRAP
+typedef enum WICBitmapDitherType
+{
+    WICBitmapDitherTypeNone             = 0,
+    WICBitmapDitherTypeSolid            = 0,
+    WICBitmapDitherTypeOrdered4x4       = 0x1,
+    WICBitmapDitherTypeOrdered8x8       = 0x2,
+    WICBitmapDitherTypeOrdered16x16     = 0x3,
+    WICBitmapDitherTypeSpiral4x4        = 0x4,
+    WICBitmapDitherTypeSpiral8x8        = 0x5,
+    WICBitmapDitherTypeDualSpiral4x4    = 0x6,
+    WICBitmapDitherTypeDualSpiral8x8    = 0x7,
+    WICBitmapDitherTypeErrorDiffusion   = 0x8,
+    WICBITMAPDITHERTYPE_FORCE_DWORD     = 0x7fffffff
+} WICBitmapDitherType;
+
+#if defined (WICBitmapPaletteType)
+#undef WICBitmapPaletteType
+#endif
+#define WICBitmapPaletteType WICBitmapPaletteType_WRAP
+typedef enum WICBitmapPaletteType
+{
+    WICBitmapPaletteTypeCustom              = 0,
+    WICBitmapPaletteTypeMedianCut           = 0x1,
+    WICBitmapPaletteTypeFixedBW             = 0x2,
+    WICBitmapPaletteTypeFixedHalftone8      = 0x3,
+    WICBitmapPaletteTypeFixedHalftone27     = 0x4,
+    WICBitmapPaletteTypeFixedHalftone64     = 0x5,
+    WICBitmapPaletteTypeFixedHalftone125    = 0x6,
+    WICBitmapPaletteTypeFixedHalftone216    = 0x7,
+    WICBitmapPaletteTypeFixedWebPalette     = WICBitmapPaletteTypeFixedHalftone216,
+    WICBitmapPaletteTypeFixedHalftone252    = 0x8,
+    WICBitmapPaletteTypeFixedHalftone256    = 0x9,
+    WICBitmapPaletteTypeFixedGray4          = 0xa,
+    WICBitmapPaletteTypeFixedGray16         = 0xb,
+    WICBitmapPaletteTypeFixedGray256        = 0xc,
+    WICBITMAPPALETTETYPE_FORCE_DWORD        = 0x7fffffff
+} WICBitmapPaletteType;
+
+#if defined (WICComponentType)
+#undef WICComponentType
+#endif
+#define WICComponentType WICComponentType_WRAP
+typedef enum WICComponentType
+{
+    WICDecoder                      = 0x1,
+    WICEncoder                      = 0x2,
+    WICPixelFormatConverter         = 0x4,
+    WICMetadataReader               = 0x8,
+    WICMetadataWriter               = 0x10,
+    WICPixelFormat                  = 0x20,
+    WICAllComponents                = 0x3f,
+    WICCOMPONENTTYPE_FORCE_DWORD    = 0x7fffffff
+} WICComponentType;
+
+#if defined (WICComponentEnumerateOptions)
+#undef WICComponentEnumerateOptions
+#endif
+#define WICComponentEnumerateOptions WICComponentEnumerateOptions_WRAP
+typedef enum WICComponentEnumerateOptions
+{
+    WICComponentEnumerateDefault                = 0,
+    WICComponentEnumerateRefresh                = 0x1,
+    WICComponentEnumerateDisabled               = 0x80000000,
+    WICComponentEnumerateUnsigned               = 0x40000000,
+    WICComponentEnumerateBuiltInOnly            = 0x20000000,
+    WICCOMPONENTENUMERATEOPTIONS_FORCE_DWORD    = 0x7fffffff
+} WICComponentEnumerateOptions;
+
+#if defined (WICBitmapCreateCacheOption)
+#undef WICBitmapCreateCacheOption
+#endif
+#define WICBitmapCreateCacheOption WICBitmapCreateCacheOption_WRAP
+typedef int WICBitmapCreateCacheOption;
+
+#if defined (WICBitmapAlphaChannelOption)
+#undef WICBitmapAlphaChannelOption
+#endif
+#define WICBitmapAlphaChannelOption WICBitmapAlphaChannelOption_WRAP
+typedef int WICBitmapAlphaChannelOption;
+
+} // namespace
+
+// ====================================================================================================
+
+#if defined (REFWICPixelFormatGUID)
+#undef REFWICPixelFormatGUID
+#endif
+#define REFWICPixelFormatGUID REFWICPixelFormatGUID_WRAP
+typedef REFGUID REFWICPixelFormatGUID;
+
+#if defined (WICPixelFormatGUID)
+#undef WICPixelFormatGUID
+#endif
+#define WICPixelFormatGUID WICPixelFormatGUID_WRAP
+typedef GUID WICPixelFormatGUID;
+
+// ====================================================================================================
+
+#if defined (IWICPalette)
+#undef IWICPalette
+#endif
+#define IWICPalette IWICPalette_WRAP
+struct IWICPalette;
+
+#if defined (WICRect)
+#undef WICRect
+#endif
+#define WICRect WICRect_WRAP
+struct WICRect;
+
+#if defined (IWICMetadataQueryReader)
+#undef IWICMetadataQueryReader
+#endif
+#define IWICMetadataQueryReader IWICMetadataQueryReader_WRAP
+struct IWICMetadataQueryReader;
+
+#if defined (IWICColorContext)
+#undef IWICColorContext
+#endif
+#define IWICColorContext IWICColorContext_WRAP
+struct IWICColorContext;
+
+#if defined (IWICBitmapDecoderInfo)
+#undef IWICBitmapDecoderInfo
+#endif
+#define IWICBitmapDecoderInfo IWICBitmapDecoderInfo_WRAP
+struct IWICBitmapDecoderInfo;
+
+#if defined (IWICBitmapEncoder)
+#undef IWICBitmapEncoder
+#endif
+#define IWICBitmapEncoder IWICBitmapEncoder_WRAP
+struct IWICBitmapEncoder;
+
+#if defined (IWICBitmapScaler)
+#undef IWICBitmapScaler
+#endif
+#define IWICBitmapScaler IWICBitmapScaler_WRAP
+struct IWICBitmapScaler;
+
+#if defined (IWICBitmapClipper)
+#undef IWICBitmapClipper
+#endif
+#define IWICBitmapClipper IWICBitmapClipper_WRAP
+struct IWICBitmapClipper;
+
+#if defined (IWICBitmapFlipRotator)
+#undef IWICBitmapFlipRotator
+#endif
+#define IWICBitmapFlipRotator IWICBitmapFlipRotator_WRAP
+struct IWICBitmapFlipRotator;
+
+#if defined (IWICStream)
+#undef IWICStream
+#endif
+#define IWICStream IWICStream_WRAP
+struct IWICStream;
+
+#if defined (IWICColorTransform)
+#undef IWICColorTransform
+#endif
+#define IWICColorTransform IWICColorTransform_WRAP
+struct IWICColorTransform;
+
+#if defined (IWICBitmap)
+#undef IWICBitmap
+#endif
+#define IWICBitmap IWICBitmap_WRAP
+struct IWICBitmap;
+
+#if defined (IWICFastMetadataEncoder)
+#undef IWICFastMetadataEncoder
+#endif
+#define IWICFastMetadataEncoder IWICFastMetadataEncoder_WRAP
+struct IWICFastMetadataEncoder;
+
+#if defined (IWICMetadataQueryWriter)
+#undef IWICMetadataQueryWriter
+#endif
+#define IWICMetadataQueryWriter IWICMetadataQueryWriter_WRAP
+struct IWICMetadataQueryWriter;
+
+// ====================================================================================================
+
+#if !defined (STDMETHODCALLTYPE)
+#define STDMETHODCALLTYPE WINAPI
+#endif
+
+#if defined (IWICComponentInfo)
+#undef IWICComponentInfo
+#endif
+#define IWICComponentInfo IWICComponentInfo_WRAP
+struct IWICComponentInfo : public IUnknown
+{
+    virtual HRESULT STDMETHODCALLTYPE GetComponentType(WICComponentType *pType) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetCLSID(CLSID *pclsid) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetSigningStatus(DWORD *pStatus) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetAuthor(UINT cchAuthor, WCHAR *wzAuthor, UINT *pcchActual) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetVendorGUID(GUID *pguidVendor) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetVersion(UINT cchVersion, WCHAR *wzVersion, UINT *pcchActual) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetSpecVersion(UINT cchSpecVersion, WCHAR *wzSpecVersion, UINT *pcchActual) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetFriendlyName(UINT cchFriendlyName, WCHAR *wzFriendlyName, UINT *pcchActual) = 0;
+};
+
+#if defined (IWICBitmapCodecInfo)
+#undef IWICBitmapCodecInfo
+#endif
+#define IWICBitmapCodecInfo IWICBitmapCodecInfo_WRAP
+struct IWICBitmapCodecInfo : public IWICComponentInfo
+{
+    virtual HRESULT STDMETHODCALLTYPE GetContainerFormat(GUID *pguidContainerFormat) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetPixelFormats(UINT cFormats, GUID *pguidPixelFormats, UINT *pcActual) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetColorManagementVersion(UINT cchColorManagementVersion, WCHAR *wzColorManagementVersion, UINT *pcchActual) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetDeviceManufacturer(UINT cchDeviceManufacturer, WCHAR *wzDeviceManufacturer, UINT *pcchActual) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetDeviceModels(UINT cchDeviceModels, WCHAR *wzDeviceModels, UINT *pcchActual) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetMimeTypes(UINT cchMimeTypes, WCHAR *wzMimeTypes, UINT *pcchActual) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetFileExtensions(UINT cchFileExtensions, WCHAR *wzFileExtensions, UINT *pcchActual) = 0;
+    virtual HRESULT STDMETHODCALLTYPE DoesSupportAnimation(BOOL *pfSupportAnimation) = 0;
+    virtual HRESULT STDMETHODCALLTYPE DoesSupportChromakey(BOOL *pfSupportChromakey) = 0;
+    virtual HRESULT STDMETHODCALLTYPE DoesSupportLossless(BOOL *pfSupportLossless) = 0;
+    virtual HRESULT STDMETHODCALLTYPE DoesSupportMultiframe(BOOL *pfSupportMultiframe) = 0;
+    virtual HRESULT STDMETHODCALLTYPE MatchesMimeType(LPCWSTR wzMimeType, BOOL *pfMatches) = 0;
+};
+
+#if defined (IWICBitmapSource)
+#undef IWICBitmapSource
+#endif
+#define IWICBitmapSource IWICBitmapSource_WRAP
+struct IWICBitmapSource : public IUnknown
+{
+    virtual HRESULT STDMETHODCALLTYPE GetSize(UINT *puiWidth, UINT *puiHeight) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetPixelFormat(WICPixelFormatGUID *pPixelFormat) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetResolution(double *pDpiX, double *pDpiY) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CopyPalette(IWICPalette *pIPalette) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CopyPixels(const WICRect *prc, UINT cbStride, UINT cbBufferSize, BYTE *pbBuffer) = 0;
+};
+
+#if defined (IWICFormatConverter)
+#undef IWICFormatConverter
+#endif
+#define IWICFormatConverter IWICFormatConverter_WRAP
+struct IWICFormatConverter : public IWICBitmapSource
+{
+    virtual HRESULT STDMETHODCALLTYPE Initialize(IWICBitmapSource *pISource, REFWICPixelFormatGUID dstFormat, WICBitmapDitherType dither, IWICPalette *pIPalette, double alphaThresholdPercent, WICBitmapPaletteType paletteTranslate) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CanConvert(REFWICPixelFormatGUID srcPixelFormat, REFWICPixelFormatGUID dstPixelFormat, BOOL *pfCanConvert) = 0;
+};
+
+#if defined (IWICBitmapFrameDecode)
+#undef IWICBitmapFrameDecode
+#endif
+#define IWICBitmapFrameDecode IWICBitmapFrameDecode_WRAP
+struct IWICBitmapFrameDecode : public IWICBitmapSource
+{
+    virtual HRESULT STDMETHODCALLTYPE GetMetadataQueryReader(IWICMetadataQueryReader **ppIMetadataQueryReader) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetColorContexts(UINT cCount, IWICColorContext **ppIColorContexts, UINT *pcActualCount) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetThumbnail(IWICBitmapSource **ppIThumbnail) = 0;
+};
+
+#if defined (IWICBitmapDecoder)
+#undef IWICBitmapDecoder
+#endif
+#define IWICBitmapDecoder IWICBitmapDecoder_WRAP
+struct IWICBitmapDecoder : public IUnknown
+{
+    virtual HRESULT STDMETHODCALLTYPE QueryCapability(IStream *pIStream, DWORD *pdwCapability) = 0;
+    virtual HRESULT STDMETHODCALLTYPE Initialize(IStream *pIStream, WICDecodeOptions cacheOptions) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetContainerFormat(GUID *pguidContainerFormat) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetDecoderInfo(IWICBitmapDecoderInfo **ppIDecoderInfo) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CopyPalette(IWICPalette *pIPalette) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetMetadataQueryReader(IWICMetadataQueryReader **ppIMetadataQueryReader) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetPreview(IWICBitmapSource **ppIBitmapSource) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetColorContexts(UINT cCount, IWICColorContext **ppIColorContexts, UINT *pcActualCount) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetThumbnail(IWICBitmapSource **ppIThumbnail) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetFrameCount(UINT *pCount) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetFrame(UINT index, IWICBitmapFrameDecode **ppIBitmapFrame) = 0;
+};
+
+#if defined (IWICImagingFactory)
+#undef IWICImagingFactory
+#endif
+#define IWICImagingFactory IWICImagingFactory_WRAP
+struct IWICImagingFactory : public IUnknown
+{
+    virtual HRESULT STDMETHODCALLTYPE CreateDecoderFromFilename(LPCWSTR wzFilename, const GUID *pguidVendor, DWORD dwDesiredAccess, WICDecodeOptions metadataOptions, IWICBitmapDecoder **ppIDecoder) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateDecoderFromStream(IStream *pIStream, const GUID *pguidVendor, WICDecodeOptions metadataOptions, IWICBitmapDecoder **ppIDecoder) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateDecoderFromFileHandle(ULONG_PTR hFile, const GUID *pguidVendor, WICDecodeOptions metadataOptions, IWICBitmapDecoder **ppIDecoder) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateComponentInfo(REFCLSID clsidComponent, IWICComponentInfo **ppIInfo) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateDecoder(REFGUID guidContainerFormat, const GUID *pguidVendor, IWICBitmapDecoder **ppIDecoder) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateEncoder(REFGUID guidContainerFormat, const GUID *pguidVendor, IWICBitmapEncoder **ppIEncoder) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreatePalette(IWICPalette **ppIPalette) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateFormatConverter(IWICFormatConverter **ppIFormatConverter) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateBitmapScaler(IWICBitmapScaler **ppIBitmapScaler) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateBitmapClipper(IWICBitmapClipper **ppIBitmapClipper) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateBitmapFlipRotator(IWICBitmapFlipRotator **ppIBitmapFlipRotator) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateStream(IWICStream **ppIWICStream) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateColorContext(IWICColorContext **ppIWICColorContext) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateColorTransformer(IWICColorTransform **ppIWICColorTransform) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateBitmap(UINT uiWidth, UINT uiHeight, REFWICPixelFormatGUID pixelFormat, WICBitmapCreateCacheOption option, IWICBitmap **ppIBitmap) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateBitmapFromSource(IWICBitmapSource *pIBitmapSource, WICBitmapCreateCacheOption option, IWICBitmap **ppIBitmap) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateBitmapFromSourceRect(IWICBitmapSource *pIBitmapSource, UINT x, UINT y, UINT width, UINT height, IWICBitmap **ppIBitmap) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateBitmapFromMemory(UINT uiWidth, UINT uiHeight, REFWICPixelFormatGUID pixelFormat, UINT cbStride, UINT cbBufferSize, BYTE *pbBuffer, IWICBitmap **ppIBitmap) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateBitmapFromHBITMAP(HBITMAP hBitmap, HPALETTE hPalette, WICBitmapAlphaChannelOption options, IWICBitmap **ppIBitmap) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateBitmapFromHICON(HICON hIcon, IWICBitmap **ppIBitmap) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateComponentEnumerator(DWORD componentTypes, DWORD options, IEnumUnknown **ppIEnumUnknown) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateFastMetadataEncoderFromDecoder(IWICBitmapDecoder *pIDecoder, IWICFastMetadataEncoder **ppIFastEncoder) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateFastMetadataEncoderFromFrameDecode(IWICBitmapFrameDecode *pIFrameDecoder, IWICFastMetadataEncoder **ppIFastEncoder) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateQueryWriter(REFGUID guidMetadataFormat, const GUID *pguidVendor, IWICMetadataQueryWriter **ppIQueryWriter) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateQueryWriterFromReader(IWICMetadataQueryReader *pIQueryReader, const GUID *pguidVendor, IWICMetadataQueryWriter **ppIQueryWriter) = 0;
+};
+
+// ====================================================================================================
 
 namespace {
 
@@ -77,27 +408,11 @@ public:
         return CoCreateInstance_f(rclsid, pUnkOuter, dwClsContext, riid, ppv);
     }
 
-    HRESULT IIDFromString(LPCOLESTR lpsz, LPIID lpiid)
-    {
-        typedef HRESULT(WINAPI *IIDFromString_t)(LPCOLESTR, LPIID);
-        IIDFromString_t IIDFromString_f = (IIDFromString_t)m_IIDFromString;
-        return IIDFromString_f(lpsz, lpiid);
-    }
-
-    HRESULT CLSIDFromString(LPCOLESTR lpsz, LPCLSID pclsid)
-    {
-        typedef HRESULT(WINAPI *CLSIDFromString_t)(LPCOLESTR, LPCLSID);
-        CLSIDFromString_t CLSIDFromString_f = (CLSIDFromString_t)m_CLSIDFromString;
-        return CLSIDFromString_f(lpsz, pclsid);
-    }
-
 private:
     OLE32()
         : m_CoInitialize(Q_NULLPTR)
         , m_CoUninitialize(Q_NULLPTR)
         , m_CoCreateInstance(Q_NULLPTR)
-        , m_IIDFromString(Q_NULLPTR)
-        , m_CLSIDFromString(Q_NULLPTR)
     {
         HMODULE library = ::LoadLibraryA("ole32");
         if(!library)
@@ -106,8 +421,6 @@ private:
         m_CoInitialize = ::GetProcAddress(library, "CoInitialize");
         m_CoUninitialize = ::GetProcAddress(library, "CoUninitialize");
         m_CoCreateInstance = ::GetProcAddress(library, "CoCreateInstance");
-        m_IIDFromString = ::GetProcAddress(library, "IIDFromString");
-        m_CLSIDFromString = ::GetProcAddress(library, "CLSIDFromString");
     }
 
     ~OLE32()
@@ -115,15 +428,12 @@ private:
 
     bool isValid() const
     {
-        return m_CoInitialize && m_CoUninitialize && m_CoCreateInstance &&
-                m_IIDFromString && m_CLSIDFromString;
+        return m_CoInitialize && m_CoUninitialize && m_CoCreateInstance;
     }
 
     FARPROC m_CoInitialize;
     FARPROC m_CoUninitialize;
     FARPROC m_CoCreateInstance;
-    FARPROC m_IIDFromString;
-    FARPROC m_CLSIDFromString;
 };
 
 HRESULT CoInitialize_WRAP(LPVOID pvReserved)
@@ -153,56 +463,31 @@ HRESULT CoCreateInstance_WRAP(REFCLSID rclsid, LPUNKNOWN pUnkOuter, DWORD dwClsC
 }
 #define CoCreateInstance CoCreateInstance_WRAP
 
-HRESULT IIDFromString_WRAP(LPCOLESTR lpsz, LPIID lpiid)
-{
-    if(OLE32 *ole32 = OLE32::instance())
-        return ole32->IIDFromString(lpsz, lpiid);
-    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
-    return E_FAIL;
-}
-#define IIDFromString IIDFromString_WRAP
-
-HRESULT CLSIDFromString_WRAP(LPCOLESTR lpsz, LPCLSID pclsid)
-{
-    if(OLE32 *ole32 = OLE32::instance())
-        return ole32->CLSIDFromString(lpsz, pclsid);
-    LOG_WARNING() << LOGGING_CTX << "Failed to load ole32.dll";
-    return E_FAIL;
-}
-#define CLSIDFromString CLSIDFromString_WRAP
-
 // ====================================================================================================
 
-IID GetIID(LPCOLESTR lpsz)
-{
-    IID result;
-    memset(&result, 0, sizeof(IID));
-    HRESULT hr = IIDFromString(lpsz, &result);
-    if(!SUCCEEDED(hr))
-        LOG_WARNING() << LOGGING_CTX << "Can't get IID for" << QString::fromStdWString(lpsz);
-    return result;
-}
+#if defined (IID_IWICImagingFactory)
+#undef IID_IWICImagingFactory
+#endif
+#define IID_IWICImagingFactory IID_IWICImagingFactory_WRAP
+const IID IID_IWICImagingFactory = { 0xec5ec8a9, 0xc395, 0x4314, { 0x9c, 0x77, 0x54, 0xd7, 0xa9, 0x35, 0xff, 0x70 } };
 
-#define IID_IWICImagingFactory GetIID(L"{ec5ec8a9-c395-4314-9c77-54d7a935ff70}")
-#define IID_IWICBitmapCodecInfo GetIID(L"{E87A44C4-B76E-4c47-8B09-298EB12A2714}")
-
-CLSID GetCLSID(LPCOLESTR lpsz)
-{
-    CLSID result;
-    memset(&result, 0, sizeof(CLSID));
-    HRESULT hr = CLSIDFromString(lpsz, &result);
-    if(!SUCCEEDED(hr))
-        LOG_WARNING() << LOGGING_CTX << "Can't get CLSID for" << QString::fromStdWString(lpsz);
-    return result;
-}
+#if defined (IID_IWICBitmapCodecInfo)
+#undef IID_IWICBitmapCodecInfo
+#endif
+#define IID_IWICBitmapCodecInfo IID_IWICBitmapCodecInfo_WRAP
+const IID IID_IWICBitmapCodecInfo = { 0xe87a44c4, 0xb76e, 0x4c47, { 0x8b, 0x09, 0x29, 0x8e, 0xb1, 0x2a, 0x27, 0x14 } };
 
 #if defined (CLSID_WICImagingFactory)
 #undef CLSID_WICImagingFactory
 #endif
-#define CLSID_WICImagingFactory GetCLSID(L"{cacaf262-9370-4615-a13b-9f5539da4c0a}")
+#define CLSID_WICImagingFactory CLSID_WICImagingFactory_WRAP
+const CLSID CLSID_WICImagingFactory = { 0xcacaf262, 0x9370, 0x4615, { 0xa1, 0x3b, 0x9f, 0x55, 0x39, 0xda, 0x4c, 0x0a } };
 
-const GUID GUID_WICPixelFormat32bppBGRA_WRAP = { 0x6fddc324, 0x4e03, 0x4bfe, { 0xb1, 0x85, 0x3d, 0x77, 0x76, 0x8d, 0xc9, 0x0f} };
+#if defined (GUID_WICPixelFormat32bppBGRA)
+#undef GUID_WICPixelFormat32bppBGRA
+#endif
 #define GUID_WICPixelFormat32bppBGRA GUID_WICPixelFormat32bppBGRA_WRAP
+const GUID GUID_WICPixelFormat32bppBGRA = { 0x6fddc324, 0x4e03, 0x4bfe, { 0xb1, 0x85, 0x3d, 0x77, 0x76, 0x8d, 0xc9, 0x0f } };
 
 // ====================================================================================================
 
