@@ -336,7 +336,6 @@ disable_thirdparty {
     CONFIG *= disable_libwebp
     CONFIG *= disable_libwmf
     CONFIG *= disable_libyuv
-    CONFIG *= disable_nsimage
     CONFIG *= disable_openexr
     CONFIG *= disable_openjpeg
     CONFIG *= disable_openjph
@@ -345,7 +344,6 @@ disable_thirdparty {
     CONFIG *= disable_qtimageformats
     CONFIG *= disable_resvg
     CONFIG *= disable_stb
-    CONFIG *= disable_wic
     CONFIG *= disable_xzutils
     CONFIG *= disable_zlib
     CONFIG *= disable_zstd
