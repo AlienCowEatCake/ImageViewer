@@ -650,9 +650,6 @@ disable_cxx11 : !system_libde265 {
 # libheif options:
 #    disable_libheif
 #    system_libheif
-disable_libde265 : !system_libheif {
-    CONFIG *= disable_libheif
-}
 *msvc* : !system_libheif : lessThan(MSVC_VERSION, 2017) {
     CONFIG *= disable_libheif
 }
@@ -834,7 +831,5 @@ disable_libavif | system_libavif {
 }
 
 disable_openexr | system_openexr {
-    disable_libheif | system_libheif {
-        CONFIG *= disable_openjph
-    }
+    CONFIG *= disable_openjph
 }

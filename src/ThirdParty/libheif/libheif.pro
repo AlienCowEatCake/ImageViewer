@@ -28,13 +28,13 @@ include(../OpenH264/OpenH264.pri)
 INCLUDEPATH = $${THIRDPARTY_LIBHEIF_PATH} $${THIRDPARTY_LIBHEIF_PATH}/libheif $${THIRDPARTY_LIBHEIF_PATH}/libheif/api $${THIRDPARTY_LIBHEIF_INCLUDE_PATH} $${INCLUDEPATH}
 
 DEFINES += LIBHEIF_STATIC_BUILD
-DEFINES += HAVE_INTTYPES_H HAVE_LIBDE265=1 WITH_UNCOMPRESSED_CODEC=1 HAVE_STDDEF_H
+DEFINES += HAVE_INTTYPES_H WITH_UNCOMPRESSED_CODEC=1 HAVE_STDDEF_H
 !*msvc*: DEFINES += HAVE_UNISTD_H
 !disable_zlib: DEFINES += HAVE_ZLIB=1
 !disable_brotli: DEFINES += HAVE_BROTLI=1
 !disable_libwebp: DEFINES += HAVE_LIBSHARPYUV=1
 
-# find ./libheif -name '*.cc' | egrep -v '(_fuzzer|_aom|_dav1d|_rav1e|_svt|_x265|_ffmpeg|_jpeg|_openjpeg|_kvazaar|_unix|_windows|_vvdec|_vvenc|_uvg266|_openjph|_openh264|_webcodecs|_x264)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
+# find ./libheif -name '*.cc' | egrep -v '(_fuzzer|_libde265|_aom|_dav1d|_rav1e|_svt|_x265|_ffmpeg|_jpeg|_openjpeg|_kvazaar|_unix|_windows|_vvdec|_vvenc|_uvg266|_openjph|_openh264|_webcodecs|_x264)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_aux_images.cc \
@@ -127,7 +127,6 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/nclx.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/pixelimage.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugin_registry.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_libde265.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_uncompressed.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_mask.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_uncompressed.cc \
@@ -150,6 +149,14 @@ SOURCES += \
 #    SOURCES += \
 #        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins_unix.cc
 #}
+
+# find ./libheif -name '*.cc' | egrep '(_libde265)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
+!disable_libde265 {
+    SOURCES += \
+        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_libde265.cc \
+
+    DEFINES += HAVE_LIBDE265=1
+}
 
 # find ./libheif -name '*.cc' | egrep '(_aom)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
 !disable_aom {
