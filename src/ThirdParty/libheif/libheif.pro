@@ -23,6 +23,7 @@ include(../zlib/zlib.pri)
 include(../brotli/brotli.pri)
 include(../LibWebP/LibWebP.pri)
 include(../OpenJPH/OpenJPH.pri)
+include(../OpenH264/OpenH264.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LIBHEIF_PATH} $${THIRDPARTY_LIBHEIF_PATH}/libheif $${THIRDPARTY_LIBHEIF_PATH}/libheif/api $${THIRDPARTY_LIBHEIF_INCLUDE_PATH} $${INCLUDEPATH}
 
@@ -183,6 +184,14 @@ SOURCES += \
         $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_openjph.cc \
 
     DEFINES += HAVE_OPENJPH_ENCODER=1
+}
+
+# find ./libheif -name '*.cc' | egrep '(_openh264)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
+!disable_openh264 {
+    SOURCES += \
+        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_openh264.cc \
+
+    DEFINES += HAVE_OpenH264_DECODER=1
 }
 
 # find ./libheif -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'

@@ -147,6 +147,8 @@ See the [buildscripts/](buildscripts/) directory.
   Please note that resvg has unstable API and ABI, so safe upgrade for resvg isn't possible without application rebuild.
 * aom options: `disable_aom`, `system_aom` *(bundled package by default)*  
   This is a transitive dependency. It isn't required if system libraries are used.
+* OpenH264 options: `disable_openh264`, `system_openh264` *(bundled package by default)*  
+  This is a transitive dependency. It isn't required if system libraries are used.
 * libde265 options: `disable_libde265`, `system_libde265` *(bundled package by default)*  
   This is a transitive dependency. It isn't required if system libraries are used.
 * libheif options: `disable_libheif`, `system_libheif` *(bundled package by default)*  

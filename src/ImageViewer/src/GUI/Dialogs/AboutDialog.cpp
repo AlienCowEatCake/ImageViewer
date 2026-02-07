@@ -169,6 +169,9 @@ extern "C" {
 #if defined (HAS_AOM)
 #include <aom/aom.h>
 #endif
+#if defined (HAS_OPENH264)
+#include <wels/codec_ver.h>
+#endif
 #if defined (HAS_LIBDE256)
 #include <libde265/de265.h>
 #endif
@@ -748,6 +751,23 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://aomedia.googlesource.com/aom/"),
                       QString::fromLatin1("2-Clause BSD License"),
                       QString::fromLatin1("https://aomedia.googlesource.com/aom/+/refs/heads/main/LICENSE")
+                      ));
+#endif
+
+#if defined (HAS_OPENH264)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the OpenH264 Video Codec library"),
+                      QString::fromLatin1("OpenH264"),
+#if defined (OPENH264_MAJOR) && defined (OPENH264_MINOR) && defined (OPENH264_REVISION) && defined (OPENH264_RESERVED)
+                      QString::fromLatin1("%1.%2.%3.%4").arg(OPENH264_MAJOR).arg(OPENH264_MINOR).arg(OPENH264_REVISION).arg(OPENH264_RESERVED),
+#elif defined (OPENH264_MAJOR) && defined (OPENH264_MINOR) && defined (OPENH264_REVISION)
+                      QString::fromLatin1("%1.%2.%3").arg(OPENH264_MAJOR).arg(OPENH264_MINOR).arg(OPENH264_REVISION),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("https://www.openh264.org/"),
+                      QString::fromLatin1("2-Clause BSD License"),
+                      QString::fromLatin1("https://github.com/cisco/openh264/blob/master/LICENSE")
                       ));
 #endif
 

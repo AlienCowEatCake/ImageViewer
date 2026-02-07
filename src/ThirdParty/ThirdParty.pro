@@ -108,6 +108,10 @@ SUBDIRS =
     SUBDIRS += aom/aom.pro
 }
 
+!disable_openh264 : !system_openh264 {
+    SUBDIRS += OpenH264/OpenH264.pro
+}
+
 !disable_libde265 : !system_libde265 {
     SUBDIRS += libde265/libde265.pro
 }

@@ -99,6 +99,7 @@ include(libexpat/libexpat.pri)
 #  * libjpeg
 #  * OpenJPEG
 #  * OpenJPH
+#  * OpenH264
 #  * libde265
 #  * zlib
 #  * brotli
@@ -134,4 +135,5 @@ include(zlib/zlib.pri)
 include(Zstandard/Zstandard.pri)
 include(brotli/brotli.pri)
 include(highway/highway.pri)
+include(OpenH264/OpenH264.pri)
 include(libde265/libde265.pri)
