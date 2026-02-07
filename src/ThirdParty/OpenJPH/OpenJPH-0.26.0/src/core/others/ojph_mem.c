@@ -62,7 +62,7 @@
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef OJPH_OS_WINDOWS
+#if (defined OJPH_OS_WINDOWS) && (defined _MSC_VER)
   OJPH_EXPORT void* ojph_aligned_malloc(size_t alignment, size_t size)
   {
     assert(alignment != 0 && (alignment & (alignment - 1)) == 0);

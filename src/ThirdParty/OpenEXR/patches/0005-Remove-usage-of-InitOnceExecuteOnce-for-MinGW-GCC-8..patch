@@ -1,7 +1,7 @@
-From ee63eac9d00c616333c949e7f9856bc9b07e3aeb Mon Sep 17 00:00:00 2001
+From 40dec68662440e97cbee42d22519dbad66b91a41 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 2 Feb 2026 02:06:45 +0700
-Subject: [PATCH 5/5] Remove usage of InitOnceExecuteOnce for Windows XP
+Subject: [PATCH 5/5] Remove usage of InitOnceExecuteOnce for MinGW GCC 8.1.0
  compatibility
 
 ---
@@ -46,5 +46,5 @@ index 6c3c1032..0fe76e71 100644
  #    else
  #        include <pthread.h>
 -- 
-2.52.0
+2.47.3
 

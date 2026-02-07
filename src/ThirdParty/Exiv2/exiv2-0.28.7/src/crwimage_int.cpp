@@ -750,7 +750,12 @@ void CrwMap::decode0x180e(const CiffComponent& ciffComponent, const CrwMapping* 
   time_t t = v.value_.at(0);
   tm r;
 #ifdef _WIN32
+#ifdef _MSC_VER
   auto tm = localtime_s(&r, &t) ? nullptr : &r;
+#else
+  (void)r;
+  auto tm = std::localtime(&t);
+#endif
 #else
   auto tm = localtime_r(&t, &r);
 #endif

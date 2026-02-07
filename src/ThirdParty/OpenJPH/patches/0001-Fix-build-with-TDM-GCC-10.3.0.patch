@@ -1,0 +1,25 @@
+From 11392958a0260039d975e97123b680618da7a340 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sat, 7 Feb 2026 20:52:18 +0700
+Subject: [PATCH] Fix build with TDM-GCC 10.3.0
+
+---
+ src/core/others/ojph_mem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/others/ojph_mem.c b/src/core/others/ojph_mem.c
+index f88dc11..fbcdb26 100644
+--- a/src/core/others/ojph_mem.c
++++ b/src/core/others/ojph_mem.c
+@@ -62,7 +62,7 @@
+ #endif
+ 
+ ////////////////////////////////////////////////////////////////////////////////
+-#ifdef OJPH_OS_WINDOWS
++#if (defined OJPH_OS_WINDOWS) && (defined _MSC_VER)
+   OJPH_EXPORT void* ojph_aligned_malloc(size_t alignment, size_t size)
+   {
+     assert(alignment != 0 && (alignment & (alignment - 1)) == 0);
+-- 
+2.47.3
+
