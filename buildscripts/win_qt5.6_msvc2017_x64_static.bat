@@ -1,12 +1,12 @@
 @echo off
 set PROJECT=ImageViewer
-set ARCH=x86
-set VCVARS_ARCH=x64_x86
+set ARCH=x64
+set VCVARS_ARCH=x64
 call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2017
 set VCVARS="%VS2017_VCVARSALL%"
-if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\5.6.3\msvc2017_static
-set BUILDDIR=build_win_qt5.6_msvc2017_%ARCH%
-set SUFFIX=_qt5.6_msvc2017_%ARCH%
+if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\5.6.3\msvc2017_64_static
+set BUILDDIR=build_win_qt5.6_msvc2017_%ARCH%_static
+set SUFFIX=_qt5.6_msvc2017_%ARCH%_static
 set APP_PATH=src\%PROJECT%
 set NMAKE_CMD="%~dp0\..\buildscripts\helpers\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"

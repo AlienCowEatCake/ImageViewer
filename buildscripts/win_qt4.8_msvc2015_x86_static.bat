@@ -4,8 +4,8 @@ set ARCH=x86
 call "%~dp0\..\buildscripts\helpers\find_vcvarsall.bat" 2015
 set VCVARS="%VS2015_VCVARSALL%"
 if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\4.8.7\msvc2015_static
-set BUILDDIR=build_win_qt4.8_msvc2015_%ARCH%
-set SUFFIX=_qt4.8_msvc2015_%ARCH%
+set BUILDDIR=build_win_qt4.8_msvc2015_%ARCH%_static
+set SUFFIX=_qt4.8_msvc2015_%ARCH%_static
 set APP_PATH=src\%PROJECT%
 set NMAKE_CMD="%~dp0\..\buildscripts\helpers\jom.exe" /J %NUMBER_OF_PROCESSORS%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"

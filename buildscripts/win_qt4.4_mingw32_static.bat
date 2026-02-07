@@ -2,8 +2,8 @@
 set PROJECT=ImageViewer
 if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\4.4.3\mingw342_32_static
 if "x%MINGW_PATH%x" == "xx" set MINGW_PATH=C:\Qt\Tools\mingw342_32
-set BUILDDIR=build_win_qt4.4_mingw342
-set SUFFIX=_qt4.4_mingw32
+set BUILDDIR=build_win_qt4.4_mingw342_static
+set SUFFIX=_qt4.4_mingw32_static
 set APP_PATH=src\%PROJECT%
 set ZIP_CMD="%~dp0\..\buildscripts\helpers\zip.exe"
 for /F "tokens=1,2*" %%i in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v "PROCESSOR_ARCHITECTURE"') DO (
