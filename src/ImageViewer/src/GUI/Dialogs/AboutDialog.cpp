@@ -175,6 +175,9 @@ extern "C" {
 #if defined (HAS_LIBDE256)
 #include <libde265/de265.h>
 #endif
+#if defined (HAS_VVDEC)
+#include <vvdec/version.h>
+#endif
 #if defined (HAS_LIBYUV)
 #include <libyuv.h>
 #endif
@@ -779,6 +782,23 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://www.libde265.org/"),
                       QString::fromLatin1("GNU LGPL v3"),
                       QString::fromLatin1("https://github.com/strukturag/libde265/blob/master/COPYING")
+                      ));
+#endif
+
+#if defined (HAS_VVDEC)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the Fraunhofer Versatile Video Decoder library"),
+                      QString::fromLatin1("VVdeC"),
+#if defined (VVDEC_VERSION)
+                      QString::fromLatin1(VVDEC_VERSION),
+#elif defined (VVDEC_VERSION_MAJOR) && defined (VVDEC_VERSION_MINOR) && defined (VVDEC_VERSION_PATCH)
+                      QString::fromLatin1("%1.%2.%3").arg(VVDEC_VERSION_MAJOR).arg(VVDEC_VERSION_MINOR).arg(VVDEC_VERSION_PATCH),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("https://github.com/fraunhoferhhi/vvdec"),
+                      QString::fromLatin1("3-Clause Clear BSD License"),
+                      QString::fromLatin1("https://github.com/fraunhoferhhi/vvdec/blob/master/LICENSE.txt")
                       ));
 #endif
 

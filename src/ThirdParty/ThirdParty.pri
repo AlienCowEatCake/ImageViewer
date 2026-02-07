@@ -101,6 +101,7 @@ include(libexpat/libexpat.pri)
 #  * OpenJPH
 #  * OpenH264
 #  * libde265
+#  * VVdeC
 #  * zlib
 #  * brotli
 #  * LibWebP
@@ -137,3 +138,4 @@ include(brotli/brotli.pri)
 include(highway/highway.pri)
 include(OpenH264/OpenH264.pri)
 include(libde265/libde265.pri)
+include(VVdeC/VVdeC.pri)

@@ -1,0 +1,454 @@
+stages:
+  - build
+
+variables:
+  FULL_BUILD:
+    value: "0"
+    description: "Enable full build with various cpompilers."
+  REBUILD_DOCKER_IMAGE:
+    value: "0"
+    description: "rebuild and publish docker image with latest emscripten"
+  EMSDK_VERSION:
+    value: "3.1.26"
+    description: "EMSDK version used for WASM build (either version number or latest)"
+  ENABLE_LTO:
+    value: 0
+    description: "enable link-time optimization (OFF by default in CI to improve caching)"
+  CCACHE_DIR: "${CI_PROJECT_DIR}/ext/ccache"
+  CCACHE_MAXSIZE: 500M
+
+.base_template:
+  stage: build
+  interruptible: true
+  after_script: [ccache -s]
+  cache:
+    - paths:
+        - ext/bitstreams
+      key:
+        files:
+          - cmake/modules/define_bitstream_files.cmake
+      when: always
+    - paths:
+        - ext/ccache
+      key: $CI_JOB_NAME
+      when: always
+  tags:
+    - docker
+
+.build_only_template:
+  extends: .base_template
+  script:
+    - make enable-lto=${ENABLE_LTO} all
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PROJECT_PATH == "git/vvdec" && $CI_COMMIT_BRANCH == "master"'
+
+.build_only_template_full:
+  extends: .build_only_template
+  rules:
+    - if: '$FULL_BUILD == "1"'
+    - if: '$CI_PROJECT_PATH == "git/vvdec" && $CI_COMMIT_BRANCH == "master"'
+
+.build_test_template:
+  extends: .base_template
+  variables:
+    CTEST_OUTPUT_ON_FAILURE: 1
+    CTEST_PARALLEL_LEVEL: 2
+  script:
+    - make enable-bitstream-download=1 enable-local-bitstream-download=1 enable-lto=${ENABLE_LTO} all
+    - make test
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PROJECT_PATH == "git/vvdec" && $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_PROJECT_PATH == "git/vvdec" && $CI_COMMIT_BRANCH == "develop"'
+      when: delayed
+      start_in: 1 hour
+
+.build_test_template_full:
+  extends: .build_test_template
+  rules:
+    - if: '$FULL_BUILD == "1"'
+    - if: '$CI_PROJECT_PATH == "git/vvdec" && $CI_COMMIT_BRANCH == "master"'
+
+
+.build_test_macos_template:
+  extends: .build_test_template
+  script:
+    - make osx-arch=${OSX_ARCH} enable-bitstream-download=1 enable-local-bitstream-download=1 enable-lto=${ENABLE_LTO} all
+    - make osx-arch=${OSX_ARCH} test
+
+.build_test_msvc_template:
+  extends: .build_test_template
+  script:
+    - make msvc-arch=${MSVC_ARCH} enable-bitstream-download=1 enable-local-bitstream-download=1 enable-lto=${ENABLE_LTO} all
+    - make msvc-arch=${MSVC_ARCH} test
+
+.build_android_template:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/git/vvdec/android_sdk_ndk:latest
+  needs:
+    - job: rebuild_android_ndk_docker_image
+      optional: true
+  script:
+    - mkdir -p build/android
+    - cmake -B build/android -G Ninja
+            --toolchain=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake
+            -DANDROID_TOOLCHAIN_NAME=${ANDROID_NDK_TRIPLE}-clang
+            -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+            -DBUILD_SHARED_LIBS=1
+            -DCMAKE_BUILD_TYPE=Release
+    - ninja -C build/android
+  variables:
+    ANDROID_PLATFORM: 29
+    ANDROID_NDK_TRIPLE: "# e.g., arm-linux-androideabi or aarch64-linux-android"
+
+
+build_gcc5_ubuntu1804:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_1804_full:latest
+  variables:
+    CC: gcc-5
+    CXX: g++-5
+
+build_gcc6_ubuntu1804:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_1804_full:latest
+  variables:
+    CC: gcc-6
+    CXX: g++-6
+
+build_gcc7_ubuntu2004:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2004_full:latest
+  variables:
+    CC: gcc-7
+    CXX: g++-7
+
+build_gcc8_ubuntu2004:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2004_full:latest
+  variables:
+    CC: gcc-8
+    CXX: g++-8
+
+build_gcc9_ubuntu2204:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2204_full:latest
+  variables:
+    CC: gcc-9
+    CXX: g++-9
+
+build_gcc10_ubuntu2204:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2204_full:latest
+  variables:
+    CC: gcc-10
+    CXX: g++-10
+
+build_gcc11_ubuntu2204:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2204_full:latest
+  variables:
+    CC: gcc-11
+    CXX: g++-11
+
+build_gcc12_ubuntu2204:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2204_full:latest
+  variables:
+    CC: gcc-12
+    CXX: g++-12
+
+build_gcc13_ubuntu2404:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2404_full:latest
+  variables:
+    CC: gcc-13
+    CXX: g++-13
+
+build_gcc14_ubuntu2404:
+  extends: .build_only_template
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2404_full:latest
+  variables:
+    CC: gcc-14
+    CXX: g++-14
+
+build_clang7_ubuntu2004:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2004_full:latest
+  variables:
+    CC: clang-7
+    CXX: clang++-7
+
+build_clang8_ubuntu2004:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2004_full:latest
+  variables:
+    CC: clang-8
+    CXX: clang++-8
+
+build_clang9_ubuntu2004:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2004_full:latest
+  variables:
+    CC: clang-9
+    CXX: clang++-9
+
+build_clang10_ubuntu2004:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2004_full:latest
+  variables:
+    CC: clang-10
+    CXX: clang++-10
+
+build_clang11_ubuntu2204:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2204_full:latest
+  variables:
+    CC: clang-11
+    CXX: clang++-11
+
+build_clang12_ubuntu2204:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2204_full:latest
+  variables:
+    CC: clang-12
+    CXX: clang++-12
+
+build_clang13_ubuntu2204:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2204_full:latest
+  variables:
+    CC: clang-13
+    CXX: clang++-13
+
+build_clang14_ubuntu2204:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2204_full:latest
+  variables:
+    CC: clang-14
+    CXX: clang++-14
+
+build_clang15_ubuntu2204:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2204_full:latest
+  variables:
+    CC: clang-15
+    CXX: clang++-15
+
+build_clang16_ubuntu2404:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2404_full:latest
+  variables:
+    CC: clang-16
+    CXX: clang++-16
+
+build_clang17_ubuntu2404:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2404_full:latest
+  variables:
+    CC: clang-17
+    CXX: clang++-17
+
+build_clang18_ubuntu2404:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2404_full:latest
+  variables:
+    CC: clang-18
+    CXX: clang++-18
+
+build_clang19_ubuntu2404:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2404_full:latest
+  variables:
+    CC: clang-19
+    CXX: clang++-19
+
+build_clang20_ubuntu2404:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2404_full:latest
+  variables:
+    CC: clang-20
+    CXX: clang++-20
+
+build_mingw_ubuntu2404:
+  extends: .build_only_template_full
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2404_full:latest
+  variables:
+    toolchainfile: cmake/toolchains/x86_64-w64-mingw32-gcc-posix-ubuntu.cmake
+
+build_aarch64_gcc_ubuntu2404:
+  extends: .build_only_template
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2404_full:latest
+  variables:
+    toolchainfile: cmake/toolchains/aarch64-linux-gnu-gcc-ubuntu.cmake
+
+build_armv7_gcc_ubuntu2404:
+  extends: .build_only_template
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2404_full:latest
+  variables:
+    toolchainfile: cmake/toolchains/arm-linux-gnueabihf-gcc-ubuntu.cmake
+
+build_android:aarch64:
+  extends: .build_android_template
+  variables:
+    ANDROID_NDK_TRIPLE: aarch64-linux-android
+
+build_android:armv7:
+  extends: .build_android_template
+  variables:
+    ANDROID_NDK_TRIPLE: arm-linux-androideabi
+
+build_android:x86:
+  extends: .build_android_template
+  variables:
+    ANDROID_NDK_TRIPLE: x86-linux-android
+
+build_android:x86_64:
+  extends: .build_android_template
+  variables:
+    ANDROID_NDK_TRIPLE: x86_64-linux-android
+
+build_ios:
+  extends: .build_only_template_full
+  variables:
+    CONFIG_OPTIONS: -DCMAKE_SYSTEM_NAME=iOS
+    # build only libvvdec:
+    BUILD_TOOL_OPTIONS: "-t vvdec"
+  script:
+    # static build only:
+    - make enable-lto=${ENABLE_LTO} static
+  tags:
+    - macos-arm
+
+test_ubuntu2004:
+  extends: .build_test_template
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2004_dev:latest
+
+test_ubuntu2204:
+  extends: .build_test_template
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2204_dev:latest
+
+test_ubuntu2404:
+  extends: .build_test_template
+  image: $CI_REGISTRY/pub/dockerimages/ubuntu_2404_dev:latest
+
+test_vs2017:
+  extends: .build_test_msvc_template
+  variables:
+    MSVC_ARCH: x64
+    # use VS 2017 compilers:
+    CONFIG_OPTIONS: -T v141
+  tags:
+    - vs2022
+
+test_vs2019:
+  extends: .build_test_msvc_template
+  variables:
+    MSVC_ARCH: x64
+    # use VS 2019 compilers:
+    CONFIG_OPTIONS: -T v142
+  tags:
+    - vs2022
+
+test_vs2022:
+  extends: .build_test_msvc_template
+  variables:
+    MSVC_ARCH: x64
+  tags:
+    - vs2022
+
+test_vs2022_Win32:
+  extends: .build_test_msvc_template
+  variables:
+    MSVC_ARCH: Win32
+  tags:
+    - vs2022
+
+test_vs2022_arm64:
+  extends: .build_test_msvc_template
+  variables:
+    MSVC_ARCH: arm64
+  tags:
+    - vs2022-arm
+
+test_macos_arm64:
+  extends: .build_test_macos_template
+  variables:
+    OSX_ARCH: arm64
+  tags:
+    - macos-arm
+
+test_macos_x86_64:
+  extends: .build_test_macos_template
+  variables:
+    OSX_ARCH: x86_64
+  tags:
+    - macos-x86_64
+
+
+.rebuild_docker_image_template:
+  extends: .build_only_template
+  script:
+    - echo -n $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - mkdir -p empty_context
+    - if [[ $REBUILD_DOCKER_IMAGE = 1 ]] ; then NO_CACHE_ARG=--no-cache=true ; fi
+    - docker pull $DOCKER_IMAGE_TAG || true
+    - docker build -t $DOCKER_IMAGE_TAG
+                   -f $DOCKERFILE
+                   --build-arg BUILDKIT_INLINE_CACHE=1
+                   --pull
+                   --cache-from $DOCKER_IMAGE_TAG
+                   --load
+                   $NO_CACHE_ARG
+                   $IMAGE_BUILD_ARGS
+                   empty_context
+    - docker push $DOCKER_IMAGE_TAG
+  variables:
+    DOCKERFILE: ""
+    DOCKER_IMAGE_TAG: ""
+    IMAGE_BUILD_ARGS: ""
+  tags:
+    - docker-build
+
+rebuild_selenium_docker_image:
+  extends: .rebuild_docker_image_template
+  variables:
+    DOCKERFILE: ".selenium.dockerfile"
+    DOCKER_IMAGE_TAG: "$CI_REGISTRY_IMAGE/selenium-debian:emsdk-$EMSDK_VERSION"
+    IMAGE_BUILD_ARGS: "--build-arg EMSDK_VER=$EMSDK_VERSION"
+  rules:
+    - if: '$CI_PROJECT_PATH == "git/vvdec" && $FULL_BUILD == "1"'
+
+rebuild_android_ndk_docker_image:
+  extends: .rebuild_docker_image_template
+  variables:
+    DOCKERFILE: ".android_sdk_ndk.dockerfile"
+    DOCKER_IMAGE_TAG: "$CI_REGISTRY_IMAGE/android_sdk_ndk:latest"
+    #IMAGE_BUILD_ARGS: "--build-arg v_ndk=r27c --build-arg v_ndk_n=27.2.12479018"
+  rules:
+    - if: '$CI_PROJECT_PATH == "git/vvdec" && $FULL_BUILD == "1"'
+
+test_wasm:
+  extends: .build_test_template_full
+  image: $CI_REGISTRY/git/vvdec/selenium-debian:emsdk-$EMSDK_VERSION
+  needs:
+    - job: rebuild_selenium_docker_image
+      optional: true
+  script:
+    - source /opt/emsdk/emsdk_env.sh
+    - emcc --version
+    - emcmake cmake -GNinja -B build/wasm -DVVDEC_ENABLE_X86_SIMD=TRUE -DVVDEC_ENABLE_BITSTREAM_DOWNLOAD=ON -DVVDEC_ENABLE_LOCAL_BITSTREAM_DOWNLOAD=ON
+    - cmake --build build/wasm
+    - cmake --build build/wasm -t install
+    - python3 tests/wasm/wasm_test-server.py &
+    - python3 tests/wasm/run_tests.py
+  artifacts:
+    name: "vvdec-wasm"
+    paths:
+      - install/
+

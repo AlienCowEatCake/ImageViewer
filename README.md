@@ -151,6 +151,8 @@ See the [buildscripts/](buildscripts/) directory.
   This is a transitive dependency. It isn't required if system libraries are used.
 * libde265 options: `disable_libde265`, `system_libde265` *(bundled package by default)*  
   This is a transitive dependency. It isn't required if system libraries are used.
+* VVdeC options: `disable_vvdec`, `system_vvdec` *(bundled package by default)*  
+  This is a transitive dependency. It isn't required if system libraries are used.
 * libheif options: `disable_libheif`, `system_libheif` *(bundled package by default)*  
   Libheif is used for reading HEIF and AVIF files.
 * OpenEXR options: `disable_openexr`, `system_openexr` *(bundled package by default)*  

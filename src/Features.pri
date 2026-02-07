@@ -322,6 +322,7 @@ disable_thirdparty {
     CONFIG *= disable_libbpg
     CONFIG *= disable_openh264
     CONFIG *= disable_libde265
+    CONFIG *= disable_vvdec
     CONFIG *= disable_libexif
     CONFIG *= disable_libexpat
     CONFIG *= disable_libheif
@@ -359,6 +360,7 @@ system_thirdparty : !disable_thirdparty {
     CONFIG *= disable_highway
     CONFIG *= disable_openh264
     CONFIG *= disable_libde265
+    CONFIG *= disable_vvdec
     CONFIG *= disable_libexpat
     CONFIG *= disable_libyuv
     CONFIG *= disable_openjph
@@ -647,6 +649,13 @@ disable_cxx11 : !system_libde265 {
     CONFIG *= disable_libde265
 }
 
+# VVdeC options:
+#    disable_vvdec
+#    system_vvdec
+disable_cxx14 : !system_vvdec {
+    CONFIG *= disable_vvdec
+}
+
 # libheif options:
 #    disable_libheif
 #    system_libheif
@@ -798,6 +807,7 @@ disable_libwmf | system_libwmf {
 system_libheif | disable_libheif {
     CONFIG *= disable_openh264
     CONFIG *= disable_libde265
+    CONFIG *= disable_vvdec
 }
 
 disable_exiv2 | system_exiv2 {

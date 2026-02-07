@@ -116,6 +116,10 @@ SUBDIRS =
     SUBDIRS += libde265/libde265.pro
 }
 
+!disable_vvdec : !system_vvdec {
+    SUBDIRS += VVdeC/VVdeC.pro
+}
+
 !disable_libheif : !system_libheif {
     SUBDIRS += libheif/libheif.pro
 }

@@ -24,6 +24,7 @@ include(../brotli/brotli.pri)
 include(../LibWebP/LibWebP.pri)
 include(../OpenJPH/OpenJPH.pri)
 include(../OpenH264/OpenH264.pri)
+include(../VVdeC/VVdeC.pri)
 
 INCLUDEPATH = $${THIRDPARTY_LIBHEIF_PATH} $${THIRDPARTY_LIBHEIF_PATH}/libheif $${THIRDPARTY_LIBHEIF_PATH}/libheif/api $${THIRDPARTY_LIBHEIF_INCLUDE_PATH} $${INCLUDEPATH}
 
@@ -199,6 +200,14 @@ SOURCES += \
         $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_openh264.cc \
 
     DEFINES += HAVE_OpenH264_DECODER=1
+}
+
+# find ./libheif -name '*.cc' | egrep '(_vvdec)' | LANG=C sort | sed 's|^\.|        $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
+!disable_vvdec {
+    SOURCES += \
+        $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_vvdec.cc \
+
+    DEFINES += HAVE_VVDEC=1
 }
 
 # find ./libheif -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBHEIF_PATH}| ; s|$| \\|'
