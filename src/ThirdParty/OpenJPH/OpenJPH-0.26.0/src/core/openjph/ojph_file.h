@@ -47,28 +47,15 @@
 namespace ojph {
 
   ////////////////////////////////////////////////////////////////////////////
-#ifdef OJPH_OS_WINDOWS
   int inline ojph_fseek(FILE* stream, si64 offset, int origin)
   {
-    return _fseeki64(stream, offset, origin);
+    return fseek(stream, static_cast<long>(offset), origin);
   }
 
   si64 inline ojph_ftell(FILE* stream)
   {
-    return _ftelli64(stream);
+    return static_cast<si64>(ftell(stream));
   }
-#else
-  int inline ojph_fseek(FILE* stream, si64 offset, int origin)
-  {
-    return fseeko(stream, offset, origin);
-  }
-
-  si64 inline ojph_ftell(FILE* stream)
-  {
-    return ftello(stream);
-  }
-#endif
-
 
   ////////////////////////////////////////////////////////////////////////////
   class OJPH_EXPORT outfile_base

@@ -1,0 +1,35 @@
+From 3b7d3feabd40acf50aac3e083a893628b768ee86 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Mon, 9 Feb 2026 02:16:34 +0700
+Subject: [PATCH] Fix build with MinGW GCC 3.4.2
+
+---
+ codec/common/src/crt_util_safe_x.cpp | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/codec/common/src/crt_util_safe_x.cpp b/codec/common/src/crt_util_safe_x.cpp
+index 9d54ea8e..f159873d 100644
+--- a/codec/common/src/crt_util_safe_x.cpp
++++ b/codec/common/src/crt_util_safe_x.cpp
+@@ -215,6 +215,10 @@ int32_t WelsFclose (WelsFileHandle*   pFp) {
+ }
+ 
+ int32_t WelsGetTimeOfDay (SWelsTime* pTp) {
++#if defined(_WIN32)
++  _ftime (pTp);
++  return 0;
++#else
+   struct timeval  sTv;
+ 
+   if (gettimeofday (&sTv, NULL)) {
+@@ -225,6 +229,7 @@ int32_t WelsGetTimeOfDay (SWelsTime* pTp) {
+   pTp->millitm = (uint16_t)sTv.tv_usec / 1000;
+ 
+   return 0;
++#endif
+ }
+ 
+ int32_t WelsStrftime (char* pBuffer, int32_t iSize, const char* kpFormat, const SWelsTime* kpTp) {
+-- 
+2.52.0
+

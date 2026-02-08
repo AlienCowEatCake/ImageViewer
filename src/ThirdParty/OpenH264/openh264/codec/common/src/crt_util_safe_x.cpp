@@ -215,6 +215,10 @@ int32_t WelsFclose (WelsFileHandle*   pFp) {
 }
 
 int32_t WelsGetTimeOfDay (SWelsTime* pTp) {
+#if defined(_WIN32)
+  _ftime (pTp);
+  return 0;
+#else
   struct timeval  sTv;
 
   if (gettimeofday (&sTv, NULL)) {
@@ -225,6 +229,7 @@ int32_t WelsGetTimeOfDay (SWelsTime* pTp) {
   pTp->millitm = (uint16_t)sTv.tv_usec / 1000;
 
   return 0;
+#endif
 }
 
 int32_t WelsStrftime (char* pBuffer, int32_t iSize, const char* kpFormat, const SWelsTime* kpTp) {

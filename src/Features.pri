@@ -655,6 +655,9 @@ disable_cxx11 : !system_libde265 {
 *msvc* : !system_vvdec : lessThan(MSVC_VERSION, 2017) {
     CONFIG *= disable_vvdec
 }
+*g++* : !*clang* : !system_vvdec : lessThan(GCC_VERSION_NUMERIC, 80100) { # FIXME: Find exact version
+    CONFIG *= disable_vvdec
+}
 disable_cxx14 : !system_vvdec {
     CONFIG *= disable_vvdec
 }
