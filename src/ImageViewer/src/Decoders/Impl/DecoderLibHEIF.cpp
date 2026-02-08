@@ -19,6 +19,7 @@
 
 #include <QtGlobal>
 
+#include <algorithm>
 #include <cstring>
 
 #include <libheif/heif.h>
@@ -32,6 +33,7 @@
 #include <QImage>
 #include <QFile>
 #include <QByteArray>
+#include <QPixmap>
 
 #include "Utils/Global.h"
 #include "Utils/Logging.h"
@@ -43,9 +45,8 @@
 #include "Internal/ImageData.h"
 #include "Internal/ImageMetaData.h"
 #include "Internal/PayloadWithMetaData.h"
-#include "Internal/Animation/AbstractAnimationProvider.h"
 #include "Internal/Animation/DelayCalculator.h"
-#include "Internal/Animation/FramesCompositor.h"
+#include "Internal/Animation/IAnimationProvider.h"
 #include "Internal/Utils/MappedBuffer.h"
 
 #if defined (LIBHEIF_NUMERIC_VERSION) && (LIBHEIF_NUMERIC_VERSION >= 0x01030000)
@@ -118,8 +119,7 @@ public:
 
     ~SP()
     {
-        if(m_dataRef && m_deleter)
-            m_deleter(m_dataRef);
+        reset();
     }
 
     inline operator bool() const    { return !!m_dataRef; }
@@ -127,48 +127,136 @@ public:
     inline T ** operator & ()       { return &m_dataRef; }
     inline T * operator -> () const { return m_dataRef; }
 
+    void swap(SP<T> &other)
+    {
+        std::swap(m_dataRef, other.m_dataRef);
+        std::swap(m_deleter, other.m_deleter);
+    }
+
+    void reset()
+    {
+        if(m_dataRef && m_deleter)
+            m_deleter(m_dataRef);
+        m_dataRef = Q_NULLPTR;
+        m_deleter = Q_NULLPTR;
+    }
+
+    void reset(T *dataRef, void (*deleter)(T*))
+    {
+        reset();
+        m_dataRef = dataRef;
+        m_deleter = deleter;
+    }
+
+    void reset(T *dataRef, void (*deleter)(const T*))
+    {
+        reset(dataRef, (void (*)(T*))deleter);
+    }
+
 private:
     T *m_dataRef;
     void (*m_deleter)(T*);
 };
 
-class HeifAnimationProvider : public AbstractAnimationProvider
+class HeifAnimationProvider : public IAnimationProvider
 {
     Q_DISABLE_COPY(HeifAnimationProvider)
 
 public:
     HeifAnimationProvider()
-    {}
+        : m_nextImageDelay(-1)
+#if defined (USE_LIBHEIF_SEQUENCES)
+        , m_timescale(0)
+#endif
+    {
+    }
+
+    bool isValid() const Q_DECL_OVERRIDE
+    {
+        return !m_currentImage.isNull();
+    }
+
+    bool isSingleFrame() const Q_DECL_OVERRIDE
+    {
+#if defined (USE_LIBHEIF_SEQUENCES)
+        if(m_ctx && heif_context_has_sequence(m_ctx) && m_timescale && m_track)
+            return false;
+#endif
+        return true;
+    }
+
+    int nextImageDelay() const Q_DECL_OVERRIDE
+    {
+        return m_nextImageDelay;
+    }
+
+    bool jumpToNextImage() Q_DECL_OVERRIDE
+    {
+#if defined (USE_LIBHEIF_SEQUENCES)
+        if(isSingleFrame())
+            return false;
+
+        SP<heif_image> img(Q_NULLPTR, &heif_image_release);
+        heif_error error = heif_track_decode_next_image(m_track, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, m_options);
+        if(error.code == heif_error_End_of_sequence)
+        {
+            LOG_DEBUG() << LOGGING_CTX << "End_of_sequence reached";
+            return false;
+        }
+        if(error.code != heif_error_Ok)
+        {
+            LOG_WARNING() << LOGGING_CTX << "Can't decode next image:" << error.message;
+            return false;
+        }
+
+        QImage frame = convertImage(img);
+        if(frame.isNull())
+            return false;
+        m_currentImage = frame;
+        const uint32_t duration = heif_image_get_duration(img);
+        const int durationMs = static_cast<int>(static_cast<uint64_t>(duration) * static_cast<uint64_t>(1000) / static_cast<uint64_t>(m_timescale));
+        m_nextImageDelay = DelayCalculator::calculate(durationMs, DelayCalculator::MODE_CHROME);
+        return true;
+#else
+        return false;
+#endif
+    }
+
+    QPixmap currentPixmap() const Q_DECL_OVERRIDE
+    {
+        return QPixmap::fromImage(currentImage());
+    }
+
+    QImage currentImage() const Q_DECL_OVERRIDE
+    {
+        return m_currentImage;
+    }
 
     PayloadWithMetaData<bool> readHeifFile(const QString &filePath)
     {
 #if defined (USE_STREAM_READER_API)
-        QFile inFile(filePath);
-        if(!inFile.open(QIODevice::ReadOnly))
+        m_inFile.reset(new QFile(filePath));
+        if(!m_inFile->open(QIODevice::ReadOnly))
         {
             LOG_WARNING() << LOGGING_CTX << "Can't open" << filePath;
             return false;
         }
 
-        const HeifInitGuard heifInitGuard;
-        SP<heif_context> ctx(heif_context_alloc(), &heif_context_free);
-
-        heif_reader reader;
-        memset(&reader, 0, sizeof(heif_reader));
-        reader.reader_api_version = 1;
-        reader.get_position = &getPositionCallback;
-        reader.read = &readCallback;
-        reader.seek = &seekCallback;
-        reader.wait_for_file_size = &waitForFileSizeCallback;
-        heif_error error = heif_context_read_from_reader(ctx, &reader, &inFile, Q_NULLPTR);
+        m_ctx.reset(heif_context_alloc(), &heif_context_free);
+        memset(&m_reader, 0, sizeof(m_reader));
+        m_reader.reader_api_version = 1;
+        m_reader.get_position = &getPositionCallback;
+        m_reader.read = &readCallback;
+        m_reader.seek = &seekCallback;
+        m_reader.wait_for_file_size = &waitForFileSizeCallback;
+        heif_error error = heif_context_read_from_reader(m_ctx, &m_reader, m_inFile.data(), Q_NULLPTR);
 #else
-        const MappedBuffer inBuffer(filePath);
-        if(!inBuffer.isValid())
+        m_inBuffer.reset(new MappedBuffer(filePath));
+        if(!m_inBuffer->isValid())
             return false;
 
-        const HeifInitGuard heifInitGuard;
-        SP<heif_context> ctx(heif_context_alloc(), &heif_context_free);
-        heif_error error = heif_context_read_from_memory(ctx, inBuffer.dataAs<const void*>(), inBuffer.sizeAs<size_t>(), Q_NULLPTR);
+        m_ctx.reset(heif_context_alloc(), &heif_context_free);
+        heif_error error = heif_context_read_from_memory(m_ctx, m_inBuffer->dataAs<const void*>(), m_inBuffer->sizeAs<size_t>(), Q_NULLPTR);
 #endif
         if(error.code != heif_error_Ok)
         {
@@ -176,72 +264,44 @@ public:
             return false;
         }
 
-        SP<heif_decoding_options> options(heif_decoding_options_alloc(), &heif_decoding_options_free);
+        m_options.reset(heif_decoding_options_alloc(), &heif_decoding_options_free);
 #if defined (LIBHEIF_NUMERIC_VERSION) && (LIBHEIF_NUMERIC_VERSION >= 0x01070000)
-        if(options->version >= 2)
-            options->convert_hdr_to_8bit = 1;
+        if(m_options->version >= 2)
+            m_options->convert_hdr_to_8bit = 1;
 #endif
 
 #if defined (USE_LIBHEIF_SEQUENCES)
-        if(heif_context_has_sequence(ctx))
+        if(heif_context_has_sequence(m_ctx))
         {
-            const int tracksCount = heif_context_number_of_sequence_tracks(ctx);
+            const int tracksCount = heif_context_number_of_sequence_tracks(m_ctx);
             if(tracksCount > 0)
             {
                 QScopedArrayPointer<uint32_t> trackIds(new uint32_t[tracksCount]);
                 memset(trackIds.data(), 0, sizeof(uint32_t) * tracksCount);
-                heif_context_get_track_ids(ctx, trackIds.data());
+                heif_context_get_track_ids(m_ctx, trackIds.data());
                 for(int trackNum = 0; trackNum < tracksCount; ++trackNum)
                 {
-                    SP<heif_track> track(heif_context_get_track(ctx, trackIds[trackNum]), &heif_track_release);
+                    SP<heif_track> track(heif_context_get_track(m_ctx, trackIds[trackNum]), &heif_track_release);
                     if(!track)
                         continue;
-                    switch(heif_track_get_track_handler_type(track))
-                    {
-                    case heif_track_type_image_sequence:
-                    {
-                        if(m_frames.empty())
-                        {
-                            const uint32_t timescale = heif_track_get_timescale(track);
-                            uint16_t width = 0, height = 0;
-                            error = heif_track_get_image_resolution(track, &width, &height);
-                            if(error.code != heif_error_Ok)
-                                continue;
-                            FramesCompositor compositor;
-                            compositor.startComposition(QSize(width, height));
-                            while(true)
-                            {
-                                SP<heif_image> img(Q_NULLPTR, &heif_image_release);
-                                error = heif_track_decode_next_image(track, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, options);
-                                if(error.code != heif_error_Ok)
-                                    break;
-                                QImage frame = convertImage(img);
-                                if(frame.isNull())
-                                    break;
-                                const uint32_t duration = heif_image_get_duration(img);
-                                const int durationMs = static_cast<int>(static_cast<uint64_t>(duration) * static_cast<uint64_t>(1000) / static_cast<uint64_t>(timescale));
-                                m_frames.push_back(Frame(frame, DelayCalculator::calculate(durationMs, DelayCalculator::MODE_CHROME)));
-                            }
-                            if(error.code != heif_error_End_of_sequence)
-                            {
-                                LOG_WARNING() << LOGGING_CTX << "Can't decode sequence:" << error.message;
-                                m_frames.clear();
-                            }
-                        }
+                    if(heif_track_get_track_handler_type(track) != heif_track_type_image_sequence)
+                        continue;
+                    m_timescale = heif_track_get_timescale(track);
+                    m_track.swap(track);
+                    if(jumpToNextImage())
                         break;
-                    }
-                    default:
-                        break;
-                    }
+                    m_timescale = 0;
+                    m_track.reset();
+                    continue;
                 }
             }
         }
-#endif
 
-        if(m_frames.empty())
+        if(m_currentImage.isNull())
+#endif
         {
             SP<heif_image_handle> handle(Q_NULLPTR, &heif_image_handle_release);
-            error = heif_context_get_primary_image_handle(ctx, &handle);
+            error = heif_context_get_primary_image_handle(m_ctx, &handle);
             if(error.code != heif_error_Ok)
             {
                 LOG_WARNING() << LOGGING_CTX << "Can't get primary image handle:" << error.message;
@@ -249,30 +309,27 @@ public:
             }
 
             SP<heif_image> img(Q_NULLPTR, &heif_image_release);
-            error = heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, options);
+            error = heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, m_options);
             if(error.code != heif_error_Ok)
             {
                 LOG_WARNING() << LOGGING_CTX << "Can't decode image:" << error.message;
                 return false;
             }
 
-            QImage result = convertImage(img);
-            if(result.isNull())
-            {
+            m_currentImage = convertImage(img);
+            if(m_currentImage.isNull())
                 return false;
-            }
-            m_frames.append(result);
         }
 
 #if defined (USE_STREAM_READER_API)
         ImageMetaData *metaData = ImageMetaData::createMetaData(filePath);
 #else
-        ImageMetaData *metaData = ImageMetaData::createMetaData(inBuffer.dataAsByteArray());
+        ImageMetaData *metaData = ImageMetaData::createMetaData(m_inBuffer->dataAsByteArray());
 #endif
         if(!metaData)
         {
             SP<heif_image_handle> handle(Q_NULLPTR, &heif_image_handle_release);
-            error = heif_context_get_primary_image_handle(ctx, &handle);
+            error = heif_context_get_primary_image_handle(m_ctx, &handle);
             if(error.code != heif_error_Ok)
             {
                 LOG_WARNING() << LOGGING_CTX << "Can't get primary image handle:" << error.message;
@@ -318,8 +375,6 @@ public:
             }
         }
 
-        m_error = m_frames.empty();
-        m_numFrames = m_frames.size();
         return PayloadWithMetaData<bool>(true, metaData);
     }
 
@@ -360,6 +415,25 @@ private:
 
         return result;
     }
+
+private:
+    QImage m_currentImage;
+    int m_nextImageDelay;
+
+#if defined (USE_STREAM_READER_API)
+    QScopedPointer<QFile> m_inFile;
+    heif_reader m_reader;
+#else
+    QScopedPointer<MappedBuffer> m_inBuffer;
+#endif
+
+    HeifInitGuard m_initGuard;
+    SP<heif_context> m_ctx;
+    SP<heif_decoding_options> m_options;
+#if defined (USE_LIBHEIF_SEQUENCES)
+    uint32_t m_timescale;
+    SP<heif_track> m_track;
+#endif
 };
 
 class DecoderLibHEIF : public IDecoder
