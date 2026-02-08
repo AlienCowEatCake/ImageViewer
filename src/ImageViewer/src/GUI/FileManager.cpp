@@ -24,6 +24,7 @@
 #include <cassert>
 #include <limits>
 
+#include <QApplication>
 #include <QDir>
 #include <QDirIterator>
 #include <QFileInfo>
@@ -133,6 +134,7 @@ void FilesScanner::reset()
         const QStringList files = m_watcher->files();
         if(!files.isEmpty())
             m_watcher->removePaths(files);
+        m_watcher->moveToThread(this);
         QAtomicInt_storeRelease(m_watcherConfigured, 0);
     }
     m_watcherMutex.unlock();
@@ -172,6 +174,7 @@ void FilesScanner::run()
             timer.start();
 #endif
             m_watcher->addPath(m_directoryPath);
+            m_watcher->moveToThread(qApp->thread());
             QAtomicInt_storeRelease(m_watcherConfigured, 1);
 #if !defined (QT_NO_DEBUG_OUTPUT)
             LOG_DEBUG() << LOGGING_CTX << "Watcher configured, elapsed time =" << static_cast<qint64>(timer.elapsed()) << "ms";
@@ -215,6 +218,7 @@ void FilesScanner::run()
                 CHECK_INTERRUPTION;
                 m_watcher->addPath(*it);
             }
+            m_watcher->moveToThread(qApp->thread());
             QAtomicInt_storeRelease(m_watcherConfigured, 1);
 #if !defined (QT_NO_DEBUG_OUTPUT)
             LOG_DEBUG() << LOGGING_CTX << "Watcher configured, elapsed time =" << static_cast<qint64>(timer.elapsed()) << "ms";
