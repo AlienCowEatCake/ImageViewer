@@ -155,6 +155,25 @@ Test image which was created during the development of this project
 
 --------------------------------------------------------------------------------
 
+::: HEIF test images :::
+
+Test Lena images (converted to heif via heif-enc v1.21.2)
+ * lena/avc.heif
+ * lena/avif.heif
+ * lena/hevc.heif
+ * lena/htj2k.heif
+ * lena/jpeg2000.heif
+ * lena/jpeg.heif
+ * lena/uncompressed.heif
+ * lena/vvc.heif
+
+Test images which was created during the development of this project
+ * seq/seq_rep_1.heif
+ * seq/seq_rep_3.heif
+ * seq/seq_rep_inf.heif
+
+--------------------------------------------------------------------------------
+
 ::: JNG test images :::
 
 Images from http://libmng.com/JNGsuite/
@@ -954,6 +973,7 @@ TIFF: https://www.itu.int/itudoc/itu-t/com16/tiff-fx/t-cases/index.html
 Many: https://github.com/python-pillow/Pillow/tree/10.4.0/Tests/images
       https://github.com/openpreserve/format-corpus
 HEIF: https://github.com/nokiatech/heif/tree/gh-pages/content
+      https://github.com/MPEGGroup/FileFormatConformance/tree/main/data/file_features/published/heif
 
 --------------------------------------------------------------------------------
 
