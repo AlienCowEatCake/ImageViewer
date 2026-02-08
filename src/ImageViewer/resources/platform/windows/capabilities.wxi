@@ -256,6 +256,13 @@
       Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
+      Name=".vvic"
+      Value="$(var.ProductNameSafe).vvic"
+      Id="reg_cap_assoc_vvic" />
+    <RegistryValue
+      Root="HKMU"
+      Type="string"
+      Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".lerc1"
       Value="$(var.ProductNameSafe).lerc1"
       Id="reg_cap_assoc_lerc1" />

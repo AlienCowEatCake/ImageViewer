@@ -207,6 +207,12 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
+      Key=".vvic"
+      Value="$(var.ProductNameSafe).vvic"
+      Id="reg_assoc_vvic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
       Key=".lerc1"
       Value="$(var.ProductNameSafe).lerc1"
       Id="reg_assoc_lerc1" />

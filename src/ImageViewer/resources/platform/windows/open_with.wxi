@@ -1119,6 +1119,37 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
+      Key="$(var.ProductNameSafe).vvic"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_vvic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).vvic\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_vvic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).vvic\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_vvic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).vvic\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_vvic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".vvic\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).vvic"
+      Id="reg_vvic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
       Key="$(var.ProductNameSafe).lerc1"
       Value="Limited Error Raster Compression Format Image"
       Id="reg_type_lerc1" />

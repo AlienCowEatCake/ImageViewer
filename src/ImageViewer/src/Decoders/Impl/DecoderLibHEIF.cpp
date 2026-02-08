@@ -386,6 +386,9 @@ public:
 #if defined (LIBHEIF_NUMERIC_VERSION) && (LIBHEIF_NUMERIC_VERSION >= 0x010D0000)
                 << QString::fromLatin1("hej2")
 #endif
+#if defined (LIBHEIF_HAVE_VERSION) && (LIBHEIF_HAVE_VERSION(1, 18, 0))
+                << QString::fromLatin1("vvic")
+#endif
                    ;
     }
 
