@@ -1,0 +1,170 @@
+From eed7dcaffcde62cf1b23a0dd2c11a627788e46f5 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 8 Feb 2026 22:26:14 +0700
+Subject: [PATCH] Fix build with TDM-GCC 10.3.0
+
+---
+ include/vvdec/vvdec.h.in         |  3 +++
+ source/Lib/CommonLib/BitStream.h | 16 +++++++++-------
+ source/Lib/CommonLib/CommonDef.h | 29 +++++++++++++++++++++++++++++
+ source/Lib/CommonLib/TypeDef.h   |  2 +-
+ 4 files changed, 42 insertions(+), 8 deletions(-)
+
+diff --git a/include/vvdec/vvdec.h.in b/include/vvdec/vvdec.h.in
+index fa632d8..9675ae1 100644
+--- a/include/vvdec/vvdec.h.in
++++ b/include/vvdec/vvdec.h.in
+@@ -44,6 +44,7 @@ POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include "vvdec/vvdecDecl.h"
+ 
++#include <stdarg.h>
+ #include <stdint.h>
+ #include <stdbool.h>
+ 
+@@ -60,6 +61,7 @@ extern "C" {
+ 
+ VVDEC_NAMESPACE_BEGIN
+ 
++#if 0
+ #if defined( __x86_64__ ) || defined( _M_X64 ) || defined( __i386__ ) || defined( __i386 ) || defined( _M_IX86 )
+ # define VVDEC_ARCH_X86 1
+ #elif defined( __aarch64__ ) || defined( _M_ARM64 ) || defined( __arm__ ) || defined( _M_ARM )
+@@ -69,6 +71,7 @@ VVDEC_NAMESPACE_BEGIN
+ #elif defined( __loongarch__ )
+ # define VVDEC_ARCH_LOONGARCH 1
+ #endif
++#endif
+ 
+ /* vvdecDecoder:
+  * opaque handler for the decoder */
+diff --git a/source/Lib/CommonLib/BitStream.h b/source/Lib/CommonLib/BitStream.h
+index e8ca18e..bd7273a 100644
+--- a/source/Lib/CommonLib/BitStream.h
++++ b/source/Lib/CommonLib/BitStream.h
+@@ -51,12 +51,6 @@ POSSIBILITY OF SUCH DAMAGE.
+ #include <memory>
+ #include "CommonDef.h"
+ 
+-#if defined(TARGET_SIMD_X86) && SIMD_ENABLE
+-#  include "CommonDefX86.h"   // needed for simde_bswap64, but don't just include simde-common.h, because it breaks other files
+-#else
+-#  include "simde/simde-common.h"
+-#endif
+-
+ namespace vvdec
+ {
+ 
+@@ -211,12 +205,20 @@ private:
+     else
+     {
+       CHECKD( reinterpret_cast<intptr_t>( &m_fifo[m_fifo_idx] ) & 0x7, "bistream read pos unaligned" );
+-      m_held_bits = simde_bswap64( *reinterpret_cast<uint64_t*>( &m_fifo[m_fifo_idx] ) );
++      m_held_bits = generic_bswap64( *reinterpret_cast<uint64_t*>( &m_fifo[m_fifo_idx] ) );
+       m_fifo_idx += num_bytes_to_load;
+     }
+ 
+     m_num_held_bits = num_bytes_to_load * 8;
+   }
++
++  static inline uint64_t generic_bswap64(uint64_t v)
++  {
++    v = ((v & 0xffffffff00000000ull) >> 32) | ((v & 0x00000000ffffffffull) << 32);
++    v = ((v & 0xffff0000ffff0000ull) >> 16) | ((v & 0x0000ffff0000ffffull) << 16);
++    v = ((v & 0xff00ff00ff00ff00ull) >>  8) | ((v & 0x00ff00ff00ff00ffull) <<  8);
++    return v;
++  }
+ };
+ 
+ }
+diff --git a/source/Lib/CommonLib/CommonDef.h b/source/Lib/CommonLib/CommonDef.h
+index 06023c8..12e4824 100644
+--- a/source/Lib/CommonLib/CommonDef.h
++++ b/source/Lib/CommonLib/CommonDef.h
+@@ -55,6 +55,7 @@ POSSIBILITY OF SUCH DAMAGE.
+ #include <functional>
+ #include <mutex>
+ 
++#if 0
+ #if defined( __x86_64__ ) || defined( _M_X64 ) || defined( __i386__ ) || defined( __i386 ) || defined( _M_IX86 )
+ # define REAL_TARGET_X86 1
+ #elif defined( __aarch64__ ) || defined( _M_ARM64 ) || defined( __arm__ ) || defined( _M_ARM )
+@@ -71,6 +72,7 @@ POSSIBILITY OF SUCH DAMAGE.
+ #ifdef _WIN32
+ #  include <intrin.h>
+ #endif
++#endif
+ 
+ #if defined( __INTEL_COMPILER )
+ #pragma warning( disable : 1786 )
+@@ -445,6 +447,7 @@ static inline void msg( MsgLevel level, const char* fmt, ... )
+ 
+ #if ALIGNED_MALLOC
+ 
++#if 0
+ #  if( _WIN32 && ( _MSC_VER > 1300 ) ) || defined( __MINGW64_VERSION_MAJOR )
+ #    define xMalloc( type, len ) (type*) _aligned_malloc( sizeof( type ) * ( len ), MEMORY_ALIGN_DEF_SIZE )
+ #    define xFree( ptr )         _aligned_free( ptr )
+@@ -468,6 +471,30 @@ namespace detail
+   }
+ }   // namespace detail
+ #  endif
++#else
++#  define xMalloc( type, len ) (type*) detail::aligned_malloc( sizeof( type ) * ( len ), MEMORY_ALIGN_DEF_SIZE )
++#  define xFree( ptr )         detail::aligned_free( ptr )
++namespace detail
++{
++  static inline void* aligned_malloc( size_t len, size_t alignment )
++  {
++    char* orig_ptr = (char*)malloc(len + alignment + sizeof(void*));
++    if (orig_ptr == NULL)
++      return NULL;
++    void* align_ptr = (void*)(((size_t)(orig_ptr + sizeof(void*)) + alignment - 1) & ~(alignment - 1));
++    *((size_t*)((char*)align_ptr - sizeof(void*))) = (size_t)orig_ptr;
++    return align_ptr;
++  }
++
++  static inline void aligned_free( void* align_ptr )
++  {
++    if (align_ptr) {
++      void* orig_ptr = (void*)((size_t)(*((size_t*)((char*)align_ptr - sizeof(void*)))));
++      free(orig_ptr);
++    }
++  }
++}   // namespace detail
++#endif
+ 
+ #else   // !ALIGNED_MALLOC
+ #  define xMalloc( type, len ) (type*) malloc( sizeof( type ) * ( len ) )
+@@ -599,6 +626,7 @@ namespace arm_simd
+ template <typename ValueType> static inline ValueType rightShift      (const ValueType value, const int shift) { return (shift >= 0) ? ( value                                  >> shift) : ( value                                   << -shift); }
+ template <typename ValueType> static inline ValueType rightShift_round(const ValueType value, const int shift) { return (shift >= 0) ? ((value + (ValueType(1) << (shift - 1))) >> shift) : ( value                                   << -shift); }
+ 
++#if ENABLE_SIMD_LOG2
+ #if defined( _WIN32 )
+ static inline unsigned int bit_scan_reverse( int a )
+ {
+@@ -612,6 +640,7 @@ static inline unsigned int bit_scan_reverse( int a )
+   return __builtin_clz( a ) ^ ( 8 * sizeof( a ) - 1 );
+ }
+ #endif
++#endif
+ 
+ #if ENABLE_SIMD_LOG2
+ static inline int getLog2( int val )
+diff --git a/source/Lib/CommonLib/TypeDef.h b/source/Lib/CommonLib/TypeDef.h
+index 6fbcda7..87bc4eb 100644
+--- a/source/Lib/CommonLib/TypeDef.h
++++ b/source/Lib/CommonLib/TypeDef.h
+@@ -142,7 +142,7 @@ namespace vvdec
+ // ====================================================================================================================
+ 
+ // SIMD optimizations
+-#define SIMD_ENABLE                                      1
++#define SIMD_ENABLE                                      0
+ #define ENABLE_SIMD_OPT                                 ( SIMD_ENABLE )                                     ///< SIMD optimizations
+ #define ENABLE_SIMD_OPT_MCIF                            ( 1 && ENABLE_SIMD_OPT )                            ///< SIMD optimization for the interpolation filter
+ #define ENABLE_SIMD_OPT_BUFFER                          ( 1 && ENABLE_SIMD_OPT )                            ///< SIMD optimization for the buffer operations
+-- 
+2.52.0
+

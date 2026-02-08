@@ -51,12 +51,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <memory>
 #include "CommonDef.h"
 
-#if defined(TARGET_SIMD_X86) && SIMD_ENABLE
-#  include "CommonDefX86.h"   // needed for simde_bswap64, but don't just include simde-common.h, because it breaks other files
-#else
-#  include "simde/simde-common.h"
-#endif
-
 namespace vvdec
 {
 
@@ -211,11 +205,19 @@ private:
     else
     {
       CHECKD( reinterpret_cast<intptr_t>( &m_fifo[m_fifo_idx] ) & 0x7, "bistream read pos unaligned" );
-      m_held_bits = simde_bswap64( *reinterpret_cast<uint64_t*>( &m_fifo[m_fifo_idx] ) );
+      m_held_bits = generic_bswap64( *reinterpret_cast<uint64_t*>( &m_fifo[m_fifo_idx] ) );
       m_fifo_idx += num_bytes_to_load;
     }
 
     m_num_held_bits = num_bytes_to_load * 8;
+  }
+
+  static inline uint64_t generic_bswap64(uint64_t v)
+  {
+    v = ((v & 0xffffffff00000000ull) >> 32) | ((v & 0x00000000ffffffffull) << 32);
+    v = ((v & 0xffff0000ffff0000ull) >> 16) | ((v & 0x0000ffff0000ffffull) << 16);
+    v = ((v & 0xff00ff00ff00ff00ull) >>  8) | ((v & 0x00ff00ff00ff00ffull) <<  8);
+    return v;
   }
 };
 

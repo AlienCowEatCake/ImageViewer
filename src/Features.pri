@@ -652,6 +652,9 @@ disable_cxx11 : !system_libde265 {
 # VVdeC options:
 #    disable_vvdec
 #    system_vvdec
+*msvc* : !system_vvdec : lessThan(MSVC_VERSION, 2017) {
+    CONFIG *= disable_vvdec
+}
 disable_cxx14 : !system_vvdec {
     CONFIG *= disable_vvdec
 }

@@ -44,6 +44,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "vvdec/vvdecDecl.h"
 
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -60,6 +61,7 @@ extern "C" {
 
 VVDEC_NAMESPACE_BEGIN
 
+#if 0
 #if defined( __x86_64__ ) || defined( _M_X64 ) || defined( __i386__ ) || defined( __i386 ) || defined( _M_IX86 )
 # define VVDEC_ARCH_X86 1
 #elif defined( __aarch64__ ) || defined( _M_ARM64 ) || defined( __arm__ ) || defined( _M_ARM )
@@ -68,6 +70,7 @@ VVDEC_NAMESPACE_BEGIN
 # define VVDEC_ARCH_WASM 1
 #elif defined( __loongarch__ )
 # define VVDEC_ARCH_LOONGARCH 1
+#endif
 #endif
 
 /* vvdecDecoder:

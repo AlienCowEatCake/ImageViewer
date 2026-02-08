@@ -55,6 +55,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <functional>
 #include <mutex>
 
+#if 0
 #if defined( __x86_64__ ) || defined( _M_X64 ) || defined( __i386__ ) || defined( __i386 ) || defined( _M_IX86 )
 # define REAL_TARGET_X86 1
 #elif defined( __aarch64__ ) || defined( _M_ARM64 ) || defined( __arm__ ) || defined( _M_ARM )
@@ -70,6 +71,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef _WIN32
 #  include <intrin.h>
+#endif
 #endif
 
 #if defined( __INTEL_COMPILER )
@@ -445,6 +447,7 @@ static inline void msg( MsgLevel level, const char* fmt, ... )
 
 #if ALIGNED_MALLOC
 
+#if 0
 #  if( _WIN32 && ( _MSC_VER > 1300 ) ) || defined( __MINGW64_VERSION_MAJOR )
 #    define xMalloc( type, len ) (type*) _aligned_malloc( sizeof( type ) * ( len ), MEMORY_ALIGN_DEF_SIZE )
 #    define xFree( ptr )         _aligned_free( ptr )
@@ -468,6 +471,30 @@ namespace detail
   }
 }   // namespace detail
 #  endif
+#else
+#  define xMalloc( type, len ) (type*) detail::aligned_malloc( sizeof( type ) * ( len ), MEMORY_ALIGN_DEF_SIZE )
+#  define xFree( ptr )         detail::aligned_free( ptr )
+namespace detail
+{
+  static inline void* aligned_malloc( size_t len, size_t alignment )
+  {
+    char* orig_ptr = (char*)malloc(len + alignment + sizeof(void*));
+    if (orig_ptr == NULL)
+      return NULL;
+    void* align_ptr = (void*)(((size_t)(orig_ptr + sizeof(void*)) + alignment - 1) & ~(alignment - 1));
+    *((size_t*)((char*)align_ptr - sizeof(void*))) = (size_t)orig_ptr;
+    return align_ptr;
+  }
+
+  static inline void aligned_free( void* align_ptr )
+  {
+    if (align_ptr) {
+      void* orig_ptr = (void*)((size_t)(*((size_t*)((char*)align_ptr - sizeof(void*)))));
+      free(orig_ptr);
+    }
+  }
+}   // namespace detail
+#endif
 
 #else   // !ALIGNED_MALLOC
 #  define xMalloc( type, len ) (type*) malloc( sizeof( type ) * ( len ) )
@@ -599,6 +626,7 @@ namespace arm_simd
 template <typename ValueType> static inline ValueType rightShift      (const ValueType value, const int shift) { return (shift >= 0) ? ( value                                  >> shift) : ( value                                   << -shift); }
 template <typename ValueType> static inline ValueType rightShift_round(const ValueType value, const int shift) { return (shift >= 0) ? ((value + (ValueType(1) << (shift - 1))) >> shift) : ( value                                   << -shift); }
 
+#if ENABLE_SIMD_LOG2
 #if defined( _WIN32 )
 static inline unsigned int bit_scan_reverse( int a )
 {
@@ -611,6 +639,7 @@ static inline unsigned int bit_scan_reverse( int a )
 {
   return __builtin_clz( a ) ^ ( 8 * sizeof( a ) - 1 );
 }
+#endif
 #endif
 
 #if ENABLE_SIMD_LOG2
