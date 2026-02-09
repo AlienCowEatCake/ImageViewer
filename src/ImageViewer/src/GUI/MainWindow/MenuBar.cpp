@@ -163,6 +163,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         menuFile->addAction(actionStartSlideShow);
         actionStartSlideShow->setShortcuts(createAnyModifierShortcuts(Qt::Key_W, 0, (QList<QKeySequence>() << (Qt::CTRL | Qt::Key_W))));
         actionStartSlideShow->setMenuRole(QAction::NoRole);
+        actionStartSlideShow->setCheckable(true);
         menuFile->addSeparator();
         menuFile->addAction(actionImageInformation);
         actionImageInformation->setShortcuts(createAnyModifierShortcuts(Qt::Key_I));
@@ -362,7 +363,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionAboutQt->setIcon                  (getMenuIcon(ThemeUtils::ICON_HELP_ABOUT_QT         ));
         actionCheckForUpdates->setIcon          (getMenuIcon(ThemeUtils::ICON_SYNC_SYNCHRONIZING    ));
         actionEditStylesheet->setIcon           (getMenuIcon(ThemeUtils::ICON_EDIT_PREFERENCES      ));
-        actionStartSlideShow->setIcon(getMenuIcon(isSlideShowMode ? ThemeUtils::ICON_MEDIA_PLAYBACK_STOP : ThemeUtils::ICON_MEDIA_SLIDESHOW));
+        actionStartSlideShow->setIcon(getMenuIcon(isSlideShowMode ? ThemeUtils::ICON_MEDIA_PLAYBACK_STOP : ThemeUtils::ICON_MEDIA_PLAYBACK_START));
     }
 
     void setSlideShowMode(bool isSlideShow)
@@ -370,11 +371,13 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         isSlideShowMode = isSlideShow;
         if(!isSlideShowMode)
         {
+            actionStartSlideShow->setChecked(false);
             actionStartSlideShow->setText(QCoreApplication::translate("MenuBar", "Start S&lideshow"));
-            actionStartSlideShow->setIcon(getMenuIcon(ThemeUtils::ICON_MEDIA_SLIDESHOW));
+            actionStartSlideShow->setIcon(getMenuIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_START));
         }
         else
         {
+            actionStartSlideShow->setChecked(true);
             actionStartSlideShow->setText(QCoreApplication::translate("MenuBar", "Stop S&lideshow"));
             actionStartSlideShow->setIcon(getMenuIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_STOP));
         }

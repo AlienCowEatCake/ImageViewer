@@ -79,6 +79,7 @@ struct ToolBar::Impl : public ControlsContainerEmitter
         , CONSTRUCT_OBJECT(preferences, QToolButton, (toolbar))
         , CONSTRUCT_OBJECT(exit, QToolButton, (toolbar))
     {
+        startSlideShow->setCheckable(true);
         zoomFitToWindow->setCheckable(true);
         zoomOriginalSize->setCheckable(true);
         zoomFullScreen->setCheckable(true);
@@ -160,7 +161,7 @@ struct ToolBar::Impl : public ControlsContainerEmitter
         deleteFile->setIcon             (iconThemeManager->GetIcon(ThemeUtils::ICON_EDIT_DELETE             , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         preferences->setIcon            (iconThemeManager->GetIcon(ThemeUtils::ICON_EDIT_PREFERENCES        , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         exit->setIcon                   (iconThemeManager->GetIcon(ThemeUtils::ICON_APPLICATION_EXIT        , toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
-        startSlideShow->setIcon         (iconThemeManager->GetIcon(isSlideShowMode ? ThemeUtils::ICON_MEDIA_PLAYBACK_STOP : ThemeUtils::ICON_MEDIA_SLIDESHOW, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+        startSlideShow->setIcon         (iconThemeManager->GetIcon(isSlideShowMode ? ThemeUtils::ICON_MEDIA_PLAYBACK_STOP : ThemeUtils::ICON_MEDIA_PLAYBACK_START, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
     }
 
     void setSlideShowMode(bool isSlideShow)
@@ -168,11 +169,13 @@ struct ToolBar::Impl : public ControlsContainerEmitter
         isSlideShowMode = isSlideShow;
         if(!isSlideShowMode)
         {
+            startSlideShow->setChecked(false);
             startSlideShow->setToolTip(QCoreApplication::translate("ToolBar", "Start Slideshow"));
-            startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_SLIDESHOW, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
+            startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_START, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         }
         else
         {
+            startSlideShow->setChecked(true);
             startSlideShow->setToolTip(QCoreApplication::translate("ToolBar", "Stop Slideshow"));
             startSlideShow->setIcon(IconThemeManager::instance()->GetIcon(ThemeUtils::ICON_MEDIA_PLAYBACK_STOP, toolBarButtonsFallbackIconRequired, toolBarButtonsHasDarkTheme));
         }

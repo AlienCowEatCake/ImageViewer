@@ -607,6 +607,7 @@ NSImage *NSImageForIconType(ThemeUtils::IconTypes iconType, bool darkBackground 
 #undef MAKE_SEGMENTED_PAIR_ITEM_RTL_AWARE
 #undef MAKE_BUTTONED_ITEM
 
+    [m_toolBarData->startSlideShow.button setCheckable:YES];
     [m_toolBarData->zoomFitToWindow.button setCheckable:YES];
     [m_toolBarData->zoomOriginalSize.button setCheckable:YES];
     [m_toolBarData->zoomFullScreen.button setCheckable:YES];
@@ -979,16 +980,18 @@ struct MacToolBar::Impl
     {
         AUTORELEASE_POOL;
         isSlideShowMode = isSlideShow;
-        NSButton *button = toolBarData.startSlideShow.button;
+        CheckableNSButton *button = toolBarData.startSlideShow.button;
         if(!button)
             return;
         if(!isSlideShowMode)
         {
-            [button setImage:NSImageForIconType(ThemeUtils::ICON_MEDIA_SLIDESHOW)];
+            [button setChecked:NO];
+            [button setImage:NSImageForIconType(ThemeUtils::ICON_MEDIA_PLAYBACK_START)];
             toolBarData.startSlideShow.setToolTip(QCoreApplication::translate("MacToolBar", "Start Slideshow"));
         }
         else
         {
+            [button setChecked:YES];
             [button setImage:NSImageForIconType(ThemeUtils::ICON_MEDIA_PLAYBACK_STOP)];
             toolBarData.startSlideShow.setToolTip(QCoreApplication::translate("MacToolBar", "Stop Slideshow"));
         }

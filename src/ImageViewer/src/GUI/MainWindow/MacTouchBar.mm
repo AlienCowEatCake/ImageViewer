@@ -323,7 +323,7 @@ API_AVAILABLE(macos(10.12.2))
     MAKE_SEGMENTED_PAIR_ITEM_RTL_AWARE(GROUP, ITEM1, ICON1, ICON1, TEMPLATE1, TEMPLATE1, ITEM2, ICON2, ICON2, TEMPLATE2, TEMPLATE2)
 
     MAKE_SEGMENTED_PAIR_ITEM_RTL_AWARE(navigateGroup, navigatePrevious, ICON_GO_PREVIOUS, ICON_GO_NEXT, NSImageNameTouchBarGoBackTemplate, NSImageNameTouchBarGoBackTemplate, navigateNext, ICON_GO_NEXT, ICON_GO_PREVIOUS, NSImageNameTouchBarGoForwardTemplate, NSImageNameTouchBarGoForwardTemplate);
-    MAKE_BUTTONED_ITEM(startSlideShow, ICON_MEDIA_PLAYBACK_START, NSImageNameTouchBarSlideshowTemplate);
+    MAKE_BUTTONED_ITEM(startSlideShow, ICON_MEDIA_PLAYBACK_START, NSImageNameTouchBarPlayTemplate);
     MAKE_SEGMENTED_PAIR_ITEM(zoomGroup, zoomOut, ICON_ZOOM_OUT, nil, zoomIn, ICON_ZOOM_IN, nil);
     MAKE_BUTTONED_ITEM(zoomFitToWindow, ICON_ZOOM_FIT_BEST, nil);
     MAKE_BUTTONED_ITEM(zoomOriginalSize, ICON_ZOOM_ORIGINAL, nil);
@@ -341,6 +341,7 @@ API_AVAILABLE(macos(10.12.2))
 #undef MAKE_SEGMENTED_PAIR_ITEM_RTL_AWARE
 #undef MAKE_BUTTONED_ITEM
 
+    m_touchBarData->startSlideShow.setCheckable(true);
     m_touchBarData->zoomFitToWindow.setCheckable(true);
     m_touchBarData->zoomOriginalSize.setCheckable(true);
 
@@ -532,13 +533,20 @@ struct MacTouchBar::Impl
 #if defined (AVAILABLE_MAC_OS_X_VERSION_10_12_2_AND_LATER)
         if(@available(macOS 10.12.2, *))
         {
-            NSButton *button = touchBarData.startSlideShow.button;
+            ButtonedTouchBarItem &item = touchBarData.startSlideShow;
+            NSButton *button = item.button;
             if(!button)
                 return;
             if(!isSlideShow)
-                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarSlideshowTemplate, ThemeUtils::ICON_MEDIA_SLIDESHOW)];
+            {
+                item.setChecked(false);
+                [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarPlayTemplate, ThemeUtils::ICON_MEDIA_PLAYBACK_START)];
+            }
             else
+            {
+                item.setChecked(true);
                 [button setImage:NSImageForNameOrIconType(NSImageNameTouchBarRecordStopTemplate, ThemeUtils::ICON_MEDIA_PLAYBACK_STOP)];
+            }
         }
 #else
         Q_UNUSED(isSlideShow);
