@@ -33,8 +33,13 @@
 #include <QString>
 #include <QGraphicsItem>
 #include <QInputDialog>
+#include <QDir>
 #include <QFileInfo>
 #include <QTimer>
+
+#if !defined (QT_NO_CLIPBOARD)
+#include <QClipboard>
+#endif
 
 #if defined (ENABLE_PRINT_SUPPORT)
 #include "../Dialogs/PrintDialog.h"
@@ -741,6 +746,17 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Right:
         m_impl->ui.imageViewerWidget->scrollRight();
         break;
+#if !defined (QT_NO_CLIPBOARD)
+    case Qt::Key_C:
+        if(event->modifiers().testFlag(Qt::ControlModifier) && m_impl->isFileOpened())
+        {
+            if(event->modifiers().testFlag(Qt::AltModifier) || event->modifiers().testFlag(Qt::ShiftModifier))
+                qApp->clipboard()->setText(QDir::toNativeSeparators(QFileInfo(m_impl->uiState.currentFilePath).absoluteFilePath()));
+            else
+                qApp->clipboard()->setImage(m_impl->ui.imageViewerWidget->grabImage());
+        }
+        break;
+#endif
     default:
         break;
     }
