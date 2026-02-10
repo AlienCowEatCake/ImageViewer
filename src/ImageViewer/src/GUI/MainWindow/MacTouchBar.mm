@@ -633,6 +633,8 @@ CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setImageInformation
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setPrintEnabled, &m_impl->touchBarData.print)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setPreferencesEnabled, &m_impl->touchBarData.preferences)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setExitEnabled, &m_impl->touchBarData.exit)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setCopyEnabled)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacTouchBar, setCopyPathEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setRotateCounterclockwiseEnabled, &m_impl->touchBarData.rotateCounterclockwise)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setRotateClockwiseEnabled, &m_impl->touchBarData.rotateClockwise)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacTouchBar, setFlipHorizontalEnabled, &m_impl->touchBarData.flipHorizontal)

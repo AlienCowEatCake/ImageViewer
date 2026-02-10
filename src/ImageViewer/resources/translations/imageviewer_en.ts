@@ -515,22 +515,22 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="362"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="371"/>
         <source>Error</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="376"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="385"/>
         <source>…</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="501"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="526"/>
         <source>Zoom</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="502"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="527"/>
         <source>Zoom Factor (%):</source>
         <translation></translation>
     </message>
@@ -538,172 +538,182 @@
 <context>
     <name>MenuBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
         <source>&amp;File</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
         <source>&amp;Edit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
         <source>&amp;View</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="301"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
         <source>&amp;Help</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="302"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
         <source>&amp;Reopen With</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
         <source>&amp;Open File</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
         <source>Open &amp;Folder</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
         <source>&amp;Save As</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
         <source>New &amp;Window</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
         <source>Pre&amp;vious</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
         <source>&amp;Next</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
         <source>Image &amp;Information</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
         <source>&amp;Print</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
         <source>Pr&amp;eferences</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="328"/>
         <source>&amp;Quit</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
-        <source>Rotate &amp;Counterclockwise</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
-        <source>&amp;Rotate Clockwise</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
-        <source>Flip &amp;Horizontal</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
-        <source>Flip &amp;Vertical</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="318"/>
-        <source>&amp;Delete File</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
-        <source>Zoom &amp;Out</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
-        <source>Zoom &amp;In</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
-        <source>&amp;Reset Zoom</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
-        <source>&amp;Zoom…</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
-        <source>Fit Image To &amp;Window Size</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
-        <source>Original &amp;Size</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
-        <source>&amp;Full Screen</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
-        <source>Show &amp;Menu Bar</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
-        <source>Show &amp;Toolbar</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="328"/>
-        <source>&amp;About</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="329"/>
-        <source>About &amp;Qt</source>
+        <source>&amp;Copy</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="330"/>
+        <source>Copy &amp;Path</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="331"/>
+        <source>&amp;Rotate Counterclockwise</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="332"/>
+        <source>Rotate Clock&amp;wise</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="333"/>
+        <source>Flip &amp;Horizontal</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="334"/>
+        <source>Flip &amp;Vertical</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="335"/>
+        <source>&amp;Delete File</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="336"/>
+        <source>Zoom &amp;Out</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="337"/>
+        <source>Zoom &amp;In</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="338"/>
+        <source>&amp;Reset Zoom</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="339"/>
+        <source>&amp;Zoom…</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="340"/>
+        <source>Fit Image To &amp;Window Size</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="341"/>
+        <source>Original &amp;Size</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="342"/>
+        <source>&amp;Full Screen</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="343"/>
+        <source>Show &amp;Menu Bar</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="344"/>
+        <source>Show &amp;Toolbar</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="345"/>
+        <source>&amp;About</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="346"/>
+        <source>About &amp;Qt</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="347"/>
         <source>Check for &amp;Updates</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="375"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="394"/>
         <source>Start S&amp;lideshow</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="381"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="400"/>
         <source>Stop S&amp;lideshow</source>
         <translation></translation>
     </message>

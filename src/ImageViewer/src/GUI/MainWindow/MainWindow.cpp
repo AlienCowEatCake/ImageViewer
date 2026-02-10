@@ -102,6 +102,13 @@ struct MainWindow::Impl
             container->setSaveAsEnabled(isEnabled);
             container->setImageInformationEnabled(isEnabled);
             container->setPrintEnabled(isEnabled);
+#if !defined (QT_NO_CLIPBOARD)
+            container->setCopyEnabled(isEnabled);
+            container->setCopyPathEnabled(isEnabled);
+#else
+            container->setCopyEnabled(false);
+            container->setCopyPathEnabled(false);
+#endif
         }
         updateMenuReopenWith();
     }
@@ -269,6 +276,8 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
         connect(object, SIGNAL(printRequested())                    , this                      , SLOT(onPrintRequested())                  );
         connect(object, SIGNAL(preferencesRequested())              , this                      , SIGNAL(preferencesRequested())            );
         connect(object, SIGNAL(exitRequested())                     , this                      , SLOT(close())                             );
+        connect(object, SIGNAL(copyRequested())                     , this                      , SLOT(onCopyRequested())                   );
+        connect(object, SIGNAL(copyPathRequested())                 , this                      , SLOT(onCopyPathRequested())               );
         connect(object, SIGNAL(rotateCounterclockwiseRequested())   , imageViewerWidget         , SLOT(rotateCounterclockwise())            );
         connect(object, SIGNAL(rotateCounterclockwiseRequested())   , &m_impl->effectsStorage   , SLOT(rotateCounterclockwise())            );
         connect(object, SIGNAL(rotateClockwiseRequested())          , imageViewerWidget         , SLOT(rotateClockwise())                   );
@@ -489,6 +498,22 @@ void MainWindow::onPrintRequested()
     if(dialog->exec())
         m_impl->printOptions = dialog->optionsData();
     dialog->deleteLater();
+#endif
+}
+
+void MainWindow::onCopyRequested()
+{
+#if !defined (QT_NO_CLIPBOARD)
+    if(m_impl->isFileOpened())
+        qApp->clipboard()->setImage(m_impl->ui.imageViewerWidget->grabImage());
+#endif
+}
+
+void MainWindow::onCopyPathRequested()
+{
+#if !defined (QT_NO_CLIPBOARD)
+    if(m_impl->isFileOpened())
+        qApp->clipboard()->setText(QDir::toNativeSeparators(QFileInfo(m_impl->uiState.currentFilePath).absoluteFilePath()));
 #endif
 }
 
@@ -748,12 +773,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         break;
 #if !defined (QT_NO_CLIPBOARD)
     case Qt::Key_C:
-        if(event->modifiers().testFlag(Qt::ControlModifier) && m_impl->isFileOpened())
+        if(event->modifiers().testFlag(Qt::ControlModifier))
         {
             if(event->modifiers().testFlag(Qt::AltModifier) || event->modifiers().testFlag(Qt::ShiftModifier))
-                qApp->clipboard()->setText(QDir::toNativeSeparators(QFileInfo(m_impl->uiState.currentFilePath).absoluteFilePath()));
+                onCopyPathRequested();
             else
-                qApp->clipboard()->setImage(m_impl->ui.imageViewerWidget->grabImage());
+                onCopyRequested();
         }
         break;
 #endif

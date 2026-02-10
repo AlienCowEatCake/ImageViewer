@@ -271,6 +271,8 @@ CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(QtToolBar, setImageInformationEn
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(QtToolBar, setPrintEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(QtToolBar, setPreferencesEnabled, m_impl->preferences)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(QtToolBar, setExitEnabled, m_impl->exit)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(QtToolBar, setCopyEnabled)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(QtToolBar, setCopyPathEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(QtToolBar, setRotateCounterclockwiseEnabled, m_impl->rotateCounterclockwise)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(QtToolBar, setRotateClockwiseEnabled, m_impl->rotateClockwise)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(QtToolBar, setFlipHorizontalEnabled, m_impl->flipHorizontal)

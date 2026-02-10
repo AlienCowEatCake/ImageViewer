@@ -1062,6 +1062,8 @@ CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setImageInformationE
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setPrintEnabled, &m_impl->toolBarData.print)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setPreferencesEnabled, &m_impl->toolBarData.preferences)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setExitEnabled, &m_impl->toolBarData.exit)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setCopyEnabled)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(MacToolBar, setCopyPathEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setRotateCounterclockwiseEnabled, &m_impl->toolBarData.rotateCounterclockwise)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setRotateClockwiseEnabled, &m_impl->toolBarData.rotateClockwise)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MacToolBar, setFlipHorizontalEnabled, &m_impl->toolBarData.flipHorizontal)

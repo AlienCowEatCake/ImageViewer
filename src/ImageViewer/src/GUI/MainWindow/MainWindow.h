@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -73,6 +73,9 @@ public Q_SLOTS:
     void onZoomModeChanged(ImageViewerWidget::ZoomMode mode);
     void onSaveAsRequested();
     void onPrintRequested();
+
+    void onCopyRequested();
+    void onCopyPathRequested();
 
     void onZoomCustomRequested();
     void onZoomFitToWindowRequested();

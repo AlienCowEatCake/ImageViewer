@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2021 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -65,6 +65,8 @@ Q_SIGNALS:
     void printRequested();
     void preferencesRequested();
     void exitRequested();
+    void copyRequested();
+    void copyPathRequested();
     void rotateCounterclockwiseRequested();
     void rotateClockwiseRequested();
     void flipHorizontalRequested();
@@ -104,6 +106,8 @@ public:
         virtual void setPrintEnabled(bool) FUNCTION_BODY \
         virtual void setPreferencesEnabled(bool) FUNCTION_BODY \
         virtual void setExitEnabled(bool) FUNCTION_BODY \
+        virtual void setCopyEnabled(bool) FUNCTION_BODY \
+        virtual void setCopyPathEnabled(bool) FUNCTION_BODY \
         virtual void setRotateCounterclockwiseEnabled(bool) FUNCTION_BODY \
         virtual void setRotateClockwiseEnabled(bool) FUNCTION_BODY \
         virtual void setFlipHorizontalEnabled(bool) FUNCTION_BODY \

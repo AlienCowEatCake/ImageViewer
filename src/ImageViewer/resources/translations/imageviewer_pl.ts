@@ -515,22 +515,22 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="362"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="371"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="376"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="385"/>
         <source>…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="501"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="526"/>
         <source>Zoom</source>
         <translation type="unfinished">Powiększenie</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="502"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="527"/>
         <source>Zoom Factor (%):</source>
         <translation type="unfinished">Skala powiększenia (%):</translation>
     </message>
@@ -538,172 +538,182 @@
 <context>
     <name>MenuBar</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="298"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
         <source>&amp;File</source>
         <translation type="unfinished">&amp;Plik</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="299"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
         <source>&amp;Edit</source>
         <translation type="unfinished">&amp;Modyfikuj</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="300"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
         <source>&amp;View</source>
         <translation type="unfinished">&amp;Widok</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="301"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
         <source>&amp;Help</source>
         <translation type="unfinished">Pomo&amp;c</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="302"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
         <source>&amp;Reopen With</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="304"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
         <source>&amp;Open File</source>
         <translation type="unfinished">&amp;Otwórz plik</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="305"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
         <source>Open &amp;Folder</source>
         <translation type="unfinished">Wybór &amp;katalogu</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="306"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
         <source>&amp;Save As</source>
         <translation type="unfinished">Zapisz &amp;jako</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="307"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
         <source>New &amp;Window</source>
         <translation type="unfinished">Otwórz w&#xa0;nowy&amp;m oknie</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="308"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
         <source>Pre&amp;vious</source>
         <translation type="unfinished">&amp;Poprzedni</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="309"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
         <source>&amp;Next</source>
         <translation type="unfinished">&amp;Następny</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="310"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
         <source>Image &amp;Information</source>
         <translation type="unfinished">Dodatkowe &amp;informacje</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="311"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
         <source>&amp;Print</source>
         <translation type="unfinished">Wy&amp;drukuj</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="312"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
         <source>Pr&amp;eferences</source>
         <translation type="unfinished">Pr&amp;eferencje</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="313"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="328"/>
         <source>&amp;Quit</source>
         <translation type="unfinished">&amp;Zakończ</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="314"/>
-        <source>Rotate &amp;Counterclockwise</source>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="329"/>
+        <source>&amp;Copy</source>
+        <translation type="unfinished">S&amp;kopiuj</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="330"/>
+        <source>Copy &amp;Path</source>
+        <translation type="unfinished">Skopiuj ś&amp;cieżkę</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="331"/>
+        <source>&amp;Rotate Counterclockwise</source>
         <translation type="unfinished">Obróć &amp;przeciwnie do ruchu wskazówek zegara</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="315"/>
-        <source>&amp;Rotate Clockwise</source>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="332"/>
+        <source>Rotate Clock&amp;wise</source>
         <translation type="unfinished">Obróć &amp;zgodnie z ruchem wskazówek zegara</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="316"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="333"/>
         <source>Flip &amp;Horizontal</source>
         <translation type="unfinished">Odbij p&amp;oziomo</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="317"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="334"/>
         <source>Flip &amp;Vertical</source>
         <translation type="unfinished">Odbij p&amp;ionowo</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="318"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="335"/>
         <source>&amp;Delete File</source>
         <translation type="unfinished">&amp;Usuń plik</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="319"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="336"/>
         <source>Zoom &amp;Out</source>
         <translation type="unfinished">Pomn&amp;iejsz</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="320"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="337"/>
         <source>Zoom &amp;In</source>
         <translation type="unfinished">Po&amp;większ</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="321"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="338"/>
         <source>&amp;Reset Zoom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="322"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="339"/>
         <source>&amp;Zoom…</source>
         <translation type="unfinished">&amp;Powiększenie…</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="323"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="340"/>
         <source>Fit Image To &amp;Window Size</source>
         <translation type="unfinished">Dopasuj do rozmiaru &amp;okna</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="324"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="341"/>
         <source>Original &amp;Size</source>
         <translation type="unfinished">&amp;Zwykły rozmiar</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="325"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="342"/>
         <source>&amp;Full Screen</source>
         <translation type="unfinished">Pełny &amp;ekran</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="326"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="343"/>
         <source>Show &amp;Menu Bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="327"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="344"/>
         <source>Show &amp;Toolbar</source>
         <translation type="unfinished">Pokaż/ukryj pasek &amp;narzędzi</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="328"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="345"/>
         <source>&amp;About</source>
         <translation type="unfinished">&amp;O&#xa0;programie</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="329"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="346"/>
         <source>About &amp;Qt</source>
         <translation type="unfinished">O&#xa0;&amp;Qt</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="330"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="347"/>
         <source>Check for &amp;Updates</source>
         <translation type="unfinished">Wyszukaj &amp;aktualizacje</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="375"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="394"/>
         <source>Start S&amp;lideshow</source>
         <translation type="unfinished">Rozpocznij prezen&amp;tację</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="381"/>
+        <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="400"/>
         <source>Stop S&amp;lideshow</source>
         <translation type="unfinished">Zatrzymaj prezen&amp;tację</translation>
     </message>

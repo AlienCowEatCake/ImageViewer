@@ -282,6 +282,8 @@ CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(ToolBar, setImageInformationEnab
 CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(ToolBar, setPrintEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setPreferencesEnabled, m_impl->preferences)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setExitEnabled, m_impl->exit)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(ToolBar, setCopyEnabled)
+CONTROLS_CONTAINER_EMPTY_BOOL_ARG_FUNCTION_IMPL(ToolBar, setCopyPathEnabled)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setRotateCounterclockwiseEnabled, m_impl->rotateCounterclockwise)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setRotateClockwiseEnabled, m_impl->rotateClockwise)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(ToolBar, setFlipHorizontalEnabled, m_impl->flipHorizontal)

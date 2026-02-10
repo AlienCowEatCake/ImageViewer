@@ -76,6 +76,8 @@ struct MenuBar::Impl : public ControlsContainerEmitter
     QAction * const actionPrint;
     QAction * const actionPreferences;
     QAction * const actionExit;
+    QAction * const actionCopy;
+    QAction * const actionCopyPath;
     QAction * const actionRotateCounterclockwise;
     QAction * const actionRotateClockwise;
     QAction * const actionFlipHorizontal;
@@ -120,6 +122,8 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         , CONSTRUCT_OBJECT_FROM_POINTER(actionPrint                 , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionPreferences           , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionExit                  , createWidgetAction(parent))
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionCopy                  , createWidgetAction(parent))
+        , CONSTRUCT_OBJECT_FROM_POINTER(actionCopyPath              , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionRotateCounterclockwise, createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionRotateClockwise       , createWidgetAction(parent))
         , CONSTRUCT_OBJECT_FROM_POINTER(actionFlipHorizontal        , createWidgetAction(parent))
@@ -191,6 +195,17 @@ struct MenuBar::Impl : public ControlsContainerEmitter
 #endif
         actionExit->setMenuRole(QAction::QuitRole);
 
+        menuEdit->addAction(actionCopy);
+        actionCopy->setShortcuts(QList<QKeySequence>() << (Qt::CTRL | Qt::Key_C));
+        actionCopy->setMenuRole(QAction::NoRole);
+        menuEdit->addAction(actionCopyPath);
+#if defined (Q_OS_MAC)
+        actionCopyPath->setShortcuts(QList<QKeySequence>() << (Qt::CTRL | Qt::ALT | Qt::Key_C) << (Qt::CTRL | Qt::SHIFT | Qt::Key_C));
+#else
+        actionCopyPath->setShortcuts(QList<QKeySequence>() << (Qt::CTRL | Qt::SHIFT | Qt::Key_C) << (Qt::CTRL | Qt::ALT | Qt::Key_C));
+#endif
+        actionCopyPath->setMenuRole(QAction::NoRole);
+        menuEdit->addSeparator();
         menuEdit->addAction(actionRotateCounterclockwise);
         actionRotateCounterclockwise->setShortcuts(createAnyModifierShortcuts(Qt::Key_L));
         actionRotateCounterclockwise->setMenuRole(QAction::NoRole);
@@ -311,8 +326,10 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionPrint->setText(QCoreApplication::translate("MenuBar", "&Print"));
         actionPreferences->setText(QCoreApplication::translate("MenuBar", "Pr&eferences"));
         actionExit->setText(QCoreApplication::translate("MenuBar", "&Quit"));
-        actionRotateCounterclockwise->setText(QCoreApplication::translate("MenuBar", "Rotate &Counterclockwise"));
-        actionRotateClockwise->setText(QCoreApplication::translate("MenuBar", "&Rotate Clockwise"));
+        actionCopy->setText(QCoreApplication::translate("MenuBar", "&Copy"));
+        actionCopyPath->setText(QCoreApplication::translate("MenuBar", "Copy &Path"));
+        actionRotateCounterclockwise->setText(QCoreApplication::translate("MenuBar", "&Rotate Counterclockwise"));
+        actionRotateClockwise->setText(QCoreApplication::translate("MenuBar", "Rotate Clock&wise"));
         actionFlipHorizontal->setText(QCoreApplication::translate("MenuBar", "Flip &Horizontal"));
         actionFlipVertical->setText(QCoreApplication::translate("MenuBar", "Flip &Vertical"));
         actionDeleteFile->setText(QCoreApplication::translate("MenuBar", "&Delete File"));
@@ -347,6 +364,8 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         actionPrint->setIcon                    (getMenuIcon(ThemeUtils::ICON_DOCUMENT_PRINT        ));
         actionPreferences->setIcon              (getMenuIcon(ThemeUtils::ICON_EDIT_PREFERENCES      ));
         actionExit->setIcon                     (getMenuIcon(ThemeUtils::ICON_APPLICATION_EXIT      ));
+        actionCopy->setIcon                     (getMenuIcon(ThemeUtils::ICON_EDIT_COPY             ));
+        actionCopyPath->setIcon                 (getMenuIcon(ThemeUtils::ICON_EDIT_COPY             ));
         actionRotateCounterclockwise->setIcon   (getMenuIcon(ThemeUtils::ICON_OBJECT_ROTATE_LEFT    ));
         actionRotateClockwise->setIcon          (getMenuIcon(ThemeUtils::ICON_OBJECT_ROTATE_RIGHT   ));
         actionFlipHorizontal->setIcon           (getMenuIcon(ThemeUtils::ICON_OBJECT_FLIP_HORIZONTAL));
@@ -494,6 +513,8 @@ MenuBar::MenuBar(QWidget *parent)
     connect(m_impl->actionPrint                 , SIGNAL(triggered()), emitter, SIGNAL(printRequested())                    );
     connect(m_impl->actionPreferences           , SIGNAL(triggered()), emitter, SIGNAL(preferencesRequested())              );
     connect(m_impl->actionExit                  , SIGNAL(triggered()), emitter, SIGNAL(exitRequested())                     );
+    connect(m_impl->actionCopy                  , SIGNAL(triggered()), emitter, SIGNAL(copyRequested())                     );
+    connect(m_impl->actionCopyPath              , SIGNAL(triggered()), emitter, SIGNAL(copyPathRequested())                 );
     connect(m_impl->actionRotateCounterclockwise, SIGNAL(triggered()), emitter, SIGNAL(rotateCounterclockwiseRequested())   );
     connect(m_impl->actionRotateClockwise       , SIGNAL(triggered()), emitter, SIGNAL(rotateClockwiseRequested())          );
     connect(m_impl->actionFlipHorizontal        , SIGNAL(triggered()), emitter, SIGNAL(flipHorizontalRequested())           );
@@ -585,6 +606,8 @@ CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setImageInformationEnabled, m_impl-
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setPrintEnabled, m_impl->actionPrint)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setPreferencesEnabled, m_impl->actionPreferences)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setExitEnabled, m_impl->actionExit)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setCopyEnabled, m_impl->actionCopy)
+CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setCopyPathEnabled, m_impl->actionCopyPath)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setRotateCounterclockwiseEnabled, m_impl->actionRotateCounterclockwise)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setRotateClockwiseEnabled, m_impl->actionRotateClockwise)
 CONTROLS_CONTAINER_SET_ENABLED_IMPL(MenuBar, setFlipHorizontalEnabled, m_impl->actionFlipHorizontal)
