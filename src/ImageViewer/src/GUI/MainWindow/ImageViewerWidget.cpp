@@ -89,7 +89,8 @@ struct ImageViewerWidget::Impl
         , transformationMode(Qt::SmoothTransformation)
         , wheelMode(WHEEL_SCROLL)
         , wheelAccumulatedValue(0)
-        , upscaleOnFitToWindow(false)
+        , currentUpscaleOnFitToWindow(false)
+        , lastUpscaleOnFitToWindow(currentUpscaleOnFitToWindow)
         , navigatePreviousEnabled(false)
         , navigateNextEnabled(false)
         , navigationZone(MOUSE_NAVIGATION_ZONE_NONE)
@@ -104,7 +105,7 @@ struct ImageViewerWidget::Impl
         const QRectF boundingRect = rotationMatrix.mapRect(currentGraphicsItem->boundingRect());
         const QSize imageSize = boundingRect.size().toSize();
         const QSize windowSize = imageViewerWidget->viewport()->size();
-        if(upscaleOnFitToWindow || imageSize.width() > windowSize.width() || imageSize.height() > windowSize.height())
+        if(currentUpscaleOnFitToWindow || imageSize.width() > windowSize.width() || imageSize.height() > windowSize.height())
         {
             const qreal deltaWidth = static_cast<qreal>(windowSize.width() - ZOOM_FIT_SIZE_CORRECTION) / static_cast<qreal>(imageSize.width());
             const qreal deltaHeight = static_cast<qreal>(windowSize.height() - ZOOM_FIT_SIZE_CORRECTION) / static_cast<qreal>(imageSize.height());
@@ -303,7 +304,8 @@ struct ImageViewerWidget::Impl
     Qt::TransformationMode transformationMode;
     WheelMode wheelMode;
     qreal wheelAccumulatedValue;
-    bool upscaleOnFitToWindow;
+    bool currentUpscaleOnFitToWindow;
+    bool lastUpscaleOnFitToWindow;
     bool navigatePreviousEnabled;
     bool navigateNextEnabled;
     MouseNavigationZone navigationZone;
@@ -426,12 +428,15 @@ void ImageViewerWidget::clear()
     m_impl->flipHorizontal = false;
     m_impl->flipVertical = false;
     m_impl->wheelAccumulatedValue = 0;
+    m_impl->currentZoomMode = m_impl->lastZoomMode;
+    m_impl->currentUpscaleOnFitToWindow = m_impl->lastUpscaleOnFitToWindow;
 }
 
 void ImageViewerWidget::setZoomMode(ImageViewerWidget::ZoomMode mode)
 {
     m_impl->currentZoomMode = mode;
     m_impl->lastZoomMode = mode;
+    m_impl->currentUpscaleOnFitToWindow = m_impl->lastUpscaleOnFitToWindow;
     m_impl->updateTransformations();
 }
 
@@ -491,6 +496,7 @@ void ImageViewerWidget::zoomOut()
 void ImageViewerWidget::resetZoom()
 {
     m_impl->currentZoomMode = m_impl->lastZoomMode;
+    m_impl->currentUpscaleOnFitToWindow = m_impl->lastUpscaleOnFitToWindow;
     m_impl->updateTransformations();
 }
 
@@ -541,7 +547,8 @@ void ImageViewerWidget::setSmoothTransformation(bool enabled)
 
 void ImageViewerWidget::setUpscaleOnFitToWindow(bool enabled)
 {
-    m_impl->upscaleOnFitToWindow = enabled;
+    m_impl->currentUpscaleOnFitToWindow = enabled;
+    m_impl->lastUpscaleOnFitToWindow = enabled;
     m_impl->updateTransformations();
 }
 
@@ -617,6 +624,7 @@ void ImageViewerWidget::mouseDoubleClickEvent(QMouseEvent *event)
         {
         case ZOOM_IDENTITY:
         case ZOOM_CUSTOM:
+            m_impl->currentUpscaleOnFitToWindow = true;
             m_impl->currentZoomMode = ZOOM_FIT_TO_WINDOW;
             break;
         case ZOOM_FIT_TO_WINDOW:
