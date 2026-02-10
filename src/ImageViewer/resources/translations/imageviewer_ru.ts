@@ -515,22 +515,22 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="371"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="374"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="385"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="388"/>
         <source>…</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="526"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="529"/>
         <source>Zoom</source>
         <translation>Масштабирование</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="527"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="530"/>
         <source>Zoom Factor (%):</source>
         <translation>Масштаб (%):</translation>
     </message>
@@ -1356,130 +1356,140 @@
         <translation>Плавающее или присоединённое</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="164"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="166"/>
         <source>Select Background Color</source>
         <translation>Выберите цвет фона</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="113"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="115"/>
         <source>General</source>
         <translation>Основные</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="114"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="116"/>
         <source>Interface</source>
         <translation>Интерфейс</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="115"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="117"/>
         <source>Decoders</source>
         <translation>Декодеры</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="118"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="120"/>
         <source>Automatically check for updates</source>
         <translation>Автоматически проверять обновления</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="122"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="124"/>
         <source>Ask before deleting images</source>
         <translation>Спросить перед удалением изображений</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="125"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="127"/>
         <source>Move deleted images to trash</source>
         <translation>Удалять изображения в корзину</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="129"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="131"/>
         <source>Use smooth image rendering</source>
         <translation>Использовать сглаженный режим отрисовки</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="134"/>
         <source>Allow fit to window for small images</source>
         <translation>Масштабировать к размеру окна маленькие изображения</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="137"/>
         <source>Remember rotation and flip until app exit</source>
         <translation>Запоминать вращение и переворот до выхода из приложения</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="138"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="140"/>
+        <source>Start with a maximized window</source>
+        <translation>Запускать с развёрнутым окном</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="143"/>
+        <source>Save window size and position</source>
+        <translation>Сохранять размер окна и позицию</translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="146"/>
         <source>Slideshow interval</source>
         <translation>Интервал слайдшоу</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="139"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="147"/>
         <source>sec</source>
         <translation>сек</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="146"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="154"/>
         <source>Navigate</source>
         <comment>WheelMode</comment>
         <translation>Навигация</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="187"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="197"/>
         <source>&lt;b&gt;Language&lt;/b&gt;</source>
         <translation>&lt;b&gt;Язык&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="188"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="198"/>
         <source>&lt;b&gt;Theme&lt;/b&gt;</source>
         <translation>&lt;b&gt;Тема&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="190"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="200"/>
         <source>&lt;b&gt;Icon Theme&lt;/b&gt;</source>
         <translation>&lt;b&gt;Тема значков&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="193"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="203"/>
         <source>&lt;b&gt;Toolbar Position&lt;/b&gt;</source>
         <translation>&lt;b&gt;Положение панели инструментов&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="196"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="206"/>
         <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
         <translation>&lt;b&gt;Цвета фона&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="197"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="207"/>
         <source>Normal:</source>
         <translation>Обычный:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="198"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="208"/>
         <source>Fullscreen:</source>
         <translation>На полный экран:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="143"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="151"/>
         <source>&lt;b&gt;Mouse wheel action&lt;/b&gt;</source>
         <translation>&lt;b&gt;Действие при вращении колёсика мыши&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="144"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="152"/>
         <source>Scroll</source>
         <comment>WheelMode</comment>
         <translation>Прокрутка</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="145"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="153"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
         <translation>Масштабирование</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="233"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="243"/>
         <source>&lt;b&gt;Enabled decoders:&lt;/b&gt;</source>
         <translation>&lt;b&gt;Разрешённые декодеры:&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="202"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="204"/>
         <source>Preferences</source>
         <translation>Настройки</translation>
     </message>

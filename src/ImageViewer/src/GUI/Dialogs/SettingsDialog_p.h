@@ -76,6 +76,8 @@ struct SettingsDialog::UI
         , CONSTRUCT_OBJECT(smoothTransformationCheckbox, QCheckBox, (generalTabFrame))
         , CONSTRUCT_OBJECT(upscaleOnFitToWindowCheckbox, QCheckBox, (generalTabFrame))
         , CONSTRUCT_OBJECT(rememberEffectsDuringSessionCheckbox, QCheckBox, (generalTabFrame))
+        , CONSTRUCT_OBJECT(openMainWindowMaximizedCheckbox, QCheckBox, (generalTabFrame))
+        , CONSTRUCT_OBJECT(saveMainWindowGeometryCheckbox, QCheckBox, (generalTabFrame))
         , CONSTRUCT_OBJECT(slideShowIntervalFrame, QFrame, (generalTabFrame))
         , CONSTRUCT_OBJECT(slideShowIntervalLabel, QLabel, (slideShowIntervalFrame))
         , CONSTRUCT_OBJECT(slideShowSpinBox, QSpinBox, (slideShowIntervalFrame))
@@ -135,6 +137,12 @@ struct SettingsDialog::UI
         rememberEffectsDuringSessionCheckbox->setText(QCoreApplication::translate("SettingsDialog", "Remember rotation and flip until app exit"));
         rememberEffectsDuringSessionCheckbox->setChecked(settings->rememberEffectsDuringSession());
 
+        openMainWindowMaximizedCheckbox->setText(QCoreApplication::translate("SettingsDialog", "Start with a maximized window"));
+        openMainWindowMaximizedCheckbox->setChecked(settings->openMainWindowMaximized());
+
+        saveMainWindowGeometryCheckbox->setText(QCoreApplication::translate("SettingsDialog", "Save window size and position"));
+        saveMainWindowGeometryCheckbox->setChecked(settings->saveMainWindowGeometry());
+
         slideShowIntervalLabel->setText(QCoreApplication::translate("SettingsDialog", "Slideshow interval"));
         slideShowSecLabel->setText(QCoreApplication::translate("SettingsDialog", "sec"));
         slideShowSpinBox->setValue(settings->slideShowInterval());
@@ -180,6 +188,8 @@ struct SettingsDialog::UI
         generalTabLayout->addWidget(smoothTransformationCheckbox);
         generalTabLayout->addWidget(upscaleOnFitToWindowCheckbox);
         generalTabLayout->addWidget(rememberEffectsDuringSessionCheckbox);
+        generalTabLayout->addWidget(openMainWindowMaximizedCheckbox);
+        generalTabLayout->addWidget(saveMainWindowGeometryCheckbox);
         generalTabLayout->addWidget(slideShowIntervalFrame);
         generalTabLayout->addWidget(wheelModeFrame);
         generalTabLayout->addStretch();
@@ -269,6 +279,8 @@ struct SettingsDialog::UI
     QCheckBox *smoothTransformationCheckbox;
     QCheckBox *upscaleOnFitToWindowCheckbox;
     QCheckBox *rememberEffectsDuringSessionCheckbox;
+    QCheckBox *openMainWindowMaximizedCheckbox;
+    QCheckBox *saveMainWindowGeometryCheckbox;
     QFrame *slideShowIntervalFrame;
     QLabel *slideShowIntervalLabel;
     QSpinBox *slideShowSpinBox;

@@ -263,7 +263,7 @@ bool MainController::selectLastFile()
 
 void MainController::showMainWindow()
 {
-    if(m_impl->settings.mainWindowMaximized())
+    if((m_impl->settings.saveMainWindowGeometry() && m_impl->settings.mainWindowMaximized()) || m_impl->settings.openMainWindowMaximized())
         m_impl->mainWindow.showMaximized();
     else
         m_impl->mainWindow.showNormal();

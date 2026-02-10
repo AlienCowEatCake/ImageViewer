@@ -515,22 +515,22 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="371"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="374"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="385"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="388"/>
         <source>…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="526"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="529"/>
         <source>Zoom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="527"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="530"/>
         <source>Zoom Factor (%):</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1356,130 +1356,140 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="164"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="166"/>
         <source>Select Background Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="202"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="204"/>
         <source>Preferences</source>
         <translation type="unfinished">Preferensi</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="113"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="115"/>
         <source>General</source>
         <translation type="unfinished">Lihat Contoh Jadi</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="114"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="116"/>
         <source>Interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="115"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="117"/>
         <source>Decoders</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="118"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="120"/>
         <source>Automatically check for updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="122"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="124"/>
         <source>Ask before deleting images</source>
         <translation type="unfinished">Tanya sebelum menghapus citra</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="125"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="127"/>
         <source>Move deleted images to trash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="129"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="131"/>
         <source>Use smooth image rendering</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="134"/>
         <source>Allow fit to window for small images</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="137"/>
         <source>Remember rotation and flip until app exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="138"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="140"/>
+        <source>Start with a maximized window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="143"/>
+        <source>Save window size and position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="146"/>
         <source>Slideshow interval</source>
         <translation type="unfinished">Interval salindia</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="139"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="147"/>
         <source>sec</source>
         <translation type="unfinished">det</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="143"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="151"/>
         <source>&lt;b&gt;Mouse wheel action&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="144"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="152"/>
         <source>Scroll</source>
         <comment>WheelMode</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="145"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="153"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="146"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="154"/>
         <source>Navigate</source>
         <comment>WheelMode</comment>
         <translation type="unfinished">Navigasi</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="187"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="197"/>
         <source>&lt;b&gt;Language&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="188"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="198"/>
         <source>&lt;b&gt;Theme&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="190"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="200"/>
         <source>&lt;b&gt;Icon Theme&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="193"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="203"/>
         <source>&lt;b&gt;Toolbar Position&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="196"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="206"/>
         <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
         <translation type="unfinished">&lt;b&gt;Warna latar&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="197"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="207"/>
         <source>Normal:</source>
         <translation type="unfinished">Normal:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="198"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="208"/>
         <source>Fullscreen:</source>
         <translation type="unfinished">Layar Penuh:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="233"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="243"/>
         <source>&lt;b&gt;Enabled decoders:&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>

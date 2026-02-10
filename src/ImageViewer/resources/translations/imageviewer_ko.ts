@@ -515,22 +515,22 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="371"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="374"/>
         <source>Error</source>
         <translation>오류</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="385"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="388"/>
         <source>…</source>
         <translation type="unfinished">…</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="526"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="529"/>
         <source>Zoom</source>
         <translation>확대/축소</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="527"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="530"/>
         <source>Zoom Factor (%):</source>
         <translation>확대/축소 비율 (%):</translation>
     </message>
@@ -1356,130 +1356,140 @@
         <translation>떠 있거나 도킹</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="164"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="166"/>
         <source>Select Background Color</source>
         <translation>배경색 선택</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="202"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog.cpp" line="204"/>
         <source>Preferences</source>
         <translation>환경 설정</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="113"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="115"/>
         <source>General</source>
         <translation>일반</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="114"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="116"/>
         <source>Interface</source>
         <translation>인터페이스</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="115"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="117"/>
         <source>Decoders</source>
         <translation>디코더</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="118"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="120"/>
         <source>Automatically check for updates</source>
         <translation>자동으로 업데이트 확인</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="122"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="124"/>
         <source>Ask before deleting images</source>
         <translation>이미지를 삭제하기 전에 묻기</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="125"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="127"/>
         <source>Move deleted images to trash</source>
         <translation>삭제된 이미지를 휴지통으로 옮기기</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="129"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="131"/>
         <source>Use smooth image rendering</source>
         <translation>부드러운 이미지 렌더링 사용</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="132"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="134"/>
         <source>Allow fit to window for small images</source>
         <translation>작은 이미지를 창에 맞출 수 있도록 허용</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="135"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="137"/>
         <source>Remember rotation and flip until app exit</source>
         <translation>앱이 종료될 때까지 회전하고 뒤집기 기억</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="138"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="140"/>
+        <source>Start with a maximized window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="143"/>
+        <source>Save window size and position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="146"/>
         <source>Slideshow interval</source>
         <translation>슬라이드쇼 간격</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="139"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="147"/>
         <source>sec</source>
         <translation>초</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="143"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="151"/>
         <source>&lt;b&gt;Mouse wheel action&lt;/b&gt;</source>
         <translation>&lt;b&gt;마우스 휠 동작&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="144"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="152"/>
         <source>Scroll</source>
         <comment>WheelMode</comment>
         <translation>스크롤</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="145"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="153"/>
         <source>Zoom</source>
         <comment>WheelMode</comment>
         <translation>확대/축소</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="146"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="154"/>
         <source>Navigate</source>
         <comment>WheelMode</comment>
         <translation type="unfinished">탐색</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="187"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="197"/>
         <source>&lt;b&gt;Language&lt;/b&gt;</source>
         <translation>&lt;b&gt;언어&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="188"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="198"/>
         <source>&lt;b&gt;Theme&lt;/b&gt;</source>
         <translation>&lt;b&gt;테마&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="190"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="200"/>
         <source>&lt;b&gt;Icon Theme&lt;/b&gt;</source>
         <translation>&lt;b&gt;아이콘 테마&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="193"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="203"/>
         <source>&lt;b&gt;Toolbar Position&lt;/b&gt;</source>
         <translation>&lt;b&gt;도구 모음 위치&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="196"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="206"/>
         <source>&lt;b&gt;Background colors&lt;/b&gt;</source>
         <translation>&lt;b&gt;배경 색상&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="197"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="207"/>
         <source>Normal:</source>
         <translation>일반:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="198"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="208"/>
         <source>Fullscreen:</source>
         <translation>전체 화면:</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="233"/>
+        <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="243"/>
         <source>&lt;b&gt;Enabled decoders:&lt;/b&gt;</source>
         <translation>&lt;b&gt;활성화된 디코더:&lt;/b&gt;</translation>
     </message>

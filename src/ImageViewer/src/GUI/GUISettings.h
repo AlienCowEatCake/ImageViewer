@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -58,6 +58,8 @@ Q_SIGNALS:
     void smoothTransformationChanged(bool enabled);
     void upscaleOnFitToWindowChanged(bool enabled);
     void rememberEffectsDuringSessionChanged(bool enabled);
+    void saveMainWindowGeometryChanged(bool enabled);
+    void openMainWindowMaximizedChanged(bool enabled);
     void mainWindowGeometryChanged(const QByteArray &geometry);
     void mainWindowStateChanged(const QByteArray &state);
     void mainWindowMaximizedChanged(bool maximized);
@@ -104,6 +106,12 @@ public:
 
     bool rememberEffectsDuringSession() const;
     void setRememberEffectsDuringSession(bool enabled);
+
+    bool saveMainWindowGeometry() const;
+    void setSaveMainWindowGeometry(bool enabled);
+
+    bool openMainWindowMaximized() const;
+    void setOpenMainWindowMaximized(bool enabled);
 
     QByteArray mainWindowGeometry() const;
     void setMainWindowGeometry(const QByteArray &geometry);

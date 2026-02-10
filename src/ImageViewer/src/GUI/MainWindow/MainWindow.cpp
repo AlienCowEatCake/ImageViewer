@@ -330,16 +330,19 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
 
     ui.menubar->setVisible(false);
     m_impl->setToolBarVisible(false);
+    const bool restoreSaved = settings->saveMainWindowGeometry();
     RestorableGeometryHelper &geometryHelper = m_impl->geometryHelper;
     geometryHelper.saveGeometry();
-    geometryHelper.deserialize(settings->mainWindowGeometry());
+    if(restoreSaved)
+        geometryHelper.deserialize(settings->mainWindowGeometry());
     geometryHelper.block();
     ui.menubar->setVisible(settings->menuBarVisible());
     m_impl->setToolBarVisible(settings->toolBarVisible());
     geometryHelper.unblock();
     geometryHelper.restoreGeometry();
 #if !defined (HAS_MAC_TOOLBAR)
-    restoreState(settings->mainWindowState(), WINDOW_STATE_VERSION);
+    if(restoreSaved)
+        restoreState(settings->mainWindowState(), WINDOW_STATE_VERSION);
 #endif
     updateUIState(m_impl->uiState, UICF_All);
 
@@ -602,6 +605,8 @@ void MainWindow::saveGeometrySettings()
 {
     if(!m_impl->isFullScreenMode)
         m_impl->geometryHelper.saveGeometry();
+    if(!m_impl->settings->saveMainWindowGeometry())
+        return;
     m_impl->settings->setMainWindowGeometry(m_impl->geometryHelper.serialize());
 #if !defined (HAS_MAC_TOOLBAR)
     m_impl->settings->setMainWindowState(saveState(WINDOW_STATE_VERSION));

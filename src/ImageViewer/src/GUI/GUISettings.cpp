@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2025 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -113,6 +113,8 @@ const QString LAST_OPENED_PATH_KEY              = QString::fromLatin1("LastOpene
 const QString SMOOTH_TRANSFORMATION_KEY         = QString::fromLatin1("SmoothTransformation");
 const QString UPSCALE_ON_FIT_TO_WINDOW_KEY      = QString::fromLatin1("UpscaleOnFitToWindow");
 const QString REMEMBER_EFFECTS_DURING_SESSION   = QString::fromLatin1("RememberEffectsDuringSession");
+const QString SAVE_MAIN_WINDOW_GEOMETRY_KEY     = QString::fromLatin1("SaveMainWindowGeometry");
+const QString OPEN_MAIN_WINDOW_MAXIMIZED_KEY    = QString::fromLatin1("OpenMainWindowMaximized");
 const QString MAIN_WINDOW_GEOMETRY_KEY          = QString::fromLatin1("MainWindowGeometry");
 const QString MAIN_WINDOW_STATE_KEY             = QString::fromLatin1("MainWindowState");
 const QString MAIN_WINDOW_MAXIMIZED_KEY         = QString::fromLatin1("MainWindowMaximized");
@@ -358,6 +360,46 @@ void GUISettings::setRememberEffectsDuringSession(bool enabled)
     m_impl->settings.setValue(REMEMBER_EFFECTS_DURING_SESSION, enabled);
     if(enabled != oldValue)
         Q_EMIT rememberEffectsDuringSessionChanged(enabled);
+}
+
+bool GUISettings::saveMainWindowGeometry() const
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::Bool);
+#else
+    const QVariant::Type type = QVariant::Bool;
+#endif
+    const bool defaultValue = true;
+    QVariant value = m_impl->settings.value(SAVE_MAIN_WINDOW_GEOMETRY_KEY, defaultValue);
+    return value.isValid() && value.canConvert(type) ? value.toBool() : defaultValue;
+}
+
+void GUISettings::setSaveMainWindowGeometry(bool enabled)
+{
+    const bool oldValue = saveMainWindowGeometry();
+    m_impl->settings.setValue(SAVE_MAIN_WINDOW_GEOMETRY_KEY, enabled);
+    if(enabled != oldValue)
+        Q_EMIT saveMainWindowGeometryChanged(enabled);
+}
+
+bool GUISettings::openMainWindowMaximized() const
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    const QMetaType type(QMetaType::Bool);
+#else
+    const QVariant::Type type = QVariant::Bool;
+#endif
+    const bool defaultValue = false;
+    QVariant value = m_impl->settings.value(OPEN_MAIN_WINDOW_MAXIMIZED_KEY, defaultValue);
+    return value.isValid() && value.canConvert(type) ? value.toBool() : defaultValue;
+}
+
+void GUISettings::setOpenMainWindowMaximized(bool enabled)
+{
+    const bool oldValue = openMainWindowMaximized();
+    m_impl->settings.setValue(OPEN_MAIN_WINDOW_MAXIMIZED_KEY, enabled);
+    if(enabled != oldValue)
+        Q_EMIT openMainWindowMaximizedChanged(enabled);
 }
 
 QByteArray GUISettings::mainWindowGeometry() const
