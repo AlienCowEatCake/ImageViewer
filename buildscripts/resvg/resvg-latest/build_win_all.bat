@@ -1,6 +1,6 @@
 @echo off
 
-set "RESVG_VERSION=0.46.0"
+set "RESVG_VERSION=0.47.0"
 set "RUST_VERSION=1.87.0"
 
 for /F "tokens=1,2*" %%i in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" /v "PROCESSOR_ARCHITECTURE"') DO (
