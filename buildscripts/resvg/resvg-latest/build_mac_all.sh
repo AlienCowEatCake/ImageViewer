@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-RESVG_VERSION="0.46.0"
+RESVG_VERSION="0.47.0"
 if [[ $(sysctl -n machdep.cpu.brand_string) =~ "Apple" ]] ; then
     RESVG_HOST="aarch64-apple-darwin"
 else
