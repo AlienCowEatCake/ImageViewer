@@ -297,7 +297,7 @@ QString getTextBrowserContent()
     result.append(formatItem(
                       QString::fromLatin1("This software uses the APNG patch for libpng"),
                       QString::fromLatin1("libpng-apng"),
-                      QString::fromLatin1("%1.%2.%3").arg(PNG_LIBPNG_VER_MAJOR).arg(PNG_LIBPNG_VER_MINOR).arg(PNG_LIBPNG_VER_RELEASE),
+                      QString(),
                       QString::fromLatin1("https://sourceforge.net/projects/libpng-apng/"),
                       QString::fromLatin1("PNG Reference Library License") + (libpngIsV2 ? QString::fromLatin1(" v2") : QString()),
                       QString::fromLatin1("https://sourceforge.net/p/libpng-apng/code/ci/libpng16/tree/LICENSE")
