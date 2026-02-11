@@ -1,1 +1,1 @@
-#include "../../openexr-3.4.4/src/lib/OpenEXR/ImfZip.h"
+#include "../../openexr-2.5.10/OpenEXR/IlmImf/ImfZip.h"

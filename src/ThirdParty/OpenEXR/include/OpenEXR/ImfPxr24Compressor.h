@@ -1,1 +1,1 @@
-#include "../../openexr-3.4.4/src/lib/OpenEXR/ImfPxr24Compressor.h"
+#include "../../openexr-2.5.10/OpenEXR/IlmImf/ImfPxr24Compressor.h"

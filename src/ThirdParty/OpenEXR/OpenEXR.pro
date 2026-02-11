@@ -5,485 +5,381 @@ TEMPLATE = lib
 CONFIG += staticlib
 TARGET = tp_openexr
 
-QT -= core gui
+QT -= gui
 
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-3.4.4
+THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-2.5.10
 THIRDPARTY_OPENEXR_CONFIG_PATH = $${PWD}/config
-THIRDPARTY_IMATH_PATH = $${PWD}/Imath-3.2.2
+THIRDPARTY_ILM_THREAD_QT = $${PWD}/IlmThreadQt
 THIRDPARTY_OPENEXR_INCLUDE_PATH = $${PWD}/include
 
 include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../zlib/zlib.pri)
-include(../OpenJPEG/OpenJPEG.pri)
-include(../OpenJPH/OpenJPH.pri)
 
 INCLUDEPATH = \
     $${THIRDPARTY_OPENEXR_CONFIG_PATH} \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/IlmThread \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IexMath \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil \
+    $${THIRDPARTY_ILM_THREAD_QT}/IlmThread \
     $${INCLUDEPATH}
 
-disable_openjph: DEFINES += OPENEXR_DISABLE_OJPH
-
-# cmake -DCMAKE_BUILD_TYPE=Release -DPYTHON=OFF -DBUILD_WEBSITE=OFF -DBUILD_TESTING=OFF -DOPENEXR_INSTALL=ON -DOPENEXR_INSTALL_TOOLS=OFF -DOPENEXR_BUILD_LIBS=ON -DOPENEXR_BUILD_TOOLS=OFF -DOPENEXR_BUILD_EXAMPLES=OFF -DOPENEXR_INSTALL_DOCS=OFF -DOPENEXR_BUILD_PYTHON=OFF -DOPENEXR_TEST_LIBRARIES=OFF -DOPENEXR_TEST_TOOLS=OFF -DOPENEXR_TEST_PYTHON=OFF -DBUILD_SHARED_LIBS=OFF -DOPENEXR_USE_CLANG_TIDY=OFF -DOPENEXR_FORCE_INTERNAL_DEFLATE=ON -DOPENEXR_FORCE_INTERNAL_IMATH=ON -DOPENEXR_FORCE_INTERNAL_OPENJPH=ON -DOPENEXR_USE_TBB=OFF ..
-
-# find ./src/Imath -name '*.cpp' -or -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_IMATH_PATH}| ; s|$| \\|'
 SOURCES += \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathColorAlgo.cpp \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathFun.cpp \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathMatrixAlgo.cpp \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathRandom.cpp \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/half.cpp \
-\#    $${THIRDPARTY_IMATH_PATH}/src/Imath/toFloat.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/eLut.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/half.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/toFloat.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexBaseExc.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexThrowErrnoExc.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IexMath/IexMathFloatExc.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IexMath/IexMathFpu.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThread.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadMutex.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadMutexPosix.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadMutexWin32.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadPool.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadPosix.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadSemaphore.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadSemaphoreOSX.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadSemaphorePosixCompat.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadSemaphorePosix.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadSemaphoreWin32.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadWin32.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathColorAlgo.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathExc.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathFun.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathMatrixAlgo.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathRandom.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathVec.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/b44ExpLogTable.cpp \
+\#    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/dwaLookups.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfAcesFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfB44Compressor.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfBoxAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfChannelListAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfChannelList.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfChromaticitiesAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfChromaticities.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfCompositeDeepScanLine.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfCompressionAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfCompressor.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfConvert.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfCRgbaFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepCompositing.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepFrameBuffer.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepImageStateAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepScanLineInputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepScanLineInputPart.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepScanLineOutputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepScanLineOutputPart.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepTiledInputPart.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepTiledOutputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepTiledOutputPart.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDoubleAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDwaCompressor.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfEnvmapAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfEnvmap.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfFastHuf.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfFloatAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfFloatVectorAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfFrameBuffer.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfFramesPerSecond.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfGenericInputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfGenericOutputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfHeader.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfHuf.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfInputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfInputPart.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfInputPartData.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfIntAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfIO.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfKeyCodeAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfKeyCode.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfLineOrderAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfLut.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfMatrixAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfMisc.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfMultiPartOutputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfMultiView.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfOpaqueAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfOutputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfOutputPart.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfOutputPartData.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfPartType.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfPizCompressor.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfPreviewImageAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfPreviewImage.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfPxr24Compressor.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRationalAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRational.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRgbaFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRgbaYca.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRleCompressor.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRle.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfScanLineInputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfStandardAttributes.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfStdIO.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfStringAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfStringVectorAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfSystemSpecific.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTestFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfThreading.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTileDescriptionAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTiledInputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTiledInputPart.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTiledMisc.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTiledOutputFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTiledOutputPart.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTiledRgbaFile.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTileOffsets.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTimeCodeAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTimeCode.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfVecAttribute.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfVersion.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfWav.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfZipCompressor.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfZip.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfDeepImageChannel.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfDeepImage.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfDeepImageIO.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfDeepImageLevel.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfFlatImageChannel.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfFlatImage.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfFlatImageIO.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfFlatImageLevel.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfImageChannel.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfImage.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfImageDataWindow.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfImageIO.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfImageLevel.cpp \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfSampleCountChannel.cpp \
 
-# find ./src/Imath -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_IMATH_PATH}| ; s|$| \\|'
 HEADERS += \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathBox.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathBoxAlgo.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathColor.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathColorAlgo.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathEuler.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathExport.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathForward.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathFrame.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathFrustum.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathFrustumTest.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathFun.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathGL.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathGLU.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathInt64.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathInterval.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathLine.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathLineAlgo.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathMath.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathMatrix.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathMatrixAlgo.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathNamespace.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathPlane.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathPlatform.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathQuat.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathRandom.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathRoots.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathShear.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathSphere.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathTypeTraits.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathVec.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/ImathVecAlgo.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/half.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/halfFunction.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/halfLimits.h \
-    $${THIRDPARTY_IMATH_PATH}/src/Imath/toFloat.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/eLut.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/halfExport.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/halfFunction.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/half.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/halfLimits.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Half/toFloat.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexBaseExc.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexErrnoExc.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexExport.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexForward.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/Iex.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexMacros.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexMathExc.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexNamespace.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Iex/IexThrowErrnoExc.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IexMath/IexMathFloatExc.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IexMath/IexMathFpu.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IexMath/IexMathIeeeExc.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadExport.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadForward.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThread.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadMutex.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadNamespace.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadPool.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/IlmThread/IlmThreadSemaphore.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathBoxAlgo.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathBox.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathColorAlgo.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathColor.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathEuler.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathExc.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathExport.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathForward.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathFrame.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathFrustum.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathFrustumTest.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathFun.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathGL.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathGLU.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathHalfLimits.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathInt64.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathInterval.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathLimits.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathLineAlgo.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathLine.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathMath.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathMatrixAlgo.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathMatrix.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathNamespace.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathPlane.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathPlatform.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathQuat.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathRandom.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathRoots.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathShear.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathSphere.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathVecAlgo.h \
+    $${THIRDPARTY_OPENEXR_PATH}/IlmBase/Imath/ImathVec.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/b44ExpLogTable.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/dwaLookups.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfAcesFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfArray.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfAutoArray.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfB44Compressor.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfBoxAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfChannelListAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfChannelList.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfCheckedArithmetic.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfChromaticitiesAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfChromaticities.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfCompositeDeepScanLine.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfCompressionAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfCompression.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfCompressor.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfConvert.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfCRgbaFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepCompositing.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepFrameBuffer.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepImageStateAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepImageState.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepScanLineInputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepScanLineInputPart.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepScanLineOutputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepScanLineOutputPart.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepTiledInputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepTiledInputPart.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepTiledOutputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDeepTiledOutputPart.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDoubleAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDwaCompressor.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfDwaCompressorSimd.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfEnvmapAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfEnvmap.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfExport.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfFastHuf.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfFloatAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfFloatVectorAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfForward.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfFrameBuffer.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfFramesPerSecond.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfGenericInputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfGenericOutputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfHeader.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfHuf.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfInputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfInputPartData.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfInputPart.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfInputStreamMutex.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfInt64.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfIntAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfIO.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfKeyCodeAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfKeyCode.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfLineOrderAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfLineOrder.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfLut.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfMatrixAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfMisc.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfMultiPartInputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfMultiPartOutputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfMultiView.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfName.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfNamespace.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfOpaqueAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfOptimizedPixelReading.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfOutputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfOutputPartData.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfOutputPart.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfOutputStreamMutex.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfPartHelper.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfPartType.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfPixelType.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfPizCompressor.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfPreviewImageAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfPreviewImage.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfPxr24Compressor.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRationalAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRational.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRgbaFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRgba.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRgbaYca.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRleCompressor.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfRle.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfScanLineInputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfSimd.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfStandardAttributes.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfStdIO.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfStringAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfStringVectorAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfSystemSpecific.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTestFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfThreading.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTileDescriptionAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTileDescription.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTiledInputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTiledInputPart.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTiledMisc.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTiledOutputFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTiledOutputPart.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTiledRgbaFile.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTileOffsets.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTimeCodeAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfTimeCode.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfVecAttribute.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfVersion.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfWav.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfXdr.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfZipCompressor.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImf/ImfZip.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfDeepImageChannel.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfDeepImage.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfDeepImageIO.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfDeepImageLevel.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfFlatImageChannel.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfFlatImage.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfFlatImageIO.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfFlatImageLevel.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfImageChannel.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfImageChannelRenaming.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfImageDataWindow.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfImage.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfImageIO.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfImageLevel.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfSampleCountChannel.h \
+    $${THIRDPARTY_OPENEXR_PATH}/OpenEXR/IlmImfUtil/ImfUtilExport.h \
 
-# find ./src/lib -name '*.cpp' -or -name '*.c' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_OPENEXR_PATH}| ; s|$| \\|'
+HEADERS += \
+    $${THIRDPARTY_OPENEXR_CONFIG_PATH}/IlmBaseConfig.h \
+    $${THIRDPARTY_OPENEXR_CONFIG_PATH}/IlmBaseConfigInternal.h \
+    $${THIRDPARTY_OPENEXR_CONFIG_PATH}/OpenEXRConfig.h \
+    $${THIRDPARTY_OPENEXR_CONFIG_PATH}/OpenEXRConfigInternal.h \
+
 SOURCES += \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexBaseExc.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexMathFloatExc.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexMathFpu.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexThrowErrnoExc.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/IlmThread/IlmThread.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/IlmThread/IlmThreadPool.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/IlmThread/IlmThreadSemaphore.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/IlmThread/IlmThreadSemaphoreOSX.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/IlmThread/IlmThreadSemaphorePosix.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/IlmThread/IlmThreadSemaphorePosixCompat.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/IlmThread/IlmThreadSemaphoreWin32.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfAcesFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfB44Compressor.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfBoxAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfBytesAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCRgbaFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChannelList.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChannelListAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChromaticities.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChromaticitiesAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompositeDeepScanLine.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompression.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompressionAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompressor.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfContext.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfContextInit.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfConvert.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepCompositing.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepFrameBuffer.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepImageStateAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepScanLineInputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepScanLineInputPart.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepScanLineOutputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepScanLineOutputPart.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepTiledInputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepTiledInputPart.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepTiledOutputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepTiledOutputPart.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDoubleAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDwaCompressor.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfEnvmap.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfEnvmapAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfFastHuf.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfFloatAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfFloatVectorAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfFrameBuffer.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfFramesPerSecond.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfGenericInputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfGenericOutputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfHTCompressor.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfHeader.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfHuf.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfIDManifest.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfIDManifestAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfIO.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfInputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfInputPart.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfInputPartData.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfIntAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfKeyCode.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfKeyCodeAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfLineOrderAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfLut.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfMatrixAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfMisc.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfMultiPartInputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfMultiPartOutputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfMultiView.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfOpaqueAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfOutputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfOutputPart.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfOutputPartData.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfPartType.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfPizCompressor.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfPreviewImage.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfPreviewImageAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfPxr24Compressor.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRational.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRationalAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRgbaFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRgbaYca.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRle.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRleCompressor.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfScanLineInputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfStandardAttributes.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfStdIO.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfStringAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfStringVectorAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfSystemSpecific.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTestFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfThreading.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTileDescriptionAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTileOffsets.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTiledInputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTiledInputPart.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTiledMisc.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTiledOutputFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTiledOutputPart.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTiledRgbaFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTimeCode.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTimeCodeAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfVecAttribute.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfVersion.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfWav.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZip.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZipCompressor.cpp \
-\#    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/dwaLookups.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/attributes.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/base.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/bytes.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/channel_list.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/chunk.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/coding.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/compression.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/context.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/debug.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/decoding.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/encoding.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/float_vector.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_b44.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_b44_table.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_b44_table_init.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa_table.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa_table_init.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_ht.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_ht_common.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_huf.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_piz.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_pxr24.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_rle.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_structs.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_zip.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/memory.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/opaque.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/pack.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/parse_header.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/part.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/part_attr.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/preview.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/std_attr.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/string.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/string_vector.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/unpack.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/validation.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/write_header.c \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfCheckFile.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfDeepImage.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfDeepImageChannel.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfDeepImageIO.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfDeepImageLevel.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfFlatImage.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfFlatImageChannel.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfFlatImageIO.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfFlatImageLevel.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfImage.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfImageChannel.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfImageDataWindow.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfImageIO.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfImageLevel.cpp \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfSampleCountChannel.cpp \
+    $${THIRDPARTY_ILM_THREAD_QT}/IlmThread/IlmThread.cpp \
+    $${THIRDPARTY_ILM_THREAD_QT}/IlmThread/IlmThreadMutex.cpp \
+    $${THIRDPARTY_ILM_THREAD_QT}/IlmThread/IlmThreadPool.cpp \
+    $${THIRDPARTY_ILM_THREAD_QT}/IlmThread/IlmThreadSemaphore.cpp \
 
-# find ./src/lib -name '*.h' | grep -v '/IlmThread/' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_OPENEXR_PATH}| ; s|$| \\|'
 HEADERS += \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/Iex.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexBaseExc.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexErrnoExc.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexExport.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexForward.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexMacros.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexMathExc.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexMathFloatExc.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexMathFpu.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexMathIeeeExc.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexNamespace.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/Iex/IexThrowErrnoExc.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfAcesFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfArray.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfAutoArray.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfB44Compressor.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfBoxAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfBytesAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCRgbaFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChannelList.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChannelListAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCheckedArithmetic.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChromaticities.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfChromaticitiesAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompositeDeepScanLine.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompression.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompressionAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfCompressor.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfContext.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfContextInit.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfConvert.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepCompositing.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepFrameBuffer.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepImageState.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepImageStateAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepScanLineInputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepScanLineInputPart.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepScanLineOutputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepScanLineOutputPart.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepTiledInputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepTiledInputPart.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepTiledOutputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDeepTiledOutputPart.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDoubleAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfDwaCompressor.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfEnvmap.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfEnvmapAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfExport.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfFastHuf.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfFloatAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfFloatVectorAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfForward.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfFrameBuffer.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfFramesPerSecond.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfGenericInputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfGenericOutputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfHTCompressor.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfHeader.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfHuf.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfIDManifest.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfIDManifestAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfIO.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfInputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfInputPart.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfInputPartData.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfInputStreamMutex.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfInt64.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfIntAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfKeyCode.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfKeyCodeAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfLineOrder.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfLineOrderAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfLut.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfMatrixAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfMisc.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfMultiPartInputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfMultiPartOutputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfMultiView.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfName.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfNamespace.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfOpaqueAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfOptimizedPixelReading.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfOutputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfOutputPart.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfOutputPartData.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfOutputStreamMutex.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfPartHelper.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfPartType.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfPixelType.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfPizCompressor.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfPreviewImage.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfPreviewImageAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfPxr24Compressor.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRational.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRationalAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRgba.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRgbaFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRgbaYca.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRle.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfRleCompressor.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfScanLineInputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfSimd.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfStandardAttributes.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfStdIO.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfStringAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfStringVectorAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfSystemSpecific.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTestFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfThreading.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTileDescription.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTileDescriptionAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTileOffsets.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTiledInputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTiledInputPart.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTiledMisc.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTiledOutputFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTiledOutputPart.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTiledRgbaFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTimeCode.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfTimeCodeAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfVecAttribute.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfVersion.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfWav.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfXdr.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZip.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXR/ImfZipCompressor.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/backward_compatibility.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_attr.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_bytes.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_channel_list.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_coding.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_compress.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_constants.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_cpuid.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_decompress.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa_channeldata.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa_classifier.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa_compressor.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa_decoder.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa_encoder.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa_helpers.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_dwa_simd.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_file.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_float_vector.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_ht_common.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_huf.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_memory.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_opaque.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_posix_file_impl.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_preview.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_string.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_string_vector.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_structs.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_thread.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_util.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_win32_file_impl.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/internal_xdr.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_attr.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_base.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_chunkio.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_coding.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_compression.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_config.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_context.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_debug.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_decode.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_encode.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_errors.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_part.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_std_attr.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRCore/openexr_version.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfCheckFile.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfDeepImage.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfDeepImageChannel.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfDeepImageIO.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfDeepImageLevel.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfFlatImage.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfFlatImageChannel.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfFlatImageIO.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfFlatImageLevel.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfImage.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfImageChannel.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfImageChannelRenaming.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfImageDataWindow.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfImageIO.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfImageLevel.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfSampleCountChannel.h \
-    $${THIRDPARTY_OPENEXR_PATH}/src/lib/OpenEXRUtil/ImfUtilExport.h \
+    $${THIRDPARTY_ILM_THREAD_QT}/IlmThread/IlmThreadForward.h \
+    $${THIRDPARTY_ILM_THREAD_QT}/IlmThread/IlmThread.h \
+    $${THIRDPARTY_ILM_THREAD_QT}/IlmThread/IlmThreadMutex.h \
+    $${THIRDPARTY_ILM_THREAD_QT}/IlmThread/IlmThreadNamespace.h \
+    $${THIRDPARTY_ILM_THREAD_QT}/IlmThread/IlmThreadPool.h \
+    $${THIRDPARTY_ILM_THREAD_QT}/IlmThread/IlmThreadSemaphore.h \
 
-# find . -name '*.h' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}| ; s|$| \\|'
 HEADERS += \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathBox.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathBoxAlgo.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathColor.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathColorAlgo.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathConfig.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathEuler.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathExport.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathForward.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathFrame.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathFrustum.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathFrustumTest.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathFun.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathGL.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathGLU.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathInt64.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathInterval.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathLine.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathLineAlgo.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathMath.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathMatrix.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathMatrixAlgo.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathNamespace.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathPlane.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathPlatform.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathQuat.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathRandom.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathRoots.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathShear.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathSphere.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathTypeTraits.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathVec.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/ImathVecAlgo.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/half.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/halfFunction.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/halfLimits.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/Imath/toFloat.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/Iex.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/halfExport.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/halfFunction.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/half.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/halfLimits.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IexBaseExc.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IexConfig.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IexErrnoExc.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IexExport.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IexForward.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/Iex.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IexMacros.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IexMathExc.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IexMathFloatExc.h \
@@ -491,44 +387,71 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IexMathIeeeExc.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IexNamespace.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IexThrowErrnoExc.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThread.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadConfig.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadExport.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmBaseConfig.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadForward.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThread.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadMutex.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadNamespace.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadPool.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadProcessGroup.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/IlmThreadSemaphore.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathBoxAlgo.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathBox.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathColorAlgo.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathColor.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathEuler.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathExc.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathExport.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathForward.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathFrame.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathFrustum.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathFrustumTest.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathFun.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathGL.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathGLU.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathHalfLimits.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathInt64.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathInterval.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathLimits.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathLineAlgo.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathLine.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathMath.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathMatrixAlgo.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathMatrix.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathNamespace.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathPlane.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathPlatform.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathQuat.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathRandom.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathRoots.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathShear.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathSphere.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathVecAlgo.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImathVec.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfAcesFile.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfArray.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfAttribute.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfAutoArray.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfB44Compressor.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfBoxAttribute.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfBytesAttribute.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCRgbaFile.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfChannelList.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfChannelListAttribute.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCheckFile.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfChannelList.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCheckedArithmetic.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfChromaticities.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfChromaticitiesAttribute.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfChromaticities.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompositeDeepScanLine.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompression.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompressionAttribute.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompression.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCompressor.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfContext.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfContextInit.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfConvert.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfCRgbaFile.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepCompositing.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepFrameBuffer.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepImage.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepImageChannel.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepImage.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepImageIO.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepImageLevel.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepImageState.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepImageStateAttribute.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepImageState.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepScanLineInputFile.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepScanLineInputPart.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepScanLineOutputFile.h \
@@ -539,12 +462,13 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDeepTiledOutputPart.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDoubleAttribute.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDwaCompressor.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfEnvmap.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfDwaCompressorSimd.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfEnvmapAttribute.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfEnvmap.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfExport.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfFastHuf.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfFlatImage.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfFlatImageChannel.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfFlatImage.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfFlatImageIO.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfFlatImageLevel.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfFloatAttribute.h \
@@ -554,28 +478,25 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfFramesPerSecond.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfGenericInputFile.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfGenericOutputFile.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfHTCompressor.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfHeader.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfHuf.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfIDManifest.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfIDManifestAttribute.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfIO.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfImage.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfImageChannel.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfImageChannelRenaming.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfImageDataWindow.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfImage.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfImageIO.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfImageLevel.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfInputFile.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfInputPart.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfInputPartData.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfInputPart.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfInputStreamMutex.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfInt64.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfIntAttribute.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfKeyCode.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfIO.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfKeyCodeAttribute.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfLineOrder.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfKeyCode.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfLineOrderAttribute.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfLineOrder.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfLut.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfMatrixAttribute.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfMisc.h \
@@ -587,23 +508,23 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfOpaqueAttribute.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfOptimizedPixelReading.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfOutputFile.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfOutputPart.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfOutputPartData.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfOutputPart.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfOutputStreamMutex.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfPartHelper.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfPartType.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfPixelType.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfPizCompressor.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfPreviewImage.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfPreviewImageAttribute.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfPreviewImage.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfPxr24Compressor.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfRational.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfRationalAttribute.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfRgba.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfRational.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfRgbaFile.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfRgba.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfRgbaYca.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfRle.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfRleCompressor.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfRle.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfSampleCountChannel.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfScanLineInputFile.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfSimd.h \
@@ -614,71 +535,25 @@ HEADERS += \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfSystemSpecific.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTestFile.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfThreading.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTileDescription.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTileDescriptionAttribute.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTileOffsets.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTileDescription.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTiledInputFile.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTiledInputPart.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTiledMisc.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTiledOutputFile.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTiledOutputPart.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTiledRgbaFile.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTimeCode.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTileOffsets.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTimeCodeAttribute.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfTimeCode.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfUtilExport.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfVecAttribute.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfVersion.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfWav.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfXdr.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfZip.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfZipCompressor.h \
+    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/ImfZip.h \
     $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/OpenEXRConfig.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/backward_compatibility.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_attr.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_bytes.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_channel_list.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_coding.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_compress.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_constants.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_cpuid.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_decompress.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_dwa_channeldata.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_dwa_classifier.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_dwa_compressor.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_dwa_decoder.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_dwa_encoder.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_dwa_helpers.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_dwa_simd.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_file.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_float_vector.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_ht_common.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_huf.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_memory.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_opaque.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_posix_file_impl.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_preview.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_string.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_string_vector.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_structs.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_thread.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_util.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_win32_file_impl.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/internal_xdr.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_attr.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_base.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_chunkio.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_coding.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_compression.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_config.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_context.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_debug.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_decode.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_encode.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_errors.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_part.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_std_attr.h \
-    $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/OpenEXR/openexr_version.h \
 
-TR_EXCLUDE += $${THIRDPARTY_OPENEXR_PATH}/* $${THIRDPARTY_IMATH_PATH}/* $${THIRDPARTY_OPENEXR_CONFIG_PATH}/* $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/*
+TR_EXCLUDE += $${THIRDPARTY_OPENEXR_PATH}/* $${THIRDPARTY_OPENEXR_CONFIG_PATH}/* $${THIRDPARTY_ILM_THREAD_QT}/* $${THIRDPARTY_OPENEXR_INCLUDE_PATH}/*
 

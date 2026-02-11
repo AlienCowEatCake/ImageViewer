@@ -678,13 +678,7 @@ disable_cxx17 : !system_libheif {
 disable_zlib : !system_openexr {
     CONFIG *= disable_openexr
 }
-*msvc* : !system_openexr : lessThan(MSVC_VERSION, 2017) {
-    CONFIG *= disable_openexr
-}
-win32 : *g++* : !*clang* : !system_openexr : lessThan(GCC_VERSION_NUMERIC, 80100) { # FIXME: Find exact version
-    CONFIG *= disable_openexr
-}
-disable_cxx17 : !system_openexr {
+*msvc* : !system_openexr : lessThan(MSVC_VERSION, 2013) {
     CONFIG *= disable_openexr
 }
 
@@ -846,6 +840,4 @@ disable_libavif | system_libavif {
     }
 }
 
-disable_openexr | system_openexr {
-    CONFIG *= disable_openjph
-}
+CONFIG *= disable_openjph
