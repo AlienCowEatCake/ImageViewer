@@ -22,12 +22,12 @@
 <context>
     <name>ImageViewerWidget</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/ImageViewerWidget.cpp" line="228"/>
+        <location filename="../../src/GUI/MainWindow/ImageViewerWidget.cpp" line="229"/>
         <source>Next</source>
         <translation type="unfinished">Sljedeća</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/ImageViewerWidget.cpp" line="237"/>
+        <location filename="../../src/GUI/MainWindow/ImageViewerWidget.cpp" line="238"/>
         <source>Previous</source>
         <translation type="unfinished">Prethodna</translation>
     </message>
