@@ -665,10 +665,10 @@ disable_cxx14 : !system_vvdec {
 # libheif options:
 #    disable_libheif
 #    system_libheif
-*msvc* : !system_libheif : lessThan(MSVC_VERSION, 2017) {
+*msvc* : !system_libheif : lessThan(MSVC_VERSION, 2015) {
     CONFIG *= disable_libheif
 }
-disable_cxx17 : !system_libheif {
+disable_cxx11 : !system_libheif {
     CONFIG *= disable_libheif
 }
 
@@ -805,7 +805,6 @@ disable_libwmf | system_libwmf {
 }
 
 system_libheif | disable_libheif {
-    CONFIG *= disable_openh264
     CONFIG *= disable_libde265
     CONFIG *= disable_vvdec
 }
@@ -839,3 +838,4 @@ disable_libavif | system_libavif {
 }
 
 CONFIG *= disable_openjph
+CONFIG *= disable_openh264

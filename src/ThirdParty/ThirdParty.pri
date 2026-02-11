@@ -97,7 +97,6 @@ include(libexpat/libexpat.pri)
 #  * libjpeg
 #  * OpenJPEG
 #  * OpenJPH
-#  * OpenH264
 #  * libde265
 #  * VVdeC
 #  * zlib
