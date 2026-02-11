@@ -76,6 +76,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
     {
 #define P(NAME, MAIN_PRIORITY, ADVANCED_PRIORITY) decoderPriotities[QString::fromLatin1(NAME)] = ComplexPriotiry(MAIN_PRIORITY, ADVANCED_PRIORITY)
         /// @note Decoders for static raster images
+        P("DecoderJ40"                  ,   50, -1); ///< For JXL images.
         P("DecoderWIC"                  ,   60, -1); ///< Generic Windows decoder.
         P("DecoderSTB"                  ,  100, 10); ///< Generic STB decoder.
         P("DecoderQImage"               ,  200, 20); ///< Generic Qt decoder for default formats.

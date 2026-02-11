@@ -114,6 +114,7 @@ include(libyuv/libyuv.pri)
 
 # Modules without dependencies
 include(STB/STB.pri)
+include(J40/J40.pri)
 include(libRSVG/libRSVG.pri)
 include(resvg/resvg.pri)
 include(FLIF/FLIF.pri)

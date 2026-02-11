@@ -181,6 +181,10 @@ extern "C" {
 #if defined (HAS_LIBYUV)
 #include <libyuv.h>
 #endif
+#if defined (HAS_J40)
+#define J40_CONFIRM_THAT_THIS_IS_EXPERIMENTAL_AND_POTENTIALLY_UNSAFE
+#include <j40.h>
+#endif
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
@@ -847,6 +851,21 @@ QString getTextBrowserContent()
                       QString::fromLatin1("https://github.com/nothings/stb"),
                       QString::fromLatin1("Public Domain or MIT License"),
                       QString::fromLatin1("https://github.com/nothings/stb/blob/master/LICENSE")
+                      ));
+#endif
+
+#if defined (HAS_J40)
+    result.append(formatItem(
+                      QString::fromLatin1("This software uses the J40 library"),
+                      QString::fromLatin1("j40"),
+#if defined (J40_VERSION)
+                      QString::fromLatin1("%1").arg(J40_VERSION),
+#else
+                      QString(),
+#endif
+                      QString::fromLatin1("https://github.com/lifthrasiir/j40"),
+                      QString::fromLatin1("MIT No Attribution License"),
+                      QString::fromLatin1("https://github.com/lifthrasiir/j40/blob/main/LICENSE.txt")
                       ));
 #endif
 
