@@ -16,12 +16,14 @@ include($${PWD}/../../Features.pri)
 
     !system_exiv2 {
 
-        THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.28.7
+        THIRDPARTY_EXIV2_PATH = $${PWD}/exiv2-0.27.7-Source
         THIRDPARTY_EXIV2_CONFIG_PATH = $${PWD}/config
 
         INCLUDEPATH += $${THIRDPARTY_EXIV2_PATH}/include $${THIRDPARTY_EXIV2_CONFIG_PATH}
         DEPENDPATH += $${THIRDPARTY_EXIV2_PATH}/include $${THIRDPARTY_EXIV2_CONFIG_PATH}
         TR_EXCLUDE += $${THIRDPARTY_EXIV2_PATH}/* $${THIRDPARTY_EXIV2_CONFIG_PATH}/*
+
+        DEFINES += EXV_HAVE_STDINT_H
 
         OUT_LIB_TARGET = tp_exiv2
         OUT_LIB_DIR = $${OUT_PWD}/../ThirdParty/Exiv2
