@@ -1,4 +1,4 @@
-From af6a2b28dbd13b3d269ce27297ad45fbe6833d47 Mon Sep 17 00:00:00 2001
+From dfd987f00577aeb22e301e972de462b8ca9034d2 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 9 Aug 2025 21:12:08 +0700
 Subject: [PATCH 8/8] Dont use modern options with old Qt verson
@@ -35,10 +35,10 @@ Subject: [PATCH 8/8] Dont use modern options with old Qt verson
  28 files changed, 807 insertions(+), 44 deletions(-)
 
 diff --git a/src/imageformats/ani.cpp b/src/imageformats/ani.cpp
-index fc0cccc..cfb3294 100644
+index 0fa1ed8..54c2a01 100644
 --- a/src/imageformats/ani.cpp
 +++ b/src/imageformats/ani.cpp
-@@ -387,7 +387,11 @@ bool ANIHandler::ensureScanned() const
+@@ -388,7 +388,11 @@ bool ANIHandler::ensureScanned() const
              }
  
              // TODO should we check that the number of rate entries matches nSteps?
@@ -255,7 +255,7 @@ index 6e644d9..5d6dac4 100644
                              tmpcolorimage.convertToColorSpace(QColorSpace(QColorSpace::Primaries::SRgb, QColorSpace::TransferFunction::SRgb));
                              transfer_to_save = (avifTransferCharacteristics)13;
 diff --git a/src/imageformats/chunks.cpp b/src/imageformats/chunks.cpp
-index 2335896..24e2f0d 100644
+index 183c00a..fa93da7 100644
 --- a/src/imageformats/chunks.cpp
 +++ b/src/imageformats/chunks.cpp
 @@ -32,7 +32,11 @@ static QString dataToString(const IFFChunk *chunk)
@@ -2125,7 +2125,7 @@ index b64ae3c..399ca7e 100644
          tfmt = alpha ? QImage::Format_ARGB32 : QImage::Format_RGB32;
      }
 diff --git a/src/imageformats/psd.cpp b/src/imageformats/psd.cpp
-index 4e391e2..40b7510 100644
+index 210325e..ce3eed1 100644
 --- a/src/imageformats/psd.cpp
 +++ b/src/imageformats/psd.cpp
 @@ -38,6 +38,10 @@
@@ -2216,7 +2216,7 @@ index 4e391e2..40b7510 100644
              format = !alpha ? QImage::Format_Grayscale16 : QImage::Format_RGBA64_Premultiplied;
          } else {
              format = !alpha ? QImage::Format_Grayscale8 : QImage::Format_RGBA8888_Premultiplied;
-@@ -1338,7 +1360,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1340,7 +1362,11 @@ bool PSDHandler::read(QImage *image)
          return false;
      }
  
@@ -2228,7 +2228,7 @@ index 4e391e2..40b7510 100644
      // Read the compressed stride sizes
      if (compression) {
          for (auto &&v : strides) {
-@@ -1353,7 +1379,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1355,7 +1381,11 @@ bool PSDHandler::read(QImage *image)
      }
      // calculate the absolute file positions of each stride (required when a colorspace conversion should be done)
      auto device = stream.device();
@@ -2240,7 +2240,7 @@ index 4e391e2..40b7510 100644
      if (!stridePositions.isEmpty()) {
          stridePositions[0] = device->pos();
      }
-@@ -1377,7 +1407,7 @@ bool PSDHandler::read(QImage *image)
+@@ -1379,7 +1409,7 @@ bool PSDHandler::read(QImage *image)
          // CMYK with spots (e.g. CMYKA) ICC conversion to RGBA/RGBX
          QImage tmpCmyk;
          ScanLineConverter iccConv(img.format());
@@ -2249,7 +2249,7 @@ index 4e391e2..40b7510 100644
          if (header.color_mode == CM_CMYK && img.format() != QImage::Format_CMYK8888) {
              auto tmpi = QImage(header.width, 1, QImage::Format_CMYK8888);
              if (setColorSpace(tmpi, irs)) {
-@@ -1410,7 +1440,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1412,7 +1442,11 @@ bool PSDHandler::read(QImage *image)
                  } else if (header.depth == 16) {
                      planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, header.channel_count);
                  } else if (header.depth == 32) {
@@ -2261,7 +2261,7 @@ index 4e391e2..40b7510 100644
                  }
              }
  
-@@ -1435,7 +1469,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1437,7 +1471,11 @@ bool PSDHandler::read(QImage *image)
                      else if (header.depth == 16)
                          premulConversion<quint16>(scanLine, header.width, 3, header.channel_count, PremulConversion::PS2P);
                      else if (header.depth == 32)
@@ -2273,7 +2273,7 @@ index 4e391e2..40b7510 100644
                  }
                  if (header.color_mode == CM_GRAYSCALE) {
                      if (header.depth == 8)
-@@ -1443,7 +1481,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1445,7 +1483,11 @@ bool PSDHandler::read(QImage *image)
                      else if (header.depth == 16)
                          premulConversion<quint16>(scanLine, header.width, 1, header.channel_count, PremulConversion::PS2P);
                      else if (header.depth == 32)
@@ -2285,7 +2285,7 @@ index 4e391e2..40b7510 100644
                  }
              }
  
-@@ -1480,7 +1522,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1488,7 +1530,11 @@ bool PSDHandler::read(QImage *image)
                  else if (header.depth == 16)
                      rawChannelsCopy<quint16>(img.scanLine(y), imgChannels, psdScanline.data(), header.channel_count, header.width);
                  else if (header.depth == 32)
@@ -2297,7 +2297,7 @@ index 4e391e2..40b7510 100644
              }
              if (header.color_mode == CM_GRAYSCALE) {
                  for (auto c = 0; c < imgChannels; ++c) { // GRAYA to RGBA
-@@ -1490,7 +1536,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1498,7 +1544,11 @@ bool PSDHandler::read(QImage *image)
                      else if (header.depth == 16)
                          rawChannelCopy<quint16>(img.scanLine(y), imgChannels, c, psdScanline.data(), header.channel_count, sc, header.width);
                      else if (header.depth == 32)
@@ -2309,7 +2309,7 @@ index 4e391e2..40b7510 100644
                  }
              }
          }
-@@ -1523,7 +1573,11 @@ bool PSDHandler::read(QImage *image)
+@@ -1531,7 +1581,11 @@ bool PSDHandler::read(QImage *image)
                          planarToChunchy<quint16>(scanLine, rawStride.data(), header.width, c, imgChannels);
                  } else if (header.depth == 32 && header.color_mode == CM_RGB) {
                      // 32-bits float images: RGB/RGBA
@@ -2321,7 +2321,7 @@ index 4e391e2..40b7510 100644
                  } else if (header.depth == 32 && header.color_mode == CM_GRAYSCALE) {
                      if (imgChannels >= 3) { // GRAY to RGB
                          planarToChunchy<float>(scanLine, rawStride.data(), header.width, 0, imgChannels);
-@@ -1556,11 +1610,13 @@ bool PSDHandler::read(QImage *image)
+@@ -1564,11 +1618,13 @@ bool PSDHandler::read(QImage *image)
          if (header.color_mode == CM_RGB && header.depth == 32) {
              img.setColorSpace(QColorSpace(QColorSpace::SRgbLinear));
          }
@@ -2536,7 +2536,7 @@ index 5f5f11b..d2c92c4 100644
              if (m_pb.bitMask() == 7)
                  format = QImage::Format_RGB888;
 diff --git a/src/imageformats/tga.cpp b/src/imageformats/tga.cpp
-index c6746b1..8a253dc 100644
+index 03af818..f7bbc31 100644
 --- a/src/imageformats/tga.cpp
 +++ b/src/imageformats/tga.cpp
 @@ -31,6 +31,9 @@
@@ -2761,5 +2761,5 @@ index 5a94dcd..1858c1b 100644
          buffer.resize(blockSize * (bpp == 2 ? 2 : 1));
          buffer.fill(uchar());
 -- 
-2.47.3
+2.52.0
 

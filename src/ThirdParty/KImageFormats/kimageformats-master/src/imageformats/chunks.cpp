@@ -2564,7 +2564,7 @@ static QByteArray decompressVdat(const QByteArray &comp)
 static QByteArray vdatToIlbmPlane(const QByteArray &vdatData, const BMHDChunk *header)
 {
     QByteArray ba(vdatData.size(), char());
-    auto rowLen = header->rowLen();
+    auto rowLen = qint32(header->rowLen());
     for (auto x = 0, n = 0; x < rowLen; x += 2) {
         for (auto y = 0, off = x, h = header->height(); y < h; y++, off += rowLen) {
             if ((off + 1 >= ba.size()) || n + 1 >= vdatData.size()) {
@@ -2870,7 +2870,7 @@ bool PLTEChunk::isValid() const
     if (dataBytes() < 4) {
         return false;
     }
-    if (dataBytes() - 4 < total() * 3) {
+    if (dataBytes() - 4 < quint32(total()) * 3) {
         return false;
     }
     return chunkId() == PLTEChunk::defaultChunkId();

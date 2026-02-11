@@ -742,7 +742,7 @@ static bool LoadTGA(QIODevice *dev, const TgaHeader &tga, QImage &img)
                 if (div == 0)
                     hasAlpha = false;
                 for (int x = x_start; x != x_end; x += x_step) {
-                    const int alpha = hasAlpha ? int((src[3]) << (8 - numAlphaBits)) * 255 / div : 255;
+                    const int alpha = hasAlpha ? int(quint8(src[3]) << (8 - numAlphaBits)) * 255 / div : 255;
                     scanline[x] = qRgba(src[2], src[1], src[0], alpha);
                     src += 4;
                 }

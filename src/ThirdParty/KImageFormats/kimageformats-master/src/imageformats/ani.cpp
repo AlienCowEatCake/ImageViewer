@@ -5,6 +5,7 @@
 */
 
 #include "ani_p.h"
+#include "util_p.h"
 
 #include <QImage>
 #include <QLoggingCategory>
@@ -101,7 +102,7 @@ bool ANIHandler::read(QImage *outImage)
     }
 
     const auto frameSize = *(reinterpret_cast<const quint32_le *>(frameSizeData.data()));
-    if (!frameSize) {
+    if (!frameSize || frameSize > quint32(kMaxQVectorSize)) {
         return false;
     }
 

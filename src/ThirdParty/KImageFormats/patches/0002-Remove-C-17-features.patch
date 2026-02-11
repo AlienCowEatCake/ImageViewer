@@ -1,4 +1,4 @@
-From e11a31b55d748a82c5328729b76671678dcdf863 Mon Sep 17 00:00:00 2001
+From d782e7cbffe5dee6999dacf93e44f9b27a07252f Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
 Subject: [PATCH 2/8] Remove C++17 features
@@ -15,7 +15,7 @@ Subject: [PATCH 2/8] Remove C++17 features
  8 files changed, 19 insertions(+), 19 deletions(-)
 
 diff --git a/src/imageformats/chunks.cpp b/src/imageformats/chunks.cpp
-index 5d0e717..2335896 100644
+index ef825ee..183c00a 100644
 --- a/src/imageformats/chunks.cpp
 +++ b/src/imageformats/chunks.cpp
 @@ -2951,9 +2951,9 @@ inline IPARChunk::Rgb yuvToRgb(IHDRChunk::Yuv yuv) {
@@ -186,5 +186,5 @@ index 117c8da..5a94dcd 100644
          if (value.isEmpty())
              continue;
 -- 
-2.47.3
+2.52.0
 
