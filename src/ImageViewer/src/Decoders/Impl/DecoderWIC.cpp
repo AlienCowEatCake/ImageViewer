@@ -27,6 +27,7 @@
 #include <QVariant>
 
 #include "Utils/Global.h"
+#include "Utils/InfoUtils.h"
 #include "Utils/Logging.h"
 
 #include "../IDecoder.h"
@@ -562,7 +563,9 @@ public:
 
     bool isAvailable() const Q_DECL_OVERRIDE
     {
-        return !!OLE32::instance();
+        // https://learn.microsoft.com/en-us/windows/win32/wic/-wic-about-windows-imaging-codec
+        // Windows Imaging Component (WIC) is available in Windows Vista and later
+        return InfoUtils::WinVersionGreatOrEqual(6, 0) && !!OLE32::instance();
     }
 
     QSharedPointer<IImageData> loadImage(const QString &filePath) Q_DECL_OVERRIDE
