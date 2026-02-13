@@ -24,9 +24,12 @@
 
 #include <libheif/heif.h>
 /// @note Sequences API is available since 1.20.0, but it is mostly broken until 1.21.0
-#if defined (LIBHEIF_HAVE_VERSION) && (LIBHEIF_HAVE_VERSION(1, 21, 0))
+#if defined (LIBHEIF_HAVE_VERSION) && (LIBHEIF_HAVE_VERSION(1, 20, 0))
 #include <libheif/heif_sequences.h>
 #define USE_LIBHEIF_SEQUENCES
+#if !(LIBHEIF_HAVE_VERSION(1, 21, 0))
+#define USE_LIBHEIF_SEQUENCES_NOT_BY_DEFAULT
+#endif
 #endif
 
 #include <QFileInfo>
@@ -163,12 +166,14 @@ class HeifAnimationProvider : public IAnimationProvider
     Q_DISABLE_COPY(HeifAnimationProvider)
 
 public:
-    HeifAnimationProvider()
+    HeifAnimationProvider(bool processSequences)
         : m_nextImageDelay(-1)
 #if defined (USE_LIBHEIF_SEQUENCES)
         , m_timescale(0)
+        , m_processSequences(processSequences)
 #endif
     {
+        Q_UNUSED(processSequences);
     }
 
     bool isValid() const Q_DECL_OVERRIDE
@@ -179,7 +184,7 @@ public:
     bool isSingleFrame() const Q_DECL_OVERRIDE
     {
 #if defined (USE_LIBHEIF_SEQUENCES)
-        if(m_ctx && heif_context_has_sequence(m_ctx) && m_timescale && m_track)
+        if(m_processSequences && m_ctx && heif_context_has_sequence(m_ctx) && m_timescale && m_track)
             return false;
 #endif
         return true;
@@ -271,7 +276,7 @@ public:
 #endif
 
 #if defined (USE_LIBHEIF_SEQUENCES)
-        if(heif_context_has_sequence(m_ctx))
+        if(m_processSequences && heif_context_has_sequence(m_ctx))
         {
             const int tracksCount = heif_context_number_of_sequence_tracks(m_ctx);
             if(tracksCount > 0)
@@ -433,18 +438,25 @@ private:
 #if defined (USE_LIBHEIF_SEQUENCES)
     uint32_t m_timescale;
     SP<heif_track> m_track;
+    bool m_processSequences;
 #endif
 };
 
 class DecoderLibHEIF : public IDecoder
 {
 public:
+    DecoderLibHEIF(bool processSequences = false)
+        : m_processSequences(processSequences)
+    {}
+
     QString name() const Q_DECL_OVERRIDE
     {
+        if(m_processSequences)
+            return QString::fromLatin1("DecoderLibHEIFs");
         return QString::fromLatin1("DecoderLibHEIF");
     }
 
-    QStringList supportedFormats() const Q_DECL_OVERRIDE
+    QStringList supportedFormatsInternal() const
     {
         return QStringList()
                 << QString::fromLatin1("heif")
@@ -466,8 +478,21 @@ public:
                    ;
     }
 
+    QStringList supportedFormats() const Q_DECL_OVERRIDE
+    {
+#if defined (USE_LIBHEIF_SEQUENCES_NOT_BY_DEFAULT)
+        if(m_processSequences)
+            return QStringList();
+#endif
+        return supportedFormatsInternal();
+    }
+
     QStringList advancedFormats() const Q_DECL_OVERRIDE
     {
+#if defined (USE_LIBHEIF_SEQUENCES_NOT_BY_DEFAULT)
+        if(m_processSequences)
+            return supportedFormatsInternal();
+#endif
         return QStringList();
     }
 
@@ -481,13 +506,19 @@ public:
         const QFileInfo fileInfo(filePath);
         if(!fileInfo.exists() || !fileInfo.isReadable())
             return QSharedPointer<IImageData>();
-        HeifAnimationProvider *provider = new HeifAnimationProvider();
+        HeifAnimationProvider *provider = new HeifAnimationProvider(m_processSequences);
         const PayloadWithMetaData<bool> readResult = provider->readHeifFile(filePath);
         QGraphicsItem *item = GraphicsItemsFactory::instance().createAnimatedItem(provider);
         return QSharedPointer<IImageData>(new ImageData(item, filePath, name(), readResult.metaData()));
     }
+
+private:
+    bool m_processSequences;
 };
 
+#if defined (USE_LIBHEIF_SEQUENCES)
+DecoderAutoRegistrator registratorS(new DecoderLibHEIF(true));
+#endif
 DecoderAutoRegistrator registrator(new DecoderLibHEIF);
 
 } // namespace

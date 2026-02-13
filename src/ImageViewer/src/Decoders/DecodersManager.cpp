@@ -88,6 +88,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderLibTiff"              ,  530, -1); ///< For TIFF images.
         P("DecoderJbigKit"              ,  540, -1); ///< For JBIG1 images.
         P("DecoderLibRaw"               ,  550, -1); ///< For RAW images.
+        P("DecoderLibHEIF"              ,  560, 95); ///< For HEIF images with HEVC and AV1 codecs and some AVIF images.
         P("DecoderOpenEXR"              ,  570, -1); ///< For EXR images.
         P("DecoderLERC"                 ,  590, -1); ///< For LERC images.
         P("DecoderJxrLib"               ,  600, -1); ///< For JPEG XR images.
@@ -102,7 +103,7 @@ ComplexPriotiry GetDecoderPriority(const IDecoder *decoder)
         P("DecoderLibBpg"               , 1320, -1); ///< For BPG images.
         P("DecoderFLIF"                 , 1330, -1); ///< For FLIF images.
         P("DecoderLibJxl"               , 1340, -1); ///< For JXL images.
-        P("DecoderLibHEIF"              , 1350, -1); ///< For HEIF images with HEVC and AV1 codecs and some AVIF images.
+        P("DecoderLibHEIFs"             , 1350, -1); ///< For HEIF images with HEVC and AV1 codecs and some AVIF images.
         P("DecoderLibAvif"              , 1360, 90); ///< For AVIF images and HEIF images with AV1 codec.
         /// @note Decoders for vector images
         P("DecoderQtSVG"                , 2100, -1); ///< Generic Qt decoder for SVG images.
