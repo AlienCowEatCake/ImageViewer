@@ -335,6 +335,8 @@ MainWindow::MainWindow(GUISettings *settings, QWidget *parent)
     geometryHelper.saveGeometry();
     if(restoreSaved)
         geometryHelper.deserialize(settings->mainWindowGeometry());
+    else
+        geometryHelper.deserialize(QByteArray());
     geometryHelper.block();
     ui.menubar->setVisible(settings->menuBarVisible());
     m_impl->setToolBarVisible(settings->toolBarVisible());
