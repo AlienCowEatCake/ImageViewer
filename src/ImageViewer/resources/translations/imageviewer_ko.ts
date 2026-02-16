@@ -24,12 +24,12 @@
     <message>
         <location filename="../../src/GUI/MainWindow/ImageViewerWidget.cpp" line="229"/>
         <source>Next</source>
-        <translation type="unfinished">다음</translation>
+        <translation>다음</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/ImageViewerWidget.cpp" line="238"/>
         <source>Previous</source>
-        <translation type="unfinished">이전</translation>
+        <translation>이전</translation>
     </message>
 </context>
 <context>
@@ -522,7 +522,7 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="388"/>
         <source>…</source>
-        <translation type="unfinished">…</translation>
+        <translation>…</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="529"/>
@@ -615,12 +615,12 @@
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="329"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished">복사(&amp;C)</translation>
+        <translation>복사(&amp;C)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="330"/>
         <source>Copy &amp;Path</source>
-        <translation type="unfinished">경로 복사하기(&amp;P)</translation>
+        <translation>경로 복사(&amp;P)</translation>
     </message>
     <message>
         <location filename="../../src/GUI/MainWindow/MenuBar.cpp" line="331"/>
@@ -1413,12 +1413,12 @@
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="140"/>
         <source>Start with a maximized window</source>
-        <translation type="unfinished"></translation>
+        <translation>최대화된 창으로 시작</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="143"/>
         <source>Save window size and position</source>
-        <translation type="unfinished"></translation>
+        <translation>창 크기와 위치 저장</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="146"/>
@@ -1451,7 +1451,7 @@
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="154"/>
         <source>Navigate</source>
         <comment>WheelMode</comment>
-        <translation type="unfinished">탐색</translation>
+        <translation>탐색</translation>
     </message>
     <message>
         <location filename="../../src/GUI/Dialogs/SettingsDialog_p.h" line="197"/>
