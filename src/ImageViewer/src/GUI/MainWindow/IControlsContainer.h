@@ -26,7 +26,7 @@
 
 /*
 
-ALL_LIST="OpenFile OpenFolder SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow ImageInformation Preferences Exit RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomCustom ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt CheckForUpdates EditStylesheet"
+ALL_LIST="OpenFile OpenFolder SaveAs NewWindow NavigatePrevious NavigateNext StartSlideShow ImageInformation Print Preferences Exit Copy CopyPath RotateCounterclockwise RotateClockwise FlipHorizontal FlipVertical DeleteFile ZoomOut ZoomIn ZoomReset ZoomCustom ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar About AboutQt CheckForUpdates EditStylesheet"
 CHECKABLE_LIST="ZoomFitToWindow ZoomOriginalSize ZoomFullScreen ShowMenuBar ShowToolBar"
 
 # Q_SIGNALS
