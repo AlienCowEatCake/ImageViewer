@@ -902,6 +902,68 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
+      Key="$(var.ProductNameSafe).avci"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_avci" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avci\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_avci" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avci\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_avci" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avci\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_avci" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".avci\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).avci"
+      Id="reg_avci" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avcs"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_avcs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avcs\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_avcs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avcs\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_avcs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).avcs\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_avcs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".avcs\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).avcs"
+      Id="reg_avcs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
       Key="$(var.ProductNameSafe).heif"
       Value="High Efficiency Image File Format Image"
       Id="reg_type_heif" />
@@ -933,68 +995,6 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
-      Key="$(var.ProductNameSafe).heic"
-      Value="High Efficiency Image File Format Image"
-      Id="reg_type_heic" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key="$(var.ProductNameSafe).heic\DefaultIcon"
-      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
-      Id="reg_icon_heic" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key="$(var.ProductNameSafe).heic\shell\open"
-      Value="Open with $(var.ProductName)"
-      Id="reg_shell_open_heic" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key="$(var.ProductNameSafe).heic\shell\open\command"
-      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
-      Id="reg_shell_open_command_heic" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key=".heic\OpenWithProgids"
-      Value=""
-      Name="$(var.ProductNameSafe).heic"
-      Id="reg_heic" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key="$(var.ProductNameSafe).heix"
-      Value="High Efficiency Image File Format Image"
-      Id="reg_type_heix" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key="$(var.ProductNameSafe).heix\DefaultIcon"
-      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
-      Id="reg_icon_heix" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key="$(var.ProductNameSafe).heix\shell\open"
-      Value="Open with $(var.ProductName)"
-      Id="reg_shell_open_heix" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key="$(var.ProductNameSafe).heix\shell\open\command"
-      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
-      Id="reg_shell_open_command_heix" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key=".heix\OpenWithProgids"
-      Value=""
-      Name="$(var.ProductNameSafe).heix"
-      Id="reg_heix" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
       Key="$(var.ProductNameSafe).heifs"
       Value="High Efficiency Image File Format Image"
       Id="reg_type_heifs" />
@@ -1023,6 +1023,37 @@
       Value=""
       Name="$(var.ProductNameSafe).heifs"
       Id="reg_heifs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heic"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_heic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heic\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_heic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heic\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_heic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heic\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_heic" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".heic\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).heic"
+      Id="reg_heic" />
     <RegistryValue
       Root="HKCR"
       Type="string"
@@ -1116,6 +1147,68 @@
       Value=""
       Name="$(var.ProductNameSafe).hej2"
       Id="reg_hej2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hsj2"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_hsj2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hsj2\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_hsj2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hsj2\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_hsj2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).hsj2\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_hsj2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".hsj2\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).hsj2"
+      Id="reg_hsj2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heix"
+      Value="High Efficiency Image File Format Image"
+      Id="reg_type_heix" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heix\DefaultIcon"
+      Value="[INSTALLLOCATION]$(var.ExeProcessName),0"
+      Id="reg_icon_heix" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heix\shell\open"
+      Value="Open with $(var.ProductName)"
+      Id="reg_shell_open_heix" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key="$(var.ProductNameSafe).heix\shell\open\command"
+      Value="&quot;[INSTALLLOCATION]$(var.ExeProcessName)&quot; &quot;%1&quot;"
+      Id="reg_shell_open_command_heix" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".heix\OpenWithProgids"
+      Value=""
+      Name="$(var.ProductNameSafe).heix"
+      Id="reg_heix" />
     <RegistryValue
       Root="HKCR"
       Type="string"

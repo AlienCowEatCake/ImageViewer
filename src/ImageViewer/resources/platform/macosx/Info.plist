@@ -216,13 +216,16 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>avci</string>
+				<string>avcs</string>
 				<string>heif</string>
-				<string>heic</string>
-				<string>heix</string>
 				<string>heifs</string>
+				<string>heic</string>
 				<string>heics</string>
 				<string>hif</string>
 				<string>hej2</string>
+				<string>hsj2</string>
+				<string>heix</string>
 				<string>vvic</string>
 			</array>
 			<key>CFBundleTypeName</key>

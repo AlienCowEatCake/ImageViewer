@@ -166,7 +166,7 @@ class HeifAnimationProvider : public IAnimationProvider
     Q_DISABLE_COPY(HeifAnimationProvider)
 
 public:
-    HeifAnimationProvider(bool processSequences)
+    explicit HeifAnimationProvider(bool processSequences)
         : m_nextImageDelay(-1)
 #if defined (USE_LIBHEIF_SEQUENCES)
         , m_timescale(0)
@@ -445,7 +445,7 @@ private:
 class DecoderLibHEIF : public IDecoder
 {
 public:
-    DecoderLibHEIF(bool processSequences = false)
+    explicit DecoderLibHEIF(bool processSequences = false)
         : m_processSequences(processSequences)
     {}
 
@@ -460,20 +460,25 @@ public:
     {
         return QStringList()
                 << QString::fromLatin1("heif")
-                << QString::fromLatin1("heic")
-                << QString::fromLatin1("heix")
                 << QString::fromLatin1("heifs")
+                << QString::fromLatin1("heic")
                 << QString::fromLatin1("heics")
                 << QString::fromLatin1("hif")
+                << QString::fromLatin1("heix")
 #if defined (LIBHEIF_NUMERIC_VERSION) && (LIBHEIF_NUMERIC_VERSION >= 0x01070000)
                 << QString::fromLatin1("avif")
                 << QString::fromLatin1("avifs")
 #endif
 #if defined (LIBHEIF_NUMERIC_VERSION) && (LIBHEIF_NUMERIC_VERSION >= 0x010D0000)
                 << QString::fromLatin1("hej2")
+                << QString::fromLatin1("hsj2")
 #endif
 #if defined (LIBHEIF_HAVE_VERSION) && (LIBHEIF_HAVE_VERSION(1, 18, 0))
                 << QString::fromLatin1("vvic")
+#endif
+#if defined (LIBHEIF_HAVE_VERSION) && (LIBHEIF_HAVE_VERSION(1, 19, 0))
+                << QString::fromLatin1("avci")
+                << QString::fromLatin1("avcs")
 #endif
                    ;
     }

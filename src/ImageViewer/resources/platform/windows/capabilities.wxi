@@ -207,6 +207,20 @@
       Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
+      Name=".avci"
+      Value="$(var.ProductNameSafe).avci"
+      Id="reg_cap_assoc_avci" />
+    <RegistryValue
+      Root="HKMU"
+      Type="string"
+      Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
+      Name=".avcs"
+      Value="$(var.ProductNameSafe).avcs"
+      Id="reg_cap_assoc_avcs" />
+    <RegistryValue
+      Root="HKMU"
+      Type="string"
+      Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".heif"
       Value="$(var.ProductNameSafe).heif"
       Id="reg_cap_assoc_heif" />
@@ -214,23 +228,16 @@
       Root="HKMU"
       Type="string"
       Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
-      Name=".heic"
-      Value="$(var.ProductNameSafe).heic"
-      Id="reg_cap_assoc_heic" />
-    <RegistryValue
-      Root="HKMU"
-      Type="string"
-      Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
-      Name=".heix"
-      Value="$(var.ProductNameSafe).heix"
-      Id="reg_cap_assoc_heix" />
-    <RegistryValue
-      Root="HKMU"
-      Type="string"
-      Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
       Name=".heifs"
       Value="$(var.ProductNameSafe).heifs"
       Id="reg_cap_assoc_heifs" />
+    <RegistryValue
+      Root="HKMU"
+      Type="string"
+      Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
+      Name=".heic"
+      Value="$(var.ProductNameSafe).heic"
+      Id="reg_cap_assoc_heic" />
     <RegistryValue
       Root="HKMU"
       Type="string"
@@ -252,6 +259,20 @@
       Name=".hej2"
       Value="$(var.ProductNameSafe).hej2"
       Id="reg_cap_assoc_hej2" />
+    <RegistryValue
+      Root="HKMU"
+      Type="string"
+      Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
+      Name=".hsj2"
+      Value="$(var.ProductNameSafe).hsj2"
+      Id="reg_cap_assoc_hsj2" />
+    <RegistryValue
+      Root="HKMU"
+      Type="string"
+      Key="$(var.HKLMRegPath)\Capabilities\FileAssociations"
+      Name=".heix"
+      Value="$(var.ProductNameSafe).heix"
+      Id="reg_cap_assoc_heix" />
     <RegistryValue
       Root="HKMU"
       Type="string"

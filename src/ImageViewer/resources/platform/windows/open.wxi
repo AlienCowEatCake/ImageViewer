@@ -165,27 +165,33 @@
     <RegistryValue
       Root="HKCR"
       Type="string"
+      Key=".avci"
+      Value="$(var.ProductNameSafe).avci"
+      Id="reg_assoc_avci" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".avcs"
+      Value="$(var.ProductNameSafe).avcs"
+      Id="reg_assoc_avcs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
       Key=".heif"
       Value="$(var.ProductNameSafe).heif"
       Id="reg_assoc_heif" />
     <RegistryValue
       Root="HKCR"
       Type="string"
-      Key=".heic"
-      Value="$(var.ProductNameSafe).heic"
-      Id="reg_assoc_heic" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
-      Key=".heix"
-      Value="$(var.ProductNameSafe).heix"
-      Id="reg_assoc_heix" />
-    <RegistryValue
-      Root="HKCR"
-      Type="string"
       Key=".heifs"
       Value="$(var.ProductNameSafe).heifs"
       Id="reg_assoc_heifs" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".heic"
+      Value="$(var.ProductNameSafe).heic"
+      Id="reg_assoc_heic" />
     <RegistryValue
       Root="HKCR"
       Type="string"
@@ -204,6 +210,18 @@
       Key=".hej2"
       Value="$(var.ProductNameSafe).hej2"
       Id="reg_assoc_hej2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".hsj2"
+      Value="$(var.ProductNameSafe).hsj2"
+      Id="reg_assoc_hsj2" />
+    <RegistryValue
+      Root="HKCR"
+      Type="string"
+      Key=".heix"
+      Value="$(var.ProductNameSafe).heix"
+      Id="reg_assoc_heix" />
     <RegistryValue
       Root="HKCR"
       Type="string"
