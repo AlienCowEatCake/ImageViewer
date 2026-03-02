@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2017-2024 Peter S. Zhigalov <peter.zhigalov@gmail.com>
+   Copyright (C) 2017-2026 Peter S. Zhigalov <peter.zhigalov@gmail.com>
 
    This file is part of the `ImageViewer' program.
 
@@ -629,7 +629,7 @@ ImageMetaData *readExifMetaData(TIFF *tiff)
 
 #else
 
-ImageMetaData *readExifMetaData(TIFF */*tiff*/)
+ImageMetaData *readExifMetaData(TIFF* /*tiff*/)
 {
     /// @todo LibTIFF-3.x: Add implementation?
     return Q_NULLPTR;
