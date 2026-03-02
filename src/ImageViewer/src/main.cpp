@@ -19,6 +19,7 @@
 
 #include <QtPlugin>
 #include <QIcon>
+#include <QImageReader>
 #include <QDir>
 #include <QFileInfo>
 #include <QLibraryInfo>
@@ -77,6 +78,9 @@ int main(int argc, char *argv[])
 #endif
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+#endif
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QImageReader::setAllocationLimit(0);
 #endif
     Workarounds::InitQtUtilsResources();
 
