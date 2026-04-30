@@ -1,0 +1,55 @@
+From 548f473baab09760659bbef92ada674489ae8bb0 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 9 Jul 2023 10:02:06 +0700
+Subject: [PATCH 10/10] Remove C++11 features
+
+---
+ src/jp2image.cpp     | 4 ++--
+ src/jp2image_int.cpp | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/jp2image.cpp b/src/jp2image.cpp
+index eb49d042..5637a3c3 100644
+--- a/src/jp2image.cpp
++++ b/src/jp2image.cpp
+@@ -210,7 +210,7 @@ namespace Exiv2
+                     }
+                     boxFileTypeFound = true;
+                     std::vector<byte> boxData(box.length - boxSize);
+-                    io_->read(boxData.data(), static_cast<long>(boxData.size()));
++                    io_->read(&(boxData[0]), static_cast<long>(boxData.size()));
+                     if (!Internal::isValidBoxFileType(boxData))
+                         throw Error(kerCorruptedMetadata);
+                     break;
+@@ -477,7 +477,7 @@ namespace Exiv2
+                         // This box shall immediately follow the JPEG 2000 Signature box
+                         /// \todo  All files shall contain one and only one File Type box.
+                         std::vector<byte> boxData(box.length - boxSize);
+-                        io_->read(boxData.data(), static_cast<long>(boxData.size()));
++                        io_->read(&(boxData[0]), static_cast<long>(boxData.size()));
+                         if (!Internal::isValidBoxFileType(boxData))
+                             throw Error(kerCorruptedMetadata);
+                         break;
+diff --git a/src/jp2image_int.cpp b/src/jp2image_int.cpp
+index 9a0dfcd0..285c791e 100644
+--- a/src/jp2image_int.cpp
++++ b/src/jp2image_int.cpp
+@@ -16,12 +16,12 @@ namespace Internal {
+         }
+ 
+         const size_t N = (boxData.size() - 8u) / 4u;
+-        const uint32_t brand = getULong(boxData.data(), bigEndian);
+-        const uint32_t minorVersion = getULong(boxData.data() + 4, bigEndian);
++        const uint32_t brand = getULong(&(boxData[0]), bigEndian);
++        const uint32_t minorVersion = getULong(&(boxData[0]) + 4, bigEndian);
+ 
+         bool clWithRightBrand = false;
+         for (size_t i = 0; i < N; i++) {
+-            uint32_t compatibilityList = getULong(boxData.data() + 8 + i * 4, bigEndian);
++            uint32_t compatibilityList = getULong(&(boxData[0]) + 8 + i * 4, bigEndian);
+             if (compatibilityList == brandJp2) {
+                 clWithRightBrand = true;
+                 break;
+-- 
+2.39.2
+

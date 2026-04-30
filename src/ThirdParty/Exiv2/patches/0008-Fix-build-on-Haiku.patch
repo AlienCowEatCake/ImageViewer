@@ -1,0 +1,25 @@
+From 8b3bdce74ecd2d81ac913046778f9800ef45caf9 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Mon, 22 Jul 2019 04:41:15 +0700
+Subject: [PATCH 8/9] Fix build on Haiku
+
+---
+ src/timegm.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/timegm.h b/src/timegm.h
+index c95189d5..cacfce0f 100644
+--- a/src/timegm.h
++++ b/src/timegm.h
+@@ -11,7 +11,7 @@ extern "C" {
+ #define timegm _mkgmtime
+ #endif
+ 
+-#if defined(__MINGW__)
++#if defined(__MINGW__) || defined(__HAIKU__)
+ time_t timegm(struct tm * const tmp);
+ #endif
+ 
+-- 
+2.39.2
+

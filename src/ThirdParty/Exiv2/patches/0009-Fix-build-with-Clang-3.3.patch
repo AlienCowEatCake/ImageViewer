@@ -1,0 +1,27 @@
+From 31c36768af75c9c91a1ec3c6b00121a2de581f5d Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Mon, 22 Jul 2019 04:41:51 +0700
+Subject: [PATCH 9/9] Fix build with Clang 3.3
+
+---
+ src/safe_op.hpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/safe_op.hpp b/src/safe_op.hpp
+index ddcc44b8..5f8f8994 100644
+--- a/src/safe_op.hpp
++++ b/src/safe_op.hpp
+@@ -198,7 +198,9 @@ namespace Safe
+         }
+ 
+ #if defined(__GNUC__) || defined(__clang__)
+-#if __GNUC__ >= 5 || __clang_major__ >= 3
++#if (defined(__GNUC__) && (__GNUC__ >= 5)) || \
++    (defined(__clang__) && !defined(__apple_build_version__) && ((__clang_major__ > 3) || (__clang_major__ == 3 && __clang_minor__ >= 4))) || \
++    (defined(__clang__) && defined(__apple_build_version__) && (__clang_major__ >= 7))
+ 
+ /*!
+  * This macro pastes a specialization of builtin_add_overflow using gcc's &
+-- 
+2.39.2
+
