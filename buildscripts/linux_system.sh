@@ -134,6 +134,13 @@ if type "dpkg-buildpackage" &> /dev/null ; then
     find "debian" -type d -exec chmod 755 \{\} \;
     find "debian" -type f -exec chmod 644 \{\} \;
     chmod 755 "debian/rules"
+    if [ -x "debian/dirs" ] ; then
+        DEBIAN_DIRS_EXEC_CONTENT="$(cat "debian/dirs")"
+        DEBIAN_DIRS_EXEC_CONTENT='#!/bin/sh\ncat << DEBIAN_DIRS_EXEC_CONTENT_EOF\n'"${DEBIAN_DIRS_EXEC_CONTENT}"
+        DEBIAN_DIRS_EXEC_CONTENT="${DEBIAN_DIRS_EXEC_CONTENT}"'\nDEBIAN_DIRS_EXEC_CONTENT_EOF\n'
+        printf "${DEBIAN_DIRS_EXEC_CONTENT}" > "debian/dirs"
+        chmod 755 "debian/dirs"
+    fi
     SYSTEM_SUFFIX="system"
     if [ -f "/etc/os-release" ] ; then
         OS_ID="$(grep -E "^ID=" "/etc/os-release" | sed 's|^ID=["]*\([^"]*\)["]*$|\1|' | grep -E -v "^ID=")"

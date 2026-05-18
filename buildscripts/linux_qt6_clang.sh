@@ -59,6 +59,13 @@ cp -a "../../${DEBIAN_DIR_PATH}" ./
 find "debian" -type d -exec chmod 755 \{\} \;
 find "debian" -type f -exec chmod 644 \{\} \;
 chmod 755 "debian/rules"
+if [ -x "debian/dirs" ] ; then
+    DEBIAN_DIRS_EXEC_CONTENT="$(cat "debian/dirs")"
+    DEBIAN_DIRS_EXEC_CONTENT='#!/bin/sh\ncat << DEBIAN_DIRS_EXEC_CONTENT_EOF\n'"${DEBIAN_DIRS_EXEC_CONTENT}"
+    DEBIAN_DIRS_EXEC_CONTENT="${DEBIAN_DIRS_EXEC_CONTENT}"'\nDEBIAN_DIRS_EXEC_CONTENT_EOF\n'
+    printf "${DEBIAN_DIRS_EXEC_CONTENT}" > "debian/dirs"
+    chmod 755 "debian/dirs"
+fi
 dpkg-buildpackage -rfakeroot -b -uc
 cd ..
 for i in *.deb ; do
