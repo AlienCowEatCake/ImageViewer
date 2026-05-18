@@ -9,131 +9,101 @@ ICONS_DIR_PATH="src/${PROJECT}/resources/icon"
 DEBIAN_DIR_PATH="src/${PROJECT}/resources/platform/debian"
 SCRIPT_PATH="src/${PROJECT}/resources/platform/linux/set_associations.sh"
 
-CMD_QMAKE="qmake"
-CONFIG_STR="release enable_pkgconfig disable_zstd disable_xzutils disable_brotli disable_highway disable_libexpat disable_libbpg disable_freetype disable_aom disable_libde265 disable_flif disable_stb disable_qtimageformats disable_kimageformats"
-if pkg-config zlib ; then
-    CONFIG_STR="${CONFIG_STR} system_zlib"
-else
-    CONFIG_STR="${CONFIG_STR} disable_zlib"
-fi
-if pkg-config lcms2 ; then
-    CONFIG_STR="${CONFIG_STR} system_liblcms2"
-else
-    CONFIG_STR="${CONFIG_STR} disable_liblcms2"
-fi
-if pkg-config libexif ; then
-    CONFIG_STR="${CONFIG_STR} system_libexif"
-else
-    CONFIG_STR="${CONFIG_STR} disable_libexif"
-fi
-if pkg-config exiv2 ; then
-    CONFIG_STR="${CONFIG_STR} system_exiv2"
-else
+FREETYPE_INCLUDE_PATH="/usr/include/freetype2"
+LIBJXR_INCLUDE_PATH="/usr/include/jxrlib"
+
+CMD_QMAKE=
+for CMD_QMAKE in "qmake6" "qmake" ; do
+    if type "${CMD_QMAKE}" &> /dev/null ; then
+        break
+    fi
+done
+echo "QMAKE: ${CMD_QMAKE}"
+
+CONFIG_STR="release enable_update_checking system_thirdparty"
+if ! pkg-config exiv2 ; then
     CONFIG_STR="${CONFIG_STR} disable_exiv2"
 fi
-if pkg-config libjpeg ; then
-    CONFIG_STR="${CONFIG_STR} system_libjpeg"
-else
-    CONFIG_STR="${CONFIG_STR} disable_libjpeg"
+if ! echo '#include <flif.h>\n#include <flif_dec.h>' | cpp -x c++ 2>/dev/null >/dev/null ; then
+    CONFIG_STR="${CONFIG_STR} disable_flif"
 fi
-if echo '#include <jasper/jasper.h>' | cpp -x c++ 2>/dev/null >/dev/null ; then
-    CONFIG_STR="${CONFIG_STR} system_libjasper"
-else
-    CONFIG_STR="${CONFIG_STR} disable_libjasper"
-fi
-if echo '#include <libmng.h>' | cpp -x c++ 2>/dev/null >/dev/null ; then
-    CONFIG_STR="${CONFIG_STR} system_libmng"
-else
-    CONFIG_STR="${CONFIG_STR} disable_libmng"
-fi
-if pkg-config libpng ; then
-    CONFIG_STR="${CONFIG_STR} system_libpng"
-else
-    CONFIG_STR="${CONFIG_STR} disable_libpng"
-fi
-if echo '#include <jbig.h>' | cpp -x c++ 2>/dev/null >/dev/null ; then
-    CONFIG_STR="${CONFIG_STR} system_jbigkit"
-else
-    CONFIG_STR="${CONFIG_STR} disable_jbigkit"
-fi
-if echo '#include <Lerc_c_api.h>' | cpp -x c++ 2>/dev/null >/dev/null ; then
-    CONFIG_STR="${CONFIG_STR} system_lerc"
-else
-    CONFIG_STR="${CONFIG_STR} disable_lerc"
-fi
-if pkg-config libtiff-4 ; then
-    CONFIG_STR="${CONFIG_STR} system_libtiff"
-else
-    CONFIG_STR="${CONFIG_STR} disable_libtiff"
-fi
-if pkg-config libwebp libwebpdemux libwebpmux libsharpyuv ; then
-    CONFIG_STR="${CONFIG_STR} system_libwebp"
-else
-    CONFIG_STR="${CONFIG_STR} disable_libwebp"
-fi
-if echo -e '#include <libwmf/api.h>\n#include <libwmf/gd.h>' | cpp -I "/usr/include/freetype2" -x c++ 2>/dev/null >/dev/null ; then
-    CONFIG_STR="${CONFIG_STR} system_libwmf"
-else
-    CONFIG_STR="${CONFIG_STR} disable_libwmf"
-fi
-if pkg-config libopenjp2 ; then
-    CONFIG_STR="${CONFIG_STR} system_openjpeg"
-else
-    CONFIG_STR="${CONFIG_STR} disable_openjpeg"
-fi
-if echo '#include <gif_lib.h>' | cpp -x c++ 2>/dev/null >/dev/null ; then
-    CONFIG_STR="${CONFIG_STR} system_giflib"
-else
+if ! echo '#include <gif_lib.h>' | cpp -x c++ 2>/dev/null >/dev/null ; then
     CONFIG_STR="${CONFIG_STR} disable_giflib"
 fi
-if pkg-config libraw ; then
-    CONFIG_STR="${CONFIG_STR} system_libraw"
-else
+if ! echo '#include <jbig.h>' | cpp -x c++ 2>/dev/null >/dev/null ; then
+    CONFIG_STR="${CONFIG_STR} disable_jbigkit"
+fi
+if ! echo '#include <JXRGlue.h>' | cpp -I "${LIBJXR_INCLUDE_PATH}" -x c++ 2>/dev/null >/dev/null ; then
+    CONFIG_STR="${CONFIG_STR} disable_jxrlib"
+fi
+if ! echo '#include <Lerc_c_api.h>' | cpp -x c++ 2>/dev/null >/dev/null ; then
+    CONFIG_STR="${CONFIG_STR} disable_lerc"
+fi
+if ! pkg-config libavif ; then
+    CONFIG_STR="${CONFIG_STR} disable_libavif"
+fi
+if ! echo '#include <libbpg.h>' | cpp -x c 2>/dev/null >/dev/null ; then
+    CONFIG_STR="${CONFIG_STR} disable_libbpg"
+fi
+if ! pkg-config libexif ; then
+    CONFIG_STR="${CONFIG_STR} disable_libexif"
+fi
+if ! pkg-config libheif ; then
+    CONFIG_STR="${CONFIG_STR} disable_libheif"
+fi
+if ! echo '#include <jasper/jasper.h>' | cpp -x c++ 2>/dev/null >/dev/null ; then
+    CONFIG_STR="${CONFIG_STR} disable_libjasper"
+fi
+if ! pkg-config libjpeg ; then
+    CONFIG_STR="${CONFIG_STR} disable_libjpeg"
+fi
+if ! pkg-config libjxl ; then
+    CONFIG_STR="${CONFIG_STR} disable_libjxl"
+fi
+if ! pkg-config lcms2 ; then
+    CONFIG_STR="${CONFIG_STR} disable_liblcms2"
+fi
+if ! echo '#include <libmng.h>' | cpp -x c++ 2>/dev/null >/dev/null ; then
+    CONFIG_STR="${CONFIG_STR} disable_libmng"
+fi
+if ! pkg-config libpng ; then
+    CONFIG_STR="${CONFIG_STR} disable_libpng"
+fi
+if ! pkg-config libraw ; then
     CONFIG_STR="${CONFIG_STR} disable_libraw"
 fi
-if pkg-config librsvg-2.0 ; then
-    CONFIG_STR="${CONFIG_STR} system_librsvg"
-else
+if ! pkg-config librsvg-2.0 ; then
     CONFIG_STR="${CONFIG_STR} disable_librsvg"
+fi
+if ! pkg-config libtiff-4 ; then
+    CONFIG_STR="${CONFIG_STR} disable_libtiff"
+fi
+if ! pkg-config libwebp libwebpdemux libwebpmux libsharpyuv ; then
+    CONFIG_STR="${CONFIG_STR} disable_libwebp"
+fi
+if ! echo -e '#include <libwmf/api.h>\n#include <libwmf/gd.h>' | cpp -I "${FREETYPE_INCLUDE_PATH}" -x c++ 2>/dev/null >/dev/null ; then
+    CONFIG_STR="${CONFIG_STR} disable_libwmf"
+fi
+if ! pkg-config OpenEXR ; then
+    CONFIG_STR="${CONFIG_STR} disable_openexr"
+fi
+if ! pkg-config libopenjp2 ; then
+    CONFIG_STR="${CONFIG_STR} disable_openjpeg"
+fi
+if ! pkg-config zlib ; then
+    CONFIG_STR="${CONFIG_STR} disable_zlib"
 fi
 if echo '#include <resvg.h>' | cpp -x c++ 2>/dev/null >/dev/null ; then
     CONFIG_STR="${CONFIG_STR} system_resvg"
-else
-    CONFIG_STR="${CONFIG_STR} disable_resvg"
 fi
-if pkg-config libheif ; then
-    CONFIG_STR="${CONFIG_STR} system_libheif"
-else
-    CONFIG_STR="${CONFIG_STR} disable_libheif"
-fi
-if pkg-config OpenEXR IlmBase ; then
-    CONFIG_STR="${CONFIG_STR} system_openexr"
-else
-    CONFIG_STR="${CONFIG_STR} disable_openexr"
-fi
-if pkg-config libavif ; then
-    CONFIG_STR="${CONFIG_STR} system_libavif"
-else
-    CONFIG_STR="${CONFIG_STR} disable_libavif"
-fi
-if echo '#include <JXRGlue.h>' | cpp -I "/usr/include/jxrlib" -x c++ 2>/dev/null >/dev/null ; then
-    CONFIG_STR="${CONFIG_STR} system_jxrlib"
-else
-    CONFIG_STR="${CONFIG_STR} disable_jxrlib"
-fi
-if pkg-config libjxl ; then
-    CONFIG_STR="${CONFIG_STR} system_libjxl"
-else
-    CONFIG_STR="${CONFIG_STR} disable_libjxl"
-fi
-echo "Config: ${CONFIG_STR}"
+echo "CONFIG: ${CONFIG_STR}"
 echo
 
 cd "$(dirname $0)"/..
 rm -rf "${BUILDDIR}"
 mkdir -p "${BUILDDIR}"
 cd "${BUILDDIR}"
-${CMD_QMAKE} -r CONFIG+="${CONFIG_STR}" CONFIG+="enable_update_checking" INCLUDEPATH+="/usr/include/freetype2" INCLUDEPATH+="/usr/include/jxrlib" "../${PROJECT}.pro"
+${CMD_QMAKE} -r CONFIG+="${CONFIG_STR}" INCLUDEPATH+="${FREETYPE_INCLUDE_PATH}" INCLUDEPATH+="${LIBJXR_INCLUDE_PATH}" "../${PROJECT}.pro"
 make -j$(getconf _NPROCESSORS_ONLN)
 strip --strip-all "${APP_PATH}/${PROJECT}"
 
@@ -164,6 +134,20 @@ if type "dpkg-buildpackage" &> /dev/null ; then
     find "debian" -type d -exec chmod 755 \{\} \;
     find "debian" -type f -exec chmod 644 \{\} \;
     chmod 755 "debian/rules"
+    SYSTEM_SUFFIX="system"
+    if [ -f "/etc/os-release" ] ; then
+        OS_ID="$(grep -E "^ID=" "/etc/os-release" | sed 's|^ID=["]*\([^"]*\)["]*$|\1|' | grep -E -v "^ID=")"
+        OS_VERSION_ID="$(grep -E "^VERSION_ID=" "/etc/os-release" | sed 's|^VERSION_ID=["]*\([^"]*\)["]*$|\1|' | grep -E -v "^VERSION_ID=")"
+        if [ ! -z "${OS_ID}" ] ; then
+            if [ ! -z "${OS_VERSION_ID}" ] ; then
+                SYSTEM_SUFFIX="${OS_ID}-${OS_VERSION_ID}"
+            else
+                SYSTEM_SUFFIX="${OS_ID}"
+            fi
+            SYSTEM_SUFFIX="$(echo "${SYSTEM_SUFFIX}" | tr '[:upper:]' '[:lower:]' | sed 's|[ \t\r\n]\{1,\}|_|g ; s|[_]\{1,\}|-|g ; s|[-]\{1,\}|.|g ; s|[\.]\{1,\}|.|g')"
+        fi
+    fi
+    sed -i "s|(\([^)]*\))|(\1~${SYSTEM_SUFFIX})|" "debian/changelog"
     dpkg-buildpackage -rfakeroot -b -uc
     cd ..
     cp -a *.deb ../
