@@ -47,14 +47,14 @@ environment:
     # - job_name: GNU/Linux, Ubuntu 18.04, Qt 4.8, x64, Testing
     #   job_group: linux_test_qt4
     #   APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu
-    - job_name: GNU/Linux, Ubuntu 22.04, Qt 5.15, x64, Testing
+    - job_name: GNU/Linux, Ubuntu 20.04, Qt 5.15, x64, Testing
       job_group: linux_test
-      APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2204
+      APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
       QTDIR: Qt/5.15/gcc_64
-    - job_name: GNU/Linux, Ubuntu 22.04, Qt 6.5, x64, Testing
+    - job_name: GNU/Linux, Ubuntu 22.04, Qt 6.8, x64, Testing
       job_group: linux_test
       APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2204
-      QTDIR: Qt/6.5/gcc_64
+      QTDIR: Qt/6.8
     # - job_name: GNU/Linux, Qt 5.15, x64
     #   job_group: linux_buildscript
     #   APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2204
@@ -70,6 +70,7 @@ for:
     only:
       - job_group: macos_test
   build_script:
+    - pushd "${HOME}" && for i in ${QTDIR//\// } bin; do cd "${i}" && echo "Contents of ${PWD}:" && ls -lAh || break; done && popd
     - export PATH="${HOME}/${QTDIR}/bin:${PATH}"
     - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
     - cd "${APPVEYOR_BUILD_FOLDER}/build"
@@ -157,7 +158,9 @@ for:
     only:
       - job_group: linux_test
   build_script:
+    - pushd "${HOME}" && for i in ${QTDIR//\// } bin; do cd "${i}" && echo "Contents of ${PWD}:" && ls -lAh || break; done && popd
     - export PATH="${HOME}/${QTDIR}/bin:${PATH}"
+    - export LD_LIBRARY_PATH="${HOME}/${QTDIR}/lib:${HOME}/${QTDIR}:${LD_LIBRARY_PATH}"
     - mkdir "${APPVEYOR_BUILD_FOLDER}/build"
     - cd "${APPVEYOR_BUILD_FOLDER}/build"
     - qmake -r CONFIG+=release CONFIG+="enable_librsvg enable_resvg disable_fallback_iccprofiles enable_update_checking" ..
