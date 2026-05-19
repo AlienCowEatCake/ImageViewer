@@ -407,7 +407,7 @@ struct MenuBar::Impl : public ControlsContainerEmitter
         QIcon icon = IconThemeManager::instance()->GetIcon(type, menuActionsFallbackIconRequired, menuActionsHasDarkTheme);
 
         // https://bugreports.qt.io/browse/QTBUG-140898
-#if defined (Q_OS_WIN) && (QT_VERSION >= QT_VERSION_CHECK(6, 9, 2))
+#if defined (Q_OS_WIN) && (QT_VERSION >= QT_VERSION_CHECK(6, 9, 2)) && (QT_VERSION < QT_VERSION_CHECK(6, 11, 1))
         static const QList<QIcon::Mode> modes = QList<QIcon::Mode>() << QIcon::Normal << QIcon::Disabled << QIcon::Active << QIcon::Selected;
         static const QList<QIcon::State> states = QList<QIcon::State>() << QIcon::On << QIcon::Off;
         const qreal menuIconSize = qApp->style()->pixelMetric(QStyle::PM_SmallIconSize);
