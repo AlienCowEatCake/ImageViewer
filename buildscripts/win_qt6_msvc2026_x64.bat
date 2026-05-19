@@ -25,7 +25,6 @@ set "PATH=%WINDIR%;%WINDIR%\System32"
 call %VCVARS% %VCVARS_ARCH%
 set "PATH=%QT_PATH%\bin;%WIX%\bin;%WIX%;%PATH%"
 set CRT_DIR="%VCToolsRedistDir%\x64\Microsoft.VC145.CRT"
-set UCRT_DIR="%UniversalCRTSdkDir%\Redist\%UCRTVersion%\ucrt\DLLs\x64"
 
 cd "%~dp0"
 cd ..
@@ -42,7 +41,7 @@ rmdir /S /Q %PROJECT%%SUFFIX% 2>nul >nul
 mkdir %PROJECT%%SUFFIX%
 copy %APP_PATH%\release\%PROJECT%.exe %PROJECT%%SUFFIX%\%PROJECT%.exe
 windeployqt --release --no-compiler-runtime --no-system-d3d-compiler --no-system-dxc-compiler --no-virtualkeyboard --no-opengl-sw %PROJECT%%SUFFIX%
-%DLLRESOLVER_CMD% %PROJECT%%SUFFIX% %RESVG_PATH% %UCRT_DIR% %CRT_DIR% %QT_PATH%\bin
+%DLLRESOLVER_CMD% %PROJECT%%SUFFIX% %RESVG_PATH% %CRT_DIR% %QT_PATH%\bin
 copy ..\src\%PROJECT%\resources\translations\*.qm %PROJECT%%SUFFIX%\translations\
 copy ..\src\QtUtils\resources\translations\*.qm %PROJECT%%SUFFIX%\translations\
 %ZIP_CMD% -9r ..\%PROJECT%%SUFFIX%.zip %PROJECT%%SUFFIX%

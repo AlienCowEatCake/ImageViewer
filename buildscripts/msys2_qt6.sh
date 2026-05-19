@@ -13,7 +13,6 @@ CMD_DEPLOY="windeployqt6"
 MSYSTEM_PKG_PREFIX="mingw-w64"
 VCVARS_ARCH=""
 CRT_ARCH=""
-UCRT_ARCH=""
 WIX_ARCH=""
 WIX_OS_VER="10"
 RESVG_TARGET=""
@@ -21,28 +20,24 @@ if [ "${MSYSTEM}" == "UCRT64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-ucrt-x86_64"
     VCVARS_ARCH="x64"
     CRT_ARCH="x64"
-    UCRT_ARCH="x64"
     WIX_ARCH="x64"
     RESVG_TARGET="x86_64-pc-windows-msvc"
 elif [ "${MSYSTEM}" == "MINGW64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-x86_64"
     VCVARS_ARCH="x64"
     CRT_ARCH="x64"
-    UCRT_ARCH="x64"
     WIX_ARCH="x64"
     RESVG_TARGET="x86_64-pc-windows-msvc"
 elif [ "${MSYSTEM}" == "CLANG64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-x86_64"
     VCVARS_ARCH="x64"
     CRT_ARCH="x64"
-    UCRT_ARCH="x64"
     WIX_ARCH="x64"
     RESVG_TARGET="x86_64-pc-windows-msvc"
 elif [ "${MSYSTEM}" == "CLANGARM64" ] ; then
     MSYSTEM_PKG_PREFIX="${MSYSTEM_PKG_PREFIX}-clang-aarch64"
     VCVARS_ARCH="arm64"
     CRT_ARCH="arm64"
-    UCRT_ARCH="arm64"
     WIX_ARCH="arm64"
     RESVG_TARGET="aarch64-pc-windows-msvc"
 else
@@ -102,15 +97,6 @@ echo %VCToolsRedistDir%${CRT_ARCH}\Microsoft.VC145.CRT
 EOF
 }
 
-function getUCRTPath() {
-    local VCVARS="$(getVCVARSPath)"
-    cat << EOF | cmd | tail -3 | head -1
-set VCVARS="${VCVARS}"
-call %VCVARS% ${VCVARS_ARCH}
-echo %UniversalCRTSdkDir%Redist\%UCRTVersion%\ucrt\DLLs\\${UCRT_ARCH}
-EOF
-}
-
 function stripAll() {
     find "${DIST_PREFIX}" \( -name '*.exe' -o -name '*.dll' \) | while IFS= read -r item ; do
         strip --strip-all "${item}" || strip "${item}" || true
@@ -148,10 +134,9 @@ find "${DIST_PREFIX}/platforms" -type f \( -name 'qdirect2d.dll' -o -name 'qmini
 copyDlls "$(cygpath -w "${MSYSTEM_PREFIX}/bin")"
 stripAll
 CRT_ROOT="$(cygpath -w "$(getCRTPath)")"
-UCRT_ROOT="$(cygpath -w "$(getUCRTPath)")"
 # @todo HACK: avoid Bad address error after native cmd calling
 echo
-copyDlls "${CRT_ROOT}" "${UCRT_ROOT}"
+copyDlls "${CRT_ROOT}"
 zip -9r "../${DIST_PREFIX}.zip" "${DIST_PREFIX}"
 rm -rf "build_msi"
 mv "${DIST_PREFIX}" "build_msi"
