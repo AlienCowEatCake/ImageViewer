@@ -176,7 +176,11 @@ QString compilerDescriptionInt()
 #elif (_MSC_VER == 1944)
     return QString::fromLatin1("MSVC++ 14.44 (Visual Studio 2022 version 17.14)");
 #elif (_MSC_VER == 1950)
-    return QString::fromLatin1("MSVC++ 14.50 (Visual Studio 2026 version 18.0)");
+    return QString::fromLatin1("MSVC++ 14.50 (Visual Studio 2026)");
+#elif (_MSC_VER == 1951)
+    return QString::fromLatin1("MSVC++ 14.51 (Visual Studio 2026)");
+#elif (_MSC_VER == 1952)
+    return QString::fromLatin1("MSVC++ 14.52 (Visual Studio 2026)");
 #else
     return QString::fromLatin1("MSVC++ (_MSC_VER=%1)").arg(_MSC_VER);
 #endif
