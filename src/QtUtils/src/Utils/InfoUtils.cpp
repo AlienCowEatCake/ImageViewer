@@ -772,7 +772,15 @@ QString GetSystemDescription()
         QSettings reg(QString::fromLatin1("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion"), QSettings::Registry64Format);
         const QString displayVersion = reg.value(QString::fromLatin1("DisplayVersion")).toString();
         if(!displayVersion.isEmpty())
+        {
             winVersion.append(QString::fromLatin1(" %1").arg(displayVersion));
+        }
+        else
+        {
+            const QString releaseId = reg.value(QString::fromLatin1("ReleaseId")).toString();
+            if(!releaseId.isEmpty())
+                winVersion.append(QString::fromLatin1(" %1").arg(releaseId));
+        }
     }
 #endif
 
