@@ -14,8 +14,9 @@ set ZIP_CMD="%~dp0\..\buildscripts\helpers\arm64\zip.exe"
 set DLLRESOLVER_CMD="%~dp0\..\buildscripts\helpers\arm64\dllresolver.exe"
 set RESVG_PATH="%~dp0\resvg\resvg-0.45.1\aarch64-pc-windows-msvc"
 
+set "PATH=%WINDIR%;%WINDIR%\System32"
 call %VCVARS% %VCVARS_ARCH%
-set PATH=%QT_PATH%\bin;%WIX%\bin;%WIX%;%PATH%
+set "PATH=%QT_PATH%\bin;%WIX%\bin;%WIX%;%PATH%"
 set CRT_DIR="%VCToolsRedistDir%\arm64\Microsoft.VC143.CRT"
 set UCRT_DIR="%UniversalCRTSdkDir%\Redist\%UCRTVersion%\ucrt\DLLs\arm64"
 

@@ -17,8 +17,9 @@ for /F "tokens=1,2*" %%i in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\S
     )
 )
 
+set "PATH=%WINDIR%;%WINDIR%\System32"
 call %VCVARS% %VCVARS_ARCH%
-set PATH=%QT_PATH%\bin;%PATH%
+set "PATH=%QT_PATH%\bin;%PATH%"
 
 cd "%~dp0"
 cd ..

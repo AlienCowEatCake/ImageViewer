@@ -22,8 +22,9 @@ for /F "tokens=1,2*" %%i in ('reg query "HKLM\SYSTEM\CurrentControlSet\Control\S
     )
 )
 
+set "PATH=%WINDIR%;%WINDIR%\System32"
 call %VCVARS% %VCVARS_ARCH%
-set PATH=%QT_PATH%\bin;%WIX%\bin;%WIX%;%PATH%
+set "PATH=%QT_PATH%\bin;%WIX%\bin;%WIX%;%PATH%"
 set CRT_DIR="%VCToolsRedistDir%\x86\Microsoft.VC143.CRT"
 set UCRT_DIR="%UniversalCRTSdkDir%\Redist\%UCRTVersion%\ucrt\DLLs\x86"
 

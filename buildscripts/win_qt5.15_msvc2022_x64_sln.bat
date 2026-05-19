@@ -6,8 +6,9 @@ set VCVARS="%VS2022_VCVARSALL%"
 if "x%QT_PATH%x" == "xx" set QT_PATH=C:\Qt\5.15.2\msvc2019_64
 set BUILDDIR=build_win_qt5.15_msvc2022_%ARCH%_sln
 
+set "PATH=%WINDIR%;%WINDIR%\System32"
 call %VCVARS% %ARCH%
-set PATH=%QT_PATH%\bin;%PATH%
+set "PATH=%QT_PATH%\bin;%PATH%"
 
 cd "%~dp0"
 cd ..
