@@ -21,6 +21,10 @@ extern "C" {
     (defined(__x86_64__) || defined(__i386__)) && \
     !defined(LIBYUV_ENABLE_ROWWIN)
 
+// Note: for avx and avx512 declare clobber as xmm registers due to
+// clang for windows needing to preserve xmm registers but not saving
+// them if declared as ymm or zmm.
+
 #if defined(HAS_ARGBTOYROW_SSSE3) || defined(HAS_ARGBGRAYROW_SSSE3)
 
 // Constants for ARGB
@@ -224,8 +228,8 @@ void RAWToARGBRow_AVX2(const uint8_t* src_raw, uint8_t* dst_argb, int width) {
   asm volatile(
       "vpcmpeqb    %%ymm6,%%ymm6,%%ymm6          \n"  // 0xff000000
       "vpslld      $0x18,%%ymm6,%%ymm6           \n"
-      "vbroadcastf128 %3,%%ymm4                  \n"  //
-      "vbroadcastf128 %4,%%ymm5                  \n"  //
+      "vbroadcasti128 %3,%%ymm4                  \n"  //
+      "vbroadcasti128 %4,%%ymm5                  \n"  //
 
       LABELALIGN  //
       "1:          \n"
@@ -307,7 +311,7 @@ void RGBToARGBRow_AVX512BW(const uint8_t* src_raw, uint8_t* dst_argb, const uint
         "+r"(width)                     // %2
       : "m"(kPermdRAWToARGB_AVX512BW),  // %3
         "m"(*shuffler)                  // %4
-      : "memory", "cc", "rax", "k1", "zmm0", "zmm1", "zmm2", "zmm3", "zmm4", "zmm5", "zmm6");
+      : "memory", "cc", "rax", "k1", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6");
 }
 
 void RAWToARGBRow_AVX512BW(const uint8_t* src_raw, uint8_t* dst_argb, int width) {
@@ -609,7 +613,7 @@ static const lvec32 kPermdRGB24_AVX = {0, 1, 2, 4, 5, 6, 3, 7};
 
 void ARGBToRGB24Row_AVX2(const uint8_t* src, uint8_t* dst, int width) {
   asm volatile(
-      "vbroadcastf128 %3,%%ymm6                  \n"
+      "vbroadcasti128 %3,%%ymm6                  \n"
       "vmovdqa     %4,%%ymm7                     \n"
 
       LABELALIGN
@@ -703,7 +707,7 @@ void ARGBToRGB24Row_AVX512VBMI(const uint8_t* src, uint8_t* dst, int width) {
 #ifdef HAS_ARGBTORAWROW_AVX2
 void ARGBToRAWRow_AVX2(const uint8_t* src, uint8_t* dst, int width) {
   asm volatile(
-      "vbroadcastf128 %3,%%ymm6                  \n"
+      "vbroadcasti128 %3,%%ymm6                  \n"
       "vmovdqa     %4,%%ymm7                     \n"
 
       LABELALIGN
@@ -1061,7 +1065,7 @@ void ABGRToAR30Row_SSSE3(const uint8_t* src, uint8_t* dst, int width) {
 #ifdef HAS_ARGBTOAR30ROW_AVX2
 void ARGBToAR30Row_AVX2(const uint8_t* src, uint8_t* dst, int width) {
   asm volatile(
-      "vbroadcastf128 %3,%%ymm2                  \n"  // shuffler for RB
+      "vbroadcasti128 %3,%%ymm2                  \n"  // shuffler for RB
       "vbroadcastss %4,%%ymm3                    \n"  // multipler for RB
       "vbroadcastss %5,%%ymm4                    \n"  // mask for R10 B10
       "vbroadcastss %6,%%ymm5                    \n"  // mask for AG
@@ -1098,7 +1102,7 @@ void ARGBToAR30Row_AVX2(const uint8_t* src, uint8_t* dst, int width) {
 #ifdef HAS_ABGRTOAR30ROW_AVX2
 void ABGRToAR30Row_AVX2(const uint8_t* src, uint8_t* dst, int width) {
   asm volatile(
-      "vbroadcastf128 %3,%%ymm2                  \n"  // shuffler for RB
+      "vbroadcasti128 %3,%%ymm2                  \n"  // shuffler for RB
       "vbroadcastss %4,%%ymm3                    \n"  // multipler for RB
       "vbroadcastss %5,%%ymm4                    \n"  // mask for R10 B10
       "vbroadcastss %6,%%ymm5                    \n"  // mask for AG
@@ -1264,8 +1268,8 @@ void ARGBToAB64Row_AVX2(const uint8_t* src_argb,
                         uint16_t* dst_ab64,
                         int width) {
   asm volatile(
-      "vbroadcastf128 %3,%%ymm2                  \n"
-      "vbroadcastf128 %4,%%ymm3                  \n" LABELALIGN
+      "vbroadcasti128 %3,%%ymm2                  \n"
+      "vbroadcasti128 %4,%%ymm3                  \n" LABELALIGN
       "1:          \n"
       "vmovdqu     (%0),%%ymm0                   \n"
       "vpermq      $0xd8,%%ymm0,%%ymm0           \n"
@@ -1317,7 +1321,7 @@ void AR64ToARGBRow_AVX2(const uint16_t* src_ar64,
 void AB64ToARGBRow_AVX2(const uint16_t* src_ab64,
                         uint8_t* dst_argb,
                         int width) {
-      asm volatile("vbroadcastf128 %3,%%ymm2                  \n" LABELALIGN
+      asm volatile("vbroadcasti128 %3,%%ymm2                  \n" LABELALIGN
       "1:          \n"
       "vmovdqu     (%0),%%ymm0                   \n"
       "vmovdqu     0x20(%0),%%ymm1               \n"
@@ -1532,8 +1536,8 @@ void ARGBToYMatrixRow_AVX2(const uint8_t* src_argb,
       "vpcmpeqb    %%ymm5,%%ymm5,%%ymm5          \n"
       "vpsllw      $15,%%ymm5,%%ymm5             \n"
       "vpacksswb   %%ymm5,%%ymm5,%%ymm5          \n"
-      "vbroadcastf128 0(%3),%%ymm4               \n"
-      "vbroadcastf128 0x60(%3),%%ymm7            \n"
+      "vbroadcasti128 0(%3),%%ymm4               \n"
+      "vbroadcasti128 0x60(%3),%%ymm7            \n"
       "vpmaddubsw  %%ymm5,%%ymm4,%%ymm6          \n"
       "vphaddw     %%ymm6,%%ymm6,%%ymm6          \n"
       "vpsubw      %%ymm6,%%ymm7,%%ymm7          \n"
@@ -1615,8 +1619,8 @@ void ARGBToYMatrixRow_AVX512BW(const uint8_t* src_argb,
         "+r"(width)      // %2
       : "r"(c),          // %3
         "m"(kPermdARGBToY_AVX512BW) // %4
-      : "memory", "cc", "zmm0", "zmm1", "zmm2", "zmm3", "zmm4", "zmm5", "zmm6",
-        "zmm7", "zmm16");
+      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6",
+        "xmm7", "xmm16");
 }
 #endif
 
@@ -1757,8 +1761,8 @@ void ARGBToUV444MatrixRow_AVX2(const uint8_t* src_argb,
 #endif
       : "r"(c),                 // %4
         "m"(kPermdARGBToY_AVX)  // %5
-      : "memory", "cc", "ymm0", "ymm1", "ymm2", "ymm3", "ymm4", "ymm5", "ymm6",
-        "ymm7");
+      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6",
+        "xmm7");
 }
 #endif  // HAS_ARGBTOUV444ROW_AVX2
 
@@ -1837,8 +1841,8 @@ void ARGBToUV444MatrixRow_AVX512BW(const uint8_t* src_argb,
 #endif
       : "r"(c),                      // %4
         "m"(kPermdARGBToY_AVX512BW)  // %5
-      : "memory", "cc", "zmm0", "zmm1", "zmm2", "zmm3", "zmm4", "zmm5", "zmm6",
-        "zmm7", "zmm16");
+      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6",
+        "xmm7", "xmm16");
 }
 #endif  // HAS_ARGBTOUV444ROW_AVX512BW
 
@@ -1933,8 +1937,8 @@ void ARGBToUVMatrixRow_AVX2(const uint8_t* src_argb,
                             int width,
                             const struct ArgbConstants* c) {
   asm volatile(
-      "vbroadcastf128 0x20(%5),%%ymm4           \n"  // RGBToU
-      "vbroadcastf128 0x40(%5),%%ymm5           \n"  // RGBToV
+      "vbroadcasti128 0x20(%5),%%ymm4           \n"  // RGBToU
+      "vbroadcasti128 0x40(%5),%%ymm5           \n"  // RGBToV
       "vpcmpeqb    %%ymm6,%%ymm6,%%ymm6          \n"  // 0x0101
       "vpabsb      %%ymm6,%%ymm6                 \n"
       "vmovdqa     %6,%%ymm7                     \n"  // kShuffleAARRGGBB
@@ -2298,8 +2302,8 @@ void ARGBToUVMatrixRow_AVX512BW(const uint8_t* src_argb,
         "m"(kShuffleAARRGGBB),              // %6
         "m"(kPermdARGBToY_AVX512BW),        // %7
         "m"(kPermdARGBToUV_AVX512BW)        // %8
-      : "memory", "cc", "zmm0", "zmm1", "zmm2", "zmm3", "zmm4", "zmm5", "zmm6",
-        "zmm7", "zmm16", "zmm17", "zmm18", "zmm19");
+      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6",
+        "xmm7", "xmm16", "xmm17", "xmm18", "xmm19");
 }
 
 void ARGBToUVRow_AVX512BW(const uint8_t* src_argb,
@@ -3421,7 +3425,7 @@ void OMITFP I422ToRGBARow_SSSE3(const uint8_t* y_buf,
   "vpunpcklbw %%zmm1,%%zmm3,%%zmm3                                \n" \
   "vpermq     $0xd8,%%zmm3,%%zmm3                                 \n" \
   "vpunpcklwd %%zmm3,%%zmm3,%%zmm3                                \n" \
-  "vmovups    (%[y_buf]),%%ymm4                                   \n" \
+  "vmovdqu    (%[y_buf]),%%ymm4                                   \n" \
   "vpermq     %%zmm4,%%zmm17,%%zmm4                               \n" \
   "vpermq     $0xd8,%%zmm4,%%zmm4                                 \n" \
   "vpunpcklbw %%zmm4,%%zmm4,%%zmm4                                \n" \
@@ -3614,32 +3618,26 @@ void OMITFP I422ToRGBARow_SSSE3(const uint8_t* y_buf,
   "vpshufb    %%ymm7,%%ymm1,%%ymm3                                \n" \
   "lea        0x20(%[uyvy_buf]),%[uyvy_buf]                       \n"
 
-// TODO(fbarchard): Remove broadcastb
 #if defined(__x86_64__)
 #define YUVTORGB_SETUP_AVX2(yuvconstants)                             \
-  "vpcmpeqb    %%xmm13,%%xmm13,%%xmm13                            \n" \
+  "vpcmpeqb    %%ymm13,%%ymm13,%%ymm13                            \n" \
   "vmovdqa     (%[yuvconstants]),%%ymm8                           \n" \
-  "vpsllw      $7,%%xmm13,%%xmm13                                 \n" \
+  "vpabsb      %%ymm13,%%ymm13                                    \n" \
   "vmovdqa     32(%[yuvconstants]),%%ymm9                         \n" \
-  "vpbroadcastb %%xmm13,%%ymm13                                   \n" \
+  "vpsllw      $7,%%ymm13,%%ymm13                                 \n" \
   "vmovdqa     64(%[yuvconstants]),%%ymm10                        \n" \
   "vmovdqa     96(%[yuvconstants]),%%ymm11                        \n" \
   "vmovdqa     128(%[yuvconstants]),%%ymm12                       \n"
 
 #define YUVTORGB_SETUP_AVX512BW(yuvconstants)                         \
-  "vpcmpeqb   %%xmm13,%%xmm13,%%xmm13                             \n" \
-  "movdqa     (%[yuvconstants]),%%xmm8                            \n" \
-  "vpbroadcastq %%xmm8, %%zmm8                                    \n" \
-  "vpsllw     $7,%%xmm13,%%xmm13                                  \n" \
-  "vpbroadcastb %%xmm13,%%zmm13                                   \n" \
-  "movq       32(%[yuvconstants]),%%xmm9                          \n" \
-  "vpbroadcastq %%xmm9,%%zmm9                                     \n" \
-  "movq       64(%[yuvconstants]),%%xmm10                         \n" \
-  "vpbroadcastq %%xmm10,%%zmm10                                   \n" \
-  "movq       96(%[yuvconstants]),%%xmm11                         \n" \
-  "vpbroadcastq %%xmm11,%%zmm11                                   \n" \
-  "movq       128(%[yuvconstants]),%%xmm12                        \n" \
-  "vpbroadcastq %%xmm12,%%zmm12                                   \n" \
+  "vpternlogd $0xff,%%zmm13,%%zmm13,%%zmm13                       \n" \
+  "vpbroadcastq (%[yuvconstants]),%%zmm8                          \n" \
+  "vpabsb     %%zmm13,%%zmm13                                     \n" \
+  "vpsllw     $7,%%zmm13,%%zmm13                                  \n" \
+  "vpbroadcastq 32(%[yuvconstants]),%%zmm9                        \n" \
+  "vpbroadcastq 64(%[yuvconstants]),%%zmm10                       \n" \
+  "vpbroadcastq 96(%[yuvconstants]),%%zmm11                       \n" \
+  "vpbroadcastq 128(%[yuvconstants]),%%zmm12                      \n" \
   "vmovups    (%[quadsplitperm]),%%zmm16                          \n" \
   "vmovups    (%[dquadsplitperm]),%%zmm17                         \n" \
   "vmovups    (%[unperm]),%%zmm18                                 \n"
@@ -4384,8 +4382,8 @@ void OMITFP YUY2ToARGBRow_AVX2(const uint8_t* yuy2_buf,
                                const struct YuvConstants* yuvconstants,
                                int width) {
   asm volatile(
-      "vbroadcastf128 %[kShuffleYUY2Y],%%ymm6    \n"
-      "vbroadcastf128 %[kShuffleYUY2UV],%%ymm7   \n" YUVTORGB_SETUP_AVX2(
+      "vbroadcasti128 %[kShuffleYUY2Y],%%ymm6    \n"
+      "vbroadcasti128 %[kShuffleYUY2UV],%%ymm7   \n" YUVTORGB_SETUP_AVX2(
       yuvconstants) "vpcmpeqb    %%ymm5,%%ymm5,%%ymm5          \n"
 
       LABELALIGN "1:          \n" READYUY2_AVX2 YUVTORGB_AVX2(yuvconstants)
@@ -4411,8 +4409,8 @@ void OMITFP UYVYToARGBRow_AVX2(const uint8_t* uyvy_buf,
                                const struct YuvConstants* yuvconstants,
                                int width) {
   asm volatile(
-      "vbroadcastf128 %[kShuffleUYVYY],%%ymm6    \n"
-      "vbroadcastf128 %[kShuffleUYVYUV],%%ymm7   \n" YUVTORGB_SETUP_AVX2(
+      "vbroadcasti128 %[kShuffleUYVYY],%%ymm6    \n"
+      "vbroadcasti128 %[kShuffleUYVYUV],%%ymm7   \n" YUVTORGB_SETUP_AVX2(
       yuvconstants) "vpcmpeqb    %%ymm5,%%ymm5,%%ymm5          \n"
 
       LABELALIGN "1:          \n" READUYVY_AVX2 YUVTORGB_AVX2(yuvconstants)
@@ -4671,7 +4669,7 @@ void MirrorRow_SSSE3(const uint8_t* src, uint8_t* dst, int width) {
 #ifdef HAS_MIRRORROW_AVX2
 void MirrorRow_AVX2(const uint8_t* src, uint8_t* dst, int width) {
   ptrdiff_t temp_width = (ptrdiff_t)(width);
-      asm volatile("vbroadcastf128 %3,%%ymm5                  \n"
+      asm volatile("vbroadcasti128 %3,%%ymm5                  \n"
 
                LABELALIGN
       "1:          \n"
@@ -4690,6 +4688,43 @@ void MirrorRow_AVX2(const uint8_t* src, uint8_t* dst, int width) {
                : "memory", "cc", "xmm0", "xmm5");
 }
 #endif  // HAS_MIRRORROW_AVX2
+
+#ifdef HAS_MIRRORSPLITUVROW_AVX2
+// Shuffle table for reversing the bytes of UV channels.
+static const uvec8 kShuffleMirrorSplitUV = {14u, 12u, 10u, 8u, 6u, 4u, 2u, 0u,
+                                            15u, 13u, 11u, 9u, 7u, 5u, 3u, 1u};
+
+void MirrorSplitUVRow_AVX2(const uint8_t* src,
+                           uint8_t* dst_u,
+                           uint8_t* dst_v,
+                           int width) {
+  ptrdiff_t temp_width = (ptrdiff_t)(width);
+  asm volatile(
+      "vbroadcasti128 %4,%%ymm1                  \n"
+      "lea         -0x20(%0,%3,2),%0             \n"
+      "sub         %1,%2                         \n"
+
+      LABELALIGN
+      "1:          \n"
+      "vmovdqu     (%0),%%ymm0                   \n"
+      "lea         -0x20(%0),%0                  \n"
+      "vpshufb     %%ymm1,%%ymm0,%%ymm0          \n"
+      "vpermq      $0x72,%%ymm0,%%ymm0           \n"
+      "vextracti128 $0x1,%%ymm0,%%xmm2           \n"
+      "vmovdqu     %%xmm0,(%1)                   \n"
+      "vmovdqu     %%xmm2,0x00(%1,%2,1)          \n"
+      "lea         0x10(%1),%1                   \n"
+      "sub         $0x10,%3                      \n"
+      "jg          1b                            \n"
+      "vzeroupper  \n"
+      : "+r"(src),                  // %0
+        "+r"(dst_u),                // %1
+        "+r"(dst_v),                // %2
+        "+r"(temp_width)            // %3
+      : "m"(kShuffleMirrorSplitUV)  // %4
+      : "memory", "cc", "xmm0", "xmm1", "xmm2");
+}
+#endif  // HAS_MIRRORSPLITUVROW_AVX2
 
 #ifdef HAS_MIRRORUVROW_SSSE3
 // Shuffle table for reversing the UV.
@@ -4719,7 +4754,7 @@ void MirrorUVRow_SSSE3(const uint8_t* src_uv, uint8_t* dst_uv, int width) {
 #ifdef HAS_MIRRORUVROW_AVX2
 void MirrorUVRow_AVX2(const uint8_t* src_uv, uint8_t* dst_uv, int width) {
   ptrdiff_t temp_width = (ptrdiff_t)(width);
-      asm volatile("vbroadcastf128 %3,%%ymm5                  \n"
+      asm volatile("vbroadcasti128 %3,%%ymm5                  \n"
 
                LABELALIGN
       "1:          \n"
@@ -4739,38 +4774,7 @@ void MirrorUVRow_AVX2(const uint8_t* src_uv, uint8_t* dst_uv, int width) {
 }
 #endif  // HAS_MIRRORUVROW_AVX2
 
-#ifdef HAS_MIRRORSPLITUVROW_SSSE3
-// Shuffle table for reversing the bytes of UV channels.
-static const uvec8 kShuffleMirrorSplitUV = {14u, 12u, 10u, 8u, 6u, 4u, 2u, 0u,
-                                            15u, 13u, 11u, 9u, 7u, 5u, 3u, 1u};
-void MirrorSplitUVRow_SSSE3(const uint8_t* src,
-                            uint8_t* dst_u,
-                            uint8_t* dst_v,
-                            int width) {
-  ptrdiff_t temp_width = (ptrdiff_t)(width);
-  asm volatile(
-      "movdqa      %4,%%xmm1                     \n"
-      "lea         -0x10(%0,%3,2),%0             \n"
-      "sub         %1,%2                         \n"
 
-      LABELALIGN
-      "1:          \n"
-      "movdqu      (%0),%%xmm0                   \n"
-      "lea         -0x10(%0),%0                  \n"
-      "pshufb      %%xmm1,%%xmm0                 \n"
-      "movlpd      %%xmm0,(%1)                   \n"
-      "movhpd      %%xmm0,0x00(%1,%2,1)          \n"
-      "lea         0x8(%1),%1                    \n"
-      "sub         $8,%3                         \n"
-      "jg          1b                            \n"
-      : "+r"(src),                  // %0
-        "+r"(dst_u),                // %1
-        "+r"(dst_v),                // %2
-        "+r"(temp_width)            // %3
-      : "m"(kShuffleMirrorSplitUV)  // %4
-      : "memory", "cc", "xmm0", "xmm1");
-}
-#endif  // HAS_MIRRORSPLITUVROW_SSSE3
 
 #ifdef HAS_RGB24MIRRORROW_SSSE3
 
@@ -4818,6 +4822,60 @@ void RGB24MirrorRow_SSSE3(const uint8_t* src_rgb24,
       : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5");
 }
 #endif  // HAS_RGB24MIRRORROW_SSSE3
+
+#ifdef HAS_RGB24MIRRORROW_AVX2
+// Shuffle first 10 pixels to last 10 mirrored.  first byte zero
+static const uvec8 kShuffleMirrorRGB0_AVX = {
+    128u, 12u, 13u, 14u, 9u, 10u, 11u, 6u, 7u, 8u, 3u, 4u, 5u, 0u, 1u, 2u
+};
+
+// Shuffle last 2 pixels to first 2 mirrored.  last byte zero
+static const uvec8 kShuffleMirrorRGB1_AVX = {
+    13u, 14u, 15u, 10u, 11u, 12u, 7u, 8u, 9u, 4u, 5u, 6u, 1u, 2u, 3u, 128u
+};
+
+void RGB24MirrorRow_AVX2(const uint8_t* src_rgb24,
+                         uint8_t* dst_rgb24,
+                         int width) {
+  ptrdiff_t temp_width = (ptrdiff_t)(width);
+  src_rgb24 += width * 3 - 96;
+  asm volatile(
+      "vbroadcasti128 %3,%%ymm4                  \n"
+      "vmovdqa     %4,%%xmm5                     \n"
+
+      LABELALIGN
+      "1:          \n"
+      "vmovdqu     (%0),%%xmm0                   \n"  // first 10
+      "vinserti128 $1,15(%0),%%ymm0,%%ymm0       \n"
+      "vmovdqu     30(%0),%%xmm1                 \n"  // next 10
+      "vinserti128 $1,45(%0),%%ymm1,%%ymm1       \n"
+      "vmovdqu     60(%0),%%xmm2                 \n"  // next 10
+      "vinserti128 $1,75(%0),%%ymm2,%%ymm2       \n"
+      "vmovdqu     80(%0),%%xmm3                 \n"  // last 2 special
+      "vpshufb     %%ymm4,%%ymm0,%%ymm0          \n"
+      "vpshufb     %%ymm4,%%ymm1,%%ymm1          \n"
+      "vpshufb     %%ymm4,%%ymm2,%%ymm2          \n"
+      "vpshufb     %%xmm5,%%xmm3,%%xmm3          \n"
+      "lea         -0x60(%0),%0                  \n"
+      "vmovdqu     %%xmm0,80(%1)                 \n"
+      "vextracti128 $1,%%ymm0,65(%1)             \n"
+      "vmovdqu     %%xmm1,50(%1)                 \n"
+      "vextracti128 $1,%%ymm1,35(%1)             \n"
+      "vmovdqu     %%xmm2,20(%1)                 \n"
+      "vextracti128 $1,%%ymm2,5(%1)              \n"
+      "vmovq       %%xmm3,0(%1)                  \n"
+      "lea         0x60(%1),%1                   \n"
+      "sub         $0x20,%2                      \n"
+      "jg          1b                            \n"
+      "vzeroupper  \n"
+      : "+r"(src_rgb24),          // %0
+        "+r"(dst_rgb24),          // %1
+        "+r"(temp_width)          // %2
+      : "m"(kShuffleMirrorRGB0_AVX),  // %3
+        "m"(kShuffleMirrorRGB1_AVX)   // %4
+      : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5");
+}
+#endif  // HAS_RGB24MIRRORROW_AVX2
 
 #ifdef HAS_ARGBMIRRORROW_SSE2
 
@@ -5207,7 +5265,7 @@ void SplitUVRow_16_AVX2(const uint16_t* src_uv,
   depth = 16 - depth;
   asm volatile(
       "vmovd       %4,%%xmm3                     \n"
-      "vbroadcastf128 %5,%%ymm4                  \n"
+      "vbroadcasti128 %5,%%ymm4                  \n"
       "sub         %1,%2                         \n"
 
       // 16 pixels per loop.
@@ -6109,7 +6167,7 @@ void SplitARGBRow_AVX2(const uint8_t* src_argb,
       "sub         %1,%3                         \n"
       "sub         %1,%4                         \n"
       "vmovdqa     %7,%%ymm3                     \n"
-      "vbroadcastf128 %6,%%ymm4                  \n"
+      "vbroadcasti128 %6,%%ymm4                  \n"
 
       LABELALIGN
       "1:          \n"
@@ -6157,7 +6215,7 @@ void SplitXRGBRow_AVX2(const uint8_t* src_argb,
                        int width) {
   asm volatile(
       "vmovdqa     %6,%%ymm3                     \n"
-      "vbroadcastf128 %5,%%ymm4                  \n"
+      "vbroadcasti128 %5,%%ymm4                  \n"
 
       LABELALIGN
       "1:          \n"
@@ -6406,7 +6464,7 @@ void MergeARGB16To8Row_AVX2(const uint16_t* src_r,
       "sub         %0,%1                         \n"
       "sub         %0,%2                         \n"
       "sub         %0,%3                         \n"
-      "vbroadcastf128 %7,%%ymm5                  \n"
+      "vbroadcasti128 %7,%%ymm5                  \n"
       "vmovd       %6,%%xmm6                     \n"
 
       LABELALIGN
@@ -6461,7 +6519,7 @@ void MergeXRGB16To8Row_AVX2(const uint16_t* src_r,
   asm volatile(
       "sub         %0,%1                         \n"
       "sub         %0,%2                         \n"
-      "vbroadcastf128 %6,%%ymm5                  \n"
+      "vbroadcasti128 %6,%%ymm5                  \n"
       "vmovd       %5,%%xmm6                     \n"
       "vpcmpeqb    %%ymm3,%%ymm3,%%ymm3          \n"
       "vpsrlw      $8,%%ymm3,%%ymm3              \n"  // A (0xff)
@@ -6694,7 +6752,7 @@ void ARGBExtractAlphaRow_AVX2(const uint8_t* src_argb,
                               int width) {
   asm volatile(
       "vmovdqa     %3,%%ymm4                     \n"
-      "vbroadcastf128 %4,%%ymm5                  \n"
+      "vbroadcasti128 %4,%%ymm5                  \n"
 
       LABELALIGN
       "1:          \n"
@@ -7640,7 +7698,7 @@ void ARGBUnattenuateRow_AVX2(const uint8_t* src_argb,
   uintptr_t alpha;
   asm volatile(
       "sub         %0,%1                         \n"
-      "vbroadcastf128 %5,%%ymm5                  \n"
+      "vbroadcasti128 %5,%%ymm5                  \n"
 
       // 8 pixel loop.
       LABELALIGN
@@ -8694,87 +8752,6 @@ void ARGBAffineRow_SSE2(const uint8_t* src_argb,
 }
 #endif  // HAS_ARGBAFFINEROW_SSE2
 
-#ifdef HAS_INTERPOLATEROW_SSSE3
-// Bilinear filter 16x2 -> 16x1
-void InterpolateRow_SSSE3(uint8_t* dst_ptr,
-                          const uint8_t* src_ptr,
-                          ptrdiff_t src_stride,
-                          int width,
-                          int source_y_fraction) {
-  asm volatile(
-      "sub         %1,%0                         \n"
-      "cmp         $0x0,%3                       \n"
-      "je          100f                          \n"
-      "cmp         $0x80,%3                      \n"
-      "je          50f                           \n"
-
-      "movd        %3,%%xmm0                     \n"
-      "neg         %3                            \n"
-      "add         $0x100,%3                     \n"
-      "movd        %3,%%xmm5                     \n"
-      "punpcklbw   %%xmm0,%%xmm5                 \n"
-      "punpcklwd   %%xmm5,%%xmm5                 \n"
-      "pshufd      $0x0,%%xmm5,%%xmm5            \n"
-      "mov         $0x80808080,%%eax             \n"
-      "movd        %%eax,%%xmm4                  \n"
-      "pshufd      $0x0,%%xmm4,%%xmm4            \n"
-
-      // General purpose row blend.
-      LABELALIGN
-      "1:          \n"
-      "movdqu      (%1),%%xmm0                   \n"
-      "movdqu      0x00(%1,%4,1),%%xmm2          \n"
-      "movdqa      %%xmm0,%%xmm1                 \n"
-      "punpcklbw   %%xmm2,%%xmm0                 \n"
-      "punpckhbw   %%xmm2,%%xmm1                 \n"
-      "psubb       %%xmm4,%%xmm0                 \n"
-      "psubb       %%xmm4,%%xmm1                 \n"
-      "movdqa      %%xmm5,%%xmm2                 \n"
-      "movdqa      %%xmm5,%%xmm3                 \n"
-      "pmaddubsw   %%xmm0,%%xmm2                 \n"
-      "pmaddubsw   %%xmm1,%%xmm3                 \n"
-      "paddw       %%xmm4,%%xmm2                 \n"
-      "paddw       %%xmm4,%%xmm3                 \n"
-      "psrlw       $0x8,%%xmm2                   \n"
-      "psrlw       $0x8,%%xmm3                   \n"
-      "packuswb    %%xmm3,%%xmm2                 \n"
-      "movdqu      %%xmm2,0x00(%1,%0,1)          \n"
-      "lea         0x10(%1),%1                   \n"
-      "sub         $0x10,%2                      \n"
-      "jg          1b                            \n"
-      "jmp         99f                           \n"
-
-      // Blend 50 / 50.
-      LABELALIGN
-      "50:         \n"
-      "movdqu      (%1),%%xmm0                   \n"
-      "movdqu      0x00(%1,%4,1),%%xmm1          \n"
-      "pavgb       %%xmm1,%%xmm0                 \n"
-      "movdqu      %%xmm0,0x00(%1,%0,1)          \n"
-      "lea         0x10(%1),%1                   \n"
-      "sub         $0x10,%2                      \n"
-      "jg          50b                           \n"
-      "jmp         99f                           \n"
-
-      // Blend 100 / 0 - Copy row unchanged.
-      LABELALIGN
-      "100:        \n"
-      "movdqu      (%1),%%xmm0                   \n"
-      "movdqu      %%xmm0,0x00(%1,%0,1)          \n"
-      "lea         0x10(%1),%1                   \n"
-      "sub         $0x10,%2                      \n"
-      "jg          100b                          \n"
-
-      "99:         \n"
-      : "+r"(dst_ptr),           // %0
-        "+r"(src_ptr),           // %1
-        "+rm"(width),            // %2
-        "+r"(source_y_fraction)  // %3
-      : "r"(src_stride)          // %4
-      : "memory", "cc", "eax", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5");
-}
-#endif  // HAS_INTERPOLATEROW_SSSE3
-
 #ifdef HAS_INTERPOLATEROW_AVX2
 // Bilinear filter 32x2 -> 32x1
 void InterpolateRow_AVX2(uint8_t* dst_ptr,
@@ -8853,6 +8830,85 @@ void InterpolateRow_AVX2(uint8_t* dst_ptr,
 }
 #endif  // HAS_INTERPOLATEROW_AVX2
 
+#ifdef HAS_INTERPOLATEROW_16_AVX2
+// Bilinear filter 16x2 -> 16x1
+void InterpolateRow_16_AVX2(uint16_t* dst_ptr,
+                            const uint16_t* src_ptr,
+                            ptrdiff_t src_stride,
+                            int width,
+                            int source_y_fraction) {
+  asm volatile(
+      "sub         %1,%0                         \n"
+      "cmp         $0x0,%3                       \n"
+      "je          100f                          \n"
+      "cmp         $0x80,%3                      \n"
+      "je          50f                           \n"
+
+      "vmovd       %3,%%xmm0                     \n"
+      "neg         %3                            \n"
+      "add         $0x100,%3                     \n"
+      "vmovd       %3,%%xmm5                     \n"
+      "vpunpcklwd  %%xmm0,%%xmm5,%%xmm5          \n"
+      "vpbroadcastd %%xmm5,%%ymm5                \n"
+      "mov         $0x80008000,%%eax             \n"  // 0x80008000 used to bias unsigned words to signed range for vpmaddwd.
+      "vmovd       %%eax,%%xmm4                  \n"
+      "vbroadcastss %%xmm4,%%ymm4                \n"
+      "mov         $8388736,%%eax                \n"  // 32768 * 256 + 128 rounding constant.
+      "vmovd       %%eax,%%xmm3                  \n"
+      "vbroadcastss %%xmm3,%%ymm3                \n"
+
+      LABELALIGN
+      "1:          \n"
+      "vmovdqu     (%1),%%ymm0                   \n"
+      "vmovdqu     (%1,%4,2),%%ymm1              \n"
+      "vpunpckhwd  %%ymm1,%%ymm0,%%ymm2          \n"
+      "vpunpcklwd  %%ymm1,%%ymm0,%%ymm0          \n"
+      "vpsubw      %%ymm4,%%ymm2,%%ymm2          \n"
+      "vpsubw      %%ymm4,%%ymm0,%%ymm0          \n"
+      "vpmaddwd    %%ymm5,%%ymm2,%%ymm2          \n"
+      "vpmaddwd    %%ymm5,%%ymm0,%%ymm0          \n"
+      "vpaddd      %%ymm3,%%ymm2,%%ymm2          \n"
+      "vpaddd      %%ymm3,%%ymm0,%%ymm0          \n"
+      "vpsrad      $0x8,%%ymm2,%%ymm2            \n"
+      "vpsrad      $0x8,%%ymm0,%%ymm0            \n"
+      "vpackusdw   %%ymm2,%%ymm0,%%ymm0          \n"
+      "vmovdqu     %%ymm0,0x00(%1,%0,1)          \n"
+      "lea         0x20(%1),%1                   \n"
+      "sub         $0x10,%2                      \n"
+      "jg          1b                            \n"
+      "jmp         99f                           \n"
+
+      "50:         \n"
+      LABELALIGN
+      "2:          \n"
+      "vmovdqu     (%1),%%ymm0                   \n"
+      "vpavgw      (%1,%4,2),%%ymm0,%%ymm0       \n"
+      "vmovdqu     %%ymm0,0x00(%1,%0,1)          \n"
+      "lea         0x20(%1),%1                   \n"
+      "sub         $0x10,%2                      \n"
+      "jg          2b                            \n"
+      "jmp         99f                           \n"
+
+      "100:        \n"
+      LABELALIGN
+      "3:          \n"
+      "vmovdqu     (%1),%%ymm0                   \n"
+      "vmovdqu     %%ymm0,0x00(%1,%0,1)          \n"
+      "lea         0x20(%1),%1                   \n"
+      "sub         $0x10,%2                      \n"
+      "jg          3b                            \n"
+
+      "99:         \n"
+      "vzeroupper                                \n"
+      : "+r"(dst_ptr),           // %0
+        "+r"(src_ptr),           // %1
+        "+r"(width),             // %2
+        "+r"(source_y_fraction)  // %3
+      : "r"(src_stride)          // %4
+      : "memory", "cc", "eax", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5");
+}
+#endif  // HAS_INTERPOLATEROW_16_AVX2
+
 #ifdef HAS_ARGBSHUFFLEROW_SSSE3
 // For BGRAToARGB, ABGRToARGB, RGBAToARGB, and ARGBToRGBA.
 void ARGBShuffleRow_SSSE3(const uint8_t* src_argb,
@@ -8887,7 +8943,7 @@ void ARGBShuffleRow_AVX2(const uint8_t* src_argb,
                          uint8_t* dst_argb,
                          const uint8_t* shuffler,
                          int width) {
-      asm volatile("vbroadcastf128 (%3),%%ymm5                \n"
+      asm volatile("vbroadcasti128 (%3),%%ymm5                \n"
 
                LABELALIGN
       "1:          \n"
@@ -9113,10 +9169,10 @@ void ARGBPolynomialRow_AVX2(const uint8_t* src_argb,
                             const float* poly,
                             int width) {
   asm volatile(
-      "vbroadcastf128 (%3),%%ymm4                \n"
-      "vbroadcastf128 0x10(%3),%%ymm5            \n"
-      "vbroadcastf128 0x20(%3),%%ymm6            \n"
-      "vbroadcastf128 0x30(%3),%%ymm7            \n"
+      "vbroadcasti128 (%3),%%ymm4                \n"
+      "vbroadcasti128 0x10(%3),%%ymm5            \n"
+      "vbroadcasti128 0x20(%3),%%ymm6            \n"
+      "vbroadcasti128 0x30(%3),%%ymm7            \n"
 
       // 2 pixel loop.
       LABELALIGN
@@ -9148,46 +9204,8 @@ void ARGBPolynomialRow_AVX2(const uint8_t* src_argb,
 }
 #endif  // HAS_ARGBPOLYNOMIALROW_AVX2
 
-#ifdef HAS_HALFFLOATROW_SSE2
-static float kScaleBias = 1.9259299444e-34f;
-void HalfFloatRow_SSE2(const uint16_t* src,
-                       uint16_t* dst,
-                       float scale,
-                       int width) {
-  scale *= kScaleBias;
-  asm volatile(
-      "movd        %3,%%xmm4                     \n"
-      "pshufd      $0x0,%%xmm4,%%xmm4            \n"
-      "pxor        %%xmm5,%%xmm5                 \n"
-      "sub         %0,%1                         \n"
-
-      // 16 pixel loop.
-      LABELALIGN
-      "1:          \n"
-      "movdqu      (%0),%%xmm2                   \n"  // 8 shorts
-      "add         $0x10,%0                      \n"
-      "movdqa      %%xmm2,%%xmm3                 \n"
-      "punpcklwd   %%xmm5,%%xmm2                 \n"  // 8 ints in xmm2/1
-      "cvtdq2ps    %%xmm2,%%xmm2                 \n"  // 8 floats
-      "punpckhwd   %%xmm5,%%xmm3                 \n"
-      "cvtdq2ps    %%xmm3,%%xmm3                 \n"
-      "mulps       %%xmm4,%%xmm2                 \n"
-      "mulps       %%xmm4,%%xmm3                 \n"
-      "psrld       $0xd,%%xmm2                   \n"
-      "psrld       $0xd,%%xmm3                   \n"
-      "packssdw    %%xmm3,%%xmm2                 \n"
-      "movdqu      %%xmm2,-0x10(%0,%1,1)         \n"
-      "sub         $0x8,%2                       \n"
-      "jg          1b                            \n"
-      : "+r"(src),   // %0
-        "+r"(dst),   // %1
-        "+r"(width)  // %2
-      : "m"(scale)   // %3
-      : "memory", "cc", "xmm2", "xmm3", "xmm4", "xmm5");
-}
-#endif  // HAS_HALFFLOATROW_SSE2
-
 #ifdef HAS_HALFFLOATROW_AVX2
+static float kScaleBias = 1.9259299444e-34f;
 void HalfFloatRow_AVX2(const uint16_t* src,
                        uint16_t* dst,
                        float scale,
@@ -9510,9 +9528,9 @@ void NV21ToYUV24Row_AVX2(const uint8_t* src_y,
                          int width) {
   asm volatile(
       "sub         %0,%1                         \n"
-      "vbroadcastf128 (%4),%%ymm4                \n"  // 3 shuffler constants
-      "vbroadcastf128 16(%4),%%ymm5              \n"
-      "vbroadcastf128 32(%4),%%ymm6              \n"
+      "vbroadcasti128 (%4),%%ymm4                \n"  // 3 shuffler constants
+      "vbroadcasti128 16(%4),%%ymm5              \n"
+      "vbroadcasti128 32(%4),%%ymm6              \n"
 
       "1:          \n"
       "vmovdqu     (%0),%%ymm2                   \n"  // load 32 Y values
@@ -9619,7 +9637,7 @@ void SwapUVRow_SSSE3(const uint8_t* src_uv, uint8_t* dst_vu, int width) {
 
 #ifdef HAS_SWAPUVROW_AVX2
 void SwapUVRow_AVX2(const uint8_t* src_uv, uint8_t* dst_vu, int width) {
-      asm volatile("vbroadcastf128 %3,%%ymm5                  \n"
+      asm volatile("vbroadcasti128 %3,%%ymm5                  \n"
 
                LABELALIGN
       "1:          \n"

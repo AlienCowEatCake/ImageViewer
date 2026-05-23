@@ -8,6 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
+#include "libyuv/convert_from_argb.h"  // For ArgbConstants
 #include "libyuv/planar_functions.h"
 
 #include <assert.h>
@@ -2582,7 +2583,6 @@ void MirrorUVPlane(const uint8_t* src_uv,
 #endif
 #if defined(HAS_MIRRORUVROW_SSSE3)
   if (TestCpuFlag(kCpuHasSSSE3)) {
-    MirrorUVRow = MirrorUVRow_Any_SSSE3;
     if (IS_ALIGNED(width, 8)) {
       MirrorUVRow = MirrorUVRow_SSSE3;
     }
@@ -2822,11 +2822,11 @@ int RGB24Mirror(const uint8_t* src_rgb24,
     }
   }
 #endif
-#if defined(HAS_RGB24MIRRORROW_SSSE3)
-  if (TestCpuFlag(kCpuHasSSSE3)) {
-    RGB24MirrorRow = RGB24MirrorRow_Any_SSSE3;
-    if (IS_ALIGNED(width, 16)) {
-      RGB24MirrorRow = RGB24MirrorRow_SSSE3;
+#if defined(HAS_RGB24MIRRORROW_AVX2)
+  if (TestCpuFlag(kCpuHasAVX2)) {
+    RGB24MirrorRow = RGB24MirrorRow_Any_AVX2;
+    if (IS_ALIGNED(width, 32)) {
+      RGB24MirrorRow = RGB24MirrorRow_AVX2;
     }
   }
 #endif
@@ -4332,14 +4332,6 @@ int InterpolatePlane(const uint8_t* src0,
     height = 1;
     src_stride0 = src_stride1 = dst_stride = 0;
   }
-#if defined(HAS_INTERPOLATEROW_SSSE3)
-  if (TestCpuFlag(kCpuHasSSSE3)) {
-    InterpolateRow = InterpolateRow_Any_SSSE3;
-    if (IS_ALIGNED(width, 16)) {
-      InterpolateRow = InterpolateRow_SSSE3;
-    }
-  }
-#endif
 #if defined(HAS_INTERPOLATEROW_AVX2)
   if (TestCpuFlag(kCpuHasAVX2)) {
     InterpolateRow = InterpolateRow_Any_AVX2;
@@ -5077,14 +5069,6 @@ int HalfFloatPlane(const uint16_t* src_y,
     height = 1;
     src_stride_y = dst_stride_y = 0;
   }
-#if defined(HAS_HALFFLOATROW_SSE2)
-  if (TestCpuFlag(kCpuHasSSE2)) {
-    HalfFloatRow = HalfFloatRow_Any_SSE2;
-    if (IS_ALIGNED(width, 8)) {
-      HalfFloatRow = HalfFloatRow_SSE2;
-    }
-  }
-#endif
 #if defined(HAS_HALFFLOATROW_AVX2)
   if (TestCpuFlag(kCpuHasAVX2)) {
     HalfFloatRow = HalfFloatRow_Any_AVX2;
@@ -5543,14 +5527,6 @@ int UYVYToNV12(const uint8_t* src_uyvy,
   }
 #endif
 
-#if defined(HAS_INTERPOLATEROW_SSSE3)
-  if (TestCpuFlag(kCpuHasSSSE3)) {
-    InterpolateRow = InterpolateRow_Any_SSSE3;
-    if (IS_ALIGNED(width, 16)) {
-      InterpolateRow = InterpolateRow_SSSE3;
-    }
-  }
-#endif
 #if defined(HAS_INTERPOLATEROW_AVX2)
   if (TestCpuFlag(kCpuHasAVX2)) {
     InterpolateRow = InterpolateRow_Any_AVX2;

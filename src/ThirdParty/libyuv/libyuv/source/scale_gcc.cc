@@ -1815,14 +1815,8 @@ void ScaleAddRow_AVX2(const uint8_t* src_ptr,
 }
 #endif  // HAS_SCALEADDROW_AVX2
 
-// Constant for making pixels signed to avoid pmaddubsw
-// saturation.
-static const uvec8 kFsub80 = {0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
-                              0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80};
-
-// Constant for making pixels unsigned and adding .5 for rounding.
-static const uvec16 kFadd40 = {0x4040, 0x4040, 0x4040, 0x4040,
-                               0x4040, 0x4040, 0x4040, 0x4040};
+static const uvec16 kFadd40 = {0x0040, 0x0040, 0x0040, 0x0040,
+                               0x0040, 0x0040, 0x0040, 0x0040};
 
 // Bilinear column filtering. SSSE3 version.
 void ScaleFilterCols_SSSE3(uint8_t* dst_ptr,
@@ -1838,8 +1832,9 @@ void ScaleFilterCols_SSSE3(uint8_t* dst_ptr,
       "movd        %k2,%%xmm5                    \n"
       "pcmpeqb     %%xmm6,%%xmm6                 \n"
       "psrlw       $0x9,%%xmm6                   \n"  // 0x007f007f
-      "pcmpeqb     %%xmm7,%%xmm7                 \n"
-      "psrlw       $15,%%xmm7                    \n"  // 0x00010001
+      "pcmpeqb     %%xmm7,%%xmm7                 \n"  // 0x00ff mask for
+                                                      // extracting 'a'
+      "psrlw       $8,%%xmm7                     \n"
 
       "pextrw      $0x1,%%xmm2,%k3               \n"
       "subl        $0x2,%5                       \n"
@@ -1862,17 +1857,18 @@ void ScaleFilterCols_SSSE3(uint8_t* dst_ptr,
       "movd        %k2,%%xmm4                    \n"
       "pshufb      %%xmm5,%%xmm1                 \n"
       "punpcklwd   %%xmm4,%%xmm0                 \n"
-      "psubb       %8,%%xmm0                     \n"  // make pixels signed.
-      "pxor        %%xmm6,%%xmm1                 \n"  // 128 - f = (f ^ 127 ) +
-                                                      // 1
-      "paddusb     %%xmm7,%%xmm1                 \n"
-      "pmaddubsw   %%xmm0,%%xmm1                 \n"
+      "pxor        %%xmm6,%%xmm1                 \n"
+      "movdqa      %%xmm0,%%xmm4                 \n"  // Copy pixels.
+      "pmaddubsw   %%xmm1,%%xmm0                 \n"  // a * (127 - f) + b * f
+      "pand        %%xmm7,%%xmm4                 \n"  // Extract left pixels
+                                                      // 'a'.
+      "paddw       %%xmm4,%%xmm0                 \n"  // a * 128 + f * (b - a)
       "pextrw      $0x1,%%xmm2,%k3               \n"
+      "paddw       %8,%%xmm0                     \n"  // add rounding bias 64.
       "pextrw      $0x3,%%xmm2,%k4               \n"
-      "paddw       %9,%%xmm1                     \n"  // make pixels unsigned.
-      "psrlw       $0x7,%%xmm1                   \n"
-      "packuswb    %%xmm1,%%xmm1                 \n"
-      "movd        %%xmm1,%k2                    \n"
+      "psrlw       $0x7,%%xmm0                   \n"
+      "packuswb    %%xmm0,%%xmm0                 \n"
+      "movd        %%xmm0,%k2                    \n"
       "mov         %w2,(%0)                      \n"
       "lea         0x2(%0),%0                    \n"
       "subl        $0x2,%5                       \n"
@@ -1886,14 +1882,15 @@ void ScaleFilterCols_SSSE3(uint8_t* dst_ptr,
       "movd        %k2,%%xmm0                    \n"
       "psrlw       $0x9,%%xmm2                   \n"
       "pshufb      %%xmm5,%%xmm2                 \n"
-      "psubb       %8,%%xmm0                     \n"  // make pixels signed.
       "pxor        %%xmm6,%%xmm2                 \n"
-      "paddusb     %%xmm7,%%xmm2                 \n"
-      "pmaddubsw   %%xmm0,%%xmm2                 \n"
-      "paddw       %9,%%xmm2                     \n"  // make pixels unsigned.
-      "psrlw       $0x7,%%xmm2                   \n"
-      "packuswb    %%xmm2,%%xmm2                 \n"
-      "movd        %%xmm2,%k2                    \n"
+      "movdqa      %%xmm0,%%xmm4                 \n"  // Copy pixels.
+      "pmaddubsw   %%xmm2,%%xmm0                 \n"  // a * (127 - f) + b * f
+      "pand        %%xmm7,%%xmm4                 \n"  // Extract left pixel 'a'.
+      "paddw       %%xmm4,%%xmm0                 \n"  // a * 128 + f * (b - a)
+      "paddw       %8,%%xmm0                     \n"  // add rounding bias 64.
+      "psrlw       $0x7,%%xmm0                   \n"
+      "packuswb    %%xmm0,%%xmm0                 \n"
+      "movd        %%xmm0,%k2                    \n"
       "mov         %b2,(%0)                      \n"
       "99:         \n"
       : "+r"(dst_ptr),      // %0
@@ -1909,11 +1906,9 @@ void ScaleFilterCols_SSSE3(uint8_t* dst_ptr,
       : "rm"(x),   // %6
         "rm"(dx),  // %7
 #if defined(__x86_64__)
-        "x"(kFsub80),  // %8
-        "x"(kFadd40)   // %9
+        "x"(kFadd40)  // %8
 #else
-        "m"(kFsub80),    // %8
-        "m"(kFadd40)     // %9
+        "m"(kFadd40)  // %8
 #endif
       : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6",
         "xmm7");

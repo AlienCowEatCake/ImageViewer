@@ -1536,9 +1536,9 @@ void ScaleUVColsUp2_C(uint8_t* dst_uv,
   }
 }
 
-// TODO(fbarchard): Replace 0x7f ^ f with 128-f.  bug=607.
-// Mimics SSSE3 blender
-#define BLENDER1(a, b, f) ((a) * (0x7f ^ f) + (b)*f) >> 7
+// Performs (a + ((f * (b - a) + 64) >> 7)) which is equivalent of
+// ((a * (128 - f) + b * f + 64) >> 7).
+#define BLENDER1(a, b, f) ((a) + (((f) * ((b) - (a)) + 64) >> 7))
 #define BLENDERC(a, b, f, s) \
   (uint16_t)(BLENDER1(((a) >> s) & 255, ((b) >> s) & 255, f) << s)
 #define BLENDER(a, b, f) BLENDERC(a, b, f, 8) | BLENDERC(a, b, f, 0)
@@ -1636,14 +1636,6 @@ void ScalePlaneVertical(int src_height,
   assert(dst_width > 0);
   assert(dst_height > 0);
   src_argb += (x >> 16) * bpp;
-#if defined(HAS_INTERPOLATEROW_SSSE3)
-  if (TestCpuFlag(kCpuHasSSSE3)) {
-    InterpolateRow = InterpolateRow_Any_SSSE3;
-    if (IS_ALIGNED(dst_width_bytes, 16)) {
-      InterpolateRow = InterpolateRow_SSSE3;
-    }
-  }
-#endif
 #if defined(HAS_INTERPOLATEROW_AVX2)
   if (TestCpuFlag(kCpuHasAVX2)) {
     InterpolateRow = InterpolateRow_Any_AVX2;
@@ -1718,14 +1710,6 @@ void ScalePlaneVertical_16(int src_height,
   assert(dst_width > 0);
   assert(dst_height > 0);
   src_argb += (x >> 16) * wpp;
-#if defined(HAS_INTERPOLATEROW_16_SSE2)
-  if (TestCpuFlag(kCpuHasSSE2)) {
-    InterpolateRow = InterpolateRow_16_Any_SSE2;
-    if (IS_ALIGNED(dst_width_words, 16)) {
-      InterpolateRow = InterpolateRow_16_SSE2;
-    }
-  }
-#endif
 #if defined(HAS_INTERPOLATEROW_16_SSSE3)
   if (TestCpuFlag(kCpuHasSSSE3)) {
     InterpolateRow = InterpolateRow_16_Any_SSSE3;

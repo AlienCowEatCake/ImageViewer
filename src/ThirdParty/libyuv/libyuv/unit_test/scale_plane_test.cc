@@ -85,49 +85,49 @@ TEST_F(LibYUVScaleTest, TestScaleRowDown2Box_Odd_SSSE3) {
     // Test regular half size.
     ScaleRowDown2Box_C(orig_pixels, 128, dst_pixels_c, 64);
 
-    EXPECT_EQ(64u, dst_pixels_c[0]);
-    EXPECT_EQ(25u, dst_pixels_c[1]);
-    EXPECT_EQ(13u, dst_pixels_c[2]);
-    EXPECT_EQ(5u, dst_pixels_c[3]);
-    EXPECT_EQ(0u, dst_pixels_c[4]);
-    EXPECT_EQ(133u, dst_pixels_c[63]);
+    ASSERT_EQ(64u, dst_pixels_c[0]);
+    ASSERT_EQ(25u, dst_pixels_c[1]);
+    ASSERT_EQ(13u, dst_pixels_c[2]);
+    ASSERT_EQ(5u, dst_pixels_c[3]);
+    ASSERT_EQ(0u, dst_pixels_c[4]);
+    ASSERT_EQ(133u, dst_pixels_c[63]);
 
     // Test Odd width version - Last pixel is just 1 horizontal pixel.
     ScaleRowDown2Box_Odd_C(orig_pixels, 128, dst_pixels_c, 64);
 
-    EXPECT_EQ(64u, dst_pixels_c[0]);
-    EXPECT_EQ(25u, dst_pixels_c[1]);
-    EXPECT_EQ(13u, dst_pixels_c[2]);
-    EXPECT_EQ(5u, dst_pixels_c[3]);
-    EXPECT_EQ(0u, dst_pixels_c[4]);
-    EXPECT_EQ(10u, dst_pixels_c[63]);
+    ASSERT_EQ(64u, dst_pixels_c[0]);
+    ASSERT_EQ(25u, dst_pixels_c[1]);
+    ASSERT_EQ(13u, dst_pixels_c[2]);
+    ASSERT_EQ(5u, dst_pixels_c[3]);
+    ASSERT_EQ(0u, dst_pixels_c[4]);
+    ASSERT_EQ(10u, dst_pixels_c[63]);
 
     // Test one pixel less, should skip the last pixel.
     memset(dst_pixels_c, 0, sizeof(dst_pixels_c));
     ScaleRowDown2Box_Odd_C(orig_pixels, 128, dst_pixels_c, 63);
 
-    EXPECT_EQ(64u, dst_pixels_c[0]);
-    EXPECT_EQ(25u, dst_pixels_c[1]);
-    EXPECT_EQ(13u, dst_pixels_c[2]);
-    EXPECT_EQ(5u, dst_pixels_c[3]);
-    EXPECT_EQ(0u, dst_pixels_c[4]);
-    EXPECT_EQ(0u, dst_pixels_c[63]);
+    ASSERT_EQ(64u, dst_pixels_c[0]);
+    ASSERT_EQ(25u, dst_pixels_c[1]);
+    ASSERT_EQ(13u, dst_pixels_c[2]);
+    ASSERT_EQ(5u, dst_pixels_c[3]);
+    ASSERT_EQ(0u, dst_pixels_c[4]);
+    ASSERT_EQ(0u, dst_pixels_c[63]);
 
     // Test regular half size SSSE3.
     ScaleRowDown2Box_SSSE3(orig_pixels, 128, dst_pixels_opt, 64);
 
-    EXPECT_EQ(64u, dst_pixels_opt[0]);
-    EXPECT_EQ(25u, dst_pixels_opt[1]);
-    EXPECT_EQ(13u, dst_pixels_opt[2]);
-    EXPECT_EQ(5u, dst_pixels_opt[3]);
-    EXPECT_EQ(0u, dst_pixels_opt[4]);
-    EXPECT_EQ(133u, dst_pixels_opt[63]);
+    ASSERT_EQ(64u, dst_pixels_opt[0]);
+    ASSERT_EQ(25u, dst_pixels_opt[1]);
+    ASSERT_EQ(13u, dst_pixels_opt[2]);
+    ASSERT_EQ(5u, dst_pixels_opt[3]);
+    ASSERT_EQ(0u, dst_pixels_opt[4]);
+    ASSERT_EQ(133u, dst_pixels_opt[63]);
 
     // Compare C and SSSE3 match.
     ScaleRowDown2Box_Odd_C(orig_pixels, 128, dst_pixels_c, 64);
     ScaleRowDown2Box_Odd_SSSE3(orig_pixels, 128, dst_pixels_opt, 64);
     for (int i = 0; i < 64; ++i) {
-      EXPECT_EQ(dst_pixels_c[i], dst_pixels_opt[i]);
+      ASSERT_EQ(dst_pixels_c[i], dst_pixels_opt[i]);
     }
   }
 }
@@ -160,11 +160,11 @@ TEST_F(LibYUVScaleTest, TestScaleRowDown2Box_16) {
   }
 
   for (int i = 0; i < 1280; ++i) {
-    EXPECT_EQ(dst_pixels_c[i], dst_pixels_opt[i]);
+    ASSERT_EQ(dst_pixels_c[i], dst_pixels_opt[i]);
   }
 
-  EXPECT_EQ(dst_pixels_c[0], (0 + 1 + 2560 + 2561 + 2) / 4);
-  EXPECT_EQ(dst_pixels_c[1279], 3839);
+  ASSERT_EQ(dst_pixels_c[0], (0 + 1 + 2560 + 2561 + 2) / 4);
+  ASSERT_EQ(dst_pixels_c[1279], 3839);
 }
 #endif  // ENABLE_ROW_TESTS
 
@@ -244,7 +244,7 @@ static int TestPlaneFilter_16(int src_width,
         DX(benchmark_width_, nom, denom), DX(benchmark_height_, nom, denom),   \
         kFilter##filter, benchmark_iterations_, disable_cpu_flags_,            \
         benchmark_cpu_info_);                                                  \
-    EXPECT_LE(diff, max_diff);                                                 \
+    ASSERT_LE(diff, max_diff);                                                 \
   }
 
 // Test a scale factor with all 4 filters.  Expect unfiltered to be exact, but
@@ -283,12 +283,12 @@ TEST_F(LibYUVScaleTest, PlaneTest3x) {
                kFilterBilinear);
   }
 
-  EXPECT_EQ(225, dest_pixels[0]);
+  ASSERT_EQ(225, dest_pixels[0]);
 
   ScalePlane(orig_pixels, kSrcStride, 480, 3, dest_pixels, kDstStride, 160, 1,
              kFilterNone);
 
-  EXPECT_EQ(225, dest_pixels[0]);
+  ASSERT_EQ(225, dest_pixels[0]);
 
   free_aligned_buffer_page_end(dest_pixels);
   free_aligned_buffer_page_end(orig_pixels);
@@ -311,12 +311,12 @@ TEST_F(LibYUVScaleTest, PlaneTest4x) {
                kFilterBilinear);
   }
 
-  EXPECT_EQ(66, dest_pixels[0]);
+  ASSERT_EQ(66, dest_pixels[0]);
 
   ScalePlane(orig_pixels, kSrcStride, 640, 4, dest_pixels, kDstStride, 160, 1,
              kFilterNone);
 
-  EXPECT_EQ(2, dest_pixels[0]);  // expect the 3rd pixel of the 3rd row
+  ASSERT_EQ(2, dest_pixels[0]);  // expect the 3rd pixel of the 3rd row
 
   free_aligned_buffer_page_end(dest_pixels);
   free_aligned_buffer_page_end(orig_pixels);
@@ -345,7 +345,7 @@ TEST_F(LibYUVScaleTest, PlaneTestRotate_None) {
   }
 
   for (int i = 0; i < kSize; ++i) {
-    EXPECT_EQ(dest_c_pixels[i], dest_opt_pixels[i]);
+    ASSERT_EQ(dest_c_pixels[i], dest_opt_pixels[i]);
   }
 
   free_aligned_buffer_page_end(dest_c_pixels);
@@ -375,7 +375,7 @@ TEST_F(LibYUVScaleTest, PlaneTestRotate_Bilinear) {
   }
 
   for (int i = 0; i < kSize; ++i) {
-    EXPECT_EQ(dest_c_pixels[i], dest_opt_pixels[i]);
+    ASSERT_EQ(dest_c_pixels[i], dest_opt_pixels[i]);
   }
 
   free_aligned_buffer_page_end(dest_c_pixels);
@@ -406,7 +406,7 @@ TEST_F(LibYUVScaleTest, PlaneTestRotate_Box) {
   }
 
   for (int i = 0; i < kSize; ++i) {
-    EXPECT_EQ(dest_c_pixels[i], dest_opt_pixels[i]);
+    ASSERT_EQ(dest_c_pixels[i], dest_opt_pixels[i]);
   }
 
   free_aligned_buffer_page_end(dest_c_pixels);
@@ -432,9 +432,9 @@ TEST_F(LibYUVScaleTest, PlaneTest1_Box) {
                      /* dst_width= */ 1, /* dst_height= */ 2,
                      libyuv::kFilterBox);
 
-  EXPECT_EQ(dst_pixels[0], 1);
-  EXPECT_EQ(dst_pixels[1], 1);
-  EXPECT_EQ(dst_pixels[2], 3);
+  ASSERT_EQ(dst_pixels[0], 1);
+  ASSERT_EQ(dst_pixels[1], 1);
+  ASSERT_EQ(dst_pixels[2], 3);
 
   free_aligned_buffer_page_end(dst_pixels);
   free_aligned_buffer_page_end(orig_pixels);
@@ -460,9 +460,9 @@ TEST_F(LibYUVScaleTest, PlaneTest1_16_Box) {
       /* src_height= */ 1, dst_pixels, /* dst_stride= */ 1,
       /* dst_width= */ 1, /* dst_height= */ 2, libyuv::kFilterNone);
 
-  EXPECT_EQ(dst_pixels[0], 1);
-  EXPECT_EQ(dst_pixels[1], 1);
-  EXPECT_EQ(dst_pixels[2], 3);
+  ASSERT_EQ(dst_pixels[0], 1);
+  ASSERT_EQ(dst_pixels[1], 1);
+  ASSERT_EQ(dst_pixels[2], 3);
 
   free_aligned_buffer_page_end(dst_pixels_alloc);
   free_aligned_buffer_page_end(orig_pixels_alloc);
@@ -529,7 +529,7 @@ TEST_F(LibYUVScaleTest, ScalePlaneVertical_IntStrideOverflow) {
                      kDstHeight, kFilterNone);
 
   // Not reached under ASAN.
-  EXPECT_EQ(0, r);
+  ASSERT_EQ(0, r);
   delete[] src;
   delete[] dst;
 }

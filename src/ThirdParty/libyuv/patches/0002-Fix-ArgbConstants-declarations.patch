@@ -1,4 +1,4 @@
-From 8953174da9c4199a63c94832571a1fb77aac04ee Mon Sep 17 00:00:00 2001
+From 4cb8173ce50e468e739e139ca85b9b90d0dddccd Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 2 May 2026 14:09:01 +0700
 Subject: [PATCH 2/2] Fix ArgbConstants declarations
@@ -8,7 +8,7 @@ Subject: [PATCH 2/2] Fix ArgbConstants declarations
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/source/convert.cc b/source/convert.cc
-index d9fb5477..666360ae 100644
+index 4a713658..127939ed 100644
 --- a/source/convert.cc
 +++ b/source/convert.cc
 @@ -22,9 +22,9 @@
