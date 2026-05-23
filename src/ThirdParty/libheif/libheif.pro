@@ -10,7 +10,7 @@ TARGET = tp_libheif
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.21.2
+THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.22.0
 THIRDPARTY_LIBHEIF_INCLUDE_PATH = $${PWD}/include
 
 include(../../Features.pri)
@@ -41,6 +41,7 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_aux_images.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_brands.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_color.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_components.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_context.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_decoding.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_encoding.cc \
@@ -51,6 +52,7 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_items.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_library.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_metadata.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_omaf.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_plugin.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_properties.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_regions.cc \
@@ -80,20 +82,29 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg_dec.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg_enc.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_abstract.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_component_interleave.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_mixed_interleave.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_pixel_interleave.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_row_interleave.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_tile_component_interleave.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_codec.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_dec.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_block_component_interleave.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_block_pixel_interleave.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_bytealign_component_interleave.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_component_interleave.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_legacybase.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_mixed_interleave.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_pixel_interleave.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_row_interleave.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_enc.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_encoder.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_encoder_component_interleave.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_encoder_rgb_block_pixel_interleave.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_encoder_rgb_bytealign_pixel_interleave.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_encoder_rgb_pixel_interleave.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/vvc_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/vvc_dec.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/vvc_enc.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/alpha.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/bayer_bilinear.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/chroma_sampling.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/colorconversion.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/hdr_sdr.cc \
@@ -103,12 +114,14 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/rgb2yuv_sharp.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/yuv2rgb.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/common_utils.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/compression.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/compression_brotli.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/compression_zlib.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/context.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/error.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/file.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/file_layout.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/id_creator.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/avc.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/avif.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/grid.cc \
@@ -122,11 +135,13 @@ SOURCES += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/tiled.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/unc_image.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/vvc.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/image/image_description.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/image/pixelimage.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/init.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/logging.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/mini.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/nclx.cc \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/pixelimage.cc \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/omaf_boxes.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugin_registry.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_uncompressed.cc \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_mask.cc \
@@ -216,6 +231,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_aux_images.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_brands.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_color.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_components.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_context.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_cxx.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_decoding.h \
@@ -229,6 +245,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_items.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_library.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_metadata.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_omaf.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_plugin.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_properties.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_regions.h \
@@ -259,21 +276,30 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg_dec.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/jpeg_enc.h \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_abstract.h \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_component_interleave.h \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_mixed_interleave.h \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_pixel_interleave.h \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_row_interleave.h \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/decoder_tile_component_interleave.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_codec.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_dec.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_block_component_interleave.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_block_pixel_interleave.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_bytealign_component_interleave.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_component_interleave.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_legacybase.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_mixed_interleave.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_pixel_interleave.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_decoder_row_interleave.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_enc.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_encoder.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_encoder_component_interleave.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_encoder_rgb_block_pixel_interleave.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_encoder_rgb_bytealign_pixel_interleave.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_encoder_rgb_pixel_interleave.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/uncompressed/unc_types.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/vvc_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/vvc_dec.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/codecs/vvc_enc.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/alpha.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/bayer_bilinear.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/chroma_sampling.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/colorconversion.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/color-conversion/hdr_sdr.h \
@@ -288,6 +314,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/error.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/file.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/file_layout.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/id_creator.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/avc.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/avif.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/grid.h \
@@ -301,12 +328,14 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/tiled.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/unc_image.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/image-items/vvc.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/image/image_description.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/image/pixelimage.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/init.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/logging.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/mdat_data.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/mini.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/nclx.h \
-    $${THIRDPARTY_LIBHEIF_PATH}/libheif/pixelimage.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/omaf_boxes.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugin_registry.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_aom.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_dav1d.h \

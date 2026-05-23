@@ -1,0 +1,4 @@
+[libfuzzer]
+
+[lsan]
+suppressions=encoder_fuzzer_lsan_suppressions.txt
