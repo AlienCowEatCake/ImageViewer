@@ -186,14 +186,14 @@ am__relativize = \
     dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
   done; \
   reldir="$$dir2"
-ACLOCAL = ${SHELL} '/home/marti/lcms2-2.19/missing' aclocal-1.18
+ACLOCAL = ${SHELL} '/home/marti/lcms2-2.19.1/missing' aclocal-1.18
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
 AS = as
-AUTOCONF = ${SHELL} '/home/marti/lcms2-2.19/missing' autoconf
-AUTOHEADER = ${SHELL} '/home/marti/lcms2-2.19/missing' autoheader
-AUTOMAKE = ${SHELL} '/home/marti/lcms2-2.19/missing' automake-1.18
+AUTOCONF = ${SHELL} '/home/marti/lcms2-2.19.1/missing' autoconf
+AUTOHEADER = ${SHELL} '/home/marti/lcms2-2.19.1/missing' autoheader
+AUTOMAKE = ${SHELL} '/home/marti/lcms2-2.19.1/missing' automake-1.18
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -233,13 +233,13 @@ LDFLAGS =
 LIBOBJS = 
 LIBRARY_AGE = 0
 LIBRARY_CURRENT = 2
-LIBRARY_REVISION = 18
+LIBRARY_REVISION = 19
 LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBTOOL_DEPS = .//ltmain.sh
 LIB_JPEG = -ljpeg
 LIB_MATH = -lm
-LIB_PLUGINS =  -llcms2_fast_float -llcms2_threaded
+LIB_PLUGINS = 
 LIB_THREAD = -lpthread
 LIB_TIFF = -ltiff
 LIB_ZLIB = -lz
@@ -247,8 +247,8 @@ LIPO =
 LN_S = ln -s
 LTLIBOBJS = 
 LT_SYS_LIBRARY_PATH = 
-MAINT = #
-MAKEINFO = ${SHELL} '/home/marti/lcms2-2.19/missing' makeinfo
+MAINT = 
+MAKEINFO = ${SHELL} '/home/marti/lcms2-2.19.1/missing' makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /usr/bin/mkdir -p
 NM = /usr/bin/nm -B
@@ -276,10 +276,10 @@ SHELL = /bin/sh
 STRIP = strip
 TIFFICC_DEPLIBS = -ltiff -ljpeg -lz -lm -lpthread
 VERSION = 2.19
-abs_builddir = /home/marti/lcms2-2.19/plugins
-abs_srcdir = /home/marti/lcms2-2.19/plugins
-abs_top_builddir = /home/marti/lcms2-2.19
-abs_top_srcdir = /home/marti/lcms2-2.19
+abs_builddir = /home/marti/lcms2-2.19.1/plugins
+abs_srcdir = /home/marti/lcms2-2.19.1/plugins
+abs_top_builddir = /home/marti/lcms2-2.19.1
+abs_top_srcdir = /home/marti/lcms2-2.19.1
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -313,7 +313,7 @@ htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
 inline = 
-install_sh = ${SHELL} /home/marti/lcms2-2.19/install-sh
+install_sh = ${SHELL} /home/marti/lcms2-2.19.1/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -338,7 +338,7 @@ SUBDIRS = fast_float threaded
 all: all-recursive
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: # $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -362,9 +362,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure: # $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4): # $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 

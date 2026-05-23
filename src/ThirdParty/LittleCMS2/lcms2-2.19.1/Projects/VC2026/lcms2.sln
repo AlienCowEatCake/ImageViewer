@@ -42,11 +42,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lcms2_threaded_plugin_testb
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{4DD637AE-09B1-4994-8FC7-7F6EB19165EC}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\BUILDING.md = ..\..\BUILDING.md
 		..\..\plugins\fast_float\doc\LittleCMS floating point extensions 1.7.pdf = ..\..\plugins\fast_float\doc\LittleCMS floating point extensions 1.7.pdf
 		..\..\plugins\threaded\doc\LittleCMS threaded extensions 1.0.pdf = ..\..\plugins\threaded\doc\LittleCMS threaded extensions 1.0.pdf
-		..\..\doc\LittleCMS2.18 API.pdf = ..\..\doc\LittleCMS2.18 API.pdf
-		..\..\doc\LittleCMS2.18 Plugin API.pdf = ..\..\doc\LittleCMS2.18 Plugin API.pdf
-		..\..\doc\LittleCMS2.18 tutorial.pdf = ..\..\doc\LittleCMS2.18 tutorial.pdf
+		..\..\doc\LittleCMS2.19 API.pdf = ..\..\doc\LittleCMS2.19 API.pdf
+		..\..\doc\LittleCMS2.19 Plugin API.pdf = ..\..\doc\LittleCMS2.19 Plugin API.pdf
+		..\..\doc\LittleCMS2.19 tutorial.pdf = ..\..\doc\LittleCMS2.19 tutorial.pdf
 	EndProjectSection
 EndProject
 Global
@@ -241,7 +242,7 @@ Global
 		{F56B9CBA-A34D-4C68-9003-A6919236399E} = {09D18587-D927-4047-977F-49918A174D5E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {E95EA102-6884-4CAD-AF6D-9BF36C69A33D}
 		QtVersion = $(DefaultQtVersion)
+		SolutionGuid = {E95EA102-6884-4CAD-AF6D-9BF36C69A33D}
 	EndGlobalSection
 EndGlobal
