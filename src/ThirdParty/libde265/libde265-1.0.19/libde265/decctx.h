@@ -35,6 +35,7 @@
 #include "libde265/acceleration.h"
 #include "libde265/nal-parser.h"
 
+#include <array>
 #include <memory>
 
 constexpr int DE265_MAX_VPS_SETS = 16;   // this is the maximum as defined in the standard
@@ -262,6 +263,11 @@ public:
      There is one saved model for the initialization of each CTB row.
      The array is unused for non-WPP streams. */
   std::vector<context_model_table> ctx_models;  // TODO: move this into image ?
+
+  /* Saved StatCoeff[] (persistent_rice_adaptation state) parallel to ctx_models.
+     Per HEVC RExt, this state must be carried across WPP CTB rows together
+     with the CABAC context. */
+  std::vector<std::array<uint8_t, 4>> StatCoeff_models;
 };
 
 
@@ -499,9 +505,9 @@ class decoder_context : public base_context {
 
  private:
   void init_thread_context(thread_context* tctx);
-  void add_task_decode_CTB_row(thread_context* tctx, bool firstSliceSubstream, int ctbRow);
+  void add_task_decode_CTB_row(thread_context* tctx, bool firstSliceSubstream, uint16_t ctbRow);
   void add_task_decode_slice_segment(thread_context* tctx, bool firstSliceSubstream,
-                                     int ctbX,int ctbY);
+                                     uint16_t ctbX, uint16_t ctbY);
 
   void mark_whole_slice_as_processed(image_unit* imgunit,
                                      slice_unit* sliceunit,

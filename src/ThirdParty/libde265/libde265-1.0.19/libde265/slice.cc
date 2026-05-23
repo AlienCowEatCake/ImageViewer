@@ -42,7 +42,7 @@ extern bool read_short_term_ref_pic_set(error_queue* errqueue,
                                         const seq_parameter_set* sps,
                                         bitreader* br,
                                         ref_pic_set* out_set,
-                                        int idxRps, // index of the set to be read
+                                        uint32_t idxRps, // index of the set to be read
                                         const std::vector<ref_pic_set>& sets,
                                         bool sliceRefPicSet);
 
@@ -360,6 +360,9 @@ void slice_segment_header::reset()
 
   RemoveReferencesList.clear();
 
+  for (int i = 0; i < 4; i++) {
+    ctx_model_storage_StatCoeff[i] = 0;
+  }
   ctx_model_storage_defined = false;
 }
 
@@ -851,7 +854,7 @@ de265_error slice_segment_header::read(bitreader* br, decoder_context* ctx,
       }
       offset_len = uvlc + 1;
 
-      for (int i = 0; i < num_entry_point_offsets; i++) {
+      for (uint32_t i = 0; i < num_entry_point_offsets; i++) {
         {
           uint32_t offset_minus1 = br->get_bits(offset_len);
           if (offset_minus1 == UINT32_MAX) {
@@ -1235,7 +1238,7 @@ de265_error slice_segment_header::write(error_queue* errqueue, CABAC_encoder& ou
     if (num_entry_point_offsets > 0) {
       out.write_uvlc(offset_len - 1);
 
-      for (int i = 0; i < num_entry_point_offsets; i++) {
+      for (uint32_t i = 0; i < num_entry_point_offsets; i++) {
         {
           uint32_t prev = 0;
           if (i > 0) prev = entry_point_offset[i - 1];
@@ -1505,7 +1508,7 @@ void slice_segment_header::dump_slice_segment_header(const decoder_context* ctx,
     if (num_entry_point_offsets > 0) {
       LOG1("offset_len                 : %d\n", offset_len);
 
-      for (int i = 0; i < num_entry_point_offsets; i++) {
+      for (uint32_t i = 0; i < num_entry_point_offsets; i++) {
         LOG2("entry point [%i] : %d\n", i, entry_point_offset[i]);
       }
     }
@@ -2474,12 +2477,21 @@ static int decode_coeff_abs_level_greater2(thread_context* tctx,
 
 #define MAX_PREFIX (15+3)
 
+// Defensive bounds against non-conforming bitstreams. The spec (eq. 9-25 / 9-23) does
+// not impose an explicit upper bound on cRiceParam or StatCoeff in the persistent-rice
+// path, but a malformed stream can push them arbitrarily high. We clamp so that the
+// signed-int shift expressions in residual_coding stay well-defined:
+//   - 3 * (1 << uiGoRiceParam) requires uiGoRiceParam <= 29 (else int32 overflow)
+//   - 3 << (StatCoeff/4)       requires StatCoeff/4   <= 29 (same)
+#define MAX_RICE_PARAM 29
+#define MAX_STAT_COEFF (4 * MAX_RICE_PARAM + 3)  // 119: largest value with /4 <= 29
+
 static int32_t decode_coeff_abs_level_remaining(thread_context* tctx,
                                                 int cRiceParam)
 {
   logtrace(LogSlice, "# decode_coeff_abs_level_remaining\n");
 
-  uint16_t prefix = 0;
+  uint32_t prefix = 0;
   while (tctx->cabac_decoder.decode_bypass()) {
     prefix++;
     if (prefix > MAX_PREFIX) {
@@ -2502,7 +2514,7 @@ static int32_t decode_coeff_abs_level_remaining(thread_context* tctx,
     // included in the 'prefix' counter above.
 
     int codeword = tctx->cabac_decoder.decode_FL_bypass( prefix - 3 + cRiceParam);
-    value = (((UINT16_C(1) << (prefix - 3)) + 3 - 1) << cRiceParam) + codeword;
+    value = (((UINT32_C(1) << (prefix - 3)) + 3 - 1) << cRiceParam) + codeword;
   }
 
   logtrace(LogSymbols, "$1 coeff_abs_level_remaining=%d\n", value);
@@ -3372,15 +3384,24 @@ int residual_coding(thread_context* tctx,
             }
           }
           else {
-            if (baseLevel + coeff_abs_level_remaining > 3 * (1 << uiGoRiceParam))
+            if (baseLevel + coeff_abs_level_remaining > 3 * (1 << uiGoRiceParam)) {
               uiGoRiceParam++;
+              if (uiGoRiceParam > MAX_RICE_PARAM) {
+                uiGoRiceParam = MAX_RICE_PARAM;
+                tctx->decctx->add_warning(DE265_WARNING_RICE_PARAMETER_OUT_OF_RANGE, true);
+              }
+            }
           }
 
           // persistent_rice_adaptation_enabled_flag
           if (sps.range_extension.persistent_rice_adaptation_enabled_flag &&
               firstCoeffWithAbsLevelRemaining) {
             if (coeff_abs_level_remaining >= (3 << (tctx->StatCoeff[sbType] / 4))) {
-              tctx->StatCoeff[sbType]++;
+              if (tctx->StatCoeff[sbType] < MAX_STAT_COEFF) {
+                tctx->StatCoeff[sbType]++;
+              } else {
+                tctx->decctx->add_warning(DE265_WARNING_RICE_PARAMETER_OUT_OF_RANGE, true);
+              }
             }
             else if (2 * coeff_abs_level_remaining < (1 << (tctx->StatCoeff[sbType] / 4)) &&
                      tctx->StatCoeff[sbType] > 0) {
@@ -4739,6 +4760,11 @@ enum DecodeResult decode_substream(thread_context* tctx,
       // copy CABAC model from previous CTB row
       tctx->ctx_model = tctx->imgunit->ctx_models[(tctx->CtbY - 1)];
       tctx->imgunit->ctx_models[(tctx->CtbY - 1)].release(); // not used anymore
+
+      // also restore the StatCoeff[] state for persistent_rice_adaptation
+      for (int i = 0; i < 4; i++) {
+        tctx->StatCoeff[i] = tctx->imgunit->StatCoeff_models[(tctx->CtbY - 1)][i];
+      }
     }
     else {
       tctx->img->wait_for_progress(tctx->task, 0, tctx->CtbY - 1,CTB_PROGRESS_PREFILTER);
@@ -4792,6 +4818,11 @@ enum DecodeResult decode_substream(thread_context* tctx,
 
       tctx->imgunit->ctx_models[ctby] = tctx->ctx_model;
       tctx->imgunit->ctx_models[ctby].decouple(); // store an independent copy
+
+      // also save the StatCoeff[] state for persistent_rice_adaptation
+      for (int i = 0; i < 4; i++) {
+        tctx->imgunit->StatCoeff_models[ctby][i] = tctx->StatCoeff[i];
+      }
     }
 
 
@@ -4807,6 +4838,11 @@ enum DecodeResult decode_substream(thread_context* tctx,
       if (pps.dependent_slice_segments_enabled_flag) {
         tctx->shdr->ctx_model_storage = tctx->ctx_model;
         tctx->shdr->ctx_model_storage.decouple(); // store an independent copy
+
+        // also save the StatCoeff[] state for persistent_rice_adaptation
+        for (int i = 0; i < 4; i++) {
+          tctx->shdr->ctx_model_storage_StatCoeff[i] = tctx->StatCoeff[i];
+        }
 
         tctx->shdr->ctx_model_storage_defined = true;
       }
@@ -4920,6 +4956,11 @@ bool initialize_CABAC_at_slice_segment_start(thread_context* tctx)
 
       tctx->ctx_model = prevCtbHdr->ctx_model_storage;
       prevCtbHdr->ctx_model_storage.release();
+
+      // also restore the StatCoeff[] state for persistent_rice_adaptation
+      for (int i = 0; i < 4; i++) {
+        tctx->StatCoeff[i] = prevCtbHdr->ctx_model_storage_StatCoeff[i];
+      }
     }
   }
   else {

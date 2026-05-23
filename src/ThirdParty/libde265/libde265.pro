@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBDE265_PATH = $${PWD}/libde265-1.0.18
+THIRDPARTY_LIBDE265_PATH = $${PWD}/libde265-1.0.19
 THIRDPARTY_LIBDE265_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -24,7 +24,7 @@ win32 {
     DEFINES += NOMINMAX
 }
 
-# find ./libde265 -name '*.cc' | egrep -v '(/arm/|/x86/)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBDE265_PATH}| ; s|$| \\|'
+# find ./libde265 -name '*.cc' | egrep -v '(/arm/|/arm32/|/x86/)' | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBDE265_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/alloc_pool.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/bitstream.cc \
@@ -63,7 +63,7 @@ SOURCES += \
 HEADERS += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/acceleration.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/alloc_pool.h \
-    $${THIRDPARTY_LIBDE265_PATH}/libde265/arm/arm.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/arm32/arm.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/bitstream.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/cabac.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/contextmodel.h \
@@ -98,7 +98,8 @@ HEADERS += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse-dct.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse-motion.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse.h \
-    $${THIRDPARTY_LIBDE265_CONFIG_PATH}/config.h
+    $${THIRDPARTY_LIBDE265_CONFIG_PATH}/config.h \
+    $${THIRDPARTY_LIBDE265_CONFIG_PATH}/libde265/de265-version.h
 
 win32 {
     SOURCES += \

@@ -50,7 +50,7 @@ extern bool read_short_term_ref_pic_set(error_queue* errqueue,
                                         const seq_parameter_set* sps,
                                         bitreader* br,
                                         ref_pic_set* out_set,
-                                        int idxRps,  // index of the set to be read
+                                        uint32_t idxRps,  // index of the set to be read
                                         const std::vector<ref_pic_set>& sets,
                                         bool sliceRefPicSet);
 
@@ -58,7 +58,7 @@ extern bool write_short_term_ref_pic_set(error_queue* errqueue,
                                          const seq_parameter_set* sps,
                                          CABAC_encoder& out,
                                          const ref_pic_set* in_set, // which set to write
-                                         int idxRps,  // index of the set to be read
+                                         uint32_t idxRps,  // index of the set to be read
                                          const std::vector<ref_pic_set>& sets, // previously read sets
                                          bool sliceRefPicSet); // is this in the slice header?
 
@@ -583,6 +583,7 @@ de265_error seq_parameter_set::compute_derived_values(bool sanitize_values)
 
   Log2MinTrafoSize = log2_min_transform_block_size;
   Log2MaxTrafoSize = log2_min_transform_block_size + log2_diff_max_min_transform_block_size;
+  assert(Log2MaxTrafoSize >= 2);  // log2_min_transform_block_size >= 2 by spec; relied on by pps.cc
 
   if (max_transform_hierarchy_depth_inter > Log2CtbSizeY - Log2MinTrafoSize) {
     if (sanitize_values) {
@@ -1335,6 +1336,7 @@ de265_error seq_parameter_set::write(error_queue* errqueue, CABAC_encoder& out)
   }
   Log2MinTrafoSize = log2_min_transform_block_size;
   Log2MaxTrafoSize = log2_min_transform_block_size + log2_diff_max_min_transform_block_size;
+  assert(Log2MaxTrafoSize >= 2);  // log2_min_transform_block_size >= 2 by spec; relied on by pps.cc
   Log2MinPUSize = Log2MinCbSizeY-1;
   PicWidthInMinPUs  = PicWidthInCtbsY  << (Log2CtbSizeY - Log2MinPUSize);
   PicHeightInMinPUs = PicHeightInCtbsY << (Log2CtbSizeY - Log2MinPUSize);

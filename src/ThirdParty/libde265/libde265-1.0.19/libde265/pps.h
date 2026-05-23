@@ -126,7 +126,7 @@ public:
   int8_t tc_offset;    // [-12;12]
 
   bool pic_scaling_list_data_present_flag;
-  struct scaling_list_data scaling_list; // contains valid data if sps->scaling_list_enabled_flag set
+  scaling_list_data scaling_list; // contains valid data if sps->scaling_list_enabled_flag set
 
   bool lists_modification_present_flag;
   uint8_t log2_parallel_merge_level; // [2 ; log2(max CB size)]
@@ -146,10 +146,10 @@ public:
   int Log2MinCuChromaQpOffsetSize;
   int Log2MaxTransformSkipSize;
 
-  int colWidth [ DE265_MAX_TILE_COLUMNS ];
-  int rowHeight[ DE265_MAX_TILE_ROWS ];
-  int colBd    [ DE265_MAX_TILE_COLUMNS+1 ];
-  int rowBd    [ DE265_MAX_TILE_ROWS+1 ];
+  uint16_t colWidth [ DE265_MAX_TILE_COLUMNS ];
+  uint16_t rowHeight[ DE265_MAX_TILE_ROWS ];
+  uint16_t colBd    [ DE265_MAX_TILE_COLUMNS+1 ];
+  uint16_t rowBd    [ DE265_MAX_TILE_ROWS+1 ];
 
   std::vector<uint32_t> CtbAddrRStoTS; // #CTBs
   std::vector<uint32_t> CtbAddrTStoRS; // #CTBs

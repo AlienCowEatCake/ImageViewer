@@ -62,15 +62,19 @@ bool pps_range_extension::read(bitreader* br, decoder_context* ctx, const pic_pa
   }
 
   cross_component_prediction_enabled_flag = br->get_bits(1);
+  // shall be 0 when ChromaArrayType is not 3 (Sec. 7.4.3.3.2)
   if (sps->ChromaArrayType != CHROMA_444 &&
       cross_component_prediction_enabled_flag) {
       ctx->add_warning(DE265_WARNING_PPS_HEADER_INVALID, false);
+      return false;
   }
 
   chroma_qp_offset_list_enabled_flag = br->get_bits(1);
+  // shall be 0 when ChromaArrayType is 0 (mono) (Sec. 7.4.3.3.2)
   if (sps->ChromaArrayType == CHROMA_MONO &&
       chroma_qp_offset_list_enabled_flag) {
       ctx->add_warning(DE265_WARNING_PPS_HEADER_INVALID, false);
+      return false;
   }
 
   if (chroma_qp_offset_list_enabled_flag) {
@@ -260,6 +264,8 @@ void pic_parameter_set::set_defaults(enum PresetSet)
   pps_range_extension_flag = 0;
   pps_multilayer_extension_flag = 0;
   pps_extension_6bits = 0;
+
+  range_extension.reset();
 }
 
 
@@ -312,7 +318,9 @@ bool pic_parameter_set::read(bitreader* br, decoder_context* ctx)
 
   {
     int32_t svlc;
-    if ((svlc = br->get_svlc()) == SVLC_ERROR) {
+    // init_qp_minus26 shall be in [-(26 + QpBdOffset_Y), +25] (Sec. 7.4.3.3.1)
+    if ((svlc = br->get_svlc()) == SVLC_ERROR ||
+        svlc < -(26 + sps->QpBdOffset_Y) || svlc > 25) {
       ctx->add_warning(DE265_WARNING_PPS_HEADER_INVALID, false);
       return false;
     }
@@ -365,18 +373,20 @@ bool pic_parameter_set::read(bitreader* br, decoder_context* ctx)
 
   if (tiles_enabled_flag) {
     if ((uvlc = br->get_uvlc()) == UVLC_ERROR ||
-	uvlc+1 > DE265_MAX_TILE_COLUMNS) {
+        uvlc + 1 > DE265_MAX_TILE_COLUMNS ||
+        uvlc + 1 > sps->PicWidthInCtbsY) {
       ctx->add_warning(DE265_WARNING_PPS_HEADER_INVALID, false);
       return false;
     }
-    num_tile_columns = uvlc+1;
+    num_tile_columns = uvlc + 1;
 
     if ((uvlc = br->get_uvlc()) == UVLC_ERROR ||
-	uvlc+1 > DE265_MAX_TILE_ROWS) {
+        uvlc + 1 > DE265_MAX_TILE_ROWS ||
+        uvlc + 1 > sps->PicHeightInCtbsY) {
       ctx->add_warning(DE265_WARNING_PPS_HEADER_INVALID, false);
       return false;
     }
-    num_tile_rows = uvlc+1;
+    num_tile_rows = uvlc + 1;
 
     uniform_spacing_flag = br->get_bits(1);
 
@@ -384,30 +394,29 @@ bool pic_parameter_set::read(bitreader* br, decoder_context* ctx)
       uint16_t lastColumnWidth = sps->PicWidthInCtbsY;
       uint16_t lastRowHeight   = sps->PicHeightInCtbsY;
 
-      for (int i=0; i<num_tile_columns-1; i++)
-        {
-          if ((uvlc = br->get_uvlc()) == UVLC_ERROR ||
-              uvlc >= lastColumnWidth) {
-	    ctx->add_warning(DE265_WARNING_PPS_HEADER_INVALID, false);
-	    return false;
-	  }
-          colWidth[i] = uvlc+1;
-
-          lastColumnWidth -= colWidth[i];
+      for (int i = 0; i < num_tile_columns - 1; i++) {
+        if ((uvlc = br->get_uvlc()) == UVLC_ERROR ||
+            uvlc + 1 >= lastColumnWidth) {
+          ctx->add_warning(DE265_WARNING_PPS_HEADER_INVALID, false);
+          return false;
         }
 
-      colWidth[num_tile_columns-1] = lastColumnWidth;
+        colWidth[i] = uvlc + 1;
 
-      for (int i=0; i<num_tile_rows-1; i++)
-        {
-          if ((uvlc = br->get_uvlc()) == UVLC_ERROR ||
-              uvlc >= lastRowHeight) {
-	    ctx->add_warning(DE265_WARNING_PPS_HEADER_INVALID, false);
-	    return false;
-	  }
-          rowHeight[i] = uvlc+1;
-          lastRowHeight -= rowHeight[i];
+        lastColumnWidth -= colWidth[i];
+      }
+
+      colWidth[num_tile_columns - 1] = lastColumnWidth;
+
+      for (int i = 0; i < num_tile_rows - 1; i++) {
+        if ((uvlc = br->get_uvlc()) == UVLC_ERROR ||
+            uvlc + 1 >= lastRowHeight) {
+          ctx->add_warning(DE265_WARNING_PPS_HEADER_INVALID, false);
+          return false;
         }
+        rowHeight[i] = uvlc + 1;
+        lastRowHeight -= rowHeight[i];
+      }
 
 
       rowHeight[num_tile_rows-1] = lastRowHeight;
@@ -481,7 +490,7 @@ bool pic_parameter_set::read(bitreader* br, decoder_context* ctx)
     }
   }
   else {
-    memcpy(&scaling_list, &sps->scaling_list, sizeof(scaling_list_data));
+    scaling_list = sps->scaling_list;
   }
 
 
@@ -514,16 +523,12 @@ bool pic_parameter_set::read(bitreader* br, decoder_context* ctx)
       }
     }
 
-    //assert(false);
-    /*
-      while( more_rbsp_data() )
-
-      pps_extension_data_flag
-      u(1)
-      rbsp_trailing_bits()
-
-      }
-    */
+    // Multilayer extension and the 6 reserved extension bits would carry
+    // additional payload that we do not parse. Reject the stream.
+    if (pps_multilayer_extension_flag || pps_extension_6bits) {
+      ctx->add_warning(DE265_ERROR_NOT_IMPLEMENTED_YET, false);
+      return false;
+    }
   }
 
 
@@ -591,74 +596,32 @@ void pic_parameter_set::set_derived_values(const seq_parameter_set* sps)
   MinTbAddrZS  .resize(sps->PicSizeInTbsY );
 
 
-  // raster scan (RS) <-> tile scan (TS) conversion
+  // raster scan (RS) <-> tile scan (TS) conversion (Sec. 6.5.1)
+  // and tile-ID assignment (TileId in TS order, TileIdRS in RS order).
+  //
+  // Walk the picture in tile-scan order: for each tile (tileY, tileX), iterate
+  // the CTBs (y, x) inside it in raster order. ctbAddrTS increments by 1 per
+  // CTB visited, so both mapping directions and both TileId arrays are filled
+  // in a single O(PicSizeInCtbsY) pass.
 
-  for (uint32_t ctbAddrRS=0 ; ctbAddrRS < sps->PicSizeInCtbsY ; ctbAddrRS++)
-    {
-      int tbX = ctbAddrRS % sps->PicWidthInCtbsY;
-      int tbY = ctbAddrRS / sps->PicWidthInCtbsY;
-      int tileX=-1,tileY=-1;
-
-      for (int i=0;i<num_tile_columns;i++)
-        if (tbX >= colBd[i])
-          tileX=i;
-
-      for (int j=0;j<num_tile_rows;j++)
-        if (tbY >= rowBd[j])
-          tileY=j;
-
-      CtbAddrRStoTS[ctbAddrRS] = 0;
-      for (int i=0;i<tileX;i++)
-        CtbAddrRStoTS[ctbAddrRS] += rowHeight[tileY]*colWidth[i];
-
-      for (int j=0;j<tileY;j++)
-        {
-          //pps->CtbAddrRStoTS[ctbAddrRS] += (tbY - pps->rowBd[tileY])*pps->colWidth[tileX];
-          //pps->CtbAddrRStoTS[ctbAddrRS] += tbX - pps->colBd[tileX];
-
-          CtbAddrRStoTS[ctbAddrRS] += sps->PicWidthInCtbsY * rowHeight[j];
+  uint32_t ctbAddrTS = 0;
+  uint32_t tIdx = 0;
+  for (int tileY = 0; tileY < num_tile_rows; tileY++) {
+    for (int tileX = 0; tileX < num_tile_columns; tileX++) {
+      for (int y = rowBd[tileY]; y < rowBd[tileY + 1]; y++) {
+        for (int x = colBd[tileX]; x < colBd[tileX + 1]; x++) {
+          uint32_t ctbAddrRS = y * sps->PicWidthInCtbsY + x;
+          CtbAddrRStoTS[ctbAddrRS] = ctbAddrTS;
+          CtbAddrTStoRS[ctbAddrTS] = ctbAddrRS;
+          TileId  [ctbAddrTS] = tIdx;
+          TileIdRS[ctbAddrRS] = tIdx;
+          ctbAddrTS++;
         }
-
-      assert(tileX>=0 && tileY>=0);
-
-      CtbAddrRStoTS[ctbAddrRS] += (tbY-rowBd[tileY])*colWidth[tileX];
-      CtbAddrRStoTS[ctbAddrRS] +=  tbX - colBd[tileX];
-
-
-      // inverse mapping
-
-      CtbAddrTStoRS[ CtbAddrRStoTS[ctbAddrRS] ] = ctbAddrRS;
-    }
-
-
-#if 0
-  logtrace(LogHeaders,"6.5.1 CtbAddrRSToTS\n");
-  for (int y=0;y<sps->PicHeightInCtbsY;y++)
-    {
-      for (int x=0;x<sps->PicWidthInCtbsY;x++)
-        {
-          logtrace(LogHeaders,"%3d ", CtbAddrRStoTS[x + y*sps->PicWidthInCtbsY]);
-        }
-
-      logtrace(LogHeaders,"\n");
-    }
-#endif
-
-  // tile id
-
-  for (int j=0, tIdx=0 ; j<num_tile_rows ; j++)
-    for (int i=0 ; i<num_tile_columns;i++)
-      {
-        for (int y=rowBd[j] ; y<rowBd[j+1] ; y++)
-          for (int x=colBd[i] ; x<colBd[i+1] ; x++) {
-            TileId  [ CtbAddrRStoTS[y*sps->PicWidthInCtbsY + x] ] = tIdx;
-            TileIdRS[ y*sps->PicWidthInCtbsY + x ] = tIdx;
-
-            //logtrace(LogHeaders,"tileID[%d,%d] = %d\n",x,y,pps->TileIdRS[ y*sps->PicWidthInCtbsY + x ]);
-          }
-
-        tIdx++;
       }
+      tIdx++;
+    }
+  }
+  assert(ctbAddrTS == sps->PicSizeInCtbsY);
 
 #if 0
   logtrace(LogHeaders,"Tile IDs RS:\n");
@@ -731,7 +694,7 @@ bool pic_parameter_set::write(error_queue* errqueue, CABAC_encoder& out,
   }
   out.write_uvlc(pic_parameter_set_id);
 
-  if (seq_parameter_set_id >= DE265_MAX_PPS_SETS) {
+  if (seq_parameter_set_id >= DE265_MAX_SPS_SETS) {
     errqueue->add_warning(DE265_WARNING_NONEXISTING_SPS_REFERENCED, false);
     return false;
   }

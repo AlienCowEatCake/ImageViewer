@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.16.3)
 
 project (libde265
     LANGUAGES C CXX
-    VERSION 1.0.18
+    VERSION 1.0.19
 )
 
 # Auto-compute BCD-encoded numeric version from project version.
@@ -19,10 +19,10 @@ set (PACKAGE_VERSION ${PROJECT_VERSION})
 # This controls the shared library filename:
 #   libde265.so -> libde265.so.0 -> libde265.so.0.1.9
 #                  ^^^^^^^^^^^^^^    ^^^^^^^^^^^^^^^^^^
-#                  SOVERSION         VERSION
+#                  DE265_SOVERSION   DE265_LIBRARY_VERSION
 #
-# VERSION is a three-part number: MAJOR.MINOR.PATCH
-#   - MAJOR = the ABI major version (same as SOVERSION).
+# DE265_LIBRARY_VERSION is a three-part number: MAJOR.MINOR.PATCH
+#   - MAJOR = the ABI major version (same as DE265_SOVERSION).
 #             Bump when the ABI breaks (exported functions removed or signatures changed).
 #             Reset MINOR and PATCH to 0.
 #   - MINOR = backward-compatible ABI additions.
@@ -31,11 +31,11 @@ set (PACKAGE_VERSION ${PROJECT_VERSION})
 #   - PATCH = implementation-only changes (bug fixes, performance improvements).
 #             Bump when the ABI is unchanged.
 #
-# SOVERSION must always equal the MAJOR part of VERSION.
+# DE265_SOVERSION must always equal the MAJOR part of DE265_LIBRARY_VERSION.
 # Programs linked against libde265.so.0 will work with any libde265.so.0.x.y.
 #
 set(DE265_SOVERSION 0)
-set(DE265_LIBRARY_VERSION "0.1.11")
+set(DE265_LIBRARY_VERSION "0.1.12")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -73,42 +73,54 @@ endif()
 CHECK_INCLUDE_FILE(malloc.h HAVE_MALLOC_H)
 CHECK_FUNCTION_EXISTS(posix_memalign HAVE_POSIX_MEMALIGN)
 
+option(ENABLE_SIMD "Enable SIMD acceleration (SSE on x86, NEON on ARM)" ON)
+
 include(CheckCSourceCompiles)
-check_c_source_compiles(
-  "#if !defined(__x86_64) && !defined(__i386__) \
-  && !defined(_M_IX86) && !defined(_M_AMD64) \
-  || defined(_M_ARM64EC) || defined(_ARM64EC_)
-  #error not x86
-  #endif
-  int main(){return 0;}"
-  HAVE_X86)
+if(ENABLE_SIMD)
+  check_c_source_compiles(
+    "#if !defined(__x86_64) && !defined(__i386__) \
+    && !defined(_M_IX86) && !defined(_M_AMD64) \
+    || defined(_M_ARM64EC) || defined(_ARM64EC_)
+    #error not x86
+    #endif
+    int main(){return 0;}"
+    HAVE_X86)
 
-if(HAVE_X86)
-  if (MSVC)
-    set(SUPPORTS_SSE2 1)
-    set(SUPPORTS_SSSE3 1)
-    set(SUPPORTS_SSE4_1 1)
-  else()
-    check_c_compiler_flag(-msse2 SUPPORTS_SSE2)
-    check_c_compiler_flag(-mssse3 SUPPORTS_SSSE3)
-    check_c_compiler_flag(-msse4.1 SUPPORTS_SSE4_1)
+  if(HAVE_X86)
+    if (MSVC)
+      set(SUPPORTS_SSE2 1)
+      set(SUPPORTS_SSSE3 1)
+      set(SUPPORTS_SSE4_1 1)
+    else()
+      check_c_compiler_flag(-msse2 SUPPORTS_SSE2)
+      check_c_compiler_flag(-mssse3 SUPPORTS_SSSE3)
+      check_c_compiler_flag(-msse4.1 SUPPORTS_SSE4_1)
+    endif()
+    if(SUPPORTS_SSE4_1)
+      set(HAVE_SSE4_1 TRUE)
+    endif()
   endif()
-  if(SUPPORTS_SSE4_1)
-    set(HAVE_SSE4_1 TRUE)
+
+  check_c_source_compiles(
+    "#if !defined(__arm__) && !defined(_M_ARM)
+    #error not 32-bit ARM
+    #endif
+    int main(){return 0;}"
+    HAVE_ARM32)
+
+  check_c_source_compiles(
+    "#if !defined(__aarch64__) && !defined(_M_ARM64)
+    #error not 64-bit ARM
+    #endif
+    int main(){return 0;}"
+    HAVE_ARM64)
+
+  if(HAVE_ARM32)
+    enable_language(ASM)
+    check_c_compiler_flag(-mfpu=neon HAVE_NEON)
   endif()
-endif()
-
-check_c_source_compiles(
-  "#if !defined(__arm__) && !defined(__aarch64__) \
-  && !defined(_M_ARM) && !defined(_M_ARM64)
-  #error not ARM
-  #endif
-  int main(){return 0;}"
-  HAVE_ARM)
-
-if(HAVE_ARM)
-  enable_language(ASM)
-  check_c_compiler_flag(-mfpu=neon HAVE_NEON)
+else()
+  message(STATUS "SIMD acceleration disabled (ENABLE_SIMD=OFF) — using scalar fallback only")
 endif()
 
 configure_file (libde265/de265-version.h.in libde265/de265-version.h)
@@ -119,13 +131,30 @@ if(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
   add_definitions(-Wall -Werror=return-type -Werror=unused-result -Werror=reorder)
 endif()
 
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
+
 include(CheckCXXSymbolExists)
 check_cxx_symbol_exists(_LIBCPP_VERSION cstdlib HAVE_LIBCPP)
-if(HAVE_LIBCPP)
-  set(LIBS_PRIVATE "-lc++")
-else()
-  set(LIBS_PRIVATE "-lstdc++")
+
+# Build Libs.private contents for libde265.pc.
+set(_libs_private "")
+if(NOT MSVC)
+  if(HAVE_LIBCPP)
+    list(APPEND _libs_private "-lc++")
+  else()
+    list(APPEND _libs_private "-lstdc++")
+  endif()
 endif()
+# Emit '-lpthread' rather than '-pthread' so consumers using
+# `pkg-config --libs --static` get an unambiguous linker flag (see #453).
+if(CMAKE_USE_PTHREADS_INIT)
+  list(APPEND _libs_private "-lpthread")
+endif()
+if(UNIX)
+  list(APPEND _libs_private "-lm")
+endif()
+string(JOIN " " LIBS_PRIVATE ${_libs_private})
 
 
 option(BUILD_SHARED_LIBS "Build shared library" ON)
@@ -143,8 +172,6 @@ include_directories ("${PROJECT_SOURCE_DIR}/libde265")
 if(MSVC)
   include_directories ("${PROJECT_SOURCE_DIR}/extra")
 endif()
-
-find_package(Threads)
 
 option(ENABLE_DECODER "Enable Decoder" ON)
 option(ENABLE_ENCODER "Enable Encoder" OFF)
