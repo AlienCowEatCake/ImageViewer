@@ -1,0 +1,9 @@
+build/
+corpus/
+corpus.zip
+wmf_fuzzer
+wmf_fuzzer.o
+crash-*
+oom-*
+leak-*
+timeout-*

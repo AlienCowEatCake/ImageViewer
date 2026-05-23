@@ -1,0 +1,40 @@
+<head>
+<title>META_EXCLUDECLIPRECT</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_EXCLUDECLIPRECT
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+INT32 ExcludeClipRect
+(
+	HDC32 hdc,
+	INT32 left,
+	INT32 top,
+	INT32 right,
+	INT32 bottom
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<h1>DESCRIPTION</h1>
+<table border=1>
+<tr>
+<td>U16 array no</td><td>Value</td>
+</tr>
+<td>0</td> <td>bottom</td>
+</tr>
+<tr>
+ <td>1</td> <td>right</td>
+</tr>
+<tr>
+ <td>2</td> <td>top</td>
+</tr>
+<tr>
+ <td>3</td><td>left</td>
+</tr>
+</table>
+top, left, right and bottom define the points of the region to be deleted from
+the clipping region, the resultant
+clipping region is the original region minus this region.
+<p><a href="support.html">back</a><p>
+</body>

@@ -1,0 +1,45 @@
+<head>
+<title>META_SETMAPMODE</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_SETMAPMODE
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+INT32 SetMapMode
+(
+    HDC32 hdc,
+    INT32 mode
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+<TR>
+<TD>0</TD>
+<TD>MapMode</TD>
+</TR>
+</TABLE>
+
+SetMapMode sets the mapping mode to one of MM_TEXT, MM_LOMETRIC,MM_HIMETRIC,
+MM_LOENGLISH,MM_HIENGLISH,MM_TWIPS,MM_ISOTROPIC,MM_ANISOTROPIC<br>
+Set <a href="mapmode.html">this doc</a> for explanation<p>
+Id like to point out here, that some wmf files do not set a mapping mode at
+all, and while the referenced doc here puts MM_TEXT as the default mapping
+mode, in practice when no map mode is set <b>and</b> the wmf isn't a 
+placeable wmf, i.e. there is no information at all about the desired size of 
+the wmf, then this is a problem because <br>
+<ul>
+<li>wmfs exist which expect to be played in MM_TEXT mode where each unit is a pixel and<br>
+<li>wmfs exist which expect to be played in MM_TWIPS mode where each unit is 1/1440 or
+an inch.<br>
+</ul>
+and neither set a MAPMODE. (grrr) so arbitrarily i put non-placeable wmf files
+that have no MAPMODE set into MM_TEXT mode if they are < 400 x 400 and into
+the other mode if they are not.
+<p><a href="support.html">back</a>
+</body>

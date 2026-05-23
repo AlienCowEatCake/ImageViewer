@@ -1,0 +1,33 @@
+<head>
+<title>META_SETTEXTALIGN</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_SETTEXTALIGN
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+UINT32 SetTextAlign
+(
+	HDC32 hdc,
+	UINT32 textAlign
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+<TR>
+<TD>0</TD>
+<TD>magic no</TD>
+</TR>
+</TABLE>
+magic no is combo of TA_NOUPDATECP,TA_UPDATECP,TA_LEFT,TA_RIGHT,TA_CENTER,TA_TOP,TA_BOTTOM,TA_BASELINE
+which basically specify whether the text is left or right aligned, or centered in the horizontal
+direction. centered on the baseline, at the top or the bottom of the baseline. And whether the
+current position is updated or not.See the source for more details on all this malarky.
+
+<p><a href="support.html">back</a><p>
+</body>

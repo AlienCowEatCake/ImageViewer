@@ -1,0 +1,170 @@
+<head>
+<title>META_DIBBITBLT</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_DIBBITBLT
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+
+BOOL32 BitBlt
+(
+    HDC32 hdcDst,
+    INT32 xDst,
+    INT32 yDst,
+    INT32 width,
+    INT32 height,
+    HDC32 hdcSrc,
+    INT32 xSrc,
+    INT32 ySrc,
+    DWORD rop
+);
+</pre>
+
+<h1>DESCRIPTION</h1>
+DIBBITBLT is the operand that BitBlt converts to automatically when
+used with a metafile. It has <b>two</b> forms so watch out.<p>
+DibBitBlt basically copies a dib into a dest location 
+transformed by the ROP, but it can also be used with ROP's
+that dont use the src at all.
+<p>
+Form 1<br>
+In the scenario where hdcSrc is NULL, then the arguments are
+as follows
+<table border=1>
+<tr><td>U16</td><td>Value</td></tr>
+<tr><td>0</td><td rowspan=2>rop</td></tr>
+<tr><td>1</td></tr>
+<tr><td>2</td><td>ySrc</td></tr>
+<tr><td>3</td><td>xSrc</td></tr>
+<tr><td>4</td><td>???, probably nothing</td></tr>
+<tr><td>5</td><td>height</td></tr>
+<tr><td>6</td><td>width</td></tr>
+<tr><td>7</td><td>yDst</td></tr>
+<tr><td>8</td><td>xDst</td></tr>
+</table>
+<p>
+Form 2<br>
+In the scenario where hdcSrc is not NULL, then the arguments are
+as follows
+<table border=1>
+<tr><td>U16</td><td>Value</td></tr>
+<tr><td>0</td><td rowspan=2>rop</td></tr>
+<tr><td>1</td></tr>
+<tr><td>2</td><td>ySrc</td></tr>
+<tr><td>3</td><td>xSrc</td></tr>
+<tr><td>4</td><td>height</td></tr>
+<tr><td>5</td><td>width</td></tr>
+<tr><td>6</td><td>yDst</td></tr>
+<tr><td>7</td><td>xDst</td></tr>
+<tr><td>8 until the end</td><td>the src dib<td></tr>
+</table>
+<p>
+rop is the ROP.<br>
+ySrc is the starting y coord to copy from (in log units i suppose) in the dib (if it exists).<br>
+xSrc it the x coord to copy from (in log units i suppose) in the dib (if it exists).<br>
+height is height in logical units of the destination rectangle<br>
+width is width in logical units of the destination rectangle<br>
+yDst is the y pos in logical units of the rectangle to copy to in the destination window<br>
+xDst is the x pos in logical units of the rectangle to copy to in the destination window<p>
+
+The primary purpose of this is to copy a dib to a given location, but it can be used to
+do all sorts of ROP tricks as well or instead.
+<p><a href="support.html">back</a>
+
+<p>Some realworld examples and thoughts at the time on DIBBITBLT
+<pre>
+
+DIBBITBLT is created from a BitBlt call, i havent seen BITBLT in the wild at
+all and suspect that it doesnt exist.
+
+theres two sets of possibilites for the parameters.
+one that fits the layout of the call which is used 
+when the src is NULL, i.e....
+
+head
+40 09
+
+0 }__dwRop
+1 }
+
+2 srcy  
+00 00
+
+3 srcx  
+00 00
+
+4       ?
+00 00
+
+5 height
+50 00
+
+6 width
+50 00
+
+7 dest y
+00 00
+
+8 dest x
+5a 00
+
+and the other when src is not NULL, with the calls that use
+src, where in effect argument 4 (the src dc) is missing
+and the dib placed after the end of the parameters. I suppose
+you can tell one from the other either by looking at the
+no of parameters, or by seeing if no 4 is 0, or by seeing
+if the dwROP requires a src, i use approach one, as its simple.
+
+
+
+
+head
+40 09
+
+
+0 }__dwROP 
+1 }
+09 0a fb 00
+
+2 srcy
+00 00
+
+3 srcx
+00 00
+
+4 dest height
+50 00
+
+5 dest width
+50 00
+
+6 dest y
+b4 00
+
+7 dest x
+b4 00
+
+8 the dib itself.
+28 00
+
+9
+00 00
+
+10
+50 00
+
+11
+00 00
+
+12
+50 00
+
+13
+00 00
+
+01 00
+
+Caolan
+</pre>
+</body>

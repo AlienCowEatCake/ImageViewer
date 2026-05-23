@@ -1,0 +1,46 @@
+<head>
+<title>META_FLOODFILL</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_FLOODFILL
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+BOOL32 FloodFill
+(
+	HDC32 hdc,
+	INT32 x,
+	INT32 y,
+	COLORREF color
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+
+<TR>
+<TD>0</TD>
+
+<TD ROWSPAN="2">COLORREF</TD>
+</TR>
+
+<TR>
+<TD>1</TD>
+</TR>
+<TR>
+<TD>2</TD>
+<td>y</td>
+</TR>
+<TR>
+<TD>3</TD>
+<td>x</td>
+</TR>
+</TABLE>
+At the point x,y FloodFill fills with the color COLORREF in all directions until it meets a border
+of the same color as COLORREF. see <a href="ExtFloodFill.html">ExtFloodFill</a>
+<p><a href="support.html">back</a>
+</body>

@@ -1,0 +1,33 @@
+<head>
+<title>META_POLYGON</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_POLYGON
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+BOOL32 Polygon
+(
+	HDC32 hdc,
+	const POINT32 *pt,
+	INT32 count
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<table border=1>
+<tr>
+<td>U16 array no</td><td>Value</td>
+</tr>
+<td>0</td> <td>no of points</td>
+</tr>
+<tr>
+ <td>1 each odd until the end</td> <td>x of the point</td>
+</tr>
+<tr>
+ <td>2 each even until the end</td> <td>y of the point</td>
+</tr>
+</table>
+Polygon, is a list of points, for filled polygons <a href="SetPolyFillMode.html">SetPolyFillMode</a> affects
+how the polygon is filled.
+<p><a href="support.html">back</a>
+</body>

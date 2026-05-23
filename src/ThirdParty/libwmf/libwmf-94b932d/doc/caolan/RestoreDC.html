@@ -1,0 +1,30 @@
+<head>
+<title>META_RESTOREDC</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_RESTOREDC
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+BOOL32 RestoreDC
+(
+	HDC32 hdc,
+	INT32 level
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<table border=1>
+<tr>
+<td>U16 array no</td><td>Value</td>
+</tr>
+<tr>
+<td>0</td> <td>level</td>
+</tr>
+</table>
+RestoreDC restores a DC off the stack which it has been pushed by
+<a href="SaveDC.html">SaveDC</a>. The value is the number of
+entries to be popped off the stack to find the correct one
+to restore. The DC'c between the top of the stack and the one
+to restore are discarded.
+<p><a href="support.html">back</a>
+</body>

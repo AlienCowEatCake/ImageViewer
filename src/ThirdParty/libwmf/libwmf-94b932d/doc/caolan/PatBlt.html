@@ -1,0 +1,57 @@
+<head>
+<title>META_PATBLT</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_PATBLT
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+BOOL32 PatBlt
+(
+HDC32 hdc,
+INT32 left,
+INT32 top,
+INT32 width,
+INT32 height,
+DWORD rop
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+
+<TR>
+<TD>0</TD>
+
+<TD ROWSPAN="2">ROP</TD>
+</TR>
+
+<TR>
+<TD>1</TD>
+</TR>
+<TR>
+<TD>2</TD>
+<td>height</td>
+</TR>
+<TR>
+<TD>3</TD>
+<td>width</td>
+</TR>
+<TR>
+<TD>4</TD>
+<td>top</td>
+</TR>
+<TR>
+<TD>5</TD>
+<td>left</td>
+</TR>
+</TABLE>
+PalBlt combines a pattern i.e the currently selected brush, with the destination,
+which is defined by top,left,width and height.<br>
+The ROP defines how they should be combined. see <a href="rop.html">rop</a>
+<p><a href="support.html">back</a>
+</body>

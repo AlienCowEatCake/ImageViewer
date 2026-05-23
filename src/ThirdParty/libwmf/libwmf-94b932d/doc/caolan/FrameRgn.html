@@ -1,0 +1,41 @@
+<head>
+<title>META_FRAMEREGION</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_FRAMEREGION
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+BOOL32 FrameRgn
+(
+	HDC32 hdc,
+	HRGN32 hrgn,
+	HBRUSH32 hbrush,
+	INT32 nWidth,
+	INT32 nHeight
+);
+
+</pre>
+<h1>DESCRIPTION</h1>
+<table border=1>
+<tr>
+<td>U16 array no</td><td>Value</td>
+</tr>
+<tr>
+<td>0</td> <td>height</td>
+</tr>
+<tr>
+<td>1</td> <td>width</td>
+</tr>
+<tr>
+<td>2</td> <td>region object no</td>
+</tr>
+<tr>
+<td>3</td> <td>brush object no</td>
+</tr>
+</table>
+FrameRgn draws a border around region identified by the first param with the brush identified
+with the second param. width is the width of vertical lines, and height is the height of horizontal
+lines.
+<p><a href="support.html">back</a>
+</body>

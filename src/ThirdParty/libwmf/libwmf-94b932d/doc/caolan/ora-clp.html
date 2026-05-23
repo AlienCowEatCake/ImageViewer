@@ -1,0 +1,549 @@
+<html>
+<head>
+<title>GFF Format Summary: Microsoft Windows Clipboard</title>
+</head>
+<body>
+<h1><a name="SPEC-MICCLIP">Microsoft Windows Clipboard</a></h1>
+<p>
+<b>Also Known As:</b> CLP
+<p>
+<hr>
+<p>
+
+<p>
+<table border=0>
+<tr valign=top>
+  <td align=left><b>Type</b></td>
+  <td align=left>Metafile</td>
+</tr>
+<tr valign=top>
+  <td align=left><b>Colors</b></td>
+  <td align=left>Bilevel to 24-bit</td>
+</tr>
+<tr valign=top>
+  <td align=left><b>Compression</b></td>
+  <td align=left>None</td>
+</tr>
+<tr valign=top>
+  <td align=left><b>Maximum Image Size</b></td>
+  <td align=left>32Kx32K and 2Gx2G pixels</td>
+</tr>
+<tr valign=top>
+  <td align=left><b>Multiple Images Per File</b></td>
+  <td align=left>Yes</td>
+</tr>
+<tr valign=top>
+  <td align=left><b>Numerical Format</b></td>
+  <td align=left>Little-endian</td>
+</tr>
+<tr valign=top>
+  <td align=left><b>Originator</b></td>
+  <td align=left>Microsoft Corporation</td>
+</tr>
+<tr valign=top>
+  <td align=left><b>Platform</b></td>
+  <td align=left>Microsoft Windows</td>
+</tr>
+<tr valign=top>
+  <td align=left><b>Supporting Applications</b></td>
+  <td align=left>Microsoft Clipboard and ClipBook Viewer</td>
+</tr>
+<tr valign=top>
+  <td align=left><b>See Also</b></td>
+  <td align=left><a href="gffse:/format.micbmp">Microsoft Bitmap</a>,
+   <a href="gffse:/format.micmeta">Microsoft Metafile</a>, DIF,
+   <a href="gffse:/format.micsylk">SYLK</a>, RTF</td>
+</tr>
+</table>
+<p>
+<b>Usage</b><br>
+Used as a "one-format-saves-all" solution for easily storing data
+in Windows to disk.
+<p>
+<b>Comments</b><br>
+A useful and under-utilized format. Programmers can safely assume 
+that every installation of Windows will have the ability to read and write
+Clipboard files. 
+<p>
+<hr>
+<p>
+<A NAME="MICCLIP-DMYID.1"><!-- Overview anchor --></A>
+<p>
+The Clipboard file format is used to store Microsoft Windows
+Clipboard data to disk. The Clipboard is an area of shared memory found
+in the Windows operating system, and is the simplest mechanism
+available to exchange data between applications running in the
+Windows environment.
+<p>
+<B>Contents:</B><br>
+<A HREF="#MICCLIP-DMYID.2">File Organization</a><br>
+<a href="#MICCLIP-DMYID.3">File Details</A><br>
+<A HREF="#MICCLIP-DMYID.4">For Further Information</A><br>
+<p>
+A set of functions in the Windows API is used to transfer data between
+the Clipboard and Windows applications. For example, the Cut, Copy,
+Clear, Paste, and Undo functions found in many Windows applications
+all use these function to access Clipboard memory as an area for
+temporary storage and data exchange. However, only one Windows
+application may access the Clipboard at a time. The Clipboard can also
+be accessed directly using the built-in Windows applications Clipboard
+Viewer and ClipBook Viewer.
+<p>
+The Clipboard Viewer is a simple application used to view the entire
+contents of the Clipboard and to save its data to disk using the CLP
+file format. The ClipBook Viewer is an extended version of the
+Clipboard Viewer that allows stored data to be divided into separate
+pages of information and shared over a Microsoft (NetBEUI) network
+using the OLE or DDE protocols. Each page in the ClipBook may hold the
+data captured by a single Cut or Copy operation. ClipBook may contain
+a maximum of 127 separate pages, each identified by a name up to 47
+characters in length, and limited in size only by the amount of
+available disk space. Each page of the ClipBook may be stored in a
+separate CLP file.
+<p>
+The Clipboard Viewer and ClipBook Viewer are separate programs, but
+both use the executable file name <i>clipbrd.exe</i>, so it is not likely
+you will find both programs installed in the same Windows
+environment.
+<p>
+The Clipboard Viewer under Windows 2.<i>x</i> and 3.<i>x</i>
+is found in the Main group box. Windows for Workgroups
+3.<i>x</i> and Windows NT 3.<i>x</i> provide only
+the ClipBook Viewer, also found in the Main group box. 
+<p>
+Clipboard Viewer is not installed by default in Windows 95. To
+install the Clipboard Viewer under Windows 95, you must select
+Add/Remove Programs in Control Panel, click the Windows Setup tab,
+click Accessories, and then click Details. Click the Clipboard Viewer
+check box to select it, and then click OK or Apply. The Clipboard
+Viewer will be installed and a shortcut will be placed in the
+Accessories menu under the Programs menu.
+<p>
+The CD-ROM version of Windows 95 and CD-ROM Extras for Microsoft
+Windows 95 Upgrade also includes the ClipBook Viewer, but the floppy
+disk version of Windows 95 does not. If you install Windows 95 over
+Windows for Workgroups version 3.1, and during Setup choose to not
+install the Windows 95 Clipboard Viewer, Windows 95 retains and will
+use the Windows for Workgroups ClipBook Viewer.
+<p>
+It is important to realize that both the Clipboard and ClipBook
+Viewer are only applications that access the Clipboard and its data,
+and are not the Clipboard themselves. This point is often a source of
+confusion for both Windows users and programmers alike.
+<p>
+
+<h2><A NAME="MICCLIP-DMYID.2">File Organization</A></h2>
+<p>
+Clipboard files use a very simple data format, but can be quite
+complicated because they can store many types of data. The CLP file
+format begins with a header and is followed by a directory of one or
+more records that indicates the type and location of data within the
+Clipboard file. Following these records are the actual Clipboard data.
+(See Figure Microsoft Windows Clipboard-1.)
+<h4>Figure Microsoft Windows Clipboard-1: Basic layout of a CLP file</h4>
+<p>
+<img src="./msclip01.gif" alt="[Graphic: Figure Microsoft Windows Clipboard-1]">
+<p>
+There will be one section of data per record.
+The standard Clipboard data formats are listed in Table Microsoft
+Windows Clipboard-1.
+<p>
+<table>
+<caption>Table Microsoft Windows Clipboard-1: Standard Clipboard Data Formats</caption>
+<tr>
+  <th align=left>Data Format</th>
+  <th align=left>Format ID</th>
+  <th align=left>Description</th>
+</tr>
+<tr>
+  <td align=left>TEXT</td>
+  <td align=left>0x0001</td>
+  <td align=left>ANSI text</td>
+</tr>
+<tr>
+  <td align=left>BITMAP</td>
+  <td align=left>0x0002</td>
+  <td align=left>Windows Device-Dependent Bitmap</td>
+</tr>
+<tr>
+  <td align=left>METAFILE</td>
+  <td align=left>0x0003</td>
+  <td align=left>Windows Clipboard Metafile</td>
+</tr>
+<tr>
+  <td align=left>SYLK</td>
+  <td align=left>0x0004</td>
+  <td align=left>Microsoft spreadsheet format</td>
+</tr>
+<tr>
+  <td align=left>DIF</td>
+  <td align=left>0x0005</td>
+  <td align=left>Soft Arts spreadsheet format</td>
+</tr>
+<tr>
+  <td align=left>TIFF</td>
+  <td align=left>0x0006</td>
+  <td align=left>Adobe Tag Image File Format</td>
+</tr>
+<tr>
+  <td align=left>OEMTEXT</td>
+  <td align=left>0x0007</td>
+  <td align=left>ASCII text</td>
+</tr>
+<tr>
+  <td align=left>DIB</td>
+  <td align=left>0x0008</td>
+  <td align=left>Windows Device-Independent Bitmap</td>
+</tr>
+<tr>
+  <td align=left>PALETTE</td>
+  <td align=left>0x0009</td>
+  <td align=left>Windows DIB Color Palette</td>
+</tr>
+<tr>
+  <td align=left>PENDATA</td>
+  <td align=left>0x000A</td>
+  <td align=left>Microsoft Pen Windows data</td>
+</tr>
+<tr>
+  <td align=left>RIFF</td>
+  <td align=left>0x000B</td>
+  <td align=left>Microsoft Resource Interchange File Format</td>
+</tr>
+<tr>
+  <td align=left>WAVE</td>
+  <td align=left>0x000C</td>
+  <td align=left>Microsoft Audio File Format</td>
+</tr>
+<tr>
+  <td align=left>UNICODETEXT</td>
+  <td align=left>0x000D</td>
+  <td align=left>Unicode text (Windows NT only)</td>
+</tr>
+<tr>
+  <td align=left>ENHMETAFILE</td>
+  <td align=left>0x000E</td>
+  <td align=left>Windows Enhanced Metafile (Windows 95 and NT only)</td>
+</tr>
+<tr>
+  <td align=left>HDROP</td>
+  <td align=left>0x000F</td>
+  <td align=left>Double NULL-terminated list of strings (Windows 95 only)</td>
+</tr>
+<tr>
+  <td align=left>LOCALE</td>
+  <td align=left>0x0010</td>
+  <td align=left>Language and character set specifier (Windows 95 only)</td>
+</tr>
+</table>
+<p>
+Most of the native Windows data formats are supported by the
+Clipboard. The Clipboard is also capable of storing private or
+user-defined data formats (Table Microsoft Windows
+Metafile-2). Applications such as the
+Microsoft Windows Write word processor store a variety of private
+data formats using the Clipboard. You can also store any other file
+format as private data inside of a CLP file and read the file into
+the Clipboard using the Clipboard Viewer or your own Clipboard-aware
+application. Your application is then responsible for parsing and
+displaying the private data.
+<p>
+<table>
+<caption>Table Microsoft Windows Clipboard-2: Private Clipboard Data Formats</caption>
+<tr>
+  <th align=left>Data Formats</th>
+  <th align=left>Format ID</th>
+  <th align=left>Description</th>
+</tr>
+<tr>
+  <td align=left>OWNERDISPLAY</td>
+  <td align=left>0x0080</td>
+  <td align=left>Private data not displayable on the Clipboard</td>
+</tr>
+<tr>
+  <td align=left>DSPTEXT</td>
+  <td align=left>0x0081</td>
+  <td align=left>Display Text</td>
+</tr>
+<tr>
+  <td align=left>DSPBITMAP</td>
+  <td align=left>0x0082</td>
+  <td align=left>Display Bitmap</td>
+</tr>
+<tr>
+  <td align=left>DSPMETAFILEPICT</td>
+  <td align=left>0x0083</td>
+  <td align=left>Display Metafile Picture</td>
+</tr>
+<tr>
+  <td align=left>DSPENHMETAFILE</td>
+  <td align=left>0x008E</td>
+  <td align=left>Display Enhanced Metafile</td>
+</tr>
+<tr>
+  <td align=left>PRIVATEFIRST</td>
+  <td align=left>0x0200</td>
+  <td align=left>First Private Data Format</td>
+</tr>
+<tr>
+  <td align=left>PRIVATELAST</td>
+  <td align=left>0x02FF</td>
+  <td align=left>Last Private Data Format</td>
+</tr>
+<tr>
+  <td align=left>GDIOBJFIRST</td>
+  <td align=left>0x0300</td>
+  <td align=left>First Private Graphics Device Interface Object</td>
+</tr>
+<tr>
+  <td align=left>GDIOBJLAST</td>
+  <td align=left>0x03FF</td>
+  <td align=left>Last Private Graphics Device Interface Object</td>
+</tr>
+</table>
+<p>
+When a CLP file is read by a Clipboard viewer, the data of the first
+usable entry will be displayed. It is therefore necessary to store
+the most important data first in a CLP file. For example, you might
+store the same piece of text in both the TEXT and OEMTEXT formats.
+Windows would use the TEXT data, and other applications that use only
+the ASCII character set would use the OEMTEXT data. The same text
+data could also be stored as RTF and UNICODETEXT in the same CLP
+file.
+<p>
+Not every flavor of Windows is capable of supporting every Clipboard
+data format. For example, ENHMETAFILE is not supported by Windows 3.<i>x</i>
+and UNICODETEXT is presently only supported by Windows NT. If Windows
+cannot find data in a usable format on the Clipboard, it will attempt
+to convert a recognized data format to one considered more suitable.
+For example, TEXT or OEMTEXT data may be converted to UNICODETEXT;
+METAFILEPICT to ENHMETAFILE; BITMAP to DIB, and DIB to PALETTE.
+Unrecognized formats are ignored and not displayed by the viewers.
+<p>
+<h2><A NAME="MICCLIP-DMYID.3">File Details</A></h2>
+<p>
+The CLP header is four bytes in length and has the following format:
+<pre>
+typedef struct _ClpHeader
+{
+    WORD FileId;        /* File identifier (always 3C50h) */
+    WORD FormatCount;   /* Number of records in directory */
+} CLPHEADER;
+</pre>
+<p>
+FileId is used to identify a CLP file. This value is always 3C50h.
+<p>
+FormatCount is the number of record entries in the format directory.
+<p>
+<h3><A NAME="MICCLIP-DMYID.3.1">Clipboard Records</A></h3>
+<p>
+Following the header is one or more records that indicate the type
+and location of data within the Clipboard file. The number of records
+is specified by the FormatCount field in the header. Each record may
+be from 11 to 89 bytes in length and has the following format:
+<pre>
+typedef struct _FormatRecord
+{
+    WORD  FormatId;       /* Format Identifier */
+    DWORD DataLength;     /* Number of bytes in the data */
+    DWORD DataOffset;     /* Offset of the data in the file */
+    BYTE  FormatName[];   /* Format name */
+} FORMATRECORD;
+</pre>
+<p>
+FormatId identifies the type of data indicated by this record. Valid
+values for this field are listed in the Format ID columns of Tables
+Microsoft Windows Clipboard-1 and Microsoft Windows Clipboard-2.
+<p>
+DataLength specifies the length of the data in bytes.
+<p>
+DataOffset indicates the offset of the data within the Clipboard file.
+The offset is always calculated from the beginning of the file.
+<p>
+FormatName is a plain-text string that describes the name of the
+format. This string will be "Text" for TEXT data, "Bitmap" for BITMAP
+data, and so forth. Private data types, such as "Rich Text Format",
+will also be described. This string may be up to 78 characters in
+length and is always terminated with a NULL (0x00).
+<p>
+The format of an entire Clipboard file can be defined as such:
+<pre>
+typedef struct _ClipboardFormat
+{
+    CLPHEADER ClpHeader;
+    FORMATRECORD ClpRecords[ClpHeader.FormatCount];
+    BYTE Data[];
+} CLIPBOARDFORMAT;
+</pre>
+<p>
+
+<h3><A NAME="MICCLIP-DMYID.3.2">Clipboard Data</A></h3>
+<p>
+The CLP format supports a bewildering variety of data formats. Most of
+these formats are documented as separate file formats described
+elsewhere in this book. Following is a description of the format data
+types listed in Tables Microsoft Windows Clipboard-1 and Microsoft
+Windows Clipboard-2.
+<p>
+TEXT is one or more strings of 8-bit ANSI characters. Each string is
+terminated by a carriage return (0x0D) and a line feed (0x0A). A NULL
+(0x00) byte indicates the end of the TEXT data. The ANSI character set
+is the default character set used by Windows.
+<p>
+BITMAP is a Microsoft Device-Dependent Bitmap (DDB). Refer to the
+<a href="gffse:/format.micbmp">Microsoft Windows Bitmap</a>
+format article for more information on the DDB format.
+<p>
+METAFILE is a standard Windows Metafile, but is preceded by an
+additional header used by the Clipboard. Refer to the
+<a href="gffse:/format.micmeta">Microsoft Windows Metafile</a>
+format article for the format of the Clipboard
+Metafile.
+<p>
+SYLK is the Microsoft Symbolic Link data format used by Microsoft
+Excel, Chart, and Multiplan to store spreadsheet data. The SYLK data
+is stored as ASCII text with each line terminated with a carriage
+return and line feed. Refer to the
+<a href="gffse:/format.micsylk">Microsoft SYLK</a>
+file format article for more information on the SYLK format.
+<p>
+DIF is the Software Arts Data Interchange Format used to store
+spreadsheet data. The DIF data is stored as ASCII text with each line
+terminated with a carriage return and line feed. Refer to the
+<a href="gffse:/format.lotusdif">Lotus DIF</a> file format article
+for more information on the DIF format. 
+<p>
+TIFF is the Tag Image File Format created by Aldus, Hewlett-Packard,
+and others, and is now administered by Adobe Systems. Refer to the
+<a href="gffse:/format.tiff">Tag Image File Format</a> article
+for further information on TIFF.
+<p>
+OEMTEXT is one or more strings of 7-bit ASCII characters. Each string
+is terminated by a carriage return (0x0D) and a line feed (0x0A). A
+NULL (0x00) byte indicates the end of the OEMTEXT data. The ASCII
+character set is the default character set used by MS-DOS.
+<p>
+DIB is a Microsoft Device-Independent Bitmap (DIB). Refer to the
+<a href="gffse:/format.micbmp">Microsoft Windows Bitmap</a> format
+article for more information on the DIB format.
+<p>
+PALETTE is a DIB color palette. Refer to the
+<a href="gffse:/format.micbmp">Microsoft Windows Bitmap</a>
+format article for more information on the DIB color palettes.
+<p>
+RIFF is the Microsoft Resource Interchange File Format. This is
+Microsoft's "store anything" multimedia file format. Refer to the
+<a href="gffse:/format.micriff">Microsoft RIFF</a> article
+for more information.
+<p>
+WAVE is the Microsoft Waveform audio file format (.wav files). A wave
+file is nothing more than a RIFF file that stores only digital audio
+data.
+<p>
+UNICODETEXT is one or more strings of 16-bit Unicode characters. Each
+string is terminated by a carriage return (0x000D) and a line feed
+(0x000A). A NULL (0x0000) byte indicates the end of the UNICODETEXT
+data. The Unicode character set is the default character set used by
+Windows NT and Win32.
+<p>
+ENHMETAFILE is an Enhanced Windows Metafile found on Win32 systems.
+Refer to the <a href="gffse:/format.micmeta">Microsoft Windows
+Metafile</a> format article for the format
+of the Enhanced Metafile.
+<p>
+OWNERDISPLAY is private data that is not recognized by the Clipboard,
+and is therefore not displayed by the Clipboard Viewer. The
+FormatName field of this data's record should yield a clue as to the
+format of the data.
+<p>
+DSPTEXT is a collection of private text. This data is stored using the
+same format as the TEXT format, and will be displayed as text, but is
+not available via the TEXT format ID.
+<p>
+DSPBITMAP is a collection of private text. This data is stored using
+the same format as the BITMAP format, and will be displayed as text,
+but is not retrievable using the BITMAP format ID.
+<p>
+DSPMETAFILEPICT is a collection of private text. This data is stored
+using the same format as the METAFILEPICT format, and will be
+displayed as text, but is not retrievable using the METAFILEPICT
+format ID.
+<p>
+DSPENHMETAFILE is a collection of private text. This data is stored
+using the same format as the ENHMETAFILE format, and will be
+displayed as text, but is not retrievable using the ENHMETAFILE
+format ID.
+<p>
+GDIOBJFIRST and GDIOBJLAST are a range of reserved values use to
+register private GDI objects. GDI objects include brushes, pens,
+palettes, and fonts. Under Windows the object is created first in
+memory and then saved to the Clipboard using the SetClipboardData()
+functions call. The handle of the GDI object and a value in the
+range of GDIOBJFIRST and GDIOBJLAST (inclusive) are passed to the
+function.
+<p>
+PRIVATEFIRST and PRIVATELAST are a range of reserved values used to
+register private data formats. There is no official registration of 
+private data format numbers, so your reader application needs to both
+recognize this value and the FormatName string to properly identify
+the private data.
+<p>
+For example, let's say you want to import a 32K IFF file into your
+application through the Clipboard. You might construct a CLP file
+with a single record and containing the IFF file data:
+<pre>
+typedef struct _PrivateIffFormat
+{
+    WORD  FileId;           /* 0x3C50 */
+    WORD  FormatCount;      /* 0x0001 */
+    WORD  FormatId;         /* 0x0200 */
+    DWORD DataLength;       /* 0x00007FFF */
+    DWORD DataOffset;       /* 0x00000026 */
+    BYTE  FormatName[];     /* "Interchange File Format\0" */
+    BYTE  Data[];           /* The entire IFF file */
+} PRIVATEIFFFORMAT;
+</pre>
+<p>
+In this example we see a CLP file that contains a single record
+describing a private format with an ID value of 0x200. The data is 32K
+in size and begins 39 bytes into the file. Once this file has been
+read into the Clipboard the IFF file data may be read and parsed by
+any application that can access the Clipboard.
+<p>
+
+<h2><A NAME="MICCLIP-DMYID.4">For Further Information</A></h2>
+<p>
+There is no official CLP file format specification. The Clipboard
+File Format and Clipboard management functions are described in
+detail in:
+<blockquote>
+<p><i>Microsoft Windows Programmer's Reference</i>, Volumes 2 and 4, Microsoft Press, Redmond, WA, 1990.
+</blockquote>
+<p>
+The Microsoft Developers Network (MSDN) distributes several files
+containing information on the CLP format. These files may be found on
+the MSDN CD, or on the Microsoft Web site at:
+<blockquote>
+<i>http://www.microsoft.com/developr/MSDN/</i>
+</blockquote>
+<p>
+
+<hr>
+<p>
+<A HREF="gffse:/format.micbmp"><img src="../../images/txtpreva.gif"></A>
+<A HREF="gffse:/format.micmeta"><img src="../../images/txtnexta.gif"></A>
+<A HREF="../book.htm"><img src="../../images/txtupa.gif"></A>
+<a href="../bookidx.htm"><img src="../../images/txttoidx.gif"></a>
+<br>
+<a href="../booktoc.htm"><img src="../../images/btntoc.gif"></a>
+<a href="../book/glossary.htm"><img src="../../images/btnglos.gif"></a>
+<a href="../main.htm"><img src="../../images/btnmain.gif"></a>
+<a href="gffse:/page.formats"><img src="../../images/btnfmt.gif"></a>
+<a href="../software.htm"><img src="../../images/btnsoft.gif"></a>
+<a href="../internet.htm"><img src="../../images/btninet.gif"></a>
+<a href="../book.htm"><img src="../../images/btnbook.gif"></a>
+<P>
+Copyright &copy; 1996, 1994 O'Reilly &amp; Associates, Inc.  All Rights Reserved.
+<p>
+</body>
+</html>

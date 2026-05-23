@@ -1,0 +1,72 @@
+<head>
+<title>META_CREATEPENINDIRECT</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_CREATEPENINDIRECT
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+HPEN32 CreatePenIndirect(const LOGPEN32 *pen);
+
+typedef struct tagLOGPEN
+{
+	UINT        lopnStyle;
+	POINT       lopnWidth;
+	COLORREF    lopnColor;
+} LOGPEN;
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+<TR>
+<TD>0</TD>
+<TD>lopnStyle</TD>
+</TR>
+<TR>
+<TD>1</TD>
+<TD>lopnWidth</TD>
+</TR>
+<TR>
+<TD>2</TD>
+<TD rowspan=2>lopnColor</TD>
+</TR>
+<TR>
+<TD>3</TD>
+</TR>
+</TABLE>
+lopnColor is the color of the pen, lopnWidth is the width of the pen, if the pen's
+width is > 1 but the lopnStyle is not solid, then lopnStyle is ignored and set to 
+solid anyway.<br>
+lopnStyle can be one of 
+PS_SOLID,            
+PS_DASH,             
+PS_DOT,              
+PS_DASHDOT,          
+PS_DASHDOTDOT,       
+PS_NULL,             
+PS_INSIDEFRAME,      
+PS_USERSTYLE,        
+PS_ALTERNATE        . Check out the source for that they actually mean. Theres also
+a set of flags and masks that can be found in lopnStyle as well that set the end and join styles
+of lines drawn with a pen, they are
+PS_STYLE_MASK,
+PS_ENDCAP_ROUND,
+PS_ENDCAP_SQUARE,
+PS_ENDCAP_FLAT,
+PS_ENDCAP_MASK,
+PS_JOIN_ROUND,
+PS_JOIN_BEVEL,
+PS_JOIN_MITER,
+PS_JOIN_MASK,
+PS_COSMETIC, 
+PS_GEOMETRIC,
+PS_TYPE_MASK, again check out the source to figure these out.<p>
+This operation adds an entry for itself in the object list.
+
+
+<p><a href="support.html">back</a><p>
+</body>

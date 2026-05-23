@@ -1,0 +1,58 @@
+<head>
+<title>META_CREATEBRUSHINDIRECT</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_CREATEBRUSHINDIRECT
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+HBRUSH32 CreateBrushIndirect(const LOGBRUSH32 *brush);
+
+typedef struct tagLOGBRUSH
+{
+	UINT        lbStyle;
+	COLORREF    lbColor;
+	LONG        lbHatch;
+} LOGBRUSH;
+</pre>
+<h1>DESCRIPTION</h1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+<TR>
+<TD>0</TD>
+<TD>lbStyle</TD>
+</TR>
+<TR>
+<TD>1</TD>
+<TD rowspan=2>lbColor</TD>
+</TR>
+<TR>
+<TD>2</TD>
+</TR>
+<TR>
+<TD>3</TD>
+<TD>lbHatch</TD>
+</TR>
+</TABLE>
+
+lbColor is the color of the brush, lbStyle can be one of
+BS_SOLID,BS_NULL & BS_HATCHED, there are others, but i dont think they can
+show up in metafiles<p>
+if lbStyle is not hatched then lbHatch is ignored, otherwise lbHatch is one
+of
+HS_HORIZONTAL,
+HS_VERTICAL,  
+HS_FDIAGONAL, 
+HS_BDIAGONAL, 
+HS_CROSS,   
+HS_DIAGCROSS. See the source for details of these.<p>
+This operation adds an entry for itself in the object list.
+
+
+
+<p><a href="support.html">back</a><p>
+</body>

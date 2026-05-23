@@ -1,0 +1,389 @@
+<html>
+<title>
+Window Metafile (wmf) Reference.
+</title>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>Window Metafile (wmf) Reference</h1>
+<table>
+<tr>
+<td colspan=3>METAFILE OPERAND</td>
+<td colspan=2>
+SUPPORTED
+</td>
+</tr>
+<tr>
+<td colspan=3>
+</td>
+<td>
+X version
+</td>
+<td>
+gd (gif) version
+</td>
+</tr>
+<tr>
+<td>
+#define </td><td><a href="SetBkColor.html">META_SETBKCOLOR</a>              </td><td>0x0201</tr>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetBkMode.html">META_SETBKMODE</a>               </td><td>0x0102</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetMapMode.html">META_SETMAPMODE</a>              </td><td>0x0103</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetROP2.html">META_SETROP2</a>                 </td><td>0x0104</td>
+<td>X</td>
+<td>-</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetPolyFillMode.html">META_SETPOLYFILLMODE</a>         </td><td>0x0106</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>-</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetStretchBltMode.html">META_SETSTRETCHBLTMODE</a>       </td><td>0x0107</td>
+<td>-<sup><a href="#3">3</a></sup></td>
+<td>-<sup><a href="#3">3</a></sup></td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetTextColor.html">META_SETTEXTCOLOR</a>            </td><td>0x0209</td>
+<td>X</td>
+<td>X</td>
+</tr>
+
+<tr><td>
+#define </td><td><a href="SetTextCharacterExtra.html">META_SETTEXTCHAREXTRA</a>        </td><td>0x0108</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>-</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetWindowOrg.html">META_SETWINDOWORG</a>            </td><td>0x020B</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetWindowExt.html">META_SETWINDOWEXT</a>            </td><td>0x020C</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetViewportOrg.html">META_SETVIEWPORTORG</a>          </td><td>0x020D</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>X<sup><a href="#4">4</a></sup></td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetViewportExt.html">META_SETVIEWPORTEXT</a>          </td><td>0x020E</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>X<sup><a href="#4">4</a></sup></td>
+</tr>
+<tr><td>
+#define </td><td><a href="OffsetWindowOrg.html">META_OFFSETWINDOWORG</a>         </td><td>0x020F</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>X<sup><a href="#4">4</a></sup></td>
+</tr>
+<tr><td>
+#define </td><td><a href="ScaleWindowExt.html">META_SCALEWINDOWEXT</a>          </td><td>0x0410</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>X<sup><a href="#4">4</a></sup></td>
+</tr>
+<tr><td>
+#define </td><td><a href="OffsetViewportOrg.html">META_OFFSETVIEWPORTORG</a>       </td><td>0x0211</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>X<sup><a href="#4">4</a></sup></td>
+</tr>
+<tr><td>
+#define </td><td><a href="ScaleViewportExt.html">META_SCALEVIEWPORTEXT</a>        </td><td>0x0412</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>X<sup><a href="#4">4</a></sup></td>
+</tr>
+<tr><td>
+#define </td><td><a href="LineTo.html">META_LINETO</a>                  </td><td>0x0213</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="MoveTo.html">META_MOVETO</a>                  </td><td>0x0214</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="ExcludeClipRect.html">META_EXCLUDECLIPRECT</a>         </td><td>0x0415</td>
+<td>X</td>
+<td>-</td>
+</tr>
+<tr><td>
+#define </td><td><a href="IntersectClipRect.html">META_INTERSECTCLIPRECT</a>       </td><td>0x0416</td>
+<td>X</td>
+<td>-</td>
+</tr>
+<tr><td>
+#define </td><td><a href="Arc.html">META_ARC</a>                     </td><td>0x0817</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="Ellipse.html">META_ELLIPSE</a>                 </td><td>0x0418</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="FloodFill.html">META_FLOODFILL</a>               </td><td>0x0419</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>X<sup><a href="#4">4</a></sup></td>
+</tr>
+<tr><td>
+#define </td><td><a href="Pie.html">META_PIE</a>                     </td><td>0x081A</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="Rectangle.html">META_RECTANGLE</a>               </td><td>0x041B</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="RoundRect.html">META_ROUNDRECT</a>               </td><td>0x061C</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="PatBlt.html">META_PATBLT</a>                  </td><td>0x061D</td>
+<td>X<sup><a href="#4">4</a><a href="#6">6</a></sup></td>
+<td>X<sup><a href="#4">4</a><a href="#6">6</a></sup></td>
+</tr>
+<tr><td>
+#define </td><td><a href="SaveDC.html">META_SAVEDC</a>                  </td><td>0x001E</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetPixel.html">META_SETPIXEL</a>                </td><td>0x041F</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="OffsetClipRgn.html">META_OFFSETCLIPRGN</a>           </td><td>0x0220</td>
+<td>X</td>
+<td>-</td>
+</tr>
+<tr><td>
+#define </td><td><a href="Polygon.html">META_POLYGON</a>                 </td><td>0x0324</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="Polyline.html">META_POLYLINE</a>                </td><td>0x0325</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="esc.html">META_ESCAPE</a>                  </td><td>0x0626</td>
+<td>-<sup><a href="#5">5</a></sup></td>
+<td>-<sup><a href="#5">5</a></sup></td>
+</tr>
+<tr><td>
+#define </td><td><a href="RestoreDC.html">META_RESTOREDC</a>               </td><td>0x0127</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="FillRgn.html">META_FILLREGION</a>              </td><td>0x0228</td>
+<td>X<sup></td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="FrameRgn.html">META_FRAMEREGION</a>             </td><td>0x0429</td>
+<td>X<sup></td>
+<td>-</td>
+</tr>
+<tr><td>
+#define </td><td><a href="InvertRgn.html">META_INVERTREGION</a>            </td><td>0x012A</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>-</td>
+</tr>
+<tr><td>
+#define </td><td><a href="PaintRgn.html">META_PAINTREGION</a>             </td><td>0x012B</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SelectClipRgn.html">META_SELECTCLIPREGION</a>        </td><td>0x012C</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>-</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SelectObject.html">META_SELECTOBJECT</a>            </td><td>0x012D</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetTextAlign.html">META_SETTEXTALIGN</a>            </td><td>0x012E</td>
+<td>X</td>
+<td>_</td>
+</tr>
+<tr><td>
+#define </td><td><a href="Chord.html">META_CHORD</a>                   </td><td>0x0830</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetMapperFlags.html">META_SETMAPPERFLAGS</a>          </td><td>0x0231</td>
+<td>-<sup><a href="#3">3</a></sup></td>
+<td>-<sup><a href="#3">3</a></sup></td>
+</tr>
+
+<tr><td>
+#define </td><td><a href="TextOut.html">META_TEXTOUT</a>                 </td><td>0x0521</td>
+</tr>
+<tr><td>
+#define </td><td><a href="ExtTextOut.html">META_EXTTEXTOUT</a>              </td><td>0x0a32</td>
+<td>X</td>
+<td></td>
+</tr>
+<tr><td>
+#define </td><td><a href="SetDIBitsToDevice.html">META_SETDIBTODEV</a>             </td><td>0x0d33</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>X<sup><a href="#4">4</a></sup></td>
+</tr>
+<tr><td>
+#define </td><td><a href="PolyPolygon.html">META_POLYPOLYGON</a>             </td><td>0x0538</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="DibBitBlt.html">META_DIBBITBLT</a>               </td><td>0x0940</td>
+<td>X<sup><a href="#7">7</a></sup></td>
+<td>-</td>
+</tr>
+<tr><td>
+#define </td><td><a href="DibStretchBlt.html">META_DIBSTRETCHBLT</a>           </td><td>0x0b41</td>
+<td>X<sup><a href="#7">7</a></sup></td>
+<td>-</td>
+</tr>
+<tr><td>
+#define </td><td><a href="ExtFloodFill.html">META_EXTFLOODFILL</a>            </td><td>0x0548</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>X<sup><a href="#4">4</a></sup></td>
+</tr>
+<tr><td>
+#define </td><td><a href="DeleteObject.html">META_DELETEOBJECT</a>            </td><td>0x01f0</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="CreatePenIndirect.html">META_CREATEPENINDIRECT</a>       </td><td>0x02FA</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td>META_CREATEFONTINDIRECT      </td><td>0x02FB</td>
+</tr>
+<tr><td>
+#define </td><td><a href="CreateBrushIndirect.html">META_CREATEBRUSHINDIRECT</a>     </td><td>0x02FC</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr><td>
+#define </td><td><a href="CreateRegion.html">META_CREATEREGION</a>            </td><td>0x06FF</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>X<sup><a href="#4">4</a></sup></td>
+</tr>
+
+<tr><td>
+#define </td><td><a href="StretchDib.html">META_STRETCHDIB</a>              </td><td>0x0f43</td>
+<td>X</td>
+<td>X</td>
+</tr>
+
+<tr><td>
+#define </td><td>META_SETTEXTJUSTIFICATION    </td><td>0x020A</td>
+<td>X<sup><a href="#4">4</a></sup></td>
+<td>-</td>
+</tr>
+<tr>
+<td colspan=5>
+<h3>These opcodes are not seen in the wild, so realworld instances of these are welcome, they all appear
+to get translated into the equivalent that is prefixed with DIB</h3>
+</td>
+</tr>
+<tr><td>
+#define </td><td>META_BITBLT                  </td><td>0x0922</td>
+</tr>
+<tr><td>
+#define </td><td>META_STRETCHBLT              </td><td>0x0B23</td>
+<td>X<sup><a href="#7">7</a></sup></td>
+<td>-</td>
+</tr>
+
+<tr><td>
+#define </td><td>META_CREATEPATTERNBRUSH      </td><td>0x01F9</td>
+</tr>
+<tr>
+<td colspan=5>
+<h3>These opcodes are all related to palettes, and i dont think they matter at all, information to the contrary is
+welcome, these are only implemented to the degree that they dont mess up object counting</h3>
+</td>
+</tr>
+
+<tr><td>
+#define </td><td>META_SELECTPALETTE           </td><td>0x0234</td>
+</tr>
+<tr><td>
+#define </td><td>META_REALIZEPALETTE          </td><td>0x0035</td>
+</tr>
+<tr><td>
+#define </td><td>META_ANIMATEPALETTE          </td><td>0x0436</td>
+</tr>
+<tr><td>
+#define </td><td>META_SETPALENTRIES           </td><td>0x0037</td>
+</tr>
+<tr><td>
+#define </td><td>META_RESIZEPALETTE           </td><td>0x0139</td>
+</tr>
+<tr><td>
+#define </td><td>META_CREATEPALETTE           </td><td>0x00f7</td>
+</tr>
+<tr>
+<td colspan=5>
+<h3>These opcodes are unimplemented, for the reason that i dont know what they are, no known documentation</h3>
+</td>
+</tr>
+<tr><td>
+#define </td><td><a href="unknown.html">META_SETRELABS</a>               </td><td>0x0105</td>
+<td>?<sup><a href="#2">2</a></sup></td>
+<td>?<sup><a href="#2">2</a></sup></td>
+</tr>
+</table>
+
+
+<p>
+<p>
+<p>
+
+<sup><a name="2">2</a></sup>
+What on earth is this ?<br>
+<sup><a name="3">3</a></sup>
+Personally considered unimportant, to be dealt with at my leisure.<br>
+<sup><a name="4">4</a></sup>
+Untested<br>
+<sup><a name="5">5</a></sup>
+Has no effect on the output of the wmf file.<br>
+<sup><a name="6">6</a></sup>
+Full support pending palette handling.<br>
+<sup><a name="7">7</a></sup>
+Uses ROP, see <a href="rop.html">ROP SUPPORT</a>.<br>
+<p>
+<hr>
+<a href="mailto:Caolan.McNamara@ul.ie">Caolan.McNamara@ul.ie</a><br>
+<a href="http://www.csn.ul.ie/~caolan/docs/libwmf.html">libwmf home</a><br>
+
+
+</body>
+</html>

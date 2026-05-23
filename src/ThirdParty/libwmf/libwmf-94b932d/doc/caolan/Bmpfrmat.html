@@ -1,0 +1,529 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>BMP Format</TITLE>
+<META NAME="subject" CONTENT="Windows Bitmap File Format Specifications">
+<META NAME="Major Version" CONTENT="1">
+<META NAME="Minor Version" CONTENT="0">
+<META NAME="Template" CONTENT="C:\MSOffice\Templates\c3word60.dot">
+</HEAD>
+<BODY>
+
+<P ALIGN="CENTER"><CENTER><TABLE BORDER CELLSPACING=1 CELLPADDING=9 WIDTH=555 ALIGN="LEFT" HSPACE=15>
+<TR><TD WIDTH="22%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=4><P ALIGN="JUSTIFY">Title: </B></FONT></TD>
+<TD WIDTH="78%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY"></FONT><I><FONT FACE="Book Antiqua" SIZE=4>BMP Format</I></FONT></TD>
+</TR>
+<TR><TD WIDTH="22%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=4><P ALIGN="JUSTIFY">Subject: </B></FONT></TD>
+<TD WIDTH="78%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY"></FONT><I><FONT FACE="Book Antiqua" SIZE=4>Windows Bitmap File Format Specifications</I></FONT></TD>
+</TR>
+<TR><TD WIDTH="22%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=4><P ALIGN="JUSTIFY">Author: </B></FONT></TD>
+<TD WIDTH="78%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY"></FONT><I><FONT FACE="Book Antiqua" SIZE=4>Wim Wouters</I></FONT></TD>
+</TR>
+<TR><TD WIDTH="22%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=4><P ALIGN="JUSTIFY">Version:</B></FONT></TD>
+<TD WIDTH="78%" VALIGN="TOP">
+<I><FONT FACE="Book Antiqua" SIZE=4><P ALIGN="JUSTIFY">V1.1</I></FONT></TD>
+</TR>
+</TABLE>
+</CENTER></P>
+
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">&nbsp;</P>
+</FONT><B><FONT FACE="Book Antiqua" SIZE=6><P ALIGN="JUSTIFY"><A NAME="_Toc381201080">Table of Contents</A></P>
+</FONT><U><FONT FACE="Book Antiqua" SIZE=4><P ALIGN="JUSTIFY">Table of Contents&#9;
+<P>Introduction&#9;</P>
+<P>Bitmap File Format&#9;</P>
+</U></FONT><FONT FACE="Book Antiqua" SIZE=3><P>General&#9;</P>
+<P>BMP Contents&#9;</P>
+</FONT><U><FONT FACE="Book Antiqua" SIZE=4><P>Field Details&#9;</P>
+</U></FONT><FONT FACE="Book Antiqua" SIZE=3><P>Height Field&#9;</P>
+<P>Bits Per Pixel Field&#9;</P>
+<P>Compression Field&#9;</P>
+<P>Colors Field&#9;</P>
+<P>Important Colors Field&#9;</P>
+</FONT><FONT FACE="Book Antiqua" SIZE=6><P ALIGN="JUSTIFY">&nbsp;</P><A NAME="_Toc381201081">Introduction</A></P>
+</B></FONT><FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">This document describes the Microsoft Windows and IBM OS/2 picture bitmap files, called Bitmaps or BMP files. Most of the descriptions of the BMP file concentrate on the Microsoft Windows BMP structures like </FONT><FONT FACE="Courier New" SIZE=3>BMPINFOHEADER</FONT><FONT FACE="Book Antiqua" SIZE=3> and </FONT><FONT FACE="Courier New" SIZE=3>BMPCOREINFO</FONT><FONT FACE="Book Antiqua" SIZE=3> , but only a few describe the file contents on byte level. This information is therefor only intended to be used in applications where direct reading and writing of a BMP file is required.</P>
+</FONT><B><FONT FACE="Book Antiqua" SIZE=6><P ALIGN="JUSTIFY"><A NAME="_Toc381201082">Bitmap File Format</A></P>
+</B></FONT><FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">The following chapters contain the detailed information on the contents of the BMP file. First more general information will be given regarding the byte order and file alignment. The second chapter will concentrate on the byte-level contents of a BMP file. The third chapter will elaborate on this chapter and explain some of the concepts - like compression - and/or values in detail.</P>
+</FONT><B><FONT FACE="Book Antiqua" SIZE=5><P><A NAME="_Toc381201083">General</A></P>
+</B></FONT><FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">The BMP file has been created by Microsoft and IBM and is therefor very strictly bound to the architecture of the main hardware platform that both companies support: the IBM compatible PC. This means that all values stored in the BMP file are in the Intel format, sometimes also called the Little Endian format because of the byte order that an Intel processor uses internally to store values.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">The BMP files are the way, Windows stores bit mapped images. The BMP image data is bit packed but every line must end on a dword boundary - if that’s not the case, it must be padded with zeroes. BMP files are stored bottom-up, that means that the first scan line is the bottom line. </P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">The BMP format has four incarnations, two under Windows (new and old) and two under OS/2, all are described here.</P>
+</FONT><B><FONT FACE="Book Antiqua" SIZE=5><P><A NAME="_Toc381201084">BMP Contents</A></P>
+</B></FONT><FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">The following table contains a description of the contents of the BMP file. For every field, the file offset, the length and the contents will be given. For a more detailed discussion, see the following chapters.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P></FONT>
+<TABLE BORDER CELLSPACING=2 BORDERCOLOR="#000000" CELLPADDING=9 WIDTH=821>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=3 COLOR="#808080"><P ALIGN="JUSTIFY">Offset</B></FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=3 COLOR="#808080"><P ALIGN="JUSTIFY">Field</B></FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=3 COLOR="#808080"><P ALIGN="JUSTIFY">Size</B></FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=3 COLOR="#808080"><P ALIGN="JUSTIFY">Contents</B></FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">0000h</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Identifier</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">2 bytes</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">The characters identifying the bitmap. The following entries are possible:</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">‘BM’ - Windows 3.1x, 95, NT, …</P>
+<P ALIGN="JUSTIFY">‘BA’ - OS/2 Bitmap Array</P>
+<P ALIGN="JUSTIFY">‘CI’ - OS/2 Color Icon</P>
+<P ALIGN="JUSTIFY">‘CP’ - OS/2 Color Pointer</P>
+<P ALIGN="JUSTIFY">‘IC’ - OS/2 Icon</P>
+<P ALIGN="JUSTIFY">‘PT’ - OS/2 Pointer</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">0002h</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">File Size</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 dword</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Complete file size in bytes.</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">0006h</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Reserved</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 dword</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Reserved for later use.</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">000Ah</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Bitmap Data Offset</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 dword</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Offset from beginning of file to the beginning of the bitmap data.</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">000Eh</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Bitmap Header Size</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 dword</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Length of the Bitmap Info Header used to describe the bitmap colors, compression, … The following sizes are possible:</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">28h - Windows 3.1x, 95, NT, …</P>
+<P ALIGN="JUSTIFY">0Ch - OS/2 1.x</P>
+<P ALIGN="JUSTIFY">F0h - OS/2 2.x</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">0012h</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Width</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 dword</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Horizontal width of bitmap in pixels.</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">0016h</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Height</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 dword</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Vertical height of bitmap in pixels.</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">001Ah</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Planes</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 word</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Number of planes in this bitmap.</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">001Ch</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Bits Per Pixel</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 word</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Bits per pixel used to store palette entry information. This also identifies in an indirect way the number of possible colors. Possible values are:</P>
+<P ALIGN="JUSTIFY">1 - Monochrome bitmap</P>
+<P ALIGN="JUSTIFY">4 - 16 color bitmap</P>
+<P ALIGN="JUSTIFY">8 - 256 color bitmap</P>
+<P ALIGN="JUSTIFY">16 - 16bit (high color) bitmap</P>
+<P ALIGN="JUSTIFY">24 - 24bit (true color) bitmap</P>
+<P ALIGN="JUSTIFY">32 - 32bit (true color) bitmap</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">001Eh</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Compression</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 dword</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Compression specifications. The following values are possible:</P>
+<P ALIGN="JUSTIFY">0 - none (Also identified by BI_RGB)</P>
+<P ALIGN="JUSTIFY">1 - RLE 8-bit / pixel (Also identified by BI_RLE4)</P>
+<P ALIGN="JUSTIFY">2 - RLE 4-bit / pixel (Also identified by BI_RLE8)</P>
+<P ALIGN="JUSTIFY">3 - Bitfields  (Also identified by BI_BITFIELDS)</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">0022h</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Bitmap Data Size</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 dword</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Size of the bitmap data in bytes. This number must be rounded to the next 4 byte boundary.</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">0026h</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">HResolution</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 dword</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Horizontal resolution expressed in pixel per meter.</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">002Ah</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">VResolution</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 dword</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Vertical resolution expressed in pixels per meter.</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">002Eh</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Colors</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 dword</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Number of colors used by this bitmap. For a 8-bit / pixel bitmap this will be 100h or 256.</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">0032h</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Important Colors</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1 dword</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Number of important colors. This number will be equal to the number of colors when every color is important.</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">0036h</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Palette</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">N * 4 byte</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">The palette specification. For every entry in the palette four bytes are used to describe the RGB values of the color in the following way:</P>
+<P ALIGN="JUSTIFY">1 byte for blue component</P>
+<P ALIGN="JUSTIFY">1 byte for green component</P>
+<P ALIGN="JUSTIFY">1 byte for red component</P>
+<P ALIGN="JUSTIFY">1 byte filler which is set to 0 (zero)</FONT></TD>
+</TR>
+<TR><TD WIDTH="10%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">0436h</FONT></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Bitmap Data</FONT></TD>
+<TD WIDTH="14%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">x bytes</FONT></TD>
+<TD WIDTH="61%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Depending on the compression specifications, this field contains all the bitmap data bytes which represent indices in the color palette.</FONT></TD>
+</TR>
+</TABLE>
+
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<B><I><P ALIGN="JUSTIFY">Note:</B> The following sizes were used in the specification above: </P>
+</I><P ALIGN="JUSTIFY">&nbsp;</P></FONT>
+<P ALIGN="LEFT"><TABLE BORDER CELLSPACING=2 BORDERCOLOR="#000000" CELLPADDING=9 WIDTH=282>
+<TR><TD WIDTH="30%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=3 COLOR="#808080"><P ALIGN="JUSTIFY">Size</B></FONT></TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=3 COLOR="#808080"><P ALIGN="JUSTIFY"># bytes</B></FONT></TD>
+<TD WIDTH="37%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=3 COLOR="#808080"><P ALIGN="JUSTIFY">Sign</B></FONT></TD>
+</TR>
+<TR><TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">char</FONT></TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1</FONT></TD>
+<TD WIDTH="37%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">signed</FONT></TD>
+</TR>
+<TR><TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">word</FONT></TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">2</FONT></TD>
+<TD WIDTH="37%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">unsigned</FONT></TD>
+</TR>
+<TR><TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">dword</FONT></TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">4</FONT></TD>
+<TD WIDTH="37%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">unsigned</FONT></TD>
+</TR>
+</TABLE>
+</P>
+
+<B><FONT FACE="Book Antiqua" SIZE=6><P ALIGN="JUSTIFY"><A NAME="_Toc381201085">Field Details</A></P>
+</B></FONT><FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Some of the fields require some more information. The following chapters will try to provide this information:</P>
+</FONT><B><FONT FACE="Book Antiqua" SIZE=5><P><A NAME="_Toc381201086">Height Field</A></P>
+</B></FONT><FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">The <I>Height</I> field identifies the height of the bitmap in pixels. In other words, it describes the number of scan lines of the bitmap. If this field is negative, indicating a top-down DIB, the <I>Compression</I> field must be either BI_RGB or BI_BITFIELDS.  Top-down DIBs cannot be compressed.</P>
+</FONT><B><FONT FACE="Book Antiqua" SIZE=5><P><A NAME="_Toc381201087">Bits Per Pixel Field</A></P>
+</B></FONT><FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">The <I>Bits Per Pixel</I> (BBP) field of the bitmap file determines the number of bits that define each pixel and the maximum number of colors in the bitmap.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+
+<UL>
+<B><P ALIGN="JUSTIFY"><LI>When this field is equal to 1.</LI></P></UL>
+
+</B><P ALIGN="JUSTIFY">&nbsp;</P><DIR>
+<DIR>
+
+<P ALIGN="JUSTIFY">The bitmap is monochrome, and the palette contains two entries. Each bit in the bitmap array represents a pixel. If the bit is clear, the pixel is displayed with the color of the first entry in the palette; if the bit is set, the pixel has the color of the second entry in the table.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">&nbsp;</P></DIR>
+</DIR>
+
+
+<UL>
+<B><P ALIGN="JUSTIFY"><LI>When this field is equal to 4.</LI></P></UL>
+
+</B><P ALIGN="JUSTIFY">&nbsp;</P><DIR>
+<DIR>
+
+<P ALIGN="JUSTIFY">The bitmap has a maximum of 16 colors, and the palette contains up to 16 entries. Each pixel in the bitmap is represented by a 4-bit index into the palette. For example, if the first byte in the bitmap is 1Fh, the byte represents two pixels. The first pixel contains the color in the second palette entry, and the second pixel contains the color in the sixteenth palette entry.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">&nbsp;</P></DIR>
+</DIR>
+
+
+<UL>
+<B><P ALIGN="JUSTIFY"><LI>When this field is equal to 8.</LI></P></UL>
+
+</B><P ALIGN="JUSTIFY">&nbsp;</P><DIR>
+<DIR>
+
+<P ALIGN="JUSTIFY">The bitmap has a maximum of 256 colors, and the palette contains up to 256 entries. In this case, each byte in the array represents a single pixel.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">&nbsp;</P></DIR>
+</DIR>
+
+
+<UL>
+<B><P ALIGN="JUSTIFY"><LI>When this field is equal to 16.</LI></P></UL>
+
+</B><P ALIGN="JUSTIFY">&nbsp;</P><DIR>
+<DIR>
+
+<P ALIGN="JUSTIFY">The bitmap has a maximum of 2^16 colors. If the <I>Compression</I> field of the bitmap file is set to BI_RGB, the <I>Palette</I> field does not contain any entries. Each word in the bitmap array represents a single pixel. The relative intensities of red, green, and blue are represented with 5 bits for each color component. The value for blue is in the least significant 5 bits, followed by 5 bits each for green and red, respectively. The most significant bit is not used.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">If the <I>Compression</I> field of the bitmap file is set to BI_BITFIELDS, the <I>Palette</I> field contains three dword color masks that specify the red, green, and blue components, respectively, of each pixel.  Each word in the bitmap array represents a single pixel.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<B><P ALIGN="JUSTIFY">Windows NT specific:</B> When the <I>Compression</I> field is set to BI_BITFIELDS, bits set in each dword mask must be contiguous and should not overlap the bits of another mask. All the bits in the pixel do not have to be used. </P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<B><P ALIGN="JUSTIFY">Windows 95 specific:</B> When the <I>Compression</I> field is set to BI_BITFIELDS, Windows 95 supports only the following 16bpp color masks: A 5-5-5 16-bit image, where the blue mask is 0x001F, the green mask is 0x03E0, and the red mask is 0x7C00; and a 5-6-5 16-bit image, where the blue mask is 0x001F, the green mask is 0x07E0, and the red mask is 0xF800.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">&nbsp;</P></DIR>
+</DIR>
+
+
+<UL>
+<B><P ALIGN="JUSTIFY"><LI>When this field is equal to 24.</LI></P></UL>
+
+</B><P ALIGN="JUSTIFY">&nbsp;</P><DIR>
+<DIR>
+
+<P ALIGN="JUSTIFY">The bitmap has a maximum of 2^24 colors, and the <I>Palette</I> field does not contain any entries. Each 3-byte triplet in the bitmap array represents the relative intensities of blue, green, and red, respectively, for a pixel.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">&nbsp;</P></DIR>
+</DIR>
+
+
+<UL>
+<B><P ALIGN="JUSTIFY"><LI>When this field is equal to 32.</LI></P></UL>
+
+</B><P ALIGN="JUSTIFY">&nbsp;</P><DIR>
+<DIR>
+
+<P ALIGN="JUSTIFY">The bitmap has a maximum of 2^32 colors. If the <I>Compression</I> field of the bitmap is set to BI_RGB, the <I>Palette</I> field does not contain any entries. Each dword in the bitmap array represents the relative intensities of blue, green, and red, respectively, for a pixel. The high byte in each dword is not used.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">If the <I>Compression</I> field of the bitmap is set to BI_BITFIELDS, the Palette field contains three dword color masks that specify the red, green, and blue components, respectively, of each pixel. Each dword in the bitmap array represents a single pixel.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<B><P ALIGN="JUSTIFY">Windows NT specific:</B> When the <I>Compression</I> field is set to BI_BITFIELDS, bits set in each dword mask must be contiguous and should not overlap the bits of another mask. All the bits in the pixel do not have to be used. </P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<B><P ALIGN="JUSTIFY">Windows 95 specific:</B> When the <I>Compression</I> field is set to BI_BITFIELDS, Windows 95 supports only the following 32bpp color mask: The blue mask is 0x000000FF, the green mask is 0x0000FF00, and the red mask is 0x00FF0000.</P></DIR>
+</DIR>
+
+</FONT><B><FONT FACE="Book Antiqua" SIZE=5><P><A NAME="_Toc381201088">Compression Field</A></P>
+</B></FONT><FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">The <I>Compression</I> field specifies the way the bitmap data is stored in the file. This information together with the <I>Bits Per Pixel</I> (<I>BPP</I>) field identifies the compression algorithm to follow.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">The following values are possible in this field:</P>
+<P ALIGN="JUSTIFY">&nbsp;</P></FONT>
+<TABLE BORDER CELLSPACING=2 BORDERCOLOR="#000000" CELLPADDING=9 WIDTH=821>
+<TR><TD WIDTH="18%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=3 COLOR="#808080"><P ALIGN="JUSTIFY">Value</B></FONT></TD>
+<TD WIDTH="82%" VALIGN="TOP">
+<B><FONT FACE="Book Antiqua" SIZE=3 COLOR="#808080"><P ALIGN="JUSTIFY">Meaning</B></FONT></TD>
+</TR>
+<TR><TD WIDTH="18%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">BI_RGB</FONT></TD>
+<TD WIDTH="82%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">An uncompressed format.</FONT></TD>
+</TR>
+<TR><TD WIDTH="18%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">BI_RLE4</FONT></TD>
+<TD WIDTH="82%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">An RLE format for bitmaps with 4 bits per pixel. The compression format is a two-byte format consisting of a count byte followed by two word-length color indices. For more information, see the following Remarks section.</FONT></TD>
+</TR>
+<TR><TD WIDTH="18%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">BI_RLE8</FONT></TD>
+<TD WIDTH="82%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">A run-length encoded (RLE) format for bitmaps with 8 bits per pixel. The compression format is a two-byte format consisting of a count byte followed by a byte containing a color index. For more information, see the following Remarks section.</FONT></TD>
+</TR>
+<TR><TD WIDTH="18%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">BI_BITFIELDS</FONT></TD>
+<TD WIDTH="82%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Specifies that the bitmap is not compressed and that the color table consists of three double word color masks that specify the red, green, and blue components, respectively, of each pixel. This is valid when used with 16- and 32- bits-per-pixel bitmaps.</FONT></TD>
+</TR>
+</TABLE>
+
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">When the Compression field is BI_RLE8, the bitmap is compressed by using a run-length encoding (RLE) format for an 8-bit bitmap. This format can be compressed in encoded or absolute modes. Both modes can occur anywhere in the same bitmap.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+
+<UL>
+<B><P ALIGN="JUSTIFY"><LI>Encoded mode consists of two bytes: </LI></P></UL>
+
+</B><P ALIGN="JUSTIFY">&nbsp;</P><DIR>
+<DIR>
+
+<P ALIGN="JUSTIFY">The first byte specifies the number of consecutive pixels to be drawn using the color index contained in the second byte. In addition, the first byte of the pair can be set to zero to indicate an escape that denotes an end of line, end of bitmap, or delta. The interpretation of the escape depends on the value of the second byte of the pair, which can be one of the following:</P>
+<P ALIGN="JUSTIFY">&nbsp;</P></DIR>
+</DIR>
+</FONT>
+<P ALIGN="RIGHT"><TABLE CELLSPACING=0 BORDER=0 CELLPADDING=9 WIDTH=753>
+<TR><TD WIDTH="9%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">0</FONT></TD>
+<TD WIDTH="91%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">End of line.</FONT></TD>
+</TR>
+<TR><TD WIDTH="9%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">1</FONT></TD>
+<TD WIDTH="91%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">End of bitmap.</FONT></TD>
+</TR>
+<TR><TD WIDTH="9%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">2</FONT></TD>
+<TD WIDTH="91%" VALIGN="TOP">
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">Delta. The two bytes following the escape contain unsigned values indicating the horizontal and vertical offsets of the next pixel from the current position.</FONT></TD>
+</TR>
+</TABLE>
+</P>
+
+<FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">&nbsp;</P>
+
+<UL>
+<B><P ALIGN="JUSTIFY"><LI>Absolute mode.</LI></P></UL>
+
+</B><P ALIGN="JUSTIFY">&nbsp;</P><DIR>
+<DIR>
+
+<P ALIGN="JUSTIFY">The first byte is zero and the second byte is a value in the range 03H through FFH. The second byte represents the number of bytes that follow, each of which contains the color index of a single pixel. When the second byte is 2 or less, the escape has the same meaning as in encoded mode. In absolute mode, each run must be aligned on a word boundary.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">&nbsp;</P></DIR>
+</DIR>
+
+<P ALIGN="JUSTIFY">The following example shows the hexadecimal values of an 8-bit compressed bitmap.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+</FONT><FONT FACE="Courier New" SIZE=3><P ALIGN="JUSTIFY">03 04 05 06 00 03 45 56 67 00 02 78 00 02 05 01 02 78 00 00 09 1E 00 01</P>
+</FONT><FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">This bitmap would expand as follows (two-digit values represent a color index for a single pixel):</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+</FONT><FONT FACE="Courier New" SIZE=3><P ALIGN="JUSTIFY">04 04 04</P>
+<P ALIGN="JUSTIFY">06 06 06 06 06</P>
+<P ALIGN="JUSTIFY">45 56 67</P>
+<P ALIGN="JUSTIFY">78 78</P>
+<P ALIGN="JUSTIFY">move current position 5 right and 1 down</P>
+<P ALIGN="JUSTIFY">78 78</P>
+<P ALIGN="JUSTIFY">end of line</P>
+<P ALIGN="JUSTIFY">1E 1E 1E 1E 1E 1E 1E 1E 1E</P>
+<P ALIGN="JUSTIFY">end of RLE bitmap</P>
+</FONT><FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">When the Compression field is BI_RLE4, the bitmap is compressed by using a run-length encoding format for a 4-bit bitmap, which also uses encoded and absolute modes:</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+
+<UL>
+<B><P ALIGN="JUSTIFY"><LI>In encoded mode.</LI></P></UL>
+
+</B><P ALIGN="JUSTIFY">&nbsp;</P><DIR>
+<DIR>
+
+<P ALIGN="JUSTIFY">The first byte of the pair contains the number of pixels to be drawn using the color indices in the second byte. The second byte contains two color indices, one in its high-order four bits and one in its low-order four bits. The first of the pixels is drawn using the color specified by the high-order four bits, the second is drawn using the color in the low-order four bits, the third is drawn using the color in the high-order four bits, and so on, until all the pixels specified by the first byte have been drawn.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P></DIR>
+</DIR>
+
+
+<UL>
+<B><P ALIGN="JUSTIFY"><LI>In absolute mode. </LI></P></UL>
+
+</B><P ALIGN="JUSTIFY">&nbsp;</P><DIR>
+<DIR>
+
+<P ALIGN="JUSTIFY">The first byte is zero, the second byte contains the number of color indices that follow, and subsequent bytes contain color indices in their high- and low-order four bits, one color index for each pixel. In absolute mode, each run must be aligned on a word boundary. </P>
+<P ALIGN="JUSTIFY">The end-of-line, end-of-bitmap, and delta escapes described for BI_RLE8 also apply to BI_RLE4 compression.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">&nbsp;</P></DIR>
+</DIR>
+
+<P ALIGN="JUSTIFY">The following example shows the hexadecimal values of a 4-bit compressed bitmap.</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+</FONT><FONT FACE="Courier New" SIZE=3><P ALIGN="JUSTIFY">03 04 05 06 00 06 45 56 67 00 04 78 00 02 05 01 04 78 00 00 09 1E 00 01</P>
+</FONT><FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">This bitmap would expand as follows (single-digit values represent a color index for a single pixel):</P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+</FONT><FONT FACE="Courier New" SIZE=3><P ALIGN="JUSTIFY">0 4 0</P>
+<P ALIGN="JUSTIFY">0 6 0 6 0</P>
+<P ALIGN="JUSTIFY">4 5 5 6 6 7</P>
+<P ALIGN="JUSTIFY">7 8 7 8</P>
+<P ALIGN="JUSTIFY">move current position 5 right and 1 down</P>
+<P ALIGN="JUSTIFY">7 8 7 8</P>
+<P ALIGN="JUSTIFY">end of line</P>
+<P ALIGN="JUSTIFY">1 E 1 E 1 E 1 E 1</P>
+<P ALIGN="JUSTIFY">end of RLE bitmap</P>
+</FONT><B><FONT FACE="Book Antiqua" SIZE=5><P><A NAME="_Toc381201089">Colors Field</A></P>
+</B></FONT><FONT FACE="Book Antiqua" SIZE=3><P ALIGN="JUSTIFY">The <I>Colors</I> field specifies the number of color indices in the color table that are actually used by the bitmap. If this value is zero, the bitmap uses the maximum number of colors corresponding to the value of the <I>BBP</I> field for the compression mode specified by the <I>Compression</I> field. </P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">If the <I>Colors</I> field is nonzero and the <I>BBP</I> field less than 16, the <I>Colors</I> field specifies the actual number of colors the graphics engine or device driver accesses. </P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">If the <I>BBP</I> field  is 16 or greater, then <I>Colors</I> field specifies the size of the color table used to optimize performance of Windows color palettes. </P>
+<P ALIGN="JUSTIFY">&nbsp;</P>
+<P ALIGN="JUSTIFY">If <I>BBP</I> equals 16 or 32, the optimal color palette starts immediately following the three double word masks.</P>
+<P ALIGN="JUSTIFY"> </P>
+<P ALIGN="JUSTIFY">If the bitmap is a packed bitmap (a bitmap in which the bitmap array immediately follows the bitmap header and which is referenced by a single pointer), the <I>Colors</I> field must be either 0 or the actual size of the color table. </P>
+</FONT><B><FONT FACE="Book Antiqua" SIZE=5><P><A NAME="_Toc381201090">Important Colors Field</A></P>
+</B></FONT><FONT FACE="Arial" SIZE=3><P ALIGN="JUSTIFY">The <I>Important Colors</I> field s</FONT><FONT FACE="Book Antiqua" SIZE=3>pecifies the number of color indices that are considered important for displaying the bitmap. If this value is zero, all colors are important. </P>
+<P ALIGN="JUSTIFY">&nbsp;</P></FONT></BODY>
+</HTML>

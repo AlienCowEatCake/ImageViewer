@@ -1,0 +1,1767 @@
+<html>
+<head>
+<title>GFF Format Summary: Microsoft Windows Metafile</title>
+</head>
+<body>
+<h1><a name="SPEC-MICMETA">Microsoft Windows Metafile</a></h1>
+<p>
+<b>Also Known As:</b> WMF, Enhanced Metafile, EMF, APM
+<p>
+<hr>
+<p>
+
+<p>
+<table border=0>
+<tr valign=top>
+  <td align=left><b>Type</b></td>
+  <td align=left>Metafile</td>
+</tr>
+<tr valign=top>
+  <td align=left><b>Colors</b></td>
+  <td align=left>24-bit</td>
+</tr> 
+<tr valign=top>
+  <td align=left><b>Compression</b></td>
+  <td align=left>None</td>
+</tr> 
+<tr valign=top>
+  <td align=left><b>Maximum Image Size</b></td>
+  <td align=left>NA</td>
+</tr> 
+<tr valign=top>
+  <td align=left><b>Multiple Images Per File</b></td>
+  <td align=left>Yes</td>
+</tr> 
+<tr valign=top>
+  <td align=left><b>Numerical Format</b></td>
+  <td align=left>Little-endian</td>
+</tr> 
+<tr valign=top>
+  <td align=left><b>Originator</b></td>
+  <td align=left>Microsoft Corporation</td>
+</tr> 
+<tr valign=top>
+  <td align=left><b>Platform</b></td>
+  <td align=left>Microsoft Windows</td>
+</tr> 
+<tr valign=top>
+  <td align=left><b>Supporting Applications</b></td>
+  <td align=left>Numerous Microsoft Windows-based graphics applications</td>
+</tr> 
+<tr valign=top>
+  <td align=left><b>See Also</b></td>
+  <td align=left><A HREF="gffse:/format.eps">Encapsulated PostScript</A>,
+   <a href="gffse:/format.micbmp">Microsoft Windows Bitmap</A>,
+   and <a href="gffse:/format.micclip">Microsoft Windows Clipboard</A></td>
+</tr>
+</table>
+<p>
+<b>Usage</b><br>
+Storage of vector drawings and bitmaps.
+<p>
+<b>Comments</b><br>
+A widely used format associated with Microsoft Windows, 
+although many applications on other platforms provide support.
+<p>
+<hr>
+<p>
+<A NAME="MICMETA-DMYID.1"><!-- Overview anchor --></A>
+<p>
+Microsoft Windows Metafile Format (WMF) files are used to store both
+vector and bitmap-format graphical data in memory or in disk files.
+The vector data stored in WMF files is described as Microsoft Windows
+Graphics Device Interface (GDI) commands. In the Window environment
+these commands are interpreted and played back on an output device 
+using the Windows API PlayMetaFile() function. Bitmap data stored in
+a WMF file may be stored in the form of a Microsoft Device Dependent
+Bitmap (DDB), or Device Independent Bitmap (DIB).
+
+<P>
+<B>Contents:</B><br>
+<A HREF="#MICMETA-DMYID.2">File Organization</a><br>
+<a href="#MICMETA-DMYID.3">File Details</A><br>
+<A HREF="#MICMETA-DMYID.4">For Further Information</A><br>
+
+<P>
+In the Windows environment, metafiles are typically created and
+played back in memory. If the metafile data grows too large to be
+stored in memory, or needs to be saved before an application
+terminates, the data can be written to disk in the form of a WMF or
+EMF file and played back from disk. The maximum size of a Windows
+metafile is four gigabytes.
+<p>
+WMF is the original 16-bit Windows metafile format that appeared with
+Windows 2.0. EMF files are the 32-bit revision of the WMF format.
+EMF files have extended functionality over WMF files, including a
+color palette and full support for all 32-bit GDI commands. The Win32
+API (Windows 95 and Windows NT) and 32-bit OLE support both WMF and
+EMF files. The Win16 and Win32s APIs (Windows 3.<i>x</i>) and 16-bit OLE
+only supports WMF files.
+<p>
+Although the Windows Metafile format is specific to Microsoft
+Windows, many non-Windows-based applications support this format as a
+method for interchanging graphical data with Windows applications.
+Because of the widespread popularity of the Microsoft Windows GUI,
+the Windows Metafile format has become a staple format for graphical
+applications and is therefore supported on most platforms. For
+example, Adobe's Encapsulated PostScript (EPS) supports the use of an
+included Windows Metafile when required to store vector-based data.
+<p>
+If you are using metafiles in the Windows or OS/2 operating systems
+you will not write code to parse them directly, but instead call a
+set of Windows API functions used to manipulate metafiles. Because
+there is ample documentation from Microsoft and IBM on how to use
+metafiles under Windows and OS/2, this article will look at the
+structure and direct parsing of Microsoft metafiles without the
+benefit of the Windows API.
+<p>
+If you have access to the Win16 Software Development Kit, then you
+will find all of the data structures and data type definitions
+associated with WMF files in the <i>WINDOWS.H</i> header file. For the Win32
+SDK you will find WMF and EMF definitions in the <i>WINUSER.H</I> and
+<i>WINGDI.H</i> header files. Both of these SDKs are available with all C
+and C++ compilers that support Windows application development.
+<p>
+
+<h2><A NAME="MICMETA-DMYID.2">File Organization</A></h2>
+<p>
+A metafile is comprised of one or two information headers and an
+array of variable-length records that store the GDI function call
+information.
+<p>
+There are four flavors of Windows metafiles: standard, placeable,
+clipboard, and enhanced. A standard metafile contains an 18-byte WMF
+header followed by one or more records of GDI commands. A placeable
+metafile contains a 22-byte header followed by the standard 18-byte
+WMF header and GDI command records. Clipboard metafiles contains a
+8-byte (Win16) or 16-byte (Win32) header that precedes the standard
+metafile header. Enhanced metafiles contain only EMF records, with
+the first record storing the header information. EMF files are not
+compatible in design with the other types of WMF metafiles.
+<p>
+Windows Metafiles (Figure Microsoft Windows Metafile-1)
+contain a header, followed by one or
+more records of data. The header contains a description of the record
+data stored in the metafile. Each record is a binary-encoded
+Microsoft Windows Graphics Device Interface (GDI) function call. The
+GDI is used by Windows to perform all output to a window, printer, or
+other output device. When the metafile data is rendered (or played
+back, in Microsoft terminology), the data from each record is used to
+perform the appropriate GDI function call to render each object 
+stored in the file. The last record in the file contains information
+indicating that the end of the record data has been reached.
+<h4>Figure Microsoft Windows Metafile-1: Standard metafile format</h4>
+<p>
+<img src="./msmeta01.gif" alt="[Graphic: Figure Microsoft Windows Metafile-1]">
+<p>
+Placeable metafiles (Figure Microsoft Windows Metafile-2)
+are WMF files with an 18-byte header
+prepended.  This preheader contain information used to describe the
+position of the metafile drawing on the printed page (something that
+the original WMF file designers did not think of).
+<h4>Figure Microsoft Windows Metafile-2: Placeable metafile format</h4>
+<p>
+<img src="./msmeta02.gif" alt="[Graphic: Figure Microsoft Windows Metafile-2]">
+<p>
+Clipboard metafiles (Figure Microsoft Windows Metafile-3)
+are similar to placeable metafiles in
+that that also contain an extra header prepended to a WMF file. The
+Clipboard preheader contains information used to describe the position
+of the metafile on the Windows Clipboard and the mapping mode used to
+playback the data. 
+<h4>Figure Microsoft Windows Metafile-3: Clipboard metafile format</h4>
+<p>
+<img src="./msmeta03.gif" alt="[Graphic: Figure Microsoft Windows Metafile-3]">
+<p>
+Enhanced metafiles (Figure Microsoft Windows Metafile-4)
+have the same basic format of WMF
+files: a header followed by one or more records of drawing objects
+stored as GDI commands. Unlike WMF, the header is also stored in a 
+record which appears as the first record in each EMF file. The EMF
+header now contains additional information, including the position
+and mapping information stored in the placeable and clipboard
+metafile preheaders. EMF also adds the features of a file description
+string and a programmable color palette to the metafile format. 
+<h4>Figure Microsoft Windows Metafile-4: Enhanced metafile format</h4>
+<p>
+<img src="./msmeta04.gif" alt="[Graphic: Figure Microsoft Windows Metafile-4]">
+<p>
+
+<h2><A NAME="MICMETA-DMYID.3">File Details</A></h2>
+<p>
+The standard Windows metafile header is 18 bytes in length and is
+structured as follows:
+<pre>
+typedef struct _WindowsMetaHeader
+{
+  WORD  FileType;       /* Type of metafile (0=memory, 1=disk) */
+  WORD  HeaderSize;     /* Size of header in WORDS (always 9) */
+  WORD  Version;        /* Version of Microsoft Windows used */
+  DWORD FileSize;       /* Total size of the metafile in WORDs */
+  WORD  NumOfObjects;   /* Number of objects in the file */
+  DWORD MaxRecordSize;  /* The size of largest record in WORDs */
+  WORD  NumOfParams;    /* Not Used (always 0) */
+} WMFHEAD;
+</pre>
+<p>
+FileType contains a value which indicates the location of the metafile
+data. A value of 0 indicates that the metafile is stored in memory,
+while a 1 indicates that it is stored on disk.
+<p>
+HeaderSize contains the size of the metafile header in 16-bit WORDs.
+This value is always 9.
+<p>
+Version stores the version number of Microsoft Windows that created
+the metafile. This value is always read in hexadecimal format. For
+example, in a metafile created by Windows 3.0 and 3.1, this item
+would have the value 0x0300.
+<p>
+FileSize specifies the total size of the metafile in 16-bit WORDs.
+<p>
+NumOfObjects specifies the number of objects that are in the metafile.
+<p>
+MaxRecordSize specifies the size of the largest record in the metafile
+in WORDs.
+<p>
+NumOfParams is not used and is set to a value of 0.
+<p>
+
+<h3><A NAME="MICMETA-DMYID.3.1">Aldus Placeable Metafiles</A></h3>
+<p>
+Placeable Metafiles (file extension .APM) were created by Aldus
+Corporation as a non-standard way of specifying how a metafile is
+mapped and scaled on an output device. Placeable metafiles are quite
+wide-spread, but not directly supported by the Windows API. To
+playback a placeable metafile using the Windows API, you will first
+need to strip the placeable metafile header from the file. This is 
+typically performed by copying the metafile to a temporary file
+starting at file offset 0x16. The contents of the temporary file may
+then be used as input to the Windows GetMetaFile(), PlayMetaFile(),
+CopyMetaFile(), etc. GDI functions. Placeable Metafiles are limited
+to 64K in length.
+<p>
+Each placeable metafile begins with a 22-byte header followed by a
+standard metafile:
+<pre>
+typedef struct _PlaceableMetaHeader
+{
+  DWORD Key;           /* Magic number (always 9AC6CDD7h) */
+  WORD  Handle;        /* Metafile HANDLE number (always 0) */
+  SHORT Left;          /* Left coordinate in metafile units */
+  SHORT Top;           /* Top coordinate in metafile units */
+  SHORT Right;         /* Right coordinate in metafile units */
+  SHORT Bottom;        /* Bottom coordinate in metafile units */
+  WORD  Inch;          /* Number of metafile units per inch */
+  DWORD Reserved;      /* Reserved (always 0) */
+  WORD  Checksum;      /* Checksum value for previous 10 WORDs */
+} PLACEABLEMETAHEADER;
+</pre>
+<P>
+Key contains a special identification value that indicates the
+presence of a placeable metafile header and is always 9AC6CDD7h.
+<p>
+Handle is used to stored the handle of the metafile in memory. When
+written to disk, this field is not used and will always contains the
+value 0.
+<p>
+Left, Top, Right, and Bottom contain the coordinates of the
+upper-left and lower-right corners of the image on the output device.
+These are measured in twips[1]. These four fields also
+correspond to the RECT structure used in Microsoft Windows and
+defined in the file <i>WINDOWS.H</i>.
+<p>
+<i>[1] A twip (meaning "twentieth of a point") is the logical unit of
+measurement used in Windows Metafiles. A twip is equal to 1/1440 of
+an inch. Thus 720 twips equal 1/2 inch, while 32,768 twips is 22.75
+inches.</i>
+<p>
+Inch contains the number of twips per inch used to represent the
+image. Normally, there are 1440 twips per inch; however, this number
+may be changed to scale the image. A value of 720 indicates that the
+image is double its normal size, or scaled to a factor of 2:1. A
+value of 360 indicates a scale of 4:1, while a value of 2880
+indicates that the image is scaled down in size by a factor of two. A
+value of 1440 indicates a 1:1 scale ratio.
+<p>
+Reserved is not used and is always set to 0.
+<p>
+Checksum contains a checksum value for the previous 10 WORDs in the
+header. This value can be in an attempt to detect if the metafile has
+become corrupted. The checksum is calculated by XORing each WORD value
+to an initial value of 0:
+<pre>
+PLACEABLEMETAHEADER pmh; 
+pmh.Checksum = 0;
+pmh.Checksum ^= (pmh.Key & 0x0000FFFFUL);
+pmh.Checksum ^= ((pmh.Key & 0xFFFF0000UL) &gt;&gt; 16);
+pmh.Checksum ^= pmh.Handle; 
+pmh.Checksum ^= pmh.Left;
+pmh.Checksum ^= pmh.Top; 
+pmh.Checksum ^= pmh.Right;
+pmh.Checksum ^= pmh.Bottom; 
+pmh.Checksum ^= pmh.Inch;
+pmh.Checksum ^= (pmh.Reserved & 0x0000FFFFUL);
+pmh.Checksum ^= ((pmh.Reserved & 0xFFFF0000UL) &gt;&gt; 16);
+</pre>
+<p>
+An alternative way to step through the header structure one WORD at a
+time is to use a pointer as shown below:
+<pre>
+PLACEABLEMETAHEADER *pmh; 
+WORD *ptr;
+pmh->Checksum = 0;
+for (ptr = (WORD *) pmh; ptr < (WORD *)pmh->Checksum; ptr++)
+    pmh->Checksum ^= *ptr;
+</pre>
+<p>
+
+<h3><A NAME="MICMETA-DMYID.3.2">Clipboard Metafile</A></h3>
+<p>
+Clipboard metafiles are stored in Microsoft Clipboard Viewer files
+(file extension .CLP) and Microsoft Windows Write files (file
+extension .WRI). Clipboard metafiles are also based on the standard
+metafile format, but are preceded by an additional 8- or 16-byte
+header that allows the position of the metafile on the Clipboard
+viewer. If the Clipboard metafile was created using a 16-bit version
+of Windows (Windows and Windows for Workgroups) this header will
+contain 2-byte fields arranged in the following structure:
+<pre>
+typedef struct _Clipboard16MetaHeader
+{
+  SHORT MappingMode; /* Units used to playback metafile */
+  SHORT Width;       /* Width of the metafile */
+  SHORT Height;      /* Height of the metafile */
+  WORD  Handle;      /* Handle to the metafile in memory */
+} CLIPBOARD16METAHEADER;
+</pre>
+<p>
+MappingMode specifies the type of Windows coordinate mapping units
+used to store and playback the metafile data. This field will contain
+one of the following values:
+<p>
+<table border=0>
+<tr>
+  <th align=left>Value</th>
+  <th align=left>Mapping Mode</th>
+  <th align=left>One Unit Maps To</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td>Text</td>
+  <td>One pixel</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>Low Metric</td>
+  <td>0.1 millimeter</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>High Metric</td>
+  <td>0.01 millimeter</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>Low English</td>
+  <td>0.01 inch</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>High English</td>
+  <td>0.001 inch</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td>Twips</td>
+  <td>1/1440th of an inch</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td>Isotropic</td>
+  <td>Application specific (aspect ratio preserved)</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td>Anisotropic</td>
+  <td>Application specific (aspect ratio not preserved)</td>
+</tr>
+</table>
+<p>
+Width and Height are the size of the metafile in the units specified
+in the MappingMode field.
+<p>
+Handle is used to stored the handle of the metafile in memory. When
+written to disk, this field is not used and will always contains the
+value 0.
+<p>
+If the clipboard metafile was created under a 32-bit Windows
+environment (Windows NT and Windows 95) this header will contain the
+same fields as the Win16 WMF header, but the fields are 32 bytes in
+length:
+<pre>
+typedef struct _Clipboard32MetaHeader
+{
+  LONG  MappingMode; /* Units used to playback metafile */
+  LONG  Width;       /* Width of the metafile */
+  LONG  Height;      /* Height of the metafile */
+  DWORD Handle;      /* Handle to the metafile in memory */
+} CLIPBOARD32METAHEADER;
+</pre>
+<p>
+
+<h3><A NAME="MICMETA-DMYID.3.3">Enhanced Metafiles</A></h3>
+<p>
+Enhanced metafile files are a "new and improved" 32-bit revision of
+the standard metafile. Only the 32-bit Windows API (Win32) supports
+EMF files and the 16-bit Windows APIs (Win16 and Win32s) do not. It is also
+recommended that WMF files not be used by applications running the
+Window 32-bit environments (Windows 95 and Windows NT). Enhanced
+metafiles are typically saved to disk using the file extension
+".EMF".
+<p>
+The string data found in EMF files uses the Unicode character set.
+Each Unicode character is 2-bytes in size. The first 256 (of the over
+36000) characters of the Unicode characters set are also the 256
+characters of the ANSI character set used by Windows. The low byte of
+each Unicode character will contain the ANSI character value and the
+high byte will be zero. You will recognize Unicode strings in data
+dumps when you see a byte pattern such as " S u m m a r y I n f o"
+rather than the more common ANSI or ASCII pattern of "SummaryInfo".
+<p>
+EMF files have a header that is 80 bytes in length and contains the
+same features as found in placeable and Clipboard metafiles. Although
+the header is considered to be just another EMF record, it must
+appear as the first record in every EMF file.
+<pre>
+typedef struct _EnhancedMetaHeader
+{
+    DWORD RecordType;       /* Record type */
+    DWORD RecordSize;       /* Size of the record in bytes */
+    LONG  BoundsLeft;       /* Left inclusive bounds */
+    LONG  BoundsRight;      /* Right inclusive bounds */
+    LONG  BoundsTop;        /* Top inclusive bounds */
+    LONG  BoundsBottom;     /* Bottom inclusive bounds */
+    LONG  FrameLeft;        /* Left side of inclusive picture frame */
+    LONG  FrameRight;       /* Right side of inclusive picture frame */
+    LONG  FrameTop;         /* Top side of inclusive picture frame */
+    LONG  FrameBottom;      /* Bottom side of inclusive picture frame */
+    DWORD Signature;        /* Signature ID (always 0x464D4520) */
+    DWORD Version;          /* Version of the metafile */
+    DWORD Size;             /* Size of the metafile in bytes */
+    DWORD NumOfRecords;     /* Number of records in the metafile */
+    WORD  NumOfHandles;     /* Number of handles in the handle table */
+    WORD  Reserved;         /* Not used (always 0) */
+    DWORD SizeOfDescrip;    /* Size of description string in WORDs */
+    DWORD OffsOfDescrip;    /* Offset of description string in metafile */
+    DWORD NumPalEntries;    /* Number of color palette entries */
+    LONG  WidthDevPixels;   /* Width of reference device in pixels */
+    LONG  HeightDevPixels;  /* Height of reference device in pixels */
+    LONG  WidthDevMM;       /* Width of reference device in millimeters */
+    LONG  HeightDevMM;      /* Height of reference device in millimeters */
+} ENHANCEDMETAHEADER;
+</pre>
+<p>
+RecordType identifies the type of EMF record. For the EMF header
+record this value is always 00000001h.
+<p> 
+RecordSize is the size of the header in bytes.
+<p>
+BoundsLeft, BoundsRight, BoundsTop, and BoundsBottom specify the size
+of the metafile drawing using X, Y, width, and length coordinate
+system. BoundsTop and BoundsBottom must have greater values than
+BoundsLeft and BoundsRight.
+<p>
+FrameLeft, FrameRight, FrameTop, and FrameBottom specify the size of
+the frame or border that encloses the metafile using X, Y, width, and
+length coordinate system. FrameTop and FrameBottom must have greater
+values than FrameLeft and FrameRight.
+<p>
+Signature is a file identification value and is always set to
+the value of 0x464D4520.
+<p>
+Version is the version number of the EMF file format. The current
+version is 1.0 and is stored as the value 0x00000100.
+<P>
+Size is the size of the entire metafile in bytes.          
+<p>
+NumOfRecords is the total number of records in the metafile,
+including the header record.  
+<P>
+NumOfHandles is the number of handles currently stored in the memory
+handle table. This value is always 0 for metafile data stored to
+disk.
+<P>
+Reserved is not used and is always zero.
+<P>
+SizeOfDescrip is the number of 16-bit Unicode characters contained in
+the description string, including all NULL characters. If this value
+is 0 then no description string is present in the file. 
+<P>
+OffsOfDescrip is the location of the description string calculated as
+the number of bytes from the beginning of the file. If this value is 0
+then no description string is present in the file.
+<P>
+NumPalEntries indicates the number of entries in the color palette.
+The color palette, if present, will be located in the End-Of-File
+records. If this value is 0 then no color palette is present.
+<P>
+WidthDevPixels and HeightDevPixels are the width and height of the
+display device in pixels.
+<P>
+WidthDevMM and HeightDevMM are the width and height of the
+display device in millimeters.
+<P>
+
+<h4><A NAME="MICMETA-DMYID.3.3.1">EMF Description String</a></h4>
+<p>
+A Unicode description string may be stored in an EMF file. If the
+SizeOfDescrip and OffsOfDescrip header fields are not zero, then a
+description string is present in the file. It will be located
+OffsOfDescrip bytes from the beginning of the file and will contain
+SizeOfDescrip Unicode characters.
+<P>
+Although not limited in practical size (unless you want a description
+longer than two billion characters), the description string is
+expected to have a specific format. The format is the name of the
+application that created the picture, a NULL, the name or description
+of the picture, and finally two NULLs. A typical EMF creator/title
+Unicode description string may therefore appear as such:
+<Pre>
+"Pain Paint 1.5\0Eating at Polly's\0\0"
+</pre>
+<P>
+Adhering to this "double NULL-terminated format" guarantees that
+standard information may be obtained form an EMF file and also allows
+the description string to be easily read using Windows GDI function
+calls.
+<p>
+
+<h3><A NAME="MICMETA-DMYID.3.4">Standard Metafile Records</A></h3>
+<p>
+Following the standard header in all WMF metafiles is a series of
+data records. This record is defined by the METARECORD data type
+definition in <i>WINDOWS.H</i> and has the following format:
+<pre>
+typedef struct _StandardMetaRecord
+{
+    DWORD Size;          /* Total size of the record in WORDs */
+    WORD  Function;      /* Function number (defined in WINDOWS.H) */
+    WORD  Parameters[];  /* Parameter values passed to function */
+} WMFRECORD;
+</pre>
+<p>
+Size is the total size of the records in 16-bit WORDs, including the
+Size field itself. The minimum possible size for a record is 3.
+<p>
+Function is the GDI number of the function called to playback this
+record. The low-byte of this value identifies the specific GDI
+function to call. The high-byte is the number of WORDs passed to this
+function, and is also the number of elements in the Parameters array.
+For example, a value of 0x0213 indicates the LineTo() function (0x13)
+and that this function is passed two WORD values.
+<p>
+Parameters is an array of the parameters used by the GDI function
+specified by this record. The parameters are stored in the reverse
+order in which they are passed to the function. For example, the two
+parameter values of the LineTo record are passed to the LineTo()
+function in the order of X and Y, but store in the record as Y and X.
+<p>
+Although each record parameter is stored as a WORD, the exact data
+type of the parameter is determined by the function it is passed to.
+Parameter values that change, such as device context handles, are
+never stored in metafile records.
+<p>
+The last record in every metafile always has a function number of
+0000h, a Size of 0003h, and no Parameters array. This record is used
+to indicate the end of the record data in the metafile. The use of
+this terminator record is missing from the original WMF description
+found in the Windows SDK and is now documented in article Q99334 of
+the Microsoft Knowledge Base.
+<p>
+When a Windows Metafile format file is played back in the Windows
+environment, each record is read and the function call it contains is
+executed in the sequence in which it is stored in the file. Windows
+creates a table of object handles used by the functions called in the
+metafile records. The maximum size of this object handle table is
+indicated by the value of the NumOfObjects field in the header.
+Windows inserts new objects into the table using the SelectObject()
+API call. The object handle table is only created and used during the
+access of the metafile in memory and is never stored in a WMF file.
+<p>
+There are several important considerations that must be observed when
+reading metafile record data.
+<p>
+Not all of the records in a Windows Metafile have the above format,
+although most do. The metafile records that do follow this basic
+record format are the following:
+<p>
+<table>
+<tr>
+  <th align=left>Record Name</th>
+  <th align=left>Function Number</th>
+</tr>
+<tr>
+  <td>AbortDoc</td>
+  <td>0x0052</td>
+</tr>
+<tr>
+  <td>Arc</td>
+  <td>0x0817</td>
+</tr>
+<tr>
+  <td>Chord</td>
+  <td>0x0830</td>
+</tr>
+<tr>
+  <td>DeleteObject</td>
+  <td>0x01f0</td>
+</tr>
+<tr>
+  <td>Ellipse</td>
+  <td>0x0418</td>
+</tr>
+<tr>
+  <td>EndDoc</td>
+  <td>0x005E</td>
+</tr>
+<tr>
+  <td>EndPage</td>
+  <td>0x0050</td>
+</tr>
+<tr>
+  <td>ExcludeClipRect</td>
+  <td>0x0415</td>
+</tr>
+<tr>
+  <td>ExtFloodFill</td>
+  <td>0x0548</td>
+</tr>
+<tr>
+  <td>FillRegion</td>
+  <td>0x0228</td>
+</tr>
+<tr>
+  <td>FloodFill</td>
+  <td>0x0419</td>
+</tr>
+<tr>
+  <td>FrameRegion</td>
+  <td>0x0429</td>
+</tr>
+<tr>
+  <td>IntersectClipRect</td>
+  <td>0x0416</td>
+</tr>
+<tr>
+  <td>InvertRegion</td>
+  <td>0x012A</td>
+</tr>
+<tr>
+  <td>LineTo</td>
+  <td>0x0213</td>
+</tr>
+<tr>
+  <td>MoveTo</td>
+  <td>0x0214</td>
+</tr>
+<tr>
+  <td>OffsetClipRgn</td>
+  <td>0x0220</td>
+</tr>
+<tr>
+  <td>OffsetViewportOrg</td>
+  <td>0x0211</td>
+</tr>
+<tr>
+  <td>OffsetWindowOrg</td>
+  <td>0x020F</td>
+</tr>
+<tr>
+  <td>PaintRegion</td>
+  <td>0x012B</td>
+</tr>
+<tr>
+  <td>PatBlt</td>
+  <td>0x061D</td>
+</tr>
+<tr>
+  <td>Pie</td>
+  <td>0x081A</td>
+</tr>
+<tr>
+  <td>RealizePalette</td>
+  <td>0x0035</td>
+</tr>
+<tr>
+  <td>Rectangle</td>
+  <td>0x041B</td>
+</tr>
+<tr>
+  <td>ResetDc</td>
+  <td>0x014C</td>
+</tr>
+<tr>
+  <td>ResizePalette</td>
+  <td>0x0139</td>
+</tr>
+<tr>
+  <td>RestoreDC</td>
+  <td>0x0127</td>
+</tr>
+<tr>
+  <td>RoundRect</td>
+  <td>0x061C</td>
+</tr>
+<tr>
+  <td>SaveDC</td>
+  <td>0x001E</td>
+</tr>
+<tr>
+  <td>ScaleViewportExt</td>
+  <td>0x0412</td>
+</tr>
+<tr>
+  <td>ScaleWindowExt</td>
+  <td>0x0410</td>
+</tr>
+<tr>
+  <td>SelectClipRegion</td>
+  <td>0x012C</td>
+</tr>
+<tr>
+  <td>SelectObject</td>
+  <td>0x012D</td>
+</tr>
+<tr>
+  <td>SelectPalette</td>
+  <td>0x0234</td>
+</tr>
+<tr>
+  <td>SetTextAlign</td>
+  <td>0x012E</td>
+</tr>
+<tr>
+  <td>SetBkColor</td>
+  <td>0x0201</td>
+</tr>
+<tr>
+  <td>SetBkMode</td>
+  <td>0x0102</td>
+</tr>
+<tr>
+  <td>SetDibToDev</td>
+  <td>0x0d33</td>
+</tr>
+<tr>
+  <td>SetMapMode</td>
+  <td>0x0103</td>
+</tr>
+<tr>
+  <td>SetMapperFlags</td>
+  <td>0x0231</td>
+</tr>
+<tr>
+  <td>SetPalEntries</td>
+  <td>0x0037</td>
+</tr>
+<tr>
+  <td>SetPixel</td>
+  <td>0x041F</td>
+</tr>
+<tr>
+  <td>SetPolyFillMode</td>
+  <td>0x0106</td>
+</tr>
+<tr>
+  <td>SetRelabs</td>
+  <td>0x0105</td>
+</tr>
+<tr>
+  <td>SetROP2</td>
+  <td>0x0104</td>
+</tr>
+<tr>
+  <td>SetStretchBltMode</td>
+  <td>0x0107</td>
+</tr>
+<tr>
+  <td>SetTextAlign</td>
+  <td>0x012E</td>
+</tr>
+<tr>
+  <td>SetTextCharExtra</td>
+  <td>0x0108</td>
+</tr>
+<tr>
+  <td>SetTextColor</td>
+  <td>0x0209</td>
+</tr>
+<tr>
+  <td>SetTextJustification</td>
+  <td>0x020A</td>
+</tr>
+<tr>
+  <td>SetViewportExt</td>
+  <td>0x020E</td>
+</tr>
+<tr>
+  <td>SetViewportOrg</td>
+  <td>0x020D</td>
+</tr>
+<tr>
+  <td>SetWindowExt</td>
+  <td>0x020C</td>
+</tr>
+<tr>
+  <td>SetWindowOrg</td>
+  <td>0x020B</td>
+</tr>
+<tr>
+  <td>StartDoc</td>
+  <td>0x014D</td>
+</tr>
+<tr>
+  <td>StartPage</td>
+  <td>0x004F</td>
+</tr>
+</table>
+
+<p>
+For example, the LineTo record stores information that is passed to
+the LineTo() GDI function. The LineTo() function draws a line from
+the current point to the coordinates specified in the record data.
+Assuming the line is to be drawn to location 100,50, the data in the
+LineTo record would appear as follows:
+<pre>
+Size           5        /* Five WORDs in the file */
+Function       0x0213   /* LineTo function number */
+Parameters[0]  50       /* Y Coordinate */
+Parameters[1]  100      /* X Coordinate */
+</pre>
+<p>
+This data would be read from the metafile and passed to the LineTo()
+GDI functions as such (the hDC handle is not stored in the metafile):
+<pre>
+LineTo(hDC, 100, 5);    
+</pre>
+<p>
+Several record formats deviate from the basic record format by
+containing a data structure, rather than a data array, in the
+Parameters field. These records are:
+<p>
+<table>
+<tr>
+  <th align=left>Record Name</th>
+  <th align=left>Function Number</th>
+</tr>
+<tr>
+  <td>AnimatePalette</td>
+  <td>0x0436</td>
+</tr>
+<tr>
+  <td>BitBlt</td>
+  <td>0x0922</td>
+</tr>
+<tr>
+  <td>CreateBitmap</td>
+  <td>0x06FE</td>
+</tr>
+<tr>
+  <td>CreateBitmapIndirect</td>
+  <td>0x02FD</td>
+</tr>
+<tr>
+  <td>CreateBrush</td>
+  <td>0x00F8</td>
+</tr>
+<tr>
+  <td>CreateBrushIndirect</td>
+  <td>0x02FC</td>
+</tr>
+<tr>
+  <td>CreateFontIndirect</td>
+  <td>0x02FB</td>
+</tr>
+<tr>
+  <td>CreatePalette</td>
+  <td>0x00F7</td>
+</tr>
+<tr>
+  <td>CreatePatternBrush</td>
+  <td>0x01F9</td>
+</tr>
+<tr>
+  <td>CreatePenIndirect</td>
+  <td>0x02FA</td>
+</tr>
+<tr>
+  <td>CreateRegion</td>
+  <td>0x06FF</td>
+</tr>
+<tr>
+  <td>DeleteObject</td>
+  <td>0x01F0</td>
+</tr>
+<tr>
+  <td>DibBitblt</td>
+  <td>0x0940</td>
+</tr>
+<tr>
+  <td>DibCreatePatternBrush</td>
+  <td>0x0142</td>
+</tr>
+<tr>
+  <td>DibStretchBlt</td>
+  <td>0x0B41</td>
+</tr>
+<tr>
+  <td>DrawText</td>
+  <td>0x062F</td>
+</tr>
+<tr>
+  <td>Escape</td>
+  <td>0x0626</td>
+</tr>
+<tr>
+  <td>ExtTextOut</td>
+  <td>0x0A32</td>
+</tr>
+<tr>
+  <td>Polygon</td>
+  <td>0x0324</td>
+</tr>
+<tr>
+  <td>PolyPolygon</td>
+  <td>0x0538</td>
+</tr>
+<tr>
+  <td>Polyline</td>
+  <td>0x0325</td>
+</tr>
+<tr>
+  <td>TextOut</td>
+  <td>0x0521</td>
+</tr>
+<tr>
+  <td>StretchBlt</td>
+  <td>0x0B23</td>
+</tr>
+<tr>
+  <td>StretchDIBits</td>
+  <td>0x0F43</td>
+</tr>
+</table>
+<p>
+For example, the BitBlt record is used to store bitmap data in a 
+metafile. The BitBlt record stores a Device Dependent Bitmap (DDB) in
+its Parameters field. A DDB is a simple header followed by
+uncompressed bitmap data. The entire BitBlt record in a Windows 2.<i>x</i>
+metafile will have the following format:
+<pre>
+typedef struct _BitBltRecord
+{
+    DWORD     Size;             /* Total size of the record in WORDs */
+    WORD      Function;         /* Function number (0x0922) */
+    WORD      RasterOp;         /* High-order word for the raster operation */
+    WORD      YSrcOrigin;       /* Y-coordinate of the source origin */
+    WORD      XSrcOrigin;       /* X-coordinate of the source origin */
+    WORD      YDest;            /* Destination width */
+    WORD      XDest;            /* Destination height */
+    WORD      YDestOrigin;      /* Y-coordinate of the destination origin */
+    WORD      XDestOrigin;      /* X-coordinate of the destination origin */
+    /* DDB Bitmap */
+    DWORD     Width;            /* Width of bitmap in pixels */
+    DWORD     Height;           /* Height of bitmap in scan lines */
+    DWORD     BytesPerLine;     /* Number of bytes in each scan line */
+    WORD      NumColorPlanes;   /* Number of color planes in the bitmap */
+    WORD      BitsPerPixel;     /* Number of bits in each pixel */
+    RGBTRIPLE Bitmap[];         /* Bitmap data */
+} BITBLTRECORD;
+</pre>
+<p>
+The bitmap data itself is stored as an array of RGBTRIPLE structures:
+<pre>
+typedef struct _RGBTriple
+{
+    BYTE Red;
+    BYTE Green;
+    BYTE Blue;
+} RGBTRIPLE;
+</pre>
+<p>
+Note that DDB bitmap found in Windows 2.<i>x</i> WMF BitBlt records is not
+compatible with Windows 3.0 and later. Windows 3.0 created the
+DibBitBlt record to store a Device Independent Bitmap (DIB) rather
+than a DDB. A DibBitBlt record has the following format:
+<pre>
+typedef struct _DibBitBltRecord
+{
+    DWORD   Size;             /* Total size of the record in WORDs */
+    WORD    Function;         /* Function number (0x0940) */
+    WORD    RasterOp;         /* High-order word for the raster operation */
+    WORD    YSrcOrigin;       /* Y-coordinate of the source origin */
+    WORD    XSrcOrigin;       /* X-coordinate of the source origin */
+    WORD    YDest;            /* Destination width */
+    WORD    XDest;            /* Destination height */
+    WORD    YDestOrigin;      /* Y-coordinate of the destination origin */
+    WORD    XDestOrigin;      /* X-coordinate of the destination origin */
+    /* DIB Bitmap */
+    DWORD   Width;            /* Width of bitmap in pixels */
+    DWORD   Height;           /* Height of bitmap in scan lines */
+    DWORD   BytesPerLine;     /* Number of bytes in each scan line */
+    WORD    NumColorPlanes;   /* Number of color planes in the bitmap */
+    WORD    BitsPerPixel;     /* Number of bits in each pixel */
+    DWORD   Compression;      /* Compression type */
+    DWORD   SizeImage;        /* Size of bitmap in bytes */
+    LONG    XPelsPerMeter;    /* Width of image in pixels per meter */
+    LONG    YPelsPerMeter;    /* Height of image in pixels per meter */
+    DWORD   ClrUsed;          /* Number of colors used */
+    DWORD   ClrImportant;     /* Number of important colors */
+    RGBQUAD Bitmap[];         /* Bitmap data */
+} DIBBITBLTRECORD;
+</pre>
+<p>
+The bitmap data itself is stored as an array of RGBQUAD structures:
+<pre>
+typedef struct _RGBQuad
+{
+    BYTE Red;
+    BYTE Green;
+    BYTE Blue;
+    BYTE Reserved;
+} RGBQUAD;
+</pre>
+<p>
+One other function-specific metafile record that deserves attention
+is Escape. The Windows 3.<i>x</i> API supports 64 different printer escape
+sequences that may be embedded into a WMF metafile. The actual
+sequences available will vary depending upon the printer driver(s)
+currently installed it the Windows environment. The use of printer
+escapes is discouraged, as including one or more Escape records in
+the WMF file makes the metafile data device-dependent.
+<p>
+One of the most common Escape records is MFCOMMENT. The WMF format
+does not directly support the insertion of human-readable text. The
+MFCOMMENT printer sequence is therefore used insert a string (or
+other private data) up to 32K in size into a metafile. There may be
+multiple Escape records stored in a metafile.
+<p>
+Consult the <i>Microsoft Windows Programmer's Reference</i>, Volume 2, for
+the internal structure of each function-specific metafile records.
+<p>
+Several GDI function calls were added or had their parameters changed
+with the release of Microsoft Windows 3.0. GDI function calls in this
+category include:
+<p>
+AnimatePalette<br>
+BitBlt<br>
+CreatePalette<br>
+CreatePatternBrush<br>
+DeleteObject<br>
+DibBitBlt<br>
+DibCreatePatternBrush<br>
+DibStretchBlt<br>
+RealizePalette<br>
+ResizePalette<br>
+StretchBlt
+<p>
+Note that not all GDI function calls can appear in a metafile. The
+only calls that are valid are those that take a handle to a device
+context as their first parameter. A complete list of all of the GDI
+function calls is documented in <I>Microsoft Windows Programmer's
+Reference</i>, Volume 2. They are also found in the <i>WINDOWS.H</i> header
+file. These GDI function calls are the directives that begin with the
+characters META. There are more than 70 different GDI function calls
+defined for Windows 3.<i>x</i>.
+<p>
+
+<h3><A NAME="MICMETA-DMYID.3.5">Enhanced Metafile Records</A></h3>
+<p>
+Enhanced metafiles also have an enhanced metafile record structure.
+When compared to standard metafile records you will see that all
+three fields are now 32-bit DWORDs and the positions of the Size and
+Function fields are exchanged:
+<pre>
+typedef struct _EnhancedMetaRecord
+{
+    DWORD Function;      /* Function number (defined in WINGDI.H) */
+    DWORD Size;          /* Total size of the record in WORDs */
+    DWORD Parameters[];   /* Parameter values passed to GDI function */
+} EMFRECORD;
+</pre>
+<p>
+Function is the GDI number of the function called to playback this
+record. In the Win32 SDK these values identified by the EMR_*
+definitions in the <i>WINDOWS.H</i> header file.
+<p>
+Size is the total size of the records in BYTEs, including the Size
+and Function fields. The minimum possible size for a record is 8.
+<p>
+Parameters is an array of the parameters used by the GDI function
+specified by this record. The parameters are stored in the reverse
+order in which they are passed to the function. For example, the two
+parameter values of the LineTo record are passed to the LineTo()
+function in the order of X and Y, but stored in the record as Y and X.
+<p>
+An EMF file is composed entirely of EMF records. Of the 97 record
+types presently defined for EMF files, at least two records must be
+present in every file. These are the header record (record type 1)
+and the End Of File record (record type 14).
+<p>
+Here are the function identifiers for all 97 EMF records. If you need
+to add EMF file capability to your software, then you must obtain a
+copy of the Microsoft documents that describe these Win32 API
+functions. 
+<p>
+<table>
+<tr>
+  <th align=left>Record</th>
+  <th align=left width=100>Value</th>
+  <th align=left>Record</th>
+  <th align=left>Value</th>
+</tr>
+<tr>
+  <td>EMR_ABORTPATH</td>
+  <td>68</td>
+  <td>EMR_POLYLINE</td>
+  <td>4</td>
+</tr>
+<tr>
+  <td>EMR_ANGLEARC</td>
+  <td>41</td>
+  <td>EMR_POLYLINE16</td>
+  <td>87</td>
+</tr>
+<tr>
+  <td>EMR_ARC</td>
+  <td>45</td>
+  <td>EMR_POLYLINETO</td>
+  <td>6</td>
+</tr>
+<tr>
+  <td>EMR_ARCTO</td>
+  <td>55</td>
+  <td>EMR_POLYLINETO16</td>
+  <td>89</td>
+</tr>
+<tr>
+  <td>EMR_BEGINPATH</td>
+  <td>59</td>
+  <td>EMR_POLYPOLYGON</td>
+  <td>8</td>
+</tr>
+<tr>
+  <td>EMR_BITBLT</td>
+  <td>76</td>
+  <td>EMR_POLYPOLYGON16</td>
+  <td>91</td>
+</tr>
+<tr>
+  <td>EMR_CHORD</td>
+  <td>46</td>
+  <td>EMR_POLYPOLYLINE</td>
+  <td>7</td>
+</tr>
+<tr>
+  <td>EMR_CLOSEFIGURE</td>
+  <td>61</td>
+  <td>EMR_POLYPOLYLINE16</td>
+  <td>90</td>
+</tr>
+<tr>
+  <td>EMR_CREATEBRUSHINDIRECT</td>
+  <td>39</td>
+  <td>EMR_POLYTEXTOUTA</td>
+  <td>96</td>
+</tr>
+<tr>
+  <td>EMR_CREATEDIBPATTERNBRUSHPT</td>
+  <td>94</td>
+  <td>EMR_POLYTEXTOUTW</td>
+  <td>97</td>
+</tr>
+<tr>
+  <td>EMR_CREATEMONOBRUSH</td>
+  <td>93</td>
+  <td>EMR_REALIZEPALETTE</td>
+  <td>52</td>
+</tr>
+<tr>
+  <td>EMR_CREATEPALETTE</td>
+  <td>49</td>
+  <td>EMR_RECTANGLE</td>
+  <td>43</td>
+</tr>
+<tr>
+  <td>EMR_CREATEPEN</td>
+  <td>38</td>
+  <td>EMR_RESIZEPALETTE</td>
+  <td>51</td>
+</tr>
+<tr>
+  <td>EMR_DELETEOBJECT</td>
+  <td>40</td>
+  <td>EMR_RESTOREDC</td>
+  <td>34</td>
+</tr>
+<tr>
+  <td>EMR_ELLIPSE</td>
+  <td>42</td>
+  <td>EMR_ROUNDRECT</td>
+  <td>44</td>
+</tr>
+<tr>
+  <td>EMR_ENDPATH</td>
+  <td>60</td>
+  <td>EMR_SAVEDC</td>
+  <td>33</td>
+</tr>
+<tr>
+  <td>EMR_EOF</td>
+  <td>14</td>
+  <td>EMR_SCALEVIEWPORTEXTEX</td>
+  <td>31</td>
+</tr>
+<tr>
+  <td>EMR_EXCLUDECLIPRECT</td>
+  <td>29</td>
+  <td>EMR_SCALEWINDOWEXTEX</td>
+  <td>32</td>
+</tr>
+<tr>
+  <td>EMR_EXTCREATEFONTINDIRECTW</td>
+  <td>82</td>
+  <td>EMR_SELECTCLIPPATH</td>
+  <td>67</td>
+</tr>
+<tr>
+  <td>EMR_EXTCREATEPEN</td>
+  <td>95</td>
+  <td>EMR_SELECTOBJECT</td>
+  <td>37</td>
+</tr>
+<tr>
+  <td>EMR_EXTFLOODFILL</td>
+  <td>53</td>
+  <td>EMR_SELECTPALETTE</td>
+  <td>48</td>
+</tr>
+<tr>
+  <td>EMR_EXTSELECTCLIPRGN</td>
+  <td>75</td>
+  <td>EMR_SETARCDIRECTION</td>
+  <td>57</td>
+</tr>
+<tr>
+  <td>EMR_EXTTEXTOUTA</td>
+  <td>83</td>
+  <td>EMR_SETBKCOLOR</td>
+  <td>25</td>
+</tr>
+<tr>
+  <td>EMR_EXTTEXTOUTW</td>
+  <td>84</td>
+  <td>EMR_SETBKMODE</td>
+  <td>18</td>
+</tr>
+<tr>
+  <td>EMR_FILLPATH</td>
+  <td>62</td>
+  <td>EMR_SETBRUSHORGEX</td>
+  <td>13</td>
+</tr>
+<tr>
+  <td>EMR_FILLRGN</td>
+  <td>71</td>
+  <td>EMR_SETCOLORADJUSTMENT</td>
+  <td>23</td>
+</tr>
+<tr>
+  <td>EMR_FLATTENPATH</td>
+  <td>65</td>
+  <td>EMR_SETDIBITSTODEVICE</td>
+  <td>80</td>
+</tr>
+<tr>
+  <td>EMR_FRAMERGN</td>
+  <td>72</td>
+  <td>EMR_SETMAPMODE</td>
+  <td>17</td>
+</tr>
+<tr>
+  <td>EMR_GDICOMMENT</td>
+  <td>70</td>
+  <td>EMR_SETMAPPERFLAGS</td>
+  <td>16</td>
+</tr>
+<tr>
+  <td>EMR_HEADER</td>
+  <td>1</td>
+  <td>EMR_SETMETARGN</td>
+  <td>28</td>
+</tr>
+<tr>
+  <td>EMR_INTERSECTCLIPRECT</td>
+  <td>30</td>
+  <td>EMR_SETMITERLIMIT</td>
+  <td>58</td>
+</tr>
+<tr>
+  <td>EMR_INVERTRGN</td>
+  <td>73</td>
+  <td>EMR_SETPALETTEENTRIES</td>
+  <td>50</td>
+</tr>
+<tr>
+  <td>EMR_LINETO</td>
+  <td>54</td>
+  <td>EMR_SETPIXELV</td>
+  <td>15</td>
+</tr>
+<tr>
+  <td>EMR_MASKBLT</td>
+  <td>78</td>
+  <td>EMR_SETPOLYFILLMODE</td>
+  <td>19</td>
+</tr>
+<tr>
+  <td>EMR_MODIFYWORLDTRANSFORM</td>
+  <td>36</td>
+  <td>EMR_SETROP2</td>
+  <td>20</td>
+</tr>
+<tr>
+  <td>EMR_MOVETOEX</td>
+  <td>27</td>
+  <td>EMR_SETSTRETCHBLTMODE</td>
+  <td>21</td>
+</tr>
+<tr>
+  <td>EMR_OFFSETCLIPRGN</td>
+  <td>26</td>
+  <td>EMR_SETTEXTALIGN</td>
+  <td>22</td>
+</tr>
+<tr>
+  <td>EMR_PAINTRGN</td>
+  <td>74</td>
+  <td>EMR_SETTEXTCOLOR</td>
+  <td>24</td>
+</tr>
+<tr>
+  <td>EMR_PIE</td>
+  <td>47</td>
+  <td>EMR_SETVIEWPORTEXTEX</td>
+  <td>11</td>
+</tr>
+<tr>
+  <td>EMR_PLGBLT</td>
+  <td>79</td>
+  <td>EMR_SETVIEWPORTORGEX</td>
+  <td>12</td>
+</tr>
+<tr>
+  <td>EMR_POLYBEZIER</td>
+  <td>2</td>
+  <td>EMR_SETWINDOWEXTEX</td>
+  <td>9</td>
+</tr>
+<tr>
+  <td>EMR_POLYBEZIER16</td>
+  <td>85</td>
+  <td>EMR_SETWINDOWORGEX</td>
+  <td>10</td>
+</tr>
+<tr>
+  <td>EMR_POLYBEZIERTO</td>
+  <td>5</td>
+  <td>EMR_SETWORLDTRANSFORM</td>
+  <td>35</td>
+</tr>
+<tr>
+  <td>EMR_POLYBEZIERTO16</td>
+  <td>88</td>
+  <td>EMR_STRETCHBLT</td>
+  <td>77</td>
+</tr>
+<tr>
+  <td>EMR_POLYDRAW</td>
+  <td>56</td>
+  <td>EMR_STRETCHDIBITS</td>
+  <td>81</td>
+</tr>
+<tr>
+  <td>EMR_POLYDRAW16</td>
+  <td>92</td>
+  <td>EMR_STROKEANDFILLPATH</td>
+  <td>63</td>
+</tr>
+<tr>
+  <td>EMR_POLYGON</td>
+  <td>3</td>
+  <td>EMR_STROKEPATH</td>
+  <td>64</td>
+</tr>
+<tr>
+  <td>EMR_POLYGON16</td>
+  <td>86</td>
+  <td>EMR_WIDENPATH</td>
+  <td>66</td>
+</tr>
+</table>
+<p>
+
+<h3><A NAME="MICMETA-DMYID.3.6">Color Palette</A></h3>
+<p>
+EMF files may also contain an optional color palette used to render
+the EMF drawing. By comparison, WMF files do not store a color
+palette and instead use the default Windows foreground palette.
+<p>
+The NumPalEntries field in the EMF header will indicate the number of
+entries in the palette and will have a value of zero if no palette is
+present. The color palette, if present, will be stored in the End Of
+File record. The EOF record is always the last record stores in an
+EMF file and has the following format:
+<pre>
+typedef struct _EndOfRecord
+{
+    DWORD  Function;        /* End Of Record ID (14) */
+    DWORD  Size;            /* Total size of the record in WORDs */
+    DWORD  NumPalEntries;   /* Number of color palette entries */
+    DWORD  OffPalEntries;   /* Offset of color palette entries */
+    PALENT Palette[];       /* The color palette data */
+    DWORD  OffToEOF;        /* Offset to beginning of this record */
+} ENDOFRECORD;
+</pre>
+<p>
+Function is the function number of this record. For EOF records this
+value is always 14.
+<p>
+Size is the total size of this record in bytes. For an EOF record that
+does not contain a color palette this value will be 20.
+<p>
+NumPalEntries is the number of color palette entries. This value will
+correspond the value of the NumPalEntries field in the EMF header. A
+value of zero indicates no color palette is present.
+<p>
+OffPalEntries indicates the position of the first color palette entry.
+The offset is measured from the beginning of the EOF record.
+<p>
+Palette is the color palette data stored as an array of PALENT
+structures. This field is not present in the EOF record if a color 
+palette is not present. 
+<p>
+OffToEOF indicates the byte offset back to the beginning of the EOF
+record. This field is located after the color palette data (if any)
+and always contains the same value as the Size field.
+<p>
+Each entry in the color palette is four bytes in size and has the
+following format:
+<pre>
+typedef struct _PaletteEntry
+{
+    BYTE Red;       /* Red component value */
+    BYTE Green;     /* Green component value */
+    BYTE Blue;      /* Blue component value */
+    BYTE Flags;     /* Flag values */
+} PALENT;
+</pre>
+<p>
+Red, Green, and Blue contain the color component values for the
+24-bit color palette entry.
+<p>
+Flags contains a bitfield of flags use to indicate the usage of the
+palette entry. Values for this field are:
+<table border=0>
+<tr>
+  <td>0x01</td>
+  <td>Palette index used for animation</td>
+</tr>
+<tr>
+  <td>0x02</td>
+  <td>Palette index is explicit to device</td>
+</tr>
+<tr>
+  <td>0x04</td>
+  <td>Do not match color to system palette</td>
+</tr>
+</table>
+
+<h3><a name="#MICMETA-DMYID.3.7">GDI Comment</A></h3>
+<p>
+One very nice feature of the EMF format is the ability to embed
+private data within an EMF file. Unlike the WMF printer escape
+comment, the GDI comment may contain any type of data and is
+completely device independent.
+<p>
+The GDICOMMENT record has the following format:
+<pre>
+typedef struct _GdiCommentRecord
+{
+    DWORD   Function;      /* GDI Comment ID (70) */
+    DWORD   Size;          /* Total size of the record in WORDs */
+    DWORD   SizeOfData;    /* Size of comment data in bytes */
+    BYTE    Data[];        /* Comment data */        
+} GDICOMMENTRECORD;
+</pre>
+<p>
+Function is the function number of this record. For GDI Comment
+records this value is always 70.
+<p>
+Size is the total size of this record in bytes. For an GDI comment
+record that does not contain any data this value will be 12.
+<p>
+SizeOfData is the number of bytes in the Data field.
+<p>
+Data is the GDI Comment data. The data may be strings, Encapsulated
+PostScipt, or an enhanced metafile.
+<p>
+Each GDI Comment record may store one or more types of comment data.
+The Metafile comment stores a single metafile. The BeginGroup and
+EndGroup comments store a collection of enhanced metafile objects and
+description strings. And the Multiformats comment stores multiple
+enhanced metafiles and Encapsulated PostScript data.
+<p>
+GDI Comments should never contain any application-specific data, as
+this would make the enhanced metafile device dependent. Comment data
+should also not store the offset position of any other data in the
+file. It is possible that records will be added or removed to the
+metafile causing the offset values to then be invalid.
+<p>
+The Metafile comment is a header followed by an enhanced metafile.
+The header has the following format:
+<pre>
+typedef struct _GdiCommentMetafile
+{
+    DWORD Identifier;       /* Comment ID (0x43494447) */
+    DWORD Comment;          /* Metafile ID (0x80000001) */
+    DWORD Version;          /* Version of the metafile */
+    DWORD Checksum;         /* Checksum value of the metafile */
+    DWORD Flags;            /* Flags (always 0) */
+    DWORD Size;             /* Size of the metafile data in bytes */
+} GDICOMMENTMETAFILE;
+</pre>
+<p>
+Identifier contains a value of 0x43494447 identifying this
+structure as a GDI public comment.
+<p>
+Comment contains a value of 0x80000001 identifying this
+structure as a metafile comment.
+<p>
+Version is the version of the metafile. This value is typically
+0x00000001.
+<p>
+Checksum is the checksum value of the metafile data.
+<p>
+Flags is not presently used and is always 0.    
+<p>
+Size is the number of bytes in the metafile data.
+<p>
+The BeginGroup and EndGroup comments contain one or more EMF drawing
+objects. The BeginGroup comment starts the list, followed by all
+EMF records, and is completed by the EndGroup comment. Such groups
+may be nested. The format of the BeginGroup header is as follows:
+<pre>
+typedef struct _GdiCommentBeginGroup
+{
+    DWORD Identifier;       /* Comment ID (0x43494447) */
+    DWORD Comment;          /* BeginGroup ID (0x00000002) */
+    LONG  BoundsLeft;       /* Left side of bounding rectangle */
+    LONG  BoundsRight;      /* Right side of bounding rectangle */
+    LONG  BoundsTop;        /* Top side of bounding rectangle */
+    LONG  BoundsBottom;     /* Bottom side of bounding rectangle */
+    DWORD SizeOfDescrip;    /* Number of characters in the description */     
+} GDICOMMENTBEGINGROUP;
+</pre>
+<p>
+Identifier contains a value of 0x43494447 identifying this structure
+as a GDI public comment.
+<p>
+Comment contains a value of 0x00000002 identifying this structure as
+a BeginGroup comment.
+<p>
+BoundsLeft, BoundsRight, BoundsTop, and BoundsBottom define the
+bounding rectangle of the picture.
+<p>
+SizeOfDescrip is the number of Unicode characters in the description
+string.  This string, if present, will always immediately follow this
+header. If this value is zero then there is no description string
+present.
+<p>
+The EndGroup comment contains only a header and no data. The header
+has the following format:
+<pre>
+typedef struct _GdiCommentEndGroup
+{
+    DWORD Identifier;       /* Comment ID (0x43494447) */
+    DWORD Comment;          /* EndGroup ID (0x00000003) */
+} GDICOMMENTENDGROUP;
+</pre>
+<p>
+Identifier contains a value of 0x43494447 identifying this structure
+as a GDI public comment.
+<p>
+Comment contains a value of 0x00000003 identifying this structure as
+a EndGroup comment.
+<p>
+The Multiformats comment is used to store metafile and Encapsulated
+PostScript (EPS) picture data. This comment begins with a header
+followed by one or more pictures. The format of a Multiformats
+comments header is as follows:
+<pre>
+typedef struct _GdiCommentMultiFormats
+{
+    DWORD Identifier;       /* Comment ID (0x43494447) */
+    DWORD Comment;          /* Multiformats ID (0x40000004) */
+    LONG  BoundsLeft;       /* Left side of bounding rectangle */
+    LONG  BoundsRight;      /* Right side of bounding rectangle */
+    LONG  BoundsTop;        /* Top side of bounding rectangle */
+    LONG  BoundsBottom;     /* Bottom side of bounding rectangle */
+    DWORD NumFormats;       /* Number of formats in comment */
+    EMRFORMAT Data[];       /* Array of comment data */
+} GDICOMMENTMULTIFORMATS
+</pre>
+<p>
+Identifier contains a value of 0x43494447 identifying this structure
+as a GDI public comment.
+<p>
+Comment contains a value of 0x40000004 identifying this structure as
+a Multiformats comment.
+<p>
+BoundsLeft, BoundsRight, BoundsTop, and BoundsBottom define the
+bounding rectangle of the picture.
+<p>
+NumFormats is the number of EMRFORMAT structures in the data.
+<p>
+Data contains one or more EMRFORMAT structures followed their
+associated data. Each structure identifies the type of comment data,
+its size and location in the record.
+<pre>
+typedef struct _EmrFormat
+{
+    DWORD Signature;    /* Format signature */
+    DWORD Version;      /* Format version number */
+    DWORD Data;         /* Size of data in bytes */
+    DWORD OffsetToData; /* Offset to data */
+} EMRFORMAT;
+</pre>
+<p>
+Signature is the data format identifier. A value of 0x464D4520
+indicates an enhanced metafile, and a value of 0x46535045 indicates
+an Encapsulated PostScript file.
+<p>
+Version is the version level of the data. For EPS data this field
+will hold the EPS version number. For an enhanced metafile this
+value of this field will be 0x00000001.
+<p>
+Data is the size of the data associated with this structure in bytes.
+<p>
+OffsetToData is the byte offset of the beginning of the data. The
+offset is measured from the beginning of the Comments field in the
+GDICOMMENTMULTIFORMATS record structure.
+<p>
+
+<h2><A NAME="MICMETA-DMYID.4">For Further Information</A></h2>
+<p>
+For further information about the Microsoft Windows Metafile and
+Enhanced Metafile formats, see the specification included on the
+CD-ROM that accompanies this book. You may also obtain information by
+contacting Microsoft at:
+<p>
+Microsoft Corporation<br>
+One Microsoft Way<br>
+Redmond, WA 98052-6399<br>
+Voice: 206-882-8080<br>
+FAX: 206-936-7329<br>
+BBS: 206-637-9009<br>
+WWW: <i>http://www.microsoft.com/</i><br>
+FTP: <i>ftp://ftp.microsoft.com/</i>
+<p>
+Additional information about the Windows Metafile and Enhanced Metafile 
+Format and the Microsoft Windows Graphics Device Interface can also be 
+found in the following references:
+<blockquote>
+<p>
+Swan, Tom, <i>Inside Windows File Formats</i>, Sams Publishing,
+Indianapolis, IN, 1993.
+<p>
+Microsoft Corporation, <i>Microsoft Windows: A Guide to
+Programming</i>, Microsoft Windows Programmer's Reference
+Library, Microsoft Press, Redmond, WA, 1990.
+<p>
+Microsoft Corporation, <i>Microsoft Windows: Programmer's Reference,
+Volume 4: Resources</i>, Microsoft Windows Programmer's Reference
+Library, Microsoft Press, Redmond, WA, 1990.
+<p>
+Microsoft Corporation, <i>Microsoft Windows: Programming Tools</i>,
+Microsoft Windows Programmer's Reference Library,
+Microsoft Press, Redmond, WA, 1990.
+</blockquote>
+<p>
+The Microsoft Windows Programmer's Reference Library is the master
+reference for programmers working with all aspects of Microsoft
+Windows. The books in this library are supplied with the Microsoft
+Windows Software Development Kit (SDK). The manuals supplied with the
+Visual C++ 4.0 Professional Development Systems are also very
+helpful. You can get information about obtaining these products from:
+<p>
+Microsoft Information Center<br>
+Voice: 800-426-9400
+<p>
+The Microsoft Developers Network (MSDN) distributes several files
+containing information on the WMF and EMF formats. These files may be
+found on the MSDN CD, or on the Microsoft Web site at:
+<p>
+<dl>
+<dt><i>http://www.microsoft.com/Softlib/MSLFILES/ENMETA.EXE</i><dd>
+<p>
+This archive contains sample Windows code to manipulate EMF files.
+Two sample EMF files are included.
+<p>
+<dt><i>http://www.microsoft.com/Softlib/MSLFILES/METAFILE.EXE</i><dd>
+<p>
+This archive contains the METAFILE.HLP help file that describes
+the WMF file format.
+<p>
+<dt><i>http://www.microsoft.com/Softlib/MSLFILES/PLAYMETA.EXE</i><dd>
+<p>
+This archive contains sample Windows code to manipulate WMF files
+<p>
+<dt><i>http://www.microsoft.com/developr/MSDN/OctCD/EMFDCO.ZIP</i><dd>
+<p>
+This archive contains the Windows source code for the EMF 
+decoding utility.
+<p>
+<dt><i>http://www.microsoft.com/developr/MSDN/OctCD/ENHMET.ZIP</i><dd>
+<p>
+This archive contains the ENHMETA.HLP help file that describes
+the EMF file format.
+<p>
+<dt><i>http://www.microsoft.com/developr/MSDN/OctCD/METAFI.ZIP</i><dd>
+<p>
+This archive contains the METAFI.HLP help file that describes
+the WMF file format. 
+</dl><p>
+<p>
+
+<hr>
+<p>
+<!--
+<A HREF="gffse:/format.micbmp"><img src="../../images/txtpreva.gif"></A>
+<A HREF="gffse:/format.miff"><img src="../../images/txtnexta.gif"></A>
+<A HREF="../book.htm"><img src="../../images/txtupa.gif"></A>
+<a href="../bookidx.htm"><img src="../../images/txttoidx.gif"></a>
+<br>
+<a href="../booktoc.htm"><img src="../../images/btntoc.gif"></a>
+<a href="../book/glossary.htm"><img src="../../images/btnglos.gif"></a>
+<a href="../main.htm"><img src="../../images/btnmain.gif"></a>
+<a href="gffse:/page.formats"><img src="../../images/btnfmt.gif"></a>
+<a href="../software.htm"><img src="../../images/btnsoft.gif"></a>
+<a href="../internet.htm"><img src="../../images/btninet.gif"></a>
+<a href="../book.htm"><img src="../../images/btnbook.gif"></a>
+-->
+<P>
+Copyright &copy; 1996, 1994 O'Reilly &amp; Associates, Inc.  All Rights Reserved.
+<p>
+</body>
+</html>

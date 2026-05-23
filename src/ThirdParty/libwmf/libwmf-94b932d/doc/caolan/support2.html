@@ -1,0 +1,110 @@
+<html>
+<body>
+META_SETBKCOLOR              <br>
+META_SETBKMODE               <br>
+META_SETMAPMODE              <br>
+META_SETROP2                 <br>
+META_SETRELABS               <br>
+META_SETPOLYFILLMODE         <br>
+META_SETSTRETCHBLTMODE       <br>
+META_SETTEXTCHAREXTRA        <br>
+<h3>META_SETTEXTCOLOR</h3>
+U32 color<p>
+META_SETTEXTJUSTIFICATION    <br>
+META_SETWINDOWORG            <br>
+META_SETWINDOWEXT            <br>
+META_SETVIEWPORTORG          <br>
+META_SETVIEWPORTEXT          <br>
+META_OFFSETWINDOWORG         <br>
+META_SCALEWINDOWEXT          <br>
+META_OFFSETVIEWPORTORG       <br>
+META_SCALEVIEWPORTEXT        <br>
+META_LINETO                  <br>
+META_MOVETO                  <br>
+META_EXCLUDECLIPRECT         <br>
+META_INTERSECTCLIPRECT       <br>
+<hr>
+<h3>META_ARC</h3>
+<table border=1>
+<tr>
+<td>U16 array no</td><td>Value</td>
+</tr>
+<td>0</td> <td>U16 yend, y of endpoint</td>
+</tr>
+<tr>
+ <td>1</td> <td>U16 xend, x of endpoint</td>
+</tr>
+<tr>
+ <td>2</td> <td>U16 ystart, y of endpoint</td>
+</tr>
+<tr>
+ <td>3</td><td> U16 xstart, x of endpoint</td>
+</tr>
+<tr>
+ <td>4</td><td> U16 bottom, bottom of bounding box</td>
+</tr>
+<tr>
+ <td>5</td><td> U16 right, right of bounding box</td>
+</tr>
+<tr>
+ <td>6</td><td> U16 top, top of bounding box</td>
+</tr>
+<tr>
+ <td>7</td><td> U16 left, left of bounding box</td>
+</tr>
+</table>
+left, right, top and bottom are the extents of the ellipse of
+which the arc is a part<br>
+xstart,ystart define a point from which you draw an imaginary line 
+between it and the center of the ellipse, where that line intersects the
+ellipse is the starting part of the arc<br>
+xend,yend similiarly define the end of the arc.<p>
+<a href="file:/home/caolan/WineAPI/Arc.html">Arc</a>
+<hr>
+META_ELLIPSE                 <br>
+META_FLOODFILL               <br>
+META_PIE                     <br>
+META_RECTANGLE               <br>
+META_ROUNDRECT               <br>
+META_PATBLT                  <br>
+META_SAVEDC                  <br>
+META_SETPIXEL                <br>
+META_OFFSETCLIPRGN           <br>
+META_TEXTOUT                 <br>
+META_BITBLT                  <br>
+META_STRETCHBLT              <br>
+META_POLYGON                 <br>
+META_POLYLINE                <br>
+META_ESCAPE                  <br>
+META_RESTOREDC               <br>
+META_FILLREGION              <br>
+META_FRAMEREGION             <br>
+META_INVERTREGION            <br>
+META_PAINTREGION             <br>
+META_SELECTCLIPREGION        <br>
+META_SELECTOBJECT            <br>
+META_SETTEXTALIGN            <br>
+META_CHORD                   <br>
+META_SETMAPPERFLAGS          <br>
+META_EXTTEXTOUT              <br>
+META_SETDIBTODEV             <br>
+META_SELECTPALETTE           <br>
+META_REALIZEPALETTE          <br>
+META_ANIMATEPALETTE          <br>
+META_SETPALENTRIES           <br>
+META_POLYPOLYGON             <br>
+META_RESIZEPALETTE           <br>
+META_DIBBITBLT               <br>
+META_DIBSTRETCHBLT           <br>
+META_DIBCREATEPATTERNBRUSH   <br>
+META_STRETCHDIB              <br>
+META_EXTFLOODFILL            <br>
+META_DELETEOBJECT            <br>
+META_CREATEPALETTE           <br>
+META_CREATEPATTERNBRUSH      <br>
+META_CREATEPENINDIRECT       <br>
+META_CREATEFONTINDIRECT      <br>
+META_CREATEBRUSHINDIRECT     <br>
+META_CREATEREGION            <br>
+</body>
+</html>

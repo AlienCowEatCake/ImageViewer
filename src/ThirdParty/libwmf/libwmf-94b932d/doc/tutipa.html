@@ -1,0 +1,1287 @@
+<html>
+<head>
+<title>libwmf-0.2.0 Tutorial 2: The IPA</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff"
+      background="caolan/pics/weave.jpg">
+<h1>libwmf-0.2.0 Tutorial 2: The IPA</h1>
+
+<h2>Contents</h2>
+
+<ul>
+<li><a href="#intro">Introduction</a>
+<li><a href="#types">Types</a>
+<li><a href="#ipafnref"><b>IPA</b> Function Reference</a>
+<li><a href="#ipafns">IPA Functions</a>
+<li><a href="#bitmap">Bitmap Functions</a>
+<li><a href="#fns">Other Functions</a>
+<li><a href="#guide">Guidelines</a>
+<li><a href="#compile">Compiling - The Distribution</a>
+</ul>
+
+<a name="intro"><h2>Introduction</h2></a>
+
+<p>
+This is a combination of tutorial and reference guide for writing new device
+layers for <tt>libwmf</tt>.
+</p>
+<p>
+Since no two graphics interfaces are identical, the task of the <b>IPA</b>
+(the interface between the interpreter and the device layer) is to simplify the
+task of translating the metafile drawing commands. (It cannot be denied that
+there is still considerable room for improvement.)
+</p>
+<p>
+When writing a new device layer you will need to include the following headers:
+</p>
+<font color=blue>
+<pre>
+#include &#60;libwmf/ipa.h&#62;
+#include &#60;libwmf/defs.h&#62;
+</pre>
+</font>
+<p>
+The former includes the <b>API</b> declarations as well as the <b>IPA</b>
+declarations, while the latter defines metafile constants.
+</p>
+
+<a name="types"><h2>Types</h2></a>
+
+  <a href="#RGB">wmfRGB</a>
+| <a href="#BMP">wmfBMP</a>
+| <a href="#Brush">wmfBrush</a>
+| <a href="#Pen">wmfPen</a>
+| <a href="#Font">wmfFont</a>
+| <a href="#DC">wmfDC</a>
+| <a href="#Flood">wmfFlood_t</a>
+| <a href="#DrawPixel">wmfDrawPixel_t</a>
+| <a href="#DrawArc">wmfDrawArc_t</a>
+| <a href="#DrawLine">wmfDrawLine_t</a>
+| <a href="#PolyLine">wmfPolyLine_t</a>
+| <a href="#DrawRect">wmfDrawRectangle_t</a>
+| <a href="#PolyRect">wmfPolyRectangle_t</a>
+| <a href="#BMPRead">wmfBMP_Read_t</a>
+| <a href="#BMPDraw">wmfBMP_Draw_t</a>
+| <a href="#ROPDraw">wmfROP_Draw_t</a>
+| <a href="#DrawText">wmfDrawText_t</a>
+| <a href="#UserData">wmfUserData_t</a>
+| <a href="#CharDrawer">wmfCharDrawer</a>
+
+<ul>
+<li><a name="RGB"><b>wmfRGB</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfRGB wmfRGB;
+
+struct _wmfRGB
+{	unsigned char r;
+	unsigned char g;
+	unsigned char b;
+};
+</pre>
+</font>
+<p>
+<tt>wmfRGB</tt> describes a color, with <tt>r = g = b = 255</tt> corresponding
+to <i>white</i> and <tt>r = g = b = 0</tt> corresponding to <i>black</i>.
+</p>
+
+<li><a name="BMP"><b>wmfBMP</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfBMP wmfBMP;
+
+struct _wmfBMP
+{	U16 width;
+	U16 height;
+
+	void* data;
+};
+</pre>
+</font>
+<p>
+Container for a bitmap, of dimensions <tt>width</tt> and <tt>height</tt>.
+If non-zero, <tt>data</tt> is a pointer to an internal representation of the
+bitmap. The interpreter does not reference <tt>data</tt> and will not attempt
+to draw a bitmap if <tt>data</tt> is zero; however, a bitmap brush pattern
+may be set even though <tt>data</tt> is zero. (<tt>data=0</tt> indicates
+either that the device layer has no support for bitmaps or that the bitmap
+is corrupt or unreadable.)
+</p>
+
+<li><a name="Brush"><b>wmfBrush</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfBrush wmfBrush;
+
+struct _wmfBrush
+{	U16 lbStyle;
+	U16 lbHatch;
+
+	wmfRGB lbColor;
+	wmfBMP bmp;
+};
+</pre>
+</font>
+<p>
+<tt>wmfBrush</tt> is one element of the current drawing context.
+<tt>lbStyle</tt> is one of the following:
+</p>
+<font color=blue>
+<pre>
+/* Brush Styles */
+#define BS_SOLID            0
+#define BS_NULL             1
+#define BS_HOLLOW     BS_NULL
+#define BS_HATCHED          2
+#define BS_PATTERN          3
+#define BS_INDEXED          4
+#define BS_DIBPATTERN       5
+#define BS_DIBPATTERNPT     6
+#define BS_PATTERN8X8       7
+#define BS_DIBPATTERN8X8    8
+</pre>
+</font>
+<p>
+where <tt>BS_NULL</tt> indicates that no brush is set. If
+<tt>lbStyle=BS_HATCHED</tt> then the brush has the pattern, specified by
+<tt>lbHatch</tt> which is one of:
+</p>
+<font color=blue>
+<pre>
+/* Hatch Styles */
+#define HS_HORIZONTAL       0       /* ----- */
+#define HS_VERTICAL         1       /* ||||| */
+#define HS_FDIAGONAL        2       /* \\\\\ */
+#define HS_BDIAGONAL        3       /* ///// */
+#define HS_CROSS            4       /* +++++ */
+#define HS_DIAGCROSS        5       /* xxxxx */
+</pre>
+</font>
+<p>
+If <tt>lbStyle=BS_HATCHED</tt> or <tt>lbStyle=BS_SOLID</tt> then the foreground
+color of the brush is <tt>lbColor</tt>. Otherwise, if the brush is a bitmap,
+ensure that <tt>bmp.data</tt> is non-zero.
+</p>
+<p>
+The following macros should be used to retrieve the above info.:
+</p>
+<font color=blue>
+<pre>
+#include <libwmf/macro.h>
+
+/* WMF_BRUSH_STYLE(wmfBrush* B) -> (U16) brush style
+ * WMF_BRUSH_HATCH(wmfBrush* B) -> (U16) brush hatch style
+ * 
+ * WMF_BRUSH_COLOR(wmfBrush* B) -> (wmfRGB*) brush color
+ * 
+ * WMF_BRUSH_BITMAP(wmfBrush* B) -> (wmfBMP*) brush bitmap
+ */
+#define WMF_BRUSH_STYLE(B)  ((B)->lbStyle)
+#define WMF_BRUSH_HATCH(B)  ((B)->lbHatch)
+
+#define WMF_BRUSH_COLOR(B)  (&((B)->lbColor))
+
+#define WMF_BRUSH_BITMAP(B) (&((B)->bmp))
+</pre>
+</font>
+
+<li><a name="Pen"><b>wmfPen</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfPen wmfPen;
+
+struct _wmfPen
+{	U16 lopnStyle;
+
+	double width;
+	double height;
+
+	wmfRGB lopnColor;
+};
+</pre>
+</font>
+<p>
+<tt>wmfPen</tt> is one element of the current drawing context. The nib has
+dimensions <tt>width</tt> and <tt>height</tt> and color <tt>lopnColor</tt>.
+<tt>lopnStyle</tt> contains style information on the line itself, on the ends,
+on the joins, and on the type:
+</p>
+<font color=blue>
+<pre>
+#define PS_STYLE_MASK       0x0000000F
+#define PS_ENDCAP_MASK      0x00000F00
+#define PS_JOIN_MASK        0x0000F000
+#define PS_TYPE_MASK        0x000F0000
+</pre>
+</font>
+<p>
+<tt>lopnStyle & PS_STYLE_MASK</tt> is one of:
+</p>
+<font color=blue>
+<pre>
+#define PS_SOLID            0
+#define PS_DASH             1       /* -------  */
+#define PS_DOT              2       /* .......  */
+#define PS_DASHDOT          3       /* _._._._  */
+#define PS_DASHDOTDOT       4       /* _.._.._  */
+#define PS_NULL             5
+#define PS_INSIDEFRAME      6
+#define PS_USERSTYLE        7
+#define PS_ALTERNATE        8
+</pre>
+</font>
+<p>
+where PS_NULL indicates that no pen has been set.
+<tt>lopnStyle & PS_ENDCAP_MASK</tt> is one of:
+</p>
+<font color=blue>
+<pre>
+#define PS_ENDCAP_ROUND     0x00000000
+#define PS_ENDCAP_SQUARE    0x00000100
+#define PS_ENDCAP_FLAT      0x00000200
+</pre>
+</font>
+<p>
+and <tt>lopnStyle & PS_JOIN_MASK</tt> is one of:
+</p>
+<font color=blue>
+<pre>
+#define PS_JOIN_ROUND       0x00000000
+#define PS_JOIN_BEVEL       0x00001000
+#define PS_JOIN_MITER       0x00002000
+</pre>
+</font>
+<p>
+Finally, <tt>lopnStyle & PS_TYPE_MASK</tt> is one of:
+</p>
+<font color=blue>
+<pre>
+#define PS_COSMETIC         0x00000000
+#define PS_GEOMETRIC        0x00010000
+</pre>
+</font>
+<p>
+The following macros should be used to retrieve the above info.:
+</p>
+<font color=blue>
+<pre>
+#include <libwmf/macro.h>
+
+/* WMF_PEN_STYLE(wmfPen* P)  -> (U16) pen style
+ * WMF_PEN_ENDCAP(wmfPen* P) -> (U16) endcap style
+ * WMF_PEN_JOIN(wmfPen* P)   -> (U16) join style
+ * WMF_PEN_TYPE(wmfPen* P)   -> (U16) `type' of pen (??)
+ * 
+ * WMF_PEN_WIDTH(wmfPen* P)  -> (double) pen `width'  (thickness w.r.t. x-axis)
+ * WMF_PEN_HEIGHT(wmfPen* P) -> (double) pen `height' (thickness w.r.t. y-axis)
+ * 
+ * WMF_PEN_COLOR(wmfPen* P) -> (wmfRGB*) pen color
+ */
+#define WMF_PEN_STYLE(P)  ((P)->lopnStyle & PS_STYLE_MASK)
+#define WMF_PEN_ENDCAP(P) ((P)->lopnStyle & PS_ENDCAP_MASK)
+#define WMF_PEN_JOIN(P)   ((P)->lopnStyle & PS_JOIN_MASK)
+#define WMF_PEN_TYPE(P)   ((P)->lopnStyle & PS_TYPE_MASK)
+
+#define WMF_PEN_WIDTH(P)  ((P)->width)
+#define WMF_PEN_HEIGHT(P) ((P)->height)
+
+#define WMF_PEN_COLOR(P)  (&((P)->lopnColor))
+</pre>
+</font>
+
+<li><a name="Font"><b>wmfFont</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfFont wmfFont;
+
+struct _wmfFont
+{	U16 lfHeight;
+	U16 lfWidth;
+
+	S16 lfEscapement;
+	S16 lfOrientation;
+
+	U16 lfWeight;
+
+	U8 lfItalic;
+	U8 lfUnderline;
+	U8 lfStrikeOut;
+	U8 lfCharSet;
+	U8 lfOutPrecision;
+	U8 lfClipPrecision;
+	U8 lfQuality;
+	U8 lfPitchAndFamily;
+
+	char* lfFaceName;
+
+	char* ps_name;
+
+	FT_Face ft_face;
+};
+</pre>
+</font>
+<p>
+<tt>wmfFont</tt> is one element of the current drawing context. Of all of this,
+the most important elements are <tt>ps_name</tt> (the postscript font name) and
+<tt>ft_face</tt>, the freetype (2) font face for which <b>bold</b> and
+<i>italics</i> have already been determined.
+</p>
+<p>
+The following macros should be used to retrieve the above info.:
+</p>
+<font color=blue>
+<pre>
+#include <libwmf/macro.h>
+
+/* WMF_TEXT_ANGLE(wmfFont* F) -> (double) text angle in radians
+ * 
+ * WMF_TEXT_UNDERLINE(wmfFont* F) -> (U8) ?? whether to underline (?? how thick)
+ * WMF_TEXT_STRIKEOUT(wmfFont* F) -> (U8) ?? whether to strikeout (?? how thick)
+ * 
+ * WMF_FONT_NAME(wmfFont* F)   -> (char*) font name supplied by metafile
+ * WMF_FONT_PSNAME(wmfFont* F) -> (char*) font name to use in postscript output
+ * WMF_FONT_FTFACE(wmfFont* F) -> (FT_Face) freetype(2) font face
+ */
+#define WMF_TEXT_ANGLE(F)     ((((double) (F)->lfEscapement) / 10) * M_PI / 180)
+
+#define WMF_TEXT_UNDERLINE(F) ((F)->lfUnderline)
+#define WMF_TEXT_STRIKEOUT(F) ((F)->lfStrikeOut)
+
+#define WMF_FONT_NAME(F)   ((F)->lfFaceName)
+#define WMF_FONT_PSNAME(F) ((F)->ps_name)
+#define WMF_FONT_FTFACE(F) ((F)->ft_face)
+</pre>
+</font>
+
+<li><a name="DC"><b>wmfDC</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfDC wmfDC;
+
+struct _wmfDC
+{	void* userdata;
+
+	wmfBrush* brush;
+	wmfPen* pen;
+	wmfFont* font;
+
+	int key;     /* Is this used ?? */
+
+	wmfDC* next; /* Is this used ?? */
+
+	wmfRGB textcolor;
+	wmfRGB bgcolor;
+
+	U16 textalign;
+	U16 bgmode;
+	U16 polyfillmode;
+	U16 charextra;
+	U16 breakextra;
+
+	U16 ROPmode;
+
+	struct
+	{	S32 Ox;
+		S32 Oy;
+		S32 width;
+		S32 height;
+	} Window;
+
+	double pixel_width; /* Display pixel dimensions (inches) */
+	double pixel_height;
+
+	U16 map_mode;
+
+	void* clip;
+};
+</pre>
+</font>
+<p>
+<i>Still very much a work in progress, especially with regard to the drawing
+context <tt>wmfDC</tt>; there is much in this structure that is (or should
+be) irrelevant to the <b>IPA</b>.</i>
+</p>
+<p>
+See <b>wmfBrush</b>, <b>wmfPen</b> and <b>wmfFont</b>. <tt>textcolor</tt> is
+the color to draw text, <tt>bgcolor</tt> is the background color (generally, as
+well as with text) unless <tt>bgmode=TRANSPARENT</tt>, in which case there is
+no background. <tt>bgmode</tt> is one of:
+</p>
+<font color=blue>
+<pre>
+#define TRANSPARENT         1
+#define OPAQUE              2
+#define BKMODE_LAST         2
+</pre>
+</font>
+<p>
+The following macros should be used to retrieve the above info.:
+</p>
+<font color=blue>
+<pre>
+#include <libwmf/macro.h>
+
+/* WMF_DC_BRUSH(wmfDC* C) -> (wmfBrush*) current brush
+ * WMF_DC_PEN(wmfDC* C)   -> (wmfPen*)   current pen
+ * WMF_DC_FONT(wmfDC* C)  -> (wmfFont*)  current font
+ * 
+ * WMF_DC_TEXTCOLOR(wmfDC* C)  -> (wmfRGB*) text color
+ * WMF_DC_BACKGROUND(wmfDC* C) -> (wmfRGB*) background color
+ * 
+ * WMF_DC_OPAQUE(wmfDC* C) -> (U16) whether to fill opaque (non-zero if true)
+ * 
+ * WMF_DC_POLYFILL(wmfDC* C) -> (U16) how to fill polygons
+ * 
+ * WMF_DC_ROP(wmfDC* C) -> (U16) ROP mode
+ */
+#define WMF_DC_BRUSH(C)      ((C)->brush)
+#define WMF_DC_PEN(C)        ((C)->pen)
+#define WMF_DC_FONT(C)       ((C)->font)
+
+#define WMF_DC_TEXTCOLOR(C)  (&((C)->textcolor))
+#define WMF_DC_BACKGROUND(C) (&((C)->bgcolor))
+
+#define WMF_DC_OPAQUE(C)     ((C)->bgmode - 1)
+
+#define WMF_DC_POLYFILL(C)   ((C)->polyfillmode)
+
+#define WMF_DC_ROP(C)        ((C)->ROPmode)
+</pre>
+</font>
+
+<li><a name="Flood"><b>wmfFlood_t</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfFlood_t wmfFlood_t;
+
+struct _wmfFlood_t
+{	wmfDC* dc;
+
+	wmfD_Coord pt;
+	wmfRGB color;
+
+	U16 type;
+
+	double pixel_width;
+	double pixel_height;
+};
+</pre>
+</font>
+<p>
+Flood-fill region with color <tt>color</tt>, starting at point <tt>pt</tt>.
+Since this is almost certainly not a vector operation, the pixel width and
+height are given (and are probably best ignored...). <tt>type</tt> is one
+of:
+</p>
+<font color=blue>
+<pre>
+#define  FLOODFILLBORDER    0
+#define  FLOODFILLSURFACE   1
+</pre>
+</font>
+
+<li><a name="DrawPixel"><b>wmfDrawPixel_t</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfDrawPixel_t wmfDrawPixel_t;
+
+struct _wmfDrawPixel_t
+{	wmfDC* dc;
+
+	wmfD_Coord pt;
+	wmfRGB color;
+
+	double pixel_width;
+	double pixel_height;
+};
+</pre>
+</font>
+<p>
+Set pixel at point <tt>pt</tt> to color <tt>color</tt>. The pixel width and
+height are given.
+</p>
+
+<li><a name="DrawArc"><b>wmfDrawArc_t</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfDrawArc_t wmfDrawArc_t;
+
+struct _wmfDrawArc_t
+{	wmfDC* dc;
+
+	wmfD_Coord TL;
+	wmfD_Coord BR;
+
+	wmfD_Coord start; /* draw_ellipse: (ignored) */
+	wmfD_Coord end;
+};
+</pre>
+</font>
+<p>
+Draw a complete or partial ellipse. <tt>TL</tt> and <tt>BR</tt> are the
+coordinates of the top left and bottom right of the ellipse's bounding box
+respectively. If incomplete, then <tt>start</tt> and <tt>end</tt> give the
+start and end coordinates of the arc.
+</p>
+
+<li><a name="DrawLine"><b>wmfDrawLine_t</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfDrawLine_t wmfDrawLine_t;
+
+struct _wmfDrawLine_t
+{	wmfDC* dc;
+
+	wmfD_Coord from;
+	wmfD_Coord to;
+};
+</pre>
+</font>
+<p>
+Draw line from point <tt>from</tt> to point <tt>to</tt>.
+</p>
+
+<li><a name="PolyLine"><b>wmfPolyLine_t</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfPolyLine_t wmfPolyLine_t;
+
+struct _wmfPolyLine_t
+{	wmfDC* dc;
+
+	wmfD_Coord* pt;
+
+	U16 count;
+};
+</pre>
+</font>
+<p>
+An array (of length <tt>count</tt>) of points <tt>pt[]</tt>. This may be used
+to describe polygons as well as line sequences.
+</p>
+
+<li><a name="DrawRect"><b>wmfDrawRectangle_t</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfDrawRectangle_t wmfDrawRectangle_t;
+
+struct _wmfDrawRectangle_t
+{	wmfDC* dc;
+
+	wmfD_Coord TL;
+	wmfD_Coord BR;
+
+	float width; /* draw_rectangle: axes of corner ellipses; zero if un-rounded */
+	float height;
+};
+</pre>
+</font>
+<p>
+A rectangle, possibly with rounded corners - in which case <tt>width</tt> and
+<tt>height</tt> give the elliptic axes of the rectangle's corners.
+</p>
+
+<li><a name="PolyRect"><b>wmfPolyRectangle_t</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfPolyRectangle_t wmfPolyRectangle_t;
+
+struct _wmfPolyRectangle_t
+{	wmfDC* dc;
+
+	wmfD_Coord* TL; /* region_frame & region_paint: TL[count],BR[count] give the */
+	wmfD_Coord* BR; /* final `extents'... */
+
+	unsigned int count;
+
+	float width;  /* region_frame: border thickness; zero otherwise */
+	float height;
+};
+</pre>
+</font>
+<p>
+Used by region and clip calls, <tt>wmfPolyRectangle_t</tt> is used to describe
+multiple rectangles, whose top left and bottom right corners are given by the
+<tt>TL</tt> and <tt>BR</tt> arrays respectively. These arrays are of length
+<tt>count</tt> in the case of clip calls, and of length <tt>count</tt> + 1 in
+the case of the region calls, the extra element containing the overall bounding
+box (the region extents). In the case of <tt>region_frame</tt>, <tt>width</tt>
+and <tt>height</tt> give the thickness of the frame.
+</p>
+
+<li><a name="BMPRead"><b>wmfBMP_Read_t</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfBMP_Read_t wmfBMP_Read_t;
+
+struct _wmfBMP_Read_t          /* Two means available for accessing BMP image:        */
+{	long offset;           /* (1) position in source file of start of BMP;        *
+                                * use API->bbuf.seek to set pos(ition), etc.          */
+	long length;           /* (2) buffer of length length containing image of BMP */
+	unsigned char* buffer;
+
+	U16 width;  /* WMF player may preset these values; zero otherwise. */
+	U16 height; /* Use caution - may be buggy... ?? [TODO]             */
+
+	wmfBMP bmp;
+};
+</pre>
+</font>
+<p>
+There are two ways to read a bitmap presented by <tt>libwmf</tt>: the first is
+to read it directly from the input stream using the internal stream functions:
+<font color=blue>
+<pre>
+/* Macro-wrappers for stream functions:
+ * (int)  WMF_READ ((wmfAPI*) API)                 - returns unsigned char cast to int, or EOF
+ * (int)  WMF_SEEK ((wmfAPI*) API,(long) position) - returns (-1) on error, else 0
+ * (long) WMF_TELL ((wmfAPI*) API)                 - returns (-1) on error, else current position
+ */
+</pre>
+</font>
+where the bitmap starts at offset <tt>offset</tt>; the second (which is
+preferred) is to use the buffer <tt>buffer</tt> of length <tt>length</tt>.
+</p>
+<p>
+To complicate matters, the bitmap's data may be truncated so that the bitmap's
+header is incorrect - <tt>width</tt> and <tt>height</tt> give the <i>real</i>
+dimensions of the bitmap.
+</p>
+<p>
+The bitmap's width and height should be entered into <tt>bmp</tt> (see
+<a href="#BMP">wmfBMP</a> above) as well as a pointer to the bitmap data (which
+can be in any format you choose; the library does not need to know).
+</p>
+
+<li><a name="BMPDraw"><b>wmfBMP_Draw_t</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfBMP_Draw_t wmfBMP_Draw_t;
+
+struct _wmfBMP_Draw_t
+{	wmfDC* dc;
+
+	wmfD_Coord pt;
+	wmfBMP bmp;
+
+	U32 type;
+
+	struct
+	{	U16 x;
+		U16 y;
+		U16 w;
+		U16 h;
+	} crop;
+
+	double pixel_width;
+	double pixel_height;
+};
+</pre>
+</font>
+<p>
+In contrast to earlier versions, <tt>libwmf</tt> no longer makes any attempt to
+crop or scale the bitmap. Instead the crop data are presented to the device
+layer to use as it sees fit, and the pixel width and height as well. The bitmap
+referenced by <tt>bmp</tt> (see <a href="#BMP">wmfBMP</a> above) is to be drawn
+at point <tt>pt</tt>.
+</p>
+<p>
+<i><b>TODO:</b> info on <tt>type</tt></i>
+</p>
+
+<li><a name="ROPDraw"><b>wmfROP_Draw_t</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfROP_Draw_t wmfROP_Draw_t;
+
+struct _wmfROP_Draw_t
+{	wmfDC* dc;
+
+	wmfD_Coord TL;
+	wmfD_Coord BR;
+
+	U32 ROP;
+
+	double pixel_width;
+	double pixel_height;
+};
+</pre>
+</font>
+<p>
+<i><b>TODO:</b></i>
+</p>
+
+<li><a name="DrawText"><b>wmfDrawText_t</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfDrawText_t wmfDrawText_t;
+
+struct _wmfDrawText_t
+{	wmfDC* dc;
+
+	wmfD_Coord pt;
+
+	wmfD_Coord TL; /* Clip zone */
+	wmfD_Coord BR;
+
+	struct /* An estimated surround zone */
+	{	wmfD_Coord TL;
+		wmfD_Coord TR;
+		wmfD_Coord BL;
+		wmfD_Coord BR;
+	} bbox;
+
+	char* str;
+
+	U16 flags;
+
+	double font_height;
+	double font_ratio;  /* width to height ratio */
+};
+</pre>
+</font>
+<p>
+Fonts and text are <i>triiicky</i>! Fortunately <tt>libwmf</tt> tries to do
+most of the work. As such text justification is taken care of by the
+interpreter, and fonts (<b>bold</b>, <i>italic</i>, etc.) are selected
+elsewhere. The emphasis with <tt>wmfDrawText_t</tt> is therefore the rendering
+of text.
+</p>
+<p>
+The text can be assumed to be left-justified, starting at point <tt>pt</tt>.
+<tt>TL</tt> and <tt>BR</tt> are the corners of a clip rectangle. <tt>bbox</tt>
+gives four corners of rectangle - an <i>estimate</i> of the background zone.
+<tt>str</tt> is the text to draw; <tt>font_height</tt> is the height of the
+font and <tt>font_ratio</tt> is how much to stretch the font width-wise. The
+values for <tt>flags</tt> are:
+</p>
+<font color=blue>
+<pre>
+#define ETO_OPAQUE          0x0002
+#define ETO_CLIPPED         0x0004
+#define ETO_GLYPH_INDEX     0x0010
+#define ETO_RTLREADING      0x0080
+</pre>
+</font>
+
+<li><a name="UserData"><b>wmfUserData_t</b></a>
+<font color=blue>
+<pre>
+typedef struct _wmfUserData_t wmfUserData_t;
+
+struct _wmfUserData_t	/* TODO: Need to be careful with usage here; not all these are set by the player! */
+{	wmfDC* dc;          /* dc is guaranteed */
+
+	void* data;         /* data also, except for init */
+};
+</pre>
+</font>
+<p>
+Redundant; may be removed at some point...
+</p>
+
+<li><a name="CharDrawer"><b>wmfCharDrawer</b></a>
+<font color=blue>
+<pre>
+typedef void (*wmfCharDrawer) (wmfAPI*,wmfDrawText_t*);
+</pre>
+</font>
+</ul>
+
+<a name="ipafnref"><h2>IPA Function Reference</h2></a>
+
+<p>
+Let us assume that you are writing a device layer called <i>mydev</i>, then the
+first requirement is an initialization function:
+</p>
+<font color=blue>
+<pre>
+#include &#60;libwmf/ipa.h&#62;
+#include &#60;libwmf/defs.h&#62;
+#include &#60;libwmf/<i>mydev</i>.h&#62;
+
+void wmf_<i>mydev</i>_function (wmfAPI* API)
+{	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
+
+	/* */
+</pre>
+</font>
+The function reference has the following definition:
+<font color=blue>
+<pre>
+typedef struct _wmfFunctionReference wmfFunctionReference;
+
+struct _wmfFunctionReference
+{	void (*device_open) (wmfAPI*);
+	void (*device_close) (wmfAPI*);
+	void (*device_begin) (wmfAPI*);
+	void (*device_end) (wmfAPI*);
+
+	void (*flood_interior) (wmfAPI*,wmfFlood_t*);
+	void (*flood_exterior) (wmfAPI*,wmfFlood_t*);
+
+	void (*draw_pixel) (wmfAPI*,wmfDrawPixel_t*);
+	void (*draw_pie) (wmfAPI*,wmfDrawArc_t*);
+	void (*draw_chord) (wmfAPI*,wmfDrawArc_t*);
+	void (*draw_arc) (wmfAPI*,wmfDrawArc_t*);
+	void (*draw_ellipse) (wmfAPI*,wmfDrawArc_t*);
+	void (*draw_line) (wmfAPI*,wmfDrawLine_t*);
+	void (*poly_line) (wmfAPI*,wmfPolyLine_t*);
+	void (*draw_polygon) (wmfAPI*,wmfPolyLine_t*);
+	void (*draw_rectangle) (wmfAPI*,wmfDrawRectangle_t*);
+
+	void (*rop_draw) (wmfAPI*,wmfROP_Draw_t*);
+	void (*bmp_draw) (wmfAPI*,wmfBMP_Draw_t*);
+	void (*bmp_read) (wmfAPI*,wmfBMP_Read_t*);
+	void (*bmp_free) (wmfAPI*,wmfBMP*);
+
+	void (*draw_text) (wmfAPI*,wmfDrawText_t*);
+
+	void (*udata_init) (wmfAPI*,wmfUserData_t*);
+	void (*udata_copy) (wmfAPI*,wmfUserData_t*);
+	void (*udata_set) (wmfAPI*,wmfUserData_t*);
+	void (*udata_free) (wmfAPI*,wmfUserData_t*);
+
+	void (*region_frame) (wmfAPI*,wmfPolyRectangle_t*);
+	void (*region_paint) (wmfAPI*,wmfPolyRectangle_t*);
+	void (*region_clip) (wmfAPI*,wmfPolyRectangle_t*);
+};
+</pre>
+</font>
+<p>
+The initialization function has two purposes, the first being to establish the
+links that create the <b>IPA</b> by pointing the function reference variables
+to your own drawing functions:
+</p>
+<font color=blue>
+<pre>
+#include &#60;libwmf/ipa.h&#62;
+#include &#60;libwmf/defs.h&#62;
+#include &#60;libwmf/<i>mydev</i>.h&#62;
+
+void wmf_<i>mydev</i>_function (wmfAPI* API)
+{	wmfFunctionReference* FR = (wmfFunctionReference*) API-&#62;function_reference;
+
+	FR-&#62;device_open  = wmf_<i>mydev</i>_device_open;
+	FR-&#62;device_close = wmf_<i>mydev</i>_device_close;
+	FR-&#62;device_begin = wmf_<i>mydev</i>_device_begin;
+	FR-&#62;device_end   = wmf_<i>mydev</i>_device_end;
+	/* etc. */
+
+	/* */
+}
+
+void wmf_<i>mydev</i>_device_open (wmfAPI* API)
+{	/* */
+}
+
+/* etc. */
+</pre>
+</font>
+<p>
+The second purpose of the initialization function is to allocate the device's
+data structure, set the device parameters to default values if necessary, and
+then to attach the data to the <tt>API->device_data</tt> hook.
+</p>
+<font color=blue>
+<pre>
+/* */
+
+typedef struct _wmf_<i>mydev</i>_t wmf_<i>mydev</i>_t;
+
+struct _wmf_<i>mydev</i>_t
+{	/* */
+
+	unsigned long flags;
+}
+
+void wmf_<i>mydev</i>_function (wmfAPI* API)
+{	wmfFunctionReference* FR = (wmfFunctionReference*) API-&#62;function_reference;
+
+	wmf_<i>mydev</i>_t* ddata = 0;
+
+	FR-&#62;device_open  = wmf_<i>mydev</i>_device_open;
+	/* etc. */
+
+	API-&#62;device_data = wmf_malloc (API,sizeof (wmf_<i>mydev</i>_t));
+
+	if (API->err != wmf_E_None) return; /* insufficient memory? */
+
+	ddata = (wmf_<i>mydev</i>_t*) API-&#62;device_data;
+
+	/* */
+
+	ddata->flags = 0;
+}
+
+/* */
+</pre>
+</font>
+
+<a name="ipafns"><h2>IPA Functions</h2></a>
+
+<p>
+The <b>IPA</b> functions are called by <tt>wmf_play ()</tt>, the only exception
+being <tt>device_close</tt> which is called by <tt>wmf_api_destroy ()</tt> -
+and then only if <tt>device_open</tt> has been called by <tt>wmf_play ()</tt>.
+</p>
+<p>
+<tt>device_open</tt> is called the first time (and <i>only</i> the first time)
+<tt>wmf_play ()</tt> is called, and is the very first <b>IPA</b> function to be
+called, just as <tt>device_close</tt> will be the very last.
+</p>
+<p>
+At the beginning of each <i>play</i> cycle (i.e., each call to
+<tt>wmf_play ()</tt>) <tt>device_begin</tt> is called (after
+<tt>device_open</tt> if it is the first cycle), and at the end of each cycle
+<tt>device_end</tt> is called. The metafile graphics use other <b>IPA</b>
+functions.
+</p>
+<p>
+<tt>device_open</tt>, <tt>device_begin</tt>, <tt>device_end</tt> and
+<tt>device_close</tt> <i>should</i> be written so that <tt>wmf_play ()</tt> can
+be called repeatedly.
+</p>
+<p>
+The names of the functions are not important. The generic names are used below:
+</p>
+
+  <a href="#devopen">device_open</a>
+| <a href="#devclose">device_close</a>
+| <a href="#devbegin">device_begin</a>
+| <a href="#devend">device_end</a>
+| <a href="#floodint">flood_interior</a>
+| <a href="#floodext">flood_exterior</a>
+| <a href="#dpixel">draw_pixel</a>
+| <a href="#dpie">draw_pie</a>
+| <a href="#dchord">draw_chord</a>
+| <a href="#darc">draw_arc</a>
+| <a href="#dellipse">draw_ellipse</a>
+| <a href="#dline">draw_line</a>
+| <a href="#pline">poly_line</a>
+| <a href="#dpoly">draw_polygon</a>
+| <a href="#drect">draw_rectangle</a>
+| <a href="#ropdraw">rop_draw</a>
+| <a href="#bmpdraw">bmp_draw</a>
+| <a href="#bmpread">bmp_read</a>
+| <a href="#bmpfree">bmp_free</a>
+| <a href="#dtext">draw_text</a>
+| <a href="#uinit">udata_init</a>
+| <a href="#ucopy">udata_copy</a>
+| <a href="#uset">udata_set</a>
+| <a href="#ufree">udata_free</a>
+| <a href="#rframe">region_frame</a>
+| <a href="#rpaint">region_paint</a>
+| <a href="#rclip">region_clip</a>
+
+<ul>
+<li><a name="devopen"><b>device_open</b></a>
+<font color=blue>
+<pre>
+void device_open (wmfAPI*);
+</pre>
+</font>
+<p>
+<tt>device_open</tt> is the very first <b>IPA</b> function to be called. It is
+called only once, the first time <tt>wmf_play ()</tt> is called.
+</p>
+
+<li><a name="devclose"><b>device_close</b></a>
+<font color=blue>
+<pre>
+void device_close (wmfAPI*);
+</pre>
+</font>
+<p>
+<tt>device_close</tt> is the very last <b>IPA</b> function to be called. It is
+called by <tt>wmf_api_destroy ()</tt>, and only if <tt>device_open</tt> has
+been called earlier.
+</p>
+
+<li><a name="devbegin"><b>device_begin</b></a>
+<font color=blue>
+<pre>
+void device_begin (wmfAPI*);
+</pre>
+</font>
+<p>
+<tt>device_begin</tt> is the first <b>IPA</b> function called from
+<tt>wmf_play ()</tt> (with the exception of <tt>device_open</tt> the first time
+<tt>wmf_play ()</tt> is called).
+</p>
+
+<li><a name="devend"><b>device_end</b></a>
+<font color=blue>
+<pre>
+void device_end (wmfAPI*);
+</pre>
+</font>
+<p>
+<tt>device_end</tt> is the last <b>IPA</b> function called from
+<tt>wmf_play ()</tt>.
+</p>
+
+<li><a name="floodint"><b>flood_interior</b></a>
+<font color=blue>
+<pre>
+void flood_interior (wmfAPI*,<a href="#Flood">wmfFlood_t</a>*);
+</pre>
+</font>
+
+<li><a name="floodext"><b>flood_exterior</b></a>
+<font color=blue>
+<pre>
+void flood_exterior (wmfAPI*,<a href="#Flood">wmfFlood_t</a>*);
+</pre>
+</font>
+
+<li><a name="dpixel"><b>draw_pixel</b></a>
+<font color=blue>
+<pre>
+void draw_pixel (wmfAPI*,<a href="#DrawPixel">wmfDrawPixel_t</a>*);
+</pre>
+</font>
+
+<li><a name="dpie"><b>draw_pie</b></a>
+<font color=blue>
+<pre>
+void draw_pie (wmfAPI*,<a href="#DrawArc">wmfDrawArc_t</a>*);
+</pre>
+</font>
+
+<li><a name="dchord"><b>draw_chord</b></a>
+<font color=blue>
+<pre>
+void draw_chord (wmfAPI*,<a href="#DrawArc">wmfDrawArc_t</a>*);
+</pre>
+</font>
+
+<li><a name="darc"><b>draw_arc</b></a>
+<font color=blue>
+<pre>
+void draw_arc (wmfAPI*,<a href="#DrawArc">wmfDrawArc_t</a>*);
+</pre>
+</font>
+
+<li><a name="dellipse"><b>draw_ellipse</b></a>
+<font color=blue>
+<pre>
+void draw_ellipse (wmfAPI*,<a href="#DrawArc">wmfDrawArc_t</a>*);
+</pre>
+</font>
+
+<li><a name="dline"><b>draw_line</b></a>
+<font color=blue>
+<pre>
+void draw_line (wmfAPI*,<a href="#DrawLine">wmfDrawLine_t</a>*);
+</pre>
+</font>
+
+<li><a name="pline"><b>poly_line</b></a>
+<font color=blue>
+<pre>
+void poly_line (wmfAPI*,<a href="#PolyLine">wmfPolyLine_t</a>*);
+</pre>
+</font>
+
+<li><a name="dpoly"><b>draw_polygon</b></a>
+<font color=blue>
+<pre>
+void draw_polygon (wmfAPI*,<a href="#PolyLine">wmfPolyLine_t</a>*);
+</pre>
+</font>
+
+<li><a name="drect"><b>draw_rectangle</b></a>
+<font color=blue>
+<pre>
+void draw_rectangle (wmfAPI*,<a href="#DrawRect">wmfDrawRectangle_t</a>*);
+</pre>
+</font>
+
+<li><a name="ropdraw"><b>rop_draw</b></a>
+<font color=blue>
+<pre>
+void rop_draw (wmfAPI*,<a href="#ROPDraw">wmfROP_Draw_t</a>*);
+</pre>
+</font>
+<p>
+<i><b>TODO:</b></i>
+</p>
+
+<li><a name="bmpdraw"><b>bmp_draw</b></a>
+<font color=blue>
+<pre>
+void bmp_draw (wmfAPI*,<a href="#BMPDraw">wmfBMP_Draw_t</a>*);
+</pre>
+</font>
+<p>
+<b>Note:</b> Unless you're feeling masochistic and want to write, or re-write,
+your own suite of functions for the reading, writing and general manipulation
+of bitmaps, you should defer this to <tt>libwmf</tt>'s built-in support which
+is adapted from <tt>ImageMagick</tt>'s excellent BMP coder.
+</p>
+<p>
+See section on bitmaps below.
+</p>
+
+<li><a name="bmpread"><b>bmp_read</b></a>
+<font color=blue>
+<pre>
+void bmp_read (wmfAPI*,<a href="#BMPRead">wmfBMP_Read_t</a>*);
+</pre>
+</font>
+<p>
+<b>Note:</b> Unless you're feeling masochistic and want to write, or re-write,
+your own suite of functions for the reading, writing and general manipulation
+of bitmaps, you should defer this to <tt>libwmf</tt>'s built-in support which
+is adapted from <tt>ImageMagick</tt>'s excellent BMP coder.
+</p>
+<font color=blue>
+<pre>
+void bmp_read (wmfAPI* API,<a href="#BMPRead">wmfBMP_Read_t</a>* bmp_read)
+{	wmf_ipa_bmp_read (API,bmp_read);
+}
+</pre>
+</font>
+
+<li><a name="bmpfree"><b>bmp_free</b></a>
+<font color=blue>
+<pre>
+void bmp_free (wmfAPI*,<a href="#BMP">wmfBMP</a>*);
+</pre>
+</font>
+<p>
+<b>Note:</b> Unless you're feeling masochistic and want to write, or re-write,
+your own suite of functions for the reading, writing and general manipulation
+of bitmaps, you should defer this to <tt>libwmf</tt>'s built-in support which
+is adapted from <tt>ImageMagick</tt>'s excellent BMP coder.
+</p>
+<font color=blue>
+<pre>
+void bmp_free (wmfAPI* API,<a href="#BMP">wmfBMP</a>* bmp)
+{	wmf_ipa_bmp_free (API,bmp);
+}
+</pre>
+</font>
+
+<li><a name="dtext"><b>draw_text</b></a>
+<font color=blue>
+<pre>
+void draw_text (wmfAPI*,<a href="#DrawText">wmfDrawText_t</a>*);
+</pre>
+</font>
+<p>
+If desired, strings can be decomposed into individual chars using
+<tt>wmf_ipa_draw_text ()</tt>. Best to see source for the various device layers
+in <tt>libwmf</tt>.
+</p>
+
+<li><a name="uinit"><b>udata_init</b></a>
+<font color=blue>
+<pre>
+void udata_init (wmfAPI*,<a href="#UserData">wmfUserData_t</a>*);
+</pre>
+</font>
+<p>
+Redundant; may be removed at some point...
+</p>
+
+<li><a name="ucopy"><b>udata_copy</b></a>
+<font color=blue>
+<pre>
+void udata_copy (wmfAPI*,<a href="#UserData">wmfUserData_t</a>*);
+</pre>
+</font>
+<p>
+Redundant; may be removed at some point...
+</p>
+
+<li><a name="uset"><b>udata_set</b></a>
+<font color=blue>
+<pre>
+void udata_set (wmfAPI*,<a href="#UserData">wmfUserData_t</a>*);
+</pre>
+</font>
+<p>
+Redundant; may be removed at some point...
+</p>
+
+<li><a name="ufree"><b>udata_free</b></a>
+<font color=blue>
+<pre>
+void udata_free (wmfAPI*,<a href="#UserData">wmfUserData_t</a>*);
+</pre>
+</font>
+<p>
+Redundant; may be removed at some point...
+</p>
+
+<li><a name="rframe"><b>region_frame</b></a>
+<font color=blue>
+<pre>
+void region_frame (wmfAPI*,<a href="#PolyRect">wmfPolyRectangle_t</a>*);
+</pre>
+</font>
+
+<li><a name="rpaint"><b>region_paint</b></a>
+<font color=blue>
+<pre>
+void region_paint (wmfAPI*,<a href="#PolyRect">wmfPolyRectangle_t</a>*);
+</pre>
+</font>
+
+<li><a name="rclip"><b>region_clip</b></a>
+<font color=blue>
+<pre>
+void region_clip (wmfAPI*,<a href="#PolyRect">wmfPolyRectangle_t</a>*);
+</pre>
+</font>
+<p>
+If the number of clip rectangles is zero, the current clip region should be
+unset.
+</p>
+</ul>
+
+<a name="bitmap"><h2>Bitmap Functions</h2></a>
+
+<a name="fns"><h2>Other Functions</h2></a>
+
+<a name="guide"><h2>Guidelines</h2></a>
+
+<a name="compile"><h2>Compiling - The Distribution</h2></a>
+
+<p>
+The section applies only if you are working on the <tt>libwmf</tt> sources.
+</p>
+<p>
+The build system uses <b>automake</b> and <b>autoconf</b>. If any changes are
+made to any of the various <tt>Makefile.am</tt> files, or to
+<tt>configure.in</tt> or <tt>libwmf.m4</tt>, then the build system will need to
+be updated. Change to the top source directory (containing
+<tt>configure.in</tt> and <tt>libwmf.m4</tt>) and:
+</p>
+<font color=blue>
+<pre>
+# aclocal
+# automake
+# autoheader
+# autoconf
+# date > stamp-h.in
+</pre>
+</font>
+<p>
+When adding a new device layer, <tt>include/libwmf/Makefile.am</tt> and
+<tt>src/ipa/Makefile.am</tt> will need to be modifiled. Source files
+(<tt>src/ipa/new.c</tt>) and installing header files
+(<tt>include/libwmf/new.h</tt>) do not need to be added to the distribution,
+but other headers (<tt>src/ipa/new.h</tt> &amp; <tt>src/ipa/new/*.h</tt>) will.
+</p>
+
+<hr>
+
+<address>
+Copyright 2001 wvWare/libwmf <a href="http://www.wvware.com/">http://www.wvware.com/</a>
+</address>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+<HTML>
+<title>
+META_SETBKMODE
+</title>
+<BODY link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+
+<H1>
+NAME</H1>
+META_SETBKMODE
+<H1>
+NEAREST API CALL</H1>
+
+<PRE>#include &lt;windows.h>
+int SetBkMode(
+   HDC hdc,
+   INT iBkMode
+ );
+</PRE>
+<H1>
+DESCRIPTION</H1>
+<TABLE BORDER >
+<TR>
+<TD>U16</TD>
+
+<TD>Value</TD>
+</TR>
+<TR>
+<TD>0</TD>
+<TD>BkMode</TD>
+</TR>
+</TABLE>
+
+Sets the background mode to either OPAQUE of TRANSPARENT, if its
+OPAQUE then the effects described in <a href="SetBkColor.html">META_SETBKCOLOR</a>
+take effect.<br>
+If its TRANSPARENT, the ordinary behaviour takes place, where transparent parts
+of hatched brushes, pens and text remain transparent.
+<p><a href="support.html">back</a>
+</BODY>
+</HTML>

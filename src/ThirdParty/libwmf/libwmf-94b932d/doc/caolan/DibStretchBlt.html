@@ -1,0 +1,43 @@
+<head>
+<title>META_DIBSTRETCHBLT</title>
+</head>
+<body link="#CC0000" alink="#FF3300" vlink="#330099" text="#000000" bgcolor="#ffffff" background="pics/weave.jpg">
+<h1>NAME</h1>
+META_DIBSTRETCHBLT
+<h1>NEAREST API CALL</h1>
+<pre>#include &lt;windows.h&gt;
+BOOL32 StretchBlt
+(
+	HDC32 hdcDst,
+	INT32 xDst,
+	INT32 yDst,
+	INT32 widthDst,
+	INT32 heightDst,
+	HDC32 hdcSrc,
+	INT32 xSrc,
+	INT32 ySrc,
+	INT32 widthSrc,
+	INT32 heightSrc,
+	DWORD rop
+);
+</pre>
+<h1>DESCRIPTION</h1>
+<table border=1>
+<tr><td>U16</td><td>Value</td></tr>
+<tr><td>0</td><td rowspan=2>rop</td></tr>
+<tr><td>1</td></tr>
+<tr><td>2</td><td>ySrc</td></tr>
+<tr><td>3</td><td>xSrc</td></tr>
+<tr><td>4</td><td>src height</td></tr>
+<tr><td>5</td><td>src width</td></tr>
+<tr><td>6</td><td>dest height</td></tr>
+<tr><td>7</td><td>dest width</td></tr>
+<tr><td>8</td><td>yDest</td></tr>
+<tr><td>9</td><td>xDest</td></tr>
+<tr><td>10 until the end</td><td>the full dib</td></tr>
+</table>
+DibStretchBlt stretches a dib of src height and src width (from location
+ySrc and xSrc ?) to the destination x and y, with the dest width and height,
+transformed by the rop.
+<p><a href="support.html">back</a><p>
+</body>

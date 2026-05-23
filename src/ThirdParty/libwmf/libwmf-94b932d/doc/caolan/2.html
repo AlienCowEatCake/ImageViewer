@@ -1,0 +1,435 @@
+<HTML>
+<HEAD><TITLE>Q: How do I display a 256 color bitmap?</TITLE></HEAD>
+<BODY>
+<p><b>Q: How do I display a 256 color bitmap?</b>
+
+<p>A: To display a 256 color bitmap, you must use the palette information
+that is in the bitmap.  With the palette information, you create a GDI
+object known as a logical palette, using the function <var>CreatePalette()</var>.
+You must also call the functions <var>SelectPalette()</var> and
+<var>RealizePalette()</var>
+before displaying the bitmap.  The <var>SelectPalette()</var> function is used to
+select a logical palette into the device context.  The
+<var>RealizePalette()</var>
+function maps color entries in the logical palette that is selected into
+the device context to entries in the system palette.
+
+<p>Since the system palette may be shared by more than one application,
+Windows uses a few messages for sharing the palette.   When an
+application is about to receive the input focus, Windows sends the
+window a <var>WM_QUERYNEWPALETTE</var> message.  If the application uses the
+palette, it should realize its logical palette, invalidate the window's
+client area, and return <var>TRUE</var> to indicate that it has changed the system
+palette.
+
+<p>When the system palette has been changed, Windows sends
+<var>WM_PALETTECHANGED</var> messages to all the inactive windows, from top to
+bottom in the Z-order.  A window that uses the palette should do one of
+two things:
+
+<ul>
+<li>It can realize its palette by calling <var>RealizePalette()</var>, and redraw
+the client area.  When realizing its palette, colors are mapped to any
+free entries in the system palette that remain, otherwise, they are
+mapped to the closest colors in the system palette.</li>
+<li>It can call the function <var>UpdateColors()</var>.  This function quickly maps
+existing system palette colors on the screen to the closest colors in
+the new system palette.  The accuracy of the matched colors decreases
+every time this function is called, so a bitmap color's will become more
+and more distorted, until the window is brought to the foreground.</li>
+</ul>
+
+<p>The following example displays a 256 color bitmap:
+<p><code><pre>
+// <a href="bmp256.c">bmp256.c</a>
+// copyright 1995 Robert Mashlan
+
+#define STRICT
+#include &lt;windows.h&gt;
+#include &lt;windowsx.h&gt;
+#include &lt;commdlg.h&gt;
+#include &lt;string.h&gt;
+
+#include "bmp256.rh"
+
+#define LOCALFUNC static NEAR PASCAL
+
+#define WM_OPENFILE WM_USER // message used to open a file
+
+// app's HINSTANCE
+HINSTANCE hInst;
+
+int LOCALFUNC WMPaint( HWND hwnd )
+// WM_PAINT message handler
+{
+   PAINTSTRUCT ps;
+   BITMAP bm;
+   HDC hdc = BeginPaint(hwnd,&amp;ps);
+   HBITMAP hbmp = (HGLOBAL)GetProp(hwnd,"bmp");
+   HPALETTE hPal = (HPALETTE)GetProp(hwnd,"palette");
+   HPALETTE hPalOld;
+   HDC hdcMem = CreateCompatibleDC(hdc);
+   if(hPal) {
+      hPalOld = SelectPalette(hdc,hPal,FALSE);
+      RealizePalette(hdc);
+   }
+   GetObject(hbmp,sizeof(bm),(LPSTR)&amp;bm);
+   hbmp = SelectObject(hdcMem,hbmp);
+   BitBlt(hdc,0,0,bm.bmWidth,bm.bmHeight,hdcMem,0,0,SRCCOPY);
+   hbmp = SelectObject(hdcMem,hbmp);
+   if(hPalOld)
+      SelectPalette(hdc,hPalOld,FALSE);
+   DeleteDC(hdcMem);
+   EndPaint(hwnd,&amp;ps);
+   return 0;
+}
+
+#define ISWIN30DIB(lpbi) ((*(LPDWORD)(lpbi))==sizeof(BITMAPINFOHEADER))
+#define GETDIBBITS(lpbi) (lpbi+(WORD)(*(LPDWORD)lpbi)+PaletteSize(lpbi))
+
+WORD DIBNumColors(LPSTR lpbi)
+// returns the number of palette entries in a memory DIB
+{
+   WORD wBitCount;
+   if(ISWIN30DIB(lpbi)) {
+      // use the biClrUsed entry, if non-zero
+      DWORD dwClrUsed = ((LPBITMAPINFOHEADER)lpbi)-&gt;biClrUsed;
+      if(dwClrUsed)
+         return (WORD)dwClrUsed;
+   }
+   // Calculate the number of colors in the color table based on
+   //  the number of bits per pixel for the DIB.
+   if(ISWIN30DIB (lpbi))
+      wBitCount = ((LPBITMAPINFOHEADER)lpbi)-&gt;biBitCount;
+   else
+      wBitCount = ((LPBITMAPCOREHEADER)lpbi)-&gt;bcBitCount;
+   switch(wBitCount) {
+      case 1:
+         return 2;
+      case 4:
+         return 16;
+      case 8:
+         return 256;
+      default:
+         return 0;
+   }
+}
+
+WORD PaletteSize(LPSTR lpbi)
+// returns the size of the palette in a memory DIB
+{
+   WORD wResult = DIBNumColors(lpbi);
+   if(ISWIN30DIB(lpbi))
+      return(wResult*sizeof(RGBQUAD));
+   else
+      return(wResult*sizeof(RGBTRIPLE));
+}
+
+
+HPALETTE LOCALFUNC CreateDIBPalette( HGLOBAL hDIB )
+// this function creates a logical palette from a
+// in-memory DIB
+{
+   LPLOGPALETTE lpPal;
+   HPALETTE  hPal = NULL;
+   int       i, wNumColors;
+   LPSTR     lpbi = NULL;
+   LPBITMAPINFO  lpbmi;
+   LPBITMAPCOREINFO lpbmc;
+
+   if (!hDIB) return NULL;
+   lpbi = GlobalLock(hDIB);
+   lpbmi = (LPBITMAPINFO)lpbi;
+   lpbmc = (LPBITMAPCOREINFO)lpbi;
+   wNumColors = DIBNumColors(lpbi);
+   if(wNumColors) {
+      lpPal = (LPLOGPALETTE)GlobalAllocPtr(GHND,sizeof(LOGPALETTE)+
+                             sizeof(PALETTEENTRY)*wNumColors);
+      if(!lpPal) {
+         GlobalUnlock(hDIB);
+         return NULL;
+      }
+      lpPal-&gt;palVersion = 0x300;
+      lpPal-&gt;palNumEntries = wNumColors;
+      for(i=0;i&lt;wNumColors;i++) {
+         if(ISWIN30DIB(lpbi)) {
+            lpPal-&gt;palPalEntry[i].peRed =
+               lpbmi-&gt;bmiColors[i].rgbRed;
+            lpPal-&gt;palPalEntry[i].peGreen =
+               lpbmi-&gt;bmiColors[i].rgbGreen;
+            lpPal-&gt;palPalEntry[i].peBlue  =
+               lpbmi-&gt;bmiColors[i].rgbBlue;
+            lpPal-&gt;palPalEntry[i].peFlags = 0;
+         } else {
+            lpPal-&gt;palPalEntry[i].peRed =
+               lpbmc-&gt;bmciColors[i].rgbtRed;
+            lpPal-&gt;palPalEntry[i].peGreen =
+               lpbmc-&gt;bmciColors[i].rgbtGreen;
+            lpPal-&gt;palPalEntry[i].peBlue = 
+               lpbmc-&gt;bmciColors[i].rgbtBlue;
+            lpPal-&gt;palPalEntry[i].peFlags = 0;
+         }
+      }
+      hPal = CreatePalette(lpPal);
+      GlobalFreePtr(lpPal);
+   }
+   GlobalUnlock(hDIB);
+   return hPal;
+}
+
+HBITMAP LOCALFUNC DIBToBMP(HGLOBAL hDIB, HPALETTE hPal)
+// convert a DIB in a global memory block to a DDB
+{
+   LPSTR    lpDIBHdr;
+   HBITMAP  hbmp;
+   HDC      hdc;
+   HPALETTE hPalOld = NULL;
+
+   if (!hDIB)
+      return NULL;
+
+   lpDIBHdr = GlobalLock(hDIB);
+   hdc = GetDC(NULL);
+   if(!hdc) {
+      GlobalUnlock(hDIB);
+      return NULL;
+   }
+   if (hPal) {
+      hPalOld = SelectPalette(hdc,hPal,FALSE);
+      RealizePalette(hdc);
+   }
+   hbmp = CreateDIBitmap(hdc,
+      (LPBITMAPINFOHEADER)lpDIBHdr,
+      CBM_INIT,
+      GETDIBBITS(lpDIBHdr),
+      (LPBITMAPINFO)lpDIBHdr,
+      DIB_RGB_COLORS);
+   if(hPalOld)
+      hPalOld = SelectPalette(hdc,hPalOld,FALSE);
+   ReleaseDC(NULL,hdc);
+   GlobalUnlock(hDIB);
+   return hbmp;
+}
+
+BOOL LOCALFUNC ReadDIBFile( HWND hwnd, LPCSTR lpstrFileName )
+// reads a DIB file, and converts it to a DDB, and creates the
+// logical palette.
+{
+   BITMAPFILEHEADER bmfh;
+   OFSTRUCT of;
+   DWORD dwSize;
+   HGLOBAL hDat = NULL;
+   LPSTR lpDat = NULL;
+   HFILE hf = OpenFile(lpstrFileName,&amp;of,OF_READ);
+   HPALETTE hPal;
+   if( hf == HFILE_ERROR ) goto failed;
+   if( _hread(hf,&amp;bmfh,sizeof(bmfh) ) != sizeof(bmfh) ) goto failed;
+   if( bmfh.bfType != 'BM' ) goto failed;
+   dwSize = _llseek(hf,0,2) - sizeof(bmfh);
+   _llseek(hf,sizeof(bmfh),0);
+   hDat = GlobalAlloc(GHND,dwSize);
+   if( !hDat ) goto failed;
+   lpDat = GlobalLock( hDat );
+   _hread(hf,lpDat,dwSize);
+   GlobalUnlock(hDat);
+   hPal = CreateDIBPalette(hDat);
+   SetProp(hwnd,"palette",hPal);
+   SetProp(hwnd,"bmp",DIBToBMP(hDat,hPal));
+   GlobalFree(hDat);
+   _lclose(hf);
+   return TRUE;
+failed:
+   if( lpDat )
+      GlobalUnlock(hDat);
+   if( hDat )
+      GlobalFree(hDat);
+   if( hf != HFILE_ERROR )
+      _lclose(hf);
+   return FALSE;
+}
+
+void LOCALFUNC OpenDIBFile( HWND hwnd, LPCSTR lpstrFileName )
+// read DIB file, updates title and display
+{
+   char szTitle[80] = "256 Color BMP Viewer";
+   HPALETTE hPal = GetProp(hwnd,"palette");
+   HBITMAP hbmp = GetProp(hwnd,"bmp");
+   if(hPal) {
+      DeleteObject(hPal);
+      RemoveProp(hwnd,"palette");
+   }
+   if(hbmp) {
+      DeleteObject(hbmp);
+      RemoveProp(hwnd,"bmp");
+   }
+   if( lpstrFileName ) {
+      ReadDIBFile(hwnd,lpstrFileName);
+      lstrcat(szTitle," - ");
+      GetFileTitle(lpstrFileName,szTitle+lstrlen(szTitle),
+         sizeof(szTitle)-lstrlen(szTitle));
+   }
+   SetWindowText(hwnd,szTitle);
+   InvalidateRect(hwnd,NULL,TRUE);
+}
+
+
+void LOCALFUNC OpenFileDlg( HWND hwnd )
+// displays Open File dialog
+{
+   char szFileName[80] = "";
+   static OPENFILENAME ofn;
+
+   ofn.lStructSize = sizeof(ofn);
+   ofn.hwndOwner = hwnd;
+   ofn.hInstance = hInst;
+   ofn.lpstrFilter = "bitmaps\000*.bmp;*.dib;*.rle\000";
+   ofn.lpstrFile = szFileName;
+   ofn.nMaxFile = sizeof(szFileName);
+   ofn.Flags = OFN_HIDEREADONLY | OFN_FILEMUSTEXIST;
+   ofn.lpstrDefExt = "BMP";
+   if( GetOpenFileName(&amp;ofn) )
+      SendMessage(hwnd,WM_OPENFILE,0,(LPARAM)(LPSTR)szFileName);
+}
+
+int LOCALFUNC RealizeMyPalette( HWND hwnd )
+// realize palette to screen DC, return number of changed entries
+{
+   HDC hdc = GetDC(hwnd);
+   HPALETTE hPal = GetProp(hwnd,"palette");
+   int i = 0;
+   if(hPal) {
+      hPal = SelectPalette(hdc,hPal,FALSE);
+      i = RealizePalette(hdc);
+      SelectPalette(hdc,hPal,FALSE);
+      ReleaseDC(hwnd,hdc);
+   }
+   return i;
+}
+
+LRESULT CALLBACK _export MainWndProc( HWND hwnd, UINT msg,
+   WPARAM wParam, LPARAM lParam )
+{
+   switch(msg) {
+
+      case WM_DESTROY:
+         OpenDIBFile(hwnd,NULL);
+         PostQuitMessage(0);
+         return 0;
+
+      case WM_PAINT:
+         return WMPaint(hwnd);
+
+      case WM_PALETTECHANGED:
+         if( (HWND)wParam != hwnd &amp;&amp; GetProp(hwnd,"palette") )
+            if( RealizeMyPalette(hwnd) )
+               InvalidateRect(hwnd,NULL,TRUE);
+         return 0;
+
+      case WM_QUERYNEWPALETTE: {
+         if(RealizeMyPalette(hwnd)) {
+            InvalidateRect(hwnd,NULL,TRUE);
+            return TRUE;
+         }
+         return 0;
+      }
+
+      case WM_OPENFILE:
+         OpenDIBFile(hwnd,(LPSTR)lParam);
+         return 0;
+
+      case WM_COMMAND:
+         switch(wParam) {
+            case CM_EXIT:
+               SendMessage(hwnd,WM_CLOSE,0,0);
+               return 0;
+            case CM_FILEOPEN:
+               OpenFileDlg(hwnd);
+               return 0;
+         }
+         return 0;
+
+   }
+   return DefWindowProc(hwnd,msg,wParam,lParam);
+}
+
+int MessagePump(void)
+{
+   MSG msg;
+   while( GetMessage(&amp;msg,NULL,0,0) ) {
+      TranslateMessage(&amp;msg);
+      DispatchMessage(&amp;msg);
+   }
+   return msg.wParam;
+}
+
+#pragma argsused
+int PASCAL WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,
+                    LPSTR lpstrCmdLine, int nCmdShow )
+{
+   char szClassName[] = "256BmpDemo";
+   HWND hwnd;
+   hInst = hInstance;
+   if(!hPrevInst) {
+      WNDCLASS wc;
+      memset(&amp;wc,0,sizeof(wc));
+      wc.style         = CS_HREDRAW|CS_VREDRAW;
+      wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+      wc.hCursor       = LoadCursor(NULL,IDC_ARROW);
+      wc.hIcon         = LoadIcon(NULL,IDI_APPLICATION);
+      wc.lpfnWndProc   = MainWndProc;
+      wc.lpszClassName = szClassName;
+      wc.lpszMenuName  = MAKEINTRESOURCE(MENU_MAIN);
+      wc.hInstance     = hInst;
+      RegisterClass(&amp;wc);
+   }
+   hwnd = CreateWindow(szClassName,"256 Color Bitmap",
+                       WS_OVERLAPPEDWINDOW,
+                       CW_USEDEFAULT,CW_USEDEFAULT,500,500,
+                       NULL,NULL,hInst,NULL);
+   if(hwnd) {
+      if( lstrlen(lpstrCmdLine) )
+         SendMessage(hwnd,WM_OPENFILE,0,(LPARAM)lpstrCmdLine);
+      ShowWindow(hwnd,nCmdShow);
+      UpdateWindow(hwnd);
+      return MessagePump();
+   }
+   return -1;
+}
+</pre></code>
+
+<p>Listing for <a href="bmp256.rh">bmp256.rh</a>:
+<p><code><pre>
+/* bmp256.rh */
+#define MENU_MAIN     1001
+#define CM_FILEOPEN   102
+#define CM_EXIT       101
+Listing for bmp256.rc:
+/* bmp256.rc */
+#include "bmp256.rh"
+
+MENU_MAIN MENU 
+{
+ POPUP "&amp;File"
+ {
+  MENUITEM "&amp;Open...", CM_FILEOPEN
+  MENUITEM "E&amp;xit", CM_EXIT
+ }
+}
+</pre></code>
+<p>Listing for <a href="bmp256.def">bmp256.def</a>:
+<p><code><pre>
+NAME        BMP256
+DESCRIPTION "256 Color DIB demo - Copyright 1995 Robert Mashlan"
+EXETYPE     WINDOWS
+CODE        LOADONCALL MOVEABLE DISCARDABLE
+DATA        PRELOAD MOVEABLE MULTIPLE
+HEAPSIZE    1024
+STACKSIZE   8196
+</pre></code>
+
+<hr>
+<em>Copyright 1995 <a href="http://www.transport.com/~rmashlan/">Robert Mashlan</a></em><br>
+Return to <a href="./">Windows Developer FAQ - Graphics</a><br>
+<a href="../comments.html">Comments?</a><br>
+</body>
+</HTML>

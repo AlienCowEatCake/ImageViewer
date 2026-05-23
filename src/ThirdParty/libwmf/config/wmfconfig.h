@@ -70,6 +70,9 @@
 /* Define to 1 if you have the 'strstr' function. */
 #define HAVE_STRSTR 1
 
+/* Build against system libgd */
+/* #undef HAVE_SYS_GD */
+
 /* Define to 1 if you have the <sys/stat.h> header file. */
 /* #undef HAVE_SYS_STAT_H */
 
