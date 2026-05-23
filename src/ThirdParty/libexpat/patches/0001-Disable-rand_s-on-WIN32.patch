@@ -1,4 +1,4 @@
-From 9ca478b3bfcac49c6c0ddbe2b49c6e34f23dafcc Mon Sep 17 00:00:00 2001
+From 19ebab9ed15748b727d952ce43bac0dd3cc5af8a Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 22 Mar 2025 19:29:35 +0700
 Subject: [PATCH] Disable rand_s on WIN32
@@ -8,7 +8,7 @@ Subject: [PATCH] Disable rand_s on WIN32
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/expat/lib/xmlparse.c b/expat/lib/xmlparse.c
-index 620d1e4b..6fd65905 100644
+index 890a9389..088e7865 100644
 --- a/expat/lib/xmlparse.c
 +++ b/expat/lib/xmlparse.c
 @@ -135,7 +135,7 @@
@@ -20,7 +20,7 @@ index 620d1e4b..6fd65905 100644
  #  include "random_rand_s.h"
  #endif /* defined(_WIN32) */
  
-@@ -1088,7 +1088,7 @@ generate_hash_secret_salt(void) {
+@@ -1089,7 +1089,7 @@ generate_hash_secret_salt(void) {
    return ENTROPY_DEBUG("arc4random", entropy);
  #else
    /* Try high quality providers first .. */

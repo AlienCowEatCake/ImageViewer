@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libexpat {
 
-        THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.8.0
+        THIRDPARTY_LIBEXPAT_PATH = $${PWD}/expat-2.8.1
 
         INCLUDEPATH += $${THIRDPARTY_LIBEXPAT_PATH}/lib
         DEPENDPATH += $${THIRDPARTY_LIBEXPAT_PATH}/lib
