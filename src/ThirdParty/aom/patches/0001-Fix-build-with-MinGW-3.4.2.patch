@@ -1,4 +1,4 @@
-From 98c2b1763aad4cff2f0deda203435751301836e5 Mon Sep 17 00:00:00 2001
+From a2a13eb24cb3c8c51fdeefcdc2b75f774e2dc500 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 14 Nov 2021 17:11:43 +0700
 Subject: [PATCH] Fix build with MinGW 3.4.2
@@ -10,7 +10,7 @@ Subject: [PATCH] Fix build with MinGW 3.4.2
  3 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/aom/aom_codec.h b/aom/aom_codec.h
-index 84454a281b..9b69a674d9 100644
+index 1ecf5f8..7585c08 100644
 --- a/aom/aom_codec.h
 +++ b/aom/aom_codec.h
 @@ -132,7 +132,7 @@ extern "C" {
@@ -23,7 +23,7 @@ index 84454a281b..9b69a674d9 100644
  #elif defined(_MSC_VER)
  #define ATTRIBUTE_PACKED
 diff --git a/aom_ports/bitops.h b/aom_ports/bitops.h
-index cbcfe5f3dc..55c51f9073 100644
+index cbcfe5f..55c51f9 100644
 --- a/aom_ports/bitops.h
 +++ b/aom_ports/bitops.h
 @@ -38,7 +38,7 @@ extern "C" {
@@ -36,10 +36,10 @@ index cbcfe5f3dc..55c51f9073 100644
    assert(n != 0);
    return 31 ^ __builtin_clz(n);
 diff --git a/av1/encoder/ratectrl.h b/av1/encoder/ratectrl.h
-index 88c048fb7e..1fdf4b9ae5 100644
+index deea12d..41e3358 100644
 --- a/av1/encoder/ratectrl.h
 +++ b/av1/encoder/ratectrl.h
-@@ -364,7 +364,7 @@ typedef struct {
+@@ -380,7 +380,7 @@ typedef struct {
    int arf_q;
  
    /*!\cond */
@@ -49,5 +49,5 @@ index 88c048fb7e..1fdf4b9ae5 100644
    int base_layer_qp;
  
 -- 
-2.39.5
+2.47.3
 

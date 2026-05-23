@@ -1,0 +1,91 @@
+From 561d443923387fc99edc86917c9a07c28ac72582 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 24 May 2026 18:22:54 +0700
+Subject: [PATCH 2/2] Remove static_assert usage from C code
+
+---
+ av1/av1_cx_iface.c            | 2 +-
+ av1/common/common.h           | 4 ++--
+ av1/common/idct.h             | 2 +-
+ av1/common/thread_common.c    | 2 +-
+ av1/decoder/grain_synthesis.c | 4 ++--
+ 5 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/av1/av1_cx_iface.c b/av1/av1_cx_iface.c
+index f9fe5ea6cf..eb0e476c63 100644
+--- a/av1/av1_cx_iface.c
++++ b/av1/av1_cx_iface.c
+@@ -4392,7 +4392,7 @@ static aom_codec_err_t encoder_set_option(aom_codec_alg_priv_t *ctx,
+   size_t len = strlen(name) + strlen(value) + 4;
+   char *const err_string = ctx->ppi->error.detail;
+ 
+-  static_assert(sizeof(ctx->ppi->error.detail) >= ARG_ERR_MSG_MAX_LEN,
++  assert(sizeof(ctx->ppi->error.detail) >= ARG_ERR_MSG_MAX_LEN &&
+                 "The size of the err_msg buffer for arg_match_helper must be "
+                 "at least ARG_ERR_MSG_MAX_LEN");
+ 
+diff --git a/av1/common/common.h b/av1/common/common.h
+index 598db30e76..9c5436970d 100644
+--- a/av1/common/common.h
++++ b/av1/common/common.h
+@@ -29,14 +29,14 @@ extern "C" {
+ // Only need this for fixed-size arrays, for structs just assign.
+ #define av1_copy(dest, src)                         \
+   do {                                              \
+-    static_assert(sizeof(dest) == sizeof(src), ""); \
++    assert(sizeof(dest) == sizeof(src));            \
+     memcpy(dest, src, sizeof(src));                 \
+   } while (0)
+ 
+ // Use this for variably-sized arrays.
+ #define av1_copy_array(dest, src, n)                      \
+   do {                                                    \
+-    static_assert(sizeof(*(dest)) == sizeof(*(src)), ""); \
++    assert(sizeof(*(dest)) == sizeof(*(src)));            \
+     memcpy(dest, src, n * sizeof(*(src)));                \
+   } while (0)
+ 
+diff --git a/av1/common/idct.h b/av1/common/idct.h
+index 2dda093a68..6eb40d940e 100644
+--- a/av1/common/idct.h
++++ b/av1/common/idct.h
+@@ -42,7 +42,7 @@ void av1_highbd_iwht4x4_add(const tran_low_t *input, uint8_t *dest, int stride,
+                             int eob, int bd);
+ 
+ static inline const int32_t *cast_to_int32(const tran_low_t *input) {
+-  static_assert(sizeof(int32_t) == sizeof(tran_low_t), "");
++  assert(sizeof(int32_t) == sizeof(tran_low_t));
+   return (const int32_t *)input;
+ }
+ 
+diff --git a/av1/common/thread_common.c b/av1/common/thread_common.c
+index dee45b44c2..878a896d01 100644
+--- a/av1/common/thread_common.c
++++ b/av1/common/thread_common.c
+@@ -940,7 +940,7 @@ static void foreach_rest_unit_in_planes_mt(AV1LrStruct *lr_ctxt,
+   }
+ 
+   int i;
+-  static_assert(MAX_MB_PLANE == 3, "");
++  assert(MAX_MB_PLANE == 3);
+ 
+   if (!lr_sync->sync_range || num_rows_lr > lr_sync->rows ||
+       num_workers > lr_sync->num_workers || num_planes > lr_sync->num_planes) {
+diff --git a/av1/decoder/grain_synthesis.c b/av1/decoder/grain_synthesis.c
+index a1ab1bf7ab..10f1d26a2b 100644
+--- a/av1/decoder/grain_synthesis.c
++++ b/av1/decoder/grain_synthesis.c
+@@ -1075,8 +1075,8 @@ static int add_film_grain_run(const aom_film_grain_t *params, uint8_t *luma,
+                         scaling_lut.y);
+ 
+   if (params->chroma_scaling_from_luma) {
+-    static_assert(sizeof(scaling_lut.cb) == sizeof(scaling_lut.y), "");
+-    static_assert(sizeof(scaling_lut.cr) == sizeof(scaling_lut.y), "");
++    assert(sizeof(scaling_lut.cb) == sizeof(scaling_lut.y));
++    assert(sizeof(scaling_lut.cr) == sizeof(scaling_lut.y));
+     memcpy(scaling_lut.cb, scaling_lut.y, sizeof(scaling_lut.y));
+     memcpy(scaling_lut.cr, scaling_lut.y, sizeof(scaling_lut.y));
+   } else {
+-- 
+2.47.3
+

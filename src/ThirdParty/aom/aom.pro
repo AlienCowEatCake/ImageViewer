@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.13.3
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.14.1
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -136,6 +136,7 @@ SOURCES += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_complexity.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_cyclicrefresh.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/aq_variance.c \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_ext_ratectrl.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm2d.c \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_noise_estimate.c \
@@ -230,10 +231,12 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom/aom_codec.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_decoder.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_encoder.h \
+    $${THIRDPARTY_AOM_PATH}/aom/aom_ext_ratectrl.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_external_partition.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_frame_buffer.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_image.h \
     $${THIRDPARTY_AOM_PATH}/aom/aom_integer.h \
+    $${THIRDPARTY_AOM_PATH}/aom/aom_tpl.h \
     $${THIRDPARTY_AOM_PATH}/aom/aomcx.h \
     $${THIRDPARTY_AOM_PATH}/aom/aomdx.h \
     $${THIRDPARTY_AOM_PATH}/aom/internal/aom_codec_internal.h \
@@ -249,8 +252,10 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/blend_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/dist_wtd_avg_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/highbd_convolve8_neon.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/highbd_convolve8_sve.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/mem_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/reinterpret_neon.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/subpel_variance_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/sum_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/arm/transpose_neon.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/binary_codes_reader.h \
@@ -354,17 +359,21 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/av1_cx_iface.h \
     $${THIRDPARTY_AOM_PATH}/av1/av1_iface_common.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/alloccommon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/av1_convolve_scale_neon_dotprod.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/av1_inv_txfm_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/compound_convolve_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/convolve_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/convolve_neon_dotprod.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/convolve_neon_i8mm.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/convolve_scale_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/convolve_sve2.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_compound_convolve_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_convolve_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_convolve_sve2.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/highbd_warp_plane_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/resize_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/arm/warp_plane_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/arm/warp_plane_neon_i8mm.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_common_int.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d_cfg.h \
@@ -396,7 +405,9 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/common/reconintra.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/resize.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/restoration.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/riscv/compound_convolve_rvv.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/riscv/convolve_rvv.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/riscv/highbd_compound_convolve_rvv.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/scale.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/scan.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/seg_common.h \
@@ -406,6 +417,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/common/timing.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/token_cdfs.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/txb_common.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/warp_plane_hwy.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/warped_motion.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/x86/av1_inv_txfm_avx2.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/x86/av1_inv_txfm_ssse3.h \
@@ -431,6 +443,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/pickrst_sve.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/shift_neon.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/arm/txfm_neon.h \
+    $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_ext_ratectrl.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm1d_cfg.h \
     $${THIRDPARTY_AOM_PATH}/av1/encoder/av1_fwd_txfm2d_hwy.h \
@@ -566,11 +579,6 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/test/webm_video_source.h \
     $${THIRDPARTY_AOM_PATH}/test/y4m_video_source.h \
     $${THIRDPARTY_AOM_PATH}/test/yuv_video_source.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/SVT-AV1/EbMemory_AVX2.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/SVT-AV1/EbMemory_SSE4_1.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/SVT-AV1/convolve_2d_avx2.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/SVT-AV1/convolve_avx2.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/SVT-AV1/synonyms.h \
     $${THIRDPARTY_AOM_PATH}/third_party/fastfeat/fast.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-assertion-result.h \
     $${THIRDPARTY_AOM_PATH}/third_party/googletest/src/googletest/include/gtest/gtest-death-test.h \

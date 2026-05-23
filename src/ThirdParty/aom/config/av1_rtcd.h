@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026, Alliance for Open Media. All rights reserved.
+ * Copyright (c) 2017, Alliance for Open Media. All rights reserved.
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -291,7 +291,7 @@ uint32_t av1_get_crc32c_value_c(void *crc_calculator, const uint8_t *p, size_t l
 void av1_get_horver_correlation_full_c(const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
 #define av1_get_horver_correlation_full av1_get_horver_correlation_full_c
 
-void av1_get_nz_map_contexts_c(const uint8_t *const levels, const int16_t *const scan, const uint16_t eob, const TX_SIZE tx_size, const TX_CLASS tx_class, int8_t *const coeff_contexts);
+void av1_get_nz_map_contexts_c(const uint8_t *const levels, const int16_t *const scan, const int eob, const TX_SIZE tx_size, const TX_CLASS tx_class, int8_t *const coeff_contexts);
 #define av1_get_nz_map_contexts av1_get_nz_map_contexts_c
 
 void av1_highbd_apply_temporal_filter_c(const struct yv12_buffer_config *frame_to_filter, const struct macroblockd *mbd, const BLOCK_SIZE block_size, const int mb_row, const int mb_col, const int num_planes, const double *noise_levels, const MV *subblock_mvs, const int *subblock_mses, const int q_factor, const int filter_strength, int tf_wgt_calc_lvl, const uint8_t *pred, uint32_t *accum, uint16_t *count);
