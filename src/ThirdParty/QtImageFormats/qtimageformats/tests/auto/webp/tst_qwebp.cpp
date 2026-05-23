@@ -1,6 +1,7 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
+#include <QTemporaryDir>
 #include <QtTest/QtTest>
 #include <QtGui/QtGui>
 
@@ -16,12 +17,19 @@ private slots:
     void readAnimation();
     void writeImage_data();
     void writeImage();
+
+private:
+    QTemporaryDir m_temporaryDir;
 };
 
 void tst_qwebp::initTestCase()
 {
     if (!QImageReader::supportedImageFormats().contains("webp"))
         QSKIP("The image format handler is not installed.");
+
+    QVERIFY2(m_temporaryDir.isValid(), qPrintable(m_temporaryDir.errorString()));
+    QString path = m_temporaryDir.path();
+    QVERIFY2(QDir::setCurrent(path), qPrintable("Could not chdir to " + path));
 }
 
 void tst_qwebp::readImage_data()

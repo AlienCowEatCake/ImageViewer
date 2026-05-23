@@ -118,7 +118,7 @@
 
 /* Pick up YCbCr subsampling info from the JPEG data stream to support files
    lacking the tag (default enabled). */
-/* #undef CHECK_JPEG_YCBCR_SUBSAMPLING */
+#define CHECK_JPEG_YCBCR_SUBSAMPLING 1
 
 /* Support MS MDI magic number files as TIFF */
 #define MDI_SUPPORT 1
