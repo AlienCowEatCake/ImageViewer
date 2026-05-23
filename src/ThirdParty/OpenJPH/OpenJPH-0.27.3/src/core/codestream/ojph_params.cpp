@@ -992,10 +992,21 @@ namespace ojph {
         OJPH_ERROR(0x0005007E, "unsupported settings in a COD-SPcod parameter");
 
       ui8 num_decompositions =  get_num_decompositions();
-      if (Scod & 1)
-        for (int i = 0; i <= num_decompositions; ++i)
+      if (Scod & 1) {
+        for (int i = 0; i <= num_decompositions; ++i) {
           if (file->read(&SPcod.precinct_size[i], 1) != 1)
             OJPH_ERROR(0x0005007B, "error reading COD segment");
+          if (i)
+            if ((SPcod.precinct_size[i] & 0x0F) == 0 ||
+              (SPcod.precinct_size[i] >> 4) == 0)
+              OJPH_ERROR(0x0005007F,
+                "Precinct width or height for resolutions other than the"
+                " coarsest must be larger than 1; here, they are %d and %d,"
+                " respectively.",
+                1 << (SPcod.precinct_size[i] & 0x0F),
+                1 << (SPcod.precinct_size[i] >> 4));
+        }
+      }
       if (Lcod != 12 + ((Scod & 1) ? 1 + SPcod.num_decomp : 0))
         OJPH_ERROR(0x0005007C, "error in COD segment length");
     }
@@ -1051,10 +1062,21 @@ namespace ojph {
         OJPH_ERROR(0x0005012D, "unsupported settings in a COC-SPcoc parameter");
 
       ui8 num_decompositions =  get_num_decompositions();
-      if (Scod & 1)
-        for (int i = 0; i <= num_decompositions; ++i)
+      if (Scod & 1) {
+        for (int i = 0; i <= num_decompositions; ++i) {
           if (file->read(&SPcod.precinct_size[i], 1) != 1)
             OJPH_ERROR(0x0005012A, "error reading COC segment");
+          if (i)
+            if ((SPcod.precinct_size[i] & 0x0F) == 0 ||
+              (SPcod.precinct_size[i] >> 4) == 0)
+              OJPH_ERROR(0x0005012E,
+                "Precinct width or height for resolutions other than the"
+                " coarsest must be larger than 1; here, they are %d and %d,"
+                " respectively.",
+                1 << (SPcod.precinct_size[i] & 0x0F),
+                1 << (SPcod.precinct_size[i] >> 4));
+        }
+      }
       ui32 t = 9;
       t += num_comps < 257 ? 0 : 1;
       t += (Scod & 1) ? 1 + num_decompositions : 0;
@@ -1194,8 +1216,10 @@ namespace ojph {
             qcd_component < 3 ? employing_color_transform : false);
         else if (qcd_wavelet_kern == param_cod::DWT_IRV97)
         {
-          if (this->base_delta == -1.0f)
-            this->base_delta = 1.0f / (float)(1 << qcd_bit_depth);
+          if (this->base_delta == -1.0f) {
+            ui32 t = ojph_min(16, qcd_bit_depth);
+            this->base_delta = 1.0f / (float)(1 << t);
+          }
           set_irrev_quant(qcd_num_decompositions);
         }
         else
@@ -1228,8 +1252,16 @@ namespace ojph {
               c < 3 ? employing_color_transform : false);
           else if (cp->get_wavelet_kern() == param_cod::DWT_IRV97)
           {
-            if (qp->base_delta == -1.0f)
-              qp->base_delta = 1.0f / (float)(1 << bit_depth);
+            if (qp->base_delta == -1.0f) {
+              if (qcd_wavelet_kern == param_cod::DWT_IRV97) {
+                assert(this->base_delta != -1.0f);
+                qp->base_delta = this->base_delta;
+              }
+              else {
+                ui32 t = ojph_min(16, qcd_bit_depth);
+                qp->base_delta = 1.0f / (float)(1 << t);
+              }
+            }
             qp->set_irrev_quant(num_decompositions);
           }
           else
@@ -1253,8 +1285,16 @@ namespace ojph {
               c < 3 ? employing_color_transform : false);
           else if (cp->get_wavelet_kern() == param_cod::DWT_IRV97)
           {
-            if (qp->base_delta == -1.0f)
-              qp->base_delta = 1.0f / (float)(1 << bit_depth);
+            if (qp->base_delta == -1.0f) {
+              if (qcd_wavelet_kern == param_cod::DWT_IRV97) {
+                assert(this->base_delta != -1.0f);
+                qp->base_delta = this->base_delta;
+              }
+              else {
+                ui32 t = ojph_min(16, qcd_bit_depth);
+                qp->base_delta = 1.0f / (float)(1 << t);
+              }
+            }
             qp->set_irrev_quant(num_decompositions);
           }
           else
@@ -1399,11 +1439,15 @@ namespace ojph {
 
     //////////////////////////////////////////////////////////////////////////
     float param_qcd::get_irrev_delta(const param_dfs* dfs,
-                                     ui32 num_decompositions,
+                                     ui32 num_decompositions, ui32 comp_num,
                                      ui32 resolution, ui32 subband) const
     {
       float arr[] = { 1.0f, 2.0f, 2.0f, 4.0f };
-      assert((Sqcd & 0x1F) == 2);
+      if ((Sqcd & 0x1F) != 2)
+        OJPH_ERROR(0x00050101, "There is something wrong in the configuration "
+          "of the codestream; for component %d, the codestream defines an "
+          "irreversible transform, for which the codestream provides a "
+          "reversible (no quantization) step sizes in Sqcd/Sqcc.", comp_num);
 
       ui32 idx;
       if (dfs != NULL && dfs->exists())
