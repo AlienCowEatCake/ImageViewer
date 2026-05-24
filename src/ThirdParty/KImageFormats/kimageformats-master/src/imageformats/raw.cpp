@@ -35,7 +35,7 @@
  * The maximum size in pixel allowed by the plugin.
  */
 #ifndef RAW_MAX_IMAGE_WIDTH
-#define RAW_MAX_IMAGE_WIDTH std::min(65535, KIF_LARGE_IMAGE_PIXEL_LIMIT)
+#define RAW_MAX_IMAGE_WIDTH KIF_64K_IMAGE_PIXEL_LIMIT
 #endif
 #ifndef RAW_MAX_IMAGE_HEIGHT
 #define RAW_MAX_IMAGE_HEIGHT RAW_MAX_IMAGE_WIDTH
@@ -759,8 +759,8 @@ bool LoadRAW(QImageIOHandler *handler, QImage &img)
 
     // *** Limiting the maximum image size on a reasonable size
     auto size = rawImageSize(rawProcessor.get());
-    if (size.width() > RAW_MAX_IMAGE_WIDTH || size.height() > RAW_MAX_IMAGE_HEIGHT) {
-        qCWarning(LOG_RAWPLUGIN) << "The maximum image size is limited to" << RAW_MAX_IMAGE_WIDTH << "x" << RAW_MAX_IMAGE_HEIGHT << "px";
+    if (size.width() >= RAW_MAX_IMAGE_WIDTH || size.height() >= RAW_MAX_IMAGE_HEIGHT) {
+        qCWarning(LOG_RAWPLUGIN) << "The maximum image size is limited to" << (RAW_MAX_IMAGE_WIDTH - 1) << "x" << (RAW_MAX_IMAGE_HEIGHT - 1) << "px";
         return false;
     }
 

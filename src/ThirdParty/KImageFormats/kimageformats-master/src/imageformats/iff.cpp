@@ -617,6 +617,69 @@ bool IFFHandler::readRGFXImage(QImage *image)
     return true;
 }
 
+bool IFFHandler::readDEEPImage(QImage *image)
+{
+    auto forms = d->searchForms<FORMChunk>();
+    if (forms.isEmpty()) {
+        return false;
+    }
+    auto cin = qBound(0, currentImageNumber(), int(forms.size() - 1));
+    auto &&form = forms.at(cin);
+
+    // show the first one (I don't have a sample with many images)
+    auto headers = IFFChunk::searchT<DGBLChunk>(form);
+    if (headers.isEmpty()) {
+        return false;
+    }
+    // create the image
+    auto &&header = headers.first();
+    auto size = header->size();
+    auto locs = IFFChunk::searchT<DLOCChunk>(form);
+    if (!locs.isEmpty()) {
+        size = locs.first()->size();
+    }
+    auto img = imageAlloc(size, form->format());
+    if (img.isNull()) {
+        qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readDEEPImage(): error while allocating the image";
+        return false;
+    }
+
+    // decoding the image
+    auto bodies = IFFChunk::searchT<DBODChunk>(form);
+    if (bodies.isEmpty()) {
+        img.fill(0);
+    } else {
+        auto &&body = bodies.first();
+        if (!body->resetStrideRead(device())) {
+            qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readDEEPImage(): error while reading image data";
+            return false;
+        }
+        auto pels = IFFChunk::searchT<DPELChunk>(form);
+        if (pels.isEmpty()) {
+            // DPEL is used to calculate the image format, so here should not be empty.
+            return false;
+        }
+        auto tvdcs = IFFChunk::searchT<TVDCChunk>(form);
+        for (auto y = 0, h = img.height(); y < h; ++y) {
+            auto line = reinterpret_cast<char*>(img.scanLine(y));
+            auto ba = body->strideRead(device(), y, header, pels.first(),
+                                       locs.isEmpty() ? nullptr : locs.first(),
+                                       tvdcs.isEmpty() ? nullptr : tvdcs.first());
+            if (ba.isEmpty()) {
+                qCWarning(LOG_IFFPLUGIN) << "IFFHandler::readDEEPImage(): error while reading image scanline";
+                return false;
+            }
+            memcpy(line, ba.constData(), std::min(img.bytesPerLine(), ba.size()));
+        }
+    }
+
+    // set metadata (including image resolution)
+    addMetadata(img, form);
+
+    *image = img;
+    return true;
+}
+
 bool IFFHandler::read(QImage *image)
 {
     if (!d->readStructure(device())) {
@@ -637,6 +700,10 @@ bool IFFHandler::read(QImage *image)
     }
 
     if (readRGFXImage(image)) {
+        return true;
+    }
+
+    if (readDEEPImage(image)) {
         return true;
     }
 

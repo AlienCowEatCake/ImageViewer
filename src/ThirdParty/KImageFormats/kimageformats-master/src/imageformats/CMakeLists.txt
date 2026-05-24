@@ -73,6 +73,10 @@ endif()
 
 ##################################
 
+kimageformats_add_plugin(kimg_ff SOURCES ff.cpp)
+
+##################################
+
 kimageformats_add_plugin(kimg_hdr SOURCES hdr.cpp)
 
 ##################################

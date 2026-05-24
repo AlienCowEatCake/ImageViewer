@@ -49,6 +49,16 @@ Quality range - compression/subsampling
 #define KIMG_AVIF_QUALITY_LOW 51
 #endif
 
+/* *** AVIF_MAX_IMAGE_WIDTH and AVIF_MAX_IMAGE_HEIGHT ***
+ * The maximum size in pixel allowed by the plugin.
+ */
+#ifndef AVIF_MAX_IMAGE_WIDTH
+#define AVIF_MAX_IMAGE_WIDTH KIF_64K_IMAGE_PIXEL_LIMIT
+#endif
+#ifndef AVIF_MAX_IMAGE_HEIGHT
+#define AVIF_MAX_IMAGE_HEIGHT AVIF_MAX_IMAGE_WIDTH
+#endif
+
 QAVIFHandler::QAVIFHandler()
     : m_parseState(ParseAvifNotParsed)
     , m_quality(KIMG_AVIF_DEFAULT_QUALITY)
@@ -168,7 +178,7 @@ bool QAVIFHandler::ensureDecoder()
 #endif
 
 #if AVIF_VERSION >= 110000
-    m_decoder->imageDimensionLimit = 65535;
+    m_decoder->imageDimensionLimit = std::max(AVIF_MAX_IMAGE_WIDTH, AVIF_MAX_IMAGE_HEIGHT) - 1;
 #endif
 
     avifResult decodeResult;
@@ -196,7 +206,7 @@ bool QAVIFHandler::ensureDecoder()
     m_container_width = m_decoder->image->width;
     m_container_height = m_decoder->image->height;
 
-    if ((m_container_width > 65535) || (m_container_height > 65535)) {
+    if ((m_container_width >= AVIF_MAX_IMAGE_WIDTH) || (m_container_height >= AVIF_MAX_IMAGE_HEIGHT)) {
         qCWarning(LOG_AVIFPLUGIN, "AVIF image (%dx%d) is too large!", m_container_width, m_container_height);
         m_parseState = ParseAvifError;
         return false;
@@ -625,7 +635,7 @@ bool QAVIFHandler::write(const QImage &image)
     }
 
     if ((image.width() > 0) && (image.height() > 0)) {
-        if ((image.width() > 65535) || (image.height() > 65535)) {
+        if ((image.width() >= AVIF_MAX_IMAGE_WIDTH) || (image.height() >= AVIF_MAX_IMAGE_HEIGHT)) {
             qCWarning(LOG_AVIFPLUGIN, "Image (%dx%d) is too large to save!", image.width(), image.height());
             return false;
         }

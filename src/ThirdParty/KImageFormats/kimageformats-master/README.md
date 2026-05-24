@@ -16,6 +16,7 @@ The following image formats have read-only support:
 
 - Animated Windows cursors (ani)
 - Camera RAW images (arw, cr2, cr3, dcs, dng, ...)
+- Farbfeld (ff)
 - Gimp (xcf)
 - Interchange Format Files (iff, ilbm, lbm)
 - Krita (kra)
@@ -247,17 +248,19 @@ Anyway, all plugins are also limited by the
 
 > [!note]
 > You can change the maximum limit of 300000 pixels by setting the constant
-> `KIF_LARGE_IMAGE_PIXEL_LIMIT` to the desired value in the cmake file.
+> `KIF_LARGE_IMAGE_PIXEL_LIMIT` to the desired value in the cmake file. It 
+> cannot be less than 65536.
 
 Below are the maximum sizes for each plugin ('n/a' means no limit, i.e. the 
 limit depends on the format encoding).
-- ANI: n/a
+- ANI: same size as Qt's ICO plugin
 - AVIF: 32,768 x 32,768 pixels, in any case no larger than 256 megapixels
 - DDS: 300,000 x 300,000 pixels
 - EXR: 300,000 x 300,000 pixels
 - EPS: same size as Qt's JPG plugin
+- FF: 300,000 x 300,000 pixels
 - HDR: 300,000 x 300,000 pixels
-- HEIF: n/a
+- HEIF: 65,535 x 65,535 pixels
 - IFF: 65,535 x 65,535 pixels
 - JP2: 300,000 x 300,000 pixels, in any case no larger than 2 gigapixels
 - JXL: 262,144 x 262,144 pixels, in any case no larger than 256 megapixels
@@ -333,6 +336,15 @@ distributions. In particular, it is necessary that the HEIF library has
 support for HEVC codec. If HEVC codec is not available the plugin
 will compile but will fail the tests.
 
+The following defines can be defined in cmake to modify the behavior of the 
+plugin:
+- `HEIF_DISABLE_QT_TRANSFORMATION`: HEIF transformations, in addition to 
+  rotations and reflections, also support image cropping. Consequently, the 
+  Qt plugin, must also honor the crop. This define is useful in case 
+  of problems: activating it disables Qt's support for transformations, 
+  delegating them to the HEIF libraries (which will therefore always apply 
+  them regardless of what is requested from Qt).
+
 **If you are interested in compiling the plugin without running the tests, 
 also use the following string options:**
 - `KIMAGEFORMATS_HEIF_TEST` to change the behaviour of HEIF tests. Set to 
@@ -394,6 +406,7 @@ The plugin supports the following image data:
 - FORM IMAG (Compact Disc-Interactive): It supports CLut4, CLut7, CLut8, Rle7
   and DYuv formats.
 - FORM RGFX: It supports uncompressed images only.
+- FORM DEEP: It supports uncompressed, RLE and TVDC images.
 - FOR4 CIMG (Maya Image File Format): It supports 24/48-bit RGB and 32/64-bit 
   RGBA images.
 

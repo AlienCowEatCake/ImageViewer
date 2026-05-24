@@ -51,8 +51,23 @@ private:
     ParseHeicState m_parseState;
     int m_quality;
     QImage m_current_image;
+    quint16 m_orientation;
 
     bool write_helper(const QImage &image);
+
+    /*!
+     * \brief heif_orientation_helper
+     * Read the transform_mirror and transform_rotation_ccw properties and set \a m_orientation
+     * \return True on success, otherwise false.
+     */
+    bool read_orientation_helper(void *heif_handle, const void *heif_ctx);
+
+    /*!
+     * \brief read_crop
+     * Read the crop information.
+     * \return True on success, otherwise false.
+     */
+    bool read_crop(void *heif_handle, const void *heif_ctx, const QSize& size, QRect &crop);
 
     static void startHeifLib();
     static void finishHeifLib();

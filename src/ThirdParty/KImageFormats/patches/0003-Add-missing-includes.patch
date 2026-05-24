@@ -1,7 +1,7 @@
-From d728d4f5d5ce82053e2890a67ccbcc0aaab99c93 Mon Sep 17 00:00:00 2001
+From 4700ef448964a214ca9f1cd57f61b14bf06ca5c4 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 23 Jun 2024 19:58:27 +0700
-Subject: [PATCH 3/8] Add missing includes
+Subject: [PATCH 3/9] Add missing includes
 
 ---
  src/imageformats/packbits_p.h | 2 ++
@@ -22,7 +22,7 @@ index 63a1b55..7284868 100644
  
  /*!
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
-index 79b70ef..b24e5d2 100644
+index 7998956..40857eb 100644
 --- a/src/imageformats/util_p.h
 +++ b/src/imageformats/util_p.h
 @@ -8,6 +8,9 @@

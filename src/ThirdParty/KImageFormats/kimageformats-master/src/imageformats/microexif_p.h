@@ -211,6 +211,19 @@ public:
     void setTransformation(const QImageIOHandler::Transformation& t);
 
     /*!
+     * \brief transformationToOrientation
+     * \param t The Qt transformation.
+     * \return The EXIF orientation value or 0 if none.
+     */
+    static quint16 transformationToOrientation(const QImageIOHandler::Transformation& t);
+    /*!
+     * \brief orientationToTransformation
+     * \param o The EXIF orientation.
+     * \return The orientation converted in the equivalent Qt transformation.
+     */
+    static QImageIOHandler::Transformation orientationToTransformation(quint16 o);
+
+    /*!
      * \brief software
      * \return Name and version number of the software package(s) used to create the image.
      */

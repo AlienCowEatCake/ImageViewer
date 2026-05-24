@@ -94,6 +94,11 @@ DEFINES += RGHDChunk=tp_RGHDChunk
 DEFINES += RSCMChunk=tp_RSCMChunk
 DEFINES += VDATChunk=tp_VDATChunk
 DEFINES += YUVSChunk=tp_YUVSChunk
+DEFINES += DBODChunk=tp_DBODChunk
+DEFINES += DGBLChunk=tp_DGBLChunk
+DEFINES += DLOCChunk=tp_DLOCChunk
+DEFINES += DPELChunk=tp_DPELChunk
+DEFINES += TVDCChunk=tp_TVDCChunk
 
 # --------------------------------------------------------------------------------
 
@@ -181,6 +186,21 @@ DEFINES += LOG_DDSPLUGIN=tp_LOG_DDSPLUGIN
     DEFINES += makePreview=tp_makePreview
     DEFINES += LOG_EXRPLUGIN=tp_LOG_EXRPLUGIN
 }
+
+# --------------------------------------------------------------------------------
+
+SOURCES += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/ff.cpp
+
+HEADERS += \
+    $${THIRDPARTY_KIMAGEFORMATS_PATH}/src/imageformats/ff_p.h
+
+DEFINES += WRAPPER_USE_FF_HANDLER
+
+DEFINES += FFHandler=tp_FFHandler
+DEFINES += FFPlugin=tp_FFPlugin
+DEFINES += FFHandlerPrivate=tp_FFHandlerPrivate
+DEFINES += LOG_FFPLUGIN=tp_LOG_FFPLUGIN
 
 # --------------------------------------------------------------------------------
 

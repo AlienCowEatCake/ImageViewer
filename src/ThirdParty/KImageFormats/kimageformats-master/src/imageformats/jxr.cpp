@@ -1010,7 +1010,7 @@ private:
             return true;
         }
 
-        DESCRIPTIVEMETADATA meta;
+        DESCRIPTIVEMETADATA meta = {};
         if (pDecoder->GetDescriptiveMetadata(pDecoder, &meta)) {
             return false;
         }
@@ -1045,7 +1045,7 @@ bool JXRHandler::read(QImage *outImage)
 
     PKPixelFormatGUID convFmt;
     auto imageFmt = d->imageFormat(&convFmt);
-    auto img = imageAlloc(d->imageSize(), imageFmt);
+    auto img = imageAlloc(d->imageSize(), imageFmt, ImageInitToZero::FPOnly);
     if (img.isNull()) {
         return false;
     }

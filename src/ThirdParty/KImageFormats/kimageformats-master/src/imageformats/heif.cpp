@@ -11,6 +11,9 @@
 #include "microexif_p.h"
 #include "util_p.h"
 #include <libheif/heif.h>
+#if LIBHEIF_HAVE_VERSION(1, 17, 0)
+#include <libheif/heif_properties.h>
+#endif
 
 #include <QColorSpace>
 #include <QLoggingCategory>
@@ -31,6 +34,28 @@ Q_LOGGING_CATEGORY(LOG_HEIFPLUGIN, "kf.imageformats.plugins.heif", QtWarningMsg)
  * XMP and EXIF maximum size.
  */
 #define HEIF_MAX_METADATA_SIZE (4 * 1024 * 1024)
+#endif
+
+#ifndef HEIF_DISABLE_QT_TRANSFORMATION
+/*!
+ * HEIF transformations, in addition to rotations and reflections,
+ * also support image cropping. Consequently, the Qt plugin, must
+ * also honor the crop. This define is useful in case of problems:
+ * activating it disables Qt's support for transformations,
+ * delegating them to the HEIF libraries (which will therefore
+ * always apply them regardless of what is requested from Qt).
+ */
+// #define HEIF_DISABLE_QT_TRANSFORMATION
+#endif
+
+/* *** HEIF_MAX_IMAGE_WIDTH and HEIF_MAX_IMAGE_HEIGHT ***
+ * The maximum size in pixel allowed by the plugin.
+ */
+#ifndef HEIF_MAX_IMAGE_WIDTH
+#define HEIF_MAX_IMAGE_WIDTH KIF_64K_IMAGE_PIXEL_LIMIT
+#endif
+#ifndef HEIF_MAX_IMAGE_HEIGHT
+#define HEIF_MAX_IMAGE_HEIGHT HEIF_MAX_IMAGE_WIDTH
 #endif
 
 size_t HEIFHandler::m_initialized_count = 0;
@@ -72,6 +97,7 @@ static struct heif_error heifhandler_write_callback(struct heif_context * /* ctx
 HEIFHandler::HEIFHandler()
     : m_parseState(ParseHeicNotParsed)
     , m_quality(100)
+    , m_orientation(0)
 {
 }
 
@@ -120,6 +146,11 @@ bool HEIFHandler::write(const QImage &image)
 {
     if (image.format() == QImage::Format_Invalid || image.isNull()) {
         qCWarning(LOG_HEIFPLUGIN) << "No image data to save";
+        return false;
+    }
+
+    if (image.width() >= HEIF_MAX_IMAGE_WIDTH || image.height() >= HEIF_MAX_IMAGE_HEIGHT) {
+        qCWarning(LOG_HEIFPLUGIN) << "Image size invalid:" << image.width() << "x" << image.height();
         return false;
     }
 
@@ -329,12 +360,25 @@ bool HEIFHandler::write_helper(const QImage &image)
         }
     }
 
+#if LIBHEIF_HAVE_VERSION(1, 17, 0)
+    if (m_orientation >= 1 && m_orientation <= 8) {
+        // Function available from HEIF v1.14
+        encoder_options->image_orientation = heif_orientation(m_orientation);
+    }
+#endif
+
     struct heif_image_handle *handle;
     err = heif_context_encode_image(context, h_image, encoder, encoder_options, &handle);
 
     // exif metadata
     if (err.code == heif_error_Ok) {
         auto exif = MicroExif::fromImage(tmpimage);
+#if LIBHEIF_HAVE_VERSION(1, 17, 0)
+        if (m_orientation >= 1 && m_orientation <= 8) {
+            // EXIF orientation must be coherent with HEIF orientation
+            exif.setOrientation(m_orientation);
+        }
+#endif
         if (!exif.isEmpty()) {
             auto ba = exif.toByteArray();
             err = heif_context_add_exif_metadata(context, handle, ba.constData(), ba.size());
@@ -378,6 +422,82 @@ bool HEIFHandler::write_helper(const QImage &image)
 
     heif_context_free(context);
     return true;
+}
+
+bool HEIFHandler::read_orientation_helper(void *heif_handle, const void *heif_ctx)
+{
+    if (heif_handle == nullptr || heif_ctx == nullptr) {
+        return false;
+    }
+#if LIBHEIF_HAVE_VERSION(1, 17, 0)
+    auto handle = reinterpret_cast<heif_image_handle *>(heif_handle);
+    auto ctx = reinterpret_cast<const heif_context *>(heif_ctx);
+    auto item_id = heif_image_handle_get_item_id(handle);
+
+    // get the properties
+    heif_transform_mirror_direction mirror = heif_transform_mirror_direction::heif_transform_mirror_direction_invalid;
+    heif_property_id mir_id;
+    if (heif_item_get_properties_of_type(ctx, item_id, heif_item_property_type_transform_mirror, &mir_id, 1) > 0) {
+        mirror = heif_item_get_property_transform_mirror(ctx, item_id, mir_id);
+        if (mirror == heif_transform_mirror_direction::heif_transform_mirror_direction_invalid)
+            return false;
+    }
+
+    int rotation_ccw = -1;
+    heif_property_id rot_id;
+    if (heif_item_get_properties_of_type(ctx, item_id, heif_item_property_type_transform_rotation, &rot_id, 1) > 0) {
+        rotation_ccw = heif_item_get_property_transform_rotation_ccw(ctx, item_id, rot_id);
+        if (rotation_ccw == -1)
+            return false;
+    }
+
+    if (rotation_ccw == -1 && mirror == heif_transform_mirror_direction::heif_transform_mirror_direction_invalid) {
+        m_orientation = 0;
+    } else if (rotation_ccw == 0 && mirror == heif_transform_mirror_direction::heif_transform_mirror_direction_invalid) {
+        m_orientation = 1;
+    } else if (rotation_ccw <= 0 && mirror == heif_transform_mirror_direction::heif_transform_mirror_direction_horizontal) {
+        m_orientation = 2;
+    } else if (rotation_ccw == 180 && mirror == heif_transform_mirror_direction::heif_transform_mirror_direction_invalid) {
+        m_orientation = 3;
+    } else if (rotation_ccw <= 0 && mirror == heif_transform_mirror_direction::heif_transform_mirror_direction_vertical) {
+        m_orientation = 4;
+    } else if (rotation_ccw == 270 && mirror == heif_transform_mirror_direction::heif_transform_mirror_direction_horizontal) {
+        m_orientation = 5;
+    } else if (rotation_ccw == 270 && mirror == heif_transform_mirror_direction::heif_transform_mirror_direction_invalid) {
+        m_orientation = 6;
+    } else if (rotation_ccw == 270 && mirror == heif_transform_mirror_direction::heif_transform_mirror_direction_vertical) {
+        m_orientation = 7;
+    } else if (rotation_ccw == 90 && mirror == heif_transform_mirror_direction::heif_transform_mirror_direction_invalid) {
+        m_orientation = 8;
+    }
+
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool HEIFHandler::read_crop(void *heif_handle, const void *heif_ctx, const QSize &size, QRect &crop)
+{
+    if (heif_handle == nullptr || heif_ctx == nullptr) {
+        return false;
+    }
+#if LIBHEIF_HAVE_VERSION(1, 17, 0)
+    auto handle = reinterpret_cast<heif_image_handle *>(heif_handle);
+    auto ctx = reinterpret_cast<const heif_context *>(heif_ctx);
+    auto item_id = heif_image_handle_get_item_id(handle);
+
+    heif_property_id crop_id;
+    if (heif_item_get_properties_of_type(ctx, item_id, heif_item_property_type_transform_crop, &crop_id, 1) > 0) {
+        int l = 0, t = 0, r = 0, b = 0;
+        heif_item_get_property_transform_crop_borders(ctx, item_id, crop_id, size.width(), size.height(), &l, &t, &r, &b);
+        crop = QRect(QPoint(t, l), size - QSize(b + t, r + l));
+    }
+
+    return crop.isValid();
+#else
+    return false;
+#endif
 }
 
 bool HEIFHandler::isSupportedBMFFType(const QByteArray &header)
@@ -460,10 +580,10 @@ QVariant HEIFHandler::option(ImageOption option) const
     switch (option) {
     case Size:
         return m_current_image.size();
-        break;
+    case ImageTransformation:
+        return int(MicroExif::orientationToTransformation(m_orientation));
     default:
         return QVariant();
-        break;
     }
 }
 
@@ -478,6 +598,9 @@ void HEIFHandler::setOption(ImageOption option, const QVariant &value)
             m_quality = 100;
         }
         break;
+    case ImageTransformation:
+        m_orientation = MicroExif::transformationToOrientation(QImageIOHandler::Transformation(value.toUInt()));
+        break;
     default:
         QImageIOHandler::setOption(option, value);
         break;
@@ -486,7 +609,11 @@ void HEIFHandler::setOption(ImageOption option, const QVariant &value)
 
 bool HEIFHandler::supportsOption(ImageOption option) const
 {
-    return option == Quality || option == Size;
+    auto ok = option == Quality || option == Size;
+#ifndef HEIF_DISABLE_QT_TRANSFORMATION
+    ok = ok || option == ImageTransformation;
+#endif
+    return ok;
 }
 
 bool HEIFHandler::ensureParsed() const
@@ -509,6 +636,7 @@ bool HEIFHandler::ensureParsed() const
 #if LIBHEIF_HAVE_VERSION(1, 13, 0)
     finishHeifLib();
 #endif
+
     return success;
 }
 
@@ -593,10 +721,16 @@ bool HEIFHandler::ensureDecoder()
         return false;
     }
 
+    bool ignore_transformations = false;
     struct heif_decoding_options *decoder_option = heif_decoding_options_alloc();
 
 #if LIBHEIF_HAVE_VERSION(1, 13, 0)
     decoder_option->strict_decoding = 1;
+#endif
+#ifdef HEIF_DISABLE_QT_TRANSFORMATION
+    decoder_option->ignore_transformations = ignore_transformations;
+#else
+    decoder_option->ignore_transformations = ignore_transformations = read_orientation_helper(handle, ctx);
 #endif
 
     struct heif_image *img = nullptr;
@@ -627,14 +761,17 @@ bool HEIFHandler::ensureDecoder()
     const int imageWidth = heif_image_get_width(img, heif_channel_interleaved);
     const int imageHeight = heif_image_get_height(img, heif_channel_interleaved);
 
-    QSize imageSize(imageWidth, imageHeight);
+    QSize imageSize;
+    if (imageWidth < HEIF_MAX_IMAGE_WIDTH && imageHeight < HEIF_MAX_IMAGE_HEIGHT) {
+        imageSize = QSize(imageWidth, imageHeight);
+    }
 
     if (!imageSize.isValid()) {
         heif_image_release(img);
         heif_image_handle_release(handle);
         heif_context_free(ctx);
         m_parseState = ParseHeicError;
-        qCWarning(LOG_HEIFPLUGIN) << "HEIC image size invalid:" << imageSize;
+        qCWarning(LOG_HEIFPLUGIN) << "HEIC image size invalid:" << imageWidth << "x" << imageHeight;
         return false;
     }
 
@@ -854,6 +991,12 @@ bool HEIFHandler::ensureDecoder()
         qCWarning(LOG_HEIFPLUGIN) << "Unsupported bit depth:" << bit_depth;
         return false;
         break;
+    }
+
+    if (ignore_transformations) {
+        QRect crop_rect;
+        if (read_crop(handle, ctx, m_current_image.size(), crop_rect))
+            m_current_image = m_current_image.copy(crop_rect);
     }
 
     heif_color_profile_type profileType = heif_image_handle_get_color_profile_type(handle);
@@ -1105,7 +1248,6 @@ void HEIFHandler::finishHeifLib()
     if (m_initialized_count == 0) {
         heif_deinit();
     }
-
 #endif
 }
 

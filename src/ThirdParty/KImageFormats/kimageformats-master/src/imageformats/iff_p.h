@@ -39,6 +39,8 @@ private:
 
     bool readRGFXImage(QImage *image);
 
+    bool readDEEPImage(QImage *image);
+
 private:
     const QScopedPointer<IFFHandlerPrivate> d;
 };

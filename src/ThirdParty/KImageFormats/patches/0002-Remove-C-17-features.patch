@@ -1,7 +1,7 @@
-From 5fb7a73aac9b623c870fc76200ec940e7e7e85cf Mon Sep 17 00:00:00 2001
+From 71376c50e92b361cefaf59b01f80a006d1d30d58 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 25 Apr 2022 01:45:25 +0700
-Subject: [PATCH 2/8] Remove C++17 features
+Subject: [PATCH 2/9] Remove C++17 features
 
 ---
  src/imageformats/chunks.cpp |  6 +++---
@@ -15,10 +15,10 @@ Subject: [PATCH 2/8] Remove C++17 features
  8 files changed, 19 insertions(+), 19 deletions(-)
 
 diff --git a/src/imageformats/chunks.cpp b/src/imageformats/chunks.cpp
-index ccecd89..5407ded 100644
+index 817c4fe..3e8100b 100644
 --- a/src/imageformats/chunks.cpp
 +++ b/src/imageformats/chunks.cpp
-@@ -2959,9 +2959,9 @@ inline IPARChunk::Rgb yuvToRgb(IHDRChunk::Yuv yuv) {
+@@ -3050,9 +3050,9 @@ inline IPARChunk::Rgb yuvToRgb(IHDRChunk::Yuv yuv) {
      const auto r = yuv.y + (yuv.v - 128.) * 1.371;
      const auto g = (yuv.y - 0.299 * r - 0.114 * b) / 0.587;
  
@@ -54,7 +54,7 @@ index 05e6524..84f5e51 100644
  
      /*!
 diff --git a/src/imageformats/jxr.cpp b/src/imageformats/jxr.cpp
-index 7bcaa07..d1ad61e 100644
+index 01a12d6..ac462d4 100644
 --- a/src/imageformats/jxr.cpp
 +++ b/src/imageformats/jxr.cpp
 @@ -1124,11 +1124,11 @@ bool JXRHandler::read(QImage *outImage)
@@ -124,18 +124,18 @@ index 8af8a39..b64ae3c 100644
                      return QImage::Format_ARGB32;
                  }
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
-index 85d1ef6..79b70ef 100644
+index 24c0d68..7998956 100644
 --- a/src/imageformats/util_p.h
 +++ b/src/imageformats/util_p.h
-@@ -61,7 +61,7 @@
+@@ -70,7 +70,7 @@
  #define META_KEY_LENS_SERIALNUMBER "LensSerialNumber"
  
  // QList uses some extra space for stuff, hence the 32 here suggested by Thiago Macieira
 -static constexpr int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
 +static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
  
- // On Qt 6 to make the plugins fail to allocate if the image size is greater than QImageReader::allocationLimit()
- // it is necessary to allocate the image with QImageIOHandler::allocateImage().
+ /*!
+  * \brief The ImageInitToZero enum
 diff --git a/src/imageformats/xcf.cpp b/src/imageformats/xcf.cpp
 index 117c8da..5a94dcd 100644
 --- a/src/imageformats/xcf.cpp

@@ -1,15 +1,15 @@
-From a5db44362a9a4a06c974ca996a2ab75b863e953e Mon Sep 17 00:00:00 2001
+From e2f5e9e054a67df669dcf0318f4793400d6855c3 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 9 Aug 2025 21:12:08 +0700
-Subject: [PATCH 8/8] Dont use modern options with old Qt verson
+Subject: [PATCH 9/9] Dont use modern options with old Qt verson
 
 ---
  src/imageformats/ani.cpp               |   4 +
  src/imageformats/ani_p.h               |  16 +++
  src/imageformats/avif.cpp              |  36 +++++-
- src/imageformats/chunks.cpp            | 148 ++++++++++++++++++++-----
+ src/imageformats/chunks.cpp            | 154 ++++++++++++++++++++-----
  src/imageformats/chunks_p.h            |  59 ++++++++++
- src/imageformats/dds.cpp               | 136 +++++++++++++++++++++++
+ src/imageformats/dds.cpp               | 136 ++++++++++++++++++++++
  src/imageformats/exr.cpp               |  40 +++++++
  src/imageformats/hdr.cpp               |  27 ++++-
  src/imageformats/heif.cpp              |  11 +-
@@ -31,9 +31,9 @@ Subject: [PATCH 8/8] Dont use modern options with old Qt verson
  src/imageformats/sct.cpp               |   2 +
  src/imageformats/tga.cpp               |  15 +++
  src/imageformats/tim.cpp               |  22 +++-
- src/imageformats/util_p.h              |  11 +-
+ src/imageformats/util_p.h              |  14 ++-
  src/imageformats/xcf.cpp               |  43 ++++++-
- 29 files changed, 847 insertions(+), 47 deletions(-)
+ 29 files changed, 855 insertions(+), 48 deletions(-)
 
 diff --git a/src/imageformats/ani.cpp b/src/imageformats/ani.cpp
 index c8cc22b..f83be1f 100644
@@ -94,10 +94,10 @@ index bfce9ef..7b8435b 100644
      QString m_name;
      QString m_artist;
 diff --git a/src/imageformats/avif.cpp b/src/imageformats/avif.cpp
-index 04f3f77..5d6dac4 100644
+index 3a55657..4bfa50d 100644
 --- a/src/imageformats/avif.cpp
 +++ b/src/imageformats/avif.cpp
-@@ -299,7 +299,9 @@ bool QAVIFHandler::decode_one_frame()
+@@ -309,7 +309,9 @@ bool QAVIFHandler::decode_one_frame()
          colorspace = QColorSpace::fromIccProfile(icc_data);
          if (!colorspace.isValid()) {
              qCWarning(LOG_AVIFPLUGIN, "AVIF image has Qt-unsupported or invalid ICC profile!");
@@ -108,7 +108,7 @@ index 04f3f77..5d6dac4 100644
              if (colorspace.colorModel() == QColorSpace::ColorModel::Cmyk) {
                  qCWarning(LOG_AVIFPLUGIN, "CMYK ICC profile is not extected for AVIF, discarding the ICCprofile!");
                  colorspace = QColorSpace();
-@@ -329,6 +331,7 @@ bool QAVIFHandler::decode_one_frame()
+@@ -339,6 +341,7 @@ bool QAVIFHandler::decode_one_frame()
                  }
              }
          }
@@ -116,7 +116,7 @@ index 04f3f77..5d6dac4 100644
      } else {
          float prim[8] = {0.64f, 0.33f, 0.3f, 0.6f, 0.15f, 0.06f, 0.3127f, 0.329f};
          // outPrimaries: rX, rY, gX, gY, bX, bY, wX, wY
-@@ -363,12 +366,14 @@ bool QAVIFHandler::decode_one_frame()
+@@ -373,12 +376,14 @@ bool QAVIFHandler::decode_one_frame()
          case 13:
              q_trc = QColorSpace::TransferFunction::SRgb;
              break;
@@ -131,7 +131,7 @@ index 04f3f77..5d6dac4 100644
          default:
              qCWarning(LOG_AVIFPLUGIN, "CICP colorPrimaries: %d, transferCharacteristics: %d\nThe colorspace is unsupported by this plug-in yet.",
                       m_decoder->image->colorPrimaries,
-@@ -378,9 +383,11 @@ bool QAVIFHandler::decode_one_frame()
+@@ -388,9 +393,11 @@ bool QAVIFHandler::decode_one_frame()
          }
  
          if (q_trc != QColorSpace::TransferFunction::Custom) { // we create new colorspace using Qt
@@ -143,7 +143,7 @@ index 04f3f77..5d6dac4 100644
                  switch (m_decoder->image->colorPrimaries) {
                  /* AVIF_COLOR_PRIMARIES_BT709 */
                  case 0:
-@@ -388,9 +395,11 @@ bool QAVIFHandler::decode_one_frame()
+@@ -398,9 +405,11 @@ bool QAVIFHandler::decode_one_frame()
                  case 2: /* AVIF_COLOR_PRIMARIES_UNSPECIFIED */
                      colorspace = QColorSpace(QColorSpace::Primaries::SRgb, q_trc, q_trc_gamma);
                      break;
@@ -155,7 +155,7 @@ index 04f3f77..5d6dac4 100644
                  /* AVIF_COLOR_PRIMARIES_SMPTE432 */
                  case 12:
                      colorspace = QColorSpace(QColorSpace::Primaries::DciP3D65, q_trc, q_trc_gamma);
-@@ -399,7 +408,9 @@ bool QAVIFHandler::decode_one_frame()
+@@ -409,7 +418,9 @@ bool QAVIFHandler::decode_one_frame()
                      colorspace = QColorSpace(whitePoint, redPoint, greenPoint, bluePoint, q_trc, q_trc_gamma);
                      break;
                  }
@@ -165,7 +165,7 @@ index 04f3f77..5d6dac4 100644
          }
  
          if (!colorspace.isValid()) {
-@@ -513,12 +524,21 @@ bool QAVIFHandler::decode_one_frame()
+@@ -523,12 +534,21 @@ bool QAVIFHandler::decode_one_frame()
  #else
          switch (m_decoder->image->imir.axis) {
  #endif
@@ -187,7 +187,7 @@ index 04f3f77..5d6dac4 100644
          }
      }
  
-@@ -747,17 +767,20 @@ bool QAVIFHandler::write(const QImage &image)
+@@ -757,17 +777,20 @@ bool QAVIFHandler::write(const QImage &image)
                  /* AVIF_TRANSFER_CHARACTERISTICS_SRGB */
                  avif->transferCharacteristics = (avifTransferCharacteristics)13;
                  break;
@@ -208,7 +208,7 @@ index 04f3f77..5d6dac4 100644
              if (avif->transferCharacteristics == 2) { // in case TransferFunction was not identified yet
                  if (tmpgrayimage.colorSpace().colorModel() == QColorSpace::ColorModel::Gray && lossless) {
                      avif->colorPrimaries = (avifColorPrimaries)2;
-@@ -793,6 +816,7 @@ bool QAVIFHandler::write(const QImage &image)
+@@ -803,6 +826,7 @@ bool QAVIFHandler::write(const QImage &image)
                      }
                  }
              }
@@ -216,7 +216,7 @@ index 04f3f77..5d6dac4 100644
          }
  
          if (save_depth > 8) { // QImage::Format_Grayscale16
-@@ -833,6 +857,7 @@ bool QAVIFHandler::write(const QImage &image)
+@@ -843,6 +867,7 @@ bool QAVIFHandler::write(const QImage &image)
              }
          }
  
@@ -224,7 +224,7 @@ index 04f3f77..5d6dac4 100644
          QImage tmpcolorimage;
          auto cs = image.colorSpace();
          if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && image.format() == QImage::Format_CMYK8888) {
-@@ -847,6 +872,9 @@ bool QAVIFHandler::write(const QImage &image)
+@@ -857,6 +882,9 @@ bool QAVIFHandler::write(const QImage &image)
          } else {
              tmpcolorimage = image.convertToFormat(tmpformat);
          }
@@ -234,7 +234,7 @@ index 04f3f77..5d6dac4 100644
  
          avifPixelFormat pixel_format = AVIF_PIXEL_FORMAT_YUV420;
          if (m_quality >= KIMG_AVIF_QUALITY_HIGH) {
-@@ -877,10 +905,12 @@ bool QAVIFHandler::write(const QImage &image)
+@@ -887,10 +915,12 @@ bool QAVIFHandler::write(const QImage &image)
                  /* AVIF_MATRIX_COEFFICIENTS_CHROMA_DERIVED_NCL */
                  matrix_to_save = (avifMatrixCoefficients)12;
                  break;
@@ -247,7 +247,7 @@ index 04f3f77..5d6dac4 100644
              default:
                  /* AVIF_TRANSFER_CHARACTERISTICS_UNSPECIFIED */
                  primaries_to_save = (avifColorPrimaries)2;
-@@ -910,12 +940,14 @@ bool QAVIFHandler::write(const QImage &image)
+@@ -920,12 +950,14 @@ bool QAVIFHandler::write(const QImage &image)
                  /* AVIF_TRANSFER_CHARACTERISTICS_SRGB */
                  transfer_to_save = (avifTransferCharacteristics)13;
                  break;
@@ -262,7 +262,7 @@ index 04f3f77..5d6dac4 100644
              default:
                  /* AVIF_TRANSFER_CHARACTERISTICS_UNSPECIFIED */
                  transfer_to_save = (avifTransferCharacteristics)2;
-@@ -951,12 +983,14 @@ bool QAVIFHandler::write(const QImage &image)
+@@ -961,12 +993,14 @@ bool QAVIFHandler::write(const QImage &image)
                          case 5: // AVIF_TRANSFER_CHARACTERISTICS_BT470BG
                              tmpcolorimage.convertToColorSpace(QColorSpace(QColorSpace::Primaries::SRgb, 2.8f));
                              break;
@@ -278,7 +278,7 @@ index 04f3f77..5d6dac4 100644
                              tmpcolorimage.convertToColorSpace(QColorSpace(QColorSpace::Primaries::SRgb, QColorSpace::TransferFunction::SRgb));
                              transfer_to_save = (avifTransferCharacteristics)13;
 diff --git a/src/imageformats/chunks.cpp b/src/imageformats/chunks.cpp
-index 5407ded..32627a7 100644
+index 3e8100b..377d10d 100644
 --- a/src/imageformats/chunks.cpp
 +++ b/src/imageformats/chunks.cpp
 @@ -32,7 +32,11 @@ static QString dataToString(const IFFChunk *chunk)
@@ -293,7 +293,7 @@ index 5407ded..32627a7 100644
      return QString::fromUtf8(dt).trimmed();
  }
  
-@@ -551,7 +555,11 @@ qint32 CMAPChunk::count() const
+@@ -561,7 +565,11 @@ qint32 CMAPChunk::count() const
      return dataBytes() / 3;
  }
  
@@ -305,7 +305,7 @@ index 5407ded..32627a7 100644
  {
      auto p = innerPalette();
      if (!halfbride) {
-@@ -569,9 +577,17 @@ bool CMAPChunk::innerReadStructure(QIODevice *d)
+@@ -579,9 +587,17 @@ bool CMAPChunk::innerReadStructure(QIODevice *d)
      return cacheData(d);
  }
  
@@ -323,7 +323,7 @@ index 5407ded..32627a7 100644
      auto &&d = data();
      for (qint32 i = 0, n = count(); i < n; ++i) {
          auto i3 = i * 3;
-@@ -608,9 +624,17 @@ qint32 CMYKChunk::count() const
+@@ -618,9 +634,17 @@ qint32 CMYKChunk::count() const
      return dataBytes() / 4;
  }
  
@@ -341,7 +341,7 @@ index 5407ded..32627a7 100644
      auto &&d = data();
      for (qint32 i = 0, n = count(); i < n; ++i) {
          auto i4 = i * 4;
-@@ -1178,21 +1202,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
+@@ -1188,21 +1212,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
                      auto v = planes.at(k * rowLen + i);
                      auto msk = 1 << k;
                      if (v & (1 << 7))
@@ -371,7 +371,7 @@ index 5407ded..32627a7 100644
                  }
              }
          }
-@@ -1214,21 +1238,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
+@@ -1224,21 +1248,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
                      auto k8 = k * 8;
                      auto msk = (1 << (7 - j));
                      if (planes.at(k8 * rowLen + i) & msk)
@@ -401,7 +401,7 @@ index 5407ded..32627a7 100644
                  }
          }
          break;
-@@ -1269,21 +1293,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
+@@ -1279,21 +1303,21 @@ QByteArray BODYChunk::deinterleave(const QByteArray &planes, qint32 y, const BMH
                      auto msk = (1 << (7 - j));
                      auto idx = cnt + order[k];
                      if (planes.at(k8 * rowLen + i) & msk)
@@ -431,7 +431,7 @@ index 5407ded..32627a7 100644
                  }
                  if (p == 6) { // RGBX wants unused X data set to 0xFF
                      ba[cnt + 6] = char(0xFF);
-@@ -1576,10 +1600,12 @@ QImage::Format FORMChunk::rgfxFormat() const
+@@ -1588,10 +1612,12 @@ QImage::Format FORMChunk::rgfxFormat() const
              return QImage::Format_RGBX64;
          if (rgfx_format == RGHDChunk::BitmapType::Rgb64)
              return QImage::Format_RGBA64;
@@ -444,7 +444,22 @@ index 5407ded..32627a7 100644
      }
  
      return QImage::Format_Invalid;
-@@ -2876,12 +2902,20 @@ qint32 PLTEChunk::total() const
+@@ -1624,12 +1650,14 @@ QImage::Format FORMChunk::deepFormat() const
+                 return FORMAT_RGBA_8BIT;
+             else if (depth == 16)
+                 return QImage::Format_RGBA64;
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+         } else if (list.at(0).type == DPELChunk::Cyan &&
+                    list.at(1).type == DPELChunk::Magenta &&
+                    list.at(2).type == DPELChunk::Yellow &&
+                    list.at(3).type == DPELChunk::Black) {
+             if (depth == 8)
+                 return QImage::Format_CMYK8888;
++#endif
+         } else if (list.at(0).type == DPELChunk::Red &&
+                    list.at(1).type == DPELChunk::Green &&
+                    list.at(2).type == DPELChunk::Blue) {
+@@ -2967,12 +2995,20 @@ qint32 PLTEChunk::total() const
      return qint32(ui16(data().at(3), data().at(2)));
  }
  
@@ -465,7 +480,7 @@ index 5407ded..32627a7 100644
      auto &&d = data();
      for (qint32 i = offset(), n = total(); i < n; ++i) {
          auto i3 = 4 + i * 3;
-@@ -3025,7 +3059,9 @@ QByteArray IDATChunk::strideRead(QIODevice *d, qint32 y, const IHDRChunk *header
+@@ -3116,7 +3152,9 @@ QByteArray IDATChunk::strideRead(QIODevice *d, qint32 y, const IHDRChunk *header
  
          if (header->model() == IHDRChunk::Rgb555) {
              for (qint32 x = 0, w = rr.size() - 1; x < w; x += 2) {
@@ -476,7 +491,7 @@ index 5407ded..32627a7 100644
              }
          }
  
-@@ -3274,13 +3310,21 @@ qint32 RCOLChunk::count() const
+@@ -3365,13 +3403,21 @@ qint32 RCOLChunk::count() const
      return isValid() ? 256 : 0;
  }
  
@@ -498,7 +513,7 @@ index 5407ded..32627a7 100644
      auto &&d = data();
      for (qint32 i = 0, n = count(); i < n; ++i) {
          auto i3 = i * 3 + 8;
-@@ -3468,7 +3512,7 @@ QByteArray RBODChunk::deinterleave(const QByteArray &planes, qint32 y, const RGH
+@@ -3559,7 +3605,7 @@ QByteArray RBODChunk::deinterleave(const QByteArray &planes, qint32 y, const RGH
      } else if (rgfx_format == RGHDChunk::BitmapType::Rgb48) {
          QDataStream in(planes);
          in.setByteOrder(QDataStream::BigEndian);
@@ -507,7 +522,7 @@ index 5407ded..32627a7 100644
          ou.setByteOrder(QDataStream::ByteOrder(QSysInfo::ByteOrder));
  
          quint16 r, g, b;
-@@ -3483,7 +3527,7 @@ QByteArray RBODChunk::deinterleave(const QByteArray &planes, qint32 y, const RGH
+@@ -3574,7 +3620,7 @@ QByteArray RBODChunk::deinterleave(const QByteArray &planes, qint32 y, const RGH
      } else if (rgfx_format == RGHDChunk::BitmapType::Rgb64) {
          QDataStream in(planes);
          in.setByteOrder(QDataStream::BigEndian);
@@ -516,7 +531,7 @@ index 5407ded..32627a7 100644
          ou.setByteOrder(QDataStream::ByteOrder(QSysInfo::ByteOrder));
  
          auto invAlpha = header->bitmapType() & RGHDChunk::BitmapType::HasInvAlpha;
-@@ -3502,7 +3546,7 @@ QByteArray RBODChunk::deinterleave(const QByteArray &planes, qint32 y, const RGH
+@@ -3593,7 +3639,7 @@ QByteArray RBODChunk::deinterleave(const QByteArray &planes, qint32 y, const RGH
          QDataStream in(planes);
          in.setByteOrder(QDataStream::BigEndian);
          in.setFloatingPointPrecision(QDataStream::SinglePrecision);
@@ -525,7 +540,7 @@ index 5407ded..32627a7 100644
          ou.setByteOrder(QDataStream::ByteOrder(QSysInfo::ByteOrder));
          ou.setFloatingPointPrecision(QDataStream::SinglePrecision);
  
-@@ -3519,7 +3563,7 @@ QByteArray RBODChunk::deinterleave(const QByteArray &planes, qint32 y, const RGH
+@@ -3610,7 +3656,7 @@ QByteArray RBODChunk::deinterleave(const QByteArray &planes, qint32 y, const RGH
          QDataStream in(planes);
          in.setByteOrder(QDataStream::BigEndian);
          in.setFloatingPointPrecision(QDataStream::SinglePrecision);
@@ -534,7 +549,18 @@ index 5407ded..32627a7 100644
          ou.setByteOrder(QDataStream::ByteOrder(QSysInfo::ByteOrder));
          ou.setFloatingPointPrecision(QDataStream::SinglePrecision);
  
-@@ -3600,13 +3644,21 @@ IPALChunk *BEAMChunk::clone() const
+@@ -4077,7 +4123,9 @@ QByteArray DBODChunk::strideRead(QIODevice *d, qint32, const DGBLChunk *header,
+     if (auto count = pel->count()) {
+         if (pel->depth() / count == 16) {
+             for (auto x = 0, w = qint32(planes.size()) - 1; x < w; x += 2) {
+-                std::swap(planes[x], planes[x + 1]);
++                const char tmp = planes[x];
++                planes[x] = planes[x + 1];
++                planes[x + 1] = tmp;
+             }
+         }
+     }
+@@ -4123,13 +4171,21 @@ IPALChunk *BEAMChunk::clone() const
      return new BEAMChunk(*this);
  }
  
@@ -556,7 +582,7 @@ index 5407ded..32627a7 100644
  {
      auto &&height = _height;
      if (height < 1) {
-@@ -3618,7 +3670,11 @@ QList<QRgb> BEAMChunk::palette(qint32 y) const
+@@ -4141,7 +4197,11 @@ QList<QRgb> BEAMChunk::palette(qint32 y) const
      }
      auto col = qint32(bpp / 2);
      auto &&dt = data();
@@ -568,7 +594,7 @@ index 5407ded..32627a7 100644
      for (auto c = 0; c < col; ++c) {
          // 2 bytes per color (0x0R 0xGB)
          auto idx = bpp * y + c * 2;
-@@ -3694,7 +3750,11 @@ IPALChunk *SHAMChunk::clone() const
+@@ -4217,7 +4277,11 @@ IPALChunk *SHAMChunk::clone() const
      return new SHAMChunk(*this);
  }
  
@@ -580,7 +606,7 @@ index 5407ded..32627a7 100644
  {
      auto && height = _height;
      if (height < 1) {
-@@ -3711,7 +3771,11 @@ QList<QRgb> SHAMChunk::palette(qint32 y) const
+@@ -4234,7 +4298,11 @@ QList<QRgb> SHAMChunk::palette(qint32 y) const
          return {};
      }
      auto &&dt = data();
@@ -592,7 +618,7 @@ index 5407ded..32627a7 100644
      for (auto c = 0, col = bpp / 2, idx0 = y / div * bpp + 2; c < col; ++c) {
          // 2 bytes per color (0x0R 0xGB)
          auto idx = idx0 + c * 2;
-@@ -3725,7 +3789,11 @@ QList<QRgb> SHAMChunk::palette(qint32 y) const
+@@ -4248,7 +4316,11 @@ QList<QRgb> SHAMChunk::palette(qint32 y) const
      return pal;
  }
  
@@ -604,7 +630,7 @@ index 5407ded..32627a7 100644
  {
      _height = height;
      return true;
-@@ -3762,7 +3830,11 @@ IPALChunk *RASTChunk::clone() const
+@@ -4285,7 +4357,11 @@ IPALChunk *RASTChunk::clone() const
      return new RASTChunk(*this);
  }
  
@@ -616,7 +642,7 @@ index 5407ded..32627a7 100644
  {
      auto &&height = _height;
      if (height < 1) {
-@@ -3774,7 +3846,11 @@ QList<QRgb> RASTChunk::palette(qint32 y) const
+@@ -4297,7 +4373,11 @@ QList<QRgb> RASTChunk::palette(qint32 y) const
      }
      auto col = qint32(bpp / 2 - 1);
      auto &&dt = data();
@@ -628,7 +654,7 @@ index 5407ded..32627a7 100644
      for (auto c = 0; c < col; ++c) {
          auto idx = bpp * y + 2 + c * 2;
          if (idx + 1 < dt.size()) {
-@@ -3793,7 +3869,11 @@ QList<QRgb> RASTChunk::palette(qint32 y) const
+@@ -4316,7 +4396,11 @@ QList<QRgb> RASTChunk::palette(qint32 y) const
      return pal;
  }
  
@@ -640,7 +666,7 @@ index 5407ded..32627a7 100644
  {
      _height = height;
      return true;
-@@ -3907,7 +3987,11 @@ IPALChunk *PCHGChunk::clone() const
+@@ -4430,7 +4514,11 @@ IPALChunk *PCHGChunk::clone() const
      return new PCHGChunk(*this);
  }
  
@@ -652,7 +678,7 @@ index 5407ded..32627a7 100644
  {
      return _palettes.value(y);
  }
-@@ -4090,7 +4174,11 @@ static QByteArray pchgFastDecomp(const QByteArray& input, int treeSize, int orig
+@@ -4613,7 +4701,11 @@ static QByteArray pchgFastDecomp(const QByteArray& input, int treeSize, int orig
  }
  // !Huffman decompression
  
@@ -664,7 +690,7 @@ index 5407ded..32627a7 100644
  {
      Q_UNUSED(height)
      auto dt = data().mid(20);
-@@ -4175,7 +4263,7 @@ bool PCHGChunk::initialize(const QList<QRgb> &cmapPalette, qint32 height)
+@@ -4698,7 +4790,7 @@ bool PCHGChunk::initialize(const QList<QRgb> &cmapPalette, qint32 height)
              return false;
          }
  
@@ -674,7 +700,7 @@ index 5407ded..32627a7 100644
                  last[i] = hash.value(i);
          }
 diff --git a/src/imageformats/chunks_p.h b/src/imageformats/chunks_p.h
-index df7835e..2800618 100644
+index 0a7ba46..ed58ee0 100644
 --- a/src/imageformats/chunks_p.h
 +++ b/src/imageformats/chunks_p.h
 @@ -25,6 +25,9 @@
@@ -687,7 +713,7 @@ index df7835e..2800618 100644
  
  #include "microexif_p.h"
  
-@@ -416,7 +419,11 @@ public:
+@@ -423,7 +426,11 @@ public:
       * \param y The scanline.
       * \return The modified palette.
       */
@@ -699,7 +725,7 @@ index df7835e..2800618 100644
  
      /*!
       * \brief initialize
-@@ -425,7 +432,11 @@ public:
+@@ -432,7 +439,11 @@ public:
       * \param height The image height.
       * \return True on success, otherwise false.
       */
@@ -711,7 +737,7 @@ index df7835e..2800618 100644
  };
  
  
-@@ -589,12 +600,20 @@ public:
+@@ -596,12 +607,20 @@ public:
       * \return The color palette.
       * \note If \a halfbride is true, the returned palette size is count() * 2.
       */
@@ -732,7 +758,7 @@ index df7835e..2800618 100644
  
      virtual bool innerReadStructure(QIODevice *d) override;
  };
-@@ -632,7 +651,11 @@ protected:
+@@ -639,7 +658,11 @@ protected:
       * \brief palette
       * \return The CMYK color palette converted to RGB one.
       */
@@ -744,7 +770,7 @@ index df7835e..2800618 100644
  };
  
  /*!
-@@ -1667,7 +1690,11 @@ protected:
+@@ -1688,7 +1711,11 @@ protected:
  
      qint32 total() const;
  
@@ -756,7 +782,7 @@ index df7835e..2800618 100644
  };
  
  
-@@ -1835,7 +1862,11 @@ public:
+@@ -1856,7 +1883,11 @@ public:
      CHUNKID_DEFINE(RCOL_CHUNK)
  
  protected:
@@ -768,7 +794,7 @@ index df7835e..2800618 100644
  };
  
  
-@@ -1965,9 +1996,15 @@ public:
+@@ -2246,9 +2277,15 @@ public:
  
      virtual IPALChunk *clone() const override;
  
@@ -784,7 +810,7 @@ index df7835e..2800618 100644
  
      CHUNKID_DEFINE(BEAM_CHUNK)
  
-@@ -2009,9 +2046,15 @@ public:
+@@ -2290,9 +2327,15 @@ public:
  
      virtual IPALChunk *clone() const override;
  
@@ -800,7 +826,7 @@ index df7835e..2800618 100644
  
      CHUNKID_DEFINE(SHAM_CHUNK)
  
-@@ -2040,9 +2083,15 @@ public:
+@@ -2321,9 +2364,15 @@ public:
  
      virtual IPALChunk *clone() const override;
  
@@ -816,7 +842,7 @@ index df7835e..2800618 100644
  
      CHUNKID_DEFINE(RAST_CHUNK)
  
-@@ -2101,9 +2150,15 @@ public:
+@@ -2382,9 +2431,15 @@ public:
  
      virtual IPALChunk *clone() const override;
  
@@ -832,7 +858,7 @@ index df7835e..2800618 100644
  
      CHUNKID_DEFINE(PCHG_CHUNK)
  
-@@ -2113,7 +2168,11 @@ protected:
+@@ -2394,7 +2449,11 @@ protected:
  private:
      QHash<qint32, QHash<quint16, QRgb>> _paletteChanges;
  
@@ -1336,10 +1362,10 @@ index 71c4bf1..51f8a3d 100644
          }
      }
 diff --git a/src/imageformats/heif.cpp b/src/imageformats/heif.cpp
-index 5005e67..983cc38 100644
+index 4a3d881..6e7e5c8 100644
 --- a/src/imageformats/heif.cpp
 +++ b/src/imageformats/heif.cpp
-@@ -189,6 +189,7 @@ bool HEIFHandler::write_helper(const QImage &image)
+@@ -220,6 +220,7 @@ bool HEIFHandler::write_helper(const QImage &image)
          }
      }
  
@@ -1347,7 +1373,7 @@ index 5005e67..983cc38 100644
      QImage tmpimage;
      auto cs = image.colorSpace();
      if (cs.isValid() && cs.colorModel() == QColorSpace::ColorModel::Cmyk && image.format() == QImage::Format_CMYK8888) {
-@@ -204,6 +205,9 @@ bool HEIFHandler::write_helper(const QImage &image)
+@@ -235,6 +236,9 @@ bool HEIFHandler::write_helper(const QImage &image)
      } else {
          tmpimage = image.convertToFormat(tmpformat);
      }
@@ -1357,7 +1383,7 @@ index 5005e67..983cc38 100644
  
      struct heif_context *context = heif_context_alloc();
      struct heif_error err;
-@@ -864,7 +868,9 @@ bool HEIFHandler::ensureDecoder()
+@@ -1007,7 +1011,9 @@ bool HEIFHandler::ensureDecoder()
                  QColorSpace colorspace = QColorSpace::fromIccProfile(ba);
                  if (!colorspace.isValid()) {
                      qCWarning(LOG_HEIFPLUGIN) << "HEIC image has Qt-unsupported or invalid ICC profile!";
@@ -1368,7 +1394,7 @@ index 5005e67..983cc38 100644
                      qCWarning(LOG_HEIFPLUGIN) << "CMYK ICC profile is not expected for HEIF, discarding the ICCprofile!";
                      colorspace = QColorSpace();
                  } else if (colorspace.colorModel() == QColorSpace::ColorModel::Gray) {
-@@ -891,6 +897,7 @@ bool HEIFHandler::ensureDecoder()
+@@ -1034,6 +1040,7 @@ bool HEIFHandler::ensureDecoder()
                          m_current_image.convertTo(bit_depth > 8 ? QImage::Format_Grayscale16 : QImage::Format_Grayscale8);
                      }
                  }
@@ -1376,7 +1402,7 @@ index 5005e67..983cc38 100644
                  m_current_image.setColorSpace(colorspace);
              }
          } else {
-@@ -927,12 +934,14 @@ bool HEIFHandler::ensureDecoder()
+@@ -1070,12 +1077,14 @@ bool HEIFHandler::ensureDecoder()
              case 13:
                  q_trc = QColorSpace::TransferFunction::SRgb;
                  break;
@@ -1392,7 +1418,7 @@ index 5005e67..983cc38 100644
                  qCWarning(LOG_HEIFPLUGIN) << "CICP color_primaries: %d, transfer_characteristics: %d\nThe colorspace is unsupported by this plug-in yet."
                                            << nclx->color_primaries
 diff --git a/src/imageformats/iff.cpp b/src/imageformats/iff.cpp
-index 881f072..c3f533e 100644
+index d46f094..a97eea1 100644
 --- a/src/imageformats/iff.cpp
 +++ b/src/imageformats/iff.cpp
 @@ -235,12 +235,14 @@ static void addMetadata(QImage &img, const IFOR_Chunk *form)
@@ -1435,7 +1461,7 @@ index 881f072..c3f533e 100644
      addMetadata(img, form);
  
      *image = img;
-@@ -677,7 +687,7 @@ QVariant IFFHandler::option(ImageOption option) const
+@@ -744,7 +754,7 @@ QVariant IFFHandler::option(ImageOption option) const
      }
  
      if (option == QImageIOHandler::ImageTransformation) {
@@ -1856,7 +1882,7 @@ index c062584..ef1fac6 100644
  
      QImage m_current_image;
 diff --git a/src/imageformats/jxr.cpp b/src/imageformats/jxr.cpp
-index 5598d6c..97d1ffc 100644
+index a73e8b9..2f6fbf2 100644
 --- a/src/imageformats/jxr.cpp
 +++ b/src/imageformats/jxr.cpp
 @@ -51,6 +51,9 @@ Q_LOGGING_CATEGORY(LOG_JXRPLUGIN, "kf.imageformats.plugins.jxr", QtWarningMsg)
@@ -1972,7 +1998,7 @@ index 5598d6c..97d1ffc 100644
  #endif
  
 diff --git a/src/imageformats/microexif.cpp b/src/imageformats/microexif.cpp
-index b723714..7ae11cb 100644
+index 23dd3f4..4ea2649 100644
 --- a/src/imageformats/microexif.cpp
 +++ b/src/imageformats/microexif.cpp
 @@ -12,7 +12,9 @@
@@ -2032,7 +2058,7 @@ index b723714..7ae11cb 100644
              }
          } else if (dataType == EXIF_TAG_DATATYPE(ExifTagType::Undefined)) {
              auto l = readBytes(ds, count, false);
-@@ -905,7 +925,11 @@ QDateTime MicroExif::dateTime() const
+@@ -907,7 +927,11 @@ QDateTime MicroExif::dateTime() const
      auto dt = QDateTime::fromString(tiffString(TIFF_DATETIME), QStringLiteral("yyyy:MM:dd HH:mm:ss"));
      auto ofTag = exifString(EXIF_OFFSETTIME);
      if (dt.isValid() && !ofTag.isEmpty())
@@ -2044,7 +2070,7 @@ index b723714..7ae11cb 100644
      return dt;
  }
  
-@@ -925,7 +949,11 @@ QDateTime MicroExif::dateTimeOriginal() const
+@@ -927,7 +951,11 @@ QDateTime MicroExif::dateTimeOriginal() const
      auto dt = QDateTime::fromString(exifString(EXIF_DATETIMEORIGINAL), QStringLiteral("yyyy:MM:dd HH:mm:ss"));
      auto ofTag = exifString(EXIF_OFFSETTIMEORIGINAL);
      if (dt.isValid() && !ofTag.isEmpty())
@@ -2056,7 +2082,7 @@ index b723714..7ae11cb 100644
      return dt;
  }
  
-@@ -945,7 +973,11 @@ QDateTime MicroExif::dateTimeDigitized() const
+@@ -947,7 +975,11 @@ QDateTime MicroExif::dateTimeDigitized() const
      auto dt = QDateTime::fromString(exifString(EXIF_DATETIMEDIGITIZED), QStringLiteral("yyyy:MM:dd HH:mm:ss"));
      auto ofTag = exifString(EXIF_OFFSETTIMEDIGITIZED);
      if (dt.isValid() && !ofTag.isEmpty())
@@ -2068,7 +2094,7 @@ index b723714..7ae11cb 100644
      return dt;
  }
  
-@@ -1099,7 +1131,7 @@ FlashFlags MicroExif::flash() const
+@@ -1101,7 +1133,7 @@ FlashFlags MicroExif::flash() const
  
  void MicroExif::setFlash(const FlashFlags &flash)
  {
@@ -2077,7 +2103,7 @@ index b723714..7ae11cb 100644
          m_exifTags.remove(EXIF_FLASH);
      else
          m_exifTags.insert(EXIF_FLASH, quint16(flash));
-@@ -1398,7 +1430,7 @@ void MicroExif::updateImageMetadata(QImage &targetImage, bool replaceExisting) c
+@@ -1400,7 +1432,7 @@ void MicroExif::updateImageMetadata(QImage &targetImage, bool replaceExisting) c
      }
      if (replaceExisting || targetImage.text(QStringLiteral(META_KEY_FLASH)).isEmpty()) {
          auto v = flash();
@@ -2087,7 +2113,7 @@ index b723714..7ae11cb 100644
      }
      if (replaceExisting || targetImage.text(QStringLiteral(META_KEY_FNUMBER)).isEmpty()) {
 diff --git a/src/imageformats/pcx.cpp b/src/imageformats/pcx.cpp
-index 769129b..5ec7518 100644
+index af453a3..d14045c 100644
 --- a/src/imageformats/pcx.cpp
 +++ b/src/imageformats/pcx.cpp
 @@ -781,11 +781,13 @@ static bool writeImage24(const QImage &image, QDataStream &s, PCXHEADER &header)
@@ -2470,7 +2496,7 @@ index 5434744..08c38de 100644
          auto rasLine = dec.readLine(rasLineSize);
          if (rasLine.size() != rasLineSize) {
 diff --git a/src/imageformats/raw.cpp b/src/imageformats/raw.cpp
-index f1cfcca..ae235ce 100644
+index fcfbe94..e5efe79 100644
 --- a/src/imageformats/raw.cpp
 +++ b/src/imageformats/raw.cpp
 @@ -841,9 +841,11 @@ bool LoadRAW(QImageIOHandler *handler, QImage &img)
@@ -2729,15 +2755,16 @@ index 312886b..133141c 100644
  
      *image = img;
 diff --git a/src/imageformats/util_p.h b/src/imageformats/util_p.h
-index b24e5d2..c03a63b 100644
+index 40857eb..6c1fd5e 100644
 --- a/src/imageformats/util_p.h
 +++ b/src/imageformats/util_p.h
-@@ -14,9 +14,12 @@
+@@ -14,10 +14,13 @@
  #include <limits>
  
  #include <QImage>
 -#include <QImageIOHandler>
  #include <QIODevice>
+ #include <QPixelFormat>
  
 +#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 +#include <QImageIOHandler>
@@ -2746,21 +2773,28 @@ index b24e5d2..c03a63b 100644
  // Default maximum width and height for the large image plugins.
  #ifndef KIF_LARGE_IMAGE_PIXEL_LIMIT
  #define KIF_LARGE_IMAGE_PIXEL_LIMIT 300000
-@@ -71,9 +74,13 @@ static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
- inline QImage imageAlloc(const QSize &size, const QImage::Format &format)
+@@ -98,6 +101,12 @@ enum class ImageInitToZero
+ inline QImage imageAlloc(const QSize &size, const QImage::Format &format, const ImageInitToZero& init = ImageInitToZero::None)
  {
      QImage img;
 +#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 +    img = QImage(size, format);
++    if (init != ImageInitToZero::None && !img.isNull()) {
++        img.fill(0);
++    }
 +#else
      if (!QImageIOHandler::allocateImage(size, format, &img)) {
          img = QImage(); // paranoia
+     }
+@@ -113,6 +122,7 @@ inline QImage imageAlloc(const QSize &size, const QImage::Format &format, const
+             img.fill(0);
+         }
      }
 +#endif
      return img;
  }
  
-@@ -179,9 +186,11 @@ static QByteArray deviceRead(QIODevice *d, qint64 maxSize)
+@@ -218,9 +228,11 @@ static QByteArray deviceRead(QIODevice *d, qint64 maxSize)
      QByteArray ba;
      while (ba.size() < maxSize) {
          auto toRead = std::min(blockSize, maxSize - ba.size());

@@ -162,6 +162,7 @@ HANDLER_TYPES="ANIHandler ani
         QAVIFHandler avif
         QDDSHandler dds
         EXRHandler exr
+        FFHandler ff
         HDRHandler hdr
         HEIFHandler heif
         IFFHandler iff

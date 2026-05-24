@@ -15,6 +15,7 @@
 
 #include <QImage>
 #include <QIODevice>
+#include <QPixelFormat>
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QImageIOHandler>
@@ -23,6 +24,14 @@
 // Default maximum width and height for the large image plugins.
 #ifndef KIF_LARGE_IMAGE_PIXEL_LIMIT
 #define KIF_LARGE_IMAGE_PIXEL_LIMIT 300000
+#endif
+
+// Maximum size for legacy image formats.
+#define KIF_64K_IMAGE_PIXEL_LIMIT 65536
+
+#if KIF_LARGE_IMAGE_PIXEL_LIMIT < KIF_64K_IMAGE_PIXEL_LIMIT
+#undef KIF_LARGE_IMAGE_PIXEL_LIMIT
+#define KIF_LARGE_IMAGE_PIXEL_LIMIT KIF_64K_IMAGE_PIXEL_LIMIT
 #endif
 
 // Image metadata keys to use in plugins (so they are consistent)
@@ -69,24 +78,57 @@
 // QList uses some extra space for stuff, hence the 32 here suggested by Thiago Macieira
 static const int kMaxQVectorSize = std::numeric_limits<int>::max() - 32;
 
-// On Qt 6 to make the plugins fail to allocate if the image size is greater than QImageReader::allocationLimit()
-// it is necessary to allocate the image with QImageIOHandler::allocateImage().
-inline QImage imageAlloc(const QSize &size, const QImage::Format &format)
+/*!
+ * \brief The ImageInitToZero enum
+ */
+enum class ImageInitToZero
+{
+    None, /**< Do not initialize the image. */
+    All, /**< Initialize all images. */
+    PremulOnly, /**< Initialize only images with premultiplied alpha. */
+    FPOnly, /**< Initialize only images with floating point format. */
+    FPAndPremul /**< Initialize floating point and premultiplied formats. */
+};
+
+/*!
+ * \brief imageAlloc
+ * Helper function to initialize framework images.
+ * \param size The image size.
+ * \param format The image format,
+ * \param init Whether and which images should be initialized to zero.
+ * \return The allocated image or a null image on error.
+ */
+inline QImage imageAlloc(const QSize &size, const QImage::Format &format, const ImageInitToZero& init = ImageInitToZero::None)
 {
     QImage img;
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     img = QImage(size, format);
+    if (init != ImageInitToZero::None && !img.isNull()) {
+        img.fill(0);
+    }
 #else
     if (!QImageIOHandler::allocateImage(size, format, &img)) {
         img = QImage(); // paranoia
+    }
+    if (init != ImageInitToZero::None && !img.isNull()) {
+        auto pixelFormat = img.pixelFormat();
+        auto isFloat = pixelFormat.typeInterpretation() == QPixelFormat::FloatingPoint;
+        auto isPremul = pixelFormat.premultiplied();
+        if (init == ImageInitToZero::All) {
+            img.fill(0);
+        } else if (isFloat && (init == ImageInitToZero::FPOnly || init == ImageInitToZero::FPAndPremul)) {
+            img.fill(0);
+        } else if (isPremul && (init == ImageInitToZero::PremulOnly || init == ImageInitToZero::FPAndPremul)) {
+            img.fill(0);
+        }
     }
 #endif
     return img;
 }
 
-inline QImage imageAlloc(qint32 width, qint32 height, const QImage::Format &format)
+inline QImage imageAlloc(qint32 width, qint32 height, const QImage::Format &format, const ImageInitToZero& init = ImageInitToZero::None)
 {
-    return imageAlloc(QSize(width, height), format);
+    return imageAlloc(QSize(width, height), format, init);
 }
 
 template<class TI, class SF> // SF = source FP, TI = target INT

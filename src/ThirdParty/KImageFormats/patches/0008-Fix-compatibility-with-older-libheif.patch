@@ -1,0 +1,215 @@
+From 52a41da9a1c30f75842ec8aa93346894bebf9386 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 24 May 2026 17:57:22 +0700
+Subject: [PATCH 8/9] Fix compatibility with older libheif
+
+---
+ src/imageformats/heif.cpp | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+
+diff --git a/src/imageformats/heif.cpp b/src/imageformats/heif.cpp
+index 8f4c9d4..4a3d881 100644
+--- a/src/imageformats/heif.cpp
++++ b/src/imageformats/heif.cpp
+@@ -11,7 +11,9 @@
+ #include "microexif_p.h"
+ #include "util_p.h"
+ #include <libheif/heif.h>
++#if LIBHEIF_HAVE_VERSION(1, 17, 0)
+ #include <libheif/heif_properties.h>
++#endif
+ 
+ #include <QColorSpace>
+ #include <QLoggingCategory>
+@@ -152,11 +154,15 @@ bool HEIFHandler::write(const QImage &image)
+         return false;
+     }
+ 
++#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+     startHeifLib();
++#endif
+ 
+     bool success = write_helper(image);
+ 
++#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+     finishHeifLib();
++#endif
+ 
+     return success;
+ }
+@@ -188,10 +194,12 @@ bool HEIFHandler::write_helper(const QImage &image)
+     }
+ 
+     heif_compression_format encoder_codec = heif_compression_HEVC;
++#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+     if (format() == "hej2") {
+         encoder_codec = heif_compression_JPEG2000;
+         save_depth = 8; // for compatibility reasons
+     }
++#endif
+ 
+     heif_chroma chroma;
+     if (save_depth > 8) {
+@@ -348,10 +356,12 @@ bool HEIFHandler::write_helper(const QImage &image)
+         }
+     }
+ 
++#if LIBHEIF_HAVE_VERSION(1, 17, 0)
+     if (m_orientation >= 1 && m_orientation <= 8) {
+         // Function available from HEIF v1.14
+         encoder_options->image_orientation = heif_orientation(m_orientation);
+     }
++#endif
+ 
+     struct heif_image_handle *handle;
+     err = heif_context_encode_image(context, h_image, encoder, encoder_options, &handle);
+@@ -359,10 +369,12 @@ bool HEIFHandler::write_helper(const QImage &image)
+     // exif metadata
+     if (err.code == heif_error_Ok) {
+         auto exif = MicroExif::fromImage(tmpimage);
++#if LIBHEIF_HAVE_VERSION(1, 17, 0)
+         if (m_orientation >= 1 && m_orientation <= 8) {
+             // EXIF orientation must be coherent with HEIF orientation
+             exif.setOrientation(m_orientation);
+         }
++#endif
+         if (!exif.isEmpty()) {
+             auto ba = exif.toByteArray();
+             err = heif_context_add_exif_metadata(context, handle, ba.constData(), ba.size());
+@@ -413,6 +425,7 @@ bool HEIFHandler::read_orientation_helper(void *heif_handle, const void *heif_ct
+     if (heif_handle == nullptr || heif_ctx == nullptr) {
+         return false;
+     }
++#if LIBHEIF_HAVE_VERSION(1, 17, 0)
+     auto handle = reinterpret_cast<heif_image_handle *>(heif_handle);
+     auto ctx = reinterpret_cast<const heif_context *>(heif_ctx);
+     auto item_id = heif_image_handle_get_item_id(handle);
+@@ -455,6 +468,9 @@ bool HEIFHandler::read_orientation_helper(void *heif_handle, const void *heif_ct
+     }
+ 
+     return true;
++#else
++    return false;
++#endif
+ }
+ 
+ bool HEIFHandler::read_crop(void *heif_handle, const void *heif_ctx, const QSize &size, QRect &crop)
+@@ -462,6 +478,7 @@ bool HEIFHandler::read_crop(void *heif_handle, const void *heif_ctx, const QSize
+     if (heif_handle == nullptr || heif_ctx == nullptr) {
+         return false;
+     }
++#if LIBHEIF_HAVE_VERSION(1, 17, 0)
+     auto handle = reinterpret_cast<heif_image_handle *>(heif_handle);
+     auto ctx = reinterpret_cast<const heif_context *>(heif_ctx);
+     auto item_id = heif_image_handle_get_item_id(handle);
+@@ -474,6 +491,9 @@ bool HEIFHandler::read_crop(void *heif_handle, const void *heif_ctx, const QSize
+     }
+ 
+     return crop.isValid();
++#else
++    return false;
++#endif
+ }
+ 
+ bool HEIFHandler::isSupportedBMFFType(const QByteArray &header)
+@@ -603,11 +623,15 @@ bool HEIFHandler::ensureParsed() const
+ 
+     HEIFHandler *that = const_cast<HEIFHandler *>(this);
+ 
++#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+     startHeifLib();
++#endif
+ 
+     bool success = that->ensureDecoder();
+ 
++#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+     finishHeifLib();
++#endif
+ 
+     return success;
+ }
+@@ -696,7 +720,9 @@ bool HEIFHandler::ensureDecoder()
+     bool ignore_transformations = false;
+     struct heif_decoding_options *decoder_option = heif_decoding_options_alloc();
+ 
++#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+     decoder_option->strict_decoding = 1;
++#endif
+ #ifdef HEIF_DISABLE_QT_TRANSFORMATION
+     decoder_option->ignore_transformations = ignore_transformations;
+ #else
+@@ -706,6 +732,7 @@ bool HEIFHandler::ensureDecoder()
+     struct heif_image *img = nullptr;
+     err = heif_decode_image(handle, &img, heif_colorspace_RGB, chroma, decoder_option);
+ 
++#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+     if (err.code == heif_error_Invalid_input && err.subcode == heif_suberror_Unknown_NCLX_matrix_coefficients && img == nullptr && buffer.contains("Xiaomi")) {
+         qCWarning(LOG_HEIFPLUGIN) << "Non-standard HEIF image with invalid matrix_coefficients, probably made by a Xiaomi device!";
+ 
+@@ -713,6 +740,7 @@ bool HEIFHandler::ensureDecoder()
+         decoder_option->strict_decoding = 0;
+         err = heif_decode_image(handle, &img, heif_colorspace_RGB, chroma, decoder_option);
+     }
++#endif
+ 
+     if (decoder_option) {
+         heif_decoding_options_free(decoder_option);
+@@ -1160,27 +1188,34 @@ void HEIFHandler::queryHeifLib()
+     QMutexLocker locker(&getHEIFHandlerMutex());
+ 
+     if (!m_plugins_queried) {
++#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+         if (m_initialized_count == 0) {
+             heif_init(nullptr);
+         }
++#endif
+ 
+         m_heif_encoder_available = heif_have_encoder_for_format(heif_compression_HEVC);
+         m_heif_decoder_available = heif_have_decoder_for_format(heif_compression_HEVC);
++#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+         m_hej2_decoder_available = heif_have_decoder_for_format(heif_compression_JPEG2000);
+         m_hej2_encoder_available = heif_have_encoder_for_format(heif_compression_JPEG2000);
++#endif
+ #if LIBHEIF_HAVE_VERSION(1, 19, 6)
+         m_avci_decoder_available = heif_have_decoder_for_format(heif_compression_AVC);
+ #endif
+         m_plugins_queried = true;
+ 
++#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+         if (m_initialized_count == 0) {
+             heif_deinit();
+         }
++#endif
+     }
+ }
+ 
+ void HEIFHandler::startHeifLib()
+ {
++#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+     QMutexLocker locker(&getHEIFHandlerMutex());
+ 
+     if (m_initialized_count == 0) {
+@@ -1188,10 +1223,12 @@ void HEIFHandler::startHeifLib()
+     }
+ 
+     m_initialized_count++;
++#endif
+ }
+ 
+ void HEIFHandler::finishHeifLib()
+ {
++#if LIBHEIF_HAVE_VERSION(1, 13, 0)
+     QMutexLocker locker(&getHEIFHandlerMutex());
+ 
+     if (m_initialized_count == 0) {
+@@ -1202,6 +1239,7 @@ void HEIFHandler::finishHeifLib()
+     if (m_initialized_count == 0) {
+         heif_deinit();
+     }
++#endif
+ }
+ 
+ QMutex &HEIFHandler::getHEIFHandlerMutex()
+-- 
+2.47.3
+

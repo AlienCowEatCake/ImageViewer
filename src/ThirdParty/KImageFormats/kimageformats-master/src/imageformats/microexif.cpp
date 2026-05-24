@@ -764,7 +764,42 @@ void MicroExif::setOrientation(quint16 orient)
 
 QImageIOHandler::Transformation MicroExif::transformation() const
 {
-    switch (orientation()) {
+    return orientationToTransformation(orientation());
+}
+
+void MicroExif::setTransformation(const QImageIOHandler::Transformation &t)
+{
+    setOrientation(transformationToOrientation(t));
+}
+
+quint16 MicroExif::transformationToOrientation(const QImageIOHandler::Transformation &t)
+{
+    switch (t) {
+    case QImageIOHandler::TransformationNone:
+        return 1;
+    case QImageIOHandler::TransformationMirror:
+        return 2;
+    case QImageIOHandler::TransformationRotate180:
+        return 3;
+    case QImageIOHandler::TransformationFlip:
+        return 4;
+    case QImageIOHandler::TransformationFlipAndRotate90:
+        return 5;
+    case QImageIOHandler::TransformationRotate90:
+        return 6;
+    case QImageIOHandler::TransformationMirrorAndRotate90:
+        return 7;
+    case QImageIOHandler::TransformationRotate270:
+        return 8;
+    default:
+        break;
+    }
+    return 0; // no orientation set
+}
+
+QImageIOHandler::Transformation MicroExif::orientationToTransformation(quint16 o)
+{
+    switch (o) {
     case 1:
         return QImageIOHandler::TransformationNone;
     case 2:
@@ -785,39 +820,6 @@ QImageIOHandler::Transformation MicroExif::transformation() const
         break;
     };
     return QImageIOHandler::TransformationNone;
-}
-
-void MicroExif::setTransformation(const QImageIOHandler::Transformation &t)
-{
-    switch (t) {
-    case QImageIOHandler::TransformationNone:
-        setOrientation(1);
-        break;
-    case QImageIOHandler::TransformationMirror:
-        setOrientation(2);
-        break;
-    case QImageIOHandler::TransformationRotate180:
-        setOrientation(3);
-        break;
-    case QImageIOHandler::TransformationFlip:
-        setOrientation(4);
-        break;
-    case QImageIOHandler::TransformationFlipAndRotate90:
-        setOrientation(5);
-        break;
-    case QImageIOHandler::TransformationRotate90:
-        setOrientation(6);
-        break;
-    case QImageIOHandler::TransformationMirrorAndRotate90:
-        setOrientation(7);
-        break;
-    case QImageIOHandler::TransformationRotate270:
-        setOrientation(8);
-        break;
-    default:
-        break;
-    }
-    setOrientation(0); // no orientation set
 }
 
 QString MicroExif::software() const

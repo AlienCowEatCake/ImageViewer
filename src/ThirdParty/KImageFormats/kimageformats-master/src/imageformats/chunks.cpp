@@ -299,6 +299,14 @@ IFFChunk::ChunkList IFFChunk::innerFromDevice(QIODevice *d, bool *ok, IFFChunk *
             chunk = QSharedPointer<IFFChunk>(new CTBLChunk());
         } else if (cid == DATE_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new DATEChunk());
+        } else if (cid == DBOD_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new DBODChunk());
+        } else if (cid == DGBL_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new DGBLChunk());
+        } else if (cid == DLOC_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new DLOCChunk());
+        } else if (cid == DPEL_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new DPELChunk());
         } else if (cid == DPI__CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new DPIChunk());
         } else if (cid == EXIF_CHUNK) {
@@ -345,6 +353,8 @@ IFFChunk::ChunkList IFFChunk::innerFromDevice(QIODevice *d, bool *ok, IFFChunk *
             chunk = QSharedPointer<IFFChunk>(new SHAMChunk());
         } else if (cid == TBHD_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new TBHDChunk());
+        } else if (cid == TVDC_CHUNK) {
+            chunk = QSharedPointer<IFFChunk>(new TVDCChunk());
         } else if (cid == VDAT_CHUNK) {
             chunk = QSharedPointer<IFFChunk>(new VDATChunk());
         } else if (cid == VERS_CHUNK) {
@@ -1492,6 +1502,8 @@ bool FORMChunk::innerReadStructure(QIODevice *d)
         setChunks(IFFChunk::innerFromDevice(d, &ok, this));
     } else if (_type == RGFX_FORM_TYPE) {
         setChunks(IFFChunk::innerFromDevice(d, &ok, this));
+    } else if (_type == DEEP_FORM_TYPE || _type == TVPP_FORM_TYPE) {
+        setChunks(IFFChunk::innerFromDevice(d, &ok, this));
     }
     return ok;
 }
@@ -1611,6 +1623,74 @@ QImage::Format FORMChunk::rgfxFormat() const
     return QImage::Format_Invalid;
 }
 
+QImage::Format FORMChunk::deepFormat() const
+{
+    auto pels = IFFChunk::searchT<DPELChunk>(chunks());
+    if (pels.isEmpty()) {
+        return QImage::Format_Invalid;
+    }
+    auto list = pels.first()->elements();
+
+    // support for same depth on all elements
+    auto depth = -1;
+    for (auto &&el : list) {
+        if (depth < 0)
+            depth = el.depth;
+        if (depth != el.depth)
+            return QImage::Format_Invalid;
+    }
+
+    // calculate the image format
+    if (list.size() == 4) {
+        if (list.at(0).type == DPELChunk::Red &&
+            list.at(1).type == DPELChunk::Green &&
+            list.at(2).type == DPELChunk::Blue &&
+            list.at(3).type == DPELChunk::Alpha) {
+            if (depth == 8)
+                return FORMAT_RGBA_8BIT;
+            else if (depth == 16)
+                return QImage::Format_RGBA64;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+        } else if (list.at(0).type == DPELChunk::Cyan &&
+                   list.at(1).type == DPELChunk::Magenta &&
+                   list.at(2).type == DPELChunk::Yellow &&
+                   list.at(3).type == DPELChunk::Black) {
+            if (depth == 8)
+                return QImage::Format_CMYK8888;
+#endif
+        } else if (list.at(0).type == DPELChunk::Red &&
+                   list.at(1).type == DPELChunk::Green &&
+                   list.at(2).type == DPELChunk::Blue) {
+            // unknown type of channel 4 -> ignoring it
+            if (depth == 8)
+                return QImage::Format_RGBX8888;
+            else if (depth == 16)
+                return QImage::Format_RGBX64;
+        }
+    } else if (list.size() == 3) {
+        if (list.at(0).type == DPELChunk::Red &&
+            list.at(1).type == DPELChunk::Green &&
+            list.at(2).type == DPELChunk::Blue) {
+            if (depth == 8)
+                return FORMAT_RGB_8BIT;
+        } else if (list.at(0).type == DPELChunk::Blue &&
+                   list.at(1).type == DPELChunk::Green &&
+                   list.at(2).type == DPELChunk::Red) {
+            if (depth == 8)
+                return QImage::Format_BGR888;
+        }
+    } else if (list.size() == 1) {
+        if (depth == 1)
+            return QImage::Format_Mono;
+        else if (depth == 8)
+            return QImage::Format_Grayscale8;
+        else if (depth == 16)
+            return QImage::Format_Grayscale16;
+    }
+
+    return QImage::Format_Invalid;
+}
+
 QByteArray FORMChunk::formType() const
 {
     return _type;
@@ -1622,6 +1702,8 @@ QImage::Format FORMChunk::format() const
         return cdiFormat();
     } else if (formType() == RGFX_FORM_TYPE) {
         return rgfxFormat();
+    } else if (formType() == DEEP_FORM_TYPE || formType() == TVPP_FORM_TYPE) {
+        return deepFormat();
     }
     return iffFormat();
 }
@@ -1637,6 +1719,15 @@ QSize FORMChunk::size() const
         auto rghds = IFFChunk::searchT<RGHDChunk>(chunks());
         if (!rghds.isEmpty()) {
             return rghds.first()->size();
+        }
+    } else if (formType() == DEEP_FORM_TYPE || formType() == TVPP_FORM_TYPE) {
+        auto dlocs = IFFChunk::searchT<DLOCChunk>(chunks());
+        if (!dlocs.isEmpty()) {
+            return dlocs.first()->size();
+        }
+        auto dgbls = IFFChunk::searchT<DGBLChunk>(chunks());
+        if (!dgbls.isEmpty()) {
+            return dgbls.first()->size();
         }
     } else {
         auto bmhds = IFFChunk::searchT<BMHDChunk>(chunks());
@@ -1760,6 +1851,8 @@ bool CATChunk::innerReadStructure(QIODevice *d)
     } else if (_type == IMAG_FORM_TYPE) {
         setChunks(IFFChunk::innerFromDevice(d, &ok, this));
     } else if (_type == RGFX_FORM_TYPE) {
+        setChunks(IFFChunk::innerFromDevice(d, &ok, this));
+    } else if (_type == DEEP_FORM_TYPE || _type == TVPP_FORM_TYPE) {
         setChunks(IFFChunk::innerFromDevice(d, &ok, this));
     }
     return ok;
@@ -3615,6 +3708,440 @@ quint32 RBODChunk::strideSize(const RGHDChunk *header) const
         return header->width() * 16;
     }
     return 0;
+}
+
+
+/* ******************
+ * *** DGBL Chunk ***
+ * ****************** */
+
+DGBLChunk::~DGBLChunk()
+{
+
+}
+
+DGBLChunk::DGBLChunk()
+    : IFFChunk()
+{
+
+}
+
+DGBLChunk::Compression DGBLChunk::compression() const
+{
+    if (!isValid()) {
+        return Compression::Uncompressed;
+    }
+    return Compression(ui16(data(), 4));
+
+}
+
+qint32 DGBLChunk::width() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data(), 0));
+}
+
+qint32 DGBLChunk::height() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data(), 2));
+}
+
+quint8 DGBLChunk::xAspectRatio() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return quint8(data().at(6));
+}
+
+quint8 DGBLChunk::yAspectRatio() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return quint8(data().at(7));
+}
+
+bool DGBLChunk::isValid() const
+{
+    if (dataBytes() < 8) {
+        return false;
+    }
+    return chunkId() == DGBLChunk::defaultChunkId();
+}
+
+bool DGBLChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
+ * *** DPEL Chunk ***
+ * ****************** */
+
+DPELChunk::~DPELChunk()
+{
+
+}
+
+DPELChunk::DPELChunk()
+    : IFFChunk()
+{
+
+}
+
+qint32 DPELChunk::count() const
+{
+    if (dataBytes() < 4) {
+        return 0;
+    }
+    auto cnt = i32(data(), 0);
+    if (cnt < 0 || cnt > 128) {
+        // an image should have 3, 4 or 5 channels:
+        // 128 is enough to give an error.
+        cnt = 0;
+    }
+    return cnt;
+}
+
+qint32 DPELChunk::depth() const
+{
+    auto depth = 0;
+    auto list = elements();
+    for (auto &&el : list) {
+        depth += el.depth;
+    }
+    return depth;
+}
+
+QList<DPELChunk::Element> DPELChunk::elements() const
+{
+    QList<DPELChunk::Element> list;
+    if (isValid()) {
+        for (auto n = count(), i = 0; i < n; ++i) {
+            auto idx = 4 + i * 4;
+            list << DPELChunk::Element(DataType(ui16(data(), idx)),
+                                       ui16(data(), idx + 2));
+        }
+    }
+    return list;
+}
+
+bool DPELChunk::isValid() const
+{
+    if (dataBytes() < quint32(4 + count() * 4)) {
+        return false;
+    }
+    return chunkId() == DPELChunk::defaultChunkId();
+}
+
+bool DPELChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
+ * *** DLOC Chunk ***
+ * ****************** */
+
+DLOCChunk::~DLOCChunk()
+{
+
+}
+
+DLOCChunk::DLOCChunk()
+    : IFFChunk()
+{
+
+}
+
+qint32 DLOCChunk::width() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data(), 0));
+}
+
+qint32 DLOCChunk::height() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(ui16(data(), 2));
+}
+
+QSize DLOCChunk::size() const
+{
+    return QSize(width(), height());
+}
+
+qint32 DLOCChunk::xOffset() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(i16(data(), 4));
+}
+
+qint32 DLOCChunk::yOffset() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return qint32(i16(data(), 6));
+}
+
+bool DLOCChunk::isValid() const
+{
+    if (dataBytes() < 8) {
+        return false;
+    }
+    return chunkId() == DLOCChunk::defaultChunkId();
+}
+
+bool DLOCChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
+ * *** TVDC Chunk ***
+ * ****************** */
+
+TVDCChunk::~TVDCChunk()
+{
+
+}
+
+TVDCChunk::TVDCChunk()
+    : IFFChunk()
+{
+
+}
+
+qint32 TVDCChunk::count() const
+{
+    if (!isValid()) {
+        return 0;
+    }
+    return dataBytes() / 2;
+}
+
+QList<quint16> TVDCChunk::table() const
+{
+    QList<quint16> list;
+    if (isValid()) {
+        for (auto n = count(), i = 0; i < n; ++i) {
+            list << ui16(data(), i * 2);
+        }
+    }
+    return list;
+}
+
+bool TVDCChunk::isValid() const
+{
+    if (dataBytes() < 32) {
+        return false;
+    }
+    return chunkId() == TVDCChunk::defaultChunkId();
+}
+
+bool TVDCChunk::innerReadStructure(QIODevice *d)
+{
+    return cacheData(d);
+}
+
+
+/* ******************
+ * *** DBOD Chunk ***
+ * ****************** */
+
+DBODChunk::~DBODChunk()
+{
+
+}
+
+DBODChunk::DBODChunk()
+    : IFFChunk()
+{
+
+}
+
+bool DBODChunk::isValid() const
+{
+    return chunkId() == DBODChunk::defaultChunkId();
+}
+
+/*!
+ * \brief rleDeepDecompress
+ * Each run contains a pixel (all components)
+ */
+inline qint64 rleDeepDecompress(QIODevice *input, char *output, qint64 olen, qint32 pixelBytes)
+{
+    qint64 j = 0;
+    pixelBytes = std::max(1, pixelBytes);
+    for (qint64 rr = 0, available = olen; j < olen; available = olen - j) {
+        char n;
+
+        // check the output buffer space for the next run
+        if (available < 129 * pixelBytes) {
+            if (input->peek(&n, 1) != 1) { // end of data (or error)
+                break;
+            }
+            if ((static_cast<signed char>(n) >= 0 ? qint64(n) + 1 : qint64(1 - n)) * pixelBytes > available)
+                break;
+        }
+
+        // decompress
+        if (input->read(&n, 1) != 1) { // end of data (or error)
+            break;
+        }
+
+        if (static_cast<signed char>(n) >= 0) {
+            rr = input->read(output + j, (qint64(n) + 1) * pixelBytes);
+            if (rr == -1) {
+                return -1;
+            }
+        }
+        else {
+            auto buf = input->read(pixelBytes);
+            if (buf.size() != pixelBytes) {
+                break;
+            }
+            rr = qint64(1 - static_cast<signed char>(n));
+            for (qint64 i = 0; i < rr; ++i) {
+                std::memcpy(output + j + i * pixelBytes, buf.data(), buf.size());
+            }
+            rr *= pixelBytes;
+        }
+
+        j += rr;
+    }
+    return j;
+}
+
+/*!
+ * \brief tvdcDeepDecompress
+ * the compression is made line by line for each elementof the chunk DPEL.
+ * For RGBA for example we have a Red line, a Green line, and so on.
+ */
+inline qint64 tvdcDeepDecompress(QIODevice *input, char *output, qint64 olen, const QList<quint16>& table)
+{
+    if (table.size() != 16) {
+        return -1;
+    }
+
+    quint8 v = 0;
+    quint8 last = 0;
+    for (qint64 i = 0, pos = 0, lastRead = -1; i < olen; ++i) {
+        if ((pos >> 1) != lastRead) {
+            char n;
+            if (input->read(&n, 1) != 1) {
+                return -1;
+            }
+            lastRead = (pos >> 1);
+            last = quint8(n);
+        }
+        quint8 d = last;
+        if (pos++ & 1) {
+            d &= 0xf;
+        } else {
+            d >>= 4;
+        }
+        v += table.at(d);
+        output[i] = char(v);
+        if (!table.at(d)) {
+            if ((pos >> 1) != lastRead) {
+                char n;
+                if (input->read(&n, 1) != 1) {
+                    return -1;
+                }
+                lastRead = (pos >> 1);
+                last = quint8(n);
+            }
+            d = last;
+            if (pos++ & 1) {
+                d &= 0xf;
+            } else {
+                d >>= 4;
+            }
+            while (d--) {
+                if (i < olen - 1) {
+                    output[++i] = char(v);
+                    continue;
+                }
+                return -1;
+            }
+        }
+    }
+    return olen;
+}
+
+QByteArray DBODChunk::strideRead(QIODevice *d, qint32, const DGBLChunk *header, const DPELChunk *pel, const DLOCChunk *loc, const TVDCChunk *tvdc) const
+{
+    auto size = strideSize(header, pel, loc);
+    if (size == 0) {
+        return {};
+    }
+
+    qint64 rr = 0;
+    QByteArray planes(size, char());
+    if (header->compression() == DGBLChunk::Compression::Uncompressed) {
+        rr = d->read(planes.data(), planes.size());
+    } else if (header->compression() == DGBLChunk::Compression::Rle) {
+        rr = rleDeepDecompress(d, planes.data(), planes.size(), pel->depth() / 8);
+    } else if (header->compression() == DGBLChunk::Compression::TvDeepCompression) {
+        if (tvdc) { // TVDC is planar, so I have to convert to chunky
+            auto table = tvdc->table();
+            for (auto i = 0, n = pel->count(); i < n; ++i) {
+                QByteArray ba(size / n, char());
+                rr += tvdcDeepDecompress(d, ba.data(), ba.size(), tvdc->table());
+                for (auto j = 0, m = int(ba.size()); j < m; ++j) {
+                    planes[i + j * n] = ba.at(j);
+                }
+            }
+        }
+    } else {
+        qCDebug(LOG_IFFPLUGIN) << "DBODChunk::strideRead(): unknown compression" << header->compression();
+    }
+
+    // Uncompressed, Rle and TvDeepCompression: one line at a time.
+    if (rr != size) {
+        return {};
+    }
+
+    // byte swap
+    if (auto count = pel->count()) {
+        if (pel->depth() / count == 16) {
+            for (auto x = 0, w = qint32(planes.size()) - 1; x < w; x += 2) {
+                const char tmp = planes[x];
+                planes[x] = planes[x + 1];
+                planes[x + 1] = tmp;
+            }
+        }
+    }
+
+    return planes;
+}
+
+bool DBODChunk::resetStrideRead(QIODevice *d) const
+{
+    return seek(d);
+}
+
+quint32 DBODChunk::strideSize(const DGBLChunk *header, const DPELChunk *pel, const DLOCChunk *loc) const
+{
+    auto width = loc ? loc->width() : header->width();
+    return (width * pel->depth() + 7) / 8;
 }
 
 

@@ -58,6 +58,10 @@ Q_DECLARE_LOGGING_CATEGORY(LOG_IFFPLUGIN)
 #define CAMG_CHUNK QByteArray("CAMG")
 #define CMAP_CHUNK QByteArray("CMAP")
 #define CMYK_CHUNK QByteArray("CMYK") // https://wiki.amigaos.net/wiki/ILBM_IFF_Interleaved_Bitmap#ILBM.CMYK
+#define DBOD_CHUNK QByteArray("DBOD")
+#define DGBL_CHUNK QByteArray("DGBL")
+#define DLOC_CHUNK QByteArray("DLOC")
+#define DPEL_CHUNK QByteArray("DPEL")
 #define DPI__CHUNK QByteArray("DPI ")
 #define IDAT_CHUNK QByteArray("IDAT")
 #define IHDR_CHUNK QByteArray("IHDR")
@@ -68,6 +72,7 @@ Q_DECLARE_LOGGING_CATEGORY(LOG_IFFPLUGIN)
 #define RFLG_CHUNK QByteArray("RFLG")
 #define RGHD_CHUNK QByteArray("RGHD")
 #define RSCM_CHUNK QByteArray("RSCM")
+#define TVDC_CHUNK QByteArray("TVDC")
 #define XBMI_CHUNK QByteArray("XBMI")
 #define YUVS_CHUNK QByteArray("YUVS")
 
@@ -99,12 +104,14 @@ Q_DECLARE_LOGGING_CATEGORY(LOG_IFFPLUGIN)
 
 // FORM types
 #define ACBM_FORM_TYPE QByteArray("ACBM")
+#define DEEP_FORM_TYPE QByteArray("DEEP")
 #define ILBM_FORM_TYPE QByteArray("ILBM")
 #define IMAG_FORM_TYPE QByteArray("IMAG")
 #define PBM__FORM_TYPE QByteArray("PBM ")
 #define RGB8_FORM_TYPE QByteArray("RGB8")
 #define RGBN_FORM_TYPE QByteArray("RGBN")
 #define RGFX_FORM_TYPE QByteArray("RGFX")
+#define TVPP_FORM_TYPE QByteArray("TVPP") // same as DEEP
 
 #define CIMG_FOR4_TYPE QByteArray("CIMG")
 #define TBMP_FOR4_TYPE QByteArray("TBMP")
@@ -665,11 +672,23 @@ class CAMGChunk : public IFFChunk
 {
 public:
     enum ModeId {
-        LoResLace = 0x0004,
+        GenLockVideo = 0x0002,
+        InterlacedDisplay = 0x0004,
+        DoubleScan = 0x0008,
+        SuperHighResolution = 0x0020,
+        PlayfieldBitplaneAdjust = 0x0040,
         HalfBrite = 0x0080,
-        LoResDpf = 0x0400,
-        Ham = 0x0800,
-        HiRes = 0x8000
+        GenLockAudio = 0x0100,
+        DualPlayfield = 0x0400,
+        HoldAndModify = 0x0800,
+        ExtendedMode = 0x1000,
+        ViewPortHide = 0x2000,
+        Sprites = 0x4000,
+        HighResolution = 0x8000,
+
+        // aliases
+        Lace = InterlacedDisplay,
+        Ham = HoldAndModify
     };
 
     Q_DECLARE_FLAGS(ModeIds, ModeId)
@@ -969,6 +988,8 @@ private:
     QImage::Format cdiFormat() const;
 
     QImage::Format rgfxFormat() const;
+
+    QImage::Format deepFormat() const;
 };
 
 
@@ -1974,6 +1995,266 @@ private:
     QByteArray deinterleave(const QByteArray &planes, qint32 y, const RGHDChunk *header, const RSCMChunk *rcsm = nullptr, const RCOLChunk *rcol = nullptr) const;
 
     quint32 strideSize(const RGHDChunk *header) const;
+};
+
+
+/*!
+ * *** DEEP IFF CHUNKS ***
+ */
+
+/*!
+ * \brief The DGBLChunk class
+ */
+class DGBLChunk : public IFFChunk
+{
+public:
+    enum Compression : quint16 {
+        Uncompressed = 0,
+        Rle = 1,
+        Huffman = 2,
+        DynamicHuffman = 3,
+        Jpeg = 4,
+        TvDeepCompression = 5
+    };
+
+    virtual ~DGBLChunk() override;
+    DGBLChunk();
+    DGBLChunk(const DGBLChunk& other) = default;
+    DGBLChunk& operator =(const DGBLChunk& other) = default;
+
+    /*!
+     * \brief compression
+     * \return The type of compression used.
+     */
+    Compression compression() const;
+
+    /*!
+     * \brief width
+     * \return Width of the source display in pixels.
+     */
+    qint32 width() const;
+
+    /*!
+     * \brief height
+     * \return Height of the source display in pixels.
+     */
+    qint32 height() const;
+
+    /*!
+     * \brief size
+     * \return Size of the source display in pixels.
+     */
+    QSize size() const
+    {
+        return QSize(width(), height());
+    }
+
+    /*!
+     * \brief xAspectRatio
+     * \return X pixel aspect.
+     */
+    quint8 xAspectRatio() const;
+
+    /*!
+     * \brief yAspectRatio
+     * \return Y pixel aspect.
+     */
+    quint8 yAspectRatio() const;
+
+    virtual bool isValid() const override;
+
+    CHUNKID_DEFINE(DGBL_CHUNK)
+
+protected:
+    virtual bool innerReadStructure(QIODevice *d) override;
+};
+
+
+/*!
+ * \brief The DPELChunk class
+ */
+class DPELChunk : public IFFChunk
+{
+public:
+    enum DataType : quint16 {
+        Invalid = 0,
+        Red = 1,
+        Green = 2,
+        Blue = 3,
+        Alpha = 4,
+        Yellow = 5,
+        Cyan = 6,
+        Magenta = 7,
+        Black = 8,
+        Mask = 9,
+        ZBuffer = 10,
+        Opacity = 11,
+        LinearKey = 12,
+        BinaryKey = 13
+    };
+
+    struct Element {
+        Element(const DataType& t = DataType::Invalid, quint16 d = 0) : type(t), depth(d) {}
+        DataType type;
+        quint16 depth;
+    };
+
+    virtual ~DPELChunk() override;
+    DPELChunk();
+    DPELChunk(const DPELChunk& other) = default;
+    DPELChunk& operator =(const DPELChunk& other) = default;
+
+    /*!
+     * \brief count
+     * \return The number of elements
+     */
+    qint32 count() const;
+
+    /*!
+     * \brief depth
+     * \return The pixel depth.
+     */
+    qint32 depth() const;
+
+    /*!
+     * \brief elements
+     * Elements needed to identify the content of every pixel.
+     * Pixels will always be padded to byte boundaries.
+     * \return The list of elements. An empty list on error.
+     */
+    QList<Element> elements() const;
+
+    virtual bool isValid() const override;
+
+    CHUNKID_DEFINE(DPEL_CHUNK)
+
+protected:
+    virtual bool innerReadStructure(QIODevice *d) override;
+};
+
+
+/*!
+ * \brief The DLOCChunk class
+ */
+class DLOCChunk : public IFFChunk
+{
+public:
+    virtual ~DLOCChunk() override;
+    DLOCChunk();
+    DLOCChunk(const DLOCChunk& other) = default;
+    DLOCChunk& operator =(const DLOCChunk& other) = default;
+
+    /*!
+     * \brief width
+     * \return Width of the bitmap in pixels.
+     */
+    qint32 width() const;
+
+    /*!
+     * \brief height
+     * \return Height of the bitmap in pixels.
+     */
+    qint32 height() const;
+
+    /*!
+     * \brief size
+     * \return Size in pixels.
+     */
+    QSize size() const;
+
+    /*!
+     * \brief xOffset
+     * X offset of origin in source image.
+     */
+    qint32 xOffset() const;
+
+    /*!
+     * \brief yOffset
+     * \returnX offset of origin in source image.
+     */
+    qint32 yOffset() const;
+
+    virtual bool isValid() const override;
+
+    CHUNKID_DEFINE(DLOC_CHUNK)
+
+protected:
+    virtual bool innerReadStructure(QIODevice *d) override;
+};
+
+
+/*!
+ * \brief The TVDCChunk class
+ */
+class TVDCChunk : public IFFChunk
+{
+public:
+    virtual ~TVDCChunk() override;
+    TVDCChunk();
+    TVDCChunk(const TVDCChunk& other) = default;
+    TVDCChunk& operator =(const TVDCChunk& other) = default;
+
+    qint32 count() const;
+
+    QList<quint16> table() const;
+
+    virtual bool isValid() const override;
+
+    CHUNKID_DEFINE(TVDC_CHUNK)
+
+protected:
+    virtual bool innerReadStructure(QIODevice *d) override;
+};
+
+
+/*!
+ * \brief The DBODChunk class
+ */
+class DBODChunk : public IFFChunk
+{
+public:
+    virtual ~DBODChunk() override;
+    DBODChunk();
+    DBODChunk(const DBODChunk& other) = default;
+    DBODChunk& operator =(const DBODChunk& other) = default;
+
+    virtual bool isValid() const override;
+
+    CHUNKID_DEFINE(DBOD_CHUNK)
+
+    /*!
+     * \brief readStride
+     * \param d The device.
+     * \param y The current scanline.
+     * \param header The bitmap header.
+     * \param pel The pixel elements info.
+     * \param loc The display location (optional).
+     * \return The scanline as requested for QImage.
+     * \warning Call resetStrideRead() once before this one.
+     */
+    QByteArray strideRead(QIODevice *d,
+                          qint32 y,
+                          const DGBLChunk *header,
+                          const DPELChunk *pel,
+                          const DLOCChunk *loc = nullptr,
+                          const TVDCChunk *tvdc = nullptr) const;
+
+    /*!
+     * \brief resetStrideRead
+     * Reset the stride read set the position at the beginning of the data and reset all buffers.
+     * \param d The device.
+     * \return True on success, otherwise false.
+     * \sa strideRead
+     * \note Must be called once before strideRead().
+     */
+    bool resetStrideRead(QIODevice *d) const;
+
+protected:
+    /*!
+     * \brief strideSize
+     * \return The size of data to have to decode an image row.
+     */
+    quint32 strideSize(const DGBLChunk *header, const DPELChunk *pel, const DLOCChunk *loc = nullptr) const;
 };
 
 

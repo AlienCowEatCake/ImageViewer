@@ -23,17 +23,19 @@
   Usage:
     python infra/helper.py build_image kimageformats
     python infra/helper.py build_fuzzers --sanitizer undefined|address|memory kimageformats
-    python infra/helper.py run_fuzzer kimageformats kimgio_[ani|avif|dds|exr|hdr|heif|iff|jp2|jxl|jxr|kra|ora|pcx|pfm|pic|psd|pxr|qoi|ras|raw|rgb|sct|tim|tga|xcf]_fuzzer
+    python infra/helper.py run_fuzzer kimageformats kimgio_[ani|avif|dds|exr|ff|hdr|heif|iff|jp2|jxl|jxr|kra|ora|pcx|pfm|pic|psd|pxr|qoi|ras|raw|rgb|sct|tim|tga|xcf]_fuzzer
 */
 
 #include <QBuffer>
 #include <QCoreApplication>
 #include <QImage>
+#include <QImageReader>
 
 #include "ani_p.h"
 #include "avif_p.h"
 #include "dds_p.h"
 #include "exr_p.h"
+#include "ff_p.h"
 #include "hdr_p.h"
 #include "heif_p.h"
 #include "iff_p.h"
@@ -60,6 +62,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
     int argc = 0;
     QCoreApplication a(argc, nullptr);
+
+    QImageReader::setAllocationLimit(2000);
 
     QImageIOHandler* handler = new HANDLER();
 

@@ -35,6 +35,9 @@
 #if defined (WRAPPER_USE_EXR_HANDLER)
 #include "../kimageformats-master/src/imageformats/exr_p.h"
 #endif
+#if defined (WRAPPER_USE_FF_HANDLER)
+#include "../kimageformats-master/src/imageformats/ff_p.h"
+#endif
 #if defined (WRAPPER_USE_HDR_HANDLER)
 #include "../kimageformats-master/src/imageformats/hdr_p.h"
 #endif
@@ -117,6 +120,9 @@ enum BuiltInFormatType
 #endif
 #if defined (WRAPPER_USE_EXR_HANDLER)
     ExrFormat,
+#endif
+#if defined (WRAPPER_USE_FF_HANDLER)
+    FfFormat,
 #endif
 #if defined (WRAPPER_USE_HDR_HANDLER)
     HdrFormat,
@@ -207,6 +213,9 @@ static const BuiltInFormatStruct BuiltInFormats[] =
 #endif
 #if defined (WRAPPER_USE_EXR_HANDLER)
     { ExrFormat , QList<QByteArray>() << "exr" },
+#endif
+#if defined (WRAPPER_USE_FF_HANDLER)
+    { FfFormat , QList<QByteArray>() << "ff" },
 #endif
 #if defined (WRAPPER_USE_HDR_HANDLER)
     { HdrFormat , QList<QByteArray>() << "hdr" },
@@ -359,6 +368,11 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
 #if defined (WRAPPER_USE_EXR_HANDLER)
         case ExrFormat:
             handler = new EXRHandler;
+            break;
+#endif
+#if defined (WRAPPER_USE_FF_HANDLER)
+        case FfFormat:
+            handler = new FFHandler;
             break;
 #endif
 #if defined (WRAPPER_USE_HDR_HANDLER)
@@ -529,6 +543,12 @@ static QImageIOHandler *createReadHandlerHelper(QIODevice *device,
             case ExrFormat:
                 if(EXRHandler::canRead(device))
                     handler = new EXRHandler;
+                break;
+#endif
+#if defined (WRAPPER_USE_FF_HANDLER)
+            case FfFormat:
+                if(FFHandler::canRead(device))
+                    handler = new FFHandler;
                 break;
 #endif
 #if defined (WRAPPER_USE_HDR_HANDLER)
@@ -1340,6 +1360,7 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
     result.append(QByteArrayLiteral("image/avif"));
 #endif
 #if defined (WRAPPER_USE_DDS_HANDLER)
+    result.append(QByteArrayLiteral("image/vnd.ms-dds"));
     result.append(QByteArrayLiteral("image/x-dds"));
 #endif
 #if defined (WRAPPER_USE_EPS_HANDLER)
@@ -1347,6 +1368,9 @@ QList<QByteArray> KImageFormatsImageReader::supportedMimeTypes()
 #endif
 #if defined (WRAPPER_USE_EXR_HANDLER)
     result.append(QByteArrayLiteral("image/x-exr"));
+#endif
+#if defined (WRAPPER_USE_EXR_HANDLER)
+    result.append(QByteArrayLiteral("image/x-farbfeld"));
 #endif
 #if defined (WRAPPER_USE_HDR_HANDLER)
     result.append(QByteArrayLiteral("image/x-hdr"));

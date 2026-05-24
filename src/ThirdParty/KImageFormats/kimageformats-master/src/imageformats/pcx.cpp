@@ -65,11 +65,11 @@ public:
 
     inline int width() const
     {
-        return (XMax - XMin) + 1;
+        return int(XMax - XMin) + 1;
     }
     inline int height() const
     {
-        return (YMax - YMin) + 1;
+        return int(YMax - YMin) + 1;
     }
     inline bool isCompressed() const
     {

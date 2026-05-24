@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.29)
 
-set(KF_VERSION "6.26.0") # handled by release scripts
-set(KF_DEP_VERSION "6.25.0") # handled by release scripts
+set(KF_VERSION "6.27.0") # handled by release scripts
+set(KF_DEP_VERSION "6.26.0") # handled by release scripts
 project(KImageFormats VERSION ${KF_VERSION})
 
 include(FeatureSummary)
-find_package(ECM 6.25.0  NO_MODULE)
+find_package(ECM 6.26.0  NO_MODULE)
 set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
 feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
@@ -72,7 +72,7 @@ set_property(CACHE KIMAGEFORMATS_HEJ2_TEST PROPERTY STRINGS "OFF" "READ_ONLY" "A
 set(KIMAGEFORMATS_AVCI_TEST "ALL" CACHE STRING "Enable AVCI tests: OFF, ALL")
 set_property(CACHE KIMAGEFORMATS_AVCI_TEST PROPERTY STRINGS "OFF" "ALL")
 if(KIMAGEFORMATS_HEIF)
-    pkg_check_modules(LibHeif IMPORTED_TARGET libheif>=1.10.0)
+    pkg_check_modules(LibHeif IMPORTED_TARGET libheif>=1.17.0)
 endif()
 add_feature_info(LibHeif LibHeif_FOUND "required for the QImage plugin for HEIF/HEIC images")
 
@@ -107,7 +107,7 @@ add_feature_info(LibJXR LibJXR_FOUND "required for the QImage plugin for JPEG XR
 
 ecm_set_disabled_deprecation_versions(
     QT 6.11.0
-    KF 6.23.0
+    KF 6.26.0
 )
 
 add_subdirectory(src)
