@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright Contributors to the OpenEXR Project.
+
+# .readthedocs.yml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
+
+build:
+  os: "ubuntu-22.04"
+  tools:
+    # urllib3>=2.7 (website/requirements.txt) requires Python >=3.10
+    python: "3.11"
+       
+sphinx:
+  configuration: website/conf.py
+
+python:
+  install:
+    - requirements: website/requirements.txt

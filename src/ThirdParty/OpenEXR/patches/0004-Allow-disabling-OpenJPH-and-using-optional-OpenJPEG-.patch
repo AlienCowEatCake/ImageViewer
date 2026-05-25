@@ -1,4 +1,4 @@
-From aa9ef37f88e44401de083f415edebe755e71d569 Mon Sep 17 00:00:00 2001
+From 3fd830a8186598120dea10527b615e9eb113fec8 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Mon, 6 Oct 2025 01:39:17 +0700
 Subject: [PATCH 4/5] Allow disabling OpenJPH and using optional OpenJPEG
@@ -9,7 +9,7 @@ Subject: [PATCH 4/5] Allow disabling OpenJPH and using optional OpenJPEG
  1 file changed, 232 insertions(+)
 
 diff --git a/src/lib/OpenEXRCore/internal_ht.cpp b/src/lib/OpenEXRCore/internal_ht.cpp
-index 12ccea4f..df0a8970 100644
+index 279de215..02557e5e 100644
 --- a/src/lib/OpenEXRCore/internal_ht.cpp
 +++ b/src/lib/OpenEXRCore/internal_ht.cpp
 @@ -7,17 +7,25 @@
@@ -105,7 +105,7 @@ index 12ccea4f..df0a8970 100644
  
  static exr_result_t
  ht_undo_impl (
-@@ -190,6 +258,7 @@ ht_undo_impl (
+@@ -192,6 +260,7 @@ ht_undo_impl (
          cs_to_file_ch[cs_i].raster_line_offset = computedoffset;
      }
  
@@ -113,7 +113,7 @@ index 12ccea4f..df0a8970 100644
      ojph::mem_infile infile;
      infile.open (
          reinterpret_cast<const ojph::ui8*> (compressed_data) + header_sz,
-@@ -323,6 +392,164 @@ ht_undo_impl (
+@@ -335,6 +404,164 @@ ht_undo_impl (
      }
  
      infile.close ();
@@ -278,7 +278,7 @@ index 12ccea4f..df0a8970 100644
  
      return rv;
  }
-@@ -354,6 +581,7 @@ internal_exr_undo_ht (
+@@ -366,6 +593,7 @@ internal_exr_undo_ht (
  static exr_result_t
  ht_apply_impl (exr_encode_pipeline_t* encode)
  {
@@ -286,7 +286,7 @@ index 12ccea4f..df0a8970 100644
      exr_result_t rv = EXR_ERR_SUCCESS;
  
      std::vector<CodestreamChannelInfo> cs_to_file_ch (encode->channel_count);
-@@ -527,6 +755,10 @@ ht_apply_impl (exr_encode_pipeline_t* encode)
+@@ -539,6 +767,10 @@ ht_apply_impl (exr_encode_pipeline_t* encode)
      }
  
      return rv;
@@ -298,5 +298,5 @@ index 12ccea4f..df0a8970 100644
  
  extern "C" exr_result_t
 -- 
-2.54.0
+2.47.3
 
