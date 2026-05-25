@@ -319,7 +319,10 @@ int heif_image_get_polarization_pattern_index_for_component(const heif_image*,
 
 // --- Sensor bad pixels map (ISO 23001-17, Section 6.1.7)
 
-struct heif_bad_pixel { uint32_t row; uint32_t column; };
+typedef struct heif_bad_pixel
+{
+  uint32_t row; uint32_t column;
+} heif_bad_pixel;
 
 // Add a sensor bad pixels map to an image.
 // component_indices: array of component indices this map applies to (may be NULL if num_component_indices == 0,
