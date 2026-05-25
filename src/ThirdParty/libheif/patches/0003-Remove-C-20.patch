@@ -1,4 +1,4 @@
-From 5d7f6c96fc42d112deabc63706d3ebf191c81730 Mon Sep 17 00:00:00 2001
+From 2eb502d38918cd990605304682edfb625e0d5cc1 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 23 Nov 2024 20:17:00 +0700
 Subject: [PATCH 3/4] Remove C++20
@@ -12,6 +12,7 @@ Subject: [PATCH 3/4] Remove C++20
  ..._decoder_bytealign_component_interleave.cc |  1 -
  .../uncompressed/unc_decoder_legacybase.cc    | 17 +++--
  .../unc_encoder_component_interleave.cc       | 12 ++-
+ libheif/color-conversion/bayer_bilinear.cc    |  3 +-
  libheif/context.cc                            |  6 +-
  libheif/image-items/grid.cc                   |  2 +-
  libheif/image-items/iden.cc                   |  2 +-
@@ -20,7 +21,7 @@ Subject: [PATCH 3/4] Remove C++20
  libheif/image-items/tiled.cc                  |  8 +-
  libheif/nclx.h                                |  4 +-
  libheif/security_limits.cc                    | 76 ++++++++++++++-----
- 16 files changed, 121 insertions(+), 71 deletions(-)
+ 17 files changed, 123 insertions(+), 72 deletions(-)
 
 diff --git a/heifio/decoder_raw.cc b/heifio/decoder_raw.cc
 index a2ed77ae..836b4388 100644
@@ -284,6 +285,21 @@ index 4c88d71d..c99eb17d 100644
    }
    else {
      // we use dense packing
+diff --git a/libheif/color-conversion/bayer_bilinear.cc b/libheif/color-conversion/bayer_bilinear.cc
+index 4ce307c1..5a11094d 100644
+--- a/libheif/color-conversion/bayer_bilinear.cc
++++ b/libheif/color-conversion/bayer_bilinear.cc
+@@ -168,8 +168,9 @@ Op_bayer_bilinear_to_RGB24_32::convert_colorspace(const std::shared_ptr<const He
+   }
+ 
+   // Bilinear demosaicing using precomputed offset tables.
+-  auto demosaic = [&]<typename Pixel>(const Pixel* in, Pixel* out,
++  auto demosaic = [&](const auto* in, auto* out,
+                                       size_t in_str, size_t out_str) {
++    using Pixel = typename std::remove_pointer<decltype(out)>::type;
+     for (uint32_t y = 0; y < height; y++) {
+       for (uint32_t x = 0; x < width; x++) {
+         const auto& offsets = neighbor_offsets[(y % ph) * pw + (x % pw)];
 diff --git a/libheif/context.cc b/libheif/context.cc
 index 37c9e30a..962c44b7 100644
 --- a/libheif/context.cc

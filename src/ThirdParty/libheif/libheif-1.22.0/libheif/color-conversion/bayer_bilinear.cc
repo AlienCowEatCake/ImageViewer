@@ -168,8 +168,9 @@ Op_bayer_bilinear_to_RGB24_32::convert_colorspace(const std::shared_ptr<const He
   }
 
   // Bilinear demosaicing using precomputed offset tables.
-  auto demosaic = [&]<typename Pixel>(const Pixel* in, Pixel* out,
+  auto demosaic = [&](const auto* in, auto* out,
                                       size_t in_str, size_t out_str) {
+    using Pixel = typename std::remove_pointer<decltype(out)>::type;
     for (uint32_t y = 0; y < height; y++) {
       for (uint32_t x = 0; x < width; x++) {
         const auto& offsets = neighbor_offsets[(y % ph) * pw + (x % pw)];

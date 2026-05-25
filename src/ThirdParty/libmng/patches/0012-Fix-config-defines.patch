@@ -1,0 +1,44 @@
+From 63eea85e6b67101ed508cef696c587c77ba55b8d Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Tue, 26 May 2026 00:35:57 +0700
+Subject: [PATCH 12/12] Fix config defines
+
+---
+ config.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/config.h b/config.h
+index 982821c..8dd7b0f 100644
+--- a/config.h
++++ b/config.h
+@@ -11,13 +11,17 @@
+ #define HAVE_INTTYPES_H 1
+ 
+ /* define if you want JPEG support */
++#ifdef HAS_LIBJPEG
+ #define HAVE_LIBJPEG 1
++#endif
+ 
+ /* define if you want lcms v1 support */
+ /* #undef HAVE_LIBLCMS1 */
+ 
+ /* define if you want lcms v2 support */
++#ifdef HAS_LCMS2
+ #define HAVE_LIBLCMS2 1
++#endif
+ 
+ /* Define to 1 if you have the `z' library (-lz). */
+ #define HAVE_LIBZ 1
+@@ -62,7 +66,9 @@
+ #define MNG_ERROR_TELLTALE 1
+ 
+ /* define if you want full lcms support */
++#ifdef HAS_LCMS2
+ #define MNG_FULL_CMS 1
++#endif
+ 
+ /* enable support for accessing chunks */
+ #define MNG_STORE_CHUNKS 1
+-- 
+2.47.3
+

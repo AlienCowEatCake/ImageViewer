@@ -474,7 +474,9 @@ disable_cxx11 : !system_highway {
 # LCMS options:
 #    disable_liblcms2
 #    system_liblcms2
-
+*msvc* : !system_liblcms2 : lessThan(MSVC_VERSION, 2013) {
+    CONFIG *= disable_liblcms2
+}
 
 # libexif options:
 #    disable_libexif

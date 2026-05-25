@@ -11,13 +11,17 @@
 #define HAVE_INTTYPES_H 1
 
 /* define if you want JPEG support */
+#ifdef HAS_LIBJPEG
 #define HAVE_LIBJPEG 1
+#endif
 
 /* define if you want lcms v1 support */
 /* #undef HAVE_LIBLCMS1 */
 
 /* define if you want lcms v2 support */
+#ifdef HAS_LCMS2
 #define HAVE_LIBLCMS2 1
+#endif
 
 /* Define to 1 if you have the `z' library (-lz). */
 #define HAVE_LIBZ 1
@@ -62,7 +66,9 @@
 #define MNG_ERROR_TELLTALE 1
 
 /* define if you want full lcms support */
+#ifdef HAS_LCMS2
 #define MNG_FULL_CMS 1
+#endif
 
 /* enable support for accessing chunks */
 #define MNG_STORE_CHUNKS 1
