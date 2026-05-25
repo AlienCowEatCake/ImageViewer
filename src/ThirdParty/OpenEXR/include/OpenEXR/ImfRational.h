@@ -1,1 +1,1 @@
-#include "../../openexr-3.4.12/src/lib/OpenEXR/ImfRational.h"
+#include "../../openexr-2.5.10/OpenEXR/IlmImf/ImfRational.h"

@@ -1,1 +1,1 @@
-#include "../../openexr-3.4.12/src/lib/OpenEXRUtil/ImfImageChannel.h"
+#include "../../openexr-2.5.10/OpenEXR/IlmImfUtil/ImfImageChannel.h"

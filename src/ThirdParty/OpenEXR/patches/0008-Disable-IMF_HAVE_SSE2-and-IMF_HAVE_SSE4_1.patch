@@ -1,0 +1,34 @@
+From 4ca4e15063913617474eb70ba0e7009a63ed65e7 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 8 Sep 2024 17:28:50 +0700
+Subject: [PATCH 8/8] Disable IMF_HAVE_SSE2 and IMF_HAVE_SSE4_1
+
+---
+ OpenEXR/IlmImf/ImfSimd.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/OpenEXR/IlmImf/ImfSimd.h b/OpenEXR/IlmImf/ImfSimd.h
+index 9625499f..2fb7b639 100644
+--- a/OpenEXR/IlmImf/ImfSimd.h
++++ b/OpenEXR/IlmImf/ImfSimd.h
+@@ -44,6 +44,9 @@
+ //
+ 
+ 
++// ImfSystemSpecific.cpp: In function ‘void Imf_2_5::<unnamed>::cpuid(int, int&, int&, int&, int&)’:
++// ImfSystemSpecific.cpp:52: error: can't find a register in class ‘BREG’ while reloading ‘asm’
++#if 0
+ // GCC and Visual Studio SSE2 compiler flags
+ #if defined __SSE2__ || (_MSC_VER >= 1300 && !_M_CEE_PURE && (_M_IX86 || _M_X64))
+     #define IMF_HAVE_SSE2 1
+@@ -52,6 +55,7 @@
+ #if defined __SSE4_1__
+     #define IMF_HAVE_SSE4_1 1
+ #endif
++#endif
+ 
+ extern "C"
+ {
+-- 
+2.46.0
+

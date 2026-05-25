@@ -1,1 +1,1 @@
-#include "../../openexr-3.4.12/src/lib/IlmThread/IlmThreadNamespace.h"
+#include "../../IlmThreadQt/IlmThread/IlmThreadNamespace.h"

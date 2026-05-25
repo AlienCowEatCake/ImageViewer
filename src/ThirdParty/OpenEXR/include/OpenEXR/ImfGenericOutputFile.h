@@ -1,1 +1,1 @@
-#include "../../openexr-3.4.12/src/lib/OpenEXR/ImfGenericOutputFile.h"
+#include "../../openexr-2.5.10/OpenEXR/IlmImf/ImfGenericOutputFile.h"

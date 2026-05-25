@@ -1,0 +1,1833 @@
+From 1687902088adb46e955e371c2f58d83fd8266e6b Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sat, 16 Nov 2019 18:20:28 +0700
+Subject: [PATCH 2/7] Fix build with MinGW 3.4.2
+
+---
+ IlmBase/Half/half.h                          | 13 +++++++
+ IlmBase/Half/halfFunction.h                  |  7 ++++
+ IlmBase/Iex/IexBaseExc.cpp                   |  2 ++
+ IlmBase/Iex/IexBaseExc.h                     | 34 +++++++++++++++++-
+ IlmBase/IexMath/IexMathFloatExc.h            |  7 ++++
+ IlmBase/Imath/ImathColor.h                   | 18 ++++++++--
+ IlmBase/Imath/ImathEuler.h                   |  4 +++
+ IlmBase/Imath/ImathMatrix.h                  | 12 +++++++
+ IlmBase/Imath/ImathQuat.h                    |  4 +++
+ IlmBase/Imath/ImathShear.h                   |  4 +++
+ IlmBase/Imath/ImathVec.h                     | 12 +++++++
+ OpenEXR/IlmImf/ImfAcesFile.cpp               | 14 ++++++++
+ OpenEXR/IlmImf/ImfAcesFile.h                 | 10 ++++++
+ OpenEXR/IlmImf/ImfArray.h                    | 10 ++++++
+ OpenEXR/IlmImf/ImfAttribute.h                | 10 ++++++
+ OpenEXR/IlmImf/ImfAutoArray.h                |  7 ++++
+ OpenEXR/IlmImf/ImfB44Compressor.h            |  7 ++++
+ OpenEXR/IlmImf/ImfCompositeDeepScanLine.h    |  5 +++
+ OpenEXR/IlmImf/ImfDeepScanLineInputFile.cpp  |  7 ++++
+ OpenEXR/IlmImf/ImfDeepScanLineInputFile.h    |  7 ++++
+ OpenEXR/IlmImf/ImfDeepScanLineOutputFile.cpp |  7 ++++
+ OpenEXR/IlmImf/ImfDeepScanLineOutputFile.h   |  5 +++
+ OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp     | 11 ++++--
+ OpenEXR/IlmImf/ImfDeepTiledInputFile.h       |  5 +++
+ OpenEXR/IlmImf/ImfDeepTiledOutputFile.cpp    | 14 ++++++++
+ OpenEXR/IlmImf/ImfDeepTiledOutputFile.h      |  5 +++
+ OpenEXR/IlmImf/ImfDwaCompressor.cpp          |  2 +-
+ OpenEXR/IlmImf/ImfDwaCompressor.h            |  7 ++++
+ OpenEXR/IlmImf/ImfFastHuf.h                  |  7 ++++
+ OpenEXR/IlmImf/ImfFrameBuffer.h              |  2 +-
+ OpenEXR/IlmImf/ImfHuf.cpp                    |  2 +-
+ OpenEXR/IlmImf/ImfIO.h                       | 10 ++++++
+ OpenEXR/IlmImf/ImfInputFile.cpp              |  7 ++++
+ OpenEXR/IlmImf/ImfInputFile.h                |  5 +++
+ OpenEXR/IlmImf/ImfKeyCode.h                  |  4 +++
+ OpenEXR/IlmImf/ImfMisc.cpp                   |  2 +-
+ OpenEXR/IlmImf/ImfMultiPartInputFile.cpp     |  9 +++--
+ OpenEXR/IlmImf/ImfMultiPartInputFile.h       |  5 +++
+ OpenEXR/IlmImf/ImfMultiPartOutputFile.cpp    |  7 ++++
+ OpenEXR/IlmImf/ImfMultiPartOutputFile.h      |  7 ++++
+ OpenEXR/IlmImf/ImfOutputFile.cpp             |  7 ++++
+ OpenEXR/IlmImf/ImfOutputFile.h               |  5 +++
+ OpenEXR/IlmImf/ImfPizCompressor.h            |  7 ++++
+ OpenEXR/IlmImf/ImfPxr24Compressor.h          |  7 ++++
+ OpenEXR/IlmImf/ImfRgbaFile.cpp               | 14 ++++++++
+ OpenEXR/IlmImf/ImfRgbaFile.h                 | 10 ++++++
+ OpenEXR/IlmImf/ImfRleCompressor.h            |  7 ++++
+ OpenEXR/IlmImf/ImfScanLineInputFile.cpp      | 18 ++++++++--
+ OpenEXR/IlmImf/ImfScanLineInputFile.h        |  7 ++++
+ OpenEXR/IlmImf/ImfStdIO.cpp                  | 34 ++++++------------
+ OpenEXR/IlmImf/ImfSystemSpecific.h           | 36 ++++++++++++++++++--
+ OpenEXR/IlmImf/ImfTiledInputFile.cpp         | 16 ++++++++-
+ OpenEXR/IlmImf/ImfTiledInputFile.h           |  7 ++++
+ OpenEXR/IlmImf/ImfTiledMisc.cpp              |  4 +--
+ OpenEXR/IlmImf/ImfTiledOutputFile.cpp        | 14 ++++++++
+ OpenEXR/IlmImf/ImfTiledOutputFile.h          |  5 +++
+ OpenEXR/IlmImf/ImfTiledRgbaFile.h            | 10 ++++++
+ OpenEXR/IlmImf/ImfTimeCode.h                 |  4 +++
+ OpenEXR/IlmImf/ImfZip.h                      |  7 ++++
+ OpenEXR/IlmImfUtil/ImfDeepImageChannel.h     | 12 +++++++
+ OpenEXR/IlmImfUtil/ImfFlatImageChannel.h     | 12 +++++++
+ OpenEXR/IlmImfUtil/ImfSampleCountChannel.h   |  7 ++++
+ 62 files changed, 526 insertions(+), 41 deletions(-)
+
+diff --git a/IlmBase/Half/half.h b/IlmBase/Half/half.h
+index 6a5ee23d..415fcef9 100644
+--- a/IlmBase/Half/half.h
++++ b/IlmBase/Half/half.h
+@@ -96,12 +96,21 @@ class half
+     // Constructors
+     //-------------
+ 
++#if __cplusplus >= 201103L
+     half () = default;			// no initialization
++#else
++    half () {}					// no initialization
++#endif
+     half (float f);
+     // rule of 5
++#if __cplusplus >= 201103L
+     ~half () = default;
+     half (const half &) = default;
+     half (half &&) noexcept = default;
++#else
++    ~half () {}
++    half (const half &h) { this->_h = h._h; }
++#endif
+ 
+     //--------------------
+     // Conversion to float
+@@ -121,8 +130,12 @@ class half
+     // Assignment
+     //-----------
+ 
++#if __cplusplus >= 201103L
+     half &		operator = (const half  &h) = default;
+     half &		operator = (half  &&h) noexcept = default;
++#else
++    half &		operator = (const half  &h) { this->_h = h._h; return *this; }
++#endif
+     half &		operator = (float f);
+ 
+     half &		operator += (half  h);
+diff --git a/IlmBase/Half/halfFunction.h b/IlmBase/Half/halfFunction.h
+index 16bae058..a45f37c5 100644
+--- a/IlmBase/Half/halfFunction.h
++++ b/IlmBase/Half/halfFunction.h
+@@ -114,10 +114,17 @@ class halfFunction
+ 
+ #ifndef ILMBASE_HAVE_LARGE_STACK
+     ~halfFunction () { delete [] _lut; }
++#if __cplusplus >= 201103L
+     halfFunction (const halfFunction &) = delete;
+     halfFunction& operator= (const halfFunction &) = delete;
+     halfFunction (halfFunction &&) = delete;
+     halfFunction& operator= (halfFunction &&) = delete;
++#else
++  private:
++    halfFunction (const halfFunction &);
++    halfFunction& operator= (const halfFunction &);
++  public:
++#endif
+ #endif
+ 
+     //-----------
+diff --git a/IlmBase/Iex/IexBaseExc.cpp b/IlmBase/Iex/IexBaseExc.cpp
+index 2b0f56a8..985ad5c3 100644
+--- a/IlmBase/Iex/IexBaseExc.cpp
++++ b/IlmBase/Iex/IexBaseExc.cpp
+@@ -121,6 +121,7 @@ BaseExc::operator = (const BaseExc& be) throw ()
+     return *this;
+ }
+ 
++#if __cplusplus >= 201103L
+ BaseExc &
+ BaseExc::operator = (BaseExc&& be) throw ()
+ {
+@@ -131,6 +132,7 @@ BaseExc::operator = (BaseExc&& be) throw ()
+     }
+     return *this;
+ }
++#endif
+ 
+ const char *
+ BaseExc::what () const throw ()
+diff --git a/IlmBase/Iex/IexBaseExc.h b/IlmBase/Iex/IexBaseExc.h
+index 8e24c2cc..a6a6e10b 100644
+--- a/IlmBase/Iex/IexBaseExc.h
++++ b/IlmBase/Iex/IexBaseExc.h
+@@ -65,16 +65,20 @@ class BaseExc: public std::exception
+     // Constructors and destructor
+     //----------------------------
+ 
+-    IEX_EXPORT BaseExc (const char *s = nullptr) throw();     // std::string (s)
++    IEX_EXPORT BaseExc (const char *s = NULL) throw();        // std::string (s)
+     IEX_EXPORT BaseExc (const std::string &s) throw();        // std::string (s)
+     IEX_EXPORT BaseExc (std::stringstream &s) throw();        // std::string (s.str())
+ 
+     IEX_EXPORT BaseExc (const BaseExc &be) throw();
++#if __cplusplus >= 201103L
+     IEX_EXPORT BaseExc (BaseExc &&be) throw();
++#endif
+     IEX_EXPORT virtual ~BaseExc () throw ();
+ 
+     IEX_EXPORT BaseExc & operator = (const BaseExc& be) throw ();
++#if __cplusplus >= 201103L
+     IEX_EXPORT BaseExc & operator = (BaseExc&& be) throw ();
++#endif
+ 
+     //---------------------------------------------------
+     // what() method -- e.what() returns _message.c_str()
+@@ -132,6 +136,8 @@ class BaseExc: public std::exception
+ // class derived directly or indirectly from BaseExc:
+ //-----------------------------------------------------
+ 
++#if __cplusplus >= 201103L
++
+ #define DEFINE_EXC_EXP(exp, name, base)                             \
+     class name: public base                                         \
+     {                                                               \
+@@ -158,6 +164,32 @@ exp name& name::operator = (name &other) throw() { base::operator=(other); retur
+ exp name& name::operator = (name &&other) throw() { base::operator=(other); return *this; } \
+ exp name::~name () throw () {}
+ 
++#else
++
++#define DEFINE_EXC_EXP(exp, name, base)                             \
++    class name: public base                                         \
++    {                                                               \
++      public:                                                       \
++        exp name() throw();                                         \
++        exp name (const char* text) throw();                        \
++        exp name (const std::string &text) throw();                 \
++        exp name (std::stringstream &text) throw();                 \
++        exp name (const name &other) throw();                       \
++        exp name& operator = (name &other) throw();                 \
++        exp ~name() throw();                                        \
++    };
++
++#define DEFINE_EXC_EXP_IMPL(exp, name, base)                       \
++exp name::name () throw () : base () {}                            \
++exp name::name (const char* text) throw () : base (text) {}        \
++exp name::name (const std::string& text) throw () : base (text) {} \
++exp name::name (std::stringstream& text) throw () : base (text) {} \
++exp name::name (const name &other) throw() : base (other) {}       \
++exp name& name::operator = (name &other) throw() { base::operator=(other); return *this; } \
++exp name::~name () throw () {}
++
++#endif
++
+ // For backward compatibility.
+ #define DEFINE_EXC(name, base) DEFINE_EXC_EXP(, name, base)
+ 
+diff --git a/IlmBase/IexMath/IexMathFloatExc.h b/IlmBase/IexMath/IexMathFloatExc.h
+index 5bf3d114..9befff6e 100644
+--- a/IlmBase/IexMath/IexMathFloatExc.h
++++ b/IlmBase/IexMath/IexMathFloatExc.h
+@@ -106,10 +106,17 @@ class MathExcOn
+ 
+     IEXMATH_EXPORT MathExcOn (int when);
+     IEXMATH_EXPORT ~MathExcOn ();
++#if __cplusplus >= 201103L
+     MathExcOn (const MathExcOn&) = delete;
+     MathExcOn& operator= (const MathExcOn&) = delete;
+     MathExcOn (MathExcOn&&) = delete;
+     MathExcOn& operator= (MathExcOn&&) = delete;
++#else
++  private:
++    MathExcOn (const MathExcOn&);
++    MathExcOn& operator= (const MathExcOn&);
++  public:
++#endif
+ 
+     // It is possible for functions to set the exception registers
+     // yet not trigger a SIGFPE.  Specifically, the implementation
+diff --git a/IlmBase/Imath/ImathColor.h b/IlmBase/Imath/ImathColor.h
+index 79ef5449..a6422b0b 100644
+--- a/IlmBase/Imath/ImathColor.h
++++ b/IlmBase/Imath/ImathColor.h
+@@ -62,7 +62,7 @@ class Color3: public Vec3 <T>
+     Color3 ();			// no initialization
+     explicit Color3 (T a);	// (a a a)
+     Color3 (T a, T b, T c);	// (a b c)
+-    ~Color3 () = default;
++    ~Color3 ();
+ 
+     //---------------------------------
+     // Copy constructors and assignment
+@@ -139,7 +139,7 @@ template <class T> class Color4
+     Color4 ();			    	// no initialization
+     explicit Color4 (T a);		// (a a a a)
+     Color4 (T a, T b, T c, T d);	// (a b c d)
+-    ~Color4 () = default;
++    ~Color4 ();
+ 
+     //---------------------------------
+     // Copy constructors and assignment
+@@ -309,6 +309,13 @@ Color3<T>::Color3 (T a, T b, T c): Vec3 <T> (a, b, c)
+     // empty
+ }
+ 
++template <class T>
++inline
++Color3<T>::~Color3 ()
++{
++    // empty
++}
++
+ template <class T>
+ inline
+ Color3<T>::Color3 (const Color3 &c): Vec3 <T> (c)
+@@ -479,6 +486,13 @@ Color4<T>::Color4 (T x, T y, T z, T w)
+     a = w;
+ }
+ 
++template <class T>
++inline
++Color4<T>::~Color4 ()
++{
++    // empty
++}
++
+ template <class T>
+ inline
+ Color4<T>::Color4 (const Color4 &v)
+diff --git a/IlmBase/Imath/ImathEuler.h b/IlmBase/Imath/ImathEuler.h
+index 9a5d0dd4..099f2d0f 100644
+--- a/IlmBase/Imath/ImathEuler.h
++++ b/IlmBase/Imath/ImathEuler.h
+@@ -230,7 +230,11 @@ class Euler : public Vec3<T>
+     //  Destructor
+     //-------------
+ 	
++#if __cplusplus >= 201103L
+ 	~Euler() = default;
++#else
++    ~Euler() {}
++#endif
+ 
+     //---------------------------------
+     //  Algebraic functions/ Operators
+diff --git a/IlmBase/Imath/ImathMatrix.h b/IlmBase/Imath/ImathMatrix.h
+index df164c38..2bbeb8ce 100644
+--- a/IlmBase/Imath/ImathMatrix.h
++++ b/IlmBase/Imath/ImathMatrix.h
+@@ -119,7 +119,11 @@ template <class T> class Matrix22
+     // Destructor
+     //------------
+ 
++#if __cplusplus >= 201103L
+     ~Matrix22 () = default;
++#else
++    ~Matrix22 () {}
++#endif
+ 	
+     //----------------------
+     // Compatibility with Sb
+@@ -393,7 +397,11 @@ template <class T> class Matrix33
+     // Destructor
+     //------------
+ 
++#if __cplusplus >= 201103L
+     ~Matrix33 () = default;
++#else
++    ~Matrix33 () {}
++#endif
+ 	
+     //----------------------
+     // Compatibility with Sb
+@@ -754,7 +762,11 @@ template <class T> class Matrix44
+     // Destructor
+     //------------
+ 
++#if __cplusplus >= 201103L
+     ~Matrix44 () = default;
++#else
++    ~Matrix44 () {}
++#endif
+ 
+     //--------------------------------
+     // Copy constructor and assignment
+diff --git a/IlmBase/Imath/ImathQuat.h b/IlmBase/Imath/ImathQuat.h
+index d2fe0c20..2e0d989b 100644
+--- a/IlmBase/Imath/ImathQuat.h
++++ b/IlmBase/Imath/ImathQuat.h
+@@ -102,7 +102,11 @@ class Quat
+     // Destructor
+     //-------------
+ 
++#if __cplusplus >= 201103L
+     ~Quat () = default;
++#else
++    ~Quat () {}
++#endif
+ 
+     //-------------------------------------------------
+     //	Basic Algebra - Operators and Methods
+diff --git a/IlmBase/Imath/ImathShear.h b/IlmBase/Imath/ImathShear.h
+index c6d8e85a..3ab6e698 100644
+--- a/IlmBase/Imath/ImathShear.h
++++ b/IlmBase/Imath/ImathShear.h
+@@ -95,7 +95,11 @@ template <class T> class Shear6
+     // Destructor
+     //------------
+ 
++#if __cplusplus >= 201103L
+ 	~Shear6() = default;
++#else
++    ~Shear6() {}
++#endif
+ 
+     //----------------------
+     // Compatibility with Sb
+diff --git a/IlmBase/Imath/ImathVec.h b/IlmBase/Imath/ImathVec.h
+index 1576a365..851185ae 100644
+--- a/IlmBase/Imath/ImathVec.h
++++ b/IlmBase/Imath/ImathVec.h
+@@ -102,7 +102,11 @@ template <class T> class Vec2
+     // Destructor
+     //------------
+ 	
++#if __cplusplus >= 201103L
+     ~Vec2 () = default;
++#else
++    ~Vec2 () {}
++#endif
+ 
+     //----------------------
+     // Compatibility with Sb
+@@ -305,7 +309,11 @@ template <class T> class Vec3
+     // Destructor
+     //-----------
+ 	
++#if __cplusplus >= 201103L
+     ~Vec3 () = default;
++#else
++    ~Vec3 () {}
++#endif
+ 
+     //---------------------------------------------------------
+     // Vec4 to Vec3 conversion, divides x, y and z by w:
+@@ -523,7 +531,11 @@ template <class T> class Vec4
+     // Destructor
+     //-----------
+ 	
++#if __cplusplus >= 201103L
+     ~Vec4 () = default;
++#else
++    ~Vec4 () {}
++#endif
+ 
+     //-------------------------------------
+     // Vec3 to Vec4 conversion, sets w to 1
+diff --git a/OpenEXR/IlmImf/ImfAcesFile.cpp b/OpenEXR/IlmImf/ImfAcesFile.cpp
+index 57a582c2..4562c043 100644
+--- a/OpenEXR/IlmImf/ImfAcesFile.cpp
++++ b/OpenEXR/IlmImf/ImfAcesFile.cpp
+@@ -72,10 +72,17 @@ class AcesOutputFile::Data
+      Data();
+     ~Data();
+ 
++#if __cplusplus >= 201103L
+     Data (const Data& other) = delete;
+     Data& operator = (const Data& other) = delete;
+     Data (Data&& other) = delete;
+     Data& operator = (Data&& other) = delete;
++#else
++  private:
++    Data (const Data& other);
++    Data& operator = (const Data& other);
++  public:
++#endif
+ 
+     RgbaOutputFile *	rgbaFile;
+ };
+@@ -343,10 +350,17 @@ class AcesInputFile::Data
+      Data();
+     ~Data();
+ 
++#if __cplusplus >= 201103L
+     Data (const Data& other) = delete;
+     Data& operator = (const Data& other) = delete;
+     Data (Data&& other) = delete;
+     Data& operator = (Data&& other) = delete;
++#else
++  private:
++    Data (const Data& other);
++    Data& operator = (const Data& other);
++  public:
++#endif
+ 
+     void		initColorConversion ();
+ 
+diff --git a/OpenEXR/IlmImf/ImfAcesFile.h b/OpenEXR/IlmImf/ImfAcesFile.h
+index d1a8f710..20d5bae3 100644
+--- a/OpenEXR/IlmImf/ImfAcesFile.h
++++ b/OpenEXR/IlmImf/ImfAcesFile.h
+@@ -234,10 +234,15 @@ class AcesOutputFile
+ 
+   private:
+ 
++#if __cplusplus >= 201103L
+     AcesOutputFile (const AcesOutputFile &) = delete;
+     AcesOutputFile & operator = (const AcesOutputFile &) = delete;
+     AcesOutputFile (AcesOutputFile &&) = delete;
+     AcesOutputFile & operator = (AcesOutputFile &&) = delete;
++#else
++    AcesOutputFile (const AcesOutputFile &);
++    AcesOutputFile & operator = (const AcesOutputFile &);
++#endif
+ 
+     class Data;
+ 
+@@ -345,10 +350,15 @@ class AcesInputFile
+ 
+   private:
+ 
++#if __cplusplus >= 201103L
+     AcesInputFile (const AcesInputFile &) = delete;
+     AcesInputFile & operator = (const AcesInputFile &) = delete;
+     AcesInputFile (AcesInputFile &&) = delete;
+     AcesInputFile & operator = (AcesInputFile &&) = delete;
++#else
++    AcesInputFile (const AcesInputFile &);
++    AcesInputFile & operator = (const AcesInputFile &);
++#endif
+ 
+     class Data;
+ 
+diff --git a/OpenEXR/IlmImf/ImfArray.h b/OpenEXR/IlmImf/ImfArray.h
+index d56fc978..b5371271 100644
+--- a/OpenEXR/IlmImf/ImfArray.h
++++ b/OpenEXR/IlmImf/ImfArray.h
+@@ -120,10 +120,15 @@ class Array
+ 
+   private:
+ 
++#if __cplusplus >= 201103L
+     Array (const Array &) = delete;
+     Array & operator = (const Array &) = delete;
+     Array (Array &&) = delete;
+     Array & operator = (Array &&) = delete;
++#else
++    Array (const Array &);
++    Array & operator = (const Array &);
++#endif
+ 
+     long _size;
+     T * _data;
+@@ -178,10 +183,15 @@ class Array2D
+ 
+   private:
+ 
++#if __cplusplus >= 201103L
+     Array2D (const Array2D &) = delete;
+     Array2D & operator = (const Array2D &) = delete;
+     Array2D (Array2D &&) = delete;
+     Array2D & operator = (Array2D &&) = delete;
++#else
++    Array2D (const Array2D &);
++    Array2D & operator = (const Array2D &);
++#endif
+ 
+     long        _sizeX;
+     long	_sizeY;
+diff --git a/OpenEXR/IlmImf/ImfAttribute.h b/OpenEXR/IlmImf/ImfAttribute.h
+index e2b02c26..a2ade5d2 100644
+--- a/OpenEXR/IlmImf/ImfAttribute.h
++++ b/OpenEXR/IlmImf/ImfAttribute.h
+@@ -147,6 +147,7 @@ class TypedAttribute: public Attribute
+     // that the type T is copyable/assignable/moveable.
+     //------------------------------------------------------------
+ 
++#if __cplusplus >= 201103L
+     TypedAttribute () = default;
+     TypedAttribute (const T &value);
+     TypedAttribute (const TypedAttribute<T> &other) = default;
+@@ -156,6 +157,15 @@ class TypedAttribute: public Attribute
+ 
+     TypedAttribute& operator = (const TypedAttribute<T>& other) = default;
+     TypedAttribute& operator = (TypedAttribute<T>&& other) = default;
++#else
++    TypedAttribute () {}
++    TypedAttribute (const T &value);
++    TypedAttribute (const TypedAttribute<T> &other) { _value = other._value; }
++
++    virtual ~TypedAttribute () {}
++
++    TypedAttribute& operator = (const TypedAttribute<T>& other) { _value = other._value; return *this; }
++#endif
+     
+     //--------------------------------
+     // Access to the attribute's value
+diff --git a/OpenEXR/IlmImf/ImfAutoArray.h b/OpenEXR/IlmImf/ImfAutoArray.h
+index 4a275dce..2317650b 100644
+--- a/OpenEXR/IlmImf/ImfAutoArray.h
++++ b/OpenEXR/IlmImf/ImfAutoArray.h
+@@ -61,10 +61,17 @@ OPENEXR_IMF_INTERNAL_NAMESPACE_HEADER_ENTER
+ 	 AutoArray (): _data (new T [size]) { memset(_data, 0, size*sizeof(T)); }
+ 	~AutoArray () {delete [] _data;}
+ 
++#if __cplusplus >= 201103L
+         AutoArray (const AutoArray& other) = delete;
+         AutoArray& operator = (const AutoArray& other) = delete;
+         AutoArray (AutoArray&& other) = delete;
+         AutoArray& operator = (AutoArray&& other) = delete;
++#else
++      private:
++        AutoArray (const AutoArray& other);
++        AutoArray& operator = (const AutoArray& other);
++      public:
++#endif
+         
+ 	operator T * ()			{return _data;}
+ 	operator const T * () const	{return _data;}
+diff --git a/OpenEXR/IlmImf/ImfB44Compressor.h b/OpenEXR/IlmImf/ImfB44Compressor.h
+index 13619b10..9113b4bd 100644
+--- a/OpenEXR/IlmImf/ImfB44Compressor.h
++++ b/OpenEXR/IlmImf/ImfB44Compressor.h
+@@ -63,10 +63,17 @@ class B44Compressor: public Compressor
+     IMF_EXPORT
+     virtual ~B44Compressor ();
+ 
++#if __cplusplus >= 201103L
+     B44Compressor (const B44Compressor& other) = delete;
+     B44Compressor& operator = (const B44Compressor& other) = delete;
+     B44Compressor (B44Compressor&& other) = delete;
+     B44Compressor& operator = (B44Compressor&& other) = delete;
++#else
++  private:
++    B44Compressor (const B44Compressor& other);
++    B44Compressor& operator = (const B44Compressor& other);
++  public:
++#endif
+     
+     IMF_EXPORT
+     virtual int		numScanLines () const;
+diff --git a/OpenEXR/IlmImf/ImfCompositeDeepScanLine.h b/OpenEXR/IlmImf/ImfCompositeDeepScanLine.h
+index 3ed06da4..85eec7ae 100644
+--- a/OpenEXR/IlmImf/ImfCompositeDeepScanLine.h
++++ b/OpenEXR/IlmImf/ImfCompositeDeepScanLine.h
+@@ -143,10 +143,15 @@ class CompositeDeepScanLine
+     private :  
+       struct Data *_Data;
+       
++#if __cplusplus >= 201103L
+     CompositeDeepScanLine(const CompositeDeepScanLine &) = delete;
+     CompositeDeepScanLine & operator=(const CompositeDeepScanLine &) = delete;
+     CompositeDeepScanLine(CompositeDeepScanLine &&) = delete;
+     CompositeDeepScanLine & operator=(CompositeDeepScanLine &&) = delete;
++#else
++    CompositeDeepScanLine(const CompositeDeepScanLine &);
++    CompositeDeepScanLine & operator=(const CompositeDeepScanLine &);
++#endif
+ };
+ 
+ OPENEXR_IMF_INTERNAL_NAMESPACE_HEADER_EXIT
+diff --git a/OpenEXR/IlmImf/ImfDeepScanLineInputFile.cpp b/OpenEXR/IlmImf/ImfDeepScanLineInputFile.cpp
+index ead43c72..a5d3198a 100644
+--- a/OpenEXR/IlmImf/ImfDeepScanLineInputFile.cpp
++++ b/OpenEXR/IlmImf/ImfDeepScanLineInputFile.cpp
+@@ -260,10 +260,17 @@ struct DeepScanLineInputFile::Data: public Mutex
+     Data (int numThreads);
+     ~Data ();
+ 
++#if __cplusplus >= 201103L
+     Data (const Data& data) = delete;
+     Data& operator = (const Data& data) = delete;
+     Data (Data&& data) = delete;
+     Data& operator = (Data&& data) = delete;
++#else
++  private:
++    Data (const Data& data);
++    Data& operator = (const Data& data);
++  public:
++#endif
+     
+     inline LineBuffer * getLineBuffer (int number); // hash function from line
+                                                     // buffer indices into our
+diff --git a/OpenEXR/IlmImf/ImfDeepScanLineInputFile.h b/OpenEXR/IlmImf/ImfDeepScanLineInputFile.h
+index 1ccf4ac7..8d22da86 100644
+--- a/OpenEXR/IlmImf/ImfDeepScanLineInputFile.h
++++ b/OpenEXR/IlmImf/ImfDeepScanLineInputFile.h
+@@ -69,10 +69,17 @@ class DeepScanLineInputFile : public GenericInputFile
+                            int version, /*version field from file*/
+                            int numThreads = globalThreadCount());
+ 
++#if __cplusplus >= 201103L
+     DeepScanLineInputFile (const DeepScanLineInputFile& other) = delete;
+     DeepScanLineInputFile& operator = (const DeepScanLineInputFile& other) = delete;
+     DeepScanLineInputFile (DeepScanLineInputFile&& other) = delete;
+     DeepScanLineInputFile& operator = (DeepScanLineInputFile&& other) = delete;
++#else
++  private:
++    DeepScanLineInputFile (const DeepScanLineInputFile& other);
++    DeepScanLineInputFile& operator = (const DeepScanLineInputFile& other);
++  public:
++#endif
+ 
+     //-----------------------------------------
+     // Destructor -- deallocates internal data
+diff --git a/OpenEXR/IlmImf/ImfDeepScanLineOutputFile.cpp b/OpenEXR/IlmImf/ImfDeepScanLineOutputFile.cpp
+index 6e302440..f902c766 100644
+--- a/OpenEXR/IlmImf/ImfDeepScanLineOutputFile.cpp
++++ b/OpenEXR/IlmImf/ImfDeepScanLineOutputFile.cpp
+@@ -234,10 +234,17 @@ struct DeepScanLineOutputFile::Data
+     Data (int numThreads);
+     ~Data ();
+ 
++#if __cplusplus >= 201103L
+     Data (const Data& other) = delete;
+     Data& operator = (const Data& other) = delete;
+     Data (Data&& other) = delete;
+     Data& operator = (Data&& other) = delete;
++#else
++  private:
++    Data (const Data& other);
++    Data& operator = (const Data& other);
++  public:
++#endif
+ 
+     inline LineBuffer *         getLineBuffer (int number);// hash function from line
+                                                            // buffer indices into our
+diff --git a/OpenEXR/IlmImf/ImfDeepScanLineOutputFile.h b/OpenEXR/IlmImf/ImfDeepScanLineOutputFile.h
+index 3c1ecc17..73420ff6 100644
+--- a/OpenEXR/IlmImf/ImfDeepScanLineOutputFile.h
++++ b/OpenEXR/IlmImf/ImfDeepScanLineOutputFile.h
+@@ -238,10 +238,15 @@ class DeepScanLineOutputFile : public GenericOutputFile
+     //------------------------------------------------------------
+     DeepScanLineOutputFile (const OutputPartData* part);
+ 
++#if __cplusplus >= 201103L
+     DeepScanLineOutputFile (const DeepScanLineOutputFile &) = delete;
+     DeepScanLineOutputFile & operator = (const DeepScanLineOutputFile &) = delete;
+     DeepScanLineOutputFile (DeepScanLineOutputFile &&) = delete;
+     DeepScanLineOutputFile & operator = (DeepScanLineOutputFile &&) = delete;
++#else
++    DeepScanLineOutputFile (const DeepScanLineOutputFile &);
++    DeepScanLineOutputFile & operator = (const DeepScanLineOutputFile &);
++#endif
+ 
+     void                initialize (const Header &header);
+     void                initializeLineBuffer();
+diff --git a/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp b/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp
+index f7ee6a4d..ab420301 100644
+--- a/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp
++++ b/OpenEXR/IlmImf/ImfDeepTiledInputFile.cpp
+@@ -268,10 +268,17 @@ struct DeepTiledInputFile::Data: public Mutex
+      Data (int numThreads);
+     ~Data ();
+ 
++#if __cplusplus >= 201103L
+     Data (const Data& other) = delete;
+     Data& operator = (const Data& other) = delete;
+     Data (Data&& other) = delete;
+     Data& operator = (Data&& other) = delete;
++#else
++  private:
++    Data (const Data& other);
++    Data& operator = (const Data& other);
++  public:
++#endif
+     
+     inline TileBuffer * getTileBuffer (int number);
+                                                     // hash function from tile indices
+@@ -290,8 +297,8 @@ DeepTiledInputFile::Data::Data (int numThreads):
+     multiPartBackwardSupport(false),
+     numThreads(numThreads),
+     memoryMapped(false),
+-    sampleCountTableComp(nullptr),
+-    _streamData(nullptr),
++    sampleCountTableComp(NULL),
++    _streamData(NULL),
+     _deleteStream(false)
+ {
+     //
+diff --git a/OpenEXR/IlmImf/ImfDeepTiledInputFile.h b/OpenEXR/IlmImf/ImfDeepTiledInputFile.h
+index f7f13623..faa7af65 100644
+--- a/OpenEXR/IlmImf/ImfDeepTiledInputFile.h
++++ b/OpenEXR/IlmImf/ImfDeepTiledInputFile.h
+@@ -440,10 +440,15 @@ class DeepTiledInputFile : public GenericInputFile
+ 
+     DeepTiledInputFile (InputPartData* part);
+ 
++#if __cplusplus >= 201103L
+     DeepTiledInputFile (const DeepTiledInputFile &) = delete;
+     DeepTiledInputFile & operator = (const DeepTiledInputFile &) = delete;
+     DeepTiledInputFile (DeepTiledInputFile &&) = delete;
+     DeepTiledInputFile & operator = (DeepTiledInputFile &&) = delete;
++#else
++    DeepTiledInputFile (const DeepTiledInputFile &);
++    DeepTiledInputFile & operator = (const DeepTiledInputFile &);
++#endif
+ 
+     DeepTiledInputFile (const Header &header, OPENEXR_IMF_INTERNAL_NAMESPACE::IStream *is, int version,
+                     int numThreads);
+diff --git a/OpenEXR/IlmImf/ImfDeepTiledOutputFile.cpp b/OpenEXR/IlmImf/ImfDeepTiledOutputFile.cpp
+index 887c0329..a61511d3 100644
+--- a/OpenEXR/IlmImf/ImfDeepTiledOutputFile.cpp
++++ b/OpenEXR/IlmImf/ImfDeepTiledOutputFile.cpp
+@@ -203,10 +203,17 @@ struct BufferedTile
+         delete [] sampleCountTableData;
+     }
+ 
++#if __cplusplus >= 201103L
+     BufferedTile (const BufferedTile& other) = delete;
+     BufferedTile& operator = (const BufferedTile& other) = delete;
+     BufferedTile (BufferedTile&& other) = delete;
+     BufferedTile& operator = (BufferedTile&& other) = delete;
++#else
++  private:
++    BufferedTile (const BufferedTile& other);
++    BufferedTile& operator = (const BufferedTile& other);
++  public:
++#endif
+ };
+ 
+ 
+@@ -316,10 +323,17 @@ struct DeepTiledOutputFile::Data
+      Data (int numThreads);
+     ~Data ();
+ 
++#if __cplusplus >= 201103L
+     Data (const Data& other) = delete;
+     Data& operator = (const Data& other) = delete;
+     Data (Data&& other) = delete;
+     Data& operator = (Data&& other) = delete;
++#else
++  private:
++    Data (const Data& other);
++    Data& operator = (const Data& other);
++  public:
++#endif
+     
+     inline TileBuffer * getTileBuffer (int number);
+                                                 // hash function from tile
+diff --git a/OpenEXR/IlmImf/ImfDeepTiledOutputFile.h b/OpenEXR/IlmImf/ImfDeepTiledOutputFile.h
+index c119e339..0f5609b5 100644
+--- a/OpenEXR/IlmImf/ImfDeepTiledOutputFile.h
++++ b/OpenEXR/IlmImf/ImfDeepTiledOutputFile.h
+@@ -482,10 +482,15 @@ class DeepTiledOutputFile : public GenericOutputFile
+     // ----------------------------------------------------------------
+     DeepTiledOutputFile (const OutputPartData* part);
+ 
++#if __cplusplus >= 201103L
+     DeepTiledOutputFile (const DeepTiledOutputFile &) = delete;
+     DeepTiledOutputFile & operator = (const DeepTiledOutputFile &) = delete;
+     DeepTiledOutputFile (DeepTiledOutputFile &&) = delete;
+     DeepTiledOutputFile & operator = (DeepTiledOutputFile &&) = delete;
++#else
++    DeepTiledOutputFile (const DeepTiledOutputFile &);
++    DeepTiledOutputFile & operator = (const DeepTiledOutputFile &);
++#endif
+ 
+     void                initialize (const Header &header);
+ 
+diff --git a/OpenEXR/IlmImf/ImfDwaCompressor.cpp b/OpenEXR/IlmImf/ImfDwaCompressor.cpp
+index 6cd2099d..0b1a9787 100644
+--- a/OpenEXR/IlmImf/ImfDwaCompressor.cpp
++++ b/OpenEXR/IlmImf/ImfDwaCompressor.cpp
+@@ -159,7 +159,7 @@
+ #include <limits>
+ 
+ #include <cstddef>
+-#include <cstdint>
++#include <stdint.h>
+ 
+ 
+ // Windows specific addition to prevent the indirect import of the redefined min/max macros
+diff --git a/OpenEXR/IlmImf/ImfDwaCompressor.h b/OpenEXR/IlmImf/ImfDwaCompressor.h
+index 012819c7..924a0784 100644
+--- a/OpenEXR/IlmImf/ImfDwaCompressor.h
++++ b/OpenEXR/IlmImf/ImfDwaCompressor.h
+@@ -71,10 +71,17 @@ class DwaCompressor: public Compressor
+     IMF_EXPORT
+     virtual ~DwaCompressor ();
+ 
++#if __cplusplus >= 201103L
+     DwaCompressor (const DwaCompressor& other) = delete;
+     DwaCompressor& operator = (const DwaCompressor& other) = delete;
+     DwaCompressor (DwaCompressor&& other) = delete;
+     DwaCompressor& operator = (DwaCompressor&& other) = delete;
++#else
++  private:
++    DwaCompressor (const DwaCompressor& other);
++    DwaCompressor& operator = (const DwaCompressor& other);
++  public:
++#endif
+     
+     IMF_EXPORT
+     virtual int numScanLines () const;
+diff --git a/OpenEXR/IlmImf/ImfFastHuf.h b/OpenEXR/IlmImf/ImfFastHuf.h
+index 4c9a599b..591192ed 100644
+--- a/OpenEXR/IlmImf/ImfFastHuf.h
++++ b/OpenEXR/IlmImf/ImfFastHuf.h
+@@ -92,10 +92,17 @@ class FastHufDecoder
+     IMF_EXPORT
+     ~FastHufDecoder ();
+ 
++#if __cplusplus >= 201103L
+     FastHufDecoder (const FastHufDecoder& other) = delete;
+     FastHufDecoder& operator = (const FastHufDecoder& other) = delete;
+     FastHufDecoder (FastHufDecoder&& other) = delete;
+     FastHufDecoder& operator = (FastHufDecoder&& other) = delete;
++#else
++  private:
++    FastHufDecoder (const FastHufDecoder& other);
++    FastHufDecoder& operator = (const FastHufDecoder& other);
++  public:
++#endif
+ 
+     IMF_EXPORT
+     static bool enabled ();
+diff --git a/OpenEXR/IlmImf/ImfFrameBuffer.h b/OpenEXR/IlmImf/ImfFrameBuffer.h
+index dca74b0f..02eaf55a 100644
+--- a/OpenEXR/IlmImf/ImfFrameBuffer.h
++++ b/OpenEXR/IlmImf/ImfFrameBuffer.h
+@@ -52,7 +52,7 @@
+ 
+ #include <map>
+ #include <string>
+-#include <cstdint>
++#include <stdint.h>
+ 
+ 
+ OPENEXR_IMF_INTERNAL_NAMESPACE_HEADER_ENTER
+diff --git a/OpenEXR/IlmImf/ImfHuf.cpp b/OpenEXR/IlmImf/ImfHuf.cpp
+index 165fac58..6fef2fdd 100644
+--- a/OpenEXR/IlmImf/ImfHuf.cpp
++++ b/OpenEXR/IlmImf/ImfHuf.cpp
+@@ -53,7 +53,7 @@
+ #include <cstring>
+ #include <cassert>
+ #include <algorithm>
+-#include <cstdint>
++#include <stdint.h>
+ 
+ 
+ using namespace std;
+diff --git a/OpenEXR/IlmImf/ImfIO.h b/OpenEXR/IlmImf/ImfIO.h
+index e93676bd..fb823d97 100644
+--- a/OpenEXR/IlmImf/ImfIO.h
++++ b/OpenEXR/IlmImf/ImfIO.h
+@@ -147,10 +147,15 @@ class IStream
+ 
+   private:
+ 
++#if __cplusplus >= 201103L
+     IStream (const IStream &) = delete;
+     IStream & operator = (const IStream &) = delete;
+     IStream (IStream &&) = delete;
+     IStream & operator = (IStream &&) = delete;
++#else
++    IStream (const IStream &);
++    IStream & operator = (const IStream &);
++#endif
+ 
+     std::string		_fileName;
+ };
+@@ -215,10 +220,15 @@ class OStream
+ 
+   private:
+ 
++#if __cplusplus >= 201103L
+     OStream (const OStream &) = delete;
+     OStream & operator = (const OStream &) = delete;
+     OStream (OStream &&) = delete;
+     OStream & operator = (OStream &&) = delete;
++#else
++    OStream (const OStream &);
++    OStream & operator = (const OStream &);
++#endif
+ 
+     std::string		_fileName;
+ };
+diff --git a/OpenEXR/IlmImf/ImfInputFile.cpp b/OpenEXR/IlmImf/ImfInputFile.cpp
+index 600c7023..62bbf9c7 100644
+--- a/OpenEXR/IlmImf/ImfInputFile.cpp
++++ b/OpenEXR/IlmImf/ImfInputFile.cpp
+@@ -112,10 +112,17 @@ struct InputFile::Data : public Mutex
+      Data (int numThreads);
+     ~Data ();
+ 
++#if __cplusplus >= 201103L
+     Data (const Data& other) = delete;
+     Data& operator = (const Data& other) = delete;
+     Data (Data&& other) = delete;
+     Data& operator = (Data&& other) = delete;
++#else
++  private:
++    Data (const Data& other);
++    Data& operator = (const Data& other);
++  public:
++#endif
+ 
+     void		deleteCachedBuffer();
+ };
+diff --git a/OpenEXR/IlmImf/ImfInputFile.h b/OpenEXR/IlmImf/ImfInputFile.h
+index f2bd11fc..efb08d47 100644
+--- a/OpenEXR/IlmImf/ImfInputFile.h
++++ b/OpenEXR/IlmImf/ImfInputFile.h
+@@ -257,10 +257,15 @@ class InputFile : public GenericInputFile
+ 
+     InputFile (InputPartData* part);
+ 
++#if __cplusplus >= 201103L
+     InputFile (const InputFile &) = delete;
+     InputFile & operator = (const InputFile &) = delete;
+     InputFile (InputFile &&) = delete;
+     InputFile & operator = (InputFile &&) = delete;
++#else
++    InputFile (const InputFile &);
++    InputFile & operator = (const InputFile &);
++#endif
+ 
+     void		initialize ();
+     void                multiPartInitialize(InputPartData* part);
+diff --git a/OpenEXR/IlmImf/ImfKeyCode.h b/OpenEXR/IlmImf/ImfKeyCode.h
+index 231c7848..e22ade98 100644
+--- a/OpenEXR/IlmImf/ImfKeyCode.h
++++ b/OpenEXR/IlmImf/ImfKeyCode.h
+@@ -120,7 +120,11 @@ class KeyCode
+ 
+     IMF_EXPORT
+     KeyCode (const KeyCode &other);
++#if __cplusplus >= 201103L
+     ~KeyCode() = default;
++#else
++    ~KeyCode() {}
++#endif
+     IMF_EXPORT
+     KeyCode & operator = (const KeyCode &other);
+ 
+diff --git a/OpenEXR/IlmImf/ImfMisc.cpp b/OpenEXR/IlmImf/ImfMisc.cpp
+index 0451a339..957190e9 100644
+--- a/OpenEXR/IlmImf/ImfMisc.cpp
++++ b/OpenEXR/IlmImf/ImfMisc.cpp
+@@ -54,7 +54,7 @@
+ #include <ImfTileDescription.h>
+ #include "ImfNamespace.h"
+ 
+-#include <cstdint>
++#include <stdint.h>
+ 
+ OPENEXR_IMF_INTERNAL_NAMESPACE_SOURCE_ENTER
+ 
+diff --git a/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp b/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
+index f271f9e9..8a291682 100644
+--- a/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
++++ b/OpenEXR/IlmImf/ImfMultiPartInputFile.cpp
+@@ -118,10 +118,15 @@ struct MultiPartInputFile::Data: public InputStreamMutex
+             delete parts[i];
+     }
+     
++#if __cplusplus >= 201103L
+     Data (const Data& other) = delete;
+     Data& operator = (const Data& other) = delete;
+     Data (Data&& other) = delete;
+     Data& operator = (Data&& other) = delete;
++#else
++    Data (const Data& other);
++    Data& operator = (const Data& other);
++#endif
+     
+     template <class T>
+     T*    createInputPartT(int partNumber)
+@@ -456,8 +461,8 @@ MultiPartInputFile::Data::createTileOffsets(const Header& header)
+     // Precompute level and tile information
+     //
+ 
+-    int* numXTiles = nullptr;
+-    int* numYTiles = nullptr;
++    int* numXTiles = NULL;
++    int* numYTiles = NULL;
+     int numXLevels, numYLevels;
+     TileDescription tileDesc = header.tileDescription();
+     try
+diff --git a/OpenEXR/IlmImf/ImfMultiPartInputFile.h b/OpenEXR/IlmImf/ImfMultiPartInputFile.h
+index f3651d9e..178b6d0d 100644
+--- a/OpenEXR/IlmImf/ImfMultiPartInputFile.h
++++ b/OpenEXR/IlmImf/ImfMultiPartInputFile.h
+@@ -97,10 +97,15 @@ class MultiPartInputFile : public GenericInputFile
+   private:
+     Data*                           _data;
+ 
++#if __cplusplus >= 201103L
+     MultiPartInputFile(const MultiPartInputFile &) = delete;
+     MultiPartInputFile& operator = (const MultiPartInputFile &) = delete;
+     MultiPartInputFile(MultiPartInputFile &&) = delete;
+     MultiPartInputFile& operator = (MultiPartInputFile &&) = delete;
++#else
++    MultiPartInputFile(const MultiPartInputFile &);
++    MultiPartInputFile& operator = (const MultiPartInputFile &);
++#endif
+ 
+     
+     //
+diff --git a/OpenEXR/IlmImf/ImfMultiPartOutputFile.cpp b/OpenEXR/IlmImf/ImfMultiPartOutputFile.cpp
+index 082efc27..61706311 100644
+--- a/OpenEXR/IlmImf/ImfMultiPartOutputFile.cpp
++++ b/OpenEXR/IlmImf/ImfMultiPartOutputFile.cpp
+@@ -125,10 +125,17 @@ struct MultiPartOutputFile::Data: public OutputStreamMutex
+                 delete parts[i];
+         }
+ 
++#if __cplusplus >= 201103L
+     Data (const Data& other) = delete;
+     Data& operator = (const Data& other) = delete;
+     Data (Data&& other) = delete;
+     Data& operator = (Data&& other) = delete;
++#else
++  private:
++    Data (const Data& other);
++    Data& operator = (const Data& other);
++  public:
++#endif
+     
+ };
+ 
+diff --git a/OpenEXR/IlmImf/ImfMultiPartOutputFile.h b/OpenEXR/IlmImf/ImfMultiPartOutputFile.h
+index b74f9cb6..1ae006ca 100644
+--- a/OpenEXR/IlmImf/ImfMultiPartOutputFile.h
++++ b/OpenEXR/IlmImf/ImfMultiPartOutputFile.h
+@@ -100,10 +100,17 @@ class MultiPartOutputFile : public GenericOutputFile
+         IMF_EXPORT
+         ~MultiPartOutputFile();
+ 
++#if __cplusplus >= 201103L
+         MultiPartOutputFile(const MultiPartOutputFile& other) = delete;
+         MultiPartOutputFile& operator = (const MultiPartOutputFile& other) = delete;
+         MultiPartOutputFile(MultiPartOutputFile&& other) = delete;
+         MultiPartOutputFile& operator = (MultiPartOutputFile&& other) = delete;
++#else
++      private:
++        MultiPartOutputFile(const MultiPartOutputFile& other);
++        MultiPartOutputFile& operator = (const MultiPartOutputFile& other);
++      public:
++#endif
+ 
+         struct Data;
+ 
+diff --git a/OpenEXR/IlmImf/ImfOutputFile.cpp b/OpenEXR/IlmImf/ImfOutputFile.cpp
+index d0e34988..cca8a19d 100644
+--- a/OpenEXR/IlmImf/ImfOutputFile.cpp
++++ b/OpenEXR/IlmImf/ImfOutputFile.cpp
+@@ -212,10 +212,17 @@ struct OutputFile::Data
+      Data (int numThreads);
+     ~Data ();
+ 
++#if __cplusplus >= 201103L
+     Data (const Data& other) = delete;
+     Data& operator = (const Data& other) = delete;
+     Data (Data&& other) = delete;
+     Data& operator = (Data&& other) = delete;
++#else
++  private:
++    Data (const Data& other);
++    Data& operator = (const Data& other);
++  public:
++#endif
+     
+     inline LineBuffer *	getLineBuffer (int number); // hash function from line
+     						    // buffer indices into our
+diff --git a/OpenEXR/IlmImf/ImfOutputFile.h b/OpenEXR/IlmImf/ImfOutputFile.h
+index d9285949..950082f7 100644
+--- a/OpenEXR/IlmImf/ImfOutputFile.h
++++ b/OpenEXR/IlmImf/ImfOutputFile.h
+@@ -257,10 +257,15 @@ class OutputFile : public GenericOutputFile
+     //------------------------------------------------------------
+     OutputFile (const OutputPartData* part);
+ 
++#if __cplusplus >= 201103L
+     OutputFile (const OutputFile &) = delete;
+     OutputFile & operator = (const OutputFile &) = delete;
+     OutputFile (OutputFile &&) = delete;
+     OutputFile & operator = (OutputFile &&) = delete;
++#else
++    OutputFile (const OutputFile &);
++    OutputFile & operator = (const OutputFile &);
++#endif
+ 
+     void		initialize (const Header &header);
+ 
+diff --git a/OpenEXR/IlmImf/ImfPizCompressor.h b/OpenEXR/IlmImf/ImfPizCompressor.h
+index 13c9c5ea..fa5a5b5f 100644
+--- a/OpenEXR/IlmImf/ImfPizCompressor.h
++++ b/OpenEXR/IlmImf/ImfPizCompressor.h
+@@ -63,10 +63,17 @@ class PizCompressor: public Compressor
+     IMF_EXPORT
+     virtual ~PizCompressor ();
+ 
++#if __cplusplus >= 201103L
+     PizCompressor (const PizCompressor& other) = delete;
+     PizCompressor& operator = (const PizCompressor& other) = delete;
+     PizCompressor (PizCompressor&& other) = delete;
+     PizCompressor& operator = (PizCompressor&& other) = delete;
++#else
++  private:
++    PizCompressor (const PizCompressor& other);
++    PizCompressor& operator = (const PizCompressor& other);
++  public:
++#endif
+ 
+     IMF_EXPORT
+     virtual int		numScanLines () const;
+diff --git a/OpenEXR/IlmImf/ImfPxr24Compressor.h b/OpenEXR/IlmImf/ImfPxr24Compressor.h
+index 2c79c459..1ea878df 100644
+--- a/OpenEXR/IlmImf/ImfPxr24Compressor.h
++++ b/OpenEXR/IlmImf/ImfPxr24Compressor.h
+@@ -60,10 +60,17 @@ class Pxr24Compressor: public Compressor
+     IMF_EXPORT
+     virtual ~Pxr24Compressor ();
+ 
++#if __cplusplus >= 201103L
+     Pxr24Compressor (const Pxr24Compressor& other) = delete;
+     Pxr24Compressor& operator = (const Pxr24Compressor& other) = delete;
+     Pxr24Compressor (Pxr24Compressor&& other) = delete;
+     Pxr24Compressor& operator = (Pxr24Compressor&& other) = delete;
++#else
++  private:
++    Pxr24Compressor (const Pxr24Compressor& other);
++    Pxr24Compressor& operator = (const Pxr24Compressor& other);
++  public:
++#endif
+ 
+     IMF_EXPORT
+     virtual int		numScanLines () const;
+diff --git a/OpenEXR/IlmImf/ImfRgbaFile.cpp b/OpenEXR/IlmImf/ImfRgbaFile.cpp
+index b020f4e8..4f82aa52 100644
+--- a/OpenEXR/IlmImf/ImfRgbaFile.cpp
++++ b/OpenEXR/IlmImf/ImfRgbaFile.cpp
+@@ -196,10 +196,17 @@ class RgbaOutputFile::ToYca: public Mutex
+      ToYca (OutputFile &outputFile, RgbaChannels rgbaChannels);
+     ~ToYca ();
+ 
++#if __cplusplus >= 201103L
+     ToYca (const ToYca& other) = delete;
+     ToYca& operator = (const ToYca& other) = delete;
+     ToYca (ToYca&& other) = delete;
+     ToYca& operator = (ToYca&& other) = delete;
++#else
++  private:
++    ToYca (const ToYca& other);
++    ToYca& operator = (const ToYca& other);
++  public:
++#endif
+ 
+     void		setYCRounding (unsigned int roundY,
+ 	    			       unsigned int roundC);
+@@ -817,10 +824,17 @@ class RgbaInputFile::FromYca: public Mutex
+      FromYca (InputFile &inputFile, RgbaChannels rgbaChannels);
+     ~FromYca ();
+ 
++#if __cplusplus >= 201103L
+     FromYca (const FromYca& other) = delete;
+     FromYca& operator = (const FromYca& other) = delete;
+     FromYca (FromYca&& other) = delete;
+     FromYca& operator = (FromYca&& other) = delete;
++#else
++  private:
++    FromYca (const FromYca& other);
++    FromYca& operator = (const FromYca& other);
++  public:
++#endif
+ 
+     void		setFrameBuffer (Rgba *base,
+ 					size_t xStride,
+diff --git a/OpenEXR/IlmImf/ImfRgbaFile.h b/OpenEXR/IlmImf/ImfRgbaFile.h
+index 3e16716b..cc12ea23 100644
+--- a/OpenEXR/IlmImf/ImfRgbaFile.h
++++ b/OpenEXR/IlmImf/ImfRgbaFile.h
+@@ -291,10 +291,15 @@ class RgbaOutputFile
+ 						char c);
+   private:
+ 
++#if __cplusplus >= 201103L
+     RgbaOutputFile (const RgbaOutputFile &) = delete;
+     RgbaOutputFile & operator = (const RgbaOutputFile &) = delete;
+     RgbaOutputFile (RgbaOutputFile &&) = delete;
+     RgbaOutputFile & operator = (RgbaOutputFile &&) = delete;
++#else
++    RgbaOutputFile (const RgbaOutputFile &);
++    RgbaOutputFile & operator = (const RgbaOutputFile &);
++#endif
+ 
+     class ToYca;
+ 
+@@ -430,10 +435,15 @@ class RgbaInputFile
+ 
+   private:
+ 
++#if __cplusplus >= 201103L
+     RgbaInputFile (const RgbaInputFile &) = delete;
+     RgbaInputFile & operator = (const RgbaInputFile &) = delete;
+     RgbaInputFile (RgbaInputFile &&) = delete;
+     RgbaInputFile & operator = (RgbaInputFile &&) = delete;
++#else
++    RgbaInputFile (const RgbaInputFile &);
++    RgbaInputFile & operator = (const RgbaInputFile &);
++#endif
+ 
+     class FromYca;
+ 
+diff --git a/OpenEXR/IlmImf/ImfRleCompressor.h b/OpenEXR/IlmImf/ImfRleCompressor.h
+index e0118db0..fe18d4ad 100644
+--- a/OpenEXR/IlmImf/ImfRleCompressor.h
++++ b/OpenEXR/IlmImf/ImfRleCompressor.h
+@@ -58,10 +58,17 @@ class RleCompressor: public Compressor
+     IMF_EXPORT
+     virtual ~RleCompressor ();
+ 
++#if __cplusplus >= 201103L
+     RleCompressor (const RleCompressor& other) = delete;
+     RleCompressor& operator = (const RleCompressor& other) = delete;
+     RleCompressor (RleCompressor&& other) = delete;
+     RleCompressor& operator = (RleCompressor&& other) = delete;
++#else
++  private:
++    RleCompressor (const RleCompressor& other);
++    RleCompressor& operator = (const RleCompressor& other);
++  public:
++#endif
+ 
+     IMF_EXPORT
+     virtual int numScanLines () const;
+diff --git a/OpenEXR/IlmImf/ImfScanLineInputFile.cpp b/OpenEXR/IlmImf/ImfScanLineInputFile.cpp
+index d5d72ef7..4f2cbe66 100644
+--- a/OpenEXR/IlmImf/ImfScanLineInputFile.cpp
++++ b/OpenEXR/IlmImf/ImfScanLineInputFile.cpp
+@@ -150,10 +150,17 @@ struct LineBuffer
+     LineBuffer (Compressor * const comp);
+     ~LineBuffer ();
+ 
++#if __cplusplus >= 201103L
+     LineBuffer (const LineBuffer& other) = delete;
+     LineBuffer& operator = (const LineBuffer& other) = delete;
+     LineBuffer (LineBuffer&& other) = delete;
+     LineBuffer& operator = (LineBuffer&& other) = delete;
++#else
++  private:
++    LineBuffer (const LineBuffer& other);
++    LineBuffer& operator = (const LineBuffer& other);
++  public:
++#endif
+ 
+     inline void		wait () {_sem.wait();}
+     inline void		post () {_sem.post();}
+@@ -244,10 +251,17 @@ struct ScanLineInputFile::Data: public Mutex
+     Data (int numThreads);
+     ~Data ();
+ 
++#if __cplusplus >= 201103L
+     Data (const Data& other) = delete;
+     Data& operator = (const Data& other) = delete;
+     Data (Data&& other) = delete;
+     Data& operator = (Data&& other) = delete;
++#else
++  private:
++    Data (const Data& other);
++    Data& operator = (const Data& other);
++  public:
++#endif
+     
+     inline LineBuffer * getLineBuffer (int number); // hash function from line
+     						    // buffer indices into our
+@@ -1188,7 +1202,7 @@ ScanLineInputFile::ScanLineInputFile(InputPartData* part)
+                 if( _data->lineBuffers[i] )
+                 {
+                    EXRFreeAligned(_data->lineBuffers[i]->buffer);
+-                   _data->lineBuffers[i]->buffer=nullptr;
++                   _data->lineBuffers[i]->buffer=NULL;
+                 }
+             }
+         }
+@@ -1246,7 +1260,7 @@ ScanLineInputFile::ScanLineInputFile
+                  if( _data->lineBuffers[i] )
+                  {
+                    EXRFreeAligned(_data->lineBuffers[i]->buffer);
+-                   _data->lineBuffers[i]->buffer=nullptr;
++                   _data->lineBuffers[i]->buffer=NULL;
+                  }
+               }
+            }
+diff --git a/OpenEXR/IlmImf/ImfScanLineInputFile.h b/OpenEXR/IlmImf/ImfScanLineInputFile.h
+index 85242657..16fe65a9 100644
+--- a/OpenEXR/IlmImf/ImfScanLineInputFile.h
++++ b/OpenEXR/IlmImf/ImfScanLineInputFile.h
+@@ -75,10 +75,17 @@ class ScanLineInputFile : public GenericInputFile
+     IMF_EXPORT
+     virtual ~ScanLineInputFile ();
+ 
++#if __cplusplus >= 201103L
+     ScanLineInputFile (const ScanLineInputFile& other) = delete;
+     ScanLineInputFile& operator = (const ScanLineInputFile& other) = delete;
+     ScanLineInputFile (ScanLineInputFile&& other) = delete;
+     ScanLineInputFile& operator = (ScanLineInputFile&& other) = delete;
++#else
++  private:
++    ScanLineInputFile (const ScanLineInputFile& other);
++    ScanLineInputFile& operator = (const ScanLineInputFile& other);
++  public:
++#endif
+ 
+ 
+     //------------------------
+diff --git a/OpenEXR/IlmImf/ImfStdIO.cpp b/OpenEXR/IlmImf/ImfStdIO.cpp
+index a264c207..fe154d16 100644
+--- a/OpenEXR/IlmImf/ImfStdIO.cpp
++++ b/OpenEXR/IlmImf/ImfStdIO.cpp
+@@ -86,8 +86,7 @@ template <typename CharT, typename TraitsT>
+ class InjectFilebuf : public basic_filebuf<CharT, TraitsT>
+ {
+ public:
+-    using base_filebuf = basic_filebuf<CharT, TraitsT>;
+-    inline base_filebuf* wide_open (int fd, ios_base::openmode m)
++    inline basic_filebuf<CharT, TraitsT>* wide_open (int fd, ios_base::openmode m)
+     {
+         // sys_open will do an fdopen internally which will then clean up the fd upon close
+         this->_M_file.sys_open (fd, m);
+@@ -105,7 +104,7 @@ public:
+             // we don't ever seek to end or anything, so should be done at this point...
+             return this;
+         }
+-        return nullptr;
++        return NULL;
+     }
+ };
+ # endif // USE_CUSTOM_WIDE_OPEN
+@@ -115,21 +114,16 @@ make_ifstream (const char *filename)
+ {
+     wstring wfn = WidenFilename (filename);
+ # ifdef USE_CUSTOM_WIDE_OPEN
+-    int     fd;
+-    errno_t e = _wsopen_s (
+-        &fd, wfn.c_str (), _O_RDONLY|_O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+-    if (e != 0)
++    int fd = _wsopen (
++        wfn.c_str (), _O_RDONLY|_O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
++    if (fd == 0)
+     {
+-        char errbuf[4096];
+-        strerror_s (errbuf, 4096, e);
+-        errno = e;
++        char* errbuf = strerror (errno);
+         throw IEX_NAMESPACE::ErrnoExc (
+             "Unable to open input filestream: " + std::string (errbuf));
+     }
+     ifstream* ret = new ifstream;
+-    using CharT   = ifstream::char_type;
+-    using TraitsT = ifstream::traits_type;
+-    if (static_cast<InjectFilebuf<CharT, TraitsT>*> (ret->rdbuf ())
++    if (static_cast<InjectFilebuf<ifstream::char_type, ifstream::traits_type>*> (ret->rdbuf ())
+         ->wide_open (fd, ios_base::in | ios_base::binary))
+     {
+         ret->clear();
+@@ -146,25 +140,19 @@ make_ofstream (const char* filename)
+ {
+     wstring   wfn = WidenFilename (filename);
+ # ifdef USE_CUSTOM_WIDE_OPEN
+-    int     fd;
+-    errno_t e = _wsopen_s (
+-        &fd,
++    int fd = _wsopen (
+         wfn.c_str (),
+         _O_WRONLY | _O_CREAT | _O_BINARY,
+         _SH_DENYNO,
+         _S_IREAD | _S_IWRITE);
+-    if (e != 0)
++    if (fd == 0)
+     {
+-        char errbuf[4096];
+-        strerror_s (errbuf, 4096, e);
+-        errno = e;
++        char* errbuf = strerror (errno);
+         throw IEX_NAMESPACE::ErrnoExc (
+             "Unable to open output filestream: " + std::string(errbuf));
+     }
+     ofstream* ret = new ofstream;
+-    using CharT   = ifstream::char_type;
+-    using TraitsT = ifstream::traits_type;
+-    if (static_cast<InjectFilebuf<CharT, TraitsT>*> (ret->rdbuf ())
++    if (static_cast<InjectFilebuf<ifstream::char_type, ifstream::traits_type>*> (ret->rdbuf ())
+             ->wide_open (fd, ios_base::out | ios_base::binary))
+     {
+         ret->clear ();
+diff --git a/OpenEXR/IlmImf/ImfSystemSpecific.h b/OpenEXR/IlmImf/ImfSystemSpecific.h
+index 706c4eb9..9830c1e2 100644
+--- a/OpenEXR/IlmImf/ImfSystemSpecific.h
++++ b/OpenEXR/IlmImf/ImfSystemSpecific.h
+@@ -37,6 +37,10 @@
+ 
+ #include "ImfNamespace.h"
+ #include "ImfSimd.h"
++#if defined(_WIN32) && defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)
++# include <errno.h>
++# include <stdint.h>
++#endif
+ #include <stdlib.h>
+ #include "ImfExport.h"
+ #include "OpenEXRConfig.h"
+@@ -70,7 +74,28 @@ inline void*
+ EXRAllocAligned (size_t size, size_t alignment)
+ {
+     // GNUC is used for things like mingw to (cross-)compile for windows
+-#ifdef _WIN32
++#if defined(_WIN32) && defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)
++# define EXR_NOT_POWER_OF_TWO(n) (((n) & ((n) - 1)))
++# define EXR_UI(p) ((uintptr_t) (p))
++# define EXR_PTR_ALIGN(p0, alignment) ((void*) ((EXR_UI(p0) + (alignment + sizeof(void*))) & (~EXR_UI(alignment - 1))))
++# define EXR_ORIG_PTR(p) (*(((void**) (EXR_UI(p) & (~EXR_UI(sizeof(void*) - 1)))) - 1))
++    if (EXR_NOT_POWER_OF_TWO (alignment))
++    {
++        errno = EINVAL;
++        return NULL;
++    }
++    if (size == 0)
++        return NULL;
++    if (alignment < sizeof (void*))
++        alignment = sizeof (void*);
++
++    void* p0 = malloc (size + (alignment + sizeof (void*)));
++    if (!p0)
++        return NULL;
++    void* p = EXR_PTR_ALIGN (p0, alignment);
++    EXR_ORIG_PTR (p) = p0;
++    return p;
++#elif defined(_WIN32)
+     return _aligned_malloc (size, alignment);
+ #elif defined(__INTEL_COMPILER) || defined(__ICL) || defined(__ICC) || defined(__ECC)
+     return _mm_malloc (size, alignment);
+@@ -91,7 +116,14 @@ EXRAllocAligned (size_t size, size_t alignment)
+ inline void
+ EXRFreeAligned (void* ptr)
+ {
+-#ifdef _WIN32
++#if defined(_WIN32) && defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)
++    if (ptr)
++      free (EXR_ORIG_PTR (ptr));
++# undef EXR_NOT_POWER_OF_TWO
++# undef EXR_UI
++# undef EXR_PTR_ALIGN
++# undef EXR_ORIG_PTR
++#elif defined(_WIN32)
+     _aligned_free (ptr);
+ #elif defined(__INTEL_COMPILER) || defined(__ICL) || defined(__ICC) ||         \
+     defined(__ECC)
+diff --git a/OpenEXR/IlmImf/ImfTiledInputFile.cpp b/OpenEXR/IlmImf/ImfTiledInputFile.cpp
+index 68e0662e..9dad02c1 100644
+--- a/OpenEXR/IlmImf/ImfTiledInputFile.cpp
++++ b/OpenEXR/IlmImf/ImfTiledInputFile.cpp
+@@ -149,10 +149,17 @@ struct TileBuffer
+      TileBuffer (Compressor * const comp);
+     ~TileBuffer ();
+ 
++#if __cplusplus >= 201103L
+     TileBuffer (const TileBuffer& other) = delete;
+     TileBuffer& operator = (const TileBuffer& other) = delete;
+     TileBuffer (TileBuffer&& other) = delete;
+     TileBuffer& operator = (TileBuffer&& other) = delete;
++#else
++  private:
++    TileBuffer (const TileBuffer& other);
++    TileBuffer& operator = (const TileBuffer& other);
++  public:
++#endif
+ 
+     inline void		wait () {_sem.wait();}
+     inline void		post () {_sem.post();}
+@@ -248,10 +255,17 @@ struct TiledInputFile::Data: public Mutex
+      Data (int numThreads);
+     ~Data ();
+ 
++#if __cplusplus >= 201103L
+     Data (const Data& other) = delete;
+     Data& operator = (const Data& other) = delete;
+     Data (Data&& other) = delete;
+     Data& operator = (Data&& other) = delete;
++#else
++  private:
++    Data (const Data& other);
++    Data& operator = (const Data& other);
++  public:
++#endif
+ 
+     static const int gLargeChunkTableSize = 1024*1024;
+     void validateStreamSize();                       // throw an exception if the file is significantly
+@@ -270,7 +284,7 @@ TiledInputFile::Data::Data (int numThreads):
+     partNumber (-1),
+     multiPartBackwardSupport(false),
+     numThreads(numThreads),
+-    multiPartFile(nullptr),
++    multiPartFile(NULL),
+     memoryMapped(false),
+     _streamData(NULL),
+     _deleteStream(false)
+diff --git a/OpenEXR/IlmImf/ImfTiledInputFile.h b/OpenEXR/IlmImf/ImfTiledInputFile.h
+index f919df40..37e747af 100644
+--- a/OpenEXR/IlmImf/ImfTiledInputFile.h
++++ b/OpenEXR/IlmImf/ImfTiledInputFile.h
+@@ -93,10 +93,17 @@ class TiledInputFile : public GenericInputFile
+     IMF_EXPORT
+     virtual ~TiledInputFile ();
+ 
++#if __cplusplus >= 201103L
+     TiledInputFile (const TiledInputFile& other) = delete;
+     TiledInputFile& operator = (const TiledInputFile& other) = delete;
+     TiledInputFile (TiledInputFile&& other) = delete;
+     TiledInputFile& operator = (TiledInputFile&& other) = delete;
++#else
++  private:
++    TiledInputFile (const TiledInputFile& other);
++    TiledInputFile& operator = (const TiledInputFile& other);
++  public:
++#endif
+ 
+ 
+     //------------------------
+diff --git a/OpenEXR/IlmImf/ImfTiledMisc.cpp b/OpenEXR/IlmImf/ImfTiledMisc.cpp
+index 06ea3144..77843a71 100644
+--- a/OpenEXR/IlmImf/ImfTiledMisc.cpp
++++ b/OpenEXR/IlmImf/ImfTiledMisc.cpp
+@@ -352,8 +352,8 @@ getTiledChunkOffsetTableSize(const Header& header)
+     // Precompute level and tile information.
+     //
+ 
+-    int* numXTiles=nullptr;
+-    int* numYTiles=nullptr;
++    int* numXTiles=NULL;
++    int* numYTiles=NULL;
+     int numXLevels;
+     int numYLevels;
+     try
+diff --git a/OpenEXR/IlmImf/ImfTiledOutputFile.cpp b/OpenEXR/IlmImf/ImfTiledOutputFile.cpp
+index 52f7577a..8e8b9f07 100644
+--- a/OpenEXR/IlmImf/ImfTiledOutputFile.cpp
++++ b/OpenEXR/IlmImf/ImfTiledOutputFile.cpp
+@@ -188,10 +188,17 @@ struct BufferedTile
+ 	delete [] pixelData;
+     }
+ 
++#if __cplusplus >= 201103L
+     BufferedTile (const BufferedTile& other) = delete;
+     BufferedTile& operator = (const BufferedTile& other) = delete;
+     BufferedTile (BufferedTile&& other) = delete;
+     BufferedTile& operator = (BufferedTile&& other) = delete;
++#else
++  private:
++    BufferedTile (const BufferedTile& other);
++    BufferedTile& operator = (const BufferedTile& other);
++  public:
++#endif
+ };
+ 
+ 
+@@ -283,10 +290,17 @@ struct TiledOutputFile::Data
+      Data (int numThreads);
+     ~Data ();
+     
++#if __cplusplus >= 201103L
+     Data (const Data& other) = delete;
+     Data& operator = (const Data& other) = delete;
+     Data (Data&& other) = delete;
+     Data& operator = (Data&& other) = delete;
++#else
++  private:
++    Data (const Data& other);
++    Data& operator = (const Data& other);
++  public:
++#endif
+ 
+     inline TileBuffer *	getTileBuffer (int number);
+     						// hash function from tile
+diff --git a/OpenEXR/IlmImf/ImfTiledOutputFile.h b/OpenEXR/IlmImf/ImfTiledOutputFile.h
+index 87164311..8504fbd8 100644
+--- a/OpenEXR/IlmImf/ImfTiledOutputFile.h
++++ b/OpenEXR/IlmImf/ImfTiledOutputFile.h
+@@ -503,10 +503,15 @@ class TiledOutputFile : public GenericOutputFile
+     // ----------------------------------------------------------------
+     TiledOutputFile (const OutputPartData* part);
+ 
++#if __cplusplus >= 201103L
+     TiledOutputFile (const TiledOutputFile &) = delete;
+     TiledOutputFile & operator = (const TiledOutputFile &) = delete;
+     TiledOutputFile (TiledOutputFile &&) = delete;
+     TiledOutputFile & operator = (TiledOutputFile &&) = delete;
++#else
++    TiledOutputFile (const TiledOutputFile &);
++    TiledOutputFile & operator = (const TiledOutputFile &);
++#endif
+ 
+     void		initialize (const Header &header);
+ 
+diff --git a/OpenEXR/IlmImf/ImfTiledRgbaFile.h b/OpenEXR/IlmImf/ImfTiledRgbaFile.h
+index 2be943c5..28cbbcf2 100644
+--- a/OpenEXR/IlmImf/ImfTiledRgbaFile.h
++++ b/OpenEXR/IlmImf/ImfTiledRgbaFile.h
+@@ -316,10 +316,15 @@ class TiledRgbaOutputFile
+     // Copy constructor and assignment are not implemented
+     //
+ 
++#if __cplusplus >= 201103L
+     TiledRgbaOutputFile (const TiledRgbaOutputFile &) = delete;	
+     TiledRgbaOutputFile & operator = (const TiledRgbaOutputFile &) = delete;
+     TiledRgbaOutputFile (TiledRgbaOutputFile &&) = delete;	
+     TiledRgbaOutputFile & operator = (TiledRgbaOutputFile &&) = delete;
++#else
++    TiledRgbaOutputFile (const TiledRgbaOutputFile &);
++    TiledRgbaOutputFile & operator = (const TiledRgbaOutputFile &);
++#endif
+ 
+     class ToYa;
+ 
+@@ -541,10 +546,15 @@ class TiledRgbaInputFile
+     // Copy constructor and assignment are not implemented
+     //
+ 
++#if __cplusplus >= 201103L
+     TiledRgbaInputFile (const TiledRgbaInputFile &) = delete;
+     TiledRgbaInputFile & operator = (const TiledRgbaInputFile &) = delete;
+     TiledRgbaInputFile (TiledRgbaInputFile &&) = delete;
+     TiledRgbaInputFile & operator = (TiledRgbaInputFile &&) = delete;
++#else
++    TiledRgbaInputFile (const TiledRgbaInputFile &);
++    TiledRgbaInputFile & operator = (const TiledRgbaInputFile &);
++#endif
+ 
+     class FromYa;
+ 
+diff --git a/OpenEXR/IlmImf/ImfTimeCode.h b/OpenEXR/IlmImf/ImfTimeCode.h
+index fa64c2b2..c9b826ad 100644
+--- a/OpenEXR/IlmImf/ImfTimeCode.h
++++ b/OpenEXR/IlmImf/ImfTimeCode.h
+@@ -167,7 +167,11 @@ class TimeCode
+     IMF_EXPORT
+     TimeCode (const TimeCode &other);
+ 
++#if __cplusplus >= 201103L
+     ~TimeCode () = default;
++#else
++    ~TimeCode () {}
++#endif
+ 
+     IMF_EXPORT
+     TimeCode & operator = (const TimeCode &other);
+diff --git a/OpenEXR/IlmImf/ImfZip.h b/OpenEXR/IlmImf/ImfZip.h
+index 839d68a5..6321cdf6 100644
+--- a/OpenEXR/IlmImf/ImfZip.h
++++ b/OpenEXR/IlmImf/ImfZip.h
+@@ -53,10 +53,17 @@ class Zip
+         IMF_EXPORT
+         ~Zip();
+ 
++#if __cplusplus >= 201103L
+         Zip (const Zip& other) = delete;
+         Zip& operator = (const Zip& other) = delete;
+         Zip (Zip&& other) = delete;
+         Zip& operator = (Zip&& other) = delete;
++#else
++      private:
++        Zip (const Zip& other);
++        Zip& operator = (const Zip& other);
++      public:
++#endif
+ 
+         IMF_EXPORT
+         size_t maxRawSize();
+diff --git a/OpenEXR/IlmImfUtil/ImfDeepImageChannel.h b/OpenEXR/IlmImfUtil/ImfDeepImageChannel.h
+index fdb07062..a87bf061 100644
+--- a/OpenEXR/IlmImfUtil/ImfDeepImageChannel.h
++++ b/OpenEXR/IlmImfUtil/ImfDeepImageChannel.h
+@@ -103,10 +103,17 @@ class DeepImageChannel: public ImageChannel
+     IMFUTIL_EXPORT DeepImageChannel (DeepImageLevel &level, bool pLinear);
+     IMFUTIL_EXPORT virtual ~DeepImageChannel();
+ 
++#if __cplusplus >= 201103L
+     DeepImageChannel (const DeepImageChannel& other) = delete;
+     DeepImageChannel& operator = (const DeepImageChannel& other) = delete;
+     DeepImageChannel (DeepImageChannel&& other) = delete;
+     DeepImageChannel& operator = (DeepImageChannel&& other) = delete;
++#else
++  private:
++    DeepImageChannel (const DeepImageChannel& other);
++    DeepImageChannel& operator = (const DeepImageChannel& other);
++  public:
++#endif
+ 
+     virtual void setSamplesToZero
+                         (size_t i,
+@@ -195,10 +202,15 @@ class TypedDeepImageChannel: public DeepImageChannel
+     TypedDeepImageChannel (DeepImageLevel &level, bool pLinear);
+     virtual ~TypedDeepImageChannel ();
+ 
++#if __cplusplus >= 201103L
+     TypedDeepImageChannel (const TypedDeepImageChannel& other) = delete;
+     TypedDeepImageChannel& operator = (const TypedDeepImageChannel& other) = delete;    
+     TypedDeepImageChannel (TypedDeepImageChannel&& other) = delete;
+     TypedDeepImageChannel& operator = (TypedDeepImageChannel&& other) = delete;    
++#else
++    TypedDeepImageChannel (const TypedDeepImageChannel& other);
++    TypedDeepImageChannel& operator = (const TypedDeepImageChannel& other);
++#endif
+ 
+     virtual void setSamplesToZero
+                             (size_t i,
+diff --git a/OpenEXR/IlmImfUtil/ImfFlatImageChannel.h b/OpenEXR/IlmImfUtil/ImfFlatImageChannel.h
+index 1b0190e9..815d5aae 100644
+--- a/OpenEXR/IlmImfUtil/ImfFlatImageChannel.h
++++ b/OpenEXR/IlmImfUtil/ImfFlatImageChannel.h
+@@ -102,10 +102,17 @@ class FlatImageChannel: public ImageChannel
+     IMFUTIL_EXPORT
+     virtual ~FlatImageChannel();
+ 
++#if __cplusplus >= 201103L
+     FlatImageChannel (const FlatImageChannel& other) = delete;
+     FlatImageChannel& operator = (const FlatImageChannel& other) = delete;
+     FlatImageChannel (FlatImageChannel&& other) = delete;
+     FlatImageChannel& operator = (FlatImageChannel&& other) = delete;
++#else
++  private:
++    FlatImageChannel (const FlatImageChannel& other);
++    FlatImageChannel& operator = (const FlatImageChannel& other);
++  protected:
++#endif
+ 
+     IMFUTIL_EXPORT
+     virtual void            resize ();
+@@ -179,10 +186,15 @@ class TypedFlatImageChannel: public FlatImageChannel
+ 
+     virtual ~TypedFlatImageChannel ();
+ 
++#if __cplusplus >= 201103L
+     TypedFlatImageChannel (const TypedFlatImageChannel& other) = delete;
+     TypedFlatImageChannel& operator = (const TypedFlatImageChannel& other) = delete;    
+     TypedFlatImageChannel (TypedFlatImageChannel&& other) = delete;
+     TypedFlatImageChannel& operator = (TypedFlatImageChannel&& other) = delete;    
++#else
++    TypedFlatImageChannel (const TypedFlatImageChannel& other);
++    TypedFlatImageChannel& operator = (const TypedFlatImageChannel& other);
++#endif
+ 
+     virtual void        resize ();
+ 
+diff --git a/OpenEXR/IlmImfUtil/ImfSampleCountChannel.h b/OpenEXR/IlmImfUtil/ImfSampleCountChannel.h
+index 8e8086c6..5af6d048 100644
+--- a/OpenEXR/IlmImfUtil/ImfSampleCountChannel.h
++++ b/OpenEXR/IlmImfUtil/ImfSampleCountChannel.h
+@@ -224,10 +224,17 @@ class SampleCountChannel : public ImageChannel
+          IMFUTIL_EXPORT
+         ~Edit ();
+ 
++#if __cplusplus >= 201103L
+         Edit (const Edit& other) = delete;
+         Edit& operator = (const Edit& other) = delete;
+         Edit (Edit&& other) = delete;
+         Edit& operator = (Edit&& other) = delete;
++#else
++      private:
++        Edit (const Edit& other);
++        Edit& operator = (const Edit& other);
++      public:
++#endif
+ 
+         //
+         // Access to the writable sample count array.
+-- 
+2.42.0
+

@@ -19,7 +19,7 @@ cd ..
 rmdir /S /Q %BUILDDIR% 2>nul >nul
 mkdir %BUILDDIR%
 cd %BUILDDIR%
-qmake -r CONFIG+="release" CONFIG+="disable_embed_translations" CONFIG+=disable_openexr ..\%PROJECT%.pro
+qmake -r CONFIG+="release" CONFIG+="disable_embed_translations" ..\%PROJECT%.pro
 mingw32-make -j%NUMBER_OF_PROCESSORS%
 if not exist %APP_PATH%\release\%PROJECT%.exe (
     if NOT "%CI%" == "true" pause

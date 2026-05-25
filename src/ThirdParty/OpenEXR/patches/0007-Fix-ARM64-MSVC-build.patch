@@ -1,0 +1,25 @@
+From 52573df98358473a0ae63d674ca726e0740f840a Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Wed, 4 Jan 2023 05:51:15 +0700
+Subject: [PATCH 7/7] Fix ARM64 MSVC build
+
+---
+ OpenEXR/IlmImf/ImfSimd.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/OpenEXR/IlmImf/ImfSimd.h b/OpenEXR/IlmImf/ImfSimd.h
+index 3489bd0c..9625499f 100644
+--- a/OpenEXR/IlmImf/ImfSimd.h
++++ b/OpenEXR/IlmImf/ImfSimd.h
+@@ -45,7 +45,7 @@
+ 
+ 
+ // GCC and Visual Studio SSE2 compiler flags
+-#if defined __SSE2__ || (_MSC_VER >= 1300 && !_M_CEE_PURE)
++#if defined __SSE2__ || (_MSC_VER >= 1300 && !_M_CEE_PURE && (_M_IX86 || _M_X64))
+     #define IMF_HAVE_SSE2 1
+ #endif
+ 
+-- 
+2.42.0
+

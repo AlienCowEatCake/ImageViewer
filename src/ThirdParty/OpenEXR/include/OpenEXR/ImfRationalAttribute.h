@@ -1,1 +1,1 @@
-#include "../../openexr-3.4.12/src/lib/OpenEXR/ImfRationalAttribute.h"
+#include "../../openexr-2.5.10/OpenEXR/IlmImf/ImfRationalAttribute.h"
