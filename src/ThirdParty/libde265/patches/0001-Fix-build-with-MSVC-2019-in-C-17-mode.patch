@@ -1,0 +1,25 @@
+From 08fc4db0a4576c57061989b85344f691b0c4e314 Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sat, 19 Dec 2020 23:26:33 +0700
+Subject: [PATCH] Fix build with MSVC 2019 in C++17 mode
+
+---
+ libde265/util.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libde265/util.h b/libde265/util.h
+index 84d4d36a..cffbd646 100644
+--- a/libde265/util.h
++++ b/libde265/util.h
+@@ -65,7 +65,7 @@
+ #define ALIGNED_4( var )  LIBDE265_DECLARE_ALIGNED( var, 4 )
+ 
+ // C++11 specific features
+-#if defined(_MSC_VER) || (!__clang__ && __GNUC__ && GCC_VERSION < 40600)
++#if (defined(_MSC_VER) && __cplusplus < 201103L) || (!__clang__ && __GNUC__ && GCC_VERSION < 40600)
+ #define FOR_LOOP(type, var, list)   for each (type var in list)
+ #undef FOR_LOOP_AUTO_SUPPORT
+ #else
+-- 
+2.20.1
+

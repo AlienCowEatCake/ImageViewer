@@ -641,7 +641,13 @@ disable_cxx14 : !system_openjph {
 # libde265 options:
 #    disable_libde265
 #    system_libde265
-disable_cxx17 : !system_libde265 {
+*msvc* : !system_libde265 : lessThan(MSVC_VERSION, 2012) {
+    CONFIG *= disable_libde265
+}
+win32 : *g++* : !*clang* : lessThan(GCC_VERSION_NUMERIC, 50100) { # FIXME: Find exact version
+    CONFIG *= disable_libde265
+}
+disable_cxx11 : !system_libde265 {
     CONFIG *= disable_libde265
 }
 
