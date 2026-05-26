@@ -1,0 +1,74 @@
+From d2e761c83909a79c29eac73c184798ace573bbf1 Mon Sep 17 00:00:00 2001
+From: Gerasim Troeglazov <3dEyes@gmail.com>
+Date: Thu, 1 Aug 2024 19:54:41 +1000
+Subject: [PATCH 2/2] Fix for Haiku
+
+---
+ codec/common/src/WelsThreadLib.cpp | 16 ++++++++++++++--
+ meson.build                        |  2 +-
+ 2 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/codec/common/src/WelsThreadLib.cpp b/codec/common/src/WelsThreadLib.cpp
+index 4e44f248..b11217e1 100644
+--- a/codec/common/src/WelsThreadLib.cpp
++++ b/codec/common/src/WelsThreadLib.cpp
+@@ -50,7 +50,7 @@
+ #include <unistd.h>
+ #ifdef __EMSCRIPTEN__
+ #include <emscripten/threading.h>
+-#elif !defined(__Fuchsia__)
++#elif !defined(__Fuchsia__) && !defined(__HAIKU__)
+ #include <sys/sysctl.h>
+ #endif
+ #ifdef __APPLE__
+@@ -67,6 +67,9 @@
+ #ifdef __ANDROID__
+ #include <android/api-level.h>
+ #endif
++#ifdef __HAIKU__
++#include <OS.h>
++#endif
+ 
+ #include "WelsThreadLib.h"
+ #include <stdio.h>
+@@ -236,7 +239,7 @@ WELS_THREAD_ERROR_CODE    WelsThreadCreate (WELS_THREAD_HANDLE* thread,  LPWELS_
+   err = pthread_attr_init (&at);
+   if (err)
+     return err;
+-#if !defined(__ANDROID__) && !defined(__Fuchsia__)
++#if !defined(__ANDROID__) && !defined(__Fuchsia__) && !defined(__HAIKU__)
+   err = pthread_attr_setscope (&at, PTHREAD_SCOPE_SYSTEM);
+   if (err)
+     return err;
+@@ -509,6 +512,15 @@ WELS_THREAD_ERROR_CODE    WelsQueryLogicalProcessInfo (WelsLogicalProcessInfo* p
+ 
+   return WELS_THREAD_ERROR_OK;
+ 
++#elif defined(__HAIKU__)
++  system_info sysinfo;
++  if (get_system_info(&sysinfo) == B_OK) {
++  	pInfo->ProcessorCount = sysinfo.cpu_count;
++  } else {
++  	pInfo->ProcessorCount = 1;
++  }
++  return WELS_THREAD_ERROR_OK;
++
+ #elif defined(__EMSCRIPTEN__)
+ 
+   // There is not yet a way to determine CPU count in emscripten JS environment.
+diff --git a/meson.build b/meson.build
+index a0dfd219..2ecbe927 100644
+--- a/meson.build
++++ b/meson.build
+@@ -57,7 +57,7 @@ cpp_lib = '-lstdc++'
+ libm_dep = cpp.find_library('m', required : false)
+ deps += [libm_dep]
+ 
+-if ['linux', 'freebsd', 'android', 'ios', 'darwin'].contains(system)
++if ['linux', 'freebsd', 'android', 'ios', 'darwin', 'haiku'].contains(system)
+   asm_format32 = 'elf'
+   asm_format64 = 'elf64'
+   if ['ios', 'darwin'].contains(system)
+-- 
+2.53.0
+

@@ -50,7 +50,7 @@
 #include <unistd.h>
 #ifdef __EMSCRIPTEN__
 #include <emscripten/threading.h>
-#elif !defined(__Fuchsia__)
+#elif !defined(__Fuchsia__) && !defined(__HAIKU__)
 #include <sys/sysctl.h>
 #endif
 #ifdef __APPLE__
@@ -66,6 +66,9 @@
 #endif
 #ifdef __ANDROID__
 #include <android/api-level.h>
+#endif
+#ifdef __HAIKU__
+#include <OS.h>
 #endif
 
 #include "WelsThreadLib.h"
@@ -236,7 +239,7 @@ WELS_THREAD_ERROR_CODE    WelsThreadCreate (WELS_THREAD_HANDLE* thread,  LPWELS_
   err = pthread_attr_init (&at);
   if (err)
     return err;
-#if !defined(__ANDROID__) && !defined(__Fuchsia__)
+#if !defined(__ANDROID__) && !defined(__Fuchsia__) && !defined(__HAIKU__)
   err = pthread_attr_setscope (&at, PTHREAD_SCOPE_SYSTEM);
   if (err)
     return err;
@@ -507,6 +510,15 @@ WELS_THREAD_ERROR_CODE    WelsQueryLogicalProcessInfo (WelsLogicalProcessInfo* p
     pInfo->ProcessorCount = 1;
   }
 
+  return WELS_THREAD_ERROR_OK;
+
+#elif defined(__HAIKU__)
+  system_info sysinfo;
+  if (get_system_info(&sysinfo) == B_OK) {
+  	pInfo->ProcessorCount = sysinfo.cpu_count;
+  } else {
+  	pInfo->ProcessorCount = 1;
+  }
   return WELS_THREAD_ERROR_OK;
 
 #elif defined(__EMSCRIPTEN__)
