@@ -515,22 +515,22 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="374"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="376"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="388"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="390"/>
         <source>…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="529"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="531"/>
         <source>Zoom</source>
         <translation type="unfinished">Suurenna</translation>
     </message>
     <message>
-        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="530"/>
+        <location filename="../../src/GUI/MainWindow/MainWindow.cpp" line="532"/>
         <source>Zoom Factor (%):</source>
         <translation type="unfinished">Suurennusskaala (%):</translation>
     </message>
@@ -1497,47 +1497,47 @@
 <context>
     <name>Themes</name>
     <message>
-        <location filename="../../src/main.cpp" line="84"/>
+        <location filename="../../src/main.cpp" line="88"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="87"/>
+        <location filename="../../src/main.cpp" line="91"/>
         <source>Light</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="91"/>
+        <location filename="../../src/main.cpp" line="95"/>
         <source>Dark</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="96"/>
+        <location filename="../../src/main.cpp" line="100"/>
         <source>Fusion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="100"/>
+        <location filename="../../src/main.cpp" line="104"/>
         <source>Fusion Light</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="104"/>
+        <location filename="../../src/main.cpp" line="108"/>
         <source>Fusion Dark</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="109"/>
+        <location filename="../../src/main.cpp" line="113"/>
         <source>Windows</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="113"/>
+        <location filename="../../src/main.cpp" line="117"/>
         <source>Windows 95</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/main.cpp" line="117"/>
+        <location filename="../../src/main.cpp" line="121"/>
         <source>Windows 2000</source>
         <translation type="unfinished"></translation>
     </message>
