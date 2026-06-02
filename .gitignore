@@ -84,7 +84,7 @@ Makefile*
 # In-tree Xcode builds
 /src/ImageViewer/Info.plist
 *.xcodeproj
-build
+**/build/
 
 # ReSVG
 !/buildscripts/resvg/**/*.so
