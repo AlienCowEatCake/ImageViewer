@@ -163,8 +163,6 @@
 
 /* custom fonts provider */
 #include "fontsprovider/fontsprovider.h"
-#define WMF_FONTDIR         ProvideWmfFontdir()
 #define WMF_GS_FONTDIR      ProvideWmfGsFontdir()
 #define WMF_SYS_FONTMAP     ProvideWmfSysFontmap()
-#define WMF_XTRA_FONTMAP    ProvideWmfXtraFontmap()
 #define WMF_GS_FONTMAP      ProvideWmfGsFontmap()

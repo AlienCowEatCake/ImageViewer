@@ -35,6 +35,147 @@
 
 #include "font.h"
 
+#include "fonts/fontmap.in.h"
+#include "fonts/NimbusMonoPS-Bold.afm.h"
+#include "fonts/NimbusMonoPS-Bold.t1.h"
+#include "fonts/NimbusMonoPS-BoldItalic.afm.h"
+#include "fonts/NimbusMonoPS-BoldItalic.t1.h"
+#include "fonts/NimbusMonoPS-Italic.afm.h"
+#include "fonts/NimbusMonoPS-Italic.t1.h"
+#include "fonts/NimbusMonoPS-Regular.afm.h"
+#include "fonts/NimbusMonoPS-Regular.t1.h"
+#include "fonts/NimbusRoman-Bold.afm.h"
+#include "fonts/NimbusRoman-Bold.t1.h"
+#include "fonts/NimbusRoman-BoldItalic.afm.h"
+#include "fonts/NimbusRoman-BoldItalic.t1.h"
+#include "fonts/NimbusRoman-Italic.afm.h"
+#include "fonts/NimbusRoman-Italic.t1.h"
+#include "fonts/NimbusRoman-Regular.afm.h"
+#include "fonts/NimbusRoman-Regular.t1.h"
+#include "fonts/NimbusSans-Bold.afm.h"
+#include "fonts/NimbusSans-Bold.t1.h"
+#include "fonts/NimbusSans-BoldItalic.afm.h"
+#include "fonts/NimbusSans-BoldItalic.t1.h"
+#include "fonts/NimbusSans-Italic.afm.h"
+#include "fonts/NimbusSans-Italic.t1.h"
+#include "fonts/NimbusSans-Regular.afm.h"
+#include "fonts/NimbusSans-Regular.t1.h"
+#include "fonts/StandardSymbolsPS.afm.h"
+#include "fonts/StandardSymbolsPS.t1.h"
+
+#ifdef WMF_XTRA_FONTMAP
+#undef WMF_XTRA_FONTMAP
+#endif
+#define WMF_XTRA_FONTMAP local_font_prefix
+
+static const char local_font_prefix[] = "@WMF_FONTDIR@";
+static const size_t local_font_prefix_size = sizeof (local_font_prefix) / sizeof (char) - 1;
+
+static int is_local (const char* path)
+{
+	if (strncmp (local_font_prefix,path,local_font_prefix_size) != 0) return 0;
+
+	path += local_font_prefix_size;
+	if (*path == '\0') return (1);
+
+	path += 1;
+	if (*path == '\0') return (1);
+
+#define CHECK_PATH(X) \
+	do \
+	{	if (strncmp (path,(X),sizeof (X) / sizeof (char) - 1) == 0) \
+		{	if (strcmp (path + sizeof (X) / sizeof (char) - 1,".afm") == 0 || \
+				strcmp (path + sizeof (X) / sizeof (char) - 1,".t1") == 0) \
+				return (1); \
+		} \
+	} \
+	while(0)
+	CHECK_PATH("NimbusSans-Regular");
+	CHECK_PATH("NimbusSans-BoldItalic");
+	CHECK_PATH("NimbusSans-Bold");
+	CHECK_PATH("NimbusSans-Italic");
+	CHECK_PATH("NimbusRoman-Regular");
+	CHECK_PATH("NimbusRoman-BoldItalic");
+	CHECK_PATH("NimbusRoman-Bold");
+	CHECK_PATH("NimbusRoman-Italic");
+	CHECK_PATH("NimbusMonoPS-Regular");
+	CHECK_PATH("NimbusMonoPS-BoldItalic");
+	CHECK_PATH("NimbusMonoPS-Bold");
+	CHECK_PATH("NimbusMonoPS-Italic");
+	CHECK_PATH("StandardSymbolsPS");
+#undef CHECK_PATH
+
+	return (0);
+}
+
+static void get_local_glyphs (const char* glyphs,const unsigned char** data,unsigned long* size)
+{
+	const char* glyphs_local = glyphs + local_font_prefix_size + 1;
+
+	if (data == NULL || size == NULL) return;
+
+	*data = NULL;
+	*size = 0;
+#define CHECK_PATH(X,D,S) \
+	do \
+	{	if (strncmp (glyphs_local,(X),sizeof (X) / sizeof (char) - 1) == 0) \
+		{	if (strcmp (glyphs_local + sizeof (X) / sizeof (char) - 1,".t1") == 0) \
+			{	*data = (const unsigned char*)(D); \
+				*size = (unsigned long)(S); \
+			} \
+		} \
+	} \
+	while(0)
+	CHECK_PATH("NimbusSans-Regular",      NimbusSans_Regular_t1,      NimbusSans_Regular_t1_len);
+	CHECK_PATH("NimbusSans-BoldItalic",   NimbusSans_BoldItalic_t1,   NimbusSans_BoldItalic_t1_len);
+	CHECK_PATH("NimbusSans-Bold",         NimbusSans_Bold_t1,         NimbusSans_Bold_t1_len);
+	CHECK_PATH("NimbusSans-Italic",       NimbusSans_Italic_t1,       NimbusSans_Italic_t1_len);
+	CHECK_PATH("NimbusRoman-Regular",     NimbusRoman_Regular_t1,     NimbusRoman_Regular_t1_len);
+	CHECK_PATH("NimbusRoman-BoldItalic",  NimbusRoman_BoldItalic_t1,  NimbusRoman_BoldItalic_t1_len);
+	CHECK_PATH("NimbusRoman-Bold",        NimbusRoman_Bold_t1,        NimbusRoman_Bold_t1_len);
+	CHECK_PATH("NimbusRoman-Italic",      NimbusRoman_Italic_t1,      NimbusRoman_Italic_t1_len);
+	CHECK_PATH("NimbusMonoPS-Regular",    NimbusMonoPS_Regular_t1,    NimbusMonoPS_Regular_t1_len);
+	CHECK_PATH("NimbusMonoPS-BoldItalic", NimbusMonoPS_BoldItalic_t1, NimbusMonoPS_BoldItalic_t1_len);
+	CHECK_PATH("NimbusMonoPS-Bold",       NimbusMonoPS_Bold_t1,       NimbusMonoPS_Bold_t1_len);
+	CHECK_PATH("NimbusMonoPS-Italic",     NimbusMonoPS_Italic_t1,     NimbusMonoPS_Italic_t1_len);
+	CHECK_PATH("StandardSymbolsPS",       StandardSymbolsPS_t1,       StandardSymbolsPS_t1_len);
+#undef CHECK_PATH
+}
+
+static void get_local_metrics (const char* metrics,const unsigned char** data,unsigned long* size)
+{
+	const char* metrics_local = metrics + local_font_prefix_size + 1;
+
+	if (data == NULL || size == NULL) return;
+
+	*data = NULL;
+	*size = 0;
+#define CHECK_PATH(X,D,S) \
+	do \
+	{	if (strncmp (metrics_local,(X),sizeof (X) / sizeof (char) - 1) == 0) \
+		{	if (strcmp (metrics_local + sizeof (X) / sizeof (char) - 1,".afm") == 0) \
+			{	*data = (const unsigned char*)(D); \
+				*size = (unsigned long)(S); \
+			} \
+		} \
+	} \
+	while(0)
+	CHECK_PATH("NimbusSans-Regular",      NimbusSans_Regular_afm,      NimbusSans_Regular_afm_len);
+	CHECK_PATH("NimbusSans-BoldItalic",   NimbusSans_BoldItalic_afm,   NimbusSans_BoldItalic_afm_len);
+	CHECK_PATH("NimbusSans-Bold",         NimbusSans_Bold_afm,         NimbusSans_Bold_afm_len);
+	CHECK_PATH("NimbusSans-Italic",       NimbusSans_Italic_afm,       NimbusSans_Italic_afm_len);
+	CHECK_PATH("NimbusRoman-Regular",     NimbusRoman_Regular_afm,     NimbusRoman_Regular_afm_len);
+	CHECK_PATH("NimbusRoman-BoldItalic",  NimbusRoman_BoldItalic_afm,  NimbusRoman_BoldItalic_afm_len);
+	CHECK_PATH("NimbusRoman-Bold",        NimbusRoman_Bold_afm,        NimbusRoman_Bold_afm_len);
+	CHECK_PATH("NimbusRoman-Italic",      NimbusRoman_Italic_afm,      NimbusRoman_Italic_afm_len);
+	CHECK_PATH("NimbusMonoPS-Regular",    NimbusMonoPS_Regular_afm,    NimbusMonoPS_Regular_afm_len);
+	CHECK_PATH("NimbusMonoPS-BoldItalic", NimbusMonoPS_BoldItalic_afm, NimbusMonoPS_BoldItalic_afm_len);
+	CHECK_PATH("NimbusMonoPS-Bold",       NimbusMonoPS_Bold_afm,       NimbusMonoPS_Bold_afm_len);
+	CHECK_PATH("NimbusMonoPS-Italic",     NimbusMonoPS_Italic_afm,     NimbusMonoPS_Italic_afm_len);
+	CHECK_PATH("StandardSymbolsPS",       StandardSymbolsPS_afm,       StandardSymbolsPS_afm_len);
+#undef CHECK_PATH
+}
+
 static void ipa_font_add_wmf (wmfAPI* API,wmfFontMap* mapping)
 {	wmfFontmapData* font_data = (wmfFontmapData*) ((wmfFontData*) API->font_data)->user_data;
 
@@ -774,7 +915,7 @@ static void exmlfontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
 
 	void* user_data;
 
-	FILE* in;
+	FILE* in = NULL;
 
 	EXML_FontData exml_data;
 
@@ -791,14 +932,16 @@ static void exmlfontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
 		return;
 	}
 
-	in = fopen (xmlfontmap,"r");
+	if (strcmp (xmlfontmap,WMF_XTRA_FONTMAP) == 0)
+	{	in = fopen (xmlfontmap,"r");
 
-	if (in == 0)
-	{	WMF_DEBUG (API,"unable to open xml-fontmap");
-		FD->max = 0;
-		wmf_free (API,FD->FI);
-		FD->FI = 0;
-		return;
+		if (in == 0)
+		{	WMF_DEBUG (API,"unable to open xml-fontmap");
+			FD->max = 0;
+			wmf_free (API,FD->FI);
+			FD->FI = 0;
+			return;
+		}
 	}
 
 	exml = XML_ParserCreate (0);
@@ -821,20 +964,28 @@ static void exmlfontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
 
 	XML_SetStartElementHandler (exml,exml_start);
 
-	while (fgets (buffer,EXML_BUFSIZE,in))
-	{	length = (int) strlen (buffer);
+	if (in != 0)
+	{	while (fgets (buffer,EXML_BUFSIZE,in))
+		{	length = (int) strlen (buffer);
 
-		if (XML_Parse (exml,buffer,length,0) == 0)
+			if (XML_Parse (exml,buffer,length,0) == 0)
+			{	WMF_DEBUG (API,"expat-xml: error parsing xml fontmap");
+				status = 1;
+				break;
+			}
+		}
+		if (status == 0) XML_Parse (exml,buffer,0,1);
+	}
+	else
+	{	if (XML_Parse (exml,(const char*)fontmap_in,(int)fontmap_in_len,1) == 0)
 		{	WMF_DEBUG (API,"expat-xml: error parsing xml fontmap");
 			status = 1;
-			break;
 		}
 	}
-	if (status == 0) XML_Parse (exml,buffer,0,1);
 
 	XML_ParserFree (exml);
 
-	fclose (in);
+	if (in != 0) fclose (in);
 
 	if (FD->len == 0)
 	{	FD->max = 0;
@@ -945,7 +1096,12 @@ static void xml2fontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
 	xml2_data.API = API;
 	xml2_data.FD = FD;
 
-	ctxt = xmlCreateFileParserCtxt (xmlfontmap);
+	if (strcmp (xmlfontmap,WMF_XTRA_FONTMAP) == 0)
+	{	ctxt = xmlCreateMemoryParserCtxt ((const char*)fontmap_in,(int)fontmap_in_len);
+	}
+	else
+	{	ctxt = xmlCreateFileParserCtxt (xmlfontmap);
+	}
 
 	if (ctxt == 0) return;
 
@@ -1642,29 +1798,72 @@ static FT_Face ipa_font_face_open (wmfAPI* API,char* ps_name,char* glyphs,char* 
 
 	struct stat stat_buf;
 
-	if (stat (glyphs,&stat_buf))
-	{	WMF_ERROR (API,"unable to stat font file:");
-		WMF_ERROR (API,glyphs);
-		API->err = wmf_E_BadFile;
-		return (0);
-	}
+	if (is_local (glyphs))
+	{	const unsigned char* glyphs_data = NULL;
+		unsigned long glyphs_size = 0;
+		get_local_glyphs (glyphs,&glyphs_data,&glyphs_size);
+		if (glyphs_data == NULL || glyphs_size == 0)
+		{	WMF_ERROR (API,"unable to stat font file:");
+			WMF_ERROR (API,glyphs);
+			API->err = wmf_E_BadFile;
+			return (0);
+		}
 
-	if (FT_New_Face (font_data->Library,glyphs,0,&face) != 0)
-	{	WMF_ERROR (API,"Failed to open font:");
-		WMF_ERROR (API,glyphs);
-		API->err = wmf_E_DeviceError;
-		return (0);
+		if (FT_New_Memory_Face (font_data->Library,(const FT_Byte*)glyphs_data,(FT_Long)glyphs_size,0,&face) != 0)
+		{	WMF_ERROR (API,"Failed to open font:");
+			WMF_ERROR (API,glyphs);
+			API->err = wmf_E_DeviceError;
+			return (0);
+		}
+	}
+	else
+	{	if (stat (glyphs,&stat_buf))
+		{	WMF_ERROR (API,"unable to stat font file:");
+			WMF_ERROR (API,glyphs);
+			API->err = wmf_E_BadFile;
+			return (0);
+		}
+
+		if (FT_New_Face (font_data->Library,glyphs,0,&face) != 0)
+		{	WMF_ERROR (API,"Failed to open font:");
+			WMF_ERROR (API,glyphs);
+			API->err = wmf_E_DeviceError;
+			return (0);
+		}
 	}
 
 	if (metrics)
-	{	if (stat (metrics,&stat_buf))
-		{	WMF_DEBUG (API,"unable to stat font metrics file:");
-			WMF_DEBUG (API,metrics);
+	{	if (is_local (metrics))
+		{	const unsigned char* metrics_data = NULL;
+			unsigned long metrics_size = 0;
+			get_local_metrics (metrics,&metrics_data,&metrics_size);
+			if (metrics_data == NULL || metrics_size == 0)
+			{	WMF_DEBUG (API,"unable to stat font metrics file:");
+				WMF_DEBUG (API,metrics);
+			}
+			else
+			{	FT_Open_Args args;
+				memset (&args,0,sizeof(FT_Open_Args));
+				args.flags = FT_OPEN_MEMORY;
+				args.memory_base = (const FT_Byte*)metrics_data;
+				args.memory_size = (FT_Long)metrics_size;
+
+				if (FT_Attach_Stream (face,&args) != 0)
+				{	WMF_DEBUG (API,"unable to load font metrics file:");
+					WMF_DEBUG (API,metrics);
+				}
+			}
 		}
 		else
-		{	if (FT_Attach_File (face,metrics) != 0)
-			{	WMF_DEBUG (API,"unable to load font metrics file:");
+		{	if (stat (metrics,&stat_buf))
+			{	WMF_DEBUG (API,"unable to stat font metrics file:");
 				WMF_DEBUG (API,metrics);
+			}
+			else
+			{	if (FT_Attach_File (face,metrics) != 0)
+				{	WMF_DEBUG (API,"unable to load font metrics file:");
+					WMF_DEBUG (API,metrics);
+				}
 			}
 		}
 	}
@@ -1775,7 +1974,7 @@ static char* ipa_font_path_find (wmfAPI* API,char* file_name)
 		strcat (path,"/");
 		strcat (path,file_name);
 		WMF_DEBUG (API,path);
-		if (stat (path,&stat_buf) == 0) break; /* file exists */
+		if (is_local (path) || stat (path,&stat_buf) == 0) break; /* file exists */
 		i++;
 	}
 

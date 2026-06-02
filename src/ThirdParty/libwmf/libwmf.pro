@@ -48,9 +48,6 @@ SOURCES += \
 HEADERS += \
     $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/fontsprovider.h
 
-RESOURCES += \
-    $${THIRDPARTY_LIBWMF_CONFIG_PATH}/fontsprovider/resources/libwmf_fontsprovider.qrc
-
 # find ./src -name '*.c' | egrep -v "(/src/convert/|/src/extra/trio/|/src/io-|$(egrep -R '^main ' src/extra/gd | sed 's|:.*||' | xargs | sed 's/ /|/g'))" | LANG=C sort | sed 's|^\.|    $${THIRDPARTY_LIBWMF_PATH}| ; s|$| \\|'
 SOURCES += \
     $${THIRDPARTY_LIBWMF_PATH}/src/api.c \
@@ -113,6 +110,33 @@ HEADERS += \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/trio/trio.h \
     $${THIRDPARTY_LIBWMF_PATH}/src/extra/trio/triop.h \
     $${THIRDPARTY_LIBWMF_PATH}/src/font.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusMonoPS-Bold.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusMonoPS-Bold.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusMonoPS-BoldItalic.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusMonoPS-BoldItalic.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusMonoPS-Italic.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusMonoPS-Italic.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusMonoPS-Regular.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusMonoPS-Regular.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusRoman-Bold.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusRoman-Bold.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusRoman-BoldItalic.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusRoman-BoldItalic.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusRoman-Italic.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusRoman-Italic.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusRoman-Regular.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusRoman-Regular.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusSans-Bold.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusSans-Bold.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusSans-BoldItalic.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusSans-BoldItalic.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusSans-Italic.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusSans-Italic.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusSans-Regular.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/NimbusSans-Regular.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/StandardSymbolsPS.afm.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/StandardSymbolsPS.t1.h \
+    $${THIRDPARTY_LIBWMF_PATH}/src/fonts/fontmap.in.h \
     $${THIRDPARTY_LIBWMF_PATH}/src/ipa/eps.h \
     $${THIRDPARTY_LIBWMF_PATH}/src/ipa/eps/bmp.h \
     $${THIRDPARTY_LIBWMF_PATH}/src/ipa/eps/device.h \

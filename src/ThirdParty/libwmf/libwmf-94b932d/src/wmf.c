@@ -25,6 +25,11 @@
 
 #include "wmfdefs.h"
 
+#ifdef WMF_FONTDIR
+#undef WMF_FONTDIR
+#endif
+#define WMF_FONTDIR "@WMF_FONTDIR@"
+
 static void wmf_arg (unsigned long*,wmfAPI_Options*);
 static void wmf_arg_fontdirs (wmfAPI*,wmfAPI_Options*);
 
