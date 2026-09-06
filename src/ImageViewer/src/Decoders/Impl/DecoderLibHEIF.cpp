@@ -108,16 +108,19 @@ public:
     SP()
         : m_dataRef(Q_NULLPTR)
         , m_deleter(Q_NULLPTR)
+        , m_cdeleter(Q_NULLPTR)
     {}
 
     SP(T *dataRef, void (*deleter)(T*))
         : m_dataRef(dataRef)
         , m_deleter(deleter)
+        , m_cdeleter(Q_NULLPTR)
     {}
 
     SP(T *dataRef, void (*deleter)(const T*))
         : m_dataRef(dataRef)
-        , m_deleter((void (*)(T*))deleter)
+        , m_deleter(Q_NULLPTR)
+        , m_cdeleter(deleter)
     {}
 
     ~SP()
@@ -134,13 +137,19 @@ public:
     {
         std::swap(m_dataRef, other.m_dataRef);
         std::swap(m_deleter, other.m_deleter);
+        std::swap(m_cdeleter, other.m_cdeleter);
     }
 
     void reset()
     {
-        if(m_dataRef && m_deleter)
-            m_deleter(m_dataRef);
-        m_dataRef = Q_NULLPTR;
+        if(m_dataRef)
+        {
+            if(m_deleter)
+                m_deleter(m_dataRef);
+            if(m_cdeleter)
+                m_cdeleter(m_dataRef);
+            m_dataRef = Q_NULLPTR;
+        }
         m_deleter = Q_NULLPTR;
     }
 
@@ -149,16 +158,21 @@ public:
         reset();
         m_dataRef = dataRef;
         m_deleter = deleter;
+        m_cdeleter = Q_NULLPTR;
     }
 
     void reset(T *dataRef, void (*deleter)(const T*))
     {
-        reset(dataRef, (void (*)(T*))deleter);
+        reset();
+        m_dataRef = dataRef;
+        m_deleter = Q_NULLPTR;
+        m_cdeleter = deleter;
     }
 
 private:
     T *m_dataRef;
     void (*m_deleter)(T*);
+    void (*m_cdeleter)(const T*);
 };
 
 class HeifAnimationProvider : public IAnimationProvider
