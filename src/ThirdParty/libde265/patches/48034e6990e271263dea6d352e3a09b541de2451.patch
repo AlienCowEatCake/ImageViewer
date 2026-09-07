@@ -1,0 +1,79 @@
+From 48034e6990e271263dea6d352e3a09b541de2451 Mon Sep 17 00:00:00 2001
+From: Dirk Lemstra <dirk@lemstra.org>
+Date: Sat, 30 May 2026 14:18:18 +0200
+Subject: [PATCH] Refactor fill_scan_pos to fill entire table in a single pass
+
+Replace the per-entry reverse-search loop in fill_scan_pos with a
+table-filling function (fill_scan_pos_table) that iterates over all
+sub-blocks and scan positions once, directly computing and storing
+each entry's subBlock and scanPos values.
+
+This eliminates the O(n^2) search behaviour of the previous approach
+and simplifies the call site in init_scan_orders by removing the
+redundant x/y loops.
+---
+ libde265/scan.cc | 38 ++++++++++++++------------------------
+ 1 file changed, 14 insertions(+), 24 deletions(-)
+
+diff --git a/libde265/scan.cc b/libde265/scan.cc
+index b29e283f9..f5db960d5 100644
+--- a/libde265/scan.cc
++++ b/libde265/scan.cc
+@@ -105,30 +105,25 @@ scan_position get_scan_position(int x,int y, int scanIdx, int log2BlkSize)
+   return scanpos[scanIdx][log2BlkSize][ y*(1<<log2BlkSize) + x ];
+ }
+ 
+-static void fill_scan_pos(scan_position* pos, int x,int y,int scanIdx, int log2TrafoSize)
++static void fill_scan_pos_table(scan_position* pos, int scanIdx, int log2TrafoSize)
+ {
+-  int lastScanPos = 16;
+-  int lastSubBlock = (1<<(log2TrafoSize-2)) * (1<<(log2TrafoSize-2)) -1;
++  int numSubBlocks = (1<<(log2TrafoSize-2)) * (1<<(log2TrafoSize-2));
++  int blkSize = 1 << log2TrafoSize;
+ 
+   const position* ScanOrderSub = get_scan_order(log2TrafoSize-2, scanIdx);
+   const position* ScanOrderPos = get_scan_order(2, scanIdx);
+ 
+-  int xC,yC;
+-  do {
+-    if (lastScanPos==0) {
+-      lastScanPos=16;
+-      lastSubBlock--;
++  for (int sb = 0; sb < numSubBlocks; sb++)
++    {
++      position S = ScanOrderSub[sb];
++      for (int sp = 0; sp < 16; sp++)
++        {
++          int xC = (S.x<<2) + ScanOrderPos[sp].x;
++          int yC = (S.y<<2) + ScanOrderPos[sp].y;
++          pos[yC * blkSize + xC].subBlock = sb;
++          pos[yC * blkSize + xC].scanPos  = sp;
++        }
+     }
+-    lastScanPos--;
+-
+-    position S = ScanOrderSub[lastSubBlock];
+-    xC = (S.x<<2) + ScanOrderPos[lastScanPos].x;
+-    yC = (S.y<<2) + ScanOrderPos[lastScanPos].y;
+-
+-  } while ( (xC != x) || (yC != y));
+-
+-  pos->subBlock = lastSubBlock;
+-  pos->scanPos  = lastScanPos;
+ }
+ 
+ 
+@@ -141,12 +136,7 @@ void init_scan_orders()
+       init_scan_d(scan_d[log2size], 1<<log2size);
+     }
+ 
+-
+   for (int log2size=2;log2size<=5;log2size++)
+     for (int scanIdx=0;scanIdx<3;scanIdx++)
+-      for (int y=0;y<(1<<log2size);y++)
+-        for (int x=0;x<(1<<log2size);x++)
+-          {
+-            fill_scan_pos(&scanpos[scanIdx][log2size][ y*(1<<log2size) + x ],x,y,scanIdx,log2size);
+-          }
++      fill_scan_pos_table(scanpos[scanIdx][log2size], scanIdx, log2size);
+ }
