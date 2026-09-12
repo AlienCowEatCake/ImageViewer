@@ -1,4 +1,4 @@
-From 561d443923387fc99edc86917c9a07c28ac72582 Mon Sep 17 00:00:00 2001
+From e0dc24b459fbb9ea3fcb33d63e7d1144241c87ba Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 24 May 2026 18:22:54 +0700
 Subject: [PATCH 2/2] Remove static_assert usage from C code
@@ -12,10 +12,10 @@ Subject: [PATCH 2/2] Remove static_assert usage from C code
  5 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/av1/av1_cx_iface.c b/av1/av1_cx_iface.c
-index f9fe5ea6cf..eb0e476c63 100644
+index b43c96d7a1..7342b6a741 100644
 --- a/av1/av1_cx_iface.c
 +++ b/av1/av1_cx_iface.c
-@@ -4392,7 +4392,7 @@ static aom_codec_err_t encoder_set_option(aom_codec_alg_priv_t *ctx,
+@@ -4434,7 +4434,7 @@ static aom_codec_err_t encoder_set_option(aom_codec_alg_priv_t *ctx,
    size_t len = strlen(name) + strlen(value) + 4;
    char *const err_string = ctx->ppi->error.detail;
  
@@ -87,5 +87,5 @@ index a1ab1bf7ab..10f1d26a2b 100644
      memcpy(scaling_lut.cr, scaling_lut.y, sizeof(scaling_lut.y));
    } else {
 -- 
-2.47.3
+2.55.0
 

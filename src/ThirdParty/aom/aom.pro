@@ -10,7 +10,7 @@ QT -= gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.14.1
+THIRDPARTY_AOM_PATH = $${PWD}/libaom-3.15.0
 THIRDPARTY_AOM_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -266,6 +266,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/bitwriter_buffer.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/blend.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/butteraugli.h \
+    $${THIRDPARTY_AOM_PATH}/aom_dsp/convolve_hwy.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entcode.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entdec.h \
     $${THIRDPARTY_AOM_PATH}/aom_dsp/entenc.h \
@@ -377,6 +378,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_common_int.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm1d_cfg.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/av1_inv_txfm2d.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_loopfilter.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/av1_txfm.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/blockd.h \
@@ -387,6 +389,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/av1/common/common.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/common_data.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/convolve.h \
+    $${THIRDPARTY_AOM_PATH}/av1/common/convolve_2d_sr_hwy.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/debugmodes.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/entropy.h \
     $${THIRDPARTY_AOM_PATH}/av1/common/entropymode.h \
@@ -611,11 +614,14 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/bit_set.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/cache_control.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/algo/copy-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/algo/count-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/algo/find-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/algo/minmax-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/algo/transform-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/bit_pack/bit_pack-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/dot/dot-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/image/image.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/math/fast_math-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/math/math-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/matvec/matvec-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/random/random-inl.h \
@@ -632,11 +638,8 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/thread_pool/spin.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/thread_pool/thread_pool.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/thread_pool/topology.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/contrib/unroller/unroller-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/detect_compiler_arch.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/detect_targets.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/examples/skeleton-inl.h \
-    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/examples/skeleton.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/foreach_target.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/highway.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/highway_export.h \
@@ -646,6 +649,7 @@ HEADERS += \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/emu128-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/generic_ops-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/inside-inl.h \
+    $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/loongarch_lasx-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/loongarch_lsx-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/ppc_vsx-inl.h \
     $${THIRDPARTY_AOM_PATH}/third_party/highway/hwy/ops/rvv-inl.h \
