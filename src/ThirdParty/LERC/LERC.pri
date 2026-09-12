@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_lerc {
 
-        THIRDPARTY_LERC_PATH = $${PWD}/lerc-js_v4.1.1
+        THIRDPARTY_LERC_PATH = $${PWD}/lerc-4.2.0
 
         INCLUDEPATH += $${THIRDPARTY_LERC_PATH}/src/LercLib/include
         DEPENDPATH += $${THIRDPARTY_LERC_PATH}/src/LercLib/include

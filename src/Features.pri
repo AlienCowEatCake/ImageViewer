@@ -529,6 +529,9 @@ disable_zlib : !system_libpng {
 # LERC options:
 #    disable_lerc
 #    system_lerc
+disable_cxx11 : !system_lerc {
+    CONFIG *= disable_lerc
+}
 *msvc* : !system_lerc : lessThan(MSVC_VERSION, 2013) {
     CONFIG *= disable_lerc
 }

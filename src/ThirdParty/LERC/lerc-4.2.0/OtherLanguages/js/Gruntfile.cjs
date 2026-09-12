@@ -1,0 +1,137 @@
+const copyright = `/*! Lerc {version}
+Copyright 2015 - 2026 Esri
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+A local copy of the license and additional notices are located with the
+source distribution at:
+http://github.com/Esri/lerc/
+Contributors:  Thomas Maurer, Wenxue Ju
+*/
+`;
+
+// eslint-disable-next-line no-undef
+module.exports = function (grunt) {
+  const version = grunt.file.readJSON("package.json").version;
+  const bundeFormat = grunt.option("format") || "umd";
+  const outputSurfix = bundeFormat === "umd" ? "" : "." + bundeFormat;
+  const distFolder = "dist";
+  const lercBundle = `${distFolder}/LercDecode${outputSurfix}.js`;
+  grunt.initConfig({
+    eslint: {
+      options: {
+        quiet: true,
+        fix: grunt.option("fix")
+      },
+      target: ["src/**/*.ts"]
+    },
+    clean: {
+      dist: [`${distFolder}/**/*.*`]
+    },
+    copy: {
+      dist: {
+        files: [
+          {
+            src: "src/LercDecode.d.ts",
+            dest: `${distFolder}/LercDecode.d.ts`
+          },
+          {
+            src: "src/lerc-wasm.wasm",
+            dest: `${distFolder}/lerc-wasm.wasm`
+          },
+          {
+            src: `${distFolder}/LercDecode.es.js`,
+            dest: `${distFolder}/LercDecode.es.js`
+          },
+          {
+            src: `${distFolder}/LercDecode.js`,
+            dest: `${distFolder}/LercDecode.js`
+          },
+          {
+            expand: true,
+            src: ["package.json", "README.*", "CHANGELOG.*"],
+            dest: `${distFolder}/`
+          }
+        ],
+        options: {
+          processContentExclude: "**/*.wasm",
+          process: (content, srcpath) => {
+            // workaround webpack dynamic import issue to remove the need of custom resolve fallback config for "module"
+            if (srcpath.includes(`${distFolder}/LercDecode.es.js`)) {
+              return content.replace('await import("module")', 'await import(/*webpackIgnore:true*/"module")');
+            }
+            // fix umd document.currentScript issue. this may also be fixed by import meta handling in rollup.
+            if (srcpath.includes(`${distFolder}/LercDecode.js`)) {
+              return content
+                .replace(/document.currentScript/g, "currentScript")
+                .replace(
+                  '"use strict";async',
+                  '"use strict";var currentScript=globalThis.document?.currentScript;async'
+                );
+            }
+            if (!srcpath.includes("package.json")) {
+              return content;
+            }
+            const json = { ...JSON.parse(content), dependencies: {}, devDependencies: {}, scripts: {} };
+            delete json.type;
+            return JSON.stringify(json, null, 2);
+          }
+        }
+      },
+      dev: {
+        files: [
+          {
+            src: "src/lerc-wasm.wasm",
+            dest: `${distFolder}/lerc-wasm.wasm`
+          }
+        ]
+      }
+    },
+    rollup: {
+      options: {
+        banner: copyright.replace("{version}", version),
+        name: "Lerc",
+        format: bundeFormat,
+        sourcemap: false
+        // useStrict: false
+      },
+      dist: {
+        files: [
+          {
+            dest: lercBundle,
+            src: "src/Lerc.js"
+          }
+        ]
+      }
+    },
+    terser: {
+      options: {},
+      dist: {
+        files: [
+          {
+            dest: lercBundle,
+            src: lercBundle
+          }
+        ]
+      }
+    }
+  });
+
+  //grunt.task.loadTasks
+
+  grunt.loadNpmTasks("grunt-contrib-clean");
+  grunt.loadNpmTasks("grunt-contrib-copy");
+  grunt.loadNpmTasks("grunt-contrib-concat");
+  grunt.loadNpmTasks("grunt-rollup");
+  grunt.loadNpmTasks("grunt-eslint");
+  grunt.loadNpmTasks("grunt-terser");
+
+  grunt.registerTask("default", ["eslint", "rollup", "copy:dev"]);
+  grunt.registerTask("dist", ["default", "terser", "copy:dist"]);
+};
