@@ -1,0 +1,25 @@
+From adc8bc2c12af5ebb71a6c229fe89f32d6b67e08e Mon Sep 17 00:00:00 2001
+From: Peter Zhigalov <peter.zhigalov@gmail.com>
+Date: Sun, 13 Sep 2026 04:25:23 +0700
+Subject: [PATCH 2/2] Remove static_assert usage from C code
+
+---
+ src/read.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/read.c b/src/read.c
+index a6a33d81..39c18b42 100644
+--- a/src/read.c
++++ b/src/read.c
+@@ -4527,7 +4527,7 @@ static avifResult avifParseMinimizedImageBox(avifDecoderData * data,
+         colorItem->premByID = alphaIsPremultiplied;
+         avifProperty * alphaAuxProp = avifMetaCreateProperty(meta, "auxC");
+         AVIF_CHECKERR(alphaAuxProp, AVIF_RESULT_OUT_OF_MEMORY);
+-        static_assert(sizeof(alphaAuxProp->u.auxC.auxType) >= sizeof(AVIF_URN_ALPHA0), "");
++        assert(sizeof(alphaAuxProp->u.auxC.auxType) >= sizeof(AVIF_URN_ALPHA0));
+         memcpy(alphaAuxProp->u.auxC.auxType, AVIF_URN_ALPHA0, sizeof(AVIF_URN_ALPHA0));
+         AVIF_CHECKERR(avifDecoderItemAddProperty(alphaItem, alphaAuxProp), AVIF_RESULT_OUT_OF_MEMORY);
+ 
+-- 
+2.55.0
+
