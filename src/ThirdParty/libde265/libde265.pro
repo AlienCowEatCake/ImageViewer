@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBDE265_PATH = $${PWD}/libde265-1.0.19
+THIRDPARTY_LIBDE265_PATH = $${PWD}/libde265-1.1.3
 THIRDPARTY_LIBDE265_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -35,6 +35,8 @@ SOURCES += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/decctx.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/dpb.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback-dct.cc \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback-deblk.cc \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback-intrapred.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback-motion.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback.cc \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/image-io.cc \
@@ -72,6 +74,8 @@ HEADERS += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/decctx.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/dpb.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback-dct.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback-deblk.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback-intrapred.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback-motion.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/fallback.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/image-io.h \
@@ -96,8 +100,13 @@ HEADERS += \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/vps.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/vui.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse-dct.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse-deblk.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse-intrapred.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse-motion.h \
     $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/sse.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/transform-avx2.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/transform-avx512.h \
+    $${THIRDPARTY_LIBDE265_PATH}/libde265/x86/transform-dct-tables.h \
     $${THIRDPARTY_LIBDE265_CONFIG_PATH}/config.h \
     $${THIRDPARTY_LIBDE265_CONFIG_PATH}/libde265/de265-version.h
 
