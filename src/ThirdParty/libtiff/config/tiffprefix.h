@@ -86,6 +86,7 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define TIFFGetField tp_TIFFGetField
 #define TIFFGetFieldDefaulted tp_TIFFGetFieldDefaulted
 #define TIFFGetMapFileProc tp_TIFFGetMapFileProc
+#define TIFFGetMaxCompressionRatio tp_TIFFGetMaxCompressionRatio
 #define TIFFGetMode tp_TIFFGetMode
 #define TIFFGetReadProc tp_TIFFGetReadProc
 #define TIFFGetSeekProc tp_TIFFGetSeekProc
@@ -240,8 +241,11 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define TIFFYCbCrToRGBInit tp_TIFFYCbCrToRGBInit
 #define TIFFYCbCrtoRGB tp_TIFFYCbCrtoRGB
 #define XYZtoRGB24 tp_XYZtoRGB24
+#define _TIFFAdd64 tp__TIFFAdd64
+#define _TIFFAddSSize tp__TIFFAddSSize
 #define _TIFFBuiltinCODECS tp__TIFFBuiltinCODECS
 #define _TIFFCastUInt64ToSSize tp__TIFFCastUInt64ToSSize
+#define _TIFFCastUInt64ToUInt32 tp__TIFFCastUInt64ToUInt32
 #define _TIFFCheckDirNumberAndOffset tp__TIFFCheckDirNumberAndOffset
 #define _TIFFCheckFieldIsValidForCodec tp__TIFFCheckFieldIsValidForCodec
 #define _TIFFCheckMalloc tp__TIFFCheckMalloc
@@ -249,6 +253,9 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define _TIFFClampDoubleToFloat tp__TIFFClampDoubleToFloat
 #define _TIFFClampDoubleToUInt32 tp__TIFFClampDoubleToUInt32
 #define _TIFFCleanupIFDOffsetAndNumberMaps tp__TIFFCleanupIFDOffsetAndNumberMaps
+#define _TIFFComputeBitOffset tp__TIFFComputeBitOffset
+#define _TIFFComputeRowOffset tp__TIFFComputeRowOffset
+#define _TIFFComputeRowSize64 tp__TIFFComputeRowSize64
 #define _TIFFCreateAnonField tp__TIFFCreateAnonField
 #define _TIFFDefaultStripSize tp__TIFFDefaultStripSize
 #define _TIFFDefaultTileSize tp__TIFFDefaultTileSize
@@ -279,10 +286,12 @@ nm -C libtp_libtiff.a | grep -E '^[a-z0-9]{16} [TDBRS]' | sed 's|^.* . _\(.*\)$|
 #define _TIFFReadEncodedTileAndAllocBuffer tp__TIFFReadEncodedTileAndAllocBuffer
 #define _TIFFReadTileAndAllocBuffer tp__TIFFReadTileAndAllocBuffer
 #define _TIFFRemoveEntryFromDirectoryListByOffset tp__TIFFRemoveEntryFromDirectoryListByOffset
+#define _TIFFResetTifDirAndInitStrileCounters tp__TIFFResetTifDirAndInitStrileCounters
 #define _TIFFRewriteField tp__TIFFRewriteField
 #define _TIFFSeekOK tp__TIFFSeekOK
 #define _TIFFSetDefaultCompressionState tp__TIFFSetDefaultCompressionState
 #define _TIFFSetupFields tp__TIFFSetupFields
+#define _TIFFStrileSize64 tp__TIFFStrileSize64
 #define _TIFFSwab16BitData tp__TIFFSwab16BitData
 #define _TIFFSwab24BitData tp__TIFFSwab24BitData
 #define _TIFFSwab32BitData tp__TIFFSwab32BitData

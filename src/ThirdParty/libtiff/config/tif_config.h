@@ -30,7 +30,10 @@
 
 /* Define to 1 if you have the declaration of `optarg', and to 0 if you don't.
    */
+/* #undef HAVE_DECL_OPTARG */
+#ifndef HAVE_DECL_OPTARG
 #define HAVE_DECL_OPTARG 0
+#endif
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
