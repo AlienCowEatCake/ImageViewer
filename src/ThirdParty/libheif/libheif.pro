@@ -10,7 +10,7 @@ TARGET = tp_libheif
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.22.1
+THIRDPARTY_LIBHEIF_PATH = $${PWD}/libheif-1.23.4
 THIRDPARTY_LIBHEIF_INCLUDE_PATH = $${PWD}/include
 
 include(../../Features.pri)
@@ -240,6 +240,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_entity_groups.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_error.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_experimental.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_export.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_image.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_image_handle.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/api/libheif/heif_items.h \
@@ -348,6 +349,7 @@ HEADERS += \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_vvdec.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/decoder_webcodecs.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_aom.h \
+    $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_input_check.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_jpeg.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_kvazaar.h \
     $${THIRDPARTY_LIBHEIF_PATH}/libheif/plugins/encoder_mask.h \

@@ -1,4 +1,4 @@
-From e37643eec202317f0b05416625c167f20957e519 Mon Sep 17 00:00:00 2001
+From a12b7b15a5242fb47520c51090e39caa1b36db4f Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 21 Dec 2022 23:23:25 +0700
 Subject: [PATCH 2/4] Revert "Enable wide chars for all Windows"
@@ -11,10 +11,10 @@ This reverts commit 0d7c5a181905eeb6b5bc2c8f91012a2abb0c5bfc.
  3 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/libheif/api/libheif/heif_context.cc b/libheif/api/libheif/heif_context.cc
-index 04cb516f..bcf4a7b9 100644
+index 58ed347b..0afa9138 100644
 --- a/libheif/api/libheif/heif_context.cc
 +++ b/libheif/api/libheif/heif_context.cc
-@@ -241,7 +241,7 @@ static heif_error heif_file_writer_write(heif_context* ctx,
+@@ -247,7 +247,7 @@ static heif_error heif_file_writer_write(heif_context* ctx,
  {
    const char* filename = static_cast<const char*>(userdata);
  
@@ -24,7 +24,7 @@ index 04cb516f..bcf4a7b9 100644
  #else
    std::ofstream ostr(filename, std::ios_base::binary);
 diff --git a/libheif/file.cc b/libheif/file.cc
-index eb90f61e..f69bd24c 100644
+index 725aef20..07c4764e 100644
 --- a/libheif/file.cc
 +++ b/libheif/file.cc
 @@ -44,13 +44,13 @@
@@ -43,7 +43,7 @@ index eb90f61e..f69bd24c 100644
  #endif
  
  
-@@ -105,7 +105,7 @@ std::shared_ptr<Box_infe> HeifFile::get_infe_box(heif_item_id ID)
+@@ -108,7 +108,7 @@ std::shared_ptr<Box_infe> HeifFile::get_infe_box(heif_item_id ID)
  
  Error HeifFile::read_from_file(const char* input_filename)
  {
@@ -52,8 +52,8 @@ index eb90f61e..f69bd24c 100644
    auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(convert_utf8_path_to_utf16(input_filename).c_str(), std::ios_base::binary));
  #else
    auto input_stream_istr = std::unique_ptr<std::istream>(new std::ifstream(input_filename, std::ios_base::binary));
-@@ -1444,7 +1444,7 @@ void HeifFile::set_auxC_property(heif_item_id id, const std::string& type)
-   m_ipma_box->add_property_for_item_ID(id, Box_ipma::PropertyAssociation{true, uint16_t(index + 1)});
+@@ -1528,7 +1528,7 @@ Error HeifFile::set_auxC_property(heif_item_id id, const std::string& type)
+   return Error::Ok;
  }
  
 -#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
@@ -62,12 +62,12 @@ index eb90f61e..f69bd24c 100644
  {
    std::wstring ret;
 diff --git a/libheif/file.h b/libheif/file.h
-index 34dc2502..617896e2 100644
+index 247778c2..dd34b048 100644
 --- a/libheif/file.h
 +++ b/libheif/file.h
-@@ -248,7 +248,7 @@ public:
+@@ -252,7 +252,7 @@ public:
  
-   void set_auxC_property(heif_item_id id, const std::string& type);
+   Error set_auxC_property(heif_item_id id, const std::string& type);
  
 -#if defined(__MINGW32__) || defined(__MINGW64__) || defined(_MSC_VER)
 +#ifdef _MSC_VER
@@ -75,5 +75,5 @@ index 34dc2502..617896e2 100644
  #endif
  
 -- 
-2.47.3
+2.55.0
 
