@@ -10,7 +10,7 @@ TARGET = tp_LibRaw
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_LIBRAW_PATH = $${PWD}/LibRaw-0.22.1
+THIRDPARTY_LIBRAW_PATH = $${PWD}/LibRaw-0.22.2
 
 include(../../Features.pri)
 include(../CommonSettings.pri)
@@ -21,6 +21,7 @@ include(../zlib/zlib.pri)
 INCLUDEPATH = $${THIRDPARTY_LIBRAW_PATH} $${INCLUDEPATH}
 
 DEFINES += LIBRAW_NOTHREADS USE_X3FTOOLS USE_6BY9RPI
+DEFINES += LIBRAW_USE_CALLOC_INSTEAD_OF_MALLOC LIBRAW_CALLOC_RAWSTORE
 
 !disable_libjpeg {
     DEFINES += USE_JPEG USE_JPEG8
