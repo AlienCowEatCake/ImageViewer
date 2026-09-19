@@ -158,6 +158,10 @@ static void Clipping (wmfAPI*,wmfRegion*,wmfRegion*,wmfD_Rect*,U16);
 /* In: dc.h
  */
 static wmfDC* dc_copy (wmfAPI*,wmfDC*);
+static void   dc_free (wmfAPI*,wmfDC*);
+
+static void dc_deselect_object (wmfAPI*,wmfDC*,wmfObject*);
+static void dc_release_object (wmfAPI*,wmfObject*);
 
 static void   dc_stack_push (wmfAPI*,wmfDC*);
 static wmfDC* dc_stack_pop (wmfAPI*);
@@ -212,7 +216,10 @@ static int meta_palette_create (wmfAPI*);
 static int meta_delete (wmfAPI*,wmfRecord*);
 static int meta_unused (wmfAPI*,wmfRecord*);
 
-static void polypoly_construct (wmfAPI*,wmfPolyPoly_t*,wmfPolyLine_t*,U16);
+static U16  polypoly_point_count (wmfPolyPoly_t*,U16);
+static U16  polypoly_closest_point (wmfPolyPoly_t*,U16,U16);
+static void polypoly_append_points (wmfPolyPoly_t*,wmfPolyLine_t*,U16,U16,U16);
+static void polypoly_construct (wmfPolyPoly_t*,wmfPolyLine_t*);
 
 static void diagnose_object (wmfAPI*,unsigned int,wmfObject*);
 

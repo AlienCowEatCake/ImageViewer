@@ -274,6 +274,18 @@ static int fig_brushstyle (wmfAPI* API,wmfDC* dc)
 
 		bmp = WMF_BRUSH_BITMAP (brush);
 
+		if (bmp->data == 0)
+		{	if (API->flags & WMF_OPT_IGNORE_NONFATAL)
+			{	WMF_DEBUG (API,"Attempt to fill with non-existent pattern!");
+				break;
+			}
+			else
+			{	WMF_ERROR (API,"Attempt to fill with non-existent pattern!");
+				API->err = wmf_E_Glitch;
+				break;
+			}
+		}
+
 		fillstyle = fig_bmp_pattern (API,bmp->data);
 	break;
 

@@ -34,6 +34,11 @@ WMFEXAMPLES = \
 	examples/sample2.wmf \
 	examples/text.wmf
 
-EXTRA_DIST = AUTHORS BUILDING CREDITS NEWS README $(WMFEXAMPLES) \
+WMFFUZZ = \
+	fuzz/build.sh \
+	fuzz/wmf_fuzzer.c \
+	fuzz/wmf_fuzzer.options
+
+EXTRA_DIST = AUTHORS BUILDING CREDITS NEWS README $(WMFEXAMPLES) $(WMFFUZZ) \
 	libwmf.spec \
 	patches/acconfig.h

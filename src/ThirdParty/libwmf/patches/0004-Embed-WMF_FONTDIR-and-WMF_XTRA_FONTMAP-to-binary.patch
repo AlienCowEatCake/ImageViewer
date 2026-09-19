@@ -1,4 +1,4 @@
-From d6c01767ed931d42cdd6b456da30696a989445d6 Mon Sep 17 00:00:00 2001
+From 38990d95f63e12fe249066eefc762e62584d00ab Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 3 Jun 2026 00:09:35 +0700
 Subject: [PATCH 4/4] Embed WMF_FONTDIR and WMF_XTRA_FONTMAP to binary
@@ -63,7 +63,7 @@ Subject: [PATCH 4/4] Embed WMF_FONTDIR and WMF_XTRA_FONTMAP to binary
  create mode 100644 src/fonts/fontmap.in.h
 
 diff --git a/src/font.c b/src/font.c
-index 27eaa44..fd6c86c 100644
+index 3bade48..a4cf3a8 100644
 --- a/src/font.c
 +++ b/src/font.c
 @@ -35,6 +35,147 @@
@@ -214,7 +214,7 @@ index 27eaa44..fd6c86c 100644
  static void ipa_font_add_wmf (wmfAPI* API,wmfFontMap* mapping)
  {	wmfFontmapData* font_data = (wmfFontmapData*) ((wmfFontData*) API->font_data)->user_data;
  
-@@ -774,7 +915,7 @@ static void exmlfontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
+@@ -778,7 +919,7 @@ static void exmlfontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
  
  	void* user_data;
  
@@ -223,7 +223,7 @@ index 27eaa44..fd6c86c 100644
  
  	EXML_FontData exml_data;
  
-@@ -791,14 +932,16 @@ static void exmlfontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
+@@ -795,14 +936,16 @@ static void exmlfontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
  		return;
  	}
  
@@ -247,7 +247,7 @@ index 27eaa44..fd6c86c 100644
  	}
  
  	exml = XML_ParserCreate (0);
-@@ -821,20 +964,28 @@ static void exmlfontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
+@@ -825,20 +968,28 @@ static void exmlfontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
  
  	XML_SetStartElementHandler (exml,exml_start);
  
@@ -282,7 +282,7 @@ index 27eaa44..fd6c86c 100644
  
  	if (FD->len == 0)
  	{	FD->max = 0;
-@@ -945,7 +1096,12 @@ static void xml2fontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
+@@ -949,7 +1100,12 @@ static void xml2fontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
  	xml2_data.API = API;
  	xml2_data.FD = FD;
  
@@ -296,7 +296,7 @@ index 27eaa44..fd6c86c 100644
  
  	if (ctxt == 0) return;
  
-@@ -1642,30 +1798,73 @@ static FT_Face ipa_font_face_open (wmfAPI* API,char* ps_name,char* glyphs,char*
+@@ -1636,30 +1792,73 @@ static FT_Face ipa_font_face_open (wmfAPI* API,char* ps_name,char* glyphs,char*
  
  	struct stat stat_buf;
  
@@ -385,7 +385,7 @@ index 27eaa44..fd6c86c 100644
  		}
  	}
  
-@@ -1775,7 +1974,7 @@ static char* ipa_font_path_find (wmfAPI* API,char* file_name)
+@@ -1768,7 +1967,7 @@ static char* ipa_font_path_find (wmfAPI* API,char* file_name)
  		strcat (path,"/");
  		strcat (path,file_name);
  		WMF_DEBUG (API,path);
@@ -86132,5 +86132,5 @@ index 7dc996d..85067de 100644
  static void wmf_arg_fontdirs (wmfAPI*,wmfAPI_Options*);
  
 -- 
-2.54.0
+2.55.0
 

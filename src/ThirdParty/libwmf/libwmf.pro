@@ -10,7 +10,7 @@ QT += core gui
 CONFIG -= warn_on
 CONFIG += exceptions_off rtti_off warn_off
 
-THIRDPARTY_LIBWMF_PATH = $${PWD}/libwmf-94b932d
+THIRDPARTY_LIBWMF_PATH = $${PWD}/libwmf-a916f30
 THIRDPARTY_LIBWMF_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)

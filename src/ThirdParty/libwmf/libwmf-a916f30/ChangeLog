@@ -1,3 +1,13 @@
+v. 0.2.16
+	* license file corrected to LGPL, as always intended
+	* many parsing and resource handling corrections in the player
+	* eight Coverity reports resolved
+	* new wmf_gd_get_image_pixels(), and support for the current system libgd
+	* symbols exported for Windows and MSYS2 builds
+	* macOS 26 build fixed
+	* a fuzzer added, and wider test coverage
+	* zlib and png found through pkg-config, pixbuf can be disabled on its own
+
 v. 0.2.15
 	* BMP image parsing fixes in embedded DIBs
 	* record size validation for polyline, polygon, polypolygon and text records

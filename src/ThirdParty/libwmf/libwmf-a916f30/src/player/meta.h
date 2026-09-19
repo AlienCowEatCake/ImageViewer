@@ -99,6 +99,15 @@ static int meta_orgext (wmfAPI* API,wmfRecord* Record)
 	return (changed);
 }
 
+/* Returns the value clamped to the S32 range, so the conversion below is in range for whatever
+ * scale a metafile asks for.
+ */
+static S32 clamp_to_S32 (double value)
+{	if (value > (double) INT32_MAX) return ((S32) INT32_MAX);
+	if (value < (double) INT32_MIN) return ((S32) INT32_MIN);
+	return ((S32) value);
+}
+
 static int meta_scale (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
@@ -138,13 +147,13 @@ static int meta_scale (wmfAPI* API,wmfRecord* Record)
 	switch (Record->function)
 	{
 	case META_SCALEWINDOWEXT:
-		P->dc->Window.width  = (S32) (((double) P->dc->Window.width  * x2) / x1);
-		P->dc->Window.height = (S32) (((double) P->dc->Window.height * y2) / y1);
+		P->dc->Window.width  = clamp_to_S32 (((double) P->dc->Window.width  * x2) / x1);
+		P->dc->Window.height = clamp_to_S32 (((double) P->dc->Window.height * y2) / y1);
 	break;
 
 	case META_SCALEVIEWPORTEXT:
-		P->Viewport_Width  = (S32) (((double) P->Viewport_Width  * x2) / x1);
-		P->Viewport_Height = (S32) (((double) P->Viewport_Height * y2) / y1);
+		P->Viewport_Width  = clamp_to_S32 (((double) P->Viewport_Width  * x2) / x1);
+		P->Viewport_Height = clamp_to_S32 (((double) P->Viewport_Height * y2) / y1);
 	break;
 
 	default:
@@ -870,7 +879,7 @@ static int meta_polygons (wmfAPI* API,wmfRecord* Record)
 	{	fprintf (stderr,",%lu",(unsigned long) polypoly.npoly);
 	}
 
-	polypoly.pt = (wmfD_Coord**) wmf_malloc (API, polypoly.npoly * sizeof (wmfD_Coord*));
+	polypoly.pt = (wmfD_Coord**) wmf_calloc (API, polypoly.npoly, sizeof (wmfD_Coord*));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
@@ -895,22 +904,12 @@ static int meta_polygons (wmfAPI* API,wmfRecord* Record)
 		{	WMF_DEBUG (API,"strange polygon in polypolygon list; skipping record...");
 			skip_record = 1;
 		}
-		if (skip_record)
-		{	polypoly.pt[i] = 0;
-		}
-		else
-		{	polypoly.pt[i] = (wmfD_Coord*) wmf_malloc (API, polypoly.count[i] * sizeof (wmfD_Coord));
-			if (ERR (API)) break;
-		}
 	}
 	int too_short = Record->size < 1 + polypoly.npoly + 2 * (uint64_t) num_pars;
 	if (skip_record || too_short)
 	{	if (too_short)
 		{	WMF_ERROR (API,"Bad record - too few parameters for polypolygon!");
 			API->err = wmf_E_BadFormat;
-		}
-		for (i = 0; i < polypoly.npoly; i++)
-		{	if (polypoly.pt[i]) wmf_free (API, polypoly.pt[i]);
 		}
 		wmf_free (API, polypoly.pt);
 		wmf_free (API, polypoly.count);
@@ -919,6 +918,17 @@ static int meta_polygons (wmfAPI* API,wmfRecord* Record)
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
 		return (changed);
+	}
+
+/* The record holds two parameters for every point, so the point arrays together
+ * are about twice the size of the record.
+ */
+	for (i = 0; i < polypoly.npoly; i++)
+	{	polypoly.pt[i] = (wmfD_Coord*) wmf_malloc (API, polypoly.count[i] * sizeof (wmfD_Coord));
+		if (ERR (API))
+		{	WMF_DEBUG (API,"bailing...");
+			return (changed);
+		}
 	}
 
 	if (SCAN (API) && DIAG (API))
@@ -986,7 +996,7 @@ static int meta_polygons (wmfAPI* API,wmfRecord* Record)
 				return (changed);
 			}
 
-			polypoly_construct (API, &polypoly, &polyline, 0);
+			polypoly_construct (&polypoly, &polyline);
 
 			if (polyline.count > 2) FR->draw_polygon (API,&polyline);
 
@@ -1018,54 +1028,34 @@ static int meta_polygons (wmfAPI* API,wmfRecord* Record)
 	return (changed);
 }
 
-static void polypoly_construct (wmfAPI* API,wmfPolyPoly_t* polypoly,wmfPolyLine_t* polyline,U16 ipoly)
+/* The number of points to use from polygon ipoly, ignoring a repeat of the first point at the end.
+ * 0 means the polygon is too small to draw.
+ */
+static U16 polypoly_point_count (wmfPolyPoly_t* polypoly,U16 ipoly)
 {	U16 count = polypoly->count[ipoly];
-	U16 i;
-	U16 imin;
-	U16 last;
+
+	if ((polypoly->pt[ipoly] == 0) || (count < 3)) return (0);
+
+	while ((polypoly->pt[ipoly][0].x == polypoly->pt[ipoly][count-1].x)
+	    && (polypoly->pt[ipoly][0].y == polypoly->pt[ipoly][count-1].y))
+	{	count--;
+		if (count < 3) return (0);
+	}
+
+	return (count);
+}
+
+/* The point of polygon ipoly nearest to the first point of polygon ipoly+1. [TODO: improve this??]
+ */
+static U16 polypoly_closest_point (wmfPolyPoly_t* polypoly,U16 ipoly,U16 count)
+{	U16 i;
+	U16 closest = 0;
 
 	double x2;
 	double y2;
 	double r2;
 	double r2_min = 0;
 
-	if ((polyline->pt == 0) || (polypoly->pt == 0)) return; /* erk!! */
-
-	if ((polypoly->pt[ipoly] == 0) || (polypoly->count[ipoly] < 3)) return;
-
-	while ((polypoly->pt[ipoly][0].x == polypoly->pt[ipoly][count-1].x)
-	    && (polypoly->pt[ipoly][0].y == polypoly->pt[ipoly][count-1].y))
-	{
-		count--;
-		if (count < 3) break;
-	}
-	if (count < 3) return;
-
-	last = 0;
-	if (ipoly < (polypoly->npoly - 1))
-	{	if ((polypoly->pt[ipoly+1] == 0) || (polypoly->count[ipoly+1] < 3))
-		{	last = 1; /* erk!! */
-		}
-	}
-	else
-	{	last = 1; /* last poly, yay! */
-	}
-	if (last)
-	{	for (i = 0; i < count; i++)
-		{	polyline->pt[polyline->count].x = polypoly->pt[ipoly][i].x;
-			polyline->pt[polyline->count].y = polypoly->pt[ipoly][i].y;
-			polyline->count++;
-		}
-		polyline->pt[polyline->count].x = polypoly->pt[ipoly][0].x;
-		polyline->pt[polyline->count].y = polypoly->pt[ipoly][0].y;
-		polyline->count++;
-
-		return;
-	}
-
-	/* find polygon point closest to point 0 in next polygon [TODO: improve this??]
-	 */
-	imin = 0;
 	for (i = 0; i < count; i++)
 	{	x2 = (double) polypoly->pt[ipoly][i].x - (double) polypoly->pt[ipoly+1][0].x;
 		x2 *= x2;
@@ -1077,26 +1067,78 @@ static void polypoly_construct (wmfAPI* API,wmfPolyPoly_t* polypoly,wmfPolyLine_
 		}
 		else if (r2 < r2_min)
 		{	r2_min = r2;
-			imin = i;
+			closest = i;
 		}
 	}
 
-	for (i = 0; i <= imin; i++)
-	{	polyline->pt[polyline->count].x = polypoly->pt[ipoly][i].x;
-		polyline->pt[polyline->count].y = polypoly->pt[ipoly][i].y;
+	return (closest);
+}
+
+/* Append points first up to but not including end of polygon ipoly to the polyline.
+ */
+static void polypoly_append_points (wmfPolyPoly_t* polypoly,wmfPolyLine_t* polyline,U16 ipoly,U16 first,U16 end)
+{	U16 i;
+
+	for (i = first; i < end; i++)
+	{	polyline->pt[polyline->count] = polypoly->pt[ipoly][i];
 		polyline->count++;
 	}
+}
 
-	polypoly_construct (API, polypoly, polyline, (U16)(ipoly + 1));
+/* Join the polygons into one polyline. Each polygon opens at its first point, steps out to the next
+ * polygon at the point nearest to it, and is closed again on the way back.
+ */
+static void polypoly_construct (wmfPolyPoly_t* polypoly,wmfPolyLine_t* polyline)
+{	U16 ipoly;
+	U16 opened = 0;
+	U16 count;
+	U16 closest;
+	U16 last;
 
-	for (i = imin; i < count; i++)
-	{	polyline->pt[polyline->count].x = polypoly->pt[ipoly][i].x;
-		polyline->pt[polyline->count].y = polypoly->pt[ipoly][i].y;
-		polyline->count++;
+	if ((polyline->pt == 0) || (polypoly->pt == 0)) return; /* erk!! */
+
+	for (ipoly = 0; ipoly < polypoly->npoly; ipoly++)
+	{	count = polypoly_point_count (polypoly,ipoly);
+
+		if (count == 0) break;
+
+		last = 0;
+		if (ipoly < (polypoly->npoly - 1))
+		{	if ((polypoly->pt[ipoly+1] == 0) || (polypoly->count[ipoly+1] < 3))
+			{	last = 1; /* erk!! */
+			}
+		}
+		else
+		{	last = 1; /* last poly, yay! */
+		}
+
+		if (last)
+		{	polypoly_append_points (polypoly,polyline,ipoly,0,count);
+			polypoly_append_points (polypoly,polyline,ipoly,0,1);
+
+			break;
+		}
+
+		closest = polypoly_closest_point (polypoly,ipoly,count);
+
+		polypoly_append_points (polypoly,polyline,ipoly,0,(U16) (closest + 1));
+
+		opened++;
 	}
-	polyline->pt[polyline->count].x = polypoly->pt[ipoly][0].x;
-	polyline->pt[polyline->count].y = polypoly->pt[ipoly][0].y;
-	polyline->count++;
+
+	/* Close the polygons that were stepped out of, innermost first.
+	 */
+	while (opened > 0)
+	{	opened--;
+
+		ipoly = opened;
+
+		count   = polypoly_point_count (polypoly,ipoly);
+		closest = polypoly_closest_point (polypoly,ipoly,count);
+
+		polypoly_append_points (polypoly,polyline,ipoly,closest,count);
+		polypoly_append_points (polypoly,polyline,ipoly,0,1);
+	}
 }
 
 static int meta_round (wmfAPI* API,wmfRecord* Record)
@@ -1577,6 +1619,7 @@ static int meta_rgn_create (wmfAPI* API,wmfRecord* Record)
 	U16 count;
 
 	unsigned long max_index;
+	unsigned long total_rectangles;
 
 	objects = P->objects;
 
@@ -1592,8 +1635,6 @@ static int meta_rgn_create (wmfAPI* API,wmfRecord* Record)
 	oid_region = i;
 	obj_region = objects + oid_region;
 
-	obj_region->type = OBJ_REGION;
-
 	region = &(obj_region->obj.rgn);
 
 	region->rects = (wmfD_Rect*) wmf_malloc (API,8 * sizeof (wmfD_Rect));
@@ -1605,6 +1646,8 @@ static int meta_rgn_create (wmfAPI* API,wmfRecord* Record)
 	}
 
 	WmfSetRectRgn (region,0);
+
+	obj_region->type = OBJ_REGION;
 
 	if (SCAN (API) && DIAG (API))
 	{	fprintf (stderr,"\t[0x%04x]",Record->function);
@@ -1629,6 +1672,7 @@ static int meta_rgn_create (wmfAPI* API,wmfRecord* Record)
 
 	end = OffsetRecord (API,Record,10);
 	max_index = 10;
+	total_rectangles = 0;
 	for (band = 0; band < num_band; band++)
 	{	max_index++;
 		if (SCAN (API) && DIAG (API))
@@ -1646,6 +1690,17 @@ static int meta_rgn_create (wmfAPI* API,wmfRecord* Record)
 		}
 
 		num_pair = count >> 1;
+
+/* Each rectangle is merged into the region on its own, and a merge reads the whole region, so the
+ * time taken grows with the square of this total.
+ */
+		total_rectangles += num_pair;
+
+		if (total_rectangles > 1024)
+		{	WMF_ERROR (API,"Region rectangle limit exceeded!");
+			API->err = wmf_E_BadFormat;
+			break;
+		}
 
 		max_index += count + 3;
 		if (SCAN (API) && DIAG (API))
@@ -1671,7 +1726,11 @@ static int meta_rgn_create (wmfAPI* API,wmfRecord* Record)
 
 			WmfSetRectRgn (&temp_region,&d_r);
 			WmfCombineRgn (API,region,region,&temp_region,RGN_OR);
+
+			if (ERR (API)) break;
 		}
+
+		if (ERR (API)) break;
 	}
 
 	wmf_free (API,temp_region.rects);
@@ -2187,6 +2246,11 @@ static int meta_dib_brush (wmfAPI* API,wmfRecord* Record)
 
 	bmp_record = OffsetRecord (API,Record,2);
 
+	if (ERR (API))
+	{	WMF_DEBUG (API,"bailing...");
+		return (changed);
+	}
+
 	pos_current = WMF_TELL (API);
 	if (pos_current < 0)
 	{	WMF_ERROR (API,"API's tell() failed on input stream!");
@@ -2527,6 +2591,11 @@ static int meta_dc_save (wmfAPI* API,wmfRecord* Record) /* complete ?? */
 
 	dc_stack_push (API,P->dc);
 
+	if (ERR (API))
+	{	WMF_DEBUG (API,"bailing...");
+		return (changed);
+	}
+
 	P->dc = dc_copy (API,P->dc);
 
 	return (changed);
@@ -2557,12 +2626,7 @@ static int meta_dc_restore (wmfAPI* API,wmfRecord* Record)
 
 	if (PLAY (API) && FR->udata_free) FR->udata_free (API,&userdata);
 
-	clip = (wmfRegion*) P->dc->clip;
-
-	wmf_free (API,clip->rects);
-
-	wmf_free (API,P->dc->clip);
-	wmf_free (API,P->dc);
+	dc_free (API,P->dc);
 
 	P->dc = dc_stack_pop (API);
 
@@ -3366,7 +3430,8 @@ static int meta_font_create (wmfAPI* API,wmfRecord* Record)
 	par_S16_w = ParS16 (API,Record,1);
 	par_S16_h = ParS16 (API,Record,0);
 
-	WMF_FONT_SET_HEIGHT (font,ABS (par_S16_h));
+/* The height divides the width to give the text aspect ratio, so it stays at 1 or more. */
+	WMF_FONT_SET_HEIGHT (font,MAX (ABS (par_S16_h),1));
 	WMF_FONT_SET_WIDTH  (font,ABS (par_S16_w));
 
 	WMF_FONT_SET_ESCAPEMENT  (font,ParS16 (API,Record,2)); /* text angle */
@@ -3510,6 +3575,8 @@ static int meta_delete (wmfAPI* API,wmfRecord* Record)
 	else if (obj->type == OBJ_FONT)
 	{	wmf_free (API,obj->obj.font.lfFaceName);
 	}
+
+	dc_release_object (API,obj);
 
 	obj->type = 0;
 

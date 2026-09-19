@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_libwmf {
 
-        THIRDPARTY_LIBWMF_PATH = $${PWD}/libwmf-94b932d
+        THIRDPARTY_LIBWMF_PATH = $${PWD}/libwmf-a916f30
 
         INCLUDEPATH += $${THIRDPARTY_LIBWMF_PATH}/include $${THIRDPARTY_LIBWMF_PATH}
         DEPENDPATH += $${THIRDPARTY_LIBWMF_PATH}/include $${THIRDPARTY_LIBWMF_PATH}

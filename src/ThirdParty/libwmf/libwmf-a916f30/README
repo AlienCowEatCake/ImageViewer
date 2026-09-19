@@ -1,3 +1,12 @@
+libwmf-0.2.16 Release Notes
+---------------------------
+
+- License file corrected to LGPL
+- Many parsing and resource handling corrections
+- New wmf_gd_get_image_pixels(), and support for the current system libgd
+- Windows, MSYS2 and macOS build fixes
+- A fuzzer, and wider test coverage
+
 libwmf-0.2.15 Release Notes
 ---------------------------
 

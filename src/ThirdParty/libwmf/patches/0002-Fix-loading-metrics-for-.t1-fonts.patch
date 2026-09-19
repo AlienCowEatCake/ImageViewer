@@ -1,17 +1,17 @@
-From 37282a21c7c8ccda76cd061611d0d825609f10bb Mon Sep 17 00:00:00 2001
+From 7e38f7a5251cf37843ee635fb279ff757f88bab3 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Wed, 28 Dec 2022 22:14:56 +0700
-Subject: [PATCH 2/5] Fix loading metrics for .t1 fonts
+Subject: [PATCH 2/4] Fix loading metrics for .t1 fonts
 
 ---
  src/font.c | 28 ++++++++++++++++++++++++----
  1 file changed, 24 insertions(+), 4 deletions(-)
 
 diff --git a/src/font.c b/src/font.c
-index c1ecb53..27eaa44 100644
+index 18eed85..3bade48 100644
 --- a/src/font.c
 +++ b/src/font.c
-@@ -1550,13 +1550,23 @@ static FT_Face ipa_font_face (wmfAPI* API,wmfFont* font,char* ps_name)
+@@ -1544,13 +1544,23 @@ static FT_Face ipa_font_face (wmfAPI* API,wmfFont* font,char* ps_name)
  
  	metrics = 0;
  	if (glyphs)
@@ -37,7 +37,7 @@ index c1ecb53..27eaa44 100644
  
  		face = ipa_font_face_open (API,ps_name,glyphs,metrics);
  	}
-@@ -1587,13 +1597,23 @@ static FT_Face ipa_font_face (wmfAPI* API,wmfFont* font,char* ps_name)
+@@ -1581,13 +1591,23 @@ static FT_Face ipa_font_face (wmfAPI* API,wmfFont* font,char* ps_name)
  
  	metrics = 0;
  	if (glyphs)
@@ -64,5 +64,5 @@ index c1ecb53..27eaa44 100644
  		face = ipa_font_face_open (API,ps_name,glyphs,metrics);
  	}
 -- 
-2.54.0
+2.55.0
 

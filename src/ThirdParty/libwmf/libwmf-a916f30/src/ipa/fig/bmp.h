@@ -136,9 +136,9 @@ static void wmf_fig_bmp_read (wmfAPI* API,wmfBMP_Read_t* bmp_read)
 static void wmf_fig_bmp_free (wmfAPI* API,wmfBMP* bmp)
 {	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]bmp_free");
 
-	wmf_ipa_bmp_free (API,bmp);
-
 	fig_bmp_remove (API,bmp->data);
+
+	wmf_ipa_bmp_free (API,bmp);
 }
 
 static void fig_bmp_add (wmfAPI* API,void* bmp)

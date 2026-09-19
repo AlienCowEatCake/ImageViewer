@@ -23,7 +23,7 @@
 static wmfD_Rect* rgn_memchk (wmfAPI* API,wmfRegion* rgn)
 {	wmfD_Rect* more = 0;
 
-	if (rgn->numRects < (rgn->size - 1)) return (rgn->rects + rgn->numRects);
+	if ((rgn->numRects + 1) < rgn->size) return (rgn->rects + rgn->numRects);
 
 	more = wmf_realloc (API,rgn->rects,(rgn->size + 8) * sizeof (wmfD_Rect));
 
@@ -248,6 +248,7 @@ static void REGION_RegionOp (
 
 	if ((newReg->rects = wmf_malloc (API,sizeof (wmfD_Rect) * newReg->size)) == 0)
 	{	newReg->size = 0;
+		wmf_free (API,oldRects);
 		return;
 	}
 
@@ -410,6 +411,7 @@ static void REGION_RegionOp (
 			newReg->size = 1;
 			wmf_free (API,newReg->rects);
 			newReg->rects = wmf_malloc (API,sizeof (wmfD_Rect));
+			if (newReg->rects == 0) newReg->size = 0;
 		}
 	}
 

@@ -321,11 +321,15 @@ static void ipa_font_add_cache (wmfAPI* API,wmfFT_CacheEntry* entry)
 	font_data->cache[i].name = wmf_strdup (API,entry->name);
 	font_data->cache[i].path = wmf_strdup (API,entry->path);
 	font_data->cache[i].face = entry->face;
+	font_data->cache[i].ipa_font = (wmfIPAFont*) wmf_malloc (API,sizeof (wmfIPAFont));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
 		return;
 	}
+
+	font_data->cache[i].ipa_font->ps_name = font_data->cache[i].name;
+	font_data->cache[i].ipa_font->ft_face = entry->face;
 
 	i++;
 	font_data->cache[i].name = 0;
@@ -1418,24 +1422,14 @@ static char* ipa_font_gs_readline (wmfAPI* API,FILE* in)
  * postscript font name is hit-and-miss.
  */
 void wmf_ipa_font_map (wmfAPI* API,wmfFont* font)
-{	wmfIPAFont* ipa_font = 0;
-
-	char* mapping = 0;
+{	char* mapping = 0;
 
 	if (font == 0) return;
-	if (font->user_data == 0)
-	{	font->user_data = wmf_malloc (API,sizeof (wmfIPAFont));
 
-		if (ERR (API))
-		{	WMF_DEBUG (API,"bailing...");
-			return;
-		}
-	}
-
-	ipa_font = (wmfIPAFont*) font->user_data;
-
-	ipa_font->ps_name = 0;
-	ipa_font->ft_face = 0;
+/* A face that loads gives the font the cache entry's own wmfIPAFont, so nothing here belongs to
+ * one font and nothing needs freeing when a font goes away.
+ */
+	font->user_data = 0;
 
 /* Check system fonts for match and load font face if found...
  */
@@ -1909,8 +1903,6 @@ static FT_Face ipa_font_face_open (wmfAPI* API,char* ps_name,char* glyphs,char* 
 static FT_Face ipa_font_face_cached (wmfAPI* API,wmfFont* font,char* ps_name)
 {	wmfFontmapData* font_data = (wmfFontmapData*) ((wmfFontData*) API->font_data)->user_data;
 
-	wmfIPAFont* ipa_font = (wmfIPAFont*) font->user_data;
-
 	FT_Face face = 0;
 
 	unsigned int i;
@@ -1927,8 +1919,9 @@ static FT_Face ipa_font_face_cached (wmfAPI* API,wmfFont* font,char* ps_name)
 	}
 
 	if (face)
-	{	ipa_font->ps_name = ps_name;
-		ipa_font->ft_face = face;
+	{	font->user_data = (void*) font_data->cache[i].ipa_font;
+
+		if (font->user_data == 0) face = 0;
 	}
 
 	return (face);

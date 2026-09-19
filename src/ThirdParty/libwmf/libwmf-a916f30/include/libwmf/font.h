@@ -65,6 +65,12 @@ struct _wmfFT_CacheEntry
 	char* path;
 
 	FT_Face face;
+
+	/**
+	 * The name and face of this entry, in the form the device layer reads through a font's
+	 * user_data. One per cache entry, so it lives as long as the entry does.
+	 */
+	wmfIPAFont* ipa_font;
 };
 
 struct _wmfGS_FontData

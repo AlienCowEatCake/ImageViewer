@@ -60,6 +60,7 @@ static void Clipping (wmfAPI* API,wmfRegion* clip,wmfRegion* vis,wmfD_Rect* rect
 
 			if (ERR (API))
 			{	WMF_DEBUG (API,"bailing...");
+				wmf_free (API,rgn.rects);
 				return;
 			}
 		}
@@ -69,6 +70,7 @@ static void Clipping (wmfAPI* API,wmfRegion* clip,wmfRegion* vis,wmfD_Rect* rect
 
 		if (ERR (API))
 		{	WMF_DEBUG (API,"bailing...");
+			wmf_free (API,rgn.rects);
 			return;
 		}
 	}
@@ -77,10 +79,13 @@ static void Clipping (wmfAPI* API,wmfRegion* clip,wmfRegion* vis,wmfD_Rect* rect
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
+		wmf_free (API,rgn.rects);
 		return;
 	}
 
-	(*clip) = rgn; /* What about what *was* in clip ?? Check WmfCombineRgn */
+	if (clip->rects != rgn.rects) wmf_free (API,clip->rects);
+
+	(*clip) = rgn;
 }
 
 #endif /* ! WMFPLAYER_CLIP_H */

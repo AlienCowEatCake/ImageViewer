@@ -44,7 +44,14 @@ make -j"$(nproc)" -C src libwmf.la libwmflite.la
 cd "$SRCDIR"
 
 FT_CFLAGS=$(pkg-config --cflags freetype2)
-DEP_LIBS=$(pkg-config --libs freetype2 libpng libxml-2.0 zlib)
+
+# configure already worked out the dependency libraries, including whether gd
+# is the system one or the bundled copy, so take its answer from the Makefile.
+DEP_LIBS=$(sed -n 's/^WMF_DEP_LIBS = *//p' "$BUILDDIR/src/Makefile")
+case " $DEP_LIBS " in
+	*" -lgd "*) ;;
+	*) DEP_LIBS="$BUILDDIR/src/extra/gd/.libs/libgd.a $DEP_LIBS" ;;
+esac
 
 $CC $CFLAGS \
 	$FT_CFLAGS \
@@ -55,8 +62,7 @@ $CC $CFLAGS $LIB_FUZZING_ENGINE \
 	fuzz/wmf_fuzzer.o \
 	"$BUILDDIR/src/.libs/libwmf.a" \
 	"$BUILDDIR/src/.libs/libwmflite.a" \
-	$DEP_LIBS -ljpeg -lX11 \
-	-lm \
+	$DEP_LIBS \
 	-o fuzz/wmf_fuzzer
 
 if [ ! -d fuzz/corpus ] || [ -z "$(ls -A fuzz/corpus 2>/dev/null)" ]; then
