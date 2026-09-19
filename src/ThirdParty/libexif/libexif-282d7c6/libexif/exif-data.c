@@ -70,6 +70,8 @@ struct _ExifDataPrivate
 
 	ExifDataOption options;
 	ExifDataType data_type;
+
+	unsigned int ifd_used[EXIF_IFD_COUNT];
 };
 
 static void *
@@ -168,6 +170,7 @@ exif_data_load_data_entry (ExifData *data, ExifEntry *entry,
 			   unsigned int size, unsigned int offset)
 {
 	unsigned int s, doff;
+	unsigned char formatsize;
 
 	entry->tag        = exif_get_short (d + offset + 0, data->priv->order);
 	entry->format     = exif_get_short (d + offset + 2, data->priv->order);
@@ -182,8 +185,13 @@ exif_data_load_data_entry (ExifData *data, ExifEntry *entry,
 
 	/* {0,1,2,4,8} x { 0x00000000 .. 0xffffffff } 
 	 *   -> { 0x000000000 .. 0x7fffffff8 } */
-	s = exif_format_get_size(entry->format) * entry->components;
-	if ((s < entry->components) || (s == 0)){
+
+	formatsize = exif_format_get_size(entry->format);
+	if (!formatsize || (entry->components >= (0xffffffff / formatsize)))
+		return 0;
+
+	s = formatsize * entry->components;
+	if ((s < entry->components) || (s == 0)) {
 		return 0;
 	}
 
@@ -368,6 +376,16 @@ if (data->ifd[(i)]->count) {				\
 		"Skipping...",				\
 		exif_ifd_get_name (i));			\
 	break;						\
+}							\
+if (data->priv->ifd_used[i]) {				\
+	exif_log (data->priv->log, EXIF_LOG_CODE_DEBUG,	\
+		"ExifData", "Attempt to load IFD "	\
+		"'%s' multiple times detected. "	\
+		"Skipping...",				\
+		exif_ifd_get_name (i));			\
+	break;						\
+} else {						\
+	data->priv->ifd_used[i] = 1;			\
 }
 
 /*! Calculate the recursion cost added by one level of IFD loading.
@@ -1339,8 +1357,8 @@ fix_func (ExifContent *c, void *UNUSED(data))
 				if (cnt == c->count) {
 					/* safety net */
 					exif_log (c->parent->priv->log, EXIF_LOG_CODE_DEBUG, "exif-data",
-					"failed to remove last entry from entries.");
-					c->count--;
+						  "failed to remove entry from entries.");
+					break;
 				}
 			}
 		}

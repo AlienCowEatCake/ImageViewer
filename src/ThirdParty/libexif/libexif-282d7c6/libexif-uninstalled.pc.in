@@ -1,0 +1,12 @@
+# Copyright (C) 2007-2026 Hans Ulrich Niedermann <hun@n-dimensional.de>, et. al.
+# SPDX-License-Identifier: LGPL-2.0-or-later
+Name: libexif
+Description: Library for easy access to EXIF data
+URL: https://libexif.github.io/
+Copyright: (C) 2001-2026 Lutz Mueller <lutz.s.mueller@gmail.com>, et. al.
+License: LGPL-2.1-or-later
+Source: https://github.com/libexif/libexif/releases/download/v@VERSION@/libexif-@VERSION@.tar.gz
+Version: @VERSION@
+Libs: ${pcfiledir}/libexif/libexif.la
+Cflags: -I${pcfiledir}/@srcdir@ -I${pcfiledir}
+Link.ABI: c

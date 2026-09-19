@@ -97,6 +97,7 @@ exif_mnote_data_fuji_save (ExifMnoteData *ne, unsigned char **buf,
 	*buf_size = 8 + 4 + 2 + n->count * 12 + 4;
 	*buf = exif_mem_alloc (ne->mem, *buf_size);
 	if (!*buf) {
+		EXIF_LOG_NO_MEMORY (ne->log, "ExifMnoteDataFuji", *buf_size);
 		*buf_size = 0;
 		return;
 	}
@@ -133,6 +134,7 @@ exif_mnote_data_fuji_save (ExifMnoteData *ne, unsigned char **buf,
 			if (s & 1) ts += 1;
 			t = exif_mem_realloc (ne->mem, *buf, ts);
 			if (!t) {
+				EXIF_LOG_NO_MEMORY (ne->log, "ExifMnoteDataFuji", ts);
 				return;
 			}
 			*buf = t;

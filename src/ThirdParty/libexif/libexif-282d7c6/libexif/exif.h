@@ -70,6 +70,13 @@
  * Libexif by default relies on the calloc(3), realloc(3), and free(3)
  * functions, but the libexif user can tell libexif to use their
  * special memory management functions at runtime.
+ *
+ * When memory allocation failures occur within libexif and there is no way
+ * to notify the caller (such as by returning a NULL pointer), a message is
+ * logged using the #ExifLog interface with the #EXIF_LOG_CODE_NO_MEMORY
+ * code.  This failure may have left libexif data structures in an
+ * inconsistent state, so the application should refrain from using existing
+ * libexif structures after such a log call has been made.
  * 
  * \section thread_safety Thread Safety
  * 
@@ -85,7 +92,8 @@
  * can use libexif without issues if they never share handles.
  *
  */
-/* Copyright (C) 2007-2021 Hans Ulrich Niedermann <gp@n-dimensional.de>
+/* Copyright (C) 2007-2026 Hans Ulrich Niedermann <gp@n-dimensional.de>,
+ * et. al.
  * SPDX-License-Identifier: LGPL-2.0-or-later
  */
 

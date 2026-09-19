@@ -141,6 +141,7 @@ void
 exif_content_add_entry (ExifContent *c, ExifEntry *entry)
 {
 	ExifEntry **entries;
+	unsigned int s;
 	if (!c || !c->priv || !entry || entry->parent) return;
 
 	/* One tag can only be added once to an IFD. */
@@ -152,9 +153,12 @@ exif_content_add_entry (ExifContent *c, ExifEntry *entry)
 		return;
 	}
 
-	entries = exif_mem_realloc (c->priv->mem,
-		c->entries, sizeof (ExifEntry*) * (c->count + 1));
-	if (!entries) return;
+	s = sizeof (ExifEntry*) * (c->count + 1);
+	entries = exif_mem_realloc (c->priv->mem, c->entries, s);
+	if (!entries) {
+		EXIF_LOG_NO_MEMORY (c->priv->log, "ExifContent", s);
+		return;
+	}
 	entry->parent = c;
 	entries[c->count++] = entry;
 	c->entries = entries;
@@ -180,9 +184,10 @@ exif_content_remove_entry (ExifContent *c, ExifEntry *e)
 	/* Remove the entry */
 	temp = c->entries[c->count-1];
 	if (c->count > 1) {
-		t = exif_mem_realloc (c->priv->mem, c->entries,
-					sizeof(ExifEntry*) * (c->count - 1));
+		const unsigned int s = sizeof(ExifEntry*) * (c->count - 1);
+		t = exif_mem_realloc (c->priv->mem, c->entries, s);
 		if (!t) {
+			EXIF_LOG_NO_MEMORY (c->priv->log, "ExifContent", s);
 			return;
 		}
 		c->entries = t;

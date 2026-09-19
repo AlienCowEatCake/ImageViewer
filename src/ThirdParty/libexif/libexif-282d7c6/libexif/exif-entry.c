@@ -1394,14 +1394,20 @@ exif_entry_get_value (ExifEntry *e, char *val, unsigned int maxlen)
 	case EXIF_TAG_XP_SUBJECT:
 	{
 		unsigned char *utf16;
+		unsigned int s;
 
 		/* Sanity check the size to prevent overflow. Note EXIF files are 64kb at most. */
 		if (e->size >= 65536 - sizeof(uint16_t)*2) break;
 
 		/* The tag may not be U+0000-terminated , so make a local
 		   U+0000-terminated copy before converting it */
-		utf16 = exif_mem_alloc (e->priv->mem, e->size+sizeof(uint16_t)+1);
-		if (!utf16) break;
+		s = e->size+sizeof(uint16_t)+1;
+		utf16 = exif_mem_alloc (e->priv->mem, s);
+		if (!utf16) {
+			exif_entry_log (e, EXIF_LOG_CODE_NO_MEMORY,
+				"Could not allocate %lu byte(s).", (unsigned long)s);
+			break;
+		}
 		memcpy(utf16, e->data, e->size);
 
 		/* NUL terminate the string. If the size is odd (which isn't possible
