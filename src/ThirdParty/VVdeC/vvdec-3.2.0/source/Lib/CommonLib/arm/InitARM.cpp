@@ -1,0 +1,223 @@
+/* -----------------------------------------------------------------------------
+The copyright in this software is being made available under the Clear BSD
+License, included below. No patent rights, trademark rights and/or
+other Intellectual Property Rights other than the copyrights concerning
+the Software are granted under this license.
+
+The Clear BSD License
+
+Copyright (c) 2018-2026, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVdeC Authors.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted (subject to the limitations in the disclaimer below) provided that
+the following conditions are met:
+
+     * Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
+
+     * Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+     * Neither the name of the copyright holder nor the names of its
+     contributors may be used to endorse or promote products derived from this
+     software without specific prior written permission.
+
+NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY
+THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+
+------------------------------------------------------------------------------------------- */
+
+/*
+ * \ingroup CommonLib
+ * \file    InitARM.cpp
+ * \brief   Initialize encoder SIMD functions.
+ */
+
+#include "CommonDefARM.h"
+#include "CommonLib/CommonDef.h"
+#include "CommonLib/InterPrediction.h"
+#include "CommonLib/InterpolationFilter.h"
+#include "CommonLib/TrQuant.h"
+#include "CommonLib/RdCost.h"
+#include "CommonLib/Buffer.h"
+#include "CommonLib/TrQuant_EMT.h"
+#include "CommonLib/IntraPrediction.h"
+#include "CommonLib/LoopFilter.h"
+#include "CommonLib/Picture.h"
+
+#include "CommonLib/AdaptiveLoopFilter.h"
+#include "CommonLib/SampleAdaptiveOffset.h"
+
+namespace vvdec
+{
+
+#ifdef TARGET_SIMD_ARM
+
+#if ENABLE_SIMD_OPT_MCIF
+void InterpolationFilter::initInterpolationFilterARM( /*int iBitDepthY, int iBitDepthC*/ )
+{
+  auto vext = read_arm_extension_flags();
+  if( vext >= NEON )
+  {
+    _initInterpolationFilterARM<NEON>();
+  }
+#if TARGET_SIMD_ARM_SVE
+  if( vext >= SVE )
+  {
+    _initInterpolationFilterARM<SVE>();
+  }
+#endif
+}
+#endif
+
+#if ENABLE_SIMD_OPT_BUFFER
+void PelBufferOps::initPelBufOpsARM()
+{
+  auto vext = read_arm_extension_flags();
+  if( vext >= NEON )
+  {
+    _initPelBufOpsARM<NEON>();
+  }
+#if TARGET_SIMD_ARM_RDM
+  if( vext >= NEON_RDM )
+  {
+    _initPelBufOpsARM<NEON_RDM>();
+  }
+#endif
+#if TARGET_SIMD_ARM_SVE
+  if( vext >= SVE )
+  {
+    _initPelBufOpsARM<SVE>();
+  }
+#endif
+#if TARGET_SIMD_ARM_SVE2
+  if( vext >= SVE2 )
+  {
+    _initPelBufOpsARM<SVE2>();
+  }
+#endif
+}
+#endif
+
+#if ENABLE_SIMD_OPT_DIST
+void RdCost::initRdCostARM()
+{
+  auto vext = read_arm_extension_flags();
+  if( vext >= NEON )
+  {
+    _initRdCostARM<NEON>();
+  }
+}
+#endif
+
+#if ENABLE_SIMD_OPT_ALF
+void AdaptiveLoopFilter::initAdaptiveLoopFilterARM()
+{
+  auto vext = read_arm_extension_flags();
+  if( vext >= NEON )
+  {
+    _initAdaptiveLoopFilterARM<NEON>();
+  }
+}
+#endif
+
+#if ENABLE_SIMD_DBLF
+void LoopFilter::initLoopFilterARM()
+{
+  auto vext = read_arm_extension_flags();
+  if( vext >= NEON )
+  {
+    _initLoopFilterARM<NEON>();
+  }
+}
+#endif
+
+#if ENABLE_SIMD_TCOEFF_OPS
+void TCoeffOps::initTCoeffOpsARM()
+{
+  auto vext = read_arm_extension_flags();
+  if( vext >= NEON )
+  {
+    _initTCoeffOpsARM<NEON>();
+  }
+}
+
+//void TrQuant::initTrQuantARM()
+//{
+//  auto vext = read_arm_extension_flags();
+//  if( vext >= NEON )
+//  {
+//    _initTrQuantARM<NEON>();
+//  }
+//}
+#endif
+
+//#  if ENABLE_SIMD_OPT_INTRAPRED
+//void IntraPrediction::initIntraPredictionARM()
+//{
+//  auto vext = read_arm_extension_flags();
+//  if( vext >= NEON )
+//  {
+//    _initIntraPredictionARM<NEON>();
+//  }
+//#  endif
+
+#if ENABLE_SIMD_OPT_SAO
+void SampleAdaptiveOffset::initSampleAdaptiveOffsetARM()
+{
+  auto vext = read_arm_extension_flags();
+  if( vext >= NEON )
+  {
+    _initSampleAdaptiveOffsetARM<NEON>();
+  }
+}
+#endif
+
+#if ENABLE_SIMD_OPT_INTER
+void InterPrediction::initInterPredictionARM()
+{
+  auto vext = read_arm_extension_flags();
+  if( vext >= NEON )
+  {
+    _initInterPredictionARM<NEON>();
+  }
+}
+#endif
+
+#if ENABLE_SIMD_OPT_PICTURE
+void Picture::initPictureARM()
+{
+  auto vext = read_arm_extension_flags();
+  if( vext >= NEON )
+  {
+    _initPictureARM<NEON>();
+  }
+}
+#endif
+
+//#  if ENABLE_SIMD_OPT_QUANT
+//void Quant::initQuantARM()
+//{
+//  auto vext = read_arm_extension_flags();
+//  if( vext >= NEON )
+//  {
+//    _initQuantARM<NEON>();
+//  }
+//#  endif
+
+#endif   // TARGET_SIMD_ARM
+
+}   // namespace vvdec

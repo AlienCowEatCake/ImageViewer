@@ -9,7 +9,7 @@ include($${PWD}/../../Features.pri)
 
     !system_vvdec {
 
-        THIRDPARTY_VVDEC_PATH = $${PWD}/vvdec-3.1.0
+        THIRDPARTY_VVDEC_PATH = $${PWD}/vvdec-3.2.0
         THIRDPARTY_VVDEC_CONFIG_PATH = $${PWD}/config
 
         INCLUDEPATH += $${THIRDPARTY_VVDEC_CONFIG_PATH} $${THIRDPARTY_VVDEC_PATH}/include

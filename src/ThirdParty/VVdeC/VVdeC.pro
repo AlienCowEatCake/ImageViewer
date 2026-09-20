@@ -10,7 +10,7 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_VVDEC_PATH = $${PWD}/vvdec-3.1.0
+THIRDPARTY_VVDEC_PATH = $${PWD}/vvdec-3.2.0
 THIRDPARTY_VVDEC_CONFIG_PATH = $${PWD}/config
 
 include(../../Features.pri)
@@ -124,10 +124,15 @@ HEADERS += \
     $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/UnitPartitioner.h \
     $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/UnitTools.h \
     $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/WeightPrediction.h \
-    $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/arm/BufferARM.h \
     $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/arm/CommonDefARM.h \
-    $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/arm/RdCostARM.h \
+    $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/arm/InterpolationFilter_neon.h \
+    $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/arm/neon/mem_neon.h \
     $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/arm/neon/sum_neon.h \
+    $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/arm/neon/tbl_neon.h \
+    $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/arm/neon/transpose_neon.h \
+    $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/arm/sve/neon_sve_bridge.h \
+    $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/arm/sve/tbl_sve.h \
+    $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/arm/sve2/tbl_sve2.h \
     $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/dtrace.h \
     $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/dtrace_buffer.h \
     $${THIRDPARTY_VVDEC_PATH}/source/Lib/CommonLib/dtrace_codingstruct.h \

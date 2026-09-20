@@ -1,0 +1,575 @@
+/* -----------------------------------------------------------------------------
+The copyright in this software is being made available under the Clear BSD
+License, included below. No patent rights, trademark rights and/or
+other Intellectual Property Rights other than the copyrights concerning
+the Software are granted under this license.
+
+The Clear BSD License
+
+Copyright (c) 2018-2025, Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V. & The VVdeC Authors.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted (subject to the limitations in the disclaimer below) provided that
+the following conditions are met:
+
+     * Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
+
+     * Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+     * Neither the name of the copyright holder nor the names of its
+     contributors may be used to endorse or promote products derived from this
+     software without specific prior written permission.
+
+NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY
+THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+
+------------------------------------------------------------------------------------------- */
+
+/** \file     InterPred_neon.cpp
+    \brief    SIMD for InterPrediction
+*/
+
+//! \ingroup CommonLib
+//! \{
+
+#include "CommonDefARM.h"
+#include "CommonLib/CommonDef.h"
+#include "CommonLib/InterPrediction.h"
+
+#include "neon/sum_neon.h"
+#include "neon/tbl_neon.h"
+
+namespace vvdec
+{
+
+#if ENABLE_SIMD_OPT_INTER && defined( TARGET_SIMD_ARM )
+
+static inline int rightShiftMSB( int numer, int denom )
+{
+  int shiftIdx = bit_scan_reverse( denom );
+  return numer >> shiftIdx;
+}
+
+static inline int16x8_t signum_neon( int16x8_t x )
+{
+  x = vqshlq_n_s16( x, 15 );
+  return vrshrq_n_s16( x, 15 );
+}
+
+static inline void calcBIOSums_neon( const Pel* srcY0Tmp, const Pel* srcY1Tmp, const Pel* gradX0, const Pel* gradX1,
+                                     const Pel* gradY0, const Pel* gradY1, int gradOfs, const int widthG,
+                                     const int bitDepth, int limit, int& tmpx, int& tmpy )
+{
+  const int srcStride = widthG;
+  int16x8_t sumAbsGXTmp = vdupq_n_s16( 0 );
+  int16x8_t sumDIXTmp = vdupq_n_s16( 0 );
+  int16x8_t sumAbsGYTmp = vdupq_n_s16( 0 );
+  int16x8_t sumDIYTmp = vdupq_n_s16( 0 );
+  int16x8_t sumSignGyGxTmp = vdupq_n_s16( 0 );
+  int16_t mask6_arr[8] = { ~0, ~0, ~0, ~0, ~0, ~0, 0, 0 };
+  int16x8_t mask6 = vld1q_s16( mask6_arr );
+
+  for( int y = 0; y < 6; y++ )
+  {
+    int16x8_t shiftSrcY0Tmp = vshrq_n_s16( vld1q_s16( srcY0Tmp ), 4 );
+    int16x8_t shiftSrcY1Tmp = vshrq_n_s16( vld1q_s16( srcY1Tmp ), 4 );
+
+    int16x8_t loadGradX0 = vld1q_s16( gradX0 + gradOfs );
+    int16x8_t loadGradX1 = vld1q_s16( gradX1 + gradOfs );
+    int16x8_t loadGradY0 = vld1q_s16( gradY0 + gradOfs );
+    int16x8_t loadGradY1 = vld1q_s16( gradY1 + gradOfs );
+    int16x8_t subTemp1 = vsubq_s16( shiftSrcY1Tmp, shiftSrcY0Tmp );
+    int16x8_t packTempX = vhaddq_s16( loadGradX0, loadGradX1 );
+    int16x8_t packTempY = vhaddq_s16( loadGradY0, loadGradY1 );
+
+    int16x8_t signX = signum_neon( packTempX );
+    int16x8_t signY = signum_neon( packTempY );
+
+    sumAbsGXTmp = vabaq_s16( sumAbsGXTmp, packTempX, vdupq_n_s16( 0 ) );
+    sumAbsGYTmp = vabaq_s16( sumAbsGYTmp, packTempY, vdupq_n_s16( 0 ) );
+    sumDIXTmp = vmlaq_s16( sumDIXTmp, subTemp1, signX );
+    sumDIYTmp = vmlaq_s16( sumDIYTmp, subTemp1, signY );
+    sumSignGyGxTmp = vmlaq_s16( sumSignGyGxTmp, packTempX, signY );
+
+    srcY0Tmp += srcStride;
+    srcY1Tmp += srcStride;
+    gradOfs += widthG;
+  }
+
+  int sumAbsGX = horizontal_add_s16x8( vandq_s16( sumAbsGXTmp, mask6 ) );
+  int sumAbsGY = horizontal_add_s16x8( vandq_s16( sumAbsGYTmp, mask6 ) );
+  int sumDIX = horizontal_add_s16x8( vandq_s16( sumDIXTmp, mask6 ) );
+  int sumDIY = horizontal_add_s16x8( vandq_s16( sumDIYTmp, mask6 ) );
+  int sumSignGY_GX = horizontal_add_s16x8( vandq_s16( sumSignGyGxTmp, mask6 ) );
+
+  tmpx = sumAbsGX == 0 ? 0 : rightShiftMSB( sumDIX << 2, sumAbsGX );
+  tmpx = Clip3( -limit, limit, tmpx );
+
+  int mainsGxGy = sumSignGY_GX >> 12;
+  int secsGxGy = sumSignGY_GX & ( ( 1 << 12 ) - 1 );
+  int tmpData = tmpx * mainsGxGy;
+  tmpData = ( ( tmpData << 12 ) + tmpx * secsGxGy ) >> 1;
+  tmpy = sumAbsGY == 0 ? 0 : rightShiftMSB( ( sumDIY << 2 ) - tmpData, sumAbsGY );
+  tmpy = Clip3( -limit, limit, tmpy );
+}
+
+static inline void addBIOAvg4_x2_neon( const int16_t* src0, const int16_t* src1, int16_t* dst, ptrdiff_t dstStride,
+                                       const int16_t* gradX0, const int16_t* gradX1, const int16_t* gradY0,
+                                       const int16_t* gradY1, int gradOfs, ptrdiff_t widthG, int tmpx[2], int tmpy[2],
+                                       int shift, int offset, const ClpRng& clpRng )
+{
+  const ptrdiff_t srcStride = widthG;
+  const ptrdiff_t gradStride = widthG;
+  const int32x4_t voffset = vdupq_n_s32( offset );
+  const uint16x8_t vibdimax = vdupq_n_u16( clpRng.max() );
+
+  for( int y = 0; y < 4; y++ )
+  {
+    int16x8_t a = vsubq_s16( vld1q_s16( gradX0 + gradOfs ), vld1q_s16( gradX1 + gradOfs ) );
+    int16x8_t b = vsubq_s16( vld1q_s16( gradY0 + gradOfs ), vld1q_s16( gradY1 + gradOfs ) );
+
+    int16x8_t s0 = vld1q_s16( src0 );
+    int16x8_t s1 = vld1q_s16( src1 );
+
+    int32x4_t s01_lo = vaddl_s16( vget_low_s16( s0 ), vget_low_s16( s1 ) );
+    int32x4_t s01_hi = vaddl_s16( vget_high_s16( s0 ), vget_high_s16( s1 ) );
+
+    int32x4_t sum_lo = vaddq_s32( voffset, s01_lo );
+    int32x4_t sum_hi = vaddq_s32( voffset, s01_hi );
+
+    sum_lo = vmlal_n_s16( sum_lo, vget_low_s16( a ), tmpx[0] );
+    sum_lo = vmlal_n_s16( sum_lo, vget_low_s16( b ), tmpy[0] );
+    sum_hi = vmlal_n_s16( sum_hi, vget_high_s16( a ), tmpx[1] );
+    sum_hi = vmlal_n_s16( sum_hi, vget_high_s16( b ), tmpy[1] );
+
+    uint16x4_t sum_u16_lo = vqmovun_s32( vshlq_s32( sum_lo, vdupq_n_s32( -shift ) ) );
+    uint16x4_t sum_u16_hi = vqmovun_s32( vshlq_s32( sum_hi, vdupq_n_s32( -shift ) ) );
+    uint16x8_t sum_u16 = vcombine_u16( sum_u16_lo, sum_u16_hi );
+
+    int16x8_t sum_s16 = vreinterpretq_s16_u16( vminq_u16( vibdimax, sum_u16 ) );
+
+    vst1q_s16( dst, sum_s16 );
+
+    dst += dstStride;
+    src0 += srcStride;
+    src1 += srcStride;
+    gradOfs += gradStride;
+  }
+}
+
+template<int width, int height>
+static void BiOptFlow_neon_impl( const Pel* srcY0, const Pel* srcY1, const Pel* gradX0, const Pel* gradX1,
+                                 const Pel* gradY0, const Pel* gradY1, Pel* dstY, const ptrdiff_t dstStride,
+                                 const int shiftNum, const int offset, const int limit, const ClpRng& clpRng,
+                                 const int bitDepth )
+{
+  constexpr int widthG = width + BIO_ALIGN_SIZE;
+  constexpr int stridePredMC = width + BIO_ALIGN_SIZE;
+  int offsetPos = widthG * BIO_EXTEND_SIZE + BIO_EXTEND_SIZE;
+
+  constexpr int xUnit = width >> 2;
+  int yUnit = height >> 2;
+  int offsetPad = 0;
+
+  static_assert( width >= 8 && height >= 4, "Invalid width or height" );
+
+  do
+  {
+    const Pel* srcY0Temp = srcY0;
+    const Pel* srcY1Temp = srcY1;
+    Pel* dstY0 = dstY;
+
+    int OffPos = offsetPos;
+    int OffPad = offsetPad;
+
+    for( int xu = 0; xu < xUnit; xu += 2 )
+    {
+      int tmpx[2], tmpy[2];
+      calcBIOSums_neon( srcY0Temp, srcY1Temp, gradX0, gradX1, gradY0, gradY1, OffPad, widthG, bitDepth, limit, tmpx[0],
+                        tmpy[0] );
+
+      calcBIOSums_neon( srcY0Temp + 4, srcY1Temp + 4, gradX0, gradX1, gradY0, gradY1, OffPad + 4, widthG, bitDepth,
+                        limit, tmpx[1], tmpy[1] );
+
+      addBIOAvg4_x2_neon( srcY0Temp + stridePredMC + 1, srcY1Temp + stridePredMC + 1, dstY0, dstStride, gradX0, gradX1,
+                          gradY0, gradY1, OffPos, widthG, tmpx, tmpy, shiftNum, offset, clpRng );
+      srcY0Temp += 8;
+      srcY1Temp += 8;
+      dstY0 += 8;
+      OffPos += 8;
+      OffPad += 8;
+    }
+    srcY0 += stridePredMC << 2;
+    srcY1 += stridePredMC << 2;
+    dstY += dstStride << 2;
+    offsetPos += widthG << 2;
+    offsetPad += widthG << 2;
+  } while( --yUnit != 0 );
+}
+
+void BiOptFlow_neon( const Pel* srcY0, const Pel* srcY1, const Pel* gradX0, const Pel* gradX1, const Pel* gradY0,
+                     const Pel* gradY1, const int width, const int height, Pel* dstY, const ptrdiff_t dstStride,
+                     const int shiftNum, const int offset, const int limit, const ClpRng& clpRng, const int bitDepth )
+{
+  if( width == 8 && height == 16 )
+  {
+    BiOptFlow_neon_impl<8, 16>( srcY0, srcY1, gradX0, gradX1, gradY0, gradY1, dstY, dstStride, shiftNum, offset, limit,
+                                clpRng, bitDepth );
+  }
+  else if( width == 16 && height == 8 )
+  {
+    BiOptFlow_neon_impl<16, 8>( srcY0, srcY1, gradX0, gradX1, gradY0, gradY1, dstY, dstStride, shiftNum, offset, limit,
+                                clpRng, bitDepth );
+  }
+  else if( width == 16 && height == 16 )
+  {
+    BiOptFlow_neon_impl<16, 16>( srcY0, srcY1, gradX0, gradX1, gradY0, gradY1, dstY, dstStride, shiftNum, offset, limit,
+                                 clpRng, bitDepth );
+  }
+  else
+  {
+    CHECKD( true, "Unsupported height and width combination" );
+  }
+}
+
+template<bool PAD>
+void gradFilter_neon( Pel* src, ptrdiff_t _srcStride, int width, int height, ptrdiff_t _gradStride, Pel* gradX,
+                      Pel* gradY, const int bitDepth )
+{
+  const int widthInside = PAD ? width - 2 * BIO_EXTEND_SIZE : 4;
+  const int heightInside = PAD ? height - 2 * BIO_EXTEND_SIZE : 4;
+  const ptrdiff_t gradStride = PAD ? _gradStride : 4;
+  const ptrdiff_t srcStride = PAD ? _srcStride : 6;
+
+  int16_t* srcTmp = PAD ? src + srcStride + 1 : src;
+  int16_t* gradXTmp = PAD ? gradX + gradStride + 1 : gradX;
+  int16_t* gradYTmp = PAD ? gradY + gradStride + 1 : gradY;
+
+  constexpr int shift = 6;
+
+  CHECKD( widthInside < 4, "(Width - 2) must be greater than or equal to 4!" );
+  CHECKD( heightInside % 2 != 0, "(Height - 2) must be multiple of 2!" );
+
+  if( widthInside % 8 == 0 )
+  {
+    int y = heightInside;
+    do
+    {
+      int x = 0;
+      do
+      {
+        int16x8_t srcRight = vld1q_s16( srcTmp + x + 1 );
+        int16x8_t srcLeft = vld1q_s16( srcTmp + x - 1 );
+
+        int16x8_t srcBottom0 = vld1q_s16( srcTmp + srcStride + x );
+        int16x8_t srcTop0 = vld1q_s16( srcTmp - srcStride + x );
+
+        srcRight = vshrq_n_s16( srcRight, shift );
+        srcLeft = vshrq_n_s16( srcLeft, shift );
+        srcBottom0 = vshrq_n_s16( srcBottom0, shift );
+        srcTop0 = vshrq_n_s16( srcTop0, shift );
+
+        int16x8_t grad_x = vsubq_s16( srcRight, srcLeft );
+        int16x8_t grad_y = vsubq_s16( srcBottom0, srcTop0 );
+
+        vst1q_s16( gradXTmp, grad_x );
+        vst1q_s16( gradYTmp, grad_y );
+
+        gradXTmp += 8;
+        gradYTmp += 8;
+        x += 8;
+      } while( x != widthInside );
+
+      gradXTmp += gradStride - widthInside;
+      gradYTmp += gradStride - widthInside;
+      srcTmp += srcStride;
+    } while( --y != 0 );
+  }
+  else
+  {
+    CHECKD( widthInside != 4, "(Width - 2) must be equal to 4!" );
+    int y = heightInside >> 1;
+
+    int16x8_t srcTop = vcombine_s16( vld1_s16( srcTmp - srcStride ), vld1_s16( srcTmp ) );
+    srcTop = vshrq_n_s16( srcTop, shift );
+
+    do
+    {
+      int16x8_t srcRight = vcombine_s16( vld1_s16( srcTmp + 1 ), vld1_s16( srcTmp + srcStride + 1 ) );
+      int16x8_t srcLeft = vcombine_s16( vld1_s16( srcTmp - 1 ), vld1_s16( srcTmp + srcStride - 1 ) );
+      int16x8_t srcBottom = vcombine_s16( vld1_s16( srcTmp + srcStride ), vld1_s16( srcTmp + ( srcStride << 1 ) ) );
+
+      srcRight = vshrq_n_s16( srcRight, shift );
+      srcLeft = vshrq_n_s16( srcLeft, shift );
+      srcBottom = vshrq_n_s16( srcBottom, shift );
+
+      const int16x8_t grad_x = vsubq_s16( srcRight, srcLeft );
+      const int16x8_t grad_y = vsubq_s16( srcBottom, srcTop );
+
+      vst1_s16( gradXTmp, vget_low_s16( grad_x ) );
+      vst1_s16( gradXTmp + gradStride, vget_high_s16( grad_x ) );
+      vst1_s16( gradYTmp, vget_low_s16( grad_y ) );
+      vst1_s16( gradYTmp + gradStride, vget_high_s16( grad_y ) );
+
+      gradXTmp += gradStride << 1;
+      gradYTmp += gradStride << 1;
+      srcTmp += srcStride << 1;
+      srcTop = srcBottom; // For next iteration.
+    } while( --y != 0 );
+  }
+
+  if( PAD )
+  {
+    gradXTmp = gradX + gradStride + 1;
+    gradYTmp = gradY + gradStride + 1;
+    srcTmp = src + srcStride + 1;
+    int y = heightInside;
+    do
+    {
+      gradXTmp[-1] = gradXTmp[0];
+      gradXTmp[widthInside] = gradXTmp[widthInside - 1];
+      gradXTmp += gradStride;
+
+      gradYTmp[-1] = gradYTmp[0];
+      gradYTmp[widthInside] = gradYTmp[widthInside - 1];
+      gradYTmp += gradStride;
+
+      srcTmp[-1] = srcTmp[0];
+      srcTmp[widthInside] = srcTmp[widthInside - 1];
+      srcTmp += srcStride;
+    } while( --y != 0 );
+
+    gradXTmp = gradX + gradStride;
+    gradYTmp = gradY + gradStride;
+    srcTmp = src + srcStride;
+
+    memcpy( gradXTmp - gradStride, gradXTmp, sizeof( Pel ) * width );
+    memcpy( gradXTmp + heightInside * gradStride, gradXTmp + ( heightInside - 1 ) * gradStride, sizeof( Pel ) * width );
+    memcpy( gradYTmp - gradStride, gradYTmp, sizeof( Pel ) * width );
+    memcpy( gradYTmp + heightInside * gradStride, gradYTmp + ( heightInside - 1 ) * gradStride, sizeof( Pel ) * width );
+    memcpy( srcTmp - srcStride, srcTmp, sizeof( Pel ) * ( width ) );
+    memcpy( srcTmp + heightInside * srcStride, srcTmp + ( heightInside - 1 ) * srcStride, sizeof( Pel ) * width );
+  }
+}
+
+// Duplicate the right element once: 0, 1, 2, 3, 4, 5, 6, 6
+static const uint8_t kPad1RightTbl[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 12, 13 };
+// Duplicate the left element once: 0, 0, 1, 2, 3, 4, 5, 6
+static const uint8_t kPad1LeftTbl[] = { 0, 1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+// Duplicate the right element twice: 0, 1, 2, 3, 4, 5, 5, 5
+static const uint8_t kPad2RightTbl[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 10, 11, 10, 11 };
+// Duplicate the left element twice: 0, 0, 0, 1, 2, 3, 4, 5
+static const uint8_t kPad2LeftTbl[] = { 0, 1, 0, 1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+
+static inline void prefetchPad_1_7( const Pel* src, const ptrdiff_t srcStride, Pel* dst, const ptrdiff_t dstStride,
+                                    int height )
+{
+  uint8x16_t idx = vld1q_u8( kPad1RightTbl );
+
+  int16x8_t s = vld1q_s16( src );
+  int16x8_t r = vreinterpretq_s16_s8( vvdec_vqtbl1q_s8( vreinterpretq_s8_s16( s ), idx ) );
+  dst[-dstStride - 1] = vgetq_lane_s16( s, 0 );
+  vst1q_s16( dst - dstStride, r );
+  dst[-1] = vgetq_lane_s16( s, 0 );
+  vst1q_s16( dst, r );
+
+  do
+  {
+    src += srcStride;
+    dst += dstStride;
+
+    s = vld1q_s16( src );
+    r = vreinterpretq_s16_s8( vvdec_vqtbl1q_s8( vreinterpretq_s8_s16( s ), idx ) );
+    dst[-1] = vgetq_lane_s16( s, 0 );
+    vst1q_s16( dst, r );
+  } while( --height != 1 );
+
+  dst[dstStride - 1] = vgetq_lane_s16( s, 0 );
+  vst1q_s16( dst + dstStride, r );
+}
+
+static inline void prefetchPad_1_11( const Pel* src, const ptrdiff_t srcStride, Pel* dst, const ptrdiff_t dstStride,
+                                     int height )
+{
+  uint8x16_t idx0 = vld1q_u8( kPad1LeftTbl );
+  uint8x16_t idx1 = vld1q_u8( kPad1RightTbl );
+
+  int16x8_t s0 = vld1q_s16( src + 0 );
+  int16x8_t s1 = vld1q_s16( src + 4 );
+  int16x8_t r0 = vreinterpretq_s16_s8( vvdec_vqtbl1q_s8( vreinterpretq_s8_s16( s0 ), idx0 ) );
+  int16x8_t r1 = vreinterpretq_s16_s8( vvdec_vqtbl1q_s8( vreinterpretq_s8_s16( s1 ), idx1 ) );
+  vst1q_s16( dst - dstStride - 1, r0 );
+  vst1q_s16( dst - dstStride + 4, r1 );
+  vst1q_s16( dst - 1, r0 );
+  vst1q_s16( dst + 4, r1 );
+
+  do
+  {
+    src += srcStride;
+    dst += dstStride;
+
+    s0 = vld1q_s16( src + 0 );
+    s1 = vld1q_s16( src + 4 );
+    r0 = vreinterpretq_s16_s8( vvdec_vqtbl1q_s8( vreinterpretq_s8_s16( s0 ), idx0 ) );
+    r1 = vreinterpretq_s16_s8( vvdec_vqtbl1q_s8( vreinterpretq_s8_s16( s1 ), idx1 ) );
+    vst1q_s16( dst - 1, r0 );
+    vst1q_s16( dst + 4, r1 );
+  } while( --height != 1 );
+
+  vst1q_s16( dst + dstStride - 1, r0 );
+  vst1q_s16( dst + dstStride + 4, r1 );
+}
+
+static inline void prefetchPad_2_15( const Pel* src, const ptrdiff_t srcStride, Pel* dst, const ptrdiff_t dstStride,
+                                     int height )
+{
+  uint8x16_t idx0 = vld1q_u8( kPad2LeftTbl );
+
+  int16x8_t s0 = vld1q_s16( src + 0 );
+  int16x8_t s1 = vld1q_s16( src + 6 );
+  int16x4_t s2 = vdup_n_s16( *( src + 14 ) );
+  int16x8_t r0 = vreinterpretq_s16_s8( vvdec_vqtbl1q_s8( vreinterpretq_s8_s16( s0 ), idx0 ) );
+  vst1q_s16( dst - 2 * dstStride - 2, r0 );
+  vst1q_s16( dst - 2 * dstStride + 6, s1 );
+  vst1_s16( dst - 2 * dstStride + 14, s2 );
+  vst1q_s16( dst - 1 * dstStride - 2, r0 );
+  vst1q_s16( dst - 1 * dstStride + 6, s1 );
+  vst1_s16( dst - 1 * dstStride + 14, s2 );
+  vst1q_s16( dst - 0 * dstStride - 2, r0 );
+  vst1q_s16( dst - 0 * dstStride + 6, s1 );
+  vst1_s16( dst - 0 * dstStride + 14, s2 );
+
+  do
+  {
+    src += srcStride;
+    dst += dstStride;
+
+    s0 = vld1q_s16( src + 0 );
+    s1 = vld1q_s16( src + 6 );
+    s2 = vdup_n_s16( *( src + 14 ) );
+
+    r0 = vreinterpretq_s16_s8( vvdec_vqtbl1q_s8( vreinterpretq_s8_s16( s0 ), idx0 ) );
+    vst1q_s16( dst - 2, r0 );
+    vst1q_s16( dst + 6, s1 );
+    vst1_s16( dst + 14, s2 );
+  } while( --height != 1 );
+
+  vst1q_s16( dst + 1 * dstStride - 2, r0 );
+  vst1q_s16( dst + 1 * dstStride + 6, s1 );
+  vst1_s16( dst + 1 * dstStride + 14, s2 );
+  vst1q_s16( dst + 2 * dstStride - 2, r0 );
+  vst1q_s16( dst + 2 * dstStride + 6, s1 );
+  vst1_s16( dst + 2 * dstStride + 14, s2 );
+}
+
+static inline void prefetchPad_2_23( const Pel* src, const ptrdiff_t srcStride, Pel* dst, const ptrdiff_t dstStride,
+                                     int height )
+{
+  uint8x16_t idx0 = vld1q_u8( kPad2LeftTbl );
+  uint8x16_t idx1 = vld1q_u8( kPad2RightTbl );
+
+  int16x8_t s0 = vld1q_s16( src + 0 );
+  int16x8_t s1 = vld1q_s16( src + 6 );
+  int16x8_t s2 = vld1q_s16( src + 14 );
+  int16x8_t s3 = vld1q_s16( src + 17 );
+  int16x8_t r0 = vreinterpretq_s16_s8( vvdec_vqtbl1q_s8( vreinterpretq_s8_s16( s0 ), idx0 ) );
+  int16x8_t r1 = vreinterpretq_s16_s8( vvdec_vqtbl1q_s8( vreinterpretq_s8_s16( s3 ), idx1 ) );
+  vst1q_s16( dst - 2 * dstStride - 2, r0 );
+  vst1q_s16( dst - 2 * dstStride + 6, s1 );
+  vst1q_s16( dst - 2 * dstStride + 14, s2 );
+  vst1q_s16( dst - 2 * dstStride + 17, r1 );
+  vst1q_s16( dst - 1 * dstStride - 2, r0 );
+  vst1q_s16( dst - 1 * dstStride + 6, s1 );
+  vst1q_s16( dst - 1 * dstStride + 14, s2 );
+  vst1q_s16( dst - 1 * dstStride + 17, r1 );
+  vst1q_s16( dst - 0 * dstStride - 2, r0 );
+  vst1q_s16( dst - 0 * dstStride + 6, s1 );
+  vst1q_s16( dst - 0 * dstStride + 14, s2 );
+  vst1q_s16( dst - 0 * dstStride + 17, r1 );
+
+  do
+  {
+    src += srcStride;
+    dst += dstStride;
+
+    s0 = vld1q_s16( src + 0 );
+    s1 = vld1q_s16( src + 6 );
+    s2 = vld1q_s16( src + 14 );
+    s3 = vld1q_s16( src + 17 );
+
+    r0 = vreinterpretq_s16_s8( vvdec_vqtbl1q_s8( vreinterpretq_s8_s16( s0 ), idx0 ) );
+    r1 = vreinterpretq_s16_s8( vvdec_vqtbl1q_s8( vreinterpretq_s8_s16( s3 ), idx1 ) );
+    vst1q_s16( dst - 2, r0 );
+    vst1q_s16( dst + 6, s1 );
+    vst1q_s16( dst + 14, s2 );
+    vst1q_s16( dst + 17, r1 );
+  } while( --height != 1 );
+
+  vst1q_s16( dst + 1 * dstStride - 2, r0 );
+  vst1q_s16( dst + 1 * dstStride + 6, s1 );
+  vst1q_s16( dst + 1 * dstStride + 14, s2 );
+  vst1q_s16( dst + 1 * dstStride + 17, r1 );
+  vst1q_s16( dst + 2 * dstStride - 2, r0 );
+  vst1q_s16( dst + 2 * dstStride + 6, s1 );
+  vst1q_s16( dst + 2 * dstStride + 14, s2 );
+  vst1q_s16( dst + 2 * dstStride + 17, r1 );
+}
+
+void prefetchPadL_neon( const Pel* src, const ptrdiff_t srcStride, Pel* dst, const ptrdiff_t dstStride, int width,
+                        int height )
+{
+  CHECKD( width != 15 && width != 23, "Unsupported width" );
+
+  if( width == 15 )
+  {
+    prefetchPad_2_15( src, srcStride, dst, dstStride, height );
+  }
+  else // width == 23
+  {
+    prefetchPad_2_23( src, srcStride, dst, dstStride, height );
+  }
+}
+
+void prefetchPadC_neon( const Pel* src, const ptrdiff_t srcStride, Pel* dst, const ptrdiff_t dstStride, int width,
+                        int height )
+{
+  CHECKD( width != 7 && width != 11, "Unsupported width" );
+
+  if( width == 7 )
+  {
+    prefetchPad_1_7( src, srcStride, dst, dstStride, height );
+  }
+  else // width == 11
+  {
+    prefetchPad_1_11( src, srcStride, dst, dstStride, height );
+  }
+}
+
+template<>
+void InterPrediction::_initInterPredictionARM<NEON>()
+{
+  BiOptFlow = BiOptFlow_neon;
+  BioGradFilter = gradFilter_neon<true>;
+  profGradFilter = gradFilter_neon<false>;
+  prefetchPad[0] = prefetchPadL_neon;
+  prefetchPad[2] = prefetchPadC_neon;
+}
+
+#endif // ENABLE_SIMD_OPT_INTER && defined(TARGET_SIMD_ARM)
+
+} // namespace vvdec

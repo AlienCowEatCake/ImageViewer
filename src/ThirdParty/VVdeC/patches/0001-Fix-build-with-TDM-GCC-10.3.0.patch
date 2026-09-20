@@ -1,4 +1,4 @@
-From eed7dcaffcde62cf1b23a0dd2c11a627788e46f5 Mon Sep 17 00:00:00 2001
+From 64b5dfa03f1c383b90b6e95646d102a372bc54f6 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sun, 8 Feb 2026 22:26:14 +0700
 Subject: [PATCH] Fix build with TDM-GCC 10.3.0
@@ -11,7 +11,7 @@ Subject: [PATCH] Fix build with TDM-GCC 10.3.0
  4 files changed, 42 insertions(+), 8 deletions(-)
 
 diff --git a/include/vvdec/vvdec.h.in b/include/vvdec/vvdec.h.in
-index fa632d8..9675ae1 100644
+index 48c99ef..99bb48b 100644
 --- a/include/vvdec/vvdec.h.in
 +++ b/include/vvdec/vvdec.h.in
 @@ -44,6 +44,7 @@ POSSIBILITY OF SUCH DAMAGE.
@@ -21,8 +21,8 @@ index fa632d8..9675ae1 100644
 +#include <stdarg.h>
  #include <stdint.h>
  #include <stdbool.h>
- 
-@@ -60,6 +61,7 @@ extern "C" {
+ #include <stdarg.h>
+@@ -61,6 +62,7 @@ extern "C" {
  
  VVDEC_NAMESPACE_BEGIN
  
@@ -30,7 +30,7 @@ index fa632d8..9675ae1 100644
  #if defined( __x86_64__ ) || defined( _M_X64 ) || defined( __i386__ ) || defined( __i386 ) || defined( _M_IX86 )
  # define VVDEC_ARCH_X86 1
  #elif defined( __aarch64__ ) || defined( _M_ARM64 ) || defined( __arm__ ) || defined( _M_ARM )
-@@ -69,6 +71,7 @@ VVDEC_NAMESPACE_BEGIN
+@@ -70,6 +72,7 @@ VVDEC_NAMESPACE_BEGIN
  #elif defined( __loongarch__ )
  # define VVDEC_ARCH_LOONGARCH 1
  #endif
@@ -39,7 +39,7 @@ index fa632d8..9675ae1 100644
  /* vvdecDecoder:
   * opaque handler for the decoder */
 diff --git a/source/Lib/CommonLib/BitStream.h b/source/Lib/CommonLib/BitStream.h
-index e8ca18e..bd7273a 100644
+index b118433..1d03687 100644
 --- a/source/Lib/CommonLib/BitStream.h
 +++ b/source/Lib/CommonLib/BitStream.h
 @@ -51,12 +51,6 @@ POSSIBILITY OF SUCH DAMAGE.
@@ -78,7 +78,7 @@ index e8ca18e..bd7273a 100644
  
  }
 diff --git a/source/Lib/CommonLib/CommonDef.h b/source/Lib/CommonLib/CommonDef.h
-index 06023c8..12e4824 100644
+index fc813e6..a6fe3d9 100644
 --- a/source/Lib/CommonLib/CommonDef.h
 +++ b/source/Lib/CommonLib/CommonDef.h
 @@ -55,6 +55,7 @@ POSSIBILITY OF SUCH DAMAGE.
@@ -136,7 +136,7 @@ index 06023c8..12e4824 100644
  
  #else   // !ALIGNED_MALLOC
  #  define xMalloc( type, len ) (type*) malloc( sizeof( type ) * ( len ) )
-@@ -599,6 +626,7 @@ namespace arm_simd
+@@ -602,6 +629,7 @@ namespace arm_simd
  template <typename ValueType> static inline ValueType rightShift      (const ValueType value, const int shift) { return (shift >= 0) ? ( value                                  >> shift) : ( value                                   << -shift); }
  template <typename ValueType> static inline ValueType rightShift_round(const ValueType value, const int shift) { return (shift >= 0) ? ((value + (ValueType(1) << (shift - 1))) >> shift) : ( value                                   << -shift); }
  
@@ -144,7 +144,7 @@ index 06023c8..12e4824 100644
  #if defined( _WIN32 )
  static inline unsigned int bit_scan_reverse( int a )
  {
-@@ -612,6 +640,7 @@ static inline unsigned int bit_scan_reverse( int a )
+@@ -615,6 +643,7 @@ static inline unsigned int bit_scan_reverse( int a )
    return __builtin_clz( a ) ^ ( 8 * sizeof( a ) - 1 );
  }
  #endif
@@ -153,7 +153,7 @@ index 06023c8..12e4824 100644
  #if ENABLE_SIMD_LOG2
  static inline int getLog2( int val )
 diff --git a/source/Lib/CommonLib/TypeDef.h b/source/Lib/CommonLib/TypeDef.h
-index 6fbcda7..87bc4eb 100644
+index 429b7fe..2fbdc9f 100644
 --- a/source/Lib/CommonLib/TypeDef.h
 +++ b/source/Lib/CommonLib/TypeDef.h
 @@ -142,7 +142,7 @@ namespace vvdec
@@ -166,5 +166,5 @@ index 6fbcda7..87bc4eb 100644
  #define ENABLE_SIMD_OPT_MCIF                            ( 1 && ENABLE_SIMD_OPT )                            ///< SIMD optimization for the interpolation filter
  #define ENABLE_SIMD_OPT_BUFFER                          ( 1 && ENABLE_SIMD_OPT )                            ///< SIMD optimization for the buffer operations
 -- 
-2.52.0
+2.55.0
 
