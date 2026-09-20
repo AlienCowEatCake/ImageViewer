@@ -22,13 +22,6 @@ declare_args() {
 
 config("libyuv_config") {
   include_dirs = [ "include" ]
-  if (is_android) {
-    if (target_cpu == "arm" || target_cpu == "x86") {
-      ldflags = [ "-Wl,--dynamic-linker,/system/bin/linker" ]
-    } else {
-      ldflags = [ "-Wl,--dynamic-linker,/system/bin/linker64" ]
-    }
-  }
 
   # Define CHROMIUM to tell cpu_id to avoid sandbox unsafe system calls.
   defines = [ "CHROMIUM" ]
@@ -76,7 +69,7 @@ group("libyuv") {
   all_dependent_configs = [ ":libyuv_config" ]
   deps = []
 
-  if (is_win && target_cpu == "x64") {
+  if (is_win && target_cpu == "x64" && current_toolchain == default_toolchain) {
     # Compile with clang in order to get inline assembly
     public_deps = [ ":libyuv_internal(//build/toolchain/win:win_clang_x64)" ]
   } else {
@@ -125,6 +118,7 @@ static_library("libyuv_internal") {
     "include/libyuv/convert_from.h",
     "include/libyuv/convert_from_argb.h",
     "include/libyuv/cpu_id.h",
+    "include/libyuv/cpu_support.h",
     "include/libyuv/loongson_intrinsics.h",
     "include/libyuv/mjpeg_decoder.h",
     "include/libyuv/planar_functions.h",
@@ -132,6 +126,7 @@ static_library("libyuv_internal") {
     "include/libyuv/rotate_argb.h",
     "include/libyuv/rotate_row.h",
     "include/libyuv/row.h",
+    "include/libyuv/row_sve.h",
     "include/libyuv/scale.h",
     "include/libyuv/scale_argb.h",
     "include/libyuv/scale_rgb.h",
@@ -253,8 +248,8 @@ if (libyuv_use_sve) {
     # The -march arguments below are incompatible with libc++ modules.
     use_libcxx_modules = false
 
-    # SVE2 is an Armv9-A feature.
-    cflags = [ "-march=armv9-a+i8mm+sve2" ]
+    # SVE2 is an Armv9-A feature, but use Armv8.5-A for compatibility.
+    cflags = [ "-march=armv8.5-a+i8mm+sve2" ]
   }
 }
 
@@ -273,8 +268,9 @@ if (libyuv_use_sme) {
     # The -march arguments below are incompatible with libc++ modules.
     use_libcxx_modules = false
 
-    # SME is an Armv9-A feature.
-    cflags = [ "-march=armv9-a+i8mm+sme" ]
+    # SME is an Armv9-A feature, but use Armv8.5-A for compatibility with
+    # processors like Apple M4/M5 that support SME without SVE.
+    cflags = [ "-march=armv8.5-a+i8mm+sme" ]
   }
 }
 

@@ -1,4 +1,4 @@
-From 4cb8173ce50e468e739e139ca85b9b90d0dddccd Mon Sep 17 00:00:00 2001
+From 3955e06bc25cb5df0b7afb58d5517882e972d7b5 Mon Sep 17 00:00:00 2001
 From: Peter Zhigalov <peter.zhigalov@gmail.com>
 Date: Sat, 2 May 2026 14:09:01 +0700
 Subject: [PATCH 2/2] Fix ArgbConstants declarations
@@ -8,13 +8,13 @@ Subject: [PATCH 2/2] Fix ArgbConstants declarations
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/source/convert.cc b/source/convert.cc
-index 4a713658..127939ed 100644
+index 20445caf..330db9ac 100644
 --- a/source/convert.cc
 +++ b/source/convert.cc
-@@ -22,9 +22,9 @@
- 
+@@ -24,9 +24,9 @@
  #ifdef __cplusplus
  namespace libyuv {
+ 
 +extern "C" {
  extern const struct ArgbConstants kArgbI601Constants;
  extern const struct ArgbConstants kArgbJPEGConstants;
@@ -23,5 +23,5 @@ index 4a713658..127939ed 100644
  
  // Subsample amount uses a shift.
 -- 
-2.47.3
+2.55.0
 

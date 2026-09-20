@@ -18,7 +18,6 @@
 #endif
 
 #include "../unit_test/unit_test.h"
-#include "libyuv/basic_types.h"
 #include "libyuv/cpu_id.h"
 #include "libyuv/version.h"
 
@@ -189,6 +188,7 @@ TEST_F(LibYUVBaseTest, TestCpuHas) {
     int has_avxvnni = TestCpuFlag(kCpuHasAVXVNNI);
     int has_avxvnniint8 = TestCpuFlag(kCpuHasAVXVNNIINT8);
     int has_amxint8 = TestCpuFlag(kCpuHasAMXINT8);
+    int has_avx512bmm = TestCpuFlag(kCpuHasAVX512BMM);
     printf("Has X86 0x%x\n", has_x86);
     printf("Has SSE2 0x%x\n", has_sse2);
     printf("Has SSSE3 0x%x\n", has_ssse3);
@@ -211,6 +211,7 @@ TEST_F(LibYUVBaseTest, TestCpuHas) {
     printf("HAS AVXVNNI 0x%x\n", has_avxvnni);
     printf("Has AVXVNNIINT8 0x%x\n", has_avxvnniint8);
     printf("Has AMXINT8 0x%x\n", has_amxint8);
+    printf("Has AVX512BMM 0x%x\n", has_avx512bmm);
   }
 #endif  // defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) ||
         // defined(_M_X64)
@@ -365,7 +366,9 @@ TEST_F(LibYUVBaseTest, TestLinuxAArch64) {
   expected |= kCpuHasSME;
   ASSERT_EQ(expected, AArch64CpuCaps(0x3fffffffU, 0x82f3ffU));
 
-  // TODO: Check for SME2 feature detection from Apple M4
+  // Check for SME2 feature detection.
+  expected |= kCpuHasSME2;
+  ASSERT_EQ(expected, AArch64CpuCaps(0x3fffffffU, 0x200082f3ffULL));
 }
 #endif
 

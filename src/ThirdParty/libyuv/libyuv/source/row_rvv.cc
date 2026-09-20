@@ -40,6 +40,18 @@ extern "C" {
     bg = yuvconst->kRGBCoeffBias[2] - 32;                        \
     br = yuvconst->kRGBCoeffBias[3] + 32;                        \
   }
+// Fill YUV -> AR30 conversion constants into vectors
+#define YUVTORGB_SETUP_AR30(yuvconst, ub, vr, ug, vg, yg, bb, bg, br) \
+  {                                                                   \
+    ub = yuvconst->kUVCoeff[0];                                       \
+    vr = yuvconst->kUVCoeff[1];                                       \
+    ug = yuvconst->kUVCoeff[2];                                       \
+    vg = yuvconst->kUVCoeff[3];                                       \
+    yg = yuvconst->kRGBCoeffBias[0];                                  \
+    bb = yuvconst->kRGBCoeffBias[1] + 24;                             \
+    bg = yuvconst->kRGBCoeffBias[2] - 24;                             \
+    br = yuvconst->kRGBCoeffBias[3] + 24;                             \
+  }
 #else
 // Fill YUV -> RGB conversion constants into vectors
 // NOTE: To match behavior on other platforms, vxrm (fixed-point rounding mode
@@ -55,6 +67,19 @@ extern "C" {
     bb = yuvconst->kRGBCoeffBias[1] + 32;                        \
     bg = yuvconst->kRGBCoeffBias[2] - 32;                        \
     br = yuvconst->kRGBCoeffBias[3] + 32;                        \
+  }
+// Fill YUV -> AR30 conversion constants into vectors
+#define YUVTORGB_SETUP_AR30(yuvconst, ub, vr, ug, vg, yg, bb, bg, br) \
+  {                                                                   \
+    asm volatile("csrwi vxrm, 0");                                    \
+    ub = yuvconst->kUVCoeff[0];                                       \
+    vr = yuvconst->kUVCoeff[1];                                       \
+    ug = yuvconst->kUVCoeff[2];                                       \
+    vg = yuvconst->kUVCoeff[3];                                       \
+    yg = yuvconst->kRGBCoeffBias[0];                                  \
+    bb = yuvconst->kRGBCoeffBias[1] + 24;                             \
+    bg = yuvconst->kRGBCoeffBias[2] - 24;                             \
+    br = yuvconst->kRGBCoeffBias[3] + 24;                             \
   }
 #endif
 // Read [2*VLEN/8] Y, [VLEN/8] U and [VLEN/8] V from 422
@@ -705,6 +730,48 @@ void I422ToRGB24Row_RVV(const uint8_t* src_y,
 }
 #endif
 
+#ifdef HAS_I422TOAR30ROW_RVV
+void I422ToAR30Row_RVV(const uint8_t* src_y,
+                       const uint8_t* src_u,
+                       const uint8_t* src_v,
+                       uint8_t* dst_ar30,
+                       const struct YuvConstants* yuvconstants,
+                       int width) {
+  size_t vl;
+  size_t w = (size_t)width;
+  uint8_t ub, vr, ug, vg;
+  int16_t yg, bb, bg, br;
+  vuint8m2_t v_u, v_v;
+  vuint16m4_t v_y_16, v_g_16, v_b_16, v_r_16;
+  vuint16m4_t v_b_10, v_g_10, v_r_10, v_ra_16;
+  vuint32m8_t v_ar30, v_ra_32;
+  YUVTORGB_SETUP_AR30(yuvconstants, ub, vr, ug, vg, yg, bb, bg, br);
+  do {
+    READYUV422(vl, w, src_y, src_u, src_v, v_u, v_v, v_y_16);
+    YUVTORGB(vl, v_u, v_v, ub, vr, ug, vg, yg, bb, bg, br, v_y_16, v_g_16,
+             v_b_16, v_r_16);
+    v_b_10 =
+        __riscv_vminu_vx_u16m4(__riscv_vsrl_vx_u16m4(v_b_16, 4, vl), 1023, vl);
+    v_g_10 =
+        __riscv_vminu_vx_u16m4(__riscv_vsrl_vx_u16m4(v_g_16, 4, vl), 1023, vl);
+    v_r_10 =
+        __riscv_vminu_vx_u16m4(__riscv_vsrl_vx_u16m4(v_r_16, 4, vl), 1023, vl);
+    v_ar30 = __riscv_vwaddu_vx_u32m8(v_b_10, 0, vl);
+    v_ar30 = __riscv_vwmaccu_vx_u32m8(v_ar30, 1024, v_g_10, vl);
+    v_ra_16 = __riscv_vor_vx_u16m4(v_r_10, 0x0c00, vl);
+    v_ra_32 = __riscv_vwaddu_vx_u32m8(v_ra_16, 0, vl);
+    v_ra_32 = __riscv_vsll_vx_u32m8(v_ra_32, 20, vl);
+    v_ar30 = __riscv_vor_vv_u32m8(v_ar30, v_ra_32, vl);
+    __riscv_vse32_v_u32m8((uint32_t*)dst_ar30, v_ar30, vl);
+    w -= vl;
+    src_y += vl;
+    src_u += vl / 2;
+    src_v += vl / 2;
+    dst_ar30 += vl * 4;
+  } while (w > 0);
+}
+#endif
+
 #ifdef HAS_I400TOARGBROW_RVV
 #if defined(LIBYUV_RVV_HAS_VXRM_ARG)
 void I400ToARGBRow_RVV(const uint8_t* src_y,
@@ -1249,53 +1316,93 @@ void MergeUVRow_RVV(const uint8_t* src_u,
 }
 #endif
 
-
-
-// RGB to JPeg coefficients
-// B * 0.1140 coefficient = 29
-// G * 0.5870 coefficient = 150
-// R * 0.2990 coefficient = 77
-// Add 0.5 = 0x80
-static const struct ArgbConstants kRgb24JPEGConstants = {{29, 150, 77, 0}, {0}, {0}, {128}, {0}};
-
-static const struct ArgbConstants kRawJPEGConstants = {{77, 150, 29, 0}, {0}, {0}, {128}, {0}};
-
-// RGB to BT.601 coefficients
-// B * 0.1016 coefficient = 25
-// G * 0.5078 coefficient = 129
-// R * 0.2578 coefficient = 66
-// Add 16.5 = 0x1080
-
-static const struct ArgbConstants kRgb24I601Constants = {{25, 129, 66, 0}, {0}, {0}, {0x1080}, {0}};
-
-static const struct ArgbConstants kRawI601Constants = {{66, 129, 25, 0}, {0}, {0}, {0x1080}, {0}};
+#ifdef HAS_SWAPUVROW_RVV
+// TODO(fbarchard): RVV_ASM uses vle16.v/vse16.v which requires hardware
+// support for unaligned 16-bit vector loads and stores.
+void SwapUVRow_RVV(const uint8_t* src_uv, uint8_t* dst_vu, int width) {
+  assert(width != 0);
+#ifdef RVV_ASM
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wvla"
+  size_t vl;
+  asm(
+      "1:          \n"
+      "vsetvli     %[vl], %[w], e16, m4, ta, ma  \n"
+      "vle16.v     v8, (%[src_uv])               \n"
+      "vsrl.vi     v12, v8, 8                    \n"
+      "vsll.vi     v8, v8, 8                     \n"
+      "vor.vv      v8, v8, v12                   \n"
+      "vse16.v     v8, (%[dst_vu])               \n"
+      "sub         %[w], %[w], %[vl]             \n"
+      "slli        %[vl], %[vl], 1               \n"
+      "add         %[src_uv], %[src_uv], %[vl]   \n"
+      "add         %[dst_vu], %[dst_vu], %[vl]   \n"
+      "bgtz        %[w], 1b                      \n"
+      : [src_uv] "+r"(src_uv),  // %[src_uv]
+        [dst_vu] "+r"(dst_vu),  // %[dst_vu]
+        [w] "+r"(width),        // %[w]
+        [vl] "=&r"(vl),         // %[vl]
+        "=m"(*(uint8_t (*)[width * 2])dst_vu)
+      : "m"(*(const uint8_t (*)[width * 2])src_uv)
+      : "vl", "vtype", "v8", "v9", "v10", "v11", "v12", "v13", "v14", "v15");
+#pragma GCC diagnostic pop
+#else
+  size_t w = (size_t)width;
+  do {
+    size_t vl = __riscv_vsetvl_e8m4(w);
+#if defined(LIBYUV_RVV_HAS_TUPLE_TYPE)
+    vuint8m4x2_t v_src = __riscv_vlseg2e8_v_u8m4x2(src_uv, vl);
+    vuint8m4_t v_u = __riscv_vget_v_u8m4x2_u8m4(v_src, 0);
+    vuint8m4_t v_v = __riscv_vget_v_u8m4x2_u8m4(v_src, 1);
+#if defined(LIBYUV_RVV_HAS_VCREATE)
+    vuint8m4x2_t v_dst = __riscv_vcreate_v_u8m4x2(v_v, v_u);
+#else
+    vuint8m4x2_t v_dst = __riscv_vset_v_u8m4_u8m4x2(v_src, 0, v_v);
+    v_dst = __riscv_vset_v_u8m4_u8m4x2(v_dst, 1, v_u);
+#endif
+    __riscv_vsseg2e8_v_u8m4x2(dst_vu, v_dst, vl);
+#else
+    vuint8m4_t v_u, v_v;
+    __riscv_vlseg2e8_v_u8m4(&v_u, &v_v, src_uv, vl);
+    __riscv_vsseg2e8_v_u8m4(dst_vu, v_v, v_u, vl);
+#endif
+    w -= vl;
+    src_uv += 2 * vl;
+    dst_vu += 2 * vl;
+  } while (w > 0);
+#endif
+}
+#endif
 
 // ARGB expects first 3 values to contain RGB and 4th value is ignored
 #ifdef HAS_ARGBTOYMATRIXROW_RVV
 void ARGBToYMatrixRow_RVV(const uint8_t* src_argb,
-                                 uint8_t* dst_y,
-                                 int width,
-                                 const struct ArgbConstants* c) {
+                          uint8_t* dst_y,
+                          int width,
+                          const struct ArgbConstants* c) {
   assert(width != 0);
   size_t w = (size_t)width;
-  vuint8m2_t v_by, v_gy, v_ry;  // vectors are to store RGBToY constant
-  vuint16m4_t v_addy;           // vector is to store kAddY
+  vuint8m2_t v_y0, v_y1, v_y2, v_y3;
+  vuint16m4_t v_addy;
   size_t vl = __riscv_vsetvl_e8m2(w);
-  v_by = __riscv_vmv_v_x_u8m2(c->kRGBToY[0], vl);
-  v_gy = __riscv_vmv_v_x_u8m2(c->kRGBToY[1], vl);
-  v_ry = __riscv_vmv_v_x_u8m2(c->kRGBToY[2], vl);
+  v_y0 = __riscv_vmv_v_x_u8m2(c->kRGBToY[0], vl);
+  v_y1 = __riscv_vmv_v_x_u8m2(c->kRGBToY[1], vl);
+  v_y2 = __riscv_vmv_v_x_u8m2(c->kRGBToY[2], vl);
+  v_y3 = __riscv_vmv_v_x_u8m2(c->kRGBToY[3], vl);
   v_addy = __riscv_vmv_v_x_u16m4(c->kAddY[0], vl);
   do {
     vuint8m2_t v_y;
     vuint16m4_t v_y_u16;
     size_t vl = __riscv_vsetvl_e8m2(w);
     vuint8m2x4_t v_src_argb = __riscv_vlseg4e8_v_u8m2x4(src_argb, vl);
-    vuint8m2_t v_b = __riscv_vget_v_u8m2x4_u8m2(v_src_argb, 0);
-    vuint8m2_t v_g = __riscv_vget_v_u8m2x4_u8m2(v_src_argb, 1);
-    vuint8m2_t v_r = __riscv_vget_v_u8m2x4_u8m2(v_src_argb, 2);
-    v_y_u16 = __riscv_vwmulu_vv_u16m4(v_r, v_ry, vl);
-    v_y_u16 = __riscv_vwmaccu_vv_u16m4(v_y_u16, v_gy, v_g, vl);
-    v_y_u16 = __riscv_vwmaccu_vv_u16m4(v_y_u16, v_by, v_b, vl);
+    vuint8m2_t v_b0 = __riscv_vget_v_u8m2x4_u8m2(v_src_argb, 0);
+    vuint8m2_t v_b1 = __riscv_vget_v_u8m2x4_u8m2(v_src_argb, 1);
+    vuint8m2_t v_b2 = __riscv_vget_v_u8m2x4_u8m2(v_src_argb, 2);
+    vuint8m2_t v_b3 = __riscv_vget_v_u8m2x4_u8m2(v_src_argb, 3);
+    v_y_u16 = __riscv_vwmulu_vv_u16m4(v_b0, v_y0, vl);
+    v_y_u16 = __riscv_vwmaccu_vv_u16m4(v_y_u16, v_y1, v_b1, vl);
+    v_y_u16 = __riscv_vwmaccu_vv_u16m4(v_y_u16, v_y2, v_b2, vl);
+    v_y_u16 = __riscv_vwmaccu_vv_u16m4(v_y_u16, v_y3, v_b3, vl);
     v_y_u16 = __riscv_vadd_vv_u16m4(v_y_u16, v_addy, vl);
     v_y = __riscv_vnsrl_wx_u8m2(v_y_u16, 8, vl);
     __riscv_vse8_v_u8m2(dst_y, v_y, vl);
@@ -1306,89 +1413,11 @@ void ARGBToYMatrixRow_RVV(const uint8_t* src_argb,
 }
 #endif
 
-#ifdef HAS_ARGBTOYROW_RVV
-void ARGBToYRow_RVV(const uint8_t* src_argb, uint8_t* dst_y, int width) {
-  ARGBToYMatrixRow_RVV(src_argb, dst_y, width, &kRgb24I601Constants);
-}
-#endif
-
-#ifdef HAS_ARGBTOYJROW_RVV
-void ARGBToYJRow_RVV(const uint8_t* src_argb, uint8_t* dst_yj, int width) {
-  ARGBToYMatrixRow_RVV(src_argb, dst_yj, width, &kRgb24JPEGConstants);
-}
-#endif
-
-#ifdef HAS_ABGRTOYROW_RVV
-void ABGRToYRow_RVV(const uint8_t* src_abgr, uint8_t* dst_y, int width) {
-  ARGBToYMatrixRow_RVV(src_abgr, dst_y, width, &kRawI601Constants);
-}
-#endif
-
-#ifdef HAS_ABGRTOYJROW_RVV
-void ABGRToYJRow_RVV(const uint8_t* src_abgr, uint8_t* dst_yj, int width) {
-  ARGBToYMatrixRow_RVV(src_abgr, dst_yj, width, &kRawJPEGConstants);
-}
-#endif
-
-// RGBA expects first value to be A and ignored, then 3 values to contain RGB.
-#ifdef HAS_RGBATOYMATRIXROW_RVV
-static void RGBAToYMatrixRow_RVV(const uint8_t* src_rgba,
-                                 uint8_t* dst_y,
-                                 int width,
-                                 const struct ArgbConstants* c) {
-  assert(width != 0);
-  size_t w = (size_t)width;
-  vuint8m2_t v_by, v_gy, v_ry;  // vectors are to store RGBToY constant
-  vuint16m4_t v_addy;           // vector is to store kAddY
-  size_t vl = __riscv_vsetvl_e8m2(w);
-  v_by = __riscv_vmv_v_x_u8m2(c->kRGBToY[0], vl);
-  v_gy = __riscv_vmv_v_x_u8m2(c->kRGBToY[1], vl);
-  v_ry = __riscv_vmv_v_x_u8m2(c->kRGBToY[2], vl);
-  v_addy = __riscv_vmv_v_x_u16m4(c->kAddY[0], vl);
-  do {
-    vuint8m2_t v_y;
-    vuint16m4_t v_y_u16;
-    size_t vl = __riscv_vsetvl_e8m2(w);
-    vuint8m2x4_t v_src_rgba = __riscv_vlseg4e8_v_u8m2x4(src_rgba, vl);
-    vuint8m2_t v_b = __riscv_vget_v_u8m2x4_u8m2(v_src_rgba, 1);
-    vuint8m2_t v_g = __riscv_vget_v_u8m2x4_u8m2(v_src_rgba, 2);
-    vuint8m2_t v_r = __riscv_vget_v_u8m2x4_u8m2(v_src_rgba, 3);
-    v_y_u16 = __riscv_vwmulu_vv_u16m4(v_r, v_ry, vl);
-    v_y_u16 = __riscv_vwmaccu_vv_u16m4(v_y_u16, v_gy, v_g, vl);
-    v_y_u16 = __riscv_vwmaccu_vv_u16m4(v_y_u16, v_by, v_b, vl);
-    v_y_u16 = __riscv_vadd_vv_u16m4(v_y_u16, v_addy, vl);
-    v_y = __riscv_vnsrl_wx_u8m2(v_y_u16, 8, vl);
-    __riscv_vse8_v_u8m2(dst_y, v_y, vl);
-    w -= vl;
-    src_rgba += 4 * vl;
-    dst_y += vl;
-  } while (w > 0);
-}
-#endif
-
-#ifdef HAS_RGBATOYROW_RVV
-void RGBAToYRow_RVV(const uint8_t* src_rgba, uint8_t* dst_y, int width) {
-  RGBAToYMatrixRow_RVV(src_rgba, dst_y, width, &kRgb24I601Constants);
-}
-#endif
-
-#ifdef HAS_RGBATOYJROW_RVV
-void RGBAToYJRow_RVV(const uint8_t* src_rgba, uint8_t* dst_yj, int width) {
-  RGBAToYMatrixRow_RVV(src_rgba, dst_yj, width, &kRgb24JPEGConstants);
-}
-#endif
-
-#ifdef HAS_BGRATOYROW_RVV
-void BGRAToYRow_RVV(const uint8_t* src_bgra, uint8_t* dst_y, int width) {
-  RGBAToYMatrixRow_RVV(src_bgra, dst_y, width, &kRawI601Constants);
-}
-#endif
-
 #ifdef HAS_RGBTOYMATRIXROW_RVV
-static void RGBToYMatrixRow_RVV(const uint8_t* src_rgb,
-                                uint8_t* dst_y,
-                                int width,
-                                const struct ArgbConstants* c) {
+void RGBToYMatrixRow_RVV(const uint8_t* src_rgb,
+                         uint8_t* dst_y,
+                         int width,
+                         const struct ArgbConstants* c) {
   assert(width != 0);
   size_t w = (size_t)width;
   vuint8m2_t v_by, v_gy, v_ry;  // vectors are to store RGBToY constant
@@ -1419,16 +1448,320 @@ static void RGBToYMatrixRow_RVV(const uint8_t* src_rgb,
 }
 #endif
 
-#ifdef HAS_RGB24TOYJROW_RVV
+#ifdef HAS_ARGBTOUV444MATRIXROW_RVV
+void ARGBToUV444MatrixRow_RVV(const uint8_t* src_argb,
+                              uint8_t* dst_u,
+                              uint8_t* dst_v,
+                              int width,
+                              const struct ArgbConstants* c) {
+  assert(width != 0);
+  size_t w = (size_t)width;
+  vint8m2_t v_u0, v_u1, v_u2, v_u3;
+  vint8m2_t v_v0, v_v1, v_v2, v_v3;
+  vint16m4_t v_adduv;
+  size_t vl = __riscv_vsetvl_e8m2(w);
+  v_u0 = __riscv_vmv_v_x_i8m2(c->kRGBToU[0], vl);
+  v_u1 = __riscv_vmv_v_x_i8m2(c->kRGBToU[1], vl);
+  v_u2 = __riscv_vmv_v_x_i8m2(c->kRGBToU[2], vl);
+  v_u3 = __riscv_vmv_v_x_i8m2(c->kRGBToU[3], vl);
+  v_v0 = __riscv_vmv_v_x_i8m2(c->kRGBToV[0], vl);
+  v_v1 = __riscv_vmv_v_x_i8m2(c->kRGBToV[1], vl);
+  v_v2 = __riscv_vmv_v_x_i8m2(c->kRGBToV[2], vl);
+  v_v3 = __riscv_vmv_v_x_i8m2(c->kRGBToV[3], vl);
+  v_adduv = __riscv_vmv_v_x_i16m4((int16_t)c->kAddUV[0], vl);
+  do {
+    size_t vl = __riscv_vsetvl_e8m2(w);
+    vuint8m2x4_t v_src_argb = __riscv_vlseg4e8_v_u8m2x4(src_argb, vl);
+    vuint8m2_t v_b0 = __riscv_vget_v_u8m2x4_u8m2(v_src_argb, 0);
+    vuint8m2_t v_b1 = __riscv_vget_v_u8m2x4_u8m2(v_src_argb, 1);
+    vuint8m2_t v_b2 = __riscv_vget_v_u8m2x4_u8m2(v_src_argb, 2);
+    vuint8m2_t v_b3 = __riscv_vget_v_u8m2x4_u8m2(v_src_argb, 3);
+
+    vint16m4_t v_u_i16 = __riscv_vwmulsu_vv_i16m4(v_u0, v_b0, vl);
+    v_u_i16 = __riscv_vwmaccsu_vv_i16m4(v_u_i16, v_u1, v_b1, vl);
+    v_u_i16 = __riscv_vwmaccsu_vv_i16m4(v_u_i16, v_u2, v_b2, vl);
+    v_u_i16 = __riscv_vwmaccsu_vv_i16m4(v_u_i16, v_u3, v_b3, vl);
+    v_u_i16 = __riscv_vsub_vv_i16m4(v_adduv, v_u_i16, vl);
+    vuint8m2_t v_u = __riscv_vnsrl_wx_u8m2(
+        __riscv_vreinterpret_v_i16m4_u16m4(v_u_i16), 8, vl);
+    __riscv_vse8_v_u8m2(dst_u, v_u, vl);
+
+    vint16m4_t v_v_i16 = __riscv_vwmulsu_vv_i16m4(v_v0, v_b0, vl);
+    v_v_i16 = __riscv_vwmaccsu_vv_i16m4(v_v_i16, v_v1, v_b1, vl);
+    v_v_i16 = __riscv_vwmaccsu_vv_i16m4(v_v_i16, v_v2, v_b2, vl);
+    v_v_i16 = __riscv_vwmaccsu_vv_i16m4(v_v_i16, v_v3, v_b3, vl);
+    v_v_i16 = __riscv_vsub_vv_i16m4(v_adduv, v_v_i16, vl);
+    vuint8m2_t v_v = __riscv_vnsrl_wx_u8m2(
+        __riscv_vreinterpret_v_i16m4_u16m4(v_v_i16), 8, vl);
+    __riscv_vse8_v_u8m2(dst_v, v_v, vl);
+
+    w -= vl;
+    src_argb += 4 * vl;
+    dst_u += vl;
+    dst_v += vl;
+  } while (w > 0);
+}
 #endif
 
-#ifdef HAS_RAWTOYJROW_RVV
+#ifdef HAS_ARGBTOUVMATRIXROW_RVV
+void ARGBToUVMatrixRow_RVV(const uint8_t* src_argb,
+                           int src_stride_argb,
+                           uint8_t* dst_u,
+                           uint8_t* dst_v,
+                           int width,
+                           const struct ArgbConstants* c) {
+  assert(width != 0);
+  const uint8_t* src_argb_0 = src_argb;
+  const uint8_t* src_argb_1 = src_argb + src_stride_argb;
+  int w = width >> 1;
+  if (w > 0) {
+    size_t w_len = (size_t)w;
+    vint8m1_t v_u0, v_u1, v_u2, v_u3;
+    vint8m1_t v_v0, v_v1, v_v2, v_v3;
+    vint16m2_t v_adduv;
+    size_t vl = __riscv_vsetvl_e8m1(w_len);
+    v_u0 = __riscv_vmv_v_x_i8m1(c->kRGBToU[0], vl);
+    v_u1 = __riscv_vmv_v_x_i8m1(c->kRGBToU[1], vl);
+    v_u2 = __riscv_vmv_v_x_i8m1(c->kRGBToU[2], vl);
+    v_u3 = __riscv_vmv_v_x_i8m1(c->kRGBToU[3], vl);
+    v_v0 = __riscv_vmv_v_x_i8m1(c->kRGBToV[0], vl);
+    v_v1 = __riscv_vmv_v_x_i8m1(c->kRGBToV[1], vl);
+    v_v2 = __riscv_vmv_v_x_i8m1(c->kRGBToV[2], vl);
+    v_v3 = __riscv_vmv_v_x_i8m1(c->kRGBToV[3], vl);
+    v_adduv = __riscv_vmv_v_x_i16m2((int16_t)c->kAddUV[0], vl);
+    do {
+      size_t vl = __riscv_vsetvl_e8m1(w_len);
+      vuint8m1x8_t v_src0 = __riscv_vlseg8e8_v_u8m1x8(src_argb_0, vl);
+      vuint8m1x8_t v_src1 = __riscv_vlseg8e8_v_u8m1x8(src_argb_1, vl);
+
+      vuint8m1_t b0 = __riscv_vget_v_u8m1x8_u8m1(v_src0, 0);
+      vuint8m1_t g0 = __riscv_vget_v_u8m1x8_u8m1(v_src0, 1);
+      vuint8m1_t r0 = __riscv_vget_v_u8m1x8_u8m1(v_src0, 2);
+      vuint8m1_t a0 = __riscv_vget_v_u8m1x8_u8m1(v_src0, 3);
+      vuint8m1_t b1 = __riscv_vget_v_u8m1x8_u8m1(v_src0, 4);
+      vuint8m1_t g1 = __riscv_vget_v_u8m1x8_u8m1(v_src0, 5);
+      vuint8m1_t r1 = __riscv_vget_v_u8m1x8_u8m1(v_src0, 6);
+      vuint8m1_t a1 = __riscv_vget_v_u8m1x8_u8m1(v_src0, 7);
+
+      vuint8m1_t b0_1 = __riscv_vget_v_u8m1x8_u8m1(v_src1, 0);
+      vuint8m1_t g0_1 = __riscv_vget_v_u8m1x8_u8m1(v_src1, 1);
+      vuint8m1_t r0_1 = __riscv_vget_v_u8m1x8_u8m1(v_src1, 2);
+      vuint8m1_t a0_1 = __riscv_vget_v_u8m1x8_u8m1(v_src1, 3);
+      vuint8m1_t b1_1 = __riscv_vget_v_u8m1x8_u8m1(v_src1, 4);
+      vuint8m1_t g1_1 = __riscv_vget_v_u8m1x8_u8m1(v_src1, 5);
+      vuint8m1_t r1_1 = __riscv_vget_v_u8m1x8_u8m1(v_src1, 6);
+      vuint8m1_t a1_1 = __riscv_vget_v_u8m1x8_u8m1(v_src1, 7);
+
+      vuint16m2_t sum_b = __riscv_vwaddu_vv_u16m2(b0, b1, vl);
+      sum_b = __riscv_vwaddu_wv_u16m2(sum_b, b0_1, vl);
+      sum_b = __riscv_vwaddu_wv_u16m2(sum_b, b1_1, vl);
+      sum_b = __riscv_vadd_vx_u16m2(sum_b, 2, vl);
+      vuint8m1_t b = __riscv_vnsrl_wx_u8m1(sum_b, 2, vl);
+
+      vuint16m2_t sum_g = __riscv_vwaddu_vv_u16m2(g0, g1, vl);
+      sum_g = __riscv_vwaddu_wv_u16m2(sum_g, g0_1, vl);
+      sum_g = __riscv_vwaddu_wv_u16m2(sum_g, g1_1, vl);
+      sum_g = __riscv_vadd_vx_u16m2(sum_g, 2, vl);
+      vuint8m1_t g = __riscv_vnsrl_wx_u8m1(sum_g, 2, vl);
+
+      vuint16m2_t sum_r = __riscv_vwaddu_vv_u16m2(r0, r1, vl);
+      sum_r = __riscv_vwaddu_wv_u16m2(sum_r, r0_1, vl);
+      sum_r = __riscv_vwaddu_wv_u16m2(sum_r, r1_1, vl);
+      sum_r = __riscv_vadd_vx_u16m2(sum_r, 2, vl);
+      vuint8m1_t r = __riscv_vnsrl_wx_u8m1(sum_r, 2, vl);
+
+      vuint16m2_t sum_a = __riscv_vwaddu_vv_u16m2(a0, a1, vl);
+      sum_a = __riscv_vwaddu_wv_u16m2(sum_a, a0_1, vl);
+      sum_a = __riscv_vwaddu_wv_u16m2(sum_a, a1_1, vl);
+      sum_a = __riscv_vadd_vx_u16m2(sum_a, 2, vl);
+      vuint8m1_t a = __riscv_vnsrl_wx_u8m1(sum_a, 2, vl);
+
+      vint16m2_t v_u_i16 = __riscv_vwmulsu_vv_i16m2(v_u0, b, vl);
+      v_u_i16 = __riscv_vwmaccsu_vv_i16m2(v_u_i16, v_u1, g, vl);
+      v_u_i16 = __riscv_vwmaccsu_vv_i16m2(v_u_i16, v_u2, r, vl);
+      v_u_i16 = __riscv_vwmaccsu_vv_i16m2(v_u_i16, v_u3, a, vl);
+      v_u_i16 = __riscv_vsub_vv_i16m2(v_adduv, v_u_i16, vl);
+      vuint8m1_t v_u = __riscv_vnsrl_wx_u8m1(
+          __riscv_vreinterpret_v_i16m2_u16m2(v_u_i16), 8, vl);
+      __riscv_vse8_v_u8m1(dst_u, v_u, vl);
+
+      vint16m2_t v_v_i16 = __riscv_vwmulsu_vv_i16m2(v_v0, b, vl);
+      v_v_i16 = __riscv_vwmaccsu_vv_i16m2(v_v_i16, v_v1, g, vl);
+      v_v_i16 = __riscv_vwmaccsu_vv_i16m2(v_v_i16, v_v2, r, vl);
+      v_v_i16 = __riscv_vwmaccsu_vv_i16m2(v_v_i16, v_v3, a, vl);
+      v_v_i16 = __riscv_vsub_vv_i16m2(v_adduv, v_v_i16, vl);
+      vuint8m1_t v_v = __riscv_vnsrl_wx_u8m1(
+          __riscv_vreinterpret_v_i16m2_u16m2(v_v_i16), 8, vl);
+      __riscv_vse8_v_u8m1(dst_v, v_v, vl);
+
+      w_len -= vl;
+      src_argb_0 += 8 * vl;
+      src_argb_1 += 8 * vl;
+      dst_u += vl;
+      dst_v += vl;
+    } while (w_len > 0);
+  }
+  if (width & 1) {
+    uint8_t b = (src_argb_0[0] + src_argb_1[0] + 1) >> 1;
+    uint8_t g = (src_argb_0[1] + src_argb_1[1] + 1) >> 1;
+    uint8_t r = (src_argb_0[2] + src_argb_1[2] + 1) >> 1;
+    uint8_t a = (src_argb_0[3] + src_argb_1[3] + 1) >> 1;
+    dst_u[0] = (c->kAddUV[0] - (c->kRGBToU[0] * b + c->kRGBToU[1] * g +
+                                c->kRGBToU[2] * r + c->kRGBToU[3] * a)) >>
+               8;
+    dst_v[0] = (c->kAddUV[0] - (c->kRGBToV[0] * b + c->kRGBToV[1] * g +
+                                c->kRGBToV[2] * r + c->kRGBToV[3] * a)) >>
+               8;
+  }
+}
 #endif
 
-#ifdef HAS_RGB24TOYROW_RVV
+#ifdef HAS_RGBTOUV444MATRIXROW_RVV
+void RGBToUV444MatrixRow_RVV(const uint8_t* src_rgb,
+                             uint8_t* dst_u,
+                             uint8_t* dst_v,
+                             int width,
+                             const struct ArgbConstants* c) {
+  assert(width != 0);
+  size_t w = (size_t)width;
+  vint8m2_t v_bu, v_gu, v_ru;
+  vint8m2_t v_bv, v_gv, v_rv;
+  vint16m4_t v_adduv;
+  size_t vl = __riscv_vsetvl_e8m2(w);
+  v_bu = __riscv_vmv_v_x_i8m2(c->kRGBToU[0], vl);
+  v_gu = __riscv_vmv_v_x_i8m2(c->kRGBToU[1], vl);
+  v_ru = __riscv_vmv_v_x_i8m2(c->kRGBToU[2], vl);
+  v_bv = __riscv_vmv_v_x_i8m2(c->kRGBToV[0], vl);
+  v_gv = __riscv_vmv_v_x_i8m2(c->kRGBToV[1], vl);
+  v_rv = __riscv_vmv_v_x_i8m2(c->kRGBToV[2], vl);
+  v_adduv = __riscv_vmv_v_x_i16m4((int16_t)c->kAddUV[0], vl);
+  do {
+    size_t vl = __riscv_vsetvl_e8m2(w);
+    vuint8m2x3_t v_src_rgb = __riscv_vlseg3e8_v_u8m2x3(src_rgb, vl);
+    vuint8m2_t v_b = __riscv_vget_v_u8m2x3_u8m2(v_src_rgb, 0);
+    vuint8m2_t v_g = __riscv_vget_v_u8m2x3_u8m2(v_src_rgb, 1);
+    vuint8m2_t v_r = __riscv_vget_v_u8m2x3_u8m2(v_src_rgb, 2);
+
+    vint16m4_t v_u_i16 = __riscv_vwmulsu_vv_i16m4(v_ru, v_r, vl);
+    v_u_i16 = __riscv_vwmaccsu_vv_i16m4(v_u_i16, v_gu, v_g, vl);
+    v_u_i16 = __riscv_vwmaccsu_vv_i16m4(v_u_i16, v_bu, v_b, vl);
+    v_u_i16 = __riscv_vsub_vv_i16m4(v_adduv, v_u_i16, vl);
+    vuint8m2_t v_u = __riscv_vnsrl_wx_u8m2(
+        __riscv_vreinterpret_v_i16m4_u16m4(v_u_i16), 8, vl);
+    __riscv_vse8_v_u8m2(dst_u, v_u, vl);
+
+    vint16m4_t v_v_i16 = __riscv_vwmulsu_vv_i16m4(v_rv, v_r, vl);
+    v_v_i16 = __riscv_vwmaccsu_vv_i16m4(v_v_i16, v_gv, v_g, vl);
+    v_v_i16 = __riscv_vwmaccsu_vv_i16m4(v_v_i16, v_bv, v_b, vl);
+    v_v_i16 = __riscv_vsub_vv_i16m4(v_adduv, v_v_i16, vl);
+    vuint8m2_t v_v = __riscv_vnsrl_wx_u8m2(
+        __riscv_vreinterpret_v_i16m4_u16m4(v_v_i16), 8, vl);
+    __riscv_vse8_v_u8m2(dst_v, v_v, vl);
+
+    w -= vl;
+    src_rgb += 3 * vl;
+    dst_u += vl;
+    dst_v += vl;
+  } while (w > 0);
+}
 #endif
 
-#ifdef HAS_RAWTOYROW_RVV
+#ifdef HAS_RGBTOUVMATRIXROW_RVV
+void RGBToUVMatrixRow_RVV(const uint8_t* src_rgb,
+                          int src_stride_rgb,
+                          uint8_t* dst_u,
+                          uint8_t* dst_v,
+                          int width,
+                          const struct ArgbConstants* c) {
+  assert(width != 0);
+  const uint8_t* src_rgb_0 = src_rgb;
+  const uint8_t* src_rgb_1 = src_rgb + src_stride_rgb;
+  int w = width >> 1;
+  if (w > 0) {
+    size_t w_len = (size_t)w;
+    vint8m1_t v_bu, v_gu, v_ru;
+    vint8m1_t v_bv, v_gv, v_rv;
+    vint16m2_t v_adduv;
+    size_t vl = __riscv_vsetvl_e8m1(w_len);
+    v_bu = __riscv_vmv_v_x_i8m1(c->kRGBToU[0], vl);
+    v_gu = __riscv_vmv_v_x_i8m1(c->kRGBToU[1], vl);
+    v_ru = __riscv_vmv_v_x_i8m1(c->kRGBToU[2], vl);
+    v_bv = __riscv_vmv_v_x_i8m1(c->kRGBToV[0], vl);
+    v_gv = __riscv_vmv_v_x_i8m1(c->kRGBToV[1], vl);
+    v_rv = __riscv_vmv_v_x_i8m1(c->kRGBToV[2], vl);
+    v_adduv = __riscv_vmv_v_x_i16m2((int16_t)c->kAddUV[0], vl);
+    do {
+      size_t vl = __riscv_vsetvl_e8m1(w_len);
+      vuint8m1x6_t v_src0 = __riscv_vlseg6e8_v_u8m1x6(src_rgb_0, vl);
+      vuint8m1x6_t v_src1 = __riscv_vlseg6e8_v_u8m1x6(src_rgb_1, vl);
+
+      vuint8m1_t b0 = __riscv_vget_v_u8m1x6_u8m1(v_src0, 0);
+      vuint8m1_t g0 = __riscv_vget_v_u8m1x6_u8m1(v_src0, 1);
+      vuint8m1_t r0 = __riscv_vget_v_u8m1x6_u8m1(v_src0, 2);
+      vuint8m1_t b1 = __riscv_vget_v_u8m1x6_u8m1(v_src0, 3);
+      vuint8m1_t g1 = __riscv_vget_v_u8m1x6_u8m1(v_src0, 4);
+      vuint8m1_t r1 = __riscv_vget_v_u8m1x6_u8m1(v_src0, 5);
+
+      vuint8m1_t b0_1 = __riscv_vget_v_u8m1x6_u8m1(v_src1, 0);
+      vuint8m1_t g0_1 = __riscv_vget_v_u8m1x6_u8m1(v_src1, 1);
+      vuint8m1_t r0_1 = __riscv_vget_v_u8m1x6_u8m1(v_src1, 2);
+      vuint8m1_t b1_1 = __riscv_vget_v_u8m1x6_u8m1(v_src1, 3);
+      vuint8m1_t g1_1 = __riscv_vget_v_u8m1x6_u8m1(v_src1, 4);
+      vuint8m1_t r1_1 = __riscv_vget_v_u8m1x6_u8m1(v_src1, 5);
+
+      vuint16m2_t sum_b = __riscv_vwaddu_vv_u16m2(b0, b1, vl);
+      sum_b = __riscv_vwaddu_wv_u16m2(sum_b, b0_1, vl);
+      sum_b = __riscv_vwaddu_wv_u16m2(sum_b, b1_1, vl);
+      sum_b = __riscv_vadd_vx_u16m2(sum_b, 2, vl);
+      vuint8m1_t b = __riscv_vnsrl_wx_u8m1(sum_b, 2, vl);
+
+      vuint16m2_t sum_g = __riscv_vwaddu_vv_u16m2(g0, g1, vl);
+      sum_g = __riscv_vwaddu_wv_u16m2(sum_g, g0_1, vl);
+      sum_g = __riscv_vwaddu_wv_u16m2(sum_g, g1_1, vl);
+      sum_g = __riscv_vadd_vx_u16m2(sum_g, 2, vl);
+      vuint8m1_t g = __riscv_vnsrl_wx_u8m1(sum_g, 2, vl);
+
+      vuint16m2_t sum_r = __riscv_vwaddu_vv_u16m2(r0, r1, vl);
+      sum_r = __riscv_vwaddu_wv_u16m2(sum_r, r0_1, vl);
+      sum_r = __riscv_vwaddu_wv_u16m2(sum_r, r1_1, vl);
+      sum_r = __riscv_vadd_vx_u16m2(sum_r, 2, vl);
+      vuint8m1_t r = __riscv_vnsrl_wx_u8m1(sum_r, 2, vl);
+
+      vint16m2_t v_u_i16 = __riscv_vwmulsu_vv_i16m2(v_ru, r, vl);
+      v_u_i16 = __riscv_vwmaccsu_vv_i16m2(v_u_i16, v_gu, g, vl);
+      v_u_i16 = __riscv_vwmaccsu_vv_i16m2(v_u_i16, v_bu, b, vl);
+      v_u_i16 = __riscv_vsub_vv_i16m2(v_adduv, v_u_i16, vl);
+      vuint8m1_t v_u = __riscv_vnsrl_wx_u8m1(
+          __riscv_vreinterpret_v_i16m2_u16m2(v_u_i16), 8, vl);
+      __riscv_vse8_v_u8m1(dst_u, v_u, vl);
+
+      vint16m2_t v_v_i16 = __riscv_vwmulsu_vv_i16m2(v_rv, r, vl);
+      v_v_i16 = __riscv_vwmaccsu_vv_i16m2(v_v_i16, v_gv, g, vl);
+      v_v_i16 = __riscv_vwmaccsu_vv_i16m2(v_v_i16, v_bv, b, vl);
+      v_v_i16 = __riscv_vsub_vv_i16m2(v_adduv, v_v_i16, vl);
+      vuint8m1_t v_v = __riscv_vnsrl_wx_u8m1(
+          __riscv_vreinterpret_v_i16m2_u16m2(v_v_i16), 8, vl);
+      __riscv_vse8_v_u8m1(dst_v, v_v, vl);
+
+      w_len -= vl;
+      src_rgb_0 += 6 * vl;
+      src_rgb_1 += 6 * vl;
+      dst_u += vl;
+      dst_v += vl;
+    } while (w_len > 0);
+  }
+  if (width & 1) {
+    uint8_t b = (src_rgb_0[0] + src_rgb_1[0] + 1) >> 1;
+    uint8_t g = (src_rgb_0[1] + src_rgb_1[1] + 1) >> 1;
+    uint8_t r = (src_rgb_0[2] + src_rgb_1[2] + 1) >> 1;
+    dst_u[0] = (c->kAddUV[0] - (c->kRGBToU[0] * b + c->kRGBToU[1] * g +
+                                c->kRGBToU[2] * r)) >>
+               8;
+    dst_v[0] = (c->kAddUV[0] - (c->kRGBToV[0] * b + c->kRGBToV[1] * g +
+                                c->kRGBToV[2] * r)) >>
+               8;
+  }
+}
 #endif
 
 // Blend src_argb over src_argb1 and store to dst_argb.
@@ -1584,6 +1917,164 @@ void ARGBCopyYToAlphaRow_RVV(const uint8_t* src, uint8_t* dst, int width) {
     dst += vl * dst_stride;
   } while (w > 0);
 }
+#endif
+
+#ifdef HAS_CONVERT16TO8ROW_RVV
+void Convert16To8Row_RVV(const uint16_t* src_y,
+                         uint8_t* dst_y,
+                         int scale,
+                         int width) {
+  size_t w = (size_t)width;
+  const int shift = __builtin_clz((int32_t)scale) - 15;
+  do {
+    size_t vl = __riscv_vsetvl_e16m4(w);
+    vuint16m4_t v_src = __riscv_vle16_v_u16m4(src_y, vl);
+    vuint8m2_t v_dst = __riscv_vnsrl_wx_u8m2(v_src, shift, vl);
+    __riscv_vse8_v_u8m2(dst_y, v_dst, vl);
+    w -= vl;
+    src_y += vl;
+    dst_y += vl;
+  } while (w > 0);
+}
+#endif
+
+#ifdef HAS_CONVERT8TO16ROW_RVV
+// Use scale to convert lsb formats to msb, depending how many bits there are:
+// 512 = 9 bits
+// 1024 = 10 bits
+// 4096 = 12 bits
+// 65536 = 16 bits
+void Convert8To16Row_RVV(const uint8_t* src_y,
+                         uint16_t* dst_y,
+                         int bits,
+                         int width) {
+  size_t w = (size_t)width;
+  const int shift = 16 - bits;
+  do {
+    size_t vl = __riscv_vsetvl_e8m2(w);
+    vuint8m2_t v_src = __riscv_vle8_v_u8m2(src_y, vl);
+    vuint16m4_t v_dst = __riscv_vwaddu_vx_u16m4(v_src, 0, vl);
+    v_dst = __riscv_vmul_vx_u16m4(v_dst, 0x0101, vl);
+    v_dst = __riscv_vsrl_vx_u16m4(v_dst, shift, vl);
+    __riscv_vse16_v_u16m4(dst_y, v_dst, vl);
+    w -= vl;
+    src_y += vl;
+    dst_y += vl;
+  } while (w > 0);
+}
+#endif
+
+#ifdef HAS_MULTIPLYROW_16_RVV
+void MultiplyRow_16_RVV(const uint16_t* src_y,
+                        uint16_t* dst_y,
+                        int scale,
+                        int width) {
+  size_t w = (size_t)width;
+  do {
+    size_t vl = __riscv_vsetvl_e16m8(w);
+    vuint16m8_t v_src = __riscv_vle16_v_u16m8(src_y, vl);
+    vuint16m8_t v_dst = __riscv_vmul_vx_u16m8(v_src, (uint16_t)scale, vl);
+    __riscv_vse16_v_u16m8(dst_y, v_dst, vl);
+    w -= vl;
+    src_y += vl;
+    dst_y += vl;
+  } while (w > 0);
+}
+#endif
+
+#ifdef HAS_HALFROW_16TO8_RVV
+void HalfRow_16To8_RVV(const uint16_t* src_uv,
+                       ptrdiff_t src_uv_stride,
+                       uint8_t* dst_uv,
+                       int scale,
+                       int width) {
+  size_t w = (size_t)width;
+  const uint16_t* src_uv1 = src_uv + src_uv_stride;
+  const int shift = __builtin_clz((int32_t)scale) - 15;
+#ifndef LIBYUV_RVV_HAS_VXRM_ARG
+  asm volatile("csrwi vxrm, 0");
+#endif
+  do {
+    size_t vl = __riscv_vsetvl_e16m4(w);
+    vuint16m4_t v_src0 = __riscv_vle16_v_u16m4(src_uv, vl);
+    vuint16m4_t v_src1 = __riscv_vle16_v_u16m4(src_uv1, vl);
+#ifdef LIBYUV_RVV_HAS_VXRM_ARG
+    vuint16m4_t v_avg =
+        __riscv_vaaddu_vv_u16m4(v_src0, v_src1, __RISCV_VXRM_RNU, vl);
+#else
+    vuint16m4_t v_avg = __riscv_vaaddu_vv_u16m4(v_src0, v_src1, vl);
+#endif
+    vuint8m2_t v_dst = __riscv_vnsrl_wx_u8m2(v_avg, shift, vl);
+    __riscv_vse8_v_u8m2(dst_uv, v_dst, vl);
+    w -= vl;
+    src_uv += vl;
+    src_uv1 += vl;
+    dst_uv += vl;
+  } while (w > 0);
+}
+#endif
+
+#ifdef HAS_HALFWIDTHROW_16TO8_RVV
+#if defined(LIBYUV_RVV_HAS_TUPLE_TYPE) && defined(LIBYUV_RVV_HAS_VXRM_ARG)
+void HalfWidthRow_16To8_RVV(const uint16_t* src_uv,
+                            ptrdiff_t src_uv_stride,
+                            uint8_t* dst_uv,
+                            int scale,
+                            int width) {
+  const uint16_t* s = src_uv;
+  const uint16_t* t = src_uv + src_uv_stride;
+  size_t w = (size_t)width;
+  const int shift = __builtin_clz((int32_t)scale) - 15;
+  do {
+    size_t vl = __riscv_vsetvl_e16m4(w);
+    vuint16m4x2_t v_s = __riscv_vlseg2e16_v_u16m4x2(s, vl);
+    vuint16m4x2_t v_t = __riscv_vlseg2e16_v_u16m4x2(t, vl);
+    vuint16m4_t v_s0 = __riscv_vget_v_u16m4x2_u16m4(v_s, 0);
+    vuint16m4_t v_s1 = __riscv_vget_v_u16m4x2_u16m4(v_s, 1);
+    vuint16m4_t v_t0 = __riscv_vget_v_u16m4x2_u16m4(v_t, 0);
+    vuint16m4_t v_t1 = __riscv_vget_v_u16m4x2_u16m4(v_t, 1);
+    vuint32m8_t v_s01 = __riscv_vwaddu_vv_u32m8(v_s0, v_s1, vl);
+    vuint32m8_t v_t01 = __riscv_vwaddu_vv_u32m8(v_t0, v_t1, vl);
+    vuint32m8_t v_st01 = __riscv_vadd_vv_u32m8(v_s01, v_t01, vl);
+    vuint16m4_t v_avg =
+        __riscv_vnclipu_wx_u16m4(v_st01, 2, __RISCV_VXRM_RNU, vl);
+    vuint8m2_t v_dst = __riscv_vnsrl_wx_u8m2(v_avg, shift, vl);
+    __riscv_vse8_v_u8m2(dst_uv, v_dst, vl);
+    w -= vl;
+    s += 2 * vl;
+    t += 2 * vl;
+    dst_uv += vl;
+  } while (w > 0);
+}
+#else
+void HalfWidthRow_16To8_RVV(const uint16_t* src_uv,
+                            ptrdiff_t src_uv_stride,
+                            uint8_t* dst_uv,
+                            int scale,
+                            int width) {
+  const uint16_t* s = src_uv;
+  const uint16_t* t = src_uv + src_uv_stride;
+  size_t w = (size_t)width;
+  const int shift = __builtin_clz((int32_t)scale) - 15;
+  asm volatile("csrwi vxrm, 0");
+  do {
+    size_t vl = __riscv_vsetvl_e16m4(w);
+    vuint16m4_t v_s0, v_s1, v_t0, v_t1;
+    __riscv_vlseg2e16_v_u16m4(&v_s0, &v_s1, s, vl);
+    __riscv_vlseg2e16_v_u16m4(&v_t0, &v_t1, t, vl);
+    vuint32m8_t v_s01 = __riscv_vwaddu_vv_u32m8(v_s0, v_s1, vl);
+    vuint32m8_t v_t01 = __riscv_vwaddu_vv_u32m8(v_t0, v_t1, vl);
+    vuint32m8_t v_st01 = __riscv_vadd_vv_u32m8(v_s01, v_t01, vl);
+    vuint16m4_t v_avg = __riscv_vnclipu_wx_u16m4(v_st01, 2, vl);
+    vuint8m2_t v_dst = __riscv_vnsrl_wx_u8m2(v_avg, shift, vl);
+    __riscv_vse8_v_u8m2(dst_uv, v_dst, vl);
+    w -= vl;
+    s += 2 * vl;
+    t += 2 * vl;
+    dst_uv += vl;
+  } while (w > 0);
+}
+#endif
 #endif
 
 #ifdef __cplusplus

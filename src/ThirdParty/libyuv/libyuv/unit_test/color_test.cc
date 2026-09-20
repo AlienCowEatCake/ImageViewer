@@ -11,7 +11,6 @@
 #include <stdlib.h>
 
 #include "../unit_test/unit_test.h"
-#include "libyuv/basic_types.h"
 #include "libyuv/convert.h"
 #include "libyuv/convert_argb.h"
 #include "libyuv/convert_from.h"
@@ -464,8 +463,7 @@ static void YUVFToRGBReference(int y, int u, int v, int* r, int* g, int* b) {
 static void YUVUToRGBReference(int y, int u, int v, int* r, int* g, int* b) {
   double y1 = (y - 16) * 1.164384;
   *r = RoundToByte(y1 - (v - 128) * -1.67867);
-  *g = RoundToByte(y1 - (u - 128) * 0.187326 -
-                   (v - 128) * 0.65042);
+  *g = RoundToByte(y1 - (u - 128) * 0.187326 - (v - 128) * 0.65042);
   *b = RoundToByte(y1 - (u - 128) * -2.14177);
 }
 

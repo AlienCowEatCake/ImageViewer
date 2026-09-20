@@ -11,6 +11,8 @@
 #ifndef INCLUDE_LIBYUV_CPU_ID_H_
 #define INCLUDE_LIBYUV_CPU_ID_H_
 
+#include <stdint.h>
+
 #include "libyuv/basic_types.h"
 
 #ifdef __cplusplus
@@ -60,6 +62,7 @@ static const int kCpuHasAVX10_2 = 0x2000000;
 static const int kCpuHasAVXVNNI = 0x4000000;
 static const int kCpuHasAVXVNNIINT8 = 0x8000000;
 static const int kCpuHasAMXINT8 = 0x10000000;
+static const int kCpuHasAVX512BMM = 0x20000000;
 
 // These flags are only valid on LOONGARCH processors.
 static const int kCpuHasLOONGARCH = 0x20;

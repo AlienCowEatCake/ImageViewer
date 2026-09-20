@@ -431,13 +431,13 @@ static void FillRamp(uint8_t* buf,
 
 // Test scaling with C vs Opt and return maximum pixel difference. 0 = exact.
 static void YUVToARGBTestFilter(int src_width,
-                               int src_height,
-                               int dst_width,
-                               int dst_height,
-                               FilterMode f,
-                               int benchmark_iterations,
-                               int error_threshold,
-                               int* max_diff_out) {
+                                int src_height,
+                                int dst_width,
+                                int dst_height,
+                                FilterMode f,
+                                int benchmark_iterations,
+                                int error_threshold,
+                                int* max_diff_out) {
   int64_t src_y_plane_size = Abs(src_width) * Abs(src_height);
   int64_t src_uv_plane_size =
       ((Abs(src_width) + 1) / 2) * ((Abs(src_height) + 1) / 2);
@@ -448,8 +448,8 @@ static void YUVToARGBTestFilter(int src_width,
   align_buffer_page_end(src_u, src_uv_plane_size);
   align_buffer_page_end(src_v, src_uv_plane_size);
 
-  int64_t dst_argb_plane_size = (dst_width) * (dst_height)*4LL;
-  int dst_stride_argb = (dst_width)*4;
+  int64_t dst_argb_plane_size = (dst_width) * (dst_height) * 4LL;
+  int dst_stride_argb = (dst_width) * 4;
   align_buffer_page_end(dst_argb_c, dst_argb_plane_size);
   align_buffer_page_end(dst_argb_opt, dst_argb_plane_size);
   if (!dst_argb_c || !dst_argb_opt || !src_y || !src_u || !src_v) {
@@ -516,10 +516,10 @@ TEST_F(LibYUVScaleTest, YUVToRGBScaleUp) {
 
 TEST_F(LibYUVScaleTest, YUVToRGBScaleDown) {
   int diff = 0;
-  YUVToARGBTestFilter(
-      benchmark_width_ * 3 / 2, benchmark_height_ * 3 / 2, benchmark_width_,
-      benchmark_height_, libyuv::kFilterBilinear, benchmark_iterations_, 10,
-      &diff);
+  YUVToARGBTestFilter(benchmark_width_ * 3 / 2, benchmark_height_ * 3 / 2,
+                      benchmark_width_, benchmark_height_,
+                      libyuv::kFilterBilinear, benchmark_iterations_, 10,
+                      &diff);
   ASSERT_LE(diff, 10);
 }
 
@@ -592,6 +592,44 @@ TEST_F(LibYUVScaleTest, ARGBTest4x) {
   ASSERT_EQ(255 - 2, dest_pixels[1]);
   ASSERT_EQ(3, dest_pixels[2]);
   ASSERT_EQ(12, dest_pixels[3]);
+
+  free_aligned_buffer_page_end(dest_pixels);
+  free_aligned_buffer_page_end(orig_pixels);
+}
+
+TEST_F(LibYUVScaleTest, ARGBScale_LargeHeightOverflow) {
+  const int src_w = 4;
+  const int src_h = 32767;
+  align_buffer_page_end(orig_pixels, src_w * src_h * 4);
+  align_buffer_page_end(dest_pixels, src_w * 2 * 4);
+  memset(orig_pixels, 128, src_w * src_h * 4);
+
+  // Test both vertical-only scaling (dst_w == src_w) and 2D scaling (dst_w != src_w).
+  for (int dst_w : {4, 2}) {
+    int res = ARGBScale(orig_pixels, src_w * 4, src_w, src_h, dest_pixels,
+                        dst_w * 4, dst_w, 2, kFilterBilinear);
+    EXPECT_EQ(0, res);
+
+    res = ARGBScale(orig_pixels, src_w * 4, src_w, -src_h, dest_pixels,
+                    dst_w * 4, dst_w, 2, kFilterBilinear);
+    EXPECT_EQ(0, res);
+
+    res = ARGBScale(orig_pixels, src_w * 4, src_w, src_h, dest_pixels,
+                    dst_w * 4, dst_w, 2, kFilterLinear);
+    EXPECT_EQ(0, res);
+
+    res = ARGBScale(orig_pixels, src_w * 4, src_w, -src_h, dest_pixels,
+                    dst_w * 4, dst_w, 2, kFilterLinear);
+    EXPECT_EQ(0, res);
+
+    res = ARGBScale(orig_pixels, src_w * 4, src_w, src_h, dest_pixels,
+                    dst_w * 4, dst_w, 2, kFilterNone);
+    EXPECT_EQ(0, res);
+
+    res = ARGBScale(orig_pixels, src_w * 4, src_w, -src_h, dest_pixels,
+                    dst_w * 4, dst_w, 2, kFilterNone);
+    EXPECT_EQ(0, res);
+  }
 
   free_aligned_buffer_page_end(dest_pixels);
   free_aligned_buffer_page_end(orig_pixels);

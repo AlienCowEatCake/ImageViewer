@@ -11,8 +11,6 @@
 #include "libyuv/rotate_row.h"
 #include "libyuv/row.h"
 
-#include "libyuv/basic_types.h"
-
 #ifdef __cplusplus
 namespace libyuv {
 extern "C" {
@@ -198,16 +196,16 @@ void Transpose4x4_32_NEON(const uint8_t* src,
       "vst1.8      {q3}, [%7]!                   \n"
       "bgt         1b                            \n"
 
-      : "+r"(src),                        // %0
-        "+r"(src1),                       // %1
-        "+r"(src2),                       // %2
-        "+r"(src3),                       // %3
-        "+r"(dst),                        // %4
-        "+r"(dst1),                       // %5
-        "+r"(dst2),                       // %6
-        "+r"(dst3),                       // %7
-        "+r"(width)                       // %8
-      : "r"((ptrdiff_t)(src_stride * 4))  // %9
+      : "+r"(src),                      // %0
+        "+r"(src1),                     // %1
+        "+r"(src2),                     // %2
+        "+r"(src3),                     // %3
+        "+r"(dst),                      // %4
+        "+r"(dst1),                     // %5
+        "+r"(dst2),                     // %6
+        "+r"(dst3),                     // %7
+        "+r"(width)                     // %8
+      : "r"((ptrdiff_t)src_stride * 4)  // %9
       : "memory", "cc", "q0", "q1", "q2", "q3");
 }
 
