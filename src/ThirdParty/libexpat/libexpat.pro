@@ -17,6 +17,20 @@ include(../../Features.pri)
 include(../CommonSettings.pri)
 include(../zlib/zlib.pri)
 
+*g++*|*clang*|*llvm*|*xcode* {
+    greaterThan(QT_MAJOR_VERSION, 6) {
+        CONFIG += libexpat_c11
+    }
+    equals(QT_MAJOR_VERSION, 6) : greaterThan(QT_MINOR_VERSION, 5) {
+        CONFIG += libexpat_c11
+    }
+    libexpat_c11 {
+        QMAKE_CFLAGS += -std=gnu11
+    } else {
+        QMAKE_CFLAGS += -std=gnu99
+    }
+}
+
 INCLUDEPATH = $${THIRDPARTY_LIBEXPAT_CONFIG_PATH} $${THIRDPARTY_LIBEXPAT_PATH}/lib $${INCLUDEPATH}
 
 DEFINES += XML_POOR_ENTROPY XML_STATIC
