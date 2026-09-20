@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright (c) Contributors to the OpenEXR Project.
+
+version: 2
+updates:
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    exclude-paths:
+      - ".github/workflows/ci_workflow_vfx.yml"
+    groups:
+      codeql:
+        patterns:
+          - "github/codeql-action/*"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      day: "monday"
+      interval: "weekly"
+
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      day: "monday"
+      interval: "weekly"

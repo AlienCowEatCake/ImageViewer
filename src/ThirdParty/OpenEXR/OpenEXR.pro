@@ -10,9 +10,9 @@ QT -= core gui
 CONFIG -= warn_on
 CONFIG += warn_off
 
-THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-3.4.12
+THIRDPARTY_OPENEXR_PATH = $${PWD}/openexr-3.4.15
 THIRDPARTY_OPENEXR_CONFIG_PATH = $${PWD}/config
-THIRDPARTY_IMATH_PATH = $${PWD}/Imath-3.2.2
+THIRDPARTY_IMATH_PATH = $${PWD}/Imath-3.2.3
 THIRDPARTY_OPENEXR_INCLUDE_PATH = $${PWD}/include
 
 include(../../Features.pri)

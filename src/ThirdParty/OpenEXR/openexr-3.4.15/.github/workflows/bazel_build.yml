@@ -1,0 +1,89 @@
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright (c) Contributors to the OpenEXR Project.
+#
+# GitHub Actions workflow file
+# https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+name: Bazel
+
+# Skip the run on *.md changes and on changes to the website, *except*
+# for "website/src", since that code needs validation.  There's a
+# separate workflow for with website.
+
+on:
+  push:
+    paths:
+      - '**'
+      - '!**.md'
+      - '!website/**'
+      - 'website/src/**'
+      - '!src/wrappers/**'
+      - '!.github/workflows/**'
+      - '.github/workflows/bazel_build.yml'
+  pull_request:
+    paths:
+      - '**'
+      - '!**.md'
+      - '!website/**'
+      - 'website/src/**'
+      - '!src/wrappers/**'
+      - '!.github/workflows/**'
+      - '.github/workflows/bazel_build.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build_and_test_ubuntu:
+    name: Linux Ubuntu 24.04 Bazel build <GCC 13.3.0>
+    runs-on: ubuntu-24.04
+    
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+    - name: Mount Bazel cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: "/home/runner/.cache/bazel"
+        key: bazel-ubuntu-24
+
+    - name: Build
+      run: |
+        bazel build //...
+        bazel test --test_output=errors //...
+
+  build_and_test_windows:
+    name: Windows Server 2025 build <Visual Studio 2022>
+    runs-on: windows-2025
+
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+    - name: Mount Bazel cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: "/home/runner/.cache/bazel"
+        key: bazel-windows-2025
+
+    - name: Build
+      run: |
+        bazel build //...
+        bazel test --test_output=errors //...
+
+  build_and_test_macos:
+    name: macOS 15 Bazel build <Apple Clang14>
+    runs-on: macos-15
+
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+    - name: Mount Bazel cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: "/home/runner/.cache/bazel"
+        key: bazel-macos-15
+
+    - name: Build
+      run: |
+        bazel build //...
+        bazel test --test_output=errors //...
